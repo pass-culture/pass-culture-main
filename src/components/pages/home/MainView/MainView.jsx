@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import { parse } from 'query-string'
-import React, { Component, createRef, Fragment } from 'react'
+import React, { Fragment, useCallback, useEffect, useRef, useState } from 'react'
 import { Link, Route } from 'react-router-dom'
 
 import { formatToFrenchDecimal } from '../../../../utils/getDisplayPrice'
@@ -20,66 +20,48 @@ import Profile from '../Profile/Profile'
 import User from '../Profile/ValueObjects/User'
 import { setCustomUserId } from '../../../../notifications/setUpBatchSDK'
 
-class MainView extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      modules: [],
-      fetchingError: false,
-      haveSeenAllModules: false,
-    }
-    this.modulesListRef = createRef()
-  }
+const MainView = props => {
+  const { history, geolocation, match, user, updateCurrentUser } = props
+  const { trackAllModulesSeen, trackAllTilesSeen } = props
+  const [modules, setModules] = useState([])
+  const [fetchingError, setFetchingError] = useState(false)
+  const [haveSeenAllModules, setHaveSeenAllModules] = useState(false)
 
-  componentDidMount() {
-    const { history, updateCurrentUser, user } = this.props
-    const queryParams = parse(history.location.search)
+  const modulesListRef = useRef(null)
 
+  useEffect(() => {
     setCustomUserId(user.id)
+    updateCurrentUser({ lastConnectionDate: new Date() })
+  }, [updateCurrentUser, user.id])
 
-    updateCurrentUser({
-      lastConnectionDate: new Date(),
-    })
-    fetchHomepage({ entryId: queryParams['entryId'] })
-      .then(modules => {
-        this.setState({
-          modules: modules,
-        })
-      })
-      .catch(() => {
-        this.setState({
-          fetchingError: true,
-        })
-      })
-  }
+  useEffect(() => {
+    const { entryId } = parse(history.location.search)
+    fetchHomepage({ entryId })
+      .then(setModules)
+      .catch(() => setFetchingError(true))
+  }, [history.location.search])
 
-  componentDidUpdate(prevProps, prevState) {
-    const { trackAllModulesSeen } = this.props
-    const { haveSeenAllModules, modules } = this.state
-    if (prevState.modules.length !== modules.length) {
-      this.checkIfAllModulesHaveBeenSeen()
-    }
-    if (prevState.haveSeenAllModules !== haveSeenAllModules) {
+  useEffect(() => {
+    if (haveSeenAllModules) {
       trackAllModulesSeen(modules.length)
     }
-  }
+  }, [haveSeenAllModules, trackAllModulesSeen, modules.length])
 
-  checkIfAllModulesHaveBeenSeen = () => {
+  const checkIfAllModulesHaveBeenSeen = useCallback(() => {
     const navbarHeight = 60
     const modulePaddingBottom = 24
     const hasReachedEndOfPage =
-      this.modulesListRef.current.getBoundingClientRect().bottom +
+      modulesListRef.current.getBoundingClientRect().bottom +
         navbarHeight -
         modulePaddingBottom -
         document.documentElement.clientHeight <=
       0
     if (hasReachedEndOfPage) {
-      this.setState({ haveSeenAllModules: true })
+      setHaveSeenAllModules(true)
     }
-  }
+  }, [])
 
-  renderModule = (module, row) => {
-    const { geolocation, history, trackAllTilesSeen } = this.props
+  const renderModule = (module, row) => {
     if (module instanceof Offers || module instanceof OffersWithCover) {
       return (
         <Module
@@ -109,67 +91,59 @@ class MainView extends Component {
     }
   }
 
-  render() {
-    const { fetchingError, modules } = this.state
-    const { history, match, user } = this.props
-    const { publicName, wallet_balance } = user
-    const formattedPublicName = formatPublicName(publicName)
-    const formattedWalletBalance = formatToFrenchDecimal(wallet_balance)
-
-    return fetchingError ? (
-      <AnyError />
-    ) : (
-      <Fragment>
-        <Route path={`${match.path}/profil`}>
-          <Profile
-            history={history}
-            match={match}
-            user={user}
-          />
-        </Route>
+  return fetchingError ? (
+    <AnyError />
+  ) : (
+    <Fragment>
+      <Route path={`${match.path}/profil`}>
+        <Profile
+          history={history}
+          match={match}
+          user={user}
+        />
+      </Route>
+      <div
+        className="home-wrapper"
+        onScroll={checkIfAllModulesHaveBeenSeen}
+      >
+        <section className="hw-header">
+          <div className="hw-account">
+            <Link to="/accueil/profil">
+              <Icon
+                className="hw-account-image"
+                svg="ico-informations-white"
+              />
+            </Link>
+          </div>
+          <div className="hw-pseudo">
+            {`Bonjour ${formatPublicName(user.publicName)}`}
+          </div>
+          <div className="hw-wallet">
+            {`Tu as ${formatToFrenchDecimal(user.wallet_balance)} € sur ton pass`}
+          </div>
+        </section>
         <div
-          className="home-wrapper"
-          onScroll={this.checkIfAllModulesHaveBeenSeen}
+          className="hw-modules"
+          ref={modulesListRef}
         >
-          <section className="hw-header">
-            <div className="hw-account">
-              <Link to="/accueil/profil">
-                <Icon
-                  className="hw-account-image"
-                  svg="ico-informations-white"
-                />
-              </Link>
-            </div>
-            <div className="hw-pseudo">
-              {`Bonjour ${formattedPublicName}`}
-            </div>
-            <div className="hw-wallet">
-              {`Tu as ${formattedWalletBalance} € sur ton pass`}
-            </div>
-          </section>
-          <div
-            className="hw-modules"
-            ref={this.modulesListRef}
-          >
-            {modules.map((module, row) => this.renderModule(module, row))}
-          </div>
+          {modules.map(renderModule)}
         </div>
-        <Route
-          exact
-          path={`${match.path}/:details(details|transition)/:offerId([A-Z0-9]+)/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?`}
-          sensitive
-        >
-          <div className="home-details-wrapper">
-            <CloseLink closeTo="/accueil" />
-            <OfferDetailsContainer
-              match={match}
-              withHeader={false}
-            />
-          </div>
-        </Route>
-      </Fragment>
-    )
-  }
+      </div>
+      <Route
+        exact
+        path={`${match.path}/:details(details|transition)/:offerId([A-Z0-9]+)/:booking(reservation)?/:bookingId([A-Z0-9]+)?/:cancellation(annulation)?/:confirmation(confirmation)?`}
+        sensitive
+      >
+        <div className="home-details-wrapper">
+          <CloseLink closeTo="/accueil" />
+          <OfferDetailsContainer
+            match={match}
+            withHeader={false}
+          />
+        </div>
+      </Route>
+    </Fragment>
+  )
 }
 
 MainView.propTypes = {
