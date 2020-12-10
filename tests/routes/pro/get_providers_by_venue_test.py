@@ -39,7 +39,6 @@ class Get:
                     "id": humanize(allocine_stocks.id),
                     "isActive": True,
                     "localClass": "AllocineStocks",
-                    "modelName": "Provider",
                     "name": "Allociné",
                     "requireProviderIdentifier": True,
                 },
@@ -48,7 +47,6 @@ class Get:
                     "id": humanize(titelive_stocks.id),
                     "isActive": True,
                     "localClass": "TiteLiveStocks",
-                    "modelName": "Provider",
                     "name": "TiteLive Stocks (Epagine / Place des libraires.com)",
                     "requireProviderIdentifier": True,
                 },
@@ -79,7 +77,6 @@ class Get:
                     "id": humanize(titelive_stocks.id),
                     "isActive": True,
                     "localClass": "TiteLiveStocks",
-                    "modelName": "Provider",
                     "name": "TiteLive Stocks (Epagine / Place des libraires.com)",
                     "requireProviderIdentifier": True,
                 }
