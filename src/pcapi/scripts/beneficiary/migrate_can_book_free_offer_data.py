@@ -28,9 +28,9 @@ def migrate_can_book_free_offer_data(batch_size=1000):
     while item_ids:
         modified_count = get_base_query(min_id).filter(UserSQLEntity.id <= max_id).update({"isBeneficiary": True})
         db.session.commit()
-        item_ids = get_ids_query(max_id).limit(batch_size).all()
-        min_id, max_id = max_id, item_ids[-1][0]
-        print(f"{modified_count} users modified out of {batch_size}")
         modified_sum += modified_count
-
+        print(f"{modified_count} users modified out of {batch_size}")
+        item_ids = get_ids_query(max_id).limit(batch_size).all()
+        if item_ids:
+            min_id, max_id = max_id, item_ids[-1][0]
     print(f"{modified_sum} users updated")
