@@ -54,10 +54,7 @@ from pcapi.scripts.iris.import_iris import create_centroid_from_polygon
 from pcapi.utils.token import random_token
 
 
-DEFAULT_USER = UserSQLEntity()
 PLAIN_DEFAULT_TESTING_PASSWORD = "user@AZERTY123"
-DEFAULT_USER.setPassword(PLAIN_DEFAULT_TESTING_PASSWORD)
-HASHED_DEFAULT_TESTING_PASSWORD = DEFAULT_USER.password
 DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID = int(os.environ.get("DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID", 88))
 
 
@@ -515,8 +512,7 @@ def create_user(
     if password:
         user.setPassword(password)
     else:
-        user.clearTextPassword = PLAIN_DEFAULT_TESTING_PASSWORD
-        user.password = HASHED_DEFAULT_TESTING_PASSWORD
+        user.setPassword(PLAIN_DEFAULT_TESTING_PASSWORD)
         user.resetPasswordToken = reset_password_token
         user.resetPasswordTokenValidityLimit = reset_password_token_validity_limit
 
