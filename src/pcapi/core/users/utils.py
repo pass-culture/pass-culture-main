@@ -18,3 +18,7 @@ def create_custom_jwt_token(user_id: int, token_type: str, expiration_date: Opti
         jwt_secret_key,  # type: ignore # known as str in build assertion
         algorithm=ALGORITHM_HS_256,
     ).decode("ascii")
+
+
+def format_email(email: str) -> str:
+    return email.strip().lower()

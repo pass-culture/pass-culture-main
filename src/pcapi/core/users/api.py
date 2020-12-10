@@ -6,13 +6,16 @@ from typing import Optional
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.utils import create_custom_jwt_token
+from pcapi.core.users.utils import format_email
 from pcapi.domain import user_emails
 from pcapi.domain.password import generate_reset_token
 from pcapi.domain.password import random_password
+from pcapi.models.api_errors import ApiErrors
 from pcapi.models.deposit import DEPOSIT_DEFAULT_AMOUNT
 from pcapi.models.deposit import Deposit
 from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.repository import repository
+from pcapi.repository.user_queries import find_user_by_email
 from pcapi.scripts.beneficiary import THIRTY_DAYS_IN_HOURS
 from pcapi.utils import mailing as mailing_utils
 
@@ -58,8 +61,11 @@ def create_account(
     is_email_validated: bool = False,
     send_activation_mail: bool = True,
 ) -> UserSQLEntity:
+    if find_user_by_email(email):
+        raise ApiErrors({"email": "Un compte lié à cet email existe déjà"})
+
     user = UserSQLEntity(
-        email=email,
+        email=format_email(email),
         dateOfBirth=brithdate,
         isEmailValidated=is_email_validated,
         departementCode="007",

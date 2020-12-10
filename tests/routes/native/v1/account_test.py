@@ -70,7 +70,7 @@ class AccountTest:
         test_client = TestClient(app.test_client())
         assert UserSQLEntity.query.first() is None
         data = {
-            "email": "john.doe@example.com",
+            "email": "John.doe@example.com",
             "password": "Aazflrifaoi6@",
             "birthdate": "1960-12-31",
             "notifications": True,
@@ -83,6 +83,23 @@ class AccountTest:
 
         user = UserSQLEntity.query.first()
         assert user is not None
-        assert user.email == data["email"]
+        assert user.email == "john.doe@example.com"
         assert user.isEmailValidated is False
         mocked_send_raw_email.assert_called()
+
+    def test_account_creation_taken_email(self, app):
+        test_client = TestClient(app.test_client())
+        users_factories.UserFactory(email=self.identifier)
+
+        data = {
+            "email": "eMail@example.com",
+            "password": "Aazflrifaoi6@",
+            "birthdate": "1960-12-31",
+            "notifications": True,
+            "token": "gnagna",
+            "hasAllowedRecommendations": True,
+        }
+
+        response = test_client.post("/native/v1/account", json=data)
+        assert response.status_code == 400
+        assert response.json["email"] == "Un compte lié à cet email existe déjà"

@@ -8,6 +8,7 @@ from sqlalchemy.orm import Query
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.functions import Function
 
+from pcapi.core.users.utils import format_email
 from pcapi.models import BeneficiaryImport
 from pcapi.models import BeneficiaryImportSources
 from pcapi.models import BeneficiaryImportStatus
@@ -24,7 +25,7 @@ def count_users_by_email(email: str) -> int:
 
 
 def find_user_by_email(email: str) -> UserSQLEntity:
-    return UserSQLEntity.query.filter(func.lower(UserSQLEntity.email) == email.strip().lower()).first()
+    return UserSQLEntity.query.filter(func.lower(UserSQLEntity.email) == format_email(email)).first()
 
 
 def find_by_civility(first_name: str, last_name: str, date_of_birth: datetime) -> List[UserSQLEntity]:
