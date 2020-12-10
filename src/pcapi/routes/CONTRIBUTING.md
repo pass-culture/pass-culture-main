@@ -63,7 +63,7 @@ class Get:
             # when
             response = TestClient(app.test_client()) \
                 .with_auth(email='user@test.com') \
-                .get(API_URL + '/offers')
+                .get('/offers')
 
             # then
             assert response.status_code == 200

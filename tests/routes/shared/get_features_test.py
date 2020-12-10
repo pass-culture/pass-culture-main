@@ -1,6 +1,5 @@
 import pytest
 
-from pcapi.model_creators.generic_creators import API_URL
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.repository import repository
 
@@ -16,7 +15,7 @@ class Get:
             repository.save(user)
 
             # when
-            response = TestClient(app.test_client()).with_auth(user.email).get(API_URL + "/features")
+            response = TestClient(app.test_client()).with_auth(user.email).get("/features")
 
             # then
             assert response.status_code == 200
@@ -26,7 +25,7 @@ class Get:
         @pytest.mark.usefixtures("db_session")
         def when_user_is_not_logged_in(self, app):
             # when
-            response = TestClient(app.test_client()).get(API_URL + "/features")
+            response = TestClient(app.test_client()).get("/features")
 
             # then
             assert response.status_code == 200

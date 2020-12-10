@@ -54,7 +54,6 @@ from pcapi.scripts.iris.import_iris import create_centroid_from_polygon
 from pcapi.utils.token import random_token
 
 
-API_URL = "http://localhost:5000"
 DEFAULT_USER = UserSQLEntity()
 PLAIN_DEFAULT_TESTING_PASSWORD = "user@AZERTY123"
 DEFAULT_USER.setPassword(PLAIN_DEFAULT_TESTING_PASSWORD)

@@ -17,9 +17,6 @@ from pcapi.utils.human_ids import humanize
 from tests.conftest import TestClient
 
 
-API_URL = "/venues/"
-
-
 class Put:
     class Returns401:
         @pytest.mark.usefixtures("db_session")
@@ -33,10 +30,9 @@ class Put:
             stock = create_stock(offer=offer)
             repository.save(stock, user_offerer, venue)
 
-            api_url = API_URL + humanize(venue.id) + "/offers/activate"
-
             # when
-            response = TestClient(app.test_client()).put(api_url)
+            client = TestClient(app.test_client())
+            response = client.put(f"/venues/{humanize(venue.id)}/offers/activate")
 
             # then
             assert response.status_code == 401
@@ -54,10 +50,9 @@ class Put:
             stock = create_stock_from_offer(offer)
             repository.save(stock, user_offerer, venue, user_with_no_rights)
 
-            api_url = API_URL + humanize(venue.id) + "/offers/activate"
-
             # When
-            response = TestClient(app.test_client()).with_auth("user_with_no_rights@example.net").put(api_url)
+            client = TestClient(app.test_client()).with_auth("user_with_no_rights@example.net")
+            response = client.put(f"/venues/{humanize(venue.id)}/offers/activate")
 
             # Then
             assert response.status_code == 403
@@ -77,10 +72,9 @@ class Put:
             offer2.isActive = False
             repository.save(offer2, stock1, user_offerer, venue)
 
-            api_url = API_URL + "6TT67RTE/offers/activate"
-
             # When
-            response = TestClient(app.test_client()).with_auth("test@example.net").put(api_url)
+            client = TestClient(app.test_client()).with_auth("test@example.net")
+            response = client.put("/venues/6TT67RTE/offers/activate")
 
             # Then
             assert response.status_code == 404
@@ -100,10 +94,9 @@ class Put:
             offer2.isActive = False
             repository.save(offer2, stock1, user_offerer, venue)
 
-            api_url = API_URL + humanize(venue.id) + "/offers/activate"
-
             # When
-            response = TestClient(app.test_client()).with_auth("test@example.net").put(api_url)
+            client = TestClient(app.test_client()).with_auth("test@example.net")
+            response = client.put(f"/venues/{humanize(venue.id)}/offers/activate")
 
             # Then
             assert response.status_code == 200
@@ -130,10 +123,9 @@ class Put:
             offer2.isActive = False
             repository.save(offer2, stock1, user_offerer, venue)
 
-            api_url = API_URL + humanize(venue.id) + "/offers/activate"
-
             # When
-            response = TestClient(app.test_client()).with_auth("test@example.net").put(api_url)
+            client = TestClient(app.test_client()).with_auth("test@example.net")
+            response = client.put(f"/venues/{humanize(venue.id)}/offers/activate")
 
             # Then
             assert response.status_code == 200
@@ -151,10 +143,9 @@ class Put:
             stock1 = create_stock_from_offer(offer)
             repository.save(offer2, stock1, user_offerer, venue)
 
-            api_url = API_URL + humanize(venue.id) + "/offers/deactivate"
-
             # When
-            response = TestClient(app.test_client()).with_auth("test@example.net").put(api_url)
+            client = TestClient(app.test_client()).with_auth("test@example.net")
+            response = client.put(f"/venues/{humanize(venue.id)}/offers/deactivate")
 
             # Then
             assert response.status_code == 200
@@ -181,10 +172,9 @@ class Put:
             stock1 = create_stock_from_offer(offer)
             repository.save(offer2, stock1, user_offerer, venue)
 
-            api_url = API_URL + humanize(venue.id) + "/offers/deactivate"
-
             # When
-            response = TestClient(app.test_client()).with_auth("test@example.net").put(api_url)
+            client = TestClient(app.test_client()).with_auth("test@example.net")
+            response = client.put(f"/venues/{humanize(venue.id)}/offers/deactivate")
 
             # Then
             assert response.status_code == 200

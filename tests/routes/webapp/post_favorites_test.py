@@ -1,6 +1,5 @@
 import pytest
 
-from pcapi.model_creators.generic_creators import API_URL
 from pcapi.model_creators.generic_creators import create_mediation
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_recommendation
@@ -27,7 +26,7 @@ class Post:
             }
 
             # When
-            response = TestClient(app.test_client()).with_auth(user.email).post(f"{API_URL}/favorites", json=json)
+            response = TestClient(app.test_client()).with_auth(user.email).post("/favorites", json=json)
 
             # Then
             assert response.status_code == 400
@@ -51,7 +50,7 @@ class Post:
             }
 
             # When
-            response = TestClient(app.test_client()).with_auth(user.email).post(f"{API_URL}/favorites", json=json)
+            response = TestClient(app.test_client()).with_auth(user.email).post("/favorites", json=json)
 
             # Then
             assert response.status_code == 404
@@ -73,7 +72,7 @@ class Post:
             }
 
             # When
-            response = TestClient(app.test_client()).with_auth(user.email).post(f"{API_URL}/favorites", json=json)
+            response = TestClient(app.test_client()).with_auth(user.email).post("/favorites", json=json)
 
             # Then
             assert response.status_code == 404
@@ -96,7 +95,7 @@ class Post:
             }
 
             # When
-            response = TestClient(app.test_client()).with_auth(user.email).post(f"{API_URL}/favorites", json=json)
+            response = TestClient(app.test_client()).with_auth(user.email).post("/favorites", json=json)
 
             # Then
             assert response.status_code == 201
@@ -121,7 +120,7 @@ class Post:
             }
 
             # When
-            response = TestClient(app.test_client()).with_auth(user.email).post(f"{API_URL}/favorites", json=json)
+            response = TestClient(app.test_client()).with_auth(user.email).post("/favorites", json=json)
 
             # Then
             assert response.status_code == 201

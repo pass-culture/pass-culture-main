@@ -1,6 +1,5 @@
 import pytest
 
-from pcapi.model_creators.generic_creators import API_URL
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_favorite
 from pcapi.model_creators.generic_creators import create_mediation
@@ -24,7 +23,7 @@ class Get:
             repository.save(user)
 
             # When
-            response = TestClient(app.test_client()).with_auth(user.email).get(API_URL + "/favorites")
+            response = TestClient(app.test_client()).with_auth(user.email).get("/favorites")
 
             # Then
             assert response.status_code == 200
@@ -44,7 +43,7 @@ class Get:
             repository.save(user, favorite1, favorite2)
 
             # When
-            response = TestClient(app.test_client()).with_auth(user.email).get(API_URL + "/favorites")
+            response = TestClient(app.test_client()).with_auth(user.email).get("/favorites")
 
             # Then
             assert response.status_code == 200
@@ -69,7 +68,7 @@ class Get:
             repository.save(booking, favorite)
 
             # When
-            response = TestClient(app.test_client()).with_auth(user.email).get(API_URL + "/favorites")
+            response = TestClient(app.test_client()).with_auth(user.email).get("/favorites")
 
             # Then
             assert response.status_code == 200
@@ -84,7 +83,7 @@ class Get:
         @pytest.mark.usefixtures("db_session")
         def when_user_is_not_logged_in(self, app):
             # When
-            response = TestClient(app.test_client()).get(API_URL + "/favorites")
+            response = TestClient(app.test_client()).get("/favorites")
 
             # Then
             assert response.status_code == 401

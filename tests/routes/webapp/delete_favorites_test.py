@@ -1,6 +1,5 @@
 import pytest
 
-from pcapi.model_creators.generic_creators import API_URL
 from pcapi.model_creators.generic_creators import create_favorite
 from pcapi.model_creators.generic_creators import create_mediation
 from pcapi.model_creators.generic_creators import create_offerer
@@ -30,9 +29,7 @@ class Delete:
             repository.save(recommendation, user, favorite)
 
             # When
-            response = (
-                TestClient(app.test_client()).with_auth(user.email).delete(f"{API_URL}/favorites/{humanize(offer.id)}")
-            )
+            response = TestClient(app.test_client()).with_auth(user.email).delete(f"/favorites/{humanize(offer.id)}")
 
             # Then
             assert response.status_code == 200
@@ -54,7 +51,7 @@ class Delete:
             repository.save(recommendation, user, favorite)
 
             # When
-            response = TestClient(app.test_client()).with_auth(user.email).delete(f"{API_URL}/favorites/1")
+            response = TestClient(app.test_client()).with_auth(user.email).delete("/favorites/1")
 
             # Then
             assert response.status_code == 404
@@ -72,7 +69,7 @@ class Delete:
             repository.save(recommendation, user, favorite)
 
             # When
-            response = TestClient(app.test_client()).with_auth(user.email).delete(f"{API_URL}/favorites/ABCD/ABCD")
+            response = TestClient(app.test_client()).with_auth(user.email).delete("/favorites/ABCD/ABCD")
 
             # Then
             assert response.status_code == 404
