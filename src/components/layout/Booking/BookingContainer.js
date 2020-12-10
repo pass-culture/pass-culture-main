@@ -25,8 +25,7 @@ export const mapStateToProps = (state, ownProps) => {
   }
 }
 
-export const mapDispatchToProps = dispatch => (
-  {
+export const mapDispatchToProps = dispatch => ({
   handleSubmit: (payload, handleRequestFail, handleRequestSuccess) => {
     dispatch(
       requestData({
@@ -43,11 +42,15 @@ export const mapDispatchToProps = dispatch => (
   getCurrentUserInformation: async () => {
     const currentUser = await getCurrentUser()
     return dispatch(setCurrentUser(currentUser))
-  }
+  },
 })
 
 export const mergeProps = (stateProps, dispatchProps, ownProps) => {
-  const { history: { location: { pathname }}} = ownProps
+  const {
+    history: {
+      location: { pathname },
+    },
+  } = ownProps
   const basePathRegExp = '^/([^/]*)/'
   const basePath = pathname.match(basePathRegExp)[1]
   const { offer: { id: offerId } = {} } = stateProps
@@ -57,7 +60,10 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
     ...dispatchProps,
     ...ownProps,
     trackBookingSuccess: () => {
-      ownProps.tracking.trackEvent({ action: `${basePath.toUpperCase()} - bookingOffer`, name: offerId })
+      ownProps.tracking.trackEvent({
+        action: `${basePath.toUpperCase()} - bookingOffer`,
+        name: offerId,
+      })
     },
   }
 }
@@ -65,9 +71,5 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
 export default compose(
   withRouter,
   withTracking('Offer'),
-  connect(
-    mapStateToProps,
-    mapDispatchToProps,
-    mergeProps
-  )
+  connect(mapStateToProps, mapDispatchToProps, mergeProps)
 )(Booking)
