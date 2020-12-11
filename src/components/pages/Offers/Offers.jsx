@@ -4,7 +4,7 @@ import React, { Fragment, PureComponent } from 'react'
 import { Link } from 'react-router-dom'
 
 import AppLayout from 'app/AppLayout'
-import ActionsBarPortal from 'components/layout/ActionsBarPortal'
+import ActionsBarPortal from 'components/layout/ActionsBarPortal/ActionsBarPortal'
 import Icon from 'components/layout/Icon'
 import Select from 'components/layout/inputs/Select'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
@@ -78,13 +78,12 @@ class Offers extends PureComponent {
   }
 
   componentWillUnmount() {
-    const { closeNotification, notification, setSelectedOfferIds, hideActionsBar } = this.props
+    const { closeNotification, notification, setSelectedOfferIds } = this.props
     if (notification && notification.tag === 'offers-activation') {
       closeNotification()
     }
 
     setSelectedOfferIds([])
-    hideActionsBar()
   }
 
   updateUrlMatchingState = () => {
@@ -267,7 +266,7 @@ class Offers extends PureComponent {
   }
 
   selectOffer = (offerId, selected) => {
-    const { hideActionsBar, setSelectedOfferIds, selectedOfferIds, showActionsBar } = this.props
+    const { setSelectedOfferIds, selectedOfferIds } = this.props
     let newSelectedOfferIds = [...selectedOfferIds]
     if (selected) {
       newSelectedOfferIds.push(offerId)
@@ -276,15 +275,13 @@ class Offers extends PureComponent {
       newSelectedOfferIds.splice(offerIdIndex, 1)
     }
     setSelectedOfferIds(newSelectedOfferIds)
-    newSelectedOfferIds.length ? showActionsBar() : hideActionsBar()
   }
 
   selectAllOffers = () => {
-    const { offers, showActionsBar, setSelectedOfferIds, hideActionsBar } = this.props
+    const { offers, setSelectedOfferIds } = this.props
     const { areAllOffersSelected } = this.state
 
     const selectedOfferIds = areAllOffersSelected ? [] : offers.map(offer => offer.id)
-    selectedOfferIds.length ? showActionsBar() : hideActionsBar()
     setSelectedOfferIds(selectedOfferIds)
 
     this.toggleSelectAllCheckboxes()
@@ -619,6 +616,8 @@ class Offers extends PureComponent {
         </Link>
       )
 
+    const nbSelectedOffers = areAllOffersSelected ? offersCount : selectedOfferIds.length
+
     return (
       <AppLayout
         layoutConfig={{
@@ -630,7 +629,7 @@ class Offers extends PureComponent {
           action={actionLink}
           title="Offres"
         />
-        <ActionsBarPortal>
+        <ActionsBarPortal isVisible={nbSelectedOffers > 0}>
           <ActionsBarContainer
             areAllOffersSelected={areAllOffersSelected}
             nbSelectedOffers={areAllOffersSelected ? offersCount : selectedOfferIds.length}
@@ -679,7 +678,6 @@ Offers.defaultProps = {
 Offers.propTypes = {
   closeNotification: PropTypes.func.isRequired,
   currentUser: PropTypes.shape().isRequired,
-  hideActionsBar: PropTypes.func.isRequired,
   loadOffers: PropTypes.func.isRequired,
   offers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   query: PropTypes.shape({
@@ -697,7 +695,6 @@ Offers.propTypes = {
   }).isRequired,
   selectedOfferIds: PropTypes.arrayOf(PropTypes.string),
   setSelectedOfferIds: PropTypes.func.isRequired,
-  showActionsBar: PropTypes.func.isRequired,
   venue: PropTypes.shape({
     name: PropTypes.string.isRequired,
   }),

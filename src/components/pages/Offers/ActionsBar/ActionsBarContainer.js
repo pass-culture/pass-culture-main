@@ -3,7 +3,6 @@ import { compose } from 'redux'
 
 import withTracking from 'components/hocs/withTracking'
 import { setSelectedOfferIds } from 'store/offers/actions'
-import { hideActionsBar } from 'store/reducers/actionsBar'
 import { showNotificationV2 } from 'store/reducers/notificationReducer'
 
 import ActionsBar from './ActionsBar'
@@ -17,7 +16,6 @@ export const mapStateToProps = state => {
 
 export const mapDispatchToProps = dispatch => {
   return {
-    hideActionsBar: () => dispatch(hideActionsBar()),
     setSelectedOfferIds: selectedOfferIds => dispatch(setSelectedOfferIds(selectedOfferIds)),
     showSuccessNotification: text =>
       dispatch(

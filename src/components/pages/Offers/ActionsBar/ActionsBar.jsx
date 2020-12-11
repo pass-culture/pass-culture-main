@@ -20,7 +20,6 @@ const ActionsBar = props => {
   const {
     refreshOffers,
     selectedOfferIds,
-    hideActionsBar,
     setSelectedOfferIds,
     showSuccessNotification,
     trackActivateOffers,
@@ -33,9 +32,8 @@ const ActionsBar = props => {
 
   const handleClose = useCallback(() => {
     setSelectedOfferIds([])
-    hideActionsBar()
     areAllOffersSelected && toggleSelectAllCheckboxes()
-  }, [hideActionsBar, setSelectedOfferIds, areAllOffersSelected, toggleSelectAllCheckboxes])
+  }, [setSelectedOfferIds, areAllOffersSelected, toggleSelectAllCheckboxes])
 
   const handleUpdateOffersStatus = useCallback(
     isActivating => {
@@ -138,7 +136,6 @@ ActionsBar.defaultProps = {
 
 ActionsBar.propTypes = {
   areAllOffersSelected: PropTypes.bool,
-  hideActionsBar: PropTypes.func.isRequired,
   refreshOffers: PropTypes.func.isRequired,
   selectedOfferIds: PropTypes.arrayOf(PropTypes.string),
   setSelectedOfferIds: PropTypes.func.isRequired,

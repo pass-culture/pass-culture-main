@@ -1505,7 +1505,7 @@ describe('src | components | pages | Offers | Offers', () => {
   })
 
   describe('offers selection', () => {
-    it('should display actionBar when at least one offer is selected', async () => {
+    it('should display actionsBar when at least one offer is selected', async () => {
       // Given
       renderOffers(props, store)
       let checkbox
@@ -1518,7 +1518,7 @@ describe('src | components | pages | Offers | Offers', () => {
       expect(props.showActionsBar).toHaveBeenCalledWith()
     })
 
-    it('should hide actionBar when all offers are unselected', async () => {
+    it('should hide actionsBar when all offers are unselected', async () => {
       // Given
       props.selectedOfferIds = ['N9']
       renderOffers(props, store)

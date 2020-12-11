@@ -4,7 +4,6 @@ import { tracker } from 'store/reducers/tracker'
 
 import { offersReducer } from '../offers/reducer'
 
-import actionsBar from './actionsBar'
 import bookingSummary from './bookingSummary/bookingSummary'
 import data from './data'
 import errors from './errors'
@@ -14,7 +13,6 @@ import modal from './modal'
 import { notificationReducer } from './notificationReducer'
 
 const rootReducer = combineReducers({
-  actionsBar,
   bookingSummary,
   data,
   errors,
