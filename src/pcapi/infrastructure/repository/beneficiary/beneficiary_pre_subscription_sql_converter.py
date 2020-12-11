@@ -1,10 +1,9 @@
+from pcapi.core.beneficiaries import api as beneficiaries_api
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
 from pcapi.domain.password import generate_reset_token
 from pcapi.domain.password import random_password
 from pcapi.models import BeneficiaryImport
 from pcapi.models import ImportStatus
-from pcapi.models.deposit import DEPOSIT_DEFAULT_AMOUNT
-from pcapi.models.deposit import Deposit
 from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.scripts.beneficiary import THIRTY_DAYS_IN_HOURS
 
@@ -31,18 +30,11 @@ def to_model(beneficiary_pre_subscription: BeneficiaryPreSubscription) -> UserSQ
 
     generate_reset_token(beneficiary, validity_duration_hours=THIRTY_DAYS_IN_HOURS)
 
-    _attach_deposit(beneficiary, beneficiary_pre_subscription)
+    deposit = beneficiaries_api.create_deposit(beneficiary, beneficiary_pre_subscription.deposit_source)
+    beneficiary.deposits = [deposit]
     _attach_beneficiary_import(beneficiary, beneficiary_pre_subscription)
 
     return beneficiary
-
-
-def _attach_deposit(beneficiary: UserSQLEntity, beneficiary_pre_subscription: BeneficiaryPreSubscription) -> None:
-    deposit = Deposit()
-    deposit.amount = DEPOSIT_DEFAULT_AMOUNT
-    deposit.source = beneficiary_pre_subscription.deposit_source
-
-    beneficiary.deposits = [deposit]
 
 
 def _attach_beneficiary_import(

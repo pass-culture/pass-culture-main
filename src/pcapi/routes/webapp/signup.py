@@ -4,9 +4,9 @@ from flask import request
 
 from pcapi import settings
 from pcapi.connectors.google_spreadsheet import get_authorized_emails_and_dept_codes
+from pcapi.core.beneficiaries import api as beneficiaries_api
 from pcapi.flask_app import private_api
 from pcapi.models import ApiErrors
-from pcapi.models import Deposit
 from pcapi.models import UserSQLEntity
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
@@ -30,7 +30,7 @@ def signup_webapp():
 
     if settings.IS_INTEGRATION:
         new_user.departementCode = "00"
-        objects_to_save.append(_create_initial_deposit(new_user))
+        objects_to_save.append(beneficiaries_api.create_deposit(new_user, "test"))
     else:
         authorized_emails, departement_codes = get_authorized_emails_and_dept_codes()
         departement_code = _get_departement_code_when_authorized_or_error(authorized_emails, departement_codes)
@@ -49,14 +49,6 @@ def signup_webapp():
             app.logger.exception("Mail service failure", e)
 
     return jsonify(as_dict(new_user, includes=BENEFICIARY_INCLUDES)), 201
-
-
-def _create_initial_deposit(new_user):
-    deposit = Deposit()
-    deposit.amount = 499.99
-    deposit.user = new_user
-    deposit.source = "test"
-    return deposit
 
 
 def _get_departement_code_when_authorized_or_error(authorized_emails, departement_codes):

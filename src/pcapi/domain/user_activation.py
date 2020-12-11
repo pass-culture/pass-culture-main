@@ -2,6 +2,7 @@ import csv
 from io import StringIO
 from typing import Iterable
 
+from pcapi.core.beneficiaries import api as beneficiaries_api
 from pcapi.domain.password import generate_reset_token
 from pcapi.domain.password import random_password
 from pcapi.models.api_errors import ApiErrors
@@ -41,11 +42,7 @@ def create_initial_deposit(user_to_activate: UserSQLEntity) -> Deposit:
         error.add_error("user", "Cet utilisateur a déjà crédité son pass Culture")
         raise error
 
-    deposit = Deposit()
-    deposit.amount = 500
-    deposit.user = user_to_activate
-    deposit.source = "fichier csv"
-    return deposit
+    return beneficiaries_api.create_deposit(user_to_activate, "fichier csv")
 
 
 def generate_activation_users_csv(activation_users: Iterable[ActivationUser]) -> str:
@@ -75,9 +72,8 @@ def create_beneficiary_from_application(application_detail: dict) -> UserSQLEnti
     beneficiary.hasSeenTutorials = False
     generate_reset_token(beneficiary, validity_duration_hours=THIRTY_DAYS_IN_HOURS)
 
-    deposit = Deposit()
-    deposit.amount = 500
-    deposit.source = "démarches simplifiées dossier [%s]" % application_detail["application_id"]
+    application_id = application_detail["application_id"]
+    deposit = beneficiaries_api.create_deposit(beneficiary, f"démarches simplifiées dossier [{application_id}]")
     beneficiary.deposits = [deposit]
 
     return beneficiary
