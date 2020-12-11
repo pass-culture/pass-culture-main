@@ -1,10 +1,32 @@
 .sign-up-page {
-  .hero-body {
-    padding-left: rem(54px);
-  }
-
   a.quaternary-link {
     color: $primary;
+  }
+
+  .information-text {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: row;
+    margin-top: rem(24px);
+
+    img {
+      height: rem(21px);
+      margin-right: rem(6px);
+      margin-top: rem(3px);
+    }
+
+    p {
+      color: $grey-dark;
+      font-size: rem(13px);
+      line-height: rem(16px);
+      text-align: justify;
+    }
+  }
+
+  .field-password > img {
+    position: absolute;
+    right: rem(16px);
+    top: rem(37px);
   }
 
   .logo-side {
@@ -52,6 +74,10 @@
     width: 59%;
   }
 
+  .hero-body {
+    padding: 3rem 1.5rem;
+  }
+
   .column {
     padding: 0;
   }
@@ -73,26 +99,6 @@
 
     span {
       font-weight: bold;
-    }
-  }
-
-  .information-text {
-    align-items: flex-start;
-    display: flex;
-    flex-direction: row;
-    margin-top: rem(24px);
-
-    img {
-      height: rem(21px);
-      margin-right: rem(6px);
-      margin-top: rem(3px);
-    }
-
-    p {
-      color: $grey-dark;
-      font-size: rem(13px);
-      line-height: rem(16px);
-      text-align: justify;
     }
   }
 
@@ -149,12 +155,6 @@
 
   .field-password > label {
     width: 90%;
-  }
-
-  .field-password > img {
-    position: absolute;
-    right: rem(16px);
-    top: rem(37px);
   }
 
   .siren-field {

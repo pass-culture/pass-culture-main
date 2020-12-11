@@ -5,7 +5,10 @@
 .crop-explain .column {
   color: $mediation-green-dark;
   display: flex;
+  flex-basis: 0;
   flex-flow: column nowrap;
+  flex-grow: 1;
+  margin: 0 0.75em 0 0;
 
   &.explain-text {
     padding-left: 0;

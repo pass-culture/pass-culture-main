@@ -6,6 +6,10 @@
   background-image: $linear-gradient-to-right;
   box-shadow: 0 0 60px 0 $black-shadow;
   margin: auto;
+
+  &.columns {
+    display: flex;
+  }
 }
 
 .home-card {
