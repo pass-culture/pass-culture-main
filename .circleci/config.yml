@@ -278,7 +278,7 @@ jobs:
       - authenticate_gcp:
           gcp-key-name: GCP_METIER_KEY
       - deploy-cloudrun:
-          app_name: pass-culture-api-dev
+          app_name: pass-culture-api-development
           app_env: testing
           app_image_tag: ${CIRCLE_SHA1}
           app_service_account_email: secret-reader-development@pass-culture-app-projet-test.iam.gserviceaccount.com
