@@ -48,10 +48,10 @@ const MainView = props => {
         document.documentElement.clientHeight <=
       0
     if (hasReachedEndOfPage && modulesListRef.current.children.length > 0) {
-      trackAllModulesSeen()
+      trackAllModulesSeen(displayedModules.length)
       haveSeenAllModules.current = true
     }
-  }, [trackAllModulesSeen])
+  }, [trackAllModulesSeen, displayedModules])
 
   useEffect(() => {
     // Check on first render if we have seen all modules without scrolling: all modules fit on the page
