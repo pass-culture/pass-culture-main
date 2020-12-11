@@ -276,7 +276,7 @@ describe('src | components | MainView', () => {
   })
 
   describe('modules tracking', () => {
-    it('should track the user who have seen all modules after scroll', async () => {
+    it('should track the user who have seen all modules after scroll - only once', async () => {
       // Given
       props.displayedModules = [
         new BusinessPane({ image: 'my-image-1' }),
@@ -298,6 +298,14 @@ describe('src | components | MainView', () => {
 
       // Then
       expect(props.trackAllModulesSeen).toHaveBeenCalledWith(3)
+      expect(props.trackAllModulesSeen).toHaveBeenCalledTimes(1)
+
+      act(() => {
+        homeWrapper.invoke('onScroll')()
+      })
+
+      // Then
+      expect(props.trackAllModulesSeen).toHaveBeenCalledTimes(1)
     })
 
     it('should not track the user who have not seen all modules after scroll', async () => {
