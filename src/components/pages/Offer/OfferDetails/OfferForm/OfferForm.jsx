@@ -84,7 +84,7 @@ const OfferForm = props => {
   const [venues, setVenues] = useState([])
   const [venueOptions, setVenueOptions] = useState([])
   const [hasSynchronizedStocks, setHasSynchronizedStocks] = useState(false)
-  const [formFields, setFormFields] = useState(Object.keys(DEFAULT_FORM_VALUES))
+  const [offerFormFields, setOfferFormFields] = useState(Object.keys(DEFAULT_FORM_VALUES))
   const [readOnlyFields, setReadOnlyFields] = useState([''])
   const [formErrors, setFormErrors] = useState(submitErrors)
   const [isBusy, setIsBusy] = useState(true)
@@ -230,20 +230,24 @@ const OfferForm = props => {
       ...offerConditionalFields,
     ]
 
-    setFormFields(newFormFields)
+    setOfferFormFields(newFormFields)
   }, [offerType, isUserAdmin, receiveNotificationEmails, venue])
 
   const isValid = useCallback(() => {
     let newFormErrors = {}
+    const formFields = [...offerFormFields, 'offererId']
     mandatoryFields.forEach(fieldName => {
-      if (fieldName in formValues && formValues[fieldName] === DEFAULT_FORM_VALUES[fieldName]) {
+      if (
+        formFields.includes(fieldName) &&
+        formValues[fieldName] === DEFAULT_FORM_VALUES[fieldName]
+      ) {
         newFormErrors[fieldName] = 'Ce champs est obligatoire.'
       }
     })
 
     setFormErrors(newFormErrors)
     return Object.keys(newFormErrors).length === 0
-  }, [formValues])
+  }, [offerFormFields, formValues])
 
   useEffect(() => {
     if (onChange) {
@@ -265,7 +269,7 @@ const OfferForm = props => {
         'visa',
       ]
 
-      const submitedValues = formFields.reduce((acc, fieldName) => {
+      const submitedValues = offerFormFields.reduce((acc, fieldName) => {
         if (extraDataFields.includes(fieldName)) {
           if (!('extraData' in acc)) {
             acc.extraData = {}
@@ -283,7 +287,7 @@ const OfferForm = props => {
       // use NotificationV2
       window.scrollTo({ top: 0, behavior: 'smooth' })
     }
-  }, [formFields, formValues, isValid, onSubmit])
+  }, [offerFormFields, formValues, isValid, onSubmit])
 
   const handleFormUpdate = useCallback(
     newFormValues => setFormValues(oldFormValues => ({ ...oldFormValues, ...newFormValues })),
@@ -403,7 +407,7 @@ const OfferForm = props => {
                 value={formValues.description}
               />
             </div>
-            {formFields.includes('speaker') && (
+            {offerFormFields.includes('speaker') && (
               <div className="form-row">
                 <TextInput
                   disabled={readOnlyFields.includes('speaker')}
@@ -418,7 +422,7 @@ const OfferForm = props => {
               </div>
             )}
 
-            {formFields.includes('author') && (
+            {offerFormFields.includes('author') && (
               <div className="form-row">
                 <TextInput
                   disabled={readOnlyFields.includes('author')}
@@ -433,7 +437,7 @@ const OfferForm = props => {
               </div>
             )}
 
-            {formFields.includes('visa') && (
+            {offerFormFields.includes('visa') && (
               <div className="form-row">
                 <TextInput
                   disabled={readOnlyFields.includes('visa')}
@@ -448,7 +452,7 @@ const OfferForm = props => {
               </div>
             )}
 
-            {formFields.includes('isbn') && (
+            {offerFormFields.includes('isbn') && (
               <div className="form-row">
                 <TextInput
                   disabled={readOnlyFields.includes('isbn')}
@@ -463,7 +467,7 @@ const OfferForm = props => {
               </div>
             )}
 
-            {formFields.includes('stageDirector') && (
+            {offerFormFields.includes('stageDirector') && (
               <div className="form-row">
                 <TextInput
                   disabled={readOnlyFields.includes('stageDirector')}
@@ -478,7 +482,7 @@ const OfferForm = props => {
               </div>
             )}
 
-            {formFields.includes('performer') && (
+            {offerFormFields.includes('performer') && (
               <div className="form-row">
                 <TextInput
                   disabled={readOnlyFields.includes('performer')}
@@ -492,54 +496,8 @@ const OfferForm = props => {
                 />
               </div>
             )}
-          </section>
 
-          <section className="form-section">
-            <h2 className="section-title">
-              {'Informations pratiques'}
-            </h2>
-            <p className="section-description">
-              {
-                'Les informations pratiques permettent de donner aux utilisateurs des informations sur le retrait de leur commande.'
-              }
-            </p>
-
-            <div className="form-row">
-              <TextareaInput
-                countCharacters
-                disabled={readOnlyFields.includes('withdrawalDetails')}
-                error={getErrorMessage('withdrawalDetails')}
-                label="Informations de retrait"
-                maxLength={500}
-                name="withdrawalDetails"
-                onChange={handleSingleFormUpdate}
-                required
-                rows={4}
-                sublabel={!mandatoryFields.includes('withdrawalDetails') ? 'Optionnel' : ''}
-                value={formValues.withdrawalDetails}
-              />
-            </div>
-
-            {formFields.includes('url') && (
-              <div className="form-row">
-                <TextInput
-                  disabled={readOnlyFields.includes('url')}
-                  error={getErrorMessage('url')}
-                  label="URL"
-                  name="url"
-                  onChange={handleSingleFormUpdate}
-                  required
-                  sublabel={
-                    !readOnlyFields.includes('url') &&
-                    'Vous pouvez inclure {token} {email} et {offerId} dans l’URL, qui seront remplacés respectivement par le code de la contremarque, l’e-mail de la personne ayant reservé et l’identifiant de l’offre'
-                  }
-                  type="text"
-                  value={formValues.url}
-                />
-              </div>
-            )}
-
-            {formFields.includes('durationMinutes') && (
+            {offerFormFields.includes('durationMinutes') && (
               <div className="form-row">
                 <TimeInput
                   error={getErrorMessage('durationMinutes')}
@@ -554,6 +512,17 @@ const OfferForm = props => {
                 />
               </div>
             )}
+          </section>
+
+          <section className="form-section">
+            <h2 className="section-title">
+              {'Informations pratiques'}
+            </h2>
+            <p className="section-description">
+              {
+                'Les informations pratiques permettent de donner aux utilisateurs des informations sur le retrait de leur commande.'
+              }
+            </p>
 
             <div className="form-row">
               <Select
@@ -571,6 +540,7 @@ const OfferForm = props => {
                 sublabel={!mandatoryFields.includes('offererId') ? 'Optionnel' : ''}
               />
             </div>
+
             <div className="form-row">
               <Select
                 defaultOption={{
@@ -592,6 +562,41 @@ const OfferForm = props => {
                 <OfferRefundWarning />
               </div>
             )}
+
+            <div className="form-row">
+              <TextareaInput
+                countCharacters
+                disabled={readOnlyFields.includes('withdrawalDetails')}
+                error={getErrorMessage('withdrawalDetails')}
+                label="Informations de retrait"
+                maxLength={500}
+                name="withdrawalDetails"
+                onChange={handleSingleFormUpdate}
+                required
+                rows={6}
+                sublabel={!mandatoryFields.includes('withdrawalDetails') ? 'Optionnel' : ''}
+                value={formValues.withdrawalDetails}
+              />
+            </div>
+
+            {offerFormFields.includes('url') && (
+              <div className="form-row">
+                <TextInput
+                  disabled={readOnlyFields.includes('url')}
+                  error={getErrorMessage('url')}
+                  label="URL"
+                  name="url"
+                  onChange={handleSingleFormUpdate}
+                  required
+                  sublabel={
+                    !readOnlyFields.includes('url') &&
+                    'Vous pouvez inclure {token} {email} et {offerId} dans l’URL, qui seront remplacés respectivement par le code de la contremarque, l’e-mail de la personne ayant reservé et l’identifiant de l’offre'
+                  }
+                  type="text"
+                  value={formValues.url}
+                />
+              </div>
+            )}
           </section>
 
           {offer && (
@@ -610,7 +615,7 @@ const OfferForm = props => {
               {'Autre'}
             </h2>
 
-            {formFields.includes('isNational') && (
+            {offerFormFields.includes('isNational') && (
               <div className="form-row">
                 <CheckboxInput
                   checked={!!formValues.isNational}
@@ -621,7 +626,7 @@ const OfferForm = props => {
                 />
               </div>
             )}
-            {formFields.includes('isDuo') && (
+            {offerFormFields.includes('isDuo') && (
               <div className="form-row">
                 <CheckboxInput
                   checked={formValues.isDuo}
@@ -644,7 +649,7 @@ const OfferForm = props => {
               />
             </div>
 
-            {formFields.includes('bookingEmail') && (
+            {offerFormFields.includes('bookingEmail') && (
               <div className="form-row">
                 <TextInput
                   disabled={readOnlyFields.includes('bookingEmail')}

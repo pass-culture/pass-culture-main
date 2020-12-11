@@ -10,7 +10,7 @@ import { configureTestStore } from 'store/testUtils'
 
 import OfferDetailsContainer from '../OfferDetailsContainer'
 
-import { setOfferValues } from './helpers'
+import { getInputErrorForField, getOfferInputForField, setOfferValues } from './helpers'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   createOffer: jest.fn(),
@@ -47,7 +47,7 @@ describe('offerDetails - Creation', () => {
         value: 'EventType.CINEMA',
       },
       {
-        conditionalFields: ['author', 'musicType', 'performer'],
+        conditionalFields: ['author', 'musicType', 'performer', 'durationMinutes'],
         offlineOnly: false,
         onlineOnly: false,
         proLabel: 'Musique - concerts, festivals',
@@ -131,12 +131,14 @@ describe('offerDetails - Creation', () => {
     pcapi.loadTypes.mockResolvedValue(types)
     pcapi.getValidatedOfferers.mockResolvedValue(offerers)
     pcapi.getVenuesForOfferer.mockResolvedValue(venues)
+    jest.spyOn(window, 'scrollTo').mockImplementation()
   })
 
   afterEach(() => {
-    pcapi.loadTypes.mockClear()
+    pcapi.createOffer.mockClear()
     pcapi.getValidatedOfferers.mockClear()
     pcapi.getVenuesForOfferer.mockClear()
+    pcapi.loadTypes.mockClear()
   })
 
   describe('render when creating a new offer', () => {
@@ -177,7 +179,7 @@ describe('offerDetails - Creation', () => {
       renderOffers({}, store)
 
       // Then
-      expect(screen.getByText("Type d'offre", { selector: 'h2' })).toBeInTheDocument()
+      expect(screen.getByText("Type d'offre", { selector: '.section-title' })).toBeInTheDocument()
     })
 
     describe('when selecting an offer type', () => {
@@ -189,9 +191,13 @@ describe('offerDetails - Creation', () => {
         await setOfferValues({ type: 'EventType.CINEMA' })
 
         // Then
-        expect(screen.getByText('Infos artistiques', { selector: 'h2' })).toBeInTheDocument()
-        expect(screen.getByText('Informations pratiques', { selector: 'h2' })).toBeInTheDocument()
-        expect(screen.getByText('Autre', { selector: 'h2' })).toBeInTheDocument()
+        expect(
+          screen.getByText('Infos artistiques', { selector: '.section-title' })
+        ).toBeInTheDocument()
+        expect(
+          screen.getByText('Informations pratiques', { selector: '.section-title' })
+        ).toBeInTheDocument()
+        expect(screen.getByText('Autre', { selector: '.section-title' })).toBeInTheDocument()
       })
 
       it('should display an offerer selection', async () => {
@@ -314,7 +320,7 @@ describe('offerDetails - Creation', () => {
           await setOfferValues({ type: 'EventType.MUSIQUE' })
 
           // Then
-          const musicTypeInput = screen.getByLabelText('Genre musical')
+          const musicTypeInput = await getOfferInputForField('musicType')
           expect(musicTypeInput).toBeInTheDocument()
           expect(musicTypeInput).toHaveAttribute('name', 'musicType')
         })
@@ -328,7 +334,7 @@ describe('offerDetails - Creation', () => {
           await setOfferValues({ musicType: '501' })
 
           // Then
-          const musicSubTypeInput = screen.getByLabelText('Sous genre')
+          const musicSubTypeInput = await getOfferInputForField('musicSubType')
           expect(musicSubTypeInput).toBeInTheDocument()
           expect(musicSubTypeInput).toHaveAttribute('name', 'musicSubType')
         })
@@ -337,13 +343,13 @@ describe('offerDetails - Creation', () => {
           // Given
           renderOffers({}, store)
           await setOfferValues({ type: 'EventType.MUSIQUE' })
-          await screen.findByLabelText('Genre musical')
+          await screen.findByLabelText('Genre musical', { exact: false })
 
           // When
           await setOfferValues({ type: 'EventType.CINEMA' })
 
           // Then
-          expect(screen.queryByLabelText('Genre musical')).not.toBeInTheDocument()
+          expect(screen.queryByLabelText('Genre musical', { exact: false })).not.toBeInTheDocument()
         })
 
         it('should not display a music subtype selection when a musicType is not selected and a showType was selected before', async () => {
@@ -357,7 +363,7 @@ describe('offerDetails - Creation', () => {
           await setOfferValues({ type: 'EventType.MUSIQUE' })
 
           // Then
-          expect(screen.queryByLabelText('Sous genre')).not.toBeInTheDocument()
+          expect(screen.queryByLabelText('Sous genre', { exact: false })).not.toBeInTheDocument()
         })
       })
 
@@ -370,7 +376,7 @@ describe('offerDetails - Creation', () => {
           await setOfferValues({ type: 'EventType.SPECTACLE_VIVANT' })
 
           // Then
-          const showTypeInput = screen.getByLabelText('Type de spectacle')
+          const showTypeInput = await getOfferInputForField('showType')
           expect(showTypeInput).toBeInTheDocument()
           expect(showTypeInput).toHaveAttribute('name', 'showType')
         })
@@ -384,7 +390,7 @@ describe('offerDetails - Creation', () => {
           await setOfferValues({ showType: '1300' })
 
           // Then
-          const showSubTypeInput = screen.getByLabelText('Sous type')
+          const showSubTypeInput = await getOfferInputForField('showSubType')
           expect(showSubTypeInput).toBeInTheDocument()
           expect(showSubTypeInput).toHaveAttribute('name', 'showSubType')
         })
@@ -399,7 +405,7 @@ describe('offerDetails - Creation', () => {
           await setOfferValues({ type: 'EventType.CONFERENCE_DEBAT_DEDICACE' })
 
           // Then
-          const speakerInput = screen.getByLabelText('Intervenant')
+          const speakerInput = await getOfferInputForField('speaker')
           expect(speakerInput).toBeInTheDocument()
           expect(speakerInput).toHaveAttribute('name', 'speaker')
         })
@@ -414,7 +420,7 @@ describe('offerDetails - Creation', () => {
           await setOfferValues({ type: 'EventType.CINEMA' })
 
           // Then
-          const authorInput = screen.getByLabelText('Auteur')
+          const authorInput = await getOfferInputForField('author')
           expect(authorInput).toBeInTheDocument()
           expect(authorInput).toHaveAttribute('name', 'author')
         })
@@ -429,7 +435,7 @@ describe('offerDetails - Creation', () => {
           await setOfferValues({ type: 'EventType.CINEMA' })
 
           // Then
-          const visaInput = screen.getByLabelText(/Visa/)
+          const visaInput = await getOfferInputForField('visa')
           expect(visaInput).toBeInTheDocument()
           expect(visaInput).toHaveAttribute('name', 'visa')
         })
@@ -444,7 +450,7 @@ describe('offerDetails - Creation', () => {
           await setOfferValues({ type: 'ThingType.LIVRE_EDITION' })
 
           // Then
-          const isbnInput = screen.getByLabelText('ISBN')
+          const isbnInput = await getOfferInputForField('isbn')
           expect(isbnInput).toBeInTheDocument()
           expect(isbnInput).toHaveAttribute('name', 'isbn')
         })
@@ -459,7 +465,7 @@ describe('offerDetails - Creation', () => {
           await setOfferValues({ type: 'EventType.CINEMA' })
 
           // Then
-          const stageDirectorInput = screen.getByLabelText('Metteur en scène')
+          const stageDirectorInput = await getOfferInputForField('stageDirector')
           expect(stageDirectorInput).toBeInTheDocument()
           expect(stageDirectorInput).toHaveAttribute('name', 'stageDirector')
         })
@@ -474,8 +480,7 @@ describe('offerDetails - Creation', () => {
           await setOfferValues({ type: 'EventType.MUSIQUE' })
 
           // Then
-          const performerInput = screen.getByLabelText('Interprète')
-          expect(performerInput).toBeInTheDocument()
+          const performerInput = await getOfferInputForField('performer')
           expect(performerInput).toHaveAttribute('name', 'performer')
         })
       })
@@ -490,7 +495,7 @@ describe('offerDetails - Creation', () => {
           await setOfferValues({ venueId: venues[2].id })
 
           // Then
-          const urlInput = screen.getByLabelText(/URL/)
+          const urlInput = await getOfferInputForField('url')
           expect(urlInput).toBeInTheDocument()
           expect(urlInput).toHaveAttribute('name', 'url')
         })
@@ -569,7 +574,7 @@ describe('offerDetails - Creation', () => {
           await setOfferValues({ type: 'EventType.MUSIQUE' })
 
           // Then
-          const durationInput = screen.getByLabelText('Durée')
+          const durationInput = await getOfferInputForField('durationMinutes')
           expect(durationInput).toBeInTheDocument()
           expect(durationInput).toHaveAttribute('name', 'durationMinutes')
         })
@@ -582,7 +587,7 @@ describe('offerDetails - Creation', () => {
           await setOfferValues({ type: 'EventType.MUSIQUE' })
 
           // Then
-          const duoInput = screen.getByLabelText(/Accepter les réservations "duo"/)
+          const duoInput = await getOfferInputForField('isDuo')
           expect(duoInput).toBeInTheDocument()
           expect(duoInput).toHaveAttribute('name', 'isDuo')
         })
@@ -593,11 +598,20 @@ describe('offerDetails - Creation', () => {
   describe('when submitting form', () => {
     it('should call API with offer data', async () => {
       // Given
+      types.push({
+        conditionalFields: ['author', 'musicType', 'performer', 'durationMinutes'],
+        offlineOnly: false,
+        onlineOnly: false,
+        proLabel: 'Musique - concerts, festivals',
+        type: 'Event',
+        value: 'EventType.TEST_MUSIQUE',
+      })
+      pcapi.loadTypes.mockResolvedValue(types)
       const offerValues = {
         name: 'Ma petite offre',
         description: 'Pas si petite que ça',
-        durationMinutes: '01:00',
-        type: 'EventType.MUSIQUE',
+        durationMinutes: '03:00',
+        type: 'EventType.TEST_MUSIQUE',
         extraData: {
           author: '',
           musicType: '501',
@@ -620,5 +634,54 @@ describe('offerDetails - Creation', () => {
       // Then
       expect(pcapi.createOffer).toHaveBeenCalledWith(offerValues)
     })
+  })
+
+  it('should show errors for mandatory fields', async () => {
+    types.push({
+      conditionalFields: ['author', 'musicType', 'performer', 'durationMinutes', 'url'],
+      offlineOnly: false,
+      onlineOnly: false,
+      proLabel: 'Musique - concerts, festivals',
+      type: 'Event',
+      value: 'EventType.TEST_MUSIQUE',
+    })
+    pcapi.loadTypes.mockResolvedValue(types)
+    renderOffers({}, store)
+
+    await setOfferValues({ type: 'EventType.MUSIQUE' })
+
+    // When
+    fireEvent.click(screen.getByText('Enregistrer et passer au stocks'))
+
+    // Then
+    expect(pcapi.createOffer).not.toHaveBeenCalled()
+
+    // Mandatory fields
+    const nameError = await getInputErrorForField('name')
+    expect(nameError).toBeInTheDocument()
+    const venueIdError = await getInputErrorForField('venueId')
+    expect(venueIdError).toBeInTheDocument()
+    const offererIdError = await getInputErrorForField('offererId')
+    expect(offererIdError).toBeInTheDocument()
+
+    // Optional fields
+    const descriptionError = await getInputErrorForField('description')
+    expect(descriptionError).toBeNull()
+    const durationMinutesError = await getInputErrorForField('durationMinutes')
+    expect(durationMinutesError).toBeNull()
+    const typeError = await getInputErrorForField('type')
+    expect(typeError).toBeNull()
+    const authorError = await getInputErrorForField('author')
+    expect(authorError).toBeNull()
+    const musicTypeError = await getInputErrorForField('musicType')
+    expect(musicTypeError).toBeNull()
+    const musicSubTypeError = await getInputErrorForField('musicSubType')
+    expect(musicSubTypeError).toBeNull()
+    const performerError = await getInputErrorForField('performer')
+    expect(performerError).toBeNull()
+    const isDuoError = await getInputErrorForField('isDuo')
+    expect(isDuoError).toBeNull()
+    const withdrawalDetailsError = await getInputErrorForField('withdrawalDetails')
+    expect(withdrawalDetailsError).toBeNull()
   })
 })
