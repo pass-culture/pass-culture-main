@@ -4,7 +4,6 @@ import React, { Fragment } from 'react'
 import { NavLink } from 'react-router-dom'
 import ReactTooltip from 'react-tooltip'
 
-import ActionsBar from 'components/layout/ActionsBar'
 import HeaderContainer from 'components/layout/Header/HeaderContainer'
 import Icon from 'components/layout/Icon'
 import Modal from 'components/layout/Modal'
@@ -12,7 +11,7 @@ import NotificationV1Container from 'components/layout/NotificationV1/Notificati
 import NotificationV2Container from 'components/layout/NotificationV2/NotificationV2Container'
 
 const AppLayout = props => {
-  const { PageActionsBar, children, layoutConfig } = props
+  const { children, layoutConfig } = props
 
   const defaultConfig = {
     backTo: null,
@@ -85,11 +84,6 @@ const AppLayout = props => {
         )}
         <NotificationV2Container />
         <Modal key="modal" />
-        {PageActionsBar && (
-          <ActionsBar>
-            <PageActionsBar />
-          </ActionsBar>
-        )}
       </main>
     </div>
   )

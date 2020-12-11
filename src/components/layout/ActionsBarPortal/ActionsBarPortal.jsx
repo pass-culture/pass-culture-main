@@ -2,8 +2,10 @@ import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import React from 'react'
 
-const ActionsBar = ({ isVisible, children }) => {
-  return (
+import PortalContainer from 'app/PortalContainer'
+
+const ActionsBarPortal = ({ isVisible, children }) => (
+  <PortalContainer>
     <div className={classnames('actions-bar', { 'actions-bar-visible': isVisible })}>
       <div className="container">
         <div className="actions-bar-content">
@@ -11,16 +13,16 @@ const ActionsBar = ({ isVisible, children }) => {
         </div>
       </div>
     </div>
-  )
-}
+  </PortalContainer>
+)
 
-ActionsBar.defaultProps = {
+ActionsBarPortal.defaultProps = {
   isVisible: false,
 }
 
-ActionsBar.propTypes = {
+ActionsBarPortal.propTypes = {
   children: PropTypes.shape().isRequired,
   isVisible: PropTypes.bool,
 }
 
-export default ActionsBar
+export default ActionsBarPortal

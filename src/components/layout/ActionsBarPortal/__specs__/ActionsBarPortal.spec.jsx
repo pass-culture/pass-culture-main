@@ -7,7 +7,7 @@ import configureStore from 'store'
 import { initialState, showActionsBar } from 'store/reducers/actionsBar'
 import { renderWithStyles } from 'utils/testHelpers'
 
-import ActionsBar from '../'
+import ActionsBar from '..'
 
 const renderActionsBar = (props, store) => {
   return renderWithStyles(
@@ -19,7 +19,7 @@ const renderActionsBar = (props, store) => {
       </ActionsBar>
     </Provider>,
     {
-      stylesheet: 'components/layout/ActionsBar/_ActionsBar.scss',
+      stylesheet: 'components/layout/ActionsBarPortal/_ActionsBarPortal.scss',
     }
   )
 }

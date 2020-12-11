@@ -4,6 +4,7 @@ import React, { Fragment, PureComponent } from 'react'
 import { Link } from 'react-router-dom'
 
 import AppLayout from 'app/AppLayout'
+import ActionsBarPortal from 'components/layout/ActionsBarPortal'
 import Icon from 'components/layout/Icon'
 import Select from 'components/layout/inputs/Select'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
@@ -292,20 +293,6 @@ class Offers extends PureComponent {
   toggleSelectAllCheckboxes = () => {
     const { areAllOffersSelected } = this.state
     this.setState({ areAllOffersSelected: !areAllOffersSelected })
-  }
-
-  getOffersActionsBar = () => {
-    const { selectedOfferIds } = this.props
-    const { areAllOffersSelected, offersCount } = this.state
-
-    return (
-      <ActionsBarContainer
-        areAllOffersSelected={areAllOffersSelected}
-        nbSelectedOffers={areAllOffersSelected ? offersCount : selectedOfferIds.length}
-        refreshOffers={this.getPaginatedOffersWithFilters}
-        toggleSelectAllCheckboxes={this.toggleSelectAllCheckboxes}
-      />
-    )
   }
 
   setIsStatusFiltersVisible = isStatusFiltersVisible => {
@@ -610,8 +597,8 @@ class Offers extends PureComponent {
   }
 
   render() {
-    const { currentUser, offers, savedSearchFilters } = this.props
-    const { isLoading } = this.state
+    const { currentUser, offers, savedSearchFilters, selectedOfferIds } = this.props
+    const { areAllOffersSelected, isLoading, offersCount } = this.state
     const { isAdmin } = currentUser || {}
 
     const hasOffers = !!offers.length || this.hasSearchFilters(savedSearchFilters)
@@ -634,7 +621,6 @@ class Offers extends PureComponent {
 
     return (
       <AppLayout
-        PageActionsBar={this.getOffersActionsBar}
         layoutConfig={{
           pageName: 'offers',
         }}
@@ -644,6 +630,14 @@ class Offers extends PureComponent {
           action={actionLink}
           title="Offres"
         />
+        <ActionsBarPortal>
+          <ActionsBarContainer
+            areAllOffersSelected={areAllOffersSelected}
+            nbSelectedOffers={areAllOffersSelected ? offersCount : selectedOfferIds.length}
+            refreshOffers={this.getPaginatedOffersWithFilters}
+            toggleSelectAllCheckboxes={this.toggleSelectAllCheckboxes}
+          />
+        </ActionsBarPortal>
         {displayOffers ? (
           <Fragment>
             <h3 className="op-title">

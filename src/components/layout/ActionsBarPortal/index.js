@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 
-import ActionsBar from './ActionsBar'
+import ActionsBarPortal from './ActionsBarPortal'
 
 export const mapStateToProps = state => {
   return {
@@ -8,4 +8,4 @@ export const mapStateToProps = state => {
   }
 }
 
-export default connect(mapStateToProps)(ActionsBar)
+export default connect(mapStateToProps)(ActionsBarPortal)
