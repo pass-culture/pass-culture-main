@@ -31,8 +31,8 @@ const useDisplayedHomemodules = (history, geolocation) => {
 
   useEffect(() => {
     if (modules.length) {
-      const fetchAlgoliaModules = async () =>
-        await Promise.all(
+      const fetchAlgoliaModules = async () => {
+        const algoliaModules = await Promise.all(
           modules
             .filter(module => module instanceof Offers || module instanceof OffersWithCover)
             .map(async ({ algolia: parameters, moduleId }) => {
@@ -43,14 +43,14 @@ const useDisplayedHomemodules = (history, geolocation) => {
               return { moduleId, parsedParameters, ...response }
             })
         )
-
-      fetchAlgoliaModules().then(algoliaModules => {
         const mapping = {}
         algoliaModules.filter(Boolean).forEach(({ moduleId, nbHits, hits, parsedParameters }) => {
           mapping[moduleId] = { nbHits, hits, parsedParameters }
         })
         setAlgoliaMapping(mapping)
-      })
+      }
+
+      fetchAlgoliaModules()
     }
   }, [modules, geolocation])
 

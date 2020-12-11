@@ -42,6 +42,7 @@ const Module = props => {
     ? buildTiles({ algolia, cover, hits, nbHits })
     : buildPairedTiles({ algolia, cover, hits, nbHits })
 
+  const LayoutComponent = isOneItemLayout ? OneItem : TwoItems
   return (
     <section className="module-wrapper">
       <h1>
@@ -59,33 +60,19 @@ const Module = props => {
           resistance
           slideClassName="module-slides"
         >
-          {tiles.map((tile, index) => {
-            return isOneItemLayout ? (
-              <OneItem
-                historyPush={historyPush}
-                isSwitching={isSwitching}
-                // eslint-disable-next-line react/no-array-index-key
-                key={`${index}-tile`}
-                layout={layout}
-                moduleName={title}
-                parsedParameters={parsedParameters}
-                row={row}
-                tile={tile}
-              />
-            ) : (
-              <TwoItems
-                historyPush={historyPush}
-                isSwitching={isSwitching}
-                // eslint-disable-next-line react/no-array-index-key
-                key={`${index}-tile`}
-                layout={layout}
-                moduleName={title}
-                parsedParameters={parsedParameters}
-                row={row}
-                tile={tile}
-              />
-            )
-          })}
+          {tiles.map((tile, index) => (
+            <LayoutComponent
+              historyPush={historyPush}
+              isSwitching={isSwitching}
+              // eslint-disable-next-line react/no-array-index-key
+              key={`${index}-tile`}
+              layout={layout}
+              moduleName={title}
+              parsedParameters={parsedParameters}
+              row={row}
+              tile={tile}
+            />
+          ))}
         </SwipeableViews>
       </ul>
     </section>
