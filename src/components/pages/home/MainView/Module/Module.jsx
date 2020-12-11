@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React, { useCallback, useState, useEffect, useRef } from 'react'
 import SwipeableViews from 'react-swipeable-views'
 
 import { fetchAlgolia } from '../../../../../vendor/algolia/algolia'
@@ -11,130 +11,108 @@ import { buildPairedTiles, buildTiles } from './domain/buildTiles'
 import OneItem from './OneItem/OneItem'
 import TwoItems from './TwoItems/TwoItems'
 
-class Module extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      hits: [],
-      isSwitching: false,
-      nbHits: 0,
-      parsedParameters: null,
-    }
-    this.swipeRatio = 0.2
-    this.haveAlreadySeenAllTiles = false
-  }
+const swipeRatio = 0.2
 
-  componentDidMount() {
-    const {
-      geolocation,
-      module: { algolia },
-    } = this.props
+const Module = props => {
+  const { geolocation, historyPush, row, module, trackAllTilesSeen } = props
+  const { algolia, cover, display } = module
+  const [results, setResults] = useState({ hits: [], nbHits: 0, parsedParameters: null })
+
+  const [isSwitching, setIsSwitching] = useState(false)
+  const onSwitching = useCallback(() => setIsSwitching(true), [])
+  const onTransitionEnd = useCallback(() => setIsSwitching(false), [])
+
+  const haveAlreadySeenAllTiles = useRef(false)
+
+  useEffect(() => {
     const parsedParameters = parseAlgoliaParameters({ geolocation, parameters: algolia })
 
     if (parsedParameters) {
       fetchAlgolia(parsedParameters).then(data => {
         const { hits, nbHits } = data
-        this.setState({
+        setResults({
           hits: hits,
           nbHits: nbHits,
           parsedParameters: parsedParameters,
         })
       })
     }
-  }
+  }, [algolia, geolocation])
 
-  onChangeIndex = numberOfTiles => index => {
-    const {
-      trackAllTilesSeen,
-      module: { display: { title = 'Missing title' } = {} },
-    } = this.props
-    const haveSeenAllTilesForTheFirstTime =
-      index + 1 === numberOfTiles && !this.haveAlreadySeenAllTiles
+  const onChangeIndex = useCallback(
+    numberOfTiles => index => {
+      const { display: { title = 'Missing title' } = {} } = module
+      const haveSeenAllTilesForTheFirstTime =
+        index + 1 === numberOfTiles && !haveAlreadySeenAllTiles.current
 
-    if (haveSeenAllTilesForTheFirstTime) {
-      trackAllTilesSeen(title, numberOfTiles)
-      this.haveAlreadySeenAllTiles = true
-    }
-  }
+      if (haveSeenAllTilesForTheFirstTime) {
+        trackAllTilesSeen(title, numberOfTiles)
+        haveAlreadySeenAllTiles.current = true
+      }
+    },
+    [module, trackAllTilesSeen]
+  )
 
-  onSwitching = () => {
-    this.setState({ isSwitching: true })
-  }
+  const { layout = PANE_LAYOUT['ONE-ITEM-MEDIUM'], minOffers = 0, title } = display || {}
+  const { hits, nbHits, parsedParameters } = results
+  const atLeastOneHit = hits.length > 0
+  const minOffersHasBeenReached = nbHits >= minOffers
+  const shouldModuleBeDisplayed = atLeastOneHit && minOffersHasBeenReached
+  const isOneItemLayout = layout === PANE_LAYOUT['ONE-ITEM-MEDIUM']
+  const tiles = isOneItemLayout
+    ? buildTiles({ algolia, cover, hits, nbHits })
+    : buildPairedTiles({ algolia, cover, hits, nbHits })
 
-  onTransitionEnd = () => {
-    this.setState({ isSwitching: false })
-  }
-
-  render() {
-    const {
-      historyPush,
-      module: {
-        algolia,
-        cover,
-        display: { layout = PANE_LAYOUT['ONE-ITEM-MEDIUM'], minOffers = 0, title } = {},
-      },
-      row,
-    } = this.props
-    const { hits, isSwitching, nbHits, parsedParameters } = this.state
-    const atLeastOneHit = hits.length > 0
-    const minOffersHasBeenReached = nbHits >= minOffers
-    const shouldModuleBeDisplayed = atLeastOneHit && minOffersHasBeenReached
-    const isOneItemLayout = layout === PANE_LAYOUT['ONE-ITEM-MEDIUM']
-    const tiles = isOneItemLayout
-      ? buildTiles({ algolia, cover, hits, nbHits })
-      : buildPairedTiles({ algolia, cover, hits, nbHits })
-
-    return (
-      shouldModuleBeDisplayed && (
-        <section className="module-wrapper">
-          <h1>
-            {title}
-          </h1>
-          <ul>
-            <SwipeableViews
-              className={layout || PANE_LAYOUT['ONE-ITEM-MEDIUM']}
-              disableLazyLoading
-              enableMouseEvents
-              hysteresis={this.swipeRatio}
-              onChangeIndex={this.onChangeIndex(tiles.length)}
-              onSwitching={this.onSwitching}
-              onTransitionEnd={this.onTransitionEnd}
-              resistance
-              slideClassName="module-slides"
-            >
-              {tiles.map((tile, index) => {
-                return isOneItemLayout ? (
-                  <OneItem
-                    historyPush={historyPush}
-                    isSwitching={isSwitching}
-                    // eslint-disable-next-line react/no-array-index-key
-                    key={`${index}-tile`}
-                    layout={layout}
-                    moduleName={title}
-                    parsedParameters={parsedParameters}
-                    row={row}
-                    tile={tile}
-                  />
-                ) : (
-                  <TwoItems
-                    historyPush={historyPush}
-                    isSwitching={isSwitching}
-                    // eslint-disable-next-line react/no-array-index-key
-                    key={`${index}-tile`}
-                    layout={layout}
-                    moduleName={title}
-                    parsedParameters={parsedParameters}
-                    row={row}
-                    tile={tile}
-                  />
-                )
-              })}
-            </SwipeableViews>
-          </ul>
-        </section>
-      )
+  return (
+    shouldModuleBeDisplayed && (
+      <section className="module-wrapper">
+        <h1>
+          {title}
+        </h1>
+        <ul>
+          <SwipeableViews
+            className={layout || PANE_LAYOUT['ONE-ITEM-MEDIUM']}
+            disableLazyLoading
+            enableMouseEvents
+            hysteresis={swipeRatio}
+            onChangeIndex={onChangeIndex(tiles.length)}
+            onSwitching={onSwitching}
+            onTransitionEnd={onTransitionEnd}
+            resistance
+            slideClassName="module-slides"
+          >
+            {tiles.map((tile, index) => {
+              return isOneItemLayout ? (
+                <OneItem
+                  historyPush={historyPush}
+                  isSwitching={isSwitching}
+                  // eslint-disable-next-line react/no-array-index-key
+                  key={`${index}-tile`}
+                  layout={layout}
+                  moduleName={title}
+                  parsedParameters={parsedParameters}
+                  row={row}
+                  tile={tile}
+                />
+              ) : (
+                <TwoItems
+                  historyPush={historyPush}
+                  isSwitching={isSwitching}
+                  // eslint-disable-next-line react/no-array-index-key
+                  key={`${index}-tile`}
+                  layout={layout}
+                  moduleName={title}
+                  parsedParameters={parsedParameters}
+                  row={row}
+                  tile={tile}
+                />
+              )
+            })}
+          </SwipeableViews>
+        </ul>
+      </section>
     )
-  }
+  )
 }
 
 Module.defaultProps = {

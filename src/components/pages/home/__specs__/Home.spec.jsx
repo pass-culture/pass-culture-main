@@ -151,6 +151,8 @@ describe('src | components | home', () => {
       await flushPromises()
       wrapper.update()
     })
+
+    wrapper.setProps({})
     const moduleName = wrapper.find('Module').find({ children: 'Mon module' })
     expect(moduleName).toHaveLength(1)
   })
