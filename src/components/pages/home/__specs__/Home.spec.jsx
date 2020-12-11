@@ -1,8 +1,11 @@
 import { mount } from 'enzyme'
 import React from 'react'
+import { parse } from 'query-string'
 import { act } from 'react-dom/test-utils'
 import { MemoryRouter } from 'react-router'
+
 import { campaignTracker } from '../../../../tracking/mediaCampaignsTracking'
+import AnyError from '../../../layout/ErrorBoundaries/ErrorsPage/AnyError/AnyError'
 import { fetchAlgolia } from '../../../../vendor/algolia/algolia'
 import { fetchHomepage } from '../../../../vendor/contentful/contentful'
 import Home from '../Home'
@@ -12,6 +15,9 @@ import User from '../Profile/ValueObjects/User'
 jest.mock('../../../../vendor/contentful/contentful', () => ({
   fetchHomepage: jest.fn(),
 }))
+jest.mock('query-string', () => ({
+  parse: jest.fn(),
+}))
 jest.mock('../../../../vendor/algolia/algolia', () => ({
   fetchAlgolia: jest.fn(),
 }))
@@ -19,10 +25,18 @@ jest.mock('../../../../notifications/setUpBatchSDK', () => ({
   setCustomUserId: jest.fn(),
 }))
 
+const moduleId = 'moduleId'
 const flushPromises = () => new Promise(setImmediate)
 
+const offersWithCover = new OffersWithCover({
+  moduleId,
+  algolia: { isDuo: true },
+  cover: 'my-cover',
+  display: { title: 'Mon module', layout: 'one-item-medium', minOffers: 1 },
+})
 describe('src | components | home', () => {
   let props
+  let algoliaMockResponse
   beforeEach(() => {
     props = {
       geolocation: {
@@ -52,6 +66,28 @@ describe('src | components | home', () => {
         publicName: 'Iron Man',
         wallet_balance: 200.1,
       }),
+    }
+    algoliaMockResponse = {
+      hits: [
+        {
+          objectID: 'NE',
+          offer: {
+            dates: [],
+            id: 'NE',
+            label: 'Cinéma',
+            name: "Dansons jusqu'en 2030",
+            priceMax: 33,
+            priceMin: 33,
+            thumbUrl: 'http://localhost/storage/thumbs/mediations/KQ',
+          },
+          venue: {
+            name: 'Le Sous-sol',
+          },
+        },
+      ],
+      nbHits: 1,
+      nbPages: 1,
+      page: 1,
     }
   })
 
@@ -84,13 +120,8 @@ describe('src | components | home', () => {
 
   it('should render the main view with a valid geolocation prop', async () => {
     // Given
-    fetchAlgolia.mockResolvedValue({
-      hits: [],
-      nbHits: 0,
-      nbPages: 1,
-      page: 1,
-    })
-    fetchHomepage.mockResolvedValue([])
+    fetchAlgolia.mockResolvedValue(algoliaMockResponse)
+    fetchHomepage.mockResolvedValue([offersWithCover])
 
     // When
     const wrapper = mount(
@@ -104,39 +135,14 @@ describe('src | components | home', () => {
     })
 
     // Then
+    wrapper.update()
     const mainView = wrapper.find('MainView')
     expect(mainView.prop('geolocation')).toStrictEqual(props.geolocation)
   })
 
   it('should render the main view when navigating to /accueil', async () => {
     // Given
-    const offersWithCover = new OffersWithCover({
-      algolia: { isDuo: true },
-      cover: 'my-cover',
-      display: { title: 'Mon module', layout: 'one-item-medium', minOffers: 1 },
-    })
-    fetchAlgolia.mockResolvedValue({
-      hits: [
-        {
-          objectID: 'NE',
-          offer: {
-            dates: [],
-            id: 'NE',
-            label: 'Cinéma',
-            name: "Dansons jusqu'en 2030",
-            priceMax: 33,
-            priceMin: 33,
-            thumbUrl: 'http://localhost/storage/thumbs/mediations/KQ',
-          },
-          venue: {
-            name: 'Le Sous-sol',
-          },
-        },
-      ],
-      nbHits: 1,
-      nbPages: 1,
-      page: 1,
-    })
+    fetchAlgolia.mockResolvedValue(algoliaMockResponse)
     fetchHomepage.mockResolvedValue([offersWithCover])
 
     // When
@@ -152,7 +158,7 @@ describe('src | components | home', () => {
       wrapper.update()
     })
 
-    wrapper.setProps({})
+    wrapper.update()
     const moduleName = wrapper.find('Module').find({ children: 'Mon module' })
     expect(moduleName).toHaveLength(1)
   })
@@ -190,5 +196,47 @@ describe('src | components | home', () => {
 
     // Then
     expect(campaignTracker.home).toHaveBeenCalledTimes(1)
+  })
+
+  it('should fetch homepage using entry id from url when provided', async () => {
+    // given
+    const entryId = 'ABCDE'
+    parse.mockReturnValue({ entryId })
+    props.history.location.search = entryId
+    fetchHomepage.mockResolvedValue([])
+
+    // when
+    await mount(
+      <MemoryRouter>
+        <Home {...props} />
+      </MemoryRouter>
+    )
+    await act(async () => {
+      await flushPromises()
+    })
+
+    // then
+    expect(fetchHomepage).toHaveBeenCalledWith({ entryId })
+  })
+
+  it('should render an error page when homepage is not loadable', async () => {
+    // Given
+    const flushPromises = () => new Promise(setImmediate)
+    fetchHomepage.mockRejectedValue(new Error('fetching error'))
+
+    // When
+    const wrapper = mount(
+      <MemoryRouter>
+        <Home {...props} />
+      </MemoryRouter>
+    )
+    await act(async () => {
+      await flushPromises()
+      wrapper.update()
+    })
+
+    // Then
+    const anyError = wrapper.find(AnyError)
+    expect(anyError).toHaveLength(1)
   })
 })

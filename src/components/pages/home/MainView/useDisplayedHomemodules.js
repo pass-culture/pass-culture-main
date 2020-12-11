@@ -23,8 +23,8 @@ const useDisplayedHomemodules = (history, geolocation) => {
   const [fetchingError, setFetchingError] = useState(false)
 
   useEffect(() => {
-    const { entryId } = parse(history.location.search)
-    fetchHomepage({ entryId })
+    const parsedSearch = parse(history.location.search)
+    fetchHomepage({ entryId: parsedSearch ? parsedSearch.entryId : '' })
       .then(setModules)
       .catch(() => setFetchingError(true))
   }, [history.location.search])

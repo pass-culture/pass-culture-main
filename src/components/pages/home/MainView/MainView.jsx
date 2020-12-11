@@ -143,13 +143,13 @@ const MainView = props => {
 }
 
 MainView.propTypes = {
-  algoliaMapping: {
-    moduleId: PropTypes.shape({
+  algoliaMapping: PropTypes.shape(
+    PropTypes.shape({
       hits: PropTypes.arrayOf(PropTypes.shape()).isRequired,
       nbHits: PropTypes.number.isRequired,
       parsedParameters: PropTypes.shape(),
-    }),
-  }.isRequired,
+    })
+  ).isRequired,
   displayedModules: PropTypes.arrayOf(
     PropTypes.instanceOf(Offers, OffersWithCover, BusinessPane, ExclusivityPane)
   ).isRequired,

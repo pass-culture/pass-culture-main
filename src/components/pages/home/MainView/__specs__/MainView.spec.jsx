@@ -5,12 +5,10 @@ import { act } from 'react-dom/test-utils'
 import { MemoryRouter } from 'react-router'
 
 import { fetchHomepage } from '../../../../../vendor/contentful/contentful'
-import AnyError from '../../../../layout/ErrorBoundaries/ErrorsPage/AnyError/AnyError'
 import User from '../../../profile/ValueObjects/User'
 import BusinessModule from '../BusinessModule/BusinessModule'
 import BusinessPane from '../domain/ValueObjects/BusinessPane'
 import ExclusivityPane from '../domain/ValueObjects/ExclusivityPane'
-import Offers from '../domain/ValueObjects/Offers'
 import OffersWithCover from '../domain/ValueObjects/OffersWithCover'
 import ExclusivityModule from '../ExclusivityModule/ExclusivityModule'
 import MainView from '../MainView'
@@ -40,6 +38,8 @@ jest.mock('../domain/parseAlgoliaParameters', () => ({
 jest.mock('../../../../../notifications/setUpBatchSDK', () => ({
   setCustomUserId: jest.fn(),
 }))
+
+const moduleId = 'moduleId'
 
 describe('src | components | MainView', () => {
   let props
@@ -128,12 +128,15 @@ describe('src | components | MainView', () => {
 
   it('should render a module component when module is for offers with cover', async () => {
     // given
+    const results = { hits: [], nbHits: 0, parsedParameters: {} }
+    props.algoliaMapping = { moduleId: results }
     const offersWithCover = new OffersWithCover({
+      moduleId,
       algolia: { isDuo: true },
       cover: 'my-cover',
       display: { layout: 'one-item-medium' },
     })
-    fetchHomepage.mockResolvedValue([offersWithCover])
+    props.displayedModules = [offersWithCover]
 
     // when
     const wrapper = await mount(
@@ -152,16 +155,20 @@ describe('src | components | MainView', () => {
       module: offersWithCover,
       row: 0,
       trackAllTilesSeen: props.trackAllTilesSeen,
+      results,
     })
   })
 
   it('should render a module component when module is for offers', async () => {
     // given
+    const results = { hits: [], nbHits: 0, parsedParameters: {} }
+    props.algoliaMapping = { moduleId: results }
     const offers = new OffersWithCover({
       algolia: { isDuo: true },
       display: { layout: 'one-item-medium' },
+      moduleId,
     })
-    fetchHomepage.mockResolvedValue([offers])
+    props.displayedModules = [offers]
 
     // when
     const wrapper = await mount(
@@ -180,18 +187,19 @@ describe('src | components | MainView', () => {
       module: offers,
       row: 0,
       trackAllTilesSeen: props.trackAllTilesSeen,
+      results,
     })
   })
 
   it('should render a business module component when module is for business information', async () => {
     // given
-    fetchHomepage.mockResolvedValue([
+    props.displayedModules = [
       new BusinessPane({
         image: 'my-image',
         title: 'my-title',
         url: 'my-url',
       }),
-    ])
+    ]
 
     // when
     const wrapper = await mount(
@@ -208,13 +216,13 @@ describe('src | components | MainView', () => {
 
   it('should render an exclusivity module component when module is for an exclusive offer', async () => {
     // given
-    fetchHomepage.mockResolvedValue([
+    props.displayedModules = [
       new ExclusivityPane({
         alt: 'my alt text',
         image: 'https://www.link-to-my-image.com',
         offerId: 'AE',
       }),
-    ])
+    ]
 
     // when
     const wrapper = await mount(
@@ -227,44 +235,6 @@ describe('src | components | MainView', () => {
     // then
     const module = wrapper.find(ExclusivityModule)
     expect(module).toHaveLength(1)
-  })
-
-  it('should fetch homepage using entry id from url when provided', async () => {
-    // given
-    const entryId = 'ABCDE'
-    parse.mockReturnValue({ entryId })
-    props.history.location.search = entryId
-    fetchHomepage.mockResolvedValue([new Offers({})])
-
-    // when
-    const wrapper = await mount(
-      <MemoryRouter>
-        <MainView {...props} />
-      </MemoryRouter>
-    )
-    await wrapper.update()
-
-    // then
-    expect(fetchHomepage).toHaveBeenCalledWith({ entryId })
-  })
-
-  it('should render an error page when homepage is not loadable', async () => {
-    // Given
-    const flushPromises = () => new Promise(setImmediate)
-    fetchHomepage.mockRejectedValue(new Error('fetching error'))
-
-    // When
-    const wrapper = mount(
-      <MemoryRouter>
-        <MainView {...props} />
-      </MemoryRouter>
-    )
-    await flushPromises()
-    wrapper.update()
-
-    // Then
-    const anyError = wrapper.find(AnyError)
-    expect(anyError).toHaveLength(1)
   })
 
   it('should update user last connection date when on page', () => {
