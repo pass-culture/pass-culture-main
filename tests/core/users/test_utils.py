@@ -2,9 +2,9 @@ from datetime import datetime
 
 import jwt
 
+from pcapi import settings
 from pcapi.core.users.models import ALGORITHM_HS_256
 from pcapi.core.users.utils import create_custom_jwt_token
-from pcapi.flask_app import jwt_secret_key
 
 
 class CreateCurstomJwtTokenTest:
@@ -15,7 +15,7 @@ class CreateCurstomJwtTokenTest:
 
         jwt_token = create_custom_jwt_token(user_id, token_type, expiration_date)
 
-        decoded = jwt.decode(jwt_token, jwt_secret_key, algorithms=ALGORITHM_HS_256)
+        decoded = jwt.decode(jwt_token, settings.JWT_SECRET_KEY, algorithms=ALGORITHM_HS_256)
 
         assert decoded["userId"] == user_id
         assert decoded["type"] == token_type
@@ -27,7 +27,7 @@ class CreateCurstomJwtTokenTest:
 
         jwt_token = create_custom_jwt_token(user_id, token_type)
 
-        decoded = jwt.decode(jwt_token, jwt_secret_key, algorithms=ALGORITHM_HS_256)
+        decoded = jwt.decode(jwt_token, settings.JWT_SECRET_KEY, algorithms=ALGORITHM_HS_256)
 
         assert decoded["userId"] == user_id
         assert decoded["type"] == token_type

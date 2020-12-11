@@ -5,6 +5,7 @@ from freezegun import freeze_time
 import jwt
 import pytest
 
+from pcapi import settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.api import create_id_check_token
 from pcapi.core.users.api import generate_and_save_token
@@ -12,7 +13,6 @@ from pcapi.core.users.models import ALGORITHM_HS_256
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.repository import get_user_with_valid_token
-from pcapi.flask_app import jwt_secret_key
 from pcapi.repository import repository
 
 from tests.conftest import TestClient
@@ -33,14 +33,14 @@ class GenerateAndSaveTokenTest:
 
         assert generated_token.id == saved_token.id
         assert saved_token.type == token_type
-        decoded = jwt.decode(saved_token.value, jwt_secret_key, algorithms=ALGORITHM_HS_256)
+        decoded = jwt.decode(saved_token.value, settings.JWT_SECRET_KEY, algorithms=ALGORITHM_HS_256)
         assert decoded["userId"] == user.id
         assert decoded["type"] == token_type.value
         assert decoded["exp"] is not None
 
         with freeze_time(datetime.now() + timedelta(hours=48)):
             with pytest.raises(jwt.exceptions.ExpiredSignatureError):
-                jwt.decode(saved_token.value, jwt_secret_key, algorithms=ALGORITHM_HS_256)
+                jwt.decode(saved_token.value, settings.JWT_SECRET_KEY, algorithms=ALGORITHM_HS_256)
 
         # ensure token is not valid for authentication
         test_client = TestClient(app.test_client())
@@ -59,7 +59,7 @@ class GenerateAndSaveTokenTest:
         assert generated_token.type == token_type
         assert generated_token.expirationDate is None
 
-        decoded = jwt.decode(generated_token.value, jwt_secret_key, algorithms=ALGORITHM_HS_256)
+        decoded = jwt.decode(generated_token.value, settings.JWT_SECRET_KEY, algorithms=ALGORITHM_HS_256)
 
         assert decoded["userId"] == user.id
         assert decoded["type"] == token_type.value
@@ -76,7 +76,7 @@ class GenerateAndSaveTokenTest:
 class ValidateJwtTokenTest:
     token_value = jwt.encode(
         {"pay": "load"},
-        jwt_secret_key,
+        settings.JWT_SECRET_KEY,
         algorithm=ALGORITHM_HS_256,
     ).decode("ascii")
 

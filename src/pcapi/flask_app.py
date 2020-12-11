@@ -63,8 +63,7 @@ if feature_request_profiling_enabled():
         restrictions=profiling_restrictions,
     )
 
-jwt_secret_key = os.environ.get("JWT_SECRET_KEY")
-if not jwt_secret_key:
+if not settings.JWT_SECRET_KEY:
     json_logger.error("JWT_SECRET_KEY not found in env")
     raise Exception("JWT_SECRET_KEY not found in env")
 
@@ -81,7 +80,7 @@ app.config["REMEMBER_COOKIE_DURATION"] = 90 * 24 * 3600
 app.config["PERMANENT_SESSION_LIFETIME"] = 90 * 24 * 3600
 app.config["FLASK_ADMIN_SWATCH"] = "flatly"
 app.config["FLASK_ADMIN_FLUID_LAYOUT"] = True
-app.config["JWT_SECRET_KEY"] = jwt_secret_key
+app.config["JWT_SECRET_KEY"] = settings.JWT_SECRET_KEY
 
 jwt = JWTManager(app)
 

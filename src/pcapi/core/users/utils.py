@@ -3,8 +3,8 @@ from typing import Optional
 
 import jwt
 
+from pcapi import settings
 from pcapi.core.users.models import ALGORITHM_HS_256
-from pcapi.flask_app import jwt_secret_key
 
 
 def create_custom_jwt_token(user_id: int, token_type: str, expiration_date: Optional[datetime] = None) -> str:
@@ -15,7 +15,7 @@ def create_custom_jwt_token(user_id: int, token_type: str, expiration_date: Opti
         payload["exp"] = int(expiration_date.timestamp())
     return jwt.encode(
         payload,
-        jwt_secret_key,  # type: ignore # known as str in build assertion
+        settings.JWT_SECRET_KEY,  # type: ignore # known as str in build assertion
         algorithm=ALGORITHM_HS_256,
     ).decode("ascii")
 
