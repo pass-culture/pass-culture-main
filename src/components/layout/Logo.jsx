@@ -5,13 +5,9 @@ import { NavLink } from 'react-router-dom'
 
 import { ROOT_PATH } from 'utils/config'
 
-const Logo = ({ className, noLink, whiteHeader, signPage }) => {
-  let src
-  if (whiteHeader) {
-    src = `${ROOT_PATH}/icon/logo-full-hppro.png`
-  } else src = `${ROOT_PATH}/icons/brand-logo-pro-small-pro.png`
-
-  if (!whiteHeader && signPage) {
+const Logo = ({ className, noLink, signPage }) => {
+  let src = `${ROOT_PATH}/icons/brand-logo-pro-small-pro.png`
+  if (signPage) {
     src = `${ROOT_PATH}/icons/logo-group-splash@2x.png`
   }
 
