@@ -151,7 +151,7 @@ MainView.propTypes = {
     })
   ).isRequired,
   displayedModules: PropTypes.arrayOf(
-    PropTypes.instanceOf(Offers, OffersWithCover, BusinessPane, ExclusivityPane)
+    PropTypes.shape(Offers, OffersWithCover, BusinessPane, ExclusivityPane)
   ).isRequired,
   geolocation: PropTypes.shape({
     latitude: PropTypes.number,

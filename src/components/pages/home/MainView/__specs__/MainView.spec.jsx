@@ -278,17 +278,11 @@ describe('src | components | MainView', () => {
   describe('modules tracking', () => {
     it('should track the user who have seen all modules after scroll', async () => {
       // Given
-      fetchHomepage.mockResolvedValueOnce([
-        new BusinessPane({
-          title: 'my-title-1',
-        }),
-        new BusinessPane({
-          title: 'my-title-2',
-        }),
-        new BusinessPane({
-          title: 'my-title-3',
-        }),
-      ])
+      props.displayedModules = [
+        new BusinessPane({ image: 'my-image-1' }),
+        new BusinessPane({ image: 'my-image-2' }),
+        new BusinessPane({ image: 'my-image-3' }),
+      ]
       const wrapper = await mount(
         <MemoryRouter>
           <MainView {...props} />
@@ -308,17 +302,11 @@ describe('src | components | MainView', () => {
 
     it('should not track the user who have not seen all modules after scroll', async () => {
       // Given
-      fetchHomepage.mockResolvedValueOnce([
-        new BusinessPane({
-          title: 'my-title-1',
-        }),
-        new BusinessPane({
-          title: 'my-title-2',
-        }),
-        new BusinessPane({
-          title: 'my-title-3',
-        }),
-      ])
+      props.displayedModules = [
+        new BusinessPane({ image: 'my-image-1' }),
+        new BusinessPane({ image: 'my-image-2' }),
+        new BusinessPane({ image: 'my-image-3' }),
+      ]
       const wrapper = await mount(
         <MemoryRouter>
           <MainView {...props} />
@@ -338,17 +326,12 @@ describe('src | components | MainView', () => {
 
     it('should track the user who have seen all modules without scroll', async () => {
       // Given
-      fetchHomepage.mockResolvedValueOnce([
-        new BusinessPane({
-          title: 'my-title-1',
-        }),
-        new BusinessPane({
-          title: 'my-title-2',
-        }),
-        new BusinessPane({
-          title: 'my-title-3',
-        }),
-      ])
+      props.algoliaMapping = {}
+      props.displayedModules = [
+        new BusinessPane({ image: 'my-image-1' }),
+        new BusinessPane({ image: 'my-image-2' }),
+        new BusinessPane({ image: 'my-image-3' }),
+      ]
       jest.spyOn(document.documentElement, 'clientHeight', 'get').mockImplementationOnce(() => 37)
 
       // When
@@ -364,17 +347,11 @@ describe('src | components | MainView', () => {
 
     it('should not track the user who have not seen all modules without scroll', async () => {
       // Given
-      fetchHomepage.mockResolvedValueOnce([
-        new BusinessPane({
-          title: 'my-title-1',
-        }),
-        new BusinessPane({
-          title: 'my-title-2',
-        }),
-        new BusinessPane({
-          title: 'my-title-3',
-        }),
-      ])
+      props.displayedModules = [
+        new BusinessPane({ image: 'my-image-1' }),
+        new BusinessPane({ image: 'my-image-2' }),
+        new BusinessPane({ image: 'my-image-3' }),
+      ]
       jest.spyOn(document.documentElement, 'clientHeight', 'get').mockImplementationOnce(() => 35)
 
       // When
@@ -413,11 +390,7 @@ describe('src | components | MainView', () => {
         }
       ) => state,
     })
-    fetchHomepage.mockResolvedValueOnce([
-      new BusinessPane({
-        title: 'my-title-1',
-      }),
-    ])
+    props.displayedModules = [new BusinessPane({ image: 'my-image-1' })]
 
     // When
     const wrapper = await mount(

@@ -28,7 +28,7 @@ const MainView = ({ user, historyPush }) => (
 
 MainView.propTypes = {
   historyPush: PropTypes.func.isRequired,
-  user: PropTypes.instanceOf(User).isRequired,
+  user: PropTypes.shape(User).isRequired,
 }
 
 export default MainView

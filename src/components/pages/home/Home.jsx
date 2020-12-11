@@ -68,7 +68,7 @@ Home.propTypes = {
   trackAllModulesSeen: PropTypes.func.isRequired,
   trackAllTilesSeen: PropTypes.func.isRequired,
   updateCurrentUser: PropTypes.func.isRequired,
-  user: PropTypes.instanceOf(User).isRequired,
+  user: PropTypes.shape(User).isRequired,
 }
 
 export default Home

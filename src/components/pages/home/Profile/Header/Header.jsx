@@ -17,9 +17,7 @@ const Header = ({ user }) => {
         className="ph-back-link"
         to="/accueil"
       >
-        <Icon
-          svg="ico-arrow-previous"
-        />
+        <Icon svg="ico-arrow-previous" />
       </Link>
       <div className="ph-pseudo">
         {`${publicName}`}
@@ -35,7 +33,7 @@ const Header = ({ user }) => {
 }
 
 Header.propTypes = {
-  user: PropTypes.instanceOf(User).isRequired,
+  user: PropTypes.shape(User).isRequired,
 }
 
 export default Header

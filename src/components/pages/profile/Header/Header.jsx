@@ -25,7 +25,7 @@ const Header = ({ user }) => {
 }
 
 Header.propTypes = {
-  user: PropTypes.instanceOf(User).isRequired,
+  user: PropTypes.shape(User).isRequired,
 }
 
 export default Header

@@ -127,7 +127,7 @@ PersonalInformations.propTypes = {
   pathToProfile: PropTypes.string.isRequired,
   triggerSuccessSnackbar: PropTypes.func.isRequired,
   updateCurrentUser: PropTypes.func.isRequired,
-  user: PropTypes.instanceOf(User).isRequired,
+  user: PropTypes.shape(User).isRequired,
 }
 
 export default PersonalInformations

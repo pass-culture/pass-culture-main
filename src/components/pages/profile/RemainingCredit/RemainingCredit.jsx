@@ -88,7 +88,7 @@ class RemainingCredit extends PureComponent {
 }
 
 RemainingCredit.propTypes = {
-  user: PropTypes.instanceOf(User).isRequired,
+  user: PropTypes.shape(User).isRequired,
 }
 
 export default RemainingCredit
