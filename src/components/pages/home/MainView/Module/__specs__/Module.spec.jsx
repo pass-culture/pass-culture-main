@@ -10,6 +10,7 @@ import OffersWithCover from '../../domain/ValueObjects/OffersWithCover'
 import SeeMore from '../SeeMore/SeeMore'
 import { getStubStore } from '../../../../../../utils/stubStore'
 import { Provider } from 'react-redux'
+import { parseAlgoliaParameters } from '../../domain/parseAlgoliaParameters'
 
 jest.mock('../../../../../../vendor/algolia/algolia', () => ({
   fetchAlgolia: jest.fn(),
@@ -89,6 +90,7 @@ describe('src | components | Module', () => {
       module: null,
       row: 1,
       trackAllTilesSeen: jest.fn(),
+      results: { hits: [], nbHits: 0, parsedParameters: {} },
     }
     mockStore = getStubStore({
       data: (
@@ -100,22 +102,9 @@ describe('src | components | Module', () => {
     fetchAlgolia.mockReset()
   })
 
-  function mockAlgolia({ hits, nbHits }) {
-    fetchAlgolia.mockReturnValue(
-      new Promise(resolve => {
-        resolve({
-          hits: hits,
-          nbHits: nbHits,
-          nbPages: 0,
-          page: 0,
-        })
-      })
-    )
-  }
-
   it('should render two OfferTile when two offers', async () => {
     // given
-    mockAlgolia({ hits: [offerOne, offerTwo], nbHits: 2 })
+    props.results = { hits: [offerOne, offerTwo], nbHits: 2, parsedParameters: {} }
     props.module = new Offers({ algolia, display })
 
     // when
@@ -138,7 +127,7 @@ describe('src | components | Module', () => {
 
   it('should render a pane with a title', async () => {
     // given
-    mockAlgolia({ hits: [offerOne], nbHits: 1 })
+    props.results = { hits: [offerOne], nbHits: 1, parsedParameters: {} }
     props.module = new Offers({ algolia, display })
 
     // when
@@ -154,27 +143,8 @@ describe('src | components | Module', () => {
     expect(title).toHaveLength(1)
   })
 
-  it('should not render OfferTile nor pane title when no hits', async () => {
-    mockAlgolia({ hits: [], nbHits: 0 })
-    props.module = new Offers({ algolia, display })
-
-    // when
-    const wrapper = await mount(
-      <MemoryRouter>
-        <Module {...props} />
-      </MemoryRouter>
-    )
-    await wrapper.update()
-
-    // then
-    const offerTile = wrapper.find(Module).find(OfferTile)
-    expect(offerTile).toHaveLength(0)
-    const title = wrapper.find(Module).find({ children: 'Les offres près de chez toi!' })
-    expect(title).toHaveLength(0)
-  })
-
   it('should render a cover when provided', async () => {
-    mockAlgolia({ hits: [offerOne], nbHits: 1 })
+    props.results = { hits: [offerOne], nbHits: 1, parsedParameters: {} }
     const cover = 'https://www.link-to-my-image.com'
     props.module = new OffersWithCover({ algolia, cover, display })
 
@@ -209,27 +179,13 @@ describe('src | components | Module', () => {
     expect(fetchAlgolia).not.toHaveBeenCalled()
   })
 
-  it('should not render OfferTile when two offers are retrieved but min offers is superior', async () => {
-    // given
-    mockAlgolia({ hits: [offerOne, offerTwo], nbHits: 2 })
-    display.minOffers = 3
-    props.module = new Offers({ algolia, display })
-
-    // when
-    const wrapper = await mount(
-      <MemoryRouter>
-        <Module {...props} />
-      </MemoryRouter>
-    )
-
-    // then
-    const offers = wrapper.find(Module).find(OfferTile)
-    expect(offers).toHaveLength(0)
-  })
-
   it('should render a see more tile when displayed offers hits are inferior to total of hits', async () => {
     // given
-    mockAlgolia({ hits: [offerOne], nbHits: 5 })
+    props.results = {
+      hits: [offerOne],
+      nbHits: 5,
+      parsedParameters: parseAlgoliaParameters({ geolocation, parameters: algolia }),
+    }
     props.module = new Offers({ algolia, display })
     props.row = 0
 
@@ -278,7 +234,7 @@ describe('src | components | Module', () => {
   })
 
   it('should not render a see more tile when displayed offers hits are equal to total of hits', async () => {
-    mockAlgolia({ hits: [offerOne], nbHits: 1 })
+    props.results = { hits: [offerOne], nbHits: 1, parsedParameters: {} }
     props.module = new Offers({ algolia, display })
 
     // when
@@ -296,7 +252,7 @@ describe('src | components | Module', () => {
 
   it('should not render a see more tile when algolia parameters contains tags', async () => {
     algolia.tags = ["Offres de l'été"]
-    mockAlgolia({ hits: [offerOne], nbHits: 5 })
+    props.results = { hits: [offerOne], nbHits: 5, parsedParameters: {} }
     props.module = new Offers({ algolia, display })
 
     // when
@@ -314,7 +270,7 @@ describe('src | components | Module', () => {
 
   it('should not render a see more tile when algolia parameters contains beginningDatetime', async () => {
     algolia.beginningDatetime = '2020-01-01T20:00:00'
-    mockAlgolia({ hits: [offerOne], nbHits: 5 })
+    props.results = { hits: [offerOne], nbHits: 5, parsedParameters: {} }
     props.module = new Offers({ algolia, display })
 
     // when
@@ -332,7 +288,7 @@ describe('src | components | Module', () => {
 
   it('should not render a see more tile when algolia parameters contains endingDatetime', async () => {
     algolia.endingDatetime = '2020-01-01T20:00:00'
-    mockAlgolia({ hits: [offerOne], nbHits: 5 })
+    props.results = { hits: [offerOne], nbHits: 5, parsedParameters: {} }
     props.module = new Offers({ algolia, display })
 
     // when
@@ -351,7 +307,7 @@ describe('src | components | Module', () => {
   describe('when layout is two tiles', () => {
     it('should render a cover, two offer tiles, a see more tile', async () => {
       // given
-      mockAlgolia({ hits: [offerOne, offerTwo], nbHits: 3 })
+      props.results = { hits: [offerOne, offerTwo], nbHits: 3, parsedParameters: {} }
       const cover = 'https://www.link-to-my-image.com'
       display.layout = PANE_LAYOUT['TWO-ITEMS']
       props.module = new OffersWithCover({ algolia, cover, display })
@@ -380,7 +336,7 @@ describe('src | components | Module', () => {
     describe('only one tile', () => {
       it('should not track user on render for last tile seen if there is only one tile', async () => {
         // Given
-        mockAlgolia({ hits: [offerOne], nbHits: 1 })
+        props.results = { hits: [offerOne], nbHits: 1, parsedParameters: {} }
         props.module = new Offers({ algolia, display })
 
         // When
@@ -415,7 +371,7 @@ describe('src | components | Module', () => {
             name: 'Librairie Kléber',
           },
         }
-        mockAlgolia({ hits: [offerOne, offerTwo, offerThree], nbHits: 3 })
+        props.results = { hits: [offerOne, offerTwo, offerThree], nbHits: 3, parsedParameters: {} }
         props = {
           ...props,
           module: new Offers({ algolia, display }),

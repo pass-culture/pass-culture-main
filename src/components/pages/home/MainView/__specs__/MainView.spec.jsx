@@ -48,6 +48,8 @@ describe('src | components | MainView', () => {
     fetchHomepage.mockResolvedValue([])
     parse.mockReturnValue({})
     props = {
+      algoliaMapping: {},
+      displayedModules: [],
       geolocation: {
         latitude: 5,
         longitude: 10,

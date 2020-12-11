@@ -7,7 +7,7 @@ import { parseAlgoliaParameters } from './domain/parseAlgoliaParameters'
 import Offers from './domain/ValueObjects/Offers'
 import OffersWithCover from './domain/ValueObjects/OffersWithCover'
 
-const shouldModuleBeDisplayed = algoliaMapping => module => {
+export const shouldModuleBeDisplayed = algoliaMapping => module => {
   if (module instanceof Offers || module instanceof OffersWithCover) {
     const { hits = [], nbHits = 0 } = algoliaMapping[module.moduleId] || {}
     const atLeastOneHit = hits.length > 0
