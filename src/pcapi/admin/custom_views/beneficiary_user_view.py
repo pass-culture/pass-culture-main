@@ -1,16 +1,26 @@
+from flask_login import current_user
 from sqlalchemy.orm import query
 from sqlalchemy.sql.functions import func
 from wtforms import Form
 from wtforms import validators
 
+from pcapi import settings
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.models import UserOfferer
 from pcapi.models.user_sql_entity import UserSQLEntity
+from pcapi.utils.mailing import parse_email_addresses
 
 
 class BeneficiaryUserView(BaseAdminView):
     can_edit = True
-    can_create = True
+
+    @property
+    def can_create(self) -> bool:
+        if settings.IS_PROD:
+            return current_user.email in parse_email_addresses(settings.SUPER_ADMIN_EMAIL_ADDRESSES)
+
+        return True
+
     column_list = [
         "id",
         "isBeneficiary",

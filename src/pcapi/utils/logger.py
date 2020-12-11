@@ -3,7 +3,7 @@ import logging
 
 from pythonjsonlogger import jsonlogger
 
-from pcapi import settings
+from pcapi.settings import LOG_LEVEL
 
 
 def disable_werkzeug_request_logs() -> None:
@@ -25,7 +25,7 @@ class CustomJsonFormatter(jsonlogger.JsonFormatter):
 logger = logging.getLogger()
 logging.basicConfig(
     format="%(asctime)s %(levelname)-8s %(message)s",
-    level=settings.LOG_LEVEL,
+    level=LOG_LEVEL,
     datefmt="%Y-%m-%d %H:%M:%S",
 )
 json_logger = logging.getLogger(__name__)

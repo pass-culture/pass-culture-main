@@ -78,6 +78,7 @@ SENTRY_SAMPLE_RATE = float(os.environ.get("SENTRY_SAMPLE_RATE", 0))
 #   - mailjet
 #   - log
 SEND_RAW_EMAIL_BACKEND = os.environ.get("SEND_RAW_EMAIL_BACKEND", "mailjet").lower()
+SUPER_ADMIN_EMAIL_ADDRESSES = os.environ.get("SUPER_ADMIN_EMAIL_ADDRESSES", "")
 
 
 # ALGOLIA
