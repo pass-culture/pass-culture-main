@@ -14,10 +14,10 @@ from tests.infrastructure.repository.beneficiary import beneficiary_jouve_creato
 
 
 @freeze_time("2020-10-15 09:00:00")
-@patch("pcapi.infrastructure.repository.beneficiary.beneficiary_jouve_repository.JOUVE_API_DOMAIN", "https://jouve.com")
-@patch("pcapi.infrastructure.repository.beneficiary.beneficiary_jouve_repository.JOUVE_PASSWORD", "secret-password")
-@patch("pcapi.infrastructure.repository.beneficiary.beneficiary_jouve_repository.JOUVE_USERNAME", "username")
-@patch("pcapi.infrastructure.repository.beneficiary.beneficiary_jouve_repository.JOUVE_VAULT_GUID", "12")
+@patch("pcapi.settings.JOUVE_API_DOMAIN", "https://jouve.com")
+@patch("pcapi.settings.JOUVE_API_PASSWORD", "secret-password")
+@patch("pcapi.settings.JOUVE_API_USERNAME", "username")
+@patch("pcapi.settings.JOUVE_API_VAULT_GUID", "12")
 @patch("pcapi.infrastructure.repository.beneficiary.beneficiary_jouve_repository.requests.post")
 def test_calls_jouve_api_with_previously_fetched_token(mocked_requests_post):
     # Given
