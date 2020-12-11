@@ -6,7 +6,10 @@ import PortalContainer from 'app/PortalContainer'
 
 const ActionsBarPortal = ({ isVisible, children }) => (
   <PortalContainer>
-    <div className={classnames('actions-bar', { 'actions-bar-visible': isVisible })}>
+    <div
+      className={classnames('actions-bar', { 'actions-bar-visible': isVisible })}
+      data-testid="actions-bar"
+    >
       <div className="container">
         <div className="actions-bar-content">
           {children}

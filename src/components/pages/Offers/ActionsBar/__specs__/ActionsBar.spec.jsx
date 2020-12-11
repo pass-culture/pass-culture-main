@@ -20,8 +20,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
     props = {
       refreshOffers: jest.fn(),
       selectedOfferIds: ['testId1', 'testId2'],
-      hideActionsBar: jest.fn(),
-      setSelectedOfferIds: jest.fn(),
+      clearSelectedOfferIds: jest.fn(),
       toggleSelectAllCheckboxes: jest.fn(),
       showSuccessNotification: jest.fn(),
       trackActivateOffers: jest.fn(),
@@ -81,22 +80,9 @@ describe('src | components | pages | Offers | ActionsBar', () => {
       // then
       await waitFor(() => {
         expect(updateOffersActiveStatus).toHaveBeenLastCalledWith(false, expectedBody)
-        expect(props.setSelectedOfferIds).toHaveBeenNthCalledWith(1, [])
+        expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
         expect(props.refreshOffers).toHaveBeenCalledWith({ shouldTriggerSpinner: false })
         expect(props.trackActivateOffers).toHaveBeenCalledWith(['testId1', 'testId2'])
-      })
-    })
-
-    it('should hide action bar', async () => {
-      // given
-      renderActionsBar(props)
-
-      // when
-      fireEvent.click(screen.queryByText('Activer'))
-
-      // then
-      await waitFor(() => {
-        expect(props.hideActionsBar).toHaveBeenCalledWith()
       })
     })
 
@@ -143,22 +129,9 @@ describe('src | components | pages | Offers | ActionsBar', () => {
       // then
       await waitFor(() => {
         expect(updateOffersActiveStatus).toHaveBeenLastCalledWith(false, expectedBody)
-        expect(props.setSelectedOfferIds).toHaveBeenNthCalledWith(1, [])
+        expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
         expect(props.refreshOffers).toHaveBeenCalledWith({ shouldTriggerSpinner: false })
         expect(props.trackDeactivateOffers).toHaveBeenCalledWith(['testId1', 'testId2'])
-      })
-    })
-
-    it('should hide action bar', async () => {
-      // given
-      renderActionsBar(props)
-
-      // when
-      fireEvent.click(screen.queryByText('Désactiver'))
-
-      // then
-      await waitFor(() => {
-        expect(props.hideActionsBar).toHaveBeenCalledWith()
       })
     })
 
@@ -199,8 +172,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
     fireEvent.click(screen.queryByText('Annuler'))
 
     // then
-    expect(props.setSelectedOfferIds).toHaveBeenNthCalledWith(1, [])
-    expect(props.hideActionsBar).toHaveBeenCalledWith()
+    expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
   })
 
   describe('when all offers are selected', () => {
@@ -223,8 +195,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
       // then
       await waitFor(() => {
         expect(updateOffersActiveStatus).toHaveBeenLastCalledWith(true, expectedBody)
-        expect(props.setSelectedOfferIds).toHaveBeenNthCalledWith(1, [])
-        expect(props.hideActionsBar).toHaveBeenCalledTimes(1)
+        expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
         expect(props.refreshOffers).toHaveBeenCalledWith({ shouldTriggerSpinner: false })
       })
     })
@@ -248,8 +219,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
       // then
       await waitFor(() => {
         expect(updateOffersActiveStatus).toHaveBeenLastCalledWith(true, expectedBody)
-        expect(props.setSelectedOfferIds).toHaveBeenNthCalledWith(1, [])
-        expect(props.hideActionsBar).toHaveBeenCalledTimes(1)
+        expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
         expect(props.refreshOffers).toHaveBeenCalledWith({ shouldTriggerSpinner: false })
       })
     })

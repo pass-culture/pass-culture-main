@@ -1,9 +1,8 @@
-import { SAVE_SEARCH_FILTERS, SET_OFFERS, SET_SELECTED_OFFER_IDS } from './actions'
+import { SAVE_SEARCH_FILTERS, SET_OFFERS } from './actions'
 
 export const initialState = {
   list: [],
   searchFilters: {},
-  selectedOfferIds: [],
 }
 
 export const offersReducer = (state = initialState, action) => {
@@ -17,8 +16,6 @@ export const offersReducer = (state = initialState, action) => {
       })
       return { ...state, searchFilters: filters }
     }
-    case SET_SELECTED_OFFER_IDS:
-      return { ...state, selectedOfferIds: action.offerIds }
     case SET_OFFERS:
       return { ...state, list: action.offers }
     default:

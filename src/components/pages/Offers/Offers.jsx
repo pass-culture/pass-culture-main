@@ -61,6 +61,7 @@ class Offers extends PureComponent {
       isStatusFiltersVisible: false,
       areAllOffersSelected: false,
       typeOptions: [],
+      selectedOfferIds: [],
     }
   }
 
@@ -78,12 +79,10 @@ class Offers extends PureComponent {
   }
 
   componentWillUnmount() {
-    const { closeNotification, notification, setSelectedOfferIds } = this.props
+    const { closeNotification, notification } = this.props
     if (notification && notification.tag === 'offers-activation') {
       closeNotification()
     }
-
-    setSelectedOfferIds([])
   }
 
   updateUrlMatchingState = () => {
@@ -266,7 +265,7 @@ class Offers extends PureComponent {
   }
 
   selectOffer = (offerId, selected) => {
-    const { setSelectedOfferIds, selectedOfferIds } = this.props
+    const { selectedOfferIds } = this.state
     let newSelectedOfferIds = [...selectedOfferIds]
     if (selected) {
       newSelectedOfferIds.push(offerId)
@@ -274,15 +273,16 @@ class Offers extends PureComponent {
       const offerIdIndex = newSelectedOfferIds.indexOf(offerId)
       newSelectedOfferIds.splice(offerIdIndex, 1)
     }
-    setSelectedOfferIds(newSelectedOfferIds)
+
+    this.setState({ selectedOfferIds: newSelectedOfferIds })
   }
 
   selectAllOffers = () => {
-    const { offers, setSelectedOfferIds } = this.props
+    const { offers } = this.props
     const { areAllOffersSelected } = this.state
 
     const selectedOfferIds = areAllOffersSelected ? [] : offers.map(offer => offer.id)
-    setSelectedOfferIds(selectedOfferIds)
+    this.setState({ selectedOfferIds: selectedOfferIds })
 
     this.toggleSelectAllCheckboxes()
   }
@@ -308,6 +308,10 @@ class Offers extends PureComponent {
       ? periodEndingDate.endOf('day').format()
       : DEFAULT_SEARCH_FILTERS.periodEndingDate
     this.setSearchFilters({ periodEndingDate: dateToFilter })
+  }
+
+  clearSelectedOfferIds = () => {
+    this.setState({ selectedOfferIds: [] })
   }
 
   renderSearchFilters = () => {
@@ -481,8 +485,8 @@ class Offers extends PureComponent {
   }
 
   renderTable = () => {
-    const { offers, selectedOfferIds } = this.props
-    const { areAllOffersSelected, offersCount, page, pageCount } = this.state
+    const { offers } = this.props
+    const { areAllOffersSelected, offersCount, page, pageCount, selectedOfferIds } = this.state
 
     return (
       <Fragment>
@@ -594,8 +598,8 @@ class Offers extends PureComponent {
   }
 
   render() {
-    const { currentUser, offers, savedSearchFilters, selectedOfferIds } = this.props
-    const { areAllOffersSelected, isLoading, offersCount } = this.state
+    const { currentUser, offers, savedSearchFilters } = this.props
+    const { areAllOffersSelected, isLoading, offersCount, selectedOfferIds } = this.state
     const { isAdmin } = currentUser || {}
 
     const hasOffers = !!offers.length || this.hasSearchFilters(savedSearchFilters)
@@ -632,8 +636,10 @@ class Offers extends PureComponent {
         <ActionsBarPortal isVisible={nbSelectedOffers > 0}>
           <ActionsBarContainer
             areAllOffersSelected={areAllOffersSelected}
+            clearSelectedOfferIds={this.clearSelectedOfferIds}
             nbSelectedOffers={areAllOffersSelected ? offersCount : selectedOfferIds.length}
             refreshOffers={this.getPaginatedOffersWithFilters}
+            selectedOfferIds={selectedOfferIds}
             toggleSelectAllCheckboxes={this.toggleSelectAllCheckboxes}
           />
         </ActionsBarPortal>
@@ -671,7 +677,6 @@ class Offers extends PureComponent {
 }
 
 Offers.defaultProps = {
-  selectedOfferIds: [],
   venue: undefined,
 }
 
@@ -693,8 +698,6 @@ Offers.propTypes = {
     status: PropTypes.string,
     creationMode: PropTypes.string,
   }).isRequired,
-  selectedOfferIds: PropTypes.arrayOf(PropTypes.string),
-  setSelectedOfferIds: PropTypes.func.isRequired,
   venue: PropTypes.shape({
     name: PropTypes.string.isRequired,
   }),

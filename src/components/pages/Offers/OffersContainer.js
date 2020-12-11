@@ -2,14 +2,13 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import withQueryRouter from 'with-query-router'
 
-import { saveSearchFilters, setSelectedOfferIds } from 'store/offers/actions'
+import { saveSearchFilters } from 'store/offers/actions'
 import { selectOffers } from 'store/offers/selectors'
 import {
   loadOffers,
   setAllVenueOffersActivate,
   setAllVenueOffersInactivate,
 } from 'store/offers/thunks'
-import { hideActionsBar, showActionsBar } from 'store/reducers/actionsBar'
 import { closeNotification, showNotificationV1 } from 'store/reducers/notificationReducer'
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 import { fetchFromApiWithCredentials } from 'utils/fetch'
@@ -23,7 +22,6 @@ export const mapStateToProps = state => {
     notification: state.notification,
     offers: selectOffers(state),
     savedSearchFilters: state.offers.searchFilters,
-    selectedOfferIds: state.offers.selectedOfferIds,
   }
 }
 
@@ -55,11 +53,8 @@ export const mapDispatchToProps = dispatch => {
         )
       })
     },
-    hideActionsBar: () => dispatch(hideActionsBar()),
     loadOffers: filters => dispatch(loadOffers(filters)),
     saveSearchFilters: filters => dispatch(saveSearchFilters(filters)),
-    setSelectedOfferIds: selectedOfferIds => dispatch(setSelectedOfferIds(selectedOfferIds)),
-    showActionsBar: () => dispatch(showActionsBar()),
   }
 }
 

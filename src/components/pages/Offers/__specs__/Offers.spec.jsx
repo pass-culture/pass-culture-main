@@ -9,7 +9,7 @@ import { MemoryRouter } from 'react-router'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { fetchAllVenuesByProUser } from 'repository/venuesService'
 import { configureTestStore } from 'store/testUtils'
-import { queryByTextTrimHtml } from 'utils/testHelpers'
+import { queryByTextTrimHtml, renderWithStyles } from 'utils/testHelpers'
 
 import {
   ALL_OFFERERS,
@@ -1385,42 +1385,6 @@ describe('src | components | pages | Offers | Offers', () => {
       // Then
       expect(props.closeNotification).not.toHaveBeenCalledWith()
     })
-
-    it('should deselect all offers', () => {
-      // Given
-      props = {
-        ...props,
-        closeNotification: jest.fn(),
-        notification: {
-          tag: 'offers-activation',
-        },
-      }
-      const { unmount } = renderOffers(props, store)
-
-      // When
-      unmount()
-
-      // Then
-      expect(props.setSelectedOfferIds).toHaveBeenLastCalledWith([])
-    })
-
-    it('should hide action bar', () => {
-      // Given
-      props = {
-        ...props,
-        closeNotification: jest.fn(),
-        notification: {
-          tag: 'offers-activation',
-        },
-      }
-      const { unmount } = renderOffers(props, store)
-
-      // When
-      unmount()
-
-      // Then
-      expect(props.hideActionsBar).toHaveBeenCalledWith()
-    })
   })
 
   describe('page navigation', () => {
@@ -1486,6 +1450,9 @@ describe('src | components | pages | Offers | Offers', () => {
       wrapper.update()
       const rightArrow = wrapper.find('img[alt="Aller à la page précédente"]').closest('button')
       expect(rightArrow.prop('disabled')).toBe(true)
+
+      // enzyme do not unmount correctly, this cause actionsBar tests using rect portal to fail.
+      wrapper.unmount()
     })
 
     it('should not be able to click on next arrow when being on the last page', async () => {
@@ -1501,35 +1468,41 @@ describe('src | components | pages | Offers | Offers', () => {
       wrapper.update()
       const rightArrow = wrapper.find('img[alt="Aller à la page suivante"]').closest('button')
       expect(rightArrow.prop('disabled')).toBe(true)
+
+      // enzyme do not unmount correctly, this cause actionsBar tests using rect portal to fail.
+      wrapper.unmount()
     })
   })
 
   describe('offers selection', () => {
     it('should display actionsBar when at least one offer is selected', async () => {
       // Given
-      renderOffers(props, store)
-      let checkbox
-      await waitFor(() => (checkbox = screen.getByTestId('select-offer-N9')))
+      renderWithStyles(
+        <Provider store={store}>
+          <MemoryRouter>
+            <Offers {...props} />
+          </MemoryRouter>
+        </Provider>,
+        {
+          stylesheet: 'components/layout/ActionsBarPortal/_ActionsBarPortal.scss',
+        }
+      )
+
+      const actionBar = await screen.findByTestId('actions-bar')
+      expect(actionBar).not.toBeVisible()
 
       // When
-      fireEvent.click(checkbox)
+      const checkbox = await screen.findByTestId('select-offer-N9')
+      await fireEvent.click(checkbox)
 
       // Then
-      expect(props.showActionsBar).toHaveBeenCalledWith()
-    })
-
-    it('should hide actionsBar when all offers are unselected', async () => {
-      // Given
-      props.selectedOfferIds = ['N9']
-      renderOffers(props, store)
-      let checkbox
-      await waitFor(() => (checkbox = screen.getByTestId('select-offer-N9', { checked: true })))
+      expect(actionBar).toBeVisible()
 
       // When
-      fireEvent.click(checkbox)
+      await fireEvent.click(checkbox)
 
       // Then
-      expect(props.hideActionsBar).toHaveBeenCalledWith()
+      expect(actionBar).not.toBeVisible()
     })
 
     describe('on click on select all offers checkbox', () => {
@@ -1574,49 +1547,25 @@ describe('src | components | pages | Offers | Offers', () => {
         ]
         await renderOffers(props, store)
 
+        const firstOfferCheckbox = await screen.findByTestId('select-offer-M4')
+        const secondOfferCheckbox = await screen.findByTestId('select-offer-AE3')
+
+        expect(firstOfferCheckbox.checked).toStrictEqual(false)
+        expect(secondOfferCheckbox.checked).toStrictEqual(false)
+
         // When
         fireEvent.click(screen.getByLabelText('Tout sélectionner'))
 
         // Then
-        expect(props.setSelectedOfferIds).toHaveBeenCalledWith(['M4', 'AE3'])
-      })
-
-      it('should uncheck all offers checkboxes when already checked', async () => {
-        // Given
-        props.offers = [
-          {
-            id: 'M4',
-            isActive: true,
-            isEditable: true,
-            isFullyBooked: false,
-            isEvent: true,
-            isThing: false,
-            hasBookingLimitDatetimesPassed: false,
-            name: 'My little offer',
-            thumbUrl: '/my-fake-thumb',
-            venueId: 'JI',
-          },
-          {
-            id: 'AE3',
-            isActive: true,
-            isEditable: true,
-            isFullyBooked: true,
-            isEvent: false,
-            isThing: true,
-            hasBookingLimitDatetimesPassed: false,
-            name: 'My other offer',
-            thumbUrl: '/my-other-fake-thumb',
-            venueId: 'JI',
-          },
-        ]
-        await renderOffers(props, store)
-        fireEvent.click(screen.getByLabelText('Tout sélectionner'))
+        expect(firstOfferCheckbox.checked).toStrictEqual(true)
+        expect(secondOfferCheckbox.checked).toStrictEqual(true)
 
         // When
         fireEvent.click(screen.getByLabelText('Tout désélectionner'))
 
         // Then
-        expect(props.setSelectedOfferIds).toHaveBeenCalledWith([])
+        expect(firstOfferCheckbox.checked).toStrictEqual(false)
+        expect(secondOfferCheckbox.checked).toStrictEqual(false)
       })
     })
   })
