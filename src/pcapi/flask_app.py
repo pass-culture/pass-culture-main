@@ -36,8 +36,6 @@ from pcapi.serialization.utils import before_handler
 from pcapi.utils.health_checker import read_version_from_file
 from pcapi.utils.json_encoder import EnumJSONEncoder
 from pcapi.utils.logger import json_logger
-from pcapi.utils.mailing import MAILJET_API_KEY
-from pcapi.utils.mailing import MAILJET_API_SECRET
 
 
 if settings.IS_DEV is False:
@@ -150,5 +148,5 @@ CORS(
 app.url_map.strict_slashes = False
 
 with app.app_context():
-    app.mailjet_client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version="v3")
+    app.mailjet_client = Client(auth=(settings.MAILJET_API_KEY, settings.MAILJET_API_SECRET), version="v3")
     app.redis_client = redis.from_url(url=settings.REDIS_URL, decode_responses=True)

@@ -13,15 +13,13 @@ from mailjet_rest import Client
 
 from pcapi import settings
 from pcapi.models.db import db
-from pcapi.utils.mailing import MAILJET_API_KEY
-from pcapi.utils.mailing import MAILJET_API_SECRET
 
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET", "+%+3Q23!zbc+!Dd@")
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-app.mailjet_client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version="v3")
+app.mailjet_client = Client(auth=(settings.MAILJET_API_KEY, settings.MAILJET_API_SECRET), version="v3")
 db.init_app(app)
 db.app = app
 

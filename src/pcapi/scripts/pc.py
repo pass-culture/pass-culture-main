@@ -14,8 +14,6 @@ import redis
 from pcapi import settings
 from pcapi.models.db import db
 from pcapi.scripts.install import install_scripts
-from pcapi.utils.mailing import MAILJET_API_KEY
-from pcapi.utils.mailing import MAILJET_API_SECRET
 
 
 app = Flask(__name__, template_folder="../templates")
@@ -34,7 +32,7 @@ app.manager = Manager(create_app)
 with app.app_context():
     install_scripts()
 
-    app.mailjet_client = Client(auth=(MAILJET_API_KEY, MAILJET_API_SECRET), version="v3")
+    app.mailjet_client = Client(auth=(settings.MAILJET_API_KEY, settings.MAILJET_API_SECRET), version="v3")
     app.redis_client = redis.from_url(url=settings.REDIS_URL, decode_responses=True)
 
 
