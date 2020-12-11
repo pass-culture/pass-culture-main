@@ -2,17 +2,7 @@
 
 $tablet: 769px;
 $desktop: 1024px;
-$fullhd: $desktop; // Bulma
 
 // Typography
 
 $family-sans-serif: 'Barlow', 'Helvetica Neue', arial, sans-serif; // Bulma
-
-// Altère .section
-$section-padding: 1rem 0;
-
-// Création d'une offre
-$control-border-width: 2px;
-$control-radius: 2.25em/2;
-$control-padding-horizontal: 1em;
-$input-focus-box-shadow-size: 0;

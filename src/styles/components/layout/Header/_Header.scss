@@ -115,6 +115,15 @@ header.navbar {
   }
 
   .icon {
+    align-items: center;
+    display: inline-flex;
+    height: 1.5rem;
+    justify-content: center;
     margin-right: 0.5rem;
+    width: 1.5rem;
   }
+}
+
+.navbar-dropdown.is-right {
+  width: rem(230px);
 }

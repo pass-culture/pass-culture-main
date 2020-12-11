@@ -120,7 +120,7 @@ const ActionsBar = props => {
           {'Activer'}
         </button>
         <button
-          className="button"
+          className="button oa-cancel"
           onClick={handleClose}
           type="button"
         >

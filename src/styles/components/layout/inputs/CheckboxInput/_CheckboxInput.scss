@@ -1,5 +1,4 @@
-input[type="checkbox"],
-.input-checkbox {
+input[type="checkbox"] {
   appearance: none;
   border: 2px solid $grey-dark;
   border-radius: 4px;
@@ -73,6 +72,7 @@ input[type="checkbox"],
 
   .ic-sub-label {
     @include caption();
+
     color: $grey-dark;
     margin-top: rem(8px);
   }

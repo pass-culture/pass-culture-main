@@ -131,10 +131,10 @@ class SignupForm extends PureComponent {
     return (
       <section>
         <div className="sign-up-wrapper">
-          <h1 className="sign-up-title">
+          <h1>
             {'Créer votre compte professionnel'}
           </h1>
-          <h2 className="sign-up-sub-title">
+          <h2>
             {'Merci de compléter les champs suivants pour créer votre compte.'}
           </h2>
           <div className="sign-up-operating-procedures">

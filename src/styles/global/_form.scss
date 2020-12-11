@@ -7,7 +7,7 @@
 input.input,
 .select select,
 textarea.textarea {
-  font-weight: 500;
+  font-size: rem(16px);
 
   &[readonly]:not([type="checkbox"]) {
     background-color: transparent;

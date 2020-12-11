@@ -18,7 +18,9 @@ const OfferPreviewLink = ({ offerWebappUrl, onClick }) => (
     >
       <Icon svg="ico-eye" />
     </span>
-    {'Prévisualiser'}
+    <span>
+      {'Prévisualiser'}
+    </span>
   </a>
 )
 

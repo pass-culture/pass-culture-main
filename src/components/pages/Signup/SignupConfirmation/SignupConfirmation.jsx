@@ -6,7 +6,7 @@ const SignupConfirmation = () => (
   <div className="hero">
     <div className="hero-body">
       <div>
-        <h1 className="title">
+        <h1>
           {'Merci !'}
         </h1>
         <div className="confirmation-text">

@@ -31,6 +31,23 @@
   a {
     color: $primary;
   }
+
+  .label {
+    display: block;
+    font-size: rem(16px);
+    font-weight: 700;
+    margin-bottom: rem(10px);
+  }
+
+  input {
+    width: 100%;
+  }
+
+  .is-expanded {
+    flex-grow: 1;
+    flex-shrink: 1;
+    margin-right: rem(10px);
+  }
 }
 
 .thumbnailManager {

@@ -642,24 +642,22 @@ class Offers extends PureComponent {
         />
         {displayOffers ? (
           <Fragment>
-            <span className="subtitle-container">
-              <h3 className="subtitle">
-                {'Rechercher une offre'}
-              </h3>
-              {this.hasSearchFilters(savedSearchFilters) ? (
-                <Link
-                  className="reset-filters-link"
-                  onClick={this.resetFilters}
-                  to="/offres"
-                >
-                  {'Réinitialiser les filtres'}
-                </Link>
-              ) : (
-                <span className="reset-filters-link disabled">
-                  {'Réinitialiser les filtres'}
-                </span>
-              )}
-            </span>
+            <h3 className="op-title">
+              {'Rechercher une offre'}
+            </h3>
+            {this.hasSearchFilters(savedSearchFilters) ? (
+              <Link
+                className="reset-filters-link"
+                onClick={this.resetFilters}
+                to="/offres"
+              >
+                {'Réinitialiser les filtres'}
+              </Link>
+            ) : (
+              <span className="reset-filters-link disabled">
+                {'Réinitialiser les filtres'}
+              </span>
+            )}
 
             {this.renderSearchFilters()}
 

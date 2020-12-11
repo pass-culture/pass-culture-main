@@ -185,11 +185,10 @@ class VenueEdition extends PureComponent {
 
     const actionLink = !!initialId && (
       <Link
-        className="cta button is-primary"
-        id="action-create-offer"
+        className="primary-button"
         to={`/offres/creation?lieu=${initialId}&structure=${offererId}`}
       >
-        <span className="icon">
+        <span>
           <Icon svg="ico-offres-w" />
         </span>
         <span>

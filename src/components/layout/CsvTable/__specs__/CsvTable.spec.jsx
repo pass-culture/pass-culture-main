@@ -92,7 +92,7 @@ describe('src | components | layout | CsvTable', () => {
       })
 
       // then
-      const noDataContainer = wrapper.find('#no-data-container')
+      const noDataContainer = wrapper.find('.no-data-container')
       expect(noDataContainer).toHaveLength(1)
       expect(noDataContainer.text()).toBe("Il n'y a pas de données à afficher.")
     })

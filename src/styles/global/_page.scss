@@ -1,3 +1,13 @@
+.container {
+  margin: 0 auto;
+  position: relative;
+}
+
+.columns,
+.field.is-grouped {
+  display: flex;
+}
+
 .page {
   &.red-bg {
     background-color: $primary;

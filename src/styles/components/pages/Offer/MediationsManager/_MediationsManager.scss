@@ -2,6 +2,10 @@
   .small-text {
     color: $grey-dark;
     font-size: rem(13px);
+
+    p {
+      margin-bottom: rem(10px);
+    }
   }
 
   .align-left {
@@ -39,9 +43,8 @@
       }
     }
   }
-}
 
-.columns.is-centered {
-  display: flex;
-  justify-content: center;
+  .is-centered {
+    justify-content: center;
+  }
 }

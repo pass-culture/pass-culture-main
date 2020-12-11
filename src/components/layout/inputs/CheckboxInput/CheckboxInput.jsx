@@ -13,7 +13,6 @@ export const CheckboxInput = ({
   ...attributes
 }) => {
   let inputClasses = className ? className.split(' ') : []
-  inputClasses.push('input-checkbox')
   let textClasses = ['input-checkbox-label']
   if (hiddenLabel) {
     textClasses.push('label-hidden')

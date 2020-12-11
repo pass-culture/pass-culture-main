@@ -29,7 +29,7 @@ class OffererDetails extends PureComponent {
           subtitle={offerer.name}
           title="Structure"
         />
-        <p className="subtitle op-subtitle">
+        <p>
           {'Détails de la structure rattachée, des lieux et des fournisseurs de ses offres.'}
         </p>
         <div className="section op-content-section">

@@ -356,7 +356,7 @@ class Mediation extends PureComponent {
         >
           <div className="control">
             <Link
-              className="button is-primary is-outlined"
+              className="secondary-link"
               to={backPath}
             >
               {'Annuler'}
@@ -420,7 +420,7 @@ class Mediation extends PureComponent {
             {'Depuis une adresse Internet :'}
           </label>
           <div className="field is-grouped">
-            <p className="control is-expanded">
+            <p className="is-expanded">
               <input
                 className="input is-rounded"
                 onChange={this.handleOnUrlChange}
@@ -429,7 +429,7 @@ class Mediation extends PureComponent {
                 value={inputUrl}
               />
             </p>
-            <p className="control">
+            <p>
               <button
                 className="primary-button"
                 onClick={this.handleOnOkClick}

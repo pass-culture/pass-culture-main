@@ -18,8 +18,6 @@ const MediationItem = ({ mediation }) => {
         disabled={!isActive}
         src={thumbUrl}
       />
-      <br />
-      <br />
       <div className="columns is-centered">
         <Field
           name="isActive"

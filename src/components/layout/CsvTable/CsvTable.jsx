@@ -94,8 +94,8 @@ class CsvTable extends PureComponent {
         )}
 
         {!hasAtLeastData && !isLoading && (
-          <div id="no-data-container">
-            <p className="section">
+          <div className="no-data-container">
+            <p>
               {`Il n'y a pas de données à afficher.`}
             </p>
           </div>

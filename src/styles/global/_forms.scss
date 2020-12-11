@@ -263,18 +263,21 @@
   }
 }
 
-// Override Bulma
-.input,
-.textarea,
-.select select {
-  border-color: $grey-medium !important;
-}
-
-.input:focus,
-.input:hover:not([type="checkbox"]),
-.textarea:focus,
-.textarea:hover,
-.select select:focus,
-.select select:hover {
-  border-color: $grey-medium !important;
+.input[type="email"],
+.input[type="text"],
+.input[type="url"] {
+  align-items: center;
+  appearance: none;
+  border: rem(2px) solid $grey-medium;
+  border-radius: rem(20px);
+  box-shadow: none;
+  display: inline-flex;
+  font-size: rem(16px);
+  height: rem(36px);
+  justify-content: flex-start;
+  line-height: 1.5;
+  outline: none;
+  padding: rem(6px) rem(18px);
+  position: relative;
+  vertical-align: top;
 }

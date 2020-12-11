@@ -143,6 +143,12 @@
           }
         }
       }
+
+      .submitStep {
+        background-color: $primary;
+        border-radius: rem(2px);
+        color: $white;
+      }
     }
   }
 }
