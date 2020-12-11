@@ -1,10 +1,13 @@
 import PropTypes from 'prop-types'
-import React, { Fragment, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef } from 'react'
+
 import MainView from './MainView/MainView'
+import useDisplayedHomemodules from './MainView/useDisplayedHomemodules'
 import User from './Profile/ValueObjects/User'
 import { getCurrentPosition } from '../../../utils/geolocation'
 import LoaderContainer from '../../layout/Loader/LoaderContainer'
 import { campaignTracker } from '../../../tracking/mediaCampaignsTracking'
+import AnyError from '../../layout/ErrorBoundaries/ErrorsPage/AnyError/AnyError'
 
 const Home = ({
   geolocation,
@@ -15,8 +18,11 @@ const Home = ({
   updateCurrentUser,
   user,
 }) => {
-  const [isLoading, setIsLoading] = useState(true)
   const geolocationRef = useRef(geolocation)
+  const { displayedModules, fetchingError, algoliaMapping } = useDisplayedHomemodules(
+    history,
+    geolocationRef.current
+  )
 
   useEffect(() => {
     campaignTracker.home()
@@ -27,29 +33,28 @@ const Home = ({
       try {
         const confirmedGeolocation = await getCurrentPosition(geolocation)
         geolocationRef.current = confirmedGeolocation
-        setIsLoading(false)
       } catch (error) {
-        setIsLoading(false)
+        return
       }
     }
     waitForCoordinates()
   }, [geolocation])
 
+  if (fetchingError) return <AnyError />
+  if (Object.entries(algoliaMapping).length === 0) return <LoaderContainer />
+
   return (
-    <Fragment>
-      {isLoading && <LoaderContainer />}
-      {!isLoading && (
-        <MainView
-          geolocation={geolocationRef.current}
-          history={history}
-          match={match}
-          trackAllModulesSeen={trackAllModulesSeen}
-          trackAllTilesSeen={trackAllTilesSeen}
-          updateCurrentUser={updateCurrentUser}
-          user={user}
-        />
-      )}
-    </Fragment>
+    <MainView
+      algoliaMapping={algoliaMapping}
+      displayedModules={displayedModules}
+      geolocation={geolocationRef.current}
+      history={history}
+      match={match}
+      trackAllModulesSeen={trackAllModulesSeen}
+      trackAllTilesSeen={trackAllTilesSeen}
+      updateCurrentUser={updateCurrentUser}
+      user={user}
+    />
   )
 }
 

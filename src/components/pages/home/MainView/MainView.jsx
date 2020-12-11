@@ -1,11 +1,8 @@
 import PropTypes from 'prop-types'
-import { parse } from 'query-string'
-import React, { Fragment, useCallback, useEffect, useRef, useState } from 'react'
+import React, { Fragment, useCallback, useEffect, useRef } from 'react'
 import { Link, Route } from 'react-router-dom'
 
 import { formatToFrenchDecimal } from '../../../../utils/getDisplayPrice'
-import { fetchHomepage } from '../../../../vendor/contentful/contentful'
-import AnyError from '../../../layout/ErrorBoundaries/ErrorsPage/AnyError/AnyError'
 import CloseLink from '../../../layout/Header/CloseLink/CloseLink'
 import BusinessModule from './BusinessModule/BusinessModule'
 import { formatPublicName } from './domain/formatPublicName'
@@ -19,13 +16,19 @@ import Icon from '../../../layout/Icon/Icon'
 import Profile from '../Profile/Profile'
 import User from '../Profile/ValueObjects/User'
 import { setCustomUserId } from '../../../../notifications/setUpBatchSDK'
+import BusinessPane from './domain/ValueObjects/BusinessPane'
 
 const MainView = props => {
-  const { history, geolocation, match, user, updateCurrentUser } = props
+  const {
+    history,
+    displayedModules,
+    geolocation,
+    match,
+    user,
+    updateCurrentUser,
+    algoliaMapping,
+  } = props
   const { trackAllModulesSeen, trackAllTilesSeen } = props
-  const [modules, setModules] = useState([])
-  const [fetchingError, setFetchingError] = useState(false)
-
   const haveSeenAllModules = useRef(false)
   const modulesListRef = useRef(null)
 
@@ -33,13 +36,6 @@ const MainView = props => {
     setCustomUserId(user.id)
     updateCurrentUser({ lastConnectionDate: new Date() })
   }, [updateCurrentUser, user.id])
-
-  useEffect(() => {
-    const { entryId } = parse(history.location.search)
-    fetchHomepage({ entryId })
-      .then(setModules)
-      .catch(() => setFetchingError(true))
-  }, [history.location.search])
 
   const checkIfAllModulesHaveBeenSeen = useCallback(() => {
     if (!modulesListRef.current || haveSeenAllModules.current) return
@@ -57,6 +53,11 @@ const MainView = props => {
     }
   }, [trackAllModulesSeen])
 
+  useEffect(() => {
+    // Check on first render if we have seen all modules without scrolling: all modules fit on the page
+    checkIfAllModulesHaveBeenSeen()
+  }, [checkIfAllModulesHaveBeenSeen])
+
   const renderModule = (module, row) => {
     if (module instanceof Offers || module instanceof OffersWithCover) {
       return (
@@ -65,6 +66,7 @@ const MainView = props => {
           historyPush={history.push}
           key={`${row}-module`}
           module={module}
+          results={algoliaMapping[module.moduleId]}
           row={row}
           trackAllTilesSeen={trackAllTilesSeen}
         />
@@ -87,9 +89,7 @@ const MainView = props => {
     }
   }
 
-  return fetchingError ? (
-    <AnyError />
-  ) : (
+  return (
     <Fragment>
       <Route path={`${match.path}/profil`}>
         <Profile
@@ -122,7 +122,7 @@ const MainView = props => {
           className="hw-modules"
           ref={modulesListRef}
         >
-          {modules.map(renderModule)}
+          {displayedModules.map(renderModule)}
         </div>
       </div>
       <Route
@@ -143,6 +143,16 @@ const MainView = props => {
 }
 
 MainView.propTypes = {
+  algoliaMapping: {
+    moduleId: PropTypes.shape({
+      hits: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+      nbHits: PropTypes.number.isRequired,
+      parsedParameters: PropTypes.shape(),
+    }),
+  }.isRequired,
+  displayedModules: PropTypes.arrayOf(
+    PropTypes.instanceOf(Offers, OffersWithCover, BusinessPane, ExclusivityPane)
+  ).isRequired,
   geolocation: PropTypes.shape({
     latitude: PropTypes.number,
     longitude: PropTypes.number,
