@@ -22,10 +22,19 @@ const Select = ({
   options,
   required,
   selectedValue,
+  sublabel,
 }) => (
   <div className="input-select">
-    <label htmlFor={name}>
+    <label
+      className="labels"
+      htmlFor={name}
+    >
       {label}
+      {sublabel && (
+        <span className="it-sub-label">
+          {sublabel}
+        </span>
+      )}
     </label>
     <select
       className={`${error ? 'error' : ''}`}
@@ -62,6 +71,7 @@ Select.defaultProps = {
   error: null,
   isDisabled: false,
   required: false,
+  sublabel: '',
 }
 
 Select.propTypes = {
@@ -82,6 +92,7 @@ Select.propTypes = {
   ).isRequired,
   required: PropTypes.bool,
   selectedValue: PropTypes.string.isRequired,
+  sublabel: PropTypes.string,
 }
 
 export default Select

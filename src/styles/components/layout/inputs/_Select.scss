@@ -2,11 +2,19 @@
   display: flex;
   flex-direction: column;
 
+  .it-sub-label {
+    @include caption();
+
+    color: $grey-dark;
+    float: right;
+    margin-left: rem(5px);
+  }
+
   select {
     @include body();
 
     appearance: none;
-    background: url(/icons/dropdown-disclosure-down-b.svg) no-repeat 92% 56%;
+    background: url(/icons/dropdown-disclosure-down-b.svg) no-repeat right rem(15px) top 56%;
     border: 1px solid $grey-medium;
     border-radius: rem(20px);
     cursor: pointer;
