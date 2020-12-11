@@ -37,6 +37,7 @@ describe('formatPatch', () => {
         bic: 'QSDFGH8Z564',
         bookingEmail: 'R6465373fake674654673@email.com',
         city: 'Aulnay-sous-Bois',
+        comment: '',
         iban: 'FR7630001007941234567890185',
         latitude: 48.92071,
         longitude: 2.48371,
@@ -114,8 +115,8 @@ describe('formatPatch', () => {
 
       // then
       expect(result).toStrictEqual({
-        venueTypeId: null,
-        venueLabelId: null,
+        venueTypeId: '',
+        venueLabelId: '',
       })
     })
   })

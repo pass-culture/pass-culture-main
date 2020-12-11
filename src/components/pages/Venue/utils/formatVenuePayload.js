@@ -10,26 +10,26 @@ export const formatVenuePayload = (payload, isCreatedEntity) => {
     'longitude',
     'managingOffererId',
     'name',
-    'publicName',
     'postalCode',
+    'publicName',
     'siret',
-    'venueTypeId',
     'venueLabelId',
+    'venueTypeId',
   ]
 
   const edition_authorized_input_field = [
-    'bookingEmail',
-    'publicName',
     'address',
+    'bookingEmail',
     'city',
     'comment',
     'latitude',
     'longitude',
     'name',
     'postalCode',
+    'publicName',
     'siret',
-    'venueTypeId',
     'venueLabelId',
+    'venueTypeId',
   ]
 
   const requestPayload = {}
@@ -39,7 +39,7 @@ export const formatVenuePayload = (payload, isCreatedEntity) => {
     : edition_authorized_input_field
 
   authorizedFields.forEach(inputName => {
-    if (payload[inputName]) {
+    if (payload[inputName] !== undefined) {
       requestPayload[inputName] = payload[inputName]
     } else if (inputName === 'venueTypeId' || inputName === 'venueLabelId') {
       requestPayload[inputName] = null
