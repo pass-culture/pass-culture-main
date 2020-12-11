@@ -18,7 +18,7 @@ class GetByProIdentifierTest:
         self.venue_sql_repository = VenueWithOffererNameSQLRepository()
 
     @pytest.mark.usefixtures("db_session")
-    def test_returns_only_venues_of_pro_user(self, app: object):
+    def should_return_only_venues_of_pro_user(self, app: object):
         # given
         pro_user = create_user()
         offerer = create_offerer()
@@ -43,7 +43,7 @@ class GetByProIdentifierTest:
         assert set(found_venues_id) == {expected_venue_1.identifier, expected_venue_2.identifier}
 
     @pytest.mark.usefixtures("db_session")
-    def test_returns_all_existing_venues_for_admin_user(self, app: object):
+    def should_return_all_existing_venues_for_admin_user(self, app: object):
         # given
         admin_user = create_user(is_admin=True)
         offerer = create_offerer()
@@ -66,7 +66,7 @@ class GetByProIdentifierTest:
         assert set(found_venues_id) == {expected_venue_1.identifier, expected_venue_2.identifier}
 
     @pytest.mark.usefixtures("db_session")
-    def test_returns_empty_list_when_no_venues_exist(self, app: object):
+    def should_return_empty_list_when_no_venues_exist(self, app: object):
         # given
         pro_user = create_user()
         offerer = create_offerer()
@@ -80,7 +80,7 @@ class GetByProIdentifierTest:
         assert found_venues == []
 
     @pytest.mark.usefixtures("db_session")
-    def test_returns_all_venues_of_pro_user_ordered_by_name(self, app: object):
+    def should_return_all_venues_of_pro_user_ordered_by_name(self, app: object):
         # given
         pro_user = create_user()
         offerer = create_offerer()
@@ -102,7 +102,7 @@ class GetByProIdentifierTest:
         assert found_venues[1].name == expected_venue_1.name
 
     @pytest.mark.usefixtures("db_session")
-    def test_does_not_return_venues_of_non_validated_offerer(self, app: object):
+    def should_not_return_venues_of_non_validated_offerer(self, app: object):
         # given
         pro_user = create_user()
         offerer_validated = create_offerer(siren="123456789")
@@ -124,7 +124,7 @@ class GetByProIdentifierTest:
         assert found_venues[0].name == expected_venue.name
 
     @pytest.mark.usefixtures("db_session")
-    def test_does_not_return_venues_of_non_validated_user_offerer(self, app: object):
+    def should_not_return_venues_of_non_validated_user_offerer(self, app: object):
         # given
         pro_user = create_user(email="john.doe@example.com")
         offerer = create_offerer(siren="123456789")
@@ -140,7 +140,7 @@ class GetByProIdentifierTest:
         assert len(found_venues) == 0
 
     @pytest.mark.usefixtures("db_session")
-    def test_returns_venues_filtered_by_offerer_id_when_provided(self, app: object):
+    def should_return_venues_filtered_by_offerer_id_when_provided(self, app: object):
         # given
         pro_user = create_user()
         wanted_offerer = create_offerer(idx=1)

@@ -14,6 +14,7 @@ def serialize_venues_with_offerer_name(venues: List[VenueWithOffererName]) -> js
 def serialize_venue_with_offerer_name(venue: VenueWithOffererName) -> Dict:
     return {
         "id": humanize(venue.identifier),
+        "managingOffererId": humanize(venue.managing_offerer_identifier),
         "name": venue.name,
         "offererName": venue.offerer_name,
         "publicName": venue.public_name,

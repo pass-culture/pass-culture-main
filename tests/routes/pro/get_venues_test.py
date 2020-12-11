@@ -32,6 +32,7 @@ class Get:
             assert len(response.json) == 1
             expected_venue = {
                 "id": humanize(venue.id),
+                "managingOffererId": humanize(venue.managingOffererId),
                 "name": venue_name,
                 "offererName": venue.managingOfferer.name,
                 "publicName": None,
