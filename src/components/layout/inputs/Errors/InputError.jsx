@@ -3,20 +3,35 @@ import React from 'react'
 
 import Icon from '../../Icon'
 
-const InputError = ({ message }) => (
-  <span className="it-errors">
-    <Icon
-      alt="Une erreur est survenue"
-      svg="picto-echec"
-    />
-    <pre>
-      {message}
-    </pre>
-  </span>
-)
+const InputError = ({ name, message }) => {
+  const inputErrorExtraProps = name
+    ? {
+        'data-testid': `input-error-field-${name}`,
+      }
+    : {}
+  return (
+    <span
+      className="it-errors"
+      {...inputErrorExtraProps}
+    >
+      <Icon
+        alt="Une erreur est survenue"
+        svg="picto-echec"
+      />
+      <pre>
+        {message}
+      </pre>
+    </span>
+  )
+}
+
+InputError.defaultProps = {
+  name: '',
+}
 
 InputError.propTypes = {
   message: PropTypes.string.isRequired,
+  name: PropTypes.string,
 }
 
 export default InputError

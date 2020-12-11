@@ -36,7 +36,12 @@ const TextInput = ({
       type={type}
       value={value}
     />
-    {error && <InputError message={error} />}
+    {error && (
+      <InputError
+        message={error}
+        name={name}
+      />
+    )}
     {countCharacters && (
       <span className="it-character-count">
         {`${value ? value.length : 0}/${maxLength}`}

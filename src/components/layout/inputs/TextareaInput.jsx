@@ -41,7 +41,12 @@ const TextareaInput = ({
         rows={rows}
         value={textareaValue}
       />
-      {error && <InputError message={error} />}
+      {error && (
+        <InputError
+          message={error}
+          name={name}
+        />
+      )}
       {countCharacters && (
         <span className="it-character-count">
           {`${textareaValue ? textareaValue.length : 0}/${maxLength}`}

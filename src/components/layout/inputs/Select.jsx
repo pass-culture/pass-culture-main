@@ -49,7 +49,12 @@ const Select = ({
         </option>
       ))}
     </select>
-    {error && <InputError message={error} />}
+    {error && (
+      <InputError
+        message={error}
+        name={name}
+      />
+    )}
   </div>
 )
 
