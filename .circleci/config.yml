@@ -283,11 +283,10 @@ jobs:
       GKE_CLUSTER_NAME: cluster-metier-ehp
       HELM_EXPERIMENTAL_OCI: 1
       CHART_NAME: passculture-chart
-      HELM_CHART_URI: ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:${TAG}
       HELM_CHART_NAME: passculture
       HELM_RELEASE_NAME: development
       KUBERNETES_NAMESPACE: development
-      HELM_VALUES_FILE: values.yaml
+      HELM_VALUES_FILE: values.testing.yaml
       TAG: stable
     steps:
       - authenticate_gcp:
@@ -306,7 +305,12 @@ jobs:
           command: helm chart export ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:${TAG} -d tmp/
       - run:
           name: Deploy chart with Helm
-          command: helm upgrade -i --wait ${HELM_RELEASE_NAME} tmp/${HELM_CHART_NAME} -n ${KUBERNETES_NAMESPACE} -f tmp/${HELM_CHART_NAME}/${HELM_VALUES_FILE}
+          command: |
+            helm upgrade ${HELM_RELEASE_NAME} tmp/${HELM_CHART_NAME}
+              --install --wait
+              --namespace ${KUBERNETES_NAMESPACE}
+              --values tmp/${HELM_CHART_NAME}/${HELM_VALUES_FILE}
+              --set-string image.tag=${CIRCLE_SHA1}
 
   tests-data-analytics:
     docker:
@@ -520,17 +524,11 @@ workflows:
       - deploy-cloudrun:
           requires:
             - build-and-push-image
-          filters:
-            branches:
-              only:
-                - master
           context:
             - GCP
       - deploy-cron-and-worker:
-          filters:
-            branches:
-              only:
-                - master
+          requires:
+            - build-and-push-image
           context:
             - GCP
 
