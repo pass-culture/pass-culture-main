@@ -6,10 +6,9 @@ from sqlalchemy.sql.functions import func
 from wtforms import Form
 from wtforms import StringField
 from wtforms.fields.html5 import DateField
-from wtforms.fields.html5 import EmailField
-from wtforms.fields.html5 import IntegerField
 from wtforms.fields.html5 import TelField
 from wtforms.validators import DataRequired
+from wtforms.validators import Length
 from wtforms.validators import Optional
 
 from pcapi.admin.base_configuration import BaseAdminView
@@ -49,13 +48,15 @@ class PartnerUserView(BaseAdminView):
 
     def scaffold_form(self):
         form_class = super().scaffold_form()
-        form_class.email = EmailField("Email", [DataRequired()])
         form_class.firstName = StringField("Prenom", [DataRequired()])
         form_class.lastName = StringField("Nom", [DataRequired()])
         form_class.dateOfBirth = DateField("Date de naissance", [Optional()])
-        form_class.departementCode = IntegerField("Département", [DataRequired()])
-        form_class.postalCode = StringField("Code postal", [Optional()])
-        form_class.phoneNumber = TelField("Numéro de téléphone", [Optional()])
+        form_class.departementCode = StringField(
+            "Département", [DataRequired(), Length(min=2, max=3, message="Mauvais format de département")]
+        )
+        form_class.phoneNumber = TelField(
+            "Numéro de téléphone", [Optional(), Length(min=0, max=20, message="Numéro de téléphone invalide")]
+        )
 
         return form_class
 
