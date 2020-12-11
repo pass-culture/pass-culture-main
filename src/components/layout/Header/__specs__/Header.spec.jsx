@@ -1,28 +1,22 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { shallow } from 'enzyme'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
-import { signout } from 'repository/pcapi/pcapi'
 import { getStubStore } from 'utils/stubStore'
 
-import Icon from '../../Icon'
+import * as constants from '../_constants'
 import Header from '../Header'
-import '@testing-library/jest-dom'
 
-jest.mock('repository/pcapi/pcapi', () => {
-  return {
-    signout: jest.fn()
-  }
-})
+import '@testing-library/jest-dom'
 
 describe('header', () => {
   let props
 
   beforeEach(() => {
     props = {
-      isSmall: false,
+      dispatch: jest.fn(),
       name: 'fake name',
       offerers: [{}],
       isSmall: false,
@@ -30,14 +24,6 @@ describe('header', () => {
   })
 
   describe('render', () => {
-    it('should render a header element with the right css classes when is not small', () => {
-      // when
-      const wrapper = shallow(<Header {...props} />)
-
-      // then
-      expect(wrapper.prop('className')).toBe('navbar is-primary')
-    })
-
     it('should render a header element with the right css classes when is small', () => {
       // given
       props.isSmall = true
@@ -46,82 +32,12 @@ describe('header', () => {
       const wrapper = shallow(<Header {...props} />)
 
       // then
-      expect(wrapper.prop('className')).toBe('navbar is-primary is-small')
-    })
-
-    describe('should pluralize offerers menu link', () => {
-      it('should display Structure juridique when one offerer', () => {
-        // when
-        const wrapper = shallow(<Header {...props} />)
-        const navLinks = wrapper.find('NavLink')
-
-        const linkTitle = navLinks
-          .at(5)
-          .childAt(1)
-          .props().children
-
-        // then
-        expect(navLinks).toHaveLength(8)
-        expect(linkTitle).toStrictEqual('Structure juridique')
-      })
-
-      it('should display Structures juridiques when many offerers', () => {
-        // given
-        props.offerers = [{}, {}]
-
-        // when
-        const wrapper = shallow(<Header {...props} />)
-        const navLinks = wrapper.find('NavLink')
-        const linkTitle = navLinks
-          .at(5)
-          .childAt(1)
-          .props().children
-
-        // then
-        expect(navLinks).toHaveLength(8)
-        expect(linkTitle).toStrictEqual('Structures juridiques')
-      })
-    })
-
-    describe('help link', () => {
-      it('should display a "help" link in the header', () => {
-        // when
-        const wrapper = shallow(<Header {...props} />)
-
-        // then
-        const helpLink = wrapper
-          .find('.navbar-menu')
-          .find('.navbar-end')
-          .find('.navbar-item')
-          .at(8)
-        expect(helpLink.prop('href')).toBe(
-          'https://aide.passculture.app/fr/category/acteurs-culturels-1t20dhs/',
-        )
-        expect(helpLink.prop('target')).toBe('_blank')
-      })
-
-      it('should display a "help" icon and the proper label', () => {
-        // when
-        const wrapper = shallow(<Header {...props} />)
-
-        // then
-        const helpLink = wrapper
-          .find('.navbar-menu')
-          .find('.navbar-end')
-          .find('.navbar-item')
-          .at(8)
-        const spans = helpLink.find('span')
-        const helpIcon = spans.at(0).find(Icon)
-        const helpLabel = spans.at(1)
-        expect(helpIcon.prop('svg')).toBe('ico-help')
-        expect(helpLabel.text()).toBe('Aide')
-      })
+      expect(wrapper.prop('className')).toBe('navbar is-small')
     })
   })
 })
 
-
-const renderHeader = (props) => {
+const renderHeader = props => {
   const stubStore = getStubStore({
     data: (state = {}) => state,
   })
@@ -130,7 +46,7 @@ const renderHeader = (props) => {
       <MemoryRouter>
         <Header {...props} />
       </MemoryRouter>
-    </Provider>,
+    </Provider>
   )
 }
 
@@ -140,8 +56,52 @@ describe('navigation menu', () => {
     props = {
       dispatch: jest.fn(),
       name: 'Utilisateur',
-      offerers: [{id: '1'}]
+      offerers: [{ id: '1' }],
     }
+  })
+
+  describe('should pluralize Offerer menu link', () => {
+    it('should display Structure juridique for a single offerer', () => {
+      // when
+      renderHeader(props)
+
+      // then
+      const singularOffererLink = screen.queryByText('Structure juridique')
+      const pluralOffererLink = screen.queryByText('Structures juridiques')
+      expect(singularOffererLink).toBeInTheDocument()
+      expect(singularOffererLink.closest('a')).toHaveAttribute('href', '/structures')
+      expect(pluralOffererLink).not.toBeInTheDocument()
+    })
+
+    it('should display Structures juridiques for multiple offerers', () => {
+      // given
+      props.offerers = [{}, {}]
+
+      // when
+      renderHeader(props)
+
+      // then
+      const singularOffererLink = screen.queryByText('Structure juridique')
+      const pluralOffererLink = screen.queryByText('Structures juridiques')
+      expect(singularOffererLink).not.toBeInTheDocument()
+      expect(pluralOffererLink).toBeInTheDocument()
+      expect(pluralOffererLink.closest('a')).toHaveAttribute('href', '/structures')
+    })
+  })
+
+  describe('help link', () => {
+    it('should display a "help" link in the header', () => {
+      // when
+      renderHeader(props)
+
+      // then
+      const helpLink = screen.queryByText('Aide')
+      expect(helpLink.closest('a')).toHaveAttribute(
+        'href',
+        'https://aide.passculture.app/fr/category/acteurs-culturels-1t20dhs/'
+      )
+      expect(helpLink.closest('a')).toHaveAttribute('target', '_blank')
+    })
   })
 
   it('should have link to Guichet', () => {
@@ -193,39 +153,30 @@ describe('navigation menu', () => {
     renderHeader(props)
 
     // Then
-    expect(screen.queryByText('Déconnexion').closest('button')).toBeInTheDocument()
+    const logOutButton = screen.queryByText('Déconnexion')
+    expect(logOutButton).toBeInTheDocument()
   })
 
-  it.skip('should call api to signout when clicking on signout button', () => {
+  it('should have link to Styleguide when is enabled', () => {
     // Given
-    renderHeader(props)
-
-    // When
-    fireEvent.click(screen.getByText('Déconnexion'))
-
-    // Then
-    expect(signout).toHaveBeenCalledTimes(1)
-  })
-
-  it('should have link to Styleguide when in developpement environment', () => {
-    // Given
+    // eslint-disable-next-line
+    constants.STYLEGUIDE_ACTIVE = true
     renderHeader(props)
 
     // Then
     expect(screen.queryByText('Styleguide')).toBeInTheDocument()
   })
 
-  it.skip('should not have link to Styleguide when in production environment', () => {
-    // Given
-    const initialEnvironmentName = process.env.ENVIRONMENT_NAME
-    process.env.ENVIRONMENT_NAME = 'production'
+  it('should not have link to Styleguide when is disabled', () => {
+    // given
+    // eslint-disable-next-line
+    constants.STYLEGUIDE_ACTIVE = false
 
     // When
     renderHeader(props)
 
     // Then
     expect(screen.queryByText('Styleguide')).not.toBeInTheDocument()
-    process.env.ENVIRONMENT_NAME = initialEnvironmentName
   })
 
   // reste : les éléments conditionnels (Styleguide et !isSmall)

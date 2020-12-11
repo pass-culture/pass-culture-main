@@ -3,6 +3,10 @@ header.navbar {
   background-image: $linear-gradient-to-bottom-right;
   z-index: inherit;
 
+  .container {
+    max-width: 1000px;
+  }
+
   &:not(.is-small) {
     height: 9.375rem;
   }
@@ -12,7 +16,11 @@ header.navbar {
 
     &:hover,
     &:focus {
-      background-color: $primary;
+      background-color: $primary-dark;
+
+      &.logo {
+        background-color: transparent;
+      }
     }
   }
 
@@ -34,6 +42,10 @@ header.navbar {
 
     .navbar-item {
       @include caption();
+
+      img {
+        filter: brightness(0) invert(1);
+      }
     }
   }
 
@@ -41,11 +53,6 @@ header.navbar {
     margin-right: 0.5rem;
   }
 }
-
-.navbar-dropdown.is-right {
-  width: rem(230px);
-}
-
 
 [data-reach-menu-button] {
   @include caption();

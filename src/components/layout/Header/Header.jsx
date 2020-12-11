@@ -6,11 +6,12 @@ import React, { PureComponent } from 'react'
 import { NavLink } from 'react-router-dom'
 import { reinitializeData } from 'redux-saga-data'
 
-import * as pcapi from 'repository/pcapi/pcapi'
+import { signout } from 'repository/pcapi/pcapi'
 
 import Icon from '../Icon'
 import Logo from '../Logo'
 
+// FIXME (Adrien S, 11/12/2020): Inject StyleGuide as a props, to avoid mocks and increase testability
 import { HELP_PAGE_URL, STYLEGUIDE_ACTIVE } from './_constants'
 
 class Header extends PureComponent {
@@ -18,8 +19,7 @@ class Header extends PureComponent {
 
   onSignoutClick = () => {
     const { dispatch } = this.props
-    pcapi
-      .signout()
+    signout()
       .then(() => {
         dispatch(reinitializeData())
       })
@@ -37,7 +37,7 @@ class Header extends PureComponent {
           'is-small': isSmall,
         })}
       >
-        <div className="container">
+        <nav className="container">
           <div className="navbar-brand">
             <Logo className="navbar-item" />
           </div>
@@ -45,6 +45,7 @@ class Header extends PureComponent {
             <div className="navbar-end">
               <NavLink
                 className="navbar-item"
+                role="menuitem"
                 to="/guichet"
               >
                 <span className="icon">
@@ -56,6 +57,7 @@ class Header extends PureComponent {
               </NavLink>
               <NavLink
                 className="navbar-item"
+                role="menuitem"
                 to="/offres"
               >
                 <span className="icon">
@@ -67,6 +69,7 @@ class Header extends PureComponent {
               </NavLink>
               <NavLink
                 className="navbar-item"
+                role="menuitem"
                 to="/reservations"
               >
                 <span className="icon">
@@ -77,13 +80,14 @@ class Header extends PureComponent {
                 </span>
               </NavLink>
               <Menu>
-                <MenuButton>
+                <MenuButton className="navbar-item">
                   <span className="icon">
                     <Icon svg="ico-user-circled-w" />
                   </span>
                   <span>
                     {name}
                   </span>
+                  <Icon svg="ico-arrow-down-r" />
                 </MenuButton>
                 <MenuList>
                   <MenuLink
@@ -135,13 +139,12 @@ class Header extends PureComponent {
                   <MenuLink
                     as="a"
                     href={HELP_PAGE_URL}
+                    target="_blank"
                   >
                     <span className="icon">
                       <Icon svg="ico-help" />
                     </span>
-                    <span>
-                      {'Aide'}
-                    </span>
+                    {'Aide'}
                   </MenuLink>
                   <MenuItem onSelect={this.onSignoutClick}>
                     <span className="icon">
@@ -155,7 +158,7 @@ class Header extends PureComponent {
               </Menu>
             </div>
           </div>
-        </div>
+        </nav>
       </header>
     )
   }

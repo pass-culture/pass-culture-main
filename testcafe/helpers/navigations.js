@@ -3,23 +3,22 @@ import { Selector } from 'testcafe'
 import { createUserRole } from './roles'
 
 export const navigateToOfferersAs = (user, userRole) => async t => {
-  const navbarAnchor = Selector('a.navbar-link, span.navbar-burger').filterVisible()
-  const offerersNavbarAnchor = Selector("a.navbar-item[href='/structures']")
+  const dropdownMenu = Selector('button').withText(user.publicName).filterVisible()
+  const offerersMenuItem = Selector("a[role='menuitem']").withText(/Structure[s]? juridique[s]?/)
 
   if (!userRole) {
     await t.useRole(createUserRole(user))
   } else {
     await t.useRole(userRole)
   }
-  await t.click(navbarAnchor).click(offerersNavbarAnchor)
+  await t.click(dropdownMenu).click(offerersMenuItem())
 }
 
 export const navigateToOffersAs = user => async t => {
-  const navbarAnchor = Selector('a.navbar-link, span.navbar-burger').filterVisible()
-  const offersNavbarAnchor = Selector("a.navbar-item[href='/offres']")
+  const offersMenuItem = Selector("a[role='menuitem']").withText('Offres')
 
   await t.useRole(createUserRole(user))
-  await t.click(navbarAnchor).click(offersNavbarAnchor)
+  await t.click(offersMenuItem)
 }
 
 export const navigateToNewOffererAs = (user, userRole) => async t => {
