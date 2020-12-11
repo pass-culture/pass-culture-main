@@ -317,6 +317,10 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin, 
         return [stock for stock in self.stocks if not stock.isSoftDeleted]
 
     @property
+    def bookableStocks(self) -> List[Stock]:
+        return [stock for stock in self.stocks if stock.isBookable]
+
+    @property
     def offerType(self) -> Optional[dict]:
         all_types = list(ThingType) + list(EventType)
         for possible_type in all_types:
