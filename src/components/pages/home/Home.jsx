@@ -19,7 +19,7 @@ const Home = ({
   user,
 }) => {
   const geolocationRef = useRef(geolocation)
-  const { displayedModules, fetchingError, algoliaMapping } = useDisplayedHomemodules(
+  const { displayedModules, isError, isLoading, algoliaMapping } = useDisplayedHomemodules(
     history,
     geolocationRef.current
   )
@@ -40,8 +40,8 @@ const Home = ({
     waitForCoordinates()
   }, [geolocation])
 
-  if (fetchingError) return <AnyError />
-  if (Object.entries(algoliaMapping).length === 0) return <LoaderContainer />
+  if (isError) return <AnyError />
+  if (isLoading) return <LoaderContainer />
 
   return (
     <MainView

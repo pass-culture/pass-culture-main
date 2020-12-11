@@ -20,13 +20,16 @@ export const shouldModuleBeDisplayed = algoliaMapping => module => {
 const useDisplayedHomemodules = (history, geolocation) => {
   const [modules, setModules] = useState([])
   const [algoliaMapping, setAlgoliaMapping] = useState({})
-  const [fetchingError, setFetchingError] = useState(false)
+  const [isError, setIsError] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     const parsedSearch = parse(history.location.search)
+    setIsError(false)
+    setIsLoading(true)
     fetchHomepage({ entryId: parsedSearch ? parsedSearch.entryId : '' })
       .then(setModules)
-      .catch(() => setFetchingError(true))
+      .catch(() => setIsError(true))
   }, [history.location.search])
 
   useEffect(() => {
@@ -48,15 +51,22 @@ const useDisplayedHomemodules = (history, geolocation) => {
           mapping[moduleId] = { nbHits, hits, parsedParameters }
         })
         setAlgoliaMapping(mapping)
+        setIsLoading(false)
       }
 
-      fetchAlgoliaModules()
+      try {
+        fetchAlgoliaModules()
+      } catch (error) {
+        setIsError(true)
+        setIsLoading(false)
+      }
     }
   }, [modules, geolocation])
 
   return {
     displayedModules: modules.filter(shouldModuleBeDisplayed(algoliaMapping)),
-    fetchingError,
+    isError,
+    isLoading,
     algoliaMapping,
   }
 }
