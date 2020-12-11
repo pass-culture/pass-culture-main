@@ -2,11 +2,11 @@ from typing import Callable
 from typing import Dict
 from typing import List
 
+from pcapi import settings
 from pcapi.models import Offer
 from pcapi.models import Offerer
 from pcapi.models import UserOfferer
 from pcapi.models import UserSQLEntity
-from pcapi.utils.mailing import ADMINISTRATION_EMAIL_ADDRESS
 from pcapi.utils.mailing import compute_email_html_part_and_recipients
 from pcapi.utils.mailing import make_activation_users_email
 from pcapi.utils.mailing import make_offer_creation_notification_email
@@ -23,7 +23,7 @@ def maybe_send_offerer_validation_email(
     if offerer.isValidated and user_offerer.isValidated:
         return None
     email = make_validation_email_object(offerer, user_offerer)
-    recipients = [ADMINISTRATION_EMAIL_ADDRESS]
+    recipients = [settings.ADMINISTRATION_EMAIL_ADDRESS]
     email["Html-part"], email["To"] = compute_email_html_part_and_recipients(email["Html-part"], recipients)
     return send_email(data=email)
 

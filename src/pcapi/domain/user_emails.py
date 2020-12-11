@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Callable
 from typing import List
 
+from pcapi import settings
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.users import models as users_models
@@ -41,14 +42,13 @@ from pcapi.emails.user_reset_password import retrieve_data_for_reset_password_us
 from pcapi.models import Offerer
 from pcapi.models import UserOfferer
 from pcapi.models import UserSQLEntity
-from pcapi.utils.mailing import ADMINISTRATION_EMAIL_ADDRESS
 from pcapi.utils.mailing import compute_email_html_part_and_recipients
 from pcapi.utils.mailing import make_offerer_driven_cancellation_email_for_offerer
 from pcapi.utils.mailing import make_user_validation_email
 
 
 def send_booking_recap_emails(booking: Booking, send_email: Callable[..., bool]) -> None:
-    recipients = [ADMINISTRATION_EMAIL_ADDRESS]
+    recipients = [settings.ADMINISTRATION_EMAIL_ADDRESS]
     booking_email = booking.stock.offer.bookingEmail
     if booking_email:
         recipients.append(booking_email)
@@ -78,7 +78,7 @@ def send_offerer_driven_cancellation_email_to_offerer(booking: Booking, send_ema
     recipients = []
     if offerer_email:
         recipients.append(offerer_email)
-    recipients.append(ADMINISTRATION_EMAIL_ADDRESS)
+    recipients.append(settings.ADMINISTRATION_EMAIL_ADDRESS)
     email = make_offerer_driven_cancellation_email_for_offerer(booking)
     email["Html-part"], email["To"] = compute_email_html_part_and_recipients(email["Html-part"], recipients)
     send_email(data=email)
@@ -228,5 +228,5 @@ def _build_recipients_list(booking: Booking) -> str:
     offerer_booking_email = booking.stock.offer.bookingEmail
     if offerer_booking_email:
         recipients.append(offerer_booking_email)
-    recipients.append(ADMINISTRATION_EMAIL_ADDRESS)
+    recipients.append(settings.ADMINISTRATION_EMAIL_ADDRESS)
     return ", ".join(recipients)

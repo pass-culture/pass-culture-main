@@ -1,10 +1,9 @@
 from typing import Dict
 
+from pcapi import settings
 from pcapi.models import Booking
 from pcapi.models import Stock
 from pcapi.repository.feature_queries import feature_send_mail_to_users_enabled
-from pcapi.utils.mailing import DEV_EMAIL_ADDRESS
-from pcapi.utils.mailing import SUPPORT_EMAIL_ADDRESS
 from pcapi.utils.mailing import build_pc_pro_offer_link
 from pcapi.utils.mailing import extract_users_information_from_bookings
 from pcapi.utils.mailing import format_booking_date_for_email
@@ -27,10 +26,10 @@ def retrieve_offerer_booking_recap_email_data_after_user_cancellation(booking: B
     is_active = _is_offer_active_for_recap(stock)
 
     return {
-        "FromEmail": SUPPORT_EMAIL_ADDRESS,
+        "FromEmail": settings.SUPPORT_EMAIL_ADDRESS,
         "MJ-TemplateID": 780015,
         "MJ-TemplateLanguage": True,
-        "To": recipients if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS,
+        "To": recipients if feature_send_mail_to_users_enabled() else settings.DEV_EMAIL_ADDRESS,
         "Vars": {
             "departement": departement_code,
             "nom_offre": offer.name,

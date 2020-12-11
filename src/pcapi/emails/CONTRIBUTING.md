@@ -6,8 +6,10 @@
 ## Dictionnaire à retourner
 
 ```python
+from pcapi import settings
+
 {
-    'FromEmail': SUPPORT_EMAIL_ADDRESS,
+    'FromEmail': settings.SUPPORT_EMAIL_ADDRESS,
     'MJ-TemplateID': [XXX],
     'MJ-TemplateLanguage': True,
     'To': [email_du_destinataire],
@@ -42,8 +44,8 @@ Dans `Vars`, on peut y mettre :
 
 ## Constantes utiles
 
-- `DEV_EMAIL_ADDRESS` ;
-- `SUPPORT_EMAIL_ADDRESS`.
+- `settings.DEV_EMAIL_ADDRESS` ;
+- `settings.SUPPORT_EMAIL_ADDRESS`.
 
 ## Pour tester l'envoi d'un e-mail
 

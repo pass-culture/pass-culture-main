@@ -1,10 +1,9 @@
 from typing import Dict
 from typing import List
 
+from pcapi import settings
 from pcapi.models import Booking
 from pcapi.repository.feature_queries import feature_send_mail_to_users_enabled
-from pcapi.utils.mailing import DEV_EMAIL_ADDRESS
-from pcapi.utils.mailing import SUPPORT_EMAIL_ADDRESS
 from pcapi.utils.mailing import build_pc_pro_offer_link
 from pcapi.utils.mailing import format_booking_date_for_email
 from pcapi.utils.mailing import format_booking_hours_for_email
@@ -26,10 +25,10 @@ def retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation(
     venue_name = offer.venue.publicName if offer.venue.publicName else offer.venue.name
 
     return {
-        "FromEmail": SUPPORT_EMAIL_ADDRESS,
+        "FromEmail": settings.SUPPORT_EMAIL_ADDRESS,
         "MJ-TemplateID": 1116333,
         "MJ-TemplateLanguage": True,
-        "To": recipients if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS,
+        "To": recipients if feature_send_mail_to_users_enabled() else settings.DEV_EMAIL_ADDRESS,
         "Vars": {
             "offer_name": offer.name,
             "venue_name": venue_name,

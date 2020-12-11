@@ -2,10 +2,9 @@ from typing import Dict
 
 from babel.dates import format_date
 
+from pcapi import settings
 from pcapi.models import Booking
 from pcapi.repository.feature_queries import feature_send_mail_to_users_enabled
-from pcapi.utils.mailing import DEV_EMAIL_ADDRESS
-from pcapi.utils.mailing import SUPPORT_EMAIL_ADDRESS
 from pcapi.utils.mailing import format_booking_hours_for_email
 from pcapi.utils.mailing import get_event_datetime
 
@@ -22,10 +21,10 @@ def retrieve_data_to_warn_user_after_stock_update_affecting_booking(booking: Boo
     if is_event:
         event_date = format_date(get_event_datetime(stock), format="full", locale="fr")
         event_hour = format_booking_hours_for_email(booking)
-    email_to = booking.user.email if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS
+    email_to = booking.user.email if feature_send_mail_to_users_enabled() else settings.DEV_EMAIL_ADDRESS
 
     return {
-        "FromEmail": SUPPORT_EMAIL_ADDRESS,
+        "FromEmail": settings.SUPPORT_EMAIL_ADDRESS,
         "MJ-TemplateID": 1332139,
         "MJ-TemplateLanguage": True,
         "To": email_to,

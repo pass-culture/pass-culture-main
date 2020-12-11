@@ -1,5 +1,6 @@
 from typing import Dict
 
+from pcapi import settings
 from pcapi.core.bookings.models import Booking
 from pcapi.models.offer_type import ProductType
 from pcapi.repository.feature_queries import feature_send_mail_to_users_enabled
@@ -7,8 +8,6 @@ from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_time_formatted_for_email
 from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.human_ids import humanize
-from pcapi.utils.mailing import DEV_EMAIL_ADDRESS
-from pcapi.utils.mailing import SUPPORT_EMAIL_ADDRESS
 from pcapi.utils.mailing import format_environment_for_email
 
 
@@ -25,7 +24,7 @@ def retrieve_data_for_beneficiary_booking_confirmation_email(booking: Booking) -
     department_code = venue.departementCode if not is_digital_offer else beneficiary.departementCode
     booking_date_in_tz = utc_datetime_to_department_timezone(booking.dateCreated, department_code)
 
-    beneficiary_email = beneficiary.email if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS
+    beneficiary_email = beneficiary.email if feature_send_mail_to_users_enabled() else settings.DEV_EMAIL_ADDRESS
     beneficiary_first_name = beneficiary.firstName
     formatted_booking_date = get_date_formatted_for_email(booking_date_in_tz)
     formatted_booking_time = get_time_formatted_for_email(booking_date_in_tz)
@@ -55,7 +54,7 @@ def retrieve_data_for_beneficiary_booking_confirmation_email(booking: Booking) -
         formatted_event_beginning_date = get_date_formatted_for_email(event_beginning_date_in_tz)
 
     return {
-        "FromEmail": SUPPORT_EMAIL_ADDRESS,
+        "FromEmail": settings.SUPPORT_EMAIL_ADDRESS,
         "MJ-TemplateID": 1163067,
         "MJ-TemplateLanguage": True,
         "To": beneficiary_email,
