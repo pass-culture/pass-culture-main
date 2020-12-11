@@ -1,3 +1,6 @@
+from datetime import datetime
+from decimal import Decimal
+from typing import List
 from typing import Optional
 
 from pydantic import BaseModel
@@ -19,10 +22,22 @@ class OfferOffererResponse(BaseModel):
         orm_mode = True
 
 
+class OfferStockResponse(BaseModel):
+    id: int
+    beginningDatetime: datetime
+    price: Decimal
+
+    class Config:
+        orm_mode = True
+
+
 class OfferVenueResponse(BaseModel):
+    id: int
+    address: Optional[str]
     city: Optional[str]
     managingOfferer: OfferOffererResponse = Field(..., alias="offerer")
     name: str
+    postalCode: Optional[str]
     publicName: Optional[str]
 
     class Config:
@@ -32,11 +47,15 @@ class OfferVenueResponse(BaseModel):
 
 class OfferResponse(BaseModel):
     id: int
+    description: Optional[str]
+    isDigital: bool
     isDuo: bool
     name: str
     offerType: OfferCategoryResponse = Field(..., alias="category")
+    bookableStocks: List[OfferStockResponse]
     thumbUrl: Optional[str] = Field(None, alias="imageUrl")
     venue: OfferVenueResponse
+    withdrawalDetails: Optional[str]
 
     class Config:
         orm_mode = True
