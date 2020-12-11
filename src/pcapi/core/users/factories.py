@@ -1,8 +1,10 @@
 import datetime
+import uuid
 
 import factory
 
 from pcapi.core.testing import BaseFactory
+from pcapi.models import user_session
 from pcapi.models import user_sql_entity
 
 from . import constants
@@ -64,3 +66,19 @@ class ResetPasswordToken(TokenFactory):
 class EmailValidationToken(TokenFactory):
     type = models.TokenType.EMAIL_VALIDATION
     expirationDate = factory.LazyFunction(lambda: datetime.datetime.now() + constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME)
+
+
+class UserSessionFactory(BaseFactory):
+    class Meta:
+        model = user_session.UserSession
+
+    uuid = factory.LazyFunction(uuid.uuid4)
+
+    @classmethod
+    def _create(cls, model_class, *args, **kwargs):
+        try:
+            user = kwargs.pop("user")
+        except KeyError:
+            raise ValueError('UserSessionFactory requires a "user" argument.')
+        kwargs["userId"] = user.id
+        return super()._create(model_class, *args, **kwargs)

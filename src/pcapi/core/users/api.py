@@ -1,6 +1,7 @@
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
+import secrets
 from typing import Optional
 
 from pcapi.core.users import exceptions
@@ -13,11 +14,13 @@ from pcapi.domain.password import generate_reset_token
 from pcapi.domain.password import random_password
 from pcapi.models.deposit import DEPOSIT_DEFAULT_AMOUNT
 from pcapi.models.deposit import Deposit
+from pcapi.models.user_session import UserSession
 from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.scripts.beneficiary import THIRTY_DAYS_IN_HOURS
 from pcapi.utils import mailing as mailing_utils
+from pcapi.utils.logger import logger
 
 from . import constants
 
@@ -102,3 +105,29 @@ def fulfill_user_data(user: UserSQLEntity, deposit_source: str) -> UserSQLEntity
     user.deposits = [deposit]
 
     return user
+
+
+def suspend_account(user: UserSQLEntity, reason: constants.SuspensionReason, actor: UserSQLEntity):
+    user.isActive = False
+    user.suspensionReason = str(reason)
+    # If we ever unsuspend the account, we'll have to explictly enable
+    # isAdmin again. An admin now may not be an admin later.
+    user.isAdmin = False
+    # FIXME (before merge): est-ce qu'il y a un intérêt à modifier le
+    # mot de passe ? De toute façon, l'utilisateur ne pourra pas se
+    # logger puisque `isActive=False`.
+    user.setPassword(secrets.token_urlsafe(30))
+    repository.save(user)
+
+    sessions = UserSession.query.filter_by(userId=user.id)
+    repository.delete(*sessions)
+
+    logger.info("user=%s has been suspended by actor=%s for reason=%s", user.id, actor.id, reason)
+
+
+def unsuspend_account(user: UserSQLEntity, actor: UserSQLEntity):
+    user.isActive = True
+    user.suspensionReason = ""
+    repository.save(user)
+
+    logger.info("user=%s has been unsuspended by actor=%s", user.id, actor.id)

@@ -6,6 +6,8 @@ import jwt
 import pytest
 
 from pcapi import settings
+from pcapi.core.users import api as users_api
+from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.api import create_id_check_token
 from pcapi.core.users.api import generate_and_save_token
@@ -13,6 +15,7 @@ from pcapi.core.users.models import ALGORITHM_HS_256
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.repository import get_user_with_valid_token
+from pcapi.models.user_session import UserSession
 from pcapi.repository import repository
 
 from tests.conftest import TestClient
@@ -175,3 +178,30 @@ class GenerateIdCheckTokenIfEligibleTest:
         user = users_factories.UserFactory(dateOfBirth=datetime(1999, 5, 1))
         token = create_id_check_token(user)
         assert not token
+
+
+class SuspendAccountTest:
+    def test_suspend_account(self):
+        user = users_factories.UserFactory(isAdmin=True, isBeneficiary=False)
+        users_factories.UserSessionFactory(user=user)
+        reason = users_constants.SuspensionReason.FRAUD
+        actor = users_factories.UserFactory(isAdmin=True, isBeneficiary=False)
+
+        users_api.suspend_account(user, reason, actor)
+
+        assert user.suspensionReason == str(reason)
+        assert not user.isActive
+        assert not user.isAdmin
+        assert not UserSession.query.filter_by(userId=user.id).first()
+        assert actor.isActive
+
+
+class UnsuspendAccountTest:
+    def test_unsuspend_account(self):
+        user = users_factories.UserFactory(isActive=False)
+        actor = users_factories.UserFactory(isAdmin=True, isBeneficiary=False)
+
+        users_api.unsuspend_account(user, actor)
+
+        assert not user.suspensionReason
+        assert user.isActive
