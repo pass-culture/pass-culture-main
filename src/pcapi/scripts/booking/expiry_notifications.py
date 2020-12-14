@@ -7,11 +7,12 @@ import pcapi.core.bookings.repository as bookings_repository
 from pcapi.utils.logger import logger
 
 
-def notify_users_of_expired_bookings(expired_on: datetime.date = datetime.date.today()) -> None:
+def notify_users_of_expired_bookings(expired_on: datetime.date = None) -> None:
     """
     This script will be scheduled to begin after CANCEL_EXPIRED_BOOKINGS_CRON_START_DATE, but can be called before that
     date manually in order to check the number of emails that would be sent.
     """
+    expired_on = expired_on or datetime.date.today()
 
     logger.info("[notify_users_of_expired_bookings] Start")
     expired_bookings_ordered_by_user = bookings_repository.find_expired_bookings_ordered_by_user(expired_on)
@@ -43,12 +44,12 @@ def notify_users_of_expired_bookings(expired_on: datetime.date = datetime.date.t
     logger.info("[notify_users_of_expired_bookings] End")
 
 
-def notify_offerers_of_expired_bookings(expired_on: datetime.date = datetime.date.today()) -> None:
+def notify_offerers_of_expired_bookings(expired_on: datetime.date = None) -> None:
     """
     This script will be scheduled to begin after CANCEL_EXPIRED_BOOKINGS_CRON_START_DATE, but can be called before that
     date manually in order to check the number of emails that would be sent.
     """
-
+    expired_on = expired_on or datetime.date.today()
     logger.info("[notify_offerers_of_expired_bookings] Start")
 
     expired_bookings_ordered_by_offerer = bookings_repository.find_expired_bookings_ordered_by_offerer(expired_on)

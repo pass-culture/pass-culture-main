@@ -187,7 +187,8 @@ def generate_booking_token():
     raise ValueError("Could not generate new booking token")
 
 
-def find_expired_bookings_ordered_by_user(expired_on: date = date.today()) -> Query:
+def find_expired_bookings_ordered_by_user(expired_on: date = None) -> Query:
+    expired_on = expired_on or date.today()
     return (
         Booking.query.filter(Booking.isCancelled.is_(True))
         .filter(cast(Booking.cancellationDate, Date) == expired_on)
@@ -197,7 +198,8 @@ def find_expired_bookings_ordered_by_user(expired_on: date = date.today()) -> Qu
     )
 
 
-def find_expired_bookings_ordered_by_offerer(expired_on: date = date.today()) -> Query:
+def find_expired_bookings_ordered_by_offerer(expired_on: date = None) -> Query:
+    expired_on = expired_on or date.today()
     return (
         Booking.query.join(Stock)
         .join(Offer)
