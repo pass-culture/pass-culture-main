@@ -291,6 +291,55 @@ describe('offerDetails - Creation', () => {
         expect(pcapi.getVenuesForOfferer).toHaveBeenCalledWith(offerers[0].id)
       })
 
+      it('should warn user that his offerer has no physical venues when selecting a physical offer and no venues are physical', async () => {
+        // Given
+        pcapi.getVenuesForOfferer.mockResolvedValue([
+          {
+            id: 'AB',
+            isVirtual: true,
+            managingOffererId: offerers[0].id,
+            name: 'Le lieu virtuel',
+            offererName: 'La structure',
+          },
+        ])
+        renderOffers({}, store)
+
+        // When
+        await setOfferValues({ type: 'EventType.CINEMA' })
+
+        // Then
+        const venueInput = screen.getByLabelText('Lieu')
+        expect(venueInput).toBeInTheDocument()
+        expect(venueInput).not.toHaveAttribute('disabled')
+        const venueIdError = await getInputErrorForField('venueId')
+        expect(venueIdError).toHaveTextContent(
+          'Il faut obligatoirement une structure avec un lieu.'
+        )
+      })
+
+      it('should remove no physical venue warning when it is no longer valid', async () => {
+        // Given
+        pcapi.getVenuesForOfferer.mockResolvedValue([
+          {
+            id: 'AB',
+            isVirtual: true,
+            managingOffererId: offerers[0].id,
+            name: 'Le lieu virtuel',
+            offererName: 'La structure',
+          },
+        ])
+        renderOffers({}, store)
+        await setOfferValues({ type: 'EventType.CINEMA' })
+
+        // When
+        await setOfferValues({ type: 'ThingType.LIVRE_EDITION' })
+
+        // Then
+        expect(screen.getByLabelText('Lieu')).toBeInTheDocument()
+        const venueIdError = await getInputErrorForField('venueId')
+        expect(venueIdError).toBeNull()
+      })
+
       it('should select offerer of selected venue', async () => {
         // Given
         renderOffers({}, store)

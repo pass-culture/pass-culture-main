@@ -190,17 +190,10 @@ const OfferForm = props => {
     }
     setVenueOptions(buildSelectOptions('id', 'name', venuesToShow))
 
-    if (venuesToShow.length) {
-      if (formValues.venueId && !venuesToShow.find(venue => venue.id === formValues.venueId)) {
-        setFormValues({ ...formValues, venueId: DEFAULT_FORM_VALUES.venueId })
-      }
-      const venueFieldIdx = readOnlyFields.findIndex(fieldName => fieldName === 'venueId')
-      if (!offerIsSynchronized && venueFieldIdx !== -1) {
-        readOnlyFields.splice(venueFieldIdx, 1)
-        setReadOnlyFields(readOnlyFields)
-      }
-    } else if (!readOnlyFields.includes('venueId')) {
-      setReadOnlyFields([...readOnlyFields, 'venueId'])
+    if (venuesToShow.length === 0) {
+      setFormErrors({ venueId: 'Il faut obligatoirement une structure avec un lieu.' })
+    } else {
+      setFormErrors({})
     }
   }
 
