@@ -42,7 +42,7 @@ def cancel_expired_bookings(batch_size: int = 100) -> None:
         )
 
         if errors:
-            logger.exception("Encountered these validation errors: %s", errors)
+            logger.exception("[cancel_expired_bookings] Encountered these validation errors: %s", errors)
 
     else:
         logger.info(
