@@ -105,6 +105,18 @@ class Returns401:
         assert response.status_code == 401
         assert response.json["password"] == ["Mot de passe incorrect"]
 
+    def when_account_is_not_active(self, app):
+        # Given
+        user = users_factories.UserFactory(isActive=False, password="secret")
+        data = {"identifier": user.email, "password": "secret"}
+
+        # When
+        response = TestClient(app.test_client()).post("/beneficiaries/signin", json=data)
+
+        # Then
+        assert response.status_code == 401
+        assert response.json["identifier"] == ["Identifiant incorrect"]
+
     def when_account_is_not_validated(self, app):
         # Given
         user = users_factories.UserFactory(password="secret")
