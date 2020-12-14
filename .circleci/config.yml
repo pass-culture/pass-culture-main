@@ -312,10 +312,10 @@ jobs:
       - run:
           name: Deploy chart with Helm
           command: |
-            helm upgrade ${HELM_RELEASE_NAME} tmp/${HELM_CHART_NAME}
-              --install --wait
-              --namespace ${KUBERNETES_NAMESPACE}
-              --values tmp/${HELM_CHART_NAME}/${HELM_VALUES_FILE}
+            helm upgrade ${HELM_RELEASE_NAME} tmp/${HELM_CHART_NAME} \
+              --install --wait \
+              --namespace ${KUBERNETES_NAMESPACE} \
+              --values tmp/${HELM_CHART_NAME}/${HELM_VALUES_FILE} \
               --set-string image.tag=${CIRCLE_SHA1}
 
   tests-data-analytics:
