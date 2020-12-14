@@ -24,7 +24,7 @@ class OfferOffererResponse(BaseModel):
 
 class OfferStockResponse(BaseModel):
     id: int
-    beginningDatetime: datetime
+    beginningDatetime: Optional[datetime]
     price: Decimal
 
     class Config:

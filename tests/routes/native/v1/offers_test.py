@@ -5,6 +5,8 @@ import pytest
 
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.factories import OfferFactory
+from pcapi.core.offers.factories import ThingOfferFactory
+from pcapi.core.offers.factories import ThingStockFactory
 from pcapi.models.offer_type import EventType
 
 from tests.conftest import TestClient
@@ -50,6 +52,17 @@ class OffersTest:
             },
             "withdrawalDetails": offer.withdrawalDetails,
         }
+
+    def test_get_thing_offer(self, app):
+        offer = ThingOfferFactory()
+        ThingStockFactory(offer=offer, price=12.34)
+
+        response = TestClient(app.test_client()).get(f"/native/v1/offer/{offer.id}")
+
+        assert response.status_code == 200
+        assert not response.json["bookableStocks"][0]["beginningDatetime"]
+        assert response.json["bookableStocks"][0]["price"] == 12.34
+        assert response.json["category"]["label"] == "Film"
 
     def test_get_offer_not_found(self, app):
         response = TestClient(app.test_client()).get("/native/v1/offer/1")
