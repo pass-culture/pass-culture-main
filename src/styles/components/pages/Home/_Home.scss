@@ -15,11 +15,6 @@
 
   &:not(:last-child) {
     border-right: 0.4rem dotted $white;
-
-    @media (max-width: $tablet) {
-      border-bottom: 0.4rem dotted $white;
-      border-right: none;
-    }
   }
 
   img {

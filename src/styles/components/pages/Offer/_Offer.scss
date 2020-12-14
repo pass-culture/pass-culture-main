@@ -81,6 +81,8 @@
 
   .offer-form {
     .select {
+      position: relative;
+
       select {
         background-color: $white;
         border: rem(2px) solid $grey-medium;
@@ -103,8 +105,8 @@
         height: rem(10px);
         margin-top: rem(-7px);
         position: absolute;
-        right: rem(45px);
-        top: rem(305px);
+        right: rem(20px);
+        top: rem(16px);
         transform: rotate(-45deg);
         transform-origin: center;
         width: rem(10px);

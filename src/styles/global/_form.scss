@@ -214,16 +214,6 @@ div.control.control-duration {
   }
 }
 
-@media (min-width: $tablet) {
-  .field-label {
-    text-align: left;
-  }
-
-  .field-body {
-    flex-grow: 4;
-  }
-}
-
 ul.help {
   img {
     vertical-align: text-bottom;

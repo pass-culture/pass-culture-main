@@ -10,16 +10,6 @@
     right: 60%;
     top: 0;
     z-index: 1;
-
-    @media (max-width: $tablet) {
-      height: rem(100px);
-      position: relative;
-
-      img {
-        left: 0;
-        padding: rem(16px) 0;
-      }
-    }
   }
 
   .sign-page-form {
