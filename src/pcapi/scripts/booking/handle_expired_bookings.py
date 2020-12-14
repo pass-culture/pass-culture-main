@@ -58,6 +58,41 @@ def cancel_expired_bookings(batch_size: int = 100) -> None:
     logger.info("[cancel_expired_bookings] End")
 
 
+def notify_users_of_soon_to_be_expired_bookings() -> None:
+    booking_creation_date_23_days_ago = datetime.date.today() - datetime.timedelta(days=23)
+
+    logger.info("[notify_users_of_soon_to_be_expired_bookings] Start")
+    bookings_ordered_by_user = bookings_repository.find_bookings_expired_on_specific_date_ordered_by_user(
+        booking_creation_date_23_days_ago
+    )
+
+    expired_bookings_grouped_by_user = dict()
+    for user, booking in groupby(bookings_ordered_by_user, attrgetter("user")):
+        expired_bookings_grouped_by_user[user] = list(booking)
+
+    is_after_start_date = datetime.datetime.utcnow() >= conf.CANCEL_EXPIRED_BOOKINGS_CRON_START_DATE
+    notified_users = []
+
+    if is_after_start_date:
+        for user, _bookings in expired_bookings_grouped_by_user.items():
+            notified_users.append(user)
+
+        logger.info(
+            "[Booking expiration in 7 days] %d Users have been notified: %s",
+            len(notified_users),
+            notified_users,
+        )
+
+    else:
+        logger.info(
+            "%d Users would have been notified of expired booking cancellation: %s",
+            len(expired_bookings_grouped_by_user),
+            expired_bookings_grouped_by_user,
+        )
+
+    logger.info("[notify_users_of_soon_to_be_expired_bookings] End")
+
+
 def notify_users_of_expired_bookings(expired_on: datetime.date = None) -> None:
     expired_on = expired_on or datetime.date.today()
 

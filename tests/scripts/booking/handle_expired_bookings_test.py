@@ -187,6 +187,41 @@ class NotifyUsersOfExpiredBookingsTest:
             mocked_send_raw_email,
         )
 
+    @mock.patch("pcapi.core.bookings.conf.CANCEL_EXPIRED_BOOKINGS_CRON_START_DATE", datetime.utcnow())
+    def should_log_notifications_of_bookings_which_will_expired_in_7_days(self, app, caplog) -> None:
+        caplog.set_level(logging.INFO)
+        now = datetime.utcnow()
+        booking_date_23_days_ago = now - timedelta(days=23)
+        booking_date_22_days_ago = now - timedelta(days=22)
+
+        dvd = ProductFactory(type=str(offer_type.ThingType.AUDIOVISUEL))
+        expire_in_7_days_dvd_booking = BookingFactory(
+            stock__offer__product=dvd,
+            dateCreated=booking_date_23_days_ago,
+            isCancelled=False,
+        )
+        cd = ProductFactory(type=str(offer_type.ThingType.MUSIQUE))
+        expire_in_7_days_cd_booking = BookingFactory(
+            stock__offer__product=cd,
+            dateCreated=booking_date_23_days_ago,
+            isCancelled=False,
+        )
+        non_expired_cd = ProductFactory(type=str(offer_type.ThingType.MUSIQUE))
+        dont_expire_in_7_days_cd_booking = BookingFactory(
+            stock__offer__product=non_expired_cd,
+            dateCreated=booking_date_22_days_ago,
+            isCancelled=False,
+        )
+        repository.save(dont_expire_in_7_days_cd_booking)
+
+        handle_expired_bookings.notify_users_of_soon_to_be_expired_bookings()
+
+        assert (
+            caplog.records[1].message
+            == f"[Booking expiration in 7 days] 2 Users have been notified: [{expire_in_7_days_dvd_booking.user}, {expire_in_7_days_cd_booking.user}]"
+        )
+        assert str(dont_expire_in_7_days_cd_booking) not in caplog.text
+
 
 @pytest.mark.usefixtures("db_session")
 class NotifyOfferersOfExpiredBookingsTest:
