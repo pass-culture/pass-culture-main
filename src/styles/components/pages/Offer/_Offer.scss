@@ -1,4 +1,13 @@
 .offer-page {
+  .has-text-weight-light {
+    font-size: rem(12px);
+    font-weight: 300;
+  }
+
+  .has-text-primary {
+    color: $primary;
+  }
+
   .label {
     display: block;
   }
@@ -95,7 +104,7 @@
         margin-top: rem(-7px);
         position: absolute;
         right: rem(45px);
-        top: rem(300px);
+        top: rem(305px);
         transform: rotate(-45deg);
         transform-origin: center;
         width: rem(10px);

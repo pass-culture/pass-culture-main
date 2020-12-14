@@ -1,4 +1,8 @@
 .offerers-page {
+  .has-text-primary {
+    color: $primary;
+  }
+
   a.button {
     &.cta {
       &:focus,

@@ -1,10 +1,12 @@
 $white: #fff;
 $grey-medium: #c7c7cc;
 $grey-dark: #626262;
+$grey-light: #f5f5f5;
 $black: #151515;
 $black-with-transparency: rgba($black, 0.8);
 $black-shadow: rgba($black, 0.2);
 
+$primary: #eb0055;
 $primary-dark: #c10046;
 $secondary: #320096;
 $accent: #06f;
@@ -18,15 +20,6 @@ $notification-error: #ff8097;
 $notification-info: #b3e7ff;
 $notification-success: #b8e986;
 $notification-warning: #ffd580;
-
-// Surcharge de Bulma
-$primary: #eb0055;
-$grey-light: #f5f5f5;
-$subtitle-color: inherit;
-$text: $black;
-$link: $black;
-$input-color: $black;
-$input-focus-border-color: $primary;
 
 $linear-gradient-to-bottom-right: linear-gradient(to bottom right, $primary, $secondary);
 $linear-gradient-to-right: linear-gradient(to right, $primary, $secondary);

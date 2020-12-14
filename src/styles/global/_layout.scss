@@ -5,20 +5,41 @@
 }
 
 html {
-  min-height: 100%;
-  overflow-y: auto;
+  @include body();
 }
 
-body {
-  font-size: rem(16px);
-  line-height: 1.1875em;
-  margin: 0 auto;
-  min-height: 100%;
-  width: 100%;
+body,
+button,
+input,
+select,
+textarea {
+  font-family: 'Barlow', 'Helvetica Neue', arial, sans-serif;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
 }
 
 hr {
   @include dotted($primary);
+
+  border: none;
+  height: rem(2px);
+  margin: rem(24px) 0;
+}
+
+a {
+  color: $black;
+  text-decoration: none;
+}
+
+ul {
+  list-style: none;
+}
+
+pre {
+  background-color: $grey-medium;
 }
 
 .main-list {

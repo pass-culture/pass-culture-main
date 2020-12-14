@@ -1,4 +1,16 @@
 .offerer-page {
+  .has-text-primary {
+    color: $primary;
+  }
+
+  .has-text-grey {
+    color: $grey-dark;
+  }
+
+  .has-text-centered {
+    text-align: center;
+  }
+
   .field-group {
     min-height: 10rem;
   }
