@@ -8,10 +8,16 @@ executors:
   gcp-sdk:
     docker:
       - image: google/cloud-sdk:316.0.0
+        auth:
+          username: $DOCKERHUB_USER
+          password: $DOCKERHUB_PASSWORD
 
   helm:
     docker:
       - image: passcultureapp/helm-gcp:3.4.1
+        auth:
+          username: $DOCKERHUB_USER
+          password: $DOCKERHUB_PASSWORD
 
 ###################
 #  COMMANDS
@@ -346,7 +352,7 @@ jobs:
           app_name: pass-culture-api-${CIRCLE_BRANCH}
           app_env: ${CIRCLE_BRANCH}
           app_image_tag: ${API_VERSION}
-          app_service_account_email: secret-reader@pass-culture-app-projet-test.iam.gserviceaccount.com
+          app_service_account_email: secret-reader-${CIRCLE_BRANCH}@pass-culture-app-projet-test.iam.gserviceaccount.com
           vpc_connector_name: metier-development
 
   deploy-cron-and-worker:
