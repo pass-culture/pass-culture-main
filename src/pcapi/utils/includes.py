@@ -89,6 +89,7 @@ USER_INCLUDES = [
     "-password",
     "-resetPasswordToken",
     "-resetPasswordTokenValidityLimit",
+    "-suspensionReason",
     "-validationToken",
     "hasPhysicalVenues",
     "hasOffers",

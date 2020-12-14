@@ -130,6 +130,10 @@ class UserSQLEntity(PcObject, Model, NeedsValidationMixin, VersionedMixin):
 
     hasAllowedRecommendations = Column(Boolean, nullable=False, server_default=expression.false())
 
+    # FIXME (dbaty, 2020-12-14): once v114 has been deployed, populate
+    # existing rows with the empty string and add NOT NULL constraint.
+    suspensionReason = Column(Text, nullable=True, default="")
+
     def checkPassword(self, passwordToCheck):
         return check_password(passwordToCheck, self.password)
 
