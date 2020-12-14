@@ -25,8 +25,7 @@ from pcapi.scheduled_tasks.decorators import cron_require_feature
 from pcapi.scheduled_tasks.decorators import log_cron
 from pcapi.scripts.beneficiary import old_remote_import
 from pcapi.scripts.beneficiary import remote_import
-from pcapi.scripts.booking import expiry_notifications
-from pcapi.scripts.booking.cancel_expired_bookings import cancel_expired_bookings
+from pcapi.scripts.booking.handle_expired_bookings import handle_expired_bookings
 from pcapi.scripts.update_booking_used import update_booking_used_after_stock_occurrence
 
 
@@ -131,20 +130,8 @@ def pc_clean_discovery_views(app) -> None:
 
 @log_cron
 @cron_context
-def pc_cancel_expired_bookings(app) -> None:
-    cancel_expired_bookings()
-
-
-@log_cron
-@cron_context
-def pc_notify_users_of_expired_bookings(app) -> None:
-    expiry_notifications.notify_users_of_expired_bookings()
-
-
-@log_cron
-@cron_context
-def pc_notify_offerers_of_expired_bookings(app) -> None:
-    expiry_notifications.notify_offerers_of_expired_bookings()
+def pc_handle_expired_bookings(app) -> None:
+    handle_expired_bookings()
 
 
 def main():
@@ -183,29 +170,11 @@ def main():
     scheduler.add_job(pc_clean_discovery_views, "cron", [app], hour=clean_discovery_frequency)
 
     scheduler.add_job(
-        pc_cancel_expired_bookings,
-        "cron",
-        [app],
-        day="*",
-        hour="2",
-        start_date=CANCEL_EXPIRED_BOOKINGS_CRON_START_DATE.strftime("%Y-%m-%d"),
-    )
-
-    scheduler.add_job(
-        pc_notify_offerers_of_expired_bookings,
+        pc_handle_expired_bookings,
         "cron",
         [app],
         day="*",
         hour="5",
-        start_date=CANCEL_EXPIRED_BOOKINGS_CRON_START_DATE.strftime("%Y-%m-%d"),
-    )
-
-    scheduler.add_job(
-        pc_notify_users_of_expired_bookings,
-        "cron",
-        [app],
-        day="*",
-        hour="6",
         start_date=CANCEL_EXPIRED_BOOKINGS_CRON_START_DATE.strftime("%Y-%m-%d"),
     )
 
