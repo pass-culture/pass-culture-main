@@ -130,7 +130,11 @@ describe('offerDetails - Creation', () => {
     ]
     pcapi.loadTypes.mockResolvedValue(types)
     pcapi.getValidatedOfferers.mockResolvedValue(offerers)
-    pcapi.getVenuesForOfferer.mockResolvedValue(venues)
+    pcapi.getVenuesForOfferer.mockImplementation(offererId =>
+      Promise.resolve(
+        venues.filter(venue => (offererId ? venue.managingOffererId === offererId : true))
+      )
+    )
     jest.spyOn(window, 'scrollTo').mockImplementation()
   })
 
@@ -200,7 +204,7 @@ describe('offerDetails - Creation', () => {
         expect(screen.getByText('Autre', { selector: '.section-title' })).toBeInTheDocument()
       })
 
-      it('should display an offerer selection', async () => {
+      it('should display an offerer selection and a venue selection when user is pro', async () => {
         // Given
         renderOffers({}, store)
 
@@ -209,6 +213,9 @@ describe('offerDetails - Creation', () => {
 
         // Then
         expect(screen.queryByLabelText('Structure')).toBeInTheDocument()
+        const venueInput = screen.queryByLabelText('Lieu')
+        expect(venueInput).toBeInTheDocument()
+        expect(venueInput).not.toHaveAttribute('disabled')
       })
 
       it('should have offerer selected when given as queryParam', async () => {
@@ -224,24 +231,13 @@ describe('offerDetails - Creation', () => {
 
       it('should have venue selected when given as queryParam', async () => {
         // Given
-        renderOffers({}, store, `?lieu=${venues[0].id}`)
+        renderOffers({}, store, `?lieu=${venues[0].id}&structure=${venues[0].managingOffererId}`)
 
         // When
         await setOfferValues({ type: 'EventType.CINEMA' })
 
         // Then
         expect(screen.getByDisplayValue(venues[0].name)).toBeInTheDocument()
-      })
-
-      it('should display a venue selection', async () => {
-        // Given
-        renderOffers({}, store)
-
-        // When
-        await setOfferValues({ type: 'EventType.CINEMA' })
-
-        // Then
-        expect(screen.queryByLabelText('Lieu')).toBeInTheDocument()
       })
 
       it('should only display virtual venues when offer type is online only', async () => {
@@ -283,6 +279,18 @@ describe('offerDetails - Creation', () => {
         expect(screen.getByText(venues[2].name)).toBeInTheDocument()
       })
 
+      it('should only display venues of selected offerer', async () => {
+        // Given
+        renderOffers({}, store)
+        await setOfferValues({ type: 'EventType.CINEMA' })
+
+        // When
+        await setOfferValues({ offererId: offerers[0].id })
+
+        // Then
+        expect(pcapi.getVenuesForOfferer).toHaveBeenCalledWith(offerers[0].id)
+      })
+
       it('should select offerer of selected venue', async () => {
         // Given
         renderOffers({}, store)
@@ -292,7 +300,7 @@ describe('offerDetails - Creation', () => {
         await setOfferValues({ venueId: venues[0].id })
 
         // Then
-        expect(screen.getByDisplayValue(offerers[0].name)).toBeInTheDocument()
+        expect(screen.getByLabelText('Structure')).toHaveDisplayValue(offerers[0].name)
       })
 
       it('should display email notification input when aksing to receive booking emails', async () => {
@@ -658,11 +666,11 @@ describe('offerDetails - Creation', () => {
 
     // Mandatory fields
     const nameError = await getInputErrorForField('name')
-    expect(nameError).toBeInTheDocument()
+    expect(nameError).toHaveTextContent('Ce champ est obligatoire')
     const venueIdError = await getInputErrorForField('venueId')
-    expect(venueIdError).toBeInTheDocument()
+    expect(venueIdError).toHaveTextContent('Ce champ est obligatoire')
     const offererIdError = await getInputErrorForField('offererId')
-    expect(offererIdError).toBeInTheDocument()
+    expect(offererIdError).toHaveTextContent('Ce champ est obligatoire')
 
     // Optional fields
     const descriptionError = await getInputErrorForField('description')

@@ -73,7 +73,7 @@ const getOfferConditionalFields = ({
 }
 
 const OfferForm = props => {
-  const { initialValues, isUserAdmin, offer, onSubmit, onChange, submitErrors } = props
+  const { initialValues, isUserAdmin, offer, onSubmit, submitErrors } = props
 
   const [formValues, setFormValues] = useState({})
   const [offererOptions, setOffererOptions] = useState([])
@@ -83,29 +83,43 @@ const OfferForm = props => {
   const [venue, setVenue] = useState(null)
   const [venues, setVenues] = useState([])
   const [venueOptions, setVenueOptions] = useState([])
-  const [hasSynchronizedStocks, setHasSynchronizedStocks] = useState(false)
+  const [offerIsSynchronized, setOfferIsSynchronized] = useState(false)
   const [offerFormFields, setOfferFormFields] = useState(Object.keys(DEFAULT_FORM_VALUES))
   const [readOnlyFields, setReadOnlyFields] = useState([''])
   const [formErrors, setFormErrors] = useState(submitErrors)
   const [isBusy, setIsBusy] = useState(true)
 
-  useEffect(() => {
-    // retrieve data on mount
+  const handleFormUpdate = useCallback(
+    newFormValues => setFormValues(oldFormValues => ({ ...oldFormValues, ...newFormValues })),
+    [setFormValues]
+  )
 
+  useEffect(() => {
+    setFormErrors(submitErrors)
+  }, [submitErrors])
+  useEffect(retrieveDataOnMount, [])
+  useEffect(initializeFormData, [initialValues, offer])
+  useEffect(storeOfferTypeAndVenueWhenSelected, [formValues, types, venues])
+  useEffect(buildFormFields, [offerType, isUserAdmin, receiveNotificationEmails, venue])
+  useEffect(selectManagingOffererOfSelectedVenue, [handleFormUpdate, venue])
+  useEffect(retrieveVenuesOfSelectedOfferer, [formValues.offererId, isUserAdmin])
+  useEffect(filterVenueOptionsForSelectedType, [
+    formValues,
+    offerIsSynchronized,
+    offerType,
+    readOnlyFields,
+    venues,
+  ])
+
+  function retrieveDataOnMount() {
     pcapi.loadTypes().then(receivedTypes => setTypes(receivedTypes))
     pcapi
       .getValidatedOfferers()
       .then(offerers => buildSelectOptions('id', 'name', offerers))
       .then(offererOptions => setOffererOptions(offererOptions))
-  }, [])
+  }
 
-  useEffect(() => {
-    setFormErrors(submitErrors)
-  }, [submitErrors])
-
-  useEffect(() => {
-    // Initialize creation / edition form data
-
+  function initializeFormData() {
     let values = {}
     if (offer) {
       values = Object.keys(DEFAULT_FORM_VALUES).reduce((acc, field) => {
@@ -124,7 +138,7 @@ const OfferForm = props => {
       }
 
       const isSynchronized = isSynchronizedOffer(offer)
-      setHasSynchronizedStocks(isSynchronized)
+      setOfferIsSynchronized(isSynchronized)
       if (isSynchronized) {
         let syncReadOnlyFields = Object.keys(DEFAULT_FORM_VALUES)
         if (isAllocineOffer(offer)) {
@@ -150,11 +164,9 @@ const OfferForm = props => {
 
     setFormValues(values)
     setIsBusy(false)
-  }, [initialValues, offer])
+  }
 
-  useEffect(() => {
-    // retrieve venues selected offerer
-
+  function retrieveVenuesOfSelectedOfferer() {
     let offererId = formValues.offererId
     if (offererId === DEFAULT_FORM_VALUES.offererId) {
       offererId = null
@@ -167,11 +179,9 @@ const OfferForm = props => {
         setVenues(receivedVenues)
       })
     }
-  }, [formValues.offererId, isUserAdmin])
+  }
 
-  useEffect(() => {
-    // filter venue options for selected type
-
+  function filterVenueOptionsForSelectedType() {
     let venuesToShow = venues
     if (offerType?.offlineOnly) {
       venuesToShow = venuesToShow.filter(venue => !venue.isVirtual)
@@ -185,29 +195,25 @@ const OfferForm = props => {
         setFormValues({ ...formValues, venueId: DEFAULT_FORM_VALUES.venueId })
       }
       const venueFieldIdx = readOnlyFields.findIndex(fieldName => fieldName === 'venueId')
-      if (!hasSynchronizedStocks && venueFieldIdx !== -1) {
+      if (!offerIsSynchronized && venueFieldIdx !== -1) {
         readOnlyFields.splice(venueFieldIdx, 1)
         setReadOnlyFields(readOnlyFields)
       }
     } else if (!readOnlyFields.includes('venueId')) {
       setReadOnlyFields([...readOnlyFields, 'venueId'])
     }
-  }, [formValues, hasSynchronizedStocks, offerType, readOnlyFields, venues])
+  }
 
-  useEffect(() => {
-    // store useful objects for selected venueId and type
-
+  function storeOfferTypeAndVenueWhenSelected() {
     if (formValues.type) {
       setOfferType(types.find(type => type.value === formValues.type))
     }
     if (formValues.venueId) {
       setVenue(venues.find(venue => venue.id === formValues.venueId))
     }
-  }, [formValues, types, venues])
+  }
 
-  useEffect(() => {
-    // build form fields
-
+  function buildFormFields() {
     const baseOfferFields = ['description', 'name', 'type', 'venueId', 'withdrawalDetails']
 
     const offerConditionalFields = getOfferConditionalFields({
@@ -231,7 +237,7 @@ const OfferForm = props => {
     ]
 
     setOfferFormFields(newFormFields)
-  }, [offerType, isUserAdmin, receiveNotificationEmails, venue])
+  }
 
   const isValid = useCallback(() => {
     let newFormErrors = {}
@@ -241,19 +247,13 @@ const OfferForm = props => {
         formFields.includes(fieldName) &&
         formValues[fieldName] === DEFAULT_FORM_VALUES[fieldName]
       ) {
-        newFormErrors[fieldName] = 'Ce champs est obligatoire.'
+        newFormErrors[fieldName] = 'Ce champ est obligatoire.'
       }
     })
 
     setFormErrors(newFormErrors)
     return Object.keys(newFormErrors).length === 0
   }, [offerFormFields, formValues])
-
-  useEffect(() => {
-    if (onChange) {
-      onChange(formValues)
-    }
-  }, [formValues, onChange])
 
   const submitForm = useCallback(() => {
     if (isValid()) {
@@ -289,16 +289,11 @@ const OfferForm = props => {
     }
   }, [offerFormFields, formValues, isValid, onSubmit])
 
-  const handleFormUpdate = useCallback(
-    newFormValues => setFormValues(oldFormValues => ({ ...oldFormValues, ...newFormValues })),
-    [setFormValues]
-  )
-
-  useEffect(() => {
-    if (venue && venue.managingOffererId) {
+  function selectManagingOffererOfSelectedVenue() {
+    if (venue) {
       handleFormUpdate({ offererId: venue.managingOffererId })
     }
-  }, [handleFormUpdate, venue])
+  }
 
   const handleSingleFormUpdate = useCallback(
     event => {
@@ -365,7 +360,7 @@ const OfferForm = props => {
           />
         </div>
 
-        {hasSynchronizedStocks && (
+        {offerIsSynchronized && (
           <div className="form-row">
             <SynchronizableProviderInformation offer={offer} />
           </div>
@@ -699,7 +694,6 @@ OfferForm.propTypes = {
   initialValues: PropTypes.shape(),
   isUserAdmin: PropTypes.bool,
   offer: PropTypes.shape(),
-  onChange: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
 }
 
