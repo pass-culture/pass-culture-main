@@ -134,6 +134,12 @@ class UserSQLEntity(PcObject, Model, NeedsValidationMixin, VersionedMixin):
     # existing rows with the empty string and add NOT NULL constraint.
     suspensionReason = Column(Text, nullable=True, default="")
 
+    # FIXME (dbaty, 2020-12-14): once v114 has been deployed, populate
+    # existing rows, remove this field and let the UserSQLEntity model
+    # use DeactivableMixin. We'll need to add a migration that adds a
+    # NOT NULL constraint.
+    isActive = Column(Boolean, nullable=True, server_default=expression.true(), default=True)
+
     def checkPassword(self, passwordToCheck):
         return check_password(passwordToCheck, self.password)
 

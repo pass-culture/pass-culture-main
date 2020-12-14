@@ -86,6 +86,7 @@ USER_INCLUDES = [
     "-culturalSurveyId",
     "-culturalSurveyFilledDate",
     "-hasSeenTutorials",
+    "-isActive",
     "-password",
     "-resetPasswordToken",
     "-resetPasswordTokenValidityLimit",
