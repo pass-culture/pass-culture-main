@@ -7,42 +7,16 @@ import TextareaInput from 'components/layout/inputs/TextareaInput'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import TimeInput from 'components/layout/inputs/TimeInput'
 import Spinner from 'components/layout/Spinner'
+import { isAllocineOffer, isSynchronizedOffer } from 'components/pages/Offer/domain/localProvider'
+import offerIsRefundable from 'components/pages/Offer/domain/offerIsRefundable'
 import * as pcapi from 'repository/pcapi/pcapi'
 
-import { isAllocineOffer, isSynchronizedOffer } from '../../domain/localProvider'
-import offerIsRefundable from '../../domain/offerIsRefundable'
 import MediationsManager from '../../MediationsManager/MediationsManagerContainer'
-import { SELECT_DEFAULT_VALUE, TEXT_INPUT_DEFAULT_VALUE } from '../_constants'
 
+import { DEFAULT_FORM_VALUES, MANDATORY_FIELDS } from './_constants'
 import OfferRefundWarning from './OfferRefundWarning'
 import SynchronizableProviderInformation from './SynchronizableProviderInformation'
 import TypeTreeSelects from './TypeTreeSelects'
-
-export const DEFAULT_FORM_VALUES = {
-  author: TEXT_INPUT_DEFAULT_VALUE,
-  bookingEmail: TEXT_INPUT_DEFAULT_VALUE,
-  description: TEXT_INPUT_DEFAULT_VALUE,
-  durationMinutes: TEXT_INPUT_DEFAULT_VALUE,
-  isbn: TEXT_INPUT_DEFAULT_VALUE,
-  isDuo: false,
-  isNational: false,
-  name: TEXT_INPUT_DEFAULT_VALUE,
-  musicSubType: SELECT_DEFAULT_VALUE,
-  musicType: SELECT_DEFAULT_VALUE,
-  offererId: SELECT_DEFAULT_VALUE,
-  performer: TEXT_INPUT_DEFAULT_VALUE,
-  showSubType: SELECT_DEFAULT_VALUE,
-  showType: SELECT_DEFAULT_VALUE,
-  stageDirector: TEXT_INPUT_DEFAULT_VALUE,
-  speaker: TEXT_INPUT_DEFAULT_VALUE,
-  type: SELECT_DEFAULT_VALUE,
-  url: TEXT_INPUT_DEFAULT_VALUE,
-  venueId: SELECT_DEFAULT_VALUE,
-  visa: TEXT_INPUT_DEFAULT_VALUE,
-  withdrawalDetails: TEXT_INPUT_DEFAULT_VALUE,
-}
-
-const mandatoryFields = ['name', 'venueId', 'offererId', 'url']
 
 const getOfferConditionalFields = ({
   offerType = null,
@@ -72,9 +46,13 @@ const getOfferConditionalFields = ({
   return offerConditionalFields
 }
 
-const OfferForm = props => {
-  const { initialValues, isUserAdmin, offer, onSubmit, submitErrors } = props
-
+const OfferForm = ({
+  initialValues,
+  isUserAdmin,
+  offer,
+  onSubmit,
+  submitErrors,
+}) => {
   const [formValues, setFormValues] = useState({})
   const [offererOptions, setOffererOptions] = useState([])
   const [offerType, setOfferType] = useState(null)
@@ -97,145 +75,147 @@ const OfferForm = props => {
   useEffect(() => {
     setFormErrors(submitErrors)
   }, [submitErrors])
-  useEffect(retrieveDataOnMount, [])
-  useEffect(initializeFormData, [initialValues, offer])
-  useEffect(storeOfferTypeAndVenueWhenSelected, [formValues, types, venues])
-  useEffect(buildFormFields, [offerType, isUserAdmin, receiveNotificationEmails, venue])
-  useEffect(selectManagingOffererOfSelectedVenue, [handleFormUpdate, venue])
-  useEffect(retrieveVenuesOfSelectedOfferer, [formValues.offererId, isUserAdmin])
-  useEffect(filterVenueOptionsForSelectedType, [
-    formValues,
-    offerIsSynchronized,
-    offerType,
-    readOnlyFields,
-    venues,
-  ])
-
-  function retrieveDataOnMount() {
+  useEffect(function retrieveDataOnMount() {
     pcapi.loadTypes().then(receivedTypes => setTypes(receivedTypes))
     pcapi
       .getValidatedOfferers()
       .then(offerers => buildSelectOptions('id', 'name', offerers))
       .then(offererOptions => setOffererOptions(offererOptions))
-  }
+  }, [])
+  useEffect(
+    function initializeFormData() {
+      let values = {}
+      if (offer) {
+        values = Object.keys(DEFAULT_FORM_VALUES).reduce((acc, field) => {
+          if (field in offer) {
+            return { ...acc, [field]: offer[field] }
+          } else if (offer.extraData && field in offer.extraData) {
+            return { ...acc, [field]: offer.extraData[field] || DEFAULT_FORM_VALUES[field] }
+          }
+          return { ...acc, [field]: DEFAULT_FORM_VALUES[field] }
+        }, {})
 
-  function initializeFormData() {
-    let values = {}
-    if (offer) {
-      values = Object.keys(DEFAULT_FORM_VALUES).reduce((acc, field) => {
-        if (field in offer) {
-          return { ...acc, [field]: offer[field] }
-        } else if (offer.extraData && field in offer.extraData) {
-          return { ...acc, [field]: offer.extraData[field] || DEFAULT_FORM_VALUES[field] }
+        if (offer.venue) {
+          // FIXME (rlecellier): what happend if this offerer isn't
+          // in the 10 offerers received by getValidatedOfferers() ?!
+          values.offererId = offer.venue.managingOffererId
         }
-        return { ...acc, [field]: DEFAULT_FORM_VALUES[field] }
-      }, {})
 
-      if (offer.venue) {
-        // FIXME (rlecellier): what happend if this offerer isn't
-        // in the 10 offerers received by getValidatedOfferers() ?!
-        values.offererId = offer.venue.managingOffererId
-      }
-
-      const isSynchronized = isSynchronizedOffer(offer)
-      setOfferIsSynchronized(isSynchronized)
-      if (isSynchronized) {
-        let syncReadOnlyFields = Object.keys(DEFAULT_FORM_VALUES)
-        if (isAllocineOffer(offer)) {
-          syncReadOnlyFields = syncReadOnlyFields.filter(fieldName => fieldName !== 'isDuo')
+        const isSynchronized = isSynchronizedOffer(offer)
+        setOfferIsSynchronized(isSynchronized)
+        if (isSynchronized) {
+          let syncReadOnlyFields = Object.keys(DEFAULT_FORM_VALUES)
+          if (isAllocineOffer(offer)) {
+            syncReadOnlyFields = syncReadOnlyFields.filter(fieldName => fieldName !== 'isDuo')
+          }
+          setReadOnlyFields(syncReadOnlyFields)
+        } else {
+          setReadOnlyFields([
+            'type',
+            'musicType',
+            'musicSubType',
+            'offererId',
+            'showType',
+            'showSubType',
+          ])
         }
-        setReadOnlyFields(syncReadOnlyFields)
+        if (offer.bookingEmail && offer.bookingEmail.length) {
+          setReceiveNotificationEmails(true)
+        }
       } else {
-        setReadOnlyFields([
-          'type',
-          'musicType',
-          'musicSubType',
-          'offererId',
-          'showType',
-          'showSubType',
-        ])
+        values = { ...DEFAULT_FORM_VALUES, ...initialValues }
       }
-      if (offer.bookingEmail && offer.bookingEmail.length) {
-        setReceiveNotificationEmails(true)
-      }
-    } else {
-      values = { ...DEFAULT_FORM_VALUES, ...initialValues }
-    }
 
-    setFormValues(values)
-    setIsBusy(false)
-  }
+      setFormValues(values)
+      setIsBusy(false)
+    },
+    [initialValues, offer]
+  )
+  useEffect(
+    function buildFormFields() {
+      const baseOfferFields = ['description', 'name', 'type', 'venueId', 'withdrawalDetails']
 
-  function retrieveVenuesOfSelectedOfferer() {
-    let offererId = formValues.offererId
-    if (offererId === DEFAULT_FORM_VALUES.offererId) {
-      offererId = null
-    }
-
-    if (isUserAdmin && !offererId) {
-      setVenues([])
-    } else {
-      pcapi.getVenuesForOfferer(offererId).then(receivedVenues => {
-        setVenues(receivedVenues)
+      const offerConditionalFields = getOfferConditionalFields({
+        offerType,
+        isUserAdmin,
+        receiveNotificationEmails,
+        venue,
       })
-    }
-  }
+      let offerTypeConditionalFields = offerType ? offerType.conditionalFields : []
+      if (offerTypeConditionalFields.includes('musicType')) {
+        offerTypeConditionalFields.push('musicSubType')
+      }
+      if (offerTypeConditionalFields.includes('showType')) {
+        offerTypeConditionalFields.push('showSubType')
+      }
 
-  function filterVenueOptionsForSelectedType() {
-    let venuesToShow = venues
-    if (offerType?.offlineOnly) {
-      venuesToShow = venuesToShow.filter(venue => !venue.isVirtual)
-    } else if (offerType?.onlineOnly) {
-      venuesToShow = venuesToShow.filter(venue => venue.isVirtual)
-    }
-    setVenueOptions(buildSelectOptions('id', 'name', venuesToShow))
+      const newFormFields = [
+        ...baseOfferFields,
+        ...offerTypeConditionalFields,
+        ...offerConditionalFields,
+      ]
 
-    if (venuesToShow.length === 0) {
-      setFormErrors({ venueId: 'Il faut obligatoirement une structure avec un lieu.' })
-    } else {
-      setFormErrors({})
-    }
-  }
+      setOfferFormFields(newFormFields)
+    },
+    [offerType, isUserAdmin, receiveNotificationEmails, venue]
+  )
+  useEffect(
+    function storeOfferTypeAndVenueWhenSelected() {
+      if (formValues.type) {
+        setOfferType(types.find(type => type.value === formValues.type))
+      }
+      if (formValues.venueId) {
+        setVenue(venues.find(venue => venue.id === formValues.venueId))
+      }
+    },
+    [formValues, types, venues]
+  )
+  useEffect(
+    function selectManagingOffererOfSelectedVenue() {
+      if (venue) {
+        handleFormUpdate({ offererId: venue.managingOffererId })
+      }
+    },
+    [handleFormUpdate, venue]
+  )
+  useEffect(
+    function retrieveVenuesOfSelectedOfferer() {
+      let offererId = formValues.offererId
+      if (offererId === DEFAULT_FORM_VALUES.offererId) {
+        offererId = null
+      }
 
-  function storeOfferTypeAndVenueWhenSelected() {
-    if (formValues.type) {
-      setOfferType(types.find(type => type.value === formValues.type))
-    }
-    if (formValues.venueId) {
-      setVenue(venues.find(venue => venue.id === formValues.venueId))
-    }
-  }
+      if (!isUserAdmin || offererId) {
+        pcapi.getVenuesForOfferer(offererId).then(receivedVenues => {
+          setVenues(receivedVenues)
+        })
+      }
+    },
+    [formValues.offererId, isUserAdmin]
+  )
+  useEffect(
+    function filterVenueOptionsForSelectedType() {
+      let venuesToShow = venues
+      if (offerType?.offlineOnly) {
+        venuesToShow = venuesToShow.filter(venue => !venue.isVirtual)
+      } else if (offerType?.onlineOnly) {
+        venuesToShow = venuesToShow.filter(venue => venue.isVirtual)
+      }
+      setVenueOptions(buildSelectOptions('id', 'name', venuesToShow))
 
-  function buildFormFields() {
-    const baseOfferFields = ['description', 'name', 'type', 'venueId', 'withdrawalDetails']
-
-    const offerConditionalFields = getOfferConditionalFields({
-      offerType,
-      isUserAdmin,
-      receiveNotificationEmails,
-      venue,
-    })
-    let offerTypeConditionalFields = offerType ? offerType.conditionalFields : []
-    if (offerTypeConditionalFields.includes('musicType')) {
-      offerTypeConditionalFields.push('musicSubType')
-    }
-    if (offerTypeConditionalFields.includes('showType')) {
-      offerTypeConditionalFields.push('showSubType')
-    }
-
-    const newFormFields = [
-      ...baseOfferFields,
-      ...offerTypeConditionalFields,
-      ...offerConditionalFields,
-    ]
-
-    setOfferFormFields(newFormFields)
-  }
+      if (venuesToShow.length === 0 && venues.length > 0) {
+        setFormErrors({ venueId: 'Il faut obligatoirement une structure avec un lieu.' })
+      } else {
+        setFormErrors({})
+      }
+    },
+    [offerType, venues]
+  )
 
   const isValid = useCallback(() => {
     let newFormErrors = {}
     const formFields = [...offerFormFields, 'offererId']
-    mandatoryFields.forEach(fieldName => {
+    MANDATORY_FIELDS.forEach(fieldName => {
       if (
         formFields.includes(fieldName) &&
         formValues[fieldName] === DEFAULT_FORM_VALUES[fieldName]
@@ -275,18 +255,8 @@ const OfferForm = props => {
       }, {})
 
       onSubmit(submitedValues)
-    } else {
-      // TODO rlecellier: Add page notification "you've got some errors !"
-      // use NotificationV2
-      window.scrollTo({ top: 0, behavior: 'smooth' })
     }
   }, [offerFormFields, formValues, isValid, onSubmit])
-
-  function selectManagingOffererOfSelectedVenue() {
-    if (venue) {
-      handleFormUpdate({ offererId: venue.managingOffererId })
-    }
-  }
 
   const handleSingleFormUpdate = useCallback(
     event => {
@@ -375,7 +345,7 @@ const OfferForm = props => {
                 name="name"
                 onChange={handleSingleFormUpdate}
                 required
-                sublabel={!mandatoryFields.includes('name') ? 'Optionnel' : ''}
+                sublabel={!MANDATORY_FIELDS.includes('name') ? 'Optionnel' : ''}
                 type="text"
                 value={formValues.name}
               />
@@ -391,7 +361,7 @@ const OfferForm = props => {
                 onChange={handleSingleFormUpdate}
                 required
                 rows={6}
-                sublabel={!mandatoryFields.includes('description') ? 'Optionnel' : ''}
+                sublabel={!MANDATORY_FIELDS.includes('description') ? 'Optionnel' : ''}
                 value={formValues.description}
               />
             </div>
@@ -403,7 +373,7 @@ const OfferForm = props => {
                   label="Intervenant"
                   name="speaker"
                   onChange={handleSingleFormUpdate}
-                  sublabel={!mandatoryFields.includes('speaker') ? 'Optionnel' : ''}
+                  sublabel={!MANDATORY_FIELDS.includes('speaker') ? 'Optionnel' : ''}
                   type="text"
                   value={formValues.speaker}
                 />
@@ -418,7 +388,7 @@ const OfferForm = props => {
                   label="Auteur"
                   name="author"
                   onChange={handleSingleFormUpdate}
-                  sublabel={!mandatoryFields.includes('author') ? 'Optionnel' : ''}
+                  sublabel={!MANDATORY_FIELDS.includes('author') ? 'Optionnel' : ''}
                   type="text"
                   value={formValues.author}
                 />
@@ -433,7 +403,7 @@ const OfferForm = props => {
                   label="Visa d’exploitation"
                   name="visa"
                   onChange={handleSingleFormUpdate}
-                  sublabel={!mandatoryFields.includes('visa') ? 'Optionnel' : ''}
+                  sublabel={!MANDATORY_FIELDS.includes('visa') ? 'Optionnel' : ''}
                   type="text"
                   value={formValues.visa}
                 />
@@ -448,7 +418,7 @@ const OfferForm = props => {
                   label="ISBN"
                   name="isbn"
                   onChange={handleSingleFormUpdate}
-                  sublabel={!mandatoryFields.includes('isbn') ? 'Optionnel' : ''}
+                  sublabel={!MANDATORY_FIELDS.includes('isbn') ? 'Optionnel' : ''}
                   type="text"
                   value={formValues.isbn}
                 />
@@ -463,7 +433,7 @@ const OfferForm = props => {
                   label="Metteur en scène"
                   name="stageDirector"
                   onChange={handleSingleFormUpdate}
-                  sublabel={!mandatoryFields.includes('stageDirector') ? 'Optionnel' : ''}
+                  sublabel={!MANDATORY_FIELDS.includes('stageDirector') ? 'Optionnel' : ''}
                   type="text"
                   value={formValues.stageDirector}
                 />
@@ -478,7 +448,7 @@ const OfferForm = props => {
                   label="Interprète"
                   name="performer"
                   onChange={handleSingleFormUpdate}
-                  sublabel={!mandatoryFields.includes('performer') ? 'Optionnel' : ''}
+                  sublabel={!MANDATORY_FIELDS.includes('performer') ? 'Optionnel' : ''}
                   type="text"
                   value={formValues.performer}
                 />
@@ -494,7 +464,7 @@ const OfferForm = props => {
                   onChange={handleDurationChange}
                   placeholder="HH:MM"
                   readOnly={readOnlyFields.includes('durationMinutes')}
-                  sublabel={!mandatoryFields.includes('duration') ? 'Optionnel' : ''}
+                  sublabel={!MANDATORY_FIELDS.includes('duration') ? 'Optionnel' : ''}
                   type="duration"
                   value={formValues.durationMinutes}
                 />
@@ -516,7 +486,7 @@ const OfferForm = props => {
               <Select
                 defaultOption={{
                   displayName: 'Sélectionnez une structure',
-                  id: SELECT_DEFAULT_VALUE,
+                  id: DEFAULT_FORM_VALUES.offererId,
                 }}
                 error={getErrorMessage('offererId')}
                 handleSelection={handleSingleFormUpdate}
@@ -525,7 +495,7 @@ const OfferForm = props => {
                 name="offererId"
                 options={offererOptions}
                 selectedValue={formValues.offererId}
-                sublabel={!mandatoryFields.includes('offererId') ? 'Optionnel' : ''}
+                sublabel={!MANDATORY_FIELDS.includes('offererId') ? 'Optionnel' : ''}
               />
             </div>
 
@@ -533,7 +503,7 @@ const OfferForm = props => {
               <Select
                 defaultOption={{
                   displayName: 'Sélectionnez un lieu',
-                  id: SELECT_DEFAULT_VALUE,
+                  id: DEFAULT_FORM_VALUES.venueId,
                 }}
                 error={getErrorMessage('venueId')}
                 handleSelection={handleSingleFormUpdate}
@@ -542,7 +512,7 @@ const OfferForm = props => {
                 name="venueId"
                 options={venueOptions}
                 selectedValue={formValues.venueId}
-                sublabel={!mandatoryFields.includes('venueId') ? 'Optionnel' : ''}
+                sublabel={!MANDATORY_FIELDS.includes('venueId') ? 'Optionnel' : ''}
               />
             </div>
             {displayRefundWarning && (
@@ -562,7 +532,7 @@ const OfferForm = props => {
                 onChange={handleSingleFormUpdate}
                 required
                 rows={6}
-                sublabel={!mandatoryFields.includes('withdrawalDetails') ? 'Optionnel' : ''}
+                sublabel={!MANDATORY_FIELDS.includes('withdrawalDetails') ? 'Optionnel' : ''}
                 value={formValues.withdrawalDetails}
               />
             </div>

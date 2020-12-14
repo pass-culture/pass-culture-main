@@ -4,7 +4,7 @@ import Select, { buildSelectOptions } from 'components/layout/inputs/Select'
 
 import { musicOptionsTree, showOptionsTree } from '../enums'
 
-import { DEFAULT_FORM_VALUES } from './OfferForm'
+import { DEFAULT_FORM_VALUES } from './_constants'
 
 const TypeTreeSelects = props => {
   const { isReadOnly, types, typeValues, updateTypeValues } = props
