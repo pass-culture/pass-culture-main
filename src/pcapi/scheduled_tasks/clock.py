@@ -26,6 +26,7 @@ from pcapi.scheduled_tasks.decorators import log_cron
 from pcapi.scripts.beneficiary import old_remote_import
 from pcapi.scripts.beneficiary import remote_import
 from pcapi.scripts.booking.handle_expired_bookings import handle_expired_bookings
+from pcapi.scripts.booking.notify_soon_to_be_expired_bookings import notify_soon_to_be_expired_bookings
 from pcapi.scripts.update_booking_used import update_booking_used_after_stock_occurrence
 
 
@@ -134,6 +135,12 @@ def pc_handle_expired_bookings(app) -> None:
     handle_expired_bookings()
 
 
+@log_cron
+@cron_context
+def pc_notify_soon_to_be_expired_bookings(app) -> None:
+    notify_soon_to_be_expired_bookings()
+
+
 def main():
     from pcapi.flask_app import app
 
@@ -175,6 +182,16 @@ def main():
         [app],
         day="*",
         hour="5",
+        start_date=CANCEL_EXPIRED_BOOKINGS_CRON_START_DATE.strftime("%Y-%m-%d"),
+    )
+
+    scheduler.add_job(
+        pc_notify_soon_to_be_expired_bookings,
+        "cron",
+        [app],
+        day="*",
+        hour="5",
+        minute="30",
         start_date=CANCEL_EXPIRED_BOOKINGS_CRON_START_DATE.strftime("%Y-%m-%d"),
     )
 

@@ -16,6 +16,7 @@ def handle_expired_bookings() -> None:
     logger.info("[handle_expired_bookings] Start")
 
     cancel_expired_bookings()
+
     notify_users_of_expired_bookings()
     notify_offerers_of_expired_bookings()
 
