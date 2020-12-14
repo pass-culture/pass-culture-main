@@ -84,6 +84,20 @@ class Returns204:
         assert response.status_code == 204
 
     @patch("pcapi.routes.shared.passwords.check_recaptcha_token_is_valid", return_value=True)
+    def when_account_is_not_valid(self, check_recaptcha_token_is_valid_mock, app, db_session):
+        # given
+        user = users_factories.UserFactory(isActive=False)
+        data = {"token": "dumbToken", "email": user.email}
+
+        # when
+        response = TestClient(app.test_client()).post("/users/reset-password", json=data)
+
+        # then
+        assert response.status_code == 204
+        user = UserSQLEntity.query.get(user.id)
+        assert not user.resetPasswordToken
+
+    @patch("pcapi.routes.shared.passwords.check_recaptcha_token_is_valid", return_value=True)
     def when_email_is_known(self, check_recaptcha_token_is_valid_mock, app, db_session):
         # given
         user = users_factories.UserFactory()

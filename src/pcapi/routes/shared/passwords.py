@@ -49,7 +49,7 @@ def post_for_password_token(body: ResetPasswordBodyModel) -> None:
     check_recaptcha_token_is_valid(body.token, "resetPassword", settings.RECAPTCHA_RESET_PASSWORD_MINIMAL_SCORE)
     user = find_user_by_email(body.email)
 
-    if not user:
+    if not user or not user.isActive:
         # Here we also return a 204 to prevent attacker from discovering which email exists in db
         return
 

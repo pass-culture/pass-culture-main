@@ -63,7 +63,7 @@ def refresh() -> authentication.RefreshResponse:
 def request_password_reset(body: RequestPasswordResetRequest) -> None:
     user = find_user_by_email(body.email)
 
-    if not user:
+    if not user or not user.isActive:
         return
 
     reset_password_token = users_api.create_reset_password_token(user)

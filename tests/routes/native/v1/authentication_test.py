@@ -118,6 +118,18 @@ def test_request_reset_password_for_existing_email(mock_send_reset_password_emai
     assert saved_token.type.value == "reset-password"
 
 
+@patch("pcapi.routes.native.v1.authentication.send_reset_password_email_to_native_app_user")
+def test_request_reset_password_for_inactive_account(mock_send_reset_password_email_to_native_app_user, app):
+    email = "existing_user@example.com"
+    data = {"email": email}
+    users_factories.UserFactory(email=email, isActive=False)
+
+    response = TestClient(app.test_client()).post("/native/v1/request_password_reset", json=data)
+
+    assert response.status_code == 204
+    mock_send_reset_password_email_to_native_app_user.assert_not_called()
+
+
 @pytest.mark.usefixtures("db_session")
 @patch("pcapi.routes.native.v1.authentication.send_reset_password_email_to_native_app_user")
 def test_request_reset_password_with_mail_service_exception(mock_send_reset_password_email_to_native_app_user, app):
