@@ -2,31 +2,17 @@ import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
 
 import PageTitle from 'components/layout/PageTitle/PageTitle'
-import Titles from 'components/layout/Titles/Titles'
 import * as pcapi from 'repository/pcapi/pcapi'
 
 import OfferFormContainer from './OfferForm/OfferFormContainer'
-import OfferPreviewLink from './OfferPreviewLink/OfferPreviewLink'
 import OfferPreviewPlaceholder from './OfferPreviewPlaceholder/OfferPreviewPlaceholder'
 
 const OfferDetails = props => {
-  const { history, isUserAdmin, location, match } = props
+  const { history, isUserAdmin, location, offer } = props
 
-  const [offer, setOffer] = useState(null)
   const [formInitialValues, setFormInitialValues] = useState({})
   const [formErrors, setFormErrors] = useState({})
-  const [isTypeSelected, setIsTypeSelected] = useState(true)
-
-  useEffect(() => {
-    async function loadOffer(offerId) {
-      const existingOffer = await pcapi.loadOffer(offerId)
-      setOffer(existingOffer)
-    }
-
-    if (match.params.offerId) {
-      loadOffer(match.params.offerId)
-    }
-  }, [match.params.offerId])
+  const [showMediationForm, setShowMediationForm] = useState(false)
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search)
@@ -43,6 +29,10 @@ const OfferDetails = props => {
       }))
     }
   }, [setFormInitialValues, location.search])
+
+  useEffect(() => {
+    setShowMediationForm(true)
+  }, [offer])
 
   const handleSubmitOffer = useCallback(
     async offerValues => {
@@ -77,39 +67,24 @@ const OfferDetails = props => {
     [history, offer, setFormErrors]
   )
 
-  let pageTitle = 'Nouvelle offre'
-  let mediationId = null
-  if (offer) {
-    pageTitle = 'Éditer une offre'
-    mediationId = offer.activeMediation ? offer.activeMediation.id : null
-  }
-
-  const actionLink = offer && (
-    <OfferPreviewLink
-      mediationId={mediationId}
-      offerId={offer.id}
-    />
-  )
-
   return (
-    <div className="offer-page-v2">
-      <PageTitle title={pageTitle} />
-      <Titles
-        action={actionLink}
-        title={pageTitle}
-      />
+    <div className="offer-edit">
+      <PageTitle title="Détails de l'offre" />
 
-      <div className="offer-content">
-        <OfferFormContainer
-          initialValues={formInitialValues}
-          isUserAdmin={isUserAdmin}
-          offer={offer}
-          onSubmit={handleSubmitOffer}
-          setIsTypeSelected={setIsTypeSelected}
-          submitErrors={formErrors}
-        />
-        {isTypeSelected && (
-          <div>
+      <div className="sidebar-container">
+        <div className="content">
+          <OfferFormContainer
+            initialValues={formInitialValues}
+            isUserAdmin={isUserAdmin}
+            offer={offer}
+            onSubmit={handleSubmitOffer}
+            setShowMediationForm={setShowMediationForm}
+            submitErrors={formErrors}
+          />
+        </div>
+
+        {showMediationForm && (
+          <div className="sidebar">
             <OfferPreviewPlaceholder />
           </div>
         )}

@@ -5,8 +5,9 @@ import React, { Fragment, useCallback, useEffect, useState } from 'react'
 import Icon from 'components/layout/Icon'
 import { DateInput } from 'components/layout/inputs/DateInput/DateInput'
 import { TimeInput } from 'components/layout/inputs/TimeInput/TimeInput'
-import { DeleteStockConfirmation } from 'components/pages/Offer/Stocks/DeleteStockConfirmation/DeleteStockConfirmation'
 import * as pcapi from 'repository/pcapi/pcapi'
+
+import { DeleteStockConfirmation } from '../DeleteStockConfirmation/DeleteStockConfirmation'
 
 const StockItem = ({
   departmentCode,

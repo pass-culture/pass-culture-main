@@ -41,10 +41,8 @@ describe('stocks page', () => {
     jest.spyOn(Date.prototype, 'toISOString').mockImplementation(() => '2020-12-15T12:00:00Z')
     spiedMomentSetDefaultTimezone = jest.spyOn(moment.tz, 'setDefault')
     props = {
-      match: {
-        params: {
-          offerId: 'AG3A',
-        },
+      offer: {
+        id: 'AG3A',
       },
     }
 
@@ -89,28 +87,6 @@ describe('stocks page', () => {
 
       // Then
       expect(spiedMomentSetDefaultTimezone).toHaveBeenCalledWith('America/Cayenne')
-    })
-
-    it('should display title Stocks', async () => {
-      // given
-      pcapi.loadOffer.mockResolvedValue(defaultOffer)
-
-      // when
-      await renderStocks(props, store)
-
-      // then
-      expect(screen.getByRole('heading', { level: 1, name: 'Stocks' })).toBeInTheDocument()
-    })
-
-    it('should display subtitle Stock et prix', async () => {
-      // given
-      pcapi.loadOffer.mockResolvedValue(defaultOffer)
-
-      // when
-      await renderStocks(props, store)
-
-      // then
-      expect(screen.getByRole('heading', { level: 2, name: 'Stock et prix' })).toBeInTheDocument()
     })
 
     it('should display "Gratuit" when stock is free', async () => {
@@ -219,7 +195,7 @@ describe('stocks page', () => {
       await act(async () => {
         unmount = await render(
           <MemoryRouter>
-            <Stocks match={{ params: { offerId: 'AG3A' } }} />
+            <Stocks offer={{ id: 'AG3A' }} />
           </MemoryRouter>
         ).unmount
       })

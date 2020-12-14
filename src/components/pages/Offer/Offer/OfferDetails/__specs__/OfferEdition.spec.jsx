@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 import { fireEvent } from '@testing-library/dom'
-import { render, screen } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
@@ -9,7 +9,7 @@ import { getProviderInfo } from 'components/pages/Offer/LocalProviderInformation
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
-import OfferDetailsContainer from '../OfferDetailsContainer'
+import OfferDetailsContainer from '../../OfferLayoutContainer'
 
 import { fieldLabels, getInputErrorForField, setOfferValues } from './helpers'
 
@@ -21,33 +21,32 @@ jest.mock('repository/pcapi/pcapi', () => ({
   loadTypes: jest.fn(),
 }))
 
-const renderOffers = (props, store, queryParams = '') => {
-  return render(
-    <Provider store={store}>
-      <MemoryRouter
-        initialEntries={[{ pathname: '/offres/v2/ABC12/edition', search: queryParams }]}
-      >
-        <Route
-          exact
-          path="/offres/v2/:offerId/edition"
+const renderOffers = async (props, store, queryParams = '') => {
+  await act(async () => {
+    await render(
+      <Provider store={store}>
+        <MemoryRouter
+          initialEntries={[{ pathname: '/offres/v2/ABC12/edition', search: queryParams }]}
         >
-          <OfferDetailsContainer {...props} />
-        </Route>
-      </MemoryRouter>
-    </Provider>
-  )
+          <Route path="/offres/v2/:offerId([A-Z0-9]+)/">
+            <OfferDetailsContainer {...props} />
+          </Route>
+        </MemoryRouter>
+      </Provider>
+    )
+  })
 }
 
 describe('offerDetails - Edition', () => {
   let editedOffer
   let offerers
+  let props
   let store
   let types
   let venues
 
   beforeEach(() => {
     store = configureTestStore({ data: { users: [{ publicName: 'François', isAdmin: false }] } })
-
     types = [
       {
         conditionalFields: [],
@@ -85,6 +84,9 @@ describe('offerDetails - Edition', () => {
       id: 'ABC12',
       name: 'My edited offer',
     }
+    props = {
+      setShowMediationForm: jest.fn(),
+    }
     pcapi.loadOffer.mockResolvedValue(editedOffer)
     pcapi.loadTypes.mockResolvedValue(types)
     pcapi.getValidatedOfferers.mockResolvedValue(offerers)
@@ -92,43 +94,9 @@ describe('offerDetails - Edition', () => {
   })
 
   describe('render when editing an existing offer', () => {
-    it('should have title "Éditer une offre"', async () => {
-      // When
-      renderOffers({}, store)
-
-      // Then
-      const title = await screen.findByText('Éditer une offre', { selector: 'h1' })
-      expect(title).toBeInTheDocument()
-    })
-
-    it("should have a preview link redirecting to the webapp's offer page", async () => {
-      // When
-      renderOffers({}, store)
-
-      // Then
-      const previewLink = await screen.findByText('Prévisualiser', { selector: 'a' })
-      expect(previewLink).toBeInTheDocument()
-      const expectedWebappUri = `offre/details/${editedOffer.id}`
-      expect(previewLink).toHaveAttribute('href', expect.stringContaining(expectedWebappUri))
-    })
-
-    it("should have a preview link redirecting to the webapp's offer page with mediationId as parameter when an active mediation exists", async () => {
-      // Given
-      editedOffer.activeMediation = { id: 'CBA' }
-
-      // When
-      renderOffers({}, store)
-
-      // Then
-      const previewLink = await screen.findByText('Prévisualiser', { selector: 'a' })
-      expect(previewLink).toBeInTheDocument()
-      const expectedWebappUri = `offre/details/${editedOffer.id}/${editedOffer.activeMediation.id}`
-      expect(previewLink).toHaveAttribute('href', expect.stringContaining(expectedWebappUri))
-    })
-
     it('should have offer title input', async () => {
       // When
-      renderOffers({}, store)
+      await renderOffers(props, store)
 
       // Then
       const titleInput = await screen.findByLabelText("Titre de l'offre")
@@ -137,7 +105,7 @@ describe('offerDetails - Edition', () => {
 
     it('should change title with typed value', async () => {
       // Given
-      renderOffers({}, store)
+      await renderOffers(props, store)
       const titleInput = await screen.findByLabelText("Titre de l'offre")
 
       // When
@@ -184,7 +152,7 @@ describe('offerDetails - Edition', () => {
       })
       pcapi.loadTypes.mockResolvedValue(types)
 
-      renderOffers({}, store)
+      await renderOffers(props, store)
 
       // Edition read only fields
       const typeInput = await screen.findByLabelText(fieldLabels.type.label, {
@@ -288,7 +256,7 @@ describe('offerDetails - Edition', () => {
         const providerInformation = getProviderInfo(editedOffer.lastProvider.name)
 
         // When
-        renderOffers({}, store)
+        await renderOffers(props, store)
 
         // Then
         const providerBanner = await screen.findByText(
@@ -339,7 +307,7 @@ describe('offerDetails - Edition', () => {
         })
         pcapi.loadTypes.mockResolvedValue(types)
 
-        renderOffers({}, store)
+        await renderOffers(props, store)
 
         // Edition read only fields
         const typeInput = await screen.findByLabelText(fieldLabels.type.label, {
@@ -457,7 +425,7 @@ describe('offerDetails - Edition', () => {
         })
         pcapi.loadTypes.mockResolvedValue(types)
 
-        renderOffers({}, store)
+        await renderOffers(props, store)
 
         // Edition read only fields
         const isDuoInput = await screen.findByLabelText(fieldLabels.isDuo.label, {
@@ -485,7 +453,7 @@ describe('offerDetails - Edition', () => {
         },
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
-      renderOffers({}, store)
+      await renderOffers(props, store)
       await setOfferValues({ receiveNotificationEmails: false })
 
       // When
@@ -511,7 +479,7 @@ describe('offerDetails - Edition', () => {
         bookingEmail: null,
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
-      renderOffers({}, store)
+      await renderOffers(props, store)
       await setOfferValues({ receiveNotificationEmails: true })
 
       // When

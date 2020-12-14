@@ -4,14 +4,13 @@ import React, { Fragment, useCallback, useEffect, useState } from 'react'
 
 import Icon from 'components/layout/Icon'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
-import Titles from 'components/layout/Titles/Titles'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { getDepartmentTimezone } from 'utils/timezone'
 
 import StockItemContainer from './StockItem/StockItemContainer'
 
-const Stocks = ({ match }) => {
-  const offerId = match.params.offerId
+const Stocks = ({ offer }) => {
+  const offerId = offer.id
   const [stocks, setStocks] = useState([])
   const [departmentCode, setDepartmentCode] = useState(null)
   const [isEvent, setIsEvent] = useState(false)
@@ -59,10 +58,10 @@ const Stocks = ({ match }) => {
   return (
     <div className="stocks-page">
       <PageTitle title="Vos stocks" />
-      <Titles title="Stocks" />
-      <h2>
+      <h3 className="section-title">
         {'Stock et prix'}
-      </h2>
+      </h3>
+
       <div className="cancellation-information">
         {isEvent ? eventCancellationInformation : thingCancellationInformation}
       </div>
@@ -145,10 +144,8 @@ const Stocks = ({ match }) => {
 }
 
 Stocks.propTypes = {
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      offerId: PropTypes.string.isRequired,
-    }).isRequired,
+  offer: PropTypes.shape({
+    id: PropTypes.string.isRequired,
   }).isRequired,
 }
 

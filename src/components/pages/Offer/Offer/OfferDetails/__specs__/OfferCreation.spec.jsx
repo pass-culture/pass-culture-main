@@ -1,14 +1,14 @@
 import '@testing-library/jest-dom'
 import { fireEvent } from '@testing-library/dom'
-import { render, screen } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
 import React from 'react'
 import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
+import { MemoryRouter, Route } from 'react-router'
 
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
-import OfferDetailsContainer from '../OfferDetailsContainer'
+import OfferDetailsContainer from '../../OfferLayoutContainer'
 import { DEFAULT_FORM_VALUES } from '../OfferForm/_constants'
 
 import { getInputErrorForField, getOfferInputForField, setOfferValues } from './helpers'
@@ -20,24 +20,32 @@ jest.mock('repository/pcapi/pcapi', () => ({
   loadTypes: jest.fn(),
 }))
 
-const renderOffers = (props, store, queryParams = null) => {
-  return render(
-    <Provider store={store}>
-      <MemoryRouter initialEntries={[{ pathname: '/offres/v2/creation', search: queryParams }]}>
-        <OfferDetailsContainer {...props} />
-      </MemoryRouter>
-    </Provider>
-  )
+const renderOffers = async (props, store, queryParams = null) => {
+  await act(async () => {
+    await render(
+      <Provider store={store}>
+        <MemoryRouter initialEntries={[{ pathname: '/offres/v2/creation', search: queryParams }]}>
+          <Route path="/offres/v2/">
+            <OfferDetailsContainer {...props} />
+          </Route>
+        </MemoryRouter>
+      </Provider>
+    )
+  })
 }
 
 describe('offerDetails - Creation', () => {
   let types
   let offerers
+  let props
   let store
   let venues
 
   beforeEach(() => {
     store = configureTestStore({ data: { users: [{ publicName: 'François', isAdmin: false }] } })
+    props = {
+      setShowMediationForm: jest.fn(),
+    }
     types = [
       {
         conditionalFields: ['author', 'visa', 'stageDirector'],
@@ -149,7 +157,7 @@ describe('offerDetails - Creation', () => {
   describe('render when creating a new offer', () => {
     it('should get types from API', async () => {
       // When
-      renderOffers({}, store)
+      await renderOffers(props, store)
 
       // Then
       expect(pcapi.loadTypes).toHaveBeenCalledTimes(1)
@@ -157,7 +165,7 @@ describe('offerDetails - Creation', () => {
 
     it("should get user's offerer from API", async () => {
       // When
-      renderOffers({}, store)
+      await renderOffers(props, store)
 
       // Then
       expect(pcapi.getValidatedOfferers).toHaveBeenCalledTimes(1)
@@ -165,23 +173,15 @@ describe('offerDetails - Creation', () => {
 
     it("should get user's venues from API", async () => {
       // When
-      renderOffers({}, store)
+      await renderOffers(props, store)
 
       // Then
       expect(pcapi.getVenuesForOfferer).toHaveBeenCalledWith(null)
     })
 
-    it('should have title "Ajouter une offre"', () => {
+    it('should have a section "Type d\'offre"', async () => {
       // When
-      renderOffers({}, store)
-
-      // Then
-      expect(screen.getByText('Nouvelle offre', { selector: 'h1' })).toBeInTheDocument()
-    })
-
-    it('should have a section "Type d\'offre"', () => {
-      // When
-      renderOffers({}, store)
+      await renderOffers(props, store)
 
       // Then
       expect(screen.getByText("Type d'offre", { selector: '.section-title' })).toBeInTheDocument()
@@ -189,7 +189,7 @@ describe('offerDetails - Creation', () => {
 
     it('should not display a placeholder for preview', async () => {
       // When
-      renderOffers({}, store)
+      await renderOffers(props, store)
 
       // Then
       expect(screen.queryByText('Ajouter une image')).not.toBeInTheDocument()
@@ -198,7 +198,7 @@ describe('offerDetails - Creation', () => {
     describe('when selecting an offer type', () => {
       it('should display a placeholder for preview', async () => {
         // Given
-        renderOffers({}, store)
+        await renderOffers(props, store)
 
         // When
         await setOfferValues({ type: 'EventType.CINEMA' })
@@ -209,7 +209,7 @@ describe('offerDetails - Creation', () => {
 
       it('should display "Infos pratiques", "Infos artistiques", and "Autre" section', async () => {
         // Given
-        renderOffers({}, store)
+        await renderOffers(props, store)
 
         // When
         await setOfferValues({ type: 'EventType.CINEMA' })
@@ -226,7 +226,7 @@ describe('offerDetails - Creation', () => {
 
       it('should display an offerer selection and a venue selection when user is pro', async () => {
         // Given
-        renderOffers({}, store)
+        await renderOffers(props, store)
 
         // When
         await setOfferValues({ type: 'EventType.CINEMA' })
@@ -240,7 +240,7 @@ describe('offerDetails - Creation', () => {
 
       it('should have offerer selected when given as queryParam', async () => {
         // Given
-        renderOffers({}, store, `?structure=${offerers[0].id}`)
+        await renderOffers(props, store, `?structure=${offerers[0].id}`)
 
         // When
         await setOfferValues({ type: 'EventType.CINEMA' })
@@ -252,7 +252,7 @@ describe('offerDetails - Creation', () => {
       it('should select offerer when there is only one option', async () => {
         // Given
         pcapi.getValidatedOfferers.mockResolvedValue([offerers[0]])
-        renderOffers({}, store)
+        await renderOffers(props, store)
 
         // When
         await setOfferValues({ type: 'EventType.CINEMA' })
@@ -263,7 +263,11 @@ describe('offerDetails - Creation', () => {
 
       it('should have venue selected when given as queryParam', async () => {
         // Given
-        renderOffers({}, store, `?lieu=${venues[0].id}&structure=${venues[0].managingOffererId}`)
+        await renderOffers(
+          props,
+          store,
+          `?lieu=${venues[0].id}&structure=${venues[0].managingOffererId}`
+        )
 
         // When
         await setOfferValues({ type: 'EventType.CINEMA' })
@@ -275,7 +279,7 @@ describe('offerDetails - Creation', () => {
       it('should select venue when there is only one option', async () => {
         // Given
         pcapi.getVenuesForOfferer.mockResolvedValue([venues[0]])
-        renderOffers({}, store)
+        await renderOffers(props, store)
 
         // When
         await setOfferValues({ type: 'EventType.CINEMA' })
@@ -286,7 +290,7 @@ describe('offerDetails - Creation', () => {
 
       it('should only display virtual venues when offer type is online only', async () => {
         // Given
-        renderOffers({}, store)
+        await renderOffers(props, store)
 
         // When
         await setOfferValues({ type: 'ThingType.PRESSE_ABO' })
@@ -299,7 +303,7 @@ describe('offerDetails - Creation', () => {
 
       it('should only display physical venues when offer type is offline only', async () => {
         // Given
-        renderOffers({}, store)
+        await renderOffers(props, store)
 
         // When
         await setOfferValues({ type: 'EventType.CINEMA' })
@@ -312,7 +316,7 @@ describe('offerDetails - Creation', () => {
 
       it('should display all venues when offer type is offline and online', async () => {
         // Given
-        renderOffers({}, store)
+        await renderOffers(props, store)
 
         // When
         await setOfferValues({ type: 'EventType.MUSIQUE' })
@@ -325,7 +329,7 @@ describe('offerDetails - Creation', () => {
 
       it('should only display venues of selected offerer', async () => {
         // Given
-        renderOffers({}, store)
+        await renderOffers(props, store)
         await setOfferValues({ type: 'EventType.CINEMA' })
 
         // When
@@ -346,7 +350,7 @@ describe('offerDetails - Creation', () => {
             offererName: 'La structure',
           },
         ])
-        renderOffers({}, store)
+        await renderOffers(props, store)
 
         // When
         await setOfferValues({ type: 'EventType.CINEMA' })
@@ -372,7 +376,7 @@ describe('offerDetails - Creation', () => {
             offererName: 'La structure',
           },
         ])
-        renderOffers({}, store)
+        await renderOffers(props, store)
         await setOfferValues({ type: 'EventType.CINEMA' })
 
         // When
@@ -386,7 +390,7 @@ describe('offerDetails - Creation', () => {
 
       it('should select offerer of selected venue', async () => {
         // Given
-        renderOffers({}, store)
+        await renderOffers(props, store)
         await setOfferValues({ type: 'EventType.CINEMA' })
 
         // When
@@ -398,7 +402,7 @@ describe('offerDetails - Creation', () => {
 
       it('should display email notification input when asking to receive booking emails', async () => {
         // Given
-        renderOffers({}, store)
+        await renderOffers(props, store)
         await setOfferValues({ type: 'EventType.MUSIQUE' })
 
         // When
@@ -415,7 +419,7 @@ describe('offerDetails - Creation', () => {
       describe('with conditional field "musicType"', () => {
         it('should display a music type selection', async () => {
           // Given
-          renderOffers({}, store)
+          await renderOffers(props, store)
 
           // When
           await setOfferValues({ type: 'EventType.MUSIQUE' })
@@ -428,7 +432,7 @@ describe('offerDetails - Creation', () => {
 
         it('should display a music subtype selection when a musicType is selected', async () => {
           // Given
-          renderOffers({}, store)
+          await renderOffers(props, store)
           await setOfferValues({ type: 'EventType.MUSIQUE' })
 
           // When
@@ -442,7 +446,7 @@ describe('offerDetails - Creation', () => {
 
         it('should not display a music type selection when changing to an offer type wihtout "musicType" conditional field', async () => {
           // Given
-          renderOffers({}, store)
+          await renderOffers(props, store)
           await setOfferValues({ type: 'EventType.MUSIQUE' })
           await screen.findByLabelText('Genre musical', { exact: false })
 
@@ -455,7 +459,7 @@ describe('offerDetails - Creation', () => {
 
         it('should not display a music subtype selection when a musicType is not selected and a showType was selected before', async () => {
           // Given
-          renderOffers({}, store)
+          await renderOffers(props, store)
           await setOfferValues({ type: 'EventType.SPECTACLE_VIVANT' })
           await setOfferValues({ showType: '1300' })
           await setOfferValues({ showSubType: '1307' })
@@ -471,7 +475,7 @@ describe('offerDetails - Creation', () => {
       describe('with conditional field "showType"', () => {
         it('should display a show type selection', async () => {
           // Given
-          renderOffers({}, store)
+          await renderOffers(props, store)
 
           // When
           await setOfferValues({ type: 'EventType.SPECTACLE_VIVANT' })
@@ -484,7 +488,7 @@ describe('offerDetails - Creation', () => {
 
         it('should display a show subtype selection when a showType is selected', async () => {
           // Given
-          renderOffers({}, store)
+          await renderOffers(props, store)
 
           // When
           await setOfferValues({ type: 'EventType.SPECTACLE_VIVANT' })
@@ -500,7 +504,7 @@ describe('offerDetails - Creation', () => {
       describe('with conditional field "speaker"', () => {
         it('should display a text input "intervenant"', async () => {
           // Given
-          renderOffers({}, store)
+          await renderOffers(props, store)
 
           // When
           await setOfferValues({ type: 'EventType.CONFERENCE_DEBAT_DEDICACE' })
@@ -515,7 +519,7 @@ describe('offerDetails - Creation', () => {
       describe('with conditional field "author"', () => {
         it('should display a text input "auteur"', async () => {
           // Given
-          renderOffers({}, store)
+          await renderOffers(props, store)
 
           // When
           await setOfferValues({ type: 'EventType.CINEMA' })
@@ -530,7 +534,7 @@ describe('offerDetails - Creation', () => {
       describe('with conditional field "visa"', () => {
         it("should display a text input 'Visa d'exploitation'", async () => {
           // Given
-          renderOffers({}, store)
+          await renderOffers(props, store)
 
           // When
           await setOfferValues({ type: 'EventType.CINEMA' })
@@ -545,7 +549,7 @@ describe('offerDetails - Creation', () => {
       describe('with conditional field "isbn"', () => {
         it('should display a text input "ISBN"', async () => {
           // Given
-          renderOffers({}, store)
+          await renderOffers(props, store)
 
           // When
           await setOfferValues({ type: 'ThingType.LIVRE_EDITION' })
@@ -560,7 +564,7 @@ describe('offerDetails - Creation', () => {
       describe('with conditional field "stageDirector"', () => {
         it('should display a text input "Metteur en scène"', async () => {
           // Given
-          renderOffers({}, store)
+          await renderOffers(props, store)
 
           // When
           await setOfferValues({ type: 'EventType.CINEMA' })
@@ -575,7 +579,7 @@ describe('offerDetails - Creation', () => {
       describe('with conditional field "performer"', () => {
         it('should display a text input "Interprète"', async () => {
           // Given
-          renderOffers({}, store)
+          await renderOffers(props, store)
 
           // When
           await setOfferValues({ type: 'EventType.MUSIQUE' })
@@ -589,7 +593,7 @@ describe('offerDetails - Creation', () => {
       describe('when selecting a virtual venue', () => {
         it('should display a text input "url"', async () => {
           // Given
-          renderOffers({}, store)
+          await renderOffers(props, store)
           await setOfferValues({ type: 'ThingType.PRESSE_ABO' })
 
           // When
@@ -603,7 +607,7 @@ describe('offerDetails - Creation', () => {
 
         it('should display refundable banner when offer type is online only', async () => {
           // Given
-          renderOffers({}, store)
+          await renderOffers(props, store)
           await setOfferValues({ type: 'ThingType.PRESSE_ABO' })
 
           // When
@@ -619,7 +623,7 @@ describe('offerDetails - Creation', () => {
 
         it('should remove refundable banner after deselecting the venue', async () => {
           // Given
-          renderOffers({}, store)
+          await renderOffers(props, store)
           await setOfferValues({ type: 'ThingType.PRESSE_ABO' })
           await setOfferValues({ venueId: venues[2].id })
 
@@ -636,7 +640,7 @@ describe('offerDetails - Creation', () => {
 
         it('should remove refundable banner after selecting a refundable offer type', async () => {
           // Given
-          renderOffers({}, store)
+          await renderOffers(props, store)
           await setOfferValues({ type: 'ThingType.PRESSE_ABO' })
           await setOfferValues({ venueId: venues[2].id })
 
@@ -653,7 +657,7 @@ describe('offerDetails - Creation', () => {
 
         it('should display refundable banner when offer type is online and offline', async () => {
           // Given
-          renderOffers({}, store)
+          await renderOffers(props, store)
           await setOfferValues({ type: 'EventType.MUSIQUE' })
 
           // When
@@ -669,7 +673,7 @@ describe('offerDetails - Creation', () => {
 
         it('should not display refundable banner when offer type is ThingType.LIVRE_EDITION', async () => {
           // Given
-          renderOffers({}, store)
+          await renderOffers(props, store)
           await setOfferValues({ type: 'ThingType.LIVRE_EDITION' })
 
           // When
@@ -685,7 +689,7 @@ describe('offerDetails - Creation', () => {
 
         it('should not display refundable banner when offer type is ThingType.CINEMA_CARD', async () => {
           // Given
-          renderOffers({}, store)
+          await renderOffers(props, store)
           await setOfferValues({ type: 'ThingType.CINEMA_CARD' })
 
           // When
@@ -703,7 +707,7 @@ describe('offerDetails - Creation', () => {
       describe('when offer type is event type', () => {
         it('should display a time input "Durée"', async () => {
           // Given
-          renderOffers({}, store)
+          await renderOffers(props, store)
 
           // When
           await setOfferValues({ type: 'EventType.MUSIQUE' })
@@ -716,7 +720,7 @@ describe('offerDetails - Creation', () => {
 
         it('should display a checkbox input "Offre duo" checked by default', async () => {
           // Given
-          renderOffers({}, store)
+          await renderOffers(props, store)
 
           // When
           await setOfferValues({ type: 'EventType.MUSIQUE' })
@@ -759,7 +763,7 @@ describe('offerDetails - Creation', () => {
         withdrawalDetails: 'À venir chercher sur place.',
       }
 
-      renderOffers({}, store)
+      await renderOffers(props, store)
 
       await setOfferValues({ type: offerValues.type })
       await setOfferValues(offerValues)
@@ -782,7 +786,7 @@ describe('offerDetails - Creation', () => {
       value: 'EventType.TEST_MUSIQUE',
     })
     pcapi.loadTypes.mockResolvedValue(types)
-    renderOffers({}, store)
+    await renderOffers(props, store)
 
     await setOfferValues({ type: 'EventType.MUSIQUE' })
 
@@ -825,7 +829,7 @@ describe('offerDetails - Creation', () => {
 
   it('should show error for email notification input when asking to receive booking emails and no email was provided', async () => {
     // Given
-    renderOffers({}, store)
+    await renderOffers(props, store)
     await setOfferValues({ type: 'EventType.MUSIQUE' })
     await setOfferValues({ receiveNotificationEmails: true })
 

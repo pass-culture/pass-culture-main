@@ -11,9 +11,10 @@ import { isAllocineOffer, isSynchronizedOffer } from 'components/pages/Offer/dom
 import offerIsRefundable from 'components/pages/Offer/domain/offerIsRefundable'
 import * as pcapi from 'repository/pcapi/pcapi'
 
+import SynchronizedProviderInformation from '../SynchronizedProviderInformation'
+
 import { DEFAULT_FORM_VALUES, MANDATORY_FIELDS } from './_constants'
 import OfferRefundWarning from './OfferRefundWarning'
-import SynchronizedProviderInformation from './SynchronizedProviderInformation'
 import TypeTreeSelects from './TypeTreeSelects'
 
 const getOfferConditionalFields = ({
@@ -49,8 +50,8 @@ const OfferForm = ({
   isUserAdmin,
   offer,
   onSubmit,
-  setIsTypeSelected,
   showErrorNotification,
+  setShowMediationForm,
   submitErrors,
 }) => {
   const [formValues, setFormValues] = useState({})
@@ -61,7 +62,6 @@ const OfferForm = ({
   const [venue, setVenue] = useState(null)
   const [venues, setVenues] = useState([])
   const [venueOptions, setVenueOptions] = useState([])
-  const [offerIsSynchronized, setOfferIsSynchronized] = useState(false)
   const [offerFormFields, setOfferFormFields] = useState(Object.keys(DEFAULT_FORM_VALUES))
   const [readOnlyFields, setReadOnlyFields] = useState([''])
   const [formErrors, setFormErrors] = useState(submitErrors)
@@ -112,9 +112,8 @@ const OfferForm = ({
           values.offererId = offer.venue.managingOffererId
         }
 
-        const isSynchronized = isSynchronizedOffer(offer)
-        setOfferIsSynchronized(isSynchronized)
-        if (isSynchronized) {
+        const isOfferSynchronized = isSynchronizedOffer(offer)
+        if (isOfferSynchronized) {
           let syncReadOnlyFields = Object.keys(DEFAULT_FORM_VALUES)
           if (isAllocineOffer(offer)) {
             syncReadOnlyFields = syncReadOnlyFields.filter(fieldName => fieldName !== 'isDuo')
@@ -325,13 +324,12 @@ const OfferForm = ({
 
   let submitFormButtonText = 'Enregistrer'
   let displayFullForm = true
-  setIsTypeSelected(displayFullForm)
-
   if (!offer) {
     submitFormButtonText = 'Enregistrer et passer au stocks'
     displayFullForm = !!formValues.type
-    setIsTypeSelected(displayFullForm)
   }
+
+  setShowMediationForm(displayFullForm)
 
   if (isBusy) {
     return <Spinner />
@@ -339,7 +337,7 @@ const OfferForm = ({
 
   return (
     <form className="offer-form">
-      {offerIsSynchronized ? (
+      {isSynchronizedOffer(offer) ? (
         <div className="form-row">
           <SynchronizedProviderInformation providerName={offer.lastProvider.name} />
         </div>
@@ -355,7 +353,7 @@ const OfferForm = ({
         </h3>
         <p className="section-description">
           {
-            'La catégorie de l’offre permet de la caractériser au mieux et de la valoriser au mieux dans l’application.'
+            'Le type de l’offre permet de la caractériser au mieux et de la valoriser au mieux dans l’application.'
           }
         </p>
 
@@ -592,8 +590,9 @@ const OfferForm = ({
                   onChange={handleSingleFormUpdate}
                   required
                   subLabel={
-                    !readOnlyFields.includes('url') &&
-                    'Vous pouvez inclure {token} {email} et {offerId} dans l’URL, qui seront remplacés respectivement par le code de la contremarque, l’e-mail de la personne ayant reservé et l’identifiant de l’offre'
+                    readOnlyFields.includes('url')
+                      ? 'Vous pouvez inclure {token} {email} et {offerId} dans l’URL, qui seront remplacés respectivement par le code de la contremarque, l’e-mail de la personne ayant reservé et l’identifiant de l’offre'
+                      : null
                   }
                   type="text"
                   value={formValues.url}
@@ -692,7 +691,7 @@ OfferForm.propTypes = {
   isUserAdmin: PropTypes.bool,
   offer: PropTypes.shape(),
   onSubmit: PropTypes.func.isRequired,
-  setIsTypeSelected: PropTypes.func.isRequired,
+  setShowMediationForm: PropTypes.func.isRequired,
   showErrorNotification: PropTypes.func.isRequired,
 }
 

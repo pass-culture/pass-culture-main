@@ -8,10 +8,9 @@ import Unavailable from 'components/pages/Errors/Unavailable/Unavailable'
 import HomeContainer from 'components/pages/Home/HomeContainer'
 import LostPasswordContainer from 'components/pages/LostPassword/LostPasswordContainer'
 import Mediation from 'components/pages/Mediation/MediationContainer'
+import OfferLayoutContainer from 'components/pages/Offer/Offer/OfferLayoutContainer'
 import OfferCreation from 'components/pages/Offer/OfferCreation/OfferCreationContainer'
-import OfferDetailsContainer from 'components/pages/Offer/OfferDetails/OfferDetailsContainer'
 import OfferEdition from 'components/pages/Offer/OfferEdition/OfferEditionContainer'
-import StocksContainer from 'components/pages/Offer/Stocks/StocksContainer'
 import OffererCreationContainer from 'components/pages/Offerer/OffererCreation/OffererCreationContainer'
 import OffererDetailsContainer from 'components/pages/Offerer/OffererDetails/OffererDetailsContainer'
 import Offerers from 'components/pages/Offerers/OfferersContainer'
@@ -205,22 +204,10 @@ if (OFFER_CREATION_V2) {
   routes = [
     ...routes,
     {
-      component: OfferDetailsContainer,
-      exact: true,
-      path: '/offres/v2/creation',
+      component: OfferLayoutContainer,
+      exact: false,
+      path: ['/offres/v2/creation', '/offres/v2/:offerId([A-Z0-9]+)'],
       title: 'Offre',
-    },
-    {
-      component: OfferDetailsContainer,
-      exact: true,
-      path: '/offres/v2/:offerId/edition',
-      title: 'Offre',
-    },
-    {
-      component: StocksContainer,
-      exact: true,
-      path: '/offres/:offerId/stocks',
-      title: 'Stocks',
     },
   ]
 }

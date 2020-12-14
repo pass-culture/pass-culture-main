@@ -1,0 +1,67 @@
+.pc-breadcrumb {
+  color: $grey-medium;
+  display: flex;
+
+  .bc-step {
+    @include caption();
+
+    color: $grey-medium;
+    display: flex;
+    line-height: rem(24px);
+
+    a {
+      color: $black;
+    }
+
+    &.active,
+    &.active a {
+      color: $primary;
+    }
+
+    .separator {
+      align-items: center;
+      display: flex;
+      height: rem(24px);
+      justify-content: center;
+      width: rem(24px);
+
+      path {
+        fill: $grey-medium;
+      }
+    }
+
+    &.active .separator path {
+      fill: $black;
+    }
+  }
+
+  &.bc-tab {
+    color: $black;
+
+    .bc-step {
+      @include button();
+
+      margin-left: rem(24px);
+
+      a:hover,
+      a:focus {
+        color: $primary;
+      }
+
+      &:first-child {
+        margin-left: 0;
+      }
+
+      &.active,
+      &.active a {
+        .active-underline {
+          background: $primary;
+          display: block;
+          height: rem(2px);
+          margin-top: rem(4px);
+          width: rem(56px);
+        }
+      }
+    }
+  }
+}

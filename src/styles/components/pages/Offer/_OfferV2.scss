@@ -3,16 +3,31 @@
     @include caption();
 
     color: $grey-dark;
+    margin-bottom: rem(24px);
   }
 
   .offer-content {
-    display: flex;
-    justify-content: space-between;
+    margin-top: rem(25px);
+
+    .sidebar-container {
+      display: flex;
+      justify-content: space-between;
+
+      .content {
+        max-width: rem(486px);
+      }
+
+      .sidebar {
+        flex: 0 0 rem(256px);
+      }
+    }
+  }
+
+  .pc-breadcrumb {
+    margin-bottom: rem(24px);
   }
 
   .offer-form {
-    max-width: rem(486px);
-
     .form-row {
       margin-top: rem(24px);
     }
