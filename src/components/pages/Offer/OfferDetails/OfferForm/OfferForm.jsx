@@ -341,9 +341,9 @@ const OfferForm = props => {
   return (
     <form className="offer-form">
       <section className="form-section">
-        <h2 className="section-title">
+        <h3 className="section-title">
           {"Type d'offre"}
-        </h2>
+        </h3>
         <p className="section-description">
           {
             'La catégorie de l’offre permet de la caractériser au mieux et de la valoriser au mieux dans l’application.'
@@ -375,9 +375,9 @@ const OfferForm = props => {
       {displayFullForm && (
         <Fragment>
           <section className="form-section">
-            <h2 className="section-title">
+            <h3 className="section-title">
               {'Infos artistiques'}
-            </h2>
+            </h3>
 
             <div className="form-row">
               <TextInput
@@ -515,9 +515,9 @@ const OfferForm = props => {
           </section>
 
           <section className="form-section">
-            <h2 className="section-title">
+            <h3 className="section-title">
               {'Informations pratiques'}
-            </h2>
+            </h3>
             <p className="section-description">
               {
                 'Les informations pratiques permettent de donner aux utilisateurs des informations sur le retrait de leur commande.'
@@ -601,9 +601,9 @@ const OfferForm = props => {
 
           {offer && (
             <section className="form-section">
-              <h2 className="section-title">
+              <h3 className="section-title">
                 {'Gestion des stocks et des accroches'}
-              </h2>
+              </h3>
               <div className="form-row">
                 <MediationsManager offer={offer} />
               </div>
@@ -611,9 +611,9 @@ const OfferForm = props => {
           )}
 
           <section className="form-section">
-            <h2 className="section-title">
+            <h3 className="section-title">
               {'Autre'}
-            </h2>
+            </h3>
 
             {offerFormFields.includes('isNational') && (
               <div className="form-row">

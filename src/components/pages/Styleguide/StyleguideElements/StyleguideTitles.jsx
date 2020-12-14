@@ -9,6 +9,10 @@ const StyleguideTitles = () => {
     <h2>{"Ceci est un sous-titre"}</h2>
   `
 
+  const sectionTitle = String.raw`
+    <h3 class="section-title">{"Ceci est un titre de section"}</h3>
+  `
+
   return (
     <div>
       <div className="flex-block">
@@ -33,6 +37,19 @@ const StyleguideTitles = () => {
           <pre className="it-icon-snippet">
             <code>
               {subtitle}
+            </code>
+          </pre>
+        </div>
+      </div>
+
+      <div className="flex-block">
+        <h3 className="section-title">
+          {'Ceci est un titre de section'}
+        </h3>
+        <div className="it-description">
+          <pre className="it-icon-snippet">
+            <code>
+              {sectionTitle}
             </code>
           </pre>
         </div>
