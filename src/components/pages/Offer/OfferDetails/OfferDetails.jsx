@@ -5,7 +5,7 @@ import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
 import * as pcapi from 'repository/pcapi/pcapi'
 
-import OfferForm from './OfferForm/OfferForm'
+import OfferFormContainer from './OfferForm/OfferFormContainer'
 import OfferPreviewLink from './OfferPreviewLink/OfferPreviewLink'
 
 const OfferDetails = props => {
@@ -102,7 +102,7 @@ const OfferDetails = props => {
       </p>
 
       <div className="content">
-        <OfferForm
+        <OfferFormContainer
           initialValues={formInitialValues}
           isUserAdmin={isUserAdmin}
           offer={offer}

@@ -16,7 +16,7 @@ const FieldErrors = ({ className, customMessage, meta }) => {
     (meta && meta.touched && (meta.error || (!meta.dirtySinceLastSubmit && meta.submitError)))
   let errorMessage =
     (showError &&
-      (customMessage || (meta.error || (!meta.dirtySinceLastSubmit && meta.submitError)))) ||
+      (customMessage || meta.error || (!meta.dirtySinceLastSubmit && meta.submitError))) ||
     null
   // FIXME -> transformation en array plus propre
   // on considére qu'une erreur est soit un string, soit un array
@@ -29,7 +29,7 @@ const FieldErrors = ({ className, customMessage, meta }) => {
         <span className="field-error-icon">
           <Icon
             alt="Une erreur est survenue"
-            svg="picto-echec"
+            svg="ico-notification-error-red"
           />
         </span>
         <span className="field-error-messages">

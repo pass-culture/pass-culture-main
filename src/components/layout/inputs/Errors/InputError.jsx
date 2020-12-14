@@ -16,7 +16,7 @@ const InputError = ({ name, message }) => {
     >
       <Icon
         alt="Une erreur est survenue"
-        svg="picto-echec"
+        svg="ico-notification-error-red"
       />
       <pre>
         {message}

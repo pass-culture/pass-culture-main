@@ -33,7 +33,7 @@ describe('src | components | layout | NotificationV2', () => {
     )
   }
 
-  it('should display given text with correct icon', () => {
+  it('should display given text with icon', () => {
     // given
     const sentNotification = {
       text: 'Mon petit succès',
@@ -49,9 +49,44 @@ describe('src | components | layout | NotificationV2', () => {
     const notification = screen.getByText(sentNotification.text)
     expect(notification).toBeInTheDocument()
     expect(notification).toHaveClass('show')
+    expect(screen.getByRole('img')).toBeInTheDocument()
+  })
+
+  it('should success icon when notification is type success', () => {
+    // given
+    const sentNotification = {
+      text: 'Mon petit succès',
+      type: 'success',
+      version: 2,
+    }
+    store = configureTestStore({ notification: sentNotification })
+
+    // when
+    renderNotificationV2(props, store)
+
+    // then
     expect(screen.getByRole('img')).toHaveAttribute(
       'src',
       expect.stringContaining('ico-notification-success-white')
+    )
+  })
+
+  it('should error icon when notification is type error', () => {
+    // given
+    const sentNotification = {
+      text: 'Ma petite erreur',
+      type: 'error',
+      version: 2,
+    }
+    store = configureTestStore({ notification: sentNotification })
+
+    // when
+    renderNotificationV2(props, store)
+
+    // then
+    expect(screen.getByRole('img')).toHaveAttribute(
+      'src',
+      expect.stringContaining('ico-notification-error-white')
     )
   })
 

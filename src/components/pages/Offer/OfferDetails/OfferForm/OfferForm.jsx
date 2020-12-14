@@ -51,6 +51,7 @@ const OfferForm = ({
   isUserAdmin,
   offer,
   onSubmit,
+  showErrorNotification,
   submitErrors,
 }) => {
   const [formValues, setFormValues] = useState({})
@@ -255,8 +256,10 @@ const OfferForm = ({
       }, {})
 
       onSubmit(submitedValues)
+    } else {
+      showErrorNotification()
     }
-  }, [offerFormFields, formValues, isValid, onSubmit])
+  }, [offerFormFields, formValues, isValid, onSubmit, showErrorNotification])
 
   const handleSingleFormUpdate = useCallback(
     event => {
@@ -658,6 +661,7 @@ OfferForm.propTypes = {
   isUserAdmin: PropTypes.bool,
   offer: PropTypes.shape(),
   onSubmit: PropTypes.func.isRequired,
+  showErrorNotification: PropTypes.func.isRequired,
 }
 
 export default OfferForm

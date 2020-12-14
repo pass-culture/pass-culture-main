@@ -60,6 +60,11 @@
     color: $white;
   }
 
+  &.is-error {
+    background-color: $red-error;
+    color: $white;
+  }
+
   img {
     height: rem(40px);
     padding-right: rem(8px);

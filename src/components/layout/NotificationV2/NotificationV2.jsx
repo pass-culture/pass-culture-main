@@ -34,6 +34,8 @@ const NotificationV2 = ({ hideNotification, notification }) => {
   let svg
   if (type === 'success') {
     svg = 'ico-notification-success-white'
+  } else if (type === 'error') {
+    svg = 'ico-notification-error-white'
   }
 
   if (isInDom) {
