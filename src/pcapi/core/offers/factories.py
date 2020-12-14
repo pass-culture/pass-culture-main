@@ -9,7 +9,9 @@ import pcapi.core.users.factories as users_factories
 from pcapi.models import offer_type
 
 
-ALL_TYPES = {t.name for t in list(offer_type.EventType) + list(offer_type.ThingType)}
+ALL_TYPES = {
+    str(t) for t in list(offer_type.EventType) + list(offer_type.ThingType) if t.name != "ACTIVATION"
+}  # {"EventType.Musique", "ThingType.Musique"...}
 
 
 class OffererFactory(BaseFactory):
@@ -113,7 +115,7 @@ class OfferFactory(BaseFactory):
     class Meta:
         model = models.Offer
 
-    product = factory.SubFactory(ProductFactory)
+    product = factory.SubFactory(ThingProductFactory)
     venue = factory.SubFactory(VenueFactory)
     type = factory.SelfAttribute("product.type")
     name = factory.SelfAttribute("product.name")
@@ -143,6 +145,17 @@ class StockFactory(BaseFactory):
     offer = factory.SubFactory(OfferFactory)
     price = 10
     quantity = 1000
+
+    beginningDatetime = factory.Maybe(
+        "offer.isEvent",
+        factory.LazyFunction(lambda: datetime.datetime.now() + datetime.timedelta(days=5)),
+        None,
+    )
+    bookingLimitDatetime = factory.Maybe(
+        "stock.beginningDatetime and offer.isEvent",
+        factory.LazyAttribute(lambda stock: stock.beginningDatetime - datetime.timedelta(minutes=60)),
+        None,
+    )
 
 
 class ThingStockFactory(StockFactory):

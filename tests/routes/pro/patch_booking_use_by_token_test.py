@@ -107,6 +107,8 @@ class Returns204:
                 stock__price=0,
                 stock__offer__product__type=str(EventType.ACTIVATION),
                 user__isBeneficiary=False,
+                stock__beginningDatetime=datetime.datetime.utcnow()
+                + datetime.timedelta(days=1),  # ensure the booking is confirmed to be able to use it
             )
             pro_user = UserFactory(email="pro@example.com", isBeneficiary=False, isAdmin=True)
             offerer = booking.stock.offer.venue.managingOfferer
