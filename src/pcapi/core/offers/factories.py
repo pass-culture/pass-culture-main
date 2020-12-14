@@ -10,7 +10,7 @@ from pcapi.models import offer_type
 
 
 ALL_TYPES = {
-    str(t) for t in list(offer_type.EventType) + list(offer_type.ThingType) if t.name != "ACTIVATION"
+    name for name in offer_type.ALL_OFFER_TYPES_DICT if name not in ("ThingType.ACTIVATION", "EventType.ACTIVATION")
 }  # {"EventType.Musique", "ThingType.Musique"...}
 
 

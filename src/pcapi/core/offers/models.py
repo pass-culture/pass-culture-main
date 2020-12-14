@@ -26,9 +26,9 @@ from pcapi.models.db import db
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.extra_data_mixin import ExtraDataMixin
 from pcapi.models.has_thumb_mixin import HasThumbMixin
-from pcapi.models.offer_type import Category
+from pcapi.models.offer_type import ALL_OFFER_TYPES_DICT
+from pcapi.models.offer_type import CATEGORIES_LABEL_DICT
 from pcapi.models.offer_type import CategoryType
-from pcapi.models.offer_type import EventType
 from pcapi.models.offer_type import ProductType
 from pcapi.models.offer_type import ThingType
 from pcapi.models.pc_object import PcObject
@@ -323,21 +323,15 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin, 
 
     @property
     def offerType(self) -> Optional[dict]:
-        all_types = list(ThingType) + list(EventType)
-        for possible_type in all_types:
-            if str(possible_type) == self.type:
-                return possible_type.as_dict()
+        if self.type not in ALL_OFFER_TYPES_DICT:
+            raise ValueError(f"Unexpected offer type '{self.type}' for offer {self.id}")
 
-        raise ValueError(f"Unexpected offer type '{self.type}' for offer {self.id}")
+        return ALL_OFFER_TYPES_DICT[self.type]
 
     @property
     def offer_category(self) -> str:
-        label = self.offerType["appLabel"]
-        for category in Category:
-            if label in category.value:
-                return category.name
-
-        return None  # offer_types EventType.ACTIVATION and ThingType.ACTIVATION do not have a corresponding Category...
+        # offer_types EventType.ACTIVATION and ThingType.ACTIVATION do not have a corresponding Category so return None in this case
+        return CATEGORIES_LABEL_DICT.get(self.offerType["appLabel"])
 
     @property
     def category_type(self) -> Optional[str]:

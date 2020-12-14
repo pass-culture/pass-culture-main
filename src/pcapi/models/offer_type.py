@@ -296,6 +296,10 @@ class ThingType(Enum):
     }
 
 
+# The as_dict() method is still needed because keys "type" and "value" are used...
+ALL_OFFER_TYPES_DICT = {str(t): t.as_dict() for t in list(ThingType) + list(EventType)}
+
+
 class ProductType:
     @classmethod
     def is_thing(cls, name: str) -> bool:
@@ -335,3 +339,6 @@ class Category(Enum):
     PRESSE = ["Presse en ligne"]
     SPECTACLE = ["Spectacle", "Abonnement spectacles"]
     VISITE = ["Musée, arts visuels et patrimoine"]
+
+
+CATEGORIES_LABEL_DICT = {label: category.name for category in list(Category) for label in category.value}
