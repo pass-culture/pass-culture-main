@@ -11,7 +11,8 @@ from tests.conftest import clean_database
 
 class CustomViewsTest:
     @clean_database
-    def test_beneficiary_user_creation(self, app):
+    @patch("pcapi.admin.custom_views.beneficiary_user_view.send_raw_email", return_value=True)
+    def test_beneficiary_user_creation(self, mocked_send_raw_email, app):
         users_factories.UserFactory(email="user@example.com", isAdmin=True, isBeneficiary=False)
 
         data = dict(
@@ -41,6 +42,21 @@ class CustomViewsTest:
         assert len(user_created.deposits) == 1
         assert user_created.deposits[0].source == "pass-culture-admin"
         assert user_created.deposits[0].amount == 500
+
+        mocked_send_raw_email.assert_called_with(
+            data={
+                "FromEmail": "support@example.com",
+                "Mj-TemplateID": 994771,
+                "Mj-TemplateLanguage": True,
+                "To": "toto@email.fr",
+                "Vars": {
+                    "prenom_user": "Serge",
+                    "token": user_created.resetPasswordToken,
+                    "email": "toto%40email.fr",
+                    "env": "-development",
+                },
+            }
+        )
 
     @patch("pcapi.settings.IS_PROD", return_value=True)
     @patch("pcapi.settings.SUPER_ADMIN_EMAIL_ADDRESSES", return_value="")
