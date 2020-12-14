@@ -2,10 +2,9 @@ from datetime import datetime
 from datetime import timedelta
 from unittest.mock import patch
 
+import pcapi.core.users.factories as users_factories
 from pcapi.domain.password import RESET_PASSWORD_TOKEN_LENGTH
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.models import UserSQLEntity
-from pcapi.repository import repository
 from pcapi.validation.routes.captcha import InvalidRecaptchaTokenException
 
 from tests.conftest import TestClient
@@ -18,9 +17,7 @@ class Returns400:
         data = {"email": "", "token": "dumbToken"}
 
         # when
-        response = TestClient(app.test_client()).post(
-            "/users/reset-password", json=data, headers={"origin": "http://localhost:3000"}
-        )
+        response = TestClient(app.test_client()).post("/users/reset-password", json=data)
 
         # then
         assert response.status_code == 400
@@ -32,9 +29,7 @@ class Returns400:
         data = {"token": "dumbToken"}
 
         # when
-        response = TestClient(app.test_client()).post(
-            "/users/reset-password", json=data, headers={"origin": "http://localhost:3000"}
-        )
+        response = TestClient(app.test_client()).post("/users/reset-password", json=data)
 
         # then
         assert response.status_code == 400
@@ -45,9 +40,7 @@ class Returns400:
         data = {"email": "dumbemail"}
 
         # when
-        response = TestClient(app.test_client()).post(
-            "/users/reset-password", json=data, headers={"origin": "http://localhost:3000"}
-        )
+        response = TestClient(app.test_client()).post("/users/reset-password", json=data)
 
         # then
         assert response.status_code == 400
@@ -59,9 +52,7 @@ class Returns400:
         data = {"email": "dumbemail"}
 
         # when
-        response = TestClient(app.test_client()).post(
-            "/users/reset-password", json=data, headers={"origin": "http://localhost:3000"}
-        )
+        response = TestClient(app.test_client()).post("/users/reset-password", json=data)
 
         # then
         assert response.status_code == 400
@@ -73,9 +64,7 @@ class Returns400:
         data = {"email": "dumbemail", "token": "dumbToken"}
 
         # when
-        response = TestClient(app.test_client()).post(
-            "/users/reset-password", json=data, headers={"origin": "http://localhost:3000"}
-        )
+        response = TestClient(app.test_client()).post("/users/reset-password", json=data)
 
         # then
         assert response.status_code == 400
@@ -89,9 +78,7 @@ class Returns204:
         data = {"token": "dumbToken", "email": "unknown.user@test.com"}
 
         # when
-        response = TestClient(app.test_client()).post(
-            "/users/reset-password", json=data, headers={"origin": "http://localhost:3000"}
-        )
+        response = TestClient(app.test_client()).post("/users/reset-password", json=data)
 
         # then
         assert response.status_code == 204
@@ -99,19 +86,15 @@ class Returns204:
     @patch("pcapi.routes.shared.passwords.check_recaptcha_token_is_valid", return_value=True)
     def when_email_is_known(self, check_recaptcha_token_is_valid_mock, app, db_session):
         # given
-        data = {"token": "dumbToken", "email": "bobby@test.com"}
-        user = create_user(email="bobby@test.com")
-        repository.save(user)
-        user_id = user.id
+        user = users_factories.UserFactory()
+        data = {"token": "dumbToken", "email": user.email}
 
         # when
-        response = TestClient(app.test_client()).post(
-            "/users/reset-password", json=data, headers={"origin": "http://localhost:3000"}
-        )
+        response = TestClient(app.test_client()).post("/users/reset-password", json=data)
 
         # then
-        user = UserSQLEntity.query.get(user_id)
         assert response.status_code == 204
+        user = UserSQLEntity.query.get(user.id)
         assert len(user.resetPasswordToken) == RESET_PASSWORD_TOKEN_LENGTH
         now = datetime.utcnow()
         assert (now + timedelta(hours=23)) < user.resetPasswordTokenValidityLimit < (now + timedelta(hours=25))
@@ -128,13 +111,11 @@ class Returns204:
         db_session,
     ):
         # given
-        data = {"token": "dumbToken", "email": "bobby@example.com"}
-        user = create_user(is_beneficiary=True, email="bobby@example.com")
-        app_origin_header = "http://localhost:3000"
-        repository.save(user)
+        user = users_factories.UserFactory()
+        data = {"token": "dumbToken", "email": user.email}
 
         # when
-        TestClient(app.test_client()).post("/users/reset-password", json=data, headers={"origin": app_origin_header})
+        TestClient(app.test_client()).post("/users/reset-password", json=data)
 
         # then
         send_reset_password_email_to_user_mock.assert_called_once_with(user, send_raw_email_mock)
@@ -151,13 +132,11 @@ class Returns204:
         db_session,
     ):
         # given
-        data = {"token": "dumbToken", "email": "bobby@example.com"}
-        user = create_user(is_beneficiary=False, email="bobby@example.com")
-        app_origin_header = "http://localhost:3000"
-        repository.save(user)
+        user = users_factories.UserFactory(isBeneficiary=False)
+        data = {"token": "dumbToken", "email": user.email}
 
         # when
-        TestClient(app.test_client()).post("/users/reset-password", json=data, headers={"origin": app_origin_header})
+        TestClient(app.test_client()).post("/users/reset-password", json=data)
 
         # then
         send_reset_password_email_to_pro_mock.assert_called_once_with(user, send_raw_email_mock)
