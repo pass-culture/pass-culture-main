@@ -37,7 +37,7 @@ from ..bookings.models import Booking
 from .models import Mediation
 
 
-DEFAULT_OFFERS_PER_PAGE = 20
+DEFAULT_OFFERS_PER_PAGE = 10
 DEFAULT_PAGE = 1
 UNCHANGED = object()
 
