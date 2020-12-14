@@ -1,0 +1,2 @@
+class NotEligible(Exception):
+    pass
