@@ -17,3 +17,13 @@ class SuspensionReason(Enum):
     END_OF_ELIGIBILITY = "end of eligibility"
     FRAUD = "fraud"
     UPON_USER_REQUEST = "upon user request"
+
+
+SUSPENSION_REASON_CHOICES = (
+    (SuspensionReason.END_OF_ELIGIBILITY, "fin d'éligibilité"),
+    (SuspensionReason.END_OF_CONTRACT, "fin de contrat"),
+    (SuspensionReason.FRAUD, "fraude"),
+    (SuspensionReason.UPON_USER_REQUEST, "demande de l'utilisateur"),
+)
+
+assert set(_t[0] for _t in SUSPENSION_REASON_CHOICES) == set(SuspensionReason)

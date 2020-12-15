@@ -1,4 +1,5 @@
 from datetime import datetime
+from unittest.mock import patch
 
 from sqlalchemy import and_
 from wtforms.form import Form
@@ -105,3 +106,41 @@ class ProUserViewTest:
 
         # Then
         assert user.publicName == "Ken Thompson"
+
+    @clean_database
+    # FIXME (dbaty, 2020-12-16): I could not find a quick way to
+    # generate a valid CSRF token in tests. This should be fixed.
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_suspend_pro(self, mocked_validate_csrf_token, app):
+        admin = users_factories.UserFactory(email="admin15@example.com", isAdmin=True, isBeneficiary=False)
+        pro = users_factories.UserFactory(email="user15@example.com", isBeneficiary=False)
+
+        client = TestClient(app.test_client()).with_auth(admin.email)
+        url = f"/pc/back-office/pro_users/suspend?user_id={pro.id}"
+        data = {
+            "reason": "fraud",
+            "csrf_token": "token",
+        }
+        response = client.post(url, form=data)
+
+        assert response.status_code == 302
+        assert not pro.isActive
+
+    @clean_database
+    # FIXME (dbaty, 2020-12-16): I could not find a quick way to
+    # generate a valid CSRF token in tests. This should be fixed.
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_unsuspend_pro(self, mocked_validate_csrf_token, app):
+        admin = users_factories.UserFactory(email="admin15@example.com", isAdmin=True, isBeneficiary=False)
+        pro = users_factories.UserFactory(email="user15@example.com", isBeneficiary=False, isActive=False)
+
+        client = TestClient(app.test_client()).with_auth(admin.email)
+        url = f"/pc/back-office/pro_users/unsuspend?user_id={pro.id}"
+        data = {
+            "reason": "fraud",
+            "csrf_token": "token",
+        }
+        response = client.post(url, form=data)
+
+        assert response.status_code == 302
+        assert pro.isActive

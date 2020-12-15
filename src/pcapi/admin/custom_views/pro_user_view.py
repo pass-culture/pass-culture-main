@@ -17,6 +17,8 @@ from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.models.venue_sql_entity import create_digital_venue
 from pcapi.validation.models.has_address_mixin import POSTAL_CODE_REGEX
 
+from .suspension_mixin import SuspensionMixin
+
 
 def unique_siren(form: Form, field: Field) -> None:
     if Offerer.query.filter_by(siren=field.data).first():
@@ -42,7 +44,7 @@ def create_user_offerer(user: UserSQLEntity, offerer: Offerer) -> UserOfferer:
     return user_offerer
 
 
-class ProUserView(BaseAdminView):
+class ProUserView(SuspensionMixin, BaseAdminView):
     can_edit = True
     can_create = True
     column_list = [
@@ -58,6 +60,7 @@ class ProUserView(BaseAdminView):
         "postalCode",
         "resetPasswordToken",
         "validationToken",
+        "actions",
     ]
     column_labels = dict(
         email="Email",

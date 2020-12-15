@@ -83,3 +83,41 @@ class BeneficiaryUserViewTest:
         deposits = Deposit.query.all()
         assert len(filtered_users) == 0
         assert len(deposits) == 0
+
+    @clean_database
+    # FIXME (dbaty, 2020-12-16): I could not find a quick way to
+    # generate a valid CSRF token in tests. This should be fixed.
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_suspend_beneficiary(self, mocked_validate_csrf_token, app):
+        admin = users_factories.UserFactory(email="admin15@example.com", isAdmin=True, isBeneficiary=False)
+        beneficiary = users_factories.UserFactory(email="user15@example.com")
+
+        client = TestClient(app.test_client()).with_auth(admin.email)
+        url = f"/pc/back-office/beneficiary_users/suspend?user_id={beneficiary.id}"
+        data = {
+            "reason": "fraud",
+            "csrf_token": "token",
+        }
+        response = client.post(url, form=data)
+
+        assert response.status_code == 302
+        assert not beneficiary.isActive
+
+    @clean_database
+    # FIXME (dbaty, 2020-12-16): I could not find a quick way to
+    # generate a valid CSRF token in tests. This should be fixed.
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_unsuspend_beneficiary(self, mocked_validate_csrf_token, app):
+        admin = users_factories.UserFactory(email="admin15@example.com", isAdmin=True, isBeneficiary=False)
+        beneficiary = users_factories.UserFactory(email="user15@example.com", isActive=False)
+
+        client = TestClient(app.test_client()).with_auth(admin.email)
+        url = f"/pc/back-office/beneficiary_users/unsuspend?user_id={beneficiary.id}"
+        data = {
+            "reason": "fraud",
+            "csrf_token": "token",
+        }
+        response = client.post(url, form=data)
+
+        assert response.status_code == 302
+        assert beneficiary.isActive

@@ -14,8 +14,10 @@ from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.utils.mailing import parse_email_addresses
 from pcapi.utils.mailing import send_raw_email
 
+from .suspension_mixin import SuspensionMixin
 
-class BeneficiaryUserView(BaseAdminView):
+
+class BeneficiaryUserView(SuspensionMixin, BaseAdminView):
     can_edit = True
 
     @property
@@ -38,6 +40,7 @@ class BeneficiaryUserView(BaseAdminView):
         "postalCode",
         "resetPasswordToken",
         "validationToken",
+        "actions",
     ]
     column_labels = dict(
         email="Email",
