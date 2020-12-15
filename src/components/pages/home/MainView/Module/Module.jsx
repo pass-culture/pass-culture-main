@@ -12,13 +12,11 @@ import TwoItems from './TwoItems/TwoItems'
 const swipeRatio = 0.2
 
 const Module = props => {
+  const { historyPush, row, module, results } = props
   const {
-    historyPush,
-    row,
-    module,
     trackAllTilesSeen,
     trackConsultOffer: consultOffer,
-    results,
+    trackSeeMoreHasBeenClicked: clickSeeMore,
   } = props
   const { algolia, cover, display } = module
 
@@ -28,25 +26,31 @@ const Module = props => {
 
   const haveAlreadySeenAllTiles = useRef(false)
 
+  // For modules with a cover, we artificially hide the title in contentful by setting it to " "
+  // In this case, we use the title from algolia, which is required.
+  const moduleName =
+    display && display.title && display.title.replace(/\s+/g, '') !== ''
+      ? display.title
+      : algolia.title
+
   const onChangeIndex = useCallback(
     numberOfTiles => index => {
-      const { display: { title = 'Missing title' } = {} } = module
-      const haveSeenAllTilesForTheFirstTime =
-        index + 1 === numberOfTiles && !haveAlreadySeenAllTiles.current
-
-      if (haveSeenAllTilesForTheFirstTime) {
-        trackAllTilesSeen(title, numberOfTiles)
+      const haveSeenAllTiles = index + 1 === numberOfTiles
+      if (haveSeenAllTiles && !haveAlreadySeenAllTiles.current) {
+        trackAllTilesSeen(moduleName, numberOfTiles)
         haveAlreadySeenAllTiles.current = true
       }
     },
-    [module, trackAllTilesSeen]
+    [trackAllTilesSeen, moduleName]
   )
 
   const trackConsultOffer = useCallback(() => {
-    const emptyDisplayTitle = display.title.replace(/\s+/g, '') === ''
-    const moduleName = emptyDisplayTitle ? algolia.title : display.title
     consultOffer(moduleName)
-  }, [algolia, display, consultOffer])
+  }, [moduleName, consultOffer])
+
+  const trackClickSeeMore = useCallback(() => {
+    clickSeeMore(moduleName)
+  }, [moduleName, clickSeeMore])
 
   const { layout = PANE_LAYOUT['ONE-ITEM-MEDIUM'], title } = display || {}
   const { hits = [], nbHits = 0, parsedParameters = null } = results || {}
@@ -80,10 +84,10 @@ const Module = props => {
               // eslint-disable-next-line react/no-array-index-key
               key={`${index}-tile`}
               layout={layout}
-              moduleName={title}
               parsedParameters={parsedParameters}
               row={row}
               tile={tile}
+              trackClickSeeMore={trackClickSeeMore}
               trackConsultOffer={trackConsultOffer}
             />
           ))}
@@ -104,6 +108,7 @@ Module.propTypes = {
   row: PropTypes.number.isRequired,
   trackAllTilesSeen: PropTypes.func.isRequired,
   trackConsultOffer: PropTypes.func.isRequired,
+  trackSeeMoreHasBeenClicked: PropTypes.func.isRequired,
 }
 
 export default Module

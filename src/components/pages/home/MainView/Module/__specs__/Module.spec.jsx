@@ -90,6 +90,8 @@ describe('src | components | Module', () => {
       module: null,
       row: 1,
       trackAllTilesSeen: jest.fn(),
+      trackConsultOffer: jest.fn(),
+      trackSeeMoreHasBeenClicked: jest.fn(),
       results: { hits: [], nbHits: 0, parsedParameters: {} },
     }
     mockStore = getStubStore({
@@ -204,12 +206,10 @@ describe('src | components | Module', () => {
     const seeMore = wrapper.find(SeeMore)
     expect(seeMore).toHaveLength(1)
     expect(seeMore.props()).toStrictEqual({
-      dispatch: expect.any(Function),
       historyPush: props.historyPush,
       isInFirstModule: true,
       isSwitching: false,
       layout: 'one-item-medium',
-      moduleName: 'Les offres près de chez toi!',
       parameters: {
         aroundRadius: null,
         beginningDatetime: null,
@@ -228,8 +228,7 @@ describe('src | components | Module', () => {
         searchAround: false,
         tags: [],
       },
-      trackSeeMoreHasBeenClicked: expect.any(Function),
-      tracking: expect.any(Object),
+      trackClickSeeMore: expect.any(Function),
     })
   })
 

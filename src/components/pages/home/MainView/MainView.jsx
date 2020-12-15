@@ -27,7 +27,12 @@ const MainView = props => {
     updateCurrentUser,
     algoliaMapping,
   } = props
-  const { trackAllModulesSeen, trackAllTilesSeen, trackConsultOffer } = props
+  const {
+    trackAllModulesSeen,
+    trackAllTilesSeen,
+    trackConsultOffer,
+    trackSeeMoreHasBeenClicked,
+  } = props
   const haveSeenAllModules = useRef(false)
   const modulesListRef = useRef(null)
 
@@ -69,6 +74,7 @@ const MainView = props => {
           row={row}
           trackAllTilesSeen={trackAllTilesSeen}
           trackConsultOffer={trackConsultOffer}
+          trackSeeMoreHasBeenClicked={trackSeeMoreHasBeenClicked}
         />
       )
     } else {
@@ -154,6 +160,7 @@ MainView.propTypes = {
   trackAllModulesSeen: PropTypes.func.isRequired,
   trackAllTilesSeen: PropTypes.func.isRequired,
   trackConsultOffer: PropTypes.func.isRequired,
+  trackSeeMoreHasBeenClicked: PropTypes.func.isRequired,
   updateCurrentUser: PropTypes.func.isRequired,
   user: PropTypes.shape(User).isRequired,
 }

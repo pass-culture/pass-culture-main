@@ -15,7 +15,6 @@ describe('src | components | SeeMore', () => {
       isSwitching: false,
       historyPush: jest.fn(),
       layout: PANE_LAYOUT['ONE-ITEM-MEDIUM'],
-      moduleName: 'Un super module près de chez toi',
       parameters: {
         aroundRadius: null,
         geolocation: { latitude: 1, longitude: 2 },
@@ -28,7 +27,7 @@ describe('src | components | SeeMore', () => {
         searchAround: true,
         tags: [],
       },
-      trackSeeMoreHasBeenClicked: jest.fn(),
+      trackClickSeeMore: jest.fn(),
     }
   })
 
@@ -188,6 +187,6 @@ describe('src | components | SeeMore', () => {
     link.simulate('click', { preventDefault: jest.fn() })
 
     // Then
-    expect(props.trackSeeMoreHasBeenClicked).toHaveBeenCalledWith(props.moduleName)
+    expect(props.trackClickSeeMore).toHaveBeenCalledTimes(1)
   })
 })

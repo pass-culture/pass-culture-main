@@ -3,17 +3,17 @@ import React from 'react'
 
 import Cover from '../Cover/Cover'
 import OfferTile from '../OfferTile/OfferTile'
-import SeeMoreContainer from '../SeeMore/SeeMoreContainer'
+import SeeMore from '../SeeMore/SeeMore'
 
 const OneItem = ({
   historyPush,
   isSwitching,
   layout,
-  moduleName,
   parsedParameters,
   row,
   tile,
   trackConsultOffer,
+  trackClickSeeMore,
 }) => {
   const tileIsACoverItem = typeof tile === 'string'
   const tileIsASeeMoreItem = typeof tile === 'boolean'
@@ -28,14 +28,14 @@ const OneItem = ({
     )
   } else {
     return tileIsASeeMoreItem ? (
-      <SeeMoreContainer
+      <SeeMore
         historyPush={historyPush}
         isInFirstModule={row === 0}
         isSwitching={isSwitching}
         key={`${row}-see-more`}
         layout={layout}
-        moduleName={moduleName}
         parameters={parsedParameters}
+        trackClickSeeMore={trackClickSeeMore}
       />
     ) : (
       <OfferTile
@@ -54,10 +54,10 @@ OneItem.propTypes = {
   historyPush: PropTypes.func.isRequired,
   isSwitching: PropTypes.bool.isRequired,
   layout: PropTypes.string.isRequired,
-  moduleName: PropTypes.string.isRequired,
   parsedParameters: PropTypes.shape().isRequired,
   row: PropTypes.number.isRequired,
   tile: PropTypes.oneOfType([PropTypes.string, PropTypes.bool, PropTypes.shape()]).isRequired,
+  trackClickSeeMore: PropTypes.func.isRequired,
   trackConsultOffer: PropTypes.func.isRequired,
 }
 

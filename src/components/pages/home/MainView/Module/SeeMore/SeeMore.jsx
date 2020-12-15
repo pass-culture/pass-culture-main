@@ -29,13 +29,12 @@ const SeeMore = ({
   isInFirstModule,
   isSwitching,
   layout,
-  moduleName,
   parameters,
-  trackSeeMoreHasBeenClicked,
+  trackClickSeeMore,
 }) => {
   function goToSearchPage(event) {
     if (!isSwitching) {
-      trackSeeMoreHasBeenClicked(moduleName)
+      trackClickSeeMore()
       historyPush({
         pathname: '/recherche/resultats',
         parametersFromHome: parameters,
@@ -77,7 +76,6 @@ const SeeMore = ({
 
 SeeMore.defaultProps = {
   layout: PANE_LAYOUT['ONE-ITEM-MEDIUM'],
-  moduleName: '',
 }
 
 SeeMore.propTypes = {
@@ -85,9 +83,8 @@ SeeMore.propTypes = {
   isInFirstModule: PropTypes.bool.isRequired,
   isSwitching: PropTypes.bool.isRequired,
   layout: PropTypes.string,
-  moduleName: PropTypes.string,
   parameters: PropTypes.shape().isRequired,
-  trackSeeMoreHasBeenClicked: PropTypes.func.isRequired,
+  trackClickSeeMore: PropTypes.func.isRequired,
 }
 
 export default SeeMore

@@ -2,17 +2,17 @@ import PropTypes from 'prop-types'
 import Cover from '../Cover/Cover'
 import React from 'react'
 import OfferTile from '../OfferTile/OfferTile'
-import SeeMoreContainer from '../SeeMore/SeeMoreContainer'
+import SeeMore from '../SeeMore/SeeMore'
 
 const TwoItems = ({
   historyPush,
   isSwitching,
   layout,
-  moduleName,
   parsedParameters,
   row,
   tile,
   trackConsultOffer,
+  trackClickSeeMore,
 }) => {
   const firstTileIsACoverItem = typeof tile[0] === 'string'
   const firstTileIsASeeMoreItem = typeof tile[0] === 'boolean'
@@ -28,13 +28,14 @@ const TwoItems = ({
     )
   } else if (firstTileIsASeeMoreItem) {
     return (
-      <SeeMoreContainer
+      <SeeMore
         historyPush={historyPush}
         isInFirstModule={row === 0}
         isSwitching={isSwitching}
         key={`${row}-see-more`}
         layout={layout}
         parameters={parsedParameters}
+        trackClickSeeMore={trackClickSeeMore}
       />
     )
   } else {
@@ -50,13 +51,13 @@ const TwoItems = ({
           trackConsultOffer={trackConsultOffer}
         />
         {secondTileIsASeeMoreItem ? (
-          <SeeMoreContainer
+          <SeeMore
             historyPush={historyPush}
             isSwitching={isSwitching}
             key={`${row}-see-more`}
             layout={layout}
-            moduleName={moduleName}
             parameters={parsedParameters}
+            trackClickSeeMore={trackClickSeeMore}
           />
         ) : offersArePaired ? (
           <OfferTile
@@ -77,12 +78,12 @@ TwoItems.propTypes = {
   historyPush: PropTypes.func.isRequired,
   isSwitching: PropTypes.bool.isRequired,
   layout: PropTypes.string.isRequired,
-  moduleName: PropTypes.string.isRequired,
   parsedParameters: PropTypes.shape().isRequired,
   row: PropTypes.number.isRequired,
   tile: PropTypes.arrayOf(
     PropTypes.oneOfType([PropTypes.string, PropTypes.bool, PropTypes.shape()])
   ).isRequired,
+  trackClickSeeMore: PropTypes.func.isRequired,
   trackConsultOffer: PropTypes.func.isRequired,
 }
 

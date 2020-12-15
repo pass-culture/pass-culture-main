@@ -36,6 +36,12 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => ({
       name: moduleName,
     })
   },
+  trackSeeMoreHasBeenClicked: moduleName => {
+    ownProps.tracking.trackEvent({
+      action: 'seeMoreHasBeenClicked',
+      name: moduleName,
+    })
+  },
 })
 
 export default compose(
