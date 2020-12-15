@@ -37,7 +37,7 @@ export const getInputErrorForField = async fieldName => {
 }
 
 export const setOfferValues = async values => {
-  const checkboxes = ['bookingEmail', 'isDuo', 'receiveNotificationEmails']
+  const checkboxes = ['isDuo', 'receiveNotificationEmails']
   const setFormValueForField = async (field, value) => {
     let input
     const { label, exact } = fieldLabels[field]

@@ -352,7 +352,7 @@ describe('offerDetails - Creation', () => {
         expect(screen.getByLabelText('Structure')).toHaveDisplayValue(offerers[0].name)
       })
 
-      it('should display email notification input when aksing to receive booking emails', async () => {
+      it('should display email notification input when asking to receive booking emails', async () => {
         // Given
         renderOffers({}, store)
         await setOfferValues({ type: 'EventType.MUSIQUE' })
@@ -361,11 +361,11 @@ describe('offerDetails - Creation', () => {
         await setOfferValues({ receiveNotificationEmails: true })
 
         // Then
-        const modifiedInputs = await setOfferValues({ bookingEmail: true })
-        const { bookingEmail: bookingMailInput } = modifiedInputs
-
-        expect(bookingMailInput).toBeInTheDocument()
-        expect(bookingMailInput).toHaveAttribute('name', 'bookingEmail')
+        const bookingEmailInput = screen.getByLabelText(
+          'Être notifié par email des réservations à :'
+        )
+        expect(bookingEmailInput).toBeInTheDocument()
+        expect(bookingEmailInput).toHaveAttribute('name', 'bookingEmail')
       })
 
       describe('with conditional field "musicType"', () => {
@@ -740,5 +740,21 @@ describe('offerDetails - Creation', () => {
     expect(isDuoError).toBeNull()
     const withdrawalDetailsError = await getInputErrorForField('withdrawalDetails')
     expect(withdrawalDetailsError).toBeNull()
+    const bookingEmailInput = await getInputErrorForField('bookingEmail')
+    expect(bookingEmailInput).toBeNull()
+  })
+
+  it('should show error for email notification input when asking to receive booking emails and no email was provided', async () => {
+    // Given
+    renderOffers({}, store)
+    await setOfferValues({ type: 'EventType.MUSIQUE' })
+    await setOfferValues({ receiveNotificationEmails: true })
+
+    // When
+    fireEvent.click(screen.getByText('Enregistrer et passer au stocks'))
+
+    // Then
+    const bookingEmailInput = await getInputErrorForField('bookingEmail')
+    expect(bookingEmailInput).toHaveTextContent('Ce champ est obligatoire')
   })
 })

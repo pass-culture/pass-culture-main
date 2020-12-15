@@ -25,4 +25,4 @@ export const DEFAULT_FORM_VALUES = {
   withdrawalDetails: TEXT_INPUT_DEFAULT_VALUE,
 }
 
-export const MANDATORY_FIELDS = ['name', 'venueId', 'offererId', 'url']
+export const MANDATORY_FIELDS = ['name', 'venueId', 'offererId', 'url', 'bookingEmail']
