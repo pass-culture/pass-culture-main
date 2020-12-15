@@ -16,6 +16,10 @@
     appearance: none;
   }
 
+  .select.readonly select {
+    line-height: 2.5;
+  }
+
   .textarea {
     border: rem(2px) solid $grey-medium;
     display: block;

@@ -274,9 +274,9 @@ class Mediation extends PureComponent {
           <div className="section">
             <div className="row">
               <div className="section">
-                <h6>
+                <div>
                   {'Exemples :'}
-                </h6>
+                </div>
                 <div className="columns crop-explain">
                   <div className="column">
                     <img
