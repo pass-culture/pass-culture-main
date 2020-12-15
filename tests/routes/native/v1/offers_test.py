@@ -18,7 +18,23 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class OffersTest:
     def test_get_event_offer(self, app):
         offer_type = EventType.CINEMA
-        offer = OfferFactory(type=str(offer_type), isDuo=True, withdrawalDetails="modalité de retrait")
+        extra_data = {
+            "author": "mandibule",
+            "musicSubType": "502",
+            "musicType": "501",
+            "performer": "interprète",
+            "showSubType": "101",
+            "showType": "100",
+            "stageDirector": "metteur en scène",
+            "speaker": "intervenant",
+        }
+        offer = OfferFactory(
+            type=str(offer_type),
+            isDuo=True,
+            withdrawalDetails="modalité de retrait",
+            extraData=extra_data,
+            durationMinutes=33,
+        )
 
         bookableStock = EventStockFactory(offer=offer, price=12.34)
         EventStockFactory(offer=offer, beginningDatetime=datetime.utcnow() - timedelta(days=1))  # not bookable stock
@@ -37,6 +53,17 @@ class OffersTest:
             ],
             "category": {"categoryType": "Event", "label": "Cinéma", "name": "CINEMA"},
             "description": offer.description,
+            "extraData": {
+                "author": "mandibule",
+                "durationMinutes": 33,
+                "musicSubType": "Acid Jazz",
+                "musicType": "Jazz",
+                "performer": "interprète",
+                "showSubType": "Carnaval",
+                "showType": "Arts de la rue",
+                "speaker": "intervenant",
+                "stageDirector": "metteur en scène",
+            },
             "imageUrl": None,
             "isDuo": True,
             "isDigital": offer.isDigital,

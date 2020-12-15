@@ -1,13 +1,21 @@
 from datetime import datetime
 from decimal import Decimal
+from typing import Callable
+from typing import Dict
 from typing import List
 from typing import Optional
 
 from pydantic import BaseModel
+from pydantic.class_validators import validator
 from pydantic.fields import Field
 
+from pcapi.domain.music_types import MUSIC_SUB_TYPES_DICT
+from pcapi.domain.music_types import MUSIC_TYPES_DICT
+from pcapi.domain.show_types import SHOW_SUB_TYPES_DICT
+from pcapi.domain.show_types import SHOW_TYPES_DICT
 from pcapi.models.offer_type import CategoryNameEnum
 from pcapi.models.offer_type import CategoryType
+from pcapi.utils.logger import logger
 
 
 class Coordinates(BaseModel):
@@ -39,7 +47,7 @@ class OfferStockResponse(BaseModel):
 
 class OfferVenueResponse(BaseModel):
     @classmethod
-    def from_orm(cls, venue):
+    def from_orm(cls, venue):  # type: ignore
         venue.coordinates = {"latitude": venue.latitude, "longitude": venue.longitude}
         return super().from_orm(venue)
 
@@ -57,18 +65,65 @@ class OfferVenueResponse(BaseModel):
         allow_population_by_field_name = True
 
 
+LABELS_BY_DICT_MAPPING = {"musicSubType": ""}
+
+
+def get_id_converter(labels_by_id: Dict, field_name: str) -> Callable[[Optional[str]], Optional[str]]:
+    def convert_id_into_label(value_id: Optional[str]) -> Optional[str]:
+        try:
+            return labels_by_id[int(value_id)] if value_id else None
+        except ValueError:  # on the second time this function is called twice, the field is already converted
+            return None
+        except KeyError:
+            logger.exception("Invalid '%s' '%s' found on an offer", field_name, value_id)
+            return None
+
+    return convert_id_into_label
+
+
+class OfferExtraData(BaseModel):
+    author: Optional[str]
+    durationMinutes: Optional[int]
+    musicSubType: Optional[str]
+    musicType: Optional[str]
+    performer: Optional[str]
+    showSubType: Optional[str]
+    showType: Optional[str]
+    stageDirector: Optional[str]
+    speaker: Optional[str]
+
+    _convert_music_sub_type = validator("musicSubType", pre=True, allow_reuse=True)(
+        get_id_converter(MUSIC_SUB_TYPES_DICT, "musicSubType")
+    )
+    _convert_music_type = validator("musicType", pre=True, allow_reuse=True)(
+        get_id_converter(MUSIC_TYPES_DICT, "musicType")
+    )
+    _convert_show_sub_type = validator("showSubType", pre=True, allow_reuse=True)(
+        get_id_converter(SHOW_SUB_TYPES_DICT, "showSubType")
+    )
+    _convert_show_type = validator("showType", pre=True, allow_reuse=True)(
+        get_id_converter(SHOW_TYPES_DICT, "showType")
+    )
+
+
 class OfferResponse(BaseModel):
     @classmethod
-    def from_orm(cls, offer):
+    def from_orm(cls, offer):  # type: ignore
         offer.category = {
             "name": offer.offer_category,
             "label": offer.offerType["appLabel"],
             "categoryType": offer.category_type,
         }
+        if offer.extraData:
+            offer.extraData["durationMinutes"] = offer.durationMinutes
+        else:
+            offer.extraData = {"durationMinutes": offer.durationMinutes}
+
         return super().from_orm(offer)
 
     id: int
     description: Optional[str]
+    extraData: Optional[OfferExtraData]
     isDigital: bool
     isDuo: bool
     name: str
