@@ -166,12 +166,12 @@ def send_activation_email(
     send_email: Callable[..., bool],
     native_version: bool = False,
     token: users_models.Token = None,
-) -> None:
+) -> bool:
     if not native_version:
         data = beneficiary_activation.get_activation_email_data(user=user)
     else:
         data = beneficiary_activation.get_activation_email_data_for_native(user=user, token=token)
-    send_email(data=data)
+    return send_email(data=data)
 
 
 def send_batch_stock_postponement_emails_to_users(bookings: List[Booking], send_email: Callable[..., bool]) -> None:
