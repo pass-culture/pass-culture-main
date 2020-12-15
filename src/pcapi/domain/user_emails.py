@@ -17,6 +17,9 @@ from pcapi.emails.beneficiary_pre_subscription_rejected import (
     make_not_eligible_beneficiary_pre_subscription_rejected_data,
 )
 from pcapi.emails.beneficiary_pre_subscription_rejected import make_duplicate_beneficiary_pre_subscription_rejected_data
+from pcapi.emails.beneficiary_soon_to_be_expired_bookings import (
+    build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary,
+)
 from pcapi.emails.beneficiary_warning_after_pro_booking_cancellation import (
     retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation,
 )
@@ -175,6 +178,13 @@ def send_pro_user_waiting_for_validation_by_admin_email(
     user: UserSQLEntity, send_email: Callable[..., bool], offerer: Offerer
 ) -> None:
     data = retrieve_data_for_pro_user_waiting_offerer_validation_email(user, offerer)
+    send_email(data=data)
+
+
+def send_soon_to_be_expired_bookings_recap_email_to_beneficiary(
+    beneficiary: UserSQLEntity, bookings: List[Booking], send_email: Callable[..., bool]
+) -> None:
+    data = build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary(beneficiary, bookings)
     send_email(data=data)
 
 

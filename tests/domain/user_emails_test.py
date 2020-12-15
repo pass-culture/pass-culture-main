@@ -1,12 +1,14 @@
 from datetime import datetime
+from datetime import timedelta
 from unittest.mock import Mock
 from unittest.mock import call
 from unittest.mock import patch
 
 import pytest
 
-from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.offers.factories import OffererFactory
+from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.offers.factories import ProductFactory
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import Token
 from pcapi.domain.user_emails import send_activation_email
@@ -24,6 +26,7 @@ from pcapi.domain.user_emails import send_rejection_email_to_beneficiary_pre_sub
 from pcapi.domain.user_emails import send_reset_password_email_to_native_app_user
 from pcapi.domain.user_emails import send_reset_password_email_to_pro
 from pcapi.domain.user_emails import send_reset_password_email_to_user
+from pcapi.domain.user_emails import send_soon_to_be_expired_bookings_recap_email_to_beneficiary
 from pcapi.domain.user_emails import send_user_driven_cancellation_email_to_offerer
 from pcapi.domain.user_emails import send_user_validation_email
 from pcapi.domain.user_emails import send_validation_confirmation_email_to_pro
@@ -36,6 +39,7 @@ from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_stock_with_event_offer
 from pcapi.models import Offerer
+from pcapi.models import offer_type
 from pcapi.repository import repository
 
 from tests.domain_creators.generic_creators import create_domain_beneficiary_pre_subcription
@@ -582,3 +586,52 @@ class SendExpiredBookingsRecapEmailToOffererTest:
         mocked_send_email.assert_called_once()
         mocked_send_email.call_args_list[0][1]["MJ-TemplateID"] = 1952508
         mocked_send_email.call_args_list[0][1]["recipients"] = "dev@example.com"
+
+
+@pytest.mark.usefixtures("db_session")
+class SendSoonToBeExpiredBookingsRecapEmailToBeneficiaryTest:
+    @patch("pcapi.utils.mailing.feature_send_mail_to_users_enabled", return_value=True)
+    def test_should_send_email_to_beneficiary_when_they_have_soon_to_be_expired_bookings(self, app):
+        now = datetime.utcnow()
+        user = users_factories.UserFactory(email="isasimov@example.com", isBeneficiary=True, isAdmin=False)
+        created_23_days_ago = now - timedelta(days=23)
+
+        dvd = ProductFactory(type=str(offer_type.ThingType.AUDIOVISUEL))
+        soon_to_be_expired_dvd_booking = BookingFactory(
+            stock__offer__product=dvd,
+            stock__offer__name="Fondation",
+            stock__offer__venue__name="Première Fondation",
+            dateCreated=created_23_days_ago,
+            user=user,
+        )
+
+        cd = ProductFactory(type=str(offer_type.ThingType.MUSIQUE))
+        soon_to_be_expired_cd_booking = BookingFactory(
+            stock__offer__product=cd,
+            stock__offer__name="Fondation et Empire",
+            stock__offer__venue__name="Seconde Fondation",
+            dateCreated=created_23_days_ago,
+            user=user,
+        )
+
+        mocked_send_email = Mock()
+
+        send_soon_to_be_expired_bookings_recap_email_to_beneficiary(
+            user, [soon_to_be_expired_cd_booking, soon_to_be_expired_dvd_booking], mocked_send_email
+        )
+
+        mocked_send_email.assert_called_once()
+        kwargs = mocked_send_email.call_args_list[0][1]
+        assert kwargs["data"] == {
+            "FromEmail": "dev@example.com",
+            "Mj-TemplateID": 1927224,
+            "Mj-TemplateLanguage": True,
+            "To": "dev@example.com",
+            "Vars": {
+                "bookings": [
+                    {"offer_name": "Fondation et Empire", "venue_name": "Seconde Fondation"},
+                    {"offer_name": "Fondation", "venue_name": "Première Fondation"},
+                ],
+                "environment": "-development",
+            },
+        }
