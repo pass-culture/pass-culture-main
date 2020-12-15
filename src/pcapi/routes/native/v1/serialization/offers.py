@@ -6,6 +6,9 @@ from typing import Optional
 from pydantic import BaseModel
 from pydantic.fields import Field
 
+from pcapi.models.offer_type import CategoryNameEnum
+from pcapi.models.offer_type import CategoryType
+
 
 class Coordinates(BaseModel):
     latitude: Optional[Decimal]
@@ -13,9 +16,9 @@ class Coordinates(BaseModel):
 
 
 class OfferCategoryResponse(BaseModel):
-    categoryType: str
+    categoryType: CategoryType
     label: str
-    name: str
+    name: CategoryNameEnum
 
 
 class OfferOffererResponse(BaseModel):

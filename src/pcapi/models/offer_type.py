@@ -341,4 +341,6 @@ class Category(Enum):
     VISITE = ["Musée, arts visuels et patrimoine"]
 
 
+CategoryNameEnum = Enum("CategoryNameEnum", {category.name: category.name for category in list(Category)})
+
 CATEGORIES_LABEL_DICT = {label: category.name for category in list(Category) for label in category.value}
