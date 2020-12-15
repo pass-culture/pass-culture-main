@@ -26,7 +26,6 @@
     background: url(/icons/dropdown-disclosure-down-b.svg) no-repeat 92% 56%;
     border: 2px solid $grey-medium;
     border-radius: rem(20px);
-    cursor: pointer;
     font-size: rem(16px);
     font-weight: 700;
     height: rem(40px);
@@ -140,7 +139,6 @@
     .fw-offer-date-input {
       background: none;
       border: 0;
-      cursor: pointer;
       font-size: rem(16px);
       outline: none;
       padding-left: rem(10px);
@@ -173,7 +171,6 @@
       border: 2px solid $grey-medium;
       border-radius: rem(20px);
       box-shadow: 2px 2px 6px 0 $black-shadow;
-      cursor: pointer;
       font-size: rem(16px);
       height: rem(40px);
       margin-top: rem(12px);

@@ -26,8 +26,6 @@
         padding: 0.5rem 1rem;
 
         &:not(.placeholder) {
-          cursor: pointer;
-
           &.highlighted {
             font-weight: 700;
           }

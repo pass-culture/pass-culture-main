@@ -20,7 +20,6 @@
     align-items: center;
     background: $grey-light;
     bottom: 0;
-    cursor: pointer;
     display: flex;
     justify-content: center;
     left: 0;
@@ -76,7 +75,6 @@
     }
 
     .zoom {
-      cursor: pointer;
       width: calc(100% - 90px);
     }
 
@@ -85,7 +83,6 @@
       background-size: rem(36px) rem(36px);
       border: none;
       color: $primary;
-      cursor: pointer;
       display: inline-block;
       font-size: rem(1px);
       height: rem(40px);

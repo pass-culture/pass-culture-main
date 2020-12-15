@@ -23,7 +23,6 @@
       align-self: center;
       background: none;
       border: none;
-      cursor: pointer;
       height: rem(14px);
       margin-left: rem(8px);
       width: rem(14px);
@@ -144,10 +143,6 @@
       overflow: visible;
       white-space: nowrap;
 
-      label {
-        cursor: pointer;
-      }
-
       &.label-disabled {
         opacity: 0.3;
 
@@ -165,7 +160,6 @@
         background-color: transparent;
         border: none;
         color: inherit;
-        cursor: pointer;
         display: flex;
         font-size: inherit;
         font-weight: inherit;
@@ -232,7 +226,6 @@
     button {
       background: none;
       border: none;
-      cursor: pointer;
       height: rem(24px);
 
       &:disabled {

@@ -42,6 +42,13 @@ pre {
   background-color: $grey-medium;
 }
 
+input[type="radio"],
+input[type="date"],
+select,
+button {
+  cursor: pointer;
+}
+
 .main-list {
   margin-bottom: 1rem;
 

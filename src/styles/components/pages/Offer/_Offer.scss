@@ -41,7 +41,6 @@
     border: rem(2px) solid $primary;
     border-radius: 0;
     color: $primary;
-    cursor: pointer;
     display: inline-flex;
     line-height: rem(15px);
     padding: rem(4px) rem(12px);
@@ -91,7 +90,6 @@
         background-color: $white;
         border: rem(2px) solid $grey-medium;
         border-radius: rem(18px);
-        cursor: pointer;
         font-size: rem(16px);
         font-weight: 500;
         height: rem(36px);
