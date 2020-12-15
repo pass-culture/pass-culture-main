@@ -5,8 +5,9 @@ from unittest.mock import patch
 
 import pytest
 
-import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.users import factories as users_factories
+from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.offers.factories import OffererFactory
+import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import Token
 from pcapi.domain.user_emails import send_activation_email
 from pcapi.domain.user_emails import send_attachment_validation_email_to_pro_offerer
@@ -14,6 +15,8 @@ from pcapi.domain.user_emails import send_batch_cancellation_emails_to_users
 from pcapi.domain.user_emails import send_beneficiary_booking_cancellation_email
 from pcapi.domain.user_emails import send_booking_confirmation_email_to_beneficiary
 from pcapi.domain.user_emails import send_booking_recap_emails
+from pcapi.domain.user_emails import send_expired_bookings_recap_email_to_beneficiary
+from pcapi.domain.user_emails import send_expired_bookings_recap_email_to_offerer
 from pcapi.domain.user_emails import send_offerer_bookings_recap_email_after_offerer_cancellation
 from pcapi.domain.user_emails import send_offerer_driven_cancellation_email_to_offerer
 from pcapi.domain.user_emails import send_ongoing_offerer_attachment_information_email_to_pro
@@ -229,7 +232,7 @@ class SendBookingConfirmationEmailToBeneficiaryTest:
 class SendBookingRecapEmailsTest:
     @patch("pcapi.utils.mailing.feature_send_mail_to_users_enabled", return_value=False)
     def test_send_to_developers(self, mock_feature_send_mail_to_users_enabled):
-        booking = bookings_factories.BookingFactory(
+        booking = BookingFactory(
             stock__offer__bookingEmail="booking.email@example.com",
         )
         mocked_send_email = Mock()
@@ -242,7 +245,7 @@ class SendBookingRecapEmailsTest:
 
     @patch("pcapi.utils.mailing.feature_send_mail_to_users_enabled", return_value=True)
     def test_send_to_offerer_and_admin(self, mock_feature_send_mail_to_users_enabled):
-        booking = bookings_factories.BookingFactory(
+        booking = BookingFactory(
             stock__offer__bookingEmail="booking.email@example.com",
         )
         mocked_send_email = Mock()
@@ -255,7 +258,7 @@ class SendBookingRecapEmailsTest:
 
     @patch("pcapi.utils.mailing.feature_send_mail_to_users_enabled", return_value=True)
     def test_send_only_to_admin(self, feature_send_mail_to_users_enabled):
-        booking = bookings_factories.BookingFactory()
+        booking = BookingFactory()
         mocked_send_email = Mock()
 
         send_booking_recap_emails(booking, mocked_send_email)
@@ -542,3 +545,40 @@ class SendRejectionEmailToBeneficiaryPreSubscriptionTest:
         # then
         mocked_make_data.assert_called_once_with(beneficiary_pre_subscription.email)
         mocked_send_email.assert_called_once_with(data={"MJ-TemplateID": 1619528})
+
+
+class SendExpiredBookingsRecapEmailToBeneficiaryTest:
+    @pytest.mark.usefixtures("db_session")
+    def test_should_send_email_to_beneficiary_when_expired_bookings_cancelled(self, app):
+        amnesiac_user = users_factories.UserFactory(email="dory@example.com")
+        expired_today_dvd_booking = BookingFactory(
+            user=amnesiac_user,
+        )
+        expired_today_cd_booking = BookingFactory(
+            user=amnesiac_user,
+        )
+        mocked_send_email = Mock()
+
+        send_expired_bookings_recap_email_to_beneficiary(
+            amnesiac_user, [expired_today_cd_booking, expired_today_dvd_booking], mocked_send_email
+        )
+
+        mocked_send_email.assert_called_once()
+        mocked_send_email.call_args_list[0][1]["MJ-TemplateID"] = 1951103
+
+
+class SendExpiredBookingsRecapEmailToOffererTest:
+    @pytest.mark.usefixtures("db_session")
+    def test_should_send_email_to_offerer_when_expired_bookings_cancelled(self, app):
+        offerer = OffererFactory()
+        expired_today_dvd_booking = BookingFactory()
+        expired_today_cd_booking = BookingFactory()
+        mocked_send_email = Mock()
+
+        send_expired_bookings_recap_email_to_offerer(
+            offerer, [expired_today_cd_booking, expired_today_dvd_booking], mocked_send_email
+        )
+
+        mocked_send_email.assert_called_once()
+        mocked_send_email.call_args_list[0][1]["MJ-TemplateID"] = 1952508
+        mocked_send_email.call_args_list[0][1]["recipients"] = "dev@example.com"

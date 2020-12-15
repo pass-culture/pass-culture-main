@@ -6,7 +6,10 @@ from pcapi.core.bookings import conf
 import pcapi.core.bookings.api as bookings_api
 import pcapi.core.bookings.repository as bookings_repository
 from pcapi.core.bookings.repository import find_expiring_bookings
+from pcapi.domain.user_emails import send_expired_bookings_recap_email_to_beneficiary
+from pcapi.domain.user_emails import send_expired_bookings_recap_email_to_offerer
 from pcapi.utils.logger import logger
+from pcapi.utils.mailing import send_raw_email
 
 
 def handle_expired_bookings() -> None:
@@ -68,7 +71,8 @@ def notify_users_of_expired_bookings(expired_on: datetime.date = None) -> None:
     notified_users = []
 
     if is_after_start_date:
-        for user, _bookings in expired_bookings_grouped_by_user.items():
+        for user, bookings in expired_bookings_grouped_by_user.items():
+            send_expired_bookings_recap_email_to_beneficiary(user, bookings, send_raw_email)
             notified_users.append(user)
 
         logger.info(
@@ -102,7 +106,8 @@ def notify_offerers_of_expired_bookings(expired_on: datetime.date = None) -> Non
     notified_offerers = []
 
     if is_after_start_date:
-        for offerer, _bookings in expired_bookings_grouped_by_offerer.items():
+        for offerer, bookings in expired_bookings_grouped_by_offerer.items():
+            send_expired_bookings_recap_email_to_offerer(offerer, bookings, send_raw_email)
             notified_offerers.append(offerer)
 
         logger.info(

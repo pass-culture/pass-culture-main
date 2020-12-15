@@ -9,6 +9,7 @@ from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription impo
 from pcapi.emails import beneficiary_activation
 from pcapi.emails.beneficiary_booking_cancellation import make_beneficiary_booking_cancellation_email_data
 from pcapi.emails.beneficiary_booking_confirmation import retrieve_data_for_beneficiary_booking_confirmation_email
+from pcapi.emails.beneficiary_expired_bookings import build_expired_bookings_recap_email_data_for_beneficiary
 from pcapi.emails.beneficiary_offer_cancellation import (
     retrieve_offerer_booking_recap_email_data_after_user_cancellation,
 )
@@ -25,6 +26,7 @@ from pcapi.emails.offerer_booking_recap import retrieve_data_for_offerer_booking
 from pcapi.emails.offerer_bookings_recap_after_deleting_stock import (
     retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation,
 )
+from pcapi.emails.offerer_expired_bookings import build_expired_bookings_recap_email_data_for_offerer
 from pcapi.emails.offerer_ongoing_attachment import retrieve_data_for_offerer_ongoing_attachment_email
 from pcapi.emails.pro_reset_password import retrieve_data_for_reset_password_pro_email
 from pcapi.emails.pro_waiting_validation import retrieve_data_for_pro_user_waiting_offerer_validation_email
@@ -145,6 +147,21 @@ def send_booking_cancellation_emails_to_user_and_offerer(
     if reason == BookingCancellationReasons.OFFERER:
         send_warning_to_beneficiary_after_pro_booking_cancellation(booking, send_email)
         send_offerer_driven_cancellation_email_to_offerer(booking, send_email)
+
+
+def send_expired_bookings_recap_email_to_beneficiary(
+    beneficiary: UserSQLEntity, bookings: List[Booking], send_email: Callable[..., bool]
+) -> None:
+    data = build_expired_bookings_recap_email_data_for_beneficiary(beneficiary, bookings)
+    send_email(data=data)
+
+
+def send_expired_bookings_recap_email_to_offerer(
+    offerer: Offerer, bookings: List[Booking], send_email: Callable[..., bool]
+) -> None:
+    recipients = _build_recipients_list(bookings[0])
+    data = build_expired_bookings_recap_email_data_for_offerer(offerer, recipients, bookings)
+    send_email(data=data)
 
 
 def send_user_validation_email(

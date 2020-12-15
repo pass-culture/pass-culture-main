@@ -1,6 +1,6 @@
 from datetime import datetime
 import os
-from typing import Callable
+import typing
 
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
@@ -35,7 +35,7 @@ class MailjetNotificationService(NotificationService):
         self,
         booking: Booking,
         reason: BookingCancellationReasons,
-        send_email: Callable[..., bool],
+        send_email: typing.Callable[..., bool],
     ):
         try:
             send_booking_cancellation_emails_to_user_and_offerer(booking, reason, send_raw_email)
