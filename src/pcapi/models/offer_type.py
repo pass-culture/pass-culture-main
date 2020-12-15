@@ -1,11 +1,15 @@
-import enum
 from enum import Enum
+
+
+class CategoryType(Enum):
+    EVENT = "Event"
+    THING = "Thing"
 
 
 class EventType(Enum):
     def as_dict(self) -> dict:
         dict_value = {
-            "type": "Event",
+            "type": CategoryType.EVENT.value,
             "value": str(self),
         }
         dict_value.update(self.value)
@@ -96,7 +100,7 @@ class EventType(Enum):
 class ThingType(Enum):
     def as_dict(self):
         dict_value = {
-            "type": "Thing",
+            "type": CategoryType.THING.value,
             "value": str(self),
         }
         dict_value.update(self.value)
@@ -314,7 +318,7 @@ class ProductType:
         return False
 
 
-class Category(enum.Enum):
+class Category(Enum):
     CINEMA = ["Cinéma", "Carte d'abonnement cinéma"]
     CONFERENCE = ["Conférences, rencontres et découverte des métiers"]
     INSTRUMENT = ["Instrument de musique"]

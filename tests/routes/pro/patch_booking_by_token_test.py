@@ -87,10 +87,7 @@ class Returns204:
         # FIXME: what is the purpose of this test? Are we testing that
         # Flask knows how to URL-decode parameters?
         def expect_booking_to_be_used_with_special_char_in_url(self, app):
-            booking = BookingFactory(
-                token="ABCDEF",
-                user__email="user+plus@example.com",
-            )
+            booking = BookingFactory(token="ABCDEF", user__email="user+plus@example.com")
             pro_user = UserFactory(email="pro@example.com")
             offerer = booking.stock.offer.venue.managingOfferer
             offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)

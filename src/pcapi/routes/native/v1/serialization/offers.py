@@ -8,11 +8,9 @@ from pydantic.fields import Field
 
 
 class OfferCategoryResponse(BaseModel):
-    appLabel: str = Field(..., alias="label")
-    value: str
-
-    class Config:
-        allow_population_by_field_name = True
+    categoryType: str
+    label: str
+    name: str
 
 
 class OfferOffererResponse(BaseModel):
@@ -46,12 +44,21 @@ class OfferVenueResponse(BaseModel):
 
 
 class OfferResponse(BaseModel):
+    @classmethod
+    def from_orm(cls, offer):
+        offer.category = {
+            "name": offer.offer_category,
+            "label": offer.offerType["appLabel"],
+            "categoryType": offer.category_type,
+        }
+        return super().from_orm(offer)
+
     id: int
     description: Optional[str]
     isDigital: bool
     isDuo: bool
     name: str
-    offerType: OfferCategoryResponse = Field(..., alias="category")
+    category: OfferCategoryResponse
     bookableStocks: List[OfferStockResponse]
     thumbUrl: Optional[str] = Field(None, alias="imageUrl")
     venue: OfferVenueResponse

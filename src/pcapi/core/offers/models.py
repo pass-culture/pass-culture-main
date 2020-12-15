@@ -27,6 +27,7 @@ from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.extra_data_mixin import ExtraDataMixin
 from pcapi.models.has_thumb_mixin import HasThumbMixin
 from pcapi.models.offer_type import Category
+from pcapi.models.offer_type import CategoryType
 from pcapi.models.offer_type import EventType
 from pcapi.models.offer_type import ProductType
 from pcapi.models.offer_type import ThingType
@@ -326,10 +327,8 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin, 
         for possible_type in all_types:
             if str(possible_type) == self.type:
                 return possible_type.as_dict()
-        # FIXME (dbaty, 2020-12-03): shouldn't we raise an error such as
-        #     raise ValueError(f"Unexpected offer type '{self.type}'")
-        # instead of returning None?
-        return None
+
+        raise ValueError(f"Unexpected offer type '{self.type}' for offer {self.id}")
 
     @property
     def offer_category(self) -> str:
@@ -337,9 +336,17 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin, 
         for category in Category:
             if label in category.value:
                 return category.name
-        # FIXME (dbaty, 2020-12-03): shouldn't we raise an error such as
-        #     raise ValueError(f"Unexpected category for offer type '{label}'")
-        # instead of returning None?
+
+        return None  # offer_types EventType.ACTIVATION and ThingType.ACTIVATION do not have a corresponding Category...
+
+    @property
+    def category_type(self) -> Optional[str]:
+        if self.isEvent:
+            return CategoryType.EVENT.value
+
+        if self.isThing:
+            return CategoryType.THING.value
+
         return None
 
     @property

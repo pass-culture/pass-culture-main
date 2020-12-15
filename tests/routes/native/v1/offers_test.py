@@ -5,9 +5,9 @@ import pytest
 
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.factories import OfferFactory
-from pcapi.core.offers.factories import ThingOfferFactory
 from pcapi.core.offers.factories import ThingStockFactory
 from pcapi.models.offer_type import EventType
+from pcapi.models.offer_type import ThingType
 
 from tests.conftest import TestClient
 
@@ -16,7 +16,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class OffersTest:
-    def test_get_offer(self, app):
+    def test_get_event_offer(self, app):
         offer_type = EventType.CINEMA
         offer = OfferFactory(type=str(offer_type), isDuo=True, withdrawalDetails="modalité de retrait")
 
@@ -35,7 +35,7 @@ class OffersTest:
                     "beginningDatetime": bookableStock.beginningDatetime.strftime("%Y-%m-%dT%H:%M:%S.%f"),
                 }
             ],
-            "category": {"label": "Cinéma", "value": str(offer_type)},
+            "category": {"categoryType": "Event", "label": "Cinéma", "name": "CINEMA"},
             "description": offer.description,
             "imageUrl": None,
             "isDuo": True,
@@ -54,7 +54,8 @@ class OffersTest:
         }
 
     def test_get_thing_offer(self, app):
-        offer = ThingOfferFactory()
+        offer_type = ThingType.MUSEES_PATRIMOINE_ABO
+        offer = OfferFactory(type=str(offer_type))
         ThingStockFactory(offer=offer, price=12.34)
 
         response = TestClient(app.test_client()).get(f"/native/v1/offer/{offer.id}")
@@ -62,7 +63,11 @@ class OffersTest:
         assert response.status_code == 200
         assert not response.json["bookableStocks"][0]["beginningDatetime"]
         assert response.json["bookableStocks"][0]["price"] == 12.34
-        assert response.json["category"]["label"] == "Film"
+        assert response.json["category"] == {
+            "categoryType": "Thing",
+            "label": "Musée, arts visuels et patrimoine",
+            "name": "VISITE",
+        }
 
     def test_get_offer_not_found(self, app):
         response = TestClient(app.test_client()).get("/native/v1/offer/1")
