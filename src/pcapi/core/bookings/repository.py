@@ -214,16 +214,6 @@ def find_expired_bookings_ordered_by_user(expired_on: date = None) -> Query:
     )
 
 
-def find_bookings_expired_on_specific_date_ordered_by_user(booking_date: date) -> Query:
-    return (
-        Booking.query.filter(Booking.isCancelled.is_(False))
-        .filter(Booking.isUsed.is_(False))
-        .filter(cast(Booking.dateCreated, Date) == booking_date)
-        .order_by(Booking.userId)
-        .all()
-    )
-
-
 def find_expired_bookings_ordered_by_offerer(expired_on: date = None) -> Query:
     expired_on = expired_on or date.today()
     return (

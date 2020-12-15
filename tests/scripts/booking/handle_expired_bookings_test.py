@@ -1,3 +1,4 @@
+from datetime import date
 from datetime import datetime
 from datetime import timedelta
 import logging
@@ -188,9 +189,9 @@ class NotifyUsersOfExpiredBookingsTest:
         )
 
     @mock.patch("pcapi.core.bookings.conf.CANCEL_EXPIRED_BOOKINGS_CRON_START_DATE", datetime.utcnow())
-    def should_log_notifications_of_bookings_which_will_expired_in_7_days(self, app, caplog) -> None:
+    def should_log_notifications_of_bookings_which_will_expire_in_7_days(self, app, caplog) -> None:
         caplog.set_level(logging.INFO)
-        now = datetime.utcnow()
+        now = date.today()
         booking_date_23_days_ago = now - timedelta(days=23)
         booking_date_22_days_ago = now - timedelta(days=22)
 

@@ -59,10 +59,13 @@ def cancel_expired_bookings(batch_size: int = 100) -> None:
 
 
 def notify_users_of_soon_to_be_expired_bookings() -> None:
-    booking_creation_date_23_days_ago = datetime.date.today() - datetime.timedelta(days=23)
+    days_remaining_to_have_seven_days_left = 23
+    booking_creation_date_23_days_ago = datetime.date.today() - datetime.timedelta(
+        days=days_remaining_to_have_seven_days_left
+    )
 
     logger.info("[notify_users_of_soon_to_be_expired_bookings] Start")
-    bookings_ordered_by_user = bookings_repository.find_bookings_expired_on_specific_date_ordered_by_user(
+    bookings_ordered_by_user = bookings_repository.find_soon_to_be_expiring_booking_ordered_by_user(
         booking_creation_date_23_days_ago
     )
 
