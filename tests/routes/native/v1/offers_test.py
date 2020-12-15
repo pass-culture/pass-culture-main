@@ -45,6 +45,10 @@ class OffersTest:
                 "id": offer.venue.id,
                 "address": offer.venue.address,
                 "city": offer.venue.city,
+                "coordinates": {
+                    "latitude": float(offer.venue.latitude) if offer.venue.latitude else None,
+                    "longitude": float(offer.venue.longitude) if offer.venue.longitude else None,
+                },
                 "name": offer.venue.name,
                 "offerer": {"name": offer.venue.managingOfferer.name},
                 "postalCode": offer.venue.postalCode,

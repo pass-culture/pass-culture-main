@@ -7,6 +7,11 @@ from pydantic import BaseModel
 from pydantic.fields import Field
 
 
+class Coordinates(BaseModel):
+    latitude: Optional[Decimal]
+    longitude: Optional[Decimal]
+
+
 class OfferCategoryResponse(BaseModel):
     categoryType: str
     label: str
@@ -30,6 +35,11 @@ class OfferStockResponse(BaseModel):
 
 
 class OfferVenueResponse(BaseModel):
+    @classmethod
+    def from_orm(cls, venue):
+        venue.coordinates = {"latitude": venue.latitude, "longitude": venue.longitude}
+        return super().from_orm(venue)
+
     id: int
     address: Optional[str]
     city: Optional[str]
@@ -37,6 +47,7 @@ class OfferVenueResponse(BaseModel):
     name: str
     postalCode: Optional[str]
     publicName: Optional[str]
+    coordinates: Coordinates
 
     class Config:
         orm_mode = True
