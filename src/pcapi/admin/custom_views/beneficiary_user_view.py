@@ -4,6 +4,7 @@ from sqlalchemy.orm import query
 from sqlalchemy.sql.functions import func
 from wtforms import Form
 from wtforms import validators
+from wtforms.validators import DataRequired
 
 from pcapi import settings
 from pcapi.admin.base_configuration import BaseAdminView
@@ -57,14 +58,20 @@ class BeneficiaryUserView(BaseAdminView):
         "email",
         "firstName",
         "lastName",
-        "publicName",
         "dateOfBirth",
         "departementCode",
         "postalCode",
         "isBeneficiary",
     ]
 
+    form_args = dict(
+        firstName=dict(validators=[DataRequired()]),
+        lastName=dict(validators=[DataRequired()]),
+        dateOfBirth=dict(validators=[DataRequired()]),
+    )
+
     def on_model_change(self, form: Form, model: UserSQLEntity, is_created: bool) -> None:
+        model.publicName = f"{model.firstName} {model.lastName}"
         # If a user is an admin, he shouldn't be able to be beneficiary
         if form.isBeneficiary.data and model.isAdmin:
             raise validators.ValidationError("Un admin ne peut pas être bénéficiaire")

@@ -9,7 +9,7 @@ from tests.conftest import TestClient
 from tests.conftest import clean_database
 
 
-class CustomViewsTest:
+class BeneficiaryUserViewTest:
     @clean_database
     @patch("pcapi.admin.custom_views.beneficiary_user_view.send_raw_email", return_value=True)
     def test_beneficiary_user_creation(self, mocked_send_raw_email, app):
@@ -19,7 +19,6 @@ class CustomViewsTest:
             email="toto@email.fr",
             firstName="Serge",
             lastName="Lama",
-            publicName="SergeLeLama",
             dateOfBirth="2002-07-13 10:05:00",
             departementCode="93",
             postalCode="93000",
@@ -34,7 +33,7 @@ class CustomViewsTest:
         user_created = UserSQLEntity.query.filter_by(email="toto@email.fr").one()
         assert user_created.firstName == "Serge"
         assert user_created.lastName == "Lama"
-        assert user_created.publicName == "SergeLeLama"
+        assert user_created.publicName == "Serge Lama"
         assert user_created.dateOfBirth == datetime(2002, 7, 13, 10, 5)
         assert user_created.departementCode == "93"
         assert user_created.postalCode == "93000"
@@ -69,7 +68,6 @@ class CustomViewsTest:
             email="toto@email.fr",
             firstName="Serge",
             lastName="Lama",
-            publicName="SergeLeLama",
             dateOfBirth="2002-07-13 10:05:00",
             departementCode="93",
             postalCode="93000",
