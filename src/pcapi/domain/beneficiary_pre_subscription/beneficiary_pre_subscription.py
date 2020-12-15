@@ -1,39 +1,25 @@
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
 from pcapi.domain.postal_code.postal_code import PostalCode
 
 
+@dataclass
 class BeneficiaryPreSubscription:
-    def __init__(
-        self,
-        activity: str,
-        address: str,
-        application_id: int,
-        city: str,
-        civility: str,
-        date_of_birth: datetime,
-        email: str,
-        first_name: str,
-        last_name: str,
-        phone_number: str,
-        postal_code: str,
-        source: str,
-        source_id: Optional[int],
-    ):
-        self.activity = activity
-        self.address = address
-        self.application_id = application_id
-        self.city = city
-        self.civility = civility
-        self.date_of_birth = date_of_birth
-        self.email = email
-        self.first_name = first_name
-        self.last_name = last_name
-        self.phone_number = phone_number
-        self.postal_code = postal_code
-        self.source = source
-        self.source_id = source_id
+    activity: str
+    address: str
+    application_id: int
+    city: str
+    civility: str
+    date_of_birth: datetime
+    email: str
+    first_name: str
+    last_name: str
+    phone_number: str
+    postal_code: str
+    source: str
+    source_id: Optional[int]
 
     @property
     def department_code(self) -> str:
