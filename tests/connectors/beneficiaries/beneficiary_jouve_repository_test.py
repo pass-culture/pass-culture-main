@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Dict
 from unittest.mock import MagicMock
 from unittest.mock import call
 from unittest.mock import patch
@@ -6,11 +7,33 @@ from unittest.mock import patch
 from freezegun import freeze_time
 import pytest
 
+from pcapi.connectors.beneficiaries.jouve_backend import ApiJouveException
+from pcapi.connectors.beneficiaries.jouve_backend import BeneficiaryJouveBackend
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
-from pcapi.infrastructure.repository.beneficiary.beneficiary_jouve_repository import ApiJouveException
-from pcapi.infrastructure.repository.beneficiary.beneficiary_jouve_repository import BeneficiaryJouveRepository
 
-from tests.infrastructure.repository.beneficiary import beneficiary_jouve_creators
+
+def get_application_by_detail_response(
+    application_id: int = 2,
+    birth_date: str = "09/08/1995",
+) -> Dict:
+    return {
+        "id": application_id,
+        "birthDate": birth_date,
+        "registrationDate": "04/06/2020 06:00",
+        "address": "18 avenue des fleurs",
+        "city": "RENNES",
+        "email": "rennes@example.org",
+        "firstName": "Céline",
+        "gender": "F",
+        "lastName": "DURAND",
+        "postalCode": "35123",
+        "phoneNumber": "0123456789",
+        "activity": "Apprenti",
+    }
+
+
+def get_token_detail_response(token: str) -> Dict:
+    return {"Value": token}
 
 
 @freeze_time("2020-10-15 09:00:00")
@@ -18,27 +41,18 @@ from tests.infrastructure.repository.beneficiary import beneficiary_jouve_creato
 @patch("pcapi.settings.JOUVE_API_PASSWORD", "secret-password")
 @patch("pcapi.settings.JOUVE_API_USERNAME", "username")
 @patch("pcapi.settings.JOUVE_API_VAULT_GUID", "12")
-@patch("pcapi.infrastructure.repository.beneficiary.beneficiary_jouve_repository.requests.post")
+@patch("pcapi.connectors.beneficiaries.jouve_backend.requests.post")
 def test_calls_jouve_api_with_previously_fetched_token(mocked_requests_post):
     # Given
     token = "token-for-tests"
     application_id = 5
 
     get_token_response = MagicMock(status_code=200)
-    get_token_response.json = MagicMock(return_value=beneficiary_jouve_creators.get_token_detail_response(token))
+    get_token_response.json = MagicMock(return_value=get_token_detail_response(token))
 
-    get_application_by_json = beneficiary_jouve_creators.get_application_by_detail_response(
-        address="18 avenue des fleurs",
+    get_application_by_json = get_application_by_detail_response(
         application_id=application_id,
         birth_date="08/24/1995",
-        city="RENNES",
-        email="rennes@example.org",
-        first_name="Céline",
-        gender="F",
-        last_name="DURAND",
-        phone_number="0123456789",
-        postal_code="35123",
-        status="Apprenti",
     )
     get_application_by_response = MagicMock(status_code=200)
     get_application_by_response.json = MagicMock(return_value=get_application_by_json)
@@ -46,7 +60,7 @@ def test_calls_jouve_api_with_previously_fetched_token(mocked_requests_post):
     mocked_requests_post.side_effect = [get_token_response, get_application_by_response]
 
     # When
-    beneficiary_pre_subscription = BeneficiaryJouveRepository().get_application_by(application_id)
+    beneficiary_pre_subscription = BeneficiaryJouveBackend().get_application_by(application_id)
 
     # Then
     assert mocked_requests_post.call_args_list[0] == call(
@@ -80,7 +94,7 @@ def test_calls_jouve_api_with_previously_fetched_token(mocked_requests_post):
     assert beneficiary_pre_subscription.public_name == "Céline DURAND"
 
 
-@patch("pcapi.infrastructure.repository.beneficiary.beneficiary_jouve_repository.requests.post")
+@patch("pcapi.connectors.beneficiaries.jouve_backend.requests.post")
 def test_raise_exception_when_password_is_invalid(stubed_requests_post):
     # Given
     application_id = "5"
@@ -88,22 +102,22 @@ def test_raise_exception_when_password_is_invalid(stubed_requests_post):
 
     # When
     with pytest.raises(ApiJouveException) as api_jouve_exception:
-        BeneficiaryJouveRepository().get_application_by(application_id)
+        BeneficiaryJouveBackend().get_application_by(application_id)
 
     # Then
     assert str(api_jouve_exception.value) == "Error 400 getting API jouve authentication token"
 
 
-@patch("pcapi.infrastructure.repository.beneficiary.beneficiary_jouve_repository.requests.post")
+@patch("pcapi.connectors.beneficiaries.jouve_backend.requests.post")
 def test_raise_exception_when_token_is_invalid(stubed_requests_post):
     # Given
     token = "token-for-tests"
     application_id = "5"
 
     get_token_response = MagicMock(status_code=200)
-    get_token_response.json = MagicMock(return_value=beneficiary_jouve_creators.get_token_detail_response(token))
+    get_token_response.json = MagicMock(return_value=get_token_detail_response(token))
 
-    get_application_by_json = beneficiary_jouve_creators.get_application_by_detail_response()
+    get_application_by_json = get_application_by_detail_response()
     get_application_by_response = MagicMock(status_code=400)
     get_application_by_response.json = MagicMock(return_value=get_application_by_json)
 
@@ -111,7 +125,7 @@ def test_raise_exception_when_token_is_invalid(stubed_requests_post):
 
     # When
     with pytest.raises(ApiJouveException) as api_jouve_exception:
-        BeneficiaryJouveRepository().get_application_by(application_id)
+        BeneficiaryJouveBackend().get_application_by(application_id)
 
     # Then
     assert str(api_jouve_exception.value) == "Error 400 getting API jouve GetJouveByID with id: 5"

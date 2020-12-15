@@ -138,3 +138,4 @@ JOUVE_API_DOMAIN = os.environ.get("JOUVE_API_DOMAIN")
 JOUVE_API_USERNAME = os.environ.get("JOUVE_USERNAME")
 JOUVE_API_PASSWORD = os.environ.get("JOUVE_PASSWORD")
 JOUVE_API_VAULT_GUID = os.environ.get("JOUVE_VAULT_GUID")
+JOUVE_APPLICATION_BACKEND = "pcapi.connectors.beneficiaries.jouve_backend.BeneficiaryJouveBackend"

@@ -1,10 +1,10 @@
 from datetime import datetime
-from unittest.mock import MagicMock
 from unittest.mock import patch
 
 from freezegun import freeze_time
 import pytest
 
+from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsADuplicate
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.models import BeneficiaryImport
@@ -12,46 +12,50 @@ from pcapi.models import UserSQLEntity
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.models.deposit import Deposit
 from pcapi.repository import repository
-from pcapi.use_cases.create_beneficiary_from_application import CreateBeneficiaryFromApplication
+from pcapi.use_cases.create_beneficiary_from_application import create_beneficiary_from_application
 
-from tests.domain_creators.generic_creators import create_domain_beneficiary_pre_subcription
+
+PRE_SUBSCRIPTION_BASE_DATA = {
+    "activity": "Apprenti",
+    "address": "3 rue de Valois",
+    "city": "Paris",
+    "civility": "Mme",
+    "date_of_birth": datetime(1995, 2, 5),
+    "email": "rennes@example.org",
+    "first_name": "Thomas",
+    "last_name": "DURAND",
+    "phone_number": "0123456789",
+    "source": "jouve",
+    "source_id": None,
+}
+
+
+class FakeBeneficiaryJouveBackend:
+    def get_application_by(self, application_id: int) -> BeneficiaryPreSubscription:
+        return BeneficiaryPreSubscription(
+            application_id=application_id,
+            postal_code=f"{application_id:02d}123",
+            **PRE_SUBSCRIPTION_BASE_DATA,
+        )
 
 
 @patch("pcapi.use_cases.create_beneficiary_from_application.send_raw_email")
 @patch("pcapi.use_cases.create_beneficiary_from_application.send_activation_email")
 @patch("pcapi.domain.password.random_token")
 @patch("pcapi.infrastructure.repository.beneficiary.beneficiary_pre_subscription_sql_converter.random_password")
+@patch(
+    "pcapi.settings.JOUVE_APPLICATION_BACKEND",
+    "tests.use_cases.create_beneficiary_from_application_test.FakeBeneficiaryJouveBackend",
+)
 @freeze_time("2020-10-15 09:00:00")
 @pytest.mark.usefixtures("db_session")
 def test_saved_a_beneficiary_from_application(
     stubed_random_password, stubed_random_token, mocked_send_activation_email, stubed_send_raw_email, app
 ):
     # Given
-    application_id = 7
+    application_id = 35
     stubed_random_password.return_value = b"random-password"
     stubed_random_token.return_value = "token"
-    beneficiary_pre_subscription = create_domain_beneficiary_pre_subcription(
-        activity="Apprenti",
-        address="3 rue de Valois",
-        application_id=application_id,
-        city="Paris",
-        civility="Mme",
-        date_of_birth=datetime(1995, 2, 5),
-        email="rennes@example.org",
-        first_name="Thomas",
-        last_name="DURAND",
-        phone_number="0123456789",
-        postal_code="35123",
-        source="jouve",
-        source_id=None,
-    )
-
-    beneficiary_pre_subscription_repository = MagicMock()
-    beneficiary_pre_subscription_repository.get_application_by.return_value = beneficiary_pre_subscription
-    create_beneficiary_from_application = CreateBeneficiaryFromApplication()
-    create_beneficiary_from_application.beneficiary_pre_subscription_repository = (
-        beneficiary_pre_subscription_repository
-    )
 
     # When
     create_beneficiary_from_application.execute(application_id)
@@ -79,7 +83,7 @@ def test_saved_a_beneficiary_from_application(
 
     deposit = Deposit.query.one()
     assert deposit.amount == 500
-    assert deposit.source == "dossier jouve [7]"
+    assert deposit.source == "dossier jouve [35]"
     assert deposit.userId == beneficiary.id
 
     beneficiary_import = BeneficiaryImport.query.one()
@@ -90,25 +94,17 @@ def test_saved_a_beneficiary_from_application(
     mocked_send_activation_email.assert_called_once()
 
 
+@patch(
+    "pcapi.settings.JOUVE_APPLICATION_BACKEND",
+    "tests.use_cases.create_beneficiary_from_application_test.FakeBeneficiaryJouveBackend",
+)
 @pytest.mark.usefixtures("db_session")
 def test_cannot_save_beneficiary_if_email_is_already_taken(app):
     # Given
+    application_id = 35
     email = "rennes@example.org"
     user = create_user(email=email, idx=4)
     repository.save(user)
-
-    application_id = 7
-    beneficiary_pre_subscription = create_domain_beneficiary_pre_subcription(
-        date_of_birth=datetime(1995, 2, 5),
-        application_id=application_id,
-        email=email,
-    )
-    beneficiary_pre_subscription_repository = MagicMock()
-    beneficiary_pre_subscription_repository.get_application_by.return_value = beneficiary_pre_subscription
-    create_beneficiary_from_application = CreateBeneficiaryFromApplication()
-    create_beneficiary_from_application.beneficiary_pre_subscription_repository = (
-        beneficiary_pre_subscription_repository
-    )
 
     # When
     create_beneficiary_from_application.execute(application_id)
@@ -124,6 +120,10 @@ def test_cannot_save_beneficiary_if_email_is_already_taken(app):
     assert beneficiary_import.detail == f"Email {email} is already taken."
 
 
+@patch(
+    "pcapi.settings.JOUVE_APPLICATION_BACKEND",
+    "tests.use_cases.create_beneficiary_from_application_test.FakeBeneficiaryJouveBackend",
+)
 @pytest.mark.usefixtures("db_session")
 def test_cannot_save_beneficiary_if_duplicate(app):
     # Given
@@ -135,19 +135,7 @@ def test_cannot_save_beneficiary_if_duplicate(app):
     user = create_user(first_name=first_name, last_name=last_name, date_of_birth=date_of_birth, idx=existing_user_id)
     repository.save(user)
 
-    application_id = 7
-    beneficiary_pre_subscription = create_domain_beneficiary_pre_subcription(
-        date_of_birth=date_of_birth,
-        application_id=application_id,
-        first_name=first_name,
-        last_name=last_name,
-    )
-    beneficiary_pre_subscription_repository = MagicMock()
-    beneficiary_pre_subscription_repository.get_application_by.return_value = beneficiary_pre_subscription
-    create_beneficiary_from_application = CreateBeneficiaryFromApplication()
-    create_beneficiary_from_application.beneficiary_pre_subscription_repository = (
-        beneficiary_pre_subscription_repository
-    )
+    application_id = 35
 
     # When
     create_beneficiary_from_application.execute(application_id)
@@ -163,33 +151,15 @@ def test_cannot_save_beneficiary_if_duplicate(app):
     assert beneficiary_import.detail == f"User with id {existing_user_id} is a duplicate."
 
 
+@patch(
+    "pcapi.settings.JOUVE_APPLICATION_BACKEND",
+    "tests.use_cases.create_beneficiary_from_application_test.FakeBeneficiaryJouveBackend",
+)
 @pytest.mark.usefixtures("db_session")
 def test_cannot_save_beneficiary_if_department_is_not_eligible(app):
     # Given
-    application_id = 7
-    postal_code = "36123"
-    beneficiary_pre_subscription = create_domain_beneficiary_pre_subcription(
-        activity="Apprenti",
-        address="3 rue de Valois",
-        application_id=application_id,
-        city="Paris",
-        civility="Mme",
-        date_of_birth=datetime(1995, 2, 5),
-        email="rennes@example.org",
-        first_name="Thomas",
-        last_name="DURAND",
-        phone_number="0123456789",
-        postal_code=postal_code,
-        source="jouve",
-        source_id=None,
-    )
-
-    beneficiary_pre_subscription_repository = MagicMock()
-    beneficiary_pre_subscription_repository.get_application_by.return_value = beneficiary_pre_subscription
-    create_beneficiary_from_application = CreateBeneficiaryFromApplication()
-    create_beneficiary_from_application.beneficiary_pre_subscription_repository = (
-        beneficiary_pre_subscription_repository
-    )
+    application_id = 36
+    postal_code = f"{application_id:02d}123"
 
     # When
     create_beneficiary_from_application.execute(application_id)
@@ -208,28 +178,30 @@ def test_cannot_save_beneficiary_if_department_is_not_eligible(app):
 @patch("pcapi.use_cases.create_beneficiary_from_application.validate")
 @patch("pcapi.use_cases.create_beneficiary_from_application.send_raw_email")
 @patch("pcapi.use_cases.create_beneficiary_from_application.send_rejection_email_to_beneficiary_pre_subscription")
+@patch(
+    "pcapi.settings.JOUVE_APPLICATION_BACKEND",
+    "tests.use_cases.create_beneficiary_from_application_test.FakeBeneficiaryJouveBackend",
+)
 @pytest.mark.usefixtures("db_session")
 def test_calls_send_rejection_mail_with_validation_error(
     mocked_send_rejection_email_to_beneficiary_pre_subscription, stubed_send_raw_email, stubed_validate, app
 ):
     # Given
-    application_id = 7
-    beneficiary_pre_subscription = create_domain_beneficiary_pre_subcription(application_id=application_id)
-    beneficiary_pre_subscription_repository = MagicMock()
-    beneficiary_pre_subscription_repository.get_application_by.return_value = beneficiary_pre_subscription
-    create_beneficiary_from_application = CreateBeneficiaryFromApplication()
-    create_beneficiary_from_application.beneficiary_pre_subscription_repository = (
-        beneficiary_pre_subscription_repository
-    )
+    application_id = 35
     error = BeneficiaryIsADuplicate("Some reason")
     stubed_validate.side_effect = error
+    pre_subscription = BeneficiaryPreSubscription(
+        application_id=application_id,
+        postal_code=f"{application_id:02d}123",
+        **PRE_SUBSCRIPTION_BASE_DATA,
+    )
 
     # When
     create_beneficiary_from_application.execute(application_id)
 
     # Then
     mocked_send_rejection_email_to_beneficiary_pre_subscription.assert_called_once_with(
-        beneficiary_pre_subscription=beneficiary_pre_subscription,
+        beneficiary_pre_subscription=pre_subscription,
         beneficiary_is_eligible=True,
         send_email=stubed_send_raw_email,
     )

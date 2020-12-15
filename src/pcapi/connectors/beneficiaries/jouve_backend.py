@@ -14,7 +14,7 @@ class ApiJouveException(Exception):
     pass
 
 
-class BeneficiaryJouveRepository:
+class BeneficiaryJouveBackend:
     def _get_authentication_token(self) -> str:
         expiration = datetime.datetime.now() + datetime.timedelta(hours=1)
         response = requests.post(
