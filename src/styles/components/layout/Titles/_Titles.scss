@@ -28,17 +28,10 @@
 }
 
 .title-subtitle-link-block {
-  display: grid;
-  grid-gap: rem(10px);
-  grid-template-columns: repeat(3, 1fr);
-
-  h2 {
-    grid-column: 1 / 4;
-  }
+  display: flex;
+  justify-content: space-between;
 
   .title-action-links {
-    grid-column: 4;
-
     .link {
       background-color: transparent;
       color: $primary;
