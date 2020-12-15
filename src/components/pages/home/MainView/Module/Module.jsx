@@ -12,7 +12,14 @@ import TwoItems from './TwoItems/TwoItems'
 const swipeRatio = 0.2
 
 const Module = props => {
-  const { historyPush, row, module, trackAllTilesSeen, results } = props
+  const {
+    historyPush,
+    row,
+    module,
+    trackAllTilesSeen,
+    trackConsultOffer: consultOffer,
+    results,
+  } = props
   const { algolia, cover, display } = module
 
   const [isSwitching, setIsSwitching] = useState(false)
@@ -34,6 +41,12 @@ const Module = props => {
     },
     [module, trackAllTilesSeen]
   )
+
+  const trackConsultOffer = useCallback(() => {
+    const emptyDisplayTitle = display.title.replace(/\s+/g, '') === ''
+    const moduleName = emptyDisplayTitle ? algolia.title : display.title
+    consultOffer(moduleName)
+  }, [algolia, display, consultOffer])
 
   const { layout = PANE_LAYOUT['ONE-ITEM-MEDIUM'], title } = display || {}
   const { hits = [], nbHits = 0, parsedParameters = null } = results || {}
@@ -71,6 +84,7 @@ const Module = props => {
               parsedParameters={parsedParameters}
               row={row}
               tile={tile}
+              trackConsultOffer={trackConsultOffer}
             />
           ))}
         </SwipeableViews>
@@ -89,6 +103,7 @@ Module.propTypes = {
   }).isRequired,
   row: PropTypes.number.isRequired,
   trackAllTilesSeen: PropTypes.func.isRequired,
+  trackConsultOffer: PropTypes.func.isRequired,
 }
 
 export default Module

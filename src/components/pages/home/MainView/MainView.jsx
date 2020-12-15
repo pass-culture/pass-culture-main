@@ -27,7 +27,7 @@ const MainView = props => {
     updateCurrentUser,
     algoliaMapping,
   } = props
-  const { trackAllModulesSeen, trackAllTilesSeen } = props
+  const { trackAllModulesSeen, trackAllTilesSeen, trackConsultOffer } = props
   const haveSeenAllModules = useRef(false)
   const modulesListRef = useRef(null)
 
@@ -68,6 +68,7 @@ const MainView = props => {
           results={algoliaMapping[module.moduleId]}
           row={row}
           trackAllTilesSeen={trackAllTilesSeen}
+          trackConsultOffer={trackConsultOffer}
         />
       )
     } else {
@@ -152,6 +153,7 @@ MainView.propTypes = {
   match: PropTypes.shape().isRequired,
   trackAllModulesSeen: PropTypes.func.isRequired,
   trackAllTilesSeen: PropTypes.func.isRequired,
+  trackConsultOffer: PropTypes.func.isRequired,
   updateCurrentUser: PropTypes.func.isRequired,
   user: PropTypes.shape(User).isRequired,
 }

@@ -14,15 +14,18 @@ const preventDefault = event => {
   event.preventDefault()
 }
 
-const OfferTile = ({ historyPush, hit, isSwitching, layout }) => {
+const OfferTile = ({ historyPush, hit, isSwitching, layout, trackConsultOffer }) => {
   const { offer, venue } = hit
   const offerDates = offer.isEvent
-    ? `${formatSearchResultDate(venue.departementCode, offer.dates)}${layout === PANE_LAYOUT['ONE-ITEM-MEDIUM'] ? ' - ' : ''}`
+    ? `${formatSearchResultDate(venue.departementCode, offer.dates)}${
+        layout === PANE_LAYOUT['ONE-ITEM-MEDIUM'] ? ' - ' : ''
+      }`
     : ''
   const formattedPrice = formatResultPrice(offer.priceMin, offer.priceMax, offer.isDuo)
 
   function goToOffer(event) {
     if (!isSwitching) {
+      trackConsultOffer()
       historyPush(`/accueil/details/${offer.id}`)
     }
     event.preventDefault()
@@ -74,6 +77,7 @@ OfferTile.propTypes = {
   hit: PropTypes.shape().isRequired,
   isSwitching: PropTypes.bool.isRequired,
   layout: PropTypes.string,
+  trackConsultOffer: PropTypes.func.isRequired,
 }
 
 export default OfferTile

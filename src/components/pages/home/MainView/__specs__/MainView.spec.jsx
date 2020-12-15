@@ -65,6 +65,7 @@ describe('src | components | MainView', () => {
       match: {},
       trackAllModulesSeen: jest.fn(),
       trackAllTilesSeen: jest.fn(),
+      trackConsultOffer: jest.fn(),
       updateCurrentUser: jest.fn(),
       user: new User({
         email: 'john.doe@example.fr',
@@ -139,6 +140,7 @@ describe('src | components | MainView', () => {
       module: offersWithCover,
       row: 0,
       trackAllTilesSeen: props.trackAllTilesSeen,
+      trackConsultOffer: props.trackConsultOffer,
       results,
     })
   })
@@ -171,6 +173,7 @@ describe('src | components | MainView', () => {
       module: offers,
       row: 0,
       trackAllTilesSeen: props.trackAllTilesSeen,
+      trackConsultOffer: props.trackConsultOffer,
       results,
     })
   })

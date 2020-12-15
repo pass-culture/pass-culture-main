@@ -30,6 +30,12 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => ({
       name: `Module name: ${moduleName} - Number of tiles: ${numberOfModules}`,
     })
   },
+  trackConsultOffer: moduleName => {
+    ownProps.tracking.trackEvent({
+      action: 'ConsultOffer',
+      name: moduleName,
+    })
+  },
 })
 
 export default compose(

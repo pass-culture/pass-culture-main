@@ -15,6 +15,7 @@ const Home = ({
   match,
   trackAllModulesSeen,
   trackAllTilesSeen,
+  trackConsultOffer,
   updateCurrentUser,
   user,
 }) => {
@@ -52,6 +53,7 @@ const Home = ({
       match={match}
       trackAllModulesSeen={trackAllModulesSeen}
       trackAllTilesSeen={trackAllTilesSeen}
+      trackConsultOffer={trackConsultOffer}
       updateCurrentUser={updateCurrentUser}
       user={user}
     />
@@ -67,6 +69,7 @@ Home.propTypes = {
   match: PropTypes.shape().isRequired,
   trackAllModulesSeen: PropTypes.func.isRequired,
   trackAllTilesSeen: PropTypes.func.isRequired,
+  trackConsultOffer: PropTypes.func.isRequired,
   updateCurrentUser: PropTypes.func.isRequired,
   user: PropTypes.shape(User).isRequired,
 }

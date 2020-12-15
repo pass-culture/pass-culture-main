@@ -5,7 +5,16 @@ import Cover from '../Cover/Cover'
 import OfferTile from '../OfferTile/OfferTile'
 import SeeMoreContainer from '../SeeMore/SeeMoreContainer'
 
-const OneItem = ({ historyPush, isSwitching, layout, moduleName, parsedParameters, row, tile }) => {
+const OneItem = ({
+  historyPush,
+  isSwitching,
+  layout,
+  moduleName,
+  parsedParameters,
+  row,
+  tile,
+  trackConsultOffer,
+}) => {
   const tileIsACoverItem = typeof tile === 'string'
   const tileIsASeeMoreItem = typeof tile === 'boolean'
 
@@ -35,6 +44,7 @@ const OneItem = ({ historyPush, isSwitching, layout, moduleName, parsedParameter
         isSwitching={isSwitching}
         key={`${row}${tile.offer.id}`}
         layout={layout}
+        trackConsultOffer={trackConsultOffer}
       />
     )
   }
@@ -48,6 +58,7 @@ OneItem.propTypes = {
   parsedParameters: PropTypes.shape().isRequired,
   row: PropTypes.number.isRequired,
   tile: PropTypes.oneOfType([PropTypes.string, PropTypes.bool, PropTypes.shape()]).isRequired,
+  trackConsultOffer: PropTypes.func.isRequired,
 }
 
 export default OneItem

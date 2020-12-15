@@ -12,6 +12,7 @@ const TwoItems = ({
   parsedParameters,
   row,
   tile,
+  trackConsultOffer,
 }) => {
   const firstTileIsACoverItem = typeof tile[0] === 'string'
   const firstTileIsASeeMoreItem = typeof tile[0] === 'boolean'
@@ -46,6 +47,7 @@ const TwoItems = ({
           isSwitching={isSwitching}
           key={`${row}${tile[0].offer.id}`}
           layout={layout}
+          trackConsultOffer={trackConsultOffer}
         />
         {secondTileIsASeeMoreItem ? (
           <SeeMoreContainer
@@ -63,6 +65,7 @@ const TwoItems = ({
             isSwitching={isSwitching}
             key={`${row}${tile[1].offer.id}`}
             layout={layout}
+            trackConsultOffer={trackConsultOffer}
           />
         ) : null}
       </div>
@@ -80,6 +83,7 @@ TwoItems.propTypes = {
   tile: PropTypes.arrayOf(
     PropTypes.oneOfType([PropTypes.string, PropTypes.bool, PropTypes.shape()])
   ).isRequired,
+  trackConsultOffer: PropTypes.func.isRequired,
 }
 
 export default TwoItems
