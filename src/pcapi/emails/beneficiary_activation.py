@@ -29,7 +29,7 @@ def get_activation_email_data(user: UserSQLEntity) -> Dict:
 def get_activation_email_data_for_native(user: UserSQLEntity, token: models.Token) -> Dict:
     expiration_timestamp = int(token.expirationDate.timestamp())
     query_string = urlencode({"token": token.value, "expiration_timestamp": expiration_timestamp, "email": user.email})
-    email_confirmation_link = f"{settings.NATIVE_APP_URL}/email-confirmation?{query_string}"
+    email_confirmation_link = f"{settings.NATIVE_APP_URL}/signup-confirmation?{query_string}"
     return {
         "FromEmail": SUPPORT_EMAIL_ADDRESS,
         "Mj-TemplateID": 1897370,
