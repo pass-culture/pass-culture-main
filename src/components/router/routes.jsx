@@ -93,19 +93,19 @@ let routes = [
    *
    ---------------------------------------------------  */
   {
-    component: SearchContainer,
-    icon: IcoNavSearch,
-    to: '/recherche',
-    path: '/recherche',
-    title: 'Recherche',
-  },
-  {
     component: HomeContainer,
     featureName: 'WEBAPP_HOMEPAGE',
     icon: IcoNavHome,
     path: '/accueil',
     to: '/accueil',
     title: 'Accueil',
+  },
+  {
+    component: SearchContainer,
+    icon: IcoNavSearch,
+    to: '/recherche',
+    path: '/recherche',
+    title: 'Recherche',
   },
   {
     component: MyBookingsContainer,
@@ -123,7 +123,6 @@ let routes = [
   },
   {
     component: ProfileContainer,
-    featureName: 'WEBAPP_PROFILE_PAGE',
     icon: IcoNavProfile,
     to: '/profil',
     path: '/profil',
