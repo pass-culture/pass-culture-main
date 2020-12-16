@@ -109,6 +109,9 @@ export const StockItem = ({
   const computedRemainingQuantity = totalQuantityValue - stock.bookingsQuantity
   const remainingQuantityValue = totalQuantityValue !== '' ? computedRemainingQuantity : 'Illimité'
   const isEventStockEditable = beginningDatetime > today
+  const isThingStockEditable = !isOfferSynchronized
+  const isStockEditable = isEvent ? isEventStockEditable : isThingStockEditable
+  const isStockDeletable = isEvent ? stock.isEventDeletable : !isOfferSynchronized
 
   const saveChanges = useCallback(() => {
     const payload = {
@@ -210,7 +213,7 @@ export const StockItem = ({
           {!isEditing ? (
             <button
               className="secondary-button"
-              disabled={(isEvent && !isEventStockEditable) || isDeleting}
+              disabled={!isStockEditable || isDeleting}
               onClick={enableUpdatableFields}
               type="button"
             >
@@ -237,7 +240,7 @@ export const StockItem = ({
           {!isEditing ? (
             <button
               className="secondary-button"
-              disabled={!stock.isEventDeletable || isDeleting}
+              disabled={!isStockDeletable || isDeleting}
               onClick={askDeletionConfirmation}
               type="button"
             >

@@ -61,6 +61,7 @@ const Stocks = ({ match }) => {
       </div>
       <button
         className="tertiary-button"
+        disabled={!isEvent && isOfferSynchronized}
         type="button"
       >
         <Icon svg="ico-plus" />

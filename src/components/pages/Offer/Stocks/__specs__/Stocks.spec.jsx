@@ -340,7 +340,7 @@ describe('stocks page', () => {
         await renderStocks(props)
 
         // then
-        expect(await screen.findByRole('button', { name: 'Ajouter un stock' })).toBeInTheDocument()
+        expect(screen.getByRole('button', { name: 'Ajouter un stock' })).toBeEnabled()
       })
 
       it("should display offer's stock fields disabled by default", async () => {
@@ -378,6 +378,30 @@ describe('stocks page', () => {
 
         expect(columnHeaders[6].textContent).toBe('Supprimer')
         expect(columnCells[6].querySelector('img[alt="Supprimer le stock"]')).toBeInTheDocument()
+      })
+
+      describe('when offer has been synchronized', () => {
+        beforeEach(() => {
+          const synchronisedThingOffer = {
+            ...defaultOffer,
+            isEvent: false,
+            lastProviderId: 'D4',
+            stocks: [
+              {
+                ...defaultStock,
+              },
+            ],
+          }
+          pcapi.loadOffer.mockResolvedValue(synchronisedThingOffer)
+        })
+
+        it('should not be able to add a stock', async () => {
+          // When
+          await renderStocks(props)
+
+          // Then
+          expect(screen.getByRole('button', { name: 'Ajouter un stock' })).toBeDisabled()
+        })
       })
     })
   })
@@ -980,6 +1004,7 @@ describe('stocks page', () => {
           stocks: [
             {
               ...defaultStock,
+              isEventDeletable: true,
             },
           ],
         }
@@ -1255,6 +1280,39 @@ describe('stocks page', () => {
             // Then
             expect(pcapi.updateStock.mock.calls[0][0].quantity).toBeNull()
           })
+        })
+      })
+
+      describe('when offer has been synchronized (with Titelive, leslibraires.fr, FNAC or Praxiel)', () => {
+        beforeEach(() => {
+          const synchronisedThingOffer = {
+            ...thingOffer,
+            lastProviderId: 'D4',
+          }
+          pcapi.loadOffer.mockResolvedValue(synchronisedThingOffer)
+        })
+
+        it('should not be able to edit a stock', async () => {
+          // Given
+          await renderStocks(props)
+          const editStockButton = screen.getByAltText('Modifier le stock').closest('button')
+
+          // When
+          fireEvent.click(editStockButton)
+
+          // Then
+          expect(editStockButton).toBeDisabled()
+          expect(screen.getByLabelText('Prix')).toBeDisabled()
+          expect(screen.getByLabelText('Date limite de réservation')).toBeDisabled()
+          expect(screen.getByLabelText('Quantité')).toBeDisabled()
+        })
+
+        it('should not be able to delete a stock', async () => {
+          // When
+          await renderStocks(props)
+
+          // Then
+          expect(screen.getByAltText('Supprimer le stock').closest('button')).toBeDisabled()
         })
       })
     })
