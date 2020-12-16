@@ -47,7 +47,7 @@ class BeneficiaryUserViewTest:
                 "FromEmail": "support@example.com",
                 "Mj-TemplateID": 994771,
                 "Mj-TemplateLanguage": True,
-                "To": "toto@email.fr",
+                "To": "dev@example.com",
                 "Vars": {
                     "prenom_user": "Serge",
                     "token": user_created.resetPasswordToken,

@@ -3,10 +3,11 @@ from unittest.mock import patch
 from pcapi.core.users import factories as users_factories
 from pcapi.emails import beneficiary_activation
 from pcapi.model_creators.generic_creators import create_user
+from pcapi.utils.mailing import DEV_EMAIL_ADDRESS
 
 
 class GetActivationEmailTest:
-    @patch("pcapi.emails.beneficiary_activation.format_environment_for_email", return_value="")
+    @patch("pcapi.settings.IS_PROD", return_value=True)
     def test_should_return_dict_when_environment_is_production(self, mock_format_environment_for_email):
         # Given
         user = create_user(email="fabien+test@example.net", first_name="Fabien", reset_password_token="ABCD123")
@@ -32,6 +33,7 @@ class GetActivationEmailTest:
         activation_email_data = beneficiary_activation.get_activation_email_data(user)
 
         # Then
+        assert activation_email_data["To"] == DEV_EMAIL_ADDRESS
         assert activation_email_data["Vars"] == {
             "prenom_user": "Fabien",
             "token": "ABCD123",
