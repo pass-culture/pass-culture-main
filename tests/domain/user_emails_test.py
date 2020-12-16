@@ -590,8 +590,14 @@ class SendExpiredBookingsRecapEmailToOffererTest:
 
 @pytest.mark.usefixtures("db_session")
 class SendSoonToBeExpiredBookingsRecapEmailToBeneficiaryTest:
-    @patch("pcapi.utils.mailing.feature_send_mail_to_users_enabled", return_value=True)
-    def test_should_send_email_to_beneficiary_when_they_have_soon_to_be_expired_bookings(self, app):
+    @patch(
+        "pcapi.domain.user_emails.build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary",
+        return_value={"MJ-TemplateID": 12345},
+    )
+    def test_should_send_email_to_beneficiary_when_they_have_soon_to_be_expired_bookings(
+        self, build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary
+    ):
+        # given
         now = datetime.utcnow()
         user = users_factories.UserFactory(email="isasimov@example.com", isBeneficiary=True, isAdmin=False)
         created_23_days_ago = now - timedelta(days=23)
@@ -613,25 +619,15 @@ class SendSoonToBeExpiredBookingsRecapEmailToBeneficiaryTest:
             dateCreated=created_23_days_ago,
             user=user,
         )
-
         mocked_send_email = Mock()
 
+        # when
         send_soon_to_be_expired_bookings_recap_email_to_beneficiary(
             user, [soon_to_be_expired_cd_booking, soon_to_be_expired_dvd_booking], mocked_send_email
         )
 
-        mocked_send_email.assert_called_once()
-        kwargs = mocked_send_email.call_args_list[0][1]
-        assert kwargs["data"] == {
-            "FromEmail": "dev@example.com",
-            "Mj-TemplateID": 1927224,
-            "Mj-TemplateLanguage": True,
-            "To": "dev@example.com",
-            "Vars": {
-                "bookings": [
-                    {"offer_name": "Fondation et Empire", "venue_name": "Seconde Fondation"},
-                    {"offer_name": "Fondation", "venue_name": "Première Fondation"},
-                ],
-                "environment": "-development",
-            },
-        }
+        # then
+        build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary.assert_called_once_with(
+            user, [soon_to_be_expired_cd_booking, soon_to_be_expired_dvd_booking]
+        )
+        mocked_send_email.assert_called_once_with(data={"MJ-TemplateID": 12345})

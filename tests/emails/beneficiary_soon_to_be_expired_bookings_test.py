@@ -11,7 +11,7 @@ from pcapi.emails.beneficiary_soon_to_be_expired_bookings import (
 class BuildSoonToBeExpiredBookingsRecapEmailDataForBeneficiaryTest:
     def test_build_soon_to_be_expired_bookings_data(self, app):
         # Given
-        beneficiary = UserFactory(email="isasimov@example.com", isBeneficiary=True, isAdmin=False)
+        beneficiary = UserFactory(email="isasimov@example.com", firstName="ASIMOV", isBeneficiary=True, isAdmin=False)
         bookings = [
             BookingFactory(
                 stock__offer__name="offre 1",
@@ -33,6 +33,7 @@ class BuildSoonToBeExpiredBookingsRecapEmailDataForBeneficiaryTest:
             "Mj-TemplateLanguage": True,
             "To": "dev@example.com",
             "Vars": {
+                "user_firstName": "ASIMOV",
                 "bookings": [
                     {"offer_name": "offre 1", "venue_name": "venue 1"},
                     {"offer_name": "offre 2", "venue_name": "venue 2"},

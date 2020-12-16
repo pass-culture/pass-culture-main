@@ -23,6 +23,7 @@ def build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary(
         "Mj-TemplateLanguage": True,
         "To": beneficiary.email if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS,
         "Vars": {
+            "user_firstName": beneficiary.firstName,
             "bookings": _extract_bookings_information_from_bookings_list(bookings),
             "environment": environment,
         },
