@@ -1,25 +1,29 @@
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { forwardRef } from 'react'
 
-const InputWithCalendar = props => {
-  const { customClass, ...inputProperties } = props
+const InputWithCalendar = forwardRef(function InputWithCalendar(props, ref) {
+  const { customClass, ariaLabel, ...inputProperties } = props
   delete inputProperties.props
 
   return (
-    <label className={customClass}>
+    <div className={customClass}>
       <input
+        aria-label={ariaLabel}
         {...inputProperties}
+        ref={ref}
         type="text"
       />
-    </label>
+    </div>
   )
-}
+})
 
 InputWithCalendar.defaultProps = {
+  ariaLabel: undefined,
   props: {},
 }
 
 InputWithCalendar.propTypes = {
+  ariaLabel: PropTypes.string,
   props: PropTypes.shape({
     customClass: PropTypes.string,
   }),
