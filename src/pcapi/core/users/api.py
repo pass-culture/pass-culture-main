@@ -113,9 +113,6 @@ def suspend_account(user: UserSQLEntity, reason: constants.SuspensionReason, act
     # If we ever unsuspend the account, we'll have to explictly enable
     # isAdmin again. An admin now may not be an admin later.
     user.isAdmin = False
-    # FIXME (before merge): est-ce qu'il y a un intérêt à modifier le
-    # mot de passe ? De toute façon, l'utilisateur ne pourra pas se
-    # logger puisque `isActive=False`.
     user.setPassword(secrets.token_urlsafe(30))
     repository.save(user)
 
