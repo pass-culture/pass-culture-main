@@ -263,6 +263,51 @@ describe('stocks page', () => {
         const buttonAddDate = await screen.findByRole('button', { name: 'Ajouter une date' })
         expect(buttonAddDate).toBeInTheDocument()
       })
+
+      it("should display offer's stocks fields disabled by default", async () => {
+        // when
+        await renderStocks(props)
+
+        // then
+        expect(pcapi.loadOffer).toHaveBeenCalledWith('AG3A')
+
+        const columnHeaders = await screen.findAllByRole('columnheader')
+        const columnCells = await screen.findAllByRole('cell')
+
+        expect(columnHeaders).toHaveLength(9)
+
+        expect(columnHeaders[0].textContent).toBe('Date')
+        expect(columnCells[0].querySelector('input').value).toBe('20/12/2020')
+        expect(columnCells[0].querySelector('input')).toBeDisabled()
+
+        expect(columnHeaders[1].textContent).toBe('Horaire')
+        expect(columnCells[1].querySelector('input').value).toBe('19:00')
+        expect(columnCells[1].querySelector('input')).toBeDisabled()
+
+        expect(columnHeaders[2].textContent).toBe('Prix')
+        expect(columnCells[2].querySelector('input').value).toBe('10.01')
+        expect(columnCells[2].querySelector('input')).toBeDisabled()
+
+        expect(columnHeaders[3].textContent).toBe('Date limite de réservation')
+        expect(columnCells[3].querySelector('input').value).toBe('18/12/2020')
+        expect(columnCells[3].querySelector('input')).toBeDisabled()
+
+        expect(columnHeaders[4].textContent).toBe('Quantité')
+        expect(columnCells[4].querySelector('input').value).toBe('10')
+        expect(columnCells[4].querySelector('input')).toBeDisabled()
+
+        expect(columnHeaders[5].textContent).toBe('Stock restant')
+        expect(columnCells[5].textContent).toBe('6')
+
+        expect(columnHeaders[6].textContent).toBe('Réservations')
+        expect(columnCells[6].textContent).toBe('4')
+
+        expect(columnHeaders[7].textContent).toBe('Modifier')
+        expect(columnCells[7].querySelector('img[alt="Modifier le stock"]')).toBeInTheDocument()
+
+        expect(columnHeaders[8].textContent).toBe('Supprimer')
+        expect(columnCells[8].querySelector('img[alt="Supprimer le stock"]')).toBeInTheDocument()
+      })
     })
 
     describe('render thing offer', () => {
@@ -297,6 +342,43 @@ describe('stocks page', () => {
         // then
         expect(await screen.findByRole('button', { name: 'Ajouter un stock' })).toBeInTheDocument()
       })
+
+      it("should display offer's stock fields disabled by default", async () => {
+        // when
+        await renderStocks(props)
+
+        // then
+        expect(pcapi.loadOffer).toHaveBeenCalledWith('AG3A')
+
+        const columnHeaders = await screen.findAllByRole('columnheader')
+        const columnCells = await screen.findAllByRole('cell')
+
+        expect(columnHeaders).toHaveLength(7)
+
+        expect(columnHeaders[0].textContent).toBe('Prix')
+        expect(columnCells[0].querySelector('input').value).toBe('10.01')
+        expect(columnCells[0].querySelector('input')).toBeDisabled()
+
+        expect(columnHeaders[1].textContent).toBe('Date limite de réservation')
+        expect(columnCells[1].querySelector('input').value).toBe('18/12/2020')
+        expect(columnCells[1].querySelector('input')).toBeDisabled()
+
+        expect(columnHeaders[2].textContent).toBe('Quantité')
+        expect(columnCells[2].querySelector('input').value).toBe('10')
+        expect(columnCells[2].querySelector('input')).toBeDisabled()
+
+        expect(columnHeaders[3].textContent).toBe('Stock restant')
+        expect(columnCells[3].textContent).toBe('6')
+
+        expect(columnHeaders[4].textContent).toBe('Réservations')
+        expect(columnCells[4].textContent).toBe('4')
+
+        expect(columnHeaders[5].textContent).toBe('Modifier')
+        expect(columnCells[5].querySelector('img[alt="Modifier le stock"]')).toBeInTheDocument()
+
+        expect(columnHeaders[6].textContent).toBe('Supprimer')
+        expect(columnCells[6].querySelector('img[alt="Supprimer le stock"]')).toBeInTheDocument()
+      })
     })
   })
 
@@ -316,49 +398,6 @@ describe('stocks page', () => {
         }
 
         pcapi.loadOffer.mockResolvedValue(eventOffer)
-      })
-
-      it("should display offer's stocks fields disabled by default", async () => {
-        // when
-        await renderStocks(props)
-
-        // then
-        expect(pcapi.loadOffer).toHaveBeenCalledWith('AG3A')
-
-        const columnHeaders = await screen.findAllByRole('columnheader')
-        const columnCells = await screen.findAllByRole('cell')
-
-        expect(columnHeaders[0].textContent).toBe('Date')
-        expect(columnCells[0].querySelector('input').value).toBe('20/12/2020')
-        expect(columnCells[0].querySelector('input')).toBeDisabled()
-
-        expect(columnHeaders[1].textContent).toBe('Horaire')
-        expect(columnCells[1].querySelector('input').value).toBe('19:00')
-        expect(columnCells[1].querySelector('input')).toBeDisabled()
-
-        expect(columnHeaders[2].textContent).toBe('Prix')
-        expect(columnCells[2].querySelector('input').value).toBe('10.01')
-        expect(columnCells[2].querySelector('input')).toBeDisabled()
-
-        expect(columnHeaders[3].textContent).toBe('Date limite de réservation')
-        expect(columnCells[3].querySelector('input').value).toBe('18/12/2020')
-        expect(columnCells[3].querySelector('input')).toBeDisabled()
-
-        expect(columnHeaders[4].textContent).toBe('Quantité')
-        expect(columnCells[4].querySelector('input').value).toBe('10')
-        expect(columnCells[4].querySelector('input')).toBeDisabled()
-
-        expect(columnHeaders[5].textContent).toBe('Stock restant')
-        expect(columnCells[5].textContent).toBe('6')
-
-        expect(columnHeaders[6].textContent).toBe('Réservations')
-        expect(columnCells[6].textContent).toBe('4')
-
-        expect(columnHeaders[7].textContent).toBe('Modifier')
-        expect(columnCells[7].querySelector('img[alt="Modifier le stock"]')).toBeInTheDocument()
-
-        expect(columnHeaders[8].textContent).toBe('Supprimer')
-        expect(columnCells[8].querySelector('img[alt="Supprimer le stock"]')).toBeInTheDocument()
       })
 
       describe('when offer has been manually created', () => {
@@ -547,7 +586,14 @@ describe('stocks page', () => {
             // given
             pcapi.loadOffer.mockResolvedValue({
               ...eventOffer,
-              stocks: [{ ...defaultStock, quantity: 0, bookingsQuantity: 0 }],
+              stocks: [
+                {
+                  ...defaultStock,
+                  beginningDatetime: '2020-12-20T22:00:00Z',
+                  quantity: 0,
+                  bookingsQuantity: 0,
+                },
+              ],
             })
 
             // when
@@ -926,8 +972,9 @@ describe('stocks page', () => {
     })
 
     describe('edit thing offer', () => {
+      let thingOffer
       beforeEach(() => {
-        const thingOffer = {
+        thingOffer = {
           ...defaultOffer,
           isEvent: false,
           stocks: [
@@ -939,38 +986,276 @@ describe('stocks page', () => {
         pcapi.loadOffer.mockResolvedValue(thingOffer)
       })
 
-      it("should display offer's stocks", async () => {
-        // when
-        await renderStocks(props)
+      describe('when offer has been manually created', () => {
+        it('should be able to edit price field', async () => {
+          // given
+          await renderStocks(props)
+          fireEvent.click(screen.getByAltText('Modifier le stock'))
 
-        // then
-        expect(pcapi.loadOffer).toHaveBeenCalledWith('AG3A')
+          // when
+          fireEvent.change(screen.getByDisplayValue('10.01'), { target: { value: '127.03' } })
 
-        const columnHeaders = await screen.findAllByRole('columnheader')
-        const columnCells = await screen.findAllByRole('cell')
+          // then
+          expect(screen.queryByDisplayValue('10.01')).not.toBeInTheDocument()
+          expect(screen.getByDisplayValue('127.03')).toBeInTheDocument()
+        })
 
-        expect(columnHeaders).toHaveLength(7)
+        it('should be able to edit booking limit date field', async () => {
+          // given
+          await renderStocks(props)
+          fireEvent.click(screen.getByAltText('Modifier le stock'))
 
-        expect(columnHeaders[0].textContent).toBe('Prix')
-        expect(columnCells[0].querySelector('input').value).toBe('10.01')
+          // when
+          fireEvent.click(screen.getByDisplayValue('18/12/2020'))
+          fireEvent.click(screen.getByLabelText('day-17'))
 
-        expect(columnHeaders[1].textContent).toBe('Date limite de réservation')
-        expect(columnCells[1].querySelector('input').value).toBe('18/12/2020')
+          // then
+          expect(screen.queryByDisplayValue('18/12/2020')).not.toBeInTheDocument()
+          expect(screen.getByDisplayValue('17/12/2020')).toBeInTheDocument()
+        })
 
-        expect(columnHeaders[2].textContent).toBe('Quantité')
-        expect(columnCells[2].querySelector('input').value).toBe('10')
+        it('should be able to edit total quantity field', async () => {
+          // given
+          await renderStocks(props)
+          fireEvent.click(screen.getByAltText('Modifier le stock'))
 
-        expect(columnHeaders[3].textContent).toBe('Stock restant')
-        expect(columnCells[3].textContent).toBe('6')
+          // when
+          fireEvent.change(screen.getByDisplayValue('10'), { target: { value: '23' } })
 
-        expect(columnHeaders[4].textContent).toBe('Réservations')
-        expect(columnCells[4].textContent).toBe('4')
+          // then
+          expect(screen.queryByDisplayValue('10')).not.toBeInTheDocument()
+          expect(screen.getByDisplayValue('23')).toBeInTheDocument()
+        })
 
-        expect(columnHeaders[5].textContent).toBe('Modifier')
-        expect(columnCells[5].querySelector('img[alt="Modifier le stock"]')).toBeInTheDocument()
+        it('should compute remaining quantity based on inputted total quantity', async () => {
+          // given
+          await renderStocks(props)
+          fireEvent.click(screen.getByAltText('Modifier le stock'))
 
-        expect(columnHeaders[6].textContent).toBe('Supprimer')
-        expect(columnCells[6].querySelector('img[alt="Supprimer le stock"]')).toBeInTheDocument()
+          // when
+          fireEvent.change(screen.getByDisplayValue('10'), { target: { value: '9' } })
+
+          // then
+          const initialRemainingQuantity = screen.queryByText('6')
+          expect(initialRemainingQuantity).not.toBeInTheDocument()
+
+          const computedRemainingQuantity = screen.queryByText('5')
+          expect(computedRemainingQuantity).toBeInTheDocument()
+        })
+
+        it('should set remaining quantity to Illimité when emptying total quantity field', async () => {
+          // given
+          await renderStocks(props)
+          fireEvent.click(screen.getByAltText('Modifier le stock'))
+
+          // when
+          fireEvent.change(screen.getByDisplayValue('10'), { target: { value: '' } })
+
+          // then
+          const computedRemainingQuantity = screen.getByText('Illimité')
+          expect(computedRemainingQuantity).toBeInTheDocument()
+        })
+
+        it('should not set remaining quantity to Illimité when total quantity is zero', async () => {
+          // given
+          pcapi.loadOffer.mockResolvedValue({
+            ...thingOffer,
+            stocks: [{ ...defaultStock, quantity: 0, bookingsQuantity: 0 }],
+          })
+
+          // when
+          await renderStocks(props)
+
+          // then
+          expect(screen.getByLabelText('Quantité').value).not.toBe('')
+          expect(screen.getByLabelText('Quantité').value).toBe('0')
+          const remainingQuantityValue = screen.getAllByRole('cell')[3].textContent
+          expect(remainingQuantityValue).not.toBe('Illimité')
+          expect(remainingQuantityValue).toBe('0')
+        })
+
+        it('should display a validation button instead of an edition button', async () => {
+          // given
+          await renderStocks(props)
+
+          // when
+          fireEvent.click(screen.getByAltText('Modifier le stock'))
+
+          // then
+          expect(screen.getByAltText('Valider les modifications')).toBeInTheDocument()
+          expect(screen.queryByAltText('Modifier le stock')).not.toBeInTheDocument()
+        })
+
+        it('should display a cancellation button instead of a deletion button', async () => {
+          // given
+          await renderStocks(props)
+
+          // when
+          fireEvent.click(screen.getByAltText('Modifier le stock'))
+
+          // then
+          expect(screen.getByAltText('Annuler les modifications')).toBeInTheDocument()
+          expect(screen.queryByAltText('Supprimer le stock')).not.toBeInTheDocument()
+        })
+
+        it('should discard changes on stock when clicking on cancel button', async () => {
+          // Given
+          await renderStocks(props)
+          fireEvent.click(screen.getByAltText('Modifier le stock'))
+
+          fireEvent.change(screen.getByLabelText('Prix'), { target: { value: '14.01' } })
+
+          fireEvent.click(screen.getByLabelText('Date limite de réservation'))
+          fireEvent.click(screen.getByLabelText('day-25'))
+
+          fireEvent.change(screen.getByLabelText('Quantité'), { target: { value: '6' } })
+
+          // When
+          fireEvent.click(screen.getByAltText('Annuler les modifications'))
+
+          // Then
+          expect(pcapi.updateStock).not.toHaveBeenCalled()
+          expect(screen.getByLabelText('Prix').value).toBe('10.01')
+          expect(screen.getByLabelText('Date limite de réservation').value).toBe('18/12/2020')
+          expect(screen.getByLabelText('Quantité').value).toBe('10')
+        })
+
+        it('should exit edition mode on discard changes', async () => {
+          // Given
+          await renderStocks(props)
+          fireEvent.click(screen.getByAltText('Modifier le stock'))
+
+          // When
+          fireEvent.click(screen.getByAltText('Annuler les modifications'))
+
+          // Then
+          expect(screen.queryByAltText('Valider les modifications')).not.toBeInTheDocument()
+          expect(screen.queryByAltText('Annuler les modifications')).not.toBeInTheDocument()
+        })
+
+        describe('when clicking on validate button', () => {
+          it('should save changes done to stock', async () => {
+            // Given
+            pcapi.updateStock.mockResolvedValue({})
+            await renderStocks(props)
+            fireEvent.click(screen.getByAltText('Modifier le stock'))
+
+            fireEvent.change(screen.getByLabelText('Prix'), { target: { value: '14.01' } })
+
+            fireEvent.click(screen.getByLabelText('Date limite de réservation'))
+            fireEvent.click(screen.getByLabelText('day-25'))
+
+            fireEvent.change(screen.getByLabelText('Quantité'), { target: { value: '6' } })
+
+            // When
+            fireEvent.click(screen.getByAltText('Valider les modifications'))
+
+            // Then
+            expect(pcapi.updateStock).toHaveBeenCalledWith({
+              bookingLimitDatetime: '2020-12-25T23:59:59Z',
+              id: '2E',
+              price: '14.01',
+              quantity: '6',
+            })
+            expect(screen.getByLabelText('Prix').value).toBe('14.01')
+            expect(screen.getByLabelText('Date limite de réservation').value).toBe('25/12/2020')
+            expect(screen.getByLabelText('Quantité').value).toBe('6')
+          })
+
+          it('should refresh offer and leave edition mode', async () => {
+            // Given
+            pcapi.updateStock.mockResolvedValue({})
+            const initialOffer = {
+              ...defaultOffer,
+              stocks: [
+                {
+                  ...defaultStock,
+                  price: 10.01,
+                },
+              ],
+            }
+            const updatedOffer = {
+              ...defaultOffer,
+              stocks: [
+                {
+                  ...defaultStock,
+                  price: 10,
+                },
+              ],
+            }
+            pcapi.loadOffer.mockResolvedValueOnce(initialOffer).mockResolvedValueOnce(updatedOffer)
+            await renderStocks(props)
+            fireEvent.click(screen.getByAltText('Modifier le stock'))
+
+            // When
+            await act(async () => {
+              await fireEvent.click(screen.getByAltText('Valider les modifications'))
+            })
+
+            // Then
+            expect(pcapi.loadOffer).toHaveBeenCalledTimes(2)
+            expect(screen.queryByAltText('Valider les modifications')).not.toBeInTheDocument()
+            expect(screen.queryByAltText('Annuler les modifications')).not.toBeInTheDocument()
+          })
+
+          it('should set booking limit time to end of selected day when specified', async () => {
+            // Given
+            pcapi.updateStock.mockResolvedValue({})
+            await renderStocks(props)
+            fireEvent.click(screen.getByAltText('Modifier le stock'))
+            fireEvent.click(screen.getByLabelText('Date limite de réservation'))
+            fireEvent.click(screen.getByLabelText('day-19'))
+
+            // When
+            fireEvent.click(screen.getByAltText('Valider les modifications'))
+            // Then
+            expect(pcapi.updateStock.mock.calls[0][0].bookingLimitDatetime).toBe(
+              '2020-12-19T23:59:59Z'
+            )
+          })
+
+          it('should set booking limit datetime to null when not specified', async () => {
+            // Given
+            pcapi.updateStock.mockResolvedValue({})
+            await renderStocks(props)
+            fireEvent.click(screen.getByAltText('Modifier le stock'))
+            fireEvent.change(screen.getByLabelText('Date limite de réservation'), {
+              target: { value: '' },
+            })
+
+            // When
+            fireEvent.click(screen.getByAltText('Valider les modifications'))
+
+            // Then
+            expect(pcapi.updateStock.mock.calls[0][0].bookingLimitDatetime).toBeNull()
+          })
+
+          it('should set price to 0 when not specified', async () => {
+            // Given
+            pcapi.updateStock.mockResolvedValue({})
+            await renderStocks(props)
+            fireEvent.click(screen.getByAltText('Modifier le stock'))
+            fireEvent.change(screen.getByLabelText('Prix'), { target: { value: '' } })
+
+            // When
+            fireEvent.click(screen.getByAltText('Valider les modifications'))
+            // Then
+            expect(pcapi.updateStock.mock.calls[0][0].price).toBe(0)
+          })
+
+          it('should set quantity to null when not specified', async () => {
+            // Given
+            pcapi.updateStock.mockResolvedValue({})
+            await renderStocks(props)
+            fireEvent.click(screen.getByAltText('Modifier le stock'))
+            fireEvent.change(screen.getByLabelText('Quantité'), { target: { value: '' } })
+
+            // When
+            fireEvent.click(screen.getByAltText('Valider les modifications'))
+            // Then
+            expect(pcapi.updateStock.mock.calls[0][0].quantity).toBeNull()
+          })
+        })
       })
     })
   })

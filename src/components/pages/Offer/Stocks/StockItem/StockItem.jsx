@@ -77,9 +77,8 @@ export const StockItem = ({
     setBookingLimitDatetime(utcDateIsoFormat)
   }, [])
 
-  const getBookingLimitDatetime = useCallback(() => {
+  const getBookingLimitDatetimeForEvent = useCallback(() => {
     const momentBookingLimitDatetime = moment(bookingLimitDatetime)
-
     if (
       bookingLimitDatetime === '' ||
       momentBookingLimitDatetime.isSame(beginningDatetime, 'day')
@@ -89,6 +88,13 @@ export const StockItem = ({
       return momentBookingLimitDatetime.utc().endOf('day').format()
     }
   }, [bookingLimitDatetime, beginningDatetime])
+
+  const getBookingLimitDatetimeForThing = useCallback(() => {
+    if (bookingLimitDatetime) {
+      return moment(bookingLimitDatetime).utc().endOf('day').format()
+    }
+    return null
+  }, [bookingLimitDatetime])
 
   const changePrice = useCallback(event => setPrice(event.target.value), [])
 
@@ -102,21 +108,36 @@ export const StockItem = ({
   const totalQuantityValue = totalQuantity !== null ? totalQuantity : ''
   const computedRemainingQuantity = totalQuantityValue - stock.bookingsQuantity
   const remainingQuantityValue = totalQuantityValue !== '' ? computedRemainingQuantity : 'Illimité'
-  const isStockEditable = beginningDatetime > today
+  const isEventStockEditable = beginningDatetime > today
 
   const saveChanges = useCallback(() => {
-    pcapi
-      .updateStock({
-        id: stock.id,
-        beginningDatetime: beginningDatetime,
-        bookingLimitDatetime: getBookingLimitDatetime(),
-        price: price ? price : 0,
-        quantity: totalQuantity ? totalQuantity : null,
-      })
-      .then(() => {
-        refreshOffer()
-      })
-  }, [stock.id, beginningDatetime, getBookingLimitDatetime, price, totalQuantity, refreshOffer])
+    const payload = {
+      id: stock.id,
+      price: price ? price : 0,
+      quantity: totalQuantity ? totalQuantity : null,
+    }
+    const thingPayload = {
+      ...payload,
+      bookingLimitDatetime: getBookingLimitDatetimeForThing(),
+    }
+    const eventPayload = {
+      ...payload,
+      beginningDatetime: beginningDatetime,
+      bookingLimitDatetime: getBookingLimitDatetimeForEvent(),
+    }
+    pcapi.updateStock(isEvent ? eventPayload : thingPayload).then(() => {
+      refreshOffer()
+    })
+  }, [
+    stock.id,
+    beginningDatetime,
+    isEvent,
+    getBookingLimitDatetimeForEvent,
+    getBookingLimitDatetimeForThing,
+    price,
+    totalQuantity,
+    refreshOffer,
+  ])
 
   return (
     <Fragment>
@@ -189,7 +210,7 @@ export const StockItem = ({
           {!isEditing ? (
             <button
               className="secondary-button"
-              disabled={!isStockEditable || isDeleting}
+              disabled={(isEvent && !isEventStockEditable) || isDeleting}
               onClick={enableUpdatableFields}
               type="button"
             >
@@ -201,7 +222,7 @@ export const StockItem = ({
           ) : (
             <button
               className="secondary-button validate-button"
-              disabled={!beginningDatetime}
+              disabled={isEvent && !beginningDatetime}
               onClick={saveChanges}
               type="button"
             >
