@@ -156,4 +156,44 @@ describe('pcapiClient', () => {
       })
     })
   })
+
+  describe('delete', () => {
+    it('should call API with given path and JSON Mime type and credentials by default and correct method', async () => {
+      // Given
+      const path = '/stocks/123'
+
+      // When
+      await client.delete(path)
+
+      // Then
+      expect(fetch).toHaveBeenCalledWith(`${API_URL}${path}`, {
+        credentials: 'include',
+        method: 'DELETE',
+      })
+    })
+
+    it('should call API without credentials when not required', async () => {
+      // Given
+      const path = '/stocks/123'
+
+      // When
+      await client.delete(path, false)
+
+      // Then
+      expect(fetch).toHaveBeenCalledWith(`${API_URL}${path}`, {
+        method: 'DELETE',
+      })
+    })
+
+    it('should return json if return status is ok', async () => {
+      // Given
+      fetch.mockResponseOnce(JSON.stringify({ id: '123' }), { status: 200 })
+
+      // When
+      const response = await client.delete('/stocks/123')
+
+      // Then
+      expect(response.id).toBe('123')
+    })
+  })
 })

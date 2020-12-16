@@ -1,13 +1,14 @@
 import { API_URL } from 'utils/config'
 
 const GET_HTTP_METHOD = 'GET'
+const DELETE_HTTP_METHOD = 'DELETE'
 const HTTP_STATUS_NO_CONTENT = 204
 
 const buildOptions = (method, withCredentials = true) => {
   const options = {
     method: method,
   }
-  if (method != GET_HTTP_METHOD) {
+  if (method !== GET_HTTP_METHOD && method !== DELETE_HTTP_METHOD) {
     options['headers'] = { 'Content-Type': 'application/json' }
   }
 
@@ -52,5 +53,8 @@ export const client = {
       body: JSON.stringify(data),
     }
     return await fetchWithErrorHandler(path, options)
+  },
+  delete: async (path, withCredentials = true) => {
+    return await fetchWithErrorHandler(path, buildOptions(DELETE_HTTP_METHOD, withCredentials))
   },
 }

@@ -5,17 +5,15 @@ export const formatLocalTimeDateString = (
   departementCode,
   dateFormat = 'dddd DD/MM/YYYY à HH:mm'
 ) => {
-  const tz = getTimezone(departementCode)
-  return moment(date)
-    .tz(tz)
-    .format(dateFormat)
+  const tz = getDepartmentTimezone(departementCode)
+  return moment(date).tz(tz).format(dateFormat)
 }
 
 // Cayenne              UTC          Paris                St Denis
 //    | ---------------- | ----------- | --------------------|
 //   9:00 ------------ 12:00 ------- 14:00 --------------- 16:00
 
-export const getTimezone = departementCode => {
+export const getDepartmentTimezone = departementCode => {
   // This mapping is also defined in the webapp and in the backend. Make
   // sure that all are synchronized.
   switch (departementCode) {

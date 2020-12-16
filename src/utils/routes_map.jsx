@@ -11,6 +11,7 @@ import Mediation from 'components/pages/Mediation/MediationContainer'
 import OfferCreation from 'components/pages/Offer/OfferCreation/OfferCreationContainer'
 import OfferDetailsContainer from 'components/pages/Offer/OfferDetails/OfferDetailsContainer'
 import OfferEdition from 'components/pages/Offer/OfferEdition/OfferEditionContainer'
+import StocksContainer from 'components/pages/Offer/Stocks/StocksContainer'
 import OffererCreationContainer from 'components/pages/Offerer/OffererCreation/OffererCreationContainer'
 import OffererDetailsContainer from 'components/pages/Offerer/OffererDetails/OffererDetailsContainer'
 import Offerers from 'components/pages/Offerers/OfferersContainer'
@@ -214,6 +215,12 @@ if (OFFER_CREATION_V2) {
       exact: true,
       path: '/offres/v2/:offerId/edition',
       title: 'Offre',
+    },
+    {
+      component: StocksContainer,
+      exact: true,
+      path: '/offres/:offerId/stocks',
+      title: 'Stocks',
     },
   ]
 }

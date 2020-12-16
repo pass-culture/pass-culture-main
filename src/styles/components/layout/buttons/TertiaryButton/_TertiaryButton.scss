@@ -7,7 +7,7 @@
   &:hover,
   &:focus {
     color: $black;
-    text-decoration: underline;
+    cursor: pointer;
   }
 
   img {
@@ -20,4 +20,18 @@
 
 .tertiary-link {
   @include tertiary();
+
+  &:hover,
+  &:focus {
+    color: $black;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+}
+
+.tertiary-button {
+  @include tertiary();
+
+  background: none;
+  border: none;
 }

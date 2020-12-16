@@ -128,3 +128,15 @@ export const getVenuesForOfferer = offererId => {
 export const loadTypes = () => {
   return client.get('/types')
 }
+
+//
+// stocks
+//
+export const updateStock = stock => {
+  const { id, ...stockWithoutId } = stock
+  return client.patch(`/stocks/${id}`, stockWithoutId)
+}
+
+export const deleteStock = stockId => {
+  return client.delete(`/stocks/${stockId}`)
+}

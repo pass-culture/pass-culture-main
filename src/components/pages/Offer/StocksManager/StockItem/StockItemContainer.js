@@ -7,7 +7,7 @@ import withFrenchQueryRouter from 'components/hocs/withFrenchQueryRouter'
 import { selectOfferById } from 'store/offers/selectors'
 import { selectOffererById } from 'store/selectors/data/offerersSelectors'
 import { selectVenueById } from 'store/selectors/data/venuesSelectors'
-import { getTimezone } from 'utils/timezone'
+import { getDepartmentTimezone } from 'utils/timezone'
 import { translateQueryParamsToApiParams } from 'utils/translate'
 
 import Offer from '../ValueObjects/Offer'
@@ -21,11 +21,11 @@ export const selectTimezoneByVenueIdAndOffererId = createCachedSelector(
   (venue, offerer) => {
     if (!venue) return
 
-    if (!venue.isVirtual) return getTimezone(venue.departementCode)
+    if (!venue.isVirtual) return getDepartmentTimezone(venue.departementCode)
 
     if (!offerer) return
 
-    return getTimezone(offerer.postalCode.slice(0, 3))
+    return getDepartmentTimezone(offerer.postalCode.slice(0, 3))
   }
 )((state, venueId = '', offererId = '') => `${venueId}${offererId}`)
 

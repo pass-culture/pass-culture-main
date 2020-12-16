@@ -1,0 +1,31 @@
+.stocks-page {
+  .tertiary-button {
+    margin-top: rem(26px);
+
+    img {
+      filter: brightness(0);
+    }
+  }
+
+  .cancellation-information {
+    margin-top: rem(16px);
+  }
+
+  table {
+    margin-top: rem(28px);
+  }
+
+  th {
+    @include caption();
+  }
+
+  th.action-column {
+    min-width: rem(61px);
+  }
+
+  table td,
+  table th {
+    padding: rem(10px) rem(5px);
+    vertical-align: middle;
+  }
+}

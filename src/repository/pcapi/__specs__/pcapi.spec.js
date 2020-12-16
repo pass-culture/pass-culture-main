@@ -1,10 +1,11 @@
 import { DEFAULT_SEARCH_FILTERS } from 'components/pages/Offers/_constants'
 import { client } from 'repository/pcapi/pcapiClient'
 
-import { loadFilteredOffers, updateOffersActiveStatus } from '../pcapi'
+import { deleteStock, loadFilteredOffers, updateOffersActiveStatus, updateStock } from '../pcapi'
 
 jest.mock('repository/pcapi/pcapiClient', () => ({
   client: {
+    delete: jest.fn(),
     get: jest.fn().mockResolvedValue({}),
     patch: jest.fn(),
   },
@@ -165,6 +166,37 @@ describe('pcapi', () => {
           ids: ['A3', 'E9'],
           isActive: true,
         })
+      })
+    })
+  })
+
+  describe('deleteStock', () => {
+    it('should delete stock given its id', () => {
+      // When
+      deleteStock('2E')
+
+      // Then
+      expect(client.delete).toHaveBeenCalledWith('/stocks/2E')
+    })
+  })
+
+  describe('updateStock', () => {
+    it('should update stock given its id and changes', () => {
+      // When
+      updateStock({
+        beginningDatetime: '2020-12-26T23:00:00Z',
+        bookingLimitDatetime: '2020-12-25T22:00:00Z',
+        id: '2E',
+        price: '14.01',
+        quantity: '6',
+      })
+
+      // Then
+      expect(client.patch).toHaveBeenCalledWith('/stocks/2E', {
+        beginningDatetime: '2020-12-26T23:00:00Z',
+        bookingLimitDatetime: '2020-12-25T22:00:00Z',
+        price: '14.01',
+        quantity: '6',
       })
     })
   })

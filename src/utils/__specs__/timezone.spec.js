@@ -1,4 +1,4 @@
-import { formatLocalTimeDateString, getTimezone } from '../timezone'
+import { formatLocalTimeDateString, getDepartmentTimezone } from '../timezone'
 
 describe('formatLocalTimeDateString', () => {
   it('should return a formatted date with Paris departement code and specified format', () => {
@@ -46,7 +46,7 @@ describe('getTimezone', () => {
     const departementCode = '75'
 
     // when
-    const timezone = getTimezone(departementCode)
+    const timezone = getDepartmentTimezone(departementCode)
 
     // then
     expect(timezone).toBe('Europe/Paris')
@@ -57,7 +57,7 @@ describe('getTimezone', () => {
     const departementCode = '973'
 
     // when
-    const timezone = getTimezone(departementCode)
+    const timezone = getDepartmentTimezone(departementCode)
 
     // then
     expect(timezone).toBe('America/Cayenne')
@@ -68,7 +68,7 @@ describe('getTimezone', () => {
     const departementCode = '974'
 
     // when
-    const timezone = getTimezone(departementCode)
+    const timezone = getDepartmentTimezone(departementCode)
 
     // then
     expect(timezone).toBe('Indian/Reunion')
