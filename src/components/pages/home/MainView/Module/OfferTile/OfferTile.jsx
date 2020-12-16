@@ -25,7 +25,7 @@ const OfferTile = ({ historyPush, hit, isSwitching, layout, trackConsultOffer })
 
   function goToOffer(event) {
     if (!isSwitching) {
-      trackConsultOffer()
+      trackConsultOffer(offer.id)
       historyPush(`/accueil/details/${offer.id}`)
     }
     event.preventDefault()

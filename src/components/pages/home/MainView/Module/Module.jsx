@@ -44,9 +44,10 @@ const Module = props => {
     [trackAllTilesSeen, moduleName]
   )
 
-  const trackConsultOffer = useCallback(() => {
-    consultOffer(moduleName)
-  }, [moduleName, consultOffer])
+  const trackConsultOffer = useCallback(offerId => consultOffer(moduleName, offerId), [
+    moduleName,
+    consultOffer,
+  ])
 
   const trackClickSeeMore = useCallback(() => {
     clickSeeMore(moduleName)
