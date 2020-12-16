@@ -5,7 +5,6 @@ import pytest
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsADuplicate
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsNotEligible
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import CantRegisterBeneficiary
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_validator import _is_postal_code_eligible
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_validator import validate
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.repository import repository
@@ -23,11 +22,11 @@ def test_should_not_raise_exception_for_valid_beneficiary(app):
         validate(beneficiary_pre_subcription)
     except CantRegisterBeneficiary:
         # Then
-        assert pytest.fail(f"Should not raise an exception when email not given")
+        assert pytest.fail("Should not raise an exception when email not given")
 
 
 @pytest.mark.usefixtures("db_session")
-def test_raises_if_email_already_taken(app):
+def test_raises_if_email_already_taken_by_beneficiary(app):
     # Given
     email = "email@example.org"
     existing_user = create_user(email=email)
@@ -37,10 +36,22 @@ def test_raises_if_email_already_taken(app):
 
     # When
     with pytest.raises(BeneficiaryIsADuplicate) as error:
-        validate(beneficiary_pre_subcription)
+        validate(beneficiary_pre_subcription, preexisting_account=existing_user)
 
     # Then
     assert str(error.value) == f"Email {email} is already taken."
+
+
+@pytest.mark.usefixtures("db_session")
+def test_validates_for_non_beneficiary_with_same_mail(app):
+    email = "email@example.org"
+    existing_user = create_user(email=email, is_beneficiary=False, is_email_validated=True)
+    repository.save(existing_user)
+
+    beneficiary_pre_subcription = create_domain_beneficiary_pre_subcription(email=email)
+
+    # Should not raise an exception
+    validate(beneficiary_pre_subcription, preexisting_account=existing_user)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -56,7 +67,7 @@ def test_doesnt_raise_if_email_not_taken(app):
         validate(beneficiary_pre_subcription)
     except CantRegisterBeneficiary:
         # Then
-        assert pytest.fail(f"Should not raise an exception when email not given")
+        assert pytest.fail("Should not raise an exception when email not given")
 
 
 @pytest.mark.usefixtures("db_session")
@@ -104,7 +115,7 @@ def test_doesnt_raise_if_no_exact_duplicate(app):
         validate(beneficiary_pre_subcription)
     except CantRegisterBeneficiary:
         # Then
-        assert pytest.fail(f"Should not raise an exception when email not given")
+        assert pytest.fail("Should not raise an exception when email not given")
 
 
 @pytest.mark.parametrize("postal_code", ["36000", "36034", "97400"])
@@ -132,4 +143,4 @@ def test_should_not_raise_if_eligible(app, postal_code):
         validate(beneficiary_pre_subcription)
     except CantRegisterBeneficiary:
         # Then
-        assert pytest.fail(f"Should not raise when postal code is eligible")
+        assert pytest.fail("Should not raise when postal code is eligible")

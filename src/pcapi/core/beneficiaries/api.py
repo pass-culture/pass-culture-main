@@ -16,7 +16,7 @@ def activate_beneficiary(user: UserSQLEntity, deposit_source: str) -> UserSQLEnt
     user.isBeneficiary = True
     deposit = create_deposit(user, deposit_source=deposit_source)
     db.session.add_all((user, deposit))
-    db.session.flush()
+    db.session.commit()
     return user
 
 

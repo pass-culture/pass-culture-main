@@ -4,6 +4,7 @@ from unittest.mock import patch
 from freezegun import freeze_time
 import pytest
 
+from pcapi.core.users import api as users_api
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsADuplicate
 from pcapi.model_creators.generic_creators import create_user
@@ -92,6 +93,42 @@ def test_saved_a_beneficiary_from_application(
     assert beneficiary_import.beneficiary == beneficiary
 
     mocked_send_activation_email.assert_called_once()
+
+
+@patch("pcapi.use_cases.create_beneficiary_from_application.send_activation_email")
+@patch(
+    "pcapi.settings.JOUVE_APPLICATION_BACKEND",
+    "tests.use_cases.create_beneficiary_from_application_test.FakeBeneficiaryJouveBackend",
+)
+@freeze_time("2013-05-15 09:00:00")
+@pytest.mark.usefixtures("db_session")
+def test_application_for_native_app_user(mocked_send_activation_email, app):
+    # Given
+    application_id = 35
+    users_api.create_account(
+        email=PRE_SUBSCRIPTION_BASE_DATA["email"],
+        password="123456789",
+        brithdate=PRE_SUBSCRIPTION_BASE_DATA["date_of_birth"],
+        is_email_validated=True,
+        send_activation_mail=False,
+    )
+
+    # When
+    create_beneficiary_from_application.execute(application_id)
+
+    # Then
+    mocked_send_activation_email.assert_called_once()
+
+    beneficiary = UserSQLEntity.query.one()
+    deposit = Deposit.query.one()
+    assert deposit.amount == 500
+    assert deposit.source == "dossier jouve [35]"
+    assert deposit.userId == beneficiary.id
+
+    beneficiary_import = BeneficiaryImport.query.one()
+    assert beneficiary_import.currentStatus == ImportStatus.CREATED
+    assert beneficiary_import.applicationId == application_id
+    assert beneficiary_import.beneficiary == beneficiary
 
 
 @patch(

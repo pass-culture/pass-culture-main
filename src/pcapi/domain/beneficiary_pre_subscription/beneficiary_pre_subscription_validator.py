@@ -64,7 +64,13 @@ def _check_not_a_duplicate(beneficiary_pre_subscription: BeneficiaryPreSubscript
         raise BeneficiaryIsADuplicate(f"User with id {duplicates[0].id} is a duplicate.")
 
 
-def validate(beneficiary_pre_subscription: BeneficiaryPreSubscription) -> None:
+def validate(
+    beneficiary_pre_subscription: BeneficiaryPreSubscription, preexisting_account: UserSQLEntity = None
+) -> None:
     _check_department_is_eligible(beneficiary_pre_subscription)
-    _check_email_is_not_taken(beneficiary_pre_subscription)
+    if not preexisting_account:
+        _check_email_is_not_taken(beneficiary_pre_subscription)
+    else:
+        if preexisting_account.isBeneficiary or not preexisting_account.isEmailValidated:
+            raise BeneficiaryIsADuplicate(f"Email {beneficiary_pre_subscription.email} is already taken.")
     _check_not_a_duplicate(beneficiary_pre_subscription)
