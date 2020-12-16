@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React, { Fragment, useCallback, useEffect, useRef } from 'react'
-import { Link, Route } from 'react-router-dom'
+import { Route } from 'react-router-dom'
 
 import { formatToFrenchDecimal } from '../../../../utils/getDisplayPrice'
 import CloseLink from '../../../layout/Header/CloseLink/CloseLink'
@@ -12,7 +12,6 @@ import OffersWithCover from './domain/ValueObjects/OffersWithCover'
 import ExclusivityModule from './ExclusivityModule/ExclusivityModule'
 import Module from './Module/Module'
 import OfferDetailsContainer from './OfferDetails/OfferDetailsContainer'
-import Icon from '../../../layout/Icon/Icon'
 import Profile from '../Profile/Profile'
 import User from '../Profile/ValueObjects/User'
 import { setCustomUserId } from '../../../../notifications/setUpBatchSDK'
@@ -103,14 +102,6 @@ const MainView = props => {
         onScroll={checkIfAllModulesHaveBeenSeen}
       >
         <section className="hw-header">
-          <div className="hw-account">
-            <Link to="/accueil/profil">
-              <Icon
-                className="hw-account-image"
-                svg="ico-informations-white"
-              />
-            </Link>
-          </div>
           <div className="hw-pseudo">
             {`Bonjour ${formatPublicName(user.publicName)}`}
           </div>

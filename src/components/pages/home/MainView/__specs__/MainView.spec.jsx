@@ -13,8 +13,6 @@ import OffersWithCover from '../domain/ValueObjects/OffersWithCover'
 import ExclusivityModule from '../ExclusivityModule/ExclusivityModule'
 import MainView from '../MainView'
 import Module from '../Module/Module'
-import { Link } from 'react-router-dom'
-import Icon from '../../../../layout/Icon/Icon'
 import { Provider } from 'react-redux'
 import { getStubStore } from '../../../../../utils/stubStore'
 import { setCustomUserId } from '../../../../../notifications/setUpBatchSDK'
@@ -48,7 +46,11 @@ describe('src | components | MainView', () => {
     fetchHomepage.mockResolvedValue([])
     parse.mockReturnValue({})
     props = {
-      algoliaMapping: {},
+      algoliaMapping: {
+        hits: [],
+        nbHits: 0,
+        parsedParameters: {},
+      },
       displayedModules: [],
       geolocation: {
         latitude: 5,
@@ -108,28 +110,10 @@ describe('src | components | MainView', () => {
     expect(subtitle).toHaveLength(1)
   })
 
-  it('should render a Link component with the profil icon', () => {
-    // when
-    const wrapper = mount(
-      <MemoryRouter>
-        <MainView {...props} />
-      </MemoryRouter>
-    )
-
-    // then
-    const link = wrapper.find(Link)
-    expect(link).toHaveLength(1)
-    expect(link.prop('to')).toBe('/accueil/profil')
-
-    const icon = link.find(Icon)
-    expect(icon).toHaveLength(1)
-    expect(icon.prop('svg')).toBe('ico-informations-white')
-  })
-
   it('should render a module component when module is for offers with cover', async () => {
     // given
-    const results = { hits: [], nbHits: 0, parsedParameters: {} }
-    props.algoliaMapping = { moduleId: results }
+    const results = { moduleData: {} }
+    props.algoliaMapping = { moduleId: results, hits: [], nbHits: 0, parsedParameters: {} }
     const offersWithCover = new OffersWithCover({
       moduleId,
       algolia: { isDuo: true },

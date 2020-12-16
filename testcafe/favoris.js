@@ -9,7 +9,7 @@ fixture('Favoris,')
 test('je peux ajouter une offre à mes favoris et supprimer une offre de mes favoris', async t => {
   const userRole = await createUserRoleFromUserSandbox(
     'webapp_08_booking',
-    'get_existing_webapp_user_can_book_event_offer'
+    'get_existing_webapp_user_can_book_digital_offer'
   )
   const { offer } = await fetchSandbox(
     'webapp_08_booking',
