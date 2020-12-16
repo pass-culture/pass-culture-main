@@ -42,7 +42,7 @@ class BookOfferTest:
         mocked_add_offer_id.assert_called_once_with(client=app.redis_client, offer_id=stock.offer.id)
 
         email_data1 = mocked_send_raw_email.call_args_list[0][1]["data"]
-        assert email_data1["MJ-TemplateID"] == 1095029  # to offerer
+        assert email_data1["MJ-TemplateID"] == 2113444  # to offerer
         email_data2 = mocked_send_raw_email.call_args_list[1][1]["data"]
         assert email_data2["MJ-TemplateID"] == 1163067  # to beneficiary
 

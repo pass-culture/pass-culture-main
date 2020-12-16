@@ -38,7 +38,7 @@ def get_expected_base_email_data(booking, **overrides):
     offerer_id = humanize(booking.stock.offer.venue.managingOfferer.id)
     email_data = {
         "FromEmail": "support@example.com",
-        "MJ-TemplateID": 1095029,
+        "MJ-TemplateID": 2113444,
         "MJ-TemplateLanguage": True,
         "To": "dev@example.com",
         "Vars": {

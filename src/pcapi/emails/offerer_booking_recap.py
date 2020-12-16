@@ -34,7 +34,7 @@ def retrieve_data_for_offerer_booking_recap_email(booking: Booking, recipients: 
 
     mailjet_json = {
         "FromEmail": settings.SUPPORT_EMAIL_ADDRESS,
-        "MJ-TemplateID": 1095029,
+        "MJ-TemplateID": 2113444,
         "MJ-TemplateLanguage": True,
         "To": create_email_recipients(recipients),
         "Vars": {
