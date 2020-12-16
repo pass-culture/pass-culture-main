@@ -24,3 +24,8 @@ class ApplicationUpdateRequest(BaseModel):
 
 class ApplicationUpdateResponse(BaseModel):
     pass
+
+
+class ChangeBeneficiaryEmailRequestBody(BaseModel):
+    new_email: str
+    password: str

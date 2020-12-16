@@ -9,17 +9,20 @@ from flask_login import login_user
 from pcapi import settings
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import repository as users_repo
+from pcapi.core.users.api import send_user_emails_for_email_change
 from pcapi.flask_app import private_api
 from pcapi.flask_app import public_api
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.serialization import as_dict
 from pcapi.routes.serialization import beneficiaries as serialization_beneficiaries
+from pcapi.routes.serialization.beneficiaries import ChangeBeneficiaryEmailRequestBody
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.use_cases.update_user_informations import AlterableUserInformations
 from pcapi.use_cases.update_user_informations import update_user_informations
 from pcapi.utils.includes import BENEFICIARY_INCLUDES
 from pcapi.utils.logger import json_logger
 from pcapi.utils.login_manager import stamp_session
+from pcapi.utils.mailing import MailServiceException
 from pcapi.utils.rest import expect_json_data
 from pcapi.utils.rest import login_or_api_key_required
 from pcapi.validation.routes.captcha import check_recaptcha_token_is_valid
@@ -61,6 +64,32 @@ def patch_beneficiary() -> Tuple[str, int]:
 
     formattedUser = as_dict(user, includes=BENEFICIARY_INCLUDES)
     return jsonify(formattedUser), 200
+
+
+@private_api.route("/beneficiaries/change_email_request", methods=["PUT"])
+@login_or_api_key_required
+@spectree_serialize(on_success_status=204, on_error_statuses=[401, 503])
+def change_beneficiary_email_request(body: ChangeBeneficiaryEmailRequestBody) -> None:
+    errors = ApiErrors()
+    errors.status_code = 401
+    try:
+        user = users_repo.get_user_with_credentials(current_user.email, body.password)
+    except users_exceptions.InvalidIdentifier as exc:
+        errors.add_error("identifier", "Identifiant incorrect")
+        raise errors from exc
+    except users_exceptions.UnvalidatedAccount as exc:
+        errors.add_error("identifier", "Ce compte n'est pas validé.")
+        raise errors from exc
+    except users_exceptions.InvalidPassword as exc:
+        errors.add_error("password", "Mot de passe incorrect")
+        raise errors from exc
+
+    try:
+        send_user_emails_for_email_change(user, body.new_email)
+    except MailServiceException as mail_service_exception:
+        errors.status_code = 503
+        errors.add_error("email", "L'envoi d'email a échoué")
+        raise errors from mail_service_exception
 
 
 # @debt api-migration
