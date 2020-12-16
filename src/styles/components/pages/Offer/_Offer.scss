@@ -12,8 +12,37 @@
     display: block;
   }
 
-  .select select {
-    appearance: none;
+  .select {
+    position: relative;
+
+    select {
+      appearance: none;
+      background-color: $white;
+      border: rem(2px) solid $grey-medium;
+      border-radius: rem(18px);
+      font-size: rem(16px);
+      font-weight: 500;
+      height: rem(36px);
+      outline: none;
+      padding: rem(4px) rem(40px) rem(4px) rem(16px);
+      width: 100%;
+    }
+
+    &::after {
+      border: rem(3px) solid $black;
+      border-radius: rem(2px);
+      border-right: 0;
+      border-top: 0;
+      content: " ";
+      height: rem(10px);
+      margin-top: rem(-7px);
+      position: absolute;
+      right: rem(20px);
+      top: rem(16px);
+      transform: rotate(-45deg);
+      transform-origin: center;
+      width: rem(10px);
+    }
   }
 
   .select.readonly select {
@@ -83,38 +112,6 @@
   }
 
   .offer-form {
-    .select {
-      position: relative;
-
-      select {
-        background-color: $white;
-        border: rem(2px) solid $grey-medium;
-        border-radius: rem(18px);
-        font-size: rem(16px);
-        font-weight: 500;
-        height: rem(36px);
-        outline: none;
-        padding: rem(4px) rem(40px) rem(4px) rem(16px);
-        width: 100%;
-      }
-
-      &::after {
-        border: rem(3px) solid $black;
-        border-radius: rem(2px);
-        border-right: 0;
-        border-top: 0;
-        content: " ";
-        height: rem(10px);
-        margin-top: rem(-7px);
-        position: absolute;
-        right: rem(20px);
-        top: rem(16px);
-        transform: rotate(-45deg);
-        transform-origin: center;
-        width: rem(10px);
-      }
-    }
-
     .title-field #offer-name {
       padding: rem(5px) rem(40px) rem(4px) rem(16px);
     }

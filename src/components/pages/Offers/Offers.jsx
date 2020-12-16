@@ -616,7 +616,7 @@ class Offers extends PureComponent {
     const actionLink =
       !displayOffers || isAdmin ? null : (
         <Link
-          className="cta button is-primary"
+          className="primary-button"
           to="/offres/creation"
         >
           <span className="icon">

@@ -133,7 +133,7 @@ class AllocineProviderForm extends PureComponent {
 
             <div className="apf-provider-import-button-section">
               <button
-                className="button is-primary apf-provider-import-button"
+                className="primary-button"
                 disabled={!canSubmit}
                 onClick={formProps.handleSubmit}
                 type="submit"

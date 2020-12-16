@@ -1,4 +1,8 @@
 .offerer-page {
+  .main-content > p {
+    margin-bottom: rem(24px);
+  }
+
   .has-text-primary {
     color: $primary;
   }
