@@ -16,7 +16,18 @@ const Stocks = ({ match }) => {
   const [departmentCode, setDepartmentCode] = useState(null)
   const [isEvent, setIsEvent] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
+  const [isAddingNewStock, setIsAddingNewStock] = useState(false)
   const [isOfferSynchronized, setIsOfferSynchronized] = useState(false)
+  const newStock = {
+    offerId: offerId,
+    id: '',
+    bookingsQuantity: 0,
+    isEventDeletable: false,
+    beginningDatetime: '',
+    bookingLimitDatetime: '',
+    price: 0,
+    quantity: null,
+  }
 
   useEffect(() => {
     moment.tz.setDefault(getDepartmentTimezone(departmentCode))
@@ -43,6 +54,10 @@ const Stocks = ({ match }) => {
     getOffer()
   }, [getOffer])
 
+  const addNewStock = useCallback(() => {
+    setIsAddingNewStock(true)
+  }, [setIsAddingNewStock])
+
   const eventCancellationInformation =
     'Les réservations peuvent être annulées par les utilisateurs jusqu’à 48h après la réservation et au maximum 72h avant l’évènement. Si la date limite de réservation n’est pas encore passée, la place est alors automatiquement remise en vente.'
 
@@ -61,7 +76,8 @@ const Stocks = ({ match }) => {
       </div>
       <button
         className="tertiary-button"
-        disabled={(!isEvent && stocks.length > 0) || isOfferSynchronized}
+        disabled={(!isEvent && stocks.length > 0) || isOfferSynchronized || isAddingNewStock}
+        onClick={addNewStock}
         type="button"
       >
         <Icon svg="ico-plus" />
@@ -104,6 +120,18 @@ const Stocks = ({ match }) => {
           </tr>
         </thead>
         <tbody>
+          {isAddingNewStock && (
+            <StockItem
+              departmentCode={departmentCode}
+              isEvent={isEvent}
+              isNewStock
+              isOfferSynchronized={isOfferSynchronized}
+              refreshOffer={getOffer}
+              setParentIsAdding={setIsAddingNewStock}
+              setParentIsEditing={setIsEditing}
+              stock={newStock}
+            />
+          )}
           {stocks.map(stock => (
             <StockItem
               departmentCode={departmentCode}
@@ -111,6 +139,7 @@ const Stocks = ({ match }) => {
               isOfferSynchronized={isOfferSynchronized}
               key={stock.id}
               refreshOffer={getOffer}
+              setParentIsAdding={setIsAddingNewStock}
               setParentIsEditing={setIsEditing}
               stock={stock}
             />

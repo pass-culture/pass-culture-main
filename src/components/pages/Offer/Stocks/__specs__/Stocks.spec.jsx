@@ -13,6 +13,7 @@ jest.mock('repository/pcapi/pcapi', () => ({
   deleteStock: jest.fn(),
   loadOffer: jest.fn(),
   updateStock: jest.fn(),
+  createStock: jest.fn(),
 }))
 
 const renderStocks = props =>
@@ -68,6 +69,7 @@ describe('stocks page', () => {
     pcapi.loadOffer.mockReset()
     pcapi.deleteStock.mockReset()
     pcapi.updateStock.mockReset()
+    pcapi.createStock.mockReset()
     spiedMomentSetDefaultTimezone.mockRestore()
   })
 
@@ -1000,6 +1002,196 @@ describe('stocks page', () => {
             expect(screen.getByLabelText('Prix')).toBeEnabled()
             expect(screen.getByLabelText('Quantité')).toBeEnabled()
           })
+        })
+      })
+
+      describe('create new stock', () => {
+        let noStockOffer
+        beforeEach(() => {
+          noStockOffer = {
+            ...defaultOffer,
+            isEvent: true,
+            stocks: [],
+          }
+
+          pcapi.loadOffer.mockResolvedValue(noStockOffer)
+        })
+
+        it('should append new stock line on top of stocks list when clicking on add button', async () => {
+          // given
+          const eventOffer = {
+            ...defaultOffer,
+            isEvent: true,
+            stocks: [
+              {
+                ...defaultStock,
+                beginningDatetime: '2020-12-20T22:00:00Z',
+              },
+            ],
+          }
+          pcapi.loadOffer.mockResolvedValue(eventOffer)
+          await renderStocks(props)
+
+          // when
+          fireEvent.click(screen.getByText('Ajouter une date'))
+
+          // then
+          expect(screen.getAllByRole('row')).toHaveLength(3)
+          expect(screen.getAllByLabelText('Date de l’événement')[0].value).toBe('')
+          expect(screen.getAllByLabelText('Date de l’événement')[1].value).toBe('20/12/2020')
+        })
+
+        it('should have empty date, hour, price, limit datetime and quantity fields emptied by default', async () => {
+          // given
+          await renderStocks(props)
+
+          // when
+          fireEvent.click(screen.getByText('Ajouter une date'))
+
+          // then
+          expect(screen.getByLabelText('Date de l’événement').value).toBe('')
+          expect(screen.getByLabelText('Heure de l’événement').value).toBe('')
+          expect(screen.getByLabelText('Prix').value).toBe('')
+          expect(screen.getByLabelText('Date limite de réservation').value).toBe('')
+          expect(screen.getByLabelText('Quantité').value).toBe('')
+        })
+
+        it('should not have remaining stocks and bookings columns', async () => {
+          // given
+          await renderStocks(props)
+
+          // when
+          fireEvent.click(screen.getByText('Ajouter une date'))
+
+          // then
+          const columnCells = screen.getAllByRole('cell')
+          expect(columnCells[3].textContent).toBe('')
+          expect(columnCells[4].textContent).toBe('')
+        })
+
+        it('should not have edit and delete columns', async () => {
+          // given
+          await renderStocks(props)
+
+          // when
+          fireEvent.click(screen.getByText('Ajouter une date'))
+
+          // then
+          expect(screen.queryByAltText('Modifier le stock')).not.toBeInTheDocument()
+          expect(screen.queryByAltText('Supprimer le stock')).not.toBeInTheDocument()
+        })
+
+        it('should have a validation and cancel button to save or cancel new stock', async () => {
+          // given
+          await renderStocks(props)
+
+          // when
+          fireEvent.click(screen.getByText('Ajouter une date'))
+
+          // then
+          expect(screen.queryByAltText('Valider les modifications')).toBeInTheDocument()
+          expect(screen.queryByAltText('Annuler les modifications')).toBeInTheDocument()
+        })
+
+        it('should not be able to validate while beginning date time is empty', async () => {
+          // given
+          await renderStocks(props)
+
+          // when
+          fireEvent.click(screen.getByText('Ajouter une date'))
+
+          // then
+          expect(
+            screen.queryByAltText('Valider les modifications').closest('button')
+          ).toBeDisabled()
+
+          fireEvent.click(screen.getByLabelText('Date de l’événement'))
+          fireEvent.click(screen.getByLabelText('day-24'))
+          expect(screen.queryByAltText('Valider les modifications').closest('button')).toBeEnabled()
+        })
+
+        it('should add new stock to stocks and remove new empty stock line when clicking on validate button', async () => {
+          // given
+          pcapi.createStock.mockResolvedValue({})
+          const offer = {
+            ...defaultOffer,
+            isEvent: true,
+          }
+          const initialOffer = {
+            ...offer,
+            stocks: [],
+          }
+          const updatedOffer = {
+            ...offer,
+            stocks: [
+              {
+                quantity: 15,
+                price: 15,
+                remainingQuantity: 15,
+                bookingsQuantity: 0,
+                beginningDatetime: '2020-12-24T23:00:00Z',
+                bookingLimitDatetime: '2020-12-22T23:59:59Z',
+                id: stockId,
+                isEventDeletable: true,
+              },
+            ],
+          }
+          pcapi.loadOffer.mockResolvedValueOnce(initialOffer).mockResolvedValueOnce(updatedOffer)
+          await renderStocks(props)
+
+          fireEvent.click(screen.getByText('Ajouter une date'))
+
+          fireEvent.click(screen.getByLabelText('Date de l’événement'))
+          fireEvent.click(screen.getByLabelText('day-24'))
+
+          fireEvent.click(screen.getByLabelText('Heure de l’événement'))
+          fireEvent.click(screen.getByText('20:00'))
+
+          fireEvent.change(screen.getByLabelText('Prix'), { target: { value: '15' } })
+
+          fireEvent.click(screen.getByLabelText('Date limite de réservation'))
+          fireEvent.click(screen.getByLabelText('day-22'))
+
+          fireEvent.change(screen.getByLabelText('Quantité'), { target: { value: '15' } })
+
+          // when
+          await act(async () => {
+            await fireEvent.click(screen.getByAltText('Valider les modifications'))
+          })
+
+          // then
+          expect(pcapi.createStock).toHaveBeenCalledWith({
+            offerId: 'AG3A',
+            beginningDatetime: '2020-12-24T23:00:00Z',
+            bookingLimitDatetime: '2020-12-22T23:59:59Z',
+            price: '15',
+            quantity: '15',
+          })
+          expect(screen.getAllByRole('row')).toHaveLength(2)
+        })
+
+        it('should cancel new stock addition when clicking on cancel button', async () => {
+          // Given
+          await renderStocks(props)
+          fireEvent.click(screen.getByText('Ajouter une date'))
+
+          // When
+          fireEvent.click(screen.getByAltText('Annuler les modifications'))
+
+          // Then
+          expect(pcapi.createStock).not.toHaveBeenCalled()
+          expect(screen.getAllByRole('row')).toHaveLength(1)
+        })
+
+        it('should not be able to add second stock while first one is not validated', async () => {
+          // Given
+          await renderStocks(props)
+
+          // When
+          fireEvent.click(screen.getByText('Ajouter une date'))
+
+          // Then
+          expect(screen.getByText('Ajouter une date')).toBeDisabled()
         })
       })
     })

@@ -140,3 +140,7 @@ export const updateStock = stock => {
 export const deleteStock = stockId => {
   return client.delete(`/stocks/${stockId}`)
 }
+
+export const createStock = stock => {
+  return client.post('/stocks', stock)
+}

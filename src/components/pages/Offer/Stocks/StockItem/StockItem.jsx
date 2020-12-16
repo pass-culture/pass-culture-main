@@ -14,11 +14,13 @@ export const StockItem = ({
   isOfferSynchronized,
   refreshOffer,
   stock,
+  setParentIsAdding,
   setParentIsEditing,
+  isNewStock,
 }) => {
   const today = new Date().toISOString()
 
-  const [isEditing, setIsEditing] = useState(false)
+  const [isEditing, setIsEditing] = useState(isNewStock)
   const [isDeleting, setIsDeleting] = useState(false)
   const [beginningDatetime, setBeginningDatetime] = useState(stock.beginningDatetime)
   const [bookingLimitDatetime, setBookingLimitDatetime] = useState(stock.bookingLimitDatetime)
@@ -30,12 +32,12 @@ export const StockItem = ({
   }, [])
 
   const refreshStock = useCallback(() => {
-    setIsEditing(false)
+    setIsEditing(isNewStock)
     setBeginningDatetime(stock.beginningDatetime)
     setBookingLimitDatetime(stock.bookingLimitDatetime)
     setPrice(stock.price)
     setTotalQuantity(stock.quantity)
-  }, [stock])
+  }, [isNewStock, stock])
 
   useEffect(() => {
     refreshStock()
@@ -142,6 +144,33 @@ export const StockItem = ({
     refreshOffer,
   ])
 
+  const saveNewStock = useCallback(() => {
+    pcapi
+      .createStock({
+        offerId: stock.offerId,
+        beginningDatetime: beginningDatetime,
+        bookingLimitDatetime: getBookingLimitDatetimeForEvent(),
+        price: price ? price : 0,
+        quantity: totalQuantity ? totalQuantity : null,
+      })
+      .then(() => {
+        refreshOffer()
+        setParentIsAdding(false)
+      })
+  }, [
+    stock.offerId,
+    beginningDatetime,
+    getBookingLimitDatetimeForEvent,
+    price,
+    totalQuantity,
+    refreshOffer,
+    setParentIsAdding,
+  ])
+
+  const removeNewStockLine = useCallback(() => {
+    setParentIsAdding(false)
+  }, [setParentIsAdding])
+
   return (
     <Fragment>
       <tr>
@@ -204,10 +233,10 @@ export const StockItem = ({
           />
         </td>
         <td>
-          {remainingQuantityValue}
+          {!isNewStock && remainingQuantityValue}
         </td>
         <td>
-          {stock.bookingsQuantity}
+          {!isNewStock && stock.bookingsQuantity}
         </td>
         <td className="action-column">
           {!isEditing ? (
@@ -226,7 +255,7 @@ export const StockItem = ({
             <button
               className="secondary-button validate-button"
               disabled={isEvent && !beginningDatetime}
-              onClick={saveChanges}
+              onClick={isNewStock ? saveNewStock : saveChanges}
               type="button"
             >
               <Icon
@@ -252,7 +281,7 @@ export const StockItem = ({
           ) : (
             <button
               className="secondary-button"
-              onClick={refreshStock}
+              onClick={!isNewStock ? refreshStock : removeNewStockLine}
               type="button"
             >
               <Icon
@@ -275,11 +304,17 @@ export const StockItem = ({
   )
 }
 
+StockItem.defaultProps = {
+  isNewStock: false,
+}
+
 StockItem.propTypes = {
   departmentCode: PropTypes.string.isRequired,
   isEvent: PropTypes.bool.isRequired,
+  isNewStock: PropTypes.bool,
   isOfferSynchronized: PropTypes.bool.isRequired,
   refreshOffer: PropTypes.func.isRequired,
+  setParentIsAdding: PropTypes.func.isRequired,
   setParentIsEditing: PropTypes.func.isRequired,
   stock: PropTypes.shape({
     id: PropTypes.string.isRequired,
