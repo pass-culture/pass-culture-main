@@ -1,12 +1,9 @@
 from typing import List
 
-from wtforms.validators import DataRequired
-
 from pcapi.admin.base_configuration import BaseAdminView
 
 
 class UserOffererView(BaseAdminView):
-    can_edit = True
     can_delete = True
     column_list = [
         "user.email",
@@ -17,7 +14,6 @@ class UserOffererView(BaseAdminView):
         "offerer.address",
         "offerer.name",
         "offerer.id",
-        "rights",
     ]
     column_labels = {
         "user.email": "Email utilisateur",
@@ -28,7 +24,6 @@ class UserOffererView(BaseAdminView):
         "offerer.address": "Adresse de la structure",
         "offerer.name": "Nom de la structure",
         "offerer.id": "Identifiant de la structure",
-        "rights": "Statut de l'utilisateur sur la structure",
     }
     column_sortable_list: List[str] = []
     column_searchable_list = [
@@ -40,7 +35,6 @@ class UserOffererView(BaseAdminView):
         "offerer.address",
         "offerer.name",
         "offerer.id",
-        "rights",
     ]
     column_filters = [
         "user.email",
@@ -49,7 +43,4 @@ class UserOffererView(BaseAdminView):
         "offerer.siren",
         "offerer.address",
         "offerer.name",
-        "rights",
     ]
-    form_columns = ["rights"]
-    form_args = dict(rights=dict(label="Statut de l'utilisateur sur la structure", validators=[DataRequired()]))
