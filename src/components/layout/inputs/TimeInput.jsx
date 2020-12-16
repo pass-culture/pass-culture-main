@@ -54,7 +54,7 @@ TimeInput.defaultProps = {
   error: '',
   label: '',
   readOnly: false,
-  subLabel: null,
+  subLabel: '',
   value: '01:00',
 }
 

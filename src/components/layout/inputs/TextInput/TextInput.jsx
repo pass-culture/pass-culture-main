@@ -13,7 +13,7 @@ const TextInput = ({
   onChange,
   placeholder,
   required,
-  sublabel,
+  subLabel,
   type,
   value,
 }) => (
@@ -21,7 +21,7 @@ const TextInput = ({
     <div className="labels">
       {label}
       <span className="it-sub-label">
-        {sublabel}
+        {subLabel}
       </span>
     </div>
     <input
@@ -58,7 +58,7 @@ TextInput.defaultProps = {
   onChange: null,
   placeholder: '',
   required: false,
-  sublabel: '',
+  subLabel: '',
   type: 'text',
   value: '',
 }
@@ -73,7 +73,7 @@ TextInput.propTypes = {
   onChange: PropTypes.func,
   placeholder: PropTypes.string,
   required: PropTypes.bool,
-  sublabel: PropTypes.string,
+  subLabel: PropTypes.string,
   type: PropTypes.string,
   value: PropTypes.string,
 }

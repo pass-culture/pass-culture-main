@@ -14,7 +14,7 @@ const TextareaInput = ({
   placeholder,
   required,
   rows,
-  sublabel,
+  subLabel,
   value,
 }) => {
   const textareaValue = [undefined, null].includes(value) ? '' : value
@@ -26,7 +26,7 @@ const TextareaInput = ({
       <div className="labels">
         {label}
         <span className="it-sub-label">
-          {sublabel}
+          {subLabel}
         </span>
       </div>
       <textarea
@@ -65,7 +65,7 @@ TextareaInput.defaultProps = {
   placeholder: '',
   required: false,
   rows: 4,
-  sublabel: '',
+  subLabel: '',
   value: '',
 }
 
@@ -80,7 +80,7 @@ TextareaInput.propTypes = {
   placeholder: PropTypes.string,
   required: PropTypes.bool,
   rows: PropTypes.number,
-  sublabel: PropTypes.string,
+  subLabel: PropTypes.string,
   value: PropTypes.string,
 }
 

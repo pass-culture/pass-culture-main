@@ -29,7 +29,7 @@ const StyleguideInputText = () => {
       label="Intitulé"
       name="input-text-disabled"
       placeholder="placeholder disabled"
-      sublabel="Intitulé secondaire"
+      subLabel="Intitulé secondaire"
       type="text"
       value="01:00"
 
@@ -37,7 +37,7 @@ const StyleguideInputText = () => {
       error="Message d'erreur"
       label="Intitulé"
       name="input-text-disabled"
-      sublabel="Intitulé secondaire"
+      subLabel="Intitulé secondaire"
       value="01:00"
     />
   `

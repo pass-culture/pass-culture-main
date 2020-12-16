@@ -10,7 +10,7 @@ const StyleguideInputTextarea = () => {
       onChange={onChange}
       placeholder="placeholder"
       required
-      sublabel="Intitulé secondaire"
+      subLabel="Intitulé secondaire"
       value="Valeur"
     />
   `
@@ -23,7 +23,7 @@ const StyleguideInputTextarea = () => {
       onChange={onChange}
       placeholder="placeholder"
       required
-      sublabel="Intitulé secondaire"
+      subLabel="Intitulé secondaire"
     />
   `
   const inputTextareaDisabled = `
@@ -32,7 +32,7 @@ const StyleguideInputTextarea = () => {
       label="Intitulé"
       name="input-text-disabled"
       placeholder="placeholder disabled"
-      sublabel="Intitulé secondaire"
+      subLabel="Intitulé secondaire"
       value="Valeur"
     />
   `
@@ -46,7 +46,7 @@ const StyleguideInputTextarea = () => {
       onChange={onChange}
       placeholder="placeholder"
       required
-      sublabel="Intitulé secondaire"
+      subLabel="Intitulé secondaire"
       value="Valeur"
     />
   `
@@ -68,7 +68,7 @@ const StyleguideInputTextarea = () => {
             onChange={onChange}
             placeholder="placeholder"
             required
-            sublabel="Intitulé secondaire"
+            subLabel="Intitulé secondaire"
           />
         </div>
         <div className="it-description">
@@ -87,7 +87,7 @@ const StyleguideInputTextarea = () => {
             label="Intitulé"
             name="input-text-disabled"
             placeholder="placeholder disabled"
-            sublabel="Intitulé secondaire"
+            subLabel="Intitulé secondaire"
           />
         </div>
         <div className="it-description">
@@ -111,7 +111,7 @@ const StyleguideInputTextarea = () => {
             onChange={onChange}
             placeholder="placeholder"
             required
-            sublabel="Intitulé secondaire"
+            subLabel="Intitulé secondaire"
           />
         </div>
         <div className="it-description">
@@ -136,7 +136,7 @@ const StyleguideInputTextarea = () => {
             onChange={onChange}
             placeholder="placeholder"
             required
-            sublabel="Intitulé secondaire"
+            subLabel="Intitulé secondaire"
           />
         </div>
         <div className="it-description">

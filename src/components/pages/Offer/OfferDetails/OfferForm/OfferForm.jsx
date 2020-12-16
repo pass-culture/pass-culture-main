@@ -348,7 +348,7 @@ const OfferForm = ({
                 name="name"
                 onChange={handleSingleFormUpdate}
                 required
-                sublabel={!MANDATORY_FIELDS.includes('name') ? 'Optionnel' : ''}
+                subLabel={!MANDATORY_FIELDS.includes('name') ? 'Optionnel' : ''}
                 type="text"
                 value={formValues.name}
               />
@@ -364,7 +364,7 @@ const OfferForm = ({
                 onChange={handleSingleFormUpdate}
                 required
                 rows={6}
-                sublabel={!MANDATORY_FIELDS.includes('description') ? 'Optionnel' : ''}
+                subLabel={!MANDATORY_FIELDS.includes('description') ? 'Optionnel' : ''}
                 value={formValues.description}
               />
             </div>
@@ -376,7 +376,7 @@ const OfferForm = ({
                   label="Intervenant"
                   name="speaker"
                   onChange={handleSingleFormUpdate}
-                  sublabel={!MANDATORY_FIELDS.includes('speaker') ? 'Optionnel' : ''}
+                  subLabel={!MANDATORY_FIELDS.includes('speaker') ? 'Optionnel' : ''}
                   type="text"
                   value={formValues.speaker}
                 />
@@ -391,7 +391,7 @@ const OfferForm = ({
                   label="Auteur"
                   name="author"
                   onChange={handleSingleFormUpdate}
-                  sublabel={!MANDATORY_FIELDS.includes('author') ? 'Optionnel' : ''}
+                  subLabel={!MANDATORY_FIELDS.includes('author') ? 'Optionnel' : ''}
                   type="text"
                   value={formValues.author}
                 />
@@ -406,7 +406,7 @@ const OfferForm = ({
                   label="Visa d’exploitation"
                   name="visa"
                   onChange={handleSingleFormUpdate}
-                  sublabel={!MANDATORY_FIELDS.includes('visa') ? 'Optionnel' : ''}
+                  subLabel={!MANDATORY_FIELDS.includes('visa') ? 'Optionnel' : ''}
                   type="text"
                   value={formValues.visa}
                 />
@@ -421,7 +421,7 @@ const OfferForm = ({
                   label="ISBN"
                   name="isbn"
                   onChange={handleSingleFormUpdate}
-                  sublabel={!MANDATORY_FIELDS.includes('isbn') ? 'Optionnel' : ''}
+                  subLabel={!MANDATORY_FIELDS.includes('isbn') ? 'Optionnel' : ''}
                   type="text"
                   value={formValues.isbn}
                 />
@@ -436,7 +436,7 @@ const OfferForm = ({
                   label="Metteur en scène"
                   name="stageDirector"
                   onChange={handleSingleFormUpdate}
-                  sublabel={!MANDATORY_FIELDS.includes('stageDirector') ? 'Optionnel' : ''}
+                  subLabel={!MANDATORY_FIELDS.includes('stageDirector') ? 'Optionnel' : ''}
                   type="text"
                   value={formValues.stageDirector}
                 />
@@ -451,7 +451,7 @@ const OfferForm = ({
                   label="Interprète"
                   name="performer"
                   onChange={handleSingleFormUpdate}
-                  sublabel={!MANDATORY_FIELDS.includes('performer') ? 'Optionnel' : ''}
+                  subLabel={!MANDATORY_FIELDS.includes('performer') ? 'Optionnel' : ''}
                   type="text"
                   value={formValues.performer}
                 />
@@ -467,7 +467,7 @@ const OfferForm = ({
                   onChange={handleDurationChange}
                   placeholder="HH:MM"
                   readOnly={readOnlyFields.includes('durationMinutes')}
-                  sublabel={!MANDATORY_FIELDS.includes('duration') ? 'Optionnel' : ''}
+                  subLabel={!MANDATORY_FIELDS.includes('durationMinutes') ? 'Optionnel' : ''}
                   type="duration"
                   value={formValues.durationMinutes}
                 />
@@ -498,7 +498,7 @@ const OfferForm = ({
                 name="offererId"
                 options={offererOptions}
                 selectedValue={formValues.offererId}
-                sublabel={!MANDATORY_FIELDS.includes('offererId') ? 'Optionnel' : ''}
+                subLabel={!MANDATORY_FIELDS.includes('offererId') ? 'Optionnel' : ''}
               />
             </div>
 
@@ -515,7 +515,7 @@ const OfferForm = ({
                 name="venueId"
                 options={venueOptions}
                 selectedValue={formValues.venueId}
-                sublabel={!MANDATORY_FIELDS.includes('venueId') ? 'Optionnel' : ''}
+                subLabel={!MANDATORY_FIELDS.includes('venueId') ? 'Optionnel' : ''}
               />
             </div>
             {displayRefundWarning && (
@@ -535,7 +535,7 @@ const OfferForm = ({
                 onChange={handleSingleFormUpdate}
                 required
                 rows={6}
-                sublabel={!MANDATORY_FIELDS.includes('withdrawalDetails') ? 'Optionnel' : ''}
+                subLabel={!MANDATORY_FIELDS.includes('withdrawalDetails') ? 'Optionnel' : ''}
                 value={formValues.withdrawalDetails}
               />
             </div>
@@ -549,7 +549,7 @@ const OfferForm = ({
                   name="url"
                   onChange={handleSingleFormUpdate}
                   required
-                  sublabel={
+                  subLabel={
                     !readOnlyFields.includes('url') &&
                     'Vous pouvez inclure {token} {email} et {offerId} dans l’URL, qui seront remplacés respectivement par le code de la contremarque, l’e-mail de la personne ayant reservé et l’identifiant de l’offre'
                   }

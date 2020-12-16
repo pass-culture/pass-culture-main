@@ -11,7 +11,7 @@ const StyleguideInputText = () => {
       onChange={onChange}
       placeholder="placeholder"
       required
-      sublabel="Intitulé secondaire"
+      subLabel="Intitulé secondaire"
       type="text"
       value="Valeur"
     />
@@ -25,7 +25,7 @@ const StyleguideInputText = () => {
       onChange={onChange}
       placeholder="placeholder"
       required
-      sublabel="Intitulé secondaire"
+      subLabel="Intitulé secondaire"
       type="text"
     />
   `
@@ -35,7 +35,7 @@ const StyleguideInputText = () => {
       label="Intitulé"
       name="input-text-disabled"
       placeholder="placeholder disabled"
-      sublabel="Intitulé secondaire"
+      subLabel="Intitulé secondaire"
       type="text"
       value="Valeur"
     />
@@ -50,7 +50,7 @@ const StyleguideInputText = () => {
       onChange={onChange}
       onIconClick={onClick}
       placeholder="placeholder with icon"
-      sublabel="Intitulé secondaire"
+      subLabel="Intitulé secondaire"
       type="text"
     />
    `
@@ -63,7 +63,7 @@ const StyleguideInputText = () => {
       label="Intitulé"
       name="input-text-icon-disabled"
       placeholder="placeholder with icon"
-      sublabel="Intitulé secondaire"
+      subLabel="Intitulé secondaire"
       type="text"
     />
   `
@@ -76,7 +76,7 @@ const StyleguideInputText = () => {
       label="Intitulé"
       name="input-text-icon-disabled"
       placeholder="placeholder with icon"
-      sublabel="Intitulé secondaire"
+      subLabel="Intitulé secondaire"
       type="text"
     />
   `
@@ -89,7 +89,7 @@ const StyleguideInputText = () => {
       onChange={onChange}
       placeholder="placeholder"
       required
-      sublabel="Intitulé secondaire"
+      subLabel="Intitulé secondaire"
       type="text"
       value="Valeur"
     />
@@ -115,7 +115,7 @@ const StyleguideInputText = () => {
           onChange={onChange}
           placeholder="placeholder"
           required
-          sublabel="Intitulé secondaire"
+          subLabel="Intitulé secondaire"
           type="text"
         />
         <div className="it-description">
@@ -133,7 +133,7 @@ const StyleguideInputText = () => {
           label="Intitulé"
           name="input-text-disabled"
           placeholder="placeholder disabled"
-          sublabel="Intitulé secondaire"
+          subLabel="Intitulé secondaire"
           type="text"
         />
         <div className="it-description">
@@ -156,7 +156,7 @@ const StyleguideInputText = () => {
           onChange={onChange}
           placeholder="placeholder"
           required
-          sublabel="Intitulé secondaire"
+          subLabel="Intitulé secondaire"
           type="text"
         />
         <div className="it-description">
@@ -180,7 +180,7 @@ const StyleguideInputText = () => {
             onChange={onChange}
             onIconClick={onClick}
             placeholder="placeholder with icon"
-            sublabel="Intitulé secondaire"
+            subLabel="Intitulé secondaire"
             type="text"
           />
         </div>
@@ -202,7 +202,7 @@ const StyleguideInputText = () => {
             label="Intitulé"
             name="input-text-icon-disabled"
             placeholder="placeholder with icon"
-            sublabel="Intitulé secondaire"
+            subLabel="Intitulé secondaire"
             type="text"
           />
         </div>
@@ -227,7 +227,7 @@ const StyleguideInputText = () => {
             label="Intitulé"
             name="input-text-icon-disabled"
             placeholder="placeholder with icon"
-            sublabel="Intitulé secondaire"
+            subLabel="Intitulé secondaire"
             type="text"
           />
         </div>
@@ -252,7 +252,7 @@ const StyleguideInputText = () => {
           onChange={onChange}
           placeholder="placeholder"
           required
-          sublabel="Intitulé secondaire"
+          subLabel="Intitulé secondaire"
           type="text"
         />
         <div className="it-description">

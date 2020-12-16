@@ -210,7 +210,7 @@ class LostPassword extends PureComponent {
                         onIconClick={this.handleToggleHidden}
                         placeholder="Mon nouveau mot de passe"
                         required
-                        sublabel="obligatoire"
+                        subLabel="obligatoire"
                         type={isPasswordHidden ? 'password' : 'text'}
                         value={newPasswordValue}
                       />
@@ -254,7 +254,7 @@ class LostPassword extends PureComponent {
                         onChange={this.handleInputEmailChange}
                         placeholder="nom@exemple.fr"
                         required
-                        sublabel="obligatoire"
+                        subLabel="obligatoire"
                         type="email"
                         value={emailValue}
                       />
