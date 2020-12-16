@@ -4,14 +4,18 @@ from datetime import timedelta
 import secrets
 from typing import Optional
 
+from pcapi import settings
 from pcapi.core.users import exceptions
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.utils import create_custom_jwt_token
+from pcapi.core.users.utils import create_jwt_token_with_custom_payload
 from pcapi.core.users.utils import format_email
 from pcapi.domain import user_emails
 from pcapi.domain.password import generate_reset_token
 from pcapi.domain.password import random_password
+from pcapi.emails.beneficiary_email_change import build_beneficiary_confirmation_email_change_data
+from pcapi.emails.beneficiary_email_change import build_beneficiary_information_email_change_data
 from pcapi.models.deposit import DEPOSIT_DEFAULT_AMOUNT
 from pcapi.models.deposit import Deposit
 from pcapi.models.user_session import UserSession
@@ -21,6 +25,7 @@ from pcapi.repository.user_queries import find_user_by_email
 from pcapi.scripts.beneficiary import THIRTY_DAYS_IN_HOURS
 from pcapi.utils import mailing as mailing_utils
 from pcapi.utils.logger import logger
+from pcapi.utils.mailing import MailServiceException
 
 from . import constants
 
@@ -107,7 +112,7 @@ def fulfill_user_data(user: UserSQLEntity, deposit_source: str) -> UserSQLEntity
     return user
 
 
-def suspend_account(user: UserSQLEntity, reason: constants.SuspensionReason, actor: UserSQLEntity):
+def suspend_account(user: UserSQLEntity, reason: constants.SuspensionReason, actor: UserSQLEntity) -> None:
     user.isActive = False
     user.suspensionReason = str(reason)
     # If we ever unsuspend the account, we'll have to explictly enable
@@ -122,9 +127,39 @@ def suspend_account(user: UserSQLEntity, reason: constants.SuspensionReason, act
     logger.info("user=%s has been suspended by actor=%s for reason=%s", user.id, actor.id, reason)
 
 
-def unsuspend_account(user: UserSQLEntity, actor: UserSQLEntity):
+def unsuspend_account(user: UserSQLEntity, actor: UserSQLEntity) -> None:
     user.isActive = True
     user.suspensionReason = ""
     repository.save(user)
 
     logger.info("user=%s has been unsuspended by actor=%s", user.id, actor.id)
+
+
+def send_user_emails_for_email_change(user: UserSQLEntity, new_email: str) -> None:
+    user_with_new_email = UserSQLEntity.query.filter_by(email=new_email).first()
+    if user_with_new_email:
+        return
+
+    information_data = build_beneficiary_information_email_change_data(user.email, user.firstName)
+    information_sucessfully_sent = mailing_utils.send_raw_email(information_data)
+    if not information_sucessfully_sent:
+        raise MailServiceException()
+
+    link_for_email_change = _build_link_for_email_change(user.email, new_email)
+    confirmation_data = build_beneficiary_confirmation_email_change_data(
+        user.firstName, link_for_email_change, new_email
+    )
+    confirmation_sucessfully_sent = mailing_utils.send_raw_email(confirmation_data)
+    if not confirmation_sucessfully_sent:
+        raise MailServiceException()
+
+    return
+
+
+def _build_link_for_email_change(current_email: str, new_email: str) -> str:
+    expiration_date = datetime.now() + constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
+    token = create_jwt_token_with_custom_payload(
+        dict(current_email=current_email, new_email=new_email), expiration_date
+    )
+
+    return f"{settings.WEBAPP_URL}/email-change?token={token}&expiration_timestamp={int(expiration_date.timestamp())}"
