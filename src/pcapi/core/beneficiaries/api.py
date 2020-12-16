@@ -1,5 +1,8 @@
 from pcapi.core.users import api as users_api
+from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
+from pcapi.models import BeneficiaryImport
 from pcapi.models import Deposit
+from pcapi.models import ImportStatus
 from pcapi.models import UserSQLEntity
 from pcapi.models.db import db
 from pcapi.models.deposit import DEPOSIT_DEFAULT_AMOUNT
@@ -32,3 +35,16 @@ def create_deposit(beneficiary: UserSQLEntity, deposit_source: str) -> Deposit:
         userId=beneficiary.id,
     )
     return deposit
+
+
+def attach_beneficiary_import_details(
+    beneficiary: UserSQLEntity, beneficiary_pre_subscription: BeneficiaryPreSubscription
+) -> None:
+    beneficiary_import = BeneficiaryImport()
+
+    beneficiary_import.applicationId = beneficiary_pre_subscription.application_id
+    beneficiary_import.sourceId = beneficiary_pre_subscription.source_id
+    beneficiary_import.source = beneficiary_pre_subscription.source
+    beneficiary_import.setStatus(status=ImportStatus.CREATED)
+
+    beneficiary.beneficiaryImports = [beneficiary_import]

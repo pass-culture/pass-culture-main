@@ -32,22 +32,9 @@ def to_model(beneficiary_pre_subscription: BeneficiaryPreSubscription) -> UserSQ
 
     deposit = beneficiaries_api.create_deposit(beneficiary, beneficiary_pre_subscription.deposit_source)
     beneficiary.deposits = [deposit]
-    _attach_beneficiary_import(beneficiary, beneficiary_pre_subscription)
+    beneficiaries_api.attach_beneficiary_import_details(beneficiary, beneficiary_pre_subscription)
 
     return beneficiary
-
-
-def _attach_beneficiary_import(
-    beneficiary: UserSQLEntity, beneficiary_pre_subscription: BeneficiaryPreSubscription
-) -> None:
-    beneficiary_import = BeneficiaryImport()
-
-    beneficiary_import.applicationId = beneficiary_pre_subscription.application_id
-    beneficiary_import.sourceId = beneficiary_pre_subscription.source_id
-    beneficiary_import.source = beneficiary_pre_subscription.source
-    beneficiary_import.setStatus(status=ImportStatus.CREATED)
-
-    beneficiary.beneficiaryImports = [beneficiary_import]
 
 
 def to_rejected_model(beneficiary_pre_subscription: BeneficiaryPreSubscription, detail: str) -> BeneficiaryImport:
