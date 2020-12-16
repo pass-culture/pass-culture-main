@@ -1,5 +1,6 @@
 from typing import Dict
 from urllib.parse import quote
+from urllib.parse import urlencode
 
 from pcapi import settings
 from pcapi.core.users import models
@@ -27,9 +28,8 @@ def get_activation_email_data(user: UserSQLEntity) -> Dict:
 
 def get_activation_email_data_for_native(user: UserSQLEntity, token: models.Token) -> Dict:
     expiration_timestamp = int(token.expirationDate.timestamp())
-    email_confirmation_link = (
-        f"{settings.NATIVE_APP_URL}/email-confirmation?token={token.value}&expiration_timestamp={expiration_timestamp}"
-    )
+    query_string = urlencode({"token": token.value, "expiration_timestamp": expiration_timestamp, "email": user.email})
+    email_confirmation_link = f"{settings.NATIVE_APP_URL}/email-confirmation?{query_string}"
     return {
         "FromEmail": SUPPORT_EMAIL_ADDRESS,
         "Mj-TemplateID": 1897370,

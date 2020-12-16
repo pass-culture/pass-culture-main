@@ -51,3 +51,4 @@ class GetActivationEmailTest:
 
         # Then
         assert activation_email_data["Vars"]["native_app_link"]
+        assert "email=fabien%2Btest%40example.net" in activation_email_data["Vars"]["native_app_link"]
