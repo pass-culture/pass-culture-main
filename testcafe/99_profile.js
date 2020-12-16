@@ -14,7 +14,7 @@ test('je peux changer mes informations', async t => {
     'get_existing_webapp_validated_user_with_has_filled_cultural_survey'
   )
   const homePath = `${ROOT_PATH}accueil`
-  const profilePath = `${homePath}/profil`
+  const profilePath = `${ROOT_PATH}profil`
   const emptyField = 'ctrl+a delete'
   const submitInput = Selector('input[type="submit"]')
 
@@ -30,10 +30,7 @@ test('je peux changer mes informations', async t => {
   const updatedNickname = Selector('main').withText(validNickname)
 
   // Je saisis un pseudo invalide et j'ai un message d'erreur
-  await t
-    .click(personalInformationsLink)
-    .expect(getPageUrl())
-    .contains(personalInformationsPath)
+  await t.click(personalInformationsLink).expect(getPageUrl()).contains(personalInformationsPath)
 
   await t
     .click(nicknameInput)
