@@ -23,6 +23,14 @@ def handle_expired_bookings() -> None:
     logger.info("[handle_expired_bookings] End")
 
 
+def handle_soon_to_be_expired_bookings() -> None:
+    logger.info("[handle_soon_to_be_expired_bookings] Start")
+
+    notify_users_of_soon_to_be_expired_bookings()
+
+    logger.info("[handle_soon_to_be_expired_bookings] End")
+
+
 def cancel_expired_bookings(batch_size: int = 100) -> None:
     logger.info("[cancel_expired_bookings] Start")
     bookings_to_expire = find_expiring_bookings().all()
@@ -58,16 +66,9 @@ def cancel_expired_bookings(batch_size: int = 100) -> None:
     logger.info("[cancel_expired_bookings] End")
 
 
-def notify_users_of_soon_to_be_expired_bookings() -> None:
-    days_remaining_to_have_seven_days_left = 23
-    booking_creation_date_23_days_ago = datetime.date.today() - datetime.timedelta(
-        days=days_remaining_to_have_seven_days_left
-    )
-
+def notify_users_of_soon_to_be_expired_bookings(given_date: datetime.date = None) -> None:
     logger.info("[notify_users_of_soon_to_be_expired_bookings] Start")
-    bookings_ordered_by_user = bookings_repository.find_soon_to_be_expiring_booking_ordered_by_user(
-        booking_creation_date_23_days_ago
-    )
+    bookings_ordered_by_user = bookings_repository.find_soon_to_be_expiring_booking_ordered_by_user(given_date)
 
     expired_bookings_grouped_by_user = dict()
     for user, booking in groupby(bookings_ordered_by_user, attrgetter("user")):
@@ -81,14 +82,14 @@ def notify_users_of_soon_to_be_expired_bookings() -> None:
             notified_users.append(user)
 
         logger.info(
-            "[Booking expiration in 7 days] %d Users have been notified: %s",
+            "[handle_soon_to_be_expired_bookings] %d Users have been notified: %s",
             len(notified_users),
             notified_users,
         )
 
     else:
         logger.info(
-            "%d Users would have been notified of expired booking cancellation: %s",
+            "[handle_soon_to_be_expired_bookings] %d Users would have been notified of expired booking cancellation: %s",
             len(expired_bookings_grouped_by_user),
             expired_bookings_grouped_by_user,
         )

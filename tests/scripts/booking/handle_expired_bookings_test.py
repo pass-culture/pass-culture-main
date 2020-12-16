@@ -219,7 +219,7 @@ class NotifyUsersOfExpiredBookingsTest:
 
         assert (
             caplog.records[1].message
-            == f"[Booking expiration in 7 days] 2 Users have been notified: [{expire_in_7_days_dvd_booking.user}, {expire_in_7_days_cd_booking.user}]"
+            == f"[handle_soon_to_be_expired_bookings] 2 Users have been notified: [{expire_in_7_days_dvd_booking.user}, {expire_in_7_days_cd_booking.user}]"
         )
         assert str(dont_expire_in_7_days_cd_booking) not in caplog.text
 
