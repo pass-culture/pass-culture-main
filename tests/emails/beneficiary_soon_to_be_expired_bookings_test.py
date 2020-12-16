@@ -38,6 +38,5 @@ class BuildSoonToBeExpiredBookingsRecapEmailDataForBeneficiaryTest:
                     {"offer_name": "offre 1", "venue_name": "venue 1"},
                     {"offer_name": "offre 2", "venue_name": "venue 2"},
                 ],
-                "environment": "-development",
             },
         }

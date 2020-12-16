@@ -6,8 +6,8 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import ProductFactory
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import Token
