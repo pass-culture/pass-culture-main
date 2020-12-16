@@ -3,8 +3,6 @@ import createCachedSelector from 're-reselect'
 import { selectBookingByRouterMatch } from './bookingsSelectors'
 import { selectFavoriteById } from './favoritesSelectors'
 
-export const selectRecommendations = state => state.data.recommendations
-
 export const selectRecommendationById = createCachedSelector(
   state => state.data.recommendations,
   (state, recommendationId) => recommendationId,

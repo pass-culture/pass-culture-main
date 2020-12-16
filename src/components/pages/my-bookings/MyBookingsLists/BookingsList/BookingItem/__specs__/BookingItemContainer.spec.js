@@ -11,11 +11,6 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
       state = {
         data: {
           features: [],
-          mediations: [
-            {
-              id: 'AAAA',
-            },
-          ],
           offers: [
             {
               id: 'CCCC',
@@ -23,14 +18,6 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
               venue: {
                 departementCode: '93',
               },
-            },
-          ],
-          recommendations: [
-            {
-              id: 'AE',
-              mediationId: 'AAAA',
-              offerId: 'CCCC',
-              thumbUrl: 'https://example.net/mediation/image',
             },
           ],
           stocks: [
@@ -64,21 +51,12 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
       // then
       expect(props).toStrictEqual({
         isQrCodeFeatureDisabled: true,
-        mediation: {
-          id: 'AAAA',
-        },
         offer: {
           id: 'CCCC',
           product: { name: 'Fake booking name' },
           venue: {
             departementCode: '93',
           },
-        },
-        recommendation: {
-          id: 'AE',
-          mediationId: 'AAAA',
-          offerId: 'CCCC',
-          thumbUrl: 'https://example.net/mediation/image',
         },
         ribbon: null,
         stock: { beginningDatetime: null, id: 'AA', offerId: 'CCCC' },
@@ -97,9 +75,6 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
       // then
       expect(props).toStrictEqual({
         isQrCodeFeatureDisabled: true,
-        mediation: {
-          id: 'AAAA',
-        },
         offer: {
           id: 'CCCC',
           isDigital: false,
@@ -108,12 +83,6 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
           venue: {
             departementCode: '93',
           },
-        },
-        recommendation: {
-          id: 'AE',
-          mediationId: 'AAAA',
-          offerId: 'CCCC',
-          thumbUrl: 'https://example.net/mediation/image',
         },
         ribbon: {
           label: 'Retiré',
@@ -134,9 +103,6 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
       // then
       expect(props).toStrictEqual({
         isQrCodeFeatureDisabled: true,
-        mediation: {
-          id: 'AAAA',
-        },
         offer: {
           id: 'CCCC',
           isDigital: true,
@@ -144,12 +110,6 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
           venue: {
             departementCode: '93',
           },
-        },
-        recommendation: {
-          id: 'AE',
-          mediationId: 'AAAA',
-          offerId: 'CCCC',
-          thumbUrl: 'https://example.net/mediation/image',
         },
         ribbon: {
           label: 'Utilisé',
@@ -169,21 +129,12 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
       // then
       expect(props).toStrictEqual({
         isQrCodeFeatureDisabled: true,
-        mediation: {
-          id: 'AAAA',
-        },
         offer: {
           id: 'CCCC',
           product: { name: 'Fake booking name' },
           venue: {
             departementCode: '93',
           },
-        },
-        recommendation: {
-          id: 'AE',
-          mediationId: 'AAAA',
-          offerId: 'CCCC',
-          thumbUrl: 'https://example.net/mediation/image',
         },
         ribbon: {
           label: 'Terminé',
@@ -205,9 +156,6 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
       // then
       expect(props).toStrictEqual({
         isQrCodeFeatureDisabled: true,
-        mediation: {
-          id: 'AAAA',
-        },
         offer: {
           id: 'CCCC',
           isEvent: true,
@@ -215,12 +163,6 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
           venue: {
             departementCode: '93',
           },
-        },
-        recommendation: {
-          id: 'AE',
-          mediationId: 'AAAA',
-          offerId: 'CCCC',
-          thumbUrl: 'https://example.net/mediation/image',
         },
         ribbon: {
           label: 'Aujourd’hui',
@@ -242,9 +184,6 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
       // then
       expect(props).toStrictEqual({
         isQrCodeFeatureDisabled: true,
-        mediation: {
-          id: 'AAAA',
-        },
         offer: {
           id: 'CCCC',
           isEvent: true,
@@ -252,12 +191,6 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
           venue: {
             departementCode: '93',
           },
-        },
-        recommendation: {
-          id: 'AE',
-          mediationId: 'AAAA',
-          offerId: 'CCCC',
-          thumbUrl: 'https://example.net/mediation/image',
         },
         ribbon: {
           label: 'Demain',
@@ -277,21 +210,12 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
       // then
       expect(props).toStrictEqual({
         isQrCodeFeatureDisabled: true,
-        mediation: {
-          id: 'AAAA',
-        },
         offer: {
           id: 'CCCC',
           product: { name: 'Fake booking name' },
           venue: {
             departementCode: '93',
           },
-        },
-        recommendation: {
-          id: 'AE',
-          mediationId: 'AAAA',
-          offerId: 'CCCC',
-          thumbUrl: 'https://example.net/mediation/image',
         },
         ribbon: {
           label: 'Annulé',

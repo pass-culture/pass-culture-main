@@ -40,7 +40,7 @@ describe('src | components | App', () => {
       history: {},
       isMaintenanceActivated: false,
       location: {
-        pathname: '/discovery',
+        pathname: '/accueil',
       },
     }
 
@@ -50,7 +50,7 @@ describe('src | components | App', () => {
     // Then
     const statusBarComponent = wrapper.find(StatusBarHelmet)
     expect(statusBarComponent).toHaveLength(1)
-    expect(statusBarComponent.prop('pathname')).toBe('/discovery')
+    expect(statusBarComponent.prop('pathname')).toBe('/accueil')
   })
 
   it('should display navbar when user is connected and path needs the navbar', () => {

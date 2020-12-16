@@ -2,25 +2,7 @@ import {
   selectRecommendationById,
   selectRecommendationByOfferIdAndMediationId,
   selectRecommendationByRouterMatch,
-  selectRecommendations,
 } from '../recommendationsSelectors'
-
-describe('selectRecommendations', () => {
-  it('should return recommendations', () => {
-    // given
-    const state = {
-      data: {
-        recommendations: [{ id: 'AEY1' }],
-      },
-    }
-
-    // when
-    const result = selectRecommendations(state)
-
-    // then
-    expect(result).toStrictEqual([{ id: 'AEY1' }])
-  })
-})
 
 describe('selectRecommendationById', () => {
   it('should return undefined when no match', () => {

@@ -2,9 +2,7 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
-import { selectMediationById } from '../../../../../../redux/selectors/data/mediationsSelectors'
 import { selectOfferById } from '../../../../../../redux/selectors/data/offersSelectors'
-import { selectRecommendationById } from '../../../../../../redux/selectors/data/recommendationsSelectors'
 import { selectStockById } from '../../../../../../redux/selectors/data/stocksSelectors'
 import getHumanizeRelativeDate from '../../../../../../utils/date/getHumanizeRelativeDate'
 import withTracking from '../../../../../hocs/withTracking'
@@ -66,11 +64,9 @@ export const ribbonLabelAndType = (
 
 export const mapStateToProps = (state, ownProps) => {
   const { booking } = ownProps
-  const { isCancelled, isUsed, recommendationId, stockId } = booking
+  const { isCancelled, isUsed, stockId } = booking
   const stock = selectStockById(state, stockId)
   const { beginningDatetime } = stock
-  const recommendation = selectRecommendationById(state, recommendationId) || {}
-  const mediation = selectMediationById(state, recommendation.mediationId)
   const offer = selectOfferById(state, stock.offerId)
   const { isDigital, isEvent } = offer
   const timezone = getTimezoneFromOffer(offer)
@@ -89,9 +85,7 @@ export const mapStateToProps = (state, ownProps) => {
 
   return {
     isQrCodeFeatureDisabled,
-    mediation,
     offer,
-    recommendation,
     ribbon,
     stock,
   }
@@ -113,9 +107,5 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
 export default compose(
   withRouter,
   withTracking('Offer'),
-  connect(
-    mapStateToProps,
-    {},
-    mergeProps
-  )
+  connect(mapStateToProps, {}, mergeProps)
 )(BookingItem)

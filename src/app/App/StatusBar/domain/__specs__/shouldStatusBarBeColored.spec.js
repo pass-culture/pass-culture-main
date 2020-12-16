@@ -4,10 +4,10 @@ describe('should status bar be colored', () => {
   describe('when user is on a page without a pink header', () => {
     it('should return false', () => {
       // given
-      const discoveryPath = '/decouverte/YTRE/FD'
+      const offerPath = '/offre/YTRE/FD'
 
       // when
-      const isStatusBarPink = shouldStatusBarBeColored(discoveryPath)
+      const isStatusBarPink = shouldStatusBarBeColored(offerPath)
 
       // then
       expect(isStatusBarPink).toBe(false)

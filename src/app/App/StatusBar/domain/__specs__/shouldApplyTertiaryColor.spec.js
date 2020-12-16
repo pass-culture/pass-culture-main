@@ -4,10 +4,10 @@ describe('should status bar be colored in tertiary color', () => {
   describe('when user is on a page without a purple header', () => {
     it('should return false', () => {
       // given
-      const discoveryPath = '/decouverte/YTRE/FD'
+      const offerPage = '/offre/YTRE/FD'
 
       // when
-      const result = shouldApplyTertiaryColor(discoveryPath)
+      const result = shouldApplyTertiaryColor(offerPage)
 
       // then
       expect(result).toBe(false)
@@ -17,9 +17,7 @@ describe('should status bar be colored in tertiary color', () => {
   describe('when user is on a page with a purple header', () => {
     it('should return true', () => {
       // given
-      const pathsWithTertiaryColor = [
-        '/accueil',
-      ]
+      const pathsWithTertiaryColor = ['/accueil']
 
       pathsWithTertiaryColor.forEach(path => {
         // when

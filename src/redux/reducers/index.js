@@ -8,13 +8,11 @@ import share from './share'
 import splash from './splash'
 import token from './token'
 import maintenance from './maintenance'
-import lastRecommendationsRequestTimestamp from './lastRecommendationRequestTimestamp'
 
 const rootReducer = combineReducers({
   currentUser,
   data,
   geolocation,
-  lastRecommendationsRequestTimestamp,
   maintenance,
   overlay,
   pagination,
