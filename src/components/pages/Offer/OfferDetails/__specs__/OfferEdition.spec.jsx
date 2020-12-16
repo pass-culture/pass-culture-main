@@ -10,10 +10,10 @@ import { configureTestStore } from 'store/testUtils'
 
 import OfferDetailsContainer from '../OfferDetailsContainer'
 
-import { fieldLabels } from './helpers'
+import { fieldLabels, getInputErrorForField, setOfferValues } from './helpers'
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  createOffer: jest.fn(),
+  updateOffer: jest.fn(),
   getValidatedOfferers: jest.fn(),
   getVenuesForOfferer: jest.fn(),
   loadOffer: jest.fn(),
@@ -211,8 +211,8 @@ describe('offerDetails - Edition', () => {
         id: 'ABC12',
         name: 'My edited offer',
         type: 'EventType.FULL_CONDITIONAL_FIELDS',
-        musicType: 501, // Jazz
-        musicSubType: 502, // Acid Jazz
+        musicType: 501,
+        musicSubType: 502,
         description: 'Offer description',
         venueId: 'LOCAL_VENUE_ID',
         withdrawalDetails: 'Offer withdrawal details',
@@ -506,6 +506,57 @@ describe('offerDetails - Edition', () => {
         })
         expect(isDuoInput).not.toHaveAttribute('disabled')
       })
+    })
+  })
+
+  describe('when submitting form', () => {
+    it('should remove notification email when remove the will to receive notifications', async () => {
+      // Given
+      const editedOffer = {
+        id: 'ABC12',
+        name: 'My edited offer',
+        type: 'ThingType.PRESSE_ABO',
+        description: 'Offer description',
+        venueId: venues[0].id,
+        withdrawalDetails: 'Offer withdrawal details',
+        bookingEmail: 'booking@email.net',
+      }
+      pcapi.loadOffer.mockResolvedValue(editedOffer)
+      renderOffers({}, store)
+      await setOfferValues({ receiveNotificationEmails: false })
+
+      // When
+      fireEvent.click(screen.getByText('Enregistrer'))
+
+      // Then
+      const { id: offerId, ...offerValues } = editedOffer
+      expect(pcapi.updateOffer).toHaveBeenCalledWith(offerId, {
+        ...offerValues,
+        bookingEmail: null,
+      })
+    })
+
+    it('should show error for email notification input when asking to receive booking emails and no email was provided', async () => {
+      // Given
+      const editedOffer = {
+        id: 'ABC12',
+        name: 'My edited offer',
+        type: 'ThingType.PRESSE_ABO',
+        description: 'Offer description',
+        venueId: venues[0].id,
+        withdrawalDetails: 'Offer withdrawal details',
+        bookingEmail: null,
+      }
+      pcapi.loadOffer.mockResolvedValue(editedOffer)
+      renderOffers({}, store)
+      await setOfferValues({ receiveNotificationEmails: true })
+
+      // When
+      fireEvent.click(screen.getByText('Enregistrer'))
+
+      // Then
+      const bookingEmailInput = await getInputErrorForField('bookingEmail')
+      expect(bookingEmailInput).toHaveTextContent('Ce champ est obligatoire')
     })
   })
 })

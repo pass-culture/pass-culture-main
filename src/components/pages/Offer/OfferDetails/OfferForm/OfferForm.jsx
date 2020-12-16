@@ -88,7 +88,7 @@ const OfferForm = ({
       let values = {}
       if (offer) {
         values = Object.keys(DEFAULT_FORM_VALUES).reduce((acc, field) => {
-          if (field in offer) {
+          if (offer[field]) {
             return { ...acc, [field]: offer[field] }
           } else if (offer.extraData && field in offer.extraData) {
             return { ...acc, [field]: offer.extraData[field] || DEFAULT_FORM_VALUES[field] }
@@ -255,11 +255,22 @@ const OfferForm = ({
         return acc
       }, {})
 
+      if (!receiveNotificationEmails) {
+        submitedValues.bookingEmail = null
+      }
+
       onSubmit(submitedValues)
     } else {
       showErrorNotification()
     }
-  }, [offerFormFields, formValues, isValid, onSubmit, showErrorNotification])
+  }, [
+    offerFormFields,
+    formValues,
+    isValid,
+    onSubmit,
+    receiveNotificationEmails,
+    showErrorNotification,
+  ])
 
   const handleSingleFormUpdate = useCallback(
     event => {

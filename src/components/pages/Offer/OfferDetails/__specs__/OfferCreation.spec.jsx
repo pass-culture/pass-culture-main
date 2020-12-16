@@ -689,7 +689,7 @@ describe('offerDetails - Creation', () => {
       fireEvent.click(screen.getByText('Enregistrer et passer au stocks'))
 
       // Then
-      expect(pcapi.createOffer).toHaveBeenCalledWith(offerValues)
+      expect(pcapi.createOffer).toHaveBeenCalledWith({ ...offerValues, bookingEmail: null })
     })
   })
 
