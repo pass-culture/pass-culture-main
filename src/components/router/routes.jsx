@@ -1,7 +1,6 @@
 import { IS_DEBUG_PAGE_ACTIVE } from '../../utils/config'
 import { IcoNavBookings } from '../layout/NavBar/Icons/IcoNavBookings'
 import { IcoNavDebug } from '../layout/NavBar/Icons/IcoNavDebug'
-import { IcoNavDiscovery } from '../layout/NavBar/Icons/IcoNavDiscovery'
 import { IcoNavFavorites } from '../layout/NavBar/Icons/IcoNavFavorites'
 import { IcoNavHome } from '../layout/NavBar/Icons/IcoNavHome'
 import { IcoNavProfile } from '../layout/NavBar/Icons/IcoNavProfile'
@@ -10,7 +9,6 @@ import ActivationContainer from '../pages/activation/ActivationContainer'
 import BetaPageContainer from '../pages/beta-page/BetaPageContainer'
 import EligibilityCheckContainer from '../pages/create-account/EligibilityCheckContainer'
 import Debug from '../pages/debug/DebugPage'
-import DiscoveryContainer from '../pages/discovery/DiscoveryContainer'
 import ForgotPassword from '../pages/forgot-password/ForgotPassword'
 import HomeContainer from '../pages/home/HomeContainer'
 import MyBookingsContainer from '../pages/my-bookings/MyBookingsContainer'
@@ -22,6 +20,7 @@ import SignInContainer from '../pages/signin/SignInContainer'
 import SignupContainer from '../pages/signup/SignupContainer'
 import TutorialsContainer from '../pages/tutorials/TutorialsContainer'
 import TypeFormContainer from '../pages/typeform/TypeformContainer'
+import DiscoveryRedirectionToHome from '../pages/discovery/DiscoveryRedirectionToHome'
 
 let routes = [
   {
@@ -81,6 +80,11 @@ let routes = [
     path: '/offre/:details(details|transition)/:offerId([A-Z0-9]+)/:mediationId(vide|[A-Z0-9]+)?',
     title: 'Détail de l’offre',
   },
+  {
+    component: DiscoveryRedirectionToHome,
+    path: '/decouverte/:offerId([A-Z0-9]+)?/:mediationId([A-Z0-9]+)?',
+    title: 'Les offres',
+  },
   /* ---------------------------------------------------
    *
    * NAVBAR ITEMS
@@ -88,13 +92,6 @@ let routes = [
    * Car ils contiennent une propriété `icon`
    *
    ---------------------------------------------------  */
-  {
-    component: DiscoveryContainer,
-    icon: IcoNavDiscovery,
-    to: '/decouverte',
-    path: '/decouverte/:offerId([A-Z0-9]+)?/:mediationId([A-Z0-9]+)?',
-    title: 'Les offres',
-  },
   {
     component: SearchContainer,
     icon: IcoNavSearch,

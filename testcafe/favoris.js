@@ -2,6 +2,7 @@ import { Selector } from 'testcafe'
 
 import { ROOT_PATH } from '../src/utils/config'
 import createUserRoleFromUserSandbox from './helpers/createUserRoleFromUserSandbox'
+import { fetchSandbox } from './helpers/sandboxes'
 
 fixture('Favoris,')
 
@@ -10,8 +11,12 @@ test('je peux ajouter une offre à mes favoris et supprimer une offre de mes fav
     'webapp_08_booking',
     'get_existing_webapp_user_can_book_event_offer'
   )
-  const showVerso = Selector('button.button.to-recto')
-  const discoveryPage = Selector('.discovery-page')
+  const { offer } = await fetchSandbox(
+    'webapp_08_booking',
+    'get_non_free_thing_offer_with_active_mediation'
+  )
+
+  const offerPageElement = Selector('.offer-page')
   const favoriButton = Selector('button.fav-button')
   const favoriteBoxes = Selector('li .teaser-link')
   const lastCheckbox = favoriteBoxes.find('input').withAttribute('type', 'checkbox')
@@ -19,16 +24,18 @@ test('je peux ajouter une offre à mes favoris et supprimer une offre de mes fav
   const modifyButton = button.withText('Modifier')
   const deleteButton = button.withText('Supprimer')
 
-  await t.useRole(userRole).navigateTo(`${ROOT_PATH}decouverte`)
+  // Je peux naviguer jusqu'au détail d'une offre
+  const offerPage = `${ROOT_PATH}offre/details/${offer.id}`
+  await t.useRole(userRole).navigateTo(offerPage)
 
-  // je peux ajouter une offre à mes favoris via le carrousel
-  const favoriteOfferName = await discoveryPage.find('h1').textContent
-  await t.click(showVerso).click(favoriButton)
+  // je peux ajouter une offre à mes favoris
+  const favoriteOfferName = await offerPageElement.find('h1').textContent
+  await t.click(favoriButton)
 
   // je vais sur mes favoris, je vérifie qu'il est là et je peux le supprimer
   await t
     .navigateTo(`${ROOT_PATH}favoris`)
-    .expect(favoriteBoxes.nth(-1).withText(favoriteOfferName))
+    .expect(favoriteBoxes.nth(-1).withText(favoriteOfferName).exists)
     .ok()
     .click(modifyButton)
     .click(lastCheckbox)
