@@ -4,12 +4,18 @@ from datetime import timedelta
 import secrets
 from typing import Optional
 
+from jwt import DecodeError
+from jwt import ExpiredSignatureError
+from jwt import InvalidSignatureError
+from jwt import InvalidTokenError
+
 from pcapi import settings
 from pcapi.core.users import exceptions
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.utils import create_custom_jwt_token
-from pcapi.core.users.utils import create_jwt_token_with_custom_payload
+from pcapi.core.users.utils import decode_jwt_token
+from pcapi.core.users.utils import encode_jwt_payload
 from pcapi.core.users.utils import format_email
 from pcapi.domain import user_emails
 from pcapi.domain.password import generate_reset_token
@@ -156,10 +162,37 @@ def send_user_emails_for_email_change(user: UserSQLEntity, new_email: str) -> No
     return
 
 
+def change_user_email(token: str) -> None:
+    try:
+        jwt_payload = decode_jwt_token(token)
+    except (
+        ExpiredSignatureError,
+        InvalidSignatureError,
+        DecodeError,
+        InvalidTokenError,
+    ) as error:
+        raise InvalidTokenError() from error
+
+    if not {"exp", "new_email", "current_email"} <= set(jwt_payload):
+        raise InvalidTokenError()
+
+    new_email = jwt_payload["new_email"]
+    if UserSQLEntity.query.filter_by(email=new_email).first():
+        return
+
+    current_email = jwt_payload["current_email"]
+    current_user = UserSQLEntity.query.filter_by(email=current_email).first()
+    if not current_user:
+        return
+
+    current_user.email = new_email
+    repository.save(current_user)
+
+    return
+
+
 def _build_link_for_email_change(current_email: str, new_email: str) -> str:
     expiration_date = datetime.now() + constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
-    token = create_jwt_token_with_custom_payload(
-        dict(current_email=current_email, new_email=new_email), expiration_date
-    )
+    token = encode_jwt_payload(dict(current_email=current_email, new_email=new_email), expiration_date)
 
     return f"{settings.WEBAPP_URL}/email-change?token={token}&expiration_timestamp={int(expiration_date.timestamp())}"
