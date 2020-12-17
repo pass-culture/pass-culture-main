@@ -55,6 +55,7 @@ def get_expected_base_email_data(booking, mediation, **overrides):
             "is_event": 1,
             "is_single_event": 1,
             "is_duo_event": 0,
+            "can_expire": 0,
             "offer_id": humanize(booking.stock.offer.id),
             "mediation_id": humanize(mediation.id),
             "env": "",
@@ -114,6 +115,7 @@ def test_should_return_thing_specific_data_for_email_when_offer_is_a_thing(mock_
         is_event=0,
         is_single_event=0,
         offer_name="Super bien culturel",
+        can_expire=1,
     )
     assert email_data == expected
 
@@ -145,6 +147,7 @@ def test_should_return_digital_thing_specific_data_for_email_when_offer_is_a_dig
         is_single_event=0,
         offer_name="Super offre numérique",
         offer_price="Gratuit",
+        can_expire=1,
     )
     assert email_data == expected
 

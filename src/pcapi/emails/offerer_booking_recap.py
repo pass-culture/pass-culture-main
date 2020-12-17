@@ -26,6 +26,7 @@ def retrieve_data_for_offerer_booking_recap_email(booking: Booking, recipients: 
     offer_type = offer.type
     is_event = int(offer.isEvent)
     bookings = booking_repository.find_ongoing_bookings_by_stock(booking.stock.id)
+    can_expire = int(offer.offerType.get("canExpire", False))
 
     offer_link = build_pc_pro_offer_link(offer)
     environment = format_environment_for_email()
@@ -54,6 +55,7 @@ def retrieve_data_for_offerer_booking_recap_email(booking: Booking, recipients: 
             "lien_offre_pcpro": offer_link,
             "departement": departement_code,
             "env": environment,
+            "can_expire": can_expire,
         },
     }
 

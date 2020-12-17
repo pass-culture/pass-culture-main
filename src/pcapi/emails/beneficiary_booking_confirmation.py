@@ -20,6 +20,7 @@ def retrieve_data_for_beneficiary_booking_confirmation_email(booking: Booking) -
     is_digital_offer = offer.isDigital
     is_physical_offer = ProductType.is_thing(name=offer.type) and not is_digital_offer
     is_event = ProductType.is_event(name=offer.type)
+    can_expire = int(offer.offerType.get("canExpire", False))
 
     department_code = venue.departementCode if not is_digital_offer else beneficiary.departementCode
     booking_date_in_tz = utc_datetime_to_department_timezone(booking.dateCreated, department_code)
@@ -80,5 +81,6 @@ def retrieve_data_for_beneficiary_booking_confirmation_email(booking: Booking) -
             "offer_id": offer_id,
             "mediation_id": mediation_id,
             "env": environment,
+            "can_expire": can_expire,
         },
     }

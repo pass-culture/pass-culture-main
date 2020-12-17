@@ -52,6 +52,7 @@ def get_expected_base_email_data(booking, **overrides):
             "user_lastName": "Doe",
             "user_email": "john@example.com",
             "is_event": 1,
+            "can_expire": 0,
             "nombre_resa": 1,
             "contremarque": "ABC123",
             "env": "-development",
@@ -108,6 +109,7 @@ def test_with_book():
         is_event=0,
         nom_offre="Le récit de voyage",
         offer_type="book",
+        can_expire=1,
     )
     assert email_data == expected
 
@@ -138,6 +140,7 @@ def test_with_book_with_missing_isbn():
         nom_offre="Le récit de voyage",
         offer_type="book",
         ISBN="",
+        can_expire=1,
     )
     assert email_data == expected
 
