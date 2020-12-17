@@ -1,9 +1,7 @@
-from unittest.mock import MagicMock
 from unittest.mock import Mock
 from unittest.mock import patch
 
 import pytest
-from requests import Response
 
 from pcapi.domain.beneficiary_contact.beneficiary_contact import BeneficiaryContact
 from pcapi.domain.beneficiary_contact.beneficiary_contact_exceptions import AddNewBeneficiaryContactException
@@ -64,7 +62,7 @@ class MailjetNotificationServiceTest:
         def setup_method(self):
             self.notification_service = MailjetNotificationService()
 
-        @patch.dict("os.environ", {"MAILJET_NOT_YET_ELIGIBLE_LIST_ID": MOCK_MAILJET_LIST_ID})
+        @patch("pcapi.settings.MAILJET_NOT_YET_ELIGIBLE_LIST_ID", MOCK_MAILJET_LIST_ID)
         @patch("pcapi.infrastructure.services.notification.mailjet_notification_service.add_contact_to_list")
         def test_call_add_contact_to_list(self, add_contact_to_list_mock):
             # Given
@@ -79,7 +77,7 @@ class MailjetNotificationServiceTest:
             # Then
             add_contact_to_list_mock.assert_called_once_with(beneficiary_contact.email, MOCK_MAILJET_LIST_ID)
 
-        @patch.dict("os.environ", {"MAILJET_NOT_YET_ELIGIBLE_LIST_ID": MOCK_MAILJET_LIST_ID})
+        @patch("pcapi.settings.MAILJET_NOT_YET_ELIGIBLE_LIST_ID", MOCK_MAILJET_LIST_ID)
         @patch("pcapi.infrastructure.services.notification.mailjet_notification_service.add_contact_to_list")
         def test_raises_error_on_list_addition_when_status_code_not_201_or_400(self, add_contact_to_list_mock):
             # Given
