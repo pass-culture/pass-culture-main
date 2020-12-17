@@ -266,6 +266,10 @@ describe('offerDetails - Edition', () => {
         exact: fieldLabels.offererId.exact,
       })
       expect(offererIdInput).toHaveAttribute('disabled')
+      const venueIdInput = await screen.findByLabelText(fieldLabels.venueId.label, {
+        exact: fieldLabels.venueId.exact,
+      })
+      expect(venueIdInput).toHaveAttribute('disabled')
 
       // Editable fields
       const authorInput = await screen.findByLabelText(fieldLabels.author.label, {
@@ -312,10 +316,6 @@ describe('offerDetails - Edition', () => {
         exact: fieldLabels.url.exact,
       })
       expect(urlInput).not.toHaveAttribute('disabled')
-      const venueIdInput = await screen.findByLabelText(fieldLabels.venueId.label, {
-        exact: fieldLabels.venueId.exact,
-      })
-      expect(venueIdInput).not.toHaveAttribute('disabled')
       const visaInput = await screen.findByLabelText(fieldLabels.visa.label, {
         exact: fieldLabels.visa.exact,
       })

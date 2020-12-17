@@ -127,6 +127,7 @@ const OfferForm = ({
             'offererId',
             'showType',
             'showSubType',
+            'venueId',
           ])
         }
         if (offer.bookingEmail && offer.bookingEmail.length) {
