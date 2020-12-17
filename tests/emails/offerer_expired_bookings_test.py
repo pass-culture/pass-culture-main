@@ -14,6 +14,10 @@ from pcapi.models import offer_type
 
 @pytest.mark.usefixtures("db_session")
 @patch("pcapi.utils.mailing.feature_send_mail_to_users_enabled", return_value=True)
+@patch(
+    "pcapi.emails.offerer_expired_bookings.build_pc_pro_offer_link",
+    return_value="http://pc_pro.com/offer_link",
+)
 def test_should_send_email_to_offerer_when_expired_bookings_cancelled(self, app):
     now = datetime.utcnow()
     offerer = OffererFactory()
@@ -67,6 +71,7 @@ def test_should_send_email_to_offerer_when_expired_bookings_cancelled(self, app)
                     "quantity": 1,
                     "user_name": "Dory",
                     "user_email": "dory@example.com",
+                    "pcpro_offer_link": "http://pc_pro.com/offer_link",
                 },
                 {
                     "offer_name": "Random Access Memories",
@@ -77,8 +82,10 @@ def test_should_send_email_to_offerer_when_expired_bookings_cancelled(self, app)
                     "quantity": 1,
                     "user_name": "Dorian",
                     "user_email": "dorian@example.com",
+                    "pcpro_offer_link": "http://pc_pro.com/offer_link",
                 },
             ],
             "department": "75",
+            "env": "-development",
         },
     }

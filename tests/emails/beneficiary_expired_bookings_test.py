@@ -56,5 +56,6 @@ def test_should_send_email_to_offerer_when_expired_bookings_cancelled(self, app)
                 {"offer_name": "Memento", "venue_name": "Mnémosyne"},
                 {"offer_name": "Random Access Memories", "venue_name": "Virgin Megastore"},
             ],
+            "env": "-development",
         },
     }
