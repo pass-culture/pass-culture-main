@@ -15,10 +15,23 @@ from pcapi.utils.mailing import send_raw_email
 def handle_expired_bookings() -> None:
     logger.info("[handle_expired_bookings] Start")
 
-    cancel_expired_bookings()
+    try:
+        logger.info("[handle_expired_bookings] STEP 1 : cancel_expired_bookings()")
+        cancel_expired_bookings()
+    except Exception as e:  # pylint: disable=broad-except
+        logger.exception("[handle_expired_bookings] Error in STEP 1 : %s", e)
 
-    notify_users_of_expired_bookings()
-    notify_offerers_of_expired_bookings()
+    try:
+        logger.info("[handle_expired_bookings] STEP 2 : notify_users_of_expired_bookings()")
+        notify_users_of_expired_bookings()
+    except Exception as e:  # pylint: disable=broad-except
+        logger.exception("[handle_expired_bookings] Error in STEP 2 : %s", e)
+
+    try:
+        logger.info("[handle_expired_bookings] STEP 3 : notify_offerers_of_expired_bookings()")
+        notify_offerers_of_expired_bookings()
+    except Exception as e:  # pylint: disable=broad-except
+        logger.exception("[handle_expired_bookings] Error in STEP 3 : %s", e)
 
     logger.info("[handle_expired_bookings] End")
 
