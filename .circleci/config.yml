@@ -109,6 +109,27 @@ commands:
                 WALLET_BALANCES_RECIPIENTS=sm://${GCP_PROJECT}/<< parameters.app_name >>_wallet_balances_recipients" \
             --image=${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_REGISTRY_NAME}/${DOCKER_IMAGE_NAME}:<< parameters.app_image_tag >>
 
+  cron-helm-deploy:
+    description: Deploy Crons and worker via helm to Kubernetes Cluster
+    parameters:
+      helm_release_name:
+        type: string
+      helm_chart_name:
+        type: string
+      kubernetes_namespace:
+        type: string
+      helm_values_file:
+        type: string
+      api_version:
+        type: env_var_name
+    steps:
+      - run: |
+          helm upgrade << parameters.helm_release_name >> tmp/<< parameters.helm_chart_name >> \
+            --install --wait \
+            --namespace << parameters.kubernetes_namespace >> \
+            --values tmp/<< parameters.helm_chart_name >>/<< parameters.helm_values_file >> \
+            --set-string image.tag=${<< parameters.api_version >>}
+
 ###################
 #  JOBS
 ###################
@@ -361,10 +382,6 @@ jobs:
       GKE_CLUSTER_NAME: cluster-metier-ehp
       HELM_EXPERIMENTAL_OCI: 1
       CHART_NAME: passculture-chart
-      HELM_CHART_NAME: passculture
-      HELM_RELEASE_NAME: ${CIRCLE_BRANCH}
-      KUBERNETES_NAMESPACE: ${CIRCLE_BRANCH}
-      HELM_VALUES_FILE: values.${CIRCLE_BRANCH}.yaml
       TAG: stable
     steps:
       - checkout
@@ -385,14 +402,12 @@ jobs:
       - run:
           name: Export chart in local filesystem
           command: helm chart export ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:${TAG} -d tmp/
-      - run:
-          name: Deploy chart with Helm
-          command: |
-            helm upgrade ${HELM_RELEASE_NAME} tmp/${HELM_CHART_NAME}
-              --install --wait
-              --namespace ${KUBERNETES_NAMESPACE}
-              --values tmp/${HELM_CHART_NAME}/${HELM_VALUES_FILE}
-              --set-string image.tag=${API_VERSION}
+      - cron-helm-deploy:
+          helm_chart_name: passculture
+          helm_release_name: ${CIRCLE_BRANCH}
+          kubernetes_namespace: ${CIRCLE_BRANCH}
+          helm_values_file: values.${CIRCLE_BRANCH}.yaml
+          api_version: API_VERSION
 
   deploy-pro:
     machine:
