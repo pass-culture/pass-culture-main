@@ -69,7 +69,7 @@ REDIS_VENUE_PROVIDERS_CHUNK_SIZE = int(os.environ.get("REDIS_VENUE_PROVIDERS_LRA
 
 
 # SENTRY
-SENTRY_DSN = "https://0470142cf8d44893be88ecded2a14e42@logs.passculture.app/5"
+SENTRY_DSN = os.environ.get("SENTRY_DSN", "https://0470142cf8d44893be88ecded2a14e42@logs.passculture.app/5")
 SENTRY_SAMPLE_RATE = float(os.environ.get("SENTRY_SAMPLE_RATE", 0))
 
 # MAILS
