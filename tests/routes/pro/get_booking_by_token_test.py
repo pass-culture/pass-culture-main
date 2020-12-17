@@ -91,40 +91,6 @@ class Get:
             }
 
         @pytest.mark.usefixtures("db_session")
-        def when_user_has_rights_and_activation_event(self, app):
-            # Given
-            user = create_user(date_of_birth=datetime(2001, 2, 1), email="user@example.com", phone_number="0698765432")
-            admin_user = create_user(is_beneficiary=False, email="admin@example.com", is_admin=True)
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            offer = create_offer_with_event_product(
-                venue, event_name="Offre d'activation", event_type=EventType.ACTIVATION
-            )
-            event_occurrence = create_event_occurrence(offer)
-            stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-            booking = create_booking(user=user, stock=stock, venue=venue)
-            repository.save(admin_user, booking)
-            url = f"/bookings/token/{booking.token}"
-
-            # When
-            response = TestClient(app.test_client()).with_auth("admin@example.com").get(url)
-
-            # Then
-            assert response.status_code == 200
-            response_json = response.json
-            assert response_json == {
-                "bookingId": humanize(booking.id),
-                "date": serialize(booking.stock.beginningDatetime),
-                "dateOfBirth": "2001-02-01T00:00:00Z",
-                "email": "user@example.com",
-                "isUsed": False,
-                "offerName": "Offre d'activation",
-                "phoneNumber": "0698765432",
-                "userName": "John Doe",
-                "venueDepartementCode": "93",
-            }
-
-        @pytest.mark.usefixtures("db_session")
         def when_user_has_rights_and_email_with_special_characters_url_encoded(self, app):
             # Given
             user = create_user(email="user+plus@example.com")

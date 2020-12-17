@@ -1,17 +1,11 @@
-import datetime
-from unittest.mock import Mock
-from unittest.mock import patch
-
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.payments.factories import PaymentFactory
 from pcapi.core.users.factories import UserFactory
-from pcapi.domain.user_emails import send_activation_email
 from pcapi.model_creators.generic_creators import create_api_key
 from pcapi.model_creators.generic_creators import create_booking
-from pcapi.model_creators.generic_creators import create_deposit
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_payment
 from pcapi.model_creators.generic_creators import create_stock
@@ -21,9 +15,7 @@ from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.model_creators.specific_creators import create_stock_with_event_offer
 from pcapi.models import Booking
-from pcapi.models import Deposit
 from pcapi.models import EventType
-from pcapi.models import UserSQLEntity
 from pcapi.repository import repository
 from pcapi.utils.token import random_token
 
@@ -99,66 +91,6 @@ class Returns204:
             booking = Booking.query.one()
             assert booking.isUsed
 
-        def when_admin_user_is_logged_in_expect_activation_booking_to_be_used_and_linked_user_to_be_able_to_book(
-            self, app
-        ):
-            booking = BookingFactory(
-                token="ABCDEF",
-                stock__price=0,
-                stock__offer__product__type=str(EventType.ACTIVATION),
-                user__isBeneficiary=False,
-                stock__beginningDatetime=datetime.datetime.utcnow()
-                + datetime.timedelta(days=1),  # ensure the booking is confirmed to be able to use it
-            )
-            pro_user = UserFactory(email="pro@example.com", isBeneficiary=False, isAdmin=True)
-            offerer = booking.stock.offer.venue.managingOfferer
-            offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
-
-            url = f"/v2/bookings/use/token/{booking.token}"
-            response = TestClient(app.test_client()).with_auth("pro@example.com").patch(url)
-
-            # Then
-            assert response.status_code == 204
-            user = booking.user
-            assert user.isBeneficiary
-            assert user.deposits[0].amount == 500
-
-        def when_admin_user_is_logged_in_expect_to_send_notification_email(self, app):
-            # Given
-            user = create_user(email="user@email.fr", first_name="John")
-            admin_user = create_user(is_beneficiary=False, email="pro@email.fr", is_admin=True)
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(admin_user, offerer)
-            venue = create_venue(offerer)
-            stock = create_stock_with_event_offer(
-                offerer,
-                venue,
-                price=0,
-                beginning_datetime=datetime.datetime.utcnow() + datetime.timedelta(hours=46),
-                booking_limit_datetime=datetime.datetime.utcnow() + datetime.timedelta(hours=24),
-                event_type=EventType.ACTIVATION,
-            )
-            booking = create_booking(user=user, stock=stock, venue=venue)
-            repository.save(booking, user_offerer)
-            user_id = user.id
-
-            mocked_send_email = Mock()
-            return_value = Mock()
-            mocked_send_email.return_value = return_value
-
-            # When
-            url = "/v2/bookings/use/token/{}".format(booking.token)
-            with patch("pcapi.utils.mailing.feature_send_mail_to_users_enabled", return_value=True):
-                send_activation_email(user, mocked_send_email)
-            response = TestClient(app.test_client()).with_auth("pro@email.fr").patch(url)
-
-            # Then
-            user = UserSQLEntity.query.get(user_id)
-            assert response.status_code == 204
-            assert user.isBeneficiary is True
-            assert user.deposits[0].amount == 500
-            mocked_send_email.assert_called_once()
-
 
 class Returns401:
     @pytest.mark.usefixtures("db_session")
@@ -213,7 +145,7 @@ class Returns403:
             offerer2 = create_offerer(siren="987654321")
             user_offerer = create_user_offerer(pro_user, offerer)
             venue = create_venue(offerer)
-            stock = create_stock_with_event_offer(offerer, venue, price=0, event_type=EventType.ACTIVATION)
+            stock = create_stock_with_event_offer(offerer, venue, price=0, event_type=EventType.CINEMA)
             booking = create_booking(user=user, stock=stock, venue=venue)
 
             repository.save(pro_user, booking, user_offerer, offerer2)
@@ -296,26 +228,6 @@ class Returns403:
             assert response.status_code == 403
             assert response.json["user"] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]
             assert Booking.query.get(booking_id).isUsed is False
-
-        @pytest.mark.usefixtures("db_session")
-        def when_user_is_not_admin_and_tries_to_patch_activation_offer(self, app):
-            # Given
-            user = create_user()
-            pro_user = create_user(email="pro@email.fr")
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(pro_user, offerer)
-            venue = create_venue(offerer)
-            stock = create_stock_with_event_offer(offerer, venue, price=0, event_type=EventType.ACTIVATION)
-            booking = create_booking(user=user, stock=stock, venue=venue)
-            repository.save(booking, user_offerer)
-
-            # When
-            url = "/v2/bookings/use/token/{}".format(booking.token)
-            response = TestClient(app.test_client()).with_auth("pro@email.fr").patch(url)
-
-            # Then
-            assert response.status_code == 403
-            assert response.json["user"] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]
 
         @pytest.mark.usefixtures("db_session")
         def when_user_is_logged_in_and_booking_has_been_cancelled_already(self, app):
@@ -413,41 +325,6 @@ class Returns404:
             # Then
             assert response.status_code == 404
             assert response.json["global"] == ["Cette contremarque n'a pas été trouvée"]
-
-
-class Returns405:
-    class WhenLoggedUserIsAdmin:
-        @pytest.mark.usefixtures("db_session")
-        def expect_no_new_deposits_when_the_linked_user_has_been_already_activated(self, app):
-            # Given
-            user = create_user(is_beneficiary=False, email="user@email.fr")
-            deposit = create_deposit(user, amount=0)
-
-            admin_user = create_user(is_beneficiary=False, email="admin@email.fr", is_admin=True)
-
-            offerer = create_offerer()
-            admin_user_offerer = create_user_offerer(admin_user, offerer)
-            venue = create_venue(offerer)
-            activation_offer_stock = create_stock_with_event_offer(
-                offerer, venue, price=0, event_type=EventType.ACTIVATION
-            )
-
-            booking = create_booking(user=user, stock=activation_offer_stock, venue=venue)
-
-            repository.save(booking, admin_user_offerer, deposit)
-
-            user_id = user.id
-
-            # When
-            url = "/v2/bookings/use/token/{}".format(booking.token)
-            response = TestClient(app.test_client()).with_auth("admin@email.fr").patch(url)
-
-            # Then
-            deposits_for_user = Deposit.query.filter_by(userId=user_id).all()
-            assert response.status_code == 405
-            assert response.json["user"] == ["Cet utilisateur a déjà crédité son pass Culture"]
-            assert len(deposits_for_user) == 1
-            assert deposits_for_user[0].amount == 0
 
 
 class Returns410:

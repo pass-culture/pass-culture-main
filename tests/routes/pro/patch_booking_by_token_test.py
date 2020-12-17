@@ -7,7 +7,6 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.payments.factories import PaymentFactory
 from pcapi.core.users.factories import UserFactory
 from pcapi.model_creators.generic_creators import create_booking
-from pcapi.model_creators.generic_creators import create_deposit
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
@@ -17,10 +16,6 @@ from pcapi.model_creators.specific_creators import create_offer_with_event_produ
 from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence
 from pcapi.model_creators.specific_creators import create_stock_with_event_offer
 from pcapi.models import Booking
-from pcapi.models import Deposit
-from pcapi.models import EventType
-from pcapi.models import ThingType
-from pcapi.models import UserSQLEntity
 from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
 
@@ -100,31 +95,6 @@ class Returns204:
             assert response.status_code == 204
             booking = Booking.query.one()
             assert booking.isUsed
-
-    class WhenUserIsAdmin:
-        def expect_activation_booking_to_be_used_and_linked_user_to_be_able_to_book(self, app):
-            # Given
-            user = create_user(is_beneficiary=False, is_admin=False, first_name="John")
-            pro_user = create_user(is_beneficiary=False, email="pro@email.fr", is_admin=True)
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(pro_user, offerer)
-            venue = create_venue(offerer)
-            activation_offer = create_offer_with_event_product(venue, event_type=ThingType.ACTIVATION)
-            activation_event_occurrence = create_event_occurrence(activation_offer)
-            stock = create_stock_from_event_occurrence(activation_event_occurrence, price=0)
-            booking = create_booking(user=user, stock=stock, venue=venue)
-            repository.save(booking, user_offerer)
-            user_id = user.id
-            url = "/bookings/token/{}".format(booking.token)
-
-            # When
-            response = TestClient(app.test_client()).with_auth("pro@email.fr").patch(url)
-
-            # Then
-            user = UserSQLEntity.query.get(user_id)
-            assert response.status_code == 204
-            assert user.isBeneficiary is True
-            assert user.deposits[0].amount == 500
 
 
 @pytest.mark.usefixtures("db_session")
@@ -210,26 +180,6 @@ class Returns403:  # Forbidden
             "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."
         ]
         assert Booking.query.get(booking_id).isUsed is False
-
-    def when_user_is_not_admin_and_tries_to_patch_activation_offer(self, app):
-        # Given
-        user = create_user()
-        pro_user = create_user(email="pro@email.fr", is_admin=False)
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(pro_user, offerer)
-        venue = create_venue(offerer)
-        activation_offer = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
-        activation_event_occurrence = create_event_occurrence(activation_offer)
-        stock = create_stock_from_event_occurrence(activation_event_occurrence, price=0)
-        booking = create_booking(user=user, stock=stock, venue=venue)
-        repository.save(booking, user_offerer)
-        url = "/bookings/token/{}".format(booking.token)
-
-        # When
-        response = TestClient(app.test_client()).with_auth("pro@email.fr").patch(url)
-
-        # Then
-        assert response.status_code == 403
 
     def when_booking_has_been_cancelled_already(self, app):
         # Given
@@ -340,34 +290,6 @@ class Returns404:
             # Then
             assert response.status_code == 404
             assert Booking.query.get(booking_id).isUsed is False
-
-
-@pytest.mark.usefixtures("db_session")
-class Returns405:  # Method Not Allowed
-    def expect_no_new_deposits_when_the_linked_user_has_been_already_activated(self, app):
-        # Given
-        user = create_user(is_beneficiary=False, is_admin=False)
-        pro_user = create_user(is_beneficiary=False, email="pro@email.fr", is_admin=True)
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(pro_user, offerer)
-        venue = create_venue(offerer)
-        activation_offer = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
-        activation_event_occurrence = create_event_occurrence(activation_offer)
-        stock = create_stock_from_event_occurrence(activation_event_occurrence, price=0)
-        booking = create_booking(user=user, stock=stock, venue=venue)
-        deposit = create_deposit(user, amount=500)
-        repository.save(booking, user_offerer, deposit)
-        user_id = user.id
-        url = "/bookings/token/{}".format(booking.token)
-
-        # When
-        response = TestClient(app.test_client()).with_auth("pro@email.fr").patch(url)
-
-        # Then
-        deposits_for_user = Deposit.query.filter_by(userId=user_id).all()
-        assert response.status_code == 405
-        assert len(deposits_for_user) == 1
-        assert deposits_for_user[0].amount == 500
 
 
 @pytest.mark.usefixtures("db_session")

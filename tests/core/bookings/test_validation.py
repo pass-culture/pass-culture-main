@@ -10,8 +10,6 @@ from pcapi.core.bookings import validation
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.models import ApiErrors
-from pcapi.models import EventType
 from pcapi.models import ThingType
 from pcapi.models import api_errors
 
@@ -302,25 +300,6 @@ class CheckOffererCanCancelBookingTest:
         with pytest.raises(api_errors.ForbiddenError) as exc:
             validation.check_offerer_can_cancel_booking(booking)
         assert exc.value.errors["global"] == ["Impossible d'annuler une réservation consommée"]
-
-
-@pytest.mark.usefixtures("db_session")
-class CheckActivationBookingCanBeKeptTest:
-    def test_should_raise_an_error_when_booking_has_an_event_activation_type(self):
-        booking = factories.BookingFactory(stock__offer__type=str(EventType.ACTIVATION))
-        with pytest.raises(ApiErrors) as exc:
-            validation.check_is_not_activation_booking(booking)
-        assert exc.value.errors["booking"] == ["Impossible d'annuler une offre d'activation"]
-
-    def test_should_raise_an_error_when_booking_has_a_thing_activation_type(self):
-        booking = factories.BookingFactory(stock__offer__type=str(EventType.ACTIVATION))
-        with pytest.raises(ApiErrors) as exc:
-            validation.check_is_not_activation_booking(booking)
-        assert exc.value.errors["booking"] == ["Impossible d'annuler une offre d'activation"]
-
-    def test_should_not_raise_when_booking_is_not_an_activation(self):
-        booking = factories.BookingFactory(stock__offer__type=str(EventType.JEUX))
-        validation.check_is_not_activation_booking(booking)  # should not raise
 
 
 @pytest.mark.usefixtures("db_session")

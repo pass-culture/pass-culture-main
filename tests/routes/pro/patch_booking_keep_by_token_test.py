@@ -17,7 +17,6 @@ from pcapi.model_creators.specific_creators import create_offer_with_event_produ
 from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence
 from pcapi.model_creators.specific_creators import create_stock_with_event_offer
 from pcapi.models import Booking
-from pcapi.models import EventType
 from pcapi.repository import repository
 from pcapi.utils.token import random_token
 
@@ -242,32 +241,6 @@ class Returns403:
             assert response.status_code == 403
             assert response.json["user"] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]
             assert Booking.query.get(booking.id).isUsed is False
-
-        @pytest.mark.usefixtures("db_session")
-        def when_user_tries_to_patch_activation_offer(self, app):
-            # Given
-            user = create_user()
-
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(user, offerer)
-            venue = create_venue(offerer)
-
-            activation_offer = create_offer_with_event_product(venue, event_type=EventType.ACTIVATION)
-            activation_event_occurrence = create_event_occurrence(activation_offer)
-            stock = create_stock_from_event_occurrence(activation_event_occurrence, price=0)
-
-            booking = create_booking(user=user, stock=stock, venue=venue)
-
-            repository.save(booking, user_offerer)
-
-            # When
-            url = "/v2/bookings/keep/token/{}".format(booking.token)
-            response = TestClient(app.test_client()).with_auth(user.email).patch(url)
-
-            # Then
-            assert response.status_code == 403
-            assert Booking.query.get(booking.id).isUsed is False
-            assert response.json["booking"] == ["Impossible d'annuler une offre d'activation"]
 
         @pytest.mark.usefixtures("db_session")
         def when_user_is_logged_in_and_booking_has_been_cancelled_already(self, app):

@@ -16,7 +16,6 @@ import pcapi.core.payments.factories as payments_factories
 import pcapi.core.recommendations.factories as recommendations_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.models import api_errors
-from pcapi.models import offer_type
 from pcapi.models.feature import override_features
 from pcapi.utils.token import random_token
 
@@ -292,15 +291,6 @@ class MarkAsUnusedTest:
         booking = factories.BookingFactory(isUsed=True)
         api.mark_as_unused(booking)
         assert not booking.isUsed
-
-    def test_raise_if_activation_booking(self):
-        booking = factories.BookingFactory(
-            isUsed=True,
-            stock__offer__type=str(offer_type.EventType.ACTIVATION),
-        )
-        with pytest.raises(api_errors.ForbiddenError):
-            api.mark_as_unused(booking)
-        assert booking.isUsed  # unchanged
 
     def test_raise_if_not_yet_used(self):
         booking = factories.BookingFactory(isUsed=False)

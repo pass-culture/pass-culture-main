@@ -125,7 +125,6 @@ def mark_as_used(booking: Booking) -> None:
 
 
 def mark_as_unused(booking: Booking) -> None:
-    validation.check_is_not_activation_booking(booking)
     validation.check_can_be_mark_as_unused(booking)
     booking.isUsed = False
     booking.dateUsed = None

@@ -20,7 +20,7 @@ class CheckOfferTypeIsValidTest:
         check_offer_type_is_valid(str(ThingType.JEUX_VIDEO))
 
     def test_does_not_raise_exception_when_EventType_is_given(self):
-        check_offer_type_is_valid(str(EventType.ACTIVATION))
+        check_offer_type_is_valid(str(EventType.CINEMA))
 
 
 class CheckOfferNameIsValidTest:

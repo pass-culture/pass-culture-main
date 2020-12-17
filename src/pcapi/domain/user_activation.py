@@ -7,8 +7,6 @@ from pcapi.domain.password import random_password
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.models.deposit import Deposit
-from pcapi.models.offer_type import EventType
-from pcapi.models.offer_type import ThingType
 from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.scripts.beneficiary import THIRTY_DAYS_IN_HOURS
 
@@ -57,10 +55,6 @@ def generate_activation_users_csv(activation_users: Iterable[ActivationUser]) ->
     writer.writerow(ActivationUser.CSV_HEADER)
     writer.writerows(csv_lines)
     return output.getvalue()
-
-
-def is_activation_booking(booking):
-    return booking.stock.offer.type in [str(EventType.ACTIVATION), str(ThingType.ACTIVATION)]
 
 
 def create_beneficiary_from_application(application_detail: dict) -> UserSQLEntity:

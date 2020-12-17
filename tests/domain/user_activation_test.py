@@ -6,20 +6,15 @@ import pytest
 
 from pcapi.domain.user_activation import ActivationUser
 from pcapi.domain.user_activation import generate_activation_users_csv
-from pcapi.domain.user_activation import is_activation_booking
 from pcapi.domain.user_activation import is_import_status_change_allowed
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_stock
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_venue
-from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.model_creators.specific_creators import create_product_with_event_type
-from pcapi.models import EventType
 from pcapi.models import ImportStatus
 from pcapi.models import ThingType
-from pcapi.models import UserSQLEntity
 from pcapi.scripts.beneficiary.old_remote_import import create_beneficiary_from_application
 
 
@@ -149,36 +144,3 @@ class CreateBeneficiaryFromApplicationTest:
         assert len(beneficiary.deposits) == 1
         assert beneficiary.deposits[0].amount == Decimal(500)
         assert beneficiary.deposits[0].source == "démarches simplifiées dossier [123]"
-
-
-class IsActivationBookingTest:
-    def test_returns_true_when_offer_is_event_type_activation(self):
-        # Given
-        product = create_product_with_event_type(event_type=EventType.ACTIVATION)
-        offer = create_offer_with_event_product(product=product)
-        stock = create_stock(offer=offer)
-        booking = create_booking(user=UserSQLEntity(), stock=stock)
-
-        # Then
-        assert is_activation_booking(booking)
-
-    def test_returns_true_when_offer_is_thing_type_activation(self):
-        # Given
-        product = create_product_with_event_type(event_type=ThingType.ACTIVATION)
-        offer = create_offer_with_event_product(product=product)
-        stock = create_stock(offer=offer)
-        booking = create_booking(user=UserSQLEntity(), stock=stock)
-
-        # Then
-        assert is_activation_booking(booking)
-
-    def test_returns_false_with_type_of_offer_is_not_an_activation(self):
-        # Given
-        product = create_product_with_event_type(event_type=EventType.SPECTACLE_VIVANT)
-        offer = create_offer_with_event_product(product=product)
-        offer.type = "EventType.SPECTACLE_VIVANT"
-        stock = create_stock(offer=offer)
-        booking = create_booking(user=UserSQLEntity(), stock=stock)
-
-        # Then
-        assert is_activation_booking(booking) is False

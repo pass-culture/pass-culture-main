@@ -10,8 +10,6 @@ from pcapi.core.bookings.models import Booking
 import pcapi.core.bookings.repository as booking_repository
 import pcapi.core.bookings.validation as bookings_validation
 from pcapi.domain.user_activation import create_initial_deposit
-from pcapi.domain.user_activation import is_activation_booking
-from pcapi.domain.user_emails import send_activation_email
 from pcapi.domain.users import check_is_authorized_to_access_bookings_recap
 from pcapi.flask_app import private_api
 from pcapi.flask_app import public_api
@@ -27,7 +25,6 @@ from pcapi.routes.serialization import serialize_booking
 from pcapi.routes.serialization.bookings_recap_serialize import serialize_bookings_recap_paginated
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import humanize
-from pcapi.utils.mailing import send_raw_email
 from pcapi.utils.rest import ensure_current_user_has_rights
 from pcapi.validation.routes.bookings import check_email_and_offer_id_for_anonymous_user
 from pcapi.validation.routes.bookings import check_page_format_is_number
@@ -73,10 +70,6 @@ def patch_booking_by_token(token: str):
         check_email_and_offer_id_for_anonymous_user(email, offer_id)
 
     bookings_api.mark_as_used(booking)
-
-    if is_activation_booking(booking):
-        _activate_user(booking.user)
-        send_activation_email(booking.user, send_raw_email)
 
     return "", 204
 
@@ -137,10 +130,6 @@ def patch_booking_use_by_token(token: str):
 
     if valid_api_key:
         check_api_key_allows_to_validate_booking(valid_api_key, offerer_id)
-
-    if is_activation_booking(booking):
-        _activate_user(booking.user)
-        send_activation_email(booking.user, send_raw_email)
 
     bookings_api.mark_as_used(booking)
 

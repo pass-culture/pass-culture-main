@@ -8,7 +8,6 @@ from pcapi.core.bookings import exceptions
 from pcapi.core.bookings.models import Booking
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
-from pcapi.domain import user_activation
 import pcapi.domain.expenses as payments_api
 from pcapi.models import UserSQLEntity
 from pcapi.models import api_errors
@@ -144,14 +143,6 @@ def check_is_usable(booking: Booking) -> None:
             f"Cette réservation a été effectuée le {booking_date}. "
             f"Veuillez attendre jusqu’au {max_cancellation_date} pour valider la contremarque.",
         )
-        raise forbidden
-
-
-# FIXME: should not raise exceptions from `api_errors` (see above for details).
-def check_is_not_activation_booking(booking: Booking) -> None:
-    if user_activation.is_activation_booking(booking):
-        forbidden = api_errors.ForbiddenError()
-        forbidden.add_error("booking", "Impossible d'annuler une offre d'activation")
         raise forbidden
 
 
