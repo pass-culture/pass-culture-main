@@ -54,6 +54,7 @@ jobs:
             nvm install
             yarn test:unit --coverage
             yarn coveralls
+            bash <(curl -s https://codecov.io/bash)
       - run:
           name: Install dockerize
           command: |
