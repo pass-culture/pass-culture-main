@@ -5,16 +5,19 @@ from flask import request
 from flask_login import current_user
 from flask_login import login_required
 from flask_login import login_user
+from jwt import InvalidTokenError
 
 from pcapi import settings
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import repository as users_repo
+from pcapi.core.users.api import change_user_email
 from pcapi.core.users.api import send_user_emails_for_email_change
 from pcapi.flask_app import private_api
 from pcapi.flask_app import public_api
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.serialization import as_dict
 from pcapi.routes.serialization import beneficiaries as serialization_beneficiaries
+from pcapi.routes.serialization.beneficiaries import ChangeBeneficiaryEmailBody
 from pcapi.routes.serialization.beneficiaries import ChangeBeneficiaryEmailRequestBody
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.use_cases.update_user_informations import AlterableUserInformations
@@ -90,6 +93,17 @@ def change_beneficiary_email_request(body: ChangeBeneficiaryEmailRequestBody) ->
         errors.status_code = 503
         errors.add_error("email", "L'envoi d'email a échoué")
         raise errors from mail_service_exception
+
+
+@private_api.route("/beneficiaries/change_email", methods=["PUT"])
+@spectree_serialize(on_success_status=204, on_error_statuses=[400])
+def change_beneficiary_email(body: ChangeBeneficiaryEmailBody) -> None:
+    try:
+        change_user_email(body.token)
+    except InvalidTokenError as error:
+        errors = ApiErrors()
+        errors.status_code = 400
+        raise errors from error
 
 
 # @debt api-migration

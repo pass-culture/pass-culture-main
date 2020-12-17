@@ -29,3 +29,7 @@ class ApplicationUpdateResponse(BaseModel):
 class ChangeBeneficiaryEmailRequestBody(BaseModel):
     new_email: str
     password: str
+
+
+class ChangeBeneficiaryEmailBody(BaseModel):
+    token: str

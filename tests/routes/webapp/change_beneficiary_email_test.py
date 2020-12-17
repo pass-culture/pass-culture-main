@@ -1,11 +1,16 @@
+from datetime import datetime
+from datetime import timedelta
 from unittest.mock import call
 from unittest.mock import patch
 
 from freezegun import freeze_time
+import jwt
 import pytest
 
+from pcapi import settings
 import pcapi.core.users.factories as users_factories
-from pcapi.settings import WEBAPP_URL
+from pcapi.core.users.models import ALGORITHM_HS_256
+from pcapi.models.user_sql_entity import UserSQLEntity
 
 from tests.conftest import TestClient
 
@@ -40,7 +45,9 @@ class Returns204:
             "leHAiOjE2MDI4Mzg4MDB9.Q2-583JqPSfDjuMD6ZMhMnb07Rr47iBZFRwlFC"
             "ymSf0"
         )
-        confirmation_link = f"{WEBAPP_URL}/email-change?token={confirmation_data_token}&expiration_timestamp=1602838800"
+        confirmation_link = (
+            f"{settings.WEBAPP_URL}/email-change?token={confirmation_data_token}&expiration_timestamp=1602838800"
+        )
         confirmation_data = {
             "FromEmail": "support@example.com",
             "MJ-TemplateID": 2066065,
@@ -55,6 +62,35 @@ class Returns204:
         assert mocked_mailing_utils.send_raw_email.call_count == 2
         calls = [call(information_data), call(confirmation_data)]
         mocked_mailing_utils.send_raw_email.assert_has_calls(calls)
+
+    @freeze_time("2020-10-15 09:00:00")
+    def when_token_is_valid(self, app):
+        # Given
+        user = users_factories.UserFactory(email="oldemail@mail.com")
+
+        expiration_date = datetime.now() + timedelta(hours=1)
+        token_payload = dict(
+            exp=int(expiration_date.timestamp()), current_email="oldemail@mail.com", new_email="newemail@mail.com"
+        )
+        token = jwt.encode(
+            token_payload,
+            settings.JWT_SECRET_KEY,  # type: ignore # known as str in build assertion
+            algorithm=ALGORITHM_HS_256,
+        ).decode("ascii")
+
+        data = {"token": token}
+
+        # When
+        client = TestClient(app.test_client()).with_auth(user.email)
+        response = client.put("/beneficiaries/change_email", json=data)
+
+        # Then
+        assert response.status_code == 204
+        old_email_user = UserSQLEntity.query.filter_by(email="oldemail@mail.com").first()
+        assert old_email_user is None
+        new_email_user = UserSQLEntity.query.filter_by(email="newemail@mail.com").first()
+        assert new_email_user is not None
+        assert new_email_user.id == user.id
 
 
 @pytest.mark.usefixtures("db_session")
