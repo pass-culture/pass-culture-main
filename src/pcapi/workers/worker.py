@@ -30,15 +30,6 @@ conn = redis.from_url(settings.REDIS_URL)
 redis_queue = Queue(connection=conn)
 logging.getLogger("rq.worker").setLevel(logging.CRITICAL)
 
-if settings.IS_DEV is False:
-    sentry_sdk.init(
-        dsn=settings.SENTRY_DSN,
-        integrations=[RedisIntegration(), RqIntegration(), SqlalchemyIntegration()],
-        release=read_version_from_file(),
-        environment=settings.ENV,
-        traces_sample_rate=settings.SENTRY_SAMPLE_RATE,
-    )
-
 
 def log_worker_error(job: Job, exception_type: Type, exception_value: Exception) -> None:
     # This handler is called by `rq.Worker.handle_exception()` from an
@@ -47,6 +38,14 @@ def log_worker_error(job: Job, exception_type: Type, exception_value: Exception)
 
 
 if __name__ == "__main__":
+    if settings.IS_DEV is False:
+        sentry_sdk.init(
+            dsn=settings.SENTRY_DSN,
+            integrations=[RedisIntegration(), RqIntegration(), SqlalchemyIntegration()],
+            release=read_version_from_file(),
+            environment=settings.ENV,
+            traces_sample_rate=settings.SENTRY_SAMPLE_RATE,
+        )
     while True:
         try:
             with Connection(conn):
