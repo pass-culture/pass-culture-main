@@ -97,10 +97,6 @@ const OfferDetails = props => {
         title={pageTitle}
       />
 
-      <p className="page-subtitle">
-        {'Tous les champs sont obligatoires sauf mention contraire'}
-      </p>
-
       <div className="content">
         <OfferFormContainer
           initialValues={formInitialValues}

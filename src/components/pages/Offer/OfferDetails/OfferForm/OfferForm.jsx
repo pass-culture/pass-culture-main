@@ -13,7 +13,7 @@ import * as pcapi from 'repository/pcapi/pcapi'
 
 import { DEFAULT_FORM_VALUES, MANDATORY_FIELDS } from './_constants'
 import OfferRefundWarning from './OfferRefundWarning'
-import SynchronizableProviderInformation from './SynchronizableProviderInformation'
+import SynchronizedProviderInformation from './SynchronizedProviderInformation'
 import TypeTreeSelects from './TypeTreeSelects'
 
 const getOfferConditionalFields = ({
@@ -336,6 +336,16 @@ const OfferForm = ({
 
   return (
     <form className="offer-form">
+      {offerIsSynchronized ? (
+        <div className="form-row">
+          <SynchronizedProviderInformation providerName={offer.lastProvider.name} />
+        </div>
+      ) : (
+        <p className="page-subtitle">
+          {'Tous les champs sont obligatoires sauf mention contraire'}
+        </p>
+      )}
+
       <section className="form-section">
         <h3 className="section-title">
           {"Type d'offre"}
@@ -360,12 +370,6 @@ const OfferForm = ({
             updateTypeValues={handleFormUpdate}
           />
         </div>
-
-        {offerIsSynchronized && (
-          <div className="form-row">
-            <SynchronizableProviderInformation offer={offer} />
-          </div>
-        )}
       </section>
 
       {displayFullForm && (

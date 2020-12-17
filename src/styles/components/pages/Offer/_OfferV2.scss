@@ -1,11 +1,13 @@
 .offer-page-v2 {
   .page-subtitle {
     @include caption();
+
     color: $grey-dark;
   }
 
   .content {
     margin-top: rem(24px);
+
     .offer-form {
       max-width: rem(486px);
 
@@ -15,8 +17,17 @@
     }
   }
 
-  .debug {
-    position: static;
-    white-space: pre-wrap;
+  .provider-information {
+    align-items: center;
+    background-color: $notification-info;
+    border-radius: rem(6px);
+    height: rem(50px);
+
+    img {
+      height: rem(50px);
+      margin-left: rem(20px);
+      margin-right: rem(20px);
+      width: rem(50px);
+    }
   }
 }

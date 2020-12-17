@@ -5,6 +5,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
+import { getProviderInfo } from 'components/pages/Offer/LocalProviderInformation/getProviderInfo'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
@@ -149,6 +150,7 @@ describe('offerDetails - Edition', () => {
 
     it('should allow edition of editable fields only', async () => {
       // Given
+      venues[0].isVirtual = true
       const editedOffer = {
         id: 'ABC12',
         name: 'My edited offer',
@@ -156,7 +158,8 @@ describe('offerDetails - Edition', () => {
         musicType: 501,
         musicSubType: 502,
         description: 'Offer description',
-        venueId: 'LOCAL_VENUE_ID',
+        venue: venues[0],
+        venueId: venues[0].id,
         withdrawalDetails: 'Offer withdrawal details',
         author: 'Mr Offer Author',
         performer: 'Mr Offer Performer',
@@ -180,14 +183,6 @@ describe('offerDetails - Edition', () => {
         value: 'EventType.FULL_CONDITIONAL_FIELDS',
       })
       pcapi.loadTypes.mockResolvedValue(types)
-      venues.push({
-        id: 'LOCAL_VENUE_ID',
-        isVirtual: true,
-        managingOffererId: offerers[0].id,
-        name: 'Le lieu',
-        offererName: 'La structure',
-      })
-      pcapi.getVenuesForOfferer.mockResolvedValue(venues)
 
       renderOffers({}, store)
 
@@ -279,6 +274,7 @@ describe('offerDetails - Edition', () => {
           showType: 400,
           showSubType: 401,
           description: 'Offer description',
+          venue: venues[0],
           venueId: venues[0].id,
           withdrawalDetails: 'Offer withdrawal details',
           author: 'Mr Offer Author',
@@ -289,17 +285,24 @@ describe('offerDetails - Edition', () => {
           },
         }
         pcapi.loadOffer.mockResolvedValue(editedOffer)
+        const providerInformation = getProviderInfo(editedOffer.lastProvider.name)
 
         // When
         renderOffers({}, store)
 
         // Then
-        const providerBanner = await screen.findByText('Offre synchronisée avec Leslibraires.fr')
+        const providerBanner = await screen.findByText(
+          `Offre synchronisée avec ${providerInformation.name}`
+        )
         expect(providerBanner).toBeInTheDocument()
+        expect(
+          screen.getByRole('img', { name: `Icône de ${providerInformation.name}` })
+        ).toHaveAttribute('src', expect.stringContaining(providerInformation.icon))
       })
 
       it('should not allow any edition', async () => {
         // Given
+        venues[0].isVirtual = true
         const editedOffer = {
           id: 'ABC12',
           name: 'My edited offer',
@@ -307,7 +310,8 @@ describe('offerDetails - Edition', () => {
           showType: 400,
           showSubType: 401,
           description: 'Offer description',
-          venueId: 'LOCAL_VENUE_ID',
+          venue: venues[0],
+          venueId: venues[0].id,
           withdrawalDetails: 'Offer withdrawal details',
           author: 'Mr Offer Author',
           performer: 'Mr Offer Performer',
@@ -334,14 +338,6 @@ describe('offerDetails - Edition', () => {
           value: 'EventType.FULL_CONDITIONAL_FIELDS',
         })
         pcapi.loadTypes.mockResolvedValue(types)
-        venues.push({
-          id: 'LOCAL_VENUE_ID',
-          isVirtual: true,
-          managingOffererId: offerers[0].id,
-          name: 'Le lieu',
-          offererName: 'La structure',
-        })
-        pcapi.getVenuesForOfferer.mockResolvedValue(venues)
 
         renderOffers({}, store)
 
@@ -432,7 +428,8 @@ describe('offerDetails - Edition', () => {
           showType: 400,
           showSubType: 401,
           description: 'Offer description',
-          venueId: 'LOCAL_VENUE_ID',
+          venue: venues[0],
+          venueId: venues[0].id,
           withdrawalDetails: 'Offer withdrawal details',
           author: 'Mr Offer Author',
           performer: 'Mr Offer Performer',
@@ -459,14 +456,6 @@ describe('offerDetails - Edition', () => {
           value: 'EventType.FULL_CONDITIONAL_FIELDS',
         })
         pcapi.loadTypes.mockResolvedValue(types)
-        venues.push({
-          id: 'LOCAL_VENUE_ID',
-          isVirtual: true,
-          managingOffererId: offerers[0].id,
-          name: 'Le lieu',
-          offererName: 'La structure',
-        })
-        pcapi.getVenuesForOfferer.mockResolvedValue(venues)
 
         renderOffers({}, store)
 
