@@ -11,8 +11,6 @@ import { isAllocineOffer, isSynchronizedOffer } from 'components/pages/Offer/dom
 import offerIsRefundable from 'components/pages/Offer/domain/offerIsRefundable'
 import * as pcapi from 'repository/pcapi/pcapi'
 
-import MediationsManager from '../../MediationsManager/MediationsManagerContainer'
-
 import { DEFAULT_FORM_VALUES, MANDATORY_FIELDS } from './_constants'
 import OfferRefundWarning from './OfferRefundWarning'
 import SynchronizableProviderInformation from './SynchronizableProviderInformation'
@@ -587,17 +585,6 @@ const OfferForm = ({
               </div>
             )}
           </section>
-
-          {offer && (
-            <section className="form-section">
-              <h3 className="section-title">
-                {'Gestion des stocks et des accroches'}
-              </h3>
-              <div className="form-row">
-                <MediationsManager offer={offer} />
-              </div>
-            </section>
-          )}
 
           <section className="form-section">
             <h3 className="section-title">
