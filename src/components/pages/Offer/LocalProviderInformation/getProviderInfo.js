@@ -29,5 +29,5 @@ export const getProviderInfo = providerName => {
     },
   ]
 
-  return providers.find(providerInfo => providerName.startsWith(providerInfo.id))
+  return providers.find(providerInfo => providerName.toLowerCase().startsWith(providerInfo.id))
 }

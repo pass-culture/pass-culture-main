@@ -2,7 +2,7 @@ import React, { Fragment, useCallback, useEffect, useState } from 'react'
 
 import Select, { buildSelectOptions } from 'components/layout/inputs/Select'
 
-import { musicOptionsTree, showOptionsTree } from '../enums'
+import { musicOptionsTree, showOptionsTree } from '../subTypes'
 
 import { DEFAULT_FORM_VALUES } from './_constants'
 

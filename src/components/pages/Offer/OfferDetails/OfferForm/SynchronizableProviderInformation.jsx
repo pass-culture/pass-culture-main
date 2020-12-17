@@ -4,15 +4,12 @@ import ReactTooltip from 'react-tooltip'
 
 import Icon from 'components/layout/Icon'
 import Thumb from 'components/layout/Thumb'
-
-import { synchronizableProviders } from '../enums'
+import { getProviderInfo } from 'components/pages/Offer/LocalProviderInformation/getProviderInfo'
 
 const SynchronizableProviderInformation = props => {
   const { offer } = props
   const { lastProvider, thumbUrl, offererId, venueId } = offer
-  const providerInfo = synchronizableProviders.find(
-    providerData => providerData.name === lastProvider.name
-  )
+  const providerInfo = getProviderInfo(lastProvider.name)
 
   useEffect(() => {
     ReactTooltip.rebuild()

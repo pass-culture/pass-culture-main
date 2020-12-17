@@ -49,30 +49,6 @@ describe('offerDetails - Edition', () => {
 
     types = [
       {
-        conditionalFields: ['author', 'visa', 'stageDirector'],
-        offlineOnly: true,
-        onlineOnly: false,
-        proLabel: 'Cinéma - projections et autres évènements',
-        type: 'Event',
-        value: 'EventType.CINEMA',
-      },
-      {
-        conditionalFields: ['author', 'musicType', 'performer'],
-        offlineOnly: false,
-        onlineOnly: false,
-        proLabel: 'Musique - concerts, festivals',
-        type: 'Event',
-        value: 'EventType.MUSIQUE',
-      },
-      {
-        conditionalFields: ['author', 'showType', 'stageDirector', 'performer'],
-        offlineOnly: true,
-        onlineOnly: false,
-        proLabel: 'Spectacle vivant',
-        type: 'Event',
-        value: 'EventType.SPECTACLE_VIVANT',
-      },
-      {
         conditionalFields: [],
         offlineOnly: false,
         onlineOnly: true,
@@ -88,31 +64,11 @@ describe('offerDetails - Edition', () => {
         type: 'Thing',
         value: 'ThingType.LIVRE_EDITION',
       },
-      {
-        conditionalFields: [],
-        offlineOnly: false,
-        onlineOnly: true,
-        proLabel: 'Cinéma - vente à distance',
-        type: 'Thing',
-        value: 'ThingType.CINEMA_CARD',
-      },
-      {
-        conditionalFields: ['speaker'],
-        offlineOnly: true,
-        onlineOnly: false,
-        proLabel: 'Conférences, rencontres et découverte des métiers',
-        type: 'Event',
-        value: 'EventType.CONFERENCE_DEBAT_DEDICACE',
-      },
     ]
     offerers = [
       {
         id: 'BA',
         name: 'La structure',
-      },
-      {
-        id: 'BAC',
-        name: "L'autre structure",
       },
     ]
     venues = [
@@ -122,20 +78,6 @@ describe('offerDetails - Edition', () => {
         managingOffererId: offerers[0].id,
         name: 'Le lieu',
         offererName: 'La structure',
-      },
-      {
-        id: 'ABC',
-        isVirtual: false,
-        managingOffererId: offerers[1].id,
-        name: "L'autre lieu",
-        offererName: "L'autre structure",
-      },
-      {
-        id: 'ABCD',
-        isVirtual: true,
-        managingOffererId: offerers[1].id,
-        name: "L'autre lieu (Offre numérique)",
-        offererName: "L'autre structure",
       },
     ]
     editedOffer = {
@@ -328,6 +270,34 @@ describe('offerDetails - Edition', () => {
     })
 
     describe('for synchronized offers', () => {
+      it('should show a banner stating the synchronization and the provider', async () => {
+        // Given
+        const editedOffer = {
+          id: 'ABC12',
+          name: 'My synchronized offer',
+          type: 'ThingType.LIVRE_EDITION',
+          showType: 400,
+          showSubType: 401,
+          description: 'Offer description',
+          venueId: venues[0].id,
+          withdrawalDetails: 'Offer withdrawal details',
+          author: 'Mr Offer Author',
+          performer: 'Mr Offer Performer',
+          bookingEmail: 'booking@email.net',
+          lastProvider: {
+            name: 'leslibraires.fr',
+          },
+        }
+        pcapi.loadOffer.mockResolvedValue(editedOffer)
+
+        // When
+        renderOffers({}, store)
+
+        // Then
+        const providerBanner = await screen.findByText('Offre synchronisée avec Leslibraires.fr')
+        expect(providerBanner).toBeInTheDocument()
+      })
+
       it('should not allow any edition', async () => {
         // Given
         const editedOffer = {

@@ -1,5 +1,3 @@
-import { PROVIDER_ICONS } from '../../../utils/providers'
-
 export const musicOptionsTree = [
   {
     code: 501,
@@ -400,33 +398,5 @@ export const showOptionsTree = [
       { code: 1503, label: 'Spectacle historique' },
       { code: 1504, label: 'Spectacle aquatique' },
     ],
-  },
-]
-
-export const synchronizableProviders = [
-  {
-    id: 'allociné',
-    icon: PROVIDER_ICONS['AllocineStocks'],
-    name: 'Allociné',
-  },
-  {
-    id: 'leslibraires.fr',
-    icon: PROVIDER_ICONS['LibrairesStocks'],
-    name: 'Leslibraires.fr',
-  },
-  {
-    id: 'titelive',
-    icon: PROVIDER_ICONS['TiteLiveStocks'],
-    name: 'Tite Live',
-  },
-  {
-    id: 'fnac',
-    icon: PROVIDER_ICONS['FnacStocks'],
-    name: 'Fnac',
-  },
-  {
-    id: 'praxiel',
-    icon: PROVIDER_ICONS['PraxielStocks'],
-    name: 'Praxiel',
   },
 ]
