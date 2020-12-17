@@ -165,11 +165,17 @@ const OfferForm = ({
       if (formValues.type) {
         setOfferType(types.find(type => type.value === formValues.type))
       }
-      if (formValues.venueId) {
+
+      if (
+        formValues.venueId &&
+        venueOptions.find(showedVenue => showedVenue.id === formValues.venueId)
+      ) {
         setVenue(venues.find(venue => venue.id === formValues.venueId))
+      } else {
+        setVenue(null)
       }
     },
-    [formValues, types, venues]
+    [formValues, venueOptions, types, venues]
   )
   useEffect(
     function selectManagingOffererOfSelectedVenue() {

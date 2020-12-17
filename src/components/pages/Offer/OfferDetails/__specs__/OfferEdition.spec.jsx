@@ -515,11 +515,15 @@ describe('offerDetails - Edition', () => {
       const editedOffer = {
         id: 'ABC12',
         name: 'My edited offer',
-        type: 'ThingType.PRESSE_ABO',
+        type: 'ThingType.LIVRE_EDITION',
         description: 'Offer description',
         venueId: venues[0].id,
         withdrawalDetails: 'Offer withdrawal details',
         bookingEmail: 'booking@email.net',
+        extraData: {
+          author: '',
+          isbn: '',
+        },
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
       renderOffers({}, store)

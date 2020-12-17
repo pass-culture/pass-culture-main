@@ -9,6 +9,7 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
 import OfferDetailsContainer from '../OfferDetailsContainer'
+import { DEFAULT_FORM_VALUES } from '../OfferForm/_constants'
 
 import { getInputErrorForField, getOfferInputForField, setOfferValues } from './helpers'
 
@@ -546,9 +547,9 @@ describe('offerDetails - Creation', () => {
         it('should display a text input "url"', async () => {
           // Given
           renderOffers({}, store)
+          await setOfferValues({ type: 'ThingType.PRESSE_ABO' })
 
           // When
-          await setOfferValues({ type: 'ThingType.PRESSE_ABO' })
           await setOfferValues({ venueId: venues[2].id })
 
           // Then
@@ -560,9 +561,9 @@ describe('offerDetails - Creation', () => {
         it('should display refundable banner when offer type is online only', async () => {
           // Given
           renderOffers({}, store)
+          await setOfferValues({ type: 'ThingType.PRESSE_ABO' })
 
           // When
-          await setOfferValues({ type: 'ThingType.PRESSE_ABO' })
           await setOfferValues({ venueId: venues[2].id })
 
           // Then
@@ -573,12 +574,46 @@ describe('offerDetails - Creation', () => {
           ).toBeInTheDocument()
         })
 
+        it('should remove refundable banner after deselecting the venue', async () => {
+          // Given
+          renderOffers({}, store)
+          await setOfferValues({ type: 'ThingType.PRESSE_ABO' })
+          await setOfferValues({ venueId: venues[2].id })
+
+          // When
+          await setOfferValues({ venueId: DEFAULT_FORM_VALUES.venueId })
+
+          // Then
+          expect(
+            screen.queryByText(
+              "Cette offre numérique ne fera pas l'objet d'un remboursement. Pour plus d'informations sur les catégories éligibles au remboursement, merci de consulter les CGU."
+            )
+          ).not.toBeInTheDocument()
+        })
+
+        it('should remove refundable banner after selecting a refundable offer type', async () => {
+          // Given
+          renderOffers({}, store)
+          await setOfferValues({ type: 'ThingType.PRESSE_ABO' })
+          await setOfferValues({ venueId: venues[2].id })
+
+          // When
+          await setOfferValues({ type: 'EventType.SPECTACLE_VIVANT' })
+
+          // Then
+          expect(
+            screen.queryByText(
+              "Cette offre numérique ne fera pas l'objet d'un remboursement. Pour plus d'informations sur les catégories éligibles au remboursement, merci de consulter les CGU."
+            )
+          ).not.toBeInTheDocument()
+        })
+
         it('should display refundable banner when offer type is online and offline', async () => {
           // Given
           renderOffers({}, store)
+          await setOfferValues({ type: 'EventType.MUSIQUE' })
 
           // When
-          await setOfferValues({ type: 'EventType.MUSIQUE' })
           await setOfferValues({ venueId: venues[2].id })
 
           // Then
@@ -592,9 +627,9 @@ describe('offerDetails - Creation', () => {
         it('should not display refundable banner when offer type is ThingType.LIVRE_EDITION', async () => {
           // Given
           renderOffers({}, store)
+          await setOfferValues({ type: 'ThingType.LIVRE_EDITION' })
 
           // When
-          await setOfferValues({ type: 'ThingType.LIVRE_EDITION' })
           await setOfferValues({ venueId: venues[2].id })
 
           // Then
@@ -608,9 +643,9 @@ describe('offerDetails - Creation', () => {
         it('should not display refundable banner when offer type is ThingType.CINEMA_CARD', async () => {
           // Given
           renderOffers({}, store)
+          await setOfferValues({ type: 'ThingType.CINEMA_CARD' })
 
           // When
-          await setOfferValues({ type: 'ThingType.CINEMA_CARD' })
           await setOfferValues({ venueId: venues[2].id })
 
           // Then
