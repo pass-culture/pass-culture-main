@@ -265,6 +265,7 @@ export const StockItem = ({
       </tr>
       {isDeleting && (
         <DeleteStockConfirmation
+          isEvent={isEvent}
           refreshOffer={refreshOffer}
           setIsDeleting={setIsDeleting}
           stockId={stock.id}

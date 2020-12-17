@@ -13,13 +13,17 @@
 
   table {
     margin-top: rem(28px);
+    width: 100%;
   }
 
   th {
     @include caption();
+
+    text-align: left;
   }
 
   th.action-column {
+    max-width: rem(61px);
     min-width: rem(61px);
   }
 

@@ -3,7 +3,7 @@ import React, { useCallback } from 'react'
 
 import * as pcapi from 'repository/pcapi/pcapi'
 
-export const DeleteStockConfirmation = ({ refreshOffer, setIsDeleting, stockId }) => {
+export const DeleteStockConfirmation = ({ isEvent, refreshOffer, setIsDeleting, stockId }) => {
   const confirmStockDeletion = useCallback(() => {
     pcapi.deleteStock(stockId).then(() => refreshOffer())
   }, [refreshOffer, stockId])
@@ -14,7 +14,7 @@ export const DeleteStockConfirmation = ({ refreshOffer, setIsDeleting, stockId }
     <tr>
       <td
         className="delete-confirmation"
-        colSpan="7"
+        colSpan={isEvent ? '7' : '5'}
       >
         {
           'En confirmant l’annulation de cette date, vous supprimerez aussi toutes les réservations associées.'
@@ -47,6 +47,7 @@ export const DeleteStockConfirmation = ({ refreshOffer, setIsDeleting, stockId }
 }
 
 DeleteStockConfirmation.propTypes = {
+  isEvent: PropTypes.bool.isRequired,
   refreshOffer: PropTypes.func.isRequired,
   setIsDeleting: PropTypes.func.isRequired,
   stockId: PropTypes.string.isRequired,
