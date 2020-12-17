@@ -123,7 +123,7 @@ commands:
             --install --wait \
             --namespace << parameters.kubernetes_namespace >> \
             --values tmp/<< parameters.helm_chart_name >>/<< parameters.helm_values_file >> \
-            --set-string image.tag=${API_VERSION}
+            --set-string image.tag=${CIRCLE_SHA1}
           true
 
 ###################
