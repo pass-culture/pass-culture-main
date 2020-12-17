@@ -6,12 +6,15 @@ from flask_admin import expose
 from flask_admin.form import SecureForm
 from flask_login import current_user
 from markupsafe import Markup
+from werkzeug.exceptions import Forbidden
 import wtforms
 import wtforms.validators
 
+from pcapi import settings
 import pcapi.core.users.api as users_api
 import pcapi.core.users.constants as users_constants
 from pcapi.models.user_sql_entity import UserSQLEntity
+from pcapi.utils.mailing import parse_email_addresses
 
 
 class SuspensionForm(SecureForm):
@@ -26,7 +29,16 @@ class UnsuspensionForm(SecureForm):
     pass  # empty form, only has the CSRF token field
 
 
+def _allow_suspension_and_unsuspension(user):
+    if not settings.IS_PROD:
+        return True
+    return user.email in parse_email_addresses(settings.SUPER_ADMIN_EMAIL_ADDRESSES)
+
+
 def _action_links(view, context, model, name):
+    if not _allow_suspension_and_unsuspension(current_user):
+        return None
+
     if model.isActive:
         url = url_for(".suspend_user_view")
         text = "Suspendre&hellip;"
@@ -54,6 +66,9 @@ class SuspensionMixin:
 
     @expose("suspend", methods=["GET", "POST"])
     def suspend_user_view(self):
+        if not _allow_suspension_and_unsuspension(current_user):
+            return Forbidden()
+
         user_id = request.args["user_id"]
         user = UserSQLEntity.query.get(user_id)
 
@@ -75,6 +90,9 @@ class SuspensionMixin:
 
     @expose("unsuspend", methods=["GET", "POST"])
     def unsuspend_user_view(self):
+        if not _allow_suspension_and_unsuspension(current_user):
+            return Forbidden()
+
         user_id = request.args["user_id"]
         user = UserSQLEntity.query.get(user_id)
 

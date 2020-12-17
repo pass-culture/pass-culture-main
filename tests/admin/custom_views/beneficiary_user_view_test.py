@@ -1,6 +1,9 @@
 from datetime import datetime
 from unittest.mock import patch
 
+import pytest
+
+from pcapi.admin.custom_views.suspension_mixin import _allow_suspension_and_unsuspension
 import pcapi.core.users.factories as users_factories
 from pcapi.models import Deposit
 from pcapi.models.user_sql_entity import UserSQLEntity
@@ -121,3 +124,28 @@ class BeneficiaryUserViewTest:
 
         assert response.status_code == 302
         assert beneficiary.isActive
+
+    @clean_database
+    @patch("pcapi.settings.IS_PROD", True)
+    def test_suspend_beneficiary_is_restricted(self, app):
+        admin = users_factories.UserFactory(email="admin@example.com", isAdmin=True, isBeneficiary=False)
+        beneficiary = users_factories.UserFactory(email="user@example.com")
+
+        client = TestClient(app.test_client()).with_auth(admin.email)
+        url = f"/pc/back-office/beneficiary_users/suspend?user_id={beneficiary.id}"
+        data = {
+            "reason": "fraud",
+            "csrf_token": "token",
+        }
+        response = client.post(url, form=data)
+
+        assert response.status_code == 403
+
+    @patch("pcapi.settings.IS_PROD", True)
+    @patch("pcapi.settings.SUPER_ADMIN_EMAIL_ADDRESSES", "super-admin@example.com, boss@example.com")
+    @pytest.mark.usefixtures("db_session")
+    def test_allow_suspension_and_unsuspension(self):
+        basic_admin = users_factories.UserFactory(email="admin@example.com", isAdmin=True, isBeneficiary=False)
+        assert not _allow_suspension_and_unsuspension(basic_admin)
+        super_admin = users_factories.UserFactory(email="super-admin@example.com", isAdmin=True, isBeneficiary=False)
+        assert _allow_suspension_and_unsuspension(super_admin)
