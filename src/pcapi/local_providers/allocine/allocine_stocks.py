@@ -1,5 +1,4 @@
 from datetime import datetime
-import os
 import re
 from typing import Dict
 from typing import List
@@ -10,6 +9,7 @@ from dateutil import tz
 from dateutil.parser import parse
 from sqlalchemy import Sequence
 
+from pcapi import settings
 from pcapi.domain.allocine import get_movie_poster
 from pcapi.domain.allocine import get_movies_showtimes
 from pcapi.domain.price_rule import AllocineStocksPriceRule
@@ -43,7 +43,7 @@ class AllocineStocks(LocalProvider):
 
     def __init__(self, allocine_venue_provider: AllocineVenueProvider):
         super().__init__(allocine_venue_provider)
-        self.api_key = os.environ.get("ALLOCINE_API_KEY", None)
+        self.api_key = settings.ALLOCINE_API_KEY
         self.venue = allocine_venue_provider.venue
         self.theater_id = allocine_venue_provider.venueIdAtOfferProvider
         self.movies_showtimes = get_movies_showtimes(self.api_key, self.theater_id)
