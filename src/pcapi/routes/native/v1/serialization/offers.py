@@ -84,6 +84,7 @@ def get_id_converter(labels_by_id: Dict, field_name: str) -> Callable[[Optional[
 class OfferExtraData(BaseModel):
     author: Optional[str]
     durationMinutes: Optional[int]
+    isbn: Optional[str]
     musicSubType: Optional[str]
     musicType: Optional[str]
     performer: Optional[str]
@@ -91,6 +92,7 @@ class OfferExtraData(BaseModel):
     showType: Optional[str]
     stageDirector: Optional[str]
     speaker: Optional[str]
+    visa: Optional[str]
 
     _convert_music_sub_type = validator("musicSubType", pre=True, allow_reuse=True)(
         get_id_converter(MUSIC_SUB_TYPES_DICT, "musicSubType")

@@ -20,6 +20,7 @@ class OffersTest:
         offer_type = EventType.CINEMA
         extra_data = {
             "author": "mandibule",
+            "isbn": "3838",
             "musicSubType": "502",
             "musicType": "501",
             "performer": "interprète",
@@ -27,6 +28,7 @@ class OffersTest:
             "showType": "100",
             "stageDirector": "metteur en scène",
             "speaker": "intervenant",
+            "visa": "vasi",
         }
         offer = OfferFactory(
             type=str(offer_type),
@@ -55,6 +57,7 @@ class OffersTest:
             "description": offer.description,
             "extraData": {
                 "author": "mandibule",
+                "isbn": "3838",
                 "durationMinutes": 33,
                 "musicSubType": "Acid Jazz",
                 "musicType": "Jazz",
@@ -63,6 +66,7 @@ class OffersTest:
                 "showType": "Arts de la rue",
                 "speaker": "intervenant",
                 "stageDirector": "metteur en scène",
+                "visa": "vasi",
             },
             "imageUrl": None,
             "isDuo": True,
