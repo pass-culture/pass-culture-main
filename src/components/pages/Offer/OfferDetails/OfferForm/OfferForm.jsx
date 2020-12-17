@@ -84,6 +84,17 @@ const OfferForm = ({
       .then(offererOptions => setOffererOptions(offererOptions))
   }, [])
   useEffect(
+    function selectOffererOrVenueWhenUnique() {
+      if (offererOptions.length === 1) {
+        handleFormUpdate({ offererId: offererOptions[0].id })
+      }
+      if (venueOptions.length === 1) {
+        handleFormUpdate({ venueId: venueOptions[0].id })
+      }
+    },
+    [handleFormUpdate, offererOptions, venueOptions]
+  )
+  useEffect(
     function initializeFormData() {
       let values = {}
       if (offer) {
@@ -175,7 +186,7 @@ const OfferForm = ({
         setVenue(null)
       }
     },
-    [formValues, venueOptions, types, venues]
+    [formValues.type, formValues.venueId, venueOptions, types, venues]
   )
   useEffect(
     function selectManagingOffererOfSelectedVenue() {

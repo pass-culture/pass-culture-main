@@ -230,9 +230,33 @@ describe('offerDetails - Creation', () => {
         expect(screen.getByDisplayValue(offerers[0].name)).toBeInTheDocument()
       })
 
+      it('should select offerer when there is only one option', async () => {
+        // Given
+        pcapi.getValidatedOfferers.mockResolvedValue([offerers[0]])
+        renderOffers({}, store)
+
+        // When
+        await setOfferValues({ type: 'EventType.CINEMA' })
+
+        // Then
+        expect(screen.getByDisplayValue(offerers[0].name)).toBeInTheDocument()
+      })
+
       it('should have venue selected when given as queryParam', async () => {
         // Given
         renderOffers({}, store, `?lieu=${venues[0].id}&structure=${venues[0].managingOffererId}`)
+
+        // When
+        await setOfferValues({ type: 'EventType.CINEMA' })
+
+        // Then
+        expect(screen.getByDisplayValue(venues[0].name)).toBeInTheDocument()
+      })
+
+      it('should select venue when there is only one option', async () => {
+        // Given
+        pcapi.getVenuesForOfferer.mockResolvedValue([venues[0]])
+        renderOffers({}, store)
 
         // When
         await setOfferValues({ type: 'EventType.CINEMA' })
