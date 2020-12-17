@@ -7,7 +7,7 @@ export const DEFAULT_FORM_VALUES = {
   description: TEXT_INPUT_DEFAULT_VALUE,
   durationMinutes: TEXT_INPUT_DEFAULT_VALUE,
   isbn: TEXT_INPUT_DEFAULT_VALUE,
-  isDuo: false,
+  isDuo: true,
   isNational: false,
   name: TEXT_INPUT_DEFAULT_VALUE,
   musicSubType: SELECT_DEFAULT_VALUE,

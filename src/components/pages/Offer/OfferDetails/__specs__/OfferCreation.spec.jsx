@@ -636,7 +636,7 @@ describe('offerDetails - Creation', () => {
           expect(durationInput).toHaveAttribute('name', 'durationMinutes')
         })
 
-        it('should display a checkbox input "Offre duo"', async () => {
+        it('should display a checkbox input "Offre duo" checked by default', async () => {
           // Given
           renderOffers({}, store)
 
@@ -647,6 +647,7 @@ describe('offerDetails - Creation', () => {
           const duoInput = await getOfferInputForField('isDuo')
           expect(duoInput).toBeInTheDocument()
           expect(duoInput).toHaveAttribute('name', 'isDuo')
+          expect(duoInput).toBeChecked()
         })
       })
     })
