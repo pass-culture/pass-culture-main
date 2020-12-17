@@ -19,6 +19,8 @@ from sentry_sdk.integrations.rq import RqIntegration
 from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 
 from pcapi import settings
+from pcapi.flask_app import app
+from pcapi.utils.health_checker import check_database_connection
 from pcapi.utils.health_checker import read_version_from_file
 from pcapi.utils.logger import logger
 from pcapi.workers.logger import JobStatus
@@ -37,7 +39,27 @@ def log_worker_error(job: Job, exception_type: Type, exception_value: Exception)
     logger.exception(build_job_log_message(job, JobStatus.FAILED, f"{exception_type.__name__}: {exception_value}"))
 
 
+def log_redis_connection_status():
+    try:
+        conn.ping()
+        logger.info("Worker: redis connection OK")
+
+    except redis.exceptions.ConnectionError as e:
+        logger.critical("Worker: redis connection KO: %s", e)
+
+
+def log_database_connection_status():
+    with app.app_context():
+        if check_database_connection():
+            logger.info("Worker: database connection OK")
+        else:
+            logger.critical("Worker: database connection KO")
+
+
 if __name__ == "__main__":
+    log_redis_connection_status()
+    log_database_connection_status()
+
     if settings.IS_DEV is False:
         sentry_sdk.init(
             dsn=settings.SENTRY_DSN,
@@ -46,6 +68,7 @@ if __name__ == "__main__":
             environment=settings.ENV,
             traces_sample_rate=settings.SENTRY_SAMPLE_RATE,
         )
+        logger.info("Worker : connection to sentry OK")
     while True:
         try:
             with Connection(conn):
@@ -53,5 +76,5 @@ if __name__ == "__main__":
                 worker.work()
 
         except redis.ConnectionError:
-            logger.warning("Catched connection error. Restarting in 5 seconds")
+            logger.warning("Worker connection error. Restarting in 5 seconds")
             time.sleep(5)
