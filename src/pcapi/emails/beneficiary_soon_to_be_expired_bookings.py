@@ -4,6 +4,7 @@ from pcapi import settings
 from pcapi.models import Booking
 from pcapi.models import UserSQLEntity
 from pcapi.repository.feature_queries import feature_send_mail_to_users_enabled
+from pcapi.utils.mailing import format_environment_for_email
 
 
 def build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary(
@@ -19,6 +20,7 @@ def build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary(
         "Vars": {
             "user_firstName": beneficiary.firstName,
             "bookings": _extract_bookings_information_from_bookings_list(bookings),
+            "env": format_environment_for_email(),
         },
     }
 
