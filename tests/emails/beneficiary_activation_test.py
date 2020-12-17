@@ -1,9 +1,9 @@
 from unittest.mock import patch
 
+from pcapi import settings
 from pcapi.core.users import factories as users_factories
 from pcapi.emails import beneficiary_activation
 from pcapi.model_creators.generic_creators import create_user
-from pcapi.utils.mailing import DEV_EMAIL_ADDRESS
 
 
 class GetActivationEmailTest:
@@ -33,7 +33,7 @@ class GetActivationEmailTest:
         activation_email_data = beneficiary_activation.get_activation_email_data(user)
 
         # Then
-        assert activation_email_data["To"] == DEV_EMAIL_ADDRESS
+        assert activation_email_data["To"] == settings.DEV_EMAIL_ADDRESS
         assert activation_email_data["Vars"] == {
             "prenom_user": "Fabien",
             "token": "ABCD123",

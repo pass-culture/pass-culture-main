@@ -19,7 +19,7 @@ def get_activation_email_data(user: UserSQLEntity) -> Dict:
         "FromEmail": settings.SUPPORT_EMAIL_ADDRESS,
         "Mj-TemplateID": 994771,
         "Mj-TemplateLanguage": True,
-        "To": email if feature_send_mail_to_users_enabled() else DEV_EMAIL_ADDRESS,
+        "To": email if feature_send_mail_to_users_enabled() else settings.DEV_EMAIL_ADDRESS,
         "Vars": {"prenom_user": first_name, "token": token, "email": quote(email), "env": env},
     }
 
