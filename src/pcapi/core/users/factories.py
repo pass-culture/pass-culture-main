@@ -33,6 +33,11 @@ class UserFactory(BaseFactory):
     def _create(cls, model_class, *args, **kwargs):
         password = kwargs.get("password", DEFAULT_PASSWORD)
         kwargs["password"] = user_sql_entity.hash_password(password)
+        # Let us just say `UserFactory(isAdmin=True)` and not have to
+        # mention `isBeneficiary=False` (because it's enforced by a
+        # database constraint anyway).
+        if kwargs.get("isAdmin"):
+            kwargs["isBeneficiary"] = False
         return super()._create(model_class, *args, **kwargs)
 
     @factory.post_generation

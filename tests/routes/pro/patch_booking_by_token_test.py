@@ -183,7 +183,7 @@ class Returns403:  # Forbidden
 
     def when_booking_has_been_cancelled_already(self, app):
         # Given
-        admin = UserFactory(isAdmin=True, isBeneficiary=False)
+        admin = UserFactory(isAdmin=True)
         booking = BookingFactory(isCancelled=True)
         url = f"/bookings/token/{booking.token}"
 
@@ -197,7 +197,7 @@ class Returns403:  # Forbidden
 
     def when_booking_has_been_refunded(self, app):
         # Given
-        admin = UserFactory(isAdmin=True, isBeneficiary=False)
+        admin = UserFactory(isAdmin=True)
         booking = BookingFactory(isUsed=True)
         PaymentFactory(booking=booking)
         url = f"/bookings/token/{booking.token}"

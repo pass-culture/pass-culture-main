@@ -19,7 +19,7 @@ class ProUserViewTest:
     @clean_database
     def test_pro_user_creation(self, app):
         # Given
-        users_factories.UserFactory(email="user@example.com", isAdmin=True, isBeneficiary=False)
+        users_factories.UserFactory(email="user@example.com", isAdmin=True)
         offers_factories.VirtualVenueTypeFactory()
 
         data = dict(
@@ -112,7 +112,7 @@ class ProUserViewTest:
     # generate a valid CSRF token in tests. This should be fixed.
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_suspend_pro(self, mocked_validate_csrf_token, app):
-        admin = users_factories.UserFactory(email="admin15@example.com", isAdmin=True, isBeneficiary=False)
+        admin = users_factories.UserFactory(email="admin15@example.com", isAdmin=True)
         pro = users_factories.UserFactory(email="user15@example.com", isBeneficiary=False)
 
         client = TestClient(app.test_client()).with_auth(admin.email)
@@ -131,7 +131,7 @@ class ProUserViewTest:
     # generate a valid CSRF token in tests. This should be fixed.
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_unsuspend_pro(self, mocked_validate_csrf_token, app):
-        admin = users_factories.UserFactory(email="admin15@example.com", isAdmin=True, isBeneficiary=False)
+        admin = users_factories.UserFactory(email="admin15@example.com", isAdmin=True)
         pro = users_factories.UserFactory(email="user15@example.com", isBeneficiary=False, isActive=False)
 
         client = TestClient(app.test_client()).with_auth(admin.email)

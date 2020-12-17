@@ -232,7 +232,7 @@ class Returns403:
         @pytest.mark.usefixtures("db_session")
         def when_user_is_logged_in_and_booking_has_been_cancelled_already(self, app):
             # Given
-            admin = UserFactory(isAdmin=True, isBeneficiary=False)
+            admin = UserFactory(isAdmin=True)
             booking = BookingFactory(isCancelled=True)
             url = f"/v2/bookings/use/token/{booking.token}"
 
@@ -247,7 +247,7 @@ class Returns403:
         @pytest.mark.usefixtures("db_session")
         def when_user_is_logged_in_and_booking_has_been_refunded(self, app):
             # Given
-            admin = UserFactory(isAdmin=True, isBeneficiary=False)
+            admin = UserFactory(isAdmin=True)
             booking = BookingFactory(isUsed=True)
             PaymentFactory(booking=booking)
             url = f"/v2/bookings/use/token/{booking.token}"

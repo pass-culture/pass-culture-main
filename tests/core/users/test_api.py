@@ -179,10 +179,10 @@ class GenerateIdCheckTokenIfEligibleTest:
 
 class SuspendAccountTest:
     def test_suspend_account(self):
-        user = users_factories.UserFactory(isAdmin=True, isBeneficiary=False)
+        user = users_factories.UserFactory(isAdmin=True)
         users_factories.UserSessionFactory(user=user)
         reason = users_constants.SuspensionReason.FRAUD
-        actor = users_factories.UserFactory(isAdmin=True, isBeneficiary=False)
+        actor = users_factories.UserFactory(isAdmin=True)
 
         users_api.suspend_account(user, reason, actor)
 
@@ -196,7 +196,7 @@ class SuspendAccountTest:
 class UnsuspendAccountTest:
     def test_unsuspend_account(self):
         user = users_factories.UserFactory(isActive=False)
-        actor = users_factories.UserFactory(isAdmin=True, isBeneficiary=False)
+        actor = users_factories.UserFactory(isAdmin=True)
 
         users_api.unsuspend_account(user, actor)
 

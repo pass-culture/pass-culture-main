@@ -86,7 +86,7 @@ class BookOfferTest:
         mocked_add_offer_id.assert_not_called()
 
     def test_raise_if_is_admin(self):
-        user = users_factories.UserFactory(isBeneficiary=False, isAdmin=True)
+        user = users_factories.UserFactory(isAdmin=True)
         stock = offers_factories.StockFactory()
 
         with pytest.raises(api_errors.ApiErrors) as exc:

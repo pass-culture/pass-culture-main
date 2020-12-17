@@ -16,7 +16,7 @@ class BeneficiaryUserViewTest:
     @clean_database
     @patch("pcapi.admin.custom_views.beneficiary_user_view.send_raw_email", return_value=True)
     def test_beneficiary_user_creation(self, mocked_send_raw_email, app):
-        users_factories.UserFactory(email="user@example.com", isAdmin=True, isBeneficiary=False)
+        users_factories.UserFactory(email="user@example.com", isAdmin=True)
 
         data = dict(
             email="toto@email.fr",
@@ -65,7 +65,7 @@ class BeneficiaryUserViewTest:
     def test_beneficiary_user_creation_is_restricted_in_prod(
         self, is_prod_mock, super_admin_email_addresses, app, db_session
     ):
-        users_factories.UserFactory(email="user@example.com", isAdmin=True, isBeneficiary=False)
+        users_factories.UserFactory(email="user@example.com", isAdmin=True)
 
         data = dict(
             email="toto@email.fr",
@@ -92,7 +92,7 @@ class BeneficiaryUserViewTest:
     # generate a valid CSRF token in tests. This should be fixed.
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_suspend_beneficiary(self, mocked_validate_csrf_token, app):
-        admin = users_factories.UserFactory(email="admin15@example.com", isAdmin=True, isBeneficiary=False)
+        admin = users_factories.UserFactory(email="admin15@example.com", isAdmin=True)
         beneficiary = users_factories.UserFactory(email="user15@example.com")
 
         client = TestClient(app.test_client()).with_auth(admin.email)
@@ -111,7 +111,7 @@ class BeneficiaryUserViewTest:
     # generate a valid CSRF token in tests. This should be fixed.
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_unsuspend_beneficiary(self, mocked_validate_csrf_token, app):
-        admin = users_factories.UserFactory(email="admin15@example.com", isAdmin=True, isBeneficiary=False)
+        admin = users_factories.UserFactory(email="admin15@example.com", isAdmin=True)
         beneficiary = users_factories.UserFactory(email="user15@example.com", isActive=False)
 
         client = TestClient(app.test_client()).with_auth(admin.email)
@@ -128,7 +128,7 @@ class BeneficiaryUserViewTest:
     @clean_database
     @patch("pcapi.settings.IS_PROD", True)
     def test_suspend_beneficiary_is_restricted(self, app):
-        admin = users_factories.UserFactory(email="admin@example.com", isAdmin=True, isBeneficiary=False)
+        admin = users_factories.UserFactory(email="admin@example.com", isAdmin=True)
         beneficiary = users_factories.UserFactory(email="user@example.com")
 
         client = TestClient(app.test_client()).with_auth(admin.email)
@@ -145,7 +145,7 @@ class BeneficiaryUserViewTest:
     @patch("pcapi.settings.SUPER_ADMIN_EMAIL_ADDRESSES", "super-admin@example.com, boss@example.com")
     @pytest.mark.usefixtures("db_session")
     def test_allow_suspension_and_unsuspension(self):
-        basic_admin = users_factories.UserFactory(email="admin@example.com", isAdmin=True, isBeneficiary=False)
+        basic_admin = users_factories.UserFactory(email="admin@example.com", isAdmin=True)
         assert not _allow_suspension_and_unsuspension(basic_admin)
-        super_admin = users_factories.UserFactory(email="super-admin@example.com", isAdmin=True, isBeneficiary=False)
+        super_admin = users_factories.UserFactory(email="super-admin@example.com", isAdmin=True)
         assert _allow_suspension_and_unsuspension(super_admin)
