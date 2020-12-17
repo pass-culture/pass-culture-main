@@ -1,10 +1,12 @@
 from typing import Dict
 from typing import Tuple
+from typing import Union
 
 from flask import current_app as app
 from flask import jsonify
 from flask import request
 import simplejson as json
+from werkzeug.exceptions import HTTPException
 from werkzeug.exceptions import MethodNotAllowed
 from werkzeug.exceptions import NotFound
 
@@ -33,7 +35,10 @@ def restize_too_late_to_delete_stock(error: offers_exceptions.TooLateToDeleteSto
 
 
 @app.errorhandler(Exception)
-def internal_error(error: Exception) -> Tuple[Dict, int]:
+def internal_error(error: Exception) -> Union[Tuple[Dict, int], HTTPException]:
+    # pass through HTTP errors
+    if isinstance(error, HTTPException):
+        return error
     app.logger.exception("Unexpected error on method=%s url=%s: %s", request.method, request.url, error)
     errors = ApiErrors()
     errors.add_error("global", "Il semble que nous ayons des problèmes techniques :(" + " On répare ça au plus vite.")
