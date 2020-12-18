@@ -186,6 +186,8 @@ def change_user_email(token: str) -> None:
         return
 
     current_user.email = new_email
+    sessions = UserSession.query.filter_by(userId=current_user.id)
+    repository.delete(*sessions)
     repository.save(current_user)
 
     return

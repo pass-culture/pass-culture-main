@@ -210,6 +210,7 @@ class ChangeUserEmailTest:
     def test_change_user_email(self):
         # Given
         user = users_factories.UserFactory(email="oldemail@mail.com", firstName="UniqueNameForEmailChangeTest")
+        users_factories.UserSessionFactory(user=user)
         expiration_date = datetime.now() + timedelta(hours=1)
         token_payload = dict(current_email="oldemail@mail.com", new_email="newemail@mail.com")
         token = encode_jwt_payload(token_payload, expiration_date)
@@ -224,6 +225,7 @@ class ChangeUserEmailTest:
         assert new_user.firstName == "UniqueNameForEmailChangeTest"
         old_user = UserSQLEntity.query.filter_by(email="oldemail@mail.com").first()
         assert old_user is None
+        assert UserSession.query.filter_by(userId=user.id).first() is None
 
     def test_change_user_email_undecodable_token(self):
         # Given
