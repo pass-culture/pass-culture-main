@@ -18,8 +18,9 @@ from tests.conftest import TestClient
 @pytest.mark.usefixtures("db_session")
 class Returns204:
     @patch("pcapi.core.users.api.mailing_utils")
+    @patch("pcapi.emails.beneficiary_email_change.feature_send_mail_to_users_enabled", return_value=True)
     @freeze_time("2020-10-15 09:00:00")
-    def when_account_is_known(self, mocked_mailing_utils, app):
+    def when_account_is_known(self, mocked_feature_flipping, mocked_mailing_utils, app):
         # given
         mocked_mailing_utils.send_raw_email.return_value = True
 
