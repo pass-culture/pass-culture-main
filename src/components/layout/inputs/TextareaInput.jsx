@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
+import Textarea from 'react-autosize-textarea'
 
 import InputError from './Errors/InputError'
 
@@ -29,7 +30,7 @@ const TextareaInput = ({
           {subLabel}
         </span>
       </div>
-      <textarea
+      <Textarea
         className={`it-input ${error ? 'error' : ''}`}
         disabled={disabled}
         id={name}
