@@ -50,6 +50,9 @@ services:
       - postgres
       - redis
       - postgres-test
+    ports:
+      - 5000:5000
+      - 10002:10002
 
   redis:
     image: scalingo/redis
