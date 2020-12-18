@@ -33,130 +33,128 @@ class Header extends PureComponent {
 
     return (
       <header
-        className={classnames('navbar', {
+        className={classnames({
           'is-small': isSmall,
         })}
       >
-        <nav className="container">
-          <div className="navbar-brand">
-            <Logo className="navbar-item" />
+        <nav>
+          <div className="nav-brand">
+            <Logo className="nav-item" />
           </div>
-          <div className="navbar-menu">
-            <div className="navbar-end">
-              <NavLink
-                className="navbar-item"
-                role="menuitem"
-                to="/guichet"
-              >
+          <div className="nav-menu">
+            <NavLink
+              className="nav-item"
+              role="menuitem"
+              to="/guichet"
+            >
+              <span className="icon">
+                <Icon svg="ico-guichet-w" />
+              </span>
+              <span>
+                {'Guichet'}
+              </span>
+            </NavLink>
+            <NavLink
+              className="nav-item"
+              role="menuitem"
+              to="/offres"
+            >
+              <span className="icon">
+                <Icon svg="ico-offres-w" />
+              </span>
+              <span>
+                {'Offres'}
+              </span>
+            </NavLink>
+            <NavLink
+              className="nav-item"
+              role="menuitem"
+              to="/reservations"
+            >
+              <span className="icon">
+                <Icon svg="ico-bookings-w" />
+              </span>
+              <span>
+                {'Réservations'}
+              </span>
+            </NavLink>
+            <Menu>
+              <MenuButton className="nav-item">
                 <span className="icon">
-                  <Icon svg="ico-guichet-w" />
+                  <Icon svg="ico-user-circled-w" />
                 </span>
                 <span>
-                  {'Guichet'}
+                  {name}
                 </span>
-              </NavLink>
-              <NavLink
-                className="navbar-item"
-                role="menuitem"
-                to="/offres"
-              >
-                <span className="icon">
-                  <Icon svg="ico-offres-w" />
-                </span>
-                <span>
-                  {'Offres'}
-                </span>
-              </NavLink>
-              <NavLink
-                className="navbar-item"
-                role="menuitem"
-                to="/reservations"
-              >
-                <span className="icon">
-                  <Icon svg="ico-bookings-w" />
-                </span>
-                <span>
-                  {'Réservations'}
-                </span>
-              </NavLink>
-              <Menu>
-                <MenuButton className="navbar-item">
+                <Icon svg="ico-arrow-down-r" />
+              </MenuButton>
+              <MenuList>
+                <MenuLink
+                  as="a"
+                  href="/profil"
+                >
                   <span className="icon">
-                    <Icon svg="ico-user-circled-w" />
+                    <Icon svg="ico-user" />
                   </span>
                   <span>
-                    {name}
+                    {'Profil'}
                   </span>
-                  <Icon svg="ico-arrow-down-r" />
-                </MenuButton>
-                <MenuList>
+                </MenuLink>
+                <MenuLink
+                  as="a"
+                  href="/structures"
+                >
+                  <span className="icon">
+                    <Icon svg="ico-structure-r" />
+                  </span>
+                  <span>
+                    {offerers.length > 1 ? 'Structures juridiques' : 'Structure juridique'}
+                  </span>
+                </MenuLink>
+                <MenuLink
+                  as="a"
+                  href="/remboursements"
+                >
+                  <span className="icon">
+                    <Icon svg="ico-compta" />
+                  </span>
+                  <span>
+                    {'Remboursements'}
+                  </span>
+                </MenuLink>
+                {STYLEGUIDE_ACTIVE && (
                   <MenuLink
                     as="a"
-                    href="/profil"
+                    href="/styleguide"
                   >
                     <span className="icon">
-                      <Icon svg="ico-user" />
+                      <Icon svg="ico-stars" />
                     </span>
                     <span>
-                      {'Profil'}
+                      {'Styleguide'}
                     </span>
                   </MenuLink>
-                  <MenuLink
-                    as="a"
-                    href="/structures"
-                  >
-                    <span className="icon">
-                      <Icon svg="ico-structure-r" />
-                    </span>
-                    <span>
-                      {offerers.length > 1 ? 'Structures juridiques' : 'Structure juridique'}
-                    </span>
-                  </MenuLink>
-                  <MenuLink
-                    as="a"
-                    href="/remboursements"
-                  >
-                    <span className="icon">
-                      <Icon svg="ico-compta" />
-                    </span>
-                    <span>
-                      {'Remboursements'}
-                    </span>
-                  </MenuLink>
-                  {STYLEGUIDE_ACTIVE && (
-                    <MenuLink
-                      as="a"
-                      href="/styleguide"
-                    >
-                      <span className="icon">
-                        <Icon svg="ico-stars" />
-                      </span>
-                      <span>
-                        {'Styleguide'}
-                      </span>
-                    </MenuLink>
-                  )}
-                  <MenuLink
-                    as="a"
-                    href={HELP_PAGE_URL}
-                    target="_blank"
-                  >
-                    <span className="icon">
-                      <Icon svg="ico-help" />
-                    </span>
-                    {'Aide'}
-                  </MenuLink>
-                  <MenuItem onSelect={this.onSignoutClick}>
-                    <span className="icon">
-                      <Icon svg="ico-deconnect" />
-                    </span>
-                    <span>
-                      {'Déconnexion'}
-                    </span>
-                  </MenuItem>
-                </MenuList>
-              </Menu>
-            </div>
+                )}
+                <MenuLink
+                  as="a"
+                  href={HELP_PAGE_URL}
+                  target="_blank"
+                >
+                  <span className="icon">
+                    <Icon svg="ico-help" />
+                  </span>
+                  {'Aide'}
+                </MenuLink>
+                <MenuItem onSelect={this.onSignoutClick}>
+                  <span className="icon">
+                    <Icon svg="ico-deconnect" />
+                  </span>
+                  <span>
+                    {'Déconnexion'}
+                  </span>
+                </MenuItem>
+              </MenuList>
+            </Menu>
           </div>
         </nav>
       </header>

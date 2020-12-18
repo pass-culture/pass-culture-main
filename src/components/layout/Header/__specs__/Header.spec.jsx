@@ -32,7 +32,7 @@ describe('header', () => {
       const wrapper = shallow(<Header {...props} />)
 
       // then
-      expect(wrapper.prop('className')).toBe('navbar is-small')
+      expect(wrapper.prop('className')).toBe('is-small')
     })
   })
 })

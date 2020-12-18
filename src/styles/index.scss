@@ -2,6 +2,7 @@
 // Import's order is important.
 @import 'mixins/index.scss';
 @import 'variables/index.scss';
+// FIXME (asaunier, 18-12-2020): Remove Bulma once the stock modale is gone
 @import '~bulma/sass/utilities/_all';
 @import '~bulma/sass/components/_all';
 @import '~react-datepicker/src/stylesheets/datepicker';
