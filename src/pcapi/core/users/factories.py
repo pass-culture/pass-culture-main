@@ -40,6 +40,12 @@ class UserFactory(BaseFactory):
             kwargs["isBeneficiary"] = False
         return super()._create(model_class, *args, **kwargs)
 
+    @classmethod
+    def _build(cls, model_class, *args, **kwargs):
+        password = kwargs.get("password", DEFAULT_PASSWORD)
+        kwargs["password"] = user_sql_entity.hash_password(password)
+        return super()._build(model_class, *args, **kwargs)
+
     @factory.post_generation
     def deposit(obj, create, extracted, **kwargs):  # pylint: disable=no-self-argument
         from pcapi.core.payments.factories import DepositFactory

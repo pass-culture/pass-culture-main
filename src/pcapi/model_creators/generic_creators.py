@@ -486,6 +486,7 @@ def create_user(
     reset_password_token: str = None,
     reset_password_token_validity_limit: datetime = None,
     validation_token: str = None,
+    is_email_validated: bool = True,
 ) -> UserSQLEntity:
     user = UserSQLEntity()
     user.activity = activity
@@ -501,6 +502,7 @@ def create_user(
     user.id = idx
     user.isAdmin = is_admin
     user.isBeneficiary = is_beneficiary
+    user.isEmailValidated = is_email_validated
     user.lastConnectionDate = last_connection_date
     user.lastName = last_name
     user.needsToFillCulturalSurvey = needs_to_fill_cultural_survey

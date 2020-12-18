@@ -36,11 +36,10 @@ from .serialization import authentication
 def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
     try:
         users_repo.get_user_with_credentials(body.identifier, body.password)
+    except users_exceptions.UnvalidatedAccount as exc:
+        raise ApiErrors({"code": "EMAIL_NOT_VALIDATED", "general": ["L'email n'a pas été validé."]}) from exc
     except users_exceptions.CredentialsException as exc:
-        raise ApiErrors(
-            {"general": ["Identifiant ou Mot de passe incorrect"]},
-            status_code=400,
-        ) from exc
+        raise ApiErrors({"general": ["Identifiant ou Mot de passe incorrect"]}) from exc
 
     user_email = format_email(body.identifier)
 
