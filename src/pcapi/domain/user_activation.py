@@ -1,7 +1,3 @@
-import csv
-from io import StringIO
-from typing import Iterable
-
 from pcapi.core.payments import api as payments_api
 from pcapi.domain.password import generate_reset_token
 from pcapi.domain.password import random_password
@@ -13,33 +9,6 @@ from pcapi.scripts.beneficiary import THIRTY_DAYS_IN_HOURS
 IMPORT_STATUS_MODIFICATION_RULE = (
     "Seuls les dossiers au statut DUPLICATE peuvent être modifiés (aux statuts REJECTED ou RETRY uniquement)"
 )
-
-
-class ActivationUser:
-    CSV_HEADER = [
-        "Prénom",
-        "Nom",
-        "Email",
-        "Contremarque d'activation",
-    ]
-
-    def __init__(self, booking):
-        self.first_name = booking.user.firstName
-        self.last_name = booking.user.lastName
-        self.email = booking.user.email
-        self.token = booking.token
-
-    def as_csv_row(self):
-        return [self.first_name, self.last_name, self.email, self.token]
-
-
-def generate_activation_users_csv(activation_users: Iterable[ActivationUser]) -> str:
-    output = StringIO()
-    csv_lines = [user.as_csv_row() for user in activation_users]
-    writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
-    writer.writerow(ActivationUser.CSV_HEADER)
-    writer.writerows(csv_lines)
-    return output.getvalue()
 
 
 def create_beneficiary_from_application(application_detail: dict) -> UserSQLEntity:

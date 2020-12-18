@@ -326,26 +326,6 @@ def make_wallet_balances_email(csv: str) -> Dict:
     }
 
 
-def make_activation_users_email(csv: str) -> Dict:
-    now = datetime.utcnow()
-    csv_b64encode = base64.b64encode(csv.encode("utf-8")).decode()
-    return {
-        "FromEmail": settings.SUPPORT_EMAIL_ADDRESS,
-        "FromName": "pass Culture Pro",
-        "Subject": "Liste des utilisateurs créés pour l'activation du pass Culture - {}".format(
-            datetime.strftime(now, "%Y-%m-%d")
-        ),
-        "Attachments": [
-            {
-                "ContentType": "text/csv",
-                "Filename": "liste_des_utilisateurs_{}.csv".format(datetime.strftime(now, "%Y%m%d")),
-                "Content": csv_b64encode,
-            }
-        ],
-        "Html-part": "",
-    }
-
-
 def compute_email_html_part_and_recipients(email_html_part, recipients: Union[List[str], str]) -> (str, str):
     if isinstance(recipients, list):
         recipients_string = ", ".join(recipients)

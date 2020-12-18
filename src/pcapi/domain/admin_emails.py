@@ -8,7 +8,6 @@ from pcapi.models import Offerer
 from pcapi.models import UserOfferer
 from pcapi.models import UserSQLEntity
 from pcapi.utils.mailing import compute_email_html_part_and_recipients
-from pcapi.utils.mailing import make_activation_users_email
 from pcapi.utils.mailing import make_offer_creation_notification_email
 from pcapi.utils.mailing import make_payment_details_email
 from pcapi.utils.mailing import make_payment_message_email
@@ -44,14 +43,6 @@ def send_payment_details_email(csv_attachment: str, recipients: List[str], send_
 
 def send_wallet_balances_email(csv_attachment: str, recipients: List[str], send_email: Callable[[dict], bool]) -> bool:
     email = make_wallet_balances_email(csv_attachment)
-    email["Html-part"], email["To"] = compute_email_html_part_and_recipients("", recipients)
-    return send_email(data=email)
-
-
-def send_users_activation_report(
-    csv_attachment: str, recipients: List[str], send_email: Callable[[dict], bool]
-) -> bool:
-    email = make_activation_users_email(csv_attachment)
     email["Html-part"], email["To"] = compute_email_html_part_and_recipients("", recipients)
     return send_email(data=email)
 

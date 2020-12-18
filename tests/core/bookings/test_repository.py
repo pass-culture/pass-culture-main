@@ -32,10 +32,9 @@ from pcapi.model_creators.specific_creators import create_stock_from_offer
 from pcapi.model_creators.specific_creators import create_stock_with_event_offer
 from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
 from pcapi.models import Booking
-from pcapi.models import EventType
-from pcapi.models import ThingType
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ResourceNotFoundError
+from pcapi.models.offer_type import ThingType
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository import repository
 
@@ -372,59 +371,6 @@ class FindDateUsedTest:
 
         # then
         assert date_used is None
-
-
-class FindUserActivationBookingTest:
-    @pytest.mark.usefixtures("db_session")
-    def test_returns_activation_thing_booking_linked_to_user(self, app: fixture):
-        # given
-        user = create_user()
-        offerer = create_offerer()
-        venue_online = create_venue(offerer, siret=None, is_virtual=True)
-        activation_offer = create_offer_with_thing_product(venue_online, thing_type=ThingType.ACTIVATION)
-        activation_stock = create_stock_from_offer(activation_offer, price=0, quantity=200)
-        activation_booking = create_booking(user=user, stock=activation_stock, venue=venue_online)
-        repository.save(activation_booking)
-
-        # when
-        booking = booking_repository.find_user_activation_booking(user)
-
-        # then
-        assert booking == activation_booking
-
-    @pytest.mark.usefixtures("db_session")
-    def test_returns_activation_event_booking_linked_to_user(self, app: fixture):
-        # given
-        user = create_user()
-        offerer = create_offerer()
-        venue_online = create_venue(offerer, siret=None, is_virtual=True)
-        activation_offer = create_offer_with_event_product(venue_online, event_type=EventType.ACTIVATION)
-        activation_stock = create_stock_from_offer(activation_offer, price=0, quantity=200)
-        activation_booking = create_booking(user=user, stock=activation_stock, venue=venue_online)
-        repository.save(activation_booking)
-
-        # when
-        booking = booking_repository.find_user_activation_booking(user)
-
-        # then
-        assert booking == activation_booking
-
-    @pytest.mark.usefixtures("db_session")
-    def test_returns_false_is_no_booking_exists_on_such_stock(self, app: fixture):
-        # given
-        user = create_user()
-        offerer = create_offerer()
-        venue_online = create_venue(offerer, siret=None, is_virtual=True)
-        book_offer = create_offer_with_thing_product(venue_online, thing_type=ThingType.LIVRE_EDITION)
-        book_stock = create_stock_from_offer(book_offer, price=0, quantity=200)
-        book_booking = create_booking(user=user, stock=book_stock, venue=venue_online)
-        repository.save(book_booking)
-
-        # when
-        booking = booking_repository.find_user_activation_booking(user)
-
-        # then
-        assert booking is None
 
 
 class FindByTest:

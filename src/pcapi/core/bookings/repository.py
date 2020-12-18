@@ -30,7 +30,6 @@ from pcapi.models import UserOfferer
 from pcapi.models import VenueSQLEntity
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.db import db
-from pcapi.models.offer_type import EventType
 from pcapi.models.offer_type import ThingType
 from pcapi.models.offerer import Offerer
 from pcapi.models.payment import Payment
@@ -122,19 +121,6 @@ def find_bookings_eligible_for_payment_for_venue(venue_id: int) -> List[Booking]
 
 def find_date_used(booking: Booking) -> datetime:
     return booking.dateUsed
-
-
-def find_user_activation_booking(user: UserSQLEntity) -> Booking:
-    is_activation_offer = (Offer.type == str(ThingType.ACTIVATION)) | (Offer.type == str(EventType.ACTIVATION))
-
-    return (
-        Booking.query.join(UserSQLEntity)
-        .join(Stock, Booking.stockId == Stock.id)
-        .join(Offer)
-        .filter(is_activation_offer)
-        .filter(UserSQLEntity.id == user.id)
-        .first()
-    )
 
 
 def token_exists(token: str) -> bool:

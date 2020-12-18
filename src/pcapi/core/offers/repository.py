@@ -17,9 +17,7 @@ from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
 from pcapi.infrastructure.repository.pro_offers.paginated_offers_recap_domain_converter import to_domain
 from pcapi.models import Offer
 from pcapi.models import Offerer
-from pcapi.models import Product
 from pcapi.models import Stock
-from pcapi.models import ThingType
 from pcapi.models import UserOfferer
 from pcapi.models import UserSQLEntity
 from pcapi.models import VenueSQLEntity
@@ -189,17 +187,6 @@ def _filter_by_status(query: Query, datetime_now: datetime, status: str) -> Quer
     elif status == INACTIVE_STATUS:
         query = query.filter(Offer.isActive.is_(False))
     return query
-
-
-def find_online_activation_stock():
-    return (
-        Stock.query.join(Offer)
-        .join(VenueSQLEntity)
-        .filter_by(isVirtual=True)
-        .join(Product, Offer.productId == Product.id)
-        .filter_by(type=str(ThingType.ACTIVATION))
-        .first()
-    )
 
 
 def get_stocks_for_offers(offer_ids: List[int]) -> List[Stock]:

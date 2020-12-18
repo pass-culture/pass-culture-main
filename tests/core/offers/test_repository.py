@@ -4,7 +4,6 @@ from datetime import timedelta
 import pytest
 
 from pcapi.core.offers import factories as offers_factories
-from pcapi.core.offers.repository import find_online_activation_stock
 from pcapi.core.offers.repository import get_offers_by_ids
 from pcapi.core.offers.repository import get_paginated_offers_for_filters
 from pcapi.core.users import factories as users_factories
@@ -1000,22 +999,6 @@ class PaginatedOfferForFiltersTest:
             assert Identifier(self.active_thing_offer_with_all_stocks_without_quantity.id) not in offer_ids
             assert Identifier(self.active_thing_offer_with_one_stock_with_remaining_quantity.id) not in offer_ids
             assert paginated_offers.total_offers == 1
-
-
-@pytest.mark.usefixtures("db_session")
-def test_find_online_activation_stock(app):
-    offers_factories.EventStockFactory()
-    offers_factories.StockFactory(offer__type=str(ThingType.ACTIVATION), offer__venue__isVirtual=False)
-
-    # assert find_online_activation_stock() is None
-
-    activation_stock = offers_factories.StockFactory(
-        offer__type=str(ThingType.ACTIVATION),
-        offer__venue=offers_factories.VirtualVenueFactory(),
-        offer__product__type=str(ThingType.ACTIVATION),
-    )
-
-    assert find_online_activation_stock() == activation_stock
 
 
 @pytest.mark.usefixtures("db_session")
