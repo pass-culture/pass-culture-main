@@ -52,18 +52,6 @@ const Styleguide = () => (
     <StyleguideInputTextarea />
 
     <StyleguideTitle
-      className="sg-inputtime"
-      componentName="InputTime"
-    />
-    <StyleguideInputTime />
-
-    <StyleguideTitle
-      className="sg-textarea"
-      componentName="Textarea"
-    />
-    <StyleguideInputTextarea />
-
-    <StyleguideTitle
       className="sg-select"
       componentName="Select"
     />
