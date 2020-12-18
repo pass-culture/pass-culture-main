@@ -730,7 +730,7 @@ describe('offerDetails - Creation', () => {
         durationMinutes: '03:00',
         type: 'EventType.TEST_MUSIQUE',
         extraData: {
-          author: '',
+          author: null,
           musicType: '501',
           musicSubType: '502',
           performer: 'TEST PERFORMER NAME',

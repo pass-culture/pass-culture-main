@@ -521,8 +521,8 @@ describe('offerDetails - Edition', () => {
         withdrawalDetails: 'Offer withdrawal details',
         bookingEmail: 'booking@email.net',
         extraData: {
-          author: '',
-          isbn: '',
+          author: null,
+          isbn: null,
         },
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)

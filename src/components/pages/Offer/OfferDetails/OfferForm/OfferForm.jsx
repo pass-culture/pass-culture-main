@@ -256,6 +256,7 @@ const OfferForm = ({
         'showType',
         'showSubType',
         'speaker',
+        'stageDirector',
         'visa',
       ]
 
@@ -264,9 +265,16 @@ const OfferForm = ({
           if (!('extraData' in acc)) {
             acc.extraData = {}
           }
-          acc.extraData[fieldName] = formValues[fieldName]
+          acc.extraData[fieldName] =
+            formValues[fieldName] === DEFAULT_FORM_VALUES[fieldName] ? null : formValues[fieldName]
         } else {
-          acc = { ...acc, [fieldName]: formValues[fieldName] }
+          acc = {
+            ...acc,
+            [fieldName]:
+              formValues[fieldName] === DEFAULT_FORM_VALUES[fieldName]
+                ? null
+                : formValues[fieldName],
+          }
         }
         return acc
       }, {})
