@@ -1,15 +1,26 @@
 version: "3.7"
 
 services:
+  postgres:
+    extends:
+      file: docker-compose-app.yml
+      service: postgres
+
+  redis:
+    extends:
+      file: docker-compose-app.yml
+      service: redis
+
   worker:
     image: passcultureapp/api-flask:latest
+    working_dir: /opt/services/flaskapp/src
     container_name: pc-worker
     command: >
       bash -c "set -x;
-               cd /opt/services/flaskapp/src;
-               pip install -r ./requirements.txt;
-               python -m nltk.downloader punkt stopwords;
-               while true; do python src/pcapi/workers/worker.py; done;"
+              pip install -e .
+              pip install -r ./requirements.txt;
+              python -m nltk.downloader punkt stopwords;
+              python src/pcapi/workers/worker.py;"
     volumes:
       - ./api:/opt/services/flaskapp/src
     env_file:
@@ -25,3 +36,13 @@ services:
     depends_on:
       - postgres
       - redis
+
+networks:
+  db_nw:
+    driver: bridge
+  web_nw:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
