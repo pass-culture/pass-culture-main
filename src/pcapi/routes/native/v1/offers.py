@@ -5,7 +5,7 @@ from . import blueprint
 from .serialization import offers as serializers
 
 
-@blueprint.native_v1.route("/offer/<offer_id>", methods=["GET"])
+@blueprint.native_v1.route("/offer/<int:offer_id>", methods=["GET"])
 @spectree_serialize(
     response_model=serializers.OfferResponse, api=blueprint.api, on_error_statuses=[404]
 )  # type: ignore
