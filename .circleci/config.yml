@@ -102,7 +102,6 @@ commands:
                 PROVIDER_FNAC_BASIC_AUTHENTICATION_TOKEN=sm://${GCP_PROJECT}/<< parameters.app_name >>_provider_fnac_basic_authentication_token, \
                 RECAPTCHA_SECRET=sm://${GCP_PROJECT}/<< parameters.app_name >>_recaptcha_secret, \
                 REDIS_URL=sm://${GCP_PROJECT}/<< parameters.app_name >>_redis_url, \
-                SCALINGO_APP_TOKEN=sm://${GCP_PROJECT}/<< parameters.app_name >>_scalingo_app_token, \
                 SUPPORT_EMAIL_ADDRESS=sm://${GCP_PROJECT}/<< parameters.app_name >>_support_email_address, \
                 TRANSACTIONS_RECIPIENTS=sm://${GCP_PROJECT}/<< parameters.app_name >>_transactions_recipients, \
                 WALLET_BALANCES_RECIPIENTS=sm://${GCP_PROJECT}/<< parameters.app_name >>_wallet_balances_recipients" \
