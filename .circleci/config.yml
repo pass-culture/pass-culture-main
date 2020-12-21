@@ -34,7 +34,7 @@ commands:
       - run: gcloud auth activate-service-account --key-file ${HOME}/gcp-key.json
       - run: gcloud --quiet config set project ${GCP_PROJECT}
 
-  deploy-cloudrun:
+  deploy-api-cloudrun:
     description: Authenticate to a GCP project
     parameters:
       app_name:
@@ -43,7 +43,11 @@ commands:
         type: string
       app_image_tag:
         type: string
+      docker_image_name:
+        type: string
       app_service_account_email:
+        type: string
+      vpc_connector_name:
         type: string
     steps:
       - run: |
@@ -51,7 +55,7 @@ commands:
           gcloud beta run deploy << parameters.app_name >> \
             --platform=managed \
             --allow-unauthenticated \
-            --vpc-connector=metier-development \
+            --vpc-connector=<< parameters.vpc_connector_name >> \
             --project ${GCP_PROJECT} \
             --region ${GCP_REGION} \
             --port=80 \
@@ -102,7 +106,7 @@ commands:
                 SUPPORT_EMAIL_ADDRESS=sm://${GCP_PROJECT}/<< parameters.app_name >>_support_email_address, \
                 TRANSACTIONS_RECIPIENTS=sm://${GCP_PROJECT}/<< parameters.app_name >>_transactions_recipients, \
                 WALLET_BALANCES_RECIPIENTS=sm://${GCP_PROJECT}/<< parameters.app_name >>_wallet_balances_recipients" \
-            --image=${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_REGISTRY_NAME}/${DOCKER_IMAGE_NAME}:<< parameters.app_image_tag >>
+            --image=${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_REGISTRY_NAME}/<< parameters.docker_image_name >>:<< parameters.app_image_tag >>
             true
 
   deploy-cron-gke:
@@ -292,19 +296,21 @@ jobs:
       - run: |
           docker build . \
             -f Dockerfile.gcp \
-            -t ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_REGISTRY_NAME}/${DOCKER_IMAGE_NAME}:${CIRCLE_SHA1}
-      - run: docker push ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_REGISTRY_NAME}/${DOCKER_IMAGE_NAME}:${CIRCLE_SHA1}
+            -t ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:${CIRCLE_SHA1}
+      - run: docker push ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:${CIRCLE_SHA1}
 
-  deploy-cloudrun:
+  deploy-api-cloudrun:
     executor: gcp-sdk
     steps:
       - authenticate_gcp:
           gcp-key-name: GCP_METIER_KEY
-      - deploy-cloudrun:
-          app_name: pass-culture-api-development
+      - deploy-api-cloudrun:
+          app_name: pcapi-testing
           app_env: testing
           app_image_tag: ${CIRCLE_SHA1}
-          app_service_account_email: secret-reader-development@pass-culture-app-projet-test.iam.gserviceaccount.com
+          docker_image_name: pcapi
+          app_service_account_email: pcapi-testing@pass-culture-app-projet-test.iam.gserviceaccount.com
+          vpc_connector_name: metier-development
 
   deploy-cron-and-worker:
     executor: helm
@@ -543,7 +549,7 @@ workflows:
                 - master
           context:
             - GCP
-      - deploy-cloudrun:
+      - deploy-api-cloudrun:
           requires:
             - build-and-push-image
           context:
