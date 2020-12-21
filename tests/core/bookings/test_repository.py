@@ -1,4 +1,6 @@
+from datetime import date
 from datetime import datetime
+from datetime import time
 from datetime import timedelta
 
 from dateutil import tz
@@ -6,6 +8,7 @@ from freezegun import freeze_time
 import pytest
 from pytest import fixture
 
+from pcapi.core.bookings import factories
 import pcapi.core.bookings.repository as booking_repository
 from pcapi.core.bookings.repository import find_by_pro_user_id
 from pcapi.core.offers.models import EVENT_AUTOMATIC_REFUND_DELAY
@@ -1446,3 +1449,31 @@ class FindByProUserIdTest:
         assert bookings_recap_paginated.bookings_recap[0].venue_name == venue_for_event.publicName
         assert bookings_recap_paginated.bookings_recap[1].venue_name == venue_for_book.publicName
         assert bookings_recap_paginated.bookings_recap[2].venue_name == venue_for_thing.publicName
+
+
+class FindSoonToBeExpiredBookingsTest:
+    @pytest.mark.usefixtures("db_session")
+    def test_should_return_only_soon_to_be_expired_bookings(self, app: fixture):
+        # Given
+        expired_creation_date = date.today() - timedelta(days=23)
+        expired_creation_date = datetime.combine(expired_creation_date, time(12, 34, 17))
+        non_expired_creation_date = date.today() - timedelta(days=24)
+        non_expired_creation_date = datetime.combine(non_expired_creation_date, time(12, 34, 17))
+        too_old_expired_creation_date = date.today() - timedelta(days=22)
+        too_old_expired_creation_date = datetime.combine(too_old_expired_creation_date, time(12, 34, 17))
+
+        expected_booking = factories.BookingFactory(
+            dateCreated=expired_creation_date, stock__offer__product__type=str(ThingType.AUDIOVISUEL)
+        )
+        factories.BookingFactory(
+            dateCreated=non_expired_creation_date, stock__offer__product__type=str(ThingType.AUDIOVISUEL)
+        )
+        factories.BookingFactory(
+            dateCreated=too_old_expired_creation_date, stock__offer__product__type=str(ThingType.AUDIOVISUEL)
+        )
+
+        # When
+        expired_bookings = booking_repository.find_soon_to_be_expiring_booking_ordered_by_user().all()
+
+        # Then
+        assert expired_bookings == [expected_booking]

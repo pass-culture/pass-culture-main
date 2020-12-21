@@ -1,5 +1,6 @@
 from datetime import date
 from datetime import datetime
+from datetime import time
 from datetime import timedelta
 import logging
 from unittest import mock
@@ -22,8 +23,8 @@ class NotifyUsersOfSoonToBeExpiredBookingsTest:
     def should_log_notifications_of_bookings_which_will_expire_in_7_days(self, mocked_email_recap, app, caplog) -> None:
         caplog.set_level(logging.INFO)
         now = date.today()
-        booking_date_23_days_ago = now - timedelta(days=23)
-        booking_date_22_days_ago = now - timedelta(days=22)
+        booking_date_23_days_ago = datetime.combine(now - timedelta(days=23), time(15, 34))
+        booking_date_22_days_ago = datetime.combine(now - timedelta(days=22), time(12, 26))
 
         dvd = ProductFactory(type=str(offer_type.ThingType.AUDIOVISUEL))
         expire_in_7_days_dvd_booking = BookingFactory(
@@ -59,7 +60,7 @@ class NotifyUsersOfSoonToBeExpiredBookingsTest:
         "pcapi.scripts.booking.notify_soon_to_be_expired_bookings.send_soon_to_be_expired_bookings_recap_email_to_beneficiary"
     )
     def should_call_email_service_for_bookings_which_will_expire_in_7_days(
-        self, mocked_email_recap, mocked_send_raw_email, app, caplog
+        self, mocked_email_recap, mocked_send_raw_email, app
     ) -> None:
         # Given
         now = date.today()

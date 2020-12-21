@@ -181,17 +181,23 @@ def find_expiring_bookings() -> Query:
 
 def find_soon_to_be_expiring_booking_ordered_by_user(given_date: date = None) -> Query:
     given_date = given_date or date.today()
-    creation_date_to_check = given_date + conf.BOOKINGS_EXPIRY_NOTIFICATION_DELAY - conf.BOOKINGS_AUTO_EXPIRY_DELAY
+    given_date = (
+        datetime.combine(given_date, time(0, 0))
+        + conf.BOOKINGS_EXPIRY_NOTIFICATION_DELAY
+        - conf.BOOKINGS_AUTO_EXPIRY_DELAY
+    )
+    creation_date_to_check_start = datetime.combine(given_date, time(0, 0))
+    creation_date_to_check_end = datetime.combine(given_date, time(23, 59, 59))
     booking_types_names_that_can_expire = [str(t) for t in ThingType if t.value.get("canExpire", False)]
+
     return (
         Booking.query.join(Stock)
         .join(Offer)
         .filter(Offer.type.in_(booking_types_names_that_can_expire))
         .filter(Booking.isCancelled.is_(False))
         .filter(Booking.isUsed.is_(False))
-        .filter(Booking.dateCreated == creation_date_to_check)
+        .filter(Booking.dateCreated.between(creation_date_to_check_start, creation_date_to_check_end))
         .order_by(Booking.userId)
-        .all()
     )
 
 
