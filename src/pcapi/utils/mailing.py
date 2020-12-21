@@ -41,6 +41,14 @@ def send_raw_email(data: Dict) -> bool:
             logger.logger.info("[EMAIL] Sending email %s", data)
             successfully_sent_email = True
         else:
+            if settings.MAILJET_TEMPLATE_DEBUGGING:
+                messages_data = data.get("Messages")
+                if messages_data:
+                    for message_data in messages_data:
+                        message_data["TemplateErrorReporting"] = {
+                            "Email": settings.DEV_EMAIL_ADDRESS,
+                            "Name": "Mailjet Template Errors",
+                        }
             response = app.mailjet_client.send.create(data=data)
             successfully_sent_email = response.status_code == 200
         status = EmailStatus.SENT if successfully_sent_email else EmailStatus.ERROR

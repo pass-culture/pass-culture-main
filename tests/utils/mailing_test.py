@@ -403,6 +403,46 @@ class SendRawEmailTest:
         app.mailjet_client.send.create.assert_called_once_with(data=data)
         assert result is False
 
+    @patch("pcapi.utils.mailing.app.mailjet_client.send.create")
+    def test_template_error_debugging(self, mocked_create, app):
+        # Given
+        data = {
+            "Messages": [
+                {
+                    "FromEmail": "dev@example.com",
+                    "To": "customer@example.com",
+                    "Mj-TemplateID": 0,
+                    "Mj-TemplateLanguage": True,
+                    "Vars": {
+                        "department": "93",
+                    },
+                },
+            ]
+        }
+
+        # When
+        send_raw_email(data)
+
+        # Then
+        transformed_data = {
+            "Messages": [
+                {
+                    "FromEmail": "dev@example.com",
+                    "To": "customer@example.com",
+                    "Mj-TemplateID": 0,
+                    "Mj-TemplateLanguage": True,
+                    "Vars": {
+                        "department": "93",
+                    },
+                    "TemplateErrorReporting": {
+                        "Email": "dev@example.com",
+                        "Name": "Mailjet Template Errors",
+                    },
+                },
+            ]
+        }
+        mocked_create.assert_called_once_with(data=transformed_data)
+
 
 class CreateContactTest:
     def test_should_call_mailjet_api_to_create_contact(self, app):
