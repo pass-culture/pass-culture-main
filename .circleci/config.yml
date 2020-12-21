@@ -49,6 +49,8 @@ commands:
         type: string
       app_image_tag:
         type: string
+      docker_image_name:
+        type: string
       app_service_account_email:
         type: string
       vpc_connector_name:
@@ -107,7 +109,7 @@ commands:
                 SUPPORT_EMAIL_ADDRESS=sm://${GCP_PROJECT}/<< parameters.app_name >>_support_email_address, \
                 TRANSACTIONS_RECIPIENTS=sm://${GCP_PROJECT}/<< parameters.app_name >>_transactions_recipients, \
                 WALLET_BALANCES_RECIPIENTS=sm://${GCP_PROJECT}/<< parameters.app_name >>_wallet_balances_recipients" \
-            --image=${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_REGISTRY_NAME}/${DOCKER_IMAGE_NAME}:<< parameters.app_image_tag >>
+            --image=${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_REGISTRY_NAME}/<< parameters.docker_image_name >>:<< parameters.app_image_tag >>
 
   deploy-cron-gke:
     description: Deploy Crons and worker via helm to Kubernetes Cluster
@@ -320,8 +322,8 @@ jobs:
       - run: |
           docker build ./api \
             -f ./api/Dockerfile.gcp \
-            -t ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_REGISTRY_NAME}/${DOCKER_IMAGE_NAME}:${API_VERSION}
-      - run: docker push ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_REGISTRY_NAME}/${DOCKER_IMAGE_NAME}:${API_VERSION}
+            -t ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:${API_VERSION}
+      - run: docker push ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:${API_VERSION}
 
   deploy-api:
     machine:
@@ -368,10 +370,11 @@ jobs:
       - authenticate_gcp:
           gcp-key-name: GCP_METIER_KEY
       - deploy-api-cloudrun:
-          app_name: pass-culture-api-${CIRCLE_BRANCH}
+          app_name: pcapi-${CIRCLE_BRANCH}
           app_env: ${CIRCLE_BRANCH}
           app_image_tag: ${API_VERSION}
-          app_service_account_email: secret-reader-${CIRCLE_BRANCH}@pass-culture-app-projet-test.iam.gserviceaccount.com
+          docker_image_name: pcapi
+          app_service_account_email: pcapi-${CIRCLE_BRANCH}@pass-culture-app-projet-test.iam.gserviceaccount.com
           vpc_connector_name: metier-development
 
   deploy-cron-and-worker:
