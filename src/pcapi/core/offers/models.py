@@ -257,6 +257,14 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin, 
 
     criteria = relationship("Criterion", backref=db.backref("criteria", lazy="dynamic"), secondary="offer_criterion")
 
+    audioDisabilityCompliant = Column(Boolean, nullable=True)
+
+    mentalDisabilityCompliant = Column(Boolean, nullable=True)
+
+    motorDisabilityCompliant = Column(Boolean, nullable=True)
+
+    visualDisabilityCompliant = Column(Boolean, nullable=True)
+
     @property
     def activeMediation(self) -> Optional[Mediation]:
         sorted_by_date_desc = sorted(self.mediations, key=lambda m: m.dateCreated, reverse=True)

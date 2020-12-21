@@ -36,6 +36,7 @@ class GetNonFreeThingOfferWithActiveMediationTest:
             "offer": {
                 "ageMax": None,
                 "ageMin": None,
+                "audioDisabilityCompliant": None,
                 "bookingEmail": "booking@example.net",
                 "conditions": None,
                 "dateCreated": format_into_utc_date(offer.dateCreated),
@@ -51,6 +52,8 @@ class GetNonFreeThingOfferWithActiveMediationTest:
                 "isNational": False,
                 "lastProviderId": None,
                 "mediaUrls": ["test/urls"],
+                "mentalDisabilityCompliant": None,
+                "motorDisabilityCompliant": None,
                 "name": "Test Book",
                 "productId": humanize(product.id),
                 "thingName": "Test Book",
@@ -59,6 +62,7 @@ class GetNonFreeThingOfferWithActiveMediationTest:
                 "venueCity": "Montreuil",
                 "venueId": humanize(venue.id),
                 "venueName": "La petite librairie",
+                "visualDisabilityCompliant": None,
                 "withdrawalDetails": None,
             },
         }
@@ -102,6 +106,7 @@ class GetNonFreeEventOfferTest:
             "offer": {
                 "ageMax": None,
                 "ageMin": None,
+                "audioDisabilityCompliant": None,
                 "bookingEmail": "booking@example.net",
                 "conditions": None,
                 "dateCreated": format_into_utc_date(offer.dateCreated),
@@ -117,6 +122,8 @@ class GetNonFreeEventOfferTest:
                 "isNational": False,
                 "lastProviderId": None,
                 "mediaUrls": [],
+                "mentalDisabilityCompliant": None,
+                "motorDisabilityCompliant": None,
                 "name": "Test event",
                 "productId": humanize(product.id),
                 "thingName": "Test event",
@@ -125,6 +132,7 @@ class GetNonFreeEventOfferTest:
                 "venueCity": "Montreuil",
                 "venueId": humanize(venue.id),
                 "venueName": "La petite librairie",
+                "visualDisabilityCompliant": None,
                 "withdrawalDetails": None,
             },
         }

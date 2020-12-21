@@ -67,6 +67,7 @@ class Get:
                     "offer": {
                         "ageMax": None,
                         "ageMin": None,
+                        "audioDisabilityCompliant": None,
                         "bookingEmail": "booking@example.net",
                         "conditions": None,
                         "dateCreated": format_into_utc_date(offer.dateCreated),
@@ -86,6 +87,8 @@ class Get:
                         "isNational": False,
                         "lastProviderId": None,
                         "mediaUrls": ["test/urls"],
+                        "mentalDisabilityCompliant": None,
+                        "motorDisabilityCompliant": None,
                         "name": "Test Book",
                         "offerType": {
                             "appLabel": "Film",
@@ -154,6 +157,7 @@ class Get:
                             "venueTypeId": None,
                         },
                         "venueId": humanize(venue.id),
+                        "visualDisabilityCompliant": None,
                         "withdrawalDetails": None,
                     },
                     "offerId": humanize(offer.id),
