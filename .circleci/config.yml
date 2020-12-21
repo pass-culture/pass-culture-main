@@ -14,10 +14,10 @@ executors:
 
   helm:
     docker:
-      - image: passcultureapp/helm-gcp:3.4.1
+      - image: ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/helm-gcp:3.4.1
         auth:
-          username: $DOCKERHUB_USER
-          password: $DOCKERHUB_PASSWORD
+          username: _json_key  # default username when using a JSON key file to authenticate
+          password: $GCP_INFRA_KEY
 
 ###################
 #  COMMANDS
