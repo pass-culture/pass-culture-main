@@ -6,8 +6,6 @@ from pcapi.models import Booking
 from pcapi.models import Offerer
 from pcapi.repository.feature_queries import feature_send_mail_to_users_enabled
 from pcapi.utils.mailing import build_pc_pro_offer_link
-from pcapi.utils.mailing import format_booking_date_for_email
-from pcapi.utils.mailing import format_booking_hours_for_email
 from pcapi.utils.mailing import format_environment_for_email
 
 
@@ -37,9 +35,6 @@ def _extract_bookings_information_from_bookings_list(bookings: typing.List[Booki
                 "offer_name": offer.name,
                 "venue_name": offer.venue.publicName if offer.venue.publicName else offer.venue.name,
                 "price": str(stock.price) if stock.price > 0 else "gratuit",
-                "date": format_booking_date_for_email(booking),
-                "time": format_booking_hours_for_email(booking),
-                "quantity": booking.quantity,
                 "user_name": booking.user.publicName,
                 "user_email": booking.user.email,
                 "pcpro_offer_link": build_pc_pro_offer_link(offer),
