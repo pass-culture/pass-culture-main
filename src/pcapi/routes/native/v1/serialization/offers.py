@@ -108,6 +108,13 @@ class OfferExtraData(BaseModel):
     )
 
 
+class OfferAccessibilityResponse(BaseModel):
+    audioDisability: Optional[bool]
+    mentalDisability: Optional[bool]
+    motorDisability: Optional[bool]
+    visualDisability: Optional[bool]
+
+
 class OfferResponse(BaseModel):
     @classmethod
     def from_orm(cls, offer):  # type: ignore
@@ -116,6 +123,13 @@ class OfferResponse(BaseModel):
             "label": offer.offerType["appLabel"],
             "categoryType": offer.category_type,
         }
+        offer.accessibility = {
+            "audioDisability": offer.audioDisabilityCompliant,
+            "mentalDisability": offer.mentalDisabilityCompliant,
+            "motorDisability": offer.motorDisabilityCompliant,
+            "visualDisability": offer.visualDisabilityCompliant,
+        }
+
         if offer.extraData:
             offer.extraData["durationMinutes"] = offer.durationMinutes
         else:
@@ -124,6 +138,7 @@ class OfferResponse(BaseModel):
         return super().from_orm(offer)
 
     id: int
+    accessibility: OfferAccessibilityResponse
     description: Optional[str]
     extraData: Optional[OfferExtraData]
     isDigital: bool

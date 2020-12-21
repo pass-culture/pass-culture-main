@@ -36,6 +36,7 @@ class OffersTest:
             withdrawalDetails="modalité de retrait",
             extraData=extra_data,
             durationMinutes=33,
+            visualDisabilityCompliant=True,
         )
 
         bookableStock = EventStockFactory(offer=offer, price=12.34)
@@ -46,6 +47,12 @@ class OffersTest:
         assert response.status_code == 200
         assert response.json == {
             "id": offer.id,
+            "accessibility": {
+                "audioDisability": None,
+                "mentalDisability": None,
+                "motorDisability": None,
+                "visualDisability": True,
+            },
             "bookableStocks": [
                 {
                     "id": bookableStock.id,
