@@ -26,7 +26,7 @@ class Coordinates(BaseModel):
 class OfferCategoryResponse(BaseModel):
     categoryType: CategoryType
     label: str
-    name: CategoryNameEnum
+    name: Optional[CategoryNameEnum]
 
 
 class OfferOffererResponse(BaseModel):

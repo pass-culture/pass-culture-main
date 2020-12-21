@@ -338,7 +338,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin, 
 
     @property
     def offer_category(self) -> str:
-        # offer_types EventType.ACTIVATION and ThingType.ACTIVATION do not have a corresponding Category so return None in this case
+        # offer_types ThingType.OEUVRE_ART, EventType.ACTIVATION and ThingType.ACTIVATION do not have a corresponding Category so return None in this case
         return CATEGORIES_LABEL_DICT.get(self.offerType["appLabel"])
 
     @property
