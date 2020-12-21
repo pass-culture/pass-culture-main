@@ -8,11 +8,13 @@ import { TimeInput } from 'components/layout/inputs/TimeInput/TimeInput'
 import { DeleteStockConfirmation } from 'components/pages/Offer/Stocks/DeleteStockConfirmation/DeleteStockConfirmation'
 import * as pcapi from 'repository/pcapi/pcapi'
 
-export const StockItem = ({
+const StockItem = ({
   departmentCode,
   isEvent,
   isNewStock,
   isOfferSynchronized,
+  notifyUpdateError,
+  notifyUpdateSuccess,
   offerId,
   refreshOffer,
   stock,
@@ -131,15 +133,23 @@ export const StockItem = ({
       beginningDatetime: beginningDatetime,
       bookingLimitDatetime: getBookingLimitDatetimeForEvent(),
     }
-    pcapi.updateStock(isEvent ? eventPayload : thingPayload).then(() => {
-      refreshOffer()
-    })
+    pcapi
+      .updateStock(isEvent ? eventPayload : thingPayload)
+      .then(async () => {
+        await refreshOffer()
+        notifyUpdateSuccess()
+      })
+      .catch(() => {
+        notifyUpdateError()
+      })
   }, [
     stock.id,
     beginningDatetime,
     isEvent,
     getBookingLimitDatetimeForEvent,
     getBookingLimitDatetimeForThing,
+    notifyUpdateError,
+    notifyUpdateSuccess,
     price,
     totalQuantity,
     refreshOffer,
@@ -323,6 +333,8 @@ StockItem.propTypes = {
   isEvent: PropTypes.bool.isRequired,
   isNewStock: PropTypes.bool,
   isOfferSynchronized: PropTypes.bool.isRequired,
+  notifyUpdateError: PropTypes.func.isRequired,
+  notifyUpdateSuccess: PropTypes.func.isRequired,
   offerId: PropTypes.string.isRequired,
   refreshOffer: PropTypes.func.isRequired,
   setIsAddingNewStock: PropTypes.func.isRequired,
@@ -337,3 +349,5 @@ StockItem.propTypes = {
     quantity: PropTypes.number,
   }),
 }
+
+export default StockItem

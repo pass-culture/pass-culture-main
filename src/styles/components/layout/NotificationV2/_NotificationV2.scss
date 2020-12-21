@@ -9,6 +9,7 @@
   text-align: center;
   transform: translateX(-50%);
   visibility: hidden;
+  white-space: pre-line;
   z-index: 100;
 
   &.show {

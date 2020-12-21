@@ -8,7 +8,7 @@ import Titles from 'components/layout/Titles/Titles'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { getDepartmentTimezone } from 'utils/timezone'
 
-import { StockItem } from './StockItem/StockItem'
+import StockItemContainer from './StockItem/StockItemContainer'
 
 const Stocks = ({ match }) => {
   const offerId = match.params.offerId
@@ -28,7 +28,7 @@ const Stocks = ({ match }) => {
   }, [departmentCode])
 
   const getOffer = useCallback(() => {
-    pcapi.loadOffer(offerId).then(offer => {
+    return pcapi.loadOffer(offerId).then(offer => {
       const stocksByDescendingBeginningDatetime = offer.stocks.sort(
         (stock1, stock2) =>
           moment(stock2.beginningDatetime).unix() - moment(stock1.beginningDatetime).unix()
@@ -114,7 +114,7 @@ const Stocks = ({ match }) => {
         </thead>
         <tbody>
           {isAddingNewStock && (
-            <StockItem
+            <StockItemContainer
               departmentCode={departmentCode}
               isEvent={isEvent}
               isNewStock
@@ -126,7 +126,7 @@ const Stocks = ({ match }) => {
             />
           )}
           {stocks.map(stock => (
-            <StockItem
+            <StockItemContainer
               departmentCode={departmentCode}
               isEvent={isEvent}
               isOfferSynchronized={isOfferSynchronized}
