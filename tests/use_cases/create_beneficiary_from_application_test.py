@@ -108,7 +108,7 @@ def test_application_for_native_app_user(mocked_send_activation_email, app):
     users_api.create_account(
         email=PRE_SUBSCRIPTION_BASE_DATA["email"],
         password="123456789",
-        brithdate=PRE_SUBSCRIPTION_BASE_DATA["date_of_birth"],
+        birthdate=PRE_SUBSCRIPTION_BASE_DATA["date_of_birth"],
         is_email_validated=True,
         send_activation_mail=False,
     )

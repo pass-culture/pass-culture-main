@@ -73,7 +73,7 @@ def generate_and_save_token(user: UserSQLEntity, token_type: TokenType, life_tim
 def create_account(
     email: str,
     password: str,
-    brithdate: date,
+    birthdate: date,
     has_allowed_recommendations: bool = False,
     is_email_validated: bool = False,
     send_activation_mail: bool = True,
@@ -83,7 +83,7 @@ def create_account(
 
     user = UserSQLEntity(
         email=format_email(email),
-        dateOfBirth=brithdate,
+        dateOfBirth=birthdate,
         isEmailValidated=is_email_validated,
         departementCode="007",
         publicName="   ",  # Required because model validation requires 3+ chars

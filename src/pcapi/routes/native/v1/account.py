@@ -50,7 +50,7 @@ def create_account(body: serializers.AccountRequest) -> None:
         api.create_account(
             email=body.email,
             password=body.password,
-            brithdate=body.birthdate,
+            birthdate=body.birthdate,
             has_allowed_recommendations=body.has_allowed_recommendations,
             is_email_validated=False,
         )
