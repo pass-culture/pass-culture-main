@@ -49,6 +49,7 @@ const OfferForm = ({
   isUserAdmin,
   offer,
   onSubmit,
+  setIsTypeSelected,
   showErrorNotification,
   submitErrors,
 }) => {
@@ -324,10 +325,12 @@ const OfferForm = ({
 
   let submitFormButtonText = 'Enregistrer'
   let displayFullForm = true
+  setIsTypeSelected(displayFullForm)
 
   if (!offer) {
     submitFormButtonText = 'Enregistrer et passer au stocks'
     displayFullForm = !!formValues.type
+    setIsTypeSelected(displayFullForm)
   }
 
   if (isBusy) {
@@ -689,6 +692,7 @@ OfferForm.propTypes = {
   isUserAdmin: PropTypes.bool,
   offer: PropTypes.shape(),
   onSubmit: PropTypes.func.isRequired,
+  setIsTypeSelected: PropTypes.func.isRequired,
   showErrorNotification: PropTypes.func.isRequired,
 }
 

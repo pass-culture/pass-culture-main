@@ -5,15 +5,16 @@
     color: $grey-dark;
   }
 
-  .content {
-    margin-top: rem(24px);
+  .offer-content {
+    display: flex;
+    justify-content: space-between;
+  }
 
-    .offer-form {
-      max-width: rem(486px);
+  .offer-form {
+    max-width: rem(486px);
 
-      .form-row {
-        margin-top: rem(24px);
-      }
+    .form-row {
+      margin-top: rem(24px);
     }
   }
 

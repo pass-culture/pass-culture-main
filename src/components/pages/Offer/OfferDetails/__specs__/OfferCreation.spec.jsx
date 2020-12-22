@@ -187,7 +187,26 @@ describe('offerDetails - Creation', () => {
       expect(screen.getByText("Type d'offre", { selector: '.section-title' })).toBeInTheDocument()
     })
 
+    it('should not display a placeholder for preview', async () => {
+      // When
+      renderOffers({}, store)
+
+      // Then
+      expect(screen.queryByText('Ajouter une image')).not.toBeInTheDocument()
+    })
+
     describe('when selecting an offer type', () => {
+      it('should display a placeholder for preview', async () => {
+        // Given
+        renderOffers({}, store)
+
+        // When
+        await setOfferValues({ type: 'EventType.CINEMA' })
+
+        // Then
+        expect(screen.getByText('Ajouter une image')).toBeInTheDocument()
+      })
+
       it('should display "Infos pratiques", "Infos artistiques", and "Autre" section', async () => {
         // Given
         renderOffers({}, store)

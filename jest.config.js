@@ -1,4 +1,7 @@
 module.exports = {
+  moduleNameMapper: {
+    '\\.svg': '<rootDir>/src/utils/svgrMock.js',
+  },
   modulePaths: ['node_modules', 'src'],
   setupFiles: ['<rootDir>/jest.setup.js'],
   testEnvironment: 'jest-environment-jsdom-sixteen',

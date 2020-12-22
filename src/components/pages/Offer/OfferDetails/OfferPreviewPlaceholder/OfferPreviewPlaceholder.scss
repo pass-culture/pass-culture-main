@@ -1,0 +1,14 @@
+.of-placeholder {
+  @include button;
+
+  align-items: center;
+  background-color: $grey-light;
+  border: rem(1px) solid $grey-medium;
+  border-radius: rem(4px);
+  box-shadow: 0 0 rem(20px) 0 $black-shadow;
+  display: flex;
+  flex-direction: column;
+  height: rem(385px);
+  justify-content: center;
+  width: rem(256px);
+}

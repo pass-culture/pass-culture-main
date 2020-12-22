@@ -7,6 +7,7 @@ import * as pcapi from 'repository/pcapi/pcapi'
 
 import OfferFormContainer from './OfferForm/OfferFormContainer'
 import OfferPreviewLink from './OfferPreviewLink/OfferPreviewLink'
+import OfferPreviewPlaceholder from './OfferPreviewPlaceholder/OfferPreviewPlaceholder'
 
 const OfferDetails = props => {
   const { history, isUserAdmin, location, match } = props
@@ -14,6 +15,7 @@ const OfferDetails = props => {
   const [offer, setOffer] = useState(null)
   const [formInitialValues, setFormInitialValues] = useState({})
   const [formErrors, setFormErrors] = useState({})
+  const [isTypeSelected, setIsTypeSelected] = useState(true)
 
   useEffect(() => {
     async function loadOffer(offerId) {
@@ -97,14 +99,20 @@ const OfferDetails = props => {
         title={pageTitle}
       />
 
-      <div className="content">
+      <div className="offer-content">
         <OfferFormContainer
           initialValues={formInitialValues}
           isUserAdmin={isUserAdmin}
           offer={offer}
           onSubmit={handleSubmitOffer}
+          setIsTypeSelected={setIsTypeSelected}
           submitErrors={formErrors}
         />
+        {isTypeSelected && (
+          <div>
+            <OfferPreviewPlaceholder />
+          </div>
+        )}
       </div>
     </div>
   )

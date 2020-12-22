@@ -1,4 +1,5 @@
-// L'ordre des imports est important.
+// Global import.
+// Import's order is important.
 @import 'mixins/index.scss';
 @import 'variables/index.scss';
 @import '~bulma/sass/utilities/_all';
@@ -8,3 +9,6 @@
 @import '~input-range-scss';
 @import 'global/index.scss';
 @import 'components/index.scss';
+
+// Components scoped imports.
+@import '../components/pages/Offer/OfferDetails/OfferPreviewPlaceholder/OfferPreviewPlaceholder.scss';
