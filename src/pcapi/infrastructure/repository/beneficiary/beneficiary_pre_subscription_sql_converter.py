@@ -1,4 +1,5 @@
-from pcapi.core.beneficiaries import api as beneficiaries_api
+from pcapi.core.payments import api as payments_api
+from pcapi.core.users import api as users_api
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
 from pcapi.domain.password import generate_reset_token
 from pcapi.domain.password import random_password
@@ -30,9 +31,9 @@ def to_model(beneficiary_pre_subscription: BeneficiaryPreSubscription) -> UserSQ
 
     generate_reset_token(beneficiary, validity_duration_hours=THIRTY_DAYS_IN_HOURS)
 
-    deposit = beneficiaries_api.create_deposit(beneficiary, beneficiary_pre_subscription.deposit_source)
+    deposit = payments_api.create_deposit(beneficiary, beneficiary_pre_subscription.deposit_source)
     beneficiary.deposits = [deposit]
-    beneficiaries_api.attach_beneficiary_import_details(beneficiary, beneficiary_pre_subscription)
+    users_api.attach_beneficiary_import_details(beneficiary, beneficiary_pre_subscription)
 
     return beneficiary
 

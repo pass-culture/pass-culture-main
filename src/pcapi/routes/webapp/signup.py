@@ -4,7 +4,7 @@ from flask import request
 
 from pcapi import settings
 from pcapi.connectors.google_spreadsheet import get_authorized_emails_and_dept_codes
-from pcapi.core.beneficiaries import api as beneficiaries_api
+from pcapi.core.payments import api as payments_api
 from pcapi.flask_app import private_api
 from pcapi.models import ApiErrors
 from pcapi.models import UserSQLEntity
@@ -30,7 +30,7 @@ def signup_webapp():
 
     if settings.IS_INTEGRATION:
         new_user.departementCode = "00"
-        objects_to_save.append(beneficiaries_api.create_deposit(new_user, "test"))
+        objects_to_save.append(payments_api.create_deposit(new_user, "test"))
     else:
         authorized_emails, departement_codes = get_authorized_emails_and_dept_codes()
         departement_code = _get_departement_code_when_authorized_or_error(authorized_emails, departement_codes)

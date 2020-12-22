@@ -1,5 +1,5 @@
 from pcapi.connectors.beneficiaries import get_application_by_id
-from pcapi.core.beneficiaries import api as beneficiaries_api
+from pcapi.core.users import api as users_api
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsADuplicate
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import CantRegisterBeneficiary
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_validator import validate
@@ -36,8 +36,8 @@ class CreateBeneficiaryFromApplication:
             if not user:
                 beneficiary = self.beneficiary_repository.save(beneficiary_pre_subscription)
             else:
-                beneficiary = beneficiaries_api.activate_beneficiary(user, beneficiary_pre_subscription.deposit_source)
-                beneficiaries_api.attach_beneficiary_import_details(user, beneficiary_pre_subscription)
+                beneficiary = users_api.activate_beneficiary(user, beneficiary_pre_subscription.deposit_source)
+                users_api.attach_beneficiary_import_details(user, beneficiary_pre_subscription)
             send_activation_email(user=beneficiary, send_email=send_raw_email)
 
 

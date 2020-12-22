@@ -10,7 +10,7 @@ from jwt import InvalidSignatureError
 from jwt import InvalidTokenError
 
 from pcapi import settings
-from pcapi.core.beneficiaries import api as beneficiaries_api
+from pcapi.core.payments import api as payment_api
 from pcapi.core.users import exceptions
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
@@ -19,10 +19,14 @@ from pcapi.core.users.utils import decode_jwt_token
 from pcapi.core.users.utils import encode_jwt_payload
 from pcapi.core.users.utils import format_email
 from pcapi.domain import user_emails
+from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
 from pcapi.domain.password import generate_reset_token
 from pcapi.domain.password import random_password
 from pcapi.emails.beneficiary_email_change import build_beneficiary_confirmation_email_change_data
 from pcapi.emails.beneficiary_email_change import build_beneficiary_information_email_change_data
+from pcapi.models import BeneficiaryImport
+from pcapi.models import ImportStatus
+from pcapi.models.db import db
 from pcapi.models.user_session import UserSession
 from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.repository import repository
@@ -95,6 +99,29 @@ def create_account(
     return user
 
 
+def activate_beneficiary(user: UserSQLEntity, deposit_source: str) -> UserSQLEntity:
+    if not is_user_eligible(user):
+        raise exceptions.NotEligible()
+    user.isBeneficiary = True
+    deposit = payment_api.create_deposit(user, deposit_source=deposit_source)
+    db.session.add_all((user, deposit))
+    db.session.commit()
+    return user
+
+
+def attach_beneficiary_import_details(
+    beneficiary: UserSQLEntity, beneficiary_pre_subscription: BeneficiaryPreSubscription
+) -> None:
+    beneficiary_import = BeneficiaryImport()
+
+    beneficiary_import.applicationId = beneficiary_pre_subscription.application_id
+    beneficiary_import.sourceId = beneficiary_pre_subscription.source_id
+    beneficiary_import.source = beneficiary_pre_subscription.source
+    beneficiary_import.setStatus(status=ImportStatus.CREATED)
+
+    beneficiary.beneficiaryImports = [beneficiary_import]
+
+
 def request_email_confirmation(user: UserSQLEntity) -> None:
     token = create_email_validation_token(user)
     user_emails.send_activation_email(user, mailing_utils.send_raw_email, native_version=True, token=token)
@@ -109,7 +136,7 @@ def fulfill_user_data(user: UserSQLEntity, deposit_source: str) -> UserSQLEntity
     user.password = random_password()
     generate_reset_token(user, validity_duration_hours=THIRTY_DAYS_IN_HOURS)
 
-    deposit = beneficiaries_api.create_deposit(user, deposit_source)
+    deposit = payment_api.create_deposit(user, deposit_source)
     user.deposits = [deposit]
 
     return user

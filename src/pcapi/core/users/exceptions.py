@@ -16,3 +16,7 @@ class UnvalidatedAccount(CredentialsException):
 
 class UserAlreadyExistsException(Exception):
     pass
+
+
+class NotEligible(Exception):
+    pass

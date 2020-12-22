@@ -1,12 +1,15 @@
+from datetime import date
 from datetime import datetime
 from datetime import timedelta
 
+from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
 import jwt
 import pytest
 
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
+from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.api import create_id_check_token
 from pcapi.core.users.api import generate_and_save_token
@@ -318,3 +321,17 @@ class ChangeUserEmailTest:
         assert old_user is None
         new_user = UserSQLEntity.query.filter_by(email="newemail@mail.com").first()
         assert new_user is None
+
+
+class CreateBeneficiaryTest:
+    def test_with_ineligible_user_raises_exception(self):
+        user = users_factories.UserFactory.build(isBeneficiary=False)
+        with pytest.raises(users_exceptions.NotEligible):
+            users_api.activate_beneficiary(user, "test")
+
+    def test_with_eligible_user(self):
+        eligible_date = date.today() - relativedelta(years=18, days=30)
+        user = users_factories.UserFactory(isBeneficiary=False, dateOfBirth=eligible_date)
+        user = users_api.activate_beneficiary(user, "test")
+        assert user.isBeneficiary
+        assert len(user.deposits) == 1

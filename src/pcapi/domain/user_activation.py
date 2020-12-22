@@ -2,7 +2,7 @@ import csv
 from io import StringIO
 from typing import Iterable
 
-from pcapi.core.beneficiaries import api as beneficiaries_api
+from pcapi.core.payments import api as payments_api
 from pcapi.domain.password import generate_reset_token
 from pcapi.domain.password import random_password
 from pcapi.models.beneficiary_import_status import ImportStatus
@@ -61,7 +61,7 @@ def create_beneficiary_from_application(application_detail: dict) -> UserSQLEnti
     generate_reset_token(beneficiary, validity_duration_hours=THIRTY_DAYS_IN_HOURS)
 
     application_id = application_detail["application_id"]
-    deposit = beneficiaries_api.create_deposit(beneficiary, f"démarches simplifiées dossier [{application_id}]")
+    deposit = payments_api.create_deposit(beneficiary, f"démarches simplifiées dossier [{application_id}]")
     beneficiary.deposits = [deposit]
 
     return beneficiary
