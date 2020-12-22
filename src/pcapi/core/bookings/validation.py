@@ -1,6 +1,5 @@
 import datetime
 from decimal import Decimal
-from typing import Dict
 
 from pcapi.core.bookings import api
 from pcapi.core.bookings import conf
@@ -8,7 +7,6 @@ from pcapi.core.bookings import exceptions
 from pcapi.core.bookings.models import Booking
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
-import pcapi.domain.expenses as payments_api
 from pcapi.models import UserSQLEntity
 from pcapi.models import api_errors
 from pcapi.models.db import db
@@ -54,22 +52,29 @@ def check_stock_is_bookable(stock: Stock) -> None:
         raise exceptions.StockIsNotBookable()
 
 
-def check_expenses_limits(expenses: Dict, requested_amount: Decimal, offer: Offer) -> None:
+def check_expenses_limits(user: UserSQLEntity, requested_amount: Decimal, offer: Offer):
     """Raise an error if the requested amount would exceed the user's
     expense limits.
     """
-    if (expenses["all"]["actual"] + requested_amount) > expenses["all"]["max"]:
+    try:
+        deposit = user.deposits[0]
+    except IndexError:
         raise exceptions.UserHasInsufficientFunds()
 
-    if payments_api.is_eligible_to_physical_offers_capping(offer):
-        expected_total = expenses["physical"]["actual"] + requested_amount
-        if expected_total > expenses["physical"]["max"]:
-            raise exceptions.PhysicalExpenseLimitHasBeenReached(expenses["physical"]["max"])
+    config = conf.LIMIT_CONFIGURATIONS[deposit.version]
+    limits = api.get_expenses_limits(user, deposit.version)
+    for limit in limits:
+        if limit["domain"] == "all":
+            if limit["current"] + requested_amount > limit["max"]:
+                raise exceptions.UserHasInsufficientFunds()
 
-    if payments_api.is_eligible_to_digital_offers_capping(offer):
-        expected_total = expenses["digital"]["actual"] + requested_amount
-        if expected_total > expenses["digital"]["max"]:
-            raise exceptions.DigitalExpenseLimitHasBeenReached(expenses["digital"]["max"])
+        if limit["domain"] == "digital" and config.digital_cap_applies(offer):
+            if limit["current"] + requested_amount > limit["max"]:
+                raise exceptions.DigitalExpenseLimitHasBeenReached(limit["max"])
+
+        if limit["domain"] == "physical" and config.physical_cap_applies(offer):
+            if limit["current"] + requested_amount > limit["max"]:
+                raise exceptions.PhysicalExpenseLimitHasBeenReached(limit["max"])
 
 
 def check_beneficiary_can_cancel_booking(user: UserSQLEntity, booking: Booking) -> None:

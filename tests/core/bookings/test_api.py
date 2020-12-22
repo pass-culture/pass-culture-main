@@ -72,17 +72,15 @@ class BookOfferTest:
         user = users_factories.UserFactory(isAdmin=True)
         stock = offers_factories.StockFactory()
 
-        with pytest.raises(api_errors.ApiErrors) as exc:
+        with pytest.raises(exceptions.UserHasInsufficientFunds):
             api.book_offer(beneficiary=user, stock=stock, quantity=1)
-        assert "insufficientFunds" in exc.value.errors
 
     def test_raise_if_pro_user(self):
         user = users_factories.UserFactory(isBeneficiary=False, isAdmin=False)
         stock = offers_factories.StockFactory()
 
-        with pytest.raises(api_errors.ApiErrors) as exc:
+        with pytest.raises(exceptions.UserHasInsufficientFunds):
             api.book_offer(beneficiary=user, stock=stock, quantity=1)
-        assert "insufficientFunds" in exc.value.errors
 
     def test_raise_if_no_more_stock(self):
         booking = factories.BookingFactory(stock__quantity=1)

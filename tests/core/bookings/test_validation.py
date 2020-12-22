@@ -111,60 +111,64 @@ class CheckStockIsBookableTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class CheckExpenseLimitsTest:
+class CheckExpenseLimitsDepositVersion1Test:
     def test_physical_limit(self):
-        offer = offers_factories.OfferFactory(product__type=str(ThingType.AUDIOVISUEL))
-        expenses = {
-            "all": {"max": 500, "actual": 200},
-            "physical": {"max": 200, "actual": 0},
-            "digital": {"max": 300, "actual": 0},
-        }
+        beneficiary = users_factories.UserFactory(deposit__version=1)
+        offer = offers_factories.OfferFactory(product__type=str(ThingType.INSTRUMENT))
+        factories.BookingFactory(user=beneficiary, stock__price=190, stock__offer=offer)
 
-        validation.check_expenses_limits(expenses, 11, offer)  # should not raise
-
-        expenses["physical"]["actual"] = 190
+        validation.check_expenses_limits(beneficiary, 10, offer)  # should not raise
 
         with pytest.raises(exceptions.PhysicalExpenseLimitHasBeenReached) as error:
-            validation.check_expenses_limits(expenses, 11, offer)
+            validation.check_expenses_limits(beneficiary, 11, offer)
         assert error.value.errors["global"] == [
             "Le plafond de 200 € pour les biens culturels ne vous permet pas de réserver cette offre."
         ]
 
+    def test_physical_limit_on_uncapped_type(self):
+        beneficiary = users_factories.UserFactory(deposit__version=1)
+        offer = offers_factories.OfferFactory(product__type=str(ThingType.CINEMA_ABO))
+        factories.BookingFactory(user=beneficiary, stock__price=190, stock__offer=offer)
+
+        # should not raise because CINEMA_ABO is not capped
+        validation.check_expenses_limits(beneficiary, 11, offer)
+
     def test_digital_limit(self):
-        offer = offers_factories.OfferFactory(
-            product__type=str(ThingType.JEUX_VIDEO),
-            product__url="http://www.example.com/my-game",
+        beneficiary = users_factories.UserFactory(deposit__version=1)
+        product = offers_factories.DigitalProductFactory(type=str(ThingType.AUDIOVISUEL))
+        offer = offers_factories.OfferFactory(product=product)
+        factories.BookingFactory(
+            user=beneficiary,
+            stock__price=190,
+            stock__offer=offer,
         )
-        expenses = {
-            "all": {"max": 500, "actual": 200},
-            "physical": {"max": 300, "actual": 0},
-            "digital": {"max": 200, "actual": 0},
-        }
 
-        validation.check_expenses_limits(expenses, 11, offer)  # should not raise
-
-        expenses["digital"]["actual"] = 190
+        validation.check_expenses_limits(beneficiary, 10, offer)  # should not raise
 
         with pytest.raises(exceptions.DigitalExpenseLimitHasBeenReached) as error:
-            validation.check_expenses_limits(expenses, 11, offer)
+            validation.check_expenses_limits(beneficiary, 11, offer)
         assert error.value.errors["global"] == [
             "Le plafond de 200 € pour les offres numériques ne vous permet pas de réserver cette offre."
         ]
 
+    def test_digital_limit_on_uncapped_type(self):
+        beneficiary = users_factories.UserFactory(deposit__version=1)
+        product = offers_factories.DigitalProductFactory(type=str(ThingType.OEUVRE_ART))
+        offer = offers_factories.OfferFactory(product=product)
+        factories.BookingFactory(user=beneficiary, stock__price=190, stock__offer=offer)
+
+        # should not raise because OEUVRE_ART is not capped
+        validation.check_expenses_limits(beneficiary, 11, offer)
+
     def test_global_limit(self):
-        expenses = {
-            "all": {"max": 500, "actual": 0},
-            "physical": {"max": 300, "actual": 0},
-            "digital": {"max": 200, "actual": 0},
-        }
-        offer = offers_factories.OfferFactory()
+        beneficiary = users_factories.UserFactory(deposit__version=1)
+        factories.BookingFactory(user=beneficiary, stock__price=490)
+        offer = offers_factories.OfferFactory(type=str(ThingType.CINEMA_ABO))
 
-        validation.check_expenses_limits(expenses, 11, offer)  # should not raise
-
-        expenses["all"]["actual"] = 490
+        validation.check_expenses_limits(beneficiary, 10, offer)  # should not raise
 
         with pytest.raises(exceptions.UserHasInsufficientFunds) as error:
-            validation.check_expenses_limits(expenses, 11, offer)
+            validation.check_expenses_limits(beneficiary, 11, offer)
         assert error.value.errors["insufficientFunds"] == [
             "Le solde de votre pass est insuffisant pour réserver cette offre."
         ]

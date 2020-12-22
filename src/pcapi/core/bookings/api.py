@@ -8,6 +8,7 @@ from flask import current_app as app
 import pytz
 import qrcode
 import qrcode.image.svg
+from sqlalchemy.orm import joinedload
 
 from pcapi.connectors import redis
 from pcapi.core.bookings import conf
@@ -23,7 +24,6 @@ from pcapi.repository import feature_queries
 from pcapi.repository import repository
 from pcapi.utils.mailing import send_raw_email
 
-from . import repository as booking_repository
 from . import validation
 
 
@@ -43,6 +43,8 @@ def book_offer(
     validation.check_offer_already_booked(beneficiary, stock.offer)
     validation.check_quantity(stock.offer, quantity)
     validation.check_stock_is_bookable(stock)
+    total_amount = quantity * stock.price
+    validation.check_expenses_limits(beneficiary, total_amount, stock.offer)
 
     # FIXME (dbaty, 2020-10-20): if we directly set relations (for
     # example with `booking.user = beneficiary`) instead of foreign keys,
@@ -62,9 +64,6 @@ def book_offer(
         quantity=quantity,
         token=generate_booking_token(),
     )
-
-    expenses = booking_repository.get_user_expenses(beneficiary)
-    validation.check_expenses_limits(expenses, booking.total_amount, stock.offer)
 
     booking.dateCreated = datetime.datetime.utcnow()
     booking.confirmationDate = compute_confirmation_date(stock.beginningDatetime, booking.dateCreated)
@@ -204,3 +203,32 @@ def cancel_expired_bookings(
     repository.save(*cancelled_bookings)
 
     return cancelled_bookings, errors
+
+
+def get_expenses_limits(user: UserSQLEntity, version: int) -> typing.Iterable:
+    config = conf.LIMIT_CONFIGURATIONS[version]
+    bookings = (
+        Booking.query.filter_by(user=user)
+        .filter_by(isCancelled=False)
+        .options(joinedload(Booking.stock).joinedload(Stock.offer))
+        .all()
+    )
+    capped_digital_bookings = [booking for booking in bookings if config.digital_cap_applies(booking.stock.offer)]
+    capped_physical_bookings = [booking for booking in bookings if config.physical_cap_applies(booking.stock.offer)]
+    return (
+        {
+            "domain": "all",
+            "current": sum(booking.total_amount for booking in bookings),
+            "max": config.TOTAL_CAP,
+        },
+        {
+            "domain": "digital",
+            "current": sum(booking.total_amount for booking in capped_digital_bookings),
+            "max": config.DIGITAL_CAP,
+        },
+        {
+            "domain": "physical",
+            "current": sum(booking.total_amount for booking in capped_physical_bookings),
+            "max": config.PHYSICAL_CAP,
+        },
+    )
