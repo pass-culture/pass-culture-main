@@ -179,6 +179,7 @@ def create_deposit(
     date_created: datetime = datetime.utcnow(),
     idx: int = None,
     source: str = "public",
+    version: int = 1,
 ) -> Deposit:
     deposit = Deposit()
     deposit.amount = amount
@@ -186,6 +187,7 @@ def create_deposit(
     deposit.id = idx
     deposit.source = source
     deposit.user = user
+    deposit.version = version
 
     return deposit
 

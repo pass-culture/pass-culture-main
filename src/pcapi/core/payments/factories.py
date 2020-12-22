@@ -17,6 +17,7 @@ class DepositFactory(BaseFactory):
     user = factory.SubFactory(users_factories.UserFactory)
     amount = 500
     source = "public"
+    version = 1
 
 
 class PaymentFactory(BaseFactory):

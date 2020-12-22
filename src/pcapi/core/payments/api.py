@@ -14,5 +14,6 @@ def create_deposit(beneficiary: UserSQLEntity, deposit_source: str) -> Deposit:
         amount=DEPOSIT_DEFAULT_AMOUNT,
         source=deposit_source,
         userId=beneficiary.id,
+        version=1,
     )
     return deposit
