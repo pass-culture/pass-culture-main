@@ -34,4 +34,13 @@
 
   background: none;
   border: none;
+
+  &:disabled {
+    color: $grey-medium;
+    cursor: not-allowed;
+
+    img {
+      opacity: 0.6;
+    }
+  }
 }

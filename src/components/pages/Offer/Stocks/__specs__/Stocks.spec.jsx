@@ -311,8 +311,9 @@ describe('stocks page', () => {
     })
 
     describe('render thing offer', () => {
+      let thingOffer
       beforeEach(() => {
-        const thingOffer = {
+        thingOffer = {
           ...defaultOffer,
           isEvent: false,
           stocks: [
@@ -336,11 +337,23 @@ describe('stocks page', () => {
       })
 
       it('should display button to add stock', async () => {
+        // given
+        const thingOfferWithoutStock = { ...thingOffer, stocks: [] }
+        pcapi.loadOffer.mockResolvedValue(thingOfferWithoutStock)
+
         // when
         await renderStocks(props)
 
         // then
         expect(screen.getByRole('button', { name: 'Ajouter un stock' })).toBeEnabled()
+      })
+
+      it('should not be able to add a new stock if there is already one', async () => {
+        // When
+        await renderStocks(props)
+
+        // Then
+        expect(screen.getByRole('button', { name: 'Ajouter un stock' })).toBeDisabled()
       })
 
       it("should display offer's stock fields disabled by default", async () => {
@@ -382,17 +395,13 @@ describe('stocks page', () => {
 
       describe('when offer has been synchronized', () => {
         beforeEach(() => {
-          const synchronisedThingOffer = {
+          const synchronisedThingOfferWithoutStock = {
             ...defaultOffer,
             isEvent: false,
             lastProviderId: 'D4',
-            stocks: [
-              {
-                ...defaultStock,
-              },
-            ],
+            stocks: [],
           }
-          pcapi.loadOffer.mockResolvedValue(synchronisedThingOffer)
+          pcapi.loadOffer.mockResolvedValue(synchronisedThingOfferWithoutStock)
         })
 
         it('should not be able to add a stock', async () => {
