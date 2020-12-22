@@ -404,7 +404,7 @@ class SendRawEmailTest:
         assert result is False
 
     @patch("pcapi.utils.mailing.app.mailjet_client.send.create")
-    def test_template_error_debugging(self, mocked_create, app):
+    def test_template_error_debugging_for_multiple_messages(self, mocked_create, app):
         # Given
         data = {
             "Messages": [
@@ -415,6 +415,15 @@ class SendRawEmailTest:
                     "Mj-TemplateLanguage": True,
                     "Vars": {
                         "department": "93",
+                    },
+                },
+                {
+                    "FromEmail": "dev@example.com",
+                    "To": "customer@example.com",
+                    "Mj-TemplateID": 0,
+                    "Mj-TemplateLanguage": True,
+                    "Vars": {
+                        "department": "75",
                     },
                 },
             ]
@@ -439,8 +448,54 @@ class SendRawEmailTest:
                         "Name": "Mailjet Template Errors",
                     },
                 },
+                {
+                    "FromEmail": "dev@example.com",
+                    "To": "customer@example.com",
+                    "Mj-TemplateID": 0,
+                    "Mj-TemplateLanguage": True,
+                    "Vars": {
+                        "department": "75",
+                    },
+                    "TemplateErrorReporting": {
+                        "Email": "dev@example.com",
+                        "Name": "Mailjet Template Errors",
+                    },
+                },
             ]
         }
+        mocked_create.assert_called_once_with(data=transformed_data)
+
+    @patch("pcapi.utils.mailing.app.mailjet_client.send.create")
+    def test_template_error_debugging_for_single_message(self, mocked_create, app):
+        # Given
+        data = {
+            "FromEmail": "dev@example.com",
+            "To": "customer@example.com",
+            "Mj-TemplateID": 0,
+            "Mj-TemplateLanguage": True,
+            "Vars": {
+                "department": "93",
+            },
+        }
+
+        # When
+        send_raw_email(data)
+
+        # Then
+        transformed_data = {
+            "FromEmail": "dev@example.com",
+            "To": "customer@example.com",
+            "Mj-TemplateID": 0,
+            "Mj-TemplateLanguage": True,
+            "Vars": {
+                "department": "93",
+            },
+            "TemplateErrorReporting": {
+                "Email": "dev@example.com",
+                "Name": "Mailjet Template Errors",
+            },
+        }
+
         mocked_create.assert_called_once_with(data=transformed_data)
 
 

@@ -45,10 +45,9 @@ def send_raw_email(data: Dict) -> bool:
                 messages_data = data.get("Messages")
                 if messages_data:
                     for message_data in messages_data:
-                        message_data["TemplateErrorReporting"] = {
-                            "Email": settings.DEV_EMAIL_ADDRESS,
-                            "Name": "Mailjet Template Errors",
-                        }
+                        _add_template_debugging(message_data)
+                else:
+                    _add_template_debugging(data)
             response = app.mailjet_client.send.create(data=data)
             successfully_sent_email = response.status_code == 200
         status = EmailStatus.SENT if successfully_sent_email else EmailStatus.ERROR
@@ -440,4 +439,11 @@ def make_pro_user_validation_email(user: UserSQLEntity, app_origin_url: str) -> 
             "nom_structure": user.publicName,
             "lien_validation_mail": f"{app_origin_url}/inscription/validation/{user.validationToken}",
         },
+    }
+
+
+def _add_template_debugging(message_data: Dict) -> None:
+    message_data["TemplateErrorReporting"] = {
+        "Email": settings.DEV_EMAIL_ADDRESS,
+        "Name": "Mailjet Template Errors",
     }
