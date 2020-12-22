@@ -18,16 +18,6 @@ const Stocks = ({ match }) => {
   const [isEditing, setIsEditing] = useState(false)
   const [isAddingNewStock, setIsAddingNewStock] = useState(false)
   const [isOfferSynchronized, setIsOfferSynchronized] = useState(false)
-  const newStock = {
-    offerId: offerId,
-    id: '',
-    bookingsQuantity: 0,
-    isEventDeletable: false,
-    beginningDatetime: '',
-    bookingLimitDatetime: '',
-    price: 0,
-    quantity: null,
-  }
 
   useEffect(() => {
     moment.tz.setDefault(getDepartmentTimezone(departmentCode))
@@ -64,6 +54,8 @@ const Stocks = ({ match }) => {
   const thingCancellationInformation =
     'Les utilisateurs ont 30 jours pour faire valider leur contremarque. Passé ce délai, la réservation est automatiquement annulée et l’offre remise en vente.'
 
+  const hasOfferThingOneStockAlready = !isEvent && stocks.length > 0
+
   return (
     <div className="stocks-page">
       <PageTitle title="Vos stocks" />
@@ -76,8 +68,9 @@ const Stocks = ({ match }) => {
       </div>
       <button
         className="tertiary-button"
-        disabled={(!isEvent && stocks.length > 0) || isOfferSynchronized || isAddingNewStock}
+        disabled={isAddingNewStock || hasOfferThingOneStockAlready || isOfferSynchronized}
         onClick={addNewStock}
+        title={isAddingNewStock ? 'Vous ne pouvez ajouter qu’un stock à la fois.' : ''}
         type="button"
       >
         <Icon svg="ico-plus" />
@@ -126,10 +119,10 @@ const Stocks = ({ match }) => {
               isEvent={isEvent}
               isNewStock
               isOfferSynchronized={isOfferSynchronized}
+              offerId={offerId}
               refreshOffer={getOffer}
-              setParentIsAdding={setIsAddingNewStock}
+              setIsAddingNewStock={setIsAddingNewStock}
               setParentIsEditing={setIsEditing}
-              stock={newStock}
             />
           )}
           {stocks.map(stock => (
@@ -138,8 +131,9 @@ const Stocks = ({ match }) => {
               isEvent={isEvent}
               isOfferSynchronized={isOfferSynchronized}
               key={stock.id}
+              offerId={offerId}
               refreshOffer={getOffer}
-              setParentIsAdding={setIsAddingNewStock}
+              setIsAddingNewStock={setIsAddingNewStock}
               setParentIsEditing={setIsEditing}
               stock={stock}
             />

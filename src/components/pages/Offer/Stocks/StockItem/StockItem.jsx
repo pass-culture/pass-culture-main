@@ -11,12 +11,13 @@ import * as pcapi from 'repository/pcapi/pcapi'
 export const StockItem = ({
   departmentCode,
   isEvent,
+  isNewStock,
   isOfferSynchronized,
+  offerId,
   refreshOffer,
   stock,
-  setParentIsAdding,
+  setIsAddingNewStock,
   setParentIsEditing,
-  isNewStock,
 }) => {
   const today = new Date().toISOString()
 
@@ -144,10 +145,14 @@ export const StockItem = ({
     refreshOffer,
   ])
 
+  const removeNewStockLine = useCallback(() => {
+    setIsAddingNewStock(false)
+  }, [setIsAddingNewStock])
+
   const saveNewStock = useCallback(() => {
     pcapi
       .createStock({
-        offerId: stock.offerId,
+        offerId: offerId,
         beginningDatetime: beginningDatetime,
         bookingLimitDatetime: getBookingLimitDatetimeForEvent(),
         price: price ? price : 0,
@@ -155,21 +160,17 @@ export const StockItem = ({
       })
       .then(() => {
         refreshOffer()
-        setParentIsAdding(false)
+        removeNewStockLine()
       })
   }, [
-    stock.offerId,
+    offerId,
     beginningDatetime,
     getBookingLimitDatetimeForEvent,
     price,
     totalQuantity,
     refreshOffer,
-    setParentIsAdding,
+    removeNewStockLine,
   ])
-
-  const removeNewStockLine = useCallback(() => {
-    setParentIsAdding(false)
-  }, [setParentIsAdding])
 
   return (
     <Fragment>
@@ -281,7 +282,7 @@ export const StockItem = ({
           ) : (
             <button
               className="secondary-button"
-              onClick={!isNewStock ? refreshStock : removeNewStockLine}
+              onClick={isNewStock ? removeNewStockLine : refreshStock}
               type="button"
             >
               <Icon
@@ -306,6 +307,15 @@ export const StockItem = ({
 
 StockItem.defaultProps = {
   isNewStock: false,
+  stock: {
+    id: '',
+    bookingsQuantity: 0,
+    isEventDeletable: false,
+    beginningDatetime: '',
+    bookingLimitDatetime: '',
+    price: 0,
+    quantity: null,
+  },
 }
 
 StockItem.propTypes = {
@@ -313,8 +323,9 @@ StockItem.propTypes = {
   isEvent: PropTypes.bool.isRequired,
   isNewStock: PropTypes.bool,
   isOfferSynchronized: PropTypes.bool.isRequired,
+  offerId: PropTypes.string.isRequired,
   refreshOffer: PropTypes.func.isRequired,
-  setParentIsAdding: PropTypes.func.isRequired,
+  setIsAddingNewStock: PropTypes.func.isRequired,
   setParentIsEditing: PropTypes.func.isRequired,
   stock: PropTypes.shape({
     id: PropTypes.string.isRequired,
@@ -324,5 +335,5 @@ StockItem.propTypes = {
     bookingLimitDatetime: PropTypes.string,
     price: PropTypes.number.isRequired,
     quantity: PropTypes.number,
-  }).isRequired,
+  }),
 }
