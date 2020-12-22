@@ -1,4 +1,8 @@
 .stocks-page {
+  h2 {
+    @include title3();
+  }
+
   .tertiary-button {
     margin-top: rem(26px);
 
