@@ -416,6 +416,8 @@ L'option -f est également disponible pour la commande bash :
 pc -e <testing|staging|production> -f myfile.extension bash
 ```
 
+Le fichier se trouve à l'emplacement `/tmp/uploads/myfile.extension`
+
 ### Acceder au logs des bases de données
 
 En local :
