@@ -9,16 +9,13 @@ import pcapi.core.bookings.api as bookings_api
 from pcapi.core.bookings.models import Booking
 import pcapi.core.bookings.repository as booking_repository
 import pcapi.core.bookings.validation as bookings_validation
-from pcapi.domain.user_activation import create_initial_deposit
 from pcapi.domain.users import check_is_authorized_to_access_bookings_recap
 from pcapi.flask_app import private_api
 from pcapi.flask_app import public_api
 from pcapi.models import ApiKey
 from pcapi.models import EventType
 from pcapi.models import RightsType
-from pcapi.models import UserSQLEntity
 from pcapi.models.offer_type import ProductType
-from pcapi.repository import repository
 from pcapi.repository.api_key_queries import find_api_key_by_value
 from pcapi.routes.serialization import serialize
 from pcapi.routes.serialization import serialize_booking
@@ -32,7 +29,6 @@ from pcapi.validation.routes.users_authentifications import check_user_is_logged
 from pcapi.validation.routes.users_authentifications import login_or_api_key_required_v2
 from pcapi.validation.routes.users_authorizations import check_api_key_allows_to_cancel_booking
 from pcapi.validation.routes.users_authorizations import check_api_key_allows_to_validate_booking
-from pcapi.validation.routes.users_authorizations import check_user_can_validate_activation_offer
 from pcapi.validation.routes.users_authorizations import check_user_can_validate_bookings
 from pcapi.validation.routes.users_authorizations import check_user_can_validate_bookings_v2
 
@@ -175,13 +171,6 @@ def patch_booking_keep_by_token(token: str):
     bookings_api.mark_as_unused(booking)
 
     return "", 204
-
-
-def _activate_user(user_to_activate: UserSQLEntity) -> None:
-    check_user_can_validate_activation_offer(current_user)
-    user_to_activate.isBeneficiary = True
-    deposit = create_initial_deposit(user_to_activate)
-    repository.save(deposit)
 
 
 def _get_api_key_from_header(received_request: Dict) -> ApiKey:

@@ -5,9 +5,7 @@ from typing import Iterable
 from pcapi.core.beneficiaries import api as beneficiaries_api
 from pcapi.domain.password import generate_reset_token
 from pcapi.domain.password import random_password
-from pcapi.models.api_errors import ApiErrors
 from pcapi.models.beneficiary_import_status import ImportStatus
-from pcapi.models.deposit import Deposit
 from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.scripts.beneficiary import THIRTY_DAYS_IN_HOURS
 
@@ -33,16 +31,6 @@ class ActivationUser:
 
     def as_csv_row(self):
         return [self.first_name, self.last_name, self.email, self.token]
-
-
-def create_initial_deposit(user_to_activate: UserSQLEntity) -> Deposit:
-    existing_deposits = Deposit.query.filter_by(userId=user_to_activate.id).all()
-    if existing_deposits:
-        error = AlreadyActivatedException()
-        error.add_error("user", "Cet utilisateur a déjà crédité son pass Culture")
-        raise error
-
-    return beneficiaries_api.create_deposit(user_to_activate, "fichier csv")
 
 
 def generate_activation_users_csv(activation_users: Iterable[ActivationUser]) -> str:
@@ -84,7 +72,3 @@ def is_import_status_change_allowed(current_status: ImportStatus, new_status: Im
         if new_status in (ImportStatus.REJECTED, ImportStatus.RETRY):
             return True
     return False
-
-
-class AlreadyActivatedException(ApiErrors):
-    pass

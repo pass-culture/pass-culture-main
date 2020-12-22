@@ -10,9 +10,9 @@ from werkzeug.exceptions import HTTPException
 from werkzeug.exceptions import MethodNotAllowed
 from werkzeug.exceptions import NotFound
 
+from pcapi.core.beneficiaries.exceptions import AlreadyActivatedException
 import pcapi.core.offers.exceptions as offers_exceptions
 from pcapi.domain.identifier.identifier import NonProperlyFormattedScrambledId
-from pcapi.domain.user_activation import AlreadyActivatedException
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import DateTimeCastError
 from pcapi.models.api_errors import DecimalCastError

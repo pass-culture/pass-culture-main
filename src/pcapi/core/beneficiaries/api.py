@@ -21,13 +21,9 @@ def activate_beneficiary(user: UserSQLEntity, deposit_source: str) -> UserSQLEnt
 
 
 def create_deposit(beneficiary: UserSQLEntity, deposit_source: str) -> Deposit:
-
-    # should we add a check ?
-    # existing_deposits = Deposit.query.filter_by(userId=user_to_activate.id).all()
-    # if existing_deposits:
-    #     error = AlreadyActivatedException()
-    #     error.add_error("user", "Cet utilisateur a déjà crédité son pass Culture")
-    #     raise error
+    existing_deposits = bool(Deposit.query.filter_by(userId=beneficiary.id).count())
+    if existing_deposits:
+        raise exceptions.AlreadyActivatedException({"user": ["Cet utilisateur a déjà crédité son pass Culture"]})
 
     deposit = Deposit(
         amount=DEPOSIT_DEFAULT_AMOUNT,
