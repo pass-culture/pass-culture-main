@@ -22,6 +22,7 @@ def retrieve_data_for_offerer_booking_recap_email(booking: Booking, recipients: 
     user_email = booking.user.email
     user_firstname = booking.user.firstName
     user_lastname = booking.user.lastName
+    user_phoneNumber = booking.user.phoneNumber or ""
     departement_code = offer.venue.departementCode or "numérique"
     offer_type = offer.type
     is_event = int(offer.isEvent)
@@ -48,9 +49,11 @@ def retrieve_data_for_offerer_booking_recap_email(booking: Booking, recipients: 
             "quantity": quantity,
             "contremarque": booking.token,
             "prix": price,
+            # FIXME (asaunier, 2020-12-15): These information seems unused by the template
             "users": extract_users_information_from_bookings(bookings),
             "user_firstName": user_firstname,
             "user_lastName": user_lastname,
+            "user_phoneNumber": user_phoneNumber,
             "user_email": user_email,
             "lien_offre_pcpro": offer_link,
             "departement": departement_code,

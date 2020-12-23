@@ -51,6 +51,7 @@ def get_expected_base_email_data(booking, **overrides):
             "user_firstName": "John",
             "user_lastName": "Doe",
             "user_email": "john@example.com",
+            "user_phoneNumber": "",
             "is_event": 1,
             "can_expire": 0,
             "nombre_resa": 1,
@@ -204,3 +205,16 @@ def test_with_two_users_who_booked_the_same_offer():
         "contremarque": "ABC123",
     }
     assert sorted(user_data, key=lambda d: d["firstName"]) == [jane, john]
+
+
+@pytest.mark.usefixtures("db_session")
+def test_should_add_user_phone_number_to_vars():
+    # given
+    booking = make_booking(user__phoneNumber="0123456789")
+
+    # when
+    email_data = retrieve_data_for_offerer_booking_recap_email(booking, [])
+
+    # then
+    template_vars = email_data["Vars"]
+    assert template_vars["user_phoneNumber"] == "0123456789"
