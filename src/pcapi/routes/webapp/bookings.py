@@ -6,7 +6,6 @@ import pcapi.core.bookings.api as bookings_api
 from pcapi.core.bookings.models import Booking
 from pcapi.flask_app import private_api
 from pcapi.infrastructure.container import get_bookings_for_beneficiary
-from pcapi.models import Recommendation
 from pcapi.models import Stock
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
@@ -44,17 +43,11 @@ def get_booking(booking_id: int):
 @spectree_serialize(response_model=PostBookingResponseModel, on_success_status=201)
 def create_booking(body: PostBookingBodyModel) -> PostBookingResponseModel:
     stock = Stock.query.filter_by(id=dehumanize(body.stock_id)).first_or_404() if body.stock_id else None
-    recommendation = (
-        Recommendation.query.filter_by(id=dehumanize(body.recommendation_id)).first_or_404()
-        if body.recommendation_id
-        else None
-    )
 
     booking = bookings_api.book_offer(
         beneficiary=current_user,
         stock=stock,
         quantity=body.quantity,
-        recommendation=recommendation,
     )
 
     return PostBookingResponseModel(**serialize_booking_minimal(booking))

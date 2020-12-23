@@ -23,7 +23,6 @@ from sqlalchemy import *
 from pcapi.domain import *
 from pcapi.local_providers import *
 from pcapi.models import *
-from pcapi.recommendations_engine import *
 from pcapi.repository.offer_queries import *
 from pcapi.repository.user_queries import *
 from pcapi.sandboxes import *

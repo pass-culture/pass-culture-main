@@ -32,7 +32,6 @@ class FeatureToggle(enum.Enum):
     UPDATE_DISCOVERY_VIEW = "Permettre la mise à jour des données du carousel"
     UPDATE_BOOKING_USED = "Permettre la validation automatique des contremarques 48h après la fin de lévènement"
     WEBAPP_SIGNUP = "Permettre aux bénéficiaires de créer un compte"
-    RECOMMENDATIONS_WITH_GEOLOCATION = "Permettre aux utilisateurs davoir accès aux offres à 100km de leur position"
     SAVE_SEEN_OFFERS = "Enregistrer en base les offres déjà vues par les utilisateurs"
     API_SIRENE_AVAILABLE = "Active les fonctionnalitées liées à l'API Sirene"
     CLEAN_DISCOVERY_VIEW = "Nettoyer les données en base de données liées à la mise à jour régulière"

@@ -1,7 +1,6 @@
 from pcapi.model_creators.generic_creators import PLAIN_DEFAULT_TESTING_PASSWORD
 from pcapi.routes.serialization import as_dict
 from pcapi.utils.includes import BENEFICIARY_INCLUDES
-from pcapi.utils.includes import RECOMMENDATION_INCLUDES
 from pcapi.utils.includes import USER_INCLUDES
 
 
@@ -9,8 +8,8 @@ def get_booking_helper(booking):
     return dict(
         as_dict(booking),
         **{
-            "eventOrThingName": booking.recommendation.offer.product.name,
-            "venueName": booking.recommendation.offer.venue.name,
+            "eventOrThingName": booking.stock.offer.product.name,
+            "venueName": booking.stock.offer.venue.name,
         },
     )
 
@@ -78,7 +77,3 @@ def get_beneficiary_helper(user):
 
 def get_venue_helper(venue):
     return as_dict(venue)
-
-
-def get_recommendation_helper(recommendation):
-    return as_dict(recommendation, includes=RECOMMENDATION_INCLUDES)

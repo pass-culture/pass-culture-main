@@ -11,7 +11,6 @@ from pcapi.repository import repository
 from pcapi.repository.iris_venues_queries import delete_venue_from_iris_venues
 from pcapi.repository.iris_venues_queries import find_ids_of_irises_located_near_venue
 from pcapi.repository.iris_venues_queries import find_venues_located_near_iris
-from pcapi.repository.iris_venues_queries import get_iris_containing_user_location
 from pcapi.repository.iris_venues_queries import insert_venue_in_iris_venue
 
 
@@ -130,66 +129,6 @@ class DeleteVenueFromIrisVenuesTest:
 
         # Then
         assert IrisVenues.query.count() == 1
-
-
-class GetIrisContainingUserLocationTest:
-    @pytest.mark.usefixtures("db_session")
-    def test_should_link_user_to_iris_when_his_location_is_in_one_iris(self, app):
-        # Given
-        user_latitude = 49.894171
-        user_longitude = 2.295695
-
-        polygon_1 = Polygon([(0, 0), (0, 2), (2, 0), (2, 2)])
-        polygon_2 = Polygon(
-            [(2.195693, 49.994169), (2.195693, 47.894173), (2.595697, 47.894173), (2.595697, 49.994169)]
-        )
-
-        iris_1 = create_iris(polygon_1)
-        iris_2 = create_iris(polygon_2)
-
-        repository.save(iris_1, iris_2)
-
-        # When
-        iris_id = get_iris_containing_user_location(user_latitude, user_longitude)
-
-        # Then
-        assert iris_id == iris_2.id
-
-    @pytest.mark.usefixtures("db_session")
-    def test_should_link_user_to_first_iris_returned_when_his_location_is_in_two_irises(self, app):
-        # Given
-        user_latitude = 49.894171
-        user_longitude = 2.295695
-
-        polygon_1 = Polygon(
-            [(2.095693, 50.994169), (2.095693, 47.894173), (2.795697, 47.894173), (2.795697, 50.994169)]
-        )
-        polygon_2 = Polygon(
-            [(2.195693, 49.994169), (2.195693, 47.894173), (2.595697, 47.894173), (2.595697, 49.994169)]
-        )
-
-        iris_1 = create_iris(polygon_1)
-        iris_2 = create_iris(polygon_2)
-
-        repository.save(iris_1, iris_2)
-
-        # When
-        iris_id = get_iris_containing_user_location(user_latitude, user_longitude)
-
-        # Then
-        assert iris_id == iris_1.id
-
-    @pytest.mark.usefixtures("db_session")
-    def test_should_not_link_user_to_iris_if_no_iris_is_found(self, app):
-        # Given
-        user_latitude = 0
-        user_longitude = 0
-
-        # When
-        iris_id = get_iris_containing_user_location(user_latitude, user_longitude)
-
-        # Then
-        assert iris_id is None
 
 
 class FindVenuesLocatedNearIrisTest:

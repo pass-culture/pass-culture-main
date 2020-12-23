@@ -61,7 +61,6 @@ def _serialize_beneficiary_booking(
         "isCancelled": beneficiary_booking.isCancelled,
         "isUsed": beneficiary_booking.isUsed,
         "quantity": beneficiary_booking.quantity,
-        "recommendationId": humanize(beneficiary_booking.recommendationId),
         "stock": {
             "id": humanize(beneficiary_booking.stockId),
             "beginningDatetime": serialize(beneficiary_booking.beginningDatetime),

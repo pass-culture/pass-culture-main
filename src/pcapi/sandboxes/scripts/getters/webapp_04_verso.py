@@ -3,26 +3,12 @@ from pcapi.models import Offer
 from pcapi.models import Product
 from pcapi.models import Stock
 from pcapi.models import UserSQLEntity
-from pcapi.models.recommendation import Recommendation
 from pcapi.repository.user_queries import keep_only_webapp_users
 from pcapi.sandboxes.scripts.utils.bookings import find_offer_compatible_with_bookings
 from pcapi.sandboxes.scripts.utils.bookings import get_cancellable_bookings_for_user
 from pcapi.sandboxes.scripts.utils.helpers import get_beneficiary_helper
 from pcapi.sandboxes.scripts.utils.helpers import get_mediation_helper
 from pcapi.sandboxes.scripts.utils.helpers import get_offer_helper
-from pcapi.sandboxes.scripts.utils.helpers import get_recommendation_helper
-
-
-def get_existing_webapp_user_with_at_least_one_recommendation():
-    query = Recommendation.query.join(UserSQLEntity)
-    query = keep_only_webapp_users(query)
-    query = query.reset_joinpoint().join(Offer)
-
-    recommendation = query.first()
-    return {
-        "user": get_beneficiary_helper(recommendation.user),
-        "recommendation": get_recommendation_helper(recommendation),
-    }
 
 
 def get_existing_webapp_hnmm_user(return_as_dict=False):

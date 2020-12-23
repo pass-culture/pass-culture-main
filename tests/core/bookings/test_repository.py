@@ -21,7 +21,6 @@ from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_deposit
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_payment
-from pcapi.model_creators.generic_creators import create_recommendation
 from pcapi.model_creators.generic_creators import create_stock
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
@@ -641,103 +640,6 @@ class FindAllNotUsedAndNotCancelledTest:
 
         # Then
         assert bookings == [booking1]
-
-
-class GetValidBookingsByUserId:
-    @pytest.mark.usefixtures("db_session")
-    def test_should_return_bookings_by_user_id(self, app: fixture):
-        # Given
-        user1 = create_user(email="me@example.net")
-        create_deposit(user1)
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue)
-        stock = create_stock(offer=offer)
-        user2 = create_user(email="fa@example.net")
-        create_deposit(user2)
-        booking1 = create_booking(user=user1, stock=stock)
-        booking2 = create_booking(user=user2, stock=stock)
-        repository.save(booking1, booking2)
-
-        # When
-        bookings = booking_repository.find_user_bookings_for_recommendation(user1.id)
-
-        # Then
-        assert bookings == [booking1]
-
-    @pytest.mark.usefixtures("db_session")
-    def test_should_return_bookings_when_there_is_one_cancelled_booking(self, app: fixture):
-        # Given
-        user = create_user()
-        create_deposit(user)
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue)
-        stock = create_stock(offer=offer)
-        offer2 = create_offer_with_event_product(venue)
-        stock2 = create_stock(offer=offer2)
-        booking1 = create_booking(user=user, is_cancelled=True, stock=stock)
-        booking2 = create_booking(user=user, is_cancelled=False, stock=stock)
-        booking3 = create_booking(user=user, is_cancelled=False, stock=stock2)
-        repository.save(booking1, booking2, booking3)
-
-        # When
-        bookings = booking_repository.find_user_bookings_for_recommendation(user.id)
-
-        # Then
-        assert booking1 not in bookings
-
-    @pytest.mark.usefixtures("db_session")
-    def test_should_return_most_recent_booking_when_two_cancelled_on_same_stock(self, app: fixture):
-        # Given
-        user = create_user()
-        create_deposit(user)
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue)
-        stock = create_stock(offer=offer)
-        booking1 = create_booking(user=user, date_created=TWO_DAYS_AGO, is_cancelled=True, stock=stock)
-        booking2 = create_booking(user=user, date_created=THREE_DAYS_AGO, is_cancelled=True, stock=stock)
-        repository.save(booking1, booking2)
-
-        # When
-        bookings = booking_repository.find_user_bookings_for_recommendation(user.id)
-
-        # Then
-        assert bookings == [booking1]
-
-    @pytest.mark.usefixtures("db_session")
-    def test_should_return_bookings_ordered_by_beginning_date_time_ascendant(self, app: fixture):
-        # Given
-        two_days = NOW + timedelta(days=2, hours=10)
-        two_days_bis = NOW + timedelta(days=2, hours=20)
-        three_days = NOW + timedelta(days=3)
-        user = create_user()
-        create_deposit(user)
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer1 = create_offer_with_event_product(venue)
-        stock1 = create_stock(beginning_datetime=three_days, booking_limit_datetime=NOW, offer=offer1)
-        offer2 = create_offer_with_event_product(venue)
-        stock2 = create_stock(beginning_datetime=two_days, booking_limit_datetime=NOW, offer=offer2)
-        offer3 = create_offer_with_event_product(venue)
-        stock3 = create_stock(beginning_datetime=two_days_bis, booking_limit_datetime=NOW, offer=offer3)
-        booking1 = create_booking(
-            user=user, stock=stock1, recommendation=create_recommendation(user=user, offer=offer1)
-        )
-        booking2 = create_booking(
-            user=user, stock=stock2, recommendation=create_recommendation(user=user, offer=offer2)
-        )
-        booking3 = create_booking(
-            user=user, stock=stock3, recommendation=create_recommendation(user=user, offer=offer3)
-        )
-        repository.save(booking1, booking2, booking3)
-
-        # When
-        bookings = booking_repository.find_user_bookings_for_recommendation(user.id)
-
-        # Then
-        assert bookings == [booking1, booking3, booking2]
 
 
 class FindByTokenTest:

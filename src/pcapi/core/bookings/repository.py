@@ -11,7 +11,6 @@ from sqlalchemy import func
 from sqlalchemy import text
 from sqlalchemy.orm import Query
 from sqlalchemy.orm import joinedload
-from sqlalchemy.orm import selectinload
 from sqlalchemy.util._collections import AbstractKeyedTuple
 
 from pcapi.core.bookings import conf
@@ -34,17 +33,12 @@ from pcapi.models.offer_type import ThingType
 from pcapi.models.offerer import Offerer
 from pcapi.models.payment import Payment
 from pcapi.models.payment_status import TransactionStatus
-from pcapi.models.recommendation import Recommendation
 from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.utils.date import get_department_timezone
 from pcapi.utils.token import random_token
 
 
 DUO_QUANTITY = 2
-
-
-def find_from_recommendation(recommendation: Recommendation, user_id: int) -> List[Booking]:
-    return _build_find_ordered_user_bookings(user_id=user_id).filter(Offer.id == recommendation.offerId).all()
 
 
 def find_by(token: str, email: str = None, offer_id: int = None) -> Booking:
@@ -129,15 +123,6 @@ def token_exists(token: str) -> bool:
 
 def find_not_used_and_not_cancelled() -> List[Booking]:
     return Booking.query.filter(Booking.isUsed.is_(False)).filter(Booking.isCancelled.is_(False)).all()
-
-
-def find_user_bookings_for_recommendation(user_id: int) -> List[Booking]:
-    return _build_find_ordered_user_bookings(user_id).all()
-
-
-def get_only_offer_ids_from_bookings(user: UserSQLEntity) -> List[int]:
-    offers_booked = Offer.query.join(Stock).join(Booking).filter_by(userId=user.id).with_entities(Offer.id).all()
-    return [offer.id for offer in offers_booked]
 
 
 def find_used_by_token(token: str) -> Booking:
@@ -414,17 +399,6 @@ def _query_keep_only_used_and_non_cancelled_bookings_on_non_activation_offers() 
         .join(VenueSQLEntity)
         .filter(Booking.isCancelled.is_(False))
         .filter(Booking.isUsed.is_(True))
-    )
-
-
-def _build_find_ordered_user_bookings(user_id: int) -> Query:
-    return (
-        Booking.query.join(Stock)
-        .join(Offer)
-        .distinct(Booking.stockId)
-        .filter(Booking.userId == user_id)
-        .order_by(Booking.stockId, Booking.isCancelled, Booking.dateCreated.desc())
-        .options(selectinload(Booking.stock))
     )
 
 

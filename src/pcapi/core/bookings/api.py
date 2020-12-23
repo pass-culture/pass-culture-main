@@ -18,7 +18,6 @@ from pcapi.core.bookings.repository import generate_booking_token
 from pcapi.core.offers.models import Stock
 from pcapi.infrastructure.services.notification.mailjet_notification_service import MailjetNotificationService
 from pcapi.models.feature import FeatureToggle
-from pcapi.models.recommendation import Recommendation
 from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.repository import feature_queries
 from pcapi.repository import repository
@@ -38,7 +37,6 @@ def book_offer(
     beneficiary: UserSQLEntity,
     stock: Stock,
     quantity: int,
-    recommendation: Recommendation = None,
 ) -> Booking:
     """Return a booking or raise an exception if it's not possible."""
     validation.check_can_book_free_offer(beneficiary, stock)
@@ -64,8 +62,6 @@ def book_offer(
         quantity=quantity,
         token=generate_booking_token(),
     )
-    if recommendation:
-        booking.recommendationId = recommendation.id
 
     expenses = booking_repository.get_user_expenses(beneficiary)
     validation.check_expenses_limits(expenses, booking.total_amount, stock.offer)

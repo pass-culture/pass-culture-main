@@ -81,7 +81,6 @@ class PostBookingStockModel(BaseModel):
 
 class PostBookingBodyModel(BaseModel):
     stock_id: str
-    recommendation_id: Optional[str]
     quantity: int
 
     class Config:

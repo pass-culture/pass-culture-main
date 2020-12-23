@@ -63,24 +63,6 @@ OFFER_INCLUDES = [
     },
 ]
 
-RECOMMENDATION_INCLUDES = [
-    "thumbUrl",
-    {
-        "key": "offer",
-        "includes": [
-            "dateRange",
-            "isEvent",
-            "hasBookingLimitDatetimesPassed",
-            "isThing",
-            "offerType",
-            "stocks",
-            {
-                "key": "venue",
-                "includes": ["-validationToken", {"key": "managingOfferer", "includes": ["-validationToken"]}],
-            },
-        ],
-    },
-]
 
 USER_INCLUDES = [
     "-culturalSurveyId",

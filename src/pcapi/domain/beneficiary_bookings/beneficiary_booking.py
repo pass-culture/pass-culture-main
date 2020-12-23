@@ -25,7 +25,6 @@ class BeneficiaryBooking:
         isCancelled: bool,
         isUsed: bool,
         quantity: int,
-        recommendationId: Optional[int],
         stockId: int,
         token: str,
         userId: int,
@@ -77,7 +76,6 @@ class BeneficiaryBooking:
         self.isCancelled = isCancelled
         self.isUsed = isUsed
         self.quantity = quantity
-        self.recommendationId = recommendationId
         self.stockId = stockId
         self.token = token
         self.userId = userId

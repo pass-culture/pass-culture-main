@@ -37,10 +37,6 @@ class Booking(PcObject, Model, VersionedMixin):
 
     dateUsed = Column(DateTime, nullable=True)
 
-    recommendationId = Column(BigInteger, ForeignKey("recommendation.id"), index=True)
-
-    recommendation = relationship("Recommendation", foreign_keys=[recommendationId], backref="bookings")
-
     stockId = Column(BigInteger, ForeignKey("stock.id"), index=True, nullable=False)
 
     stock = relationship("Stock", foreign_keys=[stockId], backref="bookings")
@@ -107,23 +103,19 @@ class Booking(PcObject, Model, VersionedMixin):
 
     @property
     def thumbUrl(self):
-        if self.recommendation:
-            return self.recommendation.thumbUrl
         if self.stock.offer.activeMediation:
             return self.stock.offer.activeMediation.thumbUrl
         return self.stock.offer.product.thumbUrl
 
     @property
     def mediation(self):
-        if not self.recommendation:
-            return None
-        return self.recommendation.mediation
+        # TODO (viconnex, 2020-12-23) remove mediation usages
+        return None
 
     @property
     def mediationId(self):
-        if not self.recommendation:
-            return None
-        return self.recommendation.mediationId
+        # TODO (viconnex, 2020-12-23) remove mediationId usages
+        return None
 
     @property
     def qrCode(self):

@@ -17,8 +17,6 @@ from pcapi.models.criterion import Criterion
 from pcapi.models.db import db
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.deposit import Deposit
-from pcapi.models.discovery_view import DiscoveryView
-from pcapi.models.discovery_view_v3 import DiscoveryViewV3
 from pcapi.models.email import Email
 from pcapi.models.extra_data_mixin import ExtraDataMixin
 from pcapi.models.favorite_sql_entity import FavoriteSQLEntity
@@ -40,8 +38,6 @@ from pcapi.models.product import BookFormat
 from pcapi.models.product import Product
 from pcapi.models.providable_mixin import ProvidableMixin
 from pcapi.models.provider import Provider
-from pcapi.models.recommendation import Recommendation
-from pcapi.models.seen_offers import SeenOffer
 from pcapi.models.user_offerer import RightsType
 from pcapi.models.user_offerer import UserOfferer
 from pcapi.models.user_session import UserSession
@@ -95,9 +91,6 @@ __all__ = (
     "PaymentMessage",
     "Provider",
     "Product",
-    "Recommendation",
-    "DiscoveryView",
-    "DiscoveryViewV3",
     "RightsType",
     "ThingType",
     "Token",
@@ -107,7 +100,6 @@ __all__ = (
     "VenueSQLEntity",
     "VenueType",
     "VenueLabelSQLEntity",
-    "SeenOffer",
 )
 
 # Order matters
@@ -131,7 +123,6 @@ models = (
     Product,
     Offer,
     Mediation,
-    Recommendation,
     FavoriteSQLEntity,
     Feature,
     Stock,
@@ -146,11 +137,5 @@ models = (
     PaymentStatus,
     IrisFrance,
     IrisVenues,
-    SeenOffer,
     Token,
-)
-
-materialized_views = (
-    DiscoveryView,
-    DiscoveryViewV3,
 )

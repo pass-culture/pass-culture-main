@@ -11,7 +11,7 @@ Pour faire un feature flipping dans l'API du pass Culture, les étapes suivantes
 exemple :
 
 ```python
-RECOMMENDATIONS_WITH_DISCOVERY_VIEW = 'Permettre aux utilisateurs d''avoir des recommandations de manière plus rapide'
+WEBAPP_SIGNUP = 'Permettre aux bénéficiaires de créer un compte'
 ```
 
 - Dans le package routes, sur les routes qui seront mise à disposition ou non selon l'environnement :
@@ -21,12 +21,13 @@ Utiliser le décorateurs `@feature_required(FeatureToggle.{le nom de la constant
 Exemple :
 
 ```python
-@private_api.route('/v2/recommendations', methods=['PUT'])
-@login_required
-@feature_required(FeatureToggle.RECOMMENDATIONS_WITH_DISCOVERY_VIEW)
-@expect_json_datadefla route
-put_recommendations_v2():
-    json_keys = request.json.keys()
+@private_api.route("/users/signup/webapp", methods=["POST"])
+@feature_required(FeatureToggle.WEBAPP_SIGNUP)
+def signup_webapp():
+    objects_to_save = []
+    check_valid_signup_webapp(request)
+
+    new_user = UserSQLEntity(from_dict=request.json)
     ... code de la route
 ```
 

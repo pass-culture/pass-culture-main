@@ -51,7 +51,6 @@ def create_booking_activity(booking, table_name, verb, issued_at=datetime.utcnow
         "stockId": booking.stockId,
         "isCancelled": booking.isCancelled,
         "quantity": booking.quantity,
-        "recommendationId": booking.recommendationId,
         "isUsed": booking.isUsed,
     }
 

@@ -7,7 +7,6 @@ from typing import Iterable
 from typing import Optional
 
 from pcapi.core.bookings import api as bookings_api
-from pcapi.core.offers.models import Mediation
 from pcapi.models import Booking
 from pcapi.models import Deposit
 from pcapi.models import EventType
@@ -17,7 +16,6 @@ from pcapi.models import Payment
 from pcapi.models import PaymentMessage
 from pcapi.models import Product
 from pcapi.models import Provider
-from pcapi.models import Recommendation
 from pcapi.models import RightsType
 from pcapi.models import Stock
 from pcapi.models import ThingType
@@ -425,35 +423,6 @@ def create_offer_with_thing_product(
     return offer
 
 
-def create_recommendation(
-    offer: Offer = None,
-    user: UserSQLEntity = None,
-    date_created: datetime = datetime.utcnow(),
-    date_read: datetime = None,
-    date_updated: datetime = datetime.utcnow(),
-    idx: int = None,
-    is_clicked: bool = False,
-    is_first: bool = False,
-    mediation: Mediation = None,
-    search: str = None,
-    share_medium: str = None,
-) -> Recommendation:
-    recommendation = Recommendation()
-    recommendation.dateCreated = date_created
-    recommendation.dateRead = date_read
-    recommendation.dateUpdated = date_updated
-    recommendation.id = idx
-    recommendation.isClicked = is_clicked
-    recommendation.isFirst = is_first
-    recommendation.mediation = mediation
-    recommendation.offer = offer
-    recommendation.search = search
-    recommendation.shareMedium = share_medium
-    recommendation.user = user
-
-    return recommendation
-
-
 def create_booking(
     user: UserSQLEntity,
     amount: int = None,
@@ -463,7 +432,6 @@ def create_booking(
     is_cancelled: bool = False,
     is_used: bool = False,
     quantity: int = 1,
-    recommendation: Recommendation = None,
     stock: Stock = None,
     token: str = None,
     venue: VenueSQLEntity = None,
@@ -487,11 +455,8 @@ def create_booking(
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=price)
 
-    if recommendation:
-        booking.recommendation = recommendation
-    elif not stock.offer:
-        offer = create_offer_with_thing_product(venue)
-        booking.recommendation = create_recommendation(offer=offer, user=user)
+    if not stock.offer:
+        stock.offer = create_offer_with_thing_product(venue)
 
     booking.user = user
     booking.amount = stock.price

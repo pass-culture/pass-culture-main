@@ -1,109 +1,21 @@
 from datetime import datetime
-from typing import Iterable
 from typing import List
-from typing import Optional
 
 from flask_sqlalchemy import BaseQuery
 from sqlalchemy import func
-from sqlalchemy import nullsfirst
 from sqlalchemy import or_
 from sqlalchemy.orm import aliased
 from sqlalchemy.orm import joinedload
 from sqlalchemy.sql import selectable
 
-from pcapi.core.bookings.repository import get_only_offer_ids_from_bookings
 from pcapi.models import Booking
 from pcapi.models import DiscoveryView
-from pcapi.models import DiscoveryViewV3
 from pcapi.models import Offer
-from pcapi.models import SeenOffer
 from pcapi.models import Stock
-from pcapi.models import UserSQLEntity
 from pcapi.models import VenueSQLEntity
-from pcapi.models.db import Model
-from pcapi.models.feature import FeatureToggle
-from pcapi.repository import feature_queries
-from pcapi.repository.favorite_queries import get_only_offer_ids_from_favorites
-from pcapi.repository.iris_venues_queries import find_venues_located_near_iris
-from pcapi.repository.venue_queries import get_only_venue_ids_for_department_codes
-from pcapi.use_cases.diversify_recommended_offers import order_offers_by_diversified_types
 
 
 ALL_DEPARTMENTS_CODE = "00"
-
-
-def get_offers_for_recommendation(
-    user: UserSQLEntity, departement_codes: List[str] = None, limit: int = None, sent_offers_ids: Iterable[int] = ()
-) -> List[DiscoveryView]:
-    favorite_ids = get_only_offer_ids_from_favorites(user)
-
-    offer_booked_ids = get_only_offer_ids_from_bookings(user)
-
-    discovery_view_query = (
-        DiscoveryView.query.filter(DiscoveryView.id.notin_(favorite_ids))
-        .filter(DiscoveryView.id.notin_(sent_offers_ids))
-        .filter(DiscoveryView.id.notin_(offer_booked_ids))
-    )
-
-    if ALL_DEPARTMENTS_CODE not in departement_codes:
-        venue_ids = get_only_venue_ids_for_department_codes(departement_codes)
-        discovery_view_query = keep_only_offers_in_venues_or_national(discovery_view_query, venue_ids)
-
-    if feature_queries.is_active(FeatureToggle.SAVE_SEEN_OFFERS):
-        discovery_view_query = order_offers_by_unseen_offers_first(discovery_view_query, DiscoveryView, user)
-
-    discovery_view_query = discovery_view_query.order_by(DiscoveryView.offerDiscoveryOrder)
-
-    if limit:
-        discovery_view_query = discovery_view_query.limit(limit)
-
-    return order_offers_by_diversified_types(discovery_view_query.all())
-
-
-def get_offers_for_recommendation_v3(
-    user: UserSQLEntity,
-    user_iris_id: Optional[int] = None,
-    user_is_geolocated: bool = False,
-    limit: Optional[int] = None,
-    sent_offers_ids: Iterable[int] = (),
-) -> List[DiscoveryViewV3]:
-    favorite_offers_ids = get_only_offer_ids_from_favorites(user)
-
-    booked_offers_ids = get_only_offer_ids_from_bookings(user)
-
-    discovery_view_query = (
-        DiscoveryViewV3.query.filter(DiscoveryViewV3.id.notin_(favorite_offers_ids))
-        .filter(DiscoveryViewV3.id.notin_(sent_offers_ids))
-        .filter(DiscoveryViewV3.id.notin_(booked_offers_ids))
-    )
-
-    if user_is_geolocated:
-        venue_ids = find_venues_located_near_iris(user_iris_id)
-        discovery_view_query = keep_only_offers_from_venues_located_near_to_user_or_national(
-            discovery_view_query, venue_ids
-        )
-
-    if feature_queries.is_active(FeatureToggle.SAVE_SEEN_OFFERS):
-        discovery_view_query = order_offers_by_unseen_offers_first(discovery_view_query, DiscoveryViewV3, user)
-
-    discovery_view_query = discovery_view_query.order_by(DiscoveryViewV3.offerDiscoveryOrder)
-
-    if limit:
-        discovery_view_query = discovery_view_query.limit(limit)
-
-    return order_offers_by_diversified_types(discovery_view_query.all())
-
-
-def order_offers_by_unseen_offers_first(query: BaseQuery, discovery_view_model: Model, user: UserSQLEntity):
-    return query.outerjoin(
-        SeenOffer, (SeenOffer.offerId == discovery_view_model.id) & (SeenOffer.userId == user.id)
-    ).order_by(nullsfirst(SeenOffer.dateSeen))
-
-
-def keep_only_offers_from_venues_located_near_to_user_or_national(
-    query: BaseQuery, venue_ids: Iterable[int] = ()
-) -> BaseQuery:
-    return query.filter(or_(DiscoveryViewV3.venueId.in_(venue_ids), DiscoveryViewV3.isNational == True))
 
 
 def keep_only_offers_in_venues_or_national(query: BaseQuery, venue_ids: selectable.Alias) -> BaseQuery:
