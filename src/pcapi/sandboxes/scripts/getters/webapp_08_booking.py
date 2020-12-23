@@ -6,7 +6,7 @@ from pcapi.models import Stock
 from pcapi.models import ThingType
 from pcapi.models import VenueSQLEntity
 from pcapi.models.user_sql_entity import UserSQLEntity
-from pcapi.repository.offer_queries import _filter_bookable_stocks_for_discovery
+from pcapi.repository.offer_queries import filter_bookable_stocks_query
 from pcapi.repository.user_queries import keep_only_webapp_users
 from pcapi.sandboxes.scripts.utils.helpers import get_beneficiary_helper
 from pcapi.sandboxes.scripts.utils.helpers import get_offer_helper
@@ -33,7 +33,7 @@ def get_non_free_offers_query_by_type():
 
     query = Offer.query
     query = get_query_join_on_thing(query)
-    query = _filter_bookable_stocks_for_discovery(query)
+    query = filter_bookable_stocks_query(query)
     query = query.filter(filter_not_an_activation_offer).filter(filter_not_free_price)
     return query
 

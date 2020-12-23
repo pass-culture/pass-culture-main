@@ -40,7 +40,7 @@ def _build_bookings_quantity_subquery():
     return bookings_quantity
 
 
-def _filter_bookable_stocks_for_discovery(stocks_query):
+def filter_bookable_stocks_query(stocks_query):
     beginning_date_is_in_the_future_predicate = Stock.beginningDatetime > datetime.utcnow()
     booking_limit_date_is_in_the_future_predicate = Stock.bookingLimitDatetime > datetime.utcnow()
     has_no_beginning_date_predicate = Stock.beginningDatetime == None
@@ -51,13 +51,12 @@ def _filter_bookable_stocks_for_discovery(stocks_query):
         (Stock.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0
     )
 
-    stocks_query = stocks_query.outerjoin(bookings_quantity, Stock.id == bookings_quantity.c.stockId).filter(
+    return stocks_query.outerjoin(bookings_quantity, Stock.id == bookings_quantity.c.stockId).filter(
         is_not_soft_deleted_predicate
         & (beginning_date_is_in_the_future_predicate | has_no_beginning_date_predicate)
         & (booking_limit_date_is_in_the_future_predicate | has_no_booking_limit_date_predicate)
         & has_remaining_stock
     )
-    return stocks_query
 
 
 def get_offer_by_id(offer_id: int):
