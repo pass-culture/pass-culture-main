@@ -149,3 +149,31 @@ class BeneficiaryUserViewTest:
         assert not _allow_suspension_and_unsuspension(basic_admin)
         super_admin = users_factories.UserFactory(email="super-admin@example.com", isAdmin=True)
         assert _allow_suspension_and_unsuspension(super_admin)
+
+    @clean_database
+    @patch("pcapi.admin.custom_views.beneficiary_user_view.flash")
+    @patch("pcapi.admin.custom_views.beneficiary_user_view.send_raw_email")
+    def test_beneficiary_user_edition_does_not_send_email(self, mocked_send_raw_email, mocked_flask_flash, app):
+        users_factories.UserFactory(email="user@example.com", isAdmin=True)
+        user_to_edit = users_factories.UserFactory(email="not_yet_edited@email.com", isAdmin=False)
+
+        data = dict(
+            email="edited@email.com",
+            firstName=user_to_edit.firstName,
+            lastName=user_to_edit.lastName,
+            dateOfBirth=user_to_edit.dateOfBirth,
+            departementCode=user_to_edit.departementCode,
+            postalCode=user_to_edit.postalCode,
+            isBeneficiary=user_to_edit.isBeneficiary,
+        )
+
+        client = TestClient(app.test_client()).with_auth("user@example.com")
+        response = client.post(f"/pc/back-office/beneficiary_users/edit/?id={user_to_edit.id}", form=data)
+
+        assert response.status_code == 302
+
+        user_edited = UserSQLEntity.query.filter_by(email="edited@email.com").one_or_none()
+        assert user_edited is not None
+
+        mocked_flask_flash.assert_not_called()
+        mocked_send_raw_email.assert_not_called()
