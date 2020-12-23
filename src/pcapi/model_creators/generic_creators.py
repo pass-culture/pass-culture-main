@@ -36,7 +36,6 @@ from pcapi.models import PaymentMessage
 from pcapi.models import PaymentStatus
 from pcapi.models import Provider
 from pcapi.models import RightsType
-from pcapi.models import SeenOffer
 from pcapi.models import Stock
 from pcapi.models import ThingType
 from pcapi.models import UserOfferer
@@ -383,16 +382,6 @@ def create_provider(
     provider.requireProviderIdentifier = require_provider_identifier
 
     return provider
-
-
-def create_seen_offer(offer: Offer, user: UserSQLEntity, date_seen: Optional[datetime] = None) -> SeenOffer:
-    if not date_seen:
-        date_seen = datetime.utcnow()
-    seen_offer = SeenOffer()
-    seen_offer.offer = offer
-    seen_offer.user = user
-    seen_offer.dateSeen = date_seen
-    return seen_offer
 
 
 def create_stock(

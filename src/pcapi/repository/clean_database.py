@@ -22,7 +22,6 @@ from pcapi.models import PaymentMessage
 from pcapi.models import PaymentStatus
 from pcapi.models import Product
 from pcapi.models import Provider
-from pcapi.models import SeenOffer
 from pcapi.models import Stock
 from pcapi.models import UserOfferer
 from pcapi.models import UserSQLEntity
@@ -57,7 +56,6 @@ def clean_all_database(*args, **kwargs):
     Mediation.query.delete()
     OfferCriterion.query.delete()
     Criterion.query.delete()
-    SeenOffer.query.delete()
     Offer.query.delete()
     Product.query.delete()
     BankInformation.query.delete()
