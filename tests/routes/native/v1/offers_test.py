@@ -4,6 +4,7 @@ from datetime import timedelta
 import pytest
 
 from pcapi.core.offers.factories import EventStockFactory
+from pcapi.core.offers.factories import MediationFactory
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import ThingStockFactory
 from pcapi.models.offer_type import EventType
@@ -38,6 +39,7 @@ class OffersTest:
             durationMinutes=33,
             visualDisabilityCompliant=True,
         )
+        mediation = MediationFactory(offer=offer, thumbCount=1, credit="street credit")
 
         bookableStock = EventStockFactory(offer=offer, price=12.34)
         notBookableStock = EventStockFactory(
@@ -86,7 +88,7 @@ class OffersTest:
                 "stageDirector": "metteur en scène",
                 "visa": "vasi",
             },
-            "imageUrl": None,
+            "image": {"url": mediation.thumbUrl, "credit": mediation.credit},
             "isDuo": True,
             "isDigital": offer.isDigital,
             "name": offer.name,
@@ -121,6 +123,7 @@ class OffersTest:
             "label": "Musée, arts visuels et patrimoine",
             "name": "VISITE",
         }
+        assert response.json["image"] is None
 
     def test_get_offer_not_found(self, app):
         response = TestClient(app.test_client()).get("/native/v1/offer/1")

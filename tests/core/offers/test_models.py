@@ -128,9 +128,9 @@ class OfferThumbUrlTest:
         assert offer.thumbUrl.startswith("http")
         assert offer.thumbUrl == product.thumbUrl
 
-    def test_defaults_to_empty_string(self):
+    def test_defaults_to_none(self):
         offer = models.Offer()
-        assert offer.thumbUrl == ""
+        assert offer.thumbUrl == None
 
 
 class OfferCategoryTest:

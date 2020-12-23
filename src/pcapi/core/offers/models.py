@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from datetime import datetime
 from datetime import timedelta
 from typing import List
@@ -214,6 +215,12 @@ Stock.trig_update_date_ddl = """
 event.listen(Stock.__table__, "after_create", DDL(Stock.trig_update_date_ddl))
 
 
+@dataclass
+class OfferImage:
+    url: str
+    credit: Optional[str] = None
+
+
 class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin, VersionedMixin):
     __tablename__ = "offer"
 
@@ -352,13 +359,23 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin, 
         return None
 
     @property
+    def image(self) -> Optional[OfferImage]:
+        activeMediation = self.activeMediation
+        if activeMediation:
+            url = activeMediation.thumbUrl
+            if url:
+                return OfferImage(url, activeMediation.credit)
+
+        productUrl = self.product.thumbUrl if self.product else None
+        if productUrl:
+            return OfferImage(productUrl, credit=None)
+
+        return None
+
+    @property
     def thumbUrl(self) -> str:
-        offer_has_active_mediation = any(map(lambda mediation: mediation.isActive, self.mediations))
-        if offer_has_active_mediation:
-            return self.activeMediation.thumbUrl
-        if self.product:
-            return self.product.thumbUrl
-        return ""
+        image = self.image
+        return image.url if image else None
 
     @property
     def is_offline_only(self) -> bool:

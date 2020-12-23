@@ -117,6 +117,14 @@ class OfferAccessibilityResponse(BaseModel):
     visualDisability: Optional[bool]
 
 
+class OfferImageResponse(BaseModel):
+    url: str
+    credit: Optional[str]
+
+    class Config:
+        orm_mode = True
+
+
 class OfferResponse(BaseModel):
     @classmethod
     def from_orm(cls, offer):  # type: ignore
@@ -148,7 +156,7 @@ class OfferResponse(BaseModel):
     name: str
     category: OfferCategoryResponse
     stocks: List[OfferStockResponse]
-    thumbUrl: Optional[str] = Field(None, alias="imageUrl")
+    image: Optional[OfferImageResponse]
     venue: OfferVenueResponse
     withdrawalDetails: Optional[str]
 
