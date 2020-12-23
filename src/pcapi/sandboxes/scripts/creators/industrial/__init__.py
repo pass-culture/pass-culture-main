@@ -24,7 +24,6 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerers_with
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_payments import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_pro_users import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_pro_users_api_keys import *
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_recommendations import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_thing_offers import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_thing_products import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_thing_stocks import *
@@ -70,13 +69,11 @@ def save_industrial_sandbox():
     discovery_view_queries.refresh()
     discovery_view_v3_queries.refresh()
 
-    recommendations_by_name = create_industrial_recommendations(offers_by_name, users_by_name)
-
     criteria_by_name = create_industrial_criteria()
 
     associate_criterion_to_one_offer_with_mediation(offers_by_name, criteria_by_name)
 
-    create_industrial_bookings(recommendations_by_name)
+    create_industrial_bookings(offers_by_name, users_by_name)
 
     create_industrial_payments()
 
