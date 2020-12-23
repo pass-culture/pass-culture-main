@@ -5,8 +5,8 @@ import PageTitle from 'components/layout/PageTitle/PageTitle'
 import * as pcapi from 'repository/pcapi/pcapi'
 
 import OfferCover from './OfferCover/OfferCover'
+import OfferCoverPlaceholder from './OfferCover/OfferCoverPlaceholder/OfferCoverPlaceholder'
 import OfferFormContainer from './OfferForm/OfferFormContainer'
-import OfferPreviewPlaceholder from './OfferPreviewPlaceholder/OfferPreviewPlaceholder'
 
 const OfferDetails = props => {
   const { history, isUserAdmin, location, offer } = props
@@ -95,7 +95,7 @@ const OfferDetails = props => {
 
         {showMediationForm && (
           <div className="sidebar">
-            {coverUrl ? <OfferCover url={coverUrl} /> : <OfferPreviewPlaceholder />}
+            {coverUrl ? <OfferCover url={coverUrl} /> : <OfferCoverPlaceholder />}
           </div>
         )}
       </div>
