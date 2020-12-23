@@ -82,6 +82,7 @@ describe('offerDetails - Edition', () => {
     ]
     editedOffer = {
       id: 'ABC12',
+      mediations: [],
       name: 'My edited offer',
     }
     props = {
@@ -94,6 +95,39 @@ describe('offerDetails - Edition', () => {
   })
 
   describe('render when editing an existing offer', () => {
+    describe('when mediations exist', () => {
+      it('should display the first actived cover', async () => {
+        // Given
+        editedOffer.mediations = [
+          {
+            isActive: false,
+            thumbUrl: 'http://fake-url/fake-image1.png',
+          },
+          {
+            isActive: true,
+            thumbUrl: 'http://fake-url/fake-image2.png',
+          },
+        ]
+
+        // When
+        renderOffers({}, store)
+
+        // Then
+        const cover = await screen.findByAltText('Couverture de l’offre')
+        expect(cover).toHaveAttribute('src', 'http://fake-url/fake-image2.png')
+      })
+    })
+
+    describe('when mediations do not exist', () => {
+      it('should display the placeholder', async () => {
+        // When
+        renderOffers({}, store)
+
+        // Then
+        expect(await screen.findByText('Ajouter une image')).toBeInTheDocument()
+      })
+    })
+
     it('should have offer title input', async () => {
       // When
       await renderOffers(props, store)

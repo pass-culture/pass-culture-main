@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import * as pcapi from 'repository/pcapi/pcapi'
 
+import OfferCover from './OfferCover/OfferCover'
 import OfferFormContainer from './OfferForm/OfferFormContainer'
 import OfferPreviewPlaceholder from './OfferPreviewPlaceholder/OfferPreviewPlaceholder'
 
@@ -67,6 +68,15 @@ const OfferDetails = props => {
     [history, offer, setFormErrors]
   )
 
+  let coverUrl = null
+
+  if (offer) {
+    if (offer.mediations) {
+      const firstMediationWithActivePreview = offer.mediations.find(mediation => mediation.isActive)
+      coverUrl = firstMediationWithActivePreview && firstMediationWithActivePreview.thumbUrl
+    }
+  }
+
   return (
     <div className="offer-edit">
       <PageTitle title="Détails de l'offre" />
@@ -85,7 +95,7 @@ const OfferDetails = props => {
 
         {showMediationForm && (
           <div className="sidebar">
-            <OfferPreviewPlaceholder />
+            {coverUrl ? <OfferCover url={coverUrl} /> : <OfferPreviewPlaceholder />}
           </div>
         )}
       </div>

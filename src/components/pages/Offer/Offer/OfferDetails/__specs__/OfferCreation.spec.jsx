@@ -155,7 +155,7 @@ describe('offerDetails - Creation', () => {
   })
 
   describe('render when creating a new offer', () => {
-    it('should get types from API', async () => {
+    it('should get types from API', () => {
       // When
       await renderOffers(props, store)
 
@@ -163,7 +163,7 @@ describe('offerDetails - Creation', () => {
       expect(pcapi.loadTypes).toHaveBeenCalledTimes(1)
     })
 
-    it("should get user's offerer from API", async () => {
+    it("should get user's offerer from API", () => {
       // When
       await renderOffers(props, store)
 
@@ -171,7 +171,7 @@ describe('offerDetails - Creation', () => {
       expect(pcapi.getValidatedOfferers).toHaveBeenCalledTimes(1)
     })
 
-    it("should get user's venues from API", async () => {
+    it("should get user's venues from API", () => {
       // When
       await renderOffers(props, store)
 
@@ -187,7 +187,7 @@ describe('offerDetails - Creation', () => {
       expect(screen.getByText("Type d'offre", { selector: '.section-title' })).toBeInTheDocument()
     })
 
-    it('should not display a placeholder for preview', async () => {
+    it('should not display a placeholder for preview', () => {
       // When
       await renderOffers(props, store)
 

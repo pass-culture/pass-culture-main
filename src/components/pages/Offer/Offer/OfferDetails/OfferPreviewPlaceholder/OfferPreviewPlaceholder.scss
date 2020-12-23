@@ -10,4 +10,10 @@
   flex-direction: column;
   height: rem(385px);
   justify-content: center;
+
+  img {
+    border-radius: rem(4px);
+    height: 100%;
+    width: 100%;
+  }
 }
