@@ -34,7 +34,6 @@ from pcapi.models.allocine_venue_provider import AllocineVenueProvider
 from pcapi.models.db import db
 from pcapi.models.email import Email
 from pcapi.models.install import install_features
-from pcapi.models.install import install_materialized_views
 from pcapi.models.venue_label_sql_entity import VenueLabelSQLEntity
 
 
@@ -78,6 +77,5 @@ def clean_all_database(*args, **kwargs):
     VenueType.query.delete()
     VenueLabelSQLEntity.query.delete()
     db.session.commit()
-    install_materialized_views()
     install_features()
     install_local_providers()

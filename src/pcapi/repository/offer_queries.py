@@ -1,25 +1,17 @@
 from datetime import datetime
 from typing import List
 
-from flask_sqlalchemy import BaseQuery
 from sqlalchemy import func
-from sqlalchemy import or_
 from sqlalchemy.orm import aliased
 from sqlalchemy.orm import joinedload
-from sqlalchemy.sql import selectable
 
 from pcapi.models import Booking
-from pcapi.models import DiscoveryView
 from pcapi.models import Offer
 from pcapi.models import Stock
 from pcapi.models import VenueSQLEntity
 
 
 ALL_DEPARTMENTS_CODE = "00"
-
-
-def keep_only_offers_in_venues_or_national(query: BaseQuery, venue_ids: selectable.Alias) -> BaseQuery:
-    return query.filter(or_(DiscoveryView.venueId.in_(venue_ids), DiscoveryView.isNational == True))
 
 
 def find_searchable_offer(offer_id):

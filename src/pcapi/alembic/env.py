@@ -27,9 +27,7 @@ def include_object(object, name, type_, reflected, compare_to) -> bool:  # pylin
     # https://alembic.sqlalchemy.org/en/latest/cookbook.html#don-t-generate-any-drop-table-directives-with-autogenerate
     if type_ == "table" and reflected and compare_to is None:
         return False
-    if name in ("discovery_view", "discovery_view_v3", "transaction", "activity"):
-        # TODO: flag discovery_view* as views:
-        # https://alembic.sqlalchemy.org/en/latest/cookbook.html#don-t-emit-create-table-statements-for-views
+    if name in ("transaction", "activity"):
         return False
     return True
 

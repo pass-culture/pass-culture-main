@@ -1,5 +1,3 @@
-from pcapi.repository import discovery_view_queries
-from pcapi.repository import discovery_view_v3_queries
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_activation_offers import (
     create_industrial_activation_offers,
 )
@@ -65,9 +63,6 @@ def save_industrial_sandbox():
     create_industrial_thing_stocks(thing_offers_by_name)
 
     create_industrial_mediations(offers_by_name)
-
-    discovery_view_queries.refresh()
-    discovery_view_v3_queries.refresh()
 
     criteria_by_name = create_industrial_criteria()
 

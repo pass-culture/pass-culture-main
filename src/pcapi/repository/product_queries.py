@@ -11,7 +11,6 @@ from pcapi.repository import repository
 from pcapi.repository.favorite_queries import get_favorites_for_offers
 from pcapi.repository.mediation_queries import get_mediations_for_offers
 from pcapi.repository.offer_queries import get_offers_by_product_id
-from pcapi.repository.recommendation_queries import get_recommendations_for_offers
 
 
 class ProductWithBookingsException(Exception):
@@ -41,12 +40,10 @@ def delete_unwanted_existing_product(isbn: str):
     objects_to_delete = objects_to_delete + offers
     stocks = offers_repository.get_stocks_for_offers(offer_ids)
     objects_to_delete = objects_to_delete + stocks
-    recommendations = get_recommendations_for_offers(offer_ids)
     mediations = get_mediations_for_offers(offer_ids)
     objects_to_delete = objects_to_delete + mediations
     favorites = get_favorites_for_offers(offer_ids)
     objects_to_delete = objects_to_delete + favorites
-    objects_to_delete = objects_to_delete + recommendations
     repository.delete(*objects_to_delete)
 
 

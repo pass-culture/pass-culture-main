@@ -5,8 +5,6 @@ from pcapi.models.db import db
 from pcapi.models.db import versioning_manager
 from pcapi.models.feature import Feature
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository import discovery_view_queries
-from pcapi.repository import discovery_view_v3_queries
 from pcapi.repository import repository
 
 
@@ -16,11 +14,6 @@ def install_activity():
     create_versionning_tables()
 
     db.session.commit()
-
-
-def install_materialized_views():
-    discovery_view_queries.create(db.session, discovery_view_queries.order_by_digital_offers)
-    discovery_view_v3_queries.create(db.session, discovery_view_v3_queries.order_by_digital_offers_v3)
 
 
 def install_features():

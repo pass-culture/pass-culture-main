@@ -11,7 +11,6 @@ from pcapi.load_environment_variables import load_environment_variables
 from pcapi.local_providers.install import install_local_providers
 from pcapi.models.install import install_activity
 from pcapi.models.install import install_features
-from pcapi.models.install import install_materialized_views
 from pcapi.routes import install_routes
 from pcapi.routes.native.v1.blueprint import native_v1
 from pcapi.utils.logger import configure_json_logger
@@ -37,7 +36,6 @@ with app.app_context():
 
     if settings.IS_DEV:
         install_activity()
-        install_materialized_views()
         install_local_providers()
         install_features()
 
