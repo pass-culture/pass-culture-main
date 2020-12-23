@@ -40,7 +40,9 @@ class OffersTest:
         )
 
         bookableStock = EventStockFactory(offer=offer, price=12.34)
-        EventStockFactory(offer=offer, beginningDatetime=datetime.utcnow() - timedelta(days=1))  # not bookable stock
+        notBookableStock = EventStockFactory(
+            offer=offer, price=45.68, beginningDatetime=datetime.utcnow() - timedelta(days=1)
+        )
 
         response = TestClient(app.test_client()).get(f"/native/v1/offer/{offer.id}")
 
@@ -53,12 +55,19 @@ class OffersTest:
                 "motorDisability": None,
                 "visualDisability": True,
             },
-            "bookableStocks": [
+            "stocks": [
                 {
                     "id": bookableStock.id,
                     "price": 12.34,
                     "beginningDatetime": bookableStock.beginningDatetime.strftime("%Y-%m-%dT%H:%M:%S.%f"),
-                }
+                    "isBookable": True,
+                },
+                {
+                    "id": notBookableStock.id,
+                    "price": 45.68,
+                    "isBookable": False,
+                    "beginningDatetime": notBookableStock.beginningDatetime.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+                },
             ],
             "category": {"categoryType": "Event", "label": "Cinéma", "name": "CINEMA"},
             "description": offer.description,
@@ -103,8 +112,8 @@ class OffersTest:
         response = TestClient(app.test_client()).get(f"/native/v1/offer/{offer.id}")
 
         assert response.status_code == 200
-        assert not response.json["bookableStocks"][0]["beginningDatetime"]
-        assert response.json["bookableStocks"][0]["price"] == 12.34
+        assert not response.json["stocks"][0]["beginningDatetime"]
+        assert response.json["stocks"][0]["price"] == 12.34
         assert response.json["category"] == {
             "categoryType": "Thing",
             "label": "Musée, arts visuels et patrimoine",

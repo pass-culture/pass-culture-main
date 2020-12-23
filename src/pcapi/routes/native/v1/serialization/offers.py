@@ -39,6 +39,7 @@ class OfferOffererResponse(BaseModel):
 class OfferStockResponse(BaseModel):
     id: int
     beginningDatetime: Optional[datetime]
+    isBookable: bool
     price: Decimal
 
     class Config:
@@ -145,7 +146,7 @@ class OfferResponse(BaseModel):
     isDuo: bool
     name: str
     category: OfferCategoryResponse
-    bookableStocks: List[OfferStockResponse]
+    stocks: List[OfferStockResponse]
     thumbUrl: Optional[str] = Field(None, alias="imageUrl")
     venue: OfferVenueResponse
     withdrawalDetails: Optional[str]
