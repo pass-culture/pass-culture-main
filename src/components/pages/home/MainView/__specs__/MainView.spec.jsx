@@ -240,8 +240,8 @@ describe('src | components | MainView', () => {
   })
 
   it('should have called batchSDK custom id setup with userId to enable notifications', () => {
-    window.batchSDK = () => {}
     // given
+    window.batchSDK = () => {}
     props.user = new User({
       email: 'john.doe@example.fr',
       expenses: {
