@@ -37,7 +37,9 @@ const MainView = props => {
   const modulesListRef = useRef(null)
 
   useEffect(() => {
-    setCustomUserId(user.id)
+    if (window.batchSDK) {
+      setCustomUserId(user.id)
+    }
     updateCurrentUser({ lastConnectionDate: new Date() })
   }, [updateCurrentUser, user.id])
 
