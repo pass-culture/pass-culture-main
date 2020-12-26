@@ -1,13 +1,6 @@
 from datetime import datetime
-import os
 import re
 import typing
-
-# Loading variables should always be the first thing, before any other load
-from pcapi.load_environment_variables import load_environment_variables
-
-
-load_environment_variables()
 
 from flask import Blueprint
 from flask import Flask
@@ -56,7 +49,7 @@ login_manager = LoginManager()
 admin = Admin(name="Back Office du Pass Culture", url="/pc/back-office", template_mode="bootstrap3")
 
 if feature_request_profiling_enabled():
-    profiling_restrictions = [int(os.environ.get("PROFILE_REQUESTS_LINES_LIMIT", 100))]
+    profiling_restrictions = [settings.PROFILE_REQUESTS_LINES_LIMIT]
     app.config["PROFILE"] = True
     app.wsgi_app = ProfilerMiddleware(  # type: ignore
         app.wsgi_app,
@@ -67,9 +60,9 @@ if not settings.JWT_SECRET_KEY:
     json_logger.error("JWT_SECRET_KEY not found in env")
     raise Exception("JWT_SECRET_KEY not found in env")
 
-app.secret_key = os.environ.get("FLASK_SECRET", "+%+3Q23!zbc+!Dd@")
+app.secret_key = settings.FLASK_SECRET
 app.json_encoder = EnumJSONEncoder
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
+app.config["SQLALCHEMY_DATABASE_URI"] = settings.DATABASE_URL
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ECHO"] = False
 app.config["SESSION_COOKIE_HTTPONLY"] = True
@@ -140,7 +133,7 @@ CORS(public_api, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 private_api = Blueprint("Private API", __name__)
 CORS(
     private_api,
-    resources={r"/*": {"origins": re.compile(os.environ.get("CORS_ALLOWED_ORIGIN"))}},
+    resources={r"/*": {"origins": re.compile(settings.CORS_ALLOWED_ORIGIN)}},
     supports_credentials=True,
 )
 

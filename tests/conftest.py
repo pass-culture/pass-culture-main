@@ -1,5 +1,4 @@
 from functools import wraps
-import os
 from pathlib import Path
 from pprint import pprint
 from unittest.mock import Mock
@@ -15,15 +14,8 @@ import pytest
 from requests import Response
 from requests.auth import _basic_auth_str
 
-# We want to load the env variables BEFORE importing anything
-# because some env variables will get evaluated as soon as the
-# module is imported (utils.mailing for example)
-from pcapi.load_environment_variables import load_environment_variables
-
-
-load_environment_variables()
-
 import pcapi
+from pcapi import settings
 from pcapi.admin.install import install_admin_views
 import pcapi.core.testing
 from pcapi.flask_app import admin
@@ -41,7 +33,7 @@ from pcapi.utils.json_encoder import EnumJSONEncoder
 
 def run_migrations():
     alembic_cfg = Config("alembic.ini")
-    alembic_cfg.set_main_option("sqlalchemy.url", os.environ.get("DATABASE_URL_TEST"))
+    alembic_cfg.set_main_option("sqlalchemy.url", settings.DATABASE_URL_TEST)
     command.upgrade(alembic_cfg, "head")
 
 
@@ -57,7 +49,7 @@ def app():
         template_folder=Path(pcapi.__path__[0]) / "templates",
     )
 
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL_TEST")
+    app.config["SQLALCHEMY_DATABASE_URI"] = settings.DATABASE_URL_TEST
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["SECRET_KEY"] = "@##&6cweafhv3426445"
     app.config["REMEMBER_COOKIE_HTTPONLY"] = False

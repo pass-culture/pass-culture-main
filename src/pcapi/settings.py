@@ -12,7 +12,7 @@ IS_INTEGRATION = ENV == "integration"
 IS_STAGING = ENV == "staging"
 IS_PROD = ENV == "production"
 IS_TESTING = ENV == "testing"
-
+IS_RUNNING_TESTS = os.environ.get("RUN_ENV") == "tests"
 
 # Load configuration files
 env_path = Path(f"./.env.{ENV}")
@@ -20,7 +20,7 @@ load_dotenv(dotenv_path=env_path)
 
 if IS_DEV:
     load_dotenv(dotenv_path=".env.local.secret", override=True)
-if os.environ.get("RUN_ENV") == "tests":
+if IS_RUNNING_TESTS:
     load_dotenv(dotenv_path=".env.testauto", override=True)
 
 LOG_LEVEL = int(os.environ.get("LOG_LEVEL", LOG_LEVEL_INFO))
@@ -58,6 +58,15 @@ BLOB_SIZE = 30
 # DATABASE
 DB_MIGRATION_LOCK_TIMEOUT = int(os.environ.get("DB_MIGRATION_STATEMENT_TIMEOUT", 5000))
 DB_MIGRATION_STATEMENT_TIMEOUT = int(os.environ.get("DB_MIGRATION_STATEMENT_TIMEOUT", 60000))
+DATABASE_URL = os.environ.get("DATABASE_URL")
+DATABASE_URL_TEST = os.environ.get("DATABASE_URL_TEST")
+DATABASE_POOL_SIZE = int(os.environ.get("DATABASE_POOL_SIZE", 20))
+
+# FLASK
+PROFILE_REQUESTS_LINES_LIMIT = int(os.environ.get("PROFILE_REQUESTS_LINES_LIMIT", 100))
+FLASK_PORT = int(os.environ.get("PORT", 5000))
+FLASK_SECRET = os.environ.get("FLASK_SECRET", "+%+3Q23!zbc+!Dd@")
+CORS_ALLOWED_ORIGIN = os.environ.get("CORS_ALLOWED_ORIGIN")
 
 
 # REDIS

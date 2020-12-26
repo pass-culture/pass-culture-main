@@ -1,11 +1,3 @@
-# Loading variables should always be the first thing, before any other load
-from pcapi.load_environment_variables import load_environment_variables
-
-
-load_environment_variables()
-
-import os
-
 from flask import Flask
 from flask_script import Manager
 from mailjet_rest import Client
@@ -17,7 +9,7 @@ from pcapi.scripts.install import install_scripts
 
 
 app = Flask(__name__, template_folder="../templates")
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
+app.config["SQLALCHEMY_DATABASE_URI"] = settings.DATABASE_URL
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db.init_app(app)
 

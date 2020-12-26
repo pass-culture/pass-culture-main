@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-import os
-
 from werkzeug.middleware.profiler import ProfilerMiddleware
 
 from pcapi import settings
@@ -25,7 +23,7 @@ configure_json_logger()
 disable_werkzeug_request_logs()
 
 if feature_request_profiling_enabled():
-    profiling_restrictions = [int(os.environ.get("PROFILE_REQUESTS_LINES_LIMIT", 100))]
+    profiling_restrictions = [settings.PROFILE_REQUESTS_LINES_LIMIT]
     app.config["PROFILE"] = True
     app.wsgi_app = ProfilerMiddleware(app.wsgi_app, restrictions=profiling_restrictions)
 
@@ -52,5 +50,5 @@ with app.app_context():
     app.register_blueprint(native_v1, url_prefix="/native/v1")
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
+    port = settings.FLASK_PORT
     app.run(host="0.0.0.0", port=port, debug=settings.IS_DEV, use_reloader=True)

@@ -1,11 +1,4 @@
 """ interact """
-# Loading variables should always be the first thing, before any other load
-from pcapi.load_environment_variables import load_environment_variables
-
-
-load_environment_variables()
-
-import os
 import sys
 
 from flask import Flask
@@ -16,8 +9,8 @@ from pcapi.models.db import db
 
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("FLASK_SECRET", "+%+3Q23!zbc+!Dd@")
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
+app.secret_key = settings.FLASK_SECRET
+app.config["SQLALCHEMY_DATABASE_URI"] = settings.DATABASE_URL
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.mailjet_client = Client(auth=(settings.MAILJET_API_KEY, settings.MAILJET_API_SECRET), version="v3")
 db.init_app(app)

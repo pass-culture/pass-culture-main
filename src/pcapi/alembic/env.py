@@ -1,5 +1,4 @@
 from logging.config import fileConfig
-import os
 
 from alembic import context
 from sqlalchemy import create_engine
@@ -40,7 +39,7 @@ def run_migrations_online() -> None:
     In this scenario we need to create an Engine
     and associate a connection with the context.
     """
-    database_url = os.environ.get("DATABASE_URL")
+    database_url = settings.DATABASE_URL
     db_options = []
     if settings.DB_MIGRATION_LOCK_TIMEOUT:
         db_options.append("-c lock_timeout=%i" % settings.DB_MIGRATION_LOCK_TIMEOUT)
@@ -65,7 +64,7 @@ def run_migrations_online() -> None:
 
 def run_migrations_for_tests() -> None:
     """Run migrations in a testing context"""
-    database_url = os.environ.get("DATABASE_URL_TEST")
+    database_url = settings.DATABASE_URL_TEST
     connectable = create_engine(database_url)
     with connectable.connect() as connection:
         context.configure(
@@ -79,7 +78,7 @@ def run_migrations_for_tests() -> None:
             context.run_migrations()
 
 
-if os.environ.get("RUN_ENV") == "tests":
+if settings.IS_RUNNING_TESTS:
     run_migrations_for_tests()
 else:
     run_migrations_online()
