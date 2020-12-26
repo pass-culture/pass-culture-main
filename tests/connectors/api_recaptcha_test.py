@@ -1,7 +1,7 @@
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
-from pcapi.connectors.api_recaptcha import RECAPTCHA_API_URL
+from pcapi import settings
 from pcapi.connectors.api_recaptcha import get_token_validation_and_score
 
 
@@ -12,7 +12,7 @@ def _build_mocked_request_response(response: dict):
 
 
 class GetTokenValidationAndScoreTest:
-    @patch("pcapi.connectors.api_recaptcha.RECAPTCHA_SECRET", "recaptcha-secret")
+    @patch("pcapi.settings.RECAPTCHA_SECRET", "recaptcha-secret")
     @patch("pcapi.connectors.api_recaptcha.requests.post")
     def test_should_call_captcha_api_using_secret(self, request_post):
         # Given
@@ -23,9 +23,11 @@ class GetTokenValidationAndScoreTest:
         get_token_validation_and_score(token)
 
         # Then
-        request_post.assert_called_once_with(RECAPTCHA_API_URL, data={"secret": "recaptcha-secret", "response": token})
+        request_post.assert_called_once_with(
+            settings.RECAPTCHA_API_URL, data={"secret": "recaptcha-secret", "response": token}
+        )
 
-    @patch("pcapi.connectors.api_recaptcha.RECAPTCHA_SECRET", "recaptcha-secret")
+    @patch("pcapi.settings.RECAPTCHA_SECRET", "recaptcha-secret")
     @patch("pcapi.connectors.api_recaptcha.requests.post")
     def test_should_return_validation_fields(self, request_post):
         # Given
