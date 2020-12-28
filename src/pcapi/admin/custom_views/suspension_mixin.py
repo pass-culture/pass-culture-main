@@ -14,7 +14,6 @@ from pcapi import settings
 import pcapi.core.users.api as users_api
 import pcapi.core.users.constants as users_constants
 from pcapi.models.user_sql_entity import UserSQLEntity
-from pcapi.utils.mailing import parse_email_addresses
 
 
 class SuspensionForm(SecureForm):
@@ -32,7 +31,7 @@ class UnsuspensionForm(SecureForm):
 def _allow_suspension_and_unsuspension(user):
     if not settings.IS_PROD:
         return True
-    return user.email in parse_email_addresses(settings.SUPER_ADMIN_EMAIL_ADDRESSES)
+    return user.email in settings.SUPER_ADMIN_EMAIL_ADDRESSES
 
 
 def _action_links(view, context, model, name):

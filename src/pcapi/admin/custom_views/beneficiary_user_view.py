@@ -11,7 +11,6 @@ from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.domain.user_emails import send_activation_email
 from pcapi.models import UserOfferer
 from pcapi.models.user_sql_entity import UserSQLEntity
-from pcapi.utils.mailing import parse_email_addresses
 from pcapi.utils.mailing import send_raw_email
 
 from .suspension_mixin import SuspensionMixin
@@ -23,7 +22,7 @@ class BeneficiaryUserView(SuspensionMixin, BaseAdminView):
     @property
     def can_create(self) -> bool:
         if settings.IS_PROD:
-            return current_user.email in parse_email_addresses(settings.SUPER_ADMIN_EMAIL_ADDRESSES)
+            return current_user.email in settings.SUPER_ADMIN_EMAIL_ADDRESSES
 
         return True
 

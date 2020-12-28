@@ -31,7 +31,6 @@ from pcapi.utils.mailing import extract_users_information_from_bookings
 from pcapi.utils.mailing import format_booking_date_for_email
 from pcapi.utils.mailing import format_booking_hours_for_email
 from pcapi.utils.mailing import make_validation_email_object
-from pcapi.utils.mailing import parse_email_addresses
 from pcapi.utils.mailing import send_raw_email
 
 from tests.conftest import mocked_mail
@@ -116,27 +115,6 @@ def test_save_and_send_creates_an_entry_in_email_with_status_error_when_send_mai
     assert email.content == email_content
     assert email.status == EmailStatus.ERROR
     assert email.datetime == datetime(2019, 1, 1, 12, 0, 0)
-
-
-class ParseEmailAddressesTest:
-    def test_returns_an_empty_list(self):
-        assert parse_email_addresses("") == []
-        assert parse_email_addresses(None) == []
-
-    def test_returns_one_address_when_a_single_one_is_given(self):
-        assert parse_email_addresses("recipient@test.com") == ["recipient@test.com"]
-        assert parse_email_addresses("recipient@test.com  ;  ") == ["recipient@test.com"]
-        assert parse_email_addresses(" , recipient@test.com") == ["recipient@test.com"]
-
-    def test_returns_two_addresses_when_given_addresses_are_separated_by_comma(self):
-        assert parse_email_addresses("one@test.com,two@test.com") == ["one@test.com", "two@test.com"]
-        assert parse_email_addresses("one@test.com, two@test.com") == ["one@test.com", "two@test.com"]
-        assert parse_email_addresses("  one@test.com  , two@test.com   ") == ["one@test.com", "two@test.com"]
-
-    def test_returns_two_addresses_when_given_addresses_are_separated_by_semicolon(self):
-        assert parse_email_addresses("one@test.com;two@test.com") == ["one@test.com", "two@test.com"]
-        assert parse_email_addresses("one@test.com; two@test.com") == ["one@test.com", "two@test.com"]
-        assert parse_email_addresses("  one@test.com  ; two@test.com   ") == ["one@test.com", "two@test.com"]
 
 
 class ComputeEmailHtmlPartAndRecipientsTest:

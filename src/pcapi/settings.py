@@ -5,6 +5,8 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+from .utils import settings as utils
+
 
 ENV = os.environ.get("ENV", "development")
 IS_DEV = ENV == "development"
@@ -82,12 +84,21 @@ SENTRY_DSN = os.environ.get("SENTRY_DSN", "https://0470142cf8d44893be88ecded2a14
 SENTRY_SAMPLE_RATE = float(os.environ.get("SENTRY_SAMPLE_RATE", 0))
 
 # MAILS
+SUPPORT_EMAIL_ADDRESS = os.environ.get("SUPPORT_EMAIL_ADDRESS")
+ADMINISTRATION_EMAIL_ADDRESS = os.environ.get("ADMINISTRATION_EMAIL_ADDRESS")
+DEV_EMAIL_ADDRESS = os.environ.get("DEV_EMAIL_ADDRESS")
+SUPER_ADMIN_EMAIL_ADDRESSES = utils.parse_email_addresses(os.environ.get("SUPER_ADMIN_EMAIL_ADDRESSES"))
+ACTIVATION_USER_RECIPIENTS = utils.parse_email_addresses(os.environ.get("ACTIVATION_USER_RECIPIENTS"))
+TRANSACTIONS_RECIPIENTS = utils.parse_email_addresses(os.environ.get("TRANSACTIONS_RECIPIENTS"))
+PAYMENTS_REPORT_RECIPIENTS = utils.parse_email_addresses(os.environ.get("PAYMENTS_REPORT_RECIPIENTS"))
+PAYMENTS_DETAILS_RECIPIENTS = utils.parse_email_addresses(os.environ.get("PAYMENTS_DETAILS_RECIPIENTS"))
+WALLET_BALANCES_RECIPIENTS = utils.parse_email_addresses(os.environ.get("WALLET_BALANCES_RECIPIENTS"))
+
 # Temporary setting to allow load tests to disable sending email
 # Possible values:
 #   - mailjet
 #   - log
 SEND_RAW_EMAIL_BACKEND = os.environ.get("SEND_RAW_EMAIL_BACKEND", "mailjet").lower()
-SUPER_ADMIN_EMAIL_ADDRESSES = os.environ.get("SUPER_ADMIN_EMAIL_ADDRESSES", "")
 
 
 # ALGOLIA
@@ -129,12 +140,6 @@ RECAPTCHA_LICENCE_MINIMAL_SCORE = float(os.environ.get("RECAPTCHA_LICENCE_MINIMA
 RECAPTCHA_RESET_PASSWORD_MINIMAL_SCORE = float(os.environ.get("RECAPTCHA_RESET_PASSWORD_MINIMAL_SCORE", 0.7))
 RECAPTCHA_API_URL = "https://www.google.com/recaptcha/api/siteverify"
 RECAPTCHA_SECRET = os.environ.get("RECAPTCHA_SECRET")
-
-
-# MAILS
-SUPPORT_EMAIL_ADDRESS = os.environ.get("SUPPORT_EMAIL_ADDRESS")
-ADMINISTRATION_EMAIL_ADDRESS = os.environ.get("ADMINISTRATION_EMAIL_ADDRESS")
-DEV_EMAIL_ADDRESS = os.environ.get("DEV_EMAIL_ADDRESS")
 
 
 # MAILJET

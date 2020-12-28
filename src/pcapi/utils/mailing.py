@@ -344,19 +344,6 @@ def compute_email_html_part_and_recipients(email_html_part, recipients: Union[Li
     return email_html_part, email_to
 
 
-def parse_email_addresses(addresses: str) -> List[str]:
-    if not addresses:
-        addresses = []
-    elif "," in addresses:
-        addresses = [a.strip() for a in addresses.split(",")]
-    elif ";" in addresses:
-        addresses = [a.strip() for a in addresses.split(";")]
-    else:
-        addresses = [addresses]
-
-    return [a for a in addresses if a]
-
-
 def make_offer_creation_notification_email(offer: Offer, author: UserSQLEntity) -> Dict:
     pro_link_to_offer = f"{settings.PRO_URL}/offres/{humanize(offer.id)}"
     webapp_link_to_offer = f"{settings.WEBAPP_URL}/offre/details/{humanize(offer.id)}"

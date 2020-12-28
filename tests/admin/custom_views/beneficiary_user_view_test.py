@@ -142,7 +142,7 @@ class BeneficiaryUserViewTest:
         assert response.status_code == 403
 
     @patch("pcapi.settings.IS_PROD", True)
-    @patch("pcapi.settings.SUPER_ADMIN_EMAIL_ADDRESSES", "super-admin@example.com, boss@example.com")
+    @patch("pcapi.settings.SUPER_ADMIN_EMAIL_ADDRESSES", ["super-admin@example.com", "boss@example.com"])
     @pytest.mark.usefixtures("db_session")
     def test_allow_suspension_and_unsuspension(self):
         basic_admin = users_factories.UserFactory(email="admin@example.com", isAdmin=True)
