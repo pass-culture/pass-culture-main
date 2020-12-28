@@ -34,7 +34,7 @@ class UpdateVenuesForSpecificProviderTest:
         assert call(venue_provider_titelive1) in mock_do_sync_venue_provider.call_args_list
         assert call(venue_provider_titelive2) in mock_do_sync_venue_provider.call_args_list
 
-    @patch.dict("os.environ", {"SYNC_WORKERS_POOL_SIZE": "1"})
+    @patch("pcapi.settings.PROVIDERS_SYNC_WORKERS_POOL_SIZE", 1)
     @patch("pcapi.local_providers.venue_provider_worker.sleep")
     @patch("pcapi.local_providers.venue_provider_worker.do_sync_venue_provider")
     @patch("pcapi.local_providers.venue_provider_worker.get_nb_containers_at_work")
