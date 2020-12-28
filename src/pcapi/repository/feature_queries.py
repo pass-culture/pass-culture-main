@@ -1,5 +1,3 @@
-import os
-
 from pcapi import settings
 from pcapi.models import Feature
 from pcapi.models.api_errors import ResourceNotFoundError
@@ -18,7 +16,3 @@ def is_active(feature_toggle: FeatureToggle) -> bool:
 
 def feature_send_mail_to_users_enabled() -> bool:
     return settings.IS_PROD or settings.IS_INTEGRATION
-
-
-def feature_clean_seen_offers_enabled():
-    return os.environ.get("CLEAN_SEEN_OFFERS") == "true"

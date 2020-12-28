@@ -8,7 +8,6 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.repository import discovery_view_queries
 from pcapi.repository import discovery_view_v3_queries
 from pcapi.repository import feature_queries
-from pcapi.repository.feature_queries import feature_clean_seen_offers_enabled
 from pcapi.repository.provider_queries import get_provider_by_local_class
 from pcapi.repository.seen_offer_queries import remove_old_seen_offers
 from pcapi.repository.user_queries import find_most_recent_beneficiary_creation_date_for_source
@@ -148,7 +147,7 @@ def main():
 
     scheduler.add_job(pc_remote_import_beneficiaries, "cron", [app], day="*")
 
-    if feature_clean_seen_offers_enabled():
+    if settings.CLEAN_SEEN_OFFERS:
         scheduler.add_job(pc_remove_old_seen_offers, "cron", [app], day=old_seen_offers_delete_frequency)
 
     scheduler.add_job(update_booking_used, "cron", [app], day="*", hour="0")
