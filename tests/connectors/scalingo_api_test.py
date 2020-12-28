@@ -9,7 +9,7 @@ from pcapi.connectors.scalingo_api import run_process_in_one_off_container
 
 
 class GetApplicationBearerTokenTest:
-    @patch.dict("os.environ", {"SCALINGO_APP_TOKEN": "token123"})
+    @patch("pcapi.settings.SCALINGO_APP_TOKEN", "token123")
     @patch("pcapi.connectors.scalingo_api.requests.post")
     def test_should_call_scalingo_auth_url_with_application_token(self, mock_post):
         # Given
@@ -40,7 +40,7 @@ class GetApplicationBearerTokenTest:
 
 
 class RunProcessInOneOffContainerTest:
-    @patch.dict("os.environ", {"SCALINGO_APP_TOKEN": "token123"})
+    @patch("pcapi.settings.SCALINGO_APP_TOKEN", "token123")
     @patch("pcapi.settings.API_APPLICATION_NAME", "pass-culture-api-app")
     @patch("pcapi.connectors.scalingo_api.requests.post")
     @patch("pcapi.connectors.scalingo_api._get_application_bearer_token")
@@ -63,7 +63,7 @@ class RunProcessInOneOffContainerTest:
         )
         assert container_id == "12345678987654ERTY"
 
-    @patch.dict("os.environ", {"SCALINGO_APP_TOKEN": "token123"})
+    @patch("pcapi.settings.SCALINGO_APP_TOKEN", "token123")
     @patch("pcapi.settings.API_APPLICATION_NAME", "pass-culture-api-app")
     @patch("pcapi.connectors.scalingo_api.requests.post")
     @patch("pcapi.connectors.scalingo_api._get_application_bearer_token")

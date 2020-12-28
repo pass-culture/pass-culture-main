@@ -1,14 +1,6 @@
-import os
-
 import requests
 
 from pcapi import settings
-
-
-SCALINGO_AUTH_URL = "https://auth.scalingo.com/v1"
-SCALINGO_API_URL = "https://api.osc-fr1.scalingo.com/v1"
-SCALINGO_API_REGION = "osc-fr1"
-SCALINGO_API_CONTAINER_SIZE = "L"
 
 
 class ScalingoApiException(Exception):
@@ -20,12 +12,12 @@ def run_process_in_one_off_container(command: str) -> str:
     run_one_off_endpoint = f"/apps/{settings.API_APPLICATION_NAME}/run"
     command_parameters = {
         "command": command,
-        "region": SCALINGO_API_REGION,
+        "region": settings.SCALINGO_API_REGION,
         "detached": True,
-        "size": SCALINGO_API_CONTAINER_SIZE,
+        "size": settings.SCALINGO_API_CONTAINER_SIZE,
     }
     api_response = requests.post(
-        f"{SCALINGO_API_URL}{run_one_off_endpoint}",
+        f"{settings.SCALINGO_API_URL}{run_one_off_endpoint}",
         json=command_parameters,
         headers={"Authorization": f"Bearer {app_bearer_token}"},
     )
@@ -36,9 +28,9 @@ def run_process_in_one_off_container(command: str) -> str:
 
 
 def _get_application_bearer_token() -> str:
-    application_token = os.environ.get("SCALINGO_APP_TOKEN")
+    application_token = settings.SCALINGO_APP_TOKEN
     bearer_token_endpoint = "/tokens/exchange"
-    api_response = requests.post(f"{SCALINGO_AUTH_URL}{bearer_token_endpoint}", auth=(None, application_token))
+    api_response = requests.post(f"{settings.SCALINGO_AUTH_URL}{bearer_token_endpoint}", auth=(None, application_token))
     if api_response.status_code != 200:
         raise ScalingoApiException(f"Error getting bearer token with status {api_response.status_code}")
     json_response = api_response.json()
