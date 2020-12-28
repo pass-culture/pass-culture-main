@@ -20,9 +20,5 @@ def feature_send_mail_to_users_enabled() -> bool:
     return settings.IS_PROD or settings.IS_INTEGRATION
 
 
-def feature_request_profiling_enabled() -> bool:
-    return os.environ.get("PROFILE_REQUESTS", False)
-
-
 def feature_clean_seen_offers_enabled():
     return os.environ.get("CLEAN_SEEN_OFFERS") == "true"

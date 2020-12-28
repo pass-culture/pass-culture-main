@@ -64,7 +64,9 @@ DATABASE_URL = os.environ.get("DATABASE_URL")
 DATABASE_URL_TEST = os.environ.get("DATABASE_URL_TEST")
 DATABASE_POOL_SIZE = int(os.environ.get("DATABASE_POOL_SIZE", 20))
 
+
 # FLASK
+PROFILE_REQUESTS = bool(os.environ.get("PROFILE_REQUESTS", False))
 PROFILE_REQUESTS_LINES_LIMIT = int(os.environ.get("PROFILE_REQUESTS_LINES_LIMIT", 100))
 FLASK_PORT = int(os.environ.get("PORT", 5000))
 FLASK_SECRET = os.environ.get("FLASK_SECRET", "+%+3Q23!zbc+!Dd@")

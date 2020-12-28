@@ -12,7 +12,6 @@ from pcapi.local_providers.install import install_local_providers
 from pcapi.models.install import install_activity
 from pcapi.models.install import install_features
 from pcapi.models.install import install_materialized_views
-from pcapi.repository.feature_queries import feature_request_profiling_enabled
 from pcapi.routes import install_routes
 from pcapi.routes.native.v1.blueprint import native_v1
 from pcapi.utils.logger import configure_json_logger
@@ -22,7 +21,7 @@ from pcapi.utils.logger import disable_werkzeug_request_logs
 configure_json_logger()
 disable_werkzeug_request_logs()
 
-if feature_request_profiling_enabled():
+if settings.PROFILE_REQUESTS:
     profiling_restrictions = [settings.PROFILE_REQUESTS_LINES_LIMIT]
     app.config["PROFILE"] = True
     app.wsgi_app = ProfilerMiddleware(app.wsgi_app, restrictions=profiling_restrictions)

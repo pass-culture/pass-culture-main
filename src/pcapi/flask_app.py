@@ -24,7 +24,6 @@ from werkzeug.middleware.profiler import ProfilerMiddleware
 
 from pcapi import settings
 from pcapi.models.db import db
-from pcapi.repository.feature_queries import feature_request_profiling_enabled
 from pcapi.serialization.utils import before_handler
 from pcapi.utils.health_checker import read_version_from_file
 from pcapi.utils.json_encoder import EnumJSONEncoder
@@ -48,7 +47,7 @@ api.register(app)
 login_manager = LoginManager()
 admin = Admin(name="Back Office du Pass Culture", url="/pc/back-office", template_mode="bootstrap3")
 
-if feature_request_profiling_enabled():
+if settings.PROFILE_REQUESTS:
     profiling_restrictions = [settings.PROFILE_REQUESTS_LINES_LIMIT]
     app.config["PROFILE"] = True
     app.wsgi_app = ProfilerMiddleware(  # type: ignore
