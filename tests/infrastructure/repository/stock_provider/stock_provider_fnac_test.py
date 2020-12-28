@@ -11,7 +11,7 @@ class StockProviderFnacRepositoryTest:
         self.stock_provider_fnac_repository.fnac_api.stocks = MagicMock()
         self.stock_provider_fnac_repository.fnac_api.is_siret_registered = MagicMock()
 
-    @patch.dict("os.environ", {"PROVIDER_FNAC_BASIC_AUTHENTICATION_TOKEN": "token123"})
+    @patch("pcapi.settings.FNAC_API_TOKEN", "token123")
     def should_instanciate_provider_api_with_correct_params(self):
         # Given
         self.stock_provider_fnac_repository = StockProviderFnacRepository()

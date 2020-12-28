@@ -1,8 +1,8 @@
 from datetime import datetime
-import os
 from typing import Dict
 from typing import Iterator
 
+from pcapi import settings
 from pcapi.domain.stock_provider.stock_provider_repository import StockProviderRepository
 from pcapi.infrastructure.repository.stock_provider.provider_api import ProviderAPI
 
@@ -12,7 +12,7 @@ class StockProviderFnacRepository(StockProviderRepository):
         self.fnac_api = ProviderAPI(
             api_url="https://passculture-fr.ws.fnac.com/api/v1/pass-culture/stocks",
             name="Fnac",
-            authentication_token=os.environ.get("PROVIDER_FNAC_BASIC_AUTHENTICATION_TOKEN"),
+            authentication_token=settings.FNAC_API_TOKEN,
         )
 
     def stocks_information(
