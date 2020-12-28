@@ -1,10 +1,10 @@
 from datetime import datetime
-import os
 import re
 from typing import Callable
 from typing import Dict
 from typing import List
 
+from pcapi import settings
 from pcapi.connectors.api_demarches_simplifiees import get_application_details
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_validator import get_beneficiary_duplicates
 from pcapi.domain.demarches_simplifiees import get_closed_application_ids_for_demarche_simplifiee
@@ -24,9 +24,6 @@ from pcapi.utils.mailing import MailServiceException
 from pcapi.utils.mailing import send_raw_email
 
 
-TOKEN = os.environ.get("DEMARCHES_SIMPLIFIEES_TOKEN", None)
-
-
 def run(
     process_applications_updated_after: datetime,
     get_all_applications_ids: Callable[..., List[int]] = get_closed_application_ids_for_demarche_simplifiee,
@@ -35,7 +32,7 @@ def run(
     already_imported: Callable[..., bool] = is_already_imported,
     already_existing_user: Callable[..., UserSQLEntity] = find_user_by_email,
 ) -> None:
-    procedure_id = int(os.environ.get("DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID_v2"))
+    procedure_id = settings.DMS_NEW_ENROLLMENT_PROCEDURE_ID
     logger.info(
         "[BATCH][REMOTE IMPORT BENEFICIARIES] Start import from Démarches Simplifiées for "
         "procedure = %s - Procedure %s",
@@ -44,7 +41,7 @@ def run(
     )
     error_messages: List[str] = []
     new_beneficiaries: List[UserSQLEntity] = []
-    applications_ids = get_all_applications_ids(procedure_id, TOKEN, process_applications_updated_after)
+    applications_ids = get_all_applications_ids(procedure_id, settings.DMS_TOKEN, process_applications_updated_after)
     retry_ids = get_applications_ids_to_retry()
 
     logger.info(
@@ -59,7 +56,7 @@ def run(
     )
 
     for application_id in retry_ids + applications_ids:
-        details = get_details(application_id, procedure_id, TOKEN)
+        details = get_details(application_id, procedure_id, settings.DMS_TOKEN)
         try:
             information = parse_beneficiary_information(details)
         except Exception as exc:  # pylint: disable=broad-except

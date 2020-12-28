@@ -1,10 +1,10 @@
 from datetime import datetime
-import os
 from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Union
 
+from pcapi import settings
 from pcapi.connectors.api_demarches_simplifiees import DmsApplicationStates
 from pcapi.connectors.api_demarches_simplifiees import get_all_applications_for_procedure
 from pcapi.connectors.api_demarches_simplifiees import get_application_details
@@ -15,9 +15,6 @@ from pcapi.utils.date import DATE_ISO_FORMAT
 from pcapi.utils.logger import logger
 
 
-OFFERER_PROCEDURE_ID = os.environ.get("DEMARCHES_SIMPLIFIEES_RIB_OFFERER_PROCEDURE_ID")
-VENUE_PROCEDURE_ID = os.environ.get("DEMARCHES_SIMPLIFIEES_RIB_VENUE_PROCEDURE_ID")
-TOKEN = os.environ.get("DEMARCHES_SIMPLIFIEES_TOKEN")
 FIELD_FOR_VENUE_WITH_SIRET = (
     "Si vous souhaitez renseigner les coordonn\u00e9es bancaires d'un lieu avec SIRET, merci de saisir son SIRET :"
 )
@@ -86,7 +83,7 @@ def get_closed_application_ids_for_demarche_simplifiee(
 
 def get_offerer_bank_information_application_details_by_application_id(application_id: str) -> ApplicationDetail:
     response_application_details = get_application_details(
-        application_id, procedure_id=OFFERER_PROCEDURE_ID, token=TOKEN
+        application_id, procedure_id=settings.DMS_OFFERER_PROCEDURE_ID, token=settings.DMS_TOKEN
     )
 
     application_details = ApplicationDetail(
@@ -103,7 +100,9 @@ def get_offerer_bank_information_application_details_by_application_id(applicati
 
 
 def get_venue_bank_information_application_details_by_application_id(application_id: str) -> ApplicationDetail:
-    response_application_details = get_application_details(application_id, procedure_id=VENUE_PROCEDURE_ID, token=TOKEN)
+    response_application_details = get_application_details(
+        application_id, procedure_id=settings.DMS_VENUE_PROCEDURE_ID, token=settings.DMS_TOKEN
+    )
 
     application_details = ApplicationDetail(
         siren=response_application_details["dossier"]["entreprise"]["siren"],

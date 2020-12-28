@@ -26,7 +26,6 @@ ONE_WEEK_AGO = NOW - timedelta(days=7)
 
 class RunTest:
     @patch("pcapi.scripts.beneficiary.remote_import.process_beneficiary_application")
-    @patch.dict("os.environ", {"DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID_v2": "6712558"})
     def test_should_retrieve_applications_from_new_procedure_id(self, process_beneficiary_application):
         # given
         get_all_application_ids = Mock(return_value=[123, 456, 789])
@@ -57,7 +56,6 @@ class RunTest:
         get_all_application_ids.assert_called_with(6712558, ANY, ANY)
 
     @patch("pcapi.scripts.beneficiary.remote_import.process_beneficiary_application")
-    @patch.dict("os.environ", {"DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID_v2": "6712558"})
     def test_all_applications_are_processed_once(self, process_beneficiary_application):
         # given
         get_all_application_ids = Mock(return_value=[123, 456, 789])
@@ -87,7 +85,6 @@ class RunTest:
         assert process_beneficiary_application.call_count == 3
 
     @patch("pcapi.scripts.beneficiary.remote_import.process_beneficiary_application")
-    @patch.dict("os.environ", {"DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID_v2": "6712558"})
     def test_applications_to_retry_are_processed(self, process_beneficiary_application):
         # given
         get_all_application_ids = Mock(return_value=[123])
@@ -118,7 +115,6 @@ class RunTest:
 
     @patch("pcapi.scripts.beneficiary.remote_import.parse_beneficiary_information")
     @patch.dict("os.environ", {"DEMARCHES_SIMPLIFIEES_ENROLLMENT_REPORT_RECIPIENTS": "send@example.com"})
-    @patch.dict("os.environ", {"DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID_v2": "6712558"})
     @pytest.mark.usefixtures("db_session")
     def test_an_error_status_is_saved_when_an_application_is_not_parsable(
         self, mocked_parse_beneficiary_information, app
@@ -149,7 +145,6 @@ class RunTest:
         assert beneficiary_import.detail == "Le dossier 123 contient des erreurs et a été ignoré - Procedure 6712558"
 
     @patch("pcapi.scripts.beneficiary.remote_import.process_beneficiary_application")
-    @patch.dict("os.environ", {"DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID_v2": "6712558"})
     def test_application_with_known_application_id_are_not_processed(self, process_beneficiary_application):
         # given
         get_all_application_ids = Mock(return_value=[123, 456])
@@ -175,7 +170,6 @@ class RunTest:
         process_beneficiary_application.assert_not_called()
 
     @patch("pcapi.scripts.beneficiary.remote_import.process_beneficiary_application")
-    @patch.dict("os.environ", {"DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID_v2": "6712558"})
     @pytest.mark.usefixtures("db_session")
     def test_application_with_known_email_are_saved_as_rejected(self, process_beneficiary_application, app):
         # given
@@ -206,7 +200,7 @@ class RunTest:
         process_beneficiary_application.assert_not_called()
 
     @patch("pcapi.scripts.beneficiary.remote_import.process_beneficiary_application")
-    @patch.dict("os.environ", {"DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID_v2": "2567158"})
+    @patch("pcapi.settings.DMS_NEW_ENROLLMENT_PROCEDURE_ID", 2567158)
     @pytest.mark.usefixtures("db_session")
     def test_beneficiary_is_created_with_procedure_id(self, process_beneficiary_application, app):
         # given

@@ -1,13 +1,8 @@
-# Loading variables should always be the first thing, before any other load
-from pcapi.load_environment_variables import load_environment_variables
-
-
-load_environment_variables()
-
 import os
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 
+from pcapi import settings
 from pcapi.core.bookings.conf import CANCEL_EXPIRED_BOOKINGS_CRON_START_DATE
 from pcapi.local_providers.provider_manager import synchronize_venue_providers_for_provider
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
@@ -28,14 +23,6 @@ from pcapi.scripts.beneficiary import remote_import
 from pcapi.scripts.booking.handle_expired_bookings import handle_expired_bookings
 from pcapi.scripts.booking.notify_soon_to_be_expired_bookings import notify_soon_to_be_expired_bookings
 from pcapi.scripts.update_booking_used import update_booking_used_after_stock_occurrence
-
-
-DEMARCHES_SIMPLIFIEES_OLD_ENROLLMENT_PROCEDURE_ID = os.environ.get(
-    "DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID", None
-)
-DEMARCHES_SIMPLIFIEES_NEW_ENROLLMENT_PROCEDURE_ID = os.environ.get(
-    "DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID_v2", None
-)
 
 
 @log_cron
@@ -79,7 +66,7 @@ def synchronize_praxiel_stocks(app) -> None:
 @cron_context
 @cron_require_feature(FeatureToggle.BENEFICIARIES_IMPORT)
 def pc_old_remote_import_beneficiaries(app) -> None:
-    procedure_id = int(DEMARCHES_SIMPLIFIEES_OLD_ENROLLMENT_PROCEDURE_ID)
+    procedure_id = settings.DMS_OLD_ENROLLMENT_PROCEDURE_ID
     import_from_date = find_most_recent_beneficiary_creation_date_for_source(
         BeneficiaryImportSources.demarches_simplifiees, procedure_id
     )
@@ -89,7 +76,7 @@ def pc_old_remote_import_beneficiaries(app) -> None:
 @log_cron
 @cron_context
 def pc_remote_import_beneficiaries(app) -> None:
-    procedure_id = int(DEMARCHES_SIMPLIFIEES_NEW_ENROLLMENT_PROCEDURE_ID)
+    procedure_id = settings.DMS_NEW_ENROLLMENT_PROCEDURE_ID
     import_from_date = find_most_recent_beneficiary_creation_date_for_source(
         BeneficiaryImportSources.demarches_simplifiees, procedure_id
     )

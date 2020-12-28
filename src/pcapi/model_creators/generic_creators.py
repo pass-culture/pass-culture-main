@@ -2,13 +2,13 @@ from datetime import datetime
 from datetime import timedelta
 from decimal import Decimal
 from hashlib import sha256
-import os
 from typing import Optional
 from typing import Union
 
 from geoalchemy2.shape import from_shape
 from shapely.geometry import Polygon
 
+from pcapi import settings
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.offers.models import Mediation
 from pcapi.domain.payments import PaymentDetails
@@ -55,7 +55,6 @@ from pcapi.utils.token import random_token
 
 
 PLAIN_DEFAULT_TESTING_PASSWORD = "user@AZERTY123"
-DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID = int(os.environ.get("DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID", 88))
 
 
 def create_api_key(idx: int = None, offerer_id: int = 99, value: str = "A_MOCKED_API_KEY") -> ApiKey:
@@ -95,7 +94,7 @@ def create_beneficiary_import(
     date: datetime = datetime.utcnow(),
     detail: str = None,
     idx: int = None,
-    source_id: int = DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID,
+    source_id: int = settings.DMS_OLD_ENROLLMENT_PROCEDURE_ID,
     source: str = BeneficiaryImportSources.demarches_simplifiees.value,
     status: ImportStatus = ImportStatus.CREATED,
     user: UserSQLEntity = None,

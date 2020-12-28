@@ -8,7 +8,6 @@ from tests.conftest import TestClient
 class Post:
     class Returns202:
         @patch("pcapi.routes.external.bank_informations.bank_information_job.delay")
-        @patch("pcapi.validation.routes.bank_informations.DEMARCHES_SIMPLIFIEES_WEBHOOK_TOKEN", "good_token")
         @pytest.mark.usefixtures("db_session")
         def when_has_valid_provider_name_and_dossier_id(self, mock_bank_information_job, app):
             # Given
@@ -25,7 +24,6 @@ class Post:
 
     class Returns400:
         @patch("pcapi.routes.external.bank_informations.bank_information_job.delay")
-        @patch("pcapi.validation.routes.bank_informations.DEMARCHES_SIMPLIFIEES_WEBHOOK_TOKEN", "good_token")
         @pytest.mark.usefixtures("db_session")
         def when_has_not_dossier_in_request_form_data(self, mock_bank_information_job, app):
             # Given
@@ -41,7 +39,6 @@ class Post:
 
     class Returns403:
         @patch("pcapi.routes.external.bank_informations.bank_information_job.delay")
-        @patch("pcapi.validation.routes.bank_informations.DEMARCHES_SIMPLIFIEES_WEBHOOK_TOKEN", "good_token")
         @pytest.mark.usefixtures("db_session")
         def when_has_not_a_token_in_url_params(self, mock_bank_information_job, app):
             # Given
@@ -54,7 +51,6 @@ class Post:
             assert response.status_code == 403
 
         @patch("pcapi.routes.external.bank_informations.bank_information_job.delay")
-        @patch("pcapi.validation.routes.bank_informations.DEMARCHES_SIMPLIFIEES_WEBHOOK_TOKEN", "good_token")
         @pytest.mark.usefixtures("db_session")
         def when_token_in_url_params_is_not_good(self, mock_bank_information_job, app):
             # Given
