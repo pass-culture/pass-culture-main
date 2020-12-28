@@ -1,5 +1,3 @@
-import os
-
 from apscheduler.schedulers.blocking import BlockingScheduler
 
 from pcapi import settings
@@ -131,9 +129,9 @@ def pc_notify_soon_to_be_expired_bookings(app) -> None:
 def main():
     from pcapi.flask_app import app
 
-    discovery_view_refresh_frequency = os.environ.get("RECO_VIEW_REFRESH_FREQUENCY", "*")
-    old_seen_offers_delete_frequency = os.environ.get("SEEN_OFFERS_DELETE_FREQUENCY", "*")
-    clean_discovery_frequency = os.environ.get("CLEAN_DISCOVERY_FREQUENCY", "*")
+    discovery_view_refresh_frequency = settings.DISCOVERY_VIEW_REFRESH_FREQUENCY
+    old_seen_offers_delete_frequency = settings.OLD_SEEN_OFFERS_DELETE_FREQUENCY
+    clean_discovery_frequency = settings.CLEAN_DISCOVERY_FREQUENCY
 
     scheduler = BlockingScheduler()
     utils.activate_sentry(scheduler)
