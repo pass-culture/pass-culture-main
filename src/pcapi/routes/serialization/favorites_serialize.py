@@ -1,7 +1,6 @@
 from typing import Dict
 from typing import List
 
-from pcapi.core.bookings.models import Booking
 from pcapi.domain.favorite.favorite import Favorite
 from pcapi.routes.serialization.serializer import serialize
 from pcapi.utils.human_ids import humanize
@@ -46,11 +45,10 @@ def serialize_favorite(favorite: Favorite) -> Dict:
     }
 
     if favorite.is_booked:
-        booking = Booking.query.filter_by(id=favorite.booking_identifier).first_or_404()
         serialized_favorite["booking"] = {
             "id": humanize(favorite.booking_identifier),
             "stockId": humanize(favorite.booked_stock_identifier),
-            "quantity": booking.quantity,
+            "quantity": favorite.booking_quantity,
         }
 
     return serialized_favorite

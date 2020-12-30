@@ -76,6 +76,9 @@ class Get:
             favorite = response.json[0]
             assert "offer" in favorite
             assert "venue" in favorite["offer"]
+            assert "stocks" in favorite["offer"]
+            assert stock.price == favorite["offer"]["stocks"][0]["price"]
+            assert booking.quantity == favorite["booking"]["quantity"]
             assert humanize(booking.id) in favorite["booking"]["id"]
             assert "validationToken" not in favorite["offer"]["venue"]
 
