@@ -1,12 +1,79 @@
-version: 2.0
+version: 2.1
+
+###################
+#  EXECUTORS
+###################
+
+executors:
+
+  node-gcp:
+    docker:
+      - image: ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/node-gcp:12
+        auth:
+          username: _json_key  # default username when using a JSON key file to authenticate
+          password: $GCP_INFRA_KEY
+
+###################
+#  REFERENCES
+###################
 
 references:
 
   working_directory: &working_directory
     ~/pass-culture-main/pro
 
-jobs:
+###################
+#  COMMANDS
+###################
+
+commands:
+
+  authenticate_gcp:
+    description: Authenticate to a GCP project
+    parameters:
+      gcp_key_name:
+        type: env_var_name
+    steps:
+      - run: echo ${<< parameters.gcp_key_name >>} > ${HOME}/gcp-key.json
+      - run: gcloud auth activate-service-account --key-file ${HOME}/gcp-key.json
+      - run: gcloud --quiet config set project ${GCP_PROJECT}
+
+
   build:
+    description: Build the pro webapp
+    parameters:
+      node_env:
+        type: string
+    steps:
+      - run: |
+          cd ~/pass-culture-main/pro
+          yarn install
+
+          set -a; source ~/pass-culture-main/config/run_envs/<< parameters.node_env >>;
+          # TODO : Remove once env variables are cleaned in every app
+          export NODE_ENV=<< parameters.node_env >>
+
+          yarn build
+
+  push-to-bucket:
+    description: Push the built webapp to a cloudstorage bucket
+    parameters:
+      bucket_name:
+        type: string
+      build_path:
+        type: string
+    steps:
+      - run: |
+          set +eo pipefail
+          gsutil rsync -r << parameters.build_path >> gs://<< parameters.bucket_name >>
+          true
+
+###################
+#  JOBS
+###################
+
+jobs:
+  test:
     machine:
       image: ubuntu-1604:201903-01
     working_directory: ~/
@@ -127,15 +194,46 @@ jobs:
             npm install -g netlify-cli@2.46.0
             netlify deploy -s "${NETLIFY_SITE_ID_PRO}" -a "${NETLIFY_TOKEN}" -d build/ --prod
 
+  deploy-pro-gcp:
+    executor: node-gcp
+    steps:
+      - run:
+          name: Checkout main
+          command: |
+            git clone --single-branch --branch $CIRCLE_BRANCH https://github.com/betagouv/pass-culture-main.git ~/pass-culture-main || git clone https://github.com/betagouv/pass-culture-main.git ~/pass-culture-main
+      - checkout:
+          path: ~/pass-culture-main/pro
+      - authenticate_gcp:
+          gcp_key_name: GCP_METIER_KEY
+      - build:
+          node_env: testing
+      - push-to-bucket:
+          build_path: ~/pass-culture-main/pro/build/
+          bucket_name: pass-culture-app-projet-test-testing-pro
+
+###################
+#  WORKFLOWS
+###################
+
 workflows:
   version: 2
   commit:
     jobs:
-      - build
+      - test
       - deploy-pro:
           filters:
             branches:
               only:
                 - master
           requires:
-            - build
+            - test
+
+  gcp:
+    jobs:
+      - deploy-pro-gcp:
+          filters:
+            branches:
+              only:
+                - master
+          context:
+            - GCP
