@@ -82,8 +82,8 @@ describe('offerDetails - Edition', () => {
     ]
     editedOffer = {
       id: 'ABC12',
-      mediations: [],
       name: 'My edited offer',
+      thumbUrl: null,
     }
     props = {
       setShowMediationForm: jest.fn(),
@@ -96,25 +96,16 @@ describe('offerDetails - Edition', () => {
 
   describe('render when editing an existing offer', () => {
     describe('when mediations exist', () => {
-      it('should display the first actived cover', async () => {
+      it('should display the actived image', async () => {
         // Given
-        editedOffer.mediations = [
-          {
-            isActive: false,
-            thumbUrl: 'http://fake-url/fake-image1.png',
-          },
-          {
-            isActive: true,
-            thumbUrl: 'http://fake-url/fake-image2.png',
-          },
-        ]
+        editedOffer.thumbUrl = 'http://fake-url/active-image.png'
 
         // When
         renderOffers({}, store)
 
         // Then
-        const cover = await screen.findByAltText('Couverture de l’offre')
-        expect(cover).toHaveAttribute('src', 'http://fake-url/fake-image2.png')
+        const image = await screen.findByAltText('Image de l’offre')
+        expect(image).toHaveAttribute('src', 'http://fake-url/active-image.png')
       })
     })
 

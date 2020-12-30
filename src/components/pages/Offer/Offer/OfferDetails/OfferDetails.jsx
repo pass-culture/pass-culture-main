@@ -4,9 +4,9 @@ import React, { useCallback, useEffect, useState } from 'react'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import * as pcapi from 'repository/pcapi/pcapi'
 
-import OfferCover from './OfferCover/OfferCover'
-import OfferCoverPlaceholder from './OfferCover/OfferCoverPlaceholder/OfferCoverPlaceholder'
 import OfferFormContainer from './OfferForm/OfferFormContainer'
+import OfferThumbnail from './OfferThumbnail/OfferThumbnail'
+import OfferThumbnailPlaceholder from './OfferThumbnail/OfferThumbnailPlaceholder/OfferThumbnailPlaceholder'
 
 const OfferDetails = props => {
   const { history, isUserAdmin, location, offer } = props
@@ -68,13 +68,10 @@ const OfferDetails = props => {
     [history, offer, setFormErrors]
   )
 
-  let coverUrl = null
+  let thumbnailUrl = null
 
   if (offer) {
-    if (offer.mediations) {
-      const firstMediationWithActivePreview = offer.mediations.find(mediation => mediation.isActive)
-      coverUrl = firstMediationWithActivePreview && firstMediationWithActivePreview.thumbUrl
-    }
+    thumbnailUrl = offer.thumbUrl
   }
 
   return (
@@ -95,7 +92,7 @@ const OfferDetails = props => {
 
         {showMediationForm && (
           <div className="sidebar">
-            {coverUrl ? <OfferCover url={coverUrl} /> : <OfferCoverPlaceholder />}
+            {thumbnailUrl ? <OfferThumbnail url={thumbnailUrl} /> : <OfferThumbnailPlaceholder />}
           </div>
         )}
       </div>
