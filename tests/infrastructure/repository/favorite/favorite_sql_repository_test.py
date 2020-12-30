@@ -78,6 +78,7 @@ class FindByBeneficiaryTest:
         assert favorite.is_booked is True
         assert favorite.booking_identifier == booking.id
         assert favorite.booked_stock_identifier == stock.id
+        assert favorite.booking_quantity == booking.quantity
 
     @pytest.mark.usefixtures("db_session")
     def test_should_not_return_booking_when_favorite_offer_booking_is_cancelled(self, app):

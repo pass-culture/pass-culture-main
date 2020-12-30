@@ -34,12 +34,18 @@ class FavoriteSQLRepository(FavoriteRepository):
             .join(Booking)
             .filter(Booking.userId == beneficiary_identifier)
             .filter(Booking.isCancelled == False)
-            .with_entities(Booking.id.label("booking_id"), Offer.id.label("offer_id"), Stock.id.label("stock_id"))
+            .with_entities(
+                Booking.id.label("booking_id"),
+                Booking.quantity,
+                Offer.id.label("offer_id"),
+                Stock.id.label("stock_id"),
+            )
             .all()
         )
 
         bookings_by_offer_id = {
-            booking.offer_id: {"id": booking.booking_id, "stock_id": booking.stock_id} for booking in bookings
+            booking.offer_id: {"id": booking.booking_id, "stock_id": booking.stock_id, "quantity": booking.quantity}
+            for booking in bookings
         }
 
         return [
