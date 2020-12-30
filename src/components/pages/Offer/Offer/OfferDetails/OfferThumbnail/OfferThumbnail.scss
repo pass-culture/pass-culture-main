@@ -10,10 +10,44 @@
   flex-direction: column;
   height: rem(385px);
   justify-content: center;
+  position: relative;
+  width: rem(256px);
 
   img {
     border-radius: rem(4px);
     height: 100%;
     width: 100%;
+  }
+}
+
+.of-image {
+  &::after,
+  &::before {
+    opacity: 0;
+    position: absolute;
+  }
+
+  &::after {
+    background: rgba($black, 0.6);
+    border-radius: rem(4px);
+    content: '';
+    height: 100%;
+    width: 100%;
+  }
+
+  &::before {
+    background: url('assets/edit-thumbnail.svg') no-repeat center 0;
+    box-sizing: border-box;
+    color: $white;
+    content: attr(title);
+    padding-top: rem(50px);
+    z-index: 1;
+  }
+
+  &:hover::after,
+  &:hover::before,
+  &:focus::after,
+  &:focus::before {
+    opacity: 1;
   }
 }

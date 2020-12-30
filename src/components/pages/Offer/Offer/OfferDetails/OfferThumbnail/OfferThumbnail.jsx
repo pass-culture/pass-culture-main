@@ -5,7 +5,8 @@ import Icon from 'components/layout/Icon'
 
 const OfferThumbnail = ({ url }) => (
   <button
-    className="of-placeholder"
+    className="of-placeholder of-image"
+    title="Modifier l’image"
     type="button"
   >
     <Icon

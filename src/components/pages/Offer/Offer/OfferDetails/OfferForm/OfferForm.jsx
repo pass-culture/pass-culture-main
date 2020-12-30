@@ -51,7 +51,7 @@ const OfferForm = ({
   offer,
   onSubmit,
   showErrorNotification,
-  setShowMediationForm,
+  setShowThumbnailForm,
   submitErrors,
 }) => {
   const [formValues, setFormValues] = useState({})
@@ -329,7 +329,7 @@ const OfferForm = ({
     displayFullForm = !!formValues.type
   }
 
-  setShowMediationForm(displayFullForm)
+  setShowThumbnailForm(displayFullForm)
 
   if (isBusy) {
     return <Spinner />
@@ -691,7 +691,7 @@ OfferForm.propTypes = {
   isUserAdmin: PropTypes.bool,
   offer: PropTypes.shape(),
   onSubmit: PropTypes.func.isRequired,
-  setShowMediationForm: PropTypes.func.isRequired,
+  setShowThumbnailForm: PropTypes.func.isRequired,
   showErrorNotification: PropTypes.func.isRequired,
 }
 

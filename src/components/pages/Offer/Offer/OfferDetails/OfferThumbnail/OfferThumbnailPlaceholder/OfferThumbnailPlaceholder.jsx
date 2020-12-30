@@ -1,12 +1,15 @@
 import React from 'react'
 
-import { ReactComponent as AddMediation } from './assets/add-mediation.svg'
+import { ReactComponent as AddThumbnail } from './assets/add-thumbnail.svg'
 
 const OfferThumbnailPlaceholder = () => (
-  <div className="of-placeholder">
-    <AddMediation />
+  <button
+    className="of-placeholder"
+    type="button"
+  >
+    <AddThumbnail />
     {'Ajouter une image'}
-  </div>
+  </button>
 )
 
 export default OfferThumbnailPlaceholder

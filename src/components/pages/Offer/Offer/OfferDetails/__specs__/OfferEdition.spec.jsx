@@ -86,7 +86,7 @@ describe('offerDetails - Edition', () => {
       thumbUrl: null,
     }
     props = {
-      setShowMediationForm: jest.fn(),
+      setShowThumbnailForm: jest.fn(),
     }
     pcapi.loadOffer.mockResolvedValue(editedOffer)
     pcapi.loadTypes.mockResolvedValue(types)
@@ -104,7 +104,9 @@ describe('offerDetails - Edition', () => {
         renderOffers({}, store)
 
         // Then
+        const button = await screen.findByTitle('Modifier l’image', { selector: 'button' })
         const image = await screen.findByAltText('Image de l’offre')
+        expect(button).toBeInTheDocument()
         expect(image).toHaveAttribute('src', 'http://fake-url/active-image.png')
       })
     })
@@ -115,7 +117,9 @@ describe('offerDetails - Edition', () => {
         renderOffers({}, store)
 
         // Then
-        expect(await screen.findByText('Ajouter une image')).toBeInTheDocument()
+        expect(
+          await screen.findByText('Ajouter une image', { selector: 'button' })
+        ).toBeInTheDocument()
       })
     })
 

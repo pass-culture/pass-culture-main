@@ -44,7 +44,7 @@ describe('offerDetails - Creation', () => {
   beforeEach(() => {
     store = configureTestStore({ data: { users: [{ publicName: 'François', isAdmin: false }] } })
     props = {
-      setShowMediationForm: jest.fn(),
+      setShowThumbnailForm: jest.fn(),
     }
     types = [
       {
@@ -155,7 +155,7 @@ describe('offerDetails - Creation', () => {
   })
 
   describe('render when creating a new offer', () => {
-    it('should get types from API', () => {
+    it('should get types from API', async () => {
       // When
       await renderOffers(props, store)
 
@@ -163,7 +163,7 @@ describe('offerDetails - Creation', () => {
       expect(pcapi.loadTypes).toHaveBeenCalledTimes(1)
     })
 
-    it("should get user's offerer from API", () => {
+    it("should get user's offerer from API", async () => {
       // When
       await renderOffers(props, store)
 
@@ -171,7 +171,7 @@ describe('offerDetails - Creation', () => {
       expect(pcapi.getValidatedOfferers).toHaveBeenCalledTimes(1)
     })
 
-    it("should get user's venues from API", () => {
+    it("should get user's venues from API", async () => {
       // When
       await renderOffers(props, store)
 
@@ -187,12 +187,14 @@ describe('offerDetails - Creation', () => {
       expect(screen.getByText("Type d'offre", { selector: '.section-title' })).toBeInTheDocument()
     })
 
-    it('should not display a placeholder for preview', () => {
+    it('should not display a placeholder for preview', async () => {
       // When
       await renderOffers(props, store)
 
       // Then
-      expect(screen.queryByText('Ajouter une image')).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('Ajouter une image', { selector: 'button' })
+      ).not.toBeInTheDocument()
     })
 
     describe('when selecting an offer type', () => {
@@ -204,7 +206,7 @@ describe('offerDetails - Creation', () => {
         await setOfferValues({ type: 'EventType.CINEMA' })
 
         // Then
-        expect(screen.getByText('Ajouter une image')).toBeInTheDocument()
+        expect(screen.getByText('Ajouter une image', { selector: 'button' })).toBeInTheDocument()
       })
 
       it('should display "Infos pratiques", "Infos artistiques", and "Autre" section', async () => {

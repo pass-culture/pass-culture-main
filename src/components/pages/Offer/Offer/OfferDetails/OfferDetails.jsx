@@ -13,7 +13,8 @@ const OfferDetails = props => {
 
   const [formInitialValues, setFormInitialValues] = useState({})
   const [formErrors, setFormErrors] = useState({})
-  const [showMediationForm, setShowMediationForm] = useState(false)
+  const [showThumbnailForm, setShowThumbnailForm] = useState(false)
+  const [thumbnailUrl, setThumbnailUrl] = useState(null)
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search)
@@ -32,7 +33,11 @@ const OfferDetails = props => {
   }, [setFormInitialValues, location.search])
 
   useEffect(() => {
-    setShowMediationForm(true)
+    setShowThumbnailForm(true)
+
+    if (offer) {
+      setThumbnailUrl(offer.thumbUrl)
+    }
   }, [offer])
 
   const handleSubmitOffer = useCallback(
@@ -68,12 +73,6 @@ const OfferDetails = props => {
     [history, offer, setFormErrors]
   )
 
-  let thumbnailUrl = null
-
-  if (offer) {
-    thumbnailUrl = offer.thumbUrl
-  }
-
   return (
     <div className="offer-edit">
       <PageTitle title="Détails de l'offre" />
@@ -85,12 +84,12 @@ const OfferDetails = props => {
             isUserAdmin={isUserAdmin}
             offer={offer}
             onSubmit={handleSubmitOffer}
-            setShowMediationForm={setShowMediationForm}
+            setShowThumbnailForm={setShowThumbnailForm}
             submitErrors={formErrors}
           />
         </div>
 
-        {showMediationForm && (
+        {showThumbnailForm && (
           <div className="sidebar">
             {thumbnailUrl ? <OfferThumbnail url={thumbnailUrl} /> : <OfferThumbnailPlaceholder />}
           </div>
