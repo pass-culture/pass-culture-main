@@ -8,6 +8,7 @@ import { MemoryRouter } from 'react-router'
 
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
+import { queryByTextTrimHtml } from 'utils/testHelpers'
 
 import Stocks from '../Stocks'
 
@@ -903,13 +904,41 @@ describe('stocks page', () => {
         })
 
         describe('when deleting stock', () => {
+          it('should display confirmation dialog box with focus on confirmation button', async () => {
+            // Given
+            await renderStocks(props, store)
+
+            // When
+            fireEvent.click(screen.getByAltText('Supprimer le stock'))
+
+            // Then
+            expect(screen.getByLabelText('Voulez-vous supprimer ce stock ?')).toBeInTheDocument()
+            expect(
+              queryByTextTrimHtml(
+                screen,
+                'Ce stock ne sera plus disponible à la réservation et entraînera l’annulation des réservations en cours !'
+              )
+            ).toBeInTheDocument()
+            expect(
+              screen.getByText('entraînera l’annulation des réservations en cours !', {
+                selector: 'strong',
+              })
+            ).toBeInTheDocument()
+            expect(
+              screen.getByText(
+                'L’ensemble des utilisateurs concernés sera automatiquement averti par e-mail.'
+              )
+            ).toBeInTheDocument()
+            expect(screen.getByRole('button', { name: 'Supprimer' })).toHaveFocus()
+          })
+
           it('should be able to delete a stock', async () => {
             // Given
             await renderStocks(props, store)
 
             // When
             fireEvent.click(screen.getByAltText('Supprimer le stock'))
-            fireEvent.click(screen.getByText('Oui'))
+            fireEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
 
             // Then
             expect(pcapi.deleteStock).toHaveBeenCalledWith(stockId)
@@ -921,7 +950,7 @@ describe('stocks page', () => {
 
             // When
             fireEvent.click(screen.getByAltText('Supprimer le stock'))
-            fireEvent.click(screen.getByText('Non'))
+            fireEvent.click(screen.getByRole('button', { name: 'Annuler' }))
 
             // Then
             expect(pcapi.deleteStock).not.toHaveBeenCalled()
@@ -953,7 +982,7 @@ describe('stocks page', () => {
             // When
             await act(async () => {
               fireEvent.click(await screen.findByAltText('Supprimer le stock'))
-              await fireEvent.click(screen.getByText('Oui'))
+              await fireEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
             })
 
             // Then

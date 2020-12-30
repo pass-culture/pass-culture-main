@@ -11,4 +11,6 @@
 @import 'components/index.scss';
 
 // Components scoped imports.
-@import '../components/pages/Offer/Offer/OfferDetails/OfferThumbnail/OfferThumbnail.scss';
+@import 'src/components/pages/Offer/Offer/OfferDetails/OfferThumbnail/OfferThumbnail.scss';
+@import 'src/components/pages/Offer/Offer/Stocks/DeleteStockDialog/DeleteStockDialog';
+@import 'src/components/layout/DialogBox/DialogBox';

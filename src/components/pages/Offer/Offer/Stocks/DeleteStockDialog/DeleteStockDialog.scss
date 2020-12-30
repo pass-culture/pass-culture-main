@@ -1,0 +1,20 @@
+.delete-stock-dialog {
+  text-align: center;
+
+  h1 {
+    @include title4();
+  }
+
+  strong {
+    @include body-important();
+  }
+
+  div {
+    margin-top: rem(25px);
+  }
+
+  .action-buttons {
+    display: flex;
+    justify-content: space-around;
+  }
+}

@@ -42,6 +42,11 @@
   font-weight: 400;
 }
 
+@mixin body-important() {
+  font-size: rem(16px);
+  font-weight: 500;
+}
+
 @mixin caption() {
   font-size: rem(14px);
   font-weight: 500;

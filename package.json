@@ -38,6 +38,7 @@
     ]
   },
   "dependencies": {
+    "@reach/dialog": "^0.12.1",
     "@sentry/browser": "^5.27.3",
     "@sentry/tracing": "^5.27.3",
     "bulma": "0.7.4",

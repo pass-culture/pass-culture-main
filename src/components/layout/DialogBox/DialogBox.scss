@@ -1,0 +1,11 @@
+.dialog-box-overlay {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+.dialog-box-content {
+  border-radius: 10px;
+  max-width: rem(532px);
+  padding: rem(32px) rem(90px);
+}

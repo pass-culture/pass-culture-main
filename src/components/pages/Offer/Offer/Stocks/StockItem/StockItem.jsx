@@ -5,9 +5,8 @@ import React, { Fragment, useCallback, useEffect, useState } from 'react'
 import Icon from 'components/layout/Icon'
 import { DateInput } from 'components/layout/inputs/DateInput/DateInput'
 import { TimeInput } from 'components/layout/inputs/TimeInput/TimeInput'
+import { DeleteStockDialog } from 'components/pages/Offer/Offer/Stocks/DeleteStockDialog/DeleteStockDialog'
 import * as pcapi from 'repository/pcapi/pcapi'
-
-import { DeleteStockConfirmation } from '../DeleteStockConfirmation/DeleteStockConfirmation'
 
 const StockItem = ({
   departmentCode,
@@ -184,135 +183,132 @@ const StockItem = ({
   ])
 
   return (
-    <Fragment>
-      <tr>
-        {isEvent && (
-          <Fragment>
-            <td className="regular-input">
-              <DateInput
-                ariaLabel="Date de l’événement"
-                departmentCode={departmentCode}
-                disabled={!isEditing || isOfferSynchronized}
-                minUtcDateIsoFormat={today}
-                onChange={changeBeginningDatetime}
-                stock={stock}
-                utcDateIsoFormat={beginningDatetime}
-              />
-            </td>
-            <td className="small-input">
-              <TimeInput
-                ariaLabel="Heure de l’événement"
-                departmentCode={departmentCode}
-                disabled={!isEditing || isOfferSynchronized}
-                onChange={changeBeginningDatetime}
-                stock={stock}
-                utcDateIsoFormat={beginningDatetime}
-              />
-            </td>
-          </Fragment>
-        )}
-        <td className="small-input input-text">
-          <input
-            aria-label="Prix"
-            className={`it-input ${priceValue ? 'with-euro-icon' : ''}`}
-            disabled={!isEditing}
-            onChange={changePrice}
-            placeholder="Gratuit"
-            type="number"
-            value={priceValue}
-          />
-        </td>
-        <td className="regular-input">
-          <DateInput
-            ariaLabel="Date limite de réservation"
-            departmentCode={departmentCode}
-            disabled={!isEditing}
-            maxUtcDateIsoFormat={beginningDatetime}
-            onChange={changeBookingLimitDatetime}
-            stock={stock}
-            utcDateIsoFormat={bookingLimitDatetime}
-          />
-        </td>
-        <td className="small-input input-text">
-          <input
-            aria-label="Quantité"
-            className="it-input"
-            disabled={!isEditing}
-            onChange={changeTotalQuantity}
-            placeholder="Illimité"
-            type="number"
-            value={totalQuantityValue}
-          />
-        </td>
-        <td>
-          {!isNewStock && remainingQuantityValue}
-        </td>
-        <td>
-          {!isNewStock && stock.bookingsQuantity}
-        </td>
-        <td className="action-column">
-          {!isEditing ? (
-            <button
-              className="secondary-button"
-              disabled={!isStockEditable || isDeleting}
-              onClick={enableUpdatableFields}
-              type="button"
-            >
-              <Icon
-                alt="Modifier le stock"
-                svg="ico-pen"
-              />
-            </button>
-          ) : (
-            <button
-              className="secondary-button validate-button"
-              disabled={isEvent && !beginningDatetime}
-              onClick={isNewStock ? saveNewStock : saveChanges}
-              type="button"
-            >
-              <Icon
-                alt="Valider les modifications"
-                svg="ico-validate-p"
-              />
-            </button>
-          )}
-        </td>
-        <td className="action-column">
-          {!isEditing ? (
-            <button
-              className="secondary-button"
-              disabled={!isStockDeletable || isDeleting}
-              onClick={askDeletionConfirmation}
-              type="button"
-            >
-              <Icon
-                alt="Supprimer le stock"
-                svg="ico-close-r"
-              />
-            </button>
-          ) : (
-            <button
-              className="secondary-button"
-              onClick={isNewStock ? removeNewStockLine : refreshStock}
-              type="button"
-            >
-              <Icon
-                alt="Annuler les modifications"
-                svg="ico-back"
-              />
-            </button>
-          )}
-        </td>
-      </tr>
-      {isDeleting && (
-        <DeleteStockConfirmation
-          isEvent={isEvent}
-          refreshOffer={refreshOffer}
-          setIsDeleting={setIsDeleting}
-          stockId={stock.id}
-        />
+    <tr>
+      {isEvent && (
+        <Fragment>
+          <td className="regular-input">
+            <DateInput
+              ariaLabel="Date de l’événement"
+              departmentCode={departmentCode}
+              disabled={!isEditing || isOfferSynchronized}
+              minUtcDateIsoFormat={today}
+              onChange={changeBeginningDatetime}
+              stock={stock}
+              utcDateIsoFormat={beginningDatetime}
+            />
+          </td>
+          <td className="small-input">
+            <TimeInput
+              ariaLabel="Heure de l’événement"
+              departmentCode={departmentCode}
+              disabled={!isEditing || isOfferSynchronized}
+              onChange={changeBeginningDatetime}
+              stock={stock}
+              utcDateIsoFormat={beginningDatetime}
+            />
+          </td>
+        </Fragment>
       )}
-    </Fragment>
+      <td className="small-input input-text">
+        <input
+          aria-label="Prix"
+          className={`it-input ${priceValue ? 'with-euro-icon' : ''}`}
+          disabled={!isEditing}
+          onChange={changePrice}
+          placeholder="Gratuit"
+          type="number"
+          value={priceValue}
+        />
+      </td>
+      <td className="regular-input">
+        <DateInput
+          ariaLabel="Date limite de réservation"
+          departmentCode={departmentCode}
+          disabled={!isEditing}
+          maxUtcDateIsoFormat={beginningDatetime}
+          onChange={changeBookingLimitDatetime}
+          stock={stock}
+          utcDateIsoFormat={bookingLimitDatetime}
+        />
+      </td>
+      <td className="small-input input-text">
+        <input
+          aria-label="Quantité"
+          className="it-input"
+          disabled={!isEditing}
+          onChange={changeTotalQuantity}
+          placeholder="Illimité"
+          type="number"
+          value={totalQuantityValue}
+        />
+      </td>
+      <td>
+        {!isNewStock && remainingQuantityValue}
+      </td>
+      <td>
+        {!isNewStock && stock.bookingsQuantity}
+      </td>
+      <td className="action-column">
+        {!isEditing ? (
+          <button
+            className="secondary-button"
+            disabled={!isStockEditable || isDeleting}
+            onClick={enableUpdatableFields}
+            type="button"
+          >
+            <Icon
+              alt="Modifier le stock"
+              svg="ico-pen"
+            />
+          </button>
+        ) : (
+          <button
+            className="secondary-button validate-button"
+            disabled={isEvent && !beginningDatetime}
+            onClick={isNewStock ? saveNewStock : saveChanges}
+            type="button"
+          >
+            <Icon
+              alt="Valider les modifications"
+              svg="ico-validate-p"
+            />
+          </button>
+        )}
+      </td>
+      <td className="action-column">
+        {!isEditing ? (
+          <button
+            className="secondary-button"
+            disabled={!isStockDeletable || isDeleting}
+            onClick={askDeletionConfirmation}
+            type="button"
+          >
+            <Icon
+              alt="Supprimer le stock"
+              svg="ico-close-r"
+            />
+          </button>
+        ) : (
+          <button
+            className="secondary-button"
+            onClick={isNewStock ? removeNewStockLine : refreshStock}
+            type="button"
+          >
+            <Icon
+              alt="Annuler les modifications"
+              svg="ico-back"
+            />
+          </button>
+        )}
+        {isDeleting && (
+          <DeleteStockDialog
+            refreshOffer={refreshOffer}
+            setIsDeleting={setIsDeleting}
+            stockId={stock.id}
+          />
+        )}
+      </td>
+    </tr>
   )
 }
 
