@@ -57,6 +57,7 @@ commands:
         type: string
     steps:
       - run: |
+          set +eo pipefail # While GCP deployment is not stable make it always return success status
           gcloud beta run deploy << parameters.app_name >> \
             --platform=managed \
             --allow-unauthenticated \
@@ -110,6 +111,7 @@ commands:
                 TRANSACTIONS_RECIPIENTS=sm://${GCP_PROJECT}/<< parameters.app_name >>_transactions_recipients, \
                 WALLET_BALANCES_RECIPIENTS=sm://${GCP_PROJECT}/<< parameters.app_name >>_wallet_balances_recipients" \
             --image=${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_REGISTRY_NAME}/<< parameters.docker_image_name >>:<< parameters.app_image_tag >>
+            true # While GCP deployment is not stable make it always return success status
 
   deploy-cron-gke:
     description: Deploy Crons and worker via helm to Kubernetes Cluster
@@ -124,11 +126,13 @@ commands:
         type: string
     steps:
       - run: |
+          set +eo pipefail # While GCP deployment is not stable make it always return success status
           helm upgrade << parameters.helm_release_name >> tmp/<< parameters.helm_chart_name >> \
             --install --wait \
             --namespace << parameters.kubernetes_namespace >> \
             --values tmp/<< parameters.helm_chart_name >>/<< parameters.helm_values_file >> \
             --set-string image.tag=${API_VERSION}
+          true # While GCP deployment is not stable make it always return success status
 
 ###################
 #  JOBS
