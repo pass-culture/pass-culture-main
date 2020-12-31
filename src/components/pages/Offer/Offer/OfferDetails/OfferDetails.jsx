@@ -11,8 +11,7 @@ import OfferThumbnailPlaceholder from './OfferThumbnail/OfferThumbnailPlaceholde
 const OfferDetails = ({ history, isUserAdmin, location, offer }) => {
   const [formInitialValues, setFormInitialValues] = useState({})
   const [formErrors, setFormErrors] = useState({})
-  const [showThumbnailForm, setShowThumbnailForm] = useState(false)
-  const [thumbnailUrl, setThumbnailUrl] = useState(null)
+  const [showThumbnailForm, setShowThumbnailForm] = useState(offer !== null)
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search)
@@ -29,14 +28,6 @@ const OfferDetails = ({ history, isUserAdmin, location, offer }) => {
       }))
     }
   }, [setFormInitialValues, location.search])
-
-  useEffect(() => {
-    setShowThumbnailForm(true)
-
-    if (offer) {
-      setThumbnailUrl(offer.thumbUrl)
-    }
-  }, [offer])
 
   const handleSubmitOffer = useCallback(
     async offerValues => {
@@ -89,7 +80,11 @@ const OfferDetails = ({ history, isUserAdmin, location, offer }) => {
 
         {showThumbnailForm && (
           <div className="sidebar">
-            {thumbnailUrl ? <OfferThumbnail url={thumbnailUrl} /> : <OfferThumbnailPlaceholder />}
+            {offer?.thumbUrl ? (
+              <OfferThumbnail url={offer.thumbUrl} />
+            ) : (
+              <OfferThumbnailPlaceholder />
+            )}
           </div>
         )}
       </div>

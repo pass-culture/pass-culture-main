@@ -9,7 +9,7 @@ import { getProviderInfo } from 'components/pages/Offer/LocalProviderInformation
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
-import OfferDetailsContainer from '../../OfferLayoutContainer'
+import OfferLayoutContainer from '../../OfferLayoutContainer'
 import { DEFAULT_FORM_VALUES } from '../OfferForm/_constants'
 
 import { fieldLabels, getInputErrorForField, setOfferValues } from './helpers'
@@ -30,7 +30,7 @@ const renderOffers = async (props, store, queryParams = '') => {
           initialEntries={[{ pathname: '/offres/v2/ABC12/edition', search: queryParams }]}
         >
           <Route path="/offres/v2/:offerId([A-Z0-9]+)/">
-            <OfferDetailsContainer {...props} />
+            <OfferLayoutContainer {...props} />
           </Route>
         </MemoryRouter>
       </Provider>

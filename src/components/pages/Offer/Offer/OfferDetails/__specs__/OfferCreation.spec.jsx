@@ -8,7 +8,7 @@ import { MemoryRouter, Route } from 'react-router'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
-import OfferDetailsContainer from '../../OfferLayoutContainer'
+import OfferLayoutContainer from '../../OfferLayoutContainer'
 import { DEFAULT_FORM_VALUES } from '../OfferForm/_constants'
 
 import { getInputErrorForField, getOfferInputForField, setOfferValues } from './helpers'
@@ -26,7 +26,7 @@ const renderOffers = async (props, store, queryParams = null) => {
       <Provider store={store}>
         <MemoryRouter initialEntries={[{ pathname: '/offres/v2/creation', search: queryParams }]}>
           <Route path="/offres/v2/">
-            <OfferDetailsContainer {...props} />
+            <OfferLayoutContainer {...props} />
           </Route>
         </MemoryRouter>
       </Provider>
