@@ -8,9 +8,7 @@ import OfferFormContainer from './OfferForm/OfferFormContainer'
 import OfferThumbnail from './OfferThumbnail/OfferThumbnail'
 import OfferThumbnailPlaceholder from './OfferThumbnail/OfferThumbnailPlaceholder/OfferThumbnailPlaceholder'
 
-const OfferDetails = props => {
-  const { history, isUserAdmin, location, offer } = props
-
+const OfferDetails = ({ history, isUserAdmin, location, offer }) => {
   const [formInitialValues, setFormInitialValues] = useState({})
   const [formErrors, setFormErrors] = useState({})
   const [showThumbnailForm, setShowThumbnailForm] = useState(false)
@@ -100,7 +98,10 @@ const OfferDetails = props => {
 }
 
 OfferDetails.propTypes = {
+  history: PropTypes.shape().isRequired,
   isUserAdmin: PropTypes.bool.isRequired,
+  location: PropTypes.shape().isRequired,
+  offer: PropTypes.shape().isRequired,
 }
 
 export default OfferDetails

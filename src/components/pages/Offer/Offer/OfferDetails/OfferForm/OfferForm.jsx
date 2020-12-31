@@ -13,7 +13,13 @@ import * as pcapi from 'repository/pcapi/pcapi'
 
 import SynchronizedProviderInformation from '../SynchronizedProviderInformation'
 
-import { DEFAULT_FORM_VALUES, MANDATORY_FIELDS } from './_constants'
+import {
+  BASE_OFFER_FIELDS,
+  DEFAULT_FORM_VALUES,
+  EDITED_OFFER_READ_ONLY_FIELDS,
+  EXTRA_DATA_FIELDS,
+  MANDATORY_FIELDS,
+} from './_constants'
 import OfferRefundWarning from './OfferRefundWarning'
 import TypeTreeSelects from './TypeTreeSelects'
 
@@ -98,10 +104,10 @@ const OfferForm = ({
       let values = {}
       if (offer) {
         values = Object.keys(DEFAULT_FORM_VALUES).reduce((acc, field) => {
-          if (offer[field]) {
+          if (field in offer && offer[field] !== null) {
             return { ...acc, [field]: offer[field] }
           } else if (offer.extraData && field in offer.extraData) {
-            return { ...acc, [field]: offer.extraData[field] || DEFAULT_FORM_VALUES[field] }
+            return { ...acc, [field]: offer.extraData[field] }
           }
           return { ...acc, [field]: DEFAULT_FORM_VALUES[field] }
         }, {})
@@ -114,23 +120,17 @@ const OfferForm = ({
 
         const isOfferSynchronized = isSynchronizedOffer(offer)
         if (isOfferSynchronized) {
-          let syncReadOnlyFields = Object.keys(DEFAULT_FORM_VALUES)
+          let synchonizedOfferReadOnlyFields = Object.keys(DEFAULT_FORM_VALUES)
           if (isAllocineOffer(offer)) {
-            syncReadOnlyFields = syncReadOnlyFields.filter(fieldName => fieldName !== 'isDuo')
+            synchonizedOfferReadOnlyFields = synchonizedOfferReadOnlyFields.filter(
+              fieldName => fieldName !== 'isDuo'
+            )
           }
-          setReadOnlyFields(syncReadOnlyFields)
+          setReadOnlyFields(synchonizedOfferReadOnlyFields)
         } else {
-          setReadOnlyFields([
-            'type',
-            'musicType',
-            'musicSubType',
-            'offererId',
-            'showType',
-            'showSubType',
-            'venueId',
-          ])
+          setReadOnlyFields(EDITED_OFFER_READ_ONLY_FIELDS)
         }
-        if (offer.bookingEmail && offer.bookingEmail.length) {
+        if (offer.bookingEmail !== null) {
           setReceiveNotificationEmails(true)
         }
       } else {
@@ -144,8 +144,6 @@ const OfferForm = ({
   )
   useEffect(
     function buildFormFields() {
-      const baseOfferFields = ['description', 'name', 'type', 'venueId', 'withdrawalDetails']
-
       const offerConditionalFields = getOfferConditionalFields({
         offerType,
         isUserAdmin,
@@ -161,7 +159,7 @@ const OfferForm = ({
       }
 
       const newFormFields = [
-        ...baseOfferFields,
+        ...BASE_OFFER_FIELDS,
         ...offerTypeConditionalFields,
         ...offerConditionalFields,
       ]
@@ -232,6 +230,7 @@ const OfferForm = ({
   const isValid = useCallback(() => {
     let newFormErrors = {}
     const formFields = [...offerFormFields, 'offererId']
+
     MANDATORY_FIELDS.forEach(fieldName => {
       if (
         formFields.includes(fieldName) &&
@@ -247,43 +246,30 @@ const OfferForm = ({
 
   const submitForm = useCallback(() => {
     if (isValid()) {
-      const extraDataFields = [
-        'author',
-        'isbn',
-        'musicType',
-        'musicSubType',
-        'performer',
-        'showType',
-        'showSubType',
-        'speaker',
-        'stageDirector',
-        'visa',
-      ]
-
-      const submitedValues = offerFormFields.reduce((acc, fieldName) => {
-        if (extraDataFields.includes(fieldName)) {
-          if (!('extraData' in acc)) {
-            acc.extraData = {}
+      const editableFields = offerFormFields.filter(field => !readOnlyFields.includes(field))
+      const submittedValues = editableFields.reduce(
+        (submittedValues, fieldName) => {
+          if (!EXTRA_DATA_FIELDS.includes(fieldName)) {
+            submittedValues = {
+              ...submittedValues,
+              [fieldName]: formValues[fieldName],
+            }
+          } else if (formValues[fieldName] !== DEFAULT_FORM_VALUES[fieldName]) {
+            submittedValues.extraData = {
+              ...submittedValues.extraData,
+              [fieldName]: formValues[fieldName],
+            }
           }
-          acc.extraData[fieldName] =
-            formValues[fieldName] === DEFAULT_FORM_VALUES[fieldName] ? null : formValues[fieldName]
-        } else {
-          acc = {
-            ...acc,
-            [fieldName]:
-              formValues[fieldName] === DEFAULT_FORM_VALUES[fieldName]
-                ? null
-                : formValues[fieldName],
-          }
-        }
-        return acc
-      }, {})
+          return submittedValues
+        },
+        { extraData: null }
+      )
 
       if (!receiveNotificationEmails) {
-        submitedValues.bookingEmail = null
+        submittedValues.bookingEmail = null
       }
 
-      onSubmit(submitedValues)
+      onSubmit(submittedValues)
     } else {
       showErrorNotification()
     }
@@ -292,15 +278,15 @@ const OfferForm = ({
     formValues,
     isValid,
     onSubmit,
+    readOnlyFields,
     receiveNotificationEmails,
     showErrorNotification,
   ])
 
   const handleSingleFormUpdate = useCallback(
     event => {
-      const checkboxFields = ['isDuo', 'isNational', 'receiveNotificationEmails']
       const field = event.target.name
-      const value = checkboxFields.includes(field) ? !formValues[field] : event.target.value
+      const value = event.target.type === 'checkbox' ? !formValues[field] : event.target.value
       handleFormUpdate({ [field]: value })
     },
     [formValues, handleFormUpdate]
@@ -634,6 +620,7 @@ const OfferForm = ({
             <div className="form-row">
               <CheckboxInput
                 checked={receiveNotificationEmails}
+                disabled={readOnlyFields.includes('bookingEmail')}
                 label="Recevoir les emails de réservation"
                 name="receiveNotificationEmails"
                 onChange={toggleReceiveNotification}
@@ -693,6 +680,7 @@ OfferForm.propTypes = {
   onSubmit: PropTypes.func.isRequired,
   setShowThumbnailForm: PropTypes.func.isRequired,
   showErrorNotification: PropTypes.func.isRequired,
+  submitErrors: PropTypes.shape().isRequired,
 }
 
 export default OfferForm

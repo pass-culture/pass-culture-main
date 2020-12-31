@@ -808,7 +808,7 @@ const state = {
       {
         id: 'CY',
         address: 'RUE DES POMMES ROSAS',
-        bookingEmail: 'fake@email.com',
+        bookingEmail: 'fake@example.com',
         city: 'Cayenne',
         comment: null,
         dateModifiedAtLastProvider: '2019-03-07T10:40:03.216279Z',

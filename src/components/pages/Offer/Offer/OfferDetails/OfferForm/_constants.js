@@ -25,4 +25,26 @@ export const DEFAULT_FORM_VALUES = {
   withdrawalDetails: TEXT_INPUT_DEFAULT_VALUE,
 }
 
+export const BASE_OFFER_FIELDS = ['description', 'name', 'type', 'venueId', 'withdrawalDetails']
+export const EDITED_OFFER_READ_ONLY_FIELDS = [
+  'type',
+  'musicType',
+  'musicSubType',
+  'offererId',
+  'showType',
+  'showSubType',
+  'venueId',
+]
+export const EXTRA_DATA_FIELDS = [
+  'author',
+  'isbn',
+  'musicType',
+  'musicSubType',
+  'performer',
+  'showType',
+  'showSubType',
+  'speaker',
+  'stageDirector',
+  'visa',
+]
 export const MANDATORY_FIELDS = ['name', 'venueId', 'offererId', 'url', 'bookingEmail']

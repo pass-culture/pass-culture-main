@@ -10,6 +10,7 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
 import OfferDetailsContainer from '../../OfferLayoutContainer'
+import { DEFAULT_FORM_VALUES } from '../OfferForm/_constants'
 
 import { fieldLabels, getInputErrorForField, setOfferValues } from './helpers'
 
@@ -160,7 +161,7 @@ describe('offerDetails - Edition', () => {
         withdrawalDetails: 'Offer withdrawal details',
         author: 'Mr Offer Author',
         performer: 'Mr Offer Performer',
-        bookingEmail: 'booking@email.net',
+        bookingEmail: 'booking@example.net',
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
       types.push({
@@ -276,7 +277,7 @@ describe('offerDetails - Edition', () => {
           withdrawalDetails: 'Offer withdrawal details',
           author: 'Mr Offer Author',
           performer: 'Mr Offer Performer',
-          bookingEmail: 'booking@email.net',
+          bookingEmail: 'booking@example.net',
           lastProvider: {
             name: 'leslibraires.fr',
           },
@@ -312,7 +313,7 @@ describe('offerDetails - Edition', () => {
           withdrawalDetails: 'Offer withdrawal details',
           author: 'Mr Offer Author',
           performer: 'Mr Offer Performer',
-          bookingEmail: 'booking@email.net',
+          bookingEmail: 'booking@example.net',
           lastProvider: {
             name: 'Leslibraires.fr',
           },
@@ -363,6 +364,13 @@ describe('offerDetails - Edition', () => {
           exact: fieldLabels.bookingEmail.exact,
         })
         expect(bookingEmailInput).toHaveAttribute('disabled')
+        const receiveNotificationEmailsCheckbox = await screen.findByLabelText(
+          fieldLabels.receiveNotificationEmails.label,
+          {
+            exact: fieldLabels.bookingEmail.exact,
+          }
+        )
+        expect(receiveNotificationEmailsCheckbox).toHaveAttribute('disabled')
         const descriptionInput = await screen.findByLabelText(fieldLabels.description.label, {
           exact: fieldLabels.description.exact,
         })
@@ -430,7 +438,7 @@ describe('offerDetails - Edition', () => {
           withdrawalDetails: 'Offer withdrawal details',
           author: 'Mr Offer Author',
           performer: 'Mr Offer Performer',
-          bookingEmail: 'booking@email.net',
+          bookingEmail: 'booking@example.net',
           lastProvider: {
             name: 'Allociné',
           },
@@ -466,6 +474,96 @@ describe('offerDetails - Edition', () => {
   })
 
   describe('when submitting form', () => {
+    it('should not send not editable fields', async () => {
+      // Given
+      const editedOffer = {
+        id: 'ABC12',
+        name: 'My edited offer',
+        type: 'ThingType.LIVRE_EDITION',
+        description: 'Offer description',
+        venueId: venues[0].id,
+        withdrawalDetails: 'Offer withdrawal details',
+        bookingEmail: 'booking@example.net',
+        extraData: null,
+      }
+      pcapi.loadOffer.mockResolvedValue(editedOffer)
+      await renderOffers(props, store)
+
+      // When
+      fireEvent.click(screen.getByText('Enregistrer'))
+
+      // Then
+      expect(pcapi.updateOffer).toHaveBeenCalledWith(
+        editedOffer.id,
+        expect.not.objectContaining({
+          venueId: expect.anything(),
+          type: expect.anything(),
+        })
+      )
+    })
+
+    it('should send null extraData when removing them', async () => {
+      // Given
+      const editedOffer = {
+        id: 'ABC12',
+        name: 'My edited offer',
+        type: 'ThingType.LIVRE_EDITION',
+        description: 'Offer description',
+        venueId: venues[0].id,
+        withdrawalDetails: 'Offer withdrawal details',
+        bookingEmail: 'booking@example.net',
+        extraData: {
+          author: 'Mon auteur',
+          isbn: '123456789',
+        },
+      }
+      pcapi.loadOffer.mockResolvedValue(editedOffer)
+      await renderOffers(props, store)
+
+      // When
+      await setOfferValues({ author: DEFAULT_FORM_VALUES.author, isbn: DEFAULT_FORM_VALUES.isbn })
+
+      // Then
+      fireEvent.click(screen.getByText('Enregistrer'))
+      expect(pcapi.updateOffer).toHaveBeenCalledWith(
+        editedOffer.id,
+        expect.objectContaining({
+          extraData: null,
+        })
+      )
+    })
+
+    it('should remove attribute from extraData when no value is provided', async () => {
+      // Given
+      const editedOffer = {
+        id: 'ABC12',
+        name: 'My edited offer',
+        type: 'ThingType.LIVRE_EDITION',
+        description: 'Offer description',
+        venueId: venues[0].id,
+        withdrawalDetails: 'Offer withdrawal details',
+        bookingEmail: 'booking@example.net',
+        extraData: {
+          author: 'Mon auteur',
+          isbn: '123456789',
+        },
+      }
+      pcapi.loadOffer.mockResolvedValue(editedOffer)
+      await renderOffers(props, store)
+
+      // When
+      await setOfferValues({ author: DEFAULT_FORM_VALUES.author })
+
+      // Then
+      fireEvent.click(screen.getByText('Enregistrer'))
+      expect(pcapi.updateOffer).toHaveBeenCalledWith(
+        editedOffer.id,
+        expect.objectContaining({
+          extraData: { isbn: editedOffer.extraData.isbn },
+        })
+      )
+    })
+
     it('should remove notification email when remove the will to receive notifications', async () => {
       // Given
       const editedOffer = {
@@ -475,11 +573,8 @@ describe('offerDetails - Edition', () => {
         description: 'Offer description',
         venueId: venues[0].id,
         withdrawalDetails: 'Offer withdrawal details',
-        bookingEmail: 'booking@email.net',
-        extraData: {
-          author: null,
-          isbn: null,
-        },
+        bookingEmail: 'booking@example.net',
+        extraData: null,
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
       await renderOffers(props, store)
@@ -489,11 +584,12 @@ describe('offerDetails - Edition', () => {
       fireEvent.click(screen.getByText('Enregistrer'))
 
       // Then
-      const { id: offerId, ...offerValues } = editedOffer
-      expect(pcapi.updateOffer).toHaveBeenCalledWith(offerId, {
-        ...offerValues,
-        bookingEmail: null,
-      })
+      expect(pcapi.updateOffer).toHaveBeenCalledWith(
+        editedOffer.id,
+        expect.objectContaining({
+          bookingEmail: null,
+        })
+      )
     })
 
     it('should show error for email notification input when asking to receive booking emails and no email was provided', async () => {

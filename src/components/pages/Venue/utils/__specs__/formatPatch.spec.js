@@ -7,7 +7,7 @@ describe('formatPatch', () => {
       const patch = {
         address: 'RUE DIDEROT',
         bic: 'QSDFGH8Z564',
-        bookingEmail: 'R6465373fake674654673@email.com',
+        bookingEmail: 'R6465373fake674654673sub@example.com',
         city: 'Aulnay-sous-Bois',
         comment: '',
         dateModifiedAtLastProvider: '2019-02-05T09:37:37.776590Z',
@@ -35,7 +35,7 @@ describe('formatPatch', () => {
       const expected = {
         address: 'RUE DIDEROT',
         bic: 'QSDFGH8Z564',
-        bookingEmail: 'R6465373fake674654673@email.com',
+        bookingEmail: 'R6465373fake674654673sub@example.com',
         city: 'Aulnay-sous-Bois',
         comment: '',
         iban: 'FR7630001007941234567890185',
@@ -60,7 +60,7 @@ describe('formatPatch', () => {
       const patch = {
         address: 'RUE DIDEROT',
         bic: 'QSDFGH8Z564',
-        bookingEmail: 'R6465373fake674654673@email.com',
+        bookingEmail: 'R6465373fake674654673sub@example.com',
         city: 'Aulnay-sous-Bois',
         comment: 'comment',
         dateModifiedAtLastProvider: '2019-02-05T09:37:37.776590Z',
@@ -89,7 +89,7 @@ describe('formatPatch', () => {
       // then
       expect(result).toStrictEqual({
         address: 'RUE DIDEROT',
-        bookingEmail: 'R6465373fake674654673@email.com',
+        bookingEmail: 'R6465373fake674654673sub@example.com',
         comment: 'comment',
         city: 'Aulnay-sous-Bois',
         latitude: 48.92071,

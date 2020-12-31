@@ -25,7 +25,7 @@ const renderOfferDetails = async (props, store) => {
   })
 }
 
-describe('offerDetails', () => {
+describe('offerLayout', () => {
   let editedOffer
   let props
   let store
