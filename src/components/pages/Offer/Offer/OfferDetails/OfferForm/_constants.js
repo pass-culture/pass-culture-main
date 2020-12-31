@@ -5,7 +5,7 @@ export const DEFAULT_FORM_VALUES = {
   author: TEXT_INPUT_DEFAULT_VALUE,
   bookingEmail: TEXT_INPUT_DEFAULT_VALUE,
   description: TEXT_INPUT_DEFAULT_VALUE,
-  durationMinutes: TEXT_INPUT_DEFAULT_VALUE,
+  durationMinutes: null,
   isbn: TEXT_INPUT_DEFAULT_VALUE,
   isDuo: true,
   isNational: false,

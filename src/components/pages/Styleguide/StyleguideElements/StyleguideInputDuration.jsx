@@ -1,44 +1,35 @@
 import React from 'react'
 
-import TimeInput from 'components/layout/inputs/TimeInput'
+import DurationInput from 'components/layout/inputs/DurationInput/DurationInput'
 
-const StyleguideInputText = () => {
-  const inputTimeEnabled = `
-    <TimeInput
+const StyleguideInputDuration = () => {
+  const inputDurationEnabled = `
+    <DurationInput
       label="Intitulé"
       name="input-time-default"
       onChange={onChange}
       subLabel="Intitulé secondaire"
-      value="01:00"
+      value="60"
     />
   `
-  const inputTimeReadOnly = `
-    <TimeInput
+  const inputDurationReadOnly = `
+    <DurationInput
       label="Intitulé"
       name="input-time-default"
       onChange={onChange}
       readOnly
       subLabel="Intitulé secondaire"
-      value="01:00"
+      value="60"
     />
   `
 
-  const inputTimeWithError = `
-    <TextInput
-      disabled
-      label="Intitulé"
-      name="input-text-disabled"
-      placeholder="placeholder disabled"
-      subLabel="Intitulé secondaire"
-      type="text"
-      value="01:00"
-
-    <TimeInput
+  const inputDurationWithError = `
+    <DurationInput
       error="Message d'erreur"
       label="Intitulé"
       name="input-text-disabled"
       subLabel="Intitulé secondaire"
-      value="01:00"
+      value="60"
     />
   `
 
@@ -52,17 +43,17 @@ const StyleguideInputText = () => {
         {'Champs de durée'}
       </h3>
       <div className="flex-block">
-        <TimeInput
+        <DurationInput
           label="Intitulé"
           name="input-time-default"
           onChange={onChange}
           subLabel="Intitulé secondaire"
-          value="01:00"
+          value="60"
         />
         <div className="it-description">
           <pre className="it-icon-snippet">
             <code>
-              {inputTimeEnabled}
+              {inputDurationEnabled}
             </code>
           </pre>
         </div>
@@ -72,18 +63,18 @@ const StyleguideInputText = () => {
         {'Champs de durée read only'}
       </h3>
       <div className="flex-block">
-        <TimeInput
+        <DurationInput
           label="Intitulé"
           name="input-time-default"
           onChange={onChange}
           readOnly
           subLabel="Intitulé secondaire"
-          value="01:00"
+          value="60"
         />
         <div className="it-description">
           <pre className="it-icon-snippet">
             <code>
-              {inputTimeReadOnly}
+              {inputDurationReadOnly}
             </code>
           </pre>
         </div>
@@ -94,18 +85,18 @@ const StyleguideInputText = () => {
         {'Champs de durée en erreur'}
       </h3>
       <div className="flex-block">
-        <TimeInput
+        <DurationInput
           error="Ce champs comporte une erreur"
           label="Intitulé"
           name="input-time-default"
           onChange={onChange}
           subLabel="Intitulé secondaire"
-          value="01:00"
+          value="60"
         />
         <div className="it-description">
           <pre className="it-icon-snippet">
             <code>
-              {inputTimeWithError}
+              {inputDurationWithError}
             </code>
           </pre>
         </div>
@@ -114,4 +105,4 @@ const StyleguideInputText = () => {
   )
 }
 
-export default StyleguideInputText
+export default StyleguideInputDuration

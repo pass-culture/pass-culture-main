@@ -752,7 +752,7 @@ describe('offerDetails - Creation', () => {
       const offerValues = {
         name: 'Ma petite offre',
         description: 'Pas si petite que ça',
-        durationMinutes: '03:00',
+        durationMinutes: '1:30',
         type: 'EventType.TEST_MUSIQUE',
         extraData: {
           musicType: '501',
@@ -773,7 +773,11 @@ describe('offerDetails - Creation', () => {
       fireEvent.click(screen.getByText('Enregistrer et passer au stocks'))
 
       // Then
-      expect(pcapi.createOffer).toHaveBeenCalledWith({ ...offerValues, bookingEmail: null })
+      expect(pcapi.createOffer).toHaveBeenCalledWith({
+        ...offerValues,
+        bookingEmail: null,
+        durationMinutes: 90,
+      })
     })
   })
 

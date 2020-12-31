@@ -2,10 +2,10 @@ import PropTypes from 'prop-types'
 import React, { Fragment, useCallback, useEffect, useState, useRef } from 'react'
 
 import { CheckboxInput } from 'components/layout/inputs/CheckboxInput/CheckboxInput'
+import DurationInput from 'components/layout/inputs/DurationInput/DurationInput'
 import Select, { buildSelectOptions } from 'components/layout/inputs/Select'
 import TextareaInput from 'components/layout/inputs/TextareaInput'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
-import TimeInput from 'components/layout/inputs/TimeInput'
 import Spinner from 'components/layout/Spinner'
 import { isAllocineOffer, isSynchronizedOffer } from 'components/pages/Offer/domain/localProvider'
 import offerIsRefundable from 'components/pages/Offer/domain/offerIsRefundable'
@@ -385,7 +385,6 @@ const OfferForm = ({
                 maxLength={1000}
                 name="description"
                 onChange={handleSingleFormUpdate}
-                required
                 rows={6}
                 subLabel={!MANDATORY_FIELDS.includes('description') ? 'Optionnel' : ''}
                 value={formValues.description}
@@ -483,16 +482,15 @@ const OfferForm = ({
 
             {offerFormFields.includes('durationMinutes') && (
               <div className="form-row">
-                <TimeInput
+                <DurationInput
+                  disabled={readOnlyFields.current.includes('durationMinutes')}
                   error={getErrorMessage('durationMinutes')}
+                  initialDurationInMinutes={formValues.durationMinutes}
                   label="Durée"
                   name="durationMinutes"
                   onChange={handleDurationChange}
                   placeholder="HH:MM"
-                  readOnly={readOnlyFields.current.includes('durationMinutes')}
                   subLabel={!MANDATORY_FIELDS.includes('durationMinutes') ? 'Optionnel' : ''}
-                  type="duration"
-                  value={formValues.durationMinutes}
                 />
               </div>
             )}
@@ -556,7 +554,6 @@ const OfferForm = ({
                 maxLength={500}
                 name="withdrawalDetails"
                 onChange={handleSingleFormUpdate}
-                required
                 rows={6}
                 subLabel={!MANDATORY_FIELDS.includes('withdrawalDetails') ? 'Optionnel' : ''}
                 value={formValues.withdrawalDetails}

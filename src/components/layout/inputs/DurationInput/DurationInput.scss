@@ -14,7 +14,12 @@
     margin-left: rem(5px);
   }
 
-  .itime-input {
+  .itime-field-container {
+    align-items: center;
+    display: flex;
+  }
+
+  .itime-field {
     @include body();
 
     border: 1px solid $grey-medium;

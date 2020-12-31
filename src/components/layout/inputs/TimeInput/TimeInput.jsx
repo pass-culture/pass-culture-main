@@ -6,7 +6,7 @@ import DatePicker from 'react-datepicker'
 import InputWithCalendar from 'components/layout/inputs/PeriodSelector/InputWithCalendar'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
-export const TimeInput = ({
+const TimeInput = ({
   ariaLabel,
   departmentCode,
   disabled,
@@ -68,3 +68,5 @@ TimeInput.propTypes = {
   onChange: PropTypes.func.isRequired,
   utcDateIsoFormat: PropTypes.string.isRequired,
 }
+
+export default TimeInput
