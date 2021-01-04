@@ -96,7 +96,7 @@ describe('offerDetails - Edition', () => {
   })
 
   describe('render when editing an existing offer', () => {
-    describe('when mediations exist', () => {
+    describe('when thumbnail exists', () => {
       it('should display the actived image', async () => {
         // Given
         editedOffer.thumbUrl = 'http://fake-url/active-image.png'
@@ -112,7 +112,7 @@ describe('offerDetails - Edition', () => {
       })
     })
 
-    describe('when mediations do not exist', () => {
+    describe('when thumbnail do not exist', () => {
       it('should display the placeholder', async () => {
         // When
         renderOffers({}, store)

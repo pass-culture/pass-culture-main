@@ -1,13 +1,13 @@
 import React from 'react'
 
-import { ReactComponent as AddThumbnail } from './assets/add-thumbnail.svg'
+import { ReactComponent as AddThumbnailIcon } from './assets/add-thumbnail.svg'
 
 const OfferThumbnailPlaceholder = () => (
   <button
     className="of-placeholder"
     type="button"
   >
-    <AddThumbnail />
+    <AddThumbnailIcon />
     {'Ajouter une image'}
   </button>
 )

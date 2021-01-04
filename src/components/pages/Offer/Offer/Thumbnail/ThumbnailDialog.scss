@@ -1,0 +1,18 @@
+.thumbnail-dialog {
+  position: relative;
+}
+
+.tbd-close {
+  background-color: transparent;
+  border: 0;
+  position: absolute;
+  right: 0;
+}
+
+.tbd-header {
+  text-align: center;
+
+  h1 {
+    @include title4;
+  }
+}

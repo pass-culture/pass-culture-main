@@ -16,9 +16,11 @@ export const DialogBox = forwardRef(function DialogBox(
     >
       <DialogContent
         aria-labelledby={labelledBy}
-        className={`dialog-box-content ${extraClassNames}`}
+        className="dialog-box-content"
       >
-        {children}
+        <section className={extraClassNames}>
+          {children}
+        </section>
       </DialogContent>
     </DialogOverlay>
   )
