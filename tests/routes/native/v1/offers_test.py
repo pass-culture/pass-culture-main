@@ -60,6 +60,7 @@ class OffersTest:
                     "id": bookableStock.id,
                     "price": 12.34,
                     "beginningDatetime": bookableStock.beginningDatetime.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+                    "bookingLimitDatetime": bookableStock.bookingLimitDatetime.strftime("%Y-%m-%dT%H:%M:%S.%f"),
                     "isBookable": True,
                 },
                 {
@@ -67,6 +68,7 @@ class OffersTest:
                     "price": 45.68,
                     "isBookable": False,
                     "beginningDatetime": notBookableStock.beginningDatetime.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+                    "bookingLimitDatetime": notBookableStock.bookingLimitDatetime.strftime("%Y-%m-%dT%H:%M:%S.%f"),
                 },
             ],
             "category": {"categoryType": "Event", "label": "Cinéma", "name": "CINEMA"},

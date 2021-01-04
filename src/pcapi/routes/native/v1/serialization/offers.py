@@ -39,6 +39,7 @@ class OfferOffererResponse(BaseModel):
 class OfferStockResponse(BaseModel):
     id: int
     beginningDatetime: Optional[datetime]
+    bookingLimitDatetime: Optional[datetime]
     isBookable: bool
     price: Decimal
 
