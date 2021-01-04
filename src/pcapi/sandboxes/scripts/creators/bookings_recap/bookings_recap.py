@@ -1,12 +1,12 @@
 from datetime import datetime
 from datetime import timedelta
 
+from pcapi.core.payments.api import create_deposit
 from pcapi.models import EventType
 from pcapi.models import ThingType
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.creators.helpers.sql_creators import create_booking
-from pcapi.sandboxes.scripts.creators.helpers.sql_creators import create_deposit
 from pcapi.sandboxes.scripts.creators.helpers.sql_creators import create_offer_with_event_product
 from pcapi.sandboxes.scripts.creators.helpers.sql_creators import create_offer_with_thing_product
 from pcapi.sandboxes.scripts.creators.helpers.sql_creators import create_offerer
@@ -40,9 +40,11 @@ def save_bookings_recap_sandbox():
         email="loulou.duck@example.com",
     )
 
-    create_deposit(beneficiary1)
-    create_deposit(beneficiary2)
-    create_deposit(beneficiary3)
+    repository.save(beneficiary1, beneficiary2, beneficiary3)
+    deposit1 = create_deposit(beneficiary1, "public")
+    deposit2 = create_deposit(beneficiary2, "public")
+    deposit3 = create_deposit(beneficiary3, "public")
+    repository.save(deposit1, deposit2, deposit3)
 
     pro = create_user(
         public_name="Balthazar Picsou",

@@ -8,7 +8,6 @@ from typing import Optional
 
 from pcapi.core.bookings import api as bookings_api
 from pcapi.models import Booking
-from pcapi.models import Deposit
 from pcapi.models import EventType
 from pcapi.models import Offer
 from pcapi.models import Offerer
@@ -83,23 +82,6 @@ def create_user(
         user.resetPasswordTokenValidityLimit = reset_password_token_validity_limit
 
     return user
-
-
-def create_deposit(
-    user: UserSQLEntity,
-    amount: int = 500,
-    date_created: datetime = datetime.utcnow(),
-    idx: int = None,
-    source: str = "public",
-) -> Deposit:
-    deposit = Deposit()
-    deposit.amount = amount
-    deposit.dateCreated = date_created
-    deposit.id = idx
-    deposit.source = source
-    deposit.user = user
-
-    return deposit
 
 
 def create_offerer(
