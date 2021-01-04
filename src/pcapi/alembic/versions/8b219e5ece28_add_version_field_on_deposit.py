@@ -1,7 +1,7 @@
 """add_version_field_on_deposit
 
 Revision ID: 8b219e5ece28
-Revises: 55bf0bb6c53b
+Revises: 93d6975c3fa7
 Create Date: 2020-12-18 15:28:15.415357
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = "8b219e5ece28"
-down_revision = "55bf0bb6c53b"
+down_revision = "93d6975c3fa7"
 branch_labels = None
 depends_on = None
 
