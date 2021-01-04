@@ -1,5 +1,6 @@
 import contextlib
 import enum
+from typing import Generator
 
 from sqlalchemy import Column
 from sqlalchemy import Enum
@@ -37,6 +38,7 @@ class FeatureToggle(enum.Enum):
     CLEAN_DISCOVERY_VIEW = "Nettoyer les données en base de données liées à la mise à jour régulière"
     WEBAPP_HOMEPAGE = "Permettre l affichage de la nouvelle page d accueil de la webapp"
     WEBAPP_PROFILE_PAGE = "Permettre l affichage de la page profil (route dédiée + navbar)"
+    APPLY_BOOKING_LIMITS_V2 = "Permettre l affichage des nouvelles règles de génération de portefeuille des jeunes"
 
 
 class Feature(PcObject, Model, DeactivableMixin):
@@ -44,12 +46,12 @@ class Feature(PcObject, Model, DeactivableMixin):
     description = Column(String(300), nullable=False)
 
     @property
-    def nameKey(self):
+    def nameKey(self) -> str:
         return str(self.name).replace("FeatureToggle.", "")
 
 
 @contextlib.contextmanager
-def override_features(**overrides):
+def override_features(**overrides) -> Generator:
     """A context manager that temporarily enables and/or disables features.
 
     It can also be used as a function decorator.
