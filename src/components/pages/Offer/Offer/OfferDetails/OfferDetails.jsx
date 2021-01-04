@@ -4,11 +4,11 @@ import React, { useCallback, useEffect, useState } from 'react'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import * as pcapi from 'repository/pcapi/pcapi'
 
-import OfferFormContainer from './OfferForm/OfferFormContainer'
+import OfferForm from './OfferForm/OfferForm'
 import OfferThumbnail from './OfferThumbnail/OfferThumbnail'
 import OfferThumbnailPlaceholder from './OfferThumbnail/OfferThumbnailPlaceholder/OfferThumbnailPlaceholder'
 
-const OfferDetails = ({ history, isUserAdmin, location, offer }) => {
+const OfferDetails = ({ history, isUserAdmin, location, offer, showErrorNotification }) => {
   const [formInitialValues, setFormInitialValues] = useState({})
   const [formErrors, setFormErrors] = useState({})
   const [showThumbnailForm, setShowThumbnailForm] = useState(offer !== null)
@@ -56,10 +56,11 @@ const OfferDetails = ({ history, isUserAdmin, location, offer }) => {
             newFormErrors[formFieldName] = error.errors[apiFieldName]
           }
           setFormErrors(newFormErrors)
+          showErrorNotification()
         }
       }
     },
-    [history, offer, setFormErrors]
+    [history, offer, setFormErrors, showErrorNotification]
   )
 
   return (
@@ -68,12 +69,13 @@ const OfferDetails = ({ history, isUserAdmin, location, offer }) => {
 
       <div className="sidebar-container">
         <div className="content">
-          <OfferFormContainer
+          <OfferForm
             initialValues={formInitialValues}
             isUserAdmin={isUserAdmin}
             offer={offer}
             onSubmit={handleSubmitOffer}
             setShowThumbnailForm={setShowThumbnailForm}
+            showErrorNotification={showErrorNotification}
             submitErrors={formErrors}
           />
         </div>
@@ -97,6 +99,7 @@ OfferDetails.propTypes = {
   isUserAdmin: PropTypes.bool.isRequired,
   location: PropTypes.shape().isRequired,
   offer: PropTypes.shape().isRequired,
+  showErrorNotification: PropTypes.func.isRequired,
 }
 
 export default OfferDetails
