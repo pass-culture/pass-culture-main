@@ -7,11 +7,9 @@ import pytest
 
 from pcapi.core.bookings import factories
 from pcapi.core.offers.factories import EventStockFactory
-from pcapi.core.offers.factories import MediationFactory
 from pcapi.core.offers.factories import ThingStockFactory
 from pcapi.core.users.factories import UserFactory
 from pcapi.emails.beneficiary_booking_cancellation import make_beneficiary_booking_cancellation_email_data
-from pcapi.utils.human_ids import humanize
 
 
 @pytest.mark.usefixtures("db_session")
@@ -45,7 +43,6 @@ class MakeBeneficiaryBookingCancellationEmailDataTest:
                 "event_hour": "",
                 "is_event": 0,
                 "is_free_offer": 0,
-                "mediation_id": "vide",
                 "offer_id": "AHREA",
                 "offer_name": "Test thing name",
                 "offer_price": "10.20",
@@ -83,7 +80,6 @@ class MakeBeneficiaryBookingCancellationEmailDataTest:
                 "event_hour": "19h29",
                 "is_event": 1,
                 "is_free_offer": 0,
-                "mediation_id": "vide",
                 "offer_id": "AHREA",
                 "offer_name": "Test event name",
                 "offer_price": "10.20",
@@ -105,23 +101,6 @@ class MakeBeneficiaryBookingCancellationEmailDataTest:
 
         # Then
         assert email_data["Vars"]["is_free_offer"] == 1
-
-    def test_should_return_with_an_id_of_mediation(self):
-        # Given
-        booking = factories.BookingFactory(
-            user=UserFactory(),
-            isCancelled=True,
-            stock=ThingStockFactory(
-                price=0,
-            ),
-        )
-        mediation = MediationFactory(thumbCount=1, offer=booking.stock.offer)
-
-        # When
-        email_data = make_beneficiary_booking_cancellation_email_data(booking)
-
-        # Then
-        assert email_data["Vars"]["mediation_id"] == humanize(mediation.id)
 
     def test_should_return_the_price_multiplied_by_quantity_when_it_is_a_duo_offer(self):
         # Given

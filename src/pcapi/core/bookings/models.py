@@ -103,19 +103,13 @@ class Booking(PcObject, Model, VersionedMixin):
 
     @property
     def thumbUrl(self):
-        if self.stock.offer.activeMediation:
-            return self.stock.offer.activeMediation.thumbUrl
+        if self.mediation:
+            return self.mediation.thumbUrl
         return self.stock.offer.product.thumbUrl
 
     @property
     def mediation(self):
-        # TODO (viconnex, 2020-12-23) remove mediation usages
-        return None
-
-    @property
-    def mediationId(self):
-        # TODO (viconnex, 2020-12-23) remove mediationId usages
-        return None
+        return self.stock.offer.activeMediation
 
     @property
     def qrCode(self):

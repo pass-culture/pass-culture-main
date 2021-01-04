@@ -23,7 +23,6 @@ def make_beneficiary_booking_cancellation_email_data(booking: Booking) -> Dict:
     offer_name = offer.name
     price = str(stock.price * booking.quantity)
     is_free_offer = 1 if stock.price == 0 else 0
-    mediation_id = humanize(booking.mediationId) if booking.mediationId is not None else "vide"
 
     if is_event:
         beginning_date_time_in_tz = utc_datetime_to_department_timezone(
@@ -43,7 +42,6 @@ def make_beneficiary_booking_cancellation_email_data(booking: Booking) -> Dict:
             "event_hour": event_hour,
             "is_free_offer": is_free_offer,
             "is_event": is_event,
-            "mediation_id": mediation_id,
             "offer_id": offer_id,
             "offer_name": offer_name,
             "offer_price": price,
