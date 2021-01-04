@@ -771,7 +771,7 @@ describe('stocks page', () => {
               expect(pcapi.updateStock).toHaveBeenCalledWith({
                 beginningDatetime: '2020-12-26T23:00:00Z',
                 bookingLimitDatetime: '2020-12-25T23:59:59Z',
-                id: '2E',
+                stockId: '2E',
                 price: '14.01',
                 quantity: '6',
               })
@@ -1450,7 +1450,7 @@ describe('stocks page', () => {
             // Then
             expect(pcapi.updateStock).toHaveBeenCalledWith({
               bookingLimitDatetime: '2020-12-25T23:59:59Z',
-              id: '2E',
+              stockId: '2E',
               price: '14.01',
               quantity: '6',
             })

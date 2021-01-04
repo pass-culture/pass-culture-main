@@ -61,9 +61,14 @@ describe('stocks page', () => {
   })
 
   describe('render', () => {
-    it('should display error message on error', async () => {
+    it('should display error message on api error', async () => {
       // Given
-      pcapi.updateStock.mockImplementation(() => Promise.reject({ errors: 'A error happened' }))
+      pcapi.updateStock.mockRejectedValue({
+        errors: {
+          price: 'Price error.',
+          quantity: 'Quantity error.',
+        },
+      })
 
       await renderStockItem(props, store)
       const modifyButton = screen.getByAltText('Modifier le stock').closest('button')
@@ -78,6 +83,52 @@ describe('stocks page', () => {
         exact: false,
       })
       expect(errorMessage).toBeInTheDocument()
+      const priceErrorMessage = await screen.findByText('Price error.', {
+        exact: false,
+      })
+      expect(priceErrorMessage).toBeInTheDocument()
+      const quantityErrorMessage = await screen.findByText('Quantity error.', {
+        exact: false,
+      })
+      expect(quantityErrorMessage).toBeInTheDocument()
+    })
+
+    it('should display error message on pre-submit error', async () => {
+      // Given
+      await renderStockItem(props, store)
+      const modifyButton = screen.getByAltText('Modifier le stock').closest('button')
+      fireEvent.click(modifyButton)
+
+      const priceInput = await screen.findByDisplayValue('10')
+      const quantityInput = await screen.findByDisplayValue('20')
+
+      // When
+      fireEvent.change(priceInput, { target: { value: -10 } })
+      fireEvent.change(quantityInput, { target: { value: -20 } })
+      const submitIcon = await screen.findByAltText('Valider les modifications')
+      const submitButton = submitIcon.closest('button')
+      fireEvent.click(submitButton)
+
+      // Then
+      const errorMessage = await screen.findByText('Impossible de modifier le stock.', {
+        exact: false,
+      })
+      expect(errorMessage).toBeInTheDocument()
+      const priceErrorMessage = await screen.findByText('Le prix doit être positif.', {
+        exact: false,
+      })
+      expect(priceErrorMessage).toBeInTheDocument()
+      const quantityErrorMessage = await screen.findByText('Le stock doit être positif.', {
+        exact: false,
+      })
+      expect(quantityErrorMessage).toBeInTheDocument()
+      const quantityToLowErrorMessage = await screen.findByText(
+        'La quantité ne peut être inférieure au nombre de réservations.',
+        {
+          exact: false,
+        }
+      )
+      expect(quantityToLowErrorMessage).toBeInTheDocument()
     })
 
     it('should display success message on success', async () => {

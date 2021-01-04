@@ -133,8 +133,8 @@ export const loadTypes = () => {
 // stocks
 //
 export const updateStock = stock => {
-  const { id, ...stockWithoutId } = stock
-  return client.patch(`/stocks/${id}`, stockWithoutId)
+  const { stockId, ...stockWithoutId } = stock
+  return client.patch(`/stocks/${stockId}`, stockWithoutId)
 }
 
 export const deleteStock = stockId => {

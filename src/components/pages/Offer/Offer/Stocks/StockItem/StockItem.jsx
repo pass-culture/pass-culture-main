@@ -13,7 +13,8 @@ const StockItem = ({
   isEvent,
   isNewStock,
   isOfferSynchronized,
-  notifyUpdateError,
+  notifyCreateSuccess,
+  notifyError,
   notifyUpdateSuccess,
   offerId,
   refreshOffer,
@@ -23,6 +24,7 @@ const StockItem = ({
 }) => {
   const today = new Date().toISOString()
 
+  const [formErrors, setFormErrors] = useState({})
   const [isEditing, setIsEditing] = useState(isNewStock)
   const [isDeleting, setIsDeleting] = useState(false)
   const [beginningDatetime, setBeginningDatetime] = useState(stock.beginningDatetime)
@@ -118,39 +120,87 @@ const StockItem = ({
   const isStockEditable = isEvent ? isEventStockEditable : isThingStockEditable
   const isStockDeletable = isEvent ? stock.isEventDeletable : !isOfferSynchronized
 
+  useEffect(() => {
+    const errorMessages = Object.values(formErrors)
+    if (errorMessages.length > 0) {
+      notifyError(errorMessages)
+    }
+  }, [formErrors, notifyError])
+
+  const isValid = useCallback(() => {
+    let errors = []
+
+    if (price < 0) {
+      errors['price'] = 'Le prix doit être positif.'
+    }
+
+    if (totalQuantity < 0) {
+      errors['quantity'] = 'Le stock doit être positif.'
+    }
+
+    if (!isNewStock && remainingQuantityValue < 0) {
+      const missingQuantityMessage =
+        'La quantité ne peut être inférieure au nombre de réservations.'
+      if ('quantity' in errors) {
+        errors['quantity'] = `${errors['quantity']}\n${missingQuantityMessage}`
+      } else {
+        errors['quantity'] = missingQuantityMessage
+      }
+    }
+
+    const hasErrors = Object.values(errors).length > 0
+
+    if (hasErrors) {
+      const formErrors = {
+        global: isNewStock ? 'Impossible d’ajouter le stock.' : 'Impossible de modifier le stock.',
+        ...errors,
+      }
+      setFormErrors(formErrors)
+    }
+
+    return !hasErrors
+  }, [isNewStock, price, remainingQuantityValue, setFormErrors, totalQuantity])
+
   const saveChanges = useCallback(() => {
-    const payload = {
-      id: stock.id,
-      price: price ? price : 0,
-      quantity: totalQuantity ? totalQuantity : null,
+    if (isValid()) {
+      const payload = {
+        stockId: stock.id,
+        price: price ? price : 0,
+        quantity: totalQuantity ? totalQuantity : null,
+      }
+      const thingPayload = {
+        ...payload,
+        bookingLimitDatetime: getBookingLimitDatetimeForThing(),
+      }
+      const eventPayload = {
+        ...payload,
+        beginningDatetime: beginningDatetime,
+        bookingLimitDatetime: getBookingLimitDatetimeForEvent(),
+      }
+      pcapi
+        .updateStock(isEvent ? eventPayload : thingPayload)
+        .then(async () => {
+          await refreshOffer()
+          notifyUpdateSuccess()
+        })
+        .catch(errors => {
+          const submitErrors = {
+            global: 'Impossible de modifier le stock.',
+            ...('errors' in errors ? errors.errors : []),
+          }
+          setFormErrors(submitErrors)
+        })
     }
-    const thingPayload = {
-      ...payload,
-      bookingLimitDatetime: getBookingLimitDatetimeForThing(),
-    }
-    const eventPayload = {
-      ...payload,
-      beginningDatetime: beginningDatetime,
-      bookingLimitDatetime: getBookingLimitDatetimeForEvent(),
-    }
-    pcapi
-      .updateStock(isEvent ? eventPayload : thingPayload)
-      .then(async () => {
-        await refreshOffer()
-        notifyUpdateSuccess()
-      })
-      .catch(() => {
-        notifyUpdateError()
-      })
   }, [
     stock.id,
     beginningDatetime,
     isEvent,
+    isValid,
     getBookingLimitDatetimeForEvent,
     getBookingLimitDatetimeForThing,
-    notifyUpdateError,
     notifyUpdateSuccess,
     price,
+    setFormErrors,
     totalQuantity,
     refreshOffer,
   ])
@@ -160,32 +210,47 @@ const StockItem = ({
   }, [setIsAddingNewStock])
 
   const saveNewStock = useCallback(() => {
-    const payload = {
-      offerId: offerId,
-      price: price ? price : 0,
-      quantity: totalQuantity ? totalQuantity : null,
-    }
-    const thingPayload = {
-      ...payload,
-      bookingLimitDatetime: getBookingLimitDatetimeForThing(),
-    }
-    const eventPayload = {
-      ...payload,
-      beginningDatetime: beginningDatetime,
-      bookingLimitDatetime: getBookingLimitDatetimeForEvent(),
-    }
+    if (isValid()) {
+      const payload = {
+        offerId: offerId,
+        price: price ? price : 0,
+        quantity: totalQuantity ? totalQuantity : null,
+      }
+      const thingPayload = {
+        ...payload,
+        bookingLimitDatetime: getBookingLimitDatetimeForThing(),
+      }
+      const eventPayload = {
+        ...payload,
+        beginningDatetime: beginningDatetime,
+        bookingLimitDatetime: getBookingLimitDatetimeForEvent(),
+      }
 
-    pcapi.createStock(isEvent ? eventPayload : thingPayload).then(() => {
-      refreshOffer()
-      removeNewStockLine()
-    })
+      pcapi
+        .createStock(isEvent ? eventPayload : thingPayload)
+        .then(() => {
+          refreshOffer()
+          removeNewStockLine()
+          notifyCreateSuccess()
+        })
+        .catch(errors => {
+          const submitErrors = {
+            global: 'Impossible d’ajouter le stock.',
+            ...('errors' in errors ? errors.errors : []),
+          }
+          setFormErrors(submitErrors)
+        })
+    }
   }, [
     offerId,
     beginningDatetime,
     isEvent,
     getBookingLimitDatetimeForEvent,
     getBookingLimitDatetimeForThing,
+    isValid,
+    notifyCreateSuccess,
     price,
+    setFormErrors,
     totalQuantity,
     refreshOffer,
     removeNewStockLine,
@@ -222,8 +287,11 @@ const StockItem = ({
       <td className="small-input input-text">
         <input
           aria-label="Prix"
-          className={`it-input ${priceValue ? 'with-euro-icon' : ''}`}
+          className={`it-input ${priceValue ? 'with-euro-icon' : ''} ${
+            'price' in formErrors ? 'error' : ''
+          }`}
           disabled={!isEditing}
+          name="price"
           onChange={changePrice}
           placeholder="Gratuit"
           type="number"
@@ -245,8 +313,9 @@ const StockItem = ({
       <td className="small-input input-text">
         <input
           aria-label="Quantité"
-          className="it-input"
+          className={`it-input ${'quantity' in formErrors ? 'error' : ''}`}
           disabled={!isEditing}
+          name="quantity"
           onChange={changeTotalQuantity}
           placeholder="Illimité"
           type="number"
@@ -341,7 +410,8 @@ StockItem.propTypes = {
   isEvent: PropTypes.bool.isRequired,
   isNewStock: PropTypes.bool,
   isOfferSynchronized: PropTypes.bool.isRequired,
-  notifyUpdateError: PropTypes.func.isRequired,
+  notifyCreateSuccess: PropTypes.func.isRequired,
+  notifyError: PropTypes.func.isRequired,
   notifyUpdateSuccess: PropTypes.func.isRequired,
   offerId: PropTypes.string.isRequired,
   refreshOffer: PropTypes.func.isRequired,

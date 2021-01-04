@@ -5,13 +5,21 @@ import { showNotificationV2 } from 'store/reducers/notificationReducer'
 import StockItem from './StockItem'
 
 const mapDispatchToProps = dispatch => ({
-  notifyUpdateError: () =>
+  notifyCreateSuccess: () =>
     dispatch(
       showNotificationV2({
-        type: 'error',
-        text: 'Impossible de modifier le stock.',
+        type: 'success',
+        text: 'Le stock a bien été ajouté.',
       })
     ),
+  notifyError: errors => {
+    return dispatch(
+      showNotificationV2({
+        type: 'error',
+        text: errors.join('\n'),
+      })
+    )
+  },
   notifyUpdateSuccess: () =>
     dispatch(
       showNotificationV2({
