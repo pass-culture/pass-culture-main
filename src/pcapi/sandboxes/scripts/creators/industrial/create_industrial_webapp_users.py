@@ -56,6 +56,7 @@ def create_industrial_webapp_users():
                 departement_code=str(departement_code),
                 email=email,
                 first_name="PC Test Jeune",
+                date_of_birth=datetime(2003, 1, 1),
                 has_seen_tutorials=has_seen_tutorials,
                 last_name="{} {}".format(departement_code, short_tag),
                 needs_to_fill_cultural_survey=needs_to_fill_cultural_survey,

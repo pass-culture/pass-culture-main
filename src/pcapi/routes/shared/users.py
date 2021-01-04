@@ -37,7 +37,6 @@ def get_profile():
 @private_api.route("/users/token/<token>", methods=["GET"])
 def check_activation_token_exists(token):
     user = find_user_by_reset_password_token(token)
-
     if user is None:
         return jsonify(), 404
 

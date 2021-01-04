@@ -17,6 +17,7 @@ from pcapi.flask_app import public_api
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.serialization import as_dict
 from pcapi.routes.serialization import beneficiaries as serialization_beneficiaries
+from pcapi.routes.serialization.beneficiaries import BeneficiaryAccountResponse
 from pcapi.routes.serialization.beneficiaries import ChangeBeneficiaryEmailBody
 from pcapi.routes.serialization.beneficiaries import ChangeBeneficiaryEmailRequestBody
 from pcapi.serialization.decorator import spectree_serialize
@@ -37,9 +38,13 @@ from pcapi.workers.beneficiary_job import beneficiary_job
 # @debt api-migration
 @private_api.route("/beneficiaries/current", methods=["GET"])
 @login_required
-def get_beneficiary_profile() -> Tuple[str, int]:
+@spectree_serialize(response_model=BeneficiaryAccountResponse)
+def get_beneficiary_profile() -> BeneficiaryAccountResponse:
     user = current_user._get_current_object()
-    return jsonify(as_dict(user, includes=BENEFICIARY_INCLUDES)), 200
+
+    response = BeneficiaryAccountResponse.from_orm(user)
+
+    return response
 
 
 # @debt api-migration
