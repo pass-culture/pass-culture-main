@@ -12,6 +12,7 @@ export const DateInput = ({
   disabled,
   maxUtcDateIsoFormat,
   minUtcDateIsoFormat,
+  openingUtcDateIsoFormat,
   onChange,
   utcDateIsoFormat,
 }) => {
@@ -27,6 +28,8 @@ export const DateInput = ({
     return undefined
   }
 
+  const selectedDate = getMomentDate(utcDateIsoFormat)
+
   return (
     <DatePicker
       className="datetime-input"
@@ -40,6 +43,7 @@ export const DateInput = ({
       maxDate={getMomentDate(maxUtcDateIsoFormat)}
       minDate={getMomentDate(minUtcDateIsoFormat)}
       onChange={onChange}
+      openToDate={selectedDate ? selectedDate : getMomentDate(openingUtcDateIsoFormat)}
       placeholderText="JJ/MM/AAAA"
       selected={getMomentDate(utcDateIsoFormat)}
     />
@@ -60,5 +64,6 @@ DateInput.propTypes = {
   maxUtcDateIsoFormat: PropTypes.string,
   minUtcDateIsoFormat: PropTypes.string,
   onChange: PropTypes.func.isRequired,
+  openingUtcDateIsoFormat: PropTypes.string.isRequired,
   utcDateIsoFormat: PropTypes.string.isRequired,
 }

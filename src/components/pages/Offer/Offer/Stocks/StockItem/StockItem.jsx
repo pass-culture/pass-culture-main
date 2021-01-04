@@ -193,6 +193,7 @@ const StockItem = ({
               disabled={!isEditing || isOfferSynchronized}
               minUtcDateIsoFormat={today}
               onChange={changeBeginningDatetime}
+              openingUtcDateIsoFormat={today}
               stock={stock}
               utcDateIsoFormat={beginningDatetime}
             />
@@ -227,6 +228,7 @@ const StockItem = ({
           disabled={!isEditing}
           maxUtcDateIsoFormat={beginningDatetime}
           onChange={changeBookingLimitDatetime}
+          openingUtcDateIsoFormat={today}
           stock={stock}
           utcDateIsoFormat={bookingLimitDatetime}
         />

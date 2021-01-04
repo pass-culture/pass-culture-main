@@ -1077,7 +1077,7 @@ describe('stocks page', () => {
           expect(screen.getAllByLabelText('Date de l’événement')[1].value).toBe('20/12/2020')
         })
 
-        it('should have empty date, hour, price, limit datetime and quantity fields emptied by default', async () => {
+        it('should have date, hour, price, limit datetime and quantity fields emptied by default', async () => {
           // given
           await renderStocks(props, store)
 
