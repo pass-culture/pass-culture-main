@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
-import { fireEvent } from '@testing-library/dom'
 import { act, render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
@@ -128,9 +128,10 @@ describe('offerDetails - Edition', () => {
       // Given
       await renderOffers(props, store)
       const titleInput = await screen.findByLabelText("Titre de l'offre")
+      userEvent.clear(titleInput)
 
       // When
-      fireEvent.change(titleInput, { target: { value: 'Mon nouveau titre' } })
+      userEvent.type(titleInput, 'Mon nouveau titre')
 
       // Then
       const newTitleValue = await screen.findByDisplayValue('Mon nouveau titre')
@@ -608,7 +609,7 @@ describe('offerDetails - Edition', () => {
       await renderOffers(props, store)
 
       // When
-      fireEvent.click(screen.getByText('Enregistrer'))
+      userEvent.click(screen.getByText('Enregistrer'))
 
       // Then
       expect(pcapi.updateOffer).toHaveBeenCalledWith(
@@ -642,7 +643,7 @@ describe('offerDetails - Edition', () => {
       await setOfferValues({ author: DEFAULT_FORM_VALUES.author, isbn: DEFAULT_FORM_VALUES.isbn })
 
       // Then
-      fireEvent.click(screen.getByText('Enregistrer'))
+      userEvent.click(screen.getByText('Enregistrer'))
       expect(pcapi.updateOffer).toHaveBeenCalledWith(
         editedOffer.id,
         expect.objectContaining({
@@ -673,7 +674,7 @@ describe('offerDetails - Edition', () => {
       await setOfferValues({ author: DEFAULT_FORM_VALUES.author })
 
       // Then
-      fireEvent.click(screen.getByText('Enregistrer'))
+      userEvent.click(screen.getByText('Enregistrer'))
       expect(pcapi.updateOffer).toHaveBeenCalledWith(
         editedOffer.id,
         expect.objectContaining({
@@ -699,7 +700,7 @@ describe('offerDetails - Edition', () => {
       await setOfferValues({ receiveNotificationEmails: false })
 
       // When
-      fireEvent.click(screen.getByText('Enregistrer'))
+      userEvent.click(screen.getByText('Enregistrer'))
 
       // Then
       expect(pcapi.updateOffer).toHaveBeenCalledWith(
@@ -726,7 +727,7 @@ describe('offerDetails - Edition', () => {
       await setOfferValues({ receiveNotificationEmails: true })
 
       // When
-      fireEvent.click(screen.getByText('Enregistrer'))
+      userEvent.click(screen.getByText('Enregistrer'))
 
       // Then
       const bookingEmailInput = await getInputErrorForField('bookingEmail')

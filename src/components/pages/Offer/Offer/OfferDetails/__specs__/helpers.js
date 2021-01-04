@@ -1,4 +1,5 @@
-import { fireEvent, screen, waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
 export const fieldLabels = {
   author: { label: 'Auteur', exact: false },
@@ -38,16 +39,26 @@ export const getInputErrorForField = async fieldName => {
 
 export const setOfferValues = async values => {
   const checkboxes = ['isDuo', 'receiveNotificationEmails']
+  const selects = [
+    'musicType',
+    'musicSubType',
+    'offererId',
+    'showType',
+    'showSubType',
+    'type',
+    'venueId',
+  ]
   const setFormValueForField = async (field, value) => {
     let input
     const { label, exact } = fieldLabels[field]
     input = await screen.findByLabelText(label, { exact })
     if (checkboxes.includes(field)) {
-      if (input.checked !== value) {
-        fireEvent.click(input)
-      }
+      userEvent.click(input)
+    } else if (selects.includes(field)) {
+      userEvent.selectOptions(input, value)
     } else {
-      fireEvent.change(input, { target: { value } })
+      userEvent.clear(input)
+      userEvent.type(input, value)
     }
 
     return input
