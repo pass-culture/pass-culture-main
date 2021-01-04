@@ -250,23 +250,25 @@ const OfferForm = ({
       const editableFields = offerFormFields.filter(
         field => !readOnlyFields.current.includes(field)
       )
-      const submittedValues = editableFields.reduce(
-        (submittedValues, fieldName) => {
-          if (!EXTRA_DATA_FIELDS.includes(fieldName)) {
-            submittedValues = {
-              ...submittedValues,
-              [fieldName]: formValues[fieldName],
-            }
-          } else if (formValues[fieldName] !== DEFAULT_FORM_VALUES[fieldName]) {
-            submittedValues.extraData = {
-              ...submittedValues.extraData,
-              [fieldName]: formValues[fieldName],
-            }
-          }
-          return submittedValues
-        },
-        { extraData: null }
+      const submittedValuesAccumulator = editableFields.some(editableField =>
+        EXTRA_DATA_FIELDS.includes(editableField)
       )
+        ? { extraData: null }
+        : {}
+      const submittedValues = editableFields.reduce((submittedValues, fieldName) => {
+        if (!EXTRA_DATA_FIELDS.includes(fieldName)) {
+          submittedValues = {
+            ...submittedValues,
+            [fieldName]: formValues[fieldName],
+          }
+        } else if (formValues[fieldName] !== DEFAULT_FORM_VALUES[fieldName]) {
+          submittedValues.extraData = {
+            ...submittedValues.extraData,
+            [fieldName]: formValues[fieldName],
+          }
+        }
+        return submittedValues
+      }, submittedValuesAccumulator)
 
       if (!receiveNotificationEmails) {
         submittedValues.bookingEmail = null

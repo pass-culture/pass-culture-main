@@ -548,7 +548,7 @@ describe('offerDetails - Edition', () => {
         const editedOffer = {
           id: 'ABC12',
           name: 'My edited offer',
-          type: 'EventType.FULL_CONDITIONAL_FIELDS',
+          type: 'EventType.CINEMA',
           showType: 400,
           showSubType: 401,
           description: 'Offer description',
@@ -563,23 +563,15 @@ describe('offerDetails - Edition', () => {
           },
         }
         pcapi.loadOffer.mockResolvedValue(editedOffer)
-        types.push({
-          conditionalFields: [
-            'author',
-            'showType',
-            'performer',
-            'isbn',
-            'stageDirector',
-            'speaker',
-            'visa',
-          ],
-          offlineOnly: false,
+        const cinemaType = {
+          conditionalFields: ['author', 'visa', 'stageDirector'],
+          offlineOnly: true,
           onlineOnly: false,
-          proLabel: 'Musique - concerts, festivals',
+          proLabel: 'Cinéma - projections et autres évènements',
           type: 'Event',
-          value: 'EventType.FULL_CONDITIONAL_FIELDS',
-        })
-        pcapi.loadTypes.mockResolvedValue(types)
+          value: 'EventType.CINEMA',
+        }
+        pcapi.loadTypes.mockResolvedValue([cinemaType])
 
         await renderOffers(props, store)
 
@@ -593,7 +585,7 @@ describe('offerDetails - Edition', () => {
   })
 
   describe('when submitting form', () => {
-    it('should not send not editable fields', async () => {
+    it('should not send not editable fields for unsynchronised offers', async () => {
       // Given
       const editedOffer = {
         id: 'ABC12',
@@ -617,6 +609,48 @@ describe('offerDetails - Edition', () => {
         expect.not.objectContaining({
           venueId: expect.anything(),
           type: expect.anything(),
+        })
+      )
+    })
+    it('should not send extraData for synchronized offers', async () => {
+      // Given
+      const editedOffer = {
+        id: 'ABC12',
+        name: 'My edited offer',
+        type: 'EventType.CINEMA',
+        description: 'Offer description',
+        venueId: venues[0].id,
+        withdrawalDetails: 'Offer withdrawal details',
+        bookingEmail: 'booking@example.net',
+        extraData: {
+          stageDirector: 'Mr Stage Director',
+        },
+        lastProvider: {
+          name: 'Allociné',
+        },
+      }
+      pcapi.loadOffer.mockResolvedValue(editedOffer)
+      pcapi.loadOffer.mockResolvedValue(editedOffer)
+      const cinemaType = {
+        conditionalFields: ['author', 'visa', 'stageDirector'],
+        offlineOnly: true,
+        onlineOnly: false,
+        proLabel: 'Cinéma - projections et autres évènements',
+        type: 'Event',
+        value: 'EventType.CINEMA',
+      }
+      pcapi.loadTypes.mockResolvedValue([cinemaType])
+
+      await renderOffers(props, store)
+
+      // When
+      userEvent.click(screen.getByText('Enregistrer'))
+
+      // Then
+      expect(pcapi.updateOffer).toHaveBeenCalledWith(
+        editedOffer.id,
+        expect.not.objectContaining({
+          extraData: null,
         })
       )
     })
