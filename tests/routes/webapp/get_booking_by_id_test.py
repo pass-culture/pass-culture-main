@@ -50,7 +50,6 @@ class Get:
                 "isUsed": False,
                 "mediation": None,
                 "quantity": 1,
-                "recommendationId": None,
                 "stock": {
                     "beginningDatetime": None,
                     "bookingLimitDatetime": None,

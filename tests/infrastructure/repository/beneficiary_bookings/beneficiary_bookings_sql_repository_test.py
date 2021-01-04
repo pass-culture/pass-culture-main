@@ -3,6 +3,9 @@ from datetime import timedelta
 
 import pytest
 
+from pcapi.core.bookings import factories
+from pcapi.core.offers.factories import EventStockFactory
+from pcapi.core.users.factories import UserFactory
 from pcapi.domain.beneficiary_bookings.beneficiary_bookings_with_stocks import BeneficiaryBookingsWithStocks
 from pcapi.infrastructure.repository.beneficiary_bookings.beneficiary_bookings_sql_repository import (
     BeneficiaryBookingsSQLRepository,
@@ -13,7 +16,6 @@ from pcapi.infrastructure.repository.beneficiary_bookings.beneficiary_bookings_s
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_deposit
 from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_recommendation
 from pcapi.model_creators.generic_creators import create_stock
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_venue
@@ -58,7 +60,6 @@ class BeneficiaryBookingsSQLRepositoryTest:
         assert expected_booking.isCancelled is False
         assert expected_booking.isUsed is True
         assert expected_booking.quantity == 2
-        assert expected_booking.recommendationId is None
         assert expected_booking.stockId == stock.id
         assert expected_booking.token == booking.token
         assert expected_booking.userId == user.id
@@ -143,41 +144,43 @@ class BeneficiaryBookingsSQLRepositoryTest:
         assert result.bookings[0].id == booking1.id
 
     @pytest.mark.usefixtures("db_session")
-    def should_return_most_recent_bookings_first(self, app):
+    def should_return_bookings(self, app):
         # Given
         now = datetime.utcnow()
         two_days = now + timedelta(days=2, hours=10)
         two_days_bis = now + timedelta(days=2, hours=20)
         three_days = now + timedelta(days=3)
-        user = create_user()
-        create_deposit(user)
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer1 = create_offer_with_event_product(venue)
-        stock1 = create_stock(beginning_datetime=three_days, booking_limit_datetime=now, offer=offer1)
-        offer2 = create_offer_with_event_product(venue)
-        stock2 = create_stock(beginning_datetime=two_days, booking_limit_datetime=now, offer=offer2)
-        offer3 = create_offer_with_event_product(venue)
-        stock3 = create_stock(beginning_datetime=two_days_bis, booking_limit_datetime=now, offer=offer3)
-        booking1 = create_booking(
-            user=user, stock=stock1, recommendation=create_recommendation(user=user, offer=offer1)
+
+        user = UserFactory()
+
+        booking1 = factories.BookingFactory(
+            user=user,
+            stock=EventStockFactory(
+                beginningDatetime=three_days,
+                bookingLimitDatetime=now,
+            ),
         )
-        booking2 = create_booking(
-            user=user, stock=stock2, recommendation=create_recommendation(user=user, offer=offer2)
+        booking2 = factories.BookingFactory(
+            user=user,
+            stock=EventStockFactory(
+                beginningDatetime=two_days,
+                bookingLimitDatetime=now,
+            ),
         )
-        booking3 = create_booking(
-            user=user, stock=stock3, recommendation=create_recommendation(user=user, offer=offer3)
+        booking3 = factories.BookingFactory(
+            user=user,
+            stock=EventStockFactory(
+                beginningDatetime=two_days_bis,
+                bookingLimitDatetime=now,
+            ),
         )
-        repository.save(booking1, booking2, booking3)
 
         # When
         result = BeneficiaryBookingsSQLRepository().get_beneficiary_bookings(beneficiary_id=user.id)
 
         # Then
         assert len(result.bookings) == 3
-        assert result.bookings[0].id == booking1.id
-        assert result.bookings[1].id == booking3.id
-        assert result.bookings[2].id == booking2.id
+        assert set(booking.id for booking in result.bookings) == {booking1.id, booking2.id, booking3.id}
 
 
 class GetStocksInformationTest:

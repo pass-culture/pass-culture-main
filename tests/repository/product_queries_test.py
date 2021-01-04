@@ -5,7 +5,6 @@ from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_favorite
 from pcapi.model_creators.generic_creators import create_mediation
 from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_recommendation
 from pcapi.model_creators.generic_creators import create_stock
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_venue
@@ -14,7 +13,6 @@ from pcapi.model_creators.specific_creators import create_product_with_thing_typ
 from pcapi.models import FavoriteSQLEntity
 from pcapi.models import Offer
 from pcapi.models import Product
-from pcapi.models import Recommendation
 from pcapi.models import Stock
 from pcapi.models.offer_type import ThingType
 from pcapi.repository import repository
@@ -121,9 +119,8 @@ class DeleteUnwantedExistingProductTest:
         offer = create_offer_with_thing_product(venue, product=product)
         stock = create_stock(offer=offer, price=0)
         mediation = create_mediation(offer=offer)
-        recommendation = create_recommendation(offer=offer, user=user, mediation=mediation)
 
-        repository.save(venue, product, offer, stock, user, mediation, recommendation)
+        repository.save(venue, product, offer, stock, user, mediation)
 
         # When
         delete_unwanted_existing_product("1111111111111")
@@ -132,7 +129,6 @@ class DeleteUnwantedExistingProductTest:
         assert Product.query.count() == 0
         assert Offer.query.count() == 0
         assert Stock.query.count() == 0
-        assert Recommendation.query.count() == 0
         assert Mediation.query.count() == 0
 
     @pytest.mark.usefixtures("db_session")
@@ -146,10 +142,9 @@ class DeleteUnwantedExistingProductTest:
         offer = create_offer_with_thing_product(venue, product=product)
         stock = create_stock(offer=offer, price=0)
         mediation = create_mediation(offer=offer)
-        recommendation = create_recommendation(offer=offer, user=user, mediation=mediation)
         favorite = create_favorite(mediation=mediation, offer=offer, user=user)
 
-        repository.save(venue, product, offer, stock, user, mediation, recommendation, favorite)
+        repository.save(venue, product, offer, stock, user, mediation, favorite)
 
         # When
         delete_unwanted_existing_product("1111111111111")
@@ -159,7 +154,6 @@ class DeleteUnwantedExistingProductTest:
         assert Offer.query.count() == 0
         assert Stock.query.count() == 0
         assert Mediation.query.count() == 0
-        assert Recommendation.query.count() == 0
         assert FavoriteSQLEntity.query.count() == 0
 
 

@@ -25,7 +25,6 @@ def test_save_activation_sandbox(app):
         Offer=1,
         Offerer=1,
         Product=1,
-        Recommendation=0,
         Stock=1,
         UserSQLEntity=0,
         UserOfferer=0,

@@ -5,7 +5,7 @@ import pytest
 
 from pcapi.core.bookings import factories
 from pcapi.core.bookings import models
-import pcapi.core.recommendations.factories as recommendations_factories
+from pcapi.core.offers.factories import MediationFactory
 import pcapi.core.users.factories as users_factories
 from pcapi.models import ApiErrors
 from pcapi.models import EventType
@@ -71,14 +71,11 @@ def test_too_many_bookings_postgresql_exception():
 @pytest.mark.usefixtures("db_session")
 class BookingThumbUrlTest:
     def test_thumb_url_use_mediation_if_exists(self):
-        recommendation = recommendations_factories.RecommendationFactory(
-            mediation__thumbCount=1,
-        )
+        mediation = MediationFactory(thumbCount=1)
         booking = factories.BookingFactory(
-            recommendation=recommendation,
-            stock__offer=recommendation.offer,
+            stock__offer=mediation.offer,
         )
-        mediation_id = humanize(recommendation.mediation.id)
+        mediation_id = humanize(mediation.id)
         assert booking.thumbUrl == f"http://localhost/storage/thumbs/mediations/{mediation_id}"
 
     def test_thumb_url_use_product_if_no_mediation(self):
@@ -91,12 +88,9 @@ class BookingThumbUrlTest:
         assert booking.thumbUrl is None
 
     def test_no_thumb_if_mediation_thumb_count_is_zero(self):
-        recommendation = recommendations_factories.RecommendationFactory(
-            mediation__thumbCount=0,
-        )
+        mediation = MediationFactory(thumbCount=0)
         booking = factories.BookingFactory(
-            recommendation=recommendation,
-            stock__offer=recommendation.offer,
+            stock__offer=mediation.offer,
         )
         assert booking.thumbUrl is None
 

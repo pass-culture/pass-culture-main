@@ -60,7 +60,6 @@ class Get:
                 "isEventExpired": False,
                 "isUsed": False,
                 "quantity": 1,
-                "recommendationId": None,
                 "stock": {
                     "beginningDatetime": None,
                     "id": humanize(stock.id),

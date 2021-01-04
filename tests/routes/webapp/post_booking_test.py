@@ -2,7 +2,6 @@ import pytest
 
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.offers.factories as offers_factories
-import pcapi.core.recommendations.factories as recommendations_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import humanize
 
@@ -14,9 +13,8 @@ class Returns201:
     def test_booking_creation(self, app):
         user = users_factories.UserFactory()
         stock = offers_factories.StockFactory()
-        recommendation = recommendations_factories.RecommendationFactory(user=user)
 
-        data = {"stockId": humanize(stock.id), "recommendationId": humanize(recommendation.id), "quantity": 1}
+        data = {"stockId": humanize(stock.id), "quantity": 1}
         client = TestClient(app.test_client()).with_auth(user.email)
         response = client.post("/bookings", json=data)
 
@@ -40,7 +38,7 @@ class Returns400:
         user = users_factories.UserFactory()
         stock = offers_factories.StockFactory(quantity=0)
 
-        data = {"stockId": humanize(stock.id), "recommendationId": None, "quantity": 1}
+        data = {"stockId": humanize(stock.id), "quantity": 1}
         client = TestClient(app.test_client()).with_auth(user.email)
         response = client.post("/bookings", json=data)
 

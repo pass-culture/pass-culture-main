@@ -5,7 +5,6 @@ import pytest
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_deposit
 from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_recommendation
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
@@ -63,10 +62,9 @@ class Get:
             venue = create_venue(offerer)
             thing_offer = create_offer_with_thing_product(venue=None)
             stock = create_stock_with_thing_offer(offerer, venue, thing_offer, price=5)
-            recommendation = create_recommendation(thing_offer, user)
             deposit_1 = create_deposit(user, amount=10)
             deposit_2 = create_deposit(user, amount=10)
-            booking = create_booking(user=user, stock=stock, venue=venue, recommendation=recommendation, quantity=1)
+            booking = create_booking(user=user, stock=stock, venue=venue, quantity=1)
 
             repository.save(user, venue, deposit_1, deposit_2, booking)
 

@@ -3,7 +3,6 @@ import pytest
 from pcapi.model_creators.generic_creators import create_favorite
 from pcapi.model_creators.generic_creators import create_mediation
 from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_recommendation
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
@@ -24,9 +23,8 @@ class Delete:
             venue = create_venue(offerer, postal_code="29100", siret="12345678912341")
             offer = create_offer_with_thing_product(venue, thumb_count=0)
             mediation = None
-            recommendation = create_recommendation(offer=offer, user=user, mediation=mediation)
             favorite = create_favorite(mediation=mediation, offer=offer, user=user)
-            repository.save(recommendation, user, favorite)
+            repository.save(user, favorite)
 
             # When
             response = TestClient(app.test_client()).with_auth(user.email).delete(f"/favorites/{humanize(offer.id)}")
@@ -46,9 +44,8 @@ class Delete:
             venue = create_venue(offerer, postal_code="29100", siret="12345678912341")
             offer = create_offer_with_thing_product(venue, thumb_count=0)
             mediation = create_mediation(offer, is_active=True)
-            recommendation = create_recommendation(offer=offer, user=user, mediation=mediation, is_clicked=False)
             favorite = create_favorite(mediation=mediation, offer=offer, user=user)
-            repository.save(recommendation, user, favorite)
+            repository.save(user, favorite)
 
             # When
             response = TestClient(app.test_client()).with_auth(user.email).delete("/favorites/1")
@@ -64,9 +61,8 @@ class Delete:
             venue = create_venue(offerer, postal_code="29100", siret="12345678912341")
             offer = create_offer_with_thing_product(venue, thumb_count=0)
             mediation = create_mediation(offer, is_active=True)
-            recommendation = create_recommendation(offer=offer, user=user, mediation=mediation, is_clicked=False)
             favorite = create_favorite(mediation=mediation, offer=offer, user=user)
-            repository.save(recommendation, user, favorite)
+            repository.save(user, favorite)
 
             # When
             response = TestClient(app.test_client()).with_auth(user.email).delete("/favorites/ABCD/ABCD")

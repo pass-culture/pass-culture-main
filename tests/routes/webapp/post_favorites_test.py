@@ -2,7 +2,6 @@ import pytest
 
 from pcapi.model_creators.generic_creators import create_mediation
 from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_recommendation
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
@@ -41,8 +40,7 @@ class Post:
             venue = create_venue(offerer, postal_code="29100", siret="12345678912341")
             offer = create_offer_with_thing_product(venue, thumb_count=0)
             mediation = create_mediation(offer, is_active=True)
-            recommendation = create_recommendation(offer=offer, user=user, mediation=mediation, is_clicked=False)
-            repository.save(recommendation, user)
+            repository.save(user)
 
             json = {
                 "offerId": "ABCD",
@@ -63,8 +61,7 @@ class Post:
             venue = create_venue(offerer, postal_code="29100", siret="12345678912341")
             offer = create_offer_with_thing_product(venue, thumb_count=0)
             mediation = create_mediation(offer, is_active=True)
-            recommendation = create_recommendation(offer=offer, user=user, mediation=mediation, is_clicked=False)
-            repository.save(recommendation, user)
+            repository.save(user, mediation)
 
             json = {
                 "offerId": humanize(offer.id),
@@ -86,8 +83,7 @@ class Post:
             venue = create_venue(offerer, postal_code="29100", siret="12345678912341")
             offer = create_offer_with_thing_product(venue, thumb_count=0)
             mediation = create_mediation(offer, is_active=True)
-            recommendation = create_recommendation(offer=offer, user=user, mediation=mediation, is_clicked=False)
-            repository.save(recommendation, user)
+            repository.save(user, mediation)
 
             json = {
                 "offerId": humanize(offer.id),
@@ -112,8 +108,7 @@ class Post:
             offerer = create_offerer()
             venue = create_venue(offerer, postal_code="29100", siret="12345678912341")
             offer = create_offer_with_thing_product(venue, thumb_count=0)
-            recommendation = create_recommendation(offer=offer, user=user, is_clicked=False)
-            repository.save(recommendation, user)
+            repository.save(user, offer)
 
             json = {
                 "offerId": humanize(offer.id),

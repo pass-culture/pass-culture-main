@@ -1,29 +1,34 @@
 from datetime import datetime
+from datetime import timedelta
 from unittest.mock import patch
 
 from freezegun import freeze_time
+import pytest
 
+from pcapi.core.bookings import factories
+from pcapi.core.offers.factories import EventStockFactory
+from pcapi.core.offers.factories import MediationFactory
+from pcapi.core.offers.factories import ThingStockFactory
+from pcapi.core.users.factories import UserFactory
 from pcapi.emails.beneficiary_booking_cancellation import make_beneficiary_booking_cancellation_email_data
-from pcapi.model_creators.generic_creators import create_booking
-from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_recommendation
-from pcapi.model_creators.generic_creators import create_user
-from pcapi.model_creators.generic_creators import create_venue
-from pcapi.model_creators.specific_creators import create_offer_with_event_product
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.model_creators.specific_creators import create_stock_from_offer
+from pcapi.utils.human_ids import humanize
 
 
+@pytest.mark.usefixtures("db_session")
 class MakeBeneficiaryBookingCancellationEmailDataTest:
     @patch("pcapi.emails.beneficiary_booking_cancellation.format_environment_for_email", return_value="")
     def test_should_return_thing_data_when_booking_is_a_thing(self, mock_format_environment_for_email):
         # Given
-        beneficiary = create_user(email="fabien@example.com", first_name="Fabien")
-        thing_offer = create_offer_with_thing_product(venue=None, thing_name="Test thing name", idx=123456)
-        recommendation = create_recommendation(offer=thing_offer, user=beneficiary)
-        recommendation.mediationId = 36
-        stock = create_stock_from_offer(offer=thing_offer, price=10.2)
-        booking = create_booking(beneficiary, is_cancelled=True, recommendation=recommendation, stock=stock)
+        booking = factories.BookingFactory(
+            user=UserFactory(email="fabien@example.com", firstName="Fabien"),
+            isCancelled=True,
+            stock=ThingStockFactory(
+                price=10.2,
+                beginningDatetime=datetime.now() - timedelta(days=1),
+                offer__name="Test thing name",
+                offer__id=123456,
+            ),
+        )
 
         # When
         email_data = make_beneficiary_booking_cancellation_email_data(booking)
@@ -40,10 +45,10 @@ class MakeBeneficiaryBookingCancellationEmailDataTest:
                 "event_hour": "",
                 "is_event": 0,
                 "is_free_offer": 0,
-                "mediation_id": "EQ",
+                "mediation_id": "vide",
                 "offer_id": "AHREA",
                 "offer_name": "Test thing name",
-                "offer_price": "10.2",
+                "offer_price": "10.20",
                 "user_first_name": "Fabien",
             },
         }
@@ -52,13 +57,16 @@ class MakeBeneficiaryBookingCancellationEmailDataTest:
     @patch("pcapi.emails.beneficiary_booking_cancellation.format_environment_for_email", return_value="-testing")
     def test_should_return_event_data_when_booking_is_an_event(self, mock_format_environment_for_email):
         # Given
-        venue = create_venue(create_offerer())
-        beneficiary = create_user(email="fabien@example.com", first_name="Fabien")
-        event_offer = create_offer_with_event_product(venue, event_name="Test event name", idx=123456)
-        recommendation = create_recommendation(offer=event_offer, user=beneficiary)
-        recommendation.mediationId = 36
-        stock = create_stock_from_offer(offer=event_offer, price=10.2, beginning_datetime=datetime.utcnow())
-        booking = create_booking(beneficiary, is_cancelled=True, recommendation=recommendation, stock=stock)
+        booking = factories.BookingFactory(
+            user=UserFactory(email="fabien@example.com", firstName="Fabien"),
+            isCancelled=True,
+            stock=EventStockFactory(
+                price=10.2,
+                beginningDatetime=datetime.utcnow(),
+                offer__name="Test event name",
+                offer__id=123456,
+            ),
+        )
 
         # When
         email_data = make_beneficiary_booking_cancellation_email_data(booking)
@@ -75,22 +83,22 @@ class MakeBeneficiaryBookingCancellationEmailDataTest:
                 "event_hour": "19h29",
                 "is_event": 1,
                 "is_free_offer": 0,
-                "mediation_id": "EQ",
+                "mediation_id": "vide",
                 "offer_id": "AHREA",
                 "offer_name": "Test event name",
-                "offer_price": "10.2",
+                "offer_price": "10.20",
                 "user_first_name": "Fabien",
             },
         }
 
     def test_should_return_is_free_offer_when_offer_price_equals_to_zero(self):
         # Given
-        beneficiary = create_user()
-        thing_offer = create_offer_with_thing_product(venue=None)
-        recommendation = create_recommendation()
-        recommendation.mediationId = 36
-        stock = create_stock_from_offer(offer=thing_offer, price=0)
-        booking = create_booking(beneficiary, is_cancelled=True, recommendation=recommendation, stock=stock)
+        booking = factories.BookingFactory(
+            isCancelled=True,
+            stock=EventStockFactory(
+                price=0,
+            ),
+        )
 
         # When
         email_data = make_beneficiary_booking_cancellation_email_data(booking)
@@ -98,30 +106,36 @@ class MakeBeneficiaryBookingCancellationEmailDataTest:
         # Then
         assert email_data["Vars"]["is_free_offer"] == 1
 
-    def test_should_return_an_empty_mediation_id_when_no_mediation(self):
+    def test_should_return_with_an_id_of_mediation(self):
         # Given
-        beneficiary = create_user()
-        thing_offer = create_offer_with_thing_product(venue=None)
-        recommendation = create_recommendation()
-        stock = create_stock_from_offer(offer=thing_offer)
-        booking = create_booking(beneficiary, is_cancelled=True, recommendation=recommendation, stock=stock)
+        booking = factories.BookingFactory(
+            user=UserFactory(),
+            isCancelled=True,
+            stock=ThingStockFactory(
+                price=0,
+            ),
+        )
+        mediation = MediationFactory(thumbCount=1, offer=booking.stock.offer)
 
         # When
         email_data = make_beneficiary_booking_cancellation_email_data(booking)
 
         # Then
-        assert email_data["Vars"]["mediation_id"] == "vide"
+        assert email_data["Vars"]["mediation_id"] == humanize(mediation.id)
 
     def test_should_return_the_price_multiplied_by_quantity_when_it_is_a_duo_offer(self):
         # Given
-        beneficiary = create_user()
-        thing_offer = create_offer_with_thing_product(venue=None)
-        recommendation = create_recommendation()
-        stock = create_stock_from_offer(offer=thing_offer, price=10)
-        booking = create_booking(beneficiary, is_cancelled=True, quantity=2, recommendation=recommendation, stock=stock)
+        booking = factories.BookingFactory(
+            user=UserFactory(),
+            isCancelled=True,
+            quantity=2,
+            stock=ThingStockFactory(
+                price=10,
+            ),
+        )
 
         # When
         email_data = make_beneficiary_booking_cancellation_email_data(booking)
 
         # Then
-        assert email_data["Vars"]["offer_price"] == "20"
+        assert email_data["Vars"]["offer_price"] == "20.00"

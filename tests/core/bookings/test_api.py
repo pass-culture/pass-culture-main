@@ -13,7 +13,6 @@ from pcapi.core.bookings import factories
 from pcapi.core.bookings.models import BookingCancellationReasons
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
-import pcapi.core.recommendations.factories as recommendations_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.models import api_errors
 from pcapi.models.feature import override_features
@@ -33,7 +32,6 @@ class BookOfferTest:
         assert booking.quantity == 1
         assert booking.amount == 10
         assert booking.stock == stock
-        assert booking.recommendation is None
         assert len(booking.token) == 6
         assert not booking.isCancelled
         assert not booking.isUsed
@@ -56,25 +54,10 @@ class BookOfferTest:
         assert booking.quantity == 1
         assert booking.amount == 10
         assert booking.stock == stock
-        assert booking.recommendation is None
         assert len(booking.token) == 6
         assert not booking.isCancelled
         assert not booking.isUsed
         assert booking.confirmationDate == two_days_after_booking
-
-    def test_create_booking_with_recommendation(self):
-        user = users_factories.UserFactory()
-        stock = offers_factories.StockFactory()
-        recommendation = recommendations_factories.RecommendationFactory(user=user, offer=stock.offer)
-
-        booking = api.book_offer(
-            beneficiary=user,
-            stock=stock,
-            quantity=1,
-            recommendation=recommendation,
-        )
-
-        assert booking.recommendation == recommendation
 
     @override_features(SYNCHRONIZE_ALGOLIA=False)
     @mock.patch("pcapi.connectors.redis.add_offer_id")
