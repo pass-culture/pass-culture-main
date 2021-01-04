@@ -52,6 +52,18 @@ describe('src | components | inputs | DurationInput', () => {
     expect(durationInput).toHaveValue('1:15')
   })
 
+  it('should pad minutes with 0 when initial duration in hours has less than 10 minutes', async () => {
+    // Given
+    props.initialDurationInMinutes = 60
+
+    // When
+    await renderDurationInput(props)
+
+    // Then
+    const durationInput = screen.getByRole('textbox')
+    expect(durationInput).toHaveValue('1:00')
+  })
+
   it('should not call onChange prop function while text is not a correct duration in hours', async () => {
     // Given
     await renderDurationInput(props)
