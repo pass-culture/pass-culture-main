@@ -38,6 +38,7 @@ class OffersTest:
             extraData=extra_data,
             durationMinutes=33,
             visualDisabilityCompliant=True,
+            externalTicketOfficeUrl="https://url.com",
         )
         mediation = MediationFactory(offer=offer, thumbCount=1, credit="street credit")
 
@@ -75,6 +76,7 @@ class OffersTest:
             ],
             "category": {"categoryType": "Event", "label": "Cinéma", "name": "CINEMA"},
             "description": offer.description,
+            "externalTicketOfficeUrl": "https://url.com",
             "extraData": {
                 "author": "mandibule",
                 "isbn": "3838",

@@ -150,6 +150,7 @@ class OfferResponse(BaseModel):
     id: int
     accessibility: OfferAccessibilityResponse
     description: Optional[str]
+    externalTicketOfficeUrl: Optional[str]
     extraData: Optional[OfferExtraData]
     isDigital: bool
     isDuo: bool
