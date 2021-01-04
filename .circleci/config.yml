@@ -578,7 +578,9 @@ workflows:
           filters:
             branches:
               only:
+                - production
                 - staging
+                - integration
           context:
             - GCP
       - deploy-api-cloudrun:
