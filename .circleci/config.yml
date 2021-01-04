@@ -1,4 +1,43 @@
 version: 2.1
+orbs:
+  slack: circleci/slack@4.2
+
+slack-fail-post-step: &slack-fail-post-step
+  post-steps:
+    - slack/notify:
+        event: fail
+        channel: shérif
+        custom: |
+          {
+            "blocks": [
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": "Oups, `nightly` a eu un soucis cette nuit :pleurs:"
+                },
+                "accessory": {
+                  "type": "image",
+                  "image_url": "https://upload.wikimedia.org/wikipedia/commons/f/f3/Airport-firefighters-drill.jpg",
+                  "alt_text": "Nightly down"
+                }
+              },
+              {
+                "type": "actions",
+                "elements": [
+                  {
+                    "type": "button",
+                    "text": {
+                      "type": "plain_text",
+                      "text": "View job",
+                      "emoji": true
+                    },
+                    "url": "$CIRCLE_BUILD_URL"
+                  }
+                ]
+              }
+            ]
+          }
 
 ###################
 #  EXECUTORS
@@ -568,10 +607,20 @@ workflows:
               only:
                 - master
     jobs:
-      - functional-tests-webapp
-      - functional-tests-pro
-      - tests-data-analytics
+      - functional-tests-webapp:
+          context: Slack
+          <<: *slack-fail-post-step
+      - functional-tests-pro:
+          context: Slack
+          <<: *slack-fail-post-step
+      - tests-data-analytics:
+          context: Slack
+          <<: *slack-fail-post-step
       - run-tests:
           name: "Run nightly tests"
           is_nightly_build: true
-      - quality
+          context: Slack
+          <<: *slack-fail-post-step
+      - quality:
+          context: Slack
+          <<: *slack-fail-post-step
