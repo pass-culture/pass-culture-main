@@ -68,10 +68,10 @@ const OfferForm = ({
   const [venueOptions, setVenueOptions] = useState([])
   const [offerFormFields, setOfferFormFields] = useState(Object.keys(DEFAULT_FORM_VALUES))
   const [formErrors, setFormErrors] = useState(submitErrors)
+  const [venues, setVenues] = useState([])
+  const [offererOptions, setOffererOptions] = useState([])
   const isBusy = useRef(true)
-  const offererOptions = useRef([])
   const readOnlyFields = useRef([])
-  const venues = useRef([])
 
   const handleFormUpdate = useCallback(
     newFormValues => setFormValues(oldFormValues => ({ ...oldFormValues, ...newFormValues })),
@@ -88,7 +88,7 @@ const OfferForm = ({
         .getValidatedOfferers()
         .then(offerers => buildSelectOptions('id', 'name', offerers))
         .then(options => {
-          offererOptions.current = options
+          setOffererOptions(options)
           if (options.length === 1) {
             handleFormUpdate({ offererId: options[0].id })
           }
@@ -175,12 +175,12 @@ const OfferForm = ({
         formValues.venueId &&
         venueOptions.find(showedVenue => showedVenue.id === formValues.venueId)
       ) {
-        setVenue(venues.current.find(venue => venue.id === formValues.venueId))
+        setVenue(venues.find(venue => venue.id === formValues.venueId))
       } else {
         setVenue(null)
       }
     },
-    [formValues.type, formValues.venueId, venueOptions, types]
+    [formValues.type, formValues.venueId, venues, venueOptions, types]
   )
   useEffect(
     function selectManagingOffererOfSelectedVenue() {
@@ -199,7 +199,7 @@ const OfferForm = ({
 
       if (!isUserAdmin || offererId) {
         pcapi.getVenuesForOfferer(offererId).then(receivedVenues => {
-          venues.current = receivedVenues
+          setVenues(receivedVenues)
         })
       }
     },
@@ -207,7 +207,7 @@ const OfferForm = ({
   )
   useEffect(
     function filterVenueOptionsForSelectedType() {
-      let venuesToShow = venues.current
+      let venuesToShow = venues
       if (offerType?.offlineOnly) {
         venuesToShow = venuesToShow.filter(venue => !venue.isVirtual)
       } else if (offerType?.onlineOnly) {
@@ -215,7 +215,7 @@ const OfferForm = ({
       }
       setVenueOptions(buildSelectOptions('id', 'name', venuesToShow))
 
-      if (venuesToShow.length === 0 && venues.current.length > 0) {
+      if (venuesToShow.length === 0 && venues.length > 0) {
         setFormErrors({ venueId: 'Il faut obligatoirement une structure avec un lieu.' })
       } else {
         setFormErrors({})
@@ -225,7 +225,7 @@ const OfferForm = ({
         handleFormUpdate({ venueId: venuesToShow[0].id })
       }
     },
-    [offerType, handleFormUpdate]
+    [offerType, handleFormUpdate, venues]
   )
 
   const isValid = useCallback(() => {
@@ -517,7 +517,7 @@ const OfferForm = ({
                 isDisabled={readOnlyFields.current.includes('offererId')}
                 label="Structure"
                 name="offererId"
-                options={offererOptions.current}
+                options={offererOptions}
                 selectedValue={formValues.offererId}
                 subLabel={!MANDATORY_FIELDS.includes('offererId') ? 'Optionnel' : ''}
               />
