@@ -160,22 +160,31 @@ const StockItem = ({
   }, [setIsAddingNewStock])
 
   const saveNewStock = useCallback(() => {
-    pcapi
-      .createStock({
-        offerId: offerId,
-        beginningDatetime: beginningDatetime,
-        bookingLimitDatetime: getBookingLimitDatetimeForEvent(),
-        price: price ? price : 0,
-        quantity: totalQuantity ? totalQuantity : null,
-      })
-      .then(() => {
-        refreshOffer()
-        removeNewStockLine()
-      })
+    const payload = {
+      offerId: offerId,
+      price: price ? price : 0,
+      quantity: totalQuantity ? totalQuantity : null,
+    }
+    const thingPayload = {
+      ...payload,
+      bookingLimitDatetime: getBookingLimitDatetimeForThing(),
+    }
+    const eventPayload = {
+      ...payload,
+      beginningDatetime: beginningDatetime,
+      bookingLimitDatetime: getBookingLimitDatetimeForEvent(),
+    }
+
+    pcapi.createStock(isEvent ? eventPayload : thingPayload).then(() => {
+      refreshOffer()
+      removeNewStockLine()
+    })
   }, [
     offerId,
     beginningDatetime,
+    isEvent,
     getBookingLimitDatetimeForEvent,
+    getBookingLimitDatetimeForThing,
     price,
     totalQuantity,
     refreshOffer,
@@ -221,7 +230,7 @@ const StockItem = ({
           value={priceValue}
         />
       </td>
-      <td className="regular-input">
+      <td className={`${isEvent ? 'regular-input' : 'large-input'}`}>
         <DateInput
           ariaLabel="Date limite de réservation"
           departmentCode={departmentCode}
