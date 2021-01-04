@@ -2,10 +2,11 @@ import { fireEvent } from '@testing-library/dom'
 import '@testing-library/jest-dom'
 import { act, render, screen } from '@testing-library/react'
 import moment from 'moment-timezone'
-import React from 'react'
+import React, { Fragment } from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
+import NotificationV2Container from 'components/layout/NotificationV2/NotificationV2Container'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 import { queryByTextTrimHtml } from 'utils/testHelpers'
@@ -24,7 +25,10 @@ const renderStocks = (props, store) =>
     await render(
       <Provider store={store}>
         <MemoryRouter>
-          <Stocks {...props} />
+          <Fragment>
+            <Stocks {...props} />
+            <NotificationV2Container />
+          </Fragment>
         </MemoryRouter>
       </Provider>
     )
@@ -987,6 +991,33 @@ describe('stocks page', () => {
 
             // Then
             expect(screen.getAllByRole('row')).toHaveLength(1)
+          })
+
+          it('should display a success message after deletion', async () => {
+            // Given
+            await renderStocks(props, store)
+
+            // When
+            fireEvent.click(screen.getByAltText('Supprimer le stock'))
+            fireEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
+
+            // Then
+            expect(await screen.findByText('Le stock a été supprimé.')).toBeInTheDocument()
+          })
+
+          it('should display an error message when deletion fails', async () => {
+            // Given
+            pcapi.deleteStock.mockRejectedValue({})
+            await renderStocks(props, store)
+
+            // When
+            fireEvent.click(screen.getByAltText('Supprimer le stock'))
+            fireEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
+
+            // Then
+            expect(
+              await screen.findByText('Une erreur est survenue lors de la suppression du stock.')
+            ).toBeInTheDocument()
           })
 
           it('should disable editing and deleting buttons', async () => {

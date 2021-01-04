@@ -6,13 +6,25 @@ import * as pcapi from 'repository/pcapi/pcapi'
 
 import { ReactComponent as DeletionIcon } from './assets/deletion.svg'
 
-export const DeleteStockDialog = ({ refreshOffer, setIsDeleting, stockId }) => {
+const DeleteStockDialog = ({
+  notifyDeletionError,
+  notifyDeletionSuccess,
+  refreshOffer,
+  setIsDeleting,
+  stockId,
+}) => {
   const DIALOG_LABEL_ID = 'DIALOG_LABEL_ID'
   const deleteButtonRef = useRef()
 
   const confirmStockDeletion = useCallback(() => {
-    pcapi.deleteStock(stockId).then(() => refreshOffer())
-  }, [refreshOffer, stockId])
+    pcapi
+      .deleteStock(stockId)
+      .then(() => {
+        notifyDeletionSuccess()
+        refreshOffer()
+      })
+      .catch(() => notifyDeletionError())
+  }, [notifyDeletionError, notifyDeletionSuccess, refreshOffer, stockId])
 
   const abortStockDeletion = useCallback(() => setIsDeleting(false), [setIsDeleting])
 
@@ -58,7 +70,11 @@ export const DeleteStockDialog = ({ refreshOffer, setIsDeleting, stockId }) => {
 }
 
 DeleteStockDialog.propTypes = {
+  notifyDeletionError: PropTypes.func.isRequired,
+  notifyDeletionSuccess: PropTypes.func.isRequired,
   refreshOffer: PropTypes.func.isRequired,
   setIsDeleting: PropTypes.func.isRequired,
   stockId: PropTypes.string.isRequired,
 }
+
+export default DeleteStockDialog

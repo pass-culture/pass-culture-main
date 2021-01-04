@@ -5,7 +5,7 @@ import React, { Fragment, useCallback, useEffect, useState } from 'react'
 import Icon from 'components/layout/Icon'
 import { DateInput } from 'components/layout/inputs/DateInput/DateInput'
 import { TimeInput } from 'components/layout/inputs/TimeInput/TimeInput'
-import { DeleteStockDialog } from 'components/pages/Offer/Offer/Stocks/DeleteStockDialog/DeleteStockDialog'
+import DeleteStockDialogContainer from 'components/pages/Offer/Offer/Stocks/DeleteStockDialog/DeleteStockDialogContainer'
 import * as pcapi from 'repository/pcapi/pcapi'
 
 const StockItem = ({
@@ -303,7 +303,7 @@ const StockItem = ({
           </button>
         )}
         {isDeleting && (
-          <DeleteStockDialog
+          <DeleteStockDialogContainer
             refreshOffer={refreshOffer}
             setIsDeleting={setIsDeleting}
             stockId={stock.id}
