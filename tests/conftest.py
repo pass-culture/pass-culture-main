@@ -24,7 +24,6 @@ from pcapi.local_providers.install import install_local_providers
 from pcapi.model_creators.generic_creators import PLAIN_DEFAULT_TESTING_PASSWORD
 from pcapi.models.db import db
 from pcapi.models.install import install_activity
-from pcapi.models.install import install_materialized_views
 from pcapi.repository.clean_database import clean_all_database
 from pcapi.routes import install_routes
 from pcapi.routes.native.v1.blueprint import native_v1
@@ -68,7 +67,6 @@ def app():
     run_migrations()
 
     install_activity()
-    install_materialized_views()
     install_routes(app)
     install_local_providers()
     admin.init_app(app)
@@ -122,7 +120,6 @@ def _db(app):  # pylint: disable=redefined-outer-name
     run_migrations()
 
     install_activity()
-    install_materialized_views()
     install_routes(app)
     install_local_providers()
     clean_all_database()
