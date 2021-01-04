@@ -272,6 +272,8 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin, 
 
     visualDisabilityCompliant = Column(Boolean, nullable=True)
 
+    externalTicketOfficeUrl = Column(String, nullable=True)
+
     @property
     def activeMediation(self) -> Optional[Mediation]:
         sorted_by_date_desc = sorted(self.mediations, key=lambda m: m.dateCreated, reverse=True)

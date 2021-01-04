@@ -74,6 +74,7 @@ class Get:
                         "dateModifiedAtLastProvider": format_into_utc_date(offer.dateModifiedAtLastProvider),
                         "description": None,
                         "durationMinutes": None,
+                        "externalTicketOfficeUrl": None,
                         "extraData": {"author": "Test Author"},
                         "fieldsUpdated": [],
                         "hasBookingLimitDatetimesPassed": False,
