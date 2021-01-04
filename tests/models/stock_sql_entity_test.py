@@ -104,7 +104,7 @@ def test_stock_cannot_have_a_negative_price(app):
         repository.save(stock)
 
     # then
-    assert e.value.errors["global"] is not None
+    assert e.value.errors["price"] is not None
 
 
 @pytest.mark.usefixtures("db_session")
