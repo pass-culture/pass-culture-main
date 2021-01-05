@@ -14,23 +14,28 @@ import { IS_LOCALHOST, IS_PROD } from '../utils/config'
 function registerValidSW(swUrl) {
   navigator.serviceWorker
     .register(swUrl)
-    .then(registration => {
-      registration.onupdatefound = () => {
-        const installingWorker = registration.installing
-        installingWorker.onstatechange = () => {
-          if (installingWorker.state === 'installed') {
-            if (navigator.serviceWorker.controller) {
-              window.location.reload()
-              window.alert(
-                'Nous avons mis à jour le pass Culture ! L‘application va maintenant se relancer pour appliquer les changements.',
-              )
-            } else {
-              logger.log('Content is cached for offline use.')
+    .then(
+      registration => {
+        registration.onupdatefound = () => {
+          const installingWorker = registration.installing
+          installingWorker.onstatechange = () => {
+            if (installingWorker.state === 'installed') {
+              if (navigator.serviceWorker.controller) {
+                window.location.reload()
+                window.alert(
+                  'Nous avons mis à jour le pass Culture ! L‘application va maintenant se relancer pour appliquer les changements.'
+                )
+              } else {
+                logger.log('Content is cached for offline use.')
+              }
             }
           }
         }
+      },
+      error => {
+        logger.error('Service worker registration failed:', error)
       }
-    })
+    )
     .catch(error => {
       logger.error('Error during service worker registration:', error)
     })
