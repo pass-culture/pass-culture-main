@@ -1,9 +1,3 @@
-# Loading variables should always be the first thing, before any other load
-from pcapi.load_environment_variables import load_environment_variables
-
-
-load_environment_variables()
-
 import logging
 import time
 from typing import Any

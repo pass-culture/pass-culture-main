@@ -1,9 +1,3 @@
-# Loading variables should always be the first thing, before any other load
-from pcapi.load_environment_variables import load_environment_variables
-
-
-load_environment_variables()
-
 from apscheduler.schedulers.blocking import BlockingScheduler
 
 from pcapi.local_providers.provider_manager import synchronize_data_for_provider

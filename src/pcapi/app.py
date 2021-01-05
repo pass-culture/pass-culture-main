@@ -7,7 +7,6 @@ from pcapi.documentation import install_documentation
 from pcapi.flask_app import admin
 from pcapi.flask_app import app
 from pcapi.flask_app import db
-from pcapi.load_environment_variables import load_environment_variables
 from pcapi.local_providers.install import install_local_providers
 from pcapi.models.install import install_activity
 from pcapi.models.install import install_features
@@ -32,8 +31,6 @@ def install_login_manager() -> None:
 
 
 with app.app_context():
-    load_environment_variables()
-
     if settings.IS_DEV:
         install_activity()
         install_local_providers()
