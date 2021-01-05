@@ -119,7 +119,7 @@ jobs:
             export NVM_DIR="/opt/circleci/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             nvm install
-            yarn test:unit --coverage
+            yarn test:unit --coverage --silent
             yarn coveralls
             bash <(curl -s https://codecov.io/bash)
       - run:
