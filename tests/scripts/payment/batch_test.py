@@ -2,12 +2,8 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.models import Feature
-from pcapi.models.feature import FeatureToggle
-from pcapi.repository import repository
+from pcapi.models.feature import override_features
 from pcapi.scripts.payment.batch import generate_and_send_payments
-
-from tests.test_utils import deactivate_feature
 
 
 class GenerateAndSendPaymentsTest:
@@ -20,6 +16,7 @@ class GenerateAndSendPaymentsTest:
     @patch("pcapi.scripts.payment.batch.send_payments_report", return_value=[])
     @patch("pcapi.scripts.payment.batch.send_payments_details", return_value=[])
     @patch("pcapi.scripts.payment.batch.send_wallet_balances", return_value=[])
+    @override_features(DEGRESSIVE_REIMBURSEMENT_RATE=False)
     @pytest.mark.usefixtures("db_session")
     def test_should_retrieve_all_steps_except_1_bis_when_message_id_is_none(
         self,
@@ -34,11 +31,6 @@ class GenerateAndSendPaymentsTest:
         update_booking_used_after_stock_occurrence,
         app,
     ):
-        # Given
-        feature = Feature.query.filter_by(name=FeatureToggle.DEGRESSIVE_REIMBURSEMENT_RATE).first()
-        feature.isActive = False
-        repository.save(feature)
-
         # When
         generate_and_send_payments(None)
 
@@ -100,6 +92,7 @@ class GenerateAndSendPaymentsTest:
     @patch("pcapi.scripts.payment.batch.send_payments_details", return_value=[])
     @patch("pcapi.scripts.payment.batch.send_wallet_balances", return_value=[])
     @pytest.mark.usefixtures("db_session")
+    @override_features(UPDATE_BOOKING_USED=False)
     def test_should_not_update_booking_usage_if_corresponding_feature_is_disabled(
         self,
         send_wallet_balances,
@@ -113,9 +106,6 @@ class GenerateAndSendPaymentsTest:
         update_booking_used_after_stock_occurrence,
         app,
     ):
-        # Given
-        deactivate_feature(FeatureToggle.UPDATE_BOOKING_USED)
-
         # When
         generate_and_send_payments("ar5y65dtre45")
 

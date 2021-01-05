@@ -4,10 +4,8 @@ from unittest.mock import patch
 from freezegun import freeze_time
 import pytest
 
-from pcapi.models.feature import Feature
-from pcapi.models.feature import FeatureToggle
+from pcapi.models.feature import override_features
 from pcapi.models.user_sql_entity import UserSQLEntity
-from pcapi.repository import repository
 from pcapi.routes.serialization import serialize
 
 from tests.conftest import TestClient
@@ -300,16 +298,11 @@ class Post:
 
     class Returns403:
         @pytest.mark.usefixtures("db_session")
+        @override_features(WEBAPP_SIGNUP=False)
         def when_feature_is_not_active(self, app):
-            # Given
-            data = BASE_DATA.copy()
-            feature = Feature.query.filter_by(name=FeatureToggle.WEBAPP_SIGNUP).first()
-            feature.isActive = False
-            repository.save(feature)
-
             # When
             response = TestClient(app.test_client()).post(
-                "/users/signup/webapp", json=data, headers={"origin": "http://localhost:3000"}
+                "/users/signup/webapp", json=BASE_DATA, headers={"origin": "http://localhost:3000"}
             )
 
             # Then

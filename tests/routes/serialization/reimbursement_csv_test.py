@@ -11,7 +11,7 @@ from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
-from pcapi.models.feature import FeatureToggle
+from pcapi.models.feature import override_features
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository import repository
 from pcapi.repository.reimbursement_queries import find_all_offerer_payments
@@ -19,8 +19,6 @@ from pcapi.routes.serialization.reimbursement_csv_serialize import Reimbursement
 from pcapi.routes.serialization.reimbursement_csv_serialize import find_all_offerer_reimbursement_details
 from pcapi.routes.serialization.reimbursement_csv_serialize import generate_reimbursement_details_csv
 from pcapi.scripts.payment.batch_steps import generate_new_payments
-
-from tests.test_utils import deactivate_feature
 
 
 class FindReimbursementDetailsTest:
@@ -70,9 +68,9 @@ class ReimbursementDetailsCSVTest:
 
     @freeze_time("2019-07-05 12:00:00")
     @pytest.mark.usefixtures("db_session")
+    @override_features(DEGRESSIVE_REIMBURSEMENT_RATE=False)
     def test_generate_payment_details_csv_with_right_values(self, app):
         # given
-        deactivate_feature(FeatureToggle.DEGRESSIVE_REIMBURSEMENT_RATE)
         user = create_user(first_name="John", last_name="Doe")
         deposit = create_deposit(user, amount=500, source="public")
         offerer1 = create_offerer(siren="123456789", address="123 rue de Paris")

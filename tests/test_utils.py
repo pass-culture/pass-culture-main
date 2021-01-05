@@ -4,15 +4,6 @@ from unittest.mock import Mock
 from shapely.geometry import Polygon
 
 from pcapi.models import Booking
-from pcapi.models.feature import Feature
-from pcapi.models.feature import FeatureToggle
-from pcapi.repository import repository
-
-
-def deactivate_feature(feature_toggle: FeatureToggle):
-    feature = Feature.query.filter_by(name=feature_toggle.name).one()
-    feature.isActive = False
-    repository.save(feature)
 
 
 def create_mocked_bookings(num_bookings: int, venue_email: str, name: str = "Offer name") -> List[Booking]:
