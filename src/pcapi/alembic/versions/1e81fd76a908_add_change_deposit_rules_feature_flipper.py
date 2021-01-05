@@ -1,7 +1,7 @@
 """add_change_deposit_rules_feature_flipper
 
 Revision ID: 1e81fd76a908
-Revises: 8b219e5ece28
+Revises: ebb6831ad781
 Create Date: 2021-01-04 14:49:40.994052
 
 """
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = "1e81fd76a908"
-down_revision = "8b219e5ece28"
+down_revision = "ebb6831ad781"
 branch_labels = None
 depends_on = None
 
