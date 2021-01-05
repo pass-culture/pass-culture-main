@@ -5,9 +5,6 @@ const CURRENT_USER_PATH = `${API_URL}/beneficiaries/current`
 export async function getCurrentUser() {
   const response = await fetch(CURRENT_USER_PATH, {
     credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
   })
 
   if (response.status !== 200) return null
