@@ -3,8 +3,8 @@ import enum
 from typing import Generator
 
 from sqlalchemy import Column
-from sqlalchemy import Enum
 from sqlalchemy import String
+from sqlalchemy import Text
 
 from pcapi.models.db import Model
 from pcapi.models.deactivable_mixin import DeactivableMixin
@@ -38,7 +38,7 @@ class FeatureToggle(enum.Enum):
 
 
 class Feature(PcObject, Model, DeactivableMixin):
-    name = Column(Enum(FeatureToggle), unique=True, nullable=False)
+    name = Column(Text, unique=True, nullable=False)
     description = Column(String(300), nullable=False)
 
     @property
@@ -64,12 +64,7 @@ def override_features(**overrides) -> Generator:
         def test_something():
             pass  # [...]
     """
-    state = {
-        feature.name: is_active
-        for feature, is_active in (
-            Feature.query.filter(Feature.name.in_(overrides)).with_entities(Feature.name, Feature.isActive).all()
-        )
-    }
+    state = dict(Feature.query.filter(Feature.name.in_(overrides)).with_entities(Feature.name, Feature.isActive).all())
     # Yes, the following may perform multiple SQL queries. It's fine,
     # we will probably not toggle thousands of features in each call.
     apply_to_revert = {}

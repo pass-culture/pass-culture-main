@@ -11,7 +11,7 @@ def find_all():
 def is_active(feature_toggle: FeatureToggle) -> bool:
     if not isinstance(feature_toggle, FeatureToggle):
         raise ResourceNotFoundError
-    return Feature.query.filter_by(name=feature_toggle).first().isActive
+    return Feature.query.filter_by(name=feature_toggle.name).first().isActive
 
 
 def feature_send_mail_to_users_enabled() -> bool:
