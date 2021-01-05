@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom'
+import { fireEvent } from '@testing-library/dom'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
@@ -64,30 +65,46 @@ describe('src | components | inputs | DurationInput', () => {
     expect(durationInput).toHaveValue('1:00')
   })
 
-  it('should not call onChange prop function while text is not a correct duration in hours', async () => {
+  it('should call onChange prop function with updated duration in minutes when user leave field', async () => {
     // Given
     await renderDurationInput(props)
     const durationInput = screen.getByRole('textbox')
-
-    // When
-    userEvent.type(durationInput, '1:2')
-
-    // Then
-    expect(props.onChange).toHaveBeenCalledTimes(0)
-    expect(durationInput).toHaveValue('1:2')
-  })
-
-  it('should call onChange prop function with updated duration in minutes', async () => {
-    // Given
-    await renderDurationInput(props)
-    const durationInput = screen.getByRole('textbox')
-
-    // When
     await userEvent.type(durationInput, '1:25')
+
+    // When
+    fireEvent.blur(durationInput)
 
     // Then
     expect(props.onChange).toHaveBeenCalledWith(85)
     expect(durationInput).toHaveValue('1:25')
+  })
+
+  it('should consider as minute a single digit after ":" when user leave field', async () => {
+    // Given
+    await renderDurationInput(props)
+    const durationInput = screen.getByRole('textbox')
+    userEvent.type(durationInput, '1:7')
+
+    // When
+    fireEvent.blur(durationInput)
+
+    // Then
+    expect(props.onChange).toHaveBeenCalledWith(67)
+    expect(durationInput).toHaveValue('1:07')
+  })
+
+  it('should consider as hours numbers with no ":" when user leave field', async () => {
+    // Given
+    await renderDurationInput(props)
+    const durationInput = screen.getByRole('textbox')
+    userEvent.type(durationInput, '3')
+
+    // When
+    fireEvent.blur(durationInput)
+
+    // Then
+    expect(props.onChange).toHaveBeenCalledWith(180)
+    expect(durationInput).toHaveValue('3:00')
   })
 
   it('should call onChange prop function with null when user remove the duration', async () => {
@@ -95,9 +112,11 @@ describe('src | components | inputs | DurationInput', () => {
     await renderDurationInput(props)
     const durationInput = screen.getByRole('textbox')
     await userEvent.type(durationInput, '1:25')
+    fireEvent.blur(durationInput)
+    await userEvent.clear(durationInput)
 
     // When
-    await userEvent.clear(durationInput)
+    fireEvent.blur(durationInput)
 
     // Then
     expect(props.onChange).toHaveBeenLastCalledWith(null)
@@ -113,7 +132,6 @@ describe('src | components | inputs | DurationInput', () => {
     await userEvent.type(durationInput, 'Accélérer1:13')
 
     // Then
-    expect(props.onChange).toHaveBeenCalledWith(73)
     expect(durationInput).toHaveValue('1:13')
   })
 
@@ -126,7 +144,6 @@ describe('src | components | inputs | DurationInput', () => {
     await userEvent.type(durationInput, '1:34:23')
 
     // Then
-    expect(props.onChange).toHaveBeenCalledWith(94)
     expect(durationInput).toHaveValue('1:34')
   })
 
@@ -139,20 +156,42 @@ describe('src | components | inputs | DurationInput', () => {
     await userEvent.type(durationInput, '1:346')
 
     // Then
-    expect(props.onChange).toHaveBeenCalledWith(94)
     expect(durationInput).toHaveValue('1:34')
   })
 
-  it('should accept only 0 to 5 for ten of minutes":"', async () => {
+  it('should not accept minutes to be over 59', async () => {
     // Given
     await renderDurationInput(props)
     const durationInput = screen.getByRole('textbox')
 
     // When
-    await userEvent.type(durationInput, '1:734')
+    await userEvent.type(durationInput, '1:60')
 
     // Then
-    expect(props.onChange).toHaveBeenCalledWith(94)
-    expect(durationInput).toHaveValue('1:34')
+    expect(durationInput).toHaveValue('1:6')
+  })
+
+  it('should accept minutes equal to 59', async () => {
+    // Given
+    await renderDurationInput(props)
+    const durationInput = screen.getByRole('textbox')
+
+    // When
+    await userEvent.type(durationInput, '1:59')
+
+    // Then
+    expect(durationInput).toHaveValue('1:59')
+  })
+
+  it('should not accept minutes without hours', async () => {
+    // Given
+    await renderDurationInput(props)
+    const durationInput = screen.getByRole('textbox')
+
+    // When
+    await userEvent.type(durationInput, ':59')
+
+    // Then
+    expect(durationInput).toHaveValue('59')
   })
 })

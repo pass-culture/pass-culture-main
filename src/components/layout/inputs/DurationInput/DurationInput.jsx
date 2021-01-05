@@ -10,8 +10,6 @@ const translateMinutesToHours = durationInMinutes => {
   return `${hours}:${minutes}`
 }
 
-const validHoursDuration = durationInHours => durationInHours.match(/[0-9]*:[0-5][0-9]/)
-
 const DurationInput = ({
   disabled,
   error,
@@ -26,41 +24,37 @@ const DurationInput = ({
     translateMinutesToHours(initialDurationInMinutes)
   )
 
-  const onDurationChange = useCallback(
+  const onDurationBlur = useCallback(
     event => {
       const updatedHoursDuration = event.target.value
-      let correctedHoursDuration
 
-      const hasFinishedWritingHours = /[0-9]+:/.test(updatedHoursDuration)
-      if (hasFinishedWritingHours) {
-        const hasFinishedWritingMinutes = /[0-9]+:[0-5][0-9]/.test(updatedHoursDuration)
-        const hasBegunWritingMinutes = /[0-9]+:[0-5]/.test(updatedHoursDuration)
+      if (updatedHoursDuration !== '') {
+        const [updatedHours, updatedMinutes] = updatedHoursDuration.split(':')
 
-        if (hasFinishedWritingMinutes) {
-          correctedHoursDuration = updatedHoursDuration.match(/[0-9]+:[0-5][0-9]/)[0]
-          setDurationInHours(correctedHoursDuration)
-        } else if (hasBegunWritingMinutes) {
-          correctedHoursDuration = updatedHoursDuration.match(/[0-9]+:[0-5]/)[0]
-          setDurationInHours(correctedHoursDuration)
-        } else {
-          correctedHoursDuration = updatedHoursDuration.match(/[0-9]+:/)[0]
-          setDurationInHours(correctedHoursDuration)
-        }
-      } else {
-        correctedHoursDuration = updatedHoursDuration.match(/[0-9]*/)[0]
-        setDurationInHours(correctedHoursDuration)
-      }
-
-      if (validHoursDuration(correctedHoursDuration)) {
-        const [updatedHours, updatedMinutes] = correctedHoursDuration.split(':')
-        const updatedDurationInMinutes = parseInt(updatedHours) * 60 + parseInt(updatedMinutes)
+        const updatedDurationInMinutes =
+          parseInt(updatedHours) * 60 + parseInt(updatedMinutes | '0')
+        setDurationInHours(translateMinutesToHours(updatedDurationInMinutes))
         onChange(updatedDurationInMinutes)
-      } else if (correctedHoursDuration === '') {
+      } else {
         onChange(null)
       }
     },
     [onChange]
   )
+
+  const onDurationChange = useCallback(event => {
+    const updatedHoursDuration = event.target.value
+    let correctedHoursDuration
+
+    const hasFinishedWritingHours = /[0-9]+:/.test(updatedHoursDuration)
+    if (hasFinishedWritingHours) {
+      correctedHoursDuration = updatedHoursDuration.match(/[0-9]+:[0-5]?[0-9]?/)[0]
+      setDurationInHours(correctedHoursDuration)
+    } else {
+      correctedHoursDuration = updatedHoursDuration.match(/[0-9]*/)[0]
+      setDurationInHours(correctedHoursDuration)
+    }
+  }, [])
 
   return (
     <label className="input-time">
@@ -75,6 +69,7 @@ const DurationInput = ({
           className="itime-field"
           disabled={disabled}
           name={name}
+          onBlur={onDurationBlur}
           onChange={onDurationChange}
           placeholder="HH:MM"
           required={required}
@@ -96,7 +91,6 @@ DurationInput.defaultProps = {
   disabled: false,
   error: null,
   initialDurationInMinutes: null,
-  onChange: null,
   required: false,
   subLabel: '',
 }
@@ -107,7 +101,7 @@ DurationInput.propTypes = {
   initialDurationInMinutes: PropTypes.number,
   label: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-  onChange: PropTypes.func,
+  onChange: PropTypes.func.isRequired,
   required: PropTypes.bool,
   subLabel: PropTypes.string,
 }
