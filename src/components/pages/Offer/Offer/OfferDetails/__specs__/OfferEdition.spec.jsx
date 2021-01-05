@@ -617,6 +617,29 @@ describe('offerDetails - Edition', () => {
       )
     })
 
+    it('should show a success notification when form was correctly submitted', async () => {
+      // Given
+      const editedOffer = {
+        id: 'ABC12',
+        name: 'My edited offer',
+        type: 'ThingType.LIVRE_EDITION',
+        description: 'Offer description',
+        venueId: venues[0].id,
+        withdrawalDetails: 'Offer withdrawal details',
+        bookingEmail: 'booking@example.net',
+        extraData: null,
+      }
+      pcapi.loadOffer.mockResolvedValue(editedOffer)
+      await renderOffers(props, store)
+
+      // When
+      userEvent.click(screen.getByText('Enregistrer'))
+
+      // Then
+      const successNotification = await screen.findByText('Votre offre a bien été modifiée')
+      expect(successNotification).toBeInTheDocument()
+    })
+
     it('should not send extraData for synchronized offers', async () => {
       // Given
       const editedOffer = {

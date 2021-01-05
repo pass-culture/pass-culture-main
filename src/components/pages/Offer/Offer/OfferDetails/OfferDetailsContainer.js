@@ -19,6 +19,20 @@ const mapDispatchToProps = dispatch => ({
         text: 'Une ou plusieurs erreurs sont présentes dans le formulaire',
       })
     ),
+  showCreationSuccessNotification: () =>
+    dispatch(
+      showNotificationV2({
+        type: 'success',
+        text: 'Votre offre a bien été créée',
+      })
+    ),
+  showEditionSuccessNotification: () =>
+    dispatch(
+      showNotificationV2({
+        type: 'success',
+        text: 'Votre offre a bien été modifiée',
+      })
+    ),
 })
 
 export default compose(withRouter, connect(mapStateToProps, mapDispatchToProps))(OfferDetails)

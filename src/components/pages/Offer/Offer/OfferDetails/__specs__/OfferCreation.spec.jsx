@@ -781,6 +781,36 @@ describe('offerDetails - Creation', () => {
     })
   })
 
+  it('should show a success notification when form was correctly submitted', async () => {
+    // Given
+    const offerValues = {
+      name: 'Ma petite offre',
+      description: 'Pas si petite que ça',
+      durationMinutes: '1:30',
+      type: 'EventType.MUSIQUE',
+      extraData: {
+        musicType: '501',
+        musicSubType: '502',
+        performer: 'TEST PERFORMER NAME',
+      },
+      venueId: venues[0].id,
+      isDuo: false,
+      withdrawalDetails: 'À venir chercher sur place.',
+    }
+
+    await renderOffers(props, store)
+
+    await setOfferValues({ type: offerValues.type })
+    await setOfferValues(offerValues)
+
+    // When
+    userEvent.click(screen.getByText('Enregistrer et passer au stocks'))
+
+    // Then
+    const successNotification = await screen.findByText('Votre offre a bien été créée')
+    expect(successNotification).toBeInTheDocument()
+  })
+
   it('should show errors for mandatory fields', async () => {
     // Given
     await renderOffers(props, store)

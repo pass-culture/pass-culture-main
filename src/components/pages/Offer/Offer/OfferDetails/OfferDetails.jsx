@@ -8,7 +8,15 @@ import OfferForm from './OfferForm/OfferForm'
 import OfferThumbnail from './OfferThumbnail/OfferThumbnail'
 import OfferThumbnailPlaceholder from './OfferThumbnail/OfferThumbnailPlaceholder/OfferThumbnailPlaceholder'
 
-const OfferDetails = ({ history, isUserAdmin, location, offer, showErrorNotification }) => {
+const OfferDetails = ({
+  history,
+  isUserAdmin,
+  location,
+  offer,
+  showCreationSuccessNotification,
+  showEditionSuccessNotification,
+  showErrorNotification,
+}) => {
   const [formInitialValues, setFormInitialValues] = useState({})
   const [formErrors, setFormErrors] = useState({})
   const [showThumbnailForm, setShowThumbnailForm] = useState(offer !== null)
@@ -35,9 +43,11 @@ const OfferDetails = ({ history, isUserAdmin, location, offer, showErrorNotifica
         let redirectId
         if (offer) {
           await pcapi.updateOffer(offer.id, offerValues)
+          showEditionSuccessNotification()
           redirectId = offer.id
         } else {
           const response = await pcapi.createOffer(offerValues)
+          showCreationSuccessNotification()
           redirectId = response.id
         }
         history.push(`/offres/v2/${redirectId}/edition`)
@@ -60,7 +70,14 @@ const OfferDetails = ({ history, isUserAdmin, location, offer, showErrorNotifica
         }
       }
     },
-    [history, offer, setFormErrors, showErrorNotification]
+    [
+      history,
+      offer,
+      setFormErrors,
+      showCreationSuccessNotification,
+      showEditionSuccessNotification,
+      showErrorNotification,
+    ]
   )
 
   return (
@@ -103,6 +120,8 @@ OfferDetails.propTypes = {
   isUserAdmin: PropTypes.bool.isRequired,
   location: PropTypes.shape().isRequired,
   offer: PropTypes.shape(),
+  showCreationSuccessNotification: PropTypes.func.isRequired,
+  showEditionSuccessNotification: PropTypes.func.isRequired,
   showErrorNotification: PropTypes.func.isRequired,
 }
 
