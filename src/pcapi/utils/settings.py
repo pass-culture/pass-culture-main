@@ -2,16 +2,17 @@
 # Please do not import other pcapi modules as it may lead to
 # circular imports resulting in environ variables not be loaded.
 from typing import List
+from typing import Optional
 
 
-def parse_email_addresses(addresses: str) -> List[str]:
+def parse_email_addresses(addresses: Optional[str]) -> List[str]:
     if not addresses:
-        addresses = []
-    elif "," in addresses:
-        addresses = [a.strip() for a in addresses.split(",")]
+        return []
+    if "," in addresses:
+        result = [a.strip() for a in addresses.split(",")]
     elif ";" in addresses:
-        addresses = [a.strip() for a in addresses.split(";")]
+        result = [a.strip() for a in addresses.split(";")]
     else:
-        addresses = [addresses]
+        result = [addresses]
 
-    return [a for a in addresses if a]
+    return [a for a in result if a]

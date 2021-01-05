@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import List
+from typing import Optional
 from typing import Tuple
 
 from lxml.etree import DocumentInvalid
@@ -87,9 +88,9 @@ def generate_new_payments() -> Tuple[List[Payment], List[Payment]]:
 
 def send_transactions(
     payments: List[Payment],
-    pass_culture_iban: str,
-    pass_culture_bic: str,
-    pass_culture_remittance_code: str,
+    pass_culture_iban: Optional[str],
+    pass_culture_bic: Optional[str],
+    pass_culture_remittance_code: Optional[str],
     recipients: List[str],
 ) -> None:
     if not pass_culture_iban or not pass_culture_bic or not pass_culture_remittance_code:
