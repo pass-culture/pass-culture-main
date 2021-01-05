@@ -11,14 +11,6 @@ from tests.test_utils import deactivate_feature
 
 
 class GenerateAndSendPaymentsTest:
-    @patch(
-        "os.environ",
-        return_value={
-            "PASS_CULTURE_IBAN": "1234567",
-            "PASS_CULTURE_BIC": "1234567",
-            "PASS_CULTURE_REMITTANCE_CODE": "1234567",
-        },
-    )
     @patch("pcapi.scripts.payment.batch.update_booking_used_after_stock_occurrence")
     @patch("pcapi.scripts.payment.batch.get_payments_by_message_id")
     @patch("pcapi.scripts.payment.batch.generate_new_payments", return_value=([], []))
@@ -40,7 +32,6 @@ class GenerateAndSendPaymentsTest:
         generate_new_payments,
         get_payments_by_message_id,
         update_booking_used_after_stock_occurrence,
-        environment,
         app,
     ):
         # Given
@@ -62,14 +53,6 @@ class GenerateAndSendPaymentsTest:
         update_booking_used_after_stock_occurrence.assert_called_once()
         get_payments_by_message_id.assert_not_called()
 
-    @patch(
-        "os.environ",
-        return_value={
-            "PASS_CULTURE_IBAN": "1234567",
-            "PASS_CULTURE_BIC": "1234567",
-            "PASS_CULTURE_REMITTANCE_CODE": "1234567",
-        },
-    )
     @patch("pcapi.scripts.payment.batch.update_booking_used_after_stock_occurrence")
     @patch("pcapi.scripts.payment.batch.get_payments_by_message_id")
     @patch("pcapi.scripts.payment.batch.generate_new_payments", return_value=([], []))
@@ -91,7 +74,6 @@ class GenerateAndSendPaymentsTest:
         generate_new_payments,
         get_payments_by_message_id,
         update_booking_used_after_stock_occurrence,
-        environment,
         app,
     ):
         # When
@@ -108,14 +90,6 @@ class GenerateAndSendPaymentsTest:
         concatenate_payments_with_errors_and_retries.assert_not_called()
         update_booking_used_after_stock_occurrence.assert_called_once()
 
-    @patch(
-        "os.environ",
-        return_value={
-            "PASS_CULTURE_IBAN": "1234567",
-            "PASS_CULTURE_BIC": "1234567",
-            "PASS_CULTURE_REMITTANCE_CODE": "1234567",
-        },
-    )
     @patch("pcapi.scripts.payment.batch.update_booking_used_after_stock_occurrence")
     @patch("pcapi.scripts.payment.batch.get_payments_by_message_id")
     @patch("pcapi.scripts.payment.batch.generate_new_payments", return_value=([], []))
@@ -137,7 +111,6 @@ class GenerateAndSendPaymentsTest:
         generate_new_payments,
         get_payments_by_message_id,
         update_booking_used_after_stock_occurrence,
-        environment,
         app,
     ):
         # Given

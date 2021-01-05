@@ -1,4 +1,3 @@
-import os
 from typing import List
 from typing import Tuple
 
@@ -19,10 +18,6 @@ from pcapi.utils.logger import logger
 
 
 def generate_and_send_payments(payment_message_id: str = None):
-    PASS_CULTURE_IBAN = os.environ.get("PASS_CULTURE_IBAN", None)
-    PASS_CULTURE_BIC = os.environ.get("PASS_CULTURE_BIC", None)
-    PASS_CULTURE_REMITTANCE_CODE = os.environ.get("PASS_CULTURE_REMITTANCE_CODE", None)
-
     logger.info("[BATCH][PAYMENTS] STEP 0 : validate bookings associated to outdated stocks")
     if feature_queries.is_active(FeatureToggle.UPDATE_BOOKING_USED):
         update_booking_used_after_stock_occurrence()
@@ -33,9 +28,9 @@ def generate_and_send_payments(payment_message_id: str = None):
         logger.info("[BATCH][PAYMENTS] STEP 3 : send transactions")
         send_transactions(
             payments_to_send,
-            PASS_CULTURE_IBAN,
-            PASS_CULTURE_BIC,
-            PASS_CULTURE_REMITTANCE_CODE,
+            settings.PASS_CULTURE_IBAN,
+            settings.PASS_CULTURE_BIC,
+            settings.PASS_CULTURE_REMITTANCE_CODE,
             settings.TRANSACTIONS_RECIPIENTS,
         )
     except Exception as e:  # pylint: disable=broad-except
