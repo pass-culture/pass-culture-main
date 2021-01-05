@@ -6,10 +6,8 @@ from unittest import mock
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
-from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.offers.factories import ProductFactory
-from pcapi.core.users.factories import UserFactory
 from pcapi.models import offer_type
 from pcapi.repository import repository
 from pcapi.scripts.booking import handle_expired_bookings
@@ -17,7 +15,6 @@ from pcapi.scripts.booking import handle_expired_bookings
 
 @pytest.mark.usefixtures("db_session")
 class CancelExpiredBookingsTest:
-    @mock.patch("pcapi.core.bookings.conf.CANCEL_EXPIRED_BOOKINGS_CRON_START_DATE", datetime.utcnow())
     def should_cancel_old_thing_that_can_expire_booking(self, app) -> None:
         now = datetime.utcnow()
         two_months_ago = now - timedelta(days=60)
@@ -27,10 +24,9 @@ class CancelExpiredBookingsTest:
         handle_expired_bookings.cancel_expired_bookings()
 
         assert old_book_booking.isCancelled
-        assert old_book_booking.cancellationDate.timestamp() == pytest.approx(datetime.utcnow().timestamp())
+        assert old_book_booking.cancellationDate.timestamp() == pytest.approx(datetime.utcnow().timestamp(), rel=1)
         assert old_book_booking.cancellationReason == BookingCancellationReasons.EXPIRED
 
-    @mock.patch("pcapi.core.bookings.conf.CANCEL_EXPIRED_BOOKINGS_CRON_START_DATE", datetime.utcnow())
     def should_not_cancel_new_thing_that_can_expire_booking(self, app) -> None:
         book = ProductFactory(type=str(offer_type.ThingType.LIVRE_EDITION))
         book_booking = BookingFactory(stock__offer__product=book)
@@ -41,7 +37,6 @@ class CancelExpiredBookingsTest:
         assert not book_booking.cancellationDate
         assert not book_booking.cancellationReason
 
-    @mock.patch("pcapi.core.bookings.conf.CANCEL_EXPIRED_BOOKINGS_CRON_START_DATE", datetime.utcnow())
     def should_not_cancel_old_event_booking(self, app) -> None:
         two_months_ago = datetime.utcnow() - timedelta(days=60)
         tomorrow = datetime.utcnow() + timedelta(days=1)
@@ -56,7 +51,6 @@ class CancelExpiredBookingsTest:
         assert not old_concert_booking.cancellationDate
         assert not old_concert_booking.cancellationReason
 
-    @mock.patch("pcapi.core.bookings.conf.CANCEL_EXPIRED_BOOKINGS_CRON_START_DATE", datetime.utcnow())
     def should_not_cancel_old_thing_that_cannot_expire_booking(self, app) -> None:
         two_months_ago = datetime.utcnow() - timedelta(days=60)
         press_subscription = ProductFactory(type=str(offer_type.ThingType.PRESSE_ABO))
@@ -70,7 +64,6 @@ class CancelExpiredBookingsTest:
         assert not old_press_subscription_booking.cancellationDate
         assert not old_press_subscription_booking.cancellationReason
 
-    @mock.patch("pcapi.core.bookings.conf.CANCEL_EXPIRED_BOOKINGS_CRON_START_DATE", datetime.utcnow())
     def should_not_update_cancelled_old_thing_that_can_expire_booking(self, app) -> None:
         fifty_days_ago = datetime.utcnow() - timedelta(days=50)
         forty_days_ago = datetime.utcnow() - timedelta(days=40)
@@ -90,23 +83,6 @@ class CancelExpiredBookingsTest:
         assert old_book_booking.cancellationDate == forty_days_ago
         assert old_book_booking.cancellationReason == BookingCancellationReasons.BENEFICIARY
 
-    @mock.patch(
-        "pcapi.core.bookings.conf.CANCEL_EXPIRED_BOOKINGS_CRON_START_DATE", datetime.utcnow() + timedelta(days=1)
-    )
-    def should_not_cancel_old_thing_that_can_expire_bookings_before_start_date(self, app) -> None:
-        now = datetime.utcnow()
-        two_months_ago = now - timedelta(days=60)
-        book = ProductFactory(type=str(offer_type.ThingType.LIVRE_EDITION))
-        user = UserFactory()
-        BookingFactory.create_batch(size=5, stock__offer__product=book, user=user, dateCreated=two_months_ago)
-
-        handle_expired_bookings.cancel_expired_bookings(batch_size=2)
-
-        assert Booking.query.filter(Booking.isCancelled.is_(True)).count() == 0
-        assert Booking.query.filter(Booking.cancellationDate.isnot(None)).count() == 0
-        assert Booking.query.filter(Booking.cancellationReason.isnot(None)).count() == 0
-
-    @mock.patch("pcapi.core.bookings.conf.CANCEL_EXPIRED_BOOKINGS_CRON_START_DATE", datetime.utcnow())
     def should_only_cancel_old_thing_that_can_expire_bookings_before_start_date(self, app) -> None:
         now = datetime.utcnow()
         two_months_ago = now - timedelta(days=60)
@@ -120,11 +96,11 @@ class CancelExpiredBookingsTest:
         handle_expired_bookings.cancel_expired_bookings()
 
         assert old_guitar_booking.isCancelled
-        assert old_guitar_booking.cancellationDate.timestamp() == pytest.approx(datetime.utcnow().timestamp())
+        assert old_guitar_booking.cancellationDate.timestamp() == pytest.approx(datetime.utcnow().timestamp(), rel=1)
         assert old_guitar_booking.cancellationReason == BookingCancellationReasons.EXPIRED
 
         assert old_disc_booking.isCancelled
-        assert old_disc_booking.cancellationDate.timestamp() == pytest.approx(datetime.utcnow().timestamp())
+        assert old_disc_booking.cancellationDate.timestamp() == pytest.approx(datetime.utcnow().timestamp(), rel=1)
         assert old_disc_booking.cancellationReason == BookingCancellationReasons.EXPIRED
 
         assert not old_audio_book_booking.isCancelled
@@ -134,7 +110,6 @@ class CancelExpiredBookingsTest:
 
 @pytest.mark.usefixtures("db_session")
 class NotifyUsersOfExpiredBookingsTest:
-    @mock.patch("pcapi.core.bookings.conf.CANCEL_EXPIRED_BOOKINGS_CRON_START_DATE", datetime.utcnow())
     @mock.patch("pcapi.scripts.booking.handle_expired_bookings.send_raw_email")
     @mock.patch("pcapi.scripts.booking.handle_expired_bookings.send_expired_bookings_recap_email_to_beneficiary")
     def should_notify_of_todays_expired_bookings(
@@ -173,7 +148,7 @@ class NotifyUsersOfExpiredBookingsTest:
 
         assert (
             caplog.records[1].message
-            == f"2 Users have been notified: [{expired_today_dvd_booking.user}, {expired_today_cd_booking.user}]"
+            == f"[notify_users_of_expired_bookings] 2 Users have been notified: [{expired_today_dvd_booking.user}, {expired_today_cd_booking.user}]"
         )
         assert str(expired_yesterday_painting_booking) not in caplog.text
         assert mocked_send_email_recap.call_args_list[0][0] == (
@@ -190,7 +165,6 @@ class NotifyUsersOfExpiredBookingsTest:
 
 @pytest.mark.usefixtures("db_session")
 class NotifyOfferersOfExpiredBookingsTest:
-    @mock.patch("pcapi.core.bookings.conf.CANCEL_EXPIRED_BOOKINGS_CRON_START_DATE", datetime.utcnow())
     @mock.patch("pcapi.scripts.booking.handle_expired_bookings.send_raw_email")
     @mock.patch("pcapi.scripts.booking.handle_expired_bookings.send_expired_bookings_recap_email_to_offerer")
     def should_notify_of_todays_expired_bookings(
@@ -229,7 +203,7 @@ class NotifyOfferersOfExpiredBookingsTest:
 
         assert (
             caplog.records[1].message
-            == f"2 Offerers have been notified: [{expired_today_dvd_booking.stock.offer.venue.managingOfferer},"
+            == f"[notify_users_of_expired_bookings] 2 Offerers have been notified: [{expired_today_dvd_booking.stock.offer.venue.managingOfferer},"
             f" {expired_today_cd_booking.stock.offer.venue.managingOfferer}]"
         )
         assert str(expired_yesterday_painting_booking) not in caplog.text

@@ -2,7 +2,6 @@ import datetime
 from itertools import groupby
 from operator import attrgetter
 
-from pcapi.core.bookings import conf
 import pcapi.core.bookings.api as bookings_api
 import pcapi.core.bookings.repository as bookings_repository
 from pcapi.core.bookings.repository import find_expiring_bookings
@@ -39,34 +38,25 @@ def handle_expired_bookings() -> None:
 def cancel_expired_bookings(batch_size: int = 100) -> None:
     logger.info("[cancel_expired_bookings] Start")
     bookings_to_expire = find_expiring_bookings().all()
-    is_after_start_date = datetime.datetime.utcnow() >= conf.CANCEL_EXPIRED_BOOKINGS_CRON_START_DATE
     cancelled_bookings = []
     errors = []
 
-    if is_after_start_date:
-        for batch in range(0, len(bookings_to_expire), batch_size):
-            batch_cancelled_bookings, batch_errors = bookings_api.cancel_expired_bookings(
-                bookings_to_expire[batch : batch + batch_size],
-            )
-            cancelled_bookings.extend(batch_cancelled_bookings)
-            if batch_errors:
-                errors.extend(batch_errors)
-
-        logger.info(
-            "%d Bookings have been cancelled: %s",
-            len(cancelled_bookings),
-            cancelled_bookings,
+    for batch in range(0, len(bookings_to_expire), batch_size):
+        batch_cancelled_bookings, batch_errors = bookings_api.cancel_expired_bookings(
+            bookings_to_expire[batch : batch + batch_size],
         )
+        cancelled_bookings.extend(batch_cancelled_bookings)
+        if batch_errors:
+            errors.extend(batch_errors)
 
-        if errors:
-            logger.exception("[cancel_expired_bookings] Encountered these validation errors: %s", errors)
+    logger.info(
+        "[cancel_expired_bookings] %d Bookings have been cancelled: %s",
+        len(cancelled_bookings),
+        cancelled_bookings,
+    )
 
-    else:
-        logger.info(
-            "%d Bookings would have been selected for cancellation: %s",
-            len(bookings_to_expire),
-            bookings_to_expire,
-        )
+    if errors:
+        logger.exception("[cancel_expired_bookings] Encountered these validation errors: %s", errors)
 
     logger.info("[cancel_expired_bookings] End")
 
@@ -81,26 +71,17 @@ def notify_users_of_expired_bookings(expired_on: datetime.date = None) -> None:
     for user, booking in groupby(expired_bookings_ordered_by_user, attrgetter("user")):
         expired_bookings_grouped_by_user[user] = list(booking)
 
-    is_after_start_date = datetime.datetime.utcnow() >= conf.CANCEL_EXPIRED_BOOKINGS_CRON_START_DATE
     notified_users = []
 
-    if is_after_start_date:
-        for user, bookings in expired_bookings_grouped_by_user.items():
-            send_expired_bookings_recap_email_to_beneficiary(user, bookings, send_raw_email)
-            notified_users.append(user)
+    for user, bookings in expired_bookings_grouped_by_user.items():
+        send_expired_bookings_recap_email_to_beneficiary(user, bookings, send_raw_email)
+        notified_users.append(user)
 
-        logger.info(
-            "%d Users have been notified: %s",
-            len(notified_users),
-            notified_users,
-        )
-
-    else:
-        logger.info(
-            "%d Users would have been notified of expired booking cancellation: %s",
-            len(expired_bookings_grouped_by_user),
-            expired_bookings_grouped_by_user,
-        )
+    logger.info(
+        "[notify_users_of_expired_bookings] %d Users have been notified: %s",
+        len(notified_users),
+        notified_users,
+    )
 
     logger.info("[notify_users_of_expired_bookings] End")
 
@@ -116,25 +97,16 @@ def notify_offerers_of_expired_bookings(expired_on: datetime.date = None) -> Non
     ):
         expired_bookings_grouped_by_offerer[offerer] = list(booking)
 
-    is_after_start_date = datetime.datetime.utcnow() >= conf.CANCEL_EXPIRED_BOOKINGS_CRON_START_DATE
     notified_offerers = []
 
-    if is_after_start_date:
-        for offerer, bookings in expired_bookings_grouped_by_offerer.items():
-            send_expired_bookings_recap_email_to_offerer(offerer, bookings, send_raw_email)
-            notified_offerers.append(offerer)
+    for offerer, bookings in expired_bookings_grouped_by_offerer.items():
+        send_expired_bookings_recap_email_to_offerer(offerer, bookings, send_raw_email)
+        notified_offerers.append(offerer)
 
-        logger.info(
-            "%d Offerers have been notified: %s",
-            len(notified_offerers),
-            notified_offerers,
-        )
-
-    else:
-        logger.info(
-            "%d Offerers would have been notified of expired booking cancellation: %s",
-            len(expired_bookings_grouped_by_offerer),
-            expired_bookings_grouped_by_offerer,
-        )
+    logger.info(
+        "[notify_users_of_expired_bookings] %d Offerers have been notified: %s",
+        len(notified_offerers),
+        notified_offerers,
+    )
 
     logger.info("[notify_offerers_of_expired_bookings] End")

@@ -8,7 +8,6 @@ CONFIRM_BOOKING_AFTER_CREATION_DELAY = datetime.timedelta(hours=48)
 CONFIRM_BOOKING_BEFORE_EVENT_DELAY = datetime.timedelta(hours=48)
 BOOKINGS_AUTO_EXPIRY_DELAY = datetime.timedelta(days=30)
 BOOKINGS_EXPIRY_NOTIFICATION_DELAY = datetime.timedelta(days=7)
-CANCEL_EXPIRED_BOOKINGS_CRON_START_DATE = datetime.datetime(2021, 1, 4)
 
 
 def _get_hours_from_timedelta(td: datetime.timedelta) -> float:

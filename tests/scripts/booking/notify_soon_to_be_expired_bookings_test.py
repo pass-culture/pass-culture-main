@@ -16,7 +16,6 @@ from pcapi.scripts.booking.notify_soon_to_be_expired_bookings import notify_user
 
 @pytest.mark.usefixtures("db_session")
 class NotifyUsersOfSoonToBeExpiredBookingsTest:
-    @mock.patch("pcapi.core.bookings.conf.CANCEL_EXPIRED_BOOKINGS_CRON_START_DATE", datetime.utcnow())
     @mock.patch(
         "pcapi.scripts.booking.notify_soon_to_be_expired_bookings.send_soon_to_be_expired_bookings_recap_email_to_beneficiary"
     )
@@ -54,7 +53,6 @@ class NotifyUsersOfSoonToBeExpiredBookingsTest:
         )
         assert str(dont_expire_in_7_days_cd_booking) not in caplog.text
 
-    @mock.patch("pcapi.core.bookings.conf.CANCEL_EXPIRED_BOOKINGS_CRON_START_DATE", datetime.utcnow())
     @mock.patch("pcapi.scripts.booking.notify_soon_to_be_expired_bookings.send_raw_email")
     @mock.patch(
         "pcapi.scripts.booking.notify_soon_to_be_expired_bookings.send_soon_to_be_expired_bookings_recap_email_to_beneficiary"

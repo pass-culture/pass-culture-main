@@ -1,7 +1,6 @@
 from apscheduler.schedulers.blocking import BlockingScheduler
 
 from pcapi import settings
-from pcapi.core.bookings.conf import CANCEL_EXPIRED_BOOKINGS_CRON_START_DATE
 from pcapi.local_providers.provider_manager import synchronize_venue_providers_for_provider
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.feature import FeatureToggle
@@ -114,7 +113,6 @@ def main():
         [app],
         day="*",
         hour="5",
-        start_date=CANCEL_EXPIRED_BOOKINGS_CRON_START_DATE.strftime("%Y-%m-%d"),
     )
 
     scheduler.add_job(
@@ -124,7 +122,6 @@ def main():
         day="*",
         hour="5",
         minute="30",
-        start_date=CANCEL_EXPIRED_BOOKINGS_CRON_START_DATE.strftime("%Y-%m-%d"),
     )
 
     scheduler.start()
