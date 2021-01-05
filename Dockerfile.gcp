@@ -1,34 +1,41 @@
-### Local environment image
+##################### Local environment layer #####################
 
 FROM python:3.7.6-slim AS api-flask
 
 ENV PYTHONUNBUFFERED 1
+
 WORKDIR /usr/local/bin
-RUN apt update && apt -y install gcc libpq-dev && apt clean
+
+RUN apt-get update \
+	&& apt-get -y install gcc libpq-dev \
+	&& apt-get clean
+
 COPY ./requirements.txt ./
-RUN pip install --no-cache-dir -r ./requirements.txt
+
+RUN pip install \
+	--no-cache-dir \
+	--requirement ./requirements.txt
+
 RUN python -m nltk.downloader punkt stopwords
 
-EXPOSE 5000
-
-### GCP run image
+##################### GCP run layer #####################
 
 FROM api-flask
 
-WORKDIR /usr/src/app
-
-ENV UNICORN_N_WORKERS 2
-ENV UNICORN_TIMEOUT   90
-ENV NLTK_DATA /root/nltk_data
-
-RUN apt update && \
-    apt -y install postgresql-client curl git && \
-    apt clean
-
-COPY . .
-COPY src/pcapi .
 COPY --from=us-docker.pkg.dev/berglas/berglas/berglas:latest /bin/berglas /bin/berglas
 
-RUN pip --no-cache-dir install -e .
+WORKDIR /usr/src/app
+
+ENV NLTK_DATA /root/nltk_data
+
+RUN apt-get update && \
+    apt-get -y install postgresql-client curl git && \
+    apt-get clean
+
+COPY . .
+
+RUN pip install \
+	--no-cache-dir \
+	--editable .
 
 ENTRYPOINT exec /bin/berglas exec -- ./entrypoint.sh
