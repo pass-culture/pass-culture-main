@@ -9,6 +9,7 @@ from wtforms.fields.core import StringField
 from wtforms.validators import ValidationError
 
 from pcapi.admin.base_configuration import BaseAdminView
+from pcapi.domain.password import generate_reset_token
 from pcapi.domain.password import random_password
 from pcapi.models import UserOfferer
 from pcapi.models.offerer import Offerer
@@ -129,6 +130,7 @@ class ProUserView(SuspensionMixin, BaseAdminView):
         if is_created:
             model.isBeneficiary = False
             model.password = random_password()
+            generate_reset_token(model, 24 * 14)
             offerer = create_offerer(form)
             create_digital_venue(offerer)
             user_offerer = create_user_offerer(user=model, offerer=offerer)
