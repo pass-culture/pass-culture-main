@@ -8,7 +8,7 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 
 
-def install_activity():
+def install_activity() -> None:
     orm.configure_mappers()
 
     create_versionning_tables()
@@ -16,17 +16,19 @@ def install_activity():
     db.session.commit()
 
 
-def install_features():
+def install_features() -> None:
     Feature.query.delete()
     features = []
     for toggle in FeatureToggle:
         feature = Feature()
-        feature.populate_from_dict({"description": toggle.value, "name": toggle, "is_active": True})
+        feature.populate_from_dict(
+            {"description": toggle.value, "name": toggle, "is_active": toggle != "APPLY_BOOKING_LIMITS_V2"}
+        )
         features.append(feature)
     repository.save(*features)
 
 
-def create_versionning_tables():
+def create_versionning_tables() -> None:
     # FIXME: This is seriously ugly... (based on https://github.com/kvesteri/postgresql-audit/issues/21)
     try:
         versioning_manager.transaction_cls.__table__.create(db.session.get_bind())
