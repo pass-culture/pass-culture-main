@@ -94,11 +94,15 @@ const OfferDetails = ({ history, isUserAdmin, location, offer, showErrorNotifica
   )
 }
 
+OfferDetails.defaultProps = {
+  offer: null,
+}
+
 OfferDetails.propTypes = {
   history: PropTypes.shape().isRequired,
   isUserAdmin: PropTypes.bool.isRequired,
   location: PropTypes.shape().isRequired,
-  offer: PropTypes.shape().isRequired,
+  offer: PropTypes.shape(),
   showErrorNotification: PropTypes.func.isRequired,
 }
 

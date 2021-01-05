@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 export const fieldLabels = {
@@ -31,10 +31,12 @@ export const getOfferInputForField = async fieldName => {
   return await screen.findByLabelText(label, { exact })
 }
 
-export const getInputErrorForField = async fieldName => {
-  let errorInput
-  await waitFor(() => (errorInput = screen.queryByTestId(`input-error-field-${fieldName}`)))
-  return errorInput
+export const findInputErrorForField = fieldName => {
+  return screen.findByTestId(`input-error-field-${fieldName}`)
+}
+
+export const queryInputErrorForField = fieldName => {
+  return screen.queryByTestId(`input-error-field-${fieldName}`)
 }
 
 export const setOfferValues = async values => {

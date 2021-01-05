@@ -1,17 +1,23 @@
 import '@testing-library/jest-dom'
-import { fireEvent } from '@testing-library/dom'
 import { act, render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
+import NotificationV2Container from 'components/layout/NotificationV2/NotificationV2Container'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
 import OfferLayoutContainer from '../../OfferLayoutContainer'
 import { DEFAULT_FORM_VALUES } from '../OfferForm/_constants'
 
-import { getInputErrorForField, getOfferInputForField, setOfferValues } from './helpers'
+import {
+  findInputErrorForField,
+  getOfferInputForField,
+  queryInputErrorForField,
+  setOfferValues,
+} from './helpers'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   createOffer: jest.fn(),
@@ -26,7 +32,10 @@ const renderOffers = async (props, store, queryParams = null) => {
       <Provider store={store}>
         <MemoryRouter initialEntries={[{ pathname: '/offres/v2/creation', search: queryParams }]}>
           <Route path="/offres/v2/">
-            <OfferLayoutContainer {...props} />
+            <>
+              <OfferLayoutContainer {...props} />
+              <NotificationV2Container />
+            </>
           </Route>
         </MemoryRouter>
       </Provider>
@@ -361,7 +370,7 @@ describe('offerDetails - Creation', () => {
         const venueInput = screen.getByLabelText('Lieu')
         expect(venueInput).toBeInTheDocument()
         expect(venueInput).not.toHaveAttribute('disabled')
-        const venueIdError = await getInputErrorForField('venueId')
+        const venueIdError = await findInputErrorForField('venueId')
         expect(venueIdError).toHaveTextContent(
           'Il faut obligatoirement une structure avec un lieu.'
         )
@@ -386,7 +395,7 @@ describe('offerDetails - Creation', () => {
 
         // Then
         expect(screen.getByLabelText('Lieu')).toBeInTheDocument()
-        const venueIdError = await getInputErrorForField('venueId')
+        const venueIdError = queryInputErrorForField('venueId')
         expect(venueIdError).toBeNull()
       })
 
@@ -740,26 +749,17 @@ describe('offerDetails - Creation', () => {
   describe('when submitting form', () => {
     it('should call API with offer data', async () => {
       // Given
-      types.push({
-        conditionalFields: ['author', 'musicType', 'performer', 'durationMinutes'],
-        offlineOnly: false,
-        onlineOnly: false,
-        proLabel: 'Musique - concerts, festivals',
-        type: 'Event',
-        value: 'EventType.TEST_MUSIQUE',
-      })
-      pcapi.loadTypes.mockResolvedValue(types)
       const offerValues = {
         name: 'Ma petite offre',
         description: 'Pas si petite que ça',
         durationMinutes: '1:30',
-        type: 'EventType.TEST_MUSIQUE',
+        type: 'EventType.MUSIQUE',
         extraData: {
           musicType: '501',
           musicSubType: '502',
           performer: 'TEST PERFORMER NAME',
         },
-        venueId: 'AB',
+        venueId: venues[0].id,
         isDuo: false,
         withdrawalDetails: 'À venir chercher sur place.',
       }
@@ -770,7 +770,7 @@ describe('offerDetails - Creation', () => {
       await setOfferValues(offerValues)
 
       // When
-      fireEvent.click(screen.getByText('Enregistrer et passer au stocks'))
+      userEvent.click(screen.getByText('Enregistrer et passer au stocks'))
 
       // Then
       expect(pcapi.createOffer).toHaveBeenCalledWith({
@@ -782,54 +782,60 @@ describe('offerDetails - Creation', () => {
   })
 
   it('should show errors for mandatory fields', async () => {
-    types.push({
-      conditionalFields: ['author', 'musicType', 'performer', 'durationMinutes', 'url'],
-      offlineOnly: false,
-      onlineOnly: false,
-      proLabel: 'Musique - concerts, festivals',
-      type: 'Event',
-      value: 'EventType.TEST_MUSIQUE',
-    })
-    pcapi.loadTypes.mockResolvedValue(types)
+    // Given
     await renderOffers(props, store)
-
     await setOfferValues({ type: 'EventType.MUSIQUE' })
 
     // When
-    fireEvent.click(screen.getByText('Enregistrer et passer au stocks'))
+    userEvent.click(screen.getByText('Enregistrer et passer au stocks'))
 
     // Then
     expect(pcapi.createOffer).not.toHaveBeenCalled()
 
     // Mandatory fields
-    const nameError = await getInputErrorForField('name')
+    const nameError = await findInputErrorForField('name')
     expect(nameError).toHaveTextContent('Ce champ est obligatoire')
-    const venueIdError = await getInputErrorForField('venueId')
+    const venueIdError = await findInputErrorForField('venueId')
     expect(venueIdError).toHaveTextContent('Ce champ est obligatoire')
-    const offererIdError = await getInputErrorForField('offererId')
+    const offererIdError = await findInputErrorForField('offererId')
     expect(offererIdError).toHaveTextContent('Ce champ est obligatoire')
 
     // Optional fields
-    const descriptionError = await getInputErrorForField('description')
+    const descriptionError = queryInputErrorForField('description')
     expect(descriptionError).toBeNull()
-    const durationMinutesError = await getInputErrorForField('durationMinutes')
+    const durationMinutesError = queryInputErrorForField('durationMinutes')
     expect(durationMinutesError).toBeNull()
-    const typeError = await getInputErrorForField('type')
+    const typeError = queryInputErrorForField('type')
     expect(typeError).toBeNull()
-    const authorError = await getInputErrorForField('author')
+    const authorError = queryInputErrorForField('author')
     expect(authorError).toBeNull()
-    const musicTypeError = await getInputErrorForField('musicType')
+    const musicTypeError = queryInputErrorForField('musicType')
     expect(musicTypeError).toBeNull()
-    const musicSubTypeError = await getInputErrorForField('musicSubType')
+    const musicSubTypeError = queryInputErrorForField('musicSubType')
     expect(musicSubTypeError).toBeNull()
-    const performerError = await getInputErrorForField('performer')
+    const performerError = queryInputErrorForField('performer')
     expect(performerError).toBeNull()
-    const isDuoError = await getInputErrorForField('isDuo')
+    const isDuoError = queryInputErrorForField('isDuo')
     expect(isDuoError).toBeNull()
-    const withdrawalDetailsError = await getInputErrorForField('withdrawalDetails')
+    const withdrawalDetailsError = queryInputErrorForField('withdrawalDetails')
     expect(withdrawalDetailsError).toBeNull()
-    const bookingEmailInput = await getInputErrorForField('bookingEmail')
+    const bookingEmailInput = queryInputErrorForField('bookingEmail')
     expect(bookingEmailInput).toBeNull()
+  })
+
+  it('should show an error notification when form is not valid', async () => {
+    // Given
+    await renderOffers(props, store)
+    await setOfferValues({ type: 'EventType.MUSIQUE' })
+
+    // When
+    userEvent.click(screen.getByText('Enregistrer et passer au stocks'))
+
+    // Then
+    const errorNotification = await screen.findByText(
+      'Une ou plusieurs erreurs sont présentes dans le formulaire'
+    )
+    expect(errorNotification).toBeInTheDocument()
   })
 
   it('should show error for email notification input when asking to receive booking emails and no email was provided', async () => {
@@ -839,10 +845,45 @@ describe('offerDetails - Creation', () => {
     await setOfferValues({ receiveNotificationEmails: true })
 
     // When
-    fireEvent.click(screen.getByText('Enregistrer et passer au stocks'))
+    userEvent.click(screen.getByText('Enregistrer et passer au stocks'))
 
     // Then
-    const bookingEmailInput = await getInputErrorForField('bookingEmail')
+    const bookingEmailInput = await findInputErrorForField('bookingEmail')
     expect(bookingEmailInput).toHaveTextContent('Ce champ est obligatoire')
+  })
+
+  it('should show error sent by API and show an error notification', async () => {
+    // Given
+    const offerValues = {
+      name: 'Ce nom serait-il invalide ?',
+      description: 'Pas si petite que ça',
+      durationMinutes: '1:30',
+      type: 'EventType.MUSIQUE',
+      extraData: {
+        musicType: '501',
+        musicSubType: '502',
+        performer: 'TEST PERFORMER NAME',
+      },
+      venueId: venues[0].id,
+      isDuo: false,
+      withdrawalDetails: 'À venir chercher sur place.',
+    }
+
+    pcapi.createOffer.mockRejectedValue({ errors: { name: "Ce nom n'est pas valide" } })
+    await renderOffers(props, store)
+
+    await setOfferValues({ type: offerValues.type })
+    await setOfferValues(offerValues)
+
+    // When
+    userEvent.click(screen.getByText('Enregistrer et passer au stocks'))
+
+    // Then
+    const nameError = await screen.findByText("Ce nom n'est pas valide")
+    expect(nameError).toBeInTheDocument()
+    const errorNotification = await screen.findByText(
+      'Une ou plusieurs erreurs sont présentes dans le formulaire'
+    )
+    expect(errorNotification).toBeInTheDocument()
   })
 })

@@ -5,6 +5,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
+import NotificationV2Container from 'components/layout/NotificationV2/NotificationV2Container'
 import { getProviderInfo } from 'components/pages/Offer/LocalProviderInformation/getProviderInfo'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
@@ -12,7 +13,7 @@ import { configureTestStore } from 'store/testUtils'
 import OfferLayoutContainer from '../../OfferLayoutContainer'
 import { DEFAULT_FORM_VALUES } from '../OfferForm/_constants'
 
-import { fieldLabels, getInputErrorForField, setOfferValues } from './helpers'
+import { fieldLabels, findInputErrorForField, setOfferValues } from './helpers'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   updateOffer: jest.fn(),
@@ -30,7 +31,10 @@ const renderOffers = async (props, store, queryParams = '') => {
           initialEntries={[{ pathname: '/offres/v2/ABC12/edition', search: queryParams }]}
         >
           <Route path="/offres/v2/:offerId([A-Z0-9]+)/">
-            <OfferLayoutContainer {...props} />
+            <>
+              <OfferLayoutContainer {...props} />
+              <NotificationV2Container />
+            </>
           </Route>
         </MemoryRouter>
       </Provider>
@@ -612,6 +616,7 @@ describe('offerDetails - Edition', () => {
         })
       )
     })
+
     it('should not send extraData for synchronized offers', async () => {
       // Given
       const editedOffer = {
@@ -764,8 +769,11 @@ describe('offerDetails - Edition', () => {
       userEvent.click(screen.getByText('Enregistrer'))
 
       // Then
-      const bookingEmailInput = await getInputErrorForField('bookingEmail')
+      const bookingEmailInput = await findInputErrorForField('bookingEmail')
       expect(bookingEmailInput).toHaveTextContent('Ce champ est obligatoire')
+      expect(
+        screen.getByText('Une ou plusieurs erreurs sont présentes dans le formulaire')
+      ).toBeInTheDocument()
     })
   })
 })
