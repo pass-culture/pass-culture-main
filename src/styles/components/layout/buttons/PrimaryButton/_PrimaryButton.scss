@@ -1,3 +1,8 @@
+@mixin primary-focus {
+  background-color: $primary-dark;
+  border: 3px solid $primary-dark;
+}
+
 @mixin primary {
   @include button();
 
@@ -19,8 +24,8 @@
   &:active,
   &:hover,
   &:focus {
-    background-color: $primary-dark;
-    border: 3px solid $primary-dark;
+    @include primary-focus();
+
     color: $white;
   }
 

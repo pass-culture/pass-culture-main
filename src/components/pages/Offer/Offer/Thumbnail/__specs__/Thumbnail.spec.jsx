@@ -8,6 +8,7 @@ import { MemoryRouter, Route } from 'react-router'
 import OfferLayoutContainer from 'components/pages/Offer/Offer/OfferLayoutContainer'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
+import { queryByTextTrimHtml } from 'utils/testHelpers'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   getValidatedOfferers: jest.fn(),
@@ -16,9 +17,7 @@ jest.mock('repository/pcapi/pcapi', () => ({
   loadTypes: jest.fn(),
 }))
 
-const renderThumbnail = async (props, store, editedOffer) => {
-  editedOffer.thumbUrl = 'http://fake-url/active-image.png'
-
+const renderThumbnail = async (props, store) => {
   render(
     <Provider store={store}>
       <MemoryRouter initialEntries={[{ pathname: '/offres/v2/ABC12/edition' }]}>
@@ -47,7 +46,7 @@ describe('thumbnail edition', () => {
     editedOffer = {
       id: 'ABC12',
       name: 'My edited offer',
-      thumbUrl: null,
+      thumbUrl: 'http://example.net/active-image.png',
     }
     pcapi.getValidatedOfferers.mockResolvedValue(offerers)
     pcapi.getVenuesForOfferer.mockResolvedValue(venues)
@@ -56,9 +55,9 @@ describe('thumbnail edition', () => {
   })
 
   describe('when thumbnail exists', () => {
-    it('should display a modal when user is clicking on thumbnail', async () => {
+    it('should display a modal when the user is clicking on thumbnail', async () => {
       // When
-      await renderThumbnail({}, store, editedOffer)
+      await renderThumbnail({}, store)
 
       // Then
       expect(screen.getByLabelText('Ajouter une image')).toBeInTheDocument()
@@ -66,10 +65,10 @@ describe('thumbnail edition', () => {
     })
   })
 
-  describe('when user is within the upload tunnel', () => {
+  describe('when the user is within the upload tunnel', () => {
     it('should close the modal when user is clicking on close button', async () => {
       // Given
-      await renderThumbnail({}, store, editedOffer)
+      await renderThumbnail({}, store)
 
       // When
       fireEvent.click(screen.getByTitle('Fermer la modale', { selector: 'button' }))
@@ -79,6 +78,29 @@ describe('thumbnail edition', () => {
       expect(
         screen.queryByTitle('Fermer la modale', { selector: 'button' })
       ).not.toBeInTheDocument()
+    })
+
+    describe('when the user is on import tab', () => {
+      it('should display information for importing', async () => {
+        // When
+        await renderThumbnail({}, store)
+
+        // Then
+        expect(
+          screen.getByText('Utilisez de préférence un visuel en orientation portrait', {
+            selector: 'p',
+          })
+        ).toBeInTheDocument()
+        const input = screen.getByLabelText('Importer une image depuis l’ordinateur')
+        expect(input).toHaveAttribute('type', 'file')
+        expect(input).toHaveAttribute('accept', 'image/png, image/jpeg')
+        expect(
+          queryByTextTrimHtml(
+            screen,
+            'Format supportés : JPG, PNG Le poids du fichier de ne doit pas dépasser 10 Mo La taille de l’image doit être supérieure à 400 x 400px'
+          )
+        ).toBeInTheDocument()
+      })
     })
   })
 })

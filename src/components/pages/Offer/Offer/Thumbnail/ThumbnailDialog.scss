@@ -1,18 +1,50 @@
 .thumbnail-dialog {
   position: relative;
+  text-align: center;
 }
 
-.tbd-close {
+.tnd-close {
   background-color: transparent;
   border: 0;
   position: absolute;
   right: 0;
 }
 
-.tbd-header {
-  text-align: center;
+.tnd-header {
+  @include title4;
 
-  h1 {
-    @include title4;
+  margin-bottom: rem(24px);
+}
+
+.tnd-hr {
+  border: rem(1px) solid $grey-medium;
+}
+
+.tnf-form {
+  margin-top: rem(48px);
+}
+
+.tnf-info {
+  color: $grey-dark;
+  margin-bottom: rem(40px);
+  margin-top: rem(8px);
+}
+
+.tnf-file-label {
+  cursor: pointer;
+  width: rem(366px);
+
+  &:focus-within {
+    @include primary-focus();
   }
+}
+
+.tnf-file-input {
+  height: 0;
+}
+
+.tnf-mandatory {
+  @include caption();
+
+  color: $grey-dark;
 }
