@@ -1,9 +1,10 @@
 import json
-import os
 
 from google.oauth2.service_account import Credentials
 import gspread
 from memoize import Memoizer
+
+from pcapi import settings
 
 
 user_spreadsheet_store = {}
@@ -15,7 +16,7 @@ class MissingGoogleKeyException(Exception):
 
 
 def get_credentials():
-    google_key = os.environ.get("PC_GOOGLE_KEY")
+    google_key = settings.GOOGLE_KEY
     if not google_key:
         raise MissingGoogleKeyException()
     # Newline characters must be escaped in JSON.
