@@ -322,12 +322,14 @@ jobs:
       - export_version
       - authenticate_gcp:
           gcp-key-name: GCP_INFRA_KEY
-      - run: gcloud beta auth configure-docker ${GCP_REGION}-docker.pkg.dev
       - run: |
-          docker build ./api \
-            -f ./api/Dockerfile.gcp \
-            -t ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:${API_VERSION}
-      - run: docker push ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:${API_VERSION}
+          if [[ ${CIRCLE_BRANCH} == "staging" ]];then
+            gcloud beta auth configure-docker ${GCP_REGION}-docker.pkg.dev
+            docker build ./api \
+              -f ./api/Dockerfile.gcp \
+              -t ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:${API_VERSION}
+            docker push ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:${API_VERSION}
+          fi
 
   deploy-api:
     machine:
