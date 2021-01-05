@@ -4,6 +4,12 @@ import { compose } from 'redux'
 import withTracking from '../../hocs/withTracking'
 import { connect } from 'react-redux'
 import { ANDROID_APPLICATION_ID } from '../../../utils/config'
+import selectIsFeatureDisabled from '../../router/selectors/selectIsFeatureDisabled'
+import { FEATURES } from '../../router/selectors/features'
+
+export const mapStateToProps = state => ({
+  isNewBookingLimitsActived: !selectIsFeatureDisabled(state, FEATURES.APPLY_BOOKING_LIMITS_V2),
+})
 
 export const mergeProps = (stateProps, dispatchProps, ownProps) => {
   return {
@@ -24,9 +30,5 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
 export default compose(
   withNotRequiredLogin,
   withTracking('BetaPage'),
-  connect(
-    null,
-    null,
-    mergeProps
-  )
+  connect(mapStateToProps, null, mergeProps)
 )(BetaPage)

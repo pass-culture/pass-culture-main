@@ -33,6 +33,25 @@ describe('components | BetaPage', () => {
     expect(line3).toHaveLength(1)
   })
 
+  it('should render page component with 300 € when new booking limits is activated', () => {
+    // when
+    const wrapper = shallow(<BetaPage trackSignup={jest.fn()} isNewBookingLimitsActived={true} />)
+
+    // then
+    const line1 = wrapper.findWhere(node => node.text() === 'Bienvenue dans\nton pass Culture')
+    const line2 = wrapper.findWhere(
+      node => node.text() === 'Tu as 18 ans et tu vis dans un\ndépartement éligible ?'
+    )
+    const line3 = wrapper.findWhere(
+      node =>
+        node.text() ===
+        "Bénéficie de 300 € afin de\nrenforcer tes pratiques\nculturelles et d'en découvrir\nde nouvelles !"
+    )
+    expect(line1).toHaveLength(1)
+    expect(line2).toHaveLength(1)
+    expect(line3).toHaveLength(1)
+  })
+
   it('should render an Icon component for page background', () => {
     // when
     const wrapper = shallow(<BetaPage trackSignup={jest.fn()} />)

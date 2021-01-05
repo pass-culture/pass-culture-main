@@ -4,13 +4,9 @@ import React from 'react'
 import FormFooter from '../../forms/FormFooter'
 import Icon from '../../layout/Icon/Icon'
 
-const BetaPage = ({ trackSignup }) => (
+const BetaPage = ({ trackSignup, isNewBookingLimitsActived }) => (
   <div className="beta-page">
-    <Icon
-      alt=""
-      className="bp-logo"
-      svg="circle"
-    />
+    <Icon alt="" className="bp-logo" svg="circle" />
     <main className="bp-main">
       <div className="bp-title">
         {'Bienvenue dans\n'}
@@ -27,7 +23,7 @@ const BetaPage = ({ trackSignup }) => (
         </a>
       </div>
       <div className="bp-content">
-        {'Bénéficie de 500 € afin de\n'}
+        {`Bénéficie de ${isNewBookingLimitsActived ? 300 : 500} € afin de\n`}
         {'renforcer tes pratiques\n'}
         {"culturelles et d'en découvrir\n"}
         {'de nouvelles !'}
@@ -52,6 +48,7 @@ const BetaPage = ({ trackSignup }) => (
 )
 
 BetaPage.propTypes = {
+  isNewBookingLimitsActived: PropTypes.bool.isRequired,
   trackSignup: PropTypes.func.isRequired,
 }
 
