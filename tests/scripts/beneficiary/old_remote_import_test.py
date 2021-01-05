@@ -83,7 +83,6 @@ class OldRemoteImportRunTest:
         assert process_beneficiary_application.call_count == 3
 
     @patch("pcapi.scripts.beneficiary.old_remote_import.parse_beneficiary_information")
-    @patch.dict("os.environ", {"DEMARCHES_SIMPLIFIEES_ENROLLMENT_REPORT_RECIPIENTS": "send@example.com"})
     @pytest.mark.usefixtures("db_session")
     def test_an_error_status_is_saved_when_an_application_is_not_parsable(
         self, mocked_parse_beneficiary_information, app
