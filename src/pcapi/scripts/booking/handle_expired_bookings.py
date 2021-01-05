@@ -2,11 +2,12 @@ import datetime
 from itertools import groupby
 from operator import attrgetter
 
-import pcapi.core.bookings.api as bookings_api
+from pcapi.core.bookings.models import Booking
+from pcapi.core.bookings.models import BookingCancellationReasons
 import pcapi.core.bookings.repository as bookings_repository
-from pcapi.core.bookings.repository import find_expiring_bookings
 from pcapi.domain.user_emails import send_expired_bookings_recap_email_to_beneficiary
 from pcapi.domain.user_emails import send_expired_bookings_recap_email_to_offerer
+from pcapi.models import db
 from pcapi.utils.logger import logger
 from pcapi.utils.mailing import send_raw_email
 
@@ -35,29 +36,47 @@ def handle_expired_bookings() -> None:
     logger.info("[handle_expired_bookings] End")
 
 
-def cancel_expired_bookings(batch_size: int = 100) -> None:
+def cancel_expired_bookings(batch_size: int = 500) -> None:
     logger.info("[cancel_expired_bookings] Start")
-    bookings_to_expire = find_expiring_bookings().all()
-    cancelled_bookings = []
-    errors = []
 
-    for batch in range(0, len(bookings_to_expire), batch_size):
-        batch_cancelled_bookings, batch_errors = bookings_api.cancel_expired_bookings(
-            bookings_to_expire[batch : batch + batch_size],
+    expiring_bookings_count = bookings_repository.find_expiring_bookings().count()
+    logger.info("[cancel_expired_bookings] %d expiring bookings to cancel", expiring_bookings_count)
+    if expiring_bookings_count == 0:
+        logger.info("[cancel_expired_bookings] End")
+        return
+
+    updated_total = 0
+    expiring_booking_ids = bookings_repository.find_expiring_bookings_ids().limit(batch_size).all()
+    max_id = expiring_booking_ids[-1][0]
+
+    # we commit here to make sure there is no unexpected objects in SQLA cache before the update,
+    # as we use synchronize_session=False
+    db.session.commit()
+
+    while expiring_booking_ids:
+        updated = (
+            Booking.query.filter(Booking.id <= max_id)
+            .filter(Booking.id.in_(expiring_booking_ids))
+            .update(
+                {"isCancelled": True, "cancellationReason": BookingCancellationReasons.EXPIRED},
+                synchronize_session=False,
+            )
         )
-        cancelled_bookings.extend(batch_cancelled_bookings)
-        if batch_errors:
-            errors.extend(batch_errors)
+        db.session.commit()
+
+        updated_total += updated
+        expiring_booking_ids = bookings_repository.find_expiring_bookings_ids().limit(batch_size).all()
+        if expiring_booking_ids:
+            max_id = expiring_booking_ids[-1][0]
+        logger.info(
+            "[cancel_expired_bookings] %d Bookings have been cancelled in this batch",
+            updated,
+        )
 
     logger.info(
-        "[cancel_expired_bookings] %d Bookings have been cancelled: %s",
-        len(cancelled_bookings),
-        cancelled_bookings,
+        "[cancel_expired_bookings] %d Bookings have been cancelled",
+        updated_total,
     )
-
-    if errors:
-        logger.exception("[cancel_expired_bookings] Encountered these validation errors: %s", errors)
-
     logger.info("[cancel_expired_bookings] End")
 
 

@@ -3,11 +3,13 @@ from datetime import timedelta
 import logging
 from unittest import mock
 
+from flask_sqlalchemy import get_debug_queries
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.offers.factories import ProductFactory
+from pcapi.core.users.factories import UserFactory
 from pcapi.models import offer_type
 from pcapi.repository import repository
 from pcapi.scripts.booking import handle_expired_bookings
@@ -106,6 +108,25 @@ class CancelExpiredBookingsTest:
         assert not old_audio_book_booking.isCancelled
         assert not old_audio_book_booking.cancellationDate
         assert not old_audio_book_booking.cancellationReason
+
+    def test_queries_performance(self, app) -> None:
+        with app.app_context():
+            now = datetime.utcnow()
+            two_months_ago = now - timedelta(days=60)
+            book = ProductFactory(type=str(offer_type.ThingType.LIVRE_EDITION))
+            user = UserFactory()
+            BookingFactory.create_batch(size=10, stock__offer__product=book, dateCreated=two_months_ago, user=user)
+        n_queries = (
+            1  # savepoint
+            + 1  # select count
+            + 1  # select initial ids
+            + 1  # release savepoint
+            + 1  # savepoint
+            + 4 * 4  # update, release savepoint, savepoint, select next ids
+        )
+        with app.app_context():
+            handle_expired_bookings.cancel_expired_bookings(batch_size=3)
+            assert len(get_debug_queries()) == n_queries
 
 
 @pytest.mark.usefixtures("db_session")

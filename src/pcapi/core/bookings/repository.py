@@ -150,6 +150,10 @@ def find_expiring_bookings() -> Query:
     )
 
 
+def find_expiring_bookings_ids() -> Query:
+    return find_expiring_bookings().order_by(Booking.id).with_entities(Booking.id)
+
+
 def find_soon_to_be_expiring_booking_ordered_by_user(given_date: date = None) -> Query:
     given_date = given_date or date.today()
     given_date = (
