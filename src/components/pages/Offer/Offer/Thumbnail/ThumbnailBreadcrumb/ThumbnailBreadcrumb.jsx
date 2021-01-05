@@ -1,19 +1,22 @@
+import PropTypes from 'prop-types'
 import React from 'react'
 
 import Breadcrumb, { STYLE_TYPE_TAB } from 'components/layout/Breadcrumb'
+import { IMPORT_TAB_ID, URL_TAB_ID } from 'components/pages/Offer/Offer/Thumbnail/_constants'
 
-const ThumbnailBreadcrumb = () => {
-  const activeStep = 'import'
+const ThumbnailBreadcrumb = ({ activeStep, changeTab }) => {
   const steps = [
     {
-      id: 'import',
+      id: IMPORT_TAB_ID,
       label: 'Importer',
-      url: '/',
+      onClick: changeTab(IMPORT_TAB_ID),
+      url: '#',
     },
     {
-      id: 'use_a_url',
+      id: URL_TAB_ID,
       label: 'Utiliser une URL',
-      url: '/',
+      onClick: changeTab(URL_TAB_ID),
+      url: '#',
     },
   ]
 
@@ -24,6 +27,11 @@ const ThumbnailBreadcrumb = () => {
       styleType={STYLE_TYPE_TAB}
     />
   )
+}
+
+ThumbnailBreadcrumb.propTypes = {
+  activeStep: PropTypes.string.isRequired,
+  changeTab: PropTypes.func.isRequired,
 }
 
 export default ThumbnailBreadcrumb

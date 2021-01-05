@@ -27,10 +27,15 @@ const Breadcrumb = props => {
               key={`breadcrumb-step-${step.id}`}
             >
               {step.url ? (
-                <Link to={step.url}>
+                <Link
+                  onClick={step.onClick ? step.onClick : null}
+                  to={step.url}
+                >
                   {step.label}
                 </Link>
-              ) : step.label}
+              ) : (
+                step.label
+              )}
 
               <span className="active-underline" />
             </span>
@@ -57,6 +62,7 @@ Breadcrumb.propTypes = {
     PropTypes.shape({
       id: PropTypes.string.isRequired,
       label: PropTypes.string.isRequired,
+      onClick: PropTypes.func,
       url: PropTypes.string,
     })
   ).isRequired,

@@ -1,6 +1,11 @@
 .thumbnail-dialog {
+  min-height: rem(510px);
   position: relative;
   text-align: center;
+
+  svg {
+    width: 100%;
+  }
 }
 
 .tnd-close {
@@ -22,6 +27,10 @@
 
 .tnf-form {
   margin-top: rem(48px);
+
+  .input-text {
+    text-align: left;
+  }
 }
 
 .tnf-info {
@@ -32,7 +41,8 @@
 
 .tnf-file-label {
   cursor: pointer;
-  width: rem(366px);
+  margin-bottom: rem(16px);
+  padding: 0 rem(48px);
 
   &:focus-within {
     @include primary-focus();
@@ -41,10 +51,16 @@
 
 .tnf-file-input {
   height: 0;
+  width: 0;
 }
 
 .tnf-mandatory {
   @include caption();
 
   color: $grey-dark;
+}
+
+.tnf-url-button {
+  margin-top: rem(36px);
+  width: rem(334px);
 }

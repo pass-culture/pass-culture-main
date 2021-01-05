@@ -8,7 +8,6 @@ import { MemoryRouter, Route } from 'react-router'
 import OfferLayoutContainer from 'components/pages/Offer/Offer/OfferLayoutContainer'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
-import { queryByTextTrimHtml } from 'utils/testHelpers'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   getValidatedOfferers: jest.fn(),
@@ -91,15 +90,57 @@ describe('thumbnail edition', () => {
             selector: 'p',
           })
         ).toBeInTheDocument()
-        const input = screen.getByLabelText('Importer une image depuis l’ordinateur')
-        expect(input).toHaveAttribute('type', 'file')
-        expect(input).toHaveAttribute('accept', 'image/png, image/jpeg')
+        const fileInput = screen.getByLabelText('Importer une image depuis l’ordinateur')
+        expect(fileInput).toHaveAttribute('type', 'file')
+        expect(fileInput).toHaveAttribute('accept', 'image/png, image/jpeg')
         expect(
-          queryByTextTrimHtml(
-            screen,
-            'Format supportés : JPG, PNG Le poids du fichier de ne doit pas dépasser 10 Mo La taille de l’image doit être supérieure à 400 x 400px'
-          )
+          screen.getByText('Formats supportés : JPG, PNG', {
+            selector: 'li',
+          })
         ).toBeInTheDocument()
+        expect(
+          screen.getByText('Le poids du fichier ne doit pas dépasser 10 Mo', {
+            selector: 'li',
+          })
+        ).toBeInTheDocument()
+        expect(
+          screen.getByText('La taille de l’image doit être supérieure à 400 x 400px', {
+            selector: 'li',
+          })
+        ).toBeInTheDocument()
+      })
+    })
+
+    describe('when the user is on url tab', () => {
+      it('should display information for importing', async () => {
+        // Given
+        await renderThumbnail({}, store)
+
+        // When
+        fireEvent.click(screen.getByText('Utiliser une URL'))
+
+        // Then
+        expect(
+          screen.getByText('Utilisez de préférence un visuel en orientation portrait', {
+            selector: 'p',
+          })
+        ).toBeInTheDocument()
+        const urlInput = screen.getByLabelText('Url de l’image')
+        expect(urlInput).toHaveAttribute('type', 'url')
+        expect(urlInput).toHaveAttribute('placeholder', 'Ex : http://...')
+        expect(screen.getByText('Valider', { selector: 'button' })).toHaveAttribute('disabled')
+      })
+
+      it('should enable submit button if there is a string', async () => {
+        // Given
+        await renderThumbnail({}, store)
+        fireEvent.click(screen.getByText('Utiliser une URL'))
+
+        // When
+        fireEvent.change(screen.getByLabelText('Url de l’image'), { target: { value: 'MEFA' } })
+
+        // Then
+        expect(screen.getByText('Valider', { selector: 'button' })).not.toHaveAttribute('disabled')
       })
     })
   })

@@ -1,18 +1,31 @@
 import PropTypes from 'prop-types'
-import React, { useCallback, useRef } from 'react'
+import React, { useCallback, useRef, useState } from 'react'
 
 import { DialogBox } from 'components/layout/DialogBox/DialogBox'
+import { IMPORT_TAB_ID } from 'components/pages/Offer/Offer/Thumbnail/_constants'
 import { ReactComponent as CloseModalIcon } from 'components/pages/Offer/Offer/Thumbnail/assets/close-modal.svg'
 import ThumbnailBreadcrumb from 'components/pages/Offer/Offer/Thumbnail/ThumbnailBreadcrumb/ThumbnailBreadcrumb'
 import ThumbnailFile from 'components/pages/Offer/Offer/Thumbnail/ThumbnailFile/ThumbnailFile'
+import ThumbnailUrl from 'components/pages/Offer/Offer/Thumbnail/ThumbnailUrl/ThumbnailUrl'
 
 const ThumbnailDialog = ({ setIsModalOpened }) => {
   const fileInputRef = useRef()
   const DIALOG_LABEL_ID = 'label_for_aria'
 
+  const [tabId, setTabId] = useState(IMPORT_TAB_ID)
+  const [activeStep, setActiveStep] = useState(IMPORT_TAB_ID)
+
   const closeModal = useCallback(() => {
     setIsModalOpened(false)
   }, [setIsModalOpened])
+
+  const changeTab = useCallback(
+    tabId => () => {
+      setTabId(tabId)
+      setActiveStep(tabId)
+    },
+    []
+  )
 
   return (
     <DialogBox
@@ -37,8 +50,12 @@ const ThumbnailDialog = ({ setIsModalOpened }) => {
           {'Ajouter une image'}
         </h1>
       </header>
-      <ThumbnailBreadcrumb />
-      <ThumbnailFile ref={fileInputRef} />
+      <ThumbnailBreadcrumb
+        activeStep={activeStep}
+        changeTab={changeTab}
+        ref={fileInputRef}
+      />
+      {tabId === IMPORT_TAB_ID ? <ThumbnailFile /> : <ThumbnailUrl />}
       <hr className="tnd-hr" />
     </DialogBox>
   )

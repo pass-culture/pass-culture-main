@@ -1,8 +1,8 @@
-import React, { forwardRef } from 'react'
+import React from 'react'
 
 import { ReactComponent as ThumbnailSampleIcon } from 'components/pages/Offer/Offer/Thumbnail/assets/thumbnail-sample.svg'
 
-const ThumbnailFile = forwardRef(function ThumbnailFile(props, ref) {
+const ThumbnailFile = () => {
   return (
     <form className="tnf-form">
       <ThumbnailSampleIcon />
@@ -14,19 +14,22 @@ const ThumbnailFile = forwardRef(function ThumbnailFile(props, ref) {
         <input
           accept="image/png, image/jpeg"
           className="tnf-file-input"
-          ref={ref}
           type="file"
         />
       </label>
-      <p className="tnf-mandatory">
-        {'Format supportés : JPG, PNG '}
-        <br />
-        {'Le poids du fichier de ne doit pas dépasser 10 Mo '}
-        <br />
-        {'La taille de l’image doit être supérieure à 400 x 400px '}
-      </p>
+      <ul className="tnf-mandatory">
+        <li>
+          {'Formats supportés : JPG, PNG '}
+        </li>
+        <li>
+          {'Le poids du fichier ne doit pas dépasser 10 Mo '}
+        </li>
+        <li>
+          {'La taille de l’image doit être supérieure à 400 x 400px '}
+        </li>
+      </ul>
     </form>
   )
-})
+}
 
 export default ThumbnailFile
