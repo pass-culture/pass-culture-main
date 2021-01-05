@@ -6,89 +6,86 @@
     height: rem(40px);
     margin-top: rem(12px);
 
-    .field-date {
-      align-items: center;
-      background: url(/icons/ico-calendar.svg) no-repeat 90% center;
-      display: flex;
-      height: rem(40px);
-
-      &:focus-within {
-        border-color: $primary;
-      }
-
-      &.disabled {
-        background-image: url(/icons/ico-calendar-disabled.svg);
-      }
-    }
-
-    .period-filter-begin-picker:focus-within {
-      .field-date-begin {
-        border-color: $primary;
-      }
-    }
-
-    .period-filter-end-picker:focus-within {
-      .field-date-end {
-        border-color: $primary;
-      }
-    }
-
     button {
       outline: none;
     }
 
-    .field-date {
+    &.disabled {
       box-shadow: none;
     }
+  }
 
-    .period-filter-input {
-      @include body();
+  .period-filter-inputs .field-date {
+    align-items: center;
+    background: url(/icons/ico-calendar.svg) no-repeat 90% center;
+    box-shadow: none;
+    display: flex;
+    height: rem(40px);
 
-      background: none;
-      border: 0;
-      outline: none;
-      padding-left: rem(10px);
-      width: rem(135px);
-
-      &:disabled {
-        color: $grey-dark;
-        cursor: initial;
-        opacity: 1;
-
-        &::placeholder {
-          color: $grey-dark;
-        }
-      }
-    }
-
-    .field-date-begin {
-      border-bottom-right-radius: 0;
-      border-right: none;
-      border-top-right-radius: 0;
-      height: rem(40px);
-      padding: 0 1px;
-
-      &:focus-within {
-        border-color: $primary;
-        padding: 0;
-      }
-    }
-
-    .field-date-end {
-      border-bottom-left-radius: 0;
-      border-left: none;
-      border-top-left-radius: 0;
-      height: rem(40px);
-      padding: 0 1px;
-
-      &:focus-within {
-        border-color: $primary;
-        padding: 0;
-      }
+    &:focus-within {
+      border-color: $primary;
     }
 
     &.disabled {
-      box-shadow: none;
+      background-image: url(/icons/ico-calendar-disabled.svg);
+    }
+  }
+
+  .period-filter-inputs .field-date-begin {
+    border-bottom-right-radius: 0;
+    border-right: none;
+    border-top-right-radius: 0;
+    height: rem(40px);
+    padding: 0 1px;
+
+    &:focus-within {
+      border-color: $primary;
+      padding: 0;
+    }
+  }
+
+  .period-filter-inputs .field-date-end {
+    border-bottom-left-radius: 0;
+    border-left: none;
+    border-top-left-radius: 0;
+    height: rem(40px);
+    padding: 0 1px;
+
+    &:focus-within {
+      border-color: $primary;
+      padding: 0;
+    }
+  }
+
+  .period-filter-begin-picker:focus-within {
+    .field-date-begin {
+      border-color: $primary;
+    }
+  }
+
+  .period-filter-end-picker:focus-within {
+    .field-date-end {
+      border-color: $primary;
+    }
+  }
+
+  .period-filter-input {
+    @include body();
+
+    background: none;
+    border: 0;
+    outline: none;
+    padding-left: rem(10px);
+    width: rem(135px);
+
+    &:disabled {
+      color: $grey-dark;
+      cursor: initial;
+      opacity: 1;
+
+      &::placeholder {
+        color: $grey-dark;
+      }
     }
   }
 }

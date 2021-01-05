@@ -12,8 +12,8 @@ describe('components | PeriodSelector', () => {
       changePeriodEndingDateValue: jest.fn(),
       isDisabled: false,
       label: 'Fake Label',
-      periodBeginningDate: '',
-      periodEndingDate: '',
+      periodBeginningDate: undefined,
+      periodEndingDate: undefined,
     }
   })
 
@@ -45,7 +45,7 @@ describe('components | PeriodSelector', () => {
 
   it('should not allow to select beginning date superior to ending date value', async () => {
     // Given
-    const selectedDate = '2020-04-03'
+    const selectedDate = moment('2020-04-03')
     props.periodEndingDate = selectedDate
     const wrapper = shallow(<PeriodSelector {...props} />)
 
@@ -58,7 +58,7 @@ describe('components | PeriodSelector', () => {
 
   it('should not allow to select ending date inferior to beginning date value', async () => {
     // Given
-    const selectedDate = '2020-02-18'
+    const selectedDate = moment('2020-02-18')
     props.periodBeginningDate = selectedDate
     const wrapper = shallow(<PeriodSelector {...props} />)
 

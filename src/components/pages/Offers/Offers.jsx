@@ -328,10 +328,13 @@ class Offers extends PureComponent {
 
   renderSearchFilters = () => {
     const { searchFilters, typeOptions, venueOptions, offerer } = this.state
-    const formattedPeriodBeginningDate =
-      searchFilters.periodBeginningDate && moment(searchFilters.periodBeginningDate)
-    const formattedPeriodEndingDate =
-      searchFilters.periodEndingDate && moment(searchFilters.periodEndingDate)
+    const formattedTodayDate = moment(new Date().toISOString())
+    const formattedPeriodBeginningDate = searchFilters.periodBeginningDate
+      ? moment(searchFilters.periodBeginningDate)
+      : undefined
+    const formattedPeriodEndingDate = searchFilters.periodEndingDate
+      ? moment(searchFilters.periodEndingDate)
+      : undefined
 
     return (
       <Fragment>
@@ -391,6 +394,7 @@ class Offers extends PureComponent {
               minDateEnding={formattedPeriodBeginningDate}
               periodBeginningDate={formattedPeriodBeginningDate}
               periodEndingDate={formattedPeriodEndingDate}
+              todayDate={formattedTodayDate}
             />
           </div>
           <div className="search-separator">

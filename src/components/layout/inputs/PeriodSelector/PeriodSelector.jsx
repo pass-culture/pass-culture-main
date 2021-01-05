@@ -13,6 +13,7 @@ const PeriodSelector = ({
   minDateBeginning,
   periodBeginningDate,
   periodEndingDate,
+  todayDate,
 }) => {
   return (
     <div className="period-filter">
@@ -39,6 +40,7 @@ const PeriodSelector = ({
             maxDate={periodEndingDate}
             minDate={minDateBeginning}
             onChange={changePeriodBeginningDateValue}
+            openToDate={periodBeginningDate ? periodBeginningDate : todayDate}
             placeholderText="JJ/MM/AAAA"
             selected={periodBeginningDate}
           />
@@ -57,6 +59,7 @@ const PeriodSelector = ({
             maxDate={maxDateEnding}
             minDate={periodBeginningDate}
             onChange={changePeriodEndingDateValue}
+            openToDate={periodEndingDate ? periodEndingDate : todayDate}
             placeholderText="JJ/MM/AAAA"
             selected={periodEndingDate}
           />
@@ -67,8 +70,10 @@ const PeriodSelector = ({
 }
 
 PeriodSelector.defaultProps = {
-  maxDateEnding: '',
-  minDateBeginning: '',
+  maxDateEnding: undefined,
+  minDateBeginning: undefined,
+  periodBeginningDate: undefined,
+  periodEndingDate: undefined,
 }
 
 PeriodSelector.propTypes = {
@@ -78,8 +83,9 @@ PeriodSelector.propTypes = {
   label: PropTypes.string.isRequired,
   maxDateEnding: PropTypes.string,
   minDateBeginning: PropTypes.string,
-  periodBeginningDate: PropTypes.oneOfType([PropTypes.shape(), PropTypes.string]).isRequired,
-  periodEndingDate: PropTypes.oneOfType([PropTypes.shape(), PropTypes.string]).isRequired,
+  periodBeginningDate: PropTypes.oneOfType([PropTypes.shape(), PropTypes.string]),
+  periodEndingDate: PropTypes.oneOfType([PropTypes.shape(), PropTypes.string]),
+  todayDate: PropTypes.shape().isRequired,
 }
 
 export default PeriodSelector

@@ -86,6 +86,7 @@ describe('src | components | pages | Offers | Offers', () => {
   ]
 
   beforeEach(() => {
+    jest.spyOn(Date.prototype, 'toISOString').mockImplementation(() => '2020-12-15T12:00:00Z')
     change = jest.fn()
     parse = jest.fn().mockReturnValue({})
     currentUser = { id: 'EY', isAdmin: false, name: 'Current User', publicName: 'USER' }
@@ -879,6 +880,54 @@ describe('src | components | pages | Offers | Offers', () => {
         status: DEFAULT_SEARCH_FILTERS.status,
         periodBeginningDate: DEFAULT_SEARCH_FILTERS.periodBeginningDate,
         periodEndingDate: DEFAULT_SEARCH_FILTERS.periodEndingDate,
+      })
+    })
+
+    it('should load offers with selected period beginning date', async () => {
+      // given
+      await renderOffers(props, store)
+
+      fireEvent.click(screen.getAllByPlaceholderText('JJ/MM/AAAA')[0])
+      fireEvent.click(screen.getByLabelText('day-25'))
+
+      // when
+      fireEvent.click(screen.getByText('Lancer la recherche'))
+
+      // then
+      expect(props.loadOffers).toHaveBeenLastCalledWith({
+        venueId: DEFAULT_SEARCH_FILTERS.venueId,
+        page: DEFAULT_PAGE,
+        name: DEFAULT_SEARCH_FILTERS.name,
+        typeId: DEFAULT_SEARCH_FILTERS.typeId,
+        offererId: DEFAULT_SEARCH_FILTERS.offererId,
+        status: DEFAULT_SEARCH_FILTERS.status,
+        creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
+        periodBeginningDate: '2020-12-25T00:00:00+01:00',
+        periodEndingDate: DEFAULT_SEARCH_FILTERS.periodEndingDate,
+      })
+    })
+
+    it('should load offers with selected period ending date', async () => {
+      // given
+      await renderOffers(props, store)
+
+      fireEvent.click(screen.getAllByPlaceholderText('JJ/MM/AAAA')[1])
+      fireEvent.click(screen.getByLabelText('day-27'))
+
+      // when
+      fireEvent.click(screen.getByText('Lancer la recherche'))
+
+      // then
+      expect(props.loadOffers).toHaveBeenLastCalledWith({
+        venueId: DEFAULT_SEARCH_FILTERS.venueId,
+        page: DEFAULT_PAGE,
+        name: DEFAULT_SEARCH_FILTERS.name,
+        typeId: DEFAULT_SEARCH_FILTERS.typeId,
+        offererId: DEFAULT_SEARCH_FILTERS.offererId,
+        status: DEFAULT_SEARCH_FILTERS.status,
+        creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
+        periodBeginningDate: DEFAULT_SEARCH_FILTERS.periodBeginningDate,
+        periodEndingDate: '2020-12-27T23:59:59+01:00',
       })
     })
   })
