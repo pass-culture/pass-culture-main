@@ -1,9 +1,9 @@
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.domain.ts_vector import create_filter_matching_all_keywords_in_any_model
 from pcapi.domain.ts_vector import create_get_filter_matching_ts_query_in_any_model
 from pcapi.models import Offer
 from pcapi.models import Offerer
 from pcapi.models import UserOfferer
-from pcapi.models import UserSQLEntity
 from pcapi.models import VenueSQLEntity
 
 

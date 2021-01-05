@@ -3,9 +3,9 @@ from datetime import timedelta
 import re
 from typing import Dict
 
+from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import hash_password
 from pcapi.models import ApiErrors
-from pcapi.models import UserSQLEntity
-from pcapi.models.user_sql_entity import hash_password
 from pcapi.repository import repository
 from pcapi.utils.token import random_token
 

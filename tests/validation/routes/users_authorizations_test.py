@@ -1,12 +1,12 @@
 from flask_login import AnonymousUserMixin
 import pytest
 
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.models import ApiErrors
 from pcapi.models import ApiKey
-from pcapi.models import UserSQLEntity
 from pcapi.repository import repository
 from pcapi.utils.token import random_token
 from pcapi.validation.routes.users_authorizations import check_api_key_allows_to_validate_booking

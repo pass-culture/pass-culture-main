@@ -15,11 +15,11 @@ from pcapi.core.users.api import create_id_check_token
 from pcapi.core.users.api import generate_and_save_token
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.core.users.repository import get_user_with_valid_token
 from pcapi.core.users.utils import decode_jwt_token
 from pcapi.core.users.utils import encode_jwt_payload
 from pcapi.models.user_session import UserSession
-from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.repository import repository
 
 from tests.conftest import TestClient

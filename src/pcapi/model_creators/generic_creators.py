@@ -11,6 +11,7 @@ from shapely.geometry import Polygon
 from pcapi import settings
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.offers.models import Mediation
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.domain.payments import PaymentDetails
 from pcapi.domain.price_rule import PriceRule
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
@@ -39,7 +40,6 @@ from pcapi.models import RightsType
 from pcapi.models import Stock
 from pcapi.models import ThingType
 from pcapi.models import UserOfferer
-from pcapi.models import UserSQLEntity
 from pcapi.models import VenueProvider
 from pcapi.models import VenueSQLEntity
 from pcapi.models.allocine_venue_provider import AllocineVenueProvider

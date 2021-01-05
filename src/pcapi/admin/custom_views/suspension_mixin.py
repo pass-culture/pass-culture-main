@@ -7,13 +7,12 @@ from flask_admin.form import SecureForm
 from flask_login import current_user
 from markupsafe import Markup
 from werkzeug.exceptions import Forbidden
-import wtforms
 import wtforms.validators
 
 from pcapi import settings
 import pcapi.core.users.api as users_api
 import pcapi.core.users.constants as users_constants
-from pcapi.models.user_sql_entity import UserSQLEntity
+from pcapi.core.users.models import UserSQLEntity
 
 
 class SuspensionForm(SecureForm):

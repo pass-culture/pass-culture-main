@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import List
 from typing import Optional
 
 from pydantic import BaseModel
@@ -39,25 +40,10 @@ class ChangeBeneficiaryEmailBody(BaseModel):
     token: str
 
 
-class AllExpenses(BaseModel):
-    actual: float
+class Expense(BaseModel):
+    domain: str
+    current: float
     max: float
-
-
-class DigitalExpenses(BaseModel):
-    actual: float
-    max: float
-
-
-class PhysicalExpenses(BaseModel):
-    actual: float
-    max: float
-
-
-class Expenses(BaseModel):
-    all: AllExpenses
-    digital: DigitalExpenses
-    physical: PhysicalExpenses
 
 
 class BeneficiaryAccountResponse(BaseModel):
@@ -69,7 +55,7 @@ class BeneficiaryAccountResponse(BaseModel):
     dateOfBirth: datetime
     departementCode: str
     email: str
-    expenses: Expenses
+    expenses: List[Expense]
     firstName: str
     hasAllowedRecommendations: bool
     hasPhysicalVenues: bool

@@ -12,9 +12,9 @@ from wtforms.validators import Length
 from wtforms.validators import Optional
 
 from pcapi.admin.base_configuration import BaseAdminView
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.domain.password import random_password
 from pcapi.models import UserOfferer
-from pcapi.models.user_sql_entity import UserSQLEntity
 
 
 class PartnerUserView(BaseAdminView):

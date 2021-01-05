@@ -1,5 +1,6 @@
 from pcapi import settings
 from pcapi.core.offers.models import Mediation
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.local_providers.install import install_local_providers
 from pcapi.models import AllocinePivot
 from pcapi.models import AllocineVenueProviderPriceRule
@@ -24,7 +25,6 @@ from pcapi.models import Product
 from pcapi.models import Provider
 from pcapi.models import Stock
 from pcapi.models import UserOfferer
-from pcapi.models import UserSQLEntity
 from pcapi.models import UserSession
 from pcapi.models import VenueProvider
 from pcapi.models import VenueSQLEntity

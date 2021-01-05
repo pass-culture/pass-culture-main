@@ -2,11 +2,11 @@ from datetime import datetime
 from typing import List
 from typing import Optional
 
-from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.repository.user_queries import find_user_by_email
 
 from . import exceptions
 from . import models
+from .models import UserSQLEntity
 
 
 def _check_user_and_credentials(user: UserSQLEntity, password: str) -> None:

@@ -1,4 +1,4 @@
-from pcapi.models.user_sql_entity import UserSQLEntity
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.repository.user_queries import keep_only_webapp_users
 from pcapi.sandboxes.scripts.utils.helpers import get_beneficiary_helper
 

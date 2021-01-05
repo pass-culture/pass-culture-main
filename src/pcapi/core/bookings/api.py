@@ -8,7 +8,6 @@ from flask import current_app as app
 import pytz
 import qrcode
 import qrcode.image.svg
-from sqlalchemy.orm import joinedload
 
 from pcapi.connectors import redis
 from pcapi.core.bookings import conf
@@ -16,9 +15,9 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.repository import generate_booking_token
 from pcapi.core.offers.models import Stock
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.infrastructure.services.notification.mailjet_notification_service import MailjetNotificationService
 from pcapi.models.feature import FeatureToggle
-from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.repository import feature_queries
 from pcapi.repository import repository
 from pcapi.utils.mailing import send_raw_email
@@ -182,32 +181,3 @@ def update_confirmation_dates(
         booking.confirmationDate = compute_confirmation_date(beginning_datetime, booking.dateCreated)
     repository.save(*bookings)
     return bookings
-
-
-def get_expenses_limits(user: UserSQLEntity, version: int) -> typing.Iterable:
-    config = conf.LIMIT_CONFIGURATIONS[version]
-    bookings = (
-        Booking.query.filter_by(user=user)
-        .filter_by(isCancelled=False)
-        .options(joinedload(Booking.stock).joinedload(Stock.offer))
-        .all()
-    )
-    capped_digital_bookings = [booking for booking in bookings if config.digital_cap_applies(booking.stock.offer)]
-    capped_physical_bookings = [booking for booking in bookings if config.physical_cap_applies(booking.stock.offer)]
-    return (
-        {
-            "domain": "all",
-            "current": sum(booking.total_amount for booking in bookings),
-            "max": config.TOTAL_CAP,
-        },
-        {
-            "domain": "digital",
-            "current": sum(booking.total_amount for booking in capped_digital_bookings),
-            "max": config.DIGITAL_CAP,
-        },
-        {
-            "domain": "physical",
-            "current": sum(booking.total_amount for booking in capped_physical_bookings),
-            "max": config.PHYSICAL_CAP,
-        },
-    )

@@ -10,11 +10,11 @@ from sqlalchemy import Float
 from sqlalchemy import Integer
 from sqlalchemy.dialects.postgresql import UUID
 
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.model_creators.generic_creators import create_stock
 from pcapi.models import Offer
 from pcapi.models import PcObject
 from pcapi.models import ThingType
-from pcapi.models import UserSQLEntity
 from pcapi.models.api_errors import DateTimeCastError
 from pcapi.models.api_errors import DecimalCastError
 from pcapi.models.api_errors import UuidCastError

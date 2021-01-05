@@ -15,6 +15,7 @@ from sqlalchemy.util._collections import AbstractKeyedTuple
 
 from pcapi.core.bookings import conf
 from pcapi.core.bookings.models import BookingCancellationReasons
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.domain.booking_recap.booking_recap import BookBookingRecap
 from pcapi.domain.booking_recap.booking_recap import BookingRecap
 from pcapi.domain.booking_recap.booking_recap import EventBookingRecap
@@ -33,7 +34,6 @@ from pcapi.models.offer_type import ThingType
 from pcapi.models.offerer import Offerer
 from pcapi.models.payment import Payment
 from pcapi.models.payment_status import TransactionStatus
-from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.utils.date import get_department_timezone
 from pcapi.utils.token import random_token
 

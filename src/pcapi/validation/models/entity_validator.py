@@ -1,3 +1,4 @@
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.models import ApiErrors
 from pcapi.models import BankInformation
 from pcapi.models import HasAddressMixin
@@ -5,7 +6,6 @@ from pcapi.models import Offer
 from pcapi.models import Offerer
 from pcapi.models import Product
 from pcapi.models import Stock
-from pcapi.models import UserSQLEntity
 from pcapi.models import VenueSQLEntity
 from pcapi.models.db import Model
 from pcapi.validation.models import bank_information

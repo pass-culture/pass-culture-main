@@ -6,6 +6,7 @@ from pcapi import settings
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.users import models as users_models
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
 from pcapi.emails import beneficiary_activation
 from pcapi.emails.beneficiary_booking_cancellation import make_beneficiary_booking_cancellation_email_data
@@ -41,7 +42,6 @@ from pcapi.emails.user_reset_password import retrieve_data_for_reset_password_na
 from pcapi.emails.user_reset_password import retrieve_data_for_reset_password_user_email
 from pcapi.models import Offerer
 from pcapi.models import UserOfferer
-from pcapi.models import UserSQLEntity
 from pcapi.utils.mailing import compute_email_html_part_and_recipients
 from pcapi.utils.mailing import make_offerer_driven_cancellation_email_for_offerer
 from pcapi.utils.mailing import make_user_validation_email

@@ -8,6 +8,7 @@ from typing import Iterable
 from typing import List
 from typing import Optional
 
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.models import Booking
 from pcapi.models import Criterion
 from pcapi.models import EventType
@@ -17,7 +18,6 @@ from pcapi.models import Product
 from pcapi.models import Provider
 from pcapi.models import Stock
 from pcapi.models import ThingType
-from pcapi.models import UserSQLEntity
 from pcapi.models import VenueSQLEntity
 from pcapi.utils.token import random_token
 

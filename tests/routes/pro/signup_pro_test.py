@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
@@ -9,7 +10,6 @@ from pcapi.model_creators.generic_creators import create_venue_type
 from pcapi.models.offerer import Offerer
 from pcapi.models.user_offerer import RightsType
 from pcapi.models.user_offerer import UserOfferer
-from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.repository import repository
 from pcapi.routes.pro.signup import _set_offerer_departement_code
 

@@ -1,4 +1,4 @@
-from pcapi.models import UserSQLEntity
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.models.deposit import DEPOSIT_DEFAULT_AMOUNT
 from pcapi.models.deposit import Deposit
 

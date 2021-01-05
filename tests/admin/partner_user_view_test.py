@@ -1,7 +1,7 @@
 from wtforms import Form
 
 from pcapi.admin.custom_views.partner_user_view import PartnerUserView
-from pcapi.models import UserSQLEntity
+from pcapi.core.users.models import UserSQLEntity
 
 
 class PartnerUserViewTest:

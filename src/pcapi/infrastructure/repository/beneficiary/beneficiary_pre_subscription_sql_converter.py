@@ -1,11 +1,11 @@
 from pcapi.core.payments import api as payments_api
 from pcapi.core.users import api as users_api
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
 from pcapi.domain.password import generate_reset_token
 from pcapi.domain.password import random_password
 from pcapi.models import BeneficiaryImport
 from pcapi.models import ImportStatus
-from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.scripts.beneficiary import THIRTY_DAYS_IN_HOURS
 
 

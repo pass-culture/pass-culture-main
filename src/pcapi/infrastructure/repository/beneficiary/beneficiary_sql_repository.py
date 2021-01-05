@@ -1,6 +1,6 @@
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
 from pcapi.infrastructure.repository.beneficiary import beneficiary_pre_subscription_sql_converter
-from pcapi.models import UserSQLEntity
 from pcapi.repository import repository
 
 

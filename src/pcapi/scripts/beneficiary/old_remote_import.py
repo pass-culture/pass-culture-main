@@ -6,12 +6,12 @@ from typing import List
 
 from pcapi import settings
 from pcapi.connectors.api_demarches_simplifiees import get_application_details
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.domain.demarches_simplifiees import get_closed_application_ids_for_demarche_simplifiee
 from pcapi.domain.user_activation import create_beneficiary_from_application
 from pcapi.domain.user_emails import send_activation_email
 from pcapi.models import ApiErrors
 from pcapi.models import ImportStatus
-from pcapi.models import UserSQLEntity
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.repository import repository
 from pcapi.repository.beneficiary_import_queries import find_applications_ids_to_retry

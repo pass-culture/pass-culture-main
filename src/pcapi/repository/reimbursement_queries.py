@@ -7,9 +7,9 @@ from sqlalchemy.orm import aliased
 from pcapi.core.bookings.models import Booking
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.models import Offerer
 from pcapi.models import PaymentStatus
-from pcapi.models import UserSQLEntity
 from pcapi.models import VenueSQLEntity
 from pcapi.models.payment import Payment
 

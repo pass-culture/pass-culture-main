@@ -8,8 +8,8 @@ from flask_login import login_user
 
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import repository as users_repo
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.repository.user_session_queries import delete_user_session
 from pcapi.repository.user_session_queries import existing_user_session
 from pcapi.repository.user_session_queries import register_user_session

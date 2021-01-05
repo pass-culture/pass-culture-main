@@ -1,10 +1,10 @@
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
 from pcapi.models import ThingType
-from pcapi.models import UserSQLEntity
 from pcapi.repository import repository
 from pcapi.utils.logger import logger
 

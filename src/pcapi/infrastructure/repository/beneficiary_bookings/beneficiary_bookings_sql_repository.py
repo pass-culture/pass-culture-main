@@ -1,6 +1,7 @@
 from typing import List
 
 from pcapi.core.offers.models import Mediation
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.domain.beneficiary_bookings.beneficiary_booking import BeneficiaryBooking
 from pcapi.domain.beneficiary_bookings.beneficiary_bookings_repository import BeneficiaryBookingsRepository
 from pcapi.domain.beneficiary_bookings.beneficiary_bookings_with_stocks import BeneficiaryBookingsWithStocks
@@ -10,7 +11,6 @@ from pcapi.models import Booking
 from pcapi.models import Offer
 from pcapi.models import Product
 from pcapi.models import Stock
-from pcapi.models import UserSQLEntity
 from pcapi.models import VenueSQLEntity
 
 

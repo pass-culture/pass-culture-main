@@ -3,6 +3,7 @@ from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import Token
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.models.allocine_pivot import AllocinePivot
 from pcapi.models.allocine_venue_provider import AllocineVenueProvider
 from pcapi.models.allocine_venue_provider_price_rule import AllocineVenueProviderPriceRule
@@ -41,7 +42,6 @@ from pcapi.models.provider import Provider
 from pcapi.models.user_offerer import RightsType
 from pcapi.models.user_offerer import UserOfferer
 from pcapi.models.user_session import UserSession
-from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.models.venue_label_sql_entity import VenueLabelSQLEntity
 from pcapi.models.venue_provider import VenueProvider
 from pcapi.models.venue_sql_entity import VenueSQLEntity

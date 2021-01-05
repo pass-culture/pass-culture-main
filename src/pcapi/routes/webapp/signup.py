@@ -5,9 +5,9 @@ from flask import request
 from pcapi import settings
 from pcapi.connectors.google_spreadsheet import get_authorized_emails_and_dept_codes
 from pcapi.core.payments import api as payments_api
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.flask_app import private_api
 from pcapi.models import ApiErrors
-from pcapi.models import UserSQLEntity
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.routes.serialization import as_dict

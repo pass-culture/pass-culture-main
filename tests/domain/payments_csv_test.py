@@ -4,7 +4,7 @@ from decimal import Decimal
 from pcapi.domain.payments import generate_payment_details_csv
 from pcapi.domain.payments import generate_wallet_balances_csv
 from pcapi.model_creators.generic_creators import create_payment_details
-from pcapi.models.user_sql_entity import WalletBalance
+from pcapi.models.wallet_balance import WalletBalance
 
 
 class PaymentDetailsCSVTest:

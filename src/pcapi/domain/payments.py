@@ -22,7 +22,7 @@ from pcapi.domain.reimbursement import BookingReimbursement
 from pcapi.models import PaymentMessage
 from pcapi.models.payment import Payment
 from pcapi.models.payment_status import TransactionStatus
-from pcapi.models.user_sql_entity import WalletBalance
+from pcapi.models.wallet_balance import WalletBalance
 from pcapi.utils.human_ids import humanize
 
 

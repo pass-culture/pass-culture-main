@@ -1,4 +1,4 @@
-from pcapi.models.user_sql_entity import UserSQLEntity
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.utils.logger import logger
 
 

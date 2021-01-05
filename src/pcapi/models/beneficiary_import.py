@@ -11,12 +11,12 @@ from sqlalchemy import desc
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.models.db import Model
 from pcapi.models.db import db
 from pcapi.models.pc_object import PcObject
-from pcapi.models.user_sql_entity import UserSQLEntity
 
 
 class BeneficiaryImportSources(Enum):

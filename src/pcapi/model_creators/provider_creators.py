@@ -19,6 +19,7 @@ SAVED_COUNTS = {}
 
 
 def save_counts():
+    print(pcapi.models.__all__)
     for model_name in pcapi.models.__all__:
         model = getattr(pcapi.models, model_name)
         if isclass(model) and issubclass(model, PcObject) and model_name != "PcObject":

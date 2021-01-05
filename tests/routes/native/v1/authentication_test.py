@@ -8,7 +8,7 @@ import pytest
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
-from pcapi.models.user_sql_entity import hash_password
+from pcapi.core.users.models import hash_password
 from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_id
 from pcapi.utils.token import random_token

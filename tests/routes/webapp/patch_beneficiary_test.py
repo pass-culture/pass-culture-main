@@ -1,7 +1,7 @@
 import pytest
 
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.model_creators.generic_creators import create_user
-from pcapi.models import UserSQLEntity
 from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
 

@@ -4,7 +4,7 @@ from flask_jwt_extended.utils import create_access_token
 import pytest
 
 from pcapi.core.users import factories as users_factories
-from pcapi.models import UserSQLEntity
+from pcapi.core.users.models import UserSQLEntity
 
 from tests.conftest import TestClient
 

@@ -7,6 +7,7 @@ from typing import Iterable
 from typing import Optional
 
 from pcapi.core.bookings import api as bookings_api
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.models import Booking
 from pcapi.models import EventType
 from pcapi.models import Offer
@@ -19,7 +20,6 @@ from pcapi.models import RightsType
 from pcapi.models import Stock
 from pcapi.models import ThingType
 from pcapi.models import UserOfferer
-from pcapi.models import UserSQLEntity
 from pcapi.models import VenueSQLEntity
 from pcapi.models.payment_status import PaymentStatus
 from pcapi.models.payment_status import TransactionStatus

@@ -5,6 +5,8 @@ from unittest.mock import patch
 from freezegun import freeze_time
 import pytest
 
+from pcapi.core.users.models import check_password
+from pcapi.core.users.models import hash_password
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_deposit
 from pcapi.model_creators.generic_creators import create_offerer
@@ -16,7 +18,6 @@ from pcapi.model_creators.specific_creators import create_offer_with_thing_produ
 from pcapi.models import ApiErrors
 from pcapi.models import RightsType
 from pcapi.models import ThingType
-from pcapi.models import user_sql_entity
 from pcapi.repository import repository
 
 
@@ -342,26 +343,26 @@ class needsToSeeTutorialsTest:
 
 class DevEnvironmentPasswordHasherTest:
     def test_hash_password_uses_md5(self):
-        hashed = user_sql_entity.hash_password("secret")
+        hashed = hash_password("secret")
         assert hashed == b"5ebe2294ecd0e0f08eab7690d2a6ee69"
 
     def test_check_password(self):
-        hashed = user_sql_entity.hash_password("secret")
-        assert not user_sql_entity.check_password("wrong", hashed)
-        assert user_sql_entity.check_password("secret", hashed)
+        hashed = hash_password("secret")
+        assert not check_password("wrong", hashed)
+        assert check_password("secret", hashed)
 
 
 @patch("pcapi.settings.IS_DEV", False)
 class ProdEnvironmentPasswordHasherTest:
     def test_hash_password_uses_bcrypt(self):
-        hashed = user_sql_entity.hash_password("secret")
+        hashed = hash_password("secret")
         assert hashed != "secret"
         assert hashed.startswith(b"$2b$")  # bcrypt prefix
 
     def test_check_password(self):
-        hashed = user_sql_entity.hash_password("secret")
-        assert not user_sql_entity.check_password("wrong", hashed)
-        assert user_sql_entity.check_password("secret", hashed)
+        hashed = hash_password("secret")
+        assert not check_password("wrong", hashed)
+        assert check_password("secret", hashed)
 
 
 class CalculateAgeTest:

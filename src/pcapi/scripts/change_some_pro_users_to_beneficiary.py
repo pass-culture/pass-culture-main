@@ -1,8 +1,8 @@
 from typing import List
 
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.model_creators.generic_creators import create_deposit
 from pcapi.models import UserOfferer
-from pcapi.models import UserSQLEntity
 from pcapi.repository import repository
 
 

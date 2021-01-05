@@ -1,7 +1,7 @@
 from sqlalchemy.exc import IntegrityError
 
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.models import ApiErrors
-from pcapi.models import UserSQLEntity
 from pcapi.repository import user_queries
 
 

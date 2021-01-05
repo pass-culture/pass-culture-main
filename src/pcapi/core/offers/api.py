@@ -9,16 +9,15 @@ from pcapi.connectors import redis
 from pcapi.connectors.thumb_storage import create_thumb
 import pcapi.core.bookings.repository as bookings_repository
 import pcapi.core.offers.repository as offers_repository
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.domain import admin_emails
 from pcapi.domain import user_emails
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
-from pcapi.models import Booking
 from pcapi.models import EventType
 from pcapi.models import Offer
 from pcapi.models import Product
 from pcapi.models import RightsType
 from pcapi.models import Stock
-from pcapi.models import UserSQLEntity
 from pcapi.models import VenueSQLEntity
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle

@@ -1,5 +1,5 @@
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.models.user_offerer import UserOfferer
-from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.sandboxes.scripts.utils.helpers import get_offerer_helper
 from pcapi.sandboxes.scripts.utils.helpers import get_pro_helper
 

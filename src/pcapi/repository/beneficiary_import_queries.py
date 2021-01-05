@@ -2,10 +2,10 @@ from typing import List
 
 from sqlalchemy import asc
 
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.models import BeneficiaryImport
 from pcapi.models import BeneficiaryImportSources
 from pcapi.models import ImportStatus
-from pcapi.models import UserSQLEntity
 from pcapi.models.db import db
 from pcapi.repository import repository
 

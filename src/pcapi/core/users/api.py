@@ -14,6 +14,7 @@ from pcapi.core.payments import api as payment_api
 from pcapi.core.users import exceptions
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.core.users.utils import create_custom_jwt_token
 from pcapi.core.users.utils import decode_jwt_token
 from pcapi.core.users.utils import encode_jwt_payload
@@ -28,7 +29,6 @@ from pcapi.models import BeneficiaryImport
 from pcapi.models import ImportStatus
 from pcapi.models.db import db
 from pcapi.models.user_session import UserSession
-from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.scripts.beneficiary import THIRTY_DAYS_IN_HOURS

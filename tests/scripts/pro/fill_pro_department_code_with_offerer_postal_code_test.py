@@ -1,9 +1,9 @@
 import pytest
 
 from pcapi.core.users.factories import UserFactory
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user_offerer
-from pcapi.models import UserSQLEntity
 from pcapi.repository import repository
 from pcapi.scripts.pro.fill_pro_department_code_with_offerer_postal_code import (
     fill_pro_department_code_with_offerer_postal_code,

@@ -6,12 +6,12 @@ from unittest.mock import patch
 from freezegun import freeze_time
 import pytest
 
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_venue_type
 from pcapi.models import Offerer
 from pcapi.models import UserOfferer
-from pcapi.models import UserSQLEntity
 from pcapi.repository import repository
 from pcapi.scripts.offerer.file_import import OffererNotCreatedException
 from pcapi.scripts.offerer.file_import import UserNotCreatedException

@@ -3,8 +3,8 @@ from datetime import timedelta
 from unittest.mock import patch
 
 import pcapi.core.users.factories as users_factories
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.domain.password import RESET_PASSWORD_TOKEN_LENGTH
-from pcapi.models import UserSQLEntity
 from pcapi.validation.routes.captcha import InvalidRecaptchaTokenException
 
 from tests.conftest import TestClient

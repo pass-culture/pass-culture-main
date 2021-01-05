@@ -5,11 +5,11 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi.core.users import api as users_api
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsADuplicate
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.models import BeneficiaryImport
-from pcapi.models import UserSQLEntity
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.models.deposit import Deposit
 from pcapi.repository import repository

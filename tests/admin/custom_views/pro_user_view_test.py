@@ -7,9 +7,9 @@ from wtforms.form import Form
 from pcapi.admin.custom_views.pro_user_view import ProUserView
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.models import UserOfferer
 from pcapi.models.offerer import Offerer
-from pcapi.models.user_sql_entity import UserSQLEntity
 
 from tests.conftest import TestClient
 from tests.conftest import clean_database

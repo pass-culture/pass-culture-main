@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Dict
 
 from pcapi import settings
-from pcapi.models import UserSQLEntity
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.repository.feature_queries import feature_send_mail_to_users_enabled
 from pcapi.utils.mailing import format_environment_for_email
 

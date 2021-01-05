@@ -4,8 +4,8 @@ from unittest.mock import patch
 from freezegun import freeze_time
 import pytest
 
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.models.feature import override_features
-from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.routes.serialization import serialize
 
 from tests.conftest import TestClient

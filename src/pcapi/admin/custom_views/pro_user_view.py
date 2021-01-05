@@ -9,12 +9,12 @@ from wtforms.fields.core import StringField
 from wtforms.validators import ValidationError
 
 from pcapi.admin.base_configuration import BaseAdminView
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.domain.password import generate_reset_token
 from pcapi.domain.password import random_password
 from pcapi.models import UserOfferer
 from pcapi.models.offerer import Offerer
 from pcapi.models.user_offerer import RightsType
-from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.models.venue_sql_entity import create_digital_venue
 from pcapi.validation.models.has_address_mixin import POSTAL_CODE_REGEX
 

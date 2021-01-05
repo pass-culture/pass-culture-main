@@ -1,4 +1,4 @@
-from pcapi.models import UserSQLEntity
+from pcapi.core.users.models import UserSQLEntity
 
 
 def check_is_authorized_to_access_bookings_recap(user: UserSQLEntity):

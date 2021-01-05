@@ -1,8 +1,8 @@
 from pcapi.core.payments import api as payments_api
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.domain.password import generate_reset_token
 from pcapi.domain.password import random_password
 from pcapi.models.beneficiary_import_status import ImportStatus
-from pcapi.models.user_sql_entity import UserSQLEntity
 from pcapi.scripts.beneficiary import THIRTY_DAYS_IN_HOURS
 
 

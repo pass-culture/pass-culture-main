@@ -7,11 +7,11 @@ from unittest.mock import patch
 from mailjet_rest import Client
 import pytest
 
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.models import ApiErrors
 from pcapi.models import BeneficiaryImport
 from pcapi.models import ImportStatus
-from pcapi.models import UserSQLEntity
 from pcapi.repository import repository
 from pcapi.scripts.beneficiary import remote_import
 from pcapi.scripts.beneficiary.remote_import import parse_beneficiary_information

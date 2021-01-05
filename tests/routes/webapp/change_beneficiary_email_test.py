@@ -10,7 +10,7 @@ import pytest
 from pcapi import settings
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import ALGORITHM_HS_256
-from pcapi.models.user_sql_entity import UserSQLEntity
+from pcapi.core.users.models import UserSQLEntity
 
 from tests.conftest import TestClient
 

@@ -7,7 +7,7 @@ from pcapi.core.bookings import exceptions
 from pcapi.core.bookings.models import Booking
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
-from pcapi.models import UserSQLEntity
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.models import api_errors
 from pcapi.models.db import db
 from pcapi.repository import payment_queries
@@ -62,19 +62,18 @@ def check_expenses_limits(user: UserSQLEntity, requested_amount: Decimal, offer:
         raise exceptions.UserHasInsufficientFunds()
 
     config = conf.LIMIT_CONFIGURATIONS[deposit.version]
-    limits = api.get_expenses_limits(user, deposit.version)
-    for limit in limits:
-        if limit["domain"] == "all":
-            if limit["current"] + requested_amount > limit["max"]:
+    for expense in user.expenses:
+        if expense["domain"] == "all":
+            if expense["current"] + requested_amount > expense["max"]:
                 raise exceptions.UserHasInsufficientFunds()
 
-        if limit["domain"] == "digital" and config.digital_cap_applies(offer):
-            if limit["current"] + requested_amount > limit["max"]:
-                raise exceptions.DigitalExpenseLimitHasBeenReached(limit["max"])
+        if expense["domain"] == "digital" and config.digital_cap_applies(offer):
+            if expense["current"] + requested_amount > expense["max"]:
+                raise exceptions.DigitalExpenseLimitHasBeenReached(expense["max"])
 
-        if limit["domain"] == "physical" and config.physical_cap_applies(offer):
-            if limit["current"] + requested_amount > limit["max"]:
-                raise exceptions.PhysicalExpenseLimitHasBeenReached(limit["max"])
+        if expense["domain"] == "physical" and config.physical_cap_applies(offer):
+            if expense["current"] + requested_amount > expense["max"]:
+                raise exceptions.PhysicalExpenseLimitHasBeenReached(expense["max"])
 
 
 def check_beneficiary_can_cancel_booking(user: UserSQLEntity, booking: Booking) -> None:

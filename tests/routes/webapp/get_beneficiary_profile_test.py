@@ -2,6 +2,7 @@ from datetime import datetime
 
 import pytest
 
+from pcapi.core.bookings import factories
 from pcapi.core.users.factories import UserFactory
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
@@ -39,6 +40,7 @@ class Get:
             assert response.status_code == 200
             json = response.json
             assert json["email"] == "toto@btmx.fr"
+            assert json["expenses"] == []
             assert "password" not in json
             assert "clearTextPassword" not in json
             assert "resetPasswordToken" not in json
@@ -103,11 +105,30 @@ class Get:
 
             # Then
             assert response.json["wallet_balance"] == 495.0
-            assert response.json["expenses"] == {
-                "all": {"max": 500, "actual": 5.0},
-                "physical": {"max": 200, "actual": 5.0},
-                "digital": {"max": 200, "actual": 0},
-            }
+            assert response.json["expenses"] == [
+                {"domain": "all", "current": 5.0, "max": 500.0},
+                {"domain": "digital", "current": 0.0, "max": 200.0},
+                {"domain": "physical", "current": 5.0, "max": 200.0},
+            ]
+
+        @pytest.mark.usefixtures("db_session")
+        def when_user_has_cancelled_some_offers(self, app):
+            # Given
+            booking = factories.BookingFactory(
+                isCancelled=True, user__email="wallet_test@email.com", user__postalCode="75130"
+            )
+            repository.save(booking)
+
+            # When
+            response = TestClient(app.test_client()).with_auth("wallet_test@email.com").get("/beneficiaries/current")
+
+            # Then
+            assert response.json["wallet_balance"] == 500.0
+            assert response.json["expenses"] == [
+                {"domain": "all", "current": 0.0, "max": 500.0},
+                {"domain": "digital", "current": 0.0, "max": 200.0},
+                {"domain": "physical", "current": 0.0, "max": 200.0},
+            ]
 
     class Returns401:
         @pytest.mark.usefixtures("db_session")

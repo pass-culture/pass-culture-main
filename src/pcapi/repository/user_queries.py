@@ -8,6 +8,7 @@ from sqlalchemy.orm import Query
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.functions import Function
 
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.core.users.utils import format_email
 from pcapi.models import BeneficiaryImport
 from pcapi.models import BeneficiaryImportSources
@@ -15,9 +16,8 @@ from pcapi.models import BeneficiaryImportStatus
 from pcapi.models import ImportStatus
 from pcapi.models import Offerer
 from pcapi.models import UserOfferer
-from pcapi.models import UserSQLEntity
 from pcapi.models.db import db
-from pcapi.models.user_sql_entity import WalletBalance
+from pcapi.models.wallet_balance import WalletBalance
 
 
 def count_users_by_email(email: str) -> int:

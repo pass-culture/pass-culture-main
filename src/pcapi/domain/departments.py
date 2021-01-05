@@ -1,6 +1,6 @@
 from typing import List
 
-from pcapi.models import UserSQLEntity
+from pcapi.core.users.models import UserSQLEntity
 
 
 DEPARTEMENT_CODE_VISIBILITY = {

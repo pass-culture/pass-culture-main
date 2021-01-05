@@ -9,7 +9,7 @@ from alembic import op
 from postgresql_audit.base import VersioningManager
 
 # revision identifiers, used by Alembic.
-from pcapi.models import UserSQLEntity
+from pcapi.core.users.models import UserSQLEntity
 
 
 revision = "565f79cfa5b2"

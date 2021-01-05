@@ -5,8 +5,8 @@ import pytest
 
 from pcapi.admin.custom_views.suspension_mixin import _allow_suspension_and_unsuspension
 import pcapi.core.users.factories as users_factories
+from pcapi.core.users.models import UserSQLEntity
 from pcapi.models import Deposit
-from pcapi.models.user_sql_entity import UserSQLEntity
 
 from tests.conftest import TestClient
 from tests.conftest import clean_database
