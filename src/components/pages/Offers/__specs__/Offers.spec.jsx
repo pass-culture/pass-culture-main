@@ -47,6 +47,34 @@ const renderOffers = (props, store) => {
   )
 }
 
+const offerTypes = [
+  {
+    appLabel: 'Cinéma',
+    conditionalFields: ['author', 'visa', 'stageDirector'],
+    description:
+      'Action, science-fiction, documentaire ou comédie sentimentale ? En salle, en plein air ou bien au chaud chez soi ? Et si c’était plutôt cette exposition qui allait faire son cinéma ?',
+    isActive: true,
+    offlineOnly: true,
+    onlineOnly: false,
+    proLabel: 'Cinéma - projections et autres évènements',
+    sublabel: 'Regarder',
+    type: 'Event',
+    value: 'EventType.CINEMA',
+  },
+  {
+    appLabel: 'Conférences, rencontres et découverte des métiers',
+    conditionalFields: ['speaker'],
+    description: 'Parfois une simple rencontre peut changer une vie...',
+    isActive: true,
+    offlineOnly: true,
+    onlineOnly: false,
+    proLabel: 'Conférences, rencontres et découverte des métiers',
+    sublabel: 'Rencontrer',
+    type: 'Event',
+    value: 'EventType.CONFERENCE_DEBAT_DEDICACE',
+  },
+]
+
 jest.mock('repository/venuesService', () => ({
   ...jest.requireActual('repository/venuesService'),
   fetchAllVenuesByProUser: jest.fn(),
@@ -54,7 +82,7 @@ jest.mock('repository/venuesService', () => ({
 
 jest.mock('repository/pcapi/pcapi', () => ({
   ...jest.requireActual('repository/pcapi/pcapi'),
-  loadTypes: jest.fn().mockResolvedValue([]),
+  loadTypes: jest.fn().mockResolvedValue(offerTypes),
 }))
 
 jest.mock('store/selectors/data/venuesSelectors', () => ({
@@ -837,20 +865,20 @@ describe('src | components | pages | Offers | Offers', () => {
     it('should load offers with selected type filter', async () => {
       // Given
       await renderOffers(props, store)
-      const venueSelect = screen.getByDisplayValue(ALL_VENUES_OPTION.displayName, {
-        selector: 'select[name="lieu"]',
+      const venueSelect = screen.getByDisplayValue(ALL_TYPES_OPTION.displayName, {
+        selector: 'select[name="type"]',
       })
-      fireEvent.change(venueSelect, { target: { value: proVenues[0].id } })
+      fireEvent.change(venueSelect, { target: { value: offerTypes[0].value } })
 
       // When
       fireEvent.click(screen.getByText('Lancer la recherche'))
 
       // Then
       expect(props.loadOffers).toHaveBeenLastCalledWith({
-        venueId: proVenues[0].id,
+        venueId: DEFAULT_SEARCH_FILTERS.venueId,
         page: DEFAULT_PAGE,
         name: DEFAULT_SEARCH_FILTERS.name,
-        typeId: DEFAULT_SEARCH_FILTERS.typeId,
+        typeId: 'EventType.CINEMA',
         offererId: DEFAULT_SEARCH_FILTERS.offererId,
         status: DEFAULT_SEARCH_FILTERS.status,
         creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
