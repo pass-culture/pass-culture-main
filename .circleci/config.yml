@@ -19,6 +19,13 @@ executors:
           username: _json_key  # default username when using a JSON key file to authenticate
           password: $GCP_INFRA_KEY
 
+  node-gcp:
+    docker:
+      - image: ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/node-gcp:12
+        auth:
+          username: _json_key  # default username when using a JSON key file to authenticate
+          password: $GCP_INFRA_KEY
+
 ###################
 #  COMMANDS
 ###################
@@ -133,6 +140,40 @@ commands:
             --values tmp/<< parameters.helm_chart_name >>/<< parameters.helm_values_file >> \
             --set-string image.tag=${API_VERSION}
           true # While GCP deployment is not stable make it always return success status
+
+  build-frontend-app:
+    description: Build a frontend app with yarn
+    parameters:
+      node_env:
+        type: string
+      build_dir:
+        type: string
+    steps:
+      - run:
+          name: Install dependencies
+          command: yarn install
+          working_directory: << parameters.build_dir >>
+      - run:
+          name: Build frontend app
+          command: |
+            set -a; source ./config/run_envs/<< parameters.node_env >>;
+            yarn build
+          working_directory: << parameters.build_dir >>
+
+  push-to-bucket:
+    description: Push directory to a cloudstorage bucket
+    parameters:
+      bucket_name:
+        type: string
+      build_path:
+        type: string
+    steps:
+      - run:
+          name: push directory to bucket
+          command: |
+            set +eo pipefail
+            gsutil rsync -r << parameters.build_path >> gs://<< parameters.bucket_name >>
+            true
 
 ###################
 #  JOBS
@@ -451,6 +492,21 @@ jobs:
             curl -i -k -XPOST "$GRAFANA_INFLUXDB_URL/write?db=$GRAFANA_DB" --data-binary 'deployments,application=Pro,environment='"$CIRCLE_BRANCH"',deployed=false version="'"$VERSION_TO_DEPLOY"'"'
           when: on_fail
 
+  deploy-pro-cloudstorage:
+    executor: node-gcp
+    steps:
+      - checkout
+      - run: git submodule sync
+      - run: git submodule update --init
+      - authenticate_gcp:
+          gcp-key-name: GCP_METIER_KEY
+      - build-frontend-app:
+          node_env: ${CIRCLE_BRANCH}
+          build_dir: ./pro
+      - push-to-bucket:
+          build_path: ./pro/build/
+          bucket_name: pass-culture-app-projet-test-${CIRCLE_BRANCH}-pro
+
   deploy-webapp:
     machine:
       image: ubuntu-1604:201903-01
@@ -488,6 +544,21 @@ jobs:
             curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
             curl -i -k -XPOST "$GRAFANA_INFLUXDB_URL/write?db=$GRAFANA_DB" --data-binary 'deployments,application=Webapp,environment='"$CIRCLE_BRANCH"',deployed=false version="'"$VERSION_TO_DEPLOY"'"'
           when: on_fail
+
+  deploy-webapp-cloudstorage:
+    executor: node-gcp
+    steps:
+      - checkout
+      - run: git submodule sync
+      - run: git submodule update --init
+      - authenticate_gcp:
+          gcp-key-name: GCP_METIER_KEY
+      - build-frontend-app:
+          node_env: ${CIRCLE_BRANCH}
+          build_dir: ./webapp
+      - push-to-bucket:
+          build_path: ./webapp/build/
+          bucket_name: pass-culture-app-projet-test-${CIRCLE_BRANCH}-webapp
 
   deploy-sandbox-in-testing:
     machine:
@@ -589,6 +660,16 @@ workflows:
       - deploy-cron-and-worker:
           requires:
             - build-and-push-image
+          context:
+            - GCP
+      - deploy-webapp-cloudstorage:
+          requires:
+            - deploy-api-cloudrun
+          context:
+            - GCP
+      - deploy-pro-cloudstorage:
+          requires:
+            - deploy-api-cloudrun
           context:
             - GCP
 
