@@ -1,6 +1,6 @@
 from pcapi import settings
-from pcapi.models import Feature
 from pcapi.models.api_errors import ResourceNotFoundError
+from pcapi.models.feature import Feature
 from pcapi.models.feature import FeatureToggle
 
 
