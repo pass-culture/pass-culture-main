@@ -56,19 +56,3 @@ class CannotCancelConfirmedBooking(ClientError):
 class BookingDoesntExist(ClientError):
     def __init__(self):
         super().__init__("bookingId", "bookingId ne correspond à aucune réservation")
-
-
-class BookingCancellationError(Exception):
-    pass
-
-
-class AlreadyCancelled(BookingCancellationError):
-    """Raised when trying to cancel a cancelled Booking"""
-
-
-class AlreadyUsed(BookingCancellationError):
-    """Raised when trying to cancel a used Booking"""
-
-
-class DoesNotExpire(BookingCancellationError):
-    """Raised when trying to cancel a Booking Offer type that does not expire"""
