@@ -820,18 +820,16 @@ describe('src | components | pages | Offers | Offers', () => {
       fireEvent.click(screen.getByText('Lancer la recherche'))
 
       // Then
-      await waitFor(() => {
-        expect(props.loadOffers).toHaveBeenCalledWith({
-          name: 'Any word',
-          page: DEFAULT_PAGE,
-          venueId: DEFAULT_SEARCH_FILTERS.venueId,
-          typeId: DEFAULT_SEARCH_FILTERS.typeId,
-          offererId: DEFAULT_SEARCH_FILTERS.offererId,
-          status: DEFAULT_SEARCH_FILTERS.status,
-          creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
-          periodBeginningDate: DEFAULT_SEARCH_FILTERS.periodBeginningDate,
-          periodEndingDate: DEFAULT_SEARCH_FILTERS.periodEndingDate,
-        })
+      expect(props.loadOffers).toHaveBeenCalledWith({
+        name: 'Any word',
+        page: DEFAULT_PAGE,
+        venueId: DEFAULT_SEARCH_FILTERS.venueId,
+        typeId: DEFAULT_SEARCH_FILTERS.typeId,
+        offererId: DEFAULT_SEARCH_FILTERS.offererId,
+        status: DEFAULT_SEARCH_FILTERS.status,
+        creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
+        periodBeginningDate: DEFAULT_SEARCH_FILTERS.periodBeginningDate,
+        periodEndingDate: DEFAULT_SEARCH_FILTERS.periodEndingDate,
       })
     })
 
@@ -847,18 +845,16 @@ describe('src | components | pages | Offers | Offers', () => {
       fireEvent.click(screen.getByText('Lancer la recherche'))
 
       // Then
-      await waitFor(() => {
-        expect(props.loadOffers).toHaveBeenCalledWith({
-          page: DEFAULT_PAGE,
-          venueId: proVenues[0].id,
-          name: DEFAULT_SEARCH_FILTERS.name,
-          typeId: DEFAULT_SEARCH_FILTERS.typeId,
-          offererId: DEFAULT_SEARCH_FILTERS.offererId,
-          status: DEFAULT_SEARCH_FILTERS.status,
-          creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
-          periodBeginningDate: DEFAULT_SEARCH_FILTERS.periodBeginningDate,
-          periodEndingDate: DEFAULT_SEARCH_FILTERS.periodEndingDate,
-        })
+      expect(props.loadOffers).toHaveBeenCalledWith({
+        page: DEFAULT_PAGE,
+        venueId: proVenues[0].id,
+        name: DEFAULT_SEARCH_FILTERS.name,
+        typeId: DEFAULT_SEARCH_FILTERS.typeId,
+        offererId: DEFAULT_SEARCH_FILTERS.offererId,
+        status: DEFAULT_SEARCH_FILTERS.status,
+        creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
+        periodBeginningDate: DEFAULT_SEARCH_FILTERS.periodBeginningDate,
+        periodEndingDate: DEFAULT_SEARCH_FILTERS.periodEndingDate,
       })
     })
 
@@ -1216,7 +1212,7 @@ describe('src | components | pages | Offers | Offers', () => {
       })
 
       // When
-      await waitFor(() => fireEvent.change(typeSelect, { target: { value: 'test_id_1' } }))
+      fireEvent.change(typeSelect, { target: { value: 'test_id_1' } })
       fireEvent.click(screen.getByText('Lancer la recherche'))
 
       // Then
@@ -1270,17 +1266,15 @@ describe('src | components | pages | Offers | Offers', () => {
       fireEvent.click(screen.queryByText('Appliquer'))
 
       // Then
-      await waitFor(() => {
-        expect(props.query.change).toHaveBeenLastCalledWith({
-          categorie: null,
-          creation: null,
-          lieu: null,
-          nom: null,
-          'periode-evenement-debut': null,
-          'periode-evenement-fin': null,
-          statut: null,
-          structure: null,
-        })
+      expect(props.query.change).toHaveBeenLastCalledWith({
+        categorie: null,
+        creation: null,
+        lieu: null,
+        nom: null,
+        'periode-evenement-debut': null,
+        'periode-evenement-fin': null,
+        statut: null,
+        structure: null,
       })
     })
 
@@ -1521,7 +1515,7 @@ describe('src | components | pages | Offers | Offers', () => {
       fireEvent.click(checkbox)
 
       // Then
-      await waitFor(() => expect(props.showActionsBar).toHaveBeenCalledWith())
+      expect(props.showActionsBar).toHaveBeenCalledWith()
     })
 
     it('should hide actionBar when all offers are unselected', async () => {
@@ -1535,7 +1529,7 @@ describe('src | components | pages | Offers | Offers', () => {
       fireEvent.click(checkbox)
 
       // Then
-      await waitFor(() => expect(props.hideActionsBar).toHaveBeenCalledWith())
+      expect(props.hideActionsBar).toHaveBeenCalledWith()
     })
 
     describe('on click on select all offers checkbox', () => {
