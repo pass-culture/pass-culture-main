@@ -6,7 +6,7 @@ import Icon from '../../../layout/Icon/Icon'
 import EnteringSides from '../animationsEnteringSides/EnteringSides'
 import EnteringSidesClassNames from '../animationsEnteringSides/EnteringSidesClassNames'
 
-const FirstTutorial = ({ enteringSide }) => (
+const FirstTutorial = ({ enteringSide, depositAmount }) => (
   <div className={`first-tutorial ${EnteringSidesClassNames[enteringSide]}`}>
     <Icon
       className="icon"
@@ -19,7 +19,7 @@ const FirstTutorial = ({ enteringSide }) => (
       </span>
       {' et '}
       <span className="text-highlight text-second-highlight">
-        {`500${NON_BREAKING_SPACE}€`}
+        {`${depositAmount}${NON_BREAKING_SPACE}€`}
       </span>
       {
         ' crédités directement sur l’appli pour découvrir de nouvelles activités culturelles autour de chez toi et partout en France !'
@@ -29,6 +29,7 @@ const FirstTutorial = ({ enteringSide }) => (
 )
 
 FirstTutorial.propTypes = {
+  depositAmount: PropTypes.number.isRequired,
   enteringSide: PropTypes.oneOf(Object.keys(EnteringSides)).isRequired,
 }
 

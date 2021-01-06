@@ -9,7 +9,7 @@ import SliderPoints from './SliderPoints/SliderPoints'
 import DraggableTutorial from './DraggableTutorial/DraggableTutorial'
 import EnteringSides from './animationsEnteringSides/EnteringSides'
 
-const Tutorials = ({ isHomepageDisabled, saveUserHasSeenTutorials }) => {
+const Tutorials = ({ isHomepageDisabled, saveUserHasSeenTutorials, isNewBookingLimitsActived }) => {
   const tutorials = [FirstTutorial, SecondTutorial, ThirdTutorial]
   const lastTutorialStep = tutorials.length - 1
 
@@ -32,17 +32,33 @@ const Tutorials = ({ isHomepageDisabled, saveUserHasSeenTutorials }) => {
 
   function tutorialToDisplay() {
     const enteringSide = previousStep < step ? EnteringSides.right : EnteringSides.left
+    const depositAmount = isNewBookingLimitsActived ? 300 : 500
 
     if (step === 0) {
-      return <FirstTutorial enteringSide={enteringSide} />
+      return (
+        <FirstTutorial
+          depositAmount={depositAmount}
+          enteringSide={enteringSide}
+        />
+      )
     }
 
     if (step === 1) {
-      return <SecondTutorial enteringSide={enteringSide} />
+      return (
+        <SecondTutorial
+          depositAmount={depositAmount}
+          enteringSide={enteringSide}
+        />
+      )
     }
 
     if (step === 2) {
-      return <ThirdTutorial enteringSide={enteringSide} />
+      return (
+        <ThirdTutorial
+          enteringSide={enteringSide}
+          isNewBookingLimitsActived={isNewBookingLimitsActived}
+        />
+      )
     }
   }
 
@@ -89,6 +105,7 @@ const Tutorials = ({ isHomepageDisabled, saveUserHasSeenTutorials }) => {
 
 Tutorials.propTypes = {
   isHomepageDisabled: PropTypes.bool.isRequired,
+  isNewBookingLimitsActived: PropTypes.bool.isRequired,
   saveUserHasSeenTutorials: PropTypes.func.isRequired,
 }
 

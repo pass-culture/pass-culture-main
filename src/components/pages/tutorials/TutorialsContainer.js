@@ -7,18 +7,16 @@ import { updateCurrentUser } from '../../../redux/actions/currentUser'
 import selectIsFeatureDisabled from '../../router/selectors/selectIsFeatureDisabled'
 import { FEATURES } from '../../router/selectors/features'
 
-export const mapStateToProps = state => {
-  const isHomepageDisabled = selectIsFeatureDisabled(state, FEATURES.HOMEPAGE)
+export const mapStateToProps = state => ({
+  isHomepageDisabled: selectIsFeatureDisabled(state, FEATURES.HOMEPAGE),
+  isNewBookingLimitsActived: !selectIsFeatureDisabled(state, FEATURES.APPLY_BOOKING_LIMITS_V2),
+})
 
-  return {
-    isHomepageDisabled
-  }
-}
 export const mergeProps = (stateProps, { updateCurrentUser, ...dispatchProps }, { history }) => {
   return {
     ...stateProps,
     ...dispatchProps,
-    saveUserHasSeenTutorials: async (isHomepageDisabled) => {
+    saveUserHasSeenTutorials: async isHomepageDisabled => {
       await updateCurrentUser({
         hasSeenTutorials: true,
       })
@@ -30,9 +28,5 @@ export const mergeProps = (stateProps, { updateCurrentUser, ...dispatchProps }, 
 
 export default compose(
   withRequiredLogin,
-  connect(
-    mapStateToProps,
-    { updateCurrentUser },
-    mergeProps,
-  ),
+  connect(mapStateToProps, { updateCurrentUser }, mergeProps)
 )(Tutorials)
