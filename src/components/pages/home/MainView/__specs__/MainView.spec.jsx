@@ -70,11 +70,11 @@ describe('src | components | MainView', () => {
       updateCurrentUser: jest.fn(),
       user: new User({
         email: 'john.doe@example.fr',
-        expenses: {
-          all: { actual: 287, max: 500 },
-          digital: { actual: 11, max: 200 },
-          physical: { actual: 23, max: 200 },
-        },
+        expenses: [
+          { domain: 'all', current: 287, max: 500 },
+          { domain: 'digital', current: 11, max: 200 },
+          { domain: 'physical', current: 23, max: 200 },
+        ],
         firstName: 'PC Test Jeune',
         publicName: 'Iron Man',
         wallet_balance: 200.1,
@@ -244,11 +244,11 @@ describe('src | components | MainView', () => {
     window.batchSDK = () => {}
     props.user = new User({
       email: 'john.doe@example.fr',
-      expenses: {
-        all: { actual: 287, max: 500 },
-        digital: { actual: 11, max: 200 },
-        physical: { actual: 23, max: 200 },
-      },
+      expenses: [
+        { domain: 'all', current: 287, max: 500 },
+        { domain: 'digital', current: 11, max: 200 },
+        { domain: 'physical', current: 23, max: 200 },
+      ],
       firstName: 'PC Test Jeune',
       publicName: 'Iron Man',
       wallet_balance: 200.1,
@@ -372,11 +372,11 @@ describe('src | components | MainView', () => {
       currentUser: (
         state = new User({
           email: 'john.doe@example.fr',
-          expenses: {
-            all: { actual: 287, max: 500 },
-            digital: { actual: 11, max: 200 },
-            physical: { actual: 23, max: 200 },
-          },
+          expenses: [
+            { domain: 'all', current: 287, max: 500 },
+            { domain: 'digital', current: 11, max: 200 },
+            { domain: 'physical', current: 23, max: 200 },
+          ],
           firstName: 'PC Test Jeune',
           publicName: 'Iron Man',
           wallet_balance: 200.1,

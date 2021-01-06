@@ -22,7 +22,10 @@ class RemainingCredit extends PureComponent {
     const { user } = this.props
     const { isReadMoreVisible } = this.state
     const { expenses, wallet_balance: walletBalance } = user
-    const { digital, physical, all } = expenses
+    const digital = expenses.find(expense => expense.domain === 'digital')
+    const physical = expenses.find(expense => expense.domain === 'physical')
+    const all = expenses.find(expense => expense.domain === 'all')
+
     const digitalCreditLimit = digital.max
     const physicalCreditLimit = physical.max
     const initialDeposit = all.max

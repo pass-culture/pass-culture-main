@@ -11,11 +11,11 @@ describe('remainingCredit', () => {
   beforeEach(() => {
     props = {
       user: new User({
-        expenses: {
-          all: { actual: 10, max: 300 },
-          digital: { actual: 100, max: 200 },
-          physical: { actual: 100, max: 200 },
-        },
+        expenses: [
+          { domain: 'all', current: 10, max: 300 },
+          { domain: 'digital', current: 100, max: 200 },
+          { domain: 'physical', current: 100, max: 200 },
+        ],
         wallet_balance: 0,
       }),
     }
@@ -25,11 +25,11 @@ describe('remainingCredit', () => {
     it('should display three gauges and prices', () => {
       // Given
       props.user = new User({
-        expenses: {
-          all: { actual: 10, max: 500 },
-          digital: { actual: 20, max: 201 },
-          physical: { actual: 30, max: 202 },
-        },
+        expenses: [
+          { domain: 'all', current: 10, max: 500 },
+          { domain: 'digital', current: 20, max: 201 },
+          { domain: 'physical', current: 30, max: 202 },
+        ],
         wallet_balance: 351,
       })
 
@@ -44,16 +44,6 @@ describe('remainingCredit', () => {
     })
 
     it('should display details text', () => {
-      // Given
-      props.user = new User({
-        expenses: {
-          all: { actual: 10, max: 500 },
-          digital: { actual: 20, max: 201 },
-          physical: { actual: 30, max: 202 },
-        },
-        wallet_balance: 351,
-      })
-
       // When
       const wrapper = shallow(<RemainingCredit {...props} />)
 

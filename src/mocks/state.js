@@ -7,20 +7,11 @@ const state = {
     dateCreated: '2018-10-29T09:44:18.243300Z',
     departementCode: '93',
     email: 'pctest.jeune.93@btmx.fr',
-    expenses: {
-      all: {
-        actual: 230,
-        max: 500,
-      },
-      digital: {
-        actual: 0,
-        max: 200,
-      },
-      physical: {
-        actual: 0,
-        max: 100,
-      },
-    },
+    expenses: [
+      { domain: 'all', current: 230, max: 500 },
+      { domain: 'digital', current: 0, max: 200 },
+      { domain: 'physical', current: 0, max: 200 },
+    ],
     firstName: 'PC Test',
     isAdmin: false,
     lastName: 'Jeune 93',
@@ -489,20 +480,11 @@ const state = {
     dateCreated: '2018-10-29T09:44:18.243300Z',
     departementCode: '93',
     email: 'pctest.jeune.93@btmx.fr',
-    expenses: {
-      all: {
-        actual: 230,
-        max: 500,
-      },
-      digital: {
-        actual: 0,
-        max: 200,
-      },
-      physical: {
-        actual: 0,
-        max: 100,
-      },
-    },
+    expenses: [
+      { domain: 'all', current: 230, max: 500 },
+      { domain: 'digital', current: 0, max: 200 },
+      { domain: 'physical', current: 0, max: 100 },
+    ],
     firstName: 'PC Test',
     isAdmin: false,
     lastName: 'Jeune 93',

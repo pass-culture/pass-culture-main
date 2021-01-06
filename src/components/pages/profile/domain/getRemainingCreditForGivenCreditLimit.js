@@ -1,5 +1,5 @@
 export const getRemainingCreditForGivenCreditLimit = walletBalance => ({
-  actual: expenses,
+  current: expenses,
   max: creditLimit,
 }) => {
   const absoluteRemainingCredit = creditLimit - expenses
