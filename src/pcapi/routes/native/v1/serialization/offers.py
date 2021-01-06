@@ -152,6 +152,7 @@ class OfferResponse(BaseModel):
     description: Optional[str]
     externalTicketOfficeUrl: Optional[str]
     extraData: Optional[OfferExtraData]
+    isActive: bool
     isDigital: bool
     isDuo: bool
     name: str

@@ -91,6 +91,7 @@ class OffersTest:
                 "visa": "vasi",
             },
             "image": {"url": mediation.thumbUrl, "credit": mediation.credit},
+            "isActive": True,
             "isDuo": True,
             "isDigital": offer.isDigital,
             "name": offer.name,
