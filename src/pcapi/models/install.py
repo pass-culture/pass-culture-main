@@ -22,7 +22,7 @@ def install_features() -> None:
     for toggle in FeatureToggle:
         feature = Feature()
         feature.populate_from_dict(
-            {"description": toggle.value, "name": toggle.name, "is_active": toggle != "APPLY_BOOKING_LIMITS_V2"}
+            {"description": toggle.value, "name": toggle.name, "isActive": toggle.name != "APPLY_BOOKING_LIMITS_V2"}
         )
         features.append(feature)
     repository.save(*features)

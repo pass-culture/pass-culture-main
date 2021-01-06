@@ -18,5 +18,7 @@ class InstallFeaturesTest:
         for feature_toggle in FeatureToggle:
             feature = Feature.query.filter_by(name=feature_toggle.name).one()
             assert feature.description == feature_toggle.value
-            if feature_toggle != "APPLY_BOOKING_LIMITS_V2":
+            if feature_toggle.name != "APPLY_BOOKING_LIMITS_V2":
                 assert feature.isActive
+            else:
+                assert not feature.isActive
