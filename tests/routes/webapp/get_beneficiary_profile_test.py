@@ -42,14 +42,11 @@ class Get:
         @pytest.mark.usefixtures("db_session")
         def when_user_is_logged_in_and_has_a_deposit(self, app):
             # Given
-            user = UserFactory(
+            UserFactory(
                 email="wallet_test@email.com",
                 postalCode="93020",
+                deposit__dateCreated=datetime(2000, 1, 1, 2, 2),
             )
-
-            deposit = user.deposits[0]
-            deposit.dateCreated = datetime(2000, 1, 1, 2, 2)
-            repository.save(deposit)
 
             # When
             response = TestClient(app.test_client()).with_auth("wallet_test@email.com").get("/beneficiaries/current")

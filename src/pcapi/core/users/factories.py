@@ -54,12 +54,7 @@ class UserFactory(BaseFactory):
             return None
         if obj.isAdmin or not obj.isBeneficiary:
             return None
-        deposit_kwargs = {"user": obj}
-        if extracted:
-            deposit_kwargs["amount"] = extracted
-        else:
-            pass  # use the default value of DepositFactory.amount
-        return DepositFactory(**deposit_kwargs)
+        return DepositFactory(user=obj, **kwargs)
 
 
 class TokenFactory(BaseFactory):
