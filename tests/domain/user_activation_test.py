@@ -67,7 +67,7 @@ class CreateBeneficiaryFromApplicationTest:
         # when
         beneficiary = create_beneficiary_from_application(beneficiary_information)
 
-        # then
+        # Then
         assert beneficiary.lastName == "Doe"
         assert beneficiary.firstName == "Jane"
         assert beneficiary.publicName == "Jane Doe"

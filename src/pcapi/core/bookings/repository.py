@@ -10,7 +10,6 @@ from sqlalchemy import cast
 from sqlalchemy import func
 from sqlalchemy import text
 from sqlalchemy.orm import Query
-from sqlalchemy.orm import joinedload
 from sqlalchemy.util._collections import AbstractKeyedTuple
 
 from pcapi.core.bookings import conf
@@ -21,7 +20,6 @@ from pcapi.domain.booking_recap.booking_recap import BookingRecap
 from pcapi.domain.booking_recap.booking_recap import EventBookingRecap
 from pcapi.domain.booking_recap.booking_recap import ThingBookingRecap
 from pcapi.domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
-import pcapi.domain.expenses
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models import Booking
 from pcapi.models import Offer
@@ -404,13 +402,3 @@ def _query_keep_only_used_and_non_cancelled_bookings_on_non_activation_offers() 
         .filter(Booking.isCancelled.is_(False))
         .filter(Booking.isUsed.is_(True))
     )
-
-
-def get_user_expenses(user: UserSQLEntity) -> dict:
-    bookings = (
-        Booking.query.filter_by(user=user)
-        .filter_by(isCancelled=False)
-        .options(joinedload(Booking.stock).joinedload(Stock.offer))
-        .all()
-    )
-    return pcapi.domain.expenses.get_expenses(bookings)
