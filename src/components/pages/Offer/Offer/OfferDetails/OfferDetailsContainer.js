@@ -9,6 +9,7 @@ import OfferDetails from './OfferDetails'
 
 const mapStateToProps = state => ({
   isUserAdmin: selectIsUserAdmin(state),
+  offersSearchFilters: state.offers.searchFilters,
 })
 
 const mapDispatchToProps = dispatch => ({

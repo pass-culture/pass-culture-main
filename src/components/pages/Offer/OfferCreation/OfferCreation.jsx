@@ -14,19 +14,13 @@ import OfferPreviewLink from 'components/layout/OfferPreviewLink/OfferPreviewLin
 import { webappOfferUrl } from 'components/layout/OfferPreviewLink/webappOfferUrl'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
-import { ALL_STATUS, DEFAULT_CREATION_MODE } from 'components/pages/Offers/_constants'
 import { OFFERERS_API_PATH } from 'config/apiPaths'
 import { mergeForm, resetForm } from 'store/reducers/form'
 import { showModal } from 'store/reducers/modal'
 import { CGU_URL } from 'utils/config'
 import { musicOptions, showOptions } from 'utils/edd'
 import { pluralize } from 'utils/pluralize'
-import { stringify } from 'utils/query-string'
-import {
-  mapApiToBrowser,
-  translateApiParamsToQueryParams,
-  translateQueryParamsToApiParams,
-} from 'utils/translate'
+import { translateQueryParamsToApiParams } from 'utils/translate'
 
 import { isAllocineOffer, isOfferFromStockProvider } from '../domain/localProvider'
 import offerIsRefundable from '../domain/offerIsRefundable'
@@ -34,6 +28,7 @@ import LocalProviderInformation from '../LocalProviderInformation/LocalProviderI
 import MediationsManager from '../MediationsManager/MediationsManagerContainer'
 import { OffererName } from '../OfferEdition/OffererName'
 import StocksManagerContainer from '../StocksManager/StocksManagerContainer'
+import { computeOffersUrl } from '../utils/computeOffersUrl'
 import { getDurationInHours, getDurationInMinutes } from '../utils/duration'
 
 const DURATION_LIMIT_TIME = 100
@@ -304,23 +299,6 @@ class OfferCreation extends PureComponent {
     updateFormSetIsDuo(event.target.checked)
   }
 
-  computeOffersUrl = () => {
-    const { offersSearchFilters } = this.props
-    const { creationMode, status } = offersSearchFilters
-    const searchFiltersParams = { ...offersSearchFilters }
-
-    if (status && status !== ALL_STATUS) {
-      searchFiltersParams.status = mapApiToBrowser[status]
-    }
-    if (creationMode && creationMode !== DEFAULT_CREATION_MODE.id) {
-      searchFiltersParams.creationMode = mapApiToBrowser[creationMode]
-    }
-
-    const queryString = stringify(translateApiParamsToQueryParams(searchFiltersParams))
-
-    return queryString ? `/offres?${queryString}` : '/offres'
-  }
-
   render() {
     const {
       currentUser,
@@ -330,6 +308,7 @@ class OfferCreation extends PureComponent {
       offer,
       offerer,
       offerers,
+      offersSearchFilters,
       query,
       stocks,
       selectedOfferType,
@@ -397,7 +376,7 @@ class OfferCreation extends PureComponent {
       <AppLayout
         layoutConfig={{
           pageName: 'offer',
-          backTo: { path: this.computeOffersUrl(), label: 'Offres' },
+          backTo: { path: computeOffersUrl(offersSearchFilters), label: 'Offres' },
         }}
       >
         <Main handleDataRequest={this.onHandleDataRequest} />

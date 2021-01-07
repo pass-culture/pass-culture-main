@@ -10,6 +10,7 @@ import { getProviderInfo } from 'components/pages/Offer/LocalProviderInformation
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
+import * as computeUrl from '../../../utils/computeOffersUrl'
 import OfferLayoutContainer from '../../OfferLayoutContainer'
 import { DEFAULT_FORM_VALUES } from '../OfferForm/_constants'
 
@@ -21,6 +22,10 @@ jest.mock('repository/pcapi/pcapi', () => ({
   getVenuesForOfferer: jest.fn(),
   loadOffer: jest.fn(),
   loadTypes: jest.fn(),
+}))
+
+jest.mock('../../../utils/computeOffersUrl', () => ({
+  computeOffersUrl: jest.fn().mockReturnValue('/offres'),
 }))
 
 const renderOffers = async (props, store, queryParams = '') => {
@@ -797,6 +802,84 @@ describe('offerDetails - Edition', () => {
       expect(
         screen.getByText('Une ou plusieurs erreurs sont présentes dans le formulaire')
       ).toBeInTheDocument()
+    })
+  })
+
+  describe('when clicking on cancel link', () => {
+    it('should call computeOffersUrl with proper params', async () => {
+      // Given
+      store = configureTestStore({
+        data: { users: [{ publicName: 'François', isAdmin: false }] },
+        offers: {
+          searchFilters: {
+            name: 'test',
+            offererId: 'AY',
+            venueId: 'EQ',
+            typeId: 'EventType.CINEMA',
+            status: 'all',
+            creationMode: 'manual',
+            periodBeginningDate: '2020-11-30T00:00:00+01:00',
+            periodEndingDate: '2021-01-07T23:59:59+01:00',
+            page: 1,
+          },
+        },
+      })
+      const editedOffer = {
+        id: 'ABC12',
+        name: 'My edited offer',
+        type: 'ThingType.LIVRE_EDITION',
+        description: 'Offer description',
+        venueId: venues[0].id,
+        withdrawalDetails: 'Offer withdrawal details',
+        bookingEmail: 'booking@example.net',
+        extraData: null,
+      }
+      pcapi.loadOffer.mockResolvedValue(editedOffer)
+      await renderOffers(props, store)
+
+      // When
+      userEvent.click(screen.getByText('Annuler'))
+
+      // Then
+      expect(computeUrl.computeOffersUrl).toHaveBeenLastCalledWith({
+        creationMode: 'manual',
+        name: 'test',
+        offererId: 'AY',
+        page: 1,
+        periodBeginningDate: '2020-11-30T00:00:00+01:00',
+        periodEndingDate: '2021-01-07T23:59:59+01:00',
+        status: 'all',
+        typeId: 'EventType.CINEMA',
+        venueId: 'EQ',
+      })
+    })
+
+    it('should redirect to offers page', async () => {
+      // Given
+      store = configureTestStore({
+        data: { users: [{ publicName: 'François', isAdmin: false }] },
+        offers: {
+          searchFilters: {},
+        },
+      })
+      const editedOffer = {
+        id: 'ABC12',
+        name: 'My edited offer',
+        type: 'ThingType.PRESSE_ABO',
+        description: 'Offer description',
+        venueId: venues[0].id,
+        withdrawalDetails: 'Offer withdrawal details',
+        bookingEmail: null,
+      }
+      pcapi.loadOffer.mockResolvedValue(editedOffer)
+
+      // When
+      await renderOffers(props, store)
+
+      // Then
+      const cancelLink = await screen.findByText('Annuler', { selector: 'a' })
+      expect(cancelLink).toBeInTheDocument()
+      expect(cancelLink).toHaveAttribute('href', '/offres')
     })
   })
 })

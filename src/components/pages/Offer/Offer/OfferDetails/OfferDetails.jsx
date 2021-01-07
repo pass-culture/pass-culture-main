@@ -13,6 +13,7 @@ const OfferDetails = ({
   isUserAdmin,
   location,
   offer,
+  offersSearchFilters,
   showCreationSuccessNotification,
   showEditionSuccessNotification,
   showErrorNotification,
@@ -90,6 +91,7 @@ const OfferDetails = ({
             initialValues={formInitialValues}
             isUserAdmin={isUserAdmin}
             offer={offer}
+            offersSearchFilters={offersSearchFilters}
             onSubmit={handleSubmitOffer}
             setShowThumbnailForm={setShowThumbnailForm}
             showErrorNotification={showErrorNotification}
@@ -120,6 +122,7 @@ OfferDetails.propTypes = {
   isUserAdmin: PropTypes.bool.isRequired,
   location: PropTypes.shape().isRequired,
   offer: PropTypes.shape(),
+  offersSearchFilters: PropTypes.shape().isRequired,
   showCreationSuccessNotification: PropTypes.func.isRequired,
   showEditionSuccessNotification: PropTypes.func.isRequired,
   showErrorNotification: PropTypes.func.isRequired,
