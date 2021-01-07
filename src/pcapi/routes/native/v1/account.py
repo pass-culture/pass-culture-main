@@ -4,8 +4,7 @@ from flask_jwt_extended import jwt_required
 
 from pcapi import settings
 from pcapi.core.users import api
-from pcapi.core.users.exceptions import UnderAgeUserException
-from pcapi.core.users.exceptions import UserAlreadyExistsException
+from pcapi.core.users import exceptions
 from pcapi.core.users.models import VOID_FIRST_NAME
 from pcapi.models import ApiErrors
 from pcapi.repository.user_queries import find_user_by_email
@@ -55,8 +54,26 @@ def create_account(body: serializers.AccountRequest) -> None:
             has_allowed_recommendations=body.has_allowed_recommendations,
             is_email_validated=False,
         )
-    except UserAlreadyExistsException:
+    except exceptions.UserAlreadyExistsException:
         user = find_user_by_email(body.email)
         api.request_password_reset(user)
-    except UnderAgeUserException:
+    except exceptions.UnderAgeUserException:
         raise ApiErrors({"dateOfBirth": "The birthdate is invalid"})
+
+
+@blueprint.native_v1.route("/resend_email_validation", methods=["POST"])
+@spectree_serialize(on_success_status=204, api=blueprint.api)
+def resend_email_validation(body: serializers.ResendEmailValidationRequest) -> None:
+    user = find_user_by_email(body.email)
+    if not user or not user.isActive:
+        return
+    try:
+        if user.isEmailValidated:
+            api.request_password_reset(user)
+        else:
+            api.request_email_confirmation(user)
+    except exceptions.EmailNotSent:
+        raise ApiErrors(
+            {"code": "EMAIL_NOT_SENT", "general": ["L'email n'a pas pu être envoyé"]},
+            status_code=400,
+        )

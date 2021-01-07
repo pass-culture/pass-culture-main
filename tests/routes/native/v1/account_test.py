@@ -129,3 +129,45 @@ class AccountTest:
 
         response = test_client.post("/native/v1/account", json=data)
         assert response.status_code == 400
+
+
+class ResendEmailValidationTest:
+    @patch("pcapi.utils.mailing.send_raw_email", return_value=True)
+    def test_resend_email_validation(self, mocked_send_raw_email, app):
+        user = users_factories.UserFactory(isEmailValidated=False)
+
+        test_client = TestClient(app.test_client())
+        response = test_client.post("/native/v1/resend_email_validation", json={"email": user.email})
+
+        assert response.status_code == 204
+        mocked_send_raw_email.assert_called()
+        assert mocked_send_raw_email.call_args_list[0][1]["data"]["Mj-TemplateID"] == 1897370
+
+    @patch("pcapi.utils.mailing.send_raw_email", return_value=True)
+    def test_for_already_validated_email_does_sent_passsword_reset(self, mocked_send_raw_email, app):
+        user = users_factories.UserFactory(isEmailValidated=True)
+
+        test_client = TestClient(app.test_client())
+        response = test_client.post("/native/v1/resend_email_validation", json={"email": user.email})
+
+        assert response.status_code == 204
+        mocked_send_raw_email.assert_called()
+        assert mocked_send_raw_email.call_args_list[0][1]["data"]["MJ-TemplateID"] == 1838526
+
+    @patch("pcapi.utils.mailing.send_raw_email", return_value=True)
+    def test_for_unknown_mail_does_nothing(self, mocked_send_raw_email, app):
+        test_client = TestClient(app.test_client())
+        response = test_client.post("/native/v1/resend_email_validation", json={"email": "aijfioern@mlks.com"})
+
+        assert response.status_code == 204
+        mocked_send_raw_email.assert_not_called()
+
+    @patch("pcapi.utils.mailing.send_raw_email", return_value=True)
+    def test_for_deactivated_account_does_nothhing(self, mocked_send_raw_email, app):
+        user = users_factories.UserFactory(isEmailValidated=True, isActive=False)
+
+        test_client = TestClient(app.test_client())
+        response = test_client.post("/native/v1/resend_email_validation", json={"email": user.email})
+
+        assert response.status_code == 204
+        mocked_send_raw_email.assert_not_called()
