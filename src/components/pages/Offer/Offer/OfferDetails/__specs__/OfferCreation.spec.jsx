@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom'
+import { within } from '@testing-library/dom'
 import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
@@ -235,182 +236,6 @@ describe('offerDetails - Creation', () => {
         expect(screen.getByText('Autre', { selector: '.section-title' })).toBeInTheDocument()
       })
 
-      it('should display an offerer selection and a venue selection when user is pro', async () => {
-        // Given
-        await renderOffers(props, store)
-
-        // When
-        await setOfferValues({ type: 'EventType.CINEMA' })
-
-        // Then
-        expect(screen.queryByLabelText('Structure')).toBeInTheDocument()
-        const venueInput = screen.queryByLabelText('Lieu')
-        expect(venueInput).toBeInTheDocument()
-        expect(venueInput).not.toHaveAttribute('disabled')
-      })
-
-      it('should have offerer selected when given as queryParam', async () => {
-        // Given
-        await renderOffers(props, store, `?structure=${offerers[0].id}`)
-
-        // When
-        await setOfferValues({ type: 'EventType.CINEMA' })
-
-        // Then
-        expect(screen.getByDisplayValue(offerers[0].name)).toBeInTheDocument()
-      })
-
-      it('should select offerer when there is only one option', async () => {
-        // Given
-        pcapi.getValidatedOfferers.mockResolvedValue([offerers[0]])
-        await renderOffers(props, store)
-
-        // When
-        await setOfferValues({ type: 'EventType.CINEMA' })
-
-        // Then
-        expect(screen.getByDisplayValue(offerers[0].name)).toBeInTheDocument()
-      })
-
-      it('should have venue selected when given as queryParam', async () => {
-        // Given
-        await renderOffers(
-          props,
-          store,
-          `?lieu=${venues[0].id}&structure=${venues[0].managingOffererId}`
-        )
-
-        // When
-        await setOfferValues({ type: 'EventType.CINEMA' })
-
-        // Then
-        expect(screen.getByDisplayValue(venues[0].name)).toBeInTheDocument()
-      })
-
-      it('should select venue when there is only one option', async () => {
-        // Given
-        pcapi.getVenuesForOfferer.mockResolvedValue([venues[0]])
-        await renderOffers(props, store)
-
-        // When
-        await setOfferValues({ type: 'EventType.CINEMA' })
-
-        // Then
-        expect(screen.getByDisplayValue(venues[0].name)).toBeInTheDocument()
-      })
-
-      it('should only display virtual venues when offer type is online only', async () => {
-        // Given
-        await renderOffers(props, store)
-
-        // When
-        await setOfferValues({ type: 'ThingType.PRESSE_ABO' })
-
-        // Then
-        expect(screen.queryByText(venues[0].name)).not.toBeInTheDocument()
-        expect(screen.queryByText(venues[1].name)).not.toBeInTheDocument()
-        expect(screen.getByText(venues[2].name)).toBeInTheDocument()
-      })
-
-      it('should only display physical venues when offer type is offline only', async () => {
-        // Given
-        await renderOffers(props, store)
-
-        // When
-        await setOfferValues({ type: 'EventType.CINEMA' })
-
-        // Then
-        expect(screen.getByText(venues[0].name)).toBeInTheDocument()
-        expect(screen.getByText(venues[1].name)).toBeInTheDocument()
-        expect(screen.queryByText(venues[2].name)).not.toBeInTheDocument()
-      })
-
-      it('should display all venues when offer type is offline and online', async () => {
-        // Given
-        await renderOffers(props, store)
-
-        // When
-        await setOfferValues({ type: 'EventType.MUSIQUE' })
-
-        // Then
-        expect(screen.getByText(venues[0].name)).toBeInTheDocument()
-        expect(screen.getByText(venues[1].name)).toBeInTheDocument()
-        expect(screen.getByText(venues[2].name)).toBeInTheDocument()
-      })
-
-      it('should only display venues of selected offerer', async () => {
-        // Given
-        await renderOffers(props, store)
-        await setOfferValues({ type: 'EventType.CINEMA' })
-
-        // When
-        await setOfferValues({ offererId: offerers[0].id })
-
-        // Then
-        expect(pcapi.getVenuesForOfferer).toHaveBeenCalledWith(offerers[0].id)
-      })
-
-      it('should warn user that his offerer has no physical venues when selecting a physical offer and no venues are physical', async () => {
-        // Given
-        pcapi.getVenuesForOfferer.mockResolvedValue([
-          {
-            id: 'AB',
-            isVirtual: true,
-            managingOffererId: offerers[0].id,
-            name: 'Le lieu virtuel',
-            offererName: 'La structure',
-          },
-        ])
-        await renderOffers(props, store)
-
-        // When
-        await setOfferValues({ type: 'EventType.CINEMA' })
-
-        // Then
-        const venueInput = screen.getByLabelText('Lieu')
-        expect(venueInput).toBeInTheDocument()
-        expect(venueInput).not.toHaveAttribute('disabled')
-        const venueIdError = await findInputErrorForField('venueId')
-        expect(venueIdError).toHaveTextContent(
-          'Il faut obligatoirement une structure avec un lieu.'
-        )
-      })
-
-      it('should remove no physical venue warning when it is no longer valid', async () => {
-        // Given
-        pcapi.getVenuesForOfferer.mockResolvedValue([
-          {
-            id: 'AB',
-            isVirtual: true,
-            managingOffererId: offerers[0].id,
-            name: 'Le lieu virtuel',
-            offererName: 'La structure',
-          },
-        ])
-        await renderOffers(props, store)
-        await setOfferValues({ type: 'EventType.CINEMA' })
-
-        // When
-        await setOfferValues({ type: 'ThingType.LIVRE_EDITION' })
-
-        // Then
-        expect(screen.getByLabelText('Lieu')).toBeInTheDocument()
-        const venueIdError = queryInputErrorForField('venueId')
-        expect(venueIdError).toBeNull()
-      })
-
-      it('should select offerer of selected venue', async () => {
-        // Given
-        await renderOffers(props, store)
-        await setOfferValues({ type: 'EventType.CINEMA' })
-
-        // When
-        await setOfferValues({ venueId: venues[0].id })
-
-        // Then
-        expect(screen.getByLabelText('Structure')).toHaveDisplayValue(offerers[0].name)
-      })
-
       it('should display email notification input when asking to receive booking emails', async () => {
         // Given
         await renderOffers(props, store)
@@ -425,6 +250,184 @@ describe('offerDetails - Creation', () => {
         )
         expect(bookingEmailInput).toBeInTheDocument()
         expect(bookingEmailInput).toHaveAttribute('name', 'bookingEmail')
+      })
+
+      describe('when selecting a venue', () => {
+        it('should display an offerer selection and a venue selection when user is pro', async () => {
+          // Given
+          await renderOffers(props, store)
+
+          // When
+          await setOfferValues({ type: 'EventType.CINEMA' })
+
+          // Then
+          expect(screen.queryByLabelText('Structure')).toBeInTheDocument()
+          const venueInput = screen.queryByLabelText('Lieu')
+          expect(venueInput).toBeInTheDocument()
+          expect(venueInput).not.toHaveAttribute('disabled')
+        })
+
+        it('should have offerer selected when given as queryParam', async () => {
+          // Given
+          await renderOffers(props, store, `?structure=${offerers[0].id}`)
+
+          // When
+          await setOfferValues({ type: 'EventType.CINEMA' })
+
+          // Then
+          expect(screen.getByDisplayValue(offerers[0].name)).toBeInTheDocument()
+        })
+
+        it('should select offerer when there is only one option', async () => {
+          // Given
+          pcapi.getValidatedOfferers.mockResolvedValue([offerers[0]])
+          await renderOffers(props, store)
+
+          // When
+          await setOfferValues({ type: 'EventType.CINEMA' })
+
+          // Then
+          expect(screen.getByDisplayValue(offerers[0].name)).toBeInTheDocument()
+        })
+
+        it('should have venue selected when given as queryParam', async () => {
+          // Given
+          await renderOffers(
+            props,
+            store,
+            `?lieu=${venues[0].id}&structure=${venues[0].managingOffererId}`
+          )
+
+          // When
+          await setOfferValues({ type: 'EventType.CINEMA' })
+
+          // Then
+          expect(screen.getByDisplayValue(venues[0].name)).toBeInTheDocument()
+        })
+
+        it('should select venue when there is only one option', async () => {
+          // Given
+          pcapi.getVenuesForOfferer.mockResolvedValue([venues[0]])
+          await renderOffers(props, store)
+
+          // When
+          await setOfferValues({ type: 'EventType.CINEMA' })
+
+          // Then
+          expect(screen.getByDisplayValue(venues[0].name)).toBeInTheDocument()
+        })
+
+        it('should only display virtual venues when offer type is online only', async () => {
+          // Given
+          await renderOffers(props, store)
+
+          // When
+          await setOfferValues({ type: 'ThingType.PRESSE_ABO' })
+
+          // Then
+          expect(screen.queryByText(venues[0].name)).not.toBeInTheDocument()
+          expect(screen.queryByText(venues[1].name)).not.toBeInTheDocument()
+          expect(screen.getByText(venues[2].name)).toBeInTheDocument()
+        })
+
+        it('should only display physical venues when offer type is offline only', async () => {
+          // Given
+          await renderOffers(props, store)
+
+          // When
+          await setOfferValues({ type: 'EventType.CINEMA' })
+
+          // Then
+          expect(screen.getByText(venues[0].name)).toBeInTheDocument()
+          expect(screen.getByText(venues[1].name)).toBeInTheDocument()
+          expect(screen.queryByText(venues[2].name)).not.toBeInTheDocument()
+        })
+
+        it('should display all venues when offer type is offline and online', async () => {
+          // Given
+          await renderOffers(props, store)
+
+          // When
+          await setOfferValues({ type: 'EventType.MUSIQUE' })
+
+          // Then
+          expect(screen.getByText(venues[0].name)).toBeInTheDocument()
+          expect(screen.getByText(venues[1].name)).toBeInTheDocument()
+          expect(screen.getByText(venues[2].name)).toBeInTheDocument()
+        })
+
+        it('should only display venues of selected offerer', async () => {
+          // Given
+          await renderOffers(props, store)
+          await setOfferValues({ type: 'EventType.CINEMA' })
+
+          // When
+          await setOfferValues({ offererId: offerers[0].id })
+
+          // Then
+          expect(pcapi.getVenuesForOfferer).toHaveBeenCalledWith(offerers[0].id)
+        })
+
+        it('should select offerer of selected venue', async () => {
+          // Given
+          await renderOffers(props, store)
+          await setOfferValues({ type: 'EventType.CINEMA' })
+
+          // When
+          await setOfferValues({ venueId: venues[0].id })
+
+          // Then
+          expect(screen.getByLabelText('Structure')).toHaveDisplayValue(offerers[0].name)
+        })
+
+        it('should warn user that his offerer has no physical venues when selecting a physical offer and no venues are physical', async () => {
+          // Given
+          pcapi.getVenuesForOfferer.mockResolvedValue([
+            {
+              id: 'AB',
+              isVirtual: true,
+              managingOffererId: offerers[0].id,
+              name: 'Le lieu virtuel',
+              offererName: 'La structure',
+            },
+          ])
+          await renderOffers(props, store)
+
+          // When
+          await setOfferValues({ type: 'EventType.CINEMA' })
+
+          // Then
+          const venueInput = screen.getByLabelText('Lieu')
+          expect(venueInput).toBeInTheDocument()
+          expect(venueInput).not.toHaveAttribute('disabled')
+          const venueIdError = await findInputErrorForField('venueId')
+          expect(venueIdError).toHaveTextContent(
+            'Il faut obligatoirement une structure avec un lieu.'
+          )
+        })
+
+        it('should remove no physical venue warning when it is no longer valid', async () => {
+          // Given
+          pcapi.getVenuesForOfferer.mockResolvedValue([
+            {
+              id: 'AB',
+              isVirtual: true,
+              managingOffererId: offerers[0].id,
+              name: 'Le lieu virtuel',
+              offererName: 'La structure',
+            },
+          ])
+          await renderOffers(props, store)
+          await setOfferValues({ type: 'EventType.CINEMA' })
+
+          // When
+          await setOfferValues({ type: 'ThingType.LIVRE_EDITION' })
+
+          // Then
+          expect(screen.getByLabelText('Lieu')).toBeInTheDocument()
+          const venueIdError = queryInputErrorForField('venueId')
+          expect(venueIdError).toBeNull()
+        })
       })
 
       describe('with conditional field "musicType"', () => {
@@ -713,6 +716,21 @@ describe('offerDetails - Creation', () => {
             )
           ).not.toBeInTheDocument()
         })
+
+        it('should not remind withdrawal modalities', async () => {
+          // Given
+          await renderOffers(props, store)
+          await setOfferValues({ type: 'ThingType.CINEMA_CARD' })
+
+          // When
+          await setOfferValues({ venueId: venues[2].id })
+
+          // Then
+          const withdrawalModalitiesReminder = screen.queryByText(
+            "La livraison d'article n'est pas autorisée. Pour plus d'informations, veuillez consulter nos CGU."
+          )
+          expect(withdrawalModalitiesReminder).not.toBeInTheDocument()
+        })
       })
 
       describe('when offer type is event type', () => {
@@ -741,6 +759,39 @@ describe('offerDetails - Creation', () => {
           expect(duoInput).toBeInTheDocument()
           expect(duoInput).toHaveAttribute('name', 'isDuo')
           expect(duoInput).toBeChecked()
+        })
+
+        it('should not remind withdrawal modalities', async () => {
+          // Given
+          await renderOffers(props, store)
+
+          // When
+          await setOfferValues({ type: 'EventType.MUSIQUE' })
+
+          // Then
+          const withdrawalModalitiesReminder = screen.queryByText(
+            "La livraison d'article n'est pas autorisée. Pour plus d'informations, veuillez consulter nos CGU."
+          )
+          expect(withdrawalModalitiesReminder).not.toBeInTheDocument()
+        })
+      })
+
+      describe('when offer type is thing type and venue is not virtual', () => {
+        it('should remind withdrawal modalities in "Informations pratiques" section', async () => {
+          // Given
+          await renderOffers(props, store)
+
+          // When
+          await setOfferValues({ type: 'ThingType.LIVRE_EDITION', venueId: venues[0].id })
+
+          // Then
+          const informationsPratiquesSection = within(
+            screen.getByText('Informations pratiques').closest('section')
+          )
+          const withdrawalModalitiesReminder = informationsPratiquesSection.getByText(
+            "La livraison d'article n'est pas autorisée. Pour plus d'informations, veuillez consulter nos CGU."
+          )
+          expect(withdrawalModalitiesReminder).toBeInTheDocument()
         })
       })
     })

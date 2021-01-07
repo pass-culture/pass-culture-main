@@ -20,7 +20,8 @@ import {
   EXTRA_DATA_FIELDS,
   MANDATORY_FIELDS,
 } from './_constants'
-import OfferRefundWarning from './OfferRefundWarning'
+import OfferRefundWarning from './Messages/OfferRefundWarning'
+import WithdrawalReminder from './Messages/WithdrawalReminder'
 import TypeTreeSelects from './TypeTreeSelects'
 
 const getOfferConditionalFields = ({
@@ -505,6 +506,8 @@ const OfferForm = ({
                 'Les informations pratiques permettent de donner aux utilisateurs des informations sur le retrait de leur commande.'
               }
             </p>
+
+            {offerType?.type === 'Thing' && venue && !venue.isVirtual && <WithdrawalReminder />}
 
             <div className="form-row">
               <Select
