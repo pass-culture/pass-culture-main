@@ -76,6 +76,7 @@ def validate_user(token):
     check_valid_token_for_user_validation(user_to_validate)
 
     user_to_validate.validationToken = None
+    user_to_validate.isEmailValidated = True
     repository.save(user_to_validate)
 
     user_offerer = user_offerer_queries.find_one_or_none_by_user_id(user_to_validate.id)

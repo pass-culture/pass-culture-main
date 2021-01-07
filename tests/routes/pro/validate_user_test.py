@@ -16,7 +16,7 @@ from tests.conftest import TestClient
 class Patch:
     class Returns204:
         @pytest.mark.usefixtures("db_session")
-        def expect_validation_token_to_be_set_to_none(self, app):
+        def expect_validation_token_to_be_set_to_none_and_email_validated(self, app):
             # Given
             user = create_user()
             user.generate_validation_token()
@@ -29,8 +29,10 @@ class Patch:
             )
 
             # Then
+            validated_user = UserSQLEntity.query.get(user_id)
             assert response.status_code == 204
-            assert UserSQLEntity.query.get(user_id).isValidated
+            assert validated_user.isValidated
+            assert validated_user.isEmailValidated
 
         @pytest.mark.usefixtures("db_session")
         @patch("pcapi.routes.pro.validate.send_ongoing_offerer_attachment_information_email_to_pro", return_value=True)
