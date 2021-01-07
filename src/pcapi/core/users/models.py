@@ -23,9 +23,9 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
 
 from pcapi import settings
-from pcapi.core.bookings import conf
 from pcapi.core.bookings.models import Booking
 from pcapi.core.offers.models import Stock
+from pcapi.core.users.expenses import get_expenses_limit
 from pcapi.models.db import Model
 from pcapi.models.db import db
 from pcapi.models.deposit import Deposit
@@ -215,8 +215,14 @@ class UserSQLEntity(PcObject, Model, NeedsValidationMixin, VersionedMixin):
         self.resetPasswordToken = None
         self.resetPasswordTokenValidityLimit = None
 
-    def bookings_query(self):
-        return db.session.query(Booking).with_parent(self)
+    def get_not_cancelled_bookings(self) -> Booking:
+        return (
+            db.session.query(Booking)
+            .with_parent(self)
+            .filter_by(isCancelled=False)
+            .options(joinedload(Booking.stock).joinedload(Stock.offer))
+            .all()
+        )
 
     def calculate_age(self) -> Optional[int]:
         if self.dateOfBirth is None:
@@ -230,34 +236,8 @@ class UserSQLEntity(PcObject, Model, NeedsValidationMixin, VersionedMixin):
             return []
 
         version = self.deposits[0].version
-        config = conf.LIMIT_CONFIGURATIONS[version]
 
-        bookings = (
-            self.bookings_query()
-            .filter_by(isCancelled=False)
-            .options(joinedload(Booking.stock).joinedload(Stock.offer))
-            .all()
-        )
-
-        capped_digital_bookings = [booking for booking in bookings if config.digital_cap_applies(booking.stock.offer)]
-        capped_physical_bookings = [booking for booking in bookings if config.physical_cap_applies(booking.stock.offer)]
-        return [
-            {
-                "domain": "all",
-                "current": sum(booking.total_amount for booking in bookings),
-                "max": config.TOTAL_CAP,
-            },
-            {
-                "domain": "digital",
-                "current": sum(booking.total_amount for booking in capped_digital_bookings),
-                "max": config.DIGITAL_CAP,
-            },
-            {
-                "domain": "physical",
-                "current": sum(booking.total_amount for booking in capped_physical_bookings),
-                "max": config.PHYSICAL_CAP,
-            },
-        ]
+        return get_expenses_limit(self, version)
 
     @property
     def real_wallet_balance(self):
