@@ -130,7 +130,6 @@ def test_request_reset_password_for_inactive_account(mock_send_reset_password_em
     mock_send_reset_password_email_to_native_app_user.assert_not_called()
 
 
-@pytest.mark.usefixtures("db_session")
 @patch("pcapi.domain.user_emails.send_reset_password_email_to_native_app_user")
 def test_request_reset_password_with_mail_service_exception(mock_send_reset_password_email_to_native_app_user, app):
     email = "existing_user@example.com"
@@ -173,7 +172,7 @@ def test_reset_password_success(app):
     assert user.password == hash_password(new_password)
 
 
-def test_reset_password_fail_for_password_strenght(app):
+def test_reset_password_fail_for_password_strength(app):
     reset_token = random_token()
     user = users_factories.UserFactory(
         resetPasswordToken=reset_token,
@@ -202,7 +201,6 @@ def test_validate_email_with_invalid_token(mock_get_user_with_valid_token, app):
     assert response.status_code == 400
 
 
-@pytest.mark.usefixtures("db_session")
 @freeze_time("2018-06-01")
 def test_validate_email_when_eligible(app):
     user = users_factories.UserFactory(isEmailValidated=False, dateOfBirth=datetime(2000, 6, 1))
@@ -237,7 +235,6 @@ def test_validate_email_when_eligible(app):
     assert refresh_response.status_code == 200
 
 
-@pytest.mark.usefixtures("db_session")
 @freeze_time("2018-06-01")
 def test_validate_email_when_not_eligible(app):
     user = users_factories.UserFactory(isEmailValidated=False, dateOfBirth=datetime(2000, 7, 1))
