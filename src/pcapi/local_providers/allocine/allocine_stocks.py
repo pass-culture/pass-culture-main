@@ -39,7 +39,6 @@ ORIGINAL_VERSION_SUFFIX = "VO"
 class AllocineStocks(LocalProvider):
     name = "Allociné"
     can_create = True
-    manually_editable_fields = ["quantity", "price", "bookingLimitDatetime"]
 
     def __init__(self, allocine_venue_provider: AllocineVenueProvider):
         super().__init__(allocine_venue_provider)
