@@ -21,7 +21,7 @@ const ThumbnailUrl = () => {
         {'Utilisez de préférence un visuel en orientation portrait'}
       </p>
       <TextInput
-        label="Url de l’image"
+        label="URL de l’image"
         name="url"
         onChange={checkUrl}
         placeholder="Ex : http://..."

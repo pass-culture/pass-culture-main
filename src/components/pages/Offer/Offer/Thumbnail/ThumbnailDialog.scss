@@ -2,10 +2,6 @@
   min-height: rem(510px);
   position: relative;
   text-align: center;
-
-  svg {
-    width: 100%;
-  }
 }
 
 .tnd-close {
@@ -27,6 +23,10 @@
 
 .tnf-form {
   margin-top: rem(48px);
+
+  svg {
+    width: 100%;
+  }
 
   .input-text {
     text-align: left;

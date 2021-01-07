@@ -6,6 +6,8 @@
 
 html {
   @include body();
+
+  color: $black;
 }
 
 body,

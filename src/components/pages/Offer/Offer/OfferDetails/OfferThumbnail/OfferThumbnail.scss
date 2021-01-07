@@ -14,6 +14,11 @@
   position: relative;
   width: rem(256px);
 
+  &:hover,
+  &:focus {
+    text-decoration: underline;
+  }
+
   img {
     border-radius: rem(4px);
     height: 100%;
@@ -42,6 +47,7 @@
     color: $white;
     content: attr(title);
     padding-top: rem(50px);
+    text-decoration: underline;
     z-index: 1;
   }
 

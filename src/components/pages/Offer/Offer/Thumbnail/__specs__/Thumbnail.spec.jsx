@@ -9,6 +9,21 @@ import OfferLayoutContainer from 'components/pages/Offer/Offer/OfferLayoutContai
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
+global.createImageBitmap = () => Promise.resolve({})
+
+const createFile = ({
+  name = 'example.png',
+  type = 'image/png',
+  sizeInMo = 1,
+  width = 401,
+  height = 401,
+} = {}) => {
+  const file = new File([''], name, { type })
+  Object.defineProperty(file, 'size', { value: 1024 * 1024 * sizeInMo + 1 })
+  jest.spyOn(global, 'createImageBitmap').mockResolvedValue({ width, height })
+  return file
+}
+
 jest.mock('repository/pcapi/pcapi', () => ({
   getValidatedOfferers: jest.fn(),
   getVenuesForOfferer: jest.fn(),
@@ -92,7 +107,7 @@ describe('thumbnail edition', () => {
         ).toBeInTheDocument()
         const fileInput = screen.getByLabelText('Importer une image depuis l’ordinateur')
         expect(fileInput).toHaveAttribute('type', 'file')
-        expect(fileInput).toHaveAttribute('accept', 'image/png, image/jpeg')
+        expect(fileInput).toHaveAttribute('accept', 'image/png,image/jpeg')
         expect(
           screen.getByText('Formats supportés : JPG, PNG', {
             selector: 'li',
@@ -109,6 +124,78 @@ describe('thumbnail edition', () => {
           })
         ).toBeInTheDocument()
       })
+
+      it('should not import a file other than png or jpg', async () => {
+        // Given
+        await renderThumbnail({}, store)
+        const xmlFile = createFile({ type: 'application/xml' })
+
+        // When
+        fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
+          target: { files: [xmlFile] },
+        })
+
+        // Then
+        expect(
+          await screen.findByText('Formats supportés : JPG, PNG', {
+            selector: 'strong',
+          })
+        ).toBeInTheDocument()
+      })
+
+      it('should not import a file which exceeds maximum size', async () => {
+        // Given
+        await renderThumbnail({}, store)
+        const bigFile = createFile({ sizeInMo: 10 })
+
+        // When
+        fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
+          target: { files: [bigFile] },
+        })
+
+        // Then
+        expect(
+          await screen.findByText('Le poids du fichier ne doit pas dépasser 10 Mo', {
+            selector: 'strong',
+          })
+        ).toBeInTheDocument()
+      })
+
+      it('should not import a file whose height is below minimum', async () => {
+        // Given
+        await renderThumbnail({}, store)
+        const file = createFile({ height: 200 })
+
+        // When
+        await fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
+          target: { files: [file] },
+        })
+
+        // Then
+        expect(
+          await screen.findByText('La taille de l’image doit être supérieure à 400 x 400px', {
+            selector: 'strong',
+          })
+        ).toBeInTheDocument()
+      })
+
+      it('should not import a file whose width is below minimum', async () => {
+        // Given
+        await renderThumbnail({}, store)
+        const file = createFile({ width: 200 })
+
+        // When
+        await fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
+          target: { files: [file] },
+        })
+
+        // Then
+        expect(
+          await screen.findByText('La taille de l’image doit être supérieure à 400 x 400px', {
+            selector: 'strong',
+          })
+        ).toBeInTheDocument()
+      })
     })
 
     describe('when the user is on url tab', () => {
@@ -121,11 +208,11 @@ describe('thumbnail edition', () => {
 
         // Then
         expect(
-          screen.getByText('Utilisez de préférence un visuel en orientation portrait', {
+          await screen.findByText('Utilisez de préférence un visuel en orientation portrait', {
             selector: 'p',
           })
         ).toBeInTheDocument()
-        const urlInput = screen.getByLabelText('Url de l’image')
+        const urlInput = screen.getByLabelText('URL de l’image')
         expect(urlInput).toHaveAttribute('type', 'url')
         expect(urlInput).toHaveAttribute('placeholder', 'Ex : http://...')
         expect(screen.getByText('Valider', { selector: 'button' })).toHaveAttribute('disabled')
@@ -137,7 +224,7 @@ describe('thumbnail edition', () => {
         fireEvent.click(screen.getByText('Utiliser une URL'))
 
         // When
-        fireEvent.change(screen.getByLabelText('Url de l’image'), { target: { value: 'MEFA' } })
+        fireEvent.change(screen.getByLabelText('URL de l’image'), { target: { value: 'MEFA' } })
 
         // Then
         expect(screen.getByText('Valider', { selector: 'button' })).not.toHaveAttribute('disabled')
