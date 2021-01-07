@@ -55,4 +55,5 @@ def create_account(body: serializers.AccountRequest) -> None:
             is_email_validated=False,
         )
     except UserAlreadyExistsException:
-        raise ApiErrors({"email": "Un compte lié à cet email existe déjà"})
+        user = find_user_by_email(body.email)
+        api.request_password_reset(user)
