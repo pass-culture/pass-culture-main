@@ -8,16 +8,6 @@ from sqlalchemy.orm import joinedload
 from pcapi.models import Booking
 from pcapi.models import Offer
 from pcapi.models import Stock
-from pcapi.models import VenueSQLEntity
-
-
-ALL_DEPARTMENTS_CODE = "00"
-
-
-def find_searchable_offer(offer_id):
-    return (
-        Offer.query.filter_by(id=offer_id).join(VenueSQLEntity).filter(VenueSQLEntity.validationToken == None).first()
-    )
 
 
 def _build_bookings_quantity_subquery():

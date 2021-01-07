@@ -26,11 +26,6 @@ def delete_venue_from_iris_venues(venue_id: int) -> None:
     repository.delete(*iris_venues_to_delete)
 
 
-def find_venues_located_near_iris(iris_id: int) -> List[int]:
-    iris_venues = IrisVenues.query.filter_by(irisId=iris_id).all()
-    return [iris_venue.venueId for iris_venue in iris_venues]
-
-
 def _bulk_insert_iris_venues(iris_venue_information: List[Dict]) -> None:
     db.session.bulk_insert_mappings(IrisVenues, iris_venue_information)
     db.session.commit()

@@ -10,7 +10,6 @@ from pcapi.models import IrisVenues
 from pcapi.repository import repository
 from pcapi.repository.iris_venues_queries import delete_venue_from_iris_venues
 from pcapi.repository.iris_venues_queries import find_ids_of_irises_located_near_venue
-from pcapi.repository.iris_venues_queries import find_venues_located_near_iris
 from pcapi.repository.iris_venues_queries import insert_venue_in_iris_venue
 
 
@@ -129,48 +128,3 @@ class DeleteVenueFromIrisVenuesTest:
 
         # Then
         assert IrisVenues.query.count() == 1
-
-
-class FindVenuesLocatedNearIrisTest:
-    @pytest.mark.usefixtures("db_session")
-    def test_should_return_ids_list_of_venues_located_near_given_iris(self, app):
-        # given
-        offerer = create_offerer()
-        venue = create_venue(offerer, siret="12345678912345")
-
-        polygon = Polygon([(0.1, 0.1), (0.1, 0.2), (0.2, 0.2), (0.2, 0.1)])
-
-        iris = create_iris(polygon)
-
-        iris_venue = create_iris_venue(iris, venue)
-
-        repository.save(iris_venue)
-
-        # when
-        venues_ids = find_venues_located_near_iris(iris.id)
-
-        # then
-        assert venues_ids == [venue.id]
-
-    @pytest.mark.usefixtures("db_session")
-    def test_should_return_empty_list_when_no_venue_found_near_given_iris(self, app):
-        # given
-        polygon = Polygon([(0.1, 0.1), (0.1, 0.2), (0.2, 0.2), (0.2, 0.1)])
-
-        iris = create_iris(polygon)
-
-        repository.save(iris)
-
-        # when
-        venues_ids = find_venues_located_near_iris(iris.id)
-
-        # then
-        assert venues_ids == []
-
-    @pytest.mark.usefixtures("db_session")
-    def test_should_return_empty_list_when_iris_does_not_exist(self, app):
-        # when
-        venues_ids = find_venues_located_near_iris(None)
-
-        # then
-        assert venues_ids == []

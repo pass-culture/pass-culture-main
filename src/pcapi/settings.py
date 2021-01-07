@@ -54,8 +54,6 @@ else:
     PRO_URL = f"https://pro.passculture-{ENV}.beta.gouv.fr"
     NATIVE_APP_URL = f"passculture://app.passculture.{ENV}"
 
-BLOB_SIZE = 30
-
 
 # DATABASE
 DB_MIGRATION_LOCK_TIMEOUT = int(os.environ.get("DB_MIGRATION_STATEMENT_TIMEOUT", 5000))
