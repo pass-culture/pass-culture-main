@@ -323,9 +323,7 @@ const OfferForm = ({
   return (
     <form className="offer-form">
       {isSynchronizedOffer(offer) ? (
-        <div className="form-row">
-          <SynchronizedProviderInformation providerName={offer.lastProvider.name} />
-        </div>
+        <SynchronizedProviderInformation providerName={offer.lastProvider.name} />
       ) : (
         <p className="page-subtitle">
           {'Tous les champs sont obligatoires sauf mention contraire'}
