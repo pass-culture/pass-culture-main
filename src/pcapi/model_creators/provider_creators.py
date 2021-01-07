@@ -1,8 +1,5 @@
 from datetime import datetime
-from glob import glob
 from inspect import isclass
-
-import pytest
 
 from pcapi.local_providers.providable_info import ProvidableInfo
 import pcapi.models
@@ -12,7 +9,6 @@ from pcapi.models import Provider
 from pcapi.models.db import Model
 from pcapi.repository import repository
 from pcapi.repository.provider_queries import get_provider_by_local_class
-from pcapi.utils.object_storage import STORAGE_DIR
 
 
 SAVED_COUNTS = {}
@@ -37,10 +33,6 @@ def assert_created_counts(**counts):
             last_created_count,
             counts[model_name],
         )
-
-
-def assert_created_thumbs():
-    assert len(glob(str(STORAGE_DIR / "thumbs" / "*"))) == 1
 
 
 def provider_test(app, provider, venue_provider, **counts):
@@ -87,8 +79,3 @@ def create_providable_info(
     else:
         providable_info.date_modified_at_provider = datetime.utcnow()
     return providable_info
-
-
-def assert_iterator_is_empty(custom_iterator: iter):
-    with pytest.raises(StopIteration):
-        next(custom_iterator)
