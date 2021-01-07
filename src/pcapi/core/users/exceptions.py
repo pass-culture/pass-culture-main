@@ -20,3 +20,7 @@ class UserAlreadyExistsException(Exception):
 
 class NotEligible(Exception):
     pass
+
+
+class EmailNotSent(Exception):
+    pass

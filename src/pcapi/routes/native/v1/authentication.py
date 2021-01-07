@@ -1,4 +1,3 @@
-from flask import current_app as app
 from flask import jsonify
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import create_refresh_token
@@ -12,7 +11,6 @@ from pcapi.core.users import repository as users_repo
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.utils import format_email
 from pcapi.domain.password import check_password_strength
-from pcapi.domain.user_emails import send_reset_password_email_to_native_app_user
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_email
@@ -21,7 +19,6 @@ from pcapi.routes.native.v1.serialization.authentication import ResetPasswordReq
 from pcapi.routes.native.v1.serialization.authentication import ValidateEmailRequest
 from pcapi.routes.native.v1.serialization.authentication import ValidateEmailResponse
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils.mailing import send_raw_email
 
 from . import blueprint
 from .serialization import authentication
@@ -61,18 +58,9 @@ def refresh() -> authentication.RefreshResponse:
 @spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400])  # type: ignore
 def request_password_reset(body: RequestPasswordResetRequest) -> None:
     user = find_user_by_email(body.email)
-
-    if not user or not user.isActive:
-        return
-
-    reset_password_token = users_api.create_reset_password_token(user)
-
-    is_email_sent = send_reset_password_email_to_native_app_user(
-        user.email, reset_password_token.value, reset_password_token.expirationDate, send_raw_email
-    )
-
-    if not is_email_sent:
-        app.logger.error("Email service failure when user request password reset with %s", user.email)
+    try:
+        users_api.request_password_reset(user)
+    except users_exceptions.EmailNotSent:
         raise ApiErrors(
             {"email": ["L'email n'a pas pu être envoyé"]},
             status_code=400,
