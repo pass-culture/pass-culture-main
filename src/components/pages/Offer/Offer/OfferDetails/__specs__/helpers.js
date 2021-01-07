@@ -8,6 +8,10 @@ export const fieldLabels = {
   durationMinutes: { label: 'Durée', exact: false },
   isbn: { label: 'ISBN', exact: false },
   isDuo: { label: 'Accepter les réservations "duo"', exact: false },
+  audioDisabilityCompliant: { label: 'Handicap auditif', exact: true },
+  mentalDisabilityCompliant: { label: 'Handicap mental', exact: true },
+  motorDisabilityCompliant: { label: 'Handicap moteur', exact: true },
+  visualDisabilityCompliant: { label: 'Handicap visuel', exact: true },
   isNational: { label: 'Rayonnement national', exact: true },
   name: { label: "Titre de l'offre", exact: true },
   musicSubType: { label: 'Sous genre', exact: false },
@@ -40,7 +44,14 @@ export const queryInputErrorForField = fieldName => {
 }
 
 export const setOfferValues = async values => {
-  const checkboxes = ['isDuo', 'receiveNotificationEmails']
+  const checkboxes = [
+    'isDuo',
+    'audioDisabilityCompliant',
+    'mentalDisabilityCompliant',
+    'motorDisabilityCompliant',
+    'visualDisabilityCompliant',
+    'receiveNotificationEmails',
+  ]
   const selects = [
     'musicType',
     'musicSubType',

@@ -536,6 +536,39 @@ const OfferForm = ({
             )}
           </section>
 
+          <section className="form-section accessibility-section">
+            <h3 className="section-title">
+              {'Accessibilité'}
+            </h3>
+            <p className="section-description">
+              {'Cette offre est accessible aux publics en situation de :'}
+            </p>
+            <CheckboxInput
+              checked={formValues.visualDisabilityCompliant}
+              label="Handicap visuel"
+              name="visualDisabilityCompliant"
+              onChange={handleSingleFormUpdate}
+            />
+            <CheckboxInput
+              checked={formValues.mentalDisabilityCompliant}
+              label="Handicap mental"
+              name="mentalDisabilityCompliant"
+              onChange={handleSingleFormUpdate}
+            />
+            <CheckboxInput
+              checked={formValues.motorDisabilityCompliant}
+              label="Handicap moteur"
+              name="motorDisabilityCompliant"
+              onChange={handleSingleFormUpdate}
+            />
+            <CheckboxInput
+              checked={formValues.audioDisabilityCompliant}
+              label="Handicap auditif"
+              name="audioDisabilityCompliant"
+              onChange={handleSingleFormUpdate}
+            />
+          </section>
+
           <section className="form-section">
             <h3 className="section-title">
               {'Autre'}

@@ -155,6 +155,10 @@ describe('offerDetails - Edition', () => {
         description: 'Offer description',
         durationMinutes: 90,
         isDuo: true,
+        audioDisabilityCompliant: true,
+        mentalDisabilityCompliant: true,
+        motorDisabilityCompliant: true,
+        visualDisabilityCompliant: true,
         name: 'My edited offer',
         type: 'EventType.FULL_CONDITIONAL_FIELDS',
         url: 'http://example.net',
@@ -195,79 +199,106 @@ describe('offerDetails - Edition', () => {
       await renderOffers(props, store)
 
       // Then
-      const typeInput = await screen.findByLabelText(fieldLabels.type.label, {
+      const typeInput = screen.getByLabelText(fieldLabels.type.label, {
         exact: fieldLabels.type.exact,
       })
       expect(typeInput).toHaveValue(fullConditionalFieldsType.value)
-      const musicSubTypeInput = await screen.findByLabelText(fieldLabels.musicSubType.label, {
+      const musicSubTypeInput = screen.getByLabelText(fieldLabels.musicSubType.label, {
         exact: fieldLabels.musicSubType.exact,
       })
       expect(musicSubTypeInput).toHaveValue(editedOffer.musicSubType)
-      const musicTypeInput = await screen.findByLabelText(fieldLabels.musicType.label, {
+      const musicTypeInput = screen.getByLabelText(fieldLabels.musicType.label, {
         exact: fieldLabels.musicType.exact,
       })
       expect(musicTypeInput).toHaveValue(editedOffer.musicType)
-      const offererIdInput = await screen.findByLabelText(fieldLabels.offererId.label, {
+      const offererIdInput = screen.getByLabelText(fieldLabels.offererId.label, {
         exact: fieldLabels.offererId.exact,
       })
       expect(offererIdInput).toHaveValue(editedOfferVenue.managingOffererId)
-      const venueIdInput = await screen.findByLabelText(fieldLabels.venueId.label, {
+      const venueIdInput = screen.getByLabelText(fieldLabels.venueId.label, {
         exact: fieldLabels.venueId.exact,
       })
       expect(venueIdInput).toHaveValue(editedOffer.venueId)
 
-      const authorInput = await screen.findByLabelText(fieldLabels.author.label, {
+      const authorInput = screen.getByLabelText(fieldLabels.author.label, {
         exact: fieldLabels.author.exact,
       })
       expect(authorInput).toHaveValue(editedOffer.author)
-      const bookingEmailInput = await screen.findByLabelText(fieldLabels.bookingEmail.label, {
+      const bookingEmailInput = screen.getByLabelText(fieldLabels.bookingEmail.label, {
         exact: fieldLabels.bookingEmail.exact,
       })
       expect(bookingEmailInput).toHaveValue(editedOffer.bookingEmail)
-      const descriptionInput = await screen.findByLabelText(fieldLabels.description.label, {
+      const descriptionInput = screen.getByLabelText(fieldLabels.description.label, {
         exact: fieldLabels.description.exact,
       })
       expect(descriptionInput).toHaveValue(editedOffer.description)
-      const durationMinutesInput = await screen.findByLabelText(fieldLabels.durationMinutes.label, {
+      const durationMinutesInput = screen.getByLabelText(fieldLabels.durationMinutes.label, {
         exact: fieldLabels.durationMinutes.exact,
       })
       expect(durationMinutesInput).toHaveValue('1:30')
-      const isbnInput = await screen.findByLabelText(fieldLabels.isbn.label, {
+      const isbnInput = screen.getByLabelText(fieldLabels.isbn.label, {
         exact: fieldLabels.isbn.exact,
       })
       expect(isbnInput).toHaveValue(editedOffer.isbn)
-      const isDuoInput = await screen.findByLabelText(fieldLabels.isDuo.label, {
+      const isDuoInput = screen.getByLabelText(fieldLabels.isDuo.label, {
         exact: fieldLabels.isDuo.exact,
       })
       expect(isDuoInput).toBeChecked()
-      const nameInput = await screen.findByLabelText(fieldLabels.name.label, {
+      const audioDisabilityCompliantInput = screen.getByLabelText(
+        fieldLabels.audioDisabilityCompliant.label,
+        {
+          exact: fieldLabels.audioDisabilityCompliant.exact,
+        }
+      )
+      expect(audioDisabilityCompliantInput).toBeChecked()
+      const mentalDisabilityCompliantInput = screen.getByLabelText(
+        fieldLabels.mentalDisabilityCompliant.label,
+        {
+          exact: fieldLabels.mentalDisabilityCompliant.exact,
+        }
+      )
+      expect(mentalDisabilityCompliantInput).toBeChecked()
+      const motorDisabilityCompliantInput = screen.getByLabelText(
+        fieldLabels.motorDisabilityCompliant.label,
+        {
+          exact: fieldLabels.motorDisabilityCompliant.exact,
+        }
+      )
+      expect(motorDisabilityCompliantInput).toBeChecked()
+      const visualDisabilityCompliantInput = screen.getByLabelText(
+        fieldLabels.visualDisabilityCompliant.label,
+        {
+          exact: fieldLabels.visualDisabilityCompliant.exact,
+        }
+      )
+      expect(visualDisabilityCompliantInput).toBeChecked()
+      const nameInput = screen.getByLabelText(fieldLabels.name.label, {
         exact: fieldLabels.name.exact,
       })
       expect(nameInput).toHaveValue(editedOffer.name)
-      const performerInput = await screen.findByLabelText(fieldLabels.performer.label, {
+      const performerInput = screen.getByLabelText(fieldLabels.performer.label, {
         exact: fieldLabels.performer.exact,
       })
       expect(performerInput).toHaveValue(editedOffer.extraData.performer)
-      const stageDirectorInput = await screen.findByLabelText(fieldLabels.stageDirector.label, {
+      const stageDirectorInput = screen.getByLabelText(fieldLabels.stageDirector.label, {
         exact: fieldLabels.stageDirector.exact,
       })
       expect(stageDirectorInput).toHaveValue(editedOffer.extraData.stageDirector)
-      const speakerInput = await screen.findByLabelText(fieldLabels.speaker.label, {
+      const speakerInput = screen.getByLabelText(fieldLabels.speaker.label, {
         exact: fieldLabels.speaker.exact,
       })
       expect(speakerInput).toHaveValue(editedOffer.extraData.speaker)
-      const urlInput = await screen.findByLabelText(fieldLabels.url.label, {
+      const urlInput = screen.getByLabelText(fieldLabels.url.label, {
         exact: fieldLabels.url.exact,
       })
       expect(urlInput).toHaveValue(editedOffer.url)
-      const visaInput = await screen.findByLabelText(fieldLabels.visa.label, {
+      const visaInput = screen.getByLabelText(fieldLabels.visa.label, {
         exact: fieldLabels.visa.exact,
       })
       expect(visaInput).toHaveValue(editedOffer.extraData.visa)
-      const withdrawalDetailsInput = await screen.findByLabelText(
-        fieldLabels.withdrawalDetails.label,
-        { exact: fieldLabels.withdrawalDetails.exact }
-      )
+      const withdrawalDetailsInput = screen.getByLabelText(fieldLabels.withdrawalDetails.label, {
+        exact: fieldLabels.withdrawalDetails.exact,
+      })
       expect(withdrawalDetailsInput).toHaveValue(editedOffer.withdrawalDetails)
     })
 
@@ -309,84 +340,113 @@ describe('offerDetails - Edition', () => {
       })
       pcapi.loadTypes.mockResolvedValue(types)
 
+      // When
       await renderOffers(props, store)
 
+      // Then
       // Edition read only fields
-      const typeInput = await screen.findByLabelText(fieldLabels.type.label, {
+      const typeInput = screen.getByLabelText(fieldLabels.type.label, {
         exact: fieldLabels.type.exact,
       })
-      expect(typeInput).toHaveAttribute('disabled')
-      const musicSubTypeInput = await screen.findByLabelText(fieldLabels.musicSubType.label, {
+      expect(typeInput).toBeDisabled()
+      const musicSubTypeInput = screen.getByLabelText(fieldLabels.musicSubType.label, {
         exact: fieldLabels.musicSubType.exact,
       })
-      expect(musicSubTypeInput).toHaveAttribute('disabled')
-      const musicTypeInput = await screen.findByLabelText(fieldLabels.musicType.label, {
+      expect(musicSubTypeInput).toBeDisabled()
+      const musicTypeInput = screen.getByLabelText(fieldLabels.musicType.label, {
         exact: fieldLabels.musicType.exact,
       })
-      expect(musicTypeInput).toHaveAttribute('disabled')
-      const offererIdInput = await screen.findByLabelText(fieldLabels.offererId.label, {
+      expect(musicTypeInput).toBeDisabled()
+      const offererIdInput = screen.getByLabelText(fieldLabels.offererId.label, {
         exact: fieldLabels.offererId.exact,
       })
-      expect(offererIdInput).toHaveAttribute('disabled')
-      const venueIdInput = await screen.findByLabelText(fieldLabels.venueId.label, {
+      expect(offererIdInput).toBeDisabled()
+      const venueIdInput = screen.getByLabelText(fieldLabels.venueId.label, {
         exact: fieldLabels.venueId.exact,
       })
-      expect(venueIdInput).toHaveAttribute('disabled')
+      expect(venueIdInput).toBeDisabled()
 
       // Editable fields
-      const authorInput = await screen.findByLabelText(fieldLabels.author.label, {
+      const authorInput = screen.getByLabelText(fieldLabels.author.label, {
         exact: fieldLabels.author.exact,
       })
-      expect(authorInput).not.toHaveAttribute('disabled')
-      const bookingEmailInput = await screen.findByLabelText(fieldLabels.bookingEmail.label, {
+      expect(authorInput).toBeEnabled()
+      const bookingEmailInput = screen.getByLabelText(fieldLabels.bookingEmail.label, {
         exact: fieldLabels.bookingEmail.exact,
       })
-      expect(bookingEmailInput).not.toHaveAttribute('disabled')
-      const descriptionInput = await screen.findByLabelText(fieldLabels.description.label, {
+      expect(bookingEmailInput).toBeEnabled()
+      const descriptionInput = screen.getByLabelText(fieldLabels.description.label, {
         exact: fieldLabels.description.exact,
       })
-      expect(descriptionInput).not.toHaveAttribute('disabled')
-      const durationMinutesInput = await screen.findByLabelText(fieldLabels.durationMinutes.label, {
+      expect(descriptionInput).toBeEnabled()
+      const durationMinutesInput = screen.getByLabelText(fieldLabels.durationMinutes.label, {
         exact: fieldLabels.durationMinutes.exact,
       })
-      expect(durationMinutesInput).not.toHaveAttribute('disabled')
-      const isbnInput = await screen.findByLabelText(fieldLabels.isbn.label, {
+      expect(durationMinutesInput).toBeEnabled()
+      const isbnInput = screen.getByLabelText(fieldLabels.isbn.label, {
         exact: fieldLabels.isbn.exact,
       })
-      expect(isbnInput).not.toHaveAttribute('disabled')
-      const isDuoInput = await screen.findByLabelText(fieldLabels.isDuo.label, {
+      expect(isbnInput).toBeEnabled()
+      const isDuoInput = screen.getByLabelText(fieldLabels.isDuo.label, {
         exact: fieldLabels.isDuo.exact,
       })
-      expect(isDuoInput).not.toHaveAttribute('disabled')
-      const nameInput = await screen.findByLabelText(fieldLabels.name.label, {
+      expect(isDuoInput).toBeEnabled()
+      const nameInput = screen.getByLabelText(fieldLabels.name.label, {
         exact: fieldLabels.name.exact,
       })
-      expect(nameInput).not.toHaveAttribute('disabled')
-      const performerInput = await screen.findByLabelText(fieldLabels.performer.label, {
+      expect(nameInput).toBeEnabled()
+      const performerInput = screen.getByLabelText(fieldLabels.performer.label, {
         exact: fieldLabels.performer.exact,
       })
-      expect(performerInput).not.toHaveAttribute('disabled')
-      const stageDirectorInput = await screen.findByLabelText(fieldLabels.stageDirector.label, {
+      expect(performerInput).toBeEnabled()
+      const stageDirectorInput = screen.getByLabelText(fieldLabels.stageDirector.label, {
         exact: fieldLabels.stageDirector.exact,
       })
-      expect(stageDirectorInput).not.toHaveAttribute('disabled')
-      const speakerInput = await screen.findByLabelText(fieldLabels.speaker.label, {
+      expect(stageDirectorInput).toBeEnabled()
+      const speakerInput = screen.getByLabelText(fieldLabels.speaker.label, {
         exact: fieldLabels.speaker.exact,
       })
-      expect(speakerInput).not.toHaveAttribute('disabled')
-      const urlInput = await screen.findByLabelText(fieldLabels.url.label, {
+      expect(speakerInput).toBeEnabled()
+      const urlInput = screen.getByLabelText(fieldLabels.url.label, {
         exact: fieldLabels.url.exact,
       })
-      expect(urlInput).not.toHaveAttribute('disabled')
-      const visaInput = await screen.findByLabelText(fieldLabels.visa.label, {
+      expect(urlInput).toBeEnabled()
+      const visaInput = screen.getByLabelText(fieldLabels.visa.label, {
         exact: fieldLabels.visa.exact,
       })
-      expect(visaInput).not.toHaveAttribute('disabled')
-      const withdrawalDetailsInput = await screen.findByLabelText(
-        fieldLabels.withdrawalDetails.label,
-        { exact: fieldLabels.withdrawalDetails.exact }
+      expect(visaInput).toBeEnabled()
+      const withdrawalDetailsInput = screen.getByLabelText(fieldLabels.withdrawalDetails.label, {
+        exact: fieldLabels.withdrawalDetails.exact,
+      })
+      expect(withdrawalDetailsInput).toBeEnabled()
+      const audioDisabilityCompliant = screen.getByLabelText(
+        fieldLabels.audioDisabilityCompliant.label,
+        {
+          exact: fieldLabels.audioDisabilityCompliant.exact,
+        }
       )
-      expect(withdrawalDetailsInput).not.toHaveAttribute('disabled')
+      expect(audioDisabilityCompliant).toBeEnabled()
+      const mentalDisabilityCompliant = screen.getByLabelText(
+        fieldLabels.mentalDisabilityCompliant.label,
+        {
+          exact: fieldLabels.mentalDisabilityCompliant.exact,
+        }
+      )
+      expect(mentalDisabilityCompliant).toBeEnabled()
+      const motorDisabilityCompliant = screen.getByLabelText(
+        fieldLabels.motorDisabilityCompliant.label,
+        {
+          exact: fieldLabels.motorDisabilityCompliant.exact,
+        }
+      )
+      expect(motorDisabilityCompliant).toBeEnabled()
+      const visualDisabilityCompliant = screen.getByLabelText(
+        fieldLabels.visualDisabilityCompliant.label,
+        {
+          exact: fieldLabels.visualDisabilityCompliant.exact,
+        }
+      )
+      expect(visualDisabilityCompliant).toBeEnabled()
     })
 
     describe('for synchronized offers', () => {
@@ -425,7 +485,7 @@ describe('offerDetails - Edition', () => {
         ).toHaveAttribute('src', expect.stringContaining(providerInformation.icon))
       })
 
-      it('should not allow any edition', async () => {
+      it('should allow edition of accessibility fields', async () => {
         // Given
         editedOfferVenue.isVirtual = true
         const editedOffer = {
@@ -464,95 +524,166 @@ describe('offerDetails - Edition', () => {
         })
         pcapi.loadTypes.mockResolvedValue(types)
 
+        // When
         await renderOffers(props, store)
 
-        // Edition read only fields
-        const typeInput = await screen.findByLabelText(fieldLabels.type.label, {
+        // Then
+        const audioDisabilityCompliant = screen.getByLabelText(
+          fieldLabels.audioDisabilityCompliant.label,
+          {
+            exact: fieldLabels.audioDisabilityCompliant.exact,
+          }
+        )
+        expect(audioDisabilityCompliant).toBeEnabled()
+        const mentalDisabilityCompliant = screen.getByLabelText(
+          fieldLabels.mentalDisabilityCompliant.label,
+          {
+            exact: fieldLabels.mentalDisabilityCompliant.exact,
+          }
+        )
+        expect(mentalDisabilityCompliant).toBeEnabled()
+        const motorDisabilityCompliant = screen.getByLabelText(
+          fieldLabels.motorDisabilityCompliant.label,
+          {
+            exact: fieldLabels.motorDisabilityCompliant.exact,
+          }
+        )
+        expect(motorDisabilityCompliant).toBeEnabled()
+        const visualDisabilityCompliant = screen.getByLabelText(
+          fieldLabels.visualDisabilityCompliant.label,
+          {
+            exact: fieldLabels.visualDisabilityCompliant.exact,
+          }
+        )
+        expect(visualDisabilityCompliant).toBeEnabled()
+      })
+
+      it('should not allow any other edition', async () => {
+        // Given
+        editedOfferVenue.isVirtual = true
+        const editedOffer = {
+          id: 'ABC12',
+          name: 'My edited offer',
+          type: 'EventType.FULL_CONDITIONAL_FIELDS',
+          showType: 400,
+          showSubType: 401,
+          description: 'Offer description',
+          venue: editedOfferVenue,
+          venueId: editedOfferVenue.id,
+          withdrawalDetails: 'Offer withdrawal details',
+          author: 'Mr Offer Author',
+          performer: 'Mr Offer Performer',
+          bookingEmail: 'booking@example.net',
+          lastProvider: {
+            name: 'Leslibraires.fr',
+          },
+        }
+        pcapi.loadOffer.mockResolvedValue(editedOffer)
+        types.push({
+          conditionalFields: [
+            'author',
+            'showType',
+            'performer',
+            'isbn',
+            'stageDirector',
+            'speaker',
+            'visa',
+          ],
+          offlineOnly: false,
+          onlineOnly: false,
+          proLabel: 'Musique - concerts, festivals',
+          type: 'Event',
+          value: 'EventType.FULL_CONDITIONAL_FIELDS',
+        })
+        pcapi.loadTypes.mockResolvedValue(types)
+
+        // When
+        await renderOffers(props, store)
+
+        // Then
+        const typeInput = screen.getByLabelText(fieldLabels.type.label, {
           exact: fieldLabels.type.exact,
         })
-        expect(typeInput).toHaveAttribute('disabled')
-        const showSubTypeInput = await screen.findByLabelText(fieldLabels.showSubType.label, {
+        expect(typeInput).toBeDisabled()
+        const showSubTypeInput = screen.getByLabelText(fieldLabels.showSubType.label, {
           exact: fieldLabels.showSubType.exact,
         })
-        expect(showSubTypeInput).toHaveAttribute('disabled')
-        const showTypeInput = await screen.findByLabelText(fieldLabels.showType.label, {
+        expect(showSubTypeInput).toBeDisabled()
+        const showTypeInput = screen.getByLabelText(fieldLabels.showType.label, {
           exact: fieldLabels.showType.exact,
         })
-        expect(showTypeInput).toHaveAttribute('disabled')
-        const offererIdInput = await screen.findByLabelText(fieldLabels.offererId.label, {
+        expect(showTypeInput).toBeDisabled()
+        const offererIdInput = screen.getByLabelText(fieldLabels.offererId.label, {
           exact: fieldLabels.offererId.exact,
         })
-        expect(offererIdInput).toHaveAttribute('disabled')
-        const authorInput = await screen.findByLabelText(fieldLabels.author.label, {
+        expect(offererIdInput).toBeDisabled()
+        const authorInput = screen.getByLabelText(fieldLabels.author.label, {
           exact: fieldLabels.author.exact,
         })
-        expect(authorInput).toHaveAttribute('disabled')
-        const bookingEmailInput = await screen.findByLabelText(fieldLabels.bookingEmail.label, {
+        expect(authorInput).toBeDisabled()
+        const bookingEmailInput = screen.getByLabelText(fieldLabels.bookingEmail.label, {
           exact: fieldLabels.bookingEmail.exact,
         })
-        expect(bookingEmailInput).toHaveAttribute('disabled')
-        const receiveNotificationEmailsCheckbox = await screen.findByLabelText(
+        expect(bookingEmailInput).toBeDisabled()
+        const receiveNotificationEmailsCheckbox = screen.getByLabelText(
           fieldLabels.receiveNotificationEmails.label,
           {
             exact: fieldLabels.bookingEmail.exact,
           }
         )
-        expect(receiveNotificationEmailsCheckbox).toHaveAttribute('disabled')
-        const descriptionInput = await screen.findByLabelText(fieldLabels.description.label, {
+        expect(receiveNotificationEmailsCheckbox).toBeDisabled()
+        const descriptionInput = screen.getByLabelText(fieldLabels.description.label, {
           exact: fieldLabels.description.exact,
         })
-        expect(descriptionInput).toHaveAttribute('disabled')
-        const durationMinutesInput = await screen.findByLabelText(
-          fieldLabels.durationMinutes.label,
-          {
-            exact: fieldLabels.durationMinutes.exact,
-          }
-        )
-        expect(durationMinutesInput).toHaveAttribute('disabled')
-        const isbnInput = await screen.findByLabelText(fieldLabels.isbn.label, {
+        expect(descriptionInput).toBeDisabled()
+        const durationMinutesInput = screen.getByLabelText(fieldLabels.durationMinutes.label, {
+          exact: fieldLabels.durationMinutes.exact,
+        })
+        expect(durationMinutesInput).toBeDisabled()
+        const isbnInput = screen.getByLabelText(fieldLabels.isbn.label, {
           exact: fieldLabels.isbn.exact,
         })
-        expect(isbnInput).toHaveAttribute('disabled')
-        const isDuoInput = await screen.findByLabelText(fieldLabels.isDuo.label, {
+        expect(isbnInput).toBeDisabled()
+        const isDuoInput = screen.getByLabelText(fieldLabels.isDuo.label, {
           exact: fieldLabels.isDuo.exact,
         })
-        expect(isDuoInput).toHaveAttribute('disabled')
-        const nameInput = await screen.findByLabelText(fieldLabels.name.label, {
+        expect(isDuoInput).toBeDisabled()
+        const nameInput = screen.getByLabelText(fieldLabels.name.label, {
           exact: fieldLabels.name.exact,
         })
-        expect(nameInput).toHaveAttribute('disabled')
-        const performerInput = await screen.findByLabelText(fieldLabels.performer.label, {
+        expect(nameInput).toBeDisabled()
+        const performerInput = screen.getByLabelText(fieldLabels.performer.label, {
           exact: fieldLabels.performer.exact,
         })
-        expect(performerInput).toHaveAttribute('disabled')
-        const stageDirectorInput = await screen.findByLabelText(fieldLabels.stageDirector.label, {
+        expect(performerInput).toBeDisabled()
+        const stageDirectorInput = screen.getByLabelText(fieldLabels.stageDirector.label, {
           exact: fieldLabels.stageDirector.exact,
         })
-        expect(stageDirectorInput).toHaveAttribute('disabled')
-        const speakerInput = await screen.findByLabelText(fieldLabels.speaker.label, {
+        expect(stageDirectorInput).toBeDisabled()
+        const speakerInput = screen.getByLabelText(fieldLabels.speaker.label, {
           exact: fieldLabels.speaker.exact,
         })
-        expect(speakerInput).toHaveAttribute('disabled')
-        const urlInput = await screen.findByLabelText(fieldLabels.url.label, {
+        expect(speakerInput).toBeDisabled()
+        const urlInput = screen.getByLabelText(fieldLabels.url.label, {
           exact: fieldLabels.url.exact,
         })
-        expect(urlInput).toHaveAttribute('disabled')
-        const venueIdInput = await screen.findByLabelText(fieldLabels.venueId.label, {
+        expect(urlInput).toBeDisabled()
+        const venueIdInput = screen.getByLabelText(fieldLabels.venueId.label, {
           exact: fieldLabels.venueId.exact,
         })
-        expect(venueIdInput).toHaveAttribute('disabled')
-        const visaInput = await screen.findByLabelText(fieldLabels.visa.label, {
+        expect(venueIdInput).toBeDisabled()
+        const visaInput = screen.getByLabelText(fieldLabels.visa.label, {
           exact: fieldLabels.visa.exact,
         })
-        expect(visaInput).toHaveAttribute('disabled')
-        const withdrawalDetailsInput = await screen.findByLabelText(
-          fieldLabels.withdrawalDetails.label,
-          { exact: fieldLabels.withdrawalDetails.exact }
-        )
-        expect(withdrawalDetailsInput).toHaveAttribute('disabled')
+        expect(visaInput).toBeDisabled()
+        const withdrawalDetailsInput = screen.getByLabelText(fieldLabels.withdrawalDetails.label, {
+          exact: fieldLabels.withdrawalDetails.exact,
+        })
+        expect(withdrawalDetailsInput).toBeDisabled()
       })
 
       it('should allow edition of "isDuo" for "Allociné" offers', async () => {
+        // Given
         const editedOffer = {
           id: 'ABC12',
           name: 'My edited offer',
@@ -581,13 +712,14 @@ describe('offerDetails - Edition', () => {
         }
         pcapi.loadTypes.mockResolvedValue([cinemaType])
 
+        // When
         await renderOffers(props, store)
 
-        // Edition read only fields
-        const isDuoInput = await screen.findByLabelText(fieldLabels.isDuo.label, {
+        // Then
+        const isDuoInput = screen.getByLabelText(fieldLabels.isDuo.label, {
           exact: fieldLabels.isDuo.exact,
         })
-        expect(isDuoInput).not.toHaveAttribute('disabled')
+        expect(isDuoInput).toBeEnabled()
       })
     })
   })

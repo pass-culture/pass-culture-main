@@ -215,7 +215,7 @@ describe('offerDetails - Creation', () => {
         expect(screen.getByText('Ajouter une image', { selector: 'button' })).toBeInTheDocument()
       })
 
-      it('should display "Infos pratiques", "Infos artistiques", and "Autre" section', async () => {
+      it('should display "Infos pratiques", "Infos artistiques", "Accessibilité" and "Autre" section', async () => {
         // Given
         await renderOffers(props, store)
 
@@ -224,12 +224,13 @@ describe('offerDetails - Creation', () => {
 
         // Then
         expect(
-          screen.getByText('Informations artistiques', { selector: '.section-title' })
+          screen.getByRole('heading', { name: 'Informations artistiques', level: 3 })
         ).toBeInTheDocument()
         expect(
-          screen.getByText('Informations pratiques', { selector: '.section-title' })
+          screen.getByRole('heading', { name: 'Informations pratiques', level: 3 })
         ).toBeInTheDocument()
-        expect(screen.getByText('Autre', { selector: '.section-title' })).toBeInTheDocument()
+        expect(screen.getByRole('heading', { name: 'Accessibilité', level: 3 })).toBeInTheDocument()
+        expect(screen.getByRole('heading', { name: 'Autre', level: 3 })).toBeInTheDocument()
       })
 
       it('should display email notification input when asking to receive booking emails', async () => {
@@ -439,6 +440,41 @@ describe('offerDetails - Creation', () => {
           const venueIdError = queryInputErrorForField('venueId')
           expect(venueIdError).toBeNull()
         })
+      })
+
+      it('should display accessibility section description', async () => {
+        // Given
+        await renderOffers(props, store)
+
+        // When
+        await setOfferValues({ type: 'EventType.CINEMA' })
+
+        // Then
+        expect(
+          screen.getByText('Cette offre est accessible aux publics en situation de :')
+        ).toBeInTheDocument()
+      })
+
+      it('should display accessibility checkboxes unchecked by default', async () => {
+        // Given
+        await renderOffers(props, store)
+
+        // When
+        await setOfferValues({ type: 'EventType.CINEMA' })
+
+        // Then
+        expect(
+          screen.getByLabelText('Handicap visuel', { selector: 'input[type="checkbox"]' })
+        ).not.toBeChecked()
+        expect(
+          screen.getByLabelText('Handicap mental', { selector: 'input[type="checkbox"]' })
+        ).not.toBeChecked()
+        expect(
+          screen.getByLabelText('Handicap moteur', { selector: 'input[type="checkbox"]' })
+        ).not.toBeChecked()
+        expect(
+          screen.getByLabelText('Handicap auditif', { selector: 'input[type="checkbox"]' })
+        ).not.toBeChecked()
       })
 
       describe('with conditional field "musicType"', () => {
@@ -815,6 +851,11 @@ describe('offerDetails - Creation', () => {
         name: 'Ma petite offre',
         description: 'Pas si petite que ça',
         durationMinutes: '1:30',
+        isDuo: false,
+        audioDisabilityCompliant: true,
+        mentalDisabilityCompliant: true,
+        motorDisabilityCompliant: true,
+        visualDisabilityCompliant: true,
         type: 'EventType.MUSIQUE',
         extraData: {
           musicType: '501',
@@ -822,7 +863,6 @@ describe('offerDetails - Creation', () => {
           performer: 'TEST PERFORMER NAME',
         },
         venueId: venues[0].id,
-        isDuo: false,
         withdrawalDetails: 'À venir chercher sur place.',
       }
 

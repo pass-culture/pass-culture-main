@@ -8,6 +8,10 @@ export const DEFAULT_FORM_VALUES = {
   durationMinutes: null,
   isbn: TEXT_INPUT_DEFAULT_VALUE,
   isDuo: true,
+  audioDisabilityCompliant: false,
+  mentalDisabilityCompliant: false,
+  motorDisabilityCompliant: false,
+  visualDisabilityCompliant: false,
   isNational: false,
   name: TEXT_INPUT_DEFAULT_VALUE,
   musicSubType: SELECT_DEFAULT_VALUE,
@@ -25,7 +29,17 @@ export const DEFAULT_FORM_VALUES = {
   withdrawalDetails: TEXT_INPUT_DEFAULT_VALUE,
 }
 
-export const BASE_OFFER_FIELDS = ['description', 'name', 'type', 'venueId', 'withdrawalDetails']
+export const BASE_OFFER_FIELDS = [
+  'description',
+  'audioDisabilityCompliant',
+  'mentalDisabilityCompliant',
+  'motorDisabilityCompliant',
+  'visualDisabilityCompliant',
+  'name',
+  'type',
+  'venueId',
+  'withdrawalDetails',
+]
 export const EDITED_OFFER_READ_ONLY_FIELDS = [
   'type',
   'musicType',
