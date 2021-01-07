@@ -54,7 +54,11 @@ def install_admin_views(admin: Admin, session: Session) -> None:
     )
     admin.add_view(
         BeneficiaryUserView(
-            UserSQLEntity, session, name="Comptes Jeunes/Grand Public", category=Category.USERS, endpoint="/beneficiary_users"
+            UserSQLEntity,
+            session,
+            name="Comptes Jeunes/Grand Public",
+            category=Category.USERS,
+            endpoint="/beneficiary_users",
         )
     )
     admin.add_view(
