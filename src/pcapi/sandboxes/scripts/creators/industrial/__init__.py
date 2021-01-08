@@ -10,7 +10,6 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_criterion imp
     associate_criterion_to_one_offer_with_mediation,
 )
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_criterion import create_industrial_criteria
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_deposits import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_occurrences import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_offers import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_event_products import *
@@ -39,8 +38,6 @@ def save_industrial_sandbox():
     webapp_users_by_name = create_industrial_webapp_users()
 
     users_by_name = dict(dict(admin_users_by_name, **pro_users_by_name), **webapp_users_by_name)
-
-    create_industrial_deposits(users_by_name)
 
     venue_types = create_industrial_venue_types()
 
