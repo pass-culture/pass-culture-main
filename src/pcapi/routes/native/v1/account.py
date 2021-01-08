@@ -5,7 +5,6 @@ from flask_jwt_extended import jwt_required
 from pcapi import settings
 from pcapi.core.users import api
 from pcapi.core.users import exceptions
-from pcapi.core.users.models import VOID_FIRST_NAME
 from pcapi.models import ApiErrors
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.serialization.decorator import spectree_serialize
@@ -31,11 +30,7 @@ def get_user_profile() -> serializers.UserProfileResponse:
         app.logger.error("Authenticated user with email %s not found", identifier)
         raise ApiErrors({"email": ["Utilisateur introuvable"]})
 
-    return serializers.UserProfileResponse(
-        first_name=user.firstName if user.firstName != VOID_FIRST_NAME else None,
-        email=user.email,
-        is_beneficiary=user.isBeneficiary,
-    )
+    return serializers.UserProfileResponse.from_orm(user)
 
 
 @blueprint.native_v1.route("/account", methods=["POST"])

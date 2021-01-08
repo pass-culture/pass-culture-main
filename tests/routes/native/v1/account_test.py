@@ -5,6 +5,7 @@ from dateutil.relativedelta import relativedelta
 from flask_jwt_extended.utils import create_access_token
 import pytest
 
+from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import User
 
@@ -38,7 +39,8 @@ class AccountTest:
 
     def test_get_user_profile(self, app):
         first_name = "Gaëtan"
-        users_factories.UserFactory(email=self.identifier, firstName=first_name)
+        user = users_factories.UserFactory(email=self.identifier, firstName=first_name)
+        booking = BookingFactory(user=user)
 
         access_token = create_access_token(identity=self.identifier)
         test_client = TestClient(app.test_client())
@@ -50,6 +52,11 @@ class AccountTest:
         assert response.json["email"] == self.identifier
         assert response.json["firstName"] == first_name
         assert response.json["isBeneficiary"]
+        assert response.json["expenses"] == [
+            {"current": int(booking.amount * 100), "domain": "all", "max": 50000},
+            {"current": 0, "domain": "digital", "max": 20000},
+            {"current": int(booking.amount * 100), "domain": "physical", "max": 20000},
+        ]
 
     def test_get_user_profile_empty_first_name(self, app):
         first_name = ""

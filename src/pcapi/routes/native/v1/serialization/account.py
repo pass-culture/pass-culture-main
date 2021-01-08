@@ -1,8 +1,13 @@
 from datetime import date
+from decimal import Decimal
+from typing import List
 from typing import Optional
 
 from pydantic import BaseModel
+from pydantic.class_validators import validator
 
+from pcapi.core.users.expenses import ExpenseDomain
+from pcapi.core.users.models import VOID_FIRST_NAME
 from pcapi.serialization.utils import to_camel
 
 
@@ -17,12 +22,33 @@ class AccountRequest(BaseModel):
         alias_generator = to_camel
 
 
+def convert_to_cent(amount: Decimal) -> int:
+    return int(amount * 100)
+
+
+class Expense(BaseModel):
+    domain: ExpenseDomain
+    current: int
+    max: int
+
+    _convert_current = validator("current", pre=True, allow_reuse=True)(convert_to_cent)
+    _convert_max = validator("max", pre=True, allow_reuse=True)(convert_to_cent)
+
+
 class UserProfileResponse(BaseModel):
-    first_name: Optional[str]
+    @classmethod
+    def from_orm(cls, user):  # type: ignore
+        user.firstName = user.firstName if user.firstName != VOID_FIRST_NAME else None
+
+        return super().from_orm(user)
+
+    firstName: Optional[str]
     email: str
-    is_beneficiary: bool
+    isBeneficiary: bool
+    expenses: List[Expense]
 
     class Config:
+        orm_mode = True
         alias_generator = to_camel
         allow_population_by_field_name = True
 

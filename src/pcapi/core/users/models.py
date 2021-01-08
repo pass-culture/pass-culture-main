@@ -231,13 +231,14 @@ class User(PcObject, Model, NeedsValidationMixin, VersionedMixin):
         return relativedelta(date.today(), self.dateOfBirth.date()).years
 
     @property
+    def deposit_version(self):
+        return self.deposits[0].version if self.deposits else None
+
+    @property
     def expenses(self):
-        if not self.deposits:
-            return []
+        version = self.deposit_version
 
-        version = self.deposits[0].version
-
-        return get_expenses_limit(self, version)
+        return get_expenses_limit(self, version) if version else []
 
     @property
     def real_wallet_balance(self):
