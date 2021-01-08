@@ -5,6 +5,7 @@ from typing import Optional
 from pydantic import BaseModel
 from pydantic.class_validators import validator
 
+from pcapi.core.users.expenses import ExpenseDomain
 from pcapi.models.api_errors import ApiErrors
 from pcapi.utils.date import format_into_utc_date
 
@@ -41,7 +42,7 @@ class ChangeBeneficiaryEmailBody(BaseModel):
 
 
 class Expense(BaseModel):
-    domain: str
+    domain: ExpenseDomain
     current: float
     max: float
 

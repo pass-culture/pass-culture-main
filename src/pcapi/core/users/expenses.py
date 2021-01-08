@@ -1,9 +1,12 @@
+from enum import Enum
+
 from pcapi.core.bookings import conf
 
 
-PHYSICAL = "physical"
-DIGITAL = "digital"
-ALL = "all"
+class ExpenseDomain(Enum):
+    ALL = "all"
+    DIGITAL = "digital"
+    PHYSICAL = "physical"
 
 
 def get_expenses_limit(user, version):
@@ -13,7 +16,7 @@ def get_expenses_limit(user, version):
     capped_physical_bookings = [booking for booking in bookings if config.physical_cap_applies(booking.stock.offer)]
     limits = [
         {
-            "domain": ALL,
+            "domain": ExpenseDomain.ALL.value,
             "current": sum(booking.total_amount for booking in bookings),
             "max": config.TOTAL_CAP,
         }
@@ -21,7 +24,7 @@ def get_expenses_limit(user, version):
     if config.DIGITAL_CAP:
         limits.append(
             {
-                "domain": DIGITAL,
+                "domain": ExpenseDomain.DIGITAL.value,
                 "current": sum(booking.total_amount for booking in capped_digital_bookings),
                 "max": config.DIGITAL_CAP,
             }
@@ -29,7 +32,7 @@ def get_expenses_limit(user, version):
     if config.PHYSICAL_CAP:
         limits.append(
             {
-                "domain": PHYSICAL,
+                "domain": ExpenseDomain.PHYSICAL.value,
                 "current": sum(booking.total_amount for booking in capped_physical_bookings),
                 "max": config.PHYSICAL_CAP,
             }
