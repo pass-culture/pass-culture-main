@@ -26,7 +26,7 @@ def retrieve_data_for_reset_password_native_app_email(
     user_email: str, token_value: str, expiration_date: datetime
 ) -> Dict:
     reset_password_link = (
-        f"{settings.NATIVE_APP_URL}/mot-de-passe-perdu?token={token_value}"
+        f"{settings.API_URL}/native/v1/redirect_to_native/mot-de-passe-perdu?token={token_value}"
         f"&expiration_timestamp={int(expiration_date.timestamp())}"
         f"&email={user_email}"
     )
