@@ -29,4 +29,4 @@ class Deposit(PcObject, Model):
 
     dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow)
 
-    version = Column(SmallInteger, nullable=True)
+    version = Column(SmallInteger, nullable=False)
