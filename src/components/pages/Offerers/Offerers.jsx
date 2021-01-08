@@ -39,6 +39,9 @@ class Offerers extends PureComponent {
       showNotification,
       isOffererCreationAvailable,
     } = this.props
+    // We need to use this system because of this issue:
+    // https://github.com/danbovey/react-infinite-scroller/issues/12#issuecomment-339375017
+    this.forceRenderKey = 0
 
     if (userHasNoOffersInAPhysicalVenueYet(currentUser)) {
       const url = isOffererCreationAvailable
@@ -114,6 +117,7 @@ class Offerers extends PureComponent {
       [mapApiToBrowser.keywords]: isEmptyKeywords ? null : keywords,
       page: null,
     })
+    this.forceRenderKey++ // See variable declaration for more information
 
     if (queryParams[mapApiToBrowser.keywords] !== keywords) resetLoadedOfferers()
   }
@@ -231,6 +235,7 @@ class Offerers extends PureComponent {
           handlePageReset={this.onPageReset}
           hasMore={hasMore}
           isLoading={isLoading}
+          key={this.forceRenderKey} // See variable declaration for more information
           loader={<Spinner key="spinner" />}
         >
           {offerers.map(offerer => {
