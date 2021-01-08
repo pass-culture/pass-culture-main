@@ -26,8 +26,11 @@
     }
   },
   "lint-staged": {
-    "*.svg": [
+    "./public/**/*.svg": [
       "svgo --disable=removeViewBox"
+    ],
+    "./src/**/*.svg": [
+      "svgo --disable=removeViewBox --enable=removeXMLNS"
     ],
     "*.{js,jsx}": [
       "prettier --write",
