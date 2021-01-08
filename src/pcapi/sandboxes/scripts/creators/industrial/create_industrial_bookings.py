@@ -65,7 +65,7 @@ def create_industrial_bookings(offers_by_name, users_by_name):
                     is_used = offer_index % BOOKINGS_USED_REMOVE_MODULO != 0
 
                 if user_should_have_no_more_money and user not in list_of_users_with_no_more_money:
-                    booking_amount = 500
+                    booking_amount = user.deposits[0].amount
                     list_of_users_with_no_more_money.append(user)
                 elif user_should_have_no_more_money and user in list_of_users_with_no_more_money:
                     booking_amount = 0
