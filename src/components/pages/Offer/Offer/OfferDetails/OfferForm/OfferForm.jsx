@@ -16,6 +16,10 @@ import {
   EXTRA_DATA_FIELDS,
   MANDATORY_FIELDS,
 } from './_constants'
+import { ReactComponent as AudioDisabilitySvg } from './assets/audio-disability.svg'
+import { ReactComponent as MentalDisabilitySvg } from './assets/mental-disability.svg'
+import { ReactComponent as MotorDisabilitySvg } from './assets/motor-disability.svg'
+import { ReactComponent as VisualDisabilitySvg } from './assets/visual-disability.svg'
 import OfferRefundWarning from './Messages/OfferRefundWarning'
 import WithdrawalReminder from './Messages/WithdrawalReminder'
 import TypeTreeSelects from './TypeTreeSelects'
@@ -544,24 +548,28 @@ const OfferForm = ({
               {'Cette offre est accessible aux publics en situation de :'}
             </p>
             <CheckboxInput
+              SvgElement={VisualDisabilitySvg}
               checked={formValues.visualDisabilityCompliant}
               label="Handicap visuel"
               name="visualDisabilityCompliant"
               onChange={handleSingleFormUpdate}
             />
             <CheckboxInput
+              SvgElement={MentalDisabilitySvg}
               checked={formValues.mentalDisabilityCompliant}
               label="Handicap mental"
               name="mentalDisabilityCompliant"
               onChange={handleSingleFormUpdate}
             />
             <CheckboxInput
+              SvgElement={MotorDisabilitySvg}
               checked={formValues.motorDisabilityCompliant}
               label="Handicap moteur"
               name="motorDisabilityCompliant"
               onChange={handleSingleFormUpdate}
             />
             <CheckboxInput
+              SvgElement={AudioDisabilitySvg}
               checked={formValues.audioDisabilityCompliant}
               label="Handicap auditif"
               name="audioDisabilityCompliant"

@@ -10,6 +10,7 @@ export const CheckboxInput = ({
   className,
   hiddenLabel,
   subLabel,
+  SvgElement,
   ...attributes
 }) => {
   let inputClasses = className ? className.split(' ') : []
@@ -31,6 +32,7 @@ export const CheckboxInput = ({
         type="checkbox"
         {...attributes}
       />
+      {SvgElement && <SvgElement aria-hidden />}
       <span className={textClasses.join(' ')}>
         {label}
         {subLabel && (
@@ -44,6 +46,7 @@ export const CheckboxInput = ({
 }
 
 CheckboxInput.defaultProps = {
+  SvgElement: null,
   className: '',
   hiddenLabel: false,
   labelAttributes: {},
@@ -51,6 +54,7 @@ CheckboxInput.defaultProps = {
 }
 
 CheckboxInput.propTypes = {
+  SvgElement: PropTypes.elementType,
   checked: PropTypes.bool.isRequired,
   className: PropTypes.string,
   hiddenLabel: PropTypes.bool,
