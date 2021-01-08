@@ -30,3 +30,4 @@ class PaymentFactory(BaseFactory):
     recipientSiren = factory.SelfAttribute("booking.stock.offer.venue.managingOfferer.siren")
     reimbursementRule = factory.Iterator(ALL_REIMBURSEMENT_RULES)
     reimbursementRate = 30
+    recipientName = "Récipiendaire"
