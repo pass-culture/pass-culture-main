@@ -6,3 +6,4 @@ def install_routes(app: Flask) -> None:
     from . import account
     from . import authentication
     from . import offers
+    from . import redirection
