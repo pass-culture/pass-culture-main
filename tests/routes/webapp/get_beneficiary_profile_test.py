@@ -20,16 +20,8 @@ class Get:
         def when_user_is_logged_in_and_has_no_deposit(self, app):
             # Given
             user = UserFactory(
-                civility="M.",
-                departementCode="93",
                 email="toto@btmx.fr",
-                firstName="Jean",
-                lastName="Smisse",
-                dateOfBirth=datetime(2000, 1, 1),
-                phoneNumber="0612345678",
                 postalCode="93020",
-                publicName="Toto",
-                isEmailValidated=True,
             )
             repository.delete(*user.deposits)
 
@@ -51,16 +43,8 @@ class Get:
         def when_user_is_logged_in_and_has_a_deposit(self, app):
             # Given
             user = UserFactory(
-                civility="M.",
-                departementCode="93",
                 email="wallet_test@email.com",
-                firstName="Jean",
-                lastName="Smisse",
-                dateOfBirth=datetime(2000, 1, 1),
-                phoneNumber="0612345678",
                 postalCode="93020",
-                publicName="Test",
-                isEmailValidated=True,
             )
 
             deposit = user.deposits[0]
@@ -78,16 +62,8 @@ class Get:
         def when_user_has_booked_some_offers(self, app):
             # Given
             user = UserFactory(
-                civility="M.",
-                departementCode="93",
                 email="wallet_test@email.com",
-                firstName="Jean",
-                lastName="Smisse",
-                dateOfBirth=datetime(2000, 1, 1),
-                phoneNumber="0612345678",
                 postalCode="93020",
-                publicName="Test",
-                isEmailValidated=True,
             )
 
             offerer = create_offerer(
