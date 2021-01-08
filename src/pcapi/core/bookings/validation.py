@@ -7,13 +7,13 @@ from pcapi.core.bookings import exceptions
 from pcapi.core.bookings.models import Booking
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.models import api_errors
 from pcapi.models.db import db
 from pcapi.repository import payment_queries
 
 
-def check_can_book_free_offer(user: UserSQLEntity, stock: Stock) -> None:
+def check_can_book_free_offer(user: User, stock: Stock) -> None:
     # XXX: Despite its name, the intent of this function is to check
     # whether the user is allowed to book any offer (free or not
     # free), i.e. whether the user is a pro/admin or a "regular
@@ -24,7 +24,7 @@ def check_can_book_free_offer(user: UserSQLEntity, stock: Stock) -> None:
         raise exceptions.CannotBookFreeOffers()
 
 
-def check_offer_already_booked(user: UserSQLEntity, offer: Offer) -> None:
+def check_offer_already_booked(user: User, offer: Offer) -> None:
     """Raise ``OfferIsAlreadyBooked`` if the user already booked this offer."""
     if db.session.query(
         Booking.query.filter_by(
@@ -52,7 +52,7 @@ def check_stock_is_bookable(stock: Stock) -> None:
         raise exceptions.StockIsNotBookable()
 
 
-def check_expenses_limits(user: UserSQLEntity, requested_amount: Decimal, offer: Offer):
+def check_expenses_limits(user: User, requested_amount: Decimal, offer: Offer):
     """Raise an error if the requested amount would exceed the user's
     expense limits.
     """
@@ -76,7 +76,7 @@ def check_expenses_limits(user: UserSQLEntity, requested_amount: Decimal, offer:
                 raise exceptions.PhysicalExpenseLimitHasBeenReached(expense["max"])
 
 
-def check_beneficiary_can_cancel_booking(user: UserSQLEntity, booking: Booking) -> None:
+def check_beneficiary_can_cancel_booking(user: User, booking: Booking) -> None:
     if booking.userId != user.id:
         raise exceptions.BookingDoesntExist()
     if booking.isUsed:

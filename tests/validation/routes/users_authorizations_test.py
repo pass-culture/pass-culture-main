@@ -1,7 +1,7 @@
 from flask_login import AnonymousUserMixin
 import pytest
 
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
@@ -46,7 +46,7 @@ class CheckUserCanValidateBookingTest:
         self, app
     ):
         # Given
-        user = UserSQLEntity()
+        user = User()
         user.is_authenticated = True
 
         # When
@@ -74,7 +74,7 @@ class CheckUserCanValidateBookingTestv2:
         self, app
     ):
         # Given
-        user = UserSQLEntity()
+        user = User()
         user.is_authenticated = True
 
         # When

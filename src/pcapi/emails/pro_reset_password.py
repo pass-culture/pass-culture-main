@@ -1,12 +1,12 @@
 from typing import Dict
 
 from pcapi import settings
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.repository.feature_queries import feature_send_mail_to_users_enabled
 from pcapi.utils.mailing import format_environment_for_email
 
 
-def retrieve_data_for_reset_password_pro_email(user: UserSQLEntity) -> Dict:
+def retrieve_data_for_reset_password_pro_email(user: User) -> Dict:
     user_email = user.email if feature_send_mail_to_users_enabled() else settings.DEV_EMAIL_ADDRESS
     user_reset_password_token = user.resetPasswordToken
     env = format_environment_for_email()

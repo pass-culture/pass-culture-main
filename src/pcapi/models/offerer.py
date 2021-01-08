@@ -36,7 +36,7 @@ class Offerer(
 
     name = Column(String(140), nullable=False)
 
-    users = relationship("UserSQLEntity", secondary="user_offerer")
+    users = relationship("User", secondary="user_offerer")
 
     siren = Column(
         String(9), nullable=True, unique=True

@@ -1,6 +1,6 @@
 from typing import List
 
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.model_creators.generic_creators import create_beneficiary_import
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.models import BeneficiaryImport
@@ -9,7 +9,7 @@ from pcapi.repository import repository
 from pcapi.utils.logger import logger
 
 
-def create_beneficiary_user() -> UserSQLEntity:
+def create_beneficiary_user() -> User:
     import_status = ImportStatus.CREATED
     beneficiary_user = create_user(email=f"{str(import_status)}@email.com")
 
@@ -25,7 +25,7 @@ def create_admin_user():
     logger.info("created 1 admin user")
 
 
-def create_beneficiary_imports(beneficiary_user: UserSQLEntity) -> List[BeneficiaryImport]:
+def create_beneficiary_imports(beneficiary_user: User) -> List[BeneficiaryImport]:
     beneficiary_imports = []
     index_of_beneficiary_imports = 1
     for status in ImportStatus:

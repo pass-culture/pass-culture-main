@@ -2,7 +2,7 @@ from datetime import datetime
 
 import pytest
 
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.repository import repository
 from pcapi.utils.date import format_into_utc_date
@@ -33,7 +33,7 @@ class Patch:
             response = TestClient(app.test_client()).with_auth(email=user.email).patch("/users/current", json=data)
 
             # then
-            user = UserSQLEntity.query.get(user_id)
+            user = User.query.get(user_id)
             assert user.publicName == "plop"
             assert user.email == "new@email.com"
             assert user.postalCode == "93020"
@@ -89,7 +89,7 @@ class Patch:
             response = TestClient(app.test_client()).with_auth(email=user.email).patch("/users/current", json=data)
 
             # then
-            user = UserSQLEntity.query.get(user_id)
+            user = User.query.get(user_id)
             assert user.publicName != "plop"  # not updated
             assert response.status_code == 400
             assert "publicName" not in response.json

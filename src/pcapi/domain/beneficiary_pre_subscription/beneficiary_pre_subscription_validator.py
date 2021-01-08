@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List
 
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsADuplicate
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsNotEligible
@@ -35,7 +35,7 @@ def _is_postal_code_eligible(code: str) -> bool:
     return False
 
 
-def get_beneficiary_duplicates(first_name: str, last_name: str, date_of_birth: datetime) -> List[UserSQLEntity]:
+def get_beneficiary_duplicates(first_name: str, last_name: str, date_of_birth: datetime) -> List[User]:
     return find_by_civility(first_name=first_name, last_name=last_name, date_of_birth=date_of_birth)
 
 
@@ -64,9 +64,7 @@ def _check_not_a_duplicate(beneficiary_pre_subscription: BeneficiaryPreSubscript
         raise BeneficiaryIsADuplicate(f"User with id {duplicates[0].id} is a duplicate.")
 
 
-def validate(
-    beneficiary_pre_subscription: BeneficiaryPreSubscription, preexisting_account: UserSQLEntity = None
-) -> None:
+def validate(beneficiary_pre_subscription: BeneficiaryPreSubscription, preexisting_account: User = None) -> None:
     _check_department_is_eligible(beneficiary_pre_subscription)
     if not preexisting_account:
         _check_email_is_not_taken(beneficiary_pre_subscription)

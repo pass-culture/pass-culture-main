@@ -1,5 +1,5 @@
 from pcapi.core.offers.models import Mediation
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.models import Offer
 from pcapi.models import Product
 from pcapi.models import Stock
@@ -12,8 +12,8 @@ from pcapi.sandboxes.scripts.utils.helpers import get_offer_helper
 
 
 def get_existing_webapp_hnmm_user(return_as_dict=False):
-    query = keep_only_webapp_users(UserSQLEntity.query)
-    query = query.filter(UserSQLEntity.email.contains("93.has-no-more-money"))
+    query = keep_only_webapp_users(User.query)
+    query = query.filter(User.email.contains("93.has-no-more-money"))
     user = query.first()
     if return_as_dict == False:
         return user
@@ -21,8 +21,8 @@ def get_existing_webapp_hnmm_user(return_as_dict=False):
 
 
 def get_existing_webapp_hbs_user():
-    query = keep_only_webapp_users(UserSQLEntity.query)
-    query = query.filter(UserSQLEntity.email.contains("has-booked-some"))
+    query = keep_only_webapp_users(User.query)
+    query = query.filter(User.email.contains("has-booked-some"))
     user = query.first()
     return {"user": get_beneficiary_helper(user)}
 

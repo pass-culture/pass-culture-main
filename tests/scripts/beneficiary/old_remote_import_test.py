@@ -6,7 +6,7 @@ from unittest.mock import patch
 from mailjet_rest import Client
 import pytest
 
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.models import ApiErrors
 from pcapi.models import BeneficiaryImport
@@ -119,7 +119,7 @@ class OldRemoteImportRunTest:
         find_applications_ids_to_retry = Mock(return_value=[])
 
         get_details = Mock(return_value=make_old_application_detail(123, "closed"))
-        user = UserSQLEntity()
+        user = User()
         user.email = "john.doe@example.com"
         has_already_been_imported = Mock(return_value=True)
         has_already_been_created = Mock(return_value=False)
@@ -145,7 +145,7 @@ class OldRemoteImportRunTest:
         find_applications_ids_to_retry = Mock(return_value=[])
 
         get_details = Mock(return_value=make_old_application_detail(123, "closed"))
-        user = UserSQLEntity()
+        user = User()
         user.email = "john.doe@example.com"
         has_already_been_imported = Mock(return_value=False)
         has_already_been_created = Mock(return_value=True)
@@ -234,7 +234,7 @@ class ProcessBeneficiaryApplicationTest:
         )
 
         # then
-        first = UserSQLEntity.query.first()
+        first = User.query.first()
         assert first.email == "jane.doe@example.com"
         assert first.wallet_balance == 500
         assert first.civility == "Mme"
@@ -320,7 +320,7 @@ class ProcessBeneficiaryApplicationTest:
             "civility": "Mme",
             "activity": "Étudiant",
         }
-        create_beneficiary_from_application.side_effect = [UserSQLEntity()]
+        create_beneficiary_from_application.side_effect = [User()]
         mock_repository.save.side_effect = [ApiErrors({"postalCode": ["baaaaad value"]})]
         new_beneficiaries = []
         error_messages = []

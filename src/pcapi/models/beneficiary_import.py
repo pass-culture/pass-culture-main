@@ -11,7 +11,7 @@ from sqlalchemy import desc
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.models.db import Model
@@ -33,7 +33,7 @@ class BeneficiaryImport(PcObject, Model):
 
     source = Column(String(255), nullable=False)
 
-    beneficiary = relationship("UserSQLEntity", foreign_keys=[beneficiaryId], backref="beneficiaryImports")
+    beneficiary = relationship("User", foreign_keys=[beneficiaryId], backref="beneficiaryImports")
 
     Index(
         "idx_beneficiary_import_application",
@@ -43,7 +43,7 @@ class BeneficiaryImport(PcObject, Model):
         unique=True,
     )
 
-    def setStatus(self, status: ImportStatus, detail: str = None, author: UserSQLEntity = None):
+    def setStatus(self, status: ImportStatus, detail: str = None, author: User = None):
         new_status = BeneficiaryImportStatus()
         new_status.status = status
         new_status.detail = detail

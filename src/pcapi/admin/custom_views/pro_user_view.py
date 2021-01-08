@@ -9,7 +9,7 @@ from wtforms.fields.core import StringField
 from wtforms.validators import ValidationError
 
 from pcapi.admin.base_configuration import BaseAdminView
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.domain.password import generate_reset_token
 from pcapi.domain.password import random_password
 from pcapi.models import UserOfferer
@@ -36,7 +36,7 @@ def create_offerer(form: Form) -> Offerer:
     return offerer
 
 
-def create_user_offerer(user: UserSQLEntity, offerer: Offerer) -> UserOfferer:
+def create_user_offerer(user: User, offerer: Offerer) -> UserOfferer:
     user_offerer = UserOfferer()
     user_offerer.user = user
     user_offerer.offerer = offerer
@@ -124,7 +124,7 @@ class ProUserView(SuspensionMixin, BaseAdminView):
         form.phoneNumber = StringField("Numéro de tél.", [validators.DataRequired()])
         return form
 
-    def on_model_change(self, form: Form, model: UserSQLEntity, is_created: bool) -> None:
+    def on_model_change(self, form: Form, model: User, is_created: bool) -> None:
         model.publicName = f"{model.firstName} {model.lastName}"
 
         if is_created:
@@ -139,7 +139,7 @@ class ProUserView(SuspensionMixin, BaseAdminView):
         super().on_model_change(form, model, is_created)
 
     def get_query(self) -> query:
-        return UserSQLEntity.query.join(UserOfferer).distinct(UserSQLEntity.id)
+        return User.query.join(UserOfferer).distinct(User.id)
 
     def get_count_query(self) -> query:
-        return self.session.query(func.count(distinct(UserSQLEntity.id))).select_from(UserSQLEntity).join(UserOfferer)
+        return self.session.query(func.count(distinct(User.id))).select_from(User).join(UserOfferer)

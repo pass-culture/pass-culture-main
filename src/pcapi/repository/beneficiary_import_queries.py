@@ -2,7 +2,7 @@ from typing import List
 
 from sqlalchemy import asc
 
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.models import BeneficiaryImport
 from pcapi.models import BeneficiaryImportSources
 from pcapi.models import ImportStatus
@@ -25,7 +25,7 @@ def save_beneficiary_import_with_status(
     source_id: int,
     source: BeneficiaryImportSources,
     detail: str = None,
-    user: UserSQLEntity = None,
+    user: User = None,
 ) -> None:
     existing_beneficiary_import = BeneficiaryImport.query.filter_by(applicationId=application_id).first()
 

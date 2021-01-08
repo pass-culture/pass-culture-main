@@ -6,7 +6,7 @@ from flask import request
 from flask_login import current_user
 from flask_login import login_required
 
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
 from pcapi.domain.user_emails import send_ongoing_offerer_attachment_information_email_to_pro
 from pcapi.domain.user_emails import send_pro_user_waiting_for_validation_by_admin_email
@@ -114,7 +114,7 @@ def create_offerer():
         offerer.generate_validation_token()
         user_offerer = offerer.give_rights(current_user, RightsType.editor)
         repository.save(offerer, digital_venue, user_offerer)
-        user = UserSQLEntity.query.filter_by(id=user_offerer.userId).first()
+        user = User.query.filter_by(id=user_offerer.userId).first()
 
         _send_to_pro_offer_validation_in_progress_email(user, offerer)
 
@@ -123,7 +123,7 @@ def create_offerer():
     return jsonify(get_dict_offerer(offerer)), 201
 
 
-def _send_to_pro_offer_validation_in_progress_email(user: UserSQLEntity, offerer: Offerer) -> bool:
+def _send_to_pro_offer_validation_in_progress_email(user: User, offerer: Offerer) -> bool:
     try:
         send_pro_user_waiting_for_validation_by_admin_email(user, send_raw_email, offerer)
     except MailServiceException as mail_service_exception:

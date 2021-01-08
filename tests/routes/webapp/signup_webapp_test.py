@@ -4,7 +4,7 @@ from unittest.mock import patch
 from freezegun import freeze_time
 import pytest
 
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.models.feature import override_features
 from pcapi.routes.serialization import serialize
 
@@ -76,7 +76,7 @@ class Post:
             # Then
             assert response.status_code == 201
             assert "validationToken" not in response.json
-            created_user = UserSQLEntity.query.filter_by(email="toto@btmx.fr").first()
+            created_user = User.query.filter_by(email="toto@btmx.fr").first()
             assert created_user.validationToken is None
             assert not created_user.isBeneficiary
 
@@ -104,7 +104,7 @@ class Post:
 
             # Then
             assert response.status_code == 201
-            created_user = UserSQLEntity.query.filter_by(email="pctest.isAdmin.canBook@btmx.fr").one()
+            created_user = User.query.filter_by(email="pctest.isAdmin.canBook@btmx.fr").one()
             assert not created_user.isAdmin
 
     class Returns400:

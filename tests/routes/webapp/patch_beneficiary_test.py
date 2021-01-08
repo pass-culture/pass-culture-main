@@ -1,6 +1,6 @@
 import pytest
 
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
@@ -31,7 +31,7 @@ class Patch:
             )
 
             # then
-            user = UserSQLEntity.query.get(user_id)
+            user = User.query.get(user_id)
             assert response.status_code == 200
             assert response.json["id"] == humanize(user.id)
             assert response.json["publicName"] == user.publicName
@@ -69,7 +69,7 @@ class Patch:
             )
 
             # then
-            user = UserSQLEntity.query.get(user_id)
+            user = User.query.get(user_id)
             assert response.status_code == 400
             for key in data:
                 assert response.json[key] == ["Vous ne pouvez pas changer cette information"]

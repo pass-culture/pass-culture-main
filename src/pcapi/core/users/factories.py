@@ -16,7 +16,7 @@ DEFAULT_PASSWORD = "user@AZERTY123"
 
 class UserFactory(BaseFactory):
     class Meta:
-        model = pcapi.core.users.models.UserSQLEntity
+        model = pcapi.core.users.models.User
 
     email = factory.Sequence("jeanne.doux{0}@example.com".format)
     address = factory.Sequence("{0} rue des machines".format)

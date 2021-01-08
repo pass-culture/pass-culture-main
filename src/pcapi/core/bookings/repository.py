@@ -14,7 +14,7 @@ from sqlalchemy.util._collections import AbstractKeyedTuple
 
 from pcapi.core.bookings import conf
 from pcapi.core.bookings.models import BookingCancellationReasons
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.domain.booking_recap.booking_recap import BookBookingRecap
 from pcapi.domain.booking_recap.booking_recap import BookingRecap
 from pcapi.domain.booking_recap.booking_recap import EventBookingRecap
@@ -43,7 +43,7 @@ def find_by(token: str, email: str = None, offer_id: int = None) -> Booking:
     query = Booking.query.filter_by(token=token)
 
     if email:
-        query = query.join(UserSQLEntity).filter(func.lower(UserSQLEntity.email) == email.strip().lower())
+        query = query.join(User).filter(func.lower(User.email) == email.strip().lower())
 
     if offer_id:
         query_offer = Booking.query.join(Stock).join(Offer).filter_by(id=offer_id)
@@ -222,7 +222,7 @@ def _build_bookings_recap_query(user_id: int) -> Query:
     return (
         Booking.query.outerjoin(Payment)
         .reset_joinpoint()
-        .join(UserSQLEntity)
+        .join(User)
         .join(Stock)
         .join(Offer)
         .join(VenueSQLEntity)
@@ -246,9 +246,9 @@ def _build_bookings_recap_query(user_id: int) -> Query:
             Offer.extraData.label("offerExtraData"),
             Payment.currentStatus.label("paymentStatus"),
             Payment.lastProcessedDate.label("paymentDate"),
-            UserSQLEntity.firstName.label("beneficiaryFirstname"),
-            UserSQLEntity.lastName.label("beneficiaryLastname"),
-            UserSQLEntity.email.label("beneficiaryEmail"),
+            User.firstName.label("beneficiaryFirstname"),
+            User.lastName.label("beneficiaryLastname"),
+            User.email.label("beneficiaryEmail"),
             Stock.beginningDatetime.label("stockBeginningDatetime"),
             VenueSQLEntity.departementCode.label("venueDepartementCode"),
             Offerer.name.label("offererName"),

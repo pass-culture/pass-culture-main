@@ -27,7 +27,7 @@ def signup_webapp():
     objects_to_save = []
     check_valid_signup_webapp(request)
 
-    new_user = UserSQLEntity(from_dict=request.json)
+    new_user = User(from_dict=request.json)
     ... code de la route
 ```
 

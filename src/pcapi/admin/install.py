@@ -14,7 +14,7 @@ from pcapi.admin.custom_views.partner_user_view import PartnerUserView
 from pcapi.admin.custom_views.pro_user_view import ProUserView
 from pcapi.admin.custom_views.user_offerer_view import UserOffererView
 from pcapi.admin.custom_views.venue_view import VenueView
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.models import AllocinePivot
 from pcapi.models import BeneficiaryImport
 from pcapi.models import Criterion
@@ -45,7 +45,7 @@ def install_admin_views(admin: Admin, session: Session) -> None:
     )
     admin.add_view(
         ProUserView(
-            UserSQLEntity,
+            User,
             session,
             name="Comptes Pros",
             category=Category.USERS,
@@ -54,7 +54,7 @@ def install_admin_views(admin: Admin, session: Session) -> None:
     )
     admin.add_view(
         BeneficiaryUserView(
-            UserSQLEntity,
+            User,
             session,
             name="Comptes Jeunes/Grand Public",
             category=Category.USERS,
@@ -62,9 +62,7 @@ def install_admin_views(admin: Admin, session: Session) -> None:
         )
     )
     admin.add_view(
-        PartnerUserView(
-            UserSQLEntity, session, name="Comptes Partenaires", category=Category.USERS, endpoint="/partner_users"
-        )
+        PartnerUserView(User, session, name="Comptes Partenaires", category=Category.USERS, endpoint="/partner_users")
     )
     admin.add_view(FeatureView(Feature, session, name="Fonctionnalités", category=None))
     admin.add_view(BeneficiaryImportView(BeneficiaryImport, session, name="Imports DMS", category=Category.USERS))

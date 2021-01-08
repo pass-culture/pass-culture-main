@@ -9,7 +9,7 @@ from pcapi.connectors import redis
 from pcapi.connectors.thumb_storage import create_thumb
 import pcapi.core.bookings.repository as bookings_repository
 import pcapi.core.offers.repository as offers_repository
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.domain import admin_emails
 from pcapi.domain import user_emails
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
@@ -71,7 +71,7 @@ def list_offers_for_pro_user(
     )
 
 
-def create_offer(offer_data: PostOfferBodyModel, user: UserSQLEntity) -> models.Offer:
+def create_offer(offer_data: PostOfferBodyModel, user: User) -> models.Offer:
     venue = load_or_raise_error(VenueSQLEntity, offer_data.venue_id)
 
     ensure_current_user_has_rights(rights=RightsType.editor, offerer_id=venue.managingOffererId, user=user)
@@ -323,7 +323,7 @@ def delete_stock(stock: Stock) -> None:
 
 
 def create_mediation(
-    user: UserSQLEntity,
+    user: User,
     offer: Offer,
     credit: str,
     image_as_bytes: bytes,

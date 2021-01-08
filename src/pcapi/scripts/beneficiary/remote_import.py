@@ -6,7 +6,7 @@ from typing import List
 
 from pcapi import settings
 from pcapi.connectors.api_demarches_simplifiees import get_application_details
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_validator import get_beneficiary_duplicates
 from pcapi.domain.demarches_simplifiees import get_closed_application_ids_for_demarche_simplifiee
 from pcapi.domain.user_activation import create_beneficiary_from_application
@@ -30,7 +30,7 @@ def run(
     get_applications_ids_to_retry: Callable[..., List[int]] = find_applications_ids_to_retry,
     get_details: Callable[..., Dict] = get_application_details,
     already_imported: Callable[..., bool] = is_already_imported,
-    already_existing_user: Callable[..., UserSQLEntity] = find_user_by_email,
+    already_existing_user: Callable[..., User] = find_user_by_email,
 ) -> None:
     procedure_id = settings.DMS_NEW_ENROLLMENT_PROCEDURE_ID
     logger.info(
@@ -40,7 +40,7 @@ def run(
         procedure_id,
     )
     error_messages: List[str] = []
-    new_beneficiaries: List[UserSQLEntity] = []
+    new_beneficiaries: List[User] = []
     applications_ids = get_all_applications_ids(procedure_id, settings.DMS_TOKEN, process_applications_updated_after)
     retry_ids = get_applications_ids_to_retry()
 
@@ -99,7 +99,7 @@ def run(
 def process_beneficiary_application(
     information: Dict,
     error_messages: List[str],
-    new_beneficiaries: List[UserSQLEntity],
+    new_beneficiaries: List[User],
     retry_ids: List[int],
     procedure_id: int,
 ) -> None:
@@ -146,7 +146,7 @@ def parse_beneficiary_information(application_detail: Dict) -> Dict:
 
 
 def _process_creation(
-    error_messages: List[str], information: Dict, new_beneficiaries: List[UserSQLEntity], procedure_id: int
+    error_messages: List[str], information: Dict, new_beneficiaries: List[User], procedure_id: int
 ) -> None:
     new_beneficiary = create_beneficiary_from_application(information)
     try:
@@ -185,7 +185,7 @@ def _process_creation(
 
 
 def _process_duplication(
-    duplicate_users: List[UserSQLEntity], error_messages: List[str], information: Dict, procedure_id: int
+    duplicate_users: List[User], error_messages: List[str], information: Dict, procedure_id: int
 ) -> None:
     number_of_beneficiaries = len(duplicate_users)
     duplicate_ids = ", ".join([str(u.id) for u in duplicate_users])

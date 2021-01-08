@@ -7,13 +7,13 @@ from typing import List
 from pcapi import settings
 import pcapi.core.payments.api as payments_api
 import pcapi.core.users.api as users_api
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.utils.logger import logger
 
 
-def create_or_update_users(rows: Iterable[dict]) -> List[UserSQLEntity]:
+def create_or_update_users(rows: Iterable[dict]) -> List[User]:
     # The purpose of this function is to recreate test users on
     # staging after the staging database is reset. It's meant to be
     # used anywhere else, and certainly not on production.

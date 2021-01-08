@@ -1,4 +1,4 @@
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.models import ApiErrors
 from pcapi.models import BankInformation
 from pcapi.models import HasAddressMixin
@@ -38,7 +38,7 @@ def validate(model: Model) -> ApiErrors:
         api_errors = product.validate(model, api_errors)
     elif isinstance(model, Stock):
         api_errors = stock.validate(model, api_errors)
-    elif isinstance(model, UserSQLEntity):
+    elif isinstance(model, User):
         api_errors = user.validate(model, api_errors)
     elif isinstance(model, VenueSQLEntity):
         api_errors = venue.validate(model, api_errors)

@@ -51,7 +51,7 @@ class Mediation(PcObject, Model, HasThumbMixin, ProvidableMixin, DeactivableMixi
 
     authorId = Column(BigInteger, ForeignKey("user.id"), nullable=True)
 
-    author = relationship("UserSQLEntity", foreign_keys=[authorId], backref="mediations")
+    author = relationship("User", foreign_keys=[authorId], backref="mediations")
 
     offerId = Column(BigInteger, ForeignKey("offer.id"), index=True, nullable=False)
 

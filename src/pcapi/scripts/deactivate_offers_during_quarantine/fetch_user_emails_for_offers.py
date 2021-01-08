@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.models import Offerer
 from pcapi.models import UserOfferer
 from pcapi.models import VenueSQLEntity
@@ -19,9 +19,9 @@ def fetch_user_emails_for_offers_with_max_stock_date_between_today_and_end_of_qu
         offers_query.join(VenueSQLEntity)
         .join(Offerer)
         .join(UserOfferer)
-        .join(UserSQLEntity)
-        .distinct(UserSQLEntity.email)
-        .with_entities(UserSQLEntity.email)
+        .join(User)
+        .distinct(User.email)
+        .with_entities(User.email)
         .all()
     )
 

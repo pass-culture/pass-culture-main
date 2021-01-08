@@ -3,7 +3,7 @@ from typing import List
 import pytest
 from pytest import fixture
 
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.models import Booking
 from pcapi.models import Offer
 from pcapi.models import Stock
@@ -19,7 +19,7 @@ class BookingsRecapTest:
 
         # Then
         assert Booking.query.count() == 14
-        assert UserSQLEntity.query.count() == 4
+        assert User.query.count() == 4
         assert Offer.query.count() == 6
         assert Stock.query.count() == 6
         assert VenueSQLEntity.query.count() == 4
@@ -29,4 +29,4 @@ class BookingsRecapTest:
         assert self._find_bookings_by_user_firstname("Loulou") == 6
 
     def _find_bookings_by_user_firstname(self, name: str) -> List[Booking]:
-        return Booking.query.join(UserSQLEntity).filter(UserSQLEntity.firstName == name).count()
+        return Booking.query.join(User).filter(User.firstName == name).count()

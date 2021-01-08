@@ -6,7 +6,7 @@ from pcapi import settings
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.users import models as users_models
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
 from pcapi.emails import beneficiary_activation
 from pcapi.emails.beneficiary_booking_cancellation import make_beneficiary_booking_cancellation_email_data
@@ -91,7 +91,7 @@ def send_warning_to_beneficiary_after_pro_booking_cancellation(
     send_email(data=data)
 
 
-def send_reset_password_email_to_user(user: UserSQLEntity, send_email: Callable[..., bool]) -> bool:
+def send_reset_password_email_to_user(user: User, send_email: Callable[..., bool]) -> bool:
     data = retrieve_data_for_reset_password_user_email(user)
     return send_email(data=data)
 
@@ -106,7 +106,7 @@ def send_reset_password_email_to_native_app_user(
     return send_email(data=data)
 
 
-def send_reset_password_email_to_pro(user: UserSQLEntity, send_email: Callable[..., bool]) -> None:
+def send_reset_password_email_to_pro(user: User, send_email: Callable[..., bool]) -> None:
     data = retrieve_data_for_reset_password_pro_email(user)
     send_email(data=data)
 
@@ -153,7 +153,7 @@ def send_booking_cancellation_emails_to_user_and_offerer(
 
 
 def send_expired_bookings_recap_email_to_beneficiary(
-    beneficiary: UserSQLEntity, bookings: List[Booking], send_email: Callable[..., bool]
+    beneficiary: User, bookings: List[Booking], send_email: Callable[..., bool]
 ) -> None:
     data = build_expired_bookings_recap_email_data_for_beneficiary(beneficiary, bookings)
     send_email(data=data)
@@ -168,28 +168,28 @@ def send_expired_bookings_recap_email_to_offerer(
 
 
 def send_user_validation_email(
-    user: UserSQLEntity, send_email: Callable[..., bool], app_origin_url: str, is_webapp: bool
+    user: User, send_email: Callable[..., bool], app_origin_url: str, is_webapp: bool
 ) -> None:
     data = make_user_validation_email(user, app_origin_url, is_webapp)
     send_email(data=data)
 
 
 def send_pro_user_waiting_for_validation_by_admin_email(
-    user: UserSQLEntity, send_email: Callable[..., bool], offerer: Offerer
+    user: User, send_email: Callable[..., bool], offerer: Offerer
 ) -> None:
     data = retrieve_data_for_pro_user_waiting_offerer_validation_email(user, offerer)
     send_email(data=data)
 
 
 def send_soon_to_be_expired_bookings_recap_email_to_beneficiary(
-    beneficiary: UserSQLEntity, bookings: List[Booking], send_email: Callable[..., bool]
+    beneficiary: User, bookings: List[Booking], send_email: Callable[..., bool]
 ) -> None:
     data = build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary(beneficiary, bookings)
     send_email(data=data)
 
 
 def send_activation_email(
-    user: UserSQLEntity,
+    user: User,
     send_email: Callable[..., bool],
     native_version: bool = False,
     token: users_models.Token = None,

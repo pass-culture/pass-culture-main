@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
@@ -99,7 +99,7 @@ class Post:
 
             # Then
             assert response.status_code == 201
-            created_user = UserSQLEntity.query.filter_by(email="toto_pro@btmx.fr").one()
+            created_user = User.query.filter_by(email="toto_pro@btmx.fr").one()
             assert not created_user.isAdmin
 
         @pytest.mark.usefixtures("db_session")
@@ -117,7 +117,7 @@ class Post:
             # Then
             assert response.status_code == 201
             assert "Set-Cookie" not in response.headers
-            user = UserSQLEntity.query.filter_by(email="toto_pro@btmx.fr").first()
+            user = User.query.filter_by(email="toto_pro@btmx.fr").first()
             assert user is not None
             offerer = Offerer.query.filter_by(siren="349974931").first()
             assert offerer is not None
@@ -157,7 +157,7 @@ class Post:
             # Then
             assert response.status_code == 201
             assert "Set-Cookie" not in response.headers
-            user = UserSQLEntity.query.filter_by(email="toto_pro@btmx.fr").first()
+            user = User.query.filter_by(email="toto_pro@btmx.fr").first()
             assert user is not None
             offerer = Offerer.query.filter_by(siren="349974931").first()
             assert offerer is not None
@@ -189,7 +189,7 @@ class Post:
             # Then
             assert response.status_code == 201
             assert "Set-Cookie" not in response.headers
-            user = UserSQLEntity.query.filter_by(email="toto_pro@btmx.fr").first()
+            user = User.query.filter_by(email="toto_pro@btmx.fr").first()
             assert user is not None
             offerer = Offerer.query.filter_by(siren="349974931").first()
             assert offerer is not None
@@ -220,7 +220,7 @@ class Post:
 
             # Then
             assert response.status_code == 201
-            user = UserSQLEntity.query.filter_by(email="toto_pro@btmx.fr").first()
+            user = User.query.filter_by(email="toto_pro@btmx.fr").first()
             assert user.needsToFillCulturalSurvey == False
 
     class Returns400:

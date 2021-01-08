@@ -11,7 +11,7 @@ from shapely.geometry import Polygon
 from pcapi import settings
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.offers.models import Mediation
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.domain.payments import PaymentDetails
 from pcapi.domain.price_rule import PriceRule
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
@@ -95,7 +95,7 @@ def create_beneficiary_import(
     source_id: int = settings.DMS_OLD_ENROLLMENT_PROCEDURE_ID,
     source: str = BeneficiaryImportSources.demarches_simplifiees.value,
     status: ImportStatus = ImportStatus.CREATED,
-    user: UserSQLEntity = None,
+    user: User = None,
 ) -> BeneficiaryImport:
     import_status = BeneficiaryImportStatus()
     import_status.date = date
@@ -123,7 +123,7 @@ def create_criterion(description: str = None, name: str = "best offer", score_de
 
 
 def create_booking(
-    user: UserSQLEntity,
+    user: User,
     amount: Optional[Union[Decimal, float]] = None,
     date_created: datetime = datetime.utcnow(),
     date_used: datetime = None,
@@ -174,7 +174,7 @@ def create_booking(
 
 
 def create_deposit(
-    user: UserSQLEntity,
+    user: User,
     amount: int = 500,
     date_created: datetime = datetime.utcnow(),
     idx: int = None,
@@ -193,7 +193,7 @@ def create_deposit(
 
 
 def create_favorite(
-    idx: int = None, mediation: Mediation = None, offer: Offer = None, user: UserSQLEntity = None
+    idx: int = None, mediation: Mediation = None, offer: Offer = None, user: User = None
 ) -> FavoriteSQLEntity:
     favorite = FavoriteSQLEntity()
     favorite.id = idx
@@ -206,7 +206,7 @@ def create_favorite(
 
 def create_mediation(
     offer: Offer = None,
-    author: UserSQLEntity = None,
+    author: User = None,
     credit: str = None,
     date_created: datetime = datetime.utcnow(),
     date_modified_at_last_provider: datetime = None,
@@ -443,8 +443,8 @@ def create_user(
     reset_password_token: str = None,
     reset_password_token_validity_limit: datetime = None,
     validation_token: str = None,
-) -> UserSQLEntity:
-    user = UserSQLEntity()
+) -> User:
+    user = User()
     user.activity = activity
     user.civility = civility
     user.culturalSurveyId = cultural_survey_id
@@ -478,7 +478,7 @@ def create_user(
 
 
 def create_user_offerer(
-    user: UserSQLEntity, offerer: Offerer, idx: int = None, is_admin: bool = False, validation_token: str = None
+    user: User, offerer: Offerer, idx: int = None, is_admin: bool = False, validation_token: str = None
 ) -> UserOfferer:
     user_offerer = UserOfferer()
     user_offerer.id = idx

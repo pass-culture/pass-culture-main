@@ -3,7 +3,7 @@ from datetime import timedelta
 from unittest.mock import patch
 
 import pcapi.core.users.factories as users_factories
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.domain.password import RESET_PASSWORD_TOKEN_LENGTH
 from pcapi.validation.routes.captcha import InvalidRecaptchaTokenException
 
@@ -94,7 +94,7 @@ class Returns204:
 
         # then
         assert response.status_code == 204
-        user = UserSQLEntity.query.get(user.id)
+        user = User.query.get(user.id)
         assert not user.resetPasswordToken
 
     @patch("pcapi.routes.shared.passwords.check_recaptcha_token_is_valid", return_value=True)
@@ -108,7 +108,7 @@ class Returns204:
 
         # then
         assert response.status_code == 204
-        user = UserSQLEntity.query.get(user.id)
+        user = User.query.get(user.id)
         assert len(user.resetPasswordToken) == RESET_PASSWORD_TOKEN_LENGTH
         now = datetime.utcnow()
         assert (now + timedelta(hours=23)) < user.resetPasswordTokenValidityLimit < (now + timedelta(hours=25))

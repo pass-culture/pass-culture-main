@@ -35,13 +35,11 @@ from pcapi.validation.routes.users import check_valid_signin
 from pcapi.workers.beneficiary_job import beneficiary_job
 
 
-# @debt api-migration
 @private_api.route("/beneficiaries/current", methods=["GET"])
 @login_required
 @spectree_serialize(response_model=BeneficiaryAccountResponse)
 def get_beneficiary_profile() -> BeneficiaryAccountResponse:
     user = current_user._get_current_object()
-
     response = BeneficiaryAccountResponse.from_orm(user)
 
     return response

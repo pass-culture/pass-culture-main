@@ -8,7 +8,7 @@ from wtforms.validators import DataRequired
 
 from pcapi import settings
 from pcapi.admin.base_configuration import BaseAdminView
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.domain.user_emails import send_activation_email
 from pcapi.models import UserOfferer
 from pcapi.utils.mailing import send_raw_email
@@ -72,7 +72,7 @@ class BeneficiaryUserView(SuspensionMixin, BaseAdminView):
         dateOfBirth=dict(validators=[DataRequired()]),
     )
 
-    def on_model_change(self, form: Form, model: UserSQLEntity, is_created: bool) -> None:
+    def on_model_change(self, form: Form, model: User, is_created: bool) -> None:
         model.publicName = f"{model.firstName} {model.lastName}"
         # If a user is an admin, he shouldn't be able to be beneficiary
         if form.isBeneficiary.data and model.isAdmin:
@@ -86,13 +86,13 @@ class BeneficiaryUserView(SuspensionMixin, BaseAdminView):
 
         super().on_model_change(form, model, is_created)
 
-    def after_model_change(self, form: Form, model: UserSQLEntity, is_created: bool) -> None:
+    def after_model_change(self, form: Form, model: User, is_created: bool) -> None:
         if is_created and not send_activation_email(model, send_raw_email):
             flash("L'envoi d'email a échoué", "error")
         super().after_model_change(form, model, is_created)
 
     def get_query(self) -> query:
-        return UserSQLEntity.query.outerjoin(UserOfferer).filter(UserOfferer.userId.is_(None))
+        return User.query.outerjoin(UserOfferer).filter(UserOfferer.userId.is_(None))
 
     def get_count_query(self) -> query:
         return (

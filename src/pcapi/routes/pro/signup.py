@@ -2,7 +2,7 @@ from flask import jsonify
 from flask import request
 
 from pcapi import settings
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.domain.user_emails import send_user_validation_email
 from pcapi.flask_app import private_api
@@ -26,7 +26,7 @@ def signup_pro():
     app_origin_url = request.headers.get("origin")
 
     check_valid_signup_pro(request)
-    new_user = UserSQLEntity(from_dict=request.json)
+    new_user = User(from_dict=request.json)
 
     existing_offerer = Offerer.query.filter_by(siren=request.json["siren"]).first()
 
@@ -74,7 +74,7 @@ def _generate_offerer(data):
     return offerer
 
 
-def _set_offerer_departement_code(new_user: UserSQLEntity, offerer: Offerer) -> UserSQLEntity:
+def _set_offerer_departement_code(new_user: User, offerer: Offerer) -> User:
     if settings.IS_INTEGRATION:
         new_user.departementCode = "00"
     elif offerer.postalCode is not None:

@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
@@ -29,7 +29,7 @@ class Patch:
             )
 
             # Then
-            validated_user = UserSQLEntity.query.get(user_id)
+            validated_user = User.query.get(user_id)
             assert response.status_code == 204
             assert validated_user.isValidated
             assert validated_user.isEmailValidated

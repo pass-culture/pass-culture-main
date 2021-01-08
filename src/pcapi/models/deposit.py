@@ -23,7 +23,7 @@ class Deposit(PcObject, Model):
 
     userId = Column(BigInteger, ForeignKey("user.id"), index=True, nullable=False)
 
-    user = relationship("UserSQLEntity", foreign_keys=[userId], backref="deposits")
+    user = relationship("User", foreign_keys=[userId], backref="deposits")
 
     source = Column(String(300), nullable=False)
 

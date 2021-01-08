@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.models import ApiErrors
 from pcapi.repository import repository
@@ -30,7 +30,7 @@ class PostChangePassword:
             )
 
             # then
-            user = UserSQLEntity.query.get(user_id)
+            user = User.query.get(user_id)
             assert user.checkPassword("N3W_p4ssw0rd") is True
             assert response.status_code == 204
 

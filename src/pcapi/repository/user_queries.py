@@ -8,7 +8,7 @@ from sqlalchemy.orm import Query
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.functions import Function
 
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.core.users.utils import format_email
 from pcapi.models import BeneficiaryImport
 from pcapi.models import BeneficiaryImportSources
@@ -21,40 +21,40 @@ from pcapi.models.wallet_balance import WalletBalance
 
 
 def count_users_by_email(email: str) -> int:
-    return UserSQLEntity.query.filter_by(email=email).count()
+    return User.query.filter_by(email=email).count()
 
 
-def find_user_by_email(email: str) -> UserSQLEntity:
-    return UserSQLEntity.query.filter(func.lower(UserSQLEntity.email) == format_email(email)).first()
+def find_user_by_email(email: str) -> User:
+    return User.query.filter(func.lower(User.email) == format_email(email)).first()
 
 
-def find_by_civility(first_name: str, last_name: str, date_of_birth: datetime) -> List[UserSQLEntity]:
+def find_by_civility(first_name: str, last_name: str, date_of_birth: datetime) -> List[User]:
     civility_predicate = (
-        (_matching(UserSQLEntity.firstName, first_name))
-        & (_matching(UserSQLEntity.lastName, last_name))
-        & (UserSQLEntity.dateOfBirth == date_of_birth)
+        (_matching(User.firstName, first_name))
+        & (_matching(User.lastName, last_name))
+        & (User.dateOfBirth == date_of_birth)
     )
 
-    return UserSQLEntity.query.filter(civility_predicate).all()
+    return User.query.filter(civility_predicate).all()
 
 
-def find_by_validation_token(token: str) -> UserSQLEntity:
-    return UserSQLEntity.query.filter_by(validationToken=token).first()
+def find_by_validation_token(token: str) -> User:
+    return User.query.filter_by(validationToken=token).first()
 
 
-def find_user_by_reset_password_token(token: str) -> UserSQLEntity:
-    return UserSQLEntity.query.filter_by(resetPasswordToken=token).first()
+def find_user_by_reset_password_token(token: str) -> User:
+    return User.query.filter_by(resetPasswordToken=token).first()
 
 
 def get_all_users_wallet_balances() -> List[WalletBalance]:
     wallet_balances = (
         db.session.query(
-            UserSQLEntity.id,
-            func.get_wallet_balance(UserSQLEntity.id, False),
-            func.get_wallet_balance(UserSQLEntity.id, True),
+            User.id,
+            func.get_wallet_balance(User.id, False),
+            func.get_wallet_balance(User.id, True),
         )
-        .filter(UserSQLEntity.deposits != None)
-        .order_by(UserSQLEntity.id)
+        .filter(User.deposits != None)
+        .order_by(User.id)
         .all()
     )
 
@@ -87,7 +87,7 @@ def filter_users_with_at_least_one_not_validated_offerer_validated_user_offerer(
 
 
 def keep_only_webapp_users(query: Query) -> Query:
-    return query.filter((~UserSQLEntity.UserOfferers.any()) & (UserSQLEntity.isAdmin == False))
+    return query.filter((~User.UserOfferers.any()) & (User.isAdmin == False))
 
 
 def find_most_recent_beneficiary_creation_date_for_source(source: BeneficiaryImportSources, source_id: int) -> datetime:
@@ -118,5 +118,5 @@ def _sanitized_string(value: str) -> Function:
     return sanitized
 
 
-def find_user_by_id(user_id: int) -> UserSQLEntity:
-    return UserSQLEntity.query.get(user_id)
+def find_user_by_id(user_id: int) -> User:
+    return User.query.get(user_id)

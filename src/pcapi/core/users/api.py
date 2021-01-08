@@ -14,7 +14,7 @@ from pcapi.core.payments import api as payment_api
 from pcapi.core.users import exceptions
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.core.users.utils import create_custom_jwt_token
 from pcapi.core.users.utils import decode_jwt_token
 from pcapi.core.users.utils import encode_jwt_payload
@@ -39,24 +39,24 @@ from pcapi.utils.mailing import MailServiceException
 from . import constants
 
 
-def create_email_validation_token(user: UserSQLEntity) -> Token:
+def create_email_validation_token(user: User) -> Token:
     return generate_and_save_token(
         user, TokenType.EMAIL_VALIDATION, life_time=constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME
     )
 
 
-def create_reset_password_token(user: UserSQLEntity) -> Token:
+def create_reset_password_token(user: User) -> Token:
     return generate_and_save_token(user, TokenType.RESET_PASSWORD, life_time=constants.RESET_PASSWORD_TOKEN_LIFE_TIME)
 
 
-def create_id_check_token(user: UserSQLEntity) -> Optional[Token]:
+def create_id_check_token(user: User) -> Optional[Token]:
     if not is_user_eligible(user):
         return None
 
     return generate_and_save_token(user, TokenType.ID_CHECK, constants.ID_CHECK_TOKEN_LIFE_TIME)
 
 
-def generate_and_save_token(user: UserSQLEntity, token_type: TokenType, life_time: Optional[timedelta] = None) -> Token:
+def generate_and_save_token(user: User, token_type: TokenType, life_time: Optional[timedelta] = None) -> Token:
     expiration_date = datetime.now() + life_time if life_time else None
     token_value = create_custom_jwt_token(user.id, token_type.value, expiration_date)
 
@@ -77,11 +77,11 @@ def create_account(
     has_allowed_recommendations: bool = False,
     is_email_validated: bool = False,
     send_activation_mail: bool = True,
-) -> UserSQLEntity:
+) -> User:
     if find_user_by_email(email):
         raise exceptions.UserAlreadyExistsException()
 
-    user = UserSQLEntity(
+    user = User(
         email=format_email(email),
         dateOfBirth=birthdate,
         isEmailValidated=is_email_validated,
@@ -99,7 +99,7 @@ def create_account(
     return user
 
 
-def activate_beneficiary(user: UserSQLEntity, deposit_source: str) -> UserSQLEntity:
+def activate_beneficiary(user: User, deposit_source: str) -> User:
     if not is_user_eligible(user):
         raise exceptions.NotEligible()
     user.isBeneficiary = True
@@ -110,7 +110,7 @@ def activate_beneficiary(user: UserSQLEntity, deposit_source: str) -> UserSQLEnt
 
 
 def attach_beneficiary_import_details(
-    beneficiary: UserSQLEntity, beneficiary_pre_subscription: BeneficiaryPreSubscription
+    beneficiary: User, beneficiary_pre_subscription: BeneficiaryPreSubscription
 ) -> None:
     beneficiary_import = BeneficiaryImport()
 
@@ -122,17 +122,17 @@ def attach_beneficiary_import_details(
     beneficiary.beneficiaryImports = [beneficiary_import]
 
 
-def request_email_confirmation(user: UserSQLEntity) -> None:
+def request_email_confirmation(user: User) -> None:
     token = create_email_validation_token(user)
     user_emails.send_activation_email(user, mailing_utils.send_raw_email, native_version=True, token=token)
 
 
-def is_user_eligible(user: UserSQLEntity) -> bool:
+def is_user_eligible(user: User) -> bool:
     age = user.calculate_age()
     return age is not None and age == constants.ELIGIBILITY_AGE
 
 
-def fulfill_user_data(user: UserSQLEntity, deposit_source: str) -> UserSQLEntity:
+def fulfill_user_data(user: User, deposit_source: str) -> User:
     user.password = random_password()
     generate_reset_token(user, validity_duration_hours=THIRTY_DAYS_IN_HOURS)
 
@@ -142,7 +142,7 @@ def fulfill_user_data(user: UserSQLEntity, deposit_source: str) -> UserSQLEntity
     return user
 
 
-def suspend_account(user: UserSQLEntity, reason: constants.SuspensionReason, actor: UserSQLEntity) -> None:
+def suspend_account(user: User, reason: constants.SuspensionReason, actor: User) -> None:
     user.isActive = False
     user.suspensionReason = str(reason)
     # If we ever unsuspend the account, we'll have to explictly enable
@@ -157,7 +157,7 @@ def suspend_account(user: UserSQLEntity, reason: constants.SuspensionReason, act
     logger.info("user=%s has been suspended by actor=%s for reason=%s", user.id, actor.id, reason)
 
 
-def unsuspend_account(user: UserSQLEntity, actor: UserSQLEntity) -> None:
+def unsuspend_account(user: User, actor: User) -> None:
     user.isActive = True
     user.suspensionReason = ""
     repository.save(user)
@@ -165,8 +165,8 @@ def unsuspend_account(user: UserSQLEntity, actor: UserSQLEntity) -> None:
     logger.info("user=%s has been unsuspended by actor=%s", user.id, actor.id)
 
 
-def send_user_emails_for_email_change(user: UserSQLEntity, new_email: str) -> None:
-    user_with_new_email = UserSQLEntity.query.filter_by(email=new_email).first()
+def send_user_emails_for_email_change(user: User, new_email: str) -> None:
+    user_with_new_email = User.query.filter_by(email=new_email).first()
     if user_with_new_email:
         return
 
@@ -201,11 +201,11 @@ def change_user_email(token: str) -> None:
         raise InvalidTokenError()
 
     new_email = jwt_payload["new_email"]
-    if UserSQLEntity.query.filter_by(email=new_email).first():
+    if User.query.filter_by(email=new_email).first():
         return
 
     current_email = jwt_payload["current_email"]
-    current_user = UserSQLEntity.query.filter_by(email=current_email).first()
+    current_user = User.query.filter_by(email=current_email).first()
     if not current_user:
         return
 

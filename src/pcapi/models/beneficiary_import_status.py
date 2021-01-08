@@ -39,4 +39,4 @@ class BeneficiaryImportStatus(PcObject, Model):
 
     authorId = Column(BigInteger, ForeignKey("user.id"), nullable=True)
 
-    author = relationship("UserSQLEntity", foreign_keys=[authorId])
+    author = relationship("User", foreign_keys=[authorId])

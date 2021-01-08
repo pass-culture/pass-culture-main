@@ -1,4 +1,4 @@
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_venue
@@ -12,7 +12,7 @@ from pcapi.utils.logger import logger
 def create_industrial_activation_offers():
     logger.info("create_industrial_activation_offers")
 
-    activated_user = UserSQLEntity.query.filter_by(isBeneficiary=True).first()
+    activated_user = User.query.filter_by(isBeneficiary=True).first()
     offerer = create_offerer()
     venue = create_venue(offerer, is_virtual=True, siret=None)
     offer = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)

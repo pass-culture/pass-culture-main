@@ -1,5 +1,5 @@
 from pcapi.core.offers.models import Offer
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.models import BankInformation
 from pcapi.models import Stock
 from pcapi.models import ThingType
@@ -15,7 +15,7 @@ from pcapi.sandboxes.scripts.utils.helpers import get_venue_helper
 
 
 def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_no_stock():
-    query = UserSQLEntity.query.filter(UserSQLEntity.validationToken == None)
+    query = User.query.filter(User.validationToken == None)
     query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
     query = query.join(BankInformation)
     query = (
@@ -40,7 +40,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
 
 
 def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_stock():
-    query = UserSQLEntity.query.filter(UserSQLEntity.validationToken == None)
+    query = User.query.filter(User.validationToken == None)
     query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
     query = query.join(BankInformation)
     query = (
@@ -71,7 +71,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
 
 
 def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_thing_offer_with_stock():
-    query = UserSQLEntity.query.filter(UserSQLEntity.validationToken == None)
+    query = User.query.filter(User.validationToken == None)
     query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
     query = query.join(BankInformation)
     query = query.join(VenueSQLEntity, VenueSQLEntity.managingOffererId == Offerer.id).join(Offer).join(Offer.stocks)
@@ -93,7 +93,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
 
 
 def get_existing_pro_validated_user_with_validated_offerer_with_no_iban_validated_user_offerer_with_thing_offer_with_no_stock():
-    query = UserSQLEntity.query.filter(UserSQLEntity.validationToken == None)
+    query = User.query.filter(User.validationToken == None)
     query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
     query = query.filter(Offerer.bankInformation == None)
     query = query.join(VenueSQLEntity).filter(
@@ -118,7 +118,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_no_iban_validate
 
 
 def get_existing_pro_validated_user_with_validated_offerer_with_no_iban_validated_user_offerer_with_event_offer():
-    query = UserSQLEntity.query.filter(UserSQLEntity.validationToken == None)
+    query = User.query.filter(User.validationToken == None)
     query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
     query = query.filter(Offerer.bankInformation == None)
     query = query.join(VenueSQLEntity).join(Offer).filter(Offer.type.in_([str(thing_type) for thing_type in ThingType]))

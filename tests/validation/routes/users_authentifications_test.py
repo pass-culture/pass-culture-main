@@ -1,6 +1,6 @@
 import pytest
 
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.models import ApiErrors
 from pcapi.validation.routes.users_authentifications import check_user_is_logged_in_or_email_is_provided
 
@@ -8,7 +8,7 @@ from pcapi.validation.routes.users_authentifications import check_user_is_logged
 class CheckUserIsLoggedInOrEmailIsProvidedTest:
     def test_raises_an_error_when_no_email_nor_user_logged(self):
         # Given
-        user = UserSQLEntity()
+        user = User()
         user.is_authenticated = False
         email = None
 
@@ -23,7 +23,7 @@ class CheckUserIsLoggedInOrEmailIsProvidedTest:
 
     def test_does_not_raise_error_when_email_is_provided(self):
         # Given
-        user = UserSQLEntity()
+        user = User()
         user.is_authenticated = False
         email = "fake@example.com"
 
@@ -37,7 +37,7 @@ class CheckUserIsLoggedInOrEmailIsProvidedTest:
 
     def test_does_not_raise_error_when_user_is_authenticated(self):
         # Given
-        user = UserSQLEntity()
+        user = User()
         user.is_authenticated = True
         email = "fake@example.com"
 

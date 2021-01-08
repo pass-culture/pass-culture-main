@@ -7,7 +7,7 @@ from wtforms.form import Form
 from pcapi.admin.custom_views.pro_user_view import ProUserView
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.models import UserOfferer
 from pcapi.models.offerer import Offerer
 
@@ -44,7 +44,7 @@ class ProUserViewTest:
 
         assert response.status_code == 302
 
-        users_filtered = UserSQLEntity.query.filter_by(email="toto@testemail.fr").all()
+        users_filtered = User.query.filter_by(email="toto@testemail.fr").all()
         assert len(users_filtered) == 1
         user_created = users_filtered[0]
         assert user_created.firstName == "Juste"
@@ -72,7 +72,7 @@ class ProUserViewTest:
     def test_it_gives_a_random_password_to_user(self, app, db_session):
         # Given
         offers_factories.VirtualVenueTypeFactory()
-        pro_user_view = ProUserView(UserSQLEntity, db_session)
+        pro_user_view = ProUserView(User, db_session)
         pro_user_view_create_form = pro_user_view.get_create_form()
         data = dict(
             firstName="Juste",
@@ -83,7 +83,7 @@ class ProUserViewTest:
             offererCity="Nantes",
         )
         form = pro_user_view_create_form(data=data)
-        user = UserSQLEntity()
+        user = User()
 
         # When
         pro_user_view.on_model_change(form, user, True)
@@ -96,11 +96,11 @@ class ProUserViewTest:
 
     def test_should_create_the_public_name(self, app, db_session):
         # Given
-        user = UserSQLEntity()
+        user = User()
         user.firstName = "Ken"
         user.lastName = "Thompson"
         user.publicName = None
-        view = ProUserView(model=UserSQLEntity, session=db_session)
+        view = ProUserView(model=User, session=db_session)
 
         # When
         view.on_model_change(Form(), model=user, is_created=False)

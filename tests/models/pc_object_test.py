@@ -10,7 +10,7 @@ from sqlalchemy import Float
 from sqlalchemy import Integer
 from sqlalchemy.dialects.postgresql import UUID
 
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.model_creators.generic_creators import create_stock
 from pcapi.models import Offer
 from pcapi.models import PcObject
@@ -101,7 +101,7 @@ class PopulateFromDictTest:
         }
 
         # When
-        user = UserSQLEntity(from_dict=user_data)
+        user = User(from_dict=user_data)
 
         # Then
         assert user.email == "test@example.com"

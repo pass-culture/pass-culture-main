@@ -8,7 +8,7 @@ from typing import Iterable
 from typing import List
 from typing import Optional
 
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.models import Booking
 from pcapi.models import Criterion
 from pcapi.models import EventType
@@ -28,7 +28,7 @@ def create_booking_for_event(  # pylint: disable=redefined-builtin
     is_cancelled: bool = False,
     quantity: int = 1,
     type: EventType = EventType.CINEMA,
-    user: UserSQLEntity = None,
+    user: User = None,
 ) -> Booking:
     product = Product(from_dict={"type": str(type)})
     offer = Offer()
@@ -53,7 +53,7 @@ def create_booking_for_thing(
     quantity: int = 1,
     product_type: ThingType = ThingType.JEUX,
     url: str = None,
-    user: UserSQLEntity = None,
+    user: User = None,
 ) -> Booking:
     product = Product(from_dict={"url": url, "type": str(product_type)})
     offer = Offer(from_dict={"url": url, "type": str(product_type)})

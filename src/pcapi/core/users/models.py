@@ -54,7 +54,7 @@ class Token(PcObject, Model):
 
     userId = Column(BigInteger, ForeignKey("user.id"), index=True, nullable=False)
 
-    user = relationship("UserSQLEntity", foreign_keys=[userId], backref="tokens")
+    user = relationship("User", foreign_keys=[userId], backref="tokens")
 
     value = Column(String, index=True, unique=True, nullable=False)
 
@@ -96,7 +96,7 @@ def check_password(clear_text: str, hashed: str) -> bool:
     return checker(clear_text, hashed)
 
 
-class UserSQLEntity(PcObject, Model, NeedsValidationMixin, VersionedMixin):
+class User(PcObject, Model, NeedsValidationMixin, VersionedMixin):
     __tablename__ = "user"
 
     email = Column(String(120), nullable=False, unique=True)
@@ -167,7 +167,7 @@ class UserSQLEntity(PcObject, Model, NeedsValidationMixin, VersionedMixin):
     suspensionReason = Column(Text, nullable=True, default="")
 
     # FIXME (dbaty, 2020-12-14): once v114 has been deployed, populate
-    # existing rows, remove this field and let the UserSQLEntity model
+    # existing rows, remove this field and let the User model
     # use DeactivableMixin. We'll need to add a migration that adds a
     # NOT NULL constraint.
     isActive = Column(Boolean, nullable=True, server_default=expression.true(), default=True)

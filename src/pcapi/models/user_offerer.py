@@ -23,7 +23,7 @@ class UserOfferer(PcObject, Model, NeedsValidationMixin):
 
     userId = Column(BigInteger, ForeignKey("user.id"), primary_key=True)
 
-    user = relationship("UserSQLEntity", foreign_keys=[userId], backref=backref("UserOfferers"))
+    user = relationship("User", foreign_keys=[userId], backref=backref("UserOfferers"))
 
     offererId = Column(BigInteger, ForeignKey("offerer.id"), index=True, primary_key=True)
 

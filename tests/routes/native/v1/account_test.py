@@ -4,7 +4,7 @@ from flask_jwt_extended.utils import create_access_token
 import pytest
 
 from pcapi.core.users import factories as users_factories
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 
 from tests.conftest import TestClient
 
@@ -68,7 +68,7 @@ class AccountTest:
     @patch("pcapi.utils.mailing.send_raw_email", return_value=True)
     def test_account_creation(self, mocked_send_raw_email, mocked_check_recaptcha_token_is_valid, app):
         test_client = TestClient(app.test_client())
-        assert UserSQLEntity.query.first() is None
+        assert User.query.first() is None
         data = {
             "email": "John.doe@example.com",
             "password": "Aazflrifaoi6@",
@@ -81,7 +81,7 @@ class AccountTest:
         response = test_client.post("/native/v1/account", json=data)
         assert response.status_code == 204, response.json
 
-        user = UserSQLEntity.query.first()
+        user = User.query.first()
         assert user is not None
         assert user.email == "john.doe@example.com"
         assert user.isEmailValidated is False

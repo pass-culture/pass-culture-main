@@ -9,7 +9,7 @@ from alembic import op
 from postgresql_audit.base import VersioningManager
 
 # revision identifiers, used by Alembic.
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 
 
 revision = "565f79cfa5b2"
@@ -20,7 +20,7 @@ depends_on = None
 
 def upgrade():
     versioning_manager = VersioningManager(schema_name="public")
-    versioning_manager.create_audit_table(UserSQLEntity.__table__, op.get_bind())
+    versioning_manager.create_audit_table(User.__table__, op.get_bind())
     op.execute(
         """
     SELECT public.audit_table(oid, ARRAY['password', 'resetPasswordToken', 'validationToken'])

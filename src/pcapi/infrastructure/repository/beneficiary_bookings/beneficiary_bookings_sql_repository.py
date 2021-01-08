@@ -1,7 +1,7 @@
 from typing import List
 
 from pcapi.core.offers.models import Mediation
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.domain.beneficiary_bookings.beneficiary_booking import BeneficiaryBooking
 from pcapi.domain.beneficiary_bookings.beneficiary_bookings_repository import BeneficiaryBookingsRepository
 from pcapi.domain.beneficiary_bookings.beneficiary_bookings_with_stocks import BeneficiaryBookingsWithStocks
@@ -104,7 +104,7 @@ def _get_stocks_information(offers_ids: List[int]) -> List[object]:
 def _get_bookings_information(beneficiary_id: int) -> List[object]:
     offer_activation_types = ["ThingType.ACTIVATION", "EventType.ACTIVATION"]
     return (
-        Booking.query.join(UserSQLEntity, UserSQLEntity.id == Booking.userId)
+        Booking.query.join(User, User.id == Booking.userId)
         .join(Stock, Stock.id == Booking.stockId)
         .join(Offer)
         .join(Product, Offer.productId == Product.id)
@@ -138,7 +138,7 @@ def _get_bookings_information(beneficiary_id: int) -> List[object]:
             Offer.isNational,
             Product.id.label("productId"),
             Product.thumbCount,
-            UserSQLEntity.email,
+            User.email,
             Stock.beginningDatetime,
             Stock.price,
             VenueSQLEntity.id.label("venueId"),

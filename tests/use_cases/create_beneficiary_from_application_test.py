@@ -5,7 +5,7 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi.core.users import api as users_api
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsADuplicate
 from pcapi.model_creators.generic_creators import create_user
@@ -62,7 +62,7 @@ def test_saved_a_beneficiary_from_application(
     create_beneficiary_from_application.execute(application_id)
 
     # Then
-    beneficiary = UserSQLEntity.query.one()
+    beneficiary = User.query.one()
     assert beneficiary.activity == "Apprenti"
     assert beneficiary.address == "3 rue de Valois"
     assert beneficiary.isBeneficiary is True
@@ -119,7 +119,7 @@ def test_application_for_native_app_user(mocked_send_activation_email, app):
     # Then
     mocked_send_activation_email.assert_called_once()
 
-    beneficiary = UserSQLEntity.query.one()
+    beneficiary = User.query.one()
     deposit = Deposit.query.one()
     assert deposit.amount == 500
     assert deposit.source == "dossier jouve [35]"
@@ -147,7 +147,7 @@ def test_cannot_save_beneficiary_if_email_is_already_taken(app):
     create_beneficiary_from_application.execute(application_id)
 
     # Then
-    user = UserSQLEntity.query.one()
+    user = User.query.one()
     assert user.id == 4
 
     beneficiary_import = BeneficiaryImport.query.one()
@@ -178,7 +178,7 @@ def test_cannot_save_beneficiary_if_duplicate(app):
     create_beneficiary_from_application.execute(application_id)
 
     # Then
-    user = UserSQLEntity.query.one()
+    user = User.query.one()
     assert user.id == existing_user_id
 
     beneficiary_import = BeneficiaryImport.query.one()
@@ -202,7 +202,7 @@ def test_cannot_save_beneficiary_if_department_is_not_eligible(app):
     create_beneficiary_from_application.execute(application_id)
 
     # Then
-    users_count = UserSQLEntity.query.count()
+    users_count = User.query.count()
     assert users_count == 0
 
     beneficiary_import = BeneficiaryImport.query.one()

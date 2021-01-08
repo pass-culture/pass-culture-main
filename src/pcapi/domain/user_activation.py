@@ -1,5 +1,5 @@
 from pcapi.core.payments import api as payments_api
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.domain.password import generate_reset_token
 from pcapi.domain.password import random_password
 from pcapi.models.beneficiary_import_status import ImportStatus
@@ -11,8 +11,8 @@ IMPORT_STATUS_MODIFICATION_RULE = (
 )
 
 
-def create_beneficiary_from_application(application_detail: dict) -> UserSQLEntity:
-    beneficiary = UserSQLEntity()
+def create_beneficiary_from_application(application_detail: dict) -> User:
+    beneficiary = User()
     beneficiary.lastName = application_detail["last_name"]
     beneficiary.firstName = application_detail["first_name"]
     beneficiary.publicName = "%s %s" % (application_detail["first_name"], application_detail["last_name"])

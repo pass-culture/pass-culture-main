@@ -12,5 +12,5 @@ db = SQLAlchemy(
 
 Model = db.Model
 
-versioning_manager = VersioningManager(actor_cls="UserSQLEntity")
+versioning_manager = VersioningManager(actor_cls="User")
 versioning_manager.init(Model)

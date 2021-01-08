@@ -7,7 +7,7 @@ from typing import Iterable
 from typing import Optional
 
 from pcapi.core.bookings import api as bookings_api
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.models import Booking
 from pcapi.models import EventType
 from pcapi.models import Offer
@@ -52,8 +52,8 @@ def create_user(
     reset_password_token: str = None,
     reset_password_token_validity_limit: datetime = None,
     validation_token: str = None,
-) -> UserSQLEntity:
-    user = UserSQLEntity()
+) -> User:
+    user = User()
     user.activity = activity
     user.isBeneficiary = is_beneficiary
     user.civility = civility
@@ -118,7 +118,7 @@ def create_offerer(
 
 
 def create_user_offerer(
-    user: UserSQLEntity, offerer: Offerer, idx: int = None, is_admin: bool = False, validation_token: str = None
+    user: User, offerer: Offerer, idx: int = None, is_admin: bool = False, validation_token: str = None
 ) -> UserOfferer:
     user_offerer = UserOfferer()
     user_offerer.id = idx
@@ -406,7 +406,7 @@ def create_offer_with_thing_product(
 
 
 def create_booking(
-    user: UserSQLEntity,
+    user: User,
     amount: int = None,
     date_created: datetime = datetime.utcnow(),
     date_used: datetime = None,

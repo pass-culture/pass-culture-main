@@ -1,5 +1,5 @@
 from pcapi.core.offers.models import Mediation
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.models import EventType
 from pcapi.models import Offer
 from pcapi.models import Offerer
@@ -85,49 +85,49 @@ def get_non_free_event_offer():
 
 
 def get_existing_webapp_user_has_no_more_money():
-    query = keep_only_webapp_users(UserSQLEntity.query)
-    query = query.filter(UserSQLEntity.email.contains("has-no-more-money"))
+    query = keep_only_webapp_users(User.query)
+    query = query.filter(User.email.contains("has-no-more-money"))
     user = query.first()
     return {"user": get_beneficiary_helper(user)}
 
 
 def get_existing_webapp_user_can_book_thing_offer():
-    query = keep_only_webapp_users(UserSQLEntity.query)
-    query = query.filter(UserSQLEntity.email.contains("93.has-confirmed-activation"))
+    query = keep_only_webapp_users(User.query)
+    query = query.filter(User.email.contains("93.has-confirmed-activation"))
     user = query.first()
     return {"user": get_beneficiary_helper(user)}
 
 
 def get_existing_webapp_user_can_book_digital_offer():
-    query = keep_only_webapp_users(UserSQLEntity.query)
-    query = query.filter(UserSQLEntity.email.contains("93.has-confirmed-activation"))
+    query = keep_only_webapp_users(User.query)
+    query = query.filter(User.email.contains("93.has-confirmed-activation"))
     user = query.first()
     return {"user": get_beneficiary_helper(user)}
 
 
 def get_existing_webapp_user_can_book_event_offer():
-    query = keep_only_webapp_users(UserSQLEntity.query)
-    query = query.filter(UserSQLEntity.email.contains("93.has-booked-some"))
+    query = keep_only_webapp_users(User.query)
+    query = query.filter(User.email.contains("93.has-booked-some"))
     user = query.first()
     return {"user": get_beneficiary_helper(user)}
 
 
 def get_existing_webapp_user_can_book_multidates():
-    query = keep_only_webapp_users(UserSQLEntity.query)
-    query = query.filter(UserSQLEntity.email.contains("97.has-confirmed-activation"))
+    query = keep_only_webapp_users(User.query)
+    query = query.filter(User.email.contains("97.has-confirmed-activation"))
     user = query.first()
     return {"user": get_beneficiary_helper(user)}
 
 
 def get_existing_webapp_user_reach_digital_limit():
-    query = keep_only_webapp_users(UserSQLEntity.query)
-    query = query.filter(UserSQLEntity.email.contains("93.has-booked-some"))
+    query = keep_only_webapp_users(User.query)
+    query = query.filter(User.email.contains("93.has-booked-some"))
     user = query.first()
     return {"user": get_beneficiary_helper(user)}
 
 
 def get_existing_webapp_user_reach_physical_limit():
-    query = keep_only_webapp_users(UserSQLEntity.query)
-    query = query.filter(UserSQLEntity.email.contains("93.has-booked-some"))
+    query = keep_only_webapp_users(User.query)
+    query = query.filter(User.email.contains("93.has-booked-some"))
     user = query.first()
     return {"user": get_beneficiary_helper(user)}

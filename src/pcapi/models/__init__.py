@@ -3,7 +3,7 @@ from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import Token
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.models.allocine_pivot import AllocinePivot
 from pcapi.models.allocine_venue_provider import AllocineVenueProvider
 from pcapi.models.allocine_venue_provider_price_rule import AllocineVenueProviderPriceRule
@@ -95,7 +95,7 @@ __all__ = (
     "ThingType",
     "Token",
     "UserOfferer",
-    "UserSQLEntity",
+    "User",
     "UserSession",
     "VenueSQLEntity",
     "VenueType",
@@ -104,7 +104,7 @@ __all__ = (
 
 # Order matters
 models = (
-    UserSQLEntity,
+    User,
     UserSession,
     Provider,
     Offerer,

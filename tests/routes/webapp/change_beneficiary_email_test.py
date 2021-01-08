@@ -10,7 +10,7 @@ import pytest
 from pcapi import settings
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import ALGORITHM_HS_256
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 
 from tests.conftest import TestClient
 
@@ -87,9 +87,9 @@ class Returns204:
 
         # Then
         assert response.status_code == 204
-        old_email_user = UserSQLEntity.query.filter_by(email="oldemail@mail.com").first()
+        old_email_user = User.query.filter_by(email="oldemail@mail.com").first()
         assert old_email_user is None
-        new_email_user = UserSQLEntity.query.filter_by(email="newemail@mail.com").first()
+        new_email_user = User.query.filter_by(email="newemail@mail.com").first()
         assert new_email_user is not None
         assert new_email_user.id == user.id
 

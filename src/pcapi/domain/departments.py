@@ -1,6 +1,6 @@
 from typing import List
 
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 
 
 DEPARTEMENT_CODE_VISIBILITY = {
@@ -22,7 +22,7 @@ DEPARTEMENT_CODE_VISIBILITY = {
 }
 
 
-def get_departement_codes_from_user(user: UserSQLEntity) -> List[str]:
+def get_departement_codes_from_user(user: User) -> List[str]:
     if user.departementCode[:2] in DEPARTEMENT_CODE_VISIBILITY:
         return DEPARTEMENT_CODE_VISIBILITY[user.departementCode[:2]]
     return [user.departementCode]

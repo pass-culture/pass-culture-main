@@ -1,14 +1,14 @@
 import typing
 
 from pcapi import settings
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.models import Booking
 from pcapi.repository.feature_queries import feature_send_mail_to_users_enabled
 from pcapi.utils.mailing import format_environment_for_email
 
 
 def build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary(
-    beneficiary: UserSQLEntity, bookings: typing.List[Booking]
+    beneficiary: User, bookings: typing.List[Booking]
 ) -> typing.Dict:
     return {
         "FromEmail": settings.SUPPORT_EMAIL_ADDRESS

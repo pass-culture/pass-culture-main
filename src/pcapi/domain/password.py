@@ -3,7 +3,7 @@ from datetime import timedelta
 import re
 from typing import Dict
 
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.core.users.models import hash_password
 from pcapi.models import ApiErrors
 from pcapi.repository import repository
@@ -17,9 +17,7 @@ def random_password() -> bytes:
     return hash_password(random_token(length=12))
 
 
-def check_password_validity(
-    new_password: str, new_confirmation_password: str, old_password: str, user: UserSQLEntity
-) -> None:
+def check_password_validity(new_password: str, new_confirmation_password: str, old_password: str, user: User) -> None:
     api_errors = ApiErrors()
     _ensure_new_password_is_strong_enough("newPassword", new_password, api_errors)
     _ensure_given_old_password_is_correct(user, old_password, api_errors)
@@ -44,7 +42,7 @@ def validate_change_password_request(json: Dict) -> None:
         raise api_errors
 
 
-def generate_reset_token(user: UserSQLEntity, validity_duration_hours: int = 24) -> None:
+def generate_reset_token(user: User, validity_duration_hours: int = 24) -> None:
     token = random_token(length=RESET_PASSWORD_TOKEN_LENGTH)
     user.resetPasswordToken = token
     user.resetPasswordTokenValidityLimit = datetime.utcnow() + timedelta(hours=validity_duration_hours)
@@ -82,12 +80,12 @@ def check_password_strength(key: str, password: str) -> None:
         raise api_errors
 
 
-def _ensure_new_password_is_different_from_old(user: UserSQLEntity, new_password: str, errors: ApiErrors) -> None:
+def _ensure_new_password_is_different_from_old(user: User, new_password: str, errors: ApiErrors) -> None:
     if user.checkPassword(new_password):
         errors.add_error("newPassword", "Ton nouveau mot de passe est identique à l’ancien.")
 
 
-def _ensure_given_old_password_is_correct(user: UserSQLEntity, old_password: str, errors: ApiErrors) -> None:
+def _ensure_given_old_password_is_correct(user: User, old_password: str, errors: ApiErrors) -> None:
     if not user.checkPassword(old_password):
         errors.add_error("oldPassword", "Ton ancien mot de passe est incorrect.")
 

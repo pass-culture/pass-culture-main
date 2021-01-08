@@ -12,7 +12,7 @@ import wtforms.validators
 from pcapi import settings
 import pcapi.core.users.api as users_api
 import pcapi.core.users.constants as users_constants
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 
 
 class SuspensionForm(SecureForm):
@@ -68,7 +68,7 @@ class SuspensionMixin:
             return Forbidden()
 
         user_id = request.args["user_id"]
-        user = UserSQLEntity.query.get(user_id)
+        user = User.query.get(user_id)
 
         if request.method == "POST":
             form = SuspensionForm(request.form)
@@ -92,7 +92,7 @@ class SuspensionMixin:
             return Forbidden()
 
         user_id = request.args["user_id"]
-        user = UserSQLEntity.query.get(user_id)
+        user = User.query.get(user_id)
 
         if request.method == "POST":
             form = UnsuspensionForm(request.form)

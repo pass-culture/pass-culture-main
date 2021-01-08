@@ -6,7 +6,7 @@ from unittest.mock import patch
 from freezegun import freeze_time
 import pytest
 
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_venue_type
@@ -161,7 +161,7 @@ class FillUserFromTest:
 
     def test_returns_an_user_with_data_from_csv_row(self):
         # when
-        user = fill_user_from(self.csv_row, UserSQLEntity())
+        user = fill_user_from(self.csv_row, User())
 
         # then
         assert user.lastName == "Mortimer"
@@ -177,7 +177,7 @@ class FillUserFromTest:
         random_password.return_value = "random_string"
 
         # when
-        user = fill_user_from(self.csv_row, UserSQLEntity())
+        user = fill_user_from(self.csv_row, User())
 
         # then
         assert user.password == "random_string"
@@ -188,7 +188,7 @@ class FillUserFromTest:
         data[1] = "John Robert James Jack"
 
         # when
-        user = fill_user_from(data, UserSQLEntity())
+        user = fill_user_from(data, User())
 
         # then
         assert user.firstName == "John"
@@ -196,7 +196,7 @@ class FillUserFromTest:
 
     def test_sets_default_properties_on_the_user(self):
         # when
-        user = fill_user_from(self.csv_row, UserSQLEntity())
+        user = fill_user_from(self.csv_row, User())
 
         # then
         assert user.isBeneficiary == False
@@ -204,7 +204,7 @@ class FillUserFromTest:
 
     def test_has_a_reset_password_token_and_validity_limit(self):
         # when
-        user = fill_user_from(self.csv_row, UserSQLEntity())
+        user = fill_user_from(self.csv_row, User())
 
         # then
         thirty_days_in_the_future = datetime.utcnow() + timedelta(days=30)

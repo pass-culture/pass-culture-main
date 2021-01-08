@@ -1,5 +1,5 @@
 from pcapi.core.offers.models import Offer
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.models import Offerer
 from pcapi.models import ThingType
 from pcapi.models import VenueSQLEntity
@@ -13,7 +13,7 @@ from pcapi.sandboxes.scripts.utils.helpers import get_venue_helper
 
 
 def get_existing_pro_validated_user_with_at_least_one_visible_offer():
-    query = UserSQLEntity.query.filter(UserSQLEntity.validationToken == None)
+    query = User.query.filter(User.validationToken == None)
     query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
     query = query.join(VenueSQLEntity, VenueSQLEntity.managingOffererId == Offerer.id).join(Offer)
     user = query.first()
@@ -28,7 +28,7 @@ def get_existing_pro_validated_user_with_at_least_one_visible_offer():
 
 
 def get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue():
-    query = UserSQLEntity.query.filter(UserSQLEntity.validationToken == None)
+    query = User.query.filter(User.validationToken == None)
     query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
     query = keep_offerers_with_at_least_one_physical_venue(query)
     user = query.first()
@@ -46,7 +46,7 @@ def get_existing_pro_validated_user_with_validated_offerer_validated_user_offere
 
 
 def get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_virtual_venue():
-    query = UserSQLEntity.query.filter(UserSQLEntity.validationToken == None)
+    query = User.query.filter(User.validationToken == None)
     query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
     user = query.first()
 
@@ -63,7 +63,7 @@ def get_existing_pro_validated_user_with_validated_offerer_validated_user_offere
 
 
 def get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_thing_offer():
-    query = UserSQLEntity.query.filter(UserSQLEntity.validationToken == None)
+    query = User.query.filter(User.validationToken == None)
     query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
     query = query.join(VenueSQLEntity).join(Offer).filter(Offer.type.in_([str(thing_type) for thing_type in ThingType]))
     user = query.first()
@@ -83,7 +83,7 @@ def get_existing_pro_validated_user_with_validated_offerer_validated_user_offere
 
 
 def get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_event_offer():
-    query = UserSQLEntity.query.filter(UserSQLEntity.validationToken == None)
+    query = User.query.filter(User.validationToken == None)
     query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
     query = query.join(VenueSQLEntity).join(Offer).filter(Offer.type.in_([str(event_type) for event_type in EventType]))
     user = query.first()

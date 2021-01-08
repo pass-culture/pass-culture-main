@@ -1,11 +1,11 @@
 from sqlalchemy.exc import IntegrityError
 
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.models import ApiErrors
 from pcapi.repository import user_queries
 
 
-def validate(user: UserSQLEntity, api_errors: ApiErrors) -> ApiErrors:
+def validate(user: User, api_errors: ApiErrors) -> ApiErrors:
     try:
         user_count = user_queries.count_users_by_email(user.email)
     except IntegrityError:

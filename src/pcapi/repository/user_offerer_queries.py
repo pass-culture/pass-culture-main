@@ -1,14 +1,9 @@
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.models import UserOfferer
 
 
 def find_user_offerer_email(user_offerer_id):
-    return (
-        UserOfferer.query.filter_by(id=user_offerer_id)
-        .join(UserSQLEntity)
-        .with_entities(UserSQLEntity.email)
-        .first()[0]
-    )
+    return UserOfferer.query.filter_by(id=user_offerer_id).join(User).with_entities(User.email).first()[0]
 
 
 def filter_query_where_user_is_user_offerer_and_is_validated(query, user):

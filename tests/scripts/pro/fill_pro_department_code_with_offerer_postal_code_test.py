@@ -1,7 +1,7 @@
 import pytest
 
 from pcapi.core.users.factories import UserFactory
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.repository import repository
@@ -24,7 +24,7 @@ class FillProDepartmentCodeWithOffererPostalCodeTest:
         fill_pro_department_code_with_offerer_postal_code()
 
         # Then
-        updated_user = UserSQLEntity.query.one()
+        updated_user = User.query.one()
         assert updated_user.departementCode == "72"
 
     @pytest.mark.usefixtures("db_session")
@@ -39,7 +39,7 @@ class FillProDepartmentCodeWithOffererPostalCodeTest:
         fill_pro_department_code_with_offerer_postal_code()
 
         # Then
-        updated_user = UserSQLEntity.query.one()
+        updated_user = User.query.one()
         assert updated_user.departementCode == "72"
 
     @pytest.mark.usefixtures("db_session")
@@ -54,7 +54,7 @@ class FillProDepartmentCodeWithOffererPostalCodeTest:
         fill_pro_department_code_with_offerer_postal_code()
 
         # Then
-        updated_user = UserSQLEntity.query.one()
+        updated_user = User.query.one()
         assert updated_user.departementCode == "75"
 
 

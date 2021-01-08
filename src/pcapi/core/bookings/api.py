@@ -15,7 +15,7 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.repository import generate_booking_token
 from pcapi.core.offers.models import Stock
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.infrastructure.services.notification.mailjet_notification_service import MailjetNotificationService
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
@@ -32,7 +32,7 @@ QR_CODE_BOX_BORDER = 1
 
 
 def book_offer(
-    beneficiary: UserSQLEntity,
+    beneficiary: User,
     stock: Stock,
     quantity: int,
 ) -> Booking:
@@ -78,7 +78,7 @@ def book_offer(
     return booking
 
 
-def cancel_booking_by_beneficiary(user: UserSQLEntity, booking: Booking) -> None:
+def cancel_booking_by_beneficiary(user: User, booking: Booking) -> None:
     if not user.isBeneficiary:
         raise RuntimeError("Unexpected call to cancel_booking_by_beneficiary with non-beneficiary user %s" % user)
     validation.check_beneficiary_can_cancel_booking(user, booking)

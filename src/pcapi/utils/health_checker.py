@@ -1,11 +1,11 @@
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.utils.logger import logger
 
 
 def check_database_connection() -> bool:
     database_working = False
     try:
-        UserSQLEntity.query.limit(1).all()
+        User.query.limit(1).all()
         database_working = True
     except Exception as exc:  # pylint: disable=broad-except
         logger.critical("Could not query database: %s", exc)

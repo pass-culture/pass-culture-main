@@ -1,7 +1,7 @@
 from pcapi.core.bookings.models import Booking
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.models import VenueSQLEntity
 from pcapi.models.offerer import Offerer
 from pcapi.models.payment import Payment
@@ -24,8 +24,8 @@ def get_existing_pro_validated_user_with_validated_offerer_with_reimbursement():
         .join(Offerer)
         .join(UserOfferer)
         .filter((Offerer.validationToken == None) & (UserOfferer.validationToken == None))
-        .join(UserSQLEntity)
-        .filter(UserSQLEntity.validationToken == None)
+        .join(User)
+        .filter(User.validationToken == None)
     )
 
     payment = query.first()

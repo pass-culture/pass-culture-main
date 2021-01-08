@@ -3,7 +3,7 @@ from typing import Dict
 from typing import List
 
 from pcapi import settings
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.models import Offer
 from pcapi.models import Offerer
 from pcapi.models import UserOfferer
@@ -60,7 +60,7 @@ def send_payments_report_emails(
 
 
 def send_offer_creation_notification_to_administration(
-    offer: Offer, author: UserSQLEntity, send_email: Callable[[dict], bool]
+    offer: Offer, author: User, send_email: Callable[[dict], bool]
 ) -> bool:
     email = make_offer_creation_notification_email(offer, author)
     email["Html-part"], email["To"] = compute_email_html_part_and_recipients(email["Html-part"], email["To"])

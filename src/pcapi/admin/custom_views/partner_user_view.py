@@ -12,7 +12,7 @@ from wtforms.validators import Length
 from wtforms.validators import Optional
 
 from pcapi.admin.base_configuration import BaseAdminView
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.domain.password import random_password
 from pcapi.models import UserOfferer
 
@@ -60,7 +60,7 @@ class PartnerUserView(BaseAdminView):
 
         return form_class
 
-    def on_model_change(self, form: Form, model: UserSQLEntity, is_created: bool) -> None:
+    def on_model_change(self, form: Form, model: User, is_created: bool) -> None:
         if is_created:
             model.password = random_password()
 
@@ -70,18 +70,18 @@ class PartnerUserView(BaseAdminView):
 
     def get_query(self) -> query:
         return (
-            UserSQLEntity.query.outerjoin(UserOfferer)
+            User.query.outerjoin(UserOfferer)
             .filter(UserOfferer.userId.is_(None))
-            .filter(UserSQLEntity.isBeneficiary.is_(False))
-            .filter(UserSQLEntity.isAdmin.is_(False))
+            .filter(User.isBeneficiary.is_(False))
+            .filter(User.isAdmin.is_(False))
         )
 
     def get_count_query(self) -> query:
         return (
-            self.session.query(func.count(distinct(UserSQLEntity.id)))
+            self.session.query(func.count(distinct(User.id)))
             .select_from(self.model)
             .outerjoin(UserOfferer)
             .filter(UserOfferer.userId.is_(None))
-            .filter(UserSQLEntity.isBeneficiary.is_(False))
-            .filter(UserSQLEntity.isAdmin.is_(False))
+            .filter(User.isBeneficiary.is_(False))
+            .filter(User.isAdmin.is_(False))
         )

@@ -13,7 +13,7 @@ class FavoriteSQLEntity(PcObject, Model):
 
     userId = Column(BigInteger, ForeignKey("user.id"), index=True, nullable=False)
 
-    user = relationship("UserSQLEntity", foreign_keys=[userId], backref="favorites")
+    user = relationship("User", foreign_keys=[userId], backref="favorites")
 
     offerId = Column(BigInteger, ForeignKey("offer.id"), index=True, nullable=False)
 

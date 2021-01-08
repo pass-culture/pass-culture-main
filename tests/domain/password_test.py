@@ -1,6 +1,6 @@
 import pytest
 
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.domain.password import _ensure_confirmation_password_is_same_as_new_password
 from pcapi.domain.password import _ensure_given_old_password_is_correct
 from pcapi.domain.password import _ensure_new_password_is_different_from_old
@@ -13,7 +13,7 @@ from pcapi.models import ApiErrors
 class ValidateChangePasswordRequestTest:
     def test_change_password_raises_an_error_if_old_password_is_not_given_as_key_in_json(self):
         # given
-        user = UserSQLEntity()
+        user = User()
         user.setPassword("0ld__p455w0rd")
         json = {"newPassword": "N3w__p455w0rd", "newConfirmationPassword": "N3w__c0nfirm__p455w0rd"}
 
@@ -26,7 +26,7 @@ class ValidateChangePasswordRequestTest:
 
     def test_change_password_raises_an_error_if_new_password_is_not_given_as_key_in_json(self):
         # given
-        user = UserSQLEntity()
+        user = User()
         user.setPassword("0ld__p455w0rd")
         json = {"oldPassword": "0ld__p455w0rd", "newConfirmationPassword": "N3w__c0nfirm__p455w0rd"}
 
@@ -39,7 +39,7 @@ class ValidateChangePasswordRequestTest:
 
     def test_change_password_raises_an_error_if_new_confirmation_password_is_not_given_as_key_in_json(self):
         # given
-        user = UserSQLEntity()
+        user = User()
         user.setPassword("0ld__p455w0rd")
         json = {"oldPassword": "0ld__p455w0rd", "newPassword": "N3w__p455w0rd"}
 
@@ -52,7 +52,7 @@ class ValidateChangePasswordRequestTest:
 
     def test_change_password_raises_an_error_if_old_password_has_no_value_in_json(self):
         # given
-        user = UserSQLEntity()
+        user = User()
         user.setPassword("0ld__p455w0rd")
         json = {"oldPassword": "", "newPassword": "N3w__p455w0rd", "newConfirmationPassword": "N3w__c0nfirm__p455w0rd"}
 
@@ -65,7 +65,7 @@ class ValidateChangePasswordRequestTest:
 
     def test_change_password_raises_an_error_if_new_password_has_no_value_in_json(self):
         # given
-        user = UserSQLEntity()
+        user = User()
         user.setPassword("0ld__p455w0rd")
         json = {"oldPassword": "0ld__p455w0rd", "newPassword": "", "newConfirmationPassword": "N3w__c0nfirm__p455w0rd"}
 
@@ -78,7 +78,7 @@ class ValidateChangePasswordRequestTest:
 
     def test_change_password_raises_an_error_if_new_confirmation_password_has_no_value_in_json(self):
         # given
-        user = UserSQLEntity()
+        user = User()
         user.setPassword("0ld__p455w0rd")
         json = {"oldPassword": "0ld__p455w0rd", "newPassword": "N3w__p455w0rd", "newConfirmationPassword": ""}
 
@@ -91,7 +91,7 @@ class ValidateChangePasswordRequestTest:
 
     def test_change_password_raises_an_error_if_no_password_is_provided(self):
         # given
-        user = UserSQLEntity()
+        user = User()
         user.setPassword("0ld__p455w0rd")
         json = {}
 
@@ -108,7 +108,7 @@ class ValidateChangePasswordRequestTest:
 class CheckPasswordValidityTest:
     def test_should_raise_multiple_errors_at_once(self):
         # given
-        user = UserSQLEntity()
+        user = User()
         user.setPassword("weakpassword")
         new_password = "weakpassword"
         new_confirmation_password = "weakConfirmationPassword"
@@ -223,7 +223,7 @@ class EnsureGivenOldPasswordIsCorrectTest:
     def test_change_password_should_add_an_error_if_old_password_does_not_match_existing_password(self):
         # given
         api_errors = ApiErrors()
-        user = UserSQLEntity()
+        user = User()
         user.setPassword("0ld__p455w0rd")
         old_password = "ra4nd0m_p455w0rd"
 
@@ -238,7 +238,7 @@ class EnsureNewPasswordIsDifertFromOldTest:
     def test_change_password_should_add_an_error_if_old_password_is_the_same_as_the_new_password(self):
         # given
         api_errors = ApiErrors()
-        user = UserSQLEntity()
+        user = User()
         user.setPassword("0ld__p455w0rd")
         new_password = "0ld__p455w0rd"
 

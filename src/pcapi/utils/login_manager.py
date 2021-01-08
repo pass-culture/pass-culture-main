@@ -8,7 +8,7 @@ from flask_login import login_user
 
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import repository as users_repo
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository.user_session_queries import delete_user_session
 from pcapi.repository.user_session_queries import existing_user_session
@@ -20,7 +20,7 @@ def get_user_with_id(user_id):
     session.permanent = True
     session_uuid = session.get("session_uuid")
     if existing_user_session(user_id, session_uuid):
-        return UserSQLEntity.query.get(user_id)
+        return User.query.get(user_id)
     return None
 
 

@@ -47,7 +47,7 @@ class Booking(PcObject, Model, VersionedMixin):
 
     userId = Column(BigInteger, ForeignKey("user.id"), index=True, nullable=False)
 
-    user = relationship("UserSQLEntity", foreign_keys=[userId], backref="userBookings")
+    user = relationship("User", foreign_keys=[userId], backref="userBookings")
 
     amount = Column(Numeric(10, 2), nullable=False)
 

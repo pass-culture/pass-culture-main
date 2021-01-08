@@ -1,6 +1,6 @@
 from sqlalchemy.orm import joinedload
 
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models import Offerer
 from pcapi.models import UserOfferer
@@ -9,11 +9,11 @@ from pcapi.repository import repository
 
 def fill_pro_department_code_with_offerer_postal_code() -> None:
     pro_user_to_update = (
-        UserSQLEntity.query.join(UserOfferer)
+        User.query.join(UserOfferer)
         .join(Offerer)
         .filter(Offerer.postalCode.startswith("75"))
-        .filter(UserSQLEntity.departementCode == "93")
-        .options(joinedload(UserSQLEntity.offerers))
+        .filter(User.departementCode == "93")
+        .options(joinedload(User.offerers))
         .all()
     )
 
@@ -24,5 +24,5 @@ def fill_pro_department_code_with_offerer_postal_code() -> None:
     repository.save(*pro_user_to_update)
 
 
-def _get_user_initial_linked_offerer(pro_user: UserSQLEntity) -> Offerer:
+def _get_user_initial_linked_offerer(pro_user: User) -> Offerer:
     return sorted(pro_user.UserOfferers, key=lambda user_offerer: user_offerer.id)[0].offerer

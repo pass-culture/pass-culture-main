@@ -1,4 +1,4 @@
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.domain.ts_vector import create_filter_matching_all_keywords_in_any_model
 from pcapi.domain.ts_vector import create_get_filter_matching_ts_query_in_any_model
 from pcapi.models import Offer
@@ -23,12 +23,7 @@ def get_by_offer_id(offer_id):
 
 
 def find_new_offerer_user_email(offerer_id):
-    return (
-        UserOfferer.query.filter_by(offererId=offerer_id)
-        .join(UserSQLEntity)
-        .with_entities(UserSQLEntity.email)
-        .first()[0]
-    )
+    return UserOfferer.query.filter_by(offererId=offerer_id).join(User).with_entities(User.email).first()[0]
 
 
 def find_first_by_user_offerer_id(user_offerer_id):

@@ -3,12 +3,12 @@ from functools import wraps
 from flask import request
 from flask_login import current_user
 
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.models import ApiErrors
 from pcapi.repository.api_key_queries import find_api_key_by_value
 
 
-def check_user_is_logged_in_or_email_is_provided(user: UserSQLEntity, email: str):
+def check_user_is_logged_in_or_email_is_provided(user: User, email: str):
     if not (user.is_authenticated or email):
         api_errors = ApiErrors()
         api_errors.add_error("email", "Vous devez préciser l'email de l'utilisateur quand vous n'êtes pas connecté(e)")

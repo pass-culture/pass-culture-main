@@ -15,7 +15,7 @@ from pcapi.core.users.api import create_id_check_token
 from pcapi.core.users.api import generate_and_save_token
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.core.users.repository import get_user_with_valid_token
 from pcapi.core.users.utils import decode_jwt_token
 from pcapi.core.users.utils import encode_jwt_payload
@@ -223,10 +223,10 @@ class ChangeUserEmailTest:
 
         # Then
         assert user.email == "newemail@mail.com"
-        new_user = UserSQLEntity.query.filter_by(email="newemail@mail.com").first()
+        new_user = User.query.filter_by(email="newemail@mail.com").first()
         assert new_user is not None
         assert new_user.firstName == "UniqueNameForEmailChangeTest"
-        old_user = UserSQLEntity.query.filter_by(email="oldemail@mail.com").first()
+        old_user = User.query.filter_by(email="oldemail@mail.com").first()
         assert old_user is None
         assert UserSession.query.filter_by(userId=user.id).first() is None
 
@@ -240,9 +240,9 @@ class ChangeUserEmailTest:
             users_api.change_user_email(token)
 
         # Then
-        old_user = UserSQLEntity.query.filter_by(email="oldemail@mail.com").first()
+        old_user = User.query.filter_by(email="oldemail@mail.com").first()
         assert old_user is not None
-        new_user = UserSQLEntity.query.filter_by(email="newemail@mail.com").first()
+        new_user = User.query.filter_by(email="newemail@mail.com").first()
         assert new_user is None
 
     @freeze_time("2020-10-15 09:00:00")
@@ -258,9 +258,9 @@ class ChangeUserEmailTest:
             users_api.change_user_email(token)
 
         # Then
-        old_user = UserSQLEntity.query.filter_by(email="oldemail@mail.com").first()
+        old_user = User.query.filter_by(email="oldemail@mail.com").first()
         assert old_user is not None
-        new_user = UserSQLEntity.query.filter_by(email="newemail@mail.com").first()
+        new_user = User.query.filter_by(email="newemail@mail.com").first()
         assert new_user is None
 
     @freeze_time("2020-10-15 09:00:00")
@@ -284,9 +284,9 @@ class ChangeUserEmailTest:
             users_api.change_user_email(missing_exp_token)
 
         # Then
-        old_user = UserSQLEntity.query.filter_by(email="oldemail@mail.com").first()
+        old_user = User.query.filter_by(email="oldemail@mail.com").first()
         assert old_user is not None
-        new_user = UserSQLEntity.query.filter_by(email="newemail@mail.com").first()
+        new_user = User.query.filter_by(email="newemail@mail.com").first()
         assert new_user is None
 
     @freeze_time("2020-10-15 09:00:00")
@@ -301,9 +301,9 @@ class ChangeUserEmailTest:
         users_api.change_user_email(token)
 
         # Then
-        old_user = UserSQLEntity.query.filter_by(email="oldemail@mail.com").first()
+        old_user = User.query.filter_by(email="oldemail@mail.com").first()
         assert old_user is None
-        new_user = UserSQLEntity.query.filter_by(email="newemail@mail.com").first()
+        new_user = User.query.filter_by(email="newemail@mail.com").first()
         assert new_user is not None
 
     @freeze_time("2020-10-15 09:00:00")
@@ -317,9 +317,9 @@ class ChangeUserEmailTest:
         users_api.change_user_email(token)
 
         # Then
-        old_user = UserSQLEntity.query.filter_by(email="oldemail@mail.com").first()
+        old_user = User.query.filter_by(email="oldemail@mail.com").first()
         assert old_user is None
-        new_user = UserSQLEntity.query.filter_by(email="newemail@mail.com").first()
+        new_user = User.query.filter_by(email="newemail@mail.com").first()
         assert new_user is None
 
 

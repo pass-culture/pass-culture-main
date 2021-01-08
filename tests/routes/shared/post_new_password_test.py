@@ -3,7 +3,7 @@ from datetime import timedelta
 
 import pytest
 
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.repository import repository
 
@@ -129,7 +129,7 @@ class PostNewPassword:
             )
 
             # then
-            user = UserSQLEntity.query.get(user_id)
+            user = User.query.get(user_id)
             assert response.status_code == 204
             assert user.checkPassword("N3W_p4ssw0rd")
             assert user.resetPasswordToken is None

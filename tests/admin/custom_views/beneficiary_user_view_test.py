@@ -5,7 +5,7 @@ import pytest
 
 from pcapi.admin.custom_views.suspension_mixin import _allow_suspension_and_unsuspension
 import pcapi.core.users.factories as users_factories
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.models import Deposit
 
 from tests.conftest import TestClient
@@ -33,7 +33,7 @@ class BeneficiaryUserViewTest:
 
         assert response.status_code == 302
 
-        user_created = UserSQLEntity.query.filter_by(email="toto@email.fr").one()
+        user_created = User.query.filter_by(email="toto@email.fr").one()
         assert user_created.firstName == "Serge"
         assert user_created.lastName == "Lama"
         assert user_created.publicName == "Serge Lama"
@@ -82,7 +82,7 @@ class BeneficiaryUserViewTest:
 
         assert response.status_code == 302
 
-        filtered_users = UserSQLEntity.query.filter_by(email="toto@email.fr").all()
+        filtered_users = User.query.filter_by(email="toto@email.fr").all()
         deposits = Deposit.query.all()
         assert len(filtered_users) == 0
         assert len(deposits) == 0
@@ -172,7 +172,7 @@ class BeneficiaryUserViewTest:
 
         assert response.status_code == 302
 
-        user_edited = UserSQLEntity.query.filter_by(email="edited@email.com").one_or_none()
+        user_edited = User.query.filter_by(email="edited@email.com").one_or_none()
         assert user_edited is not None
 
         mocked_flask_flash.assert_not_called()

@@ -13,7 +13,7 @@ from sqlalchemy.orm import joinedload
 from sqlalchemy.sql.functions import coalesce
 
 from pcapi.core.bookings.models import Booking
-from pcapi.core.users.models import UserSQLEntity
+from pcapi.core.users.models import User
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
 from pcapi.infrastructure.repository.pro_offers.paginated_offers_recap_domain_converter import to_domain
 from pcapi.models import Offer
@@ -80,7 +80,7 @@ def get_paginated_offers_for_filters(
     )
 
 
-def get_offers_by_ids(user: UserSQLEntity, offer_ids: [int]) -> Query:
+def get_offers_by_ids(user: User, offer_ids: [int]) -> Query:
     query = Offer.query
     if not user.isAdmin:
         query = query.join(VenueSQLEntity, Offerer, UserOfferer).filter(
