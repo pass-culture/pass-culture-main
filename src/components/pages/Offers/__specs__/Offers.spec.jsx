@@ -861,10 +861,10 @@ describe('src | components | pages | Offers | Offers', () => {
     it('should load offers with selected type filter', async () => {
       // Given
       await renderOffers(props, store)
-      const venueSelect = screen.getByDisplayValue(ALL_TYPES_OPTION.displayName, {
+      const typeSelect = screen.getByDisplayValue(ALL_TYPES_OPTION.displayName, {
         selector: 'select[name="type"]',
       })
-      fireEvent.change(venueSelect, { target: { value: offerTypes[0].value } })
+      fireEvent.change(typeSelect, { target: { value: offerTypes[0].value } })
 
       // When
       fireEvent.click(screen.getByText('Lancer la recherche'))
@@ -874,7 +874,7 @@ describe('src | components | pages | Offers | Offers', () => {
         venueId: DEFAULT_SEARCH_FILTERS.venueId,
         page: DEFAULT_PAGE,
         name: DEFAULT_SEARCH_FILTERS.name,
-        typeId: 'EventType.CINEMA',
+        typeId: offerTypes[0].value,
         offererId: DEFAULT_SEARCH_FILTERS.offererId,
         status: DEFAULT_SEARCH_FILTERS.status,
         creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
