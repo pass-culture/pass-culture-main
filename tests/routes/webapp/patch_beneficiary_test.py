@@ -1,5 +1,6 @@
 import pytest
 
+from pcapi.core.users.factories import UserFactory
 from pcapi.core.users.models import User
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.repository import repository
@@ -13,8 +14,7 @@ class Patch:
         @pytest.mark.usefixtures("db_session")
         def when_changes_are_allowed(self, app):
             # given
-            user = create_user()
-            repository.save(user)
+            user = UserFactory()
             user_id = user.id
             data = {
                 "publicName": "plop",

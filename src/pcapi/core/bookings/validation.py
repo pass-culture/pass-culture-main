@@ -65,16 +65,16 @@ def check_expenses_limits(user: User, requested_amount: Decimal, offer: Offer):
     config = conf.LIMIT_CONFIGURATIONS[deposit.version]
     for expense in user.expenses:
         if expense.domain == ExpenseDomain.ALL:
-            if expense.current + requested_amount > expense.max:
+            if expense.current + requested_amount > expense.limit:
                 raise exceptions.UserHasInsufficientFunds()
 
         if expense.domain == ExpenseDomain.DIGITAL and config.digital_cap_applies(offer):
-            if expense.current + requested_amount > expense.max:
-                raise exceptions.DigitalExpenseLimitHasBeenReached(expense.max)
+            if expense.current + requested_amount > expense.limit:
+                raise exceptions.DigitalExpenseLimitHasBeenReached(expense.limit)
 
         if expense.domain == ExpenseDomain.PHYSICAL and config.physical_cap_applies(offer):
-            if expense.current + requested_amount > expense.max:
-                raise exceptions.PhysicalExpenseLimitHasBeenReached(expense.max)
+            if expense.current + requested_amount > expense.limit:
+                raise exceptions.PhysicalExpenseLimitHasBeenReached(expense.limit)
 
 
 def check_beneficiary_can_cancel_booking(user: User, booking: Booking) -> None:

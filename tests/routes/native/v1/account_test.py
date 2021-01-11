@@ -53,9 +53,9 @@ class AccountTest:
         assert response.json["firstName"] == first_name
         assert response.json["isBeneficiary"]
         assert response.json["expenses"] == [
-            {"current": int(booking.amount * 100), "domain": "all", "max": 50000},
-            {"current": 0, "domain": "digital", "max": 20000},
-            {"current": int(booking.amount * 100), "domain": "physical", "max": 20000},
+            {"current": int(booking.amount * 100), "domain": "all", "limit": 50000},
+            {"current": 0, "domain": "digital", "limit": 20000},
+            {"current": int(booking.amount * 100), "domain": "physical", "limit": 20000},
         ]
 
     def test_get_user_profile_empty_first_name(self, app):

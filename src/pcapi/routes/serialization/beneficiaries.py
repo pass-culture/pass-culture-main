@@ -44,7 +44,7 @@ class ChangeBeneficiaryEmailBody(BaseModel):
 class Expense(BaseModel):
     domain: ExpenseDomain
     current: float
-    max: float
+    limit: float
 
     class Config:
         orm_mode = True
@@ -58,6 +58,7 @@ class BeneficiaryAccountResponse(BaseModel):
     dateCreated: datetime
     dateOfBirth: Optional[datetime]
     departementCode: str
+    deposit_version: Optional[int]
     email: str
     expenses: List[Expense]
     # @debt api-data "asaunier: Seuls quelques comptes n'ont pas cette information. Elle devrait être rendue obligatoire"

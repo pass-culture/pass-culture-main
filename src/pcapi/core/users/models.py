@@ -5,6 +5,7 @@ from decimal import Decimal
 import enum
 from hashlib import md5
 from typing import Optional
+from typing import Union
 
 import bcrypt
 from dateutil.relativedelta import relativedelta
@@ -233,10 +234,6 @@ class User(PcObject, Model, NeedsValidationMixin, VersionedMixin):
         return relativedelta(date.today(), self.dateOfBirth.date()).years
 
     @property
-    def deposit_version(self):
-        return self.deposits[0].version if self.deposits else None
-
-    @property
     def expenses(self):
         version = self.deposit_version
 
@@ -250,14 +247,16 @@ class User(PcObject, Model, NeedsValidationMixin, VersionedMixin):
             Expense(
                 domain=ExpenseDomain.ALL,
                 current=sum(booking.total_amount for booking in bookings),
-                max=config.TOTAL_CAP,
+                limit=config.TOTAL_CAP,
             )
         ]
         if config.DIGITAL_CAP:
             digital_bookings_total = sum(
                 [booking.total_amount for booking in bookings if config.digital_cap_applies(booking.stock.offer)]
             )
-            limits.append(Expense(domain=ExpenseDomain.DIGITAL, current=digital_bookings_total, max=config.DIGITAL_CAP))
+            limits.append(
+                Expense(domain=ExpenseDomain.DIGITAL, current=digital_bookings_total, limit=config.DIGITAL_CAP)
+            )
         if config.PHYSICAL_CAP:
             physical_bookings_total = sum(
                 [booking.total_amount for booking in bookings if config.physical_cap_applies(booking.stock.offer)]
@@ -266,11 +265,18 @@ class User(PcObject, Model, NeedsValidationMixin, VersionedMixin):
                 Expense(
                     domain=ExpenseDomain.PHYSICAL,
                     current=physical_bookings_total,
-                    max=config.PHYSICAL_CAP,
+                    limit=config.PHYSICAL_CAP,
                 )
             )
 
         return limits
+
+    @property
+    def deposit_version(self) -> Union[None, int]:
+        if len(self.deposits) > 0:
+            return self.deposits[0].version
+
+        return None
 
     @property
     def real_wallet_balance(self):
@@ -318,4 +324,4 @@ class ExpenseDomain(enum.Enum):
 class Expense:
     domain: ExpenseDomain
     current: Decimal
-    max: Decimal
+    limit: Decimal

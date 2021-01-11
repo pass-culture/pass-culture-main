@@ -29,10 +29,10 @@ def convert_to_cent(amount: Decimal) -> int:
 class Expense(BaseModel):
     domain: ExpenseDomain
     current: int
-    max: int
+    limit: int
 
     _convert_current = validator("current", pre=True, allow_reuse=True)(convert_to_cent)
-    _convert_max = validator("max", pre=True, allow_reuse=True)(convert_to_cent)
+    _convert_max = validator("limit", pre=True, allow_reuse=True)(convert_to_cent)
 
     class Config:
         orm_mode = True

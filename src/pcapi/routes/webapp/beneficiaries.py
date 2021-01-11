@@ -72,7 +72,7 @@ def patch_beneficiary() -> Tuple[str, int]:
     # FIXME (viconnex): the enum value of expense.domain is not correctly serialize with as_dict method
     formatted_expenses = []
     for expense in user.expenses:
-        formatted_expenses.append({"domain": expense.domain.value, "current": expense.current, "max": expense.max})
+        formatted_expenses.append({"domain": expense.domain.value, "current": expense.current, "limit": expense.limit})
 
     formattedUser["expenses"] = formatted_expenses
 

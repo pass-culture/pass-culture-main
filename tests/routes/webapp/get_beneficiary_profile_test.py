@@ -79,9 +79,9 @@ class Get:
             # Then
             assert response.json["wallet_balance"] == 495.0
             assert response.json["expenses"] == [
-                {"domain": "all", "current": 5.0, "max": 500.0},
-                {"domain": "digital", "current": 0.0, "max": 200.0},
-                {"domain": "physical", "current": 5.0, "max": 200.0},
+                {"domain": "all", "current": 5.0, "limit": 500.0},
+                {"domain": "digital", "current": 0.0, "limit": 200.0},
+                {"domain": "physical", "current": 5.0, "limit": 200.0},
             ]
 
         @pytest.mark.usefixtures("db_session")
@@ -95,9 +95,9 @@ class Get:
             # Then
             assert response.json["wallet_balance"] == 500.0
             assert response.json["expenses"] == [
-                {"domain": "all", "current": 0.0, "max": 500.0},
-                {"domain": "digital", "current": 0.0, "max": 200.0},
-                {"domain": "physical", "current": 0.0, "max": 200.0},
+                {"domain": "all", "current": 0.0, "limit": 500.0},
+                {"domain": "digital", "current": 0.0, "limit": 200.0},
+                {"domain": "physical", "current": 0.0, "limit": 200.0},
             ]
 
         @pytest.mark.usefixtures("db_session")
@@ -135,6 +135,18 @@ class Get:
 
             # Then
             assert response.status_code == 200
+
+        @pytest.mark.usefixtures("db_session")
+        def should_return_deposit_version(self, app):
+            # Given
+            UserFactory(email="wallet_test@email.com", postalCode="93020", deposit__version=1)
+
+            # When
+            response = TestClient(app.test_client()).with_auth("wallet_test@email.com").get("/beneficiaries/current")
+
+            # Then
+
+            assert response.json["deposit_version"] == 1
 
     class Returns401:
         @pytest.mark.usefixtures("db_session")

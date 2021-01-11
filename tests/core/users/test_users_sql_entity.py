@@ -7,6 +7,7 @@ import pytest
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.payments.factories as payments_factories
 from pcapi.core.users import factories
+from pcapi.core.users.factories import UserFactory
 from pcapi.core.users.models import check_password
 from pcapi.core.users.models import hash_password
 from pcapi.model_creators.generic_creators import create_offerer
@@ -255,3 +256,21 @@ class CalculateAgeTest:
         assert create_user(date_of_birth=datetime(1999, 7, 1)).calculate_age() == 18
         assert create_user(date_of_birth=datetime(2000, 7, 1)).calculate_age() == 17
         assert create_user(date_of_birth=datetime(1999, 5, 1)).calculate_age() == 19
+
+
+@pytest.mark.usefixtures("db_session")
+class DepositVersionTest:
+    def test_return_the_deposit(self):
+        # given
+        user = UserFactory(deposit__version=1)
+
+        # then
+        assert user.deposit_version == 1
+
+    def test_when_no_deposit(self):
+        # given
+        user = UserFactory()
+        repository.delete(*user.deposits)
+
+        # then
+        assert user.deposit_version == None
