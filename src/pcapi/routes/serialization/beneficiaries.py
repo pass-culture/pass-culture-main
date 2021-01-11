@@ -52,7 +52,7 @@ class BeneficiaryAccountResponse(BaseModel):
     city: Optional[str]
     civility: Optional[str]
     dateCreated: datetime
-    dateOfBirth: datetime
+    dateOfBirth: Optional[datetime]
     departementCode: str
     email: str
     expenses: List[Expense]
@@ -68,9 +68,9 @@ class BeneficiaryAccountResponse(BaseModel):
     needsToFillCulturalSurvey: bool
     needsToSeeTutorials: bool
     phoneNumber: Optional[str]
-    postalCode: str
+    postalCode: Optional[str]
     publicName: str
-    suspensionReason: str
+    suspensionReason: Optional[str]
     wallet_balance: float
     wallet_date_created: Optional[datetime]
     wallet_is_activated: bool

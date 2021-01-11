@@ -106,6 +106,48 @@ class Get:
                 {"domain": "physical", "current": 0.0, "max": 200.0},
             ]
 
+        @pytest.mark.usefixtures("db_session")
+        def when_user_is_created_without_postal_code_by_flaskadmin(self, app):
+            # Given
+            booking = factories.BookingFactory(user__email="wallet_test@email.com", user__postalCode=None)
+            repository.save(booking)
+
+            # When
+            response = TestClient(app.test_client()).with_auth("wallet_test@email.com").get("/beneficiaries/current")
+
+            # Then
+            assert response.status_code == 200
+
+        @pytest.mark.usefixtures("db_session")
+        def when_user_is_a_pro(self, app):
+            # Given
+            user = UserFactory(
+                email="pro@example.com", postalCode=None, isBeneficiary=False, suspensionReason=None, dateOfBirth=None
+            )
+            user.suspensionReason = None
+            repository.save(user)
+
+            # When
+            response = TestClient(app.test_client()).with_auth("pro@example.com").get("/beneficiaries/current")
+
+            # Then
+            assert response.status_code == 200
+            assert response.json["suspensionReason"] == None
+
+        @pytest.mark.usefixtures("db_session")
+        def when_user_is_a_admin(self, app):
+            # Given
+            user = UserFactory(
+                email="pro@example.com", postalCode=None, isBeneficiary=False, dateOfBirth=None, isAdmin=True
+            )
+            repository.save(user)
+
+            # When
+            response = TestClient(app.test_client()).with_auth("pro@example.com").get("/beneficiaries/current")
+
+            # Then
+            assert response.status_code == 200
+
     class Returns401:
         @pytest.mark.usefixtures("db_session")
         def when_user_is_not_logged_in(self, app):
