@@ -3,12 +3,16 @@ import os
 from pathlib import Path
 from pathlib import PurePath
 
+from google.cloud.storage import Client
+from google.cloud.storage.bucket import Bucket
+from google.oauth2.service_account import Credentials
 import swiftclient
 
 from pcapi import settings
 from pcapi.models.db import Model
 from pcapi.utils.human_ids import humanize
 from pcapi.utils.inflect_engine import inflect_engine
+from pcapi.utils.logger import logger
 
 
 def swift_con():
@@ -57,6 +61,14 @@ def store_public_object(bucket, object_id, blob, content_type, symlink_path=None
         storage_path = "thumbs/" + object_id
         swift_con().put_object(container_name, storage_path, contents=blob, content_type=content_type)
 
+        if settings.IS_TESTING:
+            try:
+                bucket = _get_gcp_storage_client_bucket()
+                gcp_cloud_blob = bucket.blob(storage_path)
+                gcp_cloud_blob.upload_from_string(blob)
+            except Exception:  # pylint: disable=broad-except
+                logger.exception("An error has occured while trying to upload file on gcp bucket")
+
 
 def delete_public_object(bucket, object_id):
     lpath = local_path(bucket, object_id)
@@ -78,3 +90,11 @@ def build_thumb_path(pc_object: Model, index: int) -> str:
         + humanize(pc_object.id)
         + (("_" + str(index)) if index > 0 else "")
     )
+
+
+def _get_gcp_storage_client_bucket() -> Bucket:
+    credentials = Credentials.from_service_account_info(settings.GCP_BUCKET_CREDENTIALS)
+    project_id = settings.GCP_BUCKET_CREDENTIALS.get("project_id")
+    storage_client = Client(credentials=credentials, project=project_id)
+
+    return storage_client.bucket(settings.GCP_BUCKET_NAME)
