@@ -15,6 +15,7 @@ import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import api
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories
+from pcapi.core.offers.models import Offer
 import pcapi.core.users.factories as users_factories
 from pcapi.models import api_errors
 from pcapi.models import offer_type
@@ -428,7 +429,9 @@ class CreateMediationTest:
 
 @pytest.mark.usefixtures("db_session")
 class CreateOfferTest:
-    def test_create_offer_from_scratch(self):
+    @mock.patch("pcapi.domain.admin_emails.send_offer_creation_notification_to_administration")
+    @mock.patch("pcapi.utils.mailing.send_raw_email")
+    def test_create_offer_from_scratch(self, mocked_send_raw_email, mocked_offer_creation_notification_to_admin):
         venue = factories.VenueFactory()
         offerer = venue.managingOfferer
         user_offerer = factories.UserOffererFactory(offerer=offerer)
@@ -438,6 +441,10 @@ class CreateOfferTest:
             venueId=humanize(venue.id),
             name="A pretty good offer",
             type=str(offer_type.EventType.CINEMA),
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
         )
         offer = api.create_offer(data, user)
 
@@ -445,9 +452,19 @@ class CreateOfferTest:
         assert offer.venue == venue
         assert offer.type == str(offer_type.EventType.CINEMA)
         assert offer.product.owningOfferer == offerer
+        assert offer.audioDisabilityCompliant
+        assert offer.mentalDisabilityCompliant
+        assert offer.motorDisabilityCompliant
+        assert offer.visualDisabilityCompliant
         assert not offer.bookingEmail
+        assert Offer.query.count() == 1
+        mocked_offer_creation_notification_to_admin.assert_called_once_with(offer, user, mocked_send_raw_email)
 
-    def test_create_offer_from_existing_product(self):
+    @mock.patch("pcapi.domain.admin_emails.send_offer_creation_notification_to_administration")
+    @mock.patch("pcapi.utils.mailing.send_raw_email")
+    def test_create_offer_from_existing_product(
+        self, mocked_send_raw_email, mocked_offer_creation_notification_to_admin
+    ):
         product = factories.ProductFactory(
             name="An excellent offer",
             type=str(offer_type.EventType.CINEMA),
@@ -460,12 +477,22 @@ class CreateOfferTest:
         data = offers_serialize.PostOfferBodyModel(
             venueId=humanize(venue.id),
             productId=humanize(product.id),
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
         )
         offer = api.create_offer(data, user)
 
         assert offer.name == "An excellent offer"
         assert offer.type == str(offer_type.EventType.CINEMA)
         assert offer.product == product
+        assert offer.audioDisabilityCompliant
+        assert offer.mentalDisabilityCompliant
+        assert offer.motorDisabilityCompliant
+        assert offer.visualDisabilityCompliant
+        assert Offer.query.count() == 1
+        mocked_offer_creation_notification_to_admin.assert_called_once_with(offer, user, mocked_send_raw_email)
 
     def test_create_activation_offer(self):
         user = users_factories.UserFactory(isAdmin=True)
@@ -475,6 +502,10 @@ class CreateOfferTest:
             venueId=humanize(venue.id),
             name="An offer he can't refuse",
             type=str(offer_type.EventType.ACTIVATION),
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
         )
         offer = api.create_offer(data, user)
 
@@ -486,6 +517,10 @@ class CreateOfferTest:
             venueId=humanize(1),
             name="An awful offer",
             type=str(offer_type.EventType.ACTIVATION),
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
         )
         with pytest.raises(api_errors.ApiErrors) as error:
             api.create_offer(data, user)
@@ -497,6 +532,10 @@ class CreateOfferTest:
         user = users_factories.UserFactory()
         data = offers_serialize.PostOfferBodyModel(
             venueId=humanize(venue.id),
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
         )
         with pytest.raises(api_errors.ApiErrors) as error:
             api.create_offer(data, user)
@@ -513,6 +552,10 @@ class CreateOfferTest:
             venueId=humanize(venue.id),
             name="A pathetic offer",
             type=str(offer_type.EventType.ACTIVATION),
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
         )
         with pytest.raises(api_errors.ApiErrors) as error:
             api.create_offer(data, user)
@@ -530,6 +573,10 @@ class CreateOfferBusinessLogicChecksTest:
         data = offers_serialize.PostOfferBodyModel(
             venueId=humanize(venue.id),
             productId=humanize(product.id),
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
         )
         api.create_offer(data, user_offerer.user)  # should not fail
 
@@ -541,6 +588,10 @@ class CreateOfferBusinessLogicChecksTest:
         data = offers_serialize.PostOfferBodyModel(
             venueId=humanize(venue.id),
             productId=humanize(product.id),
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
         )
         api.create_offer(data, user_offerer.user)  # should not fail
 
@@ -552,6 +603,10 @@ class CreateOfferBusinessLogicChecksTest:
         data = offers_serialize.PostOfferBodyModel(
             venueId=humanize(venue.id),
             productId=humanize(product.id),
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
         )
         with pytest.raises(api_errors.ApiErrors) as error:
             api.create_offer(data, user_offerer.user)
@@ -566,6 +621,10 @@ class CreateOfferBusinessLogicChecksTest:
         data = offers_serialize.PostOfferBodyModel(
             venueId=humanize(venue.id),
             productId=humanize(product.id),
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
         )
         with pytest.raises(api_errors.ApiErrors) as error:
             api.create_offer(data, user_offerer.user)

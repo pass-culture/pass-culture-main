@@ -35,6 +35,12 @@ class PostOfferBodyModel(BaseModel):
     duration_minutes: Optional[int]
     is_national: Optional[bool]
     is_duo: Optional[bool]
+    # TODO (schable, 2021-01-14): remove the default value for the 4 following accessibility fields
+    #  when new offer creation will be activated in pro app (current offer creation does not send those fields)
+    audio_disability_compliant: bool = False
+    mental_disability_compliant: bool = False
+    motor_disability_compliant: bool = False
+    visual_disability_compliant: bool = False
     extra_data: Any
     # FIXME (viconnex, 2020-12-02): this field is actually
     # unused for the offer creation. But the webapp does send it so

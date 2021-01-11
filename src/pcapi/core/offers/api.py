@@ -28,7 +28,6 @@ from pcapi.utils import mailing
 from pcapi.utils.rest import ensure_current_user_has_rights
 from pcapi.utils.rest import load_or_raise_error
 
-from . import models
 from . import validation
 from ..bookings.api import mark_as_unused
 from ..bookings.api import update_confirmation_dates
@@ -71,14 +70,14 @@ def list_offers_for_pro_user(
     )
 
 
-def create_offer(offer_data: PostOfferBodyModel, user: User) -> models.Offer:
+def create_offer(offer_data: PostOfferBodyModel, user: User) -> Offer:
     venue = load_or_raise_error(VenueSQLEntity, offer_data.venue_id)
 
     ensure_current_user_has_rights(rights=RightsType.editor, offerer_id=venue.managingOffererId, user=user)
 
     if offer_data.product_id:
         product = load_or_raise_error(Product, offer_data.product_id)
-        offer = models.Offer(
+        offer = Offer(
             product=product,
             type=product.type,
             name=product.name,
@@ -107,6 +106,10 @@ def create_offer(offer_data: PostOfferBodyModel, user: User) -> models.Offer:
 
     offer.venue = venue
     offer.bookingEmail = offer_data.booking_email
+    offer.audioDisabilityCompliant = offer_data.audio_disability_compliant
+    offer.mentalDisabilityCompliant = offer_data.mental_disability_compliant
+    offer.motorDisabilityCompliant = offer_data.motor_disability_compliant
+    offer.visualDisabilityCompliant = offer_data.visual_disability_compliant
     repository.save(offer)
     admin_emails.send_offer_creation_notification_to_administration(offer, user, mailing.send_raw_email)
 
@@ -184,7 +187,7 @@ def update_offers_active_status(query, is_active):
 
 
 def create_stock(
-    offer: models.Offer,
+    offer: Offer,
     price: float,
     quantity: int = None,
     beginning: datetime.datetime = None,
@@ -195,7 +198,7 @@ def create_stock(
     validation.check_offer_is_editable(offer)
     validation.check_stocks_are_editable_for_offer(offer)
 
-    stock = models.Stock(
+    stock = Stock(
         offer=offer,
         price=price,
         quantity=quantity,

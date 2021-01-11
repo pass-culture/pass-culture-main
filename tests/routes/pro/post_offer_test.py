@@ -27,6 +27,10 @@ class Returns200:
             "name": "La pièce de théâtre",
             "type": str(EventType.SPECTACLE_VIVANT),
             "extraData": {"toto": "text"},
+            "audioDisabilityCompliant": False,
+            "mentalDisabilityCompliant": True,
+            "motorDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
         }
         client = TestClient(app.test_client()).with_auth("user@example.com")
         response = client.post("/offers", json=data)
@@ -41,6 +45,10 @@ class Returns200:
         assert offer.venue == venue
         assert offer.product.durationMinutes == 60
         assert offer.product.owningOfferer == offerer
+        assert offer.motorDisabilityCompliant == False
+        assert offer.visualDisabilityCompliant == False
+        assert offer.audioDisabilityCompliant == False
+        assert offer.mentalDisabilityCompliant == True
 
     def when_creating_new_thing_offer(self, app):
         # Given
@@ -57,6 +65,10 @@ class Returns200:
             "name": "Les lièvres pas malins",
             "type": "ThingType.JEUX_VIDEO",
             "url": "http://example.com/offer",
+            "audioDisabilityCompliant": True,
+            "mentalDisabilityCompliant": False,
+            "motorDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
         }
         response = client.post("/offers", json=data)
 
@@ -74,6 +86,10 @@ class Returns200:
         assert offer.isNational
         assert offer.product.isNational
         assert offer.product.owningOfferer == offerer
+        assert offer.motorDisabilityCompliant == False
+        assert offer.visualDisabilityCompliant == False
+        assert offer.audioDisabilityCompliant == True
+        assert offer.mentalDisabilityCompliant == False
 
 
 @pytest.mark.usefixtures("db_session")
@@ -91,6 +107,10 @@ class Returns400:
             "name": "Les lièvres pas malins",
             "type": "ThingType.JEUX_VIDEO",
             "url": "http://example.com/offer",
+            "audioDisabilityCompliant": True,
+            "mentalDisabilityCompliant": False,
+            "motorDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
         }
         response = client.post("/offers", json=data)
 
@@ -149,6 +169,10 @@ class Returns400:
             "url": "http://legrandj.eu",
             "mediaUrls": ["http://media.url"],
             "venueId": humanize(venue.id),
+            "audioDisabilityCompliant": True,
+            "mentalDisabilityCompliant": False,
+            "motorDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
         }
         client = TestClient(app.test_client()).with_auth("user@example.com")
         response = client.post("/offers", json=data)
@@ -189,6 +213,10 @@ class Returns403:
         client = TestClient(app.test_client()).with_auth("user@example.com")
         data = {
             "venueId": humanize(venue.id),
+            "audioDisabilityCompliant": True,
+            "mentalDisabilityCompliant": False,
+            "motorDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
         }
         response = client.post("/offers", json=data)
 
