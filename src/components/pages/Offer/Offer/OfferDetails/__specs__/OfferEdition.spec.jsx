@@ -808,7 +808,7 @@ describe('offerDetails - Edition', () => {
   describe('when clicking on cancel link', () => {
     it('should call computeOffersUrl with proper params', async () => {
       // Given
-      store = configureTestStore({
+      const testStore = {
         data: { users: [{ publicName: 'François', isAdmin: false }] },
         offers: {
           searchFilters: {
@@ -823,7 +823,9 @@ describe('offerDetails - Edition', () => {
             page: 1,
           },
         },
-      })
+      }
+      store = configureTestStore(testStore)
+
       const editedOffer = {
         id: 'ABC12',
         name: 'My edited offer',
@@ -838,20 +840,10 @@ describe('offerDetails - Edition', () => {
       await renderOffers(props, store)
 
       // When
-      userEvent.click(screen.getByText('Annuler'))
+      userEvent.click(screen.getByRole('link', { name: 'Annuler' }))
 
       // Then
-      expect(computeUrl.computeOffersUrl).toHaveBeenLastCalledWith({
-        creationMode: 'manual',
-        name: 'test',
-        offererId: 'AY',
-        page: 1,
-        periodBeginningDate: '2020-11-30T00:00:00+01:00',
-        periodEndingDate: '2021-01-07T23:59:59+01:00',
-        status: 'all',
-        typeId: 'EventType.CINEMA',
-        venueId: 'EQ',
-      })
+      expect(computeUrl.computeOffersUrl).toHaveBeenLastCalledWith(testStore.offers.searchFilters)
     })
 
     it('should redirect to offers page', async () => {
@@ -877,7 +869,7 @@ describe('offerDetails - Edition', () => {
       await renderOffers(props, store)
 
       // Then
-      const cancelLink = await screen.findByText('Annuler', { selector: 'a' })
+      const cancelLink = screen.getByRole('link', { name: 'Annuler' })
       expect(cancelLink).toBeInTheDocument()
       expect(cancelLink).toHaveAttribute('href', '/offres')
     })
