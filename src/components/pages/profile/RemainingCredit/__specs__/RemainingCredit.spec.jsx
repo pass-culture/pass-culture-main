@@ -22,6 +22,30 @@ describe('remainingCredit', () => {
   })
 
   describe('render', () => {
+    it('should display an empty account when no deposit', () => {
+      // Given
+      props.user = new User({
+        expenses: [],
+        wallet_balance: 0,
+      })
+
+      // When
+      const wrapper = mount(<RemainingCredit {...props} />)
+
+      // Then
+      const digitalGauge = wrapper.find('.gauge-digital')
+      expect(digitalGauge).toHaveLength(1)
+      expect(digitalGauge.text()).toBe('0 €en offres\n' + 'numériques\n' + '(streaming…)')
+
+      const physicalGauge = wrapper.find('.gauge-physical')
+      expect(physicalGauge).toHaveLength(1)
+      expect(physicalGauge.text()).toBe('0 €en offres\n' + 'physiques\n' + '(livres…)')
+
+      const totalGauge = wrapper.find('.gauge-total')
+      expect(totalGauge).toHaveLength(1)
+      expect(totalGauge.text()).toBe('0 €en sorties\n' + '(spectacles…)')
+    })
+
     it('should display three gauges and prices', () => {
       // When
       const wrapper = mount(<RemainingCredit {...props} />)
