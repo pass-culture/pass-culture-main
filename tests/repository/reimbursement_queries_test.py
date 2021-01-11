@@ -4,12 +4,11 @@ from decimal import Decimal
 
 import pytest
 
+import pcapi.core.users.factories as users_factories
 from pcapi.model_creators.generic_creators import create_booking
-from pcapi.model_creators.generic_creators import create_deposit
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_payment
 from pcapi.model_creators.generic_creators import create_payment_status
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
 from pcapi.models.payment_status import TransactionStatus
@@ -21,8 +20,7 @@ class FindAllOffererPaymentsTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_one_payment_info_with_error_status(self, app):
         # Given
-        user = create_user(last_name="User", first_name="Plus")
-        deposit = create_deposit(user)
+        user = users_factories.UserFactory(lastName="User", firstName="Plus")
         offerer = create_offerer(address="7 rue du livre")
         venue = create_venue(offerer)
         stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, price=10)
@@ -37,7 +35,7 @@ class FindAllOffererPaymentsTest:
             amount=50,
             detail="Iban non fourni",
         )
-        repository.save(deposit, payment)
+        repository.save(payment)
 
         # When
         payments = find_all_offerer_payments(offerer.id)
@@ -64,8 +62,7 @@ class FindAllOffererPaymentsTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_one_payment_info_with_sent_status(self, app):
         # Given
-        user = create_user(last_name="User", first_name="Plus")
-        deposit = create_deposit(user)
+        user = users_factories.UserFactory(lastName="User", firstName="Plus")
         offerer = create_offerer(address="7 rue du livre")
         venue = create_venue(offerer)
         stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, price=10)
@@ -85,7 +82,7 @@ class FindAllOffererPaymentsTest:
             payment, detail="All good", status=TransactionStatus.RETRY, date=now - timedelta(days=1)
         )
         payment_status2 = create_payment_status(payment, detail="All good", status=TransactionStatus.SENT)
-        repository.save(deposit, payment, payment_status1, payment_status2)
+        repository.save(payment, payment_status1, payment_status2)
 
         # When
         payments = find_all_offerer_payments(offerer.id)
@@ -112,8 +109,7 @@ class FindAllOffererPaymentsTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_last_matching_status_based_on_date_for_each_payment(self, app):
         # Given
-        user = create_user(last_name="User", first_name="Plus")
-        deposit = create_deposit(user)
+        user = users_factories.UserFactory(lastName="User", firstName="Plus")
         offerer = create_offerer(address="7 rue du livre")
         venue = create_venue(offerer)
         stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, price=10)
@@ -138,7 +134,7 @@ class FindAllOffererPaymentsTest:
             status_date=now - timedelta(days=4),
         )
 
-        repository.save(deposit, payment1, payment2)
+        repository.save(payment1, payment2)
 
         last_status_for_payment1 = create_payment_status(
             payment1, detail="All good", status=TransactionStatus.SENT, date=now

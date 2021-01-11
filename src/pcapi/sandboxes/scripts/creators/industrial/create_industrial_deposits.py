@@ -1,4 +1,4 @@
-from pcapi.model_creators.generic_creators import create_deposit
+import pcapi.core.payments.api as payments_api
 from pcapi.repository import repository
 from pcapi.utils.logger import logger
 
@@ -17,7 +17,7 @@ def create_industrial_deposits(users_by_name):
         if user_has_no_deposit:
             continue
 
-        deposits_by_name["{} / public / 500".format(user_name)] = create_deposit(user, amount=500)
+        deposits_by_name["{} / public / 500".format(user_name)] = payments_api.create_deposit(user, "sandbox")
 
     repository.save(*deposits_by_name.values())
 

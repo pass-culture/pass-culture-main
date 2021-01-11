@@ -58,8 +58,10 @@ def get_all_users_wallet_balances() -> List[WalletBalance]:
         .all()
     )
 
-    instantiate_result_set = lambda u: WalletBalance(u[0], u[1], u[2])
-    return list(map(instantiate_result_set, wallet_balances))
+    return [
+        WalletBalance(user_id, current_balance, real_balance)
+        for user_id, current_balance, real_balance in wallet_balances
+    ]
 
 
 def filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query: Query) -> Query:

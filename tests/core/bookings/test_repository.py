@@ -12,13 +12,11 @@ from pcapi.core.bookings import factories
 import pcapi.core.bookings.repository as booking_repository
 from pcapi.core.bookings.repository import find_by_pro_user_id
 from pcapi.core.offers.models import EVENT_AUTOMATIC_REFUND_DELAY
+import pcapi.core.users.factories as users_factories
 from pcapi.domain.booking_recap.booking_recap import BookBookingRecap
 from pcapi.domain.booking_recap.booking_recap import EventBookingRecap
 from pcapi.domain.booking_recap.booking_recap_history import BookingRecapHistory
-from pcapi.model_creators.activity_creators import create_booking_activity
-from pcapi.model_creators.activity_creators import save_all_activities
 from pcapi.model_creators.generic_creators import create_booking
-from pcapi.model_creators.generic_creators import create_deposit
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_payment
 from pcapi.model_creators.generic_creators import create_stock
@@ -90,8 +88,7 @@ class FindPaymentEligibleBookingsForOffererTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_used_past_event_and_thing_bookings(self, app: fixture):
         # Given
-        beneficiary = create_user()
-        create_deposit(beneficiary)
+        beneficiary = users_factories.UserFactory()
 
         offerer = create_offerer(siren="123456789")
         venue = create_venue(offerer, siret=f"{offerer.siren}12345")
@@ -133,8 +130,7 @@ class FindPaymentEligibleBookingsForOffererTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_bookings_with_payment_first_ordered_by_date_created(self, app: fixture):
         # Given
-        beneficiary = create_user()
-        create_deposit(beneficiary)
+        beneficiary = users_factories.UserFactory()
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
@@ -151,16 +147,12 @@ class FindPaymentEligibleBookingsForOffererTest:
         bookings = booking_repository.find_bookings_eligible_for_payment_for_offerer(offerer.id)
 
         # Then
-        assert bookings[0] == booking3
-        assert bookings[1] == booking4
-        assert bookings[2] == booking1
-        assert bookings[3] == booking2
+        assert bookings == [booking4, booking3, booking1, booking2]
 
     @pytest.mark.usefixtures("db_session")
     def test_returns_not_cancelled_bookings_for_offerer(self, app: fixture):
         # Given
-        beneficiary = create_user()
-        create_deposit(beneficiary)
+        beneficiary = users_factories.UserFactory()
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
@@ -179,8 +171,7 @@ class FindPaymentEligibleBookingsForOffererTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_only_used_bookings(self, app: fixture):
         # Given
-        beneficiary = create_user()
-        create_deposit(beneficiary)
+        beneficiary = users_factories.UserFactory()
         offerer = create_offerer()
         venue = create_venue(offerer)
         thing_offer = create_offer_with_thing_product(venue)
@@ -205,8 +196,7 @@ class FindPaymentEligibleBookingsForOffererTest:
         yesterday = now - timedelta(days=1)
         tomorrow = now + timedelta(days=1)
 
-        beneficiary = create_user()
-        create_deposit(beneficiary)
+        beneficiary = users_factories.UserFactory()
         offerer = create_offerer()
         venue = create_venue(offerer)
         yesterday_event_stock = create_stock_with_event_offer(
@@ -238,8 +228,7 @@ class FindPaymentEligibleBookingsForOffererTest:
     @pytest.mark.usefixtures("db_session")
     def test_does_not_return_finished_for_more_than_the_automatic_refund_delay_bookings(self, app: fixture):
         # Given
-        beneficiary = create_user()
-        create_deposit(beneficiary)
+        beneficiary = users_factories.UserFactory()
         offerer = create_offerer()
         venue = create_venue(offerer)
         in_the_past_less_than_automatic_refund_delay = (
@@ -284,8 +273,7 @@ class FindPaymentEligibleBookingsForVenueTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_used_past_event_and_thing_bookings_ordered_by_date_created(self, app: fixture):
         # Given
-        beneficiary = create_user()
-        create_deposit(beneficiary)
+        beneficiary = users_factories.UserFactory()
 
         offerer = create_offerer(siren="123456789")
         venue = create_venue(offerer, siret=f"{offerer.siren}12345")
@@ -330,40 +318,19 @@ class FindDateUsedTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_date_used_if_not_none(self, app: fixture):
         # given
-        user = create_user()
-        create_deposit(user)
-        booking = create_booking(user=user, date_used=datetime(2018, 2, 12), is_used=True)
-        repository.save(booking)
+        dt = datetime.now()
+        booking = factories.BookingFactory(isUsed=True, dateUsed=dt)
 
         # when
         date_used = booking_repository.find_date_used(booking)
 
         # then
-        assert date_used == datetime(2018, 2, 12)
+        assert date_used == dt
 
     @pytest.mark.usefixtures("db_session")
     def test_returns_none_when_date_used_is_none(self, app: fixture):
         # given
-        user = create_user()
-        create_deposit(user)
-        booking = create_booking(user=user)
-        repository.save(booking)
-
-        # when
-        date_used = booking_repository.find_date_used(booking)
-
-        # then
-        assert date_used is None
-
-    @pytest.mark.usefixtures("db_session")
-    def test_find_date_used_on_booking_returns_none_if_no_update_recorded_in_activity_table(self, app: fixture):
-        # given
-        user = create_user()
-        create_deposit(user)
-        booking = create_booking(user=user)
-        repository.save(booking)
-        activity_insert = create_booking_activity(booking, "booking", "insert", issued_at=datetime(2018, 1, 28))
-        save_all_activities(activity_insert)
+        booking = factories.BookingFactory()
 
         # when
         date_used = booking_repository.find_date_used(booking)
@@ -568,86 +535,25 @@ class SaveBookingTest:
 
 class FindAllNotUsedAndNotCancelledTest:
     @pytest.mark.usefixtures("db_session")
-    def test_return_no_booking_if_only_used(self, app: fixture):
+    def test_find_not_used_and_not_cancelled(self):
         # Given
-        user = create_user()
-        create_deposit(user)
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue)
-        stock = create_stock(offer=offer)
-        booking = create_booking(user=user, date_used=datetime(2019, 10, 12), is_used=True, stock=stock)
-        repository.save(booking)
+        booking = factories.BookingFactory()
+        factories.BookingFactory(isCancelled=True)
+        factories.BookingFactory(isUsed=True)
 
         # When
         bookings = booking_repository.find_not_used_and_not_cancelled()
 
         # Then
-        assert len(bookings) == 0
-
-    @pytest.mark.usefixtures("db_session")
-    def test_return_no_booking_if_only_cancelled(self, app: fixture):
-        # Given
-        user = create_user()
-        create_deposit(user)
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue)
-        stock = create_stock(offer=offer)
-        booking = create_booking(user=user, is_cancelled=True, stock=stock)
-        repository.save(booking)
-
-        # When
-        bookings = booking_repository.find_not_used_and_not_cancelled()
-
-        # Then
-        assert len(bookings) == 0
-
-    @pytest.mark.usefixtures("db_session")
-    def test_return_no_booking_if_used_but_cancelled(self, app: fixture):
-        # Given
-        user = create_user()
-        create_deposit(user)
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue)
-        stock = create_stock(offer=offer)
-        booking = create_booking(user=user, is_cancelled=True, is_used=True, stock=stock)
-        repository.save(booking)
-
-        # When
-        bookings = booking_repository.find_not_used_and_not_cancelled()
-
-        # Then
-        assert len(bookings) == 0
-
-    @pytest.mark.usefixtures("db_session")
-    def test_return_1_booking_if_not_used_and_not_cancelled(self, app: fixture):
-        # Given
-        user = create_user()
-        create_deposit(user)
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue)
-        stock = create_stock(offer=offer)
-        booking1 = create_booking(user=user, is_cancelled=False, is_used=False, stock=stock)
-        booking2 = create_booking(user=user, is_used=True, stock=stock)
-        booking3 = create_booking(user=user, is_cancelled=True, stock=stock)
-        repository.save(booking1, booking2, booking3)
-
-        # When
-        bookings = booking_repository.find_not_used_and_not_cancelled()
-
-        # Then
-        assert bookings == [booking1]
+        assert bookings == [booking]
 
 
 class FindByTokenTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_a_booking_when_valid_token_is_given(self, app: fixture):
         # Given
-        beneficiary = create_user()
-        create_deposit(beneficiary)
+        beneficiary = users_factories.UserFactory()
+
         valid_booking = create_booking(user=beneficiary, token="123456", is_used=True)
         repository.save(valid_booking)
 
@@ -661,8 +567,7 @@ class FindByTokenTest:
     def test_should_return_nothing_when_invalid_token_is_given(self, app: fixture):
         # Given
         invalid_token = "fake_token"
-        beneficiary = create_user()
-        create_deposit(beneficiary)
+        beneficiary = users_factories.UserFactory()
         valid_booking = create_booking(user=beneficiary, token="123456", is_used=True)
         repository.save(valid_booking)
 
@@ -675,8 +580,7 @@ class FindByTokenTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_nothing_when_valid_token_is_given_but_its_not_used(self, app: fixture):
         # Given
-        beneficiary = create_user()
-        create_deposit(beneficiary)
+        beneficiary = users_factories.UserFactory()
         valid_booking = create_booking(user=beneficiary, token="123456", is_used=False)
         repository.save(valid_booking)
 
@@ -691,8 +595,7 @@ class CountNotCancelledBookingsQuantityByStocksTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_sum_of_bookings_quantity_that_are_not_cancelled_for_given_stock(self, app: fixture):
         # Given
-        user = create_user()
-        create_deposit(user)
+        user = users_factories.UserFactory()
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
@@ -712,8 +615,7 @@ class CountNotCancelledBookingsQuantityByStocksTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_0_when_no_bookings_found(self, app: fixture):
         # Given
-        user = create_user()
-        create_deposit(user)
+        users_factories.UserFactory()
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
@@ -739,9 +641,8 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_only_expected_booking_attributes(self, app: fixture):
         # Given
-        beneficiary = create_user(email="beneficiary@example.com", first_name="Ron", last_name="Weasley")
-        create_deposit(beneficiary, 500)
-        user = create_user()
+        beneficiary = users_factories.UserFactory(email="beneficiary@example.com", firstName="Ron", lastName="Weasley")
+        user = users_factories.UserFactory()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
         venue = create_venue(offerer, idx=15)
@@ -780,8 +681,8 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_booking_as_duo_when_quantity_is_two(self, app: fixture):
         # Given
-        beneficiary = create_user(email="beneficiary@example.com")
-        user = create_user()
+        beneficiary = users_factories.UserFactory()
+        user = users_factories.UserFactory()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
         venue = create_venue(offerer)
@@ -801,8 +702,8 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_booking_with_reimbursed_when_a_payment_was_sent(self, app: fixture):
         # Given
-        beneficiary = create_user(email="beneficiary@example.com", first_name="Ron", last_name="Weasley")
-        user = create_user()
+        beneficiary = users_factories.UserFactory(email="beneficiary@example.com", firstName="Ron", lastName="Weasley")
+        user = users_factories.UserFactory()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
         venue = create_venue(offerer)
@@ -835,8 +736,8 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_event_booking_when_booking_is_on_an_event(self, app: fixture):
         # Given
-        beneficiary = create_user(email="beneficiary@example.com", first_name="Ron", last_name="Weasley")
-        user = create_user()
+        beneficiary = users_factories.UserFactory(email="beneficiary@example.com", firstName="Ron", lastName="Weasley")
+        user = users_factories.UserFactory()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
         venue = create_venue(offerer, idx="15")
@@ -876,8 +777,8 @@ class FindByProUserIdTest:
         self, app: fixture
     ):
         # Given
-        beneficiary = create_user(email="beneficiary@example.com", first_name="Ron", last_name="Weasley")
-        user = create_user()
+        beneficiary = users_factories.UserFactory(email="beneficiary@example.com")
+        user = users_factories.UserFactory()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
         venue = create_venue(offerer, idx="15")
@@ -897,9 +798,8 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_payment_date_when_booking_has_been_reimbursed(self, app: fixture):
         # Given
-        beneficiary = create_user(email="beneficiary@example.com", first_name="Ron", last_name="Weasley")
-        create_deposit(beneficiary)
-        user = create_user()
+        beneficiary = users_factories.UserFactory()
+        user = users_factories.UserFactory()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
         venue = create_venue(offerer, idx="15")
@@ -933,9 +833,8 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_cancellation_date_when_booking_has_been_cancelled(self, app: fixture):
         # Given
-        beneficiary = create_user(email="beneficiary@example.com", first_name="Ron", last_name="Weasley")
-        create_deposit(beneficiary)
-        user = create_user()
+        beneficiary = users_factories.UserFactory()
+        user = users_factories.UserFactory()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
         venue = create_venue(offerer, idx="15")
@@ -967,9 +866,8 @@ class FindByProUserIdTest:
         self, app: fixture
     ):
         # Given
-        beneficiary = create_user(email="beneficiary@example.com", first_name="Ron", last_name="Weasley")
-        create_deposit(beneficiary)
-        user = create_user()
+        beneficiary = users_factories.UserFactory()
+        user = users_factories.UserFactory()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
         venue = create_venue(offerer, idx="15")
@@ -1002,8 +900,8 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_correct_number_of_matching_offerers_bookings_linked_to_user(self, app: fixture):
         # Given
-        beneficiary = create_user(email="beneficiary@example.com")
-        user = create_user()
+        beneficiary = users_factories.UserFactory()
+        user = users_factories.UserFactory()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
         venue = create_venue(offerer)
@@ -1029,7 +927,7 @@ class FindByProUserIdTest:
     def test_should_return_bookings_from_first_page(self, app: fixture):
         # Given
         beneficiary = create_user(email="beneficiary@example.com")
-        user = create_user()
+        user = users_factories.UserFactory()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
         venue = create_venue(offerer)
@@ -1054,8 +952,8 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_bookings_from_second_page(self, app: fixture):
         # Given
-        beneficiary = create_user(email="beneficiary@example.com")
-        user = create_user()
+        beneficiary = users_factories.UserFactory()
+        user = users_factories.UserFactory()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
         venue = create_venue(offerer)
@@ -1080,8 +978,8 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_not_return_bookings_when_offerer_link_is_not_validated(self, app: fixture):
         # Given
-        beneficiary = create_user(email="beneficiary@example.com")
-        user = create_user()
+        beneficiary = users_factories.UserFactory()
+        user = users_factories.UserFactory()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer, validation_token="token")
         venue = create_venue(offerer)
@@ -1099,8 +997,8 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_one_booking_recap_item_when_quantity_booked_is_one(self, app: fixture):
         # Given
-        beneficiary = create_user(email="beneficiary@example.com")
-        user = create_user()
+        beneficiary = users_factories.UserFactory()
+        user = users_factories.UserFactory()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
         venue = create_venue(offerer)
@@ -1124,8 +1022,8 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_two_booking_recap_items_when_quantity_booked_is_two(self, app: fixture):
         # Given
-        beneficiary = create_user(email="beneficiary@example.com")
-        user = create_user()
+        beneficiary = users_factories.UserFactory()
+        user = users_factories.UserFactory()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
         venue = create_venue(offerer)
@@ -1150,8 +1048,8 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_booking_date_with_offerer_timezone_when_venue_is_digital(self, app: fixture):
         # Given
-        beneficiary = create_user(email="beneficiary@example.com", first_name="Ron", last_name="Weasley")
-        user = create_user()
+        beneficiary = users_factories.UserFactory()
+        user = users_factories.UserFactory()
         offerer = create_offerer(postal_code="97300")
         user_offerer = create_user_offerer(user, offerer)
         venue = create_venue(offerer, idx=15, is_virtual=True, siret=None)
@@ -1171,8 +1069,8 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_booking_isbn_when_information_is_available(self, app: fixture):
         # Given
-        beneficiary = create_user(email="beneficiary@example.com", first_name="Ron", last_name="Weasley")
-        user = create_user()
+        beneficiary = users_factories.UserFactory()
+        user = users_factories.UserFactory()
         offerer = create_offerer(postal_code="97300")
         user_offerer = create_user_offerer(user, offerer)
         venue = create_venue(offerer, idx=15, is_virtual=True, siret=None)
@@ -1195,8 +1093,8 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_booking_with_venue_name_when_public_name_is_not_provided(self, app):
         # Given
-        beneficiary = create_user(email="beneficiary@example.com", first_name="Ron", last_name="Weasley")
-        user = create_user()
+        beneficiary = users_factories.UserFactory()
+        user = users_factories.UserFactory()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
 
@@ -1244,8 +1142,8 @@ class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_booking_with_venue_public_name_when_public_name_is_provided(self, app):
         # Given
-        beneficiary = create_user(email="beneficiary@example.com", first_name="Ron", last_name="Weasley")
-        user = create_user()
+        beneficiary = users_factories.UserFactory()
+        user = users_factories.UserFactory()
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
 

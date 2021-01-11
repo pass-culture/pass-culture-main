@@ -6,6 +6,7 @@ import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.testing import BaseFactory
 import pcapi.core.users.factories as users_factories
 from pcapi.domain import reimbursement
+from pcapi.models import payment_status
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
 
@@ -45,3 +46,20 @@ class PaymentFactory(BaseFactory):
     reimbursementRule = factory.Iterator(ALL_REIMBURSEMENT_RULES)
     reimbursementRate = 30
     recipientName = "Récipiendaire"
+    iban = "CF13QSDFGH456789"
+    bic = "QSDFGH8Z555"
+
+    @factory.post_generation
+    def statuses(obj, create, extracted, **kwargs):  # pylint: disable=no-self-argument
+
+        if not create:
+            return None
+        if extracted:
+            return extracted
+        status = PaymentStatusFactory(payment=obj, status=payment_status.TransactionStatus.PENDING)
+        return [status]
+
+
+class PaymentStatusFactory(BaseFactory):
+    class Meta:
+        model = models.PaymentStatus

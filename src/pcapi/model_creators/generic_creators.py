@@ -25,7 +25,6 @@ from pcapi.models import BeneficiaryImportSources
 from pcapi.models import BeneficiaryImportStatus
 from pcapi.models import Booking
 from pcapi.models import Criterion
-from pcapi.models import Deposit
 from pcapi.models import FavoriteSQLEntity
 from pcapi.models import ImportStatus
 from pcapi.models import IrisFrance
@@ -171,25 +170,6 @@ def create_booking(
     booking.confirmationDate = bookings_api.compute_confirmation_date(stock.beginningDatetime, date_created)
 
     return booking
-
-
-def create_deposit(
-    user: User,
-    amount: int = 500,
-    date_created: datetime = datetime.utcnow(),
-    idx: int = None,
-    source: str = "public",
-    version: int = 1,
-) -> Deposit:
-    deposit = Deposit()
-    deposit.amount = amount
-    deposit.dateCreated = date_created
-    deposit.id = idx
-    deposit.source = source
-    deposit.user = user
-    deposit.version = version
-
-    return deposit
 
 
 def create_favorite(

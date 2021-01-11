@@ -2,11 +2,10 @@ from datetime import datetime
 
 import pytest
 
+import pcapi.core.users.factories as users_factories
 from pcapi.model_creators.generic_creators import create_booking
-from pcapi.model_creators.generic_creators import create_deposit
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_stock
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.models import Booking
@@ -17,8 +16,7 @@ from pcapi.scripts.booking.cancel_bookings_of_events_from_file import _cancel_bo
 @pytest.mark.usefixtures("db_session")
 class CancelBookingsOfEventsFromFileTest:
     def test_cancel_bookings_of_offers_from_rows(self):
-        beneficiary = create_user()
-        create_deposit(user=beneficiary)
+        beneficiary = users_factories.UserFactory()
         offerer_to_cancel = create_offerer(name="Librairie les petits parapluies gris", siren="123456789")
         offerer_to_not_cancel = create_offerer(name="L'amicale du club de combat", siren="987654321")
         venue_to_cancel = create_venue(offerer=offerer_to_cancel, siret="12345678912345")

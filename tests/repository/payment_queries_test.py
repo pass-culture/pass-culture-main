@@ -2,13 +2,12 @@ import uuid
 
 import pytest
 
+import pcapi.core.users.factories as users_factories
 from pcapi.model_creators.generic_creators import create_bank_information
 from pcapi.model_creators.generic_creators import create_booking
-from pcapi.model_creators.generic_creators import create_deposit
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_payment
 from pcapi.model_creators.generic_creators import create_payment_message
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.model_creators.specific_creators import create_stock_from_offer
@@ -23,9 +22,8 @@ class FindErrorPaymentsTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_payments_with_last_payment_status_error(self, app):
         # Given
-        user = create_user()
+        user = users_factories.UserFactory()
         booking = create_booking(user=user)
-        create_deposit(user)
         error_payment1 = create_payment(
             booking, booking.stock.offer.venue.managingOfferer, 10, status=TransactionStatus.ERROR
         )
@@ -46,9 +44,8 @@ class FindErrorPaymentsTest:
     @pytest.mark.usefixtures("db_session")
     def test_does_not_return_payment_if_has_status_error_but_not_last(self, app):
         # Given
-        user = create_user()
+        user = users_factories.UserFactory()
         booking = create_booking(user=user)
-        create_deposit(user)
         error_payment = create_payment(booking, booking.stock.offer.venue.managingOfferer, 10)
         pending_payment = create_payment(booking, booking.stock.offer.venue.managingOfferer, 10)
         error_status = PaymentStatus()
@@ -69,9 +66,8 @@ class FindRetryPaymentsTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_payments_with_last_payment_status_retry(self, app):
         # Given
-        user = create_user()
+        user = users_factories.UserFactory()
         booking = create_booking(user=user)
-        create_deposit(user)
         offerer = booking.stock.offer.venue.managingOfferer
         retry_payment1 = create_payment(booking, offerer, 10, status=TransactionStatus.RETRY)
         retry_payment2 = create_payment(booking, offerer, 10, status=TransactionStatus.RETRY)
@@ -89,9 +85,8 @@ class FindRetryPaymentsTest:
     @pytest.mark.usefixtures("db_session")
     def test_does_not_return_payment_if_has_status_retry_but_not_last(self, app):
         # Given
-        user = create_user()
+        user = users_factories.UserFactory()
         booking = create_booking(user=user)
-        create_deposit(user)
         payment = create_payment(booking, booking.stock.offer.venue.managingOfferer, 10)
         payment = create_payment(booking, booking.stock.offer.venue.managingOfferer, 10)
         pending_payment = create_payment(booking, booking.stock.offer.venue.managingOfferer, 10)
@@ -113,9 +108,8 @@ class FindPaymentsByMessageTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_payments_matching_message(self, app):
         # given
-        user = create_user()
+        user = users_factories.UserFactory()
         booking = create_booking(user=user)
-        create_deposit(user)
         offerer = booking.stock.offer.venue.managingOfferer
         transaction1 = create_payment_message(name="XML1")
         transaction2 = create_payment_message(name="XML2")
@@ -141,9 +135,8 @@ class FindPaymentsByMessageTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_nothing_if_message_is_not_matched(self, app):
         # given
-        user = create_user()
+        user = users_factories.UserFactory()
         booking = create_booking(user=user)
-        create_deposit(user)
         offerer = booking.stock.offer.venue.managingOfferer
         message1 = create_payment_message(name="XML1")
         message2 = create_payment_message(name="XML2")
@@ -172,8 +165,7 @@ class GeneratePayementsByMessageIdTest:
         offer = create_offer_with_thing_product(venue)
         paying_stock = create_stock_from_offer(offer)
         free_stock = create_stock_from_offer(offer, price=0)
-        user = create_user()
-        create_deposit(user)
+        user = users_factories.UserFactory()
         booking1 = create_booking(user=user, stock=paying_stock, venue=venue, is_used=True)
         booking2 = create_booking(user=user, stock=paying_stock, venue=venue, is_used=True)
         booking3 = create_booking(user=user, stock=paying_stock, venue=venue, is_used=True)
@@ -195,7 +187,7 @@ class FindNotProcessableWithBankInformationTest:
     def test_should_not_return_payments_to_retry_if_no_bank_information(self, app):
         # Given
         offerer = create_offerer()
-        user = create_user()
+        user = users_factories.UserFactory()
         venue = create_venue(offerer)
         stock = create_stock_from_offer(create_offer_with_thing_product(venue), price=0)
         booking = create_booking(user=user, stock=stock)
@@ -216,7 +208,7 @@ class FindNotProcessableWithBankInformationTest:
     ):
         # Given
         offerer = create_offerer()
-        user = create_user()
+        user = users_factories.UserFactory()
         venue = create_venue(offerer)
         stock = create_stock_from_offer(create_offer_with_thing_product(venue), price=0)
         booking = create_booking(user=user, stock=stock)
@@ -238,7 +230,7 @@ class FindNotProcessableWithBankInformationTest:
     ):
         # Given
         offerer = create_offerer()
-        user = create_user()
+        user = users_factories.UserFactory()
         venue = create_venue(offerer)
         stock = create_stock_from_offer(create_offer_with_thing_product(venue), price=0)
         booking = create_booking(user=user, stock=stock)
@@ -260,7 +252,7 @@ class FindNotProcessableWithBankInformationTest:
     def test_should_not_return_payment_to_retry_if_bank_information_status_is_not_accepted(self, app):
         # Given
         offerer = create_offerer()
-        user = create_user()
+        user = users_factories.UserFactory()
         venue = create_venue(offerer)
         stock = create_stock_from_offer(create_offer_with_thing_product(venue), price=0)
         booking = create_booking(user=user, stock=stock)
@@ -282,7 +274,7 @@ class FindNotProcessableWithBankInformationTest:
     ):
         # Given
         offerer = create_offerer()
-        user = create_user()
+        user = users_factories.UserFactory()
         venue = create_venue(offerer)
         stock = create_stock_from_offer(create_offer_with_thing_product(venue), price=0)
         booking = create_booking(user=user, stock=stock)
@@ -303,8 +295,7 @@ class FindByBookingIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_a_payment_when_one_linked_to_booking(self, app):
         # Given
-        beneficiary = create_user()
-        create_deposit(beneficiary)
+        beneficiary = users_factories.UserFactory()
         offerer = create_offerer()
         booking = create_booking(user=beneficiary)
         valid_payment = create_payment(booking=booking, offerer=offerer)
@@ -320,8 +311,7 @@ class FindByBookingIdTest:
     def test_should_return_nothing_when_no_payment_linked_to_booking(self, app):
         # Given
         invalid_booking_id = "99999"
-        beneficiary = create_user()
-        create_deposit(beneficiary)
+        beneficiary = users_factories.UserFactory()
         offerer = create_offerer()
         booking = create_booking(user=beneficiary)
         valid_payment = create_payment(booking=booking, offerer=offerer)

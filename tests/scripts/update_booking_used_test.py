@@ -3,103 +3,72 @@ from datetime import datetime
 from freezegun import freeze_time
 import pytest
 
-from pcapi.model_creators.generic_creators import create_booking
-from pcapi.model_creators.generic_creators import create_deposit
-from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_stock
-from pcapi.model_creators.generic_creators import create_user
-from pcapi.model_creators.generic_creators import create_venue
-from pcapi.model_creators.specific_creators import create_offer_with_event_product
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+import pcapi.core.bookings.factories as bookings_factories
+import pcapi.core.offers.factories as offers_factories
 from pcapi.models import Booking
-from pcapi.repository import repository
 from pcapi.scripts.update_booking_used import update_booking_used_after_stock_occurrence
 
 
 class UpdateBookingUsedTest:
     @pytest.mark.usefixtures("db_session")
-    def test_update_booking_used_when_booking_is_on_thing_product(self, app):
+    def test_do_not_update_if_thing_product(self):
         # Given
-        user = create_user()
-        deposit = create_deposit(user)
-
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-        stock = create_stock(beginning_datetime=None, offer=offer)
-        booking = create_booking(user=user, is_used=False, stock=stock)
-        repository.save(user, deposit, booking, stock)
+        stock = offers_factories.ThingStockFactory()
+        bookings_factories.BookingFactory(stock=stock)
 
         # When
         update_booking_used_after_stock_occurrence()
 
         # Then
-        updated_booking = Booking.query.first()
-        assert not updated_booking.isUsed
-        assert not updated_booking.dateUsed
+        booking = Booking.query.first()
+        assert not booking.isUsed
+        assert not booking.dateUsed
 
     @freeze_time("2019-10-13")
     @pytest.mark.usefixtures("db_session")
-    def test_update_booking_used_when_event_date_is_3_days_before(self, app):
+    def test_update_booking_used_when_event_date_is_3_days_before(self):
         # Given
-        user = create_user()
-        deposit = create_deposit(user)
-
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue)
-        stock = create_stock(beginning_datetime=datetime(2019, 10, 9, 10, 20, 00), offer=offer)
-        booking = create_booking(user=user, is_used=False, stock=stock)
-        repository.save(user, deposit, booking, stock)
+        beginning = datetime(2019, 10, 9, 10, 20, 0)
+        stock = offers_factories.EventStockFactory(beginningDatetime=beginning)
+        bookings_factories.BookingFactory(stock=stock)
 
         # When
         update_booking_used_after_stock_occurrence()
 
         # Then
-        updated_booking = Booking.query.first()
-        assert updated_booking.isUsed
-        assert updated_booking.dateUsed == datetime(2019, 10, 13)
+        booking = Booking.query.first()
+        assert booking.isUsed
+        assert booking.dateUsed == datetime(2019, 10, 13)
+
+    @freeze_time("2019-10-13")
+    @pytest.mark.usefixtures("db_session")
+    def test_does_not_update_booking_if_already_used(self):
+        # Given
+        beginning = datetime(2019, 10, 9, 10, 20, 0)
+        stock = offers_factories.EventStockFactory(beginningDatetime=beginning)
+        booking = bookings_factories.BookingFactory(stock=stock, isUsed=True)
+        initial_date_used = booking.dateUsed
+
+        # When
+        update_booking_used_after_stock_occurrence()
+
+        # Then
+        booking = Booking.query.first()
+        assert booking.isUsed
+        assert booking.dateUsed == initial_date_used
 
     @freeze_time("2019-10-10")
     @pytest.mark.usefixtures("db_session")
-    def test_update_booking_used_when_event_date_is_only_1_day_before(self, app):
+    def test_update_booking_used_when_event_date_is_only_1_day_before(self):
         # Given
-        user = create_user()
-        deposit = create_deposit(user)
-
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue)
-        stock = create_stock(beginning_datetime=datetime(2019, 10, 9, 10, 20, 00), offer=offer)
-        booking = create_booking(user=user, is_used=False, stock=stock)
-        repository.save(user, deposit, booking, stock)
+        beginning = datetime(2019, 10, 9, 10, 20, 0)
+        stock = offers_factories.EventStockFactory(beginningDatetime=beginning)
+        bookings_factories.BookingFactory(stock=stock)
 
         # When
         update_booking_used_after_stock_occurrence()
 
         # Then
-        updated_booking = Booking.query.first()
-        assert not updated_booking.isUsed
-        assert updated_booking.dateUsed is None
-
-    @pytest.mark.usefixtures("db_session")
-    def test_does_not_update_booking_if_already_used(self, app):
-        # Given
-        user = create_user()
-        deposit = create_deposit(user)
-
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue)
-        stock = create_stock(beginning_datetime=datetime(2019, 10, 9, 10, 20, 00), offer=offer)
-        booking_date = datetime(2019, 10, 12, 12, 20, 0)
-        booking = create_booking(user=user, date_used=booking_date, is_used=True, stock=stock)
-        repository.save(user, deposit, booking, stock)
-
-        # When
-        update_booking_used_after_stock_occurrence()
-
-        # Then
-        updated_booking = Booking.query.first()
-        assert updated_booking.isUsed
-        assert updated_booking.dateUsed == booking_date
+        booking = Booking.query.first()
+        assert not booking.isUsed
+        assert booking.dateUsed is None

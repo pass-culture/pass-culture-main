@@ -14,7 +14,6 @@ from pcapi.infrastructure.repository.beneficiary_bookings.beneficiary_bookings_s
     _get_stocks_information,
 )
 from pcapi.model_creators.generic_creators import create_booking
-from pcapi.model_creators.generic_creators import create_deposit
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_stock
 from pcapi.model_creators.generic_creators import create_user
@@ -76,14 +75,12 @@ class BeneficiaryBookingsSQLRepositoryTest:
     @pytest.mark.usefixtures("db_session")
     def should_return_bookings_by_beneficiary_id(self, app):
         # Given
-        user1 = create_user()
-        create_deposit(user1)
+        user1 = UserFactory()
+        user2 = UserFactory()
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)
         stock = create_stock(offer=offer)
-        user2 = create_user(email="fa@example.com")
-        create_deposit(user2)
         booking1 = create_booking(user=user1, stock=stock)
         booking2 = create_booking(user=user2, stock=stock)
         repository.save(booking1, booking2)
@@ -98,8 +95,7 @@ class BeneficiaryBookingsSQLRepositoryTest:
     @pytest.mark.usefixtures("db_session")
     def should_not_return_activation_bookings(self, app):
         # Given
-        user = create_user()
-        create_deposit(user)
+        user = UserFactory()
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer1 = create_offer_with_event_product(venue, event_type="ThingType.ACTIVATION")
@@ -127,7 +123,6 @@ class BeneficiaryBookingsSQLRepositoryTest:
         two_days_ago = now - timedelta(days=2)
         three_days_ago = now - timedelta(days=3)
         user = create_user()
-        create_deposit(user)
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_event_product(venue)

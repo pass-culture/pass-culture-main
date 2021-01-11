@@ -4,9 +4,10 @@ from freezegun import freeze_time
 from lxml.etree import DocumentInvalid
 import pytest
 
+import pcapi.core.bookings.factories as bookings_factories
+import pcapi.core.payments.factories as payments_factories
 from pcapi.model_creators.generic_creators import create_bank_information
 from pcapi.model_creators.generic_creators import create_booking
-from pcapi.model_creators.generic_creators import create_deposit
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_payment
 from pcapi.model_creators.generic_creators import create_user
@@ -32,9 +33,7 @@ class ConcatenatePaymentsWithErrorsAndRetriesTest:
     @pytest.mark.usefixtures("db_session")
     def test_a_list_of_payments_is_returned_with_statuses_in_error_or_retry_or_pending(self, app):
         # Given
-        user = create_user()
-        booking = create_booking(user=user)
-        deposit = create_deposit(user)
+        booking = bookings_factories.BookingFactory()
         offerer = booking.stock.offer.venue.managingOfferer
 
         error_payment = create_payment(booking, offerer, 10)
@@ -54,7 +53,7 @@ class ConcatenatePaymentsWithErrorsAndRetriesTest:
         not_processable_status.status = TransactionStatus.NOT_PROCESSABLE
         not_processable_payment.statuses.append(not_processable_status)
 
-        repository.save(error_payment, retry_payment, pending_payment, deposit)
+        repository.save(error_payment, retry_payment, pending_payment)
 
         # When
         payments = concatenate_payments_with_errors_and_retries([pending_payment])
@@ -69,22 +68,16 @@ class ConcatenatePaymentsWithErrorsAndRetriesTest:
 @pytest.mark.usefixtures("db_session")
 def test_send_transactions_should_not_send_an_email_if_pass_culture_iban_is_missing(app):
     # given
-    offerer1 = create_offerer(name="first offerer")
-    user = create_user()
-    venue1 = create_venue(offerer1)
-    stock1 = create_stock_from_offer(create_offer_with_thing_product(venue1))
-    booking1 = create_booking(user=user, stock=stock1)
-    booking2 = create_booking(user=user, stock=stock1)
-    booking3 = create_booking(user=user, stock=stock1)
-    payments = [
-        create_payment(booking1, offerer1, 10),
-        create_payment(booking2, offerer1, 20),
-        create_payment(booking3, offerer1, 20),
-    ]
+    iban = "CF13QSDFGH456789"
+    bic = "AZERTY9Q666"
+    payment1 = payments_factories.PaymentFactory(iban=iban, bic=bic)
+    payment2 = payments_factories.PaymentFactory(iban=iban, bic=bic)
+    payment3 = payments_factories.PaymentFactory(iban=iban, bic=bic)
+    payments = [payment1, payment2, payment3]
 
     # when
     with pytest.raises(Exception):
-        send_transactions(payments, None, "AZERTY9Q666", "0000", ["comptable@test.com"])
+        send_transactions(payments, None, bic, "0000", ["comptable@test.com"])
 
     # then
     app.mailjet_client.send.create.assert_not_called()
@@ -94,22 +87,16 @@ def test_send_transactions_should_not_send_an_email_if_pass_culture_iban_is_miss
 @pytest.mark.usefixtures("db_session")
 def test_send_transactions_should_not_send_an_email_if_pass_culture_bic_is_missing(app):
     # given
-    offerer1 = create_offerer(name="first offerer")
-    user = create_user()
-    venue1 = create_venue(offerer1)
-    stock1 = create_stock_from_offer(create_offer_with_thing_product(venue1))
-    booking1 = create_booking(user=user, stock=stock1)
-    booking2 = create_booking(user=user, stock=stock1)
-    booking3 = create_booking(user=user, stock=stock1)
-    payments = [
-        create_payment(booking1, offerer1, 10),
-        create_payment(booking2, offerer1, 20),
-        create_payment(booking3, offerer1, 20),
-    ]
+    iban = "CF13QSDFGH456789"
+    bic = "AZERTY9Q666"
+    payment1 = payments_factories.PaymentFactory(iban=iban, bic=bic)
+    payment2 = payments_factories.PaymentFactory(iban=iban, bic=bic)
+    payment3 = payments_factories.PaymentFactory(iban=iban, bic=bic)
+    payments = [payment1, payment2, payment3]
 
     # when
     with pytest.raises(Exception):
-        send_transactions(payments, "BD12AZERTY123456", None, "0000", ["comptable@test.com"])
+        send_transactions(payments, iban, None, "0000", ["comptable@test.com"])
 
     # then
     app.mailjet_client.send.create.assert_not_called()
@@ -119,22 +106,16 @@ def test_send_transactions_should_not_send_an_email_if_pass_culture_bic_is_missi
 @pytest.mark.usefixtures("db_session")
 def test_send_transactions_should_not_send_an_email_if_pass_culture_id_is_missing(app):
     # given
-    offerer1 = create_offerer(name="first offerer")
-    user = create_user()
-    venue1 = create_venue(offerer1)
-    stock1 = create_stock_from_offer(create_offer_with_thing_product(venue1))
-    booking1 = create_booking(user=user, stock=stock1)
-    booking2 = create_booking(user=user, stock=stock1)
-    booking3 = create_booking(user=user, stock=stock1)
-    payments = [
-        create_payment(booking1, offerer1, 10),
-        create_payment(booking2, offerer1, 20),
-        create_payment(booking3, offerer1, 20),
-    ]
+    iban = "CF13QSDFGH456789"
+    bic = "AZERTY9Q666"
+    payment1 = payments_factories.PaymentFactory(iban=iban, bic=bic)
+    payment2 = payments_factories.PaymentFactory(iban=iban, bic=bic)
+    payment3 = payments_factories.PaymentFactory(iban=iban, bic=bic)
+    payments = [payment1, payment2, payment3]
 
     # when
     with pytest.raises(Exception):
-        send_transactions(payments, "BD12AZERTY123456", "AZERTY9Q666", None, ["comptable@test.com"])
+        send_transactions(payments, iban, bic, None, ["comptable@test.com"])
 
     # then
     app.mailjet_client.send.create.assert_not_called()
@@ -144,25 +125,17 @@ def test_send_transactions_should_not_send_an_email_if_pass_culture_id_is_missin
 @pytest.mark.usefixtures("db_session")
 def test_send_transactions_should_send_an_email_with_xml_attachment(app):
     # given
-    offerer1 = create_offerer(name="first offerer")
-    user = create_user()
-    venue1 = create_venue(offerer1)
-    stock1 = create_stock_from_offer(create_offer_with_thing_product(venue1))
-    booking1 = create_booking(user=user, stock=stock1)
-    booking2 = create_booking(user=user, stock=stock1)
-    booking3 = create_booking(user=user, stock=stock1)
-    deposit = create_deposit(user, amount=500)
-    repository.save(deposit)
-    payments = [
-        create_payment(booking1, offerer1, 10, iban="FR7630007000111234567890144", bic="BDFEFR2LCCB"),
-        create_payment(booking2, offerer1, 20, iban="FR7630007000111234567890144", bic="BDFEFR2LCCB"),
-        create_payment(booking3, offerer1, 20, iban="FR7630007000111234567890144", bic="BDFEFR2LCCB"),
-    ]
+    iban = "CF13QSDFGH456789"
+    bic = "AZERTY9Q666"
+    payment1 = payments_factories.PaymentFactory(iban=iban, bic=bic)
+    payment2 = payments_factories.PaymentFactory(iban=iban, bic=bic)
+    payment3 = payments_factories.PaymentFactory(iban=iban, bic=bic)
+    payments = [payment1, payment2, payment3]
 
     app.mailjet_client.send.create.return_value = Mock(status_code=200)
 
     # when
-    send_transactions(payments, "BD12AZERTY123456", "AZERTY9Q666", "0000", ["comptable@test.com"])
+    send_transactions(payments, iban, bic, "0000", ["comptable@test.com"])
 
     # then
     app.mailjet_client.send.create.assert_called_once()
@@ -174,23 +147,13 @@ def test_send_transactions_should_send_an_email_with_xml_attachment(app):
 @mocked_mail
 @freeze_time("2018-10-15 09:21:34")
 def test_send_transactions_creates_a_new_payment_transaction_if_email_was_sent_properly(app):
-    # given@
-    offerer1 = create_offerer(name="first offerer")
-    user = create_user()
-    venue1 = create_venue(offerer1)
-    stock1 = create_stock_from_offer(create_offer_with_thing_product(venue1))
-    booking1 = create_booking(user=user, stock=stock1)
-    booking2 = create_booking(user=user, stock=stock1)
-    booking3 = create_booking(user=user, stock=stock1)
-    deposit = create_deposit(user, amount=500)
-    payments = [
-        create_payment(booking1, offerer1, 10, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"),
-        create_payment(booking2, offerer1, 20, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"),
-        create_payment(booking3, offerer1, 20, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"),
-    ]
-
-    repository.save(deposit)
-    repository.save(*payments)
+    # given
+    iban = "CF13QSDFGH456789"
+    bic = "AZERTY9Q666"
+    payment1 = payments_factories.PaymentFactory(iban=iban, bic=bic)
+    payment2 = payments_factories.PaymentFactory(iban=iban, bic=bic)
+    payment3 = payments_factories.PaymentFactory(iban=iban, bic=bic)
+    payments = [payment1, payment2, payment3]
 
     app.mailjet_client.send.create.return_value = Mock(status_code=200)
 
@@ -207,27 +170,17 @@ def test_send_transactions_creates_a_new_payment_transaction_if_email_was_sent_p
 @mocked_mail
 def test_send_transactions_set_status_to_sent_if_email_was_sent_properly(app):
     # given
-    offerer1 = create_offerer(name="first offerer")
-    user = create_user()
-    venue1 = create_venue(offerer1)
-    stock1 = create_stock_from_offer(create_offer_with_thing_product(venue1))
-    booking1 = create_booking(user=user, stock=stock1)
-    booking2 = create_booking(user=user, stock=stock1)
-    booking3 = create_booking(user=user, stock=stock1)
-    deposit = create_deposit(user, amount=500)
-    payments = [
-        create_payment(booking1, offerer1, 10, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"),
-        create_payment(booking2, offerer1, 20, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"),
-        create_payment(booking3, offerer1, 20, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"),
-    ]
-
-    repository.save(deposit)
-    repository.save(*payments)
+    iban = "CF13QSDFGH456789"
+    bic = "AZERTY9Q666"
+    payment1 = payments_factories.PaymentFactory(iban=iban, bic=bic)
+    payment2 = payments_factories.PaymentFactory(iban=iban, bic=bic)
+    payment3 = payments_factories.PaymentFactory(iban=iban, bic=bic)
+    payments = [payment1, payment2, payment3]
 
     app.mailjet_client.send.create.return_value = Mock(status_code=200)
 
     # when
-    send_transactions(payments, "BD12AZERTY123456", "AZERTY9Q666", "0000", ["comptable@test.com"])
+    send_transactions(payments, iban, bic, "0000", ["comptable@test.com"])
 
     # then
     updated_payments = Payment.query.all()
@@ -240,27 +193,16 @@ def test_send_transactions_set_status_to_sent_if_email_was_sent_properly(app):
 @mocked_mail
 def test_send_transactions_set_status_to_error_with_details_if_email_was_not_sent_properly(app):
     # given
-    offerer1 = create_offerer(name="first offerer")
-    user = create_user()
-    venue1 = create_venue(offerer1)
-    stock1 = create_stock_from_offer(create_offer_with_thing_product(venue1))
-    booking1 = create_booking(user=user, stock=stock1)
-    booking2 = create_booking(user=user, stock=stock1)
-    booking3 = create_booking(user=user, stock=stock1)
-    deposit = create_deposit(user, amount=500)
-    payments = [
-        create_payment(booking1, offerer1, 10, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"),
-        create_payment(booking2, offerer1, 20, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"),
-        create_payment(booking3, offerer1, 20, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"),
-    ]
-
-    repository.save(deposit)
-    repository.save(*payments)
+    iban = "CF13QSDFGH456789"
+    bic = "AZERTY9Q666"
+    payment1 = payments_factories.PaymentFactory(iban=iban, bic=bic)
+    payment2 = payments_factories.PaymentFactory(iban=iban, bic=bic)
+    payments = [payment1, payment2]
 
     app.mailjet_client.send.create.return_value = Mock(status_code=400)
 
     # when
-    send_transactions(payments, "BD12AZERTY123456", "AZERTY9Q666", "0000", ["comptable@test.com"])
+    send_transactions(payments, iban, bic, "0000", ["comptable@test.com"])
 
     # then
     updated_payments = Payment.query.all()
@@ -274,60 +216,36 @@ def test_send_transactions_set_status_to_error_with_details_if_email_was_not_sen
 @mocked_mail
 def test_send_transactions_with_malformed_iban_on_payments_gives_them_an_error_status_with_a_cause(app):
     # given
-    offerer = create_offerer(name="first offerer")
-    user = create_user()
-    venue = create_venue(offerer)
-    stock = create_stock_from_offer(create_offer_with_thing_product(venue))
-    booking = create_booking(user=user, stock=stock)
-    deposit = create_deposit(user, amount=500)
-    payments = [
-        create_payment(booking, offerer, 10, iban="CF  13QSDFGH45 qbc //", bic="QSDFGH8Z555"),
-    ]
-
-    repository.save(deposit, *payments)
+    payment = payments_factories.PaymentFactory(iban="CF  13QSDFGH45 qbc //")
     app.mailjet_client.send.create.return_value = Mock(status_code=400)
 
     # when
     with pytest.raises(DocumentInvalid):
-        send_transactions(payments, "BD12AZERTY123456", "AZERTY9Q666", "0000", ["comptable@test.com"])
+        send_transactions([payment], "BD12AZERTY123456", payment.bic, "0000", ["comptable@test.com"])
 
     # then
-    updated_payments = Payment.query.all()
-    for payment in updated_payments:
-        assert len(payment.statuses) == 2
-        assert payment.currentStatus.status == TransactionStatus.NOT_PROCESSABLE
-        assert (
-            payment.currentStatus.detail == "Element '{urn:iso:std:iso:20022:tech:xsd:pain.001.001.03}IBAN': "
-            "[facet 'pattern'] The value 'CF  13QSDFGH45 qbc //' is not accepted "
-            "by the pattern '[A-Z]{2,2}[0-9]{2,2}[a-zA-Z0-9]{1,30}'., line 76"
-        )
+    payment = Payment.query.one()
+    assert len(payment.statuses) == 2
+    assert payment.currentStatus.status == TransactionStatus.NOT_PROCESSABLE
+    assert (
+        payment.currentStatus.detail == "Element '{urn:iso:std:iso:20022:tech:xsd:pain.001.001.03}IBAN': "
+        "[facet 'pattern'] The value 'CF  13QSDFGH45 qbc //' is not accepted "
+        "by the pattern '[A-Z]{2,2}[0-9]{2,2}[a-zA-Z0-9]{1,30}'., line 76"
+    )
 
 
 @pytest.mark.usefixtures("db_session")
 @mocked_mail
 def test_send_payment_details_sends_a_csv_attachment(app):
     # given
-    offerer1 = create_offerer(name="first offerer")
-    user = create_user()
-    venue1 = create_venue(offerer1)
-    stock1 = create_stock_from_offer(create_offer_with_thing_product(venue1))
-    booking1 = create_booking(user=user, stock=stock1)
-    booking2 = create_booking(user=user, stock=stock1)
-    booking3 = create_booking(user=user, stock=stock1)
-    deposit = create_deposit(user, amount=500)
-    payments = [
-        create_payment(booking1, offerer1, 10, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"),
-        create_payment(booking2, offerer1, 20, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"),
-        create_payment(booking3, offerer1, 20, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"),
-    ]
-
-    repository.save(deposit)
-    repository.save(*payments)
+    iban = "CF13QSDFGH456789"
+    bic = "AZERTY9Q666"
+    payment = payments_factories.PaymentFactory(iban=iban, bic=bic)
 
     app.mailjet_client.send.create.return_value = Mock(status_code=200)
 
     # when
-    send_payments_details(payments, ["comptable@test.com"])
+    send_payments_details([payment], ["comptable@test.com"])
 
     # then
     app.mailjet_client.send.create.assert_called_once()
@@ -336,31 +254,17 @@ def test_send_payment_details_sends_a_csv_attachment(app):
     assert args[1]["data"]["Attachments"][0]["ContentType"] == "application/zip"
 
 
+@pytest.mark.usefixtures("db_session")
 @mocked_mail
 def test_send_payment_details_does_not_send_anything_if_all_payment_have_error_status(app):
     # given
-    offerer1 = create_offerer(name="first offerer")
-    user = create_user()
-    venue1 = create_venue(offerer1)
-    stock1 = create_stock_from_offer(create_offer_with_thing_product(venue1))
-    booking1 = create_booking(user=user, stock=stock1)
-    booking2 = create_booking(user=user, stock=stock1)
-    booking3 = create_booking(user=user, stock=stock1)
-
-    payments = [
-        create_payment(
-            booking1, offerer1, 10, status=TransactionStatus.ERROR, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"
-        ),
-        create_payment(
-            booking2, offerer1, 20, status=TransactionStatus.ERROR, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"
-        ),
-        create_payment(
-            booking3, offerer1, 20, status=TransactionStatus.ERROR, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"
-        ),
-    ]
+    iban = "CF13QSDFGH456789"
+    bic = "AZERTY9Q666"
+    payment = payments_factories.PaymentFactory(iban=iban, bic=bic, statuses=[])
+    payments_factories.PaymentStatusFactory(payment=payment, status=TransactionStatus.ERROR)
 
     # when
-    send_payments_details(payments, ["comptable@test.com"])
+    send_payments_details([payment], ["comptable@test.com"])
 
     # then
     app.mailjet_client.send.create.assert_not_called()
@@ -409,28 +313,15 @@ def test_send_wallet_balances_does_not_send_anything_if_recipients_are_missing(a
 @pytest.mark.usefixtures("db_session")
 def test_send_payments_report_sends_two_csv_attachments_if_some_payments_are_not_processable_and_in_error(app):
     # given
-    offerer1 = create_offerer(name="first offerer")
-    user = create_user()
-    venue1 = create_venue(offerer1)
-    stock1 = create_stock_from_offer(create_offer_with_thing_product(venue1))
-    booking1 = create_booking(user=user, stock=stock1)
-    booking2 = create_booking(user=user, stock=stock1)
-    booking3 = create_booking(user=user, stock=stock1)
-    deposit = create_deposit(user, amount=500)
-    payments = [
-        create_payment(
-            booking1, offerer1, 10, status=TransactionStatus.SENT, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"
-        ),
-        create_payment(
-            booking2, offerer1, 20, status=TransactionStatus.ERROR, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"
-        ),
-        create_payment(
-            booking3, offerer1, 20, status=TransactionStatus.NOT_PROCESSABLE, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"
-        ),
-    ]
-
-    repository.save(deposit)
-    repository.save(*payments)
+    iban = "CF13QSDFGH456789"
+    bic = "QSDFGH8Z555"
+    payment1 = payments_factories.PaymentFactory(iban=iban, bic=bic, statuses=[])
+    payments_factories.PaymentStatusFactory(payment=payment1, status=TransactionStatus.SENT)
+    payment2 = payments_factories.PaymentFactory(iban=iban, bic=bic, statuses=[])
+    payments_factories.PaymentStatusFactory(payment=payment2, status=TransactionStatus.ERROR)
+    payment3 = payments_factories.PaymentFactory(iban=iban, bic=bic, statuses=[])
+    payments_factories.PaymentStatusFactory(payment=payment3, status=TransactionStatus.NOT_PROCESSABLE)
+    payments = [payment1, payment2, payment3]
 
     app.mailjet_client.send.create.return_value = Mock(status_code=200)
 
@@ -449,28 +340,13 @@ def test_send_payments_report_sends_two_csv_attachments_if_some_payments_are_not
 @pytest.mark.usefixtures("db_session")
 def test_send_payments_report_sends_two_csv_attachments_if_no_payments_are_in_error_or_sent(app):
     # given
-    offerer1 = create_offerer(name="first offerer")
-    user = create_user()
-    venue1 = create_venue(offerer1)
-    stock1 = create_stock_from_offer(create_offer_with_thing_product(venue1))
-    booking1 = create_booking(user=user, stock=stock1)
-    booking2 = create_booking(user=user, stock=stock1)
-    booking3 = create_booking(user=user, stock=stock1)
-    deposit = create_deposit(user, amount=500)
-    payments = [
-        create_payment(
-            booking1, offerer1, 10, status=TransactionStatus.SENT, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"
-        ),
-        create_payment(
-            booking2, offerer1, 20, status=TransactionStatus.SENT, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"
-        ),
-        create_payment(
-            booking3, offerer1, 20, status=TransactionStatus.SENT, iban="CF13QSDFGH456789", bic="QSDFGH8Z555"
-        ),
-    ]
-
-    repository.save(deposit)
-    repository.save(*payments)
+    iban = "CF13QSDFGH456789"
+    bic = "QSDFGH8Z555"
+    payment1 = payments_factories.PaymentFactory(iban=iban, bic=bic, statuses=[])
+    payment2 = payments_factories.PaymentFactory(iban=iban, bic=bic, statuses=[])
+    for payment in (payment1, payment2):
+        payments_factories.PaymentStatusFactory(payment=payment, status=TransactionStatus.SENT)
+    payments = [payment1, payment2]
 
     app.mailjet_client.send.create.return_value = Mock(status_code=200)
 

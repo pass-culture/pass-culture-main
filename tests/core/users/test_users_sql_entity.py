@@ -1,16 +1,15 @@
 from datetime import datetime
-from decimal import Decimal
 from unittest.mock import patch
 
 from freezegun import freeze_time
 import pytest
 
+import pcapi.core.bookings.factories as bookings_factories
+import pcapi.core.payments.factories as payments_factories
+from pcapi.core.users import factories
 from pcapi.core.users.models import check_password
 from pcapi.core.users.models import hash_password
-from pcapi.model_creators.generic_creators import create_booking
-from pcapi.model_creators.generic_creators import create_deposit
 from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_stock
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
@@ -89,154 +88,37 @@ class HasRightsTest:
 
 class WalletBalanceTest:
     @pytest.mark.usefixtures("db_session")
-    def test_wallet_balance_is_0_with_no_deposits_and_no_bookings(self, app):
+    def test_balance_is_0_with_no_deposits_and_no_bookings(self):
         # given
-        user = create_user()
-        repository.save(user)
-
-        # when
-        balance = user.wallet_balance
+        user = factories.UserFactory()
+        repository.delete(user.deposits[0])
 
         # then
-        assert balance == Decimal(0)
+        assert user.wallet_balance == 0
+        assert user.real_wallet_balance == 0
 
     @pytest.mark.usefixtures("db_session")
-    def test_wallet_balance_is_the_sum_of_deposits_if_no_bookings(self, app):
+    def test_balance_is_the_sum_of_deposits_if_no_bookings(self):
         # given
-        user = create_user()
-        deposit1 = create_deposit(user, amount=100)
-        deposit2 = create_deposit(user, amount=50)
-        repository.save(deposit1, deposit2)
-
-        # when
-        balance = user.wallet_balance
+        user = factories.UserFactory(deposit__version=1)
+        payments_factories.DepositFactory(user=user, version=1)
 
         # then
-        assert balance == Decimal(150)
+        assert user.wallet_balance == 500 + 500
+        assert user.real_wallet_balance == 500 + 500
 
     @pytest.mark.usefixtures("db_session")
-    def test_wallet_balance_is_the_sum_of_deposits_minus_the_sum_of_bookings(self, app):
+    def test_balance(self):
         # given
-        user = create_user()
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-
-        deposit1 = create_deposit(user, amount=100)
-        deposit2 = create_deposit(user, amount=50)
-        stock1 = create_stock(offer=offer, price=20)
-        stock2 = create_stock(offer=offer, price=30)
-        booking1 = create_booking(user=user, quantity=1, stock=stock1, venue=venue)
-        booking2 = create_booking(user=user, quantity=2, stock=stock2, venue=venue)
-
-        repository.save(deposit1, deposit2, booking1, booking2)
-
-        # when
-        balance = user.wallet_balance
+        user = factories.UserFactory(deposit__version=1)
+        bookings_factories.BookingFactory(user=user, isUsed=True, quantity=1, amount=10)
+        bookings_factories.BookingFactory(user=user, isUsed=True, quantity=2, amount=20)
+        bookings_factories.BookingFactory(user=user, isUsed=False, quantity=3, amount=30)
+        bookings_factories.BookingFactory(user=user, isCancelled=True, quantity=4, amount=40)
 
         # then
-        assert balance == Decimal(70)
-
-    @pytest.mark.usefixtures("db_session")
-    def test_wallet_balance_does_not_count_cancelled_bookings(self, app):
-        # given
-        user = create_user()
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-
-        deposit1 = create_deposit(user, amount=100)
-        deposit2 = create_deposit(user, amount=50)
-        stock1 = create_stock(offer=offer, price=20)
-        stock2 = create_stock(offer=offer, price=30)
-        booking1 = create_booking(user=user, is_cancelled=False, quantity=1, stock=stock1, venue=venue)
-        booking2 = create_booking(user=user, is_cancelled=True, quantity=2, stock=stock2, venue=venue)
-
-        repository.save(deposit1, deposit2, booking1, booking2)
-
-        # when
-        balance = user.wallet_balance
-
-        # then
-        assert balance == Decimal(130)
-
-
-class RealWalletBalanceTest:
-    @pytest.mark.usefixtures("db_session")
-    def test_real_wallet_balance_is_0_with_no_deposits_and_no_bookings(self, app):
-        # given
-        user = create_user()
-        repository.save(user)
-
-        # when
-        balance = user.real_wallet_balance
-
-        # then
-        assert balance == Decimal(0)
-
-    @pytest.mark.usefixtures("db_session")
-    def test_real_wallet_balance_is_the_sum_of_deposits_if_no_bookings(self, app):
-        # given
-        user = create_user()
-        deposit1 = create_deposit(user, amount=100)
-        deposit2 = create_deposit(user, amount=50)
-        repository.save(deposit1, deposit2)
-
-        # when
-        balance = user.real_wallet_balance
-
-        # then
-        assert balance == Decimal(150)
-
-    @pytest.mark.usefixtures("db_session")
-    def test_real_wallet_balance_is_the_sum_of_deposits_minus_the_sum_of_used_bookings(self, app):
-        # given
-        user = create_user()
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-
-        deposit1 = create_deposit(user, amount=100)
-        deposit2 = create_deposit(user, amount=50)
-        stock1 = create_stock(offer=offer, price=20)
-        stock2 = create_stock(offer=offer, price=30)
-        stock3 = create_stock(offer=offer, price=40)
-        booking1 = create_booking(user=user, is_used=True, quantity=1, stock=stock1, venue=venue)
-        booking2 = create_booking(user=user, is_used=True, quantity=2, stock=stock2, venue=venue)
-        booking3 = create_booking(user=user, is_used=False, quantity=1, stock=stock3, venue=venue)
-
-        repository.save(deposit1, deposit2, booking1, booking2, booking3)
-
-        # when
-        balance = user.real_wallet_balance
-
-        # then
-        assert balance == Decimal(70)
-
-    @pytest.mark.usefixtures("db_session")
-    def test_real_wallet_balance_does_not_count_cancelled_bookings(self, app):
-        # given
-        user = create_user()
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-
-        deposit1 = create_deposit(user, amount=100)
-        deposit2 = create_deposit(user, amount=50)
-        stock1 = create_stock(offer=offer, price=20)
-        stock2 = create_stock(offer=offer, price=30)
-        stock3 = create_stock(offer=offer, price=40)
-        booking1 = create_booking(user=user, is_cancelled=True, is_used=True, quantity=1, stock=stock1, venue=venue)
-        booking2 = create_booking(user=user, is_cancelled=False, is_used=True, quantity=2, stock=stock2, venue=venue)
-        booking3 = create_booking(user=user, is_cancelled=False, is_used=True, quantity=1, stock=stock3, venue=venue)
-
-        repository.save(deposit1, deposit2, booking1, booking2, booking3)
-
-        # when
-        balance = user.real_wallet_balance
-
-        # then
-        assert balance == Decimal(50)
+        assert user.wallet_balance == 500 - (10 + 2 * 20 + 3 * 30)
+        assert user.real_wallet_balance == 500 - (10 + 2 * 20)
 
 
 class HasPhysicalVenuesTest:

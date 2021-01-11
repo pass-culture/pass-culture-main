@@ -32,7 +32,6 @@ from pcapi.domain.user_emails import send_user_validation_email
 from pcapi.domain.user_emails import send_validation_confirmation_email_to_pro
 from pcapi.domain.user_emails import send_warning_to_beneficiary_after_pro_booking_cancellation
 from pcapi.model_creators.generic_creators import create_booking
-from pcapi.model_creators.generic_creators import create_deposit
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
@@ -127,16 +126,8 @@ class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
         self, mock_feature_send_mail_to_users_enabled, app
     ):
         # Given
-        user = create_user(email="user@example.com")
-        offerer = create_offerer()
-        deposit = create_deposit(user, amount=500)
-        venue = create_venue(offerer)
-        stock = create_stock_with_event_offer(offerer, venue)
-        stock.offer.bookingEmail = "booking@example.com"
-        booking = create_booking(user=user, stock=stock)
+        booking = BookingFactory(stock__offer__bookingEmail="booking@example.com")
         mocked_send_email = Mock()
-
-        repository.save(deposit, stock)
 
         # When
         send_user_driven_cancellation_email_to_offerer(booking, mocked_send_email)
@@ -152,16 +143,8 @@ class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
         self, mock_feature_send_mail_to_users_enabled, app
     ):
         # Given
-        user = create_user(email="user@example.com")
-        offerer = create_offerer()
-        deposit = create_deposit(user, amount=500)
-        venue = create_venue(offerer)
-        stock = create_stock_with_event_offer(offerer, venue)
-        stock.offer.bookingEmail = None
-        booking = create_booking(user=user, stock=stock)
+        booking = BookingFactory(stock__offer__bookingEmail="")
         mocked_send_email = Mock()
-
-        repository.save(deposit, stock)
 
         # When
         send_user_driven_cancellation_email_to_offerer(booking, mocked_send_email)

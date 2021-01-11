@@ -1,9 +1,9 @@
 from datetime import datetime
 from datetime import timedelta
 
+import pcapi.core.payments.api as payments_api
 from pcapi.model_creators.generic_creators import create_bank_information
 from pcapi.model_creators.generic_creators import create_booking
-from pcapi.model_creators.generic_creators import create_deposit
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_stock
 from pcapi.model_creators.generic_creators import create_user
@@ -49,13 +49,13 @@ def save_users_with_deposits():
         email="user5@test.com",
         reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24),
     )
-    deposit1 = create_deposit(user1, amount=500)
-    deposit2 = create_deposit(user2, amount=500)
-    deposit3 = create_deposit(user3, amount=500)
-    deposit4 = create_deposit(user4, amount=500)
-    deposit5 = create_deposit(user5, amount=500)
+    deposit1 = payments_api.create_deposit(user1, "sandbox")
+    deposit2 = payments_api.create_deposit(user2, "sandbox")
+    deposit3 = payments_api.create_deposit(user3, "sandbox")
+    deposit4 = payments_api.create_deposit(user4, "sandbox")
+    deposit5 = payments_api.create_deposit(user5, "sandbox")
     repository.save(deposit1, deposit2, deposit3, deposit4, deposit5)
-    logger.info("created 5 users with 500 € deposits")
+    logger.info("created 5 users with deposits")
     return user1, user2, user3, user4, user5
 
 

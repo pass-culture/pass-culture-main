@@ -1,14 +1,8 @@
-from datetime import datetime
-
 import pytest
 
-from pcapi.model_creators.generic_creators import create_booking
-from pcapi.model_creators.generic_creators import create_deposit
-from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_payment
-from pcapi.model_creators.generic_creators import create_user
+import pcapi.core.bookings.factories as bookings_factories
+import pcapi.core.payments.factories as payments_factories
 from pcapi.models import Booking
-from pcapi.repository import repository
 from pcapi.scripts.booking.canceling_token_validation import canceling_token_validation
 
 
@@ -16,18 +10,14 @@ from pcapi.scripts.booking.canceling_token_validation import canceling_token_val
 def test_should_update_booking_when_valid_token_is_given_and_no_payment_associated(app):
     # Given
     token = "123456"
-    beneficiary = create_user()
-    create_deposit(user=beneficiary)
-    invalid_booking = create_booking(date_used=datetime(2020, 1, 1), is_used=True, token=token, user=beneficiary)
-    repository.save(invalid_booking)
+    booking = bookings_factories.BookingFactory(isUsed=True, token=token)
 
     # When
     canceling_token_validation(token=token)
 
     # Then
     booking = Booking.query.first()
-    assert booking.token == "123456"
-    assert booking.isUsed is False
+    assert not booking.isUsed
     assert booking.dateUsed is None
 
 
@@ -35,18 +25,14 @@ def test_should_update_booking_when_valid_token_is_given_and_no_payment_associat
 def test_should_do_nothing_when_valid_token_is_given_but_the_booking_is_linked_to_a_payment(app):
     # Given
     token = "123456"
-    beneficiary = create_user()
-    create_deposit(user=beneficiary)
-    invalid_booking = create_booking(date_used=datetime(2020, 1, 1), is_used=True, token=token, user=beneficiary)
-    offerer = create_offerer()
-    payment = create_payment(booking=invalid_booking, offerer=offerer)
-    repository.save(payment)
+    booking = bookings_factories.BookingFactory(isUsed=True, token=token)
+    initial_date_used = booking.dateUsed
+    payments_factories.PaymentFactory(booking=booking)
 
     # When
     canceling_token_validation(token=token)
 
     # Then
     booking = Booking.query.first()
-    assert booking.token == "123456"
-    assert booking.isUsed is True
-    assert booking.dateUsed == datetime(2020, 1, 1)
+    assert booking.isUsed
+    assert booking.dateUsed == initial_date_used

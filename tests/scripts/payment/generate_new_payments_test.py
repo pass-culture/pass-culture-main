@@ -1,11 +1,10 @@
 import pytest
 
+import pcapi.core.users.factories as users_factories
 from pcapi.model_creators.generic_creators import create_bank_information
 from pcapi.model_creators.generic_creators import create_booking
-from pcapi.model_creators.generic_creators import create_deposit
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_payment
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.model_creators.specific_creators import create_stock_from_offer
@@ -27,8 +26,7 @@ class GenerateNewPaymentsTest:
             offer = create_offer_with_thing_product(venue)
             paying_stock = create_stock_from_offer(offer)
             free_stock = create_stock_from_offer(offer, price=0)
-            user = create_user()
-            deposit = create_deposit(user, amount=500)
+            user = users_factories.UserFactory()
             booking1 = create_booking(user=user, stock=paying_stock, venue=venue, is_used=True)
             booking2 = create_booking(user=user, stock=paying_stock, venue=venue, is_used=True)
             booking3 = create_booking(user=user, stock=paying_stock, venue=venue, is_used=True)
@@ -36,7 +34,7 @@ class GenerateNewPaymentsTest:
             payment1 = create_payment(booking2, offerer, 10, payment_message_name="ABCD123")
 
             repository.save(payment1)
-            repository.save(deposit, booking1, booking3, booking4)
+            repository.save(booking1, booking3, booking4)
 
             initial_payment_count = Payment.query.count()
 
@@ -62,13 +60,12 @@ class GenerateNewPaymentsTest:
             paying_stock1 = create_stock_from_offer(offer1)
             paying_stock2 = create_stock_from_offer(offer2)
             free_stock1 = create_stock_from_offer(offer1, price=0)
-            user = create_user()
-            deposit = create_deposit(user, amount=500)
+            user = users_factories.UserFactory()
             booking1 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True)
             booking2 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True)
             booking3 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True)
             booking4 = create_booking(user=user, stock=free_stock1, venue=venue1, is_used=True)
-            repository.save(deposit, booking1, booking2, booking3, booking4, bank_information)
+            repository.save(booking1, booking2, booking3, booking4, bank_information)
 
             # When
             pending, not_processable = generate_new_payments()
@@ -94,12 +91,13 @@ class GenerateNewPaymentsTest:
             paying_stock1 = create_stock_from_offer(offer1, price=10000)
             paying_stock2 = create_stock_from_offer(offer2, price=10000)
             paying_stock3 = create_stock_from_offer(offer3, price=10000)
-            user = create_user()
-            deposit = create_deposit(user, amount=50000)
+            user = users_factories.UserFactory()
+            user.deposits[0].amount = 50000
+            repository.save(user.deposits[0])
             booking1 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True, quantity=1)
             booking2 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True, quantity=1)
             booking3 = create_booking(user=user, stock=paying_stock3, venue=venue3, is_used=True, quantity=1)
-            repository.save(deposit, booking1, booking2, booking3, bank_information)
+            repository.save(booking1, booking2, booking3, bank_information)
 
             # When
             pending, not_processable = generate_new_payments()
@@ -118,8 +116,7 @@ class GenerateNewPaymentsTest:
             offer = create_offer_with_thing_product(venue)
             paying_stock = create_stock_from_offer(offer)
             free_stock = create_stock_from_offer(offer, price=0)
-            user = create_user()
-            deposit = create_deposit(user, amount=500)
+            user = users_factories.UserFactory()
             booking1 = create_booking(user=user, stock=paying_stock, venue=venue, is_used=True)
             booking2 = create_booking(user=user, stock=paying_stock, venue=venue, is_used=True)
             booking3 = create_booking(user=user, stock=paying_stock, venue=venue, is_used=True)
@@ -127,7 +124,7 @@ class GenerateNewPaymentsTest:
             payment1 = create_payment(booking2, offerer, 10, payment_message_name="ABCD123")
 
             repository.save(payment1)
-            repository.save(deposit, booking1, booking3, booking4)
+            repository.save(booking1, booking3, booking4)
 
             initial_payment_count = Payment.query.count()
 
@@ -153,13 +150,12 @@ class GenerateNewPaymentsTest:
             paying_stock1 = create_stock_from_offer(offer1)
             paying_stock2 = create_stock_from_offer(offer2)
             free_stock1 = create_stock_from_offer(offer1, price=0)
-            user = create_user()
-            deposit = create_deposit(user, amount=500)
+            user = users_factories.UserFactory()
             booking1 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True)
             booking2 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True)
             booking3 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True)
             booking4 = create_booking(user=user, stock=free_stock1, venue=venue1, is_used=True)
-            repository.save(deposit, booking1, booking2, booking3, booking4, bank_information)
+            repository.save(booking1, booking2, booking3, booking4, bank_information)
 
             # When
             pending, not_processable = generate_new_payments()
@@ -185,12 +181,13 @@ class GenerateNewPaymentsTest:
             paying_stock1 = create_stock_from_offer(offer1, price=10000)
             paying_stock2 = create_stock_from_offer(offer2, price=10000)
             paying_stock3 = create_stock_from_offer(offer3, price=10000)
-            user = create_user()
-            deposit = create_deposit(user, amount=50000)
+            user = users_factories.UserFactory()
+            user.deposits[0].amount = 50000
+            repository.save(user.deposits[0])
             booking1 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True, quantity=1)
             booking2 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True, quantity=1)
             booking3 = create_booking(user=user, stock=paying_stock3, venue=venue3, is_used=True, quantity=1)
-            repository.save(deposit, booking1, booking2, booking3, bank_information)
+            repository.save(booking1, booking2, booking3, bank_information)
 
             # When
             pending, not_processable = generate_new_payments()
@@ -217,12 +214,13 @@ class GenerateNewPaymentsTest:
             paying_stock1 = create_stock_from_offer(offer1, price=10000)
             paying_stock2 = create_stock_from_offer(offer2, price=10000)
             paying_stock3 = create_stock_from_offer(offer3, price=30000)
-            user = create_user()
-            deposit = create_deposit(user, amount=50000)
+            user = users_factories.UserFactory()
+            user.deposits[0].amount = 50000
+            repository.save(user.deposits[0])
             booking1 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True, quantity=1)
             booking2 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True, quantity=1)
             booking3 = create_booking(user=user, stock=paying_stock3, venue=venue3, is_used=True, quantity=1)
-            repository.save(deposit, booking1, booking2, booking3, bank_information)
+            repository.save(booking1, booking2, booking3, bank_information)
 
             # When
             pending, not_processable = generate_new_payments()
@@ -246,11 +244,12 @@ class GenerateNewPaymentsTest:
             offer2 = create_offer_with_thing_product(venue2, thing_type=ThingType.LIVRE_EDITION, url=None)
             paying_stock1 = create_stock_from_offer(offer1, price=10000)
             paying_stock2 = create_stock_from_offer(offer2, price=19990)
-            user = create_user()
-            deposit = create_deposit(user, amount=50000)
+            user = users_factories.UserFactory()
+            user.deposits[0].amount = 50000
+            repository.save(user.deposits[0])
             booking1 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True, quantity=1)
             booking2 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True, quantity=1)
-            repository.save(deposit, booking1, booking2, bank_information)
+            repository.save(booking1, booking2, bank_information)
 
             # When
             pending, not_processable = generate_new_payments()
@@ -277,12 +276,13 @@ class GenerateNewPaymentsTest:
             paying_stock1 = create_stock_from_offer(offer1, price=10000)
             paying_stock2 = create_stock_from_offer(offer2, price=10000)
             paying_stock3 = create_stock_from_offer(offer3, price=30000)
-            user = create_user()
-            deposit = create_deposit(user, amount=50000)
+            user = users_factories.UserFactory()
+            user.deposits[0].amount = 50000
+            repository.save(user.deposits[0])
             booking1 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True, quantity=1)
             booking2 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True, quantity=1)
             booking3 = create_booking(user=user, stock=paying_stock3, venue=venue3, is_used=True, quantity=1)
-            repository.save(deposit, booking1, booking2, booking3, bank_information)
+            repository.save(booking1, booking2, booking3, bank_information)
 
             # When
             pending, not_processable = generate_new_payments()
@@ -309,12 +309,13 @@ class GenerateNewPaymentsTest:
             paying_stock1 = create_stock_from_offer(offer1, price=10000)
             paying_stock2 = create_stock_from_offer(offer2, price=10000)
             paying_stock3 = create_stock_from_offer(offer3, price=50000)
-            user = create_user()
-            deposit = create_deposit(user, amount=80000)
+            user = users_factories.UserFactory()
+            user.deposits[0].amount = 80000
+            repository.save(user.deposits[0])
             booking1 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True, quantity=1)
             booking2 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True, quantity=1)
             booking3 = create_booking(user=user, stock=paying_stock3, venue=venue3, is_used=True, quantity=1)
-            repository.save(deposit, booking1, booking2, booking3, bank_information)
+            repository.save(booking1, booking2, booking3, bank_information)
 
             # When
             pending, not_processable = generate_new_payments()
@@ -341,12 +342,13 @@ class GenerateNewPaymentsTest:
             paying_stock1 = create_stock_from_offer(offer1, price=10000)
             paying_stock2 = create_stock_from_offer(offer2, price=10000)
             paying_stock3 = create_stock_from_offer(offer3, price=100000)
-            user = create_user()
-            deposit = create_deposit(user, amount=120000)
+            user = users_factories.UserFactory()
+            user.deposits[0].amount = 120000
+            repository.save(user.deposits[0])
             booking1 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True, quantity=1)
             booking2 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True, quantity=1)
             booking3 = create_booking(user=user, stock=paying_stock3, venue=venue3, is_used=True, quantity=1)
-            repository.save(deposit, booking1, booking2, booking3, bank_information)
+            repository.save(booking1, booking2, booking3, bank_information)
 
             # When
             pending, not_processable = generate_new_payments()

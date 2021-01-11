@@ -1,10 +1,9 @@
 import pytest
 
+import pcapi.core.users.factories as users_factories
 from pcapi.model_creators.generic_creators import create_bank_information
 from pcapi.model_creators.generic_creators import create_booking
-from pcapi.model_creators.generic_creators import create_deposit
 from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
@@ -19,8 +18,7 @@ class Get:
         @pytest.mark.usefixtures("db_session")
         def when_user_has_an_offerer_attached(self, app):
             # Given
-            user = create_user(email="user+plus@email.fr")
-            deposit = create_deposit(user, amount=500, source="public")
+            user = users_factories.UserFactory(email="user+plus@email.fr")
             offerer1 = create_offerer()
             offerer2 = create_offerer(siren="123456788")
             user_offerer1 = create_user_offerer(user, offerer1, validation_token=None)
@@ -41,7 +39,6 @@ class Get:
             booking5 = create_booking(user=user, stock=stock4, is_used=True, token="ABCDEJ", venue=venue3)
             booking6 = create_booking(user=user, stock=stock4, is_used=True, token="ABCDEK", venue=venue3)
             repository.save(
-                deposit,
                 booking1,
                 booking2,
                 booking3,
@@ -68,8 +65,7 @@ class Get:
         @pytest.mark.usefixtures("db_session")
         def when_user_has_no_offerer_attached(self, app):
             # Given
-            user = create_user(email="user+plus@email.fr")
-            repository.save(user)
+            user = users_factories.UserFactory(email="user+plus@email.fr")
 
             # When
             response = TestClient(app.test_client()).with_auth(user.email).get("/reimbursements/csv")

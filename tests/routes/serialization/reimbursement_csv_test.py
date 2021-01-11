@@ -1,12 +1,11 @@
 from freezegun import freeze_time
 import pytest
 
+import pcapi.core.users.factories as users_factories
 from pcapi.model_creators.generic_creators import create_bank_information
 from pcapi.model_creators.generic_creators import create_booking
-from pcapi.model_creators.generic_creators import create_deposit
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_payment
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
@@ -25,8 +24,7 @@ class FindReimbursementDetailsTest:
     @pytest.mark.usefixtures("db_session")
     def test_find_all_offerer_reimbursement_details(self, app):
         # Given
-        user = create_user(email="user+plus@email.fr")
-        deposit = create_deposit(user, amount=500, source="public")
+        user = users_factories.UserFactory(email="user+plus@email.fr")
         offerer1 = create_offerer(siren="123456789")
         user_offerer1 = create_user_offerer(user, offerer1, validation_token=None)
         venue1 = create_venue(offerer1)
@@ -40,7 +38,7 @@ class FindReimbursementDetailsTest:
         booking1 = create_booking(user=user, stock=stock1, is_used=True, token="ABCDEF", venue=venue1)
         booking2 = create_booking(user=user, stock=stock1, token="ABCDEG", venue=venue1)
         booking3 = create_booking(user=user, stock=stock2, is_used=True, token="ABCDEH", venue=venue2)
-        repository.save(deposit, booking1, booking2, booking3, user_offerer1, bank_information1, bank_information2)
+        repository.save(booking1, booking2, booking3, user_offerer1, bank_information1, bank_information2)
         generate_new_payments()
 
         # When
@@ -71,8 +69,7 @@ class ReimbursementDetailsCSVTest:
     @override_features(DEGRESSIVE_REIMBURSEMENT_RATE=False)
     def test_generate_payment_details_csv_with_right_values(self, app):
         # given
-        user = create_user(first_name="John", last_name="Doe")
-        deposit = create_deposit(user, amount=500, source="public")
+        user = users_factories.UserFactory(firstName="John", lastName="Doe")
         offerer1 = create_offerer(siren="123456789", address="123 rue de Paris")
         user_offerer1 = create_user_offerer(user, offerer1, validation_token=None)
         venue1 = create_venue(offerer1)
@@ -81,7 +78,7 @@ class ReimbursementDetailsCSVTest:
         booking1 = create_booking(user=user, stock=stock1, is_used=True, token="ABCDEF", venue=venue1)
         booking2 = create_booking(user=user, stock=stock1, token="ABCDEG", venue=venue1)
 
-        repository.save(deposit, booking1, booking2, user_offerer1, bank_information1)
+        repository.save(booking1, booking2, user_offerer1, bank_information1)
 
         generate_new_payments()
 
@@ -102,8 +99,7 @@ class AsCsvRowTest:
     @pytest.mark.usefixtures("db_session")
     def test_generate_payment_csv_raw_contains_human_readable_status_with_details_when_error(self, app):
         # given
-        user = create_user(email="user+plus@example.com")
-        deposit = create_deposit(user)
+        user = users_factories.UserFactory(email="user+plus@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, price=10)
@@ -116,7 +112,7 @@ class AsCsvRowTest:
             amount=50,
             detail="Iban non fourni",
         )
-        repository.save(deposit, payment)
+        repository.save(payment)
 
         payments_info = find_all_offerer_payments(offerer.id)
 

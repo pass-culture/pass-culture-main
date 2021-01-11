@@ -10,7 +10,6 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.model_creators.generic_creators import create_api_key
 from pcapi.model_creators.generic_creators import create_booking
-from pcapi.model_creators.generic_creators import create_deposit
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_payment
 from pcapi.model_creators.generic_creators import create_user
@@ -39,8 +38,7 @@ class Get:
         @pytest.mark.usefixtures("db_session")
         def when_user_has_rights_and_regular_offer(self, app):
             # Given
-            user = create_user(email="user@example.com", public_name="John Doe")
-            create_deposit(user)
+            user = users_factories.UserFactory(email="user@example.com", publicName="John Doe")
             admin_user = create_user(email="admin@example.com")
             offerer = create_offerer()
             create_user_offerer(admin_user, offerer)

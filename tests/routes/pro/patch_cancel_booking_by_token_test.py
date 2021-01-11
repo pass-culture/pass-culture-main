@@ -1,7 +1,7 @@
 import pytest
 
+import pcapi.core.users.factories as users_factories
 from pcapi.model_creators.generic_creators import create_booking
-from pcapi.model_creators.generic_creators import create_deposit
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_stock
 from pcapi.model_creators.generic_creators import create_user
@@ -36,8 +36,7 @@ class Patch:
             book_offer = create_offer_with_event_product(venue)
             stock = create_stock(offer=book_offer)
 
-            user = create_user(email="j.f@example.net", public_name="J.F")
-            create_deposit(user)
+            user = users_factories.UserFactory()
             booking = create_booking(user=user, stock=stock, venue=venue)
 
             repository.save(booking, user_offerer)
@@ -66,8 +65,7 @@ class Patch:
             book_offer = create_offer_with_event_product(venue)
             stock = create_stock(offer=book_offer)
 
-            user = create_user(email="j.f@example.net", public_name="J.F")
-            create_deposit(user)
+            user = users_factories.UserFactory()
             booking = create_booking(user=user, stock=stock, venue=venue)
 
             repository.save(booking, user_offerer)
@@ -91,8 +89,7 @@ class Patch:
         @pytest.mark.usefixtures("db_session")
         def when_not_authenticated_used_api_key_or_login(self, app):
             # Given
-            user = create_user(email="j.f@example.net", public_name="J.F")
-            create_deposit(user)
+            user = users_factories.UserFactory()
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
@@ -111,8 +108,7 @@ class Patch:
         @pytest.mark.usefixtures("db_session")
         def when_giving_an_api_key_that_does_not_exists(self, app):
             # Given
-            user = create_user(email="j.f@example.net", public_name="J.F")
-            create_deposit(user)
+            user = users_factories.UserFactory()
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
@@ -141,8 +137,7 @@ class Patch:
             book_offer = create_offer_with_event_product(venue)
             stock = create_stock(offer=book_offer)
 
-            user = create_user(email="j.f@example.net", public_name="J.F")
-            create_deposit(user)
+            user = users_factories.UserFactory()
             booking = create_booking(user=user, stock=stock, venue=venue)
 
             repository.save(booking, user_offerer)
@@ -175,8 +170,7 @@ class Patch:
             book_offer = create_offer_with_event_product(venue)
             stock = create_stock(offer=book_offer)
 
-            user = create_user(email="j.f@example.net", public_name="J.F")
-            create_deposit(user)
+            user = users_factories.UserFactory()
             booking = create_booking(user=user, stock=stock, venue=venue)
 
             repository.save(booking, user_offerer)
@@ -192,7 +186,7 @@ class Patch:
             # When
             response = (
                 TestClient(app.test_client())
-                .with_auth("j.f@example.net")
+                .with_auth(user.email)
                 .patch("/v2/bookings/cancel/token/{}".format(booking.token))
             )
 
@@ -213,8 +207,7 @@ class Patch:
                 book_offer = create_offer_with_event_product(venue)
                 stock = create_stock(offer=book_offer)
 
-                user = create_user(email="j.f@example.net", public_name="J.F")
-                create_deposit(user)
+                user = users_factories.UserFactory()
                 booking = create_booking(user=user, stock=stock, is_used=True, venue=venue)
 
                 repository.save(booking, user_offerer)
@@ -239,8 +232,7 @@ class Patch:
         @pytest.mark.usefixtures("db_session")
         def when_the_booking_does_not_exists(self, app):
             # Given
-            user = create_user()
-            create_deposit(user)
+            user = users_factories.UserFactory()
             offerer = create_offerer()
             user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer)
@@ -274,8 +266,7 @@ class Patch:
             book_offer = create_offer_with_thing_product(venue)
             stock = create_stock(offer=book_offer)
 
-            user = create_user(email="j.f@example.net", public_name="J.F")
-            create_deposit(user)
+            user = users_factories.UserFactory()
             booking = create_booking(user=user, stock=stock, is_cancelled=True, venue=venue)
 
             repository.save(booking, user_offerer)
