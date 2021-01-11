@@ -135,6 +135,10 @@ def update_offer(  # pylint: disable=redefined-builtin
     conditions: str = UNCHANGED,
     venueId: str = UNCHANGED,
     productId: str = UNCHANGED,
+    audioDisabilityCompliant: bool = UNCHANGED,
+    mentalDisabilityCompliant: bool = UNCHANGED,
+    motorDisabilityCompliant: bool = UNCHANGED,
+    visualDisabilityCompliant: bool = UNCHANGED,
 ) -> Offer:
     # fmt: off
     modifications = {

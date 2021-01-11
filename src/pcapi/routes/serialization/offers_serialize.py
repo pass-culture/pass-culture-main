@@ -82,6 +82,10 @@ class PatchOfferBodyModel(BaseModel):
     conditions: Optional[str]
     venueId: Optional[str]
     productId: Optional[str]
+    audioDisabilityCompliant: Optional[bool]
+    mentalDisabilityCompliant: Optional[bool]
+    motorDisabilityCompliant: Optional[bool]
+    visualDisabilityCompliant: Optional[bool]
 
     @validator("name", pre=True)
     def validate_name(cls, name):  # pylint: disable=no-self-argument
