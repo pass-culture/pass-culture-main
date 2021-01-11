@@ -22,15 +22,25 @@ class RemainingCredit extends PureComponent {
     const { user } = this.props
     const { isReadMoreVisible } = this.state
     const { expenses, wallet_balance: walletBalance } = user
-    const digital = expenses.find(expense => expense.domain === 'digital')
-    const physical = expenses.find(expense => expense.domain === 'physical')
-    const all = expenses.find(expense => expense.domain === 'all')
 
-    const digitalCreditLimit = digital.max
-    const physicalCreditLimit = physical.max
-    const initialDeposit = all.max
-    const digitalRemainingCredit = getRemainingCreditForGivenCreditLimit(walletBalance)(digital)
-    const physicalRemainingCredit = getRemainingCreditForGivenCreditLimit(walletBalance)(physical)
+    let digitalCreditLimit = 0
+    let physicalCreditLimit = 0
+    let initialDeposit = 0
+    let digitalRemainingCredit = 0
+    let physicalRemainingCredit = 0
+
+    if (expenses.length) {
+      const digital = expenses.find(expense => expense.domain === 'digital')
+      const physical = expenses.find(expense => expense.domain === 'physical')
+      const all = expenses.find(expense => expense.domain === 'all')
+
+      digitalCreditLimit = digital.max
+      physicalCreditLimit = physical.max
+      initialDeposit = all.max
+
+      digitalRemainingCredit = getRemainingCreditForGivenCreditLimit(walletBalance)(digital)
+      physicalRemainingCredit = getRemainingCreditForGivenCreditLimit(walletBalance)(physical)
+    }
 
     return (
       <section className="pf-section">

@@ -36,4 +36,16 @@ describe('computeCreditGaugeFilling', () => {
     // Then
     expect(result).toBe(10)
   })
+
+  it('should return step 0 when credit limit is 0', () => {
+    // Given
+    const remainingCredit = 100
+    const creditLimit = 0
+
+    // When
+    const result = computeCreditGaugeFilling(remainingCredit, creditLimit)
+
+    // Then
+    expect(result).toBe(0)
+  })
 })
