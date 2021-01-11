@@ -56,7 +56,8 @@ class BeneficiaryAccountResponse(BaseModel):
     departementCode: str
     email: str
     expenses: List[Expense]
-    firstName: str
+    # @debt api-data "asaunier: Seuls quelques comptes n'ont pas cette information. Elle devrait être rendue obligatoire"
+    firstName: Optional[str]
     hasAllowedRecommendations: bool
     hasPhysicalVenues: bool
     id: str
@@ -64,7 +65,8 @@ class BeneficiaryAccountResponse(BaseModel):
     isAdmin: bool
     isBeneficiary: bool
     isEmailValidated: bool
-    lastName: str
+    # @debt api-data "asaunier: Seuls quelques comptes n'ont pas cette information. Elle devrait être rendue obligatoire"
+    lastName: Optional[str]
     needsToFillCulturalSurvey: bool
     needsToSeeTutorials: bool
     phoneNumber: Optional[str]

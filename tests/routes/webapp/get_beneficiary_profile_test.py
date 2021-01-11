@@ -2,7 +2,7 @@ from datetime import datetime
 
 import pytest
 
-from pcapi.core.bookings import factories
+from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.users.factories import UserFactory
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
@@ -90,10 +90,7 @@ class Get:
         @pytest.mark.usefixtures("db_session")
         def when_user_has_cancelled_some_offers(self, app):
             # Given
-            booking = factories.BookingFactory(
-                isCancelled=True, user__email="wallet_test@email.com", user__postalCode="75130"
-            )
-            repository.save(booking)
+            BookingFactory(isCancelled=True, user__email="wallet_test@email.com", user__postalCode="75130")
 
             # When
             response = TestClient(app.test_client()).with_auth("wallet_test@email.com").get("/beneficiaries/current")
@@ -107,10 +104,9 @@ class Get:
             ]
 
         @pytest.mark.usefixtures("db_session")
-        def when_user_is_created_without_postal_code_by_flaskadmin(self, app):
+        def when_user_is_created_without_postal_code(self, app):
             # Given
-            booking = factories.BookingFactory(user__email="wallet_test@email.com", user__postalCode=None)
-            repository.save(booking)
+            UserFactory(email="wallet_test@email.com", postalCode=None)
 
             # When
             response = TestClient(app.test_client()).with_auth("wallet_test@email.com").get("/beneficiaries/current")
@@ -121,9 +117,7 @@ class Get:
         @pytest.mark.usefixtures("db_session")
         def when_user_is_a_pro(self, app):
             # Given
-            user = UserFactory(
-                email="pro@example.com", postalCode=None, isBeneficiary=False, suspensionReason=None, dateOfBirth=None
-            )
+            user = UserFactory(email="pro@example.com", postalCode=None, isBeneficiary=False, dateOfBirth=None)
             user.suspensionReason = None
             repository.save(user)
 
@@ -137,10 +131,7 @@ class Get:
         @pytest.mark.usefixtures("db_session")
         def when_user_is_a_admin(self, app):
             # Given
-            user = UserFactory(
-                email="pro@example.com", postalCode=None, isBeneficiary=False, dateOfBirth=None, isAdmin=True
-            )
-            repository.save(user)
+            UserFactory(email="pro@example.com", postalCode=None, dateOfBirth=None, isAdmin=True)
 
             # When
             response = TestClient(app.test_client()).with_auth("pro@example.com").get("/beneficiaries/current")
