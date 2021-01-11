@@ -22,5 +22,9 @@ class NotEligible(Exception):
     pass
 
 
+class UnderAgeUserException(Exception):
+    pass
+
+
 class EmailNotSent(Exception):
     pass

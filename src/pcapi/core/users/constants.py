@@ -8,6 +8,7 @@ EMAIL_CHANGE_TOKEN_LIFE_TIME = timedelta(hours=24)
 ID_CHECK_TOKEN_LIFE_TIME = timedelta(days=1)
 
 ELIGIBILITY_AGE = 18
+ACCOUNT_CREATION_MINIMUM_AGE = 16
 
 
 class SuspensionReason(Enum):

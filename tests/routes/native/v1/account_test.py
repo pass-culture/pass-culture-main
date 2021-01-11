@@ -1,5 +1,7 @@
+from datetime import datetime
 from unittest.mock import patch
 
+from dateutil.relativedelta import relativedelta
 from flask_jwt_extended.utils import create_access_token
 import pytest
 
@@ -111,3 +113,19 @@ class AccountTest:
         assert response.status_code == 204, response.json
         mocked_send_raw_email.assert_called()
         assert mocked_send_raw_email.call_args_list[0][1]["data"]["MJ-TemplateID"] == 1838526
+
+    @patch("pcapi.routes.native.v1.account.check_recaptcha_token_is_valid")
+    def test_too_young_account_creation(self, mocked_check_recaptcha_token_is_valid, app):
+        test_client = TestClient(app.test_client())
+        assert User.query.first() is None
+        data = {
+            "email": "John.doe@example.com",
+            "password": "Aazflrifaoi6@",
+            "birthdate": (datetime.utcnow() - relativedelta(year=15)).date(),
+            "notifications": True,
+            "token": "gnagna",
+            "hasAllowedRecommendations": True,
+        }
+
+        response = test_client.post("/native/v1/account", json=data)
+        assert response.status_code == 400

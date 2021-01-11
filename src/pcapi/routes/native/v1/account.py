@@ -4,6 +4,7 @@ from flask_jwt_extended import jwt_required
 
 from pcapi import settings
 from pcapi.core.users import api
+from pcapi.core.users.exceptions import UnderAgeUserException
 from pcapi.core.users.exceptions import UserAlreadyExistsException
 from pcapi.core.users.models import VOID_FIRST_NAME
 from pcapi.models import ApiErrors
@@ -57,3 +58,5 @@ def create_account(body: serializers.AccountRequest) -> None:
     except UserAlreadyExistsException:
         user = find_user_by_email(body.email)
         api.request_password_reset(user)
+    except UnderAgeUserException:
+        raise ApiErrors({"dateOfBirth": "The birthdate is invalid"})

@@ -84,7 +84,7 @@ def create_account(
 
     user = User(
         email=format_email(email),
-        dateOfBirth=birthdate,
+        dateOfBirth=datetime.combine(birthdate, datetime.min.time()),
         isEmailValidated=is_email_validated,
         departementCode="007",
         publicName="   ",  # Required because model validation requires 3+ chars
@@ -92,6 +92,11 @@ def create_account(
         firstName="",
         hasAllowedRecommendations=has_allowed_recommendations,
     )
+
+    age = user.calculate_age()
+    if not age or age < constants.ACCOUNT_CREATION_MINIMUM_AGE:
+        raise exceptions.UnderAgeUserException()
+
     user.setPassword(password)
     repository.save(user)
 
