@@ -3,40 +3,38 @@ import React, { useCallback, useRef, useState } from 'react'
 import { IMAGE_TYPE } from 'components/pages/Offer/Offer/Thumbnail/_constants'
 import { ReactComponent as ThumbnailSampleIcon } from 'components/pages/Offer/Offer/Thumbnail/assets/thumbnail-sample.svg'
 
+import Icon from '../../../../../layout/Icon'
 import { constraints } from '../_error_validator'
 
 const ThumbnailFile = () => {
-  const [errors, setErrors] = useState([])
+  const [error, setError] = useState(null)
   const file = useRef(null)
 
-  const getErrors = async file => {
-    const errors = []
-    await Promise.all(
-      constraints.map(
-        async constraint => (await constraint.validator(file)) && errors.push(constraint.id)
-      )
-    )
-
-    return Promise.resolve(errors)
+  const getError = async file => {
+    for (const constraint of constraints) {
+      if (await constraint.validator(file)) return Promise.resolve(constraint.id)
+    }
+    return Promise.resolve(null)
   }
 
   const isThereAnError = useCallback(async () => {
     const currentFile = file.current.files[0]
-    const errors = await getErrors(currentFile)
+    const error = await getError(currentFile)
 
-    setErrors(errors)
+    setError(error)
   }, [file])
 
   const fileConstraint = () =>
     constraints.map(constraint => {
       let sentence = constraint.sentence
 
-      if (errors.length > 0 && errors.includes(constraint.id)) {
+      if (error && error === constraint.id) {
         sentence = (
           <strong
             aria-live="assertive"
             aria-relevant="all"
           >
+            <Icon svg="ico-notification-error-red" />
             {sentence}
           </strong>
         )
@@ -59,7 +57,7 @@ const ThumbnailFile = () => {
         {'Importer une image depuis l’ordinateur'}
         <input
           accept={IMAGE_TYPE.join()}
-          aria-invalid={errors.length > 0 ? true : false}
+          aria-invalid={error}
           className="tnf-file-input"
           onChange={isThereAnError}
           ref={file}

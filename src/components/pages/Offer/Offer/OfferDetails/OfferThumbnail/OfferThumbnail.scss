@@ -27,6 +27,10 @@
 }
 
 .of-image {
+  img {
+    object-fit: cover;
+  }
+
   &::after,
   &::before {
     opacity: 0;

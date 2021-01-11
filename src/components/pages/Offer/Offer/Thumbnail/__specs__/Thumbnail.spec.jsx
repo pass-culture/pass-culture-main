@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 import { fireEvent } from '@testing-library/dom'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
@@ -11,16 +11,25 @@ import { configureTestStore } from 'store/testUtils'
 
 global.createImageBitmap = () => Promise.resolve({})
 
-const createFile = ({
+const ONE_MO = 1024 * 1024
+const ONE_OCTET = 1
+
+const createImageFile = ({
   name = 'example.png',
   type = 'image/png',
   sizeInMo = 1,
-  width = 401,
-  height = 401,
+  width = 400 + ONE_OCTET,
+  height = 400 + ONE_OCTET,
 } = {}) => {
   const file = new File([''], name, { type })
-  Object.defineProperty(file, 'size', { value: 1024 * 1024 * sizeInMo + 1 })
+  Object.defineProperty(file, 'size', { value: ONE_MO * sizeInMo + ONE_OCTET })
   jest.spyOn(global, 'createImageBitmap').mockResolvedValue({ width, height })
+  return file
+}
+
+const createFile = ({ name = 'example.json', type = 'application/json', sizeInMo = 1 } = {}) => {
+  const file = new File([''], name, { type })
+  Object.defineProperty(file, 'size', { value: 1024 * 1024 * sizeInMo + 1 })
   return file
 }
 
@@ -128,11 +137,11 @@ describe('thumbnail edition', () => {
       it('should not import a file other than png or jpg', async () => {
         // Given
         await renderThumbnail({}, store)
-        const xmlFile = createFile({ type: 'application/xml' })
+        const file = createFile()
 
         // When
         fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
-          target: { files: [xmlFile] },
+          target: { files: [file] },
         })
 
         // Then
@@ -143,10 +152,36 @@ describe('thumbnail edition', () => {
         ).toBeInTheDocument()
       })
 
-      it('should not import a file which exceeds maximum size', async () => {
+      it('should only check file format if not an image', async () => {
         // Given
         await renderThumbnail({}, store)
-        const bigFile = createFile({ sizeInMo: 10 })
+        const file = createFile({ sizeInMo: 50 })
+
+        // When
+        fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
+          target: { files: [file] },
+        })
+
+        // Then
+        expect(
+          await screen.findByText('Formats supportés : JPG, PNG', {
+            selector: 'strong',
+          })
+        ).toBeInTheDocument()
+
+        await waitFor(() => {
+          expect(
+            screen.queryByText('Le poids du fichier ne doit pas dépasser 10 Mo', {
+              selector: 'strong',
+            })
+          ).not.toBeInTheDocument()
+        })
+      })
+
+      it('should not import an image which exceeds maximum size', async () => {
+        // Given
+        await renderThumbnail({}, store)
+        const bigFile = createImageFile({ sizeInMo: 10 })
 
         // When
         fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
@@ -161,10 +196,10 @@ describe('thumbnail edition', () => {
         ).toBeInTheDocument()
       })
 
-      it('should not import a file whose height is below minimum', async () => {
+      it('should not import an image whose height is below minimum', async () => {
         // Given
         await renderThumbnail({}, store)
-        const file = createFile({ height: 200 })
+        const file = createImageFile({ height: 200 })
 
         // When
         await fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
@@ -179,10 +214,10 @@ describe('thumbnail edition', () => {
         ).toBeInTheDocument()
       })
 
-      it('should not import a file whose width is below minimum', async () => {
+      it('should not import an image whose width is below minimum', async () => {
         // Given
         await renderThumbnail({}, store)
-        const file = createFile({ width: 200 })
+        const file = createImageFile({ width: 200 })
 
         // When
         await fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {

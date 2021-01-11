@@ -4,7 +4,7 @@ const isNotAnImage = async file => !IMAGE_TYPE.includes(file.type)
 const isTooBig = async file => file.size > MAX_IMAGE_SIZE
 const isOfPoorQuality = async file => {
   const { height, width } = await createImageBitmap(file)
-  return Promise.resolve(height <= MIN_IMAGE_HEIGHT || width <= MIN_IMAGE_WIDTH)
+  return height <= MIN_IMAGE_HEIGHT || width <= MIN_IMAGE_WIDTH
 }
 
 export const constraints = [

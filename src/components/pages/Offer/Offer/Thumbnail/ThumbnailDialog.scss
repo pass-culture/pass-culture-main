@@ -58,6 +58,17 @@
   @include caption();
 
   color: $grey-dark;
+
+  strong {
+    color: $error;
+    display: flex;
+    justify-content: center;
+
+    img {
+      margin: rem(3px);
+      width: rem(10px);
+    }
+  }
 }
 
 .tnf-url-button {
