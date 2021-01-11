@@ -157,6 +157,26 @@ class Returns400:
         assert response.status_code == 400
         assert response.json["url"] == ["Une offre de type Jeux (support physique) ne peut pas être numérique"]
 
+    def should_fail_when_url_is_not_properly_formatted(self, app):
+        # Given
+        venue = offers_factories.VirtualVenueFactory()
+        offerer = venue.managingOfferer
+        offers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+
+        # When
+        client = TestClient(app.test_client()).with_auth("user@example.com")
+        data = {
+            "venueId": humanize(venue.id),
+            "name": "Les lièvres pas malins",
+            "type": "ThingType.JEUX_VIDEO",
+            "url": "missing.something",
+        }
+        response = client.post("/offers", json=data)
+
+        # Then
+        assert response.status_code == 400
+        assert response.json["url"] == ['L\'URL doit commencer par "http://" ou "https://"']
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns403:

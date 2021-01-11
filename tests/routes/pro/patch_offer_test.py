@@ -72,6 +72,27 @@ class Returns400:
         for key in forbidden_keys:
             assert key in response.json
 
+    def should_fail_when_url_is_not_properly_formatted(self, app):
+        # Given
+        virtual_venue = offers_factories.VirtualVenueFactory()
+        offer = offers_factories.OfferFactory(venue=virtual_venue)
+        offers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        # When
+        data = {
+            "name": "Les lièvres pas malins",
+            "url": "missing.something",
+        }
+        client = TestClient(app.test_client()).with_auth("user@example.com")
+        response = client.patch(f"offers/{humanize(offer.id)}", json=data)
+
+        # Then
+        assert response.status_code == 400
+        assert response.json["url"] == ['L\'URL doit commencer par "http://" ou "https://"']
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns403:

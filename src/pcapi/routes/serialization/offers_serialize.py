@@ -65,7 +65,7 @@ class PatchOfferBodyModel(BaseModel):
     name: Optional[str]
     extraData: Any
     type: Optional[str]
-    url: Optional[str]
+    url: Optional[HttpUrl]
     withdrawalDetails: Optional[str]
     isActive: Optional[bool]
     isDuo: Optional[bool]
