@@ -2,9 +2,11 @@ import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
 
 import PageTitle from 'components/layout/PageTitle/PageTitle'
+import Spinner from 'components/layout/Spinner'
 import * as pcapi from 'repository/pcapi/pcapi'
 
-import OfferFormContainer from './OfferForm/OfferFormContainer'
+import OfferCreation from './OfferForm/OfferCreation'
+import OfferEditionContainer from './OfferForm/OfferEditionContainer'
 import OfferThumbnail from './OfferThumbnail/OfferThumbnail'
 import OfferThumbnailPlaceholder from './OfferThumbnail/OfferThumbnailPlaceholder/OfferThumbnailPlaceholder'
 
@@ -20,6 +22,7 @@ const OfferDetails = ({
   const [formInitialValues, setFormInitialValues] = useState({})
   const [formErrors, setFormErrors] = useState({})
   const [showThumbnailForm, setShowThumbnailForm] = useState(offer !== null)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search)
@@ -84,17 +87,33 @@ const OfferDetails = ({
     <div className="offer-edit">
       <PageTitle title="Détails de l'offre" />
 
+      {isLoading && <Spinner />}
+
       <div className="sidebar-container">
         <div className="content">
-          <OfferFormContainer
-            initialValues={formInitialValues}
-            isUserAdmin={isUserAdmin}
-            offer={offer}
-            onSubmit={handleSubmitOffer}
-            setShowThumbnailForm={setShowThumbnailForm}
-            showErrorNotification={showErrorNotification}
-            submitErrors={formErrors}
-          />
+          {offer ? (
+            <OfferEditionContainer
+              isLoading={isLoading}
+              isUserAdmin={isUserAdmin}
+              offer={offer}
+              onSubmit={handleSubmitOffer}
+              setIsLoading={setIsLoading}
+              setShowThumbnailForm={setShowThumbnailForm}
+              showErrorNotification={showErrorNotification}
+              submitErrors={formErrors}
+            />
+          ) : (
+            <OfferCreation
+              initialValues={formInitialValues}
+              isLoading={isLoading}
+              isUserAdmin={isUserAdmin}
+              onSubmit={handleSubmitOffer}
+              setIsLoading={setIsLoading}
+              setShowThumbnailForm={setShowThumbnailForm}
+              showErrorNotification={showErrorNotification}
+              submitErrors={formErrors}
+            />
+          )}
         </div>
 
         {showThumbnailForm && (

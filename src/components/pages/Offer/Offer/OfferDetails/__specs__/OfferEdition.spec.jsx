@@ -49,11 +49,11 @@ const renderOffers = async (props, store, queryParams = '') => {
 
 describe('offerDetails - Edition', () => {
   let editedOffer
-  let offerers
+  let venueManagingOfferer
   let props
   let store
   let types
-  let venues
+  let editedOfferVenue
 
   beforeEach(() => {
     store = configureTestStore({ data: { users: [{ publicName: 'François', isAdmin: false }] } })
@@ -75,24 +75,25 @@ describe('offerDetails - Edition', () => {
         value: 'ThingType.LIVRE_EDITION',
       },
     ]
-    offerers = [
-      {
-        id: 'BA',
-        name: 'La structure',
-      },
-    ]
-    venues = [
-      {
-        id: 'AB',
-        isVirtual: false,
-        managingOffererId: offerers[0].id,
-        name: 'Le lieu',
-        offererName: 'La structure',
-      },
-    ]
+    venueManagingOfferer = {
+      id: 'BA',
+      name: 'La structure',
+    }
+
+    editedOfferVenue = {
+      id: 'AB',
+      isVirtual: false,
+      managingOfferer: venueManagingOfferer,
+      managingOffererId: venueManagingOfferer.id,
+      name: 'Le lieu',
+      offererName: 'La structure',
+    }
+
     editedOffer = {
       id: 'ABC12',
       name: 'My edited offer',
+      type: 'ThingType.LIVRE_EDITION',
+      venue: editedOfferVenue,
       thumbUrl: null,
     }
     props = {
@@ -100,8 +101,6 @@ describe('offerDetails - Edition', () => {
     }
     pcapi.loadOffer.mockResolvedValue(editedOffer)
     pcapi.loadTypes.mockResolvedValue(types)
-    pcapi.getValidatedOfferers.mockResolvedValue(offerers)
-    pcapi.getVenuesForOfferer.mockResolvedValue(venues)
   })
 
   describe('render when editing an existing offer', () => {
@@ -111,7 +110,7 @@ describe('offerDetails - Edition', () => {
         editedOffer.thumbUrl = 'http://example.net/active-image.png'
 
         // When
-        renderOffers({}, store)
+        await renderOffers({}, store)
 
         // Then
         const button = await screen.findByTitle('Modifier l’image', { selector: 'button' })
@@ -124,7 +123,7 @@ describe('offerDetails - Edition', () => {
     describe('when thumbnail do not exist', () => {
       it('should display the placeholder', async () => {
         // When
-        renderOffers({}, store)
+        await renderOffers({}, store)
 
         // Then
         expect(
@@ -149,7 +148,7 @@ describe('offerDetails - Edition', () => {
 
     it('should show existing offer details', async () => {
       // Given
-      venues[0].isVirtual = true
+      editedOfferVenue.isVirtual = true
       const editedOffer = {
         id: 'ABC12',
         bookingEmail: 'booking@example.net',
@@ -159,8 +158,8 @@ describe('offerDetails - Edition', () => {
         name: 'My edited offer',
         type: 'EventType.FULL_CONDITIONAL_FIELDS',
         url: 'http://example.net',
-        venue: venues[0],
-        venueId: venues[0].id,
+        venue: editedOfferVenue,
+        venueId: editedOfferVenue.id,
         withdrawalDetails: 'Offer withdrawal details',
         extraData: {
           author: 'Mr Offer Author',
@@ -211,7 +210,7 @@ describe('offerDetails - Edition', () => {
       const offererIdInput = await screen.findByLabelText(fieldLabels.offererId.label, {
         exact: fieldLabels.offererId.exact,
       })
-      expect(offererIdInput).toHaveValue(venues[0].managingOffererId)
+      expect(offererIdInput).toHaveValue(editedOfferVenue.managingOffererId)
       const venueIdInput = await screen.findByLabelText(fieldLabels.venueId.label, {
         exact: fieldLabels.venueId.exact,
       })
@@ -274,14 +273,14 @@ describe('offerDetails - Edition', () => {
 
     it('should allow edition of editable fields only', async () => {
       // Given
-      venues[0].isVirtual = true
+      editedOfferVenue.isVirtual = true
       const editedOffer = {
         id: 'ABC12',
         name: 'My edited offer',
         type: 'EventType.FULL_CONDITIONAL_FIELDS',
         description: 'Offer description',
-        venue: venues[0],
-        venueId: venues[0].id,
+        venue: editedOfferVenue,
+        venueId: editedOfferVenue.id,
         withdrawalDetails: 'Offer withdrawal details',
         extraData: {
           author: 'Mr Offer Author',
@@ -400,8 +399,8 @@ describe('offerDetails - Edition', () => {
           showType: 400,
           showSubType: 401,
           description: 'Offer description',
-          venue: venues[0],
-          venueId: venues[0].id,
+          venue: editedOfferVenue,
+          venueId: editedOfferVenue.id,
           withdrawalDetails: 'Offer withdrawal details',
           author: 'Mr Offer Author',
           performer: 'Mr Offer Performer',
@@ -428,7 +427,7 @@ describe('offerDetails - Edition', () => {
 
       it('should not allow any edition', async () => {
         // Given
-        venues[0].isVirtual = true
+        editedOfferVenue.isVirtual = true
         const editedOffer = {
           id: 'ABC12',
           name: 'My edited offer',
@@ -436,8 +435,8 @@ describe('offerDetails - Edition', () => {
           showType: 400,
           showSubType: 401,
           description: 'Offer description',
-          venue: venues[0],
-          venueId: venues[0].id,
+          venue: editedOfferVenue,
+          venueId: editedOfferVenue.id,
           withdrawalDetails: 'Offer withdrawal details',
           author: 'Mr Offer Author',
           performer: 'Mr Offer Performer',
@@ -561,8 +560,8 @@ describe('offerDetails - Edition', () => {
           showType: 400,
           showSubType: 401,
           description: 'Offer description',
-          venue: venues[0],
-          venueId: venues[0].id,
+          venue: editedOfferVenue,
+          venueId: editedOfferVenue.id,
           withdrawalDetails: 'Offer withdrawal details',
           author: 'Mr Offer Author',
           performer: 'Mr Offer Performer',
@@ -601,7 +600,8 @@ describe('offerDetails - Edition', () => {
         name: 'My edited offer',
         type: 'ThingType.LIVRE_EDITION',
         description: 'Offer description',
-        venueId: venues[0].id,
+        venueId: editedOfferVenue.id,
+        venue: editedOfferVenue,
         withdrawalDetails: 'Offer withdrawal details',
         bookingEmail: 'booking@example.net',
         extraData: null,
@@ -629,7 +629,8 @@ describe('offerDetails - Edition', () => {
         name: 'My edited offer',
         type: 'ThingType.LIVRE_EDITION',
         description: 'Offer description',
-        venueId: venues[0].id,
+        venueId: editedOfferVenue.id,
+        venue: editedOfferVenue,
         withdrawalDetails: 'Offer withdrawal details',
         bookingEmail: 'booking@example.net',
         extraData: null,
@@ -652,7 +653,8 @@ describe('offerDetails - Edition', () => {
         name: 'My edited offer',
         type: 'EventType.CINEMA',
         description: 'Offer description',
-        venueId: venues[0].id,
+        venueId: editedOfferVenue.id,
+        venue: editedOfferVenue,
         withdrawalDetails: 'Offer withdrawal details',
         bookingEmail: 'booking@example.net',
         extraData: {
@@ -695,7 +697,8 @@ describe('offerDetails - Edition', () => {
         name: 'My edited offer',
         type: 'ThingType.LIVRE_EDITION',
         description: 'Offer description',
-        venueId: venues[0].id,
+        venueId: editedOfferVenue.id,
+        venue: editedOfferVenue,
         withdrawalDetails: 'Offer withdrawal details',
         bookingEmail: 'booking@example.net',
         extraData: {
@@ -726,7 +729,8 @@ describe('offerDetails - Edition', () => {
         name: 'My edited offer',
         type: 'ThingType.LIVRE_EDITION',
         description: 'Offer description',
-        venueId: venues[0].id,
+        venueId: editedOfferVenue.id,
+        venue: editedOfferVenue,
         withdrawalDetails: 'Offer withdrawal details',
         bookingEmail: 'booking@example.net',
         extraData: {
@@ -757,7 +761,8 @@ describe('offerDetails - Edition', () => {
         name: 'My edited offer',
         type: 'ThingType.LIVRE_EDITION',
         description: 'Offer description',
-        venueId: venues[0].id,
+        venueId: editedOfferVenue.id,
+        venue: editedOfferVenue,
         withdrawalDetails: 'Offer withdrawal details',
         bookingEmail: 'booking@example.net',
         extraData: null,
@@ -785,7 +790,8 @@ describe('offerDetails - Edition', () => {
         name: 'My edited offer',
         type: 'ThingType.PRESSE_ABO',
         description: 'Offer description',
-        venueId: venues[0].id,
+        venueId: editedOfferVenue.id,
+        venue: editedOfferVenue,
         withdrawalDetails: 'Offer withdrawal details',
         bookingEmail: null,
       }
@@ -831,7 +837,8 @@ describe('offerDetails - Edition', () => {
         name: 'My edited offer',
         type: 'ThingType.LIVRE_EDITION',
         description: 'Offer description',
-        venueId: venues[0].id,
+        venueId: editedOfferVenue.id,
+        venue: editedOfferVenue,
         withdrawalDetails: 'Offer withdrawal details',
         bookingEmail: 'booking@example.net',
         extraData: null,
@@ -859,7 +866,8 @@ describe('offerDetails - Edition', () => {
         name: 'My edited offer',
         type: 'ThingType.PRESSE_ABO',
         description: 'Offer description',
-        venueId: venues[0].id,
+        venueId: editedOfferVenue.id,
+        venue: editedOfferVenue,
         withdrawalDetails: 'Offer withdrawal details',
         bookingEmail: null,
       }

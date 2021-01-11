@@ -149,11 +149,7 @@ describe('offerDetails - Creation', () => {
     ]
     pcapi.loadTypes.mockResolvedValue(types)
     pcapi.getValidatedOfferers.mockResolvedValue(offerers)
-    pcapi.getVenuesForOfferer.mockImplementation(offererId =>
-      Promise.resolve(
-        venues.filter(venue => (offererId ? venue.managingOffererId === offererId : true))
-      )
-    )
+    pcapi.getVenuesForOfferer.mockResolvedValue(venues)
     jest.spyOn(window, 'scrollTo').mockImplementation()
   })
 
@@ -186,7 +182,7 @@ describe('offerDetails - Creation', () => {
       await renderOffers(props, store)
 
       // Then
-      expect(pcapi.getVenuesForOfferer).toHaveBeenCalledWith(null)
+      expect(pcapi.getVenuesForOfferer).toHaveBeenCalledTimes(1)
     })
 
     it('should have a section "Type d\'offre"', async () => {
@@ -363,7 +359,24 @@ describe('offerDetails - Creation', () => {
           await setOfferValues({ offererId: offerers[0].id })
 
           // Then
-          expect(pcapi.getVenuesForOfferer).toHaveBeenCalledWith(offerers[0].id)
+          expect(screen.getByText(venues[0].name)).toBeInTheDocument()
+          expect(screen.queryByText(venues[1].name)).not.toBeInTheDocument()
+          expect(screen.queryByText(venues[2].name)).not.toBeInTheDocument()
+        })
+
+        it('should display all venues when unselecting offerer', async () => {
+          // Given
+          await renderOffers(props, store)
+          await setOfferValues({ type: 'EventType.MUSIQUE' })
+          await setOfferValues({ offererId: offerers[0].id })
+
+          // When
+          await setOfferValues({ offererId: '' })
+
+          // Then
+          expect(screen.getByText(venues[0].name)).toBeInTheDocument()
+          expect(screen.getByText(venues[1].name)).toBeInTheDocument()
+          expect(screen.getByText(venues[2].name)).toBeInTheDocument()
         })
 
         it('should select offerer of selected venue', async () => {
@@ -819,7 +832,7 @@ describe('offerDetails - Creation', () => {
       await setOfferValues(offerValues)
 
       // When
-      userEvent.click(screen.getByText('Enregistrer et passer aux stocks'))
+      await userEvent.click(screen.getByText('Enregistrer et passer aux stocks'))
 
       // Then
       expect(pcapi.createOffer).toHaveBeenCalledWith({

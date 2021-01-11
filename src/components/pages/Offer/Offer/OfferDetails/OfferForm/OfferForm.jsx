@@ -1,23 +1,18 @@
 import PropTypes from 'prop-types'
-import React, { Fragment, useCallback, useEffect, useState, useRef } from 'react'
+import React, { Fragment, useCallback, useEffect, useState } from 'react'
 
 import { CheckboxInput } from 'components/layout/inputs/CheckboxInput/CheckboxInput'
 import DurationInput from 'components/layout/inputs/DurationInput/DurationInput'
 import Select, { buildSelectOptions } from 'components/layout/inputs/Select'
 import TextareaInput from 'components/layout/inputs/TextareaInput'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
-import Spinner from 'components/layout/Spinner'
-import { isAllocineOffer, isSynchronizedOffer } from 'components/pages/Offer/domain/localProvider'
 import offerIsRefundable from 'components/pages/Offer/domain/offerIsRefundable'
-import * as pcapi from 'repository/pcapi/pcapi'
 
-import { computeOffersUrl } from '../../../utils/computeOffersUrl'
 import SynchronizedProviderInformation from '../SynchronizedProviderInformation'
 
 import {
   BASE_OFFER_FIELDS,
   DEFAULT_FORM_VALUES,
-  EDITED_OFFER_READ_ONLY_FIELDS,
   EXTRA_DATA_FIELDS,
   MANDATORY_FIELDS,
 } from './_constants'
@@ -54,93 +49,49 @@ const getOfferConditionalFields = ({
 }
 
 const OfferForm = ({
+  backUrl,
   initialValues,
+  isEdition,
   isUserAdmin,
-  offer,
-  offersSearchFilters,
+  offerers,
   onSubmit,
-  showErrorNotification,
+  providerName,
+  readOnlyFields,
+  setSelectedOfferer,
   setShowThumbnailForm,
+  showErrorNotification,
   submitErrors,
+  types,
+  venues,
 }) => {
   const [formValues, setFormValues] = useState({})
   const [offerType, setOfferType] = useState(null)
   const [receiveNotificationEmails, setReceiveNotificationEmails] = useState(false)
-  const [types, setTypes] = useState([])
   const [venue, setVenue] = useState(null)
-  const [venueOptions, setVenueOptions] = useState([])
+  const [venueOptions, setVenueOptions] = useState(buildSelectOptions('id', 'name', venues))
   const [offerFormFields, setOfferFormFields] = useState(Object.keys(DEFAULT_FORM_VALUES))
   const [formErrors, setFormErrors] = useState(submitErrors)
-  const [venues, setVenues] = useState([])
-  const [offererOptions, setOffererOptions] = useState([])
-  const isBusy = useRef(true)
-  const readOnlyFields = useRef([])
 
   const handleFormUpdate = useCallback(
     newFormValues => setFormValues(oldFormValues => ({ ...oldFormValues, ...newFormValues })),
     [setFormValues]
   )
+  const offererOptions = buildSelectOptions('id', 'name', offerers)
 
   useEffect(() => {
     setFormErrors(submitErrors)
   }, [submitErrors])
   useEffect(
-    function retrieveDataOnMount() {
-      pcapi.loadTypes().then(receivedTypes => setTypes(receivedTypes))
-      pcapi
-        .getValidatedOfferers()
-        .then(offerers => buildSelectOptions('id', 'name', offerers))
-        .then(options => {
-          setOffererOptions(options)
-          if (options.length === 1) {
-            handleFormUpdate({ offererId: options[0].id })
-          }
-        })
-    },
-    [handleFormUpdate]
-  )
-  useEffect(
     function initializeFormData() {
-      let values
-      if (offer) {
-        values = Object.keys(DEFAULT_FORM_VALUES).reduce((acc, field) => {
-          if (field in offer && offer[field] !== null) {
-            return { ...acc, [field]: offer[field] }
-          } else if (offer.extraData && field in offer.extraData) {
-            return { ...acc, [field]: offer.extraData[field] }
-          }
-          return { ...acc, [field]: DEFAULT_FORM_VALUES[field] }
-        }, {})
-
-        if (offer.venue) {
-          // FIXME (rlecellier): what happend if this offerer isn't
-          // in the 10 offerers received by getValidatedOfferers() ?!
-          values.offererId = offer.venue.managingOffererId
-        }
-
-        const isOfferSynchronized = isSynchronizedOffer(offer)
-        if (isOfferSynchronized) {
-          let synchonizedOfferReadOnlyFields = Object.keys(DEFAULT_FORM_VALUES)
-          if (isAllocineOffer(offer)) {
-            synchonizedOfferReadOnlyFields = synchonizedOfferReadOnlyFields.filter(
-              fieldName => fieldName !== 'isDuo'
-            )
-          }
-          readOnlyFields.current = synchonizedOfferReadOnlyFields
-        } else {
-          readOnlyFields.current = EDITED_OFFER_READ_ONLY_FIELDS
-        }
-        if (offer.bookingEmail !== null) {
-          setReceiveNotificationEmails(true)
-        }
-      } else {
-        values = { ...DEFAULT_FORM_VALUES, ...initialValues }
+      if (
+        initialValues.bookingEmail &&
+        initialValues.bookingEmail !== DEFAULT_FORM_VALUES.bookingEmail
+      ) {
+        setReceiveNotificationEmails(true)
       }
-
-      setFormValues(values)
-      isBusy.current = false
+      setFormValues({ ...DEFAULT_FORM_VALUES, ...initialValues })
     },
-    [initialValues, offer]
+    [initialValues]
   )
   useEffect(
     function buildFormFields() {
@@ -178,35 +129,14 @@ const OfferForm = ({
         formValues.venueId &&
         venueOptions.find(showedVenue => showedVenue.id === formValues.venueId)
       ) {
-        setVenue(venues.find(venue => venue.id === formValues.venueId))
+        const selectedVenue = venues.find(venue => venue.id === formValues.venueId)
+        setVenue(selectedVenue)
+        handleFormUpdate({ offererId: selectedVenue.managingOffererId })
       } else {
         setVenue(null)
       }
     },
-    [formValues.type, formValues.venueId, venues, venueOptions, types]
-  )
-  useEffect(
-    function selectManagingOffererOfSelectedVenue() {
-      if (venue) {
-        handleFormUpdate({ offererId: venue.managingOffererId })
-      }
-    },
-    [handleFormUpdate, venue]
-  )
-  useEffect(
-    function retrieveVenuesOfSelectedOfferer() {
-      let offererId = formValues.offererId
-      if (offererId === DEFAULT_FORM_VALUES.offererId) {
-        offererId = null
-      }
-
-      if (!isUserAdmin || offererId) {
-        pcapi.getVenuesForOfferer(offererId).then(receivedVenues => {
-          setVenues(receivedVenues)
-        })
-      }
-    },
-    [formValues.offererId, isUserAdmin]
+    [formValues.type, formValues.venueId, handleFormUpdate, venues, venueOptions, types]
   )
   useEffect(
     function filterVenueOptionsForSelectedType() {
@@ -230,6 +160,21 @@ const OfferForm = ({
     },
     [offerType, handleFormUpdate, venues]
   )
+  useEffect(
+    function showThumbnail() {
+      setShowThumbnailForm(formValues.type !== DEFAULT_FORM_VALUES.type)
+    },
+    [formValues.type, setShowThumbnailForm]
+  )
+
+  const selectOfferer = useCallback(
+    event => {
+      const selectedOffererId = event.target.value
+      handleFormUpdate({ offererId: selectedOffererId })
+      setSelectedOfferer(selectedOffererId)
+    },
+    [handleFormUpdate, setSelectedOfferer]
+  )
 
   const isValid = useCallback(() => {
     let newFormErrors = {}
@@ -250,9 +195,7 @@ const OfferForm = ({
 
   const submitForm = useCallback(() => {
     if (isValid()) {
-      const editableFields = offerFormFields.filter(
-        field => !readOnlyFields.current.includes(field)
-      )
+      const editableFields = offerFormFields.filter(field => !readOnlyFields.includes(field))
       const submittedValuesAccumulator = editableFields.some(editableField =>
         EXTRA_DATA_FIELDS.includes(editableField)
       )
@@ -286,6 +229,7 @@ const OfferForm = ({
     formValues,
     isValid,
     onSubmit,
+    readOnlyFields,
     receiveNotificationEmails,
     showErrorNotification,
   ])
@@ -315,18 +259,10 @@ const OfferForm = ({
     return fieldName in formErrors ? formErrors[fieldName] : null
   }
 
-  const submitFormButtonText = offer ? 'Enregistrer' : 'Enregistrer et passer aux stocks'
-  const displayFullForm = offer ? true : formValues.type !== DEFAULT_FORM_VALUES.type
-  setShowThumbnailForm(displayFullForm)
-
-  if (isBusy.current) {
-    return <Spinner />
-  }
-
   return (
     <form className="offer-form">
-      {isSynchronizedOffer(offer) ? (
-        <SynchronizedProviderInformation providerName={offer.lastProvider.name} />
+      {providerName !== null ? (
+        <SynchronizedProviderInformation providerName={providerName} />
       ) : (
         <p className="page-subtitle">
           {'Tous les champs sont obligatoires sauf mention contraire.'}
@@ -345,7 +281,7 @@ const OfferForm = ({
 
         <div className="form-row">
           <TypeTreeSelects
-            isReadOnly={readOnlyFields.current.includes('type')}
+            isReadOnly={readOnlyFields.includes('type')}
             typeValues={{
               type: formValues.type,
               musicType: formValues.musicType,
@@ -359,7 +295,7 @@ const OfferForm = ({
         </div>
       </section>
 
-      {displayFullForm && (
+      {formValues.type !== DEFAULT_FORM_VALUES.type && (
         <Fragment>
           <section className="form-section">
             <h3 className="section-title">
@@ -368,7 +304,7 @@ const OfferForm = ({
 
             <div className="form-row">
               <TextInput
-                disabled={readOnlyFields.current.includes('name')}
+                disabled={readOnlyFields.includes('name')}
                 error={getErrorMessage('name')}
                 label="Titre de l'offre"
                 name="name"
@@ -382,7 +318,7 @@ const OfferForm = ({
             <div className="form-row">
               <TextareaInput
                 countCharacters
-                disabled={readOnlyFields.current.includes('description')}
+                disabled={readOnlyFields.includes('description')}
                 error={getErrorMessage('description')}
                 label="Description"
                 maxLength={1000}
@@ -396,7 +332,7 @@ const OfferForm = ({
             {offerFormFields.includes('speaker') && (
               <div className="form-row">
                 <TextInput
-                  disabled={readOnlyFields.current.includes('speaker')}
+                  disabled={readOnlyFields.includes('speaker')}
                   error={getErrorMessage('speaker')}
                   label="Intervenant"
                   name="speaker"
@@ -411,7 +347,7 @@ const OfferForm = ({
             {offerFormFields.includes('author') && (
               <div className="form-row">
                 <TextInput
-                  disabled={readOnlyFields.current.includes('author')}
+                  disabled={readOnlyFields.includes('author')}
                   error={getErrorMessage('author')}
                   label="Auteur"
                   name="author"
@@ -426,7 +362,7 @@ const OfferForm = ({
             {offerFormFields.includes('visa') && (
               <div className="form-row">
                 <TextInput
-                  disabled={readOnlyFields.current.includes('visa')}
+                  disabled={readOnlyFields.includes('visa')}
                   error={getErrorMessage('visa')}
                   label="Visa d’exploitation"
                   name="visa"
@@ -441,7 +377,7 @@ const OfferForm = ({
             {offerFormFields.includes('isbn') && (
               <div className="form-row">
                 <TextInput
-                  disabled={readOnlyFields.current.includes('isbn')}
+                  disabled={readOnlyFields.includes('isbn')}
                   error={getErrorMessage('isbn')}
                   label="ISBN"
                   name="isbn"
@@ -456,7 +392,7 @@ const OfferForm = ({
             {offerFormFields.includes('stageDirector') && (
               <div className="form-row">
                 <TextInput
-                  disabled={readOnlyFields.current.includes('stageDirector')}
+                  disabled={readOnlyFields.includes('stageDirector')}
                   error={getErrorMessage('stageDirector')}
                   label="Metteur en scène"
                   name="stageDirector"
@@ -471,7 +407,7 @@ const OfferForm = ({
             {offerFormFields.includes('performer') && (
               <div className="form-row">
                 <TextInput
-                  disabled={readOnlyFields.current.includes('performer')}
+                  disabled={readOnlyFields.includes('performer')}
                   error={getErrorMessage('perforer')}
                   label="Interprète"
                   name="performer"
@@ -486,7 +422,7 @@ const OfferForm = ({
             {offerFormFields.includes('durationMinutes') && (
               <div className="form-row">
                 <DurationInput
-                  disabled={readOnlyFields.current.includes('durationMinutes')}
+                  disabled={readOnlyFields.includes('durationMinutes')}
                   error={getErrorMessage('durationMinutes')}
                   initialDurationInMinutes={formValues.durationMinutes}
                   label="Durée"
@@ -518,12 +454,12 @@ const OfferForm = ({
                   id: DEFAULT_FORM_VALUES.offererId,
                 }}
                 error={getErrorMessage('offererId')}
-                handleSelection={handleSingleFormUpdate}
-                isDisabled={readOnlyFields.current.includes('offererId')}
+                handleSelection={selectOfferer}
+                isDisabled={readOnlyFields.includes('offererId')}
                 label="Structure"
                 name="offererId"
                 options={offererOptions}
-                selectedValue={formValues.offererId}
+                selectedValue={formValues.offererId || DEFAULT_FORM_VALUES.offererId}
                 subLabel={!MANDATORY_FIELDS.includes('offererId') ? 'Optionnel' : ''}
               />
             </div>
@@ -536,11 +472,11 @@ const OfferForm = ({
                 }}
                 error={getErrorMessage('venueId')}
                 handleSelection={handleSingleFormUpdate}
-                isDisabled={readOnlyFields.current.includes('venueId')}
+                isDisabled={readOnlyFields.includes('venueId')}
                 label="Lieu"
                 name="venueId"
                 options={venueOptions}
-                selectedValue={formValues.venueId}
+                selectedValue={formValues.venueId || DEFAULT_FORM_VALUES.venueId}
                 subLabel={!MANDATORY_FIELDS.includes('venueId') ? 'Optionnel' : ''}
               />
             </div>
@@ -553,7 +489,7 @@ const OfferForm = ({
             <div className="form-row">
               <TextareaInput
                 countCharacters
-                disabled={readOnlyFields.current.includes('withdrawalDetails')}
+                disabled={readOnlyFields.includes('withdrawalDetails')}
                 error={getErrorMessage('withdrawalDetails')}
                 label="Informations de retrait"
                 maxLength={500}
@@ -568,14 +504,14 @@ const OfferForm = ({
             {offerFormFields.includes('url') && (
               <div className="form-row">
                 <TextInput
-                  disabled={readOnlyFields.current.includes('url')}
+                  disabled={readOnlyFields.includes('url')}
                   error={getErrorMessage('url')}
                   label="URL"
                   name="url"
                   onChange={handleSingleFormUpdate}
                   required
                   subLabel={
-                    readOnlyFields.current.includes('url')
+                    readOnlyFields.includes('url')
                       ? 'Vous pouvez inclure {token} {email} et {offerId} dans l’URL, qui seront remplacés respectivement par le code de la contremarque, l’e-mail de la personne ayant reservé et l’identifiant de l’offre'
                       : null
                   }
@@ -595,7 +531,7 @@ const OfferForm = ({
               <div className="form-row">
                 <CheckboxInput
                   checked={!!formValues.isNational}
-                  disabled={readOnlyFields.current.includes('isNational') ? 'disabled' : ''}
+                  disabled={readOnlyFields.includes('isNational') ? 'disabled' : ''}
                   label="Rayonnement national"
                   name="isNational"
                   onChange={handleSingleFormUpdate}
@@ -606,7 +542,7 @@ const OfferForm = ({
               <div className="form-row">
                 <CheckboxInput
                   checked={formValues.isDuo}
-                  disabled={readOnlyFields.current.includes('isDuo') ? 'disabled' : ''}
+                  disabled={readOnlyFields.includes('isDuo') ? 'disabled' : ''}
                   label={'Accepter les réservations "duo"'}
                   name="isDuo"
                   onChange={handleSingleFormUpdate}
@@ -619,7 +555,7 @@ const OfferForm = ({
             <div className="form-row">
               <CheckboxInput
                 checked={receiveNotificationEmails}
-                disabled={readOnlyFields.current.includes('bookingEmail')}
+                disabled={readOnlyFields.includes('bookingEmail')}
                 label="Être notifié par email des réservations"
                 name="receiveNotificationEmails"
                 onChange={toggleReceiveNotification}
@@ -629,7 +565,7 @@ const OfferForm = ({
             {offerFormFields.includes('bookingEmail') && (
               <div className="form-row">
                 <TextInput
-                  disabled={readOnlyFields.current.includes('bookingEmail')}
+                  disabled={readOnlyFields.includes('bookingEmail')}
                   error={getErrorMessage('bookingEmail')}
                   label="Email auquel envoyer les notifications :"
                   name="bookingEmail"
@@ -646,10 +582,10 @@ const OfferForm = ({
       )}
 
       <section className="actions-section">
-        {offer ? (
+        {isEdition ? (
           <a
             className="secondary-link"
-            href={computeOffersUrl(offersSearchFilters)}
+            href={backUrl}
           >
             {'Annuler'}
           </a>
@@ -659,7 +595,7 @@ const OfferForm = ({
           onClick={submitForm}
           type="button"
         >
-          {submitFormButtonText}
+          {isEdition ? 'Enregistrer' : 'Enregistrer et passer aux stocks'}
         </button>
       </section>
     </form>
@@ -667,27 +603,22 @@ const OfferForm = ({
 }
 
 OfferForm.defaultProps = {
+  backUrl: null,
   initialValues: {},
+  isEdition: false,
   isUserAdmin: false,
-  offer: null,
+  providerName: null,
+  readOnlyFields: [],
 }
 
 OfferForm.propTypes = {
+  backUrl: PropTypes.string,
   initialValues: PropTypes.shape(),
+  isEdition: PropTypes.bool,
   isUserAdmin: PropTypes.bool,
-  offer: PropTypes.shape(),
-  offersSearchFilters: PropTypes.shape({
-    name: PropTypes.string,
-    offererId: PropTypes.string,
-    venueId: PropTypes.string,
-    typeId: PropTypes.string,
-    status: PropTypes.string,
-    creationMode: PropTypes.string,
-    periodBeginningDate: PropTypes.string,
-    periodEndingDate: PropTypes.string,
-    page: PropTypes.number,
-  }).isRequired,
   onSubmit: PropTypes.func.isRequired,
+  providerName: PropTypes.string,
+  readOnlyFields: PropTypes.arrayOf(PropTypes.string),
   setShowThumbnailForm: PropTypes.func.isRequired,
   showErrorNotification: PropTypes.func.isRequired,
   submitErrors: PropTypes.shape().isRequired,

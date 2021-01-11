@@ -65,10 +65,24 @@ describe('thumbnail edition', () => {
     types = []
     offerers = []
     venues = []
+
+    const editedOfferVenue = {
+      id: 'AB',
+      managingOffererId: 'BA',
+      name: 'Le lieu',
+      offererName: 'La structure',
+      managingOfferer: {
+        id: 'BA',
+        name: 'La structure',
+      },
+    }
     editedOffer = {
       id: 'ABC12',
       name: 'My edited offer',
       thumbUrl: 'http://example.net/active-image.png',
+      type: 'ThingType.LIVRE_EDITION',
+      venue: editedOfferVenue,
+      venueId: editedOfferVenue.id,
     }
     pcapi.getValidatedOfferers.mockResolvedValue(offerers)
     pcapi.getVenuesForOfferer.mockResolvedValue(venues)
