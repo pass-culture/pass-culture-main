@@ -2,14 +2,14 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.repository import repository
-from pcapi.model_creators.generic_creators import create_stock
 from pcapi.model_creators.generic_creators import create_booking
-from pcapi.model_creators.generic_creators import create_user
-from pcapi.model_creators.generic_creators import create_payment
 from pcapi.model_creators.generic_creators import create_offerer
-
+from pcapi.model_creators.generic_creators import create_payment
+from pcapi.model_creators.generic_creators import create_stock
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.repository import repository
 from pcapi.scripts.stock.soft_delete_stock import soft_delete_stock
+
 
 class SoftDeleteStockTest:
     @patch("pcapi.scripts.stock.soft_delete_stock.repository")
@@ -46,7 +46,6 @@ class SoftDeleteStockTest:
         # Then
         assert mock_repository.save.call_count == 0
 
-
     @patch("pcapi.scripts.stock.soft_delete_stock.repository")
     @pytest.mark.usefixtures("db_session")
     def should_return_ok_if_stock_has_no_bookings(self, mock_repository, app):
@@ -64,7 +63,6 @@ class SoftDeleteStockTest:
 
         # Then
         assert mock_repository.save.call_count == 0
-
 
     @patch("pcapi.scripts.stock.soft_delete_stock.repository")
     @patch("pcapi.core.bookings.api.repository")
@@ -84,7 +82,6 @@ class SoftDeleteStockTest:
         assert mock_repository.save.call_count == 1
         assert mock_repository_1.save.call_count == 1
         assert booking.isCancelled == True
-
 
     @patch("pcapi.scripts.stock.soft_delete_stock.repository")
     @patch("pcapi.core.bookings.api.repository")

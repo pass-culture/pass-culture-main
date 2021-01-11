@@ -1,7 +1,8 @@
 import pcapi.core.bookings.api as bookings_api
-from pcapi.repository import repository
 from pcapi.models import Booking
 from pcapi.models import Stock
+from pcapi.repository import repository
+
 
 def soft_delete_stock(stock_id):
     stock = Stock.query.filter(Stock.id == stock_id).first()
@@ -18,13 +19,10 @@ def soft_delete_stock(stock_id):
         repository.save(stock)
         print("Done")
 
+
 def _get_bookings_for_stock(stock_id):
-    return (
-        Booking.query
-            .filter(Booking.isCancelled.is_(False))
-            .filter(Booking.stockId == stock_id)
-            .all()
-    )
+    return Booking.query.filter(Booking.isCancelled.is_(False)).filter(Booking.stockId == stock_id).all()
+
 
 def _check_bookings(bookings):
     if not bookings:
@@ -39,4 +37,3 @@ def _check_bookings(bookings):
             print("KO: f{booking} has payments")
             stock_can_be_deleted = False
     return stock_can_be_deleted
-
