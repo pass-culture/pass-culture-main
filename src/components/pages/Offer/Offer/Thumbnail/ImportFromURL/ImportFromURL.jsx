@@ -3,7 +3,7 @@ import React, { useCallback, useState } from 'react'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import { ReactComponent as ThumbnailSampleIcon } from 'components/pages/Offer/Offer/Thumbnail/assets/thumbnail-sample.svg'
 
-const ThumbnailUrl = () => {
+const ImportFromURL = () => {
   const [isButtonDisabled, setIsButtonDisabled] = useState(true)
   const [url, setUrl] = useState('')
 
@@ -39,4 +39,4 @@ const ThumbnailUrl = () => {
   )
 }
 
-export default ThumbnailUrl
+export default ImportFromURL

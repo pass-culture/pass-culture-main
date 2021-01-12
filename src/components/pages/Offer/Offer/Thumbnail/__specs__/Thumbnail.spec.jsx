@@ -9,27 +9,26 @@ import OfferLayoutContainer from 'components/pages/Offer/Offer/OfferLayoutContai
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
-global.createImageBitmap = () => Promise.resolve({})
+import { MIN_IMAGE_HEIGHT, MIN_IMAGE_WIDTH } from '../_constants'
 
-const ONE_MO = 1024 * 1024
-const ONE_OCTET = 1
+global.createImageBitmap = () => Promise.resolve({})
 
 const createImageFile = ({
   name = 'example.png',
   type = 'image/png',
-  sizeInMo = 1,
-  width = 400 + ONE_OCTET,
-  height = 400 + ONE_OCTET,
+  sizeInMB = 1,
+  width = MIN_IMAGE_WIDTH,
+  height = MIN_IMAGE_HEIGHT,
 } = {}) => {
-  const file = new File([''], name, { type })
-  Object.defineProperty(file, 'size', { value: ONE_MO * sizeInMo + ONE_OCTET })
+  const file = createFile({ name, type, sizeInMB })
   jest.spyOn(global, 'createImageBitmap').mockResolvedValue({ width, height })
   return file
 }
 
-const createFile = ({ name = 'example.json', type = 'application/json', sizeInMo = 1 } = {}) => {
+const createFile = ({ name = 'example.json', type = 'application/json', sizeInMB = 1 } = {}) => {
+  const oneMB = 1024 * 1024
   const file = new File([''], name, { type })
-  Object.defineProperty(file, 'size', { value: 1024 * 1024 * sizeInMo + 1 })
+  Object.defineProperty(file, 'size', { value: oneMB * sizeInMB })
   return file
 }
 
@@ -134,6 +133,34 @@ describe('thumbnail edition', () => {
         ).toBeInTheDocument()
       })
 
+      it('should display no error if file respects all rules', async () => {
+        // Given
+        await renderThumbnail({}, store)
+        const file = createImageFile()
+
+        // When
+        fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
+          target: { files: [file] },
+        })
+
+        // Then
+        expect(
+          screen.queryByText('Formats supportés : JPG, PNG', {
+            selector: 'strong',
+          })
+        ).not.toBeInTheDocument()
+        expect(
+          screen.queryByText('Le poids du fichier ne doit pas dépasser 10 Mo', {
+            selector: 'strong',
+          })
+        ).not.toBeInTheDocument()
+        expect(
+          screen.queryByText('La taille de l’image doit être supérieure à 400 x 400px', {
+            selector: 'strong',
+          })
+        ).not.toBeInTheDocument()
+      })
+
       it('should not import a file other than png or jpg', async () => {
         // Given
         await renderThumbnail({}, store)
@@ -152,10 +179,10 @@ describe('thumbnail edition', () => {
         ).toBeInTheDocument()
       })
 
-      it('should only check file format if not an image', async () => {
+      it('should only display the first encountered validation error', async () => {
         // Given
         await renderThumbnail({}, store)
-        const file = createFile({ sizeInMo: 50 })
+        const file = createFile({ sizeInMB: 50 })
 
         // When
         fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
@@ -181,7 +208,7 @@ describe('thumbnail edition', () => {
       it('should not import an image which exceeds maximum size', async () => {
         // Given
         await renderThumbnail({}, store)
-        const bigFile = createImageFile({ sizeInMo: 10 })
+        const bigFile = createImageFile({ sizeInMB: 10 })
 
         // When
         fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {

@@ -6,15 +6,15 @@ import { ReactComponent as ThumbnailSampleIcon } from 'components/pages/Offer/Of
 import Icon from '../../../../../layout/Icon'
 import { constraints } from '../_error_validator'
 
-const ThumbnailFile = () => {
-  const [error, setError] = useState(null)
+const ImportFromComputer = () => {
+  const [error, setError] = useState('')
   const file = useRef(null)
 
   const getError = async file => {
     for (const constraint of constraints) {
       if (await constraint.validator(file)) return Promise.resolve(constraint.id)
     }
-    return Promise.resolve(null)
+    return Promise.resolve('')
   }
 
   const isThereAnError = useCallback(async () => {
@@ -26,23 +26,23 @@ const ThumbnailFile = () => {
 
   const fileConstraint = () =>
     constraints.map(constraint => {
-      let sentence = constraint.sentence
+      let description = constraint.description
 
-      if (error && error === constraint.id) {
-        sentence = (
+      if (error === constraint.id) {
+        description = (
           <strong
             aria-live="assertive"
             aria-relevant="all"
           >
             <Icon svg="ico-notification-error-red" />
-            {sentence}
+            {description}
           </strong>
         )
       }
 
       return (
         <li key={constraint.id}>
-          {sentence}
+          {description}
         </li>
       )
     })
@@ -71,4 +71,4 @@ const ThumbnailFile = () => {
   )
 }
 
-export default ThumbnailFile
+export default ImportFromComputer

@@ -4,9 +4,9 @@ import React, { useCallback, useRef, useState } from 'react'
 import { DialogBox } from 'components/layout/DialogBox/DialogBox'
 import { IMPORT_TAB_ID } from 'components/pages/Offer/Offer/Thumbnail/_constants'
 import { ReactComponent as CloseModalIcon } from 'components/pages/Offer/Offer/Thumbnail/assets/close-modal.svg'
-import ThumbnailBreadcrumb from 'components/pages/Offer/Offer/Thumbnail/ThumbnailBreadcrumb/ThumbnailBreadcrumb'
-import ThumbnailFile from 'components/pages/Offer/Offer/Thumbnail/ThumbnailFile/ThumbnailFile'
-import ThumbnailUrl from 'components/pages/Offer/Offer/Thumbnail/ThumbnailUrl/ThumbnailUrl'
+import ImportFromComputer from 'components/pages/Offer/Offer/Thumbnail/ImportFromComputer/ImportFromComputer'
+import ImportFromURL from 'components/pages/Offer/Offer/Thumbnail/ImportFromURL/ImportFromURL'
+import ImportTab from 'components/pages/Offer/Offer/Thumbnail/ImportTab/ImportTab'
 
 const ThumbnailDialog = ({ setIsModalOpened }) => {
   const fileInputRef = useRef()
@@ -50,12 +50,12 @@ const ThumbnailDialog = ({ setIsModalOpened }) => {
           {'Ajouter une image'}
         </h1>
       </header>
-      <ThumbnailBreadcrumb
+      <ImportTab
         activeStep={activeStep}
         changeTab={changeTab}
         ref={fileInputRef}
       />
-      {tabId === IMPORT_TAB_ID ? <ThumbnailFile /> : <ThumbnailUrl />}
+      {tabId === IMPORT_TAB_ID ? <ImportFromComputer /> : <ImportFromURL />}
       <hr className="tnd-hr" />
     </DialogBox>
   )
