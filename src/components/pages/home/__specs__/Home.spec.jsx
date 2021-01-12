@@ -10,7 +10,7 @@ import { fetchAlgolia } from '../../../../vendor/algolia/algolia'
 import { fetchHomepage } from '../../../../vendor/contentful/contentful'
 import Home from '../Home'
 import OffersWithCover from '../MainView/domain/ValueObjects/OffersWithCover'
-import User from '../Profile/ValueObjects/User'
+import User from '../../profile/ValueObjects/User'
 
 jest.mock('../../../../vendor/contentful/contentful', () => ({
   fetchHomepage: jest.fn(),

@@ -12,9 +12,9 @@ import OffersWithCover from './domain/ValueObjects/OffersWithCover'
 import ExclusivityModule from './ExclusivityModule/ExclusivityModule'
 import Module from './Module/Module'
 import OfferDetailsContainer from './OfferDetails/OfferDetailsContainer'
-import User from '../Profile/ValueObjects/User'
 import { setCustomUserId } from '../../../../notifications/setUpBatchSDK'
 import BusinessPane from './domain/ValueObjects/BusinessPane'
+import User from '../../profile/ValueObjects/User'
 
 const MainView = props => {
   const {

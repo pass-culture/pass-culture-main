@@ -6,7 +6,11 @@ import Icon from '../../layout/Icon/Icon'
 
 const BetaPage = ({ trackSignup, isNewBookingLimitsActived }) => (
   <div className="beta-page">
-    <Icon alt="" className="bp-logo" svg="circle" />
+    <Icon
+      alt=""
+      className="bp-logo"
+      svg="circle"
+    />
     <main className="bp-main">
       <div className="bp-title">
         {'Bienvenue dans\n'}

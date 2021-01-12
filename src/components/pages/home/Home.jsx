@@ -3,11 +3,11 @@ import React, { useEffect, useRef } from 'react'
 
 import MainView from './MainView/MainView'
 import useDisplayedHomemodules from './MainView/useDisplayedHomemodules'
-import User from './Profile/ValueObjects/User'
 import { getCurrentPosition } from '../../../utils/geolocation'
 import LoaderContainer from '../../layout/Loader/LoaderContainer'
 import { campaignTracker } from '../../../tracking/mediaCampaignsTracking'
 import AnyError from '../../layout/ErrorBoundaries/ErrorsPage/AnyError/AnyError'
+import User from '../profile/ValueObjects/User'
 
 const Home = ({
   geolocation,
