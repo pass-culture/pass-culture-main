@@ -11,10 +11,11 @@ describe('remainingCredit', () => {
   beforeEach(() => {
     props = {
       user: new User({
+        deposit_version: 1,
         expenses: [
-          { domain: 'all', current: 10, max: 500 },
-          { domain: 'digital', current: 20, max: 201 },
-          { domain: 'physical', current: 30, max: 202 },
+          { domain: 'all', current: 10, limit: 500 },
+          { domain: 'digital', current: 20, limit: 201 },
+          { domain: 'physical', current: 30, limit: 202 },
         ],
         wallet_balance: 351,
       }),

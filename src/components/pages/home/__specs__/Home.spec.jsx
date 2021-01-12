@@ -56,11 +56,12 @@ describe('src | components | home', () => {
       trackAllTilesSeen: jest.fn(),
       updateCurrentUser: jest.fn(),
       user: new User({
+        deposit_version: 1,
         email: 'john.doe@example.fr',
         expenses: [
-          { domain: 'all', current: 287, max: 500 },
-          { domain: 'digital', current: 11, max: 200 },
-          { domain: 'physical', current: 23, max: 200 },
+          { domain: 'all', current: 287, limit: 500 },
+          { domain: 'digital', current: 11, limit: 200 },
+          { domain: 'physical', current: 23, limit: 200 },
         ],
         firstName: 'PC Test Jeune',
         publicName: 'Iron Man',
