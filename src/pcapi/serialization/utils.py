@@ -34,6 +34,7 @@ def before_handler(
         "value_error.extra": "Vous ne pouvez pas changer cette information",
         "value_error.missing": "Ce champ est obligatoire",
         "value_error.url.scheme": 'L\'URL doit commencer par "http://" ou "https://"',
+        "value_error.url.host": 'L\'URL doit terminer par une extension (ex. ".fr")',
     }
 
     if pydantic_error and pydantic_error.errors():
