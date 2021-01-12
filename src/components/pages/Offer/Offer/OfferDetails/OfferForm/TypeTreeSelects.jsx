@@ -133,7 +133,7 @@ const TypeTreeSelects = props => {
       <div className="form-row">
         <Select
           defaultOption={{
-            displayName: 'Choisir une catégorie',
+            displayName: 'Choisir un type',
             id: DEFAULT_FORM_VALUES.type,
           }}
           handleSelection={handleChange}

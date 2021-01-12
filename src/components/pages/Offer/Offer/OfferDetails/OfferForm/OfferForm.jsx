@@ -313,7 +313,7 @@ const OfferForm = ({
     return fieldName in formErrors ? formErrors[fieldName] : null
   }
 
-  const submitFormButtonText = offer ? 'Enregistrer' : 'Enregistrer et passer au stocks'
+  const submitFormButtonText = offer ? 'Enregistrer' : 'Enregistrer et passer aux stocks'
   const displayFullForm = offer ? true : formValues.type !== DEFAULT_FORM_VALUES.type
   setShowThumbnailForm(displayFullForm)
 
@@ -327,7 +327,7 @@ const OfferForm = ({
         <SynchronizedProviderInformation providerName={offer.lastProvider.name} />
       ) : (
         <p className="page-subtitle">
-          {'Tous les champs sont obligatoires sauf mention contraire'}
+          {'Tous les champs sont obligatoires sauf mention contraire.'}
         </p>
       )}
 
@@ -337,7 +337,7 @@ const OfferForm = ({
         </h3>
         <p className="section-description">
           {
-            'Le type de l’offre permet de la caractériser au mieux et de la valoriser au mieux dans l’application.'
+            'Le type de l’offre permet de la caractériser et de la valoriser au mieux dans l’application.'
           }
         </p>
 
@@ -361,7 +361,7 @@ const OfferForm = ({
         <Fragment>
           <section className="form-section">
             <h3 className="section-title">
-              {'Infos artistiques'}
+              {'Informations artistiques'}
             </h3>
 
             <div className="form-row">
@@ -618,7 +618,7 @@ const OfferForm = ({
               <CheckboxInput
                 checked={receiveNotificationEmails}
                 disabled={readOnlyFields.current.includes('bookingEmail')}
-                label="Recevoir les emails de réservation"
+                label="Être notifié par email des réservations"
                 name="receiveNotificationEmails"
                 onChange={toggleReceiveNotification}
               />
@@ -629,7 +629,7 @@ const OfferForm = ({
                 <TextInput
                   disabled={readOnlyFields.current.includes('bookingEmail')}
                   error={getErrorMessage('bookingEmail')}
-                  label="Être notifié par email des réservations à :"
+                  label="Email auquel envoyer les notifications :"
                   name="bookingEmail"
                   onChange={handleSingleFormUpdate}
                   placeholder="adresse@email.com"

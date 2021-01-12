@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 
 export const fieldLabels = {
   author: { label: 'Auteur', exact: false },
-  bookingEmail: { label: 'Être notifié par email des réservations à :', exact: false },
+  bookingEmail: { label: 'Email auquel envoyer les notifications :', exact: false },
   description: { label: 'Description', exact: false },
   durationMinutes: { label: 'Durée', exact: false },
   isbn: { label: 'ISBN', exact: false },
@@ -14,7 +14,7 @@ export const fieldLabels = {
   musicType: { label: 'Genre musical', exact: false },
   offererId: { label: 'Structure', exact: true },
   performer: { label: 'Interprète', exact: false },
-  receiveNotificationEmails: { label: 'Recevoir les emails de réservation', exact: true },
+  receiveNotificationEmails: { label: 'Être notifié par email des réservations', exact: true },
   showSubType: { label: 'Sous type', exact: false },
   showType: { label: 'Type de spectacle', exact: false },
   stageDirector: { label: 'Metteur en scène', exact: false },

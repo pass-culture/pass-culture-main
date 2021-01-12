@@ -228,7 +228,7 @@ describe('offerDetails - Creation', () => {
 
         // Then
         expect(
-          screen.getByText('Infos artistiques', { selector: '.section-title' })
+          screen.getByText('Informations artistiques', { selector: '.section-title' })
         ).toBeInTheDocument()
         expect(
           screen.getByText('Informations pratiques', { selector: '.section-title' })
@@ -245,9 +245,7 @@ describe('offerDetails - Creation', () => {
         await setOfferValues({ receiveNotificationEmails: true })
 
         // Then
-        const bookingEmailInput = screen.getByLabelText(
-          'Être notifié par email des réservations à :'
-        )
+        const bookingEmailInput = screen.getByLabelText('Email auquel envoyer les notifications :')
         expect(bookingEmailInput).toBeInTheDocument()
         expect(bookingEmailInput).toHaveAttribute('name', 'bookingEmail')
       })
@@ -821,7 +819,7 @@ describe('offerDetails - Creation', () => {
       await setOfferValues(offerValues)
 
       // When
-      userEvent.click(screen.getByText('Enregistrer et passer au stocks'))
+      userEvent.click(screen.getByText('Enregistrer et passer aux stocks'))
 
       // Then
       expect(pcapi.createOffer).toHaveBeenCalledWith({
@@ -855,7 +853,7 @@ describe('offerDetails - Creation', () => {
     await setOfferValues(offerValues)
 
     // When
-    userEvent.click(screen.getByText('Enregistrer et passer au stocks'))
+    userEvent.click(screen.getByText('Enregistrer et passer aux stocks'))
 
     // Then
     const successNotification = await screen.findByText('Votre offre a bien été créée')
@@ -868,7 +866,7 @@ describe('offerDetails - Creation', () => {
     await setOfferValues({ type: 'EventType.MUSIQUE' })
 
     // When
-    userEvent.click(screen.getByText('Enregistrer et passer au stocks'))
+    userEvent.click(screen.getByText('Enregistrer et passer aux stocks'))
 
     // Then
     expect(pcapi.createOffer).not.toHaveBeenCalled()
@@ -910,7 +908,7 @@ describe('offerDetails - Creation', () => {
     await setOfferValues({ type: 'EventType.MUSIQUE' })
 
     // When
-    userEvent.click(screen.getByText('Enregistrer et passer au stocks'))
+    userEvent.click(screen.getByText('Enregistrer et passer aux stocks'))
 
     // Then
     const errorNotification = await screen.findByText(
@@ -926,7 +924,7 @@ describe('offerDetails - Creation', () => {
     await setOfferValues({ receiveNotificationEmails: true })
 
     // When
-    userEvent.click(screen.getByText('Enregistrer et passer au stocks'))
+    userEvent.click(screen.getByText('Enregistrer et passer aux stocks'))
 
     // Then
     const bookingEmailInput = await findInputErrorForField('bookingEmail')
@@ -957,7 +955,7 @@ describe('offerDetails - Creation', () => {
     await setOfferValues(offerValues)
 
     // When
-    userEvent.click(screen.getByText('Enregistrer et passer au stocks'))
+    userEvent.click(screen.getByText('Enregistrer et passer aux stocks'))
 
     // Then
     const nameError = await screen.findByText("Ce nom n'est pas valide")
