@@ -6,9 +6,9 @@
 }
 
 .cg-container {
-  margin-right: rem(3px);
-  overflow-wrap: break-word;
-  width: 34%;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
 }
 
 .cg-remaining {
@@ -140,4 +140,5 @@
 .cg-pre {
   font-family: $family-sans-serif;
   white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }

@@ -1,6 +1,7 @@
 export default class User {
   constructor(user = {}) {
     this.departementCode = user.departementCode
+    this.deposit_version = user.deposit_version
     this.email = user.email
     this.expenses = user.expenses
     this.firstName = user.firstName
