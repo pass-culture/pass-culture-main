@@ -8,8 +8,6 @@ from typing import Iterable
 from typing import List
 from typing import Optional
 
-from pcapi.core.users.models import User
-from pcapi.models import Booking
 from pcapi.models import Criterion
 from pcapi.models import EventType
 from pcapi.models import Offer
@@ -19,55 +17,6 @@ from pcapi.models import Provider
 from pcapi.models import Stock
 from pcapi.models import ThingType
 from pcapi.models import VenueSQLEntity
-from pcapi.utils.token import random_token
-
-
-def create_booking_for_event(  # pylint: disable=redefined-builtin
-    amount: int = 50,
-    date_created: datetime = datetime.utcnow(),
-    is_cancelled: bool = False,
-    quantity: int = 1,
-    type: EventType = EventType.CINEMA,
-    user: User = None,
-) -> Booking:
-    product = Product(from_dict={"type": str(type)})
-    offer = Offer()
-    stock = Stock()
-    booking = Booking(from_dict={"amount": amount})
-    offer.product = product
-    stock.offer = offer
-    booking.stock = stock
-    booking.quantity = quantity
-    booking.user = user
-    booking.isCancelled = is_cancelled
-    booking.token = random_token()
-    booking.dateCreated = date_created
-
-    return booking
-
-
-def create_booking_for_thing(
-    amount: int = 50,
-    date_created: datetime = datetime.utcnow(),
-    is_cancelled: bool = False,
-    quantity: int = 1,
-    product_type: ThingType = ThingType.JEUX,
-    url: str = None,
-    user: User = None,
-) -> Booking:
-    product = Product(from_dict={"url": url, "type": str(product_type)})
-    offer = Offer(from_dict={"url": url, "type": str(product_type)})
-    stock = Stock()
-    booking = Booking(from_dict={"amount": amount})
-    offer.product = product
-    stock.offer = offer
-    booking.stock = stock
-    booking.quantity = quantity
-    booking.user = user
-    booking.isCancelled = is_cancelled
-    booking.dateCreated = date_created
-
-    return booking
 
 
 def create_offer_with_event_product(
