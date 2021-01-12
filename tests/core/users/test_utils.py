@@ -3,7 +3,7 @@ from datetime import datetime
 import jwt
 
 from pcapi import settings
-from pcapi.core.users.models import ALGORITHM_HS_256
+from pcapi.core.users.utils import ALGORITHM_HS_256
 from pcapi.core.users.utils import create_custom_jwt_token
 from pcapi.core.users.utils import encode_jwt_payload
 

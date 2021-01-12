@@ -5,7 +5,7 @@ from typing import Optional
 from pydantic import BaseModel
 from pydantic.class_validators import validator
 
-from pcapi.core.users.expenses import ExpenseDomain
+from pcapi.core.users.models import ExpenseDomain
 from pcapi.models.api_errors import ApiErrors
 from pcapi.utils.date import format_into_utc_date
 
@@ -45,6 +45,9 @@ class Expense(BaseModel):
     domain: ExpenseDomain
     current: float
     max: float
+
+    class Config:
+        orm_mode = True
 
 
 class BeneficiaryAccountResponse(BaseModel):

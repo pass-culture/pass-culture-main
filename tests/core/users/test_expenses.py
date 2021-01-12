@@ -1,7 +1,11 @@
+from decimal import Decimal
+
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.users.factories import UserFactory
+from pcapi.core.users.models import Expense
+from pcapi.core.users.models import ExpenseDomain
 from pcapi.models import EventType
 from pcapi.models import ThingType
 
@@ -22,9 +26,9 @@ class ExpensesTest:
 
             # then
             assert expenses == [
-                {"domain": "all", "current": 50.0, "max": 500},
-                {"domain": "digital", "current": 50.0, "max": 200},
-                {"domain": "physical", "current": 0.0, "max": 200},
+                Expense(domain=ExpenseDomain.ALL, current=Decimal(50), max=Decimal(500)),
+                Expense(domain=ExpenseDomain.DIGITAL, current=Decimal(50), max=Decimal(200)),
+                Expense(domain=ExpenseDomain.PHYSICAL, current=Decimal(0), max=Decimal(200)),
             ]
 
     class ThingsTest:
@@ -43,9 +47,9 @@ class ExpensesTest:
 
                 # Then
                 assert expenses == [
-                    {"domain": "all", "current": 50.0, "max": 500},
-                    {"domain": "digital", "current": 50.0, "max": 200},
-                    {"domain": "physical", "current": 0.0, "max": 200},
+                    Expense(domain=ExpenseDomain.ALL, current=Decimal(50.0), max=Decimal(500)),
+                    Expense(domain=ExpenseDomain.DIGITAL, current=Decimal(50.0), max=Decimal(200)),
+                    Expense(domain=ExpenseDomain.PHYSICAL, current=Decimal(0.0), max=Decimal(200)),
                 ]
 
             def test_offline_offer_increase_physical_expense(self):
@@ -62,9 +66,9 @@ class ExpensesTest:
 
                 # Then
                 assert expenses == [
-                    {"domain": "all", "current": 50.0, "max": 500},
-                    {"domain": "digital", "current": 0.0, "max": 200},
-                    {"domain": "physical", "current": 50.0, "max": 200},
+                    Expense(domain=ExpenseDomain.ALL, current=Decimal(50.0), max=Decimal(500)),
+                    Expense(domain=ExpenseDomain.DIGITAL, current=Decimal(0.0), max=Decimal(200)),
+                    Expense(domain=ExpenseDomain.PHYSICAL, current=Decimal(50.0), max=Decimal(200)),
                 ]
 
         class JeuxVideoTest:
@@ -82,9 +86,9 @@ class ExpensesTest:
 
                 # Then
                 assert expenses == [
-                    {"domain": "all", "current": 50.0, "max": 500},
-                    {"domain": "digital", "current": 50.0, "max": 200},
-                    {"domain": "physical", "current": 0.0, "max": 200},
+                    Expense(domain=ExpenseDomain.ALL, current=Decimal(50.0), max=Decimal(500)),
+                    Expense(domain=ExpenseDomain.DIGITAL, current=Decimal(50.0), max=Decimal(200)),
+                    Expense(domain=ExpenseDomain.PHYSICAL, current=Decimal(0.0), max=Decimal(200)),
                 ]
 
         class MusiqueTest:
@@ -102,9 +106,9 @@ class ExpensesTest:
 
                 # Then
                 assert expenses == [
-                    {"domain": "all", "current": 50.0, "max": 500},
-                    {"domain": "digital", "current": 50.0, "max": 200},
-                    {"domain": "physical", "current": 0.0, "max": 200},
+                    Expense(domain=ExpenseDomain.ALL, current=Decimal(50.0), max=Decimal(500)),
+                    Expense(domain=ExpenseDomain.DIGITAL, current=Decimal(50.0), max=Decimal(200)),
+                    Expense(domain=ExpenseDomain.PHYSICAL, current=Decimal(0.0), max=Decimal(200)),
                 ]
 
             def test_offline_offer_increase_physical_expense(self):
@@ -121,9 +125,9 @@ class ExpensesTest:
 
                 # Then
                 assert expenses == [
-                    {"domain": "all", "current": 50.0, "max": 500},
-                    {"domain": "digital", "current": 0.0, "max": 200},
-                    {"domain": "physical", "current": 50.0, "max": 200},
+                    Expense(domain=ExpenseDomain.ALL, current=Decimal(50.0), max=Decimal(500)),
+                    Expense(domain=ExpenseDomain.DIGITAL, current=Decimal(0.0), max=Decimal(200)),
+                    Expense(domain=ExpenseDomain.PHYSICAL, current=Decimal(50.0), max=Decimal(200)),
                 ]
 
         class OeuvreArtTest:
@@ -141,9 +145,9 @@ class ExpensesTest:
 
                 # Then
                 assert expenses == [
-                    {"domain": "all", "current": 50.0, "max": 500},
-                    {"domain": "digital", "current": 0.0, "max": 200},
-                    {"domain": "physical", "current": 50.0, "max": 200},
+                    Expense(domain=ExpenseDomain.ALL, current=Decimal(50.0), max=Decimal(500)),
+                    Expense(domain=ExpenseDomain.DIGITAL, current=Decimal(0.0), max=Decimal(200)),
+                    Expense(domain=ExpenseDomain.PHYSICAL, current=Decimal(50.0), max=Decimal(200)),
                 ]
 
         class PresseAboTest:
@@ -161,9 +165,9 @@ class ExpensesTest:
 
                 # Then
                 assert expenses == [
-                    {"domain": "all", "current": 50.0, "max": 500},
-                    {"domain": "digital", "current": 50.0, "max": 200},
-                    {"domain": "physical", "current": 0.0, "max": 200},
+                    Expense(domain=ExpenseDomain.ALL, current=Decimal(50.0), max=Decimal(500)),
+                    Expense(domain=ExpenseDomain.DIGITAL, current=Decimal(50.0), max=Decimal(200)),
+                    Expense(domain=ExpenseDomain.PHYSICAL, current=Decimal(0.0), max=Decimal(200)),
                 ]
 
         class LivreEditionTest:
@@ -181,9 +185,9 @@ class ExpensesTest:
 
                 # Then
                 assert expenses == [
-                    {"domain": "all", "current": 50.0, "max": 500},
-                    {"domain": "digital", "current": 50.0, "max": 200},
-                    {"domain": "physical", "current": 0.0, "max": 200},
+                    Expense(domain=ExpenseDomain.ALL, current=Decimal(50.0), max=Decimal(500)),
+                    Expense(domain=ExpenseDomain.DIGITAL, current=Decimal(50.0), max=Decimal(200)),
+                    Expense(domain=ExpenseDomain.PHYSICAL, current=Decimal(0.0), max=Decimal(200)),
                 ]
 
             def test_offline_offer_increase_physical_expense(self):
@@ -200,9 +204,9 @@ class ExpensesTest:
 
                 # Then
                 assert expenses == [
-                    {"domain": "all", "current": 50.0, "max": 500},
-                    {"domain": "digital", "current": 0.0, "max": 200},
-                    {"domain": "physical", "current": 50.0, "max": 200},
+                    Expense(domain=ExpenseDomain.ALL, current=Decimal(50.0), max=Decimal(500)),
+                    Expense(domain=ExpenseDomain.DIGITAL, current=Decimal(0.0), max=Decimal(200)),
+                    Expense(domain=ExpenseDomain.PHYSICAL, current=Decimal(50.0), max=Decimal(200)),
                 ]
 
         class JeuxTest:
@@ -220,9 +224,9 @@ class ExpensesTest:
 
                 # Then
                 assert expenses == [
-                    {"domain": "all", "current": 50.0, "max": 500},
-                    {"domain": "digital", "current": 0.0, "max": 200},
-                    {"domain": "physical", "current": 50.0, "max": 200},
+                    Expense(domain=ExpenseDomain.ALL, current=Decimal(50.0), max=Decimal(500)),
+                    Expense(domain=ExpenseDomain.DIGITAL, current=Decimal(0.0), max=Decimal(200)),
+                    Expense(domain=ExpenseDomain.PHYSICAL, current=Decimal(50.0), max=Decimal(200)),
                 ]
 
         class PratiqueArtistiqueAboTest:
@@ -240,9 +244,9 @@ class ExpensesTest:
 
                 # Then
                 assert expenses == [
-                    {"domain": "all", "current": 100.0, "max": 500},
-                    {"domain": "digital", "current": 0.0, "max": 200},
-                    {"domain": "physical", "current": 0.0, "max": 200},
+                    Expense(domain=ExpenseDomain.ALL, current=Decimal(100.0), max=Decimal(500)),
+                    Expense(domain=ExpenseDomain.DIGITAL, current=Decimal(0.0), max=Decimal(200)),
+                    Expense(domain=ExpenseDomain.PHYSICAL, current=Decimal(0.0), max=Decimal(200)),
                 ]
 
         class MusiqueAboTest:
@@ -260,9 +264,9 @@ class ExpensesTest:
 
                 # Then
                 assert expenses == [
-                    {"domain": "all", "current": 50.0, "max": 500},
-                    {"domain": "digital", "current": 0.0, "max": 200},
-                    {"domain": "physical", "current": 0.0, "max": 200},
+                    Expense(domain=ExpenseDomain.ALL, current=Decimal(50.0), max=Decimal(500)),
+                    Expense(domain=ExpenseDomain.DIGITAL, current=Decimal(0.0), max=Decimal(200)),
+                    Expense(domain=ExpenseDomain.PHYSICAL, current=Decimal(0.0), max=Decimal(200)),
                 ]
 
         class MuseesPatrimoineAboTest:
@@ -280,9 +284,9 @@ class ExpensesTest:
 
                 # Then
                 assert expenses == [
-                    {"domain": "all", "current": 50.0, "max": 500},
-                    {"domain": "digital", "current": 0.0, "max": 200},
-                    {"domain": "physical", "current": 0.0, "max": 200},
+                    Expense(domain=ExpenseDomain.ALL, current=Decimal(50.0), max=Decimal(500)),
+                    Expense(domain=ExpenseDomain.DIGITAL, current=Decimal(0.0), max=Decimal(200)),
+                    Expense(domain=ExpenseDomain.PHYSICAL, current=Decimal(0.0), max=Decimal(200)),
                 ]
 
         class CinemaAboTest:
@@ -300,9 +304,9 @@ class ExpensesTest:
 
                 # Then
                 assert expenses == [
-                    {"domain": "all", "current": 50.0, "max": 500},
-                    {"domain": "digital", "current": 0.0, "max": 200},
-                    {"domain": "physical", "current": 0.0, "max": 200},
+                    Expense(domain=ExpenseDomain.ALL, current=Decimal(50.0), max=Decimal(500)),
+                    Expense(domain=ExpenseDomain.DIGITAL, current=Decimal(0.0), max=Decimal(200)),
+                    Expense(domain=ExpenseDomain.PHYSICAL, current=Decimal(0.0), max=Decimal(200)),
                 ]
 
         class CinemaCardTest:
@@ -320,9 +324,9 @@ class ExpensesTest:
 
                 # Then
                 assert expenses == [
-                    {"domain": "all", "current": 50.0, "max": 500},
-                    {"domain": "digital", "current": 0.0, "max": 200},
-                    {"domain": "physical", "current": 0.0, "max": 200},
+                    Expense(domain=ExpenseDomain.ALL, current=Decimal(50.0), max=Decimal(500)),
+                    Expense(domain=ExpenseDomain.DIGITAL, current=Decimal(0.0), max=Decimal(200)),
+                    Expense(domain=ExpenseDomain.PHYSICAL, current=Decimal(0.0), max=Decimal(200)),
                 ]
 
         class InstrumentTest:
@@ -340,9 +344,9 @@ class ExpensesTest:
 
                 # Then
                 assert expenses == [
-                    {"domain": "all", "current": 60.0, "max": 500},
-                    {"domain": "digital", "current": 0.0, "max": 200},
-                    {"domain": "physical", "current": 60.0, "max": 200},
+                    Expense(domain=ExpenseDomain.ALL, current=Decimal(60.0), max=Decimal(500)),
+                    Expense(domain=ExpenseDomain.DIGITAL, current=Decimal(0.0), max=Decimal(200)),
+                    Expense(domain=ExpenseDomain.PHYSICAL, current=Decimal(60.0), max=Decimal(200)),
                 ]
 
         class JeuxVideoAboTest:
@@ -360,9 +364,9 @@ class ExpensesTest:
 
                 # Then
                 assert expenses == [
-                    {"domain": "all", "current": 50.0, "max": 500},
-                    {"domain": "digital", "current": 50.0, "max": 200},
-                    {"domain": "physical", "current": 0.0, "max": 200},
+                    Expense(domain=ExpenseDomain.ALL, current=Decimal(50.0), max=Decimal(500)),
+                    Expense(domain=ExpenseDomain.DIGITAL, current=Decimal(50.0), max=Decimal(200)),
+                    Expense(domain=ExpenseDomain.PHYSICAL, current=Decimal(0.0), max=Decimal(200)),
                 ]
 
         class SpectacleVivantAboTest:
@@ -380,9 +384,9 @@ class ExpensesTest:
 
                 # Then
                 assert expenses == [
-                    {"domain": "all", "current": 50.0, "max": 500},
-                    {"domain": "digital", "current": 0.0, "max": 200},
-                    {"domain": "physical", "current": 0.0, "max": 200},
+                    Expense(domain=ExpenseDomain.ALL, current=Decimal(50.0), max=Decimal(500)),
+                    Expense(domain=ExpenseDomain.DIGITAL, current=Decimal(0.0), max=Decimal(200)),
+                    Expense(domain=ExpenseDomain.PHYSICAL, current=Decimal(0.0), max=Decimal(200)),
                 ]
 
         class LivreAudioTest:
@@ -400,9 +404,9 @@ class ExpensesTest:
 
                 # Then
                 assert expenses == [
-                    {"domain": "all", "current": 50.0, "max": 500},
-                    {"domain": "digital", "current": 50.0, "max": 200},
-                    {"domain": "physical", "current": 0.0, "max": 200},
+                    Expense(domain=ExpenseDomain.ALL, current=Decimal(50.0), max=Decimal(500)),
+                    Expense(domain=ExpenseDomain.DIGITAL, current=Decimal(50.0), max=Decimal(200)),
+                    Expense(domain=ExpenseDomain.PHYSICAL, current=Decimal(0.0), max=Decimal(200)),
                 ]
 
     class EventsTest:
@@ -420,9 +424,9 @@ class ExpensesTest:
 
                 # Then
                 assert expenses == [
-                    {"domain": "all", "current": 50.0, "max": 500},
-                    {"domain": "digital", "current": 0.0, "max": 200},
-                    {"domain": "physical", "current": 0.0, "max": 200},
+                    Expense(domain=ExpenseDomain.ALL, current=Decimal(50.0), max=Decimal(500)),
+                    Expense(domain=ExpenseDomain.DIGITAL, current=Decimal(0.0), max=Decimal(200)),
+                    Expense(domain=ExpenseDomain.PHYSICAL, current=Decimal(0.0), max=Decimal(200)),
                 ]
 
         class ConferenceDebatDedicaceTest:
@@ -439,9 +443,9 @@ class ExpensesTest:
 
                 # Then
                 assert expenses == [
-                    {"domain": "all", "current": 50.0, "max": 500},
-                    {"domain": "digital", "current": 0.0, "max": 200},
-                    {"domain": "physical", "current": 0.0, "max": 200},
+                    Expense(domain=ExpenseDomain.ALL, current=Decimal(50.0), max=Decimal(500)),
+                    Expense(domain=ExpenseDomain.DIGITAL, current=Decimal(0.0), max=Decimal(200)),
+                    Expense(domain=ExpenseDomain.PHYSICAL, current=Decimal(0.0), max=Decimal(200)),
                 ]
 
         class JeuxTest:
@@ -458,9 +462,9 @@ class ExpensesTest:
 
                 # Then
                 assert expenses == [
-                    {"domain": "all", "current": 50.0, "max": 500},
-                    {"domain": "digital", "current": 0.0, "max": 200},
-                    {"domain": "physical", "current": 0.0, "max": 200},
+                    Expense(domain=ExpenseDomain.ALL, current=Decimal(50.0), max=Decimal(500)),
+                    Expense(domain=ExpenseDomain.DIGITAL, current=Decimal(0.0), max=Decimal(200)),
+                    Expense(domain=ExpenseDomain.PHYSICAL, current=Decimal(0.0), max=Decimal(200)),
                 ]
 
         class MusiqueTest:
@@ -477,9 +481,9 @@ class ExpensesTest:
 
                 # Then
                 assert expenses == [
-                    {"domain": "all", "current": 50.0, "max": 500},
-                    {"domain": "digital", "current": 0.0, "max": 200},
-                    {"domain": "physical", "current": 0.0, "max": 200},
+                    Expense(domain=ExpenseDomain.ALL, current=Decimal(50.0), max=Decimal(500)),
+                    Expense(domain=ExpenseDomain.DIGITAL, current=Decimal(0.0), max=Decimal(200)),
+                    Expense(domain=ExpenseDomain.PHYSICAL, current=Decimal(0.0), max=Decimal(200)),
                 ]
 
         class MuseesPatrimoineTest:
@@ -496,9 +500,9 @@ class ExpensesTest:
 
                 # Then
                 assert expenses == [
-                    {"domain": "all", "current": 50.0, "max": 500},
-                    {"domain": "digital", "current": 0.0, "max": 200},
-                    {"domain": "physical", "current": 0.0, "max": 200},
+                    Expense(domain=ExpenseDomain.ALL, current=Decimal(50.0), max=Decimal(500)),
+                    Expense(domain=ExpenseDomain.DIGITAL, current=Decimal(0.0), max=Decimal(200)),
+                    Expense(domain=ExpenseDomain.PHYSICAL, current=Decimal(0.0), max=Decimal(200)),
                 ]
 
         class PratiqueArtistiqueTest:
@@ -515,9 +519,9 @@ class ExpensesTest:
 
                 # Then
                 assert expenses == [
-                    {"domain": "all", "current": 50.0, "max": 500},
-                    {"domain": "digital", "current": 0.0, "max": 200},
-                    {"domain": "physical", "current": 0.0, "max": 200},
+                    Expense(domain=ExpenseDomain.ALL, current=Decimal(50.0), max=Decimal(500)),
+                    Expense(domain=ExpenseDomain.DIGITAL, current=Decimal(0.0), max=Decimal(200)),
+                    Expense(domain=ExpenseDomain.PHYSICAL, current=Decimal(0.0), max=Decimal(200)),
                 ]
 
         class SpectacleVivantTest:
@@ -534,9 +538,9 @@ class ExpensesTest:
 
                 # Then
                 assert expenses == [
-                    {"domain": "all", "current": 50.0, "max": 500},
-                    {"domain": "digital", "current": 0.0, "max": 200},
-                    {"domain": "physical", "current": 0.0, "max": 200},
+                    Expense(domain=ExpenseDomain.ALL, current=Decimal(50.0), max=Decimal(500)),
+                    Expense(domain=ExpenseDomain.DIGITAL, current=Decimal(0.0), max=Decimal(200)),
+                    Expense(domain=ExpenseDomain.PHYSICAL, current=Decimal(0.0), max=Decimal(200)),
                 ]
 
     class ComputationTest:
@@ -556,9 +560,9 @@ class ExpensesTest:
 
                 # Then
                 assert expenses == [
-                    {"domain": "all", "current": 210.0, "max": 500},
-                    {"domain": "digital", "current": 0.0, "max": 200},
-                    {"domain": "physical", "current": 210.0, "max": 200},
+                    Expense(domain=ExpenseDomain.ALL, current=Decimal(210.0), max=Decimal(500)),
+                    Expense(domain=ExpenseDomain.DIGITAL, current=Decimal(0.0), max=Decimal(200)),
+                    Expense(domain=ExpenseDomain.PHYSICAL, current=Decimal(210.0), max=Decimal(200)),
                 ]
 
             def test_returns_max_500_and_actual_0(self):
@@ -570,7 +574,7 @@ class ExpensesTest:
 
                 # Then
                 assert expenses == [
-                    {"domain": "all", "current": 0.0, "max": 500},
-                    {"domain": "digital", "current": 0.0, "max": 200},
-                    {"domain": "physical", "current": 0.0, "max": 200},
+                    Expense(domain=ExpenseDomain.ALL, current=Decimal(0.0), max=Decimal(500)),
+                    Expense(domain=ExpenseDomain.DIGITAL, current=Decimal(0.0), max=Decimal(200)),
+                    Expense(domain=ExpenseDomain.PHYSICAL, current=Decimal(0.0), max=Decimal(200)),
                 ]

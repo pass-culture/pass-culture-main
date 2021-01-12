@@ -6,7 +6,7 @@ from typing import Optional
 from pydantic import BaseModel
 from pydantic.class_validators import validator
 
-from pcapi.core.users.expenses import ExpenseDomain
+from pcapi.core.users.models import ExpenseDomain
 from pcapi.core.users.models import VOID_FIRST_NAME
 from pcapi.serialization.utils import to_camel
 
@@ -33,6 +33,9 @@ class Expense(BaseModel):
 
     _convert_current = validator("current", pre=True, allow_reuse=True)(convert_to_cent)
     _convert_max = validator("max", pre=True, allow_reuse=True)(convert_to_cent)
+
+    class Config:
+        orm_mode = True
 
 
 class UserProfileResponse(BaseModel):

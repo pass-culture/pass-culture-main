@@ -1,5 +1,7 @@
+from dataclasses import dataclass
 from datetime import date
 from datetime import datetime
+from decimal import Decimal
 import enum
 from hashlib import md5
 from typing import Optional
@@ -23,9 +25,9 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
 
 from pcapi import settings
+from pcapi.core.bookings.conf import LIMIT_CONFIGURATIONS
 from pcapi.core.bookings.models import Booking
 from pcapi.core.offers.models import Stock
-from pcapi.core.users.expenses import get_expenses_limit
 from pcapi.models.db import Model
 from pcapi.models.db import db
 from pcapi.models.deposit import Deposit
@@ -238,7 +240,37 @@ class User(PcObject, Model, NeedsValidationMixin, VersionedMixin):
     def expenses(self):
         version = self.deposit_version
 
-        return get_expenses_limit(self, version) if version else []
+        if not version:
+            return []
+
+        bookings = self.get_not_cancelled_bookings()
+        config = LIMIT_CONFIGURATIONS[version]
+
+        limits = [
+            Expense(
+                domain=ExpenseDomain.ALL,
+                current=sum(booking.total_amount for booking in bookings),
+                max=config.TOTAL_CAP,
+            )
+        ]
+        if config.DIGITAL_CAP:
+            digital_bookings_total = sum(
+                [booking.total_amount for booking in bookings if config.digital_cap_applies(booking.stock.offer)]
+            )
+            limits.append(Expense(domain=ExpenseDomain.DIGITAL, current=digital_bookings_total, max=config.DIGITAL_CAP))
+        if config.PHYSICAL_CAP:
+            physical_bookings_total = sum(
+                [booking.total_amount for booking in bookings if config.physical_cap_applies(booking.stock.offer)]
+            )
+            limits.append(
+                Expense(
+                    domain=ExpenseDomain.PHYSICAL,
+                    current=physical_bookings_total,
+                    max=config.PHYSICAL_CAP,
+                )
+            )
+
+        return limits
 
     @property
     def real_wallet_balance(self):
@@ -274,3 +306,16 @@ class User(PcObject, Model, NeedsValidationMixin, VersionedMixin):
     @property
     def hasOffers(self):
         return any([offerer.nOffers > 0 for offerer in self.offerers])
+
+
+class ExpenseDomain(enum.Enum):
+    ALL = "all"
+    DIGITAL = "digital"
+    PHYSICAL = "physical"
+
+
+@dataclass
+class Expense:
+    domain: ExpenseDomain
+    current: Decimal
+    max: Decimal

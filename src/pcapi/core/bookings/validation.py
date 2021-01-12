@@ -7,6 +7,7 @@ from pcapi.core.bookings import exceptions
 from pcapi.core.bookings.models import Booking
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
+from pcapi.core.users.models import ExpenseDomain
 from pcapi.core.users.models import User
 from pcapi.models import api_errors
 from pcapi.models.db import db
@@ -63,17 +64,17 @@ def check_expenses_limits(user: User, requested_amount: Decimal, offer: Offer):
 
     config = conf.LIMIT_CONFIGURATIONS[deposit.version]
     for expense in user.expenses:
-        if expense["domain"] == "all":
-            if expense["current"] + requested_amount > expense["max"]:
+        if expense.domain == ExpenseDomain.ALL:
+            if expense.current + requested_amount > expense.max:
                 raise exceptions.UserHasInsufficientFunds()
 
-        if expense["domain"] == "digital" and config.digital_cap_applies(offer):
-            if expense["current"] + requested_amount > expense["max"]:
-                raise exceptions.DigitalExpenseLimitHasBeenReached(expense["max"])
+        if expense.domain == ExpenseDomain.DIGITAL and config.digital_cap_applies(offer):
+            if expense.current + requested_amount > expense.max:
+                raise exceptions.DigitalExpenseLimitHasBeenReached(expense.max)
 
-        if expense["domain"] == "physical" and config.physical_cap_applies(offer):
-            if expense["current"] + requested_amount > expense["max"]:
-                raise exceptions.PhysicalExpenseLimitHasBeenReached(expense["max"])
+        if expense.domain == ExpenseDomain.PHYSICAL and config.physical_cap_applies(offer):
+            if expense.current + requested_amount > expense.max:
+                raise exceptions.PhysicalExpenseLimitHasBeenReached(expense.max)
 
 
 def check_beneficiary_can_cancel_booking(user: User, booking: Booking) -> None:

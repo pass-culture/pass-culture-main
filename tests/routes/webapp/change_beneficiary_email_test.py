@@ -9,8 +9,8 @@ import pytest
 
 from pcapi import settings
 import pcapi.core.users.factories as users_factories
-from pcapi.core.users.models import ALGORITHM_HS_256
 from pcapi.core.users.models import User
+from pcapi.core.users.utils import ALGORITHM_HS_256
 
 from tests.conftest import TestClient
 
