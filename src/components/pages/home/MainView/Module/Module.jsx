@@ -85,6 +85,7 @@ const Module = props => {
               // eslint-disable-next-line react/no-array-index-key
               key={`${index}-tile`}
               layout={layout}
+              moduleName={moduleName}
               parsedParameters={parsedParameters}
               row={row}
               tile={tile}

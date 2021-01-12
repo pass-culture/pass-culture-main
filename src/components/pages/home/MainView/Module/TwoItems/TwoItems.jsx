@@ -13,6 +13,7 @@ const TwoItems = ({
   tile,
   trackConsultOffer,
   trackClickSeeMore,
+  moduleName,
 }) => {
   const firstTileIsACoverItem = typeof tile[0] === 'string'
   const firstTileIsASeeMoreItem = typeof tile[0] === 'boolean'
@@ -48,6 +49,7 @@ const TwoItems = ({
           isSwitching={isSwitching}
           key={`${row}${tile[0].offer.id}`}
           layout={layout}
+          moduleName={moduleName}
           trackConsultOffer={trackConsultOffer}
         />
         {secondTileIsASeeMoreItem ? (
@@ -66,6 +68,7 @@ const TwoItems = ({
             isSwitching={isSwitching}
             key={`${row}${tile[1].offer.id}`}
             layout={layout}
+            moduleName={moduleName}
             trackConsultOffer={trackConsultOffer}
           />
         ) : null}
@@ -78,6 +81,7 @@ TwoItems.propTypes = {
   historyPush: PropTypes.func.isRequired,
   isSwitching: PropTypes.bool.isRequired,
   layout: PropTypes.string.isRequired,
+  moduleName: PropTypes.string.isRequired,
   parsedParameters: PropTypes.shape().isRequired,
   row: PropTypes.number.isRequired,
   tile: PropTypes.arrayOf(

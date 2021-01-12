@@ -7,6 +7,8 @@ import { selectFavoriteByOfferId } from '../../../../../redux/selectors/data/fav
 import { selectMediationByOfferId } from '../../../../../redux/selectors/data/mediationsSelectors'
 import { selectStockById } from '../../../../../redux/selectors/data/stocksSelectors'
 import { requestData } from '../../../../../utils/fetch-normalize-data/requestData'
+import withTracking from '../../../../hocs/withTracking'
+
 import Favorite from './Favorite'
 
 const API_PATH_TO_FAVORITES_ENDPOINT = '/favorites'
@@ -65,10 +67,20 @@ export const mapDispatchToProps = dispatch => ({
   },
 })
 
+export const mergeProps = (stateProps, dispatchProps, ownProps) => ({
+  ...stateProps,
+  ...dispatchProps,
+  ...ownProps,
+  trackAddToFavoritesFromHome: (moduleName, offerId) => {
+    ownProps.tracking.trackEvent({
+      action: 'AddFavorite_FromHomepage',
+      name: `Module name: ${moduleName} - Offer id: ${offerId}`,
+    })
+  },
+})
+
 export default compose(
   withRouter,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )
+  withTracking('Offer'),
+  connect(mapStateToProps, mapDispatchToProps, mergeProps)
 )(Favorite)

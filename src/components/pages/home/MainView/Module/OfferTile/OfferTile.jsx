@@ -14,7 +14,7 @@ const preventDefault = event => {
   event.preventDefault()
 }
 
-const OfferTile = ({ historyPush, hit, isSwitching, layout, trackConsultOffer }) => {
+const OfferTile = ({ historyPush, hit, isSwitching, layout, trackConsultOffer, moduleName }) => {
   const { offer, venue } = hit
   const offerDates = offer.isEvent
     ? `${formatSearchResultDate(venue.departementCode, offer.dates)}${
@@ -26,7 +26,10 @@ const OfferTile = ({ historyPush, hit, isSwitching, layout, trackConsultOffer })
   function goToOffer(event) {
     if (!isSwitching) {
       trackConsultOffer(offer.id)
-      historyPush(`/accueil/details/${offer.id}`)
+      historyPush({
+        pathname: `/accueil/details/${offer.id}`,
+        moduleName,
+      })
     }
     event.preventDefault()
   }
@@ -77,6 +80,7 @@ OfferTile.propTypes = {
   hit: PropTypes.shape().isRequired,
   isSwitching: PropTypes.bool.isRequired,
   layout: PropTypes.string,
+  moduleName: PropTypes.string.isRequired,
   trackConsultOffer: PropTypes.func.isRequired,
 }
 

@@ -156,14 +156,12 @@ const mergeProps = (stateProps, dispatchProps, ownProps) => {
 }
 
 export default compose(
-  track({ page: 'Offer' }, { dispatch: data => {
-    window._paq.push(['trackEvent', data.page, data.action, data.name])
-  }}),
+  withTracking('PageName')
   connect(mapStateToProps, mapDispatchToProps, mergeProps)
 )(MyButton)
 ```
 
-Le HOC `track` décore le container d'une `props` `tracking` qui contient les méthodes de tracking que l'on souhaite utiliser.
+Le HOC `track` (inclus dans `src/components/hocs/withTracking.js`) décore le container d'une `props` `tracking` qui contient les méthodes de tracking que l'on souhaite utiliser.
 Il accepte deux arguments :
 - premier argument : un objet contenant le nom de la `page` que l'on souhaite mesurer (correspond à la `catégorie` de l'évènement)
 - deuxieme argument (optionnel) : un objet contenant une fonction `dispatch` qui sera exécutée à chaque fois qu'un évènement est déclenché.
