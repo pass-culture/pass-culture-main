@@ -20,6 +20,24 @@ yarn
 A la racine de webapp créer un fichier `env.local`<br>
 Les variables disponibles pour l'application sont décrites dans le fichier `src/utils/config.js`
 
+## Indexation des offres en local
+
+Si lorsque je clique sur une offre sur la webapp lancée en local et que j'ai un loader infini, voilà comment résoudre ce problème: 
+- Dans `pass-culture-main/api`, ajouter un fichier `.env.local.secret` avec:
+```
+ALGOLIA_TRIGGER_INDEXATION=1
+ALGOLIA_INDEX_NAME=<ton_index>  <= mettre un index custom, ex: 'local_myName' (surtout pas un existant)
+ALGOLIA_APPLICATION_ID=testing...H0 <= à trouver dans `.env.development` dans ce repo
+ALGOLIA_API_KEY=6a27...636  <= à trouver sur la plateforme Algolia (API Keys > Write API Key)
+```
+- Relancer `pc sandbox -n industrial`
+- Ici, ajouter un fichier `.env.development.local` qui contient: 
+```
+ALGOLIA_SEARCH_API_KEY=136...0f067 <= à trouver sur la plateforme Algolia (API Keys > Search API Key)
+ALGOLIA_INDEX_NAME=<ton_index>
+```
+- Relancer la webapp, normalement le clic sur une offre devrait maintenant fonctionner
+
 ## Tests
 
 #### Tests Unitaires (Jest/Enzyme)
