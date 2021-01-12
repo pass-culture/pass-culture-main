@@ -99,7 +99,7 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
     ...dispatchProps,
     ...ownProps,
     trackConsultOffer: () => {
-      ownProps.tracking.trackEvent({ action: 'consultOffer', name: offerId })
+      ownProps.tracking.trackEvent({ action: 'ConsultOffer_FromFavorite', name: offerId })
     },
   }
 }

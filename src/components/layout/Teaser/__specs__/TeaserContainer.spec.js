@@ -152,7 +152,7 @@ describe('src | components | layout | Teaser | TeaserContainer', () => {
       }
       mergeProps(stateProps, {}, ownProps).trackConsultOffer()
       expect(ownProps.tracking.trackEvent).toHaveBeenCalledWith({
-        action: 'consultOffer',
+        action: 'ConsultOffer_FromFavorite',
         name: 'B4',
       })
     })

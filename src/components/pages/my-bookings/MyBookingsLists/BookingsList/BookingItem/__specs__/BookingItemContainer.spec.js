@@ -455,7 +455,7 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
 
       // then
       expect(ownProps.tracking.trackEvent).toHaveBeenCalledWith({
-        action: 'consultOffer',
+        action: 'ConsultOffer_FromFavorite',
         name: 'B4',
       })
     })

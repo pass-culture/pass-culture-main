@@ -76,7 +76,7 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
   return {
     ...stateProps,
     trackConsultOffer: () => {
-      ownProps.tracking.trackEvent({ action: 'consultOffer', name: offerId })
+      ownProps.tracking.trackEvent({ action: 'ConsultOffer_FromFavorite', name: offerId })
     },
   }
 }
@@ -84,9 +84,5 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
 export default compose(
   withRouter,
   withTracking('Offer'),
-  connect(
-    mapStateToProps,
-    {},
-    mergeProps
-  )
+  connect(mapStateToProps, {}, mergeProps)
 )(Teaser)

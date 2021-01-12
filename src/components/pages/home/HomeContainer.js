@@ -32,7 +32,7 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => ({
   },
   trackConsultOffer: (moduleName, offerId) => {
     ownProps.tracking.trackEvent({
-      action: 'ConsultOffer',
+      action: 'ConsultOffer_FromHomepage',
       name: `Module name: ${moduleName} - Offer id: ${offerId}`,
     })
   },
