@@ -38,6 +38,7 @@ const TimeInput = ({
       )}
       dateFormat="HH:mm"
       disabled={disabled}
+      dropdownMode="scroll"
       maxDate={getMomentDate(maxUtcDateIsoFormat)}
       minDate={getMomentDate(minUtcDateIsoFormat)}
       onChange={onChange}
@@ -45,7 +46,7 @@ const TimeInput = ({
       selected={getMomentDate(utcDateIsoFormat)}
       showTimeSelect
       showTimeSelectOnly
-      timeCaption="Heure"
+      timeCaption="Horaire"
       timeFormat="HH:mm"
       timeIntervals={15}
     />
