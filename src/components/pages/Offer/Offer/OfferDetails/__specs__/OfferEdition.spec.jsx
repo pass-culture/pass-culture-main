@@ -809,6 +809,36 @@ describe('offerDetails - Edition', () => {
         screen.getByText('Une ou plusieurs erreurs sont présentes dans le formulaire')
       ).toBeInTheDocument()
     })
+
+    it('should show error sent by API and show an error notification', async () => {
+      // Given
+      const editedOffer = {
+        id: 'ABC12',
+        name: 'My edited offer',
+        type: 'ThingType.LIVRE_EDITION',
+        description: 'Offer description',
+        venueId: editedOfferVenue.id,
+        venue: editedOfferVenue,
+        withdrawalDetails: 'Offer withdrawal details',
+        bookingEmail: 'booking@example.net',
+        extraData: null,
+      }
+      pcapi.loadOffer.mockResolvedValue(editedOffer)
+      pcapi.updateOffer.mockRejectedValue({ errors: { name: "Ce nom n'est pas valide" } })
+      await renderOffers(props, store)
+      await setOfferValues({ name: 'Ce nom serait-il invalide ?' })
+
+      // When
+      userEvent.click(screen.getByText('Enregistrer'))
+
+      // Then
+      const nameError = await screen.findByText("Ce nom n'est pas valide")
+      expect(nameError).toBeInTheDocument()
+      const errorNotification = await screen.findByText(
+        'Une ou plusieurs erreurs sont présentes dans le formulaire'
+      )
+      expect(errorNotification).toBeInTheDocument()
+    })
   })
 
   describe('when clicking on cancel link', () => {

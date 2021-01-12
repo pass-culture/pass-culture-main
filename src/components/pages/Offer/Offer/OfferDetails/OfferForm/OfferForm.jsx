@@ -149,9 +149,15 @@ const OfferForm = ({
       setVenueOptions(buildSelectOptions('id', 'name', venuesToShow))
 
       if (venuesToShow.length === 0 && venues.length > 0) {
-        setFormErrors({ venueId: 'Il faut obligatoirement une structure avec un lieu.' })
+        setFormErrors(oldFormErrors => ({
+          ...oldFormErrors,
+          venueId: 'Il faut obligatoirement une structure avec un lieu.',
+        }))
       } else {
-        setFormErrors({})
+        setFormErrors(oldFormErrors => {
+          delete oldFormErrors.venueId
+          return oldFormErrors
+        })
       }
 
       if (venuesToShow.length === 1) {
