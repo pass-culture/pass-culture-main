@@ -314,31 +314,6 @@ class FindPaymentEligibleBookingsForVenueTest:
         assert future_event_booking not in bookings
 
 
-class FindDateUsedTest:
-    @pytest.mark.usefixtures("db_session")
-    def test_returns_date_used_if_not_none(self, app: fixture):
-        # given
-        dt = datetime.now()
-        booking = factories.BookingFactory(isUsed=True, dateUsed=dt)
-
-        # when
-        date_used = booking_repository.find_date_used(booking)
-
-        # then
-        assert date_used == dt
-
-    @pytest.mark.usefixtures("db_session")
-    def test_returns_none_when_date_used_is_none(self, app: fixture):
-        # given
-        booking = factories.BookingFactory()
-
-        # when
-        date_used = booking_repository.find_date_used(booking)
-
-        # then
-        assert date_used is None
-
-
 class FindByTest:
     class ByTokenTest:
         @pytest.mark.usefixtures("db_session")

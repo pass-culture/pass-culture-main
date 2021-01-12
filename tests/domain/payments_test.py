@@ -1,6 +1,5 @@
 from datetime import datetime
 from decimal import Decimal
-from unittest.mock import Mock
 import uuid
 
 from freezegun import freeze_time
@@ -351,7 +350,7 @@ class CreatePaymentDetailsTest:
         )
 
         # when
-        details = create_payment_details(payment, find_booking_date_used=Mock())
+        details = create_payment_details(payment)
 
         # then
         assert details.payment_iban == "123456789"
@@ -368,7 +367,7 @@ class CreatePaymentDetailsTest:
         payment = create_payment(booking, offerer, 35)
 
         # when
-        details = create_payment_details(payment, find_booking_date_used=Mock())
+        details = create_payment_details(payment)
 
         # then
         assert details.booking_user_id == 3
@@ -381,13 +380,18 @@ class CreatePaymentDetailsTest:
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         stock = create_stock(offer=offer, price=12, quantity=5)
-        booking = create_booking(user=user, stock=stock, date_created=datetime(2018, 2, 5), idx=5, quantity=2)
+        booking = create_booking(
+            user=user,
+            stock=stock,
+            date_created=datetime(2018, 2, 5),
+            date_used=datetime(2018, 2, 19),
+            idx=5,
+            quantity=2,
+        )
         payment = create_payment(booking=booking, offerer=offerer, amount=35)
-        find_date = Mock()
-        find_date.return_value = datetime(2018, 2, 19)
 
         # when
-        details = create_payment_details(payment, find_booking_date_used=find_date)
+        details = create_payment_details(payment)
 
         # then
         assert details.booking_date == datetime(2018, 2, 5)
@@ -403,11 +407,9 @@ class CreatePaymentDetailsTest:
         stock = create_stock(offer=offer, price=12, quantity=5)
         booking = create_booking(user=user, stock=stock, date_created=datetime(2018, 2, 5), idx=5, quantity=2)
         payment = create_payment(booking, offerer, 35)
-        find_date = Mock()
-        find_date.return_value = datetime(2018, 2, 19)
 
         # when
-        details = create_payment_details(payment, find_booking_date_used=find_date)
+        details = create_payment_details(payment)
 
         # then
         assert details.offerer_name == "Joe le Libraire"
@@ -422,11 +424,9 @@ class CreatePaymentDetailsTest:
         stock = create_stock(offer=offer, price=12, quantity=5)
         booking = create_booking(user=user, stock=stock, date_created=datetime(2018, 2, 5), idx=5, quantity=2)
         payment = create_payment(booking, offerer, 35)
-        find_date = Mock()
-        find_date.return_value = datetime(2018, 2, 19)
 
         # when
-        details = create_payment_details(payment, find_booking_date_used=find_date)
+        details = create_payment_details(payment)
 
         # then
         assert details.venue_name == "Jack le Sculpteur"
@@ -442,11 +442,9 @@ class CreatePaymentDetailsTest:
         stock = create_stock(offer=offer, price=12, quantity=5)
         booking = create_booking(user=user, stock=stock, date_created=datetime(2018, 2, 5), idx=5, quantity=2)
         payment = create_payment(booking, offerer, 35)
-        find_date = Mock()
-        find_date.return_value = datetime(2018, 2, 19)
 
         # when
-        details = create_payment_details(payment, find_booking_date_used=find_date)
+        details = create_payment_details(payment)
 
         # then
         assert details.offer_name == "Test Book"
@@ -456,7 +454,7 @@ class CreatePaymentDetailsTest:
 class CreateAllPaymentsDetailsTest:
     def test_returns_an_empty_list_if_no_payments_given(self):
         # when
-        details = create_all_payments_details([], find_booking_date_used=Mock())
+        details = create_all_payments_details([])
 
         # then
         assert details == []
@@ -472,7 +470,7 @@ class CreateAllPaymentsDetailsTest:
         ]
 
         # when
-        details = create_all_payments_details(payments, find_booking_date_used=Mock())
+        details = create_all_payments_details(payments)
 
         # then
         assert len(details) == 3

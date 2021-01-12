@@ -111,10 +111,6 @@ def find_bookings_eligible_for_payment_for_venue(venue_id: int) -> List[Booking]
     )
 
 
-def find_date_used(booking: Booking) -> datetime:
-    return booking.dateUsed
-
-
 def token_exists(token: str) -> bool:
     return db.session.query(Booking.query.filter_by(token=token).exists()).scalar()
 

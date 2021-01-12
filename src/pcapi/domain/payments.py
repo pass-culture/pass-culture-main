@@ -16,7 +16,6 @@ from uuid import UUID
 from flask import render_template
 from lxml import etree
 
-import pcapi.core.bookings.repository as booking_repository
 from pcapi.domain.bank_account import format_raw_iban_and_bic
 from pcapi.domain.reimbursement import BookingReimbursement
 from pcapi.models import PaymentMessage
@@ -204,16 +203,12 @@ def generate_file_checksum(file: str):
     return sha256(encoded_file).digest()
 
 
-def create_all_payments_details(
-    payments: List[Payment], find_booking_date_used=booking_repository.find_date_used
-) -> List[PaymentDetails]:
-    return list(map(lambda p: create_payment_details(p, find_booking_date_used), payments))
+def create_all_payments_details(payments: List[Payment]) -> List[PaymentDetails]:
+    return [create_payment_details(payment) for payment in payments]
 
 
-def create_payment_details(
-    payment: Payment, find_booking_date_used=booking_repository.find_date_used
-) -> PaymentDetails:
-    return PaymentDetails(payment, find_booking_date_used(payment.booking))
+def create_payment_details(payment: Payment) -> PaymentDetails:
+    return PaymentDetails(payment, payment.booking.dateUsed)
 
 
 def generate_payment_details_csv(payments_details: List[PaymentDetails]) -> str:
