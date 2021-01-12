@@ -205,6 +205,18 @@ La plus conséquente est l'industrial, elle se créée via la commande:
 pc sandbox -n industrial
 ```
 
+---------
+Troubleshooting:
+
+Si la commande sandbox renvoie des erreurs que je n'arrive pas à résoudre, tester de supprimer et reconstruire sa BDD locale. Pour ça: 
+- stopper les images lancées
+- run: `docker rm -f pc-postgres` <= suppression container
+- run: `docker volume rm pass-culture-main_postgres_data` <= suppression données
+- relancer: `pc start-backend`
+- puis relancer: `pc sandbox -n industrial`
+
+----------
+
 Cette commande faite, il y a alors deux moyens pour avoir les email/mots de passe des utilisateurs sandbox :
 
 - on peut utiliser la commande sandbox_to_testcafe qui résume les objets utilisés de la sandbox dans les différents testcafés. Si on veut avoir tous les utilisateurs des tests pro_07_offer dans l'application pro, il faut faire:
