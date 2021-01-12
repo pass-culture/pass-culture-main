@@ -34,9 +34,9 @@ class RemainingCredit extends PureComponent {
       const physical = expenses.find(expense => expense.domain === 'physical')
       const all = expenses.find(expense => expense.domain === 'all')
 
-      digitalCreditLimit = digital.max
-      physicalCreditLimit = physical.max
-      initialDeposit = all.max
+      digitalCreditLimit = digital.limit
+      physicalCreditLimit = physical.limit
+      initialDeposit = all.limit
 
       digitalRemainingCredit = getRemainingCreditForGivenCreditLimit(walletBalance)(digital)
       physicalRemainingCredit = getRemainingCreditForGivenCreditLimit(walletBalance)(physical)

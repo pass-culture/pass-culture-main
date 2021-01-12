@@ -4,6 +4,7 @@ import { shallow, mount } from 'enzyme'
 import RemainingCredit from '../RemainingCredit'
 import { NON_BREAKING_SPACE } from '../../../../../utils/specialCharacters'
 import User from '../../ValueObjects/User'
+import CreditGauge from '../CreditGauge/CreditGauge'
 
 describe('remainingCredit', () => {
   let props
@@ -23,6 +24,24 @@ describe('remainingCredit', () => {
   })
 
   describe('render', () => {
+    it('should fill the gauge with the right values', () => {
+      // When
+      const wrapper = shallow(<RemainingCredit {...props} />)
+
+      // Then
+      const gauges = wrapper.find(CreditGauge)
+      expect(gauges).toHaveLength(3)
+
+      const digitalGauge = gauges.find({ extraClassName: 'gauge-digital' })
+      expect(digitalGauge.prop('creditLimit')).toBe(201)
+
+      const physicalGauge = gauges.find({ extraClassName: 'gauge-physical' })
+      expect(physicalGauge.prop('creditLimit')).toBe(202)
+
+      const allGauge = gauges.find({ extraClassName: 'gauge-total' })
+      expect(allGauge.prop('creditLimit')).toBe(500)
+    })
+
     it('should display an empty account when no deposit', () => {
       // Given
       props.user = new User({
