@@ -13,8 +13,6 @@ import OffersWithCover from '../domain/ValueObjects/OffersWithCover'
 import ExclusivityModule from '../ExclusivityModule/ExclusivityModule'
 import MainView from '../MainView'
 import Module from '../Module/Module'
-import { Provider } from 'react-redux'
-import { getStubStore } from '../../../../../utils/stubStore'
 import { setCustomUserId } from '../../../../../notifications/setUpBatchSDK'
 
 jest.mock('../Module/domain/buildTiles', () => ({
@@ -363,44 +361,5 @@ describe('src | components | MainView', () => {
       // Then
       expect(props.trackAllModulesSeen).not.toHaveBeenCalled()
     })
-  })
-
-  it('should render a profil page when navigating to /accueil/profil', async () => {
-    // Given
-    props.match.path = '/accueil'
-    const mockStore = getStubStore({
-      currentUser: (
-        state = new User({
-          email: 'john.doe@example.fr',
-          expenses: [
-            { domain: 'all', current: 287, max: 500 },
-            { domain: 'digital', current: 11, max: 200 },
-            { domain: 'physical', current: 23, max: 200 },
-          ],
-          firstName: 'PC Test Jeune',
-          publicName: 'Iron Man',
-          wallet_balance: 200.1,
-        })
-      ) => state,
-      data: (
-        state = {
-          features: [],
-        }
-      ) => state,
-    })
-    props.displayedModules = [new BusinessPane({ image: 'my-image-1' })]
-
-    // When
-    const wrapper = await mount(
-      <Provider store={mockStore}>
-        <MemoryRouter initialEntries={['/accueil/profil']}>
-          <MainView {...props} />
-        </MemoryRouter>
-      </Provider>
-    )
-
-    // Then
-    const profile = wrapper.find({ children: 'Informations personnelles' })
-    expect(profile).toHaveLength(1)
   })
 })

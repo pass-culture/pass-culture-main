@@ -12,7 +12,6 @@ import OffersWithCover from './domain/ValueObjects/OffersWithCover'
 import ExclusivityModule from './ExclusivityModule/ExclusivityModule'
 import Module from './Module/Module'
 import OfferDetailsContainer from './OfferDetails/OfferDetailsContainer'
-import Profile from '../Profile/Profile'
 import User from '../Profile/ValueObjects/User'
 import { setCustomUserId } from '../../../../notifications/setUpBatchSDK'
 import BusinessPane from './domain/ValueObjects/BusinessPane'
@@ -99,13 +98,6 @@ const MainView = props => {
 
   return (
     <Fragment>
-      <Route path={`${match.path}/profil`}>
-        <Profile
-          history={history}
-          match={match}
-          user={user}
-        />
-      </Route>
       <div
         className="home-wrapper"
         onScroll={checkIfAllModulesHaveBeenSeen}
