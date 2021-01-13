@@ -54,7 +54,7 @@ def create_industrial_webapp_users():
             needs_to_fill_cultural_survey = True
             has_seen_tutorials = False
 
-        email = f"pctest.jeune{departement_code}.{tag}.v{deposit_version}@btmx.fr"
+        email = f"pctest.jeune{departement_code}.{tag}.v{deposit_version}@example.com"
 
         user = create_user(
             cultural_survey_id=cultural_survey_id,

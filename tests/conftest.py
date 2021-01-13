@@ -137,7 +137,7 @@ def assert_num_queries():
 
 class TestClient:
     WITH_DOC = False
-    USER_TEST_ADMIN_EMAIL = "pctest.admin93.0@btmx.fr"
+    USER_TEST_ADMIN_EMAIL = "pctest.admin93.0@example.com"
     LOCAL_ORIGIN_HEADERS = {"origin": "http://localhost:3000"}
 
     def __init__(self, client: FlaskClient):

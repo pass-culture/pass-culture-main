@@ -18,7 +18,7 @@ def create_industrial_admin_users():
     for departement_code in departement_codes:
 
         for admin_count in range(ADMINS_COUNT):
-            email = "pctest.admin{}.{}@btmx.fr".format(departement_code, admin_count)
+            email = "pctest.admin{}.{}@example.com".format(departement_code, admin_count)
             users_by_name["admin{} {}".format(departement_code, admin_count)] = create_user(
                 reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24),
                 is_beneficiary=False,

@@ -23,7 +23,7 @@ class Get:
             user = create_user(
                 civility="M.",
                 departement_code="93",
-                email="toto@btmx.fr",
+                email="toto@example.com",
                 first_name="Jean",
                 last_name="Smisse",
                 date_of_birth=datetime.datetime(2000, 1, 1),
@@ -35,7 +35,7 @@ class Get:
             repository.save(user)
 
             # When
-            response = TestClient(app.test_client()).with_auth(email="toto@btmx.fr").get("/users/current")
+            response = TestClient(app.test_client()).with_auth(email="toto@example.com").get("/users/current")
 
             # Then
             assert response.status_code == 200
@@ -48,7 +48,7 @@ class Get:
                 "dateCreated": format_into_utc_date(user.dateCreated),
                 "dateOfBirth": format_into_utc_date(user.dateOfBirth),
                 "departementCode": "93",
-                "email": "toto@btmx.fr",
+                "email": "toto@example.com",
                 "firstName": "Jean",
                 "hasAllowedRecommendations": False,
                 "hasOffers": False,

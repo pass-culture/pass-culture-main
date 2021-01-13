@@ -12,7 +12,7 @@ from tests.conftest import TestClient
 
 
 BASE_DATA = {
-    "email": "toto@btmx.fr",
+    "email": "toto@example.com",
     "firstName": "Toto",
     "lastName": "Martin",
     "postalCode": "93100",
@@ -35,7 +35,7 @@ class Post:
             expected_response_json = {
                 "isBeneficiary": False,
                 "departementCode": "93",
-                "email": "toto@btmx.fr",
+                "email": "toto@example.com",
                 "firstName": "Toto",
                 "isAdmin": False,
                 "lastName": "Martin",
@@ -45,7 +45,7 @@ class Post:
                 "dateOfBirth": "2001-01-01T00:00:00Z",
             }
             other_expected_keys = {"id", "dateCreated"}
-            get_authorized_emails_and_dept_codes.return_value = (["toto@btmx.fr"], ["93"])
+            get_authorized_emails_and_dept_codes.return_value = (["toto@example.com"], ["93"])
 
             # When
             response = TestClient(app.test_client()).post("/users/signup/webapp", json=data)
@@ -66,7 +66,7 @@ class Post:
             self, get_authorized_emails_and_dept_codes, app
         ):
             data = BASE_DATA.copy()
-            get_authorized_emails_and_dept_codes.return_value = (["toto@btmx.fr"], ["93"])
+            get_authorized_emails_and_dept_codes.return_value = (["toto@example.com"], ["93"])
 
             # When
             response = TestClient(app.test_client()).post(
@@ -76,7 +76,7 @@ class Post:
             # Then
             assert response.status_code == 201
             assert "validationToken" not in response.json
-            created_user = User.query.filter_by(email="toto@btmx.fr").first()
+            created_user = User.query.filter_by(email="toto@example.com").first()
             assert created_user.validationToken is None
             assert not created_user.isBeneficiary
 
@@ -85,7 +85,7 @@ class Post:
         def test_does_not_allow_the_creation_of_admins(self, get_authorized_emails_and_dept_codes, app):
             # Given
             user_json = {
-                "email": "pctest.isAdmin.canBook@btmx.fr",
+                "email": "pctest.isAdmin.canBook@example.com",
                 "publicName": "IsAdmin CanBook",
                 "firstName": "IsAdmin",
                 "lastName": "CanBook",
@@ -95,7 +95,7 @@ class Post:
                 "isAdmin": True,
                 "isBeneficiary": True,
             }
-            get_authorized_emails_and_dept_codes.return_value = (["pctest.isAdmin.canBook@btmx.fr"], ["93"])
+            get_authorized_emails_and_dept_codes.return_value = (["pctest.isAdmin.canBook@example.com"], ["93"])
 
             # When
             response = TestClient(app.test_client()).post(
@@ -104,7 +104,7 @@ class Post:
 
             # Then
             assert response.status_code == 201
-            created_user = User.query.filter_by(email="pctest.isAdmin.canBook@btmx.fr").one()
+            created_user = User.query.filter_by(email="pctest.isAdmin.canBook@example.com").one()
             assert not created_user.isAdmin
 
     class Returns400:
@@ -128,7 +128,7 @@ class Post:
         @pytest.mark.usefixtures("db_session")
         def when_email_with_invalid_format(self, get_authorized_emails_and_dept_codes, app):
             # Given
-            get_authorized_emails_and_dept_codes.return_value = (["toto@btmx.fr"], ["93"])
+            get_authorized_emails_and_dept_codes.return_value = (["toto@example.com"], ["93"])
             data = BASE_DATA.copy()
             data["email"] = "toto"
 
@@ -146,7 +146,7 @@ class Post:
         @pytest.mark.usefixtures("db_session")
         def when_email_is_already_used(self, get_authorized_emails_and_dept_codes, app):
             # Given
-            get_authorized_emails_and_dept_codes.return_value = (["toto@btmx.fr"], ["93"])
+            get_authorized_emails_and_dept_codes.return_value = (["toto@example.com"], ["93"])
 
             TestClient(app.test_client()).post(
                 "/users/signup/webapp", json=BASE_DATA, headers={"origin": "http://localhost:3000"}
@@ -166,7 +166,7 @@ class Post:
         @pytest.mark.usefixtures("db_session")
         def when_public_name_is_missing(self, get_authorized_emails_and_dept_codes, app):
             # Given
-            get_authorized_emails_and_dept_codes.return_value = (["toto@btmx.fr"], ["93"])
+            get_authorized_emails_and_dept_codes.return_value = (["toto@example.com"], ["93"])
             data = BASE_DATA.copy()
             del data["publicName"]
 
@@ -184,7 +184,7 @@ class Post:
         @pytest.mark.usefixtures("db_session")
         def when_public_name_is_too_short(self, get_authorized_emails_and_dept_codes, app):
             # Given
-            get_authorized_emails_and_dept_codes.return_value = (["toto@btmx.fr"], ["93"])
+            get_authorized_emails_and_dept_codes.return_value = (["toto@example.com"], ["93"])
             data = BASE_DATA.copy()
             data["publicName"] = "t"
 
@@ -202,7 +202,7 @@ class Post:
         @pytest.mark.usefixtures("db_session")
         def when_public_name_is_too_long(self, get_authorized_emails_and_dept_codes, app):
             # Given
-            get_authorized_emails_and_dept_codes.return_value = (["toto@btmx.fr"], ["93"])
+            get_authorized_emails_and_dept_codes.return_value = (["toto@example.com"], ["93"])
             data = BASE_DATA.copy()
             data["publicName"] = "x" * 300
 

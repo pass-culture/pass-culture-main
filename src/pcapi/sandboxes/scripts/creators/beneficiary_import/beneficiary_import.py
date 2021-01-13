@@ -20,7 +20,7 @@ def create_beneficiary_user() -> User:
 
 
 def create_admin_user():
-    admin_user = create_user(is_beneficiary=False, is_admin=True, email="pctest.admin93.0@btmx.fr")
+    admin_user = create_user(is_beneficiary=False, is_admin=True, email="pctest.admin93.0@example.com")
     repository.save(admin_user)
     logger.info("created 1 admin user")
 

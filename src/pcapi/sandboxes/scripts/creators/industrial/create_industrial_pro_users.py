@@ -18,7 +18,7 @@ def create_industrial_pro_users():
     for departement_code in departement_codes:
 
         for pro_count in range(PROS_COUNT):
-            email = "pctest.pro{}.{}@btmx.fr".format(departement_code, pro_count)
+            email = "pctest.pro{}.{}@example.com".format(departement_code, pro_count)
             users_by_name["pro{} {}".format(departement_code, pro_count)] = create_user(
                 reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24),
                 is_beneficiary=False,

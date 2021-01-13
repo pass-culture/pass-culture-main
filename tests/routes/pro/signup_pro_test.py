@@ -17,7 +17,7 @@ from tests.conftest import TestClient
 
 
 BASE_DATA_PRO = {
-    "email": "toto_pro@btmx.fr",
+    "email": "toto_pro@example.com",
     "publicName": "Toto Pro",
     "firstName": "Toto",
     "lastName": "Pro",
@@ -41,7 +41,7 @@ class Post:
             expected_response_json = {
                 "isBeneficiary": False,
                 "departementCode": "92",
-                "email": "toto_pro@btmx.fr",
+                "email": "toto_pro@example.com",
                 "firstName": "Toto",
                 "isAdmin": False,
                 "lastName": "Pro",
@@ -75,7 +75,7 @@ class Post:
         def test_does_not_allow_the_creation_of_admins(self, app):
             # Given
             user_json = {
-                "email": "toto_pro@btmx.fr",
+                "email": "toto_pro@example.com",
                 "publicName": "Toto Pro",
                 "firstName": "Toto",
                 "lastName": "Pro",
@@ -99,7 +99,7 @@ class Post:
 
             # Then
             assert response.status_code == 201
-            created_user = User.query.filter_by(email="toto_pro@btmx.fr").one()
+            created_user = User.query.filter_by(email="toto_pro@example.com").one()
             assert not created_user.isAdmin
 
         @pytest.mark.usefixtures("db_session")
@@ -117,7 +117,7 @@ class Post:
             # Then
             assert response.status_code == 201
             assert "Set-Cookie" not in response.headers
-            user = User.query.filter_by(email="toto_pro@btmx.fr").first()
+            user = User.query.filter_by(email="toto_pro@example.com").first()
             assert user is not None
             offerer = Offerer.query.filter_by(siren="349974931").first()
             assert offerer is not None
@@ -157,7 +157,7 @@ class Post:
             # Then
             assert response.status_code == 201
             assert "Set-Cookie" not in response.headers
-            user = User.query.filter_by(email="toto_pro@btmx.fr").first()
+            user = User.query.filter_by(email="toto_pro@example.com").first()
             assert user is not None
             offerer = Offerer.query.filter_by(siren="349974931").first()
             assert offerer is not None
@@ -189,7 +189,7 @@ class Post:
             # Then
             assert response.status_code == 201
             assert "Set-Cookie" not in response.headers
-            user = User.query.filter_by(email="toto_pro@btmx.fr").first()
+            user = User.query.filter_by(email="toto_pro@example.com").first()
             assert user is not None
             offerer = Offerer.query.filter_by(siren="349974931").first()
             assert offerer is not None
@@ -220,7 +220,7 @@ class Post:
 
             # Then
             assert response.status_code == 201
-            user = User.query.filter_by(email="toto_pro@btmx.fr").first()
+            user = User.query.filter_by(email="toto_pro@example.com").first()
             assert user.needsToFillCulturalSurvey == False
 
     class Returns400:

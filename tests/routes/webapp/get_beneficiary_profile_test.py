@@ -20,18 +20,18 @@ class Get:
         def when_user_is_logged_in_and_has_no_deposit(self, app):
             # Given
             user = UserFactory(
-                email="toto@btmx.fr",
+                email="toto@example.com",
                 postalCode="93020",
             )
             repository.delete(*user.deposits)
 
             # When
-            response = TestClient(app.test_client()).with_auth(email="toto@btmx.fr").get("/beneficiaries/current")
+            response = TestClient(app.test_client()).with_auth(email="toto@example.com").get("/beneficiaries/current")
 
             # Then
             assert response.status_code == 200
             json = response.json
-            assert json["email"] == "toto@btmx.fr"
+            assert json["email"] == "toto@example.com"
             assert json["expenses"] == []
             assert "password" not in json
             assert "clearTextPassword" not in json

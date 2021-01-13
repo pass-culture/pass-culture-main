@@ -39,11 +39,11 @@ class Get:
         @pytest.mark.usefixtures("db_session")
         def when_user_is_admin(self, app):
             # given
-            admin_user = create_user(is_beneficiary=False, email="pctest.admin93.0@btmx.fr", is_admin=True)
+            admin_user = create_user(is_beneficiary=False, email="pctest.admin93.0@example.com", is_admin=True)
             repository.save(admin_user)
 
             # when
-            response = TestClient(app.test_client()).with_auth("pctest.admin93.0@btmx.fr").get("/types")
+            response = TestClient(app.test_client()).with_auth("pctest.admin93.0@example.com").get("/types")
             types = response.json
 
             # then
