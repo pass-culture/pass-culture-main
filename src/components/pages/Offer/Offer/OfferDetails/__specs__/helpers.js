@@ -6,6 +6,7 @@ export const fieldLabels = {
   bookingEmail: { label: 'Email auquel envoyer les notifications :', exact: false },
   description: { label: 'Description', exact: false },
   durationMinutes: { label: 'Durée', exact: false },
+  externalTicketOfficeUrl: { label: /URL de la billeterie/, exact: true },
   isbn: { label: 'ISBN', exact: false },
   isDuo: { label: 'Accepter les réservations "duo"', exact: false },
   audioDisabilityCompliant: { label: 'Handicap auditif', exact: true },
@@ -24,7 +25,7 @@ export const fieldLabels = {
   stageDirector: { label: 'Metteur en scène', exact: false },
   speaker: { label: 'Intervenant', exact: false },
   type: { label: 'Type', exact: true },
-  url: { label: 'URL', exact: false },
+  url: { label: 'URL', exact: true },
   venueId: { label: 'Lieu', exact: true },
   visa: { label: 'Visa d’exploitation', exact: false },
   withdrawalDetails: { label: 'Informations de retrait', exact: false },
@@ -61,10 +62,10 @@ export const setOfferValues = async values => {
     'type',
     'venueId',
   ]
-  const setFormValueForField = async (field, value) => {
+  const setFormValueForField = (field, value) => {
     let input
     const { label, exact } = fieldLabels[field]
-    input = await screen.findByLabelText(label, { exact })
+    input = screen.getByLabelText(label, { exact })
     if (checkboxes.includes(field)) {
       userEvent.click(input)
     } else if (selects.includes(field)) {
@@ -82,7 +83,7 @@ export const setOfferValues = async values => {
     if (fieldName === 'extraData') {
       modifiedInputs[fieldName] = await setOfferValues(values.extraData)
     } else {
-      modifiedInputs[fieldName] = await setFormValueForField(fieldName, values[fieldName])
+      modifiedInputs[fieldName] = setFormValueForField(fieldName, values[fieldName])
     }
   }
 

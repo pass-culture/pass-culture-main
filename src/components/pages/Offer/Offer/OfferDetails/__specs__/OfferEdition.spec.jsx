@@ -183,6 +183,7 @@ describe('offerDetails - Edition', () => {
         bookingEmail: 'booking@example.net',
         description: 'Offer description',
         durationMinutes: 90,
+        externalTicketOfficeUrl: 'http://example.fr',
         isDuo: true,
         audioDisabilityCompliant: true,
         mentalDisabilityCompliant: true,
@@ -317,6 +318,13 @@ describe('offerDetails - Edition', () => {
         exact: fieldLabels.speaker.exact,
       })
       expect(speakerInput).toHaveValue(editedOffer.extraData.speaker)
+      const externalTicketOfficeUrlInput = screen.getByLabelText(
+        fieldLabels.externalTicketOfficeUrl.label,
+        {
+          exact: fieldLabels.externalTicketOfficeUrl.exact,
+        }
+      )
+      expect(externalTicketOfficeUrlInput).toHaveValue(editedOffer.externalTicketOfficeUrl)
       const urlInput = screen.getByLabelText(fieldLabels.url.label, {
         exact: fieldLabels.url.exact,
       })
@@ -436,6 +444,13 @@ describe('offerDetails - Edition', () => {
         exact: fieldLabels.speaker.exact,
       })
       expect(speakerInput).toBeEnabled()
+      const externalTicketOfficeUrlInput = screen.getByLabelText(
+        fieldLabels.externalTicketOfficeUrl.label,
+        {
+          exact: fieldLabels.externalTicketOfficeUrl.exact,
+        }
+      )
+      expect(externalTicketOfficeUrlInput).toBeEnabled()
       const urlInput = screen.getByLabelText(fieldLabels.url.label, {
         exact: fieldLabels.url.exact,
       })
@@ -514,7 +529,7 @@ describe('offerDetails - Edition', () => {
         ).toHaveAttribute('src', expect.stringContaining(providerInformation.icon))
       })
 
-      it('should allow edition of accessibility fields', async () => {
+      it('should allow edition of accessibility fields and external ticket office url', async () => {
         // Given
         editedOfferVenue.isVirtual = true
         const editedOffer = {
@@ -585,6 +600,13 @@ describe('offerDetails - Edition', () => {
           }
         )
         expect(visualDisabilityCompliant).toBeEnabled()
+        const externalTicketOfficeUrlInput = screen.getByLabelText(
+          fieldLabels.externalTicketOfficeUrl.label,
+          {
+            exact: fieldLabels.externalTicketOfficeUrl.exact,
+          }
+        )
+        expect(externalTicketOfficeUrlInput).toBeEnabled()
       })
 
       it('should not allow any other edition', async () => {
@@ -754,7 +776,7 @@ describe('offerDetails - Edition', () => {
   })
 
   describe('when submitting form', () => {
-    it('should not send not editable fields for unsynchronised offers', async () => {
+    it('should not send not editable fields for non-synchronised offers', async () => {
       // Given
       const editedOffer = {
         id: 'ABC12',

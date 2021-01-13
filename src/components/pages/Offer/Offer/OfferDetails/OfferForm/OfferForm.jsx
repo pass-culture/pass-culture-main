@@ -15,6 +15,7 @@ import {
   DEFAULT_FORM_VALUES,
   EXTRA_DATA_FIELDS,
   MANDATORY_FIELDS,
+  TEXT_INPUT_DEFAULT_VALUE,
 } from './_constants'
 import { ReactComponent as AudioDisabilitySvg } from './assets/audio-disability.svg'
 import { ReactComponent as MentalDisabilitySvg } from './assets/mental-disability.svg'
@@ -223,9 +224,11 @@ const OfferForm = ({
         : {}
       const submittedValues = editableFields.reduce((submittedValues, fieldName) => {
         if (!EXTRA_DATA_FIELDS.includes(fieldName)) {
+          const fieldValue =
+            formValues[fieldName] === TEXT_INPUT_DEFAULT_VALUE ? null : formValues[fieldName]
           submittedValues = {
             ...submittedValues,
-            [fieldName]: formValues[fieldName],
+            [fieldName]: fieldValue,
           }
         } else if (formValues[fieldName] !== DEFAULT_FORM_VALUES[fieldName]) {
           submittedValues.extraData = {
@@ -267,7 +270,6 @@ const OfferForm = ({
     handleFormUpdate,
   ])
 
-  // TODO rlecellier: see if it can be moved in offer default value (as offerer)
   const toggleReceiveNotification = useCallback(
     () => setReceiveNotificationEmails(!receiveNotificationEmails),
     [setReceiveNotificationEmails, receiveNotificationEmails]
@@ -576,6 +578,27 @@ const OfferForm = ({
               label="Handicap auditif"
               name="audioDisabilityCompliant"
               onChange={handleSingleFormUpdate}
+            />
+          </section>
+
+          <section className="form-section">
+            <h3 className="section-title">
+              {'Billeterie externe'}
+            </h3>
+            <p className="section-description">
+              {
+                "Ce lien sera affiché aux utilisateurs ne pouvant pas effectuer la réservation dans l'application"
+              }
+            </p>
+            <TextInput
+              disabled={readOnlyFields.includes('externalTicketOfficeUrl')}
+              error={getErrorMessage('externalTicketOfficeUrl')}
+              label="URL de la billeterie"
+              name="externalTicketOfficeUrl"
+              onChange={handleSingleFormUpdate}
+              subLabel={!MANDATORY_FIELDS.includes('externalTicketOfficeUrl') ? 'Optionnel' : ''}
+              type="text"
+              value={formValues.externalTicketOfficeUrl}
             />
           </section>
 

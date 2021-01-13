@@ -216,7 +216,7 @@ describe('offerDetails - Creation - pro user', () => {
         expect(screen.getByText('Ajouter une image', { selector: 'button' })).toBeInTheDocument()
       })
 
-      it('should display "Infos pratiques", "Infos artistiques", "Accessibilité" and "Autre" section', async () => {
+      it('should display "Infos pratiques", "Infos artistiques", "Accessibilité", "Billeterie externe" and "Autre" section', async () => {
         // Given
         await renderOffers(props, store)
 
@@ -231,6 +231,9 @@ describe('offerDetails - Creation - pro user', () => {
           screen.getByRole('heading', { name: 'Informations pratiques', level: 3 })
         ).toBeInTheDocument()
         expect(screen.getByRole('heading', { name: 'Accessibilité', level: 3 })).toBeInTheDocument()
+        expect(
+          screen.getByRole('heading', { name: 'Billeterie externe', level: 3 })
+        ).toBeInTheDocument()
         expect(screen.getByRole('heading', { name: 'Autre', level: 3 })).toBeInTheDocument()
       })
 
@@ -246,6 +249,56 @@ describe('offerDetails - Creation - pro user', () => {
         const bookingEmailInput = screen.getByLabelText('Email auquel envoyer les notifications :')
         expect(bookingEmailInput).toBeInTheDocument()
         expect(bookingEmailInput).toHaveAttribute('name', 'bookingEmail')
+      })
+
+      it('should display a text input for an external ticket office url"', async () => {
+        // Given
+        await renderOffers(props, store)
+
+        // When
+        await setOfferValues({ type: 'EventType.MUSIQUE' })
+
+        // Then
+        const externalTicketOfficeUrlInput = await getOfferInputForField('externalTicketOfficeUrl')
+        expect(externalTicketOfficeUrlInput).toBeInTheDocument()
+        expect(externalTicketOfficeUrlInput).toHaveAttribute('name', 'externalTicketOfficeUrl')
+      })
+
+      describe('accessibility fields', () => {
+        it('should display accessibility section description', async () => {
+          // Given
+          await renderOffers(props, store)
+
+          // When
+          await setOfferValues({ type: 'EventType.CINEMA' })
+
+          // Then
+          expect(
+            screen.getByText('Cette offre est accessible aux publics en situation de :')
+          ).toBeInTheDocument()
+        })
+
+        it('should display accessibility checkboxes unchecked by default', async () => {
+          // Given
+          await renderOffers(props, store)
+
+          // When
+          await setOfferValues({ type: 'EventType.CINEMA' })
+
+          // Then
+          expect(
+            screen.getByLabelText('Handicap visuel', { selector: 'input[type="checkbox"]' })
+          ).not.toBeChecked()
+          expect(
+            screen.getByLabelText('Handicap mental', { selector: 'input[type="checkbox"]' })
+          ).not.toBeChecked()
+          expect(
+            screen.getByLabelText('Handicap moteur', { selector: 'input[type="checkbox"]' })
+          ).not.toBeChecked()
+          expect(
+            screen.getByLabelText('Handicap auditif', { selector: 'input[type="checkbox"]' })
+          ).not.toBeChecked()
+        })
       })
 
       describe('venue selection', () => {
@@ -446,212 +499,181 @@ describe('offerDetails - Creation - pro user', () => {
         })
       })
 
-      it('should display accessibility section description', async () => {
-        // Given
-        await renderOffers(props, store)
+      describe('with conditional fields', () => {
+        describe('"musicType"', () => {
+          it('should display a music type selection', async () => {
+            // Given
+            await renderOffers(props, store)
 
-        // When
-        await setOfferValues({ type: 'EventType.CINEMA' })
+            // When
+            await setOfferValues({ type: 'EventType.MUSIQUE' })
 
-        // Then
-        expect(
-          screen.getByText('Cette offre est accessible aux publics en situation de :')
-        ).toBeInTheDocument()
-      })
+            // Then
+            const musicTypeInput = await getOfferInputForField('musicType')
+            expect(musicTypeInput).toBeInTheDocument()
+            expect(musicTypeInput).toHaveAttribute('name', 'musicType')
+          })
 
-      it('should display accessibility checkboxes unchecked by default', async () => {
-        // Given
-        await renderOffers(props, store)
+          it('should display a music subtype selection when a musicType is selected', async () => {
+            // Given
+            await renderOffers(props, store)
+            await setOfferValues({ type: 'EventType.MUSIQUE' })
 
-        // When
-        await setOfferValues({ type: 'EventType.CINEMA' })
+            // When
+            await setOfferValues({ musicType: '501' })
 
-        // Then
-        expect(
-          screen.getByLabelText('Handicap visuel', { selector: 'input[type="checkbox"]' })
-        ).not.toBeChecked()
-        expect(
-          screen.getByLabelText('Handicap mental', { selector: 'input[type="checkbox"]' })
-        ).not.toBeChecked()
-        expect(
-          screen.getByLabelText('Handicap moteur', { selector: 'input[type="checkbox"]' })
-        ).not.toBeChecked()
-        expect(
-          screen.getByLabelText('Handicap auditif', { selector: 'input[type="checkbox"]' })
-        ).not.toBeChecked()
-      })
+            // Then
+            const musicSubTypeInput = await getOfferInputForField('musicSubType')
+            expect(musicSubTypeInput).toBeInTheDocument()
+            expect(musicSubTypeInput).toHaveAttribute('name', 'musicSubType')
+          })
 
-      describe('with conditional field "musicType"', () => {
-        it('should display a music type selection', async () => {
-          // Given
-          await renderOffers(props, store)
+          it('should not display a music type selection when changing to an offer type wihtout "musicType" conditional field', async () => {
+            // Given
+            await renderOffers(props, store)
+            await setOfferValues({ type: 'EventType.MUSIQUE' })
+            await screen.findByLabelText('Genre musical', { exact: false })
 
-          // When
-          await setOfferValues({ type: 'EventType.MUSIQUE' })
+            // When
+            await setOfferValues({ type: 'EventType.CINEMA' })
 
-          // Then
-          const musicTypeInput = await getOfferInputForField('musicType')
-          expect(musicTypeInput).toBeInTheDocument()
-          expect(musicTypeInput).toHaveAttribute('name', 'musicType')
+            // Then
+            expect(
+              screen.queryByLabelText('Genre musical', { exact: false })
+            ).not.toBeInTheDocument()
+          })
+
+          it('should not display a music subtype selection when a musicType is not selected and a showType was selected before', async () => {
+            // Given
+            await renderOffers(props, store)
+            await setOfferValues({ type: 'EventType.SPECTACLE_VIVANT' })
+            await setOfferValues({ showType: '1300' })
+            await setOfferValues({ showSubType: '1307' })
+
+            // When
+            await setOfferValues({ type: 'EventType.MUSIQUE' })
+
+            // Then
+            expect(screen.queryByLabelText('Sous genre', { exact: false })).not.toBeInTheDocument()
+          })
         })
 
-        it('should display a music subtype selection when a musicType is selected', async () => {
-          // Given
-          await renderOffers(props, store)
-          await setOfferValues({ type: 'EventType.MUSIQUE' })
+        describe('"showType"', () => {
+          it('should display a show type selection', async () => {
+            // Given
+            await renderOffers(props, store)
 
-          // When
-          await setOfferValues({ musicType: '501' })
+            // When
+            await setOfferValues({ type: 'EventType.SPECTACLE_VIVANT' })
 
-          // Then
-          const musicSubTypeInput = await getOfferInputForField('musicSubType')
-          expect(musicSubTypeInput).toBeInTheDocument()
-          expect(musicSubTypeInput).toHaveAttribute('name', 'musicSubType')
+            // Then
+            const showTypeInput = await getOfferInputForField('showType')
+            expect(showTypeInput).toBeInTheDocument()
+            expect(showTypeInput).toHaveAttribute('name', 'showType')
+          })
+
+          it('should display a show subtype selection when a showType is selected', async () => {
+            // Given
+            await renderOffers(props, store)
+
+            // When
+            await setOfferValues({ type: 'EventType.SPECTACLE_VIVANT' })
+            await setOfferValues({ showType: '1300' })
+
+            // Then
+            const showSubTypeInput = await getOfferInputForField('showSubType')
+            expect(showSubTypeInput).toBeInTheDocument()
+            expect(showSubTypeInput).toHaveAttribute('name', 'showSubType')
+          })
         })
 
-        it('should not display a music type selection when changing to an offer type wihtout "musicType" conditional field', async () => {
-          // Given
-          await renderOffers(props, store)
-          await setOfferValues({ type: 'EventType.MUSIQUE' })
-          await screen.findByLabelText('Genre musical', { exact: false })
+        describe('"speaker"', () => {
+          it('should display a text input "intervenant"', async () => {
+            // Given
+            await renderOffers(props, store)
 
-          // When
-          await setOfferValues({ type: 'EventType.CINEMA' })
+            // When
+            await setOfferValues({ type: 'EventType.CONFERENCE_DEBAT_DEDICACE' })
 
-          // Then
-          expect(screen.queryByLabelText('Genre musical', { exact: false })).not.toBeInTheDocument()
+            // Then
+            const speakerInput = await getOfferInputForField('speaker')
+            expect(speakerInput).toBeInTheDocument()
+            expect(speakerInput).toHaveAttribute('name', 'speaker')
+          })
         })
 
-        it('should not display a music subtype selection when a musicType is not selected and a showType was selected before', async () => {
-          // Given
-          await renderOffers(props, store)
-          await setOfferValues({ type: 'EventType.SPECTACLE_VIVANT' })
-          await setOfferValues({ showType: '1300' })
-          await setOfferValues({ showSubType: '1307' })
+        describe('"author"', () => {
+          it('should display a text input "auteur"', async () => {
+            // Given
+            await renderOffers(props, store)
 
-          // When
-          await setOfferValues({ type: 'EventType.MUSIQUE' })
+            // When
+            await setOfferValues({ type: 'EventType.CINEMA' })
 
-          // Then
-          expect(screen.queryByLabelText('Sous genre', { exact: false })).not.toBeInTheDocument()
-        })
-      })
-
-      describe('with conditional field "showType"', () => {
-        it('should display a show type selection', async () => {
-          // Given
-          await renderOffers(props, store)
-
-          // When
-          await setOfferValues({ type: 'EventType.SPECTACLE_VIVANT' })
-
-          // Then
-          const showTypeInput = await getOfferInputForField('showType')
-          expect(showTypeInput).toBeInTheDocument()
-          expect(showTypeInput).toHaveAttribute('name', 'showType')
+            // Then
+            const authorInput = await getOfferInputForField('author')
+            expect(authorInput).toBeInTheDocument()
+            expect(authorInput).toHaveAttribute('name', 'author')
+          })
         })
 
-        it('should display a show subtype selection when a showType is selected', async () => {
-          // Given
-          await renderOffers(props, store)
+        describe('"visa"', () => {
+          it("should display a text input 'Visa d'exploitation'", async () => {
+            // Given
+            await renderOffers(props, store)
 
-          // When
-          await setOfferValues({ type: 'EventType.SPECTACLE_VIVANT' })
-          await setOfferValues({ showType: '1300' })
+            // When
+            await setOfferValues({ type: 'EventType.CINEMA' })
 
-          // Then
-          const showSubTypeInput = await getOfferInputForField('showSubType')
-          expect(showSubTypeInput).toBeInTheDocument()
-          expect(showSubTypeInput).toHaveAttribute('name', 'showSubType')
+            // Then
+            const visaInput = await getOfferInputForField('visa')
+            expect(visaInput).toBeInTheDocument()
+            expect(visaInput).toHaveAttribute('name', 'visa')
+          })
         })
-      })
 
-      describe('with conditional field "speaker"', () => {
-        it('should display a text input "intervenant"', async () => {
-          // Given
-          await renderOffers(props, store)
+        describe('"isbn"', () => {
+          it('should display a text input "ISBN"', async () => {
+            // Given
+            await renderOffers(props, store)
 
-          // When
-          await setOfferValues({ type: 'EventType.CONFERENCE_DEBAT_DEDICACE' })
+            // When
+            await setOfferValues({ type: 'ThingType.LIVRE_EDITION' })
 
-          // Then
-          const speakerInput = await getOfferInputForField('speaker')
-          expect(speakerInput).toBeInTheDocument()
-          expect(speakerInput).toHaveAttribute('name', 'speaker')
+            // Then
+            const isbnInput = await getOfferInputForField('isbn')
+            expect(isbnInput).toBeInTheDocument()
+            expect(isbnInput).toHaveAttribute('name', 'isbn')
+          })
         })
-      })
 
-      describe('with conditional field "author"', () => {
-        it('should display a text input "auteur"', async () => {
-          // Given
-          await renderOffers(props, store)
+        describe('"stageDirector"', () => {
+          it('should display a text input "Metteur en scène"', async () => {
+            // Given
+            await renderOffers(props, store)
 
-          // When
-          await setOfferValues({ type: 'EventType.CINEMA' })
+            // When
+            await setOfferValues({ type: 'EventType.CINEMA' })
 
-          // Then
-          const authorInput = await getOfferInputForField('author')
-          expect(authorInput).toBeInTheDocument()
-          expect(authorInput).toHaveAttribute('name', 'author')
+            // Then
+            const stageDirectorInput = await getOfferInputForField('stageDirector')
+            expect(stageDirectorInput).toBeInTheDocument()
+            expect(stageDirectorInput).toHaveAttribute('name', 'stageDirector')
+          })
         })
-      })
 
-      describe('with conditional field "visa"', () => {
-        it("should display a text input 'Visa d'exploitation'", async () => {
-          // Given
-          await renderOffers(props, store)
+        describe('"performer"', () => {
+          it('should display a text input "Interprète"', async () => {
+            // Given
+            await renderOffers(props, store)
 
-          // When
-          await setOfferValues({ type: 'EventType.CINEMA' })
+            // When
+            await setOfferValues({ type: 'EventType.MUSIQUE' })
 
-          // Then
-          const visaInput = await getOfferInputForField('visa')
-          expect(visaInput).toBeInTheDocument()
-          expect(visaInput).toHaveAttribute('name', 'visa')
-        })
-      })
-
-      describe('with conditional field "isbn"', () => {
-        it('should display a text input "ISBN"', async () => {
-          // Given
-          await renderOffers(props, store)
-
-          // When
-          await setOfferValues({ type: 'ThingType.LIVRE_EDITION' })
-
-          // Then
-          const isbnInput = await getOfferInputForField('isbn')
-          expect(isbnInput).toBeInTheDocument()
-          expect(isbnInput).toHaveAttribute('name', 'isbn')
-        })
-      })
-
-      describe('with conditional field "stageDirector"', () => {
-        it('should display a text input "Metteur en scène"', async () => {
-          // Given
-          await renderOffers(props, store)
-
-          // When
-          await setOfferValues({ type: 'EventType.CINEMA' })
-
-          // Then
-          const stageDirectorInput = await getOfferInputForField('stageDirector')
-          expect(stageDirectorInput).toBeInTheDocument()
-          expect(stageDirectorInput).toHaveAttribute('name', 'stageDirector')
-        })
-      })
-
-      describe('with conditional field "performer"', () => {
-        it('should display a text input "Interprète"', async () => {
-          // Given
-          await renderOffers(props, store)
-
-          // When
-          await setOfferValues({ type: 'EventType.MUSIQUE' })
-
-          // Then
-          const performerInput = await getOfferInputForField('performer')
-          expect(performerInput).toHaveAttribute('name', 'performer')
+            // Then
+            const performerInput = await getOfferInputForField('performer')
+            expect(performerInput).toHaveAttribute('name', 'performer')
+          })
         })
       })
 
@@ -860,6 +882,7 @@ describe('offerDetails - Creation - pro user', () => {
         mentalDisabilityCompliant: true,
         motorDisabilityCompliant: true,
         visualDisabilityCompliant: true,
+        externalTicketOfficeUrl: 'http://example.net',
         type: 'EventType.MUSIQUE',
         extraData: {
           musicType: '501',
@@ -885,141 +908,165 @@ describe('offerDetails - Creation - pro user', () => {
         durationMinutes: 90,
       })
     })
-  })
 
-  it('should show a success notification when form was correctly submitted', async () => {
-    // Given
-    const offerValues = {
-      name: 'Ma petite offre',
-      description: 'Pas si petite que ça',
-      durationMinutes: '1:30',
-      type: 'EventType.MUSIQUE',
-      extraData: {
-        musicType: '501',
-        musicSubType: '502',
-        performer: 'TEST PERFORMER NAME',
-      },
-      venueId: venues[0].id,
-      isDuo: false,
-      withdrawalDetails: 'À venir chercher sur place.',
-    }
+    it('should submit externalTicketOfficeUrl as null when no value was provided', async () => {
+      // Given
+      const offerValues = {
+        name: 'Ma petite offre',
+        type: 'EventType.MUSIQUE',
+        venueId: venues[0].id,
+      }
 
-    await renderOffers(props, store)
+      await renderOffers(props, store)
 
-    await setOfferValues({ type: offerValues.type })
-    await setOfferValues(offerValues)
+      await setOfferValues({ type: offerValues.type })
+      await setOfferValues(offerValues)
 
-    // When
-    userEvent.click(screen.getByText('Enregistrer et passer aux stocks'))
+      // When
+      await userEvent.click(screen.getByText('Enregistrer et passer aux stocks'))
 
-    // Then
-    const successNotification = await screen.findByText('Votre offre a bien été créée')
-    expect(successNotification).toBeInTheDocument()
-  })
+      // Then
+      expect(pcapi.createOffer).toHaveBeenCalledWith(
+        expect.objectContaining({
+          externalTicketOfficeUrl: null,
+        })
+      )
+    })
 
-  it('should show errors for mandatory fields', async () => {
-    // Given
-    await renderOffers(props, store)
-    await setOfferValues({ type: 'EventType.MUSIQUE' })
+    it('should show a success notification when form was correctly submitted', async () => {
+      // Given
+      const offerValues = {
+        name: 'Ma petite offre',
+        description: 'Pas si petite que ça',
+        durationMinutes: '1:30',
+        type: 'EventType.MUSIQUE',
+        extraData: {
+          musicType: '501',
+          musicSubType: '502',
+          performer: 'TEST PERFORMER NAME',
+        },
+        venueId: venues[0].id,
+        isDuo: false,
+        withdrawalDetails: 'À venir chercher sur place.',
+      }
 
-    // When
-    userEvent.click(screen.getByText('Enregistrer et passer aux stocks'))
+      await renderOffers(props, store)
 
-    // Then
-    expect(pcapi.createOffer).not.toHaveBeenCalled()
+      await setOfferValues({ type: offerValues.type })
+      await setOfferValues(offerValues)
 
-    // Mandatory fields
-    const nameError = await findInputErrorForField('name')
-    expect(nameError).toHaveTextContent('Ce champ est obligatoire')
-    const venueIdError = await findInputErrorForField('venueId')
-    expect(venueIdError).toHaveTextContent('Ce champ est obligatoire')
-    const offererIdError = await findInputErrorForField('offererId')
-    expect(offererIdError).toHaveTextContent('Ce champ est obligatoire')
+      // When
+      userEvent.click(screen.getByText('Enregistrer et passer aux stocks'))
 
-    // Optional fields
-    const descriptionError = queryInputErrorForField('description')
-    expect(descriptionError).toBeNull()
-    const durationMinutesError = queryInputErrorForField('durationMinutes')
-    expect(durationMinutesError).toBeNull()
-    const typeError = queryInputErrorForField('type')
-    expect(typeError).toBeNull()
-    const authorError = queryInputErrorForField('author')
-    expect(authorError).toBeNull()
-    const musicTypeError = queryInputErrorForField('musicType')
-    expect(musicTypeError).toBeNull()
-    const musicSubTypeError = queryInputErrorForField('musicSubType')
-    expect(musicSubTypeError).toBeNull()
-    const performerError = queryInputErrorForField('performer')
-    expect(performerError).toBeNull()
-    const isDuoError = queryInputErrorForField('isDuo')
-    expect(isDuoError).toBeNull()
-    const withdrawalDetailsError = queryInputErrorForField('withdrawalDetails')
-    expect(withdrawalDetailsError).toBeNull()
-    const bookingEmailInput = queryInputErrorForField('bookingEmail')
-    expect(bookingEmailInput).toBeNull()
-  })
+      // Then
+      const successNotification = await screen.findByText('Votre offre a bien été créée')
+      expect(successNotification).toBeInTheDocument()
+    })
 
-  it('should show an error notification when form is not valid', async () => {
-    // Given
-    await renderOffers(props, store)
-    await setOfferValues({ type: 'EventType.MUSIQUE' })
+    it('should show errors for mandatory fields', async () => {
+      // Given
+      await renderOffers(props, store)
+      await setOfferValues({ type: 'EventType.MUSIQUE' })
 
-    // When
-    userEvent.click(screen.getByText('Enregistrer et passer aux stocks'))
+      // When
+      userEvent.click(screen.getByText('Enregistrer et passer aux stocks'))
 
-    // Then
-    const errorNotification = await screen.findByText(
-      'Une ou plusieurs erreurs sont présentes dans le formulaire'
-    )
-    expect(errorNotification).toBeInTheDocument()
-  })
+      // Then
+      expect(pcapi.createOffer).not.toHaveBeenCalled()
 
-  it('should show error for email notification input when asking to receive booking emails and no email was provided', async () => {
-    // Given
-    await renderOffers(props, store)
-    await setOfferValues({ type: 'EventType.MUSIQUE' })
-    await setOfferValues({ receiveNotificationEmails: true })
+      // Mandatory fields
+      const nameError = await findInputErrorForField('name')
+      expect(nameError).toHaveTextContent('Ce champ est obligatoire')
+      const venueIdError = await findInputErrorForField('venueId')
+      expect(venueIdError).toHaveTextContent('Ce champ est obligatoire')
+      const offererIdError = await findInputErrorForField('offererId')
+      expect(offererIdError).toHaveTextContent('Ce champ est obligatoire')
 
-    // When
-    userEvent.click(screen.getByText('Enregistrer et passer aux stocks'))
+      // Optional fields
+      const descriptionError = queryInputErrorForField('description')
+      expect(descriptionError).toBeNull()
+      const durationMinutesError = queryInputErrorForField('durationMinutes')
+      expect(durationMinutesError).toBeNull()
+      const typeError = queryInputErrorForField('type')
+      expect(typeError).toBeNull()
+      const authorError = queryInputErrorForField('author')
+      expect(authorError).toBeNull()
+      const musicTypeError = queryInputErrorForField('musicType')
+      expect(musicTypeError).toBeNull()
+      const musicSubTypeError = queryInputErrorForField('musicSubType')
+      expect(musicSubTypeError).toBeNull()
+      const performerError = queryInputErrorForField('performer')
+      expect(performerError).toBeNull()
+      const isDuoError = queryInputErrorForField('isDuo')
+      expect(isDuoError).toBeNull()
+      const withdrawalDetailsError = queryInputErrorForField('withdrawalDetails')
+      expect(withdrawalDetailsError).toBeNull()
+      const bookingEmailInput = queryInputErrorForField('bookingEmail')
+      expect(bookingEmailInput).toBeNull()
+    })
 
-    // Then
-    const bookingEmailInput = await findInputErrorForField('bookingEmail')
-    expect(bookingEmailInput).toHaveTextContent('Ce champ est obligatoire')
-  })
+    it('should show an error notification when form is not valid', async () => {
+      // Given
+      await renderOffers(props, store)
+      await setOfferValues({ type: 'EventType.MUSIQUE' })
 
-  it('should show error sent by API and show an error notification', async () => {
-    // Given
-    const offerValues = {
-      name: 'Ce nom serait-il invalide ?',
-      description: 'Pas si petite que ça',
-      durationMinutes: '1:30',
-      type: 'EventType.MUSIQUE',
-      extraData: {
-        musicType: '501',
-        musicSubType: '502',
-        performer: 'TEST PERFORMER NAME',
-      },
-      venueId: venues[0].id,
-      isDuo: false,
-      withdrawalDetails: 'À venir chercher sur place.',
-    }
+      // When
+      userEvent.click(screen.getByText('Enregistrer et passer aux stocks'))
 
-    pcapi.createOffer.mockRejectedValue({ errors: { name: "Ce nom n'est pas valide" } })
-    await renderOffers(props, store)
+      // Then
+      const errorNotification = await screen.findByText(
+        'Une ou plusieurs erreurs sont présentes dans le formulaire'
+      )
+      expect(errorNotification).toBeInTheDocument()
+    })
 
-    await setOfferValues({ type: offerValues.type })
-    await setOfferValues(offerValues)
+    it('should show error for email notification input when asking to receive booking emails and no email was provided', async () => {
+      // Given
+      await renderOffers(props, store)
+      await setOfferValues({ type: 'EventType.MUSIQUE' })
+      await setOfferValues({ receiveNotificationEmails: true })
 
-    // When
-    userEvent.click(screen.getByText('Enregistrer et passer aux stocks'))
+      // When
+      userEvent.click(screen.getByText('Enregistrer et passer aux stocks'))
 
-    // Then
-    const nameError = await screen.findByText("Ce nom n'est pas valide")
-    expect(nameError).toBeInTheDocument()
-    const errorNotification = await screen.findByText(
-      'Une ou plusieurs erreurs sont présentes dans le formulaire'
-    )
-    expect(errorNotification).toBeInTheDocument()
+      // Then
+      const bookingEmailInput = await findInputErrorForField('bookingEmail')
+      expect(bookingEmailInput).toHaveTextContent('Ce champ est obligatoire')
+    })
+
+    it('should show error sent by API and show an error notification', async () => {
+      // Given
+      const offerValues = {
+        name: 'Ce nom serait-il invalide ?',
+        description: 'Pas si petite que ça',
+        durationMinutes: '1:30',
+        type: 'EventType.MUSIQUE',
+        extraData: {
+          musicType: '501',
+          musicSubType: '502',
+          performer: 'TEST PERFORMER NAME',
+        },
+        venueId: venues[0].id,
+        isDuo: false,
+        withdrawalDetails: 'À venir chercher sur place.',
+      }
+
+      pcapi.createOffer.mockRejectedValue({ errors: { name: "Ce nom n'est pas valide" } })
+      await renderOffers(props, store)
+
+      await setOfferValues({ type: offerValues.type })
+      await setOfferValues(offerValues)
+
+      // When
+      userEvent.click(screen.getByText('Enregistrer et passer aux stocks'))
+
+      // Then
+      const nameError = await screen.findByText("Ce nom n'est pas valide")
+      expect(nameError).toBeInTheDocument()
+      const errorNotification = await screen.findByText(
+        'Une ou plusieurs erreurs sont présentes dans le formulaire'
+      )
+      expect(errorNotification).toBeInTheDocument()
+    })
   })
 })

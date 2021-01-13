@@ -1,4 +1,4 @@
-const TEXT_INPUT_DEFAULT_VALUE = ''
+export const TEXT_INPUT_DEFAULT_VALUE = ''
 const SELECT_DEFAULT_VALUE = ''
 
 export const DEFAULT_FORM_VALUES = {
@@ -24,6 +24,7 @@ export const DEFAULT_FORM_VALUES = {
   speaker: TEXT_INPUT_DEFAULT_VALUE,
   type: SELECT_DEFAULT_VALUE,
   url: TEXT_INPUT_DEFAULT_VALUE,
+  externalTicketOfficeUrl: TEXT_INPUT_DEFAULT_VALUE,
   venueId: SELECT_DEFAULT_VALUE,
   visa: TEXT_INPUT_DEFAULT_VALUE,
   withdrawalDetails: TEXT_INPUT_DEFAULT_VALUE,
@@ -36,6 +37,7 @@ export const BASE_OFFER_FIELDS = [
   'motorDisabilityCompliant',
   'visualDisabilityCompliant',
   'name',
+  'externalTicketOfficeUrl',
   'type',
   'venueId',
   'withdrawalDetails',
@@ -69,6 +71,7 @@ export const SYNCHRONIZED_OFFER_EDITABLE_FIELDS = {
     'mentalDisabilityCompliant',
     'motorDisabilityCompliant',
     'visualDisabilityCompliant',
+    'externalTicketOfficeUrl',
   ],
   ALLOCINE: ['isDuo'],
 }
