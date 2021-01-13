@@ -6,6 +6,7 @@ load_environment_variables()
 
 import logging
 import time
+from typing import Any
 from typing import Type
 
 import redis
@@ -19,8 +20,6 @@ from sentry_sdk.integrations.rq import RqIntegration
 from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 
 from pcapi import settings
-from pcapi.flask_app import app
-from pcapi.utils.health_checker import check_database_connection
 from pcapi.utils.health_checker import read_version_from_file
 from pcapi.utils.logger import logger
 from pcapi.workers.logger import JobStatus
@@ -33,33 +32,22 @@ redis_queue = Queue(connection=conn)
 logging.getLogger("rq.worker").setLevel(logging.CRITICAL)
 
 
-def log_worker_error(job: Job, exception_type: Type, exception_value: Exception) -> None:
+def log_worker_error(job: Job, exception_type: Type, exception_value: Exception, traceback: Any = None) -> None:
     # This handler is called by `rq.Worker.handle_exception()` from an
     # `except` clause, so we can (and should) use `logger.exception`.
     logger.exception(build_job_log_message(job, JobStatus.FAILED, f"{exception_type.__name__}: {exception_value}"))
 
 
-def log_redis_connection_status():
+def log_redis_connection_status() -> None:
     try:
         conn.ping()
         logger.info("Worker: redis connection OK")
-
     except redis.exceptions.ConnectionError as e:
         logger.critical("Worker: redis connection KO: %s", e)
 
 
-def log_database_connection_status():
-    with app.app_context():
-        if check_database_connection():
-            logger.info("Worker: database connection OK")
-        else:
-            logger.critical("Worker: database connection KO")
-
-
 if __name__ == "__main__":
     log_redis_connection_status()
-    log_database_connection_status()
-
     if settings.IS_DEV is False:
         sentry_sdk.init(
             dsn=settings.SENTRY_DSN,
