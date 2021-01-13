@@ -24,7 +24,7 @@ describe('src | components | Favorite', () => {
   })
 
   describe('when the user click for deleting to favorite', () => {
-    it('should not called tracking', async () => {
+    it('should not called tracking', () => {
       // given
       const wrapper = shallow(<Favorite {...props} />)
       const mockTrackAddToFavorite = jest
@@ -58,7 +58,7 @@ describe('src | components | Favorite', () => {
       expect(mockTrackAddToFavorite).toHaveBeenCalledWith('Nom du module', 'AE')
     })
 
-    it('should not called tracking if coming from home page', () => {
+    it('should not call AddToFavoritesFromHome on offer page', () => {
       // given
       props.isFavorite = false
       props.history.location.pathname = 'offre/details/AE'

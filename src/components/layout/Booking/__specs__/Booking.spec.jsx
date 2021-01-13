@@ -26,6 +26,10 @@ describe('src | components | layout | Booking | Booking', () => {
       history: {
         push,
         replace,
+        location: {
+          pathname: 'offre/details/AAA',
+          moduleName: 'Nom du module',
+        },
       },
       isCancelled: false,
       isEvent: false,
@@ -46,11 +50,15 @@ describe('src | components | layout | Booking | Booking', () => {
         venue: {
           name: 'super venue',
         },
+        id: 'AAA',
       },
       recommendation: {
         id: 'AE',
       },
       trackBookingSuccess,
+      trackBookOfferClickFromHomepage: jest.fn(),
+      trackBookOfferSuccessFromHomepage: jest.fn(),
+      getCurrentUserInformation: jest.fn(),
     }
   })
 
@@ -125,5 +133,44 @@ describe('src | components | layout | Booking | Booking', () => {
     // then
     expect(wrapper.find('#booking-close-button')).toHaveLength(1)
     expect(wrapper.find('#booking-validation-button')).toHaveLength(1)
+  })
+
+  describe('analytics', () => {
+    it('should not call tracking offer when history location do not contain accueil', () => {
+      const mockTrackBookOffer = jest
+        .spyOn(props, 'trackBookOfferClickFromHomepage')
+        .mockImplementation(jest.fn())
+      const mockTrackBookOfferSuccess = jest
+        .spyOn(props, 'trackBookOfferSuccessFromHomepage')
+        .mockImplementation(jest.fn())
+
+      const wrapper = mount(<Booking {...props} />)
+      wrapper.instance().handleFormSubmit({ isDuo: true })
+
+      expect(mockTrackBookOffer).not.toHaveBeenCalled()
+
+      wrapper.instance().handleRequestSuccess({}, { payload: {} })
+
+      expect(mockTrackBookOfferSuccess).not.toHaveBeenCalled()
+    })
+    it('should call tracking offer when history location contains accueil', () => {
+      props.history.location.pathname = 'accueil/details/AE'
+      const mockTrackBookOffer = jest
+        .spyOn(props, 'trackBookOfferClickFromHomepage')
+        .mockImplementation(jest.fn())
+      const mockTrackBookOfferSuccess = jest
+        .spyOn(props, 'trackBookOfferSuccessFromHomepage')
+        .mockImplementation(jest.fn())
+
+      const wrapper = mount(<Booking {...props} />)
+
+      wrapper.instance().handleFormSubmit({ isDuo: true })
+
+      expect(mockTrackBookOffer).toHaveBeenCalledWith('Nom du module', 'AAA')
+
+      wrapper.instance().handleRequestSuccess({}, { payload: {} })
+
+      expect(mockTrackBookOfferSuccess).toHaveBeenCalledWith('Nom du module', 'AAA')
+    })
   })
 })
