@@ -35,6 +35,7 @@ class FeatureToggle(enum.Enum):
     WEBAPP_HOMEPAGE = "Permettre l affichage de la nouvelle page d accueil de la webapp"
     WEBAPP_PROFILE_PAGE = "Permettre l affichage de la page profil (route dédiée + navbar)"
     APPLY_BOOKING_LIMITS_V2 = "Permettre l affichage des nouvelles règles de génération de portefeuille des jeunes"
+    ALLOW_IDCHECK_REGISTRATION = "Autorise les utilisateurs à suivre le parcours d'inscription jusqu'à ID Check"
 
 
 class Feature(PcObject, Model, DeactivableMixin):
