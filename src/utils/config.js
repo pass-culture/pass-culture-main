@@ -20,7 +20,7 @@ export const STYLEGUIDE_ACTIVE = ENV_NAME !== 'production' && ENV_NAME !== 'stag
 export const DELETE = '_delete_'
 
 export const HELP_PAGE_URL = 'https://aide.passculture.app/fr/category/acteurs-culturels-1t20dhs/'
-export const CGU_URL = 'https://docs.passculture.app/textes-normatifs'
+export const CGU_URL = 'https://pass.culture.fr/cgu-professionnels/'
 
 export const API_URL = process.env.API_URL || 'http://localhost'
 export const {

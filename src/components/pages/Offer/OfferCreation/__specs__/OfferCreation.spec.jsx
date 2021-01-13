@@ -549,7 +549,7 @@ describe('src | OfferCreation', () => {
           )
           const insertLink = wrapper.find('.yellow-insert a')
           expect(insertLink.prop('href')).toStrictEqual(
-            'https://docs.passculture.app/textes-normatifs'
+            'https://pass.culture.fr/cgu-professionnels/'
           )
         })
       })
