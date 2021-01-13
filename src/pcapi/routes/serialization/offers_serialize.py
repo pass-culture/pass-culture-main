@@ -25,6 +25,7 @@ class PostOfferBodyModel(BaseModel):
     type: Optional[str]
     name: Optional[str]
     booking_email: Optional[str]
+    external_ticket_office_url: Optional[HttpUrl]
     url: Optional[HttpUrl]
     media_urls: Optional[List[str]]
     description: Optional[str]
@@ -71,6 +72,7 @@ class PatchOfferBodyModel(BaseModel):
     name: Optional[str]
     extraData: Any
     type: Optional[str]
+    externalTicketOfficeUrl: Optional[HttpUrl]
     url: Optional[HttpUrl]
     withdrawalDetails: Optional[str]
     isActive: Optional[bool]
@@ -378,6 +380,7 @@ class GetOfferResponseModel(BaseModel):
     stocks: List[GetOfferStockResponseModel]
     thumbUrl: Optional[str]
     type: str
+    externalTicketOfficeUrl: Optional[str]
     url: Optional[str]
     venue: GetOfferVenueResponseModel
     venueId: str

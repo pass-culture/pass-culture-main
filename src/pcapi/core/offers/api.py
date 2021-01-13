@@ -106,6 +106,7 @@ def create_offer(offer_data: PostOfferBodyModel, user: User) -> Offer:
 
     offer.venue = venue
     offer.bookingEmail = offer_data.booking_email
+    offer.externalTicketOfficeUrl = offer_data.external_ticket_office_url
     offer.audioDisabilityCompliant = offer_data.audio_disability_compliant
     offer.mentalDisabilityCompliant = offer_data.mental_disability_compliant
     offer.motorDisabilityCompliant = offer_data.motor_disability_compliant
@@ -124,6 +125,7 @@ def update_offer(  # pylint: disable=redefined-builtin
     name: str = UNCHANGED,
     extraData: dict = UNCHANGED,
     type: str = UNCHANGED,
+    externalTicketOfficeUrl: str = UNCHANGED,
     url: str = UNCHANGED,
     withdrawalDetails: str = UNCHANGED,
     isActive: bool = UNCHANGED,

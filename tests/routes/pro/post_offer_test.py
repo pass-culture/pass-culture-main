@@ -27,6 +27,7 @@ class Returns200:
             "name": "La pièce de théâtre",
             "type": str(EventType.SPECTACLE_VIVANT),
             "extraData": {"toto": "text"},
+            "externalTicketOfficeUrl": "http://example.net",
             "audioDisabilityCompliant": False,
             "mentalDisabilityCompliant": True,
             "motorDisabilityCompliant": False,
@@ -42,6 +43,7 @@ class Returns200:
         assert offer.bookingEmail == "offer@example.com"
         assert offer.type == str(EventType.SPECTACLE_VIVANT)
         assert offer.extraData == {"toto": "text"}
+        assert offer.externalTicketOfficeUrl == "http://example.net"
         assert offer.venue == venue
         assert offer.product.durationMinutes == 60
         assert offer.product.owningOfferer == offerer
@@ -65,6 +67,7 @@ class Returns200:
             "name": "Les lièvres pas malins",
             "type": "ThingType.JEUX_VIDEO",
             "url": "http://example.com/offer",
+            "externalTicketOfficeUrl": "http://example.net",
             "audioDisabilityCompliant": True,
             "mentalDisabilityCompliant": False,
             "motorDisabilityCompliant": False,
@@ -81,6 +84,7 @@ class Returns200:
         assert offer.venue == venue
         assert offer.product.name == "Les lièvres pas malins"
         assert offer.product.url == "http://example.com/offer"
+        assert offer.externalTicketOfficeUrl == "http://example.net"
         assert offer.url == "http://example.com/offer"
         assert offer.isDigital
         assert offer.isNational
@@ -156,7 +160,7 @@ class Returns400:
         assert response.status_code == 400
         assert response.json["type"] == ["Le type de cette offre est inconnu"]
 
-    def test_fail_if_incoherent_input(self, app):
+    def test_fail_when_offer_type_does_not_allow_virtual_offer_and_venue_is_virtuel(self, app):
         # Given
         venue = offers_factories.VirtualVenueFactory()
         offerer = venue.managingOfferer
@@ -181,7 +185,7 @@ class Returns400:
         assert response.status_code == 400
         assert response.json["url"] == ["Une offre de type Jeux (support physique) ne peut pas être numérique"]
 
-    def should_fail_when_url_is_not_properly_formatted(self, app):
+    def should_fail_when_url_has_no_scheme(self, app):
         # Given
         venue = offers_factories.VirtualVenueFactory()
         offerer = venue.managingOfferer
@@ -200,6 +204,66 @@ class Returns400:
         # Then
         assert response.status_code == 400
         assert response.json["url"] == ['L\'URL doit commencer par "http://" ou "https://"']
+
+    def should_fail_when_externalTicketOfficeUrl_has_no_scheme(self, app):
+        # Given
+        venue = offers_factories.VirtualVenueFactory()
+        offerer = venue.managingOfferer
+        offers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+
+        # When
+        client = TestClient(app.test_client()).with_auth("user@example.com")
+        data = {
+            "venueId": humanize(venue.id),
+            "name": "Les lièvres pas malins",
+            "type": "ThingType.JEUX_VIDEO",
+            "externalTicketOfficeUrl": "missing.something",
+        }
+        response = client.post("/offers", json=data)
+
+        # Then
+        assert response.status_code == 400
+        assert response.json["externalTicketOfficeUrl"] == ['L\'URL doit commencer par "http://" ou "https://"']
+
+    def should_fail_when_url_has_no_host(self, app):
+        # Given
+        venue = offers_factories.VirtualVenueFactory()
+        offerer = venue.managingOfferer
+        offers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+
+        # When
+        client = TestClient(app.test_client()).with_auth("user@example.com")
+        data = {
+            "venueId": humanize(venue.id),
+            "name": "Les lièvres pas malins",
+            "type": "ThingType.JEUX_VIDEO",
+            "url": "https://missing",
+        }
+        response = client.post("/offers", json=data)
+
+        # Then
+        assert response.status_code == 400
+        assert response.json["url"] == ['L\'URL doit terminer par une extension (ex. ".fr")']
+
+    def should_fail_when_externalTicketOfficeUrl_has_no_host(self, app):
+        # Given
+        venue = offers_factories.VirtualVenueFactory()
+        offerer = venue.managingOfferer
+        offers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+
+        # When
+        client = TestClient(app.test_client()).with_auth("user@example.com")
+        data = {
+            "venueId": humanize(venue.id),
+            "name": "Les lièvres pas malins",
+            "type": "ThingType.JEUX_VIDEO",
+            "externalTicketOfficeUrl": "https://missing",
+        }
+        response = client.post("/offers", json=data)
+
+        # Then
+        assert response.status_code == 400
+        assert response.json["externalTicketOfficeUrl"] == ['L\'URL doit terminer par une extension (ex. ".fr")']
 
 
 @pytest.mark.usefixtures("db_session")

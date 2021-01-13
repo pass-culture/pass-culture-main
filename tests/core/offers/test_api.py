@@ -441,6 +441,7 @@ class CreateOfferTest:
             venueId=humanize(venue.id),
             name="A pretty good offer",
             type=str(offer_type.EventType.CINEMA),
+            externalTicketOfficeUrl="http://example.net",
             audioDisabilityCompliant=True,
             mentalDisabilityCompliant=True,
             motorDisabilityCompliant=True,
@@ -452,6 +453,7 @@ class CreateOfferTest:
         assert offer.venue == venue
         assert offer.type == str(offer_type.EventType.CINEMA)
         assert offer.product.owningOfferer == offerer
+        assert offer.externalTicketOfficeUrl == "http://example.net"
         assert offer.audioDisabilityCompliant
         assert offer.mentalDisabilityCompliant
         assert offer.motorDisabilityCompliant
@@ -477,6 +479,7 @@ class CreateOfferTest:
         data = offers_serialize.PostOfferBodyModel(
             venueId=humanize(venue.id),
             productId=humanize(product.id),
+            externalTicketOfficeUrl="http://example.net",
             audioDisabilityCompliant=True,
             mentalDisabilityCompliant=True,
             motorDisabilityCompliant=True,
@@ -487,6 +490,7 @@ class CreateOfferTest:
         assert offer.name == "An excellent offer"
         assert offer.type == str(offer_type.EventType.CINEMA)
         assert offer.product == product
+        assert offer.externalTicketOfficeUrl == "http://example.net"
         assert offer.audioDisabilityCompliant
         assert offer.mentalDisabilityCompliant
         assert offer.motorDisabilityCompliant
@@ -542,7 +546,7 @@ class CreateOfferTest:
         err = "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."
         assert error.value.errors["global"] == [err]
 
-    def test_fail_to_create_activation_offer_if_no_admin(self):
+    def test_fail_to_create_activation_offer_if_not_admin(self):
         venue = factories.VenueFactory()
         offerer = venue.managingOfferer
         user_offerer = factories.UserOffererFactory(offerer=offerer)

@@ -23,7 +23,11 @@ class Returns200:
 
         # When
         client = TestClient(app.test_client()).with_auth("user@example.com")
-        data = {"name": "New name"}
+        data = {
+            "name": "New name",
+            "externalTicketOfficeUrl": "http://example.net",
+            "mentalDisabilityCompliant": True,
+        }
         response = client.patch(f"/offers/{humanize(offer.id)}", json=data)
 
         # Then
@@ -31,7 +35,10 @@ class Returns200:
         assert response.json == {
             "id": humanize(offer.id),
         }
-        assert Offer.query.get(offer.id).name == "New name"
+        updated_offer = Offer.query.get(offer.id)
+        assert updated_offer.name == "New name"
+        assert updated_offer.externalTicketOfficeUrl == "http://example.net"
+        assert updated_offer.mentalDisabilityCompliant
 
 
 @pytest.mark.usefixtures("db_session")
@@ -72,7 +79,7 @@ class Returns400:
         for key in forbidden_keys:
             assert key in response.json
 
-    def should_fail_when_url_is_not_properly_formatted(self, app):
+    def should_fail_when_url_has_no_scheme(self, app):
         # Given
         virtual_venue = offers_factories.VirtualVenueFactory()
         offer = offers_factories.OfferFactory(venue=virtual_venue)
@@ -92,6 +99,69 @@ class Returns400:
         # Then
         assert response.status_code == 400
         assert response.json["url"] == ['L\'URL doit commencer par "http://" ou "https://"']
+
+    def should_fail_when_externalTicketOfficeUrl_has_no_scheme(self, app):
+        # Given
+        virtual_venue = offers_factories.VirtualVenueFactory()
+        offer = offers_factories.OfferFactory(venue=virtual_venue)
+        offers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        # When
+        data = {
+            "name": "Les lièvres pas malins",
+            "externalTicketOfficeUrl": "missing.something",
+        }
+        client = TestClient(app.test_client()).with_auth("user@example.com")
+        response = client.patch(f"offers/{humanize(offer.id)}", json=data)
+
+        # Then
+        assert response.status_code == 400
+        assert response.json["externalTicketOfficeUrl"] == ['L\'URL doit commencer par "http://" ou "https://"']
+
+    def should_fail_when_url_has_no_host(self, app):
+        # Given
+        virtual_venue = offers_factories.VirtualVenueFactory()
+        offer = offers_factories.OfferFactory(venue=virtual_venue)
+        offers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        # When
+        data = {
+            "name": "Les lièvres pas malins",
+            "url": "https://missing",
+        }
+        client = TestClient(app.test_client()).with_auth("user@example.com")
+        response = client.patch(f"offers/{humanize(offer.id)}", json=data)
+
+        # Then
+        assert response.status_code == 400
+        assert response.json["url"] == ['L\'URL doit terminer par une extension (ex. ".fr")']
+
+    def should_fail_when_externalTicketOfficeUrl_has_no_host(self, app):
+        # Given
+        virtual_venue = offers_factories.VirtualVenueFactory()
+        offer = offers_factories.OfferFactory(venue=virtual_venue)
+        offers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        # When
+        data = {
+            "name": "Les lièvres pas malins",
+            "externalTicketOfficeUrl": "https://missing",
+        }
+        client = TestClient(app.test_client()).with_auth("user@example.com")
+        response = client.patch(f"offers/{humanize(offer.id)}", json=data)
+
+        # Then
+        assert response.status_code == 400
+        assert response.json["externalTicketOfficeUrl"] == ['L\'URL doit terminer par une extension (ex. ".fr")']
 
 
 @pytest.mark.usefixtures("db_session")
