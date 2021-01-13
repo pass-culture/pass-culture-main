@@ -2,7 +2,9 @@ import { bookingNormalizer } from '../../../../utils/normalizers'
 import { mapDispatchToProps, mapStateToProps, mergeProps } from '../BookingContainer'
 
 jest.mock('../../../../utils/fetch-normalize-data/requestData', () => {
-  const { _requestData } = jest.requireActual('../../../../utils/fetch-normalize-data/reducers/data/actionCreators')
+  const { _requestData } = jest.requireActual(
+    '../../../../utils/fetch-normalize-data/reducers/data/actionCreators'
+  )
 
   return {
     requestData: _requestData,
@@ -206,8 +208,8 @@ describe('src | components | layout | Booking | BookingContainer', () => {
       const ownProps = {
         history: {
           location: {
-            pathname: '/reservations/details/AE'
-          }
+            pathname: '/reservations/details/AE',
+          },
         },
         match: {
           params: {
@@ -224,8 +226,8 @@ describe('src | components | layout | Booking | BookingContainer', () => {
         handleSubmit: expect.any(Function),
         history: {
           location: {
-            pathname: '/reservations/details/AE'
-          }
+            pathname: '/reservations/details/AE',
+          },
         },
         match: {
           params: {
@@ -233,6 +235,7 @@ describe('src | components | layout | Booking | BookingContainer', () => {
           },
         },
         trackBookingSuccess: expect.any(Function),
+        trackBookOfferFromHomepage: expect.any(Function),
       })
     })
 
@@ -246,8 +249,8 @@ describe('src | components | layout | Booking | BookingContainer', () => {
       const ownProps = {
         history: {
           location: {
-            pathname: '/reservations/details/AE'
-          }
+            pathname: '/reservations/details/AE',
+          },
         },
         tracking: {
           trackEvent: jest.fn(),

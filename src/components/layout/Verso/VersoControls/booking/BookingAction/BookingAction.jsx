@@ -5,8 +5,11 @@ import Price from '../../../../Price/Price'
 
 class BookingAction extends PureComponent {
   handleBookingAction = () => {
-    const { bookingUrl, history } = this.props
-    history.push(bookingUrl)
+    const { bookingUrl, history, moduleName } = this.props
+    history.push({
+      pathname: bookingUrl,
+      moduleName: moduleName,
+    })
   }
 
   render() {
@@ -33,12 +36,14 @@ class BookingAction extends PureComponent {
 }
 
 BookingAction.defaultProps = {
+  moduleName: '',
   offerCannotBeBooked: false,
 }
 
 BookingAction.propTypes = {
   bookingUrl: PropTypes.string.isRequired,
   history: PropTypes.shape().isRequired,
+  moduleName: PropTypes.string,
   offerCannotBeBooked: PropTypes.bool,
   priceRange: PropTypes.arrayOf(PropTypes.number.isRequired).isRequired,
 }

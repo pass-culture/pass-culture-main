@@ -10,7 +10,7 @@ import { selectPastEventBookingByOfferId } from '../../../../../../redux/selecto
 
 export const mapStateToProps = (state, ownProps) => {
   const { location, match } = ownProps
-  const { pathname, search } = location
+  const { pathname, search, moduleName } = location
 
   const bookingUrl = `${pathname}/reservation${search}`
 
@@ -26,10 +26,8 @@ export const mapStateToProps = (state, ownProps) => {
     bookingUrl,
     offerCannotBeBooked,
     priceRange,
+    moduleName,
   }
 }
 
-export default compose(
-  withRouter,
-  connect(mapStateToProps)
-)(BookingAction)
+export default compose(withRouter, connect(mapStateToProps))(BookingAction)

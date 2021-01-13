@@ -65,6 +65,12 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
         name: offerId,
       })
     },
+    trackBookOfferFromHomepage: (moduleName, offerId) => {
+      ownProps.tracking.trackEvent({
+        action: 'BookOffer_FromHomepage',
+        name: `Module name: ${moduleName} - Offer id: ${offerId}`,
+      })
+    },
   }
 }
 
