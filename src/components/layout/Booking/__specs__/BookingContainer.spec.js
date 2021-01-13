@@ -235,7 +235,8 @@ describe('src | components | layout | Booking | BookingContainer', () => {
           },
         },
         trackBookingSuccess: expect.any(Function),
-        trackBookOfferFromHomepage: expect.any(Function),
+        trackBookOfferClickFromHomepage: expect.any(Function),
+        trackBookOfferSuccessFromHomepage: expect.any(Function),
       })
     })
 

@@ -43,7 +43,7 @@ class Booking extends PureComponent {
   }
 
   handleFormSubmit = formValues => {
-    const { handleSubmit, history, offer, trackBookOfferFromHomepage } = this.props
+    const { handleSubmit, history, offer, trackBookOfferClickFromHomepage } = this.props
     const { isDuo } = formValues
     const quantity = isDuo ? 2 : 1
     const payload = { ...formValues, quantity }
@@ -52,11 +52,17 @@ class Booking extends PureComponent {
       handleSubmit(payload, this.handleRequestFail, this.handleRequestSuccess)
     )
     if (history.location.pathname.includes('accueil'))
-      trackBookOfferFromHomepage(history.location.moduleName, offer.id)
+      trackBookOfferClickFromHomepage(history.location.moduleName, offer.id)
   }
 
   handleRequestSuccess = (state, action) => {
-    const { trackBookingSuccess, getCurrentUserInformation } = this.props
+    const {
+      trackBookingSuccess,
+      getCurrentUserInformation,
+      history,
+      offer,
+      trackBookOfferSuccessFromHomepage,
+    } = this.props
     const { payload } = action
     const { datum } = payload
     const nextState = {
@@ -65,6 +71,8 @@ class Booking extends PureComponent {
       isSubmitting: false,
     }
     trackBookingSuccess()
+    if (history.location.pathname.includes('accueil'))
+      trackBookOfferSuccessFromHomepage(history.location.moduleName, offer.id)
 
     this.setState(nextState)
     getCurrentUserInformation()
@@ -257,7 +265,8 @@ Booking.propTypes = {
   recommendation: PropTypes.shape({
     id: PropTypes.string,
   }),
-  trackBookOfferFromHomepage: PropTypes.func.isRequired,
+  trackBookOfferClickFromHomepage: PropTypes.func.isRequired,
+  trackBookOfferSuccessFromHomepage: PropTypes.func.isRequired,
   trackBookingSuccess: PropTypes.func.isRequired,
 }
 
