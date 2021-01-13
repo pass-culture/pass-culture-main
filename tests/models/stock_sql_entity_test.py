@@ -120,7 +120,7 @@ def test_stock_cannot_have_a_negative_quantity_stock(app):
         repository.save(stock)
 
     # then
-    assert e.value.errors["quantity"] == ["Le stock doit être positif"]
+    assert e.value.errors["quantity"] == ["La quantité doit être positive."]
 
 
 @pytest.mark.usefixtures("db_session")

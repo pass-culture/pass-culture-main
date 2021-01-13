@@ -137,7 +137,7 @@ def test_should_return_errors_when_invalid_stock():
     api_errors = validate(stock)
 
     # Then
-    assert api_errors.errors == {"quantity": ["Le stock doit être positif"]}
+    assert api_errors.errors == {"quantity": ["La quantité doit être positive."]}
 
 
 def test_should_not_return_errors_when_valid_stock():
