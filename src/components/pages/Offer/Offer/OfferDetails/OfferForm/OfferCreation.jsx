@@ -23,29 +23,21 @@ const OfferCreation = ({
 
   useEffect(
     function retrieveDataOnMount() {
-      const requests = []
       const typesRequest = pcapi.loadTypes().then(receivedTypes => (types.current = receivedTypes))
       const offerersRequest = pcapi.getValidatedOfferers().then(receivedOfferers => {
         offerers.current = receivedOfferers
-        if (receivedOfferers.length === 1) {
-          initialValues.offererId = receivedOfferers[0].id
-        }
       })
+      const requests = [typesRequest, offerersRequest]
       if (!isUserAdmin) {
         const venuesRequest = pcapi.getVenuesForOfferer().then(receivedVenues => {
           venues.current = receivedVenues
           setDisplayedVenues(receivedVenues)
-
-          if (receivedVenues.length === 1) {
-            initialValues.venueId = receivedVenues[0].id
-          }
         })
         requests.push(venuesRequest)
       }
-      requests.push([typesRequest, offerersRequest])
       Promise.all(requests).then(() => setIsLoading(false))
     },
-    [initialValues, isUserAdmin, setIsLoading]
+    [isUserAdmin, setIsLoading]
   )
   useEffect(
     function filterVenuesOfOfferer() {

@@ -167,6 +167,14 @@ const OfferForm = ({
     [offerType, handleFormUpdate, venues]
   )
   useEffect(
+    function selectOffererWhenUnique() {
+      if (offerers.length === 1) {
+        handleFormUpdate({ offererId: offerers[0].id })
+      }
+    },
+    [handleFormUpdate, offerers]
+  )
+  useEffect(
     function showThumbnail() {
       setShowThumbnailForm(formValues.type !== DEFAULT_FORM_VALUES.type)
     },
