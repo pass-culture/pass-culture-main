@@ -23,12 +23,12 @@ const CreditGauge = ({ children, extraClassName, creditLimit, picto, remainingCr
           <div className={`cg-remaining cg-gauge-width-${fillingStep}`} />
         </div>
       </div>
-      <div className="cg-written-remaining">
+      <span className="cg-written-remaining">
         {`${formattedRemainingCredit}${NON_BREAKING_SPACE}€`}
-      </div>
-      <pre className="cg-pre">
+      </span>
+      <span className="cg-pre">
         {children}
-      </pre>
+      </span>
     </div>
   )
 }

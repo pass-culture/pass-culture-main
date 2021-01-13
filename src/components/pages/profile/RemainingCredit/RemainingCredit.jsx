@@ -1,10 +1,9 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
-import { NON_BREAKING_SPACE } from '../../../../utils/specialCharacters'
-import { getRemainingCreditForGivenCreditLimit } from '../domain/getRemainingCreditForGivenCreditLimit'
-import CreditGauge from './CreditGauge/CreditGauge'
 import User from '../ValueObjects/User'
+import DepositVersion1 from './DepositVersion1'
+import DepositVersion2 from './DepositVersion2'
 
 class RemainingCredit extends PureComponent {
   constructor(props) {
@@ -20,83 +19,12 @@ class RemainingCredit extends PureComponent {
 
   render() {
     const { user } = this.props
-    const { isReadMoreVisible } = this.state
-    const { expenses, wallet_balance: walletBalance } = user
 
-    let digitalCreditLimit = 0
-    let physicalCreditLimit = 0
-    let initialDeposit = 0
-    let digitalRemainingCredit = 0
-    let physicalRemainingCredit = 0
-
-    if (expenses.length) {
-      const digital = expenses.find(expense => expense.domain === 'digital')
-      const physical = expenses.find(expense => expense.domain === 'physical')
-      const all = expenses.find(expense => expense.domain === 'all')
-
-      digitalCreditLimit = digital.limit
-      physicalCreditLimit = physical.limit
-      initialDeposit = all.limit
-
-      digitalRemainingCredit = getRemainingCreditForGivenCreditLimit(walletBalance)(digital)
-      physicalRemainingCredit = getRemainingCreditForGivenCreditLimit(walletBalance)(physical)
+    if (user.deposit_version === 1) {
+      return <DepositVersion1 user={user} />
+    } else {
+      return <DepositVersion2 user={user} />
     }
-
-    return (
-      <section className="pf-section">
-        <div className="rc-informations-container">
-          <div className="rc-gauges-container">
-            <div className="rc-gauges-title">
-              {`Tu peux encore dépenser jusqu’à${NON_BREAKING_SPACE}:`}
-            </div>
-            <div className="rc-gauges">
-              <CreditGauge
-                creditLimit={digitalCreditLimit}
-                extraClassName="gauge-digital"
-                picto="picto-digital-good"
-                remainingCredit={digitalRemainingCredit}
-              >
-                {`en offres\u000Anumériques\u000A(streaming…)`}
-              </CreditGauge>
-              <CreditGauge
-                creditLimit={physicalCreditLimit}
-                extraClassName="gauge-physical"
-                picto="picto-physical-good"
-                remainingCredit={physicalRemainingCredit}
-              >
-                {`en offres\u000Aphysiques\u000A(livres…)`}
-              </CreditGauge>
-              <CreditGauge
-                creditLimit={initialDeposit}
-                extraClassName="gauge-total"
-                picto="picto-ticket"
-                remainingCredit={walletBalance}
-              >
-                {`en sorties\u000A(spectacles…)`}
-              </CreditGauge>
-            </div>
-          </div>
-          <div className="rc-read-more">
-            <button
-              className={`rc-read-more-button ${
-                isReadMoreVisible ? 'rc-read-more-drop-down' : 'rc-read-more-drop-down-flipped'
-              }`}
-              onClick={this.handleToggleReadMore}
-              type="button"
-            >
-              {`Pourquoi les biens physiques et numériques sont-ils limités${NON_BREAKING_SPACE}?`}
-            </button>
-            {isReadMoreVisible && (
-              <p className="rc-read-more-content">
-                {`Le but du pass Culture est de renforcer tes pratiques culturelles,
-                mais aussi d’en créer de nouvelles. Ces plafonds ont été mis en place
-                pour favoriser la diversification des pratiques culturelles.`}
-              </p>
-            )}
-          </div>
-        </div>
-      </section>
-    )
   }
 }
 
