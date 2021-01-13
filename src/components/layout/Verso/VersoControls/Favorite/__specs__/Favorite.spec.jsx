@@ -13,6 +13,12 @@ describe('src | components | Favorite', () => {
       isFavorite: true,
       loadFavorites: jest.fn(),
       offerId: 'AE',
+      history: {
+        location: {
+          pathname: 'offre/details/AE',
+          moduleName: 'Nom du module',
+        },
+      },
     }
   })
 
