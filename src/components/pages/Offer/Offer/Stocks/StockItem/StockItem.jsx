@@ -135,7 +135,7 @@ const StockItem = ({
     }
 
     if (totalQuantity < 0) {
-      errors['quantity'] = 'Le stock doit être positif.'
+      errors['quantity'] = 'La quantité doit être positive.'
     }
 
     if (!isNewStock && remainingQuantityValue < 0) {

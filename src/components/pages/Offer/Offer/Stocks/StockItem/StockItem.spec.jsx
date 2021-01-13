@@ -118,7 +118,7 @@ describe('stocks page', () => {
         exact: false,
       })
       expect(priceErrorMessage).toBeInTheDocument()
-      const quantityErrorMessage = await screen.findByText('Le stock doit être positif.', {
+      const quantityErrorMessage = await screen.findByText('La quantité doit être positive.', {
         exact: false,
       })
       expect(quantityErrorMessage).toBeInTheDocument()
