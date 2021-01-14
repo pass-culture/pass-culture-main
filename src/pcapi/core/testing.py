@@ -1,5 +1,6 @@
 import contextlib
 import math
+from typing import Generator
 
 import factory.alchemy
 import flask
@@ -7,6 +8,8 @@ import pytest
 import sqlalchemy.engine
 import sqlalchemy.event
 import sqlalchemy.orm
+
+from pcapi import settings
 
 
 # 1. SELECT the user (beneficiary).
@@ -128,3 +131,30 @@ def register_event_for_assert_num_queries():
         _record_end_of_query,
         named=True,
     )
+
+
+@contextlib.contextmanager
+def override_settings(**overrides) -> Generator:
+    """A context manager/function decorator that temporarily changes a
+    setting.
+
+    Usage:
+
+        with override_settings(OBJECT_STORAGE_URL="https://example.com/storage"):
+            call_some_function()
+
+        @override_settings(
+            OBJECT_STORAGE_URL="https://example.com/storage",
+            OTHER_SETTING=4,
+        ):
+        def test_some_function():
+            pass  # [...]
+    """
+    initial_state = {name: getattr(settings, name) for name in overrides}
+    for name, new_value in overrides.items():
+        setattr(settings, name, new_value)
+    try:
+        yield
+    finally:
+        for name, initial_value in initial_state.items():
+            setattr(settings, name, initial_value)
