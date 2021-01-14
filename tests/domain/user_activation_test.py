@@ -4,9 +4,9 @@ from decimal import Decimal
 
 import pytest
 
+from pcapi.domain.user_activation import create_beneficiary_from_application
 from pcapi.domain.user_activation import is_import_status_change_allowed
 from pcapi.models import ImportStatus
-from pcapi.scripts.beneficiary.old_remote_import import create_beneficiary_from_application
 
 
 class IsImportStatusChangeAllowedTest:

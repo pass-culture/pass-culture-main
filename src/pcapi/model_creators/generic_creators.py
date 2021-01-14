@@ -91,7 +91,7 @@ def create_beneficiary_import(
     date: datetime = datetime.utcnow(),
     detail: str = None,
     idx: int = None,
-    source_id: int = settings.DMS_OLD_ENROLLMENT_PROCEDURE_ID,
+    source_id: int = settings.DMS_NEW_ENROLLMENT_PROCEDURE_ID,
     source: str = BeneficiaryImportSources.demarches_simplifiees.value,
     status: ImportStatus = ImportStatus.CREATED,
     user: User = None,

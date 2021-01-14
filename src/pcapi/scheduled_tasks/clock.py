@@ -10,7 +10,6 @@ from pcapi.scheduled_tasks import utils
 from pcapi.scheduled_tasks.decorators import cron_context
 from pcapi.scheduled_tasks.decorators import cron_require_feature
 from pcapi.scheduled_tasks.decorators import log_cron
-from pcapi.scripts.beneficiary import old_remote_import
 from pcapi.scripts.beneficiary import remote_import
 from pcapi.scripts.booking.handle_expired_bookings import handle_expired_bookings
 from pcapi.scripts.booking.notify_soon_to_be_expired_bookings import notify_soon_to_be_expired_bookings
@@ -56,17 +55,6 @@ def synchronize_praxiel_stocks(app) -> None:
 
 @log_cron
 @cron_context
-@cron_require_feature(FeatureToggle.BENEFICIARIES_IMPORT)
-def pc_old_remote_import_beneficiaries(app) -> None:
-    procedure_id = settings.DMS_OLD_ENROLLMENT_PROCEDURE_ID
-    import_from_date = find_most_recent_beneficiary_creation_date_for_source(
-        BeneficiaryImportSources.demarches_simplifiees, procedure_id
-    )
-    old_remote_import.run(import_from_date)
-
-
-@log_cron
-@cron_context
 def pc_remote_import_beneficiaries(app) -> None:
     procedure_id = settings.DMS_NEW_ENROLLMENT_PROCEDURE_ID
     import_from_date = find_most_recent_beneficiary_creation_date_for_source(
@@ -100,8 +88,6 @@ def main():
     scheduler.add_job(synchronize_fnac_stocks, "cron", [app], day="*", hour="1")
 
     scheduler.add_job(synchronize_praxiel_stocks, "cron", [app], day="*", hour="0")
-
-    scheduler.add_job(pc_old_remote_import_beneficiaries, "cron", [app], day="*")
 
     scheduler.add_job(pc_remote_import_beneficiaries, "cron", [app], day="*")
 

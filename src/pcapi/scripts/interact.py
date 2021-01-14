@@ -26,7 +26,6 @@ from pcapi.models import *
 from pcapi.repository.offer_queries import *
 from pcapi.repository.user_queries import *
 from pcapi.sandboxes import *
-from pcapi.scripts.beneficiary import old_remote_import
 from pcapi.scripts.beneficiary import remote_import
 from pcapi.scripts.booking import *
 from pcapi.settings import *
