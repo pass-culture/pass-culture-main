@@ -215,10 +215,6 @@ SWIFT_PROD_REGION_NAME = os.environ.get("OVH_REGION_NAME_PROD", "GRA")
 SWIFT_PROD_URL_PATH = os.environ.get("OVH_URL_PATH_PROD")
 
 
-# MISC
-CLEAN_SEEN_OFFERS = os.environ.get("CLEAN_SEEN_OFFERS") == "true"
-
-
 # PAYMENT
 PASS_CULTURE_IBAN = os.environ.get("PASS_CULTURE_IBAN")
 PASS_CULTURE_BIC = os.environ.get("PASS_CULTURE_BIC")
