@@ -1,4 +1,3 @@
-import withNotRequiredLogin from '../../hocs/with-login/withNotRequiredLogin'
 import BetaPage from './BetaPage'
 import { compose } from 'redux'
 import withTracking from '../../hocs/withTracking'
@@ -30,7 +29,6 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
 }
 
 export default compose(
-  withNotRequiredLogin,
   withTracking('BetaPage'),
   connect(mapStateToProps, null, mergeProps)
 )(BetaPage)

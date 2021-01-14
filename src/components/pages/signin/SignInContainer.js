@@ -1,6 +1,7 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 
+import withNotRequiredLogin from '../../hocs/with-login/withNotRequiredLogin'
 import { requestData } from '../../../utils/fetch-normalize-data/requestData'
 import { FEATURES } from '../../router/selectors/features'
 import selectIsFeatureDisabled from '../../router/selectors/selectIsFeatureDisabled'
@@ -24,15 +25,10 @@ export const mapDispatchToProps = dispatch => ({
           handleFail: fail(resolve),
           handleSuccess: success(resolve),
           method: 'POST',
-        }),
+        })
       )
     })
   },
 })
 
-export default compose(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps,
-  ),
-)(SignIn)
+export default compose(withNotRequiredLogin, connect(mapStateToProps, mapDispatchToProps))(SignIn)
