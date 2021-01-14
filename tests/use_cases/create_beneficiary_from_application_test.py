@@ -4,6 +4,7 @@ from unittest.mock import patch
 from freezegun import freeze_time
 import pytest
 
+from pcapi.core.testing import override_settings
 from pcapi.core.users import api as users_api
 from pcapi.core.users.models import User
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
@@ -12,6 +13,7 @@ from pcapi.model_creators.generic_creators import create_user
 from pcapi.models import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.models.deposit import Deposit
+from pcapi.models.feature import override_features
 from pcapi.repository import repository
 from pcapi.use_cases.create_beneficiary_from_application import create_beneficiary_from_application
 
@@ -188,15 +190,39 @@ def test_cannot_save_beneficiary_if_duplicate(app):
     assert beneficiary_import.detail == f"User with id {existing_user_id} is a duplicate."
 
 
-@patch(
-    "pcapi.settings.JOUVE_APPLICATION_BACKEND",
-    "tests.use_cases.create_beneficiary_from_application_test.FakeBeneficiaryJouveBackend",
-)
 @pytest.mark.usefixtures("db_session")
-def test_cannot_save_beneficiary_if_department_is_not_eligible(app):
+@override_settings(
+    JOUVE_APPLICATION_BACKEND="tests.use_cases.create_beneficiary_from_application_test.FakeBeneficiaryJouveBackend"
+)
+@override_features(WHOLE_FRANCE_OPENING=False)
+def test_cannot_save_beneficiary_if_department_is_not_eligible_legacy_behaviour(app):
     # Given
     application_id = 36
-    postal_code = f"{application_id:02d}123"
+    postal_code = f"{application_id}123"
+
+    # When
+    create_beneficiary_from_application.execute(application_id)
+
+    # Then
+    users_count = User.query.count()
+    assert users_count == 0
+
+    beneficiary_import = BeneficiaryImport.query.one()
+    assert beneficiary_import.currentStatus == ImportStatus.REJECTED
+    assert beneficiary_import.applicationId == application_id
+    assert beneficiary_import.beneficiary is None
+    assert beneficiary_import.detail == f"Postal code {postal_code} is not eligible."
+
+
+@pytest.mark.usefixtures("db_session")
+@override_settings(
+    JOUVE_APPLICATION_BACKEND="tests.use_cases.create_beneficiary_from_application_test.FakeBeneficiaryJouveBackend"
+)
+@override_features(WHOLE_FRANCE_OPENING=True)
+def test_cannot_save_beneficiary_if_department_is_not_eligible(app):
+    # Given
+    application_id = 988
+    postal_code = f"{application_id}123"
 
     # When
     create_beneficiary_from_application.execute(application_id)

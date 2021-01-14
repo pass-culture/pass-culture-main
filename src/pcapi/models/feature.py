@@ -36,6 +36,7 @@ class FeatureToggle(enum.Enum):
     WEBAPP_PROFILE_PAGE = "Permettre l affichage de la page profil (route dédiée + navbar)"
     APPLY_BOOKING_LIMITS_V2 = "Permettre l affichage des nouvelles règles de génération de portefeuille des jeunes"
     ALLOW_IDCHECK_REGISTRATION = "Autoriser les utilisateurs à suivre le parcours d inscription ID Check"
+    WHOLE_FRANCE_OPENING = "Ouvre le service à la France entière"
 
 
 class Feature(PcObject, Model, DeactivableMixin):
@@ -45,6 +46,12 @@ class Feature(PcObject, Model, DeactivableMixin):
     @property
     def nameKey(self) -> str:
         return str(self.name).replace("FeatureToggle.", "")
+
+
+FEATURES_DISABLED_BY_DEFAULT = (
+    FeatureToggle.APPLY_BOOKING_LIMITS_V2,
+    FeatureToggle.WHOLE_FRANCE_OPENING,
+)
 
 
 @contextlib.contextmanager

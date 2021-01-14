@@ -7,6 +7,7 @@ from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exce
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import CantRegisterBeneficiary
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_validator import validate
 from pcapi.model_creators.generic_creators import create_user
+from pcapi.models.feature import override_features
 from pcapi.repository import repository
 
 from tests.domain_creators.generic_creators import create_domain_beneficiary_pre_subcription
@@ -118,9 +119,10 @@ def test_doesnt_raise_if_no_exact_duplicate(app):
         assert pytest.fail("Should not raise an exception when email not given")
 
 
+@override_features(WHOLE_FRANCE_OPENING=False)
 @pytest.mark.parametrize("postal_code", ["36000", "36034", "97400"])
 @pytest.mark.usefixtures("db_session")
-def test_raises_if_not_eligible(app, postal_code):
+def test_raises_if_not_eligible_legacy_behaviour(postal_code):
     # Given
     beneficiary_pre_subcription = create_domain_beneficiary_pre_subcription(postal_code=postal_code)
 
@@ -132,9 +134,40 @@ def test_raises_if_not_eligible(app, postal_code):
     assert str(error.value) == f"Postal code {postal_code} is not eligible."
 
 
+@override_features(WHOLE_FRANCE_OPENING=False)
 @pytest.mark.parametrize("postal_code", ["34000", "34898", "97340"])
 @pytest.mark.usefixtures("db_session")
-def test_should_not_raise_if_eligible(app, postal_code):
+def test_should_not_raise_if_eligible_legacy_behaviour(postal_code):
+    # Given
+    beneficiary_pre_subcription = create_domain_beneficiary_pre_subcription(postal_code=postal_code)
+
+    try:
+        # When
+        validate(beneficiary_pre_subcription)
+    except CantRegisterBeneficiary:
+        # Then
+        assert pytest.fail("Should not raise when postal code is eligible")
+
+
+@override_features(WHOLE_FRANCE_OPENING=True)
+@pytest.mark.parametrize("postal_code", ["98735", "98800", "98800"])
+@pytest.mark.usefixtures("db_session")
+def test_raises_if_not_eligible(postal_code):
+    # Given
+    beneficiary_pre_subcription = create_domain_beneficiary_pre_subcription(postal_code=postal_code)
+
+    # When
+    with pytest.raises(BeneficiaryIsNotEligible) as error:
+        validate(beneficiary_pre_subcription)
+
+    # Then
+    assert str(error.value) == f"Postal code {postal_code} is not eligible."
+
+
+@override_features(WHOLE_FRANCE_OPENING=True)
+@pytest.mark.parametrize("postal_code", ["36000", "36034", "97400"])
+@pytest.mark.usefixtures("db_session")
+def test_should_not_raise_if_eligible(postal_code):
     # Given
     beneficiary_pre_subcription = create_domain_beneficiary_pre_subcription(postal_code=postal_code)
 

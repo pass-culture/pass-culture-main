@@ -5,11 +5,13 @@ from pcapi.core.users.models import User
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsADuplicate
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsNotEligible
+from pcapi.models.feature import FeatureToggle
+from pcapi.repository import feature_queries
 from pcapi.repository.user_queries import find_by_civility
 from pcapi.repository.user_queries import find_user_by_email
 
 
-ELIGIBLE_DEPARTMENTS = [
+ELIGIBLE_DEPARTMENTS = {
     "08",
     "22",
     "25",
@@ -24,15 +26,30 @@ ELIGIBLE_DEPARTMENTS = [
     "93",
     "94",
     "973",
-]
+}
+
+EXCLUDED_DEPARTMENTS = {
+    "984",  # Terres australes et antarctiques françaises
+    "987",  # Polynésie Française
+    "988",  # Nouvelle-Calédonie
+}
 
 
 def _is_postal_code_eligible(code: str) -> bool:
-    for department in ELIGIBLE_DEPARTMENTS:
-        if code.startswith(department):
-            return True
+    # FIXME (dbaty, 2020-01-14): remove this block once we have opened
+    # to (almost) all departments.
+    # Legacy behaviour: only a few departments are eligible.
+    if not feature_queries.is_active(FeatureToggle.WHOLE_FRANCE_OPENING):
+        for department in ELIGIBLE_DEPARTMENTS:
+            if code.startswith(department):
+                return True
+        return False
 
-    return False
+    # New behaviour: all departments are eligible, except a few.
+    for department in EXCLUDED_DEPARTMENTS:
+        if code.startswith(department):
+            return False
+    return True
 
 
 def get_beneficiary_duplicates(first_name: str, last_name: str, date_of_birth: datetime) -> List[User]:
