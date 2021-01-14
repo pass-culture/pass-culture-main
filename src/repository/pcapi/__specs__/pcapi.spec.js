@@ -2,11 +2,12 @@ import { DEFAULT_SEARCH_FILTERS } from 'components/pages/Offers/_constants'
 import { client } from 'repository/pcapi/pcapiClient'
 
 import {
+  createStock,
   deleteStock,
+  getURLErrors,
   loadFilteredOffers,
   updateOffersActiveStatus,
   updateStock,
-  createStock,
 } from '../pcapi'
 
 jest.mock('repository/pcapi/pcapiClient', () => ({
@@ -227,6 +228,19 @@ describe('pcapi', () => {
         price: '15',
         quantity: '15',
       })
+    })
+  })
+
+  describe('getURLErrors', () => {
+    it('should call the api correct GET route with url as a query param', () => {
+      // given
+      const url = 'http://ma-mauvaise-url'
+
+      // when
+      getURLErrors(url)
+
+      // then
+      expect(client.get).toHaveBeenCalledWith(`/offers/thumbnail-url-errors?url=${url}`)
     })
   })
 })

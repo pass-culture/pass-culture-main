@@ -144,3 +144,10 @@ export const deleteStock = stockId => {
 export const createStock = stock => {
   return client.post('/stocks', stock)
 }
+
+//
+// thumbnail
+//
+export const getURLErrors = url => {
+  return client.get(`/offers/thumbnail-url-errors?url=${url}`)
+}

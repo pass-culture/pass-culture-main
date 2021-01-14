@@ -11,8 +11,6 @@ import { configureTestStore } from 'store/testUtils'
 
 import { MIN_IMAGE_HEIGHT, MIN_IMAGE_WIDTH } from '../_constants'
 
-global.createImageBitmap = () => Promise.resolve({})
-
 const createImageFile = ({
   name = 'example.png',
   type = 'image/png',
@@ -31,13 +29,6 @@ const createFile = ({ name = 'example.json', type = 'application/json', sizeInMB
   Object.defineProperty(file, 'size', { value: oneMB * sizeInMB })
   return file
 }
-
-jest.mock('repository/pcapi/pcapi', () => ({
-  getValidatedOfferers: jest.fn(),
-  getVenuesForOfferer: jest.fn(),
-  loadOffer: jest.fn(),
-  loadTypes: jest.fn(),
-}))
 
 const renderThumbnail = async (props, store) => {
   render(
@@ -84,10 +75,15 @@ describe('thumbnail edition', () => {
       venue: editedOfferVenue,
       venueId: editedOfferVenue.id,
     }
-    pcapi.getValidatedOfferers.mockResolvedValue(offerers)
-    pcapi.getVenuesForOfferer.mockResolvedValue(venues)
-    pcapi.loadOffer.mockResolvedValue(editedOffer)
-    pcapi.loadTypes.mockResolvedValue(types)
+    jest.spyOn(pcapi, 'getValidatedOfferers').mockResolvedValue(offerers)
+    jest.spyOn(pcapi, 'getVenuesForOfferer').mockResolvedValue(venues)
+    jest.spyOn(pcapi, 'loadOffer').mockResolvedValue(editedOffer)
+    jest.spyOn(pcapi, 'loadTypes').mockResolvedValue(types)
+
+    Object.defineProperty(global, 'createImageBitmap', {
+      writable: true,
+      value: () => Promise.resolve({}),
+    })
   })
 
   describe('when thumbnail exists', () => {
@@ -289,7 +285,7 @@ describe('thumbnail edition', () => {
           })
         ).toBeInTheDocument()
         const urlInput = screen.getByLabelText('URL de l’image')
-        expect(urlInput).toHaveAttribute('type', 'url')
+        expect(urlInput).toHaveAttribute('type', 'text')
         expect(urlInput).toHaveAttribute('placeholder', 'Ex : http://...')
         expect(screen.getByText('Valider', { selector: 'button' })).toHaveAttribute('disabled')
       })
@@ -304,6 +300,50 @@ describe('thumbnail edition', () => {
 
         // Then
         expect(screen.getByText('Valider', { selector: 'button' })).not.toHaveAttribute('disabled')
+      })
+
+      it('should display an error if the url does meet the requirements', async () => {
+        // Given
+        jest.spyOn(pcapi, 'getURLErrors').mockResolvedValue({ errors: ['API error message'] })
+        await renderThumbnail({}, store)
+
+        fireEvent.click(screen.getByText('Utiliser une URL'))
+        fireEvent.change(screen.getByLabelText('URL de l’image'), {
+          target: { value: 'http://not-an-image' },
+        })
+
+        // When
+        fireEvent.click(screen.getByText('Valider', { selector: 'button' }))
+
+        // Then
+        expect(await screen.findByText('Valider', { selector: 'button' })).toHaveAttribute(
+          'disabled'
+        )
+        expect(
+          await screen.findByText('API error message', { selector: 'pre' })
+        ).toBeInTheDocument()
+      })
+
+      it('should display a generic error if the api did not send a valid response', async () => {
+        // Given
+        jest.spyOn(pcapi, 'getURLErrors').mockRejectedValue({})
+        await renderThumbnail({}, store)
+
+        fireEvent.click(screen.getByText('Utiliser une URL'))
+        fireEvent.change(screen.getByLabelText('URL de l’image'), {
+          target: { value: 'http://not-an-image' },
+        })
+
+        // When
+        fireEvent.click(screen.getByText('Valider', { selector: 'button' }))
+
+        // Then
+        expect(await screen.findByText('Valider', { selector: 'button' })).toHaveAttribute(
+          'disabled'
+        )
+        expect(
+          await screen.findByText('Une erreur est survenue', { selector: 'pre' })
+        ).toBeInTheDocument()
       })
     })
   })
