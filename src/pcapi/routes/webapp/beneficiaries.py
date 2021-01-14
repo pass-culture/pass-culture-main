@@ -67,8 +67,15 @@ def patch_beneficiary() -> Tuple[str, int]:
         has_seen_tutorials=request.json.get("hasSeenTutorials"),
     )
     user = update_user_informations(user_informations)
-
     formattedUser = as_dict(user, includes=BENEFICIARY_INCLUDES)
+
+    # FIXME (viconnex): the enum value of expense.domain is not correctly serialize with as_dict method
+    formatted_expenses = []
+    for expense in user.expenses:
+        formatted_expenses.append({"domain": expense.domain.value, "current": expense.current, "max": expense.max})
+
+    formattedUser["expenses"] = formatted_expenses
+
     return jsonify(formattedUser), 200
 
 
