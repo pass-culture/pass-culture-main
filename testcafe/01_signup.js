@@ -24,7 +24,7 @@ test('je peux créer un compte avec un SIREN non existant en base de données, e
   await t
     .addRequestHooks(getSirenRequestMockWithDefaultValues())
     .click(acceptCookieButton)
-    .typeText(emailInput, 'pctest0.pro93.cafe0@btmx.fr')
+    .typeText(emailInput, 'pctest0.pro93.cafe0@example.com')
     .typeText(passwordInput, 'user@AZERTY123')
     .typeText(lastNameInput, '93 Café0')
     .typeText(firstNameInput, 'PC Test 0 Pro')
@@ -45,7 +45,7 @@ test('je peux créer un compte avec un SIREN déjà existant en base de données
   await t
     .addRequestHooks(getSirenRequestMockWithDefaultValues())
     .click(acceptCookieButton)
-    .typeText(emailInput, 'pctest0.pro93.cafe1@btmx.fr')
+    .typeText(emailInput, 'pctest0.pro93.cafe1@example.com')
     .typeText(passwordInput, 'user@AZERTY123')
     .typeText(lastNameInput, '93 Café1')
     .typeText(firstNameInput, 'PC Test Pro')
