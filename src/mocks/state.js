@@ -6,7 +6,7 @@ const state = {
     canBookFreeOffers: true,
     dateCreated: '2018-10-29T09:44:18.243300Z',
     departementCode: '93',
-    email: 'pctest.jeune.93@btmx.fr',
+    email: 'pctest.jeune.93@example.com',
     expenses: [
       { domain: 'all', current: 230, max: 500 },
       { domain: 'digital', current: 0, max: 200 },
@@ -302,7 +302,7 @@ const state = {
     canBookFreeOffers: true,
     dateCreated: '2018-10-29T09:44:18.243300Z',
     departementCode: '93',
-    email: 'pctest.jeune.93@btmx.fr',
+    email: 'pctest.jeune.93@example.com',
     expenses: [
       { domain: 'all', current: 230, max: 500 },
       { domain: 'digital', current: 0, max: 200 },
