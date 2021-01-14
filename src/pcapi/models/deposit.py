@@ -13,9 +13,6 @@ from pcapi.models.db import Model
 from pcapi.models.pc_object import PcObject
 
 
-DEPOSIT_DEFAULT_AMOUNT = 500
-
-
 class Deposit(PcObject, Model):
     id = Column(BigInteger, primary_key=True, autoincrement=True)
 
