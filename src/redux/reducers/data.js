@@ -6,7 +6,6 @@ import { createDataReducer } from '../../utils/fetch-normalize-data/reducers/dat
 const dataPersistConfig = {
   key: 'passculture-webapp-data',
   storage,
-  whitelist: ['readRecommendations'],
 }
 
 const dataReducer = createDataReducer({
@@ -16,9 +15,6 @@ const dataReducer = createDataReducer({
   mediations: [],
   musicTypes: [],
   offers: [],
-  readRecommendations: [],
-  recommendations: [],
-  searchedRecommendations: [],
   showTypes: [],
   stocks: [],
   types: [],

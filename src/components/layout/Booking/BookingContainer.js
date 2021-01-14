@@ -3,7 +3,6 @@ import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
 import { selectOfferByRouterMatch } from '../../../redux/selectors/data/offersSelectors'
-import { selectRecommendationByRouterMatch } from '../../../redux/selectors/data/recommendationsSelectors'
 import { selectBookablesWithoutDateNotAvailable } from '../../../redux/selectors/data/stocksSelectors'
 import { requestData } from '../../../utils/fetch-normalize-data/requestData'
 import { bookingNormalizer } from '../../../utils/normalizers'
@@ -16,12 +15,10 @@ export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
   const offer = selectOfferByRouterMatch(state, match)
   const bookables = selectBookablesWithoutDateNotAvailable(state, offer)
-  const recommendation = selectRecommendationByRouterMatch(state, match)
 
   return {
     bookables,
     offer,
-    recommendation,
   }
 }
 

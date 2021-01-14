@@ -26,9 +26,6 @@ describe('src | components | layout | Verso | VersoControls | booking | Cancelli
     props = {
       booking: {
         id: 'AAA',
-        recommendation: {
-          offerId: 'BBB',
-        },
       },
       cancellingUrl: '/reservation/annulation',
       history: {

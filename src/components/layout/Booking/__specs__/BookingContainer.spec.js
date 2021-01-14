@@ -19,7 +19,6 @@ describe('src | components | layout | Booking | BookingContainer', () => {
   let stockId = 'AE'
 
   let booking
-  let recommendation
   let offer
 
   beforeEach(() => {
@@ -43,10 +42,6 @@ describe('src | components | layout | Booking | BookingContainer', () => {
         offerId,
         price: 10,
       },
-    }
-    recommendation = {
-      id: 'AAA',
-      offerId,
     }
     offer = {
       bookingEmail: null,
@@ -108,7 +103,6 @@ describe('src | components | layout | Booking | BookingContainer', () => {
         favorites: [],
         mediations: [],
         offers: [offer],
-        recommendations: [recommendation],
         stocks: [],
       },
       geolocation: {
@@ -128,7 +122,7 @@ describe('src | components | layout | Booking | BookingContainer', () => {
 
   describe('mapStateToProps', () => {
     describe('isEvent', () => {
-      it('should return the matching booking given the recommendation', () => {
+      it('should return the matching booking', () => {
         // given
         const ownProps = {
           match,
@@ -141,7 +135,6 @@ describe('src | components | layout | Booking | BookingContainer', () => {
         expect(result).toStrictEqual({
           bookables: [],
           offer: state.data.offers[0],
-          recommendation: state.data.recommendations[0],
         })
       })
     })
@@ -158,7 +151,6 @@ describe('src | components | layout | Booking | BookingContainer', () => {
           isDuo: true,
           price: 27,
           quantity: 2,
-          recommendationId: 'NQ',
           stockId: 'BM',
           time: 'BM',
         }
@@ -177,7 +169,6 @@ describe('src | components | layout | Booking | BookingContainer', () => {
               date: '2019-09-19T22:00:00.000Z',
               isDuo: true,
               price: 27,
-              recommendationId: 'NQ',
               stockId: 'BM',
               time: 'BM',
               quantity: 2,

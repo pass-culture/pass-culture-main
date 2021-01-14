@@ -12,11 +12,7 @@ describe('my informations', () => {
 
   beforeEach(() => {
     mockStore = getStubStore({
-      data: (
-        state = {
-          readRecommendations: [],
-        }
-      ) => state,
+      data: (state = {}) => state,
     })
 
     props = {
@@ -94,10 +90,7 @@ describe('my informations', () => {
     )
 
     // Then
-    const legalNoticePage = wrapper
-      .find({ children: 'Mentions légales' })
-      .parent()
-      .prop('href')
+    const legalNoticePage = wrapper.find({ children: 'Mentions légales' }).parent().prop('href')
 
     expect(legalNoticePage).toBe('/accueil/profil/mentions-legales')
   })
@@ -113,10 +106,7 @@ describe('my informations', () => {
     )
 
     // Then
-    const signOutLink = wrapper
-      .find({ children: 'Déconnexion' })
-      .parent()
-      .prop('href')
+    const signOutLink = wrapper.find({ children: 'Déconnexion' }).parent().prop('href')
     expect(signOutLink).toBe('')
   })
 })

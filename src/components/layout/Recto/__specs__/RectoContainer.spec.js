@@ -32,34 +32,6 @@ describe('components | RectoContainer', () => {
         thumbUrl: '/url-to-image/from-booking',
       })
     })
-
-    it('should return recommendation thumbUrl when offer id is provided and offer has a mediation', () => {
-      // given
-      const props = {
-        match: {
-          params: {
-            offerId: 'AD',
-          },
-        },
-        recommendation: { thumbUrl: '/url-to-image' },
-      }
-      const state = {
-        data: {
-          bookings: [{ id: 'AB', stockId: 'AC' }],
-          mediations: [{ id: 'AE', offerId: 'AD' }],
-          offers: [{ id: 'AD' }],
-          stocks: [{ id: 'AC', offerId: 'AD' }],
-        },
-      }
-
-      // when
-      const result = mapStateToProps(state, props)
-
-      // then
-      expect(result).toStrictEqual({
-        thumbUrl: '/url-to-image',
-      })
-    })
   })
 
   describe('findThumbByBookingId', () => {
@@ -146,36 +118,6 @@ describe('components | RectoContainer', () => {
   })
 
   describe('findThumbByOfferId', () => {
-    it('should return front text from mediation and thumb url from recommendation when offer has a mediation and a recommendation', () => {
-      // given
-      const match = {
-        params: {
-          offerId: 'AD',
-        },
-      }
-
-      const recommendation = {
-        thumbUrl: '/url-to-image',
-      }
-
-      const state = {
-        data: {
-          bookings: [],
-          mediations: [{ id: 'AE', offerId: 'AD' }],
-          offers: [{ id: 'AD', product: {} }],
-          stocks: [{ id: 'AC', offerId: 'AD' }],
-        },
-      }
-
-      // when
-      const result = findThumbByOfferId(state, match.params.offerId, match, recommendation)
-
-      // then
-      expect(result).toStrictEqual({
-        thumbUrl: '/url-to-image',
-      })
-    })
-
     it('should return no front text and use thumb url from offer when offer has no mediation', () => {
       // given
       const match = {
@@ -183,8 +125,6 @@ describe('components | RectoContainer', () => {
           offerId: 'AD',
         },
       }
-
-      const recommendation = undefined
 
       const state = {
         data: {
@@ -196,7 +136,7 @@ describe('components | RectoContainer', () => {
       }
 
       // when
-      const result = findThumbByOfferId(state, match.params.offerId, match, recommendation)
+      const result = findThumbByOfferId(state, match.params.offerId, match)
 
       // then
       expect(result).toStrictEqual({
@@ -212,8 +152,6 @@ describe('components | RectoContainer', () => {
         },
       }
 
-      const recommendation = undefined
-
       const state = {
         data: {
           bookings: [],
@@ -224,7 +162,7 @@ describe('components | RectoContainer', () => {
       }
 
       // when
-      const result = findThumbByOfferId(state, match.params.offerId, match, recommendation)
+      const result = findThumbByOfferId(state, match.params.offerId, match)
 
       // then
       expect(result).toStrictEqual({

@@ -31,23 +31,6 @@ export const favoriteNormalizer = {
   },
 }
 
-export const recommendationNormalizer = {
-  bookings: {
-    normalizer: {
-      stock: 'stocks',
-    },
-    stateKey: 'bookings',
-  },
-  mediation: 'mediations',
-  offer: {
-    normalizer: {
-      favorites: 'favorites',
-      stocks: 'stocks',
-    },
-    stateKey: 'offers',
-  },
-}
-
 export const offerNormalizer = {
   activeMediation: {
     stateKey: 'mediations',

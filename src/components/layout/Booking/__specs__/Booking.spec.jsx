@@ -52,9 +52,6 @@ describe('src | components | layout | Booking | Booking', () => {
         },
         id: 'AAA',
       },
-      recommendation: {
-        id: 'AE',
-      },
       trackBookingSuccess,
       trackBookOfferClickFromHomepage: jest.fn(),
       trackBookOfferSuccessFromHomepage: jest.fn(),

@@ -9,14 +9,14 @@ import { selectStockById } from '../../../redux/selectors/data/stocksSelectors'
 import { selectOfferById } from '../../../redux/selectors/data/offersSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
-  const { match, recommendation } = ownProps
+  const { match } = ownProps
   const { params } = match
   const { bookingId, offerId } = params
 
   if (bookingId) {
     return findThumbByBookingId(state, bookingId)
   } else {
-    return findThumbByOfferId(state, offerId, match, recommendation)
+    return findThumbByOfferId(state, offerId)
   }
 }
 
@@ -36,13 +36,7 @@ export const findThumbByBookingId = (state, bookingId) => {
   }
 }
 
-export const findThumbByOfferId = (state, offerId, match, recommendation) => {
-  if (recommendation) {
-    return {
-      thumbUrl: recommendation && recommendation.thumbUrl,
-    }
-  }
-
+export const findThumbByOfferId = (state, offerId) => {
   const offer = selectOfferById(state, offerId)
   if (offer) {
     return {
@@ -55,7 +49,4 @@ export const findThumbByOfferId = (state, offerId, match, recommendation) => {
   }
 }
 
-export default compose(
-  withRouter,
-  connect(mapStateToProps),
-)(Recto)
+export default compose(withRouter, connect(mapStateToProps))(Recto)

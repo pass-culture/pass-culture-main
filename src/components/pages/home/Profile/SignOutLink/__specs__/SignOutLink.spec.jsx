@@ -12,11 +12,9 @@ describe('sign out link', () => {
   beforeEach(() => {
     props = {
       historyPush: jest.fn(),
-      readRecommendations: [],
       reinitializeDataExceptFeatures: jest.fn(),
       resetSeedLastRequestTimestamp: jest.fn(),
       signOut: jest.fn(),
-      updateReadRecommendations: jest.fn(),
     }
   })
 
@@ -36,52 +34,24 @@ describe('sign out link', () => {
   })
 
   describe('when clicking on link', () => {
-    describe('when user has not seen any recommendation', () => {
-      it('should call functions to sign out and redirect to form connection', async () => {
-        // given
-        jest.spyOn(Date, 'now').mockImplementation(() => 1590428424078)
-        const wrapper = mount(
-          <MemoryRouter>
-            <SignOutLink {...props} />
-          </MemoryRouter>
-        )
-        const signOutLink = wrapper.find({ children: 'Déconnexion' }).parent()
+    it('should call functions to sign out and redirect to form connection', async () => {
+      // given
+      jest.spyOn(Date, 'now').mockImplementation(() => 1590428424078)
+      const wrapper = mount(
+        <MemoryRouter>
+          <SignOutLink {...props} />
+        </MemoryRouter>
+      )
+      const signOutLink = wrapper.find({ children: 'Déconnexion' }).parent()
 
-        // when
-        await signOutLink.invoke('onClick')({ defaultPrevented: jest.fn() })
+      // when
+      await signOutLink.invoke('onClick')({ defaultPrevented: jest.fn() })
 
-        // then
-        expect(props.updateReadRecommendations).not.toHaveBeenCalled()
-        expect(props.signOut).toHaveBeenCalledTimes(1)
-        expect(props.historyPush).toHaveBeenCalledWith('/connexion')
-        expect(props.resetSeedLastRequestTimestamp).toHaveBeenCalledWith(1590428424078)
-        expect(props.reinitializeDataExceptFeatures).toHaveBeenCalledTimes(1)
-      })
-    })
-
-    describe('when user has seen at least one recommendation', () => {
-      it('should update read recommendations and sign out', async () => {
-        // given
-        jest.spyOn(Date, 'now').mockImplementation(() => 1590428424078)
-        props.readRecommendations = [
-          {
-            id: 'GH',
-          },
-        ]
-        const wrapper = mount(
-          <MemoryRouter>
-            <SignOutLink {...props} />
-          </MemoryRouter>
-        )
-        const signOutLink = wrapper.find({ children: 'Déconnexion' }).parent()
-
-        // when
-        await signOutLink.invoke('onClick')({ defaultPrevented: jest.fn() })
-
-        // then
-        expect(props.updateReadRecommendations).toHaveBeenCalledWith(props.readRecommendations)
-        expect(props.signOut).toHaveBeenCalledTimes(1)
-      })
+      // then
+      expect(props.signOut).toHaveBeenCalledTimes(1)
+      expect(props.historyPush).toHaveBeenCalledWith('/connexion')
+      expect(props.resetSeedLastRequestTimestamp).toHaveBeenCalledWith(1590428424078)
+      expect(props.reinitializeDataExceptFeatures).toHaveBeenCalledTimes(1)
     })
   })
 })

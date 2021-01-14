@@ -25,7 +25,6 @@ describe('my favorites', () => {
           favorites: [],
           mediations: [],
           offers: [{ id: 'O1' }],
-          recommendations: [],
           stocks: [],
           users: [
             {

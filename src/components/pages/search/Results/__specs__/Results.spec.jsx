@@ -2573,7 +2573,6 @@ describe('components | Results', () => {
             favorites: [],
             features: [],
             mediations: [],
-            recommendations: [],
             users: [],
           }
         ) => state,
@@ -2819,7 +2818,6 @@ describe('components | Results', () => {
               favorites: [],
               features: [],
               mediations: [],
-              recommendations: [],
               users: [],
             }
           ) => state,

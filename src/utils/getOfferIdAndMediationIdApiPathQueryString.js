@@ -1,10 +1,6 @@
 export const DEFAULT_VIEW_IDENTIFIERS = ['fin', 'tuto', 'vide']
 
-export const getOfferIdAndMediationIdApiPathQueryString = (
-  match,
-  currentRecommendation,
-  coordinates
-) => {
+export const getOfferIdAndMediationIdApiPathQueryString = (match, coordinates) => {
   const isValid = match && typeof match === 'object' && !Array.isArray(match)
   if (!isValid) return ''
 
@@ -22,13 +18,6 @@ export const getOfferIdAndMediationIdApiPathQueryString = (
     pMediationId.trim() !== '' &&
     !DEFAULT_VIEW_IDENTIFIERS.includes(pMediationId) &&
     pMediationId
-
-  const isSameRecoAsMatchParams =
-    currentRecommendation &&
-    currentRecommendation.mediationId === mediationId &&
-    currentRecommendation.offerId === offerId
-
-  if (isSameRecoAsMatchParams) return ''
 
   const params = [
     (offerId && `offerId=${offerId}`) || null,

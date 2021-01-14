@@ -33,7 +33,6 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
         booking: {
           id: 'AE',
           isEventExpired: false,
-          recommendationId: 'AE',
           stockId: 'AA',
           token: 'BBBB',
         },

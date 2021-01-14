@@ -149,7 +149,7 @@ class Booking extends PureComponent {
   }
 
   render() {
-    const { bookables, extraClassName, match, offer, recommendation } = this.props
+    const { bookables, extraClassName, match, offer } = this.props
 
     const isBooking = getIsBooking(match)
 
@@ -158,7 +158,6 @@ class Booking extends PureComponent {
     }
 
     const { canSubmitForm, errors, bookedPayload, isErrored, isSubmitting, mounted } = this.state
-    const { id: recommendationId } = recommendation || {}
     const { isEvent, id: offerId } = offer
     const defaultBookable = bookables && bookables[0]
     const showForm = defaultBookable && !bookedPayload && !isErrored && !isSubmitting
@@ -178,7 +177,6 @@ class Booking extends PureComponent {
       bookables,
       date,
       price,
-      recommendationId,
       stockId,
     }
 
@@ -240,7 +238,6 @@ class Booking extends PureComponent {
 Booking.defaultProps = {
   bookables: null,
   extraClassName: '',
-  recommendation: null,
 }
 
 Booking.propTypes = {
@@ -262,9 +259,6 @@ Booking.propTypes = {
     isEvent: PropTypes.bool,
     id: PropTypes.string,
   }).isRequired,
-  recommendation: PropTypes.shape({
-    id: PropTypes.string,
-  }),
   trackBookOfferClickFromHomepage: PropTypes.func.isRequired,
   trackBookOfferSuccessFromHomepage: PropTypes.func.isRequired,
   trackBookingSuccess: PropTypes.func.isRequired,

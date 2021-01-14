@@ -57,7 +57,6 @@ describe('selectDistanceByRouterMatch', () => {
         favorites: [],
         mediations: [],
         offers: [offer],
-        recommendations: [],
       },
       geolocation: {
         latitude: 42.5,
@@ -87,7 +86,6 @@ describe('selectDistanceByRouterMatch', () => {
         favorites: [],
         mediations: [],
         offers: [offer],
-        recommendations: [],
         stocks: [{ offerId }],
       },
       geolocation: {
@@ -118,7 +116,6 @@ describe('selectDistanceByRouterMatch', () => {
         favorites: [favorite],
         mediations: [],
         offers: [offer],
-        recommendations: [],
       },
       geolocation: {
         latitude: 42.5,

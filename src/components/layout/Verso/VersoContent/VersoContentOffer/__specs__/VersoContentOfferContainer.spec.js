@@ -2,13 +2,8 @@ import { mapStateToProps } from '../VersoContentOfferContainer'
 
 describe('src | components | verso | verso-content | verso-info-offer | VersoContentOfferContainer', () => {
   describe('mapStateToProps', () => {
-    it('should return an object containing bookables, current recommendation and information regarding the offer expiration', () => {
+    it('should return an object containing bookables and information regarding the offer expiration', () => {
       // given
-      const recommendation = {
-        mediationId: 2,
-        offerId: 1,
-        uniqId: 3,
-      }
       const state = {
         data: {
           bookings: [],
@@ -29,7 +24,6 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoCon
               },
             },
           ],
-          recommendations: [recommendation],
           stocks: [{ offerId: 1 }],
         },
         geolocation: {
@@ -42,7 +36,6 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoCon
           params: { mediationId: 2, offerId: 1 },
           url: 'this is a fake url',
         },
-        recommendation,
       }
 
       // when
@@ -51,7 +44,6 @@ describe('src | components | verso | verso-content | verso-info-offer | VersoCon
       // then
       expect(result.bookables).not.toBeNull()
       expect(result.isBookable).toBe(true)
-      expect(result.recommendation).not.toBeNull()
     })
   })
 })

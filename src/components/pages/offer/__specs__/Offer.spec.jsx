@@ -36,7 +36,6 @@ describe('offer', () => {
           favorites: [],
           features: [],
           mediations: [],
-          recommendations: [],
           users: [],
         }
       ) => state,

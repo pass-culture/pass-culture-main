@@ -14,11 +14,6 @@ describe('src | components | share | ShareButtonContainer', () => {
           id: offerId,
           name: 'Marx et Compagnie',
         }
-        const recommendation = {
-          id: 'PA',
-          mediationId: 'CA',
-          offerId,
-        }
         const ownProps = {
           match: {
             params: {
@@ -33,7 +28,6 @@ describe('src | components | share | ShareButtonContainer', () => {
             favorites: [],
             mediations: [],
             offers: [offer],
-            recommendations: [recommendation],
           },
         }
 
@@ -53,11 +47,6 @@ describe('src | components | share | ShareButtonContainer', () => {
           id: offerId,
           name: 'Marx et Compagnie',
         }
-        const recommendation = {
-          id: 'PA',
-          mediationId: 'CA',
-          offerId,
-        }
         const ownProps = {
           match: {
             params: {
@@ -72,7 +61,6 @@ describe('src | components | share | ShareButtonContainer', () => {
             favorites: [],
             mediations: [],
             offers: [offer],
-            recommendations: [recommendation],
           },
         }
 
@@ -93,11 +81,6 @@ describe('src | components | share | ShareButtonContainer', () => {
             id: offerId,
             name: 'Marx et Compagnie',
           }
-          const recommendation = {
-            id: 'PA',
-            mediationId: 'CA',
-            offerId,
-          }
           const ownProps = {
             match: {
               params: {
@@ -112,7 +95,6 @@ describe('src | components | share | ShareButtonContainer', () => {
               favorites: [],
               mediations: [],
               offers: [offer],
-              recommendations: [recommendation],
             },
           }
 
@@ -147,13 +129,6 @@ describe('src | components | share | ShareButtonContainer', () => {
                 name: 'Marx et Compagnie',
               },
             ],
-            recommendations: [
-              {
-                id: 'PA',
-                mediationId: 'CA',
-                offerId: 'B4',
-              },
-            ],
           },
         }
 
@@ -173,11 +148,6 @@ describe('src | components | share | ShareButtonContainer', () => {
           id: offerId,
           name: 'Marx et Compagnie',
         }
-        const recommendation = {
-          id: 'PA',
-          mediationId: 'CA',
-          offerId,
-        }
         const ownProps = {
           match: {
             params: {
@@ -193,7 +163,6 @@ describe('src | components | share | ShareButtonContainer', () => {
             favorites: [],
             mediations: [],
             offers: [offer],
-            recommendations: [recommendation],
           },
           share: {
             options: null,

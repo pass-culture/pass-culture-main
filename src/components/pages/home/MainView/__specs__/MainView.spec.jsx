@@ -385,7 +385,6 @@ describe('src | components | MainView', () => {
       data: (
         state = {
           features: [],
-          readRecommendations: [],
         }
       ) => state,
     })

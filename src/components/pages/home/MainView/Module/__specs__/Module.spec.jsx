@@ -95,11 +95,7 @@ describe('src | components | Module', () => {
       results: { hits: [], nbHits: 0, parsedParameters: {} },
     }
     mockStore = getStubStore({
-      data: (
-        state = {
-          readRecommendations: [],
-        }
-      ) => state,
+      data: (state = {}) => state,
     })
     fetchAlgolia.mockReset()
   })

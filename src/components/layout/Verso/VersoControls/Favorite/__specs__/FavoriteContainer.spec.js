@@ -1,7 +1,9 @@
 import { mapDispatchToProps, mapStateToProps } from '../FavoriteContainer'
 
 jest.mock('../../../../../../utils/fetch-normalize-data/requestData', () => {
-  const { _requestData } = jest.requireActual('../../../../../../utils/fetch-normalize-data/reducers/data/actionCreators')
+  const { _requestData } = jest.requireActual(
+    '../../../../../../utils/fetch-normalize-data/reducers/data/actionCreators'
+  )
 
   return {
     requestData: _requestData,
@@ -21,7 +23,6 @@ describe('components | FavoriteContainer', () => {
           features: [],
           mediations: [],
           offers: [],
-          recommendations: [],
         },
       }
       ownProps = {
@@ -91,7 +92,6 @@ describe('components | FavoriteContainer', () => {
                 id: 'BF',
               },
             ],
-            recommendations: [],
           },
         }
         const ownProps = {
@@ -131,7 +131,6 @@ describe('components | FavoriteContainer', () => {
                 id: 'BF',
               },
             ],
-            recommendations: [],
           },
         }
         const ownProps = {

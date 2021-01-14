@@ -41,7 +41,6 @@ describe('selectOfferByRouterMatch', () => {
         bookings: [],
         favorites: [],
         offers: [{ id: 'AE' }],
-        recommendations: [],
       },
     }
     const match = {
@@ -64,7 +63,6 @@ describe('selectOfferByRouterMatch', () => {
         bookings: [{ id: 'BF', stockId: 'BE' }],
         favorites: [],
         offers: [{ id: 'AE' }],
-        recommendations: [],
         stocks: [{ id: 'BE', offerId: 'AE' }],
       },
     }
