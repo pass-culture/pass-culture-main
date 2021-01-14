@@ -3,6 +3,14 @@ import EligibilityCheck from './EligibilityCheck'
 import { compose } from 'redux'
 import { connect } from 'react-redux'
 import withTracking from '../../hocs/withTracking'
+import selectIsFeatureEnabled from '../../router/selectors/selectIsFeatureEnabled'
+
+export const mapStateToProps = state => {
+  const isIdCheckAvailable = selectIsFeatureEnabled(state, 'ALLOW_IDCHECK_REGISTRATION')
+  return {
+    isIdCheckAvailable,
+  }
+}
 
 export const mergeProps = (stateProps, dispatchProps, ownProps) => {
   return {
@@ -21,5 +29,5 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
 export default compose(
   withTracking('EligibilityCheck'),
   withRouter,
-  connect(null, null, mergeProps)
+  connect(mapStateToProps, null, mergeProps)
 )(EligibilityCheck)

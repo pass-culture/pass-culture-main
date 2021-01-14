@@ -42,6 +42,7 @@ describe('eligibility check page', () => {
         replace: jest.fn(),
       },
       trackEligibility,
+      isIdCheckAvailable: true,
     }
   })
 
@@ -297,37 +298,78 @@ describe('eligibility check page', () => {
         expect(checkIfDepartmentIsEligible).toHaveBeenCalledWith(postalCode)
       })
 
-      it('should display eligible view when department is eligible', () => {
-        // given
-        checkIfDepartmentIsEligible.mockReturnValue(true)
+      describe('when ID check is activated', () => {
+        it('should display eligible view when department is eligible', () => {
+          // given
+          checkIfDepartmentIsEligible.mockReturnValue(true)
 
-        const wrapper = mount(
-          <MemoryRouter>
-            <EligibilityCheck {...props} />
-          </MemoryRouter>
-        )
+          const wrapper = mount(
+            <MemoryRouter>
+              <EligibilityCheck {...props} />
+            </MemoryRouter>
+          )
 
-        const eligibilityPostalCodeInput = wrapper.find('input[placeholder="Ex: 75017"]')
-        const eligibilityDateOfBirthInput = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
+          const eligibilityPostalCodeInput = wrapper.find('input[placeholder="Ex: 75017"]')
+          const eligibilityDateOfBirthInput = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
 
-        act(() => {
-          eligibilityPostalCodeInput.invoke('onChange')({ target: { value: '93800' } })
-          eligibilityDateOfBirthInput.invoke('onChange')({ target: { value: '05/03/2002' } })
-        })
-        wrapper.update()
-
-        const eligibilityForm = wrapper.find('form')
-
-        // when
-        act(() => {
-          eligibilityForm.invoke('onSubmit')({
-            preventDefault: jest.fn(),
+          act(() => {
+            eligibilityPostalCodeInput.invoke('onChange')({ target: { value: '93800' } })
+            eligibilityDateOfBirthInput.invoke('onChange')({ target: { value: '05/03/2002' } })
           })
-        })
-        wrapper.update()
+          wrapper.update()
 
-        // then
-        expect(wrapper.find({ children: 'Tu es éligible !' })).toHaveLength(1)
+          const eligibilityForm = wrapper.find('form')
+
+          // when
+          act(() => {
+            eligibilityForm.invoke('onSubmit')({
+              preventDefault: jest.fn(),
+            })
+          })
+          wrapper.update()
+
+          // then
+          expect(wrapper.find({ children: 'Tu es éligible !' })).toHaveLength(1)
+        })
+      })
+
+      describe('when ID check is disabled', () => {
+        it('should display the specific screen', () => {
+          // given
+          props.isIdCheckAvailable = false
+          checkIfDepartmentIsEligible.mockReturnValue(true)
+
+          const wrapper = mount(
+            <MemoryRouter>
+              <EligibilityCheck {...props} />
+            </MemoryRouter>
+          )
+
+          const eligibilityPostalCodeInput = wrapper.find('input[placeholder="Ex: 75017"]')
+          const eligibilityDateOfBirthInput = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
+
+          act(() => {
+            eligibilityPostalCodeInput.invoke('onChange')({ target: { value: '93800' } })
+            eligibilityDateOfBirthInput.invoke('onChange')({ target: { value: '05/03/2002' } })
+          })
+          wrapper.update()
+
+          const eligibilityForm = wrapper.find('form')
+
+          // when
+          act(() => {
+            eligibilityForm.invoke('onSubmit')({
+              preventDefault: jest.fn(),
+            })
+          })
+          wrapper.update()
+
+          // then
+          expect(wrapper.find({ children: 'Oups !' })).toHaveLength(1)
+          expect(
+            wrapper.find({ children: 'Cette page est indisponible pour le moment.' })
+          ).toHaveLength(1)
+        })
       })
 
       it('should display ineligible department view when department is not eligible', () => {

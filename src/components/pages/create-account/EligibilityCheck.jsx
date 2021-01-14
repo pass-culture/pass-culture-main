@@ -17,8 +17,9 @@ import IneligibleUnderEighteen from './IneligibleUnderEighteen/IneligibleUnderEi
 import { RecaptchaNotice } from './RecaptchaNotice'
 import { useReCaptchaScript } from '../../../utils/recaptcha'
 import { campaignTracker } from '../../../tracking/mediaCampaignsTracking'
+import IdCheckDisabled from './IdCheckDisabled/IdCheckDisabled'
 
-const EligibilityCheck = ({ history, trackEligibility }) => {
+const EligibilityCheck = ({ history, trackEligibility, isIdCheckAvailable }) => {
   useReCaptchaScript()
   const [postalCodeInputValue, setPostalCodeInputValue] = useState('')
   const [dateOfBirthInputValue, setDateOfBirthInputValue] = useState('')
@@ -89,7 +90,12 @@ const EligibilityCheck = ({ history, trackEligibility }) => {
   switch (componentToRender) {
     case DEPARTMENT_ELIGIBILITY_VALUES.ELIGIBLE:
       trackEligibility('Eligibilite - OK')
-      return <Eligible />
+
+      if (isIdCheckAvailable) {
+        return <Eligible />
+      } else {
+        return <IdCheckDisabled />
+      }
     case DEPARTMENT_ELIGIBILITY_VALUES.NOT_ELIGIBLE:
       if (history.location.hash !== '#departement-ineligible') {
         history.replace({
@@ -194,6 +200,7 @@ const EligibilityCheck = ({ history, trackEligibility }) => {
 
 EligibilityCheck.propTypes = {
   history: PropTypes.shape().isRequired,
+  isIdCheckAvailable: PropTypes.bool.isRequired,
   trackEligibility: PropTypes.func.isRequired,
 }
 
