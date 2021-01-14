@@ -1,9 +1,11 @@
+# isort: skip_file
 import csv
 from datetime import datetime
 import sys
 from typing import Iterable
 from typing import List
 
+import pcapi.models  # pylint: disable=unused-import
 from pcapi import settings
 import pcapi.core.payments.api as payments_api
 import pcapi.core.users.api as users_api
