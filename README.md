@@ -577,3 +577,5 @@ artillery run scenario.yml -o reports/report-$(date -u +"%Y-%m-%dT%H:%M:%SZ").js
 ```
 
 Un rapport des tests daté sera généré dans le sous-dossier `reports` (qui doit être crée).
+
+## Envoyer
