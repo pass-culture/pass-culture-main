@@ -642,7 +642,7 @@ const OfferForm = ({
             className="secondary-link"
             href={backUrl}
           >
-            {'Annuler'}
+            {'Annuler et quitter'}
           </a>
         ) : null}
         <button

@@ -1009,7 +1009,7 @@ describe('offerDetails - Edition', () => {
       await renderOffers(props, store)
 
       // When
-      userEvent.click(screen.getByRole('link', { name: 'Annuler' }))
+      userEvent.click(screen.getByRole('link', { name: 'Annuler et quitter' }))
 
       // Then
       expect(computeUrl.computeOffersUrl).toHaveBeenLastCalledWith(testStore.offers.searchFilters)
@@ -1039,7 +1039,7 @@ describe('offerDetails - Edition', () => {
       await renderOffers(props, store)
 
       // Then
-      const cancelLink = screen.getByRole('link', { name: 'Annuler' })
+      const cancelLink = screen.getByRole('link', { name: 'Annuler et quitter' })
       expect(cancelLink).toBeInTheDocument()
       expect(cancelLink).toHaveAttribute('href', '/offres')
     })
