@@ -8,17 +8,11 @@ const noOp = () => false
 
 const SignOutLink = ({
   historyPush,
-  readRecommendations,
   reinitializeDataExceptFeatures,
   resetSeedLastRequestTimestamp,
   signOut,
-  updateReadRecommendations,
 }) => {
   const handleSignOutClick = () => async () => {
-    if (readRecommendations && readRecommendations.length > 0) {
-      await updateReadRecommendations(readRecommendations)
-    }
-
     await signOut()
 
     historyPush('/connexion')
@@ -41,11 +35,9 @@ const SignOutLink = ({
 
 SignOutLink.propTypes = {
   historyPush: PropTypes.func.isRequired,
-  readRecommendations: PropTypes.PropTypes.arrayOf(PropTypes.shape()).isRequired,
   reinitializeDataExceptFeatures: PropTypes.func.isRequired,
   resetSeedLastRequestTimestamp: PropTypes.func.isRequired,
   signOut: PropTypes.func.isRequired,
-  updateReadRecommendations: PropTypes.func.isRequired,
 }
 
 export default SignOutLink

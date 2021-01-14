@@ -4,7 +4,6 @@ import React from 'react'
 import ExternalLink from '../ExternalLink/ExternalLink'
 import InternalLink from '../InternalLink/InternalLink'
 import { signOut } from '../repository/signOut'
-import { updateReadRecommendations } from '../repository/updateReadRecommendations'
 import SignOutLinkContainer from '../SignOutLink/SignOutLinkContainer'
 
 const contactUrl = 'https://aide.passculture.app/fr/category/18-ans-1dnil5r/'
@@ -45,7 +44,6 @@ const ListLinks = ({ historyPush }) => (
         <SignOutLinkContainer
           historyPush={historyPush}
           signOut={signOut}
-          updateReadRecommendations={updateReadRecommendations}
         />
       </li>
     </ul>
