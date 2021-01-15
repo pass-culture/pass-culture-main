@@ -1,5 +1,6 @@
 from pcapi.connectors.api_recaptcha import get_token_validation_and_score
 from pcapi.models import ApiErrors
+from pcapi.settings import IS_RUNNING_TESTS
 
 
 class ReCaptchaException(Exception):
@@ -13,6 +14,10 @@ class InvalidRecaptchaTokenException(ApiErrors):
 
 
 def check_recaptcha_token_is_valid(token: str, original_action: str, minimal_score: float) -> None:
+    # This is to prevent E2E tests from being flaky
+    if IS_RUNNING_TESTS:
+        return
+
     response = get_token_validation_and_score(token)
     is_token_valid = response.get("success")
 
