@@ -807,6 +807,56 @@ describe('offerDetails - Edition', () => {
       expect(successNotification).toBeInTheDocument()
     })
 
+    it('should send accessibility fields for synchronized offers', async () => {
+      // Given
+      const editedOffer = {
+        id: 'ABC12',
+        name: 'My edited offer',
+        type: 'EventType.CINEMA',
+        description: 'Offer description',
+        venueId: editedOfferVenue.id,
+        venue: editedOfferVenue,
+        withdrawalDetails: 'Offer withdrawal details',
+        bookingEmail: 'booking@example.net',
+        extraData: {
+          stageDirector: 'Mr Stage Director',
+        },
+        audioDisabilityCompliant: false,
+        visualDisabilityCompliant: true,
+        motorDisabilityCompliant: false,
+        mentalDisabilityCompliant: false,
+        lastProvider: {
+          name: 'Allociné',
+        },
+      }
+      pcapi.loadOffer.mockResolvedValue(editedOffer)
+      const cinemaType = {
+        conditionalFields: ['author', 'visa', 'stageDirector'],
+        offlineOnly: true,
+        onlineOnly: false,
+        proLabel: 'Cinéma - projections et autres évènements',
+        type: 'Event',
+        value: 'EventType.CINEMA',
+      }
+      pcapi.loadTypes.mockResolvedValue([cinemaType])
+
+      await renderOffers(props, store)
+
+      // When
+      userEvent.click(screen.getByText('Enregistrer'))
+
+      // Then
+      expect(pcapi.updateOffer).toHaveBeenCalledWith(
+        editedOffer.id,
+        expect.objectContaining({
+          audioDisabilityCompliant: false,
+          visualDisabilityCompliant: true,
+          motorDisabilityCompliant: false,
+          mentalDisabilityCompliant: false,
+        })
+      )
+    })
+
     it('should not send extraData for synchronized offers', async () => {
       // Given
       const editedOffer = {
@@ -825,7 +875,6 @@ describe('offerDetails - Edition', () => {
           name: 'Allociné',
         },
       }
-      pcapi.loadOffer.mockResolvedValue(editedOffer)
       pcapi.loadOffer.mockResolvedValue(editedOffer)
       const cinemaType = {
         conditionalFields: ['author', 'visa', 'stageDirector'],

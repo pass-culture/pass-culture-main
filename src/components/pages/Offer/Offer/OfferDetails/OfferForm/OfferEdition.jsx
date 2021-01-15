@@ -1,7 +1,10 @@
 import PropTypes from 'prop-types'
 import React, { useEffect, useState } from 'react'
 
-import { isAllocineOffer, isSynchronizedOffer } from 'components/pages/Offer/domain/localProvider'
+import {
+  isFieldReadOnlyForSynchronizedOffer,
+  isSynchronizedOffer,
+} from 'components/pages/Offer/domain/localProvider'
 import * as pcapi from 'repository/pcapi/pcapi'
 
 import { computeOffersUrl } from '../../../utils/computeOffersUrl'
@@ -43,20 +46,13 @@ const OfferEdition = ({
   }
 
   const computeReadOnlyFields = offer => {
-    let readOnlyFields = []
-    const isOfferSynchronized = isSynchronizedOffer(offer)
-    if (isOfferSynchronized) {
-      let synchonizedOfferReadOnlyFields = Object.keys(DEFAULT_FORM_VALUES)
-      if (isAllocineOffer(offer)) {
-        synchonizedOfferReadOnlyFields = synchonizedOfferReadOnlyFields.filter(
-          fieldName => fieldName !== 'isDuo'
-        )
-      }
-      readOnlyFields = synchonizedOfferReadOnlyFields
+    if (isSynchronizedOffer(offer)) {
+      return Object.keys(DEFAULT_FORM_VALUES).filter(fieldName =>
+        isFieldReadOnlyForSynchronizedOffer(fieldName, offer.lastProvider)
+      )
     } else {
-      readOnlyFields = EDITED_OFFER_READ_ONLY_FIELDS
+      return EDITED_OFFER_READ_ONLY_FIELDS
     }
-    return readOnlyFields
   }
 
   useEffect(() => {

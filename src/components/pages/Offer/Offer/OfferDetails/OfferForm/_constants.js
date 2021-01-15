@@ -62,3 +62,13 @@ export const EXTRA_DATA_FIELDS = [
   'visa',
 ]
 export const MANDATORY_FIELDS = ['name', 'venueId', 'offererId', 'url', 'bookingEmail']
+
+export const SYNCHRONIZED_OFFER_EDITABLE_FIELDS = {
+  ALL_PROVIDERS: [
+    'audioDisabilityCompliant',
+    'mentalDisabilityCompliant',
+    'motorDisabilityCompliant',
+    'visualDisabilityCompliant',
+  ],
+  ALLOCINE: ['isDuo'],
+}
