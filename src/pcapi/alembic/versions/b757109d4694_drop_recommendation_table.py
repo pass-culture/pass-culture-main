@@ -1,7 +1,7 @@
 """drop_recommendation_table
 
 Revision ID: b757109d4694
-Revises: 1196c69e1385
+Revises: acbee9d1615b
 Create Date: 2021-01-08 14:30:11.459680
 
 """
@@ -11,13 +11,12 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = "b757109d4694"
-down_revision = "1196c69e1385"
+down_revision = "acbee9d1615b"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
-    op.drop_column("booking", "recommendationId")
     op.drop_table("recommendation")
 
 
@@ -55,5 +54,4 @@ def downgrade():
     op.create_index(op.f("ix_recommendation_userId"), "recommendation", ["userId"], unique=False)
     op.add_column("booking", sa.Column("recommendationId", sa.BigInteger(), nullable=True))
     op.create_index(op.f("ix_booking_recommendationId"), "booking", ["recommendationId"], unique=False)
-    op.create_foreign_key(None, "booking", "recommendation", ["recommendationId"], ["id"])
     # ### end Alembic commands ###
