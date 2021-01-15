@@ -118,9 +118,27 @@ describe('offerDetails - Edition', () => {
         expect(button).toBeInTheDocument()
         expect(image).toHaveAttribute('src', 'http://example.net/active-image.png')
       })
+
+      it('should close the modal when user is clicking on close button', async () => {
+        // Given
+        editedOffer.thumbUrl = 'http://example.net/active-image.png'
+        await renderOffers({}, store)
+        userEvent.click(await screen.findByTitle('Modifier l’image', { selector: 'button' }))
+
+        // When
+        userEvent.click(await screen.findByTitle('Fermer la modale', { selector: 'button' }))
+
+        // Then
+        expect(
+          await screen.findByTitle('Modifier l’image', { selector: 'button' })
+        ).toBeInTheDocument()
+        expect(
+          screen.queryByTitle('Fermer la modale', { selector: 'button' })
+        ).not.toBeInTheDocument()
+      })
     })
 
-    describe('when thumbnail do not exist', () => {
+    describe('when thumbnail does not exist', () => {
       it('should display the placeholder', async () => {
         // When
         await renderOffers({}, store)

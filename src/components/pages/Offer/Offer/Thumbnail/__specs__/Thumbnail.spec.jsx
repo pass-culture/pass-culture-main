@@ -1,13 +1,11 @@
 import '@testing-library/jest-dom'
 import { fireEvent } from '@testing-library/dom'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter, Route } from 'react-router'
+import { MemoryRouter } from 'react-router'
 
-import OfferLayoutContainer from 'components/pages/Offer/Offer/OfferLayoutContainer'
+import ThumbnailDialog from 'components/pages/Offer/Offer/Thumbnail/ThumbnailDialog'
 import * as pcapi from 'repository/pcapi/pcapi'
-import { configureTestStore } from 'store/testUtils'
 
 import { MIN_IMAGE_HEIGHT, MIN_IMAGE_WIDTH } from '../_constants'
 
@@ -30,66 +28,19 @@ const createFile = ({ name = 'example.json', type = 'application/json', sizeInMB
   return file
 }
 
-const renderThumbnail = async (props, store) => {
+const renderThumbnail = () => {
   render(
-    <Provider store={store}>
-      <MemoryRouter initialEntries={[{ pathname: '/offres/v2/ABC12/edition' }]}>
-        <Route path="/offres/v2/:offerId([A-Z0-9]+)/">
-          <OfferLayoutContainer {...props} />
-        </Route>
-      </MemoryRouter>
-    </Provider>
+    <MemoryRouter>
+      <ThumbnailDialog setIsModalOpened={jest.fn()} />
+    </MemoryRouter>
   )
-
-  fireEvent.click(await screen.findByTitle('Modifier l’image', { selector: 'button' }))
 }
 
 describe('thumbnail edition', () => {
-  let editedOffer
-  let offerers
-  let store
-  let types
-  let venues
-
-  beforeEach(() => {
-    store = configureTestStore({ data: { users: [{ publicName: 'François', isAdmin: false }] } })
-    types = []
-    offerers = []
-    venues = []
-
-    const editedOfferVenue = {
-      id: 'AB',
-      managingOffererId: 'BA',
-      name: 'Le lieu',
-      offererName: 'La structure',
-      managingOfferer: {
-        id: 'BA',
-        name: 'La structure',
-      },
-    }
-    editedOffer = {
-      id: 'ABC12',
-      name: 'My edited offer',
-      thumbUrl: 'http://example.net/active-image.png',
-      type: 'ThingType.LIVRE_EDITION',
-      venue: editedOfferVenue,
-      venueId: editedOfferVenue.id,
-    }
-    jest.spyOn(pcapi, 'getValidatedOfferers').mockResolvedValue(offerers)
-    jest.spyOn(pcapi, 'getVenuesForOfferer').mockResolvedValue(venues)
-    jest.spyOn(pcapi, 'loadOffer').mockResolvedValue(editedOffer)
-    jest.spyOn(pcapi, 'loadTypes').mockResolvedValue(types)
-
-    Object.defineProperty(global, 'createImageBitmap', {
-      writable: true,
-      value: () => Promise.resolve({}),
-    })
-  })
-
   describe('when thumbnail exists', () => {
     it('should display a modal when the user is clicking on thumbnail', async () => {
       // When
-      await renderThumbnail({}, store)
+      renderThumbnail()
 
       // Then
       expect(screen.getByLabelText('Ajouter une image')).toBeInTheDocument()
@@ -98,24 +49,15 @@ describe('thumbnail edition', () => {
   })
 
   describe('when the user is within the upload tunnel', () => {
-    it('should close the modal when user is clicking on close button', async () => {
-      // Given
-      await renderThumbnail({}, store)
-
-      // When
-      fireEvent.click(screen.getByTitle('Fermer la modale', { selector: 'button' }))
-
-      // Then
-      expect(screen.queryByLabelText('Ajouter une image')).not.toBeInTheDocument()
-      expect(
-        screen.queryByTitle('Fermer la modale', { selector: 'button' })
-      ).not.toBeInTheDocument()
-    })
-
     describe('when the user is on import tab', () => {
+      Object.defineProperty(global, 'createImageBitmap', {
+        writable: true,
+        value: () => Promise.resolve({}),
+      })
+
       it('should display information for importing', async () => {
         // When
-        await renderThumbnail({}, store)
+        renderThumbnail()
 
         // Then
         expect(
@@ -145,7 +87,7 @@ describe('thumbnail edition', () => {
 
       it('should display no error if file respects all rules', async () => {
         // Given
-        await renderThumbnail({}, store)
+        renderThumbnail()
         const file = createImageFile()
 
         // When
@@ -173,7 +115,7 @@ describe('thumbnail edition', () => {
 
       it('should not import a file other than png or jpg', async () => {
         // Given
-        await renderThumbnail({}, store)
+        renderThumbnail()
         const file = createFile()
 
         // When
@@ -191,7 +133,7 @@ describe('thumbnail edition', () => {
 
       it('should only display the first encountered validation error', async () => {
         // Given
-        await renderThumbnail({}, store)
+        renderThumbnail()
         const file = createFile({ sizeInMB: 50 })
 
         // When
@@ -205,19 +147,16 @@ describe('thumbnail edition', () => {
             selector: 'strong',
           })
         ).toBeInTheDocument()
-
-        await waitFor(() => {
-          expect(
-            screen.queryByText('Le poids du fichier ne doit pas dépasser 10 Mo', {
-              selector: 'strong',
-            })
-          ).not.toBeInTheDocument()
-        })
+        expect(
+          screen.queryByText('Le poids du fichier ne doit pas dépasser 10 Mo', {
+            selector: 'strong',
+          })
+        ).not.toBeInTheDocument()
       })
 
       it('should not import an image which exceeds maximum size', async () => {
         // Given
-        await renderThumbnail({}, store)
+        renderThumbnail()
         const bigFile = createImageFile({ sizeInMB: 10 })
 
         // When
@@ -235,7 +174,7 @@ describe('thumbnail edition', () => {
 
       it('should not import an image whose height is below minimum', async () => {
         // Given
-        await renderThumbnail({}, store)
+        renderThumbnail()
         const file = createImageFile({ height: 200 })
 
         // When
@@ -253,7 +192,7 @@ describe('thumbnail edition', () => {
 
       it('should not import an image whose width is below minimum', async () => {
         // Given
-        await renderThumbnail({}, store)
+        renderThumbnail()
         const file = createImageFile({ width: 200 })
 
         // When
@@ -273,7 +212,7 @@ describe('thumbnail edition', () => {
     describe('when the user is on url tab', () => {
       it('should display information for importing', async () => {
         // Given
-        await renderThumbnail({}, store)
+        renderThumbnail()
 
         // When
         fireEvent.click(screen.getByText('Utiliser une URL'))
@@ -292,7 +231,7 @@ describe('thumbnail edition', () => {
 
       it('should enable submit button if there is a string', async () => {
         // Given
-        await renderThumbnail({}, store)
+        renderThumbnail()
         fireEvent.click(screen.getByText('Utiliser une URL'))
 
         // When
@@ -305,7 +244,7 @@ describe('thumbnail edition', () => {
       it('should display an error if the url does meet the requirements', async () => {
         // Given
         jest.spyOn(pcapi, 'getURLErrors').mockResolvedValue({ errors: ['API error message'] })
-        await renderThumbnail({}, store)
+        renderThumbnail()
 
         fireEvent.click(screen.getByText('Utiliser une URL'))
         fireEvent.change(screen.getByLabelText('URL de l’image'), {
@@ -327,7 +266,7 @@ describe('thumbnail edition', () => {
       it('should display a generic error if the api did not send a valid response', async () => {
         // Given
         jest.spyOn(pcapi, 'getURLErrors').mockRejectedValue({})
-        await renderThumbnail({}, store)
+        renderThumbnail()
 
         fireEvent.click(screen.getByText('Utiliser une URL'))
         fireEvent.change(screen.getByLabelText('URL de l’image'), {
