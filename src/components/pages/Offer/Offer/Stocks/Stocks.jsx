@@ -7,6 +7,7 @@ import PageTitle from 'components/layout/PageTitle/PageTitle'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { getDepartmentTimezone } from 'utils/timezone'
 
+import { EVENT_CANCELLATION_INFORMATION, THING_CANCELLATION_INFORMATION } from './_constants'
 import StockItemContainer from './StockItem/StockItemContainer'
 
 const Stocks = ({ offer }) => {
@@ -47,12 +48,6 @@ const Stocks = ({ offer }) => {
     setIsAddingNewStock(true)
   }, [setIsAddingNewStock])
 
-  const eventCancellationInformation =
-    'Les utilisateurs ont un délai de 48h pour annuler leur réservation mais ne peuvent pas le faire moins de 48h avant le début de l’événement. Si la date limite de réservation n’est pas encore passée, la place est alors automatiquement remise en vente.'
-
-  const thingCancellationInformation =
-    'Les utilisateurs ont 30 jours pour faire valider leur contremarque. Passé ce délai, la réservation est automatiquement annulée et l’offre remise en vente.'
-
   const hasOfferThingOneStockAlready = !isEvent && stocks.length > 0
 
   return (
@@ -63,7 +58,7 @@ const Stocks = ({ offer }) => {
       </h3>
 
       <div className="cancellation-information">
-        {isEvent ? eventCancellationInformation : thingCancellationInformation}
+        {isEvent ? EVENT_CANCELLATION_INFORMATION : THING_CANCELLATION_INFORMATION}
       </div>
       <button
         className="tertiary-button"
