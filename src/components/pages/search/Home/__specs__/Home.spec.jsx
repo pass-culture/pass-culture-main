@@ -115,8 +115,7 @@ describe('components | Home', () => {
     })
 
     // then
-    expect(props.history.push).toHaveBeenCalledWith({
-      pathname: '/recherche/resultats',
+    expect(props.history.push).toHaveBeenCalledWith('/recherche/resultats', {
       search:
         '?mots-cles=search keyword&autour-de=non&tri=_by_price&categories=CINEMA&latitude=40&longitude=41',
     })
@@ -149,8 +148,7 @@ describe('components | Home', () => {
     })
 
     // then
-    expect(props.history.push).toHaveBeenCalledWith({
-      pathname: '/recherche/resultats',
+    expect(props.history.push).toHaveBeenCalledWith('/recherche/resultats', {
       search: '?mots-cles=search keyword&autour-de=oui&tri=&categories=&latitude=40&longitude=41',
     })
   })
@@ -182,8 +180,7 @@ describe('components | Home', () => {
     })
 
     // then
-    expect(props.history.push).toHaveBeenCalledWith({
-      pathname: '/recherche/resultats',
+    expect(props.history.push).toHaveBeenCalledWith('/recherche/resultats', {
       search:
         "?mots-cles=search keyword&autour-de=oui&tri=&categories=&latitude=59.2&longitude=4.3&place=34 avenue de l'opéra, Paris",
     })

@@ -6,10 +6,7 @@ import Price from '../../../../Price/Price'
 class BookingAction extends PureComponent {
   handleBookingAction = () => {
     const { bookingUrl, history, moduleName } = this.props
-    history.push({
-      pathname: bookingUrl,
-      moduleName: moduleName,
-    })
+    history.push(bookingUrl, { moduleName })
   }
 
   render() {
