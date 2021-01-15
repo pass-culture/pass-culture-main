@@ -22,7 +22,7 @@ class CheckRecaptchaTokenIsValidTest:
         # Given
         token = generate_fake_token()
         recaptcha_response.return_value = {"success": True, "score": 0.2}
-        settings_mock.IS_RUNNING_TESTS = False
+        settings_mock.IS_DEV = False
 
         # When
         with pytest.raises(InvalidRecaptchaTokenException):
@@ -34,7 +34,7 @@ class CheckRecaptchaTokenIsValidTest:
         # Given
         token = generate_fake_token()
         recaptcha_response.return_value = {"success": True, "score": 0.9, "action": "fake-action"}
-        settings_mock.IS_RUNNING_TESTS = False
+        settings_mock.IS_DEV = False
 
         # When
         with pytest.raises(ReCaptchaException) as exception:
@@ -52,7 +52,7 @@ class CheckRecaptchaTokenIsValidTest:
             "success": False,
             "error-codes": ["timeout-or-duplicate"],
         }
-        settings_mock.IS_RUNNING_TESTS = False
+        settings_mock.IS_DEV = False
 
         # When
         with pytest.raises(InvalidRecaptchaTokenException):
@@ -77,7 +77,7 @@ class CheckRecaptchaTokenIsValidTest:
             "success": False,
             "error-codes": [error_code],
         }
-        settings_mock.IS_RUNNING_TESTS = False
+        settings_mock.IS_DEV = False
 
         # When
         with pytest.raises(ReCaptchaException):
@@ -92,7 +92,7 @@ class CheckRecaptchaTokenIsValidTest:
             "success": False,
             "error-codes": ["first-error", "second-error"],
         }
-        settings_mock.IS_RUNNING_TESTS = False
+        settings_mock.IS_DEV = False
 
         # When
         with pytest.raises(ReCaptchaException) as exception:
