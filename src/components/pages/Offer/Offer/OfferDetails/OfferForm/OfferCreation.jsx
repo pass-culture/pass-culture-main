@@ -21,6 +21,7 @@ const OfferCreation = ({
   const offerers = useRef([])
   const [selectedOfferer, setSelectedOfferer] = useState(initialValues.offererId)
 
+  useEffect(() => setSelectedOfferer(initialValues.offererId), [initialValues.offererId])
   useEffect(
     function retrieveDataOnMount() {
       const typesRequest = pcapi.loadTypes().then(receivedTypes => (types.current = receivedTypes))
@@ -41,10 +42,14 @@ const OfferCreation = ({
   )
   useEffect(
     function filterVenuesOfOfferer() {
-      if (isUserAdmin && selectedOfferer) {
-        pcapi
-          .getVenuesForOfferer(selectedOfferer)
-          .then(receivedVenues => setDisplayedVenues(receivedVenues))
+      if (isUserAdmin) {
+        if (selectedOfferer) {
+          pcapi
+            .getVenuesForOfferer(selectedOfferer)
+            .then(receivedVenues => setDisplayedVenues(receivedVenues))
+        } else {
+          setDisplayedVenues([])
+        }
       } else if (!isUserAdmin) {
         const venuesToDisplay = selectedOfferer
           ? venues.current.filter(venue => venue.managingOffererId === selectedOfferer)

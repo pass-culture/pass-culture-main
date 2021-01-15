@@ -188,10 +188,12 @@ const OfferForm = ({
   const selectOfferer = useCallback(
     event => {
       const selectedOffererId = event.target.value
-      handleFormUpdate({ offererId: selectedOffererId })
-      setSelectedOfferer(selectedOffererId)
+      if (selectedOffererId !== formValues.offererId) {
+        handleFormUpdate({ offererId: selectedOffererId, venueId: DEFAULT_FORM_VALUES.venueId })
+        setSelectedOfferer(selectedOffererId)
+      }
     },
-    [handleFormUpdate, setSelectedOfferer]
+    [formValues.offererId, handleFormUpdate, setSelectedOfferer]
   )
 
   const isValid = useCallback(() => {

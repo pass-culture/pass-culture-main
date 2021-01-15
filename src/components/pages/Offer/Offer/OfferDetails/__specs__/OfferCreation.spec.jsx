@@ -160,7 +160,7 @@ describe('offerDetails - Creation', () => {
     pcapi.loadTypes.mockClear()
   })
 
-  describe('render when creating a new offer', () => {
+  describe('render when creating a new offer as pro user', () => {
     it('should get types from API', async () => {
       // When
       await renderOffers(props, store)
@@ -247,7 +247,7 @@ describe('offerDetails - Creation', () => {
         expect(bookingEmailInput).toHaveAttribute('name', 'bookingEmail')
       })
 
-      describe('when selecting a venue', () => {
+      describe('venue selection', () => {
         it('should display an offerer selection and a venue selection when user is pro', async () => {
           // Given
           await renderOffers(props, store)
