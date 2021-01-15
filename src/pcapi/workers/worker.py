@@ -17,6 +17,9 @@ from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 # FIXME (cgaunet, 2021-01-13): this is to prevent Booking circular import when importing user in read_version_from_file
 from pcapi import models  # pylint: disable=unused-import
 from pcapi import settings
+from pcapi.flask_app import app
+from pcapi.models.db import db
+from pcapi.utils.health_checker import check_database_connection
 from pcapi.utils.health_checker import read_version_from_file
 from pcapi.utils.logger import logger
 from pcapi.workers.logger import JobStatus
@@ -44,6 +47,17 @@ def log_redis_connection_status() -> None:
         logger.critical("Worker: redis connection KO: %s", e)
 
 
+def log_database_connection_status() -> None:
+    with app.app_context():
+        if check_database_connection():
+            logger.info("Worker: database connection OK")
+        else:
+            logger.critical("Worker: database connection KO")
+    db.session.remove()
+    db.session.close()
+    db.engine.dispose()
+
+
 if __name__ == "__main__":
     listen = sys.argv[1:] or ["default"]
     logger.info("Worker: listening to queues %s", listen)
@@ -62,6 +76,13 @@ if __name__ == "__main__":
 
     while True:
         try:
+            # This sessions removals are meant to prevent open db connection
+            # to spread through forked children and cause bugs in the jobs
+            # https://python-rq.org/docs/workers/#the-worker-lifecycle
+            # https://docs.sqlalchemy.org/en/13/core/connections.html?highlight=dispose#engine-disposal
+            db.session.remove()
+            db.session.close()
+            db.engine.dispose()
             with Connection(conn):
                 worker = Worker(list(map(Queue, listen)), exception_handlers=[log_worker_error])
                 worker.work()
