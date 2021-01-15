@@ -130,6 +130,17 @@ describe('offerDetails - Edition', () => {
           await screen.findByText('Ajouter une image', { selector: 'button' })
         ).toBeInTheDocument()
       })
+
+      it('should open the modal when user clicks on the placeholder', async () => {
+        // Given
+        await renderOffers({}, store)
+
+        // When
+        userEvent.click(await screen.findByTitle('Ajouter une image', { selector: 'button' }))
+
+        // Then
+        expect(await screen.findByLabelText('Ajouter une image')).toBeInTheDocument()
+      })
     })
 
     it('should change title with typed value', async () => {

@@ -204,7 +204,7 @@ describe('offerDetails - Creation', () => {
     })
 
     describe('when selecting an offer type', () => {
-      it('should display a placeholder for preview', async () => {
+      it('should display a placeholder for the offer thumbnail', async () => {
         // Given
         await renderOffers(props, store)
 
