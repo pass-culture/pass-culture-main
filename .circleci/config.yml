@@ -53,7 +53,7 @@ executors:
 
   helm:
     docker:
-      - image: ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/helm-gcp:3.4.1
+      - image: ${GCP_REGION}-docker.pkg.dev/passculture-infra-prod/${GCP_TOOLS_REGISTRY_NAME}/helm-gcp:3.4.1
         auth:
           username: _json_key  # default username when using a JSON key file to authenticate
           password: $GCP_INFRA_KEY
@@ -144,7 +144,7 @@ commands:
                 SUPPORT_EMAIL_ADDRESS=sm://${GCP_PROJECT}/<< parameters.app_name >>_support_email_address, \
                 TRANSACTIONS_RECIPIENTS=sm://${GCP_PROJECT}/<< parameters.app_name >>_transactions_recipients, \
                 WALLET_BALANCES_RECIPIENTS=sm://${GCP_PROJECT}/<< parameters.app_name >>_wallet_balances_recipients" \
-            --image=${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_REGISTRY_NAME}/<< parameters.docker_image_name >>:<< parameters.app_image_tag >>
+            --image=${GCP_REGION}-docker.pkg.dev/passculture-infra-prod/${GCP_REGISTRY_NAME}/<< parameters.docker_image_name >>:<< parameters.app_image_tag >>
             true
 
   deploy-cron-gke:
@@ -334,8 +334,8 @@ jobs:
       - run: |
           docker build . \
             -f Dockerfile.gcp \
-            -t ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:${CIRCLE_SHA1}
-      - run: docker push ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:${CIRCLE_SHA1}
+            -t ${GCP_REGION}-docker.pkg.dev/passculture-infra-prod/${GCP_REGISTRY_NAME}/pcapi:${CIRCLE_SHA1}
+      - run: docker push ${GCP_REGION}-docker.pkg.dev/passculture-infra-prod/${GCP_REGISTRY_NAME}/pcapi:${CIRCLE_SHA1}
 
   deploy-api-cloudrun:
     executor: gcp-sdk
@@ -347,8 +347,8 @@ jobs:
           app_env: testing
           app_image_tag: ${CIRCLE_SHA1}
           docker_image_name: pcapi
-          app_service_account_email: pcapi-testing@pass-culture-app-projet-test.iam.gserviceaccount.com
-          vpc_connector_name: metier-development
+          app_service_account_email: pcapi-testing@passculture-metier-ehp.iam.gserviceaccount.com
+          vpc_connector_name: metier-ehp
 
   deploy-cron-and-worker:
     executor: helm
@@ -365,13 +365,13 @@ jobs:
           command: gcloud container clusters get-credentials --region ${GCP_REGION} ${GKE_CLUSTER_NAME}
       - run:
           name: Login to GCP Artifact Registry with helm
-          command: echo ${GCP_INFRA_KEY} | helm registry login  -u _json_key --password-stdin ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}
+          command: echo ${GCP_INFRA_KEY} | helm registry login  -u _json_key --password-stdin ${GCP_REGION}-docker.pkg.dev/passculture-infra-prod
       - run:
           name: Pull chart from registry
-          command: helm chart pull ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:${TAG}
+          command: helm chart pull ${GCP_REGION}-docker.pkg.dev/passculture-infra-prod/${GCP_REGISTRY_NAME}/${CHART_NAME}:${TAG}
       - run:
           name: Export chart in local filesystem
-          command: helm chart export ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:${TAG} -d tmp/
+          command: helm chart export ${GCP_REGION}-docker.pkg.dev/passculture-infra-prod/${GCP_REGISTRY_NAME}/${CHART_NAME}:${TAG} -d tmp/
       - deploy-cron-gke:
           helm_chart_name: passculture
           helm_release_name: development
@@ -586,17 +586,17 @@ workflows:
               only:
                 - master
           context:
-            - GCP
+            - GCP_EHP
       - deploy-api-cloudrun:
           requires:
             - build-and-push-image
           context:
-            - GCP
+            - GCP_EHP
       - deploy-cron-and-worker:
           requires:
             - build-and-push-image
           context:
-            - GCP
+            - GCP_EHP
 
   nightly:
     triggers:
