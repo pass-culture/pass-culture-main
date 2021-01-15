@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { useCallback, useRef, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 
 import { DialogBox } from 'components/layout/DialogBox/DialogBox'
 import { IMPORT_TAB_ID } from 'components/pages/Offer/Offer/Thumbnail/_constants'
@@ -9,7 +9,6 @@ import ImportFromURL from 'components/pages/Offer/Offer/Thumbnail/ImportFromURL/
 import ImportTab from 'components/pages/Offer/Offer/Thumbnail/ImportTab/ImportTab'
 
 const ThumbnailDialog = ({ setIsModalOpened }) => {
-  const fileInputRef = useRef()
   const DIALOG_LABEL_ID = 'label_for_aria'
 
   const [tabId, setTabId] = useState(IMPORT_TAB_ID)
@@ -32,16 +31,7 @@ const ThumbnailDialog = ({ setIsModalOpened }) => {
       extraClassNames="thumbnail-dialog"
       labelledBy={DIALOG_LABEL_ID}
       onDismiss={closeModal}
-      ref={fileInputRef}
     >
-      <button
-        className="tnd-close"
-        onClick={closeModal}
-        title="Fermer la modale"
-        type="button"
-      >
-        <CloseModalIcon />
-      </button>
       <header>
         <h1
           className="tnd-header"
@@ -53,9 +43,16 @@ const ThumbnailDialog = ({ setIsModalOpened }) => {
       <ImportTab
         activeStep={activeStep}
         changeTab={changeTab}
-        ref={fileInputRef}
       />
       {tabId === IMPORT_TAB_ID ? <ImportFromComputer /> : <ImportFromURL />}
+      <button
+        className="tnd-close"
+        onClick={closeModal}
+        title="Fermer la modale"
+        type="button"
+      >
+        <CloseModalIcon />
+      </button>
       <hr className="tnd-hr" />
     </DialogBox>
   )

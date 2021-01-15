@@ -149,5 +149,5 @@ export const createStock = stock => {
 // thumbnail
 //
 export const getURLErrors = url => {
-  return client.get(`/offers/thumbnail-url-errors?url=${url}`)
+  return client.post('/offers/thumbnail-url-errors', { url: url })
 }

@@ -232,7 +232,7 @@ describe('pcapi', () => {
   })
 
   describe('getURLErrors', () => {
-    it('should call the api correct GET route with url as a query param', () => {
+    it('should call the api correct POST route with url as a body param', () => {
       // given
       const url = 'http://ma-mauvaise-url'
 
@@ -240,7 +240,9 @@ describe('pcapi', () => {
       getURLErrors(url)
 
       // then
-      expect(client.get).toHaveBeenCalledWith(`/offers/thumbnail-url-errors?url=${url}`)
+      expect(client.post).toHaveBeenCalledWith(`/offers/thumbnail-url-errors`, {
+        url: url,
+      })
     })
   })
 })
