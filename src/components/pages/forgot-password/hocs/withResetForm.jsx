@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 
 import { requestData } from '../../../../utils/fetch-normalize-data/requestData'
 import { getReCaptchaToken } from '../../../../utils/recaptcha'
+import { IS_DEV } from '../../../../utils/config'
 
 const noop = () => {}
 
@@ -61,9 +62,13 @@ const withResetForm = (WrappedComponent, validator, routePath, routeMethod) => {
       // directement dans les champs du formulaire
       const formSubmitPromise = new Promise(resolve => {
         if (routePath === '/users/reset-password') {
-          getReCaptchaToken('resetPassword').then(token => {
-            this.promiseOnFormSubmit({ ...formValues, token: token }, resolve)
-          })
+          if (!IS_DEV) {
+            getReCaptchaToken('resetPassword').then(token => {
+              this.promiseOnFormSubmit({ ...formValues, token: token }, resolve)
+            })
+          } else {
+            this.promiseOnFormSubmit({ ...formValues, token: 'testing_token' }, resolve)
+          }
         } else {
           this.promiseOnFormSubmit(formValues, resolve)
         }
