@@ -1,6 +1,6 @@
 import selectIsFeatureDisabled from '../selectIsFeatureDisabled'
 
-describe('src | components | router | selectIsFeatureEnabled', () => {
+describe('src | components | router | selectIsFeatureDisabled', () => {
   it('should return true when features is Empty', () => {
     // when
     const state = { data: { features: [] } }
