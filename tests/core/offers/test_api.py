@@ -667,7 +667,7 @@ class UpdateOfferTest:
         offer = factories.OfferFactory(name="Old name")
 
         with pytest.raises(models.ApiErrors) as error:
-            offer = api.update_offer(offer, name="Luftballons" * 99)
+            api.update_offer(offer, name="Luftballons" * 99)
 
         assert error.value.errors == {"name": ["Vous devez saisir moins de 140 caractères"]}
         assert models.Offer.query.one().name == "Old name"
@@ -676,7 +676,7 @@ class UpdateOfferTest:
         provider = offerers_factories.ProviderFactory(localClass="AllocineStocks")
         offer = factories.OfferFactory(lastProvider=provider, name="Old name")
 
-        offer = api.update_offer(offer, name="Old name", isDuo=True)
+        api.update_offer(offer, name="Old name", isDuo=True)
 
         offer = models.Offer.query.one()
         assert offer.name == "Old name"
@@ -687,22 +687,57 @@ class UpdateOfferTest:
         offer = factories.OfferFactory(lastProvider=provider, name="Old name")
 
         with pytest.raises(models.ApiErrors) as error:
-            offer = api.update_offer(offer, name="New name", isDuo=True)
+            api.update_offer(offer, name="New name", isDuo=True)
 
         assert error.value.errors == {"name": ["Vous ne pouvez pas modifier ce champ"]}
         offer = models.Offer.query.one()
         assert offer.name == "Old name"
         assert not offer.isDuo
 
-    def test_forbidden_on_imported_offer_if_not_allocine(self):
+    def test_success_on_imported_offer_on_accessibility_fields(self):
         provider = offerers_factories.ProviderFactory()
-        offer = factories.OfferFactory(lastProvider=provider, name="Old name")
+        offer = factories.OfferFactory(
+            lastProvider=provider,
+            name="Old name",
+            audioDisabilityCompliant=True,
+            visualDisabilityCompliant=False,
+            motorDisabilityCompliant=False,
+            mentalDisabilityCompliant=True,
+        )
+
+        api.update_offer(
+            offer,
+            name="Old name",
+            audioDisabilityCompliant=False,
+            visualDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            mentalDisabilityCompliant=False,
+        )
+
+        offer = models.Offer.query.one()
+        assert offer.name == "Old name"
+        assert offer.audioDisabilityCompliant == False
+        assert offer.visualDisabilityCompliant == True
+        assert offer.motorDisabilityCompliant == True
+        assert offer.mentalDisabilityCompliant == False
+
+    def test_forbidden_on_imported_offer_on_other_fields(self):
+        provider = offerers_factories.ProviderFactory()
+        offer = factories.OfferFactory(
+            lastProvider=provider, name="Old name", isDuo=False, audioDisabilityCompliant=True
+        )
 
         with pytest.raises(models.ApiErrors) as error:
-            offer = api.update_offer(offer, name="New name")
+            api.update_offer(offer, name="New name", isDuo=True, audioDisabilityCompliant=False)
 
-        assert error.value.errors == {"global": ["Les offres importées ne sont pas modifiables"]}
-        assert models.Offer.query.one().name == "Old name"
+        assert error.value.errors == {
+            "name": ["Vous ne pouvez pas modifier ce champ"],
+            "isDuo": ["Vous ne pouvez pas modifier ce champ"],
+        }
+        offer = models.Offer.query.one()
+        assert offer.name == "Old name"
+        assert offer.isDuo == False
+        assert offer.audioDisabilityCompliant == True
 
 
 @pytest.mark.usefixtures("db_session")

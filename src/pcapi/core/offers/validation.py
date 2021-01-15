@@ -12,7 +12,13 @@ from pcapi.models.api_errors import ForbiddenError
 from . import exceptions
 
 
-EDITABLE_FIELDS_FOR_ALLOCINE_OFFER = {"isDuo"}
+EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER = {
+    "audioDisabilityCompliant",
+    "mentalDisabilityCompliant",
+    "motorDisabilityCompliant",
+    "visualDisabilityCompliant",
+}
+EDITABLE_FIELDS_FOR_ALLOCINE_OFFER = {"isDuo"} | EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER
 EDITABLE_FIELDS_FOR_ALLOCINE_STOCK = {"bookingLimitDatetime", "price", "quantity"}
 
 
@@ -31,8 +37,11 @@ def check_offer_is_editable(offer: Offer):
         raise error
 
 
-def check_update_only_allowed_offer_fields_for_allocine_offer(updated_fields: set) -> None:
-    rejected_fields = updated_fields - EDITABLE_FIELDS_FOR_ALLOCINE_OFFER
+def check_update_only_allowed_fields_for_offer_from_provider(updated_fields: set, is_from_allocine: bool) -> None:
+    if is_from_allocine:
+        rejected_fields = updated_fields - EDITABLE_FIELDS_FOR_ALLOCINE_OFFER
+    else:
+        rejected_fields = updated_fields - EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER
     if rejected_fields:
         api_error = ApiErrors()
         for field in rejected_fields:
