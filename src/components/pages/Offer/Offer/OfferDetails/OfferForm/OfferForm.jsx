@@ -551,28 +551,28 @@ const OfferForm = ({
             </p>
             <CheckboxInput
               SvgElement={VisualDisabilitySvg}
-              checked={formValues.visualDisabilityCompliant}
+              checked={formValues.visualDisabilityCompliant || false}
               label="Handicap visuel"
               name="visualDisabilityCompliant"
               onChange={handleSingleFormUpdate}
             />
             <CheckboxInput
               SvgElement={MentalDisabilitySvg}
-              checked={formValues.mentalDisabilityCompliant}
+              checked={formValues.mentalDisabilityCompliant || false}
               label="Handicap mental"
               name="mentalDisabilityCompliant"
               onChange={handleSingleFormUpdate}
             />
             <CheckboxInput
               SvgElement={MotorDisabilitySvg}
-              checked={formValues.motorDisabilityCompliant}
+              checked={formValues.motorDisabilityCompliant || false}
               label="Handicap moteur"
               name="motorDisabilityCompliant"
               onChange={handleSingleFormUpdate}
             />
             <CheckboxInput
               SvgElement={AudioDisabilitySvg}
-              checked={formValues.audioDisabilityCompliant}
+              checked={formValues.audioDisabilityCompliant || false}
               label="Handicap auditif"
               name="audioDisabilityCompliant"
               onChange={handleSingleFormUpdate}
@@ -587,7 +587,7 @@ const OfferForm = ({
             {offerFormFields.includes('isNational') && (
               <div className="form-row">
                 <CheckboxInput
-                  checked={!!formValues.isNational}
+                  checked={formValues.isNational || false}
                   disabled={readOnlyFields.includes('isNational') ? 'disabled' : ''}
                   label="Rayonnement national"
                   name="isNational"
@@ -598,7 +598,7 @@ const OfferForm = ({
             {offerFormFields.includes('isDuo') && (
               <div className="form-row">
                 <CheckboxInput
-                  checked={formValues.isDuo}
+                  checked={formValues.isDuo || false}
                   disabled={readOnlyFields.includes('isDuo') ? 'disabled' : ''}
                   label={'Accepter les réservations "duo"'}
                   name="isDuo"
