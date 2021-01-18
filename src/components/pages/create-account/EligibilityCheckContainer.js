@@ -7,8 +7,10 @@ import selectIsFeatureEnabled from '../../router/selectors/selectIsFeatureEnable
 
 export const mapStateToProps = state => {
   const isIdCheckAvailable = selectIsFeatureEnabled(state, 'ALLOW_IDCHECK_REGISTRATION')
+  const wholeFranceOpening = selectIsFeatureEnabled(state, 'WHOLE_FRANCE_OPENING')
   return {
     isIdCheckAvailable,
+    wholeFranceOpening,
   }
 }
 

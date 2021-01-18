@@ -19,7 +19,12 @@ import { useReCaptchaScript } from '../../../utils/recaptcha'
 import { campaignTracker } from '../../../tracking/mediaCampaignsTracking'
 import IdCheckDisabled from './IdCheckDisabled/IdCheckDisabled'
 
-const EligibilityCheck = ({ history, trackEligibility, isIdCheckAvailable }) => {
+const EligibilityCheck = ({
+  history,
+  trackEligibility,
+  isIdCheckAvailable,
+  wholeFranceOpening,
+}) => {
   useReCaptchaScript()
   const [postalCodeInputValue, setPostalCodeInputValue] = useState('')
   const [dateOfBirthInputValue, setDateOfBirthInputValue] = useState('')
@@ -41,7 +46,8 @@ const EligibilityCheck = ({ history, trackEligibility, isIdCheckAvailable }) => 
 
   const dateFormatRegex = RegExp('[0-9]{2}/[0-9]{2}/[0-9]{4}', 'g')
   const isMissingField =
-    postalCodeInputValue.length < 5 || !dateFormatRegex.test(dateOfBirthInputValue)
+    (!wholeFranceOpening && postalCodeInputValue.length < 5) ||
+    !dateFormatRegex.test(dateOfBirthInputValue)
 
   const checkIfDateIsValid = (birthDay, birthMonth, birthYear) => {
     const isDateFormatValid = Date.parse(`${birthYear}-${birthMonth}-${birthDay}`)
@@ -74,17 +80,17 @@ const EligibilityCheck = ({ history, trackEligibility, isIdCheckAvailable }) => 
 
       setHasAnErrorMessage(false)
       const ageEligibilityValue = checkIfAgeIsEligible(dateOfBirthInputValue)
-
       if (ageEligibilityValue === ELIGIBILITY_VALUES.ELIGIBLE) {
-        const departmentEligibilityValue = checkIfDepartmentIsEligible(postalCodeInputValue)
-          ? DEPARTMENT_ELIGIBILITY_VALUES.ELIGIBLE
-          : DEPARTMENT_ELIGIBILITY_VALUES.NOT_ELIGIBLE
+        const departmentEligibilityValue =
+          wholeFranceOpening || checkIfDepartmentIsEligible(postalCodeInputValue)
+            ? DEPARTMENT_ELIGIBILITY_VALUES.ELIGIBLE
+            : DEPARTMENT_ELIGIBILITY_VALUES.NOT_ELIGIBLE
         setComponentToRender(departmentEligibilityValue)
       } else {
         setComponentToRender(ageEligibilityValue)
       }
     },
-    [dateOfBirthInputValue, postalCodeInputValue]
+    [dateOfBirthInputValue, postalCodeInputValue, wholeFranceOpening]
   )
 
   switch (componentToRender) {
@@ -150,17 +156,19 @@ const EligibilityCheck = ({ history, trackEligibility, isIdCheckAvailable }) => 
             onSubmit={handleSubmit}
           >
             <div>
-              <label>
-                {'Quel est ton code postal de résidence ?'}
-                <input
-                  inputMode="numeric"
-                  maxLength="5"
-                  onChange={handlePostalCodeInputChange}
-                  placeholder="Ex: 75017"
-                  type="text"
-                  value={postalCodeInputValue}
-                />
-              </label>
+              {!wholeFranceOpening && (
+                <label>
+                  {'Quel est ton code postal de résidence ?'}
+                  <input
+                    inputMode="numeric"
+                    maxLength="5"
+                    onChange={handlePostalCodeInputChange}
+                    placeholder="Ex: 75017"
+                    type="text"
+                    value={postalCodeInputValue}
+                  />
+                </label>
+              )}
               <label>
                 {'Quelle est ta date de naissance ?'}
                 <InputMask
@@ -202,6 +210,7 @@ EligibilityCheck.propTypes = {
   history: PropTypes.shape().isRequired,
   isIdCheckAvailable: PropTypes.bool.isRequired,
   trackEligibility: PropTypes.func.isRequired,
+  wholeFranceOpening: PropTypes.bool.isRequired,
 }
 
 export default EligibilityCheck

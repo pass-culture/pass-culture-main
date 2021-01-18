@@ -43,6 +43,9 @@ describe('eligibility check page', () => {
       },
       trackEligibility,
       isIdCheckAvailable: true,
+      // FIXME (dbaty, 2020-01-18): once the feature flag is removed, delete or simplify
+      // tests that have the "[legacy]" tag. (Other tests will have to be adapted, too.)
+      wholeFranceOpening: false,
     }
   })
 
@@ -78,8 +81,9 @@ describe('eligibility check page', () => {
       expect(backLink).toHaveLength(1)
     })
 
-    it('should display a postal code input label', () => {
+    it('[legacy] should display a postal code input label', () => {
       // when
+      props.wholeFranceOpening = false
       const wrapper = mount(
         <MemoryRouter>
           <EligibilityCheck {...props} />
@@ -91,6 +95,22 @@ describe('eligibility check page', () => {
       expect(eligibilityPostalCodeInputLabel).toBe('Quel est ton code postal de résidence ?')
     })
 
+    it('should only display a date of birth input label', () => {
+      // when
+      props.wholeFranceOpening = true
+      const wrapper = mount(
+        <MemoryRouter>
+          <EligibilityCheck {...props} />
+        </MemoryRouter>
+      )
+
+      // then
+      const labels = wrapper.find('label')
+      expect(labels).toHaveLength(1)
+      const label = labels.at(0).text()
+      expect(label).toBe('Quelle est ta date de naissance ?')
+    })
+
     it('should display a date of birth input label', () => {
       // when
       const wrapper = mount(
@@ -100,7 +120,7 @@ describe('eligibility check page', () => {
       )
 
       // then
-      const eligibilityDobInputLabel = wrapper.find('label').at(1).text()
+      const eligibilityDobInputLabel = wrapper.find('label').last().text()
       expect(eligibilityDobInputLabel).toBe('Quelle est ta date de naissance ?')
     })
 
@@ -185,7 +205,7 @@ describe('eligibility check page', () => {
     })
   })
 
-  describe('when user fills in his postal code and / or date of birth', () => {
+  describe('[legacy] when user fills in his postal code and / or date of birth', () => {
     it('should add a space in input when user enters the first two numbers of his postal code', () => {
       // given
       const wrapper = mount(
@@ -265,7 +285,7 @@ describe('eligibility check page', () => {
         checkIfAgeIsEligible.mockReturnValue('eligible')
       })
 
-      it("should check if department is eligible based on user's postal code", () => {
+      it("[legacy] should check if department is eligible based on user's postal code", () => {
         // given
         checkIfAgeIsEligible.mockReturnValue('eligible')
         const wrapper = mount(
@@ -299,7 +319,39 @@ describe('eligibility check page', () => {
       })
 
       describe('when ID check is activated', () => {
-        it('should display eligible view when department is eligible', () => {
+        it('should display eligible view', () => {
+          // given
+          props = { ...props }
+          props.wholeFranceOpening = true
+
+          const wrapper = mount(
+            <MemoryRouter>
+              <EligibilityCheck {...props} />
+            </MemoryRouter>
+          )
+
+          const eligibilityDateOfBirthInput = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
+
+          act(() => {
+            eligibilityDateOfBirthInput.invoke('onChange')({ target: { value: '05/03/2002' } })
+          })
+          wrapper.update()
+
+          const eligibilityForm = wrapper.find('form')
+
+          // when
+          act(() => {
+            eligibilityForm.invoke('onSubmit')({
+              preventDefault: jest.fn(),
+            })
+          })
+          wrapper.update()
+
+          // then
+          expect(wrapper.find({ children: 'Tu es éligible !' })).toHaveLength(1)
+        })
+
+        it('[legacy] should display eligible view when department is eligible', () => {
           // given
           checkIfDepartmentIsEligible.mockReturnValue(true)
 
@@ -334,7 +386,45 @@ describe('eligibility check page', () => {
       })
 
       describe('when ID check is disabled', () => {
-        it('should display the specific screen', () => {
+        it('should display the specific screen when department is eligible', () => {
+          // given
+          props.isIdCheckAvailable = false
+          props.wholeFranceOpening = false
+          checkIfDepartmentIsEligible.mockReturnValue(true)
+
+          const wrapper = mount(
+            <MemoryRouter>
+              <EligibilityCheck {...props} />
+            </MemoryRouter>
+          )
+
+          const eligibilityPostalCodeInput = wrapper.find('input[placeholder="Ex: 75017"]')
+          const eligibilityDateOfBirthInput = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
+
+          act(() => {
+            eligibilityPostalCodeInput.invoke('onChange')({ target: { value: '93800' } })
+            eligibilityDateOfBirthInput.invoke('onChange')({ target: { value: '05/03/2002' } })
+          })
+          wrapper.update()
+
+          const eligibilityForm = wrapper.find('form')
+
+          // when
+          act(() => {
+            eligibilityForm.invoke('onSubmit')({
+              preventDefault: jest.fn(),
+            })
+          })
+          wrapper.update()
+
+          // then
+          expect(wrapper.find({ children: 'Oups !' })).toHaveLength(1)
+          expect(
+            wrapper.find({ children: 'Cette page est indisponible pour le moment.' })
+          ).toHaveLength(1)
+        })
+
+        it('[legacy] should display the specific screen when department is eligible', () => {
           // given
           props.isIdCheckAvailable = false
           checkIfDepartmentIsEligible.mockReturnValue(true)
@@ -372,7 +462,7 @@ describe('eligibility check page', () => {
         })
       })
 
-      it('should display ineligible department view when department is not eligible', () => {
+      it('[legacy] should display ineligible department view when department is not eligible', () => {
         // given
         checkIfDepartmentIsEligible.mockReturnValue(false)
 
@@ -752,7 +842,7 @@ describe('eligibility check page', () => {
         expect(props.trackEligibility).toHaveBeenCalledWith('Eligibilite - Soon')
       })
 
-      it('with specific message when department is not eligible yet', () => {
+      it('[legacy] with specific message when department is not eligible yet', () => {
         // given
         checkIfDepartmentIsEligible.mockReturnValue(false)
         checkIfAgeIsEligible.mockReturnValue('eligible')

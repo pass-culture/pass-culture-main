@@ -2,7 +2,7 @@ import { mapStateToProps } from '../EligibilityCheckContainer'
 
 describe('eligibility check container', () => {
   describe('mapStateToProps()', () => {
-    it('should the map the id check status', () => {
+    it('should map feature flags', () => {
       // given
       const state = {
         data: {
@@ -17,6 +17,11 @@ describe('eligibility check container', () => {
               name: 'ALLOW_IDCHECK_REGISTRATION',
               nameKey: 'ALLOW_IDCHECK_REGISTRATION',
             },
+            {
+              isActive: true,
+              name: 'WHOLE_FRANCE_OPENING',
+              nameKey: 'WHOLE_FRANCE_OPENING',
+            },
           ],
         },
       }
@@ -27,6 +32,7 @@ describe('eligibility check container', () => {
       // then
       expect(props).toStrictEqual({
         isIdCheckAvailable: true,
+        wholeFranceOpening: true,
       })
     })
 
@@ -55,6 +61,7 @@ describe('eligibility check container', () => {
       // then
       expect(props).toStrictEqual({
         isIdCheckAvailable: false,
+        wholeFranceOpening: false,
       })
     })
   })
