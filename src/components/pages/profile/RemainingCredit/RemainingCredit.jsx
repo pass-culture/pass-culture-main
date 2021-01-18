@@ -72,9 +72,44 @@ class RemainingCredit extends PureComponent {
     )
   }
 
+  renderReadMoreSection = depositVersion => {
+    const { isReadMoreVisible } = this.state
+    const readMoreTitle =
+      depositVersion === 1
+        ? `Pourquoi les biens physiques et numériques sont-ils limités${NON_BREAKING_SPACE}?`
+        : `Pourquoi les biens numériques sont-ils limités${NON_BREAKING_SPACE}?`
+
+    const readMoreContent =
+      depositVersion === 1
+        ? `Le but du pass Culture est de renforcer tes pratiques culturelles,
+                mais aussi d’en créer de nouvelles. Ces plafonds ont été mis en place
+                pour favoriser la diversification des pratiques culturelles.`
+        : `Le but du pass Culture est de renforcer tes pratiques culturelles,
+                mais aussi d’en créer de nouvelles. Ce plafond a été mis en place
+                pour favoriser la diversification des pratiques culturelles.`
+
+    return (
+      <div className="rc-read-more">
+        <button
+          className={`rc-read-more-button ${
+            isReadMoreVisible ? 'rc-read-more-drop-down' : 'rc-read-more-drop-down-flipped'
+          }`}
+          onClick={this.handleToggleReadMore}
+          type="button"
+        >
+          {readMoreTitle}
+        </button>
+        {isReadMoreVisible && (
+          <p className="rc-read-more-content">
+            {readMoreContent}
+          </p>
+        )}
+      </div>
+    )
+  }
+
   render() {
     const { user } = this.props
-    const { isReadMoreVisible } = this.state
     const { expenses, wallet_balance: walletBalance } = user
 
     const depositVersion = user.deposit_version
@@ -91,11 +126,6 @@ class RemainingCredit extends PureComponent {
       creditLimit: physicalCreditLimit,
       remainingCredit: physicalRemainingCredit,
     }
-
-    const readMoreTitle =
-      depositVersion === 1
-        ? `Pourquoi les biens physiques et numériques sont-ils limités${NON_BREAKING_SPACE}?`
-        : `Pourquoi les biens numériques sont-ils limités${NON_BREAKING_SPACE}?`
 
     return (
       <section className="pf-section">
@@ -118,24 +148,7 @@ class RemainingCredit extends PureComponent {
               {this.renderTotalGauge(depositVersion, expenses, walletBalance)}
             </div>
           </div>
-          <div className="rc-read-more">
-            <button
-              className={`rc-read-more-button ${
-                isReadMoreVisible ? 'rc-read-more-drop-down' : 'rc-read-more-drop-down-flipped'
-              }`}
-              onClick={this.handleToggleReadMore}
-              type="button"
-            >
-              {readMoreTitle}
-            </button>
-            {isReadMoreVisible && (
-              <p className="rc-read-more-content">
-                {`Le but du pass Culture est de renforcer tes pratiques culturelles,
-                mais aussi d’en créer de nouvelles. Ces plafonds ont été mis en place
-                pour favoriser la diversification des pratiques culturelles.`}
-              </p>
-            )}
-          </div>
+          {this.renderReadMoreSection(depositVersion)}
         </div>
       </section>
     )
