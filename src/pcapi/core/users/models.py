@@ -26,7 +26,6 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
 
 from pcapi import settings
-from pcapi.core.bookings.conf import LIMIT_CONFIGURATIONS
 from pcapi.core.bookings.models import Booking
 from pcapi.core.offers.models import Stock
 from pcapi.models.db import Model
@@ -235,41 +234,9 @@ class User(PcObject, Model, NeedsValidationMixin, VersionedMixin):
 
     @property
     def expenses(self):
-        version = self.deposit_version
+        from pcapi.core.users.api import user_expenses
 
-        if not version:
-            return []
-
-        bookings = self.get_not_cancelled_bookings()
-        config = LIMIT_CONFIGURATIONS[version]
-
-        limits = [
-            Expense(
-                domain=ExpenseDomain.ALL,
-                current=sum(booking.total_amount for booking in bookings),
-                limit=config.TOTAL_CAP,
-            )
-        ]
-        if config.DIGITAL_CAP:
-            digital_bookings_total = sum(
-                [booking.total_amount for booking in bookings if config.digital_cap_applies(booking.stock.offer)]
-            )
-            limits.append(
-                Expense(domain=ExpenseDomain.DIGITAL, current=digital_bookings_total, limit=config.DIGITAL_CAP)
-            )
-        if config.PHYSICAL_CAP:
-            physical_bookings_total = sum(
-                [booking.total_amount for booking in bookings if config.physical_cap_applies(booking.stock.offer)]
-            )
-            limits.append(
-                Expense(
-                    domain=ExpenseDomain.PHYSICAL,
-                    current=physical_bookings_total,
-                    limit=config.PHYSICAL_CAP,
-                )
-            )
-
-        return limits
+        return user_expenses(self)
 
     @property
     def deposit_version(self) -> Union[None, int]:

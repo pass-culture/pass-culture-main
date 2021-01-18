@@ -10,8 +10,11 @@ from jwt import InvalidSignatureError
 from jwt import InvalidTokenError
 
 from pcapi import settings
+from pcapi.core.bookings.conf import LIMIT_CONFIGURATIONS
 from pcapi.core.payments import api as payment_api
 from pcapi.core.users import exceptions
+from pcapi.core.users.models import Expense
+from pcapi.core.users.models import ExpenseDomain
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
@@ -244,3 +247,39 @@ def _build_link_for_email_change(current_email: str, new_email: str) -> str:
     token = encode_jwt_payload(dict(current_email=current_email, new_email=new_email), expiration_date)
 
     return f"{settings.WEBAPP_URL}/email-change?token={token}&expiration_timestamp={int(expiration_date.timestamp())}"
+
+
+def user_expenses(user: User):
+    version = user.deposit_version
+
+    if not version:
+        return []
+
+    bookings = user.get_not_cancelled_bookings()
+    config = LIMIT_CONFIGURATIONS[version]
+
+    limits = [
+        Expense(
+            domain=ExpenseDomain.ALL,
+            current=sum(booking.total_amount for booking in bookings),
+            limit=config.TOTAL_CAP,
+        )
+    ]
+    if config.DIGITAL_CAP:
+        digital_bookings_total = sum(
+            [booking.total_amount for booking in bookings if config.digital_cap_applies(booking.stock.offer)]
+        )
+        limits.append(Expense(domain=ExpenseDomain.DIGITAL, current=digital_bookings_total, limit=config.DIGITAL_CAP))
+    if config.PHYSICAL_CAP:
+        physical_bookings_total = sum(
+            [booking.total_amount for booking in bookings if config.physical_cap_applies(booking.stock.offer)]
+        )
+        limits.append(
+            Expense(
+                domain=ExpenseDomain.PHYSICAL,
+                current=physical_bookings_total,
+                limit=config.PHYSICAL_CAP,
+            )
+        )
+
+    return limits
