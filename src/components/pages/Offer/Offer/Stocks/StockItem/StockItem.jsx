@@ -28,6 +28,7 @@ const StockItem = ({
   const [isEditing, setIsEditing] = useState(isNewStock)
   const [isDeleting, setIsDeleting] = useState(false)
   const [beginningDatetime, setBeginningDatetime] = useState(stock.beginningDatetime)
+  const [beginningTime, setBeginningTime] = useState(stock.beginningDatetime)
   const [bookingLimitDatetime, setBookingLimitDatetime] = useState(stock.bookingLimitDatetime)
   const [price, setPrice] = useState(stock.price)
   const [totalQuantity, setTotalQuantity] = useState(stock.quantity)
@@ -39,6 +40,7 @@ const StockItem = ({
   const refreshStock = useCallback(() => {
     setIsEditing(isNewStock)
     setBeginningDatetime(stock.beginningDatetime)
+    setBeginningTime(stock.beginningDatetime)
     setBookingLimitDatetime(stock.bookingLimitDatetime)
     setPrice(stock.price)
     setTotalQuantity(stock.quantity)
@@ -77,6 +79,18 @@ const StockItem = ({
       }
     },
     [bookingLimitDatetime, getSelectedDatetime]
+  )
+
+  const changeHour = useCallback(
+    momentDateTime => {
+      if (momentDateTime) {
+        const selectedTime = getSelectedDatetime(momentDateTime)
+        setBeginningTime(selectedTime)
+      } else {
+        setBeginningTime('')
+      }
+    },
+    [getSelectedDatetime]
   )
 
   const changeBookingLimitDatetime = useCallback(momentDateTime => {
@@ -161,6 +175,16 @@ const StockItem = ({
     return !hasErrors
   }, [isNewStock, price, remainingQuantityValue, setFormErrors, totalQuantity])
 
+  const buildBeginningDatetime = useCallback(() => {
+    const momentBeginningDate = moment(beginningDatetime)
+    const momentBeginningTime = moment(beginningTime)
+
+    momentBeginningDate.hours(momentBeginningTime.hours())
+    momentBeginningDate.minutes(momentBeginningTime.minutes())
+
+    return momentBeginningDate.utc().format()
+  }, [beginningDatetime, beginningTime])
+
   const saveChanges = useCallback(() => {
     if (isValid()) {
       const payload = {
@@ -174,7 +198,7 @@ const StockItem = ({
       }
       const eventPayload = {
         ...payload,
-        beginningDatetime: beginningDatetime,
+        beginningDatetime: buildBeginningDatetime(),
         bookingLimitDatetime: getBookingLimitDatetimeForEvent(),
       }
       pcapi
@@ -193,7 +217,7 @@ const StockItem = ({
     }
   }, [
     stock.id,
-    beginningDatetime,
+    buildBeginningDatetime,
     isEvent,
     isValid,
     getBookingLimitDatetimeForEvent,
@@ -222,7 +246,7 @@ const StockItem = ({
       }
       const eventPayload = {
         ...payload,
-        beginningDatetime: beginningDatetime,
+        beginningDatetime: buildBeginningDatetime(),
         bookingLimitDatetime: getBookingLimitDatetimeForEvent(),
       }
 
@@ -243,7 +267,7 @@ const StockItem = ({
     }
   }, [
     offerId,
-    beginningDatetime,
+    buildBeginningDatetime,
     isEvent,
     getBookingLimitDatetimeForEvent,
     getBookingLimitDatetimeForThing,
@@ -277,9 +301,9 @@ const StockItem = ({
               ariaLabel="Heure de l’événement"
               departmentCode={departmentCode}
               disabled={!isEditing || isOfferSynchronized}
-              onChange={changeBeginningDatetime}
+              onChange={changeHour}
               stock={stock}
-              utcDateIsoFormat={beginningDatetime}
+              utcDateIsoFormat={beginningTime}
             />
           </td>
         </Fragment>
@@ -344,7 +368,7 @@ const StockItem = ({
         ) : (
           <button
             className="secondary-button validate-button"
-            disabled={isEvent && !beginningDatetime}
+            disabled={isEvent && (!beginningDatetime || !beginningTime)}
             onClick={isNewStock ? saveNewStock : saveChanges}
             type="button"
           >

@@ -591,6 +591,18 @@ describe('stocks page', () => {
             expect(screen.getByDisplayValue('23')).toBeInTheDocument()
           })
 
+          it('should not empty date field when emptying hour field', async () => {
+            // given
+            await renderStocks(props, store)
+            fireEvent.click(screen.getByAltText('Modifier le stock'))
+
+            // when
+            fireEvent.change(screen.getByDisplayValue('19:00'), { target: { value: '' } })
+
+            // then
+            expect(screen.queryByDisplayValue('20/12/2020')).toBeInTheDocument()
+          })
+
           it('should compute remaining quantity based on inputted total quantity', async () => {
             // given
             await renderStocks(props, store)
@@ -1160,7 +1172,7 @@ describe('stocks page', () => {
           expect(screen.queryByAltText('Annuler les modifications')).toBeInTheDocument()
         })
 
-        it('should not be able to validate while beginning date time is empty', async () => {
+        it('should not be able to validate while beginning date and time are empty', async () => {
           // given
           await renderStocks(props, store)
 
@@ -1174,6 +1186,8 @@ describe('stocks page', () => {
 
           fireEvent.click(screen.getByLabelText('Date de l’événement'))
           fireEvent.click(screen.getByLabelText('day-24'))
+          fireEvent.click(screen.getByLabelText('Heure de l’événement'))
+          fireEvent.click(screen.getByText('20:00'))
           expect(screen.queryByAltText('Valider les modifications').closest('button')).toBeEnabled()
         })
 
