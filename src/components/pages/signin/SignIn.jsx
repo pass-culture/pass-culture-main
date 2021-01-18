@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import EmailField from '../../forms/inputs/EmailField'
 import PasswordField from '../../forms/inputs/PasswordField'
 import canSubmitForm from './utils/canSubmitForm'
+import FormError from '../../forms/FormError'
 import FormFooter from '../../forms/FormFooter'
 import parseSubmitErrors from '../../forms/utils/parseSubmitErrors'
 import { campaignTracker } from '../../../tracking/mediaCampaignsTracking'
@@ -12,6 +13,9 @@ import { campaignTracker } from '../../../tracking/mediaCampaignsTracking'
 class SignIn extends PureComponent {
   constructor(props) {
     super(props)
+    this.state = {
+      genericError: '',
+    }
   }
 
   componentDidMount() {
@@ -24,6 +28,11 @@ class SignIn extends PureComponent {
     } = action
 
     const formErrors = parseSubmitErrors(errors)
+
+    if (formErrors.signin) {
+      this.setState({ genericError: formErrors.signin[0] })
+    }
+
     formResolver(formErrors)
   }
 
@@ -43,6 +52,7 @@ class SignIn extends PureComponent {
   renderForm = props => {
     const canSubmit = canSubmitForm(props)
     const { handleSubmit } = props
+    const { genericError } = this.state
 
     return (
       <form
@@ -73,6 +83,8 @@ class SignIn extends PureComponent {
             name="password"
             placeholder="Ex : IoPms44*"
           />
+          <FormError customMessage={genericError} />
+
           <Link
             className="lf-lost-password"
             to="/mot-de-passe-perdu"

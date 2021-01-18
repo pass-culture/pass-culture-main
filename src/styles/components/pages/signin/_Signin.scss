@@ -58,7 +58,7 @@
   }
 
   .label-password-inner {
-    margin-bottom: rem(16px);
+    margin-bottom: rem(2px);
   }
 
   ::placeholder {
@@ -68,6 +68,7 @@
   }
 
   .lf-lost-password {
+    margin-top: rem(16px);
     color: $white;
     font-size: rem(16px);
     font-weight: 700;
