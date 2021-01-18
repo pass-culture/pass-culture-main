@@ -56,6 +56,7 @@ function getClientEnvironment(publicUrl) {
         CONTENTFUL_PREVIEW_TOKEN: process.env.CONTENTFUL_PREVIEW_TOKEN,
         CONTENTFUL_SPACE_ID: process.env.CONTENTFUL_SPACE_ID,
         ENVIRONMENT_NAME: process.env.ENVIRONMENT_NAME,
+        FALLBACK_STORE_EMAIL_URL: process.env.FALLBACK_STORE_EMAIL_URL,
         FIREBASE_APP_ID: process.env.FIREBASE_APP_ID,
         FIREBASE_MEASUREMENT_ID: process.env.FIREBASE_MEASUREMENT_ID,
         ID_CHECK_URL: process.env.ID_CHECK_URL,

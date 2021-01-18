@@ -4,6 +4,8 @@ import { act } from 'react-dom/test-utils'
 import { MemoryRouter } from 'react-router'
 import EligibleSoon from '../../EligibleSoon/EligibleSoon'
 import { checkIfEmailIsValid } from '../../domain/checkIfEmailIsValid'
+import IdCheckDisabled from '../IdCheckDisabled'
+import { FALLBACK_STORE_EMAIL_URL } from '../../../../../utils/config'
 
 jest.mock('../../domain/checkIfEmailIsValid', () => {
   return {
@@ -25,6 +27,9 @@ describe('eligible soon page', () => {
       title: 'Bientôt !',
       visual: React.createElement('img'),
     }
+  })
+  afterEach(() => {
+    jest.clearAllMocks()
   })
 
   it('should inform the user that he is soon to be eligible', () => {
@@ -212,5 +217,97 @@ describe('eligible soon page', () => {
         )
       })
     })
+  })
+})
+
+describe('eligible page', () => {
+  afterEach(() => {
+    jest.clearAllMocks()
+  })
+  it('should post the email on submit', async () => {
+    const wrapper = mount(
+      <MemoryRouter>
+        <IdCheckDisabled />
+      </MemoryRouter>
+    )
+    const emailInput = wrapper.find('input[type="email"]')
+
+    // when
+    act(() => {
+      emailInput.invoke('onChange')({ target: { value: 'valid@example.com' } })
+    })
+    wrapper.update()
+
+    const form = wrapper.find('form')
+    await act(async () => {
+      await form.invoke('onSubmit')({
+        preventDefault: jest.fn(),
+      })
+    })
+    wrapper.update()
+
+    // Then
+    expect(global.fetch).toHaveBeenCalledTimes(1)
+    expect(global.fetch).toHaveBeenCalledWith(FALLBACK_STORE_EMAIL_URL, {
+      body: JSON.stringify({ email: 'valid@example.com' }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
+    })
+  })
+  it('should display success message on submit success', async () => {
+    const wrapper = mount(
+      <MemoryRouter>
+        <IdCheckDisabled />
+      </MemoryRouter>
+    )
+    global.fetch.mockResolvedValueOnce({ ok: true })
+
+    const emailInput = wrapper.find('input[type="email"]')
+
+    // when
+    act(() => {
+      emailInput.invoke('onChange')({ target: { value: 'valid@example.com' } })
+    })
+    wrapper.update()
+
+    const form = wrapper.find('form')
+    await act(async () => {
+      await form.invoke('onSubmit')({
+        preventDefault: jest.fn(),
+      })
+    })
+    wrapper.update()
+
+    // Then
+    expect(wrapper.find({ children: 'C’est noté !' })).toHaveLength(1)
+  })
+  it('should not display success message on submit error', async () => {
+    const wrapper = mount(
+      <MemoryRouter>
+        <IdCheckDisabled />
+      </MemoryRouter>
+    )
+    global.fetch.mockRejectedValueOnce()
+
+    const emailInput = wrapper.find('input[type="email"]')
+
+    // when
+    act(() => {
+      emailInput.invoke('onChange')({ target: { value: 'valid@example.com' } })
+    })
+    wrapper.update()
+
+    const form = wrapper.find('form')
+    await act(async () => {
+      await form.invoke('onSubmit')({
+        preventDefault: jest.fn(),
+      })
+    })
+    wrapper.update()
+
+    // Then
+    expect(wrapper.find({ children: 'C’est noté !' })).toHaveLength(0)
   })
 })

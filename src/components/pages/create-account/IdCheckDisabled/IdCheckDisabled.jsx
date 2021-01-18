@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import { ICONS_URL } from '../../../../utils/config'
+import { FALLBACK_STORE_EMAIL_URL, ICONS_URL } from '../../../../utils/config'
 import Icon from '../../../layout/Icon/Icon'
 import ContactSaved from '../ContactSaved/ContactSaved'
 import { checkIfEmailIsValid } from '../domain/checkIfEmailIsValid'
@@ -17,21 +17,24 @@ const IdCheckDisabled = () => {
   }, [])
 
   const handleSubmit = useCallback(
-    event => {
+    async event => {
       event.preventDefault()
       setIsSubmitting(true)
 
-      // FIXME (asaunier, 13/01/21): Mettre en place l'envoi de l'email vers l'API
-      //  de sauvegarde d'email en situation de maintenance
-      // eslint-disable-next-line no-unused-vars
-      const userInformations = {
-        email: emailValue,
-      }
-
-      return Promise.resolve().then(() => {
+      try {
+        const response = await fetch(FALLBACK_STORE_EMAIL_URL, {
+          body: JSON.stringify({ email: emailValue }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          method: 'POST',
+        })
+        if (response.ok) {
+          setHasContactBeenSaved(true)
+        }
+      } catch (e) {
         setIsSubmitting(false)
-        setHasContactBeenSaved(true)
-      })
+      }
     },
     [emailValue]
   )
