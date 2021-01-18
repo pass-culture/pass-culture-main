@@ -8,8 +8,10 @@ from algoliasearch.exceptions import AlgoliaException
 from freezegun import freeze_time
 import pytest
 
+from pcapi.algolia.usecase.orchestrator import _build_offer_details_to_be_indexed
 from pcapi.algolia.usecase.orchestrator import delete_expired_offers
 from pcapi.algolia.usecase.orchestrator import process_eligible_offers
+from pcapi.core.offers import factories as offers_factories
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_stock
 from pcapi.model_creators.generic_creators import create_venue
@@ -84,6 +86,41 @@ class ProcessEligibleOffersTest:
         mock_pipeline.execute.assert_called_once()
         mock_pipeline.reset.assert_called_once()
         mock_add_offer_ids_in_error.assert_not_called()
+
+    @patch("pcapi.algolia.usecase.orchestrator.add_to_indexed_offers")
+    @patch("pcapi.algolia.usecase.orchestrator.get_offer_details")
+    @patch("pcapi.algolia.usecase.orchestrator.check_offer_exists")
+    @patch("pcapi.algolia.usecase.orchestrator.delete_objects")
+    @patch("pcapi.algolia.usecase.orchestrator.build_object")
+    @patch("pcapi.algolia.usecase.orchestrator.add_objects")
+    @pytest.mark.usefixtures("db_session")
+    @freeze_time("2019-01-04 12:00:00")
+    def test_should_only_index_bookable_offers_stock(
+        self,
+        mock_add_objects,
+        mock_build_object,
+        mock_delete_objects,
+        mock_check_offer_exists,
+        mock_get_offer_details,
+        mock_add_to_indexed_offers,
+        app,
+    ):
+        offer = offers_factories.EventOfferFactory()
+        _not_bookable_stock = offers_factories.EventStockFactory(
+            beginningDatetime=datetime(2019, 1, 5),
+            bookingLimitDatetime=datetime(2019, 1, 3),
+            offer=offer,
+            quantity=1,
+        )
+        bookable_stock = offers_factories.EventStockFactory(
+            beginningDatetime=datetime(2019, 1, 12),
+            bookingLimitDatetime=datetime(2019, 1, 10),
+            offer=offer,
+            quantity=1,
+        )
+
+        data = _build_offer_details_to_be_indexed(offer)
+        assert data["dates"] == [datetime.timestamp(bookable_stock.beginningDatetime)]
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.algolia.usecase.orchestrator.add_offer_ids_in_error")

@@ -69,7 +69,7 @@ def delete_expired_offers(client: Redis, offer_ids: List[int]) -> None:
 
 
 def _build_offer_details_to_be_indexed(offer: Offer) -> dict:
-    stocks = offer.activeStocks
+    stocks = offer.bookableStocks
     event_dates = []
     prices = list(map(lambda stock: float(stock.price), stocks))
 
