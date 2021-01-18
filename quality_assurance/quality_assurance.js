@@ -1,0 +1,103 @@
+import { Selector, t } from 'testcafe'
+
+import { ROOT_PATH } from '../src/utils/config'
+import { createUserRole } from '../testcafe/helpers/roles'
+import fetchSandbox from '../testcafe/helpers/sandboxes'
+
+fixture('Quality Assurance,').page(ROOT_PATH)
+
+test('captures d’écran de toutes les pages du site', async () => {
+  await takeScreenshot('connexion')
+  await takeScreenshot('mot-de-passe-perdu')
+  await takeScreenshot('inscription')
+  await takeScreenshot('inscription/confirmation')
+
+  const { user } = await fetchSandbox(
+    'pro_03_offerers',
+    'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer'
+  )
+  await t.useRole(createUserRole(user))
+
+  await takeScreenshot('404')
+  await t
+    .navigateTo('/accueil')
+    .takeScreenshot(optionsOfScreenshot('accueil'))
+    .click(Selector('a').withText('Fred Leopold'))
+    .takeScreenshot(optionsOfScreenshot('menu'))
+  const token = Selector('label').withText('Contremarque')
+  await t
+    .navigateTo('/guichet')
+    .typeText(token, 'FAAKEE', { replace: true })
+    .takeScreenshot(optionsOfScreenshot('guichet-FAAKEE'))
+  await t
+    .navigateTo('/guichet')
+    .typeText(token, '100004', { replace: true })
+    .takeScreenshot(optionsOfScreenshot('guichet'))
+  await t
+    .navigateTo('/offres')
+    .click(Selector('input[type="checkbox"]'))
+    .click(Selector('.field-date-end .period-filter-input'))
+    .takeScreenshot(optionsOfScreenshot('offres'))
+    .typeText(Selector('label').withText('Nom de l’offre'), 'search without result')
+    .click(Selector('button').withText('Lancer la recherche'))
+    .takeScreenshot(optionsOfScreenshot('offres-search-without-result'))
+  await t
+    .navigateTo('/offres')
+    .click(Selector('table a'))
+    .takeScreenshot(optionsOfScreenshot('offre'))
+    .click(Selector('button').withText('Gérer les stocks'))
+    .takeScreenshot(optionsOfScreenshot('offre-stocks'))
+    .click(Selector('button').withText('Fermer'))
+    .click(Selector('a').withText('Modifier l’offre'))
+    .takeScreenshot(optionsOfScreenshot('offre-edition'))
+    .click(Selector('a').withText('Ajouter une accroche'))
+    .typeText(
+      Selector("input[placeholder='URL du fichier']"),
+      'https://upload.wikimedia.org/wikipedia/commons/f/f9/Zebra_%28PSF%29.png'
+    )
+    .click(Selector('button').withText('OK'))
+    .takeScreenshot(optionsOfScreenshot('offre-accroche'))
+  await t
+    .navigateTo('/offres/creation')
+    .click(Selector('select').withText('Sélectionnez un type d’offre'))
+    .click(Selector('select option').withText('Conférences, rencontres et découverte des métiers'))
+    .takeScreenshot(optionsOfScreenshot('offre-creation'))
+  await t
+    .navigateTo('/reservations')
+    .click(Selector('img[alt="Filtrer par statut"]'))
+    .takeScreenshot(optionsOfScreenshot('reservations'))
+    .typeText(Selector(`input[placeholder="Rechercher par nom d'offre"]`), 'search without result')
+    .takeScreenshot(optionsOfScreenshot('reservations-search-without-result'))
+  await t
+    .navigateTo('/profil')
+    .takeScreenshot(optionsOfScreenshot('profil'))
+    .click(Selector('button').withText('Enregistrer'))
+    .takeScreenshot(optionsOfScreenshot('profil-success-banner'))
+  await t
+    .navigateTo('/structures')
+    .takeScreenshot(optionsOfScreenshot('structures'))
+    .click(Selector('a').withText('Club Dorothy'))
+    .takeScreenshot(optionsOfScreenshot('structure'))
+    .click(Selector('a').withText('+ Ajouter un lieu'))
+    .takeScreenshot(optionsOfScreenshot('lieu-creation'))
+    .click(Selector('button').withText('Annuler'))
+    .click(Selector('a').withText('Maison de la Brique'))
+    .takeScreenshot(optionsOfScreenshot('lieu'))
+    .click(Selector('a').withText('Modifier le lieu'))
+    .takeScreenshot(optionsOfScreenshot('lieu-edition'))
+  await takeScreenshot('structures?mots-cles=search-without-result')
+  await takeScreenshot('structures/creation')
+  await takeScreenshot('styleguide')
+  await takeScreenshot('remboursements')
+  // TODO: Pourquoi vois-je du JS ?
+  await takeScreenshot('remboursements/detail')
+})
+
+const takeScreenshot = async path => {
+  await t.navigateTo(`/${path}`).takeScreenshot(optionsOfScreenshot(path))
+}
+
+const optionsOfScreenshot = path => ({
+  path: `branch/${path.replace(/(\/|\?|=)/g, '-')}.png`,
+  fullPage: true,
+})

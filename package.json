@@ -16,9 +16,11 @@
     "lint:js:fix": "yarn lint:js --fix",
     "lint:scss": "stylelint '**/*.scss'",
     "lint:scss:fix": "yarn lint:scss --fix",
+    "qa:test": "yarn testcafe quality_assurance",
     "start": "node scripts/start.js",
-    "test:cafe": "testcafe --assertion-timeout 5000 --selector-timeout 15000 -S -s testcafe_screenshots 'chrome:headless' testcafe",
-    "test:unit": "NODE_ICU_DATA=node_modules/full-icu TZ=UTC jest"
+    "test:cafe": "yarn testcafe testcafe",
+    "test:unit": "NODE_ICU_DATA=node_modules/full-icu TZ=UTC jest",
+    "testcafe": "testcafe --assertion-timeout 5000 --selector-timeout 15000 -S -s testcafe_screenshots 'chrome:headless'"
   },
   "husky": {
     "hooks": {

@@ -72,7 +72,8 @@
   "overrides": [
     {
       "files": [
-        "testcafe/*.js"
+        "testcafe/*.js",
+        "quality_assurance/*.js"
       ],
       "rules": {
         "jest/expect-expect": "off",
