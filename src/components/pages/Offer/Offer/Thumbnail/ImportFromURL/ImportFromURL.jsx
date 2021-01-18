@@ -16,6 +16,8 @@ const ImportFromURL = () => {
     setUrl(url)
   }, [])
 
+  const isURLFormatValid = url => /^(http|https)/.test(url)
+
   const getError = async url => {
     try {
       const errors = await pcapi.getURLErrors(url)
@@ -28,11 +30,16 @@ const ImportFromURL = () => {
   const isThereAnError = useCallback(
     async event => {
       event.preventDefault()
-      const error = await getError(url)
 
-      if (error) {
-        setError(error)
-        setIsButtonDisabled(true)
+      if (!isURLFormatValid(url)) {
+        setError('Format d’URL non valide')
+      } else {
+        const error = await getError(url)
+
+        if (error) {
+          setError(error)
+          setIsButtonDisabled(true)
+        }
       }
     },
     [url]

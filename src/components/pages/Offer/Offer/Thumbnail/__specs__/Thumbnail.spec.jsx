@@ -284,6 +284,36 @@ describe('thumbnail edition', () => {
           await screen.findByText('Une erreur est survenue', { selector: 'pre' })
         ).toBeInTheDocument()
       })
+
+      it('should display a URL format error if URL format is invalid', async () => {
+        // Given
+        renderThumbnail()
+        fireEvent.click(screen.getByText('Utiliser une URL'))
+        fireEvent.change(screen.getByLabelText('URL de l’image'), {
+          target: { value: 'htp://url_example.com' },
+        })
+
+        // When
+        fireEvent.click(screen.getByText('Valider', { selector: 'button' }))
+
+        // Then
+        expect(screen.getByText('Format d’URL non valide', { selector: 'pre' })).toBeInTheDocument()
+      })
+
+      it('should not display a URL format error if URL format is valid', async () => {
+        // Given
+        renderThumbnail()
+        fireEvent.click(screen.getByText('Utiliser une URL'))
+        fireEvent.change(screen.getByLabelText('URL de l’image'), {
+          target: { value: 'https://url_example.com' },
+        })
+
+        // When
+        fireEvent.click(screen.getByText('Valider', { selector: 'button' }))
+
+        // Then
+        expect(screen.queryByText('Format d’URL non valide')).not.toBeInTheDocument()
+      })
     })
   })
 })
