@@ -49,7 +49,7 @@ const BetaPage = ({ trackSignup, isNewBookingLimitsActived, wholeFranceOpening }
         },
         {
           id: 'sign-in-link',
-          label: "J'ai un compte",
+          label: "Me connecter",
           url: '/connexion',
         },
       ]}

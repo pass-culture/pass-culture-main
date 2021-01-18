@@ -48,7 +48,9 @@ describe('components | BetaPage', () => {
     const wrapper = shallow(<BetaPage {...props} />)
 
     // then
-    const line1 = wrapper.findWhere(node => node.text() === 'Bienvenue dans\nton pass Culture')
+    const line1 = wrapper.findWhere(
+      node => node.text() === 'Bienvenue dans\nton pass Culture'
+    )
     const line2 = wrapper.findWhere(
       node => node.text() === 'Tu as 18 ans et tu vis dans un département éligible ?'
     )
@@ -131,7 +133,7 @@ describe('components | BetaPage', () => {
       },
       {
         id: 'sign-in-link',
-        label: "J'ai un compte",
+        label: "Me connecter",
         url: '/connexion',
       },
     ])
@@ -150,7 +152,7 @@ describe('components | BetaPage', () => {
         <BetaPage {...props} />
       </Router>
     )
-    const signInLink = wrapper.findWhere(node => node.text() === "J'ai un compte").first()
+    const signInLink = wrapper.findWhere(node => node.text() === "Me connecter").first()
 
     // when
     // see issue : shorturl.at/rxCHW
