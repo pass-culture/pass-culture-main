@@ -53,6 +53,7 @@ class SignIn extends PureComponent {
     const canSubmit = canSubmitForm(props)
     const { handleSubmit } = props
     const { genericError } = this.state
+    const displayErrorMessage = !props.dirtySinceLastSubmit
 
     return (
       <form
@@ -83,7 +84,7 @@ class SignIn extends PureComponent {
             name="password"
             placeholder="Ex : IoPms44*"
           />
-          <FormError customMessage={genericError} />
+          {displayErrorMessage && <FormError customMessage={genericError} />}
 
           <Link
             className="lf-lost-password"
