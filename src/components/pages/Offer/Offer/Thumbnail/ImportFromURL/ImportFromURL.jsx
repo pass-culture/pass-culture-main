@@ -6,7 +6,7 @@ import * as pcapi from 'repository/pcapi/pcapi'
 
 const ImportFromURL = () => {
   const [isButtonDisabled, setIsButtonDisabled] = useState(true)
-  const [error, setError] = useState(null)
+  const [error, setError] = useState('')
   const [url, setUrl] = useState('')
 
   const checkUrl = useCallback(event => {
@@ -14,6 +14,7 @@ const ImportFromURL = () => {
 
     setIsButtonDisabled(url === '')
     setUrl(url)
+    setError('')
   }, [])
 
   const isURLFormatValid = url => /^(http|https)/.test(url)

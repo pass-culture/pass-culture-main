@@ -4,6 +4,7 @@ import React, { useCallback, useState } from 'react'
 import { DialogBox } from 'components/layout/DialogBox/DialogBox'
 import { IMPORT_TAB_ID } from 'components/pages/Offer/Offer/Thumbnail/_constants'
 import { ReactComponent as CloseModalIcon } from 'components/pages/Offer/Offer/Thumbnail/assets/close-modal.svg'
+import Credit from 'components/pages/Offer/Offer/Thumbnail/Credit/Credit'
 import ImportFromComputer from 'components/pages/Offer/Offer/Thumbnail/ImportFromComputer/ImportFromComputer'
 import ImportFromURL from 'components/pages/Offer/Offer/Thumbnail/ImportFromURL/ImportFromURL'
 import ImportTab from 'components/pages/Offer/Offer/Thumbnail/ImportTab/ImportTab'
@@ -12,7 +13,12 @@ const ThumbnailDialog = ({ setIsModalOpened }) => {
   const DIALOG_LABEL_ID = 'label_for_aria'
 
   const [tabId, setTabId] = useState(IMPORT_TAB_ID)
-  const [activeStep, setActiveStep] = useState(IMPORT_TAB_ID)
+  const [activeTab, setActiveTab] = useState(IMPORT_TAB_ID)
+  // eslint-disable-next-line no-unused-vars
+  const [thumbnail, setThumbnail] = useState({})
+  // eslint-disable-next-line no-unused-vars
+  const [credit, setCredit] = useState('')
+  const [step, setStep] = useState(1)
 
   const closeModal = useCallback(() => {
     setIsModalOpened(false)
@@ -21,14 +27,14 @@ const ThumbnailDialog = ({ setIsModalOpened }) => {
   const changeTab = useCallback(
     tabId => () => {
       setTabId(tabId)
-      setActiveStep(tabId)
+      setActiveTab(tabId)
     },
     []
   )
 
   return (
     <DialogBox
-      extraClassNames="thumbnail-dialog"
+      extraClassNames={step === 1 ? 'thumbnail-dialog tnd-step1' : 'thumbnail-dialog'}
       labelledBy={DIALOG_LABEL_ID}
       onDismiss={closeModal}
     >
@@ -40,11 +46,31 @@ const ThumbnailDialog = ({ setIsModalOpened }) => {
           {'Ajouter une image'}
         </h1>
       </header>
-      <ImportTab
-        activeStep={activeStep}
-        changeTab={changeTab}
-      />
-      {tabId === IMPORT_TAB_ID ? <ImportFromComputer /> : <ImportFromURL />}
+      <>
+        {step === 1 && (
+          <>
+            <ImportTab
+              activeTab={activeTab}
+              changeTab={changeTab}
+            />
+            {tabId === IMPORT_TAB_ID ? (
+              <ImportFromComputer
+                setStep={setStep}
+                setThumbnail={setThumbnail}
+              />
+            ) : (
+              <ImportFromURL />
+            )}
+            <hr className="tnd-hr" />
+          </>
+        )}
+        {step === 2 && (
+          <Credit
+            setCredit={setCredit}
+            setStep={setStep}
+          />
+        )}
+      </>
       <button
         className="tnd-close"
         onClick={closeModal}
@@ -53,7 +79,6 @@ const ThumbnailDialog = ({ setIsModalOpened }) => {
       >
         <CloseModalIcon />
       </button>
-      <hr className="tnd-hr" />
     </DialogBox>
   )
 }

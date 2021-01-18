@@ -1,14 +1,14 @@
+import * as PropTypes from 'prop-types'
 import React, { useCallback, useRef, useState } from 'react'
 
+import Icon from 'components/layout/Icon'
 import { IMAGE_TYPE } from 'components/pages/Offer/Offer/Thumbnail/_constants'
+import { constraints } from 'components/pages/Offer/Offer/Thumbnail/_error_validator'
 import { ReactComponent as ThumbnailSampleIcon } from 'components/pages/Offer/Offer/Thumbnail/assets/thumbnail-sample.svg'
 
-import Icon from '../../../../../layout/Icon'
-import { constraints } from '../_error_validator'
-
-const ImportFromComputer = () => {
+const ImportFromComputer = ({ setStep, setThumbnail }) => {
   const [error, setError] = useState('')
-  const file = useRef(null)
+  const file = useRef({})
 
   const getError = async file => {
     for (const constraint of constraints) {
@@ -17,12 +17,17 @@ const ImportFromComputer = () => {
     return Promise.resolve('')
   }
 
-  const isThereAnError = useCallback(async () => {
+  const submitThumbnail = useCallback(async () => {
     const currentFile = file.current.files[0]
     const error = await getError(currentFile)
 
+    if (error === '') {
+      setThumbnail(currentFile)
+      setStep(2)
+    }
+
     setError(error)
-  }, [file])
+  }, [file, setStep, setThumbnail])
 
   const fileConstraint = () =>
     constraints.map(constraint => {
@@ -59,7 +64,7 @@ const ImportFromComputer = () => {
           accept={IMAGE_TYPE.join()}
           aria-invalid={error}
           className="tnf-file-input"
-          onChange={isThereAnError}
+          onChange={submitThumbnail}
           ref={file}
           type="file"
         />
@@ -69,6 +74,11 @@ const ImportFromComputer = () => {
       </ul>
     </form>
   )
+}
+
+ImportFromComputer.propTypes = {
+  setStep: PropTypes.func.isRequired,
+  setThumbnail: PropTypes.func.isRequired,
 }
 
 export default ImportFromComputer

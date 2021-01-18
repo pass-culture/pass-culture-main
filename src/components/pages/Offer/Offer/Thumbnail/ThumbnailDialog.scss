@@ -1,7 +1,33 @@
 .thumbnail-dialog {
-  min-height: rem(510px);
   position: relative;
   text-align: center;
+
+  label {
+    text-align: left;
+  }
+
+  .pc-breadcrumb {
+    margin-top: rem(24px);
+  }
+}
+
+.tnd-step1 {
+  min-height: rem(510px);
+}
+
+.tnd-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: rem(40px);
+
+  button {
+    width: rem(220px);
+  }
+}
+
+.tnd-subtitle {
+  color: $grey-dark;
+  margin-bottom: rem(24px);
 }
 
 .tnd-close {
@@ -14,8 +40,6 @@
 
 .tnd-header {
   @include title4;
-
-  margin-bottom: rem(24px);
 }
 
 .tnd-hr {
@@ -30,6 +54,7 @@
   }
 
   .input-text {
+    height: rem(104px);
     text-align: left;
   }
 }
@@ -74,6 +99,10 @@
 }
 
 .tnf-url-button {
-  margin-top: rem(36px);
   width: rem(334px);
+}
+
+.tnc-explanations {
+  margin-top: rem(32px);
+  text-align: left;
 }

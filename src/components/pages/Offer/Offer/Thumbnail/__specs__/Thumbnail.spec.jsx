@@ -1,13 +1,15 @@
 import '@testing-library/jest-dom'
 import { fireEvent } from '@testing-library/dom'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
 import { MemoryRouter } from 'react-router'
 
+import {
+  MIN_IMAGE_HEIGHT,
+  MIN_IMAGE_WIDTH,
+} from 'components/pages/Offer/Offer/Thumbnail/_constants'
 import ThumbnailDialog from 'components/pages/Offer/Offer/Thumbnail/ThumbnailDialog'
 import * as pcapi from 'repository/pcapi/pcapi'
-
-import { MIN_IMAGE_HEIGHT, MIN_IMAGE_WIDTH } from '../_constants'
 
 const createImageFile = ({
   name = 'example.png',
@@ -85,127 +87,176 @@ describe('thumbnail edition', () => {
         ).toBeInTheDocument()
       })
 
-      it('should display no error if file respects all rules', async () => {
-        // Given
-        renderThumbnail()
-        const file = createImageFile()
+      describe('and is selecting and image', () => {
+        it('should display no error if file respects all rules', async () => {
+          // Given
+          renderThumbnail()
+          const file = createImageFile()
 
-        // When
-        fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
-          target: { files: [file] },
+          // When
+          fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
+            target: { files: [file] },
+          })
+
+          // Then
+          await waitFor(() => {
+            expect(
+              screen.queryByText('Formats supportés : JPG, PNG', {
+                selector: 'strong',
+              })
+            ).not.toBeInTheDocument()
+            expect(
+              screen.queryByText('Le poids du fichier ne doit pas dépasser 10 Mo', {
+                selector: 'strong',
+              })
+            ).not.toBeInTheDocument()
+            expect(
+              screen.queryByText('La taille de l’image doit être supérieure à 400 x 400px', {
+                selector: 'strong',
+              })
+            ).not.toBeInTheDocument()
+          })
         })
 
-        // Then
-        expect(
-          screen.queryByText('Formats supportés : JPG, PNG', {
-            selector: 'strong',
+        it('should not import a file other than png or jpg', async () => {
+          // Given
+          renderThumbnail()
+          const file = createFile()
+
+          // When
+          fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
+            target: { files: [file] },
           })
-        ).not.toBeInTheDocument()
-        expect(
-          screen.queryByText('Le poids du fichier ne doit pas dépasser 10 Mo', {
-            selector: 'strong',
+
+          // Then
+          expect(
+            await screen.findByText('Formats supportés : JPG, PNG', {
+              selector: 'strong',
+            })
+          ).toBeInTheDocument()
+        })
+
+        it('should only display the first encountered validation error', async () => {
+          // Given
+          renderThumbnail()
+          const file = createFile({ sizeInMB: 50 })
+
+          // When
+          fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
+            target: { files: [file] },
           })
-        ).not.toBeInTheDocument()
-        expect(
-          screen.queryByText('La taille de l’image doit être supérieure à 400 x 400px', {
-            selector: 'strong',
+
+          // Then
+          expect(
+            await screen.findByText('Formats supportés : JPG, PNG', {
+              selector: 'strong',
+            })
+          ).toBeInTheDocument()
+          expect(
+            screen.queryByText('Le poids du fichier ne doit pas dépasser 10 Mo', {
+              selector: 'strong',
+            })
+          ).not.toBeInTheDocument()
+        })
+
+        it('should not import an image which exceeds maximum size', async () => {
+          // Given
+          renderThumbnail()
+          const bigFile = createImageFile({ sizeInMB: 10 })
+
+          // When
+          fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
+            target: { files: [bigFile] },
           })
-        ).not.toBeInTheDocument()
+
+          // Then
+          expect(
+            await screen.findByText('Le poids du fichier ne doit pas dépasser 10 Mo', {
+              selector: 'strong',
+            })
+          ).toBeInTheDocument()
+        })
+
+        it('should not import an image whose height is below minimum', async () => {
+          // Given
+          renderThumbnail()
+          const file = createImageFile({ height: 200 })
+
+          // When
+          fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
+            target: { files: [file] },
+          })
+
+          // Then
+          expect(
+            await screen.findByText('La taille de l’image doit être supérieure à 400 x 400px', {
+              selector: 'strong',
+            })
+          ).toBeInTheDocument()
+        })
+
+        it('should not import an image whose width is below minimum', async () => {
+          // Given
+          renderThumbnail()
+          const file = createImageFile({ width: 200 })
+
+          // When
+          fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
+            target: { files: [file] },
+          })
+
+          // Then
+          expect(
+            await screen.findByText('La taille de l’image doit être supérieure à 400 x 400px', {
+              selector: 'strong',
+            })
+          ).toBeInTheDocument()
+        })
       })
 
-      it('should not import a file other than png or jpg', async () => {
-        // Given
-        renderThumbnail()
-        const file = createFile()
+      describe('when the user is on the credit page', () => {
+        it('should display the credit requirements', async () => {
+          // Given
+          renderThumbnail()
+          const file = createImageFile()
 
-        // When
-        fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
-          target: { files: [file] },
+          // When
+          fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
+            target: { files: [file] },
+          })
+
+          // Then
+          expect(
+            await screen.findByText('Crédit image et droits d’utilisation')
+          ).toBeInTheDocument()
+          expect(await screen.findByText('Crédit image')).toBeInTheDocument()
+          const inputCredit = await screen.findByPlaceholderText('Photographe...')
+          expect(inputCredit.maxLength).toBe(255)
+          expect(
+            await screen.findByText(
+              'En utilisant ce contenu, je certifie que je suis propriétaire ou que je dispose des autorisations nécessaires pour l’utilisation de celui-ci'
+            )
+          ).toBeInTheDocument()
+          expect(await screen.findByText('Retour', { selector: 'button' })).toBeInTheDocument()
+          expect(await screen.findByText('Suivant', { selector: 'button' })).toBeInTheDocument()
         })
 
-        // Then
-        expect(
-          await screen.findByText('Formats supportés : JPG, PNG', {
-            selector: 'strong',
+        it('should return to the previous page if the return button is clicked', async () => {
+          // Given
+          renderThumbnail()
+          const file = createImageFile()
+          fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
+            target: { files: [file] },
           })
-        ).toBeInTheDocument()
-      })
 
-      it('should only display the first encountered validation error', async () => {
-        // Given
-        renderThumbnail()
-        const file = createFile({ sizeInMB: 50 })
+          // When
+          fireEvent.click(await screen.findByText('Retour', { selector: 'button' }))
 
-        // When
-        fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
-          target: { files: [file] },
+          // Then
+          expect(
+            screen.getByLabelText('Importer une image depuis l’ordinateur')
+          ).toBeInTheDocument()
         })
-
-        // Then
-        expect(
-          await screen.findByText('Formats supportés : JPG, PNG', {
-            selector: 'strong',
-          })
-        ).toBeInTheDocument()
-        expect(
-          screen.queryByText('Le poids du fichier ne doit pas dépasser 10 Mo', {
-            selector: 'strong',
-          })
-        ).not.toBeInTheDocument()
-      })
-
-      it('should not import an image which exceeds maximum size', async () => {
-        // Given
-        renderThumbnail()
-        const bigFile = createImageFile({ sizeInMB: 10 })
-
-        // When
-        fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
-          target: { files: [bigFile] },
-        })
-
-        // Then
-        expect(
-          await screen.findByText('Le poids du fichier ne doit pas dépasser 10 Mo', {
-            selector: 'strong',
-          })
-        ).toBeInTheDocument()
-      })
-
-      it('should not import an image whose height is below minimum', async () => {
-        // Given
-        renderThumbnail()
-        const file = createImageFile({ height: 200 })
-
-        // When
-        await fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
-          target: { files: [file] },
-        })
-
-        // Then
-        expect(
-          await screen.findByText('La taille de l’image doit être supérieure à 400 x 400px', {
-            selector: 'strong',
-          })
-        ).toBeInTheDocument()
-      })
-
-      it('should not import an image whose width is below minimum', async () => {
-        // Given
-        renderThumbnail()
-        const file = createImageFile({ width: 200 })
-
-        // When
-        await fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
-          target: { files: [file] },
-        })
-
-        // Then
-        expect(
-          await screen.findByText('La taille de l’image doit être supérieure à 400 x 400px', {
-            selector: 'strong',
-          })
-        ).toBeInTheDocument()
       })
     })
 
@@ -312,7 +363,29 @@ describe('thumbnail edition', () => {
         fireEvent.click(screen.getByText('Valider', { selector: 'button' }))
 
         // Then
-        expect(screen.queryByText('Format d’URL non valide')).not.toBeInTheDocument()
+        await waitFor(() => {
+          expect(screen.queryByText('Format d’URL non valide')).not.toBeInTheDocument()
+        })
+      })
+
+      it('should remove the error if the user rewrite the URL after a first error', async () => {
+        // Given
+        renderThumbnail()
+        fireEvent.click(screen.getByText('Utiliser une URL'))
+        fireEvent.change(screen.getByLabelText('URL de l’image'), {
+          target: { value: 'htp://url_example.com' },
+        })
+        fireEvent.click(screen.getByText('Valider', { selector: 'button' }))
+
+        // When
+        fireEvent.change(screen.getByPlaceholderText('Ex : http://...'), {
+          target: { value: 'http://url_example.com' },
+        })
+
+        // Then
+        expect(
+          screen.queryByText('Format d’URL non valide', { selector: 'pre' })
+        ).not.toBeInTheDocument()
       })
     })
   })

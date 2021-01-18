@@ -4,7 +4,7 @@ import React from 'react'
 import Breadcrumb, { STYLE_TYPE_TAB } from 'components/layout/Breadcrumb'
 import { IMPORT_TAB_ID, URL_TAB_ID } from 'components/pages/Offer/Offer/Thumbnail/_constants'
 
-const ImportTab = ({ activeStep, changeTab }) => {
+const ImportTab = ({ activeTab, changeTab }) => {
   const steps = [
     {
       id: IMPORT_TAB_ID,
@@ -22,7 +22,7 @@ const ImportTab = ({ activeStep, changeTab }) => {
 
   return (
     <Breadcrumb
-      activeStep={activeStep}
+      activeStep={activeTab}
       steps={steps}
       styleType={STYLE_TYPE_TAB}
     />
@@ -30,7 +30,7 @@ const ImportTab = ({ activeStep, changeTab }) => {
 }
 
 ImportTab.propTypes = {
-  activeStep: PropTypes.string.isRequired,
+  activeTab: PropTypes.string.isRequired,
   changeTab: PropTypes.func.isRequired,
 }
 
