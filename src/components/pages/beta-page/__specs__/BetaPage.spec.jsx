@@ -16,12 +16,17 @@ describe('components | BetaPage', () => {
 
   it('should render page component with pass culture information', () => {
     // when
-    const wrapper = shallow(<BetaPage trackSignup={jest.fn()} />)
+    const props = {
+      isNewBookingLimitsActived: false,
+      wholeFranceOpening: false,
+      trackSignup: jest.fn(),
+    }
+    const wrapper = shallow(<BetaPage {...props} />)
 
     // then
     const line1 = wrapper.findWhere(node => node.text() === 'Bienvenue dans\nton pass Culture')
     const line2 = wrapper.findWhere(
-      node => node.text() === 'Tu as 18 ans et tu vis dans un\ndépartement éligible ?'
+      node => node.text() === 'Tu as 18 ans et tu vis dans un département éligible ?'
     )
     const line3 = wrapper.findWhere(
       node =>
@@ -35,12 +40,17 @@ describe('components | BetaPage', () => {
 
   it('should render page component with 300 € when new booking limits is activated', () => {
     // when
-    const wrapper = shallow(<BetaPage trackSignup={jest.fn()} isNewBookingLimitsActived={true} />)
+    const props = {
+      isNewBookingLimitsActived: true,
+      wholeFranceOpening: false,
+      trackSignup: jest.fn(),
+    }
+    const wrapper = shallow(<BetaPage {...props} />)
 
     // then
     const line1 = wrapper.findWhere(node => node.text() === 'Bienvenue dans\nton pass Culture')
     const line2 = wrapper.findWhere(
-      node => node.text() === 'Tu as 18 ans et tu vis dans un\ndépartement éligible ?'
+      node => node.text() === 'Tu as 18 ans et tu vis dans un département éligible ?'
     )
     const line3 = wrapper.findWhere(
       node =>
@@ -52,9 +62,44 @@ describe('components | BetaPage', () => {
     expect(line3).toHaveLength(1)
   })
 
+  // FIXME (dbaty, 2020-01-18): once the feature flag is removed, delete tests
+  // that have the "[legacy]" tag.
+  it('[legacy] should have a link to eligible departments if feature flag is off', () => {
+    // when
+    const props = {
+      isNewBookingLimitsActived: true,
+      wholeFranceOpening: false,
+      trackSignup: jest.fn(),
+    }
+    const wrapper = shallow(<BetaPage {...props} />)
+
+    // then
+    const hasLink = wrapper.findWhere(node => node.text() === 'département éligible').exists()
+    expect(hasLink).toBe(true)
+  })
+
+  it('[legacy] should not have a link to eligible departments if feature flag is on', () => {
+    // when
+    const props = {
+      isNewBookingLimitsActived: true,
+      wholeFranceOpening: true,
+      trackSignup: jest.fn(),
+    }
+    const wrapper = shallow(<BetaPage {...props} />)
+
+    // then
+    const hasLink = wrapper.findWhere(node => node.text() === 'département éligible').exists()
+    expect(hasLink).toBe(false)
+  })
+
   it('should render an Icon component for page background', () => {
     // when
-    const wrapper = shallow(<BetaPage trackSignup={jest.fn()} />)
+    const props = {
+      isNewBookingLimitsActived: true,
+      wholeFranceOpening: true,
+      trackSignup: jest.fn(),
+    }
+    const wrapper = shallow(<BetaPage {...props} />)
 
     // then
     const icon = wrapper.find(Icon)
@@ -65,7 +110,11 @@ describe('components | BetaPage', () => {
   it('should render a FormFooter component with the right props', () => {
     // given
     const trackSignupMock = jest.fn()
-    const props = { trackSignup: trackSignupMock }
+    const props = {
+      isNewBookingLimitsActived: true,
+      wholeFranceOpening: true,
+      trackSignup: trackSignupMock,
+    }
 
     // when
     const wrapper = shallow(<BetaPage {...props} />)
@@ -91,9 +140,14 @@ describe('components | BetaPage', () => {
   it('should redirect to sign in page when clicking on sign in link', () => {
     // given
     const history = createBrowserHistory()
+    const props = {
+      isNewBookingLimitsActived: true,
+      wholeFranceOpening: true,
+      trackSignup: jest.fn(),
+    }
     const wrapper = mount(
       <Router history={history}>
-        <BetaPage trackSignup={jest.fn()} />
+        <BetaPage {...props} />
       </Router>
     )
     const signInLink = wrapper.findWhere(node => node.text() === "J'ai un compte").first()

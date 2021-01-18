@@ -4,7 +4,7 @@ import React from 'react'
 import FormFooter from '../../forms/FormFooter'
 import Icon from '../../layout/Icon/Icon'
 
-const BetaPage = ({ trackSignup, isNewBookingLimitsActived }) => (
+const BetaPage = ({ trackSignup, isNewBookingLimitsActived, wholeFranceOpening }) => (
   <div className="beta-page">
     <Icon
       alt=""
@@ -17,14 +17,20 @@ const BetaPage = ({ trackSignup, isNewBookingLimitsActived }) => (
         {'ton pass Culture'}
       </div>
       <div className="bp-content">
-        {'Tu as 18 ans et tu vis dans un\n'}
-        <a
-          href="https://pass.culture.fr/le-dispositif/#dispoexpe"
-          rel="noopener noreferrer"
-          target="_blank"
-        >
-          {'département éligible ?'}
-        </a>
+        {'Tu as 18 ans'}
+        {!wholeFranceOpening && (
+          <span>
+            {' et tu vis dans un '}
+            <a
+              href="https://pass.culture.fr/le-dispositif/#dispoexpe"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              {'département éligible'}
+            </a>
+          </span>
+        )}
+        {' ?'}
       </div>
       <div className="bp-content">
         {`Bénéficie de ${isNewBookingLimitsActived ? 300 : 500} € afin de\n`}
@@ -54,6 +60,7 @@ const BetaPage = ({ trackSignup, isNewBookingLimitsActived }) => (
 BetaPage.propTypes = {
   isNewBookingLimitsActived: PropTypes.bool.isRequired,
   trackSignup: PropTypes.func.isRequired,
+  wholeFranceOpening: PropTypes.bool.isRequired,
 }
 
 export default BetaPage
