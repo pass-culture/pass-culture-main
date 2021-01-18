@@ -79,7 +79,7 @@ class Returns401:
 
         # Then
         assert response.status_code == 401
-        assert response.json["identifier"] == ["Identifiant incorrect"]
+        assert response.json["signin"] == ["Identifiant ou mot de passe incorrect"]
 
     def when_password_is_missing(self, app):
         # Given
@@ -103,7 +103,7 @@ class Returns401:
 
         # Then
         assert response.status_code == 401
-        assert response.json["password"] == ["Mot de passe incorrect"]
+        assert response.json["signin"] == ["Identifiant ou mot de passe incorrect"]
 
     def when_account_is_not_active(self, app):
         # Given
@@ -115,7 +115,7 @@ class Returns401:
 
         # Then
         assert response.status_code == 401
-        assert response.json["identifier"] == ["Identifiant incorrect"]
+        assert response.json["signin"] == ["Identifiant ou mot de passe incorrect"]
 
     def when_account_is_not_validated(self, app):
         # Given
