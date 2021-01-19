@@ -116,7 +116,8 @@ class RemainingCredit extends PureComponent {
 
     let physicalCreditLimit = 0
     let physicalRemainingCredit = 0
-    if (expenses.length && user.deposit_version === 1) {
+    const VERSION_1 = 1
+    if (expenses.length && user.deposit_version === VERSION_1) {
       const physical = expenses.find(expense => expense.domain === 'physical')
       physicalCreditLimit = physical.limit
       physicalRemainingCredit = getRemainingCreditForGivenCreditLimit(walletBalance)(physical)
