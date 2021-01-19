@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 
 import * as pcapi from 'repository/pcapi/pcapi'
 
@@ -40,25 +40,31 @@ const OfferCreation = ({
     },
     [isUserAdmin, setIsLoading]
   )
-  useEffect(
-    function filterVenuesOfOfferer() {
-      if (isUserAdmin) {
-        if (selectedOfferer) {
-          pcapi
-            .getVenuesForOfferer(selectedOfferer)
-            .then(receivedVenues => setDisplayedVenues(receivedVenues))
-        } else {
-          setDisplayedVenues([])
-        }
-      } else if (!isUserAdmin) {
-        const venuesToDisplay = selectedOfferer
-          ? venues.current.filter(venue => venue.managingOffererId === selectedOfferer)
-          : venues.current
-        setDisplayedVenues(venuesToDisplay)
-      }
-    },
-    [isUserAdmin, selectedOfferer]
-  )
+
+  const getVenuesForAdmin = useCallback(() => {
+    if (selectedOfferer) {
+      pcapi
+        .getVenuesForOfferer(selectedOfferer)
+        .then(receivedVenues => setDisplayedVenues(receivedVenues))
+    } else {
+      setDisplayedVenues([])
+    }
+  }, [selectedOfferer])
+
+  const filterVenuesForPro = useCallback(() => {
+    const venuesToDisplay = selectedOfferer
+      ? venues.current.filter(venue => venue.managingOffererId === selectedOfferer)
+      : venues.current
+    setDisplayedVenues(venuesToDisplay)
+  }, [selectedOfferer])
+
+  useEffect(() => {
+    if (isUserAdmin) {
+      getVenuesForAdmin()
+    } else {
+      filterVenuesForPro()
+    }
+  }, [filterVenuesForPro, getVenuesForAdmin, isUserAdmin])
 
   if (isLoading) {
     return null
