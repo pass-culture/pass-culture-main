@@ -3,6 +3,7 @@ import re
 from typing import Callable
 from typing import Dict
 from typing import List
+from typing import Optional
 
 from pcapi import settings
 from pcapi.connectors.api_demarches_simplifiees import get_application_details
@@ -78,7 +79,8 @@ def run(
             )
             continue
 
-        if already_existing_user(information["email"]):
+        user = already_existing_user(information["email"])
+        if user and user.isBeneficiary is True:  # TODO: strengthen here as 20+ may redo creation :/
             _process_rejection(information, procedure_id=procedure_id)
             continue
 
@@ -89,6 +91,7 @@ def run(
                 new_beneficiaries=new_beneficiaries,
                 retry_ids=retry_ids,
                 procedure_id=procedure_id,
+                user=user,
             )
 
     logger.info(
@@ -102,6 +105,7 @@ def process_beneficiary_application(
     new_beneficiaries: List[User],
     retry_ids: List[int],
     procedure_id: int,
+    user: Optional[User] = None,
 ) -> None:
     duplicate_users = get_beneficiary_duplicates(
         first_name=information["first_name"],
@@ -110,7 +114,7 @@ def process_beneficiary_application(
     )
 
     if not duplicate_users or information["application_id"] in retry_ids:
-        _process_creation(error_messages, information, new_beneficiaries, procedure_id)
+        _process_creation(error_messages, information, new_beneficiaries, procedure_id, user=user)
     else:
         _process_duplication(duplicate_users, error_messages, information, procedure_id)
 
@@ -146,9 +150,13 @@ def parse_beneficiary_information(application_detail: Dict) -> Dict:
 
 
 def _process_creation(
-    error_messages: List[str], information: Dict, new_beneficiaries: List[User], procedure_id: int
+    error_messages: List[str],
+    information: Dict,
+    new_beneficiaries: List[User],
+    procedure_id: int,
+    user: Optional[User] = None,
 ) -> None:
-    new_beneficiary = create_beneficiary_from_application(information)
+    new_beneficiary = create_beneficiary_from_application(information, user=user)
     try:
         repository.save(new_beneficiary)
     except ApiErrors as api_errors:
