@@ -108,6 +108,7 @@ commands:
                 ALGOLIA_APPLICATION_ID=sm://${GCP_PROJECT}/<< parameters.app_name >>_algolia_application_id, \
                 ALLOCINE_API_KEY=sm://${GCP_PROJECT}/<< parameters.app_name >>_allocine_api_key, \
                 BASTION_TOKEN=sm://${GCP_PROJECT}/<< parameters.app_name >>_bastion_token, \
+                CORS_ALLOWED_ORIGIN=https://.*.<< parameters.app_env >>.gcp.passculture.app, \
                 DATABASE_URL=sm://${GCP_PROJECT}/<< parameters.app_name >>_database_url, \
                 DEMARCHES_SIMPLIFIEES_TOKEN=sm://${GCP_PROJECT}/<< parameters.app_name >>_demarches_simplifiees_token, \
                 DEMARCHES_SIMPLIFIEES_WEBHOOK_TOKEN=sm://${GCP_PROJECT}/<< parameters.app_name >>_demarches_simplifiees_webhook_token, \
