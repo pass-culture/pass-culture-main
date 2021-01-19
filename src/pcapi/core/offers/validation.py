@@ -5,6 +5,7 @@ from typing import Optional
 from PIL import Image
 
 from pcapi.models import Offer
+from pcapi.models import Provider
 from pcapi.models import Stock
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
@@ -37,8 +38,8 @@ def check_offer_is_editable(offer: Offer):
         raise error
 
 
-def check_update_only_allowed_fields_for_offer_from_provider(updated_fields: set, is_from_allocine: bool) -> None:
-    if is_from_allocine:
+def check_update_only_allowed_fields_for_offer_from_provider(updated_fields: set, provider: Provider) -> None:
+    if provider.isAllocine:
         rejected_fields = updated_fields - EDITABLE_FIELDS_FOR_ALLOCINE_OFFER
     else:
         rejected_fields = updated_fields - EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER

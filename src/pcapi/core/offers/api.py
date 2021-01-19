@@ -153,7 +153,7 @@ def update_offer(  # pylint: disable=redefined-builtin
         return offer
 
     if offer.isFromProvider:
-        validation.check_update_only_allowed_fields_for_offer_from_provider(set(modifications), offer.isFromAllocine)
+        validation.check_update_only_allowed_fields_for_offer_from_provider(set(modifications), offer.lastProvider)
 
     offer.populate_from_dict(modifications)
     if offer.product.owningOfferer and offer.product.owningOfferer == offer.venue.managingOfferer:

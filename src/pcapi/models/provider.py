@@ -34,3 +34,9 @@ class Provider(PcObject, Model, DeactivableMixin):
     enabledForPro = Column(Boolean, nullable=False, default=False)
 
     requireProviderIdentifier = Column(Boolean, nullable=False, default=True)
+
+    @property
+    def isAllocine(self) -> bool:
+        from pcapi import local_providers  # avoid import loop
+
+        return self.localClass == local_providers.AllocineStocks.__name__
