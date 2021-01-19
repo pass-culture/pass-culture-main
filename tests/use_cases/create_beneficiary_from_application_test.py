@@ -50,7 +50,7 @@ class FakeBeneficiaryJouveBackend:
     "pcapi.settings.JOUVE_APPLICATION_BACKEND",
     "tests.use_cases.create_beneficiary_from_application_test.FakeBeneficiaryJouveBackend",
 )
-@freeze_time("2020-10-15 09:00:00")
+@freeze_time("2013-05-15 09:00:00")
 @pytest.mark.usefixtures("db_session")
 def test_saved_a_beneficiary_from_application(
     stubed_random_password, stubed_random_token, mocked_send_activation_email, stubed_send_raw_email, app
@@ -82,7 +82,7 @@ def test_saved_a_beneficiary_from_application(
     assert beneficiary.postalCode == "35123"
     assert beneficiary.publicName == "Thomas DURAND"
     assert beneficiary.resetPasswordToken == "token"
-    assert beneficiary.resetPasswordTokenValidityLimit == datetime(2020, 11, 14, 9)
+    assert beneficiary.resetPasswordTokenValidityLimit == datetime(2013, 6, 14, 9)
 
     deposit = Deposit.query.one()
     assert deposit.amount == 500
