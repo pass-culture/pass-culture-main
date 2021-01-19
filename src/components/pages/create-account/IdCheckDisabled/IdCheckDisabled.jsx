@@ -44,7 +44,7 @@ const IdCheckDisabled = () => {
   return hasContactBeenSaved ? (
     <ContactSaved />
   ) : (
-    <main className="eligible-soon-page">
+    <main className="eligible-soon-page id-check-disabled-page">
       <div className="animation-text-container">
         <img
           alt=""
@@ -70,6 +70,13 @@ const IdCheckDisabled = () => {
             type="email"
             value={emailValue}
           />
+          <div className="information-text legal-notice">
+            <p>
+              {
+                "En cliquant sur \"Je veux rester informé\", j'accepte d'être contacté par e-mail lorsque l'inscription sera de nouveau disponible. Mon adresse ne sera pas utilisée à d'autres fins."
+              }
+            </p>
+          </div>
           <button
             className="submit-button"
             disabled={!isEmailValid || isSubmitting}

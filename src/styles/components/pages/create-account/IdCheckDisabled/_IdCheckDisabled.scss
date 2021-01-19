@@ -1,0 +1,9 @@
+.id-check-disabled-page {
+  .legal-notice {
+    @include caption();
+    margin-top: 32px;
+  }
+  .submit-button {
+    margin-top: 8px;
+  }
+}
