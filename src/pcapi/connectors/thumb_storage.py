@@ -1,5 +1,5 @@
-from pcapi.domain.mediations import standardize_image
 from pcapi.utils import object_storage
+from pcapi.utils.image_conversion import standardize_image
 
 
 def create_thumb(

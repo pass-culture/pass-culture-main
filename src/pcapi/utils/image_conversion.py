@@ -10,9 +10,6 @@ CONVERSION_QUALITY = 90
 DO_NOT_CROP = (0, 0, 1)
 
 
-# FIXME (dbaty, 2020-11-19): the functions is this module are not
-# related only to mediations. We use it for products, too. Move these
-# functions elsewhere.
 def standardize_image(image: bytes, crop_params: List = None) -> bytes:
     crop_params = crop_params or DO_NOT_CROP
     raw_image = PIL.Image.open(io.BytesIO(image)).convert("RGB")
