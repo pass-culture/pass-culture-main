@@ -4,9 +4,12 @@ from decimal import Decimal
 
 import pytest
 
+from pcapi.core.users import api as users_api
+from pcapi.core.users import models as users_models
 from pcapi.domain.user_activation import create_beneficiary_from_application
 from pcapi.domain.user_activation import is_import_status_change_allowed
 from pcapi.models import ImportStatus
+from pcapi.models.db import db
 
 
 class IsImportStatusChangeAllowedTest:
@@ -47,6 +50,7 @@ class IsImportStatusChangeAllowedTest:
         assert is_import_status_change_allowed(ImportStatus.RETRY, new_status) is False
 
 
+@pytest.mark.usefixtures("db_session")
 class CreateBeneficiaryFromApplicationTest:
     def test_return_newly_created_user(self):
         # given
@@ -65,9 +69,57 @@ class CreateBeneficiaryFromApplicationTest:
         }
 
         # when
-        beneficiary = create_beneficiary_from_application(beneficiary_information)
+        beneficiary = create_beneficiary_from_application(beneficiary_information, user=None)
 
         # Then
+        assert beneficiary.lastName == "Doe"
+        assert beneficiary.firstName == "Jane"
+        assert beneficiary.publicName == "Jane Doe"
+        assert beneficiary.email == "jane.doe@test.com"
+        assert beneficiary.phoneNumber == "0612345678"
+        assert beneficiary.departementCode == "67"
+        assert beneficiary.postalCode == "67200"
+        assert beneficiary.dateOfBirth == datetime(2000, 5, 1)
+        assert beneficiary.isBeneficiary == True
+        assert beneficiary.isAdmin == False
+        assert beneficiary.password is not None
+        assert beneficiary.resetPasswordToken is not None
+        assert beneficiary.resetPasswordTokenValidityLimit.date() == THIRTY_DAYS_FROM_NOW
+        assert beneficiary.activity == "Lycéen"
+        assert beneficiary.civility == "Mme"
+        assert beneficiary.hasSeenTutorials == False
+
+    def test_updates_existing_user(self):
+        # given
+        THIRTY_DAYS_FROM_NOW = (datetime.utcnow() + timedelta(days=30)).date()
+        beneficiary_information = {
+            "department": "67",
+            "last_name": "Doe",
+            "first_name": "Jane",
+            "activity": "Lycéen",
+            "civility": "Mme",
+            "birth_date": datetime(2000, 5, 1),
+            "email": "jane.doe@test.com",
+            "phone": "0612345678",
+            "postal_code": "67200",
+            "application_id": 123,
+        }
+
+        user = users_api.create_account(
+            email=beneficiary_information["email"],
+            password="123azerty@56",
+            birthdate=beneficiary_information["birth_date"],
+        )
+        db.session.add(user)
+        db.session.flush()
+
+        # when
+        beneficiary = create_beneficiary_from_application(beneficiary_information, user=user)
+        db.session.add(beneficiary)
+        db.session.flush()
+
+        # Then
+        assert users_models.User.query.count() == 1
         assert beneficiary.lastName == "Doe"
         assert beneficiary.firstName == "Jane"
         assert beneficiary.publicName == "Jane Doe"
@@ -100,7 +152,7 @@ class CreateBeneficiaryFromApplicationTest:
             "application_id": 123,
         }
         # when
-        beneficiary = create_beneficiary_from_application(beneficiary_information)
+        beneficiary = create_beneficiary_from_application(beneficiary_information, user=None)
 
         # then
         assert len(beneficiary.deposits) == 1

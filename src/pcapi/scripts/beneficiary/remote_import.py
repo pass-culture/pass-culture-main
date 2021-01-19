@@ -80,7 +80,7 @@ def run(
             continue
 
         user = already_existing_user(information["email"])
-        if user and user.isBeneficiary is True:  # TODO: strengthen here as 20+ may redo creation :/
+        if user and user.isBeneficiary is True:
             _process_rejection(information, procedure_id=procedure_id)
             continue
 

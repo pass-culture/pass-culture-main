@@ -34,7 +34,6 @@ def create_beneficiary_from_application(application_detail: dict, user: Optional
     beneficiary.hasSeenTutorials = False
     generate_reset_token(beneficiary, validity_duration_hours=THIRTY_DAYS_IN_HOURS)
 
-    # TODO: use activate_beneficiary
     beneficiary.isBeneficiary = True
     application_id = application_detail["application_id"]
     deposit = payments_api.create_deposit(beneficiary, f"démarches simplifiées dossier [{application_id}]")
