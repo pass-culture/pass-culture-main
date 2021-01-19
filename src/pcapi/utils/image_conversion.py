@@ -1,5 +1,4 @@
 import io
-from typing import List
 
 import PIL
 from PIL.Image import Image
@@ -10,7 +9,7 @@ CONVERSION_QUALITY = 90
 DO_NOT_CROP = (0, 0, 1)
 
 
-def standardize_image(image: bytes, crop_params: List = None) -> bytes:
+def standardize_image(image: bytes, crop_params: tuple = None) -> bytes:
     crop_params = crop_params or DO_NOT_CROP
     raw_image = PIL.Image.open(io.BytesIO(image)).convert("RGB")
     cropped_image = _crop_image(crop_params[0], crop_params[1], crop_params[2], raw_image)

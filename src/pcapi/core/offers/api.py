@@ -430,7 +430,7 @@ def create_mediation(
     offer: Offer,
     credit: str,
     image_as_bytes: bytes,
-    crop_params=None,
+    crop_params: tuple = None,
 ) -> Mediation:
     validation.check_mediation_thumb_quality(image_as_bytes)
 
