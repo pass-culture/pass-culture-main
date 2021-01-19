@@ -1,6 +1,8 @@
 import datetime
 from typing import Any
+from typing import List
 from typing import Optional
+from typing import Union
 
 from pydantic import BaseModel
 
@@ -9,7 +11,8 @@ from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
 
 
-class StockCreationBodyModel(BaseModel):
+# DEPRECATED: (venaud, 2021-01-19): to remove when new offer and stock creation is deployed
+class StockCreationBodyModelDeprecated(BaseModel):
     beginning_datetime: Optional[datetime.datetime]
     booking_limit_datetime: Optional[datetime.datetime]
     offer_id: int
@@ -29,7 +32,8 @@ class StockCreationBodyModel(BaseModel):
         extra = "forbid"
 
 
-class StockEditionBodyModel(BaseModel):
+# DEPRECATED: (venaud, 2021-01-19): to remove when new offer and stock creation is deployed
+class StockEditionBodyModelDeprecated(BaseModel):
     beginning_datetime: Optional[datetime.datetime]
     booking_limit_datetime: Optional[datetime.datetime]
     offer_id: Optional[str]
@@ -48,7 +52,32 @@ class StockEditionBodyModel(BaseModel):
         extra = "forbid"
 
 
-class StockResponseIdModel(BaseModel):
+class StockCreationBodyModel(BaseModel):
+    beginning_datetime: Optional[datetime.datetime]
+    booking_limit_datetime: Optional[datetime.datetime]
+    price: float
+    quantity: Optional[int]
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
+
+
+class StockEditionBodyModel(BaseModel):
+    beginning_datetime: Optional[datetime.datetime]
+    booking_limit_datetime: Optional[datetime.datetime]
+    id: int
+    price: float
+    quantity: Optional[int]
+
+    _dehumanize_id = dehumanize_field("id")
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
+
+
+class StockIdResponseModel(BaseModel):
     id: str
 
     _humanize_offer_id = humanize_field("id")
@@ -57,3 +86,17 @@ class StockResponseIdModel(BaseModel):
         orm_mode = True
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
+
+
+class StocksUpsertBodyModel(BaseModel):
+    offer_id: int
+    stocks: List[Union[StockCreationBodyModel, StockEditionBodyModel]]
+
+    _dehumanize_offer_id = dehumanize_field("offer_id")
+
+    class Config:
+        alias_generator = to_camel
+
+
+class StockIdsResponseModel(BaseModel):
+    stocks: List[StockIdResponseModel]
