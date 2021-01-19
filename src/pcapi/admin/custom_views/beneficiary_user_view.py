@@ -63,6 +63,7 @@ class BeneficiaryUserView(SuspensionMixin, BaseAdminView):
         "dateOfBirth",
         "departementCode",
         "postalCode",
+        "phoneNumber",
         "isBeneficiary",
     ]
 

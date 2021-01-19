@@ -26,6 +26,7 @@ class BeneficiaryUserViewTest:
             departementCode="93",
             postalCode="93000",
             isBeneficiary="y",
+            phoneNumber="0601020304",
         )
 
         client = TestClient(app.test_client()).with_auth("user@example.com")
@@ -41,6 +42,7 @@ class BeneficiaryUserViewTest:
         assert user_created.departementCode == "93"
         assert user_created.postalCode == "93000"
         assert user_created.isBeneficiary is True
+        assert user_created.phoneNumber == "0601020304"
         assert len(user_created.deposits) == 1
         assert user_created.deposits[0].source == "pass-culture-admin"
         assert user_created.deposits[0].amount == 500
