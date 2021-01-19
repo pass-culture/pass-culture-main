@@ -1,4 +1,5 @@
 from sqlalchemy import Column
+from sqlalchemy import DateTime
 from sqlalchemy import Integer
 from sqlalchemy import String
 from sqlalchemy import Text
@@ -13,6 +14,10 @@ class Criterion(PcObject, Model):
     description = Column(Text, nullable=True)
 
     scoreDelta = Column(Integer, nullable=False)
+
+    startDateTime = Column(DateTime, nullable=True)
+
+    endDateTime = Column(DateTime, nullable=True)
 
     def __repr__(self):
         return "%s" % self.name
