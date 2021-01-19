@@ -7,7 +7,7 @@ from pcapi.repository import feature_queries
 from . import exceptions
 
 
-def create_deposit(beneficiary: User, deposit_source: str, version=None) -> Deposit:
+def create_deposit(beneficiary: User, deposit_source: str, version: int = None) -> Deposit:
     """Create a new deposit for the user if there is no deposit yet.
 
     The ``version`` argument MUST NOT be used outside (very specific) tests.
@@ -23,6 +23,6 @@ def create_deposit(beneficiary: User, deposit_source: str, version=None) -> Depo
         version=version,
         amount=booking_configuration.TOTAL_CAP,
         source=deposit_source,
-        userId=beneficiary.id,
+        user=beneficiary,
     )
     return deposit
