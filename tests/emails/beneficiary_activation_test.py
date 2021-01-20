@@ -56,8 +56,10 @@ class GetActivationEmailTest:
         # Then
         assert activation_email_data["Vars"]["nativeAppLink"]
         assert "email=fabien%2Btest%40example.net" in activation_email_data["Vars"]["nativeAppLink"]
-        assert activation_email_data["Vars"]["isEligible"] is True
-        assert activation_email_data["Vars"]["isMinor"] is False
+        assert activation_email_data["Vars"]["isEligible"]
+        assert not activation_email_data["Vars"]["isMinor"]
+        assert isinstance(activation_email_data["Vars"]["isEligible"], int)
+        assert isinstance(activation_email_data["Vars"]["isMinor"], int)
 
     @freeze_time("2011-05-15 09:00:00")
     def test_return_dict_for_native_under_age_user(self):
@@ -71,5 +73,5 @@ class GetActivationEmailTest:
         # Then
         assert activation_email_data["Vars"]["nativeAppLink"]
         assert "email=fabien%2Btest%40example.net" in activation_email_data["Vars"]["nativeAppLink"]
-        assert activation_email_data["Vars"]["isEligible"] is False
-        assert activation_email_data["Vars"]["isMinor"] is True
+        assert not activation_email_data["Vars"]["isEligible"]
+        assert activation_email_data["Vars"]["isMinor"]

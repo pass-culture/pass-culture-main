@@ -38,7 +38,7 @@ def get_activation_email_data_for_native(user: users_models.User, token: users_m
         "To": user.email if feature_send_mail_to_users_enabled() else settings.DEV_EMAIL_ADDRESS,
         "Vars": {
             "nativeAppLink": email_confirmation_link,
-            "isEligible": users_api.is_user_eligible(user),
-            "isMinor": user.dateOfBirth + relativedelta(years=18) > datetime.today(),
+            "isEligible": int(users_api.is_user_eligible(user)),
+            "isMinor": int(user.dateOfBirth + relativedelta(years=18) > datetime.today()),
         },
     }
