@@ -388,7 +388,7 @@ class SendActivationEmailTest:
 
         # then
         mocked_send_email.assert_called()
-        native_app_link = mocked_send_email.call_args_list[0][1]["data"]["Vars"]["native_app_link"]
+        native_app_link = mocked_send_email.call_args_list[0][1]["data"]["Vars"]["nativeAppLink"]
         assert token.value in native_app_link
 
 

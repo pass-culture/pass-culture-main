@@ -96,7 +96,7 @@ class AccountTest:
         assert user.isEmailValidated is False
         mocked_send_raw_email.assert_called()
         mocked_check_recaptcha_token_is_valid.assert_called()
-        assert mocked_send_raw_email.call_args_list[0][1]["data"]["Mj-TemplateID"] == 1897370
+        assert mocked_send_raw_email.call_args_list[0][1]["data"]["Mj-TemplateID"] == 2015423
 
     @patch("pcapi.routes.native.v1.account.check_recaptcha_token_is_valid")
     @patch("pcapi.utils.mailing.send_raw_email", return_value=True)
@@ -148,7 +148,7 @@ class ResendEmailValidationTest:
 
         assert response.status_code == 204
         mocked_send_raw_email.assert_called()
-        assert mocked_send_raw_email.call_args_list[0][1]["data"]["Mj-TemplateID"] == 1897370
+        assert mocked_send_raw_email.call_args_list[0][1]["data"]["Mj-TemplateID"] == 2015423
 
     @patch("pcapi.utils.mailing.send_raw_email", return_value=True)
     def test_for_already_validated_email_does_sent_passsword_reset(self, mocked_send_raw_email, app):
