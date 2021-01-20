@@ -53,6 +53,7 @@ const OfferDetails = ({
           showCreationSuccessNotification()
           redirectId = response.id
         }
+        setFormErrors({})
         history.push(`/offres/v2/${redirectId}/edition`)
       } catch (error) {
         if (error && 'errors' in error) {
