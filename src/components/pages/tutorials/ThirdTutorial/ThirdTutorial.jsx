@@ -28,10 +28,10 @@ const ThirdTutorial = ({ enteringSide, isNewBookingLimitsActived }) => (
     {isNewBookingLimitsActived && (
       <p className="third-tutorial-text">
         {`Tu peux utiliser jusqu’à 100${NON_BREAKING_SPACE}€ en `}
-        <span className="text-highlight text-physical-offer text-first-highlight">
-          {`biens${NON_BREAKING_SPACE}physiques`}
+        <span className="text-highlight text-digital-offer text-first-highlight">
+          {`biens${NON_BREAKING_SPACE}numériques`}
         </span>
-        {'(livres, vinyles…).'}
+        {' (streaming, jeux vidéo…).'}
       </p>
     )}
     <p className="third-tutorial-text second-paragraph">
