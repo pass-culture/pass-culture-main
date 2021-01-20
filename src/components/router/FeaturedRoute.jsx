@@ -5,11 +5,12 @@ import { Route } from 'react-router-dom'
 import ErrorsPage from '../layout/ErrorBoundaries/ErrorsPage/ErrorsPage'
 import PageNotFoundContainer from '../layout/ErrorBoundaries/ErrorsPage/PageNotFound/PageNotFoundContainer'
 
+const PAGES_WORKING_WITHOUT_FEATURES = ['/', '', '/beta', '/verification-eligibilite']
 class FeaturedRoute extends PureComponent {
   componentDidMount() {
-    const { areFeaturesLoaded, requestGetFeatures } = this.props
+    const { areFeaturesLoaded, requestGetFeatures, featuresFetchFailed } = this.props
 
-    if (areFeaturesLoaded) {
+    if (areFeaturesLoaded || featuresFetchFailed) {
       return
     }
 
@@ -17,10 +18,12 @@ class FeaturedRoute extends PureComponent {
   }
 
   render() {
-    const { areFeaturesLoaded, isRouteDisabled, ...routeProps } = this.props
+    const { areFeaturesLoaded, isRouteDisabled, featuresFetchFailed, ...routeProps } = this.props
     const { path } = routeProps
+    const displayRoute =
+      areFeaturesLoaded || (PAGES_WORKING_WITHOUT_FEATURES.includes(path) && featuresFetchFailed)
 
-    if (!areFeaturesLoaded) {
+    if (!displayRoute) {
       return null
     }
 
@@ -43,6 +46,7 @@ class FeaturedRoute extends PureComponent {
 
 FeaturedRoute.propTypes = {
   areFeaturesLoaded: PropTypes.bool.isRequired,
+  featuresFetchFailed: PropTypes.bool.isRequired,
   isRouteDisabled: PropTypes.bool.isRequired,
   requestGetFeatures: PropTypes.func.isRequired,
 }

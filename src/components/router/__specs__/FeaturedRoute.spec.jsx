@@ -15,6 +15,7 @@ describe('src | components | router | FeaturedRoute', () => {
         areFeaturesLoaded: false,
         component: Foo,
         isRouteDisabled: false,
+        featuresFetchFailed: false,
         requestGetFeatures: jest.fn(),
       }
 
@@ -50,6 +51,7 @@ describe('src | components | router | FeaturedRoute', () => {
         areFeaturesLoaded: true,
         component: Foo,
         isRouteDisabled: true,
+        featuresFetchFailed: false,
         requestGetFeatures: jest.fn(),
       }
 
@@ -69,6 +71,7 @@ describe('src | components | router | FeaturedRoute', () => {
         areFeaturesLoaded: true,
         component: Foo,
         isRouteDisabled: true,
+        featuresFetchFailed: false,
         requestGetFeatures: jest.fn(),
       }
 
@@ -87,6 +90,7 @@ describe('src | components | router | FeaturedRoute', () => {
         areFeaturesLoaded: true,
         component: Foo,
         isRouteDisabled: false,
+        featuresFetchFailed: false,
         requestGetFeatures: jest.fn(),
       }
 
@@ -106,6 +110,7 @@ describe('src | components | router | FeaturedRoute', () => {
         areFeaturesLoaded: true,
         component: Foo,
         isRouteDisabled: false,
+        featuresFetchFailed: false,
         requestGetFeatures: jest.fn(),
       }
 
@@ -113,6 +118,64 @@ describe('src | components | router | FeaturedRoute', () => {
       shallow(<FeaturedRoute {...props} />)
 
       // then
+      expect(props.requestGetFeatures).toHaveBeenCalledTimes(0)
+    })
+  })
+
+  describe('when feature fetch has failed', () => {
+    it('should not call requestGetFeatures when feature fetch has failed', () => {
+      // given
+      const props = {
+        areFeaturesLoaded: false,
+        component: Foo,
+        isRouteDisabled: true,
+        featuresFetchFailed: true,
+        requestGetFeatures: jest.fn(),
+      }
+
+      // when
+      shallow(<FeaturedRoute {...props} />)
+
+      // then
+      expect(props.requestGetFeatures).toHaveBeenCalledTimes(0)
+    })
+
+    it('should render null by default', () => {
+      // given
+      const props = {
+        areFeaturesLoaded: false,
+        component: Foo,
+        isRouteDisabled: false,
+        featuresFetchFailed: true,
+        requestGetFeatures: jest.fn(),
+      }
+
+      // when
+      const wrapper = shallow(<FeaturedRoute {...props} />)
+
+      // then
+      const routeWrapper = wrapper.find(Route)
+      expect(routeWrapper).toHaveLength(0)
+    })
+
+    it('should render Foo on the right path', () => {
+      // given
+      const props = {
+        areFeaturesLoaded: false,
+        component: Foo,
+        isRouteDisabled: false,
+        featuresFetchFailed: true,
+        requestGetFeatures: jest.fn(),
+        path: '/',
+      }
+
+      // when
+      const wrapper = shallow(<FeaturedRoute {...props} />)
+
+      // then
+      const routeWrapper = wrapper.find(Route)
+      expect(routeWrapper).toHaveLength(1)
+      expect(routeWrapper.props().component).toBe(Foo)
       expect(props.requestGetFeatures).toHaveBeenCalledTimes(0)
     })
   })
