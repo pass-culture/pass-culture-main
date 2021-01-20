@@ -3,9 +3,9 @@
 
   align-items: center;
   background-color: $grey-very-light;
-  border: rem(1px) solid $grey-medium;
-  border-radius: rem(5px);
-  box-shadow: 0 0 rem(20px) 0 $black-shadow;
+  border: none;
+  border-bottom: rem(1px) solid $grey-medium;
+  border-radius: rem(4px);
   display: flex;
   flex-direction: column;
   height: rem(385px);

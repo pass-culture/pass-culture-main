@@ -18,6 +18,8 @@
       }
 
       .sidebar {
+        border: rem(1px) solid $grey-medium;
+        box-shadow: 0 0 rem(20px) 0 $black-shadow;
         flex: 0 0 rem(256px);
       }
     }

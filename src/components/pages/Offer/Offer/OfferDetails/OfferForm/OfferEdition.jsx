@@ -13,11 +13,13 @@ import { DEFAULT_FORM_VALUES, EDITED_OFFER_READ_ONLY_FIELDS } from './_constants
 import OfferForm from './OfferForm'
 
 const OfferEdition = ({
+  formValues,
   isUserAdmin,
   isLoading,
   offer,
   offersSearchFilters,
   onSubmit,
+  setFormValues,
   setIsLoading,
   setShowThumbnailForm,
   showErrorNotification,
@@ -75,6 +77,7 @@ const OfferEdition = ({
   return (
     <OfferForm
       backUrl={computeOffersUrl(offersSearchFilters)}
+      formValues={formValues}
       initialValues={initialValues}
       isEdition
       isUserAdmin={isUserAdmin}
@@ -82,6 +85,7 @@ const OfferEdition = ({
       onSubmit={onSubmit}
       providerName={providerName}
       readOnlyFields={readOnlyFields}
+      setFormValues={setFormValues}
       setShowThumbnailForm={setShowThumbnailForm}
       showErrorNotification={showErrorNotification}
       submitErrors={submitErrors}
@@ -97,6 +101,7 @@ OfferEdition.defaultProps = {
 }
 
 OfferEdition.propTypes = {
+  formValues: PropTypes.shape().isRequired,
   isLoading: PropTypes.bool.isRequired,
   isUserAdmin: PropTypes.bool,
   offer: PropTypes.shape(),
@@ -112,6 +117,7 @@ OfferEdition.propTypes = {
     page: PropTypes.number,
   }).isRequired,
   onSubmit: PropTypes.func.isRequired,
+  setFormValues: PropTypes.func.isRequired,
   setIsLoading: PropTypes.func.isRequired,
   setShowThumbnailForm: PropTypes.func.isRequired,
   showErrorNotification: PropTypes.func.isRequired,

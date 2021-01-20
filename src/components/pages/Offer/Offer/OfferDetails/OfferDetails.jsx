@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState, Fragment } from 'react'
 
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
@@ -7,6 +7,7 @@ import * as pcapi from 'repository/pcapi/pcapi'
 
 import OfferCreation from './OfferForm/OfferCreation'
 import OfferEditionContainer from './OfferForm/OfferEditionContainer'
+import OfferPreview from './OfferPreview/OfferPreview'
 import OfferThumbnail from './OfferThumbnail/OfferThumbnail'
 import OfferThumbnailPlaceholder from './OfferThumbnail/OfferThumbnailPlaceholder/OfferThumbnailPlaceholder'
 
@@ -20,6 +21,7 @@ const OfferDetails = ({
   showErrorNotification,
 }) => {
   const [formInitialValues, setFormInitialValues] = useState({})
+  const [formValues, setFormValues] = useState({})
   const [formErrors, setFormErrors] = useState({})
   const [showThumbnailForm, setShowThumbnailForm] = useState(offer !== null)
   const [isLoading, setIsLoading] = useState(true)
@@ -94,10 +96,12 @@ const OfferDetails = ({
         <div className="content">
           {offer ? (
             <OfferEditionContainer
+              formValues={formValues}
               isLoading={isLoading}
               isUserAdmin={isUserAdmin}
               offer={offer}
               onSubmit={handleSubmitOffer}
+              setFormValues={setFormValues}
               setIsLoading={setIsLoading}
               setShowThumbnailForm={setShowThumbnailForm}
               showErrorNotification={showErrorNotification}
@@ -105,10 +109,12 @@ const OfferDetails = ({
             />
           ) : (
             <OfferCreation
+              formValues={formValues}
               initialValues={formInitialValues}
               isLoading={isLoading}
               isUserAdmin={isUserAdmin}
               onSubmit={handleSubmitOffer}
+              setFormValues={setFormValues}
               setIsLoading={setIsLoading}
               setShowThumbnailForm={setShowThumbnailForm}
               showErrorNotification={showErrorNotification}
@@ -120,9 +126,15 @@ const OfferDetails = ({
         {showThumbnailForm && (
           <div className="sidebar">
             {offer?.thumbUrl ? (
-              <OfferThumbnail url={offer.thumbUrl} />
+              <Fragment>
+                <OfferThumbnail url={offer.thumbUrl} />
+                <OfferPreview formValues={formValues} />
+              </Fragment>
             ) : (
-              <OfferThumbnailPlaceholder />
+              <Fragment>
+                <OfferThumbnailPlaceholder />
+                <OfferPreview formValues={formValues} />
+              </Fragment>
             )}
           </div>
         )}

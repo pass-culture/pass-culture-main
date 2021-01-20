@@ -1,3 +1,4 @@
+import isEqual from 'lodash.isequal'
 import PropTypes from 'prop-types'
 import React, { Fragment, useCallback, useEffect, useState } from 'react'
 
@@ -55,6 +56,7 @@ const getOfferConditionalFields = ({
 
 const OfferForm = ({
   backUrl,
+  formValues,
   initialValues,
   isEdition,
   isUserAdmin,
@@ -62,6 +64,7 @@ const OfferForm = ({
   onSubmit,
   providerName,
   readOnlyFields,
+  setFormValues,
   setSelectedOfferer,
   setShowThumbnailForm,
   showErrorNotification,
@@ -69,7 +72,6 @@ const OfferForm = ({
   types,
   venues,
 }) => {
-  const [formValues, setFormValues] = useState({})
   const [offerType, setOfferType] = useState(null)
   const [receiveNotificationEmails, setReceiveNotificationEmails] = useState(false)
   const [venue, setVenue] = useState(null)
@@ -78,7 +80,11 @@ const OfferForm = ({
   const [formErrors, setFormErrors] = useState(submitErrors)
 
   const handleFormUpdate = useCallback(
-    newFormValues => setFormValues(oldFormValues => ({ ...oldFormValues, ...newFormValues })),
+    newFormValues =>
+      setFormValues(oldFormValues => {
+        const updatedFormValues = { ...oldFormValues, ...newFormValues }
+        return isEqual(oldFormValues, updatedFormValues) ? oldFormValues : updatedFormValues
+      }),
     [setFormValues]
   )
   const offererOptions = buildSelectOptions('id', 'name', offerers)
@@ -96,7 +102,7 @@ const OfferForm = ({
       }
       setFormValues({ ...DEFAULT_FORM_VALUES, ...initialValues })
     },
-    [initialValues]
+    [initialValues, setFormValues]
   )
   useEffect(
     function buildFormFields() {
@@ -695,12 +701,14 @@ OfferForm.defaultProps = {
 
 OfferForm.propTypes = {
   backUrl: PropTypes.string,
+  formValues: PropTypes.shape().isRequired,
   initialValues: PropTypes.shape(),
   isEdition: PropTypes.bool,
   isUserAdmin: PropTypes.bool,
   onSubmit: PropTypes.func.isRequired,
   providerName: PropTypes.string,
   readOnlyFields: PropTypes.arrayOf(PropTypes.string),
+  setFormValues: PropTypes.func.isRequired,
   setShowThumbnailForm: PropTypes.func.isRequired,
   showErrorNotification: PropTypes.func.isRequired,
   submitErrors: PropTypes.shape().isRequired,

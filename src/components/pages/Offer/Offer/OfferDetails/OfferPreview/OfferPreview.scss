@@ -1,0 +1,28 @@
+.offer-preview {
+  background-color: $grey-very-light;
+
+  .category {
+    background-color: $white;
+    margin-top: rem(6px);
+    padding: 0 rem(15px);
+  }
+
+  .title-preview {
+    @include body-important();
+
+    padding-top: rem(18px);
+    text-align: center;
+  }
+
+  .category-description {
+    @include caption();
+
+    padding: rem(16px) 0;
+  }
+
+  .category-title {
+    @include body-important();
+
+    padding-top: rem(11px);
+  }
+}

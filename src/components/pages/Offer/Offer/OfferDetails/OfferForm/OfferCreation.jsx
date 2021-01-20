@@ -6,6 +6,7 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import OfferForm from './OfferForm'
 
 const OfferCreation = ({
+  formValues,
   initialValues,
   isLoading,
   isUserAdmin,
@@ -13,6 +14,7 @@ const OfferCreation = ({
   showErrorNotification,
   setIsLoading,
   setShowThumbnailForm,
+  setFormValues,
   submitErrors,
 }) => {
   const venues = useRef([])
@@ -75,10 +77,12 @@ const OfferCreation = ({
 
   return (
     <OfferForm
+      formValues={formValues}
       initialValues={initialValues}
       isUserAdmin={isUserAdmin}
       offerers={offerers.current}
       onSubmit={onSubmit}
+      setFormValues={setFormValues}
       setIsLoading={setIsLoading}
       setSelectedOfferer={setSelectedOfferer}
       setShowThumbnailForm={setShowThumbnailForm}
@@ -96,10 +100,12 @@ OfferCreation.defaultProps = {
 }
 
 OfferCreation.propTypes = {
+  formValues: PropTypes.shape().isRequired,
   initialValues: PropTypes.shape(),
   isLoading: PropTypes.bool.isRequired,
   isUserAdmin: PropTypes.bool,
   onSubmit: PropTypes.func.isRequired,
+  setFormValues: PropTypes.func.isRequired,
   setIsLoading: PropTypes.func.isRequired,
   setShowThumbnailForm: PropTypes.func.isRequired,
   showErrorNotification: PropTypes.func.isRequired,
