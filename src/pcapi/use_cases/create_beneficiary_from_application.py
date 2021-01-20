@@ -2,6 +2,7 @@ from pcapi.connectors.beneficiaries import get_application_by_id
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsADuplicate
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import CantRegisterBeneficiary
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_validator import validate
+from pcapi.domain.user_emails import send_accepted_as_beneficiary_email
 from pcapi.domain.user_emails import send_activation_email
 from pcapi.domain.user_emails import send_rejection_email_to_beneficiary_pre_subscription
 from pcapi.infrastructure.repository.beneficiary.beneficiary_sql_repository import BeneficiarySQLRepository
@@ -33,7 +34,10 @@ class CreateBeneficiaryFromApplication:
 
         else:
             beneficiary = self.beneficiary_repository.save(beneficiary_pre_subscription, user=user)
-            send_activation_email(user=beneficiary, send_email=send_raw_email)
+            if user is None:
+                send_activation_email(user=beneficiary, send_email=send_raw_email)
+            else:
+                send_accepted_as_beneficiary_email(user=beneficiary, send_email=send_raw_email)
 
 
 create_beneficiary_from_application = CreateBeneficiaryFromApplication()

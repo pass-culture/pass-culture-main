@@ -42,3 +42,13 @@ def get_activation_email_data_for_native(user: users_models.User, token: users_m
             "isMinor": int(user.dateOfBirth + relativedelta(years=18) > datetime.today()),
         },
     }
+
+
+def get_accepted_as_beneficiary_email_data(user: users_models.User) -> Dict:
+    return {
+        "FromEmail": settings.SUPPORT_EMAIL_ADDRESS,
+        "Mj-TemplateID": 2016025,
+        "Mj-TemplateLanguage": True,
+        "To": user.email if feature_send_mail_to_users_enabled() else settings.DEV_EMAIL_ADDRESS,
+        "Vars": {},
+    }

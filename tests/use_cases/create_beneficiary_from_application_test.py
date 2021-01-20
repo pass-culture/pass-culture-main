@@ -97,14 +97,14 @@ def test_saved_a_beneficiary_from_application(
     mocked_send_activation_email.assert_called_once()
 
 
-@patch("pcapi.use_cases.create_beneficiary_from_application.send_activation_email")
+@patch("pcapi.use_cases.create_beneficiary_from_application.send_accepted_as_beneficiary_email")
 @patch(
     "pcapi.settings.JOUVE_APPLICATION_BACKEND",
     "tests.use_cases.create_beneficiary_from_application_test.FakeBeneficiaryJouveBackend",
 )
 @freeze_time("2013-05-15 09:00:00")
 @pytest.mark.usefixtures("db_session")
-def test_application_for_native_app_user(mocked_send_activation_email, app):
+def test_application_for_native_app_user(mocked_send_accepted_as_beneficiary_email, app):
     # Given
     application_id = 35
     users_api.create_account(
@@ -119,7 +119,7 @@ def test_application_for_native_app_user(mocked_send_activation_email, app):
     create_beneficiary_from_application.execute(application_id)
 
     # Then
-    mocked_send_activation_email.assert_called_once()
+    mocked_send_accepted_as_beneficiary_email.assert_called_once()
 
     beneficiary = User.query.one()
     deposit = Deposit.query.one()
