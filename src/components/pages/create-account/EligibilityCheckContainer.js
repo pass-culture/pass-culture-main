@@ -4,18 +4,19 @@ import { compose } from 'redux'
 import { connect } from 'react-redux'
 import withTracking from '../../hocs/withTracking'
 import selectIsFeatureEnabled from '../../router/selectors/selectIsFeatureEnabled'
+import { DEFAULT_WHOLE_FRANCE_OPENING_VALUE, FEATURES } from '../../router/selectors/features'
 
 export const mapStateToProps = state => {
   if (state.features.fetchHasFailed) {
     return {
       isIdCheckAvailable: false,
-      wholeFranceOpening: true,
+      wholeFranceOpening: DEFAULT_WHOLE_FRANCE_OPENING_VALUE,
     }
   }
 
   return {
-    isIdCheckAvailable: selectIsFeatureEnabled(state, 'ALLOW_IDCHECK_REGISTRATION'),
-    wholeFranceOpening: selectIsFeatureEnabled(state, 'WHOLE_FRANCE_OPENING'),
+    isIdCheckAvailable: selectIsFeatureEnabled(state, FEATURES.ALLOW_IDCHECK_REGISTRATION),
+    wholeFranceOpening: selectIsFeatureEnabled(state, FEATURES.WHOLE_FRANCE_OPENING),
   }
 }
 
