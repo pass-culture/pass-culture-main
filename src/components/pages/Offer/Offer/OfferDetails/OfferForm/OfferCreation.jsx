@@ -16,9 +16,9 @@ const OfferCreation = ({
   submitErrors,
 }) => {
   const venues = useRef([])
-  const [displayedVenues, setDisplayedVenues] = useState([])
   const types = useRef([])
   const offerers = useRef([])
+  const [displayedVenues, setDisplayedVenues] = useState([])
   const [selectedOfferer, setSelectedOfferer] = useState(initialValues.offererId)
 
   useEffect(() => setSelectedOfferer(initialValues.offererId), [initialValues.offererId])
@@ -32,13 +32,16 @@ const OfferCreation = ({
       if (!isUserAdmin) {
         const venuesRequest = pcapi.getVenuesForOfferer().then(receivedVenues => {
           venues.current = receivedVenues
-          setDisplayedVenues(receivedVenues)
+          const venuesToDisplay = initialValues.offererId
+            ? receivedVenues.filter(venue => venue.managingOffererId === initialValues.offererId)
+            : receivedVenues
+          setDisplayedVenues(venuesToDisplay)
         })
         requests.push(venuesRequest)
       }
       Promise.all(requests).then(() => setIsLoading(false))
     },
-    [isUserAdmin, setIsLoading]
+    [initialValues.offererId, isUserAdmin, setIsLoading]
   )
 
   const getVenuesForAdmin = useCallback(() => {

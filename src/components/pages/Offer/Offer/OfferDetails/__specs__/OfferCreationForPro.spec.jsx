@@ -44,7 +44,7 @@ const renderOffers = async (props, store, queryParams = null) => {
   })
 }
 
-describe('offerDetails - Creation', () => {
+describe('offerDetails - Creation - pro user', () => {
   let types
   let offerers
   let props
@@ -150,6 +150,7 @@ describe('offerDetails - Creation', () => {
     pcapi.loadTypes.mockResolvedValue(types)
     pcapi.getValidatedOfferers.mockResolvedValue(offerers)
     pcapi.getVenuesForOfferer.mockResolvedValue(venues)
+    pcapi.createOffer.mockResolvedValue({})
     jest.spyOn(window, 'scrollTo').mockImplementation()
   })
 
@@ -262,7 +263,7 @@ describe('offerDetails - Creation', () => {
           expect(venueInput).not.toHaveAttribute('disabled')
         })
 
-        it('should have offerer selected when given as queryParam', async () => {
+        it('should have offerer selected when given as queryParam and filter venues', async () => {
           // Given
           await renderOffers(props, store, `?structure=${offerers[0].id}`)
 
@@ -271,6 +272,9 @@ describe('offerDetails - Creation', () => {
 
           // Then
           expect(screen.getByDisplayValue(offerers[0].name)).toBeInTheDocument()
+          expect(screen.getByText(venues[0].name)).toBeInTheDocument()
+          expect(screen.queryByText(venues[1].name)).not.toBeInTheDocument()
+          expect(screen.queryByText(venues[2].name)).not.toBeInTheDocument()
         })
 
         it('should select offerer when there is only one option', async () => {

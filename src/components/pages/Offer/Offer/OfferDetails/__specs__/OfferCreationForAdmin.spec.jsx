@@ -36,7 +36,7 @@ const renderOffers = async (props, store, queryParams = null) => {
   })
 }
 
-describe('offerDetails - Creation', () => {
+describe('offerDetails - Creation - admin user', () => {
   let types
   let offerers
   let props
