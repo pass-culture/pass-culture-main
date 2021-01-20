@@ -11,6 +11,7 @@ from pcapi.core.users.models import User
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_validator import get_beneficiary_duplicates
 from pcapi.domain.demarches_simplifiees import get_closed_application_ids_for_demarche_simplifiee
 from pcapi.domain.user_activation import create_beneficiary_from_application
+from pcapi.domain.user_emails import send_accepted_as_beneficiary_email
 from pcapi.domain.user_emails import send_activation_email
 from pcapi.models import ApiErrors
 from pcapi.models import ImportStatus
@@ -182,7 +183,10 @@ def _process_creation(
         )
         new_beneficiaries.append(new_beneficiary)
         try:
-            send_activation_email(new_beneficiary, send_raw_email)
+            if user is None:
+                send_activation_email(new_beneficiary, send_raw_email)
+            else:
+                send_accepted_as_beneficiary_email(new_beneficiary, send_raw_email)
         except MailServiceException as mail_service_exception:
             logger.exception(
                 "Email send_activation_email failure for application %s - Procedure %s : %s",

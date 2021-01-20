@@ -670,7 +670,8 @@ class RunIntegrationTest:
         assert beneficiary_import.beneficiary == user
         assert beneficiary_import.currentStatus == ImportStatus.REJECTED
 
-    def test_import_native_app_user(self):
+    @patch("pcapi.scripts.beneficiary.remote_import.send_raw_email")
+    def test_import_native_app_user(self, send_raw_email):
         # given
         user = users_api.create_account(
             email=self.EMAIL,
@@ -698,3 +699,5 @@ class RunIntegrationTest:
         assert beneficiary_import.applicationId == 123
         assert beneficiary_import.beneficiary == user
         assert beneficiary_import.currentStatus == ImportStatus.CREATED
+        send_raw_email.assert_called_once()
+        assert send_raw_email.call_args_list[0][1]["data"]["Mj-TemplateID"] == 2016025
