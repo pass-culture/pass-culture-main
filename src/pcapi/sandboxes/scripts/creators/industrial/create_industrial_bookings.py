@@ -1,4 +1,5 @@
 from datetime import datetime
+from random import choice
 
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.users.models import ExpenseDomain
@@ -9,7 +10,7 @@ from pcapi.repository import repository
 from pcapi.utils.logger import logger
 
 
-MAX_RATIO_OF_EXPENSES = 0.8
+MAX_RATIO_OF_EXPENSES = 0.6
 OFFER_WITH_BOOKINGS_RATIO = 3
 OFFER_WITH_SEVERAL_STOCKS_REMOVE_MODULO = 2
 BOOKINGS_USED_REMOVE_MODULO = 5
@@ -24,6 +25,12 @@ def create_industrial_bookings(offers_by_name, users_by_name):
 
     token = 100000
 
+    active_offers_with_stocks = {
+        booking_key: offer
+        for booking_key, offer in offers_by_name.items()
+        if offer.venue.managingOfferer.isValidated is True and len(offer.stocks) > 0
+    }
+
     for (user_name, user) in users_by_name.items():
         if (
             user.firstName != "PC Test Jeune"
@@ -33,10 +40,10 @@ def create_industrial_bookings(offers_by_name, users_by_name):
             continue
 
         if "has-booked-some" in user.email:
-            _create_has_booked_some_bookings(bookings_by_name, offers_by_name, user, user_name)
+            _create_has_booked_some_bookings(bookings_by_name, active_offers_with_stocks, user, user_name)
         else:
             token = _create_bookings_for_other_beneficiaries(
-                bookings_by_name, list_of_users_with_no_more_money, offers_by_name, token, user, user_name
+                bookings_by_name, list_of_users_with_no_more_money, active_offers_with_stocks, token, user, user_name
             )
 
     repository.save(*bookings_by_name.values())
@@ -51,9 +58,6 @@ def _create_bookings_for_other_beneficiaries(
     for (offer_index, (offer_name, offer)) in enumerate(list(offers_by_name.items())):
         # FIXME (viconnex, 2020-12-22) trying to adapt previous code - not sure of the result and intention
         if offer_index % OFFER_WITH_BOOKINGS_RATIO != 0:
-            continue
-
-        if not offer.venue.managingOfferer.isValidated:
             continue
 
         user_has_only_activation_booked = (
@@ -111,34 +115,33 @@ def _create_has_booked_some_bookings(bookings_by_name, offers_by_name, user, use
 
     for (offer_index, (offer_name, offer)) in enumerate(list(offers_by_name.items())):
         # FIXME (viconnex, 2020-12-22) trying to adapt previous code - not sure of the result and intention
+        # FIXME (asaunier, 2021-01-22) UPDATE - We should replace the "ratio" mechanism by a more immutable data
+        #  construction. We currently pick among the list of available offers that may change.
         if offer_index % OFFER_WITH_BOOKINGS_RATIO != 0:
             continue
 
-        # FIXME (asaunier, 2021-01-20): We should exclude non validated venues earlier
-        if not offer.venue.managingOfferer.isValidated:
-            continue
-
         digital_expenses = next(expense for expense in user.expenses if expense.domain == ExpenseDomain.DIGITAL)
+        all_expenses = next(expense for expense in user.expenses if expense.domain == ExpenseDomain.ALL)
 
         if digital_expenses.current > MAX_RATIO_OF_EXPENSES * float(digital_expenses.limit):
             break
 
+        if all_expenses.current > MAX_RATIO_OF_EXPENSES * float(all_expenses.limit):
+            break
+
         is_activation_offer = offer.product.offerType["value"] == str(EventType.ACTIVATION)
 
-        for (index, stock) in enumerate(offer.stocks):
-            # every STOCK_MODULO RECO will have several stocks
-            if index > 0 and offer_index % (OFFER_WITH_SEVERAL_STOCKS_REMOVE_MODULO + index):
-                continue
+        stock = choice(offer.stocks)
 
-            is_used = False
-            if is_activation_offer:
-                is_used = True
-            else:
-                is_used = offer_index % BOOKINGS_USED_REMOVE_MODULO != 0
+        is_used = False
+        if is_activation_offer:
+            is_used = True
+        else:
+            is_used = offer_index % BOOKINGS_USED_REMOVE_MODULO != 0
 
-            booking = BookingFactory(user=user, isUsed=is_used, stock=stock)
-            booking_name = "{} / {} / {}".format(offer_name, user_name, booking.token)
-            bookings_by_name[booking_name] = booking
+        booking = BookingFactory(user=user, isUsed=is_used, stock=stock)
+        booking_name = "{} / {} / {}".format(offer_name, user_name, booking.token)
+        bookings_by_name[booking_name] = booking
 
-            if bookings_by_name[booking_name].isUsed:
-                bookings_by_name[booking_name].dateUsed = datetime.now()
+        if bookings_by_name[booking_name].isUsed:
+            bookings_by_name[booking_name].dateUsed = datetime.now()
