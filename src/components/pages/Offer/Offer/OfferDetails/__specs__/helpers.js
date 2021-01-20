@@ -25,7 +25,7 @@ export const fieldLabels = {
   stageDirector: { label: 'Metteur en scène', exact: false },
   speaker: { label: 'Intervenant', exact: false },
   type: { label: 'Type', exact: true },
-  url: { label: 'URL', exact: true },
+  url: { label: 'URL d’accès de l’offre', exact: false },
   venueId: { label: 'Lieu', exact: true },
   visa: { label: 'Visa d’exploitation', exact: false },
   withdrawalDetails: { label: 'Informations de retrait', exact: false },

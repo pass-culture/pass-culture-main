@@ -528,15 +528,11 @@ const OfferForm = ({
                 <TextInput
                   disabled={readOnlyFields.includes('url')}
                   error={getErrorMessage('url')}
-                  label="URL"
+                  label="URL d’accès de l’offre"
+                  longDescription="Vous pouvez inclure {token} {email} et {offerId} dans l’URL, qui seront remplacés respectivement par le code de la contremarque, l’e-mail de la personne ayant reservé et l’identifiant de l’offre"
                   name="url"
                   onChange={handleSingleFormUpdate}
                   required
-                  subLabel={
-                    readOnlyFields.includes('url')
-                      ? 'Vous pouvez inclure {token} {email} et {offerId} dans l’URL, qui seront remplacés respectivement par le code de la contremarque, l’e-mail de la personne ayant reservé et l’identifiant de l’offre'
-                      : null
-                  }
                   type="text"
                   value={formValues.url}
                 />

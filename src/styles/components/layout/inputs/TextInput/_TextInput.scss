@@ -3,7 +3,16 @@
   flex-direction: column;
 
   .labels {
+    align-items: baseline;
+    display: flex;
     justify-content: space-between;
+  }
+
+  .description {
+    @include caption();
+
+    color: $grey-dark;
+    margin-top: rem(8px);
   }
 
   .it-character-count {
@@ -16,8 +25,6 @@
     @include caption();
 
     color: $grey-dark;
-    float: right;
-    margin-left: rem(5px);
   }
 
   .it-input {

@@ -7,6 +7,7 @@ const StyleguideInputText = () => {
   const inputTextEnabled = `
     <TextInput
       label="Intitulé"
+      longDescription="Description longue de ce champ texte"
       name="input-text-default"
       onChange={onChange}
       placeholder="placeholder"
@@ -20,6 +21,7 @@ const StyleguideInputText = () => {
   const inputTextWithError = `
     <TextInput
       error="Ce champs comporte une erreur"
+      longDescription="Description longue de ce champ texte"
       label="Intitulé"
       name="input-text-default"
       onChange={onChange}
@@ -111,6 +113,7 @@ const StyleguideInputText = () => {
       <div className="flex-block">
         <TextInput
           label="Intitulé"
+          longDescription="Description longue de ce champ texte"
           name="input-text-default"
           onChange={onChange}
           placeholder="placeholder"
@@ -131,6 +134,7 @@ const StyleguideInputText = () => {
         <TextInput
           disabled
           label="Intitulé"
+          longDescription="Description longue de ce champ texte"
           name="input-text-disabled"
           placeholder="placeholder disabled"
           subLabel="Intitulé secondaire"

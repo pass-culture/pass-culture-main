@@ -8,6 +8,7 @@ const TextInput = ({
   disabled,
   error,
   label,
+  longDescription,
   maxLength,
   name,
   onChange,
@@ -24,6 +25,11 @@ const TextInput = ({
         {subLabel}
       </span>
     </div>
+    {longDescription && (
+      <div className="description">
+        {longDescription}
+      </div>
+    )}
     <input
       className={`it-input ${error ? 'error' : ''}`}
       disabled={disabled}
@@ -54,6 +60,7 @@ TextInput.defaultProps = {
   countCharacters: false,
   disabled: false,
   error: null,
+  longDescription: null,
   maxLength: null,
   onChange: null,
   placeholder: '',
@@ -68,6 +75,7 @@ TextInput.propTypes = {
   disabled: PropTypes.bool,
   error: PropTypes.string,
   label: PropTypes.string.isRequired,
+  longDescription: PropTypes.string,
   maxLength: PropTypes.number,
   name: PropTypes.string.isRequired,
   onChange: PropTypes.func,
