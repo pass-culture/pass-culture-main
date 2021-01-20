@@ -24,6 +24,9 @@ describe('eligibility check container', () => {
             },
           ],
         },
+        features: {
+          fetchHasFailed: false,
+        },
       }
 
       // when
@@ -53,6 +56,9 @@ describe('eligibility check container', () => {
             },
           ],
         },
+        features: {
+          fetchHasFailed: false,
+        },
       }
 
       // when
@@ -62,6 +68,27 @@ describe('eligibility check container', () => {
       expect(props).toStrictEqual({
         isIdCheckAvailable: false,
         wholeFranceOpening: false,
+      })
+    })
+  })
+  describe('mapStateToProps() when fetch has failed', () => {
+    it('should map feature flags', () => {
+      const state = {
+        data: {
+          features: [],
+        },
+        features: {
+          fetchHasFailed: true,
+        },
+      }
+
+      // when
+      const props = mapStateToProps(state)
+
+      // then
+      expect(props).toStrictEqual({
+        isIdCheckAvailable: false,
+        wholeFranceOpening: true,
       })
     })
   })

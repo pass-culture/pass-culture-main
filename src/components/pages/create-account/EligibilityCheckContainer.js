@@ -6,11 +6,16 @@ import withTracking from '../../hocs/withTracking'
 import selectIsFeatureEnabled from '../../router/selectors/selectIsFeatureEnabled'
 
 export const mapStateToProps = state => {
-  const isIdCheckAvailable = selectIsFeatureEnabled(state, 'ALLOW_IDCHECK_REGISTRATION')
-  const wholeFranceOpening = selectIsFeatureEnabled(state, 'WHOLE_FRANCE_OPENING')
+  if (state.features.fetchHasFailed) {
+    return {
+      isIdCheckAvailable: false,
+      wholeFranceOpening: true,
+    }
+  }
+
   return {
-    isIdCheckAvailable,
-    wholeFranceOpening,
+    isIdCheckAvailable: selectIsFeatureEnabled(state, 'ALLOW_IDCHECK_REGISTRATION'),
+    wholeFranceOpening: selectIsFeatureEnabled(state, 'WHOLE_FRANCE_OPENING'),
   }
 }
 

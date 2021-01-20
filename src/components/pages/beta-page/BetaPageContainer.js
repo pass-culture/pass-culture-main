@@ -7,10 +7,19 @@ import selectIsFeatureDisabled from '../../router/selectors/selectIsFeatureDisab
 import selectIsFeatureEnabled from '../../router/selectors/selectIsFeatureEnabled'
 import { FEATURES } from '../../router/selectors/features'
 
-export const mapStateToProps = state => ({
-  isNewBookingLimitsActived: !selectIsFeatureDisabled(state, FEATURES.APPLY_BOOKING_LIMITS_V2),
-  wholeFranceOpening: selectIsFeatureEnabled(state, 'WHOLE_FRANCE_OPENING'),
-})
+export const mapStateToProps = state => {
+  if (state.features.fetchHasFailed) {
+    return {
+      isNewBookingLimitsActived: true,
+      wholeFranceOpening: true,
+    }
+  }
+
+  return {
+    isNewBookingLimitsActived: !selectIsFeatureDisabled(state, FEATURES.APPLY_BOOKING_LIMITS_V2),
+    wholeFranceOpening: selectIsFeatureEnabled(state, 'WHOLE_FRANCE_OPENING'),
+  }
+}
 
 export const mergeProps = (stateProps, dispatchProps, ownProps) => {
   return {
