@@ -248,7 +248,6 @@ describe('offerDetails - Creation - pro user', () => {
         // Then
         const bookingEmailInput = screen.getByLabelText('Email auquel envoyer les notifications :')
         expect(bookingEmailInput).toBeInTheDocument()
-        expect(bookingEmailInput).toHaveAttribute('name', 'bookingEmail')
       })
 
       it('should display a text input for an external ticket office url"', async () => {
@@ -261,7 +260,6 @@ describe('offerDetails - Creation - pro user', () => {
         // Then
         const externalTicketOfficeUrlInput = await getOfferInputForField('externalTicketOfficeUrl')
         expect(externalTicketOfficeUrlInput).toBeInTheDocument()
-        expect(externalTicketOfficeUrlInput).toHaveAttribute('name', 'externalTicketOfficeUrl')
       })
 
       describe('accessibility fields', () => {
@@ -511,7 +509,6 @@ describe('offerDetails - Creation - pro user', () => {
             // Then
             const musicTypeInput = await getOfferInputForField('musicType')
             expect(musicTypeInput).toBeInTheDocument()
-            expect(musicTypeInput).toHaveAttribute('name', 'musicType')
           })
 
           it('should display a music subtype selection when a musicType is selected', async () => {
@@ -525,7 +522,6 @@ describe('offerDetails - Creation - pro user', () => {
             // Then
             const musicSubTypeInput = await getOfferInputForField('musicSubType')
             expect(musicSubTypeInput).toBeInTheDocument()
-            expect(musicSubTypeInput).toHaveAttribute('name', 'musicSubType')
           })
 
           it('should not display a music type selection when changing to an offer type wihtout "musicType" conditional field', async () => {
@@ -569,7 +565,6 @@ describe('offerDetails - Creation - pro user', () => {
             // Then
             const showTypeInput = await getOfferInputForField('showType')
             expect(showTypeInput).toBeInTheDocument()
-            expect(showTypeInput).toHaveAttribute('name', 'showType')
           })
 
           it('should display a show subtype selection when a showType is selected', async () => {
@@ -583,7 +578,6 @@ describe('offerDetails - Creation - pro user', () => {
             // Then
             const showSubTypeInput = await getOfferInputForField('showSubType')
             expect(showSubTypeInput).toBeInTheDocument()
-            expect(showSubTypeInput).toHaveAttribute('name', 'showSubType')
           })
         })
 
@@ -598,7 +592,6 @@ describe('offerDetails - Creation - pro user', () => {
             // Then
             const speakerInput = await getOfferInputForField('speaker')
             expect(speakerInput).toBeInTheDocument()
-            expect(speakerInput).toHaveAttribute('name', 'speaker')
           })
         })
 
@@ -613,7 +606,6 @@ describe('offerDetails - Creation - pro user', () => {
             // Then
             const authorInput = await getOfferInputForField('author')
             expect(authorInput).toBeInTheDocument()
-            expect(authorInput).toHaveAttribute('name', 'author')
           })
         })
 
@@ -628,7 +620,6 @@ describe('offerDetails - Creation - pro user', () => {
             // Then
             const visaInput = await getOfferInputForField('visa')
             expect(visaInput).toBeInTheDocument()
-            expect(visaInput).toHaveAttribute('name', 'visa')
           })
         })
 
@@ -643,7 +634,6 @@ describe('offerDetails - Creation - pro user', () => {
             // Then
             const isbnInput = await getOfferInputForField('isbn')
             expect(isbnInput).toBeInTheDocument()
-            expect(isbnInput).toHaveAttribute('name', 'isbn')
           })
         })
 
@@ -658,7 +648,6 @@ describe('offerDetails - Creation - pro user', () => {
             // Then
             const stageDirectorInput = await getOfferInputForField('stageDirector')
             expect(stageDirectorInput).toBeInTheDocument()
-            expect(stageDirectorInput).toHaveAttribute('name', 'stageDirector')
           })
         })
 
@@ -672,7 +661,7 @@ describe('offerDetails - Creation - pro user', () => {
 
             // Then
             const performerInput = await getOfferInputForField('performer')
-            expect(performerInput).toHaveAttribute('name', 'performer')
+            expect(performerInput).toBeInTheDocument()
           })
         })
       })
@@ -689,7 +678,6 @@ describe('offerDetails - Creation - pro user', () => {
           // Then
           const urlInput = await getOfferInputForField('url')
           expect(urlInput).toBeInTheDocument()
-          expect(urlInput).toHaveAttribute('name', 'url')
         })
 
         it('should display refundable banner when offer type is online only', async () => {
@@ -817,7 +805,6 @@ describe('offerDetails - Creation - pro user', () => {
           // Then
           const durationInput = await getOfferInputForField('durationMinutes')
           expect(durationInput).toBeInTheDocument()
-          expect(durationInput).toHaveAttribute('name', 'durationMinutes')
         })
 
         it('should display a checkbox input "Offre duo" checked by default', async () => {
@@ -830,7 +817,6 @@ describe('offerDetails - Creation - pro user', () => {
           // Then
           const duoInput = await getOfferInputForField('isDuo')
           expect(duoInput).toBeInTheDocument()
-          expect(duoInput).toHaveAttribute('name', 'isDuo')
           expect(duoInput).toBeChecked()
         })
 
