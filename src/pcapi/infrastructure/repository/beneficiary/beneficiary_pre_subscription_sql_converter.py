@@ -14,12 +14,12 @@ def to_model(beneficiary_pre_subscription: BeneficiaryPreSubscription, user: Opt
     if not user:
         beneficiary = User()
         beneficiary.email = beneficiary_pre_subscription.email
-        beneficiary.dateOfBirth = beneficiary_pre_subscription.date_of_birth
         beneficiary.password = random_password()
         generate_reset_token(beneficiary, validity_duration_hours=THIRTY_DAYS_IN_HOURS)
     else:
         beneficiary = user
 
+    beneficiary.dateOfBirth = beneficiary_pre_subscription.date_of_birth or beneficiary.dateOfBirth
     beneficiary.activity = beneficiary_pre_subscription.activity
     beneficiary.address = beneficiary_pre_subscription.address
     beneficiary.city = beneficiary_pre_subscription.city
