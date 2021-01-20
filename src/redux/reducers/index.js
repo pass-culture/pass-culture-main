@@ -8,6 +8,7 @@ import share from './share'
 import splash from './splash'
 import token from './token'
 import maintenance from './maintenance'
+import features from './features'
 
 const rootReducer = combineReducers({
   currentUser,
@@ -19,6 +20,7 @@ const rootReducer = combineReducers({
   share,
   splash,
   token,
+  features,
 })
 
 export default rootReducer
