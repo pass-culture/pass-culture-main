@@ -469,8 +469,6 @@ const OfferForm = ({
               }
             </p>
 
-            {offerType?.type === 'Thing' && venue && !venue.isVirtual && <WithdrawalReminder />}
-
             <div className="form-row">
               <Select
                 defaultOption={{
@@ -538,6 +536,12 @@ const OfferForm = ({
                   type="text"
                   value={formValues.url}
                 />
+              </div>
+            )}
+
+            {offerType?.type === 'Thing' && venue && !venue.isVirtual && (
+              <div className="form-row">
+                <WithdrawalReminder />
               </div>
             )}
           </section>
