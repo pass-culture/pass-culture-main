@@ -96,7 +96,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
       // then
       const cguLink = wrapper.find({ children: 'Conditions Générales d’Utilisation' }).parent('a')
       expect(cguLink).toHaveLength(1)
-      expect(cguLink.prop('href')).toBe('https://docs.passculture.app/textes-normatifs')
+      expect(cguLink.prop('href')).toBe('https://pass.culture.fr/cgu-professionnels/')
     })
 
     it('should display an external link to GDPR chart', () => {
@@ -110,9 +110,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
       // then
       const gdprLink = wrapper.find({ children: 'Charte des Données Personnelles' }).parent('a')
       expect(gdprLink).toHaveLength(1)
-      expect(gdprLink.prop('href')).toBe(
-        'https://docs.passculture.app/textes-normatifs/charte-des-donnees-personnelles'
-      )
+      expect(gdprLink.prop('href')).toBe('https://pass.culture.fr/donnees-personnelles/')
     })
 
     it('should display a mail to support', () => {
@@ -165,9 +163,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
 
       // then
       const field = wrapper.find('label').at(0)
-      expect(field.text()).toBe(
-        'Adresse e-mail'
-      )
+      expect(field.text()).toBe('Adresse e-mail')
       const input = field.find('input')
       expect(input.prop('name')).toBe('email')
       expect(input.prop('placeholder')).toBe('nom@exemple.fr')
@@ -286,7 +282,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
       )
 
       // then
-      const error = wrapper.find({ children : "erreur sur le mail" })
+      const error = wrapper.find({ children: 'erreur sur le mail' })
       expect(error).toHaveLength(1)
     })
 

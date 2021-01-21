@@ -231,7 +231,7 @@ class SignupForm extends PureComponent {
                   </span>
                   <a
                     className="quaternary-link"
-                    href="https://docs.passculture.app/textes-normatifs"
+                    href="https://pass.culture.fr/cgu-professionnels/"
                     rel="noopener noreferrer"
                     target="_blank"
                   >
@@ -245,7 +245,7 @@ class SignupForm extends PureComponent {
                   </span>
                   <a
                     className="quaternary-link"
-                    href="https://docs.passculture.app/textes-normatifs/charte-des-donnees-personnelles"
+                    href="https://pass.culture.fr/donnees-personnelles/"
                     rel="noopener noreferrer"
                     target="_blank"
                   >
