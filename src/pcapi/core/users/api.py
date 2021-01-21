@@ -318,7 +318,7 @@ def create_pro_user(request: Request) -> User:
     repository.save(*objects_to_save)
 
     try:
-        user_emails.send_user_validation_email(new_user, mailing_utils.send_raw_email, is_webapp=False)
+        user_emails.send_user_validation_email(new_user, mailing_utils.send_raw_email)
         mailing_utils.subscribe_newsletter(new_user)
     except MailServiceException:
         logger.exception("Could not send validation email when creating pro user=%s", new_user.id)

@@ -343,10 +343,10 @@ class SendOffererBookingsRecapEmailAfterOffererCancellationTest:
 
 
 class SendUserValidationEmailTest:
-    @patch("pcapi.domain.user_emails.make_user_validation_email", return_value={"Html-part": ""})
+    @patch("pcapi.domain.user_emails.make_pro_user_validation_email", return_value={"Html-part": ""})
     @patch("pcapi.utils.mailing.feature_send_mail_to_users_enabled", return_value=True)
     def when_feature_send_mail_to_users_enabled_sends_email_to_user(
-        self, feature_send_mail_to_users_enabled, make_user_validation_email
+        self, feature_send_mail_to_users_enabled, make_pro_user_validation_email
     ):
         # Given
         user = create_user()
@@ -354,11 +354,11 @@ class SendUserValidationEmailTest:
         mocked_send_email = Mock()
 
         # When
-        send_user_validation_email(user, mocked_send_email, True)
+        send_user_validation_email(user, mocked_send_email)
 
         # Then
         mocked_send_email.assert_called_once()
-        make_user_validation_email.assert_called_once()
+        make_pro_user_validation_email.assert_called_once()
         mocked_send_email.call_args_list[0][1]["To"] = user.email
 
 

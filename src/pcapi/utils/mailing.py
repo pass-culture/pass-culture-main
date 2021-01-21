@@ -193,14 +193,6 @@ def make_offerer_driven_cancellation_email_for_offerer(booking: Booking) -> Dict
     }
 
 
-def make_user_validation_email(user: User, is_webapp: bool) -> Dict:
-    if is_webapp:
-        data = make_webapp_user_validation_email(user)
-    else:
-        data = make_pro_user_validation_email(user)
-    return data
-
-
 def get_contact(user: User) -> Union[str, None]:
     mailjet_json_response = app.mailjet_client.contact.get(user.email).json()
     return mailjet_json_response["Data"][0] if "Data" in mailjet_json_response else None
@@ -376,20 +368,6 @@ def get_event_datetime(stock: Stock) -> datetime:
         date_in_tz = stock.beginningDatetime
 
     return date_in_tz
-
-
-def make_webapp_user_validation_email(user: User) -> Dict:
-    template = "mails/webapp_user_validation_email.html"
-    email_html = render_template(template, user=user, api_url=settings.API_URL, app_origin_url=settings.WEBAPP_URL)
-    return {
-        "Html-part": email_html,
-        "To": user.email,
-        "Subject": "Validation de votre adresse email pour le pass Culture",
-        "FromName": "pass Culture",
-        "FromEmail": settings.SUPPORT_EMAIL_ADDRESS
-        if feature_send_mail_to_users_enabled()
-        else settings.DEV_EMAIL_ADDRESS,
-    }
 
 
 def make_pro_user_validation_email(user: User) -> Dict:
