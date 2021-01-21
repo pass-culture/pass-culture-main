@@ -87,24 +87,9 @@ class ProcessEligibleOffersTest:
         mock_pipeline.reset.assert_called_once()
         mock_add_offer_ids_in_error.assert_not_called()
 
-    @patch("pcapi.algolia.usecase.orchestrator.add_to_indexed_offers")
-    @patch("pcapi.algolia.usecase.orchestrator.get_offer_details")
-    @patch("pcapi.algolia.usecase.orchestrator.check_offer_exists")
-    @patch("pcapi.algolia.usecase.orchestrator.delete_objects")
-    @patch("pcapi.algolia.usecase.orchestrator.build_object")
-    @patch("pcapi.algolia.usecase.orchestrator.add_objects")
     @pytest.mark.usefixtures("db_session")
     @freeze_time("2019-01-04 12:00:00")
-    def test_should_only_index_bookable_offers_stock(
-        self,
-        mock_add_objects,
-        mock_build_object,
-        mock_delete_objects,
-        mock_check_offer_exists,
-        mock_get_offer_details,
-        mock_add_to_indexed_offers,
-        app,
-    ):
+    def test_should_only_index_bookable_offers_stock(self):
         offer = offers_factories.EventOfferFactory()
         _not_bookable_stock = offers_factories.EventStockFactory(
             beginningDatetime=datetime(2019, 1, 5),
