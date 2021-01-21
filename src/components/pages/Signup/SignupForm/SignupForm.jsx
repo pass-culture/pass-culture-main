@@ -213,13 +213,11 @@ class SignupForm extends PureComponent {
                   <Field
                     component="input"
                     name="contact_ok"
-                    required
                     type="checkbox"
-                    validate={required}
                   />
                   <span>
                     {
-                      'J’accepte d’être contacté par e-mail pour donner mon avis sur le pass Culture'
+                      "J'accepte d'être contacté par e-mail pour recevoir les nouveautés du pass Culture et contribuer à son amélioration"
                     }
                   </span>
                   <FieldErrors customMessage={errors ? errors.contact_ok : null} />
