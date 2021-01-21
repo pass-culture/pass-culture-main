@@ -534,7 +534,7 @@ const OfferForm = ({
                 <TextInput
                   disabled={readOnlyFields.includes('url')}
                   error={getErrorMessage('url')}
-                  label="URL d’accès de l’offre"
+                  label="URL d’accès à l’offre"
                   longDescription="Vous pouvez inclure {token} {email} et {offerId} dans l’URL, qui seront remplacés respectivement par le code de la contremarque, l’e-mail de la personne ayant reservé et l’identifiant de l’offre"
                   name="url"
                   onChange={handleSingleFormUpdate}
@@ -594,9 +594,8 @@ const OfferForm = ({
               {'Billeterie externe'}
             </h3>
             <p className="section-description">
-              {
-                "Ce lien sera affiché aux utilisateurs ne pouvant pas effectuer la réservation dans l'application"
-              }
+              {"Ce lien sera affiché aux utilisateurs ne pouvant pas effectuer la réservation dans l'application. " +
+                'Sans cette information ils ne pourront pas réserver votre offre.'}
             </p>
             <TextInput
               disabled={readOnlyFields.includes('externalTicketOfficeUrl')}
