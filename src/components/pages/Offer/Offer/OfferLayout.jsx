@@ -3,7 +3,7 @@ import { Switch, Route } from 'react-router-dom'
 
 import Titles from 'components/layout/Titles/Titles'
 import OfferDetailsContainer from 'components/pages/Offer/Offer/OfferDetails/OfferDetailsContainer'
-import Stocks from 'components/pages/Offer/Offer/Stocks/Stocks'
+import StocksContainer from 'components/pages/Offer/Offer/Stocks/StocksContainer'
 import * as pcapi from 'repository/pcapi/pcapi'
 
 import Breadcrumb, { STEP_ID_DETAILS, STEP_ID_STOCKS } from './Breadcrumb'
@@ -84,7 +84,7 @@ const OfferLayout = props => {
             exact
             path={`${match.url}/stocks`}
           >
-            <Stocks offer={offer} />
+            <StocksContainer offer={offer} />
           </Route>
         </Switch>
       </div>

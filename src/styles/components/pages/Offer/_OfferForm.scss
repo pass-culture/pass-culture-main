@@ -17,20 +17,4 @@
       }
     }
   }
-
-  .actions-section {
-    display: flex;
-    margin-top: rem(64px);
-
-    button,
-    a {
-      flex: 1;
-      margin-left: rem(24px);
-      text-align: center;
-
-      &:first-child {
-        margin-left: 0;
-      }
-    }
-  }
 }

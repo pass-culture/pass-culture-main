@@ -36,4 +36,11 @@
     padding: rem(10px) rem(5px);
     vertical-align: middle;
   }
+
+  .actions-section {
+    button,
+    a {
+      max-width: rem(230px);
+    }
+  }
 }

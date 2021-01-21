@@ -47,4 +47,21 @@
       max-width: rem(100px);
     }
   }
+
+  .actions-section {
+    display: flex;
+    justify-content: center;
+    margin-top: rem(64px);
+
+    button,
+    a {
+      flex: 1;
+      margin-left: rem(24px);
+      text-align: center;
+
+      &:first-child {
+        margin-left: 0;
+      }
+    }
+  }
 }
