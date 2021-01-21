@@ -18,6 +18,7 @@ export const CheckboxInput = ({
   if (hiddenLabel) {
     textClasses.push('label-hidden')
   }
+  inputClasses.push('input-checkbox-input')
 
   return (
     <label

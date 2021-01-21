@@ -78,6 +78,11 @@ input[type="checkbox"] {
 }
 
 .field-checkbox {
+  .input-checkbox-input {
+    align-self: flex-start;
+    margin-top: 3px;
+  }
+
   svg {
     margin-right: rem(5px);
   }
