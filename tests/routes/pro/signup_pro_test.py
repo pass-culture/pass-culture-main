@@ -1,9 +1,6 @@
-from unittest.mock import patch
-
 import pytest
 
 from pcapi.core.users.models import User
-from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue_type
@@ -11,7 +8,6 @@ from pcapi.models.offerer import Offerer
 from pcapi.models.user_offerer import RightsType
 from pcapi.models.user_offerer import UserOfferer
 from pcapi.repository import repository
-from pcapi.routes.pro.signup import _set_offerer_departement_code
 
 from tests.conftest import TestClient
 
@@ -32,9 +28,9 @@ BASE_DATA_PRO = {
 }
 
 
+@pytest.mark.usefixtures("db_session")
 class Post:
     class Returns201:
-        @pytest.mark.usefixtures("db_session")
         def when_user_data_is_valid(self, app):
             # Given
             data = BASE_DATA_PRO.copy()
@@ -71,7 +67,6 @@ class Post:
             for key in other_expected_keys:
                 assert key in json
 
-        @pytest.mark.usefixtures("db_session")
         def test_does_not_allow_the_creation_of_admins(self, app):
             # Given
             user_json = {
@@ -102,7 +97,6 @@ class Post:
             created_user = User.query.filter_by(email="toto_pro@example.com").one()
             assert not created_user.isAdmin
 
-        @pytest.mark.usefixtures("db_session")
         def test_creates_user_offerer_digital_venue_and_userOfferer_and_does_not_log_user_in(self, app):
             # Given
             data_pro = BASE_DATA_PRO.copy()
@@ -130,7 +124,6 @@ class Post:
             assert user_offerer.validationToken is None
             assert user_offerer.rights == RightsType.editor
 
-        @pytest.mark.usefixtures("db_session")
         def when_successful_and_existing_offerer_creates_editor_user_offerer_and_does_not_log_in(self, app):
             # Given
             json_offerer = {
@@ -166,7 +159,6 @@ class Post:
             assert user_offerer.validationToken is not None
             assert user_offerer.rights == RightsType.editor
 
-        @pytest.mark.usefixtures("db_session")
         def when_successful_and_existing_offerer_but_no_user_offerer_does_not_signin(self, app):
             # Given
             json_offerer = {
@@ -198,7 +190,6 @@ class Post:
             assert user_offerer.validationToken is not None
             assert user_offerer.rights == RightsType.editor
 
-        @pytest.mark.usefixtures("db_session")
         def when_successful_and_mark_pro_user_as_no_cultural_survey_needed(self, app):
             # Given
             json_offerer = {
@@ -224,7 +215,6 @@ class Post:
             assert user.needsToFillCulturalSurvey == False
 
     class Returns400:
-        @pytest.mark.usefixtures("db_session")
         def when_email_is_missing(self, app):
             # Given
             data = BASE_DATA_PRO.copy()
@@ -240,7 +230,6 @@ class Post:
             error = response.json
             assert "email" in error
 
-        @pytest.mark.usefixtures("db_session")
         def when_email_is_invalid(self, app):
             # Given
             data = BASE_DATA_PRO.copy()
@@ -258,7 +247,6 @@ class Post:
             error = response.json
             assert "email" in error
 
-        @pytest.mark.usefixtures("db_session")
         def when_email_is_already_used(self, app):
             # Given
             data = BASE_DATA_PRO.copy()
@@ -278,7 +266,6 @@ class Post:
             error = response.json
             assert "email" in error
 
-        @pytest.mark.usefixtures("db_session")
         def when_public_name_is_missing(self, app):
             # Given
             data = BASE_DATA_PRO.copy()
@@ -296,7 +283,6 @@ class Post:
             error = response.json
             assert "publicName" in error
 
-        @pytest.mark.usefixtures("db_session")
         def when_public_name_is_too_short(self, app):
             # Given
             data = BASE_DATA_PRO.copy()
@@ -314,7 +300,6 @@ class Post:
             error = response.json
             assert "publicName" in error
 
-        @pytest.mark.usefixtures("db_session")
         def when_public_name_is_too_long(self, app):
             # Given
             data = BASE_DATA_PRO.copy()
@@ -332,7 +317,6 @@ class Post:
             error = response.json
             assert "publicName" in error
 
-        @pytest.mark.usefixtures("db_session")
         def when_password_is_missing(self, app):
             # Given
             data = BASE_DATA_PRO.copy()
@@ -348,7 +332,6 @@ class Post:
             error = response.json
             assert "password" in error
 
-        @pytest.mark.usefixtures("db_session")
         def when_password_is_invalid(self, app):
             # Given
             data = BASE_DATA_PRO.copy()
@@ -370,7 +353,6 @@ class Post:
                 "- Un caractère spécial"
             ]
 
-        @pytest.mark.usefixtures("db_session")
         def when_contact_ok_is_missing(self, app):
             # Given
             data = BASE_DATA_PRO.copy()
@@ -386,7 +368,6 @@ class Post:
             error = response.json
             assert "contact_ok" in error
 
-        @pytest.mark.usefixtures("db_session")
         def when_contact_ok_format_is_invalid(self, app):
             # Given
             data = BASE_DATA_PRO.copy()
@@ -402,7 +383,6 @@ class Post:
             error = response.json
             assert "contact_ok" in error
 
-        @pytest.mark.usefixtures("db_session")
         def when_offerer_name_is_missing(self, app):
             # Given
             data = BASE_DATA_PRO.copy()
@@ -420,7 +400,6 @@ class Post:
             error = response.json
             assert "name" in error
 
-        @pytest.mark.usefixtures("db_session")
         def when_offerer_city_is_missing(self, app):
             # Given
             data = BASE_DATA_PRO.copy()
@@ -438,7 +417,6 @@ class Post:
             error = response.json
             assert "city" in error
 
-        @pytest.mark.usefixtures("db_session")
         def when_postal_code_is_missing(self, app):
             # Given
             data = BASE_DATA_PRO.copy()
@@ -456,7 +434,6 @@ class Post:
             error = response.json
             assert "postalCode" in error
 
-        @pytest.mark.usefixtures("db_session")
         def when_invalid_postal_code(self, app):
             # Given
             data = BASE_DATA_PRO.copy()
@@ -473,39 +450,3 @@ class Post:
             assert response.status_code == 400
             error = response.json
             assert "postalCode" in error
-
-
-class SetOffererDepartementCodeTest:
-    @patch("pcapi.settings.IS_INTEGRATION", True)
-    def should_set_user_department_to_all_departments_in_integration(self):
-        # Given
-        new_user = create_user()
-        offerer = create_offerer(postal_code="75019")
-
-        # When
-        updated_user = _set_offerer_departement_code(new_user, offerer)
-
-        # Then
-        assert updated_user.departementCode == "00"
-
-    def should_set_user_department_to_undefined_department_code_when_offerer_has_none(self):
-        # Given
-        new_user = create_user()
-        offerer = create_offerer(postal_code=None)
-
-        # When
-        updated_user = _set_offerer_departement_code(new_user, offerer)
-
-        # Then
-        assert updated_user.departementCode == "XX"
-
-    def should_set_user_department_code_based_on_offerer(self):
-        # Given
-        new_user = create_user()
-        offerer = create_offerer(postal_code="75019")
-
-        # When
-        updated_user = _set_offerer_departement_code(new_user, offerer)
-
-        # Then
-        assert updated_user.departementCode == "75"

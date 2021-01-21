@@ -1,85 +1,17 @@
 from flask import jsonify
 from flask import request
 
-from pcapi import settings
-from pcapi.core.users.models import User
-from pcapi.domain.postal_code.postal_code import PostalCode
-from pcapi.domain.user_emails import send_user_validation_email
+from pcapi.core.users.api import create_pro_user
 from pcapi.flask_app import private_api
-from pcapi.models import Offerer
-from pcapi.models.user_offerer import RightsType
-from pcapi.models.venue_sql_entity import create_digital_venue
-from pcapi.repository import repository
 from pcapi.routes.serialization import as_dict
 from pcapi.utils.includes import USER_INCLUDES
-from pcapi.utils.logger import logger
-from pcapi.utils.mailing import MailServiceException
-from pcapi.utils.mailing import send_raw_email
-from pcapi.utils.mailing import subscribe_newsletter
 from pcapi.validation.routes.users import check_valid_signup_pro
 
 
 # @debt api-migration
 @private_api.route("/users/signup/pro", methods=["POST"])
 def signup_pro():
-    objects_to_save = []
-    app_origin_url = request.headers.get("origin")
-
     check_valid_signup_pro(request)
-    new_user = User(from_dict=request.json)
-
-    existing_offerer = Offerer.query.filter_by(siren=request.json["siren"]).first()
-
-    if existing_offerer:
-        user_offerer = _generate_user_offerer_when_existing_offerer(new_user, existing_offerer)
-        offerer = existing_offerer
-    else:
-        offerer = _generate_offerer(request.json)
-        user_offerer = offerer.give_rights(new_user, RightsType.editor)
-        digital_venue = create_digital_venue(offerer)
-        objects_to_save.extend([digital_venue, offerer])
-    objects_to_save.append(user_offerer)
-    new_user.isBeneficiary = False
-    new_user.isAdmin = False
-    new_user.needsToFillCulturalSurvey = False
-    new_user = _set_offerer_departement_code(new_user, offerer)
-
-    new_user.generate_validation_token()
-    objects_to_save.append(new_user)
-
-    repository.save(*objects_to_save)
-
-    try:
-        send_user_validation_email(new_user, send_raw_email, app_origin_url, is_webapp=False)
-        subscribe_newsletter(new_user)
-    except MailServiceException:
-        logger.exception("Mail service failure")
+    new_user = create_pro_user(request)
 
     return jsonify(as_dict(new_user, includes=USER_INCLUDES)), 201
-
-
-def _generate_user_offerer_when_existing_offerer(new_user, offerer):
-    user_offerer = offerer.give_rights(new_user, RightsType.editor)
-    if not settings.IS_INTEGRATION:
-        user_offerer.generate_validation_token()
-    return user_offerer
-
-
-def _generate_offerer(data):
-    offerer = Offerer()
-    offerer.populate_from_dict(data)
-
-    if not settings.IS_INTEGRATION:
-        offerer.generate_validation_token()
-    return offerer
-
-
-def _set_offerer_departement_code(new_user: User, offerer: Offerer) -> User:
-    if settings.IS_INTEGRATION:
-        new_user.departementCode = "00"
-    elif offerer.postalCode is not None:
-        new_user.departementCode = PostalCode(offerer.postalCode).get_departement_code()
-    else:
-        new_user.departementCode = "XX"  # We don't want to trigger an error on this:
-        # we want the error on user
-    return new_user

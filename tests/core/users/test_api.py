@@ -1,6 +1,7 @@
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
+from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
@@ -11,6 +12,7 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users.api import _set_offerer_departement_code
 from pcapi.core.users.api import create_id_check_token
 from pcapi.core.users.api import fulfill_user_data
 from pcapi.core.users.api import generate_and_save_token
@@ -20,6 +22,8 @@ from pcapi.core.users.models import User
 from pcapi.core.users.repository import get_user_with_valid_token
 from pcapi.core.users.utils import decode_jwt_token
 from pcapi.core.users.utils import encode_jwt_payload
+from pcapi.model_creators.generic_creators import create_offerer
+from pcapi.model_creators.generic_creators import create_user
 from pcapi.models.user_session import UserSession
 from pcapi.repository import repository
 
@@ -365,3 +369,39 @@ class FulfillUserDataTest:
         assert user.resetPasswordToken is not None
         assert len(user.deposits) == 1
         assert user.deposit_version == 2
+
+
+class SetOffererDepartementCodeTest:
+    @patch("pcapi.settings.IS_INTEGRATION", True)
+    def should_set_user_department_to_all_departments_in_integration(self):
+        # Given
+        new_user = create_user()
+        offerer = create_offerer(postal_code="75019")
+
+        # When
+        updated_user = _set_offerer_departement_code(new_user, offerer)
+
+        # Then
+        assert updated_user.departementCode == "00"
+
+    def should_set_user_department_to_undefined_department_code_when_offerer_has_none(self):
+        # Given
+        new_user = create_user()
+        offerer = create_offerer(postal_code=None)
+
+        # When
+        updated_user = _set_offerer_departement_code(new_user, offerer)
+
+        # Then
+        assert updated_user.departementCode == "XX"
+
+    def should_set_user_department_code_based_on_offerer(self):
+        # Given
+        new_user = create_user()
+        offerer = create_offerer(postal_code="75019")
+
+        # When
+        updated_user = _set_offerer_departement_code(new_user, offerer)
+
+        # Then
+        assert updated_user.departementCode == "75"
