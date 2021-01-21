@@ -16,6 +16,7 @@ from . import exceptions
 
 EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER = {
     "audioDisabilityCompliant",
+    "externalTicketOfficeUrl",
     "mentalDisabilityCompliant",
     "motorDisabilityCompliant",
     "visualDisabilityCompliant",

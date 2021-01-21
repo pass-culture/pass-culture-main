@@ -1051,6 +1051,23 @@ class UpdateOfferTest:
         assert offer.name == "Old name"
         assert not offer.isDuo
 
+    def test_success_on_imported_offer_on_external_ticket_office_url(self):
+        provider = offerers_factories.ProviderFactory()
+        offer = factories.OfferFactory(
+            externalTicketOfficeUrl="http://example.org",
+            lastProvider=provider,
+            name="Old name",
+        )
+
+        api.update_offer(
+            offer,
+            externalTicketOfficeUrl="https://example.com",
+        )
+
+        offer = models.Offer.query.one()
+        assert offer.name == "Old name"
+        assert offer.externalTicketOfficeUrl == "https://example.com"
+
     def test_success_on_imported_offer_on_accessibility_fields(self):
         provider = offerers_factories.ProviderFactory()
         offer = factories.OfferFactory(
