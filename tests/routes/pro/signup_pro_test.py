@@ -18,7 +18,6 @@ BASE_DATA_PRO = {
     "firstName": "Toto",
     "lastName": "Pro",
     "password": "__v4l1d_P455sw0rd__",
-    "contact_ok": "true",
     "siren": "349974931",
     "address": "12 boulevard de Pesaro",
     "phoneNumber": "0102030405",
@@ -76,7 +75,6 @@ class Post:
                 "firstName": "Toto",
                 "lastName": "Pro",
                 "password": "__v4l1d_P455sw0rd__",
-                "contact_ok": "true",
                 "siren": "349974931",
                 "address": "12 boulevard de Pesaro",
                 "phoneNumber": "0102030405",
@@ -325,32 +323,6 @@ class Post:
                 "- Une majuscule et une minuscule\n"
                 "- Un caractère spécial"
             ]
-
-        def when_contact_ok_is_missing(self, app):
-            # Given
-            data = BASE_DATA_PRO.copy()
-            del data["contact_ok"]
-
-            # When
-            response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
-
-            # Then
-            assert response.status_code == 400
-            error = response.json
-            assert "contact_ok" in error
-
-        def when_contact_ok_format_is_invalid(self, app):
-            # Given
-            data = BASE_DATA_PRO.copy()
-            data["contact_ok"] = "t"
-
-            # When
-            response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
-
-            # Then
-            assert response.status_code == 400
-            error = response.json
-            assert "contact_ok" in error
 
         def when_offerer_name_is_missing(self, app):
             # Given

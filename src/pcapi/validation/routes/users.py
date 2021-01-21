@@ -31,13 +31,11 @@ def check_allowed_changes_for_user(data) -> None:
 
 
 def check_valid_signup_pro(request: Request) -> None:
-    contact_ok = request.json.get("contact_ok")
     password = request.json.get("password")
     email = request.json.get("email")
     phone_number = request.json.get("phoneNumber")
 
     _check_email_is_present(email)
-    _check_valid_contact_ok(contact_ok)
     _check_phone_number_is_present(phone_number)
     _check_password_is_present(password)
     check_password_strength("password", password)
