@@ -2,20 +2,11 @@ import PropTypes from 'prop-types'
 import React from 'react'
 
 const OfferPreview = ({ formValues }) => {
-  const buildDescriptionPreview = () => {
-    const description = formValues.description
-    if (description.length > 300) {
-      return description.substr(0, 300) + '...'
+  const buildPreviewText = previewText => {
+    if (previewText.length > 300) {
+      return previewText.substr(0, 300) + '...'
     }
-    return description
-  }
-
-  const buildWithdrawalDetailsPreview = () => {
-    const withdrawalDetails = formValues.withdrawalDetails
-    if (withdrawalDetails.length > 300) {
-      return withdrawalDetails.substr(0, 300) + '...'
-    }
-    return withdrawalDetails
+    return previewText
   }
 
   return (
@@ -26,7 +17,7 @@ const OfferPreview = ({ formValues }) => {
             {formValues.name}
           </div>
           <div className="category-description">
-            {buildDescriptionPreview()}
+            {buildPreviewText(formValues.description)}
           </div>
         </div>
       )}
@@ -36,7 +27,7 @@ const OfferPreview = ({ formValues }) => {
             {'Modalités de retrait'}
           </div>
           <div className="category-description">
-            {buildWithdrawalDetailsPreview()}
+            {buildPreviewText(formValues.withdrawalDetails)}
           </div>
         </div>
       )}
