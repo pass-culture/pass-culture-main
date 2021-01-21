@@ -325,15 +325,17 @@ const OfferForm = ({
             </h3>
 
             <div className="form-row">
-              <TextInput
+              <TextareaInput
+                countCharacters
                 disabled={readOnlyFields.includes('name')}
                 error={getErrorMessage('name')}
                 label="Titre de l'offre"
+                maxLength={90}
                 name="name"
                 onChange={handleSingleFormUpdate}
                 required
+                rows={1}
                 subLabel={!MANDATORY_FIELDS.includes('name') ? 'Optionnel' : ''}
-                type="text"
                 value={formValues.name}
               />
             </div>

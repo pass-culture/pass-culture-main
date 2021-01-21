@@ -14,7 +14,7 @@ export const fieldLabels = {
   motorDisabilityCompliant: { label: 'Handicap moteur', exact: true },
   visualDisabilityCompliant: { label: 'Handicap visuel', exact: true },
   isNational: { label: 'Rayonnement national', exact: true },
-  name: { label: "Titre de l'offre", exact: true },
+  name: { label: "Titre de l'offre", exact: false },
   musicSubType: { label: 'Sous genre', exact: false },
   musicType: { label: 'Genre musical', exact: false },
   offererId: { label: 'Structure', exact: true },

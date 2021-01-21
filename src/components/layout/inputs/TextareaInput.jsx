@@ -26,9 +26,11 @@ const TextareaInput = ({
     >
       <div className="labels">
         {label}
-        <span className="it-sub-label">
-          {subLabel}
-        </span>
+        {subLabel && (
+          <span className="it-sub-label">
+            {subLabel}
+          </span>
+        )}
       </div>
       <Textarea
         className={`it-input ${error ? 'error' : ''}`}
