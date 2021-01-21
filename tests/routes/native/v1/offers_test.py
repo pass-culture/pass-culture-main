@@ -53,9 +53,9 @@ class OffersTest:
         assert response.json == {
             "id": offer.id,
             "accessibility": {
-                "audioDisability": None,
-                "mentalDisability": None,
-                "motorDisability": None,
+                "audioDisability": False,
+                "mentalDisability": False,
+                "motorDisability": False,
                 "visualDisability": True,
             },
             "stocks": [

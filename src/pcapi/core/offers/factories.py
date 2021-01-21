@@ -121,12 +121,17 @@ class OfferFactory(BaseFactory):
     name = factory.SelfAttribute("product.name")
     description = factory.SelfAttribute("product.description")
     url = factory.SelfAttribute("product.url")
+    audioDisabilityCompliant = False
+    mentalDisabilityCompliant = False
+    motorDisabilityCompliant = False
+    visualDisabilityCompliant = False
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
         # Graciously provide the required idAtProviders if lastProvider is given.
         if kwargs.get("lastProvider") and not kwargs.get("idAtProviders"):
             kwargs["idAtProviders"] = uuid.uuid4()
+
         return super()._create(model_class, *args, **kwargs)
 
 

@@ -2,8 +2,6 @@ from flask_login import current_user
 from flask_login import login_required
 
 import pcapi.core.offers.api as offers_api
-from pcapi.core.offers.api import create_offer
-from pcapi.core.offers.api import list_offers_for_pro_user
 import pcapi.core.offers.repository as offers_repository
 from pcapi.flask_app import private_api
 from pcapi.models import Offer
@@ -29,7 +27,7 @@ from pcapi.utils.rest import login_or_api_key_required
 @login_required
 @spectree_serialize(response_model=ListOffersResponseModel)  # type: ignore
 def list_offers(query: ListOffersQueryModel) -> ListOffersResponseModel:
-    paginated_offers = list_offers_for_pro_user(
+    paginated_offers = offers_api.list_offers_for_pro_user(
         user_id=current_user.id,
         user_is_admin=current_user.isAdmin,
         offerer_id=query.offerer_id,
@@ -59,7 +57,7 @@ def get_offer(offer_id: str) -> GetOfferResponseModel:
 @login_or_api_key_required
 @spectree_serialize(response_model=OfferResponseIdModel, on_success_status=201)  # type: ignore
 def post_offer(body: PostOfferBodyModel) -> OfferResponseIdModel:
-    offer = create_offer(offer_data=body, user=current_user)
+    offer = offers_api.create_offer(offer_data=body, user=current_user)
     return OfferResponseIdModel.from_orm(offer)
 
 

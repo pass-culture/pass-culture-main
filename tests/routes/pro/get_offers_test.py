@@ -100,7 +100,7 @@ class Returns200:
         assert response.status_code == 200
         assert len(offers) == 1
 
-    @patch("pcapi.routes.pro.offers.list_offers_for_pro_user")
+    @patch("pcapi.routes.pro.offers.offers_api.list_offers_for_pro_user")
     def should_return_paginated_offers_with_pagination_details_in_body(self, mocked_list_offers, app, db_session):
         # Given
         user = create_user()
@@ -147,7 +147,7 @@ class Returns200:
             "total_count": 2,
         }
 
-    @patch("pcapi.routes.pro.offers.list_offers_for_pro_user")
+    @patch("pcapi.routes.pro.offers.offers_api.list_offers_for_pro_user")
     def should_filter_offers_by_given_venue_id(self, mocked_list_offers, app, db_session):
         # given
         user = create_user()
@@ -178,7 +178,7 @@ class Returns200:
             creation_mode=None,
         )
 
-    @patch("pcapi.routes.pro.offers.list_offers_for_pro_user")
+    @patch("pcapi.routes.pro.offers.offers_api.list_offers_for_pro_user")
     def should_filter_offers_by_given_status(self, mocked_list_offers, app, db_session):
         # given
         user = create_user()
@@ -206,7 +206,7 @@ class Returns200:
             creation_mode=None,
         )
 
-    @patch("pcapi.routes.pro.offers.list_offers_for_pro_user")
+    @patch("pcapi.routes.pro.offers.offers_api.list_offers_for_pro_user")
     def should_filter_offers_by_given_offerer_id(self, mocked_list_offers, app, db_session):
         # given
         user = create_user()
@@ -237,7 +237,7 @@ class Returns200:
             creation_mode=None,
         )
 
-    @patch("pcapi.routes.pro.offers.list_offers_for_pro_user")
+    @patch("pcapi.routes.pro.offers.offers_api.list_offers_for_pro_user")
     def should_filter_offers_by_given_creation_mode(self, mocked_list_offers, app, db_session):
         # given
         user = create_user()
@@ -265,7 +265,7 @@ class Returns200:
             creation_mode="imported",
         )
 
-    @patch("pcapi.routes.pro.offers.list_offers_for_pro_user")
+    @patch("pcapi.routes.pro.offers.offers_api.list_offers_for_pro_user")
     def test_results_are_filtered_by_given_period_beginning_date(self, mocked_list_offers, app, db_session):
         # given
         user = create_user()
@@ -297,7 +297,7 @@ class Returns200:
             creation_mode=None,
         )
 
-    @patch("pcapi.routes.pro.offers.list_offers_for_pro_user")
+    @patch("pcapi.routes.pro.offers.offers_api.list_offers_for_pro_user")
     def test_results_are_filtered_by_given_period_ending_date(self, mocked_list_offers, app, db_session):
         # given
         user = create_user()

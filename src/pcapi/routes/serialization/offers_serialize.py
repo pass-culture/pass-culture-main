@@ -365,10 +365,10 @@ class GetOfferResponseModel(BaseModel):
     isEvent: bool
     isNational: bool
     isThing: bool
-    audioDisabilityCompliant: bool
-    mentalDisabilityCompliant: bool
-    motorDisabilityCompliant: bool
-    visualDisabilityCompliant: bool
+    audioDisabilityCompliant: Optional[bool]
+    mentalDisabilityCompliant: Optional[bool]
+    motorDisabilityCompliant: Optional[bool]
+    visualDisabilityCompliant: Optional[bool]
     lastProvider: Optional[GetOfferLastProviderResponseModel]
     lastProviderId: Optional[str]
     mediaUrls: List[str]
@@ -385,17 +385,6 @@ class GetOfferResponseModel(BaseModel):
     venue: GetOfferVenueResponseModel
     venueId: str
     withdrawalDetails: Optional[str]
-
-    @validator(
-        "audioDisabilityCompliant",
-        "mentalDisabilityCompliant",
-        "motorDisabilityCompliant",
-        "visualDisabilityCompliant",
-        pre=True,
-        always=True,
-    )  # pylint: disable=no-self-argument
-    def validate_accessibility_fields(cls, value):
-        return value or False
 
     class Config:
         json_encoders = {datetime: format_into_utc_date}
