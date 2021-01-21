@@ -30,23 +30,10 @@ BASE_DATA_PRO = {
 
 @pytest.mark.usefixtures("db_session")
 class Post:
-    class Returns201:
+    class Returns204:
         def when_user_data_is_valid(self, app):
             # Given
             data = BASE_DATA_PRO.copy()
-            expected_response_json = {
-                "isBeneficiary": False,
-                "departementCode": "92",
-                "email": "toto_pro@example.com",
-                "firstName": "Toto",
-                "isAdmin": False,
-                "lastName": "Pro",
-                "phoneNumber": "0102030405",
-                "postalCode": "92000",
-                "publicName": "Toto Pro",
-                "dateOfBirth": None,
-            }
-            other_expected_keys = {"id", "dateCreated"}
             venue_type = create_venue_type(label="Offre numérique")
             repository.save(venue_type)
 
@@ -56,16 +43,32 @@ class Post:
             )
 
             # Then
-            assert response.status_code == 201
+            assert response.status_code == 204
             assert "Set-Cookie" not in response.headers
 
-            json = response.json
-            assert "dateCreated" in json
-            for key, value in expected_response_json.items():
-                if key != "dateCreated":
-                    assert json[key] == value
-            for key in other_expected_keys:
-                assert key in json
+            user = User.query.filter_by(email="toto_pro@example.com").first()
+            assert user is not None
+            assert user.isBeneficiary is False
+            assert user.departementCode == "92"
+            assert user.email == "toto_pro@example.com"
+            assert user.firstName == "Toto"
+            assert user.isAdmin is False
+            assert user.lastName == "Pro"
+            assert user.phoneNumber == "0102030405"
+            assert user.postalCode == "92000"
+            assert user.publicName == "Toto Pro"
+            assert user.dateOfBirth is None
+            assert user.dateCreated is not None
+            offerer = Offerer.query.filter_by(siren="349974931").first()
+            assert offerer is not None
+            assert offerer.validationToken is not None
+            assert len(offerer.managedVenues) == 1
+            assert offerer.managedVenues[0].isVirtual
+            assert offerer.managedVenues[0].venueTypeId == venue_type.id
+            user_offerer = UserOfferer.query.filter_by(user=user, offerer=offerer).first()
+            assert user_offerer is not None
+            assert user_offerer.validationToken is None
+            assert user_offerer.rights == RightsType.editor
 
         def test_does_not_allow_the_creation_of_admins(self, app):
             # Given
@@ -93,7 +96,7 @@ class Post:
             )
 
             # Then
-            assert response.status_code == 201
+            assert response.status_code == 204
             created_user = User.query.filter_by(email="toto_pro@example.com").one()
             assert not created_user.isAdmin
 
@@ -109,7 +112,7 @@ class Post:
             )
 
             # Then
-            assert response.status_code == 201
+            assert response.status_code == 204
             assert "Set-Cookie" not in response.headers
             user = User.query.filter_by(email="toto_pro@example.com").first()
             assert user is not None
@@ -148,7 +151,7 @@ class Post:
             )
 
             # Then
-            assert response.status_code == 201
+            assert response.status_code == 204
             assert "Set-Cookie" not in response.headers
             user = User.query.filter_by(email="toto_pro@example.com").first()
             assert user is not None
@@ -179,7 +182,7 @@ class Post:
             )
 
             # Then
-            assert response.status_code == 201
+            assert response.status_code == 204
             assert "Set-Cookie" not in response.headers
             user = User.query.filter_by(email="toto_pro@example.com").first()
             assert user is not None
@@ -210,7 +213,7 @@ class Post:
             )
 
             # Then
-            assert response.status_code == 201
+            assert response.status_code == 204
             user = User.query.filter_by(email="toto_pro@example.com").first()
             assert user.needsToFillCulturalSurvey == False
 
