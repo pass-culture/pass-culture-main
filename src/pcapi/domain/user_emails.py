@@ -167,10 +167,8 @@ def send_expired_bookings_recap_email_to_offerer(
     send_email(data=data)
 
 
-def send_user_validation_email(
-    user: User, send_email: Callable[..., bool], app_origin_url: str, is_webapp: bool
-) -> None:
-    data = make_user_validation_email(user, app_origin_url, is_webapp)
+def send_user_validation_email(user: User, send_email: Callable[..., bool], is_webapp: bool) -> None:
+    data = make_user_validation_email(user, is_webapp)
     send_email(data=data)
 
 

@@ -293,7 +293,6 @@ def user_expenses(user: User):
 
 def create_pro_user(request: Request) -> User:
     objects_to_save = []
-    app_origin_url = request.headers.get("origin")
 
     new_user = User(from_dict=request.json)
 
@@ -319,7 +318,7 @@ def create_pro_user(request: Request) -> User:
     repository.save(*objects_to_save)
 
     try:
-        user_emails.send_user_validation_email(new_user, mailing_utils.send_raw_email, app_origin_url, is_webapp=False)
+        user_emails.send_user_validation_email(new_user, mailing_utils.send_raw_email, is_webapp=False)
         mailing_utils.subscribe_newsletter(new_user)
     except MailServiceException:
         logger.exception("Could not send validation email when creating pro user=%s", new_user.id)

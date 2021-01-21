@@ -354,7 +354,7 @@ class SendUserValidationEmailTest:
         mocked_send_email = Mock()
 
         # When
-        send_user_validation_email(user, mocked_send_email, "localhost-test", True)
+        send_user_validation_email(user, mocked_send_email, True)
 
         # Then
         mocked_send_email.assert_called_once()

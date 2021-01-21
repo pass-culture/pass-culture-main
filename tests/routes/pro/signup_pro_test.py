@@ -38,9 +38,7 @@ class Post:
             repository.save(venue_type)
 
             # When
-            response = TestClient(app.test_client()).post(
-                "/users/signup/pro", json=data, headers={"origin": "http://localhost:3000"}
-            )
+            response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
 
             # Then
             assert response.status_code == 204
@@ -91,9 +89,7 @@ class Post:
             repository.save(venue_type)
 
             # When
-            response = TestClient(app.test_client()).post(
-                "/users/signup/pro", json=user_json, headers={"origin": "http://localhost:3000"}
-            )
+            response = TestClient(app.test_client()).post("/users/signup/pro", json=user_json)
 
             # Then
             assert response.status_code == 204
@@ -107,9 +103,7 @@ class Post:
             repository.save(venue_type)
 
             # When
-            response = TestClient(app.test_client()).post(
-                "/users/signup/pro", json=data_pro, headers={"origin": "http://localhost:3000"}
-            )
+            response = TestClient(app.test_client()).post("/users/signup/pro", json=data_pro)
 
             # Then
             assert response.status_code == 204
@@ -146,9 +140,7 @@ class Post:
             data = BASE_DATA_PRO.copy()
 
             # When
-            response = TestClient(app.test_client()).post(
-                "/users/signup/pro", json=data, headers={"origin": "http://localhost:3000"}
-            )
+            response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
 
             # Then
             assert response.status_code == 204
@@ -177,9 +169,7 @@ class Post:
             data = BASE_DATA_PRO.copy()
 
             # When
-            response = TestClient(app.test_client()).post(
-                "/users/signup/pro", json=data, headers={"origin": "http://localhost:3000"}
-            )
+            response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
 
             # Then
             assert response.status_code == 204
@@ -208,9 +198,7 @@ class Post:
             data = BASE_DATA_PRO.copy()
 
             # When
-            response = TestClient(app.test_client()).post(
-                "/users/signup/pro", json=data, headers={"origin": "http://localhost:3000"}
-            )
+            response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
 
             # Then
             assert response.status_code == 204
@@ -224,9 +212,7 @@ class Post:
             del data["email"]
 
             # When
-            response = TestClient(app.test_client()).post(
-                "/users/signup/pro", json=data, headers={"origin": "http://localhost:3000"}
-            )
+            response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
 
             # Then
             assert response.status_code == 400
@@ -241,9 +227,7 @@ class Post:
             repository.save(venue_type)
 
             # When
-            response = TestClient(app.test_client()).post(
-                "/users/signup/pro", json=data, headers={"origin": "http://localhost:3000"}
-            )
+            response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
 
             # Then
             assert response.status_code == 400
@@ -255,14 +239,10 @@ class Post:
             data = BASE_DATA_PRO.copy()
             venue_type = create_venue_type(label="Offre numérique")
             repository.save(venue_type)
-            TestClient(app.test_client()).post(
-                "/users/signup/pro", json=data, headers={"origin": "http://localhost:3000"}
-            )
+            TestClient(app.test_client()).post("/users/signup/pro", json=data)
 
             # When
-            response = TestClient(app.test_client()).post(
-                "/users/signup/pro", json=data, headers={"origin": "http://localhost:3000"}
-            )
+            response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
 
             # Then
             assert response.status_code == 400
@@ -277,9 +257,7 @@ class Post:
             repository.save(venue_type)
 
             # When
-            response = TestClient(app.test_client()).post(
-                "/users/signup/pro", json=data, headers={"origin": "http://localhost:3000"}
-            )
+            response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
 
             # Then
             assert response.status_code == 400
@@ -294,9 +272,7 @@ class Post:
             repository.save(venue_type)
 
             # When
-            response = TestClient(app.test_client()).post(
-                "/users/signup/pro", json=data, headers={"origin": "http://localhost:3000"}
-            )
+            response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
 
             # Then
             assert response.status_code == 400
@@ -311,9 +287,7 @@ class Post:
             repository.save(venue_type)
 
             # When
-            response = TestClient(app.test_client()).post(
-                "/users/signup/pro", json=data, headers={"origin": "http://localhost:3000"}
-            )
+            response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
 
             # Then
             assert response.status_code == 400
@@ -326,9 +300,7 @@ class Post:
             del data["password"]
 
             # When
-            response = TestClient(app.test_client()).post(
-                "/users/signup/pro", json=data, headers={"origin": "http://localhost:3000"}
-            )
+            response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
 
             # Then
             assert response.status_code == 400
@@ -341,9 +313,7 @@ class Post:
             data["password"] = "weakpassword"
 
             # When
-            response = TestClient(app.test_client()).post(
-                "/users/signup/pro", json=data, headers={"origin": "http://localhost:3000"}
-            )
+            response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
 
             # Then
             assert response.status_code == 400
@@ -362,9 +332,7 @@ class Post:
             del data["contact_ok"]
 
             # When
-            response = TestClient(app.test_client()).post(
-                "/users/signup/pro", json=data, headers={"origin": "http://localhost:3000"}
-            )
+            response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
 
             # Then
             assert response.status_code == 400
@@ -377,9 +345,7 @@ class Post:
             data["contact_ok"] = "t"
 
             # When
-            response = TestClient(app.test_client()).post(
-                "/users/signup/pro", json=data, headers={"origin": "http://localhost:3000"}
-            )
+            response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
 
             # Then
             assert response.status_code == 400
@@ -394,9 +360,7 @@ class Post:
             repository.save(venue_type)
 
             # When
-            response = TestClient(app.test_client()).post(
-                "/users/signup/pro", json=data, headers={"origin": "http://localhost:3000"}
-            )
+            response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
 
             # Then
             assert response.status_code == 400
@@ -411,9 +375,7 @@ class Post:
             repository.save(venue_type)
 
             # When
-            response = TestClient(app.test_client()).post(
-                "/users/signup/pro", json=data, headers={"origin": "http://localhost:3000"}
-            )
+            response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
 
             # Then
             assert response.status_code == 400
@@ -428,9 +390,7 @@ class Post:
             repository.save(venue_type)
 
             # When
-            response = TestClient(app.test_client()).post(
-                "/users/signup/pro", json=data, headers={"origin": "http://localhost:3000"}
-            )
+            response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
 
             # Then
             assert response.status_code == 400
@@ -445,9 +405,7 @@ class Post:
             repository.save(venue_type)
 
             # When
-            response = TestClient(app.test_client()).post(
-                "/users/signup/pro", json=data, headers={"origin": "http://localhost:3000"}
-            )
+            response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
 
             # Then
             assert response.status_code == 400

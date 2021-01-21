@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 from bs4 import BeautifulSoup
 
+from pcapi import settings
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.utils.mailing import make_user_validation_email
 
@@ -11,11 +12,10 @@ class UserValidationEmailsTest:
         # Given
         user = create_user(email="test@example.com")
         user.generate_validation_token()
-        app_origin_url = "portail-pro"
 
         # When
         with patch("pcapi.utils.mailing.feature_send_mail_to_users_enabled", return_value=True):
-            email = make_user_validation_email(user, app_origin_url, is_webapp=True)
+            email = make_user_validation_email(user, is_webapp=True)
 
         # Then
         email_html = BeautifulSoup(email["Html-part"], "html.parser")
@@ -34,10 +34,9 @@ class UserValidationEmailsTest:
         # Given
         user = create_user(email="test@example.com")
         user.generate_validation_token()
-        app_origin_url = "portail-pro"
 
         # When
-        email = make_user_validation_email(user, app_origin_url, is_webapp=False)
+        email = make_user_validation_email(user, is_webapp=False)
         expected = {
             "FromEmail": "dev@example.com",
             "FromName": "pass Culture pro",
@@ -47,7 +46,7 @@ class UserValidationEmailsTest:
             "Recipients": [{"Email": "test@example.com", "Name": "John Doe"}],
             "Vars": {
                 "nom_structure": "John Doe",
-                "lien_validation_mail": f"{app_origin_url}/inscription/validation/{user.validationToken}",
+                "lien_validation_mail": f"{settings.PRO_URL}/inscription/validation/{user.validationToken}",
             },
         }
 

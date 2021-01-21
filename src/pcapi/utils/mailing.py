@@ -193,11 +193,11 @@ def make_offerer_driven_cancellation_email_for_offerer(booking: Booking) -> Dict
     }
 
 
-def make_user_validation_email(user: User, app_origin_url: str, is_webapp: bool) -> Dict:
+def make_user_validation_email(user: User, is_webapp: bool) -> Dict:
     if is_webapp:
-        data = make_webapp_user_validation_email(user, app_origin_url)
+        data = make_webapp_user_validation_email(user)
     else:
-        data = make_pro_user_validation_email(user, app_origin_url)
+        data = make_pro_user_validation_email(user)
     return data
 
 
@@ -378,9 +378,9 @@ def get_event_datetime(stock: Stock) -> datetime:
     return date_in_tz
 
 
-def make_webapp_user_validation_email(user: User, app_origin_url: str) -> Dict:
+def make_webapp_user_validation_email(user: User) -> Dict:
     template = "mails/webapp_user_validation_email.html"
-    email_html = render_template(template, user=user, api_url=settings.API_URL, app_origin_url=app_origin_url)
+    email_html = render_template(template, user=user, api_url=settings.API_URL, app_origin_url=settings.WEBAPP_URL)
     return {
         "Html-part": email_html,
         "To": user.email,
@@ -392,7 +392,7 @@ def make_webapp_user_validation_email(user: User, app_origin_url: str) -> Dict:
     }
 
 
-def make_pro_user_validation_email(user: User, app_origin_url: str) -> Dict:
+def make_pro_user_validation_email(user: User) -> Dict:
     return {
         "FromEmail": settings.SUPPORT_EMAIL_ADDRESS
         if feature_send_mail_to_users_enabled()
@@ -404,7 +404,7 @@ def make_pro_user_validation_email(user: User, app_origin_url: str) -> Dict:
         "Recipients": [{"Email": user.email, "Name": user.publicName}],
         "Vars": {
             "nom_structure": user.publicName,
-            "lien_validation_mail": f"{app_origin_url}/inscription/validation/{user.validationToken}",
+            "lien_validation_mail": f"{settings.PRO_URL}/inscription/validation/{user.validationToken}",
         },
     }
 
