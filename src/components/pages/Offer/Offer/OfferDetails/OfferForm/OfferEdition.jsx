@@ -12,6 +12,23 @@ import { computeOffersUrl } from '../../../utils/computeOffersUrl'
 import { DEFAULT_FORM_VALUES, EDITED_OFFER_READ_ONLY_FIELDS } from './_constants'
 import OfferForm from './OfferForm'
 
+const computeNoDisabilityComplianceValue = offer => {
+  const disabilityCompliantValues = [
+    offer.audioDisabilityCompliant,
+    offer.mentalDisabilityCompliant,
+    offer.motorDisabilityCompliant,
+    offer.visualDisabilityCompliant,
+  ]
+
+  const unknownDisabilityCompliance = disabilityCompliantValues.includes(null)
+  const hasDisabilityCompliance = disabilityCompliantValues.includes(true)
+  if (unknownDisabilityCompliance || hasDisabilityCompliance) {
+    return false
+  }
+
+  return true
+}
+
 const OfferEdition = ({
   formValues,
   isUserAdmin,
@@ -44,6 +61,8 @@ const OfferEdition = ({
     }, {})
 
     initialValues.offererId = offer.venue.managingOffererId
+    initialValues.noDisabilityCompliant = computeNoDisabilityComplianceValue(offer)
+
     return initialValues
   }
 

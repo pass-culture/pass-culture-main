@@ -106,6 +106,216 @@ describe('offerDetails - Edition', () => {
   })
 
   describe('render when editing an existing offer', () => {
+    describe('when interacting with disability fields', () => {
+      it("should not have checked values if disability hasn't been set", async () => {
+        const editedOffer = {
+          id: 'ABC12',
+          name: 'My edited offer',
+          type: 'ThingType.LIVRE_EDITION',
+          venue: editedOfferVenue,
+          thumbUrl: null,
+          audioDisabilityCompliant: null,
+          mentalDisabilityCompliant: null,
+          motorDisabilityCompliant: null,
+          visualDisabilityCompliant: null,
+        }
+        pcapi.loadOffer.mockResolvedValue(editedOffer)
+
+        // When
+        await renderOffers(props, store)
+
+        // Then
+        const audioDisabilityCompliantCheckbox = screen.getByLabelText(
+          fieldLabels.audioDisabilityCompliant.label,
+          {
+            exact: fieldLabels.audioDisabilityCompliant.exact,
+          }
+        )
+        const mentalDisabilityCompliantCheckbox = screen.getByLabelText(
+          fieldLabels.mentalDisabilityCompliant.label,
+          {
+            exact: fieldLabels.mentalDisabilityCompliant.exact,
+          }
+        )
+        const motorDisabilityCompliantCheckbox = screen.getByLabelText(
+          fieldLabels.motorDisabilityCompliant.label,
+          {
+            exact: fieldLabels.motorDisabilityCompliant.exact,
+          }
+        )
+        const visualDisabilityCompliantCheckbox = screen.getByLabelText(
+          fieldLabels.visualDisabilityCompliant.label,
+          {
+            exact: fieldLabels.visualDisabilityCompliant.exact,
+          }
+        )
+        const noDisabilityCompliantCheckbox = screen.getByLabelText(
+          fieldLabels.noDisabilityCompliant.label,
+          {
+            exact: fieldLabels.noDisabilityCompliant.exact,
+          }
+        )
+
+        expect(audioDisabilityCompliantCheckbox).not.toBeChecked()
+        expect(mentalDisabilityCompliantCheckbox).not.toBeChecked()
+        expect(motorDisabilityCompliantCheckbox).not.toBeChecked()
+        expect(visualDisabilityCompliantCheckbox).not.toBeChecked()
+        expect(noDisabilityCompliantCheckbox).not.toBeChecked()
+      })
+
+      it('should display error when submitting empty values', async () => {
+        const editedOffer = {
+          id: 'ABC12',
+          name: 'My edited offer',
+          type: 'ThingType.LIVRE_EDITION',
+          venue: editedOfferVenue,
+          thumbUrl: null,
+          audioDisabilityCompliant: null,
+          mentalDisabilityCompliant: null,
+          motorDisabilityCompliant: null,
+          visualDisabilityCompliant: null,
+        }
+        pcapi.loadOffer.mockResolvedValue(editedOffer)
+
+        // When
+        await renderOffers(props, store)
+        userEvent.click(screen.getByText('Enregistrer'))
+
+        // Then
+        const errorNotification = await screen.findByText(
+          'Une ou plusieurs erreurs sont présentes dans le formulaire'
+        )
+        expect(errorNotification).toBeInTheDocument()
+        expect(pcapi.updateOffer).not.toHaveBeenCalled()
+      })
+
+      it('should initialize noDisabilityCompliant unchecked and uncheck all when noDisabilityCompliant is checked', async () => {
+        const editedOffer = {
+          id: 'ABC12',
+          name: 'My edited offer',
+          type: 'ThingType.LIVRE_EDITION',
+          venue: editedOfferVenue,
+          thumbUrl: null,
+          audioDisabilityCompliant: true,
+          mentalDisabilityCompliant: true,
+          motorDisabilityCompliant: true,
+          visualDisabilityCompliant: true,
+        }
+        pcapi.loadOffer.mockResolvedValue(editedOffer)
+
+        await renderOffers(props, store)
+        const audioDisabilityCompliantCheckbox = screen.getByLabelText(
+          fieldLabels.audioDisabilityCompliant.label,
+          {
+            exact: fieldLabels.audioDisabilityCompliant.exact,
+          }
+        )
+        const mentalDisabilityCompliantCheckbox = screen.getByLabelText(
+          fieldLabels.mentalDisabilityCompliant.label,
+          {
+            exact: fieldLabels.mentalDisabilityCompliant.exact,
+          }
+        )
+        const motorDisabilityCompliantCheckbox = screen.getByLabelText(
+          fieldLabels.motorDisabilityCompliant.label,
+          {
+            exact: fieldLabels.motorDisabilityCompliant.exact,
+          }
+        )
+        const visualDisabilityCompliantCheckbox = screen.getByLabelText(
+          fieldLabels.visualDisabilityCompliant.label,
+          {
+            exact: fieldLabels.visualDisabilityCompliant.exact,
+          }
+        )
+        const noDisabilityCompliantCheckbox = screen.getByLabelText(
+          fieldLabels.noDisabilityCompliant.label,
+          {
+            exact: fieldLabels.noDisabilityCompliant.exact,
+          }
+        )
+
+        expect(noDisabilityCompliantCheckbox).not.toBeChecked()
+        expect(audioDisabilityCompliantCheckbox).toBeChecked()
+        expect(mentalDisabilityCompliantCheckbox).toBeChecked()
+        expect(motorDisabilityCompliantCheckbox).toBeChecked()
+        expect(visualDisabilityCompliantCheckbox).toBeChecked()
+
+        // When
+        userEvent.click(noDisabilityCompliantCheckbox)
+
+        // Then
+        expect(noDisabilityCompliantCheckbox).toBeChecked()
+        expect(audioDisabilityCompliantCheckbox).not.toBeChecked()
+        expect(mentalDisabilityCompliantCheckbox).not.toBeChecked()
+        expect(motorDisabilityCompliantCheckbox).not.toBeChecked()
+        expect(visualDisabilityCompliantCheckbox).not.toBeChecked()
+      })
+
+      it('should initialize noDisabilityCompliant checked and uncheck it when a disabilityCompliant is checked', async () => {
+        const editedOffer = {
+          id: 'ABC12',
+          name: 'My edited offer',
+          type: 'ThingType.LIVRE_EDITION',
+          venue: editedOfferVenue,
+          thumbUrl: null,
+          audioDisabilityCompliant: false,
+          mentalDisabilityCompliant: false,
+          motorDisabilityCompliant: false,
+          visualDisabilityCompliant: false,
+        }
+        pcapi.loadOffer.mockResolvedValue(editedOffer)
+
+        await renderOffers(props, store)
+        const audioDisabilityCompliantCheckbox = screen.getByLabelText(
+          fieldLabels.audioDisabilityCompliant.label,
+          {
+            exact: fieldLabels.audioDisabilityCompliant.exact,
+          }
+        )
+        const mentalDisabilityCompliantCheckbox = screen.getByLabelText(
+          fieldLabels.mentalDisabilityCompliant.label,
+          {
+            exact: fieldLabels.mentalDisabilityCompliant.exact,
+          }
+        )
+        const motorDisabilityCompliantCheckbox = screen.getByLabelText(
+          fieldLabels.motorDisabilityCompliant.label,
+          {
+            exact: fieldLabels.motorDisabilityCompliant.exact,
+          }
+        )
+        const visualDisabilityCompliantCheckbox = screen.getByLabelText(
+          fieldLabels.visualDisabilityCompliant.label,
+          {
+            exact: fieldLabels.visualDisabilityCompliant.exact,
+          }
+        )
+        const noDisabilityCompliantCheckbox = screen.getByLabelText(
+          fieldLabels.noDisabilityCompliant.label,
+          {
+            exact: fieldLabels.noDisabilityCompliant.exact,
+          }
+        )
+
+        expect(noDisabilityCompliantCheckbox).toBeChecked()
+        expect(audioDisabilityCompliantCheckbox).not.toBeChecked()
+        expect(mentalDisabilityCompliantCheckbox).not.toBeChecked()
+        expect(motorDisabilityCompliantCheckbox).not.toBeChecked()
+        expect(visualDisabilityCompliantCheckbox).not.toBeChecked()
+
+        // When
+        userEvent.click(mentalDisabilityCompliantCheckbox)
+
+        // Then
+        expect(noDisabilityCompliantCheckbox).not.toBeChecked()
+        expect(audioDisabilityCompliantCheckbox).not.toBeChecked()
+        expect(mentalDisabilityCompliantCheckbox).toBeChecked()
+        expect(motorDisabilityCompliantCheckbox).not.toBeChecked()
+        expect(visualDisabilityCompliantCheckbox).not.toBeChecked()
+      })
+    })
+
     describe('when thumbnail exists', () => {
       it('should display the actived image', async () => {
         // Given
@@ -816,6 +1026,10 @@ describe('offerDetails - Edition', () => {
         withdrawalDetails: 'Offer withdrawal details',
         bookingEmail: 'booking@example.net',
         extraData: null,
+        audioDisabilityCompliant: false,
+        visualDisabilityCompliant: true,
+        motorDisabilityCompliant: false,
+        mentalDisabilityCompliant: false,
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
       await renderOffers(props, store)
@@ -845,6 +1059,10 @@ describe('offerDetails - Edition', () => {
         withdrawalDetails: 'Offer withdrawal details',
         bookingEmail: 'booking@example.net',
         extraData: null,
+        audioDisabilityCompliant: false,
+        visualDisabilityCompliant: true,
+        motorDisabilityCompliant: false,
+        mentalDisabilityCompliant: false,
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
       await renderOffers(props, store)
@@ -965,6 +1183,10 @@ describe('offerDetails - Edition', () => {
           author: 'Mon auteur',
           isbn: '123456789',
         },
+        audioDisabilityCompliant: false,
+        visualDisabilityCompliant: true,
+        motorDisabilityCompliant: false,
+        mentalDisabilityCompliant: false,
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
       await renderOffers(props, store)
@@ -997,6 +1219,10 @@ describe('offerDetails - Edition', () => {
           author: 'Mon auteur',
           isbn: '123456789',
         },
+        audioDisabilityCompliant: false,
+        visualDisabilityCompliant: true,
+        motorDisabilityCompliant: false,
+        mentalDisabilityCompliant: false,
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
       await renderOffers(props, store)
@@ -1026,6 +1252,10 @@ describe('offerDetails - Edition', () => {
         withdrawalDetails: 'Offer withdrawal details',
         bookingEmail: 'booking@example.net',
         extraData: null,
+        audioDisabilityCompliant: false,
+        mentalDisabilityCompliant: false,
+        motorDisabilityCompliant: false,
+        visualDisabilityCompliant: false,
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
       await renderOffers(props, store)

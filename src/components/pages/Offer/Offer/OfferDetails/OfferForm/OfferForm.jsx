@@ -216,6 +216,18 @@ const OfferForm = ({
       }
     })
 
+    if (
+      ![
+        formValues.noDisabilityCompliant,
+        formValues.audioDisabilityCompliant,
+        formValues.mentalDisabilityCompliant,
+        formValues.motorDisabilityCompliant,
+        formValues.visualDisabilityCompliant,
+      ].includes(true)
+    ) {
+      newFormErrors['disabilityCompliant'] = 'Ce champ est obligatoire.'
+    }
+
     setFormErrors(newFormErrors)
     return Object.keys(newFormErrors).length === 0
   }, [offerFormFields, formValues])
@@ -268,6 +280,40 @@ const OfferForm = ({
       const field = event.target.name
       const value = event.target.type === 'checkbox' ? !formValues[field] : event.target.value
       handleFormUpdate({ [field]: value })
+    },
+    [formValues, handleFormUpdate]
+  )
+
+  const handleDisabilityCompliantUpdate = useCallback(
+    event => {
+      let disabilityCompliantValues = {
+        noDisabilityCompliant: formValues.noDisabilityCompliant,
+        audioDisabilityCompliant: formValues.audioDisabilityCompliant,
+        mentalDisabilityCompliant: formValues.mentalDisabilityCompliant,
+        motorDisabilityCompliant: formValues.motorDisabilityCompliant,
+        visualDisabilityCompliant: formValues.visualDisabilityCompliant,
+      }
+
+      const field = event.target.name
+      const value = !formValues[field]
+      disabilityCompliantValues[field] = value
+
+      if (field === 'noDisabilityCompliant') {
+        if (value) {
+          disabilityCompliantValues.audioDisabilityCompliant = false
+          disabilityCompliantValues.mentalDisabilityCompliant = false
+          disabilityCompliantValues.motorDisabilityCompliant = false
+          disabilityCompliantValues.visualDisabilityCompliant = false
+        }
+      } else {
+        if (Object.values(disabilityCompliantValues).includes(true)) {
+          disabilityCompliantValues.noDisabilityCompliant = false
+        } else {
+          disabilityCompliantValues.noDisabilityCompliant = true
+        }
+      }
+
+      handleFormUpdate(disabilityCompliantValues)
     },
     [formValues, handleFormUpdate]
   )
@@ -557,35 +603,41 @@ const OfferForm = ({
               {'Accessibilité'}
             </h3>
             <p className="section-description">
-              {'Cette offre est accessible aux publics en situation de :'}
+              {'Cette offre est-elle accessible aux publics en situation de handicaps :'}
             </p>
             <CheckboxInput
               SvgElement={VisualDisabilitySvg}
-              checked={formValues.visualDisabilityCompliant || false}
+              checked={formValues.visualDisabilityCompliant}
               label="Handicap visuel"
               name="visualDisabilityCompliant"
-              onChange={handleSingleFormUpdate}
+              onChange={handleDisabilityCompliantUpdate}
             />
             <CheckboxInput
               SvgElement={MentalDisabilitySvg}
-              checked={formValues.mentalDisabilityCompliant || false}
+              checked={formValues.mentalDisabilityCompliant}
               label="Handicap mental"
               name="mentalDisabilityCompliant"
-              onChange={handleSingleFormUpdate}
+              onChange={handleDisabilityCompliantUpdate}
             />
             <CheckboxInput
               SvgElement={MotorDisabilitySvg}
-              checked={formValues.motorDisabilityCompliant || false}
+              checked={formValues.motorDisabilityCompliant}
               label="Handicap moteur"
               name="motorDisabilityCompliant"
-              onChange={handleSingleFormUpdate}
+              onChange={handleDisabilityCompliantUpdate}
             />
             <CheckboxInput
               SvgElement={AudioDisabilitySvg}
-              checked={formValues.audioDisabilityCompliant || false}
+              checked={formValues.audioDisabilityCompliant}
               label="Handicap auditif"
               name="audioDisabilityCompliant"
-              onChange={handleSingleFormUpdate}
+              onChange={handleDisabilityCompliantUpdate}
+            />
+            <CheckboxInput
+              checked={formValues.noDisabilityCompliant}
+              label="Non accessible"
+              name="noDisabilityCompliant"
+              onChange={handleDisabilityCompliantUpdate}
             />
           </section>
 

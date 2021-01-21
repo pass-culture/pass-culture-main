@@ -13,6 +13,7 @@ export const fieldLabels = {
   mentalDisabilityCompliant: { label: 'Handicap mental', exact: true },
   motorDisabilityCompliant: { label: 'Handicap moteur', exact: true },
   visualDisabilityCompliant: { label: 'Handicap visuel', exact: true },
+  noDisabilityCompliant: { label: 'Non accessible', exact: true },
   isNational: { label: 'Rayonnement national', exact: true },
   name: { label: "Titre de l'offre", exact: false },
   musicSubType: { label: 'Sous genre', exact: false },

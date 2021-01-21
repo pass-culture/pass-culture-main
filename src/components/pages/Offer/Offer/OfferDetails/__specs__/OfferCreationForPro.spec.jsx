@@ -14,6 +14,7 @@ import OfferLayoutContainer from '../../OfferLayoutContainer'
 import { DEFAULT_FORM_VALUES } from '../OfferForm/_constants'
 
 import {
+  fieldLabels,
   findInputErrorForField,
   getOfferInputForField,
   queryInputErrorForField,
@@ -315,7 +316,9 @@ describe('offerDetails - Creation - pro user', () => {
 
           // Then
           expect(
-            screen.getByText('Cette offre est accessible aux publics en situation de :')
+            screen.getByText(
+              'Cette offre est-elle accessible aux publics en situation de handicaps :'
+            )
           ).toBeInTheDocument()
         })
 
@@ -896,6 +899,53 @@ describe('offerDetails - Creation - pro user', () => {
           expect(withdrawalModalitiesReminder).toBeInTheDocument()
         })
       })
+
+      it('should initialize empty disabilityCompliance', async () => {
+        // Given
+        await renderOffers(props, store)
+        await setOfferValues({ type: 'ThingType.LIVRE_EDITION', venueId: venues[0].id })
+
+        // Then
+        const audioDisabilityCompliantCheckbox = screen.getByLabelText(
+          fieldLabels.audioDisabilityCompliant.label,
+          {
+            exact: fieldLabels.audioDisabilityCompliant.exact,
+          }
+        )
+        expect(audioDisabilityCompliantCheckbox).not.toBeChecked()
+
+        const mentalDisabilityCompliantCheckbox = screen.getByLabelText(
+          fieldLabels.mentalDisabilityCompliant.label,
+          {
+            exact: fieldLabels.mentalDisabilityCompliant.exact,
+          }
+        )
+        expect(mentalDisabilityCompliantCheckbox).not.toBeChecked()
+
+        const motorDisabilityCompliantCheckbox = screen.getByLabelText(
+          fieldLabels.motorDisabilityCompliant.label,
+          {
+            exact: fieldLabels.motorDisabilityCompliant.exact,
+          }
+        )
+        expect(motorDisabilityCompliantCheckbox).not.toBeChecked()
+
+        const visualDisabilityCompliantCheckbox = screen.getByLabelText(
+          fieldLabels.visualDisabilityCompliant.label,
+          {
+            exact: fieldLabels.visualDisabilityCompliant.exact,
+          }
+        )
+        expect(visualDisabilityCompliantCheckbox).not.toBeChecked()
+
+        const noDisabilityCompliantCheckbox = screen.getByLabelText(
+          fieldLabels.noDisabilityCompliant.label,
+          {
+            exact: fieldLabels.noDisabilityCompliant.exact,
+          }
+        )
+        expect(noDisabilityCompliantCheckbox).not.toBeChecked()
+      })
     })
   })
 
@@ -944,6 +994,10 @@ describe('offerDetails - Creation - pro user', () => {
         name: 'Ma petite offre',
         type: 'EventType.MUSIQUE',
         venueId: venues[0].id,
+        audioDisabilityCompliant: false,
+        visualDisabilityCompliant: true,
+        motorDisabilityCompliant: false,
+        mentalDisabilityCompliant: false,
       }
 
       await renderOffers(props, store)
@@ -977,6 +1031,10 @@ describe('offerDetails - Creation - pro user', () => {
         venueId: venues[0].id,
         isDuo: false,
         withdrawalDetails: 'À venir chercher sur place.',
+        audioDisabilityCompliant: false,
+        visualDisabilityCompliant: true,
+        motorDisabilityCompliant: false,
+        mentalDisabilityCompliant: false,
       }
 
       await renderOffers(props, store)
@@ -1078,6 +1136,10 @@ describe('offerDetails - Creation - pro user', () => {
         venueId: venues[0].id,
         isDuo: false,
         withdrawalDetails: 'À venir chercher sur place.',
+        audioDisabilityCompliant: false,
+        visualDisabilityCompliant: true,
+        motorDisabilityCompliant: false,
+        mentalDisabilityCompliant: false,
       }
 
       pcapi.createOffer.mockRejectedValue({ errors: { name: "Ce nom n'est pas valide" } })
