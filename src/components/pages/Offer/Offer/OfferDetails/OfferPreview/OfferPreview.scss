@@ -2,20 +2,20 @@
   background-color: $grey-very-light;
   border-radius: 3px;
 
-  .category {
+  .op-section {
     background-color: $white;
     border-radius: 3px;
     margin-top: rem(6px);
     padding: 0 rem(15px);
   }
 
-  .category-description {
+  .op-section-description {
     @include preview-text();
 
     padding: rem(16px) 0;
   }
 
-  .category-title {
+  .op-section-title {
     @include body-important();
 
     padding-top: rem(11px);
