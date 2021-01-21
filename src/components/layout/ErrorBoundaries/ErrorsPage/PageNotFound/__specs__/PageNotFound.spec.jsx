@@ -21,7 +21,7 @@ describe('src | layout | PageNotFound', () => {
     const image = wrapper.find('img')
     const title = wrapper.find({ children: 'Oh non !' })
     const subtitle = wrapper.find({ children: 'Cette page n’existe pas.' })
-    const redirectionLink = wrapper.find('a[href="/"]')
+    const redirectionLink = wrapper.find('a[href="/accueil"]')
     expect(image.prop('alt')).toBe('')
     expect(image.prop('src')).toBe('http://path/to/icons/404.svg')
     expect(title).toHaveLength(1)

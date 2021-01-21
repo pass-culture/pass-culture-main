@@ -84,7 +84,7 @@ describe('my Favorites', () => {
         // then
         const redirectButton = wrapper.find('a')
         expect(redirectButton.text()).toBe('Lance-toi !')
-        expect(redirectButton.prop('href')).toBe('/')
+        expect(redirectButton.prop('href')).toBe('/accueil')
       })
 
       it('should display a description text', () => {

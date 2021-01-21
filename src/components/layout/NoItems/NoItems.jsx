@@ -7,7 +7,7 @@ const NoItems = ({ sentence }) => (
     <div className="teaser-link-container">
       <Link
         className="teaser-link-offers"
-        to="/"
+        to="/accueil"
       >
         {'Lance-toi !'}
       </Link>

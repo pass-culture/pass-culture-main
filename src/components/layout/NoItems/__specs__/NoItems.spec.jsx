@@ -15,7 +15,7 @@ describe('src | components | NoItems', () => {
     const wrapper = mount(
       <MemoryRouter>
         <NoItems {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
 
     // then
@@ -33,12 +33,12 @@ describe('src | components | NoItems', () => {
     const wrapper = mount(
       <MemoryRouter>
         <NoItems {...props} />
-      </MemoryRouter>,
+      </MemoryRouter>
     )
 
     // Then
     const link = wrapper.find('a')
-    expect(link.prop('href')).toBe('/')
+    expect(link.prop('href')).toBe('/accueil')
     expect(link.text()).toBe('Lance-toi !')
   })
 })
