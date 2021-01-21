@@ -216,6 +216,49 @@ describe('offerDetails - Creation - pro user', () => {
         expect(screen.getByText('Ajouter une image', { selector: 'button' })).toBeInTheDocument()
       })
 
+      describe('offer preview', () => {
+        it('should display title when input is filled', async () => {
+          // given
+          await renderOffers(props, store)
+          await setOfferValues({ type: 'EventType.CINEMA' })
+
+          // when
+          const titleInput = await screen.findByLabelText("Titre de l'offre")
+          userEvent.type(titleInput, 'Mon joli titre')
+
+          // then
+          expect(await screen.queryByText('Mon joli titre')).toBeInTheDocument()
+        })
+
+        it('should display description when input is filled', async () => {
+          // given
+          await renderOffers(props, store)
+          await setOfferValues({ type: 'EventType.CINEMA' })
+
+          // when
+          const descriptionInput = await screen.findByLabelText('Description', { exact: false })
+          userEvent.type(descriptionInput, 'Ma jolie description')
+
+          // then
+          expect(await screen.queryAllByText('Ma jolie description')).toHaveLength(2)
+        })
+
+        it('should display terms of withdrawal when input is filled', async () => {
+          // given
+          await renderOffers(props, store)
+          await setOfferValues({ type: 'EventType.CINEMA' })
+
+          // when
+          const withdrawalInput = await screen.findByLabelText('Informations de retrait', {
+            exact: false,
+          })
+          userEvent.type(withdrawalInput, 'Mes jolies modalités')
+
+          // then
+          expect(await screen.queryAllByText('Mes jolies modalités')).toHaveLength(2)
+        })
+      })
+
       it('should display "Infos pratiques", "Infos artistiques", "Accessibilité", "Billeterie externe" and "Autre" section', async () => {
         // Given
         await renderOffers(props, store)

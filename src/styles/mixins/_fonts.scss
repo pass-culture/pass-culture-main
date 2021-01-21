@@ -51,3 +51,8 @@
   font-size: rem(14px);
   font-weight: 500;
 }
+
+@mixin preview-text() {
+  font-size: rem(12px);
+  font-weight: 400;
+}

@@ -1,21 +1,16 @@
 .offer-preview {
   background-color: $grey-very-light;
+  border-radius: 3px;
 
   .category {
     background-color: $white;
+    border-radius: 3px;
     margin-top: rem(6px);
     padding: 0 rem(15px);
   }
 
-  .title-preview {
-    @include body-important();
-
-    padding-top: rem(18px);
-    text-align: center;
-  }
-
   .category-description {
-    @include caption();
+    @include preview-text();
 
     padding: rem(16px) 0;
   }
@@ -24,5 +19,12 @@
     @include body-important();
 
     padding-top: rem(11px);
+  }
+
+  .title-preview {
+    @include body-important();
+
+    padding-top: rem(18px);
+    text-align: center;
   }
 }

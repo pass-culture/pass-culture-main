@@ -95,6 +95,8 @@ describe('offerDetails - Edition', () => {
       type: 'ThingType.LIVRE_EDITION',
       venue: editedOfferVenue,
       thumbUrl: null,
+      description: 'My edited description',
+      withdrawalDetails: 'My edited withdrawal details',
     }
     props = {
       setShowThumbnailForm: jest.fn(),
@@ -158,6 +160,32 @@ describe('offerDetails - Edition', () => {
 
         // Then
         expect(await screen.findByLabelText('Ajouter une image')).toBeInTheDocument()
+      })
+    })
+
+    describe('offer preview', () => {
+      it('should display title', async () => {
+        // when
+        await renderOffers({}, store)
+
+        // then
+        expect(await screen.queryByText('My edited offer')).toBeInTheDocument()
+      })
+
+      it('should display description', async () => {
+        // when
+        await renderOffers({}, store)
+
+        // then
+        expect(await screen.queryAllByText('My edited description')).toHaveLength(2)
+      })
+
+      it('should display terms of withdrawal', async () => {
+        // when
+        await renderOffers({}, store)
+
+        // then
+        expect(await screen.queryAllByText('My edited withdrawal details')).toHaveLength(2)
       })
     })
 
