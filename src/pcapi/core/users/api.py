@@ -157,11 +157,11 @@ def is_user_eligible(user: User) -> bool:
     return age is not None and age == constants.ELIGIBILITY_AGE
 
 
-def fulfill_user_data(user: User, deposit_source: str) -> User:
+def fulfill_user_data(user: User, deposit_source: str, deposit_version: int = None) -> User:
     user.password = random_password()
     generate_reset_token(user, validity_duration_hours=THIRTY_DAYS_IN_HOURS)
 
-    deposit = payment_api.create_deposit(user, deposit_source)
+    deposit = payment_api.create_deposit(user, deposit_source, version=deposit_version)
     user.deposits = [deposit]
 
     return user

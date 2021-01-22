@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.admin.custom_views.beneficiary_user_view import BeneficiaryUserView
 from pcapi.admin.custom_views.suspension_mixin import _allow_suspension_and_unsuspension
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import User
@@ -27,6 +28,7 @@ class BeneficiaryUserViewTest:
             postalCode="93000",
             isBeneficiary="y",
             phoneNumber="0601020304",
+            depositVersion="1",
         )
 
         client = TestClient(app.test_client()).with_auth("user@example.com")
@@ -61,6 +63,59 @@ class BeneficiaryUserViewTest:
                 },
             }
         )
+
+    @clean_database
+    @patch("pcapi.admin.custom_views.beneficiary_user_view.send_raw_email", return_value=True)
+    def test_beneficiary_user_creation_for_deposit_v2(self, mocked_send_raw_email, app):
+        users_factories.UserFactory(email="user@example.com", isAdmin=True)
+
+        data = dict(
+            email="toto@email.fr",
+            firstName="Serge",
+            lastName="Lama",
+            dateOfBirth="2002-07-13 10:05:00",
+            departementCode="93",
+            postalCode="93000",
+            isBeneficiary="y",
+            phoneNumber="0601020304",
+            depositVersion="2",
+        )
+
+        client = TestClient(app.test_client()).with_auth("user@example.com")
+        response = client.post("/pc/back-office/beneficiary_users/new", form=data)
+
+        assert response.status_code == 302
+
+        user_created = User.query.filter_by(email="toto@email.fr").one()
+        assert len(user_created.deposits) == 1
+        assert user_created.deposits[0].version == 2
+        assert user_created.deposits[0].source == "pass-culture-admin"
+        assert user_created.deposits[0].amount == 300
+
+    def test_the_deposit_version_is_specified(self, app, db_session):
+        # Given
+        beneficiary_view = BeneficiaryUserView(User, db_session)
+        beneficiary_view_create_form = beneficiary_view.get_create_form()
+        data = dict(
+            email="toto@email.fr",
+            firstName="Serge",
+            lastName="Lama",
+            dateOfBirth="2002-07-13 10:05:00",
+            departementCode="93",
+            postalCode="93000",
+            isBeneficiary="y",
+            phoneNumber="0601020304",
+            depositVersion="2",
+        )
+
+        form = beneficiary_view_create_form(data=data)
+        user = User()
+
+        # When
+        beneficiary_view.on_model_change(form, user, True)
+
+        # Then
+        assert user.deposit_version == 2
 
     @patch("pcapi.settings.IS_PROD", return_value=True)
     @patch("pcapi.settings.SUPER_ADMIN_EMAIL_ADDRESSES", return_value="")

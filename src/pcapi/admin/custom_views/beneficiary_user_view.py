@@ -3,6 +3,7 @@ from flask_login import current_user
 from sqlalchemy.orm import query
 from sqlalchemy.sql.functions import func
 from wtforms import Form
+from wtforms import SelectField
 from wtforms import validators
 from wtforms.validators import DataRequired
 
@@ -39,6 +40,7 @@ class BeneficiaryUserView(SuspensionMixin, BaseAdminView):
         "postalCode",
         "resetPasswordToken",
         "validationToken",
+        "deposit_version",
         "actions",
     ]
     column_labels = dict(
@@ -53,6 +55,7 @@ class BeneficiaryUserView(SuspensionMixin, BaseAdminView):
         postalCode="Code postal",
         resetPasswordToken="Jeton d'activation et réinitialisation de mot de passe",
         validationToken="Jeton de validation d'adresse email",
+        deposit_version="Version du dépot",
     )
     column_searchable_list = ["id", "publicName", "email", "firstName", "lastName"]
     column_filters = ["postalCode", "isBeneficiary"]
@@ -65,6 +68,7 @@ class BeneficiaryUserView(SuspensionMixin, BaseAdminView):
         "postalCode",
         "phoneNumber",
         "isBeneficiary",
+        "isBeneficiary",
     ]
 
     form_args = dict(
@@ -72,6 +76,19 @@ class BeneficiaryUserView(SuspensionMixin, BaseAdminView):
         lastName=dict(validators=[DataRequired()]),
         dateOfBirth=dict(validators=[DataRequired()]),
     )
+
+    def get_create_form(self):
+        form_class = super().scaffold_form()
+        form_class.depositVersion = SelectField(
+            "Version du déposit",
+            [DataRequired()],
+            choices=[
+                (1, "500€ - Deux seuils de dépense (200€ en physique et 200€ en numérique)"),
+                (2, "300€ - Un seuil de dépense (100€ en offres numériques)"),
+            ],
+        )
+
+        return form_class
 
     def on_model_change(self, form: Form, model: User, is_created: bool) -> None:
         model.publicName = f"{model.firstName} {model.lastName}"
@@ -83,7 +100,8 @@ class BeneficiaryUserView(SuspensionMixin, BaseAdminView):
             # This is to prevent a circulary import dependency
             from pcapi.core.users.api import fulfill_user_data
 
-            fulfill_user_data(model, "pass-culture-admin")
+            deposit_version = int(form.depositVersion.data)
+            fulfill_user_data(model, "pass-culture-admin", deposit_version)
 
         super().on_model_change(form, model, is_created)
 

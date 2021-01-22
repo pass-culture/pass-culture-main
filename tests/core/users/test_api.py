@@ -12,6 +12,7 @@ from pcapi.core.users import constants as users_constants
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.api import create_id_check_token
+from pcapi.core.users.api import fulfill_user_data
 from pcapi.core.users.api import generate_and_save_token
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
@@ -335,3 +336,32 @@ class CreateBeneficiaryTest:
         user = users_api.activate_beneficiary(user, "test")
         assert user.isBeneficiary
         assert len(user.deposits) == 1
+
+
+class FulfillUserDataTest:
+    def test_fill_user_with_password_token_and_deposit(self):
+        # given
+        user = User()
+
+        # when
+        user = fulfill_user_data(user, "deposit_source", None)
+
+        # then
+        assert isinstance(user, User)
+        assert user.password is not None
+        assert user.resetPasswordToken is not None
+        assert len(user.deposits) == 1
+
+    def test_fill_user_with_specific_deposit_version(self):
+        # given
+        user = User()
+
+        # when
+        user = fulfill_user_data(user, "deposit_source", 2)
+
+        # then
+        assert isinstance(user, User)
+        assert user.password is not None
+        assert user.resetPasswordToken is not None
+        assert len(user.deposits) == 1
+        assert user.deposit_version == 2
