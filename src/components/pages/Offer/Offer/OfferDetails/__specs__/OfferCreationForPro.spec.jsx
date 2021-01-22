@@ -223,11 +223,11 @@ describe('offerDetails - Creation - pro user', () => {
           await setOfferValues({ type: 'EventType.CINEMA' })
 
           // when
-          const titleInput = await screen.findByLabelText("Titre de l'offre")
+          const titleInput = await screen.findByLabelText("Titre de l'offre", { exact: false })
           userEvent.type(titleInput, 'Mon joli titre')
 
           // then
-          expect(await screen.queryByText('Mon joli titre')).toBeInTheDocument()
+          expect(await screen.getAllByText('Mon joli titre')).toHaveLength(2)
         })
 
         it('should display description when input is filled', async () => {

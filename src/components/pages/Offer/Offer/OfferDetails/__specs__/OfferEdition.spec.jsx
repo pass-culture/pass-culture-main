@@ -169,7 +169,7 @@ describe('offerDetails - Edition', () => {
         await renderOffers({}, store)
 
         // then
-        expect(await screen.queryByText('My edited offer')).toBeInTheDocument()
+        expect(await screen.getAllByText('My edited offer')).toHaveLength(2)
       })
 
       it('should display description', async () => {
@@ -177,7 +177,7 @@ describe('offerDetails - Edition', () => {
         await renderOffers({}, store)
 
         // then
-        expect(await screen.queryAllByText('My edited description')).toHaveLength(2)
+        expect(await screen.getAllByText('My edited description')).toHaveLength(2)
       })
 
       it('should display terms of withdrawal', async () => {
@@ -185,7 +185,7 @@ describe('offerDetails - Edition', () => {
         await renderOffers({}, store)
 
         // then
-        expect(await screen.queryAllByText('My edited withdrawal details')).toHaveLength(2)
+        expect(await screen.getAllByText('My edited withdrawal details')).toHaveLength(2)
       })
     })
 
