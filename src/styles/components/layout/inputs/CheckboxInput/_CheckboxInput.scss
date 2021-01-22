@@ -86,4 +86,19 @@ input[type="checkbox"] {
   svg {
     margin-right: rem(5px);
   }
+
+  &.error {
+    input[type="checkbox"] {
+      border-color: $red-error;
+    }
+
+    svg .svg-color {
+      fill: $red-error;
+    }
+
+    .input-checkbox-label {
+      color: $red-error;
+      font-weight: 700;
+    }
+  }
 }

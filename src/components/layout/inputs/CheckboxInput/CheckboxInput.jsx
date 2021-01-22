@@ -6,6 +6,7 @@ export const CheckboxInput = ({
   name,
   label,
   checked,
+  isInError,
   labelAttributes,
   className,
   hiddenLabel,
@@ -13,6 +14,10 @@ export const CheckboxInput = ({
   SvgElement,
   ...attributes
 }) => {
+  let labelClasses = ['field', 'field-checkbox']
+  if (isInError) {
+    labelClasses.push('error')
+  }
   let inputClasses = className ? className.split(' ') : []
   let textClasses = ['input-checkbox-label']
   if (hiddenLabel) {
@@ -22,7 +27,7 @@ export const CheckboxInput = ({
 
   return (
     <label
-      className="field field-checkbox"
+      className={labelClasses.join(' ')}
       {...labelAttributes}
     >
       <input
@@ -50,6 +55,7 @@ CheckboxInput.defaultProps = {
   SvgElement: null,
   className: '',
   hiddenLabel: false,
+  isInError: false,
   labelAttributes: {},
   subLabel: null,
 }
@@ -59,6 +65,7 @@ CheckboxInput.propTypes = {
   checked: PropTypes.bool.isRequired,
   className: PropTypes.string,
   hiddenLabel: PropTypes.bool,
+  isInError: PropTypes.bool,
   label: PropTypes.string.isRequired,
   labelAttributes: PropTypes.shape(),
   name: PropTypes.string.isRequired,
