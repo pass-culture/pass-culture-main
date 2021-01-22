@@ -13,13 +13,8 @@ from pcapi.sandboxes.scripts.testcafe_helpers import print_testcafe_helpers
 @app.manager.option("-n", "--name", help="Sandbox name", default="classic")
 @app.manager.option("-c", "--clean", help="Clean database first", default="true")
 def sandbox(name, clean):
-    try:
-        with_clean = clean == "true"
-        save_sandbox(name, with_clean)
-    except Exception as e:  # pylint: disable=broad-except
-        print("ERROR: " + str(e))
-        traceback.print_tb(e.__traceback__)
-        pprint(vars(e))
+    with_clean = clean == "true"
+    save_sandbox(name, with_clean)
 
 
 @app.manager.option("-n", "--name", help="Sandboxes getters module name", default=None)
