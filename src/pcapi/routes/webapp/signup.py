@@ -38,6 +38,7 @@ def signup_webapp():
 
     new_user.isBeneficiary = False
     new_user.isAdmin = False
+    new_user.isEmailValidated = True
     objects_to_save.append(new_user)
 
     repository.save(*objects_to_save)
