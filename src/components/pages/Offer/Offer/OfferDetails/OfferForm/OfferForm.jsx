@@ -560,6 +560,12 @@ const OfferForm = ({
               </div>
             )}
 
+            {offerType?.type === 'Thing' && venue && !venue.isVirtual && (
+              <div className="form-row">
+                <WithdrawalReminder />
+              </div>
+            )}
+
             <div className="form-row">
               <TextareaInput
                 countCharacters
@@ -588,12 +594,6 @@ const OfferForm = ({
                   type="text"
                   value={formValues.url}
                 />
-              </div>
-            )}
-
-            {offerType?.type === 'Thing' && venue && !venue.isVirtual && (
-              <div className="form-row">
-                <WithdrawalReminder />
               </div>
             )}
           </section>
