@@ -29,23 +29,18 @@ const Signup = ({ location }) => {
           signPage
         />
       </div>
-      <div className="container">
-        <div className="columns">
-          <div className="column is-offset-6 is-two-fifths sign-page-form">
-            <Switch location={location}>
-              <Route
-                component={SignupFormContainer}
-                exact
-                path="/inscription"
-              />
-              <Route
-                component={SignupConfirmationContainer}
-                path="/inscription/confirmation"
-              />
-            </Switch>
-          </div>
-        </div>
-      </div>
+
+      <Switch location={location}>
+        <Route
+          component={SignupFormContainer}
+          exact
+          path="/inscription"
+        />
+        <Route
+          component={SignupConfirmationContainer}
+          path="/inscription/confirmation"
+        />
+      </Switch>
     </AppLayout>
   )
 }

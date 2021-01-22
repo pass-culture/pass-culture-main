@@ -129,8 +129,8 @@ class SignupForm extends PureComponent {
     const { errors } = this.props
 
     return (
-      <section>
-        <div className="sign-up-wrapper">
+      <section className="sign-up-form-page">
+        <div className="content">
           <h1>
             {'Créer votre compte professionnel'}
           </h1>

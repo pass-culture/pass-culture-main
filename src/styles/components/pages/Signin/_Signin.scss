@@ -1,46 +1,26 @@
 .sign-in-page {
-  position: relative;
+  display: flex;
+  flex-direction: row;
+  min-height: 700px;
 
   .logo-side {
     background-image: $linear-gradient-to-bottom-right;
-    bottom: 0;
     box-shadow: inset -10px 0 20px 0 $black-shadow;
-    left: 0;
-    position: fixed;
-    right: 60%;
-    top: 0;
-    z-index: 1;
+    min-width: 520px;
   }
 
-  .sign-page-form {
-    margin-left: 36%;
-  }
-
-  .page-content {
-    padding: 0;
-  }
-
-  .columns {
-    flex-direction: column;
-    flex-shrink: inherit;
-    justify-content: center;
-    margin: 0;
-    padding: 0;
+  .scrollable-content-side {
+    overflow: auto;
+    position: relative;
     width: 100%;
-  }
 
-  .column {
-    width: 40%;
-  }
-
-  .has-no-padding {
-    padding: 0;
-  }
-
-  .text-container {
-    flex-grow: 1;
-    flex-shrink: 0;
-    padding-left: rem(43px);
+    .content {
+      margin-left: calc(30px + 15%);
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 400px;
+    }
   }
 
   .title,
@@ -73,49 +53,10 @@
     margin-bottom: rem(48px);
   }
 
-  .cgu-field {
-    font-weight: 700;
-  }
-
   .buttons-field {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-  }
-
-  h4 {
-    float: left;
-    font-size: rem(16px);
-  }
-
-  .errors {
-    @include caption();
-
-    align-items: center;
-    background-color: $notification-error;
-    color: $black;
-    display: flex;
-    height: rem(50px);
-    justify-content: center;
-    line-height: rem(32px);
-    margin-top: rem(16px);
-    text-align: left;
-
-    img {
-      filter: brightness(0) invert(0);
-      height: rem(24px);
-      padding-right: rem(5px);
-      width: rem(24px);
-    }
-
-    a,
-    button {
-      margin-bottom: rem(5px);
-    }
-
-    &:empty {
-      display: none;
-    }
   }
 
   .email-input {
@@ -129,23 +70,6 @@
 
     span {
       margin-left: rem(5px);
-    }
-  }
-
-  .password-error-message {
-    color: $primary;
-    display: flex;
-    margin-bottom: rem(32px);
-
-    span {
-      margin-left: rem(5px);
-    }
-
-    pre {
-      background: none;
-      color: $primary;
-      font-family: inherit;
-      white-space: pre-wrap;
     }
   }
 }

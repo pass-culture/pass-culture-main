@@ -52,8 +52,10 @@
   }
 
   &.fullscreen {
-    margin-left: calc(40% + 1px);
-    width: auto;
+    min-width: 500px;
+    position: absolute;
+    right: 0;
+    top: 0;
   }
 }
 

@@ -1,0 +1,58 @@
+.sign-up-confirmation-page {
+  min-height: 600px;
+  overflow: auto;
+  position: relative;
+  width: 100%;
+
+  .content {
+    margin-left: calc(30px + 15%);
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 500px;
+
+    a.quaternary-link {
+      color: $primary;
+    }
+
+    .information-text {
+      align-items: flex-start;
+      display: flex;
+      flex-direction: row;
+      margin-top: rem(24px);
+
+      img {
+        height: rem(21px);
+        margin-right: rem(6px);
+        margin-top: rem(3px);
+      }
+
+      p {
+        color: $grey-dark;
+        font-size: rem(13px);
+        line-height: rem(16px);
+        text-align: justify;
+      }
+    }
+
+    .hero-body {
+      padding: 3rem 1.5rem;
+    }
+
+    .confirmation-text {
+      font-size: rem(20px);
+      font-style: italic;
+      font-weight: 500;
+      line-height: rem(24px);
+      margin-bottom: rem(12px);
+
+      span {
+        font-weight: bold;
+      }
+    }
+
+    h1 {
+      margin-bottom: rem(16px);
+    }
+  }
+}

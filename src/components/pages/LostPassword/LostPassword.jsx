@@ -137,140 +137,138 @@ class LostPassword extends PureComponent {
             signPage
           />
         </div>
-        <div className="container">
-          <div className="columns">
-            <div className="column is-offset-6 sign-page-form">
-              {change && (
-                <section className="hero password-reset">
-                  <div className="hero-body">
-                    <h1>
-                      {'Mot de passe changé !'}
-                    </h1>
-                    <h2>
-                      {'Vous pouvez dès à présent vous connecter avec votre nouveau mot de passe'}
-                    </h2>
-                    <Link
-                      className="primary-link"
-                      to="/connexion"
-                    >
-                      {'Se connecter'}
-                    </Link>
-                  </div>
-                </section>
-              )}
-              {envoye && (
-                <section className="hero mail-sent">
-                  <div className="hero-body">
-                    <h1>
-                      {'Merci !'}
-                    </h1>
-                    <h2>
-                      {
-                        'Vous allez recevoir par e-mail les instructions pour définir un nouveau mot de passe.'
+        <div className="scrollable-content-side">
+          <div className="content">
+            {change && (
+              <section className="hero password-reset">
+                <div className="hero-body">
+                  <h1>
+                    {'Mot de passe changé !'}
+                  </h1>
+                  <h2>
+                    {'Vous pouvez dès à présent vous connecter avec votre nouveau mot de passe'}
+                  </h2>
+                  <Link
+                    className="primary-link"
+                    to="/connexion"
+                  >
+                    {'Se connecter'}
+                  </Link>
+                </div>
+              </section>
+            )}
+            {envoye && (
+              <section className="hero mail-sent">
+                <div className="hero-body">
+                  <h1>
+                    {'Merci !'}
+                  </h1>
+                  <h2>
+                    {
+                      'Vous allez recevoir par e-mail les instructions pour définir un nouveau mot de passe.'
+                    }
+                  </h2>
+                  <Link
+                    className="primary-link"
+                    to="/"
+                  >
+                    {'Revenir à l’accueil'}
+                  </Link>
+                </div>
+              </section>
+            )}
+            {token && (
+              <section className="hero password-reset-request-form">
+                <div className="hero-body">
+                  <h1>
+                    {'Créer un nouveau mot de passe'}
+                  </h1>
+                  <h2>
+                    {'Saisissez le nouveau mot de passe'}
+                  </h2>
+
+                  {hasPasswordResetErrorMessage && (
+                    <GenericError
+                      message={"Une erreur s'est produite, veuillez réessayer ultérieurement."}
+                    />
+                  )}
+                  <form
+                    className="new-password-form"
+                    noValidate
+                    onSubmit={this.submitResetPassword}
+                  >
+                    <TextInputWithIcon
+                      error={newPasswordErrorMessage ? newPasswordErrorMessage : null}
+                      icon={isPasswordHidden ? 'ico-eye-close' : 'ico-eye-open'}
+                      iconAlt={
+                        isPasswordHidden ? 'Afficher le mot de passe' : 'Cacher le mot de passe'
                       }
-                    </h2>
-                    <Link
-                      className="primary-link"
-                      to="/"
+                      label="Nouveau mot de passe"
+                      name="password"
+                      onChange={this.handleInputPasswordChange}
+                      onIconClick={this.handleToggleHidden}
+                      placeholder="Mon nouveau mot de passe"
+                      required
+                      subLabel="obligatoire"
+                      type={isPasswordHidden ? 'password' : 'text'}
+                      value={newPasswordValue}
+                    />
+
+                    <button
+                      className="primary-button submit-button"
+                      disabled={this.isResetPasswordSubmitDisabled()}
+                      type="submit"
                     >
-                      {'Revenir à l’accueil'}
-                    </Link>
-                  </div>
-                </section>
-              )}
-              {token && (
-                <section className="hero password-reset-request-form">
-                  <div className="hero-body">
-                    <h1>
-                      {'Créer un nouveau mot de passe'}
-                    </h1>
-                    <h2>
-                      {'Saisissez le nouveau mot de passe'}
-                    </h2>
+                      {'Envoyer'}
+                    </button>
+                  </form>
+                </div>
+              </section>
+            )}
+            {!token && !envoye && !change && (
+              <section className="hero password-reset-request">
+                <div className="hero-body">
+                  <h1>
+                    {'Mot de passe égaré ?'}
+                  </h1>
+                  <h2>
+                    {
+                      'Indiquez ci-dessous l’adresse e-mail avec laquelle vous avez créé votre compte.'
+                    }
+                  </h2>
 
-                    {hasPasswordResetErrorMessage && (
-                      <GenericError
-                        message={"Une erreur s'est produite, veuillez réessayer ultérieurement."}
-                      />
-                    )}
-                    <form
-                      className="new-password-form"
-                      noValidate
-                      onSubmit={this.submitResetPassword}
+                  {hasPasswordResetRequestErrorMessage && (
+                    <GenericError
+                      message={"Une erreur s'est produite, veuillez réessayer ultérieurement."}
+                    />
+                  )}
+
+                  <form
+                    noValidate
+                    onSubmit={this.submitResetPasswordRequest}
+                  >
+                    <TextInput
+                      label="Adresse e-mail"
+                      name="email"
+                      onChange={this.handleInputEmailChange}
+                      placeholder="nom@exemple.fr"
+                      required
+                      subLabel="obligatoire"
+                      type="email"
+                      value={emailValue}
+                    />
+
+                    <button
+                      className="primary-button"
+                      disabled={this.isResetPasswordRequestSubmitDisabled()}
+                      type="submit"
                     >
-                      <TextInputWithIcon
-                        error={newPasswordErrorMessage ? newPasswordErrorMessage : null}
-                        icon={isPasswordHidden ? 'ico-eye-close' : 'ico-eye-open'}
-                        iconAlt={
-                          isPasswordHidden ? 'Afficher le mot de passe' : 'Cacher le mot de passe'
-                        }
-                        label="Nouveau mot de passe"
-                        name="password"
-                        onChange={this.handleInputPasswordChange}
-                        onIconClick={this.handleToggleHidden}
-                        placeholder="Mon nouveau mot de passe"
-                        required
-                        subLabel="obligatoire"
-                        type={isPasswordHidden ? 'password' : 'text'}
-                        value={newPasswordValue}
-                      />
-
-                      <button
-                        className="primary-button submit-button"
-                        disabled={this.isResetPasswordSubmitDisabled()}
-                        type="submit"
-                      >
-                        {'Envoyer'}
-                      </button>
-                    </form>
-                  </div>
-                </section>
-              )}
-              {!token && !envoye && !change && (
-                <section className="hero password-reset-request">
-                  <div className="hero-body">
-                    <h1>
-                      {'Mot de passe égaré ?'}
-                    </h1>
-                    <h2>
-                      {
-                        'Indiquez ci-dessous l’adresse e-mail avec laquelle vous avez créé votre compte.'
-                      }
-                    </h2>
-
-                    {hasPasswordResetRequestErrorMessage && (
-                      <GenericError
-                        message={"Une erreur s'est produite, veuillez réessayer ultérieurement."}
-                      />
-                    )}
-
-                    <form
-                      noValidate
-                      onSubmit={this.submitResetPasswordRequest}
-                    >
-                      <TextInput
-                        label="Adresse e-mail"
-                        name="email"
-                        onChange={this.handleInputEmailChange}
-                        placeholder="nom@exemple.fr"
-                        required
-                        subLabel="obligatoire"
-                        type="email"
-                        value={emailValue}
-                      />
-
-                      <button
-                        className="primary-button"
-                        disabled={this.isResetPasswordRequestSubmitDisabled()}
-                        type="submit"
-                      >
-                        {'Envoyer'}
-                      </button>
-                    </form>
-                  </div>
-                </section>
-              )}
-            </div>
+                      {'Envoyer'}
+                    </button>
+                  </form>
+                </div>
+              </section>
+            )}
           </div>
         </div>
       </AppLayout>

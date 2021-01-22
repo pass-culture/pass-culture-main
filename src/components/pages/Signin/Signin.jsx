@@ -87,81 +87,71 @@ class Signin extends PureComponent {
             signPage
           />
         </div>
-        <div className="container">
-          <div className="columns">
-            <div className="column is-offset-6 sign-page-form">
-              <section>
-                <div className="text-container">
-                  <h1>
-                    {'Bienvenue sur l’espace dédié aux acteurs culturels'}
-                  </h1>
-                  <h2>
-                    {'Et merci de votre participation pour nous aider à l’améliorer !'}
-                  </h2>
-                  <span className="has-text-grey">
-                    {'Tous les champs sont obligatoires'}
-                  </span>
-                  {hasErrorMessage && (
-                    <GenericError message="Identifiant ou mot de passe incorrect." />
-                  )}
-                  <form
-                    noValidate
-                    onSubmit={this.handleOnSubmit}
-                  >
-                    <div className="signin-form">
-                      <TextInput
-                        label="Adresse e-mail"
-                        name="identifier"
-                        onChange={this.handleInputEmailChange}
-                        placeholder="Identifiant (e-mail)"
-                        required
-                        type="email"
-                        value={emailValue}
-                      />
-                      <TextInputWithIcon
-                        icon={isPasswordHidden ? 'ico-eye-close' : 'ico-eye-open'}
-                        iconAlt={
-                          isPasswordHidden ? 'Afficher le mot de passe' : 'Cacher le mot de passe'
-                        }
-                        label="Mot de passe"
-                        name="password"
-                        onChange={this.handleInputPasswordChange}
-                        onIconClick={this.handleToggleHidden}
-                        placeholder="Mot de passe"
-                        required
-                        type={isPasswordHidden ? 'password' : 'text'}
-                        value={passwordValue}
-                      />
-                      <Link
-                        className="tertiary-link"
-                        id="lostPasswordLink"
-                        to="/mot-de-passe-perdu"
-                      >
-                        {'Mot de passe égaré ?'}
-                      </Link>
-                    </div>
-                    <div className="field buttons-field">
-                      <Link
-                        className="secondary-link"
-                        to={accountCreationUrl}
-                      >
-                        {'Créer un compte'}
-                      </Link>
-                      <button
-                        className="primary-button"
-                        disabled={isSubmitButtonDisabled}
-                        id="signin-submit-button"
-                        type="submit"
-                      >
-                        {'Se connecter'}
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </section>
-            </div>
+        <section className="scrollable-content-side">
+          <div className="content">
+            <h1>
+              {'Bienvenue sur l’espace dédié aux acteurs culturels'}
+            </h1>
+            <h2>
+              {'Et merci de votre participation pour nous aider à l’améliorer !'}
+            </h2>
+            <span className="has-text-grey">
+              {'Tous les champs sont obligatoires'}
+            </span>
+            {hasErrorMessage && <GenericError message="Identifiant ou mot de passe incorrect." />}
+            <form
+              noValidate
+              onSubmit={this.handleOnSubmit}
+            >
+              <div className="signin-form">
+                <TextInput
+                  label="Adresse e-mail"
+                  name="identifier"
+                  onChange={this.handleInputEmailChange}
+                  placeholder="Identifiant (e-mail)"
+                  required
+                  type="email"
+                  value={emailValue}
+                />
+                <TextInputWithIcon
+                  icon={isPasswordHidden ? 'ico-eye-close' : 'ico-eye-open'}
+                  iconAlt={isPasswordHidden ? 'Afficher le mot de passe' : 'Cacher le mot de passe'}
+                  label="Mot de passe"
+                  name="password"
+                  onChange={this.handleInputPasswordChange}
+                  onIconClick={this.handleToggleHidden}
+                  placeholder="Mot de passe"
+                  required
+                  type={isPasswordHidden ? 'password' : 'text'}
+                  value={passwordValue}
+                />
+                <Link
+                  className="tertiary-link"
+                  id="lostPasswordLink"
+                  to="/mot-de-passe-perdu"
+                >
+                  {'Mot de passe égaré ?'}
+                </Link>
+              </div>
+              <div className="field buttons-field">
+                <Link
+                  className="secondary-link"
+                  to={accountCreationUrl}
+                >
+                  {'Créer un compte'}
+                </Link>
+                <button
+                  className="primary-button"
+                  disabled={isSubmitButtonDisabled}
+                  id="signin-submit-button"
+                  type="submit"
+                >
+                  {'Se connecter'}
+                </button>
+              </div>
+            </form>
           </div>
-        </div>
+        </section>
       </AppLayout>
     )
   }
