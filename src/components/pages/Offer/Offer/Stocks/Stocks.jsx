@@ -10,63 +10,32 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import { getDepartmentTimezone } from 'utils/timezone'
 
 import { EVENT_CANCELLATION_INFORMATION, THING_CANCELLATION_INFORMATION } from './_constants'
-import { validateCreatedStock, validateUpdatedStock } from './StockItem/domain'
-import StockItemContainer from './StockItem/StockItemContainer'
-
-const getBookingLimitDatetimeForEvent = stock => {
-  const momentBookingLimitDatetime = moment(stock.bookingLimitDatetime)
-  if (
-    stock.bookingLimitDatetime === '' ||
-    momentBookingLimitDatetime.isSame(stock.beginningDatetime, 'day')
-  ) {
-    return stock.beginningDatetime
-  } else {
-    return momentBookingLimitDatetime.utc().endOf('day').format()
-  }
-}
-
-const getBookingLimitDatetimeForThing = stock => {
-  if (stock.bookingLimitDatetime) {
-    return moment(stock.bookingLimitDatetime).utc().endOf('day').format()
-  }
-  return null
-}
+import {
+  createStockPayload,
+  formatAndSortStocks,
+  validateCreatedStock,
+  validateUpdatedStock,
+} from './StockItem/domain'
+import StockItem from './StockItem/StockItem'
 
 const Stocks = ({ offer, showErrorNotification, showSuccessNotification }) => {
   const offerId = offer.id
-  const [stocks, setStocks] = useState([])
-  const [departmentCode, setDepartmentCode] = useState(null)
-  const [isEvent, setIsEvent] = useState(false)
-  const [isEditing, setIsEditing] = useState(false)
-  const [isOfferSynchronized, setIsOfferSynchronized] = useState(false)
+  const [stocks, setStocks] = useState(formatAndSortStocks(offer.stocks))
+  const isOfferSynchronized = Boolean(offer.lastProvider)
   const [formErrors, setFormErrors] = useState({})
 
+  moment.tz.setDefault(getDepartmentTimezone(offer.venue.departementCode))
   useEffect(() => {
-    moment.tz.setDefault(getDepartmentTimezone(departmentCode))
-
     return () => {
       moment.tz.setDefault()
     }
-  }, [departmentCode])
+  }, [])
 
   const getOffer = useCallback(() => {
-    return pcapi.loadOffer(offerId).then(offer => {
-      const stocksByDescendingBeginningDatetime = offer.stocks
-        .map(stock => ({ ...stock, key: stock.id }))
-        .sort(
-          (stock1, stock2) =>
-            moment(stock2.beginningDatetime).unix() - moment(stock1.beginningDatetime).unix()
-        )
-      setIsEvent(offer.isEvent)
-      setIsOfferSynchronized(Boolean(offer.lastProviderId))
-      setDepartmentCode(offer.venue.departementCode)
-      setStocks(stocksByDescendingBeginningDatetime)
+    return pcapi.loadOffer(offerId).then(loadedOffer => {
+      setStocks(formatAndSortStocks(loadedOffer.stocks))
     })
   }, [offerId])
-
-  useEffect(() => {
-    getOffer()
-  }, [getOffer])
 
   useEffect(() => {
     if (Object.values(formErrors).length > 0) {
@@ -81,34 +50,31 @@ const Stocks = ({ offer, showErrorNotification, showSuccessNotification }) => {
       quantity: null,
       bookingLimitDatetime: '',
     }
-    if (isEvent) {
+    if (offer.isEvent) {
       newStock.beginningDatetime = ''
     }
     setStocks(currentStocks => [newStock, ...currentStocks])
-  }, [isEvent])
+  }, [offer.isEvent])
 
   const removeStockInCreation = useCallback(
     key => setStocks(currentStocks => currentStocks.filter(stock => stock.key !== key)),
     []
   )
 
-  const hasOfferThingOneStockAlready = !isEvent && stocks.length > 0
+  const hasOfferThingOneStockAlready = !offer.isEvent && stocks.length > 0
   const existingStocks = useMemo(() => stocks.filter(stock => stock.id !== undefined), [stocks])
   const stocksInCreation = useMemo(() => stocks.filter(stock => stock.id === undefined), [stocks])
-
-  const setStockErrors = useCallback((key, errors) => {
-    setFormErrors({
-      global: 'Une ou plusieurs erreurs sont présentes dans le formulaire.',
-      [key]: errors,
-    })
-  }, [])
 
   const updateStock = useCallback(updatedStockValues => {
     setStocks(currentStocks => {
       const stockToUpdateIndex = currentStocks.findIndex(
         currentStock => currentStock.key === updatedStockValues.key
       )
-      const updatedStock = { ...currentStocks[stockToUpdateIndex], ...updatedStockValues }
+      const updatedStock = {
+        ...currentStocks[stockToUpdateIndex],
+        ...updatedStockValues,
+        updated: true,
+      }
       let newStocks = [...currentStocks]
       newStocks.splice(stockToUpdateIndex, 1, updatedStock)
       return newStocks
@@ -137,22 +103,18 @@ const Stocks = ({ offer, showErrorNotification, showSuccessNotification }) => {
   }
 
   const submitStocks = useCallback(() => {
-    if (areValid(stocksInCreation)) {
-      const stocksToCreate = stocksInCreation.map(stockInCreation => {
-        let payload = {
-          price: stockInCreation.price ? stockInCreation.price : 0,
-          quantity: stockInCreation.quantity ? stockInCreation.quantity : null,
-        }
-        if (isEvent) {
-          payload.beginningDatetime = stockInCreation.beginningDatetime
-          payload.bookingLimitDatetime = getBookingLimitDatetimeForEvent(stockInCreation)
-        } else {
-          payload.bookingLimitDatetime = getBookingLimitDatetimeForThing(stockInCreation)
-        }
+    const updatedStocks = existingStocks.filter(stock => stock.updated)
+    if (areValid([...stocksInCreation, ...updatedStocks])) {
+      const stocksToCreate = stocksInCreation.map(stockInCreation =>
+        createStockPayload(stockInCreation, offer.isEvent)
+      )
+      const stocksToUpdate = updatedStocks.map(updatedStock => {
+        const payload = createStockPayload(updatedStock, offer.isEvent)
+        payload.id = updatedStock.id
         return payload
       })
       pcapi
-        .bulkCreateOrEditStock(offer.id, stocksToCreate)
+        .bulkCreateOrEditStock(offer.id, [...stocksToCreate, ...stocksToUpdate])
         .then(() => {
           getOffer()
           showSuccessNotification()
@@ -160,8 +122,9 @@ const Stocks = ({ offer, showErrorNotification, showSuccessNotification }) => {
         .catch(() => showErrorNotification())
     }
   }, [
-    isEvent,
+    existingStocks,
     getOffer,
+    offer.isEvent,
     offer.id,
     showErrorNotification,
     showSuccessNotification,
@@ -176,7 +139,7 @@ const Stocks = ({ offer, showErrorNotification, showSuccessNotification }) => {
       </h3>
 
       <div className="cancellation-information">
-        {isEvent ? EVENT_CANCELLATION_INFORMATION : THING_CANCELLATION_INFORMATION}
+        {offer.isEvent ? EVENT_CANCELLATION_INFORMATION : THING_CANCELLATION_INFORMATION}
       </div>
       <button
         className="tertiary-button"
@@ -185,12 +148,12 @@ const Stocks = ({ offer, showErrorNotification, showSuccessNotification }) => {
         type="button"
       >
         <Icon svg="ico-plus" />
-        {isEvent ? 'Ajouter une date' : 'Ajouter un stock'}
+        {offer.isEvent ? 'Ajouter une date' : 'Ajouter un stock'}
       </button>
       <table>
         <thead>
           <tr>
-            {isEvent && (
+            {offer.isEvent && (
               <Fragment>
                 <th>
                   {'Date'}
@@ -215,45 +178,34 @@ const Stocks = ({ offer, showErrorNotification, showSuccessNotification }) => {
             <th>
               {'Réservations'}
             </th>
-            <th className="action-column">
-              {isEditing ? 'Valider' : 'Modifier'}
-            </th>
-            <th className="action-column">
-              {isEditing ? 'Annuler' : 'Supprimer'}
-            </th>
+            <th className="action-column" />
           </tr>
         </thead>
         <tbody>
           {stocksInCreation.map(stockInCreation => (
-            <StockItemContainer
-              departmentCode={departmentCode}
+            <StockItem
+              departmentCode={offer.venue.departementCode}
               errors={formErrors[stockInCreation.key]}
               initialStock={stockInCreation}
-              isEvent={isEvent}
+              isEvent={offer.isEvent}
               isNewStock
-              isOfferSynchronized={isOfferSynchronized}
               key={stockInCreation.key}
-              offerId={offerId}
               onChange={updateStock}
               refreshOffer={getOffer}
               removeStockInCreation={removeStockInCreation}
-              setParentIsEditing={setIsEditing}
-              setStockErrors={setStockErrors}
             />
           ))}
 
           {existingStocks.map(stock => (
-            <StockItemContainer
-              departmentCode={departmentCode}
+            <StockItem
+              departmentCode={offer.venue.departementCode}
               errors={formErrors[stock.key]}
               initialStock={stock}
-              isEvent={isEvent}
-              isOfferSynchronized={isOfferSynchronized}
+              isEvent={offer.isEvent}
               key={stock.id}
-              offerId={offerId}
+              lastProvider={offer.lastProvider}
+              onChange={updateStock}
               refreshOffer={getOffer}
-              setParentIsEditing={setIsEditing}
-              setStockErrors={setStockErrors}
             />
           ))}
         </tbody>

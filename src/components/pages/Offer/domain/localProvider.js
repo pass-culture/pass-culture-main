@@ -20,7 +20,7 @@ export const isOfferFromStockProvider = (offer = null) => {
     : false
 }
 
-const isAllocineProvider = provider => provider?.name.toLowerCase() === 'allociné'
+export const isAllocineProvider = provider => provider?.name.toLowerCase() === 'allociné'
 
 export const isAllocineOffer = (offer = null) => {
   return doesLastProviderExist(offer) ? isAllocineProvider(offer.lastProvider) : false

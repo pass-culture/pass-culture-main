@@ -10,6 +10,7 @@ const TimeInput = ({
   ariaLabel,
   departmentCode,
   disabled,
+  inError,
   maxUtcDateIsoFormat,
   minUtcDateIsoFormat,
   onChange,
@@ -33,7 +34,9 @@ const TimeInput = ({
       customInput={(
         <InputWithCalendar
           ariaLabel={ariaLabel}
-          customClass={`field-date-only without-icon ${disabled ? 'disabled' : ''}`}
+          customClass={`field-date-only without-icon${disabled ? ' disabled' : ''}${
+            inError ? ' error' : ''
+          }`}
         />
       )}
       dateFormat="HH:mm"
@@ -56,6 +59,7 @@ const TimeInput = ({
 TimeInput.defaultProps = {
   ariaLabel: undefined,
   disabled: false,
+  inError: false,
   maxUtcDateIsoFormat: undefined,
   minUtcDateIsoFormat: undefined,
 }
@@ -64,6 +68,7 @@ TimeInput.propTypes = {
   ariaLabel: PropTypes.string,
   departmentCode: PropTypes.string.isRequired,
   disabled: PropTypes.bool,
+  inError: PropTypes.bool,
   maxUtcDateIsoFormat: PropTypes.string,
   minUtcDateIsoFormat: PropTypes.string,
   onChange: PropTypes.func.isRequired,

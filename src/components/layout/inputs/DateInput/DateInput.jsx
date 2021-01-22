@@ -10,6 +10,7 @@ const DateInput = ({
   ariaLabel,
   departmentCode,
   disabled,
+  inError,
   maxUtcDateIsoFormat,
   minUtcDateIsoFormat,
   openingUtcDateIsoFormat,
@@ -36,10 +37,11 @@ const DateInput = ({
       customInput={(
         <InputWithCalendar
           ariaLabel={ariaLabel}
-          customClass={`field-date-only ${disabled ? 'disabled' : ''}`}
+          customClass={`field-date-only${disabled ? ' disabled' : ''}${inError ? ' error' : ''}`}
         />
       )}
       disabled={disabled}
+      dropdownMode="scroll"
       maxDate={getMomentDate(maxUtcDateIsoFormat)}
       minDate={getMomentDate(minUtcDateIsoFormat)}
       onChange={onChange}
@@ -53,6 +55,7 @@ const DateInput = ({
 DateInput.defaultProps = {
   ariaLabel: undefined,
   disabled: false,
+  inError: false,
   maxUtcDateIsoFormat: undefined,
   minUtcDateIsoFormat: undefined,
 }
@@ -61,6 +64,7 @@ DateInput.propTypes = {
   ariaLabel: PropTypes.string,
   departmentCode: PropTypes.string.isRequired,
   disabled: PropTypes.bool,
+  inError: PropTypes.bool,
   maxUtcDateIsoFormat: PropTypes.string,
   minUtcDateIsoFormat: PropTypes.string,
   onChange: PropTypes.func.isRequired,
