@@ -19,6 +19,8 @@
     @include caption();
 
     align-self: flex-end;
+    color: $grey-dark;
+    margin-top: rem(6px);
   }
 
   .it-sub-label {
