@@ -211,7 +211,7 @@ describe('pcapi', () => {
   })
 
   describe('signout', () => {
-    it('should', () => {
+    it('should sign out the user', () => {
       // When
       signout()
 

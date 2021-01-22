@@ -1,3 +1,58 @@
+[data-reach-menu-button] {
+  @include caption();
+
+  align-items: center;
+  background-color: transparent;
+  border: none;
+  color: $white;
+  display: flex;
+  padding: rem(5px) rem(10px);
+
+  &[aria-expanded="true"] {
+    background-color: $primary;
+  }
+}
+
+[data-reach-menu-popover] {
+  box-shadow: 0 0 3.75rem $black-shadow;
+  z-index: 10;
+}
+
+[data-reach-menu-items] {
+  background: $white;
+  border: none;
+}
+
+[data-reach-menu-item] {
+  @include caption();
+
+  align-items: center;
+  color: $primary;
+  display: flex;
+  padding: rem(5px) rem(16px) rem(5px) rem(8px);
+
+  .icon {
+    text-align: center;
+    width: rem(40px);
+  }
+
+  &:hover,
+  &:focus,
+  &:active {
+    background-color: $grey-light;
+    color: $primary;
+  }
+
+  &[data-selected] {
+    background-color: $primary;
+    color: $white;
+
+    .icon {
+      filter: brightness(0) invert(1);
+    }
+  }
+}
+
 header {
   background-image: $linear-gradient-to-bottom-right;
 
@@ -39,66 +94,13 @@ header {
 
         &:hover,
         &:focus {
-          background-color: $primary-dark;
+          background-color: $primary;
 
           &.logo {
             background-color: transparent;
           }
         }
       }
-    }
-  }
-}
-
-[data-reach-menu-button] {
-  @include caption();
-
-  align-items: center;
-  background-color: transparent;
-  border: none;
-  color: $white;
-  display: flex;
-  padding: rem(5px) rem(10px);
-
-  &[aria-expanded="true"] {
-    background-color: $primary-dark;
-  }
-}
-
-[data-reach-menu-popover] {
-  box-shadow: 0 0 3.75rem $black-shadow;
-  z-index: 10;
-}
-
-[data-reach-menu-items] {
-  background: $white;
-  border: none;
-}
-
-[data-reach-menu-item] {
-  @include caption();
-
-  align-items: center;
-  color: $primary;
-  display: flex;
-
-  .icon {
-    margin-right: rem(8px);
-  }
-
-  &:hover,
-  &:focus,
-  &:active {
-    background-color: $grey-light;
-    color: $primary;
-  }
-
-  &[data-selected] {
-    background-color: $primary-dark;
-    color: $white;
-
-    .icon {
-      filter: brightness(0) invert(1);
     }
   }
 }

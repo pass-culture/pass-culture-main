@@ -23,9 +23,6 @@ class Header extends PureComponent {
       .then(() => {
         dispatch(reinitializeData())
       })
-      .catch(() => {
-        // dispatch(reinitializeData())
-      })
   }
 
   render() {

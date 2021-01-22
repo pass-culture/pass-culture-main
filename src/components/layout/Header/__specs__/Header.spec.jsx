@@ -1,3 +1,4 @@
+import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import { shallow } from 'enzyme'
 import React from 'react'
@@ -8,8 +9,6 @@ import { getStubStore } from 'utils/stubStore'
 
 import * as constants from '../_constants'
 import Header from '../Header'
-
-import '@testing-library/jest-dom'
 
 describe('header', () => {
   let props
@@ -181,5 +180,4 @@ describe('navigation menu', () => {
 
   // reste : les éléments conditionnels (Styleguide et !isSmall)
   // devnote : comment tester que les élements du menu secondaire s'affichent au hover
-  // devnote : qui du menu burger ?
 })
