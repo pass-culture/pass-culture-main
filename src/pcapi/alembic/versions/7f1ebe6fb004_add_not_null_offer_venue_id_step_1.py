@@ -1,7 +1,7 @@
 """add_not_null_offer_venue_id_step_1 (Add not null constraint to offer.venueId: Step 1/4)
 
 Revision ID: 7f1ebe6fb004
-Revises: 1efe2b3cb31c
+Revises: 3d08d5ba9f11
 Create Date: 2021-01-22 10:10:12.994251
 
 """
@@ -10,7 +10,7 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "7f1ebe6fb004"
-down_revision = "1efe2b3cb31c"
+down_revision = "3d08d5ba9f11"
 branch_labels = None
 depends_on = None
 
