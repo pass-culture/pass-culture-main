@@ -59,13 +59,13 @@ C'est tout le framework du Pass Culture!
 - `pc start-webapp`
 - `http://localhost:3000/` devrait être lancé et fonctionnel
 
-- Connectez-vous avec `pctest.jeune93.has-booked-some@btmx.fr` et `user@AZERTY123`
+- Connectez-vous avec `pctest.jeune93.has-booked-some@example.com` et `user@AZERTY123`
 
 #### Le portail pro
 
 - `pc start-pro`
 - `http://localhost:3001/` devrait être lancé et fonctionnel
-- Connectez-vous avec `pctest.admin93.0@btmx.fr` et `user@AZERTY123`
+- Connectez-vous avec `pctest.admin93.0@example.com` et `user@AZERTY123`
 
 ### Configurer son IDE et installer l'API localement
 
@@ -205,17 +205,19 @@ La plus conséquente est l'industrial, elle se créée via la commande:
 pc sandbox -n industrial
 ```
 
----------
+---
+
 Troubleshooting:
 
-Si la commande sandbox renvoie des erreurs que je n'arrive pas à résoudre, tester de supprimer et reconstruire sa BDD locale. Pour ça: 
+Si la commande sandbox renvoie des erreurs que je n'arrive pas à résoudre, tester de supprimer et reconstruire sa BDD locale. Pour ça:
+
 - stopper les images lancées
 - run: `docker rm -f pc-postgres` <= suppression container
 - run: `docker volume rm pass-culture-main_postgres_data` <= suppression données
 - relancer: `pc start-backend`
 - puis relancer: `pc sandbox -n industrial`
 
-----------
+---
 
 Cette commande faite, il y a alors deux moyens pour avoir les email/mots de passe des utilisateurs sandbox :
 
@@ -240,19 +242,19 @@ Pour les développeur.ses, quand vous écrivez un testcafé, il faut donc la plu
 Pour l'application WEBAPP, vous pouvez naviguer avec ce user toujours présent:
 
 ```
-email: pctest.jeune93.has-booked-some@btmx.fr
+email: pctest.jeune93.has-booked-some@example.com
 ```
 
 Pour l'application PRO, vous pouvez naviguer en tant qu'admin avec:
 
 ```
-email: pctest.admin93.0@btmx.fr
+email: pctest.admin93.0@example.com
 ```
 
 Ou en tant qu'user avec :
 
 ```
-email: pctest.pro93.0@btmx.fr
+email: pctest.pro93.0@example.com
 ```
 
 Le mot de passe est toujours : `user@AZERTY123`
