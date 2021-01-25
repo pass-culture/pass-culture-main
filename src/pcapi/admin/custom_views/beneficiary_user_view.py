@@ -78,14 +78,16 @@ class BeneficiaryUserView(SuspensionMixin, BaseAdminView):
 
     def get_create_form(self):
         form_class = super().scaffold_form()
-        form_class.depositVersion = SelectField(
-            "Version du déposit",
-            [DataRequired()],
-            choices=[
-                (1, "500€ - Deux seuils de dépense (200€ en physique et 200€ en numérique)"),
-                (2, "300€ - Un seuil de dépense (100€ en offres numériques)"),
-            ],
-        )
+
+        if not settings.IS_PROD:
+            form_class.depositVersion = SelectField(
+                "Version du déposit",
+                [DataRequired()],
+                choices=[
+                    (1, "500€ - Deux seuils de dépense (200€ en physique et 200€ en numérique)"),
+                    (2, "300€ - Un seuil de dépense (100€ en offres numériques)"),
+                ],
+            )
 
         return form_class
 
@@ -99,7 +101,7 @@ class BeneficiaryUserView(SuspensionMixin, BaseAdminView):
             # This is to prevent a circulary import dependency
             from pcapi.core.users.api import fulfill_user_data
 
-            deposit_version = int(form.depositVersion.data)
+            deposit_version = int(form.depositVersion.data) if not settings.IS_PROD else None
             fulfill_user_data(model, "pass-culture-admin", deposit_version)
 
         super().on_model_change(form, model, is_created)

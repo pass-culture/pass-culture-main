@@ -118,6 +118,16 @@ class BeneficiaryUserViewTest:
         assert user.deposit_version == 2
 
     @patch("pcapi.settings.IS_PROD", return_value=True)
+    def test_form_has_no_deposit_field_for_production(self, app, db_session):
+        # Given
+        beneficiary_view = BeneficiaryUserView(User, db_session)
+        beneficiary_view_create_form = beneficiary_view.get_create_form()
+        form = beneficiary_view_create_form(data=(dict()))
+
+        # then
+        assert not hasattr(form, "depositVersion")
+
+    @patch("pcapi.settings.IS_PROD", return_value=True)
     @patch("pcapi.settings.SUPER_ADMIN_EMAIL_ADDRESSES", return_value="")
     def test_beneficiary_user_creation_is_restricted_in_prod(
         self, is_prod_mock, super_admin_email_addresses, app, db_session
@@ -165,7 +175,7 @@ class BeneficiaryUserViewTest:
 
     @clean_database
     # FIXME (dbaty, 2020-12-16): I could not find a quick way to
-    # generate a valid CSRF token in tests. This should be fixed.
+    #  generate a valid CSRF token in tests. This should be fixed.
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_unsuspend_beneficiary(self, mocked_validate_csrf_token, app):
         admin = users_factories.UserFactory(email="admin15@example.com", isAdmin=True)
