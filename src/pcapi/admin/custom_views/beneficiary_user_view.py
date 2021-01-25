@@ -68,7 +68,6 @@ class BeneficiaryUserView(SuspensionMixin, BaseAdminView):
         "postalCode",
         "phoneNumber",
         "isBeneficiary",
-        "isBeneficiary",
     ]
 
     form_args = dict(
