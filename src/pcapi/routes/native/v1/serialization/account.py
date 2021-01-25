@@ -1,3 +1,4 @@
+import datetime
 from datetime import date
 from decimal import Decimal
 from typing import List
@@ -45,10 +46,15 @@ class UserProfileResponse(BaseModel):
 
         return super().from_orm(user)
 
-    firstName: Optional[str]
+    dateOfBirth: Optional[datetime.datetime]
+    deposit_version: Optional[int]
     email: str
-    isBeneficiary: bool
     expenses: List[Expense]
+    firstName: Optional[str]
+    hasAllowedRecommendations: bool
+    lastName: Optional[str]
+    isBeneficiary: bool
+    phoneNumber: Optional[str]
 
     class Config:
         orm_mode = True

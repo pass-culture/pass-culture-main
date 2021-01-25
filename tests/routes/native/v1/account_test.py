@@ -38,8 +38,7 @@ class AccountTest:
         assert response.json["email"] == ["Utilisateur introuvable"]
 
     def test_get_user_profile(self, app):
-        first_name = "Gaëtan"
-        user = users_factories.UserFactory(email=self.identifier, firstName=first_name)
+        user = users_factories.UserFactory(email=self.identifier)
         booking = BookingFactory(user=user)
 
         access_token = create_access_token(identity=self.identifier)
@@ -49,14 +48,19 @@ class AccountTest:
         response = test_client.get("/native/v1/me")
 
         assert response.status_code == 200
+        assert response.json["dateOfBirth"] == user.dateOfBirth.strftime("%Y-%m-%dT%H:%M:%S")
+        assert response.json["depositVersion"] == user.deposit_version
         assert response.json["email"] == self.identifier
-        assert response.json["firstName"] == first_name
-        assert response.json["isBeneficiary"]
         assert response.json["expenses"] == [
             {"current": int(booking.amount * 100), "domain": "all", "limit": 50000},
             {"current": 0, "domain": "digital", "limit": 20000},
             {"current": int(booking.amount * 100), "domain": "physical", "limit": 20000},
         ]
+        assert response.json["hasAllowedRecommendations"] == user.hasAllowedRecommendations
+        assert response.json["isBeneficiary"]
+        assert response.json["firstName"] == user.firstName
+        assert response.json["lastName"] == user.lastName
+        assert response.json["phoneNumber"] == user.phoneNumber
 
     def test_get_user_profile_empty_first_name(self, app):
         first_name = ""
