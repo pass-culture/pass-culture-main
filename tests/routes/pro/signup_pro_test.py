@@ -68,38 +68,10 @@ class Post:
             assert user_offerer.validationToken is None
             assert user_offerer.rights == RightsType.editor
 
-        def test_does_not_allow_the_creation_of_admins(self, app):
-            # Given
-            user_json = {
-                "email": "toto_pro@example.com",
-                "publicName": "Toto Pro",
-                "firstName": "Toto",
-                "lastName": "Pro",
-                "password": "__v4l1d_P455sw0rd__",
-                "siren": "349974931",
-                "address": "12 boulevard de Pesaro",
-                "phoneNumber": "0102030405",
-                "postalCode": "92000",
-                "city": "Nanterre",
-                "name": "Crédit Coopératif",
-                "isAdmin": True,
-                "contactOk": "true",
-            }
-            venue_type = create_venue_type(label="Offre numérique")
-            repository.save(venue_type)
-
-            # When
-            response = TestClient(app.test_client()).post("/users/signup/pro", json=user_json)
-
-            # Then
-            assert response.status_code == 204
-            created_user = User.query.filter_by(email="toto_pro@example.com").one()
-            assert not created_user.isAdmin
-            assert created_user.hasAllowedRecommendations is True
-
         def test_creates_user_offerer_digital_venue_and_userOfferer_and_does_not_log_user_in(self, app):
             # Given
             data_pro = BASE_DATA_PRO.copy()
+            data_pro["contactOk"] = "true"
             venue_type = create_venue_type(label="Offre numérique")
             repository.save(venue_type)
 
@@ -111,6 +83,7 @@ class Post:
             assert "Set-Cookie" not in response.headers
             user = User.query.filter_by(email="toto_pro@example.com").first()
             assert user is not None
+            assert user.hasAllowedRecommendations is True
             offerer = Offerer.query.filter_by(siren="349974931").first()
             assert offerer is not None
             assert offerer.validationToken is not None
@@ -386,3 +359,31 @@ class Post:
             assert response.status_code == 400
             error = response.json
             assert "postalCode" in error
+
+        def when_extra_data_is_given(self, app):
+            # Given
+            user_json = {
+                "email": "toto_pro@example.com",
+                "publicName": "Toto Pro",
+                "firstName": "Toto",
+                "lastName": "Pro",
+                "password": "__v4l1d_P455sw0rd__",
+                "siren": "349974931",
+                "address": "12 boulevard de Pesaro",
+                "phoneNumber": "0102030405",
+                "postalCode": "92000",
+                "city": "Nanterre",
+                "name": "Crédit Coopératif",
+                "isAdmin": True,
+                "contactOk": "true",
+            }
+            venue_type = create_venue_type(label="Offre numérique")
+            repository.save(venue_type)
+
+            # When
+            response = TestClient(app.test_client()).post("/users/signup/pro", json=user_json)
+
+            # Then
+            assert response.status_code == 400
+            created_user = User.query.filter_by(email="toto_pro@example.com").first()
+            assert created_user is None
