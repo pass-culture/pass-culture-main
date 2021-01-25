@@ -10,6 +10,7 @@ from pcapi.models import Provider
 from pcapi.models import Stock
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
+from pcapi.utils import requests as pcapi_requests
 
 from . import exceptions
 
@@ -23,6 +24,17 @@ EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER = {
 }
 EDITABLE_FIELDS_FOR_ALLOCINE_OFFER = {"isDuo"} | EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER
 EDITABLE_FIELDS_FOR_ALLOCINE_STOCK = {"bookingLimitDatetime", "price", "quantity"}
+
+MAX_THUMBNAIL_SIZE = 10_000_000
+MIN_THUMBNAIL_WIDTH = 400
+MIN_THUMBNAIL_HEIGHT = 400
+ACCEPTED_THUMBNAIL_FORMATS = (
+    "png",
+    "jpg",
+    "jpeg",
+)
+DISTANT_IMAGE_REQUEST_TIMEOUT = 5
+CHUNK_SIZE_IN_BYTES = 4096
 
 
 def check_user_can_create_activation_event(user):
@@ -130,3 +142,55 @@ def check_mediation_thumb_quality(image_as_bytes: bytes) -> None:
     image = Image.open(BytesIO(image_as_bytes))
     if image.width < 400 or image.height < 400:
         raise ApiErrors({"thumb": ["L'image doit faire 400 * 400 px minimum"]})
+
+
+def check_distant_image(url: str) -> None:
+    image_as_bytes = _get_distant_image(url=url, accepted_types=ACCEPTED_THUMBNAIL_FORMATS, max_size=MAX_THUMBNAIL_SIZE)
+    _check_image(
+        image_as_bytes=image_as_bytes,
+        accepted_types=ACCEPTED_THUMBNAIL_FORMATS,
+        min_width=MIN_THUMBNAIL_WIDTH,
+        min_height=MIN_THUMBNAIL_HEIGHT,
+    )
+
+
+def _get_distant_image(
+    url: str,
+    accepted_types: tuple,
+    max_size: int,
+) -> bytes:
+    try:
+        streaming_response = pcapi_requests.get(url, timeout=DISTANT_IMAGE_REQUEST_TIMEOUT, stream=True)
+        streaming_response.raise_for_status()
+    except Exception:
+        raise exceptions.FailureToRetrieve()
+
+    # These two headers are recommended to be included by the server, but they could be missing
+    content_type = streaming_response.headers.get("Content-Type", "")
+    if content_type and content_type.lstrip("image/") not in accepted_types:
+        raise exceptions.UnacceptedFileType(accepted_types=accepted_types)
+
+    content_length = streaming_response.headers.get("Content-Length", 0)
+    if int(content_length) > max_size:
+        raise exceptions.FileSizeExceeded(max_size=max_size)
+
+    response_content = b""
+    for chunk in streaming_response.iter_content(CHUNK_SIZE_IN_BYTES):
+        response_content += chunk
+        if len(response_content) > max_size:
+            streaming_response.close()
+            raise exceptions.FileSizeExceeded(max_size=max_size)
+    return response_content
+
+
+def _check_image(image_as_bytes: bytes, accepted_types: tuple, min_width: int, min_height: int) -> None:
+    try:
+        image = Image.open(BytesIO(image_as_bytes))
+    except Exception:
+        raise exceptions.UnacceptedFileType(accepted_types)
+
+    if image.format.lower() not in accepted_types:
+        raise exceptions.UnacceptedFileType(accepted_types)
+
+    if image.width < min_width or image.height < min_height:
+        raise exceptions.ImageTooSmall(min_width, min_height)

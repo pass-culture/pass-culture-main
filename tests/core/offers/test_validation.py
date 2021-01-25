@@ -2,6 +2,7 @@ import datetime
 import pathlib
 
 import pytest
+import requests
 
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import exceptions
@@ -166,3 +167,139 @@ class CheckThumbQualityTest:
     def test_no_error_is_raised_if_the_thumb_is_heavier_than_100_ko(self):
         image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
         validation.check_mediation_thumb_quality(image_as_bytes)  # should not raise
+
+
+class GetDistantImageTest:
+    def test_ok_with_headers(self, requests_mock):
+        remote_image_url = "https://example.com/image.jpg"
+        requests_mock.get(
+            remote_image_url,
+            headers={"content-type": "image/jpeg", "content-length": "4"},
+            content=b"\xff\xd8\xff\xd9",
+        )
+
+        validation._get_distant_image(
+            url=remote_image_url,
+            accepted_types=("jpeg", "jpg"),
+            max_size=100000,
+        )
+
+    def test_ok_without_headers(self, requests_mock):
+        remote_image_url = "https://example.com/image.jpg"
+        requests_mock.get(
+            remote_image_url,
+            headers={},
+            content=b"\xff\xd8\xff\xd9",
+        )
+
+        validation._get_distant_image(
+            url=remote_image_url,
+            accepted_types=("jpeg", "jpg"),
+            max_size=100000,
+        )
+
+    def test_unaccessible_file(self, requests_mock):
+        remote_image_url = "https://example.com/this-goes-nowhere"
+        requests_mock.get(
+            remote_image_url,
+            status_code=404,
+        )
+
+        with pytest.raises(exceptions.FailureToRetrieve):
+            validation._get_distant_image(
+                url=remote_image_url,
+                accepted_types=("jpeg", "jpg"),
+                max_size=100000,
+            )
+
+    def test_content_length_header_too_large(self, requests_mock):
+        remote_image_url = "https://example.com/image.jpg"
+        requests_mock.get(
+            remote_image_url,
+            headers={"content-type": "image/jpeg", "content-length": "2000"},
+            content=b"\xff\xd8\xff\xd9",
+        )
+
+        with pytest.raises(exceptions.FileSizeExceeded):
+            validation._get_distant_image(
+                url=remote_image_url,
+                accepted_types=("jpeg", "jpg", "png"),
+                max_size=1000,
+            )
+
+    def test_content_type_header_not_accepted(self, requests_mock):
+        remote_image_url = "https://example.com/image.gif"
+        requests_mock.get(
+            remote_image_url,
+            headers={"content-type": "image/gif", "content-length": "27661"},
+        )
+
+        with pytest.raises(exceptions.UnacceptedFileType):
+            validation._get_distant_image(
+                url=remote_image_url,
+                accepted_types=("jpeg", "jpg", "png"),
+                max_size=100000,
+            )
+
+    def test_timeout(self, requests_mock):
+        remote_image_url = "https://example.com/image.jpg"
+        requests_mock.get(remote_image_url, exc=requests.exceptions.ConnectTimeout)
+
+        with pytest.raises(exceptions.FailureToRetrieve):
+            validation._get_distant_image(
+                url=remote_image_url,
+                accepted_types=("jpeg", "jpg"),
+                max_size=100000,
+            )
+
+    def test_content_too_large(self, requests_mock):
+        remote_image_url = "https://example.com/image.jpg"
+        requests_mock.get(remote_image_url, content=b"1234567890")
+
+        with pytest.raises(exceptions.FileSizeExceeded):
+            validation._get_distant_image(
+                url=remote_image_url,
+                accepted_types=("jpeg", "jpg", "png"),
+                max_size=5,
+            )
+
+
+class CheckImageTest:
+    def test_ok(self):
+        image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
+        validation._check_image(
+            image_as_bytes,
+            accepted_types=("jpeg", "jpg"),
+            min_width=400,
+            min_height=400,
+        )
+
+    def test_image_too_small(self):
+        image_as_bytes = (IMAGES_DIR / "mouette_portrait.jpg").read_bytes()
+        with pytest.raises(exceptions.ImageTooSmall):
+            validation._check_image(
+                image_as_bytes,
+                accepted_types=("jpeg", "jpg"),
+                min_width=400,
+                min_height=400,
+            )
+
+    def test_fake_jpeg(self):
+        image_as_bytes = (IMAGES_DIR / "mouette_fake_jpg.jpg").read_bytes()
+        with pytest.raises(exceptions.UnacceptedFileType):
+            validation._check_image(
+                image_as_bytes,
+                accepted_types=("jpeg", "jpg"),
+                min_width=1,
+                min_height=1,
+            )
+
+    def test_wrong_format(self):
+        image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
+        with pytest.raises(exceptions.UnacceptedFileType):
+            validation._check_image(
+                image_as_bytes,
+                accepted_types=("png",),
+                min_width=1,
+                min_height=1,
+            )

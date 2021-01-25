@@ -1,14 +1,18 @@
 from flask_login import current_user
 from flask_login import login_required
 
+from pcapi.core.offers import exceptions
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.repository as offers_repository
+from pcapi.core.offers.validation import check_distant_image
 from pcapi.flask_app import private_api
 from pcapi.models import Offer
 from pcapi.models import RightsType
 from pcapi.routes.serialization.dictifier import as_dict
 from pcapi.routes.serialization.offers_recap_serialize import serialize_offers_recap_paginated
 from pcapi.routes.serialization.offers_serialize import GetOfferResponseModel
+from pcapi.routes.serialization.offers_serialize import ImageBodyModel
+from pcapi.routes.serialization.offers_serialize import ImageResponseModel
 from pcapi.routes.serialization.offers_serialize import ListOffersQueryModel
 from pcapi.routes.serialization.offers_serialize import ListOffersResponseModel
 from pcapi.routes.serialization.offers_serialize import OfferResponseIdModel
@@ -18,6 +22,7 @@ from pcapi.routes.serialization.offers_serialize import PatchOfferBodyModel
 from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.includes import OFFER_INCLUDES
+from pcapi.utils.logger import logger
 from pcapi.utils.rest import ensure_current_user_has_rights
 from pcapi.utils.rest import load_or_404
 from pcapi.utils.rest import login_or_api_key_required
@@ -98,3 +103,24 @@ def patch_offer(offer_id: str, body: PatchOfferBodyModel) -> OfferResponseIdMode
     offer = offers_api.update_offer(offer, **body.dict(exclude_unset=True))
 
     return OfferResponseIdModel.from_orm(offer)
+
+
+@private_api.route("/offers/thumbnail-url-validation", methods=["POST"])
+@login_or_api_key_required
+@spectree_serialize(response_model=ImageResponseModel)
+def validate_distant_image(body: ImageBodyModel) -> ImageResponseModel:
+    errors = []
+
+    try:
+        check_distant_image(body.url)
+
+    except (
+        exceptions.FileSizeExceeded,
+        exceptions.ImageTooSmall,
+        exceptions.UnacceptedFileType,
+        exceptions.FailureToRetrieve,
+    ) as exc:
+        logger.info("When validating image at: %s, this error was encountered: %s", body.url, exc.__class__.__name__)
+        errors.append(exc.args[0])
+
+    return ImageResponseModel(errors=errors)

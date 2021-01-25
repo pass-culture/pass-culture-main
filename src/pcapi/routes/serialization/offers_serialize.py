@@ -388,3 +388,11 @@ class GetOfferResponseModel(BaseModel):
 
     class Config:
         json_encoders = {datetime: format_into_utc_date}
+
+
+class ImageBodyModel(BaseModel):
+    url: str
+
+
+class ImageResponseModel(BaseModel):
+    errors: List[str]
