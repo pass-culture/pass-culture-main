@@ -1,16 +1,12 @@
-from typing import Tuple
-
 from flask import request
 
 from pcapi.core.users.api import create_pro_user
 from pcapi.flask_app import private_api
-from pcapi.validation.routes.users import check_valid_signup_pro
+from pcapi.routes.serialization.users import ProUserCreationBodyModel
+from pcapi.serialization.decorator import spectree_serialize
 
 
-# @debt api-migration
 @private_api.route("/users/signup/pro", methods=["POST"])
-def signup_pro() -> Tuple[str, int]:
-    check_valid_signup_pro(request)
+@spectree_serialize(on_success_status=204)
+def signup_pro(body: ProUserCreationBodyModel) -> None:
     create_pro_user(request)
-
-    return "", 204

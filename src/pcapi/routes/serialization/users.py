@@ -4,7 +4,9 @@ from typing import Optional
 from pydantic import BaseModel
 from pydantic import EmailStr
 from pydantic import Field
+from pydantic.class_validators import validator
 
+from pcapi.domain.password import check_password_strength
 from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
@@ -56,3 +58,34 @@ class PatchUserResponseModel(BaseModel):
         alias_generator = to_camel
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
+
+
+class ProUserCreationBodyModel(BaseModel):
+    address: Optional[str]
+    city: Optional[str]
+    email: str
+    first_name: Optional[str]
+    last_name: Optional[str]
+    latitude: Optional[float]
+    longitude: Optional[float]
+    name: Optional[str]
+    password: str
+    phone_number: str
+    postal_code: Optional[str]
+    public_name: Optional[str]
+    siren: Optional[str]
+    contact_ok: Optional[bool]
+
+    @validator("password")
+    def validate_password_strength(cls, password: str) -> str:  # typing: ignore # pylint: disable=no-self-argument
+        check_password_strength("password", password)
+        return password
+
+    @validator("contact_ok", pre=True, always=True)
+    def cast_contact_ok_to_bool(  # typing: ignore # pylint: disable=no-self-argument
+        cls, contact_ok: Optional[bool]
+    ) -> bool:
+        return bool(contact_ok)
+
+    class Config:
+        alias_generator = to_camel

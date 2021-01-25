@@ -30,17 +30,6 @@ def check_allowed_changes_for_user(data) -> None:
         raise api_errors
 
 
-def check_valid_signup_pro(request: Request) -> None:
-    password = request.json.get("password")
-    email = request.json.get("email")
-    phone_number = request.json.get("phoneNumber")
-
-    _check_email_is_present(email)
-    _check_phone_number_is_present(phone_number)
-    _check_password_is_present(password)
-    check_password_strength("password", password)
-
-
 def check_valid_signup_webapp(request: Request) -> None:
     contact_ok = request.json.get("contact_ok")
     password = request.json.get("password")
@@ -62,13 +51,6 @@ def check_valid_signin(identifier: str, password: str) -> None:
         errors.add_error("password", "Mot de passe manquant")
 
     errors.maybe_raise()
-
-
-def _check_phone_number_is_present(phone_number: Optional[str]) -> None:
-    if phone_number is None:
-        errors = ApiErrors()
-        errors.add_error("phoneNumber", "Vous devez renseigner un numéro de téléphone.")
-        raise errors
 
 
 def _check_password_is_present(password: Optional[str]) -> None:

@@ -3,7 +3,6 @@ from unittest.mock import Mock
 import pytest
 
 from pcapi.models import ApiErrors
-from pcapi.validation.routes.users import check_valid_signup_pro
 from pcapi.validation.routes.users import check_valid_signup_webapp
 
 
@@ -91,41 +90,10 @@ def test_check_valid_signup_webapp_raises_api_error_if_no_email():
     assert errors.value.errors["email"] == ["Vous devez renseigner un email."]
 
 
-def test_check_valid_signup_pro_raises_api_error_if_no_phone():
-    # Given
-    mocked_request = Mock()
-    mocked_request.json = {"contact_ok": True, "email": "john.doe@test.fr", "password": "ozkfoepzfze"}
-
-    # When
-    with pytest.raises(ApiErrors) as errors:
-        check_valid_signup_pro(mocked_request)
-
-    # Then
-    assert errors.value.errors["phoneNumber"] == ["Vous devez renseigner un numéro de téléphone."]
-
-
 def test_check_valid_signup_webapp_does_not_raise_api_error_if_contact_ok_is_true_has_password_and_email():
     # Given
     mocked_request = Mock()
     mocked_request.json = {"password": "87YHJKS*nqde", "email": "test@email.com", "contact_ok": True}
-
-    # When
-    try:
-        check_valid_signup_webapp(mocked_request)
-    except ApiErrors:
-        # Then
-        assert False
-
-
-def test_check_valid_signup_pro_does_not_raise_api_error_if_contact_ok_is_true_has_password_and_email_and_phone_number():
-    # Given
-    mocked_request = Mock()
-    mocked_request.json = {
-        "password": "87YHJKS*nqde",
-        "email": "test@email.com",
-        "contact_ok": True,
-        "phoneNumber": "0102030405",
-    }
 
     # When
     try:
