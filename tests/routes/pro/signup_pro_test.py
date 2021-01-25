@@ -56,6 +56,7 @@ class Post:
             assert user.publicName == "Toto Pro"
             assert user.dateOfBirth is None
             assert user.dateCreated is not None
+            assert user.hasAllowedRecommendations is False
             offerer = Offerer.query.filter_by(siren="349974931").first()
             assert offerer is not None
             assert offerer.validationToken is not None
@@ -82,6 +83,7 @@ class Post:
                 "city": "Nanterre",
                 "name": "Crédit Coopératif",
                 "isAdmin": True,
+                "contactOk": "true",
             }
             venue_type = create_venue_type(label="Offre numérique")
             repository.save(venue_type)
@@ -93,6 +95,7 @@ class Post:
             assert response.status_code == 204
             created_user = User.query.filter_by(email="toto_pro@example.com").one()
             assert not created_user.isAdmin
+            assert created_user.hasAllowedRecommendations is True
 
         def test_creates_user_offerer_digital_venue_and_userOfferer_and_does_not_log_user_in(self, app):
             # Given

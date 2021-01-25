@@ -4,7 +4,6 @@ from datetime import timedelta
 import secrets
 from typing import Optional
 
-from flask import Request
 from jwt import DecodeError
 from jwt import ExpiredSignatureError
 from jwt import InvalidSignatureError
@@ -41,6 +40,7 @@ from pcapi.models.user_session import UserSession
 from pcapi.models.venue_sql_entity import create_digital_venue
 from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_email
+from pcapi.routes.serialization.users import ProUserCreationBodyModel
 from pcapi.scripts.beneficiary import THIRTY_DAYS_IN_HOURS
 from pcapi.utils import mailing as mailing_utils
 from pcapi.utils.logger import logger
@@ -291,39 +291,40 @@ def user_expenses(user: User):
     return limits
 
 
-def create_pro_user(request: Request) -> User:
+def create_pro_user(pro_user: ProUserCreationBodyModel) -> User:
     objects_to_save = []
 
-    new_user = User(from_dict=request.json)
+    new_pro_user = User(from_dict=pro_user.dict(by_alias=True))
+    new_pro_user.hasAllowedRecommendations = pro_user.contact_ok
 
-    existing_offerer = Offerer.query.filter_by(siren=request.json["siren"]).first()
+    existing_offerer = Offerer.query.filter_by(siren=pro_user.siren).first()
 
     if existing_offerer:
-        user_offerer = _generate_user_offerer_when_existing_offerer(new_user, existing_offerer)
+        user_offerer = _generate_user_offerer_when_existing_offerer(new_pro_user, existing_offerer)
         offerer = existing_offerer
     else:
-        offerer = _generate_offerer(request.json)
-        user_offerer = offerer.give_rights(new_user, RightsType.editor)
+        offerer = _generate_offerer(pro_user.dict(by_alias=True))
+        user_offerer = offerer.give_rights(new_pro_user, RightsType.editor)
         digital_venue = create_digital_venue(offerer)
         objects_to_save.extend([digital_venue, offerer])
     objects_to_save.append(user_offerer)
-    new_user.isBeneficiary = False
-    new_user.isAdmin = False
-    new_user.needsToFillCulturalSurvey = False
-    new_user = _set_offerer_departement_code(new_user, offerer)
+    new_pro_user.isBeneficiary = False
+    new_pro_user.isAdmin = False
+    new_pro_user.needsToFillCulturalSurvey = False
+    new_pro_user = _set_offerer_departement_code(new_pro_user, offerer)
 
-    new_user.generate_validation_token()
-    objects_to_save.append(new_user)
+    new_pro_user.generate_validation_token()
+    objects_to_save.append(new_pro_user)
 
     repository.save(*objects_to_save)
 
     try:
-        user_emails.send_user_validation_email(new_user, mailing_utils.send_raw_email)
-        mailing_utils.subscribe_newsletter(new_user)
+        user_emails.send_user_validation_email(new_pro_user, mailing_utils.send_raw_email)
+        mailing_utils.subscribe_newsletter(new_pro_user)
     except MailServiceException:
-        logger.exception("Could not send validation email when creating pro user=%s", new_user.id)
+        logger.exception("Could not send validation email when creating pro user=%s", new_pro_user.id)
 
-    return new_user
+    return new_pro_user
 
 
 def _generate_user_offerer_when_existing_offerer(new_user: User, offerer: Offerer) -> UserOfferer:
