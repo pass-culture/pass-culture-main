@@ -12,7 +12,7 @@ const lastNameInput = Selector('input[name="lastName"]')
 const firstNameInput = Selector('input[name="firstName"]')
 const phoneNumberInput = Selector('input[name="phoneNumber"]')
 const sirenInput = Selector('input[name="siren"]')
-const contactOkInput = Selector('input[name="contact_ok"]')
+const contactOkInput = Selector('input[name="contactOk"]')
 const signUpButton = Selector('button').withText('Créer mon compte')
 const acceptCookieButton = Selector('#hs-eu-confirmation-button')
 

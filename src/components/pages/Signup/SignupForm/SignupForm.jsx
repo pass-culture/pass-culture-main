@@ -212,7 +212,7 @@ class SignupForm extends PureComponent {
                 <label className="sign-up-checkbox">
                   <Field
                     component="input"
-                    name="contact_ok"
+                    name="contactOk"
                     type="checkbox"
                   />
                   <span>
@@ -220,7 +220,7 @@ class SignupForm extends PureComponent {
                       "J'accepte d'être contacté par e-mail pour recevoir les nouveautés du pass Culture et contribuer à son amélioration"
                     }
                   </span>
-                  <FieldErrors customMessage={errors ? errors.contact_ok : null} />
+                  <FieldErrors customMessage={errors ? errors.contactOk : null} />
                 </label>
 
                 <div className="sign-up-infos-before-signup">

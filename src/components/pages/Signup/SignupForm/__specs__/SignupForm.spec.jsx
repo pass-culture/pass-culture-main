@@ -266,7 +266,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
         "J'accepte d'être contacté par e-mail pour recevoir les nouveautés du pass Culture et contribuer à son amélioration"
       )
       const input = field.find('input')
-      expect(input.prop('name')).toBe('contact_ok')
+      expect(input.prop('name')).toBe('contactOk')
       expect(input.prop('type')).toBe('checkbox')
     })
 

@@ -44,7 +44,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
           postalCode: '92200',
           city: 'Ville de test',
           cgu_ok: true,
-          contact_ok: true,
+          contactOk: true,
         }
         const expectedFetchPayload = {
           ...payload,
