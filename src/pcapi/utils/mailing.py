@@ -193,32 +193,6 @@ def make_offerer_driven_cancellation_email_for_offerer(booking: Booking) -> Dict
     }
 
 
-def get_contact(user: User) -> Union[str, None]:
-    mailjet_json_response = app.mailjet_client.contact.get(user.email).json()
-    return mailjet_json_response["Data"][0] if "Data" in mailjet_json_response else None
-
-
-def subscribe_newsletter(user: User):
-    if not feature_send_mail_to_users_enabled():
-        logger.logger.info("Subscription in DEV or STAGING mode is disabled")
-        return None
-
-    try:
-        contact = get_contact(user)
-    except Exception:  # pylint: disable=broad-except
-        contact_data = {"Email": user.email, "Name": user.publicName}
-        contact_json = app.mailjet_client.contact.create(data=contact_data).json()
-        contact = contact_json["Data"][0] if "Data" in contact_json else None
-
-    if contact is None:
-        raise MailServiceException
-
-    # ('Pass Culture - Liste de diffusion', 1795144)
-    contact_lists_data = {"ContactsLists": [{"Action": "addnoforce", "ListID": 1795144}]}
-
-    return app.mailjet_client.contact_managecontactslists.create(id=contact["ID"], data=contact_lists_data).json()
-
-
 def make_payment_message_email(xml: str, checksum: bytes) -> Dict:
     now = datetime.utcnow()
     xml_b64encode = base64.b64encode(xml.encode("utf-8")).decode()

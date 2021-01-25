@@ -320,7 +320,6 @@ def create_pro_user(pro_user: ProUserCreationBodyModel) -> User:
 
     try:
         user_emails.send_user_validation_email(new_pro_user, mailing_utils.send_raw_email)
-        mailing_utils.subscribe_newsletter(new_pro_user)
     except MailServiceException:
         logger.exception("Could not send validation email when creating pro user=%s", new_pro_user.id)
 

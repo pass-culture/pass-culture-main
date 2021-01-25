@@ -1,4 +1,3 @@
-from flask import current_app as app
 from flask import jsonify
 from flask import request
 
@@ -14,8 +13,6 @@ from pcapi.routes.serialization import as_dict
 from pcapi.utils.feature import feature_required
 from pcapi.utils.includes import BENEFICIARY_INCLUDES
 from pcapi.utils.logger import logger
-from pcapi.utils.mailing import MailServiceException
-from pcapi.utils.mailing import subscribe_newsletter
 from pcapi.validation.routes.users import check_valid_signup_webapp
 
 
@@ -27,6 +24,8 @@ def signup_webapp():
     check_valid_signup_webapp(request)
 
     new_user = User(from_dict=request.json)
+    if request.json.get("contact_ok"):
+        new_user.hasAllowedRecommendations = True
 
     if settings.IS_INTEGRATION:
         new_user.departementCode = "00"
@@ -42,12 +41,6 @@ def signup_webapp():
     objects_to_save.append(new_user)
 
     repository.save(*objects_to_save)
-
-    if request.json.get("contact_ok"):
-        try:
-            subscribe_newsletter(new_user)
-        except MailServiceException as e:
-            app.logger.exception("Mail service failure", e)
 
     return jsonify(as_dict(new_user, includes=BENEFICIARY_INCLUDES)), 201
 
