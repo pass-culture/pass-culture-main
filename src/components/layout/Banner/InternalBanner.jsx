@@ -1,9 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import Icon from 'components/layout/Icon'
-
-const Banner = ({ icon, href, linkTitle, subtitle, type }) => {
+const InternalBanner = ({ href, linkTitle, subtitle, type }) => {
   return (
     <div className={`bi-banner ${type}`}>
       <p>
@@ -14,10 +12,7 @@ const Banner = ({ icon, href, linkTitle, subtitle, type }) => {
         <a
           className="bi-link"
           href={href}
-          rel="noopener noreferrer"
-          target="_blank"
         >
-          <Icon svg={icon} />
           {linkTitle}
         </a>
       </p>
@@ -25,18 +20,16 @@ const Banner = ({ icon, href, linkTitle, subtitle, type }) => {
   )
 }
 
-Banner.defaultProps = {
-  icon: 'ico-external-site',
+InternalBanner.defaultProps = {
   subtitle: '',
   type: 'attention',
 }
 
-Banner.propTypes = {
+InternalBanner.propTypes = {
   href: PropTypes.string.isRequired,
-  icon: PropTypes.string,
   linkTitle: PropTypes.string.isRequired,
   subtitle: PropTypes.string,
   type: PropTypes.oneOf(['notification-info', 'attention']),
 }
 
-export default Banner
+export default InternalBanner

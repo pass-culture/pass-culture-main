@@ -28,19 +28,19 @@ const OfferDetails = ({
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search)
-    if (queryParams.get('structure')) {
+    if (queryParams.has('structure')) {
       setFormInitialValues(oldFormInitialValues => ({
         ...oldFormInitialValues,
         offererId: queryParams.get('structure'),
       }))
     }
-    if (queryParams.get('lieu')) {
+    if (queryParams.has('lieu')) {
       setFormInitialValues(oldFormInitialValues => ({
         ...oldFormInitialValues,
         venueId: queryParams.get('lieu'),
       }))
     }
-  }, [setFormInitialValues, location.search])
+  }, [location.search])
 
   const handleSubmitOffer = useCallback(
     async offerValues => {
@@ -79,7 +79,6 @@ const OfferDetails = ({
     [
       history,
       offer,
-      setFormErrors,
       showCreationSuccessNotification,
       showEditionSuccessNotification,
       showErrorNotification,

@@ -48,9 +48,10 @@ const OfferCreation = ({
 
   const getVenuesForAdmin = useCallback(() => {
     if (selectedOfferer) {
-      pcapi
-        .getVenuesForOfferer(selectedOfferer)
-        .then(receivedVenues => setDisplayedVenues(receivedVenues))
+      pcapi.getVenuesForOfferer(selectedOfferer).then(receivedVenues => {
+        venues.current = receivedVenues
+        setDisplayedVenues(receivedVenues)
+      })
     } else {
       setDisplayedVenues([])
     }
@@ -71,12 +72,22 @@ const OfferCreation = ({
     }
   }, [filterVenuesForPro, getVenuesForAdmin, isUserAdmin])
 
+  const isComingFromOffererPage = initialValues.offererId !== undefined
+
+  const areAllVenuesVirtual =
+    isComingFromOffererPage && selectedOfferer === initialValues.offererId
+      ? venues.current
+          .filter(venue => venue.managingOffererId === selectedOfferer)
+          .every(venue => venue.isVirtual)
+      : venues.current.every(venue => venue.isVirtual)
+
   if (isLoading) {
     return null
   }
 
   return (
     <OfferForm
+      areAllVenuesVirtual={areAllVenuesVirtual}
       formValues={formValues}
       initialValues={initialValues}
       isUserAdmin={isUserAdmin}

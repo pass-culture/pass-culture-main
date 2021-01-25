@@ -1,5 +1,5 @@
-import '@testing-library/jest-dom'
 import { within } from '@testing-library/dom'
+import '@testing-library/jest-dom'
 import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
@@ -115,13 +115,15 @@ describe('offerDetails - Creation - pro user', () => {
         value: 'EventType.CONFERENCE_DEBAT_DEDICACE',
       },
     ]
+    const offerer1Id = 'BA'
+    const offerer2Id = 'BAC'
     offerers = [
       {
-        id: 'BA',
+        id: offerer1Id,
         name: 'La structure',
       },
       {
-        id: 'BAC',
+        id: offerer2Id,
         name: "L'autre structure",
       },
     ]
@@ -129,21 +131,21 @@ describe('offerDetails - Creation - pro user', () => {
       {
         id: 'AB',
         isVirtual: false,
-        managingOffererId: offerers[0].id,
+        managingOffererId: offerer1Id,
         name: 'Le lieu',
         offererName: 'La structure',
       },
       {
         id: 'ABC',
         isVirtual: false,
-        managingOffererId: offerers[1].id,
+        managingOffererId: offerer2Id,
         name: "L'autre lieu",
         offererName: "L'autre structure",
       },
       {
         id: 'ABCD',
         isVirtual: true,
-        managingOffererId: offerers[1].id,
+        managingOffererId: offerer2Id,
         name: "L'autre lieu (Offre numérique)",
         offererName: "L'autre structure",
       },
@@ -206,6 +208,151 @@ describe('offerDetails - Creation - pro user', () => {
     })
 
     describe('when selecting an offer type', () => {
+      describe('when selecting physical type', () => {
+        it('should inform user to add a venue if only virtual venue', async () => {
+          // Given
+          venues = [
+            {
+              id: 'AB',
+              isVirtual: true,
+              managingOffererId: 'AA',
+              name: 'Le lieu (Offre Numérique)',
+              offererName: 'Une structure',
+            },
+            {
+              id: 'ABC',
+              isVirtual: true,
+              managingOffererId: 'AA',
+              name: 'Un lieu (Offre Numérique)',
+              offererName: 'Une structure',
+            },
+            {
+              id: 'ABD',
+              isVirtual: true,
+              managingOffererId: 'AD',
+              name: 'Un lieu (Offre Numérique)',
+              offererName: 'Une autre structure',
+            },
+          ]
+          pcapi.getVenuesForOfferer.mockResolvedValue(venues)
+          await renderOffers(props, store)
+
+          // When
+          await setOfferValues({ type: 'EventType.CINEMA' })
+
+          // Then
+          expect(
+            screen.getByText(
+              'Pour créer une offre de ce type, ajoutez d’abord un lieu à l’une de vos structures.'
+            )
+          ).toBeInTheDocument()
+          expect(screen.getByRole('link', { name: '+ Ajouter un lieu' })).toHaveAttribute(
+            'href',
+            '/structures'
+          )
+        })
+
+        it('should not inform user about venue creation if at least one non virtual venue', async () => {
+          // Given
+          await renderOffers(props, store)
+
+          // When
+          await setOfferValues({ type: 'EventType.CINEMA' })
+
+          // Then
+          expect(
+            screen.queryByText(
+              'Pour créer une offre de ce type, ajoutez d’abord un lieu à l’une de vos structures.'
+            )
+          ).not.toBeInTheDocument()
+          expect(screen.queryByRole('link', { name: '+ Ajouter un lieu' })).not.toBeInTheDocument()
+        })
+      })
+
+      describe('when selecting digital type', () => {
+        it('should not inform user about venue creation if only virtual venue', async () => {
+          // Given
+          venues = [
+            {
+              id: 'AB',
+              isVirtual: true,
+              managingOffererId: 'AA',
+              name: 'Le lieu (Offre Numérique)',
+              offererName: 'Une structure',
+            },
+            {
+              id: 'ABC',
+              isVirtual: true,
+              managingOffererId: 'AA',
+              name: 'Un lieu (Offre Numérique)',
+              offererName: 'Une structure',
+            },
+            {
+              id: 'ABD',
+              isVirtual: true,
+              managingOffererId: 'AD',
+              name: 'Un lieu (Offre Numérique)',
+              offererName: 'Une autre structure',
+            },
+          ]
+          pcapi.getVenuesForOfferer.mockResolvedValue(venues)
+          await renderOffers(props, store)
+
+          // When
+          await setOfferValues({ type: 'ThingType.CINEMA_CARD' })
+
+          // Then
+          expect(
+            screen.queryByText(
+              'Pour créer une offre de ce type, ajoutez d’abord un lieu à l’une de vos structures.'
+            )
+          ).not.toBeInTheDocument()
+          expect(screen.queryByRole('link', { name: '+ Ajouter un lieu' })).not.toBeInTheDocument()
+        })
+      })
+
+      describe('when selecting physical or digital type', () => {
+        it('should not inform user about venue creation if only virtual venue', async () => {
+          // Given
+          venues = [
+            {
+              id: 'AB',
+              isVirtual: true,
+              managingOffererId: 'AA',
+              name: 'Le lieu (Offre Numérique)',
+              offererName: 'Une structure',
+            },
+            {
+              id: 'ABC',
+              isVirtual: true,
+              managingOffererId: 'AA',
+              name: 'Un lieu (Offre Numérique)',
+              offererName: 'Une structure',
+            },
+            {
+              id: 'ABD',
+              isVirtual: true,
+              managingOffererId: 'AD',
+              name: 'Un lieu (Offre Numérique)',
+              offererName: 'Une autre structure',
+            },
+          ]
+          pcapi.getVenuesForOfferer.mockResolvedValue(venues)
+          await renderOffers(props, store)
+
+          // When
+          await setOfferValues({ type: 'ThingType.LIVRE_EDITION' })
+
+          // Then
+          expect(
+            screen.queryByText(
+              'Pour créer une offre de ce type, ajoutez d’abord un lieu à l’une de vos structures.'
+            )
+          ).not.toBeInTheDocument()
+          expect(screen.queryByRole('link', { name: '+ Ajouter un lieu' })).not.toBeInTheDocument()
+        })
+      })
+
       it('should display a placeholder for the offer thumbnail', async () => {
         // Given
         await renderOffers(props, store)
@@ -493,21 +640,79 @@ describe('offerDetails - Creation - pro user', () => {
           expect(screen.getByLabelText('Structure')).toHaveDisplayValue(offerers[0].name)
         })
 
-        it('should warn user that his offerer has no physical venues when selecting a physical offer and no venues are physical', async () => {
+        it('should warn user if selected offerer has no physical venues but physical type is selected', async () => {
           // Given
-          pcapi.getVenuesForOfferer.mockResolvedValue([
+          const venues = [
             {
-              id: 'AB',
+              id: 'CCC',
               isVirtual: true,
               managingOffererId: offerers[0].id,
-              name: 'Le lieu virtuel',
+              name: 'Le lieu',
               offererName: 'La structure',
             },
-          ])
+            {
+              id: 'DDD',
+              isVirtual: false,
+              managingOffererId: offerers[1].id,
+              name: "L'autre lieu",
+              offererName: "L'autre structure",
+            },
+            {
+              id: 'EEE',
+              isVirtual: true,
+              managingOffererId: offerers[1].id,
+              name: "L'autre lieu (Offre numérique)",
+              offererName: "L'autre structure",
+            },
+          ]
+          pcapi.getVenuesForOfferer.mockResolvedValue(venues)
           await renderOffers(props, store)
+          await setOfferValues({ type: 'EventType.CINEMA' })
 
           // When
+          await setOfferValues({ offererId: offerers[0].id })
+
+          // Then
+          const venueInput = screen.getByLabelText('Lieu')
+          expect(venueInput).toBeInTheDocument()
+          expect(venueInput).not.toHaveAttribute('disabled')
+          const venueIdError = await findInputErrorForField('venueId')
+          expect(venueIdError).toHaveTextContent(
+            'Il faut obligatoirement une structure avec un lieu.'
+          )
+        })
+
+        it('should warn user if selected offerer has no physical venues but physical type is selected while coming from offerer page', async () => {
+          // Given
+          const venues = [
+            {
+              id: 'CCC',
+              isVirtual: true,
+              managingOffererId: offerers[0].id,
+              name: 'Le lieu',
+              offererName: 'La structure',
+            },
+            {
+              id: 'DDD',
+              isVirtual: false,
+              managingOffererId: offerers[1].id,
+              name: "L'autre lieu",
+              offererName: "L'autre structure",
+            },
+            {
+              id: 'EEE',
+              isVirtual: true,
+              managingOffererId: offerers[1].id,
+              name: "L'autre lieu (Offre numérique)",
+              offererName: "L'autre structure",
+            },
+          ]
+          pcapi.getVenuesForOfferer.mockResolvedValue(venues)
+          await renderOffers(props, store, `?structure=${offerers[1].id}`)
           await setOfferValues({ type: 'EventType.CINEMA' })
+
+          // When
+          await setOfferValues({ offererId: offerers[0].id })
 
           // Then
           const venueInput = screen.getByLabelText('Lieu')

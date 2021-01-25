@@ -58,13 +58,15 @@ describe('offerDetails - Creation - admin user', () => {
         value: 'EventType.CINEMA',
       },
     ]
+    const offerer1Id = 'BA'
+    const offerer2Id = 'BAC'
     offerers = [
       {
-        id: 'BA',
+        id: offerer1Id,
         name: 'La structure',
       },
       {
-        id: 'BAC',
+        id: offerer2Id,
         name: "L'autre structure",
       },
     ]
@@ -72,21 +74,21 @@ describe('offerDetails - Creation - admin user', () => {
       {
         id: 'AB',
         isVirtual: false,
-        managingOffererId: offerers[0].id,
+        managingOffererId: offerer1Id,
         name: 'Le lieu',
         offererName: 'La structure',
       },
       {
         id: 'ABC',
         isVirtual: false,
-        managingOffererId: offerers[1].id,
+        managingOffererId: offerer2Id,
         name: "L'autre lieu",
         offererName: "L'autre structure",
       },
       {
         id: 'ABCD',
         isVirtual: true,
-        managingOffererId: offerers[1].id,
+        managingOffererId: offerer2Id,
         name: "L'autre lieu (Offre numérique)",
         offererName: "L'autre structure",
       },

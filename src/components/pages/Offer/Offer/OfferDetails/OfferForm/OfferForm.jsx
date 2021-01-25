@@ -2,6 +2,7 @@ import isEqual from 'lodash.isequal'
 import PropTypes from 'prop-types'
 import React, { Fragment, useCallback, useEffect, useState } from 'react'
 
+import InternalBanner from 'components/layout/Banner/InternalBanner'
 import { CheckboxInput } from 'components/layout/inputs/CheckboxInput/CheckboxInput'
 import DurationInput from 'components/layout/inputs/DurationInput/DurationInput'
 import Select, { buildSelectOptions } from 'components/layout/inputs/Select'
@@ -55,6 +56,7 @@ const getOfferConditionalFields = ({
 }
 
 const OfferForm = ({
+  areAllVenuesVirtual,
   backUrl,
   formValues,
   initialValues,
@@ -333,6 +335,8 @@ const OfferForm = ({
     return fieldName in formErrors ? formErrors[fieldName] : null
   }
 
+  const isTypeOfflineButOnlyVirtualVenues = offerType?.offlineOnly && areAllVenuesVirtual
+
   return (
     <form className="offer-form">
       {providerName !== null ? (
@@ -366,10 +370,18 @@ const OfferForm = ({
             types={types}
             updateTypeValues={handleFormUpdate}
           />
+          {isTypeOfflineButOnlyVirtualVenues && (
+            <InternalBanner
+              href="/structures"
+              linkTitle="+ Ajouter un lieu"
+              subtitle="Pour créer une offre de ce type, ajoutez d’abord un lieu à l’une de vos structures."
+              type="notification-info"
+            />
+          )}
         </div>
       </section>
 
-      {formValues.type !== DEFAULT_FORM_VALUES.type && (
+      {formValues.type !== DEFAULT_FORM_VALUES.type && !isTypeOfflineButOnlyVirtualVenues && (
         <Fragment>
           <section className="form-section">
             <h3 className="section-title">

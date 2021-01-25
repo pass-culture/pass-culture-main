@@ -2,9 +2,9 @@ import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 
-import Banner from 'components/layout/Banner/Banner'
+import InternalBanner from 'components/layout/Banner/InternalBanner'
 
-describe('src | components | layout | Banner', () => {
+describe('src | components | layout | InternalBanner', () => {
   describe('render', () => {
     let props = {
       subtitle: 'subtitle',
@@ -12,23 +12,21 @@ describe('src | components | layout | Banner', () => {
       linkTitle: 'linkTitle',
     }
 
-    it('should render the Banner with the default props', () => {
+    it('should render the InternalBanner with the default props', () => {
       // when
-      render(<Banner {...props} />)
+      render(<InternalBanner {...props} />)
 
       // then
       expect(screen.getByText(props.subtitle)).toBeInTheDocument()
-      expect(screen.getByRole('img')).toBeInTheDocument()
       const link = screen.getByRole('link', { name: props.linkTitle })
       expect(link).toBeInTheDocument()
       expect(link).toHaveAttribute('href', props.href)
-      expect(link).toHaveAttribute('target', '_blank')
-      expect(link).toHaveAttribute('rel', 'noopener noreferrer')
+      expect(link).not.toHaveAttribute('target', '_blank')
     })
 
     it('should change the banner type - attention', () => {
       // when
-      render(<Banner {...props} />)
+      render(<InternalBanner {...props} />)
 
       // then
       expect(screen.getByText(props.subtitle).closest('div')).toHaveAttribute(
@@ -41,7 +39,7 @@ describe('src | components | layout | Banner', () => {
       props.type = 'notification-info'
 
       // when
-      render(<Banner {...props} />)
+      render(<InternalBanner {...props} />)
 
       // then
       expect(screen.getByText(props.subtitle).closest('div')).toHaveAttribute(
