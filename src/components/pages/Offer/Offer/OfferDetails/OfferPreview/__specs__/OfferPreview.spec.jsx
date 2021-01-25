@@ -2,7 +2,13 @@ import '@testing-library/jest-dom'
 import { act, render, screen } from '@testing-library/react'
 import React from 'react'
 
+import * as pcapi from 'repository/pcapi/pcapi'
+
 import OfferPreview from '../OfferPreview'
+
+jest.mock('repository/pcapi/pcapi', () => ({
+  getVenue: jest.fn(),
+}))
 
 const renderOfferPreview = async formValues => {
   await act(async () => {
@@ -11,6 +17,10 @@ const renderOfferPreview = async formValues => {
 }
 
 describe('offer preview', () => {
+  beforeEach(() => {
+    pcapi.getVenue.mockReturnValue(Promise.resolve())
+  })
+
   describe('render', () => {
     it('should display title, description and withdrawal details when given', () => {
       // given

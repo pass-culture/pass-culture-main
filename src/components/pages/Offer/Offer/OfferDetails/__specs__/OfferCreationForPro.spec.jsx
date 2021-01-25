@@ -24,6 +24,7 @@ import {
 jest.mock('repository/pcapi/pcapi', () => ({
   createOffer: jest.fn(),
   getValidatedOfferers: jest.fn(),
+  getVenue: jest.fn(),
   getVenuesForOfferer: jest.fn(),
   loadOffer: jest.fn(),
   loadStocks: jest.fn(),
@@ -155,6 +156,7 @@ describe('offerDetails - Creation - pro user', () => {
     pcapi.loadTypes.mockResolvedValue(types)
     pcapi.getValidatedOfferers.mockResolvedValue(offerers)
     pcapi.getVenuesForOfferer.mockResolvedValue(venues)
+    pcapi.getVenue.mockReturnValue(Promise.resolve())
     pcapi.createOffer.mockResolvedValue({})
     jest.spyOn(window, 'scrollTo').mockImplementation()
   })
@@ -379,7 +381,7 @@ describe('offerDetails - Creation - pro user', () => {
           userEvent.type(titleInput, 'Mon joli titre')
 
           // then
-          expect(await screen.getAllByText('Mon joli titre')).toHaveLength(2)
+          expect(screen.getAllByText('Mon joli titre')).toHaveLength(2)
         })
 
         it('should display description when input is filled', async () => {
@@ -408,6 +410,146 @@ describe('offerDetails - Creation - pro user', () => {
 
           // then
           expect(await screen.queryAllByText('Mes jolies modalités')).toHaveLength(2)
+        })
+
+        describe('"Où" section', () => {
+          describe('when physical venue is selected', () => {
+            it('should display "Où" section', async () => {
+              // Given
+              await renderOffers(props, store)
+              const offererWithMultipleVenues = offerers[1]
+              const physicalVenue = venues[1]
+              pcapi.getVenue.mockResolvedValue(physicalVenue)
+              await setOfferValues({
+                type: 'EventType.CINEMA',
+                offererId: offererWithMultipleVenues.id,
+              })
+
+              // When
+              userEvent.selectOptions(screen.getByLabelText('Lieu'), physicalVenue.id)
+
+              // Then
+              const offerPreview = screen.getByTestId('offer-preview-section')
+              expect(within(offerPreview).getByText('Où ?')).toBeInTheDocument()
+              expect(within(offerPreview).getByText('Adresse')).toBeInTheDocument()
+              expect(within(offerPreview).getByText('Distance')).toBeInTheDocument()
+            })
+
+            it("should display venue's public name if provided", async () => {
+              // Given
+              await renderOffers(props, store)
+              const offererWithMultipleVenues = offerers[1]
+              const physicalVenue = venues[1]
+              physicalVenue.publicName = 'Le petit nom du lieu'
+              pcapi.getVenue.mockResolvedValue(physicalVenue)
+              await setOfferValues({
+                type: 'EventType.CINEMA',
+                offererId: offererWithMultipleVenues.id,
+              })
+
+              // When
+              userEvent.selectOptions(screen.getByLabelText('Lieu'), physicalVenue.id)
+
+              // Then
+              const offerPreview = screen.getByTestId('offer-preview-section')
+              expect(
+                within(offerPreview).getByText(physicalVenue.publicName, { exact: false })
+              ).toBeInTheDocument()
+              expect(
+                within(offerPreview).queryByText(physicalVenue.name, { exact: false })
+              ).not.toBeInTheDocument()
+            })
+
+            it("should display venue's name if public name not provided", async () => {
+              // Given
+              await renderOffers(props, store)
+              const offererWithMultipleVenues = offerers[1]
+              const physicalVenue = venues[1]
+              pcapi.getVenue.mockResolvedValue(physicalVenue)
+              await setOfferValues({
+                type: 'EventType.CINEMA',
+                offererId: offererWithMultipleVenues.id,
+              })
+
+              // When
+              userEvent.selectOptions(screen.getByLabelText('Lieu'), physicalVenue.id)
+
+              // Then
+              const offerPreview = screen.getByTestId('offer-preview-section')
+              expect(
+                within(offerPreview).getByText(physicalVenue.name, { exact: false })
+              ).toBeInTheDocument()
+            })
+
+            it('should display formatted adress', async () => {
+              // Given
+              await renderOffers(props, store)
+              const offererWithMultipleVenues = offerers[1]
+              const physicalVenue = venues[1]
+              physicalVenue.address = "34 avenue de l'Opéra"
+              physicalVenue.postalCode = '75002'
+              physicalVenue.city = 'Paris'
+              pcapi.getVenue.mockResolvedValue(physicalVenue)
+              await setOfferValues({
+                type: 'EventType.CINEMA',
+                offererId: offererWithMultipleVenues.id,
+              })
+
+              // When
+              userEvent.selectOptions(screen.getByLabelText('Lieu'), physicalVenue.id)
+
+              // Then
+              const offerPreview = screen.getByTestId('offer-preview-section')
+              const expectedFormattedAddress = `${physicalVenue.name} - ${physicalVenue.address} - ${physicalVenue.postalCode} - ${physicalVenue.city}`
+              expect(within(offerPreview).getByText(expectedFormattedAddress)).toBeInTheDocument()
+            })
+          })
+
+          describe('when virtual venue is selected', () => {
+            it('should not display "Où" section', async () => {
+              // Given
+              await renderOffers(props, store)
+              const offererWithMultipleVenues = offerers[1]
+              const virtualVenue = venues[2]
+              pcapi.getVenue.mockResolvedValue(virtualVenue)
+              await setOfferValues({
+                type: 'ThingType.CINEMA_CARD',
+                offererId: offererWithMultipleVenues.id,
+              })
+
+              // When
+              userEvent.selectOptions(screen.getByLabelText('Lieu'), virtualVenue.id)
+
+              // Then
+              const offerPreview = screen.getByTestId('offer-preview-section')
+              expect(within(offerPreview).queryByText('Où ?')).not.toBeInTheDocument()
+              expect(within(offerPreview).queryByText('Adresse')).not.toBeInTheDocument()
+              expect(within(offerPreview).queryByText('Distance')).not.toBeInTheDocument()
+            })
+          })
+
+          describe('when no venue is selected', () => {
+            it('should not display "Où" section', async () => {
+              // Given
+              await renderOffers(props, store)
+              const offererWithMultipleVenues = offerers[1]
+              const physicalVenue = venues[1]
+              await setOfferValues({
+                type: 'EventType.CINEMA',
+                offererId: offererWithMultipleVenues.id,
+              })
+
+              // When
+              userEvent.selectOptions(screen.getByLabelText('Lieu'), physicalVenue.id)
+              userEvent.selectOptions(screen.getByLabelText('Lieu'), '')
+
+              // Then
+              const offerPreview = screen.getByTestId('offer-preview-section')
+              expect(within(offerPreview).queryByText('Où ?')).not.toBeInTheDocument()
+              expect(within(offerPreview).queryByText('Adresse')).not.toBeInTheDocument()
+              expect(within(offerPreview).queryByText('Distance')).not.toBeInTheDocument()
+            })
+          })
         })
       })
 

@@ -66,6 +66,12 @@
     margin-bottom: rem(16px);
   }
 
+  .op-section-secondary-title {
+    @include highlight();
+
+    line-height: rem(16px);
+  }
+
   .op-section-text {
     @include preview-text();
 
@@ -74,6 +80,10 @@
     &:last-child {
       margin-bottom: 0;
     }
+  }
+
+  .op-address {
+    line-height: rem(20px);
   }
 
   .title-preview {

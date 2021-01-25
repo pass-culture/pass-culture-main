@@ -16,6 +16,7 @@ jest.mock('repository/pcapi/pcapi', () => ({
   createOffer: jest.fn(),
   getValidatedOfferers: jest.fn(),
   getVenuesForOfferer: jest.fn(),
+  getVenue: jest.fn(),
   loadTypes: jest.fn(),
 }))
 
@@ -98,6 +99,7 @@ describe('offerDetails - Creation - admin user', () => {
     pcapi.getVenuesForOfferer.mockImplementation(offererId =>
       Promise.resolve(venues.filter(venue => venue.managingOffererId === offererId))
     )
+    pcapi.getVenue.mockReturnValue(Promise.resolve())
     jest.spyOn(window, 'scrollTo').mockImplementation()
   })
 

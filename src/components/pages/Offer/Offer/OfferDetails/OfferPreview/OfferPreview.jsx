@@ -1,13 +1,16 @@
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 
 import { ReactComponent as DuoSvg } from 'icons/ico-duo.svg'
 import { ReactComponent as PassCultureSvg } from 'icons/ico-passculture.svg'
 import { ReactComponent as TagSvg } from 'icons/ico-tag.svg'
+import * as pcapi from 'repository/pcapi/pcapi'
 
 const PREVIEW_TEXT_MAX_LENGTH = 300
 
 const OfferPreview = ({ formValues }) => {
+  const [venue, setVenue] = useState(null)
+
   const buildPreviewText = previewText => {
     if (previewText.trim().length > PREVIEW_TEXT_MAX_LENGTH) {
       return previewText.substr(0, PREVIEW_TEXT_MAX_LENGTH) + '...'
@@ -15,8 +18,21 @@ const OfferPreview = ({ formValues }) => {
     return previewText
   }
 
+  useEffect(() => {
+    formValues.venueId
+      ? pcapi.getVenue(formValues.venueId).then(venue => {
+          setVenue(venue)
+        })
+      : setVenue(null)
+  }, [formValues.venueId])
+
+  const venueName = useMemo(() => venue?.publicName || venue?.name, [venue])
+
   return (
-    <div className="offer-preview">
+    <div
+      className="offer-preview"
+      data-testid="offer-preview-section"
+    >
       <div className="op-section">
         {formValues.name && (
           <div className="title-preview">
@@ -60,6 +76,26 @@ const OfferPreview = ({ formValues }) => {
           </div>
         )}
       </div>
+
+      {venue && !venue.isVirtual && (
+        <div className="op-section">
+          <div className="op-section-title">
+            {'Où ?'}
+          </div>
+          <div className="op-section-secondary-title">
+            {'Adresse'}
+          </div>
+          <div className="op-section-text op-address">
+            {`${venueName} - ${venue.address} - ${venue.postalCode} - ${venue.city}`}
+          </div>
+          <div className="op-section-secondary-title">
+            {'Distance'}
+          </div>
+          <div className="op-section-text">
+            {'- - km'}
+          </div>
+        </div>
+      )}
 
       {formValues.withdrawalDetails && (
         <div className="op-section">

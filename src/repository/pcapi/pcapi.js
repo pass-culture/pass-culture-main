@@ -102,16 +102,19 @@ const createRequestBody = searchFilters => {
   return body
 }
 
+export const getValidatedOfferers = () => {
+  return client.get('/offerers?validated=true')
+}
+
+//
+// venues
+//
 export const setAllVenueOffersActivate = async venueId => {
   return client.put(`/venues/${venueId}/offers/activate`)
 }
 
 export const setAllVenueOffersInactivate = async venueId => {
   return client.put(`/venues/${venueId}/offers/deactivate`)
-}
-
-export const getValidatedOfferers = () => {
-  return client.get('/offerers?validated=true')
 }
 
 export const getVenuesForOfferer = offererId => {
@@ -121,6 +124,8 @@ export const getVenuesForOfferer = offererId => {
     return client.get('/venues')
   }
 }
+
+export const getVenue = venueId => client.get(`/venues/${venueId}`)
 
 //
 // types

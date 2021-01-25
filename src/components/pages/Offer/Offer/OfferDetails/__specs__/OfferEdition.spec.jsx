@@ -20,6 +20,7 @@ jest.mock('repository/pcapi/pcapi', () => ({
   updateOffer: jest.fn(),
   getValidatedOfferers: jest.fn(),
   getVenuesForOfferer: jest.fn(),
+  getVenue: jest.fn(),
   loadOffer: jest.fn(),
   loadTypes: jest.fn(),
 }))
@@ -103,6 +104,7 @@ describe('offerDetails - Edition', () => {
     }
     pcapi.loadOffer.mockResolvedValue(editedOffer)
     pcapi.loadTypes.mockResolvedValue(types)
+    pcapi.getVenue.mockReturnValue(Promise.resolve())
   })
 
   describe('render when editing an existing offer', () => {
