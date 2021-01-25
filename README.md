@@ -270,6 +270,7 @@ La politique de tagging de version est la suivante :
   - I => incrément d'**Itération**
   - P => incrément de _fix_ en **Production**
   - S => incrément de _fix_ en **Staging**
+- Lors de la pose d'un tag, il faut communiquer les migrations de BDD embarquées à la data pour éviter des bugs sur les analytics
 
 ### Exemple
 
@@ -300,18 +301,17 @@ Les tests sont enfin joués et on déploie sur Testing.
 
 ## Hotfixes
 
-Pour tagguer les hotfixes, commencer par se placer sur la dernière version déployée en production ou en staging à
-l'aide d'un `git checkout vI.P.S` sur chacun de projets. En effet nous voulons déployer uniquement ce qui est en Prod + nos commits de hotfix.
+Une fois le commit sur master, déployé en testing et validé par les POs,
+pour tagguer les hotfixes, commencer par se placer sur la dernière version déployée
+en production ou en staging à l'aide d'un `git checkout vI.P.S` sur chacun de projets.
+En effet nous voulons déployer uniquement ce qui est en Prod + nos commits de hotfix.
 
-Une fois le tag checked-out, commiter le fix du bug puis lancer la commande de création de branches de hotfixes et de tag pour chacun des projets :
+Une fois le tag checked-out, cherry-pick le fix du bug puis lancer la commande de création de branches de hotfixes et de tag pour chacun des projets :
 
 `pc -t I.P(+1).S(+1) tag-hotfix`.
 
 Une fois les tests de la CI passés, on peut déployer ce tag.
-
-Le tag déployé, il faut reporter les commits des hotfixs sur les branches masters des différents projets
-pour qu'il soient présent lors des prochaines livraison, sinon il seront écrasés.
-Il faut aussi penser à supprimer les branches de hotfixs.
+Il faut aussi penser à supprimer les branches de hotfixs une fois le déploiement.
 
 ## Deploy
 
