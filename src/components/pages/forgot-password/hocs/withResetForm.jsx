@@ -7,7 +7,7 @@ import { requestData } from '../../../../utils/fetch-normalize-data/requestData'
 import { getReCaptchaToken } from '../../../../utils/recaptcha'
 import { IS_DEV } from '../../../../utils/config'
 
-const noop = () => {}
+const doNothingFunction = () => {}
 
 const withResetForm = (WrappedComponent, validator, routePath, routeMethod) => {
   const name = WrappedComponent.displayName || 'Component'
@@ -24,10 +24,7 @@ const withResetForm = (WrappedComponent, validator, routePath, routeMethod) => {
     handleRequestFail = formResolver => (state, action) => {
       // on retourne les erreurs API au formulaire
       const nextstate = { isloading: false }
-      const {
-        payload: { errors },
-      } = action
-      this.setState(nextstate, () => formResolver(errors))
+      this.setState(nextstate, () => formResolver(action.payload.errors))
     }
 
     handleRequestSuccess = formResolver => () => {
@@ -76,38 +73,31 @@ const withResetForm = (WrappedComponent, validator, routePath, routeMethod) => {
       return formSubmitPromise
     }
 
-    renderFinalForm = ({
-      // https://github.com/final-form/final-form#formstate
-      dirtySinceLastSubmit,
-      error: preSubmitError,
-      handleSubmit,
-      hasSubmitErrors,
-      hasValidationErrors,
-      pristine,
-      values,
-    }) => {
-      const { isloading } = this.state
+    // https://github.com/final-form/final-form#formstate
+    renderFinalForm = formState => {
       const canSubmit =
-        (values.newPasswordConfirm === values.newPassword &&
-          !pristine &&
-          !hasSubmitErrors &&
-          !hasValidationErrors &&
-          !isloading) ||
-        (!hasValidationErrors && hasSubmitErrors && dirtySinceLastSubmit)
-
+        (!formState.pristine &&
+          !formState.hasSubmitErrors &&
+          !formState.hasValidationErrors &&
+          !this.state.isloading) ||
+        (!formState.hasValidationErrors &&
+          formState.hasSubmitErrors &&
+          formState.dirtySinceLastSubmit)
       return (
         <form
           autoComplete="off"
           className="logout-form-container"
-          disabled={isloading}
+          disabled={this.state.isloading}
           noValidate
-          onSubmit={handleSubmit}
+          onSubmit={formState.handleSubmit}
         >
           <WrappedComponent
             {...this.props}
             canSubmit={canSubmit}
-            formErrors={!pristine && preSubmitError}
-            isLoading={isloading}
+            hasSubmitErrors={!formState.pristine && formState.hasSubmitErrors}
+            hasValidationErrors={!formState.pristine && formState.hasValidationErrors}
+            isLoading={this.state.isloading}
+            validationErrors={formState.errors}
           />
         </form>
       )
@@ -119,7 +109,7 @@ const withResetForm = (WrappedComponent, validator, routePath, routeMethod) => {
           initialValues={this.initialValues || {}}
           onSubmit={this.handleOnFormSubmit}
           render={this.renderFinalForm}
-          validate={validator || noop}
+          validate={validator || doNothingFunction}
         />
       )
     }
@@ -129,16 +119,27 @@ const withResetForm = (WrappedComponent, validator, routePath, routeMethod) => {
     initialValues: {},
   }
 
-  ResetPasswordForm.propTypes = {
-    dispatch: PropTypes.func.isRequired,
-    // NOTE: history et location sont automatiquement
-    // injectées par le render de la route du react-router-dom
-    history: PropTypes.shape().isRequired,
-    initialValues: PropTypes.shape(),
-    location: PropTypes.shape().isRequired,
-  }
+  ResetPasswordForm.propTypes = resetPasswordFormPropTypes
 
   return connect()(ResetPasswordForm)
+}
+
+const resetPasswordFormPropTypes = {
+  dispatch: PropTypes.func.isRequired,
+  // NOTE: history et location sont automatiquement
+  // injectées par le render de la route du react-router-dom
+  history: PropTypes.shape().isRequired,
+  initialValues: PropTypes.shape(),
+  location: PropTypes.shape().isRequired,
+}
+
+export const resetFormWrappedComponentPropTypes = {
+  canSubmit: PropTypes.bool.isRequired,
+  hasSubmitErrors: PropTypes.bool.isRequired,
+  hasValidationErrors: PropTypes.bool.isRequired,
+  isLoading: PropTypes.bool.isRequired,
+  validationErrors: PropTypes.shape(),
+  ...resetPasswordFormPropTypes,
 }
 
 export default withResetForm

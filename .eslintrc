@@ -37,6 +37,7 @@
     "jest/prefer-inline-snapshots": "off",
     "jsx-a11y/label-has-for": "off",
     "no-var": "error",
+    "react/destructuring-assignment": "off",
     "react/forbid-component-props": "off",
     "react/function-component-definition":  [
       2,
