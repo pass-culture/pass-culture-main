@@ -1,15 +1,24 @@
 import '@testing-library/jest-dom'
 import { fireEvent } from '@testing-library/dom'
 import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { MemoryRouter } from 'react-router'
 
 import {
+  CANVAS_HEIGHT,
+  CANVAS_WIDTH,
+  CROP_BORDER_HEIGHT,
+  CROP_BORDER_WIDTH,
+  CROP_BORDER_COLOR,
   MIN_IMAGE_HEIGHT,
   MIN_IMAGE_WIDTH,
 } from 'components/pages/Offer/Offer/Thumbnail/_constants'
 import ThumbnailDialog from 'components/pages/Offer/Offer/Thumbnail/ThumbnailDialog'
 import * as pcapi from 'repository/pcapi/pcapi'
+import CanvasTools from 'utils/canvas.js'
+
+jest.mock('utils/canvas.js')
 
 const createImageFile = ({
   name = 'example.png',
@@ -40,7 +49,7 @@ const renderThumbnail = () => {
 
 describe('thumbnail edition', () => {
   describe('when thumbnail exists', () => {
-    it('should display a modal when the user is clicking on thumbnail', async () => {
+    it('should display a modal when the user is clicking on thumbnail', () => {
       // When
       renderThumbnail()
 
@@ -94,9 +103,7 @@ describe('thumbnail edition', () => {
           const file = createImageFile()
 
           // When
-          fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
-            target: { files: [file] },
-          })
+          userEvent.upload(screen.getByLabelText('Importer une image depuis l’ordinateur'), file)
 
           // Then
           await waitFor(() => {
@@ -124,9 +131,7 @@ describe('thumbnail edition', () => {
           const file = createFile()
 
           // When
-          fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
-            target: { files: [file] },
-          })
+          userEvent.upload(screen.getByLabelText('Importer une image depuis l’ordinateur'), file)
 
           // Then
           expect(
@@ -142,21 +147,21 @@ describe('thumbnail edition', () => {
           const file = createFile({ sizeInMB: 50 })
 
           // When
-          fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
-            target: { files: [file] },
-          })
+          userEvent.upload(screen.getByLabelText('Importer une image depuis l’ordinateur'), file)
 
           // Then
-          expect(
-            await screen.findByText('Formats supportés : JPG, PNG', {
-              selector: 'strong',
-            })
-          ).toBeInTheDocument()
-          expect(
-            screen.queryByText('Le poids du fichier ne doit pas dépasser 10 Mo', {
-              selector: 'strong',
-            })
-          ).not.toBeInTheDocument()
+          await waitFor(() => {
+            expect(
+              screen.getByText('Formats supportés : JPG, PNG', {
+                selector: 'strong',
+              })
+            ).toBeInTheDocument()
+            expect(
+              screen.queryByText('Le poids du fichier ne doit pas dépasser 10 Mo', {
+                selector: 'strong',
+              })
+            ).not.toBeInTheDocument()
+          })
         })
 
         it('should not import an image which exceeds maximum size', async () => {
@@ -165,9 +170,7 @@ describe('thumbnail edition', () => {
           const bigFile = createImageFile({ sizeInMB: 10 })
 
           // When
-          fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
-            target: { files: [bigFile] },
-          })
+          userEvent.upload(screen.getByLabelText('Importer une image depuis l’ordinateur'), bigFile)
 
           // Then
           expect(
@@ -183,9 +186,7 @@ describe('thumbnail edition', () => {
           const file = createImageFile({ height: 200 })
 
           // When
-          fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
-            target: { files: [file] },
-          })
+          userEvent.upload(screen.getByLabelText('Importer une image depuis l’ordinateur'), file)
 
           // Then
           expect(
@@ -201,60 +202,13 @@ describe('thumbnail edition', () => {
           const file = createImageFile({ width: 200 })
 
           // When
-          fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
-            target: { files: [file] },
-          })
+          userEvent.upload(screen.getByLabelText('Importer une image depuis l’ordinateur'), file)
 
           // Then
           expect(
             await screen.findByText('La taille de l’image doit être supérieure à 400 x 400px', {
               selector: 'strong',
             })
-          ).toBeInTheDocument()
-        })
-      })
-
-      describe('when the user is on the credit page', () => {
-        it('should display the credit requirements', async () => {
-          // Given
-          renderThumbnail()
-          const file = createImageFile()
-
-          // When
-          fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
-            target: { files: [file] },
-          })
-
-          // Then
-          expect(
-            await screen.findByText('Crédit image et droits d’utilisation')
-          ).toBeInTheDocument()
-          expect(await screen.findByText('Crédit image')).toBeInTheDocument()
-          const inputCredit = await screen.findByPlaceholderText('Photographe...')
-          expect(inputCredit.maxLength).toBe(255)
-          expect(
-            await screen.findByText(
-              'En utilisant ce contenu, je certifie que je suis propriétaire ou que je dispose des autorisations nécessaires pour l’utilisation de celui-ci'
-            )
-          ).toBeInTheDocument()
-          expect(await screen.findByText('Retour', { selector: 'button' })).toBeInTheDocument()
-          expect(await screen.findByText('Suivant', { selector: 'button' })).toBeInTheDocument()
-        })
-
-        it('should return to the previous page if the return button is clicked', async () => {
-          // Given
-          renderThumbnail()
-          const file = createImageFile()
-          fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
-            target: { files: [file] },
-          })
-
-          // When
-          fireEvent.click(await screen.findByText('Retour', { selector: 'button' }))
-
-          // Then
-          expect(
-            screen.getByLabelText('Importer une image depuis l’ordinateur')
           ).toBeInTheDocument()
         })
       })
@@ -266,7 +220,7 @@ describe('thumbnail edition', () => {
         renderThumbnail()
 
         // When
-        fireEvent.click(screen.getByText('Utiliser une URL'))
+        userEvent.click(screen.getByText('Utiliser une URL'))
 
         // Then
         expect(
@@ -280,30 +234,28 @@ describe('thumbnail edition', () => {
         expect(screen.getByText('Valider', { selector: 'button' })).toHaveAttribute('disabled')
       })
 
-      it('should enable submit button if there is a string', async () => {
+      it('should enable submit button if there is a string', () => {
         // Given
         renderThumbnail()
-        fireEvent.click(screen.getByText('Utiliser une URL'))
+        userEvent.click(screen.getByText('Utiliser une URL'))
 
         // When
-        fireEvent.change(screen.getByLabelText('URL de l’image'), { target: { value: 'MEFA' } })
+        userEvent.type(screen.getByLabelText('URL de l’image'), 'MEFA')
 
         // Then
         expect(screen.getByText('Valider', { selector: 'button' })).not.toHaveAttribute('disabled')
       })
 
-      it('should display an error if the url does meet the requirements', async () => {
+      it('should display an error if the url does not meet the requirements', async () => {
         // Given
         jest.spyOn(pcapi, 'getURLErrors').mockResolvedValue({ errors: ['API error message'] })
         renderThumbnail()
 
-        fireEvent.click(screen.getByText('Utiliser une URL'))
-        fireEvent.change(screen.getByLabelText('URL de l’image'), {
-          target: { value: 'http://not-an-image' },
-        })
+        userEvent.click(screen.getByText('Utiliser une URL'))
+        userEvent.type(screen.getByLabelText('URL de l’image'), 'http://not-an-image')
 
         // When
-        fireEvent.click(screen.getByText('Valider', { selector: 'button' }))
+        userEvent.click(screen.getByText('Valider', { selector: 'button' }))
 
         // Then
         expect(await screen.findByText('Valider', { selector: 'button' })).toHaveAttribute(
@@ -319,13 +271,11 @@ describe('thumbnail edition', () => {
         jest.spyOn(pcapi, 'getURLErrors').mockRejectedValue({})
         renderThumbnail()
 
-        fireEvent.click(screen.getByText('Utiliser une URL'))
-        fireEvent.change(screen.getByLabelText('URL de l’image'), {
-          target: { value: 'http://not-an-image' },
-        })
+        userEvent.click(screen.getByText('Utiliser une URL'))
+        userEvent.type(screen.getByLabelText('URL de l’image'), 'http://not-an-image')
 
         // When
-        fireEvent.click(screen.getByText('Valider', { selector: 'button' }))
+        userEvent.click(screen.getByText('Valider', { selector: 'button' }))
 
         // Then
         expect(await screen.findByText('Valider', { selector: 'button' })).toHaveAttribute(
@@ -336,16 +286,14 @@ describe('thumbnail edition', () => {
         ).toBeInTheDocument()
       })
 
-      it('should display a URL format error if URL format is invalid', async () => {
+      it('should display a URL format error if URL format is invalid', () => {
         // Given
         renderThumbnail()
-        fireEvent.click(screen.getByText('Utiliser une URL'))
-        fireEvent.change(screen.getByLabelText('URL de l’image'), {
-          target: { value: 'htp://url_example.com' },
-        })
+        userEvent.click(screen.getByText('Utiliser une URL'))
+        userEvent.type(screen.getByLabelText('URL de l’image'), 'htp://url_example.com')
 
         // When
-        fireEvent.click(screen.getByText('Valider', { selector: 'button' }))
+        userEvent.click(screen.getByText('Valider', { selector: 'button' }))
 
         // Then
         expect(screen.getByText('Format d’URL non valide', { selector: 'pre' })).toBeInTheDocument()
@@ -354,13 +302,11 @@ describe('thumbnail edition', () => {
       it('should not display a URL format error if URL format is valid', async () => {
         // Given
         renderThumbnail()
-        fireEvent.click(screen.getByText('Utiliser une URL'))
-        fireEvent.change(screen.getByLabelText('URL de l’image'), {
-          target: { value: 'https://url_example.com' },
-        })
+        userEvent.click(screen.getByText('Utiliser une URL'))
+        userEvent.type(screen.getByLabelText('URL de l’image'), 'https://url_example.com')
 
         // When
-        fireEvent.click(screen.getByText('Valider', { selector: 'button' }))
+        userEvent.click(screen.getByText('Valider', { selector: 'button' }))
 
         // Then
         await waitFor(() => {
@@ -368,24 +314,112 @@ describe('thumbnail edition', () => {
         })
       })
 
-      it('should remove the error if the user rewrite the URL after a first error', async () => {
+      it('should remove the error if the user rewrite the URL after a first error', () => {
         // Given
         renderThumbnail()
-        fireEvent.click(screen.getByText('Utiliser une URL'))
-        fireEvent.change(screen.getByLabelText('URL de l’image'), {
-          target: { value: 'htp://url_example.com' },
-        })
-        fireEvent.click(screen.getByText('Valider', { selector: 'button' }))
+        userEvent.click(screen.getByText('Utiliser une URL'))
+        userEvent.type(screen.getByLabelText('URL de l’image'), 'htp://url_example.com')
+        userEvent.click(screen.getByText('Valider', { selector: 'button' }))
 
         // When
-        fireEvent.change(screen.getByPlaceholderText('Ex : http://...'), {
-          target: { value: 'http://url_example.com' },
-        })
+        userEvent.type(screen.getByPlaceholderText('Ex : http://...'), 'http://url_example.com')
 
         // Then
         expect(
           screen.queryByText('Format d’URL non valide', { selector: 'pre' })
         ).not.toBeInTheDocument()
+      })
+    })
+
+    describe('when the user is on the credit step', () => {
+      it('should display the credit step infos', async () => {
+        // Given
+        renderThumbnail()
+        const file = createImageFile()
+
+        // When
+        userEvent.upload(screen.getByLabelText('Importer une image depuis l’ordinateur'), file)
+
+        // Then
+        expect(await screen.findByText('Crédit image et droits d’utilisation')).toBeInTheDocument()
+        expect(await screen.findByText('Crédit image')).toBeInTheDocument()
+        const inputCredit = await screen.findByPlaceholderText('Photographe...')
+        expect(inputCredit.maxLength).toBe(255)
+        expect(
+          await screen.findByText(
+            'En utilisant ce contenu, je certifie que je suis propriétaire ou que je dispose des autorisations nécessaires pour l’utilisation de celui-ci'
+          )
+        ).toBeInTheDocument()
+        expect(await screen.findByText('Retour', { selector: 'button' })).toBeInTheDocument()
+        expect(await screen.findByText('Suivant', { selector: 'button' })).toBeInTheDocument()
+      })
+
+      it('should return to the previous page if the return button is clicked', async () => {
+        // Given
+        renderThumbnail()
+        const file = createImageFile()
+        userEvent.upload(screen.getByLabelText('Importer une image depuis l’ordinateur'), file)
+
+        // When
+        userEvent.click(await screen.findByText('Retour', { selector: 'button' }))
+
+        // Then
+        expect(screen.getByLabelText('Importer une image depuis l’ordinateur')).toBeInTheDocument()
+      })
+    })
+
+    describe('when the user is on the crop step', () => {
+      it('should display the crop step infos', async () => {
+        // Given
+        renderThumbnail()
+        const file = createImageFile()
+        userEvent.upload(screen.getByLabelText('Importer une image depuis l’ordinateur'), file)
+
+        // When
+        userEvent.click(await screen.findByText('Suivant', { selector: 'button' }))
+
+        // Then
+        expect(screen.getByText('Recadrer votre image')).toBeInTheDocument()
+        expect(screen.getByLabelText('Zoom')).toBeInTheDocument()
+        expect(screen.getByRole('slider')).toBeInTheDocument()
+        expect(screen.getByText('min')).toBeInTheDocument()
+        expect(screen.getByText('max')).toBeInTheDocument()
+        expect(screen.getByText('Retour', { selector: 'button' })).toBeInTheDocument()
+        expect(screen.getByText('Prévisualiser', { selector: 'button' })).toBeInTheDocument()
+      })
+
+      it('should return to the previous step and the user must see the previous credit', async () => {
+        // Given
+        renderThumbnail()
+        const file = createImageFile()
+        userEvent.upload(screen.getByLabelText('Importer une image depuis l’ordinateur'), file)
+        userEvent.type(await screen.findByPlaceholderText('Photographe...'), 'A fake credit')
+        userEvent.click(await screen.findByText('Suivant', { selector: 'button' }))
+
+        // When
+        userEvent.click(screen.getByText('Retour', { selector: 'button' }))
+
+        // Then
+        expect(screen.getByDisplayValue('A fake credit')).toBeInTheDocument()
+      })
+
+      it('should update the cropping border at each zoom', async () => {
+        // Given
+        renderThumbnail()
+        const file = createImageFile()
+        userEvent.upload(screen.getByLabelText('Importer une image depuis l’ordinateur'), file)
+        userEvent.type(await screen.findByPlaceholderText('Photographe...'), 'A fake credit')
+        userEvent.click(await screen.findByText('Suivant', { selector: 'button' }))
+
+        // When
+        fireEvent.change(screen.getByRole('slider'), { target: { value: 2.3 } })
+
+        // Then
+        expect(CanvasTools.mock.instances[0].drawArea).toHaveBeenCalledWith({
+          width: 0,
+          color: CROP_BORDER_COLOR,
+          coordinates: [CROP_BORDER_WIDTH, CROP_BORDER_HEIGHT, CANVAS_WIDTH, CANVAS_HEIGHT],
+        })
       })
     })
   })

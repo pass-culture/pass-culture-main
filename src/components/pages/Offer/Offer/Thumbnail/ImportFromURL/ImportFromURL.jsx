@@ -47,7 +47,10 @@ const ImportFromURL = () => {
   )
 
   return (
-    <form className="tnf-form">
+    <form
+      action="#"
+      className="tnf-form"
+    >
       <ThumbnailSampleIcon />
       <p className="tnf-info">
         {'Utilisez de préférence un visuel en orientation portrait'}

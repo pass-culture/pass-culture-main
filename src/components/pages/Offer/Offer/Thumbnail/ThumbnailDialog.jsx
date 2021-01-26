@@ -5,6 +5,7 @@ import { DialogBox } from 'components/layout/DialogBox/DialogBox'
 import { IMPORT_TAB_ID } from 'components/pages/Offer/Offer/Thumbnail/_constants'
 import { ReactComponent as CloseModalIcon } from 'components/pages/Offer/Offer/Thumbnail/assets/close-modal.svg'
 import Credit from 'components/pages/Offer/Offer/Thumbnail/Credit/Credit'
+import ImageEditor from 'components/pages/Offer/Offer/Thumbnail/ImageEditor/ImageEditor'
 import ImportFromComputer from 'components/pages/Offer/Offer/Thumbnail/ImportFromComputer/ImportFromComputer'
 import ImportFromURL from 'components/pages/Offer/Offer/Thumbnail/ImportFromURL/ImportFromURL'
 import ImportTab from 'components/pages/Offer/Offer/Thumbnail/ImportTab/ImportTab'
@@ -14,9 +15,7 @@ const ThumbnailDialog = ({ setIsModalOpened }) => {
 
   const [tabId, setTabId] = useState(IMPORT_TAB_ID)
   const [activeTab, setActiveTab] = useState(IMPORT_TAB_ID)
-  // eslint-disable-next-line no-unused-vars
   const [thumbnail, setThumbnail] = useState({})
-  // eslint-disable-next-line no-unused-vars
   const [credit, setCredit] = useState('')
   const [step, setStep] = useState(1)
 
@@ -66,8 +65,15 @@ const ThumbnailDialog = ({ setIsModalOpened }) => {
         )}
         {step === 2 && (
           <Credit
+            credit={credit}
             setCredit={setCredit}
             setStep={setStep}
+          />
+        )}
+        {step === 3 && (
+          <ImageEditor
+            setStep={setStep}
+            thumbnail={thumbnail}
           />
         )}
       </>

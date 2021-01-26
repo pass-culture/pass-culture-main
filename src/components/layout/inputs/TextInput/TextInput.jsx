@@ -21,9 +21,11 @@ const TextInput = ({
   <label className="input-text">
     <div className="labels">
       {label}
-      <span className="it-sub-label">
-        {subLabel}
-      </span>
+      {subLabel && (
+        <span className="it-sub-label">
+          {subLabel}
+        </span>
+      )}
     </div>
     {longDescription && (
       <div className="description">

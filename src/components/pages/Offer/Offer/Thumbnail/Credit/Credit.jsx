@@ -3,8 +3,8 @@ import React, { useCallback, useState } from 'react'
 
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 
-const Credit = ({ setCredit, setStep }) => {
-  const [credit, setInputCredit] = useState('')
+const Credit = ({ credit, setCredit, setStep }) => {
+  const [inputCredit, setInputCredit] = useState(credit)
 
   const updateCredit = useCallback(event => {
     setInputCredit(event.target.value)
@@ -13,6 +13,11 @@ const Credit = ({ setCredit, setStep }) => {
   const previousStep = useCallback(() => {
     setStep(1)
   }, [setStep])
+
+  const nextStep = useCallback(() => {
+    setCredit(inputCredit)
+    setStep(3)
+  }, [inputCredit, setCredit, setStep])
 
   return (
     <>
@@ -29,7 +34,7 @@ const Credit = ({ setCredit, setStep }) => {
         required={false}
         subLabel="Optionnel"
         type="text"
-        value={credit}
+        value={inputCredit}
       />
 
       <div className="tnc-explanations">
@@ -49,7 +54,7 @@ const Credit = ({ setCredit, setStep }) => {
         </button>
         <button
           className="primary-button"
-          onClick={setCredit}
+          onClick={nextStep}
           title="Suivant"
           type="button"
         >
@@ -61,6 +66,7 @@ const Credit = ({ setCredit, setStep }) => {
 }
 
 Credit.propTypes = {
+  credit: PropTypes.string.isRequired,
   setCredit: PropTypes.func.isRequired,
   setStep: PropTypes.func.isRequired,
 }
