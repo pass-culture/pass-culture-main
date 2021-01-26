@@ -1,7 +1,7 @@
 from pcapi import settings
 from pcapi.core.offers.models import Mediation
-from pcapi.core.users.models import User, \
-    Token
+from pcapi.core.users.models import Token
+from pcapi.core.users.models import User
 from pcapi.local_providers.install import install_local_providers
 from pcapi.models import AllocinePivot
 from pcapi.models import AllocineVenueProviderPriceRule
