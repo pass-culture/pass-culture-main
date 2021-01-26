@@ -6,13 +6,11 @@ import FormError from '../FormError'
 
 class HiddenField extends PureComponent {
   renderField = ({ input, meta }) => {
-    const { ...inputProps } = this.props
-
     return (
       <Fragment>
         <input
           {...input}
-          {...inputProps}
+          id={this.props.id}
           type="hidden"
         />
         <FormError meta={meta} />
@@ -21,23 +19,23 @@ class HiddenField extends PureComponent {
   }
 
   render() {
-    const { name, validator } = this.props
-
     return (
       <Field
-        name={name}
+        name={this.props.name}
         render={this.renderField}
-        validate={validator}
+        validate={this.props.validator}
       />
     )
   }
 }
 
 HiddenField.defaultProps = {
-  validator: () => {},
+  id: undefined,
+  validator: undefined,
 }
 
 HiddenField.propTypes = {
+  id: PropTypes.string,
   name: PropTypes.string.isRequired,
   validator: PropTypes.func,
 }
