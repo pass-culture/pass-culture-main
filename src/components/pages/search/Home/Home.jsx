@@ -38,7 +38,7 @@ export class Home extends PureComponent {
       `&longitude=${searchAround.place ? placeGeolocation.longitude : userGeolocation.longitude}` +
       `${searchAround.place ? `&place=${long}` : ''}`
 
-    history.push('/recherche/resultats', { search })
+    history.push(`/recherche/resultats${search}`)
   }
 
   handleResetButtonClick = () => {

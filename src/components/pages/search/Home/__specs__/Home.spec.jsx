@@ -1,4 +1,4 @@
-import { mount, shallow } from 'enzyme'
+import { mount } from 'enzyme'
 import { createMemoryHistory } from 'history'
 import React from 'react'
 import { Router } from 'react-router-dom'
@@ -6,9 +6,11 @@ import { CriterionItem } from '../CriterionItem/CriterionItem'
 import { Home } from '../Home'
 
 describe('components | Home', () => {
+  let history
   let props
 
   beforeEach(() => {
+    history = createMemoryHistory()
     props = {
       categoryCriterion: {
         filters: [],
@@ -42,9 +44,6 @@ describe('components | Home', () => {
         latitude: 40,
         longitude: 41,
       },
-      history: {
-        push: jest.fn(),
-      },
       sortCriterion: {
         index: '',
         icon: 'ico-relevance',
@@ -54,15 +53,10 @@ describe('components | Home', () => {
     }
   })
 
-  it('should clear text input when clicking on reset cross', async () => {
+  it('should clear text input when clicking on reset cross', () => {
     // given
-    const history = createMemoryHistory()
     history.push('/recherche')
-    const wrapper = await mount(
-      <Router history={history}>
-        <Home {...props} />
-      </Router>
-    )
+    const wrapper = mountHomeInRouter(props, history)
     const form = wrapper.find('form')
     const input = form.find('input').first()
     input.simulate('change', {
@@ -95,11 +89,7 @@ describe('components | Home', () => {
     }
     props.categoryCriterion.facetFilter = 'CINEMA'
     props.sortCriterion.index = '_by_price'
-    const wrapper = mount(
-      <Router history={createMemoryHistory()}>
-        <Home {...props} />
-      </Router>
-    )
+    const wrapper = mountHomeInRouter(props, history)
     const form = wrapper.find('form')
     const input = form.find('input')
 
@@ -115,10 +105,10 @@ describe('components | Home', () => {
     })
 
     // then
-    expect(props.history.push).toHaveBeenCalledWith('/recherche/resultats', {
-      search:
-        '?mots-cles=search keyword&autour-de=non&tri=_by_price&categories=CINEMA&latitude=40&longitude=41',
-    })
+    expect(history.location.pathname).toStrictEqual('/recherche/resultats')
+    expect(history.location.search).toStrictEqual(
+      '?mots-cles=search keyword&autour-de=non&tri=_by_price&categories=CINEMA&latitude=40&longitude=41'
+    )
   })
 
   it('should redirect to result page when search is around user', () => {
@@ -128,11 +118,7 @@ describe('components | Home', () => {
       place: false,
       user: true,
     }
-    const wrapper = mount(
-      <Router history={createMemoryHistory()}>
-        <Home {...props} />
-      </Router>
-    )
+    const wrapper = mountHomeInRouter(props, history)
     const form = wrapper.find('form')
     const input = form.find('input')
 
@@ -148,9 +134,10 @@ describe('components | Home', () => {
     })
 
     // then
-    expect(props.history.push).toHaveBeenCalledWith('/recherche/resultats', {
-      search: '?mots-cles=search keyword&autour-de=oui&tri=&categories=&latitude=40&longitude=41',
-    })
+    expect(history.location.pathname).toStrictEqual('/recherche/resultats')
+    expect(history.location.search).toStrictEqual(
+      '?mots-cles=search keyword&autour-de=oui&tri=&categories=&latitude=40&longitude=41'
+    )
   })
 
   it('should redirect to result page when search is around place', () => {
@@ -160,11 +147,7 @@ describe('components | Home', () => {
       place: true,
       user: false,
     }
-    const wrapper = mount(
-      <Router history={createMemoryHistory()}>
-        <Home {...props} />
-      </Router>
-    )
+    const wrapper = mountHomeInRouter(props, history)
     const form = wrapper.find('form')
     const input = form.find('input')
 
@@ -180,15 +163,15 @@ describe('components | Home', () => {
     })
 
     // then
-    expect(props.history.push).toHaveBeenCalledWith('/recherche/resultats', {
-      search:
-        "?mots-cles=search keyword&autour-de=oui&tri=&categories=&latitude=59.2&longitude=4.3&place=34 avenue de l'opéra, Paris",
-    })
+    expect(history.location.pathname).toStrictEqual('/recherche/resultats')
+    expect(history.location.search).toStrictEqual(
+      "?mots-cles=search keyword&autour-de=oui&tri=&categories=&latitude=59.2&longitude=4.3&place=34 avenue de l'opéra, Paris"
+    )
   })
 
   it('should render a list of CriterionItem with the right props', () => {
     // when
-    const wrapper = shallow(<Home {...props} />)
+    const wrapper = mountHomeInRouter(props, history)
 
     // then
     const criterionItems = wrapper.find(CriterionItem)
@@ -207,3 +190,14 @@ describe('components | Home', () => {
     expect(criterionItems.at(2).prop('selectedFilter')).toBe('Pertinence')
   })
 })
+
+function mountHomeInRouter(props, history) {
+  return mount(
+    <Router history={history}>
+      <Home
+        {...props}
+        history={history}
+      />
+    </Router>
+  )
+}
