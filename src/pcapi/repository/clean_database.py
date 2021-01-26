@@ -1,6 +1,7 @@
 from pcapi import settings
 from pcapi.core.offers.models import Mediation
-from pcapi.core.users.models import User
+from pcapi.core.users.models import User, \
+    Token
 from pcapi.local_providers.install import install_local_providers
 from pcapi.models import AllocinePivot
 from pcapi.models import AllocineVenueProviderPriceRule
@@ -67,6 +68,7 @@ def clean_all_database(*args, **kwargs):
     Deposit.query.delete()
     BeneficiaryImportStatus.query.delete()
     BeneficiaryImport.query.delete()
+    Token.query.delete()
     User.query.delete()
     Activity.query.delete()
     UserSession.query.delete()
