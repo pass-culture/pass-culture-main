@@ -6,9 +6,11 @@ from typing import Optional
 
 from pydantic import BaseModel
 from pydantic.class_validators import validator
+from pydantic.fields import Field
 
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.core.users.models import VOID_FIRST_NAME
+from pcapi.core.users.models import VOID_PUBLIC_NAME
 from pcapi.serialization.utils import to_camel
 
 
@@ -40,12 +42,6 @@ class Expense(BaseModel):
 
 
 class UserProfileResponse(BaseModel):
-    @classmethod
-    def from_orm(cls, user):  # type: ignore
-        user.firstName = user.firstName if user.firstName != VOID_FIRST_NAME else None
-
-        return super().from_orm(user)
-
     dateOfBirth: Optional[datetime.datetime]
     deposit_version: Optional[int]
     email: str
@@ -55,11 +51,20 @@ class UserProfileResponse(BaseModel):
     lastName: Optional[str]
     isBeneficiary: bool
     phoneNumber: Optional[str]
+    publicName: Optional[str] = Field(None, alias="pseudo")
 
     class Config:
         orm_mode = True
         alias_generator = to_camel
         allow_population_by_field_name = True
+
+    @validator("publicName", pre=True)
+    def format_public_name(cls, publicName: str) -> Optional[str]:  # pylint: disable=no-self-argument
+        return publicName if publicName != VOID_PUBLIC_NAME else None
+
+    @validator("firstName", pre=True)
+    def format_first_name(cls, firstName: Optional[str]) -> Optional[str]:  # pylint: disable=no-self-argument
+        return firstName if firstName != VOID_FIRST_NAME else None
 
 
 class ResendEmailValidationRequest(BaseModel):

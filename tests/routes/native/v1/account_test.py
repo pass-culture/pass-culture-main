@@ -8,6 +8,7 @@ import pytest
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import User
+from pcapi.core.users.models import VOID_PUBLIC_NAME
 
 from tests.conftest import TestClient
 
@@ -61,10 +62,12 @@ class AccountTest:
         assert response.json["firstName"] == user.firstName
         assert response.json["lastName"] == user.lastName
         assert response.json["phoneNumber"] == user.phoneNumber
+        assert response.json["pseudo"] == user.publicName
 
     def test_get_user_profile_empty_first_name(self, app):
-        first_name = ""
-        users_factories.UserFactory(email=self.identifier, firstName=first_name, isBeneficiary=False)
+        users_factories.UserFactory(
+            email=self.identifier, firstName="", isBeneficiary=False, publicName=VOID_PUBLIC_NAME
+        )
 
         access_token = create_access_token(identity=self.identifier)
         test_client = TestClient(app.test_client())
@@ -75,6 +78,7 @@ class AccountTest:
         assert response.status_code == 200
         assert response.json["email"] == self.identifier
         assert response.json["firstName"] is None
+        assert response.json["pseudo"] is None
         assert not response.json["isBeneficiary"]
 
     @patch("pcapi.routes.native.v1.account.check_recaptcha_token_is_valid")

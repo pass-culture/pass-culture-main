@@ -41,6 +41,7 @@ from pcapi.models.versioned_mixin import VersionedMixin
 ALGORITHM_HS_256 = "HS256"
 
 VOID_FIRST_NAME = ""
+VOID_PUBLIC_NAME = "   "
 
 
 class TokenType(enum.Enum):

@@ -19,6 +19,7 @@ from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
 from pcapi.core.users.models import VOID_FIRST_NAME
+from pcapi.core.users.models import VOID_PUBLIC_NAME
 from pcapi.core.users.utils import create_custom_jwt_token
 from pcapi.core.users.utils import decode_jwt_token
 from pcapi.core.users.utils import encode_jwt_payload
@@ -97,7 +98,7 @@ def create_account(
         dateOfBirth=datetime.combine(birthdate, datetime.min.time()),
         isEmailValidated=is_email_validated,
         departementCode="007",
-        publicName="   ",  # Required because model validation requires 3+ chars
+        publicName=VOID_PUBLIC_NAME,  # Required because model validation requires 3+ chars
         hasSeenTutorials=False,
         firstName=VOID_FIRST_NAME,
         hasAllowedRecommendations=has_allowed_recommendations,
