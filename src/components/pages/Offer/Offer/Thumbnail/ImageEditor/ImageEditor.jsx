@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useRef, useState } from 'react'
 import AvatarEditor from 'react-avatar-editor'
 
 import {
@@ -13,11 +13,21 @@ import CanvasTools from 'utils/canvas'
 
 const ImageEditor = ({ setStep, thumbnail, url }) => {
   const image = url !== '' ? url : thumbnail
+const ImageEditor = ({ setEditedThumbnail, setStep, thumbnail }) => {
   const [scale, setScale] = useState(1)
+  const editorRef = useRef(null)
 
   const previousStep = useCallback(() => {
     setStep(2)
   }, [setStep])
+
+  const nextStep = useCallback(() => {
+    if (editorRef.current) {
+      const canvas = editorRef.current.getImage() // HTMLCanvasElement
+      setEditedThumbnail(canvas.toDataURL())
+      setStep(4)
+    }
+  }, [setEditedThumbnail, setStep])
 
   const onScaleChange = useCallback(event => {
     setScale(event.target.value)
@@ -45,6 +55,7 @@ const ImageEditor = ({ setStep, thumbnail, url }) => {
           height={CANVAS_HEIGHT}
           image={image}
           onImageChange={drawCropBorder}
+          ref={editorRef}
           scale={Number(scale)}
           width={CANVAS_WIDTH}
         />
@@ -80,6 +91,7 @@ const ImageEditor = ({ setStep, thumbnail, url }) => {
         </button>
         <button
           className="primary-button"
+          onClick={nextStep}
           title="Suivant"
           type="button"
         >
@@ -96,6 +108,7 @@ ImageEditor.defaultProps = {
 }
 
 ImageEditor.propTypes = {
+  setEditedThumbnail: PropTypes.func.isRequired,
   setStep: PropTypes.func.isRequired,
   thumbnail: PropTypes.shape(),
   url: PropTypes.string,
