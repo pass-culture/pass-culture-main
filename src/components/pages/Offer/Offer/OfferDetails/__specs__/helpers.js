@@ -1,3 +1,4 @@
+import { fireEvent } from '@testing-library/dom'
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
@@ -45,7 +46,7 @@ export const queryInputErrorForField = fieldName => {
   return screen.queryByTestId(`input-error-field-${fieldName}`)
 }
 
-export const setOfferValues = async values => {
+export const setOfferValues = values => {
   const checkboxes = [
     'isDuo',
     'audioDisabilityCompliant',
@@ -54,26 +55,16 @@ export const setOfferValues = async values => {
     'visualDisabilityCompliant',
     'receiveNotificationEmails',
   ]
-  const selects = [
-    'musicType',
-    'musicSubType',
-    'offererId',
-    'showType',
-    'showSubType',
-    'type',
-    'venueId',
-  ]
   const setFormValueForField = (field, value) => {
     let input
     const { label, exact } = fieldLabels[field]
     input = screen.getByLabelText(label, { exact })
     if (checkboxes.includes(field)) {
       userEvent.click(input)
-    } else if (selects.includes(field)) {
-      userEvent.selectOptions(input, value)
-    } else {
-      userEvent.clear(input)
+    } else if (field === 'durationMinutes') {
       userEvent.type(input, value)
+    } else {
+      fireEvent.change(input, { target: { value } })
     }
 
     return input
@@ -82,7 +73,7 @@ export const setOfferValues = async values => {
   const modifiedInputs = {}
   for (const fieldName in values) {
     if (fieldName === 'extraData') {
-      modifiedInputs[fieldName] = await setOfferValues(values.extraData)
+      modifiedInputs[fieldName] = setOfferValues(values.extraData)
     } else {
       modifiedInputs[fieldName] = setFormValueForField(fieldName, values[fieldName])
     }
