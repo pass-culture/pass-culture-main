@@ -1,7 +1,65 @@
-import { mergeProps } from '../TutorialsContainer'
+import { mergeProps, mapStateToProps } from '../TutorialsContainer'
 import { FEATURES } from '../../../router/selectors/features'
 
 describe('src | components | pages | tutorials | TutorialsContainer', () => {
+  describe('mapStateToProps', () => {
+    describe('userHasNewDepositVersion', () => {
+      it("is activated when user's deposit is v2", () => {
+        // given
+        const state = {
+          currentUser: {
+            deposit_version: 2,
+          },
+          data: {
+            features: [],
+          },
+        }
+
+        // when
+        const props = mapStateToProps(state)
+
+        // then
+        expect(props).toHaveProperty('userHasNewDepositVersion', true)
+      })
+
+      it("is disabled when user's deposit is 1", () => {
+        // given
+        const state = {
+          currentUser: {
+            deposit_version: 1,
+          },
+          data: {
+            features: [],
+          },
+        }
+
+        // when
+        const props = mapStateToProps(state)
+
+        // then
+        expect(props).toHaveProperty('userHasNewDepositVersion', false)
+      })
+
+      it('is activated when user has no deposit', () => {
+        // given
+        const state = {
+          currentUser: {
+            deposit_version: null,
+          },
+          data: {
+            features: [],
+          },
+        }
+
+        // when
+        const props = mapStateToProps(state)
+
+        // then
+        expect(props).toHaveProperty('userHasNewDepositVersion', true)
+      })
+    })
+  })
+
   describe('mapDispatchToProps', () => {
     let updateCurrentUser
 
@@ -17,14 +75,20 @@ describe('src | components | pages | tutorials | TutorialsContainer', () => {
           push: jest.fn(),
         }
         // when
-        await mergeProps({
-          data: {
-            features: [{
-              nameKey: FEATURES.HOMEPAGE,
-              isActive: false,
-            }],
+        await mergeProps(
+          {
+            data: {
+              features: [
+                {
+                  nameKey: FEATURES.HOMEPAGE,
+                  isActive: false,
+                },
+              ],
+            },
           },
-        }, { updateCurrentUser }, { history }).saveUserHasSeenTutorials(isHomepageDisabled)
+          { updateCurrentUser },
+          { history }
+        ).saveUserHasSeenTutorials(isHomepageDisabled)
 
         // then
         expect(updateCurrentUser).toHaveBeenCalledWith({
@@ -40,14 +104,20 @@ describe('src | components | pages | tutorials | TutorialsContainer', () => {
           push: jest.fn(),
         }
         // when
-        await mergeProps({
-          data: {
-            features: [{
-              nameKey: FEATURES.HOMEPAGE,
-              isActive: true,
-            }],
+        await mergeProps(
+          {
+            data: {
+              features: [
+                {
+                  nameKey: FEATURES.HOMEPAGE,
+                  isActive: true,
+                },
+              ],
+            },
           },
-        }, { updateCurrentUser }, { history }).saveUserHasSeenTutorials(isHomepageDisabled)
+          { updateCurrentUser },
+          { history }
+        ).saveUserHasSeenTutorials(isHomepageDisabled)
 
         // then
         expect(updateCurrentUser).toHaveBeenCalledWith({
