@@ -1,4 +1,5 @@
 import pcapi.core.offers.api as offers_api
+from pcapi.core.offers.repository import get_stocks_for_offer
 from pcapi.flask_app import private_api
 from pcapi.models import Offer
 from pcapi.models import Stock
@@ -10,11 +11,26 @@ from pcapi.routes.serialization.stock_serialize import StockCreationBodyModelDep
 from pcapi.routes.serialization.stock_serialize import StockEditionBodyModelDeprecated
 from pcapi.routes.serialization.stock_serialize import StockIdResponseModel
 from pcapi.routes.serialization.stock_serialize import StockIdsResponseModel
+from pcapi.routes.serialization.stock_serialize import StockResponseModel
+from pcapi.routes.serialization.stock_serialize import StocksResponseModel
 from pcapi.routes.serialization.stock_serialize import StocksUpsertBodyModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.rest import ensure_current_user_has_rights
 from pcapi.utils.rest import login_or_api_key_required
+
+
+@private_api.route("/offers/<offer_id>/stocks", methods=["GET"])
+@login_or_api_key_required
+@spectree_serialize(response_model=StocksResponseModel)
+def get_stocks(offer_id: str) -> StocksResponseModel:
+    offerer = offerer_queries.get_by_offer_id(dehumanize(offer_id))
+    ensure_current_user_has_rights(RightsType.editor, offerer.id)
+
+    stocks = get_stocks_for_offer(dehumanize(offer_id))
+    return StocksResponseModel(
+        stocks=[StockResponseModel.from_orm(stock) for stock in stocks],
+    )
 
 
 @private_api.route("/stocks/bulk", methods=["POST"])
@@ -26,7 +42,7 @@ def upsert_stocks(body: StocksUpsertBodyModel) -> StockIdsResponseModel:
 
     stocks = offers_api.upsert_stocks(body.offer_id, body.stocks)
     return StockIdsResponseModel(
-        stocks=[StockIdResponseModel.from_orm(stock) for stock in stocks],
+        stockIds=[StockIdResponseModel.from_orm(stock) for stock in stocks],
     )
 
 
@@ -77,9 +93,9 @@ def delete_stock(stock_id: str) -> StockIdResponseModel:
     # fmt: off
     stock = (
         Stock.queryNotSoftDeleted()
-        .filter_by(id=dehumanize(stock_id))
-        .join(Offer, VenueSQLEntity)
-        .first_or_404()
+            .filter_by(id=dehumanize(stock_id))
+            .join(Offer, VenueSQLEntity)
+            .first_or_404()
     )
     # fmt: on
 

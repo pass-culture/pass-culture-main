@@ -34,9 +34,9 @@ class Returns201:
         assert response.status_code == 201
 
         response_dict = response.json
-        assert len(response_dict["stocks"]) == len(stock_data["stocks"])
+        assert len(response_dict["stockIds"]) == len(stock_data["stocks"])
 
-        created_stock = Stock.query.get(dehumanize(response_dict["stocks"][0]["id"]))
+        created_stock = Stock.query.get(dehumanize(response_dict["stockIds"][0]["id"]))
         assert offer.id == created_stock.offerId
         assert created_stock.price == 20
 
@@ -60,9 +60,9 @@ class Returns201:
         assert response.status_code == 201
 
         response_dict = response.json
-        assert len(response_dict["stocks"]) == len(stock_data["stocks"])
+        assert len(response_dict["stockIds"]) == len(stock_data["stocks"])
 
-        edited_stock = Stock.query.get(dehumanize(response_dict["stocks"][0]["id"]))
+        edited_stock = Stock.query.get(dehumanize(response_dict["stockIds"][0]["id"]))
         assert edited_stock.price == 20
 
     def test_upsert_multiple_stocks(self, app):
@@ -103,9 +103,9 @@ class Returns201:
         assert response.status_code == 201
 
         response_dict = response.json
-        assert len(response_dict["stocks"]) == len(stock_data["stocks"])
+        assert len(response_dict["stockIds"]) == len(stock_data["stocks"])
 
-        for idx, result_stock_id in enumerate(response_dict["stocks"]):
+        for idx, result_stock_id in enumerate(response_dict["stockIds"]):
             expected_stock = stock_data["stocks"][idx]
             result_stock = Stock.query.get(dehumanize(result_stock_id["id"]))
             assert result_stock.price == expected_stock["price"]

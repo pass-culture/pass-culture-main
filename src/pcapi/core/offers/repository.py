@@ -191,3 +191,12 @@ def _filter_by_status(query: Query, datetime_now: datetime, status: str) -> Quer
 
 def get_stocks_for_offers(offer_ids: List[int]) -> List[Stock]:
     return Stock.query.filter(Stock.offerId.in_(offer_ids)).all()
+
+
+def get_stocks_for_offer(offer_id: int) -> List[Stock]:
+    return (
+        Stock.query.options(joinedload(Stock.bookings))
+        .filter(Stock.offerId == offer_id)
+        .filter(Stock.isSoftDeleted.is_(False))
+        .all()
+    )
