@@ -359,6 +359,7 @@ const OfferForm = ({
 
         <div className="form-row">
           <TypeTreeSelects
+            areSubtypesVisible={!isTypeOfflineButOnlyVirtualVenues}
             isReadOnly={readOnlyFields.includes('type')}
             typeValues={{
               type: formValues.type,

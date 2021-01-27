@@ -238,7 +238,7 @@ describe('offerDetails - Creation - pro user', () => {
           await renderOffers(props, store)
 
           // When
-          await setOfferValues({ type: 'EventType.CINEMA' })
+          await setOfferValues({ type: 'EventType.SPECTACLE_VIVANT' })
 
           // Then
           expect(
@@ -250,6 +250,7 @@ describe('offerDetails - Creation - pro user', () => {
             'href',
             '/structures'
           )
+          expect(screen.queryByLabelText('Type de spectacle')).not.toBeInTheDocument()
         })
 
         it('should not inform user about venue creation if at least one non virtual venue', async () => {
@@ -257,7 +258,7 @@ describe('offerDetails - Creation - pro user', () => {
           await renderOffers(props, store)
 
           // When
-          await setOfferValues({ type: 'EventType.CINEMA' })
+          await setOfferValues({ type: 'EventType.SPECTACLE_VIVANT' })
 
           // Then
           expect(
@@ -266,6 +267,7 @@ describe('offerDetails - Creation - pro user', () => {
             )
           ).not.toBeInTheDocument()
           expect(screen.queryByRole('link', { name: '+ Ajouter un lieu' })).not.toBeInTheDocument()
+          expect(screen.getByLabelText('Type de spectacle')).toBeInTheDocument()
         })
       })
 

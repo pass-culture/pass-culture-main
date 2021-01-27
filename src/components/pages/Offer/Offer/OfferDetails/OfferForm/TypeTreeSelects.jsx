@@ -1,13 +1,14 @@
 import React, { Fragment, useCallback, useEffect, useState } from 'react'
 
 import Select, { buildSelectOptions } from 'components/layout/inputs/Select'
+import { SubtypeSelects } from 'components/pages/Offer/Offer/OfferDetails/OfferForm/SubtypeSelects'
 
 import { musicOptionsTree, showOptionsTree } from '../subTypes'
 
 import { DEFAULT_FORM_VALUES } from './_constants'
 
 const TypeTreeSelects = props => {
-  const { isReadOnly, types, typeValues, updateTypeValues } = props
+  const { areSubtypesVisible, isReadOnly, types, typeValues, updateTypeValues } = props
 
   const typeOptions = buildSelectOptions('value', 'proLabel', types)
   const [subTypeOptions, setSubTypeOptions] = useState({
@@ -145,82 +146,13 @@ const TypeTreeSelects = props => {
           selectedValue={typeValues.type || DEFAULT_FORM_VALUES.type}
         />
       </div>
-
-      {!!subTypeOptions['musicType'].length && (
-        <div className="form-row">
-          <Select
-            defaultOption={{
-              displayName: 'Choisir un genre musical',
-              id: DEFAULT_FORM_VALUES.musicType,
-            }}
-            handleSelection={handleChange}
-            isDisabled={isReadOnly}
-            label="Genre musical"
-            name="musicType"
-            options={subTypeOptions['musicType']}
-            required
-            selectedValue={typeValues.musicType || DEFAULT_FORM_VALUES.musicType}
-            sublabel="Optionnel"
-          />
-        </div>
-      )}
-
-      {!!subTypeOptions['musicSubType'].length && (
-        <div className="form-row">
-          <Select
-            defaultOption={{
-              displayName: 'Choisir un sous-genre',
-              id: DEFAULT_FORM_VALUES.musicSubType,
-            }}
-            handleSelection={handleChange}
-            isDisabled={isReadOnly}
-            label="Sous genre"
-            name="musicSubType"
-            options={subTypeOptions['musicSubType']}
-            required
-            selectedValue={typeValues.musicSubType || DEFAULT_FORM_VALUES.musicSubType}
-            sublabel="Optionnel"
-          />
-        </div>
-      )}
-
-      {!!subTypeOptions['showType'].length && (
-        <div className="form-row">
-          <Select
-            defaultOption={{
-              displayName: 'Choisir un type de spectacle',
-              id: DEFAULT_FORM_VALUES.showType,
-            }}
-            handleSelection={handleChange}
-            isDisabled={isReadOnly}
-            label="Type de spectacle"
-            name="showType"
-            options={subTypeOptions['showType']}
-            required
-            selectedValue={typeValues.showType || DEFAULT_FORM_VALUES.showType}
-            sublabel="Optionnel"
-          />
-        </div>
-      )}
-
-      {!!subTypeOptions['showSubType'].length && (
-        <div className="form-row">
-          <Select
-            defaultOption={{
-              displayName: 'Choisir un sous type',
-              id: DEFAULT_FORM_VALUES.showSubType,
-            }}
-            handleSelection={handleChange}
-            isDisabled={isReadOnly}
-            label="Sous type"
-            name="showSubType"
-            options={subTypeOptions['showSubType']}
-            required
-            selectedValue={typeValues.showSubType || DEFAULT_FORM_VALUES.showSubType}
-            sublabel="Optionnel"
-          />
-        </div>
-      )}
+      <SubtypeSelects
+        areSubtypesVisible={areSubtypesVisible}
+        disabled={isReadOnly}
+        handleSelection={handleChange}
+        subTypeOptions={subTypeOptions}
+        typeValues={typeValues}
+      />
     </Fragment>
   )
 }
