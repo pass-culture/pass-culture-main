@@ -375,8 +375,8 @@ jobs:
           command: helm chart export ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:${TAG} -d tmp/
       - deploy-cron-gke:
           helm_chart_name: passculture
-          helm_release_name: development
-          kubernetes_namespace: development
+          helm_release_name: testing
+          kubernetes_namespace: testing
           helm_values_file: values.testing.yaml
 
   tests-data-analytics:
