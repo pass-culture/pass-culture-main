@@ -6,7 +6,6 @@ from flask import current_app as app
 from freezegun import freeze_time
 import pytest
 
-from pcapi import models
 from pcapi.core.bookings import api
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings import factories
@@ -370,45 +369,47 @@ class ComputeConfirmationDateTest:
         ) == event_date_four_days_from_now - timedelta(days=2)
 
 
-@freeze_time("2020-11-17 09:21:34")
+@freeze_time("2020-11-17 15:00:00")
 @pytest.mark.usefixtures("db_session")
 class UpdateConfirmationDatesTest:
-    def should_update_bookings_confirmation_date(self):
+    def should_update_bookings_confirmation_dates_for_event_beginning_tomorrow(self):
         #  Given
-        bookings = [
-            factories.BookingFactory(
-                dateCreated=(datetime.now() - timedelta(days=1)),
-            ),
-            factories.BookingFactory(
-                dateCreated=(datetime.now() - timedelta(days=4)),
-            ),
-        ]
-
+        recent_booking = factories.BookingFactory(stock__beginningDatetime=datetime.now() + timedelta(days=90))
+        old_booking = factories.BookingFactory(
+            stock=recent_booking.stock, dateCreated=(datetime.now() - timedelta(days=7))
+        )
         # When
-        api.update_confirmation_dates(bookings, datetime.now() + timedelta(days=4))
-
+        updated_bookings = api.update_confirmation_dates(
+            bookings_to_update=[recent_booking, old_booking], new_beginning_datetime=datetime.now() + timedelta(days=1)
+        )
         # Then
-        updated_booking1 = models.Booking.query.get(bookings[0].id)
-        updated_booking2 = models.Booking.query.get(bookings[1].id)
-        assert updated_booking1.confirmationDate == datetime(2020, 11, 18, 9, 21, 34)
-        assert updated_booking2.confirmationDate == datetime(2020, 11, 15, 9, 21, 34)
+        assert updated_bookings == [recent_booking, old_booking]
+        assert recent_booking.confirmationDate == old_booking.confirmationDate == datetime(2020, 11, 17, 15)
 
-    def should_return_an_updated_bookings_lis(self):
+    def should_update_bookings_confirmation_dates_for_event_beginning_in_three_days(self):
         #  Given
-        bookings = [
-            factories.BookingFactory(
-                dateCreated=(datetime.now() - timedelta(days=1)),
-            ),
-            factories.BookingFactory(
-                dateCreated=(datetime.now() - timedelta(days=4)),
-            ),
-        ]
-
+        recent_booking = factories.BookingFactory(stock__beginningDatetime=datetime.now() + timedelta(days=90))
+        old_booking = factories.BookingFactory(
+            stock=recent_booking.stock, dateCreated=(datetime.now() - timedelta(days=7))
+        )
         # When
-        new_bookings = api.update_confirmation_dates(bookings, datetime.now() + timedelta(days=4))
-
+        updated_bookings = api.update_confirmation_dates(
+            bookings_to_update=[recent_booking, old_booking], new_beginning_datetime=datetime.now() + timedelta(days=3)
+        )
         # Then
-        assert bookings[0] in new_bookings
-        assert bookings[0].confirmationDate == datetime(2020, 11, 18, 9, 21, 34)
-        assert bookings[1] in new_bookings
-        assert bookings[1].confirmationDate == datetime(2020, 11, 15, 9, 21, 34)
+        assert updated_bookings == [recent_booking, old_booking]
+        assert recent_booking.confirmationDate == old_booking.confirmationDate == datetime(2020, 11, 18, 15)
+
+    def should_update_bookings_confirmation_dates_for_event_beginning_in_a_week(self):
+        #  Given
+        recent_booking = factories.BookingFactory(stock__beginningDatetime=datetime.now() + timedelta(days=90))
+        old_booking = factories.BookingFactory(
+            stock=recent_booking.stock, dateCreated=(datetime.now() - timedelta(days=7))
+        )
+        # When
+        updated_bookings = api.update_confirmation_dates(
+            bookings_to_update=[recent_booking, old_booking], new_beginning_datetime=datetime.now() + timedelta(days=7)
+        )
+        # Then
+        assert updated_bookings == [recent_booking, old_booking]
+        assert recent_booking.confirmationDate == old_booking.confirmationDate == datetime(2020, 11, 19, 15)

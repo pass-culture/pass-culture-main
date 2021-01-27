@@ -156,7 +156,7 @@ def _convert_image_to_base64(image: Image) -> str:
 
 
 def compute_confirmation_date(
-    event_beginning: typing.Optional[datetime.datetime], booking_creation: datetime.datetime
+    event_beginning: typing.Optional[datetime.datetime], booking_creation_or_event_edition: datetime.datetime
 ) -> typing.Optional[datetime.datetime]:
     if event_beginning:
         if event_beginning.tzinfo:
@@ -165,19 +165,23 @@ def compute_confirmation_date(
         else:
             tz_naive_event_beginning = event_beginning
         before_event_limit = tz_naive_event_beginning - conf.CONFIRM_BOOKING_BEFORE_EVENT_DELAY
-        after_booking_limit = booking_creation + conf.CONFIRM_BOOKING_AFTER_CREATION_DELAY
-        earliest_date_in_cancellation_period = min(before_event_limit, after_booking_limit)
-        latest_date_between_earliest_date_in_cancellation_period_and_booking_creation = max(
-            earliest_date_in_cancellation_period, booking_creation
+        after_booking_or_event_edition_limit = (
+            booking_creation_or_event_edition + conf.CONFIRM_BOOKING_AFTER_CREATION_DELAY
         )
-        return latest_date_between_earliest_date_in_cancellation_period_and_booking_creation
+        earliest_date_in_cancellation_period = min(before_event_limit, after_booking_or_event_edition_limit)
+        latest_date_between_earliest_date_in_cancellation_period_and_booking_creation_or_event_edition = max(
+            earliest_date_in_cancellation_period, booking_creation_or_event_edition
+        )
+        return latest_date_between_earliest_date_in_cancellation_period_and_booking_creation_or_event_edition
     return None
 
 
 def update_confirmation_dates(
-    bookings: typing.List[Booking], beginning_datetime: datetime.datetime
+    bookings_to_update: typing.List[Booking], new_beginning_datetime: datetime.datetime
 ) -> typing.List[Booking]:
-    for booking in bookings:
-        booking.confirmationDate = compute_confirmation_date(beginning_datetime, booking.dateCreated)
-    repository.save(*bookings)
-    return bookings
+    for booking in bookings_to_update:
+        booking.confirmationDate = compute_confirmation_date(
+            event_beginning=new_beginning_datetime, booking_creation_or_event_edition=datetime.datetime.utcnow()
+        )
+    repository.save(*bookings_to_update)
+    return bookings_to_update
