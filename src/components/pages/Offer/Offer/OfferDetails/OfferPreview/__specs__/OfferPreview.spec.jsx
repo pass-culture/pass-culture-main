@@ -78,5 +78,23 @@ describe('offer preview', () => {
       )
       expect(shrinkedWithdrawalDetailsText).toBeInTheDocument()
     })
+
+    it('should display "isDuo", "Type" and "Price"', async () => {
+      // given
+      const formValues = {
+        isDuo: true,
+      }
+
+      // when
+      await renderOffers(formValues)
+
+      // then
+      const typeText = await screen.getByText('Type')
+      expect(typeText).toBeInTheDocument()
+      const duoText = await screen.getByText('À deux !')
+      expect(duoText).toBeInTheDocument()
+      const priceText = await screen.getByText('- - €')
+      expect(priceText).toBeInTheDocument()
+    })
   })
 })

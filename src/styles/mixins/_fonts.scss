@@ -56,3 +56,8 @@
   font-size: rem(12px);
   font-weight: 400;
 }
+
+@mixin mini-highlight() {
+  font-size: rem(10px);
+  font-weight: 600;
+}
