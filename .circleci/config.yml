@@ -655,27 +655,27 @@ workflows:
                 - staging
                 - integration
           context:
-            - GCP
+            - GCP_EHP
       - deploy-api-cloudrun:
           requires:
             - build-and-push-image
           context:
-            - GCP
+            - GCP_EHP
       - deploy-cron-and-worker:
           requires:
             - build-and-push-image
           context:
-            - GCP
+            - GCP_EHP
       - deploy-webapp-cloudstorage:
           requires:
             - deploy-api-cloudrun
           context:
-            - GCP
+            - GCP_EHP
       - deploy-pro-cloudstorage:
           requires:
             - deploy-api-cloudrun
           context:
-            - GCP
+            - GCP_EHP
 
   every-mondays-nights:
     triggers:
