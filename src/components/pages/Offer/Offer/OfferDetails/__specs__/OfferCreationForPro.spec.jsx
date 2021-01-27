@@ -25,6 +25,7 @@ jest.mock('repository/pcapi/pcapi', () => ({
   createOffer: jest.fn(),
   getValidatedOfferers: jest.fn(),
   getVenuesForOfferer: jest.fn(),
+  loadOffer: jest.fn(),
   loadTypes: jest.fn(),
 }))
 
@@ -33,7 +34,7 @@ const renderOffers = async (props, store, queryParams = null) => {
     await render(
       <Provider store={store}>
         <MemoryRouter initialEntries={[{ pathname: '/offres/v2/creation', search: queryParams }]}>
-          <Route path="/offres/v2/">
+          <Route path={['/offres/v2/creation', '/offres/v2/:offerId([A-Z0-9]+)']}>
             <>
               <OfferLayoutContainer {...props} />
               <NotificationV2Container />
@@ -1223,7 +1224,7 @@ describe('offerDetails - Creation - pro user', () => {
       )
     })
 
-    it('should show a success notification when form was correctly submitted', async () => {
+    it('should show a success notification and redirect to stock page when form was correctly submitted', async () => {
       // Given
       const offerValues = {
         name: 'Ma petite offre',
@@ -1244,7 +1245,10 @@ describe('offerDetails - Creation - pro user', () => {
         mentalDisabilityCompliant: false,
       }
 
+      const createdOffer = { ...offerValues, id: 'CREATED', stocks: [], venue: venues[0] }
+      pcapi.createOffer.mockResolvedValue(createdOffer)
       await renderOffers(props, store)
+      pcapi.loadOffer.mockResolvedValue(createdOffer)
 
       await setOfferValues({ type: offerValues.type })
       await setOfferValues(offerValues)
@@ -1255,6 +1259,8 @@ describe('offerDetails - Creation - pro user', () => {
       // Then
       const successNotification = await screen.findByText('Votre offre a bien été créée')
       expect(successNotification).toBeInTheDocument()
+      expect(screen.getByRole('heading', { name: 'Nouvelle offre', level: 1 })).toBeInTheDocument()
+      expect(screen.getByRole('heading', { name: 'Stock et prix', level: 3 })).toBeInTheDocument()
     })
 
     it('should show errors for mandatory fields', async () => {

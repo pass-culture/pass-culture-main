@@ -45,18 +45,17 @@ const OfferDetails = ({
   const handleSubmitOffer = useCallback(
     async offerValues => {
       try {
-        let redirectId
         if (offer) {
           await pcapi.updateOffer(offer.id, offerValues)
           showEditionSuccessNotification()
-          redirectId = offer.id
+          history.push(`/offres/v2/${offer.id}/edition`)
         } else {
           const response = await pcapi.createOffer(offerValues)
           showCreationSuccessNotification()
-          redirectId = response.id
+          const createdOfferId = response.id
+          history.push(`/offres/v2/${createdOfferId}/stocks`)
         }
         setFormErrors({})
-        history.push(`/offres/v2/${redirectId}/edition`)
       } catch (error) {
         if (error && 'errors' in error) {
           const mapApiErrorsToFormErrors = {

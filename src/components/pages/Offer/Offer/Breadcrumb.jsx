@@ -6,19 +6,19 @@ import Breadcrumb, { STYLE_TYPE_TAB, STYLE_TYPE_DEFAULT } from 'components/layou
 export const STEP_ID_DETAILS = 'details'
 export const STEP_ID_STOCKS = 'stocks'
 
-const OfferBreadcrumb = ({ activeStep, offer }) => {
+const OfferBreadcrumb = ({ activeStep, isCreatingOffer, offerId }) => {
   let steps
-  if (offer) {
+  if (offerId) {
     steps = [
       {
         id: STEP_ID_DETAILS,
         label: "Détail de l'offre",
-        url: `/offres/v2/${offer.id}/edition`,
+        url: `/offres/v2/${offerId}/edition`,
       },
       {
         id: STEP_ID_STOCKS,
         label: 'Stock et prix',
-        url: `/offres/v2/${offer.id}/stocks`,
+        url: `/offres/v2/${offerId}/stocks`,
       },
     ]
   } else {
@@ -39,15 +39,18 @@ const OfferBreadcrumb = ({ activeStep, offer }) => {
     <Breadcrumb
       activeStep={activeStep}
       steps={steps}
-      styleType={offer ? STYLE_TYPE_TAB : STYLE_TYPE_DEFAULT}
+      styleType={isCreatingOffer ? STYLE_TYPE_DEFAULT : STYLE_TYPE_TAB}
     />
   )
 }
 
+Breadcrumb.defaultProps = {
+  offerId: null,
+}
+
 Breadcrumb.PropTypess = {
-  offer: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-  }).isRequired,
+  offerId: PropTypes.string,
+  isCreatingOffer: PropTypes.bool.isRequired,
 }
 
 export default OfferBreadcrumb

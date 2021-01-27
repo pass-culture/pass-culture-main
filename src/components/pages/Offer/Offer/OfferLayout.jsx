@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { Switch, Route } from 'react-router-dom'
 
 import Titles from 'components/layout/Titles/Titles'
@@ -18,14 +18,13 @@ const mapPathToStep = {
 const OfferLayout = props => {
   const { location, match } = props
 
+  const isCreatingOffer = useRef(!match.params.offerId)
   const [offer, setOffer] = useState(null)
-  const [isBusy, setIsBusy] = useState(match.params.offerId !== undefined)
 
   useEffect(() => {
     async function loadOffer(offerId) {
       const existingOffer = await pcapi.loadOffer(offerId)
       setOffer(existingOffer)
-      setIsBusy(false)
     }
 
     if (match.params.offerId) {
@@ -39,7 +38,11 @@ const OfferLayout = props => {
   let pageTitle = 'Nouvelle offre'
   let actionLink
 
-  if (offer) {
+  if (match.params.offerId && !offer) {
+    return null
+  }
+
+  if (!isCreatingOffer.current) {
     pageTitle = 'Éditer une offre'
     const mediationId = offer.activeMediation ? offer.activeMediation.id : null
     actionLink = (
@@ -48,10 +51,6 @@ const OfferLayout = props => {
         offerId={offer.id}
       />
     )
-  }
-
-  if (isBusy) {
-    return null
   }
 
   return (
@@ -63,7 +62,8 @@ const OfferLayout = props => {
 
       <Breadcrumb
         activeStep={activeStep}
-        offer={offer}
+        isCreatingOffer={isCreatingOffer.current}
+        offerId={offer?.id}
       />
 
       <div className="offer-content">
