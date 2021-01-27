@@ -473,6 +473,55 @@ describe('stocks page', () => {
           expect(pcapi.deleteStock).not.toHaveBeenCalled()
         })
 
+        it('should inform user that stock cannot be updated when event is over', async () => {
+          // When
+          const eventOffer = {
+            ...defaultOffer,
+            isEvent: true,
+            stocks: [
+              {
+                ...defaultStock,
+                beginningDatetime: '2020-12-14T22:00:00Z',
+                isEventDeletable: true,
+                isEventEditable: false,
+              },
+            ],
+          }
+
+          pcapi.loadOffer.mockResolvedValue(eventOffer)
+          await renderOffers(props, store)
+
+          // Then
+          expect(
+            screen.getByRole('row', { name: 'Les évènements passés ne sont pas modifiables' })
+          ).toBeInTheDocument()
+        })
+
+        it('should inform user that stock cannot be deleted when event is over for more than 48h', async () => {
+          // When
+          const eventOffer = {
+            ...defaultOffer,
+            isEvent: true,
+            stocks: [
+              {
+                ...defaultStock,
+                beginningDatetime: '2020-12-20T22:00:00Z',
+                isEventDeletable: false,
+              },
+            ],
+          }
+
+          pcapi.loadOffer.mockResolvedValue(eventOffer)
+          await renderOffers(props, store)
+
+          // Then
+          expect(
+            screen.getByRole('row', {
+              name: 'Les évènements terminés depuis plus de 48h ne peuvent être supprimés',
+            })
+          ).toBeInTheDocument()
+        })
+
         describe('when editing stock', () => {
           it('should be able to edit beginning date field', async () => {
             // given
