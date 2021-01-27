@@ -23,17 +23,14 @@ from pcapi.domain.payments import group_payments_by_status
 from pcapi.domain.payments import keep_only_not_processable_payments
 from pcapi.domain.payments import keep_only_pending_payments
 from pcapi.domain.payments import validate_message_file_structure
-from pcapi.domain.reimbursement import CURRENT_RULES
 from pcapi.domain.reimbursement import NEW_RULES
 from pcapi.domain.reimbursement import find_all_booking_reimbursements
 from pcapi.models import Offerer
 from pcapi.models.db import db
-from pcapi.models.feature import FeatureToggle
 from pcapi.models.payment import Payment
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository import payment_queries
 from pcapi.repository import repository
-from pcapi.repository.feature_queries import is_active
 from pcapi.repository.user_queries import get_all_users_wallet_balances
 from pcapi.utils.logger import logger
 from pcapi.utils.mailing import MailServiceException
@@ -56,14 +53,10 @@ def generate_new_payments() -> Tuple[List[Payment], List[Payment]]:
     all_payments = []
 
     for offerer in offerers:
-        if is_active(FeatureToggle.DEGRESSIVE_REIMBURSEMENT_RATE):
-            booking_reimbursements = []
-            for venue in offerer.managedVenues:
-                final_bookings = booking_repository.find_bookings_eligible_for_payment_for_venue(venue.id)
-                booking_reimbursements += find_all_booking_reimbursements(final_bookings, NEW_RULES)
-        else:
-            final_bookings = booking_repository.find_bookings_eligible_for_payment_for_offerer(offerer.id)
-            booking_reimbursements = find_all_booking_reimbursements(final_bookings, CURRENT_RULES)
+        booking_reimbursements = []
+        for venue in offerer.managedVenues:
+            final_bookings = booking_repository.find_bookings_eligible_for_payment_for_venue(venue.id)
+            booking_reimbursements += find_all_booking_reimbursements(final_bookings, NEW_RULES)
 
         booking_reimbursements_to_pay = filter_out_already_paid_for_bookings(
             filter_out_bookings_without_cost(booking_reimbursements)

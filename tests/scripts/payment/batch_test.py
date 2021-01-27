@@ -16,7 +16,6 @@ class GenerateAndSendPaymentsTest:
     @patch("pcapi.scripts.payment.batch.send_payments_report", return_value=[])
     @patch("pcapi.scripts.payment.batch.send_payments_details", return_value=[])
     @patch("pcapi.scripts.payment.batch.send_wallet_balances", return_value=[])
-    @override_features(DEGRESSIVE_REIMBURSEMENT_RATE=False)
     @pytest.mark.usefixtures("db_session")
     def test_should_retrieve_all_steps_except_1_bis_when_message_id_is_none(
         self,

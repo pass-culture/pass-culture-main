@@ -88,18 +88,6 @@ def find_not_cancelled_bookings_by_stock(stock: Stock) -> List[Booking]:
     return Booking.query.filter_by(stockId=stock.id, isCancelled=False).all()
 
 
-def find_bookings_eligible_for_payment_for_offerer(offerer_id: int) -> List[Booking]:
-    return (
-        _find_bookings_eligible_for_payment()
-        .join(Offerer)
-        .filter(Offerer.id == offerer_id)
-        .reset_joinpoint()
-        .outerjoin(Payment)
-        .order_by(Payment.id, Booking.dateCreated.asc())
-        .all()
-    )
-
-
 def find_bookings_eligible_for_payment_for_venue(venue_id: int) -> List[Booking]:
     return (
         _find_bookings_eligible_for_payment()

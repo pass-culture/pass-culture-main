@@ -13,7 +13,6 @@ from pcapi.models.pc_object import PcObject
 
 class FeatureToggle(enum.Enum):
     BENEFICIARIES_IMPORT = "Permettre limport des comptes jeunes depuis DMS"
-    DEGRESSIVE_REIMBURSEMENT_RATE = "Permettre le remboursement avec un barème dégressif par lieu"
     FULL_OFFERS_SEARCH_WITH_OFFERER_AND_VENUE = (
         "Permet la recherche de mots-clés dans les tables structures et lieux en plus de celles des offres"
     )
