@@ -1,10 +1,11 @@
+import * as PropTypes from 'prop-types'
 import React, { useCallback, useState } from 'react'
 
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import { ReactComponent as ThumbnailSampleIcon } from 'components/pages/Offer/Offer/Thumbnail/assets/thumbnail-sample.svg'
 import * as pcapi from 'repository/pcapi/pcapi'
 
-const ImportFromURL = () => {
+const ImportFromURL = ({ setStep, setURL }) => {
   const [isButtonDisabled, setIsButtonDisabled] = useState(true)
   const [error, setError] = useState('')
   const [url, setUrl] = useState('')
@@ -40,10 +41,13 @@ const ImportFromURL = () => {
         if (error) {
           setError(error)
           setIsButtonDisabled(true)
+        } else {
+          setURL(url)
+          setStep(2)
         }
       }
     },
-    [url]
+    [setStep, setURL, url]
   )
 
   return (
@@ -73,6 +77,11 @@ const ImportFromURL = () => {
       </button>
     </form>
   )
+}
+
+ImportFromURL.propTypes = {
+  setStep: PropTypes.func.isRequired,
+  setURL: PropTypes.func.isRequired,
 }
 
 export default ImportFromURL

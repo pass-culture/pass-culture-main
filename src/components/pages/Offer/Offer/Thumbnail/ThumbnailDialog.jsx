@@ -13,11 +13,12 @@ import ImportTab from 'components/pages/Offer/Offer/Thumbnail/ImportTab/ImportTa
 const ThumbnailDialog = ({ setIsModalOpened }) => {
   const DIALOG_LABEL_ID = 'label_for_aria'
 
-  const [tabId, setTabId] = useState(IMPORT_TAB_ID)
   const [activeTab, setActiveTab] = useState(IMPORT_TAB_ID)
-  const [thumbnail, setThumbnail] = useState({})
   const [credit, setCredit] = useState('')
   const [step, setStep] = useState(1)
+  const [tabId, setTabId] = useState(IMPORT_TAB_ID)
+  const [thumbnail, setThumbnail] = useState({})
+  const [url, setURL] = useState('')
 
   const closeModal = useCallback(() => {
     setIsModalOpened(false)
@@ -58,7 +59,10 @@ const ThumbnailDialog = ({ setIsModalOpened }) => {
                 setThumbnail={setThumbnail}
               />
             ) : (
-              <ImportFromURL />
+              <ImportFromURL
+                setStep={setStep}
+                setURL={setURL}
+              />
             )}
             <hr className="tnd-hr" />
           </>
@@ -74,6 +78,7 @@ const ThumbnailDialog = ({ setIsModalOpened }) => {
           <ImageEditor
             setStep={setStep}
             thumbnail={thumbnail}
+            url={url}
           />
         )}
       </>

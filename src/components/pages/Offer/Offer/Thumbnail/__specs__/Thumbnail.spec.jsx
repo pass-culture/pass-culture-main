@@ -329,6 +329,20 @@ describe('thumbnail edition', () => {
           screen.queryByText('Format d’URL non valide', { selector: 'pre' })
         ).not.toBeInTheDocument()
       })
+
+      it('should go to the credit step if there is no validation error', async () => {
+        // Given
+        jest.spyOn(pcapi, 'getURLErrors').mockResolvedValue({ errors: [] })
+        renderThumbnail()
+        userEvent.click(screen.getByText('Utiliser une URL'))
+        userEvent.type(screen.getByLabelText('URL de l’image'), 'http://url_example.com')
+
+        // When
+        userEvent.click(screen.getByText('Valider', { selector: 'button' }))
+
+        // Then
+        expect(await screen.findByText('Crédit image et droits d’utilisation')).toBeInTheDocument()
+      })
     })
 
     describe('when the user is on the credit step', () => {

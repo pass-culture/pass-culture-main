@@ -11,7 +11,8 @@ import {
 } from 'components/pages/Offer/Offer/Thumbnail/_constants'
 import CanvasTools from 'utils/canvas'
 
-const ImageEditor = ({ setStep, thumbnail }) => {
+const ImageEditor = ({ setStep, thumbnail, url }) => {
+  const image = url !== '' ? url : thumbnail
   const [scale, setScale] = useState(1)
 
   const previousStep = useCallback(() => {
@@ -42,7 +43,7 @@ const ImageEditor = ({ setStep, thumbnail }) => {
           border={[CROP_BORDER_WIDTH, CROP_BORDER_HEIGHT]}
           color={[0, 0, 0, 0.4]}
           height={CANVAS_HEIGHT}
-          image={thumbnail}
+          image={image}
           onImageChange={drawCropBorder}
           scale={Number(scale)}
           width={CANVAS_WIDTH}
@@ -89,9 +90,15 @@ const ImageEditor = ({ setStep, thumbnail }) => {
   )
 }
 
+ImageEditor.defaultProps = {
+  thumbnail: {},
+  url: '',
+}
+
 ImageEditor.propTypes = {
   setStep: PropTypes.func.isRequired,
-  thumbnail: PropTypes.shape().isRequired,
+  thumbnail: PropTypes.shape(),
+  url: PropTypes.string,
 }
 
 export default ImageEditor
