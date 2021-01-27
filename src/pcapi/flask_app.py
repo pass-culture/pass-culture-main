@@ -66,6 +66,10 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ECHO"] = False
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SECURE"] = not settings.IS_DEV
+# FIXME (cgaunet, 2021-01-27): this config has been modified to test
+# gcp testing env before the whole migration is done
+if settings.IS_TESTING:
+    app.config["SESSION_COOKIE_SAMESITE"] = "None"
 app.config["REMEMBER_COOKIE_HTTPONLY"] = True
 app.config["REMEMBER_COOKIE_SECURE"] = not settings.IS_DEV
 app.config["REMEMBER_COOKIE_DURATION"] = 90 * 24 * 3600
