@@ -1,20 +1,23 @@
 import { mount } from 'enzyme'
 import React from 'react'
-import { MemoryRouter } from 'react-router'
+import { Router } from 'react-router'
 import OfferTile, { noOp } from '../OfferTile'
 import { Link } from 'react-router-dom'
 import { DEFAULT_THUMB_URL } from '../../../../../../../utils/thumb'
 import { formatSearchResultDate } from '../../../../../../../utils/date/date'
+import { createMemoryHistory } from 'history'
 
 jest.mock('../../../../../../../utils/date/date', () => ({
   formatSearchResultDate: jest.fn(),
 }))
 describe('src | components | OfferTile', () => {
   let props
+  let history
 
   beforeEach(() => {
+    history = createMemoryHistory()
     props = {
-      historyPush: jest.fn(),
+      historyPush: history.push,
       hit: {
         offer: {
           dates: [],
@@ -29,19 +32,21 @@ describe('src | components | OfferTile', () => {
         venue: {
           departementCode: '54',
           name: 'Librairie kléber',
-          publicName: null
+          publicName: null,
         },
       },
+      moduleName: 'Nom du module',
       isSwitching: false,
+      trackConsultOffer: jest.fn(),
     }
   })
 
   it('should render an offer tile with a link', () => {
     // when
     const wrapper = mount(
-      <MemoryRouter>
+      <Router history={history}>
         <OfferTile {...props} />
-      </MemoryRouter>
+      </Router>
     )
 
     // then
@@ -55,9 +60,9 @@ describe('src | components | OfferTile', () => {
   it('should render an offer tile with an image when provided', () => {
     // when
     const wrapper = mount(
-      <MemoryRouter>
+      <Router history={history}>
         <OfferTile {...props} />
-      </MemoryRouter>
+      </Router>
     )
 
     // then
@@ -73,9 +78,9 @@ describe('src | components | OfferTile', () => {
 
     // when
     const wrapper = mount(
-      <MemoryRouter>
+      <Router history={history}>
         <OfferTile {...props} />
-      </MemoryRouter>
+      </Router>
     )
 
     // then
@@ -87,9 +92,9 @@ describe('src | components | OfferTile', () => {
   it('should render an offer tile with venue name when public name is not provided', () => {
     // when
     const wrapper = mount(
-      <MemoryRouter>
+      <Router history={history}>
         <OfferTile {...props} />
-      </MemoryRouter>
+      </Router>
     )
 
     // then
@@ -100,9 +105,9 @@ describe('src | components | OfferTile', () => {
   it('should render an offer tile with the price', () => {
     // when
     const wrapper = mount(
-      <MemoryRouter>
+      <Router history={history}>
         <OfferTile {...props} />
-      </MemoryRouter>
+      </Router>
     )
 
     // then
@@ -119,9 +124,9 @@ describe('src | components | OfferTile', () => {
 
     // when
     const wrapper = mount(
-      <MemoryRouter>
+      <Router history={history}>
         <OfferTile {...props} />
-      </MemoryRouter>
+      </Router>
     )
 
     // then
@@ -132,9 +137,9 @@ describe('src | components | OfferTile', () => {
   it('should render an offer tile with the offer name', () => {
     // when
     const wrapper = mount(
-      <MemoryRouter>
+      <Router history={history}>
         <OfferTile {...props} />
-      </MemoryRouter>
+      </Router>
     )
 
     // then
@@ -148,13 +153,33 @@ describe('src | components | OfferTile', () => {
 
     // when
     const wrapper = mount(
-      <MemoryRouter>
+      <Router history={history}>
         <OfferTile {...props} />
-      </MemoryRouter>
+      </Router>
     )
 
     // then
     const venue = wrapper.find({ children: 'Un autre nom pour la librairie' })
     expect(venue).toHaveLength(1)
+  })
+
+  it('should go to offer when clicking on the link', () => {
+    // given
+    props.hit.venue.publicName = 'Un autre nom pour la librairie'
+
+    // when
+    const wrapper = mount(
+      <Router history={history}>
+        <OfferTile {...props} />
+      </Router>
+    )
+    const offerLink = wrapper.find(Link)
+    offerLink.simulate('click')
+
+    // then
+    expect(history.location.pathname).toStrictEqual(`/accueil/details/AE`)
+    expect(history.location.search).toStrictEqual('')
+    expect(history.location.state).toStrictEqual({ moduleName: 'Nom du module' })
+    expect(props.trackConsultOffer).toHaveBeenCalledWith('AE')
   })
 })

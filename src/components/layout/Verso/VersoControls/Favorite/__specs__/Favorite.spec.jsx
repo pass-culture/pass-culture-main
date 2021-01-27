@@ -1,4 +1,5 @@
 import { shallow } from 'enzyme'
+import { createMemoryHistory } from 'history'
 import React from 'react'
 
 import Icon from '../../../../../layout/Icon/Icon'
@@ -8,17 +9,17 @@ describe('src | components | Favorite', () => {
   let props
 
   beforeEach(() => {
+    const history = createMemoryHistory()
+    history.push({
+      pathname: 'accueil/details/AE',
+      state: { moduleName: 'Nom du module' },
+    })
     props = {
       handleFavorite: jest.fn(),
+      history,
       isFavorite: true,
       loadFavorites: jest.fn(),
       offerId: 'AE',
-      history: {
-        location: {
-          pathname: 'accueil/details/AE',
-          moduleName: 'Nom du module',
-        },
-      },
       trackAddToFavoritesFromHome: jest.fn(),
     }
   })
@@ -61,7 +62,10 @@ describe('src | components | Favorite', () => {
     it('should not call AddToFavoritesFromHome on offer page', () => {
       // given
       props.isFavorite = false
-      props.history.location.pathname = 'offre/details/AE'
+      props.history.push({
+        pathname: 'offre/details/AE',
+        state: { moduleName: 'Nom du module' },
+      })
       const wrapper = shallow(<Favorite {...props} />)
 
       const mockTrackAddToFavorite = jest

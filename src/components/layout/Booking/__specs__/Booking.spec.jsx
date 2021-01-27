@@ -1,20 +1,18 @@
 import { mount } from 'enzyme'
+import { createMemoryHistory } from 'history'
 import React from 'react'
 
 import Booking from '../Booking'
 
 describe('src | components | layout | Booking | Booking', () => {
   let props
-  let push
-  let replace
-  let handleSubmit
-  let trackBookingSuccess
 
   beforeEach(() => {
-    push = jest.fn()
-    replace = jest.fn()
-    handleSubmit = jest.fn()
-    trackBookingSuccess = jest.fn()
+    const history = createMemoryHistory()
+    history.push({
+      pathname: 'offre/details/AAA',
+      state: { moduleName: 'Nom du module' },
+    })
     props = {
       bookables: [],
       booking: {
@@ -22,15 +20,8 @@ describe('src | components | layout | Booking | Booking', () => {
           price: 10,
         },
       },
-      handleSubmit,
-      history: {
-        push,
-        replace,
-        location: {
-          pathname: 'offre/details/AAA',
-          moduleName: 'Nom du module',
-        },
-      },
+      handleSubmit: jest.fn(),
+      history,
       isCancelled: false,
       isEvent: false,
       location: {
@@ -52,7 +43,7 @@ describe('src | components | layout | Booking | Booking', () => {
         },
         id: 'AAA',
       },
-      trackBookingSuccess,
+      trackBookingSuccess: jest.fn(),
       trackBookOfferClickFromHomepage: jest.fn(),
       trackBookOfferSuccessFromHomepage: jest.fn(),
       getCurrentUserInformation: jest.fn(),
@@ -151,7 +142,7 @@ describe('src | components | layout | Booking | Booking', () => {
       expect(mockTrackBookOfferSuccess).not.toHaveBeenCalled()
     })
     it('should call tracking offer when history location contains accueil', () => {
-      props.history.location.pathname = 'accueil/details/AE'
+      props.history.push({ pathname: 'accueil/details/AE', state: { moduleName: 'Nom du module' } })
       const mockTrackBookOffer = jest
         .spyOn(props, 'trackBookOfferClickFromHomepage')
         .mockImplementation(jest.fn())

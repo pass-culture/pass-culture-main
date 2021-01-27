@@ -28,7 +28,7 @@ const OfferTile = ({ historyPush, hit, isSwitching, layout, trackConsultOffer, m
       trackConsultOffer(offer.id)
       historyPush({
         pathname: `/accueil/details/${offer.id}`,
-        moduleName,
+        state: { moduleName },
       })
     }
     event.preventDefault()

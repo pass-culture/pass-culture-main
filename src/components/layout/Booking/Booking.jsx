@@ -52,7 +52,10 @@ class Booking extends PureComponent {
       handleSubmit(payload, this.handleRequestFail, this.handleRequestSuccess)
     )
     if (history.location.pathname.includes('accueil'))
-      trackBookOfferClickFromHomepage(history.location.moduleName, offer.id)
+      trackBookOfferClickFromHomepage(
+        history.location.state && history.location.state.moduleName,
+        offer.id
+      )
   }
 
   handleRequestSuccess = (state, action) => {
@@ -72,7 +75,10 @@ class Booking extends PureComponent {
     }
     trackBookingSuccess()
     if (history.location.pathname.includes('accueil'))
-      trackBookOfferSuccessFromHomepage(history.location.moduleName, offer.id)
+      trackBookOfferSuccessFromHomepage(
+        history.location.state && history.location.state.moduleName,
+        offer.id
+      )
 
     this.setState(nextState)
     getCurrentUserInformation()

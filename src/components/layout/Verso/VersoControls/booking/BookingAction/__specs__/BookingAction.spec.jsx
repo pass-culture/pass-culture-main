@@ -18,9 +18,8 @@ describe('components | BookingAction', () => {
   beforeEach(() => {
     props = {
       bookingUrl: 'http://booking-layout.com',
-      history: {
-        push: jest.fn(),
-      },
+      history: createMemoryHistory(),
+      moduleName: 'Nom du module',
       offerCannotBeBooked: false,
       priceRange: [10, 30],
     }
@@ -69,9 +68,7 @@ describe('components | BookingAction', () => {
       selectOfferByRouterMatch.mockReturnValueOnce({
         isBookable: true,
       })
-
-      const mockHistory = createMemoryHistory()
-      mockHistory.push('/decouverte?param=value')
+      props.history.push('/decouverte?param=value', { moduleName: 'Nom du module' })
       const mockStore = getStubStore({
         data: (
           state = {
@@ -85,7 +82,7 @@ describe('components | BookingAction', () => {
 
       const wrapper = mount(
         <Provider store={mockStore}>
-          <Router history={mockHistory}>
+          <Router history={props.history}>
             <BookingActionContainer />
           </Router>
         </Provider>
@@ -95,9 +92,9 @@ describe('components | BookingAction', () => {
       wrapper.find({ children: 'J’y vais !' }).simulate('click')
 
       // then
-      expect(`${mockHistory.location.pathname}${mockHistory.location.search}`).toBe(
-        '/decouverte/reservation?param=value'
-      )
+      expect(props.history.location.pathname).toStrictEqual('/decouverte/reservation')
+      expect(props.history.location.search).toStrictEqual('?param=value')
+      expect(props.history.location.state).toStrictEqual({ moduleName: 'Nom du module' })
     })
   })
 })

@@ -32,7 +32,10 @@ class Favorite extends PureComponent {
   handleFavorite = (offerId, mediationId, isFavorite) => () => {
     const { handleFavorite, history, trackAddToFavoritesFromHome } = this.props
     if (!isFavorite && history.location.pathname.includes('accueil')) {
-      trackAddToFavoritesFromHome(history.location.moduleName, offerId)
+      trackAddToFavoritesFromHome(
+        history.location.state && history.location.state.moduleName,
+        offerId
+      )
     }
 
     this.setState(
@@ -70,8 +73,10 @@ Favorite.propTypes = {
   handleFavorite: PropTypes.func.isRequired,
   history: PropTypes.shape({
     location: PropTypes.shape({
-      moduleName: PropTypes.string.isRequired,
       pathname: PropTypes.string.isRequired,
+      state: PropTypes.shape({
+        moduleName: PropTypes.string.isRequired,
+      }),
     }),
   }).isRequired,
   isFavorite: PropTypes.bool,
