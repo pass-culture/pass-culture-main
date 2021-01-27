@@ -84,7 +84,7 @@ class BeneficiaryUserView(SuspensionMixin, BaseAdminView):
                 "Version du déposit",
                 [DataRequired()],
                 choices=[
-                    (1, "500€ - Deux seuils de dépense (200€ en physique et 200€ en numérique)"),
+                    (1, "500€ - Deux seuils de dépense (300€ en physique et 200€ en numérique)"),
                     (2, "300€ - Un seuil de dépense (100€ en offres numériques)"),
                 ],
             )
