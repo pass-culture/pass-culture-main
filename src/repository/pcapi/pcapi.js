@@ -132,6 +132,10 @@ export const loadTypes = () => {
 //
 // stocks
 //
+export const loadStocks = offerId => {
+  return client.get(`/offers/${offerId}/stocks`)
+}
+
 export const bulkCreateOrEditStock = (offerId, stocks) => {
   return client.post(`/stocks/bulk`, {
     offerId,

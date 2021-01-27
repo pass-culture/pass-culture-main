@@ -20,22 +20,25 @@ import StockItem from './StockItem/StockItem'
 
 const Stocks = ({ offer, showErrorNotification, showSuccessNotification }) => {
   const offerId = offer.id
-  const [stocks, setStocks] = useState(formatAndSortStocks(offer.stocks))
+  const [isLoading, setIsLoading] = useState(true)
+  const [stocks, setStocks] = useState([])
   const isOfferSynchronized = Boolean(offer.lastProvider)
   const [formErrors, setFormErrors] = useState({})
 
-  moment.tz.setDefault(getDepartmentTimezone(offer.venue.departementCode))
+  const loadStocks = useCallback(() => {
+    return pcapi.loadStocks(offerId).then(receivedStocks => {
+      setIsLoading(false)
+      setStocks(formatAndSortStocks(receivedStocks.stocks))
+    })
+  }, [offerId])
+
   useEffect(() => {
+    moment.tz.setDefault(getDepartmentTimezone(offer.venue.departementCode))
+    loadStocks()
     return () => {
       moment.tz.setDefault()
     }
-  }, [])
-
-  const getOffer = useCallback(() => {
-    return pcapi.loadOffer(offerId).then(loadedOffer => {
-      setStocks(formatAndSortStocks(loadedOffer.stocks))
-    })
-  }, [offerId])
+  }, [loadStocks, offer.venue.departementCode])
 
   useEffect(() => {
     if (Object.values(formErrors).length > 0) {
@@ -97,6 +100,8 @@ const Stocks = ({ offer, showErrorNotification, showSuccessNotification }) => {
         ...stocksErrors,
       }
       setFormErrors(formErrors)
+    } else {
+      setFormErrors({})
     }
 
     return !hasErrors
@@ -116,20 +121,24 @@ const Stocks = ({ offer, showErrorNotification, showSuccessNotification }) => {
       pcapi
         .bulkCreateOrEditStock(offer.id, [...stocksToCreate, ...stocksToUpdate])
         .then(() => {
-          getOffer()
+          loadStocks()
           showSuccessNotification()
         })
         .catch(() => showErrorNotification())
     }
   }, [
     existingStocks,
-    getOffer,
+    loadStocks,
     offer.isEvent,
     offer.id,
     showErrorNotification,
     showSuccessNotification,
     stocksInCreation,
   ])
+
+  if (isLoading) {
+    return null
+  }
 
   return (
     <div className="stocks-page">
@@ -191,7 +200,7 @@ const Stocks = ({ offer, showErrorNotification, showSuccessNotification }) => {
               isNewStock
               key={stockInCreation.key}
               onChange={updateStock}
-              refreshOffer={getOffer}
+              refreshStocks={loadStocks}
               removeStockInCreation={removeStockInCreation}
             />
           ))}
@@ -205,7 +214,7 @@ const Stocks = ({ offer, showErrorNotification, showSuccessNotification }) => {
               key={stock.id}
               lastProvider={offer.lastProvider}
               onChange={updateStock}
-              refreshOffer={getOffer}
+              refreshStocks={loadStocks}
             />
           ))}
         </tbody>

@@ -16,7 +16,7 @@ const StockItem = ({
   isNewStock,
   lastProvider,
   onChange,
-  refreshOffer,
+  refreshStocks,
   removeStockInCreation,
   initialStock,
 }) => {
@@ -218,7 +218,7 @@ const StockItem = ({
         </button>
         {isDeleting && (
           <DeleteStockDialogContainer
-            refreshOffer={refreshOffer}
+            refreshStocks={refreshStocks}
             setIsDeleting={setIsDeleting}
             stockId={initialStock.id}
           />
@@ -252,7 +252,7 @@ StockItem.propTypes = {
   isNewStock: PropTypes.bool,
   lastProvider: PropTypes.shape(),
   onChange: PropTypes.func.isRequired,
-  refreshOffer: PropTypes.func.isRequired,
+  refreshStocks: PropTypes.func.isRequired,
   removeStockInCreation: PropTypes.func,
 }
 

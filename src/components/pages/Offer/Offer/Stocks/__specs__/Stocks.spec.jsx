@@ -17,6 +17,7 @@ import Stocks from '../Stocks'
 jest.mock('repository/pcapi/pcapi', () => ({
   deleteStock: jest.fn(),
   loadOffer: jest.fn(),
+  loadStocks: jest.fn(),
   bulkCreateOrEditStock: jest.fn(),
 }))
 
@@ -70,11 +71,13 @@ describe('stocks page', () => {
       isEventDeletable: true,
     }
     pcapi.loadOffer.mockResolvedValue(defaultOffer)
+    pcapi.loadStocks.mockResolvedValue({ stocks: [] })
     pcapi.deleteStock.mockResolvedValue({ id: stockId })
   })
 
   afterEach(() => {
     pcapi.loadOffer.mockReset()
+    pcapi.loadStocks.mockReset()
     pcapi.deleteStock.mockReset()
     pcapi.bulkCreateOrEditStock.mockReset()
     spiedMomentSetDefaultTimezone.mockRestore()
@@ -92,10 +95,17 @@ describe('stocks page', () => {
       expect(spiedMomentSetDefaultTimezone).toHaveBeenCalledWith('America/Cayenne')
     })
 
+    it('should load stocks on mount', async () => {
+      // when
+      await renderOffers(props, store)
+
+      // then
+      expect(pcapi.loadStocks).toHaveBeenCalledTimes(1)
+    })
+
     it('should display "Gratuit" when stock is free', async () => {
       // given
-      const offerWithFreeStock = {
-        ...defaultOffer,
+      const freeStock = {
         stocks: [
           {
             ...defaultStock,
@@ -104,7 +114,7 @@ describe('stocks page', () => {
         ],
       }
 
-      pcapi.loadOffer.mockResolvedValue(offerWithFreeStock)
+      pcapi.loadStocks.mockResolvedValue(freeStock)
 
       // when
       await renderOffers(props, store)
@@ -118,24 +128,25 @@ describe('stocks page', () => {
       const offerWithMultipleStocks = {
         ...defaultOffer,
         isEvent: true,
-        stocks: [
-          {
-            ...defaultStock,
-            beginningDatetime: '2020-12-20T22:00:00Z',
-          },
-          {
-            ...defaultStock,
-            id: '3F',
-            beginningDatetime: '2020-12-25T20:00:00Z',
-          },
-          {
-            ...defaultStock,
-            id: '4G',
-            beginningDatetime: '2020-12-20T20:00:00Z',
-          },
-        ],
       }
+      const stocks = [
+        {
+          ...defaultStock,
+          beginningDatetime: '2020-12-20T22:00:00Z',
+        },
+        {
+          ...defaultStock,
+          id: '3F',
+          beginningDatetime: '2020-12-25T20:00:00Z',
+        },
+        {
+          ...defaultStock,
+          id: '4G',
+          beginningDatetime: '2020-12-20T20:00:00Z',
+        },
+      ]
       pcapi.loadOffer.mockResolvedValue(offerWithMultipleStocks)
+      pcapi.loadStocks.mockResolvedValue({ stocks })
 
       // when
       await renderOffers(props, store)
@@ -152,17 +163,12 @@ describe('stocks page', () => {
 
     it('should display "Illimité" for total quantity when stock has unlimited quantity', async () => {
       // given
-      const offerWithUnlimitedStock = {
-        ...defaultOffer,
-        stocks: [
-          {
-            ...defaultStock,
-            quantity: null,
-          },
-        ],
+      const unlimitedStock = {
+        ...defaultStock,
+        quantity: null,
       }
 
-      pcapi.loadOffer.mockResolvedValue(offerWithUnlimitedStock)
+      pcapi.loadStocks.mockResolvedValue({ stocks: [unlimitedStock] })
 
       // when
       await renderOffers(props, store)
@@ -173,17 +179,11 @@ describe('stocks page', () => {
 
     it('should display "Illimité" for remaining quantity when stock has unlimited quantity', async () => {
       // given
-      const offerWithUnlimitedStock = {
-        ...defaultOffer,
-        stocks: [
-          {
-            ...defaultStock,
-            quantity: null,
-          },
-        ],
+      const unlimitedStock = {
+        ...defaultStock,
+        quantity: null,
       }
-
-      pcapi.loadOffer.mockResolvedValue(offerWithUnlimitedStock)
+      pcapi.loadStocks.mockResolvedValue({ stocks: [unlimitedStock] })
 
       // when
       await renderOffers(props, store)
@@ -219,22 +219,22 @@ describe('stocks page', () => {
     describe('render event offer', () => {
       let eventOffer
       beforeEach(() => {
+        const eventStock = {
+          ...defaultStock,
+          beginningDatetime: '2020-12-20T22:00:00Z',
+        }
         eventOffer = {
           ...defaultOffer,
           isEvent: true,
-          stocks: [
-            {
-              ...defaultStock,
-              beginningDatetime: '2020-12-20T22:00:00Z',
-            },
-          ],
         }
 
         pcapi.loadOffer.mockResolvedValue(eventOffer)
+        pcapi.loadStocks.mockResolvedValue({ stocks: [eventStock] })
       })
 
       afterEach(() => {
         pcapi.loadOffer.mockReset()
+        pcapi.loadStocks.mockReset()
         pcapi.bulkCreateOrEditStock.mockReset()
       })
 
@@ -301,17 +301,14 @@ describe('stocks page', () => {
         thingOffer = {
           ...defaultOffer,
           isEvent: false,
-          stocks: [
-            {
-              ...defaultStock,
-            },
-          ],
         }
         pcapi.loadOffer.mockResolvedValue(thingOffer)
+        pcapi.loadStocks.mockResolvedValue({ stocks: [{ ...defaultStock }] })
       })
 
       afterEach(() => {
         pcapi.loadOffer.mockReset()
+        pcapi.loadStocks.mockReset()
         pcapi.bulkCreateOrEditStock.mockReset()
       })
 
@@ -328,8 +325,7 @@ describe('stocks page', () => {
 
       it('should display button to add stock', async () => {
         // given
-        const thingOfferWithoutStock = { ...thingOffer, stocks: [] }
-        pcapi.loadOffer.mockResolvedValue(thingOfferWithoutStock)
+        pcapi.loadStocks.mockResolvedValue({ stocks: [] })
 
         // when
         await renderOffers(props, store)
@@ -378,20 +374,21 @@ describe('stocks page', () => {
 
       describe('when offer is synchronized', () => {
         beforeEach(() => {
-          const synchronisedThingOfferWithoutStock = {
+          const synchronisedThingOffer = {
             ...defaultOffer,
             isEvent: false,
             lastProvider: {
               id: 'D4',
               name: 'fnac',
             },
-            stocks: [],
           }
-          pcapi.loadOffer.mockResolvedValue(synchronisedThingOfferWithoutStock)
+          pcapi.loadOffer.mockResolvedValue(synchronisedThingOffer)
+          pcapi.loadStocks.mockResolvedValue({ stocks: [] })
         })
 
         afterEach(() => {
           pcapi.loadOffer.mockReset()
+          pcapi.loadStocks.mockReset()
           pcapi.bulkCreateOrEditStock.mockReset()
         })
 
@@ -410,22 +407,22 @@ describe('stocks page', () => {
     describe('event offer', () => {
       let eventOffer
       beforeEach(() => {
+        const eventStock = {
+          ...defaultStock,
+          beginningDatetime: '2020-12-20T22:00:00Z',
+        }
         eventOffer = {
           ...defaultOffer,
           isEvent: true,
-          stocks: [
-            {
-              ...defaultStock,
-              beginningDatetime: '2020-12-20T22:00:00Z',
-            },
-          ],
         }
 
         pcapi.loadOffer.mockResolvedValue(eventOffer)
+        pcapi.loadStocks.mockResolvedValue({ stocks: [eventStock] })
       })
 
       afterEach(() => {
         pcapi.loadOffer.mockReset()
+        pcapi.loadStocks.mockReset()
         pcapi.bulkCreateOrEditStock.mockReset()
       })
 
@@ -681,8 +678,7 @@ describe('stocks page', () => {
 
           it('should not set remaining quantity to Illimité when total quantity is zero', async () => {
             // given
-            pcapi.loadOffer.mockResolvedValue({
-              ...eventOffer,
+            pcapi.loadStocks.mockResolvedValue({
               stocks: [
                 {
                   ...defaultStock,
@@ -711,6 +707,7 @@ describe('stocks page', () => {
 
             afterEach(() => {
               pcapi.loadOffer.mockReset()
+              pcapi.loadStocks.mockReset()
               pcapi.bulkCreateOrEditStock.mockReset()
             })
 
@@ -755,39 +752,25 @@ describe('stocks page', () => {
               expect(screen.getByLabelText('Quantité').value).toBe('6')
             })
 
-            it('should refresh offer', async () => {
+            it('should refresh stocks', async () => {
               // Given
-              const offer = {
-                ...defaultOffer,
-                isEvent: true,
-              }
               const stock = {
                 ...defaultStock,
                 beginningDatetime: '2020-12-20T22:00:00Z',
               }
-              const initialOffer = {
-                ...offer,
-                stocks: [
-                  {
-                    ...stock,
-                    price: 10.01,
-                  },
-                ],
+              const initialStock = {
+                ...stock,
+                price: 10.01,
               }
-              const updatedOffer = {
-                ...offer,
-                stocks: [
-                  {
-                    ...stock,
-                    price: 10,
-                  },
-                ],
+              const updatedStock = {
+                ...stock,
+                price: 10,
               }
-              pcapi.loadOffer
-                .mockResolvedValueOnce(initialOffer)
-                .mockResolvedValueOnce(updatedOffer)
+              pcapi.loadStocks
+                .mockResolvedValueOnce({ stocks: [initialStock] })
+                .mockResolvedValueOnce({ stocks: [updatedStock] })
               await renderOffers(props, store)
-              pcapi.loadOffer.mockClear()
+              pcapi.loadStocks.mockClear()
 
               // When
               await act(async () => {
@@ -795,7 +778,7 @@ describe('stocks page', () => {
               })
 
               // Then
-              expect(pcapi.loadOffer).toHaveBeenCalledTimes(1)
+              expect(pcapi.loadStocks).toHaveBeenCalledTimes(1)
             })
 
             it('should set booking limit datetime to exact beginning datetime when not specified or same as beginning date', async () => {
@@ -1036,24 +1019,13 @@ describe('stocks page', () => {
 
           it('should discard deleted stock from list', async () => {
             // Given
-            const eventOffer = {
-              ...defaultOffer,
-              isEvent: true,
-              stocks: [
-                {
-                  ...defaultStock,
-                  beginningDatetime: '2020-12-20T22:00:00Z',
-                },
-              ],
+            const initialStock = {
+              ...defaultStock,
+              beginningDatetime: '2020-12-20T22:00:00Z',
             }
-            const eventOfferWithoutStock = {
-              ...defaultOffer,
-              isEvent: true,
-              stocks: [],
-            }
-            pcapi.loadOffer
-              .mockResolvedValueOnce(eventOffer)
-              .mockResolvedValueOnce(eventOfferWithoutStock)
+            pcapi.loadStocks
+              .mockResolvedValueOnce({ stocks: [initialStock] })
+              .mockResolvedValueOnce({ stocks: [] })
 
             await renderOffers(props, store)
 
@@ -1124,6 +1096,7 @@ describe('stocks page', () => {
 
         afterEach(() => {
           pcapi.loadOffer.mockReset()
+          pcapi.loadStocks.mockReset()
           pcapi.bulkCreateOrEditStock.mockReset()
         })
 
@@ -1146,21 +1119,21 @@ describe('stocks page', () => {
     describe('thing offer', () => {
       let thingOffer
       beforeEach(() => {
+        const thingStock = {
+          ...defaultStock,
+          isEventDeletable: true,
+        }
         thingOffer = {
           ...defaultOffer,
           isEvent: false,
-          stocks: [
-            {
-              ...defaultStock,
-              isEventDeletable: true,
-            },
-          ],
         }
         pcapi.loadOffer.mockResolvedValue(thingOffer)
+        pcapi.loadStocks.mockResolvedValue({ stocks: [thingStock] })
       })
 
       afterEach(() => {
         pcapi.loadOffer.mockReset()
+        pcapi.loadStocks.mockReset()
         pcapi.bulkCreateOrEditStock.mockReset()
       })
 
@@ -1237,8 +1210,7 @@ describe('stocks page', () => {
 
         it('should not set remaining quantity to Illimité when total quantity is zero', async () => {
           // given
-          pcapi.loadOffer.mockResolvedValue({
-            ...thingOffer,
+          pcapi.loadStocks.mockResolvedValue({
             stocks: [{ ...defaultStock, quantity: 0, bookingsQuantity: 0 }],
           })
 
@@ -1287,30 +1259,22 @@ describe('stocks page', () => {
             expect(screen.getByLabelText('Quantité').value).toBe('6')
           })
 
-          it('should refresh offer and leave edition mode', async () => {
+          it('should refresh stocks', async () => {
             // Given
             pcapi.bulkCreateOrEditStock.mockResolvedValue({})
-            const initialOffer = {
-              ...defaultOffer,
-              stocks: [
-                {
-                  ...defaultStock,
-                  price: 10.01,
-                },
-              ],
+            const initialStock = {
+              ...defaultStock,
+              price: 10.01,
             }
-            const updatedOffer = {
-              ...defaultOffer,
-              stocks: [
-                {
-                  ...defaultStock,
-                  price: 10,
-                },
-              ],
+            const updatedStock = {
+              ...defaultStock,
+              price: 10,
             }
-            pcapi.loadOffer.mockResolvedValueOnce(initialOffer).mockResolvedValueOnce(updatedOffer)
+            pcapi.loadStocks
+              .mockResolvedValueOnce({ stocks: [initialStock] })
+              .mockResolvedValueOnce({ stocks: [updatedStock] })
             await renderOffers(props, store)
-            pcapi.loadOffer.mockClear()
+            pcapi.loadStocks.mockClear()
 
             // When
             await act(async () => {
@@ -1446,6 +1410,7 @@ describe('stocks page', () => {
 
         afterEach(() => {
           pcapi.loadOffer.mockReset()
+          pcapi.loadStocks.mockReset()
           pcapi.bulkCreateOrEditStock.mockReset()
         })
 
@@ -1485,22 +1450,17 @@ describe('stocks page', () => {
 
       afterEach(() => {
         pcapi.loadOffer.mockReset()
+        pcapi.loadStocks.mockReset()
         pcapi.bulkCreateOrEditStock.mockReset()
       })
 
       it('should append new stock line on top of stocks list when clicking on add button', async () => {
         // given
-        const eventOffer = {
-          ...defaultOffer,
-          isEvent: true,
-          stocks: [
-            {
-              ...defaultStock,
-              beginningDatetime: '2020-12-20T22:00:00Z',
-            },
-          ],
+        const eventStock = {
+          ...defaultStock,
+          beginningDatetime: '2020-12-20T22:00:00Z',
         }
-        pcapi.loadOffer.mockResolvedValue(eventOffer)
+        pcapi.loadStocks.mockResolvedValue({ stocks: [eventStock] })
         await renderOffers(props, store)
         userEvent.click(screen.getByText('Ajouter une date'))
 
@@ -1557,40 +1517,31 @@ describe('stocks page', () => {
       it('should add new stocks to stocks and remove new empty stock line when clicking on validate button', async () => {
         // given
         pcapi.bulkCreateOrEditStock.mockResolvedValue({})
-        const offer = {
-          ...defaultOffer,
-          isEvent: true,
-        }
-        const initialOffer = {
-          ...offer,
-          stocks: [],
-        }
-        const updatedOffer = {
-          ...offer,
-          stocks: [
-            {
-              quantity: 15,
-              price: 15,
-              remainingQuantity: 15,
-              bookingsQuantity: 0,
-              beginningDatetime: '2020-12-24T23:00:00Z',
-              bookingLimitDatetime: '2020-12-22T23:59:59Z',
-              id: '2E',
-              isEventDeletable: true,
-            },
-            {
-              quantity: 15,
-              price: 15,
-              remainingQuantity: 15,
-              bookingsQuantity: 0,
-              beginningDatetime: '2020-12-25T23:00:00Z',
-              bookingLimitDatetime: '2020-12-23T23:59:59Z',
-              id: '3E',
-              isEventDeletable: true,
-            },
-          ],
-        }
-        pcapi.loadOffer.mockResolvedValueOnce(initialOffer).mockResolvedValueOnce(updatedOffer)
+        const createdStocks = [
+          {
+            quantity: 15,
+            price: 15,
+            remainingQuantity: 15,
+            bookingsQuantity: 0,
+            beginningDatetime: '2020-12-24T23:00:00Z',
+            bookingLimitDatetime: '2020-12-22T23:59:59Z',
+            id: '2E',
+            isEventDeletable: true,
+          },
+          {
+            quantity: 15,
+            price: 15,
+            remainingQuantity: 15,
+            bookingsQuantity: 0,
+            beginningDatetime: '2020-12-25T23:00:00Z',
+            bookingLimitDatetime: '2020-12-23T23:59:59Z',
+            id: '3E',
+            isEventDeletable: true,
+          },
+        ]
+        pcapi.loadStocks
+          .mockResolvedValueOnce({ stocks: [] })
+          .mockResolvedValueOnce({ stocks: createdStocks })
         await renderOffers(props, store)
 
         userEvent.click(screen.getByText('Ajouter une date'))
@@ -1625,7 +1576,7 @@ describe('stocks page', () => {
         })
 
         // then
-        expect(pcapi.bulkCreateOrEditStock).toHaveBeenCalledWith(offer.id, [
+        expect(pcapi.bulkCreateOrEditStock).toHaveBeenCalledWith(defaultOffer.id, [
           {
             beginningDatetime: '2020-12-25T23:00:00Z',
             bookingLimitDatetime: '2020-12-23T23:59:59Z',
@@ -1753,6 +1704,7 @@ describe('stocks page', () => {
 
       afterEach(() => {
         pcapi.loadOffer.mockReset()
+        pcapi.loadStocks.mockReset()
         pcapi.bulkCreateOrEditStock.mockReset()
       })
 
@@ -1813,30 +1765,19 @@ describe('stocks page', () => {
       it('should add new stock to stocks and remove new empty stock line when clicking on validate button', async () => {
         // given
         pcapi.bulkCreateOrEditStock.mockResolvedValue({})
-        const offer = {
-          ...defaultOffer,
-          isEvent: false,
+        const createdStock = {
+          quantity: 15,
+          price: 15,
+          remainingQuantity: 15,
+          bookingsQuantity: 0,
+          beginningDatetime: '2020-12-24T23:00:00Z',
+          bookingLimitDatetime: '2020-12-22T23:59:59Z',
+          id: stockId,
+          isEventDeletable: true,
         }
-        const initialOffer = {
-          ...offer,
-          stocks: [],
-        }
-        const updatedOffer = {
-          ...offer,
-          stocks: [
-            {
-              quantity: 15,
-              price: 15,
-              remainingQuantity: 15,
-              bookingsQuantity: 0,
-              beginningDatetime: '2020-12-24T23:00:00Z',
-              bookingLimitDatetime: '2020-12-22T23:59:59Z',
-              id: stockId,
-              isEventDeletable: true,
-            },
-          ],
-        }
-        pcapi.loadOffer.mockResolvedValueOnce(initialOffer).mockResolvedValueOnce(updatedOffer)
+        pcapi.loadStocks
+          .mockResolvedValueOnce({ stocks: [] })
+          .mockResolvedValueOnce({ stocks: [createdStock] })
         await renderOffers(props, store)
 
         userEvent.click(screen.getByText('Ajouter un stock'))
