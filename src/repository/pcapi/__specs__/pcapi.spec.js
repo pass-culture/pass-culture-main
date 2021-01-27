@@ -240,7 +240,7 @@ describe('pcapi', () => {
       getURLErrors(url)
 
       // then
-      expect(client.post).toHaveBeenCalledWith(`/offers/thumbnail-url-errors`, {
+      expect(client.post).toHaveBeenCalledWith(`/offers/thumbnail-url-validation`, {
         url: url,
       })
     })
