@@ -1,8 +1,8 @@
 from typing import Optional
 
-from pydantic import BaseModel
-
 from pcapi.serialization.utils import to_camel
+
+from . import BaseModel
 
 
 class SigninRequest(BaseModel):
