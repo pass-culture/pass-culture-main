@@ -27,8 +27,8 @@ const Stocks = ({ offer, showErrorNotification, showSuccessNotification }) => {
 
   const loadStocks = useCallback(() => {
     return pcapi.loadStocks(offerId).then(receivedStocks => {
-      setIsLoading(false)
       setStocks(formatAndSortStocks(receivedStocks.stocks))
+      setIsLoading(false)
     })
   }, [offerId])
 

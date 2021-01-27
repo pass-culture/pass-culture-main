@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types'
 import React, { Fragment, useCallback, useEffect, useState } from 'react'
 
-import Icon from 'components/layout/Icon'
 import DateInput from 'components/layout/inputs/DateInput/DateInput'
 import TimeInput from 'components/layout/inputs/TimeInput/TimeInput'
 import { isAllocineProvider } from 'components/pages/Offer/domain/localProvider'
 import DeleteStockDialogContainer from 'components/pages/Offer/Offer/Stocks/DeleteStockDialog/DeleteStockDialogContainer'
 
+import { ReactComponent as DeleteStockIcon } from './assets/delete-stock.svg'
 import { hasStockBeenUpdated } from './domain'
 
 const StockItem = ({
@@ -206,14 +206,14 @@ const StockItem = ({
       </td>
       <td className="action-column">
         <button
-          className="secondary-button"
+          className="tertiary-button"
           disabled={!isStockDeletable || isDeleting}
           onClick={isNewStock ? removeNewStockLine : askDeletionConfirmation}
           type="button"
         >
-          <Icon
+          <DeleteStockIcon
             alt="Supprimer le stock"
-            svg="ico-close-r"
+            title="Supprimer le stock"
           />
         </button>
         {isDeleting && (

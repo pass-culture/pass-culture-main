@@ -26,6 +26,7 @@ jest.mock('repository/pcapi/pcapi', () => ({
   getValidatedOfferers: jest.fn(),
   getVenuesForOfferer: jest.fn(),
   loadOffer: jest.fn(),
+  loadStocks: jest.fn(),
   loadTypes: jest.fn(),
 }))
 
@@ -1158,6 +1159,10 @@ describe('offerDetails - Creation - pro user', () => {
   })
 
   describe('when submitting form', () => {
+    beforeEach(() => {
+      pcapi.loadStocks.mockResolvedValue({ stocks: [] })
+    })
+
     it('should call API with offer data', async () => {
       // Given
       const offerValues = {

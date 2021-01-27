@@ -291,7 +291,7 @@ describe('stocks page', () => {
         expect(columnHeaders[6].textContent).toBe('Réservations')
         expect(columnCells[6].textContent).toBe('4')
 
-        expect(columnCells[7].querySelector('img[alt="Supprimer le stock"]')).toBeInTheDocument()
+        expect(columnCells[7].querySelector('[alt="Supprimer le stock"]')).toBeInTheDocument()
       })
     })
 
@@ -369,7 +369,7 @@ describe('stocks page', () => {
         expect(columnHeaders[4].textContent).toBe('Réservations')
         expect(columnCells[4].textContent).toBe('4')
 
-        expect(columnCells[5].querySelector('img[alt="Supprimer le stock"]')).toBeInTheDocument()
+        expect(columnCells[5].querySelector('[alt="Supprimer le stock"]')).toBeInTheDocument()
       })
 
       describe('when offer is synchronized', () => {
@@ -463,29 +463,23 @@ describe('stocks page', () => {
           await renderOffers(props, store)
 
           // When
-          userEvent.click(screen.getByAltText('Supprimer le stock'))
+          userEvent.click(screen.getByTitle('Supprimer le stock'))
 
           // Then
-          expect(screen.getByAltText('Supprimer le stock').closest('button')).toBeDisabled()
+          expect(screen.getByTitle('Supprimer le stock').closest('button')).toBeDisabled()
           expect(pcapi.deleteStock).not.toHaveBeenCalled()
         })
 
         it('should inform user that stock cannot be updated when event is over', async () => {
           // When
-          const eventOffer = {
-            ...defaultOffer,
-            isEvent: true,
-            stocks: [
-              {
-                ...defaultStock,
-                beginningDatetime: '2020-12-14T22:00:00Z',
-                isEventDeletable: true,
-                isEventEditable: false,
-              },
-            ],
+          const eventInThePast = {
+            ...defaultStock,
+            beginningDatetime: '2020-12-14T22:00:00Z',
+            isEventDeletable: true,
+            isEventEditable: false,
           }
 
-          pcapi.loadOffer.mockResolvedValue(eventOffer)
+          pcapi.loadStocks.mockResolvedValue({ stocks: [eventInThePast] })
           await renderOffers(props, store)
 
           // Then
@@ -496,19 +490,13 @@ describe('stocks page', () => {
 
         it('should inform user that stock cannot be deleted when event is over for more than 48h', async () => {
           // When
-          const eventOffer = {
-            ...defaultOffer,
-            isEvent: true,
-            stocks: [
-              {
-                ...defaultStock,
-                beginningDatetime: '2020-12-20T22:00:00Z',
-                isEventDeletable: false,
-              },
-            ],
+          const eventInThePast = {
+            ...defaultStock,
+            beginningDatetime: '2020-12-20T22:00:00Z',
+            isEventDeletable: false,
           }
 
-          pcapi.loadOffer.mockResolvedValue(eventOffer)
+          pcapi.loadStocks.mockResolvedValue({ stocks: [eventInThePast] })
           await renderOffers(props, store)
 
           // Then
@@ -970,7 +958,7 @@ describe('stocks page', () => {
             await renderOffers(props, store)
 
             // When
-            userEvent.click(screen.getByAltText('Supprimer le stock'))
+            userEvent.click(screen.getByTitle('Supprimer le stock'))
 
             // Then
             expect(screen.getByLabelText('Voulez-vous supprimer ce stock ?')).toBeInTheDocument()
@@ -998,7 +986,7 @@ describe('stocks page', () => {
             await renderOffers(props, store)
 
             // When
-            userEvent.click(screen.getByAltText('Supprimer le stock'))
+            userEvent.click(screen.getByTitle('Supprimer le stock'))
             userEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
 
             // Then
@@ -1010,7 +998,7 @@ describe('stocks page', () => {
             await renderOffers(props, store)
 
             // When
-            userEvent.click(screen.getByAltText('Supprimer le stock'))
+            userEvent.click(screen.getByTitle('Supprimer le stock'))
             userEvent.click(screen.getByRole('button', { name: 'Annuler' }))
 
             // Then
@@ -1031,7 +1019,7 @@ describe('stocks page', () => {
 
             // When
             await act(async () => {
-              userEvent.click(await screen.findByAltText('Supprimer le stock'))
+              userEvent.click(await screen.findByTitle('Supprimer le stock'))
               await userEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
             })
 
@@ -1044,7 +1032,7 @@ describe('stocks page', () => {
             await renderOffers(props, store)
 
             // When
-            userEvent.click(screen.getByAltText('Supprimer le stock'))
+            userEvent.click(screen.getByTitle('Supprimer le stock'))
             userEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
 
             // Then
@@ -1057,7 +1045,7 @@ describe('stocks page', () => {
             await renderOffers(props, store)
 
             // When
-            userEvent.click(screen.getByAltText('Supprimer le stock'))
+            userEvent.click(screen.getByTitle('Supprimer le stock'))
             userEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
 
             // Then
@@ -1072,11 +1060,11 @@ describe('stocks page', () => {
 
             // when
             await act(async () => {
-              userEvent.click(await screen.findByAltText('Supprimer le stock'))
+              userEvent.click(await screen.findByTitle('Supprimer le stock'))
             })
 
             // then
-            expect(screen.getByAltText('Supprimer le stock').closest('button')).toBeDisabled()
+            expect(screen.getByTitle('Supprimer le stock').closest('button')).toBeDisabled()
           })
         })
       })
@@ -1429,7 +1417,7 @@ describe('stocks page', () => {
           await renderOffers(props, store)
 
           // Then
-          expect(screen.getByAltText('Supprimer le stock').closest('button')).toBeDisabled()
+          expect(screen.getByTitle('Supprimer le stock').closest('button')).toBeDisabled()
         })
       })
     })
@@ -1511,7 +1499,7 @@ describe('stocks page', () => {
         userEvent.click(screen.getByText('Ajouter une date'))
 
         // then
-        expect(screen.queryByAltText('Supprimer le stock')).toBeInTheDocument()
+        expect(screen.queryByTitle('Supprimer le stock')).toBeInTheDocument()
       })
 
       it('should add new stocks to stocks and remove new empty stock line when clicking on validate button', async () => {
@@ -1599,7 +1587,7 @@ describe('stocks page', () => {
         userEvent.click(screen.getByText('Ajouter une date'))
 
         // When
-        userEvent.click(screen.getByAltText('Supprimer le stock'))
+        userEvent.click(screen.getByTitle('Supprimer le stock'))
 
         // Then
         expect(pcapi.bulkCreateOrEditStock).not.toHaveBeenCalled()
@@ -1759,7 +1747,7 @@ describe('stocks page', () => {
         userEvent.click(screen.getByText('Ajouter un stock'))
 
         // then
-        expect(screen.queryByAltText('Supprimer le stock')).toBeInTheDocument()
+        expect(screen.queryByTitle('Supprimer le stock')).toBeInTheDocument()
       })
 
       it('should add new stock to stocks and remove new empty stock line when clicking on validate button', async () => {
@@ -1869,7 +1857,7 @@ describe('stocks page', () => {
         userEvent.click(screen.getByText('Ajouter un stock'))
 
         // When
-        userEvent.click(screen.getByAltText('Supprimer le stock'))
+        userEvent.click(screen.getByTitle('Supprimer le stock'))
 
         // Then
         expect(pcapi.bulkCreateOrEditStock).not.toHaveBeenCalled()
