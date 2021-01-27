@@ -23,7 +23,7 @@ from pcapi.domain.payments import group_payments_by_status
 from pcapi.domain.payments import keep_only_not_processable_payments
 from pcapi.domain.payments import keep_only_pending_payments
 from pcapi.domain.payments import validate_message_file_structure
-from pcapi.domain.reimbursement import NEW_RULES
+from pcapi.domain.reimbursement import RULES
 from pcapi.domain.reimbursement import find_all_booking_reimbursements
 from pcapi.models import Offerer
 from pcapi.models.db import db
@@ -56,7 +56,7 @@ def generate_new_payments() -> Tuple[List[Payment], List[Payment]]:
         booking_reimbursements = []
         for venue in offerer.managedVenues:
             final_bookings = booking_repository.find_bookings_eligible_for_payment_for_venue(venue.id)
-            booking_reimbursements += find_all_booking_reimbursements(final_bookings, NEW_RULES)
+            booking_reimbursements += find_all_booking_reimbursements(final_bookings, RULES)
 
         booking_reimbursements_to_pay = filter_out_already_paid_for_bookings(
             filter_out_bookings_without_cost(booking_reimbursements)

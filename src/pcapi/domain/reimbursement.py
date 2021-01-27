@@ -141,23 +141,16 @@ class ReimbursementRules(Enum):
     BETWEEN_20000_AND_40000_EUROS = ReimbursementRateByVenueBetween20000And40000()
     BETWEEN_40000_AND_150000_EUROS = ReimbursementRateByVenueBetween40000And150000()
     ABOVE_150000_EUROS = ReimbursementRateByVenueAbove150000()
-    MAX_REIMBURSEMENT = MaxReimbursementByOfferer()
     BOOK_REIMBURSEMENT = ReimbursementRateForBookAbove20000()
 
 
-NEW_RULES = [
+RULES = [
     ReimbursementRules.DIGITAL_THINGS,
     ReimbursementRules.PHYSICAL_OFFERS,
     ReimbursementRules.BETWEEN_20000_AND_40000_EUROS,
     ReimbursementRules.BETWEEN_40000_AND_150000_EUROS,
     ReimbursementRules.ABOVE_150000_EUROS,
     ReimbursementRules.BOOK_REIMBURSEMENT,
-]
-
-CURRENT_RULES = [
-    ReimbursementRules.DIGITAL_THINGS,
-    ReimbursementRules.PHYSICAL_OFFERS,
-    ReimbursementRules.MAX_REIMBURSEMENT,
 ]
 
 
