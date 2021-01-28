@@ -48,6 +48,7 @@ class UserProfileResponse(BaseModel):
     expenses: List[Expense]
     firstName: Optional[str]
     hasAllowedRecommendations: bool
+    is_eligible: bool
     lastName: Optional[str]
     isBeneficiary: bool
     phoneNumber: Optional[str]

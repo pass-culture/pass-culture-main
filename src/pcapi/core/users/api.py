@@ -62,7 +62,7 @@ def create_reset_password_token(user: User) -> Token:
 
 
 def create_id_check_token(user: User) -> Optional[Token]:
-    if not is_user_eligible(user):
+    if not user.is_eligible:
         return None
 
     return generate_and_save_token(user, TokenType.ID_CHECK, constants.ID_CHECK_TOKEN_LIFE_TIME)
@@ -117,7 +117,7 @@ def create_account(
 
 
 def activate_beneficiary(user: User, deposit_source: str) -> User:
-    if not is_user_eligible(user):
+    if not user.is_eligible:
         raise exceptions.NotEligible()
     user.isBeneficiary = True
     deposit = payment_api.create_deposit(user, deposit_source=deposit_source)
@@ -157,11 +157,6 @@ def request_password_reset(user: User) -> None:
     if not is_email_sent:
         logger.error("Email service failure when user requested password reset for email '%s'", user.email)
         raise exceptions.EmailNotSent()
-
-
-def is_user_eligible(user: User) -> bool:
-    age = user.calculate_age()
-    return age is not None and age == constants.ELIGIBILITY_AGE
 
 
 def fulfill_user_data(user: User, deposit_source: str, deposit_version: int = None) -> User:

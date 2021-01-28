@@ -59,6 +59,7 @@ class AccountTest:
         ]
         assert response.json["hasAllowedRecommendations"] == user.hasAllowedRecommendations
         assert response.json["isBeneficiary"]
+        assert response.json["isEligible"] == user.is_eligible
         assert response.json["firstName"] == user.firstName
         assert response.json["lastName"] == user.lastName
         assert response.json["phoneNumber"] == user.phoneNumber

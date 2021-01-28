@@ -28,6 +28,7 @@ from sqlalchemy.sql import expression
 from pcapi import settings
 from pcapi.core.bookings.models import Booking
 from pcapi.core.offers.models import Stock
+from pcapi.core.users import constants
 from pcapi.models.db import Model
 from pcapi.models.db import db
 from pcapi.models.deposit import Deposit
@@ -280,6 +281,11 @@ class User(PcObject, Model, NeedsValidationMixin, VersionedMixin):
     @property
     def hasOffers(self):
         return any([offerer.nOffers > 0 for offerer in self.offerers])
+
+    @property
+    def is_eligible(self) -> bool:
+        age = self.calculate_age()
+        return age is not None and age == constants.ELIGIBILITY_AGE
 
 
 class ExpenseDomain(enum.Enum):
