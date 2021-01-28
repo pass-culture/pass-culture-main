@@ -1,5 +1,8 @@
+from datetime import datetime
+
 from sqlalchemy import BigInteger
 from sqlalchemy import Column
+from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
 from sqlalchemy import UniqueConstraint
 from sqlalchemy.orm import relationship
@@ -22,6 +25,8 @@ class FavoriteSQLEntity(PcObject, Model):
     mediationId = Column(BigInteger, ForeignKey("mediation.id"), index=True, nullable=True)
 
     mediation = relationship("Mediation", foreign_keys=[mediationId], backref="favorites")
+
+    dateCreated = Column(DateTime, nullable=True, default=datetime.utcnow)
 
     __table_args__ = (
         UniqueConstraint(
