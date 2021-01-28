@@ -3,12 +3,14 @@ from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
 from flask_jwt_extended.utils import create_access_token
+from freezegun.api import freeze_time
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import User
 from pcapi.core.users.models import VOID_PUBLIC_NAME
+from pcapi.core.users.repository import get_id_check_token
 
 from tests.conftest import TestClient
 
@@ -187,3 +189,28 @@ class ResendEmailValidationTest:
 
         assert response.status_code == 204
         mocked_send_raw_email.assert_not_called()
+
+
+@freeze_time("2018-06-01")
+class GetIdCheckTokenTest:
+    def test_get_id_check_token_eligible(self, app):
+        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1))
+        access_token = create_access_token(identity=user.email)
+
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+        response = test_client.get("/native/v1/id_check_token")
+
+        assert response.status_code == 200
+        assert get_id_check_token(response.json["token"])
+
+    def test_get_id_check_token_not_eligible(self, app):
+        user = users_factories.UserFactory(dateOfBirth=datetime(2001, 1, 1))
+        access_token = create_access_token(identity=user.email)
+
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+        response = test_client.get("/native/v1/id_check_token")
+
+        assert response.status_code == 200
+        assert not response.json["token"]

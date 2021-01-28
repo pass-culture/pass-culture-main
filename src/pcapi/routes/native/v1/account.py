@@ -72,3 +72,19 @@ def resend_email_validation(body: serializers.ResendEmailValidationRequest) -> N
             {"code": "EMAIL_NOT_SENT", "general": ["L'email n'a pas pu être envoyé"]},
             status_code=400,
         )
+
+
+@blueprint.native_v1.route("/id_check_token", methods=["GET"])
+@spectree_serialize(api=blueprint.api, response_model=serializers.GetIdCheckTokenResponse)
+@jwt_required
+def get_id_check_token() -> serializers.GetIdCheckTokenResponse:
+    identifier = get_jwt_identity()
+    user = find_user_by_email(get_jwt_identity())
+
+    if user is None:
+        app.logger.error("Authenticated user with email %s not found", identifier)
+        raise ApiErrors({"email": ["Utilisateur introuvable"]})
+
+    id_check_token = api.create_id_check_token(user)
+
+    return serializers.GetIdCheckTokenResponse(token=id_check_token.value if id_check_token else None)

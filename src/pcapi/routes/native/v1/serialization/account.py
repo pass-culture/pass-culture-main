@@ -70,3 +70,7 @@ class UserProfileResponse(BaseModel):
 
 class ResendEmailValidationRequest(BaseModel):
     email: str
+
+
+class GetIdCheckTokenResponse(BaseModel):
+    token: Optional[str]
