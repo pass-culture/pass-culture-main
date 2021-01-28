@@ -1,3 +1,4 @@
+import mockdate from 'mockdate'
 import { shallow } from 'enzyme'
 import React from 'react'
 
@@ -9,6 +10,9 @@ jest.mock('../../../../../../../utils/thumb', () => ({
 
 describe('components | Result', () => {
   let props
+  beforeAll(() => {
+    mockdate.set(new Date(2020, 0, 1))
+  })
 
   beforeEach(() => {
     props = {
