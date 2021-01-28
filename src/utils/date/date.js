@@ -32,19 +32,16 @@ export const formatRecommendationDates = (departementCode, dateRange = []) => {
 }
 
 export const dateStringPlusTimeZone = (dateString, departementCode) => {
-  return moment(dateString)
-    .tz(getTimezone(departementCode))
-    .format('YYYY-MM-DD HH:mm:ss')
+  return moment(dateString).tz(getTimezone(departementCode)).format('YYYY-MM-DD HH:mm:ss')
 }
 
 export const humanizeDate = (date, timezone) =>
-  capitalize(
-    moment(date)
-      .tz(timezone)
-      .format('dddd DD/MM/YYYY à H:mm')
-  )
+  capitalize(moment(date).tz(timezone).format('dddd DD/MM/YYYY à H:mm'))
 
-export const formatSearchResultDate = (departmentCode, dates = []) => {
+export const formatSearchResultDate = (departmentCode, allDatesInSeconds = []) => {
+  const nowInSeconds = new Date().valueOf() / 1000
+  const dates = allDatesInSeconds.filter(date => date.valueOf() > nowInSeconds)
+
   if (dates.length === 0) return null
 
   const timezone = getTimezone(departmentCode)

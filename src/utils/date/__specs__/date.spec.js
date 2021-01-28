@@ -1,4 +1,13 @@
+import mockdate from 'mockdate'
+
 import { dateStringPlusTimeZone, formatRecommendationDates, formatSearchResultDate } from '../date'
+
+const Jan21 = new Date(2020, 0, 21)
+const Feb1 = new Date(2020, 1, 1) // Now
+const Feb27_09_09 = new Date(2020, 1, 27, 9, 9)
+const Feb27_11_11 = new Date(2020, 1, 27, 11, 11)
+const March27 = new Date(2020, 2, 27)
+const March28 = new Date(2020, 2, 28, 15, 9)
 
 describe('src | utils | date', () => {
   describe('formatRecommendationDates', () => {
@@ -60,92 +69,23 @@ describe('src | utils | date', () => {
   })
 
   describe('formatSearchResultDate', () => {
-    it('should return null when no dates', () => {
-      // given
-      const departmentCode = '93'
-      const dates = []
-
-      // when
-      const result = formatSearchResultDate(departmentCode, dates)
-
-      // then
-      expect(result).toBeNull()
+    beforeAll(() => {
+      mockdate.set(Feb1)
     })
 
-    describe('when hours and minutes superior to 10', () => {
-      it('should return one date when beginning datetime and end datetime are the same day', () => {
-        // given
-        const departmentCode = null
-        const dates = [1582801860, 1582805340]
-
-        // when
-        const result = formatSearchResultDate(departmentCode, dates)
-
-        // then
-        expect(result).toBe('Jeudi 27 février 11:11')
-      })
-
-      it('should return date when there is only one date', () => {
-        // given
-        const departmentCode = null
-        const dates = [1582801860]
-
-        // when
-        const result = formatSearchResultDate(departmentCode, dates)
-
-        // then
-        expect(result).toBe('Jeudi 27 février 11:11')
-      })
-
-      it('should indicate beginning datetime as starting date when beginning datetime and end datetime are not the same day', () => {
-        // given
-        const departmentCode = null
-        const dates = [1585308698, 1585484866, 1585571266]
-
-        // when
-        const result = formatSearchResultDate(departmentCode, dates)
-
-        // then
-        expect(result).toBe('À partir du 27 mars')
-      })
-    })
-
-    describe('when hours and minutes inferior to 10', () => {
-      it('should return date when beginning datetime and end datetime are the same day', () => {
-        // given
-        const departmentCode = null
-        const dates = [1582794540, 1582805340]
-
-        // when
-        const result = formatSearchResultDate(departmentCode, dates)
-
-        // then
-        expect(result).toBe('Jeudi 27 février 09:09')
-      })
-
-      it('should return date when there is only one date', () => {
-        // given
-        const departmentCode = null
-        const dates = [1582794540]
-
-        // when
-        const result = formatSearchResultDate(departmentCode, dates)
-
-        // then
-        expect(result).toBe('Jeudi 27 février 09:09')
-      })
-
-      it('should indicate beginning datetime as starting date when beginning datetime and end datetime are not the same day', () => {
-        // given
-        const departmentCode = null
-        const dates = [1585414800, 1593018000]
-
-        // when
-        const result = formatSearchResultDate(departmentCode, dates)
-
-        // then
-        expect(result).toBe('À partir du 28 mars')
-      })
+    it.each`
+      what                                            | dates                         | expected
+      ${'should handle empty dates'}                  | ${[]}                         | ${null}
+      ${'should format a single date <10'}            | ${[Feb27_09_09]}              | ${'Jeudi 27 février 09:09'}
+      ${'should format a single date >10'}            | ${[Feb27_11_11]}              | ${'Jeudi 27 février 11:11'}
+      ${'should pick first date if both on same day'} | ${[Feb27_09_09, Feb27_11_11]} | ${'Jeudi 27 février 09:09'}
+      ${'should pick the first date if many'}         | ${[March27, March28]}         | ${'À partir du 27 mars'}
+      ${'should filter past dates - none'}            | ${[Jan21]}                    | ${null}
+      ${'should filter past dates - single'}          | ${[Jan21, March28]}           | ${'Samedi 28 mars 15:09'}
+      ${'should filter past dates - many'}            | ${[Jan21, March27, March28]}  | ${'À partir du 27 mars'}
+    `('$what', ({ dates, expected }) => {
+      const timestampsInSeconds = dates && dates.map(date => date.valueOf() / 1000)
+      expect(formatSearchResultDate(null, timestampsInSeconds)).toBe(expected)
     })
   })
 })
