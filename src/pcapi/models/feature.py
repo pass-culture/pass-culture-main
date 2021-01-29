@@ -53,6 +53,8 @@ class Feature(PcObject, Model, DeactivableMixin):
 FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.APPLY_BOOKING_LIMITS_V2,
     FeatureToggle.WHOLE_FRANCE_OPENING,
+    FeatureToggle.PRO_HOMEPAGE,
+    FeatureToggle.PRO_TUTO,
 )
 
 
