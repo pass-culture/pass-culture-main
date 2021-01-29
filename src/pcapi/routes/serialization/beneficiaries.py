@@ -7,6 +7,7 @@ from pydantic.class_validators import validator
 
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.models.api_errors import ApiErrors
+from pcapi.serialization.utils import humanize_field
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -51,6 +52,8 @@ class Expense(BaseModel):
 
 
 class BeneficiaryAccountResponse(BaseModel):
+    _humanize_id = humanize_field("id")
+
     activity: Optional[str]
     address: Optional[str]
     city: Optional[str]

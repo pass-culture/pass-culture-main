@@ -76,6 +76,8 @@ def create_industrial_webapp_users():
 
     repository.save(*users_by_name.values())
     for user_key, user in users_by_name.items():
+        # FIXME (asaunier, 2021-01-27): There are only 2 accounts in production where beneficiaries have no deposit
+        #  including one passculture account.
         if not ("has-signed-up" in user_key or "has-booked-activation" in user_key):
             deposit = create_deposit(
                 user,

@@ -15,7 +15,6 @@ from pcapi.core.users.api import send_user_emails_for_email_change
 from pcapi.flask_app import private_api
 from pcapi.flask_app import public_api
 from pcapi.models.api_errors import ApiErrors
-from pcapi.routes.serialization import as_dict
 from pcapi.routes.serialization import beneficiaries as serialization_beneficiaries
 from pcapi.routes.serialization.beneficiaries import BeneficiaryAccountResponse
 from pcapi.routes.serialization.beneficiaries import ChangeBeneficiaryEmailBody
@@ -23,11 +22,9 @@ from pcapi.routes.serialization.beneficiaries import ChangeBeneficiaryEmailReque
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.use_cases.update_user_informations import AlterableUserInformations
 from pcapi.use_cases.update_user_informations import update_user_informations
-from pcapi.utils.includes import BENEFICIARY_INCLUDES
 from pcapi.utils.logger import json_logger
 from pcapi.utils.login_manager import stamp_session
 from pcapi.utils.mailing import MailServiceException
-from pcapi.utils.rest import expect_json_data
 from pcapi.utils.rest import login_or_api_key_required
 from pcapi.validation.routes.captcha import check_recaptcha_token_is_valid
 from pcapi.validation.routes.users import check_allowed_changes_for_user
@@ -48,8 +45,8 @@ def get_beneficiary_profile() -> BeneficiaryAccountResponse:
 # @debt api-migration
 @private_api.route("/beneficiaries/current", methods=["PATCH"])
 @login_or_api_key_required
-@expect_json_data
-def patch_beneficiary() -> Tuple[str, int]:
+@spectree_serialize(response_model=BeneficiaryAccountResponse)
+def patch_beneficiary() -> BeneficiaryAccountResponse:
     data = request.json.keys()
     check_allowed_changes_for_user(data)
 
@@ -66,17 +63,10 @@ def patch_beneficiary() -> Tuple[str, int]:
         public_name=request.json.get("publicName"),
         has_seen_tutorials=request.json.get("hasSeenTutorials"),
     )
+
     user = update_user_informations(user_informations)
-    formattedUser = as_dict(user, includes=BENEFICIARY_INCLUDES)
 
-    # FIXME (viconnex): the enum value of expense.domain is not correctly serialize with as_dict method
-    formatted_expenses = []
-    for expense in user.expenses:
-        formatted_expenses.append({"domain": expense.domain.value, "current": expense.current, "limit": expense.limit})
-
-    formattedUser["expenses"] = formatted_expenses
-
-    return jsonify(formattedUser), 200
+    return BeneficiaryAccountResponse.from_orm(user)
 
 
 @private_api.route("/beneficiaries/change_email_request", methods=["PUT"])

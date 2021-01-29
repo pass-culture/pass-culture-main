@@ -45,6 +45,56 @@ class Patch:
             assert response.json["departementCode"] == user.departementCode
             assert user.departementCode == data["departementCode"]
 
+        @pytest.mark.usefixtures("db_session")
+        def when_updating_serialization(self, app):
+            # given
+            user = UserFactory(address="1 rue des machines")
+            data = {
+                "publicName": "plop",
+                "email": "new@email.com",
+                "postalCode": "93020",
+                "phoneNumber": "0612345678",
+                "departementCode": "97",
+                "hasSeenTutorials": True,
+            }
+
+            # when
+            response = (
+                TestClient(app.test_client()).with_auth(email=user.email).patch("/beneficiaries/current", json=data)
+            )
+
+            # then
+            assert set(response.json.keys()) == {
+                "activity",
+                "address",
+                "city",
+                "civility",
+                "dateCreated",
+                "dateOfBirth",
+                "departementCode",
+                "deposit_version",
+                "email",
+                "expenses",
+                "firstName",
+                "hasAllowedRecommendations",
+                "hasPhysicalVenues",
+                "id",
+                "isActive",
+                "isAdmin",
+                "isBeneficiary",
+                "isEmailValidated",
+                "lastName",
+                "needsToFillCulturalSurvey",
+                "needsToSeeTutorials",
+                "phoneNumber",
+                "postalCode",
+                "publicName",
+                "suspensionReason",
+                "wallet_balance",
+                "wallet_date_created",
+                "wallet_is_activated",
+            }
+
     class Returns400:
         @pytest.mark.usefixtures("db_session")
         def when_changes_are_forbidden(self, app):
