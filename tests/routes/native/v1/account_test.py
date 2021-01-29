@@ -1,4 +1,5 @@
 from datetime import datetime
+from decimal import Decimal
 from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
@@ -40,9 +41,23 @@ class AccountTest:
         assert response.status_code == 400
         assert response.json["email"] == ["Utilisateur introuvable"]
 
+    @freeze_time("2018-06-01")
     def test_get_user_profile(self, app):
-        user = users_factories.UserFactory(email=self.identifier)
-        booking = BookingFactory(user=user)
+        USER_DATA = {
+            "email": self.identifier,
+            "firstName": "john",
+            "lastName": "doe",
+            "phoneNumber": "0102030405",
+            "hasAllowedRecommendations": False,
+            "needsToFillCulturalSurvey": True,
+        }
+        user = users_factories.UserFactory(
+            dateOfBirth=datetime(2000, 1, 1),
+            deposit__version=1,
+            publicName="jdo",
+            **USER_DATA,
+        )
+        BookingFactory(user=user, amount=Decimal("123.45"))
 
         access_token = create_access_token(identity=self.identifier)
         test_client = TestClient(app.test_client())
@@ -50,22 +65,22 @@ class AccountTest:
 
         response = test_client.get("/native/v1/me")
 
+        EXPECTED_DATA = {
+            "dateOfBirth": "2000-01-01T00:00:00",
+            "depositVersion": 1,
+            "expenses": [
+                {"current": 12345, "domain": "all", "limit": 50000},
+                {"current": 0, "domain": "digital", "limit": 20000},
+                {"current": 12345, "domain": "physical", "limit": 20000},
+            ],
+            "isBeneficiary": True,
+            "isEligible": True,
+            "pseudo": "jdo",
+        }
+        EXPECTED_DATA.update(USER_DATA)
+
         assert response.status_code == 200
-        assert response.json["dateOfBirth"] == user.dateOfBirth.strftime("%Y-%m-%dT%H:%M:%S")
-        assert response.json["depositVersion"] == user.deposit_version
-        assert response.json["email"] == self.identifier
-        assert response.json["expenses"] == [
-            {"current": int(booking.amount * 100), "domain": "all", "limit": 50000},
-            {"current": 0, "domain": "digital", "limit": 20000},
-            {"current": int(booking.amount * 100), "domain": "physical", "limit": 20000},
-        ]
-        assert response.json["hasAllowedRecommendations"] == user.hasAllowedRecommendations
-        assert response.json["isBeneficiary"]
-        assert response.json["isEligible"] == user.is_eligible
-        assert response.json["firstName"] == user.firstName
-        assert response.json["lastName"] == user.lastName
-        assert response.json["phoneNumber"] == user.phoneNumber
-        assert response.json["pseudo"] == user.publicName
+        assert response.json == EXPECTED_DATA
 
     def test_get_user_profile_empty_first_name(self, app):
         users_factories.UserFactory(

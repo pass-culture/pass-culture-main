@@ -53,6 +53,7 @@ class UserProfileResponse(BaseModel):
     isBeneficiary: bool
     phoneNumber: Optional[str]
     publicName: Optional[str] = Field(None, alias="pseudo")
+    needsToFillCulturalSurvey: bool
 
     class Config:
         orm_mode = True
