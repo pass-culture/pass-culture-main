@@ -130,6 +130,7 @@ commands:
                 PROVIDER_FNAC_BASIC_AUTHENTICATION_TOKEN=sm://${GCP_PROJECT}/<< parameters.app_name >>_provider_fnac_basic_authentication_token, \
                 RECAPTCHA_SECRET=sm://${GCP_PROJECT}/<< parameters.app_name >>_recaptcha_secret, \
                 REDIS_URL=sm://${GCP_PROJECT}/<< parameters.app_name >>_redis_url, \
+                SENTRY_DSN=https://04ad2157dc364143b3446616c8950662@logs.passculture.app/7, \
                 SUPPORT_EMAIL_ADDRESS=sm://${GCP_PROJECT}/<< parameters.app_name >>_support_email_address, \
                 TRANSACTIONS_RECIPIENTS=sm://${GCP_PROJECT}/<< parameters.app_name >>_transactions_recipients, \
                 WALLET_BALANCES_RECIPIENTS=sm://${GCP_PROJECT}/<< parameters.app_name >>_wallet_balances_recipients" \
