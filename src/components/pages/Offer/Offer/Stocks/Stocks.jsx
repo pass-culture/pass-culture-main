@@ -181,12 +181,16 @@ const Stocks = ({ offer, showErrorNotification, showSuccessNotification }) => {
             <th>
               {'Quantité'}
             </th>
-            <th>
-              {'Stock restant'}
-            </th>
-            <th>
-              {'Réservations'}
-            </th>
+            {(stocksInCreation.length === 0 || existingStocks.length > 0) && (
+              <Fragment>
+                <th>
+                  {'Stock restant'}
+                </th>
+                <th>
+                  {'Réservations'}
+                </th>
+              </Fragment>
+            )}
             <th className="action-column" />
           </tr>
         </thead>
@@ -222,7 +226,7 @@ const Stocks = ({ offer, showErrorNotification, showSuccessNotification }) => {
       <section className="actions-section">
         <Link
           className="secondary-link"
-          to="/offres/"
+          to={`/offres/v2/${offerId}/edition`}
         >
           {'Annuler et quitter'}
         </Link>

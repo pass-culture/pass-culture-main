@@ -216,6 +216,29 @@ describe('stocks page', () => {
       expect(spiedMomentSetDefaultTimezone).toHaveBeenNthCalledWith(2)
     })
 
+    it('should have cancel link to go back to offer details', async () => {
+      // given
+      const offer = {
+        ...defaultOffer,
+        stocks: [
+          {
+            ...defaultStock,
+            quantity: 10,
+          },
+        ],
+      }
+
+      pcapi.loadOffer.mockResolvedValue(offer)
+
+      // when
+      await renderOffers(props, store)
+
+      // then
+      const cancelLink = screen.getByRole('link', { name: 'Annuler et quitter' })
+      expect(cancelLink).toBeInTheDocument()
+      expect(cancelLink).toHaveAttribute('href', '/offres/v2/AG3A/edition')
+    })
+
     describe('render event offer', () => {
       let eventOffer
       beforeEach(() => {
@@ -1442,6 +1465,24 @@ describe('stocks page', () => {
         pcapi.bulkCreateOrEditStock.mockReset()
       })
 
+      it('should not display remaining stocks and bookings columns when no stocks yet', async () => {
+        // given
+        const eventOffer = {
+          ...defaultOffer,
+          isEvent: true,
+          stocks: [],
+        }
+        pcapi.loadOffer.mockResolvedValue(eventOffer)
+        await renderOffers(props, store)
+
+        // when
+        userEvent.click(screen.getByText('Ajouter une date'))
+
+        // then
+        expect(screen.queryByText('Stock restant')).not.toBeInTheDocument()
+        expect(screen.queryByText('Réservations')).not.toBeInTheDocument()
+      })
+
       it('should append new stock line on top of stocks list when clicking on add button', async () => {
         // given
         const eventStock = {
@@ -1694,6 +1735,24 @@ describe('stocks page', () => {
         pcapi.loadOffer.mockReset()
         pcapi.loadStocks.mockReset()
         pcapi.bulkCreateOrEditStock.mockReset()
+      })
+
+      it('should not display remaining stocks and bookings columns when no stocks yet', async () => {
+        // given
+        const thingOffer = {
+          ...defaultOffer,
+          isEvent: false,
+          stocks: [],
+        }
+        pcapi.loadOffer.mockResolvedValue(thingOffer)
+        await renderOffers(props, store)
+
+        // when
+        userEvent.click(screen.getByText('Ajouter un stock'))
+
+        // then
+        expect(screen.queryByText('Stock restant')).not.toBeInTheDocument()
+        expect(screen.queryByText('Réservations')).not.toBeInTheDocument()
       })
 
       it('should append new stock line when clicking on add button', async () => {
