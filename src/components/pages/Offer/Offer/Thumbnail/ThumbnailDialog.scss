@@ -17,10 +17,11 @@
 
 .tnd-actions {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   margin-top: rem(40px);
 
   button {
+    margin: 0 rem(12px);
     width: rem(220px);
   }
 }
@@ -105,6 +106,7 @@
 .tnc-explanations {
   margin-top: rem(32px);
   text-align: left;
+  width: rem(500px);
 }
 
 .tnr-canvas {
@@ -149,6 +151,8 @@
 
     &::-webkit-slider-thumb {
       @include slider-thumb;
+
+      margin-top: rem(-8px);
     }
 
     &::-moz-range-track {
@@ -171,4 +175,45 @@
       }
     }
   }
+}
+
+.tnp-previews {
+  background: $grey-light;
+  display: flex;
+  justify-content: center;
+  padding: rem(32px);
+
+  svg {
+    margin-bottom: rem(16px);
+  }
+
+  & > div {
+    text-align: center;
+    width: 50%;
+  }
+}
+
+.tnp-previews-wrapper {
+  margin: 0 rem(60px);
+  position: relative;
+}
+
+.tnp-shell {
+  left: rem(19px);
+  position: absolute;
+  top: rem(25px);
+}
+
+.tnp-home-preview {
+  border-radius: rem(5px);
+  left: rem(31px);
+  position: absolute;
+  top: rem(139px);
+}
+
+.tnp-offer-preview {
+  border-radius: rem(5px);
+  left: rem(66px);
+  position: absolute;
+  top: rem(70px);
 }

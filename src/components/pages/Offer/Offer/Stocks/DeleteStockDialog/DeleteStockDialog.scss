@@ -10,8 +10,9 @@
     @include body-important();
   }
 
-  div {
+  p {
     margin-top: rem(25px);
+    width: rem(350px);
   }
 
   .action-buttons {

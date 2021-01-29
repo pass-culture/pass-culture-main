@@ -11,11 +11,10 @@ import {
 } from 'components/pages/Offer/Offer/Thumbnail/_constants'
 import CanvasTools from 'utils/canvas'
 
-const ImageEditor = ({ setStep, thumbnail, url }) => {
+const ImageEditor = ({ setEditedThumbnail, setStep, thumbnail, url }) => {
   const image = url !== '' ? url : thumbnail
-const ImageEditor = ({ setEditedThumbnail, setStep, thumbnail }) => {
   const [scale, setScale] = useState(1)
-  const editorRef = useRef(null)
+  const editorRef = useRef({})
 
   const previousStep = useCallback(() => {
     setStep(2)
@@ -23,7 +22,7 @@ const ImageEditor = ({ setEditedThumbnail, setStep, thumbnail }) => {
 
   const nextStep = useCallback(() => {
     if (editorRef.current) {
-      const canvas = editorRef.current.getImage() // HTMLCanvasElement
+      const canvas = editorRef.current.getImage()
       setEditedThumbnail(canvas.toDataURL())
       setStep(4)
     }

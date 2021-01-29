@@ -1,50 +1,22 @@
 import '@testing-library/jest-dom'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import React from 'react'
-import { MemoryRouter } from 'react-router'
+import { fireEvent, screen, waitFor } from '@testing-library/react'
 
+import {
+  createFile,
+  createImageFile,
+  renderThumbnail,
+} from 'components/pages/Offer/Offer/Thumbnail/__specs__/setup'
 import {
   CANVAS_HEIGHT,
   CANVAS_WIDTH,
+  CROP_BORDER_COLOR,
   CROP_BORDER_HEIGHT,
   CROP_BORDER_WIDTH,
-  CROP_BORDER_COLOR,
-  MIN_IMAGE_HEIGHT,
-  MIN_IMAGE_WIDTH,
 } from 'components/pages/Offer/Offer/Thumbnail/_constants'
-import ThumbnailDialog from 'components/pages/Offer/Offer/Thumbnail/ThumbnailDialog'
 import * as pcapi from 'repository/pcapi/pcapi'
 import CanvasTools from 'utils/canvas.js'
 
 jest.mock('utils/canvas.js')
-
-const createImageFile = ({
-  name = 'example.png',
-  type = 'image/png',
-  sizeInMB = 1,
-  width = MIN_IMAGE_WIDTH,
-  height = MIN_IMAGE_HEIGHT,
-} = {}) => {
-  const file = createFile({ name, type, sizeInMB })
-  jest.spyOn(global, 'createImageBitmap').mockResolvedValue({ width, height })
-  return file
-}
-
-const createFile = ({ name = 'example.json', type = 'application/json', sizeInMB = 1 } = {}) => {
-  const oneMB = 1024 * 1024
-  const file = new File([''], name, { type })
-  Object.defineProperty(file, 'size', { value: oneMB * sizeInMB })
-  return file
-}
-
-const renderThumbnail = () => {
-  render(
-    <MemoryRouter>
-      <ThumbnailDialog setIsModalOpened={jest.fn()} />
-    </MemoryRouter>
-  )
-}
 
 describe('thumbnail edition', () => {
   describe('when thumbnail exists', () => {
@@ -102,7 +74,9 @@ describe('thumbnail edition', () => {
           const file = createImageFile()
 
           // When
-          userEvent.upload(screen.getByLabelText('Importer une image depuis l’ordinateur'), file)
+          fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
+            target: { files: [file] },
+          })
 
           // Then
           await waitFor(() => {
@@ -130,7 +104,9 @@ describe('thumbnail edition', () => {
           const file = createFile()
 
           // When
-          userEvent.upload(screen.getByLabelText('Importer une image depuis l’ordinateur'), file)
+          fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
+            target: { files: [file] },
+          })
 
           // Then
           expect(
@@ -146,7 +122,9 @@ describe('thumbnail edition', () => {
           const file = createFile({ sizeInMB: 50 })
 
           // When
-          userEvent.upload(screen.getByLabelText('Importer une image depuis l’ordinateur'), file)
+          fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
+            target: { files: [file] },
+          })
 
           // Then
           await waitFor(() => {
@@ -169,7 +147,9 @@ describe('thumbnail edition', () => {
           const bigFile = createImageFile({ sizeInMB: 10 })
 
           // When
-          userEvent.upload(screen.getByLabelText('Importer une image depuis l’ordinateur'), bigFile)
+          fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
+            target: { files: [bigFile] },
+          })
 
           // Then
           expect(
@@ -185,7 +165,9 @@ describe('thumbnail edition', () => {
           const file = createImageFile({ height: 200 })
 
           // When
-          userEvent.upload(screen.getByLabelText('Importer une image depuis l’ordinateur'), file)
+          fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
+            target: { files: [file] },
+          })
 
           // Then
           expect(
@@ -201,7 +183,9 @@ describe('thumbnail edition', () => {
           const file = createImageFile({ width: 200 })
 
           // When
-          userEvent.upload(screen.getByLabelText('Importer une image depuis l’ordinateur'), file)
+          fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
+            target: { files: [file] },
+          })
 
           // Then
           expect(
@@ -219,7 +203,7 @@ describe('thumbnail edition', () => {
         renderThumbnail()
 
         // When
-        userEvent.click(screen.getByText('Utiliser une URL'))
+        fireEvent.click(screen.getByText('Utiliser une URL'))
 
         // Then
         expect(
@@ -236,10 +220,10 @@ describe('thumbnail edition', () => {
       it('should enable submit button if there is a string', () => {
         // Given
         renderThumbnail()
-        userEvent.click(screen.getByText('Utiliser une URL'))
+        fireEvent.click(screen.getByText('Utiliser une URL'))
 
         // When
-        userEvent.type(screen.getByLabelText('URL de l’image'), 'MEFA')
+        fireEvent.change(screen.getByLabelText('URL de l’image'), { target: { value: 'MEFA' } })
 
         // Then
         expect(screen.getByText('Valider', { selector: 'button' })).not.toHaveAttribute('disabled')
@@ -250,11 +234,13 @@ describe('thumbnail edition', () => {
         jest.spyOn(pcapi, 'getURLErrors').mockResolvedValue({ errors: ['API error message'] })
         renderThumbnail()
 
-        userEvent.click(screen.getByText('Utiliser une URL'))
-        userEvent.type(screen.getByLabelText('URL de l’image'), 'http://not-an-image')
+        fireEvent.click(screen.getByText('Utiliser une URL'))
+        fireEvent.change(screen.getByLabelText('URL de l’image'), {
+          target: { value: 'http://not-an-image' },
+        })
 
         // When
-        userEvent.click(screen.getByText('Valider', { selector: 'button' }))
+        fireEvent.click(screen.getByText('Valider', { selector: 'button' }))
 
         // Then
         expect(await screen.findByText('Valider', { selector: 'button' })).toHaveAttribute(
@@ -270,11 +256,13 @@ describe('thumbnail edition', () => {
         jest.spyOn(pcapi, 'getURLErrors').mockRejectedValue({})
         renderThumbnail()
 
-        userEvent.click(screen.getByText('Utiliser une URL'))
-        userEvent.type(screen.getByLabelText('URL de l’image'), 'http://not-an-image')
+        fireEvent.click(screen.getByText('Utiliser une URL'))
+        fireEvent.change(screen.getByLabelText('URL de l’image'), {
+          target: { value: 'http://not-an-image' },
+        })
 
         // When
-        userEvent.click(screen.getByText('Valider', { selector: 'button' }))
+        fireEvent.click(screen.getByText('Valider', { selector: 'button' }))
 
         // Then
         expect(await screen.findByText('Valider', { selector: 'button' })).toHaveAttribute(
@@ -288,11 +276,13 @@ describe('thumbnail edition', () => {
       it('should display a URL format error if URL format is invalid', () => {
         // Given
         renderThumbnail()
-        userEvent.click(screen.getByText('Utiliser une URL'))
-        userEvent.type(screen.getByLabelText('URL de l’image'), 'htp://url_example.com')
+        fireEvent.click(screen.getByText('Utiliser une URL'))
+        fireEvent.change(screen.getByLabelText('URL de l’image'), {
+          target: { value: 'htp://url_example.com' },
+        })
 
         // When
-        userEvent.click(screen.getByText('Valider', { selector: 'button' }))
+        fireEvent.click(screen.getByText('Valider', { selector: 'button' }))
 
         // Then
         expect(screen.getByText('Format d’URL non valide', { selector: 'pre' })).toBeInTheDocument()
@@ -301,11 +291,13 @@ describe('thumbnail edition', () => {
       it('should not display a URL format error if URL format is valid', async () => {
         // Given
         renderThumbnail()
-        userEvent.click(screen.getByText('Utiliser une URL'))
-        userEvent.type(screen.getByLabelText('URL de l’image'), 'https://url_example.com')
+        fireEvent.click(screen.getByText('Utiliser une URL'))
+        fireEvent.change(screen.getByLabelText('URL de l’image'), {
+          target: { value: 'https://url_example.com' },
+        })
 
         // When
-        userEvent.click(screen.getByText('Valider', { selector: 'button' }))
+        fireEvent.click(screen.getByText('Valider', { selector: 'button' }))
 
         // Then
         await waitFor(() => {
@@ -316,12 +308,16 @@ describe('thumbnail edition', () => {
       it('should remove the error if the user rewrite the URL after a first error', () => {
         // Given
         renderThumbnail()
-        userEvent.click(screen.getByText('Utiliser une URL'))
-        userEvent.type(screen.getByLabelText('URL de l’image'), 'htp://url_example.com')
-        userEvent.click(screen.getByText('Valider', { selector: 'button' }))
+        fireEvent.click(screen.getByText('Utiliser une URL'))
+        fireEvent.change(screen.getByLabelText('URL de l’image'), {
+          target: { value: 'htp://url_example.com' },
+        })
+        fireEvent.click(screen.getByText('Valider', { selector: 'button' }))
 
         // When
-        userEvent.type(screen.getByPlaceholderText('Ex : http://...'), 'http://url_example.com')
+        fireEvent.change(screen.getByPlaceholderText('Ex : http://...'), {
+          target: { value: 'http://url_example.com' },
+        })
 
         // Then
         expect(
@@ -333,11 +329,13 @@ describe('thumbnail edition', () => {
         // Given
         jest.spyOn(pcapi, 'getURLErrors').mockResolvedValue({ errors: [] })
         renderThumbnail()
-        userEvent.click(screen.getByText('Utiliser une URL'))
-        userEvent.type(screen.getByLabelText('URL de l’image'), 'http://url_example.com')
+        fireEvent.click(screen.getByText('Utiliser une URL'))
+        fireEvent.change(screen.getByLabelText('URL de l’image'), {
+          target: { value: 'http://url_example.com' },
+        })
 
         // When
-        userEvent.click(screen.getByText('Valider', { selector: 'button' }))
+        fireEvent.click(screen.getByText('Valider', { selector: 'button' }))
 
         // Then
         expect(await screen.findByText('Crédit image et droits d’utilisation')).toBeInTheDocument()
@@ -351,7 +349,9 @@ describe('thumbnail edition', () => {
         const file = createImageFile()
 
         // When
-        userEvent.upload(screen.getByLabelText('Importer une image depuis l’ordinateur'), file)
+        fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
+          target: { files: [file] },
+        })
 
         // Then
         expect(await screen.findByText('Crédit image et droits d’utilisation')).toBeInTheDocument()
@@ -371,10 +371,12 @@ describe('thumbnail edition', () => {
         // Given
         renderThumbnail()
         const file = createImageFile()
-        userEvent.upload(screen.getByLabelText('Importer une image depuis l’ordinateur'), file)
+        fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
+          target: { files: [file] },
+        })
 
         // When
-        userEvent.click(await screen.findByText('Retour', { selector: 'button' }))
+        fireEvent.click(await screen.findByText('Retour', { selector: 'button' }))
 
         // Then
         expect(screen.getByLabelText('Importer une image depuis l’ordinateur')).toBeInTheDocument()
@@ -386,10 +388,12 @@ describe('thumbnail edition', () => {
         // Given
         renderThumbnail()
         const file = createImageFile()
-        userEvent.upload(screen.getByLabelText('Importer une image depuis l’ordinateur'), file)
+        fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
+          target: { files: [file] },
+        })
 
         // When
-        userEvent.click(await screen.findByText('Suivant', { selector: 'button' }))
+        fireEvent.click(await screen.findByText('Suivant', { selector: 'button' }))
 
         // Then
         expect(screen.getByText('Recadrer votre image')).toBeInTheDocument()
@@ -401,16 +405,20 @@ describe('thumbnail edition', () => {
         expect(screen.getByText('Prévisualiser', { selector: 'button' })).toBeInTheDocument()
       })
 
-      it('should return to the previous step and the user must see the previous credit', async () => {
+      it('should return to the credit step and the user must see the previous credit', async () => {
         // Given
         renderThumbnail()
         const file = createImageFile()
-        userEvent.upload(screen.getByLabelText('Importer une image depuis l’ordinateur'), file)
-        userEvent.type(await screen.findByPlaceholderText('Photographe...'), 'A fake credit')
-        userEvent.click(await screen.findByText('Suivant', { selector: 'button' }))
+        fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
+          target: { files: [file] },
+        })
+        fireEvent.change(await screen.findByPlaceholderText('Photographe...'), {
+          target: { value: 'A fake credit' },
+        })
+        fireEvent.click(await screen.findByText('Suivant', { selector: 'button' }))
 
         // When
-        userEvent.click(screen.getByText('Retour', { selector: 'button' }))
+        fireEvent.click(screen.getByText('Retour', { selector: 'button' }))
 
         // Then
         expect(screen.getByDisplayValue('A fake credit')).toBeInTheDocument()
@@ -420,9 +428,13 @@ describe('thumbnail edition', () => {
         // Given
         renderThumbnail()
         const file = createImageFile()
-        userEvent.upload(screen.getByLabelText('Importer une image depuis l’ordinateur'), file)
-        userEvent.type(await screen.findByPlaceholderText('Photographe...'), 'A fake credit')
-        userEvent.click(await screen.findByText('Suivant', { selector: 'button' }))
+        fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
+          target: { files: [file] },
+        })
+        fireEvent.change(await screen.findByPlaceholderText('Photographe...'), {
+          target: { value: 'A fake credit' },
+        })
+        fireEvent.click(await screen.findByText('Suivant', { selector: 'button' }))
 
         // When
         fireEvent.change(screen.getByRole('slider'), { target: { value: 2.3 } })

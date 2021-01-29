@@ -7,5 +7,6 @@
 
 .dialog-box-content {
   border-radius: 10px;
-  max-width: rem(532px);
+  min-width: rem(534px);
+  width: auto;
 }

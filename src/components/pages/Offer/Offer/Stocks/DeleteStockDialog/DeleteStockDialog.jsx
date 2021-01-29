@@ -39,15 +39,15 @@ const DeleteStockDialog = ({
       <h1 id={DIALOG_LABEL_ID}>
         {'Voulez-vous supprimer ce stock ?'}
       </h1>
-      <div>
+      <p>
         {'Ce stock ne sera plus disponible à la réservation et '}
         <strong>
           {'entraînera l’annulation des réservations en cours !'}
         </strong>
-      </div>
-      <div>
+      </p>
+      <p>
         {'L’ensemble des utilisateurs concernés sera automatiquement averti par e-mail.'}
-      </div>
+      </p>
       <div className="action-buttons">
         <button
           className="secondary-button"
