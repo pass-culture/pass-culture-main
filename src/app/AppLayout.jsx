@@ -9,6 +9,7 @@ import Icon from 'components/layout/Icon'
 import Modal from 'components/layout/Modal'
 import NotificationV1Container from 'components/layout/NotificationV1/NotificationV1Container'
 import NotificationV2Container from 'components/layout/NotificationV2/NotificationV2Container'
+import TutorialModalContainer from 'components/layout/Tutorial/TutorialModalContainer'
 
 const AppLayout = props => {
   const { children, layoutConfig } = props
@@ -82,6 +83,7 @@ const AppLayout = props => {
             </div>
           </div>
         )}
+        <TutorialModalContainer />
         <NotificationV2Container />
         <Modal key="modal" />
       </main>

@@ -22,3 +22,9 @@ export const selectIsUserAdmin = createSelector(selectCurrentUser, currentUser =
   }
   return currentUser.isAdmin
 })
+
+// FIXME: do not use reselect cause they aren't refresh in test when we change initial state.
+export const hasSeenTutorial = state => {
+  const currentUser = state.data.users && state.data.users.length ? state.data.users[0] : null
+  return currentUser ? Boolean(currentUser.hasSeenTutorial) : true
+}
