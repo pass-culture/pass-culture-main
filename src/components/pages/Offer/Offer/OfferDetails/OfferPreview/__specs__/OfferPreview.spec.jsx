@@ -4,7 +4,7 @@ import React from 'react'
 
 import OfferPreview from '../OfferPreview'
 
-const renderOffers = async formValues => {
+const renderOfferPreview = async formValues => {
   await act(async () => {
     await render(<OfferPreview formValues={formValues} />)
   })
@@ -12,7 +12,7 @@ const renderOffers = async formValues => {
 
 describe('offer preview', () => {
   describe('render', () => {
-    it('should display title, description and withdrawal details when given', async () => {
+    it('should display title, description and withdrawal details when given', () => {
       // given
       const formValues = {
         name: 'Offer title',
@@ -21,16 +21,16 @@ describe('offer preview', () => {
       }
 
       // when
-      await renderOffers(formValues)
+      renderOfferPreview(formValues)
 
       // then
-      expect(await screen.queryByText('Offer title')).toBeInTheDocument()
-      expect(await screen.queryByText('Offer description')).toBeInTheDocument()
-      expect(await screen.queryByText('Modalités de retrait')).toBeInTheDocument()
-      expect(await screen.queryByText('Offer withdrawal details')).toBeInTheDocument()
+      expect(screen.getByText('Offer title')).toBeInTheDocument()
+      expect(screen.getByText('Offer description')).toBeInTheDocument()
+      expect(screen.getByText('Modalités de retrait')).toBeInTheDocument()
+      expect(screen.getByText('Offer withdrawal details')).toBeInTheDocument()
     })
 
-    it('should truncate description text to maximum 300 characters', async () => {
+    it('should truncate description text to maximum 300 characters', () => {
       // given
       const formValues = {
         description:
@@ -38,16 +38,16 @@ describe('offer preview', () => {
       }
 
       // when
-      await renderOffers(formValues)
+      renderOfferPreview(formValues)
 
       // then
-      const shrinkedDescriptionText = await screen.queryByText(
+      const shrinkedDescriptionText = screen.getByText(
         'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillu...'
       )
       expect(shrinkedDescriptionText).toBeInTheDocument()
     })
 
-    it('should not display terms of withdrawal category if not given', async () => {
+    it('should not display terms of withdrawal category if not given', () => {
       // given
       const formValues = {
         name: 'Offer title',
@@ -56,13 +56,13 @@ describe('offer preview', () => {
       }
 
       // when
-      await renderOffers(formValues)
+      renderOfferPreview(formValues)
 
       // then
-      expect(await screen.queryByText('Modalités de retrait')).not.toBeInTheDocument()
+      expect(screen.queryByText('Modalités de retrait')).toBeNull()
     })
 
-    it('should truncate withdrawal details text to maximum 300 characters', async () => {
+    it('should truncate withdrawal details text to maximum 300 characters', () => {
       // given
       const formValues = {
         withdrawalDetails:
@@ -70,30 +70,30 @@ describe('offer preview', () => {
       }
 
       // when
-      await renderOffers(formValues)
+      renderOfferPreview(formValues)
 
       // then
-      const shrinkedWithdrawalDetailsText = await screen.queryByText(
+      const shrinkedWithdrawalDetailsText = screen.getByText(
         'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillu...'
       )
       expect(shrinkedWithdrawalDetailsText).toBeInTheDocument()
     })
 
-    it('should display "isDuo", "Type" and "Price"', async () => {
+    it('should display "isDuo", "Type" and "Price"', () => {
       // given
       const formValues = {
         isDuo: true,
       }
 
       // when
-      await renderOffers(formValues)
+      renderOfferPreview(formValues)
 
       // then
-      const typeText = await screen.getByText('Type')
+      const typeText = screen.getByText('Type')
       expect(typeText).toBeInTheDocument()
-      const duoText = await screen.getByText('À deux !')
+      const duoText = screen.getByText('À deux !')
       expect(duoText).toBeInTheDocument()
-      const priceText = await screen.getByText('- - €')
+      const priceText = screen.getByText('- - €')
       expect(priceText).toBeInTheDocument()
     })
   })
