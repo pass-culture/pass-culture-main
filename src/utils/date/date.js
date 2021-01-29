@@ -39,31 +39,35 @@ export const humanizeDate = (date, timezone) =>
   capitalize(moment(date).tz(timezone).format('dddd DD/MM/YYYY à H:mm'))
 
 export const formatSearchResultDate = (departmentCode, allDatesInSeconds = []) => {
-  const nowInSeconds = new Date().valueOf() / 1000
-  const dates = allDatesInSeconds.filter(date => date.valueOf() > nowInSeconds)
+  const dates = allDatesInSeconds
+    .map(seconds => new Date(MILLISECONDS_IN_A_SECOND * seconds))
+    .filter(date => date > new Date())
+    .sort()
 
   if (dates.length === 0) return null
 
-  const timezone = getTimezone(departmentCode)
+  const timeZone = getTimezone(departmentCode)
 
   const numberOfBookableDates = dates.length
-  let firstBookableDate = new Date(dates[0] * MILLISECONDS_IN_A_SECOND)
-  let lastBookableDate = new Date(dates[numberOfBookableDates - 1] * MILLISECONDS_IN_A_SECOND)
+  const firstBookableDate = dates[0]
+  const lastBookableDate = dates[numberOfBookableDates - 1]
 
-  const day = firstBookableDate.toLocaleString(LOCALE_FRANCE, { timezone, day: '2-digit' })
-  const month = firstBookableDate.toLocaleString(LOCALE_FRANCE, { timezone, month: 'long' })
+  const day = firstBookableDate.toLocaleString(LOCALE_FRANCE, { timeZone, day: '2-digit' })
+  const month = firstBookableDate.toLocaleString(LOCALE_FRANCE, { timeZone, month: 'long' })
 
   const bookableDatesAreOnTheSameDay = firstBookableDate.getDate() === lastBookableDate.getDate()
   const onlyOneBookableDate = numberOfBookableDates === 1
   if (bookableDatesAreOnTheSameDay || onlyOneBookableDate) {
-    const hours = firstBookableDate.getHours()
-    const minutes = firstBookableDate.getMinutes()
-    const hoursWithLeadingZero = hours < 10 ? '0' + hours : hours
-    const minutesWithLeadingZero = minutes < 10 ? '0' + minutes : minutes
-    const weekDay = firstBookableDate.toLocaleString(LOCALE_FRANCE, { timezone, weekday: 'long' })
+    const hoursMinutes = firstBookableDate.toLocaleString(LOCALE_FRANCE, {
+      timeZone,
+      hour: '2-digit',
+      minute: '2-digit',
+    })
 
+    const weekDay = firstBookableDate.toLocaleString(LOCALE_FRANCE, { timeZone, weekday: 'long' })
     const capitalizedWeekDay = weekDay.charAt(0).toUpperCase() + weekDay.slice(1)
-    return `${capitalizedWeekDay} ${day} ${month} ${hoursWithLeadingZero}:${minutesWithLeadingZero}`
+
+    return `${capitalizedWeekDay} ${day} ${month} ${hoursMinutes}`
   }
 
   return `À partir du ${day} ${month}`

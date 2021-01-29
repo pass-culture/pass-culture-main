@@ -2,12 +2,13 @@ import mockdate from 'mockdate'
 
 import { dateStringPlusTimeZone, formatRecommendationDates, formatSearchResultDate } from '../date'
 
+// TZ is mocked as UTC. We use UTC+1 (Europe/Paris). Thus we set the date to date-1
 const Jan21 = new Date(2020, 0, 21)
 const Feb1 = new Date(2020, 1, 1) // Now
-const Feb27_09_09 = new Date(2020, 1, 27, 9, 9)
-const Feb27_11_11 = new Date(2020, 1, 27, 11, 11)
+const Feb27_09_09 = new Date(2020, 1, 27, 8, 9)
+const Feb27_11_11 = new Date(2020, 1, 27, 10, 11)
 const March27 = new Date(2020, 2, 27)
-const March28 = new Date(2020, 2, 28, 15, 9)
+const March28 = new Date(2020, 2, 28, 14, 9)
 
 describe('src | utils | date', () => {
   describe('formatRecommendationDates', () => {
@@ -74,18 +75,33 @@ describe('src | utils | date', () => {
     })
 
     it.each`
-      what                                            | dates                         | expected
-      ${'should handle empty dates'}                  | ${[]}                         | ${null}
-      ${'should format a single date <10'}            | ${[Feb27_09_09]}              | ${'Jeudi 27 février 09:09'}
-      ${'should format a single date >10'}            | ${[Feb27_11_11]}              | ${'Jeudi 27 février 11:11'}
-      ${'should pick first date if both on same day'} | ${[Feb27_09_09, Feb27_11_11]} | ${'Jeudi 27 février 09:09'}
-      ${'should pick the first date if many'}         | ${[March27, March28]}         | ${'À partir du 27 mars'}
-      ${'should filter past dates - none'}            | ${[Jan21]}                    | ${null}
-      ${'should filter past dates - single'}          | ${[Jan21, March28]}           | ${'Samedi 28 mars 15:09'}
-      ${'should filter past dates - many'}            | ${[Jan21, March27, March28]}  | ${'À partir du 27 mars'}
+      what                                                                         | dates                         | expected
+      ${'should handle empty dates'}                                               | ${[]}                         | ${null}
+      ${'should show date and hour with correct format'}                           | ${[Feb27_11_11]}              | ${'Jeudi 27 février 11:11'}
+      ${'should pad hours and minutes with 0'}                                     | ${[Feb27_09_09]}              | ${'Jeudi 27 février 09:09'}
+      ${'should show earliest date and hour when both dates are on the same day'}  | ${[Feb27_09_09, Feb27_11_11]} | ${'Jeudi 27 février 09:09'}
+      ${'should sort the available dates and pick the earliest'}                   | ${[March28, March27]}         | ${'À partir du 27 mars'}
+      ${'should not show any dates if all dates are in the past'}                  | ${[Jan21]}                    | ${null}
+      ${'should show the only date not in the past'}                               | ${[Jan21, March28]}           | ${'Samedi 28 mars 15:09'}
+      ${'should show the period beginning with the earliest date not in the past'} | ${[Jan21, March27, March28]}  | ${'À partir du 27 mars'}
     `('$what', ({ dates, expected }) => {
-      const timestampsInSeconds = dates && dates.map(date => date.valueOf() / 1000)
+      const timestampsInSeconds = dates.map(date => date.valueOf() / 1000)
       expect(formatSearchResultDate(null, timestampsInSeconds)).toBe(expected)
+    })
+
+    it('should format correctly according to department code', () => {
+      const Feb23_21 = new Date(2020, 1, 23, 21, 9).valueOf() / 1000
+      // null: Europe/Paris by default
+      expect(formatSearchResultDate(null, [Feb23_21])).toBe('Dimanche 23 février 22:09')
+
+      // Europe/Paris - UTC+1
+      expect(formatSearchResultDate('75', [Feb23_21])).toBe('Dimanche 23 février 22:09')
+
+      // America/Cayenne - UTC-3
+      expect(formatSearchResultDate('973', [Feb23_21])).toBe('Dimanche 23 février 18:09')
+
+      // Indian/Reunion - UTC+4
+      expect(formatSearchResultDate('974', [Feb23_21])).toBe('Lundi 24 février 01:09')
     })
   })
 })
