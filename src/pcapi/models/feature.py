@@ -38,6 +38,7 @@ class FeatureToggle(enum.Enum):
     ALLOW_IDCHECK_REGISTRATION = "Autoriser les utilisateurs à suivre le parcours d inscription ID Check"
     WHOLE_FRANCE_OPENING = "Ouvre le service à la France entière"
     PRO_HOMEPAGE = "Permettre l affichage de la nouvelle page d accueil du portail pro"
+    PRO_TUTO = "Permettre l affichage des cartes tuto du portail pro"
 
 
 class Feature(PcObject, Model, DeactivableMixin):
