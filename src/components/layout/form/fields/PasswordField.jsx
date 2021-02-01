@@ -46,7 +46,7 @@ class PasswordField extends PureComponent {
 
     return (
       <TextInputWithIcon
-        error={errors && meta.modified ? errors[0] : null}
+        error={errors && (meta.touched || meta.modified) ? errors[0] : null}
         icon={isPasswordHidden ? 'ico-eye-close' : 'ico-eye-open'}
         iconAlt={isPasswordHidden ? 'Afficher le mot de passe' : 'Cacher le mot de passe'}
         label={label}

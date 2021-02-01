@@ -172,3 +172,10 @@ export const getURLErrors = url => {
 // user
 //
 export const signout = () => client.get('/users/signout')
+
+//
+// set password
+//
+export const setPassword = (token, newPassword) => {
+  return client.post('/users/new-password', { token, newPassword })
+}

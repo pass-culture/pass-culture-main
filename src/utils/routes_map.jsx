@@ -17,6 +17,7 @@ import Offerers from 'components/pages/Offerers/OfferersContainer'
 import Offers from 'components/pages/Offers/OffersContainer'
 import ProfilContainer from 'components/pages/Profil/ProfilContainer'
 import ReimbursementsContainer from 'components/pages/Reimbursements/ReimbursementsContainer'
+import SetPasswordContainer from 'components/pages/SetPassword/SetPasswordContainer'
 import SigninContainer from 'components/pages/Signin/SigninContainer'
 import SignupContainer from 'components/pages/Signup/SignupContainer'
 import SignupValidationContainer from 'components/pages/Signup/SignupValidation/SignupValidationContainer'
@@ -195,6 +196,19 @@ let routes = [
     meta: {
       layoutConfig: {
         isSmall: false,
+      },
+    },
+  },
+  {
+    component: SetPasswordContainer,
+    exact: true,
+    path: ['/creation-de-mot-de-passe', '/creation-de-mot-de-passe/:token'],
+    title: 'Création de mot de passe',
+    meta: {
+      public: true,
+      layoutConfig: {
+        fullscreen: true,
+        pageName: 'sign-in',
       },
     },
   },
