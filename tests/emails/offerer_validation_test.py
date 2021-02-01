@@ -8,11 +8,9 @@ from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.utils.mailing import make_validation_email_object
 
-from tests.conftest import mocked_mail
 from tests.utils.mailing_test import get_by_siren_stub
 
 
-@mocked_mail
 @pytest.mark.usefixtures("db_session")
 def test_write_object_validation_email(app):
     # Given
@@ -72,7 +70,6 @@ def test_write_object_validation_email(app):
     assert "etablissement_siege" in api_entreprise_data
 
 
-@mocked_mail
 @pytest.mark.usefixtures("db_session")
 def test_validation_email_object_does_not_include_validation_link_if_user_offerer_is_already_validated(app):
     # Given
@@ -89,7 +86,6 @@ def test_validation_email_object_does_not_include_validation_link_if_user_offere
     assert html.select("div.user_offerer h2")[0].text == "Rattachement :"
 
 
-@mocked_mail
 @pytest.mark.usefixtures("db_session")
 def test_validation_email_object_does_not_include_validation_link_if_offerer_is_already_validated(app):
     # Given
@@ -106,7 +102,6 @@ def test_validation_email_object_does_not_include_validation_link_if_offerer_is_
     assert html.select("div.offerer h2")[0].text == "Structure :"
 
 
-@mocked_mail
 @pytest.mark.usefixtures("db_session")
 def test_validation_email_should_neither_return_clearTextPassword_nor_totallysafepsswd(app):
     # Given

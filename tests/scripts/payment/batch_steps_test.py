@@ -1,11 +1,11 @@
-from unittest.mock import Mock
-
 from freezegun import freeze_time
 from lxml.etree import DocumentInvalid
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
+import pcapi.core.mails.testing as mails_testing
 import pcapi.core.payments.factories as payments_factories
+from pcapi.core.testing import override_settings
 from pcapi.model_creators.generic_creators import create_bank_information
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
@@ -26,12 +26,10 @@ from pcapi.scripts.payment.batch_steps import send_transactions
 from pcapi.scripts.payment.batch_steps import send_wallet_balances
 from pcapi.scripts.payment.batch_steps import set_not_processable_payments_with_bank_information_to_retry
 
-from tests.conftest import mocked_mail
-
 
 class ConcatenatePaymentsWithErrorsAndRetriesTest:
     @pytest.mark.usefixtures("db_session")
-    def test_a_list_of_payments_is_returned_with_statuses_in_error_or_retry_or_pending(self, app):
+    def test_a_list_of_payments_is_returned_with_statuses_in_error_or_retry_or_pending(self):
         # Given
         booking = bookings_factories.BookingFactory()
         offerer = booking.stock.offer.venue.managingOfferer
@@ -64,7 +62,6 @@ class ConcatenatePaymentsWithErrorsAndRetriesTest:
         assert all(map(lambda p: p.currentStatus.status in allowed_statuses, payments))
 
 
-@mocked_mail
 @pytest.mark.usefixtures("db_session")
 def test_send_transactions_should_not_send_an_email_if_pass_culture_iban_is_missing(app):
     # given
@@ -80,10 +77,9 @@ def test_send_transactions_should_not_send_an_email_if_pass_culture_iban_is_miss
         send_transactions(payments, None, bic, "0000", ["comptable@test.com"])
 
     # then
-    app.mailjet_client.send.create.assert_not_called()
+    assert not mails_testing.outbox
 
 
-@mocked_mail
 @pytest.mark.usefixtures("db_session")
 def test_send_transactions_should_not_send_an_email_if_pass_culture_bic_is_missing(app):
     # given
@@ -99,10 +95,9 @@ def test_send_transactions_should_not_send_an_email_if_pass_culture_bic_is_missi
         send_transactions(payments, iban, None, "0000", ["comptable@test.com"])
 
     # then
-    app.mailjet_client.send.create.assert_not_called()
+    assert not mails_testing.outbox
 
 
-@mocked_mail
 @pytest.mark.usefixtures("db_session")
 def test_send_transactions_should_not_send_an_email_if_pass_culture_id_is_missing(app):
     # given
@@ -118,10 +113,9 @@ def test_send_transactions_should_not_send_an_email_if_pass_culture_id_is_missin
         send_transactions(payments, iban, bic, None, ["comptable@test.com"])
 
     # then
-    app.mailjet_client.send.create.assert_not_called()
+    assert not mails_testing.outbox
 
 
-@mocked_mail
 @pytest.mark.usefixtures("db_session")
 def test_send_transactions_should_send_an_email_with_xml_attachment(app):
     # given
@@ -132,19 +126,15 @@ def test_send_transactions_should_send_an_email_with_xml_attachment(app):
     payment3 = payments_factories.PaymentFactory(iban=iban, bic=bic)
     payments = [payment1, payment2, payment3]
 
-    app.mailjet_client.send.create.return_value = Mock(status_code=200)
-
     # when
     send_transactions(payments, iban, bic, "0000", ["comptable@test.com"])
 
     # then
-    app.mailjet_client.send.create.assert_called_once()
-    args = app.mailjet_client.send.create.call_args
-    assert len(args[1]["data"]["Attachments"]) == 1
+    assert len(mails_testing.outbox) == 1
+    assert len(mails_testing.outbox[0].sent_data["Attachments"]) == 1
 
 
 @pytest.mark.usefixtures("db_session")
-@mocked_mail
 @freeze_time("2018-10-15 09:21:34")
 def test_send_transactions_creates_a_new_payment_transaction_if_email_was_sent_properly(app):
     # given
@@ -154,8 +144,6 @@ def test_send_transactions_creates_a_new_payment_transaction_if_email_was_sent_p
     payment2 = payments_factories.PaymentFactory(iban=iban, bic=bic)
     payment3 = payments_factories.PaymentFactory(iban=iban, bic=bic)
     payments = [payment1, payment2, payment3]
-
-    app.mailjet_client.send.create.return_value = Mock(status_code=200)
 
     # when
     send_transactions(payments, "BD12AZERTY123456", "AZERTY9Q666", "0000", ["comptable@test.com"])
@@ -167,7 +155,6 @@ def test_send_transactions_creates_a_new_payment_transaction_if_email_was_sent_p
 
 
 @pytest.mark.usefixtures("db_session")
-@mocked_mail
 def test_send_transactions_set_status_to_sent_if_email_was_sent_properly(app):
     # given
     iban = "CF13QSDFGH456789"
@@ -176,8 +163,6 @@ def test_send_transactions_set_status_to_sent_if_email_was_sent_properly(app):
     payment2 = payments_factories.PaymentFactory(iban=iban, bic=bic)
     payment3 = payments_factories.PaymentFactory(iban=iban, bic=bic)
     payments = [payment1, payment2, payment3]
-
-    app.mailjet_client.send.create.return_value = Mock(status_code=200)
 
     # when
     send_transactions(payments, iban, bic, "0000", ["comptable@test.com"])
@@ -190,7 +175,7 @@ def test_send_transactions_set_status_to_sent_if_email_was_sent_properly(app):
 
 
 @pytest.mark.usefixtures("db_session")
-@mocked_mail
+@override_settings(EMAIL_BACKEND="pcapi.core.mails.backends.testing.FailingBackend")
 def test_send_transactions_set_status_to_error_with_details_if_email_was_not_sent_properly(app):
     # given
     iban = "CF13QSDFGH456789"
@@ -198,8 +183,6 @@ def test_send_transactions_set_status_to_error_with_details_if_email_was_not_sen
     payment1 = payments_factories.PaymentFactory(iban=iban, bic=bic)
     payment2 = payments_factories.PaymentFactory(iban=iban, bic=bic)
     payments = [payment1, payment2]
-
-    app.mailjet_client.send.create.return_value = Mock(status_code=400)
 
     # when
     send_transactions(payments, iban, bic, "0000", ["comptable@test.com"])
@@ -213,11 +196,9 @@ def test_send_transactions_set_status_to_error_with_details_if_email_was_not_sen
 
 
 @pytest.mark.usefixtures("db_session")
-@mocked_mail
 def test_send_transactions_with_malformed_iban_on_payments_gives_them_an_error_status_with_a_cause(app):
     # given
     payment = payments_factories.PaymentFactory(iban="CF  13QSDFGH45 qbc //")
-    app.mailjet_client.send.create.return_value = Mock(status_code=400)
 
     # when
     with pytest.raises(DocumentInvalid):
@@ -235,27 +216,22 @@ def test_send_transactions_with_malformed_iban_on_payments_gives_them_an_error_s
 
 
 @pytest.mark.usefixtures("db_session")
-@mocked_mail
 def test_send_payment_details_sends_a_csv_attachment(app):
     # given
     iban = "CF13QSDFGH456789"
     bic = "AZERTY9Q666"
     payment = payments_factories.PaymentFactory(iban=iban, bic=bic)
 
-    app.mailjet_client.send.create.return_value = Mock(status_code=200)
-
     # when
     send_payments_details([payment], ["comptable@test.com"])
 
     # then
-    app.mailjet_client.send.create.assert_called_once()
-    args = app.mailjet_client.send.create.call_args
-    assert len(args[1]["data"]["Attachments"]) == 1
-    assert args[1]["data"]["Attachments"][0]["ContentType"] == "application/zip"
+    assert len(mails_testing.outbox) == 1
+    assert len(mails_testing.outbox[0].sent_data["Attachments"]) == 1
+    assert mails_testing.outbox[0].sent_data["Attachments"][0]["ContentType"] == "application/zip"
 
 
 @pytest.mark.usefixtures("db_session")
-@mocked_mail
 def test_send_payment_details_does_not_send_anything_if_all_payment_have_error_status(app):
     # given
     iban = "CF13QSDFGH456789"
@@ -267,10 +243,9 @@ def test_send_payment_details_does_not_send_anything_if_all_payment_have_error_s
     send_payments_details([payment], ["comptable@test.com"])
 
     # then
-    app.mailjet_client.send.create.assert_not_called()
+    assert not mails_testing.outbox
 
 
-@mocked_mail
 def test_send_payment_details_does_not_send_anything_if_recipients_are_missing(app):
     # given
     payments = []
@@ -280,36 +255,29 @@ def test_send_payment_details_does_not_send_anything_if_recipients_are_missing(a
         send_payments_details(payments, None)
 
     # then
-    app.mailjet_client.send.create.assert_not_called()
+    assert not mails_testing.outbox
 
 
 @pytest.mark.usefixtures("db_session")
-@mocked_mail
 def test_send_wallet_balances_sends_a_csv_attachment(app):
-    # given
-    app.mailjet_client.send.create.return_value = Mock(status_code=200)
-
     # when
     send_wallet_balances(["comptable@test.com"])
 
     # then
-    app.mailjet_client.send.create.assert_called_once()
-    args = app.mailjet_client.send.create.call_args
-    assert len(args[1]["data"]["Attachments"]) == 1
-    assert args[1]["data"]["Attachments"][0]["ContentType"] == "text/csv"
+    assert len(mails_testing.outbox) == 1
+    assert len(mails_testing.outbox[0].sent_data["Attachments"]) == 1
+    assert mails_testing.outbox[0].sent_data["Attachments"][0]["ContentType"] == "text/csv"
 
 
-@mocked_mail
 def test_send_wallet_balances_does_not_send_anything_if_recipients_are_missing(app):
     # when
     with pytest.raises(Exception):
         send_wallet_balances(None)
 
     # then
-    app.mailjet_client.send.create.assert_not_called()
+    assert not mails_testing.outbox
 
 
-@mocked_mail
 @pytest.mark.usefixtures("db_session")
 def test_send_payments_report_sends_two_csv_attachments_if_some_payments_are_not_processable_and_in_error(app):
     # given
@@ -323,20 +291,16 @@ def test_send_payments_report_sends_two_csv_attachments_if_some_payments_are_not
     payments_factories.PaymentStatusFactory(payment=payment3, status=TransactionStatus.NOT_PROCESSABLE)
     payments = [payment1, payment2, payment3]
 
-    app.mailjet_client.send.create.return_value = Mock(status_code=200)
-
     # when
     send_payments_report(payments, ["dev.team@test.com"])
 
     # then
-    app.mailjet_client.send.create.assert_called_once()
-    args = app.mailjet_client.send.create.call_args
-    assert len(args[1]["data"]["Attachments"]) == 2
-    assert args[1]["data"]["Attachments"][0]["ContentType"] == "text/csv"
-    assert args[1]["data"]["Attachments"][1]["ContentType"] == "text/csv"
+    assert len(mails_testing.outbox) == 1
+    assert len(mails_testing.outbox[0].sent_data["Attachments"]) == 2
+    assert mails_testing.outbox[0].sent_data["Attachments"][0]["ContentType"] == "text/csv"
+    assert mails_testing.outbox[0].sent_data["Attachments"][1]["ContentType"] == "text/csv"
 
 
-@mocked_mail
 @pytest.mark.usefixtures("db_session")
 def test_send_payments_report_sends_two_csv_attachments_if_no_payments_are_in_error_or_sent(app):
     # given
@@ -348,20 +312,16 @@ def test_send_payments_report_sends_two_csv_attachments_if_no_payments_are_in_er
         payments_factories.PaymentStatusFactory(payment=payment, status=TransactionStatus.SENT)
     payments = [payment1, payment2]
 
-    app.mailjet_client.send.create.return_value = Mock(status_code=200)
-
     # when
     send_payments_report(payments, ["dev.team@test.com"])
 
     # then
-    app.mailjet_client.send.create.assert_called_once()
-    args = app.mailjet_client.send.create.call_args
-    assert len(args[1]["data"]["Attachments"]) == 2
-    assert args[1]["data"]["Attachments"][0]["ContentType"] == "text/csv"
-    assert args[1]["data"]["Attachments"][1]["ContentType"] == "text/csv"
+    assert len(mails_testing.outbox) == 1
+    assert len(mails_testing.outbox[0].sent_data["Attachments"]) == 2
+    assert mails_testing.outbox[0].sent_data["Attachments"][0]["ContentType"] == "text/csv"
+    assert mails_testing.outbox[0].sent_data["Attachments"][1]["ContentType"] == "text/csv"
 
 
-@mocked_mail
 @pytest.mark.usefixtures("db_session")
 def test_send_payments_report_does_not_send_anything_if_no_payments_are_provided(app):
     # given
@@ -371,13 +331,13 @@ def test_send_payments_report_does_not_send_anything_if_no_payments_are_provided
     send_payments_report(payments, ["dev.team@test.com"])
 
     # then
-    app.mailjet_client.send.create.assert_not_called()
+    assert not mails_testing.outbox
 
 
 class SetNotProcessablePaymentsWithBankInformationToRetryTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_set_not_processable_payments_to_retry_and_update_payments_bic_and_iban_using_offerer_information(
-        self, app
+        self,
     ):
         # Given
         offerer = create_offerer(name="first offerer")
@@ -407,7 +367,7 @@ class SetNotProcessablePaymentsWithBankInformationToRetryTest:
         assert queried_sent_payment.currentStatus.status == TransactionStatus.SENT
 
     @pytest.mark.usefixtures("db_session")
-    def test_should_not_set_not_processable_payments_to_retry_when_bank_information_status_is_not_accepted(self, app):
+    def test_should_not_set_not_processable_payments_to_retry_when_bank_information_status_is_not_accepted(self):
         # Given
         offerer = create_offerer(name="first offerer")
         user = create_user()
@@ -437,7 +397,7 @@ class SetNotProcessablePaymentsWithBankInformationToRetryTest:
 
     @pytest.mark.usefixtures("db_session")
     def test_should_set_not_processable_payments_to_retry_and_update_payments_bic_and_iban_using_venue_information(
-        self, app
+        self,
     ):
         # Given
         offerer = create_offerer(name="first offerer")

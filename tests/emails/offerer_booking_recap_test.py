@@ -1,6 +1,5 @@
 from datetime import datetime
 from datetime import timezone
-from unittest.mock import patch
 
 import pytest
 
@@ -37,10 +36,8 @@ def get_expected_base_email_data(booking, **overrides):
     venue_id = humanize(booking.stock.offer.venue.id)
     offerer_id = humanize(booking.stock.offer.venue.managingOfferer.id)
     email_data = {
-        "FromEmail": "support@example.com",
         "MJ-TemplateID": 2113444,
         "MJ-TemplateLanguage": True,
-        "To": "dev@example.com",
         "Vars": {
             "nom_offre": "Super événement",
             "nom_lieu": "Lieu de l'offreur",
@@ -56,7 +53,6 @@ def get_expected_base_email_data(booking, **overrides):
             "can_expire": 0,
             "nombre_resa": 1,
             "contremarque": "ABC123",
-            "env": "-development",
             "ISBN": "",
             "lien_offre_pcpro": f"http://localhost:3001/offres/{offer_id}?lieu={venue_id}&structure={offerer_id}",
             "offer_type": "EventType.SPECTACLE_VIVANT",
@@ -79,7 +75,7 @@ def get_expected_base_email_data(booking, **overrides):
 def test_with_event():
     booking = make_booking()
 
-    email_data = retrieve_data_for_offerer_booking_recap_email(booking, [])
+    email_data = retrieve_data_for_offerer_booking_recap_email(booking)
 
     expected = get_expected_base_email_data(booking)
     assert email_data == expected
@@ -100,7 +96,7 @@ def test_with_book():
         stock__offer__venue__siret=None,
     )
 
-    email_data = retrieve_data_for_offerer_booking_recap_email(booking, [])
+    email_data = retrieve_data_for_offerer_booking_recap_email(booking)
 
     expected = get_expected_base_email_data(
         booking,
@@ -130,7 +126,7 @@ def test_with_book_with_missing_isbn():
         stock__offer__venue__siret=None,
     )
 
-    email_data = retrieve_data_for_offerer_booking_recap_email(booking, [])
+    email_data = retrieve_data_for_offerer_booking_recap_email(booking)
 
     expected = get_expected_base_email_data(
         booking,
@@ -150,31 +146,10 @@ def test_with_book_with_missing_isbn():
 def test_should_not_truncate_price():
     booking = make_booking(stock__price=5.86)
 
-    email_data = retrieve_data_for_offerer_booking_recap_email(booking, [])
+    email_data = retrieve_data_for_offerer_booking_recap_email(booking)
 
     expected = get_expected_base_email_data(booking, prix="5.86")
     assert email_data == expected
-
-
-@patch("pcapi.settings.IS_PROD", True)
-@pytest.mark.usefixtures("db_session")
-def test_recipients_on_production():
-    booking = make_booking()
-    recipients = ["1@example.com", "2@example.com"]
-
-    email_data = retrieve_data_for_offerer_booking_recap_email(booking, recipients)
-
-    assert email_data["To"] == ", ".join(recipients)
-
-
-@pytest.mark.usefixtures("db_session")
-def test_recipients_when_feature_send_mail_to_users_is_disabled():
-    booking = make_booking()
-    recipients = ["1@example.com", "2@example.com"]
-
-    email_data = retrieve_data_for_offerer_booking_recap_email(booking, recipients)
-
-    assert email_data["To"] == "dev@example.com"
 
 
 @pytest.mark.usefixtures("db_session")
@@ -188,7 +163,7 @@ def test_with_two_users_who_booked_the_same_offer():
         stock=booking1.stock,
     )
 
-    email_data = retrieve_data_for_offerer_booking_recap_email(booking1, [])
+    email_data = retrieve_data_for_offerer_booking_recap_email(booking1)
 
     user_data = email_data["Vars"]["users"]
     assert len(user_data) == 2
@@ -213,7 +188,7 @@ def test_should_add_user_phone_number_to_vars():
     booking = make_booking(user__phoneNumber="0123456789")
 
     # when
-    email_data = retrieve_data_for_offerer_booking_recap_email(booking, [])
+    email_data = retrieve_data_for_offerer_booking_recap_email(booking)
 
     # then
     template_vars = email_data["Vars"]

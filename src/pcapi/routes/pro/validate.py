@@ -19,7 +19,6 @@ from pcapi.repository import user_offerer_queries
 from pcapi.repository import user_queries
 from pcapi.repository.user_offerer_queries import count_pro_attached_to_offerer
 from pcapi.utils.mailing import MailServiceException
-from pcapi.utils.mailing import send_raw_email
 from pcapi.validation.routes.users import check_validation_token_has_been_already_used
 from pcapi.validation.routes.validate import check_valid_token_for_user_validation
 from pcapi.validation.routes.validate import check_validation_request
@@ -36,7 +35,7 @@ def validate_offerer_attachment(token):
     repository.save(user_offerer)
 
     try:
-        send_attachment_validation_email_to_pro_offerer(user_offerer, send_raw_email)
+        send_attachment_validation_email_to_pro_offerer(user_offerer)
     except MailServiceException as mail_service_exception:
         app.logger.exception("Email service failure", mail_service_exception)
 
@@ -63,7 +62,7 @@ def validate_new_offerer(token):
             redis.add_venue_id(client=app.redis_client, venue_id=venue_id)
 
     try:
-        send_validation_confirmation_email_to_pro(offerer, send_raw_email)
+        send_validation_confirmation_email_to_pro(offerer)
     except MailServiceException as mail_service_exception:
         app.logger.exception("Email service failure", mail_service_exception)
     return "Validation effectuée", 202
@@ -92,7 +91,7 @@ def validate_user(token):
 
         if number_of_pro_attached_to_offerer > 1:
             try:
-                send_ongoing_offerer_attachment_information_email_to_pro(user_offerer, send_raw_email)
+                send_ongoing_offerer_attachment_information_email_to_pro(user_offerer)
             except MailServiceException as mail_service_exception:
                 app.logger.exception(
                     "[send_ongoing_offerer_attachment_information_email_to_pro] " "Email service failure",
@@ -100,7 +99,7 @@ def validate_user(token):
                 )
         else:
             try:
-                send_pro_user_waiting_for_validation_by_admin_email(user_to_validate, send_raw_email, offerer)
+                send_pro_user_waiting_for_validation_by_admin_email(user_to_validate, offerer)
             except MailServiceException as mail_service_exception:
                 app.logger.exception(
                     "[send_pro_user_waiting_for_validation_by_admin_email] " "Email service failure",
@@ -112,7 +111,7 @@ def validate_user(token):
 
 def _ask_for_validation(offerer: Offerer, user_offerer: UserOfferer):
     try:
-        maybe_send_offerer_validation_email(offerer, user_offerer, send_raw_email)
+        maybe_send_offerer_validation_email(offerer, user_offerer)
 
     except MailServiceException as mail_service_exception:
         app.logger.exception("Email service failure", mail_service_exception)

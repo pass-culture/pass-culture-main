@@ -1,6 +1,5 @@
 from datetime import datetime
 from datetime import timedelta
-from unittest.mock import patch
 
 import pytest
 
@@ -13,8 +12,7 @@ from pcapi.models import offer_type
 
 
 @pytest.mark.usefixtures("db_session")
-@patch("pcapi.utils.mailing.feature_send_mail_to_users_enabled", return_value=True)
-def test_should_send_email_to_offerer_when_expired_bookings_cancelled(self, app):
+def test_should_send_email_to_offerer_when_expired_bookings_cancelled():
     now = datetime.utcnow()
     amnesiac_user = users_factories.UserFactory(email="dory@example.com", firstName="Dory")
     long_ago = now - timedelta(days=31)
@@ -46,16 +44,13 @@ def test_should_send_email_to_offerer_when_expired_bookings_cancelled(self, app)
     )
 
     assert email_data == {
-        "FromEmail": "dev@example.com",
         "Mj-TemplateID": 1951103,
         "Mj-TemplateLanguage": True,
-        "To": "dev@example.com",
         "Vars": {
             "user_firstName": "Dory",
             "bookings": [
                 {"offer_name": "Memento", "venue_name": "Mnémosyne"},
                 {"offer_name": "Random Access Memories", "venue_name": "Virgin Megastore"},
             ],
-            "env": "-development",
         },
     }

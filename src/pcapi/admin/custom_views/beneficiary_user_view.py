@@ -12,7 +12,6 @@ from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.core.users.models import User
 from pcapi.domain.user_emails import send_activation_email
 from pcapi.models import UserOfferer
-from pcapi.utils.mailing import send_raw_email
 
 from .suspension_mixin import SuspensionMixin
 
@@ -107,7 +106,7 @@ class BeneficiaryUserView(SuspensionMixin, BaseAdminView):
         super().on_model_change(form, model, is_created)
 
     def after_model_change(self, form: Form, model: User, is_created: bool) -> None:
-        if is_created and not send_activation_email(model, send_raw_email):
+        if is_created and not send_activation_email(model):
             flash("L'envoi d'email a échoué", "error")
         super().after_model_change(form, model, is_created)
 

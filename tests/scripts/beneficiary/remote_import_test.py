@@ -8,6 +8,7 @@ from unittest.mock import patch
 from mailjet_rest import Client
 import pytest
 
+import pcapi.core.mails.testing as mails_testing
 from pcapi.core.users import api as users_api
 from pcapi.core.users.models import User
 from pcapi.model_creators.generic_creators import create_user
@@ -670,8 +671,7 @@ class RunIntegrationTest:
         assert beneficiary_import.beneficiary == user
         assert beneficiary_import.currentStatus == ImportStatus.REJECTED
 
-    @patch("pcapi.scripts.beneficiary.remote_import.send_raw_email")
-    def test_import_native_app_user(self, send_raw_email):
+    def test_import_native_app_user(self):
         # given
         user = users_api.create_account(
             email=self.EMAIL,
@@ -699,5 +699,5 @@ class RunIntegrationTest:
         assert beneficiary_import.applicationId == 123
         assert beneficiary_import.beneficiary == user
         assert beneficiary_import.currentStatus == ImportStatus.CREATED
-        send_raw_email.assert_called_once()
-        assert send_raw_email.call_args_list[0][1]["data"]["Mj-TemplateID"] == 2016025
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2016025

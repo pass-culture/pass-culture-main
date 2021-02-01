@@ -11,8 +11,6 @@ from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
 from pcapi.utils.mailing import make_offer_creation_notification_email
 
-from tests.utils.mailing_test import _remove_whitespaces
-
 
 class MakeOfferCreationNotificationEmailTest:
     @pytest.mark.usefixtures("db_session")
@@ -36,12 +34,10 @@ class MakeOfferCreationNotificationEmailTest:
         email = make_offer_creation_notification_email(physical_offer, author)
 
         # Then
-        assert email["FromEmail"] == "support@example.com"
         assert email["FromName"] == "pass Culture"
         assert email["Subject"] == "[Création d’offre - 93] Le vent se lève"
 
-        email_html = _remove_whitespaces(email["Html-part"])
-        parsed_email = BeautifulSoup(email_html, "html.parser")
+        parsed_email = BeautifulSoup(email["Html-part"], "html.parser")
 
         offer_html = str(parsed_email.find("p", {"id": "offer"}))
         assert 'Une nouvelle offre : "Le vent se lève"' in offer_html
@@ -94,6 +90,5 @@ class MakeOfferCreationNotificationEmailTest:
         email = make_offer_creation_notification_email(virtual_offer, author)
 
         # Then
-        assert email["FromEmail"] == "support@example.com"
         assert email["FromName"] == "pass Culture"
         assert email["Subject"] == "[Création d’offre - numérique] Les lapins crétins"

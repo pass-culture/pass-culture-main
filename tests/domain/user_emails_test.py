@@ -1,14 +1,15 @@
 from datetime import datetime
 from datetime import timedelta
-from unittest.mock import Mock
 from unittest.mock import call
 from unittest.mock import patch
 
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
+import pcapi.core.mails.testing as mails_testing
 from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import ProductFactory
+from pcapi.core.offers.factories import UserOffererFactory
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import Token
 from pcapi.domain.user_emails import send_activation_email
@@ -37,7 +38,6 @@ from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_stock_with_event_offer
-from pcapi.models import Offerer
 from pcapi.models import offer_type
 from pcapi.repository import repository
 
@@ -45,6 +45,21 @@ from tests.domain_creators.generic_creators import create_domain_beneficiary_pre
 from tests.test_utils import create_mocked_bookings
 
 
+# FIXME (dbaty, 2020-02-01): I am not sure what we are really testing
+# here. We seem to mock way too much. (At least, we could remove a few
+# duplicate tests that check what happens when there is a bookingEmail
+# and when there is none. We use a function for that in the
+# implementation, there is no need to test it again and again here.)
+#
+# We should probably rewrite all tests and turn them into light
+# integration tests that:
+# - do NOT mock the functions that return data to be injected into
+#   Mailjet (e.g. make_beneficiary_booking_cancellation_email_data)
+# - check the recipients
+# - ... and that's all.
+
+
+@pytest.mark.usefixtures("db_session")
 class SendBeneficiaryBookingCancellationEmailTest:
     @patch(
         "pcapi.domain.user_emails.make_beneficiary_booking_cancellation_email_data",
@@ -56,23 +71,22 @@ class SendBeneficiaryBookingCancellationEmailTest:
         # given
         beneficiary = create_user()
         booking = create_booking(beneficiary, idx=23)
-        mocked_send_email = Mock()
 
         # when
-        send_beneficiary_booking_cancellation_email(booking, mocked_send_email)
+        send_beneficiary_booking_cancellation_email(booking)
 
         # then
         mocked_make_beneficiary_booking_cancellation_email_data.assert_called_once_with(booking)
-        mocked_send_email.assert_called_once_with(data={"Mj-TemplateID": 1091464})
+        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 1091464
 
 
+@pytest.mark.usefixtures("db_session")
 class SendOffererDrivenCancellationEmailToOffererTest:
     @patch(
         "pcapi.domain.user_emails.make_offerer_driven_cancellation_email_for_offerer", return_value={"Html-part": ""}
     )
-    @patch("pcapi.utils.mailing.feature_send_mail_to_users_enabled", return_value=True)
     def test_should_send_cancellation_by_offerer_email_to_offerer_and_administration_when_booking_email_provided(
-        self, feature_send_mail_to_users_enabled, make_offerer_driven_cancellation_email_for_offerer
+        self, make_offerer_driven_cancellation_email_for_offerer
     ):
         # Given
         user = create_user(email="user@example.com")
@@ -82,23 +96,19 @@ class SendOffererDrivenCancellationEmailToOffererTest:
         stock = create_stock_with_event_offer(offerer, venue)
         stock.offer.bookingEmail = "offer@example.com"
         booking = create_booking(user=user, stock=stock)
-        mocked_send_email = Mock()
 
         # When
-        send_offerer_driven_cancellation_email_to_offerer(booking, mocked_send_email)
+        send_offerer_driven_cancellation_email_to_offerer(booking)
 
         # Then
         make_offerer_driven_cancellation_email_for_offerer.assert_called_once_with(booking)
-        mocked_send_email.assert_called_once()
-        args = mocked_send_email.call_args_list
-        assert args[0][1]["data"]["To"] == "offer@example.com, administration@example.com"
+        assert mails_testing.outbox[0].sent_data["To"] == "offer@example.com, administration@example.com"
 
     @patch(
         "pcapi.domain.user_emails.make_offerer_driven_cancellation_email_for_offerer", return_value={"Html-part": ""}
     )
-    @patch("pcapi.utils.mailing.feature_send_mail_to_users_enabled", return_value=True)
     def test_should_send_cancellation_by_offerer_email_only_to_administration_when_no_booking_email_provided(
-        self, feature_send_mail_to_users_enabled, make_offerer_driven_cancellation_email_for_offerer
+        self, make_offerer_driven_cancellation_email_for_offerer
     ):
         # Given
         user = create_user(email="user@example.com")
@@ -107,72 +117,50 @@ class SendOffererDrivenCancellationEmailToOffererTest:
         stock = create_stock_with_event_offer(offerer, venue)
         stock.offer.bookingEmail = None
         booking = create_booking(user=user, stock=stock)
-        mocked_send_email = Mock()
 
         # When
-        send_offerer_driven_cancellation_email_to_offerer(booking, mocked_send_email)
+        send_offerer_driven_cancellation_email_to_offerer(booking)
 
         # Then
         make_offerer_driven_cancellation_email_for_offerer.assert_called_once_with(booking)
-        mocked_send_email.assert_called_once()
-        args = mocked_send_email.call_args_list
-        assert args[0][1]["data"]["To"] == "administration@example.com"
+        assert mails_testing.outbox[0].sent_data["To"] == "administration@example.com"
 
 
+@pytest.mark.usefixtures("db_session")
 class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
-    @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.emails.beneficiary_offer_cancellation.feature_send_mail_to_users_enabled", return_value=True)
-    def test_should_send_booking_cancellation_email_to_offerer_and_administration_when_booking_email_provided(
-        self, mock_feature_send_mail_to_users_enabled, app
-    ):
+    def test_should_send_booking_cancellation_email_to_offerer_and_administration_when_booking_email_provided(self):
         # Given
         booking = BookingFactory(stock__offer__bookingEmail="booking@example.com")
-        mocked_send_email = Mock()
 
         # When
-        send_user_driven_cancellation_email_to_offerer(booking, mocked_send_email)
+        send_user_driven_cancellation_email_to_offerer(booking)
 
         # Then
-        mocked_send_email.assert_called_once()
-        args = mocked_send_email.call_args_list
-        assert args[0][1]["data"]["To"] == "booking@example.com, administration@example.com"
+        assert mails_testing.outbox[0].sent_data["To"] == "booking@example.com, administration@example.com"
 
-    @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.emails.beneficiary_offer_cancellation.feature_send_mail_to_users_enabled", return_value=True)
-    def test_should_send_booking_cancellation_email_only_to_administration_when_no_booking_email_provided(
-        self, mock_feature_send_mail_to_users_enabled, app
-    ):
+    def test_should_send_booking_cancellation_email_only_to_administration_when_no_booking_email_provided(self):
         # Given
         booking = BookingFactory(stock__offer__bookingEmail="")
-        mocked_send_email = Mock()
 
         # When
-        send_user_driven_cancellation_email_to_offerer(booking, mocked_send_email)
+        send_user_driven_cancellation_email_to_offerer(booking)
 
         # Then
-        mocked_send_email.assert_called_once()
-        args = mocked_send_email.call_args_list
-        assert args[0][1]["data"]["To"] == "administration@example.com"
+        assert mails_testing.outbox[0].sent_data["To"] == "administration@example.com"
 
 
+@pytest.mark.usefixtures("db_session")
 class SendWarningToBeneficiaryAfterProBookingCancellationTest:
-    @patch(
-        "pcapi.emails.beneficiary_warning_after_pro_booking_cancellation.feature_send_mail_to_users_enabled",
-        return_value=True,
-    )
-    def test_should_sends_email_to_beneficiary_when_pro_cancels_booking(self, mock_feature_send_mail_to_users_enabled):
+    def test_should_sends_email_to_beneficiary_when_pro_cancels_booking(self):
         # Given
         user = create_user(email="user@example.com")
         booking = create_booking(user=user)
-        mocked_send_email = Mock()
 
         # When
-        send_warning_to_beneficiary_after_pro_booking_cancellation(booking, mocked_send_email)
+        send_warning_to_beneficiary_after_pro_booking_cancellation(booking)
 
         # Then
-        mocked_send_email.assert_called_once()
-        kwargs = mocked_send_email.call_args_list[0][1]
-        assert kwargs["data"] == {
+        assert mails_testing.outbox[0].sent_data == {
             "FromEmail": "support@example.com",
             "MJ-TemplateID": 1116690,
             "MJ-TemplateLanguage": True,
@@ -189,72 +177,50 @@ class SendWarningToBeneficiaryAfterProBookingCancellationTest:
                 "offerer_name": booking.stock.offer.venue.managingOfferer.name,
                 "user_first_name": user.firstName,
                 "venue_name": booking.stock.offer.venue.name,
+                "env": "-development",
             },
         }
 
 
+@pytest.mark.usefixtures("db_session")
 class SendBookingConfirmationEmailToBeneficiaryTest:
-    @patch("pcapi.utils.mailing.feature_send_mail_to_users_enabled", return_value=True)
     @patch(
         "pcapi.domain.user_emails.retrieve_data_for_beneficiary_booking_confirmation_email",
         return_value={"MJ-TemplateID": 1163067},
     )
-    def when_called_calls_send_email(
-        self, mocked_retrieve_data_for_beneficiary_booking_confirmation_email, mock_feature_send_mail_to_users_enabled
-    ):
+    def when_called_calls_send_email(self, mocked_retrieve_data_for_beneficiary_booking_confirmation_email):
         # Given
         user = create_user()
         booking = create_booking(user=user, idx=23)
-        mocked_send_email = Mock()
 
         # When
-        send_booking_confirmation_email_to_beneficiary(booking, mocked_send_email)
+        send_booking_confirmation_email_to_beneficiary(booking)
 
         # Then
         mocked_retrieve_data_for_beneficiary_booking_confirmation_email.assert_called_once_with(booking)
-        mocked_send_email.assert_called_once_with(data={"MJ-TemplateID": 1163067})
+        assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 1163067
 
 
 @pytest.mark.usefixtures("db_session")
 class SendBookingRecapEmailsTest:
-    @patch("pcapi.utils.mailing.feature_send_mail_to_users_enabled", return_value=False)
-    def test_send_to_developers(self, mock_feature_send_mail_to_users_enabled):
+    def test_send_to_offerer_and_admin(self):
         booking = BookingFactory(
             stock__offer__bookingEmail="booking.email@example.com",
         )
-        mocked_send_email = Mock()
 
-        send_booking_recap_emails(booking, mocked_send_email)
+        send_booking_recap_emails(booking)
 
-        mocked_send_email.assert_called_once()
-        data = mocked_send_email.call_args_list[0][1]["data"]
-        assert data["To"] == "dev@example.com"
+        assert mails_testing.outbox[0].sent_data["To"] == "administration@example.com, booking.email@example.com"
 
-    @patch("pcapi.utils.mailing.feature_send_mail_to_users_enabled", return_value=True)
-    def test_send_to_offerer_and_admin(self, mock_feature_send_mail_to_users_enabled):
-        booking = BookingFactory(
-            stock__offer__bookingEmail="booking.email@example.com",
-        )
-        mocked_send_email = Mock()
-
-        send_booking_recap_emails(booking, mocked_send_email)
-
-        mocked_send_email.assert_called_once()
-        data = mocked_send_email.call_args_list[0][1]["data"]
-        assert data["To"] == "administration@example.com, booking.email@example.com"
-
-    @patch("pcapi.utils.mailing.feature_send_mail_to_users_enabled", return_value=True)
-    def test_send_only_to_admin(self, feature_send_mail_to_users_enabled):
+    def test_send_only_to_admin(self):
         booking = BookingFactory()
-        mocked_send_email = Mock()
 
-        send_booking_recap_emails(booking, mocked_send_email)
+        send_booking_recap_emails(booking)
 
-        mocked_send_email.assert_called_once()
-        data = mocked_send_email.call_args_list[0][1]["data"]
-        assert data["To"] == "administration@example.com"
+        assert mails_testing.outbox[0].sent_data["To"] == "administration@example.com"
 
 
+@pytest.mark.usefixtures("db_session")
 class SendValidationConfirmationEmailTest:
     @patch(
         "pcapi.domain.user_emails.retrieve_data_for_new_offerer_validation_email",
@@ -264,131 +230,95 @@ class SendValidationConfirmationEmailTest:
         self, mock_retrieve_data_for_new_offerer_validation_email
     ):
         # Given
-        offerer = Offerer()
-        mocked_send_email = Mock()
+        offerer = UserOffererFactory().offerer
 
         # When
-        send_validation_confirmation_email_to_pro(offerer, mocked_send_email)
+        send_validation_confirmation_email_to_pro(offerer)
 
         # Then
         mock_retrieve_data_for_new_offerer_validation_email.assert_called_once_with(offerer)
-        mocked_send_email.assert_called_once_with(data={"Mj-TemplateID": 778723})
+        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 778723
 
 
+@pytest.mark.usefixtures("db_session")
 class SendCancellationEmailOneUserTest:
     @patch("pcapi.domain.user_emails.send_warning_to_beneficiary_after_pro_booking_cancellation")
-    @patch("pcapi.utils.mailing.feature_send_mail_to_users_enabled", return_value=True)
     def when_called_calls_send_offerer_driven_cancellation_email_to_user_for_every_booking(
-        self, feature_send_mail_to_users_enabled, mocked_send_warning_to_beneficiary_after_pro_booking_cancellation
+        self, mocked_send_warning_to_beneficiary_after_pro_booking_cancellation
     ):
         # Given
-        mocked_send_email = Mock()
         num_bookings = 6
         bookings = create_mocked_bookings(num_bookings, "offerer@example.com")
-        calls = [call(booking, mocked_send_email) for booking in bookings]
+        calls = [call(booking) for booking in bookings]
 
         # When
-        send_batch_cancellation_emails_to_users(bookings, mocked_send_email)
+        send_batch_cancellation_emails_to_users(bookings)
 
         # Then
         mocked_send_warning_to_beneficiary_after_pro_booking_cancellation.assert_has_calls(calls)
 
 
+@pytest.mark.usefixtures("db_session")
 class SendOffererBookingsRecapEmailAfterOffererCancellationTest:
     @patch(
         "pcapi.domain.user_emails.retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation",
         return_value={"Mj-TemplateID": 1116333},
     )
-    @patch("pcapi.utils.mailing.feature_send_mail_to_users_enabled", return_value=True)
-    def when_feature_send_mail_to_users_enabled_sends_to_offerer_administration(
-        self, feature_send_mail_to_users_enabled, retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation
+    def test_sends_to_offerer_administration(
+        self, retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation
     ):
         # Given
         num_bookings = 5
         bookings = create_mocked_bookings(num_bookings, "offerer@example.com")
-        recipients = "offerer@example.com, administration@example.com"
-        mocked_send_email = Mock()
 
         # When
-        send_offerer_bookings_recap_email_after_offerer_cancellation(bookings, mocked_send_email)
+        send_offerer_bookings_recap_email_after_offerer_cancellation(bookings)
 
         # Then
-        retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation.assert_called_once_with(
-            bookings, recipients
-        )
-        mocked_send_email.assert_called_once_with(data={"Mj-TemplateID": 1116333})
-
-    @patch(
-        "pcapi.domain.user_emails.retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation",
-        return_value={"Mj-TemplateID": 1116333},
-    )
-    @patch("pcapi.utils.mailing.feature_send_mail_to_users_enabled", return_value=True)
-    def when_feature_send_mail_to_users_enabled_and_offerer_email_is_missing_sends_only_to_administration(
-        self, feature_send_mail_to_users_enabled, retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation
-    ):
-        # Given
-        num_bookings = 5
-        bookings = create_mocked_bookings(num_bookings, None)
-        recipients = "administration@example.com"
-        mocked_send_email = Mock()
-
-        # When
-        send_offerer_bookings_recap_email_after_offerer_cancellation(bookings, mocked_send_email)
-
-        # Then
-        retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation.assert_called_once_with(
-            bookings, recipients
-        )
-        mocked_send_email.assert_called_once_with(data={"Mj-TemplateID": 1116333})
+        retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation.assert_called_once_with(bookings)
+        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 1116333
 
 
+@pytest.mark.usefixtures("db_session")
 class SendUserValidationEmailTest:
     @patch("pcapi.domain.user_emails.make_pro_user_validation_email", return_value={"Html-part": ""})
-    @patch("pcapi.utils.mailing.feature_send_mail_to_users_enabled", return_value=True)
-    def when_feature_send_mail_to_users_enabled_sends_email_to_user(
-        self, feature_send_mail_to_users_enabled, make_pro_user_validation_email
-    ):
+    def when_feature_send_mail_to_users_enabled_sends_email_to_user(self, make_pro_user_validation_email):
         # Given
         user = create_user()
         user.generate_validation_token()
-        mocked_send_email = Mock()
 
         # When
-        send_user_validation_email(user, mocked_send_email)
+        send_user_validation_email(user)
 
         # Then
-        mocked_send_email.assert_called_once()
-        make_pro_user_validation_email.assert_called_once()
-        mocked_send_email.call_args_list[0][1]["To"] = user.email
+        assert mails_testing.outbox[0].sent_data["To"] == user.email
 
 
+@pytest.mark.usefixtures("db_session")
 class SendActivationEmailTest:
     @patch("pcapi.emails.beneficiary_activation.get_activation_email_data")
     def test_send_activation_email(self, mocked_get_activation_email_data):
         # given
         beneficiary = users_factories.UserFactory.build()
-        mocked_send_email = Mock()
         mocked_get_activation_email_data.return_value = {"Html-part": ""}
 
         # when
-        send_activation_email(beneficiary, mocked_send_email)
+        send_activation_email(beneficiary)
 
         # then
         mocked_get_activation_email_data.assert_called_once_with(user=beneficiary)
-        mocked_send_email.assert_called_once_with(data={"Html-part": ""})
+        assert mails_testing.outbox[0].sent_data["Html-part"] == ""
 
     def test_send_activation_email_for_native(self):
         # given
         beneficiary = users_factories.UserFactory.build()
         token = users_factories.EmailValidationToken.build(user=beneficiary)
-        mocked_send_email = Mock()
 
         # when
-        send_activation_email(beneficiary, mocked_send_email, native_version=True, token=token)
+        send_activation_email(beneficiary, native_version=True, token=token)
 
         # then
-        mocked_send_email.assert_called()
-        native_app_link = mocked_send_email.call_args_list[0][1]["data"]["Vars"]["nativeAppLink"]
+        native_app_link = mails_testing.outbox[0].sent_data["Vars"]["nativeAppLink"]
         assert token.value in native_app_link
 
 
@@ -399,20 +329,18 @@ class SendAttachmentValidationEmailToProOffererTest:
         self, mocked_retrieve_data_for_offerer_attachment_validation_email, app
     ):
         # given
-        user = create_user()
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user, offerer)
-        mocked_send_email = Mock()
+        user_offerer = UserOffererFactory()
         mocked_retrieve_data_for_offerer_attachment_validation_email.return_value = {"Html-part": ""}
 
         # when
-        send_attachment_validation_email_to_pro_offerer(user_offerer, mocked_send_email)
+        send_attachment_validation_email_to_pro_offerer(user_offerer)
 
         # then
-        mocked_retrieve_data_for_offerer_attachment_validation_email.assert_called_once_with(user_offerer=user_offerer)
-        mocked_send_email.assert_called_once_with(data={"Html-part": ""})
+        mocked_retrieve_data_for_offerer_attachment_validation_email.assert_called_once_with(user_offerer)
+        assert mails_testing.outbox[0].sent_data["Html-part"] == ""
 
 
+@pytest.mark.usefixtures("db_session")
 class SendOngoingOffererAttachmentInformationEmailTest:
     @patch(
         "pcapi.domain.user_emails.retrieve_data_for_offerer_ongoing_attachment_email",
@@ -431,16 +359,15 @@ class SendOngoingOffererAttachmentInformationEmailTest:
 
         repository.save(user_offerer_1, user_offerer_2)
 
-        mocked_send_email = Mock()
-
         # when
-        send_ongoing_offerer_attachment_information_email_to_pro(user_offerer_2, mocked_send_email)
+        send_ongoing_offerer_attachment_information_email_to_pro(user_offerer_2)
 
         # then
         mock_retrieve_data_for_offerer_ongoing_attachment_email.assert_called_once_with(user_offerer_2)
-        mocked_send_email.assert_called_once_with(data={"Mj-TemplateID": 778749})
+        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 778749
 
 
+@pytest.mark.usefixtures("db_session")
 class SendResetPasswordProEmailTest:
     @patch(
         "pcapi.domain.user_emails.retrieve_data_for_reset_password_pro_email", return_value={"MJ-TemplateID": 779295}
@@ -450,16 +377,16 @@ class SendResetPasswordProEmailTest:
     ):
         # given
         user = create_user(email="pro@example.com", reset_password_token="AZ45KNB99H")
-        mocked_send_email = Mock()
 
         # when
-        send_reset_password_email_to_pro(user, mocked_send_email)
+        send_reset_password_email_to_pro(user)
 
         # then
         mock_retrieve_data_for_reset_password_pro_email.assert_called_once_with(user)
-        mocked_send_email.assert_called_once_with(data={"MJ-TemplateID": 779295})
+        assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 779295
 
 
+@pytest.mark.usefixtures("db_session")
 class SendResetPasswordUserEmailTest:
     @patch(
         "pcapi.domain.user_emails.retrieve_data_for_reset_password_user_email", return_value={"MJ-TemplateID": 912168}
@@ -469,14 +396,13 @@ class SendResetPasswordUserEmailTest:
     ):
         # given
         user = create_user(email="bobby@example.com", first_name="Bobby", reset_password_token="AZ45KNB99H")
-        mocked_send_email = Mock()
 
         # when
-        send_reset_password_email_to_user(user, mocked_send_email)
+        send_reset_password_email_to_user(user)
 
         # then
         mock_retrieve_data_for_reset_password_user_email.assert_called_once_with(user)
-        mocked_send_email.assert_called_once_with(data={"MJ-TemplateID": 912168})
+        assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 912168
 
     @patch(
         "pcapi.domain.user_emails.retrieve_data_for_reset_password_native_app_email",
@@ -487,19 +413,19 @@ class SendResetPasswordUserEmailTest:
     ):
         # given
         user = create_user(email="bobby@example.com", first_name="Bobby", reset_password_token="AZ45KNB99H")
-        mocked_send_email = Mock()
         token = Token(value="token-value", expirationDate=datetime.now())
 
         # when
-        send_reset_password_email_to_native_app_user(user.email, token.value, token.expirationDate, mocked_send_email)
+        send_reset_password_email_to_native_app_user(user.email, token.value, token.expirationDate)
 
         # then
         retrieve_data_for_reset_password_native_app_email.assert_called_once_with(
             user.email, token.value, token.expirationDate
         )
-        mocked_send_email.assert_called_once_with(data={"MJ-TemplateID": 12345})
+        assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 12345
 
 
+@pytest.mark.usefixtures("db_session")
 class SendRejectionEmailToBeneficiaryPreSubscriptionTest:
     @patch(
         "pcapi.domain.user_emails.make_duplicate_beneficiary_pre_subscription_rejected_data",
@@ -508,14 +434,13 @@ class SendRejectionEmailToBeneficiaryPreSubscriptionTest:
     def when_beneficiary_is_a_duplicate_sends_correct_template(self, mocked_make_data, app):
         # given
         beneficiary_pre_subscription = create_domain_beneficiary_pre_subcription()
-        mocked_send_email = Mock()
 
         # when
-        send_rejection_email_to_beneficiary_pre_subscription(beneficiary_pre_subscription, True, mocked_send_email)
+        send_rejection_email_to_beneficiary_pre_subscription(beneficiary_pre_subscription, beneficiary_is_eligible=True)
 
         # then
-        mocked_make_data.assert_called_once_with(beneficiary_pre_subscription.email)
-        mocked_send_email.assert_called_once_with(data={"MJ-TemplateID": 1530996})
+        mocked_make_data.assert_called_once()
+        assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 1530996
 
     @patch(
         "pcapi.domain.user_emails.make_not_eligible_beneficiary_pre_subscription_rejected_data",
@@ -524,16 +449,18 @@ class SendRejectionEmailToBeneficiaryPreSubscriptionTest:
     def when_beneficiary_is_not_eligible_sends_correct_template(self, mocked_make_data, app):
         # given
         beneficiary_pre_subscription = create_domain_beneficiary_pre_subcription()
-        mocked_send_email = Mock()
 
         # when
-        send_rejection_email_to_beneficiary_pre_subscription(beneficiary_pre_subscription, False, mocked_send_email)
+        send_rejection_email_to_beneficiary_pre_subscription(
+            beneficiary_pre_subscription, beneficiary_is_eligible=False
+        )
 
         # then
-        mocked_make_data.assert_called_once_with(beneficiary_pre_subscription.email)
-        mocked_send_email.assert_called_once_with(data={"MJ-TemplateID": 1619528})
+        mocked_make_data.assert_called_once()
+        assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 1619528
 
 
+@pytest.mark.usefixtures("db_session")
 class SendExpiredBookingsRecapEmailToBeneficiaryTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_send_email_to_beneficiary_when_expired_bookings_cancelled(self, app):
@@ -544,31 +471,24 @@ class SendExpiredBookingsRecapEmailToBeneficiaryTest:
         expired_today_cd_booking = BookingFactory(
             user=amnesiac_user,
         )
-        mocked_send_email = Mock()
-
         send_expired_bookings_recap_email_to_beneficiary(
-            amnesiac_user, [expired_today_cd_booking, expired_today_dvd_booking], mocked_send_email
+            amnesiac_user, [expired_today_cd_booking, expired_today_dvd_booking]
         )
 
-        mocked_send_email.assert_called_once()
-        mocked_send_email.call_args_list[0][1]["MJ-TemplateID"] = 1951103
+        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 1951103
 
 
+@pytest.mark.usefixtures("db_session")
 class SendExpiredBookingsRecapEmailToOffererTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_send_email_to_offerer_when_expired_bookings_cancelled(self, app):
         offerer = OffererFactory()
         expired_today_dvd_booking = BookingFactory()
         expired_today_cd_booking = BookingFactory()
-        mocked_send_email = Mock()
 
-        send_expired_bookings_recap_email_to_offerer(
-            offerer, [expired_today_cd_booking, expired_today_dvd_booking], mocked_send_email
-        )
+        send_expired_bookings_recap_email_to_offerer(offerer, [expired_today_cd_booking, expired_today_dvd_booking])
 
-        mocked_send_email.assert_called_once()
-        mocked_send_email.call_args_list[0][1]["MJ-TemplateID"] = 1952508
-        mocked_send_email.call_args_list[0][1]["recipients"] = "dev@example.com"
+        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 1952508
 
 
 @pytest.mark.usefixtures("db_session")
@@ -602,15 +522,14 @@ class SendSoonToBeExpiredBookingsRecapEmailToBeneficiaryTest:
             dateCreated=created_23_days_ago,
             user=user,
         )
-        mocked_send_email = Mock()
 
         # when
         send_soon_to_be_expired_bookings_recap_email_to_beneficiary(
-            user, [soon_to_be_expired_cd_booking, soon_to_be_expired_dvd_booking], mocked_send_email
+            user, [soon_to_be_expired_cd_booking, soon_to_be_expired_dvd_booking]
         )
 
         # then
         build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary.assert_called_once_with(
             user, [soon_to_be_expired_cd_booking, soon_to_be_expired_dvd_booking]
         )
-        mocked_send_email.assert_called_once_with(data={"MJ-TemplateID": 12345})
+        assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 12345

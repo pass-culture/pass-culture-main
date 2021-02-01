@@ -117,7 +117,7 @@ def create_offer(offer_data: PostOfferBodyModel, user: User) -> Offer:
     offer.motorDisabilityCompliant = offer_data.motor_disability_compliant
     offer.visualDisabilityCompliant = offer_data.visual_disability_compliant
     repository.save(offer)
-    admin_emails.send_offer_creation_notification_to_administration(offer, user, mailing.send_raw_email)
+    admin_emails.send_offer_creation_notification_to_administration(offer, user)
 
     return offer
 
@@ -301,7 +301,7 @@ def _notify_beneficiaries_upon_stock_edit(stock: Stock):
         if check_event_is_in_more_than_48_hours:
             bookings = _invalidate_bookings(bookings)
         try:
-            user_emails.send_batch_stock_postponement_emails_to_users(bookings, send_email=mailing.send_raw_email)
+            user_emails.send_batch_stock_postponement_emails_to_users(bookings)
         except mailing.MailServiceException as exc:
             # fmt: off
             app.logger.exception(
@@ -411,13 +411,11 @@ def delete_stock(stock: Stock) -> None:
 
     if cancelled_bookings:
         try:
-            user_emails.send_batch_cancellation_emails_to_users(cancelled_bookings, mailing.send_raw_email)
+            user_emails.send_batch_cancellation_emails_to_users(cancelled_bookings)
         except mailing.MailServiceException as exc:
             app.logger.exception("Could not notify beneficiaries about deletion of stock=%s: %s", stock.id, exc)
         try:
-            user_emails.send_offerer_bookings_recap_email_after_offerer_cancellation(
-                cancelled_bookings, mailing.send_raw_email
-            )
+            user_emails.send_offerer_bookings_recap_email_after_offerer_cancellation(cancelled_bookings)
         except mailing.MailServiceException as exc:
             app.logger.exception("Could not notify offerer about deletion of stock=%s: %s", stock.id, exc)
 

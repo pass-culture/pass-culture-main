@@ -10,6 +10,7 @@ from pcapi.core.bookings import api
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings import factories
 from pcapi.core.bookings.models import BookingCancellationReasons
+import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
 import pcapi.core.users.factories as users_factories
@@ -20,9 +21,8 @@ from pcapi.utils.token import random_token
 
 @pytest.mark.usefixtures("db_session")
 class BookOfferTest:
-    @mock.patch("pcapi.infrastructure.services.notification.mailjet_notification_service.send_raw_email")
     @mock.patch("pcapi.connectors.redis.add_offer_id")
-    def test_create_booking(self, mocked_add_offer_id, mocked_send_raw_email):
+    def test_create_booking(self, mocked_add_offer_id):
         user = users_factories.UserFactory()
         stock = offers_factories.StockFactory(price=10)
 
@@ -38,9 +38,10 @@ class BookOfferTest:
 
         mocked_add_offer_id.assert_called_once_with(client=app.redis_client, offer_id=stock.offer.id)
 
-        email_data1 = mocked_send_raw_email.call_args_list[0][1]["data"]
+        assert len(mails_testing.outbox) == 2
+        email_data1 = mails_testing.outbox[0].sent_data
         assert email_data1["MJ-TemplateID"] == 2113444  # to offerer
-        email_data2 = mocked_send_raw_email.call_args_list[1][1]["data"]
+        email_data2 = mails_testing.outbox[1].sent_data
         assert email_data2["MJ-TemplateID"] == 1163067  # to beneficiary
 
     def test_create_event_booking(self):
@@ -119,17 +120,17 @@ class BookOfferTest:
 
 @pytest.mark.usefixtures("db_session")
 class CancelByBeneficiaryTest:
-    @mock.patch("pcapi.infrastructure.services.notification.mailjet_notification_service.send_raw_email")
-    def test_cancel_booking(self, mocked_send_raw_email):
+    def test_cancel_booking(self):
         booking = factories.BookingFactory()
 
         api.cancel_booking_by_beneficiary(booking.user, booking)
 
         assert booking.isCancelled
         assert booking.cancellationReason == BookingCancellationReasons.BENEFICIARY
-        email_data1 = mocked_send_raw_email.call_args_list[0][1]["data"]
+        assert len(mails_testing.outbox) == 2
+        email_data1 = mails_testing.outbox[0].sent_data
         assert email_data1["Mj-TemplateID"] == 1091464  # to beneficiary
-        email_data2 = mocked_send_raw_email.call_args_list[1][1]["data"]
+        email_data2 = mails_testing.outbox[1].sent_data
         assert email_data2["MJ-TemplateID"] == 780015  # to offerer
 
     @override_features(SYNCHRONIZE_ALGOLIA=False)

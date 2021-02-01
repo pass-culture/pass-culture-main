@@ -37,7 +37,6 @@ from pcapi.repository.feature_queries import is_active
 from pcapi.repository.user_queries import get_all_users_wallet_balances
 from pcapi.utils.logger import logger
 from pcapi.utils.mailing import MailServiceException
-from pcapi.utils.mailing import send_raw_email
 
 
 def concatenate_payments_with_errors_and_retries(payments: List[Payment]) -> List[Payment]:
@@ -123,7 +122,7 @@ def send_transactions(
     )
     logger.info("[BATCH][PAYMENTS] Recipients of email : %s", recipients)
 
-    successfully_sent_payments = send_payment_message_email(xml_file, checksum, recipients, send_raw_email)
+    successfully_sent_payments = send_payment_message_email(xml_file, checksum, recipients)
     logger.info("[BATCH][PAYMENTS] Updating status of %d payments", len(payments))
     if successfully_sent_payments:
         for payment in payments:
@@ -146,7 +145,7 @@ def send_payments_details(payments: List[Payment], recipients: List[str]) -> Non
         logger.info("[BATCH][PAYMENTS] Sending %s details of %s payments", len(details), len(payments))
         logger.info("[BATCH][PAYMENTS] Recipients of email : %s", recipients)
         try:
-            send_payment_details_email(csv, recipients, send_raw_email)
+            send_payment_details_email(csv, recipients)
         except MailServiceException as exception:
             logger.exception("[BATCH][PAYMENTS] Error while sending payment details email to MailJet: %s", exception)
 
@@ -160,7 +159,7 @@ def send_wallet_balances(recipients: List[str]) -> None:
     logger.info("[BATCH][PAYMENTS] Sending %s wallet balances", len(balances))
     logger.info("[BATCH][PAYMENTS] Recipients of email : %s", recipients)
     try:
-        send_wallet_balances_email(csv, recipients, send_raw_email)
+        send_wallet_balances_email(csv, recipients)
     except MailServiceException as exception:
         logger.exception("[BATCH][PAYMENTS] Error while sending users wallet balances email to MailJet: %s", exception)
 
@@ -188,7 +187,7 @@ def send_payments_report(payments: List[Payment], recipients: List[str]) -> None
     logger.info("[BATCH][PAYMENTS] Recipients of email : %s", recipients)
 
     try:
-        send_payments_report_emails(not_processable_csv, error_csv, groups, recipients, send_raw_email)
+        send_payments_report_emails(not_processable_csv, error_csv, groups, recipients)
     except MailServiceException as exception:
         logger.exception("[BATCH][PAYMENTS] Error while sending payments reports to MailJet: %s", exception)
 

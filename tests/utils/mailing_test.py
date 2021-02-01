@@ -1,12 +1,9 @@
 from datetime import datetime
 from datetime import timezone
-import re
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
-from freezegun import freeze_time
 import pytest
-from requests import Timeout
 
 from pcapi.domain.user_emails import _build_recipients_list
 from pcapi.model_creators.generic_creators import create_booking
@@ -18,22 +15,14 @@ from pcapi.model_creators.specific_creators import create_offer_with_event_produ
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.model_creators.specific_creators import create_stock_from_offer
 from pcapi.models import ThingType
-from pcapi.models.email import Email
-from pcapi.models.email import EmailStatus
 from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
-from pcapi.utils.mailing import add_contact_informations
-from pcapi.utils.mailing import add_contact_to_list
 from pcapi.utils.mailing import build_pc_pro_offer_link
-from pcapi.utils.mailing import compute_email_html_part_and_recipients
-from pcapi.utils.mailing import create_contact
 from pcapi.utils.mailing import extract_users_information_from_bookings
 from pcapi.utils.mailing import format_booking_date_for_email
 from pcapi.utils.mailing import format_booking_hours_for_email
 from pcapi.utils.mailing import make_validation_email_object
-from pcapi.utils.mailing import send_raw_email
 
-from tests.conftest import mocked_mail
 from tests.files.api_entreprise import MOCKED_SIREN_ENTREPRISES_API_RETURN
 
 
@@ -55,86 +44,6 @@ def get_by_siren_stub(offerer):
         },
         "other_etablissements_sirets": ["39525144000032", "39525144000065"],
     }
-
-
-@mocked_mail
-@pytest.mark.usefixtures("db_session")
-@freeze_time("2019-01-01 12:00:00")
-def test_save_and_send_creates_an_entry_in_email_with_status_sent_when_send_mail_successful(app):
-    # given
-    email_content = {
-        "FromEmail": "test@email.fr",
-        "FromName": "Test From",
-        "Subject": "Test subject",
-        "Text-Part": "Hello world",
-        "Html-part": "<html><body>Hello World</body></html>",
-    }
-    mocked_response = MagicMock()
-    mocked_response.status_code = 200
-    app.mailjet_client.send.create.return_value = mocked_response
-
-    # when
-    successfully_sent_email = send_raw_email(email_content)
-
-    # then
-    assert successfully_sent_email
-    emails = Email.query.all()
-    assert app.mailjet_client.send.create.called_once_with(email_content)
-    assert len(emails) == 1
-    email = emails[0]
-    assert email.content == email_content
-    assert email.status == EmailStatus.SENT
-    assert email.datetime == datetime(2019, 1, 1, 12, 0, 0)
-
-
-@mocked_mail
-@pytest.mark.usefixtures("db_session")
-@freeze_time("2019-01-01 12:00:00")
-def test_save_and_send_creates_an_entry_in_email_with_status_error_when_send_mail_unsuccessful(app):
-    # given
-    email_content = {
-        "FromEmail": "test@email.fr",
-        "FromName": "Test From",
-        "Subject": "Test subject",
-        "Text-Part": "Hello world",
-        "Html-part": "<html><body>Hello World</body></html>",
-    }
-    mocked_response = MagicMock()
-    mocked_response.status_code = 500
-    app.mailjet_client.send.create.return_value = mocked_response
-
-    # when
-    successfully_sent_email = send_raw_email(email_content)
-
-    # then
-    assert not successfully_sent_email
-    assert app.mailjet_client.send.create.called_once_with(email_content)
-    emails = Email.query.all()
-    assert len(emails) == 1
-    email = emails[0]
-    assert email.content == email_content
-    assert email.status == EmailStatus.ERROR
-    assert email.datetime == datetime(2019, 1, 1, 12, 0, 0)
-
-
-class ComputeEmailHtmlPartAndRecipientsTest:
-    def test_accepts_string_as_to(self, app):
-        # when
-        with patch("pcapi.utils.mailing.feature_send_mail_to_users_enabled", return_value=True):
-            html, to = compute_email_html_part_and_recipients("my_html", "plop@plop.com")
-
-        # then
-        assert html == "my_html"
-        assert to == "plop@plop.com"
-
-    def test_accepts_list_of_strings_as_to(self, app):
-        # when
-        with patch("pcapi.utils.mailing.feature_send_mail_to_users_enabled", return_value=True):
-            html, to = compute_email_html_part_and_recipients("my_html", ["plop@plop.com", "plip@plip.com"])
-
-        # then
-        assert html == "my_html"
-        assert to == "plop@plop.com, plip@plip.com"
 
 
 class GetUsersInformationFromStockBookingsTest:
@@ -222,7 +131,7 @@ class BuildRecipientsListTest:
         recipients = _build_recipients_list(booking)
 
         # Then
-        assert recipients == "booking.email@example.com, administration@example.com"
+        assert recipients == ["booking.email@example.com", "administration@example.com"]
 
     def test_should_return_only_admin_email_when_offer_has_no_booking_email(self):
         # Given
@@ -237,7 +146,7 @@ class BuildRecipientsListTest:
         recipients = _build_recipients_list(booking)
 
         # Then
-        assert recipients == "administration@example.com"
+        assert recipients == ["administration@example.com"]
 
 
 class FormatDateAndHourForEmailTest:
@@ -333,204 +242,3 @@ class MakeValidationEmailObjectTest:
 
         # Then
         assert email_object.get("Subject") == "95 - inscription / rattachement PRO à valider : Test Offerer"
-
-
-def _remove_whitespaces(text):
-    text = re.sub(r"\n\s+", " ", text)
-    text = re.sub(r"\n", "", text)
-    return text
-
-
-class SendRawEmailTest:
-    def test_should_call_mailjet_api_to_send_emails(self, app):
-        # Given
-        data = {"data": {}}
-        app.mailjet_client.send.create = MagicMock()
-        app.mailjet_client.send.create.return_value = MagicMock(status_code=200)
-
-        # When
-        result = send_raw_email(data)
-
-        # Then
-        app.mailjet_client.send.create.assert_called_once_with(data=data)
-        assert result is True
-
-    def test_should_return_false_when_mailjet_status_code_is_not_200(self, app):
-        # Given
-        data = {"data": {}}
-        app.mailjet_client.send.create = MagicMock()
-        app.mailjet_client.send.create.return_value = MagicMock(status_code=400)
-
-        # When
-        result = send_raw_email(data)
-
-        # Then
-        app.mailjet_client.send.create.assert_called_once_with(data=data)
-        assert result is False
-
-    def test_should_catch_errors_when_mailjet_api_is_not_reachable(self, app):
-        # Given
-        data = {"data": {}}
-        app.mailjet_client.send.create = MagicMock()
-        app.mailjet_client.send.create.side_effect = Timeout
-
-        # When
-        result = send_raw_email(data)
-
-        # Then
-        app.mailjet_client.send.create.assert_called_once_with(data=data)
-        assert result is False
-
-    @patch("pcapi.utils.mailing.app.mailjet_client.send.create")
-    def test_template_error_debugging_for_multiple_messages(self, mocked_create, app):
-        # Given
-        data = {
-            "Messages": [
-                {
-                    "FromEmail": "dev@example.com",
-                    "To": "customer@example.com",
-                    "Mj-TemplateID": 0,
-                    "Mj-TemplateLanguage": True,
-                    "Vars": {
-                        "department": "93",
-                    },
-                },
-                {
-                    "FromEmail": "dev@example.com",
-                    "To": "customer@example.com",
-                    "Mj-TemplateID": 0,
-                    "Mj-TemplateLanguage": True,
-                    "Vars": {
-                        "department": "75",
-                    },
-                },
-            ]
-        }
-
-        # When
-        send_raw_email(data)
-
-        # Then
-        transformed_data = {
-            "Messages": [
-                {
-                    "FromEmail": "dev@example.com",
-                    "To": "customer@example.com",
-                    "Mj-TemplateID": 0,
-                    "Mj-TemplateLanguage": True,
-                    "Vars": {
-                        "department": "93",
-                    },
-                    "TemplateErrorReporting": {
-                        "Email": "dev@example.com",
-                        "Name": "Mailjet Template Errors",
-                    },
-                },
-                {
-                    "FromEmail": "dev@example.com",
-                    "To": "customer@example.com",
-                    "Mj-TemplateID": 0,
-                    "Mj-TemplateLanguage": True,
-                    "Vars": {
-                        "department": "75",
-                    },
-                    "TemplateErrorReporting": {
-                        "Email": "dev@example.com",
-                        "Name": "Mailjet Template Errors",
-                    },
-                },
-            ]
-        }
-        mocked_create.assert_called_once_with(data=transformed_data)
-
-    @patch("pcapi.utils.mailing.app.mailjet_client.send.create")
-    def test_template_error_debugging_for_single_message(self, mocked_create, app):
-        # Given
-        data = {
-            "FromEmail": "dev@example.com",
-            "To": "customer@example.com",
-            "Mj-TemplateID": 0,
-            "Mj-TemplateLanguage": True,
-            "Vars": {
-                "department": "93",
-            },
-        }
-
-        # When
-        send_raw_email(data)
-
-        # Then
-        transformed_data = {
-            "FromEmail": "dev@example.com",
-            "To": "customer@example.com",
-            "Mj-TemplateID": 0,
-            "Mj-TemplateLanguage": True,
-            "Vars": {
-                "department": "93",
-            },
-            "TemplateErrorReporting": {
-                "Email": "dev@example.com",
-                "Name": "Mailjet Template Errors",
-            },
-        }
-
-        mocked_create.assert_called_once_with(data=transformed_data)
-
-
-class CreateContactTest:
-    def test_should_call_mailjet_api_to_create_contact(self, app):
-        # Given
-        data = {"Email": "beneficiary@example.com"}
-        create_contact_response = {
-            "Data": [{"ID": "123", "Name": "BeneficiaryName", "Email": "beneficiary@example.com"}]
-        }
-
-        app.mailjet_client.contact.create = MagicMock()
-        app.mailjet_client.contact.create.return_value = create_contact_response
-
-        # When
-        result = create_contact("beneficiary@example.com")
-
-        # Then
-        app.mailjet_client.contact.create.assert_called_once_with(data=data)
-        assert result == create_contact_response
-
-
-class AddContactInformationsTest:
-    def test_should_call_mailjet_api_to_add_contact_informations(self, app):
-        # Given
-        data = {"Data": [{"Name": "date_de_naissance", "Value": 1046822400}, {"Name": "département", "Value": "93"}]}
-        add_contact_infos_response = {
-            "Data": [{"ID": "123", "Name": "BeneficiaryName", "Email": "beneficiary@example.com"}]
-        }
-        app.mailjet_client.contactdata.update = MagicMock()
-        app.mailjet_client.contactdata.update.return_value = add_contact_infos_response
-
-        # When
-        result = add_contact_informations("beneficiary@example.com", 1046822400, "93")
-
-        # Then
-        app.mailjet_client.contactdata.update.assert_called_once_with(id="beneficiary@example.com", data=data)
-        assert result == add_contact_infos_response
-
-
-class AddContactToListTest:
-    def test_should_call_mailjet_api_to_add_contact_to_list(self, app):
-        # Given
-        data = {
-            "IsUnsubscribed": "false",
-            "ContactAlt": "beneficiary@example.com",
-            "ListID": "12345",
-        }
-
-        add_to_list_response = {"Data": [{"ID": "123", "ListID": "mailjetListId", "ListName": "mailjetListName"}]}
-
-        app.mailjet_client.listrecipient.create = MagicMock()
-        app.mailjet_client.listrecipient.create.return_value = add_to_list_response
-
-        # When
-        result = add_contact_to_list("beneficiary@example.com", "12345")
-
-        # Then
-        app.mailjet_client.listrecipient.create.assert_called_once_with(data=data)
-        assert result == add_to_list_response

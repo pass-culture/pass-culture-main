@@ -45,7 +45,6 @@ class MakePaymentsReportEmailTest:
         email = make_payments_report_email(self.not_processable_csv, self.error_csv, self.grouped_payments)
 
         # Then
-        assert email["FromEmail"] == "support@example.com"
         assert email["FromName"] == "pass Culture Pro"
         assert email["Subject"] == "Récapitulatif des paiements pass Culture Pro - 2018-10-15"
 
@@ -76,7 +75,6 @@ def test_make_payment_message_email_sends_a_xml_file_with_its_checksum_in_email_
     email = make_payment_message_email(xml, checksum)
 
     # Then
-    assert email["FromEmail"] == "support@example.com"
     assert email["FromName"] == "pass Culture Pro"
     assert email["Subject"] == "Virements XML pass Culture Pro - 2018-10-15"
     assert email["Attachments"] == [
@@ -106,7 +104,6 @@ def test_make_payment_details_email():
 
     # Then
     expected_csv_name = "details_des_paiements_20181015.csv"
-    assert email["FromEmail"] == "support@example.com"
     assert email["FromName"] == "pass Culture Pro"
     assert email["Subject"] == "Détails des paiements pass Culture Pro - 2018-10-15"
     assert email["Html-part"] == ""

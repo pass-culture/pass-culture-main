@@ -8,6 +8,7 @@ from freezegun.api import freeze_time
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
+import pcapi.core.mails.testing as mails_testing
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import User
 from pcapi.core.users.models import VOID_PUBLIC_NAME
@@ -112,8 +113,7 @@ class AccountTest:
         assert not response.json["isBeneficiary"]
 
     @patch("pcapi.routes.native.v1.account.check_recaptcha_token_is_valid")
-    @patch("pcapi.utils.mailing.send_raw_email", return_value=True)
-    def test_account_creation(self, mocked_send_raw_email, mocked_check_recaptcha_token_is_valid, app):
+    def test_account_creation(self, mocked_check_recaptcha_token_is_valid, app):
         test_client = TestClient(app.test_client())
         assert User.query.first() is None
         data = {
@@ -132,15 +132,12 @@ class AccountTest:
         assert user is not None
         assert user.email == "john.doe@example.com"
         assert user.isEmailValidated is False
-        mocked_send_raw_email.assert_called()
         mocked_check_recaptcha_token_is_valid.assert_called()
-        assert mocked_send_raw_email.call_args_list[0][1]["data"]["Mj-TemplateID"] == 2015423
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2015423
 
     @patch("pcapi.routes.native.v1.account.check_recaptcha_token_is_valid")
-    @patch("pcapi.utils.mailing.send_raw_email", return_value=True)
-    def test_account_creation_with_existing_email_sends_email(
-        self, mocked_send_raw_email, mocked_check_recaptcha_token_is_valid, app
-    ):
+    def test_account_creation_with_existing_email_sends_email(self, mocked_check_recaptcha_token_is_valid, app):
         test_client = TestClient(app.test_client())
         users_factories.UserFactory(email=self.identifier)
         mocked_check_recaptcha_token_is_valid.return_value = None
@@ -156,8 +153,8 @@ class AccountTest:
 
         response = test_client.post("/native/v1/account", json=data)
         assert response.status_code == 204, response.json
-        mocked_send_raw_email.assert_called()
-        assert mocked_send_raw_email.call_args_list[0][1]["data"]["MJ-TemplateID"] == 1838526
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 1838526
 
     @patch("pcapi.routes.native.v1.account.check_recaptcha_token_is_valid")
     def test_too_young_account_creation(self, mocked_check_recaptcha_token_is_valid, app):
@@ -200,45 +197,41 @@ class UserProfileUpdateTest:
 
 
 class ResendEmailValidationTest:
-    @patch("pcapi.utils.mailing.send_raw_email", return_value=True)
-    def test_resend_email_validation(self, mocked_send_raw_email, app):
+    def test_resend_email_validation(self, app):
         user = users_factories.UserFactory(isEmailValidated=False)
 
         test_client = TestClient(app.test_client())
         response = test_client.post("/native/v1/resend_email_validation", json={"email": user.email})
 
         assert response.status_code == 204
-        mocked_send_raw_email.assert_called()
-        assert mocked_send_raw_email.call_args_list[0][1]["data"]["Mj-TemplateID"] == 2015423
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2015423
 
-    @patch("pcapi.utils.mailing.send_raw_email", return_value=True)
-    def test_for_already_validated_email_does_sent_passsword_reset(self, mocked_send_raw_email, app):
+    def test_for_already_validated_email_does_sent_passsword_reset(self, app):
         user = users_factories.UserFactory(isEmailValidated=True)
 
         test_client = TestClient(app.test_client())
         response = test_client.post("/native/v1/resend_email_validation", json={"email": user.email})
 
         assert response.status_code == 204
-        mocked_send_raw_email.assert_called()
-        assert mocked_send_raw_email.call_args_list[0][1]["data"]["MJ-TemplateID"] == 1838526
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 1838526
 
-    @patch("pcapi.utils.mailing.send_raw_email", return_value=True)
-    def test_for_unknown_mail_does_nothing(self, mocked_send_raw_email, app):
+    def test_for_unknown_mail_does_nothing(self, app):
         test_client = TestClient(app.test_client())
         response = test_client.post("/native/v1/resend_email_validation", json={"email": "aijfioern@mlks.com"})
 
         assert response.status_code == 204
-        mocked_send_raw_email.assert_not_called()
+        assert not mails_testing.outbox
 
-    @patch("pcapi.utils.mailing.send_raw_email", return_value=True)
-    def test_for_deactivated_account_does_nothhing(self, mocked_send_raw_email, app):
+    def test_for_deactivated_account_does_nothhing(self, app):
         user = users_factories.UserFactory(isEmailValidated=True, isActive=False)
 
         test_client = TestClient(app.test_client())
         response = test_client.post("/native/v1/resend_email_validation", json={"email": user.email})
 
         assert response.status_code == 204
-        mocked_send_raw_email.assert_not_called()
+        assert not mails_testing.outbox
 
 
 @freeze_time("2018-06-01")

@@ -7,22 +7,21 @@ from dateutil.relativedelta import relativedelta
 
 from pcapi import settings
 from pcapi.core.users import models as users_models
-from pcapi.repository.feature_queries import feature_send_mail_to_users_enabled
-from pcapi.utils.mailing import format_environment_for_email
 
 
 def get_activation_email_data(user: users_models.User) -> Dict:
     first_name = user.firstName.capitalize()
     email = user.email
     token = user.resetPasswordToken
-    env = format_environment_for_email()
 
     return {
-        "FromEmail": settings.SUPPORT_EMAIL_ADDRESS,
         "Mj-TemplateID": 994771,
         "Mj-TemplateLanguage": True,
-        "To": email if feature_send_mail_to_users_enabled() else settings.DEV_EMAIL_ADDRESS,
-        "Vars": {"prenom_user": first_name, "token": token, "email": quote(email), "env": env},
+        "Vars": {
+            "prenom_user": first_name,
+            "token": token,
+            "email": quote(email),
+        },
     }
 
 
@@ -31,10 +30,8 @@ def get_activation_email_data_for_native(user: users_models.User, token: users_m
     query_string = urlencode({"token": token.value, "expiration_timestamp": expiration_timestamp, "email": user.email})
     email_confirmation_link = f"{settings.NATIVE_APP_URL}/signup-confirmation?{query_string}"
     return {
-        "FromEmail": settings.SUPPORT_EMAIL_ADDRESS,
         "Mj-TemplateID": 2015423,
         "Mj-TemplateLanguage": True,
-        "To": user.email if feature_send_mail_to_users_enabled() else settings.DEV_EMAIL_ADDRESS,
         "Vars": {
             "nativeAppLink": email_confirmation_link,
             "isEligible": int(user.is_eligible),
@@ -43,11 +40,9 @@ def get_activation_email_data_for_native(user: users_models.User, token: users_m
     }
 
 
-def get_accepted_as_beneficiary_email_data(user: users_models.User) -> Dict:
+def get_accepted_as_beneficiary_email_data() -> Dict:
     return {
-        "FromEmail": settings.SUPPORT_EMAIL_ADDRESS,
         "Mj-TemplateID": 2016025,
         "Mj-TemplateLanguage": True,
-        "To": user.email if feature_send_mail_to_users_enabled() else settings.DEV_EMAIL_ADDRESS,
         "Vars": {},
     }

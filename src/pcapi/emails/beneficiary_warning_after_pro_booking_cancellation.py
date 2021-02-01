@@ -2,9 +2,7 @@ from typing import Dict
 
 from babel.dates import format_date
 
-from pcapi import settings
 from pcapi.models import Booking
-from pcapi.repository.feature_queries import feature_send_mail_to_users_enabled
 from pcapi.utils.mailing import format_booking_hours_for_email
 from pcapi.utils.mailing import get_event_datetime
 
@@ -14,7 +12,6 @@ def retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking: Bo
     offer = stock.offer
     event_date = ""
     event_hour = ""
-    email_to = booking.user.email if feature_send_mail_to_users_enabled() else settings.DEV_EMAIL_ADDRESS
     is_event = int(offer.isEvent)
     if is_event:
         event_date = format_date(get_event_datetime(stock), format="full", locale="fr")
@@ -32,10 +29,8 @@ def retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking: Bo
     venue_name = offer.venue.publicName if offer.venue.publicName else offer.venue.name
 
     return {
-        "FromEmail": settings.SUPPORT_EMAIL_ADDRESS,
         "MJ-TemplateID": 1116690,
         "MJ-TemplateLanguage": True,
-        "To": email_to,
         "Vars": {
             "event_date": event_date,
             "event_hour": event_hour,

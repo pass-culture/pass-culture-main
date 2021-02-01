@@ -10,9 +10,9 @@ from jwt import InvalidSignatureError
 from jwt import InvalidTokenError
 
 from pcapi import settings
+from pcapi.core import mails
 from pcapi.core.bookings.conf import LIMIT_CONFIGURATIONS
 from pcapi.core.payments import api as payment_api
-from pcapi.core.users import exceptions
 from pcapi.core.users.models import Expense
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.core.users.models import Token
@@ -43,7 +43,6 @@ from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
 from pcapi.scripts.beneficiary import THIRTY_DAYS_IN_HOURS
-from pcapi.utils import mailing as mailing_utils
 from pcapi.utils.logger import logger
 from pcapi.utils.mailing import MailServiceException
 
@@ -141,7 +140,7 @@ def attach_beneficiary_import_details(
 
 def request_email_confirmation(user: User) -> None:
     token = create_email_validation_token(user)
-    user_emails.send_activation_email(user, mailing_utils.send_raw_email, native_version=True, token=token)
+    user_emails.send_activation_email(user, native_version=True, token=token)
 
 
 def request_password_reset(user: User) -> None:
@@ -151,7 +150,7 @@ def request_password_reset(user: User) -> None:
     reset_password_token = create_reset_password_token(user)
 
     is_email_sent = user_emails.send_reset_password_email_to_native_app_user(
-        user.email, reset_password_token.value, reset_password_token.expirationDate, mailing_utils.send_raw_email
+        user.email, reset_password_token.value, reset_password_token.expirationDate
     )
 
     if not is_email_sent:
@@ -197,16 +196,17 @@ def send_user_emails_for_email_change(user: User, new_email: str) -> None:
     if user_with_new_email:
         return
 
-    information_data = build_beneficiary_information_email_change_data(user.email, user.firstName)
-    information_sucessfully_sent = mailing_utils.send_raw_email(information_data)
+    information_data = build_beneficiary_information_email_change_data(user.firstName)
+    information_sucessfully_sent = mails.send(recipients=[user.email], data=information_data)
     if not information_sucessfully_sent:
         raise MailServiceException()
 
     link_for_email_change = _build_link_for_email_change(user.email, new_email)
     confirmation_data = build_beneficiary_confirmation_email_change_data(
-        user.firstName, link_for_email_change, new_email
+        user.firstName,
+        link_for_email_change,
     )
-    confirmation_sucessfully_sent = mailing_utils.send_raw_email(confirmation_data)
+    confirmation_sucessfully_sent = mails.send(recipients=[new_email], data=confirmation_data)
     if not confirmation_sucessfully_sent:
         raise MailServiceException()
 
@@ -315,7 +315,7 @@ def create_pro_user(pro_user: ProUserCreationBodyModel) -> User:
     repository.save(*objects_to_save)
 
     try:
-        user_emails.send_user_validation_email(new_pro_user, mailing_utils.send_raw_email)
+        user_emails.send_user_validation_email(new_pro_user)
     except MailServiceException:
         logger.exception("Could not send validation email when creating pro user=%s", new_pro_user.id)
 

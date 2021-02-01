@@ -115,10 +115,8 @@ class Returns204:
 
     @patch("pcapi.routes.shared.passwords.check_recaptcha_token_is_valid", return_value=True)
     @patch("pcapi.routes.shared.passwords.send_reset_password_email_to_user")
-    @patch("pcapi.routes.shared.passwords.send_raw_email")
     def test_should_send_reset_password_email_when_user_is_a_beneficiary(
         self,
-        send_raw_email_mock,
         send_reset_password_email_to_user_mock,
         check_recaptcha_token_is_valid_mock,
         app,
@@ -132,14 +130,12 @@ class Returns204:
         TestClient(app.test_client()).post("/users/reset-password", json=data)
 
         # then
-        send_reset_password_email_to_user_mock.assert_called_once_with(user, send_raw_email_mock)
+        send_reset_password_email_to_user_mock.assert_called_once_with(user)
 
     @patch("pcapi.routes.shared.passwords.check_recaptcha_token_is_valid", return_value=True)
     @patch("pcapi.routes.shared.passwords.send_reset_password_email_to_pro")
-    @patch("pcapi.routes.shared.passwords.send_raw_email")
     def test_should_send_reset_password_email_when_user_is_an_offerer(
         self,
-        send_raw_email_mock,
         send_reset_password_email_to_pro_mock,
         check_recaptcha_token_is_valid_mock,
         app,
@@ -153,4 +149,4 @@ class Returns204:
         TestClient(app.test_client()).post("/users/reset-password", json=data)
 
         # then
-        send_reset_password_email_to_pro_mock.assert_called_once_with(user, send_raw_email_mock)
+        send_reset_password_email_to_pro_mock.assert_called_once_with(user)

@@ -131,11 +131,8 @@ class CancelExpiredBookingsTest:
 
 @pytest.mark.usefixtures("db_session")
 class NotifyUsersOfExpiredBookingsTest:
-    @mock.patch("pcapi.scripts.booking.handle_expired_bookings.send_raw_email")
     @mock.patch("pcapi.scripts.booking.handle_expired_bookings.send_expired_bookings_recap_email_to_beneficiary")
-    def should_notify_of_todays_expired_bookings(
-        self, mocked_send_email_recap, mocked_send_raw_email, app, caplog
-    ) -> None:
+    def should_notify_of_todays_expired_bookings(self, mocked_send_email_recap, app, caplog) -> None:
         caplog.set_level(logging.INFO)
         now = datetime.utcnow()
         yesterday = now - timedelta(days=1)
@@ -175,22 +172,17 @@ class NotifyUsersOfExpiredBookingsTest:
         assert mocked_send_email_recap.call_args_list[0][0] == (
             expired_today_dvd_booking.user,
             [expired_today_dvd_booking],
-            mocked_send_raw_email,
         )
         assert mocked_send_email_recap.call_args_list[1][0] == (
             expired_today_cd_booking.user,
             [expired_today_cd_booking],
-            mocked_send_raw_email,
         )
 
 
 @pytest.mark.usefixtures("db_session")
 class NotifyOfferersOfExpiredBookingsTest:
-    @mock.patch("pcapi.scripts.booking.handle_expired_bookings.send_raw_email")
     @mock.patch("pcapi.scripts.booking.handle_expired_bookings.send_expired_bookings_recap_email_to_offerer")
-    def should_notify_of_todays_expired_bookings(
-        self, mocked_send_email_recap, mocked_send_raw_email, app, caplog
-    ) -> None:
+    def should_notify_of_todays_expired_bookings(self, mocked_send_email_recap, app, caplog) -> None:
         caplog.set_level(logging.INFO)
         now = datetime.utcnow()
         yesterday = now - timedelta(days=1)
@@ -231,10 +223,8 @@ class NotifyOfferersOfExpiredBookingsTest:
         assert mocked_send_email_recap.call_args_list[0][0] == (
             expired_today_dvd_booking.stock.offer.venue.managingOfferer,
             [expired_today_dvd_booking],
-            mocked_send_raw_email,
         )
         assert mocked_send_email_recap.call_args_list[1][0] == (
             expired_today_cd_booking.stock.offer.venue.managingOfferer,
             [expired_today_cd_booking],
-            mocked_send_raw_email,
         )

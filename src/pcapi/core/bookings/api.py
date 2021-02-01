@@ -20,7 +20,6 @@ from pcapi.infrastructure.services.notification.mailjet_notification_service imp
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
 from pcapi.repository import repository
-from pcapi.utils.mailing import send_raw_email
 
 from . import validation
 
@@ -91,9 +90,6 @@ def cancel_booking_by_beneficiary(user: User, booking: Booking) -> None:
     notifier.send_booking_cancellation_emails_to_user_and_offerer(
         booking=booking,
         reason=booking.cancellationReason,
-        # FIXME: we should not have to pass this argument.
-        # Notification-related code should be reorganized.
-        send_email=send_raw_email,
     )
 
     # FIXME: why do we do that when the booking is cancelled by the

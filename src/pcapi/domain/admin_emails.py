@@ -1,13 +1,12 @@
-from typing import Callable
 from typing import Dict
 from typing import List
 
 from pcapi import settings
+from pcapi.core import mails
 from pcapi.core.users.models import User
 from pcapi.models import Offer
 from pcapi.models import Offerer
 from pcapi.models import UserOfferer
-from pcapi.utils.mailing import compute_email_html_part_and_recipients
 from pcapi.utils.mailing import make_offer_creation_notification_email
 from pcapi.utils.mailing import make_payment_details_email
 from pcapi.utils.mailing import make_payment_message_email
@@ -16,35 +15,27 @@ from pcapi.utils.mailing import make_validation_email_object
 from pcapi.utils.mailing import make_wallet_balances_email
 
 
-def maybe_send_offerer_validation_email(
-    offerer: Offerer, user_offerer: UserOfferer, send_email: Callable[[dict], bool]
-) -> bool:
+def maybe_send_offerer_validation_email(offerer: Offerer, user_offerer: UserOfferer) -> bool:
     if offerer.isValidated and user_offerer.isValidated:
         return None
     email = make_validation_email_object(offerer, user_offerer)
     recipients = [settings.ADMINISTRATION_EMAIL_ADDRESS]
-    email["Html-part"], email["To"] = compute_email_html_part_and_recipients(email["Html-part"], recipients)
-    return send_email(data=email)
+    return mails.send(recipients=recipients, data=email)
 
 
-def send_payment_message_email(
-    xml_attachment: str, checksum: bytes, recipients: List[str], send_email: Callable[[dict], bool]
-) -> bool:
+def send_payment_message_email(xml_attachment: str, checksum: bytes, recipients: List[str]) -> bool:
     email = make_payment_message_email(xml_attachment, checksum)
-    email["Html-part"], email["To"] = compute_email_html_part_and_recipients(email["Html-part"], recipients)
-    return send_email(data=email)
+    return mails.send(recipients=recipients, data=email)
 
 
-def send_payment_details_email(csv_attachment: str, recipients: List[str], send_email: Callable[[dict], bool]) -> bool:
+def send_payment_details_email(csv_attachment: str, recipients: List[str]) -> bool:
     email = make_payment_details_email(csv_attachment)
-    email["Html-part"], email["To"] = compute_email_html_part_and_recipients("", recipients)
-    return send_email(data=email)
+    return mails.send(recipients=recipients, data=email)
 
 
-def send_wallet_balances_email(csv_attachment: str, recipients: List[str], send_email: Callable[[dict], bool]) -> bool:
+def send_wallet_balances_email(csv_attachment: str, recipients: List[str]) -> bool:
     email = make_wallet_balances_email(csv_attachment)
-    email["Html-part"], email["To"] = compute_email_html_part_and_recipients("", recipients)
-    return send_email(data=email)
+    return mails.send(recipients=recipients, data=email)
 
 
 def send_payments_report_emails(
@@ -52,16 +43,11 @@ def send_payments_report_emails(
     error_payments_csv: str,
     grouped_payments: Dict,
     recipients: List[str],
-    send_email: Callable[[dict], bool],
 ) -> bool:
     email = make_payments_report_email(not_processable_payments_csv, error_payments_csv, grouped_payments)
-    email["Html-part"], email["To"] = compute_email_html_part_and_recipients(email["Html-part"], recipients)
-    return send_email(data=email)
+    return mails.send(recipients=recipients, data=email)
 
 
-def send_offer_creation_notification_to_administration(
-    offer: Offer, author: User, send_email: Callable[[dict], bool]
-) -> bool:
+def send_offer_creation_notification_to_administration(offer: Offer, author: User) -> bool:
     email = make_offer_creation_notification_email(offer, author)
-    email["Html-part"], email["To"] = compute_email_html_part_and_recipients(email["Html-part"], email["To"])
-    return send_email(data=email)
+    return mails.send(recipients=[settings.ADMINISTRATION_EMAIL_ADDRESS], data=email)

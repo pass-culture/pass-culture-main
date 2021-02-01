@@ -1,13 +1,12 @@
 from datetime import datetime
 from datetime import timedelta
-from unittest.mock import call
-from unittest.mock import patch
 
 from freezegun import freeze_time
 import jwt
 import pytest
 
 from pcapi import settings
+import pcapi.core.mails.testing as mails_testing
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import User
 from pcapi.core.users.utils import ALGORITHM_HS_256
@@ -17,12 +16,9 @@ from tests.conftest import TestClient
 
 @pytest.mark.usefixtures("db_session")
 class Returns204:
-    @patch("pcapi.core.users.api.mailing_utils")
-    @patch("pcapi.emails.beneficiary_email_change.feature_send_mail_to_users_enabled", return_value=True)
     @freeze_time("2020-10-15 09:00:00")
-    def when_account_is_known(self, mocked_feature_flipping, mocked_mailing_utils, app):
+    def when_account_is_known(self, app):
         # given
-        mocked_mailing_utils.send_raw_email.return_value = True
 
         user = users_factories.UserFactory(email="test@mail.com")
         data = {"new_email": "new@email.com", "password": "user@AZERTY123"}
@@ -38,7 +34,10 @@ class Returns204:
             "MJ-TemplateID": 2066067,
             "MJ-TemplateLanguage": True,
             "To": user.email,
-            "Vars": {"beneficiary_name": user.firstName},
+            "Vars": {
+                "beneficiary_name": user.firstName,
+                "env": "-development",
+            },
         }
         confirmation_data_token = (
             "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjdXJyZW50X2VtYWlsIjo"
@@ -57,12 +56,11 @@ class Returns204:
             "Vars": {
                 "beneficiary_name": "Jeanne",
                 "confirmation_link": confirmation_link,
+                "env": "-development",
             },
         }
 
-        assert mocked_mailing_utils.send_raw_email.call_count == 2
-        calls = [call(information_data), call(confirmation_data)]
-        mocked_mailing_utils.send_raw_email.assert_has_calls(calls)
+        assert [m.sent_data for m in mails_testing.outbox] == [information_data, confirmation_data]
 
     @freeze_time("2020-10-15 09:00:00")
     def when_token_is_valid(self, app):

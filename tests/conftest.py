@@ -9,7 +9,7 @@ from flask import Flask
 from flask.testing import FlaskClient
 from flask_jwt_extended import JWTManager
 from flask_login import LoginManager
-from mailjet_rest import Client
+import mailjet_rest
 import pytest
 from requests import Response
 from requests.auth import _basic_auth_str
@@ -17,6 +17,7 @@ from requests.auth import _basic_auth_str
 import pcapi
 from pcapi import settings
 from pcapi.admin.install import install_admin_views
+import pcapi.core.mails.testing as mails_testing
 import pcapi.core.testing
 from pcapi.flask_app import admin
 from pcapi.install_database_extensions import install_database_extensions
@@ -72,7 +73,7 @@ def app():
     admin.init_app(app)
     install_admin_views(admin, db.session)
 
-    app.mailjet_client = Mock()
+    app.mailjet_client = mailjet_rest.Client(auth=("testing-key", "testing-secret"), version="v3")
     app.redis_client = Mock()
     app.register_blueprint(native_v1, url_prefix="/native/v1")
 
@@ -81,17 +82,12 @@ def app():
     return app
 
 
-def mocked_mail(f):
-    @wraps(f)
-    def decorated_function(app, *args, **kwargs):  # pylint: disable=redefined-outer-name
-        app.mailjet_client = Mock(spec=Client)
-        app.mailjet_client.send = Mock()
-        app.mailjet_client.contact = Mock()
-        app.mailjet_client.contactdata = Mock()
-        app.mailjet_client.listrecipient = Mock()
-        return f(app, *args, **kwargs)
-
-    return decorated_function
+@pytest.fixture(autouse=True)
+def clear_mail_outbox():
+    try:
+        yield
+    finally:
+        mails_testing.reset_outbox()
 
 
 def clean_database(f: object) -> object:

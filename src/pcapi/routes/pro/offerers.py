@@ -24,7 +24,6 @@ from pcapi.use_cases.list_offerers_for_pro_user import OfferersRequestParameters
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.includes import OFFERER_INCLUDES
 from pcapi.utils.mailing import MailServiceException
-from pcapi.utils.mailing import send_raw_email
 from pcapi.utils.rest import ensure_current_user_has_rights
 from pcapi.utils.rest import expect_json_data
 from pcapi.utils.rest import load_or_404
@@ -101,7 +100,7 @@ def create_offerer():
         repository.save(user_offerer)
 
         try:
-            send_ongoing_offerer_attachment_information_email_to_pro(user_offerer, send_raw_email)
+            send_ongoing_offerer_attachment_information_email_to_pro(user_offerer)
         except MailServiceException as mail_service_exception:
             app.logger.exception(
                 "[send_ongoing_offerer_attachment_information_email_to_pro] " "Mail service failure",
@@ -125,7 +124,7 @@ def create_offerer():
 
 def _send_to_pro_offer_validation_in_progress_email(user: User, offerer: Offerer) -> bool:
     try:
-        send_pro_user_waiting_for_validation_by_admin_email(user, send_raw_email, offerer)
+        send_pro_user_waiting_for_validation_by_admin_email(user, offerer)
     except MailServiceException as mail_service_exception:
         app.logger.exception(
             "[send_pro_user_waiting_for_validation_by_admin_email] " "Mail service failure", mail_service_exception
@@ -134,6 +133,6 @@ def _send_to_pro_offer_validation_in_progress_email(user: User, offerer: Offerer
 
 def _send_to_pc_admin_offerer_to_validate_email(offerer: Offerer, user_offerer: UserOfferer) -> bool:
     try:
-        maybe_send_offerer_validation_email(offerer, user_offerer, send_raw_email)
+        maybe_send_offerer_validation_email(offerer, user_offerer)
     except MailServiceException as mail_service_exception:
         app.logger.exception("[maybe_send_offerer_validation_email] " "Mail service failure", mail_service_exception)

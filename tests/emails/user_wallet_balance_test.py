@@ -15,7 +15,6 @@ def test_make_wallet_balances_email():
     csv_binary = (
         "ImhlYWRlciBBIiwiaGVhZGVyIEIiLCJoZWFkZXIgQyIsImhlYWRlciBEIgoicGFydCBBIiwicGFydCBCIiwicGFydCBDIiwicGFydCBEIgo="
     )
-    assert email["FromEmail"] == "support@example.com"
     assert email["FromName"] == "pass Culture Pro"
     assert email["Subject"] == "Soldes des utilisateurs pass Culture - 2018-10-15"
     assert email["Html-part"] == ""

@@ -1,6 +1,5 @@
 from abc import ABC
 from abc import abstractmethod
-from typing import Callable
 
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
@@ -21,7 +20,6 @@ class NotificationService(ABC):
         self,
         booking: Booking,
         reason: BookingCancellationReasons,
-        send_email: Callable[..., bool],
     ) -> None:
         pass
 

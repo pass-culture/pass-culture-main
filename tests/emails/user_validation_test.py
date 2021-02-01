@@ -12,12 +12,10 @@ class UserValidationEmailsTest:
         # When
         email = make_pro_user_validation_email(user)
         expected = {
-            "FromEmail": "dev@example.com",
             "FromName": "pass Culture pro",
             "Subject": "[pass Culture pro] Validation de votre adresse email pour le pass Culture",
             "MJ-TemplateID": 778688,
             "MJ-TemplateLanguage": True,
-            "Recipients": [{"Email": "test@example.com", "Name": "John Doe"}],
             "Vars": {
                 "nom_structure": "John Doe",
                 "lien_validation_mail": f"{settings.PRO_URL}/inscription/validation/{user.validationToken}",

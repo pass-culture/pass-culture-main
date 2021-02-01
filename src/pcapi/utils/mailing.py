@@ -4,12 +4,9 @@ import io
 from pprint import pformat
 from typing import Dict
 from typing import List
-from typing import Union
 import zipfile
 
-from flask import current_app as app
 from flask import render_template
-from requests import Response
 
 from pcapi import settings
 from pcapi.connectors import api_entreprises
@@ -21,10 +18,6 @@ from pcapi.models import Offer
 from pcapi.models import Offerer
 from pcapi.models import Stock
 from pcapi.models import UserOfferer
-from pcapi.models.email import EmailStatus
-from pcapi.repository.email_queries import save
-from pcapi.repository.feature_queries import feature_send_mail_to_users_enabled
-from pcapi.utils import logger
 from pcapi.utils.date import format_datetime
 from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.human_ids import humanize
@@ -32,59 +25,6 @@ from pcapi.utils.human_ids import humanize
 
 class MailServiceException(Exception):
     pass
-
-
-def send_raw_email(data: Dict) -> bool:
-    successfully_sent_email = False
-    try:
-        if settings.SEND_RAW_EMAIL_BACKEND == "log":
-            logger.logger.info("[EMAIL] Sending email %s", data)
-            successfully_sent_email = True
-        else:
-            if settings.MAILJET_TEMPLATE_DEBUGGING:
-                messages_data = data.get("Messages")
-                if messages_data:
-                    for message_data in messages_data:
-                        _add_template_debugging(message_data)
-                else:
-                    _add_template_debugging(data)
-            response = app.mailjet_client.send.create(data=data)
-            successfully_sent_email = response.status_code == 200
-        status = EmailStatus.SENT if successfully_sent_email else EmailStatus.ERROR
-        save(data, status)
-        if not successfully_sent_email:
-            logger.logger.warning("[EMAIL] Trying to send email failed with status code %s", response.status_code)
-    except Exception as exc:  # pylint: disable=broad-except
-        logger.logger.exception("[EMAIL] Trying to send email failed with unexpected error %s", exc)
-
-    return successfully_sent_email
-
-
-def create_contact(email: str) -> Response:
-    data = {"Email": email}
-
-    return app.mailjet_client.contact.create(data=data)
-
-
-def add_contact_informations(email: str, date_of_birth: str, department_code: str) -> Response:
-    data = {
-        "Data": [
-            {"Name": "date_de_naissance", "Value": date_of_birth},
-            {"Name": "département", "Value": department_code},
-        ]
-    }
-
-    return app.mailjet_client.contactdata.update(id=email, data=data)
-
-
-def add_contact_to_list(email: str, list_id: str) -> Response:
-    data = {
-        "IsUnsubscribed": "false",
-        "ContactAlt": email,
-        "ListID": list_id,
-    }
-
-    return app.mailjet_client.listrecipient.create(data=data)
 
 
 def build_pc_pro_offer_link(offer: Offer) -> str:
@@ -101,16 +41,6 @@ def extract_users_information_from_bookings(bookings: List[Booking]) -> List[dic
     ]
 
     return [dict(zip(users_keys, user_property)) for user_property in users_properties]
-
-
-def create_email_recipients(recipients: List[str]) -> str:
-    if feature_send_mail_to_users_enabled():
-        return ", ".join(recipients)
-    return settings.DEV_EMAIL_ADDRESS
-
-
-def format_environment_for_email() -> str:
-    return "" if settings.IS_PROD else f"-{settings.ENV}"
 
 
 def format_booking_date_for_email(booking: Booking) -> str:
@@ -152,7 +82,6 @@ def make_validation_email_object(
 
     return {
         "FromName": "pass Culture",
-        "FromEmail": settings.SUPPORT_EMAIL_ADDRESS,
         "Subject": "%s - inscription / rattachement PRO à valider : %s" % (offerer_departement_code, offerer.name),
         "Html-part": email_html,
     }
@@ -185,9 +114,6 @@ def make_offerer_driven_cancellation_email_for_offerer(booking: Booking) -> Dict
     )
     return {
         "FromName": "pass Culture",
-        "FromEmail": settings.SUPPORT_EMAIL_ADDRESS
-        if feature_send_mail_to_users_enabled()
-        else settings.DEV_EMAIL_ADDRESS,
         "Subject": email_subject,
         "Html-part": email_html,
     }
@@ -199,7 +125,6 @@ def make_payment_message_email(xml: str, checksum: bytes) -> Dict:
     file_name = "message_banque_de_france_{}.xml".format(datetime.strftime(now, "%Y%m%d"))
 
     return {
-        "FromEmail": settings.SUPPORT_EMAIL_ADDRESS,
         "FromName": "pass Culture Pro",
         "Subject": "Virements XML pass Culture Pro - {}".format(datetime.strftime(now, "%Y-%m-%d")),
         "Attachments": [{"ContentType": "text/xml", "Filename": file_name, "Content": xml_b64encode}],
@@ -224,7 +149,6 @@ def make_payment_details_email(csv: str) -> Dict:
     csv_filename = f"details_des_paiements_{datetime.strftime(now, '%Y%m%d')}.csv"
     zipfile_content = _get_zipfile_content(csv, csv_filename)
     return {
-        "FromEmail": settings.SUPPORT_EMAIL_ADDRESS,
         "FromName": "pass Culture Pro",
         "Subject": "Détails des paiements pass Culture Pro - {}".format(datetime.strftime(now, "%Y-%m-%d")),
         "Attachments": [
@@ -251,7 +175,6 @@ def make_payments_report_email(not_processable_csv: str, error_csv: str, grouped
 
     return {
         "Subject": "Récapitulatif des paiements pass Culture Pro - {}".format(formatted_date),
-        "FromEmail": settings.SUPPORT_EMAIL_ADDRESS,
         "FromName": "pass Culture Pro",
         "Attachments": [
             {
@@ -278,7 +201,6 @@ def make_wallet_balances_email(csv: str) -> Dict:
     now = datetime.utcnow()
     csv_b64encode = base64.b64encode(csv.encode("utf-8")).decode()
     return {
-        "FromEmail": settings.SUPPORT_EMAIL_ADDRESS,
         "FromName": "pass Culture Pro",
         "Subject": "Soldes des utilisateurs pass Culture - {}".format(datetime.strftime(now, "%Y-%m-%d")),
         "Attachments": [
@@ -290,24 +212,6 @@ def make_wallet_balances_email(csv: str) -> Dict:
         ],
         "Html-part": "",
     }
-
-
-def compute_email_html_part_and_recipients(email_html_part, recipients: Union[List[str], str]) -> (str, str):
-    if isinstance(recipients, list):
-        recipients_string = ", ".join(recipients)
-    else:
-        recipients_string = recipients
-    if feature_send_mail_to_users_enabled():
-        email_to = recipients_string
-    else:
-        email_html_part = (
-            "<p>This is a test (ENV={environment})."
-            " In production, email would have been sent to : {recipients}</p>{html_part}".format(
-                environment=settings.ENV, recipients=recipients_string, html_part=email_html_part
-            )
-        )
-        email_to = settings.DEV_EMAIL_ADDRESS
-    return email_html_part, email_to
 
 
 def make_offer_creation_notification_email(offer: Offer, author: User) -> Dict:
@@ -327,8 +231,6 @@ def make_offer_creation_notification_email(offer: Offer, author: User) -> Dict:
     location_information = offer.venue.departementCode or "numérique"
     return {
         "Html-part": html,
-        "To": [settings.ADMINISTRATION_EMAIL_ADDRESS],
-        "FromEmail": settings.SUPPORT_EMAIL_ADDRESS,
         "FromName": "pass Culture",
         "Subject": f"[Création d’offre - {location_information}] {offer.product.name}",
     }
@@ -346,14 +248,10 @@ def get_event_datetime(stock: Stock) -> datetime:
 
 def make_pro_user_validation_email(user: User) -> Dict:
     return {
-        "FromEmail": settings.SUPPORT_EMAIL_ADDRESS
-        if feature_send_mail_to_users_enabled()
-        else settings.DEV_EMAIL_ADDRESS,
         "FromName": "pass Culture pro",
         "Subject": "[pass Culture pro] Validation de votre adresse email pour le pass Culture",
         "MJ-TemplateID": 778688,
         "MJ-TemplateLanguage": True,
-        "Recipients": [{"Email": user.email, "Name": user.publicName}],
         "Vars": {
             "nom_structure": user.publicName,
             "lien_validation_mail": f"{settings.PRO_URL}/inscription/validation/{user.validationToken}",

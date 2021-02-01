@@ -1,6 +1,5 @@
 from datetime import datetime
 from datetime import timedelta
-from unittest.mock import patch
 
 from freezegun import freeze_time
 import pytest
@@ -14,8 +13,7 @@ from pcapi.emails.beneficiary_booking_cancellation import make_beneficiary_booki
 
 @pytest.mark.usefixtures("db_session")
 class MakeBeneficiaryBookingCancellationEmailDataTest:
-    @patch("pcapi.emails.beneficiary_booking_cancellation.format_environment_for_email", return_value="")
-    def test_should_return_thing_data_when_booking_is_a_thing(self, mock_format_environment_for_email):
+    def test_should_return_thing_data_when_booking_is_a_thing(self):
         # Given
         booking = factories.BookingFactory(
             user=UserFactory(email="fabien@example.com", firstName="Fabien"),
@@ -33,12 +31,9 @@ class MakeBeneficiaryBookingCancellationEmailDataTest:
 
         # Then
         assert email_data == {
-            "FromEmail": "support@example.com",
             "Mj-TemplateID": 1091464,
             "Mj-TemplateLanguage": True,
-            "To": "fabien@example.com",
             "Vars": {
-                "env": "",
                 "event_date": "",
                 "event_hour": "",
                 "is_event": 0,
@@ -51,8 +46,7 @@ class MakeBeneficiaryBookingCancellationEmailDataTest:
         }
 
     @freeze_time("2019-11-26 18:29:20.891028")
-    @patch("pcapi.emails.beneficiary_booking_cancellation.format_environment_for_email", return_value="-testing")
-    def test_should_return_event_data_when_booking_is_an_event(self, mock_format_environment_for_email):
+    def test_should_return_event_data_when_booking_is_an_event(self):
         # Given
         booking = factories.BookingFactory(
             user=UserFactory(email="fabien@example.com", firstName="Fabien"),
@@ -70,12 +64,9 @@ class MakeBeneficiaryBookingCancellationEmailDataTest:
 
         # Then
         assert email_data == {
-            "FromEmail": "support@example.com",
             "Mj-TemplateID": 1091464,
             "Mj-TemplateLanguage": True,
-            "To": "fabien@example.com",
             "Vars": {
-                "env": "-testing",
                 "event_date": "26 novembre",
                 "event_hour": "19h29",
                 "is_event": 1,

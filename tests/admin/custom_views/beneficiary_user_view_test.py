@@ -5,6 +5,7 @@ import pytest
 
 from pcapi.admin.custom_views.beneficiary_user_view import BeneficiaryUserView
 from pcapi.admin.custom_views.suspension_mixin import _allow_suspension_and_unsuspension
+import pcapi.core.mails.testing as mails_testing
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import User
 from pcapi.models import Deposit
@@ -15,12 +16,11 @@ from tests.conftest import clean_database
 
 class BeneficiaryUserViewTest:
     @clean_database
-    @patch("pcapi.admin.custom_views.beneficiary_user_view.send_raw_email", return_value=True)
-    def test_beneficiary_user_creation(self, mocked_send_raw_email, app):
-        users_factories.UserFactory(email="user@example.com", isAdmin=True)
+    def test_beneficiary_user_creation(self, app):
+        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
 
         data = dict(
-            email="toto@email.fr",
+            email="lama@example.com",
             firstName="Serge",
             lastName="Lama",
             dateOfBirth="2002-07-13 10:05:00",
@@ -31,12 +31,12 @@ class BeneficiaryUserViewTest:
             depositVersion="1",
         )
 
-        client = TestClient(app.test_client()).with_auth("user@example.com")
+        client = TestClient(app.test_client()).with_auth("admin@example.com")
         response = client.post("/pc/back-office/beneficiary_users/new", form=data)
 
         assert response.status_code == 302
 
-        user_created = User.query.filter_by(email="toto@email.fr").one()
+        user_created = User.query.filter_by(email="lama@example.com").one()
         assert user_created.firstName == "Serge"
         assert user_created.lastName == "Lama"
         assert user_created.publicName == "Serge Lama"
@@ -49,24 +49,22 @@ class BeneficiaryUserViewTest:
         assert user_created.deposits[0].source == "pass-culture-admin"
         assert user_created.deposits[0].amount == 500
 
-        mocked_send_raw_email.assert_called_with(
-            data={
-                "FromEmail": "support@example.com",
-                "Mj-TemplateID": 994771,
-                "Mj-TemplateLanguage": True,
-                "To": "dev@example.com",
-                "Vars": {
-                    "prenom_user": "Serge",
-                    "token": user_created.resetPasswordToken,
-                    "email": "toto%40email.fr",
-                    "env": "-development",
-                },
-            }
-        )
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data == {
+            "FromEmail": "support@example.com",
+            "Mj-TemplateID": 994771,
+            "Mj-TemplateLanguage": True,
+            "To": "lama@example.com",
+            "Vars": {
+                "prenom_user": "Serge",
+                "token": user_created.resetPasswordToken,
+                "email": "lama%40example.com",
+                "env": "-development",
+            },
+        }
 
     @clean_database
-    @patch("pcapi.admin.custom_views.beneficiary_user_view.send_raw_email", return_value=True)
-    def test_beneficiary_user_creation_for_deposit_v2(self, mocked_send_raw_email, app):
+    def test_beneficiary_user_creation_for_deposit_v2(self, app):
         users_factories.UserFactory(email="user@example.com", isAdmin=True)
 
         data = dict(
@@ -219,8 +217,7 @@ class BeneficiaryUserViewTest:
 
     @clean_database
     @patch("pcapi.admin.custom_views.beneficiary_user_view.flash")
-    @patch("pcapi.admin.custom_views.beneficiary_user_view.send_raw_email")
-    def test_beneficiary_user_edition_does_not_send_email(self, mocked_send_raw_email, mocked_flask_flash, app):
+    def test_beneficiary_user_edition_does_not_send_email(self, mocked_flask_flash, app):
         users_factories.UserFactory(email="user@example.com", isAdmin=True)
         user_to_edit = users_factories.UserFactory(email="not_yet_edited@email.com", isAdmin=False)
 
@@ -243,4 +240,4 @@ class BeneficiaryUserViewTest:
         assert user_edited is not None
 
         mocked_flask_flash.assert_not_called()
-        mocked_send_raw_email.assert_not_called()
+        assert not mails_testing.outbox

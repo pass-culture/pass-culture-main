@@ -159,17 +159,14 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
         offer = create_offer_with_event_product(venue, event_name="My Event")
         stock = create_stock_from_offer(offer, price=12.52, beginning_datetime=datetime(2019, 10, 9, 10, 20, 00))
         booking = create_booking(user=user, stock=stock, venue=venue, is_cancelled=True, quantity=2)
-        recipients = "support@example.com"
 
         # When
-        mailjet_data = retrieve_offerer_booking_recap_email_data_after_user_cancellation(booking, recipients)
+        mailjet_data = retrieve_offerer_booking_recap_email_data_after_user_cancellation(booking)
 
         # Then
         assert mailjet_data == {
-            "FromEmail": "support@example.com",
             "MJ-TemplateID": 780015,
             "MJ-TemplateLanguage": True,
-            "To": "dev@example.com",
             "Vars": {
                 "departement": "75",
                 "nom_offre": "My Event",
@@ -184,7 +181,6 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
                 "user_email": "jean.dupont@example.com",
                 "is_active": 1,
                 "nombre_resa": 0,
-                "env": "-development",
                 "users": [],
             },
         }
@@ -204,17 +200,14 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
         stock = create_stock_from_offer(offer, price=0, beginning_datetime=datetime(2019, 10, 9, 10, 20, 00))
         booking1 = create_booking(user=user1, stock=stock, venue=venue, is_cancelled=True, quantity=2)
         create_booking(user=user2, stock=stock, venue=venue, is_cancelled=False, quantity=1, token="29JM9Q")
-        recipients = "support@example.com"
 
         # When
-        mailjet_data = retrieve_offerer_booking_recap_email_data_after_user_cancellation(booking1, recipients)
+        mailjet_data = retrieve_offerer_booking_recap_email_data_after_user_cancellation(booking1)
 
         # Then
         assert mailjet_data == {
-            "FromEmail": "support@example.com",
             "MJ-TemplateID": 780015,
             "MJ-TemplateLanguage": True,
-            "To": "dev@example.com",
             "Vars": {
                 "departement": "75",
                 "nom_offre": "My Event",
@@ -229,7 +222,6 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
                 "user_email": "jean.dupont@example.com",
                 "is_active": 1,
                 "nombre_resa": 1,
-                "env": "-development",
                 "users": [
                     {"contremarque": "29JM9Q", "email": "jean.val@example.com", "firstName": "John", "lastName": "Doe"}
                 ],
@@ -251,17 +243,14 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
         stock = create_stock_from_offer(offer, price=12)
         booking1 = create_booking(user=user1, stock=stock, venue=venue, is_cancelled=True, quantity=2)
         create_booking(user=user2, stock=stock, venue=venue, is_cancelled=False, quantity=1, token="29JM9Q")
-        recipients = "support@example.com"
 
         # When
-        mailjet_data = retrieve_offerer_booking_recap_email_data_after_user_cancellation(booking1, recipients)
+        mailjet_data = retrieve_offerer_booking_recap_email_data_after_user_cancellation(booking1)
 
         # Then
         assert mailjet_data == {
-            "FromEmail": "support@example.com",
             "MJ-TemplateID": 780015,
             "MJ-TemplateLanguage": True,
-            "To": "dev@example.com",
             "Vars": {
                 "departement": "75",
                 "nom_offre": "My Thing",
@@ -276,7 +265,6 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
                 "user_email": "jean.dupont@example.com",
                 "is_active": 0,
                 "nombre_resa": 1,
-                "env": "-development",
                 "users": [
                     {"contremarque": "29JM9Q", "email": "jean.val@example.com", "firstName": "John", "lastName": "Doe"}
                 ],
@@ -298,17 +286,13 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
         stock = create_stock_from_offer(offer, price=12)
         booking1 = create_booking(user=user1, stock=stock, venue=venue, is_cancelled=True, quantity=2)
         create_booking(user=user2, stock=stock, venue=venue, is_cancelled=False, quantity=1, token="29JM9Q")
-        recipients = "support@example.com"
-
         # When
-        mailjet_data = retrieve_offerer_booking_recap_email_data_after_user_cancellation(booking1, recipients)
+        mailjet_data = retrieve_offerer_booking_recap_email_data_after_user_cancellation(booking1)
 
         # Then
         assert mailjet_data == {
-            "FromEmail": "support@example.com",
             "MJ-TemplateID": 780015,
             "MJ-TemplateLanguage": True,
-            "To": "dev@example.com",
             "Vars": {
                 "departement": "numérique",
                 "nom_offre": "My Thing",
@@ -323,7 +307,6 @@ class MakeOffererBookingRecapEmailAfterUserCancellationWithMailjetTemplateTest:
                 "user_email": "jean.dupont@example.com",
                 "is_active": 0,
                 "nombre_resa": 1,
-                "env": "-development",
                 "users": [
                     {"contremarque": "29JM9Q", "email": "jean.val@example.com", "firstName": "John", "lastName": "Doe"}
                 ],

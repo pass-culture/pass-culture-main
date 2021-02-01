@@ -7,7 +7,6 @@ from pcapi.domain.user_emails import send_activation_email
 from pcapi.domain.user_emails import send_rejection_email_to_beneficiary_pre_subscription
 from pcapi.infrastructure.repository.beneficiary.beneficiary_sql_repository import BeneficiarySQLRepository
 from pcapi.repository.user_queries import find_user_by_email
-from pcapi.utils.mailing import send_raw_email
 
 
 class CreateBeneficiaryFromApplication:
@@ -29,15 +28,14 @@ class CreateBeneficiaryFromApplication:
             send_rejection_email_to_beneficiary_pre_subscription(
                 beneficiary_pre_subscription=beneficiary_pre_subscription,
                 beneficiary_is_eligible=isinstance(cant_register_beneficiary_exception, BeneficiaryIsADuplicate),
-                send_email=send_raw_email,
             )
 
         else:
             beneficiary = self.beneficiary_repository.save(beneficiary_pre_subscription, user=user)
             if user is None:
-                send_activation_email(user=beneficiary, send_email=send_raw_email)
+                send_activation_email(user=beneficiary)
             else:
-                send_accepted_as_beneficiary_email(user=beneficiary, send_email=send_raw_email)
+                send_accepted_as_beneficiary_email(user=beneficiary)
 
 
 create_beneficiary_from_application = CreateBeneficiaryFromApplication()

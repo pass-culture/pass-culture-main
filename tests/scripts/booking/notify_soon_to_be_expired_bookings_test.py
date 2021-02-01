@@ -53,13 +53,10 @@ class NotifyUsersOfSoonToBeExpiredBookingsTest:
         )
         assert str(dont_expire_in_7_days_cd_booking) not in caplog.text
 
-    @mock.patch("pcapi.scripts.booking.notify_soon_to_be_expired_bookings.send_raw_email")
     @mock.patch(
         "pcapi.scripts.booking.notify_soon_to_be_expired_bookings.send_soon_to_be_expired_bookings_recap_email_to_beneficiary"
     )
-    def should_call_email_service_for_bookings_which_will_expire_in_7_days(
-        self, mocked_email_recap, mocked_send_raw_email, app
-    ) -> None:
+    def should_call_email_service_for_bookings_which_will_expire_in_7_days(self, mocked_email_recap, app) -> None:
         # Given
         now = date.today()
         booking_date_23_days_ago = now - timedelta(days=23)
@@ -83,6 +80,4 @@ class NotifyUsersOfSoonToBeExpiredBookingsTest:
         notify_users_of_soon_to_be_expired_bookings()
 
         # Then
-        mocked_email_recap.assert_called_once_with(
-            expire_in_7_days_dvd_booking.user, [expire_in_7_days_dvd_booking], mocked_send_raw_email
-        )
+        mocked_email_recap.assert_called_once_with(expire_in_7_days_dvd_booking.user, [expire_in_7_days_dvd_booking])

@@ -42,7 +42,6 @@ class FakeBeneficiaryJouveBackend:
         )
 
 
-@patch("pcapi.use_cases.create_beneficiary_from_application.send_raw_email")
 @patch("pcapi.use_cases.create_beneficiary_from_application.send_activation_email")
 @patch("pcapi.domain.password.random_token")
 @patch("pcapi.infrastructure.repository.beneficiary.beneficiary_pre_subscription_sql_converter.random_password")
@@ -53,7 +52,7 @@ class FakeBeneficiaryJouveBackend:
 @freeze_time("2013-05-15 09:00:00")
 @pytest.mark.usefixtures("db_session")
 def test_saved_a_beneficiary_from_application(
-    stubed_random_password, stubed_random_token, mocked_send_activation_email, stubed_send_raw_email, app
+    stubed_random_password, stubed_random_token, mocked_send_activation_email, app
 ):
     # Given
     application_id = 35
@@ -239,7 +238,6 @@ def test_cannot_save_beneficiary_if_department_is_not_eligible(app):
 
 
 @patch("pcapi.use_cases.create_beneficiary_from_application.validate")
-@patch("pcapi.use_cases.create_beneficiary_from_application.send_raw_email")
 @patch("pcapi.use_cases.create_beneficiary_from_application.send_rejection_email_to_beneficiary_pre_subscription")
 @patch(
     "pcapi.settings.JOUVE_APPLICATION_BACKEND",
@@ -247,7 +245,7 @@ def test_cannot_save_beneficiary_if_department_is_not_eligible(app):
 )
 @pytest.mark.usefixtures("db_session")
 def test_calls_send_rejection_mail_with_validation_error(
-    mocked_send_rejection_email_to_beneficiary_pre_subscription, stubed_send_raw_email, stubed_validate, app
+    mocked_send_rejection_email_to_beneficiary_pre_subscription, stubed_validate, app
 ):
     # Given
     application_id = 35
@@ -266,5 +264,4 @@ def test_calls_send_rejection_mail_with_validation_error(
     mocked_send_rejection_email_to_beneficiary_pre_subscription.assert_called_once_with(
         beneficiary_pre_subscription=pre_subscription,
         beneficiary_is_eligible=True,
-        send_email=stubed_send_raw_email,
     )

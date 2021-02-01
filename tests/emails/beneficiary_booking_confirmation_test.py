@@ -1,6 +1,5 @@
 from datetime import datetime
 from datetime import timezone
-from unittest.mock import patch
 
 import pytest
 
@@ -32,10 +31,8 @@ def make_booking(**kwargs):
 
 def get_expected_base_email_data(booking, mediation, **overrides):
     email_data = {
-        "FromEmail": "support@example.com",
         "MJ-TemplateID": 1163067,
         "MJ-TemplateLanguage": True,
-        "To": "dev@example.com",
         "Vars": {
             "user_first_name": "Joe",
             "booking_date": "3 octobre",
@@ -58,16 +55,14 @@ def get_expected_base_email_data(booking, mediation, **overrides):
             "can_expire": 0,
             "offer_id": humanize(booking.stock.offer.id),
             "mediation_id": humanize(mediation.id),
-            "env": "",
         },
     }
     email_data["Vars"].update(overrides)
     return email_data
 
 
-@patch("pcapi.emails.beneficiary_booking_confirmation.format_environment_for_email", return_value="")
 @pytest.mark.usefixtures("db_session")
-def test_should_return_event_specific_data_for_email_when_offer_is_an_event(mock_format_environment_for_email):
+def test_should_return_event_specific_data_for_email_when_offer_is_an_event():
     booking = make_booking()
     mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
 
@@ -77,9 +72,8 @@ def test_should_return_event_specific_data_for_email_when_offer_is_an_event(mock
     assert email_data == expected
 
 
-@patch("pcapi.emails.beneficiary_booking_confirmation.format_environment_for_email", return_value="")
 @pytest.mark.usefixtures("db_session")
-def test_should_return_event_specific_data_for_email_when_offer_is_a_duo_event(mock_format_environment_for_email):
+def test_should_return_event_specific_data_for_email_when_offer_is_a_duo_event():
     booking = make_booking(quantity=2)
     mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
 
@@ -95,9 +89,8 @@ def test_should_return_event_specific_data_for_email_when_offer_is_a_duo_event(m
     assert email_data == expected
 
 
-@patch("pcapi.emails.beneficiary_booking_confirmation.format_environment_for_email", return_value="")
 @pytest.mark.usefixtures("db_session")
-def test_should_return_thing_specific_data_for_email_when_offer_is_a_thing(mock_format_environment_for_email):
+def test_should_return_thing_specific_data_for_email_when_offer_is_a_thing():
     booking = make_booking(
         stock__offer__product__type=str(models.ThingType.AUDIOVISUEL),
         stock__offer__name="Super bien culturel",
@@ -120,11 +113,8 @@ def test_should_return_thing_specific_data_for_email_when_offer_is_a_thing(mock_
     assert email_data == expected
 
 
-@patch("pcapi.emails.beneficiary_booking_confirmation.format_environment_for_email", return_value="")
 @pytest.mark.usefixtures("db_session")
-def test_should_return_digital_thing_specific_data_for_email_when_offer_is_a_digital_thing(
-    mock_format_environment_for_email,
-):
+def test_should_return_digital_thing_specific_data_for_email_when_offer_is_a_digital_thing():
     booking = make_booking(
         quantity=10,
         stock__price=0,
@@ -150,14 +140,6 @@ def test_should_return_digital_thing_specific_data_for_email_when_offer_is_a_dig
         can_expire=1,
     )
     assert email_data == expected
-
-
-@patch("pcapi.emails.beneficiary_booking_confirmation.feature_send_mail_to_users_enabled", return_value=True)
-@pytest.mark.usefixtures("db_session")
-def test_should_send_email_to_users_address_when_environment_is_production(mock_feature_send_mail_to_users_enabled):
-    booking = bookings_factories.BookingFactory(user__email="joe@example.com")
-    email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)
-    assert email_data["To"] == "joe@example.com"
 
 
 @pytest.mark.usefixtures("db_session")

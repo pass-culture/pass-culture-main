@@ -36,9 +36,8 @@ class Patch:
 
         @pytest.mark.usefixtures("db_session")
         @patch("pcapi.routes.pro.validate.send_ongoing_offerer_attachment_information_email_to_pro", return_value=True)
-        @patch("pcapi.routes.pro.validate.send_raw_email", return_value=True)
         def test_send_ongoing_offerer_attachment_information_email_to_pro(
-            self, mock_send_raw_email, mock_send_ongoing_offerer_attachment_information_email_to_pro, app
+            self, mock_send_ongoing_offerer_attachment_information_email_to_pro, app
         ):
             # Given
             user = create_user()
@@ -58,15 +57,12 @@ class Patch:
 
             # Then
             assert response.status_code == 204
-            mock_send_ongoing_offerer_attachment_information_email_to_pro.assert_called_once_with(
-                user_offerer, mock_send_raw_email
-            )
+            mock_send_ongoing_offerer_attachment_information_email_to_pro.assert_called_once_with(user_offerer)
 
         @pytest.mark.usefixtures("db_session")
         @patch("pcapi.routes.pro.validate.send_pro_user_waiting_for_validation_by_admin_email", return_value=True)
-        @patch("pcapi.routes.pro.validate.send_raw_email", return_value=True)
         def test_send_pro_user_waiting_for_validation_by_admin_email(
-            self, mock_send_raw_email, mock_send_pro_user_waiting_for_validation_by_admin_email, app
+            self, mock_send_pro_user_waiting_for_validation_by_admin_email, app
         ):
             # Given
             user = create_user()
@@ -84,16 +80,13 @@ class Patch:
 
             # Then
             assert response.status_code == 204
-            mock_send_pro_user_waiting_for_validation_by_admin_email.assert_called_once_with(
-                user, mock_send_raw_email, offerer
-            )
+            mock_send_pro_user_waiting_for_validation_by_admin_email.assert_called_once_with(user, offerer)
 
         @pytest.mark.usefixtures("db_session")
         @patch("pcapi.settings.IS_INTEGRATION", False)
         @patch("pcapi.routes.pro.validate.maybe_send_offerer_validation_email", return_value=True)
-        @patch("pcapi.routes.pro.validate.send_raw_email", return_value=True)
         def test_maybe_send_offerer_validation_email_when_not_in_integration_env(
-            self, mock_send_raw_email, mock_maybe_send_offerer_validation_email, app
+            self, mock_maybe_send_offerer_validation_email, app
         ):
             # Given
             pro = create_user()
@@ -111,11 +104,11 @@ class Patch:
 
             # Then
             assert response.status_code == 204
-            mock_maybe_send_offerer_validation_email.assert_called_once_with(offerer, user_offerer, mock_send_raw_email)
+            mock_maybe_send_offerer_validation_email.assert_called_once_with(offerer, user_offerer)
 
         @pytest.mark.usefixtures("db_session")
-        @patch("pcapi.settings.IS_INTEGRATION", True)
         @patch("pcapi.routes.pro.validate.maybe_send_offerer_validation_email", return_value=True)
+        @patch("pcapi.settings.IS_INTEGRATION", True)
         def test_validate_offerer_and_user_offerer_when_in_integration_env(
             self, mock_maybe_send_offerer_validation_email, app
         ):

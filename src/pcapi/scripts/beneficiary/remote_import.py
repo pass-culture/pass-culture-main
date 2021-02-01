@@ -23,7 +23,6 @@ from pcapi.repository.beneficiary_import_queries import save_beneficiary_import_
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.utils.logger import logger
 from pcapi.utils.mailing import MailServiceException
-from pcapi.utils.mailing import send_raw_email
 
 
 def run(
@@ -184,9 +183,9 @@ def _process_creation(
         new_beneficiaries.append(new_beneficiary)
         try:
             if user is None:
-                send_activation_email(new_beneficiary, send_raw_email)
+                send_activation_email(new_beneficiary)
             else:
-                send_accepted_as_beneficiary_email(new_beneficiary, send_raw_email)
+                send_accepted_as_beneficiary_email(new_beneficiary)
         except MailServiceException as mail_service_exception:
             logger.exception(
                 "Email send_activation_email failure for application %s - Procedure %s : %s",

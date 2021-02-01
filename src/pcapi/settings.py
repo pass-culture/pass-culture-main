@@ -70,6 +70,17 @@ SENTRY_DSN = os.environ.get("SENTRY_DSN", "https://0470142cf8d44893be88ecded2a14
 SENTRY_SAMPLE_RATE = float(os.environ.get("SENTRY_SAMPLE_RATE", 0))
 
 # MAILS
+if IS_PROD or IS_INTEGRATION:
+    _default_email_backend = "pcapi.core.mails.backends.mailjet.MailjetBackend"
+elif IS_STAGING or IS_TESTING:
+    _default_email_backend = "pcapi.core.mails.backends.mailjet.ToDevMailjetBackend"
+elif IS_RUNNING_TESTS:
+    _default_email_backend = "pcapi.core.mails.backends.testing.TestingBackend"
+elif IS_DEV:
+    _default_email_backend = "pcapi.core.mails.backends.logger.LoggerBackend"
+else:
+    raise RuntimeError("Unknown environment")
+EMAIL_BACKEND = os.environ.get("EMAIL_BACKEND", _default_email_backend)
 SUPPORT_EMAIL_ADDRESS = os.environ.get("SUPPORT_EMAIL_ADDRESS")
 ADMINISTRATION_EMAIL_ADDRESS = os.environ.get("ADMINISTRATION_EMAIL_ADDRESS")
 DEV_EMAIL_ADDRESS = os.environ.get("DEV_EMAIL_ADDRESS")
@@ -78,12 +89,6 @@ TRANSACTIONS_RECIPIENTS = utils.parse_email_addresses(os.environ.get("TRANSACTIO
 PAYMENTS_REPORT_RECIPIENTS = utils.parse_email_addresses(os.environ.get("PAYMENTS_REPORT_RECIPIENTS"))
 PAYMENTS_DETAILS_RECIPIENTS = utils.parse_email_addresses(os.environ.get("PAYMENTS_DETAILS_RECIPIENTS"))
 WALLET_BALANCES_RECIPIENTS = utils.parse_email_addresses(os.environ.get("WALLET_BALANCES_RECIPIENTS"))
-
-# Temporary setting to allow load tests to disable sending email
-# Possible values:
-#   - mailjet
-#   - log
-SEND_RAW_EMAIL_BACKEND = os.environ.get("SEND_RAW_EMAIL_BACKEND", "mailjet").lower()
 
 
 # ALGOLIA

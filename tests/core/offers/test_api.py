@@ -783,8 +783,7 @@ class CreateMediationTest:
 @pytest.mark.usefixtures("db_session")
 class CreateOfferTest:
     @mock.patch("pcapi.domain.admin_emails.send_offer_creation_notification_to_administration")
-    @mock.patch("pcapi.utils.mailing.send_raw_email")
-    def test_create_offer_from_scratch(self, mocked_send_raw_email, mocked_offer_creation_notification_to_admin):
+    def test_create_offer_from_scratch(self, mocked_offer_creation_notification_to_admin):
         venue = factories.VenueFactory()
         offerer = venue.managingOfferer
         user_offerer = factories.UserOffererFactory(offerer=offerer)
@@ -813,13 +812,10 @@ class CreateOfferTest:
         assert offer.visualDisabilityCompliant
         assert not offer.bookingEmail
         assert Offer.query.count() == 1
-        mocked_offer_creation_notification_to_admin.assert_called_once_with(offer, user, mocked_send_raw_email)
+        mocked_offer_creation_notification_to_admin.assert_called_once_with(offer, user)
 
     @mock.patch("pcapi.domain.admin_emails.send_offer_creation_notification_to_administration")
-    @mock.patch("pcapi.utils.mailing.send_raw_email")
-    def test_create_offer_from_existing_product(
-        self, mocked_send_raw_email, mocked_offer_creation_notification_to_admin
-    ):
+    def test_create_offer_from_existing_product(self, mocked_offer_creation_notification_to_admin):
         product = factories.ProductFactory(
             name="An excellent offer",
             type=str(offer_type.EventType.CINEMA),
@@ -849,7 +845,7 @@ class CreateOfferTest:
         assert offer.motorDisabilityCompliant
         assert offer.visualDisabilityCompliant
         assert Offer.query.count() == 1
-        mocked_offer_creation_notification_to_admin.assert_called_once_with(offer, user, mocked_send_raw_email)
+        mocked_offer_creation_notification_to_admin.assert_called_once_with(offer, user)
 
     def test_create_activation_offer(self):
         user = users_factories.UserFactory(isAdmin=True)

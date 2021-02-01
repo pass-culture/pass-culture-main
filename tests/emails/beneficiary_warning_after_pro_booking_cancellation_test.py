@@ -1,6 +1,5 @@
 from datetime import datetime
 from datetime import timezone
-from unittest.mock import patch
 
 from pcapi.emails.beneficiary_warning_after_pro_booking_cancellation import (
     retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation,
@@ -17,50 +16,6 @@ from pcapi.model_creators.specific_creators import create_stock_from_offer
 
 
 class RetrieveDataToWarnBeneficiaryAfterProBookingCancellationTest:
-    @patch(
-        "pcapi.emails.beneficiary_warning_after_pro_booking_cancellation.feature_send_mail_to_users_enabled",
-        return_value=True,
-    )
-    def test_should_send_mail_to_user_when_feature_send_mail_to_users_is_enabled(
-        self, feature_send_mail_to_users_enabled
-    ):
-        # Given
-        user = create_user()
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue)
-        event_occurrence = create_event_occurrence(offer)
-        stock = create_stock_from_event_occurrence(event_occurrence)
-        booking = create_booking(user=user, stock=stock)
-
-        # When
-        mailjet_data = retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking)
-
-        # Then
-        assert mailjet_data["To"] == user.email
-
-    @patch(
-        "pcapi.emails.beneficiary_warning_after_pro_booking_cancellation.feature_send_mail_to_users_enabled",
-        return_value=False,
-    )
-    def test_should_send_mail_to_dev_when_feature_send_mail_to_users_is_disabled(
-        self, feature_send_mail_to_users_enabled
-    ):
-        # Given
-        user = create_user()
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue)
-        event_occurrence = create_event_occurrence(offer)
-        stock = create_stock_from_event_occurrence(event_occurrence)
-        booking = create_booking(user=user, stock=stock)
-
-        # When
-        mailjet_data = retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking)
-
-        # Then
-        assert mailjet_data["To"] == "dev@example.com"
-
     def test_should_return_event_data_when_booking_is_on_an_event(self):
         # Given
         beginning_datetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
@@ -78,10 +33,8 @@ class RetrieveDataToWarnBeneficiaryAfterProBookingCancellationTest:
 
         # Then
         assert mailjet_data == {
-            "FromEmail": "support@example.com",
             "MJ-TemplateID": 1116690,
             "MJ-TemplateLanguage": True,
-            "To": "dev@example.com",
             "Vars": {
                 "event_date": "samedi 20 juillet 2019",
                 "event_hour": "14h",
@@ -111,10 +64,8 @@ class RetrieveDataToWarnBeneficiaryAfterProBookingCancellationTest:
 
         # Then
         assert mailjet_data == {
-            "FromEmail": "support@example.com",
             "MJ-TemplateID": 1116690,
             "MJ-TemplateLanguage": True,
-            "To": "dev@example.com",
             "Vars": {
                 "event_date": "",
                 "event_hour": "",
@@ -144,10 +95,8 @@ class RetrieveDataToWarnBeneficiaryAfterProBookingCancellationTest:
 
         # Then
         assert mailjet_data == {
-            "FromEmail": "support@example.com",
             "MJ-TemplateID": 1116690,
             "MJ-TemplateLanguage": True,
-            "To": "dev@example.com",
             "Vars": {
                 "event_date": "",
                 "event_hour": "",

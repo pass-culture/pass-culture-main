@@ -263,10 +263,9 @@ class Post:
 
         @patch("pcapi.routes.pro.offerers.maybe_send_offerer_validation_email", return_value=True)
         @patch("pcapi.connectors.api_entreprises.requests.get")
-        @patch("pcapi.routes.pro.offerers.send_raw_email", return_value=True)
         @pytest.mark.usefixtures("db_session")
         def expect_maybe_send_offerer_validation_email_to_be_called(
-            self, mock_send_raw_email, mock_api_entreprise, mock_maybe_send_offerer_validation_email, app
+            self, mock_api_entreprise, mock_maybe_send_offerer_validation_email, app
         ):
             # Given
             mock_api_entreprise.return_value = MagicMock(
@@ -295,15 +294,13 @@ class Post:
 
             user_offerer = UserOfferer.query.first()
 
-            mock_maybe_send_offerer_validation_email.assert_called_once_with(offerer, user_offerer, mock_send_raw_email)
+            mock_maybe_send_offerer_validation_email.assert_called_once_with(offerer, user_offerer)
 
         @patch("pcapi.routes.pro.offerers.send_ongoing_offerer_attachment_information_email_to_pro", return_value=True)
         @patch("pcapi.connectors.api_entreprises.requests.get")
-        @patch("pcapi.routes.pro.offerers.send_raw_email", return_value=True)
         @pytest.mark.usefixtures("db_session")
         def expect_send_ongoing_offerer_attachment_information_email_to_pro_to_be_called(
             self,
-            mock_send_raw_email,
             mock_api_entreprise,
             mock_send_ongoing_offerer_attachment_information_email_to_pro,
             app,
@@ -331,16 +328,13 @@ class Post:
             assert response.status_code == 201
             user_offerer = UserOfferer.query.first()
 
-            mock_send_ongoing_offerer_attachment_information_email_to_pro.assert_called_once_with(
-                user_offerer, mock_send_raw_email
-            )
+            mock_send_ongoing_offerer_attachment_information_email_to_pro.assert_called_once_with(user_offerer)
 
     @patch("pcapi.routes.pro.offerers.send_pro_user_waiting_for_validation_by_admin_email", return_value=True)
     @patch("pcapi.connectors.api_entreprises.requests.get")
-    @patch("pcapi.routes.pro.offerers.send_raw_email", return_value=True)
     @pytest.mark.usefixtures("db_session")
     def expect_send_pro_user_waiting_for_validation_by_admin_email_to_be_called_when_offerer_not_existing_yet(
-        self, mock_send_raw_email, mock_api_entreprise, mock_send_pro_user_waiting_for_validation_by_admin_email, app
+        self, mock_api_entreprise, mock_send_pro_user_waiting_for_validation_by_admin_email, app
     ):
         # Given
         mock_api_entreprise.return_value = MagicMock(
@@ -365,6 +359,4 @@ class Post:
         assert response.status_code == 201
         offerer = Offerer.query.first()
 
-        mock_send_pro_user_waiting_for_validation_by_admin_email.assert_called_once_with(
-            user, mock_send_raw_email, offerer
-        )
+        mock_send_pro_user_waiting_for_validation_by_admin_email.assert_called_once_with(user, offerer)

@@ -13,7 +13,6 @@ from pcapi.models import offer_type
 
 
 @pytest.mark.usefixtures("db_session")
-@patch("pcapi.utils.mailing.feature_send_mail_to_users_enabled", return_value=True)
 @patch(
     "pcapi.emails.offerer_expired_bookings.build_pc_pro_offer_link",
     return_value="http://pc_pro.com/offer_link",
@@ -47,19 +46,15 @@ def test_should_send_email_to_offerer_when_expired_bookings_cancelled(self, app)
         isCancelled=True,
         cancellationReason=BookingCancellationReasons.EXPIRED,
     )
-    recipients = "admin@example.com"
 
     email_data = build_expired_bookings_recap_email_data_for_offerer(
         offerer,
-        recipients,
         [expired_today_dvd_booking, expired_today_cd_booking],
     )
 
     assert email_data == {
-        "FromEmail": "support@example.com",
         "Mj-TemplateID": 1952508,
         "Mj-TemplateLanguage": True,
-        "To": "dev@example.com",
         "Vars": {
             "bookings": [
                 {
@@ -80,6 +75,5 @@ def test_should_send_email_to_offerer_when_expired_bookings_cancelled(self, app)
                 },
             ],
             "department": "75",
-            "env": "-development",
         },
     }
