@@ -8,6 +8,7 @@ import FieldErrors from 'components/layout/form/FieldErrors'
 import PasswordField from 'components/layout/form/fields/PasswordField'
 import Icon from 'components/layout/Icon'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
+import { LegalInfos } from 'components/layout/LegalInfos/LegalInfos'
 import { redirectLoggedUser } from 'components/router/helpers'
 
 import bindAddressAndDesignationFromSiren from '../../Offerer/OffererCreation/decorators/bindSirenFieldToDesignation'
@@ -222,53 +223,10 @@ class SignupForm extends PureComponent {
                   </span>
                   <FieldErrors customMessage={errors ? errors.contactOk : null} />
                 </label>
-
-                <div className="sign-up-infos-before-signup">
-                  <span>
-                    {'En cliquant sur Créer mon compte, vous acceptez nos '}
-                  </span>
-                  <a
-                    className="quaternary-link"
-                    href="https://pass.culture.fr/cgu-professionnels/"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                  >
-                    <Icon svg="ico-external-site-red" />
-                    <span>
-                      {'Conditions Générales d’Utilisation'}
-                    </span>
-                  </a>
-                  <span>
-                    {' ainsi que notre '}
-                  </span>
-                  <a
-                    className="quaternary-link"
-                    href="https://pass.culture.fr/donnees-personnelles/"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                  >
-                    <Icon svg="ico-external-site-red" />
-                    <span>
-                      {'Charte des Données Personnelles'}
-                    </span>
-                  </a>
-                  <span>
-                    {
-                      '. Pour en savoir plus sur la gestion de vos données personnelles et pour exercer vos droits, ou répondre à toute autre question, '
-                    }
-                  </span>
-                  <a
-                    className="quaternary-link"
-                    href="mailto:support@passculture.app"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                  >
-                    <Icon svg="ico-email-red" />
-                    <span>
-                      {'contactez notre support.'}
-                    </span>
-                  </a>
-                </div>
+                <LegalInfos
+                  className="sign-up-infos-before-signup"
+                  title="Créer mon compte"
+                />
                 <div className="buttons-field">
                   <Link
                     className="secondary-link"

@@ -8,10 +8,6 @@
     padding: 60px 0;
     width: 500px;
 
-    a.quaternary-link {
-      color: $primary;
-    }
-
     .field-password > img {
       position: absolute;
       right: rem(16px);
@@ -71,10 +67,6 @@
     }
 
     .sign-up-infos-before-signup {
-      color: $grey-dark;
-      font-size: rem(14px);
-      font-weight: 500;
-      line-height: rem(22px);
       margin-top: rem(40px);
     }
 

@@ -1,0 +1,10 @@
+.legal-infos {
+  @include caption();
+
+  color: $grey-dark;
+  line-height: rem(22px);
+
+  .quaternary-link {
+    color: $primary;
+  }
+}
