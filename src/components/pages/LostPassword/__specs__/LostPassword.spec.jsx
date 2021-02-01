@@ -99,7 +99,7 @@ describe('src | components | pages | LostPassword', () => {
         // then
         const genericError = wrapper.find(GenericError)
         expect(genericError.prop('message')).toBe(
-          "Une erreur s'est produite, veuillez réessayer ultérieurement."
+          'Un problème est survenu pendant la réinitialisation du mot de passe, veuillez réessayer plus tard.'
         )
       })
     })

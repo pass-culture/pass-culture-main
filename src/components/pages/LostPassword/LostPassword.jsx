@@ -239,7 +239,7 @@ class LostPassword extends PureComponent {
 
                   {hasPasswordResetRequestErrorMessage && (
                     <GenericError
-                      message={"Une erreur s'est produite, veuillez réessayer ultérieurement."}
+                      message="Un problème est survenu pendant la réinitialisation du mot de passe, veuillez réessayer plus tard."
                     />
                   )}
 
