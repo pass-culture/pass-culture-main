@@ -14,14 +14,14 @@ executors:
 
   helm:
     docker:
-      - image: ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/helm-gcp:3.4.1
+      - image: ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/helm-gcp:3.4.1
         auth:
           username: _json_key  # default username when using a JSON key file to authenticate
           password: $GCP_INFRA_KEY
 
   node-gcp:
     docker:
-      - image: ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/node-gcp:12
+      - image: ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/node-gcp:12
         auth:
           username: _json_key  # default username when using a JSON key file to authenticate
           password: $GCP_INFRA_KEY
@@ -36,6 +36,19 @@ commands:
     description: Export API version number as environment variable
     steps:
       - run: echo "export API_VERSION=$(cat ./api/version.txt)" >> $BASH_ENV
+
+  get_cors_allowed_origin_from_env:
+    description: Export CORS_ALLOWED_ORIGIN as env var
+    steps:
+      - run: |
+          if [[ ${CIRCLE_BRANCH} == "staging" ]];then
+            CORS_ALLOWED_ORIGIN=https://gcp-staging-.*.netlify.app
+          elif [[ ${CIRCLE_BRANCH} == "integration" ]];then
+            CORS_ALLOWED_ORIGIN=https://gcp-integratin-.*.netlify.app
+          elif [[ ${CIRCLE_BRANCH} == "production" ]];then
+            CORS_ALLOWED_ORIGIN=https://gcp-production-.*.netlify.app
+          fi
+          echo "export CORS_ALLOWED_ORIGIN=$CORS_ALLOWED_ORIGIN" >> $BASH_ENV
 
   authenticate_gcp:
     description: Authenticate to a GCP project
@@ -62,6 +75,8 @@ commands:
         type: string
       vpc_connector_name:
         type: string
+      cors_allowed_origin:
+        type: string
     steps:
       - run: |
           set +eo pipefail # While GCP deployment is not stable make it always return success status
@@ -81,6 +96,7 @@ commands:
                 ALGOLIA_API_KEY=sm://${GCP_PROJECT}/<< parameters.app_name >>_algolia_api_key, \
                 ALGOLIA_APPLICATION_ID=sm://${GCP_PROJECT}/<< parameters.app_name >>_algolia_application_id, \
                 ALLOCINE_API_KEY=sm://${GCP_PROJECT}/<< parameters.app_name >>_allocine_api_key, \
+                CORS_ALLOWED_ORIGIN=<< parameters.cors_allowed_origin >>, \
                 DATABASE_URL=sm://${GCP_PROJECT}/<< parameters.app_name >>_database_url, \
                 DEMARCHES_SIMPLIFIEES_TOKEN=sm://${GCP_PROJECT}/<< parameters.app_name >>_demarches_simplifiees_token, \
                 DEMARCHES_SIMPLIFIEES_WEBHOOK_TOKEN=sm://${GCP_PROJECT}/<< parameters.app_name >>_demarches_simplifiees_webhook_token, \
@@ -117,7 +133,7 @@ commands:
                 SUPPORT_EMAIL_ADDRESS=sm://${GCP_PROJECT}/<< parameters.app_name >>_support_email_address, \
                 TRANSACTIONS_RECIPIENTS=sm://${GCP_PROJECT}/<< parameters.app_name >>_transactions_recipients, \
                 WALLET_BALANCES_RECIPIENTS=sm://${GCP_PROJECT}/<< parameters.app_name >>_wallet_balances_recipients" \
-            --image=${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_REGISTRY_NAME}/<< parameters.docker_image_name >>:<< parameters.app_image_tag >>
+            --image=${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/<< parameters.docker_image_name >>:<< parameters.app_image_tag >>
             true # While GCP deployment is not stable make it always return success status
 
   deploy-cron-gke:
@@ -368,8 +384,8 @@ jobs:
             gcloud beta auth configure-docker ${GCP_REGION}-docker.pkg.dev
             docker build ./api \
               -f ./api/Dockerfile.gcp \
-              -t ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:${API_VERSION}
-            docker push ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:${API_VERSION}
+              -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:${API_VERSION}
+            docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:${API_VERSION}
           fi
 
   deploy-api:
@@ -414,6 +430,7 @@ jobs:
       - run: git submodule sync
       - run: git submodule update --init
       - export_version
+      - get_cors_allowed_origin_from_env
       - authenticate_gcp:
           gcp-key-name: GCP_METIER_KEY
       - deploy-api-cloudrun:
@@ -421,13 +438,13 @@ jobs:
           app_env: ${CIRCLE_BRANCH}
           app_image_tag: ${API_VERSION}
           docker_image_name: pcapi
-          app_service_account_email: pcapi-${CIRCLE_BRANCH}@pass-culture-app-projet-test.iam.gserviceaccount.com
-          vpc_connector_name: metier-development
+          app_service_account_email: pcapi-${CIRCLE_BRANCH}@${GCP_PROJECT}.iam.gserviceaccount.com
+          vpc_connector_name: ${VPC_CONNECTOR_NAME}
+          cors_allowed_origin: ${CORS_ALLOWED_ORIGIN}
 
   deploy-cron-and-worker:
     executor: helm
     environment:
-      GKE_CLUSTER_NAME: cluster-metier-ehp
       HELM_EXPERIMENTAL_OCI: 1
       CHART_NAME: passculture-chart
       TAG: stable
@@ -443,13 +460,13 @@ jobs:
           command: gcloud container clusters get-credentials --region ${GCP_REGION} ${GKE_CLUSTER_NAME}
       - run:
           name: Login to GCP Artifact Registry with helm
-          command: echo ${GCP_INFRA_KEY} | helm registry login  -u _json_key --password-stdin ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}
+          command: echo ${GCP_INFRA_KEY} | helm registry login  -u _json_key --password-stdin ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}
       - run:
           name: Pull chart from registry
-          command: helm chart pull ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:${TAG}
+          command: helm chart pull ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:${TAG}
       - run:
           name: Export chart in local filesystem
-          command: helm chart export ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:${TAG} -d tmp/
+          command: helm chart export ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:${TAG} -d tmp/
       - deploy-cron-gke:
           helm_chart_name: passculture
           helm_release_name: ${CIRCLE_BRANCH}
@@ -645,37 +662,76 @@ workflows:
             - deploy-pro
             - deploy-webapp
 
-  gcp:
+  gcp-ehp:
+    jobs:
+      - build-and-push-image:
+          filters:
+            branches:
+              only:
+                - staging
+                - integration
+          context:
+            - GCP
+            - GCP_EHP
+      - deploy-api-cloudrun:
+          requires:
+            - build-and-push-image
+          context:
+            - GCP
+            - GCP_EHP
+      - deploy-cron-and-worker:
+          requires:
+            - build-and-push-image
+          context:
+            - GCP
+            - GCP_EHP
+      - deploy-webapp-cloudstorage:
+          requires:
+            - deploy-api-cloudrun
+          context:
+            - GCP
+            - GCP_EHP
+      - deploy-pro-cloudstorage:
+          requires:
+            - deploy-api-cloudrun
+          context:
+            - GCP
+            - GCP_EHP
+
+  gcp-prod:
     jobs:
       - build-and-push-image:
           filters:
             branches:
               only:
                 - production
-                - staging
-                - integration
           context:
             - GCP
+            - GCP_PROD
       - deploy-api-cloudrun:
           requires:
             - build-and-push-image
           context:
             - GCP
+            - GCP_PROD
       - deploy-cron-and-worker:
           requires:
             - build-and-push-image
           context:
             - GCP
+            - GCP_PROD
       - deploy-webapp-cloudstorage:
           requires:
             - deploy-api-cloudrun
           context:
             - GCP
+            - GCP_PROD
       - deploy-pro-cloudstorage:
           requires:
             - deploy-api-cloudrun
           context:
             - GCP
+            - GCP_PROD
 
   every-mondays-nights:
     triggers:
