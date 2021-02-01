@@ -1,7 +1,7 @@
 """add_creation_date_on_favorites
 
 Revision ID: 6e99e0e5834d
-Revises: 539a0d1a86d0
+Revises: 4d579ee00ded
 Create Date: 2021-01-28 15:21:15.087161
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = "6e99e0e5834d"
-down_revision = "539a0d1a86d0"
+down_revision = "4d579ee00ded"
 branch_labels = None
 depends_on = None
 
