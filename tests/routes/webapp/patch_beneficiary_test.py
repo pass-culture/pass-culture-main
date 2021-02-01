@@ -4,6 +4,7 @@ from pcapi.core.users.factories import UserFactory
 from pcapi.core.users.models import User
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.repository import repository
+from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
@@ -46,7 +47,7 @@ class Patch:
             assert user.departementCode == data["departementCode"]
 
         @pytest.mark.usefixtures("db_session")
-        def when_updating_serialization(self, app):
+        def when_returning_serialized_beneficiary(self, app):
             # given
             user = UserFactory(address="1 rue des machines")
             data = {
@@ -64,35 +65,39 @@ class Patch:
             )
 
             # then
-            assert set(response.json.keys()) == {
-                "activity",
-                "address",
-                "city",
-                "civility",
-                "dateCreated",
-                "dateOfBirth",
-                "departementCode",
-                "deposit_version",
-                "email",
-                "expenses",
-                "firstName",
-                "hasAllowedRecommendations",
-                "hasPhysicalVenues",
-                "id",
-                "isActive",
-                "isAdmin",
-                "isBeneficiary",
-                "isEmailValidated",
-                "lastName",
-                "needsToFillCulturalSurvey",
-                "needsToSeeTutorials",
-                "phoneNumber",
-                "postalCode",
-                "publicName",
-                "suspensionReason",
-                "wallet_balance",
-                "wallet_date_created",
-                "wallet_is_activated",
+            assert response.json == {
+                "activity": None,
+                "address": "1 rue des machines",
+                "city": "Paris",
+                "civility": None,
+                "dateCreated": format_into_utc_date(user.dateCreated),
+                "dateOfBirth": "2000-01-01T00:00:00Z",
+                "departementCode": "97",
+                "deposit_version": 1,
+                "email": "new@example.com",
+                "expenses": [
+                    {"current": 0.0, "domain": "all", "limit": 500.0},
+                    {"current": 0.0, "domain": "digital", "limit": 200.0},
+                    {"current": 0.0, "domain": "physical", "limit": 200.0},
+                ],
+                "firstName": "Jeanne",
+                "hasAllowedRecommendations": False,
+                "hasPhysicalVenues": False,
+                "id": humanize(user.id),
+                "isActive": True,
+                "isAdmin": False,
+                "isBeneficiary": True,
+                "isEmailValidated": True,
+                "lastName": "Doux",
+                "needsToFillCulturalSurvey": True,
+                "needsToSeeTutorials": False,
+                "phoneNumber": "1234567890",
+                "postalCode": "93020",
+                "publicName": "Anne",
+                "suspensionReason": "",
+                "wallet_balance": 500.0,
+                "wallet_date_created": format_into_utc_date(user.wallet_date_created),
+                "wallet_is_activated": True,
             }
 
     class Returns400:
