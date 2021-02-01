@@ -411,7 +411,7 @@ describe('offerDetails - Creation - pro user', () => {
         })
       })
 
-      it('should display "Infos pratiques", "Infos artistiques", "Accessibilité", "Billeterie externe" and "Autre" section', async () => {
+      it('should display "Infos pratiques", "Infos artistiques", "Accessibilité", "Lien de réservation externe" and "Autre" section', async () => {
         // Given
         await renderOffers(props, store)
 
@@ -427,7 +427,7 @@ describe('offerDetails - Creation - pro user', () => {
         ).toBeInTheDocument()
         expect(screen.getByRole('heading', { name: 'Accessibilité', level: 3 })).toBeInTheDocument()
         expect(
-          screen.getByRole('heading', { name: 'Billeterie externe', level: 3 })
+          screen.getByRole('heading', { name: 'Lien de réservation externe', level: 3 })
         ).toBeInTheDocument()
         expect(screen.getByRole('heading', { name: 'Autre', level: 3 })).toBeInTheDocument()
       })

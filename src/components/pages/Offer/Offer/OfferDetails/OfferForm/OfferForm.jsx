@@ -684,11 +684,11 @@ const OfferForm = ({
 
           <section className="form-section">
             <h3 className="section-title">
-              {'Billeterie externe'}
+              {'Lien de réservation externe'}
             </h3>
             <p className="section-description">
-              {"Ce lien sera affiché aux utilisateurs ne pouvant pas effectuer la réservation dans l'application. " +
-                'Sans cette information ils ne pourront pas réserver votre offre.'}
+              {'Ce lien sera affiché aux utilisateurs ne pouvant pas effectuer la réservation dans l’application. ' +
+                'Nous vous recommandons d’insérer le lien vers votre billetterie ou votre site internet.'}
             </p>
             <TextInput
               disabled={readOnlyFields.includes('externalTicketOfficeUrl')}
