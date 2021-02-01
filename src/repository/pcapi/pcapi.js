@@ -1,4 +1,4 @@
-import { DEFAULT_SEARCH_FILTERS, DEFAULT_PAGE } from 'components/pages/Offers/_constants'
+import { DEFAULT_PAGE, DEFAULT_SEARCH_FILTERS } from 'components/pages/Offers/_constants'
 import { client } from 'repository/pcapi/pcapiClient'
 import { stringify } from 'utils/query-string'
 
@@ -164,7 +164,7 @@ export const createStock = stock => {
 //
 // thumbnail
 //
-export const getURLErrors = url => {
+export const validateDistantImage = url => {
   return client.post('/offers/thumbnail-url-validation', { url: url })
 }
 
@@ -178,4 +178,19 @@ export const signout = () => client.get('/users/signout')
 //
 export const setPassword = (token, newPassword) => {
   return client.post('/users/new-password', { token, newPassword })
+}
+
+export const postThumbnail = (offerer, offer, credit, thumb, thumbUrl, x, y, height) => {
+  // /thumbnails
+  const body = new FormData()
+  body.append('offerId', offer)
+  body.append('offererId', offerer)
+  body.append('credit', credit)
+  body.append('croppingRect[x]', x)
+  body.append('croppingRect[y]', y)
+  body.append('croppingRect[height]', height)
+  body.append('thumb', thumb)
+  body.append('thumbUrl', thumbUrl)
+
+  return client.postWithFormData('/mediations', body)
 }

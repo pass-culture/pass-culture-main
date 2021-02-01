@@ -4,8 +4,9 @@ import React, { useCallback, useState } from 'react'
 import Icon from 'components/layout/Icon'
 import ThumbnailDialog from 'components/pages/Offer/Offer/Thumbnail/ThumbnailDialog'
 
-const OfferThumbnail = ({ url }) => {
+const OfferThumbnail = ({ setThumbnailInfo, url }) => {
   const [isModalOpened, setIsModalOpened] = useState(false)
+  const [preview, setPreview] = useState(url)
 
   const openModal = useCallback(() => {
     setIsModalOpened(true)
@@ -21,16 +22,23 @@ const OfferThumbnail = ({ url }) => {
       >
         <Icon
           alt="Image de l’offre"
-          src={url}
+          src={preview}
         />
       </button>
 
-      {isModalOpened && <ThumbnailDialog setIsModalOpened={setIsModalOpened} />}
+      {isModalOpened && (
+        <ThumbnailDialog
+          setIsModalOpened={setIsModalOpened}
+          setPreview={setPreview}
+          setThumbnailInfo={setThumbnailInfo}
+        />
+      )}
     </>
   )
 }
 
 OfferThumbnail.propTypes = {
+  setThumbnailInfo: PropTypes.func.isRequired,
   url: PropTypes.string.isRequired,
 }
 

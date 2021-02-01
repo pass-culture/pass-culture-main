@@ -27,6 +27,7 @@ const OfferDetails = ({
   const [formErrors, setFormErrors] = useState({})
   const [showThumbnailForm, setShowThumbnailForm] = useState(offer !== null)
   const [isLoading, setIsLoading] = useState(true)
+  const [thumbnailInfo, setThumbnailInfo] = useState({})
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search)
@@ -50,6 +51,20 @@ const OfferDetails = ({
         if (offer) {
           await pcapi.updateOffer(offer.id, offerValues)
           showEditionSuccessNotification()
+          const offerThumbnailHasBeenUpdated = Object.values(thumbnailInfo).length > 0
+          if (offerThumbnailHasBeenUpdated) {
+            const { credit, thumbnail, croppingRect, thumbUrl } = thumbnailInfo
+            await pcapi.postThumbnail(
+              formValues.offererId,
+              offer.id,
+              credit,
+              thumbnail,
+              thumbUrl,
+              croppingRect.x,
+              croppingRect.y,
+              croppingRect.height
+            )
+          }
           history.push(`/offres/${offer.id}/edition`)
         } else {
           const response = await pcapi.createOffer(offerValues)
@@ -78,11 +93,13 @@ const OfferDetails = ({
       }
     },
     [
+      formValues.offererId,
       history,
       offer,
       showCreationSuccessNotification,
       showEditionSuccessNotification,
       showErrorNotification,
+      thumbnailInfo,
     ]
   )
 
@@ -129,7 +146,10 @@ const OfferDetails = ({
           <div className="sidebar">
             <div className="sidebar-wrapper">
               {offer?.thumbUrl ? (
-                <OfferThumbnail url={offer.thumbUrl} />
+                <OfferThumbnail
+                  setThumbnailInfo={setThumbnailInfo}
+                  url={offer.thumbUrl}
+                />
               ) : (
                 <OfferThumbnailPlaceholder />
               )}

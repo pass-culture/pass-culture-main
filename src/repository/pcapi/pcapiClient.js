@@ -40,6 +40,15 @@ export const client = {
     }
     return await fetchWithErrorHandler(path, options)
   },
+  postWithFormData: async (path, data, withCredentials = true) => {
+    let options = buildOptions('POST', withCredentials)
+    options['headers'] = { 'encode': 'multipart/form-data' }
+    options = {
+      ...options,
+      body: data,
+    }
+    return await fetchWithErrorHandler(path, options)
+  },
   put: async (path, data, withCredentials = true) => {
     const options = {
       ...buildOptions('PUT', withCredentials),

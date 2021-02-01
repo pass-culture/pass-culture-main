@@ -5,8 +5,9 @@ import { client } from 'repository/pcapi/pcapiClient'
 import {
   createStock,
   deleteStock,
-  getURLErrors,
+  validateDistantImage,
   loadFilteredOffers,
+  postThumbnail,
   updateOffersActiveStatus,
   updateStock,
 } from '../pcapi'
@@ -17,6 +18,7 @@ jest.mock('repository/pcapi/pcapiClient', () => ({
     get: jest.fn().mockResolvedValue({}),
     patch: jest.fn(),
     post: jest.fn(),
+    postWithFormData: jest.fn(),
   },
 }))
 
@@ -242,18 +244,40 @@ describe('pcapi', () => {
     })
   })
 
-  describe('getURLErrors', () => {
+  describe('validateDistantImage', () => {
     it('should call the api correct POST route with url as a body param', () => {
       // given
       const url = 'http://ma-mauvaise-url'
 
       // when
-      getURLErrors(url)
+      validateDistantImage(url)
 
       // then
       expect(client.post).toHaveBeenCalledWith(`/offers/thumbnail-url-validation`, {
         url: url,
       })
+    })
+  })
+
+  describe('postThumbnail', () => {
+    it('should call the api correct POST route with thumbnail info as body param', () => {
+      // given
+      const file = new File([''], 'myThumb.png')
+      const body = new FormData()
+      body.append('offerId', 'AA')
+      body.append('offererId', 'BB')
+      body.append('credit', 'Mon crédit')
+      body.append('croppingRect[x]', '12')
+      body.append('croppingRect[y]', '32')
+      body.append('croppingRect[height]', '350')
+      body.append('thumb', file)
+      body.append('thumbUrl', '')
+
+      // when
+      postThumbnail('BB', 'AA', 'Mon crédit', file, '', '12', '32', '350')
+
+      // then
+      expect(client.postWithFormData).toHaveBeenCalledWith(`/mediations`, body)
     })
   })
 })

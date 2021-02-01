@@ -6,7 +6,7 @@ import { IMAGE_TYPE } from 'components/pages/Offer/Offer/Thumbnail/_constants'
 import { constraints } from 'components/pages/Offer/Offer/Thumbnail/_error_validator'
 import { ReactComponent as ThumbnailSampleIcon } from 'components/pages/Offer/Offer/Thumbnail/assets/thumbnail-sample.svg'
 
-const ImportFromComputer = ({ setStep, setThumbnail }) => {
+const ImportFromComputer = ({ setStep, setThumbnail, step }) => {
   const [error, setError] = useState('')
   const file = useRef({})
 
@@ -23,11 +23,11 @@ const ImportFromComputer = ({ setStep, setThumbnail }) => {
 
     if (error === '') {
       setThumbnail(currentFile)
-      setStep(2)
+      setStep(step + 1)
     }
 
     setError(error)
-  }, [file, setStep, setThumbnail])
+  }, [setStep, setThumbnail, step])
 
   const fileConstraint = () =>
     constraints.map(constraint => {
@@ -82,6 +82,7 @@ const ImportFromComputer = ({ setStep, setThumbnail }) => {
 ImportFromComputer.propTypes = {
   setStep: PropTypes.func.isRequired,
   setThumbnail: PropTypes.func.isRequired,
+  step: PropTypes.number.isRequired,
 }
 
 export default ImportFromComputer

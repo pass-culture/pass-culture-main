@@ -3,7 +3,7 @@ import React, { useCallback, useState } from 'react'
 
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 
-const Credit = ({ credit, setCredit, setStep }) => {
+const Credit = ({ credit, setCredit, setStep, step }) => {
   const [inputCredit, setInputCredit] = useState(credit)
 
   const updateCredit = useCallback(event => {
@@ -11,13 +11,13 @@ const Credit = ({ credit, setCredit, setStep }) => {
   }, [])
 
   const previousStep = useCallback(() => {
-    setStep(1)
-  }, [setStep])
+    setStep(step - 1)
+  }, [setStep, step])
 
   const nextStep = useCallback(() => {
     setCredit(inputCredit)
-    setStep(3)
-  }, [inputCredit, setCredit, setStep])
+    setStep(step + 1)
+  }, [step, inputCredit, setCredit, setStep])
 
   return (
     <>
@@ -26,6 +26,7 @@ const Credit = ({ credit, setCredit, setStep }) => {
       </div>
 
       <TextInput
+        countCharacters
         label="Crédit image"
         maxLength={255}
         name="thumbnail-credit"
@@ -69,6 +70,7 @@ Credit.propTypes = {
   credit: PropTypes.string.isRequired,
   setCredit: PropTypes.func.isRequired,
   setStep: PropTypes.func.isRequired,
+  step: PropTypes.number.isRequired,
 }
 
 export default Credit

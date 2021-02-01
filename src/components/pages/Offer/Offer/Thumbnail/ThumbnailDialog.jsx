@@ -11,17 +11,25 @@ import ImportFromURL from 'components/pages/Offer/Offer/Thumbnail/ImportFromURL/
 import ImportTab from 'components/pages/Offer/Offer/Thumbnail/ImportTab/ImportTab'
 import Preview from 'components/pages/Offer/Offer/Thumbnail/Preview/Preview'
 
-const ThumbnailDialog = ({ setIsModalOpened }) => {
+const ThumbnailDialog = ({ setIsModalOpened, setPreview, setThumbnailInfo }) => {
   const DIALOG_LABEL_ID = 'label_for_aria'
 
   const [activeTab, setActiveTab] = useState(IMPORT_TAB_ID)
   const [credit, setCredit] = useState('')
-  const [editedThumbnail, setEditedThumbnail] = useState('')
   const [hidden, setHidden] = useState(true)
   const [step, setStep] = useState(1)
   const [tabId, setTabId] = useState(IMPORT_TAB_ID)
   const [thumbnail, setThumbnail] = useState({})
   const [url, setURL] = useState('')
+  const [previewBase64, setPreviewBase64] = useState('')
+  const [editedThumbnail, setEditedThumbnail] = useState('')
+  const [croppingRect, setCroppingRect] = useState({})
+
+  const IMPORT_STEP = 1
+  const CREDIT_STEP = 2
+  const RESIZE_STEP = 3
+  const PREVIEW_STEP = 4
+  const VALIDATION_STEP = 5
 
   useEffect(() => {
     setHidden(true)
@@ -30,6 +38,30 @@ const ThumbnailDialog = ({ setIsModalOpened }) => {
   const closeModal = useCallback(() => {
     setIsModalOpened(false)
   }, [setIsModalOpened])
+
+  useEffect(() => {
+    if (step === VALIDATION_STEP) {
+      setThumbnailInfo({
+        credit: credit,
+        thumbnail: thumbnail,
+        croppingRect: croppingRect,
+        thumbUrl: url,
+      })
+      setPreview(editedThumbnail)
+      setIsModalOpened(false)
+    }
+  }, [
+    closeModal,
+    credit,
+    croppingRect,
+    editedThumbnail,
+    setIsModalOpened,
+    setPreview,
+    setThumbnailInfo,
+    step,
+    thumbnail,
+    url,
+  ])
 
   const changeTab = useCallback(
     tabId => () => {
@@ -55,7 +87,7 @@ const ThumbnailDialog = ({ setIsModalOpened }) => {
         </h1>
       </header>
       <>
-        {step === 1 && (
+        {step === IMPORT_STEP && (
           <>
             <ImportTab
               activeTab={activeTab}
@@ -66,11 +98,14 @@ const ThumbnailDialog = ({ setIsModalOpened }) => {
               <ImportFromComputer
                 setStep={setStep}
                 setThumbnail={setThumbnail}
+                step={step}
               />
             ) : (
               <ImportFromURL
+                setPreviewBase64={setPreviewBase64}
                 setStep={setStep}
                 setURL={setURL}
+                step={step}
               />
             )}
             <hr className="tnd-hr" />
@@ -80,25 +115,29 @@ const ThumbnailDialog = ({ setIsModalOpened }) => {
             />
           </>
         )}
-        {step === 2 && (
+        {step === CREDIT_STEP && (
           <Credit
             credit={credit}
             setCredit={setCredit}
             setStep={setStep}
+            step={step}
           />
         )}
-        {step === 3 && (
+        {step === RESIZE_STEP && (
           <ImageEditor
+            setCroppingRect={setCroppingRect}
             setEditedThumbnail={setEditedThumbnail}
             setStep={setStep}
+            step={step}
             thumbnail={thumbnail}
-            url={url}
+            url={previewBase64}
           />
         )}
-        {step === 4 && (
+        {step === PREVIEW_STEP && (
           <Preview
             preview={editedThumbnail}
             setStep={setStep}
+            step={step}
           />
         )}
       </>
@@ -108,6 +147,8 @@ const ThumbnailDialog = ({ setIsModalOpened }) => {
 
 ThumbnailDialog.propTypes = {
   setIsModalOpened: PropTypes.func.isRequired,
+  setPreview: PropTypes.func.isRequired,
+  setThumbnailInfo: PropTypes.func.isRequired,
 }
 
 export default ThumbnailDialog

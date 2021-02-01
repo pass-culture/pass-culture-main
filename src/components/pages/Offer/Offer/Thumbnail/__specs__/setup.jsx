@@ -32,10 +32,17 @@ export const createFile = ({
   return file
 }
 
-export const renderThumbnail = () => {
+export const renderThumbnail = ({
+  setIsModalOpened = jest.fn(),
+  setThumbnailInfo = jest.fn(),
+} = {}) => {
   render(
     <MemoryRouter>
-      <ThumbnailDialog setIsModalOpened={jest.fn()} />
+      <ThumbnailDialog
+        setIsModalOpened={setIsModalOpened}
+        setPreview={jest.fn()}
+        setThumbnailInfo={setThumbnailInfo}
+      />
     </MemoryRouter>
   )
 }

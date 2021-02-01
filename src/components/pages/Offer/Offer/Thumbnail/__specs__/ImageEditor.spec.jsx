@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { fireEvent, screen } from '@testing-library/react'
+import { fireEvent, screen, waitFor } from '@testing-library/react'
 
 import {
   createImageFile,
@@ -16,6 +16,14 @@ jest.mock('react-avatar-editor', () => ({
       getImage: jest.fn(() => {
         return {
           toDataURL: jest.fn(() => ''),
+        }
+      }),
+      getCroppingRect: jest.fn(() => {
+        return {
+          x: 0.23,
+          y: 0.15,
+          width: 0.27,
+          height: 0.7,
         }
       }),
       render: jest.fn(),
@@ -61,5 +69,90 @@ describe('when the user is on the preview step', () => {
 
     // Then
     expect(screen.getByText('Recadrer votre image')).toBeInTheDocument()
+  })
+
+  it('should save thumbnail and close the modal when finishing import from computer', async () => {
+    // Given
+    const closeModal = jest.fn()
+    const setThumbnailInfo = jest.fn()
+    renderThumbnail({ setIsModalOpened: closeModal, setThumbnailInfo: setThumbnailInfo })
+
+    const file = createImageFile()
+    fireEvent.change(screen.getByLabelText('Importer une image depuis l’ordinateur'), {
+      target: { files: [file] },
+    })
+
+    fireEvent.change(await screen.findByPlaceholderText('Photographe...'), {
+      target: { value: 'Mon crédit' },
+    })
+    fireEvent.click(await screen.findByText('Suivant', { selector: 'button' }))
+
+    fireEvent.click(screen.getByText('Prévisualiser', { selector: 'button' }))
+
+    // When
+    fireEvent.click(screen.getByText('Valider', { selector: 'button' }))
+
+    // Then
+    await waitFor(() => {
+      expect(
+        screen.queryByText('Prévisualisation de votre image dans l’application pass Culture')
+      ).not.toBeInTheDocument()
+    })
+    expect(closeModal).toHaveBeenCalledWith(false)
+    expect(setThumbnailInfo).toHaveBeenCalledWith({
+      credit: 'Mon crédit',
+      croppingRect: {
+        x: 0.23,
+        y: 0.15,
+        width: 0.27,
+        height: 0.7,
+      },
+      thumbUrl: '',
+      thumbnail: file,
+    })
+  })
+
+  it('should save thumbnail info and close the modal when finishing import from URL', async () => {
+    // Given
+    const closeModal = jest.fn()
+    const setThumbnailInfo = jest.fn()
+    renderThumbnail({ setIsModalOpened: closeModal, setThumbnailInfo: setThumbnailInfo })
+    jest.spyOn(global, 'fetch').mockResolvedValue({
+      json: () => Promise.resolve({ errors: [], image: '' }),
+      ok: true,
+      status: 201,
+    })
+    fireEvent.click(screen.getByText('Utiliser une URL'))
+    fireEvent.change(screen.getByLabelText('URL de l’image'), {
+      target: { value: 'https://url_example.com' },
+    })
+    fireEvent.click(screen.getByText('Valider', { selector: 'button' }))
+    fireEvent.change(await screen.findByPlaceholderText('Photographe...'), {
+      target: { value: 'Mon crédit' },
+    })
+    fireEvent.click(await screen.findByText('Suivant', { selector: 'button' }))
+    fireEvent.click(screen.getByText('Prévisualiser', { selector: 'button' }))
+
+    // When
+    fireEvent.click(screen.getByText('Valider', { selector: 'button' }))
+
+    // Then
+    await waitFor(() => {
+      expect(
+        screen.queryByText('Prévisualisation de votre image dans l’application pass Culture')
+      ).not.toBeInTheDocument()
+    })
+    expect(closeModal).toHaveBeenCalledWith(false)
+    expect(setThumbnailInfo).toHaveBeenCalledWith({
+      credit: 'Mon crédit',
+      croppingRect: {
+        x: 0.23,
+        y: 0.15,
+        width: 0.27,
+        height: 0.7,
+      },
+      thumbUrl: 'https://url_example.com',
+      thumbnail: {},
+    })
   })
 })

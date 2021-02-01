@@ -118,6 +118,57 @@ describe('pcapiClient', () => {
     })
   })
 
+  describe('postWithFormData', () => {
+    it('should call API with given path and formData and credentials by default and correct method', async () => {
+      // Given
+      const path = '/mediations'
+      const file = new File([''], 'myThumb.png')
+      const body = new FormData()
+      body.append('offerId', 'AA')
+      body.append('offererId', 'BB')
+      body.append('credit', 'Mon crédit')
+      body.append('croppingRect[x]', '12')
+      body.append('croppingRect[y]', '32')
+      body.append('croppingRect[height]', '350')
+      body.append('thumb', file)
+
+      // When
+      await client.postWithFormData(path, body)
+
+      // Then
+      expect(fetch).toHaveBeenCalledWith(`${API_URL}${path}`, {
+        credentials: 'include',
+        headers: { 'encode': 'multipart/form-data' },
+        method: 'POST',
+        body: body,
+      })
+    })
+
+    it('should call API without credentials when not required', async () => {
+      // Given
+      const path = '/mediations'
+      const file = new File([''], 'myThumb.png')
+      const body = new FormData()
+      body.append('offerId', 'AA')
+      body.append('offererId', 'BB')
+      body.append('credit', 'Mon crédit')
+      body.append('croppingRect[x]', '12')
+      body.append('croppingRect[y]', '32')
+      body.append('croppingRect[height]', '350')
+      body.append('thumb', file)
+
+      // When
+      await client.postWithFormData(path, body, false)
+
+      // Then
+      expect(fetch).toHaveBeenCalledWith(`${API_URL}${path}`, {
+        headers: { 'encode': 'multipart/form-data' },
+        method: 'POST',
+        body: body,
+      })
+    })
+  })
+
   describe('patch', () => {
     it('should call API with given path and body and JSON Mime type and credentials by default and correct method', async () => {
       // Given

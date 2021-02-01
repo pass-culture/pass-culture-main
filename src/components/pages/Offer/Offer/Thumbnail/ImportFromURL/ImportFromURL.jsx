@@ -5,49 +5,48 @@ import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import { ReactComponent as ThumbnailSampleIcon } from 'components/pages/Offer/Offer/Thumbnail/assets/thumbnail-sample.svg'
 import * as pcapi from 'repository/pcapi/pcapi'
 
-const ImportFromURL = ({ setStep, setURL }) => {
+const ImportFromURL = ({ setStep, setPreviewBase64, setURL, step }) => {
   const [isButtonDisabled, setIsButtonDisabled] = useState(true)
   const [error, setError] = useState('')
-  const [url, setUrl] = useState('')
+  const [localUrl, setLocalUrl] = useState('')
 
-  const checkUrl = useCallback(event => {
-    const url = event.target.value
+  const checkUrl = useCallback(
+    event => {
+      const url = event.target.value
 
-    setIsButtonDisabled(url === '')
-    setUrl(url)
-    setError('')
-  }, [])
+      setLocalUrl(url)
+      setIsButtonDisabled(url === '')
+      setURL(url)
+      setError('')
+    },
+    [setURL]
+  )
 
   const isURLFormatValid = url => /^(http|https)/.test(url)
-
-  const getError = async url => {
-    try {
-      const errors = await pcapi.getURLErrors(url)
-      return errors.errors[0]
-    } catch {
-      return 'Une erreur est survenue'
-    }
-  }
 
   const isThereAnError = useCallback(
     async event => {
       event.preventDefault()
 
-      if (!isURLFormatValid(url)) {
+      if (!isURLFormatValid(localUrl)) {
         setError('Format d’URL non valide')
       } else {
-        const error = await getError(url)
-
-        if (error) {
-          setError(error)
+        try {
+          const result = await pcapi.validateDistantImage(localUrl)
+          if (result.errors.length > 0) {
+            setError(result.errors[0])
+            setIsButtonDisabled(true)
+          } else {
+            setPreviewBase64(result.image)
+            setStep(step + 1)
+          }
+        } catch {
           setIsButtonDisabled(true)
-        } else {
-          setURL(url)
-          setStep(2)
+          setError('Une erreur est survenue')
         }
       }
     },
-    [setStep, setURL, url]
+    [localUrl, setPreviewBase64, setStep, step]
   )
 
   return (
@@ -65,7 +64,7 @@ const ImportFromURL = ({ setStep, setURL }) => {
         name="url"
         onChange={checkUrl}
         placeholder="Ex : http://..."
-        value={url}
+        value={localUrl}
       />
       <button
         className="primary-button tnf-url-button"
@@ -80,8 +79,10 @@ const ImportFromURL = ({ setStep, setURL }) => {
 }
 
 ImportFromURL.propTypes = {
+  setPreviewBase64: PropTypes.func.isRequired,
   setStep: PropTypes.func.isRequired,
   setURL: PropTypes.func.isRequired,
+  step: PropTypes.number.isRequired,
 }
 
 export default ImportFromURL

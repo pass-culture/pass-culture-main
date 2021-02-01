@@ -11,22 +11,24 @@ import {
 } from 'components/pages/Offer/Offer/Thumbnail/_constants'
 import CanvasTools from 'utils/canvas'
 
-const ImageEditor = ({ setEditedThumbnail, setStep, thumbnail, url }) => {
+const ImageEditor = ({ setCroppingRect, setEditedThumbnail, setStep, step, thumbnail, url }) => {
   const image = url !== '' ? url : thumbnail
   const [scale, setScale] = useState(1)
   const editorRef = useRef({})
 
   const previousStep = useCallback(() => {
-    setStep(2)
-  }, [setStep])
+    setStep(step - 1)
+  }, [setStep, step])
 
   const nextStep = useCallback(() => {
     if (editorRef.current) {
       const canvas = editorRef.current.getImage()
+      const croppingRect = editorRef.current.getCroppingRect()
+      setCroppingRect(croppingRect)
       setEditedThumbnail(canvas.toDataURL())
-      setStep(4)
+      setStep(step + 1)
     }
-  }, [setEditedThumbnail, setStep])
+  }, [setCroppingRect, setEditedThumbnail, setStep, step])
 
   const onScaleChange = useCallback(event => {
     setScale(event.target.value)
@@ -107,8 +109,10 @@ ImageEditor.defaultProps = {
 }
 
 ImageEditor.propTypes = {
+  setCroppingRect: PropTypes.func.isRequired,
   setEditedThumbnail: PropTypes.func.isRequired,
   setStep: PropTypes.func.isRequired,
+  step: PropTypes.number.isRequired,
   thumbnail: PropTypes.shape(),
   url: PropTypes.string,
 }

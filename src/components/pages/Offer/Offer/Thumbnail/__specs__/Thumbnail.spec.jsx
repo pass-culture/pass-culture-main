@@ -266,7 +266,9 @@ describe('thumbnail edition', () => {
 
       it('should display an error if the url does not meet the requirements', async () => {
         // Given
-        jest.spyOn(pcapi, 'getURLErrors').mockResolvedValue({ errors: ['API error message'] })
+        jest
+          .spyOn(pcapi, 'validateDistantImage')
+          .mockResolvedValue({ errors: ['API error message'] })
         renderThumbnail()
 
         fireEvent.click(screen.getByText('Utiliser une URL'))
@@ -288,7 +290,7 @@ describe('thumbnail edition', () => {
 
       it('should display a generic error if the api did not send a valid response', async () => {
         // Given
-        jest.spyOn(pcapi, 'getURLErrors').mockRejectedValue({})
+        jest.spyOn(pcapi, 'validateDistantImage').mockRejectedValue({})
         renderThumbnail()
 
         fireEvent.click(screen.getByText('Utiliser une URL'))
@@ -362,7 +364,7 @@ describe('thumbnail edition', () => {
 
       it('should go to the credit step if there is no validation error', async () => {
         // Given
-        jest.spyOn(pcapi, 'getURLErrors').mockResolvedValue({ errors: [] })
+        jest.spyOn(pcapi, 'validateDistantImage').mockResolvedValue({ errors: [] })
         renderThumbnail()
         fireEvent.click(screen.getByText('Utiliser une URL'))
         fireEvent.change(screen.getByLabelText('URL de l’image'), {

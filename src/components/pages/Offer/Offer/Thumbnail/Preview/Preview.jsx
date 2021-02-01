@@ -5,10 +5,14 @@ import homeShell from 'components/pages/Offer/Offer/Thumbnail/assets/home-shell.
 import { ReactComponent as MobileShell } from 'components/pages/Offer/Offer/Thumbnail/assets/mobile-shell.svg'
 import offerShell from 'components/pages/Offer/Offer/Thumbnail/assets/offer-shell.png'
 
-const Preview = ({ preview, setStep }) => {
+const Preview = ({ preview, setStep, step }) => {
   const previousStep = useCallback(() => {
-    setStep(3)
-  }, [setStep])
+    setStep(step-1)
+  }, [setStep, step])
+
+  const nextStep = useCallback(() => {
+    setStep(step+1)
+  }, [setStep, step])
 
   return (
     <>
@@ -70,6 +74,7 @@ const Preview = ({ preview, setStep }) => {
         </button>
         <button
           className="primary-button"
+          onClick={nextStep}
           title="Suivant"
           type="button"
         >
@@ -83,6 +88,7 @@ const Preview = ({ preview, setStep }) => {
 Preview.propTypes = {
   preview: PropTypes.string.isRequired,
   setStep: PropTypes.func.isRequired,
+  step: PropTypes.number.isRequired,
 }
 
 export default Preview
