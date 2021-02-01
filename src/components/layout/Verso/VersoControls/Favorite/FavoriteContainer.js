@@ -77,6 +77,15 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => ({
       name: `Module name: ${moduleName} - Offer id: ${offerId}`,
     })
   },
+  trackAddToFavoritesFromSearch: offerId => {
+    ownProps.tracking.trackEvent({ action: 'AddFavorite_FromSearch', name: offerId })
+  },
+  trackAddToFavoritesFromBooking: offerId => {
+    ownProps.tracking.trackEvent({ action: 'AddFavorite_FromBooking', name: offerId })
+  },
+  trackAddToFavoritesFromOfferLink: offerId => {
+    ownProps.tracking.trackEvent({ action: 'AddFavorite_FromOfferLink', name: offerId })
+  },
 })
 
 export default compose(

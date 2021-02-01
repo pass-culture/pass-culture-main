@@ -30,12 +30,27 @@ class Favorite extends PureComponent {
   }
 
   handleFavorite = (offerId, mediationId, isFavorite) => () => {
-    const { handleFavorite, history, trackAddToFavoritesFromHome } = this.props
-    if (!isFavorite && history.location.pathname.includes('accueil')) {
-      trackAddToFavoritesFromHome(
-        history.location.state && history.location.state.moduleName,
-        offerId
-      )
+    const {
+      handleFavorite,
+      history,
+      trackAddToFavoritesFromHome,
+      trackAddToFavoritesFromOfferLink,
+      trackAddToFavoritesFromBooking,
+      trackAddToFavoritesFromSearch,
+    } = this.props
+    if (!isFavorite) {
+      if (history.location.pathname.includes('accueil')) {
+        trackAddToFavoritesFromHome(
+          history.location.state && history.location.state.moduleName,
+          offerId
+        )
+      } else if (history.location.pathname.includes('offre')) {
+        trackAddToFavoritesFromOfferLink(offerId)
+      } else if (history.location.pathname.includes('reservations')) {
+        trackAddToFavoritesFromBooking(offerId)
+      } else if (history.location.pathname.includes('recherche')) {
+        trackAddToFavoritesFromSearch(offerId)
+      }
     }
 
     this.setState(
@@ -75,7 +90,7 @@ Favorite.propTypes = {
     location: PropTypes.shape({
       pathname: PropTypes.string.isRequired,
       state: PropTypes.shape({
-        moduleName: PropTypes.string.isRequired,
+        moduleName: PropTypes.string,
       }),
     }),
   }).isRequired,
@@ -83,7 +98,10 @@ Favorite.propTypes = {
   loadFavorites: PropTypes.func.isRequired,
   mediationId: PropTypes.string,
   offerId: PropTypes.string.isRequired,
+  trackAddToFavoritesFromBooking: PropTypes.func.isRequired,
   trackAddToFavoritesFromHome: PropTypes.func.isRequired,
+  trackAddToFavoritesFromOfferLink: PropTypes.func.isRequired,
+  trackAddToFavoritesFromSearch: PropTypes.func.isRequired,
 }
 
 export default Favorite
