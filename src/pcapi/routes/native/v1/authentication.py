@@ -3,17 +3,18 @@ from flask_jwt_extended import create_access_token
 from flask_jwt_extended import create_refresh_token
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_refresh_token_required
-from flask_jwt_extended import jwt_required
 
 from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import repository as users_repo
 from pcapi.core.users.models import TokenType
+from pcapi.core.users.models import User
 from pcapi.core.users.utils import format_email
 from pcapi.domain.password import check_password_strength
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_email
+from pcapi.routes.native.security import authenticated_user_required
 from pcapi.routes.native.v1.serialization.authentication import RequestPasswordResetRequest
 from pcapi.routes.native.v1.serialization.authentication import ResetPasswordRequest
 from pcapi.routes.native.v1.serialization.authentication import ValidateEmailRequest
@@ -68,11 +69,9 @@ def request_password_reset(body: RequestPasswordResetRequest) -> None:
 
 
 @blueprint.native_v1.route("/protected", methods=["GET"])
-@jwt_required
-def protected() -> any:  # type: ignore
-    # Access the identity of the current user with get_jwt_identity
-    current_user = get_jwt_identity()
-    return jsonify(logged_in_as=current_user), 200
+@authenticated_user_required
+def protected(user: User) -> any:  # type: ignore
+    return jsonify(logged_in_as=user.email), 200
 
 
 @blueprint.native_v1.route("/reset_password", methods=["POST"])

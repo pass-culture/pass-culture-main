@@ -1,12 +1,10 @@
-from flask import current_app as app
-from flask_jwt_extended import get_jwt_identity
-from flask_jwt_extended import jwt_required
-
 from pcapi import settings
 from pcapi.core.users import api
 from pcapi.core.users import exceptions
+from pcapi.core.users.models import User
 from pcapi.models import ApiErrors
 from pcapi.repository.user_queries import find_user_by_email
+from pcapi.routes.native.security import authenticated_user_required
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.validation.routes.captcha import ReCaptchaException
 from pcapi.validation.routes.captcha import check_recaptcha_token_is_valid
@@ -21,15 +19,8 @@ from .serialization import account as serializers
     on_success_status=200,
     api=blueprint.api,
 )  # type: ignore
-@jwt_required
-def get_user_profile() -> serializers.UserProfileResponse:
-    identifier = get_jwt_identity()
-    user = find_user_by_email(identifier)
-
-    if user is None:
-        app.logger.error("Authenticated user with email %s not found", identifier)
-        raise ApiErrors({"email": ["Utilisateur introuvable"]})
-
+@authenticated_user_required
+def get_user_profile(user: User) -> serializers.UserProfileResponse:
     return serializers.UserProfileResponse.from_orm(user)
 
 
@@ -76,15 +67,8 @@ def resend_email_validation(body: serializers.ResendEmailValidationRequest) -> N
 
 @blueprint.native_v1.route("/id_check_token", methods=["GET"])
 @spectree_serialize(api=blueprint.api, response_model=serializers.GetIdCheckTokenResponse)
-@jwt_required
-def get_id_check_token() -> serializers.GetIdCheckTokenResponse:
-    identifier = get_jwt_identity()
-    user = find_user_by_email(get_jwt_identity())
-
-    if user is None:
-        app.logger.error("Authenticated user with email %s not found", identifier)
-        raise ApiErrors({"email": ["Utilisateur introuvable"]})
-
+@authenticated_user_required
+def get_id_check_token(user: User) -> serializers.GetIdCheckTokenResponse:
     id_check_token = api.create_id_check_token(user)
 
     return serializers.GetIdCheckTokenResponse(token=id_check_token.value if id_check_token else None)

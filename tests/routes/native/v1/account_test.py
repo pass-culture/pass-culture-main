@@ -38,7 +38,19 @@ class AccountTest:
 
         response = test_client.get("/native/v1/me")
 
-        assert response.status_code == 400
+        assert response.status_code == 403
+        assert response.json["email"] == ["Utilisateur introuvable"]
+
+    def test_get_user_profile_not_active(self, app):
+        users_factories.UserFactory(email=self.identifier, isActive=False)
+
+        access_token = create_access_token(identity=self.identifier)
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+
+        response = test_client.get("/native/v1/me")
+
+        assert response.status_code == 403
         assert response.json["email"] == ["Utilisateur introuvable"]
 
     @freeze_time("2018-06-01")
