@@ -52,8 +52,6 @@ class Expense(BaseModel):
 
 
 class BeneficiaryAccountResponse(BaseModel):
-    _humanize_id = humanize_field("id")
-
     activity: Optional[str]
     address: Optional[str]
     city: Optional[str]
@@ -84,6 +82,8 @@ class BeneficiaryAccountResponse(BaseModel):
     wallet_balance: float
     wallet_date_created: Optional[datetime]
     wallet_is_activated: bool
+
+    _humanize_id = humanize_field("id")
 
     class Config:
         orm_mode = True

@@ -11,7 +11,7 @@ class BeneficiaryAccountResponseTest:
     @clean_database
     def should_humanize_the_user_id(self, app):
         # Given
-        beneficiary = UserFactory(email="user15@example.com", id=1)
+        beneficiary = UserFactory(id=1)
 
         # When
         response = BeneficiaryAccountResponse.from_orm(beneficiary)

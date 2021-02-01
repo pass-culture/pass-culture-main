@@ -17,10 +17,10 @@ class Patch:
             user = UserFactory()
             user_id = user.id
             data = {
-                "publicName": "plop",
-                "email": "new@email.com",
+                "publicName": "Anne",
+                "email": "new@example.com",
                 "postalCode": "93020",
-                "phoneNumber": "0612345678",
+                "phoneNumber": "1234567890",
                 "departementCode": "97",
                 "hasSeenTutorials": True,
             }
@@ -50,10 +50,10 @@ class Patch:
             # given
             user = UserFactory(address="1 rue des machines")
             data = {
-                "publicName": "plop",
-                "email": "new@email.com",
+                "publicName": "Anne",
+                "email": "new@example.com",
                 "postalCode": "93020",
-                "phoneNumber": "0612345678",
+                "phoneNumber": "1234567890",
                 "departementCode": "97",
                 "hasSeenTutorials": True,
             }
