@@ -14,6 +14,7 @@ import { GEOLOCATION_CRITERIA } from '../../Criteria/criteriaEnums'
 import CriteriaLocation from '../../CriteriaLocation/CriteriaLocation'
 import Checkbox from '../Checkbox/Checkbox'
 import { Filters } from '../Filters'
+import { PRICE_FILTER } from '../filtersEnums'
 import { RadioList } from '../RadioList/RadioList'
 import Toggle from '../Toggle/Toggle'
 
@@ -73,7 +74,7 @@ describe('components | Filters', () => {
           isEvent: false,
           isThing: false,
         },
-        priceRange: [0, 500],
+        priceRange: PRICE_FILTER.DEFAULT_RANGE,
         searchAround: {
           everywhere: true,
           place: false,
@@ -192,10 +193,7 @@ describe('components | Filters', () => {
             <Filters {...props} />
           </Router>
         )
-        const everywhereButton = wrapper
-          .find(Criteria)
-          .find('button')
-          .first()
+        const everywhereButton = wrapper.find(Criteria).find('button').first()
 
         // when
         everywhereButton.simulate('click')
@@ -218,7 +216,7 @@ describe('components | Filters', () => {
             isEvent: false,
             isThing: false,
           },
-          priceRange: [0, 500],
+          priceRange: PRICE_FILTER.DEFAULT_RANGE,
           searchAround: false,
           sortBy: '_by_price',
           timeRange: [],
@@ -259,10 +257,7 @@ describe('components | Filters', () => {
             <Filters {...props} />
           </Router>
         )
-        const aroundMeButton = wrapper
-          .find(Criteria)
-          .find('button')
-          .at(1)
+        const aroundMeButton = wrapper.find(Criteria).find('button').at(1)
 
         // when
         aroundMeButton.simulate('click')
@@ -282,7 +277,7 @@ describe('components | Filters', () => {
             isEvent: false,
             isThing: false,
           },
-          priceRange: [0, 500],
+          priceRange: PRICE_FILTER.DEFAULT_RANGE,
           searchAround: true,
           sortBy: '_by_price',
           timeRange: [],
@@ -468,7 +463,7 @@ describe('components | Filters', () => {
             isEvent: false,
             isThing: false,
           },
-          priceRange: [0, 500],
+          priceRange: PRICE_FILTER.DEFAULT_RANGE,
           searchAround: {
             everywhere: true,
             place: false,
@@ -1055,7 +1050,7 @@ describe('components | Filters', () => {
               isEvent: false,
               isThing: false,
             },
-            priceRange: [0, 500],
+            priceRange: PRICE_FILTER.DEFAULT_RANGE,
             searchAround: false,
             sortBy: '_by_price',
             timeRange: [],
@@ -1146,7 +1141,7 @@ describe('components | Filters', () => {
               isEvent: false,
               isThing: false,
             },
-            priceRange: [0, 500],
+            priceRange: PRICE_FILTER.DEFAULT_RANGE,
             searchAround: false,
             sortBy: '_by_price',
             timeRange: [],
@@ -1272,7 +1267,7 @@ describe('components | Filters', () => {
               isEvent: false,
               isThing: false,
             },
-            priceRange: [0, 500],
+            priceRange: PRICE_FILTER.DEFAULT_RANGE,
             searchAround: false,
             sortBy: '_by_price',
             timeRange: [],
@@ -1325,7 +1320,7 @@ describe('components | Filters', () => {
             const rangeSlider = wrapper.find(Range)
             expect(rangeSlider).toHaveLength(1)
             expect(rangeSlider.prop('allowCross')).toStrictEqual(false)
-            expect(rangeSlider.prop('max')).toStrictEqual(500)
+            expect(rangeSlider.prop('max')).toStrictEqual(300)
             expect(rangeSlider.prop('min')).toStrictEqual(0)
             expect(rangeSlider.prop('onChange')).toStrictEqual(expect.any(Function))
             expect(rangeSlider.prop('onAfterChange')).toStrictEqual(expect.any(Function))
@@ -1346,10 +1341,7 @@ describe('components | Filters', () => {
               })
             )
             const wrapper = shallow(<Filters {...props} />)
-            const priceRangeSlider = wrapper
-              .find({ children: 'Prix' })
-              .closest('li')
-              .find(Range)
+            const priceRangeSlider = wrapper.find({ children: 'Prix' }).closest('li').find(Range)
 
             // when
             priceRangeSlider.simulate('change', [5, 15])
@@ -1659,10 +1651,7 @@ describe('components | Filters', () => {
               <Filters {...props} />
             </Router>
           )
-          const resetButton = wrapper
-            .find(HeaderContainer)
-            .find('.reset-button')
-            .first()
+          const resetButton = wrapper.find(HeaderContainer).find('.reset-button').first()
 
           // when
           resetButton.simulate('click')
@@ -1685,7 +1674,7 @@ describe('components | Filters', () => {
               isEvent: false,
               isThing: false,
             },
-            priceRange: [0, 500],
+            priceRange: PRICE_FILTER.DEFAULT_RANGE,
             searchAround: false,
             sortBy: '_by_price',
             timeRange: [],
@@ -1712,7 +1701,7 @@ describe('components | Filters', () => {
               isEvent: true,
               isThing: true,
             },
-            priceRange: [0, 500],
+            priceRange: PRICE_FILTER.DEFAULT_RANGE,
             searchAround: {
               everywhere: true,
               place: false,
@@ -1737,10 +1726,7 @@ describe('components | Filters', () => {
               <Filters {...props} />
             </Router>
           )
-          const resetButton = wrapper
-            .find(HeaderContainer)
-            .find('.reset-button')
-            .first()
+          const resetButton = wrapper.find(HeaderContainer).find('.reset-button').first()
 
           // when
           resetButton.simulate('click')
@@ -1763,7 +1749,7 @@ describe('components | Filters', () => {
               isEvent: false,
               isThing: false,
             },
-            priceRange: [0, 500],
+            priceRange: PRICE_FILTER.DEFAULT_RANGE,
             searchAround: false,
             sortBy: '_by_price',
             timeRange: [],
@@ -1793,10 +1779,7 @@ describe('components | Filters', () => {
           const wrapper = shallow(<Filters {...props} />)
           stubRef(wrapper)
 
-          const toggle = wrapper
-            .find({ children: 'Date' })
-            .closest('li')
-            .find(Toggle)
+          const toggle = wrapper.find({ children: 'Date' }).closest('li').find(Toggle)
 
           // when
           toggle.simulate('change', { target: { name: 'offerIsFilteredByDate', checked: true } })
@@ -1816,10 +1799,7 @@ describe('components | Filters', () => {
           stubRef(wrapper)
 
           // when
-          const toggle = wrapper
-            .find({ children: 'Date' })
-            .closest('li')
-            .find(Toggle)
+          const toggle = wrapper.find({ children: 'Date' }).closest('li').find(Toggle)
           toggle.simulate('change', { target: { name: 'offerIsFilteredByDate', checked: true } })
 
           // then
@@ -1833,10 +1813,7 @@ describe('components | Filters', () => {
           stubRef(wrapper)
 
           // when
-          const toggle = wrapper
-            .find({ children: 'Date' })
-            .closest('li')
-            .find(Toggle)
+          const toggle = wrapper.find({ children: 'Date' }).closest('li').find(Toggle)
           toggle.simulate('change', { target: { name: 'offerIsFilteredByDate', checked: true } })
 
           // then
@@ -1861,7 +1838,7 @@ describe('components | Filters', () => {
               isEvent: false,
               isThing: false,
             },
-            priceRange: [0, 500],
+            priceRange: PRICE_FILTER.DEFAULT_RANGE,
             searchAround: false,
             sortBy: '_by_price',
             timeRange: [],
@@ -1874,10 +1851,7 @@ describe('components | Filters', () => {
           const wrapper = shallow(<Filters {...props} />)
           stubRef(wrapper)
 
-          const toggle = wrapper
-            .find({ children: 'Date' })
-            .closest('li')
-            .find(Toggle)
+          const toggle = wrapper.find({ children: 'Date' }).closest('li').find(Toggle)
           toggle.simulate('change', { target: { name: 'offerIsFilteredByDate', checked: true } })
 
           // when
@@ -1906,7 +1880,7 @@ describe('components | Filters', () => {
               isEvent: false,
               isThing: false,
             },
-            priceRange: [0, 500],
+            priceRange: PRICE_FILTER.DEFAULT_RANGE,
             searchAround: false,
             sortBy: '_by_price',
             timeRange: [],
@@ -1918,10 +1892,7 @@ describe('components | Filters', () => {
           const wrapper = shallow(<Filters {...props} />)
           stubRef(wrapper)
 
-          const toggle = wrapper
-            .find({ children: 'Date' })
-            .closest('li')
-            .find(Toggle)
+          const toggle = wrapper.find({ children: 'Date' }).closest('li').find(Toggle)
           toggle.simulate('change', { target: { name: 'offerIsFilteredByDate', checked: true } })
 
           // when
@@ -1949,7 +1920,7 @@ describe('components | Filters', () => {
               isEvent: false,
               isThing: false,
             },
-            priceRange: [0, 500],
+            priceRange: PRICE_FILTER.DEFAULT_RANGE,
             searchAround: false,
             sortBy: '_by_price',
             timeRange: [],
@@ -2040,7 +2011,7 @@ describe('components | Filters', () => {
               isEvent: false,
               isThing: false,
             },
-            priceRange: [0, 500],
+            priceRange: PRICE_FILTER.DEFAULT_RANGE,
             searchAround: false,
             sortBy: '_by_price',
             timeRange: [],
@@ -2071,10 +2042,7 @@ describe('components | Filters', () => {
           stubRef(wrapper)
 
           // when
-          const toggle = wrapper
-            .find({ children: 'Heure précise' })
-            .closest('li')
-            .find(Toggle)
+          const toggle = wrapper.find({ children: 'Heure précise' }).closest('li').find(Toggle)
           toggle.simulate('change', { target: { name: 'offerIsFilteredByTime', checked: true } })
 
           // then
@@ -2096,7 +2064,7 @@ describe('components | Filters', () => {
               isEvent: false,
               isThing: false,
             },
-            priceRange: [0, 500],
+            priceRange: PRICE_FILTER.DEFAULT_RANGE,
             searchAround: false,
             sortBy: '_by_price',
             timeRange: [8, 24],
@@ -2181,7 +2149,7 @@ describe('components | Filters', () => {
                 isEvent: false,
                 isThing: false,
               },
-              priceRange: [0, 500],
+              priceRange: PRICE_FILTER.DEFAULT_RANGE,
               searchAround: false,
               sortBy: '_by_price',
               timeRange: [18, 22],

@@ -14,6 +14,7 @@ import Spinner from '../../../../layout/Spinner/Spinner'
 import { SORT_CRITERIA } from '../../Criteria/criteriaEnums'
 import CriteriaSort from '../../CriteriaSort/CriteriaSort'
 import { Filters } from '../../Filters/Filters'
+import { PRICE_FILTER } from '../../Filters/filtersEnums'
 import Header from '../../Header/Header'
 import { EmptyResult } from '../EmptyResult/EmptyResult'
 import Results from '../Results'
@@ -181,7 +182,7 @@ describe('components | Results', () => {
             isThing: false,
           },
           page: 0,
-          priceRange: [0, 500],
+          priceRange: PRICE_FILTER.DEFAULT_RANGE,
           searchAround: true,
           sortBy: '_by_proximity',
         })
@@ -287,7 +288,7 @@ describe('components | Results', () => {
             isThing: false,
           },
           page: 0,
-          priceRange: [0, 500],
+          priceRange: PRICE_FILTER.DEFAULT_RANGE,
           searchAround: true,
           sortBy: '',
         })
@@ -353,7 +354,7 @@ describe('components | Results', () => {
             isThing: false,
           },
           page: 0,
-          priceRange: [0, 500],
+          priceRange: PRICE_FILTER.DEFAULT_RANGE,
           searchAround: false,
           sortBy: '',
         })
@@ -444,7 +445,7 @@ describe('components | Results', () => {
             isThing: false,
           },
           page: 0,
-          priceRange: [0, 500],
+          priceRange: PRICE_FILTER.DEFAULT_RANGE,
           searchAround: true,
           sortBy: '',
         })
@@ -492,7 +493,7 @@ describe('components | Results', () => {
             isThing: false,
           },
           page: 0,
-          priceRange: [0, 500],
+          priceRange: PRICE_FILTER.DEFAULT_RANGE,
           searchAround: false,
           sortBy: '',
         })
@@ -536,7 +537,7 @@ describe('components | Results', () => {
             isThing: false,
           },
           page: 0,
-          priceRange: [0, 500],
+          priceRange: PRICE_FILTER.DEFAULT_RANGE,
           searchAround: false,
           sortBy: '',
         })
@@ -574,7 +575,7 @@ describe('components | Results', () => {
           offerIsFree: false,
           offerIsNew: false,
           offerTypes: { isDigital: false, isEvent: false, isThing: false },
-          priceRange: [0, 500],
+          priceRange: PRICE_FILTER.DEFAULT_RANGE,
           page: 0,
           searchAround: true,
         })
@@ -611,7 +612,7 @@ describe('components | Results', () => {
           offerIsFree: false,
           offerIsNew: false,
           offerTypes: { isDigital: false, isEvent: false, isThing: false },
-          priceRange: [0, 500],
+          priceRange: PRICE_FILTER.DEFAULT_RANGE,
           page: 0,
           searchAround: false,
           sortBy: '',
@@ -653,7 +654,7 @@ describe('components | Results', () => {
             isThing: false,
           },
           page: 0,
-          priceRange: [0, 500],
+          priceRange: PRICE_FILTER.DEFAULT_RANGE,
           searchAround: false,
           sortBy: '',
         })
@@ -696,7 +697,7 @@ describe('components | Results', () => {
             isThing: false,
           },
           page: 0,
-          priceRange: [0, 500],
+          priceRange: PRICE_FILTER.DEFAULT_RANGE,
           searchAround: false,
           sortBy: '_by_proximity',
         })
@@ -738,7 +739,7 @@ describe('components | Results', () => {
             isThing: false,
           },
           page: 0,
-          priceRange: [0, 500],
+          priceRange: PRICE_FILTER.DEFAULT_RANGE,
           searchAround: false,
           sortBy: '_by_proximity',
         })
@@ -780,7 +781,7 @@ describe('components | Results', () => {
             isThing: false,
           },
           page: 0,
-          priceRange: [0, 500],
+          priceRange: PRICE_FILTER.DEFAULT_RANGE,
           searchAround: false,
           sortBy: '',
         })
@@ -1092,7 +1093,7 @@ describe('components | Results', () => {
           isThing: false,
         },
         page: 0,
-        priceRange: [0, 500],
+        priceRange: PRICE_FILTER.DEFAULT_RANGE,
         searchAround: true,
         sortBy: '_by_price',
       })
@@ -1128,7 +1129,7 @@ describe('components | Results', () => {
             isThing: false,
           },
           page: 0,
-          priceRange: [0, 500],
+          priceRange: PRICE_FILTER.DEFAULT_RANGE,
           searchAround: true,
           sortBy: '_by_proximity',
         })
@@ -1234,7 +1235,7 @@ describe('components | Results', () => {
             isThing: false,
           },
           page: 0,
-          priceRange: [0, 500],
+          priceRange: PRICE_FILTER.DEFAULT_RANGE,
           searchAround: true,
           sortBy: '',
         })
@@ -1300,7 +1301,7 @@ describe('components | Results', () => {
             isThing: false,
           },
           page: 0,
-          priceRange: [0, 500],
+          priceRange: PRICE_FILTER.DEFAULT_RANGE,
           searchAround: false,
           sortBy: '',
         })
@@ -1391,7 +1392,7 @@ describe('components | Results', () => {
             isThing: false,
           },
           page: 0,
-          priceRange: [0, 500],
+          priceRange: PRICE_FILTER.DEFAULT_RANGE,
           searchAround: true,
           sortBy: '',
         })
@@ -1439,7 +1440,7 @@ describe('components | Results', () => {
             isThing: false,
           },
           page: 0,
-          priceRange: [0, 500],
+          priceRange: PRICE_FILTER.DEFAULT_RANGE,
           searchAround: false,
           sortBy: '',
         })
@@ -1483,7 +1484,7 @@ describe('components | Results', () => {
             isThing: false,
           },
           page: 0,
-          priceRange: [0, 500],
+          priceRange: PRICE_FILTER.DEFAULT_RANGE,
           searchAround: false,
           sortBy: '',
         })
@@ -1521,7 +1522,7 @@ describe('components | Results', () => {
           offerIsFree: false,
           offerIsNew: false,
           offerTypes: { isDigital: false, isEvent: false, isThing: false },
-          priceRange: [0, 500],
+          priceRange: PRICE_FILTER.DEFAULT_RANGE,
           page: 0,
           searchAround: true,
         })
@@ -1558,7 +1559,7 @@ describe('components | Results', () => {
           offerIsFree: false,
           offerIsNew: false,
           offerTypes: { isDigital: false, isEvent: false, isThing: false },
-          priceRange: [0, 500],
+          priceRange: PRICE_FILTER.DEFAULT_RANGE,
           page: 0,
           searchAround: false,
           sortBy: '',
@@ -1600,7 +1601,7 @@ describe('components | Results', () => {
             isThing: false,
           },
           page: 0,
-          priceRange: [0, 500],
+          priceRange: PRICE_FILTER.DEFAULT_RANGE,
           searchAround: false,
           sortBy: '',
         })
@@ -1643,7 +1644,7 @@ describe('components | Results', () => {
             isThing: false,
           },
           page: 0,
-          priceRange: [0, 500],
+          priceRange: PRICE_FILTER.DEFAULT_RANGE,
           searchAround: false,
           sortBy: '_by_proximity',
         })
@@ -1685,7 +1686,7 @@ describe('components | Results', () => {
             isThing: false,
           },
           page: 0,
-          priceRange: [0, 500],
+          priceRange: PRICE_FILTER.DEFAULT_RANGE,
           searchAround: false,
           sortBy: '_by_proximity',
         })
@@ -1727,7 +1728,7 @@ describe('components | Results', () => {
             isThing: false,
           },
           page: 0,
-          priceRange: [0, 500],
+          priceRange: PRICE_FILTER.DEFAULT_RANGE,
           searchAround: false,
           sortBy: '',
         })
@@ -1822,7 +1823,7 @@ describe('components | Results', () => {
           isThing: false,
         },
         page: 0,
-        priceRange: [0, 500],
+        priceRange: PRICE_FILTER.DEFAULT_RANGE,
         searchAround: false,
         sortBy: '',
       })
@@ -1869,7 +1870,7 @@ describe('components | Results', () => {
           isThing: false,
         },
         page: 0,
-        priceRange: [0, 500],
+        priceRange: PRICE_FILTER.DEFAULT_RANGE,
         searchAround: false,
         sortBy: '',
       })
@@ -1916,7 +1917,7 @@ describe('components | Results', () => {
           isThing: false,
         },
         page: 0,
-        priceRange: [0, 500],
+        priceRange: PRICE_FILTER.DEFAULT_RANGE,
         sortBy: '',
         searchAround: false,
       })
@@ -2158,7 +2159,7 @@ describe('components | Results', () => {
             isEvent: false,
             isThing: false,
           },
-          priceRange: [0, 500],
+          priceRange: PRICE_FILTER.DEFAULT_RANGE,
           searchAround: {
             everywhere: true,
             place: false,
@@ -2246,7 +2247,7 @@ describe('components | Results', () => {
           isThing: false,
         },
         page: 0,
-        priceRange: [0, 500],
+        priceRange: PRICE_FILTER.DEFAULT_RANGE,
         searchAround: true,
         sortBy: '',
       })
@@ -2462,7 +2463,7 @@ describe('components | Results', () => {
           isThing: false,
         },
         page: 0,
-        priceRange: [0, 500],
+        priceRange: PRICE_FILTER.DEFAULT_RANGE,
         searchAround: false,
         sortBy: '',
       })
@@ -2636,7 +2637,7 @@ describe('components | Results', () => {
           isEvent: false,
           isThing: false,
         },
-        priceRange: [0, 500],
+        priceRange: PRICE_FILTER.DEFAULT_RANGE,
         searchAround: {
           everywhere: true,
           place: false,
@@ -2983,7 +2984,7 @@ describe('components | Results', () => {
           isThing: false,
         },
         page: 0,
-        priceRange: [0, 500],
+        priceRange: PRICE_FILTER.DEFAULT_RANGE,
         searchAround: false,
         sortBy: '',
       })

@@ -830,8 +830,8 @@ export class Filters extends PureComponent {
                   </span>
                   <Range
                     allowCross={false}
-                    max={500}
-                    min={0}
+                    max={PRICE_FILTER.DEFAULT_RANGE[1]}
+                    min={PRICE_FILTER.DEFAULT_RANGE[0]}
                     onAfterChange={this.handleOffersFetchAndUrlUpdate}
                     onChange={this.handlePriceSlide}
                     value={priceRange}
