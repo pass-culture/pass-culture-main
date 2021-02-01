@@ -27,7 +27,6 @@ describe('components | Result', () => {
         },
         offer: {
           dates: [1585484866, 1585484866],
-          departementCode: 54,
           id: 'AE',
           isDigital: false,
           label: 'Livre',
@@ -35,6 +34,9 @@ describe('components | Result', () => {
           priceMin: 8,
           priceMax: 12,
           thumbUrl: '/lien-vers-mon-image',
+        },
+        venue: {
+          departementCode: 54,
         },
         objectID: 'AE',
       },

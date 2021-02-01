@@ -8,21 +8,11 @@ import { formatResultPrice } from '../../../../../../utils/price'
 import { DEFAULT_THUMB_URL } from '../../../../../../utils/thumb'
 
 const Result = ({ result, geolocation, search }) => {
-  const { _geoloc = {}, objectID, offer } = result
-  const {
-    dates,
-    departementCode,
-    id: offerId,
-    isDigital,
-    isDuo,
-    label,
-    name,
-    priceMin,
-    priceMax,
-    thumbUrl,
-  } = offer
+  const { _geoloc = {}, objectID, offer, venue } = result
+  const { dates, id: offerId, isDigital, isDuo, label, name, priceMin, priceMax, thumbUrl } = offer
   const { latitude: userLatitude, longitude: userLongitude } = geolocation
   const { lat: venueLatitude, lng: venueLongitude } = _geoloc
+  const { departementCode } = venue || {}
   const thumbSrc = thumbUrl !== null ? thumbUrl : DEFAULT_THUMB_URL
   const formattedDate = formatSearchResultDate(departementCode, dates)
   const formattedPrice = formatResultPrice(priceMin, priceMax, isDuo)
@@ -99,7 +89,6 @@ Result.propTypes = {
     }),
     offer: PropTypes.shape({
       dates: PropTypes.arrayOf(PropTypes.number),
-      departementCode: PropTypes.number,
       id: PropTypes.string,
       isDigital: PropTypes.bool,
       isDuo: PropTypes.bool,
@@ -109,6 +98,12 @@ Result.propTypes = {
       priceMin: PropTypes.number,
       priceMax: PropTypes.number,
       thumbUrl: PropTypes.string,
+    }),
+    venue: PropTypes.shape({
+      city: PropTypes.string,
+      departementCode: PropTypes.number,
+      name: PropTypes.string,
+      publicName: PropTypes.string,
     }),
     objectID: PropTypes.string,
   }),
