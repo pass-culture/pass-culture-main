@@ -5,13 +5,13 @@ describe('component | PasswordField', () => {
     it('should return true when has no character', () => {
       const result = isNotValid('')
 
-      expect(result).toBe(true)
+      expect(result).toStrictEqual(['Ce champ est obligatoire'])
     })
 
     it('should return false when has at least one character', () => {
       const result = isNotValid('une valeur')
 
-      expect(result).toBe(false)
+      expect(result).toBeNull()
     })
   })
 })

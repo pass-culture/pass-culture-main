@@ -6,7 +6,11 @@ import Icon from '../../Icon'
 import TextInputWithIcon from '../../inputs/TextInputWithIcon/TextInputWithIcon'
 
 export const isNotValid = value => {
-  return !value
+  if (!value) {
+    return ['Ce champ est obligatoire']
+  }
+
+  return null
 }
 
 class PasswordField extends PureComponent {
@@ -36,17 +40,17 @@ class PasswordField extends PureComponent {
           </Fragment>`
   }
 
-  renderPasswordField = ({ input }) => {
+  renderPasswordField = ({ input, meta }) => {
     const { isPasswordHidden } = this.state
-    const { errors } = this.props
+    const { errors, label, name } = this.props
 
     return (
       <TextInputWithIcon
-        error={errors ? errors[0] : null}
+        error={errors && meta.modified ? errors[0] : null}
         icon={isPasswordHidden ? 'ico-eye-close' : 'ico-eye-open'}
         iconAlt={isPasswordHidden ? 'Afficher le mot de passe' : 'Cacher le mot de passe'}
-        label="Mot de passe"
-        name="password"
+        label={label}
+        name={name}
         onChange={input.onChange}
         onIconClick={this.handleToggleHidden}
         placeholder="Mon mot de passe"
@@ -61,24 +65,34 @@ class PasswordField extends PureComponent {
       <span className="field-password">
         <Field
           component={this.renderPasswordField}
-          name="password"
+          name={this.props.name}
           validate={isNotValid}
         />
-        <Icon
-          alt="Caractéristiques obligatoires du mot de passe"
-          currentitem="false"
-          data-place="bottom"
-          data-tip={this.renderPasswordTooltip()}
-          data-type="info"
-          svg="picto-info"
-        />
+        {this.props.showTooltip && (
+          <Icon
+            alt="Caractéristiques obligatoires du mot de passe"
+            currentitem="false"
+            data-place="bottom"
+            data-tip={this.renderPasswordTooltip()}
+            data-type="info"
+            svg="picto-info"
+          />
+        )}
       </span>
     )
   }
 }
 
+PasswordField.defaultProps = {
+  errors: null,
+  showTooltip: false,
+}
+
 PasswordField.propTypes = {
-  errors: PropTypes.arrayOf(PropTypes.string).isRequired,
+  errors: PropTypes.arrayOf(PropTypes.string),
+  label: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  showTooltip: PropTypes.bool,
 }
 
 export default PasswordField

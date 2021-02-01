@@ -186,7 +186,12 @@ class SignupForm extends PureComponent {
                   validate={required}
                 />
 
-                <PasswordField errors={errors ? errors.password : null} />
+                <PasswordField
+                  errors={errors ? errors.password : null}
+                  label="Mot de passe"
+                  name="password"
+                  showTooltip
+                />
 
                 <Field
                   component={this.renderNameTextField}
