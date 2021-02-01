@@ -3,6 +3,12 @@
     @include title3();
   }
 
+  .add-first-stock-button {
+    align-items: center;
+    display: flex;
+    margin: rem(24px) auto 0 auto;
+  }
+
   .tertiary-button {
     margin-top: rem(26px);
 

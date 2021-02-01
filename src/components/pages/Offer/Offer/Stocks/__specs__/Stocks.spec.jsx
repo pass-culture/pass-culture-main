@@ -95,6 +95,42 @@ describe('stocks page', () => {
       expect(spiedMomentSetDefaultTimezone).toHaveBeenCalledWith('America/Cayenne')
     })
 
+    describe('when no stocks yet', () => {
+      it('should not display empty stock list', async () => {
+        // given
+        pcapi.loadStocks.mockResolvedValue({ stocks: [] })
+
+        // when
+        await renderOffers(props, store)
+
+        // then
+        expect(await screen.queryByRole('table')).not.toBeInTheDocument()
+      })
+
+      it('should not display action buttons', async () => {
+        // given
+        pcapi.loadStocks.mockResolvedValue({ stocks: [] })
+
+        // when
+        await renderOffers(props, store)
+
+        // then
+        expect(await screen.queryByText('Annuler et quitter')).not.toBeInTheDocument()
+        expect(await screen.queryByText('Enregistrer')).not.toBeInTheDocument()
+      })
+
+      it('should display add stock button', async () => {
+        // given
+        pcapi.loadStocks.mockResolvedValue({ stocks: [] })
+
+        // when
+        await renderOffers(props, store)
+
+        // then
+        expect(await screen.findByText('Ajouter un stock')).toBeInTheDocument()
+      })
+    })
+
     it('should load stocks on mount', async () => {
       // when
       await renderOffers(props, store)
@@ -220,15 +256,18 @@ describe('stocks page', () => {
       // given
       const offer = {
         ...defaultOffer,
+        stocks: [],
+      }
+
+      pcapi.loadOffer.mockResolvedValue(offer)
+      pcapi.loadStocks.mockResolvedValue({
         stocks: [
           {
             ...defaultStock,
             quantity: 10,
           },
         ],
-      }
-
-      pcapi.loadOffer.mockResolvedValue(offer)
+      })
 
       // when
       await renderOffers(props, store)
@@ -362,7 +401,7 @@ describe('stocks page', () => {
         await renderOffers(props, store)
 
         // Then
-        expect(screen.getByRole('button', { name: 'Ajouter un stock' })).toBeDisabled()
+        expect(screen.queryByRole('button', { name: 'Ajouter un stock' })).not.toBeInTheDocument()
       })
 
       it("should display offer's stock fields", async () => {
@@ -416,11 +455,21 @@ describe('stocks page', () => {
         })
 
         it('should not be able to add a stock', async () => {
+          // Given
+          pcapi.loadStocks.mockResolvedValue({
+            stocks: [
+              {
+                ...defaultStock,
+                quantity: 10,
+              },
+            ],
+          })
+
           // When
           await renderOffers(props, store)
 
           // Then
-          expect(screen.getByRole('button', { name: 'Ajouter un stock' })).toBeDisabled()
+          expect(screen.queryByRole('button', { name: 'Ajouter un stock' })).not.toBeInTheDocument()
         })
       })
     })
@@ -1047,7 +1096,7 @@ describe('stocks page', () => {
             })
 
             // Then
-            expect(screen.getAllByRole('row')).toHaveLength(1)
+            expect(screen.queryByRole('row')).not.toBeInTheDocument()
           })
 
           it('should display a success message after deletion', async () => {
@@ -1632,7 +1681,7 @@ describe('stocks page', () => {
 
         // Then
         expect(pcapi.bulkCreateOrEditStock).not.toHaveBeenCalled()
-        expect(screen.getAllByRole('row')).toHaveLength(1)
+        expect(screen.queryByRole('row')).not.toBeInTheDocument()
       })
 
       it('should be able to add second stock while first one is not validated', async () => {
@@ -1920,18 +1969,7 @@ describe('stocks page', () => {
 
         // Then
         expect(pcapi.bulkCreateOrEditStock).not.toHaveBeenCalled()
-        expect(screen.getAllByRole('row')).toHaveLength(1)
-      })
-
-      it('should not be able to add second stock while first one is not validated', async () => {
-        // Given
-        await renderOffers(props, store)
-
-        // When
-        userEvent.click(screen.getByText('Ajouter un stock'))
-
-        // Then
-        expect(screen.getByText('Ajouter un stock')).toBeDisabled()
+        expect(screen.queryByRole('row')).not.toBeInTheDocument()
       })
     })
   })

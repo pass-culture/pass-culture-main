@@ -150,94 +150,109 @@ const Stocks = ({ offer, showErrorNotification, showSuccessNotification }) => {
       <div className="cancellation-information">
         {offer.isEvent ? EVENT_CANCELLATION_INFORMATION : THING_CANCELLATION_INFORMATION}
       </div>
-      <button
-        className="tertiary-button"
-        disabled={hasOfferThingOneStockAlready || isOfferSynchronized}
-        onClick={addNewStock}
-        type="button"
-      >
-        <Icon svg="ico-plus" />
-        {offer.isEvent ? 'Ajouter une date' : 'Ajouter un stock'}
-      </button>
-      <table>
-        <thead>
-          <tr>
-            {offer.isEvent && (
-              <Fragment>
-                <th>
-                  {'Date'}
-                </th>
-                <th>
-                  {'Horaire'}
-                </th>
-              </Fragment>
-            )}
-            <th>
-              {'Prix'}
-            </th>
-            <th>
-              {'Date limite de réservation'}
-            </th>
-            <th>
-              {'Quantité'}
-            </th>
-            {(stocksInCreation.length === 0 || existingStocks.length > 0) && (
-              <Fragment>
-                <th>
-                  {'Stock restant'}
-                </th>
-                <th>
-                  {'Réservations'}
-                </th>
-              </Fragment>
-            )}
-            <th className="action-column" />
-          </tr>
-        </thead>
-        <tbody>
-          {stocksInCreation.map(stockInCreation => (
-            <StockItem
-              departmentCode={offer.venue.departementCode}
-              errors={formErrors[stockInCreation.key]}
-              initialStock={stockInCreation}
-              isEvent={offer.isEvent}
-              isNewStock
-              key={stockInCreation.key}
-              onChange={updateStock}
-              refreshStocks={loadStocks}
-              removeStockInCreation={removeStockInCreation}
-            />
-          ))}
-
-          {existingStocks.map(stock => (
-            <StockItem
-              departmentCode={offer.venue.departementCode}
-              errors={formErrors[stock.key]}
-              initialStock={stock}
-              isEvent={offer.isEvent}
-              key={stock.id}
-              lastProvider={offer.lastProvider}
-              onChange={updateStock}
-              refreshStocks={loadStocks}
-            />
-          ))}
-        </tbody>
-      </table>
-      <section className="actions-section">
-        <Link
-          className="secondary-link"
-          to={`/offres/v2/${offerId}/edition`}
-        >
-          {'Annuler et quitter'}
-        </Link>
+      {stocks.length === 0 ? (
         <button
-          className="primary-button"
-          onClick={submitStocks}
+          className="primary-button add-first-stock-button"
+          onClick={addNewStock}
           type="button"
         >
-          {'Enregistrer'}
+          <Icon svg="ico-plus" />
+          {offer.isEvent ? 'Ajouter une date' : 'Ajouter un stock'}
         </button>
-      </section>
+      ) : (
+        <Fragment>
+          {offer.isEvent && (
+            <button
+              className="tertiary-button"
+              disabled={hasOfferThingOneStockAlready || isOfferSynchronized}
+              onClick={addNewStock}
+              type="button"
+            >
+              <Icon svg="ico-plus" />
+              {'Ajouter une date'}
+            </button>
+          )}
+          <table>
+            <thead>
+              <tr>
+                {offer.isEvent && (
+                  <Fragment>
+                    <th>
+                      {'Date'}
+                    </th>
+                    <th>
+                      {'Horaire'}
+                    </th>
+                  </Fragment>
+                )}
+                <th>
+                  {'Prix'}
+                </th>
+                <th>
+                  {'Date limite de réservation'}
+                </th>
+                <th>
+                  {'Quantité'}
+                </th>
+                {(stocksInCreation.length === 0 || existingStocks.length > 0) && (
+                  <Fragment>
+                    <th>
+                      {'Stock restant'}
+                    </th>
+                    <th>
+                      {'Réservations'}
+                    </th>
+                  </Fragment>
+                )}
+                <th className="action-column" />
+              </tr>
+            </thead>
+            <tbody>
+              {stocksInCreation.map(stockInCreation => (
+                <StockItem
+                  departmentCode={offer.venue.departementCode}
+                  errors={formErrors[stockInCreation.key]}
+                  initialStock={stockInCreation}
+                  isEvent={offer.isEvent}
+                  isNewStock
+                  key={stockInCreation.key}
+                  onChange={updateStock}
+                  refreshStocks={loadStocks}
+                  removeStockInCreation={removeStockInCreation}
+                />
+              ))}
+
+              {existingStocks.map(stock => (
+                <StockItem
+                  departmentCode={offer.venue.departementCode}
+                  errors={formErrors[stock.key]}
+                  initialStock={stock}
+                  isEvent={offer.isEvent}
+                  key={stock.id}
+                  lastProvider={offer.lastProvider}
+                  onChange={updateStock}
+                  refreshStocks={loadStocks}
+                />
+              ))}
+            </tbody>
+          </table>
+          <section className="actions-section">
+            <Link
+              className="secondary-link"
+              to={`/offres/v2/${offerId}/edition`}
+            >
+              {'Annuler et quitter'}
+            </Link>
+            <button
+              className="primary-button"
+              onClick={submitStocks}
+              type="button"
+            >
+              {'Enregistrer'}
+            </button>
+          </section>
+        </Fragment>
+      )}
     </div>
   )
 }
