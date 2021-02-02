@@ -8,7 +8,7 @@ executors:
 
   node-gcp:
     docker:
-      - image: ${GCP_REGION}-docker.pkg.dev/${GCP_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/node-gcp:12
+      - image: ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/node-gcp:12
         auth:
           username: _json_key  # default username when using a JSON key file to authenticate
           password: $GCP_INFRA_KEY
@@ -177,7 +177,7 @@ jobs:
           node_env: testing
       - push-to-bucket:
           build_path: ~/pass-culture-main/webapp/build/
-          bucket_name: pass-culture-app-projet-test-testing-webapp
+          bucket_name: ${GCP_PROJECT}-testing-webapp
 
 
 ###################
@@ -203,6 +203,8 @@ workflows:
           filters:
             branches:
               only:
+                - master
                 - migration-gcp
           context:
             - GCP
+            - GCP_EHP
