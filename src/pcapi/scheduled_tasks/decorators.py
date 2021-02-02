@@ -35,6 +35,9 @@ def cron_require_feature(feature_toggle: FeatureToggle):
 def log_cron(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
+        from pcapi.utils.logger import configure_json_logger
+
+        configure_json_logger()
         start_time = time.time()
         logger.info(build_cron_log_message(name=func.__name__, status=CronStatus.STARTED))
 
