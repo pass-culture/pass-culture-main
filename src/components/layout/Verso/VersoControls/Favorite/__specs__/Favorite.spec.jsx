@@ -49,37 +49,216 @@ describe('src | components | Favorite', () => {
   })
 
   describe('when the user click for adding to favorite', () => {
-    it.each`
-      pathname                     | params                             | home     | offre    | booking  | search   | args
-      ${'accueil/details/AE'}      | ${{ moduleName: 'Nom du module' }} | ${true}  | ${false} | ${false} | ${false} | ${['Nom du module', 'AE']}
-      ${'offre/details/AE'}        | ${{}}                              | ${false} | ${true}  | ${false} | ${false} | ${['AE']}
-      ${'reservations/details/AE'} | ${{}}                              | ${false} | ${false} | ${true}  | ${false} | ${['AE']}
-      ${'recherche/details/AE'}    | ${{}}                              | ${false} | ${false} | ${false} | ${true}  | ${['AE']}
-    `(
-      'it should call tracking home=$home | offre=$offre | booking=$booking | search=$search on $pathname',
-      ({ pathname, params, home, offre, booking, search, args }) => {
-        // given
-        props.isFavorite = false
-        props.history.push(pathname, params)
-        const wrapper = shallow(<Favorite {...props} />)
-        expect(wrapper.find(Icon).props().alt).toBe('Ajouter aux favoris')
+    it('should called tracking if coming from home page', () => {
+      // given
+      props.isFavorite = false
+      props.history.push('accueil/details/AE', { moduleName: 'Nom du module' })
+      const wrapper = shallow(<Favorite {...props} />)
+      expect(wrapper.find(Icon).props().alt).toBe('Ajouter aux favoris')
 
-        // when
-        wrapper.find('button').simulate('click')
+      // when
+      wrapper.find('button').simulate('click')
 
-        // then: one of the tracking functions is called
-        if (booking) expect(props.trackAddToFavoritesFromBooking).toHaveBeenCalledWith(...args)
-        if (home) expect(props.trackAddToFavoritesFromHome).toHaveBeenCalledWith(...args)
-        if (offre) expect(props.trackAddToFavoritesFromOfferLink).toHaveBeenCalledWith(...args)
-        if (search) expect(props.trackAddToFavoritesFromSearch).toHaveBeenCalledWith(...args)
+      // then
+      expect(props.trackAddToFavoritesFromHome).toHaveBeenCalledWith('Nom du module', 'AE')
+    })
 
-        // The other functions are not called
-        if (!booking) expect(props.trackAddToFavoritesFromBooking).not.toHaveBeenCalled()
-        if (!home) expect(props.trackAddToFavoritesFromHome).not.toHaveBeenCalled()
-        if (!offre) expect(props.trackAddToFavoritesFromOfferLink).not.toHaveBeenCalled()
-        if (!search) expect(props.trackAddToFavoritesFromSearch).not.toHaveBeenCalled()
-      }
-    )
+    it('should not call AddToFavoritesFromHome on offer page', () => {
+      // given
+      props.isFavorite = false
+      props.history.push('offre/details/AE', { moduleName: 'Nom du module' })
+      const wrapper = shallow(<Favorite {...props} />)
+
+      // when
+      wrapper.find('button').simulate('click')
+
+      // then
+      expect(props.trackAddToFavoritesFromHome).not.toHaveBeenCalled()
+    })
+
+    it('should not call AddToFavoritesFromHome on search page', () => {
+      // given
+      props.isFavorite = false
+      props.history.push('recherche/details/AE', { moduleName: 'Nom du module' })
+      const wrapper = shallow(<Favorite {...props} />)
+
+      // when
+      wrapper.find('button').simulate('click')
+
+      // then
+      expect(props.trackAddToFavoritesFromHome).not.toHaveBeenCalled()
+    })
+
+    it('should not call AddToFavoritesFromHome on booking page', () => {
+      // given
+      props.isFavorite = false
+      props.history.push('reservations/details/AE', { moduleName: 'Nom du module' })
+      const wrapper = shallow(<Favorite {...props} />)
+
+      // when
+      wrapper.find('button').simulate('click')
+
+      // then
+      expect(props.trackAddToFavoritesFromHome).not.toHaveBeenCalled()
+    })
+
+    it('should called tracking if coming from offer page', () => {
+      // given
+      props.isFavorite = false
+      props.history.push('offre/details/AE', { moduleName: 'Nom du module' })
+      const wrapper = shallow(<Favorite {...props} />)
+      expect(wrapper.find(Icon).props().alt).toBe('Ajouter aux favoris')
+
+      // when
+      wrapper.find('button').simulate('click')
+
+      // then
+      expect(props.trackAddToFavoritesFromOfferLink).toHaveBeenCalledWith('AE')
+    })
+
+    it('should not call AddToFavoritesFromOfferLink on home page', () => {
+      // given
+      props.isFavorite = false
+      props.history.push('accueil/details/AE', { moduleName: 'Nom du module' })
+      const wrapper = shallow(<Favorite {...props} />)
+
+      // when
+      wrapper.find('button').simulate('click')
+
+      // then
+      expect(props.trackAddToFavoritesFromOfferLink).not.toHaveBeenCalled()
+    })
+
+    it('should not call AddToFavoritesFromOfferLink on search page', () => {
+      // given
+      props.isFavorite = false
+      props.history.push('recherche/details/AE')
+      const wrapper = shallow(<Favorite {...props} />)
+
+      // when
+      wrapper.find('button').simulate('click')
+
+      // then
+      expect(props.trackAddToFavoritesFromOfferLink).not.toHaveBeenCalled()
+    })
+
+    it('should not call AddToFavoritesFromOfferLink on booking page', () => {
+      // given
+      props.isFavorite = false
+      props.history.push('reservations/details/AE')
+      const wrapper = shallow(<Favorite {...props} />)
+
+      // when
+      wrapper.find('button').simulate('click')
+
+      // then
+      expect(props.trackAddToFavoritesFromOfferLink).not.toHaveBeenCalled()
+    })
+    it('should called tracking if coming from booking page', () => {
+      // given
+      props.isFavorite = false
+      props.history.push('reservations/details/AE')
+      const wrapper = shallow(<Favorite {...props} />)
+      expect(wrapper.find(Icon).props().alt).toBe('Ajouter aux favoris')
+
+      // when
+      wrapper.find('button').simulate('click')
+
+      // then
+      expect(props.trackAddToFavoritesFromBooking).toHaveBeenCalledWith('AE')
+    })
+
+    it('should not call AddToFavoritesFromBooking on home page', () => {
+      // given
+      props.isFavorite = false
+      props.history.push('accueil/details/AE', { moduleName: 'Nom du module' })
+      const wrapper = shallow(<Favorite {...props} />)
+
+      // when
+      wrapper.find('button').simulate('click')
+
+      // then
+      expect(props.trackAddToFavoritesFromBooking).not.toHaveBeenCalled()
+    })
+
+    it('should not call AddToFavoritesFromBooking on search page', () => {
+      // given
+      props.isFavorite = false
+      props.history.push('recherche/details/AE')
+      const wrapper = shallow(<Favorite {...props} />)
+
+      // when
+      wrapper.find('button').simulate('click')
+
+      // then
+      expect(props.trackAddToFavoritesFromBooking).not.toHaveBeenCalled()
+    })
+
+    it('should not call AddToFavoritesFromBooking on offer page', () => {
+      // given
+      props.isFavorite = false
+      props.history.push('offre/details/AE')
+      const wrapper = shallow(<Favorite {...props} />)
+
+      // when
+      wrapper.find('button').simulate('click')
+
+      // then
+      expect(props.trackAddToFavoritesFromBooking).not.toHaveBeenCalled()
+    })
+
+    it('should called tracking if coming from search page', () => {
+      // given
+      props.isFavorite = false
+      props.history.push('recherche/details/AE')
+      const wrapper = shallow(<Favorite {...props} />)
+      expect(wrapper.find(Icon).props().alt).toBe('Ajouter aux favoris')
+
+      // when
+      wrapper.find('button').simulate('click')
+
+      // then
+      expect(props.trackAddToFavoritesFromSearch).toHaveBeenCalledWith('AE')
+    })
+
+    it('should not call AddToFavoritesFromSearch on home page', () => {
+      // given
+      props.isFavorite = false
+      props.history.push('accueil/details/AE', { moduleName: 'Nom du module' })
+      const wrapper = shallow(<Favorite {...props} />)
+
+      // when
+      wrapper.find('button').simulate('click')
+
+      // then
+      expect(props.trackAddToFavoritesFromSearch).not.toHaveBeenCalled()
+    })
+
+    it('should not call AddToFavoritesFromSearch on booking page', () => {
+      // given
+      props.isFavorite = false
+      props.history.push('reservations/details/AE')
+      const wrapper = shallow(<Favorite {...props} />)
+
+      // when
+      wrapper.find('button').simulate('click')
+
+      // then
+      expect(props.trackAddToFavoritesFromSearch).not.toHaveBeenCalled()
+    })
+
+    it('should not call AddToFavoritesFromSearch on offer page', () => {
+      // given
+      props.isFavorite = false
+      props.history.push('offre/details/AE')
+      const wrapper = shallow(<Favorite {...props} />)
+
+      // when
+      wrapper.find('button').simulate('click')
+
+      // then
+      expect(props.trackAddToFavoritesFromSearch).not.toHaveBeenCalled()
+    })
   })
 
   describe('when the user click on the button', () => {
