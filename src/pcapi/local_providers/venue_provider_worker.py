@@ -1,4 +1,5 @@
 from time import sleep
+from time import time
 
 from pcapi import settings
 from pcapi.connectors.scalingo_api import ScalingoApiException
@@ -20,7 +21,15 @@ def update_venues_for_specific_provider(provider_id: int):
         venue_provider = venue_providers_to_sync[0]
         has_remaining_slot_in_pool = sync_worker_pool - get_nb_containers_at_work() > 0
         if has_remaining_slot_in_pool:
+            start = time()
+            logger.info("Starting sync of venue=%s for provider=%s", venue_provider.venueId, provider_id)
             do_sync_venue_provider(venue_provider)
+            logger.info(
+                "End of sync of venue=%s for provider=%s elapsed=%.2f",
+                venue_provider.venueId,
+                provider_id,
+                time() - start,
+            )
             venue_providers_to_sync.remove(venue_provider)
         else:
             sleep(WAIT_TIME_FOR_AVAILABLE_WORKER)
