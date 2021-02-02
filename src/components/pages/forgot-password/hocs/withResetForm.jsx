@@ -73,7 +73,6 @@ const withResetForm = (WrappedComponent, validator, routePath, routeMethod) => {
       return formSubmitPromise
     }
 
-    // https://github.com/final-form/final-form#formstate
     renderFinalForm = formState => {
       const { isloading } = this.state
       const canSubmit =
@@ -127,8 +126,6 @@ const withResetForm = (WrappedComponent, validator, routePath, routeMethod) => {
 
 const resetPasswordFormPropTypes = {
   dispatch: PropTypes.func.isRequired,
-  // NOTE: history et location sont automatiquement
-  // injectées par le render de la route du react-router-dom
   history: PropTypes.shape().isRequired,
   initialValues: PropTypes.shape(),
   location: PropTypes.shape().isRequired,
