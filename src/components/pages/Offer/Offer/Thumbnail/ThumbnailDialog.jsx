@@ -3,6 +3,7 @@ import React, { useCallback, useState } from 'react'
 
 import { DialogBox } from 'components/layout/DialogBox/DialogBox'
 import { IMPORT_TAB_ID } from 'components/pages/Offer/Offer/Thumbnail/_constants'
+import Advices from 'components/pages/Offer/Offer/Thumbnail/Advices/Advices'
 import { ReactComponent as CloseModalIcon } from 'components/pages/Offer/Offer/Thumbnail/assets/close-modal.svg'
 import Credit from 'components/pages/Offer/Offer/Thumbnail/Credit/Credit'
 import ImageEditor from 'components/pages/Offer/Offer/Thumbnail/ImageEditor/ImageEditor'
@@ -67,6 +68,7 @@ const ThumbnailDialog = ({ setIsModalOpened }) => {
               />
             )}
             <hr className="tnd-hr" />
+            <Advices />
           </>
         )}
         {step === 2 && (

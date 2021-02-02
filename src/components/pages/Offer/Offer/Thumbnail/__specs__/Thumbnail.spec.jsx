@@ -67,6 +67,41 @@ describe('thumbnail edition', () => {
         ).toBeInTheDocument()
       })
 
+      it('should display advices for a good image', () => {
+        // Given
+        renderThumbnail()
+
+        // When
+        fireEvent.click(screen.getByText('Conseils pour votre image', { selector: 'button' }))
+
+        // Then
+        expect(
+          screen.getByText(
+            'Pour maximiser vos chances de réservations, choisissez avec soin l’image qui accompagne votre offre. Les ressources suivantes sont à votre disposition :'
+          )
+        ).toBeInTheDocument()
+        expect(screen.getByText('Banque d’images libre de droits')).toBeInTheDocument()
+        const pexelsLink = screen.getByRole('link', { name: 'Pexels (nouvel onglet)' })
+        expect(pexelsLink).toHaveAttribute('href', 'https://www.pexels.com/fr-fr/')
+        expect(pexelsLink).toHaveAttribute('rel', 'noopener noreferrer')
+        expect(pexelsLink).toHaveAttribute('target', '_blank')
+        const pixabayLink = screen.getByRole('link', { name: 'Pixabay (nouvel onglet)' })
+        expect(pixabayLink).toHaveAttribute('href', 'https://pixabay.com/fr/')
+        expect(pixabayLink).toHaveAttribute('rel', 'noopener noreferrer')
+        expect(pixabayLink).toHaveAttribute('target', '_blank')
+        const shutterstockLink = screen.getByRole('link', { name: 'Shutterstock (nouvel onglet)' })
+        expect(shutterstockLink).toHaveAttribute('href', 'https://www.shutterstock.com/')
+        expect(shutterstockLink).toHaveAttribute('rel', 'noopener noreferrer')
+        expect(shutterstockLink).toHaveAttribute('target', '_blank')
+        expect(screen.getByText('Gabarits')).toBeInTheDocument()
+        expect(
+          screen.getByRole('link', { name: 'Gabarit Photoshop (.psd, 414 Ko)' })
+        ).toBeInTheDocument()
+        expect(
+          screen.getByRole('link', { name: 'Gabarit Illustrator (.eps, 1,7 Mo)' })
+        ).toBeInTheDocument()
+      })
+
       describe('and is selecting and image', () => {
         it('should display no error if file respects all rules', async () => {
           // Given

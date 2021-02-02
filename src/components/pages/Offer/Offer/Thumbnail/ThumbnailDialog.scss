@@ -103,6 +103,56 @@
   width: rem(334px);
 }
 
+.tna-advices {
+  text-align: left;
+  width: rem(500px);
+}
+
+.tna-hidden {
+  display: none;
+}
+
+.tna-toggle {
+  @include button;
+
+  align-items: center;
+  background: transparent;
+  border: 0;
+  display: flex;
+
+  svg {
+    margin-left: rem(8px);
+  }
+}
+
+.tna-teaser {
+  margin-top: rem(24px);
+}
+
+.tna-title {
+  @include title4;
+
+  margin-top: rem(8px);
+}
+
+.tna-links a {
+  @include button;
+
+  align-items: center;
+  display: flex;
+  margin: rem(16px) 0;
+
+  svg {
+    margin: 0 rem(8px) 0 rem(-5px);
+  }
+}
+
+.tna-links-help {
+  @include body;
+
+  color: $grey-dark;
+}
+
 .tnc-explanations {
   margin-top: rem(32px);
   text-align: left;
