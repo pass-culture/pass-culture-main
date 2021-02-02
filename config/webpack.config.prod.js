@@ -148,6 +148,7 @@ module.exports = {
             {
               from: `${paths.appAssetLinksDirectory}/apple-app-site-association`,
               to: `${paths.appBuild}/.well-known/apple-app-site-association`,
+              toType: 'file',
             },
           ]),
         ]
