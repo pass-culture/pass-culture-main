@@ -1,16 +1,9 @@
 from flask import Blueprint
 from spectree import SpecTree
 
+from pcapi.routes.native import security
 from pcapi.serialization.utils import before_handler
 
-
-# FIXME: once we have the homemade authentication decorator we should
-# be able to flag the routes and automatically list them here
-PROTECTED_PATHS = {
-    "/me",
-    "/id_check_token",
-    "/offer/{offer_id}",
-}
 
 native_v1 = Blueprint("native_v1", __name__)
 
@@ -19,18 +12,29 @@ class NativeSpecTree(SpecTree):
     def _generate_spec(self) -> dict:
         schema = super()._generate_spec()
         schema["components"]["securitySchemes"] = {
-            "bearerAuth": {
+            "JWTAuth": {
                 "type": "http",
                 "scheme": "bearer",
                 "bearerFormat": "JWT",
             }
         }
-        protected_paths = ["/native/v1" + path for path in PROTECTED_PATHS]
-        for path in schema["paths"]:
-            if path not in protected_paths:
+
+        # Find routes that are protected by authentication
+        # We may drop this whenever Spectree supports authentication
+        for route in self.backend.find_routes():
+            path, _parameters = self.backend.parse_path(route)
+            if path not in schema["paths"]:
                 continue
-            for operation in schema["paths"][path].values():
-                operation["security"] = [{"bearerAuth": []}]
+            for method, func in self.backend.parse_func(route):
+                if method.lower() not in schema["paths"][path]:
+                    continue
+                if self.backend.bypass(func, method) or self.bypass(func):
+                    continue
+
+                if getattr(func, "requires_authentication", None):
+                    if security.JWT_AUTH in func.requires_authentication:
+                        schema["paths"][path][method.lower()]["security"] = [{"JWTAuth": []}]
+
         return schema
 
 

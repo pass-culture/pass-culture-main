@@ -8,7 +8,14 @@ from pcapi.repository.user_queries import find_user_by_email
 from pcapi.utils.logger import logger
 
 
+JWT_AUTH = "JWT"
+
+
 def authenticated_user_required(route_function):  # type: ignore
+    if not hasattr(route_function, "requires_authentication"):
+        route_function.requires_authentication = []
+    route_function.requires_authentication.append(JWT_AUTH)
+
     @wraps(route_function)
     @jwt_required
     def retrieve_authenticated_user(*args, **kwargs):  # type: ignore
