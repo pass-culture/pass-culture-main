@@ -31,7 +31,7 @@ describe('header', () => {
       const wrapper = shallow(<Header {...props} />)
 
       // then
-      expect(wrapper.prop('className')).toBe('is-small')
+      expect(wrapper.prop('className')).toBe('is-small menu')
     })
   })
 })

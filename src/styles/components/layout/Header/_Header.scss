@@ -49,11 +49,13 @@
 
     .icon {
       filter: brightness(0) invert(1);
+      text-align: center;
+      width: 2.5rem;
     }
   }
 }
 
-header {
+header.menu {
   background-image: $linear-gradient-to-bottom-right;
 
   &:not(.is-small) {

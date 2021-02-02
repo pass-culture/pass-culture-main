@@ -1,4 +1,4 @@
-import { Menu, MenuList, MenuButton, MenuItem, MenuLink } from '@reach/menu-button'
+import { Menu, MenuButton, MenuItem, MenuLink, MenuList } from '@reach/menu-button'
 import '@reach/menu-button/styles.css'
 import classnames from 'classnames'
 import PropTypes from 'prop-types'
@@ -19,10 +19,9 @@ class Header extends PureComponent {
 
   onSignoutClick = () => {
     const { dispatch } = this.props
-    signout()
-      .then(() => {
-        dispatch(reinitializeData())
-      })
+    signout().then(() => {
+      dispatch(reinitializeData())
+    })
   }
 
   render() {
@@ -30,9 +29,12 @@ class Header extends PureComponent {
 
     return (
       <header
-        className={classnames({
-          'is-small': isSmall,
-        })}
+        className={classnames(
+          {
+            'is-small': isSmall,
+          },
+          'menu'
+        )}
       >
         <nav>
           <div className="nav-brand">
