@@ -16,6 +16,7 @@ const cancelLink = {
   disabled: false,
   label: 'Annuler',
   url: '/connexion',
+  id: 'cancel-link',
 }
 
 const submitOptions = {
