@@ -2,6 +2,7 @@ from datetime import datetime
 from datetime import timedelta
 from unittest.mock import patch
 
+from flask_jwt_extended.utils import create_access_token
 from freezegun import freeze_time
 import pytest
 
@@ -188,6 +189,52 @@ def test_reset_password_fail_for_password_strength(app):
     user = find_user_by_id(user.id)
     assert response.status_code == 400
     assert user.password == old_password
+
+
+def test_change_password_success(app):
+    new_password = "New_password1998!"
+    user = users_factories.UserFactory()
+
+    access_token = create_access_token(identity=user.email)
+    test_client = TestClient(app.test_client())
+    test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+
+    response = test_client.post(
+        "/native/v1/change_password",
+        json={"currentPassword": users_factories.DEFAULT_PASSWORD, "newPassword": new_password},
+    )
+
+    assert response.status_code == 204
+    user = find_user_by_id(user.id)
+    assert user.password == hash_password(new_password)
+
+
+def test_change_password_failures(app):
+    new_password = "New_password1998!"
+    user = users_factories.UserFactory()
+
+    access_token = create_access_token(identity=user.email)
+    test_client = TestClient(app.test_client())
+    test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+
+    response = test_client.post(
+        "/native/v1/change_password",
+        json={"currentPassword": "wrong_password", "newPassword": new_password},
+    )
+
+    assert response.status_code == 400
+    assert response.json["code"] == "INVALID_PASSWORD"
+
+    response = test_client.post(
+        "/native/v1/change_password",
+        json={"currentPassword": users_factories.DEFAULT_PASSWORD, "newPassword": "weak_password"},
+    )
+
+    assert response.status_code == 400
+    assert response.json["code"] == "WEAK_PASSWORD"
+
+    user = find_user_by_id(user.id)
+    assert user.password == hash_password(users_factories.DEFAULT_PASSWORD)
 
 
 @patch("pcapi.core.users.repository.get_user_with_valid_token", return_value=None)

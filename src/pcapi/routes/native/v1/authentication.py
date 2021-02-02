@@ -12,9 +12,11 @@ from pcapi.core.users.models import User
 from pcapi.core.users.utils import format_email
 from pcapi.domain.password import check_password_strength
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.api_errors import ForbiddenError
 from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.native.security import authenticated_user_required
+from pcapi.routes.native.v1.serialization.authentication import ChangePasswordRequest
 from pcapi.routes.native.v1.serialization.authentication import RequestPasswordResetRequest
 from pcapi.routes.native.v1.serialization.authentication import ResetPasswordRequest
 from pcapi.routes.native.v1.serialization.authentication import ValidateEmailRequest
@@ -83,6 +85,26 @@ def reset_password(body: ResetPasswordRequest) -> None:
         raise ApiErrors({"token": ["Le token de changement de mot de passe est invalide."]})
 
     check_password_strength("newPassword", body.new_password)
+
+    user.setPassword(body.new_password)
+    repository.save(user)
+
+
+@blueprint.native_v1.route("/change_password", methods=["POST"])
+@spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400])
+@authenticated_user_required
+def change_password(user: User, body: ChangePasswordRequest) -> None:
+    try:
+        users_repo.check_user_and_credentials(user, body.current_password)
+    except users_exceptions.InvalidPassword:
+        raise ApiErrors({"code": "INVALID_PASSWORD", "currentPassword": ["Le mot de passe est incorrect"]})
+    except users_exceptions.CredentialsException:
+        raise ForbiddenError()
+
+    try:
+        check_password_strength("newPassword", body.new_password)
+    except ApiErrors:
+        raise ApiErrors({"code": "WEAK_PASSWORD", "newPassword": ["Le nouveau mot de passe est trop faible"]})
 
     user.setPassword(body.new_password)
     repository.save(user)
