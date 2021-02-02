@@ -7,7 +7,7 @@ export const fieldLabels = {
   bookingEmail: { label: 'Email auquel envoyer les notifications :', exact: false },
   description: { label: 'Description', exact: false },
   durationMinutes: { label: 'Durée', exact: false },
-  externalTicketOfficeUrl: { label: /URL de la billeterie/, exact: true },
+  externalTicketOfficeUrl: { label: /URL de redirection externe/, exact: true },
   isbn: { label: 'ISBN', exact: false },
   isDuo: { label: 'Accepter les réservations "duo"', exact: false },
   audioDisabilityCompliant: { label: 'Handicap auditif', exact: true },

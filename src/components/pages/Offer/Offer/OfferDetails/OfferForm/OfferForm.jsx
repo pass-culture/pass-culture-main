@@ -693,7 +693,7 @@ const OfferForm = ({
             <TextInput
               disabled={readOnlyFields.includes('externalTicketOfficeUrl')}
               error={getErrorMessage('externalTicketOfficeUrl')}
-              label="URL de la billeterie"
+              label="URL de redirection externe"
               name="externalTicketOfficeUrl"
               onChange={handleSingleFormUpdate}
               subLabel={!MANDATORY_FIELDS.includes('externalTicketOfficeUrl') ? 'Optionnel' : ''}
