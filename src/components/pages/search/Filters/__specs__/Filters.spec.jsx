@@ -80,7 +80,6 @@ describe('components | Filters', () => {
           place: false,
           user: false,
         },
-        sortBy: '_by_price',
         timeRange: [8, 24],
       },
       match: {
@@ -177,7 +176,6 @@ describe('components | Filters', () => {
           'autour-de': 'non',
           categories: 'VISITE;CINEMA',
           'mots-cles': 'librairie',
-          tri: '_by_price',
         })
         fetchAlgolia.mockReturnValue(
           new Promise(resolve => {
@@ -218,15 +216,14 @@ describe('components | Filters', () => {
           },
           priceRange: PRICE_FILTER.DEFAULT_RANGE,
           searchAround: false,
-          sortBy: '_by_price',
           timeRange: [],
         })
         expect(props.history.replace).toHaveBeenCalledWith({
           search:
-            '?mots-cles=librairie&autour-de=non&tri=_by_price&categories=VISITE;CINEMA&latitude=40&longitude=41',
+            '?mots-cles=librairie&autour-de=non&categories=VISITE;CINEMA&latitude=40&longitude=41',
         })
         expect(props.history.push).toHaveBeenCalledWith(
-          '/recherche/resultats/filtres?mots-cles=librairie&autour-de=non&tri=_by_price&categories=VISITE;CINEMA&latitude=40&longitude=41'
+          '/recherche/resultats/filtres?mots-cles=librairie&autour-de=non&categories=VISITE;CINEMA&latitude=40&longitude=41'
         )
       })
 
@@ -241,7 +238,6 @@ describe('components | Filters', () => {
           'autour-de': 'oui',
           categories: 'VISITE',
           'mots-cles': 'librairie',
-          tri: '_by_price',
         })
         fetchAlgolia.mockReturnValue(
           new Promise(resolve => {
@@ -279,15 +275,13 @@ describe('components | Filters', () => {
           },
           priceRange: PRICE_FILTER.DEFAULT_RANGE,
           searchAround: true,
-          sortBy: '_by_price',
           timeRange: [],
         })
         expect(props.history.replace).toHaveBeenCalledWith({
-          search:
-            '?mots-cles=librairie&autour-de=oui&tri=_by_price&categories=VISITE&latitude=40&longitude=41',
+          search: '?mots-cles=librairie&autour-de=oui&categories=VISITE&latitude=40&longitude=41',
         })
         expect(props.history.push).toHaveBeenCalledWith(
-          '/recherche/resultats/filtres?mots-cles=librairie&autour-de=oui&tri=_by_price&categories=VISITE&latitude=40&longitude=41'
+          '/recherche/resultats/filtres?mots-cles=librairie&autour-de=oui&categories=VISITE&latitude=40&longitude=41'
         )
       })
     })
@@ -469,7 +463,6 @@ describe('components | Filters', () => {
             place: false,
             user: false,
           },
-          sortBy: '_by_price',
           timeRange: [8, 24],
         })
       })
@@ -1052,7 +1045,6 @@ describe('components | Filters', () => {
             },
             priceRange: PRICE_FILTER.DEFAULT_RANGE,
             searchAround: false,
-            sortBy: '_by_price',
             timeRange: [],
           })
         })
@@ -1143,7 +1135,6 @@ describe('components | Filters', () => {
             },
             priceRange: PRICE_FILTER.DEFAULT_RANGE,
             searchAround: false,
-            sortBy: '_by_price',
             timeRange: [],
           })
         })
@@ -1269,7 +1260,6 @@ describe('components | Filters', () => {
             },
             priceRange: PRICE_FILTER.DEFAULT_RANGE,
             searchAround: false,
-            sortBy: '_by_price',
             timeRange: [],
           })
         })
@@ -1632,7 +1622,6 @@ describe('components | Filters', () => {
               place: false,
               user: false,
             },
-            sortBy: '_by_price',
           }
           props.parse.mockReturnValue({
             'mots-cles': 'librairie',
@@ -1676,7 +1665,6 @@ describe('components | Filters', () => {
             },
             priceRange: PRICE_FILTER.DEFAULT_RANGE,
             searchAround: false,
-            sortBy: '_by_price',
             timeRange: [],
           })
         })
@@ -1707,7 +1695,6 @@ describe('components | Filters', () => {
               place: false,
               user: false,
             },
-            sortBy: '_by_price',
           }
           props.parse.mockReturnValue({
             'mots-cles': 'librairie',
@@ -1751,7 +1738,6 @@ describe('components | Filters', () => {
             },
             priceRange: PRICE_FILTER.DEFAULT_RANGE,
             searchAround: false,
-            sortBy: '_by_price',
             timeRange: [],
           })
         })
@@ -1840,7 +1826,6 @@ describe('components | Filters', () => {
             },
             priceRange: PRICE_FILTER.DEFAULT_RANGE,
             searchAround: false,
-            sortBy: '_by_price',
             timeRange: [],
           })
         })
@@ -1882,7 +1867,6 @@ describe('components | Filters', () => {
             },
             priceRange: PRICE_FILTER.DEFAULT_RANGE,
             searchAround: false,
-            sortBy: '_by_price',
             timeRange: [],
           })
         })
@@ -1922,7 +1906,6 @@ describe('components | Filters', () => {
             },
             priceRange: PRICE_FILTER.DEFAULT_RANGE,
             searchAround: false,
-            sortBy: '_by_price',
             timeRange: [],
           })
         })
@@ -2013,7 +1996,6 @@ describe('components | Filters', () => {
             },
             priceRange: PRICE_FILTER.DEFAULT_RANGE,
             searchAround: false,
-            sortBy: '_by_price',
             timeRange: [],
           })
         })
@@ -2066,7 +2048,6 @@ describe('components | Filters', () => {
             },
             priceRange: PRICE_FILTER.DEFAULT_RANGE,
             searchAround: false,
-            sortBy: '_by_price',
             timeRange: [8, 24],
           })
         })
@@ -2151,7 +2132,6 @@ describe('components | Filters', () => {
               },
               priceRange: PRICE_FILTER.DEFAULT_RANGE,
               searchAround: false,
-              sortBy: '_by_price',
               timeRange: [18, 22],
             })
           })

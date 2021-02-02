@@ -4,11 +4,10 @@ import React, { PureComponent } from 'react'
 import { Route, Switch } from 'react-router'
 
 import PageNotFoundContainer from '../../layout/ErrorBoundaries/ErrorsPage/PageNotFound/PageNotFoundContainer'
-import { CATEGORY_CRITERIA, GEOLOCATION_CRITERIA, SORT_CRITERIA } from './Criteria/criteriaEnums'
+import { CATEGORY_CRITERIA, GEOLOCATION_CRITERIA } from './Criteria/criteriaEnums'
 import CriteriaCategory from './CriteriaCategory/CriteriaCategory'
 import CriteriaLocation from './CriteriaLocation/CriteriaLocation'
 import { buildPlaceLabel } from './CriteriaLocation/utils/buildPlaceLabel'
-import CriteriaSort from './CriteriaSort/CriteriaSort'
 import { Home } from './Home/Home'
 import Results from './Results/Results'
 
@@ -29,7 +28,6 @@ class Search extends PureComponent {
           user: false,
         },
       },
-      sortCriterion: SORT_CRITERIA.RELEVANCE,
     }
   }
 
@@ -101,17 +99,9 @@ class Search extends PureComponent {
     redirectToSearchMainPage()
   }
 
-  handleSortCriterionSelection = criterionKey => {
-    this.setState({
-      sortCriterion: SORT_CRITERIA[criterionKey],
-    })
-    const { redirectToSearchMainPage } = this.props
-    redirectToSearchMainPage()
-  }
-
   render() {
     const { history, location, match, redirectToSearchMainPage, geolocation } = this.props
-    const { categoryCriterion, geolocationCriterion, sortCriterion } = this.state
+    const { categoryCriterion, geolocationCriterion } = this.state
     const { place } = geolocationCriterion
     const { parametersFromHome } = location
     return (
@@ -124,7 +114,6 @@ class Search extends PureComponent {
             categoryCriterion={categoryCriterion}
             geolocationCriterion={geolocationCriterion}
             history={history}
-            sortCriterion={sortCriterion}
             userGeolocation={geolocation}
           />
         </Route>
@@ -133,7 +122,6 @@ class Search extends PureComponent {
             criteria={{
               categories: categoryCriterion.facetFilter ? [categoryCriterion.facetFilter] : [],
               searchAround: geolocationCriterion.searchAround,
-              sortBy: sortCriterion.index,
             }}
             history={history}
             match={match}
@@ -168,18 +156,6 @@ class Search extends PureComponent {
             match={match}
             onCriterionSelection={this.handleCategoryCriterionSelection}
             title="Catégories"
-          />
-        </Route>
-        <Route path={`${match.path}/criteres-tri`}>
-          <CriteriaSort
-            activeCriterionLabel={sortCriterion.label}
-            backTo={match.path}
-            criteria={SORT_CRITERIA}
-            geolocation={geolocation}
-            history={history}
-            match={match}
-            onCriterionSelection={this.handleSortCriterionSelection}
-            title="Trier par"
           />
         </Route>
         <Route>

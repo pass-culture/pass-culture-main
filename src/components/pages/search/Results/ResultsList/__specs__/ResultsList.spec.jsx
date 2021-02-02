@@ -14,7 +14,6 @@ describe('component | ResultsList', () => {
       },
       isLoading: false,
       loadMore: jest.fn(),
-      onSortClick: jest.fn(),
       results: [
         {
           _geoloc: {
@@ -57,7 +56,6 @@ describe('component | ResultsList', () => {
       ],
       resultsCount: 2,
       search: '',
-      sortCriterionLabel: 'Pertinence',
       totalPagesNumber: 1,
     }
   })
@@ -155,17 +153,5 @@ describe('component | ResultsList', () => {
     // Then
     const numberOfResults = wrapper.find({ children: '1 000 000 résultats' })
     expect(numberOfResults).toHaveLength(1)
-  })
-
-  it('should display the sort filter received from props', async () => {
-    // Given
-    props.sortCriterionLabel = 'Prix'
-
-    // When
-    const wrapper = await shallow(<ResultsList {...props} />)
-
-    // Then
-    const sortButton = wrapper.find({ children: 'Prix' })
-    expect(sortButton).toHaveLength(1)
   })
 })

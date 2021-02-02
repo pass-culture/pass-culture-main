@@ -6,7 +6,6 @@ export const isPathWithNavBar = path => {
     '/mot-de-passe',
     '/mentions-legales',
     '/criteres-(.*)',
-    '/tri',
     '/filtres(.*)',
     '/bienvenue',
     '/typeform',

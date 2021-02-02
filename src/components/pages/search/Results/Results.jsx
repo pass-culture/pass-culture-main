@@ -10,8 +10,6 @@ import { DEFAULT_RADIUS_IN_KILOMETERS } from '../../../../vendor/algolia/filters
 import HeaderContainer from '../../../layout/Header/HeaderContainer'
 import Icon from '../../../layout/Icon/Icon'
 import Spinner from '../../../layout/Spinner/Spinner'
-import { SORT_CRITERIA } from '../Criteria/criteriaEnums'
-import CriteriaSort from '../CriteriaSort/CriteriaSort'
 import { Filters } from '../Filters/Filters'
 import { DATE_FILTER, PRICE_FILTER, TIME_FILTER } from '../Filters/filtersEnums'
 import Header from '../Header/Header'
@@ -25,13 +23,12 @@ class Results extends PureComponent {
   constructor(props) {
     super(props)
     const {
-      criteria: { categories, searchAround, sortBy },
+      criteria: { categories, searchAround },
       parametersFromHome,
       place,
     } = props
     const searchAroundFromUrlOrProps = this.getSearchAroundFromUrlOrProps(searchAround)
     const categoriesFromUrlOrProps = this.getCategoriesFromUrlOrProps(categories)
-    const sortByFromUrlOrProps = this.getSortByFromUrlOrProps(sortBy)
     const placeFromUrlOrProps = this.getPlaceFromUrlOrProps(place)
 
     this.state = {
@@ -54,7 +51,6 @@ class Results extends PureComponent {
         },
         priceRange: PRICE_FILTER.DEFAULT_RANGE,
         searchAround: searchAroundFromUrlOrProps,
-        sortBy: sortByFromUrlOrProps,
         timeRange: TIME_FILTER.DEFAULT_RANGE,
       },
       keywordsToSearch: '',
@@ -68,7 +64,6 @@ class Results extends PureComponent {
       resultsCount: 0,
       results: [],
       searchedKeywords: '',
-      sortCriterionLabel: this.getSortCriterionLabelFromIndex(sortByFromUrlOrProps),
       totalPagesNumber: 0,
     }
     this.inputRef = React.createRef()
@@ -167,10 +162,9 @@ class Results extends PureComponent {
         }
       }
       const keywordsFromUrl = queryParams['mots-cles'] || ''
-      const sortByFromUrl = queryParams['tri'] || ''
       const categoriesFromUrl = queryParams['categories'] || ''
       history.replace({
-        search: `?mots-cles=${keywordsFromUrl}&autour-de=non&tri=${sortByFromUrl}&categories=${categoriesFromUrl}`,
+        search: `?mots-cles=${keywordsFromUrl}&autour-de=non&categories=${categoriesFromUrl}`,
       })
       return {
         everywhere: true,
@@ -229,14 +223,6 @@ class Results extends PureComponent {
     return geolocationFilterCounter + numberOfActiveCategories
   }
 
-  getSortByFromUrlOrProps = sortByFromProps => {
-    const { history, parse } = this.props
-    const queryParams = parse(history.location.search)
-    const sortByFromUrl = queryParams['tri'] || ''
-
-    return sortByFromUrl ? sortByFromUrl : sortByFromProps
-  }
-
   showFailModal = () => {
     toast.error("La recherche n'a pas pu aboutir, réessaie plus tard.")
   }
@@ -245,7 +231,7 @@ class Results extends PureComponent {
     event.preventDefault()
     const { history, parse } = this.props
     const { filters, searchedKeywords } = this.state
-    const { offerCategories, sortBy: tri } = filters
+    const { offerCategories } = filters
     const keywordsToSearch = event.target.keywords.value
     const trimmedKeywordsToSearch = keywordsToSearch.trim()
 
@@ -258,7 +244,7 @@ class Results extends PureComponent {
 
     const search =
       `?mots-cles=${trimmedKeywordsToSearch}` +
-      `&autour-de=${autourDe}&tri=${tri}&categories=${categories}` +
+      `&autour-de=${autourDe}&categories=${categories}` +
       `&latitude=${latitude}` +
       `&longitude=${longitude}` +
       `${place ? `&place=${place}` : ''}`
@@ -324,7 +310,6 @@ class Results extends PureComponent {
       offerTypes,
       priceRange,
       searchAround,
-      sortBy,
     } = filters
     this.setState({
       isLoading: true,
@@ -341,7 +326,6 @@ class Results extends PureComponent {
       page,
       priceRange,
       searchAround: searchAround.everywhere !== true,
-      sortBy,
     }
     if (offerIsFilteredByDate) {
       options.date = date
@@ -357,7 +341,6 @@ class Results extends PureComponent {
           resultsCount: nbHits,
           results: [...results, ...hits],
           searchedKeywords: keywords,
-          sortCriterionLabel: this.getSortCriterionLabelFromIndex(sortBy),
           totalPagesNumber: nbPages,
         })
       })
@@ -404,35 +387,11 @@ class Results extends PureComponent {
   handleOnScroll = () => {
     this.inputRef.current.blur()
   }
-  getSortCriterionLabelFromIndex = index => {
-    const criterionLabels = Object.keys(SORT_CRITERIA).map(criterionKey => {
-      return SORT_CRITERIA[criterionKey].index === index ? SORT_CRITERIA[criterionKey].label : ''
-    })
-    return criterionLabels.join('')
-  }
 
   handleGoTo = path => () => {
     const { history } = this.props
     const { pathname, search } = history.location
     history.push(`${pathname}/${path}${search}`)
-  }
-
-  handleSortCriterionSelection = criterionKey => {
-    const { searchedKeywords } = this.state
-    const { history } = this.props
-    const { search } = history.location
-    const sortBy = SORT_CRITERIA[criterionKey].index
-    this.setState(
-      previousState => ({
-        filters: { ...previousState.filters, sortBy: sortBy },
-        results: [],
-        sortCriterionLabel: this.getSortCriterionLabelFromIndex(sortBy),
-      }),
-      () => this.fetchOffers({ keywords: searchedKeywords })
-    )
-    const queryParams = search.replace(/(tri=)(\w*)/, 'tri=' + sortBy)
-
-    history.push(`${SEARCH_RESULTS_URI}${queryParams}`)
   }
 
   handleNewSearchAroundMe = () => {
@@ -448,14 +407,13 @@ class Results extends PureComponent {
             place: false,
             user: true,
           },
-          sortBy: '',
         },
         place: null,
       },
       () => {
         if (isGeolocationEnabled(userGeolocation)) {
           history.push(
-            `/recherche/resultats?mots-cles=&autour-de=oui&tri=&categories=&latitude=${userGeolocation.latitude}&longitude=${userGeolocation.longitude}`
+            `/recherche/resultats?mots-cles=&autour-de=oui&categories=&latitude=${userGeolocation.latitude}&longitude=${userGeolocation.longitude}`
           )
           this.fetchOffers()
         } else {
@@ -477,7 +435,6 @@ class Results extends PureComponent {
       results,
       resultsCount,
       searchedKeywords,
-      sortCriterionLabel,
       totalPagesNumber,
     } = this.state
     const { geolocation: placeGeolocation } = place || {}
@@ -516,11 +473,9 @@ class Results extends PureComponent {
                 geolocation={searchAround.place ? placeGeolocation : userGeolocation}
                 isLoading={isLoading}
                 loadMore={this.fetchNextOffers}
-                onSortClick={this.handleGoTo('tri')}
                 results={results}
                 resultsCount={resultsCount}
                 search={search}
-                sortCriterionLabel={sortCriterionLabel}
                 totalPagesNumber={totalPagesNumber}
               />
             )}
@@ -585,20 +540,6 @@ class Results extends PureComponent {
               />
             </div>
           </Route>
-          <Route path={`${SEARCH_RESULTS_URI}/tri`}>
-            <div className="offer-details">
-              <CriteriaSort
-                activeCriterionLabel={sortCriterionLabel}
-                backTo={`${SEARCH_RESULTS_URI}${search}`}
-                criteria={SORT_CRITERIA}
-                geolocation={searchAround.place ? placeGeolocation : userGeolocation}
-                history={history}
-                match={match}
-                onCriterionSelection={this.handleSortCriterionSelection}
-                title="Trier par"
-              />
-            </div>
-          </Route>
         </Switch>
       </Fragment>
     )
@@ -609,7 +550,6 @@ Results.defaultProps = {
   criteria: {
     categories: [],
     isSearchAroundMe: false,
-    sortBy: '',
   },
   parametersFromHome: null,
   place: {
@@ -633,7 +573,6 @@ Results.propTypes = {
       place: PropTypes.bool,
       user: PropTypes.bool,
     }),
-    sortBy: PropTypes.string,
   }),
   history: PropTypes.shape().isRequired,
   match: PropTypes.shape().isRequired,

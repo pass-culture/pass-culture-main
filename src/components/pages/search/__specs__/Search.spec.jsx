@@ -7,7 +7,6 @@ import { Route, Router } from 'react-router'
 import { CATEGORY_CRITERIA } from '../Criteria/criteriaEnums'
 import { CriteriaCategory } from '../CriteriaCategory/CriteriaCategory'
 import CriteriaLocation from '../CriteriaLocation/CriteriaLocation'
-import { CriteriaSort } from '../CriteriaSort/CriteriaSort'
 import { Home } from '../Home/Home'
 import Results from '../Results/Results'
 import Search from '../Search'
@@ -103,22 +102,6 @@ describe('components | Search', () => {
       // then
       expect(categoryCriterion).toHaveLength(1)
     })
-
-    it('should select "Pertinence" by default', () => {
-      // given
-      props.history.location.pathname = '/recherche/criteres-tri'
-      const wrapper = mount(
-        <Router history={props.history}>
-          <Search {...props} />
-        </Router>
-      )
-
-      // when
-      const sortCriterion = wrapper.find({ children: 'Pertinence' })
-
-      // then
-      expect(sortCriterion).toHaveLength(1)
-    })
   })
 
   describe('routing', () => {
@@ -152,12 +135,6 @@ describe('components | Search', () => {
           },
         })
         expect(home.prop('history')).toStrictEqual(props.history)
-        expect(home.prop('sortCriterion')).toStrictEqual({
-          icon: 'ico-relevance',
-          index: '',
-          label: 'Pertinence',
-          requiresGeolocation: false,
-        })
       })
     })
 
@@ -177,7 +154,6 @@ describe('components | Search', () => {
         expect(searchResultsComponent.prop('criteria')).toStrictEqual({
           categories: [],
           searchAround: { everywhere: true, place: false, user: false },
-          sortBy: '',
         })
         expect(searchResultsComponent.prop('history')).toStrictEqual(props.history)
         expect(searchResultsComponent.prop('match')).toStrictEqual(props.match)
@@ -205,7 +181,6 @@ describe('components | Search', () => {
         expect(searchResultsComponent.prop('criteria')).toStrictEqual({
           categories: ['CINEMA'],
           searchAround: { everywhere: true, place: false, user: false },
-          sortBy: '',
         })
       })
 
@@ -225,7 +200,6 @@ describe('components | Search', () => {
         expect(searchResultsComponent.prop('criteria')).toStrictEqual({
           categories: [],
           searchAround: { everywhere: true, place: false, user: false },
-          sortBy: '',
         })
         expect(searchResultsComponent.prop('history')).toStrictEqual(props.history)
         expect(searchResultsComponent.prop('match')).toStrictEqual(props.match)
@@ -303,29 +277,6 @@ describe('components | Search', () => {
         expect(criteriaCategory.prop('match')).toStrictEqual(props.match)
         expect(criteriaCategory.prop('onCriterionSelection')).toStrictEqual(expect.any(Function))
         expect(criteriaCategory.prop('title')).toStrictEqual('Catégories')
-      })
-    })
-
-    describe('sort criteria page', () => {
-      it('should render sorting criteria page when path is /recherche/criteres-tri', () => {
-        // given
-        props.history.location.pathname = '/recherche/criteres-tri'
-        const wrapper = shallow(<Search {...props} />)
-
-        // when
-        const routes = wrapper.find(Route)
-
-        // then
-        const criteriaSortRoute = routes.at(4)
-        expect(criteriaSortRoute.prop('path')).toBe('/recherche/criteres-tri')
-        const criteriaSort = criteriaSortRoute.find(CriteriaSort)
-        expect(criteriaSort.prop('activeCriterionLabel')).toStrictEqual('Pertinence')
-        expect(criteriaSort.prop('criteria')).toStrictEqual(expect.any(Object))
-        expect(criteriaSort.prop('geolocation')).toStrictEqual(props.geolocation)
-        expect(criteriaSort.prop('history')).toStrictEqual(props.history)
-        expect(criteriaSort.prop('match')).toStrictEqual(props.match)
-        expect(criteriaSort.prop('onCriterionSelection')).toStrictEqual(expect.any(Function))
-        expect(criteriaSort.prop('title')).toStrictEqual('Trier par')
       })
     })
   })

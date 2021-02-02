@@ -11,8 +11,6 @@ import { getStubStore } from '../../../../../utils/stubStore'
 import { fetchAlgolia } from '../../../../../vendor/algolia/algolia'
 import HeaderContainer from '../../../../layout/Header/HeaderContainer'
 import Spinner from '../../../../layout/Spinner/Spinner'
-import { SORT_CRITERIA } from '../../Criteria/criteriaEnums'
-import CriteriaSort from '../../CriteriaSort/CriteriaSort'
 import { Filters } from '../../Filters/Filters'
 import { PRICE_FILTER } from '../../Filters/filtersEnums'
 import Header from '../../Header/Header'
@@ -72,7 +70,6 @@ describe('components | Results', () => {
           place: false,
           user: false,
         },
-        sortBy: '',
       },
       history: {
         location: {
@@ -153,7 +150,7 @@ describe('components | Results', () => {
     })
 
     describe('when no keywords in url', () => {
-      it('should fetch data with page 0, given categories, geolocation around user, sort by proximity', () => {
+      it('should fetch data with page 0, given categories, geolocation around user', () => {
         props.criteria = {
           categories: ['Cinéma'],
           searchAround: {
@@ -161,7 +158,6 @@ describe('components | Results', () => {
             place: false,
             user: true,
           },
-          sortBy: '_by_proximity',
         }
 
         // when
@@ -184,7 +180,6 @@ describe('components | Results', () => {
           page: 0,
           priceRange: PRICE_FILTER.DEFAULT_RANGE,
           searchAround: true,
-          sortBy: '_by_proximity',
         })
       })
     })
@@ -246,18 +241,17 @@ describe('components | Results', () => {
         expect(emptySearchResult.prop('searchedKeywords')).toBe('librairie')
       })
 
-      it('should fetch offers in all categories, without keyword, around user and sorted by relevance when clicking on "autour de chez toi"', async () => {
+      it('should fetch offers in all categories, without keyword, around user when clicking on "autour de chez toi"', async () => {
         // given
         const history = createMemoryHistory()
         props.history = history
         props.history.push(
-          '/recherche/resultats?mots-cles=recherche%20sans%20résultat&autour-de=oui&tri=_by_price&categories=INSTRUMENT'
+          '/recherche/resultats?mots-cles=recherche%20sans%20résultat&autour-de=oui&categories=INSTRUMENT'
         )
         props.parse.mockReturnValue({
           'autour-de': 'oui',
           categories: 'INSTRUMENT',
           'mots-cles': 'recherche sans résultat',
-          tri: '_by_price',
         })
         const wrapper = await mount(
           <Router history={history}>
@@ -290,11 +284,10 @@ describe('components | Results', () => {
           page: 0,
           priceRange: PRICE_FILTER.DEFAULT_RANGE,
           searchAround: true,
-          sortBy: '',
         })
         const expectedUri = props.history.location.pathname + props.history.location.search
         expect(expectedUri).toBe(
-          '/recherche/resultats?mots-cles=&autour-de=oui&tri=&categories=&latitude=40.1&longitude=41.1'
+          '/recherche/resultats?mots-cles=&autour-de=oui&categories=&latitude=40.1&longitude=41.1'
         )
       })
     })
@@ -318,7 +311,7 @@ describe('components | Results', () => {
         })
         props.history = createMemoryHistory()
         props.history.push(
-          '/recherche/resultats?mots-cles=une%20librairie&autour-de=non&tri=_by_price&categories=INSTRUMENT'
+          '/recherche/resultats?mots-cles=une%20librairie&autour-de=non&categories=INSTRUMENT'
         )
 
         // when
@@ -356,7 +349,6 @@ describe('components | Results', () => {
           page: 0,
           priceRange: PRICE_FILTER.DEFAULT_RANGE,
           searchAround: false,
-          sortBy: '',
         })
       })
 
@@ -447,7 +439,6 @@ describe('components | Results', () => {
           page: 0,
           priceRange: PRICE_FILTER.DEFAULT_RANGE,
           searchAround: true,
-          sortBy: '',
         })
       })
 
@@ -477,7 +468,7 @@ describe('components | Results', () => {
 
         // then
         expect(props.history.replace).toHaveBeenCalledWith({
-          search: '?mots-cles=&autour-de=non&tri=&categories=',
+          search: '?mots-cles=&autour-de=non&categories=',
         })
         expect(fetchAlgolia).toHaveBeenCalledWith({
           aroundRadius: 100,
@@ -495,7 +486,6 @@ describe('components | Results', () => {
           page: 0,
           priceRange: PRICE_FILTER.DEFAULT_RANGE,
           searchAround: false,
-          sortBy: '',
         })
       })
     })
@@ -539,7 +529,6 @@ describe('components | Results', () => {
           page: 0,
           priceRange: PRICE_FILTER.DEFAULT_RANGE,
           searchAround: false,
-          sortBy: '',
         })
       })
 
@@ -615,7 +604,6 @@ describe('components | Results', () => {
           priceRange: PRICE_FILTER.DEFAULT_RANGE,
           page: 0,
           searchAround: false,
-          sortBy: '',
         })
       })
 
@@ -656,182 +644,7 @@ describe('components | Results', () => {
           page: 0,
           priceRange: PRICE_FILTER.DEFAULT_RANGE,
           searchAround: false,
-          sortBy: '',
         })
-      })
-    })
-
-    describe('when sort filter', () => {
-      it('should fetch data using sort filter when provided from url', async () => {
-        // given
-        fetchAlgolia.mockReturnValue(
-          new Promise(resolve => {
-            resolve({
-              hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
-              nbHits: 2,
-              nbPages: 0,
-              page: 0,
-            })
-          })
-        )
-        parse.mockReturnValue({
-          'mots-cles': 'une librairie',
-          tri: '_by_proximity',
-        })
-
-        // when
-        await shallow(<Results {...props} />)
-
-        // then
-        expect(fetchAlgolia).toHaveBeenCalledWith({
-          aroundRadius: 100,
-          geolocation: { latitude: 40.1, longitude: 41.1 },
-          keywords: 'une librairie',
-          offerCategories: [],
-          offerIsDuo: false,
-          offerIsFree: false,
-          offerIsNew: false,
-          offerTypes: {
-            isDigital: false,
-            isEvent: false,
-            isThing: false,
-          },
-          page: 0,
-          priceRange: PRICE_FILTER.DEFAULT_RANGE,
-          searchAround: false,
-          sortBy: '_by_proximity',
-        })
-      })
-
-      it('should fetch data using sort filter when provided from prop', async () => {
-        // given
-        props.criteria.sortBy = '_by_proximity'
-        fetchAlgolia.mockReturnValue(
-          new Promise(resolve => {
-            resolve({
-              hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
-              nbHits: 2,
-              nbPages: 0,
-              page: 0,
-            })
-          })
-        )
-        parse.mockReturnValue({
-          'mots-cles': 'une librairie',
-          tri: '',
-        })
-
-        // when
-        await shallow(<Results {...props} />)
-
-        // then
-        expect(fetchAlgolia).toHaveBeenCalledWith({
-          aroundRadius: 100,
-          geolocation: { latitude: 40.1, longitude: 41.1 },
-          keywords: 'une librairie',
-          offerCategories: [],
-          offerIsDuo: false,
-          offerIsFree: false,
-          offerIsNew: false,
-          offerTypes: {
-            isDigital: false,
-            isEvent: false,
-            isThing: false,
-          },
-          page: 0,
-          priceRange: PRICE_FILTER.DEFAULT_RANGE,
-          searchAround: false,
-          sortBy: '_by_proximity',
-        })
-      })
-
-      it('should fetch data not using sort filter when not provided', async () => {
-        // given
-        fetchAlgolia.mockReturnValue(
-          new Promise(resolve => {
-            resolve({
-              hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
-              nbHits: 2,
-              nbPages: 0,
-              page: 0,
-            })
-          })
-        )
-        props.criteriacategories = []
-        parse.mockReturnValue({
-          'mots-cles': 'une librairie',
-          tri: '',
-        })
-
-        // when
-        await shallow(<Results {...props} />)
-
-        // then
-        expect(fetchAlgolia).toHaveBeenCalledWith({
-          aroundRadius: 100,
-          geolocation: { latitude: 40.1, longitude: 41.1 },
-          keywords: 'une librairie',
-          offerCategories: [],
-          offerIsDuo: false,
-          offerIsFree: false,
-          offerIsNew: false,
-          offerTypes: {
-            isDigital: false,
-            isEvent: false,
-            isThing: false,
-          },
-          page: 0,
-          priceRange: PRICE_FILTER.DEFAULT_RANGE,
-          searchAround: false,
-          sortBy: '',
-        })
-      })
-
-      it('should display the sort filter received from props', async () => {
-        // given
-        fetchAlgolia.mockReturnValueOnce(
-          new Promise(resolve => {
-            resolve({
-              hits: [{ objectID: 'AA', offer: { dates: [1586248757] } }],
-              nbHits: 1,
-              nbPages: 0,
-              page: 0,
-            })
-          })
-        )
-        props.criteria.sortBy = '_by_price'
-
-        // when
-        const wrapper = await shallow(<Results {...props} />)
-
-        // then
-        const sortCriterionLabel = wrapper.find(ResultsList).prop('sortCriterionLabel')
-        expect(sortCriterionLabel).toBe('Prix')
-      })
-
-      it('should display the sort filter received from url', async () => {
-        // given
-        fetchAlgolia.mockReturnValueOnce(
-          new Promise(resolve => {
-            resolve({
-              hits: [{ objectID: 'AA', offer: { dates: [1586248757] } }],
-              nbHits: 1,
-              nbPages: 0,
-              page: 0,
-            })
-          })
-        )
-        props.criteria.sortBy = ''
-        parse.mockReturnValue({
-          tri: '_by_price',
-        })
-
-        // when
-        const wrapper = await shallow(<Results {...props} />)
-
-        // then
-        const sortCriterionLabel = wrapper.find(ResultsList).prop('sortCriterionLabel')
-        expect(sortCriterionLabel).toBe('Prix')
       })
     })
 
@@ -861,7 +674,6 @@ describe('components | Results', () => {
         )
         parse.mockReturnValue({
           'mots-cles': '',
-          tri: '',
         })
 
         // when
@@ -884,7 +696,6 @@ describe('components | Results', () => {
           page: 0,
           priceRange: [1, 200],
           searchAround: false,
-          sortBy: '',
         })
       })
 
@@ -913,7 +724,6 @@ describe('components | Results', () => {
         )
         parse.mockReturnValue({
           'mots-cles': '',
-          tri: '',
         })
 
         // when
@@ -1068,7 +878,6 @@ describe('components | Results', () => {
         'autour-de': 'oui',
         categories: 'MUSEE',
         'mots-cles': 'une librairie',
-        tri: '_by_price',
       })
       props.criteria = {}
 
@@ -1095,12 +904,11 @@ describe('components | Results', () => {
         page: 0,
         priceRange: PRICE_FILTER.DEFAULT_RANGE,
         searchAround: true,
-        sortBy: '_by_price',
       })
     })
 
     describe('when no keywords in url', () => {
-      it('should fetch data with page 0, given categories, geolocation around user, sort by proximity', () => {
+      it('should fetch data with page 0, given categories, geolocation around user', () => {
         props.criteria = {
           categories: ['Cinéma'],
           searchAround: {
@@ -1108,7 +916,6 @@ describe('components | Results', () => {
             place: false,
             user: true,
           },
-          sortBy: '_by_proximity',
         }
 
         // when
@@ -1131,7 +938,6 @@ describe('components | Results', () => {
           page: 0,
           priceRange: PRICE_FILTER.DEFAULT_RANGE,
           searchAround: true,
-          sortBy: '_by_proximity',
         })
       })
     })
@@ -1193,18 +999,17 @@ describe('components | Results', () => {
         expect(emptySearchResult.prop('searchedKeywords')).toBe('librairie')
       })
 
-      it('should fetch offers in all categories, without keyword, around user and sorted by relevance when clicking on "autour de chez toi"', async () => {
+      it('should fetch offers in all categories, without keyword, around user when clicking on "autour de chez toi"', async () => {
         // given
         const history = createMemoryHistory()
         props.history = history
         props.history.push(
-          '/recherche/resultats?mots-cles=recherche%20sans%20résultat&autour-de=oui&tri=_by_price&categories=INSTRUMENT'
+          '/recherche/resultats?mots-cles=recherche%20sans%20résultat&autour-de=oui&categories=INSTRUMENT'
         )
         props.parse.mockReturnValue({
           'autour-de': 'oui',
           categories: 'INSTRUMENT',
           'mots-cles': 'recherche sans résultat',
-          tri: '_by_price',
         })
         const wrapper = await mount(
           <Router history={history}>
@@ -1237,11 +1042,10 @@ describe('components | Results', () => {
           page: 0,
           priceRange: PRICE_FILTER.DEFAULT_RANGE,
           searchAround: true,
-          sortBy: '',
         })
         const expectedUri = props.history.location.pathname + props.history.location.search
         expect(expectedUri).toBe(
-          '/recherche/resultats?mots-cles=&autour-de=oui&tri=&categories=&latitude=40.1&longitude=41.1'
+          '/recherche/resultats?mots-cles=&autour-de=oui&categories=&latitude=40.1&longitude=41.1'
         )
       })
     })
@@ -1265,7 +1069,7 @@ describe('components | Results', () => {
         })
         props.history = createMemoryHistory()
         props.history.push(
-          '/recherche/resultats?mots-cles=une%20librairie&autour-de=non&tri=_by_price&categories=INSTRUMENT'
+          '/recherche/resultats?mots-cles=une%20librairie&autour-de=non&categories=INSTRUMENT'
         )
 
         // when
@@ -1303,7 +1107,6 @@ describe('components | Results', () => {
           page: 0,
           priceRange: PRICE_FILTER.DEFAULT_RANGE,
           searchAround: false,
-          sortBy: '',
         })
       })
 
@@ -1394,7 +1197,6 @@ describe('components | Results', () => {
           page: 0,
           priceRange: PRICE_FILTER.DEFAULT_RANGE,
           searchAround: true,
-          sortBy: '',
         })
       })
 
@@ -1424,7 +1226,7 @@ describe('components | Results', () => {
 
         // then
         expect(props.history.replace).toHaveBeenCalledWith({
-          search: '?mots-cles=&autour-de=non&tri=&categories=',
+          search: '?mots-cles=&autour-de=non&categories=',
         })
         expect(fetchAlgolia).toHaveBeenCalledWith({
           aroundRadius: 100,
@@ -1442,7 +1244,6 @@ describe('components | Results', () => {
           page: 0,
           priceRange: PRICE_FILTER.DEFAULT_RANGE,
           searchAround: false,
-          sortBy: '',
         })
       })
     })
@@ -1486,7 +1287,6 @@ describe('components | Results', () => {
           page: 0,
           priceRange: PRICE_FILTER.DEFAULT_RANGE,
           searchAround: false,
-          sortBy: '',
         })
       })
 
@@ -1562,7 +1362,6 @@ describe('components | Results', () => {
           priceRange: PRICE_FILTER.DEFAULT_RANGE,
           page: 0,
           searchAround: false,
-          sortBy: '',
         })
       })
 
@@ -1603,182 +1402,7 @@ describe('components | Results', () => {
           page: 0,
           priceRange: PRICE_FILTER.DEFAULT_RANGE,
           searchAround: false,
-          sortBy: '',
         })
-      })
-    })
-
-    describe('when sort filter', () => {
-      it('should fetch data using sort filter when provided from url', async () => {
-        // given
-        fetchAlgolia.mockReturnValue(
-          new Promise(resolve => {
-            resolve({
-              hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
-              nbHits: 2,
-              nbPages: 0,
-              page: 0,
-            })
-          })
-        )
-        parse.mockReturnValue({
-          'mots-cles': 'une librairie',
-          tri: '_by_proximity',
-        })
-
-        // when
-        await shallow(<Results {...props} />)
-
-        // then
-        expect(fetchAlgolia).toHaveBeenCalledWith({
-          aroundRadius: 100,
-          geolocation: { latitude: 40.1, longitude: 41.1 },
-          keywords: 'une librairie',
-          offerCategories: [],
-          offerIsDuo: false,
-          offerIsFree: false,
-          offerIsNew: false,
-          offerTypes: {
-            isDigital: false,
-            isEvent: false,
-            isThing: false,
-          },
-          page: 0,
-          priceRange: PRICE_FILTER.DEFAULT_RANGE,
-          searchAround: false,
-          sortBy: '_by_proximity',
-        })
-      })
-
-      it('should fetch data using sort filter when provided from prop', async () => {
-        // given
-        props.criteria.sortBy = '_by_proximity'
-        fetchAlgolia.mockReturnValue(
-          new Promise(resolve => {
-            resolve({
-              hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
-              nbHits: 2,
-              nbPages: 0,
-              page: 0,
-            })
-          })
-        )
-        parse.mockReturnValue({
-          'mots-cles': 'une librairie',
-          tri: '',
-        })
-
-        // when
-        await shallow(<Results {...props} />)
-
-        // then
-        expect(fetchAlgolia).toHaveBeenCalledWith({
-          aroundRadius: 100,
-          geolocation: { latitude: 40.1, longitude: 41.1 },
-          keywords: 'une librairie',
-          offerCategories: [],
-          offerIsDuo: false,
-          offerIsFree: false,
-          offerIsNew: false,
-          offerTypes: {
-            isDigital: false,
-            isEvent: false,
-            isThing: false,
-          },
-          page: 0,
-          priceRange: PRICE_FILTER.DEFAULT_RANGE,
-          searchAround: false,
-          sortBy: '_by_proximity',
-        })
-      })
-
-      it('should fetch data not using sort filter when not provided', async () => {
-        // given
-        fetchAlgolia.mockReturnValue(
-          new Promise(resolve => {
-            resolve({
-              hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
-              nbHits: 2,
-              nbPages: 0,
-              page: 0,
-            })
-          })
-        )
-        props.criteriacategories = []
-        parse.mockReturnValue({
-          'mots-cles': 'une librairie',
-          tri: '',
-        })
-
-        // when
-        await shallow(<Results {...props} />)
-
-        // then
-        expect(fetchAlgolia).toHaveBeenCalledWith({
-          aroundRadius: 100,
-          geolocation: { latitude: 40.1, longitude: 41.1 },
-          keywords: 'une librairie',
-          offerCategories: [],
-          offerIsDuo: false,
-          offerIsFree: false,
-          offerIsNew: false,
-          offerTypes: {
-            isDigital: false,
-            isEvent: false,
-            isThing: false,
-          },
-          page: 0,
-          priceRange: PRICE_FILTER.DEFAULT_RANGE,
-          searchAround: false,
-          sortBy: '',
-        })
-      })
-
-      it('should display the sort filter received from props', async () => {
-        // given
-        fetchAlgolia.mockReturnValueOnce(
-          new Promise(resolve => {
-            resolve({
-              hits: [{ objectID: 'AA', offer: { dates: [1586248757] } }],
-              nbHits: 1,
-              nbPages: 0,
-              page: 0,
-            })
-          })
-        )
-        props.criteria.sortBy = '_by_price'
-
-        // when
-        const wrapper = await shallow(<Results {...props} />)
-
-        // then
-        const sortCriterionLabel = wrapper.find(ResultsList).prop('sortCriterionLabel')
-        expect(sortCriterionLabel).toBe('Prix')
-      })
-
-      it('should display the sort filter received from url', async () => {
-        // given
-        fetchAlgolia.mockReturnValueOnce(
-          new Promise(resolve => {
-            resolve({
-              hits: [{ objectID: 'AA', offer: { dates: [1586248757] } }],
-              nbHits: 1,
-              nbPages: 0,
-              page: 0,
-            })
-          })
-        )
-        props.criteria.sortBy = ''
-        parse.mockReturnValue({
-          tri: '_by_price',
-        })
-
-        // when
-        const wrapper = await shallow(<Results {...props} />)
-
-        // then
-        const sortCriterionLabel = wrapper.find(ResultsList).prop('sortCriterionLabel')
-        expect(sortCriterionLabel).toBe('Prix')
       })
     })
   })
@@ -1825,7 +1449,6 @@ describe('components | Results', () => {
         page: 0,
         priceRange: PRICE_FILTER.DEFAULT_RANGE,
         searchAround: false,
-        sortBy: '',
       })
     })
 
@@ -1872,7 +1495,6 @@ describe('components | Results', () => {
         page: 0,
         priceRange: PRICE_FILTER.DEFAULT_RANGE,
         searchAround: false,
-        sortBy: '',
       })
     })
 
@@ -1918,7 +1540,6 @@ describe('components | Results', () => {
         },
         page: 0,
         priceRange: PRICE_FILTER.DEFAULT_RANGE,
-        sortBy: '',
         searchAround: false,
       })
     })
@@ -2034,13 +1655,11 @@ describe('components | Results', () => {
       expect(results.at(0).prop('geolocation')).toStrictEqual({ latitude: 40.1, longitude: 41.1 })
       expect(results.at(0).prop('isLoading')).toStrictEqual(false)
       expect(results.at(0).prop('loadMore')).toStrictEqual(expect.any(Function))
-      expect(results.at(0).prop('onSortClick')).toStrictEqual(expect.any(Function))
       expect(results.at(0).prop('results')).toStrictEqual([offer])
       expect(results.at(0).prop('resultsCount')).toStrictEqual(1)
       expect(results.at(0).prop('search')).toStrictEqual(
-        '?mots-cles=librairie&autour-de=oui&tri=&categories=&latitude=40.1&longitude=41.1'
+        '?mots-cles=librairie&autour-de=oui&categories=&latitude=40.1&longitude=41.1'
       )
-      expect(results.at(0).prop('sortCriterionLabel')).toStrictEqual('Pertinence')
       expect(results.at(0).prop('totalPagesNumber')).toStrictEqual(1)
     })
 
@@ -2165,7 +1784,6 @@ describe('components | Results', () => {
             place: false,
             user: false,
           },
-          sortBy: '',
           timeRange: [8, 24],
         },
         keywordsToSearch: 'vas-y',
@@ -2178,7 +1796,6 @@ describe('components | Results', () => {
         results: [{ objectID: 'AG', offer: { name: 'Livre nul' } }],
         resultsCount: 1,
         searchedKeywords: 'vas-y',
-        sortCriterionLabel: 'Pertinence',
         totalPagesNumber: 0,
       })
     })
@@ -2249,7 +1866,6 @@ describe('components | Results', () => {
         page: 0,
         priceRange: PRICE_FILTER.DEFAULT_RANGE,
         searchAround: true,
-        sortBy: '',
       })
     })
 
@@ -2306,7 +1922,6 @@ describe('components | Results', () => {
         latitude: 40,
         longitude: 2,
         place: 'Paris',
-        tri: '_by_price',
       })
 
       props.history = createMemoryHistory()
@@ -2339,7 +1954,7 @@ describe('components | Results', () => {
       // then
       expect(props.history.replace).toHaveBeenCalledWith({
         search:
-          '?mots-cles=librairie&autour-de=oui&tri=_by_price&categories=VISITE&latitude=40&longitude=2&place=Paris',
+          '?mots-cles=librairie&autour-de=oui&categories=VISITE&latitude=40&longitude=2&place=Paris',
       })
     })
 
@@ -2465,7 +2080,6 @@ describe('components | Results', () => {
         page: 0,
         priceRange: PRICE_FILTER.DEFAULT_RANGE,
         searchAround: false,
-        sortBy: '',
       })
     })
 
@@ -2605,7 +2219,6 @@ describe('components | Results', () => {
       props.parse.mockReturnValue({
         categories: 'VISITE;CINEMA',
         'mots-cles': 'librairie',
-        tri: '_by_price',
       })
 
       // when
@@ -2643,7 +2256,6 @@ describe('components | Results', () => {
           place: false,
           user: false,
         },
-        sortBy: '_by_price',
         timeRange: [8, 24],
       })
       expect(filters.prop('match')).toStrictEqual(props.match)
@@ -2656,37 +2268,6 @@ describe('components | Results', () => {
       expect(filters.prop('updateNumberOfActiveFilters')).toStrictEqual(expect.any(Function))
       expect(filters.prop('updatePlace')).toStrictEqual(expect.any(Function))
       expect(filters.prop('userGeolocation')).toStrictEqual(props.userGeolocation)
-    })
-
-    it('should render sort page when current route is /recherche/resultats/tri', () => {
-      // given
-      history.push('/recherche/resultats/tri')
-      props.parse.mockReturnValue({
-        categories: 'VISITE;CINEMA',
-        'mots-cles': 'librairie',
-        tri: '_by_price',
-      })
-
-      // when
-      const wrapper = mount(
-        <Router history={history}>
-          <Provider store={store}>
-            <Results {...props} />
-          </Provider>
-        </Router>
-      )
-
-      // then
-      const sortPage = wrapper.find(CriteriaSort)
-      expect(sortPage).toHaveLength(1)
-      expect(sortPage.prop('activeCriterionLabel')).toStrictEqual('Prix')
-      expect(sortPage.prop('backTo')).toStrictEqual('/recherche/resultats?mots-cles=librairie')
-      expect(sortPage.prop('criteria')).toStrictEqual(SORT_CRITERIA)
-      expect(sortPage.prop('geolocation')).toStrictEqual(props.userGeolocation)
-      expect(sortPage.prop('history')).toStrictEqual(props.history)
-      expect(sortPage.prop('match')).toStrictEqual(props.match)
-      expect(sortPage.prop('onCriterionSelection')).toStrictEqual(expect.any(Function))
-      expect(sortPage.prop('title')).toStrictEqual('Trier par')
     })
 
     describe('come back icon', () => {
@@ -2872,181 +2453,6 @@ describe('components | Results', () => {
       // then
       const expectedUrl = history.location.pathname + history.location.search
       expect(expectedUrl).toBe('/recherche/resultats/filtres?mots-cles=librairie')
-    })
-
-    it('should redirect to sort page when clicking on sort button', async () => {
-      // given
-      fetchAlgolia.mockReturnValue(
-        new Promise(resolve => {
-          resolve({
-            hits: [{ objectID: 'AA', offer: { dates: [1586248757] } }],
-            nbHits: 1,
-            nbPages: 0,
-            page: 0,
-          })
-        })
-      )
-      const history = createBrowserHistory()
-      history.push('/recherche/resultats?mots-cles=librairie')
-      props.history = history
-      const store = getStubStore({
-        data: (state = {}) => state,
-      })
-      const wrapper = await mount(
-        <Provider store={store}>
-          <Router history={history}>
-            <Results {...props} />
-          </Router>
-        </Provider>
-      )
-      wrapper.update()
-      const sortButton = wrapper.find({ children: 'Pertinence' })
-
-      // when
-      await sortButton.simulate('click')
-
-      // then
-      const expectedUrl = history.location.pathname + history.location.search
-      expect(expectedUrl).toBe('/recherche/resultats/tri?mots-cles=librairie')
-    })
-
-    it('should change sort button name after sort criterion selection', async () => {
-      // given
-      fetchAlgolia.mockReturnValue(
-        new Promise(resolve => {
-          resolve({
-            hits: [{ objectID: 'AA', offer: { dates: [1586248757] } }],
-            nbHits: 1,
-            nbPages: 0,
-            page: 0,
-          })
-        })
-      )
-      const history = createBrowserHistory()
-      history.push('/recherche/resultats/tri?mots-cles=librairie&tri=_by_price')
-      props.history = history
-      const store = getStubStore({
-        data: (state = {}) => state,
-      })
-      const wrapper = await mount(
-        <Provider store={store}>
-          <Router history={history}>
-            <Results {...props} />
-          </Router>
-        </Provider>
-      )
-
-      // when
-      const byRelevanceButton = wrapper.find({ children: 'Pertinence' })
-      await byRelevanceButton.simulate('click')
-      wrapper.update()
-
-      // then
-      const expectedUri = history.location.pathname + history.location.search
-      expect(expectedUri).toBe('/recherche/resultats?mots-cles=librairie&tri=')
-      const sortButton = wrapper.find({ children: 'Pertinence' })
-      expect(sortButton).toHaveLength(1)
-    })
-
-    it('should fetch new results on sort criterion selection', () => {
-      // given
-      const history = createBrowserHistory()
-      history.push('/recherche/resultats/tri?mots-cles=&tri=_by_price')
-      props.history = history
-      const store = getStubStore({
-        data: (state = {}) => state,
-      })
-      const wrapper = mount(
-        <Provider store={store}>
-          <Router history={history}>
-            <Results {...props} />
-          </Router>
-        </Provider>
-      )
-
-      // when
-      const byRelevanceButton = wrapper.find({ children: 'Pertinence' })
-      byRelevanceButton.simulate('click')
-
-      // then
-      expect(fetchAlgolia).toHaveBeenCalledTimes(2)
-      expect(fetchAlgolia).toHaveBeenNthCalledWith(2, {
-        aroundRadius: 100,
-        geolocation: { latitude: 40.1, longitude: 41.1 },
-        keywords: '',
-        offerCategories: [],
-        offerIsDuo: false,
-        offerIsFree: false,
-        offerIsNew: false,
-        offerTypes: {
-          isDigital: false,
-          isEvent: false,
-          isThing: false,
-        },
-        page: 0,
-        priceRange: PRICE_FILTER.DEFAULT_RANGE,
-        searchAround: false,
-        sortBy: '',
-      })
-    })
-
-    it('should replace and not merge results with new ones on sort criterion selection', async () => {
-      // given
-      const history = createBrowserHistory()
-      fetchAlgolia
-        .mockReturnValueOnce(
-          new Promise(resolve => {
-            resolve({
-              hits: [
-                { objectID: 'AA', offer: { dates: [1586248757] } },
-                {
-                  objectID: 'BB',
-                  offer: { dates: [1586248757] },
-                },
-              ],
-              nbHits: 1,
-              nbPages: 0,
-              page: 0,
-            })
-          })
-        )
-        .mockReturnValue(
-          new Promise(resolve => {
-            resolve({
-              hits: [
-                { objectID: 'BB', offer: { dates: [1586248757] } },
-                {
-                  objectID: 'AA',
-                  offer: { dates: [1586248757] },
-                },
-              ],
-              nbHits: 1,
-              nbPages: 0,
-              page: 0,
-            })
-          })
-        )
-      history.push('/recherche/resultats/tri?mots-cles=&tri=_by_price')
-      props.history = history
-      const store = getStubStore({
-        data: (state = {}) => state,
-      })
-      const wrapper = await mount(
-        <Provider store={store}>
-          <Router history={history}>
-            <Results {...props} />
-          </Router>
-        </Provider>
-      )
-
-      // when
-      const byRelevanceButton = wrapper.find({ children: 'Pertinence' })
-      await byRelevanceButton.simulate('click')
-
-      // then
-      wrapper.update()
-      const results = wrapper.find(Result)
-      expect(results).toHaveLength(2)
     })
   })
 })

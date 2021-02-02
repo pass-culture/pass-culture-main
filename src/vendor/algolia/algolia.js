@@ -1,7 +1,14 @@
 import algoliasearch from 'algoliasearch'
 import { DATE_FILTER } from '../../components/pages/search/Filters/filtersEnums'
-import { computeTimeRangeFromHoursToSeconds, TIMESTAMP } from '../../components/pages/search/utils/date/time'
-import { ALGOLIA_APPLICATION_ID, ALGOLIA_INDEX_NAME, ALGOLIA_SEARCH_API_KEY } from '../../utils/config'
+import {
+  computeTimeRangeFromHoursToSeconds,
+  TIMESTAMP,
+} from '../../components/pages/search/utils/date/time'
+import {
+  ALGOLIA_APPLICATION_ID,
+  ALGOLIA_INDEX_NAME,
+  ALGOLIA_SEARCH_API_KEY,
+} from '../../utils/config'
 import { FACETS } from './facets'
 import { DEFAULT_RADIUS_IN_KILOMETERS, FILTERS, RADIUS_IN_METERS_FOR_NO_OFFERS } from './filters'
 
@@ -24,7 +31,6 @@ export const fetchAlgolia = ({
   },
   page = 0,
   priceRange = [],
-  sortBy = '',
   searchAround = false,
   tags = [],
   timeRange = [],
@@ -32,14 +38,22 @@ export const fetchAlgolia = ({
   const searchParameters = {
     page,
     ...buildFacetFilters({ offerCategories, offerTypes, offerIsDuo, tags }),
-    ...buildNumericFilters({ beginningDatetime, date, endingDatetime, offerIsFree, offerIsNew, priceRange, timeRange }),
+    ...buildNumericFilters({
+      beginningDatetime,
+      date,
+      endingDatetime,
+      offerIsFree,
+      offerIsNew,
+      priceRange,
+      timeRange,
+    }),
     ...buildGeolocationParameter(aroundRadius, geolocation, searchAround),
   }
   if (hitsPerPage) {
     searchParameters.hitsPerPage = hitsPerPage
   }
   const client = algoliasearch(ALGOLIA_APPLICATION_ID, ALGOLIA_SEARCH_API_KEY)
-  const index = client.initIndex(ALGOLIA_INDEX_NAME + sortBy)
+  const index = client.initIndex(ALGOLIA_INDEX_NAME)
 
   return index.search(keywords, searchParameters)
 }
@@ -75,7 +89,15 @@ const buildFacetFilters = ({ offerCategories, offerTypes, offerIsDuo, tags }) =>
   return atLeastOneFacetFilter ? { facetFilters } : {}
 }
 
-const buildNumericFilters = ({ beginningDatetime, date, endingDatetime, offerIsFree, offerIsNew, priceRange, timeRange }) => {
+const buildNumericFilters = ({
+  beginningDatetime,
+  date,
+  endingDatetime,
+  offerIsFree,
+  offerIsNew,
+  priceRange,
+  timeRange,
+}) => {
   const priceRangePredicate = buildOfferPriceRangePredicate(offerIsFree, priceRange)
   const datePredicate = buildDatePredicate(date, timeRange)
   const homepageDatePredicate = buildHomepageDatePredicate(beginningDatetime, endingDatetime)
@@ -162,15 +184,19 @@ const buildDateAndTimePredicate = (date, timeRange) => {
   let dateFilter, rangeTimestamps
   switch (date.option) {
     case DATE_FILTER.CURRENT_WEEK.value:
-      dateFilter = TIMESTAMP.WEEK.getAllFromTimeRangeAndDate(date.selectedDate, timeRange).map(
-        timestampsRangeForADay =>
-          getDatePredicate(timestampsRangeForADay[0], timestampsRangeForADay[1]),
+      dateFilter = TIMESTAMP.WEEK.getAllFromTimeRangeAndDate(
+        date.selectedDate,
+        timeRange
+      ).map(timestampsRangeForADay =>
+        getDatePredicate(timestampsRangeForADay[0], timestampsRangeForADay[1])
       )
       break
     case DATE_FILTER.CURRENT_WEEK_END.value:
-      dateFilter = TIMESTAMP.WEEK_END.getAllFromTimeRangeAndDate(date.selectedDate, timeRange).map(
-        timestampsRangeForADay =>
-          getDatePredicate(timestampsRangeForADay[0], timestampsRangeForADay[1]),
+      dateFilter = TIMESTAMP.WEEK_END.getAllFromTimeRangeAndDate(
+        date.selectedDate,
+        timeRange
+      ).map(timestampsRangeForADay =>
+        getDatePredicate(timestampsRangeForADay[0], timestampsRangeForADay[1])
       )
       break
     default:
@@ -248,7 +274,8 @@ const buildGeolocationParameter = (aroundRadius, geolocation, searchAround) => {
 
       return {
         aroundLatLng: `${latitude}, ${longitude}`,
-        aroundRadius: searchAround && radiusIsPositive ? aroundRadiusInMeters : FILTERS.UNLIMITED_RADIUS,
+        aroundRadius:
+          searchAround && radiusIsPositive ? aroundRadiusInMeters : FILTERS.UNLIMITED_RADIUS,
       }
     }
   }

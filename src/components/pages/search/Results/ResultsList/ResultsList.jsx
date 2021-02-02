@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
 import InfiniteScroll from 'react-infinite-scroller'
-import { LOCALE_FRANCE } from "../../../../../utils/date/date"
-import Icon from '../../../../layout/Icon/Icon'
+import { LOCALE_FRANCE } from '../../../../../utils/date/date'
 import Result from './Result/Result'
 
 const getNumberOfResultsToDisplay = resultsCount => {
@@ -15,11 +14,9 @@ export const ResultsList = ({
   geolocation,
   isLoading,
   loadMore,
-  onSortClick,
   results,
   resultsCount,
   search,
-  sortCriterionLabel,
   totalPagesNumber,
 }) => {
   return (
@@ -28,16 +25,6 @@ export const ResultsList = ({
         <span className="sr-items-number">
           {getNumberOfResultsToDisplay(resultsCount)}
         </span>
-        <button
-          className="sr-items-header-button"
-          onClick={onSortClick}
-          type="button"
-        >
-          <Icon svg="picto-sort" />
-          <span>
-            {sortCriterionLabel}
-          </span>
-        </button>
       </div>
       <InfiniteScroll
         hasMore={!isLoading && currentPage + 1 < totalPagesNumber}
@@ -70,7 +57,6 @@ ResultsList.propTypes = {
   }).isRequired,
   isLoading: PropTypes.bool.isRequired,
   loadMore: PropTypes.func.isRequired,
-  onSortClick: PropTypes.func.isRequired,
   results: PropTypes.arrayOf(
     PropTypes.shape({
       _geoloc: PropTypes.shape({
@@ -94,6 +80,5 @@ ResultsList.propTypes = {
   ).isRequired,
   resultsCount: PropTypes.number.isRequired,
   search: PropTypes.string,
-  sortCriterionLabel: PropTypes.string.isRequired,
   totalPagesNumber: PropTypes.number.isRequired,
 }

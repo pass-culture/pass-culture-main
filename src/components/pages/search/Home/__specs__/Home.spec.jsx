@@ -44,12 +44,6 @@ describe('components | Home', () => {
         latitude: 40,
         longitude: 41,
       },
-      sortCriterion: {
-        index: '',
-        icon: 'ico-relevance',
-        label: 'Pertinence',
-        requiresGeolocation: false,
-      },
     }
   })
 
@@ -88,7 +82,6 @@ describe('components | Home', () => {
       user: false,
     }
     props.categoryCriterion.facetFilter = 'CINEMA'
-    props.sortCriterion.index = '_by_price'
     const wrapper = mountHomeInRouter(props, history)
     const form = wrapper.find('form')
     const input = form.find('input')
@@ -107,7 +100,7 @@ describe('components | Home', () => {
     // then
     expect(history.location.pathname).toStrictEqual('/recherche/resultats')
     expect(history.location.search).toStrictEqual(
-      '?mots-cles=search keyword&autour-de=non&tri=_by_price&categories=CINEMA&latitude=40&longitude=41'
+      '?mots-cles=search keyword&autour-de=non&categories=CINEMA&latitude=40&longitude=41'
     )
   })
 
@@ -136,7 +129,7 @@ describe('components | Home', () => {
     // then
     expect(history.location.pathname).toStrictEqual('/recherche/resultats')
     expect(history.location.search).toStrictEqual(
-      '?mots-cles=search keyword&autour-de=oui&tri=&categories=&latitude=40&longitude=41'
+      '?mots-cles=search keyword&autour-de=oui&categories=&latitude=40&longitude=41'
     )
   })
 
@@ -165,7 +158,7 @@ describe('components | Home', () => {
     // then
     expect(history.location.pathname).toStrictEqual('/recherche/resultats')
     expect(history.location.search).toStrictEqual(
-      "?mots-cles=search keyword&autour-de=oui&tri=&categories=&latitude=59.2&longitude=4.3&place=34 avenue de l'opéra, Paris"
+      "?mots-cles=search keyword&autour-de=oui&categories=&latitude=59.2&longitude=4.3&place=34 avenue de l'opéra, Paris"
     )
   })
 
@@ -175,7 +168,7 @@ describe('components | Home', () => {
 
     // then
     const criterionItems = wrapper.find(CriterionItem)
-    expect(criterionItems).toHaveLength(3)
+    expect(criterionItems).toHaveLength(2)
     expect(criterionItems.at(0).prop('icon')).toBe('ico-gem-stone')
     expect(criterionItems.at(0).prop('label')).toBe('Je cherche')
     expect(criterionItems.at(0).prop('linkTo')).toBe('/recherche/criteres-categorie')
@@ -184,10 +177,6 @@ describe('components | Home', () => {
     expect(criterionItems.at(1).prop('label')).toBe('Où')
     expect(criterionItems.at(1).prop('linkTo')).toBe('/recherche/criteres-localisation')
     expect(criterionItems.at(1).prop('selectedFilter')).toBe('Partout')
-    expect(criterionItems.at(2).prop('icon')).toBe('ico-relevance')
-    expect(criterionItems.at(2).prop('label')).toBe('Trier par')
-    expect(criterionItems.at(2).prop('linkTo')).toBe('/recherche/criteres-tri')
-    expect(criterionItems.at(2).prop('selectedFilter')).toBe('Pertinence')
   })
 })
 

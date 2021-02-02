@@ -164,11 +164,7 @@ describe('components | Place', () => {
     wrapper.update()
 
     // then
-    const suggestedPlaces = wrapper
-      .find(Place)
-      .find('ul')
-      .find('li')
-      .find('button')
+    const suggestedPlaces = wrapper.find(Place).find('ul').find('li').find('button')
     expect(suggestedPlaces).toHaveLength(2)
 
     const firstSuggestedPlace = suggestedPlaces.at(0).find('span')
@@ -228,11 +224,7 @@ describe('components | Place', () => {
     wrapper.update()
 
     // then
-    const suggestedPlaces = wrapper
-      .find(Place)
-      .find('ul')
-      .find('li')
-      .find('button')
+    const suggestedPlaces = wrapper.find(Place).find('ul').find('li').find('button')
     expect(suggestedPlaces).toHaveLength(2)
 
     const firstSuggestedPlace = suggestedPlaces.at(0).find('span')
@@ -258,10 +250,7 @@ describe('components | Place', () => {
     await input.simulate('change', { target: { value: '' } })
 
     // then
-    const suggestedPlaces = wrapper
-      .find('ul')
-      .find('li')
-      .find('button')
+    const suggestedPlaces = wrapper.find('ul').find('li').find('button')
     expect(suggestedPlaces).toHaveLength(0)
   })
 
@@ -353,10 +342,7 @@ describe('components | Place', () => {
     // then
     const inputText = wrapper.find('input')
     expect(inputText.prop('value')).toBe('')
-    const suggestedPlaces = wrapper
-      .find('ul')
-      .find('li')
-      .find('button')
+    const suggestedPlaces = wrapper.find('ul').find('li').find('button')
     expect(suggestedPlaces).toHaveLength(0)
     expect(input.focus).toHaveBeenCalledTimes(1)
   })
@@ -408,10 +394,7 @@ describe('components | Place', () => {
     const input = wrapper.find('input')
     await input.simulate('change', { target: { value: 'Pari' } })
     await wrapper.update()
-    const suggestedPlaces = wrapper
-      .find('ul')
-      .find('li')
-      .find('button')
+    const suggestedPlaces = wrapper.find('ul').find('li').find('button')
 
     // When
     suggestedPlaces.at(0).simulate('click', {
@@ -442,7 +425,7 @@ describe('components | Place', () => {
     // given
     jest.spyOn(props.history, 'push').mockImplementation(() => jest.fn())
     props.history.location.pathname = '/recherche/resultats/filtres/localisation/place'
-    props.history.location.search = '?mots-cles=&autour-de=non&tri=&categories='
+    props.history.location.search = '?mots-cles=&autour-de=non&categories='
     fetchPlaces.mockReturnValue(
       new Promise(resolve => {
         resolve([
@@ -485,10 +468,7 @@ describe('components | Place', () => {
     const input = wrapper.find('input')
     await input.simulate('change', { target: { value: 'Pari' } })
     await wrapper.update()
-    const suggestedPlaces = wrapper
-      .find('ul')
-      .find('li')
-      .find('button')
+    const suggestedPlaces = wrapper.find('ul').find('li').find('button')
 
     // When
     suggestedPlaces.at(0).simulate('click', {
@@ -513,7 +493,7 @@ describe('components | Place', () => {
       },
     })
     expect(props.history.push).toHaveBeenCalledWith(
-      '/recherche/resultats/filtres?mots-cles=&autour-de=non&tri=&categories='
+      '/recherche/resultats/filtres?mots-cles=&autour-de=non&categories='
     )
   })
 
@@ -549,10 +529,7 @@ describe('components | Place', () => {
     jest.spyOn(input, 'blur').mockImplementation(jest.fn())
 
     // When
-    const resultsList = wrapper
-      .find(Place)
-      .find('div')
-      .at(2)
+    const resultsList = wrapper.find(Place).find('div').at(2)
     resultsList.simulate('scroll')
 
     // then

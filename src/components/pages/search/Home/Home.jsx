@@ -15,13 +15,7 @@ export class Home extends PureComponent {
 
   handleOnSubmit = event => {
     event.preventDefault()
-    const {
-      categoryCriterion,
-      geolocationCriterion,
-      history,
-      sortCriterion,
-      userGeolocation,
-    } = this.props
+    const { categoryCriterion, geolocationCriterion, history, userGeolocation } = this.props
     const { keywordsToSearch } = this.state
     const { place, searchAround } = geolocationCriterion
     const { geolocation: placeGeolocation, name } = place || {}
@@ -29,11 +23,10 @@ export class Home extends PureComponent {
 
     const autourDe = checkIfSearchAround(searchAround)
     const categories = categoryCriterion.facetFilter
-    const tri = sortCriterion.index
 
     const search =
       `?mots-cles=${keywordsToSearch}` +
-      `&autour-de=${autourDe}&tri=${tri}&categories=${categories}` +
+      `&autour-de=${autourDe}&categories=${categories}` +
       `&latitude=${searchAround.place ? placeGeolocation.latitude : userGeolocation.latitude}` +
       `&longitude=${searchAround.place ? placeGeolocation.longitude : userGeolocation.longitude}` +
       `${searchAround.place ? `&place=${long}` : ''}`
@@ -56,7 +49,7 @@ export class Home extends PureComponent {
 
   render() {
     const { keywordsToSearch } = this.state
-    const { categoryCriterion, geolocationCriterion, sortCriterion } = this.props
+    const { categoryCriterion, geolocationCriterion } = this.props
     return (
       <main className="search-home-page">
         <Header
@@ -79,13 +72,6 @@ export class Home extends PureComponent {
             label="Où"
             linkTo="/recherche/criteres-localisation"
             selectedFilter={geolocationCriterion.params.label}
-          />
-          <span className="sh-criteria-separator" />
-          <CriterionItem
-            icon={sortCriterion.icon}
-            label="Trier par"
-            linkTo="/recherche/criteres-tri"
-            selectedFilter={sortCriterion.label}
           />
         </ul>
         <div className="sh-search-wrapper">
@@ -132,12 +118,6 @@ Home.propTypes = {
     }).isRequired,
   }).isRequired,
   history: PropTypes.shape({ push: PropTypes.func }).isRequired,
-  sortCriterion: PropTypes.shape({
-    icon: PropTypes.string.isRequired,
-    index: PropTypes.string.isRequired,
-    label: PropTypes.string.isRequired,
-    requiresGeolocation: PropTypes.bool.isRequired,
-  }).isRequired,
   userGeolocation: PropTypes.shape({
     latitude: PropTypes.number,
     longitude: PropTypes.number,

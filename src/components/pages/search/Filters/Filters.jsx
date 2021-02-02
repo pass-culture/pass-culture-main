@@ -37,7 +37,6 @@ export class Filters extends PureComponent {
         place: false,
         user: false,
       },
-      sortBy = '',
       timeRange = TIME_FILTER.DEFAULT_RANGE,
     } = props.initialFilters
     const offerCategories = this.buildCategoriesStateFromProps()
@@ -55,7 +54,6 @@ export class Filters extends PureComponent {
         offerTypes,
         priceRange,
         searchAround,
-        sortBy,
         timeRange,
       },
       place: props.place,
@@ -87,7 +85,6 @@ export class Filters extends PureComponent {
     offerTypes,
     priceRange,
     searchAround,
-    sortBy,
     timeRange,
   }) => {
     const { showFailModal, updateFilteredOffers } = this.props
@@ -105,7 +102,6 @@ export class Filters extends PureComponent {
       offerTypes,
       priceRange,
       searchAround: searchAroundUserOrPlace,
-      sortBy,
       timeRange,
     })
       .then(offers => {
@@ -133,7 +129,6 @@ export class Filters extends PureComponent {
       offerTypes,
       priceRange,
       searchAround,
-      sortBy,
       timeRange,
     } = filters
     const offerCategories = this.getSelectedCategories()
@@ -151,7 +146,6 @@ export class Filters extends PureComponent {
       offerTypes,
       priceRange,
       searchAround,
-      sortBy,
       timeRange: offerIsFilteredByTime ? timeRange : [],
     })
 
@@ -162,17 +156,16 @@ export class Filters extends PureComponent {
   buildSearchParameter = () => {
     const { filters, place, userGeolocation } = this.state
     const { history, parse } = this.props
-    const { searchAround, sortBy } = filters
+    const { searchAround } = filters
     const offerCategories = this.getSelectedCategories()
     const autourDe = checkIfSearchAround(searchAround)
     const categories = offerCategories.join(';') || ''
-    const tri = sortBy
     const queryParams = parse(history.location.search)
     const keywords = queryParams['mots-cles'] || ''
 
     return (
       `?mots-cles=${keywords}` +
-      `&autour-de=${autourDe}&tri=${tri}&categories=${categories}` +
+      `&autour-de=${autourDe}&categories=${categories}` +
       `&latitude=${searchAround.place ? place.geolocation.latitude : userGeolocation.latitude}` +
       `&longitude=${searchAround.place ? place.geolocation.longitude : userGeolocation.longitude}` +
       `${searchAround.place ? `&place=${place.name.long}` : ''}`
@@ -986,7 +979,6 @@ Filters.propTypes = {
       place: PropTypes.bool,
       user: PropTypes.bool,
     }),
-    sortBy: PropTypes.string,
     timeRange: PropTypes.arrayOf(PropTypes.number),
   }),
   match: PropTypes.shape().isRequired,

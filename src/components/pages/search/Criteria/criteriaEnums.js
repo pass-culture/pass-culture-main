@@ -8,14 +8,14 @@ export const GEOLOCATION_CRITERIA = {
     label: 'Autour de moi',
     icon: 'ico-around-me',
     requiresGeolocation: true,
-  }
+  },
 }
 
 export const CATEGORY_CRITERIA = {
   ALL: {
     label: 'Toutes les catégories',
     icon: 'ico-all',
-    facetFilter: ''
+    facetFilter: '',
   },
   CINEMA: {
     label: 'Cinéma',
@@ -72,24 +72,4 @@ export const CATEGORY_CRITERIA = {
     icon: 'ico-instrument',
     facetFilter: 'INSTRUMENT',
   },
-}
-
-export const SORT_CRITERIA = {
-  RELEVANCE: {
-    label: 'Pertinence',
-    icon: 'ico-relevance',
-    index: '',
-    requiresGeolocation: false,
-  },
-  PRICE: {
-    label: 'Prix',
-    icon: 'ico-price',
-    index: '_by_price',
-    requiresGeolocation: false,
-  },
-}
-
-export const GEOLOCATED_CRITERIA = {
-  ...GEOLOCATION_CRITERIA,
-  ...SORT_CRITERIA,
 }

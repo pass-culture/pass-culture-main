@@ -1,6 +1,13 @@
 import algoliasearch from 'algoliasearch'
-import { computeTimeRangeFromHoursToSeconds, TIMESTAMP } from '../../../components/pages/search/utils/date/time'
-import { ALGOLIA_APPLICATION_ID, ALGOLIA_INDEX_NAME, ALGOLIA_SEARCH_API_KEY } from '../../../utils/config'
+import {
+  computeTimeRangeFromHoursToSeconds,
+  TIMESTAMP,
+} from '../../../components/pages/search/utils/date/time'
+import {
+  ALGOLIA_APPLICATION_ID,
+  ALGOLIA_INDEX_NAME,
+  ALGOLIA_SEARCH_API_KEY,
+} from '../../../utils/config'
 import { fetchAlgolia } from '../algolia'
 
 jest.mock('algoliasearch')
@@ -281,42 +288,6 @@ describe('fetchAlgolia', () => {
         facetFilters: [['offer.category:SPECTACLE', 'offer.category:LIVRE']],
         page: 0,
       })
-    })
-  })
-
-  describe('sorting', () => {
-    it('should fetch with given index when index suffix is provided', () => {
-      // given
-      const keywords = 'searched keywords'
-      const sortBy = '_by_proximity'
-
-      // when
-      fetchAlgolia({
-        keywords: keywords,
-        sortBy: sortBy,
-      })
-
-      // then
-      expect(search).toHaveBeenCalledWith(keywords, {
-        page: 0,
-      })
-      expect(initIndex).toHaveBeenCalledWith('indexName_by_proximity')
-    })
-
-    it('should fetch using default index when no index suffix is provided', () => {
-      // given
-      const keywords = 'searched keywords'
-
-      // when
-      fetchAlgolia({
-        keywords: keywords,
-      })
-
-      // then
-      expect(search).toHaveBeenCalledWith(keywords, {
-        page: 0,
-      })
-      expect(initIndex).toHaveBeenCalledWith('indexName')
     })
   })
 
@@ -837,7 +808,7 @@ describe('fetchAlgolia', () => {
         // Then
         expect(TIMESTAMP.WEEK.getAllFromTimeRangeAndDate).toHaveBeenCalledWith(
           selectedDate,
-          timeRange,
+          timeRange
         )
         expect(search).toHaveBeenCalledWith(keywords, {
           numericFilters: [
@@ -852,7 +823,10 @@ describe('fetchAlgolia', () => {
         const keywords = ''
         const selectedDate = new Date(2020, 3, 19, 11)
         const timeRange = [18, 22]
-        TIMESTAMP.WEEK_END.getAllFromTimeRangeAndDate.mockReturnValue([[123, 124], [225, 226]])
+        TIMESTAMP.WEEK_END.getAllFromTimeRangeAndDate.mockReturnValue([
+          [123, 124],
+          [225, 226],
+        ])
 
         // When
         fetchAlgolia({
@@ -867,7 +841,7 @@ describe('fetchAlgolia', () => {
         // Then
         expect(TIMESTAMP.WEEK_END.getAllFromTimeRangeAndDate).toHaveBeenCalledWith(
           selectedDate,
-          timeRange,
+          timeRange
         )
         expect(search).toHaveBeenCalledWith(keywords, {
           numericFilters: [[`offer.dates: 123 TO 124`, `offer.dates: 225 TO 226`]],
@@ -991,7 +965,6 @@ describe('fetchAlgolia', () => {
         isThing: false,
       }
       const page = 2
-      const sortBy = '_by_price'
 
       // when
       fetchAlgolia({
@@ -1000,7 +973,6 @@ describe('fetchAlgolia', () => {
         offerCategories: offerCategories,
         offerTypes: offerTypes,
         page: page,
-        sortBy: sortBy,
       })
 
       // then
@@ -1010,10 +982,10 @@ describe('fetchAlgolia', () => {
         aroundLatLng: '42, 43',
         aroundRadius: 'all',
       })
-      expect(initIndex).toHaveBeenCalledWith('indexName_by_price')
+      expect(initIndex).toHaveBeenCalledWith('indexName')
     })
 
-    it('should fetch event offers for categories pratique & spectacle around me ordered by price', () => {
+    it('should fetch event offers for categories pratique & spectacle around me', () => {
       // given
       const geolocation = {
         latitude: 42,
@@ -1027,7 +999,6 @@ describe('fetchAlgolia', () => {
         isEvent: true,
         isThing: false,
       }
-      const sortBy = '_by_price'
 
       // when
       fetchAlgolia({
@@ -1036,7 +1007,6 @@ describe('fetchAlgolia', () => {
         offerCategories,
         offerIsDuo,
         offerTypes,
-        sortBy,
       })
 
       // then
@@ -1049,10 +1019,10 @@ describe('fetchAlgolia', () => {
         aroundLatLng: '42, 43',
         aroundRadius: 'all',
       })
-      expect(initIndex).toHaveBeenCalledWith('indexName_by_price')
+      expect(initIndex).toHaveBeenCalledWith('indexName')
     })
 
-    it('should fetch duo & free event offers for categories pratique & spectacle around me ordered by price', () => {
+    it('should fetch duo & free event offers for categories pratique & spectacle around me', () => {
       // given
       const geolocation = {
         latitude: 42,
@@ -1067,7 +1037,6 @@ describe('fetchAlgolia', () => {
         isEvent: true,
         isThing: false,
       }
-      const sortBy = '_by_price'
 
       // when
       fetchAlgolia({
@@ -1077,7 +1046,6 @@ describe('fetchAlgolia', () => {
         offerIsDuo,
         priceRange,
         offerTypes,
-        sortBy,
       })
 
       // then
@@ -1092,7 +1060,7 @@ describe('fetchAlgolia', () => {
         aroundLatLng: '42, 43',
         aroundRadius: 'all',
       })
-      expect(initIndex).toHaveBeenCalledWith('indexName_by_price')
+      expect(initIndex).toHaveBeenCalledWith('indexName')
     })
   })
 
@@ -1125,10 +1093,7 @@ describe('fetchAlgolia', () => {
       expect(search).toHaveBeenCalledWith('', {
         page: 0,
         facetFilters: [
-          [
-            'offer.tags:Semaine du 14 juillet',
-            'offer.tags:Offre cinema spéciale pass culture',
-          ],
+          ['offer.tags:Semaine du 14 juillet', 'offer.tags:Offre cinema spéciale pass culture'],
         ],
       })
     })
