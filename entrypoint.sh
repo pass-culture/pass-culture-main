@@ -1,7 +1,9 @@
 #!/bin/bash
 set -e
 
-python src/pcapi/scripts/pc.py install_data && python src/pcapi/scripts/pc.py install_postgres_extension && alembic upgrade head
+python src/pcapi/scripts/pc.py install_data
+python src/pcapi/scripts/pc.py install_postgres_extension 
+alembic upgrade head
 
 gunicorn \
     --preload \
