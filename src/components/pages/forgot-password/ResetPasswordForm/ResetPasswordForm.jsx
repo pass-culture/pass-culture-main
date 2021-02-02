@@ -6,7 +6,10 @@ import FormFooter from '../../../forms/FormFooter'
 import HiddenField from '../../../forms/inputs/HiddenField'
 import PasswordField from '../../../forms/inputs/PasswordField'
 import withNotRequiredLogin from '../../../hocs/with-login/withNotRequiredLogin'
-import withResetForm, { resetFormWrappedComponentPropTypes } from '../hocs/withResetForm'
+import withResetForm, {
+  resetFormWrappedComponentDefaultPropTypes,
+  resetFormWrappedComponentPropTypes,
+} from '../hocs/withResetForm'
 
 const cancelLink = {
   className: 'is-white-text',
@@ -76,6 +79,7 @@ export const ResetPasswordForm = ({
   </Fragment>
 )
 
+ResetPasswordForm.defaultPropTypes = resetFormWrappedComponentDefaultPropTypes
 ResetPasswordForm.propTypes = resetFormWrappedComponentPropTypes
 
 function validator(formValues) {

@@ -4,7 +4,10 @@ import FormError from '../../../forms/FormError'
 import FormFooter from '../../../forms/FormFooter'
 import InputField from '../../../forms/inputs/InputField'
 import withNotRequiredLogin from '../../../hocs/with-login/withNotRequiredLogin'
-import withResetForm, { resetFormWrappedComponentPropTypes } from '../hocs/withResetForm'
+import withResetForm, {
+  resetFormWrappedComponentDefaultPropTypes,
+  resetFormWrappedComponentPropTypes,
+} from '../hocs/withResetForm'
 
 export const RequestEmailForm = ({ canSubmit, hasSubmitErrors, isLoading }) => (
   <Fragment>
@@ -46,6 +49,7 @@ export const RequestEmailForm = ({ canSubmit, hasSubmitErrors, isLoading }) => (
   </Fragment>
 )
 
+RequestEmailForm.defaultPropTypes = resetFormWrappedComponentDefaultPropTypes
 RequestEmailForm.propTypes = resetFormWrappedComponentPropTypes
 
 export default withNotRequiredLogin(

@@ -131,6 +131,10 @@ const resetPasswordFormPropTypes = {
   location: PropTypes.shape().isRequired,
 }
 
+export const resetFormWrappedComponentDefaultPropTypes = {
+  validationErrors: {},
+}
+
 export const resetFormWrappedComponentPropTypes = {
   canSubmit: PropTypes.bool.isRequired,
   hasSubmitErrors: PropTypes.bool.isRequired,
