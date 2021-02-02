@@ -1,3 +1,5 @@
+from time import time
+
 from flask import current_app as app
 
 from pcapi.algolia.infrastructure.api import clear_index
@@ -8,6 +10,7 @@ from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_alg
 from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_by_venue
 from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_by_venue_provider
 from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_from_database
+from pcapi.utils.logger import logger
 
 
 @app.manager.command
@@ -62,6 +65,22 @@ def process_expired_offers(all_offers: bool = False):
 @app.manager.option("-v", "--venue-id", help="Venue id to be processed")
 @app.manager.option("-vp", "--venue-provider-id", help="Venue provider id to be processed")
 def process_venue_provider_offers_for_algolia(provider_id: str, venue_id: int, venue_provider_id: int):
+    start = time()
+    logger.info(
+        "Starting process_venue_provider_offers_for_algolia with provider_id=%s, venue_id=%s and venue_provider_id=%s",
+        provider_id,
+        venue_id,
+        venue_provider_id,
+    )
+
     _process_venue_provider(
         client=app.redis_client, provider_id=provider_id, venue_id=venue_id, venue_provider_id=venue_provider_id
+    )
+
+    logger.info(
+        "Finished process_venue_provider_offers_for_algolia with provider_id=%s, venue_id=%s and venue_provider_id=%s elapsed=%.2f",
+        provider_id,
+        venue_id,
+        venue_provider_id,
+        time() - start,
     )
