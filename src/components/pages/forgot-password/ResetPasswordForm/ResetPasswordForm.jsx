@@ -21,57 +21,60 @@ const submitOptions = {
   label: 'OK',
 }
 
-export const ResetPasswordForm = props => {
-  return (
-    <Fragment>
-      <div>
-        <div className="fs22">
-          <h2 className="is-italic is-medium">
-            <span className="is-block">
-              {'Saisis ci-dessous'}
-            </span>
-            <span className="is-block">
-              {'ton nouveau mot de passe.'}
-            </span>
-          </h2>
-          <p className="mt12 fs16">
-            {
-              'Il doit contenir au minimum 12 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.'
-            }
-          </p>
-          <p className="is-block is-regular fs13 mt18">
-            <span>
-              {'*'}
-            </span>
-            &nbsp;
-            {'Champs obligatoires'}
-          </p>
-        </div>
-        <div>
-          <PasswordField
-            disabled={props.isLoading}
-            label="Saisis ton nouveau mot de passe"
-            name="newPassword"
-            required
-            theme="primary"
-          />
-          <PasswordField
-            disabled={props.isLoading}
-            label="Confirmes ton nouveau mot de passe"
-            name="newPasswordConfirm"
-            required
-            theme="primary"
-          />
-          <HiddenField name="token" />
-          {props.hasValidationErrors && props.validationErrors[FORM_ERROR] && (
-            <FormError customMessage={props.validationErrors[FORM_ERROR]} />
-          )}
-        </div>
+export const ResetPasswordForm = ({
+  isLoading,
+  hasValidationErrors,
+  validationErrors,
+  canSubmit,
+}) => (
+  <Fragment>
+    <div>
+      <div className="fs22">
+        <h2 className="is-italic is-medium">
+          <span className="is-block">
+            {'Saisis ci-dessous'}
+          </span>
+          <span className="is-block">
+            {'ton nouveau mot de passe.'}
+          </span>
+        </h2>
+        <p className="mt12 fs16">
+          {
+            'Il doit contenir au minimum 12 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.'
+          }
+        </p>
+        <p className="is-block is-regular fs13 mt18">
+          <span>
+            {'*'}
+          </span>
+          &nbsp;
+          {'Champs obligatoires'}
+        </p>
       </div>
-      <FormFooter items={[cancelLink, { ...submitOptions, disabled: !props.canSubmit }]} />
-    </Fragment>
-  )
-}
+      <div>
+        <PasswordField
+          disabled={isLoading}
+          label="Saisis ton nouveau mot de passe"
+          name="newPassword"
+          required
+          theme="primary"
+        />
+        <PasswordField
+          disabled={isLoading}
+          label="Confirmes ton nouveau mot de passe"
+          name="newPasswordConfirm"
+          required
+          theme="primary"
+        />
+        <HiddenField name="token" />
+        {hasValidationErrors && validationErrors[FORM_ERROR] && (
+          <FormError customMessage={validationErrors[FORM_ERROR]} />
+        )}
+      </div>
+    </div>
+    <FormFooter items={[cancelLink, { ...submitOptions, disabled: !canSubmit }]} />
+  </Fragment>
+)
 
 ResetPasswordForm.propTypes = resetFormWrappedComponentPropTypes
 

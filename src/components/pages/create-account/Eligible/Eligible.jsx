@@ -14,7 +14,7 @@ const Eligible = () => {
     getReCaptchaToken('submit').then(
       token => (window.location.href = `${ID_CHECK_URL}?licence_token=${token}`)
     )
-  })
+  }, [])
 
   return (
     <main className="eligible-page">

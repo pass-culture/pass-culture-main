@@ -75,11 +75,12 @@ const withResetForm = (WrappedComponent, validator, routePath, routeMethod) => {
 
     // https://github.com/final-form/final-form#formstate
     renderFinalForm = formState => {
+      const { isloading } = this.state
       const canSubmit =
         (!formState.pristine &&
           !formState.hasSubmitErrors &&
           !formState.hasValidationErrors &&
-          !this.state.isloading) ||
+          !isloading) ||
         (!formState.hasValidationErrors &&
           formState.hasSubmitErrors &&
           formState.dirtySinceLastSubmit)
@@ -87,7 +88,7 @@ const withResetForm = (WrappedComponent, validator, routePath, routeMethod) => {
         <form
           autoComplete="off"
           className="logout-form-container"
-          disabled={this.state.isloading}
+          disabled={isloading}
           noValidate
           onSubmit={formState.handleSubmit}
         >
@@ -96,7 +97,7 @@ const withResetForm = (WrappedComponent, validator, routePath, routeMethod) => {
             canSubmit={canSubmit}
             hasSubmitErrors={!formState.pristine && formState.hasSubmitErrors}
             hasValidationErrors={!formState.pristine && formState.hasValidationErrors}
-            isLoading={this.state.isloading}
+            isLoading={isloading}
             validationErrors={formState.errors}
           />
         </form>
