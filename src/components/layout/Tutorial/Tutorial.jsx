@@ -25,29 +25,14 @@ const steps = [
     component: ManageBookings,
   },
 ]
+const getStep = position => steps.find(step => step.position === position)
 
 const Tutorial = ({ onFinish }) => {
   const [activeStepPosition, setActiveStepPosition] = useState(1)
-  const getStep = useCallback(position => steps.find(step => step.position === position), [])
 
   const hasNextStep = getStep(activeStepPosition + 1) !== undefined
   const hasPreviousStep = getStep(activeStepPosition - 1) !== undefined
-
-  const goToStep = useCallback(
-    newStepPosition => {
-      const hasStep = getStep(newStepPosition) !== undefined
-      if (hasStep) {
-        setActiveStepPosition(newStepPosition)
-      }
-    },
-    [getStep, setActiveStepPosition]
-  )
-  const stepClick = useCallback(
-    e => {
-      goToStep(parseInt(e.target.dataset.step))
-    },
-    [goToStep]
-  )
+  const goToStep = useCallback(newStepPosition => () => setActiveStepPosition(newStepPosition), [])
 
   return (
     <div
@@ -77,10 +62,9 @@ const Tutorial = ({ onFinish }) => {
           return (
             <button
               className={navStepClasses.join(' ')}
-              data-step={step.position}
-              data-testid="nav-dotte"
+              data-testid="nav-dot"
               key={step.position}
-              onClick={stepClick}
+              onClick={goToStep(step.position)}
               type="button"
             />
           )
@@ -90,9 +74,8 @@ const Tutorial = ({ onFinish }) => {
       <section className="nav-buttons-section">
         <button
           className="secondary-button"
-          data-step={activeStepPosition - 1}
           disabled={!hasPreviousStep}
-          onClick={stepClick}
+          onClick={goToStep(activeStepPosition - 1)}
           type="button"
         >
           {'Précédent'}
@@ -100,20 +83,19 @@ const Tutorial = ({ onFinish }) => {
         {hasNextStep && (
           <button
             className="primary-button"
-            data-step={activeStepPosition + 1}
-            onClick={stepClick}
+            onClick={goToStep(activeStepPosition + 1)}
             type="button"
           >
             {'Suivant'}
           </button>
         )}
-        {!hasNextStep && onFinish && (
+        {!hasNextStep && (
           <button
             className="primary-button"
             onClick={onFinish}
             type="button"
           >
-            {'Términer'}
+            {'Terminer'}
           </button>
         )}
       </section>
@@ -121,12 +103,8 @@ const Tutorial = ({ onFinish }) => {
   )
 }
 
-Tutorial.defaultProps = {
-  onFinish: false,
-}
-
 Tutorial.propTypes = {
-  onFinish: PropTypes.oneOfType([PropTypes.func, PropTypes.oneOf([false])]),
+  onFinish: PropTypes.func.isRequired,
 }
 
 export default Tutorial

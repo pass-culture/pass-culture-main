@@ -38,7 +38,7 @@ describe('tutorialModal', () => {
     store = configureTestStore({})
   })
 
-  it('should show tutorial modal when props.hasSeenTutorial is false', async () => {
+  it('should show tutorial modal if user has not seen it yet', async () => {
     store = configureTestStore({
       data: {
         features: [
@@ -47,7 +47,7 @@ describe('tutorialModal', () => {
             description: 'Dummy description',
             isActive: true,
             name: 'Dummy name',
-            nameKey: 'FeatureToggle.PRO_TUTO',
+            nameKey: 'PRO_TUTO',
           },
         ],
         users: [
@@ -65,7 +65,7 @@ describe('tutorialModal', () => {
     expect(screen.getByText(stepTitles[0])).toBeInTheDocument()
   })
 
-  it("shouldn't show tutorial modal when props.hasSeenTutorial is true", async () => {
+  it("shouldn't show tutorial modal if user has already seen it", async () => {
     store = configureTestStore({
       data: {
         features: [
@@ -74,7 +74,7 @@ describe('tutorialModal', () => {
             description: 'Dummy description',
             isActive: true,
             name: 'Dummy name',
-            nameKey: 'FeatureToggle.PRO_TUTO',
+            nameKey: 'PRO_TUTO',
           },
         ],
         users: [
@@ -89,7 +89,7 @@ describe('tutorialModal', () => {
 
     await renderTutorialModal(store, props)
 
-    expect(screen.queryByText(stepTitles[0])).toBeNull()
+    expect(screen.queryByText(stepTitles[0])).not.toBeInTheDocument()
   })
 
   describe('interacting with navigation buttons', () => {
@@ -103,7 +103,7 @@ describe('tutorialModal', () => {
               description: 'Dummy description',
               isActive: true,
               name: 'Dummy name',
-              nameKey: 'FeatureToggle.PRO_TUTO',
+              nameKey: 'PRO_TUTO',
             },
           ],
           users: [
@@ -120,7 +120,7 @@ describe('tutorialModal', () => {
     })
 
     describe('from first step', () => {
-      it('should not display "previous" button', async () => {
+      it('should disabled "previous" button', async () => {
         const buttonPrevious = screen.getByText('Précédent')
         expect(buttonPrevious).toHaveAttribute('disabled')
       })
@@ -139,7 +139,41 @@ describe('tutorialModal', () => {
       })
     })
 
-    it('should show change steps when clicking on "previous"', async () => {
+    describe('from last step', () => {
+      let buttonPrevious
+
+      beforeEach(async () => {
+        await fireEvent.click(buttonNext)
+        await fireEvent.click(buttonNext)
+        await fireEvent.click(buttonNext)
+
+        buttonPrevious = screen.getByText('Précédent')
+      })
+
+      it('should close tutoral on click on "finish" button', async () => {
+        const buttonFinish = screen.queryByText('Terminer')
+        expect(buttonFinish).toBeInTheDocument()
+
+        expect(screen.getByTestId('tutorial-container')).toBeInTheDocument()
+        await fireEvent.click(buttonFinish)
+        expect(screen.queryByTestId('tutorial-container')).not.toBeInTheDocument()
+      })
+
+      it('should change step when clicking on "next"', async () => {
+        expect(screen.getByText(stepTitles[3])).toBeInTheDocument()
+
+        await fireEvent.click(buttonPrevious)
+        expect(screen.getByText(stepTitles[2])).toBeInTheDocument()
+
+        await fireEvent.click(buttonPrevious)
+        expect(screen.getByText(stepTitles[1])).toBeInTheDocument()
+
+        await fireEvent.click(buttonPrevious)
+        expect(screen.getByText(stepTitles[0])).toBeInTheDocument()
+      })
+    })
+
+    it('should change step when clicking on "previous"', async () => {
       await fireEvent.click(buttonNext)
       await fireEvent.click(buttonNext)
       await fireEvent.click(buttonNext)
@@ -158,8 +192,8 @@ describe('tutorialModal', () => {
       expect(screen.getByText(stepTitles[0])).toBeInTheDocument()
     })
 
-    it('should go on the right step when clicking on dottes', async () => {
-      const navDottes = screen.queryAllByTestId('nav-dotte')
+    it('should go on the right step when clicking on dots', async () => {
+      const navDottes = screen.queryAllByTestId('nav-dot')
 
       expect(screen.getByText(stepTitles[0])).toBeInTheDocument()
 

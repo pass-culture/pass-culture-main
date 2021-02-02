@@ -1,0 +1,57 @@
+.tutorial {
+  .content-section {
+    margin-bottom: rem(70px);
+  }
+
+  .nav-step-list-section {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-bottom: rem(36px);
+
+    .nav-step {
+      background: $grey-medium;
+      border: none;
+      border-radius: 50%;
+      height: 8px;
+      margin-left: rem(8px);
+      width: 8px;
+
+      &:focus {
+        outline: transparent;
+      }
+    }
+
+    .nav-step-active {
+      background: $primary;
+      border-radius: 50%;
+      box-shadow: 0 0 3px 0 rgba($secondary, 0.21);
+      height: 12px;
+      width: 12px;
+    }
+
+    .nav-step-done {
+      background: $green-valid;
+    }
+  }
+
+  .nav-buttons-section {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+
+    button {
+      margin-left: rem(20px);
+      min-width: rem(103px); // we use similar width for all button to avoid them moving on click.
+    }
+  }
+
+  .tutorial-step {
+    display: none;
+
+    &.active {
+      display: block;
+    }
+  }
+}

@@ -12,9 +12,10 @@
 @import 'components/index.scss';
 
 // Components scoped imports.
+@import 'src/components/layout/DialogBox/DialogBox';
+@import 'src/components/layout/Tutorial/Tutorial';
+@import 'src/components/layout/inputs/DurationInput/DurationInput';
 @import 'src/components/pages/Offer/Offer/OfferDetails/OfferThumbnail/OfferThumbnail';
 @import 'src/components/pages/Offer/Offer/OfferDetails/OfferPreview/OfferPreview';
 @import 'src/components/pages/Offer/Offer/Stocks/DeleteStockDialog/DeleteStockDialog';
 @import 'src/components/pages/Offer/Offer/Thumbnail/ThumbnailDialog';
-@import 'src/components/layout/DialogBox/DialogBox';
-@import 'src/components/layout/inputs/DurationInput/DurationInput';

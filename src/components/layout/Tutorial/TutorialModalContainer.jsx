@@ -9,7 +9,7 @@ import TutorialModal from './TutorialModal'
 const mapStateToProps = state => {
   return {
     hasSeenTutorial: hasSeenTutorial(state),
-    isFeatureActive: selectIsFeatureActive(state, 'FeatureToggle.PRO_TUTO'),
+    isFeatureActive: selectIsFeatureActive(state, 'PRO_TUTO'),
   }
 }
 const mapDispatchToProps = dispatch => {

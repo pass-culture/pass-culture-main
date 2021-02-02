@@ -13,8 +13,6 @@ const TutorialModal = ({ closeTutorial, hasSeenTutorial, isFeatureActive, openTu
   return null
 }
 
-TutorialModal.defaultProps = {}
-
 TutorialModal.propTypes = {
   closeTutorial: PropTypes.func.isRequired,
   hasSeenTutorial: PropTypes.bool.isRequired,
