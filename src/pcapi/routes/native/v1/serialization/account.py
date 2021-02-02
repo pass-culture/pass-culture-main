@@ -69,6 +69,10 @@ class UserProfileResponse(BaseModel):
         return firstName if firstName != VOID_FIRST_NAME else None
 
 
+class UserProfileUpdateRequest(BaseModel):
+    hasAllowedRecommendations: Optional[bool]
+
+
 class ResendEmailValidationRequest(BaseModel):
     email: str
 

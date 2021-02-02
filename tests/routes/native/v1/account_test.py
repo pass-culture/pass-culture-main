@@ -176,6 +176,29 @@ class AccountTest:
         assert response.status_code == 400
 
 
+class UserProfileUpdateTest:
+    identifier = "email@example.com"
+
+    def test_update_user_profile(self, app):
+        user = users_factories.UserFactory(email=self.identifier, hasAllowedRecommendations=True)
+
+        access_token = create_access_token(identity=self.identifier)
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+
+        response = test_client.post("/native/v1/profile", json={"hasAllowedRecommendations": False})
+
+        assert response.status_code == 200
+
+        user = User.query.filter_by(email=self.identifier).first()
+        assert user.hasAllowedRecommendations == False
+
+        response = test_client.post("/native/v1/profile", json={"hasAllowedRecommendations": True})
+
+        user = User.query.filter_by(email=self.identifier).first()
+        assert user.hasAllowedRecommendations == True
+
+
 class ResendEmailValidationTest:
     @patch("pcapi.utils.mailing.send_raw_email", return_value=True)
     def test_resend_email_validation(self, mocked_send_raw_email, app):

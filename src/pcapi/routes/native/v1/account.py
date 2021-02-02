@@ -3,6 +3,7 @@ from pcapi.core.users import api
 from pcapi.core.users import exceptions
 from pcapi.core.users.models import User
 from pcapi.models import ApiErrors
+from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.native.security import authenticated_user_required
 from pcapi.serialization.decorator import spectree_serialize
@@ -21,6 +22,20 @@ from .serialization import account as serializers
 )  # type: ignore
 @authenticated_user_required
 def get_user_profile(user: User) -> serializers.UserProfileResponse:
+    return serializers.UserProfileResponse.from_orm(user)
+
+
+@blueprint.native_v1.route("/profile", methods=["POST"])
+@spectree_serialize(
+    response_model=serializers.UserProfileResponse,
+    on_success_status=200,
+    api=blueprint.api,
+)  # type: ignore
+@authenticated_user_required
+def update_user_profile(user: User, body: serializers.UserProfileUpdateRequest) -> serializers.UserProfileResponse:
+    if body.hasAllowedRecommendations is not None:
+        user.hasAllowedRecommendations = body.hasAllowedRecommendations
+    repository.save(user)
     return serializers.UserProfileResponse.from_orm(user)
 
 
