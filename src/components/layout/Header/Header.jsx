@@ -59,7 +59,10 @@ class Header extends PureComponent {
               to="/offres"
             >
               <span className="icon">
-                <Icon svg="ico-offres-w" />
+                <Icon
+                  height="28"
+                  svg="ico-offres-w"
+                />
               </span>
               <span>
                 {'Offres'}
@@ -80,7 +83,10 @@ class Header extends PureComponent {
             <Menu>
               <MenuButton className="nav-item">
                 <span className="icon">
-                  <Icon svg="ico-user-circled-w" />
+                  <Icon
+                    height="28"
+                    svg="ico-user-circled-w"
+                  />
                 </span>
                 <span>
                   {name}
