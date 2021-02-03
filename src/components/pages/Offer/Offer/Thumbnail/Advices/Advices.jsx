@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback } from 'react'
 
 import { NBSP } from 'components/pages/Offer/Offer/Thumbnail/_constants'
 import { ReactComponent as ArrowDown } from 'components/pages/Offer/Offer/Thumbnail/assets/arrow-down.svg'
@@ -7,12 +7,10 @@ import { ReactComponent as Download } from 'components/pages/Offer/Offer/Thumbna
 import { ReactComponent as ExternalSite } from 'components/pages/Offer/Offer/Thumbnail/assets/external-site.svg'
 import { ASSETS_URL } from 'utils/config'
 
-const Advices = () => {
-  const [hidden, setHidden] = useState(true)
-
+const Advices = ({ hidden, setHidden }) => {
   const toggle = useCallback(() => {
     setHidden(!hidden)
-  }, [hidden])
+  }, [hidden, setHidden])
 
   return (
     <div className="tna-advices">

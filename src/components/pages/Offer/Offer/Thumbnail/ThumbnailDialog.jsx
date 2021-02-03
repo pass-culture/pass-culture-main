@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 
 import { DialogBox } from 'components/layout/DialogBox/DialogBox'
 import { IMPORT_TAB_ID } from 'components/pages/Offer/Offer/Thumbnail/_constants'
@@ -17,11 +17,16 @@ const ThumbnailDialog = ({ setIsModalOpened }) => {
 
   const [activeTab, setActiveTab] = useState(IMPORT_TAB_ID)
   const [credit, setCredit] = useState('')
+  const [editedThumbnail, setEditedThumbnail] = useState('')
+  const [hidden, setHidden] = useState(true)
   const [step, setStep] = useState(1)
   const [tabId, setTabId] = useState(IMPORT_TAB_ID)
   const [thumbnail, setThumbnail] = useState({})
   const [url, setURL] = useState('')
-  const [editedThumbnail, setEditedThumbnail] = useState('')
+
+  useEffect(() => {
+    setHidden(true)
+  }, [activeTab])
 
   const closeModal = useCallback(() => {
     setIsModalOpened(false)
@@ -55,6 +60,7 @@ const ThumbnailDialog = ({ setIsModalOpened }) => {
             <ImportTab
               activeTab={activeTab}
               changeTab={changeTab}
+              setHidden={setHidden}
             />
             {tabId === IMPORT_TAB_ID ? (
               <ImportFromComputer
@@ -68,7 +74,10 @@ const ThumbnailDialog = ({ setIsModalOpened }) => {
               />
             )}
             <hr className="tnd-hr" />
-            <Advices />
+            <Advices
+              hidden={hidden}
+              setHidden={setHidden}
+            />
           </>
         )}
         {step === 2 && (
