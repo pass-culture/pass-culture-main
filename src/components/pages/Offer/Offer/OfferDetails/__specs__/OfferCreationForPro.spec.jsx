@@ -412,6 +412,15 @@ describe('offerDetails - Creation - pro user', () => {
           expect(await screen.queryAllByText('Mes jolies modalités')).toHaveLength(2)
         })
 
+        it("should display disabled 'isDuo' icone for offers that aren't event", async () => {
+          await renderOffers(props, store)
+          await setOfferValues({ type: 'ThingType.LIVRE_EDITION' })
+          const disabledisDuoBox = screen.queryByText('À deux !', {
+            selector: '.op-option.disabled .op-option-text',
+          })
+          expect(disabledisDuoBox).toBeInTheDocument()
+        })
+
         describe('"Où" section', () => {
           describe('when physical venue is selected', () => {
             it('should display "Où" section', async () => {
