@@ -64,6 +64,25 @@ Mailjet, il convient donc de surcharger `EMAIL_BACKEND` et de choisir
 le backend `pcapi.core.mails.backends.logger.LoggerBackend`.
 
 
+## Vérifier l'envoi de mails dans les tests automatisés
+
+Le backend de test stocke une représentation des mails en mémoire dans
+la liste `pcapi.core.mails.testing.outbox`. On peut donc vérifier
+l'envoi des mails ainsi :
+
+```python
+import pcapi.core.mails.testing as mails_testing
+
+def test_frobulation():
+    user = UserFactory()
+
+    frobulate(user)
+
+    assert len(mails_testing.outbox) == 1
+    assert mails_testing.outbox[0].sent_data["Vars"]["first_name"] == user.firstName
+```
+
+
 ## Envoyer des mails via l'API Mailjet en local
 
 Définissez les variables d'environnement suivantes :
