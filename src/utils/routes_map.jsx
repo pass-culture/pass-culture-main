@@ -19,6 +19,7 @@ import Offers from 'components/pages/Offers/OffersContainer'
 import ProfilContainer from 'components/pages/Profil/ProfilContainer'
 import ReimbursementsContainer from 'components/pages/Reimbursements/ReimbursementsContainer'
 import SetPasswordContainer from 'components/pages/SetPassword/SetPasswordContainer'
+import SetPasswordConfirmContainer from 'components/pages/SetPasswordConfirm/SetPasswordConfirmContainer'
 import SigninContainer from 'components/pages/Signin/SigninContainer'
 import SignupContainer from 'components/pages/Signup/SignupContainer'
 import SignupValidationContainer from 'components/pages/Signup/SignupValidation/SignupValidationContainer'
@@ -219,6 +220,19 @@ let routes = [
     featureName: 'PRO_HOMEPAGE',
     path: '/v2/accueil',
     title: 'Accueil',
+  },
+  {
+    component: SetPasswordConfirmContainer,
+    exact: true,
+    path: ['/creation-de-mot-de-passe-confirmation'],
+    title: 'Confirmation création de mot de passe',
+    meta: {
+      public: true,
+      layoutConfig: {
+        fullscreen: true,
+        pageName: 'sign-in',
+      },
+    },
   },
 ]
 

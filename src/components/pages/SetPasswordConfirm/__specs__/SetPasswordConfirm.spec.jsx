@@ -1,0 +1,65 @@
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { createBrowserHistory } from 'history'
+import React from 'react'
+import '@testing-library/jest-dom'
+import { Provider } from 'react-redux'
+import { Router, Route } from 'react-router'
+
+import { configureTestStore } from 'store/testUtils'
+
+import SetPasswordConfirmContainer from '../SetPasswordConfirmContainer'
+
+const renderSetPassword = (store, history) =>
+  render(
+    <Provider store={store}>
+      <Router history={history}>
+        <Route path="/creation-de-mot-de-passe-confirmation">
+          <SetPasswordConfirmContainer />
+        </Route>
+      </Router>
+    </Provider>
+  )
+
+describe('src | components | pages | SetPassword', () => {
+  let store, history, historyPushSpy
+  beforeEach(() => {
+    store = configureTestStore()
+    history = createBrowserHistory()
+    history.push('/creation-de-mot-de-passe-confirmation')
+    historyPushSpy = jest.spyOn(history, 'push')
+  })
+  it('should redirect the user to structure page', async () => {
+    // Given
+
+    store = configureTestStore({
+      data: { users: [{ publicName: 'Bosetti' }] },
+    })
+    renderSetPassword(store, history)
+
+    // Then
+    expect(historyPushSpy).toHaveBeenCalledWith('/structures')
+  })
+
+  it('should render the default page without redirect', async () => {
+    // Given
+    renderSetPassword(store, history)
+
+    // Then
+    expect(screen.getByText('Votre mot de passe a bien été enregistré !')).toBeVisible()
+  })
+
+  it('should redirect to login page on link click', async () => {
+    // Given
+    renderSetPassword(store, history)
+    const submitButton = screen.getByText('Se connecter', { selector: 'a' })
+
+    // When
+    userEvent.click(submitButton)
+
+    // Then
+    await waitFor(() => {
+      expect(history.push).toHaveBeenCalledWith('/connexion')
+    })
+  })
+})
