@@ -18,5 +18,5 @@ export const configureTestStore = overrideData => {
     offers: offersInitialState,
   }
 
-  return configureStore(merge(initialData, overrideData)).store
+  return configureStore(merge({}, initialData, overrideData)).store
 }
