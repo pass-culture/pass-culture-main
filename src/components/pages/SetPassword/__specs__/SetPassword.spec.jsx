@@ -13,7 +13,6 @@ import { configureTestStore } from 'store/testUtils'
 
 import {
   INVALID_FORM_MESSAGE,
-  PASSWORD_CREATED_MESSAGE,
   TOKEN_ERROR_MESSAGE,
   UNKNOWN_ERROR_MESSAGE,
   DIFFERENT_PASSWORDS_ERROR_MESSAGE,
@@ -119,8 +118,7 @@ describe('src | components | pages | SetPassword', () => {
 
     // Then
     await waitFor(() => {
-      expect(screen.getByText(PASSWORD_CREATED_MESSAGE)).toBeVisible()
-      expect(history.push).toHaveBeenCalledWith('/connexion')
+      expect(history.push).toHaveBeenCalledWith('/creation-de-mot-de-passe-confirmation')
     })
   })
 

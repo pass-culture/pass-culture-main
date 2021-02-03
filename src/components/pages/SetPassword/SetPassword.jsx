@@ -9,7 +9,6 @@ import { redirectLoggedUser } from 'components/router/helpers'
 import { setPassword } from 'repository/pcapi/pcapi'
 
 export const TOKEN_ERROR_MESSAGE = 'Votre lien de création de mot de passe est invalide.'
-export const PASSWORD_CREATED_MESSAGE = 'Votre mot de passe a bien été créé.'
 export const INVALID_FORM_MESSAGE = "Une erreur s'est produite, veuillez corriger le formulaire."
 export const UNKNOWN_ERROR_MESSAGE = "Une erreur s'est produite, veuillez contacter le support."
 export const DIFFERENT_PASSWORDS_ERROR_MESSAGE = 'Les deux mots de passe ne sont pas identiques'
@@ -36,8 +35,7 @@ export const SetPassword = props => {
     values =>
       setPassword(token, values.password)
         .then(() => {
-          showNotification('success', PASSWORD_CREATED_MESSAGE)
-          history.push('/connexion')
+          history.push('/creation-de-mot-de-passe-confirmation')
         })
         .catch(error => {
           if (error.errors.newPassword) {
