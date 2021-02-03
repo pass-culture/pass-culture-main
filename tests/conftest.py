@@ -9,7 +9,6 @@ from flask import Flask
 from flask.testing import FlaskClient
 from flask_jwt_extended import JWTManager
 from flask_login import LoginManager
-import mailjet_rest
 import pytest
 from requests import Response
 from requests.auth import _basic_auth_str
@@ -73,7 +72,6 @@ def app():
     admin.init_app(app)
     install_admin_views(admin, db.session)
 
-    app.mailjet_client = mailjet_rest.Client(auth=("testing-key", "testing-secret"), version="v3")
     app.redis_client = Mock()
     app.register_blueprint(native_v1, url_prefix="/native/v1")
 

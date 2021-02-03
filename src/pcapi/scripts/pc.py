@@ -1,6 +1,5 @@
 from flask import Flask
 from flask_script import Manager
-from mailjet_rest import Client
 import redis
 
 from pcapi import settings
@@ -24,7 +23,6 @@ app.manager = Manager(create_app)
 with app.app_context():
     install_scripts()
 
-    app.mailjet_client = Client(auth=(settings.MAILJET_API_KEY, settings.MAILJET_API_SECRET), version="v3")
     app.redis_client = redis.from_url(url=settings.REDIS_URL, decode_responses=True)
 
 

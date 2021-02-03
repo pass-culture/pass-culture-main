@@ -11,7 +11,6 @@ from flask_admin import Admin
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_login import LoginManager
-from mailjet_rest import Client
 import redis
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
@@ -143,5 +142,4 @@ CORS(
 app.url_map.strict_slashes = False
 
 with app.app_context():
-    app.mailjet_client = Client(auth=(settings.MAILJET_API_KEY, settings.MAILJET_API_SECRET), version="v3")
     app.redis_client = redis.from_url(url=settings.REDIS_URL, decode_responses=True)

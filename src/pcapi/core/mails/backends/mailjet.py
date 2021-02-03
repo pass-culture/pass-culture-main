@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Iterable
 
-from flask import current_app as app
+import mailjet_rest
 from requests import Response
 
 from pcapi import settings
@@ -19,6 +19,11 @@ def _add_template_debugging(message_data: dict) -> None:
 
 
 class MailjetBackend(BaseBackend):
+    def __init__(self):
+        super().__init__()
+        auth = (settings.MAILJET_API_KEY, settings.MAILJET_API_SECRET)
+        self.mailjet_client = mailjet_rest.Client(auth=auth, version="v3")
+
     def _send(self, recipients: Iterable[str], data: dict) -> MailResult:
         data["To"] = ", ".join(recipients)
 
@@ -31,7 +36,7 @@ class MailjetBackend(BaseBackend):
                 _add_template_debugging(data)
 
         try:
-            response = app.mailjet_client.send.create(data=data)
+            response = self.mailjet_client.send.create(data=data)
         except Exception as exc:  # pylint: disable=broad-except
             logger.exception("Error trying to send e-mail with Mailjet: %s", exc)
             return MailResult(
@@ -50,7 +55,7 @@ class MailjetBackend(BaseBackend):
 
     def create_contact(self, email: str) -> Response:
         data = {"Email": email}
-        return app.mailjet_client.contact.create(data=data)
+        return self.mailjet_client.contact.create(data=data)
 
     def update_contact(self, email: str, *, birth_date: datetime, department: str) -> Response:
         birth_timestamp = int(datetime(birth_date.year, birth_date.month, birth_date.day).timestamp())
@@ -61,7 +66,7 @@ class MailjetBackend(BaseBackend):
                 {"Name": "département", "Value": department},
             ]
         }
-        return app.mailjet_client.contactdata.update(id=email, data=data)
+        return self.mailjet_client.contactdata.update(id=email, data=data)
 
     def add_contact_to_list(self, email: str, list_id: str) -> Response:
         data = {
@@ -69,7 +74,7 @@ class MailjetBackend(BaseBackend):
             "ContactAlt": email,
             "ListID": list_id,
         }
-        return app.mailjet_client.listrecipient.create(data=data)
+        return self.mailjet_client.listrecipient.create(data=data)
 
 
 class ToDevMailjetBackend(MailjetBackend):
