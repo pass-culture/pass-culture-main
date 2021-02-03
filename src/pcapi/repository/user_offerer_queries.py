@@ -1,13 +1,4 @@
-from pcapi.core.users.models import User
 from pcapi.models import UserOfferer
-
-
-def find_user_offerer_email(user_offerer_id):
-    # FIXME: not sure it's useful or performant. If we already loaded
-    # `user_offerer.user`, there is not point in calling
-    # `find_user_offerer_email(user_offerer.id)`. And that's what we
-    # do in many places.
-    return UserOfferer.query.filter_by(id=user_offerer_id).join(User).with_entities(User.email).first()[0]
 
 
 def filter_query_where_user_is_user_offerer_and_is_validated(query, user):

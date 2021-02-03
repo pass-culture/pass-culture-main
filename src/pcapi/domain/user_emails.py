@@ -43,7 +43,6 @@ from pcapi.emails.user_reset_password import retrieve_data_for_reset_password_us
 from pcapi.models import Offerer
 from pcapi.models import UserOfferer
 from pcapi.repository.offerer_queries import find_new_offerer_user_email
-from pcapi.repository.user_offerer_queries import find_user_offerer_email
 from pcapi.utils.mailing import make_offerer_driven_cancellation_email_for_offerer
 from pcapi.utils.mailing import make_pro_user_validation_email
 
@@ -115,15 +114,13 @@ def send_validation_confirmation_email_to_pro(offerer: Offerer) -> None:
 
 
 def send_ongoing_offerer_attachment_information_email_to_pro(user_offerer: UserOfferer) -> None:
-    recipient = find_user_offerer_email(user_offerer.id)
     data = retrieve_data_for_offerer_ongoing_attachment_email(user_offerer)
-    mails.send(recipients=[recipient], data=data)
+    mails.send(recipients=[user_offerer.user.email], data=data)
 
 
 def send_attachment_validation_email_to_pro_offerer(user_offerer: UserOfferer) -> None:
-    recipient = find_user_offerer_email(user_offerer.id)
     data = retrieve_data_for_offerer_attachment_validation_email(user_offerer)
-    mails.send(recipients=[recipient], data=data)
+    mails.send(recipients=[user_offerer.user.email], data=data)
 
 
 def send_batch_cancellation_emails_to_users(bookings: List[Booking]) -> None:

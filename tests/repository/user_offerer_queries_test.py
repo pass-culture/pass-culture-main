@@ -16,22 +16,6 @@ from pcapi.models import VenueSQLEntity
 from pcapi.repository import repository
 from pcapi.repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
 from pcapi.repository.user_offerer_queries import find_one_or_none_by_user_id
-from pcapi.repository.user_offerer_queries import find_user_offerer_email
-
-
-@pytest.mark.usefixtures("db_session")
-def test_find_user_offerer_email(app):
-    # Given
-    user = create_user(email="offerer@email.com")
-    offerer = create_offerer()
-    user_offerer = create_user_offerer(user, offerer)
-    repository.save(user_offerer)
-
-    # When
-    email = find_user_offerer_email(user_offerer.id)
-
-    # Then
-    assert email == "offerer@email.com"
 
 
 @pytest.mark.usefixtures("db_session")
