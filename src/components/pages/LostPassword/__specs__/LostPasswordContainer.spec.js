@@ -31,6 +31,7 @@ describe('src | components | pages | LostPassword', () => {
         change: '1',
         envoye: undefined,
         errors: [],
+        isNewHomepageActive: false,
         token: 'ABC',
       })
     })

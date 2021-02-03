@@ -17,7 +17,7 @@ class LostPassword extends PureComponent {
     super(props)
     const { currentUser, history } = props
 
-    redirectLoggedUser(history, currentUser)
+    redirectLoggedUser(history, currentUser, props.isNewHomepageActive)
 
     this.state = {
       emailValue: '',
@@ -238,9 +238,7 @@ class LostPassword extends PureComponent {
                   </h2>
 
                   {hasPasswordResetRequestErrorMessage && (
-                    <GenericError
-                      message="Un problème est survenu pendant la réinitialisation du mot de passe, veuillez réessayer plus tard."
-                    />
+                    <GenericError message="Un problème est survenu pendant la réinitialisation du mot de passe, veuillez réessayer plus tard." />
                   )}
 
                   <form

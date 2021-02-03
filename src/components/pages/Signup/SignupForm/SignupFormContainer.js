@@ -7,6 +7,7 @@ import { requestData } from 'redux-saga-data'
 
 import { removeErrors } from 'store/reducers/errors'
 import { closeNotification, showNotificationV1 } from 'store/reducers/notificationReducer'
+import { selectIsFeatureActive } from 'store/selectors/data/featuresSelectors'
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 
 import SignupForm from './SignupForm'
@@ -16,6 +17,7 @@ const STATE_ERROR_NAME = 'user'
 export const mapStateToProps = state => ({
   currentUser: selectCurrentUser(state),
   errors: get(state, `errors["${STATE_ERROR_NAME}"]`),
+  isNewHomepageActive: selectIsFeatureActive(state, 'PRO_HOMEPAGE'),
 })
 
 export const mapDispatchToProps = (dispatch, ownProps) => ({

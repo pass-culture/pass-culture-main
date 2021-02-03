@@ -2,6 +2,7 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
+import { selectIsFeatureActive } from 'store/selectors/data/featuresSelectors'
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 import { searchSelector } from 'store/selectors/search'
 import { getReCaptchaToken } from 'utils/recaptcha'
@@ -21,6 +22,7 @@ export const mapStateToProps = (state, ownProps) => {
     currentUser: selectCurrentUser(state),
     errors: userErrors,
     envoye,
+    isNewHomepageActive: selectIsFeatureActive(state, 'PRO_HOMEPAGE'),
     token,
   }
 }

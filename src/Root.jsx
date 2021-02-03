@@ -27,6 +27,7 @@ const Root = () => {
                 return (
                   <FeaturedRouteContainer
                     exact={route.exact}
+                    featureName={route.featureName}
                     key={route.path}
                     path={route.path}
                   >

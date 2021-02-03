@@ -6,6 +6,7 @@ import BookingsRecapContainer from 'components/pages/Bookings/BookingsRecapConta
 import DeskContainer from 'components/pages/Desk/DeskContainer'
 import Unavailable from 'components/pages/Errors/Unavailable/Unavailable'
 import HomeContainer from 'components/pages/Home/HomeContainer'
+import Homepage from 'components/pages/Home/Homepage'
 import LostPasswordContainer from 'components/pages/LostPassword/LostPasswordContainer'
 import Mediation from 'components/pages/Mediation/MediationContainer'
 import OfferLayoutContainer from 'components/pages/Offer/Offer/OfferLayoutContainer'
@@ -211,6 +212,13 @@ let routes = [
         pageName: 'sign-in',
       },
     },
+  },
+  {
+    component: Homepage,
+    exact: true,
+    featureName: 'PRO_HOMEPAGE',
+    path: '/v2/accueil',
+    title: 'Accueil',
   },
 ]
 

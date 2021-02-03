@@ -11,7 +11,6 @@ import Signin from '../Signin'
 describe('src | components | pages | Signin | Signin', () => {
   let submit
   let props
-  let action
   let store
 
   beforeEach(() => {
@@ -160,82 +159,17 @@ describe('src | components | pages | Signin | Signin', () => {
       )
     })
 
-    describe('when user is signed in for the first time, has no offer, has one virtual venue', () => {
+    describe('when user is signed in', () => {
       it('should redirect to offerers page', () => {
         // Given
-        action = {
-          payload: {
-            datum: {
-              hasOffers: true,
-              hasPhysicalVenues: false,
-            },
-          },
-        }
-        const state = {}
+        props.currentUser = {}
         const wrapper = shallow(<Signin {...props} />)
 
         // when
-        wrapper.instance().onHandleSuccessRedirect(state, action)
+        wrapper.instance().onHandleSuccessRedirect()
 
         // then
         expect(props.history.push).toHaveBeenCalledWith('/structures')
-      })
-    })
-
-    describe('when the user has a digital offer and only a virtual venue', () => {
-      it('should redirect to offerers page', () => {
-        action.payload = {
-          datum: {
-            hasOffers: true,
-            hasPhysicalVenues: false,
-          },
-        }
-        const state = {}
-        const wrapper = shallow(<Signin {...props} />)
-
-        // when
-        wrapper.instance().onHandleSuccessRedirect(state, action)
-
-        // then
-        expect(props.history.push).toHaveBeenCalledWith('/structures')
-      })
-    })
-
-    describe('when the user has no offers but a physical venue', () => {
-      it('should redirect to offers page', () => {
-        action.payload = {
-          datum: {
-            hasOffers: false,
-            hasPhysicalVenues: true,
-          },
-        }
-        const state = {}
-        const wrapper = shallow(<Signin {...props} />)
-
-        // when
-        wrapper.instance().onHandleSuccessRedirect(state, action)
-
-        // then
-        expect(props.history.push).toHaveBeenCalledWith('/offres')
-      })
-    })
-
-    describe('when the user has offers in physical venues', () => {
-      it('should redirect to offers page', () => {
-        action.payload = {
-          datum: {
-            hasOffers: true,
-            hasPhysicalVenues: true,
-          },
-        }
-        const state = {}
-        const wrapper = shallow(<Signin {...props} />)
-
-        // when
-        wrapper.instance().onHandleSuccessRedirect(state, action)
-
-        // then
-        expect(props.history.push).toHaveBeenCalledWith('/offres')
       })
     })
 

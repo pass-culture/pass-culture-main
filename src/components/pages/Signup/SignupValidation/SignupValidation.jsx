@@ -11,7 +11,7 @@ class SignupValidation extends PureComponent {
   constructor(props) {
     super(props)
     const { currentUser, history } = props
-    redirectLoggedUser(history, currentUser)
+    redirectLoggedUser(history, currentUser, props.isNewHomepageActive)
   }
 
   componentDidMount() {

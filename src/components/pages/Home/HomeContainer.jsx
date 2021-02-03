@@ -1,12 +1,12 @@
 import { connect } from 'react-redux'
 
-import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
+import { selectIsFeatureActive } from 'store/selectors/data/featuresSelectors'
 
 import Home from './Home'
 
 export function mapStateToProps(state) {
   return {
-    currentUser: selectCurrentUser(state),
+    isNewHomepageActive: selectIsFeatureActive(state, 'PRO_HOMEPAGE'),
   }
 }
 

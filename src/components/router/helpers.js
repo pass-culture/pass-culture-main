@@ -1,5 +1,5 @@
-export const redirectLoggedUser = (history, currentUser) => {
+export const redirectLoggedUser = (history, currentUser, isNewHomepageActive) => {
   if (currentUser) {
-    history.push(currentUser.hasPhysicalVenues ? '/offres' : '/structures')
+    history.push(isNewHomepageActive ? '/accueil' : '/structures')
   }
 }

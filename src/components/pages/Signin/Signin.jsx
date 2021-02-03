@@ -15,8 +15,8 @@ import { UNAVAILABLE_ERROR_PAGE } from '../../../utils/routes'
 class Signin extends PureComponent {
   constructor(props) {
     super(props)
-    const { currentUser, history } = props
-    redirectLoggedUser(history, currentUser)
+    const { currentUser, history, isNewHomepageActive } = props
+    redirectLoggedUser(history, currentUser, isNewHomepageActive)
 
     this.state = {
       emailValue: '',
@@ -26,14 +26,9 @@ class Signin extends PureComponent {
     }
   }
 
-  onHandleSuccessRedirect = (state, action) => {
-    const { hasOffers } = action.payload.datum || false
-    const { hasPhysicalVenues } = action.payload.datum || false
-    const hasOffersWithPhysicalVenues = hasOffers && hasPhysicalVenues
-    const { history } = this.props
-
-    const newRoute = hasOffersWithPhysicalVenues || hasPhysicalVenues ? '/offres' : '/structures'
-    history.push(newRoute)
+  onHandleSuccessRedirect = () => {
+    const { currentUser, history, isNewHomepageActive } = this.props
+    redirectLoggedUser(history, currentUser, isNewHomepageActive)
   }
 
   onHandleFail = (state, action) => {
