@@ -1,6 +1,6 @@
 MAINLAND_DEPARTEMENT_CODE_LENGTH = 2
 OVERSEAS_DEPARTEMENT_CODE_LENGTH = 3
-OVERSEAS_DEPARTEMENT_IDENTIFIER = "97"
+OVERSEAS_DEPARTEMENT_CODE_START = 97
 
 
 class PostalCode:
@@ -17,4 +17,4 @@ class PostalCode:
         )
 
     def _is_overseas_departement(self) -> bool:
-        return self.postalCode.startswith(OVERSEAS_DEPARTEMENT_IDENTIFIER)
+        return int(self.postalCode[0:2]) >= OVERSEAS_DEPARTEMENT_CODE_START
