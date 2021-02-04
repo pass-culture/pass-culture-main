@@ -102,21 +102,11 @@
       const url = new URL(window.location.href)
       const param = url.searchParams.get("source")
 
-      const doRedirect = response => {
-        if (response.ok) {
-          if (param) {
-            window.location.replace(param)
-          }
-        }
+      if (param) {
+        window.location.replace(param)
       }
-
-      fetch("https://backend.passculture.beta.gouv.fr/health/api", { "mode": "cors" })
-        .then(doRedirect)
-        .catch(error => {
-          console.log('API is unavailable')
-        })
     }
-    setInterval(redirectToApp, 30000)
+    setInterval(redirectToApp, 60000)
   </script>
 </body>
 
