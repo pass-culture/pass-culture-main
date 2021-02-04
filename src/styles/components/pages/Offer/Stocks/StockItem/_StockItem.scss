@@ -12,7 +12,7 @@
   }
 
   .small-input input {
-    width: rem(85px);
+    width: 100%;
 
     &[type="number"]:disabled {
       border: 1px solid transparent;

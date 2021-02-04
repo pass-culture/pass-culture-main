@@ -198,12 +198,16 @@ const StockItem = ({
           value={totalQuantityValue}
         />
       </td>
-      <td>
-        {!isNewStock && remainingQuantityValue}
-      </td>
-      <td>
-        {!isNewStock && initialStock.bookingsQuantity}
-      </td>
+      {!isNewStock && (
+        <Fragment>
+          <td>
+            {remainingQuantityValue}
+          </td>
+          <td>
+            {initialStock.bookingsQuantity}
+          </td>
+        </Fragment>
+      )}
       <td className="action-column">
         <button
           className="tertiary-button"

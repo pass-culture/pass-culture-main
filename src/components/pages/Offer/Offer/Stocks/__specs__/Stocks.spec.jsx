@@ -1843,8 +1843,7 @@ describe('stocks page', () => {
 
         // then
         const columnCells = screen.getAllByRole('cell')
-        expect(columnCells[3].textContent).toBe('')
-        expect(columnCells[4].textContent).toBe('')
+        expect(columnCells).toHaveLength(4)
       })
 
       it('should have a cancel button to cancel new stock', async () => {
