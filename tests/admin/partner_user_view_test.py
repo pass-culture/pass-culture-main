@@ -5,7 +5,7 @@ from pcapi.core.users.models import User
 
 
 class PartnerUserViewTest:
-    def test_should_generate_a_random_password_on_creation(self, app, db_session):
+    def test_should_generate_a_random_password_and_token_on_creation(self, app, db_session):
         # given
         user = User()
         user.password = None
@@ -16,6 +16,7 @@ class PartnerUserViewTest:
 
         # then
         assert user.password is not None
+        assert user.resetPasswordToken is not None
 
     def test_should_preserve_password_on_edition(self, app, db_session):
         # given

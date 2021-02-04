@@ -7,12 +7,14 @@ from wtforms import Form
 from wtforms import StringField
 from wtforms.fields.html5 import DateField
 from wtforms.fields.html5 import TelField
+from wtforms.form import BaseForm
 from wtforms.validators import DataRequired
 from wtforms.validators import Length
 from wtforms.validators import Optional
 
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.core.users.models import User
+from pcapi.domain.password import generate_reset_token
 from pcapi.domain.password import random_password
 from pcapi.models import UserOfferer
 
@@ -30,6 +32,7 @@ class PartnerUserView(BaseAdminView):
         "departementCode",
         "phoneNumber",
         "postalCode",
+        "resetPasswordToken",
     ]
     column_labels = dict(
         email="Email",
@@ -40,13 +43,14 @@ class PartnerUserView(BaseAdminView):
         departementCode="Département",
         phoneNumber="Numéro de téléphone",
         postalCode="Code postal",
+        resetPasswordToken="Jeton de réinitialisation du mot de passe",
     )
     column_searchable_list = ["id", "publicName", "email", "firstName", "lastName"]
     column_filters: List[str] = []
 
     form_columns = ["email", "firstName", "lastName", "dateOfBirth", "departementCode", "postalCode", "phoneNumber"]
 
-    def scaffold_form(self):
+    def scaffold_form(self) -> BaseForm:
         form_class = super().scaffold_form()
         form_class.firstName = StringField("Prenom", [DataRequired()])
         form_class.lastName = StringField("Nom", [DataRequired()])
@@ -63,6 +67,7 @@ class PartnerUserView(BaseAdminView):
     def on_model_change(self, form: Form, model: User, is_created: bool) -> None:
         if is_created:
             model.password = random_password()
+            generate_reset_token(model, 24 * 14)
 
         model.publicName = f"{model.firstName} {model.lastName}"
         model.isBeneficiary = False
