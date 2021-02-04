@@ -8,7 +8,7 @@ const Welcome = () => (
     <div className="tw-content">
       <div className="tw-description">
         {
-          'Le pass Culture est une politique culturelle publique permettant aux jeunes à partir de 18 ans de l’ensemble du territoire français de bénéficier d’une enveloppe de 300€ utilisable pour réserver vos offres.'
+          'Le pass Culture est une politique culturelle publique permettant aux jeunes à partir de 18 ans de bénéficier d’une enveloppe de 500€ utilisable pour réserver vos offres.'
         }
       </div>
       <div className="tw-strong">
