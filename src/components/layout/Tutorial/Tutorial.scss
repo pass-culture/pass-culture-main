@@ -46,12 +46,4 @@
       min-width: rem(103px); // we use similar width for all button to avoid them moving on click.
     }
   }
-
-  .tutorial-step {
-    display: none;
-
-    &.active {
-      display: block;
-    }
-  }
 }

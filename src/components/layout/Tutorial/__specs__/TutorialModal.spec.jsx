@@ -11,14 +11,14 @@ import TutorialModalContainer from '../TutorialModalContainer'
 
 const stepTitles = [
   "Bienvenue dans l'espace acteurs culturels",
-  'Créer une offre',
   'Créer un lieu',
+  'Créer une offre',
   'Suivre et gérer vos réservations',
 ]
 
 const renderTutorialModal = async (store, props = {}) => {
   return await act(async () => {
-    return await render(
+    return render(
       <Provider store={store}>
         <MemoryRouter>
           <Fragment>

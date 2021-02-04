@@ -5,7 +5,6 @@ import CreateOffer from './Step/CreateOffer'
 import CreateVenue from './Step/CreateVenue'
 import ManageBookings from './Step/ManageBookings'
 import Welcome from './Step/Welcome'
-import TutorialStep from './TutorialStep'
 
 const steps = [
   {
@@ -34,20 +33,15 @@ const Tutorial = ({ onFinish }) => {
   const hasPreviousStep = getStep(activeStepPosition - 1) !== undefined
   const goToStep = useCallback(newStepPosition => () => setActiveStepPosition(newStepPosition), [])
 
+  const activeStep = getStep(activeStepPosition)
+
   return (
     <div
       className="tutorial"
       data-testid="tutorial-container"
     >
       <section className="content-section">
-        {steps.map(step => (
-          <TutorialStep
-            isActive={activeStepPosition === step.position}
-            key={`tutorial-step-${step.position}`}
-          >
-            <step.component />
-          </TutorialStep>
-        ))}
+        <activeStep.component />
       </section>
 
       <section className="nav-step-list-section">
