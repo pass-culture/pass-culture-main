@@ -18,11 +18,20 @@
       }
 
       .sidebar {
+        flex: 0 0 rem(256px);
+      }
+
+      .sidebar-wrapper {
         border: rem(1px) solid $grey-medium;
         border-radius: 4px;
         box-shadow: 0 0 rem(20px) 0 $black-shadow;
-        flex: 0 0 rem(256px);
         height: fit-content;
+        margin-bottom: rem(24px);
+      }
+
+      .secondary-link {
+        text-align: center;
+        width: 100%;
       }
     }
   }

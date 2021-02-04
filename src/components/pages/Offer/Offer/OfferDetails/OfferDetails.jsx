@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useState, Fragment } from 'react'
 
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
+import OfferPreviewLink from 'components/pages/Offer/Offer/OfferPreviewLink/OfferPreviewLink'
 import * as pcapi from 'repository/pcapi/pcapi'
 
 import OfferCreation from './OfferForm/OfferCreation'
@@ -123,17 +124,25 @@ const OfferDetails = ({
 
         {showThumbnailForm && (
           <div className="sidebar">
+            <div className="sidebar-wrapper">
+              {offer?.thumbUrl ? (
+                <Fragment>
+                  <OfferThumbnail url={offer.thumbUrl} />
+                  <OfferPreview formValues={formValues} />
+                </Fragment>
+              ) : (
+                <Fragment>
+                  <OfferThumbnailPlaceholder />
+                  <OfferPreview formValues={formValues} />
+                </Fragment>
+              )}
+            </div>
             {offer?.thumbUrl ? (
-              <Fragment>
-                <OfferThumbnail url={offer.thumbUrl} />
-                <OfferPreview formValues={formValues} />
-              </Fragment>
-            ) : (
-              <Fragment>
-                <OfferThumbnailPlaceholder />
-                <OfferPreview formValues={formValues} />
-              </Fragment>
-            )}
+              <OfferPreviewLink
+                mediationId={offer.activeMediation ? offer.activeMediation.id : null}
+                offerId={offer.id}
+              />
+            ) : null}
           </div>
         )}
       </div>

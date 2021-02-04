@@ -390,6 +390,33 @@ describe('offerDetails - Edition', () => {
           screen.queryByTitle('Fermer la modale', { selector: 'button' })
         ).not.toBeInTheDocument()
       })
+
+      it("should have a preview link redirecting to the webapp's offer page", async () => {
+        // When
+        editedOffer.thumbUrl = 'http://example.net/active-image.png'
+        await renderOffers({}, store)
+
+        // Then
+        const previewLink = await screen.findByText('Prévisualiser dans l’app', { selector: 'a' })
+        expect(previewLink).toBeInTheDocument()
+        const expectedWebappUri = `offre/details/${editedOffer.id}`
+        expect(previewLink).toHaveAttribute('href', expect.stringContaining(expectedWebappUri))
+      })
+
+      it("should have a preview link redirecting to the webapp's offer page with mediationId as parameter when an active mediation exists", async () => {
+        // Given
+        editedOffer.thumbUrl = 'http://example.net/active-image.png'
+        editedOffer.activeMediation = { id: 'CBA' }
+
+        // When
+        await renderOffers({}, store)
+
+        // Then
+        const previewLink = await screen.findByText('Prévisualiser dans l’app', { selector: 'a' })
+        expect(previewLink).toBeInTheDocument()
+        const expectedWebappUri = `offre/details/${editedOffer.id}/${editedOffer.activeMediation.id}`
+        expect(previewLink).toHaveAttribute('href', expect.stringContaining(expectedWebappUri))
+      })
     })
 
     describe('when thumbnail does not exist', () => {
@@ -398,9 +425,10 @@ describe('offerDetails - Edition', () => {
         await renderOffers({}, store)
 
         // Then
+        expect(screen.getByText('Ajouter une image', { selector: 'button' })).toBeInTheDocument()
         expect(
-          await screen.findByText('Ajouter une image', { selector: 'button' })
-        ).toBeInTheDocument()
+          screen.queryByText('Prévisualiser dans l’app', { selector: 'a' })
+        ).not.toBeInTheDocument()
       })
 
       it('should open the modal when user clicks on the placeholder', async () => {

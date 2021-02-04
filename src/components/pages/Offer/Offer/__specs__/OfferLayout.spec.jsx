@@ -61,31 +61,6 @@ describe('offerLayout', () => {
       const title = await screen.findByText('Éditer une offre', { selector: 'h1' })
       expect(title).toBeInTheDocument()
     })
-
-    it("should have a preview link redirecting to the webapp's offer page", async () => {
-      // When
-      await renderOfferDetails(props, store)
-
-      // Then
-      const previewLink = await screen.findByText('Prévisualiser', { selector: 'a' })
-      expect(previewLink).toBeInTheDocument()
-      const expectedWebappUri = `offre/details/${editedOffer.id}`
-      expect(previewLink).toHaveAttribute('href', expect.stringContaining(expectedWebappUri))
-    })
-
-    it("should have a preview link redirecting to the webapp's offer page with mediationId as parameter when an active mediation exists", async () => {
-      // Given
-      editedOffer.activeMediation = { id: 'CBA' }
-
-      // When
-      await renderOfferDetails(props, store)
-
-      // Then
-      const previewLink = await screen.findByText('Prévisualiser', { selector: 'a' })
-      expect(previewLink).toBeInTheDocument()
-      const expectedWebappUri = `offre/details/${editedOffer.id}/${editedOffer.activeMediation.id}`
-      expect(previewLink).toHaveAttribute('href', expect.stringContaining(expectedWebappUri))
-    })
   })
 
   describe('render when creating a new offer', () => {
