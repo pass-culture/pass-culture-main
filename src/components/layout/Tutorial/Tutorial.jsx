@@ -14,11 +14,11 @@ const steps = [
   },
   {
     position: 2,
-    component: CreateOffer,
+    component: CreateVenue,
   },
   {
     position: 3,
-    component: CreateVenue,
+    component: CreateOffer,
   },
   {
     position: 4,
