@@ -11,7 +11,7 @@ import TutorialModalContainer from '../TutorialModalContainer'
 
 const stepTitles = [
   "Bienvenue dans l'espace acteurs culturels",
-  'Créer un lieu',
+  'Gérer vos lieux culturels',
   'Créer une offre',
   'Suivre et gérer vos réservations',
 ]
