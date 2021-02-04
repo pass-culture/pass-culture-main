@@ -1842,8 +1842,8 @@ describe('stocks page', () => {
         userEvent.click(screen.getByText('Ajouter un stock'))
 
         // then
-        const columnCells = screen.getAllByRole('cell')
-        expect(columnCells).toHaveLength(4)
+        expect(screen.queryByText('Stock restant')).not.toBeInTheDocument()
+        expect(screen.queryByText('Réservations')).not.toBeInTheDocument()
       })
 
       it('should have a cancel button to cancel new stock', async () => {

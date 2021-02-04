@@ -11,16 +11,12 @@
     -moz-appearance: textfield;
   }
 
-  .small-input input {
+  .resized-input input {
     width: 100%;
 
     &[type="number"]:disabled {
       border: 1px solid transparent;
     }
-  }
-
-  .large-input input {
-    width: 100%;
   }
 
   .it-input {

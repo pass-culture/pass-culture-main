@@ -149,7 +149,7 @@ const StockItem = ({
               utcDateIsoFormat={beginningDate}
             />
           </td>
-          <td className="small-input">
+          <td className="resized-input">
             <TimeInput
               ariaLabel="Heure de l’événement"
               departmentCode={departmentCode}
@@ -161,7 +161,7 @@ const StockItem = ({
           </td>
         </Fragment>
       )}
-      <td className="small-input input-text">
+      <td className="resized-input input-text">
         <input
           aria-label="Prix"
           className={`it-input ${priceValue ? 'with-euro-icon' : ''} ${
@@ -175,7 +175,7 @@ const StockItem = ({
           value={priceValue}
         />
       </td>
-      <td className={`${!isEvent ? 'large-input' : ''}`}>
+      <td className={`${!isEvent ? 'resized-input' : ''}`}>
         <DateInput
           ariaLabel="Date limite de réservation"
           departmentCode={departmentCode}
@@ -186,7 +186,7 @@ const StockItem = ({
           utcDateIsoFormat={bookingLimitDatetime}
         />
       </td>
-      <td className="small-input input-text">
+      <td className="resized-input input-text">
         <input
           aria-label="Quantité"
           className={`it-input ${'quantity' in errors ? 'error' : ''}`}
@@ -198,16 +198,12 @@ const StockItem = ({
           value={totalQuantityValue}
         />
       </td>
-      {!isNewStock && (
-        <Fragment>
-          <td>
-            {remainingQuantityValue}
-          </td>
-          <td>
-            {initialStock.bookingsQuantity}
-          </td>
-        </Fragment>
-      )}
+      <td>
+        {!isNewStock && remainingQuantityValue}
+      </td>
+      <td>
+        {!isNewStock && initialStock.bookingsQuantity}
+      </td>
       <td className="action-column">
         <button
           className="tertiary-button"
