@@ -15,6 +15,7 @@ from pcapi.domain.show_types import SHOW_SUB_TYPES_DICT
 from pcapi.domain.show_types import SHOW_TYPES_DICT
 from pcapi.models.offer_type import CategoryNameEnum
 from pcapi.models.offer_type import CategoryType
+from pcapi.routes.native.utils import convert_to_cent
 from pcapi.utils.logger import logger
 
 
@@ -41,7 +42,9 @@ class OfferStockResponse(BaseModel):
     beginningDatetime: Optional[datetime]
     bookingLimitDatetime: Optional[datetime]
     isBookable: bool
-    price: Decimal
+    price: int
+
+    _convert_price = validator("price", pre=True, allow_reuse=True)(convert_to_cent)
 
     class Config:
         orm_mode = True

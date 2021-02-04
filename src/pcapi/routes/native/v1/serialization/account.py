@@ -1,6 +1,5 @@
 import datetime
 from datetime import date
-from decimal import Decimal
 from typing import List
 from typing import Optional
 
@@ -11,6 +10,7 @@ from pydantic.fields import Field
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.core.users.models import VOID_FIRST_NAME
 from pcapi.core.users.models import VOID_PUBLIC_NAME
+from pcapi.routes.native.utils import convert_to_cent
 from pcapi.serialization.utils import to_camel
 
 
@@ -23,10 +23,6 @@ class AccountRequest(BaseModel):
 
     class Config:
         alias_generator = to_camel
-
-
-def convert_to_cent(amount: Decimal) -> int:
-    return int(amount * 100)
 
 
 class Expense(BaseModel):

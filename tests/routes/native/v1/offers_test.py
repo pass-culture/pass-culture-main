@@ -61,14 +61,14 @@ class OffersTest:
             "stocks": [
                 {
                     "id": bookableStock.id,
-                    "price": 12.34,
+                    "price": 1234,
                     "beginningDatetime": bookableStock.beginningDatetime.strftime("%Y-%m-%dT%H:%M:%S.%f"),
                     "bookingLimitDatetime": bookableStock.bookingLimitDatetime.strftime("%Y-%m-%dT%H:%M:%S.%f"),
                     "isBookable": True,
                 },
                 {
                     "id": notBookableStock.id,
-                    "price": 45.68,
+                    "price": 4568,
                     "isBookable": False,
                     "beginningDatetime": notBookableStock.beginningDatetime.strftime("%Y-%m-%dT%H:%M:%S.%f"),
                     "bookingLimitDatetime": notBookableStock.bookingLimitDatetime.strftime("%Y-%m-%dT%H:%M:%S.%f"),
@@ -120,7 +120,7 @@ class OffersTest:
 
         assert response.status_code == 200
         assert not response.json["stocks"][0]["beginningDatetime"]
-        assert response.json["stocks"][0]["price"] == 12.34
+        assert response.json["stocks"][0]["price"] == 1234
         assert response.json["category"] == {
             "categoryType": "Thing",
             "label": "Musée, arts visuels et patrimoine",
