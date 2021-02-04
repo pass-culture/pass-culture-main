@@ -203,7 +203,6 @@ workflows:
           filters:
             branches:
               only:
-                - master
                 - migration-gcp
           context:
             - GCP
