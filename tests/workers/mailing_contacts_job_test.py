@@ -26,7 +26,5 @@ def test_calls_use_case(mocked_add_contact_to_list, mocked_update_contact, mocke
 
     # Then
     mocked_create_contact.assert_called_once_with(email)
-    mocked_update_contact.assert_called_once_with(
-        email, birth_date=datetime.datetime(2003, 1, 1), department=department
-    )
+    mocked_update_contact.assert_called_once_with(email, birth_date=datetime.date(2003, 1, 1), department=department)
     mocked_add_contact_to_list(email, 10210094)

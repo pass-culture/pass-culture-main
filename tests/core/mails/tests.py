@@ -1,5 +1,5 @@
 import copy
-from datetime import datetime
+import datetime
 
 import pytest
 import requests.exceptions
@@ -67,8 +67,8 @@ class MailingListFunctionsTest:
 
     @override_settings(EMAIL_BACKEND="pcapi.core.mails.backends.mailjet.MailjetBackend")
     def test_update_contact_with_mailjet(self):
-        dt = datetime(2000, 1, 1, 12, 34)
-        timestamp = datetime(2000, 1, 1).timestamp()
+        dt = datetime.date(2000, 1, 1)
+        timestamp = 946684800  # `TZ=UTC` is set in .env.development
         with requests_mock.Mocker() as mock:
             put = mock.put("https://api.eu.mailjet.com/v3/REST/contactdata/contact@example.com")
             response = mails.update_contact("contact@example.com", birth_date=dt, department="86")
@@ -139,7 +139,7 @@ class MailjetBackendTest:
             result = backend.send_mail(recipients=self.recipients, data=self.data)
         assert not result.successful
 
-    def test_create_contact_with_mailjet(self):
+    def test_create_contact(self):
         backend = self._get_backend()
         with requests_mock.Mocker() as mock:
             posted = mock.post("https://api.eu.mailjet.com/v3/REST/contact")
@@ -148,10 +148,10 @@ class MailjetBackendTest:
         assert posted.last_request.json() == {"Email": "contact@example.com"}
 
     @override_settings(EMAIL_BACKEND="pcapi.core.mails.backends.mailjet.MailjetBackend")
-    def test_update_contact_with_mailjet(self):
+    def test_update_contact(self):
         backend = self._get_backend()
-        dt = datetime(2000, 1, 1, 12, 34)
-        timestamp = datetime(2000, 1, 1).timestamp()
+        dt = datetime.date(2000, 1, 1)
+        timestamp = 946684800  # `TZ=UTC` is set in .env.development
         with requests_mock.Mocker() as mock:
             put = mock.put("https://api.eu.mailjet.com/v3/REST/contactdata/contact@example.com")
             response = backend.update_contact("contact@example.com", birth_date=dt, department="86")
@@ -164,7 +164,7 @@ class MailjetBackendTest:
         }
 
     @override_settings(EMAIL_BACKEND="pcapi.core.mails.backends.mailjet.MailjetBackend")
-    def test_add_contact_to_list_with_mailjet(self):
+    def test_add_contact_to_list(self):
         backend = self._get_backend()
         with requests_mock.Mocker() as mock:
             posted = mock.post("https://api.eu.mailjet.com/v3/REST/listrecipient")
@@ -220,7 +220,7 @@ class ToDevMailjetBackendTest:
         assert "would have been sent to real1@example.com, real2@example.com" in posted_json["Html-part"]
         assert result.successful
 
-    def test_create_contact_with_mailjet(self):
+    def test_create_contact(self):
         backend = self._get_backend()
         with requests_mock.Mocker() as mock:
             posted = mock.post("https://api.eu.mailjet.com/v3/REST/contact")
@@ -228,10 +228,10 @@ class ToDevMailjetBackendTest:
         assert response.status_code == 200
         assert posted.last_request.json() == {"Email": "dev@example.com"}
 
-    def test_update_contact_with_mailjet(self):
+    def test_update_contact(self):
         backend = self._get_backend()
-        dt = datetime(2000, 1, 1, 12, 34)
-        timestamp = datetime(2000, 1, 1).timestamp()
+        dt = datetime.date(2000, 1, 1)
+        timestamp = 946684800  # `TZ=UTC` is set in .env.development
         with requests_mock.Mocker() as mock:
             put = mock.put("https://api.eu.mailjet.com/v3/REST/contactdata/dev@example.com")
             response = backend.update_contact("real@example.com", birth_date=dt, department="86")
@@ -244,7 +244,7 @@ class ToDevMailjetBackendTest:
         }
 
     @override_settings(EMAIL_BACKEND="pcapi.core.mails.backends.mailjet.MailjetBackend")
-    def test_add_contact_to_list_with_mailjet(self):
+    def test_add_contact_to_list(self):
         backend = self._get_backend()
         with requests_mock.Mocker() as mock:
             posted = mock.post("https://api.eu.mailjet.com/v3/REST/listrecipient")

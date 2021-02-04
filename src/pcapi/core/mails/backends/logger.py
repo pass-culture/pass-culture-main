@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date
 from typing import Iterable
 
 from requests import Response
@@ -28,7 +28,7 @@ class LoggerBackend(BaseBackend):
         response.status_code = 200
         return response
 
-    def update_contact(self, email: str, *, birth_date: datetime, department: str) -> Response:
+    def update_contact(self, email: str, *, birth_date: date, department: str) -> Response:
         logger.info("Updating contact information for email=%s", email)
         response = Response()
         response.status_code = 200

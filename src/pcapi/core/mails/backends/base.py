@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date
 from typing import Iterable
 
 from requests import Response
@@ -21,7 +21,7 @@ class BaseBackend:
     def create_contact(self, email: str) -> Response:
         raise NotImplementedError()
 
-    def update_contact(self, email: str, *, birth_date: datetime, department: str) -> Response:
+    def update_contact(self, email: str, *, birth_date: date, department: str) -> Response:
         raise NotImplementedError()
 
     def add_contact_to_list(self, email: str, list_id: str) -> Response:

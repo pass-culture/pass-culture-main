@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 
 from rq.decorators import job
 
@@ -28,7 +28,7 @@ def _create_mailing_contact(email: str, birth_date: str, department: str) -> Non
             "Got error %d from Mailjet while creating contact: %s" % (response.status_code, response.content)
         )
 
-    birth_date = datetime.fromisoformat(birth_date)
+    birth_date = datetime.date.fromisoformat(birth_date)
     response = mails.update_contact(email, birth_date=birth_date, department=department)
     if response.status_code not in (200, 400):
         raise ValueError(

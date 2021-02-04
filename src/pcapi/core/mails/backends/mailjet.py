@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 from typing import Iterable
 
 import mailjet_rest
@@ -57,8 +57,8 @@ class MailjetBackend(BaseBackend):
         data = {"Email": email}
         return self.mailjet_client.contact.create(data=data)
 
-    def update_contact(self, email: str, *, birth_date: datetime, department: str) -> Response:
-        birth_timestamp = int(datetime(birth_date.year, birth_date.month, birth_date.day).timestamp())
+    def update_contact(self, email: str, *, birth_date: datetime.date, department: str) -> Response:
+        birth_timestamp = int(datetime.datetime.combine(birth_date, datetime.time(0, 0)).timestamp())
 
         data = {
             "Data": [

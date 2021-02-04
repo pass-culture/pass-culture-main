@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date
 from typing import Iterable
 
 from requests import Response
@@ -45,7 +45,7 @@ def create_contact(email: str) -> Response:
     return backend().create_contact(email)
 
 
-def update_contact(email: str, *, birth_date: datetime, department: str) -> Response:
+def update_contact(email: str, *, birth_date: date, department: str) -> Response:
     backend = import_string(settings.EMAIL_BACKEND)
     return backend().update_contact(email, birth_date=birth_date, department=department)
 

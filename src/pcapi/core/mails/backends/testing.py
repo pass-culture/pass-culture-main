@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date
 from typing import Iterable
 
 from requests import Response
@@ -24,7 +24,7 @@ class TestingBackend(BaseBackend):
         response.status_code = 201
         return response
 
-    def update_contact(self, email: str, *, birth_date: datetime, department: str) -> Response:
+    def update_contact(self, email: str, *, birth_date: date, department: str) -> Response:
         response = Response()
         response.status_code = 200
         return response
@@ -47,7 +47,7 @@ class FailingBackend(BaseBackend):
         response.status_code = 400
         return response
 
-    def update_contact(self, email: str, *, birth_date: datetime, department: str) -> Response:
+    def update_contact(self, email: str, *, birth_date: date, department: str) -> Response:
         response = Response()
         response.status_code = 400
         return response
