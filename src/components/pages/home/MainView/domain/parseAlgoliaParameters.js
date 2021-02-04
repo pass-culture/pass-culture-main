@@ -60,7 +60,7 @@ export const parseAlgoliaParameters = ({ geolocation, parameters }) => {
   }
 }
 
-const _buildPriceRange = ({ priceMin = 0, priceMax = 500 }) => {
+const _buildPriceRange = ({ priceMin = 0, priceMax = 300 }) => {
   return [priceMin, priceMax]
 }
 
