@@ -88,18 +88,14 @@ class GenericStocks(LocalProvider):
         stock.quantity = self.provider_stocks["available"] + bookings_quantity
         stock.bookingLimitDatetime = None
         stock.offerId = self.offer_id
-        stock.price = (
-            self.provider_stocks["price"]
-            if self.price_divider_to_euro is None
-            else _fill_stock_price(int(self.provider_stocks["price"]), self.price_divider_to_euro)
-        )
+        if self.provider_stocks["price"] and self.price_divider_to_euro:
+            stock.price = int(self.provider_stocks["price"]) / self.price_divider_to_euro
+        else:
+            # Beware: price may be None. repository.save() will catch and skip the stock
+            stock.price = self.provider_stocks["price"]
         stock.dateModified = datetime.now()
 
     @staticmethod
     def get_next_offer_id_from_sequence():
         sequence = Sequence("offer_id_seq")
         return db.session.execute(sequence)
-
-
-def _fill_stock_price(provider_stock_price: int, price_divider: int) -> float:
-    return provider_stock_price / price_divider

@@ -99,6 +99,40 @@ class TiteliveStocksTest:
 
         @pytest.mark.usefixtures("db_session")
         @patch("pcapi.local_providers.titelive_stocks.titelive_stocks.api_titelive_stocks.stocks_information")
+        def test_titelive_stock_provider_skips_stock_when_price_is_null(self, stub_get_stocks_information, app):
+            # Given
+            stub_get_stocks_information.return_value = iter(
+                [{"ref": "0002730757438", "available": 10, "price": None, "validUntil": "2019-10-31T15:10:27Z"}]
+            )
+
+            offerer = create_offerer()
+            venue = create_venue(offerer, siret="12345678912345")
+            titelive_provider = activate_provider("TiteLiveStocks")
+            venue_provider = create_venue_provider(
+                venue, titelive_provider, venue_id_at_offer_provider=venue.siret, last_sync_date=datetime(2020, 2, 4)
+            )
+            product = create_product_with_thing_type(id_at_providers="0002730757438")
+            repository.save(product, venue_provider)
+
+            titelive_stocks = TiteLiveStocks(venue_provider)
+
+            # When
+            titelive_stocks.updateObjects()
+
+            # Then
+            offer = Offer.query.first()
+            stock = Stock.query.first()
+
+            assert offer.type == product.type
+            assert offer.description == product.description
+            assert offer.venue is not None
+            assert offer.bookingEmail == venue.bookingEmail
+            assert offer.extraData == product.extraData
+
+            assert stock is None
+
+        @pytest.mark.usefixtures("db_session")
+        @patch("pcapi.local_providers.titelive_stocks.titelive_stocks.api_titelive_stocks.stocks_information")
         def test_titelive_stock_provider_update_1_stock_and_1_offer(self, stub_get_stocks_information, app):
             # Given
             stub_get_stocks_information.return_value = iter(
