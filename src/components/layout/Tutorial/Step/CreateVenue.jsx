@@ -1,11 +1,9 @@
 import React from 'react'
 
 const CreateVenue = () => (
-  <div>
-    <h1>
-      {'Créer un lieu'}
-    </h1>
-  </div>
+  <h1>
+    {'Créer un lieu'}
+  </h1>
 )
 
 export default CreateVenue

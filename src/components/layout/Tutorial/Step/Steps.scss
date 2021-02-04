@@ -1,0 +1,15 @@
+.tw-strong {
+  @include body-important();
+}
+
+.tco-italic {
+  color: $grey-dark;
+  font-style: italic;
+}
+
+.tw-steps {
+  display: grid;
+  grid-column-gap: rem(16px);
+  grid-row-gap: rem(24px);
+  grid-template-columns: 1fr 1fr;
+}

@@ -1,6 +1,29 @@
 .tutorial {
+  h1 {
+    margin-bottom: rem(32px);
+  }
+
+  div {
+    margin-bottom: rem(40px);
+  }
+
+  div:last-child {
+    margin-bottom: 0;
+  }
+
+  li {
+    margin-top: rem(8px);
+  }
+
   .content-section {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
     margin-bottom: rem(70px);
+  }
+
+  .tutorial-content {
+    width: rem(500px);
   }
 
   .nav-step-list-section {

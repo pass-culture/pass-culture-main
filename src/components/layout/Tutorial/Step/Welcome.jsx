@@ -1,11 +1,11 @@
 import React from 'react'
 
 const Welcome = () => (
-  <div className="tutorial-welcome">
+  <>
     <h1>
       {"Bienvenue dans l'espace acteurs culturels"}
     </h1>
-    <div className="tw-content">
+    <section className="tutorial-content">
       <div className="tw-description">
         {
           'Le pass Culture est une politique culturelle publique permettant aux jeunes à partir de 18 ans de bénéficier d’une enveloppe de 500€ utilisable pour réserver vos offres.'
@@ -48,8 +48,8 @@ const Welcome = () => (
           </p>
         </div>
       </div>
-    </div>
-  </div>
+    </section>
+  </>
 )
 
 export default Welcome
