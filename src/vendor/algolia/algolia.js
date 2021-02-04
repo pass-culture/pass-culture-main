@@ -266,25 +266,19 @@ const buildOfferTypesPredicate = offerTypes => {
 }
 
 const buildGeolocationParameter = (aroundRadius, geolocation, searchAround) => {
-  if (geolocation) {
-    const { longitude, latitude } = geolocation
-    if (latitude && longitude) {
-      const aroundRadiusInMeters = computeRadiusInMeters(aroundRadius, searchAround)
-      const radiusIsPositive = aroundRadiusInMeters > 0
+  if (!geolocation) return
+  const { latitude, longitude } = geolocation
+  if (!latitude || !longitude) return
 
-      return {
-        aroundLatLng: `${latitude}, ${longitude}`,
-        aroundRadius:
-          searchAround && radiusIsPositive ? aroundRadiusInMeters : FILTERS.UNLIMITED_RADIUS,
-      }
-    }
+  return {
+    aroundLatLng: `${latitude}, ${longitude}`,
+    aroundRadius: computeAroudRadiusInMeters(aroundRadius, searchAround),
   }
 }
 
-const computeRadiusInMeters = (aroundRadius, searchAround) => {
-  if (searchAround && aroundRadius === 0) {
-    return RADIUS_IN_METERS_FOR_NO_OFFERS
-  }
+const computeAroudRadiusInMeters = (aroundRadius, searchAround) => {
+  if (!searchAround || aroundRadius === null) return FILTERS.UNLIMITED_RADIUS
+  if (aroundRadius === 0) return RADIUS_IN_METERS_FOR_NO_OFFERS
   return aroundRadius * 1000
 }
 
