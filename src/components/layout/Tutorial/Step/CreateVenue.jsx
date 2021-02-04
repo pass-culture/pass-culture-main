@@ -18,12 +18,12 @@ const CreateVenue = () => (
         <ul>
           <li>
             {
-              '- Numérique : pour vos offres dématérialisées (livre numérique, visites virtuelles, captations de spectacles, jeux vidéos, etc.)'
+              'Numérique : pour vos offres dématérialisées (livre numérique, visites virtuelles, captations de spectacles, jeux vidéos, etc.)'
             }
           </li>
           <li>
             {
-              '- Physique : pour les événements, les visites, les livres, instruments de musique, etc.'
+              'Physique : pour les événements, les visites, les livres, instruments de musique, etc.'
             }
           </li>
         </ul>
