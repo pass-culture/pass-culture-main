@@ -30,8 +30,22 @@ describe('components | EmptyResult', () => {
 
     // Then
     const searchedKeywords = wrapper.find({
-      children: '"mots clés recherchés"',
+      children: 'Pas de résultat trouvé pour "mots clés recherchés"',
     })
+    expect(searchedKeywords).toHaveLength(1)
+  })
+
+  it('should display message for empty query', () => {
+    // When
+    const wrapper = shallow(
+      <EmptyResult
+        onNewSearchAroundMe={jest.fn()}
+        // eslint-disable-next-line react/jsx-closing-bracket-location
+        searchedKeywords=""
+      />
+    )
+    // Then
+    const searchedKeywords = wrapper.find({ children: 'Pas de résultat trouvé.' })
     expect(searchedKeywords).toHaveLength(1)
   })
 
