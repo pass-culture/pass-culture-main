@@ -33,7 +33,7 @@ class BookingCancellation extends PureComponent {
   }
 
   render() {
-    const { booking, extraClassName, offer } = this.props
+    const { booking, extraClassName, offer, isWalletValid } = this.props
     const { mounted } = this.state
     const { isEvent } = offer || {}
 
@@ -54,6 +54,7 @@ class BookingCancellation extends PureComponent {
                   <BookingCancel
                     booking={booking}
                     isEvent={isEvent}
+                    isWalletValid={isWalletValid}
                   />
                 </div>
               </div>
@@ -87,6 +88,7 @@ BookingCancellation.propTypes = {
   }),
   extraClassName: PropTypes.string,
   history: PropTypes.shape().isRequired,
+  isWalletValid: PropTypes.bool.isRequired,
   match: PropTypes.shape({
     url: PropTypes.string.isRequired,
   }).isRequired,

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import Icon from '../../../layout/Icon/Icon'
 import getDisplayPrice from '../../../../utils/getDisplayPrice'
 
-const BookingCancel = ({ isEvent, booking }) => {
+const BookingCancel = ({ isEvent, booking, isWalletValid }) => {
   const { amount, quantity } = booking || {}
   const price = getDisplayPrice(amount * quantity)
   const cssClass = isEvent ? 'event' : 'thing'
@@ -21,9 +21,11 @@ const BookingCancel = ({ isEvent, booking }) => {
       </div>
 
       <p className="mt40">
-        <span className="is-block">
-          {`${price} vont être recrédités sur ton pass.`}
-        </span>
+        {isWalletValid && (
+          <span className="is-block">
+            {`${price} vont être recrédités sur ton pass.`}
+          </span>
+        )}
         <span className="is-block">
           {'Tu vas recevoir un e-mail de confirmation.'}
         </span>
@@ -35,6 +37,7 @@ const BookingCancel = ({ isEvent, booking }) => {
 BookingCancel.propTypes = {
   booking: PropTypes.shape().isRequired,
   isEvent: PropTypes.bool.isRequired,
+  isWalletValid: PropTypes.bool.isRequired,
 }
 
 export default BookingCancel

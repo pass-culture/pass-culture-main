@@ -14,6 +14,9 @@ describe('src | components | layout | BookingCancellation | BookingCancellationC
       }
 
       const state = {
+        currentUser: {
+          deposit_expiration_date: '2019-01-01T09:00:00.000000Z',
+        },
         data: {
           bookings: [
             {
@@ -36,6 +39,7 @@ describe('src | components | layout | BookingCancellation | BookingCancellationC
         booking: {
           id: 'bookingId',
         },
+        isWalletValid: false,
         offer: {
           id: 'offerId',
         },

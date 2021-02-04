@@ -10,5 +10,6 @@ export default class User {
     this.publicName = user.publicName
     this.wallet_balance = user.wallet_balance
     this.wallet_date_created = user.wallet_date_created
+    this.deposit_expiration_date = user.deposit_expiration_date
   }
 }

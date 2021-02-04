@@ -5,6 +5,7 @@ import { compose } from 'redux'
 import BookingCancellation from './BookingCancellation'
 import { selectBookingByRouterMatch } from '../../../redux/selectors/data/bookingsSelectors'
 import { selectOfferByRouterMatch } from '../../../redux/selectors/data/offersSelectors'
+import { isWalletValid } from '../../../redux/selectors/userSelector'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps
@@ -13,11 +14,9 @@ export const mapStateToProps = (state, ownProps) => {
 
   return {
     booking,
+    isWalletValid: isWalletValid(state),
     offer,
   }
 }
 
-export default compose(
-  withRouter,
-  connect(mapStateToProps)
-)(BookingCancellation)
+export default compose(withRouter, connect(mapStateToProps))(BookingCancellation)
