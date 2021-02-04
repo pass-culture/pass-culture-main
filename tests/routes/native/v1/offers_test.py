@@ -1,6 +1,7 @@
 from datetime import datetime
 from datetime import timedelta
 
+from freezegun import freeze_time
 import pytest
 
 from pcapi.core.offers.factories import EventStockFactory
@@ -17,6 +18,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class OffersTest:
+    @freeze_time("2020-01-01")
     def test_get_event_offer(self, app):
         offer_type = EventType.CINEMA
         extra_data = {
@@ -34,13 +36,16 @@ class OffersTest:
         offer = OfferFactory(
             type=str(offer_type),
             isDuo=True,
+            description="desk cryption",
+            name="l'offre du siècle",
             withdrawalDetails="modalité de retrait",
             extraData=extra_data,
             durationMinutes=33,
             visualDisabilityCompliant=True,
             externalTicketOfficeUrl="https://url.com",
+            venue__name="il est venu le temps des names",
         )
-        mediation = MediationFactory(offer=offer, thumbCount=1, credit="street credit")
+        MediationFactory(id=111, offer=offer, thumbCount=1, credit="street credit")
 
         bookableStock = EventStockFactory(offer=offer, price=12.34)
         notBookableStock = EventStockFactory(
@@ -62,20 +67,20 @@ class OffersTest:
                 {
                     "id": bookableStock.id,
                     "price": 1234,
-                    "beginningDatetime": bookableStock.beginningDatetime.strftime("%Y-%m-%dT%H:%M:%S.%f"),
-                    "bookingLimitDatetime": bookableStock.bookingLimitDatetime.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+                    "beginningDatetime": "2020-01-06T00:00:00",
+                    "bookingLimitDatetime": "2020-01-05T23:00:00",
                     "isBookable": True,
                 },
                 {
                     "id": notBookableStock.id,
                     "price": 4568,
                     "isBookable": False,
-                    "beginningDatetime": notBookableStock.beginningDatetime.strftime("%Y-%m-%dT%H:%M:%S.%f"),
-                    "bookingLimitDatetime": notBookableStock.bookingLimitDatetime.strftime("%Y-%m-%dT%H:%M:%S.%f"),
+                    "beginningDatetime": "2019-12-31T00:00:00",
+                    "bookingLimitDatetime": "2019-12-30T23:00:00",
                 },
             ],
             "category": {"categoryType": "Event", "label": "Cinéma", "name": "CINEMA"},
-            "description": offer.description,
+            "description": "desk cryption",
             "externalTicketOfficeUrl": "https://url.com",
             "extraData": {
                 "author": "mandibule",
@@ -90,25 +95,25 @@ class OffersTest:
                 "stageDirector": "metteur en scène",
                 "visa": "vasi",
             },
-            "image": {"url": mediation.thumbUrl, "credit": mediation.credit},
+            "image": {"url": "http://localhost/storage/thumbs/mediations/N4", "credit": "street credit"},
             "isActive": True,
             "isDuo": True,
-            "isDigital": offer.isDigital,
-            "name": offer.name,
+            "isDigital": False,
+            "name": "l'offre du siècle",
             "venue": {
                 "id": offer.venue.id,
-                "address": offer.venue.address,
-                "city": offer.venue.city,
+                "address": "1 boulevard Poissonnière",
+                "city": "Paris",
                 "coordinates": {
-                    "latitude": float(offer.venue.latitude) if offer.venue.latitude else None,
-                    "longitude": float(offer.venue.longitude) if offer.venue.longitude else None,
+                    "latitude": 48.87004,
+                    "longitude": 2.3785,
                 },
-                "name": offer.venue.name,
+                "name": "il est venu le temps des names",
                 "offerer": {"name": offer.venue.managingOfferer.name},
-                "postalCode": offer.venue.postalCode,
-                "publicName": offer.venue.publicName,
+                "postalCode": "75000",
+                "publicName": "il est venu le temps des names",
             },
-            "withdrawalDetails": offer.withdrawalDetails,
+            "withdrawalDetails": "modalité de retrait",
         }
 
     def test_get_thing_offer(self, app):
