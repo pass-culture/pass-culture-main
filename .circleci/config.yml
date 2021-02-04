@@ -101,7 +101,6 @@ commands:
             --service-account << parameters.app_service_account_email >> \
             --min-instances=1 \
             --set-env-vars "\
-                ACTIVATION_USER_RECIPIENTS=sm://${GCP_PROJECT}/<< parameters.app_name >>_activation_user_recipients, \
                 ADMINISTRATION_EMAIL_ADDRESS=sm://${GCP_PROJECT}/<< parameters.app_name >>_administration_email_address, \
                 ALGOLIA_API_KEY=sm://${GCP_PROJECT}/<< parameters.app_name >>_algolia_api_key, \
                 ALGOLIA_APPLICATION_ID=sm://${GCP_PROJECT}/<< parameters.app_name >>_algolia_application_id, \
