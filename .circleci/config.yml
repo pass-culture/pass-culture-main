@@ -582,7 +582,7 @@ workflows:
           filters:
             branches:
               only:
-                - migration-gcp
+                - master
           context:
             - GCP
             - GCP_EHP
