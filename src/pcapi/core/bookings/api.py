@@ -16,10 +16,12 @@ from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.repository import generate_booking_token
 from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
-from pcapi.infrastructure.services.notification.mailjet_notification_service import MailjetNotificationService
+from pcapi.domain import user_emails
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
 from pcapi.repository import repository
+from pcapi.utils.logger import logger
+from pcapi.utils.mailing import MailServiceException
 
 from . import validation
 
@@ -67,9 +69,14 @@ def book_offer(
 
     repository.save(booking)
 
-    notifier = MailjetNotificationService()
-    notifier.send_booking_recap(booking)
-    notifier.send_booking_confirmation_to_beneficiary(booking)
+    try:
+        user_emails.send_booking_recap_emails(booking)
+    except MailServiceException as error:
+        logger.exception("Could not send booking=%s confirmation email to offerer: %s", booking.id, error)
+    try:
+        user_emails.send_booking_confirmation_email_to_beneficiary(booking)
+    except MailServiceException as error:
+        logger.exception("Could not send booking=%s confirmation email to beneficiary: %s", booking.id, error)
 
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
@@ -86,11 +93,10 @@ def cancel_booking_by_beneficiary(user: User, booking: Booking) -> None:
     booking.cancellationReason = BookingCancellationReasons.BENEFICIARY
     repository.save(booking)
 
-    notifier = MailjetNotificationService()
-    notifier.send_booking_cancellation_emails_to_user_and_offerer(
-        booking=booking,
-        reason=booking.cancellationReason,
-    )
+    try:
+        user_emails.send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason)
+    except MailServiceException as error:
+        logger.exception("Could not send booking=%s cancellation emails to user and offerer: %s", booking.id, error)
 
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         redis.add_offer_id(client=app.redis_client, offer_id=booking.stock.offerId)

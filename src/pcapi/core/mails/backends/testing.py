@@ -21,7 +21,7 @@ class TestingBackend(BaseBackend):
 
     def create_contact(self, email: str) -> Response:
         response = Response()
-        response.status_code = 200
+        response.status_code = 201
         return response
 
     def update_contact(self, email: str, *, birth_date: datetime, department: str) -> Response:
@@ -31,7 +31,7 @@ class TestingBackend(BaseBackend):
 
     def add_contact_to_list(self, email: str, list_id: str) -> Response:
         response = Response()
-        response.status_code = 200
+        response.status_code = 201
         return response
 
 

@@ -1,20 +1,32 @@
-from unittest.mock import MagicMock
+import datetime
+from unittest import mock
 
-from pcapi.infrastructure.container import add_contact_in_eligibility_list
+from requests import Response
+
 from pcapi.workers.mailing_contacts_job import mailing_contacts_job
 
 
-def test_calls_use_case():
+def _make_response(status_code):
+    response = Response()
+    response.status_code = status_code
+    return response
+
+
+@mock.patch("pcapi.core.mails.create_contact", return_value=_make_response(201))
+@mock.patch("pcapi.core.mails.update_contact", return_value=_make_response(200))
+@mock.patch("pcapi.core.mails.add_contact_to_list", return_value=_make_response(201))
+def test_calls_use_case(mocked_add_contact_to_list, mocked_update_contact, mocked_create_contact):
     # Given
-    add_contact_in_eligibility_list.execute = MagicMock()
-    contact_email = "passculture@example.com"
-    contact_date_of_birth = "2003-01-01"
-    contact_department_code = "93800"
+    email = "contact@example.com"
+    birth_date = "2003-01-01"
+    department = "93800"
 
     # When
-    mailing_contacts_job(contact_email, contact_date_of_birth, contact_department_code)
+    mailing_contacts_job(email, birth_date, department)
 
     # Then
-    add_contact_in_eligibility_list.execute.assert_called_once_with(
-        contact_email, contact_date_of_birth, contact_department_code
+    mocked_create_contact.assert_called_once_with(email)
+    mocked_update_contact.assert_called_once_with(
+        email, birth_date=datetime.datetime(2003, 1, 1), department=department
     )
+    mocked_add_contact_to_list(email, 10210094)
