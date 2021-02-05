@@ -25,12 +25,22 @@ const Stocks = ({ offer, showErrorNotification, showSuccessNotification }) => {
   const isOfferSynchronized = Boolean(offer.lastProvider)
   const [formErrors, setFormErrors] = useState({})
 
-  const loadStocks = useCallback(() => {
-    return pcapi.loadStocks(offerId).then(receivedStocks => {
-      setStocks(formatAndSortStocks(receivedStocks.stocks))
-      setIsLoading(false)
-    })
-  }, [offerId])
+  const loadStocks = useCallback(
+    (keepCreationStocks = false) => {
+      return pcapi.loadStocks(offerId).then(receivedStocks => {
+        setStocks(oldStocks => {
+          const stocksOnCreation = keepCreationStocks ? oldStocks.filter(stock => !stock.id) : []
+          return [...stocksOnCreation, ...formatAndSortStocks(receivedStocks.stocks)]
+        })
+        setIsLoading(false)
+      })
+    },
+    [offerId]
+  )
+
+  const onDelete = useCallback(() => {
+    loadStocks(true)
+  }, [loadStocks])
 
   useEffect(() => {
     moment.tz.setDefault(getDepartmentTimezone(offer.venue.departementCode))
@@ -217,7 +227,7 @@ const Stocks = ({ offer, showErrorNotification, showSuccessNotification }) => {
                   isNewStock
                   key={stockInCreation.key}
                   onChange={updateStock}
-                  refreshStocks={loadStocks}
+                  onDelete={onDelete}
                   removeStockInCreation={removeStockInCreation}
                 />
               ))}
@@ -231,7 +241,7 @@ const Stocks = ({ offer, showErrorNotification, showSuccessNotification }) => {
                   key={stock.id}
                   lastProvider={offer.lastProvider}
                   onChange={updateStock}
-                  refreshStocks={loadStocks}
+                  onDelete={onDelete}
                 />
               ))}
             </tbody>

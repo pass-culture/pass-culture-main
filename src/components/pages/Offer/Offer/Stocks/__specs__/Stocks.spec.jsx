@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { act, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import moment from 'moment-timezone'
 import React from 'react'
@@ -1099,6 +1099,42 @@ describe('stocks page', () => {
             expect(screen.queryByRole('row')).not.toBeInTheDocument()
           })
 
+          it('should not discard creation stocks when deleting a stock', async () => {
+            // Given
+            const initialStock = {
+              ...defaultStock,
+              beginningDatetime: '2020-12-20T22:00:00Z',
+            }
+            pcapi.loadStocks
+              .mockResolvedValueOnce({ stocks: [initialStock] })
+              .mockResolvedValueOnce({ stocks: [] })
+            pcapi.loadOffer.mockResolvedValue({ ...defaultOffer, isEvent: true })
+
+            await renderOffers(props, store)
+            await fireEvent.click(await screen.findByText('Ajouter une date'))
+            const existingStock = screen.getByTestId(`stock-item-${initialStock.id}`)
+
+            let nbExpectedRows = 0
+            nbExpectedRows += 1 // header row
+            nbExpectedRows += 1 // existing stock row
+            nbExpectedRows += 1 // creation stock row
+            expect(screen.getAllByRole('row')).toHaveLength(nbExpectedRows)
+
+            // When
+            await act(async () => {
+              const existingStockScreen = within(existingStock)
+              userEvent.click(await existingStockScreen.findByTitle('Supprimer le stock'))
+              await userEvent.click(await screen.findByRole('button', { name: 'Supprimer' }))
+            })
+
+            // Then
+            expect(screen.queryByTestId(`stock-item-${initialStock.id}`)).not.toBeInTheDocument()
+            nbExpectedRows = 0
+            nbExpectedRows += 1 // header row
+            nbExpectedRows += 1 // creation stock row
+            expect(screen.getAllByRole('row')).toHaveLength(nbExpectedRows)
+          })
+
           it('should display a success message after deletion', async () => {
             // Given
             await renderOffers(props, store)
@@ -1622,35 +1658,35 @@ describe('stocks page', () => {
           .mockResolvedValueOnce({ stocks: createdStocks })
         await renderOffers(props, store)
 
-        userEvent.click(screen.getByText('Ajouter une date'))
+        fireEvent.click(screen.getByText('Ajouter une date'))
 
-        userEvent.click(screen.getAllByLabelText('Date de l’événement')[0])
-        userEvent.click(screen.getByLabelText('day-24'))
+        fireEvent.click(screen.getAllByLabelText('Date de l’événement')[0])
+        fireEvent.click(screen.getByLabelText('day-24'))
 
-        userEvent.click(screen.getAllByLabelText('Heure de l’événement')[0])
-        userEvent.click(screen.getByText('20:00'))
+        fireEvent.click(screen.getAllByLabelText('Heure de l’événement')[0])
+        fireEvent.click(screen.getByText('20:00'))
 
-        userEvent.type(screen.getByLabelText('Prix'), '15')
+        fireEvent.change(screen.getByLabelText('Prix'), { target: { value: '15' } })
 
-        userEvent.click(screen.getAllByLabelText('Date limite de réservation')[0])
-        userEvent.click(screen.getByLabelText('day-22'))
+        fireEvent.click(screen.getAllByLabelText('Date limite de réservation')[0])
+        fireEvent.click(screen.getByLabelText('day-22'))
 
-        userEvent.type(screen.getByLabelText('Quantité'), '15')
+        fireEvent.change(screen.getByLabelText('Quantité'), { target: { value: '15' } })
 
-        userEvent.click(screen.getByText('Ajouter une date'))
+        fireEvent.click(screen.getByText('Ajouter une date'))
 
-        userEvent.click(screen.getAllByLabelText('Date de l’événement')[0])
-        userEvent.click(screen.getByLabelText('day-25'))
+        fireEvent.click(screen.getAllByLabelText('Date de l’événement')[0])
+        fireEvent.click(screen.getByLabelText('day-25'))
 
-        userEvent.click(screen.getAllByLabelText('Heure de l’événement')[0])
-        userEvent.click(screen.getByText('20:00'))
+        fireEvent.click(screen.getAllByLabelText('Heure de l’événement')[0])
+        fireEvent.click(screen.getByText('20:00'))
 
-        userEvent.click(screen.getAllByLabelText('Date limite de réservation')[0])
-        userEvent.click(screen.getByLabelText('day-23'))
+        fireEvent.click(screen.getAllByLabelText('Date limite de réservation')[0])
+        fireEvent.click(screen.getByLabelText('day-23'))
 
         // when
         await act(async () => {
-          await userEvent.click(screen.getByText('Enregistrer'))
+          await fireEvent.click(screen.getByText('Enregistrer'))
         })
 
         // then

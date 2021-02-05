@@ -16,7 +16,7 @@ const StockItem = ({
   isNewStock,
   lastProvider,
   onChange,
-  refreshStocks,
+  onDelete,
   removeStockInCreation,
   initialStock,
 }) => {
@@ -134,7 +134,10 @@ const StockItem = ({
   }, [removeStockInCreation, initialStock.key])
 
   return (
-    <tr title={computeStockTitle()}>
+    <tr
+      data-testid={`stock-item-${initialStock.key}`}
+      title={computeStockTitle()}
+    >
       {isEvent && (
         <Fragment>
           <td>
@@ -218,7 +221,7 @@ const StockItem = ({
         </button>
         {isDeleting && (
           <DeleteStockDialogContainer
-            refreshStocks={refreshStocks}
+            onDelete={onDelete}
             setIsDeleting={setIsDeleting}
             stockId={initialStock.id}
           />
@@ -252,7 +255,7 @@ StockItem.propTypes = {
   isNewStock: PropTypes.bool,
   lastProvider: PropTypes.shape(),
   onChange: PropTypes.func.isRequired,
-  refreshStocks: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
   removeStockInCreation: PropTypes.func,
 }
 

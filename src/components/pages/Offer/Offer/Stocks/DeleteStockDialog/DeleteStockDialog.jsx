@@ -9,7 +9,7 @@ import { ReactComponent as DeletionIcon } from './assets/deletion.svg'
 const DeleteStockDialog = ({
   notifyDeletionError,
   notifyDeletionSuccess,
-  refreshStocks,
+  onDelete,
   setIsDeleting,
   stockId,
 }) => {
@@ -21,10 +21,10 @@ const DeleteStockDialog = ({
       .deleteStock(stockId)
       .then(() => {
         notifyDeletionSuccess()
-        refreshStocks()
+        onDelete()
       })
       .catch(() => notifyDeletionError())
-  }, [notifyDeletionError, notifyDeletionSuccess, refreshStocks, stockId])
+  }, [notifyDeletionError, notifyDeletionSuccess, onDelete, stockId])
 
   const abortStockDeletion = useCallback(() => setIsDeleting(false), [setIsDeleting])
 
@@ -72,7 +72,7 @@ const DeleteStockDialog = ({
 DeleteStockDialog.propTypes = {
   notifyDeletionError: PropTypes.func.isRequired,
   notifyDeletionSuccess: PropTypes.func.isRequired,
-  refreshStocks: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
   setIsDeleting: PropTypes.func.isRequired,
   stockId: PropTypes.string.isRequired,
 }
