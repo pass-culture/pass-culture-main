@@ -16,6 +16,7 @@
     "lint:js:fix": "yarn lint:js --fix",
     "lint:scss": "stylelint '**/*.scss'",
     "lint:scss:fix": "yarn lint:scss --fix",
+    "qa:diff": "scripts/compare-screenshots.sh",
     "qa:test": "yarn testcafe quality_assurance",
     "start": "node scripts/start.js",
     "test:cafe": "yarn testcafe testcafe",
