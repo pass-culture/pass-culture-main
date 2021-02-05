@@ -11,7 +11,7 @@ const CreateOffer = () => (
       </p>
       <p>
         {
-          "1. Automatiquement si vous utilisez un de nos logiciels partenaires (Titelive Stocks, GStocks, Librisoft, Praxiel, Allocine) ou êtes référencé sur l'une des plateformes partenaires (Placesdeslibraires.fr, leslibraires.fr ... et bien d'autres !)"
+          "1. Automatiquement si vous utilisez un de nos logiciels partenaires (Titelive Stocks, GStocks, Librisoft, Praxiel) ou êtes référencé sur l'une des plateformes partenaires (Placesdeslibraires.fr, leslibraires.fr, Allociné ... et bien d'autres !)"
         }
       </p>
       <p className="tco-italic">
