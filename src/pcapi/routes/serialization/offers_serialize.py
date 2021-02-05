@@ -395,4 +395,5 @@ class ImageBodyModel(BaseModel):
 
 
 class ImageResponseModel(BaseModel):
-    errors: List[str]
+    errors: Optional[List[str]]
+    image: Optional[str]

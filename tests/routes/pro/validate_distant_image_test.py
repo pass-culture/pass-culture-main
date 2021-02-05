@@ -11,14 +11,16 @@ from tests.conftest import TestClient
 
 class ValidateDistantImageTest:
     @pytest.mark.usefixtures("db_session")
+    @mock.patch("pcapi.routes.pro.offers._fetch_image")
     @mock.patch("pcapi.routes.pro.offers.check_distant_image")
-    def test_ok(self, mock_check_distant_image, caplog, app):
+    def test_ok(self, mock_check_distant_image, mock_fetch_image, caplog, app):
         # Given
         caplog.set_level(logging.INFO)
         body = {"url": "https://example.com/exampleaaa.jpg"}
         user = UserFactory()
         auth_request = TestClient(app.test_client()).with_auth(email=user.email)
         mock_check_distant_image.return_value = None
+        mock_fetch_image.return_value = b"aze"
 
         # When
         response = auth_request.post(
@@ -28,7 +30,7 @@ class ValidateDistantImageTest:
         # Then
         assert len(caplog.records) == 0
         assert response.status_code == 200
-        assert response.json == {"errors": []}
+        assert response.json == {"errors": [], "image": "data:image/png;base64,YXpl"}
 
     @pytest.mark.usefixtures("db_session")
     @mock.patch("pcapi.routes.pro.offers.check_distant_image")
@@ -55,7 +57,8 @@ class ValidateDistantImageTest:
             "errors": [
                 "Nous n’avons pas pu récupérer cette image; vous pouvez la télécharger "
                 'puis l’importer depuis l’onglet "Importer"'
-            ]
+            ],
+            "image": None,
         }
 
     @pytest.mark.usefixtures("db_session")
@@ -79,7 +82,7 @@ class ValidateDistantImageTest:
             caplog.records[0].message
             == "When validating image at: https://example.com/wallpaper.jpg, this error was encountered: FileSizeExceeded"
         )
-        assert response.json == {"errors": ["Utilisez une image dont le poids est inférieur à 10.0 MB"]}
+        assert response.json == {"errors": ["Utilisez une image dont le poids est inférieur à 10.0 MB"], "image": None}
 
     @pytest.mark.usefixtures("db_session")
     @mock.patch("pcapi.routes.pro.offers.check_distant_image")
@@ -102,7 +105,10 @@ class ValidateDistantImageTest:
             caplog.records[0].message
             == "When validating image at: https://example.com/icon.jpeg, this error was encountered: ImageTooSmall"
         )
-        assert response.json == {"errors": ["Utilisez une image plus grande (supérieure à 400px par 400px)"]}
+        assert response.json == {
+            "errors": ["Utilisez une image plus grande (supérieure à 400px par 400px)"],
+            "image": None,
+        }
 
     @pytest.mark.usefixtures("db_session")
     @mock.patch("pcapi.routes.pro.offers.check_distant_image")
@@ -131,4 +137,4 @@ class ValidateDistantImageTest:
             caplog.records[0].message
             == "When validating image at: https://example.com/meme.gif, this error was encountered: UnacceptedFileType"
         )
-        assert response.json == {"errors": ["Utilisez un format png, jpg, jpeg"]}
+        assert response.json == {"errors": ["Utilisez un format png, jpg, jpeg"], "image": None}
