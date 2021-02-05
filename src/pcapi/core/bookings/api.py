@@ -92,9 +92,6 @@ def cancel_booking_by_beneficiary(user: User, booking: Booking) -> None:
         reason=booking.cancellationReason,
     )
 
-    # FIXME: why do we do that when the booking is cancelled by the
-    # *beneficiary*, but not when it's cancelled by the *offerer* (see
-    # cancel_booking_by_offerer)?
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         redis.add_offer_id(client=app.redis_client, offer_id=booking.stock.offerId)
 
@@ -104,6 +101,9 @@ def cancel_booking_by_offerer(booking: Booking) -> None:
     booking.isCancelled = True
     booking.cancellationReason = BookingCancellationReasons.OFFERER
     repository.save(booking)
+
+    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
+        redis.add_offer_id(client=app.redis_client, offer_id=booking.stock.offerId)
 
 
 def mark_as_used(booking: Booking) -> None:
