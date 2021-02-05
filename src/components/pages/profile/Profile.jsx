@@ -11,6 +11,7 @@ import MainView from './MainView/MainView'
 import PersonalInformationsContainer from './PersonalInformations/PersonalInformationsContainer'
 import { handleEditPasswordSubmit } from './repository/handleEditPasswordSubmit'
 import User from './ValueObjects/User'
+import EditEmail from './EditEmail/EditEmail'
 
 const Profile = ({ history, match, user }) => {
   const { email, departementCode } = user
@@ -23,6 +24,18 @@ const Profile = ({ history, match, user }) => {
         path={`${match.path}/mot-de-passe`}
       >
         <EditPassword
+          handleSubmit={handleEditPasswordSubmit}
+          historyPush={history.push}
+          pathToProfile={match.path}
+          triggerSuccessSnackbar={toast.success}
+          user={user}
+        />
+      </Route>
+      <Route
+        exact
+        path={`${match.path}/email`}
+      >
+        <EditEmail
           handleSubmit={handleEditPasswordSubmit}
           historyPush={history.push}
           pathToProfile={match.path}

@@ -27,6 +27,7 @@ describe('when page matching URI does not contain nav bar', () => {
       '/filtres/localisation',
       '/bienvenue',
       '/typeform',
+      '/profil/email',
     ]
 
     paths.forEach(path => {

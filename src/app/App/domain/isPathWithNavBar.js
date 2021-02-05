@@ -9,6 +9,7 @@ export const isPathWithNavBar = path => {
     '/filtres(.*)',
     '/bienvenue',
     '/typeform',
+    '/profil/email',
   ]
 
   return !RegExp(`(${pathsWithoutNavBar.join('|')})$`).test(path)
