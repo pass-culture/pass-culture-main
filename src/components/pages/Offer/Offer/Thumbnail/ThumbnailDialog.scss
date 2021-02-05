@@ -44,7 +44,8 @@
 }
 
 .tnd-hr {
-  border: rem(1px) solid $grey-medium;
+  background: $grey-medium;
+  height: rem(1px);
 }
 
 .tnf-form {
