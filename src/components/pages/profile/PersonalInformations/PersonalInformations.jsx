@@ -4,6 +4,8 @@ import PropTypes from 'prop-types'
 import PersonalInformationsField from './PersonalInformationsField/PersonalInformationsField'
 import HeaderContainer from '../../../layout/Header/HeaderContainer'
 import User from '../ValueObjects/User'
+import Icon from '../../../layout/Icon/Icon'
+import { Link } from 'react-router-dom'
 
 class PersonalInformations extends PureComponent {
   constructor(props) {
@@ -93,12 +95,26 @@ class PersonalInformations extends PureComponent {
               name="name"
               value={`${user.firstName} ${user.lastName}`}
             />
-            <PersonalInformationsField
-              disabled
-              label="Adresse e-mail"
-              name="email"
-              value={user.email}
-            />
+            <div className="pf-field-email">
+              <PersonalInformationsField
+                disabled
+                label="Adresse e-mail"
+                name="email"
+                value={user.email}
+              />
+              <div className="pf-field pf-field-edit-email">
+                <Link
+                  className="home-page-link"
+                  to="/profil/email"
+                >
+                  <Icon
+                    alt="Modifier l'email"
+                    svg="ico-autre-edit"
+                  />
+                </Link>
+              </div>
+            </div>
+
             <PersonalInformationsField
               disabled
               label="Département de résidence"

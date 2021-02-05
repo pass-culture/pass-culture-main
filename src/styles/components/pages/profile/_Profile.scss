@@ -29,6 +29,7 @@
 
   .pf-field {
     display: flex;
+    flex-grow: 1;
     flex-direction: column;
     margin: rem(26px) rem(21px);
   }
@@ -37,6 +38,28 @@
     color: $black;
     display: flex;
     flex-direction: column;
+  }
+
+  .pf-field-email {
+    display: flex;
+
+    .pf-field {
+      margin: 0 rem(8px) 0 rem(21px);
+    }
+
+    .pf-field-edit-email {
+      width: 48px;
+      display: flex;
+      flex-grow: initial;
+      align-items: end;
+      flex-direction: column-reverse;
+      margin-left: 0;
+      margin-right: rem(21px);
+
+      img {
+        width: 48px;
+      }
+    }
   }
 
   .pf-input-container {
