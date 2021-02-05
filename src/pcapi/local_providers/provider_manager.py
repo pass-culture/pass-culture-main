@@ -47,8 +47,18 @@ def get_local_provider_class_by_name(class_name: str) -> Callable:
 
 def synchronize_venue_provider(venue_provider: VenueProvider, limit: Optional[int] = None):
     provider_class = get_local_provider_class_by_name(venue_provider.provider.localClass)
+    logger.info(
+        "Starting synchronization of venue_provider=%s with provider=%s",
+        venue_provider.id,
+        venue_provider.provider.localClass,
+    )
     try:
         provider = provider_class(venue_provider)
         do_update(provider, limit)
     except Exception:  # pylint: disable=broad-except
         logger.exception(build_cron_log_message(name=provider_class.__name__, status=CronStatus.FAILED))
+    logger.info(
+        "Ended synchronization of venue_provider=%s with provider=%s",
+        venue_provider.id,
+        venue_provider.provider.localClass,
+    )

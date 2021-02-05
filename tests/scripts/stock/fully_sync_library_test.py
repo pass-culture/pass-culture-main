@@ -14,8 +14,8 @@ from pcapi.scripts.stock.fully_sync_library import fully_sync_library
 
 class FullySyncLibraryTest:
     @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.scripts.stock.fully_sync_library.do_sync_venue_provider")
-    def should_call_synchronize_on_expected_venue_provider(self, mock_do_sync_venue_provider, app):
+    @patch("pcapi.scripts.stock.fully_sync_library.synchronize_venue_provider")
+    def should_call_synchronize_on_expected_venue_provider(self, mock_synchronize_venue_provider):
         # Given
         venue = VenueFactory()
         offer = OfferFactory(venue=venue)
@@ -29,12 +29,12 @@ class FullySyncLibraryTest:
         fully_sync_library(venue_id=venue.id)
 
         # Then
-        mock_do_sync_venue_provider.assert_called_once_with(venue_provider)
+        mock_synchronize_venue_provider.assert_called_once_with(venue_provider)
 
     @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.scripts.stock.fully_sync_library.do_sync_venue_provider")
+    @patch("pcapi.scripts.stock.fully_sync_library.synchronize_venue_provider")
     def should_update_quantity_to_booking_amount_for_each_synchronized_stock_on_venue(
-        self, mock_do_sync_venue_provider, app
+        self, mock_synchronize_venue_provider
     ):
         # Given
         titelive = activate_provider(provider_classname="TiteLiveStocks")

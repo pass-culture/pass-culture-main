@@ -39,6 +39,9 @@ class FeatureToggle(enum.Enum):
     WHOLE_FRANCE_OPENING = "Ouvre le service à la France entière"
     PRO_HOMEPAGE = "Permettre l affichage de la nouvelle page d accueil du portail pro"
     PRO_TUTO = "Permettre l affichage des cartes tuto du portail pro"
+    PARALLEL_SYNCHRONIZATION_OF_VENUE_PROVIDER = (
+        "Active la parallèlisation des opérations de synchronisation pour les VenueProvider"
+    )
 
 
 class Feature(PcObject, Model, DeactivableMixin):

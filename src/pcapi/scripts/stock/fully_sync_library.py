@@ -1,6 +1,6 @@
 from pcapi.core.bookings.repository import count_not_cancelled_bookings_quantity_by_stock_id
 from pcapi.core.offers.models import Offer
-from pcapi.local_providers.venue_provider_worker import do_sync_venue_provider
+from pcapi.local_providers.provider_manager import synchronize_venue_provider
 from pcapi.models import Stock
 from pcapi.models import VenueProvider
 from pcapi.repository import repository
@@ -26,4 +26,4 @@ def fully_sync_library(venue_id: int) -> None:
     venue_provider_to_sync.lastSyncDate = None
     repository.save(venue_provider_to_sync)
 
-    do_sync_venue_provider(venue_provider_to_sync)
+    synchronize_venue_provider(venue_provider_to_sync)
