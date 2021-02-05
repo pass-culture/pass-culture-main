@@ -1,5 +1,9 @@
-p.tco-no-margin {
-  margin-bottom: 0;
+p.tw-numbers {
+  margin-bottom: rem(8px);
+}
+
+.cv-venue-creation > p:first-child {
+  margin-bottom: rem(8px);
 }
 
 .tw-strong {
@@ -21,7 +25,8 @@ p.tco-no-margin {
 .mb-content {
   align-items: center;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-columns: 2fr 2fr 3fr 3fr;
+  height: 100%;
   row-gap: rem(8px);
 
   svg {
@@ -36,7 +41,7 @@ p.tco-no-margin {
     display: grid;
     grid-column-end: 5;
     grid-column-start: 1;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-columns: 2fr 2fr 3fr 3fr;
     height: rem(80px);
 
     .header-element {

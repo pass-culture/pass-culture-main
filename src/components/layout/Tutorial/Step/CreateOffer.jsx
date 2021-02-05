@@ -19,7 +19,7 @@ const CreateOffer = ({ titleId }) => (
         {'Les offres sont synchronisées avec les données du gestionnaire tous les soirs.'}
       </p>
       <div>
-        <p className="tco-no-margin">
+        <p>
           {'2. Manuellement avec notre système de création d’offre :'}
         </p>
         <ul>

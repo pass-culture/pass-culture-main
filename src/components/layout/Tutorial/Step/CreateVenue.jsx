@@ -13,7 +13,7 @@ const CreateVenue = ({ titleId }) => (
         }
       </p>
       <div>
-        <p className="tco-no-margin">
+        <p>
           {'Ils sont de deux types :'}
         </p>
         <ul>
@@ -29,14 +29,16 @@ const CreateVenue = ({ titleId }) => (
           </li>
         </ul>
       </div>
-      <p>
-        {'Votre lieu numérique est créé par défaut dans votre espace acteurs culturels.'}
-      </p>
-      <p>
-        {
-          'Pour créer un lieu physique, vous devez renseigner certaines informations (adresse, type, etc).'
-        }
-      </p>
+      <div className="cv-venue-creation">
+        <p>
+          {'Votre lieu numérique est créé par défaut dans votre espace acteurs culturels.'}
+        </p>
+        <p>
+          {
+            'Pour créer un lieu physique, vous devez renseigner certaines informations (adresse, type, etc).'
+          }
+        </p>
+      </div>
     </section>
   </>
 )

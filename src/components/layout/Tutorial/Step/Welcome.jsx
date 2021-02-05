@@ -17,7 +17,7 @@ const Welcome = ({ titleId }) => (
       </div>
       <div className="tw-steps">
         <div>
-          <p>
+          <p className="tw-numbers">
             {'1'}
           </p>
           <p>
@@ -25,7 +25,7 @@ const Welcome = ({ titleId }) => (
           </p>
         </div>
         <div>
-          <p>
+          <p className="tw-numbers">
             {'2'}
           </p>
           <p>
@@ -33,7 +33,7 @@ const Welcome = ({ titleId }) => (
           </p>
         </div>
         <div>
-          <p>
+          <p className="tw-numbers">
             {'3'}
           </p>
           <p>
@@ -41,7 +41,7 @@ const Welcome = ({ titleId }) => (
           </p>
         </div>
         <div>
-          <p>
+          <p className="tw-numbers">
             {'4'}
           </p>
           <p>
