@@ -30,6 +30,7 @@ def index_offers_in_algolia_by_venue(app):
 @log_cron
 @cron_context
 @cron_require_feature(FeatureToggle.SYNCHRONIZE_ALGOLIA)
+@cron_require_feature(FeatureToggle.ENABLE_WHOLE_VENUE_PROVIDER_ALGOLIA_INDEXATION)
 def index_offers_in_algolia_by_venue_provider(app):
     process_multi_indexing(client=app.redis_client)
 

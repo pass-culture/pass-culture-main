@@ -19,6 +19,7 @@ from pcapi.model_creators.specific_creators import create_offer_with_thing_produ
 from pcapi.model_creators.specific_creators import create_product_with_thing_type
 from pcapi.models import Offer
 from pcapi.models import Stock
+from pcapi.models.feature import override_features
 from pcapi.repository import repository
 
 
@@ -60,9 +61,11 @@ class TiteliveStocksTest:
 
     class UpdateObjectsTest:
         @pytest.mark.usefixtures("db_session")
+        @override_features(ENABLE_WHOLE_VENUE_PROVIDER_ALGOLIA_INDEXATION=False)
         @patch("pcapi.local_providers.titelive_stocks.titelive_stocks.api_titelive_stocks.stocks_information")
+        @patch("pcapi.connectors.redis.add_offer_id")
         def test_titelive_stock_provider_create_1_stock_and_1_offer_with_wanted_attributes(
-            self, stub_get_stocks_information, app
+            self, mock_add_offer_id, stub_get_stocks_information, app
         ):
             # Given
             stub_get_stocks_information.return_value = iter(
@@ -96,6 +99,8 @@ class TiteliveStocksTest:
             assert stock.price == 45.00
             assert stock.quantity == 10
             assert stock.bookingLimitDatetime is None
+
+            mock_add_offer_id.assert_called_once_with(client=app.redis_client, offer_id=offer.id)
 
         @pytest.mark.usefixtures("db_session")
         @patch("pcapi.local_providers.titelive_stocks.titelive_stocks.api_titelive_stocks.stocks_information")
@@ -205,9 +210,11 @@ class TiteliveStocksTest:
             assert stock.dateModified == datetime.now()
 
         @pytest.mark.usefixtures("db_session")
+        @override_features(ENABLE_WHOLE_VENUE_PROVIDER_ALGOLIA_INDEXATION=False)
         @patch("pcapi.local_providers.titelive_stocks.titelive_stocks.api_titelive_stocks.stocks_information")
+        @patch("pcapi.connectors.redis.add_offer_id")
         def test_titelive_stock_provider_create_1_stock_and_update_1_existing_offer(
-            self, stub_get_stocks_information, app
+            self, mock_add_offer_id, stub_get_stocks_information, app
         ):
             # Given
             stub_get_stocks_information.return_value = iter(
@@ -235,6 +242,8 @@ class TiteliveStocksTest:
             # Then
             assert Stock.query.count() == 1
             assert Offer.query.count() == 1
+
+            mock_add_offer_id.assert_called_once_with(client=app.redis_client, offer_id=offer.id)
 
         @pytest.mark.usefixtures("db_session")
         @patch("pcapi.local_providers.titelive_stocks.titelive_stocks.api_titelive_stocks.stocks_information")
