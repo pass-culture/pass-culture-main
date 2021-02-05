@@ -4,7 +4,6 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { DialogBox } from 'components/layout/DialogBox/DialogBox'
 import { IMPORT_TAB_ID } from 'components/pages/Offer/Offer/Thumbnail/_constants'
 import Advices from 'components/pages/Offer/Offer/Thumbnail/Advices/Advices'
-import { ReactComponent as CloseModalIcon } from 'components/pages/Offer/Offer/Thumbnail/assets/close-modal.svg'
 import Credit from 'components/pages/Offer/Offer/Thumbnail/Credit/Credit'
 import ImageEditor from 'components/pages/Offer/Offer/Thumbnail/ImageEditor/ImageEditor'
 import ImportFromComputer from 'components/pages/Offer/Offer/Thumbnail/ImportFromComputer/ImportFromComputer'
@@ -43,6 +42,7 @@ const ThumbnailDialog = ({ setIsModalOpened }) => {
   return (
     <DialogBox
       extraClassNames={step === 1 ? 'thumbnail-dialog tnd-step1' : 'thumbnail-dialog'}
+      hasCloseButton
       labelledBy={DIALOG_LABEL_ID}
       onDismiss={closeModal}
     >
@@ -102,14 +102,6 @@ const ThumbnailDialog = ({ setIsModalOpened }) => {
           />
         )}
       </>
-      <button
-        className="tnd-close"
-        onClick={closeModal}
-        title="Fermer la modale"
-        type="button"
-      >
-        <CloseModalIcon />
-      </button>
     </DialogBox>
   )
 }

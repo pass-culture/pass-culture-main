@@ -8,5 +8,14 @@
 .dialog-box-content {
   border-radius: 10px;
   min-width: rem(534px);
+  position: relative;
   width: auto;
+}
+
+.dialog-box-close {
+  background-color: transparent;
+  border: none;
+  position: absolute;
+  right: rem(32px);
+  top: rem(32px);
 }

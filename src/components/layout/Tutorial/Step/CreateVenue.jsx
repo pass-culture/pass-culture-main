@@ -1,8 +1,9 @@
+import PropTypes from 'prop-types'
 import React from 'react'
 
-const CreateVenue = () => (
+const CreateVenue = ({ titleId }) => (
   <>
-    <h1>
+    <h1 id={titleId}>
       {'Gérer vos lieux culturels'}
     </h1>
     <section className="tutorial-content">
@@ -39,5 +40,9 @@ const CreateVenue = () => (
     </section>
   </>
 )
+
+CreateVenue.propTypes = {
+  titleId: PropTypes.string.isRequired,
+}
 
 export default CreateVenue

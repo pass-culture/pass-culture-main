@@ -1,8 +1,9 @@
+import PropTypes from 'prop-types'
 import React from 'react'
 
-const CreateOffer = () => (
+const CreateOffer = ({ titleId }) => (
   <>
-    <h1>
+    <h1 id={titleId}>
       {'Créer une offre'}
     </h1>
     <section className="tutorial-content">
@@ -36,5 +37,9 @@ const CreateOffer = () => (
     </section>
   </>
 )
+
+CreateOffer.propTypes = {
+  titleId: PropTypes.string.isRequired,
+}
 
 export default CreateOffer

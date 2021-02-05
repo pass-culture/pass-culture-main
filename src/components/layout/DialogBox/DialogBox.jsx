@@ -1,17 +1,18 @@
 import { DialogContent, DialogOverlay } from '@reach/dialog'
+import '@reach/dialog/styles.css'
 import PropTypes from 'prop-types'
 import React, { forwardRef } from 'react'
-import '@reach/dialog/styles.css'
+
+import CloseButton from './CloseButton'
 
 export const DialogBox = forwardRef(function DialogBox(
-  { children, extraClassNames, isOpen, labelledBy, onDismiss },
+  { children, extraClassNames, hasCloseButton, labelledBy, onDismiss },
   ref
 ) {
   return (
     <DialogOverlay
       className="dialog-box-overlay"
       initialFocusRef={ref}
-      isOpen={isOpen}
       onDismiss={onDismiss}
     >
       <DialogContent
@@ -21,6 +22,7 @@ export const DialogBox = forwardRef(function DialogBox(
         <section className={extraClassNames}>
           {children}
         </section>
+        {hasCloseButton && <CloseButton onCloseClick={onDismiss} />}
       </DialogContent>
     </DialogOverlay>
   )
@@ -28,13 +30,14 @@ export const DialogBox = forwardRef(function DialogBox(
 
 DialogBox.defaultProps = {
   extraClassNames: '',
-  isOpen: true,
+  hasCloseButton: false,
 }
 
 DialogBox.propTypes = {
-  children: PropTypes.arrayOf(PropTypes.element).isRequired,
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.element), PropTypes.element])
+    .isRequired,
   extraClassNames: PropTypes.string,
-  isOpen: PropTypes.bool,
+  hasCloseButton: PropTypes.bool,
   labelledBy: PropTypes.string.isRequired,
   onDismiss: PropTypes.func.isRequired,
 }

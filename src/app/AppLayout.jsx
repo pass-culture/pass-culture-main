@@ -9,7 +9,7 @@ import Icon from 'components/layout/Icon'
 import Modal from 'components/layout/Modal'
 import NotificationV1Container from 'components/layout/NotificationV1/NotificationV1Container'
 import NotificationV2Container from 'components/layout/NotificationV2/NotificationV2Container'
-import TutorialModalContainer from 'components/layout/Tutorial/TutorialModalContainer'
+import TutorialDialogContainer from 'components/layout/Tutorial/TutorialDialogContainer'
 
 const AppLayout = props => {
   const { children, layoutConfig } = props
@@ -48,7 +48,7 @@ const AppLayout = props => {
           page: true,
           [`${pageName}-page`]: true,
           'with-header': Boolean(header),
-          'isSmall': isSmall,
+          isSmall,
           container: !fullscreen,
           fullscreen,
         })}
@@ -83,7 +83,7 @@ const AppLayout = props => {
             </div>
           </div>
         )}
-        <TutorialModalContainer />
+        <TutorialDialogContainer />
         <NotificationV2Container />
         <Modal key="modal" />
       </main>

@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import React from 'react'
 
 import { ReactComponent as BookingsSvg } from 'components/layout/Header/assets/bookings.svg'
@@ -8,9 +9,9 @@ import { ReactComponent as RefundsSvg } from 'components/layout/Header/assets/re
 import { ReactComponent as DownArrow } from './assets/down-arrow.svg'
 import { ReactComponent as UpArrow } from './assets/up-arrow.svg'
 
-const ManageBookings = () => (
+const ManageBookings = ({ titleId }) => (
   <>
-    <h1>
+    <h1 id={titleId}>
       {'Suivre et gérer vos réservations'}
     </h1>
     <section className="mb-content">
@@ -51,5 +52,9 @@ const ManageBookings = () => (
     </section>
   </>
 )
+
+ManageBookings.propTypes = {
+  titleId: PropTypes.string.isRequired,
+}
 
 export default ManageBookings

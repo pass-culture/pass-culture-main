@@ -1,8 +1,9 @@
+import PropTypes from 'prop-types'
 import React from 'react'
 
-const Welcome = () => (
+const Welcome = ({ titleId }) => (
   <>
-    <h1>
+    <h1 id={titleId}>
       {"Bienvenue dans l'espace acteurs culturels"}
     </h1>
     <section className="tutorial-content">
@@ -51,5 +52,9 @@ const Welcome = () => (
     </section>
   </>
 )
+
+Welcome.propTypes = {
+  titleId: PropTypes.string.isRequired,
+}
 
 export default Welcome

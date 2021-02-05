@@ -1,13 +1,11 @@
 import '@testing-library/jest-dom'
 import { act, fireEvent, render, screen } from '@testing-library/react'
-import React, { Fragment } from 'react'
+import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
-import Modal from 'components/layout/Modal'
+import TutorialDialogContainer from 'components/layout/Tutorial/TutorialDialogContainer'
 import { configureTestStore } from 'store/testUtils'
-
-import TutorialModalContainer from '../TutorialModalContainer'
 
 const stepTitles = [
   "Bienvenue dans l'espace acteurs culturels",
@@ -16,29 +14,26 @@ const stepTitles = [
   'Suivre et gérer vos réservations',
 ]
 
-const renderTutorialModal = async (store, props = {}) => {
+const renderTutorialDialog = async (store, props = {}) => {
   return await act(async () => {
     return render(
       <Provider store={store}>
         <MemoryRouter>
-          <Fragment>
-            <TutorialModalContainer {...props} />
-            <Modal key="modal" />
-          </Fragment>
+          <TutorialDialogContainer {...props} />
         </MemoryRouter>
       </Provider>
     )
   })
 }
 
-describe('tutorialModal', () => {
+describe('tutorial modal', () => {
   let store
 
   beforeEach(() => {
     store = configureTestStore({})
   })
 
-  it('should show tutorial modal if user has not seen it yet', async () => {
+  it('should show tutorial dialog if user has not seen it yet', async () => {
     store = configureTestStore({
       data: {
         features: [
@@ -60,12 +55,12 @@ describe('tutorialModal', () => {
     })
 
     const props = {}
-    await renderTutorialModal(store, props)
+    await renderTutorialDialog(store, props)
 
     expect(screen.getByText(stepTitles[0])).toBeInTheDocument()
   })
 
-  it("shouldn't show tutorial modal if user has already seen it", async () => {
+  it("shouldn't show tutorial dialog if user has already seen it", async () => {
     store = configureTestStore({
       data: {
         features: [
@@ -87,7 +82,7 @@ describe('tutorialModal', () => {
     })
     const props = {}
 
-    await renderTutorialModal(store, props)
+    await renderTutorialDialog(store, props)
 
     expect(screen.queryByText(stepTitles[0])).not.toBeInTheDocument()
   })
@@ -115,7 +110,7 @@ describe('tutorialModal', () => {
         },
       })
 
-      await renderTutorialModal(store)
+      await renderTutorialDialog(store)
       buttonNext = screen.getByText('Suivant')
     })
 

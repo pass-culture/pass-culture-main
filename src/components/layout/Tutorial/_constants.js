@@ -1,0 +1,1 @@
+export const TUTO_DIALOG_LABEL_ID = 'TUTO_DIALOG_LABEL_ID'
