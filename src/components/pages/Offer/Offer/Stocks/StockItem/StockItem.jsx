@@ -118,16 +118,15 @@ const StockItem = ({
     isNewStock || (isEvent ? initialStock.isEventDeletable : !isOfferSynchronized)
 
   const computeStockTitle = useCallback(() => {
-    if (!initialStock.isEventDeletable) {
-      return 'Les évènements terminés depuis plus de 48h ne peuvent être supprimés'
+    if (initialStock.id) {
+      if (!isEventStockEditable) {
+        return 'Les évènements passés ne sont pas modifiables'
+      } else if (!initialStock.isEventDeletable) {
+        return 'Les évènements terminés depuis plus de 48h ne peuvent être supprimés'
+      }
     }
-
-    if (!isEventStockEditable) {
-      return 'Les évènements passés ne sont pas modifiables'
-    }
-
     return ''
-  }, [isEventStockEditable, initialStock.isEventDeletable])
+  }, [isEventStockEditable, initialStock.isEventDeletable, initialStock.id])
 
   const removeNewStockLine = useCallback(() => {
     removeStockInCreation(initialStock.key)
