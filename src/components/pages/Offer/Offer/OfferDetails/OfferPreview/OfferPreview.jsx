@@ -8,7 +8,7 @@ import * as pcapi from 'repository/pcapi/pcapi'
 
 const PREVIEW_TEXT_MAX_LENGTH = 300
 
-const OfferPreview = ({ formValues }) => {
+const OfferPreview = ({ formValues, offerType }) => {
   const [venue, setVenue] = useState(null)
 
   const buildPreviewText = previewText => {
@@ -27,6 +27,10 @@ const OfferPreview = ({ formValues }) => {
   }, [formValues.venueId])
 
   const venueName = useMemo(() => venue?.publicName || venue?.name, [venue])
+  const isDuoEnabled = useMemo(() => offerType && offerType.type === 'Event' && formValues.isDuo, [
+    formValues.isDuo,
+    offerType,
+  ])
 
   return (
     <div
@@ -50,7 +54,7 @@ const OfferPreview = ({ formValues }) => {
             </span>
           </div>
 
-          <div className={`op-option${!formValues.isDuo ? ' disabled' : ''}`}>
+          <div className={`op-option${!isDuoEnabled ? ' disabled' : ''}`}>
             <DuoSvg
               aria-hidden
               className="op-option-ico"
@@ -113,6 +117,7 @@ const OfferPreview = ({ formValues }) => {
 
 OfferPreview.propTypes = {
   formValues: PropTypes.shape().isRequired,
+  offerType: PropTypes.shape().isRequired,
 }
 
 export default OfferPreview

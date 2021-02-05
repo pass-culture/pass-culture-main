@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { useCallback, useEffect, useState, Fragment } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
@@ -23,6 +23,7 @@ const OfferDetails = ({
 }) => {
   const [formInitialValues, setFormInitialValues] = useState({})
   const [formValues, setFormValues] = useState({})
+  const [offerType, setOfferType] = useState(null)
   const [formErrors, setFormErrors] = useState({})
   const [showThumbnailForm, setShowThumbnailForm] = useState(offer !== null)
   const [isLoading, setIsLoading] = useState(true)
@@ -102,6 +103,7 @@ const OfferDetails = ({
               onSubmit={handleSubmitOffer}
               setFormValues={setFormValues}
               setIsLoading={setIsLoading}
+              setPreviewOfferType={setOfferType}
               setShowThumbnailForm={setShowThumbnailForm}
               showErrorNotification={showErrorNotification}
               submitErrors={formErrors}
@@ -115,6 +117,7 @@ const OfferDetails = ({
               onSubmit={handleSubmitOffer}
               setFormValues={setFormValues}
               setIsLoading={setIsLoading}
+              setPreviewOfferType={setOfferType}
               setShowThumbnailForm={setShowThumbnailForm}
               showErrorNotification={showErrorNotification}
               submitErrors={formErrors}
@@ -126,16 +129,14 @@ const OfferDetails = ({
           <div className="sidebar">
             <div className="sidebar-wrapper">
               {offer?.thumbUrl ? (
-                <Fragment>
-                  <OfferThumbnail url={offer.thumbUrl} />
-                  <OfferPreview formValues={formValues} />
-                </Fragment>
+                <OfferThumbnail url={offer.thumbUrl} />
               ) : (
-                <Fragment>
-                  <OfferThumbnailPlaceholder />
-                  <OfferPreview formValues={formValues} />
-                </Fragment>
+                <OfferThumbnailPlaceholder />
               )}
+              <OfferPreview
+                formValues={formValues}
+                offerType={offerType}
+              />
             </div>
             {offer?.thumbUrl ? (
               <OfferPreviewLink

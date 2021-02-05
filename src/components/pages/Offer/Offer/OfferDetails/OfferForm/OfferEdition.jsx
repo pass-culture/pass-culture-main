@@ -38,6 +38,7 @@ const OfferEdition = ({
   onSubmit,
   setFormValues,
   setIsLoading,
+  setPreviewOfferType,
   setShowThumbnailForm,
   showErrorNotification,
   submitErrors,
@@ -105,6 +106,7 @@ const OfferEdition = ({
       providerName={providerName}
       readOnlyFields={readOnlyFields}
       setFormValues={setFormValues}
+      setPreviewOfferType={setPreviewOfferType}
       setShowThumbnailForm={setShowThumbnailForm}
       showErrorNotification={showErrorNotification}
       submitErrors={submitErrors}
@@ -138,6 +140,7 @@ OfferEdition.propTypes = {
   onSubmit: PropTypes.func.isRequired,
   setFormValues: PropTypes.func.isRequired,
   setIsLoading: PropTypes.func.isRequired,
+  setPreviewOfferType: PropTypes.func.isRequired,
   setShowThumbnailForm: PropTypes.func.isRequired,
   showErrorNotification: PropTypes.func.isRequired,
   submitErrors: PropTypes.shape().isRequired,

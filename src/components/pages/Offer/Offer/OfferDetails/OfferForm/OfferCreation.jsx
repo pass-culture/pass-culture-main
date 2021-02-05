@@ -13,6 +13,7 @@ const OfferCreation = ({
   onSubmit,
   showErrorNotification,
   setIsLoading,
+  setPreviewOfferType,
   setShowThumbnailForm,
   setFormValues,
   submitErrors,
@@ -95,6 +96,7 @@ const OfferCreation = ({
       onSubmit={onSubmit}
       setFormValues={setFormValues}
       setIsLoading={setIsLoading}
+      setPreviewOfferType={setPreviewOfferType}
       setSelectedOfferer={setSelectedOfferer}
       setShowThumbnailForm={setShowThumbnailForm}
       showErrorNotification={showErrorNotification}
@@ -118,6 +120,7 @@ OfferCreation.propTypes = {
   onSubmit: PropTypes.func.isRequired,
   setFormValues: PropTypes.func.isRequired,
   setIsLoading: PropTypes.func.isRequired,
+  setPreviewOfferType: PropTypes.func.isRequired,
   setShowThumbnailForm: PropTypes.func.isRequired,
   showErrorNotification: PropTypes.func.isRequired,
   submitErrors: PropTypes.shape().isRequired,

@@ -69,6 +69,7 @@ const OfferForm = ({
   readOnlyFields,
   setFormValues,
   setSelectedOfferer,
+  setPreviewOfferType,
   setShowThumbnailForm,
   showErrorNotification,
   submitErrors,
@@ -137,6 +138,7 @@ const OfferForm = ({
     function storeOfferTypeAndVenueWhenSelected() {
       if (formValues.type) {
         setOfferType(types.find(type => type.value === formValues.type))
+        setPreviewOfferType(types.find(type => type.value === formValues.type))
       }
 
       if (
@@ -150,7 +152,15 @@ const OfferForm = ({
         setVenue(null)
       }
     },
-    [formValues.type, formValues.venueId, handleFormUpdate, venues, venueOptions, types]
+    [
+      formValues.type,
+      formValues.venueId,
+      handleFormUpdate,
+      setPreviewOfferType,
+      venues,
+      venueOptions,
+      types,
+    ]
   )
   useEffect(
     function filterVenueOptionsForSelectedType() {
@@ -801,6 +811,7 @@ OfferForm.propTypes = {
   providerName: PropTypes.string,
   readOnlyFields: PropTypes.arrayOf(PropTypes.string),
   setFormValues: PropTypes.func.isRequired,
+  setPreviewOfferType: PropTypes.func.isRequired,
   setShowThumbnailForm: PropTypes.func.isRequired,
   showErrorNotification: PropTypes.func.isRequired,
   submitErrors: PropTypes.shape().isRequired,
