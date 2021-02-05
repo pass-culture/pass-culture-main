@@ -8,7 +8,7 @@ const CreateVenue = () => (
     <section className="tutorial-content">
       <p>
         {
-          'Les lieux vous permettent de créer des offres et de les rendres visibles sur l’application publique.'
+          'Les lieux vous permettent de créer des offres et de les rendre visibles sur l’application publique.'
         }
       </p>
       <div>
