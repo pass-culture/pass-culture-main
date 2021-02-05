@@ -1,6 +1,18 @@
 .offerers-page {
   .has-text-primary {
+    align-items: center;
     color: $primary;
+    display: flex;
+    justify-content: center;
+
+    svg {
+      height: rem(24px);
+      margin-right: rem(4px);
+    }
+
+    svg .ico-plus {
+      fill: $primary;
+    }
   }
 
   a.button {

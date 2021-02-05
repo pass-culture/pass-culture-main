@@ -2,6 +2,8 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import ReactTooltip from 'react-tooltip'
 
+import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
+
 import AllocineProviderForm from './AllocineProviderForm/AllocineProviderFormContainer'
 import StocksProviderForm from './StocksProviderForm/StocksProviderFormContainer'
 import {
@@ -201,7 +203,10 @@ class VenueProvidersManager extends PureComponent {
               onClick={this.toggleOnCreationMode}
               type="button"
             >
-              {'+ Importer des offres'}
+              <AddOfferSvg />
+              <span>
+                {'Importer des offres'}
+              </span>
             </button>
           </div>
         )}

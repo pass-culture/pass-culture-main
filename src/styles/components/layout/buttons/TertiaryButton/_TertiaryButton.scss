@@ -43,4 +43,16 @@
       opacity: 0.3;
     }
   }
+
+  &.with-icon {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+
+    img,
+    svg {
+      height: rem(24px);
+      margin-right: rem(4px);
+    }
+  }
 }

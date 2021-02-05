@@ -5,13 +5,13 @@ import { Link } from 'react-router-dom'
 
 import AppLayout from 'app/AppLayout'
 import ActionsBarPortal from 'components/layout/ActionsBarPortal/ActionsBarPortal'
-import { ReactComponent as OffresSvg } from 'components/layout/Header/assets/offres.svg'
 import Icon from 'components/layout/Icon'
 import Select from 'components/layout/inputs/Select'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
+import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { fetchAllVenuesByProUser, formatAndOrderVenues } from 'repository/venuesService'
 import { mapApiToBrowser, mapBrowserToApi, translateQueryParamsToApiParams } from 'utils/translate'
@@ -420,7 +420,7 @@ class Offers extends PureComponent {
           className="primary-button with-icon"
           to="/offres/creation"
         >
-          <Icon svg="ico-plus" />
+          <AddOfferSvg />
           {'Créer ma première offre'}
         </Link>
       </div>
@@ -609,15 +609,11 @@ class Offers extends PureComponent {
     const actionLink =
       !displayOffers || isAdmin ? null : (
         <Link
-          className="primary-button"
+          className="primary-button with-icon"
           to="/offres/creation"
         >
-          <span className="icon">
-            <OffresSvg />
-          </span>
-          <span>
-            {'Créer une offre'}
-          </span>
+          <AddOfferSvg />
+          {'Créer une offre'}
         </Link>
       )
 

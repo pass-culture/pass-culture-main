@@ -3,6 +3,7 @@ import Dotdotdot from 'react-dotdotdot'
 import { Link } from 'react-router-dom'
 
 import Icon from 'components/layout/Icon'
+import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 
 import { pluralize } from '../../../../../../utils/pluralize'
 
@@ -35,7 +36,7 @@ const VenueItem = ({ venue }) => {
               className="has-text-primary"
               to={`/offres/creation?lieu=${id}&structure=${managingOffererId}`}
             >
-              <Icon svg="ico-offres-r" />
+              <AddOfferSvg />
               {' Créer une offre'}
             </Link>
           </li>

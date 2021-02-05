@@ -4,8 +4,8 @@ import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'reac
 import { Link } from 'react-router-dom'
 import { v4 as generateRandomUuid } from 'uuid'
 
-import Icon from 'components/layout/Icon'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
+import { ReactComponent as AddStockSvg } from 'icons/ico-plus.svg'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { getDepartmentTimezone } from 'utils/timezone'
 
@@ -152,23 +152,23 @@ const Stocks = ({ offer, showErrorNotification, showSuccessNotification }) => {
       </div>
       {stocks.length === 0 ? (
         <button
-          className="primary-button add-first-stock-button"
+          className="primary-button with-icon add-first-stock-button"
           onClick={addNewStock}
           type="button"
         >
-          <Icon svg="ico-plus" />
+          <AddStockSvg />
           {offer.isEvent ? 'Ajouter une date' : 'Ajouter un stock'}
         </button>
       ) : (
         <Fragment>
           {offer.isEvent && (
             <button
-              className="tertiary-button"
+              className="tertiary-button with-icon"
               disabled={hasOfferThingOneStockAlready || isOfferSynchronized}
               onClick={addNewStock}
               type="button"
             >
-              <Icon svg="ico-plus" />
+              <AddStockSvg />
               {'Ajouter une date'}
             </button>
           )}

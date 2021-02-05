@@ -5,9 +5,9 @@ import { getCanSubmit, parseSubmitErrors } from 'react-final-form-utils'
 import { Link } from 'react-router-dom'
 
 import AppLayout from 'app/AppLayout'
-import { ReactComponent as OffresSvg } from 'components/layout/Header/assets/offres.svg'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
+import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 
 import BankInformation from '../fields/BankInformationFields/BankInformationFields'
 import VenueLabel from '../ValueObjects/VenueLabel'
@@ -185,12 +185,10 @@ class VenueEdition extends PureComponent {
 
     const actionLink = !!initialId && (
       <Link
-        className="primary-button"
+        className="primary-button with-icon"
         to={`/offres/creation?lieu=${initialId}&structure=${offererId}`}
       >
-        <span>
-          <OffresSvg />
-        </span>
+        <AddOfferSvg />
         <span>
           {'Créer une offre'}
         </span>

@@ -89,10 +89,10 @@ describe('src | VenueProvidersManager', () => {
         const wrapper = mount(<VenueProvidersManager {...props} />)
 
         // then
-        const importButton = wrapper.find({ children: '+ Importer des offres' })
+        const importButton = wrapper.find({ children: 'Importer des offres' })
         expect(importButton).toHaveLength(1)
-        expect(importButton.prop('id')).toBe('add-venue-provider-btn')
-        expect(importButton.prop('type')).toBe('button')
+        expect(importButton.parent().prop('id')).toBe('add-venue-provider-btn')
+        expect(importButton.parent().prop('type')).toBe('button')
       })
 
       it('is hidden when no providers are given', () => {
@@ -103,7 +103,7 @@ describe('src | VenueProvidersManager', () => {
         const wrapper = mount(<VenueProvidersManager {...props} />)
 
         // then
-        const importButton = wrapper.find({ children: '+ Importer des offres' })
+        const importButton = wrapper.find({ children: 'Importer des offres' })
         expect(importButton).toHaveLength(0)
       })
 
@@ -115,7 +115,7 @@ describe('src | VenueProvidersManager', () => {
         const wrapper = mount(<VenueProvidersManager {...props} />)
 
         // then
-        const importButton = wrapper.find({ children: '+ Importer des offres' })
+        const importButton = wrapper.find({ children: 'Importer des offres' })
         expect(importButton).toHaveLength(0)
       })
     })
@@ -124,7 +124,7 @@ describe('src | VenueProvidersManager', () => {
       it('should display a select input to choose a provider', () => {
         // given
         const wrapper = mount(<VenueProvidersManager {...props} />)
-        const addOfferBtn = wrapper.find({ children: '+ Importer des offres' })
+        const addOfferBtn = wrapper.find({ children: 'Importer des offres' })
 
         // when
         addOfferBtn.simulate('click')
@@ -180,7 +180,7 @@ describe('src | VenueProvidersManager', () => {
       )
 
       // when
-      wrapper.find({ children: '+ Importer des offres' }).invoke('onClick')()
+      wrapper.find({ children: 'Importer des offres' }).parent().invoke('onClick')()
       wrapper.find('select').invoke('onChange')(chooseAllocineEvent)
 
       // then
@@ -205,7 +205,7 @@ describe('src | VenueProvidersManager', () => {
       )
 
       // when
-      wrapper.find({ children: '+ Importer des offres' }).invoke('onClick')()
+      wrapper.find({ children: 'Importer des offres' }).parent().invoke('onClick')()
       wrapper.find('select').invoke('onBlur')(chooseAllocineEvent)
 
       // then
@@ -234,7 +234,7 @@ describe('src | VenueProvidersManager', () => {
       )
 
       // when
-      wrapper.find({ children: '+ Importer des offres' }).invoke('onClick')()
+      wrapper.find({ children: 'Importer des offres' }).parent().invoke('onClick')()
       wrapper.find('select').invoke('onBlur')(chooseTiteliveEvent)
 
       // then
@@ -262,7 +262,7 @@ describe('src | VenueProvidersManager', () => {
       )
 
       // when
-      wrapper.find({ children: '+ Importer des offres' }).invoke('onClick')()
+      wrapper.find({ children: 'Importer des offres' }).parent().invoke('onClick')()
       wrapper.find('select').invoke('onBlur')(chooseLibrairesEvent)
 
       // then
@@ -290,7 +290,7 @@ describe('src | VenueProvidersManager', () => {
       )
 
       // when
-      wrapper.find({ children: '+ Importer des offres' }).invoke('onClick')()
+      wrapper.find({ children: 'Importer des offres' }).parent().invoke('onClick')()
       wrapper.find('select').invoke('onBlur')(chooseFnacEvent)
 
       // then
@@ -318,7 +318,7 @@ describe('src | VenueProvidersManager', () => {
       )
 
       // when
-      wrapper.find({ children: '+ Importer des offres' }).invoke('onClick')()
+      wrapper.find({ children: 'Importer des offres' }).parent().invoke('onClick')()
       wrapper.find('select').invoke('onBlur')(choosePraxielEvent)
 
       // then
@@ -336,7 +336,7 @@ describe('src | VenueProvidersManager', () => {
       const wrapper = mount(<VenueProvidersManager {...props} />)
 
       // when
-      wrapper.find({ children: '+ Importer des offres' }).invoke('onClick')()
+      wrapper.find({ children: 'Importer des offres' }).parent().invoke('onClick')()
       wrapper.find('select').invoke('onBlur')(event)
 
       // then

@@ -31,6 +31,10 @@
 
   .secondary-button {
     margin-top: rem(6px);
+
+    svg .ico-plus {
+      fill: $primary;
+    }
   }
 
   .provider-picto {

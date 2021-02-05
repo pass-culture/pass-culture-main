@@ -10,6 +10,7 @@ import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
+import { ReactComponent as AddOffererSvg } from 'icons/ico-plus.svg'
 import { selectOfferers } from 'store/selectors/data/offerersSelectors'
 
 import { UNAVAILABLE_ERROR_PAGE } from '../../../utils/routes'
@@ -179,12 +180,10 @@ class Offerers extends PureComponent {
     const actionLink = (
       <span>
         <Link
-          className="primary-button"
+          className="primary-button with-icon"
           to={offererCreationPageURL}
         >
-          <span>
-            {'+'}
-          </span>
+          <AddOffererSvg />
           {'Ajouter une structure'}
         </Link>
         <Icon
