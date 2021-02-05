@@ -1,6 +1,9 @@
 import React from 'react'
 
-import Icon from '../../Icon'
+import { ReactComponent as BookingsSvg } from 'components/layout/Header/assets/bookings.svg'
+import { ReactComponent as CounterSvg } from 'components/layout/Header/assets/counter.svg'
+import { ReactComponent as OffersSvg } from 'components/layout/Header/assets/offers.svg'
+import { ReactComponent as RefundsSvg } from 'components/layout/Header/assets/refunds.svg'
 
 import { ReactComponent as DownArrow } from './assets/down-arrow.svg'
 import { ReactComponent as UpArrow } from './assets/up-arrow.svg'
@@ -21,22 +24,19 @@ const ManageBookings = () => (
       <DownArrow className="third-column" />
       <span className="header-example">
         <span className="header-element">
-          <Icon svg="ico-guichet-w" />
+          <CounterSvg />
           {'Guichet'}
         </span>
         <span className="header-element">
-          <Icon
-            height="28"
-            svg="ico-offres-w"
-          />
+          <OffersSvg />
           {'Offres'}
         </span>
         <span className="header-element">
-          <Icon svg="ico-bookings-w" />
+          <BookingsSvg />
           {'Réservations'}
         </span>
         <span className="header-element">
-          <Icon svg="ico-refunds" />
+          <RefundsSvg />
           {'Remboursements'}
         </span>
       </span>

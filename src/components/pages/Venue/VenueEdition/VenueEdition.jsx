@@ -5,7 +5,7 @@ import { getCanSubmit, parseSubmitErrors } from 'react-final-form-utils'
 import { Link } from 'react-router-dom'
 
 import AppLayout from 'app/AppLayout'
-import Icon from 'components/layout/Icon'
+import { ReactComponent as OffresSvg } from 'components/layout/Header/assets/offres.svg'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
 
@@ -189,7 +189,7 @@ class VenueEdition extends PureComponent {
         to={`/offres/creation?lieu=${initialId}&structure=${offererId}`}
       >
         <span>
-          <Icon svg="ico-offres-w" />
+          <OffresSvg />
         </span>
         <span>
           {'Créer une offre'}

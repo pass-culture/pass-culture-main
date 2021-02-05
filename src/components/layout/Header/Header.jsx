@@ -11,8 +11,13 @@ import { signout } from 'repository/pcapi/pcapi'
 import Icon from '../Icon'
 import Logo from '../Logo'
 
-// FIXME (Adrien S, 11/12/2020): Inject StyleGuide as a props, to avoid mocks and increase testability
 import { HELP_PAGE_URL, STYLEGUIDE_ACTIVE } from './_constants'
+import { ReactComponent as BookingsSvg } from './assets/bookings.svg'
+import { ReactComponent as CounterSvg } from './assets/counter.svg'
+import { ReactComponent as OffersSvg } from './assets/offers.svg'
+import { ReactComponent as RefundsSvg } from './assets/refunds.svg'
+
+// FIXME (Adrien S, 11/12/2020): Inject StyleGuide as a props, to avoid mocks and increase testability
 
 class Header extends PureComponent {
   onHandleSuccessRedirect = () => '/connexion'
@@ -47,7 +52,7 @@ class Header extends PureComponent {
               to="/guichet"
             >
               <span className="icon">
-                <Icon svg="ico-guichet-w" />
+                <CounterSvg />
               </span>
               <span>
                 {'Guichet'}
@@ -59,10 +64,7 @@ class Header extends PureComponent {
               to="/offres"
             >
               <span className="icon">
-                <Icon
-                  height="28"
-                  svg="ico-offres-w"
-                />
+                <OffersSvg />
               </span>
               <span>
                 {'Offres'}
@@ -74,7 +76,7 @@ class Header extends PureComponent {
               to="/reservations"
             >
               <span className="icon">
-                <Icon svg="ico-bookings-w" />
+                <BookingsSvg />
               </span>
               <span>
                 {'Réservations'}
@@ -121,7 +123,7 @@ class Header extends PureComponent {
                   href="/remboursements"
                 >
                   <span className="icon">
-                    <Icon svg="ico-compta" />
+                    <RefundsSvg className="primary-color" />
                   </span>
                   <span>
                     {'Remboursements'}

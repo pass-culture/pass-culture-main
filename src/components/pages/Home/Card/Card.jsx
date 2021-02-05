@@ -2,14 +2,12 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 
-import Icon from 'components/layout/Icon'
-
-const Card = ({ svg, title, text, navLink }) => (
+const Card = ({ SvgElement, title, text, navLink }) => (
   <NavLink
     className="home-card column"
     to={navLink}
   >
-    <Icon svg={svg} />
+    <SvgElement />
     <div className="home-card-text">
       <h1>
         {title}
@@ -22,8 +20,8 @@ const Card = ({ svg, title, text, navLink }) => (
 )
 
 Card.propTypes = {
+  SvgElement: PropTypes.elementType.isRequired,
   navLink: PropTypes.string.isRequired,
-  svg: PropTypes.string.isRequired,
   text: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
 }

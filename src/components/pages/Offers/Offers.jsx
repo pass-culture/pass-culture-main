@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 
 import AppLayout from 'app/AppLayout'
 import ActionsBarPortal from 'components/layout/ActionsBarPortal/ActionsBarPortal'
+import { ReactComponent as OffresSvg } from 'components/layout/Header/assets/offres.svg'
 import Icon from 'components/layout/Icon'
 import Select from 'components/layout/inputs/Select'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
@@ -612,7 +613,7 @@ class Offers extends PureComponent {
           to="/offres/creation"
         >
           <span className="icon">
-            <Icon svg="ico-offres-w" />
+            <OffresSvg />
           </span>
           <span>
             {'Créer une offre'}
