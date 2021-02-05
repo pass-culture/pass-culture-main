@@ -127,15 +127,26 @@ class LocalProvider(Iterator):
         db.session.commit()
 
     def _print_objects_summary(self):
-        logger.info("  Checked %d objects", self.checkedObjects)
-        logger.info("  Created %d objects", self.createdObjects)
-        logger.info("  Updated %d objects", self.updatedObjects)
-        logger.info("  %d errors in creations/updates", self.erroredObjects)
-
-        logger.info("  Checked %d thumbs", self.checkedThumbs)
-        logger.info("  Created %d thumbs", self.createdThumbs)
-        logger.info("  Updated %d thumbs", self.updatedThumbs)
-        logger.info("  %d errors in thumb creations/updates", self.erroredThumbs)
+        # FIXME (dbaty, 2020-02-05): I don't know how we could end up
+        # here with no venue_provider, but there are checks elsewhere
+        # so I do the same here.
+        venue_id = self.venue_provider.venueId if self.venue_provider else "none"
+        logger.info(
+            "Synchronization of objects of venue=%s, checked=%d, created=%d, updated=%d, errors=%s",
+            venue_id,
+            self.checkedObjects,
+            self.createdObjects,
+            self.updatedObjects,
+            self.erroredObjects,
+        )
+        logger.info(
+            "Synchronization of thumbs of venue=%s, checked=%d, created=%d, updated=%d, errors=%s",
+            venue_id,
+            self.checkedThumbs,
+            self.createdThumbs,
+            self.updatedThumbs,
+            self.erroredThumbs,
+        )
 
     def updateObjects(self, limit=None):
         # pylint: disable=too-many-nested-blocks
