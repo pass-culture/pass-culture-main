@@ -1,4 +1,3 @@
-from freezegun import freeze_time
 from lxml.etree import DocumentInvalid
 import pytest
 
@@ -135,7 +134,6 @@ def test_send_transactions_should_send_an_email_with_xml_attachment(app):
 
 
 @pytest.mark.usefixtures("db_session")
-@freeze_time("2018-10-15 09:21:34")
 def test_send_transactions_creates_a_new_payment_transaction_if_email_was_sent_properly(app):
     # given
     iban = "CF13QSDFGH456789"
@@ -149,9 +147,9 @@ def test_send_transactions_creates_a_new_payment_transaction_if_email_was_sent_p
     send_transactions(payments, "BD12AZERTY123456", "AZERTY9Q666", "0000", ["comptable@test.com"])
 
     # then
-    updated_payments = Payment.query.all()
-    assert all(p.paymentMessageName == "passCulture-SCT-20181015-092134" for p in updated_payments)
-    assert all(p.paymentMessageChecksum == payments[0].paymentMessageChecksum for p in updated_payments)
+    payment_messages = {p.paymentMessage for p in Payment.query.all()}
+    assert len(payment_messages) == 1
+    assert payment_messages != {None}
 
 
 @pytest.mark.usefixtures("db_session")
