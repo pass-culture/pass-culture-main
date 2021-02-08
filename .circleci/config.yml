@@ -470,9 +470,9 @@ jobs:
           command: helm chart export ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:${TAG} -d tmp/
       - deploy-cron-gke:
           helm_chart_name: passculture
-          helm_release_name: ${CIRCLE_BRANCH}
-          kubernetes_namespace: ${CIRCLE_BRANCH}
-          helm_values_file: values.${CIRCLE_BRANCH}.yaml
+          helm_release_name: staging
+          kubernetes_namespace: staging
+          helm_values_file: values.staging.yaml
 
   deploy-pro:
     machine:
@@ -621,8 +621,8 @@ jobs:
 
 workflows:
   version: 2
-  commit:
-    jobs:
+  # commit:
+  #   jobs:
       # - tests-script-pc
       # - tests-api:
       #     filters:
@@ -652,18 +652,18 @@ workflows:
       #           - production
       #           - staging
       #           - integration
-      - deploy-pro:
-          filters:
-            branches:
-              only:
-                - PC-6624/migration-staging
+      # - deploy-pro:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - PC-6624/migration-staging
           # requires:
           #   - deploy-api
-      - deploy-webapp:
-          filters:
-            branches:
-              only:
-                - PC-6624/migration-staging
+      # - deploy-webapp:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - PC-6624/migration-staging
           # requires:
           #   - deploy-api
       # - release-synthesis:
@@ -671,41 +671,47 @@ workflows:
       #       - deploy-pro
       #       - deploy-webapp
 
-  # gcp-ehp:
-  #   jobs:
-  #     - build-and-push-image:
-  #         filters:
-  #           branches:
-  #             only:
-  #               - staging
-  #               - integration
-  #         context:
-  #           - GCP
-  #           - GCP_EHP
-  #     - deploy-api-cloudrun:
-  #         requires:
-  #           - build-and-push-image
-  #         context:
-  #           - GCP
-  #           - GCP_EHP
-  #     - deploy-cron-and-worker:
-  #         requires:
-  #           - build-and-push-image
-  #         context:
-  #           - GCP
-  #           - GCP_EHP
-  #     - deploy-webapp-cloudstorage:
-  #         requires:
-  #           - deploy-api-cloudrun
-  #         context:
-  #           - GCP
-  #           - GCP_EHP
-  #     - deploy-pro-cloudstorage:
-  #         requires:
-  #           - deploy-api-cloudrun
-  #         context:
-  #           - GCP
-  #           - GCP_EHP
+  gcp-ehp:
+    jobs:
+      # - build-and-push-image:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - staging
+      #           - integration
+      #     context:
+      #       - GCP
+      #       - GCP_EHP
+      # - deploy-api-cloudrun:
+      #     requires:
+      #       - build-and-push-image
+      #     context:
+      #       - GCP
+      #       - GCP_EHP
+      - deploy-cron-and-worker:
+          filters:
+            branches:
+              only:
+                # - staging
+                # - integration
+                - PC-6624/migration-staging
+          # requires:
+          #   - build-and-push-image
+          context:
+            - GCP
+            - GCP_EHP
+      # - deploy-webapp-cloudstorage:
+      #     requires:
+      #       - deploy-api-cloudrun
+      #     context:
+      #       - GCP
+      #       - GCP_EHP
+      # - deploy-pro-cloudstorage:
+      #     requires:
+      #       - deploy-api-cloudrun
+      #     context:
+      #       - GCP
+      #       - GCP_EHP
 
   # gcp-prod:
   #   jobs:
