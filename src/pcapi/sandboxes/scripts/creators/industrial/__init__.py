@@ -30,11 +30,11 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_webapp_users 
 from pcapi.scripts.venue.venue_label.create_venue_labels import create_venue_labels
 
 
-def save_industrial_sandbox():
+def save_industrial_sandbox() -> None:
     (offerers_by_name, pro_users_by_name) = create_industrial_offerers_with_pro_users()
 
     admin_users_by_name = create_industrial_admin_users()
-    pro_users_by_name = create_industrial_pro_users()
+    pro_users_by_name = create_industrial_pro_users(offerers_by_name)
     webapp_users_by_name = create_industrial_webapp_users()
 
     users_by_name = dict(dict(admin_users_by_name, **pro_users_by_name), **webapp_users_by_name)
