@@ -5,18 +5,19 @@ import { navigateToNewOfferAs, navigateToOfferAs, navigateToOffersAs } from './h
 import { createUserRole } from './helpers/roles'
 import { fetchSandbox } from './helpers/sandboxes'
 
-const closeInput = Selector('button').withText('Fermer')
-const nameInput = Selector('#offer-name')
-const offererInput = Selector('#offer-offererId')
-const offererOption = Selector('#offer-offererId option')
-const typeInput = Selector('#offer-type')
-const venueInput = Selector('#offer-venueId')
-const venueOption = Selector('#offer-venueId option')
-const typeOption = Selector('#offer-type option')
-const durationMinutesInput = Selector('input.field-duration')
-const descriptionInput = Selector('#offer-description')
-const isDuo = Selector('#isDuo')
-const submitButton = Selector('button').withText('Enregistrer')
+const offerDetailsTab = Selector('a').withText("Détail de l'offre")
+const nameInput = Selector('.offer-form [name="name"]')
+const offererInput = Selector('.offer-form [name="offererId"]')
+const offererOption = Selector('.offer-form [name="offererId"] option')
+const typeInput = Selector('.offer-form [name="type"]')
+const venueInput = Selector('.offer-form [name="venueId"]')
+const venueOption = Selector('.offer-form [name="venueId"] option')
+const typeOption = Selector('.offer-form [name="type"] option')
+const durationMinutesInput = Selector('.offer-form [name="durationMinutes"]')
+const descriptionInput = Selector('.offer-form [name="description"]')
+const isDuo = Selector('.offer-form [name="isDuo"]')
+const noDisabilityCompliantCheckbox = '.offer-form [name="noDisabilityCompliant"]'
+const submitButton = Selector('.actions-section .primary-button')
 
 fixture('En étant sur la page des offres,')
 
@@ -60,20 +61,20 @@ test('je peux créer une offre de type événement', async t => {
   await navigateToNewOfferAs(user, null, null, userRole)(t)
 
   await t
-    .typeText(nameInput, 'Rencontre avec Franck Lepage')
     .click(typeInput)
     .click(typeOption.withText('Conférences, rencontres et découverte des métiers'))
+    .typeText(nameInput, 'Rencontre avec Franck Lepage')
     .click(offererInput)
     .click(offererOption.withText(offerer.name))
     .click(venueInput)
     .click(venueOption.withText(venue.name))
+    .click(noDisabilityCompliantCheckbox)
     .typeText(durationMinutesInput, '02:00')
     .typeText(descriptionInput, eventDescription)
     .click(submitButton)
     .expect(getPathname())
-    .match(/\/offres\/([A-Z0-9]*)$/)
+    .match(/\/offres\/([A-Z0-9]+)\/stocks$/)
     .expect(getUrlParams())
-    .eql('?gestion')
 })
 
 test('je peux créer une offre avec des sous-types', async t => {
@@ -81,18 +82,18 @@ test('je peux créer une offre avec des sous-types', async t => {
     'pro_07_offer',
     'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue'
   )
-  const musicTypeInput = Selector('#offer-musicType')
-  const musicTypeOption = Selector('#offer-musicType option')
-  const musicSubTypeInput = Selector('#offer-musicSubType')
-  const musicSubTypeOption = Selector('#offer-musicSubType option')
+  const musicTypeInput = Selector('.offer-form [name="musicType"]')
+  const musicTypeOption = Selector('.offer-form [name="musicType"] option')
+  const musicSubTypeInput = Selector('.offer-form [name="musicSubType"]')
+  const musicSubTypeOption = Selector('.offer-form [name="musicSubType"] option')
   const eventMusicType = 'Hip-Hop/Rap'
   const eventMusicSubType = 'Rap Alternatif'
   await navigateToNewOfferAs(user)(t)
 
   await t
-    .typeText(nameInput, 'Concert de PNL Unplugged')
     .click(typeInput)
     .click(typeOption.withText('Musique - concerts, festivals'))
+    .typeText(nameInput, 'Concert de PNL Unplugged')
     .click(musicTypeInput)
     .click(musicTypeOption.withText(eventMusicType))
     .click(musicSubTypeInput)
@@ -101,14 +102,14 @@ test('je peux créer une offre avec des sous-types', async t => {
     .click(offererOption.withText(offerer.name))
     .click(venueInput)
     .click(venueOption.withText(venue.name))
+    .click(noDisabilityCompliantCheckbox)
     .typeText(durationMinutesInput, '01:30')
     .typeText(descriptionInput, 'Venez re découvrir PNL en accoustique, sans auto-tune')
     .click(submitButton)
     .expect(getPathname())
-    .match(/\/offres\/([A-Z0-9]*)$/)
+    .match(/\/offres\/([A-Z0-9]+)\/stocks$/)
     .expect(getUrlParams())
-    .eql('?gestion')
-    .click(closeInput)
+    .click(offerDetailsTab)
     .expect(musicTypeOption.withText(eventMusicType).exists)
     .ok()
     .expect(musicTypeOption.withText(eventMusicType).selected)
@@ -122,14 +123,12 @@ test('une offre Event est duo par défaut', async t => {
     'pro_07_offer',
     'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue'
   )
-  const buttonClose = Selector('#close-manager')
-  const buttonModifyOffer = Selector('#modify-offer-button')
   await navigateToNewOfferAs(user)(t)
 
   await t
-    .typeText(nameInput, 'Offre Duo')
     .click(typeInput)
     .click(typeOption.withText('Spectacle vivant')) // choose an event
+    .typeText(nameInput, 'Offre Duo')
     .expect(isDuo.checked)
     .ok()
     .click(isDuo)
@@ -140,11 +139,11 @@ test('une offre Event est duo par défaut', async t => {
     .click(offererOption.withText(offerer.name))
     .click(venueInput)
     .click(venueOption.withText(venue.name))
+    .click(noDisabilityCompliantCheckbox)
     .click(submitButton)
-    .click(buttonClose)
+    .click(offerDetailsTab)
     .expect(isDuo.checked)
     .ok()
-    .click(buttonModifyOffer)
     .expect(isDuo.checked)
     .ok()
     .click(isDuo) // Uncheck isDuo
