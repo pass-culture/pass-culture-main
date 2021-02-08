@@ -492,16 +492,16 @@ jobs:
             nvm install
             yarn install
 
-            set -a; source ~/pass-culture/config/run_envs/"${CIRCLE_BRANCH}"
+            set -a; source ~/pass-culture/config/run_envs/staging
 
-            yarn build:${CIRCLE_BRANCH}
+            yarn build:staging
 
             npm install -g netlify-cli@2.46.0
             netlify deploy -s "${NETLIFY_SITE_ID_PRO}" -a "${NETLIFY_TOKEN}" -d build/ --prod
       - run:
           name: Check deployed version
           command: |
-            COMPONENT_URL="https://pro.$(./scripts/compute_component_partial_url.sh ${CIRCLE_BRANCH})"
+            COMPONENT_URL="https://pro.$(./scripts/compute_component_partial_url.sh staging)"
             ./scripts/check_current_tag_is_deployed.sh "$COMPONENT_URL"
       - run:
           name: Send failure notification
@@ -545,7 +545,7 @@ jobs:
             nvm install
             yarn install
 
-            set -a; source ~/pass-culture/config/run_envs/"${CIRCLE_BRANCH}";
+            set -a; source ~/pass-culture/config/run_envs/staging;
 
             yarn build
 
@@ -554,7 +554,7 @@ jobs:
       - run:
           name: Check deployed version
           command: |
-            COMPONENT_URL="https://app.$(./scripts/compute_component_partial_url.sh ${CIRCLE_BRANCH})"
+            COMPONENT_URL="https://app.$(./scripts/compute_component_partial_url.sh staging)"
             ./scripts/check_current_tag_is_deployed.sh "$COMPONENT_URL"
       - run:
           name: Send failure notification
@@ -623,116 +623,124 @@ workflows:
   version: 2
   commit:
     jobs:
-      - tests-script-pc
-      - tests-api:
-          filters:
-            branches:
-              ignore:
-                - production
-                - staging
-                - integration
-      - tests-webapp:
-          filters:
-            branches:
-              ignore:
-                - production
-                - staging
-                - integration
-      - tests-pro:
-          filters:
-            branches:
-              ignore:
-                - production
-                - staging
-                - integration
-      - deploy-api:
-          filters:
-            branches:
-              only:
-                - production
-                - staging
-                - integration
+      # - tests-script-pc
+      # - tests-api:
+      #     filters:
+      #       branches:
+      #         ignore:
+      #           - production
+      #           - staging
+      #           - integration
+      # - tests-webapp:
+      #     filters:
+      #       branches:
+      #         ignore:
+      #           - production
+      #           - staging
+      #           - integration
+      # - tests-pro:
+      #     filters:
+      #       branches:
+      #         ignore:
+      #           - production
+      #           - staging
+      #           - integration
+      # - deploy-api:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - production
+      #           - staging
+      #           - integration
       - deploy-pro:
-          requires:
-            - deploy-api
+          filters:
+            branches:
+              only:
+                - PC-6624/migration-staging
+          # requires:
+          #   - deploy-api
       - deploy-webapp:
-          requires:
-            - deploy-api
-      - release-synthesis:
-          requires:
-            - deploy-pro
-            - deploy-webapp
-
-  gcp-ehp:
-    jobs:
-      - build-and-push-image:
           filters:
             branches:
               only:
-                - staging
-                - integration
-          context:
-            - GCP
-            - GCP_EHP
-      - deploy-api-cloudrun:
-          requires:
-            - build-and-push-image
-          context:
-            - GCP
-            - GCP_EHP
-      - deploy-cron-and-worker:
-          requires:
-            - build-and-push-image
-          context:
-            - GCP
-            - GCP_EHP
-      - deploy-webapp-cloudstorage:
-          requires:
-            - deploy-api-cloudrun
-          context:
-            - GCP
-            - GCP_EHP
-      - deploy-pro-cloudstorage:
-          requires:
-            - deploy-api-cloudrun
-          context:
-            - GCP
-            - GCP_EHP
+                - PC-6624/migration-staging
+          # requires:
+          #   - deploy-api
+      # - release-synthesis:
+      #     requires:
+      #       - deploy-pro
+      #       - deploy-webapp
 
-  gcp-prod:
-    jobs:
-      - build-and-push-image:
-          filters:
-            branches:
-              only:
-                - production
-          context:
-            - GCP
-            - GCP_PROD
-      - deploy-api-cloudrun:
-          requires:
-            - build-and-push-image
-          context:
-            - GCP
-            - GCP_PROD
-      - deploy-cron-and-worker:
-          requires:
-            - build-and-push-image
-          context:
-            - GCP
-            - GCP_PROD
-      - deploy-webapp-cloudstorage:
-          requires:
-            - deploy-api-cloudrun
-          context:
-            - GCP
-            - GCP_PROD
-      - deploy-pro-cloudstorage:
-          requires:
-            - deploy-api-cloudrun
-          context:
-            - GCP
-            - GCP_PROD
+  # gcp-ehp:
+  #   jobs:
+  #     - build-and-push-image:
+  #         filters:
+  #           branches:
+  #             only:
+  #               - staging
+  #               - integration
+  #         context:
+  #           - GCP
+  #           - GCP_EHP
+  #     - deploy-api-cloudrun:
+  #         requires:
+  #           - build-and-push-image
+  #         context:
+  #           - GCP
+  #           - GCP_EHP
+  #     - deploy-cron-and-worker:
+  #         requires:
+  #           - build-and-push-image
+  #         context:
+  #           - GCP
+  #           - GCP_EHP
+  #     - deploy-webapp-cloudstorage:
+  #         requires:
+  #           - deploy-api-cloudrun
+  #         context:
+  #           - GCP
+  #           - GCP_EHP
+  #     - deploy-pro-cloudstorage:
+  #         requires:
+  #           - deploy-api-cloudrun
+  #         context:
+  #           - GCP
+  #           - GCP_EHP
+
+  # gcp-prod:
+  #   jobs:
+  #     - build-and-push-image:
+  #         filters:
+  #           branches:
+  #             only:
+  #               - production
+  #         context:
+  #           - GCP
+  #           - GCP_PROD
+  #     - deploy-api-cloudrun:
+  #         requires:
+  #           - build-and-push-image
+  #         context:
+  #           - GCP
+  #           - GCP_PROD
+  #     - deploy-cron-and-worker:
+  #         requires:
+  #           - build-and-push-image
+  #         context:
+  #           - GCP
+  #           - GCP_PROD
+  #     - deploy-webapp-cloudstorage:
+  #         requires:
+  #           - deploy-api-cloudrun
+  #         context:
+  #           - GCP
+  #           - GCP_PROD
+  #     - deploy-pro-cloudstorage:
+  #         requires:
+  #           - deploy-api-cloudrun
+  #         context:
+  #           - GCP
+  #           - GCP_PROD
 
   every-mondays-nights:
     triggers:
