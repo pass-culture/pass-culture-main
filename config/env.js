@@ -91,7 +91,7 @@ function getClientEnvironment(publicUrl) {
         WDS_SOCKET_PORT: process.env.WDS_SOCKET_PORT,
         FAST_REFRESH: process.env.FAST_REFRESH !== 'false',
         RECAPTCHA_SITE_KEY: process.env.RECAPTCHA_SITE_KEY,
-        OFFER_CREATION_V2: process.env.OFFER_CREATION_V2 !== 'false',
+        OFFER_CREATION_V2: process.env.OFFER_CREATION_V2 === 'true',
       }
     )
   // Stringify all values so we can feed into webpack DefinePlugin

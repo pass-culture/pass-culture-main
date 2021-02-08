@@ -97,7 +97,7 @@ export const navigateToNewOfferAs = (user, offerer, venue, userRole) => async t 
 export const navigateToOfferAs = (user, offer, userRole) => async t => {
   const searchInput = Selector('#offre')
   const submitButton = Selector('button[type="submit"]')
-  const offerAnchor = Selector(`a[href^="/offres/${offer.id}"]`).withText(offer.name)
+  const offerAnchor = Selector(`a[href^="/offres/${offer.id}/edition"]`).withText(offer.name)
 
   if (!userRole) {
     await t.useRole(createUserRole(user))
@@ -108,6 +108,22 @@ export const navigateToOfferAs = (user, offer, userRole) => async t => {
   await t.navigateTo('/offres')
 
   await t.typeText(searchInput, offer.name).click(submitButton).click(offerAnchor)
+}
+
+export const navigateToStocksAs = (user, offer, userRole) => async t => {
+  const searchInput = Selector('#offre')
+  const submitButton = Selector('button[type="submit"]')
+  const stocksAnchor = Selector(`a[href^="/offres/${offer.id}/stocks"]`).withText('Stocks')
+
+  if (!userRole) {
+    await t.useRole(createUserRole(user))
+  } else {
+    await t.useRole(userRole)
+  }
+
+  await t.navigateTo('/offres')
+
+  await t.typeText(searchInput, offer.name).click(submitButton).click(stocksAnchor)
 }
 
 export const navigateToNewMediationAs = (user, offer, userRole) => async t => {

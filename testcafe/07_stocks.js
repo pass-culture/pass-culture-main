@@ -1,91 +1,102 @@
 import { Selector } from 'testcafe'
 
-import { parse } from '../src/utils/query-string'
-
-import { getUrlParams } from './helpers/location'
-import { navigateToOfferAs } from './helpers/navigations'
+import { navigateToOfferAs, navigateToStocksAs } from './helpers/navigations'
 import { createUserRole } from './helpers/roles'
 import { fetchSandbox } from './helpers/sandboxes'
 
-const addAnchor = Selector('#add-stock')
-const manageStockAnchor = Selector('.manage-stock')
-const submitButton = Selector('button.button.submitStep')
+const addThingStockButton = Selector('button').withText('Ajouter un stock')
+const addEventStockButton = Selector('button').withText('Ajouter une date')
+const submitButton = Selector('button').withText('Enregistrer')
 const priceInput = Selector('input[name="price"]')
-const addStockButton = Selector('#add-stock')
-const stockItem = Selector('.stock-item')
+const stockItem = Selector('tbody').find('tr')
+const submitSuccess = Selector('.notification-v2.is-success').withText(
+  'Vos stocks ont bien été sauvegardés.'
+)
 
-fixture('En étant sur la page de détail d’une offre,')
+fixture('En étant sur la page des stocks d’une offre,')
 
-test('Je peux créer un stock pour un événement', async t => {
+test("Je peux créer un stock pour un événement en passant par la page de l'offre", async t => {
   const { offer, user } = await fetchSandbox(
     'pro_08_stocks',
     'get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_no_stock'
   )
-  const bookingLimitDatetime = Selector('#bookingLimitDatetime')
-  const datePickerLastDay = Selector('.react-datepicker__day--today')
+  const stocksAnchor = Selector(`a[href^="/offres/${offer.id}/stocks"]`).withText('Stock et prix')
+
+  const dateInput = Selector('.react-datepicker-wrapper').nth(0)
+  const hourInput = Selector('.react-datepicker-wrapper').nth(1)
+  const datePickerLastDay = Selector(
+    '.react-datepicker__week:last-child .react-datepicker__day--sun'
+  )
+  const hourPickerLastHour = Selector('.react-datepicker__time-list-item:last-child')
   await navigateToOfferAs(user, offer, createUserRole(user))(t)
 
-  await t.click(manageStockAnchor).click(addStockButton)
-
-  let queryParams = parse(await getUrlParams())
+  await t.click(stocksAnchor).click(addEventStockButton)
 
   await t
-    .expect(queryParams.stock)
-    .eql('creation')
-    .click(bookingLimitDatetime)
+    .click(dateInput)
     .click(datePickerLastDay)
+    .click(hourInput)
+    .click(hourPickerLastHour)
     .click(submitButton)
 
-  queryParams = parse(await getUrlParams())
-  await t.expect(queryParams.stock).eql(undefined).expect(stockItem.count).eql(1)
+  await t.expect(submitSuccess.exists).ok().expect(stockItem.count).eql(1)
 })
 
-test('Je ne peux pas créer un nouveau stock pour un objet ayant déjà un stock', async t => {
+test('Je ne peux pas créer un nouveau stock pour un objet ayant déjà un stock en passant par la page des offres', async t => {
   const { offer, user } = await fetchSandbox(
     'pro_08_stocks',
     'get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_thing_offer_with_stock'
   )
-  await navigateToOfferAs(user, offer, createUserRole(user))(t)
+  await navigateToStocksAs(user, offer, createUserRole(user))(t)
 
-  await t.click(manageStockAnchor).expect(addAnchor.visible).notOk()
+  await t.expect(addThingStockButton.exists).notOk({ timeout: 200 })
 })
 
 test('Je peux modifier un stock pour un événement', async t => {
-  const { offer, stock, user } = await fetchSandbox(
+  const { offer, user } = await fetchSandbox(
     'pro_08_stocks',
     'get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_stock'
   )
-  const beginInput = Selector('input.date')
-  const datePicker = Selector('.react-datepicker')
+  const dateInput = Selector('.react-datepicker-wrapper').nth(0)
+  const hourInput = Selector('.react-datepicker-wrapper').nth(1)
+  const datePickerPopin = Selector('.react-datepicker')
   const datePickerLastDay = Selector(
-    '.react-datepicker__week:last-child .react-datepicker__day:last-child'
+    '.react-datepicker__week:last-child .react-datepicker__day--sun'
   )
-  const editAnchor = Selector(`#edit-stock-${stock.id}-button`)
-  await navigateToOfferAs(user, offer, createUserRole(user))(t)
+  const hourPickerLastHour = Selector('.react-datepicker__time-list-item:last-child')
+  await navigateToStocksAs(user, offer, createUserRole(user))(t)
 
-  await t.click(manageStockAnchor).click(editAnchor)
-
-  let queryParams = parse(await getUrlParams())
   await t
-    .expect(queryParams.gestion)
-    .eql('')
-    .expect(queryParams[`stock${stock.id}`])
-    .eql('modification')
-    .expect(beginInput.exists)
+    .expect(dateInput.exists)
     .ok()
-    .expect(datePicker.exists)
+    .expect(datePickerPopin.exists)
     .notOk()
-    .click(beginInput)
-    .expect(datePicker.exists)
+    .click(dateInput)
+    .expect(datePickerPopin.exists)
     .ok()
     .click(datePickerLastDay)
-    .expect(datePicker.exists)
+    .expect(datePickerPopin.exists)
+    .notOk()
+    .expect(hourInput.exists)
+    .ok()
+    .expect(datePickerPopin.exists)
+    .notOk()
+    .click(hourInput)
+    .expect(datePickerPopin.exists)
+    .ok()
+    .click(hourPickerLastHour)
+    .expect(datePickerPopin.exists)
     .notOk()
     .typeText(priceInput, '15')
     .click(submitButton)
 
-  queryParams = parse(await getUrlParams())
-  await t.expect(queryParams.gestion).eql('').expect(queryParams.stock).eql(undefined)
+  await t
+    .expect(submitSuccess.exists)
+    .ok()
+    .expect(priceInput.value)
+    .contains('15')
+    .expect(stockItem.count)
+    .eql(3)
 })
 
 test('Je peux supprimer un stock pour un événement', async t => {
@@ -93,22 +104,18 @@ test('Je peux supprimer un stock pour un événement', async t => {
     'pro_08_stocks',
     'get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_stock'
   )
-  await navigateToOfferAs(user, offer, createUserRole(user))(t)
-  const beginInput = Selector('input.date')
-  const datePicker = Selector('.react-datepicker')
-  const deleteButton = Selector('button.delete-stock')
-  const deleteButtonConfirmation = Selector('button').withText('Oui')
+  await navigateToStocksAs(user, offer, createUserRole(user))(t)
+  const deleteButton = Selector('td').find('button')
+  const deleteButtonConfirmation = Selector('.action-buttons').find('button').withText('Supprimer')
+  const deleteSuccess = Selector('.notification-v2.is-success').withText('Le stock a été supprimé.')
 
-  await t.click(manageStockAnchor).click(deleteButton).click(deleteButtonConfirmation)
-
-  const queryParams = parse(await getUrlParams())
   await t
-    .expect(queryParams.gestion)
-    .eql('')
-    .expect(beginInput.exists)
-    .notOk()
-    .expect(datePicker.exists)
-    .notOk()
-    .expect(queryParams.stock)
-    .eql(undefined)
+    .click(deleteButton)
+    .expect(deleteButtonConfirmation.exists)
+    .ok()
+    .click(deleteButtonConfirmation)
+    .expect(deleteSuccess.exists)
+    .ok()
+    .expect(stockItem.count)
+    .eql(2)
 })
