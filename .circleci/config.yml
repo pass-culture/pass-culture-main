@@ -37,19 +37,6 @@ commands:
     steps:
       - run: echo "export API_VERSION=$(cat ./api/version.txt)" >> $BASH_ENV
 
-  get_cors_allowed_origin_from_env:
-    description: Export CORS_ALLOWED_ORIGIN as env var
-    steps:
-      - run: |
-          if [[ ${CIRCLE_BRANCH} == "staging" ]];then
-            CORS_ALLOWED_ORIGIN=https://gcp-staging-.*.netlify.app
-          elif [[ ${CIRCLE_BRANCH} == "integration" ]];then
-            CORS_ALLOWED_ORIGIN=https://gcp-integratin-.*.netlify.app
-          elif [[ ${CIRCLE_BRANCH} == "production" ]];then
-            CORS_ALLOWED_ORIGIN=https://gcp-production-.*.netlify.app
-          fi
-          echo "export CORS_ALLOWED_ORIGIN=$CORS_ALLOWED_ORIGIN" >> $BASH_ENV
-
   authenticate_gcp:
     description: Authenticate to a GCP project
     parameters:
@@ -79,7 +66,6 @@ commands:
         type: string
     steps:
       - run: |
-          set +eo pipefail # While GCP deployment is not stable make it always return success status
           gcloud beta run deploy << parameters.app_name >> \
             --platform=managed \
             --allow-unauthenticated \
@@ -135,7 +121,6 @@ commands:
                 TRANSACTIONS_RECIPIENTS=sm://${GCP_PROJECT}/<< parameters.app_name >>_transactions_recipients, \
                 WALLET_BALANCES_RECIPIENTS=sm://${GCP_PROJECT}/<< parameters.app_name >>_wallet_balances_recipients" \
             --image=${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/<< parameters.docker_image_name >>:<< parameters.app_image_tag >>
-            true # While GCP deployment is not stable make it always return success status
 
   deploy-cron-gke:
     description: Deploy Crons and worker via helm to Kubernetes Cluster
@@ -173,7 +158,7 @@ commands:
       - run:
           name: Build frontend app
           command: |
-            set -a; source ./config/run_envs/<< parameters.node_env >>;
+            set -a; source ../config/run_envs/<< parameters.node_env >>;
             yarn build
           working_directory: << parameters.build_dir >>
 
@@ -431,7 +416,6 @@ jobs:
       - run: git submodule sync
       - run: git submodule update --init
       - export_version
-      - get_cors_allowed_origin_from_env
       - authenticate_gcp:
           gcp-key-name: GCP_METIER_KEY
       - deploy-api-cloudrun:
@@ -470,9 +454,9 @@ jobs:
           command: helm chart export ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:${TAG} -d tmp/
       - deploy-cron-gke:
           helm_chart_name: passculture
-          helm_release_name: staging
-          kubernetes_namespace: staging
-          helm_values_file: values.staging.yaml
+          helm_release_name: ${CIRCLE_BRANCH}
+          kubernetes_namespace: ${CIRCLE_BRANCH}
+          helm_values_file: values.${CIRCLE_BRANCH}.yaml
 
   deploy-pro:
     machine:
@@ -492,16 +476,16 @@ jobs:
             nvm install
             yarn install
 
-            set -a; source ~/pass-culture/config/run_envs/staging
+            set -a; source ~/pass-culture/config/run_envs/"${CIRCLE_BRANCH}"
 
-            yarn build:staging
+            yarn build:${CIRCLE_BRANCH}
 
             npm install -g netlify-cli@2.46.0
             netlify deploy -s "${NETLIFY_SITE_ID_PRO}" -a "${NETLIFY_TOKEN}" -d build/ --prod
       - run:
           name: Check deployed version
           command: |
-            COMPONENT_URL="https://pro.$(./scripts/compute_component_partial_url.sh staging)"
+            COMPONENT_URL="https://pro.$(./scripts/compute_component_partial_url.sh ${CIRCLE_BRANCH})"
             ./scripts/check_current_tag_is_deployed.sh "$COMPONENT_URL"
       - run:
           name: Send failure notification
@@ -545,7 +529,7 @@ jobs:
             nvm install
             yarn install
 
-            set -a; source ~/pass-culture/config/run_envs/staging;
+            set -a; source ~/pass-culture/config/run_envs/"${CIRCLE_BRANCH}";
 
             yarn build
 
@@ -554,7 +538,7 @@ jobs:
       - run:
           name: Check deployed version
           command: |
-            COMPONENT_URL="https://app.$(./scripts/compute_component_partial_url.sh staging)"
+            COMPONENT_URL="https://app.$(./scripts/compute_component_partial_url.sh ${CIRCLE_BRANCH})"
             ./scripts/check_current_tag_is_deployed.sh "$COMPONENT_URL"
       - run:
           name: Send failure notification
@@ -621,132 +605,118 @@ jobs:
 
 workflows:
   version: 2
-  # commit:
-  #   jobs:
-      # - tests-script-pc
-      # - tests-api:
-      #     filters:
-      #       branches:
-      #         ignore:
-      #           - production
-      #           - staging
-      #           - integration
-      # - tests-webapp:
-      #     filters:
-      #       branches:
-      #         ignore:
-      #           - production
-      #           - staging
-      #           - integration
-      # - tests-pro:
-      #     filters:
-      #       branches:
-      #         ignore:
-      #           - production
-      #           - staging
-      #           - integration
-      # - deploy-api:
-      #     filters:
-      #       branches:
-      #         only:
-      #           - production
-      #           - staging
-      #           - integration
-      # - deploy-pro:
-      #     filters:
-      #       branches:
-      #         only:
-      #           - PC-6624/migration-staging
-          # requires:
-          #   - deploy-api
-      # - deploy-webapp:
-      #     filters:
-      #       branches:
-      #         only:
-      #           - PC-6624/migration-staging
-          # requires:
-          #   - deploy-api
-      # - release-synthesis:
-      #     requires:
-      #       - deploy-pro
-      #       - deploy-webapp
-
-  gcp-ehp:
+  commit:
     jobs:
-      # - build-and-push-image:
-      #     filters:
-      #       branches:
-      #         only:
-      #           - staging
-      #           - integration
-      #     context:
-      #       - GCP
-      #       - GCP_EHP
-      # - deploy-api-cloudrun:
-      #     requires:
-      #       - build-and-push-image
-      #     context:
-      #       - GCP
-      #       - GCP_EHP
-      - deploy-cron-and-worker:
+      - tests-script-pc
+      - tests-api:
+          filters:
+            branches:
+              ignore:
+                - production
+                - staging
+                - integration
+      - tests-webapp:
+          filters:
+            branches:
+              ignore:
+                - production
+                - staging
+                - integration
+      - tests-pro:
+          filters:
+            branches:
+              ignore:
+                - production
+                - staging
+                - integration
+      - deploy-api:
           filters:
             branches:
               only:
-                # - staging
-                # - integration
-                - PC-6624/migration-staging
-          # requires:
-          #   - build-and-push-image
+                - production
+                - staging
+                - integration
+      - deploy-pro:
+          requires:
+            - deploy-api
+      - deploy-webapp:
+          requires:
+            - deploy-api
+      - release-synthesis:
+          requires:
+            - deploy-pro
+            - deploy-webapp
+
+  gcp-ehp:
+    jobs:
+      - build-and-push-image:
+          filters:
+            branches:
+              only:
+                - staging
+                - integration
           context:
             - GCP
             - GCP_EHP
-      # - deploy-webapp-cloudstorage:
-      #     requires:
-      #       - deploy-api-cloudrun
-      #     context:
-      #       - GCP
-      #       - GCP_EHP
-      # - deploy-pro-cloudstorage:
-      #     requires:
-      #       - deploy-api-cloudrun
-      #     context:
-      #       - GCP
-      #       - GCP_EHP
+      - deploy-api-cloudrun:
+          requires:
+            - build-and-push-image
+          context:
+            - GCP
+            - GCP_EHP
+      - deploy-cron-and-worker:
+          requires:
+            - build-and-push-image
+          context:
+            - GCP
+            - GCP_EHP
+      - deploy-webapp-cloudstorage:
+          requires:
+            - deploy-api-cloudrun
+          context:
+            - GCP
+            - GCP_EHP
+      - deploy-pro-cloudstorage:
+          requires:
+            - deploy-api-cloudrun
+          context:
+            - GCP
+            - GCP_EHP
 
-  # gcp-prod:
-  #   jobs:
-  #     - build-and-push-image:
-  #         filters:
-  #           branches:
-  #             only:
-  #               - production
-  #         context:
-  #           - GCP
-  #           - GCP_PROD
-  #     - deploy-api-cloudrun:
-  #         requires:
-  #           - build-and-push-image
-  #         context:
-  #           - GCP
-  #           - GCP_PROD
-  #     - deploy-cron-and-worker:
-  #         requires:
-  #           - build-and-push-image
-  #         context:
-  #           - GCP
-  #           - GCP_PROD
-  #     - deploy-webapp-cloudstorage:
-  #         requires:
-  #           - deploy-api-cloudrun
-  #         context:
-  #           - GCP
-  #           - GCP_PROD
-  #     - deploy-pro-cloudstorage:
-  #         requires:
-  #           - deploy-api-cloudrun
-  #         context:
-  #           - GCP
-  #           - GCP_PROD
+  gcp-prod:
+    jobs:
+      - build-and-push-image:
+          filters:
+            branches:
+              only:
+                - production
+          context:
+            - GCP
+            - GCP_PROD
+      - deploy-api-cloudrun:
+          requires:
+            - build-and-push-image
+          context:
+            - GCP
+            - GCP_PROD
+      - deploy-cron-and-worker:
+          requires:
+            - build-and-push-image
+          context:
+            - GCP
+            - GCP_PROD
+      - deploy-webapp-cloudstorage:
+          requires:
+            - deploy-api-cloudrun
+          context:
+            - GCP
+            - GCP_PROD
+      - deploy-pro-cloudstorage:
+          requires:
+            - deploy-api-cloudrun
+          context:
+            - GCP
+            - GCP_PROD
 
   every-mondays-nights:
     triggers:
