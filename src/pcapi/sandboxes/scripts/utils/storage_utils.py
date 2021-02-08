@@ -1,8 +1,8 @@
 import os
 
 from pcapi.connectors.thumb_storage import create_thumb
+from pcapi.core.object_storage import store_public_object
 from pcapi.utils.human_ids import humanize
-from pcapi.utils.object_storage import store_public_object
 from pcapi.utils.string_processing import get_model_plural_name
 
 

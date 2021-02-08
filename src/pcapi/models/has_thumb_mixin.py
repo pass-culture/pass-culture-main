@@ -2,8 +2,8 @@ from sqlalchemy import Column
 from sqlalchemy import Integer
 
 from pcapi import settings
+from pcapi.core.object_storage import build_thumb_path
 from pcapi.utils.human_ids import humanize
-from pcapi.utils.object_storage import build_thumb_path
 from pcapi.utils.string_processing import get_model_plural_name
 
 

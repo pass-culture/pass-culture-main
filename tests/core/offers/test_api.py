@@ -755,7 +755,7 @@ class CreateMediationTest:
         assert mediation.thumbCount == 1
         mocked_add_offer_id.assert_called_once_with(client=app.redis_client, offer_id=offer.id)
 
-    @mock.patch("pcapi.utils.object_storage.store_public_object")
+    @mock.patch("pcapi.core.object_storage.store_public_object")
     def test_crop_params(self, mocked_store_public_object):
         user = users_factories.UserFactory()
         offer = factories.ThingOfferFactory()

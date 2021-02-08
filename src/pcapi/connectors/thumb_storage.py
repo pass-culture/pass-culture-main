@@ -1,5 +1,5 @@
+from pcapi.core import object_storage
 from pcapi.models.db import Model
-from pcapi.utils import object_storage
 from pcapi.utils.image_conversion import standardize_image
 
 
@@ -18,4 +18,14 @@ def create_thumb(
         blob=image_as_bytes,
         content_type="image/jpeg",
         symlink_path=symlink_path,
+    )
+
+
+def remove_thumb(
+    model_with_thumb: Model,
+    image_index: int,
+) -> None:
+    object_storage.delete_public_object(
+        bucket="thumbs",
+        object_id=model_with_thumb.get_thumb_storage_id(image_index),
     )

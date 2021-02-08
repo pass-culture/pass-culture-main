@@ -8,6 +8,7 @@ import pytz
 
 from pcapi.connectors import redis
 from pcapi.connectors.thumb_storage import create_thumb
+from pcapi.connectors.thumb_storage import remove_thumb
 import pcapi.core.bookings.repository as bookings_repository
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.users.models import User
