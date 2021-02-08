@@ -10,6 +10,8 @@ from pcapi.models import payment_status
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
 
+from . import api
+
 
 ALL_REIMBURSEMENT_RULES = {t.name for t in list(reimbursement.ReimbursementRules)}
 
@@ -21,6 +23,7 @@ class DepositFactory(BaseFactory):
     user = factory.SubFactory(users_factories.UserFactory)
     source = "public"
     version = 1
+    expirationDate = factory.LazyFunction(api._get_expiration_date)
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):

@@ -61,6 +61,8 @@ def check_expenses_limits(user: User, requested_amount: Decimal, offer: Offer):
         deposit = user.deposits[0]
     except IndexError:
         raise exceptions.UserHasInsufficientFunds()
+    if deposit.expirationDate and deposit.expirationDate < datetime.datetime.now():
+        raise exceptions.UserHasInsufficientFunds()
 
     config = conf.LIMIT_CONFIGURATIONS[deposit.version]
     for expense in user.expenses:

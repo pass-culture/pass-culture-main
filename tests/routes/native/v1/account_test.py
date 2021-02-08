@@ -67,6 +67,11 @@ class AccountTest:
         user = users_factories.UserFactory(
             dateOfBirth=datetime(2000, 1, 1),
             deposit__version=1,
+            # The expiration date is taken in account in
+            # `get_wallet_balance` and compared against the SQL
+            # `now()` function, which is NOT overriden by
+            # `freeze_time()`.
+            deposit__expirationDate=datetime(2040, 1, 1),
             publicName="jdo",
             **USER_DATA,
         )

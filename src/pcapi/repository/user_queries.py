@@ -47,6 +47,10 @@ def find_user_by_reset_password_token(token: str) -> User:
 
 
 def get_all_users_wallet_balances() -> List[WalletBalance]:
+    """Return wallet balances.
+
+    WARNING: it ignores the expiration date of the deposits.
+    """
     wallet_balances = (
         db.session.query(
             User.id,

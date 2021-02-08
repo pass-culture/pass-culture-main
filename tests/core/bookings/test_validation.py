@@ -182,8 +182,15 @@ class CheckExpenseLimitsDepositVersion1BeforeSwitchTest:
 @pytest.mark.usefixtures("db_session")
 @override_features(APPLY_BOOKING_LIMITS_V2=True)
 class CheckExpenseLimitsDepositVersion1AfterSwitchTest:
-    def _get_beneficiary(self):
-        return users_factories.UserFactory(deposit__version=1)
+    def _get_beneficiary(self, **kwargs):
+        return users_factories.UserFactory(deposit__version=1, **kwargs)
+
+    def test_raise_if_deposit_expired(self):
+        yesterday = datetime.now() - timedelta(days=1)
+        beneficiary = self._get_beneficiary(deposit__expirationDate=yesterday)
+        offer = offers_factories.OfferFactory(product__type=str(ThingType.INSTRUMENT))
+        with pytest.raises(exceptions.UserHasInsufficientFunds):
+            validation.check_expenses_limits(beneficiary, 10, offer)
 
     def test_physical_limit(self):
         beneficiary = self._get_beneficiary()
@@ -249,8 +256,15 @@ class CheckExpenseLimitsDepositVersion1AfterSwitchTest:
 
 @pytest.mark.usefixtures("db_session")
 class CheckExpenseLimitsDepositVersion2Test:
-    def _get_beneficiary(self):
-        return users_factories.UserFactory(deposit__version=2)
+    def _get_beneficiary(self, **kwargs):
+        return users_factories.UserFactory(deposit__version=2, **kwargs)
+
+    def test_raise_if_deposit_expired(self):
+        yesterday = datetime.now() - timedelta(days=1)
+        beneficiary = self._get_beneficiary(deposit__expirationDate=yesterday)
+        offer = offers_factories.OfferFactory(product__type=str(ThingType.INSTRUMENT))
+        with pytest.raises(exceptions.UserHasInsufficientFunds):
+            validation.check_expenses_limits(beneficiary, 10, offer)
 
     def test_physical_limit(self):
         beneficiary = self._get_beneficiary()

@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pcapi.core.bookings.conf as bookings_conf
 from pcapi.core.users.models import User
 from pcapi.models.deposit import Deposit
@@ -5,6 +7,14 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
 
 from . import exceptions
+
+
+DEPOSIT_VALIDITY_IN_YEARS = 2
+
+
+def _get_expiration_date(start=None):
+    start = start or datetime.utcnow()
+    return start.replace(year=start.year + DEPOSIT_VALIDITY_IN_YEARS)
 
 
 def create_deposit(beneficiary: User, deposit_source: str, version: int = None) -> Deposit:
@@ -19,10 +29,12 @@ def create_deposit(beneficiary: User, deposit_source: str, version: int = None) 
     if version is None:
         version = 2 if feature_queries.is_active(FeatureToggle.APPLY_BOOKING_LIMITS_V2) else 1
     booking_configuration = bookings_conf.LIMIT_CONFIGURATIONS[version]
+
     deposit = Deposit(
         version=version,
         amount=booking_configuration.TOTAL_CAP,
         source=deposit_source,
         user=beneficiary,
+        expirationDate=_get_expiration_date(),
     )
     return deposit
