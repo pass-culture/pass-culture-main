@@ -81,20 +81,20 @@ const Advices = ({ hidden, setHidden }) => {
         </p>
         <ul className="tna-links tna-download-links">
           <li>
-            <a href={`${ASSETS_URL}/PassCulture-accroche-template-20210128.psd`}>
+            <a href={`${ASSETS_URL}/PassCulture-image-template-20210205.psd`}>
               <Download />
               {'Gabarit Photoshop'}
               <span className="tna-links-help">
-                {`${NBSP}(.psd, 414 Ko)`}
+                {`${NBSP}(.psd, 116 Ko)`}
               </span>
             </a>
           </li>
           <li>
-            <a href={`${ASSETS_URL}/PassCulture-accroche-template-20210128.eps`}>
+            <a href={`${ASSETS_URL}/PassCulture-image-template-20210205.eps`}>
               <Download />
               {'Gabarit Illustrator'}
               <span className="tna-links-help">
-                {`${NBSP}(.eps, 1,7 Mo)`}
+                {`${NBSP}(.eps, 836 Ko)`}
               </span>
             </a>
           </li>

@@ -95,10 +95,10 @@ describe('thumbnail edition', () => {
         expect(shutterstockLink).toHaveAttribute('target', '_blank')
         expect(screen.getByText('Gabarits')).toBeInTheDocument()
         expect(
-          screen.getByRole('link', { name: 'Gabarit Photoshop (.psd, 414 Ko)' })
+          screen.getByRole('link', { name: 'Gabarit Photoshop (.psd, 116 Ko)' })
         ).toBeInTheDocument()
         expect(
-          screen.getByRole('link', { name: 'Gabarit Illustrator (.eps, 1,7 Mo)' })
+          screen.getByRole('link', { name: 'Gabarit Illustrator (.eps, 836 Ko)' })
         ).toBeInTheDocument()
       })
 
