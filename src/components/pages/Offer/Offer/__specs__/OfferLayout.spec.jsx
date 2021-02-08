@@ -43,11 +43,11 @@ describe('offerLayout', () => {
       }
       props = {
         match: {
-          url: '/offres/v2/AB',
+          url: '/offres/AB',
           params: { offerId: 'AB' },
         },
         location: {
-          pathname: '/offres/v2/AB/edition',
+          pathname: '/offres/AB/edition',
         },
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
@@ -67,11 +67,11 @@ describe('offerLayout', () => {
     beforeEach(() => {
       props = {
         match: {
-          url: '/offres/v2',
+          url: '/offres',
           params: {},
         },
         location: {
-          pathname: '/offres/v2/AB/creation',
+          pathname: '/offres/AB/creation',
         },
       }
     })
@@ -97,11 +97,11 @@ describe('offerLayout', () => {
       }
       props = {
         match: {
-          url: '/offres/v2/AB',
+          url: '/offres/AB',
           params: { offerId: 'AB' },
         },
         location: {
-          pathname: '/offres/v2/AB/stocks',
+          pathname: '/offres/AB/stocks',
         },
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)

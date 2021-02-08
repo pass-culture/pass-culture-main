@@ -50,12 +50,12 @@ const OfferDetails = ({
         if (offer) {
           await pcapi.updateOffer(offer.id, offerValues)
           showEditionSuccessNotification()
-          history.push(`/offres/v2/${offer.id}/edition`)
+          history.push(`/offres/${offer.id}/edition`)
         } else {
           const response = await pcapi.createOffer(offerValues)
           showCreationSuccessNotification()
           const createdOfferId = response.id
-          history.push(`/offres/v2/${createdOfferId}/stocks`)
+          history.push(`/offres/${createdOfferId}/stocks`)
         }
         setFormErrors({})
       } catch (error) {

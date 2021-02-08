@@ -249,7 +249,7 @@ const Stocks = ({ offer, showErrorNotification, showSuccessNotification }) => {
           <section className="actions-section">
             <Link
               className="secondary-link"
-              to={`/offres/v2/${offerId}/edition`}
+              to={`/offres/${offerId}/edition`}
             >
               {'Annuler et quitter'}
             </Link>

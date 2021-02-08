@@ -25,8 +25,8 @@ const renderOffers = async (props, store) => {
   await act(async () => {
     await render(
       <Provider store={store}>
-        <MemoryRouter initialEntries={[{ pathname: '/offres/v2/AG3A/stocks' }]}>
-          <Route path="/offres/v2/:offerId([A-Z0-9]+)/">
+        <MemoryRouter initialEntries={[{ pathname: '/offres/AG3A/stocks' }]}>
+          <Route path="/offres/:offerId([A-Z0-9]+)/">
             <>
               <OfferLayoutContainer {...props} />
               <NotificationV2Container />
@@ -275,7 +275,7 @@ describe('stocks page', () => {
       // then
       const cancelLink = screen.getByRole('link', { name: 'Annuler et quitter' })
       expect(cancelLink).toBeInTheDocument()
-      expect(cancelLink).toHaveAttribute('href', '/offres/v2/AG3A/edition')
+      expect(cancelLink).toHaveAttribute('href', '/offres/AG3A/edition')
     })
 
     describe('render event offer', () => {

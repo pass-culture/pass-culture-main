@@ -60,7 +60,7 @@ const OfferLayout = props => {
         <Switch>
           <Route
             exact
-            path="/offres/v2/creation"
+            path="/offres/creation"
           >
             <OfferDetailsContainer offer={offer} />
           </Route>

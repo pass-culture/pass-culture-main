@@ -13,12 +13,12 @@ const OfferBreadcrumb = ({ activeStep, isCreatingOffer, offerId }) => {
       {
         id: STEP_ID_DETAILS,
         label: "Détail de l'offre",
-        url: `/offres/v2/${offerId}/edition`,
+        url: `/offres/${offerId}/edition`,
       },
       {
         id: STEP_ID_STOCKS,
         label: 'Stock et prix',
-        url: `/offres/v2/${offerId}/stocks`,
+        url: `/offres/${offerId}/stocks`,
       },
     ]
   } else {
@@ -26,7 +26,7 @@ const OfferBreadcrumb = ({ activeStep, isCreatingOffer, offerId }) => {
       {
         id: STEP_ID_DETAILS,
         label: "Détail de l'offre",
-        url: `/offres/v2/creation`,
+        url: `/offres/creation`,
       },
       {
         id: STEP_ID_STOCKS,

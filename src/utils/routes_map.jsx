@@ -33,7 +33,7 @@ const RedirectToConnexionComponent = () => <Redirect to="/connexion" />
 
 // NOTE: routes are sorted by PATH alphabetical order
 // DEPRECATED: Pages are currently be rework to not use <Main> component
-export const routesWithMain = [
+export let routesWithMain = [
   {
     component: RedirectToConnexionComponent,
     exact: true,
@@ -136,24 +136,6 @@ export const routesWithMain = [
     title: 'Offres',
   },
   {
-    component: OfferCreation,
-    exact: true,
-    path: '/offres/:offerId',
-    title: 'Offre',
-  },
-  {
-    component: OfferEdition,
-    exact: true,
-    path: '/offres/:offerId/edition',
-    title: "Edition d'une offre",
-  },
-  {
-    component: Mediation,
-    exact: true,
-    path: '/offres/:offerId/accroches/:mediationId',
-    title: 'Accroche',
-  },
-  {
     component: ProfilContainer,
     exact: true,
     path: '/profil',
@@ -242,8 +224,30 @@ if (OFFER_CREATION_V2) {
     {
       component: OfferLayoutContainer,
       exact: false,
-      path: ['/offres/v2/creation', '/offres/v2/:offerId([A-Z0-9]+)'],
+      path: ['/offres/creation', '/offres/:offerId([A-Z0-9]+)'],
       title: 'Offre',
+    },
+  ]
+} else {
+  routesWithMain = [
+    ...routesWithMain,
+    {
+      component: OfferCreation,
+      exact: true,
+      path: '/offres/:offerId',
+      title: 'Offre',
+    },
+    {
+      component: OfferEdition,
+      exact: true,
+      path: '/offres/:offerId/edition',
+      title: "Edition d'une offre",
+    },
+    {
+      component: Mediation,
+      exact: true,
+      path: '/offres/:offerId/accroches/:mediationId',
+      title: 'Accroche',
     },
   ]
 }

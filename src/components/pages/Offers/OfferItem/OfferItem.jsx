@@ -6,6 +6,7 @@ import Icon from 'components/layout/Icon'
 import Thumb from 'components/layout/Thumb'
 import { isOfferFullyBooked } from 'components/pages/Offers/domain/isOfferFullyBooked'
 import { computeVenueDisplayName } from 'repository/venuesService'
+import { OFFER_CREATION_V2 } from 'utils/config'
 import { pluralize } from 'utils/pluralize'
 
 import { computeOfferStatus } from '../domain/computeOfferStatus'
@@ -71,25 +72,48 @@ const OfferItem = ({ disabled, offer, stocks, venue, isSelected, selectOffer }) 
         />
       </td>
       <td className="thumb-column">
-        <Link
-          className="name"
-          title="Afficher le détail de l'offre"
-          to={`/offres/${offer.id}`}
-        >
-          <Thumb
-            alt="Miniature d'offre"
-            url={offer.thumbUrl}
-          />
-        </Link>
+        {OFFER_CREATION_V2 ? (
+          <Link
+            className="name"
+            title="Afficher le détail de l'offre"
+            to={`/offres/${offer.id}/edition`}
+          >
+            <Thumb
+              alt="Miniature d'offre"
+              url={offer.thumbUrl}
+            />
+          </Link>
+        ) : (
+          <Link
+            className="name"
+            title="Afficher le détail de l'offre"
+            to={`/offres/${offer.id}`}
+          >
+            <Thumb
+              alt="Miniature d'offre"
+              url={offer.thumbUrl}
+            />
+          </Link>
+        )}
       </td>
       <td className="title-column">
-        <Link
-          className="name"
-          title="Afficher le détail de l'offre"
-          to={`/offres/${offer.id}`}
-        >
-          {offer.name}
-        </Link>
+        {OFFER_CREATION_V2 ? (
+          <Link
+            className="name"
+            title="Afficher le détail de l'offre"
+            to={`/offres/${offer.id}/edition`}
+          >
+            {offer.name}
+          </Link>
+        ) : (
+          <Link
+            className="name"
+            title="Afficher le détail de l'offre"
+            to={`/offres/${offer.id}`}
+          >
+            {offer.name}
+          </Link>
+        )}
         {offer.isEvent && (
           <span className="stocks">
             {pluralize(stockSize, 'date')}
@@ -122,13 +146,23 @@ const OfferItem = ({ disabled, offer, stocks, venue, isSelected, selectOffer }) 
         </span>
       </td>
       <td className="switch-column">
-        <Link
-          className="secondary-link with-icon"
-          to={`/offres/${offer.id}?gestion`}
-        >
-          <Icon svg="ico-guichet-full" />
-          {'Stocks'}
-        </Link>
+        {OFFER_CREATION_V2 ? (
+          <Link
+            className="secondary-link with-icon"
+            to={`/offres/${offer.id}/stocks`}
+          >
+            <Icon svg="ico-guichet-full" />
+            {'Stocks'}
+          </Link>
+        ) : (
+          <Link
+            className="secondary-link with-icon"
+            to={`/offres/${offer.id}?gestion`}
+          >
+            <Icon svg="ico-guichet-full" />
+            {'Stocks'}
+          </Link>
+        )}
       </td>
       <td className="edit-column">
         {isOfferEditable && (

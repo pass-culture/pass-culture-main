@@ -24,8 +24,8 @@ const renderOffers = async (props, store, queryParams = null) => {
   await act(async () => {
     await render(
       <Provider store={store}>
-        <MemoryRouter initialEntries={[{ pathname: '/offres/v2/creation', search: queryParams }]}>
-          <Route path="/offres/v2/">
+        <MemoryRouter initialEntries={[{ pathname: '/offres/creation', search: queryParams }]}>
+          <Route path="/offres/">
             <>
               <OfferLayoutContainer {...props} />
               <NotificationV2Container />
