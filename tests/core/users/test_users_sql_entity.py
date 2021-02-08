@@ -109,6 +109,24 @@ class WalletBalanceTest:
         assert user.real_wallet_balance == 500 + 500
 
     @pytest.mark.usefixtures("db_session")
+    def test_balance_count_non_expired_deposits(self):
+        # given
+        user = factories.UserFactory(deposit__version=1, deposit__expirationDate=None)
+
+        # then
+        assert user.wallet_balance == 500
+        assert user.real_wallet_balance == 500
+
+    @pytest.mark.usefixtures("db_session")
+    def test_balance_ignores_expired_deposits(self):
+        # given
+        user = factories.UserFactory(deposit__version=1, deposit__expirationDate=datetime(2000, 1, 1))
+
+        # then
+        assert user.wallet_balance == 0
+        assert user.real_wallet_balance == 0
+
+    @pytest.mark.usefixtures("db_session")
     def test_balance(self):
         # given
         user = factories.UserFactory(deposit__version=1)
@@ -120,6 +138,28 @@ class WalletBalanceTest:
         # then
         assert user.wallet_balance == 500 - (10 + 2 * 20 + 3 * 30)
         assert user.real_wallet_balance == 500 - (10 + 2 * 20)
+
+    @pytest.mark.usefixtures("db_session")
+    def test_real_balance_with_only_used_bookings(self):
+        # given
+        user = factories.UserFactory(deposit__version=1)
+        bookings_factories.BookingFactory(user=user, isUsed=False, quantity=1, amount=30)
+
+        # then
+        assert user.wallet_balance == 500 - 30
+        assert user.real_wallet_balance == 500
+
+    @pytest.mark.usefixtures("db_session")
+    def test_balance_should_not_be_negative(self):
+        # given
+        user = factories.UserFactory(deposit__version=1)
+        bookings_factories.BookingFactory(user=user, isUsed=True, quantity=1, amount=10)
+        deposit = user.deposits[0]
+        deposit.expirationDate = datetime(2000, 1, 1)
+
+        # then
+        assert user.wallet_balance == 0
+        assert user.real_wallet_balance == 0
 
 
 class HasPhysicalVenuesTest:

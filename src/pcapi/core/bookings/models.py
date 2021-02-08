@@ -129,9 +129,10 @@ class Booking(PcObject, Model, VersionedMixin):
         return self.confirmationDate and self.confirmationDate <= datetime.utcnow()
 
 
+# FIXME (dbaty, 2020-02-08): once `Deposit.expirationDate` has been
+# populated after the deployment of v122, make the column NOT NULLable
+# and remove the filter below (add a migration for _each_ change).
 Booking.trig_ddl = """
-    DROP FUNCTION IF EXISTS get_wallet_balance(user_id BIGINT);
-
     CREATE OR REPLACE FUNCTION get_wallet_balance(user_id BIGINT, only_used_bookings BOOLEAN)
     RETURNS NUMERIC(10,2) AS $$
     DECLARE
@@ -141,7 +142,8 @@ Booking.trig_ddl = """
         SELECT COALESCE(SUM(amount), 0)
         INTO sum_deposits
         FROM deposit
-        WHERE "userId"=user_id;
+        WHERE "userId"=user_id
+        AND "expirationDate" > now() OR "expirationDate" IS NULL;
 
         CASE
             only_used_bookings
@@ -157,7 +159,7 @@ Booking.trig_ddl = """
             WHERE "userId"=user_id AND NOT "isCancelled";
         END CASE;
 
-        RETURN (sum_deposits - sum_bookings);
+        RETURN GREATEST(0, (sum_deposits - sum_bookings));
     END; $$
     LANGUAGE plpgsql;
 
