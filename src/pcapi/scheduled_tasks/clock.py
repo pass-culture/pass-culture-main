@@ -1,6 +1,7 @@
 from apscheduler.schedulers.blocking import BlockingScheduler
 
 from pcapi import settings
+from pcapi.local_providers.fnac.fnac_stocks_provider import synchronize_fnac_venues_stocks
 from pcapi.local_providers.provider_manager import synchronize_venue_providers_for_provider
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.feature import FeatureToggle
@@ -42,8 +43,7 @@ def synchronize_libraires_stocks(app) -> None:
 @log_cron
 @cron_context
 def synchronize_fnac_stocks(app) -> None:
-    fnac_stocks_provider_id = get_provider_by_local_class("FnacStocks").id
-    synchronize_venue_providers_for_provider(fnac_stocks_provider_id)
+    synchronize_fnac_venues_stocks()
 
 
 @log_cron
