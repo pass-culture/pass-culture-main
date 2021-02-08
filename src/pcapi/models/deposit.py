@@ -26,4 +26,6 @@ class Deposit(PcObject, Model):
 
     dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow)
 
+    expirationDate = Column(DateTime, nullable=True)
+
     version = Column(SmallInteger, nullable=False)
