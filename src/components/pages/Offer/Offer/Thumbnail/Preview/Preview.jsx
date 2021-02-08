@@ -21,14 +21,14 @@ const Preview = ({ preview, setStep }) => {
           <img
             alt=""
             className="tnp-shell"
+            height="515"
             src={homeShell}
           />
           <img
             alt=""
             className="tnp-home-preview"
-            height="163"
+            height="225"
             src={preview}
-            width="108"
           />
           <div>
             {'Page d’accueil'}
@@ -38,15 +38,21 @@ const Preview = ({ preview, setStep }) => {
           <MobileShell />
           <img
             alt=""
-            className="tnp-shell"
+            className="tnp-blur-offer-preview"
+            height="435"
+            src={preview}
+          />
+          <img
+            alt=""
+            className="tnp-shell right"
+            height="280"
             src={offerShell}
           />
           <img
             alt=""
             className="tnp-offer-preview"
-            height="175"
+            height="247"
             src={preview}
-            width="116"
           />
           <div>
             {'Détail de l’offre'}

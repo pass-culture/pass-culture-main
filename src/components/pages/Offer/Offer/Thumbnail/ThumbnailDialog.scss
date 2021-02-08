@@ -236,6 +236,7 @@
   padding: rem(32px);
 
   svg {
+    height: rem(600px);
     margin-bottom: rem(16px);
   }
 
@@ -251,21 +252,32 @@
 }
 
 .tnp-shell {
-  left: rem(19px);
+  left: rem(26px);
   position: absolute;
-  top: rem(25px);
+  top: rem(34px);
+
+  &.right {
+    top: rem(270px);
+  }
 }
 
 .tnp-home-preview {
   border-radius: rem(5px);
-  left: rem(31px);
+  left: rem(43px);
   position: absolute;
-  top: rem(139px);
+  top: rem(187px);
+}
+
+.tnp-blur-offer-preview {
+  filter: blur(2px);
+  left: rem(27px);
+  position: absolute;
+  top: rem(35px);
 }
 
 .tnp-offer-preview {
   border-radius: rem(5px);
-  left: rem(66px);
+  left: rem(91px);
   position: absolute;
-  top: rem(70px);
+  top: rem(97px);
 }
