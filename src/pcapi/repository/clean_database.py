@@ -1,4 +1,5 @@
 from pcapi import settings
+from pcapi.core.mails.models import Email
 from pcapi.core.offers.models import Mediation
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import User
@@ -33,7 +34,6 @@ from pcapi.models import VenueType
 from pcapi.models.activity import load_activity
 from pcapi.models.allocine_venue_provider import AllocineVenueProvider
 from pcapi.models.db import db
-from pcapi.models.email import Email
 from pcapi.models.install import install_features
 from pcapi.models.venue_label_sql_entity import VenueLabelSQLEntity
 

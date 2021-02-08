@@ -7,9 +7,9 @@ import requests_mock
 
 from pcapi.core import mails
 import pcapi.core.mails.backends.mailjet
+from pcapi.core.mails.models import Email
+from pcapi.core.mails.models import EmailStatus
 from pcapi.core.testing import override_settings
-from pcapi.models.email import Email
-from pcapi.models.email import EmailStatus
 
 
 @pytest.mark.usefixtures("db_session")

@@ -4,9 +4,6 @@ from typing import Iterable
 from requests import Response
 
 from pcapi import settings
-from pcapi.models.email import Email
-from pcapi.models.email import EmailStatus
-from pcapi.repository import repository
 from pcapi.utils.module_loading import import_string
 
 from . import models
@@ -30,10 +27,13 @@ def send(*, recipients: Iterable[str], data: dict) -> bool:
 
 def _save_email(result: models.MailResult):
     """Save email to the database with its status"""
-    email = Email(
+    email = models.Email(
         content=result.sent_data,
-        status=EmailStatus.SENT if result.successful else EmailStatus.ERROR,
+        status=models.EmailStatus.SENT if result.successful else models.EmailStatus.ERROR,
     )
+    # FIXME (dbaty, 2020-02-08): avoid import loop. Again. Yes, it's on my todo list.
+    from pcapi.repository import repository
+
     repository.save(email)
 
 

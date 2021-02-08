@@ -11,7 +11,7 @@ from alembic import op
 import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
-from pcapi.models.email import EmailStatus
+from pcapi.core.mails.models import EmailStatus
 
 
 revision = "ec8d3f04eba3"

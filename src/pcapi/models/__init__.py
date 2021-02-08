@@ -1,4 +1,5 @@
 from pcapi.core.bookings.models import Booking
+from pcapi.core.mails.models import Email
 from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -18,7 +19,6 @@ from pcapi.models.criterion import Criterion
 from pcapi.models.db import db
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.deposit import Deposit
-from pcapi.models.email import Email
 from pcapi.models.extra_data_mixin import ExtraDataMixin
 from pcapi.models.favorite_sql_entity import FavoriteSQLEntity
 from pcapi.models.feature import Feature
