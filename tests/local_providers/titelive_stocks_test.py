@@ -8,6 +8,7 @@ from unittest.mock import patch
 from freezegun import freeze_time
 import pytest
 
+from pcapi.core.testing import override_features
 from pcapi.local_providers import TiteLiveStocks
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
@@ -20,7 +21,6 @@ from pcapi.model_creators.specific_creators import create_offer_with_thing_produ
 from pcapi.model_creators.specific_creators import create_product_with_thing_type
 from pcapi.models import Offer
 from pcapi.models import Stock
-from pcapi.models.feature import override_features
 from pcapi.repository import repository
 
 

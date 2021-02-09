@@ -4,6 +4,7 @@ from unittest.mock import patch
 from freezegun import freeze_time
 import pytest
 
+from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users import api as users_api
 from pcapi.core.users.models import User
@@ -13,7 +14,6 @@ from pcapi.model_creators.generic_creators import create_user
 from pcapi.models import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.models.deposit import Deposit
-from pcapi.models.feature import override_features
 from pcapi.repository import repository
 from pcapi.use_cases.create_beneficiary_from_application import create_beneficiary_from_application
 

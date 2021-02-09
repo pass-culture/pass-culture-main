@@ -1,6 +1,4 @@
-import contextlib
 import enum
-from typing import Generator
 
 from sqlalchemy import Column
 from sqlalchemy import String
@@ -59,37 +57,3 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.PRO_HOMEPAGE,
     FeatureToggle.PRO_TUTO,
 )
-
-
-@contextlib.contextmanager
-def override_features(**overrides) -> Generator:
-    """A context manager that temporarily enables and/or disables features.
-
-    It can also be used as a function decorator.
-
-    Usage:
-
-        with override_features(QR_CODE=False):
-            call_some_function()
-
-        @override_features(
-            SYNCHRONIZE_ALGOLIA=True,
-            QR_CODE=False,
-        )
-        def test_something():
-            pass  # [...]
-    """
-    state = dict(Feature.query.filter(Feature.name.in_(overrides)).with_entities(Feature.name, Feature.isActive).all())
-    # Yes, the following may perform multiple SQL queries. It's fine,
-    # we will probably not toggle thousands of features in each call.
-    apply_to_revert = {}
-    for name, status in overrides.items():
-        if status != state[name]:
-            apply_to_revert[name] = not status
-            Feature.query.filter_by(name=name).update({"isActive": status})
-
-    try:
-        yield
-    finally:
-        for name, status in apply_to_revert.items():
-            Feature.query.filter_by(name=name).update({"isActive": status})

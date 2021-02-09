@@ -4,8 +4,8 @@ from unittest.mock import patch
 from freezegun import freeze_time
 import pytest
 
+from pcapi.core.testing import override_features
 from pcapi.core.users.models import User
-from pcapi.models.feature import override_features
 from pcapi.routes.serialization import serialize
 
 from tests.conftest import TestClient

@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.models.feature import override_features
+from pcapi.core.testing import override_features
 from pcapi.scripts.payment.batch import generate_and_send_payments
 
 

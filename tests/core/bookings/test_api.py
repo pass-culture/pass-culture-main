@@ -13,9 +13,9 @@ from pcapi.core.bookings.models import BookingCancellationReasons
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
+from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.models import api_errors
-from pcapi.models.feature import override_features
 from pcapi.utils.token import random_token
 
 

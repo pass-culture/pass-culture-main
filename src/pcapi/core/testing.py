@@ -10,6 +10,7 @@ import sqlalchemy.event
 import sqlalchemy.orm
 
 from pcapi import settings
+from pcapi.models.feature import Feature
 
 
 # 1. SELECT the user (beneficiary).
@@ -180,6 +181,8 @@ class TestContextDecorator:
 
     def __call__(self, decorated):
         if isinstance(decorated, type):
+            if not getattr(self, "CAN_BE_USED_ON_CLASSES", True):
+                raise TypeError(f"{self.__class__.__name__} cannot be used to decorate a class")
             return self.decorate_class(decorated)
         if callable(decorated):
             return self.decorate_callable(decorated)
@@ -214,3 +217,47 @@ class override_settings(TestContextDecorator):
     def disable(self):
         for name, initial_value in self.initial_state.items():
             setattr(settings, name, initial_value)
+
+
+class override_features(TestContextDecorator):
+    """A context manager that temporarily enables and/or disables features.
+
+    It can also be used as a function decorator.
+
+    Usage:
+
+        with override_features(QR_CODE=False):
+            call_some_function()
+
+        @override_features(
+            SYNCHRONIZE_ALGOLIA=True,
+            QR_CODE=False,
+        )
+        def test_something():
+            pass  # [...]
+    """
+
+    # FIXME (dbaty, 2020-02-09): the `db_session` fixture does not
+    # play well with the decorator when the latter is used on a class:
+    # changes made by the decorator (during `setup_method()`) are not
+    # seen when in the tests. I should try to fix that.
+    CAN_BE_USED_ON_CLASSES = False
+
+    def __init__(self, **overrides):
+        self.overrides = overrides
+
+    def enable(self):
+        state = dict(
+            Feature.query.filter(Feature.name.in_(self.overrides)).with_entities(Feature.name, Feature.isActive).all()
+        )
+        # Yes, the following may perform multiple SQL queries. It's fine,
+        # we will probably not toggle thousands of features in each call.
+        self.apply_to_revert = {}
+        for name, status in self.overrides.items():
+            if status != state[name]:
+                self.apply_to_revert[name] = not status
+                Feature.query.filter_by(name=name).update({"isActive": status})
+
+    def disable(self):
+        for name, status in self.apply_to_revert.items():
+            Feature.query.filter_by(name=name).update({"isActive": status})

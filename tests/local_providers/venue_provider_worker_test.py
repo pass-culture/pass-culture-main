@@ -3,6 +3,7 @@ from unittest import mock
 import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.testing import override_features
 from pcapi.local_providers.venue_provider_worker import do_sync_venue_provider
 from pcapi.local_providers.venue_provider_worker import update_venues_for_specific_provider
 from pcapi.model_creators.generic_creators import create_offerer
@@ -10,7 +11,6 @@ from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.generic_creators import create_venue_provider
 from pcapi.model_creators.provider_creators import activate_provider
 from pcapi.models import VenueProvider
-from pcapi.models.feature import override_features
 from pcapi.repository import repository
 
 
