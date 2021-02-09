@@ -17,6 +17,7 @@ const OfferDetails = ({
   isUserAdmin,
   location,
   offer,
+  reloadOffer,
   showCreationSuccessNotification,
   showEditionSuccessNotification,
   showErrorNotification,
@@ -65,14 +66,14 @@ const OfferDetails = ({
               croppingRect.height
             )
           }
-          history.push(`/offres/${offer.id}/edition`)
+          reloadOffer()
+          setFormErrors({})
         } else {
           const response = await pcapi.createOffer(offerValues)
           showCreationSuccessNotification()
           const createdOfferId = response.id
           history.push(`/offres/${createdOfferId}/stocks`)
         }
-        setFormErrors({})
       } catch (error) {
         if (error && 'errors' in error) {
           const mapApiErrorsToFormErrors = {
@@ -96,6 +97,7 @@ const OfferDetails = ({
       formValues.offererId,
       history,
       offer,
+      reloadOffer,
       showCreationSuccessNotification,
       showEditionSuccessNotification,
       showErrorNotification,
@@ -173,6 +175,7 @@ const OfferDetails = ({
 
 OfferDetails.defaultProps = {
   offer: null,
+  reloadOffer: null,
 }
 
 OfferDetails.propTypes = {
@@ -180,6 +183,7 @@ OfferDetails.propTypes = {
   isUserAdmin: PropTypes.bool.isRequired,
   location: PropTypes.shape().isRequired,
   offer: PropTypes.shape(),
+  reloadOffer: PropTypes.func,
   showCreationSuccessNotification: PropTypes.func.isRequired,
   showEditionSuccessNotification: PropTypes.func.isRequired,
   showErrorNotification: PropTypes.func.isRequired,

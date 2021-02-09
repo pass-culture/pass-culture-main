@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useCallback, useEffect, useState, useRef } from 'react'
 import { Switch, Route } from 'react-router-dom'
 
 import Titles from 'components/layout/Titles/Titles'
@@ -22,16 +22,24 @@ const OfferLayout = props => {
   const isCreatingOffer = useRef(!match.params.offerId)
   const [offer, setOffer] = useState(null)
 
-  useEffect(() => {
-    async function loadOffer(offerId) {
+  const loadOffer = useCallback(
+    async offerId => {
       const existingOffer = await pcapi.loadOffer(offerId)
       setOffer(existingOffer)
-    }
+    },
+    [setOffer]
+  )
 
+  const reloadOffer = useCallback(async () => (offer.id ? loadOffer(offer.id) : false), [
+    loadOffer,
+    offer,
+  ])
+
+  useEffect(() => {
     if (match.params.offerId) {
       loadOffer(match.params.offerId)
     }
-  }, [match.params.offerId])
+  }, [loadOffer, match.params.offerId])
 
   const stepName = location.pathname.match(/[a-z]+$/)
   const activeStep = stepName ? mapPathToStep[stepName[0]] : null
@@ -68,7 +76,10 @@ const OfferLayout = props => {
             exact
             path={`${match.url}/edition`}
           >
-            <OfferDetailsContainer offer={offer} />
+            <OfferDetailsContainer
+              offer={offer}
+              reloadOffer={reloadOffer}
+            />
           </Route>
           <Route
             exact

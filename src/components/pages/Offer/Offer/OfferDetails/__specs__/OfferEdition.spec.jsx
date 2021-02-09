@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { act, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
@@ -14,7 +14,12 @@ import * as computeUrl from '../../../utils/computeOffersUrl'
 import OfferLayoutContainer from '../../OfferLayoutContainer'
 import { DEFAULT_FORM_VALUES } from '../OfferForm/_constants'
 
-import { fieldLabels, findInputErrorForField, setOfferValues } from './helpers'
+import {
+  fieldLabels,
+  findInputErrorForField,
+  getOfferInputForField,
+  setOfferValues,
+} from './helpers'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   updateOffer: jest.fn(),
@@ -22,6 +27,7 @@ jest.mock('repository/pcapi/pcapi', () => ({
   getVenuesForOfferer: jest.fn(),
   getVenue: jest.fn(),
   loadOffer: jest.fn(),
+  loadStocks: jest.fn(),
   loadTypes: jest.fn(),
 }))
 
@@ -103,6 +109,14 @@ describe('offerDetails - Edition', () => {
     pcapi.loadOffer.mockResolvedValue(editedOffer)
     pcapi.loadTypes.mockResolvedValue(types)
     pcapi.getVenue.mockReturnValue(Promise.resolve())
+    pcapi.loadStocks.mockReturnValue(Promise.resolve({ stocks: [] }))
+  })
+
+  afterEach(() => {
+    pcapi.loadOffer.mockClear()
+    pcapi.loadTypes.mockClear()
+    pcapi.getVenue.mockClear()
+    pcapi.loadStocks.mockClear()
   })
 
   describe('render when editing an existing offer', () => {
@@ -1079,6 +1093,44 @@ describe('offerDetails - Edition', () => {
   })
 
   describe('when submitting form', () => {
+    it('should show updated fields when going and back to stock tab', async () => {
+      // Given
+      await renderOffers(props, store)
+      const editValues = {
+        name: 'My edited offer',
+        type: 'ThingType.PRESSE_ABO',
+        description: 'Offer description edited',
+        withdrawalDetails: 'Offer withdrawal details edited',
+        audioDisabilityCompliant: true,
+        visualDisabilityCompliant: false,
+        motorDisabilityCompliant: true,
+        mentalDisabilityCompliant: true,
+      }
+
+      // When
+      await setOfferValues({ type: editValues.type })
+      await setOfferValues(editValues)
+      const newEditedOffer = { ...editedOffer, ...editValues }
+      pcapi.loadOffer.mockResolvedValue(newEditedOffer)
+      await fireEvent.click(screen.getByText('Enregistrer'))
+
+      await fireEvent.click(screen.getByText('Stock et prix'))
+      await fireEvent.click(await screen.findByText("Détail de l'offre"))
+
+      // Then
+      expect(await getOfferInputForField('name')).toHaveTextContent(editValues.name)
+      const expectedTypeValue = types.find(t => t.value === editValues.type).proLabel
+      expect(await getOfferInputForField('type')).toHaveTextContent(expectedTypeValue)
+      expect(await getOfferInputForField('description')).toHaveTextContent(editValues.description)
+      expect(await getOfferInputForField('withdrawalDetails')).toHaveTextContent(
+        editValues.withdrawalDetails
+      )
+      expect(await getOfferInputForField('audioDisabilityCompliant')).toBeChecked()
+      expect(await getOfferInputForField('visualDisabilityCompliant')).not.toBeChecked()
+      expect(await getOfferInputForField('motorDisabilityCompliant')).toBeChecked()
+      expect(await getOfferInputForField('mentalDisabilityCompliant')).toBeChecked()
+    })
+
     it('should not send not editable fields for non-synchronised offers', async () => {
       // Given
       const editedOffer = {
