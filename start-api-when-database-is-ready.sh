@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 >&2 echo -e "\n\033[0;32mInstalling prerequisite\n"
 
