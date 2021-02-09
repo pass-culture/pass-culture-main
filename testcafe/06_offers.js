@@ -1,6 +1,6 @@
 import { Selector } from 'testcafe'
 
-import { getPathname, getUrlParams } from './helpers/location'
+import { getPathname } from './helpers/location'
 import { navigateToNewOfferAs, navigateToOfferAs, navigateToOffersAs } from './helpers/navigations'
 import { createUserRole } from './helpers/roles'
 import { fetchSandbox } from './helpers/sandboxes'
@@ -74,7 +74,6 @@ test('je peux créer une offre de type événement', async t => {
     .click(submitButton)
     .expect(getPathname())
     .match(/\/offres\/([A-Z0-9]+)\/stocks$/)
-    .expect(getUrlParams())
 })
 
 test('je peux créer une offre avec des sous-types', async t => {
@@ -108,7 +107,6 @@ test('je peux créer une offre avec des sous-types', async t => {
     .click(submitButton)
     .expect(getPathname())
     .match(/\/offres\/([A-Z0-9]+)\/stocks$/)
-    .expect(getUrlParams())
     .click(offerDetailsTab)
     .expect(musicTypeOption.withText(eventMusicType).exists)
     .ok()
