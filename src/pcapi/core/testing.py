@@ -1,6 +1,6 @@
 import contextlib
+import functools
 import math
-from typing import Generator
 
 import factory.alchemy
 import flask
@@ -133,8 +133,60 @@ def register_event_for_assert_num_queries():
     )
 
 
-@contextlib.contextmanager
-def override_settings(**overrides) -> Generator:
+class TestContextDecorator:
+    """A base class that can be used for test class and test function
+    decorators, or as a context manager within a test.
+
+    Taken from Django and slightly adapted and simplified.
+    """
+
+    def enable(self):
+        raise NotImplementedError()
+
+    def disable(self):
+        raise NotImplementedError()
+
+    def __enter__(self):
+        return self.enable()
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.disable()
+
+    def decorate_class(self, cls):
+        decorated_setup_method = getattr(cls, "setup_method", None)
+        decorated_teardown_method = getattr(cls, "teardown_method", None)
+
+        def setup_method(inner_self):
+            self.enable()
+            if decorated_setup_method:
+                decorated_setup_method(inner_self)
+
+        def teardown_method(inner_self):
+            self.disable()
+            if decorated_teardown_method:
+                decorated_teardown_method(inner_self)
+
+        cls.setup_method = setup_method
+        cls.teardown_method = teardown_method
+        return cls
+
+    def decorate_callable(self, func):
+        @functools.wraps(func)
+        def inner(*args, **kwargs):
+            with self:
+                return func(*args, **kwargs)
+
+        return inner
+
+    def __call__(self, decorated):
+        if isinstance(decorated, type):
+            return self.decorate_class(decorated)
+        if callable(decorated):
+            return self.decorate_callable(decorated)
+        raise TypeError(f"Cannot decorate object {decorated}")
+
+
+class override_settings(TestContextDecorator):
     """A context manager/function decorator that temporarily changes a
     setting.
 
@@ -150,11 +202,15 @@ def override_settings(**overrides) -> Generator:
         def test_some_function():
             pass  # [...]
     """
-    initial_state = {name: getattr(settings, name) for name in overrides}
-    for name, new_value in overrides.items():
-        setattr(settings, name, new_value)
-    try:
-        yield
-    finally:
-        for name, initial_value in initial_state.items():
+
+    def __init__(self, **overrides):
+        self.overrides = overrides
+
+    def enable(self):
+        self.initial_state = {name: getattr(settings, name) for name in self.overrides}
+        for name, new_value in self.overrides.items():
+            setattr(settings, name, new_value)
+
+    def disable(self):
+        for name, initial_value in self.initial_state.items():
             setattr(settings, name, initial_value)
