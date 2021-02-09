@@ -4,6 +4,7 @@
 }
 
 .tutorial {
+  align-items: center;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -21,13 +22,6 @@
     margin-top: rem(8px);
   }
 
-  .content-section {
-    align-items: center;
-    display: flex;
-    flex: 8;
-    flex-direction: column;
-  }
-
   .tutorial-content {
     display: flex;
     flex-direction: column;
@@ -36,13 +30,14 @@
     width: rem(500px);
   }
 
+  .tutorial-footer {
+    margin-top: rem(50px);
+  }
+
   .nav-step-list-section {
     align-items: center;
     display: flex;
-    flex: 1;
-    flex-direction: row;
     justify-content: center;
-    margin-top: rem(24px);
 
     .nav-step {
       background: $grey-medium;
@@ -71,11 +66,7 @@
   }
 
   .nav-buttons-section {
-    align-items: center;
-    display: flex;
-    flex: 1;
-    flex-direction: row;
-    justify-content: center;
+    margin-top: rem(28px);
 
     button {
       margin-left: rem(20px);

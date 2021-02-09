@@ -52,58 +52,58 @@ const TutorialDialog = ({ hasSeenTutorial, isFeatureActive }) => {
         className="tutorial"
         data-testid="tutorial-container"
       >
-        <section className="content-section">
-          <activeStep.component titleId={TUTO_DIALOG_LABEL_ID} />
-        </section>
+        <activeStep.component titleId={TUTO_DIALOG_LABEL_ID} />
 
-        <section className="nav-step-list-section">
-          {steps.map(step => {
-            let navStepClasses = ['nav-step']
-            if (activeStepPosition === step.position) {
-              navStepClasses.push('nav-step-active')
-            } else if (activeStepPosition > step.position) {
-              navStepClasses.push('nav-step-done')
-            }
+        <section className="tutorial-footer">
+          <div className="nav-step-list-section">
+            {steps.map(step => {
+              let navStepClasses = ['nav-step']
+              if (activeStepPosition === step.position) {
+                navStepClasses.push('nav-step-active')
+              } else if (activeStepPosition > step.position) {
+                navStepClasses.push('nav-step-done')
+              }
 
-            return (
+              return (
+                <button
+                  className={navStepClasses.join(' ')}
+                  data-testid="nav-dot"
+                  key={step.position}
+                  onClick={goToStep(step.position)}
+                  type="button"
+                />
+              )
+            })}
+          </div>
+
+          <div className="nav-buttons-section">
+            <button
+              className="secondary-button"
+              disabled={!hasPreviousStep}
+              onClick={goToStep(activeStepPosition - 1)}
+              type="button"
+            >
+              {'Précédent'}
+            </button>
+            {hasNextStep && (
               <button
-                className={navStepClasses.join(' ')}
-                data-testid="nav-dot"
-                key={step.position}
-                onClick={goToStep(step.position)}
+                className="primary-button"
+                onClick={goToStep(activeStepPosition + 1)}
                 type="button"
-              />
-            )
-          })}
-        </section>
-
-        <section className="nav-buttons-section">
-          <button
-            className="secondary-button"
-            disabled={!hasPreviousStep}
-            onClick={goToStep(activeStepPosition - 1)}
-            type="button"
-          >
-            {'Précédent'}
-          </button>
-          {hasNextStep && (
-            <button
-              className="primary-button"
-              onClick={goToStep(activeStepPosition + 1)}
-              type="button"
-            >
-              {'Suivant'}
-            </button>
-          )}
-          {!hasNextStep && (
-            <button
-              className="primary-button"
-              onClick={closeTutoDialog}
-              type="button"
-            >
-              {'Terminer'}
-            </button>
-          )}
+              >
+                {'Suivant'}
+              </button>
+            )}
+            {!hasNextStep && (
+              <button
+                className="primary-button"
+                onClick={closeTutoDialog}
+                type="button"
+              >
+                {'Terminer'}
+              </button>
+            )}
+          </div>
         </section>
       </div>
     </DialogBox>

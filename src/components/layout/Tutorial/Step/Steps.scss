@@ -23,11 +23,9 @@ p.tw-numbers {
 }
 
 .mb-content {
-  align-items: center;
   display: grid;
+  grid-row-gap: rem(8px);
   grid-template-columns: 2fr 2fr 3fr 3fr;
-  height: 100%;
-  row-gap: rem(8px);
 
   svg {
     justify-self: center;

@@ -19,7 +19,7 @@ const ManageBookings = ({ titleId }) => (
         {'Valider vos contremarques'}
       </span>
       <span className="third-column">
-        {'Accéder à la liste de vos réservations et les adresses mails'}
+        {'Accéder à la liste de vos réservations et les adresses mails des utilisateurs'}
       </span>
       <DownArrow className="first-column" />
       <DownArrow className="third-column" />
