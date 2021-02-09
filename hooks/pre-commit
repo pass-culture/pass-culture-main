@@ -8,10 +8,18 @@ if [[ "$STAGED_FILES" = "" ]]; then
 fi
 
 LINTED_FILES=""
+has_alembic_migration=false
 
 for FILE in $STAGED_FILES; do
   LINTED_FILES+=" ${FILE}"
+  if [[ $FILE == *"alembic/versions/"* ]]; then
+    has_alembic_migration=true
+  fi
 done
+
+if $has_alembic_migration; then
+  alembic heads >src/pcapi/alembic/head.txt
+fi
 
 echo -e "\033[0;96mRunning isort to organize imports\033[0m\n"
 isort $LINTED_FILES --check-only --quiet
