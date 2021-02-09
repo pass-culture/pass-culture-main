@@ -27,7 +27,7 @@ const Preview = ({ preview, setStep }) => {
           <img
             alt=""
             className="tnp-home-preview"
-            height="225"
+            height="228"
             src={preview}
           />
           <div>
