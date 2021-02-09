@@ -55,7 +55,7 @@ executors:
     docker:
       - image: ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/helm-gcp:3.4.1
         auth:
-          username: _json_key  # default username when using a JSON key file to authenticate
+          username: _json_key # default username when using a JSON key file to authenticate
           password: $GCP_INFRA_KEY
 
 ###################
@@ -222,6 +222,12 @@ jobs:
             . venv/bin/activate
             python -m nltk.downloader punkt stopwords &> /dev/null
             if [ ! -z "$(alembic branches)" ]; then echo "Multiple alembic heads found"; exit 1; fi
+      - run:
+          name: Check database and model are aligned
+          command: |
+            RUN_ENV=tests venv/bin/python src/pcapi/install_database_extensions.py
+            RUN_ENV=tests venv/bin/alembic upgrade head
+            RUN_ENV=tests venv/bin/python tests/alembic/check_db_schema.py
       - when:
           condition: << parameters.is_nightly_build >>
           steps:
@@ -231,6 +237,7 @@ jobs:
                 command: |
                   RUN_ENV=tests venv/bin/pytest tests --cov --cov-report html --junitxml=test-results/junit.xml
                   venv/bin/coveralls
+
       - unless:
           condition: << parameters.is_nightly_build >>
           steps:
