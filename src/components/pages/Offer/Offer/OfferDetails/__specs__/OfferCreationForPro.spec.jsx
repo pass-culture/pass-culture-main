@@ -632,18 +632,10 @@ describe('offerDetails - Creation - pro user', () => {
           await setOfferValues({ type: 'EventType.CINEMA' })
 
           // Then
-          expect(
-            screen.getByLabelText('Handicap visuel', { selector: 'input[type="checkbox"]' })
-          ).not.toBeChecked()
-          expect(
-            screen.getByLabelText('Handicap mental', { selector: 'input[type="checkbox"]' })
-          ).not.toBeChecked()
-          expect(
-            screen.getByLabelText('Handicap moteur', { selector: 'input[type="checkbox"]' })
-          ).not.toBeChecked()
-          expect(
-            screen.getByLabelText('Handicap auditif', { selector: 'input[type="checkbox"]' })
-          ).not.toBeChecked()
+          expect(await getOfferInputForField('visualDisabilityCompliant')).not.toBeChecked()
+          expect(await getOfferInputForField('mentalDisabilityCompliant')).not.toBeChecked()
+          expect(await getOfferInputForField('motorDisabilityCompliant')).not.toBeChecked()
+          expect(await getOfferInputForField('audioDisabilityCompliant')).not.toBeChecked()
         })
       })
 

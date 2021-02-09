@@ -651,7 +651,7 @@ const OfferForm = ({
               SvgElement={VisualDisabilitySvg}
               checked={formValues.visualDisabilityCompliant}
               isInError={Boolean(getErrorMessage('disabilityCompliant'))}
-              label="Handicap visuel"
+              label="Visuel"
               name="visualDisabilityCompliant"
               onChange={handleDisabilityCompliantUpdate}
             />
@@ -659,7 +659,7 @@ const OfferForm = ({
               SvgElement={MentalDisabilitySvg}
               checked={formValues.mentalDisabilityCompliant}
               isInError={Boolean(getErrorMessage('disabilityCompliant'))}
-              label="Handicap mental"
+              label="Psychique ou cognitif"
               name="mentalDisabilityCompliant"
               onChange={handleDisabilityCompliantUpdate}
             />
@@ -667,7 +667,7 @@ const OfferForm = ({
               SvgElement={MotorDisabilitySvg}
               checked={formValues.motorDisabilityCompliant}
               isInError={Boolean(getErrorMessage('disabilityCompliant'))}
-              label="Handicap moteur"
+              label="Moteur"
               name="motorDisabilityCompliant"
               onChange={handleDisabilityCompliantUpdate}
             />
@@ -675,7 +675,7 @@ const OfferForm = ({
               SvgElement={AudioDisabilitySvg}
               checked={formValues.audioDisabilityCompliant}
               isInError={Boolean(getErrorMessage('disabilityCompliant'))}
-              label="Handicap auditif"
+              label="Auditif"
               name="audioDisabilityCompliant"
               onChange={handleDisabilityCompliantUpdate}
             />
