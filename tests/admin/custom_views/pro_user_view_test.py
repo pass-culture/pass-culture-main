@@ -108,6 +108,10 @@ class ProUserViewTest:
         # Then
         assert user.publicName == "Ken Thompson"
 
+    def test_order_by_works(self, app, db_session):
+        view = ProUserView(model=User, session=db_session)
+        view.get_list(page=1, sort_column="email", sort_desc="", search="", filters="")
+
     @clean_database
     # FIXME (dbaty, 2020-12-16): I could not find a quick way to
     # generate a valid CSRF token in tests. This should be fixed.

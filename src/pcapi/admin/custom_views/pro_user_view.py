@@ -139,7 +139,7 @@ class ProUserView(SuspensionMixin, BaseAdminView):
         super().on_model_change(form, model, is_created)
 
     def get_query(self) -> query:
-        return User.query.join(UserOfferer).distinct(User.id)
+        return User.query.join(UserOfferer).distinct(User.id).from_self()
 
     def get_count_query(self) -> query:
         return self.session.query(func.count(distinct(User.id))).select_from(User).join(UserOfferer)
