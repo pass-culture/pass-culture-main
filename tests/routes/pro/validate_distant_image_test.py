@@ -11,16 +11,14 @@ from tests.conftest import TestClient
 
 class ValidateDistantImageTest:
     @pytest.mark.usefixtures("db_session")
-    @mock.patch("pcapi.routes.pro.offers._fetch_image")
-    @mock.patch("pcapi.routes.pro.offers.check_distant_image")
-    def test_ok(self, mock_check_distant_image, mock_fetch_image, caplog, app):
+    @mock.patch("pcapi.routes.pro.offers.get_distant_image")
+    def test_ok(self, mock_get_distant_image, caplog, app):
         # Given
         caplog.set_level(logging.INFO)
         body = {"url": "https://example.com/exampleaaa.jpg"}
         user = UserFactory()
         auth_request = TestClient(app.test_client()).with_auth(email=user.email)
-        mock_check_distant_image.return_value = None
-        mock_fetch_image.return_value = b"aze"
+        mock_get_distant_image.return_value = b"aze"
 
         # When
         response = auth_request.post(
@@ -33,14 +31,14 @@ class ValidateDistantImageTest:
         assert response.json == {"errors": [], "image": "data:image/png;base64,YXpl"}
 
     @pytest.mark.usefixtures("db_session")
-    @mock.patch("pcapi.routes.pro.offers.check_distant_image")
-    def test_unaccessible_file(self, mock_check_distant_image, caplog, app):
+    @mock.patch("pcapi.routes.pro.offers.get_distant_image")
+    def test_unaccessible_file(self, mock_get_distant_image, caplog, app):
         # Given
         caplog.set_level(logging.INFO)
         body = {"url": "https://example.com/bla"}
         user = UserFactory()
         auth_request = TestClient(app.test_client()).with_auth(email=user.email)
-        mock_check_distant_image.side_effect = exceptions.FailureToRetrieve()
+        mock_get_distant_image.side_effect = exceptions.FailureToRetrieve()
 
         # When
         response = auth_request.post(
@@ -62,14 +60,14 @@ class ValidateDistantImageTest:
         }
 
     @pytest.mark.usefixtures("db_session")
-    @mock.patch("pcapi.routes.pro.offers.check_distant_image")
-    def test_image_size_too_large(self, mock_check_distant_image, caplog, app):
+    @mock.patch("pcapi.routes.pro.offers.get_distant_image")
+    def test_image_size_too_large(self, mock_get_distant_image, caplog, app):
         # Given
         caplog.set_level(logging.INFO)
         body = {"url": "https://example.com/wallpaper.jpg"}
         user = UserFactory()
         auth_request = TestClient(app.test_client()).with_auth(email=user.email)
-        mock_check_distant_image.side_effect = exceptions.FileSizeExceeded(max_size=10_000_000)
+        mock_get_distant_image.side_effect = exceptions.FileSizeExceeded(max_size=10_000_000)
 
         # When
         response = auth_request.post(
@@ -85,14 +83,14 @@ class ValidateDistantImageTest:
         assert response.json == {"errors": ["Utilisez une image dont le poids est inférieur à 10.0 MB"], "image": None}
 
     @pytest.mark.usefixtures("db_session")
-    @mock.patch("pcapi.routes.pro.offers.check_distant_image")
-    def test_image_too_small(self, mock_check_distant_image, caplog, app):
+    @mock.patch("pcapi.routes.pro.offers.get_distant_image")
+    def test_image_too_small(self, mock_get_distant_image, caplog, app):
         # Given
         caplog.set_level(logging.INFO)
         body = {"url": "https://example.com/icon.jpeg"}
         user = UserFactory()
         auth_request = TestClient(app.test_client()).with_auth(email=user.email)
-        mock_check_distant_image.side_effect = exceptions.ImageTooSmall(min_width=400, min_height=400)
+        mock_get_distant_image.side_effect = exceptions.ImageTooSmall(min_width=400, min_height=400)
 
         # When
         response = auth_request.post(
@@ -111,14 +109,14 @@ class ValidateDistantImageTest:
         }
 
     @pytest.mark.usefixtures("db_session")
-    @mock.patch("pcapi.routes.pro.offers.check_distant_image")
-    def test_wrong_format(self, mock_check_distant_image, caplog, app):
+    @mock.patch("pcapi.routes.pro.offers.get_distant_image")
+    def test_wrong_format(self, mock_get_distant_image, caplog, app):
         # Given
         caplog.set_level(logging.INFO)
         body = {"url": "https://example.com/meme.gif"}
         user = UserFactory()
         auth_request = TestClient(app.test_client()).with_auth(email=user.email)
-        mock_check_distant_image.side_effect = exceptions.UnacceptedFileType(
+        mock_get_distant_image.side_effect = exceptions.UnacceptedFileType(
             accepted_types=(
                 "png",
                 "jpg",

@@ -6,12 +6,11 @@ from flask_login import login_required
 from pcapi.core.offers import exceptions
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.repository as offers_repository
-from pcapi.core.offers.validation import check_distant_image
+from pcapi.core.offers.validation import get_distant_image
 from pcapi.flask_app import private_api
 from pcapi.models import Offer
 from pcapi.models import RightsType
 from pcapi.routes.serialization.dictifier import as_dict
-from pcapi.routes.serialization.mediations_serialize import _fetch_image
 from pcapi.routes.serialization.offers_recap_serialize import serialize_offers_recap_paginated
 from pcapi.routes.serialization.offers_serialize import GetOfferResponseModel
 from pcapi.routes.serialization.offers_serialize import ImageBodyModel
@@ -115,8 +114,11 @@ def validate_distant_image(body: ImageBodyModel) -> ImageResponseModel:
     errors = []
 
     try:
-        check_distant_image(body.url)
-
+        image = get_distant_image(body.url)
+        image_as_base64 = base64.b64encode(image)
+        return ImageResponseModel(
+            image=f'data:image/png;base64,{str(image_as_base64, encoding="utf-8")}', errors=errors
+        )
     except (
         exceptions.FileSizeExceeded,
         exceptions.ImageTooSmall,
@@ -125,11 +127,5 @@ def validate_distant_image(body: ImageBodyModel) -> ImageResponseModel:
     ) as exc:
         logger.info("When validating image at: %s, this error was encountered: %s", body.url, exc.__class__.__name__)
         errors.append(exc.args[0])
-    if not errors:
-        image = _fetch_image(body.url)
-        image_as_base64 = base64.b64encode(image)
-        return ImageResponseModel(
-            image=f'data:image/png;base64,{str(image_as_base64, encoding="utf-8")}', errors=errors
-        )
 
     return ImageResponseModel(errors=errors)

@@ -144,7 +144,7 @@ def check_mediation_thumb_quality(image_as_bytes: bytes) -> None:
         raise ApiErrors({"thumb": ["L'image doit faire 400 * 400 px minimum"]})
 
 
-def check_distant_image(url: str) -> None:
+def get_distant_image(url: str) -> bytes:
     image_as_bytes = _get_distant_image(url=url, accepted_types=ACCEPTED_THUMBNAIL_FORMATS, max_size=MAX_THUMBNAIL_SIZE)
     _check_image(
         image_as_bytes=image_as_bytes,
@@ -152,6 +152,7 @@ def check_distant_image(url: str) -> None:
         min_width=MIN_THUMBNAIL_WIDTH,
         min_height=MIN_THUMBNAIL_HEIGHT,
     )
+    return image_as_bytes
 
 
 def _get_distant_image(
