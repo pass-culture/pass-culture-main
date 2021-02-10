@@ -36,7 +36,7 @@ class GetAllUsersWalletBalancesTest:
         # given
         user1 = users_factories.UserFactory()
         user2 = users_factories.UserFactory()
-        repository.delete(user2.deposits[0])
+        repository.delete(user2.deposit)
 
         # when
         balances = get_all_users_wallet_balances()

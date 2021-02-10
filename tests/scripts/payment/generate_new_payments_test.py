@@ -89,8 +89,8 @@ class GenerateNewPaymentsTest:
         paying_stock2 = create_stock_from_offer(offer2, price=10000)
         paying_stock3 = create_stock_from_offer(offer3, price=10000)
         user = users_factories.UserFactory()
-        user.deposits[0].amount = 50000
-        repository.save(user.deposits[0])
+        user.deposit.amount = 50000
+        repository.save(user.deposit)
         booking1 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True, quantity=1)
         booking2 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True, quantity=1)
         booking3 = create_booking(user=user, stock=paying_stock3, venue=venue3, is_used=True, quantity=1)
@@ -122,8 +122,8 @@ class GenerateNewPaymentsTest:
         paying_stock2 = create_stock_from_offer(offer2, price=10000)
         paying_stock3 = create_stock_from_offer(offer3, price=30000)
         user = users_factories.UserFactory()
-        user.deposits[0].amount = 50000
-        repository.save(user.deposits[0])
+        user.deposit.amount = 50000
+        repository.save(user.deposit)
         booking1 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True, quantity=1)
         booking2 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True, quantity=1)
         booking3 = create_booking(user=user, stock=paying_stock3, venue=venue3, is_used=True, quantity=1)
@@ -152,8 +152,8 @@ class GenerateNewPaymentsTest:
         paying_stock1 = create_stock_from_offer(offer1, price=10000)
         paying_stock2 = create_stock_from_offer(offer2, price=19990)
         user = users_factories.UserFactory()
-        user.deposits[0].amount = 50000
-        repository.save(user.deposits[0])
+        user.deposit.amount = 50000
+        repository.save(user.deposit)
         booking1 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True, quantity=1)
         booking2 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True, quantity=1)
         repository.save(booking1, booking2, bank_information)
@@ -184,8 +184,8 @@ class GenerateNewPaymentsTest:
         paying_stock2 = create_stock_from_offer(offer2, price=10000)
         paying_stock3 = create_stock_from_offer(offer3, price=30000)
         user = users_factories.UserFactory()
-        user.deposits[0].amount = 50000
-        repository.save(user.deposits[0])
+        user.deposit.amount = 50000
+        repository.save(user.deposit)
         booking1 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True, quantity=1)
         booking2 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True, quantity=1)
         booking3 = create_booking(user=user, stock=paying_stock3, venue=venue3, is_used=True, quantity=1)
@@ -217,8 +217,8 @@ class GenerateNewPaymentsTest:
         paying_stock2 = create_stock_from_offer(offer2, price=10000)
         paying_stock3 = create_stock_from_offer(offer3, price=50000)
         user = users_factories.UserFactory()
-        user.deposits[0].amount = 80000
-        repository.save(user.deposits[0])
+        user.deposit.amount = 80000
+        repository.save(user.deposit)
         booking1 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True, quantity=1)
         booking2 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True, quantity=1)
         booking3 = create_booking(user=user, stock=paying_stock3, venue=venue3, is_used=True, quantity=1)
@@ -250,8 +250,8 @@ class GenerateNewPaymentsTest:
         paying_stock2 = create_stock_from_offer(offer2, price=10000)
         paying_stock3 = create_stock_from_offer(offer3, price=100000)
         user = users_factories.UserFactory()
-        user.deposits[0].amount = 120000
-        repository.save(user.deposits[0])
+        user.deposit.amount = 120000
+        repository.save(user.deposit)
         booking1 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True, quantity=1)
         booking2 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True, quantity=1)
         booking3 = create_booking(user=user, stock=paying_stock3, venue=venue3, is_used=True, quantity=1)

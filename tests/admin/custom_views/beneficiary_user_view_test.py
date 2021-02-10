@@ -46,8 +46,8 @@ class BeneficiaryUserViewTest:
         assert user_created.isBeneficiary is True
         assert user_created.phoneNumber == "0601020304"
         assert len(user_created.deposits) == 1
-        assert user_created.deposits[0].source == "pass-culture-admin"
-        assert user_created.deposits[0].amount == 500
+        assert user_created.deposit.source == "pass-culture-admin"
+        assert user_created.deposit.amount == 500
 
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data == {
@@ -86,9 +86,9 @@ class BeneficiaryUserViewTest:
 
         user_created = User.query.filter_by(email="toto@email.fr").one()
         assert len(user_created.deposits) == 1
-        assert user_created.deposits[0].version == 2
-        assert user_created.deposits[0].source == "pass-culture-admin"
-        assert user_created.deposits[0].amount == 300
+        assert user_created.deposit.version == 2
+        assert user_created.deposit.source == "pass-culture-admin"
+        assert user_created.deposit.amount == 300
 
     def test_the_deposit_version_is_specified(self, app, db_session):
         # Given

@@ -156,5 +156,5 @@ class CreateBeneficiaryFromApplicationTest:
 
         # then
         assert len(beneficiary.deposits) == 1
-        assert beneficiary.deposits[0].amount == Decimal(500)
-        assert beneficiary.deposits[0].source == "démarches simplifiées dossier [123]"
+        assert beneficiary.deposit.amount == Decimal(500)
+        assert beneficiary.deposit.source == "démarches simplifiées dossier [123]"

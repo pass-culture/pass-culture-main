@@ -87,7 +87,7 @@ def _create_bookings_for_other_beneficiaries(
                 is_used = offer_index % BOOKINGS_USED_REMOVE_MODULO != 0
 
             if user_should_have_no_more_money and user not in list_of_users_with_no_more_money:
-                booking_amount = user.deposits[0].amount
+                booking_amount = user.deposit.amount
                 list_of_users_with_no_more_money.append(user)
             elif user_should_have_no_more_money and user in list_of_users_with_no_more_money:
                 booking_amount = 0

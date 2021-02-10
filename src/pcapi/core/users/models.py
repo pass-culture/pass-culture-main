@@ -5,7 +5,6 @@ from decimal import Decimal
 import enum
 from hashlib import md5
 from typing import Optional
-from typing import Union
 
 import bcrypt
 from dateutil.relativedelta import relativedelta
@@ -241,11 +240,12 @@ class User(PcObject, Model, NeedsValidationMixin, VersionedMixin):
         return user_expenses(self)
 
     @property
-    def deposit_version(self) -> Union[None, int]:
-        if len(self.deposits) > 0:
-            return self.deposits[0].version
+    def deposit(self) -> Optional[Deposit]:
+        return self.deposits[0] if len(self.deposits) > 0 else None
 
-        return None
+    @property
+    def deposit_version(self) -> Optional[int]:
+        return self.deposit.version if self.deposit else None
 
     @property
     def real_wallet_balance(self):

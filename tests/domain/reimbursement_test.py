@@ -66,8 +66,8 @@ def create_rich_user(total_deposit):
     # (that would exceed the usual 300/500 euros limitation). We do
     # the latter for simplicity's sake.
     user = users_factories.UserFactory()
-    user.deposits[0].amount = total_deposit
-    repository.save(user.deposits[0])
+    user.deposit.amount = total_deposit
+    repository.save(user.deposit)
     return user
 
 

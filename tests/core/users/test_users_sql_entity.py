@@ -92,7 +92,7 @@ class WalletBalanceTest:
     def test_balance_is_0_with_no_deposits_and_no_bookings(self):
         # given
         user = factories.UserFactory()
-        repository.delete(user.deposits[0])
+        repository.delete(user.deposit)
 
         # then
         assert user.wallet_balance == 0
@@ -154,7 +154,7 @@ class WalletBalanceTest:
         # given
         user = factories.UserFactory(deposit__version=1)
         bookings_factories.BookingFactory(user=user, isUsed=True, quantity=1, amount=10)
-        deposit = user.deposits[0]
+        deposit = user.deposit
         deposit.expirationDate = datetime(2000, 1, 1)
 
         # then
