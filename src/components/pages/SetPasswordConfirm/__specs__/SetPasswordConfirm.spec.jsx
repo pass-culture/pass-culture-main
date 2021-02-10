@@ -62,4 +62,20 @@ describe('src | components | pages | SetPassword', () => {
       expect(history.push).toHaveBeenCalledWith('/connexion')
     })
   })
+
+  it('should display error message when error in query params', async () => {
+    // Given
+    history = createBrowserHistory()
+    history.push('/creation-de-mot-de-passe-confirmation?error=unvalid-link')
+
+    // When
+    renderSetPassword(store, history)
+
+    // Then
+    expect(screen.getByText('Votre lien a expiré !')).toBeVisible()
+    expect(screen.getByText('Veuillez contacter notre support')).toBeVisible()
+    const link = screen.getByText('Contacter')
+    expect(link).toBeVisible()
+    expect(link.getAttribute('href')).toBe('mailto:support@passculture.app')
+  })
 })
