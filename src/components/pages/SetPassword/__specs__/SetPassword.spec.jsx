@@ -13,7 +13,6 @@ import { configureTestStore } from 'store/testUtils'
 
 import {
   INVALID_FORM_MESSAGE,
-  TOKEN_ERROR_MESSAGE,
   UNKNOWN_ERROR_MESSAGE,
   DIFFERENT_PASSWORDS_ERROR_MESSAGE,
 } from '../SetPassword'
@@ -158,8 +157,9 @@ describe('src | components | pages | SetPassword', () => {
 
     // Then
     await waitFor(() => {
-      expect(screen.getByText(TOKEN_ERROR_MESSAGE)).toBeVisible()
-      expect(history.push).toHaveBeenCalledWith('/mot-de-passe-perdu')
+      expect(history.push).toHaveBeenCalledWith(
+        '/creation-de-mot-de-passe-confirmation?error=unvalid-link'
+      )
     })
   })
 
@@ -190,7 +190,8 @@ describe('src | components | pages | SetPassword', () => {
     renderSetPassword(store, history)
 
     // Then
-    expect(screen.getByText(TOKEN_ERROR_MESSAGE)).toBeVisible()
-    expect(history.push).toHaveBeenCalledWith('/mot-de-passe-perdu')
+    expect(history.push).toHaveBeenCalledWith(
+      '/creation-de-mot-de-passe-confirmation?error=unvalid-link'
+    )
   })
 })

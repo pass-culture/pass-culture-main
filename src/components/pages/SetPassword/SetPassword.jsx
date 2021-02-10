@@ -8,7 +8,6 @@ import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { redirectLoggedUser } from 'components/router/helpers'
 import { setPassword } from 'repository/pcapi/pcapi'
 
-export const TOKEN_ERROR_MESSAGE = 'Votre lien de création de mot de passe est invalide.'
 export const INVALID_FORM_MESSAGE = "Une erreur s'est produite, veuillez corriger le formulaire."
 export const UNKNOWN_ERROR_MESSAGE = "Une erreur s'est produite, veuillez contacter le support."
 export const DIFFERENT_PASSWORDS_ERROR_MESSAGE = 'Les deux mots de passe ne sont pas identiques'
@@ -19,9 +18,8 @@ export const SetPassword = props => {
   redirectLoggedUser(history, currentUser)
 
   const redirectOnTokenError = useCallback(() => {
-    showNotification('error', TOKEN_ERROR_MESSAGE)
-    history.push('/mot-de-passe-perdu')
-  }, [showNotification, history])
+    history.push('/creation-de-mot-de-passe-confirmation?error=unvalid-link')
+  }, [history])
 
   const token = match?.params.token
 
