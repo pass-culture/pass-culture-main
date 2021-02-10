@@ -29,6 +29,10 @@ class UserOfferer(PcObject, Model, NeedsValidationMixin):
 
     offerer = relationship("Offerer", foreign_keys=[offererId], backref=backref("UserOfferers"))
 
+    # FIXME (dbaty, 2021-02-15): after v123 has been deployed, remove:
+    # - this field
+    # - RightsType above
+    # - the "rightstype" column type in the database
     rights = Column(Enum(RightsType))
 
     __table_args__ = (

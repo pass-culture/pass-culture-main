@@ -18,7 +18,7 @@ class ValidateNewVenueProviderInformationTest:
         provider = create_provider()
         offerer = create_offerer()
         user = create_user()
-        user_offerer = create_user_offerer(user, offerer, is_admin=True)
+        user_offerer = create_user_offerer(user, offerer)
         venue = create_venue(offerer, name="Librairie Titelive", siret="77567146400110")
         repository.save(provider, user_offerer, venue)
 

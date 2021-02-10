@@ -257,7 +257,7 @@ class Returns404:
             user = create_user(email="user+plus@email.fr")
             user_admin = create_user(email="admin@email.fr")
             offerer = create_offerer()
-            user_offerer = create_user_offerer(user_admin, offerer, is_admin=True)
+            user_offerer = create_user_offerer(user_admin, offerer)
             venue = create_venue(offerer)
             offer = create_offer_with_event_product(venue, event_name="Event Name")
             event_occurrence = create_event_occurrence(offer)

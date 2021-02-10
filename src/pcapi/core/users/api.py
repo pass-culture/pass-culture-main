@@ -35,7 +35,6 @@ from pcapi.models import BeneficiaryImport
 from pcapi.models import ImportStatus
 from pcapi.models.db import db
 from pcapi.models.offerer import Offerer
-from pcapi.models.user_offerer import RightsType
 from pcapi.models.user_offerer import UserOfferer
 from pcapi.models.user_session import UserSession
 from pcapi.models.venue_sql_entity import create_digital_venue
@@ -298,7 +297,7 @@ def create_pro_user(pro_user: ProUserCreationBodyModel) -> User:
         offerer = existing_offerer
     else:
         offerer = _generate_offerer(pro_user.dict(by_alias=True))
-        user_offerer = offerer.give_rights(new_pro_user, RightsType.editor)
+        user_offerer = offerer.grant_access(new_pro_user)
         digital_venue = create_digital_venue(offerer)
         objects_to_save.extend([digital_venue, offerer])
     objects_to_save.append(user_offerer)
@@ -321,7 +320,7 @@ def create_pro_user(pro_user: ProUserCreationBodyModel) -> User:
 
 
 def _generate_user_offerer_when_existing_offerer(new_user: User, offerer: Offerer) -> UserOfferer:
-    user_offerer = offerer.give_rights(new_user, RightsType.editor)
+    user_offerer = offerer.grant_access(new_user)
     if not settings.IS_INTEGRATION:
         user_offerer.generate_validation_token()
     return user_offerer

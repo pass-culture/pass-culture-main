@@ -18,7 +18,6 @@ from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
 from pcapi.models import EventType
 from pcapi.models import Offer
 from pcapi.models import Product
-from pcapi.models import RightsType
 from pcapi.models import Stock
 from pcapi.models import VenueSQLEntity
 from pcapi.models import db
@@ -32,7 +31,7 @@ from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
 from pcapi.routes.serialization.stock_serialize import StockCreationBodyModel
 from pcapi.routes.serialization.stock_serialize import StockEditionBodyModel
 from pcapi.utils import mailing
-from pcapi.utils.rest import ensure_current_user_has_rights
+from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.rest import load_or_raise_error
 
 from . import validation
@@ -81,7 +80,7 @@ def list_offers_for_pro_user(
 def create_offer(offer_data: PostOfferBodyModel, user: User) -> Offer:
     venue = load_or_raise_error(VenueSQLEntity, offer_data.venue_id)
 
-    ensure_current_user_has_rights(rights=RightsType.editor, offerer_id=venue.managingOffererId, user=user)
+    check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)
 
     if offer_data.product_id:
         product = load_or_raise_error(Product, offer_data.product_id)

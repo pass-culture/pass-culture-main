@@ -14,7 +14,6 @@ from pcapi.domain.password import generate_reset_token
 from pcapi.domain.password import random_password
 from pcapi.models import UserOfferer
 from pcapi.models.offerer import Offerer
-from pcapi.models.user_offerer import RightsType
 from pcapi.models.venue_sql_entity import create_digital_venue
 from pcapi.validation.models.has_address_mixin import POSTAL_CODE_REGEX
 
@@ -40,7 +39,6 @@ def create_user_offerer(user: User, offerer: Offerer) -> UserOfferer:
     user_offerer = UserOfferer()
     user_offerer.user = user
     user_offerer.offerer = offerer
-    user_offerer.rights = RightsType.editor
 
     return user_offerer
 

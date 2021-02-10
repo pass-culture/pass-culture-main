@@ -34,7 +34,6 @@ class UserOffererFactory(BaseFactory):
 
     user = factory.SubFactory(users_factories.UserFactory)
     offerer = factory.SubFactory(OffererFactory)
-    rights = models.RightsType.editor
 
 
 class ApiKeyFactory(BaseFactory):

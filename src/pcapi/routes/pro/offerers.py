@@ -15,7 +15,6 @@ from pcapi.flask_app import private_api
 from pcapi.infrastructure.container import list_offerers_for_pro_user
 from pcapi.models import ApiErrors
 from pcapi.models import Offerer
-from pcapi.models import RightsType
 from pcapi.models import UserOfferer
 from pcapi.models.venue_sql_entity import create_digital_venue
 from pcapi.repository import repository
@@ -29,7 +28,7 @@ from pcapi.use_cases.list_offerers_for_pro_user import OfferersRequestParameters
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.includes import OFFERER_INCLUDES
 from pcapi.utils.mailing import MailServiceException
-from pcapi.utils.rest import ensure_current_user_has_rights
+from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.rest import expect_json_data
 from pcapi.utils.rest import load_or_404
 from pcapi.utils.rest import login_or_api_key_required
@@ -96,7 +95,7 @@ def list_offerers_names() -> GetOfferersNamesResponseModel:
 @login_required
 @spectree_serialize(response_model=GetOffererResponseModel)
 def get_offerer(offerer_id: str) -> GetOffererResponseModel:
-    ensure_current_user_has_rights(RightsType.editor, dehumanize(offerer_id))
+    check_user_has_access_to_offerer(current_user, dehumanize(offerer_id))
     offerer = load_or_404(Offerer, offerer_id)
 
     return GetOffererResponseModel.from_orm(offerer)
@@ -111,7 +110,7 @@ def create_offerer():
     offerer = find_by_siren(siren)
 
     if offerer is not None:
-        user_offerer = offerer.give_rights(current_user, RightsType.editor)
+        user_offerer = offerer.grant_access(current_user)
         user_offerer.generate_validation_token()
         repository.save(user_offerer)
 
@@ -127,7 +126,7 @@ def create_offerer():
         offerer.populate_from_dict(request.json)
         digital_venue = create_digital_venue(offerer)
         offerer.generate_validation_token()
-        user_offerer = offerer.give_rights(current_user, RightsType.editor)
+        user_offerer = offerer.grant_access(current_user)
         repository.save(offerer, digital_venue, user_offerer)
         user = User.query.filter_by(id=user_offerer.userId).first()
 

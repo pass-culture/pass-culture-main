@@ -5,6 +5,7 @@ from freezegun import freeze_time
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
+import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
 from pcapi.core.users import factories
 from pcapi.core.users.factories import UserFactory
@@ -16,7 +17,6 @@ from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.models import ApiErrors
-from pcapi.models import RightsType
 from pcapi.models import ThingType
 from pcapi.repository import repository
 
@@ -31,60 +31,34 @@ def test_cannot_create_admin_that_can_book(app):
         repository.save(user)
 
 
-class HasRightsTest:
-    @pytest.mark.usefixtures("db_session")
-    def test_user_has_no_editor_right_on_offerer_if_he_is_not_attached(self, app):
+@pytest.mark.usefixtures("db_session")
+class HasAccessTest:
+    def test_does_not_have_access_if_not_attached(self):
+        offerer = offers_factories.OffererFactory()
+        user = factories.UserFactory()
+
+        assert not user.has_access(offerer.id)
+
+    def test_does_not_have_access_if_not_validated(self, app):
+        user_offerer = offers_factories.UserOffererFactory(validationToken="token")
+        offerer = user_offerer.offerer
+        user = user_offerer.user
+
+        assert not user.has_access(offerer.id)
+
+    def test_has_access(self):
+        user_offerer = offers_factories.UserOffererFactory()
+        offerer = user_offerer.offerer
+        user = user_offerer.user
+
+        assert user.has_access(offerer.id)
+
+    def test_has_access_if_admin(self):
         # given
-        offerer = create_offerer()
-        user = create_user(is_admin=False)
-        repository.save(offerer, user)
+        offerer = offers_factories.OffererFactory()
+        admin = factories.UserFactory(isAdmin=True)
 
-        # when
-        has_rights = user.hasRights(RightsType.editor, offerer.id)
-
-        # then
-        assert has_rights is False
-
-    @pytest.mark.usefixtures("db_session")
-    def test_user_has_editor_right_on_offerer_if_he_is_attached(self, app):
-        # given
-        offerer = create_offerer()
-        user = create_user(is_admin=False)
-        user_offerer = create_user_offerer(user, offerer)
-        repository.save(user_offerer)
-
-        # when
-        has_rights = user.hasRights(RightsType.editor, offerer.id)
-
-        # then
-        assert has_rights is True
-
-    @pytest.mark.usefixtures("db_session")
-    def test_user_has_no_editor_right_on_offerer_if_he_is_attached_but_not_validated_yet(self, app):
-        # given
-        offerer = create_offerer()
-        user = create_user(email="bobby@test.com", is_admin=False)
-        user_offerer = create_user_offerer(user, offerer, validation_token="AZEFRGTHRQFQ")
-        repository.save(user_offerer)
-
-        # when
-        has_rights = user.hasRights(RightsType.editor, offerer.id)
-
-        # then
-        assert has_rights is False
-
-    @pytest.mark.usefixtures("db_session")
-    def test_user_has_editor_right_on_offerer_if_he_is_not_attached_but_is_admin(self, app):
-        # given
-        offerer = create_offerer()
-        user = create_user(is_beneficiary=False, is_admin=True)
-        repository.save(offerer, user)
-
-        # when
-        has_rights = user.hasRights(RightsType.editor, offerer.id)
-
-        # then
-        assert has_rights is True
+        assert admin.has_access(offerer.id)
 
 
 class WalletBalanceTest:

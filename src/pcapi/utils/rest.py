@@ -8,6 +8,7 @@ from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.sql.elements import UnaryExpression
 from sqlalchemy.sql.functions import random
 
+from pcapi.core.users.models import User
 from pcapi.models.api_errors import ApiErrors
 from pcapi.utils.human_ids import dehumanize
 
@@ -62,8 +63,8 @@ def check_order_by(order_by):
             check_single_order_by_string(part)
 
 
-def ensure_current_user_has_rights(rights, offerer_id, user=current_user):
-    if not user.hasRights(rights, offerer_id):
+def check_user_has_access_to_offerer(user: User, offerer_id: int):
+    if not user.has_access(offerer_id):
         errors = ApiErrors()
         errors.add_error("global", "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information.")
         errors.status_code = 403

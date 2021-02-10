@@ -33,7 +33,6 @@ from pcapi.models.db import db
 from pcapi.models.deposit import Deposit
 from pcapi.models.needs_validation_mixin import NeedsValidationMixin
 from pcapi.models.pc_object import PcObject
-from pcapi.models.user_offerer import RightsType
 from pcapi.models.user_offerer import UserOfferer
 from pcapi.models.versioned_mixin import VersionedMixin
 
@@ -183,22 +182,17 @@ class User(PcObject, Model, NeedsValidationMixin, VersionedMixin):
     def get_id(self):
         return str(self.id)
 
-    def hasRights(self, rights, offerer_id):
+    def has_access(self, offerer_id):
         if self.isAdmin:
             return True
 
-        if rights == RightsType.editor:
-            compatible_rights = [RightsType.editor, RightsType.admin]
-        else:
-            compatible_rights = [rights]
-
-        user_offerer = UserOfferer.query.filter(
-            (UserOfferer.offererId == offerer_id)
-            & (UserOfferer.userId == self.id)
-            & (UserOfferer.validationToken.is_(None))
-            & (UserOfferer.rights.in_(compatible_rights))
-        ).first()
-        return user_offerer is not None
+        return db.session.query(
+            UserOfferer.query.filter(
+                (UserOfferer.offererId == offerer_id)
+                & (UserOfferer.userId == self.id)
+                & (UserOfferer.validationToken.is_(None))
+            ).exists()
+        ).scalar()
 
     def is_authenticated(self):
         return True

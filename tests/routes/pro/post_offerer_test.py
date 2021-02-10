@@ -9,7 +9,6 @@ from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue_type
 from pcapi.models import Offerer
-from pcapi.models import RightsType
 from pcapi.models import UserOfferer
 from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
@@ -101,7 +100,7 @@ class Post:
 
         @patch("pcapi.connectors.api_entreprises.requests.get")
         @pytest.mark.usefixtures("db_session")
-        def expect_the_current_user_to_be_editor_of_the_new_offerer(self, mock_api_entreprise, app):
+        def expect_the_current_user_to_have_access_to_new_offerer(self, mock_api_entreprise, app):
             # Given
             mock_api_entreprise.return_value = MagicMock(
                 status_code=200, text="", json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock))
@@ -124,7 +123,7 @@ class Post:
             # then
             assert response.status_code == 201
             offerer = Offerer.query.first()
-            assert offerer.UserOfferers[0].rights == RightsType.editor
+            assert offerer.UserOfferers[0].user == user
 
         @patch("pcapi.domain.admin_emails.make_validation_email_object")
         @patch("pcapi.connectors.api_entreprises.requests.get")
@@ -224,7 +223,7 @@ class Post:
             # Then
             assert response.status_code == 201
             offerer = Offerer.query.first()
-            assert offerer.UserOfferers[0].rights == RightsType.editor
+            assert offerer.UserOfferers[0].user == user
             assert offerer.UserOfferers[0].validationToken is not None
 
         @patch("pcapi.domain.admin_emails.make_validation_email_object")

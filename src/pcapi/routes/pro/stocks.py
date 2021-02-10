@@ -1,10 +1,11 @@
+from flask_login import current_user
+
 import pcapi.core.offers.api as offers_api
 from pcapi.core.offers.repository import get_stocks_for_offer
 from pcapi.flask_app import private_api
 from pcapi.models import Offer
 from pcapi.models import Stock
 from pcapi.models import VenueSQLEntity
-from pcapi.models.user_offerer import RightsType
 from pcapi.repository import offerer_queries
 from pcapi.repository.offer_queries import get_offer_by_id
 from pcapi.routes.serialization.stock_serialize import StockCreationBodyModelDeprecated
@@ -16,7 +17,7 @@ from pcapi.routes.serialization.stock_serialize import StocksResponseModel
 from pcapi.routes.serialization.stock_serialize import StocksUpsertBodyModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.human_ids import dehumanize
-from pcapi.utils.rest import ensure_current_user_has_rights
+from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.rest import login_or_api_key_required
 
 
@@ -25,7 +26,7 @@ from pcapi.utils.rest import login_or_api_key_required
 @spectree_serialize(response_model=StocksResponseModel)
 def get_stocks(offer_id: str) -> StocksResponseModel:
     offerer = offerer_queries.get_by_offer_id(dehumanize(offer_id))
-    ensure_current_user_has_rights(RightsType.editor, offerer.id)
+    check_user_has_access_to_offerer(current_user, offerer.id)
 
     stocks = get_stocks_for_offer(dehumanize(offer_id))
     return StocksResponseModel(
@@ -38,7 +39,7 @@ def get_stocks(offer_id: str) -> StocksResponseModel:
 @spectree_serialize(on_success_status=201, response_model=StockIdsResponseModel)
 def upsert_stocks(body: StocksUpsertBodyModel) -> StockIdsResponseModel:
     offerer = offerer_queries.get_by_offer_id(body.offer_id)
-    ensure_current_user_has_rights(RightsType.editor, offerer.id)
+    check_user_has_access_to_offerer(current_user, offerer.id)
 
     stocks = offers_api.upsert_stocks(body.offer_id, body.stocks)
     return StockIdsResponseModel(
@@ -51,7 +52,7 @@ def upsert_stocks(body: StocksUpsertBodyModel) -> StockIdsResponseModel:
 @spectree_serialize(on_success_status=201, response_model=StockIdResponseModel)
 def create_stock(body: StockCreationBodyModelDeprecated) -> StockIdResponseModel:
     offerer = offerer_queries.get_by_offer_id(body.offer_id)
-    ensure_current_user_has_rights(RightsType.editor, offerer.id)
+    check_user_has_access_to_offerer(current_user, offerer.id)
 
     offer = get_offer_by_id(body.offer_id)
 
@@ -73,7 +74,7 @@ def edit_stock(stock_id: str, body: StockEditionBodyModelDeprecated) -> StockIdR
     stock = Stock.queryNotSoftDeleted().filter_by(id=dehumanize(stock_id)).join(Offer, VenueSQLEntity).first_or_404()
 
     offerer_id = stock.offer.venue.managingOffererId
-    ensure_current_user_has_rights(RightsType.editor, offerer_id)
+    check_user_has_access_to_offerer(current_user, offerer_id)
 
     stock = offers_api.edit_stock(
         stock,
@@ -100,7 +101,7 @@ def delete_stock(stock_id: str) -> StockIdResponseModel:
     # fmt: on
 
     offerer_id = stock.offer.venue.managingOffererId
-    ensure_current_user_has_rights(RightsType.editor, offerer_id)
+    check_user_has_access_to_offerer(current_user, offerer_id)
 
     offers_api.delete_stock(stock)
 

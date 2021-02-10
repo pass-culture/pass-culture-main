@@ -8,7 +8,6 @@ from flask_login import login_required
 import pcapi.core.offers.api as offers_api
 from pcapi.core.offers.models import Mediation
 from pcapi.flask_app import private_api
-from pcapi.models.user_offerer import RightsType
 from pcapi.repository.offer_queries import get_offer_by_id
 from pcapi.routes.serialization.mediations_serialize import CreateMediationBodyModel
 from pcapi.routes.serialization.mediations_serialize import MediationResponseIdModel
@@ -16,14 +15,14 @@ from pcapi.routes.serialization.mediations_serialize import UpdateMediationBodyM
 from pcapi.routes.serialization.mediations_serialize import UpdateMediationResponseModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.human_ids import dehumanize
-from pcapi.utils.rest import ensure_current_user_has_rights
+from pcapi.utils.rest import check_user_has_access_to_offerer
 
 
 @private_api.route("/mediations", methods=["POST"])
 @login_required
 @spectree_serialize(on_success_status=201, response_model=MediationResponseIdModel)
 def create_mediation(form: CreateMediationBodyModel) -> MediationResponseIdModel:
-    ensure_current_user_has_rights(RightsType.editor, form.offerer_id)
+    check_user_has_access_to_offerer(current_user, form.offerer_id)
 
     offer = get_offer_by_id(form.offer_id)
     image_as_bytes = form.get_image_as_bytes(request)
@@ -46,7 +45,7 @@ def update_mediation(mediation_id: str, body: UpdateMediationBodyModel) -> Updat
 
     mediation = Mediation.query.filter_by(id=dehumanize(mediation_id)).first_or_404()
 
-    ensure_current_user_has_rights(RightsType.editor, mediation.offer.venue.managingOffererId)
+    check_user_has_access_to_offerer(current_user, mediation.offer.venue.managingOffererId)
 
     mediation = offers_api.update_mediation(mediation=mediation, is_active=body.isActive)
 

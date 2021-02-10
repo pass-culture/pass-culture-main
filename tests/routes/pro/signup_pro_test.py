@@ -5,7 +5,6 @@ from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue_type
 from pcapi.models.offerer import Offerer
-from pcapi.models.user_offerer import RightsType
 from pcapi.models.user_offerer import UserOfferer
 from pcapi.repository import repository
 
@@ -66,7 +65,6 @@ class Post:
             user_offerer = UserOfferer.query.filter_by(user=user, offerer=offerer).first()
             assert user_offerer is not None
             assert user_offerer.validationToken is None
-            assert user_offerer.rights == RightsType.editor
 
         def test_creates_user_offerer_digital_venue_and_userOfferer_and_does_not_log_user_in(self, app):
             # Given
@@ -93,7 +91,6 @@ class Post:
             user_offerer = UserOfferer.query.filter_by(user=user, offerer=offerer).first()
             assert user_offerer is not None
             assert user_offerer.validationToken is None
-            assert user_offerer.rights == RightsType.editor
 
         def when_successful_and_existing_offerer_creates_editor_user_offerer_and_does_not_log_in(self, app):
             # Given
@@ -108,7 +105,7 @@ class Post:
             offerer = Offerer(from_dict=json_offerer)
             offerer.generate_validation_token()
             user = create_user(email="bobby@test.com", public_name="bobby")
-            user_offerer = create_user_offerer(user, offerer, is_admin=False)
+            user_offerer = create_user_offerer(user, offerer)
             repository.save(venue_type, offerer, user_offerer)
 
             data = BASE_DATA_PRO.copy()
@@ -126,7 +123,6 @@ class Post:
             user_offerer = UserOfferer.query.filter_by(user=user, offerer=offerer).first()
             assert user_offerer is not None
             assert user_offerer.validationToken is not None
-            assert user_offerer.rights == RightsType.editor
 
         def when_successful_and_existing_offerer_but_no_user_offerer_does_not_signin(self, app):
             # Given
@@ -155,7 +151,6 @@ class Post:
             user_offerer = UserOfferer.query.filter_by(user=user, offerer=offerer).first()
             assert user_offerer is not None
             assert user_offerer.validationToken is not None
-            assert user_offerer.rights == RightsType.editor
 
         def when_successful_and_mark_pro_user_as_no_cultural_survey_needed(self, app):
             # Given

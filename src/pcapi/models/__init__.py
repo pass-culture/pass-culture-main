@@ -39,7 +39,6 @@ from pcapi.models.product import BookFormat
 from pcapi.models.product import Product
 from pcapi.models.providable_mixin import ProvidableMixin
 from pcapi.models.provider import Provider
-from pcapi.models.user_offerer import RightsType
 from pcapi.models.user_offerer import UserOfferer
 from pcapi.models.user_session import UserSession
 from pcapi.models.venue_label_sql_entity import VenueLabelSQLEntity
@@ -91,7 +90,6 @@ __all__ = (
     "PaymentMessage",
     "Provider",
     "Product",
-    "RightsType",
     "ThingType",
     "Token",
     "UserOfferer",

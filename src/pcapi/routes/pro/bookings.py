@@ -14,7 +14,6 @@ from pcapi.flask_app import private_api
 from pcapi.flask_app import public_api
 from pcapi.models import ApiKey
 from pcapi.models import EventType
-from pcapi.models import RightsType
 from pcapi.models.offer_type import ProductType
 from pcapi.repository.api_key_queries import find_api_key_by_value
 from pcapi.routes.serialization import serialize
@@ -22,7 +21,7 @@ from pcapi.routes.serialization import serialize_booking
 from pcapi.routes.serialization.bookings_recap_serialize import serialize_bookings_recap_paginated
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import humanize
-from pcapi.utils.rest import ensure_current_user_has_rights
+from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.validation.routes.bookings import check_email_and_offer_id_for_anonymous_user
 from pcapi.validation.routes.bookings import check_page_format_is_number
 from pcapi.validation.routes.users_authentifications import check_user_is_logged_in_or_email_is_provided
@@ -61,7 +60,7 @@ def patch_booking_by_token(token: str):
     booking = booking_repository.find_by(booking_token_upper_case, email, offer_id)
 
     if current_user.is_authenticated:
-        ensure_current_user_has_rights(RightsType.editor, booking.stock.offer.venue.managingOffererId)
+        check_user_has_access_to_offerer(current_user, booking.stock.offer.venue.managingOffererId)
     else:
         check_email_and_offer_id_for_anonymous_user(email, offer_id)
 
@@ -143,7 +142,7 @@ def patch_cancel_booking_by_token(token: str):
     offerer_id = booking.stock.offer.venue.managingOffererId
 
     if current_user.is_authenticated:
-        ensure_current_user_has_rights(RightsType.editor, offerer_id)
+        check_user_has_access_to_offerer(current_user, offerer_id)
 
     if valid_api_key:
         check_api_key_allows_to_cancel_booking(valid_api_key, offerer_id)

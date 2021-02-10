@@ -35,7 +35,6 @@ from pcapi.models import Payment
 from pcapi.models import PaymentMessage
 from pcapi.models import PaymentStatus
 from pcapi.models import Provider
-from pcapi.models import RightsType
 from pcapi.models import Stock
 from pcapi.models import ThingType
 from pcapi.models import UserOfferer
@@ -457,13 +456,10 @@ def create_user(
     return user
 
 
-def create_user_offerer(
-    user: User, offerer: Offerer, idx: int = None, is_admin: bool = False, validation_token: str = None
-) -> UserOfferer:
+def create_user_offerer(user: User, offerer: Offerer, idx: int = None, validation_token: str = None) -> UserOfferer:
     user_offerer = UserOfferer()
     user_offerer.id = idx
     user_offerer.offerer = offerer
-    user_offerer.rights = RightsType.admin if is_admin else RightsType.editor
     user_offerer.user = user
     user_offerer.validationToken = validation_token
 

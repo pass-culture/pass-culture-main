@@ -15,7 +15,6 @@ from pcapi.flask_app import private_api
 from pcapi.infrastructure.container import get_all_venues_by_pro_user
 from pcapi.models import VenueSQLEntity
 from pcapi.models.feature import FeatureToggle
-from pcapi.models.user_offerer import RightsType
 from pcapi.repository import feature_queries
 from pcapi.repository import repository
 from pcapi.repository.iris_venues_queries import delete_venue_from_iris_venues
@@ -25,7 +24,7 @@ from pcapi.use_cases.create_venue import create_venue
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.includes import OFFER_INCLUDES
 from pcapi.utils.includes import VENUE_INCLUDES
-from pcapi.utils.rest import ensure_current_user_has_rights
+from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.rest import expect_json_data
 from pcapi.utils.rest import load_or_404
 from pcapi.validation.routes.venues import check_valid_edition
@@ -37,7 +36,7 @@ from pcapi.validation.routes.venues import validate_coordinates
 @login_required
 def get_venue(venue_id):
     venue = load_or_404(VenueSQLEntity, venue_id)
-    ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
+    check_user_has_access_to_offerer(current_user, venue.managingOffererId)
     return jsonify(as_dict(venue, includes=VENUE_INCLUDES)), 200
 
 
@@ -74,7 +73,7 @@ def edit_venue(venue_id):
     previous_venue = copy.deepcopy(venue)
     check_valid_edition(request, venue)
     validate_coordinates(request.json.get("latitude", None), request.json.get("longitude", None))
-    ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
+    check_user_has_access_to_offerer(current_user, venue.managingOffererId)
     venue.populate_from_dict(request.json)
 
     if not venue.isVirtual:
@@ -95,7 +94,7 @@ def edit_venue(venue_id):
 @login_required
 def activate_venue_offers(venue_id):
     venue = load_or_404(VenueSQLEntity, venue_id)
-    ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
+    check_user_has_access_to_offerer(current_user, venue.managingOffererId)
     offers = venue.offers
     activated_offers = update_is_active_status(offers, True)
     repository.save(*activated_offers)
@@ -109,7 +108,7 @@ def activate_venue_offers(venue_id):
 @login_required
 def deactivate_venue_offers(venue_id):
     venue = load_or_404(VenueSQLEntity, venue_id)
-    ensure_current_user_has_rights(RightsType.editor, venue.managingOffererId)
+    check_user_has_access_to_offerer(current_user, venue.managingOffererId)
     offers = venue.offers
     deactivated_offers = update_is_active_status(offers, False)
     repository.save(*deactivated_offers)

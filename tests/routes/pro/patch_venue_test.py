@@ -23,7 +23,7 @@ class Patch:
             # Given
             offerer = create_offerer()
             user = create_user()
-            user_offerer = create_user_offerer(user, offerer, is_admin=True)
+            user_offerer = create_user_offerer(user, offerer)
             siret = offerer.siren + "11111"
             venue = create_venue(offerer, comment="Pas de siret", siret=None)
             repository.save(user_offerer, venue)
@@ -93,7 +93,7 @@ class Patch:
             # Given
             offerer = create_offerer()
             user = create_user()
-            user_offerer = create_user_offerer(user, offerer, is_admin=True)
+            user_offerer = create_user_offerer(user, offerer)
             venue = create_venue(offerer, public_name="My old name")
             repository.save(user_offerer, venue)
             venue_data = {
@@ -118,7 +118,7 @@ class Patch:
             # Given
             offerer = create_offerer()
             user = create_user()
-            user_offerer = create_user_offerer(user, offerer, is_admin=True)
+            user_offerer = create_user_offerer(user, offerer)
             siret = offerer.siren + "11111"
             venue = create_venue(offerer, comment="Pas de siret", siret=None)
             repository.save(user_offerer, venue)
@@ -140,7 +140,7 @@ class Patch:
             # Given
             offerer = create_offerer()
             user = create_user()
-            user_offerer = create_user_offerer(user, offerer, is_admin=True)
+            user_offerer = create_user_offerer(user, offerer)
             siret = offerer.siren + "11111"
             venue = create_venue(offerer, siret=siret)
             repository.save(user_offerer, venue)
@@ -195,7 +195,7 @@ class Patch:
             # Given
             offerer = create_offerer()
             user = create_user()
-            user_offerer = create_user_offerer(user, offerer, is_admin=True)
+            user_offerer = create_user_offerer(user, offerer)
             siret = offerer.siren + "11111"
             venue = create_venue(offerer, siret=siret)
             repository.save(user_offerer, venue)

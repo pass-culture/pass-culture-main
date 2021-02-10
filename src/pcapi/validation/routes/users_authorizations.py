@@ -1,14 +1,13 @@
 from pcapi.models import ApiErrors
 from pcapi.models import ApiKey
-from pcapi.models import RightsType
 from pcapi.models.api_errors import ForbiddenError
 
 
-def check_user_can_validate_bookings(self, offerer_id: int):
-    if not self.is_authenticated:
+def check_user_can_validate_bookings(user, offerer_id: int):
+    if not user.is_authenticated:
         return False
 
-    if not self.hasRights(RightsType.editor, offerer_id):
+    if not user.has_access(offerer_id):
         api_errors = ApiErrors()
         api_errors.add_error("global", "Cette contremarque n'a pas été trouvée")
         raise api_errors
@@ -16,9 +15,8 @@ def check_user_can_validate_bookings(self, offerer_id: int):
     return True
 
 
-def check_user_can_validate_bookings_v2(self, offerer_id: int):
-    user_has_editors_right = self.hasRights(RightsType.editor, offerer_id)
-    if not user_has_editors_right:
+def check_user_can_validate_bookings_v2(user, offerer_id: int):
+    if not user.has_access(offerer_id):
         api_errors = ForbiddenError()
         api_errors.add_error("user", "Vous n'avez pas les droits suffisants pour valider cette contremarque.")
         raise api_errors

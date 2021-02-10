@@ -8,7 +8,6 @@ from pcapi.domain.password import generate_reset_token
 from pcapi.domain.password import random_password
 from pcapi.models import Offerer
 from pcapi.models import UserOfferer
-from pcapi.models.user_offerer import RightsType
 from pcapi.models.venue_sql_entity import create_digital_venue
 from pcapi.repository import repository
 from pcapi.repository.offerer_queries import find_by_siren
@@ -91,7 +90,6 @@ def fill_user_offerer_from(user_offerer: UserOfferer, created_user: User, create
 
     user_offerer.user = created_user
     user_offerer.offerer = created_offerer
-    user_offerer.rights = RightsType.editor
     return user_offerer
 
 

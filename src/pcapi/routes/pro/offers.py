@@ -11,7 +11,6 @@ from pcapi.core.offers.validation import check_image
 from pcapi.core.offers.validation import get_distant_image
 from pcapi.flask_app import private_api
 from pcapi.models import Offer
-from pcapi.models import RightsType
 from pcapi.repository.offer_queries import get_offer_by_id
 from pcapi.routes.serialization.dictifier import as_dict
 from pcapi.routes.serialization.offers_recap_serialize import serialize_offers_recap_paginated
@@ -30,7 +29,7 @@ from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailRespo
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.includes import GET_OFFER_INCLUDES
 from pcapi.utils.logger import logger
-from pcapi.utils.rest import ensure_current_user_has_rights
+from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.rest import load_or_404
 from pcapi.utils.rest import login_or_api_key_required
 
@@ -105,7 +104,7 @@ def patch_all_offers_active_status(body: PatchAllOffersActiveStatusBodyModel) ->
 @spectree_serialize(response_model=OfferResponseIdModel)  # type: ignore
 def patch_offer(offer_id: str, body: PatchOfferBodyModel) -> OfferResponseIdModel:
     offer = load_or_404(Offer, human_id=offer_id)
-    ensure_current_user_has_rights(RightsType.editor, offer.venue.managingOffererId)
+    check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
     offer = offers_api.update_offer(offer, **body.dict(exclude_unset=True))
 
@@ -141,7 +140,7 @@ def validate_distant_image(body: ImageBodyModel) -> ImageResponseModel:
 @login_required
 @spectree_serialize(on_success_status=201, response_model=CreateThumbnailResponseModel)
 def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseModel:
-    ensure_current_user_has_rights(RightsType.editor, form.offerer_id)
+    check_user_has_access_to_offerer(current_user, form.offerer_id)
     offer = get_offer_by_id(form.offer_id)
 
     image_as_bytes = form.get_image_as_bytes(request)

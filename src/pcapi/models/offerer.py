@@ -42,13 +42,12 @@ class Offerer(
         String(9), nullable=True, unique=True
     )  # FIXME: should not be nullable, is until we have all SIRENs filled in the DB
 
-    def give_rights(self, user, rights):
+    def grant_access(self, user):
         if not user:
             return None
         user_offerer = UserOfferer()
         user_offerer.offerer = self
         user_offerer.user = user
-        user_offerer.rights = rights
         return user_offerer
 
     @property

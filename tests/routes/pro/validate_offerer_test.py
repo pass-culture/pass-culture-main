@@ -24,7 +24,7 @@ class Get:
             offerer_token = secrets.token_urlsafe(20)
             offerer = create_offerer(validation_token=offerer_token)
             user = create_user()
-            admin = create_user_offerer(user, offerer, is_admin=True)
+            admin = create_user_offerer(user, offerer)
             repository.save(admin)
 
             # When
@@ -51,7 +51,7 @@ class Get:
             create_venue(offerer, siret=f"{offerer.siren}65371")
             create_venue(offerer, is_virtual=True, siret=None)
             user = create_user()
-            admin = create_user_offerer(user, offerer, is_admin=True)
+            admin = create_user_offerer(user, offerer)
             repository.save(admin)
 
             # When
@@ -77,7 +77,7 @@ class Get:
             create_venue(offerer, idx=2, siret=f"{offerer.siren}65371")
             create_venue(offerer, idx=3, is_virtual=True, siret=None)
             user = create_user()
-            admin = create_user_offerer(user, offerer, is_admin=True)
+            admin = create_user_offerer(user, offerer)
             repository.save(admin)
 
             # When
@@ -108,7 +108,7 @@ class Get:
             create_venue(offerer, siret=f"{offerer.siren}65371")
             create_venue(offerer, is_virtual=True, siret=None)
             user = create_user()
-            admin = create_user_offerer(user, offerer, is_admin=True)
+            admin = create_user_offerer(user, offerer)
             repository.save(admin)
 
             # When
