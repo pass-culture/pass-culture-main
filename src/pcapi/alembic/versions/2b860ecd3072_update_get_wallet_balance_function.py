@@ -44,7 +44,7 @@ def upgrade():
             WHERE "userId"=user_id AND NOT "isCancelled";
         END CASE;
 
-        RETURN GREATEST(0, (sum_deposits - sum_bookings));
+        RETURN (sum_deposits - sum_bookings);
     END; $$
     LANGUAGE plpgsql;
         """

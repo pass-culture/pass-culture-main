@@ -3,6 +3,7 @@ from datetime import timedelta
 
 from freezegun import freeze_time
 import pytest
+import sqlalchemy.exc
 
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings import factories
@@ -13,6 +14,7 @@ from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.models import ThingType
 from pcapi.models import api_errors
+from pcapi.repository import repository
 
 
 @pytest.mark.usefixtures("db_session")
@@ -320,6 +322,25 @@ class CheckExpenseLimitsDepositVersion2Test:
         assert error.value.errors["insufficientFunds"] == [
             "Le solde de votre pass est insuffisant pour réserver cette offre."
         ]
+
+
+@pytest.mark.usefixtures("db_session")
+class InsufficientFundsSQLCheckTest:
+    def test_insufficient_funds_when_user_has_negative_deposit(self):
+        # The user once booked.
+        booking = factories.BookingFactory()
+        user = booking.user
+        assert user.wallet_balance == 490
+
+        # But now their deposit expired.
+        deposit = user.deposits[0]
+        deposit.expirationDate = datetime.now() - timedelta(days=1)
+        repository.save(deposit)
+
+        # They should not be able to book again.
+        with pytest.raises(sqlalchemy.exc.InternalError) as exc:
+            factories.BookingFactory(user=user)
+            assert "insufficientFunds" in exc.args[0]
 
 
 @pytest.mark.usefixtures("db_session")

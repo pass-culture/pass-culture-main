@@ -249,11 +249,16 @@ class User(PcObject, Model, NeedsValidationMixin, VersionedMixin):
 
     @property
     def real_wallet_balance(self):
-        return db.session.query(func.get_wallet_balance(self.id, True)).scalar()
+        balance = db.session.query(func.get_wallet_balance(self.id, True)).scalar()
+        # Balance can be negative if the user has booked in the past
+        # but their deposit has expired. We don't want to expose a
+        # negative number.
+        return max(0, balance)
 
     @property
     def wallet_balance(self):
-        return db.session.query(func.get_wallet_balance(self.id, False)).scalar()
+        balance = db.session.query(func.get_wallet_balance(self.id, False)).scalar()
+        return max(0, balance)
 
     @property
     def wallet_is_activated(self):
