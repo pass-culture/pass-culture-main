@@ -345,3 +345,8 @@ def _set_offerer_departement_code(new_user: User, offerer: Offerer) -> User:
         new_user.departementCode = "XX"  # We don't want to trigger an error on this:
         # we want the error on user
     return new_user
+
+
+def set_pro_tuto_as_seen(user: User) -> None:
+    user.hasSeenProTutorials = True
+    repository.save(user)

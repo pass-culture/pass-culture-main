@@ -15,6 +15,7 @@ from pcapi.core.users.api import _set_offerer_departement_code
 from pcapi.core.users.api import create_id_check_token
 from pcapi.core.users.api import fulfill_user_data
 from pcapi.core.users.api import generate_and_save_token
+from pcapi.core.users.api import set_pro_tuto_as_seen
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
@@ -399,3 +400,16 @@ class SetOffererDepartementCodeTest:
 
         # Then
         assert updated_user.departementCode == "75"
+
+
+@pytest.mark.usefixtures("db_session")
+class SetProTutoAsSeenTest:
+    def should_set_has_seen_pro_tutorials_to_true_for_user(self):
+        # Given
+        user = users_factories.UserFactory(hasSeenProTutorials=False)
+
+        # When
+        set_pro_tuto_as_seen(user)
+
+        # Then
+        assert User.query.one().hasSeenProTutorials == True

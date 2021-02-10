@@ -13,6 +13,7 @@ def install_routes(app: Flask) -> None:
     from . import stocks
     from . import types
     from . import user_offerers
+    from . import users
     from . import validate
     from . import venue_labels
     from . import venue_providers
