@@ -89,6 +89,15 @@
       }
     }
 
+    .h-card-header-row {
+      display: flex;
+      flex-direction: row;
+
+      .h-card-title {
+        flex: 1 1 auto;
+      }
+    }
+
     &.h-card-primary {
       .h-card-inner {
         border-color: $primary;
@@ -187,7 +196,7 @@
       }
 
       .h-card {
-        flex: 1 1 auto;
+        flex: 1 1;
         margin-left: rem(24px); // in case it's inside a section-row with multiple cards
 
         &:first-child {

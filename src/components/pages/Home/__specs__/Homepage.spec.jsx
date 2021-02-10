@@ -1,9 +1,11 @@
 import '@testing-library/jest-dom'
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import React from 'react'
+import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
 import * as pcapi from 'repository/pcapi/pcapi'
+import { configureTestStore } from 'store/testUtils'
 
 import Homepage from '../Homepage'
 
@@ -12,11 +14,26 @@ jest.mock('repository/pcapi/pcapi', () => ({
 }))
 
 const renderHomePage = async () => {
+  const store = configureTestStore({
+    data: {
+      users: [
+        {
+          id: 'fake_id',
+          firstName: 'John',
+          lastName: 'Do',
+          email: 'john.do@dummy.xyz',
+          phoneNumber: '01 00 00 00 00',
+        },
+      ],
+    },
+  })
   return await act(async () => {
     await render(
-      <MemoryRouter>
-        <Homepage />
-      </MemoryRouter>
+      <Provider store={store}>
+        <MemoryRouter>
+          <Homepage />
+        </MemoryRouter>
+      </Provider>
     )
   })
 }
