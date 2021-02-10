@@ -1,0 +1,199 @@
+.homepage {
+  .pc-breadcrumb {
+    margin-bottom: rem(32px);
+    margin-top: rem(24px);
+  }
+
+  .h-description-list {
+    margin-top: rem(-8px);
+
+    dt,
+    dd {
+      float: left;
+      margin-top: rem(8px);
+    }
+
+    dt {
+      clear: left;
+      color: $grey-dark;
+    }
+
+    dd {
+      margin-left: rem(8px);
+    }
+  }
+
+  .h-card {
+    border: rem(1px) solid $grey-medium;
+    border-radius: rem(8px);
+    box-shadow: 0 rem(2px) rem(6px) 0 rgba($black, 0.15);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    &.h-card-placeholder {
+      min-height: rem(205px);
+    }
+
+    .h-card-inner {
+      border-left: rem(8px) solid $grey-medium;
+      flex: 1 1 auto;
+      padding: rem(16px);
+      padding-bottom: rem(24px);
+      padding-top: 0;
+
+      > *:first-child {
+        margin-top: 16px;
+      }
+    }
+
+    .h-card-header {
+      align-items: center;
+      border-bottom: rem(1px) solid $grey-medium;
+      display: flex;
+      flex-direction: row;
+      margin-left: rem(-16px);
+      margin-right: rem(-16px);
+
+      .input-select {
+        select {
+          margin-top: 0;
+        }
+      }
+
+      &:first-child {
+        margin-top: 0;
+      }
+
+      .h-card-header-block,
+      .h-card-actions {
+        border-right: rem(1px) solid $grey-medium;
+        padding: rem(8px);
+
+        &:last-child {
+          border-right: none;
+        }
+      }
+
+      .h-card-actions {
+        padding-left: rem(24px);
+        padding-right: rem(24px);
+
+        .tertiary-button {
+          padding-right: rem(5px);
+        }
+      }
+
+      .h-card-header-block {
+        flex: 1 1 auto;
+      }
+    }
+
+    &.h-card-primary {
+      .h-card-inner {
+        border-color: $primary;
+      }
+    }
+
+    &.h-card-secondary {
+      .h-card-inner {
+        border-color: $secondary;
+      }
+    }
+
+    &.h-card-secondary-hover {
+      &:focus,
+      &:hover {
+        border-color: $secondary;
+
+        .h-card-inner {
+          border-color: $secondary;
+        }
+      }
+    }
+
+    .h-card-title {
+      @include title4();
+    }
+
+    .h-card-secondary-title {
+      @include body();
+    }
+
+    .h-card-content {
+      margin-top: rem(16px);
+
+      &.h-content-attention {
+        background-color: $attention;
+        padding: rem(16px);
+      }
+    }
+
+    .h-card-cols {
+      display: flex;
+      flex-direction: row;
+      margin-top: rem(16px);
+
+      .h-card-col {
+        border-left: rem(1px) solid $grey-medium;
+        flex: 1 1;
+        padding-left: rem(24px);
+        padding-right: rem(24px);
+
+        &:first-child {
+          border: 0;
+          padding-left: 0;
+        }
+
+        &:last-child {
+          padding-right: 0;
+        }
+      }
+    }
+  }
+
+  .h-section {
+    margin-top: rem(40px);
+
+    &:first-child {
+      margin-top: 0;
+    }
+
+    .h-section-title {
+      @include title3();
+    }
+
+    > .h-card,
+    > .h-section {
+      margin-top: rem(24px); // in case it's just after section title
+
+      &:first-child {
+        margin-top: 0;
+      }
+    }
+
+    .h-section-row {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      margin-top: rem(16px);
+
+      &:first-child {
+        margin-top: 0;
+      }
+
+      &.nested {
+        margin-left: rem(14px);
+      }
+
+      .h-card {
+        flex: 1 1 auto;
+        margin-left: rem(24px); // in case it's inside a section-row with multiple cards
+
+        &:first-child {
+          margin-left: 0;
+        }
+      }
+    }
+  }
+}

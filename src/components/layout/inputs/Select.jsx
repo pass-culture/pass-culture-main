@@ -46,9 +46,11 @@ const Select = ({
       required={required}
       value={selectedValue || defaultOption.id}
     >
-      <option value={defaultOption.id}>
-        {defaultOption.displayName}
-      </option>
+      {defaultOption && (
+        <option value={defaultOption.id}>
+          {defaultOption.displayName}
+        </option>
+      )}
       {options.map(option => (
         <option
           key={option.id}
@@ -68,6 +70,7 @@ const Select = ({
 )
 
 Select.defaultProps = {
+  defaultOption: null,
   error: null,
   isDisabled: false,
   required: false,
@@ -78,7 +81,7 @@ Select.propTypes = {
   defaultOption: PropTypes.shape({
     displayName: PropTypes.string.isRequired,
     id: PropTypes.string.isRequired,
-  }).isRequired,
+  }),
   error: PropTypes.string,
   handleSelection: PropTypes.func.isRequired,
   isDisabled: PropTypes.bool,

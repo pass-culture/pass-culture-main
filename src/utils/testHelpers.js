@@ -35,11 +35,13 @@ export function renderWithStyles(ui, options = {}) {
   const view = render(ui, {
     ...omit(options, 'stylesheet'),
   })
-  if (options.stylesheet) {
-    const stylesData = `
+  if (options.stylesheet || options.componentStylesheet) {
+    let stylesData = `
     @import 'src/styles/variables/index.scss';
-    @import 'src/styles/${options.stylesheet}';
+    ${options.stylesheet ? `@import 'src/styles/${options.stylesheet}';` : ''}
+    ${options.componentStylesheet ? `@import 'src/${options.componentStylesheet}';` : ''}
     `
+
     const styles = sass.renderSync({ data: stylesData })
 
     const styleElement = document.createElement('style')
@@ -51,11 +53,11 @@ export function renderWithStyles(ui, options = {}) {
   return view
 }
 
-/* 
+/*
   enzymeWaitFor() continues to poll its callback as long as :
   - it throws an error,
   - and the timeout has not been reached.
-  Think of it as a custom implementation of react-testing-library's waitFor that 
+  Think of it as a custom implementation of react-testing-library's waitFor that
   also works for Enzyme.
 */
 export async function enzymeWaitFor(callback, { interval = 50, timeout = 1000 } = {}) {

@@ -49,8 +49,8 @@ Breadcrumb.defaultProps = {
 }
 
 Breadcrumb.PropTypess = {
-  offerId: PropTypes.string,
   isCreatingOffer: PropTypes.bool.isRequired,
+  offerId: PropTypes.string,
 }
 
 export default OfferBreadcrumb

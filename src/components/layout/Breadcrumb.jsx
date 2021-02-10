@@ -33,6 +33,13 @@ const Breadcrumb = props => {
                 >
                   {step.label}
                 </Link>
+              ) : step.hash ? (
+                <a
+                  href={`#${step.hash}`}
+                  onClick={step.onClick ? step.onClick : null}
+                >
+                  {step.label}
+                </a>
               ) : (
                 step.label
               )}
