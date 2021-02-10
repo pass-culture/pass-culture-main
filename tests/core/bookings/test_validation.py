@@ -5,8 +5,10 @@ from freezegun import freeze_time
 import pytest
 import sqlalchemy.exc
 
+from pcapi.core.bookings import api
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings import factories
+from pcapi.core.bookings import models
 from pcapi.core.bookings import validation
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
@@ -14,6 +16,7 @@ from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.models import ThingType
 from pcapi.models import api_errors
+from pcapi.models import db
 from pcapi.repository import repository
 
 
@@ -326,6 +329,11 @@ class CheckExpenseLimitsDepositVersion2Test:
 
 @pytest.mark.usefixtures("db_session")
 class InsufficientFundsSQLCheckTest:
+    def _expire_deposit(self, user):
+        deposit = user.deposits[0]
+        deposit.expirationDate = datetime.now() - timedelta(days=1)
+        repository.save(deposit)
+
     def test_insufficient_funds_when_user_has_negative_deposit(self):
         # The user once booked.
         booking = factories.BookingFactory()
@@ -333,13 +341,85 @@ class InsufficientFundsSQLCheckTest:
         assert user.wallet_balance == 490
 
         # But now their deposit expired.
-        deposit = user.deposits[0]
-        deposit.expirationDate = datetime.now() - timedelta(days=1)
-        repository.save(deposit)
+        self._expire_deposit(user)
 
-        # They should not be able to book again.
+        # They are not allowed to book non-free offers anymore.
         with pytest.raises(sqlalchemy.exc.InternalError) as exc:
             factories.BookingFactory(user=user)
+            assert "insufficientFunds" in exc.args[0]
+
+    def test_user_can_cancel_even_if_expired_deposit(self):
+        # The user once booked.
+        booking = factories.BookingFactory()
+        user = booking.user
+        booking_to_cancel = factories.BookingFactory(user=user)
+
+        # But now their deposit expired.
+        self._expire_deposit(user)
+
+        # They should be able to cancel their booking.
+        api.cancel_booking_by_beneficiary(user, booking_to_cancel)
+        assert booking_to_cancel.isCancelled
+
+    def test_user_can_book_a_free_offer_even_if_expired_deposit(self):
+        # The user once booked.
+        booking = factories.BookingFactory()
+        user = booking.user
+
+        # But now their deposit expired.
+        self._expire_deposit(user)
+
+        # They should be able to book free offers
+        stock = offers_factories.StockFactory(price=0)
+        api.book_offer(user, stock, quantity=1)
+        assert models.Booking.query.filter_by(user=user).count() == 2
+
+    def test_cannot_change_quantity_with_expired_deposit(self):
+        # The user once booked.
+        booking = factories.BookingFactory(quantity=10)
+        user = booking.user
+
+        # But now their deposit expired.
+        self._expire_deposit(user)
+
+        # The backend should not do that, but if it does, the database
+        # should prevent it.
+        booking.quantity += 10
+        with pytest.raises(sqlalchemy.exc.InternalError) as exc:
+            db.session.add(booking)
+            db.session.flush()
+            assert "insufficientFunds" in exc.args[0]
+
+    def test_cannot_change_amount_with_expired_deposit(self):
+        # The user once booked.
+        booking = factories.BookingFactory(amount=10)
+        user = booking.user
+
+        # But now their deposit expired.
+        self._expire_deposit(user)
+
+        # The backend should not do that, but if it does, the database
+        # should prevent it.
+        booking.amount += 10
+        with pytest.raises(sqlalchemy.exc.InternalError) as exc:
+            db.session.add(booking)
+            db.session.flush()
+            assert "insufficientFunds" in exc.args[0]
+
+    def test_cannot_uncancel_with_expired_deposit(self):
+        # The user once booked and cancelled their booking.
+        booking = factories.BookingFactory(isCancelled=True)
+        user = booking.user
+
+        # But now their deposit expired.
+        self._expire_deposit(user)
+
+        # The backend should not do that, but if it does, the database
+        # should prevent it.
+        booking.isCancelled = False
+        with pytest.raises(sqlalchemy.exc.InternalError) as exc:
+            db.session.add(booking)
+            db.session.flush()
             assert "insufficientFunds" in exc.args[0]
 
 

@@ -178,7 +178,26 @@ Booking.trig_ddl = """
                     USING HINT = 'Number of bookings cannot exceed "stock.quantity"';
       END IF;
 
-      IF (SELECT get_wallet_balance(NEW."userId", false) < 0)
+      IF (
+        (
+          -- If this is a new booking, we probably want to check the wallet.
+          OLD IS NULL
+          -- If we're updating an existing booking...
+          OR (
+            -- Check the wallet if we are changing the quantity or the amount
+            -- The backend should never do that, but let's be defensive.
+            (NEW."quantity" != OLD."quantity" OR NEW."amount" != OLD."amount")
+            -- If amount and quantity are unchanged, we want to check the wallet
+            -- only if we are UNcancelling a booking. (Users with no credits left
+            -- should be able to cancel their booking. Also, their booking can
+            -- be marked as used or not used.)
+            OR (NEW."isCancelled" != OLD."isCancelled" AND NOT NEW."isCancelled")
+          )
+        )
+        -- Allow to book free offers even with no credit left (or expired deposits)
+        AND (NEW."amount" != 0)
+        AND (get_wallet_balance(NEW."userId", false) < 0)
+      )
       THEN RAISE EXCEPTION 'insufficientFunds'
                  USING HINT = 'The user does not have enough credit to book';
       END IF;
