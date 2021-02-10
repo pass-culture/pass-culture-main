@@ -244,6 +244,10 @@ class User(PcObject, Model, NeedsValidationMixin, VersionedMixin):
         return self.deposits[0] if len(self.deposits) > 0 else None
 
     @property
+    def deposit_expiration_date(self) -> Optional[datetime]:
+        return self.deposit.expirationDate if self.deposit else None
+
+    @property
     def deposit_version(self) -> Optional[int]:
         return self.deposit.version if self.deposit else None
 

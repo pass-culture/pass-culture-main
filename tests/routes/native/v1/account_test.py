@@ -84,8 +84,10 @@ class AccountTest:
         response = test_client.get("/native/v1/me")
 
         EXPECTED_DATA = {
+            "id": user.id,
             "dateOfBirth": "2000-01-01T00:00:00",
             "depositVersion": 1,
+            "depositExpirationDate": "2040-01-01T00:00:00",
             "expenses": [
                 {"current": 12345, "domain": "all", "limit": 50000},
                 {"current": 0, "domain": "digital", "limit": 20000},

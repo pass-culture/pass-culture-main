@@ -39,7 +39,9 @@ class Expense(BaseModel):
 
 
 class UserProfileResponse(BaseModel):
+    id: int
     dateOfBirth: Optional[datetime.datetime]
+    deposit_expiration_date: Optional[datetime.datetime]
     deposit_version: Optional[int]
     email: str
     expenses: List[Expense]
