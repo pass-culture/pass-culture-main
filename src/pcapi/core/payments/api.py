@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from dateutil.relativedelta import relativedelta
+
 import pcapi.core.bookings.conf as bookings_conf
 from pcapi.core.users.models import User
 from pcapi.models.deposit import Deposit
@@ -14,7 +16,7 @@ DEPOSIT_VALIDITY_IN_YEARS = 2
 
 def _get_expiration_date(start=None):
     start = start or datetime.utcnow()
-    return start.replace(year=start.year + DEPOSIT_VALIDITY_IN_YEARS)
+    return start + relativedelta(years=DEPOSIT_VALIDITY_IN_YEARS)
 
 
 def create_deposit(beneficiary: User, deposit_source: str, version: int = None) -> Deposit:
