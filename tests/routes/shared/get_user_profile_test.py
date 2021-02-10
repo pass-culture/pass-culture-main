@@ -53,6 +53,7 @@ class Get:
                 "hasAllowedRecommendations": False,
                 "hasOffers": False,
                 "hasPhysicalVenues": False,
+                "hasSeenProTutorials": False,
                 "id": humanize(user.id),
                 "isAdmin": False,
                 "isBeneficiary": True,

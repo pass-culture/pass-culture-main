@@ -159,6 +159,8 @@ class User(PcObject, Model, NeedsValidationMixin, VersionedMixin):
 
     hasSeenTutorials = Column(Boolean, nullable=True)
 
+    hasSeenProTutorials = Column(Boolean, nullable=False, server_default=expression.false())
+
     isEmailValidated = Column(Boolean, nullable=True, server_default=expression.false())
 
     isBeneficiary = Column(Boolean, nullable=False, server_default=expression.false())
