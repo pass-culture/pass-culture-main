@@ -144,21 +144,10 @@ def check_mediation_thumb_quality(image_as_bytes: bytes) -> None:
         raise ApiErrors({"thumb": ["L'image doit faire 400 * 400 px minimum"]})
 
 
-def get_distant_image(url: str) -> bytes:
-    image_as_bytes = _get_distant_image(url=url, accepted_types=ACCEPTED_THUMBNAIL_FORMATS, max_size=MAX_THUMBNAIL_SIZE)
-    _check_image(
-        image_as_bytes=image_as_bytes,
-        accepted_types=ACCEPTED_THUMBNAIL_FORMATS,
-        min_width=MIN_THUMBNAIL_WIDTH,
-        min_height=MIN_THUMBNAIL_HEIGHT,
-    )
-    return image_as_bytes
-
-
-def _get_distant_image(
+def get_distant_image(
     url: str,
-    accepted_types: tuple,
-    max_size: int,
+    accepted_types: tuple = ACCEPTED_THUMBNAIL_FORMATS,
+    max_size: int = MAX_THUMBNAIL_SIZE,
 ) -> bytes:
     try:
         streaming_response = pcapi_requests.get(url, timeout=DISTANT_IMAGE_REQUEST_TIMEOUT, stream=True)
@@ -184,7 +173,18 @@ def _get_distant_image(
     return response_content
 
 
-def _check_image(image_as_bytes: bytes, accepted_types: tuple, min_width: int, min_height: int) -> None:
+def get_uploaded_image(image_as_bytes: bytes, max_size: int = MAX_THUMBNAIL_SIZE) -> bytes:
+    if len(image_as_bytes) > max_size:
+        raise exceptions.FileSizeExceeded
+    return image_as_bytes
+
+
+def check_image(
+    image_as_bytes: bytes,
+    accepted_types: tuple = ACCEPTED_THUMBNAIL_FORMATS,
+    min_width: int = MIN_THUMBNAIL_WIDTH,
+    min_height: int = MIN_THUMBNAIL_HEIGHT,
+) -> None:
     try:
         image = Image.open(BytesIO(image_as_bytes))
     except Exception:

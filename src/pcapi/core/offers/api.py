@@ -25,6 +25,7 @@ from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
+from pcapi.repository import mediation_queries
 from pcapi.repository import offer_queries
 from pcapi.repository import repository
 from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
@@ -38,6 +39,7 @@ from . import validation
 from ..bookings.api import mark_as_unused
 from ..bookings.api import update_confirmation_dates
 from ..bookings.models import Booking
+from .exceptions import ThumbnailStorageError
 from .models import Mediation
 
 
@@ -424,6 +426,7 @@ def delete_stock(stock: Stock) -> None:
         redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
 
 
+# TODO(fseguin): cleanup after v2 is launched
 def create_mediation(
     user: User,
     offer: Offer,
@@ -451,6 +454,7 @@ def create_mediation(
     return mediation
 
 
+# TODO(fseguin): cleanup after v2 is launched
 def update_mediation(mediation: Mediation, is_active: bool) -> Mediation:
     mediation.isActive = is_active
     repository.save(mediation)
@@ -459,3 +463,56 @@ def update_mediation(mediation: Mediation, is_active: bool) -> Mediation:
         redis.add_offer_id(client=app.redis_client, offer_id=mediation.offerId)
 
     return mediation
+
+
+def create_mediation_v2(
+    user: User,
+    offer: Offer,
+    credit: str,
+    image_as_bytes: bytes,
+    crop_params: tuple = None,
+) -> Mediation:
+    # checks image type, min dimensions
+    validation.check_image(image_as_bytes)
+
+    existing_mediations = mediation_queries.get_mediations_for_offers([offer.id])
+
+    mediation = Mediation(
+        author=user,
+        offer=offer,
+        credit=credit,
+    )
+    # `create_thumb()` requires the object to have an id, so we must save now.
+    repository.save(mediation)
+
+    try:
+        # TODO(fseguin): cleanup after image upload v2 launch
+        create_thumb(mediation, image_as_bytes, image_index=0, crop_params=crop_params, use_v2=True)
+
+    except Exception as exc:
+        app.logger.exception("An unexpected error was encountered during the thumbnail creation: %s", exc)
+        # I could not use savepoints and rollbacks with SQLA
+        repository.delete(mediation)
+        raise ThumbnailStorageError
+
+    else:
+        mediation.thumbCount = 1
+        repository.save(mediation)
+        # cleanup former thumbnails and mediations
+        for previous_mediation in existing_mediations:
+            try:
+                for thumb_index in range(0, mediation.thumbCount):
+                    remove_thumb(previous_mediation, image_index=thumb_index)
+            except Exception as exc:  # pylint: disable=broad-except
+                app.logger.exception(
+                    "An unexpected error was encountered during the thumbnails deletion for %s: %s",
+                    mediation,
+                    exc,
+                )
+            else:
+                repository.delete(previous_mediation)
+
+        if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
+            redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
+
+        return mediation

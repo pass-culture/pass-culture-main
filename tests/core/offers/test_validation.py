@@ -178,7 +178,7 @@ class GetDistantImageTest:
             content=b"\xff\xd8\xff\xd9",
         )
 
-        validation._get_distant_image(
+        validation.get_distant_image(
             url=remote_image_url,
             accepted_types=("jpeg", "jpg"),
             max_size=100000,
@@ -192,7 +192,7 @@ class GetDistantImageTest:
             content=b"\xff\xd8\xff\xd9",
         )
 
-        validation._get_distant_image(
+        validation.get_distant_image(
             url=remote_image_url,
             accepted_types=("jpeg", "jpg"),
             max_size=100000,
@@ -206,7 +206,7 @@ class GetDistantImageTest:
         )
 
         with pytest.raises(exceptions.FailureToRetrieve):
-            validation._get_distant_image(
+            validation.get_distant_image(
                 url=remote_image_url,
                 accepted_types=("jpeg", "jpg"),
                 max_size=100000,
@@ -221,7 +221,7 @@ class GetDistantImageTest:
         )
 
         with pytest.raises(exceptions.FileSizeExceeded):
-            validation._get_distant_image(
+            validation.get_distant_image(
                 url=remote_image_url,
                 accepted_types=("jpeg", "jpg", "png"),
                 max_size=1000,
@@ -235,7 +235,7 @@ class GetDistantImageTest:
         )
 
         with pytest.raises(exceptions.UnacceptedFileType):
-            validation._get_distant_image(
+            validation.get_distant_image(
                 url=remote_image_url,
                 accepted_types=("jpeg", "jpg", "png"),
                 max_size=100000,
@@ -246,7 +246,7 @@ class GetDistantImageTest:
         requests_mock.get(remote_image_url, exc=requests.exceptions.ConnectTimeout)
 
         with pytest.raises(exceptions.FailureToRetrieve):
-            validation._get_distant_image(
+            validation.get_distant_image(
                 url=remote_image_url,
                 accepted_types=("jpeg", "jpg"),
                 max_size=100000,
@@ -257,7 +257,7 @@ class GetDistantImageTest:
         requests_mock.get(remote_image_url, content=b"1234567890")
 
         with pytest.raises(exceptions.FileSizeExceeded):
-            validation._get_distant_image(
+            validation.get_distant_image(
                 url=remote_image_url,
                 accepted_types=("jpeg", "jpg", "png"),
                 max_size=5,
@@ -267,7 +267,7 @@ class GetDistantImageTest:
 class CheckImageTest:
     def test_ok(self):
         image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
-        validation._check_image(
+        validation.check_image(
             image_as_bytes,
             accepted_types=("jpeg", "jpg"),
             min_width=400,
@@ -277,7 +277,7 @@ class CheckImageTest:
     def test_image_too_small(self):
         image_as_bytes = (IMAGES_DIR / "mouette_portrait.jpg").read_bytes()
         with pytest.raises(exceptions.ImageTooSmall):
-            validation._check_image(
+            validation.check_image(
                 image_as_bytes,
                 accepted_types=("jpeg", "jpg"),
                 min_width=400,
@@ -287,7 +287,7 @@ class CheckImageTest:
     def test_fake_jpeg(self):
         image_as_bytes = (IMAGES_DIR / "mouette_fake_jpg.jpg").read_bytes()
         with pytest.raises(exceptions.UnacceptedFileType):
-            validation._check_image(
+            validation.check_image(
                 image_as_bytes,
                 accepted_types=("jpeg", "jpg"),
                 min_width=1,
@@ -297,7 +297,7 @@ class CheckImageTest:
     def test_wrong_format(self):
         image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
         with pytest.raises(exceptions.UnacceptedFileType):
-            validation._check_image(
+            validation.check_image(
                 image_as_bytes,
                 accepted_types=("png",),
                 min_width=1,

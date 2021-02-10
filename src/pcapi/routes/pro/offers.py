@@ -1,15 +1,18 @@
 import base64
 
+from flask import request
 from flask_login import current_user
 from flask_login import login_required
 
 from pcapi.core.offers import exceptions
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.repository as offers_repository
+from pcapi.core.offers.validation import check_image
 from pcapi.core.offers.validation import get_distant_image
 from pcapi.flask_app import private_api
 from pcapi.models import Offer
 from pcapi.models import RightsType
+from pcapi.repository.offer_queries import get_offer_by_id
 from pcapi.routes.serialization.dictifier import as_dict
 from pcapi.routes.serialization.offers_recap_serialize import serialize_offers_recap_paginated
 from pcapi.routes.serialization.offers_serialize import GetOfferResponseModel
@@ -22,6 +25,8 @@ from pcapi.routes.serialization.offers_serialize import PatchAllOffersActiveStat
 from pcapi.routes.serialization.offers_serialize import PatchOfferActiveStatusBodyModel
 from pcapi.routes.serialization.offers_serialize import PatchOfferBodyModel
 from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
+from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailBodyModel
+from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailResponseModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.includes import GET_OFFER_INCLUDES
 from pcapi.utils.logger import logger
@@ -115,6 +120,7 @@ def validate_distant_image(body: ImageBodyModel) -> ImageResponseModel:
 
     try:
         image = get_distant_image(body.url)
+        check_image(image)
         image_as_base64 = base64.b64encode(image)
         return ImageResponseModel(
             image=f'data:image/png;base64,{str(image_as_base64, encoding="utf-8")}', errors=errors
@@ -129,3 +135,22 @@ def validate_distant_image(body: ImageBodyModel) -> ImageResponseModel:
         errors.append(exc.args[0])
 
     return ImageResponseModel(errors=errors)
+
+
+@private_api.route("/offers/thumbnails/", methods=["POST"])
+@login_required
+@spectree_serialize(on_success_status=201, response_model=CreateThumbnailResponseModel)
+def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseModel:
+    ensure_current_user_has_rights(RightsType.editor, form.offerer_id)
+    offer = get_offer_by_id(form.offer_id)
+
+    image_as_bytes = form.get_image_as_bytes(request)
+    thumbnail = offers_api.create_mediation_v2(
+        user=current_user,
+        offer=offer,
+        credit=form.credit,
+        image_as_bytes=image_as_bytes,
+        crop_params=form.crop_params,
+    )
+
+    return CreateThumbnailResponseModel(id=thumbnail.id)

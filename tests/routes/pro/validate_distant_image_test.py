@@ -12,13 +12,15 @@ from tests.conftest import TestClient
 class ValidateDistantImageTest:
     @pytest.mark.usefixtures("db_session")
     @mock.patch("pcapi.routes.pro.offers.get_distant_image")
-    def test_ok(self, mock_get_distant_image, caplog, app):
+    @mock.patch("pcapi.routes.pro.offers.check_image")
+    def test_ok(self, mock_check_image, mock_get_distant_image, caplog, app):
         # Given
         caplog.set_level(logging.INFO)
         body = {"url": "https://example.com/exampleaaa.jpg"}
         user = UserFactory()
         auth_request = TestClient(app.test_client()).with_auth(email=user.email)
         mock_get_distant_image.return_value = b"aze"
+        mock_check_image.return_value = None
 
         # When
         response = auth_request.post(

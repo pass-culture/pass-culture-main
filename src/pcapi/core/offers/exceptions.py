@@ -1,6 +1,7 @@
 import humanize
 
 from pcapi.domain.client_exceptions import ClientError
+from pcapi.models import ApiErrors
 
 
 class TooLateToDeleteStock(ClientError):
@@ -36,3 +37,12 @@ class FailureToRetrieve(ImageValidationError):
             "Nous n’avons pas pu récupérer cette image; vous pouvez la télécharger "
             'puis l’importer depuis l’onglet "Importer"'
         )
+
+
+class MissingImage(ImageValidationError):
+    def __init__(self):
+        super().__init__("Nous n'avons pas réceptionné l'image, merci d'essayer à nouveau.")
+
+
+class ThumbnailStorageError(ApiErrors):
+    status_code = 500

@@ -1,6 +1,7 @@
 from datetime import datetime
 from datetime import timedelta
 import io
+import os
 import pathlib
 from unittest import mock
 
@@ -16,6 +17,7 @@ import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import api
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories
+from pcapi.core.offers.exceptions import ThumbnailStorageError
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.testing import override_features
@@ -778,6 +780,84 @@ class CreateMediationTest:
 
         assert error.value.errors["thumb"] == ["L'image doit faire 400 * 400 px minimum"]
         assert models.Mediation.query.count() == 0
+
+
+@pytest.mark.usefixtures("db_session")
+class CreateMediationV2Test:
+    THUMBS_DIR = (
+        pathlib.Path(tests.__path__[0])
+        / ".."
+        / "src"
+        / "pcapi"
+        / "static"
+        / "object_store_data"
+        / "thumbs"
+        / "mediations"
+    )
+
+    @mock.patch("pcapi.connectors.redis.add_offer_id")
+    def test_ok(self, mocked_add_offer_id):
+        # Given
+        user = users_factories.UserFactory()
+        offer = factories.ThingOfferFactory()
+        image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
+
+        # When
+        api.create_mediation_v2(user, offer, "©Photographe", image_as_bytes)
+
+        # Then
+        mediation = models.Mediation.query.one()
+        assert mediation.author == user
+        assert mediation.offer == offer
+        assert mediation.credit == "©Photographe"
+        assert mediation.thumbCount == 1
+        assert models.Mediation.query.filter(models.Mediation.offerId == offer.id).count() == 1
+        mocked_add_offer_id.assert_called_once_with(client=app.redis_client, offer_id=offer.id)
+
+    def test_erase_former_mediations(self):
+        # Given
+        user = users_factories.UserFactory()
+        offer = factories.ThingOfferFactory()
+        image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
+        existing_number_of_files = len(os.listdir(self.THUMBS_DIR))
+
+        mediation_1 = api.create_mediation_v2(user, offer, "©Photographe", image_as_bytes)
+        mediation_2 = api.create_mediation_v2(user, offer, "©Alice", image_as_bytes)
+        thumb_1_id = humanize(mediation_1.id)
+        thumb_2_id = humanize(mediation_2.id)
+
+        # When
+        api.create_mediation_v2(user, offer, "©moi", image_as_bytes)
+
+        # Then
+        mediation_3 = models.Mediation.query.one()
+        assert mediation_3.credit == "©moi"
+        thumb_3_id = humanize(mediation_3.id)
+
+        assert not (self.THUMBS_DIR / thumb_1_id).exists()
+        assert not (self.THUMBS_DIR / (thumb_1_id + ".type")).exists()
+        assert not (self.THUMBS_DIR / thumb_2_id).exists()
+        assert not (self.THUMBS_DIR / (thumb_2_id + ".type")).exists()
+
+        assert len(os.listdir(self.THUMBS_DIR)) == existing_number_of_files + 2
+        assert (self.THUMBS_DIR / thumb_3_id).exists()
+        assert (self.THUMBS_DIR / (thumb_3_id + ".type")).exists()
+
+    @mock.patch("pcapi.core.object_storage.store_public_object", side_effect=Exception)
+    def test_rollback_if_exception(self, mock_store_public_object):
+        # Given
+        user = users_factories.UserFactory()
+        offer = factories.ThingOfferFactory()
+        image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
+        existing_number_of_files = len(os.listdir(self.THUMBS_DIR))
+
+        # When
+        with pytest.raises(ThumbnailStorageError):
+            api.create_mediation_v2(user, offer, "©Photographe", image_as_bytes)
+
+        # Then
+        assert models.Mediation.query.count() == 0
+        assert len(os.listdir(self.THUMBS_DIR)) == existing_number_of_files
 
 
 @pytest.mark.usefixtures("db_session")
