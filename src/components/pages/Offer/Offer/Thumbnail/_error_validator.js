@@ -3,6 +3,7 @@ import { IMAGE_TYPE, MAX_IMAGE_SIZE, MIN_IMAGE_HEIGHT, MIN_IMAGE_WIDTH } from '.
 const isNotAnImage = async file => !IMAGE_TYPE.includes(file.type)
 const isTooBig = async file => file.size > MAX_IMAGE_SIZE
 const isOfPoorQuality = async file => {
+  // Polyfill for Safari and IE not supporting createImageBitmap
   if (!('createImageBitmap' in window)) {
     window.createImageBitmap = async blob =>
       new Promise(resolve => {
