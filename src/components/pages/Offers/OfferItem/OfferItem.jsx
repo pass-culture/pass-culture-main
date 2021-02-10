@@ -87,7 +87,7 @@ const OfferItem = ({ disabled, offer, stocks, venue, isSelected, selectOffer }) 
           <Link
             className="name"
             title="Afficher le détail de l'offre"
-            to={`/v1/offres/${offer.id}`}
+            to={`/offres/${offer.id}`}
           >
             <Thumb
               alt="Miniature d'offre"
@@ -109,7 +109,7 @@ const OfferItem = ({ disabled, offer, stocks, venue, isSelected, selectOffer }) 
           <Link
             className="name"
             title="Afficher le détail de l'offre"
-            to={`/v1/offres/${offer.id}`}
+            to={`/offres/${offer.id}`}
           >
             {offer.name}
           </Link>
@@ -157,7 +157,7 @@ const OfferItem = ({ disabled, offer, stocks, venue, isSelected, selectOffer }) 
         ) : (
           <Link
             className="secondary-link with-icon"
-            to={`/v1/offres/${offer.id}?gestion`}
+            to={`/offres/${offer.id}?gestion`}
           >
             <Icon svg="ico-guichet-full" />
             {'Stocks'}

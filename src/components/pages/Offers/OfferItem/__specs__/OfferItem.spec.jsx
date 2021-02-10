@@ -90,7 +90,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         expect(screen.queryByText('Stocks')).toBeInTheDocument()
         expect(screen.queryByText('Stocks')).toHaveAttribute(
           'href',
-          `/v1/offres/${eventOffer.id}?gestion`
+          `/offres/${eventOffer.id}?gestion`
         )
       })
 
@@ -131,7 +131,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         // then
         const offerTitle = screen.queryByText(props.offer.name, 'a')
         expect(offerTitle).toBeInTheDocument()
-        expect(offerTitle).toHaveAttribute('href', `/v1/offres/${props.offer.id}`)
+        expect(offerTitle).toHaveAttribute('href', `/offres/${props.offer.id}`)
         expect(offerTitle).toHaveAttribute('title', "Afficher le détail de l'offre")
       })
     })
