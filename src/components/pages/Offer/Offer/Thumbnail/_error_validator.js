@@ -3,6 +3,16 @@ import { IMAGE_TYPE, MAX_IMAGE_SIZE, MIN_IMAGE_HEIGHT, MIN_IMAGE_WIDTH } from '.
 const isNotAnImage = async file => !IMAGE_TYPE.includes(file.type)
 const isTooBig = async file => file.size > MAX_IMAGE_SIZE
 const isOfPoorQuality = async file => {
+  if (!('createImageBitmap' in window)) {
+    window.createImageBitmap = async blob =>
+      new Promise(resolve => {
+        const img = document.createElement('img')
+        img.addEventListener('load', function () {
+          resolve(this)
+        })
+        img.src = URL.createObjectURL(blob)
+      })
+  }
   const { height, width } = await createImageBitmap(file)
   return height < MIN_IMAGE_HEIGHT || width < MIN_IMAGE_WIDTH
 }
