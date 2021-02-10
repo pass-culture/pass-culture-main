@@ -10,7 +10,6 @@ import pytest
 
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
-from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.api import _set_offerer_departement_code
 from pcapi.core.users.api import create_id_check_token
@@ -329,11 +328,6 @@ class ChangeUserEmailTest:
 
 
 class CreateBeneficiaryTest:
-    def test_with_ineligible_user_raises_exception(self):
-        user = users_factories.UserFactory.build(isBeneficiary=False)
-        with pytest.raises(users_exceptions.NotEligible):
-            users_api.activate_beneficiary(user, "test")
-
     def test_with_eligible_user(self):
         eligible_date = date.today() - relativedelta(years=18, days=30)
         user = users_factories.UserFactory(isBeneficiary=False, dateOfBirth=eligible_date)

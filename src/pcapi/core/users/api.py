@@ -116,8 +116,6 @@ def create_account(
 
 
 def activate_beneficiary(user: User, deposit_source: str) -> User:
-    if not user.is_eligible:
-        raise exceptions.NotEligible()
     user.isBeneficiary = True
     deposit = payment_api.create_deposit(user, deposit_source=deposit_source)
     db.session.add_all((user, deposit))
