@@ -1,6 +1,7 @@
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
+from decimal import Decimal
 from unittest.mock import call
 from unittest.mock import patch
 
@@ -151,7 +152,7 @@ class TiteliveStocksTest:
             venue_provider = create_venue_provider(
                 venue, titelive_stocks_provider, is_active=True, venue_id_at_offer_provider="77567146400110"
             )
-            product = create_product_with_thing_type(id_at_providers="02730757438")
+            product = create_product_with_thing_type(id_at_providers="0002730757438")
             offer = create_offer_with_thing_product(
                 venue, product=product, id_at_providers="0002730757438@77567146400110"
             )
@@ -166,6 +167,39 @@ class TiteliveStocksTest:
             # Then
             stock = Stock.query.one()
             assert stock.quantity == 10
+            assert Offer.query.count() == 1
+
+        @pytest.mark.usefixtures("db_session")
+        @patch("pcapi.local_providers.titelive_stocks.titelive_stocks.api_titelive_stocks.stocks_information")
+        def test_titelive_stock_provider_skips_stock_update_when_price_is_null(self, stub_get_stocks_information, app):
+            # Given
+            stub_get_stocks_information.return_value = iter(
+                [{"ref": "0002730757438", "available": 10, "price": None, "validUntil": "2019-10-31T15:10:27Z"}]
+            )
+
+            offerer = create_offerer()
+            venue = create_venue(offerer, siret="77567146400110")
+
+            titelive_stocks_provider = activate_provider("TiteLiveStocks")
+            venue_provider = create_venue_provider(
+                venue, titelive_stocks_provider, is_active=True, venue_id_at_offer_provider="77567146400110"
+            )
+            product = create_product_with_thing_type(id_at_providers="0002730757438")
+            offer = create_offer_with_thing_product(
+                venue, product=product, id_at_providers="0002730757438@77567146400110"
+            )
+            stock = create_stock(id_at_providers="0002730757438@77567146400110", offer=offer, quantity=10, price=12.34)
+            repository.save(product, venue_provider, stock)
+
+            titelive_stocks = TiteLiveStocks(venue_provider)
+
+            # When
+            titelive_stocks.updateObjects()
+
+            # Then
+            stock = Stock.query.one()
+            assert stock.quantity == 10
+            assert stock.price == Decimal("12.34")
             assert Offer.query.count() == 1
 
         @freeze_time("2019-01-03 12:00:00")

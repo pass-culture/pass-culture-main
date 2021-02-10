@@ -112,6 +112,9 @@ class LocalProvider(Iterator):
 
         errors = entity_validator.validate(pc_object)
         if errors and len(errors.errors) > 0:
+            # expire pc_object because we may have modified it during fill_object_attributes
+            # and we don't want it to be pushed to the DB if there is any error
+            db.session.expire(pc_object)
             self.log_provider_event(LocalProviderEventType.SyncError, "ApiErrors")
             self.erroredObjects += 1
             raise errors
