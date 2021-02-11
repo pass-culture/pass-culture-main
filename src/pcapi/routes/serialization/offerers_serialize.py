@@ -68,3 +68,20 @@ class GetOffererResponseModel(BaseModel):
     class Config:
         orm_mode = True
         json_encoders = {datetime: format_into_utc_date}
+
+
+class GetOffererNameResponseModel(BaseModel):
+    id: str
+    name: str
+
+    _humanize_id = humanize_field("id")
+
+    class Config:
+        orm_mode = True
+
+
+class GetOfferersNamesResponseModel(BaseModel):
+    offerersNames: List[GetOffererNameResponseModel]
+
+    class Config:
+        orm_mode = True

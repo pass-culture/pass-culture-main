@@ -6,6 +6,7 @@ from flask import request
 from flask_login import current_user
 from flask_login import login_required
 
+from pcapi.core.offerers.repository import get_all_validated
 from pcapi.core.users.models import User
 from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
 from pcapi.domain.user_emails import send_ongoing_offerer_attachment_information_email_to_pro
@@ -20,7 +21,9 @@ from pcapi.models.venue_sql_entity import create_digital_venue
 from pcapi.repository import repository
 from pcapi.repository.offerer_queries import find_by_siren
 from pcapi.routes.serialization import as_dict
+from pcapi.routes.serialization.offerers_serialize import GetOffererNameResponseModel
 from pcapi.routes.serialization.offerers_serialize import GetOffererResponseModel
+from pcapi.routes.serialization.offerers_serialize import GetOfferersNamesResponseModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.use_cases.list_offerers_for_pro_user import OfferersRequestParameters
 from pcapi.utils.human_ids import dehumanize
@@ -45,7 +48,7 @@ def get_dict_offerers(offerers: List[Offerer]) -> list:
 # @debt api-migration
 @private_api.route("/offerers", methods=["GET"])
 @login_required
-def list_offerers():
+def get_offerers():
     keywords = request.args.get("keywords")
     only_validated_offerers = request.args.get("validated")
 
@@ -76,6 +79,17 @@ def list_offerers():
     response.headers["Access-Control-Expose-Headers"] = "Total-Data-Count"
 
     return response, 200
+
+
+@private_api.route("/offerers/names", methods=["GET"])
+@login_required
+@spectree_serialize(response_model=GetOfferersNamesResponseModel)
+def list_offerers_names() -> GetOfferersNamesResponseModel:
+    offerers = get_all_validated(user=current_user)
+
+    return GetOfferersNamesResponseModel(
+        offerersNames=[GetOffererNameResponseModel.from_orm(offerer) for offerer in offerers]
+    )
 
 
 @private_api.route("/offerers/<offerer_id>", methods=["GET"])
@@ -124,7 +138,7 @@ def create_offerer():
     return jsonify(get_dict_offerer(offerer)), 201
 
 
-def _send_to_pro_offer_validation_in_progress_email(user: User, offerer: Offerer) -> bool:
+def _send_to_pro_offer_validation_in_progress_email(user: User, offerer: Offerer) -> None:
     try:
         send_pro_user_waiting_for_validation_by_admin_email(user, offerer)
     except MailServiceException as mail_service_exception:
@@ -133,7 +147,7 @@ def _send_to_pro_offer_validation_in_progress_email(user: User, offerer: Offerer
         )
 
 
-def _send_to_pc_admin_offerer_to_validate_email(offerer: Offerer, user_offerer: UserOfferer) -> bool:
+def _send_to_pc_admin_offerer_to_validate_email(offerer: Offerer, user_offerer: UserOfferer) -> None:
     try:
         maybe_send_offerer_validation_email(offerer, user_offerer)
     except MailServiceException as mail_service_exception:
