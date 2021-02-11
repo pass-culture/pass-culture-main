@@ -38,6 +38,7 @@ const Advices = ({ hidden, setHidden }) => {
         <ul className="tna-links">
           <li>
             <a
+              className="tertiary-link"
               href="https://www.pexels.com/fr-fr/"
               rel="noopener noreferrer"
               target="_blank"
@@ -51,6 +52,7 @@ const Advices = ({ hidden, setHidden }) => {
           </li>
           <li>
             <a
+              className="tertiary-link"
               href="https://pixabay.com/fr/"
               rel="noopener noreferrer"
               target="_blank"
@@ -64,6 +66,7 @@ const Advices = ({ hidden, setHidden }) => {
           </li>
           <li>
             <a
+              className="tertiary-link"
               href="https://www.shutterstock.com/"
               rel="noopener noreferrer"
               target="_blank"
@@ -81,7 +84,10 @@ const Advices = ({ hidden, setHidden }) => {
         </p>
         <ul className="tna-links tna-download-links">
           <li>
-            <a href={`${ASSETS_URL}/PassCulture-image-template-20210205.psd`}>
+            <a
+              className="tertiary-link"
+              href={`${ASSETS_URL}/PassCulture-image-template-20210205.psd`}
+            >
               <Download />
               {'Gabarit Photoshop'}
               <span className="tna-links-help">
@@ -90,7 +96,10 @@ const Advices = ({ hidden, setHidden }) => {
             </a>
           </li>
           <li>
-            <a href={`${ASSETS_URL}/PassCulture-image-template-20210205.eps`}>
+            <a
+              className="tertiary-link"
+              href={`${ASSETS_URL}/PassCulture-image-template-20210205.eps`}
+            >
               <Download />
               {'Gabarit Illustrator'}
               <span className="tna-links-help">

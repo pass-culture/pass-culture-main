@@ -144,8 +144,6 @@
 }
 
 .tna-links a {
-  @include button;
-
   align-items: center;
   display: flex;
   margin: rem(16px) 0;
