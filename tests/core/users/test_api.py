@@ -56,7 +56,7 @@ class GenerateAndSaveTokenTest:
         # ensure token is not valid for authentication
         test_client = TestClient(app.test_client())
         test_client.auth_header = {"Authorization": f"Bearer {saved_token.value}"}
-        response = test_client.get("/native/v1/protected")
+        response = test_client.get("/native/v1/me")
         assert response.status_code == 422
 
     def test_generate_and_save_token_without_expiration_date(self):

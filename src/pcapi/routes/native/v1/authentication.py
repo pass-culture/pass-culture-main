@@ -1,4 +1,3 @@
-from flask import jsonify
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import create_refresh_token
 from flask_jwt_extended import get_jwt_identity
@@ -68,12 +67,6 @@ def request_password_reset(body: RequestPasswordResetRequest) -> None:
             {"email": ["L'email n'a pas pu être envoyé"]},
             status_code=400,
         )
-
-
-@blueprint.native_v1.route("/protected", methods=["GET"])
-@authenticated_user_required
-def protected(user: User) -> any:  # type: ignore
-    return jsonify(logged_in_as=user.email), 200
 
 
 @blueprint.native_v1.route("/reset_password", methods=["POST"])
