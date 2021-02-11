@@ -118,7 +118,7 @@ const ActionsBar = props => {
           {'Activer'}
         </button>
         <button
-          className="button oa-cancel"
+          className="secondary-button"
           onClick={handleClose}
           type="button"
         >

@@ -16,7 +16,7 @@ const Advices = ({ hidden, setHidden }) => {
     <div className="tna-advices">
       <button
         aria-pressed={!hidden}
-        className={`tna-toggle ${hidden ? 'up' : 'down'}`}
+        className={`tna-toggle ${hidden ? 'up' : 'down'} tertiary-link`}
         onClick={toggle}
         type="button"
       >
