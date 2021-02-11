@@ -424,9 +424,6 @@ describe('offerDetails - Edition', () => {
 
         // Then
         expect(screen.getByText('Ajouter une image', { selector: 'button' })).toBeInTheDocument()
-        expect(
-          screen.queryByText('Prévisualiser dans l’app', { selector: 'a' })
-        ).not.toBeInTheDocument()
       })
 
       it('should open the modal when user clicks on the placeholder', async () => {

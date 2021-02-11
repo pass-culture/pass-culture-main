@@ -138,7 +138,7 @@ const OfferDetails = ({
                 offerType={offerType}
               />
             </div>
-            {offer?.thumbUrl ? (
+            {offer ? (
               <OfferPreviewLink
                 mediationId={offer.activeMediation ? offer.activeMediation.id : null}
                 offerId={offer.id}
