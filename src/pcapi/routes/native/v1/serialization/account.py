@@ -4,10 +4,13 @@ from typing import List
 from typing import Optional
 from uuid import UUID
 
+from dateutil.relativedelta import relativedelta
 from pydantic.class_validators import validator
 from pydantic.fields import Field
 
+from pcapi.core.users import constants as users_constants
 from pcapi.core.users.models import ExpenseDomain
+from pcapi.core.users.models import User
 from pcapi.core.users.models import VOID_FIRST_NAME
 from pcapi.core.users.models import VOID_PUBLIC_NAME
 from pcapi.routes.native.utils import convert_to_cent
@@ -62,6 +65,7 @@ class UserProfileResponse(BaseModel):
     phoneNumber: Optional[str]
     publicName: Optional[str] = Field(None, alias="pseudo")
     needsToFillCulturalSurvey: bool
+    show_eligible_card: bool
 
     class Config:
         orm_mode = True
@@ -75,6 +79,19 @@ class UserProfileResponse(BaseModel):
     @validator("firstName", pre=True)
     def format_first_name(cls, firstName: Optional[str]) -> Optional[str]:  # pylint: disable=no-self-argument
         return firstName if firstName != VOID_FIRST_NAME else None
+
+    @staticmethod
+    def _show_eligible_card(user: User) -> bool:
+        return (
+            relativedelta(user.dateCreated, user.dateOfBirth).years < users_constants.ELIGIBILITY_AGE
+            and user.isBeneficiary is False
+            and user.is_eligible
+        )
+
+    @classmethod
+    def from_orm(cls, user):
+        user.show_eligible_card = cls._show_eligible_card(user)
+        return super().from_orm(user)
 
 
 class UserProfileUpdateRequest(BaseModel):

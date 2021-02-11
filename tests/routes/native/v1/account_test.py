@@ -14,6 +14,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import User
 from pcapi.core.users.models import VOID_PUBLIC_NAME
 from pcapi.core.users.repository import get_id_check_token
+from pcapi.routes.native.v1.serialization import account as account_serializers
 
 from tests.conftest import TestClient
 
@@ -99,6 +100,7 @@ class AccountTest:
             "isBeneficiary": True,
             "isEligible": True,
             "pseudo": "jdo",
+            "showEligibleCard": False,
         }
         EXPECTED_DATA.update(USER_DATA)
 
@@ -348,3 +350,31 @@ class GetIdCheckTokenTest:
 
         assert response.status_code == 200
         assert not response.json["token"]
+
+
+class ShowEligibleCardTest:
+    @pytest.mark.parametrize("age,expected", [(17, False), (18, True), (19, False)])
+    def test_against_different_age(self, age, expected):
+        date_of_birth = datetime.now() - relativedelta(years=age, day=5)
+        date_of_creation = datetime.now() - relativedelta(years=4)
+        user = users_factories.UserFactory.build(
+            dateOfBirth=date_of_birth, dateCreated=date_of_creation, isBeneficiary=False
+        )
+        assert account_serializers.UserProfileResponse._show_eligible_card(user) == expected
+
+    @pytest.mark.parametrize("beneficiary,expected", [(False, True), (True, False)])
+    def test_against_beneficiary(self, beneficiary, expected):
+        date_of_birth = datetime.now() - relativedelta(years=18, day=5)
+        date_of_creation = datetime.now() - relativedelta(years=4)
+        user = users_factories.UserFactory.build(
+            dateOfBirth=date_of_birth, dateCreated=date_of_creation, isBeneficiary=beneficiary
+        )
+        assert account_serializers.UserProfileResponse._show_eligible_card(user) == expected
+
+    def test_user_eligible_but_created_after_18(self):
+        date_of_birth = datetime.now() - relativedelta(years=18, day=5)
+        date_of_creation = datetime.now()
+        user = users_factories.UserFactory.build(
+            dateOfBirth=date_of_birth, dateCreated=date_of_creation, isBeneficiary=False
+        )
+        assert account_serializers.UserProfileResponse._show_eligible_card(user) == False
