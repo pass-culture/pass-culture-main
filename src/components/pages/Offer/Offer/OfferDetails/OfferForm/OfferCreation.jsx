@@ -28,11 +28,11 @@ const OfferCreation = ({
   useEffect(
     function retrieveDataOnMount() {
       const typesRequest = pcapi.loadTypes().then(receivedTypes => (types.current = receivedTypes))
-      const offerersRequest = pcapi.getValidatedOfferers().then(receivedOfferers => {
-        offerers.current = receivedOfferers
-      })
-      const requests = [typesRequest, offerersRequest]
+      const requests = [typesRequest]
       if (!isUserAdmin) {
+        const offerersRequest = pcapi.getValidatedOfferers().then(receivedOfferers => {
+          offerers.current = receivedOfferers
+        })
         const venuesRequest = pcapi.getVenuesForOfferer().then(receivedVenues => {
           venues.current = receivedVenues
           const venuesToDisplay = initialValues.offererId
@@ -40,23 +40,19 @@ const OfferCreation = ({
             : receivedVenues
           setDisplayedVenues(venuesToDisplay)
         })
-        requests.push(venuesRequest)
+        requests.push(offerersRequest, venuesRequest)
+      } else {
+        const offererRequest = pcapi.getOfferer(initialValues.offererId).then(receivedOfferer => {
+          offerers.current = [receivedOfferer]
+          venues.current = receivedOfferer.managedVenues
+          setDisplayedVenues(receivedOfferer.managedVenues)
+        })
+        requests.push(offererRequest)
       }
       Promise.all(requests).then(() => setIsLoading(false))
     },
     [initialValues.offererId, isUserAdmin, setIsLoading]
   )
-
-  const getVenuesForAdmin = useCallback(() => {
-    if (selectedOfferer) {
-      pcapi.getVenuesForOfferer(selectedOfferer).then(receivedVenues => {
-        venues.current = receivedVenues
-        setDisplayedVenues(receivedVenues)
-      })
-    } else {
-      setDisplayedVenues([])
-    }
-  }, [selectedOfferer])
 
   const filterVenuesForPro = useCallback(() => {
     const venuesToDisplay = selectedOfferer
@@ -66,12 +62,10 @@ const OfferCreation = ({
   }, [selectedOfferer])
 
   useEffect(() => {
-    if (isUserAdmin) {
-      getVenuesForAdmin()
-    } else {
+    if (!isUserAdmin) {
       filterVenuesForPro()
     }
-  }, [filterVenuesForPro, getVenuesForAdmin, isUserAdmin])
+  }, [filterVenuesForPro, isUserAdmin])
 
   const isComingFromOffererPage = initialValues.offererId !== undefined
 
@@ -94,6 +88,7 @@ const OfferCreation = ({
       isUserAdmin={isUserAdmin}
       offerers={offerers.current}
       onSubmit={onSubmit}
+      readOnlyFields={isUserAdmin ? ['offererId'] : []}
       setFormValues={setFormValues}
       setIsLoading={setIsLoading}
       setPreviewOfferType={setPreviewOfferType}

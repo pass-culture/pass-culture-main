@@ -14,6 +14,7 @@ import { setOfferValues } from './helpers'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   createOffer: jest.fn(),
+  getOfferer: jest.fn(),
   getValidatedOfferers: jest.fn(),
   getVenuesForOfferer: jest.fn(),
   getVenue: jest.fn(),
@@ -39,7 +40,7 @@ const renderOffers = async (props, store, queryParams = null) => {
 
 describe('offerDetails - Creation - admin user', () => {
   let types
-  let offerers
+  let offerer
   let props
   let store
   let venues
@@ -59,46 +60,23 @@ describe('offerDetails - Creation - admin user', () => {
         value: 'EventType.CINEMA',
       },
     ]
-    const offerer1Id = 'BA'
-    const offerer2Id = 'BAC'
-    offerers = [
-      {
-        id: offerer1Id,
-        name: 'La structure',
-      },
-      {
-        id: offerer2Id,
-        name: "L'autre structure",
-      },
-    ]
+    const offererId = 'BA'
     venues = [
       {
         id: 'AB',
         isVirtual: false,
-        managingOffererId: offerer1Id,
+        managingOffererId: offererId,
         name: 'Le lieu',
         offererName: 'La structure',
       },
-      {
-        id: 'ABC',
-        isVirtual: false,
-        managingOffererId: offerer2Id,
-        name: "L'autre lieu",
-        offererName: "L'autre structure",
-      },
-      {
-        id: 'ABCD',
-        isVirtual: true,
-        managingOffererId: offerer2Id,
-        name: "L'autre lieu (Offre numérique)",
-        offererName: "L'autre structure",
-      },
     ]
+    offerer = {
+      id: offererId,
+      name: 'La structure',
+      managedVenues: venues,
+    }
     pcapi.loadTypes.mockResolvedValue(types)
-    pcapi.getValidatedOfferers.mockResolvedValue(offerers)
-    pcapi.getVenuesForOfferer.mockImplementation(offererId =>
-      Promise.resolve(venues.filter(venue => venue.managingOffererId === offererId))
-    )
+    pcapi.getOfferer.mockResolvedValue(offerer)
     pcapi.getVenue.mockReturnValue(Promise.resolve())
     jest.spyOn(window, 'scrollTo').mockImplementation()
   })
@@ -111,40 +89,33 @@ describe('offerDetails - Creation - admin user', () => {
   })
 
   describe('render when creating a new offer as admin', () => {
-    it('should get offerers from API', async () => {
+    it('should get selected offerer from API', async () => {
       // When
-      await renderOffers(props, store)
+      await renderOffers(props, store, `?structure=${offerer.id}`)
 
       // Then
-      expect(pcapi.getValidatedOfferers).toHaveBeenCalledTimes(1)
+      expect(pcapi.getOfferer).toHaveBeenLastCalledWith(offerer.id)
     })
 
-    it('should not get venues from API when no offererId was provided', async () => {
+    it('should not get venues from API', async () => {
       // When
-      await renderOffers(props, store)
+      await renderOffers(props, store, `?structure=${offerer.id}`)
 
       // Then
       expect(pcapi.getVenuesForOfferer).toHaveBeenCalledTimes(0)
     })
 
-    it('should get venues of provided offererId from API', async () => {
-      // When
-      await renderOffers(props, store, `?structure=${offerers[0].id}`)
-
-      // Then
-      expect(pcapi.getVenuesForOfferer).toHaveBeenLastCalledWith(offerers[0].id)
-    })
-
     describe('when selecting an offer type', () => {
-      it('should have offerer selected when given as queryParam', async () => {
+      it('should have offerer selected and select disabled', async () => {
         // Given
-        await renderOffers(props, store, `?structure=${offerers[0].id}`)
+        await renderOffers(props, store, `?structure=${offerer.id}`)
 
         // When
         await setOfferValues({ type: 'EventType.CINEMA' })
 
         // Then
-        expect(screen.getByDisplayValue(offerers[0].name)).toBeInTheDocument()
+        expect(screen.getByDisplayValue(offerer.name)).toBeInTheDocument()
+        expect(screen.getByDisplayValue(offerer.name)).toBeDisabled()
       })
 
       it('should have venue selected when given as queryParam', async () => {
@@ -160,20 +131,6 @@ describe('offerDetails - Creation - admin user', () => {
 
         // Then
         expect(screen.getByDisplayValue(venues[0].name)).toBeInTheDocument()
-      })
-
-      it('should remove venues when unselecting offerer', async () => {
-        // Given
-        await renderOffers(props, store, `?structure=${offerers[0].id}`)
-        await setOfferValues({ type: 'EventType.CINEMA' })
-
-        // When
-        await setOfferValues({ offererId: '' })
-
-        // Then
-        expect(screen.queryByText(venues[0].name)).not.toBeInTheDocument()
-        expect(screen.queryByText(venues[1].name)).not.toBeInTheDocument()
-        expect(screen.queryByText(venues[2].name)).not.toBeInTheDocument()
       })
     })
   })
