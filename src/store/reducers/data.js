@@ -5,6 +5,7 @@ const SET_MEDIATIONS = 'SET_MEDIATIONS'
 const SET_STOCKS = 'SET_STOCKS'
 const SET_VENUES = 'SET_VENUES'
 const SET_VENUE_PROVIDERS = 'SET_VENUE_PROVIDERS'
+const SET_USERS = 'SET_USERS'
 
 export const initialState = {
   bookings: [],
@@ -40,6 +41,11 @@ export const setVenues = venues => ({
   type: SET_VENUES,
 })
 
+export const setUsers = users => ({
+  users,
+  type: SET_USERS,
+})
+
 const dataAndOffersRecapReducer = (state = initialState, action) => {
   switch (action.type) {
     case GET_DESK_BOOKINGS:
@@ -52,6 +58,8 @@ const dataAndOffersRecapReducer = (state = initialState, action) => {
       return { ...state, ...{ venues: action.venues } }
     case SET_VENUE_PROVIDERS:
       return { ...state, ...{ venueProviders: [action.payload] } }
+    case SET_USERS:
+      return { ...state, ...{ users: action.users } }
     default:
       return dataReducer(state, action)
   }

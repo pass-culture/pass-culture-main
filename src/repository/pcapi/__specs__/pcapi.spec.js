@@ -10,6 +10,7 @@ import {
   postThumbnail,
   updateOffersActiveStatus,
   updateStock,
+  setHasSeenTutos,
 } from '../pcapi'
 
 jest.mock('repository/pcapi/pcapiClient', () => ({
@@ -278,6 +279,16 @@ describe('pcapi', () => {
 
       // then
       expect(client.postWithFormData).toHaveBeenCalledWith(`/mediations`, body)
+    })
+  })
+
+  describe('hasSeenTutos', () => {
+    it('should call api patch with user id', () => {
+      // when
+      setHasSeenTutos('ABC')
+
+      // then
+      expect(client.patch).toHaveBeenCalledWith('/users/ABC/tuto-seen')
     })
   })
 })

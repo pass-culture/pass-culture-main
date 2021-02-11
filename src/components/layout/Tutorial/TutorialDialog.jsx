@@ -4,6 +4,8 @@ import React, { useCallback, useState } from 'react'
 import { DialogBox } from 'components/layout/DialogBox/DialogBox'
 import { TUTO_DIALOG_LABEL_ID } from 'components/layout/Tutorial/_constants'
 
+import * as pcapi from '../../../repository/pcapi/pcapi'
+
 import CreateOffer from './Step/CreateOffer'
 import CreateVenue from './Step/CreateVenue'
 import ManageBookings from './Step/ManageBookings'
@@ -29,11 +31,21 @@ const steps = [
 ]
 const getStep = position => steps.find(step => step.position === position)
 
-const TutorialDialog = ({ hasSeenTutorial, isFeatureActive }) => {
+const TutorialDialog = ({ currentUser, setUserHasSeenTuto, hasSeenTutorial, isFeatureActive }) => {
   const [activeStepPosition, setActiveStepPosition] = useState(1)
-  const [areTutoDisplayed, setAreTutoDisplayed] = useState(isFeatureActive && !hasSeenTutorial)
+  const [areTutoDisplayed, setAreTutoDisplayed] = useState(
+    isFeatureActive && !hasSeenTutorial && currentUser
+  )
 
-  const closeTutoDialog = useCallback(() => setAreTutoDisplayed(false), [])
+  const closeTutoDialog = useCallback(() => {
+    pcapi
+      .setHasSeenTutos(currentUser.id)
+      .then(() => {
+        setUserHasSeenTuto(currentUser)
+        setAreTutoDisplayed(false)
+      })
+      .catch(() => console.log('Raté'))
+  }, [currentUser, setUserHasSeenTuto])
 
   const hasNextStep = getStep(activeStepPosition + 1) !== undefined
   const hasPreviousStep = getStep(activeStepPosition - 1) !== undefined
@@ -111,8 +123,10 @@ const TutorialDialog = ({ hasSeenTutorial, isFeatureActive }) => {
 }
 
 TutorialDialog.propTypes = {
+  currentUser: PropTypes.shape().isRequired,
   hasSeenTutorial: PropTypes.bool.isRequired,
   isFeatureActive: PropTypes.bool.isRequired,
+  setUserHasSeenTuto: PropTypes.func.isRequired,
 }
 
 export default TutorialDialog

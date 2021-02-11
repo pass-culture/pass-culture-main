@@ -5,7 +5,13 @@ import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
 import TutorialDialogContainer from 'components/layout/Tutorial/TutorialDialogContainer'
+import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
+
+jest.mock('repository/pcapi/pcapi', () => ({
+  ...jest.requireActual('repository/pcapi/pcapi'),
+  setHasSeenTutos: jest.fn().mockResolvedValue({}),
+}))
 
 const stepTitles = [
   "Bienvenue dans l'espace acteurs culturels",
@@ -48,7 +54,7 @@ describe('tutorial modal', () => {
         users: [
           {
             id: 'test_id',
-            hasSeenTutorial: false,
+            hasSeenProTutorials: false,
           },
         ],
       },
@@ -75,7 +81,7 @@ describe('tutorial modal', () => {
         users: [
           {
             id: 'test_id',
-            hasSeenTutorial: true,
+            hasSeenProTutorials: true,
           },
         ],
       },
@@ -104,7 +110,7 @@ describe('tutorial modal', () => {
           users: [
             {
               id: 'test_id',
-              hasSeenTutorial: false,
+              hasSeenProTutorials: false,
             },
           ],
         },
@@ -145,13 +151,28 @@ describe('tutorial modal', () => {
         buttonPrevious = screen.getByText('Précédent')
       })
 
-      it('should close tutoral on click on "finish" button', async () => {
-        const buttonFinish = screen.queryByText('Terminer')
-        expect(buttonFinish).toBeInTheDocument()
+      describe('when clicking on finish button', () => {
+        it('should close tutorial', async () => {
+          const buttonFinish = screen.queryByText('Terminer')
+          expect(buttonFinish).toBeInTheDocument()
 
-        expect(screen.getByTestId('tutorial-container')).toBeInTheDocument()
-        await fireEvent.click(buttonFinish)
-        expect(screen.queryByTestId('tutorial-container')).not.toBeInTheDocument()
+          expect(screen.getByTestId('tutorial-container')).toBeInTheDocument()
+          await act(async () => {
+            await fireEvent.click(buttonFinish)
+          })
+          expect(screen.queryByTestId('tutorial-container')).not.toBeInTheDocument()
+        })
+
+        it('should call set has seen tutos function', async () => {
+          const buttonFinish = screen.queryByText('Terminer')
+          expect(buttonFinish).toBeInTheDocument()
+
+          expect(screen.getByTestId('tutorial-container')).toBeInTheDocument()
+          await act(async () => {
+            await fireEvent.click(buttonFinish)
+          })
+          expect(pcapi.setHasSeenTutos).toHaveBeenCalledWith('test_id')
+        })
       })
 
       it('should change step when clicking on "next"', async () => {

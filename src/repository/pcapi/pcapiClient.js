@@ -56,7 +56,7 @@ export const client = {
     }
     return await fetchWithErrorHandler(path, options)
   },
-  patch: async (path, data, withCredentials = true) => {
+  patch: async (path, data = {}, withCredentials = true) => {
     const options = {
       ...buildOptions('PATCH', withCredentials),
       body: JSON.stringify(data),

@@ -206,6 +206,21 @@ describe('pcapiClient', () => {
         body: '{"key":"value"}',
       })
     })
+
+    it('should have default value for data', async () => {
+      // Given
+      const path = '/users/YJ/tuto-seen'
+
+      // When
+      await client.patch(path, undefined, false)
+
+      // Then
+      expect(fetch).toHaveBeenCalledWith(`${API_URL}${path}`, {
+        headers: { 'Content-Type': 'application/json' },
+        method: 'PATCH',
+        body: '{}',
+      })
+    })
   })
 
   describe('delete', () => {
