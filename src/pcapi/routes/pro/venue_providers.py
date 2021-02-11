@@ -17,7 +17,9 @@ from pcapi.local_providers import LibrairesStocks
 from pcapi.local_providers import PraxielStocks
 from pcapi.local_providers.titelive_stocks.titelive_stocks import TiteLiveStocks
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.venue_provider import VenueProvider
+from pcapi.repository import feature_queries
 from pcapi.repository.allocine_pivot_queries import get_allocine_theaterId_for_venue
 from pcapi.repository.provider_queries import get_provider_enabled_for_pro_by_id
 from pcapi.repository.venue_queries import find_by_id
@@ -29,6 +31,7 @@ from pcapi.utils.includes import VENUE_PROVIDER_INCLUDES
 from pcapi.utils.rest import expect_json_data
 from pcapi.validation.routes.venue_providers import check_existing_provider
 from pcapi.validation.routes.venue_providers import check_new_venue_provider_information
+from pcapi.workers.venue_provider_job import venue_provider_job
 
 
 # @debt api-migration
@@ -84,6 +87,16 @@ def _get_stock_provider_repository(provider_class) -> StockProviderRepository:
 
 
 def _run_first_synchronization(new_venue_provider: VenueProvider):
-    subprocess.Popen(
-        ["python", "src/pcapi/scripts/pc.py", "update_providables", "--venue-provider-id", str(new_venue_provider.id)]
-    )
+    if feature_queries.is_active(FeatureToggle.PARALLEL_SYNCHRONIZATION_OF_VENUE_PROVIDER):
+        subprocess.Popen(
+            [
+                "python",
+                "src/pcapi/scripts/pc.py",
+                "update_providables",
+                "--venue-provider-id",
+                str(new_venue_provider.id),
+            ]
+        )
+        return
+
+    venue_provider_job.delay(new_venue_provider.id)

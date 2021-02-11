@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.core.testing import override_features
 from pcapi.infrastructure.container import api_libraires_stocks
 from pcapi.local_providers import LibrairesStocks
 from pcapi.model_creators.generic_creators import create_allocine_pivot
@@ -23,10 +24,13 @@ from tests.conftest import clean_database
 class Post:
     class Returns201:
         @pytest.mark.usefixtures("db_session")
+        @override_features(PARALLEL_SYNCHRONIZATION_OF_VENUE_PROVIDER=True)
         @patch("pcapi.routes.pro.venue_providers.subprocess.Popen")
         @patch("pcapi.use_cases.connect_venue_to_provider._check_venue_can_be_synchronized_with_provider")
         @patch("pcapi.routes.pro.venue_providers.find_by_id")
-        def when_venue_provider_is_successfully_created(self, stubbed_find_by_id, stubbed_check, mock_subprocess, app):
+        def when_venue_provider_is_successfully_created_and_using_subprocesses(
+            self, stubbed_find_by_id, stubbed_check, mock_subprocess, app
+        ):
             # Given
             user = create_user(is_admin=True, is_beneficiary=False)
             offerer = create_offerer()
@@ -65,6 +69,45 @@ class Post:
                     str(dehumanize(venue_provider_id)),
                 ]
             )
+
+        @pytest.mark.usefixtures("db_session")
+        @override_features(PARALLEL_SYNCHRONIZATION_OF_VENUE_PROVIDER=False)
+        @patch("pcapi.workers.venue_provider_job.venue_provider_job.delay")
+        @patch("pcapi.use_cases.connect_venue_to_provider._check_venue_can_be_synchronized_with_provider")
+        @patch("pcapi.routes.pro.venue_providers.find_by_id")
+        def when_venue_provider_is_successfully_created(
+            self, stubbed_find_by_id, stubbed_check, mock_synchronize_venue_provider, app
+        ):
+            # Given
+            user = create_user(is_admin=True, is_beneficiary=False)
+            offerer = create_offerer()
+            venue = create_venue(offerer, siret="12345678912345")
+            repository.save(venue, user)
+
+            stubbed_find_by_id.return_value = venue
+
+            provider = activate_provider("LibrairesStocks")
+
+            venue_provider_data = {
+                "providerId": humanize(provider.id),
+                "venueId": humanize(venue.id),
+            }
+
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
+            stubbed_check.return_value = True
+
+            # When
+            response = auth_request.post("/venueProviders", json=venue_provider_data)
+
+            # Then
+            assert response.status_code == 201
+            venue_provider = VenueProvider.query.one()
+            assert venue_provider.venueId == venue.id
+            assert venue_provider.providerId == provider.id
+            assert venue_provider.venueIdAtOfferProvider == "12345678912345"
+            assert "id" in response.json
+            venue_provider_id = response.json["id"]
+            mock_synchronize_venue_provider.assert_called_once_with(dehumanize(venue_provider_id))
 
         @pytest.mark.usefixtures("db_session")
         @patch("pcapi.routes.pro.venue_providers.find_by_id")
