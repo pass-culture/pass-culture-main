@@ -10,7 +10,7 @@ import { configureTestStore } from 'store/testUtils'
 import Homepage from '../Homepage'
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  getValidatedOfferers: jest.fn(),
+  getOfferers: jest.fn(),
 }))
 
 const renderHomePage = async () => {
@@ -60,11 +60,11 @@ describe('homepage : Tabs : Offerers', () => {
         siren: '222222222',
       },
     ]
-    pcapi.getValidatedOfferers.mockResolvedValue(baseOfferers)
+    pcapi.getOfferers.mockResolvedValue(baseOfferers)
   })
 
   afterEach(() => {
-    pcapi.getValidatedOfferers.mockClear()
+    pcapi.getOfferers.mockClear()
   })
 
   describe('render', () => {

@@ -15,7 +15,7 @@ const Offerers = () => {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(function fetchData() {
-    pcapi.getValidatedOfferers().then(receivedOfferers => {
+    pcapi.getOfferers().then(receivedOfferers => {
       setOfferers(receivedOfferers)
       setOffererOptions(buildSelectOptions('id', 'name', receivedOfferers))
       receivedOfferers.sort((o1, o2) => o1.name.localeCompare(o2.name))
