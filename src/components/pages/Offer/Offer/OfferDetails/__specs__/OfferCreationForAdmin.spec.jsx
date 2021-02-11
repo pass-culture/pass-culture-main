@@ -15,7 +15,7 @@ import { setOfferValues } from './helpers'
 jest.mock('repository/pcapi/pcapi', () => ({
   createOffer: jest.fn(),
   getOfferer: jest.fn(),
-  getValidatedOfferers: jest.fn(),
+  getValidatedOfferersNames: jest.fn(),
   getVenuesForOfferer: jest.fn(),
   getVenue: jest.fn(),
   loadTypes: jest.fn(),
@@ -83,7 +83,7 @@ describe('offerDetails - Creation - admin user', () => {
 
   afterEach(() => {
     pcapi.createOffer.mockClear()
-    pcapi.getValidatedOfferers.mockClear()
+    pcapi.getValidatedOfferersNames.mockClear()
     pcapi.getVenuesForOfferer.mockClear()
     pcapi.loadTypes.mockClear()
   })

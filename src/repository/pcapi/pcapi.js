@@ -102,6 +102,10 @@ const createRequestBody = searchFilters => {
   return body
 }
 
+export const getValidatedOfferersNames = () => {
+  return client.get('/offerers/names').then(response => response.offerersNames)
+}
+
 export const getValidatedOfferers = () => {
   return client.get('/offerers?validated=true')
 }

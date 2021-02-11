@@ -30,7 +30,7 @@ const OfferCreation = ({
       const typesRequest = pcapi.loadTypes().then(receivedTypes => (types.current = receivedTypes))
       const requests = [typesRequest]
       if (!isUserAdmin) {
-        const offerersRequest = pcapi.getValidatedOfferers().then(receivedOfferers => {
+        const offerersRequest = pcapi.getValidatedOfferersNames().then(receivedOfferers => {
           offerers.current = receivedOfferers
         })
         const venuesRequest = pcapi.getVenuesForOfferer().then(receivedVenues => {

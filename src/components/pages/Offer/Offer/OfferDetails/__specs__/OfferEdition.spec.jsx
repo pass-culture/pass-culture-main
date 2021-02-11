@@ -18,7 +18,7 @@ import { fieldLabels, findInputErrorForField, setOfferValues } from './helpers'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   updateOffer: jest.fn(),
-  getValidatedOfferers: jest.fn(),
+  getValidatedOfferersNames: jest.fn(),
   getVenuesForOfferer: jest.fn(),
   getVenue: jest.fn(),
   loadOffer: jest.fn(),
