@@ -143,7 +143,7 @@ Booking.trig_ddl = """
         INTO sum_deposits
         FROM deposit
         WHERE "userId"=user_id
-        AND "expirationDate" > now() OR "expirationDate" IS NULL;
+        AND ("expirationDate" > now() OR "expirationDate" IS NULL);
 
         CASE
             only_used_bookings
