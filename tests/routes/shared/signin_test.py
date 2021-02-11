@@ -119,8 +119,8 @@ class Post:
             response = TestClient(app.test_client()).post("/users/signin", json=data)
 
             # Then
-            assert response.status_code == 401
-            assert response.json["identifier"] == ["Identifiant manquant"]
+            assert response.status_code == 400
+            assert response.json["identifier"] == ["none is not an allowed value"]
 
         @pytest.mark.usefixtures("db_session")
         def when_identifier_is_incorrect(self, app):
@@ -147,8 +147,8 @@ class Post:
             response = TestClient(app.test_client()).post("/users/signin", json=data)
 
             # Then
-            assert response.status_code == 401
-            assert response.json["password"] == ["Mot de passe manquant"]
+            assert response.status_code == 400
+            assert response.json["password"] == ["none is not an allowed value"]
 
         @pytest.mark.usefixtures("db_session")
         def when_password_is_incorrect(self, app):

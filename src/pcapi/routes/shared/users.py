@@ -1,5 +1,4 @@
 from flask import jsonify
-from flask import request
 from flask_login import current_user
 from flask_login import login_required
 from flask_login import login_user
@@ -12,8 +11,10 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.repository.user_queries import find_user_by_reset_password_token
 from pcapi.routes.serialization import as_dict
+from pcapi.routes.serialization.users import LoginUserBodyModel
 from pcapi.routes.serialization.users import PatchUserBodyModel
 from pcapi.routes.serialization.users import PatchUserResponseModel
+from pcapi.routes.serialization.users import SharedLoginUserResponseModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.use_cases.update_user_informations import AlterableUserInformations
 from pcapi.use_cases.update_user_informations import update_user_informations
@@ -22,7 +23,6 @@ from pcapi.utils.login_manager import discard_session
 from pcapi.utils.login_manager import stamp_session
 from pcapi.utils.rest import expect_json_data
 from pcapi.utils.rest import login_or_api_key_required
-from pcapi.validation.routes.users import check_valid_signin
 
 
 # @debt api-migration
@@ -55,17 +55,13 @@ def patch_profile(body: PatchUserBodyModel) -> PatchUserResponseModel:
     return response_user_model
 
 
-# @debt api-migration
 @private_api.route("/users/signin", methods=["POST"])
-def signin():
-    json = request.get_json()
-    identifier = json.get("identifier")
-    password = json.get("password")
-    check_valid_signin(identifier, password)
+@spectree_serialize(response_model=SharedLoginUserResponseModel)
+def signin(body: LoginUserBodyModel) -> SharedLoginUserResponseModel:
     errors = ApiErrors()
     errors.status_code = 401
     try:
-        user = users_repo.get_user_with_credentials(identifier, password)
+        user = users_repo.get_user_with_credentials(body.identifier, body.password)
     except users_exceptions.InvalidIdentifier as exc:
         errors.add_error("identifier", "Identifiant incorrect")
         raise errors from exc
@@ -77,7 +73,8 @@ def signin():
         raise errors from exc
     login_user(user, remember=True)
     stamp_session(user)
-    return jsonify(as_dict(user, includes=USER_INCLUDES)), 200
+
+    return SharedLoginUserResponseModel.from_orm(user)
 
 
 @private_api.route("/users/signout", methods=["GET"])

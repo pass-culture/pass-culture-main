@@ -90,3 +90,43 @@ class ProUserCreationBodyModel(BaseModel):
     class Config:
         alias_generator = to_camel
         extra = "forbid"
+
+
+class LoginUserBodyModel(BaseModel):
+    identifier: str
+    password: str
+
+
+class SharedLoginUserResponseModel(BaseModel):
+    activity: Optional[str]
+    address: Optional[str]
+    city: Optional[str]
+    civility: Optional[str]
+    dateCreated: datetime
+    dateOfBirth: Optional[datetime]
+    departementCode: str
+    email: str
+    firstName: Optional[str]
+    hasAllowedRecommendations: bool
+    hasOffers: Optional[bool]
+    hasPhysicalVenues: Optional[bool]
+    hasSeenProTutorials: Optional[bool]
+    id: str
+    isAdmin: bool
+    isBeneficiary: bool
+    isEmailValidated: bool
+    lastConnectionDate: Optional[str]
+    lastName: Optional[str]
+    needsToFillCulturalSurvey: Optional[bool]
+    phoneNumber: Optional[str]
+    postalCode: Optional[str]
+    publicName: Optional[str]
+
+    _normalize_id = humanize_field("id")
+
+    class Config:
+        json_encoders = {datetime: format_into_utc_date}
+        orm_mode = True
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+        arbitrary_types_allowed = True
