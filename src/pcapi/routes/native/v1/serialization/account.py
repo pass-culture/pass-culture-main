@@ -2,6 +2,7 @@ import datetime
 from datetime import date
 from typing import List
 from typing import Optional
+from uuid import UUID
 
 from pydantic.class_validators import validator
 from pydantic.fields import Field
@@ -21,6 +22,14 @@ class AccountRequest(BaseModel):
     birthdate: date
     has_allowed_recommendations: bool
     token: str
+
+    class Config:
+        alias_generator = to_camel
+
+
+class CulturalSurveyRequest(BaseModel):
+    needs_to_fill_cultural_survey: bool
+    cultural_survey_id: Optional[UUID]
 
     class Config:
         alias_generator = to_camel

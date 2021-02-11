@@ -1,6 +1,7 @@
 from datetime import datetime
 from decimal import Decimal
 from unittest.mock import patch
+import uuid
 
 from dateutil.relativedelta import relativedelta
 from flask_jwt_extended.utils import create_access_token
@@ -15,6 +16,8 @@ from pcapi.core.users.models import VOID_PUBLIC_NAME
 from pcapi.core.users.repository import get_id_check_token
 
 from tests.conftest import TestClient
+
+from .utils import create_user_and_test_client
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -201,6 +204,87 @@ class UserProfileUpdateTest:
 
         user = User.query.filter_by(email=self.identifier).first()
         assert user.hasAllowedRecommendations == True
+
+
+class CulturalSurveyTest:
+    identifier = "email@example.com"
+    FROZEN_TIME = ""
+    UUID = uuid.uuid4()
+
+    @freeze_time("2018-06-01 14:44")
+    def test_user_finished_the_cultural_survey(self, app):
+        user, test_client = create_user_and_test_client(
+            app,
+            email=self.identifier,
+            needsToFillCulturalSurvey=True,
+            culturalSurveyId=None,
+            culturalSurveyFilledDate=None,
+        )
+
+        response = test_client.post(
+            "/native/v1/me/cultural_survey",
+            json={
+                "needsToFillCulturalSurvey": False,
+                "culturalSurveyId": self.UUID,
+            },
+        )
+
+        assert response.status_code == 204
+
+        user = User.query.one()
+        assert user.needsToFillCulturalSurvey == False
+        assert user.culturalSurveyId == self.UUID
+        assert user.culturalSurveyFilledDate == datetime(2018, 6, 1, 14, 44)
+
+    @freeze_time("2018-06-01 14:44")
+    def test_user_gave_up_the_cultural_survey(self, app):
+        user, test_client = create_user_and_test_client(
+            app,
+            email=self.identifier,
+            needsToFillCulturalSurvey=False,
+            culturalSurveyId=None,
+            culturalSurveyFilledDate=None,
+        )
+
+        response = test_client.post(
+            "/native/v1/me/cultural_survey",
+            json={
+                "needsToFillCulturalSurvey": False,
+                "culturalSurveyId": None,
+            },
+        )
+
+        assert response.status_code == 204
+
+        user = User.query.one()
+        assert user.needsToFillCulturalSurvey == False
+        assert user.culturalSurveyId == None
+        assert user.culturalSurveyFilledDate == None
+
+    @freeze_time("2018-06-01 14:44")
+    def test_user_fills_again_the_cultural_survey(self, app):
+        user, test_client = create_user_and_test_client(
+            app,
+            email=self.identifier,
+            needsToFillCulturalSurvey=False,
+            culturalSurveyId=self.UUID,
+            culturalSurveyFilledDate=datetime(2016, 6, 1, 14, 44),
+        )
+
+        response = test_client.post(
+            "/native/v1/me/cultural_survey",
+            json={
+                "needsToFillCulturalSurvey": False,
+                "culturalSurveyId": uuid.uuid4(),
+            },
+        )
+
+        assert response.status_code == 400
+
+        user = User.query.one()
+        assert user.needsToFillCulturalSurvey == False
+        assert user.culturalSurveyId == self.UUID
+        assert user.culturalSurveyFilledDate == datetime(2016, 6, 1, 14, 44)
 
 
 class ResendEmailValidationTest:
