@@ -1,15 +1,34 @@
 {
   "applinks": {
-    "appIDs": [
+    "apps": [],
+    "details": [{
+      "appIDs": [
+        "WBC4X3LRTS.app.passculture.test",
+        "WBC4X3LRTS.app.passculture.staging",
+        "WBC4X3LRTS.app.passculture"
+      ],
+      "components": [
+        {
+          "/": "*",
+          "comment": "Matchs every routes and lets app decides which accept"
+        }
+      ]
+    }, {
+      "appID": "WBC4X3LRTS.app.passculture.test",
+      "paths": [ "*" ]
+    },{
+      "appID": "WBC4X3LRTS.app.passculture.staging",
+      "paths": [ "*" ]
+    },{
+      "appID": "WBC4X3LRTS.app.passculture",
+      "paths": [ "*" ]
+    }]
+  },
+  "activitycontinuation": {
+    "apps": [
       "WBC4X3LRTS.app.passculture.test",
       "WBC4X3LRTS.app.passculture.staging",
       "WBC4X3LRTS.app.passculture"
-    ],
-    "components": [
-      {
-        "/": "*",
-        "comment": "Matchs every routes and lets app decides which accept"
-      }
     ]
   },
   "webcredentials": {
