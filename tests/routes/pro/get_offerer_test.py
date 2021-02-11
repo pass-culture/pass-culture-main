@@ -1,11 +1,8 @@
 import pytest
 
+import pcapi.core.offers.factories as offers_factories
+import pcapi.core.users.factories as users_factories
 from pcapi.model_creators.generic_creators import create_bank_information
-from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_user
-from pcapi.model_creators.generic_creators import create_user_offerer
-from pcapi.model_creators.generic_creators import create_venue
-from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
@@ -16,12 +13,11 @@ class Get:
         @pytest.mark.usefixtures("db_session")
         def when_user_offerer_does_not_exist(self, app):
             # Given
-            user = create_user()
-            repository.save(user)
+            pro = users_factories.UserFactory(isBeneficiary=False)
             invalid_id = 12
 
             # When
-            response = TestClient(app.test_client()).with_auth(user.email).get("/offerers/%s" % invalid_id)
+            response = TestClient(app.test_client()).with_auth(pro.email).get("/offerers/%s" % invalid_id)
 
             # then
             assert response.status_code == 404
@@ -31,18 +27,21 @@ class Get:
         @pytest.mark.usefixtures("db_session")
         def when_user_has_rights_on_offerer(self, app):
             # given
-            user = create_user()
-            offerer = create_offerer()
-            venue = create_venue(offerer)
+            pro = users_factories.UserFactory(isBeneficiary=False)
+            venue = offers_factories.VenueFactory()
+            offers_factories.UserOffererFactory(user=pro, offerer=venue.managingOfferer)
+
             create_bank_information(venue=venue)
-            user_offerer = create_user_offerer(user, offerer)
-            repository.save(user_offerer, venue)
+
             # when
-            response = TestClient(app.test_client()).with_auth(user.email).get(f"/offerers/{humanize(offerer.id)}")
+            response = (
+                TestClient(app.test_client())
+                .with_auth(pro.email)
+                .get(f"/offerers/{humanize(venue.managingOfferer.id)}")
+            )
 
             # then
             assert response.status_code == 200
             response_json = response.json
             assert "bic" in response_json["managedVenues"][0]
             assert "iban" in response_json["managedVenues"][0]
-            assert response_json["userHasAccess"] is True

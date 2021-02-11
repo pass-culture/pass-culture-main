@@ -20,6 +20,8 @@ from pcapi.models.venue_sql_entity import create_digital_venue
 from pcapi.repository import repository
 from pcapi.repository.offerer_queries import find_by_siren
 from pcapi.routes.serialization import as_dict
+from pcapi.routes.serialization.offerers_serialize import GetOffererResponseModel
+from pcapi.serialization.decorator import spectree_serialize
 from pcapi.use_cases.list_offerers_for_pro_user import OfferersRequestParameters
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.includes import OFFERER_INCLUDES
@@ -76,14 +78,14 @@ def list_offerers():
     return response, 200
 
 
-# @debt api-migration
 @private_api.route("/offerers/<offerer_id>", methods=["GET"])
 @login_required
-def get_offerer(offerer_id):
+@spectree_serialize(response_model=GetOffererResponseModel)
+def get_offerer(offerer_id: str) -> GetOffererResponseModel:
     ensure_current_user_has_rights(RightsType.editor, dehumanize(offerer_id))
     offerer = load_or_404(Offerer, offerer_id)
 
-    return jsonify(get_dict_offerer(offerer)), 200
+    return GetOffererResponseModel.from_orm(offerer)
 
 
 # @debt api-migration
