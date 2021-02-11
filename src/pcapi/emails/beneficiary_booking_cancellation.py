@@ -1,3 +1,4 @@
+import datetime
 from typing import Dict
 
 from pcapi.models import Booking
@@ -19,6 +20,7 @@ def make_beneficiary_booking_cancellation_email_data(booking: Booking) -> Dict:
     offer_name = offer.name
     price = str(stock.price * booking.quantity)
     is_free_offer = 1 if stock.price == 0 else 0
+    can_book_again = int(beneficiary.deposit.expirationDate > datetime.datetime.now())
 
     if is_event:
         beginning_date_time_in_tz = utc_datetime_to_department_timezone(
@@ -39,5 +41,6 @@ def make_beneficiary_booking_cancellation_email_data(booking: Booking) -> Dict:
             "offer_name": offer_name,
             "offer_price": price,
             "user_first_name": first_name,
+            "can_book_again": can_book_again,
         },
     }

@@ -1,32 +1,23 @@
 from datetime import datetime
 from datetime import timezone
 
+import pytest
+
+import pcapi.core.bookings.factories as bookings_factories
+import pcapi.core.offers.factories as offers_factories
 from pcapi.emails.beneficiary_warning_after_pro_booking_cancellation import (
     retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation,
 )
-from pcapi.model_creators.generic_creators import create_booking
-from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_user
-from pcapi.model_creators.generic_creators import create_venue
-from pcapi.model_creators.specific_creators import create_event_occurrence
-from pcapi.model_creators.specific_creators import create_offer_with_event_product
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence
-from pcapi.model_creators.specific_creators import create_stock_from_offer
 
 
+@pytest.mark.usefixtures("db_session")
 class RetrieveDataToWarnBeneficiaryAfterProBookingCancellationTest:
     def test_should_return_event_data_when_booking_is_on_an_event(self):
         # Given
-        beginning_datetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
-
-        user = create_user()
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue)
-        event_occurrence = create_event_occurrence(offer, beginning_datetime=beginning_datetime)
-        stock = create_stock_from_event_occurrence(event_occurrence, price=20)
-        booking = create_booking(user=user, stock=stock)
+        stock = offers_factories.EventStockFactory(
+            beginningDatetime=datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
+        )
+        booking = bookings_factories.BookingFactory(stock=stock)
 
         # When
         mailjet_data = retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking)
@@ -36,6 +27,7 @@ class RetrieveDataToWarnBeneficiaryAfterProBookingCancellationTest:
             "MJ-TemplateID": 1116690,
             "MJ-TemplateLanguage": True,
             "Vars": {
+                "can_book_again": 1,
                 "event_date": "samedi 20 juillet 2019",
                 "event_hour": "14h",
                 "is_event": 1,
@@ -43,21 +35,17 @@ class RetrieveDataToWarnBeneficiaryAfterProBookingCancellationTest:
                 "is_online": 0,
                 "is_thing": 0,
                 "offer_name": booking.stock.offer.name,
-                "offer_price": "20",
+                "offer_price": "10.00",
                 "offerer_name": booking.stock.offer.venue.managingOfferer.name,
-                "user_first_name": user.firstName,
+                "user_first_name": "Jeanne",
                 "venue_name": booking.stock.offer.venue.name,
             },
         }
 
     def test_should_return_thing_data_when_booking_is_on_a_thing(self):
         # Given
-        user = create_user()
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-        stock = create_stock_from_offer(offer, price=15)
-        booking = create_booking(user=user, stock=stock)
+        stock = offers_factories.ThingStockFactory()
+        booking = bookings_factories.BookingFactory(stock=stock)
 
         # When
         mailjet_data = retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking)
@@ -67,6 +55,7 @@ class RetrieveDataToWarnBeneficiaryAfterProBookingCancellationTest:
             "MJ-TemplateID": 1116690,
             "MJ-TemplateLanguage": True,
             "Vars": {
+                "can_book_again": 1,
                 "event_date": "",
                 "event_hour": "",
                 "is_event": 0,
@@ -74,21 +63,17 @@ class RetrieveDataToWarnBeneficiaryAfterProBookingCancellationTest:
                 "is_online": 0,
                 "is_thing": 1,
                 "offer_name": booking.stock.offer.name,
-                "offer_price": "15",
+                "offer_price": "10.00",
                 "offerer_name": booking.stock.offer.venue.managingOfferer.name,
-                "user_first_name": user.firstName,
+                "user_first_name": "Jeanne",
                 "venue_name": booking.stock.offer.venue.name,
             },
         }
 
     def test_should_return_thing_data_when_booking_is_on_an_online_offer(self):
         # Given
-        user = create_user()
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue, url="http://online.offer")
-        stock = create_stock_from_offer(offer, price=15)
-        booking = create_booking(user=user, stock=stock)
+        stock = offers_factories.ThingStockFactory(offer__product=offers_factories.DigitalProductFactory())
+        booking = bookings_factories.BookingFactory(stock=stock)
 
         # When
         mailjet_data = retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking)
@@ -98,6 +83,7 @@ class RetrieveDataToWarnBeneficiaryAfterProBookingCancellationTest:
             "MJ-TemplateID": 1116690,
             "MJ-TemplateLanguage": True,
             "Vars": {
+                "can_book_again": 1,
                 "event_date": "",
                 "event_hour": "",
                 "is_event": 0,
@@ -105,58 +91,31 @@ class RetrieveDataToWarnBeneficiaryAfterProBookingCancellationTest:
                 "is_online": 1,
                 "is_thing": 0,
                 "offer_name": booking.stock.offer.name,
-                "offer_price": "15",
+                "offer_price": "10.00",
                 "offerer_name": booking.stock.offer.venue.managingOfferer.name,
-                "user_first_name": user.firstName,
+                "user_first_name": "Jeanne",
                 "venue_name": booking.stock.offer.venue.name,
             },
         }
 
     def test_should_not_display_the_price_when_booking_is_on_a_free_offer(self):
         # Given
-        user = create_user()
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-        stock = create_stock_from_offer(offer, price=0)
-        booking = create_booking(user=user, stock=stock)
+        booking = bookings_factories.BookingFactory(stock__price=0)
 
         # When
         mailjet_data = retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking)
 
         # Then
         assert mailjet_data["Vars"]["is_free_offer"] == 1
-        assert mailjet_data["Vars"]["offer_price"] == "0"
+        assert mailjet_data["Vars"]["offer_price"] == "0.00"
 
     def test_should_display_the_price_multiplied_by_quantity_when_it_is_a_duo_offer(self):
         # Given
-        user = create_user()
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-        stock = create_stock_from_offer(offer, price=10)
-        booking = create_booking(user=user, stock=stock, quantity=2)
+        booking = bookings_factories.BookingFactory(amount=10, quantity=2)
 
         # When
         mailjet_data = retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking)
 
         # Then
         assert mailjet_data["Vars"]["is_free_offer"] == 0
-        assert mailjet_data["Vars"]["offer_price"] == "20"
-
-    def test_should_use_venue_public_name_when_venue_has_one(self):
-        # Given
-        user = create_user()
-        offerer = create_offerer()
-        venue = create_venue(offerer, name="Mon nouveau nom")
-        offer = create_offer_with_thing_product(
-            venue,
-        )
-        stock = create_stock_from_offer(offer)
-        booking = create_booking(user=user, stock=stock)
-
-        # When
-        mailjet_data = retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking)
-
-        # Then
-        assert mailjet_data["Vars"]["venue_name"] == "Mon nouveau nom"
+        assert mailjet_data["Vars"]["offer_price"] == "20.00"

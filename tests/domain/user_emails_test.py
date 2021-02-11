@@ -153,8 +153,7 @@ class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
 class SendWarningToBeneficiaryAfterProBookingCancellationTest:
     def test_should_sends_email_to_beneficiary_when_pro_cancels_booking(self):
         # Given
-        user = create_user(email="user@example.com")
-        booking = create_booking(user=user)
+        booking = BookingFactory(user__email="user@example.com", user__firstName="Jeanne")
 
         # When
         send_warning_to_beneficiary_after_pro_booking_cancellation(booking)
@@ -173,9 +172,10 @@ class SendWarningToBeneficiaryAfterProBookingCancellationTest:
                 "is_thing": 1,
                 "is_online": 0,
                 "offer_name": booking.stock.offer.name,
-                "offer_price": "10",
+                "offer_price": "10.00",
                 "offerer_name": booking.stock.offer.venue.managingOfferer.name,
-                "user_first_name": user.firstName,
+                "user_first_name": "Jeanne",
+                "can_book_again": True,
                 "venue_name": booking.stock.offer.venue.name,
                 "env": "-development",
             },

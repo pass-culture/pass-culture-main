@@ -34,6 +34,7 @@ class MakeBeneficiaryBookingCancellationEmailDataTest:
             "Mj-TemplateID": 1091464,
             "Mj-TemplateLanguage": True,
             "Vars": {
+                "can_book_again": 1,
                 "event_date": "",
                 "event_hour": "",
                 "is_event": 0,
@@ -67,6 +68,7 @@ class MakeBeneficiaryBookingCancellationEmailDataTest:
             "Mj-TemplateID": 1091464,
             "Mj-TemplateLanguage": True,
             "Vars": {
+                "can_book_again": 1,
                 "event_date": "26 novembre",
                 "event_hour": "19h29",
                 "is_event": 1,

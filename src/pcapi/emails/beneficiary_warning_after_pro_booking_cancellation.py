@@ -1,3 +1,4 @@
+import datetime
 from typing import Dict
 
 from babel.dates import format_date
@@ -27,6 +28,7 @@ def retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking: Bo
     offer_price = str(stock.price * booking.quantity)
     user_first_name = booking.user.firstName
     venue_name = offer.venue.publicName if offer.venue.publicName else offer.venue.name
+    can_book_again = int(booking.user.deposit.expirationDate > datetime.datetime.now())
 
     return {
         "MJ-TemplateID": 1116690,
@@ -42,6 +44,7 @@ def retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking: Bo
             "offer_price": offer_price,
             "offerer_name": offerer_name,
             "user_first_name": user_first_name,
+            "can_book_again": can_book_again,
             "venue_name": venue_name,
         },
     }
