@@ -59,26 +59,24 @@ const AppLayout = props => {
             {children}
           </Fragment>
         ) : (
-          <div className="columns is-gapless">
-            <div className="page-content column is-10 is-offset-1">
-              <NotificationV1Container />
-              <div
-                className={classnames('after-notification-content', {
-                  'with-padding': backTo,
-                })}
-              >
-                {backTo && (
-                  <NavLink
-                    className="back-button has-text-primary"
-                    to={backTo.path}
-                  >
-                    <Icon svg="ico-back" />
-                    {` ${backTo.label}`}
-                  </NavLink>
-                )}
-                <div className="main-content">
-                  {children}
-                </div>
+          <div className="page-content">
+            <NotificationV1Container />
+            <div
+              className={classnames('after-notification-content', {
+                'with-padding': backTo,
+              })}
+            >
+              {backTo && (
+                <NavLink
+                  className="back-button has-text-primary"
+                  to={backTo.path}
+                >
+                  <Icon svg="ico-back" />
+                  {` ${backTo.label}`}
+                </NavLink>
+              )}
+              <div className="main-content">
+                {children}
               </div>
             </div>
           </div>
