@@ -81,6 +81,7 @@ class BeneficiaryAccountResponse(BaseModel):
     suspensionReason: Optional[str]
     wallet_balance: float
     wallet_date_created: Optional[datetime]
+    deposit_expiration_date: Optional[datetime]
     wallet_is_activated: bool
 
     _humanize_id = humanize_field("id")

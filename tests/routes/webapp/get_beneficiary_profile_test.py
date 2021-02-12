@@ -46,6 +46,7 @@ class Get:
                 email="wallet_test@email.com",
                 postalCode="93020",
                 deposit__dateCreated=datetime(2000, 1, 1, 2, 2),
+                deposit__expirationDate=datetime(2002, 1, 1, 2, 2),
             )
 
             # When
@@ -54,6 +55,7 @@ class Get:
             # Then
             assert response.json["wallet_is_activated"] == True
             assert response.json["wallet_date_created"] == "2000-01-01T02:02:00Z"
+            assert response.json["deposit_expiration_date"] == "2002-01-01T02:02:00Z"
 
         @pytest.mark.usefixtures("db_session")
         def when_user_has_booked_some_offers(self, app):
