@@ -63,7 +63,7 @@ const OfferForm = ({
   initialValues,
   isEdition,
   isUserAdmin,
-  offerers,
+  offerersNames,
   onSubmit,
   providerName,
   readOnlyFields,
@@ -91,7 +91,7 @@ const OfferForm = ({
       }),
     [setFormValues]
   )
-  const offererOptions = buildSelectOptions('id', 'name', offerers)
+  const offererOptions = buildSelectOptions('id', 'name', offerersNames)
 
   useEffect(() => {
     setFormErrors(submitErrors)
@@ -192,11 +192,11 @@ const OfferForm = ({
   )
   useEffect(
     function selectOffererWhenUnique() {
-      if (offerers.length === 1) {
-        handleFormUpdate({ offererId: offerers[0].id })
+      if (offerersNames.length === 1) {
+        handleFormUpdate({ offererId: offerersNames[0].id })
       }
     },
-    [handleFormUpdate, offerers]
+    [handleFormUpdate, offerersNames]
   )
   useEffect(
     function showThumbnail() {
@@ -807,6 +807,12 @@ OfferForm.propTypes = {
   initialValues: PropTypes.shape(),
   isEdition: PropTypes.bool,
   isUserAdmin: PropTypes.bool,
+  offerersNames: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+    })
+  ).isRequired,
   onSubmit: PropTypes.func.isRequired,
   providerName: PropTypes.string,
   readOnlyFields: PropTypes.arrayOf(PropTypes.string),
@@ -815,6 +821,8 @@ OfferForm.propTypes = {
   setShowThumbnailForm: PropTypes.func.isRequired,
   showErrorNotification: PropTypes.func.isRequired,
   submitErrors: PropTypes.shape().isRequired,
+  types: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  venues: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 }
 
 export default OfferForm

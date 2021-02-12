@@ -101,7 +101,9 @@ const OfferEdition = ({
       initialValues={initialValues}
       isEdition
       isUserAdmin={isUserAdmin}
-      offerers={[offer.venue.managingOfferer]}
+      offerersNames={[
+        { id: offer.venue.managingOfferer.id, name: offer.venue.managingOfferer.name },
+      ]}
       onSubmit={onSubmit}
       providerName={providerName}
       readOnlyFields={readOnlyFields}

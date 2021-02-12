@@ -20,7 +20,7 @@ const OfferCreation = ({
 }) => {
   const venues = useRef([])
   const types = useRef([])
-  const offerers = useRef([])
+  const offerersNames = useRef([])
   const [displayedVenues, setDisplayedVenues] = useState([])
   const [selectedOfferer, setSelectedOfferer] = useState(initialValues.offererId)
 
@@ -29,9 +29,21 @@ const OfferCreation = ({
     function retrieveDataOnMount() {
       const typesRequest = pcapi.loadTypes().then(receivedTypes => (types.current = receivedTypes))
       const requests = [typesRequest]
-      if (!isUserAdmin) {
+      if (isUserAdmin) {
+        const offererRequest = pcapi.getOfferer(initialValues.offererId).then(receivedOfferer => {
+          offerersNames.current = [
+            {
+              id: receivedOfferer.id,
+              name: receivedOfferer.name,
+            },
+          ]
+          venues.current = receivedOfferer.managedVenues
+          setDisplayedVenues(receivedOfferer.managedVenues)
+        })
+        requests.push(offererRequest)
+      } else {
         const offerersRequest = pcapi.getValidatedOfferersNames().then(receivedOfferers => {
-          offerers.current = receivedOfferers
+          offerersNames.current = receivedOfferers
         })
         const venuesRequest = pcapi.getVenuesForOfferer().then(receivedVenues => {
           venues.current = receivedVenues
@@ -41,13 +53,6 @@ const OfferCreation = ({
           setDisplayedVenues(venuesToDisplay)
         })
         requests.push(offerersRequest, venuesRequest)
-      } else {
-        const offererRequest = pcapi.getOfferer(initialValues.offererId).then(receivedOfferer => {
-          offerers.current = [receivedOfferer]
-          venues.current = receivedOfferer.managedVenues
-          setDisplayedVenues(receivedOfferer.managedVenues)
-        })
-        requests.push(offererRequest)
       }
       Promise.all(requests).then(() => setIsLoading(false))
     },
@@ -86,7 +91,7 @@ const OfferCreation = ({
       formValues={formValues}
       initialValues={initialValues}
       isUserAdmin={isUserAdmin}
-      offerers={offerers.current}
+      offerersNames={offerersNames.current}
       onSubmit={onSubmit}
       readOnlyFields={isUserAdmin ? ['offererId'] : []}
       setFormValues={setFormValues}
