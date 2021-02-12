@@ -2,14 +2,13 @@ import { connect } from 'react-redux'
 
 import TutorialDialog from 'components/layout/Tutorial/TutorialDialog'
 import { selectIsFeatureActive } from 'store/selectors/data/featuresSelectors'
-import { hasSeenTutorial, selectCurrentUser } from 'store/selectors/data/usersSelectors'
+import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 
 import { setUsers } from '../../../store/reducers/data'
 
 const mapStateToProps = state => {
   return {
     currentUser: selectCurrentUser(state),
-    hasSeenTutorial: hasSeenTutorial(state),
     isFeatureActive: selectIsFeatureActive(state, 'PRO_TUTO'),
   }
 }

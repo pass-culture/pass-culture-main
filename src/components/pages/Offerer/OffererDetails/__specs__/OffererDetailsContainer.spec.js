@@ -4,6 +4,7 @@ jest.mock('redux-saga-data', () => {
   const { requestData } = jest.requireActual('fetch-normalize-data')
   return {
     requestData,
+    createDataReducer: jest.fn(),
   }
 })
 
