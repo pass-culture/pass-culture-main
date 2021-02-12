@@ -21,7 +21,7 @@ const Welcome = ({ titleId }) => (
             {'1'}
           </p>
           <p>
-            {'Renseigner vos coordonnées bancaires'}
+            {'Créer une offre physique ou numérique'}
           </p>
         </div>
         <div>
@@ -29,7 +29,7 @@ const Welcome = ({ titleId }) => (
             {'2'}
           </p>
           <p>
-            {'Créer une offre physique ou numérique'}
+            {"Publier votre offre : elle sera visible sur l'application publique"}
           </p>
         </div>
         <div>
@@ -37,7 +37,7 @@ const Welcome = ({ titleId }) => (
             {'3'}
           </p>
           <p>
-            {"Publier votre offre : elle sera visible sur l'application publique"}
+            {'Suivre et gérer vos réservations'}
           </p>
         </div>
         <div>
@@ -45,7 +45,7 @@ const Welcome = ({ titleId }) => (
             {'4'}
           </p>
           <p>
-            {'Suivre et gérer vos réservations'}
+            {'Renseigner vos coordonnées bancaires'}
           </p>
         </div>
       </div>
