@@ -43,7 +43,7 @@
       padding-top: 0;
 
       > *:first-child {
-        margin-top: 16px;
+        margin-top: rem(16px);
       }
     }
 
@@ -123,6 +123,14 @@
 
     .h-card-title {
       @include title4();
+
+      align-items: center;
+      display: flex;
+      flex-direction: row;
+
+      .h-card-title-ico {
+        margin-right: rem(3px);
+      }
     }
 
     .h-card-secondary-title {
@@ -203,6 +211,20 @@
           margin-left: 0;
         }
       }
+    }
+  }
+
+  .h-venue-list {
+    margin-top: rem(16px);
+
+    .loading-spinner {
+      img {
+        margin-bottom: 0;
+      }
+    }
+
+    .h-card-inner {
+      padding-bottom: rem(16px); // FIXME: remove this fix when venue list card get content.
     }
   }
 }

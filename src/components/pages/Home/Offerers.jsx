@@ -12,6 +12,7 @@ const Offerers = () => {
   const [offerers, setOfferers] = useState([])
   const [offererOptions, setOffererOptions] = useState([])
   const [selectedOfferer, setSelectedOfferer] = useState(null)
+  const [offlineVenues, setOfflineVenues] = useState([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(function fetchData() {
@@ -23,6 +24,13 @@ const Offerers = () => {
       setIsLoading(false)
     })
   }, [])
+
+  useEffect(() => {
+    if (isLoading) return
+    pcapi.getVenuesForOfferer(selectedOfferer.id).then(venues => {
+      setOfflineVenues(venues.filter(venue => !venue.isVirtual))
+    })
+  }, [isLoading, selectedOfferer])
 
   const handleChangeOfferer = useCallback(
     event => {
@@ -116,17 +124,49 @@ const Offerers = () => {
         </div>
       </div>
 
-      <div className="h-section-row nested">
-        <div className="h-card h-card-primary">
-          <div className="h-card-inner">
-            <h3 className="h-card-secondary-title">
-              {'Votre lieu numérique'}
-            </h3>
-            <div className="h-card-content">
-              {'Hello world !'}
+      <div className="h-venue-list">
+        <div className="h-section-row nested">
+          <div className="h-card h-card-primary">
+            <div className="h-card-inner">
+              <h3 className="h-card-title">
+                <Icon
+                  className="h-card-title-ico"
+                  svg="ico-screen-play"
+                />
+                {'Lieu numérique'}
+              </h3>
             </div>
           </div>
         </div>
+
+        {offlineVenues &&
+          offlineVenues.map(venue => (
+            <div
+              className="h-section-row nested"
+              key={venue.id}
+            >
+              <div className="h-card h-card-secondary">
+                <div className="h-card-inner">
+                  <div className="h-card-header-row">
+                    <h3 className="h-card-title">
+                      <Icon
+                        className="h-card-title-ico"
+                        svg="ico-box"
+                      />
+                      {venue.name}
+                    </h3>
+                    <Link
+                      className="tertiary-button"
+                      to={`/structures/${selectedOfferer.id}/lieux/${venue.id}`}
+                    >
+                      <Icon svg="ico-outer-pen" />
+                      {'Modifier'}
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
       </div>
     </>
   )

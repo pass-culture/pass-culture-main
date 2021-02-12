@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
@@ -11,6 +11,7 @@ import Homepage from '../Homepage'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   getOfferers: jest.fn(),
+  getVenuesForOfferer: jest.fn(),
 }))
 
 const renderHomePage = async () => {
@@ -40,6 +41,7 @@ const renderHomePage = async () => {
 
 describe('homepage : Tabs : Offerers', () => {
   let baseOfferers
+  let baseVenues
 
   beforeEach(() => {
     baseOfferers = [
@@ -60,11 +62,32 @@ describe('homepage : Tabs : Offerers', () => {
         siren: '222222222',
       },
     ]
+    baseVenues = [
+      {
+        id: 'test_venue_id_1',
+        isVirtual: true,
+        managingOffererId: baseOfferers[0].id,
+        name: 'Le Sous-sol (Offre numérique)',
+        offererName: 'Bar des amis',
+        publicName: null,
+      },
+      {
+        id: 'test_venue_id_2',
+        isVirtual: false,
+        managingOffererId: baseOfferers[0].id,
+        name: 'Le Sous-sol (Offre physique)',
+        offererName: 'Bar des amis',
+        publicName: null,
+      },
+    ]
+
     pcapi.getOfferers.mockResolvedValue(baseOfferers)
+    pcapi.getVenuesForOfferer.mockResolvedValue(baseVenues)
   })
 
   afterEach(() => {
     pcapi.getOfferers.mockClear()
+    pcapi.getVenuesForOfferer.mockClear()
   })
 
   describe('render', () => {
@@ -94,13 +117,48 @@ describe('homepage : Tabs : Offerers', () => {
       expect(await screen.findByText(selectedOffererAddress)).toBeInTheDocument()
     })
 
+    it('should display offerer venues informations', async () => {
+      const virtualVenueTitle = await screen.findByText('Lieu numérique')
+      expect(virtualVenueTitle).toBeInTheDocument()
+
+      const offlineVenueTitle = await screen.findByText(baseVenues[1].name)
+      expect(offlineVenueTitle).toBeInTheDocument()
+      const offlineVenueContainer = offlineVenueTitle.closest('div')
+      expect(
+        within(offlineVenueContainer).getByText('Modifier', { exact: false })
+      ).toBeInTheDocument()
+    })
+
     describe('when selected offerer change', () => {
       let newSelectedOfferer
+      let newSelectedOffererVenues
       beforeEach(async () => {
         const selectedOffer = baseOfferers[0]
         newSelectedOfferer = baseOfferers[1]
-        await fireEvent.change(screen.getByDisplayValue(selectedOffer.name), {
-          target: { value: newSelectedOfferer.id },
+        newSelectedOffererVenues = [
+          {
+            id: 'test_venue_id_3',
+            isVirtual: true,
+            managingOffererId: newSelectedOfferer.id,
+            name: 'New venue (Offre numérique)',
+            offererName: newSelectedOfferer.name,
+            publicName: null,
+          },
+          {
+            id: 'test_venue_id_4',
+            isVirtual: false,
+            managingOffererId: newSelectedOfferer.id,
+            name: 'New venue (Offre physique)',
+            offererName: newSelectedOfferer.name,
+            publicName: null,
+          },
+        ]
+        pcapi.getVenuesForOfferer.mockResolvedValue(newSelectedOffererVenues)
+
+        await act(async () => {
+          await fireEvent.change(screen.getByDisplayValue(selectedOffer.name), {
+            target: { value: newSelectedOfferer.id },
+          })
         })
       })
 
@@ -112,6 +170,18 @@ describe('homepage : Tabs : Offerers', () => {
           await screen.findByText(newSelectedOfferer.name, { selector: 'dd' })
         ).toBeInTheDocument()
         expect(await screen.findByText(selectedOffererAddress)).toBeInTheDocument()
+      })
+
+      it('should display new offerer venues informations', async () => {
+        const virtualVenueTitle = await screen.findByText('Lieu numérique')
+        expect(virtualVenueTitle).toBeInTheDocument()
+
+        const offlineVenueTitle = await screen.findByText(newSelectedOffererVenues[1].name)
+        expect(offlineVenueTitle).toBeInTheDocument()
+        const offlineVenueContainer = offlineVenueTitle.closest('div')
+        expect(
+          within(offlineVenueContainer).getByText('Modifier', { exact: false })
+        ).toBeInTheDocument()
       })
     })
   })
