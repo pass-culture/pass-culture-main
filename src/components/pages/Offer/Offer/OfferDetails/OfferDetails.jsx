@@ -70,8 +70,19 @@ const OfferDetails = ({
           setFormErrors({})
         } else {
           const response = await pcapi.createOffer(offerValues)
-          showCreationSuccessNotification()
           const createdOfferId = response.id
+          const { credit, thumbnail, croppingRect, thumbUrl } = thumbnailInfo
+          await pcapi.postThumbnail(
+            formValues.offererId,
+            createdOfferId,
+            credit,
+            thumbnail,
+            thumbUrl,
+            croppingRect.x,
+            croppingRect.y,
+            croppingRect.height
+          )
+          showCreationSuccessNotification()
           history.push(`/offres/${createdOfferId}/stocks`)
         }
       } catch (error) {
@@ -153,7 +164,7 @@ const OfferDetails = ({
                   url={offer.thumbUrl}
                 />
               ) : (
-                <OfferThumbnailPlaceholder />
+                <OfferThumbnailPlaceholder setThumbnailInfo={setThumbnailInfo} />
               )}
               <OfferPreview
                 formValues={formValues}
