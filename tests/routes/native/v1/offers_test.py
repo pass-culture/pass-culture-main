@@ -69,6 +69,7 @@ class OffersTest:
                     "price": 1234,
                     "beginningDatetime": "2020-01-06T00:00:00",
                     "bookingLimitDatetime": "2020-01-05T23:00:00",
+                    "cancellationLimitDatetime": "2020-01-03T00:00:00",
                     "isBookable": True,
                 },
                 {
@@ -77,6 +78,7 @@ class OffersTest:
                     "isBookable": False,
                     "beginningDatetime": "2019-12-31T00:00:00",
                     "bookingLimitDatetime": "2019-12-30T23:00:00",
+                    "cancellationLimitDatetime": "2020-01-01T00:00:00",
                 },
             ],
             "category": {"categoryType": "Event", "label": "Cinéma", "name": "CINEMA"},

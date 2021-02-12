@@ -8,6 +8,8 @@ from typing import Optional
 from pydantic.class_validators import validator
 from pydantic.fields import Field
 
+from pcapi.core.bookings.api import compute_confirmation_date
+from pcapi.core.offers.models import Stock
 from pcapi.domain.music_types import MUSIC_SUB_TYPES_DICT
 from pcapi.domain.music_types import MUSIC_TYPES_DICT
 from pcapi.domain.show_types import SHOW_SUB_TYPES_DICT
@@ -15,6 +17,7 @@ from pcapi.domain.show_types import SHOW_TYPES_DICT
 from pcapi.models.offer_type import CategoryNameEnum
 from pcapi.models.offer_type import CategoryType
 from pcapi.routes.native.utils import convert_to_cent
+from pcapi.serialization.utils import to_camel
 from pcapi.utils.logger import logger
 
 from . import BaseModel
@@ -42,6 +45,7 @@ class OfferStockResponse(BaseModel):
     id: int
     beginningDatetime: Optional[datetime]
     bookingLimitDatetime: Optional[datetime]
+    cancellation_limit_datetime: Optional[datetime]
     isBookable: bool
     price: int
 
@@ -49,6 +53,18 @@ class OfferStockResponse(BaseModel):
 
     class Config:
         orm_mode = True
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+
+    @staticmethod
+    def _get_cancellation_limit_datetime(stock: Stock) -> Optional[datetime]:
+        # compute date as if it were booked now
+        return compute_confirmation_date(stock.beginningDatetime, datetime.now())
+
+    @classmethod
+    def from_orm(cls, stock):  # type: ignore
+        stock.cancellation_limit_datetime = cls._get_cancellation_limit_datetime(stock)
+        return super().from_orm(stock)
 
 
 class OfferVenueResponse(BaseModel):

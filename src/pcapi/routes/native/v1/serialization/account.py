@@ -44,7 +44,7 @@ class Expense(BaseModel):
     limit: int
 
     _convert_current = validator("current", pre=True, allow_reuse=True)(convert_to_cent)
-    _convert_max = validator("limit", pre=True, allow_reuse=True)(convert_to_cent)
+    _convert_limit = validator("limit", pre=True, allow_reuse=True)(convert_to_cent)
 
     class Config:
         orm_mode = True
