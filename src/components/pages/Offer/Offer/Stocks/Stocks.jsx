@@ -246,6 +246,8 @@ const Stocks = ({ offer, showErrorNotification, showSuccessNotification }) => {
               ))}
             </tbody>
           </table>
+          <div className="interval cover" />
+          <div className="interval shadow" />
           <section className="actions-section">
             <Link
               className="secondary-link"

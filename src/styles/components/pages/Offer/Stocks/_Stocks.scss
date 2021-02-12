@@ -1,3 +1,7 @@
+$actionsPaddingTop: rem(20px);
+$actionsPaddingBottom: rem(20px);
+$buttonHeight: rem(40px);
+
 .stocks-page {
   h2 {
     @include title3();
@@ -41,7 +45,37 @@
     vertical-align: middle;
   }
 
+  .interval {
+    height: rem(32px);
+    left: 0;
+    right: 0;
+
+    &.cover {
+      background: $white;
+      position: absolute;
+      z-index: 1;
+    }
+
+    &.shadow {
+      background-image: radial-gradient(ellipse at bottom, $black-shadow, transparent 75%);
+      bottom: $actionsPaddingBottom + $actionsPaddingTop + $buttonHeight;
+      position: sticky;
+    }
+  }
+
+  .react-datepicker-popper {
+    z-index: 3;
+  }
+
   .actions-section {
+    background: $white;
+    bottom: 0;
+    margin-top: 0;
+    padding-bottom: $actionsPaddingBottom;
+    padding-top: $actionsPaddingTop;
+    position: sticky;
+    z-index: 2;
+
     button,
     a {
       max-width: rem(230px);
