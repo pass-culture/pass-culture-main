@@ -170,7 +170,7 @@ def get_number_of_venue_providers_currently_in_sync(client: Redis) -> int:
 
 def add_offer_ids_in_error(client: Redis, offer_ids: List[int]) -> None:
     try:
-        client.rpush(RedisBucket.REDIS_LIST_OFFER_IDS_IN_ERROR_NAME.value, offer_ids)
+        client.rpush(RedisBucket.REDIS_LIST_OFFER_IDS_IN_ERROR_NAME.value, *offer_ids)
     except redis.exceptions.RedisError as error:
         logger.exception("[REDIS] %s", error)
 

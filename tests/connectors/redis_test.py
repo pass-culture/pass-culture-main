@@ -447,7 +447,7 @@ class AddOfferIdInErrorTest:
         add_offer_ids_in_error(client=client, offer_ids=[1, 2])
 
         # Then
-        client.rpush.assert_called_once_with("offer_ids_in_error", [1, 2])
+        client.rpush.assert_called_once_with("offer_ids_in_error", 1, 2)
 
 
 class GetOfferIdsInErrorTest:
