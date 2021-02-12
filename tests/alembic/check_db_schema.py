@@ -7,7 +7,7 @@ from pcapi.alembic.run_migrations import include_object
 from pcapi.models.db import db
 
 
-connectable = create_engine(settings.DATABASE_URL_TEST)
+connectable = create_engine(settings.DATABASE_URL)
 
 
 def main():

@@ -19,15 +19,13 @@ def include_object(object, name, type_, reflected, compare_to) -> bool:  # pylin
 
 
 def run_migrations() -> None:
-    database_url = settings.DATABASE_URL_TEST if settings.IS_RUNNING_TESTS else settings.DATABASE_URL
-
     db_options = []
     if settings.DB_MIGRATION_LOCK_TIMEOUT:
         db_options.append("-c lock_timeout=%i" % settings.DB_MIGRATION_LOCK_TIMEOUT)
     if settings.DB_MIGRATION_STATEMENT_TIMEOUT:
         db_options.append("-c statement_timeout=%i" % settings.DB_MIGRATION_STATEMENT_TIMEOUT)
 
-    connectable = create_engine(database_url, connect_args={"options": " ".join(db_options)})
+    connectable = create_engine(settings.DATABASE_URL, connect_args={"options": " ".join(db_options)})
 
     with connectable.connect() as connection:
         context.configure(

@@ -32,7 +32,7 @@ from pcapi.utils.json_encoder import EnumJSONEncoder
 
 def run_migrations():
     alembic_cfg = Config("alembic.ini")
-    alembic_cfg.set_main_option("sqlalchemy.url", settings.DATABASE_URL_TEST)
+    alembic_cfg.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
     command.upgrade(alembic_cfg, "head")
 
 
@@ -48,7 +48,7 @@ def app():
         template_folder=Path(pcapi.__path__[0]) / "templates",
     )
 
-    app.config["SQLALCHEMY_DATABASE_URI"] = settings.DATABASE_URL_TEST
+    app.config["SQLALCHEMY_DATABASE_URI"] = settings.DATABASE_URL
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["SECRET_KEY"] = "@##&6cweafhv3426445"
     app.config["REMEMBER_COOKIE_HTTPONLY"] = False
