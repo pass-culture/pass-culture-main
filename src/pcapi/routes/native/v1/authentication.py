@@ -99,7 +99,7 @@ def reset_password(body: ResetPasswordRequest) -> None:
 def change_password(user: User, body: ChangePasswordRequest) -> None:
     try:
         users_repo.check_user_and_credentials(user, body.current_password)
-    except users_exceptions.InvalidPassword:
+    except users_exceptions.InvalidIdentifier:
         raise ApiErrors({"code": "INVALID_PASSWORD", "currentPassword": ["Le mot de passe est incorrect"]})
     except users_exceptions.CredentialsException:
         raise ForbiddenError()

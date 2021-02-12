@@ -134,7 +134,7 @@ class Post:
 
             # Then
             assert response.status_code == 401
-            assert response.json["identifier"] == ["Identifiant incorrect"]
+            assert response.json["identifier"] == ["Identifiant ou mot de passe incorrect"]
 
         @pytest.mark.usefixtures("db_session")
         def when_password_is_missing(self, app):
@@ -162,7 +162,7 @@ class Post:
 
             # Then
             assert response.status_code == 401
-            assert response.json["password"] == ["Mot de passe incorrect"]
+            assert response.json["identifier"] == ["Identifiant ou mot de passe incorrect"]
 
         @pytest.mark.usefixtures("db_session")
         def when_account_is_not_validated(self, app):

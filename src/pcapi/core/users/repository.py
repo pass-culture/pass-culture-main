@@ -10,14 +10,12 @@ from .models import User
 
 
 def check_user_and_credentials(user: User, password: str) -> None:
-    if not user:
-        raise exceptions.InvalidIdentifier()
-    if not user.isActive:
+    # Order is important to prevent end-user to guess user emails
+    # We need to check email and password before checking email validation
+    if not user or not user.isActive or not user.checkPassword(password):
         raise exceptions.InvalidIdentifier()
     if not user.isValidated or not user.isEmailValidated:
         raise exceptions.UnvalidatedAccount()
-    if not user.checkPassword(password):
-        raise exceptions.InvalidPassword()
 
 
 def get_user_with_credentials(identifier: str, password: str) -> User:
