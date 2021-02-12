@@ -25,11 +25,11 @@ def _build_bookings_quantity_subquery():
 def filter_bookable_stocks_query(stocks_query):
     beginning_date_is_in_the_future_predicate = Stock.beginningDatetime > datetime.utcnow()
     booking_limit_date_is_in_the_future_predicate = Stock.bookingLimitDatetime > datetime.utcnow()
-    has_no_beginning_date_predicate = Stock.beginningDatetime == None
-    has_no_booking_limit_date_predicate = Stock.bookingLimitDatetime == None
-    is_not_soft_deleted_predicate = Stock.isSoftDeleted == False
+    has_no_beginning_date_predicate = Stock.beginningDatetime.is_(None)
+    has_no_booking_limit_date_predicate = Stock.bookingLimitDatetime.is_(None)
+    is_not_soft_deleted_predicate = Stock.isSoftDeleted.is_(False)
     bookings_quantity = _build_bookings_quantity_subquery()
-    has_remaining_stock = (Stock.quantity == None) | (
+    has_remaining_stock = (Stock.quantity.is_(None)) | (
         (Stock.quantity - func.coalesce(bookings_quantity.c.quantity, 0)) > 0
     )
 

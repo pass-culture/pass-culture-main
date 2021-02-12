@@ -2,7 +2,7 @@ from pcapi.models import UserOfferer
 
 
 def filter_query_where_user_is_user_offerer_and_is_validated(query, user):
-    return query.join(UserOfferer).filter_by(user=user).filter(UserOfferer.validationToken == None)
+    return query.join(UserOfferer).filter_by(user=user).filter(UserOfferer.validationToken.is_(None))
 
 
 def find_one_or_none_by_user_id(user_id):

@@ -44,9 +44,9 @@ def _get_non_editable_venues():
         VenueSQLEntity.query.join(Offerer, VenueSQLEntity.managingOffererId == Offerer.id)
         .filter(
             or_(
-                and_(VenueSQLEntity.siret == None, Offerer.siren == None),
+                and_(VenueSQLEntity.siret.is_(None), Offerer.siren.is_(None)),
                 Offerer.name == "",
-                Offerer.siren == None,
+                Offerer.siren.is_(None),
                 not_(VenueSQLEntity.siret.startswith(Offerer.siren)),
             )
         )

@@ -88,7 +88,7 @@ def get_offers_by_ids(user: User, offer_ids: List[int]) -> Query:
     query = Offer.query
     if not user.isAdmin:
         query = query.join(VenueSQLEntity, Offerer, UserOfferer).filter(
-            and_(UserOfferer.userId == user.id, UserOfferer.validationToken == None)
+            and_(UserOfferer.userId == user.id, UserOfferer.validationToken.is_(None))
         )
     query = query.filter(Offer.id.in_(offer_ids))
     return query
@@ -114,7 +114,7 @@ def get_offers_by_filters(
             query.join(VenueSQLEntity)
             .join(Offerer)
             .join(UserOfferer)
-            .filter(and_(UserOfferer.userId == user_id, UserOfferer.validationToken == None))
+            .filter(and_(UserOfferer.userId == user_id, UserOfferer.validationToken.is_(None)))
         )
     if offerer_id is not None:
         venue_alias = aliased(VenueSQLEntity)

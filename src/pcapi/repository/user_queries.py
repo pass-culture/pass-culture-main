@@ -4,6 +4,7 @@ from typing import List
 
 from sqlalchemy import Column
 from sqlalchemy import func
+from sqlalchemy import not_
 from sqlalchemy.orm import Query
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.functions import Function
@@ -72,7 +73,7 @@ def filter_users_with_at_least_one_validated_offerer_validated_user_offerer(quer
     return (
         query.join(UserOfferer)
         .join(Offerer)
-        .filter((Offerer.validationToken == None) & (UserOfferer.validationToken == None))
+        .filter((Offerer.validationToken.is_(None)) & (UserOfferer.validationToken.is_(None)))
     )
 
 
@@ -80,7 +81,7 @@ def filter_users_with_at_least_one_validated_offerer_not_validated_user_offerer(
     return (
         query.join(UserOfferer)
         .join(Offerer)
-        .filter((Offerer.validationToken == None) & (UserOfferer.validationToken != None))
+        .filter((Offerer.validationToken.is_(None)) & (not_(UserOfferer.validationToken.is_(None))))
     )
 
 
@@ -88,12 +89,12 @@ def filter_users_with_at_least_one_not_validated_offerer_validated_user_offerer(
     return (
         query.join(UserOfferer)
         .join(Offerer)
-        .filter((Offerer.validationToken != None) & (UserOfferer.validationToken == None))
+        .filter((not_(Offerer.validationToken.is_(None))) & (UserOfferer.validationToken.is_(None)))
     )
 
 
 def keep_only_webapp_users(query: Query) -> Query:
-    return query.filter((~User.UserOfferers.any()) & (User.isAdmin == False))
+    return query.filter((~User.UserOfferers.any()) & (User.isAdmin.is_(False)))
 
 
 def find_most_recent_beneficiary_creation_date_for_source(source: BeneficiaryImportSources, source_id: int) -> datetime:
