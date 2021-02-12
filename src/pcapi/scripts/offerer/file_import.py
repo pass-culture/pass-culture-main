@@ -3,12 +3,12 @@ from datetime import datetime
 from typing import Callable
 from typing import List
 
+from pcapi.core.offerers.venue_sql_entity import create_digital_venue
 from pcapi.core.users.models import User
 from pcapi.domain.password import generate_reset_token
 from pcapi.domain.password import random_password
 from pcapi.models import Offerer
 from pcapi.models import UserOfferer
-from pcapi.models.venue_sql_entity import create_digital_venue
 from pcapi.repository import repository
 from pcapi.repository.offerer_queries import find_by_siren
 from pcapi.repository.user_offerer_queries import find_one_or_none_by_user_id_and_offerer_id

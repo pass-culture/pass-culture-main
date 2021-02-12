@@ -2,8 +2,8 @@ from sqlalchemy import Column
 from sqlalchemy import String
 from sqlalchemy.orm import relationship
 
-from pcapi.models import PcObject
 from pcapi.models.db import Model
+from pcapi.models.pc_object import PcObject
 
 
 class VenueType(PcObject, Model):

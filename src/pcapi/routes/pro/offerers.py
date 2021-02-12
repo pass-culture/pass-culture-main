@@ -7,6 +7,7 @@ from flask_login import current_user
 from flask_login import login_required
 
 from pcapi.core.offerers.repository import get_all_validated
+from pcapi.core.offerers.venue_sql_entity import create_digital_venue
 from pcapi.core.users.models import User
 from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
 from pcapi.domain.user_emails import send_ongoing_offerer_attachment_information_email_to_pro
@@ -16,7 +17,6 @@ from pcapi.infrastructure.container import list_offerers_for_pro_user
 from pcapi.models import ApiErrors
 from pcapi.models import Offerer
 from pcapi.models import UserOfferer
-from pcapi.models.venue_sql_entity import create_digital_venue
 from pcapi.repository import repository
 from pcapi.repository.offerer_queries import find_by_siren
 from pcapi.routes.serialization import as_dict

@@ -1,5 +1,6 @@
 from pcapi.core.bookings.models import Booking
 from pcapi.core.mails.models import Email
+from pcapi.core.offerers.venue_sql_entity import VenueSQLEntity
 from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -43,7 +44,6 @@ from pcapi.models.user_offerer import UserOfferer
 from pcapi.models.user_session import UserSession
 from pcapi.models.venue_label_sql_entity import VenueLabelSQLEntity
 from pcapi.models.venue_provider import VenueProvider
-from pcapi.models.venue_sql_entity import VenueSQLEntity
 from pcapi.models.venue_type import VenueType
 from pcapi.models.versioned_mixin import VersionedMixin
 
