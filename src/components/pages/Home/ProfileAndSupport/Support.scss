@@ -1,0 +1,25 @@
+.h-support {
+  .hs-link {
+    @include button();
+
+    align-items: center;
+    display: flex;
+
+    img {
+      flex: 0 0 rem(55px);
+    }
+  }
+
+  .hs-link-list {
+    li {
+      line-height: rem(32px);
+      margin-top: rem(4px);
+
+      &:hover a,
+      &:active a,
+      &:focus a {
+        color: $secondary;
+      }
+    }
+  }
+}

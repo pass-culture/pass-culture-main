@@ -104,6 +104,24 @@ describe('homepage : Tabs : Offerers', () => {
       expect(await screen.findByText('Modalités d’usage', { selector: 'h2' })).toBeInTheDocument()
     })
 
+    it('should display help links', async () => {
+      const contactLink = await screen.findByText('Contacter le support', { selector: 'a' })
+      const cguLink = await screen.findByText('Conditions Générales d’Utilisation', {
+        selector: 'a',
+      })
+      const faqLink = await screen.findByText('Foire Aux Questions', { selector: 'a' })
+
+      expect(contactLink).toBeInTheDocument()
+      expect(cguLink).toBeInTheDocument()
+      expect(faqLink).toBeInTheDocument()
+
+      expect(contactLink.getAttribute('href')).toBe('mailto:support@passculture.app')
+      expect(cguLink.getAttribute('href')).toBe('https://pass.culture.fr/cgu-professionnels/')
+      expect(faqLink.getAttribute('href')).toBe(
+        'https://aide.passculture.app/fr/category/acteurs-culturels-1t20dhs/'
+      )
+    })
+
     it('should display offerer select', () => {
       const selectedOffer = baseOfferers[0]
       expect(screen.getByDisplayValue(selectedOffer.name)).toBeInTheDocument()

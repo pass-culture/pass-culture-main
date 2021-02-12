@@ -4,7 +4,7 @@ import PageTitle from 'components/layout/PageTitle/PageTitle'
 
 import Breadcrumb, { STEP_ID_OFFERERS } from './HomepageBreadcrumb'
 import Offerers from './Offerers'
-import ProfileContainer from './ProfileContainer'
+import ProfileAndSupportContainer from './ProfileAndSupport/ProfileAndSupportContainer'
 import Usages from './Usages'
 
 const Homepage = () => {
@@ -24,13 +24,12 @@ const Homepage = () => {
       </section>
 
       <section className="h-section">
-        <ProfileContainer />
+        <ProfileAndSupportContainer />
       </section>
 
       <section className="h-section">
         <Usages />
       </section>
-
     </div>
   )
 }

@@ -4,7 +4,9 @@ import { Link } from 'react-router-dom'
 
 import Icon from 'components/layout/Icon'
 
-import { steps, STEP_ID_PROFILE } from './HomepageBreadcrumb'
+import { steps, STEP_ID_PROFILE } from '../HomepageBreadcrumb'
+
+import Support from './Support'
 
 const Profile = ({ user }) => {
   return (
@@ -65,16 +67,7 @@ const Profile = ({ user }) => {
           </div>
         </div>
 
-        <div className="h-card h-card-secondary-hover">
-          <div className="h-card-inner">
-            <h3 className="h-card-title">
-              {'Aide et support'}
-            </h3>
-            <div className="h-card-content">
-              {'Hello world !'}
-            </div>
-          </div>
-        </div>
+        <Support />
       </div>
     </>
   )

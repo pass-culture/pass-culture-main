@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 
-import Profile from './Profile'
+import ProfileAndSupport from './ProfileAndSupport'
 
 export function mapStateToProps(state) {
   return {
@@ -10,4 +10,4 @@ export function mapStateToProps(state) {
   }
 }
 
-export default connect(mapStateToProps)(Profile)
+export default connect(mapStateToProps)(ProfileAndSupport)
