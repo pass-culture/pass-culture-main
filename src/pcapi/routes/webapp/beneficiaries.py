@@ -8,6 +8,7 @@ from flask_login import login_user
 from jwt import InvalidTokenError
 
 from pcapi import settings
+from pcapi.connectors.api_recaptcha import check_recaptcha_token_is_valid
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import repository as users_repo
 from pcapi.core.users.api import change_user_email
@@ -26,7 +27,6 @@ from pcapi.utils.logger import json_logger
 from pcapi.utils.login_manager import stamp_session
 from pcapi.utils.mailing import MailServiceException
 from pcapi.utils.rest import login_or_api_key_required
-from pcapi.validation.routes.captcha import check_recaptcha_token_is_valid
 from pcapi.validation.routes.users import check_allowed_changes_for_user
 from pcapi.validation.routes.users import check_valid_signin
 from pcapi.workers.beneficiary_job import beneficiary_job

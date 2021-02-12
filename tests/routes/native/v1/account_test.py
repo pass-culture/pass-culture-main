@@ -124,7 +124,7 @@ class AccountTest:
         assert response.json["pseudo"] is None
         assert not response.json["isBeneficiary"]
 
-    @patch("pcapi.routes.native.v1.account.check_recaptcha_token_is_valid")
+    @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
     def test_account_creation(self, mocked_check_recaptcha_token_is_valid, app):
         test_client = TestClient(app.test_client())
         assert User.query.first() is None
@@ -148,7 +148,7 @@ class AccountTest:
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2015423
 
-    @patch("pcapi.routes.native.v1.account.check_recaptcha_token_is_valid")
+    @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
     def test_account_creation_with_existing_email_sends_email(self, mocked_check_recaptcha_token_is_valid, app):
         test_client = TestClient(app.test_client())
         users_factories.UserFactory(email=self.identifier)
@@ -168,7 +168,7 @@ class AccountTest:
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 1838526
 
-    @patch("pcapi.routes.native.v1.account.check_recaptcha_token_is_valid")
+    @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
     def test_too_young_account_creation(self, mocked_check_recaptcha_token_is_valid, app):
         test_client = TestClient(app.test_client())
         assert User.query.first() is None

@@ -2,10 +2,10 @@ from datetime import datetime
 from datetime import timedelta
 from unittest.mock import patch
 
+from pcapi.connectors.api_recaptcha import InvalidRecaptchaTokenException
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import User
 from pcapi.domain.password import RESET_PASSWORD_TOKEN_LENGTH
-from pcapi.validation.routes.captcha import InvalidRecaptchaTokenException
 
 from tests.conftest import TestClient
 

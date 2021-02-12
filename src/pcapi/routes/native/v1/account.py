@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from pcapi import settings
+from pcapi.connectors import api_recaptcha
 from pcapi.core.users import api
 from pcapi.core.users import exceptions
 from pcapi.core.users.models import User
@@ -10,8 +11,6 @@ from pcapi.repository import transaction
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.native.security import authenticated_user_required
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.validation.routes.captcha import ReCaptchaException
-from pcapi.validation.routes.captcha import check_recaptcha_token_is_valid
 
 from . import blueprint
 from .serialization import account as serializers
@@ -66,8 +65,10 @@ def update_cultural_survey(user: User, body: serializers.CulturalSurveyRequest) 
 def create_account(body: serializers.AccountRequest) -> None:
     if settings.NATIVE_ACCOUNT_CREATION_REQUIRES_RECAPTCHA:
         try:
-            check_recaptcha_token_is_valid(body.token, "submit", settings.RECAPTCHA_RESET_PASSWORD_MINIMAL_SCORE)
-        except ReCaptchaException:
+            api_recaptcha.check_recaptcha_token_is_valid(
+                body.token, "submit", settings.RECAPTCHA_RESET_PASSWORD_MINIMAL_SCORE
+            )
+        except api_recaptcha.ReCaptchaException:
             raise ApiErrors({"token": "The given token is not invalid"})
     try:
         api.create_account(

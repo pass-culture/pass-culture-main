@@ -4,6 +4,7 @@ from flask_login import current_user
 from flask_login import login_required
 
 from pcapi import settings
+from pcapi.connectors.api_recaptcha import check_recaptcha_token_is_valid
 from pcapi.domain.password import check_password_strength
 from pcapi.domain.password import check_password_validity
 from pcapi.domain.password import check_reset_token_validity
@@ -21,7 +22,6 @@ from pcapi.routes.serialization.password_serialize import ResetPasswordBodyModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.mailing import MailServiceException
 from pcapi.utils.rest import expect_json_data
-from pcapi.validation.routes.captcha import check_recaptcha_token_is_valid
 
 
 # @debt api-migration
