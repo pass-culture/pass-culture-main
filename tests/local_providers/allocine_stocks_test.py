@@ -1778,7 +1778,7 @@ class UpdateObjectsTest:
             allocine_stocks_provider = AllocineStocks(allocine_venue_provider)
             allocine_stocks_provider.updateObjects()
 
-            created_stocks = Stock.query.all()
+            created_stocks = Stock.query.order_by(Stock.beginningDatetime).all()
 
             first_stock = created_stocks[0]
             first_stock.fieldsUpdated = ["quantity", "price"]
