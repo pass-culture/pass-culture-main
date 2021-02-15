@@ -22,7 +22,7 @@ test('captures d’écran de toutes les pages du site', async () => {
   await t
     .navigateTo('/accueil')
     .takeScreenshot(optionsOfScreenshot('accueil'))
-    .click(Selector('a').withText('Fred Leopold'))
+    .click(Selector('button').withText('Fred Leopold'))
     .takeScreenshot(optionsOfScreenshot('menu'))
   const token = Selector('label').withText('Contremarque')
   await t
@@ -44,22 +44,19 @@ test('captures d’écran de toutes les pages du site', async () => {
   await t
     .navigateTo('/offres')
     .click(Selector('table a'))
-    .takeScreenshot(optionsOfScreenshot('offre'))
-    .click(Selector('button').withText('Gérer les stocks'))
-    .takeScreenshot(optionsOfScreenshot('offre-stocks'))
-    .click(Selector('button').withText('Fermer'))
-    .click(Selector('a').withText('Modifier l’offre'))
     .takeScreenshot(optionsOfScreenshot('offre-edition'))
-    .click(Selector('a').withText('Ajouter une accroche'))
-    .typeText(
-      Selector("input[placeholder='URL du fichier']"),
-      'https://upload.wikimedia.org/wikipedia/commons/f/f9/Zebra_%28PSF%29.png'
-    )
-    .click(Selector('button').withText('OK'))
-    .takeScreenshot(optionsOfScreenshot('offre-accroche'))
+    .click(Selector('a').withText('Stock et prix'))
+    .takeScreenshot(optionsOfScreenshot('offre-stocks'))
+  // .click(Selector('a').withText('Ajouter une accroche'))
+  // .typeText(
+  //   Selector("input[placeholder='URL du fichier']"),
+  //   'https://upload.wikimedia.org/wikipedia/commons/f/f9/Zebra_%28PSF%29.png'
+  // )
+  // .click(Selector('button').withText('OK'))
+  // .takeScreenshot(optionsOfScreenshot('offre-accroche'))
   await t
     .navigateTo('/offres/creation')
-    .click(Selector('select').withText('Sélectionnez un type d’offre'))
+    .click(Selector('select').withText('Choisir un type'))
     .click(Selector('select option').withText('Conférences, rencontres et découverte des métiers'))
     .takeScreenshot(optionsOfScreenshot('offre-creation'))
   await t
