@@ -185,14 +185,15 @@ export const postThumbnail = (offerer, offer, credit, thumb, thumbUrl, x, y, hei
   body.append('offerId', offer)
   body.append('offererId', offerer)
   body.append('credit', credit)
-  body.append('croppingRect[x]', x)
-  body.append('croppingRect[y]', y)
-  body.append('croppingRect[height]', height)
+  body.append('croppingRectX', x)
+  body.append('croppingRectY', y)
+  body.append('croppingRectHeight', height)
   body.append('thumb', thumb)
   body.append('thumbUrl', thumbUrl)
 
-  return client.postWithFormData('/mediations', body)
+  return client.postWithFormData('/offers/thumbnails', body)
 }
+
 
 //
 // user

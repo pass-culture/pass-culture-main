@@ -71,17 +71,20 @@ const OfferDetails = ({
         } else {
           const response = await pcapi.createOffer(offerValues)
           const createdOfferId = response.id
-          const { credit, thumbnail, croppingRect, thumbUrl } = thumbnailInfo
-          await pcapi.postThumbnail(
-            formValues.offererId,
-            createdOfferId,
-            credit,
-            thumbnail,
-            thumbUrl,
-            croppingRect.x,
-            croppingRect.y,
-            croppingRect.height
-          )
+          const offerThumbnailHasBeenUploaded = Object.values(thumbnailInfo).length > 0
+          if (offerThumbnailHasBeenUploaded) {
+            const { credit, thumbnail, croppingRect, thumbUrl } = thumbnailInfo
+            await pcapi.postThumbnail(
+              formValues.offererId,
+              createdOfferId,
+              credit,
+              thumbnail,
+              thumbUrl,
+              croppingRect.x,
+              croppingRect.y,
+              croppingRect.height
+            )
+          }
           showCreationSuccessNotification()
           history.push(`/offres/${createdOfferId}/stocks`)
         }

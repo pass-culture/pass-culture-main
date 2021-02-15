@@ -16,9 +16,9 @@ const OfferThumbnailPlaceholder = ({ setThumbnailInfo }) => {
   return (
     <>
       <button
-        className="of-placeholder"
+        className={`of-placeholder ${preview ? 'of-image' : ''}`}
         onClick={openModal}
-        title="Ajouter une image"
+        title={`${preview ? "Modifier l'image" : 'Ajouter une image'}`}
         type="button"
       >
         {preview ? (
@@ -26,8 +26,12 @@ const OfferThumbnailPlaceholder = ({ setThumbnailInfo }) => {
             alt="Image de l'offre"
             src={preview}
           />
-        ) : <AddThumbnailIcon />}
-        {'Ajouter une image'}
+        ) : (
+          <>
+            <AddThumbnailIcon />
+            {'Ajouter une image'}
+          </>
+        )}
       </button>
 
       {isModalOpened && (

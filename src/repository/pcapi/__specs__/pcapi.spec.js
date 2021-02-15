@@ -268,9 +268,9 @@ describe('pcapi', () => {
       body.append('offerId', 'AA')
       body.append('offererId', 'BB')
       body.append('credit', 'Mon crédit')
-      body.append('croppingRect[x]', '12')
-      body.append('croppingRect[y]', '32')
-      body.append('croppingRect[height]', '350')
+      body.append('croppingRectX', '12')
+      body.append('croppingRectY', '32')
+      body.append('croppingRectHeight', '350')
       body.append('thumb', file)
       body.append('thumbUrl', '')
 
@@ -278,7 +278,7 @@ describe('pcapi', () => {
       postThumbnail('BB', 'AA', 'Mon crédit', file, '', '12', '32', '350')
 
       // then
-      expect(client.postWithFormData).toHaveBeenCalledWith(`/mediations`, body)
+      expect(client.postWithFormData).toHaveBeenCalledWith(`/offers/thumbnails`, body)
     })
   })
 
