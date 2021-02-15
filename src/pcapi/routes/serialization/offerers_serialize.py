@@ -85,3 +85,10 @@ class GetOfferersNamesResponseModel(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class GetOfferersNamesQueryModel(BaseModel):
+    validated: Optional[bool]
+
+    class Config:
+        extra = "forbid"

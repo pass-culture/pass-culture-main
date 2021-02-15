@@ -7,58 +7,166 @@ from pcapi.utils.human_ids import humanize
 from tests.conftest import TestClient
 
 
-class Returns200:
-    @pytest.mark.usefixtures("db_session")
-    def should_returns_only_validated_offerers_managed_by_user_when_user_is_not_admin(self, app):
-        # given
-        pro = users_factories.UserFactory(isBeneficiary=False)
-        owned_offerer_validated = offers_factories.OffererFactory()
-        owned_offerer_not_validated = offers_factories.OffererFactory(validationToken="token")
+class Returns200ForProUser:
+    def _setup_offerers_for_pro_user(self, user):
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=user, offerer=offerer)
+
+        offerer_not_validated = offers_factories.OffererFactory(validationToken="token")
+        offers_factories.UserOffererFactory(user=user, offerer=offerer_not_validated)
+
         other_offerer = offers_factories.OffererFactory()
-        offers_factories.UserOffererFactory(user=pro, offerer=owned_offerer_validated)
-        offers_factories.UserOffererFactory(user=pro, offerer=owned_offerer_not_validated)
+        other_user_offerer = offers_factories.UserOffererFactory(offerer=other_offerer)
+
+        other_offerer_not_validated = offers_factories.OffererFactory(validationToken="other_token")
+        offers_factories.UserOffererFactory(user=other_user_offerer.user, offerer=other_offerer_not_validated)
+
+        return {
+            "owned_offerer_validated": offerer,
+            "owned_offerer_not_validated": offerer_not_validated,
+            "other_offerer_user": other_offerer,
+            "other_offerer_not_validated": other_offerer_not_validated,
+        }
+
+    @pytest.mark.usefixtures("db_session")
+    def test_response_serializer(self, app):
+        # given
+        pro_user = users_factories.UserFactory(isBeneficiary=False)
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
         # when
-        response = TestClient(app.test_client()).with_auth(pro.email).get("/offerers/names")
+        response = TestClient(app.test_client()).with_auth(pro_user.email).get("/offerers/names")
 
         # then
         assert response.status_code == 200
-        assert len(response.json) == 1
-
-        offerer_ids = [offererName["id"] for offererName in response.json["offerersNames"]]
-        assert humanize(owned_offerer_validated.id) in offerer_ids
-        assert [humanize(owned_offerer_not_validated.id), humanize(other_offerer.id)] not in offerer_ids
+        assert response.json == {"offerersNames": [{"id": humanize(offerer.id), "name": offerer.name}]}
 
     @pytest.mark.usefixtures("db_session")
-    def should_returns_all_validated_offerers_managed_by_user_when_user_is_admin(self, app):
+    def test_get_all_offerers_names(self, app):
+        # given
+        pro_user = users_factories.UserFactory(isBeneficiary=False)
+        offerers = self._setup_offerers_for_pro_user(pro_user)
+
+        # when
+        response = TestClient(app.test_client()).with_auth(pro_user.email).get("/offerers/names")
+
+        # then
+        assert response.status_code == 200
+        assert "offerersNames" in response.json
+        assert len(response.json["offerersNames"]) == 2
+
+        offerer_ids = [offererName["id"] for offererName in response.json["offerersNames"]]
+        assert humanize(offerers["owned_offerer_validated"].id) in offerer_ids
+        assert humanize(offerers["owned_offerer_not_validated"].id) in offerer_ids
+
+    @pytest.mark.usefixtures("db_session")
+    def test_get_all_validated_offerers_names(self, app):
+        # given
+        pro_user = users_factories.UserFactory(isBeneficiary=False)
+        offerers = self._setup_offerers_for_pro_user(pro_user)
+
+        # when
+        response = TestClient(app.test_client()).with_auth(pro_user.email).get("/offerers/names?validated=true")
+
+        # then
+        assert response.status_code == 200
+        assert "offerersNames" in response.json
+        assert len(response.json["offerersNames"]) == 1
+
+        offerer_ids = [offererName["id"] for offererName in response.json["offerersNames"]]
+        assert humanize(offerers["owned_offerer_validated"].id) in offerer_ids
+
+    @pytest.mark.usefixtures("db_session")
+    def test_get_all_not_validated_offerers_names(self, app):
+        # given
+        pro_user = users_factories.UserFactory(isBeneficiary=False)
+        offerers = self._setup_offerers_for_pro_user(pro_user)
+
+        # when
+        response = TestClient(app.test_client()).with_auth(pro_user.email).get("/offerers/names?validated=false")
+
+        # then
+        assert response.status_code == 200
+        assert "offerersNames" in response.json
+        assert len(response.json["offerersNames"]) == 1
+
+        offerer_ids = [offererName["id"] for offererName in response.json["offerersNames"]]
+        assert humanize(offerers["owned_offerer_not_validated"].id) in offerer_ids
+
+
+class Returns200ForAdmin:
+    def _setup_offerers_for_users(self):
+        offerer = offers_factories.OffererFactory()
+        user_offerer = offers_factories.UserOffererFactory(offerer=offerer)
+
+        offerer_not_validated = offers_factories.OffererFactory(validationToken="token")
+        offers_factories.UserOffererFactory(user=user_offerer.user, offerer=offerer_not_validated)
+
+        other_offerer = offers_factories.OffererFactory()
+        other_user_offerer = offers_factories.UserOffererFactory(offerer=other_offerer)
+
+        other_offerer_not_validated = offers_factories.OffererFactory(validationToken="other_token")
+        offers_factories.UserOffererFactory(user=other_user_offerer.user, offerer=other_offerer_not_validated)
+        return {
+            "offerer": offerer,
+            "offerer_not_validated": offerer_not_validated,
+            "other_offerer": other_offerer,
+            "other_offerer_not_validated": other_offerer_not_validated,
+        }
+
+    @pytest.mark.usefixtures("db_session")
+    def test_get_all_offerers_names(self, app):
         # given
         admin = users_factories.UserFactory(isBeneficiary=False, isAdmin=True)
-        offerer_not_validated = offers_factories.OffererFactory(validationToken="token")
-        other_offerer = offers_factories.OffererFactory()
+        offerers = self._setup_offerers_for_users()
 
         # when
         response = TestClient(app.test_client()).with_auth(admin.email).get("/offerers/names")
 
         # then
         assert response.status_code == 200
-        assert len(response.json) == 1
+        assert "offerersNames" in response.json
+        assert len(response.json["offerersNames"]) == 4
 
         offerer_ids = [offererName["id"] for offererName in response.json["offerersNames"]]
-        assert humanize(other_offerer.id) in offerer_ids
-        assert humanize(offerer_not_validated.id) not in offerer_ids
+        assert humanize(offerers["offerer"].id) in offerer_ids
+        assert humanize(offerers["offerer_not_validated"].id) in offerer_ids
+        assert humanize(offerers["other_offerer"].id) in offerer_ids
+        assert humanize(offerers["other_offerer_not_validated"].id) in offerer_ids
 
     @pytest.mark.usefixtures("db_session")
-    def should_returns_offerers_names_by_id(self, app):
+    def test_get_all_validated_offerers(self, app):
         # given
-        pro = users_factories.UserFactory(isBeneficiary=False)
-        owned_offerer_validated = offers_factories.OffererFactory()
-        offers_factories.UserOffererFactory(user=pro, offerer=owned_offerer_validated)
+        admin = users_factories.UserFactory(isBeneficiary=False, isAdmin=True)
+        offerers = self._setup_offerers_for_users()
 
         # when
-        response = TestClient(app.test_client()).with_auth(pro.email).get("/offerers/names")
+        response = TestClient(app.test_client()).with_auth(admin.email).get("/offerers/names?validated=true")
 
         # then
         assert response.status_code == 200
-        assert response.json == {
-            "offerersNames": [{"id": humanize(owned_offerer_validated.id), "name": owned_offerer_validated.name}]
-        }
+        assert "offerersNames" in response.json
+        assert len(response.json["offerersNames"]) == 2
+
+        offerer_ids = [offererName["id"] for offererName in response.json["offerersNames"]]
+        assert humanize(offerers["offerer"].id) in offerer_ids
+        assert humanize(offerers["other_offerer"].id) in offerer_ids
+
+    @pytest.mark.usefixtures("db_session")
+    def test_get_all_not_validated_offerers(self, app):
+        # given
+        admin = users_factories.UserFactory(isBeneficiary=False, isAdmin=True)
+        offerers = self._setup_offerers_for_users()
+
+        # when
+        response = TestClient(app.test_client()).with_auth(admin.email).get("/offerers/names?validated=false")
+
+        # then
+        assert response.status_code == 200
+        assert "offerersNames" in response.json
+        assert len(response.json["offerersNames"]) == 2
+
+        offerer_ids = [offererName["id"] for offererName in response.json["offerersNames"]]
+        assert humanize(offerers["offerer_not_validated"].id) in offerer_ids
+        assert humanize(offerers["other_offerer_not_validated"].id) in offerer_ids

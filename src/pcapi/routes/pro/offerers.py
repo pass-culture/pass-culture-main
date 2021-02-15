@@ -7,7 +7,7 @@ from flask_login import current_user
 from flask_login import login_required
 
 from pcapi.core.offerers.api import create_digital_venue
-from pcapi.core.offerers.repository import get_all_validated
+from pcapi.core.offerers.repository import get_all
 from pcapi.core.users.models import User
 from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
 from pcapi.domain.user_emails import send_ongoing_offerer_attachment_information_email_to_pro
@@ -22,6 +22,7 @@ from pcapi.repository.offerer_queries import find_by_siren
 from pcapi.routes.serialization import as_dict
 from pcapi.routes.serialization.offerers_serialize import GetOffererNameResponseModel
 from pcapi.routes.serialization.offerers_serialize import GetOffererResponseModel
+from pcapi.routes.serialization.offerers_serialize import GetOfferersNamesQueryModel
 from pcapi.routes.serialization.offerers_serialize import GetOfferersNamesResponseModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.use_cases.list_offerers_for_pro_user import OfferersRequestParameters
@@ -83,8 +84,11 @@ def get_offerers():
 @private_api.route("/offerers/names", methods=["GET"])
 @login_required
 @spectree_serialize(response_model=GetOfferersNamesResponseModel)
-def list_offerers_names() -> GetOfferersNamesResponseModel:
-    offerers = get_all_validated(user=current_user)
+def list_offerers_names(query: GetOfferersNamesQueryModel) -> GetOfferersNamesResponseModel:
+    only_validated_offerers = request.args.get("validated", None)
+    if only_validated_offerers is not None:
+        only_validated_offerers = only_validated_offerers.lower() == "true"
+    offerers = get_all(user=current_user, filters={"validated": only_validated_offerers})
 
     return GetOfferersNamesResponseModel(
         offerersNames=[GetOffererNameResponseModel.from_orm(offerer) for offerer in offerers]
