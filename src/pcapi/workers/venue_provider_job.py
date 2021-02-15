@@ -7,7 +7,7 @@ from pcapi.workers.decorators import job_context
 from pcapi.workers.decorators import log_job
 
 
-@job(worker.redis_queue, connection=worker.conn)
+@job(worker.default_queue, connection=worker.conn)
 @job_context
 @log_job
 def venue_provider_job(venue_provider_id: int) -> None:

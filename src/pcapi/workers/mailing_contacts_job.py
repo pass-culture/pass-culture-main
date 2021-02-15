@@ -9,7 +9,7 @@ from pcapi.workers.decorators import job_context
 from pcapi.workers.decorators import log_job
 
 
-@job(worker.redis_queue, connection=worker.conn)
+@job(worker.default_queue, connection=worker.conn)
 @job_context
 @log_job
 def mailing_contacts_job(contact_email: str, contact_date_of_birth: str, contact_department_code: str) -> None:
