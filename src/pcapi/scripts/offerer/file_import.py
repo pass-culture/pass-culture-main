@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Callable
 from typing import List
 
-from pcapi.core.offerers.models import create_digital_venue
+from pcapi.core.offerers.api import create_digital_venue
 from pcapi.core.users.models import User
 from pcapi.domain.password import generate_reset_token
 from pcapi.domain.password import random_password

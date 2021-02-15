@@ -24,7 +24,6 @@ from pcapi.models.has_thumb_mixin import HasThumbMixin
 from pcapi.models.needs_validation_mixin import NeedsValidationMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.providable_mixin import ProvidableMixin
-from pcapi.models.venue_type import VenueType
 from pcapi.models.versioned_mixin import VersionedMixin
 
 
@@ -152,19 +151,6 @@ def _fill_departement_code_from_postal_code(self):
         if not self.postalCode:
             raise IntegrityError(None, None, None)
         self.store_departement_code()
-
-
-def create_digital_venue(offerer):
-    digital_venue = Venue()
-    digital_venue.isVirtual = True
-    digital_venue.name = "Offre numérique"
-    digital_venue.venueTypeId = _get_digital_venue_type_id()
-    digital_venue.managingOfferer = offerer
-    return digital_venue
-
-
-def _get_digital_venue_type_id() -> int:
-    return VenueType.query.filter_by(label="Offre numérique").first().id
 
 
 ts_indexes = [
