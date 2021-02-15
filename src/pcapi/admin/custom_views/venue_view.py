@@ -24,6 +24,7 @@ class VenueView(BaseAdminView):
         "publicName",
         "latitude",
         "longitude",
+        "isPermanent",
     ]
     column_labels = dict(
         name="Nom",
@@ -34,10 +35,21 @@ class VenueView(BaseAdminView):
         publicName="Nom d'usage",
         latitude="Latitude",
         longitude="Longitude",
+        isPermanent="Lieu permanent",
     )
     column_searchable_list = ["name", "siret", "publicName"]
     column_filters = ["postalCode", "city", "publicName"]
-    form_columns = ["name", "siret", "city", "postalCode", "address", "publicName", "latitude", "longitude"]
+    form_columns = [
+        "name",
+        "siret",
+        "city",
+        "postalCode",
+        "address",
+        "publicName",
+        "latitude",
+        "longitude",
+        "isPermanent",
+    ]
 
     @property
     def column_formatters(self):
