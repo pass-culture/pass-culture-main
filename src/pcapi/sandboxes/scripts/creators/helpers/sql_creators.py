@@ -19,7 +19,7 @@ from pcapi.models import Provider
 from pcapi.models import Stock
 from pcapi.models import ThingType
 from pcapi.models import UserOfferer
-from pcapi.models import VenueSQLEntity
+from pcapi.models import Venue
 from pcapi.models.payment_status import PaymentStatus
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.utils.token import random_token
@@ -147,8 +147,8 @@ def create_venue(
     thumb_count: int = 0,
     validation_token: Optional[str] = None,
     venue_type_id: int = None,
-) -> VenueSQLEntity:
-    venue = VenueSQLEntity()
+) -> Venue:
+    venue = Venue()
     venue.bookingEmail = booking_email
     venue.comment = comment
     venue.dateModifiedAtLastProvider = date_modified_at_last_provider
@@ -200,7 +200,7 @@ def create_product_with_event_type(
 
 
 def create_offer_with_event_product(
-    venue: VenueSQLEntity = None,
+    venue: Venue = None,
     booking_email: str = "booking@example.net",
     date_created: datetime = datetime.utcnow(),
     description: Optional[str] = None,
@@ -325,7 +325,7 @@ def create_product_with_thing_type(
 
 
 def create_offer_with_thing_product(
-    venue: VenueSQLEntity,
+    venue: Venue,
     author_name: str = "Test Author",
     booking_email: Optional[str] = "booking@example.net",
     date_created: datetime = datetime.utcnow(),
@@ -412,7 +412,7 @@ def create_booking(
     quantity: int = 1,
     stock: Stock = None,
     token: str = None,
-    venue: VenueSQLEntity = None,
+    venue: Venue = None,
 ) -> Booking:
     booking = Booking()
     offerer = create_offerer(

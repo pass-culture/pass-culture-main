@@ -28,8 +28,8 @@ from pcapi.models import Provider
 from pcapi.models import Stock
 from pcapi.models import UserOfferer
 from pcapi.models import UserSession
+from pcapi.models import Venue
 from pcapi.models import VenueProvider
-from pcapi.models import VenueSQLEntity
 from pcapi.models import VenueType
 from pcapi.models.activity import load_activity
 from pcapi.models.allocine_venue_provider import AllocineVenueProvider
@@ -61,7 +61,7 @@ def clean_all_database(*args, **kwargs):
     BankInformation.query.delete()
     IrisVenues.query.delete()
     IrisFrance.query.delete()
-    VenueSQLEntity.query.delete()
+    Venue.query.delete()
     UserOfferer.query.delete()
     ApiKey.query.delete()
     Offerer.query.delete()

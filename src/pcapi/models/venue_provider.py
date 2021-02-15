@@ -22,7 +22,7 @@ from pcapi.models.provider import Provider
 class VenueProvider(PcObject, Model, ProvidableMixin, DeactivableMixin):
     venueId = Column(BigInteger, ForeignKey("venue.id"), nullable=False)
 
-    venue = relationship("VenueSQLEntity", foreign_keys=[venueId])
+    venue = relationship("Venue", foreign_keys=[venueId])
 
     providerId = Column(BigInteger, ForeignKey("provider.id"), index=True, nullable=False)
 

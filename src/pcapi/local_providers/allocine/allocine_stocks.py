@@ -20,7 +20,7 @@ from pcapi.models import EventType
 from pcapi.models import Offer
 from pcapi.models import Product
 from pcapi.models import Stock
-from pcapi.models import VenueSQLEntity
+from pcapi.models import Venue
 from pcapi.models.db import Model
 from pcapi.models.db import db
 from pcapi.models.local_provider_event import LocalProviderEventType
@@ -312,15 +312,15 @@ def _is_original_version_offer(id_at_providers: str) -> bool:
     return id_at_providers[-3:] == f"-{ORIGINAL_VERSION_SUFFIX}"
 
 
-def _build_movie_uuid(movie_information: Dict, venue: VenueSQLEntity) -> str:
+def _build_movie_uuid(movie_information: Dict, venue: Venue) -> str:
     return f"{movie_information['id']}%{venue.siret}"
 
 
-def _build_french_movie_uuid(movie_information: Dict, venue: VenueSQLEntity) -> str:
+def _build_french_movie_uuid(movie_information: Dict, venue: Venue) -> str:
     return f"{_build_movie_uuid(movie_information, venue)}-{FRENCH_VERSION_SUFFIX}"
 
 
-def _build_original_movie_uuid(movie_information: Dict, venue: VenueSQLEntity) -> str:
+def _build_original_movie_uuid(movie_information: Dict, venue: Venue) -> str:
     return f"{_build_movie_uuid(movie_information, venue)}-{ORIGINAL_VERSION_SUFFIX}"
 
 
@@ -328,5 +328,5 @@ def _build_showtime_uuid(showtime_details: Dict) -> str:
     return f"{showtime_details['diffusionVersion']}/{showtime_details['startsAt']}"
 
 
-def _build_stock_uuid(movie_information: Dict, venue: VenueSQLEntity, showtime_details: Dict) -> str:
+def _build_stock_uuid(movie_information: Dict, venue: Venue, showtime_details: Dict) -> str:
     return f"{_build_movie_uuid(movie_information, venue)}#{_build_showtime_uuid(showtime_details)}"

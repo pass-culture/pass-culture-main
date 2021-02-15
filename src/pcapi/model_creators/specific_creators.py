@@ -16,11 +16,11 @@ from pcapi.models import Product
 from pcapi.models import Provider
 from pcapi.models import Stock
 from pcapi.models import ThingType
-from pcapi.models import VenueSQLEntity
+from pcapi.models import Venue
 
 
 def create_offer_with_event_product(
-    venue: VenueSQLEntity = None,
+    venue: Venue = None,
     booking_email: str = "booking@example.net",
     criteria: List[Criterion] = None,
     date_created: datetime = datetime.utcnow(),
@@ -82,7 +82,7 @@ def create_event_occurrence(
 
 
 def create_offer_with_thing_product(
-    venue: VenueSQLEntity,
+    venue: Venue,
     author_name: str = "Test Author",
     booking_email: Optional[str] = "booking@example.net",
     date_created: datetime = datetime.utcnow(),
@@ -287,7 +287,7 @@ def create_stock_from_offer(
 
 def create_stock_with_event_offer(
     offerer: Offerer,
-    venue: VenueSQLEntity,
+    venue: Venue,
     price: int = 10,
     booking_email: str = "offer.booking.email@example.com",
     quantity: int = 10,
@@ -327,7 +327,7 @@ def create_stock_with_event_offer(
 
 def create_stock_with_thing_offer(
     offerer: Offerer,
-    venue: VenueSQLEntity,
+    venue: Venue,
     offer: Offer = None,
     price: Optional[Decimal] = 10,
     quantity: int = 50,

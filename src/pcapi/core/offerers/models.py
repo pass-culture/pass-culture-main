@@ -55,9 +55,7 @@ CONSTRAINT_CHECK_HAS_SIRET_XOR_HAS_COMMENT_XOR_IS_VIRTUAL = """
 """
 
 
-class VenueSQLEntity(
-    PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, VersionedMixin, NeedsValidationMixin
-):
+class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, VersionedMixin, NeedsValidationMixin):
     __tablename__ = "venue"
 
     id = Column(BigInteger, primary_key=True)
@@ -139,12 +137,12 @@ class VenueSQLEntity(
         return Offer.query.filter(Offer.venueId == self.id).with_entities(Offer.id).count()
 
 
-@listens_for(VenueSQLEntity, "before_insert")
+@listens_for(Venue, "before_insert")
 def before_insert(mapper, connect, self):
     _fill_departement_code_from_postal_code(self)
 
 
-@listens_for(VenueSQLEntity, "before_update")
+@listens_for(Venue, "before_update")
 def before_update(mapper, connect, self):
     _fill_departement_code_from_postal_code(self)
 
@@ -157,7 +155,7 @@ def _fill_departement_code_from_postal_code(self):
 
 
 def create_digital_venue(offerer):
-    digital_venue = VenueSQLEntity()
+    digital_venue = Venue()
     digital_venue.isVirtual = True
     digital_venue.name = "Offre numérique"
     digital_venue.venueTypeId = _get_digital_venue_type_id()
@@ -170,14 +168,14 @@ def _get_digital_venue_type_id() -> int:
 
 
 ts_indexes = [
-    ("idx_venue_fts_name", VenueSQLEntity.name),
+    ("idx_venue_fts_name", Venue.name),
     (
         "idx_venue_fts_publicName",
-        VenueSQLEntity.publicName,
+        Venue.publicName,
     ),
-    ("idx_venue_fts_address", VenueSQLEntity.address),
-    ("idx_venue_fts_siret", VenueSQLEntity.siret),
-    ("idx_venue_fts_city", VenueSQLEntity.city),
+    ("idx_venue_fts_address", Venue.address),
+    ("idx_venue_fts_siret", Venue.siret),
+    ("idx_venue_fts_city", Venue.city),
 ]
 
-(VenueSQLEntity.__ts_vectors__, VenueSQLEntity.__table_args__) = create_ts_vector_and_table_args(ts_indexes)
+(Venue.__ts_vectors__, Venue.__table_args__) = create_ts_vector_and_table_args(ts_indexes)

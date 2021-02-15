@@ -7,7 +7,7 @@ import pytest
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.generic_creators import create_venue_type
-from pcapi.models import VenueSQLEntity
+from pcapi.models import Venue
 from pcapi.repository import repository
 from pcapi.scripts.update_venue_type import _read_venue_type_from_file
 from pcapi.scripts.update_venue_type import update_venue_type
@@ -33,7 +33,7 @@ class UpdateVenueTypeTest:
 
         # Then
         captured = capsys.readouterr()
-        updated_venue = VenueSQLEntity.query.one()
+        updated_venue = Venue.query.one()
         assert updated_venue.venueTypeId == 2
         assert "1 venues have been updated" in captured.out
 
@@ -57,8 +57,8 @@ class UpdateVenueTypeTest:
 
         # Then
         captured = capsys.readouterr()
-        updated_venue1 = VenueSQLEntity.query.filter_by(id=121).one()
-        updated_venue2 = VenueSQLEntity.query.filter_by(id=99).one()
+        updated_venue1 = Venue.query.filter_by(id=121).one()
+        updated_venue2 = Venue.query.filter_by(id=99).one()
         assert updated_venue1.venueTypeId == 1
         assert updated_venue2.venueTypeId == 1
         assert "0 venues have been updated" in captured.out
@@ -83,7 +83,7 @@ class UpdateVenueTypeTest:
 
         # Then
         captured = capsys.readouterr()
-        updated_venue = VenueSQLEntity.query.one()
+        updated_venue = Venue.query.one()
         assert updated_venue.venueTypeId == 1
         assert "venue not found for id : 666" in captured.out
         assert "0 venues have been updated" in captured.out
@@ -106,7 +106,7 @@ class UpdateVenueTypeTest:
 
         # Then
         captured = capsys.readouterr()
-        updated_venue = VenueSQLEntity.query.one()
+        updated_venue = Venue.query.one()
         assert updated_venue.venueTypeId == 1
         assert "venue type id not found for label : other_type and venueId : 121" in captured.out
         assert "0 venues have been updated" in captured.out

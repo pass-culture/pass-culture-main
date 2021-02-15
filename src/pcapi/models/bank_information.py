@@ -29,7 +29,7 @@ class BankInformation(PcObject, Model, VersionedMixin):
 
     venueId = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=True, unique=True)
 
-    venue = relationship("VenueSQLEntity", foreign_keys=[venueId], backref=backref("bankInformation", uselist=False))
+    venue = relationship("Venue", foreign_keys=[venueId], backref=backref("bankInformation", uselist=False))
 
     iban = Column(String(27), nullable=True)
 

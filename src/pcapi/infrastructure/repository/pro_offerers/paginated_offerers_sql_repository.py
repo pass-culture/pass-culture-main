@@ -6,7 +6,7 @@ from pcapi.domain.pro_offerers.paginated_offerers import PaginatedOfferers
 from pcapi.domain.pro_offerers.paginated_offerers_repository import PaginatedOfferersRepository
 from pcapi.models import Offerer
 from pcapi.models import UserOfferer
-from pcapi.models import VenueSQLEntity
+from pcapi.models import Venue
 from pcapi.repository.offerer_queries import filter_offerers_with_keywords_string
 
 
@@ -33,7 +33,7 @@ class PaginatedOfferersSQLRepository(PaginatedOfferersRepository):
                 query = query.filter(not_(Offerer.validationToken.is_(None)))
 
         if keywords is not None:
-            query = query.join(VenueSQLEntity, VenueSQLEntity.managingOffererId == Offerer.id)
+            query = query.join(Venue, Venue.managingOffererId == Offerer.id)
             query = filter_offerers_with_keywords_string(query, keywords)
 
         query = query.order_by(Offerer.name)

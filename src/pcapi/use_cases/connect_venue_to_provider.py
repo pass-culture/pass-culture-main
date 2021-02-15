@@ -8,8 +8,8 @@ from pcapi.local_providers import LibrairesStocks
 from pcapi.local_providers import PraxielStocks
 from pcapi.local_providers import TiteLiveStocks
 from pcapi.models import ApiErrors
+from pcapi.models import Venue
 from pcapi.models import VenueProvider
-from pcapi.models import VenueSQLEntity
 from pcapi.repository import repository
 from pcapi.utils.human_ids import dehumanize
 from pcapi.validation.routes.venues import check_existing_venue
@@ -47,7 +47,7 @@ def connect_venue_to_provider(
     return new_venue_provider
 
 
-def _connect_stock_providers_to_venue(venue: VenueSQLEntity, venue_provider_payload: Dict) -> VenueProvider:
+def _connect_stock_providers_to_venue(venue: Venue, venue_provider_payload: Dict) -> VenueProvider:
     venue_provider = VenueProvider()
     venue_provider.venue = venue
     venue_provider.providerId = dehumanize(venue_provider_payload["providerId"])

@@ -11,7 +11,7 @@ from pcapi.models import Booking
 from pcapi.models import Offer
 from pcapi.models import Product
 from pcapi.models import Stock
-from pcapi.models import VenueSQLEntity
+from pcapi.models import Venue
 
 
 class BeneficiaryBookingsSQLRepository(BeneficiaryBookingsRepository):
@@ -108,7 +108,7 @@ def _get_bookings_information(beneficiary_id: int) -> List[object]:
         .join(Stock, Stock.id == Booking.stockId)
         .join(Offer)
         .join(Product, Offer.productId == Product.id)
-        .join(VenueSQLEntity)
+        .join(Venue)
         .filter(Booking.userId == beneficiary_id)
         .filter(Offer.type.notin_(offer_activation_types))
         .distinct(Booking.stockId)
@@ -141,14 +141,14 @@ def _get_bookings_information(beneficiary_id: int) -> List[object]:
             User.email,
             Stock.beginningDatetime,
             Stock.price,
-            VenueSQLEntity.id.label("venueId"),
-            VenueSQLEntity.departementCode,
-            VenueSQLEntity.name.label("venueName"),
-            VenueSQLEntity.address,
-            VenueSQLEntity.postalCode,
-            VenueSQLEntity.city,
-            VenueSQLEntity.latitude,
-            VenueSQLEntity.longitude,
+            Venue.id.label("venueId"),
+            Venue.departementCode,
+            Venue.name.label("venueName"),
+            Venue.address,
+            Venue.postalCode,
+            Venue.city,
+            Venue.latitude,
+            Venue.longitude,
         )
         .all()
     )

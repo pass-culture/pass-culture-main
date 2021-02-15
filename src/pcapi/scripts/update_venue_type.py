@@ -2,7 +2,7 @@ import csv
 from typing import List
 
 from pcapi.models import ApiErrors
-from pcapi.models import VenueSQLEntity
+from pcapi.models import Venue
 from pcapi.models import VenueType
 from pcapi.repository import repository
 
@@ -14,7 +14,7 @@ def update_venue_type(file_path: str):
 
     for venue_to_update in venues_to_update:
         venue_id = int(venue_to_update[0])
-        venue = VenueSQLEntity.query.filter_by(id=venue_id).first()
+        venue = Venue.query.filter_by(id=venue_id).first()
         if venue:
             venue_type_label = venue_to_update[1]
             venue_type = VenueType.query.filter_by(label=venue_type_label).first()

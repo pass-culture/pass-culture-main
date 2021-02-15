@@ -1,6 +1,6 @@
 from pcapi.core.bookings.models import Booking
 from pcapi.core.mails.models import Email
-from pcapi.core.offerers.venue_sql_entity import VenueSQLEntity
+from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -95,7 +95,7 @@ __all__ = (
     "UserOfferer",
     "User",
     "UserSession",
-    "VenueSQLEntity",
+    "Venue",
     "VenueType",
     "VenueLabelSQLEntity",
 )
@@ -109,7 +109,7 @@ models = (
     UserOfferer,
     VenueLabelSQLEntity,
     VenueType,
-    VenueSQLEntity,
+    Venue,
     ApiKey,
     AllocinePivot,
     BankInformation,

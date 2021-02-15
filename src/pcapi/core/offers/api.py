@@ -19,7 +19,7 @@ from pcapi.models import EventType
 from pcapi.models import Offer
 from pcapi.models import Product
 from pcapi.models import Stock
-from pcapi.models import VenueSQLEntity
+from pcapi.models import Venue
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
@@ -78,7 +78,7 @@ def list_offers_for_pro_user(
 
 
 def create_offer(offer_data: PostOfferBodyModel, user: User) -> Offer:
-    venue = load_or_raise_error(VenueSQLEntity, offer_data.venue_id)
+    venue = load_or_raise_error(Venue, offer_data.venue_id)
 
     check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)
 

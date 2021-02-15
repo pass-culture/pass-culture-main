@@ -7,7 +7,7 @@ from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.models import Offerer
-from pcapi.models import VenueSQLEntity
+from pcapi.models import Venue
 from pcapi.repository import repository
 from pcapi.repository.offerer_queries import filter_offerers_with_keywords_string
 from pcapi.repository.offerer_queries import find_by_id
@@ -120,7 +120,7 @@ def test_find_filtered_offerers_with_one_keyword_at_venue_public_name_level(app)
     )
 
     # when
-    offerers = filter_offerers_with_keywords_string(Offerer.query.join(VenueSQLEntity), "chouette")
+    offerers = filter_offerers_with_keywords_string(Offerer.query.join(Venue), "chouette")
 
     # then
     assert offerer_with_only_virtual_venue_with_offer not in offerers
@@ -186,7 +186,7 @@ def test_find_filtered_offerers_with_one_partial_keyword_at_venue_public_name_le
     )
 
     # when
-    offerers = filter_offerers_with_keywords_string(Offerer.query.join(VenueSQLEntity), "chou")
+    offerers = filter_offerers_with_keywords_string(Offerer.query.join(Venue), "chou")
 
     # then
     assert offerer_with_only_virtual_venue_with_offer not in offerers
@@ -252,7 +252,7 @@ def test_find_filtered_offerers_with_several_keywords_at_venue_public_name_level
     )
 
     # when
-    offerers = filter_offerers_with_keywords_string(Offerer.query.join(VenueSQLEntity), "chouette ouf")
+    offerers = filter_offerers_with_keywords_string(Offerer.query.join(Venue), "chouette ouf")
 
     # then
     assert offerer_with_only_virtual_venue_with_offer not in offerers
@@ -318,7 +318,7 @@ def test_find_filtered_offerers_with_several_partial_keywords_at_venue_public_na
     )
 
     # when
-    offerers = filter_offerers_with_keywords_string(Offerer.query.join(VenueSQLEntity), "chou ou")
+    offerers = filter_offerers_with_keywords_string(Offerer.query.join(Venue), "chou ou")
 
     # then
     assert offerer_with_only_virtual_venue_with_offer not in offerers

@@ -232,7 +232,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin, 
 
     venueId = Column(BigInteger, ForeignKey("venue.id"), nullable=False, index=True)
 
-    venue = relationship("VenueSQLEntity", foreign_keys=[venueId], backref="offers")
+    venue = relationship("Venue", foreign_keys=[venueId], backref="offers")
 
     bookingEmail = Column(String(120), nullable=True)
 

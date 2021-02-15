@@ -12,7 +12,7 @@ from jwt import InvalidTokenError
 from pcapi import settings
 from pcapi.core import mails
 from pcapi.core.bookings.conf import LIMIT_CONFIGURATIONS
-from pcapi.core.offerers.venue_sql_entity import create_digital_venue
+from pcapi.core.offerers.models import create_digital_venue
 from pcapi.core.payments import api as payment_api
 from pcapi.core.users.models import Expense
 from pcapi.core.users.models import ExpenseDomain

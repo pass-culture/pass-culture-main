@@ -5,7 +5,7 @@ from pcapi.model_creators.generic_creators import create_stock
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.models import Offer
-from pcapi.models import VenueSQLEntity
+from pcapi.models import Venue
 from pcapi.repository import repository
 from pcapi.scripts.delete_venue_and_offers_for_venue_id import delete_venue_and_offers_for_venue_id
 from pcapi.utils.human_ids import humanize
@@ -50,7 +50,7 @@ class DeleteVenueAndOffersForVenueIdTest:
         # Then
         offers = Offer.query.all()
         assert all([o.venue == venue2 for o in offers])
-        assert VenueSQLEntity.query.get(venue1.id) is None
+        assert Venue.query.get(venue1.id) is None
 
     @pytest.mark.usefixtures("db_session")
     def test_delete_venue_and_offers_should_raise_an_attribute_error_when_at_least_one_offer_has_stocks(self, app):

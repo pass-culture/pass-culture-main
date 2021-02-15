@@ -5,8 +5,8 @@ from typing import Dict
 from pcapi.domain.price_rule import PriceRule
 from pcapi.models import AllocineVenueProvider
 from pcapi.models import AllocineVenueProviderPriceRule
+from pcapi.models import Venue
 from pcapi.models import VenueProvider
-from pcapi.models import VenueSQLEntity
 from pcapi.repository import repository
 from pcapi.utils.human_ids import dehumanize
 from pcapi.validation.routes.venues import check_existing_venue
@@ -46,7 +46,7 @@ def _create_allocine_venue_provider_price_rule(
 
 
 def _create_allocine_venue_provider(
-    allocine_theater_id: str, venue_provider_payload: Dict, venue: VenueSQLEntity
+    allocine_theater_id: str, venue_provider_payload: Dict, venue: Venue
 ) -> AllocineVenueProvider:
     allocine_venue_provider = AllocineVenueProvider()
     allocine_venue_provider.venue = venue

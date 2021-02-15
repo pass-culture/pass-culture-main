@@ -9,19 +9,19 @@ from pcapi.domain.venue.venue_with_basic_information.venue_with_basic_informatio
 from pcapi.infrastructure.repository.venue.venue_with_basic_information import (
     venue_with_basic_information_domain_converter,
 )
-from pcapi.models import VenueSQLEntity
+from pcapi.models import Venue
 
 
 class VenueWithBasicInformationSQLRepository(VenueWithBasicInformationRepository):
     def find_by_siret(self, siret: str) -> VenueWithBasicInformation:
-        venue_sql_entity = VenueSQLEntity.query.filter_by(siret=siret).one_or_none()
+        venue_sql_entity = Venue.query.filter_by(siret=siret).one_or_none()
         return venue_with_basic_information_domain_converter.to_domain(venue_sql_entity) if venue_sql_entity else None
 
     def find_by_name(self, name: str, offerer_id: int) -> List[VenueWithBasicInformation]:
         venue_sql_entities = (
-            VenueSQLEntity.query.filter_by(managingOffererId=offerer_id)
-            .filter(VenueSQLEntity.siret.is_(None))
-            .filter(func.lower(VenueSQLEntity.name) == func.lower(name))
+            Venue.query.filter_by(managingOffererId=offerer_id)
+            .filter(Venue.siret.is_(None))
+            .filter(func.lower(Venue.name) == func.lower(name))
             .all()
         )
         return [

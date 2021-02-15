@@ -10,7 +10,7 @@ from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
 from pcapi.models import Offerer
 from pcapi.models import PaymentStatus
-from pcapi.models import VenueSQLEntity
+from pcapi.models import Venue
 from pcapi.models.payment import Payment
 
 
@@ -25,8 +25,8 @@ def find_all_offerer_payments(offerer_id: int) -> List[namedtuple]:
         .reset_joinpoint()
         .join(Stock)
         .join(Offer)
-        .join(VenueSQLEntity)
-        .filter(VenueSQLEntity.managingOffererId == offerer_id)
+        .join(Venue)
+        .filter(Venue.managingOffererId == offerer_id)
         .join(Offerer)
         .distinct(payment_status_query.c.paymentId)
         .order_by(payment_status_query.c.paymentId.desc(), payment_status_query.c.date.desc())
@@ -37,9 +37,9 @@ def find_all_offerer_payments(offerer_id: int) -> List[namedtuple]:
             Booking.dateUsed.label("booking_dateUsed"),
             Offer.name.label("offer_name"),
             Offerer.address.label("offerer_address"),
-            VenueSQLEntity.name.label("venue_name"),
-            VenueSQLEntity.siret.label("venue_siret"),
-            VenueSQLEntity.address.label("venue_address"),
+            Venue.name.label("venue_name"),
+            Venue.siret.label("venue_siret"),
+            Venue.address.label("venue_address"),
             Payment.amount.label("amount"),
             Payment.iban.label("iban"),
             Payment.transactionLabel.label("transactionLabel"),

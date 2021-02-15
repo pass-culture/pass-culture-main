@@ -5,7 +5,7 @@ from pcapi.models import Offer
 from pcapi.models import Offerer
 from pcapi.models import Stock
 from pcapi.models import ThingType
-from pcapi.models import VenueSQLEntity
+from pcapi.models import Venue
 from pcapi.repository.offer_queries import filter_bookable_stocks_query
 from pcapi.repository.user_queries import keep_only_webapp_users
 from pcapi.sandboxes.scripts.utils.helpers import get_beneficiary_helper
@@ -50,8 +50,8 @@ def get_non_free_thing_offer_with_active_mediation():
         query.filter(Offer.url == None)
         .filter(Stock.beginningDatetime == None)
         .filter(Offer.mediations.any(Mediation.isActive == True))
-        .join(VenueSQLEntity, VenueSQLEntity.id == Offer.venueId)
-        .join(Offerer, Offerer.id == VenueSQLEntity.managingOffererId)
+        .join(Venue, Venue.id == Offer.venueId)
+        .join(Offerer, Offerer.id == Venue.managingOffererId)
         .filter(Offerer.validationToken == None)
         .first()
     )
@@ -70,8 +70,8 @@ def get_non_free_event_offer():
     offer = (
         query.filter(Offer.type.in_([str(event_type) for event_type in EventType]))
         .filter(Offer.mediations.any(Mediation.isActive == True))
-        .join(VenueSQLEntity, VenueSQLEntity.id == Offer.venueId)
-        .join(Offerer, Offerer.id == VenueSQLEntity.managingOffererId)
+        .join(Venue, Venue.id == Offer.venueId)
+        .join(Offerer, Offerer.id == Venue.managingOffererId)
         .filter(Offerer.validationToken == None)
         .first()
     )

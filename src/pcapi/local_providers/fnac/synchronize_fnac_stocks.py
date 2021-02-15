@@ -13,13 +13,13 @@ from pcapi.core.offers.repository import get_products_map_by_id_at_providers
 from pcapi.core.offers.repository import get_stocks_by_id_at_providers
 from pcapi.infrastructure.repository.stock_provider.provider_api import ProviderAPI
 from pcapi.models import Product
-from pcapi.models import VenueSQLEntity
+from pcapi.models import Venue
 from pcapi.models.db import db
 from pcapi.utils.logger import logger
 from pcapi.validation.models.entity_validator import validate
 
 
-def synchronize_venue_stocks_from_fnac(venue: VenueSQLEntity) -> None:
+def synchronize_venue_stocks_from_fnac(venue: Venue) -> None:
     logger.info("Starting synchronization of venue=%s provider=fnac", venue.id)
     fnac_api = ProviderAPI(
         api_url=settings.FNAC_API_URL,
@@ -104,7 +104,7 @@ def _build_new_offers_from_stock_details(
     stock_details: List,
     existing_offers_by_fnac_reference: Dict[str, int],
     products_by_fnac_reference: Dict[str, Product],
-    venue: VenueSQLEntity,
+    venue: Venue,
 ) -> List[Offer]:
     new_offers = []
     for stock_detail in stock_details:
@@ -175,7 +175,7 @@ def _validate_stock_or_offer(model: Union[Offer, Stock]) -> bool:
     return True
 
 
-def _build_new_offer(venue: VenueSQLEntity, product: Product, id_at_providers: str) -> Offer:
+def _build_new_offer(venue: Venue, product: Product, id_at_providers: str) -> Offer:
     return Offer(
         bookingEmail=venue.bookingEmail,
         description=product.description,

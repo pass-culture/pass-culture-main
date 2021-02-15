@@ -1,10 +1,10 @@
 from pcapi.models import ApiErrors
-from pcapi.models import VenueSQLEntity
+from pcapi.models import Venue
 from pcapi.repository import offerer_queries
 from pcapi.repository import venue_queries
 
 
-def validate(venue: VenueSQLEntity, api_errors: ApiErrors) -> ApiErrors:
+def validate(venue: Venue, api_errors: ApiErrors) -> ApiErrors:
     if venue.siret is not None and not len(venue.siret) == 14:
         api_errors.add_error("siret", f"Ce code SIRET est invalide : {venue.siret}")
 

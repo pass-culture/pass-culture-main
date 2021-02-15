@@ -22,7 +22,7 @@ from pcapi.models import Offerer
 from pcapi.models import Product
 from pcapi.models import Stock
 from pcapi.models import UserOfferer
-from pcapi.models import VenueSQLEntity
+from pcapi.models import Venue
 from pcapi.models import db
 from pcapi.models.offer_type import ThingType
 
@@ -64,7 +64,7 @@ def get_paginated_offers_for_filters(
     )
 
     query = (
-        query.options(joinedload(Offer.venue).joinedload(VenueSQLEntity.managingOfferer))
+        query.options(joinedload(Offer.venue).joinedload(Venue.managingOfferer))
         .options(joinedload(Offer.stocks).joinedload(Stock.bookings))
         .options(joinedload(Offer.mediations))
         .options(joinedload(Offer.product))
@@ -87,7 +87,7 @@ def get_paginated_offers_for_filters(
 def get_offers_by_ids(user: User, offer_ids: List[int]) -> Query:
     query = Offer.query
     if not user.isAdmin:
-        query = query.join(VenueSQLEntity, Offerer, UserOfferer).filter(
+        query = query.join(Venue, Offerer, UserOfferer).filter(
             and_(UserOfferer.userId == user.id, UserOfferer.validationToken.is_(None))
         )
     query = query.filter(Offer.id.in_(offer_ids))
@@ -111,13 +111,13 @@ def get_offers_by_filters(
 
     if not user_is_admin:
         query = (
-            query.join(VenueSQLEntity)
+            query.join(Venue)
             .join(Offerer)
             .join(UserOfferer)
             .filter(and_(UserOfferer.userId == user_id, UserOfferer.validationToken.is_(None)))
         )
     if offerer_id is not None:
-        venue_alias = aliased(VenueSQLEntity)
+        venue_alias = aliased(Venue)
         query = query.join(venue_alias, Offer.venueId == venue_alias.id).filter(
             venue_alias.managingOffererId == offerer_id
         )

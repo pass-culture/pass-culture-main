@@ -6,7 +6,7 @@ from sqlalchemy import not_
 from sqlalchemy import or_
 
 from pcapi.models import Offerer
-from pcapi.models import VenueSQLEntity
+from pcapi.models import Venue
 from pcapi.utils.human_ids import humanize
 from pcapi.utils.logger import logger
 
@@ -41,20 +41,20 @@ def generate_non_editable_venues_csv():
 
 def _get_non_editable_venues():
     offerer_venues = (
-        VenueSQLEntity.query.join(Offerer, VenueSQLEntity.managingOffererId == Offerer.id)
+        Venue.query.join(Offerer, Venue.managingOffererId == Offerer.id)
         .filter(
             or_(
-                and_(VenueSQLEntity.siret.is_(None), Offerer.siren.is_(None)),
+                and_(Venue.siret.is_(None), Offerer.siren.is_(None)),
                 Offerer.name == "",
                 Offerer.siren.is_(None),
-                not_(VenueSQLEntity.siret.startswith(Offerer.siren)),
+                not_(Venue.siret.startswith(Offerer.siren)),
             )
         )
         .with_entities(
-            VenueSQLEntity.id.label("venueId"),
-            VenueSQLEntity.siret.label("venueSiret"),
-            VenueSQLEntity.departementCode.label("venueDepartmentCode"),
-            VenueSQLEntity.name.label("venueName"),
+            Venue.id.label("venueId"),
+            Venue.siret.label("venueSiret"),
+            Venue.departementCode.label("venueDepartmentCode"),
+            Venue.name.label("venueName"),
             Offerer.id.label("offererId"),
             Offerer.siren.label("offererSiren"),
             Offerer.name.label("offererName"),

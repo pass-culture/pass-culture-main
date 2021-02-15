@@ -38,8 +38,8 @@ from pcapi.models import Provider
 from pcapi.models import Stock
 from pcapi.models import ThingType
 from pcapi.models import UserOfferer
+from pcapi.models import Venue
 from pcapi.models import VenueProvider
-from pcapi.models import VenueSQLEntity
 from pcapi.models.allocine_venue_provider import AllocineVenueProvider
 from pcapi.models.bank_information import BankInformationStatus
 from pcapi.models.payment_status import TransactionStatus
@@ -69,7 +69,7 @@ def create_bank_information(
     iban: str = "FR7630006000011234567890189",
     idx: int = None,
     offerer: Offerer = None,
-    venue: VenueSQLEntity = None,
+    venue: Venue = None,
     status: BankInformationStatus = BankInformationStatus.ACCEPTED,
 ) -> BankInformation:
     bank_information = BankInformation()
@@ -131,7 +131,7 @@ def create_booking(
     quantity: int = 1,
     stock: Stock = None,
     token: str = None,
-    venue: VenueSQLEntity = None,
+    venue: Venue = None,
 ) -> Booking:
     booking = Booking()
     offerer = create_offerer(
@@ -488,8 +488,8 @@ def create_venue(
     validation_token: Optional[str] = None,
     venue_type_id: int = None,
     date_created: Optional[datetime] = datetime.now(),
-) -> VenueSQLEntity:
-    venue = VenueSQLEntity()
+) -> Venue:
+    venue = Venue()
     venue.bookingEmail = booking_email
     venue.comment = comment
     venue.dateModifiedAtLastProvider = date_modified_at_last_provider
@@ -518,7 +518,7 @@ def create_venue(
 
 
 def create_venue_provider(
-    venue: VenueSQLEntity,
+    venue: Venue,
     provider: Provider,
     date_modified_at_last_provider: datetime = None,
     id_at_providers: str = None,
@@ -560,7 +560,7 @@ def create_venue_label(label: str, idx: Optional[int] = None) -> VenueLabelSQLEn
 
 
 def create_allocine_venue_provider(
-    venue: VenueSQLEntity,
+    venue: Venue,
     allocine_provider: Provider,
     is_duo: bool = False,
     quantity: Optional[int] = None,
@@ -619,7 +619,7 @@ def create_iris(polygon: Polygon, iris_code: str = "123456789") -> IrisFrance:
     return iris
 
 
-def create_iris_venue(iris: IrisFrance, venue: VenueSQLEntity) -> IrisVenues:
+def create_iris_venue(iris: IrisFrance, venue: Venue) -> IrisVenues:
     iris_venue = IrisVenues()
     iris_venue.venue = venue
     iris_venue.iris = iris

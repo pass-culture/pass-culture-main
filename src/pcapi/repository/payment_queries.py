@@ -13,7 +13,7 @@ from pcapi.models import Payment
 from pcapi.models import PaymentMessage
 from pcapi.models import PaymentStatus
 from pcapi.models import Stock
-from pcapi.models import VenueSQLEntity
+from pcapi.models import Venue
 from pcapi.models.bank_information import BankInformationStatus
 from pcapi.models.db import db
 from pcapi.models.payment_status import TransactionStatus
@@ -59,7 +59,7 @@ def find_not_processable_with_bank_information() -> List[Payment]:
     )
 
     predicate_matches_venue_or_offerer = (
-        (VenueSQLEntity.id == BankInformation.venueId) | (Offerer.id == BankInformation.offererId)
+        (Venue.id == BankInformation.venueId) | (Offerer.id == BankInformation.offererId)
     ) & (BankInformation.status == BankInformationStatus.ACCEPTED)
 
     not_processable_payments_with_bank_information = (
@@ -67,7 +67,7 @@ def find_not_processable_with_bank_information() -> List[Payment]:
         .join(Booking)
         .join(Stock)
         .join(Offer)
-        .join(VenueSQLEntity)
+        .join(Venue)
         .join(Offerer)
         .join(BankInformation, predicate_matches_venue_or_offerer)
         .all()

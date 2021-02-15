@@ -6,7 +6,7 @@ from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.generic_creators import create_venue_label
 from pcapi.model_creators.generic_creators import create_venue_type
-from pcapi.models import VenueSQLEntity
+from pcapi.models import Venue
 from pcapi.repository import repository
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import humanize
@@ -48,7 +48,7 @@ class Post:
             assert response.status_code == 201
             idx = response.json["id"]
 
-            venue = VenueSQLEntity.query.filter_by(id=dehumanize(idx)).one()
+            venue = Venue.query.filter_by(id=dehumanize(idx)).one()
             assert venue.name == "Ma venue"
             assert venue.publicName == "Ma venue publique"
             assert venue.siret == "30255917810045"

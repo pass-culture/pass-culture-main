@@ -14,7 +14,7 @@ from pcapi.model_creators.specific_creators import create_offer_with_thing_produ
 from pcapi.model_creators.specific_creators import create_stock_from_event_occurrence
 from pcapi.models import EventType
 from pcapi.models import ThingType
-from pcapi.models import VenueSQLEntity
+from pcapi.models import Venue
 from pcapi.repository import repository
 from pcapi.utils.logger import logger
 
@@ -94,7 +94,7 @@ def save_offerer_without_iban():
     return venue_online, venue_with_siret_with_iban, venue_with_siret_without_iban
 
 
-def save_free_event_offer_with_stocks(venue: VenueSQLEntity):
+def save_free_event_offer_with_stocks(venue: Venue):
     free_event_offer = create_offer_with_event_product(
         venue, event_name="Free event", event_type=EventType.SPECTACLE_VIVANT
     )
@@ -107,7 +107,7 @@ def save_free_event_offer_with_stocks(venue: VenueSQLEntity):
     return past_free_event_stock, future_free_event_stock
 
 
-def save_non_reimbursable_thing_offer(venue: VenueSQLEntity):
+def save_non_reimbursable_thing_offer(venue: Venue):
     paid_non_reimbursable_offer = create_offer_with_thing_product(
         venue, thing_name="Concert en ligne", thing_type=ThingType.JEUX_VIDEO, url="http://my.game.fr"
     )
@@ -117,7 +117,7 @@ def save_non_reimbursable_thing_offer(venue: VenueSQLEntity):
     return non_reimbursable_stock
 
 
-def save_reimbursable_thing_offer(venue: VenueSQLEntity):
+def save_reimbursable_thing_offer(venue: Venue):
     paid_reimbursable_offer = create_offer_with_thing_product(
         venue, thing_name="Roman cool", thing_type=ThingType.LIVRE_EDITION
     )
@@ -127,7 +127,7 @@ def save_reimbursable_thing_offer(venue: VenueSQLEntity):
     return reimbursable_stock
 
 
-def save_paid_online_book_offer(venue: VenueSQLEntity):
+def save_paid_online_book_offer(venue: Venue):
     paid_reimbursable_offer = create_offer_with_thing_product(
         venue, thing_name="Roman cool", thing_type=ThingType.LIVRE_EDITION, url="https://mycoolbook.fr"
     )
@@ -137,7 +137,7 @@ def save_paid_online_book_offer(venue: VenueSQLEntity):
     return reimbursable_stock
 
 
-def save_paid_reimbursable_event_offer(venue: VenueSQLEntity):
+def save_paid_reimbursable_event_offer(venue: Venue):
     paid_reimbursable_event_offer = create_offer_with_event_product(
         venue, event_name="Paid event", event_type=EventType.SPECTACLE_VIVANT
     )

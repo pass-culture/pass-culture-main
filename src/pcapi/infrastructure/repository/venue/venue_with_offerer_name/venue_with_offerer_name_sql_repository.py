@@ -7,7 +7,7 @@ from pcapi.domain.venue.venue_with_offerer_name.venue_with_offerer_name_reposito
 from pcapi.infrastructure.repository.venue.venue_with_offerer_name import venue_with_offerer_name_domain_converter
 from pcapi.models import Offerer
 from pcapi.models import UserOfferer
-from pcapi.models import VenueSQLEntity
+from pcapi.models import Venue
 
 
 class VenueWithOffererNameSQLRepository(VenueWithOffererNameRepository):
@@ -17,11 +17,11 @@ class VenueWithOffererNameSQLRepository(VenueWithOffererNameRepository):
         user_is_admin: bool,
         offerer_id: Optional[Identifier] = None,
     ) -> List[VenueWithOffererName]:
-        query = VenueSQLEntity.query
+        query = Venue.query
 
         if not user_is_admin:
             query = (
-                query.join(Offerer, Offerer.id == VenueSQLEntity.managingOffererId)
+                query.join(Offerer, Offerer.id == Venue.managingOffererId)
                 .filter(Offerer.validationToken.is_(None))
                 .join(UserOfferer, UserOfferer.offererId == Offerer.id)
                 .filter(UserOfferer.validationToken.is_(None))
@@ -29,9 +29,9 @@ class VenueWithOffererNameSQLRepository(VenueWithOffererNameRepository):
             )
 
         if offerer_id:
-            query = query.filter(VenueSQLEntity.managingOffererId == offerer_id.persisted)
+            query = query.filter(Venue.managingOffererId == offerer_id.persisted)
 
-        venue_sql_entities = query.order_by(VenueSQLEntity.name).all()
+        venue_sql_entities = query.order_by(Venue.name).all()
         return [
             venue_with_offerer_name_domain_converter.to_domain(venue_sql_entity)
             for venue_sql_entity in venue_sql_entities

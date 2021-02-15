@@ -12,7 +12,7 @@ from pcapi.model_creators.specific_creators import create_product_with_thing_typ
 from pcapi.models import Offer
 from pcapi.models import Offerer
 from pcapi.models import UserOfferer
-from pcapi.models import VenueSQLEntity
+from pcapi.models import Venue
 from pcapi.repository import repository
 from pcapi.repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
 from pcapi.repository.user_offerer_queries import find_one_or_none_by_user_id
@@ -90,9 +90,7 @@ def test_filter_query_where_user_is_user_offerer_and_is_validated(app):
     repository.save(user_offerer1, user_offerer2, offerer3, offer1, offer2, offer3, offer4)
 
     # When
-    offers = filter_query_where_user_is_user_offerer_and_is_validated(
-        Offer.query.join(VenueSQLEntity).join(Offerer), user
-    ).all()
+    offers = filter_query_where_user_is_user_offerer_and_is_validated(Offer.query.join(Venue).join(Offerer), user).all()
 
     # Then
     offer_ids = [offer.id for offer in offers]

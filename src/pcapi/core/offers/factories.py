@@ -46,7 +46,7 @@ class ApiKeyFactory(BaseFactory):
 
 class VenueFactory(BaseFactory):
     class Meta:
-        model = models.VenueSQLEntity
+        model = models.Venue
 
     name = factory.Sequence("Le Petit Rintintin {}".format)
     departementCode = "75"

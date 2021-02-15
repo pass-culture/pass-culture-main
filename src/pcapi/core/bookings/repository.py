@@ -25,7 +25,7 @@ from pcapi.models import Booking
 from pcapi.models import Offer
 from pcapi.models import Stock
 from pcapi.models import UserOfferer
-from pcapi.models import VenueSQLEntity
+from pcapi.models import Venue
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.db import db
 from pcapi.models.offer_type import ThingType
@@ -91,7 +91,7 @@ def find_not_cancelled_bookings_by_stock(stock: Stock) -> List[Booking]:
 def find_bookings_eligible_for_payment_for_venue(venue_id: int) -> List[Booking]:
     return (
         _find_bookings_eligible_for_payment()
-        .filter(VenueSQLEntity.id == venue_id)
+        .filter(Venue.id == venue_id)
         .reset_joinpoint()
         .outerjoin(Payment)
         .order_by(Payment.id, Booking.dateCreated.asc())
@@ -182,7 +182,7 @@ def find_expired_bookings_ordered_by_offerer(expired_on: date = None) -> Query:
     return (
         Booking.query.join(Stock)
         .join(Offer)
-        .join(VenueSQLEntity)
+        .join(Venue)
         .join(Offerer)
         .filter(Booking.isCancelled.is_(True))
         .filter(cast(Booking.cancellationDate, Date) == expired_on)
@@ -209,7 +209,7 @@ def _build_bookings_recap_query(user_id: int) -> Query:
         .join(User)
         .join(Stock)
         .join(Offer)
-        .join(VenueSQLEntity)
+        .join(Venue)
         .join(Offerer)
         .join(UserOfferer)
         .filter(UserOfferer.userId == user_id)
@@ -234,13 +234,13 @@ def _build_bookings_recap_query(user_id: int) -> Query:
             User.lastName.label("beneficiaryLastname"),
             User.email.label("beneficiaryEmail"),
             Stock.beginningDatetime.label("stockBeginningDatetime"),
-            VenueSQLEntity.departementCode.label("venueDepartementCode"),
+            Venue.departementCode.label("venueDepartementCode"),
             Offerer.name.label("offererName"),
             Offerer.postalCode.label("offererPostalCode"),
-            VenueSQLEntity.id.label("venueId"),
-            VenueSQLEntity.name.label("venueName"),
-            VenueSQLEntity.publicName.label("venuePublicName"),
-            VenueSQLEntity.isVirtual.label("venueIsVirtual"),
+            Venue.id.label("venueId"),
+            Venue.name.label("venueName"),
+            Venue.publicName.label("venuePublicName"),
+            Venue.isVirtual.label("venueIsVirtual"),
         )
     )
 
@@ -382,7 +382,7 @@ def _find_bookings_eligible_for_payment() -> Query:
 def _query_keep_only_used_and_non_cancelled_bookings_on_non_activation_offers() -> Query:
     return (
         _query_keep_on_non_activation_offers()
-        .join(VenueSQLEntity)
+        .join(Venue)
         .filter(Booking.isCancelled.is_(False))
         .filter(Booking.isUsed.is_(True))
     )

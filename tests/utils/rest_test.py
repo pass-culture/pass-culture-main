@@ -5,7 +5,7 @@ from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.models import ApiErrors
 from pcapi.models import Offer
-from pcapi.models import VenueSQLEntity
+from pcapi.models import Venue
 from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
 from pcapi.utils.rest import check_order_by
@@ -17,7 +17,7 @@ class TestLoadOrRaiseErrorTest:
     def test_returns_object_if_found(self, app):
         # When
         with pytest.raises(ApiErrors) as error:
-            load_or_raise_error(VenueSQLEntity, humanize(1))
+            load_or_raise_error(Venue, humanize(1))
 
         assert error.value.errors["global"] == [
             "Aucun objet ne correspond à cet identifiant dans notre base de données"
@@ -31,7 +31,7 @@ class TestLoadOrRaiseErrorTest:
         repository.save(venue)
 
         # Then the following should not raise
-        load_or_raise_error(VenueSQLEntity, humanize(venue.id))
+        load_or_raise_error(Venue, humanize(venue.id))
 
 
 class TestCheckOrderByTest:

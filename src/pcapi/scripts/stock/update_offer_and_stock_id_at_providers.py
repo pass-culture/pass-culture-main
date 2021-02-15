@@ -3,7 +3,7 @@ from typing import List
 from sqlalchemy.orm import joinedload
 
 from pcapi.core.offers.models import Offer
-from pcapi.models import VenueSQLEntity
+from pcapi.models import Venue
 from pcapi.repository import repository
 
 
@@ -11,7 +11,7 @@ BATCH_SIZE = 100
 
 
 def update_offer_and_stock_id_at_providers(venue_id: int) -> None:
-    venue = VenueSQLEntity.query.get(venue_id)
+    venue = Venue.query.get(venue_id)
     current_siret = venue.siret
 
     titelive_offers_to_update = _get_titelive_offers_with_old_id_at_providers(venue, current_siret)
@@ -37,7 +37,7 @@ def update_offer_and_stock_id_at_providers(venue_id: int) -> None:
     repository.save(*stocks_to_update)
 
 
-def _get_titelive_offers_with_old_id_at_providers(venue: VenueSQLEntity, current_siret: str) -> List[Offer]:
+def _get_titelive_offers_with_old_id_at_providers(venue: Venue, current_siret: str) -> List[Offer]:
     return (
         Offer.query.filter(Offer.venueId == venue.id)
         .filter(~Offer.idAtProviders.endswith(current_siret))

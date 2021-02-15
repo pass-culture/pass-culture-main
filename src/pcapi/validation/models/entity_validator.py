@@ -6,7 +6,7 @@ from pcapi.models import Offer
 from pcapi.models import Offerer
 from pcapi.models import Product
 from pcapi.models import Stock
-from pcapi.models import VenueSQLEntity
+from pcapi.models import Venue
 from pcapi.models.db import Model
 from pcapi.validation.models import bank_information
 from pcapi.validation.models import has_address_mixin
@@ -40,7 +40,7 @@ def validate(model: Model) -> ApiErrors:
         api_errors = stock.validate(model, api_errors)
     elif isinstance(model, User):
         api_errors = user.validate(model, api_errors)
-    elif isinstance(model, VenueSQLEntity):
+    elif isinstance(model, Venue):
         api_errors = venue.validate(model, api_errors)
 
     return api_errors

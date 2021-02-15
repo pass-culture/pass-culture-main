@@ -29,7 +29,7 @@ from pcapi.model_creators.specific_creators import create_offer_with_thing_produ
 from pcapi.models import Booking
 from pcapi.models import Offer
 from pcapi.models import Offerer
-from pcapi.models import VenueSQLEntity
+from pcapi.models import Venue
 from pcapi.models.payment import Payment
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.utils.human_ids import humanize
@@ -42,7 +42,7 @@ def test_create_payment_for_booking_with_common_information(app):
     stock = create_stock(price=10, quantity=5)
     booking = create_booking(user=user, quantity=1, stock=stock)
     booking.stock.offer = Offer()
-    booking.stock.offer.venue = VenueSQLEntity()
+    booking.stock.offer.venue = Venue()
     offerer = create_offerer()
     create_bank_information(bic="QSDFGH8Z555", iban="CF13QSDFGH456789", offerer=offerer)
     booking.stock.offer.venue.managingOfferer = offerer
@@ -142,7 +142,7 @@ def test_create_payment_for_booking_with_not_processable_status_when_no_bank_inf
     stock = create_stock(price=10, quantity=5)
     booking = create_booking(user=user, quantity=1, stock=stock)
     booking.stock.offer = Offer()
-    booking.stock.offer.venue = VenueSQLEntity()
+    booking.stock.offer.venue = Venue()
     booking.stock.offer.venue.managingOfferer = create_offerer(name="Test Offerer")
     booking_reimbursement = BookingReimbursement(booking, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
 
@@ -162,7 +162,7 @@ def test_create_payment_for_booking_with_pending_status(app):
     stock = create_stock(price=10, quantity=5)
     booking = create_booking(user=user, quantity=1, stock=stock)
     booking.stock.offer = Offer()
-    booking.stock.offer.venue = VenueSQLEntity()
+    booking.stock.offer.venue = Venue()
     offerer = create_offerer()
     booking.stock.offer.venue.managingOfferer = offerer
     create_bank_information(bic="QSDFGH8Z555", iban="CF13QSDFGH456789", offerer=offerer)

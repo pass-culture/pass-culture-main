@@ -3,7 +3,7 @@ from datetime import datetime
 from pcapi.core.users.models import User
 from pcapi.models import Offerer
 from pcapi.models import UserOfferer
-from pcapi.models import VenueSQLEntity
+from pcapi.models import Venue
 from pcapi.scripts.deactivate_offers_during_quarantine.deactivate_offers import (
     build_query_offers_with_max_stock_date_between_today_and_end_of_quarantine,
 )
@@ -16,7 +16,7 @@ def fetch_user_emails_for_offers_with_max_stock_date_between_today_and_end_of_qu
         first_day_after_quarantine, today
     )
     users_info = (
-        offers_query.join(VenueSQLEntity)
+        offers_query.join(Venue)
         .join(Offerer)
         .join(UserOfferer)
         .join(User)

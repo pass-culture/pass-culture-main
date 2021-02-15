@@ -4,10 +4,10 @@ from pcapi.domain.ts_vector import create_get_filter_matching_ts_query_in_any_mo
 from pcapi.models import Offer
 from pcapi.models import Offerer
 from pcapi.models import UserOfferer
-from pcapi.models import VenueSQLEntity
+from pcapi.models import Venue
 
 
-get_filter_matching_ts_query_for_offerer = create_get_filter_matching_ts_query_in_any_model(Offerer, VenueSQLEntity)
+get_filter_matching_ts_query_for_offerer = create_get_filter_matching_ts_query_in_any_model(Offerer, Venue)
 
 
 def find_by_id(id):  # pylint: disable=redefined-builtin
@@ -19,7 +19,7 @@ def find_by_siren(siren):
 
 
 def get_by_offer_id(offer_id):
-    return Offerer.query.join(VenueSQLEntity).join(Offer).filter_by(id=offer_id).first()
+    return Offerer.query.join(Venue).join(Offer).filter_by(id=offer_id).first()
 
 
 def find_new_offerer_user_email(offerer_id):
@@ -43,9 +43,9 @@ def check_if_siren_already_exists(siren):
 
 
 def keep_offerers_with_at_least_one_physical_venue(query):
-    return query.filter(Offerer.managedVenues.any(VenueSQLEntity.isVirtual == False))
+    return query.filter(Offerer.managedVenues.any(Venue.isVirtual == False))
 
 
 def keep_offerers_with_no_physical_venue(query):
-    is_not_virtual = VenueSQLEntity.isVirtual == False
+    is_not_virtual = Venue.isVirtual == False
     return query.filter(~Offerer.managedVenues.any(is_not_virtual))

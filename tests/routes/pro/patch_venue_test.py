@@ -8,7 +8,7 @@ from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.generic_creators import create_venue_label
 from pcapi.model_creators.generic_creators import create_venue_type
-from pcapi.models import VenueSQLEntity
+from pcapi.models import Venue
 from pcapi.repository import repository
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import humanize
@@ -58,7 +58,7 @@ class Patch:
             # when
             response = auth_request.patch("/venues/%s" % humanize(venue.id), json=venue_coordinates)
             idx = response.json["id"]
-            venue = VenueSQLEntity.query.filter_by(id=dehumanize(idx)).one()
+            venue = Venue.query.filter_by(id=dehumanize(idx)).one()
 
             # Then
             mock_delete_venue_from_iris_venues.assert_called_once_with(venue.id)
@@ -181,7 +181,7 @@ class Patch:
 
             # then
             assert response.status_code == 200
-            venue = VenueSQLEntity.query.get(venue_id)
+            venue = Venue.query.get(venue_id)
             assert venue.name == "Ma librairie"
             assert venue.venueTypeId == venue_type.id
             json = response.json

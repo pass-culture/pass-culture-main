@@ -1,7 +1,7 @@
 from typing import List
 
 from pcapi.models import Offerer
-from pcapi.models import VenueSQLEntity
+from pcapi.models import Venue
 from pcapi.repository.iris_venues_queries import find_ids_of_irises_located_near_venue
 from pcapi.repository.iris_venues_queries import insert_venue_in_iris_venue
 
@@ -15,11 +15,11 @@ def link_irises_to_existing_physical_venues(search_radius: int):
 
 def _find_all_venue_ids_to_link() -> List[int]:
     venues = (
-        VenueSQLEntity.query.join(Offerer)
-        .filter(VenueSQLEntity.isVirtual.is_(False))
-        .filter(VenueSQLEntity.validationToken.is_(None))
+        Venue.query.join(Offerer)
+        .filter(Venue.isVirtual.is_(False))
+        .filter(Venue.validationToken.is_(None))
         .filter(Offerer.validationToken.is_(None))
-        .with_entities(VenueSQLEntity.id)
+        .with_entities(Venue.id)
         .all()
     )
     return [venue.id for venue in venues]

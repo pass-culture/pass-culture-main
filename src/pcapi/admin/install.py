@@ -23,7 +23,7 @@ from pcapi.models import Feature
 from pcapi.models import Offer
 from pcapi.models import Offerer
 from pcapi.models import UserOfferer
-from pcapi.models import VenueSQLEntity
+from pcapi.models import Venue
 
 
 class Category(Enum):
@@ -46,7 +46,7 @@ def install_admin_views(admin: Admin, session: Session) -> None:
     )
     admin.add_view(CriteriaView(Criterion, session, name="Tags des offres", category=Category.OFFRES_STRUCTURES_LIEUX))
     admin.add_view(OffererView(Offerer, session, name="Structures", category=Category.OFFRES_STRUCTURES_LIEUX))
-    admin.add_view(VenueView(VenueSQLEntity, session, name="Lieux", category=Category.OFFRES_STRUCTURES_LIEUX))
+    admin.add_view(VenueView(Venue, session, name="Lieux", category=Category.OFFRES_STRUCTURES_LIEUX))
     admin.add_view(
         UserOffererView(
             UserOfferer, session, name="Lien Utilisateurs/Structures", category=Category.OFFRES_STRUCTURES_LIEUX

@@ -1,8 +1,8 @@
 from pcapi.domain.venue.venue_with_offerer_name.venue_with_offerer_name import VenueWithOffererName
-from pcapi.models import VenueSQLEntity
+from pcapi.models import Venue
 
 
-def to_domain(venue_sql_entity: VenueSQLEntity) -> VenueWithOffererName:
+def to_domain(venue_sql_entity: Venue) -> VenueWithOffererName:
     return VenueWithOffererName(
         identifier=venue_sql_entity.id,
         is_virtual=venue_sql_entity.isVirtual,

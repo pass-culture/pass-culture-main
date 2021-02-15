@@ -2,7 +2,7 @@ from decimal import Decimal
 
 from pcapi.models import AllocineVenueProvider
 from pcapi.models import AllocineVenueProviderPriceRule
-from pcapi.models import VenueSQLEntity
+from pcapi.models import Venue
 from pcapi.repository import repository
 from pcapi.utils.logger import logger
 
@@ -18,9 +18,7 @@ def modify_allocine_price_rule_for_venue_by_id(venue_id: int, new_price: Decimal
 
 def modify_allocine_price_rule_for_venue_by_siret(venue_siret: str, new_price: Decimal) -> None:
     logger.info("Venue %s priceRule to be updated, new price: %s", venue_siret, new_price)
-    allocine_venue_provider = (
-        AllocineVenueProvider.query.join(VenueSQLEntity).filter_by(siret=venue_siret).one_or_none()
-    )
+    allocine_venue_provider = AllocineVenueProvider.query.join(Venue).filter_by(siret=venue_siret).one_or_none()
     if allocine_venue_provider is not None:
         _modify_allocine_price_rule_for_venue(allocine_venue_provider, new_price)
     else:

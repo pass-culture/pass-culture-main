@@ -6,9 +6,9 @@ from wtforms import Form
 
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.connectors import redis
+from pcapi.core.offerers.models import Venue
 from pcapi.flask_app import app
 from pcapi.models import Offer
-from pcapi.models import VenueSQLEntity
 
 
 class OfferView(BaseAdminView):
@@ -64,7 +64,7 @@ class OfferForVenueSubview(OfferView):
         if venue_id is None:
             abort(400, "Venue id required")
 
-        venue = VenueSQLEntity.query.filter(VenueSQLEntity.id == venue_id).one()
+        venue = Venue.query.filter(Venue.id == venue_id).one()
         if not venue:
             abort(404, "Ce lieu n'existe pas ou plus")
 

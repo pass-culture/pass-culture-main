@@ -9,16 +9,14 @@ from pcapi.models import Booking
 from pcapi.models import FavoriteSQLEntity
 from pcapi.models import Offer
 from pcapi.models import Stock
-from pcapi.models import VenueSQLEntity
+from pcapi.models import Venue
 
 
 class FavoriteSQLRepository(FavoriteRepository):
     def find_by_beneficiary(self, beneficiary_identifier: int) -> List[Favorite]:
         favorite_sql_entities = (
             FavoriteSQLEntity.query.filter(FavoriteSQLEntity.userId == beneficiary_identifier)
-            .options(
-                joinedload(FavoriteSQLEntity.offer).joinedload(Offer.venue).joinedload(VenueSQLEntity.managingOfferer)
-            )
+            .options(joinedload(FavoriteSQLEntity.offer).joinedload(Offer.venue).joinedload(Venue.managingOfferer))
             .options(joinedload(FavoriteSQLEntity.mediation))
             .options(joinedload(FavoriteSQLEntity.offer).joinedload(Offer.stocks))
             .options(joinedload(FavoriteSQLEntity.offer).joinedload(Offer.product))
