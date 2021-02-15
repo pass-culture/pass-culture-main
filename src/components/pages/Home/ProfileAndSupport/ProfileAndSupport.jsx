@@ -3,8 +3,9 @@ import React, { useState, useCallback } from 'react'
 
 import Icon from 'components/layout/Icon'
 
-import { steps, STEP_ID_PROFILE } from './HomepageBreadcrumb'
-import ProfileInformationsModal from './ProfileInformationsModal'
+import { steps, STEP_ID_PROFILE } from '../HomepageBreadcrumb'
+import ProfileInformationsModal from '../ProfileInformationsModal'
+
 import Support from './Support'
 
 /**
