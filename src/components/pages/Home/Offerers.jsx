@@ -83,32 +83,38 @@ const Offerers = () => {
                 {'Informations pratiques'}
               </h3>
               <div className="h-card-content">
-                <dl className="h-description-list">
-                  <dt>
-                    {'Siren :'}
-                  </dt>
-                  <dd>
-                    {selectedOfferer.siren}
-                  </dd>
+                <ul className="h-description-list">
+                  <li className="h-dl-row">
+                    <span className="h-dl-title">
+                      {'Siren :'}
+                    </span>
+                    <span className="h-dl-description">
+                      {selectedOfferer.siren}
+                    </span>
+                  </li>
 
-                  <dt>
-                    {'Désignation :'}
-                  </dt>
-                  <dd>
-                    {selectedOfferer.name}
-                  </dd>
+                  <li className="h-dl-row">
+                    <span className="h-dl-title">
+                      {'Désignation :'}
+                    </span>
+                    <span className="h-dl-description">
+                      {selectedOfferer.name}
+                    </span>
+                  </li>
 
-                  <dt>
-                    {'Siège social : '}
-                  </dt>
-                  <dd>
-                    {selectedOfferer.address} 
-                    {' '}
-                    {selectedOfferer.postalCode} 
-                    {' '}
-                    {selectedOfferer.city}
-                  </dd>
-                </dl>
+                  <li className="h-dl-row">
+                    <span className="h-dl-title">
+                      {'Siège social : '}
+                    </span>
+                    <span className="h-dl-description">
+                      {selectedOfferer.address}
+                      {' '}
+                      {selectedOfferer.postalCode}
+                      {' '}
+                      {selectedOfferer.city}
+                    </span>
+                  </li>
+                </ul>
               </div>
             </div>
 

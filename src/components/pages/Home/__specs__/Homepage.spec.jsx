@@ -131,7 +131,9 @@ describe('homepage : Tabs : Offerers', () => {
       const selectedOfferer = baseOfferers[0]
       const selectedOffererAddress = `${selectedOfferer.address} ${selectedOfferer.postalCode} ${selectedOfferer.city}`
       expect(await screen.findByText(selectedOfferer.siren)).toBeInTheDocument()
-      expect(await screen.findByText(selectedOfferer.name, { selector: 'dd' })).toBeInTheDocument()
+      expect(
+        await screen.findByText(selectedOfferer.name, { selector: 'span' })
+      ).toBeInTheDocument()
       expect(await screen.findByText(selectedOffererAddress)).toBeInTheDocument()
     })
 
@@ -185,7 +187,7 @@ describe('homepage : Tabs : Offerers', () => {
 
         expect(await screen.findByText(newSelectedOfferer.siren)).toBeInTheDocument()
         expect(
-          await screen.findByText(newSelectedOfferer.name, { selector: 'dd' })
+          await screen.findByText(newSelectedOfferer.name, { selector: 'span' })
         ).toBeInTheDocument()
         expect(await screen.findByText(selectedOffererAddress)).toBeInTheDocument()
       })

@@ -5,20 +5,22 @@
   }
 
   .h-description-list {
+    display: flex;
+    flex-direction: column;
     margin-top: rem(-8px);
 
-    dt,
-    dd {
-      float: left;
+    .h-dl-row {
       margin-top: rem(8px);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
-    dt {
-      clear: left;
+    .h-dl-title {
       color: $grey-dark;
     }
 
-    dd {
+    .h-dl-description {
       margin-left: rem(8px);
     }
   }
@@ -154,6 +156,7 @@
       .h-card-col {
         border-left: rem(1px) solid $grey-medium;
         flex: 1 1;
+        overflow: hidden;
         padding-left: rem(24px);
         padding-right: rem(24px);
 
