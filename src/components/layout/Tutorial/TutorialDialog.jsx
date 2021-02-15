@@ -42,9 +42,8 @@ const TutorialDialog = ({ currentUser, setUserHasSeenTuto, isFeatureActive }) =>
       .setHasSeenTutos(currentUser.id)
       .then(() => {
         setUserHasSeenTuto(currentUser)
-        setAreTutoDisplayed(false)
       })
-      .catch(() => setAreTutoDisplayed(false))
+      .finally(() => setAreTutoDisplayed(false))
   }, [currentUser, setUserHasSeenTuto])
 
   const hasNextStep = getStep(activeStepPosition + 1) !== undefined
