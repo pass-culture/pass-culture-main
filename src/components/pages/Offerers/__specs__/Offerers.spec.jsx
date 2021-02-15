@@ -57,16 +57,6 @@ describe('src | components | Offerers', () => {
           expect(links.at(0).prop('href')).toBe('/erreur/indisponible')
         })
       })
-
-      it('should display a link to create a venue', () => {
-        // when
-        const wrapper = shallow(<Offerers {...props} />)
-        const links = wrapper.find('a')
-
-        // then
-        expect(links.at(1).text()).toBe('ajouter des offres numériques.')
-        expect(links.at(1).prop('href')).toBe('/offres/creation')
-      })
     })
 
     describe('should pluralize offerers menu link', () => {
@@ -202,10 +192,7 @@ describe('src | components | Offerers', () => {
         it('should display a link to create an offer', () => {
           // when
           const wrapper = shallow(<Offerers {...props} />)
-          const pageHeading = wrapper
-            .find(Titles)
-            .first()
-            .dive()
+          const pageHeading = wrapper.find(Titles).first().dive()
 
           const link = pageHeading.find(Link)
 
@@ -221,10 +208,7 @@ describe('src | components | Offerers', () => {
 
           // when
           const wrapper = shallow(<Offerers {...props} />)
-          const pageHeading = wrapper
-            .find(Titles)
-            .first()
-            .dive()
+          const pageHeading = wrapper.find(Titles).first().dive()
 
           const link = pageHeading.find(Link)
 

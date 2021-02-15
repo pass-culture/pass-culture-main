@@ -213,10 +213,7 @@ class Offerers extends PureComponent {
           </a>
           {' lié à une structure.'}
           <br />
-          {'Sans lieu, vous pouvez uniquement '}
-          <a href="/offres/creation">
-            {'ajouter des offres numériques.'}
-          </a>
+          {'Sans lieu, vous pouvez uniquement ajouter des offres numériques.'}
         </p>
 
         <Form
