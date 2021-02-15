@@ -6,7 +6,7 @@ export const getAccountDeletionEmail = userEmail => {
 
 Je vous écris afin de vous demander la suppression de mon compte pass Culture associé à l’adresse e-mail ${userEmail}.
 
-J'ai conscience que la suppression de mon compte entraînera l'annulation définitive de l'ensemble de mes réservations en cours.
+J'ai conscience que la suppression de mon compte entraînera l'annulation définitive de l'ensemble de mes réservations en cours et la perte de mon crédit.
 
 J'ai 30 jours pour me rétracter. Au-delà de ce délai, je ne pourrai plus accéder à mon compte pass Culture, ni au crédit éventuellement restant.
 
