@@ -350,6 +350,7 @@ class GetOfferResponseModel(BaseModel):
     conditions: Optional[str]
     dateCreated: str
     dateModifiedAtLastProvider: Optional[str]
+    dateRange: List[str]
     description: Optional[str]
     durationMinutes: Optional[int]
     extraData: Any

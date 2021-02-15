@@ -109,6 +109,7 @@ class Returns200:
             "conditions": None,
             "dateCreated": "2020-10-15T00:00:00Z",
             "dateModifiedAtLastProvider": "2020-10-15T00:00:00Z",
+            "dateRange": ["2020-10-15T00:00:00Z", "2020-10-15T00:00:00Z"],
             "description": "Tatort, but slower",
             "durationMinutes": 60,
             "extraData": None,

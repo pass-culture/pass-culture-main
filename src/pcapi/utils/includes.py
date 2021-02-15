@@ -64,6 +64,9 @@ OFFER_INCLUDES = [
     },
 ]
 
+GET_OFFER_INCLUDES = copy.deepcopy(OFFER_INCLUDES)
+GET_OFFER_INCLUDES.append("dateRange")
+
 
 USER_INCLUDES = [
     "-culturalSurveyId",

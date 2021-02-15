@@ -23,7 +23,7 @@ from pcapi.routes.serialization.offers_serialize import PatchOfferActiveStatusBo
 from pcapi.routes.serialization.offers_serialize import PatchOfferBodyModel
 from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils.includes import OFFER_INCLUDES
+from pcapi.utils.includes import GET_OFFER_INCLUDES
 from pcapi.utils.logger import logger
 from pcapi.utils.rest import ensure_current_user_has_rights
 from pcapi.utils.rest import load_or_404
@@ -57,7 +57,7 @@ def list_offers(query: ListOffersQueryModel) -> ListOffersResponseModel:
 @spectree_serialize(response_model=GetOfferResponseModel)
 def get_offer(offer_id: str) -> GetOfferResponseModel:
     offer = load_or_404(Offer, offer_id)
-    return GetOfferResponseModel(**as_dict(offer, includes=OFFER_INCLUDES))
+    return GetOfferResponseModel(**as_dict(offer, includes=GET_OFFER_INCLUDES))
 
 
 @private_api.route("/offers", methods=["POST"])
