@@ -40,6 +40,7 @@ class FeatureToggle(enum.Enum):
         "Active la parallèlisation des opérations de synchronisation pour les VenueProvider"
     )
     ENABLE_WHOLE_VENUE_PROVIDER_ALGOLIA_INDEXATION = "Active la réindexation globale sur Algolia des VenueProvider"
+    SYNCHRONIZE_VENUE_PROVIDER_IN_WORKER = "Effectue la première synchronisation des venue_provider dans le worker"
 
 
 class Feature(PcObject, Model, DeactivableMixin):

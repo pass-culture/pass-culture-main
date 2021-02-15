@@ -24,7 +24,7 @@ from tests.conftest import clean_database
 class Post:
     class Returns201:
         @pytest.mark.usefixtures("db_session")
-        @override_features(PARALLEL_SYNCHRONIZATION_OF_VENUE_PROVIDER=True)
+        @override_features(SYNCHRONIZE_VENUE_PROVIDER_IN_WORKER=False)
         @patch("pcapi.routes.pro.venue_providers.subprocess.Popen")
         @patch("pcapi.use_cases.connect_venue_to_provider._check_venue_can_be_synchronized_with_provider")
         @patch("pcapi.routes.pro.venue_providers.find_by_id")
@@ -71,7 +71,7 @@ class Post:
             )
 
         @pytest.mark.usefixtures("db_session")
-        @override_features(PARALLEL_SYNCHRONIZATION_OF_VENUE_PROVIDER=False)
+        @override_features(SYNCHRONIZE_VENUE_PROVIDER_IN_WORKER=True)
         @patch("pcapi.workers.venue_provider_job.venue_provider_job.delay")
         @patch("pcapi.use_cases.connect_venue_to_provider._check_venue_can_be_synchronized_with_provider")
         @patch("pcapi.routes.pro.venue_providers.find_by_id")

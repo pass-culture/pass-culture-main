@@ -87,7 +87,7 @@ def _get_stock_provider_repository(provider_class) -> StockProviderRepository:
 
 
 def _run_first_synchronization(new_venue_provider: VenueProvider):
-    if feature_queries.is_active(FeatureToggle.PARALLEL_SYNCHRONIZATION_OF_VENUE_PROVIDER):
+    if not feature_queries.is_active(FeatureToggle.SYNCHRONIZE_VENUE_PROVIDER_IN_WORKER):
         subprocess.Popen(
             [
                 "python",
