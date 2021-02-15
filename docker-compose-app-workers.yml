@@ -26,10 +26,28 @@ services:
     env_file:
       - env_file
       - ${ENV:-development}_env_file
-    environment:
-      - DEMARCHES_SIMPLIFIEES_RIB_OFFERER_PROCEDURE_ID=$DEMARCHES_SIMPLIFIEES_RIB_OFFERER_PROCEDURE_ID
-      - DEMARCHES_SIMPLIFIEES_RIB_VENUE_PROCEDURE_ID=$DEMARCHES_SIMPLIFIEES_RIB_VENUE_PROCEDURE_ID
-      - DEMARCHES_SIMPLIFIEES_TOKEN=$DEMARCHES_SIMPLIFIEES_TOKEN
+    networks:
+      - db_nw
+      - web_nw
+    depends_on:
+      - postgres
+      - redis
+
+  worker_low:
+    image: passcultureapp/api-flask:latest
+    working_dir: /opt/services/flaskapp/src
+    container_name: pc-worker-low
+    command: >
+      bash -c "set -x;
+              pip install -e .
+              pip install -r ./requirements.txt;
+              python -m nltk.downloader punkt stopwords;
+              python src/pcapi/workers/worker.py low;"
+    volumes:
+      - ./api:/opt/services/flaskapp/src
+    env_file:
+      - env_file
+      - ${ENV:-development}_env_file
     networks:
       - db_nw
       - web_nw
