@@ -67,35 +67,19 @@ C'est tout le framework du Pass Culture!
 - `http://localhost:3001/` devrait être lancé et fonctionnel
 - Connectez-vous avec `pctest.admin93.0@example.com` et `user@AZERTY123`
 
-### Configurer son IDE et installer l'API localement
+### Configurer son API localement
 
-1. Importer le projet pass-culture/api
-2. Importer le projet pass-culture/webapp
-3. Importer le projet pass-culture/pro
+Les actions suivantes sont requises afin de faire fonctionner l'IDE correctement côté API et de pouvoir lancer les `hooks` de `pre-commit`
 
-Les actions suivantes sont requises afin de faire fonctionner l'API et de pouvoir lancer les `hooks` de `pre-commit`
-
-- installer Python 3.7 (via le marketplace)
-- monter un virtualenv ([lien](https://docs.python.org/3/library/venv.html)) afin d'avoir un environnement isolé et contextualisé pour les besoins de l'API
-
-- exécuter les commandes suivantes :
-
-  1. `cd pass-culture-main/api`
-  2. `python3 -m venv venv`
-  3. `source venv/bin/activate`
-  4. `pip install -r requirements.txt`
-  5. `pip install -e .`
-  6. `python -m nltk.downloader punkt stopwords`
-  7. `pc start-backend`
-  8. `pc test-backend`
-
-```bash
-1. curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-2. python3 [get-pip.py](http://get-pip.py/)
-3. sudo /usr/bin/easy_install virtualenv
-```
-
-Puis exécuter la suite des commandes ci dessus avec pip3.
+- Installer Python 3.7 (via le marketplace)
+- `cd pass-culture-main/api`
+- `python3 -m venv venv`
+- `source venv/bin/activate`
+- `pip install -r requirements.txt`
+- `pip install -e .`
+- Installation de nltk:
+  - Version Ubuntu: `python -m nltk.downloader punkt stopwords`
+  - Version Mac: `pip install nltk`
 
 ### Exécution des tests (API, WebApp, Pro)
 
