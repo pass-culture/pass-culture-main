@@ -280,6 +280,7 @@ describe('thumbnail edition', () => {
         fireEvent.click(screen.getByText('Valider', { selector: 'button' }))
 
         // Then
+        expect(screen.getByLabelText('URL de l’image')).toHaveAttribute('disabled')
         expect(await screen.findByText('Valider', { selector: 'button' })).toHaveAttribute(
           'disabled'
         )
@@ -302,6 +303,7 @@ describe('thumbnail edition', () => {
         fireEvent.click(screen.getByText('Valider', { selector: 'button' }))
 
         // Then
+        expect(screen.getByLabelText('URL de l’image')).toHaveAttribute('disabled')
         expect(await screen.findByText('Valider', { selector: 'button' })).toHaveAttribute(
           'disabled'
         )

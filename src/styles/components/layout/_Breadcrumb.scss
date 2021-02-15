@@ -64,4 +64,12 @@
       }
     }
   }
+
+  &.bc-disabled {
+    .bc-step:nth-child(1) {
+      a {
+        color: $grey-dark;
+      }
+    }
+  }
 }

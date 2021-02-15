@@ -24,6 +24,7 @@ const ThumbnailDialog = ({ setIsModalOpened, setPreview, setThumbnailInfo }) => 
   const [previewBase64, setPreviewBase64] = useState('')
   const [editedThumbnail, setEditedThumbnail] = useState('')
   const [croppingRect, setCroppingRect] = useState({})
+  const [isLoading, setIsLoading] = useState(false)
 
   const IMPORT_STEP = 1
   const CREDIT_STEP = 2
@@ -92,7 +93,7 @@ const ThumbnailDialog = ({ setIsModalOpened, setPreview, setThumbnailInfo }) => 
             <ImportTab
               activeTab={activeTab}
               changeTab={changeTab}
-              setHidden={setHidden}
+              isLoading={isLoading}
             />
             {tabId === IMPORT_TAB_ID ? (
               <ImportFromComputer
@@ -102,6 +103,8 @@ const ThumbnailDialog = ({ setIsModalOpened, setPreview, setThumbnailInfo }) => 
               />
             ) : (
               <ImportFromURL
+                isLoading={isLoading}
+                setIsLoading={setIsLoading}
                 setPreviewBase64={setPreviewBase64}
                 setStep={setStep}
                 setURL={setURL}

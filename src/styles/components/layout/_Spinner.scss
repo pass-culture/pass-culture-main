@@ -3,13 +3,15 @@
   text-align: center;
 
   @media screen and (prefers-reduced-motion: reduce) {
-    img {
+    img,
+    svg {
       animation: none;
       margin-bottom: rem(15px);
     }
   }
 
-  img {
+  img,
+  svg {
     animation: rotation 3s infinite linear;
     margin-bottom: rem(15px);
   }
