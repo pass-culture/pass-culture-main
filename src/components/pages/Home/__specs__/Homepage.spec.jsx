@@ -10,7 +10,8 @@ import { configureTestStore } from 'store/testUtils'
 import Homepage from '../Homepage'
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  getOfferers: jest.fn(),
+  getOfferer: jest.fn(),
+  getAllOfferersNames: jest.fn(),
   getVenuesForOfferer: jest.fn(),
 }))
 
@@ -41,6 +42,7 @@ const renderHomePage = async () => {
 
 describe('homepage : Tabs : Offerers', () => {
   let baseOfferers
+  let baseOfferersNames
   let baseVenues
 
   beforeEach(() => {
@@ -62,6 +64,10 @@ describe('homepage : Tabs : Offerers', () => {
         siren: '222222222',
       },
     ]
+    baseOfferersNames = baseOfferers.map(offerer => ({
+      id: offerer.id,
+      name: offerer.name,
+    }))
     baseVenues = [
       {
         id: 'test_venue_id_1',
@@ -81,12 +87,14 @@ describe('homepage : Tabs : Offerers', () => {
       },
     ]
 
-    pcapi.getOfferers.mockResolvedValue(baseOfferers)
+    pcapi.getOfferer.mockResolvedValue(baseOfferers[0])
+    pcapi.getAllOfferersNames.mockResolvedValue(baseOfferersNames)
     pcapi.getVenuesForOfferer.mockResolvedValue(baseVenues)
   })
 
   afterEach(() => {
-    pcapi.getOfferers.mockClear()
+    pcapi.getOfferer.mockClear()
+    pcapi.getAllOfferersNames.mockClear()
     pcapi.getVenuesForOfferer.mockClear()
   })
 
@@ -175,6 +183,7 @@ describe('homepage : Tabs : Offerers', () => {
         ]
         pcapi.getVenuesForOfferer.mockResolvedValue(newSelectedOffererVenues)
 
+        pcapi.getOfferer.mockResolvedValue(newSelectedOfferer)
         await act(async () => {
           await fireEvent.change(screen.getByDisplayValue(selectedOffer.name), {
             target: { value: newSelectedOfferer.id },

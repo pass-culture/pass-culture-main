@@ -9,21 +9,25 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import { steps, STEP_ID_OFFERERS } from './HomepageBreadcrumb'
 
 const Offerers = () => {
-  const [offerers, setOfferers] = useState([])
   const [offererOptions, setOffererOptions] = useState([])
+  const [selectedOffererId, setSelectedOffererId] = useState(null)
   const [selectedOfferer, setSelectedOfferer] = useState(null)
   const [offlineVenues, setOfflineVenues] = useState([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(function fetchData() {
-    pcapi.getOfferers().then(receivedOfferers => {
-      setOfferers(receivedOfferers)
-      setOffererOptions(buildSelectOptions('id', 'name', receivedOfferers))
-      receivedOfferers.sort((o1, o2) => o1.name.localeCompare(o2.name))
-      setSelectedOfferer(receivedOfferers[0])
-      setIsLoading(false)
+    pcapi.getAllOfferersNames().then(receivedOffererNames => {
+      setSelectedOffererId(receivedOffererNames[0].id)
+      setOffererOptions(buildSelectOptions('id', 'name', receivedOffererNames))
     })
   }, [])
+
+  useEffect(() => {
+    pcapi.getOfferer(selectedOffererId).then(receivedOfferer => {
+      setSelectedOfferer(receivedOfferer)
+      setIsLoading(false)
+    })
+  }, [setIsLoading, selectedOffererId, setSelectedOfferer])
 
   useEffect(() => {
     if (isLoading) return
@@ -36,11 +40,10 @@ const Offerers = () => {
     event => {
       const newOffererId = event.target.value
       if (newOffererId !== selectedOfferer.id) {
-        const newSelectedOfferer = offerers.find(offerer => offerer.id === newOffererId)
-        setSelectedOfferer(newSelectedOfferer)
+        setSelectedOffererId(newOffererId)
       }
     },
-    [offerers, selectedOfferer, setSelectedOfferer]
+    [selectedOfferer, setSelectedOffererId]
   )
 
   if (isLoading) {
