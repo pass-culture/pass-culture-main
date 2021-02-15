@@ -65,9 +65,7 @@ def update_cultural_survey(user: User, body: serializers.CulturalSurveyRequest) 
 def create_account(body: serializers.AccountRequest) -> None:
     if settings.NATIVE_ACCOUNT_CREATION_REQUIRES_RECAPTCHA:
         try:
-            api_recaptcha.check_recaptcha_token_is_valid(
-                body.token, "submit", settings.RECAPTCHA_RESET_PASSWORD_MINIMAL_SCORE
-            )
+            api_recaptcha.check_native_app_recaptcha_token(body.token)
         except api_recaptcha.ReCaptchaException:
             raise ApiErrors({"token": "The given token is not invalid"})
     try:

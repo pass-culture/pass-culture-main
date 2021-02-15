@@ -4,7 +4,7 @@ from flask_login import current_user
 from flask_login import login_required
 
 from pcapi import settings
-from pcapi.connectors.api_recaptcha import check_recaptcha_token_is_valid
+from pcapi.connectors.api_recaptcha import check_webapp_recaptcha_token
 from pcapi.domain.password import check_password_strength
 from pcapi.domain.password import check_password_validity
 from pcapi.domain.password import check_reset_token_validity
@@ -45,7 +45,11 @@ def post_change_password():
 @private_api.route("/users/reset-password", methods=["POST"])
 @spectree_serialize(on_success_status=204)
 def post_for_password_token(body: ResetPasswordBodyModel) -> None:
-    check_recaptcha_token_is_valid(body.token, "resetPassword", settings.RECAPTCHA_RESET_PASSWORD_MINIMAL_SCORE)
+    check_webapp_recaptcha_token(
+        body.token,
+        original_action="resetPassword",
+        minimal_score=settings.RECAPTCHA_RESET_PASSWORD_MINIMAL_SCORE,
+    )
     user = find_user_by_email(body.email)
 
     if not user or not user.isActive:

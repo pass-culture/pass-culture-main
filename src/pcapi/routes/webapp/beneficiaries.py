@@ -8,7 +8,7 @@ from flask_login import login_user
 from jwt import InvalidTokenError
 
 from pcapi import settings
-from pcapi.connectors.api_recaptcha import check_recaptcha_token_is_valid
+from pcapi.connectors.api_recaptcha import check_webapp_recaptcha_token
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import repository as users_repo
 from pcapi.core.users.api import change_user_email
@@ -141,7 +141,11 @@ def verify_id_check_licence_token(
         return serialization_beneficiaries.VerifyIdCheckLicenceResponse()
 
     # Let's try with the legacy webapp tokens
-    check_recaptcha_token_is_valid(body.token, "submit", settings.RECAPTCHA_LICENCE_MINIMAL_SCORE)
+    check_webapp_recaptcha_token(
+        body.token,
+        "submit",
+        settings.RECAPTCHA_LICENCE_MINIMAL_SCORE,
+    )
 
     return serialization_beneficiaries.VerifyIdCheckLicenceResponse()
 

@@ -7,6 +7,7 @@ import pytest
 from pcapi import settings
 from pcapi.connectors.api_recaptcha import InvalidRecaptchaTokenException
 from pcapi.connectors.api_recaptcha import ReCaptchaException
+from pcapi.connectors.api_recaptcha import ReCaptchaVersion
 from pcapi.connectors.api_recaptcha import check_recaptcha_token_is_valid
 from pcapi.connectors.api_recaptcha import get_token_validation_and_score
 from pcapi.core.testing import override_settings
@@ -34,7 +35,7 @@ class GetTokenValidationAndScoreTest:
         request_post.return_value = _build_mocked_request_response({"success": True, "score": 0.9, "action": "ACTION"})
 
         # When
-        get_token_validation_and_score(token)
+        get_token_validation_and_score(token, secret=settings.RECAPTCHA_SECRET)
 
         # Then
         request_post.assert_called_once_with(
@@ -43,7 +44,7 @@ class GetTokenValidationAndScoreTest:
 
     @override_settings(RECAPTCHA_SECRET="recaptcha-secret")
     @patch("pcapi.connectors.api_recaptcha.requests.post")
-    def test_should_return_validation_fields(self, request_post):
+    def test_should_return_validation_fields_for_v3(self, request_post):
         # Given
         token = "fake-token"
         request_post.return_value = _build_mocked_request_response(
@@ -51,13 +52,50 @@ class GetTokenValidationAndScoreTest:
         )
 
         # When
-        result = get_token_validation_and_score(token)
+        result = get_token_validation_and_score(token, secret=settings.RECAPTCHA_SECRET)
 
         # Then
         assert result == {"score": 0.9, "success": True, "action": "ACTION", "error-codes": []}
 
+    @override_settings(RECAPTCHA_SECRET="recaptcha-secret")
+    @patch("pcapi.connectors.api_recaptcha.requests.post")
+    def test_should_return_validation_fields_for_v2(self, request_post):
+        # Given
+        token = "fake-token"
+        request_post.return_value = _build_mocked_request_response(
+            {"success": True, "challenge_ts": "", "hostname": "", "error-codes": []}
+        )
+
+        # When
+        result = get_token_validation_and_score(token, secret=settings.RECAPTCHA_SECRET)
+
+        # Then
+        assert result == {"score": None, "success": True, "action": None, "error-codes": []}
+
 
 class CheckRecaptchaTokenIsValidTest:
+    @override_settings(IS_DEV=False)
+    @patch("pcapi.connectors.api_recaptcha.get_token_validation_and_score")
+    def test_v2_should_be_ok(self, recaptcha_response):
+        token = generate_fake_token()
+        recaptcha_response.return_value = {"success": True}
+        # No exception means it worked
+        check_recaptcha_token_is_valid(token, secret=settings.RECAPTCHA_SECRET, version=ReCaptchaVersion.V2)
+
+    @override_settings(IS_DEV=False)
+    @patch("pcapi.connectors.api_recaptcha.get_token_validation_and_score")
+    def test_v3_should_be_ok(self, recaptcha_response):
+        token = generate_fake_token()
+        recaptcha_response.return_value = {"success": True, "score": 0.7, "action": ORIGINAL_ACTION}
+        # No exception means it worked
+        check_recaptcha_token_is_valid(
+            token,
+            secret=settings.RECAPTCHA_SECRET,
+            version=ReCaptchaVersion.V3,
+            original_action=ORIGINAL_ACTION,
+            minimal_score=0.5,
+        )
+
     @override_settings(IS_DEV=False)
     @patch("pcapi.connectors.api_recaptcha.get_token_validation_and_score")
     def test_should_raise_when_score_is_too_low(self, recaptcha_response):
@@ -67,7 +105,13 @@ class CheckRecaptchaTokenIsValidTest:
 
         # When
         with pytest.raises(InvalidRecaptchaTokenException):
-            check_recaptcha_token_is_valid(token, ORIGINAL_ACTION, 0.5)
+            check_recaptcha_token_is_valid(
+                token,
+                secret=settings.RECAPTCHA_SECRET,
+                version=ReCaptchaVersion.V3,
+                original_action=ORIGINAL_ACTION,
+                minimal_score=0.5,
+            )
 
     @override_settings(IS_DEV=False)
     @patch("pcapi.connectors.api_recaptcha.get_token_validation_and_score")
@@ -78,7 +122,13 @@ class CheckRecaptchaTokenIsValidTest:
 
         # When
         with pytest.raises(ReCaptchaException) as exception:
-            check_recaptcha_token_is_valid(token, ORIGINAL_ACTION, 0.5)
+            check_recaptcha_token_is_valid(
+                token,
+                secret=settings.RECAPTCHA_SECRET,
+                version=ReCaptchaVersion.V3,
+                original_action=ORIGINAL_ACTION,
+                minimal_score=0.5,
+            )
 
         # Then
         assert str(exception.value) == "The action 'fake-action' does not match 'submit' from the form"
@@ -95,7 +145,13 @@ class CheckRecaptchaTokenIsValidTest:
 
         # When
         with pytest.raises(InvalidRecaptchaTokenException):
-            check_recaptcha_token_is_valid(token, ORIGINAL_ACTION, 0.5)
+            check_recaptcha_token_is_valid(
+                token,
+                secret=settings.RECAPTCHA_SECRET,
+                version=ReCaptchaVersion.V3,
+                original_action=ORIGINAL_ACTION,
+                minimal_score=0.5,
+            )
 
     @pytest.mark.parametrize(
         "error_code",
@@ -119,11 +175,17 @@ class CheckRecaptchaTokenIsValidTest:
 
         # When
         with pytest.raises(ReCaptchaException):
-            check_recaptcha_token_is_valid(token, ORIGINAL_ACTION, 0.5)
+            check_recaptcha_token_is_valid(
+                token,
+                secret=settings.RECAPTCHA_SECRET,
+                version=ReCaptchaVersion.V3,
+                original_action=ORIGINAL_ACTION,
+                minimal_score=0.5,
+            )
 
     @override_settings(IS_DEV=False)
     @patch("pcapi.connectors.api_recaptcha.get_token_validation_and_score")
-    def test_should_raise_exception_with_details(self, recaptcha_response):
+    def test_v3_should_raise_exception_with_details(self, recaptcha_response):
         # Given
         token = generate_fake_token()
         recaptcha_response.return_value = {
@@ -133,6 +195,28 @@ class CheckRecaptchaTokenIsValidTest:
 
         # When
         with pytest.raises(ReCaptchaException) as exception:
-            check_recaptcha_token_is_valid(token, ORIGINAL_ACTION, 0.5)
+            check_recaptcha_token_is_valid(
+                token,
+                secret=settings.RECAPTCHA_SECRET,
+                version=ReCaptchaVersion.V3,
+                original_action=ORIGINAL_ACTION,
+                minimal_score=0.5,
+            )
+
+        assert str(exception.value) == "Encountered the following error(s): ['first-error', 'second-error']"
+
+    @override_settings(IS_DEV=False)
+    @patch("pcapi.connectors.api_recaptcha.get_token_validation_and_score")
+    def test_v2_should_raise_exception_with_details(self, recaptcha_response):
+        # Given
+        token = generate_fake_token()
+        recaptcha_response.return_value = {
+            "success": False,
+            "error-codes": ["first-error", "second-error"],
+        }
+
+        # When
+        with pytest.raises(ReCaptchaException) as exception:
+            check_recaptcha_token_is_valid(token, secret=settings.RECAPTCHA_SECRET, version=ReCaptchaVersion.V2)
 
         assert str(exception.value) == "Encountered the following error(s): ['first-error', 'second-error']"
