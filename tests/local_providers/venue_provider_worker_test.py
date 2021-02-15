@@ -4,6 +4,7 @@ import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import override_features
+from pcapi.core.testing import override_settings
 from pcapi.local_providers.venue_provider_worker import do_sync_venue_provider
 from pcapi.local_providers.venue_provider_worker import update_venues_for_specific_provider
 from pcapi.model_creators.generic_creators import create_offerer
@@ -37,7 +38,7 @@ class UpdateVenuesForSpecificProviderTest:
         ]
 
     @override_features(PARALLEL_SYNCHRONIZATION_OF_VENUE_PROVIDER=True)
-    @mock.patch("pcapi.settings.PROVIDERS_SYNC_WORKERS_POOL_SIZE", 1)
+    @override_settings(PROVIDERS_SYNC_WORKERS_POOL_SIZE=1)
     @mock.patch("pcapi.local_providers.venue_provider_worker.sleep")
     @mock.patch("pcapi.local_providers.venue_provider_worker.do_sync_venue_provider")
     @mock.patch("pcapi.local_providers.venue_provider_worker.get_nb_containers_at_work")
