@@ -2,7 +2,6 @@ from datetime import datetime
 from datetime import timedelta
 from decimal import Decimal
 
-from freezegun import freeze_time
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
@@ -681,7 +680,6 @@ class FindAllBookingsReimbursementsTest:
         assert_degressive_reimbursement(booking_reimbursements[2], booking3, 430000)
         assert_no_reimbursement_for_digital(booking_reimbursements[1], booking2)
 
-    @freeze_time("2019-02-14")
     def test_returns_full_reimbursement_for_all_bookings_for_new_civil_year(self):
         # given
         user = create_rich_user(30000)
@@ -698,7 +696,6 @@ class FindAllBookingsReimbursementsTest:
         assert_total_reimbursement(booking_reimbursements[1], booking2)
         assert_total_reimbursement(booking_reimbursements[2], booking3)
 
-    @freeze_time("2019-02-14")
     def test_returns_85_reimbursement_rate_between_20000_and_40000_euros_for_this_civil_year(self):
         # given
         user = create_rich_user(50000)
