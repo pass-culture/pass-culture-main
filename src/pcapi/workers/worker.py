@@ -27,13 +27,13 @@ conn = redis.from_url(settings.REDIS_URL)
 logging.getLogger("rq.worker").setLevel(logging.CRITICAL)
 
 default_queue = Queue("default", connection=conn)
+low_queue = Queue("low", connection=conn, default_timeout=3600)
 
 
 def log_worker_error(job: Job, exception_type: Type, exception_value: Exception, traceback: Any = None) -> None:
     # This handler is called by `rq.Worker.handle_exception()` from an
     # `except` clause, so we can (and should) use `logger.exception`.
-    logger.exception(build_job_log_message(
-        job, JobStatus.FAILED, f"{exception_type.__name__}: {exception_value}"))
+    logger.exception(build_job_log_message(job, JobStatus.FAILED, f"{exception_type.__name__}: {exception_value}"))
 
 
 def log_redis_connection_status() -> None:
@@ -53,8 +53,7 @@ if __name__ == "__main__":
     if settings.IS_DEV is False:
         sentry_sdk.init(
             dsn=settings.SENTRY_DSN,
-            integrations=[RedisIntegration(), RqIntegration(),
-                          SqlalchemyIntegration()],
+            integrations=[RedisIntegration(), RqIntegration(), SqlalchemyIntegration()],
             release=read_version_from_file(),
             environment=settings.ENV,
             traces_sample_rate=settings.SENTRY_SAMPLE_RATE,
@@ -64,8 +63,7 @@ if __name__ == "__main__":
     while True:
         try:
             with Connection(conn):
-                worker = Worker(list(map(Queue, listen)),
-                                exception_handlers=[log_worker_error])
+                worker = Worker(list(map(Queue, listen)), exception_handlers=[log_worker_error])
                 worker.work()
 
         except redis.ConnectionError:
