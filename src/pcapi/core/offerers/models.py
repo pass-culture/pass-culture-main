@@ -90,6 +90,12 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ve
         default=False,
     )
 
+    isPermanent = Column(
+        Boolean,
+        nullable=True,
+        default=True,
+    )
+
     comment = Column(
         TEXT,
         CheckConstraint(

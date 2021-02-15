@@ -143,6 +143,7 @@ class Get:
                             "fieldsUpdated": [],
                             "id": humanize(venue.id),
                             "idAtProviders": None,
+                            "isPermanent": True,
                             "isVirtual": False,
                             "lastProviderId": None,
                             "latitude": None,

@@ -56,6 +56,38 @@ class Post:
             assert venue.venueTypeId == venue_type.id
             assert venue.venueLabelId == venue_label.id
 
+        @pytest.mark.usefixtures("db_session")
+        def test_should_consider_the_venue_to_be_permanent(self, app):
+            # given
+            offerer = create_offerer(siren="302559178")
+            user = create_user()
+            user_offerer = create_user_offerer(user, offerer)
+            venue_type = create_venue_type(label="Musée")
+            venue_label = create_venue_label(label="CAC - Centre d'art contemporain d'intérêt national")
+            repository.save(user_offerer, venue_type, venue_label)
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
+            venue_data = {
+                "name": "Ma venue",
+                "siret": "30255917810045",
+                "address": "75 Rue Charles Fourier, 75013 Paris",
+                "postalCode": "75200",
+                "bookingEmail": "toto@example.com",
+                "city": "Paris",
+                "managingOffererId": humanize(offerer.id),
+                "latitude": 48.82387,
+                "longitude": 2.35284,
+                "publicName": "Ma venue publique",
+                "venueTypeId": humanize(venue_type.id),
+                "venueLabelId": humanize(venue_label.id),
+            }
+
+            # when
+            auth_request.post("/venues", json=venue_data)
+
+            # then
+            venue = Venue.query.one()
+            assert venue.isPermanent == True
+
     class Returns400:
         @pytest.mark.usefixtures("db_session")
         def when_posting_a_virtual_venue_for_managing_offerer_with_preexisting_virtual_venue(self, app):
