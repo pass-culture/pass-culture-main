@@ -173,14 +173,15 @@ export const createStock = stock => {
   return client.post('/stocks', stock)
 }
 
-//
-// thumbnail
-//
 export const validateDistantImage = url => {
   return client.post('/offers/thumbnail-url-validation', { url: url })
 }
 
+//
+// thumbnail
+//
 export const postThumbnail = (offerer, offer, credit, thumb, thumbUrl, x, y, height) => {
+  // /thumbnails
   const body = new FormData()
   body.append('offerId', offer)
   body.append('offererId', offerer)
@@ -193,7 +194,6 @@ export const postThumbnail = (offerer, offer, credit, thumb, thumbUrl, x, y, hei
 
   return client.postWithFormData('/offers/thumbnails', body)
 }
-
 
 //
 // user
