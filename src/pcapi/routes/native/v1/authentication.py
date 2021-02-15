@@ -34,7 +34,7 @@ from .serialization import authentication
 )  # type: ignore
 def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
     try:
-        users_repo.get_user_with_credentials(body.identifier, body.password)
+        user = users_repo.get_user_with_credentials(body.identifier, body.password)
     except users_exceptions.UnvalidatedAccount as exc:
         raise ApiErrors({"code": "EMAIL_NOT_VALIDATED", "general": ["L'email n'a pas été validé."]}) from exc
     except users_exceptions.CredentialsException as exc:
@@ -43,7 +43,7 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
     user_email = format_email(body.identifier)
 
     return authentication.SigninResponse(
-        access_token=create_access_token(identity=user_email),
+        access_token=create_access_token(identity=user_email, user_claims={"user_id": user.id}),
         refresh_token=create_refresh_token(identity=user_email),
     )
 

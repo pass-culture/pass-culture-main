@@ -2,6 +2,7 @@ from datetime import datetime
 from datetime import timedelta
 from unittest.mock import patch
 
+from flask_jwt_extended import decode_token
 from flask_jwt_extended.utils import create_access_token
 from freezegun import freeze_time
 import pytest
@@ -22,7 +23,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 def test_user_logs_in_and_refreshes_token(app):
     data = {"identifier": "user@test.com", "password": users_factories.DEFAULT_PASSWORD}
-    users_factories.UserFactory(email=data["identifier"], password=data["password"])
+    user = users_factories.UserFactory(email=data["identifier"], password=data["password"])
     test_client = TestClient(app.test_client())
 
     # Get the refresh and access token
@@ -38,6 +39,10 @@ def test_user_logs_in_and_refreshes_token(app):
     test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
     response = test_client.get("/native/v1/me")
     assert response.status_code == 200
+
+    # Ensure the access token contains user.id
+    decoded = decode_token(access_token)
+    assert decoded["user_claims"]["user_id"] == user.id
 
     # Ensure the refresh token can generate a new access token
     test_client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
