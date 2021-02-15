@@ -16,7 +16,6 @@ describe('src | components | pages | OffererCreation | Offerer', () => {
         city: '',
         bic: '',
         iban: '',
-        adminUserOfferer: undefined,
       })
     })
 

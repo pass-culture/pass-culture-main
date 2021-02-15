@@ -1,13 +1,6 @@
 import { Offerer } from './Offerer'
 
-export const makeOffererComponentValueObject = (
-  adminUserOffererSelector,
-  offererSelector,
-  offererId,
-  currentUserId,
-  state
-) => {
-  const adminUserOfferer = adminUserOffererSelector(state, offererId, currentUserId, 'admin')
+export const makeOffererComponentValueObject = (offererSelector, offererId, state) => {
   const offerer = offererSelector(state, offererId)
-  return new Offerer(offerer, adminUserOfferer)
+  return new Offerer(offerer)
 }

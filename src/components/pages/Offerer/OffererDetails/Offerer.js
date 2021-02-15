@@ -1,7 +1,6 @@
 export class Offerer {
-  constructor(offerer = {}, adminUserOfferer) {
+  constructor(offerer = {}) {
     this.address = offerer.address || ''
-    this.adminUserOfferer = adminUserOfferer
     this.bic = offerer.bic || ''
     this.city = offerer.city || ''
     this.iban = offerer.iban || ''

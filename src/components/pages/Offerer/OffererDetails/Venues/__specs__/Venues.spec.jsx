@@ -17,7 +17,6 @@ describe('src | components | pages | OffererCreation | Venues', () => {
   describe('render', () => {
     it('should render a title link', () => {
       // given
-      props.adminUserOfferer = true
       const wrapper = shallow(<Venues {...props} />)
 
       // when
@@ -31,7 +30,6 @@ describe('src | components | pages | OffererCreation | Venues', () => {
       describe('when the venue creation is available', () => {
         it('should render a create venue link', () => {
           // given
-          props.adminUserOfferer = true
           const wrapper = shallow(<Venues {...props} />)
 
           // when
@@ -44,7 +42,6 @@ describe('src | components | pages | OffererCreation | Venues', () => {
       describe('when the venue creation is disabled', () => {
         it('should render a create venue link', () => {
           // given
-          props.adminUserOfferer = true
           props.isVenueCreationAvailable = false
           const wrapper = shallow(<Venues {...props} />)
 

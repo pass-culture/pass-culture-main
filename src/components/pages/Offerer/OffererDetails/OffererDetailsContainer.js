@@ -4,7 +4,6 @@ import { requestData } from 'redux-saga-data'
 
 import withTracking from 'components/hocs/withTracking'
 import { selectOffererById } from 'store/selectors/data/offerersSelectors'
-import { selectUserOffererByOffererIdAndUserIdAndRightsType } from 'store/selectors/data/userOfferersSelectors'
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 import { selectPhysicalVenuesByOffererId } from 'store/selectors/data/venuesSelectors'
 import { offererNormalizer } from 'utils/normalizers'
@@ -20,13 +19,7 @@ export const mapStateToProps = (state, ownProps) => {
   const currentUser = selectCurrentUser(state)
   return {
     currentUser,
-    offerer: makeOffererComponentValueObject(
-      selectUserOffererByOffererIdAndUserIdAndRightsType,
-      selectOffererById,
-      offererId,
-      currentUser.id,
-      state
-    ),
+    offerer: makeOffererComponentValueObject(selectOffererById, offererId, state),
     offererId,
     venues: selectPhysicalVenuesByOffererId(state, offererId),
   }

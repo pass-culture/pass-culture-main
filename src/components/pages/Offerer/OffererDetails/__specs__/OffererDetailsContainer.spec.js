@@ -62,13 +62,6 @@ describe('src | components | pages | Offerer | OffererDetails | OffererDetailsCo
           bic: 'bic',
           iban: 'iban',
           address: '256, rue des mimosas',
-          adminUserOfferer: {
-            id: 'AEKQ',
-            modelName: 'UserOfferer',
-            offererId: 'AGH',
-            rights: 'admin',
-            userId: 'TY56er',
-          },
           siren: '256712456',
         }),
         offererId: 'AGH',
