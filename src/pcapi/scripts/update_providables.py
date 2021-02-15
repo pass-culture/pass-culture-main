@@ -43,4 +43,4 @@ def update_providables(provider_name: str, venue_provider_id: str, limit: int):
     "-l", "--limit", help="Limit update to n items per venue provider" + " (for test purposes)", type=int
 )
 def update_providables_by_provider_id(provider_id: str, limit: int):
-    synchronize_venue_providers_for_provider(limit, int(provider_id))
+    synchronize_venue_providers_for_provider(int(provider_id), limit)
