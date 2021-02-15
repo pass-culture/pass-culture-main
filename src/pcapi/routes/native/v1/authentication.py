@@ -8,7 +8,6 @@ from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import repository as users_repo
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
-from pcapi.core.users.utils import format_email
 from pcapi.domain.password import check_password_strength
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
@@ -26,6 +25,10 @@ from . import blueprint
 from .serialization import authentication
 
 
+def create_user_access_token(user: User) -> str:
+    return create_access_token(identity=user.email, user_claims={"user_id": user.id})
+
+
 @blueprint.native_v1.route("/signin", methods=["POST"])
 @spectree_serialize(
     response_model=authentication.SigninResponse,
@@ -40,11 +43,9 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
     except users_exceptions.CredentialsException as exc:
         raise ApiErrors({"general": ["Identifiant ou Mot de passe incorrect"]}) from exc
 
-    user_email = format_email(body.identifier)
-
     return authentication.SigninResponse(
-        access_token=create_access_token(identity=user_email, user_claims={"user_id": user.id}),
-        refresh_token=create_refresh_token(identity=user_email),
+        access_token=create_user_access_token(user),
+        refresh_token=create_refresh_token(identity=user.email),
     )
 
 
@@ -52,8 +53,9 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
 @jwt_refresh_token_required
 @spectree_serialize(response_model=authentication.RefreshResponse, api=blueprint.api)  # type: ignore
 def refresh() -> authentication.RefreshResponse:
-    current_user = get_jwt_identity()
-    return authentication.RefreshResponse(access_token=create_access_token(identity=current_user))
+    email = get_jwt_identity()
+    user = find_user_by_email(email)
+    return authentication.RefreshResponse(access_token=create_user_access_token(user))
 
 
 @blueprint.native_v1.route("/request_password_reset", methods=["POST"])

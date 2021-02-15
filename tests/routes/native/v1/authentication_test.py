@@ -56,6 +56,10 @@ def test_user_logs_in_and_refreshes_token(app):
     response = test_client.get("/native/v1/me")
     assert response.status_code == 200
 
+    # Ensure the new access token contains user.id
+    decoded = decode_token(access_token)
+    assert decoded["user_claims"]["user_id"] == user.id
+
 
 def test_user_logs_in_with_wrong_password(app):
     data = {"identifier": "user@test.com", "password": users_factories.DEFAULT_PASSWORD}
