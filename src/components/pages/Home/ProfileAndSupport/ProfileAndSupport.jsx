@@ -1,11 +1,10 @@
 import PropTypes from 'prop-types'
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState, useCallback } from 'react'
 
 import Icon from 'components/layout/Icon'
 
-import { steps, STEP_ID_PROFILE } from '../HomepageBreadcrumb'
-
+import { steps, STEP_ID_PROFILE } from './HomepageBreadcrumb'
+import ProfileInformationsModal from './ProfileInformationsModal'
 import Support from './Support'
 
 /**
@@ -50,6 +49,10 @@ export const formatPhoneNumber = phoneNumber => {
 }
 
 const Profile = ({ user }) => {
+  const [isModalOpened, setIsModalOpened] = useState(false)
+
+  const showProfileInfoModal = useCallback(() => setIsModalOpened(true), [])
+
   return (
     <>
       <h2
@@ -66,13 +69,14 @@ const Profile = ({ user }) => {
               <h3 className="h-card-title">
                 {'Profil'}
               </h3>
-              <Link
-                className="tertiary-link"
-                to="/profil"
+              <button
+                className="tertiary-button"
+                onClick={showProfileInfoModal}
+                type="button"
               >
                 <Icon svg="ico-outer-pen" />
                 {'Modifier'}
-              </Link>
+              </button>
             </div>
             <div className="h-card-content">
               <ul className="h-description-list">
@@ -112,9 +116,9 @@ const Profile = ({ user }) => {
             </div>
           </div>
         </div>
-
         <Support />
       </div>
+      {isModalOpened && <ProfileInformationsModal setIsModalOpened={setIsModalOpened} />}
     </>
   )
 }
