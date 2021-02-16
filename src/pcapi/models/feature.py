@@ -42,6 +42,7 @@ class FeatureToggle(enum.Enum):
     ENABLE_WHOLE_VENUE_PROVIDER_ALGOLIA_INDEXATION = "Active la réindexation globale sur Algolia des VenueProvider"
     SYNCHRONIZE_VENUE_PROVIDER_IN_WORKER = "Effectue la première synchronisation des venue_provider dans le worker"
     ENABLE_NATIVE_APP_RECAPTCHA = "Active le reCaptacha sur l'API native"
+    FNAC_SYNCHRONIZATION_V2 = "Active la synchronisation FNAC v2 : synchronisation par batch"
 
 
 class Feature(PcObject, Model, DeactivableMixin):

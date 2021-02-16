@@ -5,6 +5,7 @@ from pcapi.local_providers.fnac.fnac_stocks_provider import synchronize_fnac_ven
 from pcapi.local_providers.provider_manager import synchronize_venue_providers_for_provider
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.feature import FeatureToggle
+from pcapi.repository import feature_queries
 from pcapi.repository.provider_queries import get_provider_by_local_class
 from pcapi.repository.user_queries import find_most_recent_beneficiary_creation_date_for_source
 from pcapi.scheduled_tasks import utils
@@ -43,6 +44,11 @@ def synchronize_libraires_stocks(app) -> None:
 @log_cron
 @cron_context
 def synchronize_fnac_stocks(app) -> None:
+    if not feature_queries.is_active(FeatureToggle.FNAC_SYNCHRONIZATION_V2):
+        fnac_stocks_provider_id = get_provider_by_local_class("FnacStocks").id
+        synchronize_venue_providers_for_provider(fnac_stocks_provider_id)
+        return
+
     synchronize_fnac_venues_stocks()
 
 
