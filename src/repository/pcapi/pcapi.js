@@ -164,28 +164,18 @@ export const bulkCreateOrEditStock = (offerId, stocks) => {
   })
 }
 
-export const updateStock = stock => {
-  const { stockId, ...stockWithoutId } = stock
-  return client.patch(`/stocks/${stockId}`, stockWithoutId)
-}
-
 export const deleteStock = stockId => {
   return client.delete(`/stocks/${stockId}`)
-}
-
-export const createStock = stock => {
-  return client.post('/stocks', stock)
-}
-
-export const validateDistantImage = url => {
-  return client.post('/offers/thumbnail-url-validation', { url: url })
 }
 
 //
 // thumbnail
 //
+export const validateDistantImage = url => {
+  return client.post('/offers/thumbnail-url-validation', { url: url })
+}
+
 export const postThumbnail = (offerer, offer, credit, thumb, thumbUrl, x, y, height) => {
-  // /thumbnails
   const body = new FormData()
   body.append('offerId', offer)
   body.append('offererId', offerer)

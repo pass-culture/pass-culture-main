@@ -3,13 +3,11 @@ import { signout } from 'repository/pcapi/pcapi'
 import { client } from 'repository/pcapi/pcapiClient'
 
 import {
-  createStock,
   deleteStock,
   validateDistantImage,
   loadFilteredOffers,
   postThumbnail,
   updateOffersActiveStatus,
-  updateStock,
   setHasSeenTutos,
 } from '../pcapi'
 
@@ -192,27 +190,6 @@ describe('pcapi', () => {
     })
   })
 
-  describe('updateStock', () => {
-    it('should update stock given its id and changes', () => {
-      // When
-      updateStock({
-        beginningDatetime: '2020-12-26T23:00:00Z',
-        bookingLimitDatetime: '2020-12-25T22:00:00Z',
-        stockId: '2E',
-        price: '14.01',
-        quantity: '6',
-      })
-
-      // Then
-      expect(client.patch).toHaveBeenCalledWith('/stocks/2E', {
-        beginningDatetime: '2020-12-26T23:00:00Z',
-        bookingLimitDatetime: '2020-12-25T22:00:00Z',
-        price: '14.01',
-        quantity: '6',
-      })
-    })
-  })
-
   describe('signout', () => {
     it('should sign out the user', () => {
       // When
@@ -220,28 +197,6 @@ describe('pcapi', () => {
 
       // Then
       expect(client.get).toHaveBeenCalledWith('/users/signout')
-    })
-  })
-
-  describe('createStock', () => {
-    it('should create stock given its offerId and properties', () => {
-      // when
-      createStock({
-        offerId: 'AE',
-        beginningDatetime: '2020-12-24T23:00:00Z',
-        bookingLimitDatetime: '2020-12-22T23:59:59Z',
-        price: '15',
-        quantity: '15',
-      })
-
-      // then
-      expect(client.post).toHaveBeenCalledWith('/stocks', {
-        offerId: 'AE',
-        beginningDatetime: '2020-12-24T23:00:00Z',
-        bookingLimitDatetime: '2020-12-22T23:59:59Z',
-        price: '15',
-        quantity: '15',
-      })
     })
   })
 
