@@ -18,6 +18,7 @@ function getScaledTextCoordinates(coordinates) {
 }
 
 class CanvasTools {
+  ASSE
   constructor(context) {
     this.context = context
   }

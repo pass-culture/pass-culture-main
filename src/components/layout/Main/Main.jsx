@@ -2,7 +2,6 @@ import get from 'lodash.get'
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import { resetForm } from 'store/reducers/form'
 import { showNotificationV1 } from 'store/reducers/notificationReducer'
 
 /**
@@ -31,8 +30,6 @@ class Main extends React.PureComponent {
 
   componentWillUnmount() {
     this.unblock && this.unblock()
-    const { dispatch } = this.props
-    dispatch(resetForm())
   }
 
   handleDataSuccess = () => {}
@@ -65,7 +62,6 @@ Main.defaultProps = {
 
 Main.propTypes = {
   currentUser: PropTypes.shape().isRequired,
-  dispatch: PropTypes.func.isRequired,
   handleDataRequest: PropTypes.func,
   location: PropTypes.shape().isRequired,
 }

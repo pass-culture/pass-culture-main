@@ -1,11 +1,9 @@
 import { init as SentryInit } from '@sentry/browser'
 import { Integrations as TracingIntegrations } from '@sentry/tracing'
-import { Form } from 'pass-culture-shared'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import 'typeface-barlow'
 
-import BlockContainer from 'components/layout/BlockContainer'
 import Root from 'Root'
 import { ENVIRONMENT_NAME, SENTRY_SERVER_URL, SENTRY_SAMPLE_RATE } from 'utils/config'
 
@@ -13,17 +11,6 @@ import { version } from '../package.json'
 import './styles/index.scss'
 
 import { unregister } from './registerServiceWorker'
-
-Object.assign(Form.defaultProps, {
-  blockComponent: BlockContainer,
-  handleFailNotification: (state, action) => {
-    const {
-      payload: { errors },
-    } = action
-    return (errors && errors[0] && errors[0].global) || 'Formulaire non validé'
-  },
-  handleSuccessNotification: () => 'Formulaire validé',
-})
 
 // Initialize sentry
 if (SENTRY_SERVER_URL) {
