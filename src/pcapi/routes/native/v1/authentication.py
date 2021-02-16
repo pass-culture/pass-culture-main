@@ -119,7 +119,7 @@ def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
     id_check_token = users_api.create_id_check_token(user)
 
     response = ValidateEmailResponse(
-        access_token=create_access_token(identity=user.email),
+        access_token=create_user_access_token(user),
         refresh_token=create_refresh_token(identity=user.email),
         id_check_token=id_check_token.value if id_check_token else None,
     )

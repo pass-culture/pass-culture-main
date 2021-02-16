@@ -284,6 +284,10 @@ def test_validate_email_when_eligible(app):
     protected_response = test_client.get("/native/v1/me")
     assert protected_response.status_code == 200
 
+    # Ensure the access token contains user.id
+    decoded = decode_token(access_token)
+    assert decoded["user_claims"]["user_id"] == user.id
+
     # Ensure the refresh token is valid
     refresh_token = response.json["refreshToken"]
     test_client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
