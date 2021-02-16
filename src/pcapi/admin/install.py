@@ -8,6 +8,7 @@ from pcapi.admin.custom_views.beneficiary_import_view import BeneficiaryImportVi
 from pcapi.admin.custom_views.beneficiary_user_view import BeneficiaryUserView
 from pcapi.admin.custom_views.criteria_view import CriteriaView
 from pcapi.admin.custom_views.feature_view import FeatureView
+from pcapi.admin.custom_views.offer_view import OfferForVenueSubview
 from pcapi.admin.custom_views.offer_view import OfferView
 from pcapi.admin.custom_views.offerer_view import OffererView
 from pcapi.admin.custom_views.partner_user_view import PartnerUserView
@@ -35,6 +36,14 @@ class Category(Enum):
 
 def install_admin_views(admin: Admin, session: Session) -> None:
     admin.add_view(OfferView(Offer, session, name="Offres", category=Category.OFFRES_STRUCTURES_LIEUX))
+    admin.add_view(
+        OfferForVenueSubview(
+            Offer,
+            session,
+            name="Offres pour un lieu",
+            endpoint="offer_for_venue",
+        )
+    )
     admin.add_view(CriteriaView(Criterion, session, name="Tags des offres", category=Category.OFFRES_STRUCTURES_LIEUX))
     admin.add_view(OffererView(Offerer, session, name="Structures", category=Category.OFFRES_STRUCTURES_LIEUX))
     admin.add_view(VenueView(VenueSQLEntity, session, name="Lieux", category=Category.OFFRES_STRUCTURES_LIEUX))
