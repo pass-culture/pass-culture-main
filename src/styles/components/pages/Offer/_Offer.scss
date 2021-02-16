@@ -1,177 +1,80 @@
 .offer-page {
-  .has-text-weight-light {
-    font-size: rem(12px);
-    font-weight: 300;
+  .page-subtitle {
+    @include caption();
+
+    color: $grey-dark;
+    margin-bottom: rem(24px);
   }
 
-  .has-text-primary {
-    color: $primary;
-  }
+  .offer-content {
+    margin-top: rem(25px);
 
-  .label {
-    display: block;
-  }
+    .sidebar-container {
+      display: flex;
+      justify-content: space-between;
 
-  .select {
-    position: relative;
-
-    select {
-      appearance: none;
-      background-color: $white;
-      border: rem(2px) solid $grey-medium;
-      border-radius: rem(18px);
-      font-size: rem(16px);
-      font-weight: 500;
-      height: rem(36px);
-      outline: none;
-      padding: rem(4px) rem(40px) rem(4px) rem(16px);
-      width: 100%;
-    }
-
-    &::after {
-      border: rem(3px) solid $black;
-      border-radius: rem(2px);
-      border-right: 0;
-      border-top: 0;
-      content: " ";
-      height: rem(10px);
-      margin-top: rem(-7px);
-      position: absolute;
-      right: rem(20px);
-      top: rem(16px);
-      transform: rotate(-45deg);
-      transform-origin: center;
-      width: rem(10px);
-    }
-  }
-
-  .select.readonly select {
-    line-height: 2.5;
-  }
-
-  .textarea {
-    border: rem(2px) solid $grey-medium;
-    display: block;
-    max-width: 100%;
-    min-width: 100%;
-    outline: none;
-    padding: rem(10px);
-    resize: vertical;
-  }
-
-  .box {
-    border-radius: rem(6px);
-    box-shadow: 0 rem(2px) rem(3px) rgba($black, 0.1), 0 0 0 1px rgba($black, 0.1);
-    padding: rem(20px);
-  }
-
-  .button {
-    background-color: $white;
-    border: rem(2px) solid $primary;
-    border-radius: 0;
-    color: $primary;
-    display: inline-flex;
-    line-height: rem(15px);
-    padding: rem(4px) rem(12px);
-
-    .icon {
-      margin-right: rem(10px);
-    }
-  }
-
-  .button.is-primary.is-outlined:focus,
-  .button.is-primary.is-outlined:hover {
-    background-color: $primary;
-    color: $white;
-  }
-
-  ul.mediations-list {
-    list-style: none;
-
-    li {
-      display: inline-block;
-      height: rem(250px);
-      margin-right: rem(20px);
-
-      img {
-        height: rem(200px);
+      .content {
+        max-width: rem(486px);
       }
 
-      .field {
-        .field-body {
-          margin-left: auto;
-          margin-right: auto;
-          width: 90%;
-        }
+      .sidebar {
+        flex: 0 0 rem(256px);
+      }
 
-        .checkbox {
-          margin-right: 0;
-        }
+      .sidebar-wrapper {
+        border: rem(1px) solid $grey-medium;
+        border-radius: 4px;
+        box-shadow: 0 0 rem(20px) 0 $black-shadow;
+        height: fit-content;
+        margin-bottom: rem(24px);
+      }
+
+      .secondary-link {
+        text-align: center;
+        width: 100%;
       }
     }
+  }
+
+  .pc-breadcrumb {
+    margin-bottom: rem(24px);
   }
 
   .offer-form {
-    .title-field #offer-name {
-      padding: rem(5px) rem(40px) rem(4px) rem(16px);
+    .form-row {
+      margin-top: rem(24px);
     }
   }
 
-  .nb-dates {
-    color: $primary;
-    display: inline-block;
-    font-weight: 700;
-    margin-right: 2rem;
-  }
-
-  .select-duo-offer {
-    background-color: transparent;
+  .provider-information {
+    align-items: center;
+    background-color: $notification-info;
+    border-radius: rem(6px);
     display: flex;
-    margin-bottom: rem(12px);
-    margin-top: rem(16px);
+    height: rem(50px);
 
-    label {
-      margin-left: 0.7rem;
-      vertical-align: top;
-      white-space: pre;
-    }
-
-    .duo-label-italic {
-      font-style: italic;
-    }
-
-    .tip-icon {
-      margin-left: rem(3px);
-    }
-
-    div {
-      margin-bottom: rem(11px);
+    img {
+      height: rem(40px);
+      margin-left: rem(20px);
+      margin-right: rem(20px);
+      max-width: rem(100px);
     }
   }
 
-  .offer-tooltip {
-    margin-left: rem(4px);
-  }
+  .actions-section {
+    display: flex;
+    justify-content: center;
+    margin-top: rem(64px);
 
-  .subtitle {
-    font-size: 1.1rem;
-    margin-bottom: rem(12px);
-  }
+    button,
+    a {
+      flex: 1;
+      margin-left: rem(24px);
+      text-align: center;
 
-  .field-content {
-    padding-left: rem(5px);
-    vertical-align: middle;
-  }
-
-  .field-body textarea {
-    padding-top: rem(8px);
-  }
-
-  .large-labels label {
-    min-width: rem(200px);
-  }
-
-  .is-invisible {
-    display: none;
+      &:first-child {
+        margin-left: 0;
+      }
+    }
   }
 }

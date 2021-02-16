@@ -8,10 +8,7 @@ import Unavailable from 'components/pages/Errors/Unavailable/Unavailable'
 import HomeContainer from 'components/pages/Home/HomeContainer'
 import Homepage from 'components/pages/Home/Homepage'
 import LostPasswordContainer from 'components/pages/LostPassword/LostPasswordContainer'
-import Mediation from 'components/pages/Mediation/MediationContainer'
 import OfferLayoutContainer from 'components/pages/Offer/Offer/OfferLayoutContainer'
-import OfferCreation from 'components/pages/Offer/OfferCreation/OfferCreationContainer'
-import OfferEdition from 'components/pages/Offer/OfferEdition/OfferEditionContainer'
 import OffererCreationContainer from 'components/pages/Offerer/OffererCreation/OffererCreationContainer'
 import OffererDetailsContainer from 'components/pages/Offerer/OffererDetails/OffererDetailsContainer'
 import Offerers from 'components/pages/Offerers/OfferersContainer'
@@ -26,14 +23,13 @@ import SignupValidationContainer from 'components/pages/Signup/SignupValidation/
 import StyleguideContainer from 'components/pages/Styleguide/StyleguideContainer'
 import VenueCreationContainer from 'components/pages/Venue/VenueCreation/VenueCreationContainer'
 import VenueEditionContainer from 'components/pages/Venue/VenueEdition/VenueEditionContainer'
-import { OFFER_CREATION_V2 } from 'utils/config'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
 const RedirectToConnexionComponent = () => <Redirect to="/connexion" />
 
 // NOTE: routes are sorted by PATH alphabetical order
 // DEPRECATED: Pages are currently be rework to not use <Main> component
-export let routesWithMain = [
+export const routesWithMain = [
   {
     component: RedirectToConnexionComponent,
     exact: true,
@@ -171,7 +167,7 @@ export let routesWithMain = [
 ]
 
 // Routes that does not use <Main> and are now functional components
-let routes = [
+const routes = [
   {
     component: HomeContainer,
     exact: true,
@@ -216,61 +212,12 @@ let routes = [
       },
     },
   },
+  {
+    component: OfferLayoutContainer,
+    exact: false,
+    path: ['/offres/creation', '/offres/:offerId([A-Z0-9]+)'],
+    title: 'Offre',
+  },
 ]
-
-if (OFFER_CREATION_V2) {
-  routes = [
-    ...routes,
-    {
-      component: OfferLayoutContainer,
-      exact: false,
-      path: ['/offres/creation', '/offres/:offerId([A-Z0-9]+)'],
-      title: 'Offre',
-    },
-  ]
-  routesWithMain = [
-    ...routesWithMain,
-    {
-      component: OfferCreation,
-      exact: true,
-      path: '/v1/offres/:offerId',
-      title: 'Offre',
-    },
-    {
-      component: OfferEdition,
-      exact: true,
-      path: '/v1/offres/:offerId/edition',
-      title: "Edition d'une offre",
-    },
-    {
-      component: Mediation,
-      exact: true,
-      path: '/v1/offres/:offerId/accroches/:mediationId',
-      title: 'Accroche',
-    },
-  ]
-} else {
-  routesWithMain = [
-    ...routesWithMain,
-    {
-      component: OfferCreation,
-      exact: true,
-      path: '/offres/:offerId',
-      title: 'Offre',
-    },
-    {
-      component: OfferEdition,
-      exact: true,
-      path: '/offres/:offerId/edition',
-      title: "Edition d'une offre",
-    },
-    {
-      component: Mediation,
-      exact: true,
-      path: '/offres/:offerId/accroches/:mediationId',
-      title: 'Accroche',
-    },
-  ]
-}
 
 export default routes

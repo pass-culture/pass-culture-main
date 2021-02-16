@@ -2,7 +2,7 @@ import { SYNCHRONIZED_OFFER_EDITABLE_FIELDS } from 'components/pages/Offer/Offer
 
 const doesLastProviderExist = offer => offer !== null && offer.lastProvider
 
-export const localProvidersNames = [
+const localProvidersNames = [
   'fnac',
   'leslibraires.fr',
   'praxiel/inférence',

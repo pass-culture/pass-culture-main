@@ -6,7 +6,7 @@ import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
 import NotificationV2Container from 'components/layout/NotificationV2/NotificationV2Container'
-import { getProviderInfo } from 'components/pages/Offer/LocalProviderInformation/getProviderInfo'
+import { getProviderInfo } from 'components/pages/Offer/domain/getProviderInfo'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 

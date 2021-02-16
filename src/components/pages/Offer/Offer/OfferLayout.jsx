@@ -55,7 +55,7 @@ const OfferLayout = props => {
   }
 
   return (
-    <div className="offer-page-v2">
+    <div className="offer-page">
       <Titles title={pageTitle} />
 
       <Breadcrumb
