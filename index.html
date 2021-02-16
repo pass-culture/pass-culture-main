@@ -71,6 +71,11 @@
         font-weight: bold;
     }
 
+   .from-app, .from-pro {
+     margin: 0;
+     padding: 0;
+     display: none;
+   }
   </style>
   <script>
     var _paq = window._paq || [];
@@ -102,10 +107,15 @@
       </g>
     </svg>
   </div>
-  <h1>App en maintenance</h1>
-  <p>Tu as 18 ans et tu souhaites bénéficier du pass Culture ?</p>
-  <p>Renseigne ta date de naissance et ton email pour être averti dès notre retour en ligne !</p>
-  <div><a class="register-later" href="https://app.passculture.beta.gouv.fr/verification-eligibilite">Renseigner ma date de naissance</a></div>
+  <div class="from-pro">
+    <h1>Site en maintenance</h1>
+  </div>
+  <div class="from-app">
+    <h1>App en maintenance</h1>
+    <p>Tu as 18 ans et tu souhaites bénéficier du pass Culture ?</p>
+    <p>Renseigne ta date de naissance et ton email pour être averti dès notre retour en ligne !</p>
+    <div><a class="register-later" href="https://app.passculture.beta.gouv.fr/verification-eligibilite">Renseigner ma date de naissance</a></div>
+  </div>
   <div class="icon-container">
     <svg width="68" height="50" xmlns="http://www.w3.org/2000/svg">
       <title />
@@ -115,12 +125,19 @@
     </svg>
   </div>
   <script>
-    const redirectToApp = () => {
-      const url = new URL(window.location.href)
-      const param = url.searchParams.get("source")
+    const url = new URL(window.location.href)
+    const source = url.searchParams.get("source") || ""
 
-      if (param) {
-        window.location.replace(param)
+    var blockClassToShow = "from-pro"
+    if (source.match(/app\.passculture/)) {
+      blockClassToShow = "from-app"
+    }
+    const block = document.getElementsByClassName(blockClassToShow)[0]
+    block.style.display = "block"
+
+    const redirectToApp = () => {
+      if (source) {
+        window.location.replace(source)
       }
     }
     setInterval(redirectToApp, 60000)
