@@ -7,9 +7,6 @@ from pcapi.models import Offer
 from pcapi.models import Stock
 from pcapi.models import Venue
 from pcapi.repository import offerer_queries
-from pcapi.repository.offer_queries import get_offer_by_id
-from pcapi.routes.serialization.stock_serialize import StockCreationBodyModelDeprecated
-from pcapi.routes.serialization.stock_serialize import StockEditionBodyModelDeprecated
 from pcapi.routes.serialization.stock_serialize import StockIdResponseModel
 from pcapi.routes.serialization.stock_serialize import StockIdsResponseModel
 from pcapi.routes.serialization.stock_serialize import StockResponseModel
@@ -45,46 +42,6 @@ def upsert_stocks(body: StocksUpsertBodyModel) -> StockIdsResponseModel:
     return StockIdsResponseModel(
         stockIds=[StockIdResponseModel.from_orm(stock) for stock in stocks],
     )
-
-
-@private_api.route("/stocks", methods=["POST"])
-@login_or_api_key_required
-@spectree_serialize(on_success_status=201, response_model=StockIdResponseModel)
-def create_stock(body: StockCreationBodyModelDeprecated) -> StockIdResponseModel:
-    offerer = offerer_queries.get_by_offer_id(body.offer_id)
-    check_user_has_access_to_offerer(current_user, offerer.id)
-
-    offer = get_offer_by_id(body.offer_id)
-
-    stock = offers_api.create_stock(
-        offer=offer,
-        price=body.price,
-        quantity=body.quantity,
-        beginning=body.beginning_datetime,
-        booking_limit_datetime=body.booking_limit_datetime,
-    )
-
-    return StockIdResponseModel.from_orm(stock)
-
-
-@private_api.route("/stocks/<stock_id>", methods=["PATCH"])
-@login_or_api_key_required
-@spectree_serialize(response_model=StockIdResponseModel)
-def edit_stock(stock_id: str, body: StockEditionBodyModelDeprecated) -> StockIdResponseModel:
-    stock = Stock.queryNotSoftDeleted().filter_by(id=dehumanize(stock_id)).join(Offer, Venue).first_or_404()
-
-    offerer_id = stock.offer.venue.managingOffererId
-    check_user_has_access_to_offerer(current_user, offerer_id)
-
-    stock = offers_api.edit_stock(
-        stock,
-        price=body.price,
-        quantity=body.quantity,
-        beginning=body.beginning_datetime,
-        booking_limit_datetime=body.booking_limit_datetime,
-    )
-
-    return StockIdResponseModel.from_orm(stock)
 
 
 @private_api.route("/stocks/<stock_id>", methods=["DELETE"])

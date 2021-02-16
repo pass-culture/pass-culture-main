@@ -219,29 +219,6 @@ def _create_stock(
     )
 
 
-def create_stock(
-    offer: Offer,
-    price: float,
-    quantity: int = None,
-    beginning: datetime.datetime = None,
-    booking_limit_datetime: datetime.datetime = None,
-) -> Stock:
-    stock = _create_stock(
-        offer,
-        price,
-        quantity,
-        beginning,
-        booking_limit_datetime,
-    )
-
-    repository.save(stock)
-
-    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
-        redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
-
-    return stock
-
-
 def _edit_stock(
     stock: Stock,
     price: float,
@@ -312,32 +289,6 @@ def _notify_beneficiaries_upon_stock_edit(stock: Stock):
                 exc,
             )
             # fmt: on
-
-
-def edit_stock(
-    stock: Stock,
-    price: float = None,
-    quantity: int = None,
-    beginning: datetime.datetime = None,
-    booking_limit_datetime: datetime.datetime = None,
-) -> Stock:
-    previous_beginning = stock.beginningDatetime
-    stock = _edit_stock(
-        stock,
-        price,
-        quantity,
-        beginning,
-        booking_limit_datetime,
-    )
-
-    repository.save(stock)
-
-    if stock.beginningDatetime != previous_beginning:
-        _notify_beneficiaries_upon_stock_edit(stock)
-
-    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
-        redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
-    return stock
 
 
 def upsert_stocks(
