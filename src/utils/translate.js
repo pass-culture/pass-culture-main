@@ -5,7 +5,7 @@ import {
   OFFER_STATUS_INACTIVE,
   OFFER_STATUS_SOLDOUT,
   OFFER_STATUS_EXPIRED,
-} from 'components/pages/Offers/_constants'
+} from 'components/pages/Offers/Offers/_constants'
 
 export function collectionToPath(collectionName) {
   switch (collectionName) {

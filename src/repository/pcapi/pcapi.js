@@ -1,4 +1,4 @@
-import { DEFAULT_PAGE, DEFAULT_SEARCH_FILTERS } from 'components/pages/Offers/_constants'
+import { DEFAULT_PAGE, DEFAULT_SEARCH_FILTERS } from 'components/pages/Offers/Offers/_constants'
 import { client } from 'repository/pcapi/pcapiClient'
 import { stringify } from 'utils/query-string'
 

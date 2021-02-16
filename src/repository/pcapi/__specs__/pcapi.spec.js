@@ -1,4 +1,4 @@
-import { DEFAULT_SEARCH_FILTERS } from 'components/pages/Offers/_constants'
+import { DEFAULT_SEARCH_FILTERS } from 'components/pages/Offers/Offers/_constants'
 import { signout } from 'repository/pcapi/pcapi'
 import { client } from 'repository/pcapi/pcapiClient'
 
