@@ -32,7 +32,7 @@ const BookingOfferCell = ({ offer }) => {
   return (
     <a
       className="booking-offer-detail-link"
-      href={`/offres/${offer.offer_identifier}`}
+      href={`/offres/${offer.offer_identifier}/edition`}
     >
       {component}
     </a>
