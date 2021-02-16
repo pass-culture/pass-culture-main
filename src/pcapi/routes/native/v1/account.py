@@ -1,11 +1,12 @@
 from datetime import datetime
 
-from pcapi import settings
 from pcapi.connectors import api_recaptcha
 from pcapi.core.users import api
 from pcapi.core.users import exceptions
 from pcapi.core.users.models import User
 from pcapi.models import ApiErrors
+from pcapi.models.feature import FeatureToggle
+from pcapi.repository import feature_queries
 from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.repository.user_queries import find_user_by_email
@@ -63,7 +64,7 @@ def update_cultural_survey(user: User, body: serializers.CulturalSurveyRequest) 
 @blueprint.native_v1.route("/account", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400])
 def create_account(body: serializers.AccountRequest) -> None:
-    if settings.NATIVE_ACCOUNT_CREATION_REQUIRES_RECAPTCHA:
+    if feature_queries.is_active(FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA):
         try:
             api_recaptcha.check_native_app_recaptcha_token(body.token)
         except api_recaptcha.ReCaptchaException:
