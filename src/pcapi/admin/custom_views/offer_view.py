@@ -1,5 +1,3 @@
-from typing import List
-
 from flask import abort
 from flask import request
 from flask_admin.base import expose
@@ -18,7 +16,6 @@ class OfferView(BaseAdminView):
     can_edit = True
     can_delete = False
     column_list = ["id", "name", "type", "criteria"]
-    column_searchable_list: List[str] = []
     column_sortable_list = ["name", "type", "criteria"]
     column_labels = {
         "name": "Nom",
@@ -26,7 +23,9 @@ class OfferView(BaseAdminView):
         "criteria": "Tag",
         "criteria.name": "Tag",
     }
-    column_filters = ["type", "criteria.name"]
+    # Do not add searchable column on offer view for performance reasons
+    # use the filters feature instead
+    column_filters = ["type", "criteria.name", "name"]
     form_columns = ["criteria"]
 
     def on_model_change(self, form: Form, offer: Offer, is_created: bool = False) -> None:
