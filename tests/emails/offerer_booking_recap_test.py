@@ -36,8 +36,11 @@ def get_expected_base_email_data(booking, **overrides):
     venue_id = humanize(booking.stock.offer.venue.id)
     offerer_id = humanize(booking.stock.offer.venue.managingOfferer.id)
     email_data = {
-        "MJ-TemplateID": 2113444,
+        "MJ-TemplateID": 2418750,
         "MJ-TemplateLanguage": True,
+        "Headers": {
+            "Reply-To": "john@example.com",
+        },
         "Vars": {
             "nom_offre": "Super événement",
             "nom_lieu": "Lieu de l'offreur",
@@ -51,20 +54,11 @@ def get_expected_base_email_data(booking, **overrides):
             "user_phoneNumber": "",
             "is_event": 1,
             "can_expire": 0,
-            "nombre_resa": 1,
             "contremarque": "ABC123",
             "ISBN": "",
             "lien_offre_pcpro": f"http://localhost:3001/offres/{offer_id}?lieu={venue_id}&structure={offerer_id}",
             "offer_type": "EventType.SPECTACLE_VIVANT",
             "departement": "75",
-            "users": [
-                {
-                    "firstName": "John",
-                    "lastName": "Doe",
-                    "email": "john@example.com",
-                    "contremarque": "ABC123",
-                },
-            ],
         },
     }
     email_data["Vars"].update(overrides)
@@ -153,36 +147,6 @@ def test_should_not_truncate_price():
 
 
 @pytest.mark.usefixtures("db_session")
-def test_with_two_users_who_booked_the_same_offer():
-    booking1 = make_booking()
-    make_booking(
-        token="XYZ123",
-        user__firstName="Jane",
-        user__lastName="Roe",
-        user__email="jane@example.com",
-        stock=booking1.stock,
-    )
-
-    email_data = retrieve_data_for_offerer_booking_recap_email(booking1)
-
-    user_data = email_data["Vars"]["users"]
-    assert len(user_data) == 2
-    jane = {
-        "firstName": "Jane",
-        "lastName": "Roe",
-        "email": "jane@example.com",
-        "contremarque": "XYZ123",
-    }
-    john = {
-        "firstName": "John",
-        "lastName": "Doe",
-        "email": "john@example.com",
-        "contremarque": "ABC123",
-    }
-    assert sorted(user_data, key=lambda d: d["firstName"]) == [jane, john]
-
-
-@pytest.mark.usefixtures("db_session")
 def test_should_add_user_phone_number_to_vars():
     # given
     booking = make_booking(user__phoneNumber="0123456789")
@@ -193,3 +157,16 @@ def test_should_add_user_phone_number_to_vars():
     # then
     template_vars = email_data["Vars"]
     assert template_vars["user_phoneNumber"] == "0123456789"
+
+
+@pytest.mark.usefixtures("db_session")
+def test_should_add_reply_to_header_with_beneficiary_email():
+    # given
+    booking = make_booking(user__email="beneficiary@example.com")
+
+    # when
+    email_data = retrieve_data_for_offerer_booking_recap_email(booking)
+
+    # then
+    template_headers = email_data["Headers"]
+    assert template_headers["Reply-To"] == "beneficiary@example.com"

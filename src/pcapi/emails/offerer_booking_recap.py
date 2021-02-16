@@ -1,10 +1,8 @@
 from typing import Dict
 
 from pcapi.core.bookings.models import Booking
-import pcapi.core.bookings.repository as booking_repository
 from pcapi.models.offer_type import ProductType
 from pcapi.utils.mailing import build_pc_pro_offer_link
-from pcapi.utils.mailing import extract_users_information_from_bookings
 from pcapi.utils.mailing import format_booking_date_for_email
 from pcapi.utils.mailing import format_booking_hours_for_email
 
@@ -22,19 +20,20 @@ def retrieve_data_for_offerer_booking_recap_email(booking: Booking) -> Dict:
     departement_code = offer.venue.departementCode or "numérique"
     offer_type = offer.type
     is_event = int(offer.isEvent)
-    bookings = booking_repository.find_ongoing_bookings_by_stock(booking.stock.id)
     can_expire = int(offer.offerType.get("canExpire", False))
 
     offer_link = build_pc_pro_offer_link(offer)
 
     mailjet_json = {
-        "MJ-TemplateID": 2113444,
+        "MJ-TemplateID": 2418750,
         "MJ-TemplateLanguage": True,
+        "Headers": {
+            "Reply-To": user_email,
+        },
         "Vars": {
             "nom_offre": offer_name,
             "nom_lieu": venue_name,
             "is_event": is_event,
-            "nombre_resa": len(bookings),
             "ISBN": "",
             "offer_type": "book",
             "date": "",
@@ -42,8 +41,6 @@ def retrieve_data_for_offerer_booking_recap_email(booking: Booking) -> Dict:
             "quantity": quantity,
             "contremarque": booking.token,
             "prix": price,
-            # FIXME (asaunier, 2020-12-15): These information seems unused by the template
-            "users": extract_users_information_from_bookings(bookings),
             "user_firstName": user_firstname,
             "user_lastName": user_lastname,
             "user_phoneNumber": user_phoneNumber,
