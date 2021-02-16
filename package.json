@@ -20,6 +20,7 @@
     "qa:test": "yarn testcafe quality_assurance",
     "start": "node scripts/start.js",
     "test:cafe": "yarn testcafe testcafe",
+    "test:eslint": "jest eslint-plugin-pass-culture/tests",
     "test:unit": "NODE_ICU_DATA=node_modules/full-icu TZ=UTC jest",
     "testcafe": "testcafe --assertion-timeout 5000 --selector-timeout 15000 -S -s testcafe_screenshots 'chrome:headless'"
   },
@@ -129,6 +130,7 @@
     "eslint-plugin-jest": "^24.1.0",
     "eslint-plugin-jsx-a11y": "^6.3.1",
     "eslint-plugin-only-warn": "^1.0.2",
+    "eslint-plugin-pass-culture": "./eslint-plugin-pass-culture",
     "eslint-plugin-react": "^7.21.5",
     "eslint-plugin-react-hooks": "^4.2.0",
     "eslint-plugin-testing-library": "^3.9.2",
