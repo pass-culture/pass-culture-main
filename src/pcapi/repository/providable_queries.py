@@ -6,7 +6,6 @@ from typing import Optional
 from pcapi import models
 from pcapi.models.db import Model
 from pcapi.models.db import db
-from pcapi.utils.human_ids import humanize
 
 
 def insert_chunk(chunk_to_insert: Dict):
@@ -44,18 +43,6 @@ def get_last_update_for_provider(provider_id: int, pc_obj: Model) -> datetime:
     if pc_obj.lastProviderId == provider_id:
         return pc_obj.dateModifiedAtLastProvider if pc_obj.dateModifiedAtLastProvider else None
     return None
-
-
-def _dict_to_object(object_dict: Dict, model_object: Model) -> Model:
-    pc_object = {}
-    for key, value in object_dict.items():
-        if key.endswith("Id"):
-            pc_object[key] = humanize(value)
-        else:
-            pc_object[key] = value
-    pc_obj = model_object(from_dict=pc_object)
-    pc_obj.id = pc_object["id"]
-    return pc_obj
 
 
 def dictify_pc_object(object_to_update: Model) -> Dict:
