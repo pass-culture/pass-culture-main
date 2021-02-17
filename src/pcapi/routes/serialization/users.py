@@ -17,6 +17,8 @@ class PatchUserBodyModel(BaseModel):
     cultural_survey_filled_date: Optional[str]
     department_code: Optional[str] = Field(None, alias="departementCode")
     email: Optional[EmailStr]
+    first_name: Optional[str]
+    last_name: Optional[str]
     needs_to_fill_cultural_survey: Optional[bool]
     phone_number: Optional[str]
     postal_code: Optional[str]
