@@ -7,20 +7,31 @@
   .h-description-list {
     display: flex;
     flex-direction: column;
-    margin-top: rem(-8px);
+
+    &:first-child {
+      margin-top: rem(-8px);
+    }
 
     .h-dl-row {
+      display: flex;
+      flex-direction: row;
       margin-top: rem(8px);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+
+      &.single-line {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
     }
 
     .h-dl-title {
       color: $grey-dark;
+      flex: 0;
+      white-space: nowrap;
     }
 
     .h-dl-description {
+      flex: 1 1 auto;
       margin-left: rem(8px);
     }
   }
@@ -142,9 +153,26 @@
     .h-card-content {
       margin-top: rem(16px);
 
-      &.h-content-attention {
-        background-color: $attention;
-        padding: rem(16px);
+      p {
+        color: $grey-dark;
+      }
+
+      .bi-banner {
+        border-radius: 0;
+
+        p {
+          color: $black;
+        }
+
+        .bi-link {
+          display: flex;
+          margin-top: rem(8px);
+
+          img {
+            display: block;
+            flex: 0 1 rem(25px);
+          }
+        }
       }
     }
 

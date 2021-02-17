@@ -1,10 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
+import Banner from 'components/layout/Banner/Banner'
 import Icon from 'components/layout/Icon'
 import Select, { buildSelectOptions } from 'components/layout/inputs/Select'
 import Spinner from 'components/layout/Spinner'
 import * as pcapi from 'repository/pcapi/pcapi'
+import { DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL } from 'utils/config'
 
 import { steps, STEP_ID_OFFERERS } from './HomepageBreadcrumb'
 
@@ -56,6 +58,8 @@ const Offerers = () => {
       </div>
     )
   }
+
+  const hasAccountData = selectedOfferer.iban && selectedOfferer.bic
 
   return (
     <>
@@ -126,8 +130,48 @@ const Offerers = () => {
               <h3 className="h-card-secondary-title">
                 {'Coordonnées bancaires'}
               </h3>
-              <div className="h-card-content h-content-attention">
-                {'Hello world !'}
+
+              <div className="h-card-content">
+                {hasAccountData ? (
+                  <>
+                    <p>
+                      {
+                        'Les coordonnées bancaires ci-dessous seront attribuées à tous les lieux sans coordonnées bancaires propres.'
+                      }
+                    </p>
+                    <ul className="h-description-list">
+                      <li className="h-dl-row">
+                        <span className="h-dl-title">
+                          {'IBAN :'}
+                        </span>
+                        <span className="h-dl-description">
+                          {selectedOfferer.iban}
+                        </span>
+                      </li>
+
+                      <li className="h-dl-row">
+                        <span className="h-dl-title">
+                          {'BIC :'}
+                        </span>
+                        <span className="h-dl-description">
+                          {selectedOfferer.bic}
+                        </span>
+                      </li>
+                    </ul>
+                  </>
+                ) : selectedOfferer.demarchesSimplifieesApplicationId ? (
+                  <Banner
+                    href={`https://www.demarches-simplifiees.fr/dossiers/${selectedOfferer.demarchesSimplifieesApplicationId}`}
+                    linkTitle="Voir le dossier"
+                    subtitle="Votre dossier est en cours pour cette structure"
+                  />
+                ) : (
+                  <Banner
+                    href={DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL}
+                    linkTitle="Renseignez les coordonnées bancaires de la structure"
+                    subtitle="Renseignez vos coordonnées bancaires pour être remboursé de vos offres éligibles"
+                  />
+                )}
               </div>
             </div>
           </div>

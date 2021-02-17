@@ -9,6 +9,11 @@ import { configureTestStore } from 'store/testUtils'
 
 import Homepage from '../Homepage'
 
+jest.mock('utils/config', () => ({
+  DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL:
+    'link/to/offerer/demarchesSimplifiees/procedure',
+}))
+
 jest.mock('repository/pcapi/pcapi', () => ({
   getOfferer: jest.fn(),
   getAllOfferersNames: jest.fn(),
@@ -54,6 +59,8 @@ describe('homepage : Tabs : Offerers', () => {
         id: 'GE',
         postalCode: '97300',
         siren: '111111111',
+        bic: 'test bic 01',
+        iban: 'test iban 01',
       },
       {
         address: 'RUE DE NIEUPORT',
@@ -62,6 +69,8 @@ describe('homepage : Tabs : Offerers', () => {
         name: 'Club Dorothy',
         postalCode: '93700',
         siren: '222222222',
+        bic: 'test bic 02',
+        iban: 'test iban 02',
       },
     ]
     baseOfferersNames = baseOfferers.map(offerer => ({
@@ -153,6 +162,12 @@ describe('homepage : Tabs : Offerers', () => {
       expect(await screen.findByText(selectedOffererAddress)).toBeInTheDocument()
     })
 
+    it('should display first offerer bank information', async () => {
+      const selectedOfferer = baseOfferers[0]
+      expect(await screen.findByText(selectedOfferer.iban)).toBeInTheDocument()
+      expect(await screen.findByText(selectedOfferer.bic)).toBeInTheDocument()
+    })
+
     it('should display offerer venues informations', async () => {
       const virtualVenueTitle = await screen.findByText('Lieu numérique')
       expect(virtualVenueTitle).toBeInTheDocument()
@@ -220,6 +235,11 @@ describe('homepage : Tabs : Offerers', () => {
         expect(await screen.findByText(selectedOffererAddress)).toBeInTheDocument()
       })
 
+      it('should change displayed bank information', async () => {
+        expect(await screen.findByText(newSelectedOfferer.iban)).toBeInTheDocument()
+        expect(await screen.findByText(newSelectedOfferer.bic)).toBeInTheDocument()
+      })
+
       it('should display new offerer venues informations', async () => {
         const virtualVenueTitle = await screen.findByText('Lieu numérique')
         expect(virtualVenueTitle).toBeInTheDocument()
@@ -236,6 +256,43 @@ describe('homepage : Tabs : Offerers', () => {
         )
         expect(secondOfflineVenueTitle).toBeInTheDocument()
       })
+    })
+  })
+  describe("when offerer doesn't have bank informations", () => {
+    it('should display add information link', async () => {
+      baseOfferers = [
+        {
+          ...baseOfferers[0],
+          ...{
+            bic: '',
+            iban: '',
+          },
+        },
+      ]
+      pcapi.getOfferer.mockResolvedValue(baseOfferers[0])
+      await renderHomePage()
+
+      const link = await screen.findByRole('link', {
+        name: 'Renseignez les coordonnées bancaires de la structure',
+      })
+      expect(link).toBeInTheDocument()
+    })
+
+    it('should display file information for pending registration', async () => {
+      baseOfferers = [
+        {
+          ...baseOfferers[0],
+          ...{
+            bic: '',
+            iban: '',
+            demarchesSimplifieesApplicationId: 'demarchesSimplifieesApplication_fake_id',
+          },
+        },
+      ]
+      pcapi.getOfferer.mockResolvedValue(baseOfferers[0])
+      await renderHomePage()
+
+      expect(await screen.findByRole('link', { name: 'Voir le dossier' })).toBeInTheDocument()
     })
   })
 })
