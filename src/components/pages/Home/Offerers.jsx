@@ -23,6 +23,7 @@ const Offerers = () => {
   }, [])
 
   useEffect(() => {
+    if (selectedOffererId === null) return
     pcapi.getOfferer(selectedOffererId).then(receivedOfferer => {
       setSelectedOfferer(receivedOfferer)
       setIsLoading(false)
