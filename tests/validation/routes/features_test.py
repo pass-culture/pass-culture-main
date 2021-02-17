@@ -1,34 +1,20 @@
-from unittest.mock import MagicMock
-
 import pytest
 
 from pcapi.models.feature import Feature
-from pcapi.models.feature import FeatureToggle
+from pcapi.repository import repository
 from pcapi.validation.routes.features import InconsistentFeaturesException
 from pcapi.validation.routes.features import check_feature_consistency
 
 
 class CheckFeatureConsistencyTest:
     @pytest.mark.usefixtures("db_session")
-    def test_raises_inconsistent_feature_exception_if_database_and_enum_are_inconsistent(self, app):
-        # Given
-        find_all_features = MagicMock()
-        find_all_features.return_value = []
+    def test_raises_if_inconsistency(self):
+        feature = Feature(name="FeatureToggle.PANIC_MODE", description="Activate panic mode")
+        repository.save(feature)
 
-        # When / Then
         with pytest.raises(InconsistentFeaturesException):
-            check_feature_consistency(find_all_features)
+            check_feature_consistency()
 
     @pytest.mark.usefixtures("db_session")
-    def test_returns_none_if_database_and_enum_are_consistent(self, app):
-        # Given
-        find_all_features = MagicMock()
-        features = []
-        for feature_toggle in FeatureToggle:
-            feature = Feature()
-            feature.populate_from_dict({"name": feature_toggle})
-            features.append(feature)
-        find_all_features.return_value = features
-
-        # When / Then
-        assert check_feature_consistency(find_all_features) is None
+    def test_returns_none_if_consistent(self):
+        assert check_feature_consistency() is None
