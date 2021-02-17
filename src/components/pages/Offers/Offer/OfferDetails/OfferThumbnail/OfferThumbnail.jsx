@@ -8,7 +8,8 @@ const OfferThumbnail = ({ setThumbnailInfo, url }) => {
   const [isModalOpened, setIsModalOpened] = useState(false)
   const [preview, setPreview] = useState(url)
 
-  const openModal = useCallback(() => {
+  const openModal = useCallback(e => {
+    e.target.blur()
     setIsModalOpened(true)
   }, [])
 

@@ -396,7 +396,7 @@ describe('offerDetails - Edition', () => {
 
         // Then
         expect(
-          await screen.findByTitle('Modifier l’image', { selector: 'button' })
+          await screen.getByTitle('Modifier l’image', { selector: 'button' })
         ).toBeInTheDocument()
         expect(
           screen.queryByTitle('Fermer la modale', { selector: 'button' })

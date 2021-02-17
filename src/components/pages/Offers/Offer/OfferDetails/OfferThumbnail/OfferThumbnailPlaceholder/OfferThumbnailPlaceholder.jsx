@@ -9,7 +9,8 @@ const OfferThumbnailPlaceholder = ({ setThumbnailInfo }) => {
   const [isModalOpened, setIsModalOpened] = useState(false)
   const [preview, setPreview] = useState()
 
-  const openModal = useCallback(() => {
+  const openModal = useCallback(e => {
+    e.target.blur()
     setIsModalOpened(true)
   }, [])
 
