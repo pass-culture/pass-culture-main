@@ -3,6 +3,7 @@ from flask_jwt_extended import create_refresh_token
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_refresh_token_required
 
+from pcapi.connectors import api_recaptcha
 from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import repository as users_repo
@@ -11,6 +12,8 @@ from pcapi.core.users.models import User
 from pcapi.domain.password import check_password_strength
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
+from pcapi.models.feature import FeatureToggle
+from pcapi.repository import feature_queries
 from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.native.security import authenticated_user_required
@@ -61,6 +64,11 @@ def refresh() -> authentication.RefreshResponse:
 @blueprint.native_v1.route("/request_password_reset", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400])  # type: ignore
 def request_password_reset(body: RequestPasswordResetRequest) -> None:
+    if feature_queries.is_active(FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA):
+        try:
+            api_recaptcha.check_native_app_recaptcha_token(body.token)
+        except api_recaptcha.ReCaptchaException:
+            raise ApiErrors({"token": "The given token is not invalid"})
     user = find_user_by_email(body.email)
     try:
         users_api.request_password_reset(user)

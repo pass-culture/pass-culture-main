@@ -29,6 +29,7 @@ class RefreshResponse(BaseModel):
 
 class RequestPasswordResetRequest(BaseModel):
     email: str
+    token: Optional[str] = None
 
 
 class ResetPasswordRequest(BaseModel):

@@ -7,6 +7,7 @@ from flask_jwt_extended.utils import create_access_token
 from freezegun import freeze_time
 import pytest
 
+from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
@@ -106,6 +107,34 @@ def test_request_reset_password_for_unknown_email(app):
     response = TestClient(app.test_client()).post("/native/v1/request_password_reset", json=data)
 
     assert response.status_code == 204
+
+
+@patch("pcapi.domain.user_emails.send_reset_password_email_to_native_app_user")
+@patch("pcapi.connectors.api_recaptcha.check_native_app_recaptcha_token")
+@override_features(ENABLE_NATIVE_APP_RECAPTCHA=True)
+def test_request_reset_password_with_recaptcha_ok(
+    mock_check_native_app_recaptcha_token,
+    mock_send_reset_password_email_to_native_app_user,
+    app,
+):
+    email = "existing_user@example.com"
+    data = {"email": email}
+    user = users_factories.UserFactory(email=email)
+
+    saved_token = Token.query.filter_by(user=user).first()
+    assert saved_token is None
+
+    mock_send_reset_password_email_to_native_app_user.return_value = True
+    mock_check_native_app_recaptcha_token.return_value = None
+
+    response = TestClient(app.test_client()).post("/native/v1/request_password_reset", json=data)
+
+    mock_send_reset_password_email_to_native_app_user.assert_called_once()
+    mock_check_native_app_recaptcha_token.assert_called_once()
+    assert response.status_code == 204
+
+    saved_token = Token.query.filter_by(user=user).first()
+    assert saved_token.type.value == "reset-password"
 
 
 @patch("pcapi.domain.user_emails.send_reset_password_email_to_native_app_user")
