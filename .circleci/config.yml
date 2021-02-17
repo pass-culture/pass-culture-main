@@ -32,11 +32,6 @@ executors:
 
 commands:
 
-  export_version:
-    description: Export API version number as environment variable
-    steps:
-      - run: cp ./api/version.txt version.txt
-
   authenticate_gcp:
     description: Authenticate to a GCP project
     parameters:
@@ -64,7 +59,7 @@ commands:
             --install --wait \
             --namespace << parameters.kubernetes_namespace >> \
             --values tmp/<< parameters.helm_chart_name >>/<< parameters.helm_values_file >> \
-            --set-string image.tag=$(cat version.txt)
+            --set-string image.tag=$(cat ./api/version.txt)
 
   build-frontend-app:
     description: Build a frontend app with yarn
@@ -285,7 +280,6 @@ jobs:
       - setup_remote_docker:
           version: 19.03.13
           docker_layer_caching: true
-      - export_version
       - authenticate_gcp:
           gcp-key-name: GCP_INFRA_KEY
       - run: |
@@ -293,8 +287,8 @@ jobs:
             gcloud beta auth configure-docker ${GCP_REGION}-docker.pkg.dev
             docker build ./api \
               -f ./api/Dockerfile.gcp \
-              -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:$(cat version.txt)
-            docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:$(cat version.txt)
+              -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:$(cat ./api/version.txt)
+            docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:$(cat ./api/version.txt)
           fi
 
   deploy-api:
@@ -342,7 +336,6 @@ jobs:
       - checkout
       - run: git submodule sync
       - run: git submodule update --init
-      - export_version
       - authenticate_gcp:
           gcp-key-name: GCP_METIER_KEY
       - run:
