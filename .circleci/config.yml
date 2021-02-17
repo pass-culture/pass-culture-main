@@ -64,7 +64,7 @@ commands:
             --install --wait \
             --namespace << parameters.kubernetes_namespace >> \
             --values tmp/<< parameters.helm_chart_name >>/<< parameters.helm_values_file >> \
-            --set-string image.tag=v122.2.0
+            --set-string image.tag=$(cat version.txt)
 
   build-frontend-app:
     description: Build a frontend app with yarn
@@ -359,9 +359,9 @@ jobs:
           command: helm chart export ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:${TAG} -d tmp/
       - deploy-pcapi-gke:
           helm_chart_name: pcapi
-          helm_release_name: staging
-          kubernetes_namespace: staging
-          helm_values_file: values.staging.yaml
+          helm_release_name: ${CIRCLE_BRANCH}
+          kubernetes_namespace: ${CIRCLE_BRANCH}
+          helm_values_file: values.${CIRCLE_BRANCH}.yaml
 
   deploy-pro:
     machine:
@@ -510,47 +510,47 @@ jobs:
 
 workflows:
   version: 2
-  # commit:
-  #   jobs:
-  #     - tests-script-pc
-  #     - tests-api:
-  #         filters:
-  #           branches:
-  #             ignore:
-  #               - production
-  #               - staging
-  #               - integration
-  #     - tests-webapp:
-  #         filters:
-  #           branches:
-  #             ignore:
-  #               - production
-  #               - staging
-  #               - integration
-  #     - tests-pro:
-  #         filters:
-  #           branches:
-  #             ignore:
-  #               - production
-  #               - staging
-  #               - integration
-  #     - deploy-api:
-  #         filters:
-  #           branches:
-  #             only:
-  #               - production
-  #               - staging
-  #               - integration
-  #     - deploy-pro:
-  #         requires:
-  #           - deploy-api
-  #     - deploy-webapp:
-  #         requires:
-  #           - deploy-api
-  #     - release-synthesis:
-  #         requires:
-  #           - deploy-pro
-  #           - deploy-webapp
+  commit:
+    jobs:
+      - tests-script-pc
+      - tests-api:
+          filters:
+            branches:
+              ignore:
+                - production
+                - staging
+                - integration
+      - tests-webapp:
+          filters:
+            branches:
+              ignore:
+                - production
+                - staging
+                - integration
+      - tests-pro:
+          filters:
+            branches:
+              ignore:
+                - production
+                - staging
+                - integration
+      - deploy-api:
+          filters:
+            branches:
+              only:
+                - production
+                - staging
+                - integration
+      - deploy-pro:
+          requires:
+            - deploy-api
+      - deploy-webapp:
+          requires:
+            - deploy-api
+      - release-synthesis:
+          requires:
+            - deploy-pro
+            - deploy-webapp
 
   gcp-ehp:
     jobs:
@@ -558,9 +558,8 @@ workflows:
           filters:
             branches:
               only:
-                - PC-6898/fix-ci
-                # - staging
-                # - integration
+                - staging
+                - integration
           context:
             - GCP
             - GCP_EHP
@@ -570,55 +569,55 @@ workflows:
           context:
             - GCP
             - GCP_EHP
-      # - deploy-webapp-cloudstorage:
-      #     requires:
-      #       - deploy-pcapi
-      #     context:
-      #       - GCP
-      #       - GCP_EHP
-      # - deploy-pro-cloudstorage:
-      #     requires:
-      #       - deploy-pcapi
-      #     context:
-      #       - GCP
-      #       - GCP_EHP
+      - deploy-webapp-cloudstorage:
+          requires:
+            - deploy-pcapi
+          context:
+            - GCP
+            - GCP_EHP
+      - deploy-pro-cloudstorage:
+          requires:
+            - deploy-pcapi
+          context:
+            - GCP
+            - GCP_EHP
 
-  # gcp-prod:
-  #   jobs:
-  #     - build-and-push-image:
-  #         filters:
-  #           branches:
-  #             only:
-  #               - production
-  #         context:
-  #           - GCP
-  #           - GCP_PROD
-  #     - deploy-pcapi:
-  #         requires:
-  #           - build-and-push-image
-  #         context:
-  #           - GCP
-  #           - GCP_PROD
-  #     - deploy-webapp-cloudstorage:
-  #         requires:
-  #           - deploy-pcapi
-  #         context:
-  #           - GCP
-  #           - GCP_PROD
-  #     - deploy-pro-cloudstorage:
-  #         requires:
-  #           - deploy-pcapi
-  #         context:
-  #           - GCP
-  #           - GCP_PROD
+  gcp-prod:
+    jobs:
+      - build-and-push-image:
+          filters:
+            branches:
+              only:
+                - production
+          context:
+            - GCP
+            - GCP_PROD
+      - deploy-pcapi:
+          requires:
+            - build-and-push-image
+          context:
+            - GCP
+            - GCP_PROD
+      - deploy-webapp-cloudstorage:
+          requires:
+            - deploy-pcapi
+          context:
+            - GCP
+            - GCP_PROD
+      - deploy-pro-cloudstorage:
+          requires:
+            - deploy-pcapi
+          context:
+            - GCP
+            - GCP_PROD
 
-  # every-mondays-nights:
-  #   triggers:
-  #     - schedule:
-  #         cron: "0 23 * * 1"
-  #         filters:
-  #           branches:
-  #             only:
-  #               - master
-  #   jobs:
-  #     - deploy-sandbox-in-testing
+  every-mondays-nights:
+    triggers:
+      - schedule:
+          cron: "0 23 * * 1"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - deploy-sandbox-in-testing
