@@ -96,7 +96,6 @@ class Patch:
                 "publicName": "Anne",
                 "suspensionReason": "",
                 "wallet_balance": 500.0,
-                "wallet_date_created": format_into_utc_date(user.wallet_date_created),
                 "deposit_expiration_date": format_into_utc_date(user.deposit_expiration_date),
                 "wallet_is_activated": True,
             }

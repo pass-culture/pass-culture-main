@@ -54,7 +54,6 @@ class Get:
 
             # Then
             assert response.json["wallet_is_activated"] == True
-            assert response.json["wallet_date_created"] == "2000-01-01T02:02:00Z"
             assert response.json["deposit_expiration_date"] == "2002-01-01T02:02:00Z"
 
         @pytest.mark.usefixtures("db_session")

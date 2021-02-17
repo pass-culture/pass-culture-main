@@ -13,7 +13,6 @@ BENEFICIARY_INCLUDES = [
     "expenses",
     "wallet_balance",
     "wallet_is_activated",
-    "wallet_date_created",
     "deposit_expiration_date",
     "needsToSeeTutorials",
 ]

@@ -265,13 +265,6 @@ class User(PcObject, Model, NeedsValidationMixin, VersionedMixin):
         return len(self.deposits) > 0
 
     @property
-    def wallet_date_created(self):
-        result = Deposit.query.filter_by(userId=self.id).first()
-        if result is not None:
-            return result.dateCreated
-        return None
-
-    @property
     def hasPhysicalVenues(self):
         for offerer in self.offerers:
             if any(not venue.isVirtual for venue in offerer.managedVenues):
