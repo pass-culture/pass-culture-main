@@ -196,6 +196,10 @@ export const postThumbnail = (offerer, offer, credit, thumb, thumbUrl, x, y, hei
 //
 export const signout = () => client.get('/users/signout')
 
+export const updateUserInformations = body => {
+  return client.patch('/users/current', body)
+}
+
 //
 // set password
 //

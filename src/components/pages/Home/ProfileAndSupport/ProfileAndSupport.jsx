@@ -49,7 +49,7 @@ export const formatPhoneNumber = phoneNumber => {
   return phoneNumber
 }
 
-const Profile = ({ user }) => {
+const Profile = ({ setUserInformations, showSuccessNotification, user }) => {
   const [isModalOpened, setIsModalOpened] = useState(false)
 
   const showProfileInfoModal = useCallback(() => setIsModalOpened(true), [])
@@ -119,12 +119,21 @@ const Profile = ({ user }) => {
         </div>
         <Support />
       </div>
-      {isModalOpened && <ProfileInformationsModal setIsModalOpened={setIsModalOpened} />}
+      {isModalOpened && (
+        <ProfileInformationsModal
+          setIsModalOpened={setIsModalOpened}
+          setUserInformations={setUserInformations}
+          showSuccessNotification={showSuccessNotification}
+          user={user}
+        />
+      )}
     </>
   )
 }
 
 Profile.propTypes = {
+  setUserInformations: PropTypes.func.isRequired,
+  showSuccessNotification: PropTypes.func.isRequired,
   user: PropTypes.shape().isRequired,
 }
 

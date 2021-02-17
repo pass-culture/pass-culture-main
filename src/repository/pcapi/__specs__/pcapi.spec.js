@@ -1,5 +1,5 @@
 import { DEFAULT_SEARCH_FILTERS } from 'components/pages/Offers/Offers/_constants'
-import { getVenueStats, signout } from 'repository/pcapi/pcapi'
+import { getVenueStats, signout, updateUserInformations } from 'repository/pcapi/pcapi'
 import { client } from 'repository/pcapi/pcapiClient'
 
 import {
@@ -254,6 +254,23 @@ describe('pcapi', () => {
 
       // then
       expect(client.patch).toHaveBeenCalledWith('/users/ABC/tuto-seen')
+    })
+  })
+
+  describe('update profile informations', () => {
+    it('should call api patch with user informations', () => {
+      // when
+      const body = {
+        firstName: 'Example',
+        lastName: 'User',
+        email: 'example.user@example.com',
+        phoneNumber: '0606060606',
+      }
+
+      updateUserInformations(body)
+
+      // then
+      expect(client.patch).toHaveBeenCalledWith('/users/current', body)
     })
   })
 })

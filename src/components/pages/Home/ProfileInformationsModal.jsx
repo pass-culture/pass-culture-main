@@ -1,38 +1,84 @@
 import PropTypes from 'prop-types'
 import React, { useCallback, useState } from 'react'
 
+import * as pcapi from '../../../repository/pcapi/pcapi'
 import { DialogBox } from '../../layout/DialogBox/DialogBox'
 import TextInput from '../../layout/inputs/TextInput/TextInput'
 
-const ProfileInformationsModal = ({ setIsModalOpened }) => {
-  const [lastName, setLastName] = useState('')
-  const [firstName, setFirstName] = useState('')
-  const [email, setEmail] = useState('')
-  const [phoneNumber, setPhoneNumber] = useState('')
+const ProfileInformationsModal = ({
+  setIsModalOpened,
+  setUserInformations,
+  showSuccessNotification,
+  user,
+}) => {
+  const [lastName, setLastName] = useState(user.lastName)
+  const [firstName, setFirstName] = useState(user.firstName)
+  const [email, setEmail] = useState(user.email)
+  const [phoneNumber, setPhoneNumber] = useState(user.phoneNumber)
 
   const closeModal = useCallback(() => {
     setIsModalOpened(false)
   }, [setIsModalOpened])
 
-  const submitProfileInformations = useCallback(() => {
-    setIsModalOpened(false)
-  }, [setIsModalOpened])
+  const submitProfileInformations = useCallback(
+    event => {
+      event.preventDefault()
+      const body = {
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        phoneNumber: phoneNumber,
+      }
 
-  const handleLastNameChange = useCallback(event => {
-    setLastName(event.target.value)
-  }, [])
+      pcapi
+        .updateUserInformations(body)
+        .then(() => {
+          setUserInformations(user, body)
+          showSuccessNotification()
+        })
+        .finally(() => {
+          setIsModalOpened(false)
+        })
+    },
+    [
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      setUserInformations,
+      user,
+      showSuccessNotification,
+      setIsModalOpened,
+    ]
+  )
 
-  const handleFirstNameChange = useCallback(event => {
-    setFirstName(event.target.value)
-  }, [])
+  const handleLastNameChange = useCallback(
+    event => {
+      setLastName(event.target.value)
+    },
+    [setLastName]
+  )
 
-  const handleEmailChange = useCallback(event => {
-    setEmail(event.target.value)
-  }, [])
+  const handleFirstNameChange = useCallback(
+    event => {
+      setFirstName(event.target.value)
+    },
+    [setFirstName]
+  )
 
-  const handlePhoneNumberChange = useCallback(event => {
-    setPhoneNumber(event.target.value)
-  }, [])
+  const handleEmailChange = useCallback(
+    event => {
+      setEmail(event.target.value)
+    },
+    [setEmail]
+  )
+
+  const handlePhoneNumberChange = useCallback(
+    event => {
+      setPhoneNumber(event.target.value)
+    },
+    [setPhoneNumber]
+  )
 
   return (
     <DialogBox
@@ -74,7 +120,7 @@ const ProfileInformationsModal = ({ setIsModalOpened }) => {
           <div className="actions-group">
             <button
               className="secondary-button"
-              onClick={submitProfileInformations}
+              onClick={closeModal}
               type="button"
             >
               {'Annuler'}
@@ -94,6 +140,9 @@ const ProfileInformationsModal = ({ setIsModalOpened }) => {
 
 ProfileInformationsModal.propTypes = {
   setIsModalOpened: PropTypes.func.isRequired,
+  setUserInformations: PropTypes.func.isRequired,
+  showSuccessNotification: PropTypes.func.isRequired,
+  user: PropTypes.shape().isRequired,
 }
 
 export default ProfileInformationsModal
