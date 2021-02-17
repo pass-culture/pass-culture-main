@@ -35,20 +35,7 @@ commands:
   export_version:
     description: Export API version number as environment variable
     steps:
-      - run: echo "export API_VERSION=$(cat ./api/version.txt)" >> $BASH_ENV
-
-  get_cors_allowed_origin_from_env:
-    description: Export CORS_ALLOWED_ORIGIN as env var
-    steps:
-      - run: |
-          if [[ ${CIRCLE_BRANCH} == "staging" ]];then
-            CORS_ALLOWED_ORIGIN=https://gcp-staging-.*.netlify.app
-          elif [[ ${CIRCLE_BRANCH} == "integration" ]];then
-            CORS_ALLOWED_ORIGIN=https://gcp-integratin-.*.netlify.app
-          elif [[ ${CIRCLE_BRANCH} == "production" ]];then
-            CORS_ALLOWED_ORIGIN=https://gcp-production-.*.netlify.app
-          fi
-          echo "export CORS_ALLOWED_ORIGIN=$CORS_ALLOWED_ORIGIN" >> $BASH_ENV
+      - run: cp ./api/version.txt version.txt
 
   authenticate_gcp:
     description: Authenticate to a GCP project
@@ -77,7 +64,7 @@ commands:
             --install --wait \
             --namespace << parameters.kubernetes_namespace >> \
             --values tmp/<< parameters.helm_chart_name >>/<< parameters.helm_values_file >> \
-            --set-string image.tag=${API_VERSION}
+            --set-string image.tag=v122.2.0
 
   build-frontend-app:
     description: Build a frontend app with yarn
@@ -306,8 +293,8 @@ jobs:
             gcloud beta auth configure-docker ${GCP_REGION}-docker.pkg.dev
             docker build ./api \
               -f ./api/Dockerfile.gcp \
-              -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:${API_VERSION}
-            docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:${API_VERSION}
+              -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:$(cat version.txt)
+            docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:$(cat version.txt)
           fi
 
   deploy-api:
@@ -372,9 +359,9 @@ jobs:
           command: helm chart export ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:${TAG} -d tmp/
       - deploy-pcapi-gke:
           helm_chart_name: pcapi
-          helm_release_name: ${CIRCLE_BRANCH}
-          kubernetes_namespace: ${CIRCLE_BRANCH}
-          helm_values_file: values.${CIRCLE_BRANCH}.yaml
+          helm_release_name: staging
+          kubernetes_namespace: staging
+          helm_values_file: values.staging.yaml
 
   deploy-pro:
     machine:
