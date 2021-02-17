@@ -85,11 +85,8 @@ class Patch:
             mock_delete_venue_from_iris_venues.assert_not_called()
 
         @pytest.mark.usefixtures("db_session")
-        @patch("pcapi.routes.pro.venues.feature_queries.is_active", return_value=True)
         @patch("pcapi.routes.pro.venues.redis.add_venue_id")
-        def when_updating_a_venue_on_public_name_expect_relative_venue_id_to_be_added_to_redis(
-            self, mock_redis, mock_feature, app
-        ):
+        def when_updating_a_venue_on_public_name_expect_relative_venue_id_to_be_added_to_redis(self, mock_redis, app):
             # Given
             offerer = create_offerer()
             user = create_user()
@@ -110,11 +107,8 @@ class Patch:
             mock_redis.assert_called_once_with(client=app.redis_client, venue_id=venue.id)
 
         @pytest.mark.usefixtures("db_session")
-        @patch("pcapi.routes.pro.venues.feature_queries.is_active", return_value=True)
         @patch("pcapi.routes.pro.venues.redis.add_venue_id")
-        def when_updating_a_venue_on_siret_expect_relative_venue_id_to_not_be_added_to_redis(
-            self, mock_redis, mock_feature, app
-        ):
+        def when_updating_a_venue_on_siret_expect_relative_venue_id_to_not_be_added_to_redis(self, mock_redis, app):
             # Given
             offerer = create_offerer()
             user = create_user()

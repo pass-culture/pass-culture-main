@@ -81,7 +81,8 @@ class Put:
 
     class Returns200:
         @pytest.mark.usefixtures("db_session")
-        def when_activating_all_venue_offers(self, app):
+        @patch("pcapi.routes.pro.venues.redis.add_venue_id")
+        def when_activating_all_venue_offers(self, mock_redis, app):
             # Given
             user = create_user(email="test@example.net")
             offerer = create_offerer()
@@ -106,33 +107,11 @@ class Put:
             offers = Offer.query.all()
             assert offers[0].isActive == True
             assert offers[1].isActive == True
-
-        @patch("pcapi.routes.pro.venues.feature_queries.is_active", return_value=True)
-        @patch("pcapi.routes.pro.venues.redis.add_venue_id")
-        @pytest.mark.usefixtures("db_session")
-        def when_activating_all_venue_offers_expect_venue_id_to_be_added_to_redis(self, mock_redis, mock_feature, app):
-            # Given
-            user = create_user(email="test@example.net")
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(user, offerer)
-            venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue)
-            offer2 = create_offer_with_thing_product(venue)
-            stock1 = create_stock_from_offer(offer)
-            offer.isActive = False
-            offer2.isActive = False
-            repository.save(offer2, stock1, user_offerer, venue)
-
-            # When
-            client = TestClient(app.test_client()).with_auth("test@example.net")
-            response = client.put(f"/venues/{humanize(venue.id)}/offers/activate")
-
-            # Then
-            assert response.status_code == 200
             mock_redis.assert_called_once_with(client=app.redis_client, venue_id=venue.id)
 
         @pytest.mark.usefixtures("db_session")
-        def when_deactivating_all_venue_offers(self, app):
+        @patch("pcapi.routes.pro.venues.redis.add_venue_id")
+        def when_deactivating_all_venue_offers(self, mock_redis, app):
             # Given
             user = create_user(email="test@example.net")
             offerer = create_offerer()
@@ -155,27 +134,4 @@ class Put:
             offers = Offer.query.all()
             assert not offers[0].isActive
             assert not offers[1].isActive
-
-        @patch("pcapi.routes.pro.venues.feature_queries.is_active", return_value=True)
-        @patch("pcapi.routes.pro.venues.redis.add_venue_id")
-        @pytest.mark.usefixtures("db_session")
-        def when_deactivating_all_venue_offers_expect_venue_id_to_be_added_to_redis(
-            self, mock_redis, mock_feature, app
-        ):
-            # Given
-            user = create_user(email="test@example.net")
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(user, offerer)
-            venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue)
-            offer2 = create_offer_with_thing_product(venue)
-            stock1 = create_stock_from_offer(offer)
-            repository.save(offer2, stock1, user_offerer, venue)
-
-            # When
-            client = TestClient(app.test_client()).with_auth("test@example.net")
-            response = client.put(f"/venues/{humanize(venue.id)}/offers/deactivate")
-
-            # Then
-            assert response.status_code == 200
             mock_redis.assert_called_once_with(client=app.redis_client, venue_id=venue.id)

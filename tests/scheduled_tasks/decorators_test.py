@@ -2,6 +2,10 @@ from unittest.mock import MagicMock
 from unittest.mock import call
 from unittest.mock import patch
 
+import pytest
+
+from pcapi.core.testing import override_features
+from pcapi.models.feature import FeatureToggle
 from pcapi.scheduled_tasks.decorators import cron_context
 from pcapi.scheduled_tasks.decorators import cron_require_feature
 from pcapi.scheduled_tasks.decorators import log_cron
@@ -26,11 +30,12 @@ class CronContextTest:
         application.app_context.assert_called_once()
 
 
+@pytest.mark.usefixtures("db_session")
 class CronRequireFeatureTest:
-    @patch("pcapi.scheduled_tasks.decorators.feature_queries.is_active", return_value=True)
-    def test_cron_require_feature(self, mock_active_feature):
+    @override_features(UPDATE_BOOKING_USED=True)
+    def test_cron_require_feature(self):
         # Given
-        @cron_require_feature("feature")
+        @cron_require_feature(FeatureToggle.UPDATE_BOOKING_USED)
         def decorated_function():
             return "expected result"
 
@@ -40,11 +45,11 @@ class CronRequireFeatureTest:
         # Then
         assert result == "expected result"
 
+    @override_features(UPDATE_BOOKING_USED=False)
     @patch("pcapi.scheduled_tasks.decorators.logger.info")
-    @patch("pcapi.scheduled_tasks.decorators.feature_queries.is_active", return_value=False)
-    def when_feature_is_not_activated_raise_an_error(self, mock_not_active_feature, mock_logger):
+    def when_feature_is_not_activated_raise_an_error(self, mock_logger):
         # Given
-        @cron_require_feature("feature")
+        @cron_require_feature(FeatureToggle.UPDATE_BOOKING_USED)
         def decorated_function():
             return "expected result"
 
@@ -53,7 +58,7 @@ class CronRequireFeatureTest:
 
         # Then
         assert result is None
-        mock_logger.assert_called_once_with("%s is not active", "feature")
+        mock_logger.assert_called_once_with("%s is not active", FeatureToggle.UPDATE_BOOKING_USED)
 
 
 class LogCronTest:
