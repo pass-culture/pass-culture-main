@@ -68,6 +68,8 @@ commands:
         type: string
       build_dir:
         type: string
+      build_command:
+        type: string
     steps:
       - run:
           name: Install dependencies
@@ -76,8 +78,8 @@ commands:
       - run:
           name: Build frontend app
           command: |
-            set -a; source ./config/run_envs/<< parameters.node_env >>;
-            yarn build
+            set -a; source ../config/run_envs/<< parameters.node_env >>;
+            yarn << parameters.build_command >>
           working_directory: << parameters.build_dir >>
 
   push-to-bucket:
@@ -405,9 +407,10 @@ jobs:
       - build-frontend-app:
           node_env: ${CIRCLE_BRANCH}
           build_dir: ./pro
+          build_command: "build:${CIRCLE_BRANCH}"
       - push-to-bucket:
           build_path: ./pro/build/
-          bucket_name: pass-culture-app-projet-test-${CIRCLE_BRANCH}-pro
+          bucket_name: ${GCP_PROJECT}-${CIRCLE_BRANCH}-pro
 
   deploy-webapp:
     machine:
@@ -458,9 +461,10 @@ jobs:
       - build-frontend-app:
           node_env: ${CIRCLE_BRANCH}
           build_dir: ./webapp
+          build_command: "build"
       - push-to-bucket:
           build_path: ./webapp/build/
-          bucket_name: pass-culture-app-projet-test-${CIRCLE_BRANCH}-webapp
+          bucket_name: ${GCP_PROJECT}-${CIRCLE_BRANCH}-webapp
 
   deploy-sandbox-in-testing:
     machine:
