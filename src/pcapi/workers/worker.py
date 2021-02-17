@@ -53,9 +53,9 @@ def log_database_connection_status() -> None:
             logger.info("Worker: database connection OK")
         else:
             logger.critical("Worker: database connection KO")
-    db.session.remove()
-    db.session.close()
-    db.engine.dispose()
+        db.session.remove()
+        db.session.close()
+        db.engine.dispose()
 
 
 if __name__ == "__main__":
@@ -63,6 +63,7 @@ if __name__ == "__main__":
     logger.info("Worker: listening to queues %s", listen)
 
     log_redis_connection_status()
+    log_database_connection_status()
 
     if settings.IS_DEV is False:
         sentry_sdk.init(
@@ -76,13 +77,14 @@ if __name__ == "__main__":
 
     while True:
         try:
-            # This sessions removals are meant to prevent open db connection
-            # to spread through forked children and cause bugs in the jobs
-            # https://python-rq.org/docs/workers/#the-worker-lifecycle
-            # https://docs.sqlalchemy.org/en/13/core/connections.html?highlight=dispose#engine-disposal
-            db.session.remove()
-            db.session.close()
-            db.engine.dispose()
+            with app.app_context():
+                # This sessions removals are meant to prevent open db connection
+                # to spread through forked children and cause bugs in the jobs
+                # https://python-rq.org/docs/workers/#the-worker-lifecycle
+                # https://docs.sqlalchemy.org/en/13/core/connections.html?highlight=dispose#engine-disposal
+                db.session.remove()
+                db.session.close()
+                db.engine.dispose()
             with Connection(conn):
                 worker = Worker(list(map(Queue, listen)), exception_handlers=[log_worker_error])
                 worker.work()
