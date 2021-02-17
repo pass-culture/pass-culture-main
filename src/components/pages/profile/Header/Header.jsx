@@ -1,13 +1,25 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
+import { LOCALE_FRANCE, MONTH_IN_NUMBER, YEAR_IN_NUMBER } from '../../../../utils/date/date'
 import { NON_BREAKING_SPACE } from '../../../../utils/specialCharacters'
-import { computeEndValidityDate } from '../domain/computeEndValidityDate'
 import User from '../ValueObjects/User'
 
 const Header = ({ user }) => {
-  const { publicName, wallet_date_created: walletDateCreated, wallet_balance: walletBalance } = user
-  const endValidityDate = computeEndValidityDate(walletDateCreated)
+  const {
+    publicName,
+    deposit_expiration_date: depositExpirationDateIso,
+    wallet_balance: walletBalance,
+  } = user
+
+  const formattedExpirationDate = new Date(depositExpirationDateIso).toLocaleDateString(
+    LOCALE_FRANCE,
+    {
+      ...YEAR_IN_NUMBER,
+      ...MONTH_IN_NUMBER,
+      day: 'numeric',
+    }
+  )
 
   return (
     <section className="ph-wrapper">
@@ -18,7 +30,7 @@ const Header = ({ user }) => {
         {`${walletBalance}${NON_BREAKING_SPACE}€`}
       </div>
       <div className="ph-end-validity-date">
-        {`crédit valable jusqu’au ${endValidityDate}`}
+        {`crédit valable jusqu’au ${formattedExpirationDate}`}
       </div>
     </section>
   )

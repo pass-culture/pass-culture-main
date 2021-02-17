@@ -5,7 +5,6 @@ describe('isWalletValid', () => {
     // given
     const state = {
       currentUser: {
-        wallet_date_created: '2019-02-01T09:00:00.000000Z',
         deposit_expiration_date: '2100-02-01T09:00:00.000000Z',
       },
     }
@@ -21,7 +20,6 @@ describe('isWalletValid', () => {
     // given
     const state = {
       currentUser: {
-        wallet_date_created: '2019-02-01T09:00:00.000000Z',
         deposit_expiration_date: '2021-02-01T09:00:00.000000Z',
       },
     }
@@ -37,7 +35,6 @@ describe('isWalletValid', () => {
     // given
     const state = {
       currentUser: {
-        wallet_date_created: null,
         deposit_expiration_date: null,
       },
     }

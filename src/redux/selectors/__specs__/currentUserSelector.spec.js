@@ -39,7 +39,6 @@ describe('currentUser selector', () => {
             lastName: undefined,
             publicName: undefined,
             wallet_balance: undefined,
-            wallet_date_created: undefined,
           })
         )
       })

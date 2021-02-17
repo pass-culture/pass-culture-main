@@ -9,7 +9,6 @@ import { getTimezone } from '../timezone'
 export const LOCALE_FRANCE = 'fr-FR'
 export const FULL_MONTH_IN_LETTERS = { month: 'long' }
 export const MONTH_IN_NUMBER = { month: 'numeric' }
-export const PASS_CULTURE_YEARS_VALIDITY = 2
 export const YEAR_IN_NUMBER = { year: 'numeric' }
 
 const formatDate = (date, timeZone) => {

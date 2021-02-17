@@ -13,7 +13,7 @@ describe('profileHeader', () => {
       user: new User({
         publicName: 'Rosa Bonheur',
         wallet_balance: 153,
-        wallet_date_created: '2018-12-23T09:07:48.914901Z',
+        deposit_expiration_date: '2020-12-23T09:00:00.000000Z',
       }),
     }
   })
