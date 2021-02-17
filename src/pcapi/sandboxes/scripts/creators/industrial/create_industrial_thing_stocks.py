@@ -22,7 +22,7 @@ def create_industrial_thing_stocks(thing_offers_by_name):
 
     for thing_offer_item_with_stocks in thing_offer_items_with_stocks:
         (thing_offer_with_stocks_name, thing_offer_with_stocks) = thing_offer_item_with_stocks
-        quantity = 10
+        quantity = 20
 
         short_name = get_occurrence_short_name(thing_offer_with_stocks_name)
         price = get_price_by_short_name(short_name)

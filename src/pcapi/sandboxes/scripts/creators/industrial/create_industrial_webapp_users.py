@@ -17,6 +17,7 @@ WEBAPP_TAGS = [
     "has-booked-activation",
     "has-confirmed-activation",
     "has-booked-some",
+    "has-booked-some-but-deposit-expired",
     "has-no-more-money",
 ]
 DEPOSIT_VERSIONS = bookings_conf.LIMIT_CONFIGURATIONS.keys()

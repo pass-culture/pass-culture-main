@@ -1,3 +1,6 @@
+from datetime import datetime
+
+from pcapi.repository import repository
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_activation_offers import (
     create_industrial_activation_offers,
 )
@@ -66,6 +69,12 @@ def save_industrial_sandbox() -> None:
     associate_criterion_to_one_offer_with_mediation(offers_by_name, criteria_by_name)
 
     create_industrial_bookings(offers_by_name, users_by_name)
+
+    # Now that they booked, we can expire these users' deposit.
+    for name, user in users_by_name.items():
+        if "has-booked-some-but-deposit-expired" in name:
+            user.deposit.expirationDate = datetime.now()
+            repository.save(user.deposit)
 
     create_industrial_payments()
 

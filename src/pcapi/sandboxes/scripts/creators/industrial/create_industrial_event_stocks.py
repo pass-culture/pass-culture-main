@@ -25,7 +25,7 @@ def create_industrial_event_stocks(event_occurrences_by_name):
 
     for event_occurrence_item_with_stocks in event_occurrence_items_with_stocks:
         (event_occurrence_with_stocks_name, event_occurrence_with_stocks) = event_occurrence_item_with_stocks
-        available = 10
+        available = 20
 
         short_name = get_occurrence_short_name(event_occurrence_with_stocks_name)
         price = get_price_by_short_name(short_name)
