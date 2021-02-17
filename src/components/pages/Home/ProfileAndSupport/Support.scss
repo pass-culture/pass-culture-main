@@ -5,8 +5,15 @@
     align-items: center;
     display: flex;
 
-    img {
-      flex: 0 0 rem(55px);
+    .ico-container {
+      flex: 0 0 rem(32px);
+      height: rem(25px);
+      overflow: hidden;
+
+      .ico-mail {
+        margin-left: rem(-3px);
+        margin-top: rem(-3px);
+      }
     }
   }
 

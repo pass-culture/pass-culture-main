@@ -19,7 +19,12 @@ const Support = () => {
                 rel="noopener noreferrer"
                 target="_blank"
               >
-                <Icon svg="ico-mail" />
+                <div className="ico-container">
+                  <Icon
+                    className="ico-mail"
+                    svg="ico-mail"
+                  />
+                </div>
                 {'Contacter le support'}
               </a>
             </li>
@@ -28,8 +33,12 @@ const Support = () => {
               <a
                 className="hs-link"
                 href="https://pass.culture.fr/cgu-professionnels/"
+                rel="noopener noreferrer"
+                target="_blank"
               >
-                <Icon svg="ico-external-site" />
+                <div className="ico-container">
+                  <Icon svg="ico-external-site" />
+                </div>
                 {'Conditions Générales d’Utilisation'}
               </a>
             </li>
@@ -38,8 +47,12 @@ const Support = () => {
               <a
                 className="hs-link"
                 href="https://aide.passculture.app/fr/category/acteurs-culturels-1t20dhs/"
+                rel="noopener noreferrer"
+                target="_blank"
               >
-                <Icon svg="ico-external-site" />
+                <div className="ico-container">
+                  <Icon svg="ico-external-site" />
+                </div>
                 {'Foire Aux Questions'}
               </a>
             </li>
