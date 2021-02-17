@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import { LOCALE_FRANCE, MONTH_IN_NUMBER, YEAR_IN_NUMBER } from '../../../../utils/date/date'
+import { formatDate } from '../../../../utils/date/date'
 import { NON_BREAKING_SPACE } from '../../../../utils/specialCharacters'
 import User from '../ValueObjects/User'
 
@@ -12,14 +12,7 @@ const Header = ({ user }) => {
     wallet_balance: walletBalance,
   } = user
 
-  const formattedExpirationDate = new Date(depositExpirationDateIso).toLocaleDateString(
-    LOCALE_FRANCE,
-    {
-      ...YEAR_IN_NUMBER,
-      ...MONTH_IN_NUMBER,
-      day: 'numeric',
-    }
-  )
+  const formattedExpirationDate = formatDate(new Date(depositExpirationDateIso))
 
   return (
     <section className="ph-wrapper">
