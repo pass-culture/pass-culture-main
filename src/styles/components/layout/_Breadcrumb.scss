@@ -7,7 +7,6 @@
 
     color: $grey-medium;
     display: flex;
-    line-height: rem(24px);
 
     a {
       color: $black;
@@ -16,6 +15,16 @@
     &.active,
     &.active a {
       color: $primary;
+      position: relative;
+
+      &::after {
+        border-bottom: rem(2px) solid $primary;
+        content: '';
+        left: 0;
+        position: absolute;
+        top: rem(24px);
+        width: rem(56px);
+      }
     }
 
     .separator {
@@ -50,17 +59,6 @@
 
       &:first-child {
         margin-left: 0;
-      }
-
-      &.active,
-      &.active a {
-        .active-underline {
-          background: $primary;
-          display: block;
-          height: rem(2px);
-          margin-top: rem(4px);
-          width: rem(56px);
-        }
       }
     }
   }

@@ -44,8 +44,6 @@ const Breadcrumb = ({ activeStep, isDisabled, styleType, steps }) => {
               ) : (
                 step.label
               )}
-
-              <span className="active-underline" />
             </span>
 
             {styleType === STYLE_TYPE_DEFAULT && !isLastStep && (
