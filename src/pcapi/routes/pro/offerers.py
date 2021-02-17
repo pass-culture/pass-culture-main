@@ -85,9 +85,7 @@ def get_offerers():
 @login_required
 @spectree_serialize(response_model=GetOfferersNamesResponseModel)
 def list_offerers_names(query: GetOfferersNamesQueryModel) -> GetOfferersNamesResponseModel:
-    only_validated_offerers = request.args.get("validated", None)
-    if only_validated_offerers is not None:
-        only_validated_offerers = only_validated_offerers.lower() == "true"
+    only_validated_offerers = query.validated
     offerers = get_all(user=current_user, filters={"validated": only_validated_offerers})
 
     return GetOfferersNamesResponseModel(
