@@ -46,7 +46,7 @@ class NativeAppUserResetPasswordEmailDataTest:
             "MJ-TemplateLanguage": True,
             "Vars": {
                 "native_app_link": (
-                    "https://app.passculture-testing.beta.gouv.fr/native/v1/redirect_to_native/mot-de-passe-perdu"
+                    "https://app.passculture-testing.beta.gouv.fr/mot-de-passe-perdu"
                     "?token=abc&expiration_timestamp=1577836800&email=ewing%2Bdemo%40example.com"
                 )
             },
