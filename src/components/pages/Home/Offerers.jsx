@@ -110,9 +110,9 @@ const Offerers = () => {
                       {'Siège social : '}
                     </span>
                     <span className="h-dl-description">
-                      {selectedOfferer.address}
+                      {selectedOfferer.address} 
                       {' '}
-                      {selectedOfferer.postalCode}
+                      {selectedOfferer.postalCode} 
                       {' '}
                       {selectedOfferer.city}
                     </span>
@@ -162,7 +162,7 @@ const Offerers = () => {
                         className="h-card-title-ico"
                         svg="ico-box"
                       />
-                      {venue.name}
+                      {venue.publicName || venue.name}
                     </h3>
                     <Link
                       className="tertiary-button"
