@@ -27,7 +27,7 @@ def retrieve_data_for_reset_password_native_app_email(
             "email": user_email,
         }
     )
-    reset_password_link = f"{settings.API_URL}/native/v1/redirect_to_native/mot-de-passe-perdu?{query_string}"
+    reset_password_link = f"{settings.NATIVE_APP_URL}/native/v1/redirect_to_native/mot-de-passe-perdu?{query_string}"
 
     return {
         "MJ-TemplateID": 1838526,
