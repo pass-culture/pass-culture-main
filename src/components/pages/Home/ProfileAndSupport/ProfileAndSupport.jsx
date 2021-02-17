@@ -23,7 +23,7 @@ export const formatPhoneNumber = phoneNumber => {
   let formatedNumber = phoneNumber
   if (phoneNumber) {
     formatedNumber = phoneNumber.replace(/ /g, '')
-    const r = /(+?[0-9]+)([0-9])([0-9]{8})/g
+    const r = /(\+?[0-9]+)([0-9])([0-9]{8})/g
     const parts = formatedNumber.split(r).slice(1, -1)
 
     let internationalPrefix, areaPrefix, number, isReginalNumber, isInternationalNumber
