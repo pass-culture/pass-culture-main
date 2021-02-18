@@ -257,7 +257,15 @@ class override_features(TestContextDecorator):
             if status != state[name]:
                 self.apply_to_revert[name] = not status
                 Feature.query.filter_by(name=name).update({"isActive": status})
+        # Clear the feature cache on request if any
+        if flask.has_request_context():
+            if hasattr(flask.request, "_cached_features"):
+                flask.request._cached_features = {}
 
     def disable(self):
         for name, status in self.apply_to_revert.items():
             Feature.query.filter_by(name=name).update({"isActive": status})
+        # Clear the feature cache on request if any
+        if flask.has_request_context():
+            if hasattr(flask.request, "_cached_features"):
+                flask.request._cached_features = {}
