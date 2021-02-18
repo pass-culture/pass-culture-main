@@ -24,13 +24,13 @@ const CreateOffer = ({ titleId }) => (
         </p>
         <ul>
           <li>
-            {'Sélectionner un type d’offre'}
+            {'Sélectionnez un type d’offre'}
           </li>
           <li>
-            {'Remplir les informations nécessaires'}
+            {'Remplissez les informations nécessaires'}
           </li>
           <li>
-            {'Ajouter une image'}
+            {'Ajoutez une image'}
           </li>
         </ul>
       </div>

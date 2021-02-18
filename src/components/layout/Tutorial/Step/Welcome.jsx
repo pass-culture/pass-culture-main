@@ -9,11 +9,11 @@ const Welcome = ({ titleId }) => (
     <section className="tutorial-content">
       <div className="tw-description">
         {
-          'Le pass Culture est une politique culturelle publique permettant aux jeunes à partir de 18 ans de bénéficier d’une enveloppe de 500€ utilisable pour réserver vos offres.'
+          'Le pass Culture est une politique culturelle publique permettant aux jeunes âgés de 18 ans de bénéficier d’une enveloppe de 500€ utilisable pour réserver vos offres.'
         }
       </div>
       <div className="tw-strong">
-        {'Et pour ce faire, rien de plus simple !'}
+        {'Pour mettre en avant vos offres, rien de plus simple !'}
       </div>
       <div className="tw-steps">
         <div>
@@ -21,7 +21,7 @@ const Welcome = ({ titleId }) => (
             {'1'}
           </p>
           <p>
-            {'Créer une offre physique ou numérique'}
+            {'Créez un lieu culturel'}
           </p>
         </div>
         <div>
@@ -29,7 +29,7 @@ const Welcome = ({ titleId }) => (
             {'2'}
           </p>
           <p>
-            {"Publier votre offre : elle sera visible sur l'application publique"}
+            {'Créez et publiez vos offres'}
           </p>
         </div>
         <div>
@@ -37,7 +37,7 @@ const Welcome = ({ titleId }) => (
             {'3'}
           </p>
           <p>
-            {'Suivre et gérer vos réservations'}
+            {'Suivez et gérez vos réservations'}
           </p>
         </div>
         <div>
@@ -45,7 +45,9 @@ const Welcome = ({ titleId }) => (
             {'4'}
           </p>
           <p>
-            {'Renseigner vos coordonnées bancaires'}
+            {
+              'Renseignez vos coordonnées bancaires pour percevoir les remboursements de vos offres éligibles'
+            }
           </p>
         </div>
       </div>

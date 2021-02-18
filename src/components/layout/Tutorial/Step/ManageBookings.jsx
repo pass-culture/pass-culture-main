@@ -16,10 +16,10 @@ const ManageBookings = ({ titleId }) => (
     </h1>
     <section className="mb-content">
       <span className="first-column">
-        {'Valider vos contremarques'}
+        {'Validez vos contremarques'}
       </span>
       <span className="third-column">
-        {'Accéder à la liste de vos réservations et les adresses mails des utilisateurs'}
+        {'Accédez à la liste de vos réservations et les adresses mails des utilisateurs'}
       </span>
       <DownArrow className="first-column" />
       <DownArrow className="third-column" />
@@ -44,10 +44,10 @@ const ManageBookings = ({ titleId }) => (
       <UpArrow className="second-column" />
       <UpArrow className="fourth-column" />
       <span className="second-column">
-        {'Créer, éditer, désactiver et gérer vos offres'}
+        {'Créez, éditez, désactivez et gérez vos offres'}
       </span>
       <span className="fourth-column">
-        {'Télécharger les remboursements du pass Culture'}
+        {'Téléchargez les remboursements du pass Culture'}
       </span>
     </section>
   </>
