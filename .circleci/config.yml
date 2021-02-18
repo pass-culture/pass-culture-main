@@ -68,7 +68,7 @@ commands:
         type: string
       build_dir:
         type: string
-      build_command:
+      yarn_build_subcommand:
         type: string
     steps:
       - run:
@@ -79,7 +79,7 @@ commands:
           name: Build frontend app
           command: |
             set -a; source ../config/run_envs/<< parameters.node_env >>;
-            yarn << parameters.build_command >>
+            yarn << parameters.yarn_build_subcommand >>
           working_directory: << parameters.build_dir >>
 
   push-to-bucket:
@@ -407,7 +407,7 @@ jobs:
       - build-frontend-app:
           node_env: ${CIRCLE_BRANCH}
           build_dir: ./pro
-          build_command: "build:${CIRCLE_BRANCH}"
+          yarn_build_subcommand: "build:${CIRCLE_BRANCH}"
       - push-to-bucket:
           build_path: ./pro/build/
           bucket_name: ${GCP_PROJECT}-${CIRCLE_BRANCH}-pro
@@ -461,7 +461,7 @@ jobs:
       - build-frontend-app:
           node_env: ${CIRCLE_BRANCH}
           build_dir: ./webapp
-          build_command: "build"
+          yarn_build_subcommand: "build"
       - push-to-bucket:
           build_path: ./webapp/build/
           bucket_name: ${GCP_PROJECT}-${CIRCLE_BRANCH}-webapp
