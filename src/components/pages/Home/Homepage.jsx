@@ -3,7 +3,7 @@ import React from 'react'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 
 import Breadcrumb, { STEP_ID_OFFERERS } from './HomepageBreadcrumb'
-import Offerers from './Offerers'
+import Offerers from './Offerers/Offerers'
 import ProfileAndSupportContainer from './ProfileAndSupport/ProfileAndSupportContainer'
 import Usages from './Usages'
 

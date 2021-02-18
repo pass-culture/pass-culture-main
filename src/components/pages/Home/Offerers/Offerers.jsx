@@ -8,7 +8,7 @@ import Spinner from 'components/layout/Spinner'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL } from 'utils/config'
 
-import { steps, STEP_ID_OFFERERS } from './HomepageBreadcrumb'
+import { steps, STEP_ID_OFFERERS } from '../HomepageBreadcrumb'
 
 const Offerers = () => {
   const [offererOptions, setOffererOptions] = useState([])
