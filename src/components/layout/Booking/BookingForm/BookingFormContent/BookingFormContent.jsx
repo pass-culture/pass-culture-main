@@ -77,10 +77,10 @@ class BookingFormContent extends PureComponent {
     if (bookableTimes.length === 0) return null
 
     const cancellation_limit_date = moment(bookableTimes[0].cancellationLimitDate)
-    const now = moment().format('YYYY-MM-DD')
+    const now = moment()
     let sentence = ''
 
-    if (cancellation_limit_date.format('YYYY-MM-DD') === now) {
+    if (cancellation_limit_date.diff(now) < 0) {
       sentence = 'Cette réservation n’est pas annulable'
     } else if (bookableTimes && hasBookableTimes && isEvent) {
       sentence = `Réservation annulable jusqu’au ${cancellation_limit_date.format(

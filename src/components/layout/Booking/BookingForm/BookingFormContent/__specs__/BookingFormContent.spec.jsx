@@ -93,18 +93,18 @@ describe('bookingFormContent', () => {
 
     it('should display a notice regarding the cancellation period', () => {
       // given
-      const inFiveDays = moment().add(5, 'days')
-      const now = moment().add(2, 'days')
+      const inTwoDays = moment().add(2, 'days')
+      const inTwoDaysLessFortySevenHours = inTwoDays.subtract(47, 'hours')
       props.isEvent = true
       props.values = {
         bookables: [
           {
-            beginningDatetime: inFiveDays,
-            cancellationLimitDate: now.format('YYYY-MM-DDTHH:mm:ss.00Z'),
+            beginningDatetime: inTwoDays,
+            cancellationLimitDate: inTwoDaysLessFortySevenHours.format('YYYY-MM-DDTHH:mm:ss.00Z'),
             id: 'AE',
           },
         ],
-        date: inFiveDays,
+        date: inTwoDays,
       }
 
       // when
@@ -113,7 +113,9 @@ describe('bookingFormContent', () => {
       // then
       expect(
         wrapper.find({
-          children: `Réservation annulable jusqu’au ${now.format('DD/MM/YYYY H:mm')}`,
+          children: `Réservation annulable jusqu’au ${inTwoDaysLessFortySevenHours.format(
+            'DD/MM/YYYY H:mm'
+          )}`,
         })
       ).toHaveLength(1)
     })
@@ -121,13 +123,15 @@ describe('bookingFormContent', () => {
     it('should display a notice when the user cant cancel the booking', () => {
       // given
       const inTwoDays = moment().add(2, 'days')
-      const now = moment().format('YYYY-MM-DDTHH:mm:ss.00Z')
+      const inTwoDaysLessFortyNineHours = inTwoDays
+        .subtract(49, 'hours')
+        .format('YYYY-MM-DDTHH:mm:ss.00Z')
       props.isEvent = true
       props.values = {
         bookables: [
           {
             beginningDatetime: inTwoDays,
-            cancellationLimitDate: now,
+            cancellationLimitDate: inTwoDaysLessFortyNineHours,
             id: 'AE',
           },
         ],
