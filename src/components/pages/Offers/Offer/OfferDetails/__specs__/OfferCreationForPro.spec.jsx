@@ -57,7 +57,9 @@ describe('offerDetails - Creation - pro user', () => {
   let venues
 
   beforeEach(() => {
-    store = configureTestStore({ data: { users: [{ publicName: 'François', isAdmin: false }] } })
+    store = configureTestStore({
+      data: { users: [{ publicName: 'François', isAdmin: false, email: 'francois@example.com' }] },
+    })
     props = {
       setShowThumbnailForm: jest.fn(),
     }
@@ -138,6 +140,7 @@ describe('offerDetails - Creation - pro user', () => {
         managingOffererId: offerer1Id,
         name: 'Le lieu',
         offererName: 'La structure',
+        bookingEmail: 'lieu@example.com',
       },
       {
         id: 'ABC',
@@ -145,6 +148,7 @@ describe('offerDetails - Creation - pro user', () => {
         managingOffererId: offerer2Id,
         name: "L'autre lieu",
         offererName: "L'autre structure",
+        bookingEmail: 'autre-lieu@example.com',
       },
       {
         id: 'ABCD',
@@ -316,6 +320,30 @@ describe('offerDetails - Creation - pro user', () => {
           ).not.toBeInTheDocument()
           expect(screen.queryByRole('link', { name: '+ Ajouter un lieu' })).not.toBeInTheDocument()
         })
+
+        it("should pre-fill booking notification email field with user's email", async () => {
+          // Given
+          venues = [
+            {
+              id: 'ABD',
+              isVirtual: true,
+              managingOffererId: 'AD',
+              name: 'Un lieu (Offre Numérique)',
+              offererName: 'Une autre structure',
+            },
+          ]
+          pcapi.getVenuesForOfferer.mockResolvedValue(venues)
+          await renderOffers(props, store)
+          await setOfferValues({ type: 'ThingType.CINEMA_CARD' })
+
+          // When
+          await setOfferValues({ receiveNotificationEmails: true })
+
+          // Then
+          expect(screen.getByLabelText('Email auquel envoyer les notifications :').value).toBe(
+            'francois@example.com'
+          )
+        })
       })
 
       describe('when selecting physical or digital type', () => {
@@ -328,20 +356,6 @@ describe('offerDetails - Creation - pro user', () => {
               managingOffererId: 'AA',
               name: 'Le lieu (Offre Numérique)',
               offererName: 'Une structure',
-            },
-            {
-              id: 'ABC',
-              isVirtual: true,
-              managingOffererId: 'AA',
-              name: 'Un lieu (Offre Numérique)',
-              offererName: 'Une structure',
-            },
-            {
-              id: 'ABD',
-              isVirtual: true,
-              managingOffererId: 'AD',
-              name: 'Un lieu (Offre Numérique)',
-              offererName: 'Une autre structure',
             },
           ]
           pcapi.getVenuesForOfferer.mockResolvedValue(venues)
@@ -1191,6 +1205,23 @@ describe('offerDetails - Creation - pro user', () => {
           )
           expect(withdrawalModalitiesReminder).not.toBeInTheDocument()
         })
+
+        it("should pre-fill booking notification email field with user's email when offer type is offline", async () => {
+          // Given
+          await renderOffers(props, store)
+          await setOfferValues({ type: 'ThingType.LIVRE_EDITION' })
+          await setOfferValues({ receiveNotificationEmails: true })
+
+          // When
+          await act(async () => {
+            await setOfferValues({ venueId: venues[2].id })
+          })
+
+          // Then
+          expect(screen.getByLabelText('Email auquel envoyer les notifications :').value).toBe(
+            'francois@example.com'
+          )
+        })
       })
 
       describe('when offer type is event type', () => {
@@ -1250,6 +1281,23 @@ describe('offerDetails - Creation - pro user', () => {
             "La livraison d'article n'est pas autorisée. Pour plus d'informations, veuillez consulter nos CGU."
           )
           expect(withdrawalModalitiesReminder).toBeInTheDocument()
+        })
+
+        it("should pre-fill booking notification email field with venue's email", async () => {
+          // Given
+          await renderOffers(props, store)
+          await setOfferValues({ type: 'ThingType.LIVRE_EDITION' })
+          await setOfferValues({ receiveNotificationEmails: true })
+
+          // When
+          await act(async () => {
+            await setOfferValues({ venueId: venues[0].id })
+          })
+
+          // Then
+          expect(screen.getByLabelText('Email auquel envoyer les notifications :').value).toBe(
+            'lieu@example.com'
+          )
         })
       })
 
@@ -1476,7 +1524,8 @@ describe('offerDetails - Creation - pro user', () => {
       await setOfferValues({ receiveNotificationEmails: true })
 
       // When
-      userEvent.click(screen.getByText('Enregistrer et passer aux stocks'))
+      await setOfferValues({ bookingEmail: '' })
+      fireEvent.click(screen.getByText('Enregistrer et passer aux stocks'))
 
       // Then
       const bookingEmailInput = await findInputErrorForField('bookingEmail')

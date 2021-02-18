@@ -10,6 +10,7 @@ const OfferCreation = ({
   initialValues,
   isLoading,
   isUserAdmin,
+  userEmail,
   onSubmit,
   showErrorNotification,
   setIsLoading,
@@ -102,6 +103,7 @@ const OfferCreation = ({
       showErrorNotification={showErrorNotification}
       submitErrors={submitErrors}
       types={types.current}
+      userEmail={userEmail}
       venues={displayedVenues}
     />
   )
@@ -124,6 +126,7 @@ OfferCreation.propTypes = {
   setShowThumbnailForm: PropTypes.func.isRequired,
   showErrorNotification: PropTypes.func.isRequired,
   submitErrors: PropTypes.shape().isRequired,
+  userEmail: PropTypes.string.isRequired,
 }
 
 export default OfferCreation

@@ -74,6 +74,7 @@ const OfferForm = ({
   showErrorNotification,
   submitErrors,
   types,
+  userEmail,
   venues,
 }) => {
   const [offerType, setOfferType] = useState(null)
@@ -203,6 +204,19 @@ const OfferForm = ({
       setShowThumbnailForm(formValues.type !== DEFAULT_FORM_VALUES.type)
     },
     [formValues.type, setShowThumbnailForm]
+  )
+  useEffect(
+    function setBookingEmail() {
+      if (!isEdition) {
+        if (offerType?.onlineOnly) {
+          handleFormUpdate({ bookingEmail: userEmail })
+        } else {
+          venue &&
+            handleFormUpdate({ bookingEmail: venue.isVirtual ? userEmail : venue.bookingEmail })
+        }
+      }
+    },
+    [venue, offerType, handleFormUpdate, userEmail, isEdition]
   )
 
   const selectOfferer = useCallback(
@@ -822,6 +836,7 @@ OfferForm.propTypes = {
   showErrorNotification: PropTypes.func.isRequired,
   submitErrors: PropTypes.shape().isRequired,
   types: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  userEmail: PropTypes.string.isRequired,
   venues: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 }
 

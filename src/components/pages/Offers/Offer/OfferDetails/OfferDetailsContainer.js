@@ -3,12 +3,13 @@ import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
 import { showNotificationV2 } from 'store/reducers/notificationReducer'
-import { selectIsUserAdmin } from 'store/selectors/data/usersSelectors'
+import { selectCurrentUser, selectIsUserAdmin } from 'store/selectors/data/usersSelectors'
 
 import OfferDetails from './OfferDetails'
 
 const mapStateToProps = state => ({
   isUserAdmin: selectIsUserAdmin(state),
+  userEmail: selectCurrentUser(state).email,
 })
 
 const mapDispatchToProps = dispatch => ({
