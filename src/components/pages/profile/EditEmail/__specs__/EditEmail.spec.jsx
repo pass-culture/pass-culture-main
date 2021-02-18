@@ -1,6 +1,6 @@
-import { mount } from 'enzyme'
 import React from 'react'
-import MemoryRouter from 'react-router/modules/MemoryRouter'
+import { mount } from 'enzyme'
+import { MemoryRouter } from 'react-router'
 import EditEmail from '../EditEmail'
 import { act } from 'react-dom/test-utils'
 
