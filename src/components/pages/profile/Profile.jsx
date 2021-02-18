@@ -17,6 +17,10 @@ const Profile = ({ history, match, user }) => {
   const { email, departementCode } = user
   const department = getDepartment(departementCode)
 
+  let getRedirectToPersonnalInformationPage = function () {
+    return () => history.push(`${match.path}/informations`)
+  }
+
   return (
     <Switch>
       <Route
@@ -35,13 +39,7 @@ const Profile = ({ history, match, user }) => {
         exact
         path={`${match.path}/email`}
       >
-        <EditEmail
-          handleSubmit={handleEditPasswordSubmit}
-          historyPush={history.push}
-          pathToProfile={match.path}
-          triggerSuccessSnackbar={toast.success}
-          user={user}
-        />
+        <EditEmail redirectToPersonnalInformationPage={getRedirectToPersonnalInformationPage()} />
       </Route>
       <Route
         exact
