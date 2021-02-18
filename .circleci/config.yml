@@ -650,7 +650,6 @@ workflows:
             branches:
               only:
                 - production
-                - staging
                 - integration
       - deploy-pro:
           requires:
