@@ -24,6 +24,15 @@
     height: 100%;
     width: 100%;
   }
+
+  .of-error-message {
+    color: #b60025;
+    display: flex;
+    font-size: rem(12px);
+    justify-content: center;
+    margin: rem(16px) rem(31px);
+    text-align: left;
+  }
 }
 
 .of-image {
@@ -61,4 +70,9 @@
   &:focus::before {
     opacity: 1;
   }
+}
+
+.of-error-upload-image {
+  border: solid 2px #e60039;
+  border-radius: rem(4px);
 }
