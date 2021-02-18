@@ -2,9 +2,9 @@
 
 APP_URL="$1"
 if [[ "$APP_URL" == *"backend"* ]];then
-    deployed_version=$(curl -s "$APP_URL/health/api")
+    deployed_version=$(curl -Ls "$APP_URL/health/api")
 else
-    deployed_version=v$(curl -s "$APP_URL/version.txt")
+    deployed_version=v$(curl -Ls "$APP_URL/version.txt")
 fi
 
 version_to_deploy=$(git describe --contains)
