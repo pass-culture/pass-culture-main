@@ -26,12 +26,20 @@
   }
 
   .of-error-message {
-    color: #b60025;
+    @include highlight;
+
+    color: $primary-dark;
     display: flex;
-    font-size: rem(12px);
     justify-content: center;
     margin: rem(16px) rem(31px);
+    position: absolute;
     text-align: left;
+    top: 60%;
+    z-index: 1;
+
+    svg {
+      margin-right: rem(5px);
+    }
   }
 }
 

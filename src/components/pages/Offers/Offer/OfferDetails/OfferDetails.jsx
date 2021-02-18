@@ -29,6 +29,7 @@ const OfferDetails = ({
   const [showThumbnailForm, setShowThumbnailForm] = useState(offer !== null)
   const [isLoading, setIsLoading] = useState(true)
   const [thumbnailInfo, setThumbnailInfo] = useState({})
+  const [thumbnailError, setThumbnailError] = useState(false)
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search)
@@ -90,6 +91,9 @@ const OfferDetails = ({
         }
       } catch (error) {
         if (error && 'errors' in error) {
+          if (error.errors.errors) {
+            setThumbnailError(true)
+          }
           const mapApiErrorsToFormErrors = {
             venue: 'venueId',
           }
@@ -164,10 +168,14 @@ const OfferDetails = ({
               {offer?.thumbUrl ? (
                 <OfferThumbnail
                   setThumbnailInfo={setThumbnailInfo}
+                  thumbnailError={thumbnailError}
                   url={offer.thumbUrl}
                 />
               ) : (
-                <OfferThumbnailPlaceholder setThumbnailInfo={setThumbnailInfo} />
+                <OfferThumbnailPlaceholder
+                  setThumbnailInfo={setThumbnailInfo}
+                  thumbnailError={thumbnailError}
+                />
               )}
               <OfferPreview
                 formValues={formValues}
