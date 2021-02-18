@@ -61,9 +61,12 @@ describe('thumbnail edition', () => {
           })
         ).toBeInTheDocument()
         expect(
-          screen.getByText('La taille de l’image doit être supérieure à 400 x 400px', {
-            selector: 'li',
-          })
+          screen.getByText(
+            'La taille de l’image doit être au format 6/9, avec une largeur minimale de 400px',
+            {
+              selector: 'li',
+            }
+          )
         ).toBeInTheDocument()
       })
 
@@ -80,7 +83,7 @@ describe('thumbnail edition', () => {
             'Pour maximiser vos chances de réservations, choisissez avec soin l’image qui accompagne votre offre. Les ressources suivantes sont à votre disposition :'
           )
         ).toBeInTheDocument()
-        expect(screen.getByText('Banque d’images libre de droits')).toBeInTheDocument()
+        expect(screen.getByText('Banques d’images libres de droits')).toBeInTheDocument()
         const pexelsLink = screen.getByRole('link', { name: 'Pexels (nouvel onglet)' })
         expect(pexelsLink).toHaveAttribute('href', 'https://www.pexels.com/fr-fr/')
         expect(pexelsLink).toHaveAttribute('rel', 'noopener noreferrer')
@@ -126,9 +129,12 @@ describe('thumbnail edition', () => {
               })
             ).not.toBeInTheDocument()
             expect(
-              screen.queryByText('La taille de l’image doit être supérieure à 400 x 400px', {
-                selector: 'strong',
-              })
+              screen.queryByText(
+                'La taille de l’image doit être au format 6/9, avec une largeur minimale de 400px',
+                {
+                  selector: 'strong',
+                }
+              )
             ).not.toBeInTheDocument()
           })
         })
@@ -206,9 +212,12 @@ describe('thumbnail edition', () => {
 
           // Then
           expect(
-            await screen.findByText('La taille de l’image doit être supérieure à 400 x 400px', {
-              selector: 'strong',
-            })
+            await screen.findByText(
+              'La taille de l’image doit être au format 6/9, avec une largeur minimale de 400px',
+              {
+                selector: 'strong',
+              }
+            )
           ).toBeInTheDocument()
         })
 
@@ -224,9 +233,12 @@ describe('thumbnail edition', () => {
 
           // Then
           expect(
-            await screen.findByText('La taille de l’image doit être supérieure à 400 x 400px', {
-              selector: 'strong',
-            })
+            await screen.findByText(
+              'La taille de l’image doit être au format 6/9, avec une largeur minimale de 400px',
+              {
+                selector: 'strong',
+              }
+            )
           ).toBeInTheDocument()
         })
       })

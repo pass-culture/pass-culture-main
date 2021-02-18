@@ -31,7 +31,7 @@ export const constraints = [
   },
   {
     id: 'dimensions',
-    description: 'La taille de l’image doit être supérieure à 400 x 400px',
+    description: 'La taille de l’image doit être au format 6/9, avec une largeur minimale de 400px',
     validator: isOfPoorQuality,
   },
 ]

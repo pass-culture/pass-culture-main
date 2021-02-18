@@ -33,7 +33,7 @@ const Advices = ({ hidden, setHidden }) => {
           }
         </p>
         <p className="tna-title">
-          {'Banque d’images libre de droits'}
+          {'Banques d’images libres de droits'}
         </p>
         <ul className="tna-links">
           <li>
