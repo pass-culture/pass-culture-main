@@ -95,27 +95,6 @@
         .tertiary-link {
           padding-right: rem(5px);
         }
-
-        .h-actions-list {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-
-          li {
-            border-left: rem(1px) solid $grey-medium;
-            padding-left: rem(8px);
-            padding-right: rem(8px);
-
-            &:first-child {
-              border-left: 0;
-            }
-
-            .ico-bank-warning {
-              height: rem(32px);
-              width: rem(32px);
-            }
-          }
-        }
       }
 
       .h-card-header-block {

@@ -21,6 +21,7 @@ const Offerers = ({ isVenueCreationAvailable }) => {
   const [selectedOfferer, setSelectedOfferer] = useState(null)
   const [offlineVenues, setOfflineVenues] = useState([])
   const [isLoading, setIsLoading] = useState(true)
+  const [isVisible, setIsVisible] = useState(true)
 
   useEffect(function fetchData() {
     pcapi.getAllOfferersNames().then(receivedOffererNames => {
@@ -54,6 +55,11 @@ const Offerers = ({ isVenueCreationAvailable }) => {
     [selectedOfferer, setSelectedOffererId]
   )
 
+  const toggleVisibility = useCallback(
+    () => setIsVisible(currentVisibility => !currentVisibility),
+    []
+  )
+
   const hasMissingBankInformations = useMemo(() => {
     if (!selectedOfferer) return false
     return (
@@ -85,23 +91,29 @@ const Offerers = ({ isVenueCreationAvailable }) => {
               <Select
                 handleSelection={handleChangeOfferer}
                 id={steps[STEP_ID_OFFERERS].hash}
+                label=""
                 name="offererId"
                 options={offererOptions}
                 selectedValue={selectedOfferer.id}
               />
             </div>
             <div className="h-card-actions">
-              <ul className="h-actions-list">
-                {hasMissingBankInformations && (
-                  <li>
+              <button
+                className="tertiary-button"
+                onClick={toggleVisibility}
+                type="button"
+              >
+                <Icon svg="ico-eye-open" />
+                {isVisible ? 'Masquer' : 'Afficher'}
+              </button>
+              {hasMissingBankInformations && (
                     <Icon
                       alt="Informations bancaires manquantes"
                       className="ico-bank-warning"
                       svg="ico-alert-filled"
                     />
-                  </li>
                 )}
-                <li>
+                  <div className="h-separator" />
                   <Link
                     className="tertiary-link"
                     to={`/structures/${selectedOfferer.id}`}
@@ -109,58 +121,58 @@ const Offerers = ({ isVenueCreationAvailable }) => {
                     <Icon svg="ico-outer-pen" />
                     {'Modifier'}
                   </Link>
-                </li>
-              </ul>
             </div>
           </div>
-          <div className="h-card-cols">
-            <div className="h-card-col">
-              <h3 className="h-card-secondary-title">
-                {'Informations pratiques'}
-              </h3>
-              <div className="h-card-content">
-                <ul className="h-description-list">
-                  <li className="h-dl-row">
-                    <span className="h-dl-title">
-                      {'Siren :'}
-                    </span>
-                    <span className="h-dl-description">
-                      {selectedOfferer.siren}
-                    </span>
-                  </li>
+          {isVisible && (
+            <div className="h-card-cols">
+              <div className="h-card-col">
+                <h3 className="h-card-secondary-title">
+                  {'Informations pratiques'}
+                </h3>
+                <div className="h-card-content">
+                  <ul className="h-description-list">
+                    <li className="h-dl-row">
+                      <span className="h-dl-title">
+                        {'Siren :'}
+                      </span>
+                      <span className="h-dl-description">
+                        {selectedOfferer.siren}
+                      </span>
+                    </li>
 
-                  <li className="h-dl-row">
-                    <span className="h-dl-title">
-                      {'Désignation :'}
-                    </span>
-                    <span className="h-dl-description">
-                      {selectedOfferer.name}
-                    </span>
-                  </li>
+                    <li className="h-dl-row">
+                      <span className="h-dl-title">
+                        {'Désignation :'}
+                      </span>
+                      <span className="h-dl-description">
+                        {selectedOfferer.name}
+                      </span>
+                    </li>
 
-                  <li className="h-dl-row">
-                    <span className="h-dl-title">
-                      {'Siège social : '}
-                    </span>
-                    <span className="h-dl-description">
-                      {selectedOfferer.address} 
-                      {' '}
-                      {selectedOfferer.postalCode} 
-                      {' '}
-                      {selectedOfferer.city}
-                    </span>
-                  </li>
-                </ul>
+                    <li className="h-dl-row">
+                      <span className="h-dl-title">
+                        {'Siège social : '}
+                      </span>
+                      <span className="h-dl-description">
+                        {selectedOfferer.address}
+                        {' '}
+                        {selectedOfferer.postalCode}
+                        {' '}
+                        {selectedOfferer.city}
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="h-card-col">
+                <BankInformations
+                  hasMissingBankInformations={hasMissingBankInformations}
+                  offerer={selectedOfferer}
+                />
               </div>
             </div>
-
-            <div className="h-card-col">
-              <BankInformations
-                hasMissingBankInformations={hasMissingBankInformations}
-                offerer={selectedOfferer}
-              />
-            </div>
-          </div>
+          )}
         </div>
       </div>
 
