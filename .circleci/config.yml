@@ -53,7 +53,7 @@ commands:
           # TODO : Remove once env variables are cleaned in every app
           export NODE_ENV=<< parameters.node_env >>
 
-          yarn build
+          yarn build:testing
 
   push-to-bucket:
     description: Push the built webapp to a cloudstorage bucket
