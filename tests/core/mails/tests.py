@@ -148,7 +148,6 @@ class MailjetBackendTest:
         assert response.status_code == 200
         assert posted.last_request.json() == {"Email": "contact@example.com"}
 
-    @override_settings(EMAIL_BACKEND="pcapi.core.mails.backends.mailjet.MailjetBackend")
     def test_update_contact(self):
         backend = self._get_backend()
         dt = datetime.date(2000, 1, 1)
@@ -164,7 +163,6 @@ class MailjetBackendTest:
             ],
         }
 
-    @override_settings(EMAIL_BACKEND="pcapi.core.mails.backends.mailjet.MailjetBackend")
     def test_add_contact_to_list(self):
         backend = self._get_backend()
         with requests_mock.Mocker() as mock:
@@ -254,7 +252,6 @@ class ToDevMailjetBackendTest:
             ],
         }
 
-    @override_settings(EMAIL_BACKEND="pcapi.core.mails.backends.mailjet.MailjetBackend")
     def test_add_contact_to_list(self):
         backend = self._get_backend()
         with requests_mock.Mocker() as mock:
