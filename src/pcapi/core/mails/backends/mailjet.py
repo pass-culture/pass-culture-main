@@ -11,6 +11,19 @@ from ..models import MailResult
 from .base import BaseBackend
 
 
+def monkey_patch_mailjet_requests():
+    # We want the `mailjet_rest` library to use our wrapper around
+    # `requests` to have automatic logging.
+    import mailjet_rest.client  # pylint: disable=redefined-outer-name
+
+    import pcapi.utils.requests
+
+    mailjet_rest.client.requests = pcapi.utils.requests
+
+
+monkey_patch_mailjet_requests()
+
+
 def _add_template_debugging(message_data: dict) -> None:
     message_data["TemplateErrorReporting"] = {
         "Email": settings.DEV_EMAIL_ADDRESS,

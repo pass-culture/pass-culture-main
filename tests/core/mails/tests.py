@@ -1,5 +1,6 @@
 import copy
 import datetime
+from unittest.mock import patch
 
 import pytest
 import requests.exceptions
@@ -175,6 +176,16 @@ class MailjetBackendTest:
             "ContactAlt": "contact@example.com",
             "ListID": "12345",
         }
+
+    @patch("pcapi.utils.requests.json_logger.info")
+    def test_use_our_requests_wrapper_that_logs(self, mocked_logger):
+        backend = self._get_backend()
+        with requests_mock.Mocker() as mock:
+            posted = mock.post("https://api.eu.mailjet.com/v3/send")
+            backend.send_mail(recipients=self.recipients, data=self.data)
+
+        assert posted.last_request.json() == self.expected_sent_data
+        mocked_logger.assert_called_once()
 
 
 class ToDevMailjetBackendTest:
