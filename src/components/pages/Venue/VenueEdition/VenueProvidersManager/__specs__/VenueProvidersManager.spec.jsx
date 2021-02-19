@@ -1,9 +1,10 @@
-import { mount } from 'enzyme'
+import { mount, shallow } from 'enzyme'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
-import { getStubStore } from '../../../../../../utils/stubStore'
+import { configureTestStore } from 'store/testUtils'
+
 import AllocineProviderFormContainer from '../AllocineProviderForm/AllocineProviderFormContainer'
 import StocksProviderForm from '../StocksProviderForm/StocksProviderForm'
 import VenueProviderItem from '../VenueProviderItem/VenueProviderItem'
@@ -36,9 +37,7 @@ describe('src | VenueProvidersManager', () => {
       venueProviders: [],
       venueSiret: '12345678901234',
     }
-    store = getStubStore({
-      data: (state = {}) => state,
-    })
+    store = configureTestStore()
   })
 
   it('should initialize VenueProvidersManager component with default state', () => {
@@ -144,12 +143,7 @@ describe('src | VenueProvidersManager', () => {
       it('is not possible to select another venue provider', () => {
         // given
         props.venueProviders = []
-        const store = getStubStore({})
-        const wrapper = mount(
-          <Provider store={store}>
-            <VenueProvidersManager {...props} />
-          </Provider>
-        )
+        const wrapper = shallow(<VenueProvidersManager {...props} />)
         wrapper.setState({ isCreationMode: true })
 
         // when
