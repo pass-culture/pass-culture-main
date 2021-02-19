@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import { UNAVAILABLE_ERROR_PAGE } from '../../../../../utils/routes'
+import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
 import VenueItem from './VenueItem/VenueItem'
 

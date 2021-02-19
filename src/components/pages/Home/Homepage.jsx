@@ -3,7 +3,7 @@ import React from 'react'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 
 import Breadcrumb, { STEP_ID_OFFERERS } from './HomepageBreadcrumb'
-import Offerers from './Offerers/Offerers'
+import OfferersContainer from './Offerers/OfferersContainer'
 import ProfileAndSupportContainer from './ProfileAndSupport/ProfileAndSupportContainer'
 import Usages from './Usages'
 
@@ -20,7 +20,7 @@ const Homepage = () => {
       <Breadcrumb activeStep={activeStep} />
 
       <section className="h-section">
-        <Offerers />
+        <OfferersContainer />
       </section>
 
       <section className="h-section">

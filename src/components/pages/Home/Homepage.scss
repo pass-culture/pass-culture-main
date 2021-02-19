@@ -245,6 +245,26 @@
     }
   }
 
+  .venue-banner {
+    .h-card-content {
+      text-align: center;
+
+      .actions-container {
+        display: flex;
+        justify-content: center;
+        margin-top: rem(24px);
+
+        a {
+          margin-left: rem(16px);
+
+          &:first-child {
+            margin-left: 0;
+          }
+        }
+      }
+    }
+  }
+
   .h-venue-list {
     margin-top: rem(16px);
 

@@ -17,7 +17,6 @@ jest.mock('utils/config', () => ({
 jest.mock('repository/pcapi/pcapi', () => ({
   getOfferer: jest.fn(),
   getAllOfferersNames: jest.fn(),
-  getVenuesForOfferer: jest.fn(),
 }))
 
 const renderHomePage = async () => {
@@ -48,7 +47,6 @@ const renderHomePage = async () => {
 describe('homepage : Tabs : Offerers', () => {
   let baseOfferers
   let baseOfferersNames
-  let baseVenues
 
   beforeEach(() => {
     baseOfferers = [
@@ -61,6 +59,35 @@ describe('homepage : Tabs : Offerers', () => {
         siren: '111111111',
         bic: 'test bic 01',
         iban: 'test iban 01',
+        managedVenues: [
+          {
+            id: 'test_venue_id_1',
+            isVirtual: true,
+            managingOffererId: 'GE',
+            name: 'Le Sous-sol (Offre numérique)',
+            offererName: 'Bar des amis',
+            publicName: null,
+            nOffers: 2,
+          },
+          {
+            id: 'test_venue_id_2',
+            isVirtual: false,
+            managingOffererId: 'GE',
+            name: 'Le Sous-sol (Offre physique)',
+            offererName: 'Bar des amis',
+            publicName: null,
+            nOffers: 2,
+          },
+          {
+            id: 'test_venue_id_3',
+            isVirtual: false,
+            managingOffererId: 'GE',
+            name: 'Le deuxième Sous-sol (Offre physique)',
+            offererName: 'Bar des amis',
+            publicName: 'Le deuxième Sous-sol',
+            nOffers: 2,
+          },
+        ],
       },
       {
         address: 'RUE DE NIEUPORT',
@@ -71,48 +98,21 @@ describe('homepage : Tabs : Offerers', () => {
         siren: '222222222',
         bic: 'test bic 02',
         iban: 'test iban 02',
+        managedVenues: [],
       },
     ]
     baseOfferersNames = baseOfferers.map(offerer => ({
       id: offerer.id,
       name: offerer.name,
     }))
-    baseVenues = [
-      {
-        id: 'test_venue_id_1',
-        isVirtual: true,
-        managingOffererId: baseOfferers[0].id,
-        name: 'Le Sous-sol (Offre numérique)',
-        offererName: 'Bar des amis',
-        publicName: null,
-      },
-      {
-        id: 'test_venue_id_2',
-        isVirtual: false,
-        managingOffererId: baseOfferers[0].id,
-        name: 'Le Sous-sol (Offre physique)',
-        offererName: 'Bar des amis',
-        publicName: null,
-      },
-      {
-        id: 'test_venue_id_2',
-        isVirtual: false,
-        managingOffererId: baseOfferers[0].id,
-        name: 'Le deuxième Sous-sol (Offre physique)',
-        offererName: 'Bar des amis',
-        publicName: 'Le deuxième Sous-sol',
-      },
-    ]
 
     pcapi.getOfferer.mockResolvedValue(baseOfferers[0])
     pcapi.getAllOfferersNames.mockResolvedValue(baseOfferersNames)
-    pcapi.getVenuesForOfferer.mockResolvedValue(baseVenues)
   })
 
   afterEach(() => {
     pcapi.getOfferer.mockClear()
     pcapi.getAllOfferersNames.mockClear()
-    pcapi.getVenuesForOfferer.mockClear()
   })
 
   describe('render', () => {
@@ -169,54 +169,59 @@ describe('homepage : Tabs : Offerers', () => {
     })
 
     it('should display offerer venues informations', async () => {
+      const selectedOfferer = baseOfferers[0]
       const virtualVenueTitle = await screen.findByText('Lieu numérique')
       expect(virtualVenueTitle).toBeInTheDocument()
 
-      const offlineVenueTitle = await screen.findByText(baseVenues[1].name)
+      const offlineVenueTitle = await screen.findByText(selectedOfferer.managedVenues[1].name)
       expect(offlineVenueTitle).toBeInTheDocument()
       const offlineVenueContainer = offlineVenueTitle.closest('div')
       expect(
         within(offlineVenueContainer).getByText('Modifier', { exact: false })
       ).toBeInTheDocument()
 
-      const secondOfflineVenueTitle = await screen.findByText(baseVenues[2].publicName)
+      const secondOfflineVenueTitle = await screen.findByText(
+        selectedOfferer.managedVenues[2].publicName
+      )
       expect(secondOfflineVenueTitle).toBeInTheDocument()
     })
 
     describe('when selected offerer change', () => {
       let newSelectedOfferer
-      let newSelectedOffererVenues
       beforeEach(async () => {
         const selectedOffer = baseOfferers[0]
-        newSelectedOfferer = baseOfferers[1]
-        newSelectedOffererVenues = [
-          {
-            id: 'test_venue_id_3',
-            isVirtual: true,
-            managingOffererId: newSelectedOfferer.id,
-            name: 'New venue (Offre numérique)',
-            offererName: newSelectedOfferer.name,
-            publicName: null,
-          },
-          {
-            id: 'test_venue_id_4',
-            isVirtual: false,
-            managingOffererId: newSelectedOfferer.id,
-            name: 'New venue (Offre physique)',
-            offererName: newSelectedOfferer.name,
-            publicName: null,
-          },
-          {
-            id: 'test_venue_id_5',
-            isVirtual: false,
-            managingOffererId: newSelectedOfferer.id,
-            name: 'Second new venue (Offre physique)',
-            offererName: newSelectedOfferer.name,
-            publicName: 'Second new venue public name',
-          },
-        ]
-        pcapi.getVenuesForOfferer.mockResolvedValue(newSelectedOffererVenues)
-
+        newSelectedOfferer = {
+          ...baseOfferers[1],
+          managedVenues: [
+            {
+              id: 'test_venue_id_3',
+              isVirtual: true,
+              managingOffererId: baseOfferers[1].id,
+              name: 'New venue (Offre numérique)',
+              offererName: baseOfferers[1].name,
+              publicName: null,
+              nOffers: 2,
+            },
+            {
+              id: 'test_venue_id_4',
+              isVirtual: false,
+              managingOffererId: baseOfferers[1].id,
+              name: 'New venue (Offre physique)',
+              offererName: baseOfferers[1].name,
+              publicName: null,
+              nOffers: 2,
+            },
+            {
+              id: 'test_venue_id_5',
+              isVirtual: false,
+              managingOffererId: baseOfferers[1].id,
+              name: 'Second new venue (Offre physique)',
+              offererName: baseOfferers[1].name,
+              publicName: 'Second new venue public name',
+              nOffers: 2,
+            },
+          ],
+        }
         pcapi.getOfferer.mockResolvedValue(newSelectedOfferer)
         await act(async () => {
           await fireEvent.change(screen.getByDisplayValue(selectedOffer.name), {
@@ -244,7 +249,7 @@ describe('homepage : Tabs : Offerers', () => {
         const virtualVenueTitle = await screen.findByText('Lieu numérique')
         expect(virtualVenueTitle).toBeInTheDocument()
 
-        const offlineVenueTitle = await screen.findByText(newSelectedOffererVenues[1].name)
+        const offlineVenueTitle = await screen.findByText(newSelectedOfferer.managedVenues[1].name)
         expect(offlineVenueTitle).toBeInTheDocument()
         const offlineVenueContainer = offlineVenueTitle.closest('div')
         expect(
@@ -252,12 +257,47 @@ describe('homepage : Tabs : Offerers', () => {
         ).toBeInTheDocument()
 
         const secondOfflineVenueTitle = await screen.findByText(
-          newSelectedOffererVenues[2].publicName
+          newSelectedOfferer.managedVenues[2].publicName
         )
         expect(secondOfflineVenueTitle).toBeInTheDocument()
       })
     })
   })
+
+  describe("when offerer doesn't have neither physical venue nor virtual offers", () => {
+    it('should display add information link', async () => {
+      baseOfferers = [
+        {
+          ...baseOfferers[0],
+          managedVenues: [
+            {
+              id: 'test_venue_id_1',
+              isVirtual: true,
+              managingOffererId: 'GE',
+              name: 'Le Sous-sol (Offre numérique)',
+              offererName: 'Bar des amis',
+              publicName: null,
+              nOffers: 0,
+            },
+          ],
+        },
+      ]
+      pcapi.getOfferer.mockResolvedValue(baseOfferers[0])
+      await renderHomePage()
+
+      expect(
+        await screen.findByRole('link', {
+          name: 'Créer un lieu',
+        })
+      ).toBeInTheDocument()
+      expect(
+        await screen.findByRole('link', {
+          name: 'Créer une offre numérique',
+        })
+      ).toBeInTheDocument()
+    })
+  })
+
   describe("when offerer doesn't have bank informations", () => {
     it('should display add information link', async () => {
       baseOfferers = [

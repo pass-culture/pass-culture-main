@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import PropTypes from 'prop-types'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import Banner from 'components/layout/Banner/Banner'
@@ -7,10 +8,11 @@ import Select, { buildSelectOptions } from 'components/layout/inputs/Select'
 import Spinner from 'components/layout/Spinner'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL } from 'utils/config'
+import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
 import { steps, STEP_ID_OFFERERS } from '../HomepageBreadcrumb'
 
-const Offerers = () => {
+const Offerers = ({ isVenueCreationAvailable }) => {
   const [offererOptions, setOffererOptions] = useState([])
   const [selectedOffererId, setSelectedOffererId] = useState(null)
   const [selectedOfferer, setSelectedOfferer] = useState(null)
@@ -25,19 +27,19 @@ const Offerers = () => {
   }, [])
 
   useEffect(() => {
-    if (selectedOffererId === null) return
+    if (!selectedOffererId) return
     pcapi.getOfferer(selectedOffererId).then(receivedOfferer => {
       setSelectedOfferer(receivedOfferer)
+      setOfflineVenues(receivedOfferer.managedVenues.filter(venue => !venue.isVirtual))
       setIsLoading(false)
     })
   }, [setIsLoading, selectedOffererId, setSelectedOfferer])
 
-  useEffect(() => {
-    if (isLoading) return
-    pcapi.getVenuesForOfferer(selectedOfferer.id).then(venues => {
-      setOfflineVenues(venues.filter(venue => !venue.isVirtual))
-    })
-  }, [isLoading, selectedOfferer])
+  const displayCreateVenueBanner = useMemo(() => {
+    if (!selectedOfferer) return false
+    const virtualVenue = selectedOfferer.managedVenues.find(venue => venue.isVirtual)
+    return !offlineVenues.length && !virtualVenue.nOffers
+  }, [selectedOfferer, offlineVenues])
 
   const handleChangeOfferer = useCallback(
     event => {
@@ -60,6 +62,9 @@ const Offerers = () => {
   }
 
   const hasAccountData = selectedOfferer.iban && selectedOfferer.bic
+  const venueCreationUrl = isVenueCreationAvailable
+    ? `/structures/${selectedOffererId}/lieux/creation`
+    : UNAVAILABLE_ERROR_PAGE
 
   return (
     <>
@@ -115,9 +120,9 @@ const Offerers = () => {
                       {'Siège social : '}
                     </span>
                     <span className="h-dl-description">
-                      {selectedOfferer.address}
+                      {selectedOfferer.address} 
                       {' '}
-                      {selectedOfferer.postalCode}
+                      {selectedOfferer.postalCode} 
                       {' '}
                       {selectedOfferer.city}
                     </span>
@@ -178,52 +183,85 @@ const Offerers = () => {
         </div>
       </div>
 
-      <div className="h-venue-list">
-        <div className="h-section-row nested">
-          <div className="h-card h-card-primary">
-            <div className="h-card-inner">
-              <h3 className="h-card-title">
-                <Icon
-                  className="h-card-title-ico"
-                  svg="ico-screen-play"
-                />
-                {'Lieu numérique'}
-              </h3>
+      {displayCreateVenueBanner ? (
+        <div className="h-card venue-banner">
+          <div className="h-card-inner">
+            <h3 className="h-card-title">
+              {'Lieux'}
+            </h3>
+
+            <div className="h-card-content">
+              <p>
+                {'Avant de créer votre première offre physique vous devez avoir un lieu'}
+              </p>
+              <div className="actions-container">
+                <Link
+                  className="primary-link"
+                  to={venueCreationUrl}
+                >
+                  {'Créer un lieu'}
+                </Link>
+                <Link
+                  className="secondary-link"
+                  to={`/offres/creation?structure=${selectedOfferer.id}`}
+                >
+                  {'Créer une offre numérique'}
+                </Link>
+              </div>
             </div>
           </div>
         </div>
-
-        {offlineVenues &&
-          offlineVenues.map(venue => (
-            <div
-              className="h-section-row nested"
-              key={venue.id}
-            >
-              <div className="h-card h-card-secondary">
-                <div className="h-card-inner">
-                  <div className="h-card-header-row">
-                    <h3 className="h-card-title">
-                      <Icon
-                        className="h-card-title-ico"
-                        svg="ico-box"
-                      />
-                      {venue.publicName || venue.name}
-                    </h3>
-                    <Link
-                      className="tertiary-link"
-                      to={`/structures/${selectedOfferer.id}/lieux/${venue.id}`}
-                    >
-                      <Icon svg="ico-outer-pen" />
-                      {'Modifier'}
-                    </Link>
+      ) : (
+        <div className="h-venue-list">
+          <div className="h-section-row nested">
+            <div className="h-card h-card-primary">
+              <div className="h-card-inner">
+                <h3 className="h-card-title">
+                  <Icon
+                    className="h-card-title-ico"
+                    svg="ico-screen-play"
+                  />
+                  {'Lieu numérique'}
+                </h3>
+              </div>
+            </div>
+          </div>
+          {offlineVenues &&
+            offlineVenues.map(venue => (
+              <div
+                className="h-section-row nested"
+                key={venue.id}
+              >
+                <div className="h-card h-card-secondary">
+                  <div className="h-card-inner">
+                    <div className="h-card-header-row">
+                      <h3 className="h-card-title">
+                        <Icon
+                          className="h-card-title-ico"
+                          svg="ico-box"
+                        />
+                        {venue.publicName || venue.name}
+                      </h3>
+                      <Link
+                        className="tertiary-link"
+                        to={`/structures/${selectedOfferer.id}/lieux/${venue.id}`}
+                      >
+                        <Icon svg="ico-outer-pen" />
+                        {'Modifier'}
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
-      </div>
+            ))}
+        </div>
+      )}
     </>
   )
+}
+
+Offerers.propTypes = {
+  isVenueCreationAvailable: PropTypes.bool.isRequired,
 }
 
 export default Offerers
