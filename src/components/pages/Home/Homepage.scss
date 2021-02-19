@@ -89,11 +89,32 @@
       }
 
       .h-card-actions {
-        padding-left: rem(24px);
-        padding-right: rem(24px);
+        padding-left: rem(8px);
+        padding-right: rem(8px);
 
         .tertiary-link {
           padding-right: rem(5px);
+        }
+
+        .h-actions-list {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+
+          li {
+            border-left: rem(1px) solid $grey-medium;
+            padding-left: rem(8px);
+            padding-right: rem(8px);
+
+            &:first-child {
+              border-left: 0;
+            }
+
+            .ico-bank-warning {
+              height: rem(32px);
+              width: rem(32px);
+            }
+          }
         }
       }
 
@@ -148,6 +169,10 @@
 
     .h-card-secondary-title {
       @include body();
+
+      .ico-bank-warning {
+        vertical-align: middle;
+      }
     }
 
     .h-card-content {

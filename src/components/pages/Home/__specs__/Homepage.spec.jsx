@@ -303,10 +303,8 @@ describe('homepage : Tabs : Offerers', () => {
       baseOfferers = [
         {
           ...baseOfferers[0],
-          ...{
-            bic: '',
-            iban: '',
-          },
+          bic: '',
+          iban: '',
         },
       ]
       pcapi.getOfferer.mockResolvedValue(baseOfferers[0])
@@ -316,23 +314,50 @@ describe('homepage : Tabs : Offerers', () => {
         name: 'Renseignez les coordonnées bancaires de la structure',
       })
       expect(link).toBeInTheDocument()
+      const warningIcons = await screen.findAllByAltText('Informations bancaires manquantes')
+      let nbWarningIcons = 0
+      nbWarningIcons += 1 // in offerers header
+      nbWarningIcons += 1 // in bank account card title
+      expect(warningIcons).toHaveLength(nbWarningIcons)
+    })
+
+    it("shouldn't display bank warning if all venues have bank informations", async () => {
+      baseOfferers = [
+        {
+          ...baseOfferers[0],
+          bic: '',
+          iban: '',
+          managedVenues: baseOfferers[0].managedVenues.map(venue => {
+            return {
+              ...venue,
+              bic: 'fake_bic',
+              iban: 'fake_iban',
+            }
+          }),
+        },
+      ]
+      pcapi.getOfferer.mockResolvedValue(baseOfferers[0])
+      await renderHomePage()
+
+      const warningIcons = await screen.queryByAltText('Informations bancaires manquantes')
+      expect(warningIcons).not.toBeInTheDocument()
     })
 
     it('should display file information for pending registration', async () => {
       baseOfferers = [
         {
           ...baseOfferers[0],
-          ...{
-            bic: '',
-            iban: '',
-            demarchesSimplifieesApplicationId: 'demarchesSimplifieesApplication_fake_id',
-          },
+          bic: '',
+          iban: '',
+          demarchesSimplifieesApplicationId: 'demarchesSimplifieesApplication_fake_id',
         },
       ]
       pcapi.getOfferer.mockResolvedValue(baseOfferers[0])
       await renderHomePage()
 
       expect(await screen.findByRole('link', { name: 'Voir le dossier' })).toBeInTheDocument()
+      const warningIcons = await screen.queryByAltText('Informations bancaires manquantes')
+      expect(warningIcons).not.toBeInTheDocument()
     })
   })
 })

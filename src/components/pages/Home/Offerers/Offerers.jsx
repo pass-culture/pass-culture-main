@@ -2,15 +2,18 @@ import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import Banner from 'components/layout/Banner/Banner'
 import Icon from 'components/layout/Icon'
 import Select, { buildSelectOptions } from 'components/layout/inputs/Select'
 import Spinner from 'components/layout/Spinner'
 import * as pcapi from 'repository/pcapi/pcapi'
-import { DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL } from 'utils/config'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
 import { steps, STEP_ID_OFFERERS } from '../HomepageBreadcrumb'
+
+import BankInformations from './BankInformations'
+
+const hasBankInformations = obj =>
+  Boolean((obj.iban && obj.bic) || obj.demarchesSimplifieesApplicationId)
 
 const Offerers = ({ isVenueCreationAvailable }) => {
   const [offererOptions, setOffererOptions] = useState([])
@@ -51,6 +54,14 @@ const Offerers = ({ isVenueCreationAvailable }) => {
     [selectedOfferer, setSelectedOffererId]
   )
 
+  const hasMissingBankInformations = useMemo(() => {
+    if (!selectedOfferer) return false
+    return (
+      !hasBankInformations(selectedOfferer) &&
+      selectedOfferer.managedVenues.some(venue => !hasBankInformations(venue))
+    )
+  }, [selectedOfferer])
+
   if (isLoading) {
     return (
       <div className="h-card h-card-secondary h-card-placeholder">
@@ -61,7 +72,6 @@ const Offerers = ({ isVenueCreationAvailable }) => {
     )
   }
 
-  const hasAccountData = selectedOfferer.iban && selectedOfferer.bic
   const venueCreationUrl = isVenueCreationAvailable
     ? `/structures/${selectedOffererId}/lieux/creation`
     : UNAVAILABLE_ERROR_PAGE
@@ -81,13 +91,26 @@ const Offerers = ({ isVenueCreationAvailable }) => {
               />
             </div>
             <div className="h-card-actions">
-              <Link
-                className="tertiary-link"
-                to={`/structures/${selectedOfferer.id}`}
-              >
-                <Icon svg="ico-outer-pen" />
-                {'Modifier'}
-              </Link>
+              <ul className="h-actions-list">
+                {hasMissingBankInformations && (
+                  <li>
+                    <Icon
+                      alt="Informations bancaires manquantes"
+                      className="ico-bank-warning"
+                      svg="ico-alert-filled"
+                    />
+                  </li>
+                )}
+                <li>
+                  <Link
+                    className="tertiary-link"
+                    to={`/structures/${selectedOfferer.id}`}
+                  >
+                    <Icon svg="ico-outer-pen" />
+                    {'Modifier'}
+                  </Link>
+                </li>
+              </ul>
             </div>
           </div>
           <div className="h-card-cols">
@@ -132,52 +155,10 @@ const Offerers = ({ isVenueCreationAvailable }) => {
             </div>
 
             <div className="h-card-col">
-              <h3 className="h-card-secondary-title">
-                {'Coordonnées bancaires'}
-              </h3>
-
-              <div className="h-card-content">
-                {hasAccountData ? (
-                  <>
-                    <p>
-                      {
-                        'Les coordonnées bancaires ci-dessous seront attribuées à tous les lieux sans coordonnées bancaires propres.'
-                      }
-                    </p>
-                    <ul className="h-description-list">
-                      <li className="h-dl-row">
-                        <span className="h-dl-title">
-                          {'IBAN :'}
-                        </span>
-                        <span className="h-dl-description">
-                          {selectedOfferer.iban}
-                        </span>
-                      </li>
-
-                      <li className="h-dl-row">
-                        <span className="h-dl-title">
-                          {'BIC :'}
-                        </span>
-                        <span className="h-dl-description">
-                          {selectedOfferer.bic}
-                        </span>
-                      </li>
-                    </ul>
-                  </>
-                ) : selectedOfferer.demarchesSimplifieesApplicationId ? (
-                  <Banner
-                    href={`https://www.demarches-simplifiees.fr/dossiers/${selectedOfferer.demarchesSimplifieesApplicationId}`}
-                    linkTitle="Voir le dossier"
-                    subtitle="Votre dossier est en cours pour cette structure"
-                  />
-                ) : (
-                  <Banner
-                    href={DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL}
-                    linkTitle="Renseignez les coordonnées bancaires de la structure"
-                    subtitle="Renseignez vos coordonnées bancaires pour être remboursé de vos offres éligibles"
-                  />
-                )}
-              </div>
+              <BankInformations
+                hasMissingBankInformations={hasMissingBankInformations}
+                offerer={selectedOfferer}
+              />
             </div>
           </div>
         </div>
