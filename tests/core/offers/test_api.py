@@ -16,7 +16,11 @@ import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import api
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories
+from pcapi.core.offers.api import update_offer_and_stock_id_at_providers
 from pcapi.core.offers.exceptions import ThumbnailStorageError
+from pcapi.core.offers.factories import OfferFactory
+from pcapi.core.offers.factories import StockFactory
+from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.testing import override_features
@@ -943,3 +947,22 @@ class UpdateOffersActiveStatusTest:
         assert not models.Offer.query.get(offer1.id).isActive
         assert not models.Offer.query.get(offer2.id).isActive
         assert models.Offer.query.get(offer3.id).isActive
+
+
+class UpdateOfferAndStockIdAtProvidersTest:
+    @pytest.mark.usefixtures("db_session")
+    def test_update_offer_and_stock_id_at_providers(self):
+        # Given
+        current_siret = "88888888888888"
+        venue = VenueFactory(siret=current_siret)
+        offer = OfferFactory(venue=venue, idAtProviders="1111111111111@22222222222222")
+        other_venue_offer = OfferFactory(venue=venue, idAtProviders="3333333333333@12222222222222")
+        stock = StockFactory(offer=offer, idAtProviders="1111111111111@22222222222222")
+
+        # When
+        update_offer_and_stock_id_at_providers(venue, "22222222222222")
+
+        # Then
+        assert offer.idAtProviders == "1111111111111@88888888888888"
+        assert stock.idAtProviders == "1111111111111@88888888888888"
+        assert other_venue_offer.idAtProviders == "3333333333333@12222222222222"

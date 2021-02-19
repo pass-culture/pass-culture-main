@@ -1,7 +1,10 @@
 from flask import url_for
 from markupsafe import Markup
+from wtforms import Form
 
 from pcapi.admin.base_configuration import BaseAdminView
+from pcapi.core.offerers.models import Venue
+from pcapi.core.offers.api import update_offer_and_stock_id_at_providers
 
 
 def _offers_links(view, context, model, name) -> Markup:
@@ -56,3 +59,12 @@ class VenueView(BaseAdminView):
         formatters = super().column_formatters
         formatters.update(offres=_offers_links)
         return formatters
+
+    def update_model(self, new_venue_form: Form, venue: Venue) -> None:
+        has_siret_changed = new_venue_form.siret.data != venue.siret
+        old_siret = venue.siret
+
+        super().update_model(new_venue_form, venue)
+
+        if has_siret_changed:
+            update_offer_and_stock_id_at_providers(venue, old_siret)

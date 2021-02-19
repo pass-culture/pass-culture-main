@@ -5,6 +5,7 @@ from typing import Union
 
 from flask import current_app as app
 import pytz
+from sqlalchemy.sql.functions import func
 
 from pcapi.connectors import redis
 from pcapi.connectors.thumb_storage import create_thumb
@@ -466,3 +467,39 @@ def create_mediation_v2(
             redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
 
         return mediation
+
+
+def update_offer_and_stock_id_at_providers(venue: Venue, old_siret: str) -> None:
+    current_siret = venue.siret
+
+    offer_ids = (
+        Offer.query.filter(Offer.venueId == venue.id)
+        .filter(Offer.idAtProviders.endswith(old_siret))
+        .with_entities(Offer.id)
+        .all()
+    )
+    stock_ids = (
+        Stock.query.join(Offer)
+        .filter(Offer.venueId == venue.id)
+        .filter(Stock.idAtProviders.endswith(old_siret))
+        .with_entities(Stock.id)
+        .all()
+    )
+
+    batch_size = 100
+
+    for offer_index in range(0, len(offer_ids), batch_size):
+        Offer.query.filter(Offer.id.in_(offer_ids[offer_index : offer_index + batch_size])).update(
+            {Offer.idAtProviders: func.replace(Offer.idAtProviders, old_siret, current_siret)},
+            synchronize_session=False,
+        )
+        db.session.commit()
+        offer_index = offer_index + batch_size
+
+    for stock_index in range(0, len(stock_ids), batch_size):
+        Stock.query.filter(Stock.id.in_(stock_ids[stock_index : stock_index + batch_size])).update(
+            {Stock.idAtProviders: func.replace(Stock.idAtProviders, old_siret, current_siret)},
+            synchronize_session=False,
+        )
+        db.session.commit()
+        stock_index = stock_index + batch_size
