@@ -67,7 +67,7 @@ const Profile = ({ user }) => {
                 {'Profil'}
               </h3>
               <Link
-                className="tertiary-button"
+                className="tertiary-link"
                 to="/profil"
               >
                 <Icon svg="ico-outer-pen" />

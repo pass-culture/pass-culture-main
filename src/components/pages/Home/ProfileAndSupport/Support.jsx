@@ -14,7 +14,7 @@ const Support = () => {
           <ul className="hs-link-list">
             <li>
               <a
-                className="hs-link"
+                className="hs-link tertiary-link"
                 href="mailto:support@passculture.app"
                 rel="noopener noreferrer"
                 target="_blank"
@@ -31,7 +31,7 @@ const Support = () => {
 
             <li>
               <a
-                className="hs-link"
+                className="hs-link tertiary-link"
                 href="https://pass.culture.fr/cgu-professionnels/"
                 rel="noopener noreferrer"
                 target="_blank"
@@ -45,7 +45,7 @@ const Support = () => {
 
             <li>
               <a
-                className="hs-link"
+                className="hs-link tertiary-link"
                 href="https://aide.passculture.app/fr/category/acteurs-culturels-1t20dhs/"
                 rel="noopener noreferrer"
                 target="_blank"

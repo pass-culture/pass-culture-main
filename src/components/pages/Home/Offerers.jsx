@@ -77,7 +77,7 @@ const Offerers = () => {
             </div>
             <div className="h-card-actions">
               <Link
-                className="tertiary-button"
+                className="tertiary-link"
                 to={`/structures/${selectedOfferer.id}`}
               >
                 <Icon svg="ico-outer-pen" />
@@ -115,9 +115,9 @@ const Offerers = () => {
                       {'Siège social : '}
                     </span>
                     <span className="h-dl-description">
-                      {selectedOfferer.address} 
+                      {selectedOfferer.address}
                       {' '}
-                      {selectedOfferer.postalCode} 
+                      {selectedOfferer.postalCode}
                       {' '}
                       {selectedOfferer.city}
                     </span>
@@ -210,7 +210,7 @@ const Offerers = () => {
                       {venue.publicName || venue.name}
                     </h3>
                     <Link
-                      className="tertiary-button"
+                      className="tertiary-link"
                       to={`/structures/${selectedOfferer.id}/lieux/${venue.id}`}
                     >
                       <Icon svg="ico-outer-pen" />

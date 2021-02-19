@@ -1,7 +1,5 @@
 .h-support {
   .hs-link {
-    @include button();
-
     align-items: center;
     display: flex;
 
@@ -21,12 +19,6 @@
     li {
       line-height: rem(32px);
       margin-top: rem(4px);
-
-      &:hover a,
-      &:active a,
-      &:focus a {
-        color: $secondary;
-      }
     }
   }
 }
