@@ -28,7 +28,7 @@ const AppLayout = props => {
   }
 
   return (
-    <div>
+    <>
       {!fullscreen && (
         <HeaderContainer
           isSmall={isSmall}
@@ -47,7 +47,6 @@ const AppLayout = props => {
         className={classnames({
           page: true,
           [`${pageName}-page`]: true,
-          'with-header': Boolean(header),
           isSmall,
           container: !fullscreen,
           fullscreen,
@@ -75,9 +74,7 @@ const AppLayout = props => {
                   {` ${backTo.label}`}
                 </NavLink>
               )}
-              <div className="main-content">
-                {children}
-              </div>
+              {children}
             </div>
           </div>
         )}
@@ -85,7 +82,7 @@ const AppLayout = props => {
         <NotificationV2Container />
         <Modal key="modal" />
       </main>
-    </div>
+    </>
   )
 }
 

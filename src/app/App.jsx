@@ -1,4 +1,3 @@
-import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import React, { useEffect, useState } from 'react'
 import { matchPath } from 'react-router'
@@ -57,7 +56,7 @@ export const App = props => {
   }
 
   return (
-    <div className={classnames('app', { 'modal-open': modalOpen })}>
+    <div className={modalOpen ? 'modal-open' : null}>
       {children}
     </div>
   )

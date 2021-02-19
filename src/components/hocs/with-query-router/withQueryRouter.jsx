@@ -1,9 +1,10 @@
 import invert from 'lodash.invert'
 import uniq from 'lodash.uniq'
 import PropTypes from 'prop-types'
-import { stringify } from 'query-string'
 import React, { PureComponent } from 'react'
 import { withRouter } from 'react-router-dom'
+
+import { stringify } from 'utils/query-string'
 
 import { getObjectWithMappedKeys } from './getObjectWithMappedKeys'
 import { selectQueryParamsFromQueryString } from './selectQueryParamsFromQueryString'
