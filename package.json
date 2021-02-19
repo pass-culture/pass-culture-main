@@ -83,7 +83,6 @@
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
     "react-table": "^7.5.2",
-    "react-time-input": "^0.0.19",
     "react-tooltip": "^3.8.4",
     "react-tracking": "^7.1.0",
     "redux": "^4.0.5",
