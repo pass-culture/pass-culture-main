@@ -17,8 +17,8 @@ from pcapi.utils.logger import logger
 
 def create_or_update_users(rows: Iterable[dict]) -> List[User]:
     # The purpose of this function is to recreate test users on
-    # staging after the staging database is reset. It's meant to be
-    # used anywhere else, and certainly not on production.
+    # staging after the staging database is reset. It's not meant to
+    # be used anywhere else, and certainly not on production.
     if settings.IS_PROD:
         raise ValueError("This function is not supposed to be run on production")
 
@@ -52,6 +52,23 @@ def create_or_update_users(rows: Iterable[dict]) -> List[User]:
         users.append(user)
         logger.info("Created or updated user=%s from CSV import", user.id)
 
+    admin = find_user_by_email("admin@example.com")
+    if not admin:
+        admin = users_api.create_account(
+            email="admin@example.com",
+            password=settings.STAGING_TEST_USER_PASSWORD,
+            birthdate=datetime(1946, 12, 24),
+            is_email_validated=True,
+            send_activation_mail=False,
+        )
+    admin.setPassword(settings.STAGING_TEST_USER_PASSWORD)
+    admin.isAdmin = True
+    admin.isBeneficiary = False
+    admin.firstName = "Jeanne"
+    admin.lastName = "Admin"
+    admin.publicName = f"{user.firstName} {user.lastName}"
+    repository.save(admin)
+    logger.info("Created or updated admin user=%s", admin.id)
     return users
 
 

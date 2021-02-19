@@ -4,6 +4,7 @@ import io
 import pytest
 
 import pcapi.core.users.factories as users_factories
+from pcapi.core.users.models import User
 from pcapi.scripts.beneficiary import import_users
 
 
@@ -39,3 +40,6 @@ class ReadFileTest:
         jean = users[1]
         assert jean.lastName == "Smisse"
         assert len(jean.deposits) == 1
+
+        admin = User.query.filter_by(email="admin@example.com").one()
+        assert admin.isAdmin
