@@ -30,8 +30,8 @@ const OffererDetails = ({ handleChangeOfferer, offererOptions, selectedOfferer }
   return (
     <div className="h-card h-card-secondary">
       <div className="h-card-inner">
-        <div className="h-card-header">
-          <div className="h-card-header-block">
+        <div className="od-header">
+          <div className="od-header-block">
             <Select
               handleSelection={handleChangeOfferer}
               id={steps[STEP_ID_OFFERERS].hash}
@@ -41,7 +41,7 @@ const OffererDetails = ({ handleChangeOfferer, offererOptions, selectedOfferer }
               selectedValue={selectedOfferer.id}
             />
           </div>
-          <div className="h-card-actions">
+          <div className="od-actions">
             <button
               className="tertiary-button"
               onClick={toggleVisibility}

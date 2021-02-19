@@ -60,48 +60,6 @@
       }
     }
 
-    .h-card-header {
-      align-items: center;
-      border-bottom: rem(1px) solid $grey-medium;
-      display: flex;
-      flex-direction: row;
-      margin-left: rem(-16px);
-      margin-right: rem(-16px);
-
-      .input-select {
-        select {
-          margin-top: 0;
-        }
-      }
-
-      &:first-child {
-        margin-top: 0;
-      }
-
-      .h-card-header-block,
-      .h-card-actions {
-        border-right: rem(1px) solid $grey-medium;
-        padding: rem(8px);
-
-        &:last-child {
-          border-right: none;
-        }
-      }
-
-      .h-card-actions {
-        padding-left: rem(8px);
-        padding-right: rem(8px);
-
-        .tertiary-link {
-          padding-right: rem(5px);
-        }
-      }
-
-      .h-card-header-block {
-        flex: 1 1 auto;
-      }
-    }
-
     .h-card-header-row {
       display: flex;
       flex-direction: row;

@@ -1,0 +1,43 @@
+.h-card {
+  .od-header {
+    align-items: center;
+    border-bottom: rem(1px) solid $grey-medium;
+    display: flex;
+    flex-direction: row;
+    margin-left: rem(-16px);
+    margin-right: rem(-16px);
+
+    .input-select {
+      select {
+        margin-top: 0;
+      }
+    }
+
+    &:first-child {
+      margin-top: 0;
+    }
+
+    .od-header-block,
+    .od-actions {
+      border-right: rem(1px) solid $grey-medium;
+      padding: rem(8px);
+
+      &:last-child {
+        border-right: none;
+      }
+    }
+
+    .od-actions {
+      padding-left: rem(24px);
+      padding-right: rem(24px);
+
+      .tertiary-button {
+        padding-right: rem(5px);
+      }
+    }
+
+    .od-header-block {
+      flex: 1 1 auto;
+    }
+  }
+}
