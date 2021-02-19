@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 
 import Icon from 'components/layout/Icon'
 import { ReactComponent as AddThumbnailIcon } from 'components/pages/Offers/Offer/OfferDetails/OfferThumbnail/OfferThumbnailPlaceholder/assets/add-thumbnail.svg'
-import { ReactComponent as ErrorAlertThumbnail } from 'components/pages/Offers/Offer/OfferDetails/OfferThumbnail/OfferThumbnailPlaceholder/assets/error-alert.svg'
+import { ReactComponent as ErrorAlertIcon } from 'components/pages/Offers/Offer/OfferDetails/OfferThumbnail/OfferThumbnailPlaceholder/assets/error-alert.svg'
 import ThumbnailDialog from 'components/pages/Offers/Offer/Thumbnail/ThumbnailDialog'
 
 const OfferThumbnailPlaceholder = ({ setThumbnailInfo, thumbnailError }) => {
@@ -25,7 +25,7 @@ const OfferThumbnailPlaceholder = ({ setThumbnailInfo, thumbnailError }) => {
     <>
       <button
         className={`of-placeholder ${preview ? 'of-image' : ''} ${
-          thumbnailError ? 'of-error-upload-image' : ''
+          thumbnailError ? 'of-thumbnail-error' : ''
         }`}
         onClick={openModal}
         title={`${preview ? "Modifier l'image" : 'Ajouter une image'}`}
@@ -42,7 +42,7 @@ const OfferThumbnailPlaceholder = ({ setThumbnailInfo, thumbnailError }) => {
             {'Ajouter une image'}
             {thumbnailError && (
               <div className="of-error-message">
-                <ErrorAlertThumbnail />
+                <ErrorAlertIcon />
                 {"L'image n'a pas pu être ajoutée. Veuillez réessayer"}
               </div>
             )}

@@ -62,9 +62,9 @@ const OfferDetails = ({
               credit,
               thumbnail,
               thumbUrl,
-              croppingRect.x,
-              croppingRect.y,
-              croppingRect.height
+              croppingRect?.x,
+              croppingRect?.y,
+              croppingRect?.height
             )
           }
           reloadOffer()
@@ -81,9 +81,9 @@ const OfferDetails = ({
               credit,
               thumbnail,
               thumbUrl,
-              croppingRect.x,
-              croppingRect.y,
-              croppingRect.height
+              croppingRect?.x,
+              croppingRect?.y,
+              croppingRect?.height
             )
           }
           showCreationSuccessNotification()

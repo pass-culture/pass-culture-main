@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import Icon from 'components/layout/Icon'
 import ThumbnailDialog from 'components/pages/Offers/Offer/Thumbnail/ThumbnailDialog'
 
-import { ReactComponent as ErrorAlertThumbnail } from './OfferThumbnailPlaceholder/assets/error-alert.svg'
+import { ReactComponent as ErrorAlertIcon } from './OfferThumbnailPlaceholder/assets/error-alert.svg'
 
 const OfferThumbnail = ({ setThumbnailInfo, thumbnailError, url }) => {
   const [isModalOpened, setIsModalOpened] = useState(false)
@@ -24,7 +24,7 @@ const OfferThumbnail = ({ setThumbnailInfo, thumbnailError, url }) => {
   return (
     <>
       <button
-        className={`of-placeholder of-image ${thumbnailError ? 'of-error-upload-image' : ''}`}
+        className={`of-placeholder of-image ${thumbnailError ? 'of-thumbnail-error' : ''}`}
         onClick={openModal}
         title="Modifier l’image"
         type="button"
@@ -35,7 +35,7 @@ const OfferThumbnail = ({ setThumbnailInfo, thumbnailError, url }) => {
         />
         {thumbnailError && (
           <span className="of-error-message">
-            <ErrorAlertThumbnail />
+            <ErrorAlertIcon />
             {"L'image n'a pas pu être ajoutée. Veuillez réessayer"}
           </span>
         )}

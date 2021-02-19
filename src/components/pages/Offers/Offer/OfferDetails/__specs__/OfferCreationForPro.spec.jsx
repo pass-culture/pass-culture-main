@@ -1,6 +1,6 @@
-import { within } from '@testing-library/dom'
+import { prettyDOM, within } from '@testing-library/dom'
 import '@testing-library/jest-dom'
-import { act, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
@@ -29,6 +29,7 @@ jest.mock('repository/pcapi/pcapi', () => ({
   loadOffer: jest.fn(),
   loadStocks: jest.fn(),
   loadTypes: jest.fn(),
+  postThumbnail: jest.fn(),
 }))
 
 const renderOffers = async (props, store, queryParams = null) => {
@@ -1515,6 +1516,50 @@ describe('offerDetails - Creation - pro user', () => {
       // Then
       const nameError = await screen.findByText("Ce nom n'est pas valide")
       expect(nameError).toBeInTheDocument()
+      const errorNotification = await screen.findByText(
+        'Une ou plusieurs erreurs sont présentes dans le formulaire'
+      )
+      expect(errorNotification).toBeInTheDocument()
+    })
+
+    it('should show an error notification and display an error message on the placeholder', async () => {
+      // Given
+      const offerValues = {
+        name: 'Ma petite offre',
+        type: 'EventType.MUSIQUE',
+        venueId: venues[0].id,
+        isDuo: false,
+        audioDisabilityCompliant: false,
+        visualDisabilityCompliant: true,
+        motorDisabilityCompliant: false,
+        mentalDisabilityCompliant: false,
+      }
+      jest.spyOn(Object, 'values').mockReturnValue(['item'])
+      pcapi.postThumbnail.mockRejectedValue({
+        errors: { errors: ['Utilisez une image plus grande (supérieure à 400px par 400px)'] },
+      })
+      const createdOffer = { ...offerValues, id: 'AA', stocks: [], venue: venues[0] }
+      pcapi.createOffer.mockResolvedValue(createdOffer)
+      await renderOffers(props, store)
+      pcapi.loadOffer.mockResolvedValue(createdOffer)
+
+      await setOfferValues({ type: offerValues.type })
+      await setOfferValues(offerValues)
+
+      // When
+      fireEvent.click(screen.getByText('Enregistrer et passer aux stocks'))
+
+      // Then
+
+      console.log(prettyDOM(screen.container, 99999))
+      const addThumbnail = await screen.queryByText('Ajouter une image')
+      expect(addThumbnail).toBeInTheDocument()
+
+      const thumbnailUploadError = await screen.findByText(
+        "L'image n'a pas pu être ajoutée. Veuillez réessayer"
+      )
+      expect(thumbnailUploadError).toBeInTheDocument()
+
       const errorNotification = await screen.findByText(
         'Une ou plusieurs erreurs sont présentes dans le formulaire'
       )
