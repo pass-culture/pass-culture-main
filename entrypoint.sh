@@ -2,6 +2,7 @@
 
 gunicorn \
     --preload \
+    $GUNICORN_BIND_ARG \
     --workers 1 \
     --threads 4 \
     --timeout 0 \
