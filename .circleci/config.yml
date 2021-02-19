@@ -293,6 +293,25 @@ jobs:
             docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:$(cat ./api/version.txt)
           fi
 
+  build-and-push-image-db-ops:
+    executor: gcp-sdk
+    steps:
+      - checkout
+      - run: git submodule sync
+      - run: git submodule update --init
+      - setup_remote_docker:
+          version: 19.03.13
+          docker_layer_caching: true
+      - authenticate_gcp:
+          gcp-key-name: GCP_INFRA_KEY
+      - run: gcloud beta auth configure-docker ${GCP_REGION}-docker.pkg.dev
+      - run: |
+          docker build ./infra/docker-images/db-ops \
+            -f ./infra/docker-images/db-ops/Dockerfile \
+            --build-arg "TAG=$(cat ./api/version.txt)" \
+            -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/db-ops:latest
+      - run: docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/db-ops:latest
+
   deploy-api:
     machine:
       image: ubuntu-1604:201903-01
@@ -598,6 +617,14 @@ workflows:
           context:
             - GCP
             - GCP_PROD
+      - build-and-push-image-db-ops:
+          filters:
+            branches:
+              only:
+                - production
+          context:
+            - GCP
+            - GCP_EHP
       - deploy-pcapi:
           requires:
             - build-and-push-image
