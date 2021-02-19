@@ -80,8 +80,8 @@
     "react-loading-infinite-scroller": "1.5.1",
     "react-portal": "^4.2.1",
     "react-redux": "^5.0.3",
-    "react-router": "^4.3.1",
-    "react-router-dom": "^4.0.0",
+    "react-router": "^5.2.0",
+    "react-router-dom": "^5.2.0",
     "react-table": "^7.5.2",
     "react-time-input": "^0.0.19",
     "react-tooltip": "^3.8.4",
@@ -92,8 +92,7 @@
     "redux-saga-data": "3.3.0",
     "redux-thunk": "^2.3.0",
     "reselect": "4.0.0",
-    "typeface-barlow": "^0.0.54",
-    "with-query-router": "3.2.1"
+    "typeface-barlow": "^0.0.54"
   },
   "devDependencies": {
     "@babel/core": "7.12.3",

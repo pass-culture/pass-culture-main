@@ -1,8 +1,8 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { assignData, requestData } from 'redux-saga-data'
-import withQueryRouter from 'with-query-router'
 
+import { withQueryRouter } from 'components/hocs/with-query-router/withQueryRouter'
 import { OFFERERS_API_PATH } from 'config/apiPaths'
 import { closeNotification, showNotificationV1 } from 'store/reducers/notificationReducer'
 import { isAPISireneAvailable } from 'store/selectors/data/featuresSelectors'

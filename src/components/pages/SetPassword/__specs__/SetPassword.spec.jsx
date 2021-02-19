@@ -26,7 +26,7 @@ const renderSetPassword = (store, history) =>
   render(
     <Provider store={store}>
       <Router history={history}>
-        <Route path="/creation-de-mot-de-passe/:token">
+        <Route path="/creation-de-mot-de-passe/:token?">
           <>
             <SetPasswordContainer />
             <NotificationV2Container />

@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import { compose } from 'redux'
-import withQueryRouter from 'with-query-router'
 
+import { withQueryRouter } from 'components/hocs/with-query-router/withQueryRouter'
 import { saveSearchFilters } from 'store/offers/actions'
 import { selectOffers } from 'store/offers/selectors'
 import {

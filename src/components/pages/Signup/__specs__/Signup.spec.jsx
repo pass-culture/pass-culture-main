@@ -1,6 +1,6 @@
 import { shallow } from 'enzyme'
 import React from 'react'
-import { Route } from 'react-router-dom/umd/react-router-dom'
+import { Route } from 'react-router-dom'
 
 import Logo from 'components/layout/Logo'
 import { campaignTracker } from 'tracking/mediaCampaignsTracking'

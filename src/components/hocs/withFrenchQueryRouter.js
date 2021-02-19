@@ -1,4 +1,4 @@
-import withQueryRouter from 'with-query-router'
+import { withQueryRouter } from 'components/hocs/with-query-router/withQueryRouter'
 
 import { mapBrowserToApi } from '../../utils/translate'
 

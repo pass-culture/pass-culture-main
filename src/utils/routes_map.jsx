@@ -182,7 +182,7 @@ const routes = [
   {
     component: SetPasswordContainer,
     exact: true,
-    path: ['/creation-de-mot-de-passe', '/creation-de-mot-de-passe/:token'],
+    path: ['/creation-de-mot-de-passe/:token?'],
     title: 'Création de mot de passe',
     meta: {
       public: true,
