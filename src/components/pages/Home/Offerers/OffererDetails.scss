@@ -1,43 +1,41 @@
 .h-card {
   .od-header {
     align-items: center;
-    border-bottom: rem(1px) solid $grey-medium;
     display: flex;
     flex-direction: row;
-    margin-left: rem(-16px);
-    margin-right: rem(-16px);
+    height: 100%;
+    justify-content: space-between;
+    margin-top: rem(-8px);
+    padding-bottom: rem(8px);
 
     .input-select {
+      width: 70%;
+
       select {
         margin-top: 0;
       }
     }
+  }
 
-    &:first-child {
-      margin-top: 0;
+  .od-separator {
+    background-color: $grey-medium;
+
+    &.horizontal {
+      height: 1px;
+      margin-left: rem(-16px);
+      margin-right: rem(-16px);
     }
 
-    .od-header-block,
-    .od-actions {
-      border-right: rem(1px) solid $grey-medium;
-      padding: rem(8px);
+    &.vertical {
+      align-self: stretch;
+      margin-bottom: rem(-8px);
+      margin-top: rem(-8px);
+      width: 1px;
 
-      &:last-child {
-        border-right: none;
+      &.small {
+        align-self: center;
+        height: rem(20px);
       }
-    }
-
-    .od-actions {
-      padding-left: rem(24px);
-      padding-right: rem(24px);
-
-      .tertiary-button {
-        padding-right: rem(5px);
-      }
-    }
-
-    .od-header-block {
-      flex: 1 1 auto;
     }
   }
 }

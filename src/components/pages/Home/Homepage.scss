@@ -28,7 +28,6 @@
     border: rem(1px) solid $grey-medium;
     border-radius: rem(8px);
     box-shadow: 0 rem(2px) rem(6px) 0 rgba($black, 0.15);
-    display: flex;
     overflow: hidden;
 
     &.h-card-placeholder {
@@ -37,11 +36,11 @@
 
     .h-card-inner {
       border-left: rem(8px) solid $grey-medium;
+      padding: rem(16px) rem(16px) rem(24px);
       width: 100%;
-      padding: 0 rem(16px) rem(24px);
 
-      > *:first-child {
-        margin-top: rem(16px);
+      &.h-no-bottom {
+        padding-bottom: 0;
       }
     }
 
