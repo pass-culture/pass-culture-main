@@ -5,34 +5,22 @@
   }
 
   .h-description-list {
-    display: flex;
-    flex-direction: column;
-
-    &:first-child {
-      margin-top: rem(-8px);
-    }
-
     .h-dl-row {
       display: flex;
       flex-direction: row;
       margin-top: rem(8px);
-
-      &.single-line {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
     }
 
     .h-dl-title {
       color: $grey-dark;
-      flex: 0;
-      white-space: nowrap;
+      flex-shrink: 0;
     }
 
     .h-dl-description {
-      flex: 1 1 auto;
       margin-left: rem(8px);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
   }
 
@@ -41,7 +29,6 @@
     border-radius: rem(8px);
     box-shadow: 0 rem(2px) rem(6px) 0 rgba($black, 0.15);
     display: flex;
-    flex-direction: column;
     overflow: hidden;
 
     &.h-card-placeholder {
@@ -50,10 +37,8 @@
 
     .h-card-inner {
       border-left: rem(8px) solid $grey-medium;
-      flex: 1 1 auto;
-      padding: rem(16px);
-      padding-bottom: rem(24px);
-      padding-top: 0;
+      width: 100%;
+      padding: 0 rem(16px) rem(24px);
 
       > *:first-child {
         margin-top: rem(16px);
@@ -63,10 +48,7 @@
     .h-card-header-row {
       display: flex;
       flex-direction: row;
-
-      .h-card-title {
-        flex: 1 1 auto;
-      }
+      justify-content: space-between;
     }
 
     &.h-card-primary {

@@ -92,7 +92,7 @@ const Profile = ({ user }) => {
                     {user.firstName}
                   </span>
                 </li>
-                <li className="h-dl-row single-line">
+                <li className="h-dl-row">
                   <span className="h-dl-title">
                     {'E-mail :'}
                   </span>
