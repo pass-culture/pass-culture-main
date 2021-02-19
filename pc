@@ -199,11 +199,7 @@ elif [[ "$CMD" == "bash" ]]; then
   if [[ "$ENV" == "development" ]]; then
     RUN='docker exec -it pc-flask bash'
   else
-    if [ "$FILE_TO_UPLOAD" == 'none' ]; then
-      scalingo -a "$SCALINGO_APP" run bash
-    else
-      scalingo -a "$SCALINGO_APP" run --file "$FILE_TO_UPLOAD" bash
-    fi
+    kubectl -n $ENV exec -it "$(kubectl get po -n $ENV | grep pcapi-console | awk '{print $1}')"  -- bash
     exit
   fi
 
@@ -604,7 +600,7 @@ elif [[ "$CMD" == "psql" ]]; then
   if [[ "$ENV" == "development" ]]; then
     RUN='docker exec -it pc-postgres bash -c "COLUMNS=\"'$COLUMNS'\" psql -U pass_culture pass_culture $*"'
   else
-    scalingo -a "$SCALINGO_APP" pgsql-console
+    kubectl -n $ENV exec -it "$(kubectl get po -n $ENV | grep pcapi-console | awk '{print $1}')"  -- bash -c 'psql "$DATABASE_URL"'
     exit
   fi
 
@@ -625,7 +621,7 @@ elif [[ "$CMD" == "pgcli" ]]; then
     source "$ROOT_PATH"/env_file
     RUN='docker exec -it pc-flask bash -c "pgcli $DATABASE_URL"'
   else
-    scalingo -a "$SCALINGO_APP" run 'pgcli $DATABASE_URL'
+    kubectl -n $ENV exec -it "$(kubectl get po -n $ENV | grep pcapi-console | awk '{print $1}')"  -- bash -c 'pgcli "$DATABASE_URL"'
     exit
   fi
 
@@ -636,11 +632,7 @@ elif [[ "$CMD" == "python" ]]; then
 	if [[ "$ENV" == "development" ]]; then
 		RUN='docker exec -it pc-flask bash -c "cd /opt/services/flaskapp/src/ && python -i src/pcapi/scripts/interact.py '"$CMD $*"'"'
 	else
-    if [ "$FILE_TO_UPLOAD" == 'none' ]; then
-      scalingo -a "$SCALINGO_APP" run "python -i src/pcapi/scripts/interact.py"
-		else
-      scalingo -a "$SCALINGO_APP" run --file "$FILE_TO_UPLOAD" "python -i src/pcapi/scripts/interact.py"
-		fi
+      kubectl -n $ENV exec -it "$(kubectl get po -n $ENV | grep pcapi-console | awk '{print $1}')"  -- python -i src/pcapi/scripts/interact.py
 		exit
 	fi
 
