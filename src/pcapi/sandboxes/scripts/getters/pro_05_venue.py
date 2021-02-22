@@ -18,7 +18,7 @@ def get_existing_pro_validated_user_with_validated_offerer_validated_user_offere
         for uo in user.UserOfferers
         if uo.offerer.validationToken == None
         and uo.validationToken == None
-        and all([v.isVirtual for v in uo.offerer.managedVenues])
+        and all(v.isVirtual for v in uo.offerer.managedVenues)
     ][0]
 
     return {"offerer": get_offerer_helper(offerer), "user": get_pro_helper(user)}

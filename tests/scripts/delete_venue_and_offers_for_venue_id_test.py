@@ -49,7 +49,7 @@ class DeleteVenueAndOffersForVenueIdTest:
 
         # Then
         offers = Offer.query.all()
-        assert all([o.venue == venue2 for o in offers])
+        assert all(o.venue == venue2 for o in offers)
         assert Venue.query.get(venue1.id) is None
 
     @pytest.mark.usefixtures("db_session")

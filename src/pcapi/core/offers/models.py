@@ -325,7 +325,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin, 
     @property
     def hasBookingLimitDatetimesPassed(self) -> bool:
         if self.activeStocks:
-            return all([stock.hasBookingLimitDatetimePassed for stock in self.activeStocks])
+            return all(stock.hasBookingLimitDatetimePassed for stock in self.activeStocks)
         return False
 
     @property

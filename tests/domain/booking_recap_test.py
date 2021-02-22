@@ -169,7 +169,7 @@ class BookingRecapTest:
             booking_recap_token = booking_recap.booking_token
 
             # Then
-            assert booking_recap_token == "ABCDE"  # pylint: disable=comparison-with-callable
+            assert booking_recap_token == "ABCDE"
 
         def test_should_return_token_when_offer_is_thing_and_booking_is_not_used_and_is_cancelled(self):
             # Given
@@ -181,7 +181,7 @@ class BookingRecapTest:
             booking_recap_token = booking_recap.booking_token
 
             # Then
-            assert booking_recap_token == "ABCDE"  # pylint: disable=comparison-with-callable
+            assert booking_recap_token == "ABCDE"
 
         def test_should_return_token_when_offer_is_thing_and_booking_is_used_and_cancelled(self):
             # Given
@@ -193,7 +193,7 @@ class BookingRecapTest:
             booking_recap_token = booking_recap.booking_token
 
             # Then
-            assert booking_recap_token == "ABCDE"  # pylint: disable=comparison-with-callable
+            assert booking_recap_token == "ABCDE"
 
         def test_should_return_token_when_offer_is_event_and_booking_is_not_used_nor_cancelled(self):
             # Given

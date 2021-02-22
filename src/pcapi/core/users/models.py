@@ -274,7 +274,7 @@ class User(PcObject, Model, NeedsValidationMixin, VersionedMixin):
     @property
     def hasPhysicalVenues(self):
         for offerer in self.offerers:
-            if any([not venue.isVirtual for venue in offerer.managedVenues]):
+            if any(not venue.isVirtual for venue in offerer.managedVenues):
                 return True
 
         return False
@@ -285,7 +285,7 @@ class User(PcObject, Model, NeedsValidationMixin, VersionedMixin):
 
     @property
     def hasOffers(self):
-        return any([offerer.nOffers > 0 for offerer in self.offerers])
+        return any(offerer.nOffers > 0 for offerer in self.offerers)
 
     @property
     def is_eligible(self) -> bool:
