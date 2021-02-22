@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { act, fireEvent, render, screen, within } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
@@ -44,7 +44,7 @@ const renderHomePage = async () => {
   })
 }
 
-describe('homepage : Tabs : Offerers', () => {
+describe('homepage', () => {
   let baseOfferers
   let baseOfferersNames
 
@@ -120,244 +120,31 @@ describe('homepage : Tabs : Offerers', () => {
       await renderHomePage()
     })
 
-    it('should display section and subsection titles', async () => {
-      expect(await screen.findByText('Informations pratiques')).toBeInTheDocument()
-      expect(await screen.findByText('Coordonnées bancaires')).toBeInTheDocument()
-      expect(await screen.findByText('Profil et aide', { selector: 'h2' })).toBeInTheDocument()
-      expect(await screen.findByText('Profil')).toBeInTheDocument()
-      expect(await screen.findByText('Aide et support')).toBeInTheDocument()
-      expect(await screen.findByText('Modalités d’usage', { selector: 'h2' })).toBeInTheDocument()
-    })
-
-    it('should display help links', async () => {
-      const contactLink = await screen.findByText('Contacter le support', { selector: 'a' })
-      const cguLink = await screen.findByText('Conditions Générales d’Utilisation', {
-        selector: 'a',
+    describe('profileAndSupport', () => {
+      it('should display section and subsection titles', () => {
+        expect(screen.getByText('Profil et aide', { selector: 'h2' })).toBeInTheDocument()
+        expect(screen.getByText('Profil')).toBeInTheDocument()
+        expect(screen.getByText('Aide et support')).toBeInTheDocument()
+        expect(screen.getByText('Modalités d’usage', { selector: 'h2' })).toBeInTheDocument()
       })
-      const faqLink = await screen.findByText('Foire Aux Questions', { selector: 'a' })
 
-      expect(contactLink).toBeInTheDocument()
-      expect(cguLink).toBeInTheDocument()
-      expect(faqLink).toBeInTheDocument()
-
-      expect(contactLink.getAttribute('href')).toBe('mailto:support@passculture.app')
-      expect(cguLink.getAttribute('href')).toBe('https://pass.culture.fr/cgu-professionnels/')
-      expect(faqLink.getAttribute('href')).toBe(
-        'https://aide.passculture.app/fr/category/acteurs-culturels-1t20dhs/'
-      )
-    })
-
-    it('should display offerer select', () => {
-      const selectedOffer = baseOfferers[0]
-      expect(screen.getByDisplayValue(selectedOffer.name)).toBeInTheDocument()
-    })
-
-    it('should display first offerer informations', async () => {
-      const selectedOfferer = baseOfferers[0]
-      const selectedOffererAddress = `${selectedOfferer.address} ${selectedOfferer.postalCode} ${selectedOfferer.city}`
-      expect(await screen.findByText(selectedOfferer.siren)).toBeInTheDocument()
-      expect(
-        await screen.findByText(selectedOfferer.name, { selector: 'span' })
-      ).toBeInTheDocument()
-      expect(await screen.findByText(selectedOffererAddress)).toBeInTheDocument()
-    })
-
-    it('should display first offerer bank information', async () => {
-      const selectedOfferer = baseOfferers[0]
-      expect(await screen.findByText(selectedOfferer.iban)).toBeInTheDocument()
-      expect(await screen.findByText(selectedOfferer.bic)).toBeInTheDocument()
-    })
-
-    it('should display offerer venues informations', async () => {
-      const selectedOfferer = baseOfferers[0]
-      const virtualVenueTitle = await screen.findByText('Lieu numérique')
-      expect(virtualVenueTitle).toBeInTheDocument()
-
-      const offlineVenueTitle = await screen.findByText(selectedOfferer.managedVenues[1].name)
-      expect(offlineVenueTitle).toBeInTheDocument()
-      const offlineVenueContainer = offlineVenueTitle.closest('div')
-      expect(
-        within(offlineVenueContainer).getByText('Modifier', { exact: false })
-      ).toBeInTheDocument()
-
-      const secondOfflineVenueTitle = await screen.findByText(
-        selectedOfferer.managedVenues[2].publicName
-      )
-      expect(secondOfflineVenueTitle).toBeInTheDocument()
-    })
-
-    describe('when selected offerer change', () => {
-      let newSelectedOfferer
-      beforeEach(async () => {
-        const selectedOffer = baseOfferers[0]
-        newSelectedOfferer = {
-          ...baseOfferers[1],
-          managedVenues: [
-            {
-              id: 'test_venue_id_3',
-              isVirtual: true,
-              managingOffererId: baseOfferers[1].id,
-              name: 'New venue (Offre numérique)',
-              offererName: baseOfferers[1].name,
-              publicName: null,
-              nOffers: 2,
-            },
-            {
-              id: 'test_venue_id_4',
-              isVirtual: false,
-              managingOffererId: baseOfferers[1].id,
-              name: 'New venue (Offre physique)',
-              offererName: baseOfferers[1].name,
-              publicName: null,
-              nOffers: 2,
-            },
-            {
-              id: 'test_venue_id_5',
-              isVirtual: false,
-              managingOffererId: baseOfferers[1].id,
-              name: 'Second new venue (Offre physique)',
-              offererName: baseOfferers[1].name,
-              publicName: 'Second new venue public name',
-              nOffers: 2,
-            },
-          ],
-        }
-        pcapi.getOfferer.mockResolvedValue(newSelectedOfferer)
-        await act(async () => {
-          await fireEvent.change(screen.getByDisplayValue(selectedOffer.name), {
-            target: { value: newSelectedOfferer.id },
-          })
+      it('should display help links', () => {
+        const contactLink = screen.getByText('Contacter le support', { selector: 'a' })
+        const cguLink = screen.getByText('Conditions Générales d’Utilisation', {
+          selector: 'a',
         })
-      })
+        const faqLink = screen.getByText('Foire Aux Questions', { selector: 'a' })
 
-      it('should change displayed offerer informations', async () => {
-        const selectedOffererAddress = `${newSelectedOfferer.address} ${newSelectedOfferer.postalCode} ${newSelectedOfferer.city}`
+        expect(contactLink).toBeInTheDocument()
+        expect(cguLink).toBeInTheDocument()
+        expect(faqLink).toBeInTheDocument()
 
-        expect(await screen.findByText(newSelectedOfferer.siren)).toBeInTheDocument()
-        expect(
-          await screen.findByText(newSelectedOfferer.name, { selector: 'span' })
-        ).toBeInTheDocument()
-        expect(await screen.findByText(selectedOffererAddress)).toBeInTheDocument()
-      })
-
-      it('should change displayed bank information', async () => {
-        expect(await screen.findByText(newSelectedOfferer.iban)).toBeInTheDocument()
-        expect(await screen.findByText(newSelectedOfferer.bic)).toBeInTheDocument()
-      })
-
-      it('should display new offerer venues informations', async () => {
-        const virtualVenueTitle = await screen.findByText('Lieu numérique')
-        expect(virtualVenueTitle).toBeInTheDocument()
-
-        const offlineVenueTitle = await screen.findByText(newSelectedOfferer.managedVenues[1].name)
-        expect(offlineVenueTitle).toBeInTheDocument()
-        const offlineVenueContainer = offlineVenueTitle.closest('div')
-        expect(
-          within(offlineVenueContainer).getByText('Modifier', { exact: false })
-        ).toBeInTheDocument()
-
-        const secondOfflineVenueTitle = await screen.findByText(
-          newSelectedOfferer.managedVenues[2].publicName
+        expect(contactLink.getAttribute('href')).toBe('mailto:support@passculture.app')
+        expect(cguLink.getAttribute('href')).toBe('https://pass.culture.fr/cgu-professionnels/')
+        expect(faqLink.getAttribute('href')).toBe(
+          'https://aide.passculture.app/fr/category/acteurs-culturels-1t20dhs/'
         )
-        expect(secondOfflineVenueTitle).toBeInTheDocument()
       })
-    })
-  })
-
-  describe("when offerer doesn't have neither physical venue nor virtual offers", () => {
-    it('should display add information link', async () => {
-      baseOfferers = [
-        {
-          ...baseOfferers[0],
-          managedVenues: [
-            {
-              id: 'test_venue_id_1',
-              isVirtual: true,
-              managingOffererId: 'GE',
-              name: 'Le Sous-sol (Offre numérique)',
-              offererName: 'Bar des amis',
-              publicName: null,
-              nOffers: 0,
-            },
-          ],
-        },
-      ]
-      pcapi.getOfferer.mockResolvedValue(baseOfferers[0])
-      await renderHomePage()
-
-      expect(
-        await screen.findByRole('link', {
-          name: 'Créer un lieu',
-        })
-      ).toBeInTheDocument()
-      expect(
-        await screen.findByRole('link', {
-          name: 'Créer une offre numérique',
-        })
-      ).toBeInTheDocument()
-    })
-  })
-
-  describe("when offerer doesn't have bank informations", () => {
-    it('should display add information link', async () => {
-      baseOfferers = [
-        {
-          ...baseOfferers[0],
-          bic: '',
-          iban: '',
-        },
-      ]
-      pcapi.getOfferer.mockResolvedValue(baseOfferers[0])
-      await renderHomePage()
-
-      const link = await screen.findByRole('link', {
-        name: 'Renseignez les coordonnées bancaires de la structure',
-      })
-      expect(link).toBeInTheDocument()
-      const warningIcons = await screen.findAllByAltText('Informations bancaires manquantes')
-      let nbWarningIcons = 0
-      nbWarningIcons += 1 // in offerers header
-      nbWarningIcons += 1 // in bank account card title
-      expect(warningIcons).toHaveLength(nbWarningIcons)
-    })
-
-    it("shouldn't display bank warning if all venues have bank informations", async () => {
-      baseOfferers = [
-        {
-          ...baseOfferers[0],
-          bic: '',
-          iban: '',
-          managedVenues: baseOfferers[0].managedVenues.map(venue => {
-            return {
-              ...venue,
-              bic: 'fake_bic',
-              iban: 'fake_iban',
-            }
-          }),
-        },
-      ]
-      pcapi.getOfferer.mockResolvedValue(baseOfferers[0])
-      await renderHomePage()
-
-      const warningIcons = await screen.queryByAltText('Informations bancaires manquantes')
-      expect(warningIcons).not.toBeInTheDocument()
-    })
-
-    it('should display file information for pending registration', async () => {
-      baseOfferers = [
-        {
-          ...baseOfferers[0],
-          bic: '',
-          iban: '',
-          demarchesSimplifieesApplicationId: 'demarchesSimplifieesApplication_fake_id',
-        },
-      ]
-      pcapi.getOfferer.mockResolvedValue(baseOfferers[0])
-      await renderHomePage()
-
-      expect(await screen.findByRole('link', { name: 'Voir le dossier' })).toBeInTheDocument()
-      const warningIcons = await screen.queryByAltText('Informations bancaires manquantes')
-      expect(warningIcons).not.toBeInTheDocument()
     })
   })
 })

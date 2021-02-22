@@ -10,13 +10,11 @@ import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
 import OffererDetails from './OffererDetails'
 
-import BankInformations from './BankInformations'
-
 const Offerers = ({ isVenueCreationAvailable }) => {
   const [offererOptions, setOffererOptions] = useState([])
   const [selectedOffererId, setSelectedOffererId] = useState(null)
   const [selectedOfferer, setSelectedOfferer] = useState(null)
-  const [offlineVenues, setOfflineVenues] = useState([])
+  const [physicalVenues, setPhysicalVenues] = useState([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(function fetchData() {
@@ -30,7 +28,7 @@ const Offerers = ({ isVenueCreationAvailable }) => {
     if (!selectedOffererId) return
     pcapi.getOfferer(selectedOffererId).then(receivedOfferer => {
       setSelectedOfferer(receivedOfferer)
-      setOfflineVenues(receivedOfferer.managedVenues.filter(venue => !venue.isVirtual))
+      setPhysicalVenues(receivedOfferer.managedVenues.filter(venue => !venue.isVirtual))
       setIsLoading(false)
     })
   }, [setIsLoading, selectedOffererId, setSelectedOfferer])
@@ -38,8 +36,8 @@ const Offerers = ({ isVenueCreationAvailable }) => {
   const displayCreateVenueBanner = useMemo(() => {
     if (!selectedOfferer) return false
     const virtualVenue = selectedOfferer.managedVenues.find(venue => venue.isVirtual)
-    return !offlineVenues.length && !virtualVenue.nOffers
-  }, [selectedOfferer, offlineVenues])
+    return !physicalVenues.length && !virtualVenue.nOffers
+  }, [selectedOfferer, physicalVenues])
 
   const handleChangeOfferer = useCallback(
     event => {
@@ -69,6 +67,7 @@ const Offerers = ({ isVenueCreationAvailable }) => {
     <>
       <OffererDetails
         handleChangeOfferer={handleChangeOfferer}
+        hasPhysicalVenues={physicalVenues.length > 0}
         offererOptions={offererOptions}
         selectedOfferer={selectedOfferer}
       />
@@ -116,8 +115,9 @@ const Offerers = ({ isVenueCreationAvailable }) => {
               </div>
             </div>
           </div>
-          {offlineVenues &&
-            offlineVenues.map(venue => (
+
+          {physicalVenues &&
+            physicalVenues.map(venue => (
               <div
                 className="h-section-row nested"
                 key={venue.id}

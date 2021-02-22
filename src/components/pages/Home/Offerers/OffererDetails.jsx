@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import Icon from 'components/layout/Icon'
@@ -7,13 +7,22 @@ import Select from 'components/layout/inputs/Select'
 
 import { STEP_ID_OFFERERS, steps } from '../HomepageBreadcrumb'
 
-import BankInformations from "./BankInformations"
+import BankInformations from './BankInformations'
 
 const hasBankInformations = offererOrVenue =>
-  Boolean((offererOrVenue.iban && offererOrVenue.bic) || offererOrVenue.demarchesSimplifieesApplicationId)
+  Boolean(
+    (offererOrVenue.iban && offererOrVenue.bic) || offererOrVenue.demarchesSimplifieesApplicationId
+  )
 
-const OffererDetails = ({ handleChangeOfferer, offererOptions, selectedOfferer }) => {
-  const [isVisible, setIsVisible] = useState(true)
+const OffererDetails = ({
+  handleChangeOfferer,
+  hasPhysicalVenues,
+  offererOptions,
+  selectedOfferer,
+}) => {
+  const [isVisible, setIsVisible] = useState(!hasPhysicalVenues)
+
+  useEffect(() => setIsVisible(!hasPhysicalVenues), [hasPhysicalVenues])
 
   const toggleVisibility = useCallback(
     () => setIsVisible(currentVisibility => !currentVisibility),
@@ -30,7 +39,7 @@ const OffererDetails = ({ handleChangeOfferer, offererOptions, selectedOfferer }
 
   return (
     <div className="h-card h-card-secondary">
-      <div className={`h-card-inner${isVisible?"":" h-no-bottom"}`}>
+      <div className={`h-card-inner${isVisible ? '' : ' h-no-bottom'}`}>
         <div className="od-header">
           <Select
             handleSelection={handleChangeOfferer}
@@ -99,7 +108,7 @@ const OffererDetails = ({ handleChangeOfferer, offererOptions, selectedOfferer }
                         {'Siège social : '}
                       </span>
                       <span className="h-dl-description">
-                        {selectedOfferer.address}
+                        {selectedOfferer.address} 
                         {' '}
                         {selectedOfferer.postalCode}
                         {' '}
@@ -126,7 +135,13 @@ const OffererDetails = ({ handleChangeOfferer, offererOptions, selectedOfferer }
 
 OffererDetails.propTypes = {
   handleChangeOfferer: PropTypes.func.isRequired,
-  offererOptions: PropTypes.shape().isRequired,
+  hasPhysicalVenues: PropTypes.bool.isRequired,
+  offererOptions: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+    })
+  ).isRequired,
   selectedOfferer: PropTypes.shape().isRequired,
 }
 
