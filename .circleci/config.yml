@@ -195,18 +195,26 @@ jobs:
           password: $DOCKERHUB_PASSWORD
     steps:
       - checkout
-      - restore_cache:
-          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
+      - unless:
+          condition:
+            equal: [ "master", << pipeline.git.branch >> ]
+          steps:
+            - restore_cache:
+                key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
       - run:
           name: Install requirements
           command: |
             python3 -m venv venv
             . venv/bin/activate
             pip install -r requirements.txt
-      - save_cache:
-          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
-          paths:
-            - "venv"
+      - unless:
+          condition:
+            equal: [ "master", << pipeline.git.branch >> ]
+          steps:
+            - save_cache:
+                key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
+                paths:
+                  - "venv"
       - run:
           name: Install pcapi Python package
           command: |
