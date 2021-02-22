@@ -17,8 +17,6 @@
 }
 
 .bi-link {
-  @include tertiary();
-
   &.bi-external-link--mod-topright {
     position: absolute;
     right: 0;

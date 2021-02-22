@@ -12,7 +12,7 @@ const Banner = ({ icon, href, linkTitle, subtitle, type }) => {
 
       <p>
         <a
-          className="bi-link"
+          className="bi-link tertiary-link"
           href={href}
           rel="noopener noreferrer"
           target="_blank"
