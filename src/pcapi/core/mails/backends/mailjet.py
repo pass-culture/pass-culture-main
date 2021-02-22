@@ -49,7 +49,7 @@ class MailjetBackend(BaseBackend):
                 _add_template_debugging(data)
 
         try:
-            response = self.mailjet_client.send.create(data=data)
+            response = self.mailjet_client.send.create(data=data, timeout=settings.MAILJET_HTTP_TIMEOUT)
         except Exception as exc:  # pylint: disable=broad-except
             logger.exception("Error trying to send e-mail with Mailjet: %s", exc)
             return MailResult(
@@ -68,7 +68,7 @@ class MailjetBackend(BaseBackend):
 
     def create_contact(self, email: str) -> Response:
         data = {"Email": email}
-        return self.mailjet_client.contact.create(data=data)
+        return self.mailjet_client.contact.create(data=data, timeout=settings.MAILJET_HTTP_TIMEOUT)
 
     def update_contact(self, email: str, *, birth_date: datetime.date, department: str) -> Response:
         birth_timestamp = int(datetime.datetime.combine(birth_date, datetime.time(0, 0)).timestamp())
@@ -79,7 +79,7 @@ class MailjetBackend(BaseBackend):
                 {"Name": "département", "Value": department},
             ]
         }
-        return self.mailjet_client.contactdata.update(id=email, data=data)
+        return self.mailjet_client.contactdata.update(id=email, data=data, timeout=settings.MAILJET_HTTP_TIMEOUT)
 
     def add_contact_to_list(self, email: str, list_id: str) -> Response:
         data = {
@@ -87,7 +87,7 @@ class MailjetBackend(BaseBackend):
             "ContactAlt": email,
             "ListID": list_id,
         }
-        return self.mailjet_client.listrecipient.create(data=data)
+        return self.mailjet_client.listrecipient.create(data=data, timeout=settings.MAILJET_HTTP_TIMEOUT)
 
 
 class ToDevMailjetBackend(MailjetBackend):
