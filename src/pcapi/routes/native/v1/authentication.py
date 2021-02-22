@@ -90,6 +90,7 @@ def reset_password(body: ResetPasswordRequest) -> None:
     check_password_strength("newPassword", body.new_password)
 
     user.setPassword(body.new_password)
+    user.isEmailValidated = True
     repository.save(user)
 
 

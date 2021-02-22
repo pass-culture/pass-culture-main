@@ -211,6 +211,23 @@ def test_reset_password_success(app):
     assert user.password == hash_password(new_password)
 
 
+def test_reset_password_for_unvalidated_email(app):
+    new_password = "New_password1998!"
+
+    user = users_factories.UserFactory(isEmailValidated=False)
+
+    token = Token(from_dict={"userId": user.id, "value": "secret-value", "type": TokenType.RESET_PASSWORD})
+    repository.save(token)
+
+    data = {"reset_password_token": token.value, "new_password": new_password}
+    response = TestClient(app.test_client()).post("/native/v1/reset_password", json=data)
+
+    user = find_user_by_id(user.id)
+    assert response.status_code == 204
+    assert user.password == hash_password(new_password)
+    assert user.isEmailValidated
+
+
 def test_reset_password_fail_for_password_strength(app):
     reset_token = random_token()
     user = users_factories.UserFactory(
