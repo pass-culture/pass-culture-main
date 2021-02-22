@@ -47,8 +47,38 @@ const renderHomePage = async () => {
 describe('offererDetails', () => {
   let baseOfferers
   let baseOfferersNames
+  let virtualVenue
+  let physicalVenue
+  let physicalVenueWithPublicName
 
   beforeEach(() => {
+    virtualVenue = {
+      id: 'test_venue_id_1',
+      isVirtual: true,
+      managingOffererId: 'GE',
+      name: 'Le Sous-sol (Offre numérique)',
+      offererName: 'Bar des amis',
+      publicName: null,
+      nOffers: 2,
+    }
+    physicalVenue = {
+      id: 'test_venue_id_2',
+      isVirtual: false,
+      managingOffererId: 'GE',
+      name: 'Le Sous-sol (Offre physique)',
+      offererName: 'Bar des amis',
+      publicName: null,
+      nOffers: 2,
+    }
+    physicalVenueWithPublicName = {
+      id: 'test_venue_id_3',
+      isVirtual: false,
+      managingOffererId: 'GE',
+      name: 'Le deuxième Sous-sol (Offre physique)',
+      offererName: 'Bar des amis',
+      publicName: 'Le deuxième Sous-sol',
+      nOffers: 2,
+    }
     baseOfferers = [
       {
         address: 'LA COULÉE D’OR',
@@ -59,35 +89,7 @@ describe('offererDetails', () => {
         siren: '111111111',
         bic: 'test bic 01',
         iban: 'test iban 01',
-        managedVenues: [
-          {
-            id: 'test_venue_id_1',
-            isVirtual: true,
-            managingOffererId: 'GE',
-            name: 'Le Sous-sol (Offre numérique)',
-            offererName: 'Bar des amis',
-            publicName: null,
-            nOffers: 2,
-          },
-          {
-            id: 'test_venue_id_2',
-            isVirtual: false,
-            managingOffererId: 'GE',
-            name: 'Le Sous-sol (Offre physique)',
-            offererName: 'Bar des amis',
-            publicName: null,
-            nOffers: 2,
-          },
-          {
-            id: 'test_venue_id_3',
-            isVirtual: false,
-            managingOffererId: 'GE',
-            name: 'Le deuxième Sous-sol (Offre physique)',
-            offererName: 'Bar des amis',
-            publicName: 'Le deuxième Sous-sol',
-            nOffers: 2,
-          },
-        ],
+        managedVenues: [virtualVenue, physicalVenue, physicalVenueWithPublicName],
       },
       {
         address: 'RUE DE NIEUPORT',
@@ -164,6 +166,25 @@ describe('offererDetails', () => {
 
     const secondOfflineVenueTitle = screen.getByText(selectedOfferer.managedVenues[2].publicName)
     expect(secondOfflineVenueTitle).toBeInTheDocument()
+  })
+
+  it('should not display virtual venue informations when no virtual offers', async () => {
+    // Given
+    baseOfferers[0].managedVenues = [
+      {
+        ...virtualVenue,
+        nOffers: 0,
+      },
+      physicalVenue,
+    ]
+
+    // When
+    await renderHomePage()
+
+    // Then
+    expect(
+      screen.queryByRole('heading', { level: 3, name: 'Lieu numérique', exact: false })
+    ).not.toBeInTheDocument()
   })
 
   describe('when selected offerer change', () => {
