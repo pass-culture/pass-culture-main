@@ -50,6 +50,7 @@ class GetOffererResponseModel(BaseModel):
     city: str
     dateCreated: datetime
     dateModifiedAtLastProvider: Optional[datetime]
+    demarchesSimplifieesApplicationId: Optional[str]
     fieldsUpdated: List[str]
     iban: Optional[str]
     id: str

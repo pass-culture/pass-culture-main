@@ -3,6 +3,8 @@ import pytest
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.model_creators.generic_creators import create_bank_information
+import pcapi.models.offerer as offerer_models
+from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
@@ -27,19 +29,67 @@ class Returns200:
     @pytest.mark.usefixtures("db_session")
     def when_user_has_rights_on_offerer(self, app):
         # given
-        pro = users_factories.UserFactory(isBeneficiary=False)
-        venue = offers_factories.VenueFactory()
-        offers_factories.UserOffererFactory(user=pro, offerer=venue.managingOfferer)
 
-        create_bank_information(venue=venue)
+        pro = users_factories.UserFactory(isBeneficiary=False)
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+
+        offerer_bank_information = create_bank_information(offerer=offerer)
+        venue_bank_information = create_bank_information(venue=venue, application_id=2)
+        offerer = offerer_models.Offerer.query.filter_by(id=offerer.id).first()
 
         # when
-        response = (
-            TestClient(app.test_client()).with_auth(pro.email).get(f"/offerers/{humanize(venue.managingOfferer.id)}")
-        )
+        response = TestClient(app.test_client()).with_auth(pro.email).get(f"/offerers/{humanize(offerer.id)}")
+
+        expected_serialized_offerer = {
+            "address": offerer.address,
+            "bic": offerer_bank_information.bic,
+            "iban": offerer_bank_information.iban,
+            "city": offerer.city,
+            "dateCreated": format_into_utc_date(offerer.dateCreated),
+            "dateModifiedAtLastProvider": format_into_utc_date(offerer.dateModifiedAtLastProvider),
+            "demarchesSimplifieesApplicationId": str(offerer.demarchesSimplifieesApplicationId),
+            "fieldsUpdated": offerer.fieldsUpdated,
+            "id": humanize(offerer.id),
+            "idAtProviders": offerer.idAtProviders,
+            "isValidated": offerer.isValidated,
+            "lastProviderId": offerer.lastProviderId,
+            "managedVenues": [
+                {
+                    "bic": venue_bank_information.bic,
+                    "iban": venue_bank_information.iban,
+                    "address": offererVenue.address,
+                    "bookingEmail": offererVenue.bookingEmail,
+                    "city": offererVenue.city,
+                    "comment": offererVenue.comment,
+                    "dateCreated": format_into_utc_date(offererVenue.dateCreated),
+                    "dateModifiedAtLastProvider": format_into_utc_date(offererVenue.dateModifiedAtLastProvider),
+                    "departementCode": offererVenue.departementCode,
+                    "id": humanize(offererVenue.id),
+                    "idAtProviders": offererVenue.idAtProviders,
+                    "isValidated": offererVenue.isValidated,
+                    "isVirtual": offererVenue.isVirtual,
+                    "lastProviderId": offererVenue.lastProviderId,
+                    "latitude": float(offererVenue.latitude),
+                    "longitude": float(offererVenue.longitude),
+                    "managingOffererId": humanize(offererVenue.managingOffererId),
+                    "name": offererVenue.name,
+                    "nOffers": offererVenue.nOffers,
+                    "postalCode": offererVenue.postalCode,
+                    "publicName": offererVenue.publicName,
+                    "siret": offererVenue.siret,
+                    "venueLabelId": humanize(offererVenue.venueLabelId),
+                    "venueTypeId": humanize(offererVenue.venueTypeId),
+                }
+                for offererVenue in offerer.managedVenues
+            ],
+            "name": offerer.name,
+            "nOffers": offerer.nOffers,
+            "postalCode": offerer.postalCode,
+            "siren": offerer.siren,
+        }
 
         # then
         assert response.status_code == 200
-        response_json = response.json
-        assert "bic" in response_json["managedVenues"][0]
-        assert "iban" in response_json["managedVenues"][0]
+        assert response.json == expected_serialized_offerer
