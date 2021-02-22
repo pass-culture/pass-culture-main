@@ -37,6 +37,7 @@ class Get:
                 "offererName": venue.managingOfferer.name,
                 "publicName": None,
                 "isVirtual": venue.isVirtual,
+                "bookingEmail": venue.bookingEmail,
             }
             assert response.json[0] == expected_venue
 

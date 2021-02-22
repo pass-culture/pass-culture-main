@@ -10,4 +10,5 @@ def to_domain(venue_sql_entity: Venue) -> VenueWithOffererName:
         name=venue_sql_entity.name,
         offerer_name=venue_sql_entity.managingOfferer.name,
         public_name=venue_sql_entity.publicName,
+        booking_email=venue_sql_entity.bookingEmail,
     )

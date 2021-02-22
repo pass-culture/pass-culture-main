@@ -7,6 +7,7 @@ class VenueWithOffererName:
         name: str,
         offerer_name: str,
         public_name: str = None,
+        booking_email: str = None,
     ):
         self.identifier = identifier
         self.is_virtual = is_virtual
@@ -14,3 +15,4 @@ class VenueWithOffererName:
         self.name = name
         self.offerer_name = offerer_name
         self.public_name = public_name
+        self.booking_email = booking_email

@@ -12,6 +12,7 @@ class SerializeVenuesWithOffererNameTest:
             name="Librairie Kléber",
             offerer_name="Gilbert Joseph",
             is_virtual=True,
+            booking_email="booking@email.com",
         )
         venue_2 = VenueWithOffererName(
             identifier=2,
@@ -20,6 +21,7 @@ class SerializeVenuesWithOffererNameTest:
             offerer_name="Gilbert Joseph",
             public_name="Mon gérant de librairies",
             is_virtual=False,
+            booking_email="email@booking.com",
         )
 
         # When
@@ -34,6 +36,7 @@ class SerializeVenuesWithOffererNameTest:
                 "offererName": venue_1.offerer_name,
                 "publicName": None,
                 "isVirtual": venue_1.is_virtual,
+                "bookingEmail": venue_1.booking_email,
             },
             {
                 "id": f"{humanize(venue_2.identifier)}",
@@ -42,5 +45,6 @@ class SerializeVenuesWithOffererNameTest:
                 "offererName": venue_2.offerer_name,
                 "publicName": "Mon gérant de librairies",
                 "isVirtual": venue_2.is_virtual,
+                "bookingEmail": venue_2.booking_email,
             },
         ]
