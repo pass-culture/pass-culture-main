@@ -185,4 +185,3 @@ class CriterionFactory(BaseFactory):
         model = models.Criterion
 
     name = factory.Sequence("Criterion {}".format)
-    scoreDelta = 1

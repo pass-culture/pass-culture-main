@@ -13,7 +13,8 @@ class Criterion(PcObject, Model):
 
     description = Column(Text, nullable=True)
 
-    scoreDelta = Column(Integer, nullable=False)
+    # FIXME (dbaty, 2020-02-23): remove this unused field after the deployment of v124
+    scoreDelta = Column(Integer, nullable=True)
 
     startDateTime = Column(DateTime, nullable=True)
 

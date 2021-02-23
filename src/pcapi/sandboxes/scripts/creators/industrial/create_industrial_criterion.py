@@ -12,19 +12,16 @@ def create_industrial_criteria() -> dict:
     criterion1 = Criterion()
     criterion1.name = "Bonne offre d’appel"
     criterion1.description = "Offre déjà beaucoup réservée par les autres jeunes"
-    criterion1.scoreDelta = 1
     criteria_by_name[criterion1.name] = criterion1
 
     criterion2 = Criterion()
     criterion2.name = "Mauvaise accroche"
     criterion2.description = "Offre ne possédant pas une accroche de qualité suffisante"
-    criterion2.scoreDelta = -1
     criteria_by_name[criterion2.name] = criterion2
 
     criterion3 = Criterion()
     criterion3.name = "Offre de médiation spécifique"
     criterion3.description = "Offre possédant une médiation orientée pour les jeunes de 18 ans"
-    criterion3.scoreDelta = 2
     criteria_by_name[criterion3.name] = criterion3
 
     repository.save(*criteria_by_name.values())

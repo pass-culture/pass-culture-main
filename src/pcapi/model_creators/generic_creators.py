@@ -115,7 +115,6 @@ def create_criterion(description: str = None, name: str = "best offer", score_de
     criterion = Criterion()
     criterion.name = name
     criterion.description = description
-    criterion.scoreDelta = score_delta
 
     return criterion
 
