@@ -36,6 +36,7 @@
 
     .h-card-inner {
       border-left: rem(8px) solid $grey-medium;
+      height: 100%;
       padding: rem(16px) rem(16px) rem(24px);
       width: 100%;
 
@@ -47,7 +48,13 @@
     .h-card-header-row {
       display: flex;
       flex-direction: row;
+      height: rem(18px);
       justify-content: space-between;
+
+      .tertiary-link {
+        align-self: center;
+        display: flex;
+      }
     }
 
     &.h-card-primary {
@@ -81,6 +88,7 @@
       flex-direction: row;
 
       .h-card-title-ico {
+        margin-left: rem(-8px);
         margin-right: rem(3px);
       }
     }
