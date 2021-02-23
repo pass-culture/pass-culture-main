@@ -20,6 +20,7 @@ from pcapi.domain.user_emails import send_booking_confirmation_email_to_benefici
 from pcapi.domain.user_emails import send_booking_recap_emails
 from pcapi.domain.user_emails import send_expired_bookings_recap_email_to_beneficiary
 from pcapi.domain.user_emails import send_expired_bookings_recap_email_to_offerer
+from pcapi.domain.user_emails import send_newly_eligible_user_email
 from pcapi.domain.user_emails import send_offerer_bookings_recap_email_after_offerer_cancellation
 from pcapi.domain.user_emails import send_offerer_driven_cancellation_email_to_offerer
 from pcapi.domain.user_emails import send_ongoing_offerer_attachment_information_email_to_pro
@@ -533,3 +534,19 @@ class SendSoonToBeExpiredBookingsRecapEmailToBeneficiaryTest:
             user, [soon_to_be_expired_cd_booking, soon_to_be_expired_dvd_booking]
         )
         assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 12345
+
+
+class SendNewlyEligibleUserEmailTest:
+    def test_send_activation_email(self):
+        # given
+        beneficiary = users_factories.UserFactory.build()
+
+        # when
+        send_newly_eligible_user_email(beneficiary)
+
+        # then
+        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2030056
+        assert (
+            mails_testing.outbox[0].sent_data["Vars"]["nativeAppLink"]
+            == "https://app.passculture-testing.beta.gouv.fr/"
+        )

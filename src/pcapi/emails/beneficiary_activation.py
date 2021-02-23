@@ -46,3 +46,14 @@ def get_accepted_as_beneficiary_email_data() -> Dict:
         "Mj-TemplateLanguage": True,
         "Vars": {},
     }
+
+
+def get_newly_eligible_user_email_data() -> Dict:
+    email_link = f"{settings.NATIVE_APP_URL}/"
+    return {
+        "Mj-TemplateID": 2030056,
+        "Mj-TemplateLanguage": True,
+        "Vars": {
+            "nativeAppLink": email_link,
+        },
+    }

@@ -210,6 +210,11 @@ def send_rejection_email_to_beneficiary_pre_subscription(
     mails.send(recipients=[beneficiary_pre_subscription.email], data=data)
 
 
+def send_newly_eligible_user_email(user: User) -> bool:
+    data = beneficiary_activation.get_newly_eligible_user_email_data()
+    return mails.send(recipients=[user.email], data=data)
+
+
 def _build_recipients_list(booking: Booking) -> str:
     recipients = []
     offerer_booking_email = booking.stock.offer.bookingEmail
