@@ -9,11 +9,10 @@ from wtforms.validators import DataRequired
 
 from pcapi import settings
 from pcapi.admin.base_configuration import BaseAdminView
+from pcapi.admin.custom_views.mixins.suspension_mixin import SuspensionMixin
 from pcapi.core.users.models import User
 from pcapi.domain.user_emails import send_activation_email
 from pcapi.models import UserOfferer
-
-from .suspension_mixin import SuspensionMixin
 
 
 class BeneficiaryUserView(SuspensionMixin, BaseAdminView):

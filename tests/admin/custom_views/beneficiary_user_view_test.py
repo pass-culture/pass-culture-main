@@ -4,7 +4,7 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.admin.custom_views.beneficiary_user_view import BeneficiaryUserView
-from pcapi.admin.custom_views.suspension_mixin import _allow_suspension_and_unsuspension
+from pcapi.admin.custom_views.mixins.suspension_mixin import _allow_suspension_and_unsuspension
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import User

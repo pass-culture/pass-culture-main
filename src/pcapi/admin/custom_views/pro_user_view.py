@@ -17,7 +17,7 @@ from pcapi.models.offerer import Offerer
 from pcapi.validation.models.has_address_mixin import POSTAL_CODE_REGEX
 
 from ...core.offerers.api import create_digital_venue
-from .suspension_mixin import SuspensionMixin
+from .mixins.suspension_mixin import SuspensionMixin
 
 
 def unique_siren(form: Form, field: Field) -> None:
