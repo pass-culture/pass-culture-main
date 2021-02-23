@@ -3,6 +3,7 @@ from enum import Enum
 from flask_admin.base import Admin
 from sqlalchemy.orm.session import Session
 
+from pcapi.admin.custom_views.admin_user_view import AdminUserView
 from pcapi.admin.custom_views.allocine_pivot_view import AllocinePivotView
 from pcapi.admin.custom_views.beneficiary_import_view import BeneficiaryImportView
 from pcapi.admin.custom_views.beneficiary_user_view import BeneficiaryUserView
@@ -59,6 +60,15 @@ def install_admin_views(admin: Admin, session: Session) -> None:
             name="Comptes Pros",
             category=Category.USERS,
             endpoint="/pro_users",
+        )
+    )
+    admin.add_view(
+        AdminUserView(
+            User,
+            session,
+            name="Comptes admin",
+            category=Category.USERS,
+            endpoint="/admin_users",
         )
     )
     admin.add_view(
