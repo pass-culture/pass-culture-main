@@ -1,0 +1,40 @@
+.venue-stats {
+  padding: rem(24px) rem(8px) rem(40px);
+
+  .h-card-col {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+
+    .venue-stat-amount,
+    .venue-stat-label,
+    .venue-stat-link {
+      display: inline-block;
+      text-align: center;
+    }
+
+    .venue-stat-amount {
+      @include title3();
+    }
+
+    .venue-stat-label {
+      flex: 1;
+      margin: rem(8px) 0 rem(16px);
+    }
+
+    .venue-stat-link {
+      color: $primary;
+      line-height: rem(20px);
+
+      svg {
+        display: block;
+        margin: auto;
+
+        .ico-plus {
+          fill: $primary;
+        }
+      }
+    }
+  }
+}

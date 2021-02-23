@@ -1,13 +1,15 @@
 import React from 'react'
 
-import { Venue } from 'components/pages/Home/Venues/Venue'
+import Venue from 'components/pages/Home/Venues/Venue'
 
 export const VenueList = ({ physicalVenues, selectedOffererId, virtualVenue }) => (
   <div className="h-venue-list">
     {virtualVenue && (
       <Venue
+        id={virtualVenue.id}
         isVirtual
-        name="Lieu numérique"
+        name="Offres numériques"
+        offererId={selectedOffererId}
       />
     )}
 

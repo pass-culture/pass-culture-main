@@ -163,7 +163,7 @@ describe('offererDetails', () => {
     fireEvent.click(showButton)
 
     const selectedOfferer = baseOfferers[0]
-    const virtualVenueTitle = screen.getByText('Lieu numérique')
+    const virtualVenueTitle = screen.getByText('Offres numériques')
     expect(virtualVenueTitle).toBeInTheDocument()
 
     const physicalVenueTitle = screen.getByText(selectedOfferer.managedVenues[1].name)
@@ -192,7 +192,7 @@ describe('offererDetails', () => {
 
     // Then
     expect(
-      screen.queryByRole('heading', { level: 3, name: 'Lieu numérique', exact: false })
+      screen.queryByRole('heading', { level: 3, name: 'Offres numériques', exact: false })
     ).not.toBeInTheDocument()
   })
 
@@ -257,7 +257,7 @@ describe('offererDetails', () => {
     })
 
     it('should display new offerer venues informations', async () => {
-      const virtualVenueTitle = screen.getByText('Lieu numérique')
+      const virtualVenueTitle = screen.getByText('Offres numériques')
       expect(virtualVenueTitle).toBeInTheDocument()
 
       const physicalVenueTitle = screen.getByText(newSelectedOfferer.managedVenues[1].name)
