@@ -207,7 +207,7 @@ const OfferForm = ({
   )
   useEffect(
     function setBookingEmail() {
-      if (!isEdition) {
+      if (!initialValues.bookingEmail) {
         if (offerType?.onlineOnly) {
           handleFormUpdate({ bookingEmail: userEmail })
         } else {
@@ -216,7 +216,7 @@ const OfferForm = ({
         }
       }
     },
-    [venue, offerType, handleFormUpdate, userEmail, isEdition]
+    [initialValues.bookingEmail, venue, offerType, handleFormUpdate, userEmail, isEdition]
   )
 
   const selectOfferer = useCallback(

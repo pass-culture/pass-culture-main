@@ -62,7 +62,9 @@ describe('offerDetails - Edition', () => {
   let editedOfferVenue
 
   beforeEach(() => {
-    store = configureTestStore({ data: { users: [{ publicName: 'François', isAdmin: false }] } })
+    store = configureTestStore({
+      data: { users: [{ publicName: 'François', isAdmin: false, email: 'francois@example.com' }] },
+    })
     types = [
       {
         conditionalFields: [],
@@ -93,6 +95,7 @@ describe('offerDetails - Edition', () => {
       managingOffererId: venueManagingOfferer.id,
       name: 'Le lieu',
       offererName: 'La structure',
+      bookingEmail: 'venue@example.com',
     }
 
     editedOffer = {
@@ -1091,6 +1094,39 @@ describe('offerDetails - Edition', () => {
         expect(isDuoInput).toBeEnabled()
       })
     })
+
+    describe('when booking email checkbox is not checked yet and user checks it', () => {
+      it('should prefill booking email input with correct value', async () => {
+        // given
+        const editedOffer = {
+          id: 'ABC12',
+          name: 'My edited offer',
+          type: 'ThingType.LIVRE_EDITION',
+          description: 'Offer description',
+          venueId: editedOfferVenue.id,
+          venue: editedOfferVenue,
+          withdrawalDetails: 'Offer withdrawal details',
+          bookingEmail: null,
+          extraData: null,
+          audioDisabilityCompliant: false,
+          mentalDisabilityCompliant: false,
+          motorDisabilityCompliant: false,
+          visualDisabilityCompliant: false,
+        }
+        pcapi.loadOffer.mockResolvedValue(editedOffer)
+        await renderOffers(props, store)
+
+        // when
+        await act(async () => {
+          await setOfferValues({ receiveNotificationEmails: true })
+        })
+
+        // then
+        expect(screen.getByLabelText('Email auquel envoyer les notifications :').value).toBe(
+          'venue@example.com'
+        )
+      })
+    })
   })
 
   describe('when submitting form', () => {
@@ -1406,6 +1442,9 @@ describe('offerDetails - Edition', () => {
       pcapi.loadOffer.mockResolvedValue(editedOffer)
       await renderOffers(props, store)
       await setOfferValues({ receiveNotificationEmails: true })
+      fireEvent.change(screen.getByLabelText('Email auquel envoyer les notifications :'), {
+        target: { value: '' },
+      })
 
       // When
       userEvent.click(screen.getByText('Enregistrer'))

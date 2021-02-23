@@ -42,6 +42,7 @@ const OfferEdition = ({
   setShowThumbnailForm,
   showErrorNotification,
   submitErrors,
+  userEmail,
 }) => {
   const [types, setTypes] = useState([])
   const [readOnlyFields, setReadOnlyFields] = useState([])
@@ -113,6 +114,7 @@ const OfferEdition = ({
       showErrorNotification={showErrorNotification}
       submitErrors={submitErrors}
       types={types}
+      userEmail={userEmail}
       venues={[offer.venue]}
     />
   )
@@ -146,6 +148,7 @@ OfferEdition.propTypes = {
   setShowThumbnailForm: PropTypes.func.isRequired,
   showErrorNotification: PropTypes.func.isRequired,
   submitErrors: PropTypes.shape().isRequired,
+  userEmail: PropTypes.string.isRequired,
 }
 
 export default OfferEdition
