@@ -8,6 +8,15 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
 import Homepage from '../../Homepage'
+import { CREATE_OFFERER_SELECT_ID } from '../Offerers'
+
+const mockHistoryPush = jest.fn()
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useHistory: () => ({
+    push: mockHistoryPush,
+  }),
+}))
 
 jest.mock('utils/config', () => ({
   DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL:
@@ -262,6 +271,24 @@ describe('offererDetails', () => {
         newSelectedOfferer.managedVenues[2].publicName
       )
       expect(secondOfflineVenueTitle).toBeInTheDocument()
+    })
+  })
+
+  describe('when selecting "add offerer" option"', () => {
+    it('should redirect to offerer creation page', async () => {
+      // Given
+      const selectedOffer = baseOfferers[0]
+      await renderHomePage()
+
+      // When
+      await act(async () => {
+        await fireEvent.change(screen.getByDisplayValue(selectedOffer.name), {
+          target: { value: CREATE_OFFERER_SELECT_ID },
+        })
+      })
+
+      // Then
+      expect(mockHistoryPush).toHaveBeenCalledWith('/structures/creation')
     })
   })
 

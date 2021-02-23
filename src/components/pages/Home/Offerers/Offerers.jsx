@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 
 import { buildSelectOptions } from 'components/layout/inputs/Select'
 import Spinner from 'components/layout/Spinner'
@@ -10,6 +10,9 @@ import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
 import OffererDetails from './OffererDetails'
 
+export const CREATE_OFFERER_SELECT_ID = 'creation'
+
+
 const Offerers = ({ isVenueCreationAvailable }) => {
   const [offererOptions, setOffererOptions] = useState([])
   const [selectedOffererId, setSelectedOffererId] = useState(null)
@@ -18,10 +21,18 @@ const Offerers = ({ isVenueCreationAvailable }) => {
   const [virtualVenue, setVirtualVenue] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
 
+  const history = useHistory()
+
   useEffect(function fetchData() {
     pcapi.getAllOfferersNames().then(receivedOffererNames => {
       setSelectedOffererId(receivedOffererNames[0].id)
-      setOffererOptions(buildSelectOptions('id', 'name', receivedOffererNames))
+      setOffererOptions([
+        ...buildSelectOptions('id', 'name', receivedOffererNames),
+        {
+          displayName: '+ Ajouter une structure',
+          id: CREATE_OFFERER_SELECT_ID,
+        },
+      ])
     })
   }, [])
 
@@ -47,11 +58,13 @@ const Offerers = ({ isVenueCreationAvailable }) => {
   const handleChangeOfferer = useCallback(
     event => {
       const newOffererId = event.target.value
-      if (newOffererId !== selectedOfferer.id) {
+      if (newOffererId === CREATE_OFFERER_SELECT_ID) {
+        history.push('/structures/creation')
+      } else if (newOffererId !== selectedOfferer.id) {
         setSelectedOffererId(newOffererId)
       }
     },
-    [selectedOfferer, setSelectedOffererId]
+    [history, selectedOfferer, setSelectedOffererId]
   )
 
   if (isLoading) {
