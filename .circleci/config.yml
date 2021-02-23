@@ -627,9 +627,6 @@ workflows:
           context:
             - GCP
             - GCP_PROD
-          context:
-            - GCP
-            - GCP_EHP
       - deploy-pcapi:
           requires:
             - build-and-push-image
