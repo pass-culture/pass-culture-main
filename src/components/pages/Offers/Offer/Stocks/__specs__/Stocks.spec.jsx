@@ -980,6 +980,28 @@ describe('stocks page', () => {
               expect(pcapi.bulkCreateOrEditStock).not.toHaveBeenCalled()
             })
 
+            it('should be able to edit stock when remaining quantity is unlimited and there is existing bookings', async () => {
+              // Given
+              const eventStock = {
+                ...defaultStock,
+                beginningDatetime: '2020-12-20T22:00:00Z',
+                quantity: null,
+              }
+              pcapi.loadStocks.mockResolvedValue({ stocks: [eventStock] })
+              pcapi.bulkCreateOrEditStock.mockResolvedValue({})
+
+              await renderOffers(props, store)
+              userEvent.click(screen.getByLabelText('Heure de l’événement'))
+              userEvent.click(screen.getByText('20:00'))
+
+              // When
+              await userEvent.click(screen.getByText('Enregistrer'))
+
+              // Then
+              const errorMessage = await screen.findByText('Vos stocks ont bien été sauvegardés.')
+              expect(errorMessage).toBeInTheDocument()
+            })
+
             it('should display error message on pre-submit error', async () => {
               // Given
               await renderOffers(props, store)

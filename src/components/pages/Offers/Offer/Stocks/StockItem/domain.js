@@ -73,7 +73,7 @@ export const validateUpdatedStock = stock => {
 
   const remainingQuantity = stock.quantity - stock.bookingsQuantity
 
-  if (stock.quantity !== '' && remainingQuantity < 0) {
+  if (stock.quantity && remainingQuantity < 0) {
     const missingQuantityMessage = 'La quantité ne peut être inférieure au nombre de réservations.'
     if ('quantity' in Object.keys(errors)) {
       errors.quantity = errors.quantity.concat('\n', missingQuantityMessage)
