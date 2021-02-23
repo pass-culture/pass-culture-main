@@ -308,7 +308,7 @@ jobs:
       - run: |
           docker build ./infra/docker-images/db-ops \
             -f ./infra/docker-images/db-ops/Dockerfile \
-            --build-arg "TAG=$(cat ./api/version.txt)" \
+            --build-arg "BASE_PCAPI_TAG=$(cat ./api/version.txt)" \
             -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/db-ops:latest
       - run: docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/db-ops:latest
 
@@ -578,6 +578,16 @@ workflows:
           context:
             - GCP
             - GCP_EHP
+      - build-and-push-image-db-ops:
+          requires:
+            - build-and-push-image
+          filters:
+            branches:
+              only:
+                - staging
+          context:
+            - GCP
+            - GCP_EHP
       - deploy-pcapi:
           requires:
             - build-and-push-image
@@ -607,11 +617,6 @@ workflows:
           context:
             - GCP
             - GCP_PROD
-      - build-and-push-image-db-ops:
-          filters:
-            branches:
-              only:
-                - production
           context:
             - GCP
             - GCP_EHP
