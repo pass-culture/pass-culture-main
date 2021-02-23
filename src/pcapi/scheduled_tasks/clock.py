@@ -1,6 +1,11 @@
+from datetime import date
+from datetime import timedelta
+
 from apscheduler.schedulers.blocking import BlockingScheduler
 
 from pcapi import settings
+from pcapi.core.users.repository import get_newly_eligible_users
+from pcapi.domain.user_emails import send_newly_eligible_user_email
 from pcapi.local_providers.fnac.fnac_stocks_provider import synchronize_fnac_venues_stocks
 from pcapi.local_providers.provider_manager import synchronize_venue_providers_for_provider
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
@@ -81,6 +86,14 @@ def pc_notify_soon_to_be_expired_bookings(app) -> None:
     notify_soon_to_be_expired_bookings()
 
 
+@log_cron
+@cron_context
+def pc_notify_newly_eligible_users(app) -> None:
+    yesterday = date.today() - timedelta(days=1)
+    for user in get_newly_eligible_users(yesterday):
+        send_newly_eligible_user_email(user)
+
+
 def main():
     from pcapi.flask_app import app
 
@@ -115,6 +128,8 @@ def main():
         hour="5",
         minute="30",
     )
+
+    scheduler.add_job(pc_notify_newly_eligible_users, "cron", [app], day="*", hour="3")
 
     scheduler.start()
 
