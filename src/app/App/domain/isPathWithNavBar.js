@@ -7,6 +7,7 @@ export const isPathWithNavBar = path => {
     '/mentions-legales',
     '/criteres-(.*)',
     '/filtres(.*)',
+    '/changement-email',
     '/bienvenue',
     '/typeform',
     '/profil/email',

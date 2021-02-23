@@ -21,6 +21,7 @@ import SignupContainer from '../pages/signup/SignupContainer'
 import TutorialsContainer from '../pages/tutorials/TutorialsContainer'
 import TypeFormContainer from '../pages/typeform/TypeformContainer'
 import DiscoveryRedirectionToHome from '../pages/discovery/DiscoveryRedirectionToHome'
+import EmailChange from '../pages/email-change/EmailChange'
 
 let routes = [
   {
@@ -68,6 +69,11 @@ let routes = [
     component: ForgotPassword,
     path: '/mot-de-passe-perdu',
     title: 'Mot de passe perdu',
+  },
+  {
+    component: EmailChange,
+    path: '/changement-email',
+    title: "Changement d'email",
   },
   {
     component: TypeFormContainer,
