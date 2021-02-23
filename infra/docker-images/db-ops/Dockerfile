@@ -1,15 +1,12 @@
-ARG  TAG
-FROM europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi:${TAG}
+ARG  BASE_PCAPI_TAG
+FROM europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi:${BASE_PCAPI_TAG}
 
 RUN apt-get update \
   && apt-get install -y wget \
                         gnupg2 \
                         zip \
-                        git \
                         ca-certificates \
-                        gcc \
-                        libpq-dev \
-                        gnupg2
+  && apt-get clean
 
 ### Install gcloud
 
