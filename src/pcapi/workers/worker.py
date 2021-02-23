@@ -17,20 +17,23 @@ from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 # FIXME (cgaunet, 2021-01-13): this is to prevent Booking circular import when importing user in read_version_from_file
 from pcapi import models  # pylint: disable=unused-import
 from pcapi import settings
+from pcapi.core.logging import install_logging
 from pcapi.flask_app import app
 from pcapi.models.db import db
 from pcapi.utils.health_checker import check_database_connection
 from pcapi.utils.health_checker import read_version_from_file
-from pcapi.utils.logger import logger
 from pcapi.workers.logger import JobStatus
 from pcapi.workers.logger import build_job_log_message
 
 
+install_logging()
+
 conn = redis.from_url(settings.REDIS_URL)
-logging.getLogger("rq.worker").setLevel(logging.CRITICAL)
 
 default_queue = Queue("default", connection=conn, is_async=(not settings.IS_RUNNING_TESTS))
 low_queue = Queue("low", connection=conn, default_timeout=3600, is_async=(not settings.IS_RUNNING_TESTS))
+
+logger = logging.getLogger(__name__)
 
 
 def log_worker_error(job: Job, exception_type: Type, exception_value: Exception, traceback: Any = None) -> None:

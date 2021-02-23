@@ -7,6 +7,7 @@ from flask import Flask
 # FIXME (xordoquy, 2021-03-01): this is to prevent circular imports when importing pcapi.core.users.api
 from pcapi import models  # pylint: disable=unused-import
 from pcapi import settings
+from pcapi.core.logging import install_logging
 from pcapi.core.users import api as users_api
 from pcapi.core.users.repository import get_newly_eligible_users
 from pcapi.domain.user_emails import send_newly_eligible_user_email
@@ -24,6 +25,9 @@ from pcapi.scripts.beneficiary import remote_import
 from pcapi.scripts.booking.handle_expired_bookings import handle_expired_bookings
 from pcapi.scripts.booking.notify_soon_to_be_expired_bookings import notify_soon_to_be_expired_bookings
 from pcapi.scripts.update_booking_used import update_booking_used_after_stock_occurrence
+
+
+install_logging()
 
 
 @log_cron

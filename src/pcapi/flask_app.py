@@ -1,4 +1,5 @@
 from datetime import datetime
+import logging
 import re
 import typing
 
@@ -6,6 +7,7 @@ from flask import Blueprint
 from flask import Flask
 from flask import g
 from flask import request
+from flask.logging import default_handler
 import flask.wrappers
 from flask_admin import Admin
 from flask_cors import CORS
@@ -22,11 +24,19 @@ from sqlalchemy import orm
 from werkzeug.middleware.profiler import ProfilerMiddleware
 
 from pcapi import settings
+from pcapi.core.logging import install_logging
 from pcapi.models.db import db
 from pcapi.serialization.utils import before_handler
 from pcapi.utils.health_checker import read_version_from_file
 from pcapi.utils.json_encoder import EnumJSONEncoder
-from pcapi.utils.logger import json_logger
+
+
+# This must be called BEFORE creating `logger` below. Otherwise this
+# logger won't work with our JSON formatter.
+install_logging()
+
+
+logger = logging.getLogger(__name__)
 
 
 if settings.IS_DEV is False:
@@ -39,6 +49,9 @@ if settings.IS_DEV is False:
     )
 
 app = Flask(__name__, static_url_path="/static")
+
+# Remove default logger/handler, since we use our own (see pcapi.core.logging)
+app.logger.removeHandler(default_handler)
 
 api = SpecTree("flask", MODE="strict", before=before_handler)
 api.register(app)
@@ -55,7 +68,7 @@ if settings.PROFILE_REQUESTS:
     )
 
 if not settings.JWT_SECRET_KEY:
-    json_logger.error("JWT_SECRET_KEY not found in env")
+    logger.error("JWT_SECRET_KEY not found in env")
     raise Exception("JWT_SECRET_KEY not found in env")
 
 app.secret_key = settings.FLASK_SECRET
@@ -99,7 +112,7 @@ def log_request_details(response: flask.wrappers.Response) -> flask.wrappers.Res
         "size": response.headers.get("Content-Length", type=int),
     }
 
-    json_logger.info("request details", extra=request_data)
+    logger.info("request details", extra=request_data)
 
     return response
 

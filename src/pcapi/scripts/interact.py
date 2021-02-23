@@ -18,6 +18,7 @@ db.app = app
 # Import various functions so that they are directly available in the Python shell.
 from sqlalchemy import *
 
+from pcapi.core.logging import install_logging
 from pcapi.domain import *
 from pcapi.local_providers import *
 from pcapi.models import *
@@ -30,11 +31,13 @@ from pcapi.settings import *
 from pcapi.utils.human_ids import *
 from pcapi.utils.import_module import *
 from pcapi.utils.includes import *
-from pcapi.utils.logger import *
 from pcapi.utils.token import *
 
 
 # pylint: enable=unused-import, wildcard-import, unused-wildcard-import
+
+
+install_logging()
 
 
 def set_python_prompt():
