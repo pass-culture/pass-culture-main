@@ -2,6 +2,7 @@ from datetime import date
 from datetime import timedelta
 
 from apscheduler.schedulers.blocking import BlockingScheduler
+from flask import Flask
 
 from pcapi import settings
 from pcapi.core.users.repository import get_newly_eligible_users
@@ -26,14 +27,14 @@ from pcapi.scripts.update_booking_used import update_booking_used_after_stock_oc
 @log_cron
 @cron_context
 @cron_require_feature(FeatureToggle.UPDATE_BOOKING_USED)
-def update_booking_used(app) -> None:
+def update_booking_used(app: Flask) -> None:
     update_booking_used_after_stock_occurrence()
 
 
 @log_cron
 @cron_context
 @cron_require_feature(FeatureToggle.SYNCHRONIZE_ALLOCINE)
-def synchronize_allocine_stocks(app) -> None:
+def synchronize_allocine_stocks(app: Flask) -> None:
     allocine_stocks_provider_id = get_provider_by_local_class("AllocineStocks").id
     synchronize_venue_providers_for_provider(allocine_stocks_provider_id)
 
@@ -41,14 +42,14 @@ def synchronize_allocine_stocks(app) -> None:
 @log_cron
 @cron_context
 @cron_require_feature(FeatureToggle.SYNCHRONIZE_LIBRAIRES)
-def synchronize_libraires_stocks(app) -> None:
+def synchronize_libraires_stocks(app: Flask) -> None:
     libraires_stocks_provider_id = get_provider_by_local_class("LibrairesStocks").id
     synchronize_venue_providers_for_provider(libraires_stocks_provider_id)
 
 
 @log_cron
 @cron_context
-def synchronize_fnac_stocks(app) -> None:
+def synchronize_fnac_stocks(app: Flask) -> None:
     if not feature_queries.is_active(FeatureToggle.FNAC_SYNCHRONIZATION_V2):
         fnac_stocks_provider_id = get_provider_by_local_class("FnacStocks").id
         synchronize_venue_providers_for_provider(fnac_stocks_provider_id)
@@ -59,14 +60,14 @@ def synchronize_fnac_stocks(app) -> None:
 
 @log_cron
 @cron_context
-def synchronize_praxiel_stocks(app) -> None:
+def synchronize_praxiel_stocks(app: Flask) -> None:
     praxiel_stocks_provider_id = get_provider_by_local_class("PraxielStocks").id
     synchronize_venue_providers_for_provider(praxiel_stocks_provider_id)
 
 
 @log_cron
 @cron_context
-def pc_remote_import_beneficiaries(app) -> None:
+def pc_remote_import_beneficiaries(app: Flask) -> None:
     procedure_id = settings.DMS_NEW_ENROLLMENT_PROCEDURE_ID
     import_from_date = find_most_recent_beneficiary_creation_date_for_source(
         BeneficiaryImportSources.demarches_simplifiees, procedure_id
@@ -76,25 +77,25 @@ def pc_remote_import_beneficiaries(app) -> None:
 
 @log_cron
 @cron_context
-def pc_handle_expired_bookings(app) -> None:
+def pc_handle_expired_bookings(app: Flask) -> None:
     handle_expired_bookings()
 
 
 @log_cron
 @cron_context
-def pc_notify_soon_to_be_expired_bookings(app) -> None:
+def pc_notify_soon_to_be_expired_bookings(app: Flask) -> None:
     notify_soon_to_be_expired_bookings()
 
 
 @log_cron
 @cron_context
-def pc_notify_newly_eligible_users(app) -> None:
+def pc_notify_newly_eligible_users(app: Flask) -> None:
     yesterday = date.today() - timedelta(days=1)
     for user in get_newly_eligible_users(yesterday):
         send_newly_eligible_user_email(user)
 
 
-def main():
+def main() -> None:
     from pcapi.flask_app import app
 
     scheduler = BlockingScheduler()
