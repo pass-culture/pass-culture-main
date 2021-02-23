@@ -21,6 +21,8 @@ import {
   setOfferValues,
 } from './helpers'
 
+Element.prototype.scrollIntoView = () => {}
+
 jest.mock('repository/pcapi/pcapi', () => ({
   updateOffer: jest.fn(),
   getValidatedOfferersNames: jest.fn(),
@@ -1522,7 +1524,7 @@ describe('offerDetails - Edition', () => {
       expect(button).toBeInTheDocument()
 
       const thumbnailUploadError = await screen.findByText(
-        "L'image n'a pas pu être ajoutée. Veuillez réessayer"
+        "L'image n'a pas pu être ajoutée. Veuillez réessayer."
       )
       expect(thumbnailUploadError).toBeInTheDocument()
 
@@ -1549,7 +1551,7 @@ describe('offerDetails - Edition', () => {
       expect(addThumbnail).toBeInTheDocument()
 
       const thumbnailUploadError = await screen.findByText(
-        "L'image n'a pas pu être ajoutée. Veuillez réessayer"
+        "L'image n'a pas pu être ajoutée. Veuillez réessayer."
       )
       expect(thumbnailUploadError).toBeInTheDocument()
 

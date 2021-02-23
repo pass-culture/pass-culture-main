@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState, useRef } from 'react'
 
 import Icon from 'components/layout/Icon'
 import ThumbnailDialog from 'components/pages/Offers/Offer/Thumbnail/ThumbnailDialog'
@@ -9,6 +9,7 @@ import { ReactComponent as ErrorAlertIcon } from './OfferThumbnailPlaceholder/as
 const OfferThumbnail = ({ setThumbnailInfo, thumbnailError, url }) => {
   const [isModalOpened, setIsModalOpened] = useState(false)
   const [preview, setPreview] = useState(url)
+  const thumbnailButtonRef = useRef(null)
 
   const openModal = useCallback(e => {
     e.target.blur()
@@ -18,6 +19,9 @@ const OfferThumbnail = ({ setThumbnailInfo, thumbnailError, url }) => {
   useEffect(() => {
     if (thumbnailError) {
       setPreview(url)
+      if (thumbnailButtonRef.current) {
+        thumbnailButtonRef.current.scrollIntoView()
+      }
     }
   }, [thumbnailError, url])
 
@@ -26,6 +30,7 @@ const OfferThumbnail = ({ setThumbnailInfo, thumbnailError, url }) => {
       <button
         className={`of-placeholder of-image ${thumbnailError ? 'of-thumbnail-error' : ''}`}
         onClick={openModal}
+        ref={thumbnailButtonRef}
         title="Modifier l’image"
         type="button"
       >
@@ -36,7 +41,7 @@ const OfferThumbnail = ({ setThumbnailInfo, thumbnailError, url }) => {
         {thumbnailError && (
           <span className="of-error-message">
             <ErrorAlertIcon />
-            {"L'image n'a pas pu être ajoutée. Veuillez réessayer"}
+            {"L'image n'a pas pu être ajoutée. Veuillez réessayer."}
           </span>
         )}
       </button>

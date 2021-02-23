@@ -1,6 +1,6 @@
 import isEqual from 'lodash.isequal'
 import PropTypes from 'prop-types'
-import React, { Fragment, useCallback, useEffect, useState } from 'react'
+import React, { Fragment, useCallback, useEffect, useState, useRef } from 'react'
 
 import InternalBanner from 'components/layout/Banner/InternalBanner'
 import { CheckboxInput } from 'components/layout/inputs/CheckboxInput/CheckboxInput'
@@ -83,6 +83,7 @@ const OfferForm = ({
   const [venueOptions, setVenueOptions] = useState(buildSelectOptions('id', 'name', venues))
   const [offerFormFields, setOfferFormFields] = useState(Object.keys(DEFAULT_FORM_VALUES))
   const [formErrors, setFormErrors] = useState(submitErrors)
+  const formRef = useRef(null)
 
   const handleFormUpdate = useCallback(
     newFormValues =>
@@ -218,6 +219,14 @@ const OfferForm = ({
     },
     [initialValues.bookingEmail, venue, offerType, handleFormUpdate, userEmail, isEdition]
   )
+  useEffect(() => {
+    if (formRef) {
+      const invalidElement = formRef.current.querySelector('.error')
+      if (invalidElement) {
+        invalidElement.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' })
+      }
+    }
+  }, [formRef, formErrors])
 
   const selectOfferer = useCallback(
     event => {
@@ -381,7 +390,10 @@ const OfferForm = ({
   const isTypeOfflineButOnlyVirtualVenues = offerType?.offlineOnly && areAllVenuesVirtual
 
   return (
-    <form className="offer-form">
+    <form
+      className="offer-form"
+      ref={formRef}
+    >
       {providerName !== null ? (
         <SynchronizedProviderInformation providerName={providerName} />
       ) : (

@@ -1,5 +1,6 @@
 import { Selector } from 'testcafe'
 
+import { isElementInViewport } from './helpers/custom_assertions'
 import { getPathname } from './helpers/location'
 import { navigateToNewOfferAs, navigateToOfferAs, navigateToOffersAs } from './helpers/navigations'
 import { createUserRole } from './helpers/roles'
@@ -182,4 +183,21 @@ test("je peux modifier la thumbnail d'une offre", async t => {
   await t.eval(() => location.reload(true))
   const updatedThumbnail = await offerThumbnail()
   await t.expect(updatedThumbnail.attributes['src'] === previousThumbnailSrc).notOk()
+})
+
+test("Je suis scrollé sur l'élément incorrect du formulaire d'édition d'offre", async t => {
+  const { offer, user } = await fetchSandbox(
+    'pro_06_offers',
+    'get_existing_pro_validated_user_with_at_least_one_offer_with_at_least_one_thumbnail'
+  )
+  await navigateToOfferAs(user, offer, createUserRole(user))(t)
+  const key_combination_to_delete_text_input = 'ctrl+a delete'
+
+  await t
+    .click(nameInput())
+    .pressKey(key_combination_to_delete_text_input)
+    .click(noDisabilityCompliantCheckbox)
+    .click(submitButton)
+    .expect(isElementInViewport('.offer-form [name="name"]'))
+    .ok({ timeout: 2000 })
 })
