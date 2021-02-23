@@ -153,13 +153,25 @@ Si vous voulez juste enlever les recommandations et bookings crées en dev par v
 pc reset-reco-db
 ```
 
-### Migrate
+### Migration
 
-Vous pouvez passer toutes les cli classiques d'alembic comme ceci:
+Pour effectuer une migration du schéma de la base de données, il est recommandé d'effectuer les étapes suivantes :
 
-```bash
-pc alembic upgrade
+1. Modifier le modèle applicatif dans les fichiers python
+2. Générer la migration de manière automatique
+
 ```
+pc alembic  revision --autogenerate -m nom_de_la_migration
+```
+
+3. Enlever les commentaires "please adjust" générés par alembic dans le fichier de migration
+
+4. Jouer la migration : `pc alembic upgrade head`
+
+Autres commandes utiles :
+
+- Revenir 1 migration en arrière : `pc alembic downgrade -1`
+- Afficher le sql généré entre 2 migrations sans la jouer : `pc alembic upgrade e7b46b06f6dd:head --sql`
 
 ### Test
 
