@@ -1,6 +1,7 @@
 from pcapi.models import Venue
 from pcapi.models import VenueProvider
 from pcapi.repository.provider_queries import get_provider_by_local_class
+from pcapi.utils.logger import logger
 
 from . import synchronize_fnac_stocks
 
@@ -15,4 +16,7 @@ def synchronize_fnac_venues_stocks() -> None:
     )
 
     for venue in venues:
-        synchronize_fnac_stocks.synchronize_venue_stocks_from_fnac(venue)
+        try:
+            synchronize_fnac_stocks.synchronize_venue_stocks_from_fnac(venue)
+        except Exception as exc:  # pylint: disable=broad-except
+            logger.exception("Could not synchronize stock of venue=%s: %s", venue.id, exc)
