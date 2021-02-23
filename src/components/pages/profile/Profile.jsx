@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { useCallback } from 'react'
 import { Route, Switch } from 'react-router-dom'
 import { toast } from 'react-toastify'
 
@@ -17,9 +17,10 @@ const Profile = ({ history, match, user }) => {
   const { email, departementCode } = user
   const department = getDepartment(departementCode)
 
-  let getRedirectToPersonnalInformationPage = function () {
-    return () => history.push(`${match.path}/informations`)
-  }
+  let getRedirectToPersonnalInformationPage = useCallback(
+    () => history.push(`${match.path}/informations`),
+    [history, match]
+  )
 
   return (
     <Switch>
@@ -39,7 +40,7 @@ const Profile = ({ history, match, user }) => {
         exact
         path={`${match.path}/email`}
       >
-        <EditEmail redirectToPersonnalInformationPage={getRedirectToPersonnalInformationPage()} />
+        <EditEmail redirectToPersonnalInformationPage={getRedirectToPersonnalInformationPage} />
       </Route>
       <Route
         exact

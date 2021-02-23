@@ -235,7 +235,7 @@ describe('change email page', () => {
 
       // then
       expect(toast.error).toHaveBeenCalledTimes(1)
-      expect(toast.error).toHaveBeenCalledWith('La modification de l’adresse e-mail a échouée.')
+      expect(toast.error).toHaveBeenCalledWith('La modification de l’adresse e-mail a échoué.')
     })
 
     it('should display a field error when api return an error for password', async () => {

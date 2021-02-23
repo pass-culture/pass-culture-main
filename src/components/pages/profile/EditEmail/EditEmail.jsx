@@ -35,7 +35,7 @@ const EditEmail = ({ redirectToPersonnalInformationPage }) => {
           if (answer.password) setPasswordErrors(answer.password)
         })
         .catch(() => {
-          toast.error('La modification de l’adresse e-mail a échouée.')
+          toast.error('La modification de l’adresse e-mail a échoué.')
         })
     },
     [email, password, redirectToPersonnalInformationPage]
