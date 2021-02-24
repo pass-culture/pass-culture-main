@@ -15,6 +15,14 @@
         margin-top: 0;
       }
     }
+
+    .tertiary-button.od-primary {
+      color: $primary;
+
+      & .svg-color {
+        fill: $primary;
+      }
+    }
   }
 
   .od-separator {

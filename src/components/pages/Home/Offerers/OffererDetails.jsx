@@ -7,6 +7,8 @@ import Select from 'components/layout/inputs/Select'
 
 import { STEP_ID_OFFERERS, steps } from '../HomepageBreadcrumb'
 
+import { ReactComponent as ClosedEyeSvg } from './assets/ico-eye-close.svg'
+import { ReactComponent as OpenedEyeSvg } from './assets/ico-eye-open.svg'
 import BankInformations from './BankInformations'
 
 const hasBankInformations = offererOrVenue =>
@@ -51,12 +53,21 @@ const OffererDetails = ({
           />
           <div className="od-separator vertical" />
           <button
-            className="tertiary-button"
+            className={`tertiary-button${isVisible ? ' od-primary' : ''}`}
             onClick={toggleVisibility}
             type="button"
           >
-            <Icon svg="ico-eye-open" />
-            {isVisible ? 'Masquer' : 'Afficher'}
+            {isVisible ? (
+              <>
+                <ClosedEyeSvg />
+                {'Masquer'}
+              </>
+            ) : (
+              <>
+                <OpenedEyeSvg />
+                {'Afficher'}
+              </>
+            )}
           </button>
           {hasMissingBankInformations && (
             <Icon
