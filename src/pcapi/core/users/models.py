@@ -20,6 +20,7 @@ from sqlalchemy import String
 from sqlalchemy import Text
 from sqlalchemy import func
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import backref
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
@@ -54,9 +55,9 @@ class Token(PcObject, Model):
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
 
-    userId = Column(BigInteger, ForeignKey("user.id"), index=True, nullable=False)
+    userId = Column(BigInteger, ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False)
 
-    user = relationship("User", foreign_keys=[userId], backref="tokens")
+    user = relationship("User", foreign_keys=[userId], backref=backref("tokens", passive_deletes=True))
 
     value = Column(String, index=True, unique=True, nullable=False)
 
