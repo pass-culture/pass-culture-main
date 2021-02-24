@@ -168,7 +168,7 @@ class SignupForm extends PureComponent {
             </a>
           </div>
           <div className="sign-up-tips">
-            {'Tous les champs sont obligatoires'}
+            {'Tous les champs sont obligatoires sauf mention contraire'}
           </div>
           <div>
             {}
@@ -223,7 +223,7 @@ class SignupForm extends PureComponent {
                   />
                   <span>
                     {
-                      "J'accepte d'être contacté par e-mail pour recevoir les nouveautés du pass Culture et contribuer à son amélioration"
+                      "J'accepte d'être contacté par e-mail pour recevoir les nouveautés du pass Culture et contribuer à son amélioration (facultatif)"
                     }
                   </span>
                   <FieldErrors customMessage={errors ? errors.contactOk : null} />
