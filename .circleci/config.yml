@@ -632,6 +632,12 @@ workflows:
           context:
             - GCP
             - GCP_PROD
+      - deploy-pro:
+          requires:
+            - deploy-pcapi
+      - deploy-webapp:
+          requires:
+            - deploy-pcapi
       - deploy-webapp-cloudstorage:
           requires:
             - deploy-pcapi
@@ -644,6 +650,10 @@ workflows:
           context:
             - GCP
             - GCP_PROD
+      - release-synthesis:
+          requires:
+            - deploy-pro
+            - deploy-webapp
 
   every-mondays-nights:
     triggers:
