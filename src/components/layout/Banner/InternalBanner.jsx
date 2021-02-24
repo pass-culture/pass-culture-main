@@ -10,7 +10,7 @@ const InternalBanner = ({ href, linkTitle, subtitle, type }) => {
 
       <p>
         <a
-          className="bi-link"
+          className="bi-link tertiary-link"
           href={href}
         >
           {linkTitle}
