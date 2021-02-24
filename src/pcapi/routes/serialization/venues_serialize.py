@@ -2,6 +2,7 @@ from typing import Dict
 from typing import List
 
 from flask import json
+from pydantic import BaseModel
 
 from pcapi.domain.venue.venue_with_offerer_name.venue_with_offerer_name import VenueWithOffererName
 from pcapi.utils.human_ids import humanize
@@ -21,3 +22,7 @@ def serialize_venue_with_offerer_name(venue: VenueWithOffererName) -> Dict:
         "isVirtual": venue.is_virtual,
         "bookingEmail": venue.booking_email,
     }
+
+
+class VenueStatsResponseModel(BaseModel):
+    activeBookingsCount: int
