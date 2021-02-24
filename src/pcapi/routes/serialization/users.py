@@ -9,6 +9,7 @@ from pydantic.class_validators import validator
 from pcapi.domain.password import check_password_strength
 from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
+from pcapi.serialization.utils import validate_not_empty_string_when_provided
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -24,6 +25,10 @@ class PatchUserBodyModel(BaseModel):
     postal_code: Optional[str]
     public_name: Optional[str]
     has_seen_tutorials: Optional[bool]
+
+    _validate_first_name = validate_not_empty_string_when_provided("first_name")
+    _validate_last_name = validate_not_empty_string_when_provided("last_name")
+    _validate_email = validate_not_empty_string_when_provided("email")
 
     class Config:
         alias_generator = to_camel

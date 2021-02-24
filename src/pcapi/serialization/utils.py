@@ -4,6 +4,7 @@ from typing import Union
 
 from flask import Request
 from flask import Response
+from pydantic import MissingError
 from pydantic import ValidationError
 from pydantic import validator
 
@@ -35,6 +36,7 @@ def before_handler(
         "value_error.missing": "Ce champ est obligatoire",
         "value_error.url.scheme": 'L\'URL doit commencer par "http://" ou "https://"',
         "value_error.url.host": 'L\'URL doit terminer par une extension (ex. ".fr")',
+        "value_error.email": "Le format d'email est incorrect.",
     }
 
     if pydantic_error and pydantic_error.errors():
@@ -76,6 +78,13 @@ def cast_optional_str_to_int(optional_str: Optional[str]) -> Optional[int]:
     return optional_str
 
 
+def check_string_is_not_empty(string: str) -> str:
+    if not string or string.isspace():
+        raise MissingError()
+
+    return string
+
+
 def humanize_field(field_name: str) -> classmethod:
     return validator(field_name, pre=True, allow_reuse=True)(humanize_id)
 
@@ -90,3 +99,7 @@ def dehumanize_list_field(field_name: str) -> classmethod:
 
 def cast_optional_field_str_to_int(field_name: str) -> classmethod:
     return validator(field_name, pre=True, allow_reuse=True)(cast_optional_str_to_int)
+
+
+def validate_not_empty_string_when_provided(field_name: str) -> classmethod:
+    return validator(field_name, pre=True, allow_reuse=True)(check_string_is_not_empty)
