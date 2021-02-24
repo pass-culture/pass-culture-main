@@ -202,6 +202,8 @@
   }
 
   [type="range"] {
+    -webkit-appearance: none;
+
     &::-moz-range-thumb {
       @include slider-thumb;
     }
@@ -209,6 +211,7 @@
     &::-webkit-slider-thumb {
       @include slider-thumb;
 
+      -webkit-appearance: none;
       margin-top: rem(-8px);
     }
 
