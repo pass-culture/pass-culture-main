@@ -1547,7 +1547,7 @@ describe('stocks page', () => {
           await renderOffers(props, store)
 
           // Then
-          expect(screen.getByTitle('Supprimer le stock').closest('button')).toBeDisabled()
+          expect(screen.getByTestId('stock-delete-button')).toBeDisabled()
         })
       })
     })

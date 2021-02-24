@@ -209,13 +209,14 @@ const StockItem = ({
       <td className="action-column">
         <button
           className="tertiary-button"
+          data-testid="stock-delete-button"
           disabled={!isStockDeletable || isDeleting}
           onClick={isNewStock ? removeNewStockLine : askDeletionConfirmation}
           type="button"
         >
           <DeleteStockIcon
             alt="Supprimer le stock"
-            title="Supprimer le stock"
+            title={computeStockTitle() || 'Supprimer le stock'}
           />
         </button>
         {isDeleting && (
