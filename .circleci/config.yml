@@ -554,7 +554,6 @@ workflows:
           filters:
             branches:
               only:
-                - production
                 - integration
       - deploy-pro:
           requires:
