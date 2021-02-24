@@ -351,19 +351,22 @@ describe('offererDetails', () => {
       expect(warningIcons).toHaveLength(nbWarningIcons)
     })
 
-    it("shouldn't display bank warning if all venues have bank informations", async () => {
+    it("shouldn't display bank warning if all physical venues have bank informations", async () => {
+      physicalVenue = {
+        ...physicalVenue,
+        bic: 'fake_bic',
+        iban: 'fake_iban',
+      }
+      physicalVenueWithPublicName = {
+        ...physicalVenueWithPublicName,
+        demarchesSimplifieesApplicationId: 'fake_demarchesSimplifieesApplicationId',
+      }
       baseOfferers = [
         {
           ...baseOfferers[0],
           bic: '',
           iban: '',
-          managedVenues: baseOfferers[0].managedVenues.map(venue => {
-            return {
-              ...venue,
-              bic: 'fake_bic',
-              iban: 'fake_iban',
-            }
-          }),
+          managedVenues: [virtualVenue, physicalVenue, physicalVenueWithPublicName],
         },
       ]
       pcapi.getOfferer.mockResolvedValue(baseOfferers[0])

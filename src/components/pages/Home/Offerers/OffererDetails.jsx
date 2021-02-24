@@ -34,7 +34,9 @@ const OffererDetails = ({
     if (!selectedOfferer) return false
     return (
       !hasBankInformations(selectedOfferer) &&
-      selectedOfferer.managedVenues.some(venue => !hasBankInformations(venue))
+      selectedOfferer.managedVenues
+        .filter(venue => !venue.isVirtual)
+        .some(venue => !hasBankInformations(venue))
     )
   }, [selectedOfferer])
 
