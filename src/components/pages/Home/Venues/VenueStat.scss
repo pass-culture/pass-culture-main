@@ -1,40 +1,40 @@
 .venue-stats {
-  padding: rem(24px) rem(8px) rem(40px);
+  display: grid;
+  grid-column-gap: rem(13px);
+  grid-template-columns: repeat(4, 1fr 1px) 1fr;
+  margin-bottom: rem(35px);
+  margin-top: rem(50px);
+
+  .separator {
+    background-color: $grey-medium;
+  }
 
   .h-card-col {
     align-items: center;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
+    height: rem(110px);
+    justify-content: space-between;
+    text-align: center;
 
-    .venue-stat-amount,
-    .venue-stat-label,
-    .venue-stat-link {
-      display: inline-block;
-      text-align: center;
+    &.v-add-offer-link {
+      justify-content: center;
     }
 
-    .venue-stat-amount {
+    .venue-stat-count {
       @include title3();
     }
 
-    .venue-stat-label {
-      flex: 1;
-      margin: rem(8px) 0 rem(16px);
+    a {
+      color: $primary;
+
+      svg .ico-plus {
+        fill: $primary;
+      }
     }
 
-    .venue-stat-link {
-      color: $primary;
-      line-height: rem(20px);
-
-      svg {
-        display: block;
-        margin: auto;
-
-        .ico-plus {
-          fill: $primary;
-        }
-      }
+    .venue-stat-spinner {
+      animation: rotation 3s infinite linear;
     }
   }
 }

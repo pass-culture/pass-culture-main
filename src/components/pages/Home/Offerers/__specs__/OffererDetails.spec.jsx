@@ -26,6 +26,7 @@ jest.mock('utils/config', () => ({
 jest.mock('repository/pcapi/pcapi', () => ({
   getOfferer: jest.fn(),
   getAllOfferersNames: jest.fn(),
+  getVenueStats: jest.fn(),
 }))
 
 const renderHomePage = async () => {
@@ -119,6 +120,7 @@ describe('offererDetails', () => {
 
     pcapi.getOfferer.mockResolvedValue(baseOfferers[0])
     pcapi.getAllOfferersNames.mockResolvedValue(baseOfferersNames)
+    pcapi.getVenueStats.mockResolvedValue({ activeBookingsCount: 4 })
   })
 
   afterEach(() => {

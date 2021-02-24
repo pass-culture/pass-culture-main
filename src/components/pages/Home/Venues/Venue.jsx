@@ -1,35 +1,48 @@
 import * as PropTypes from 'prop-types'
-import React from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import Icon from 'components/layout/Icon'
 import { ReactComponent as IcoPlus } from 'icons/ico-plus.svg'
+import * as pcapi from 'repository/pcapi/pcapi'
 
 import VenueStat from './VenueStat'
 
 const Venue = ({ id, isVirtual, name, offererId, publicName }) => {
+  const [stats, setStats] = useState({
+    activeBookingsCount: '',
+  })
+
   const venueStatData = [
     {
-      amount: '- -',
+      count: '- -',
       label: 'Offres actives',
       url: `/offres?lieu=${id}&statut=active`,
     },
     {
-      amount: '- -',
-      label: 'Reservations en cours',
-      url: `/reservations?lieu=${id}`,
+      count: stats.activeBookingsCount,
+      label: 'Réservations en cours',
+      url: `/reservations`,
     },
     {
-      amount: '- -',
-      label: 'Reservations en validées',
-      url: `/reservations?lieu=${id}`,
+      count: '- -',
+      label: 'Réservations validées',
+      url: `/reservations`,
     },
     {
-      amount: '- -',
+      count: '- -',
       label: 'Offres stocks épuisés',
       url: `/offres?lieu=${id}&statut=epuisee`,
     },
   ]
+
+  useEffect(() => {
+    pcapi.getVenueStats(id).then(stats => {
+      setStats({
+        activeBookingsCount: stats.activeBookingsCount.toString(),
+      })
+    })
+  }, [id])
 
   return (
     <div className="h-section-row nested">
@@ -53,23 +66,25 @@ const Venue = ({ id, isVirtual, name, offererId, publicName }) => {
               </Link>
             )}
           </div>
-          <div className="h-card-cols venue-stats">
+          <div className="venue-stats">
             {venueStatData.map(stat => (
-              <VenueStat
-                key={stat.label}
-                stat={stat}
-              />
+              <Fragment key={stat.label}>
+                <VenueStat
+                  stat={stat}
+                />
+                <div className="separator" />
+              </Fragment>
             ))}
 
-            <div className="h-card-col venue-stat">
+            <div className="h-card-col v-add-offer-link">
               <Link
-                className="venue-stat-link tertiary-link"
+                className="tertiary-link"
                 to={`/offres/creation?structure=${offererId}&lieu=${id}`}
               >
-                <IcoPlus />
-                <span>
+                <IcoPlus aria-hidden />
+                <div>
                   {isVirtual ? 'Créer une nouvelle offre numérique' : 'Créer une nouvelle offre'}
-                </span>
+                </div>
               </Link>
             </div>
           </div>

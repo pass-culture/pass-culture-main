@@ -1,5 +1,5 @@
 import { DEFAULT_SEARCH_FILTERS } from 'components/pages/Offers/Offers/_constants'
-import { signout } from 'repository/pcapi/pcapi'
+import { getVenueStats, signout } from 'repository/pcapi/pcapi'
 import { client } from 'repository/pcapi/pcapiClient'
 
 import {
@@ -177,6 +177,16 @@ describe('pcapi', () => {
           isActive: true,
         })
       })
+    })
+  })
+
+  describe('getVenueStats', () => {
+    it('should get stats for given venue', () => {
+      // When
+      getVenueStats('3F')
+
+      // Then
+      expect(client.get).toHaveBeenCalledWith('/venues/3F/stats')
     })
   })
 

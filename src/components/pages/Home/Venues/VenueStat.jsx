@@ -2,16 +2,29 @@ import * as PropTypes from 'prop-types'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
+import { ReactComponent as LoaderSvg } from 'icons/ico-passculture.svg'
+
 export const VenueStat = ({ stat }) => (
-  <div className="h-card-col">
-    <span className="venue-stat-amount">
-      {stat.amount}
-    </span>
-    <span className="venue-stat-label">
+  <div
+    className="h-card-col"
+    data-testid="venue-stat"
+  >
+    {stat.count ? (
+      <div className="venue-stat-count">
+        {stat.count}
+      </div>
+    ) : (
+      <LoaderSvg
+        className="venue-stat-spinner"
+        title="Chargement en cours"
+      />
+    )}
+
+    <div>
       {stat.label}
-    </span>
+    </div>
     <Link
-      className="venue-stat-link tertiary-link"
+      className="tertiary-link"
       to={stat.url}
     >
       {'Voir'}
@@ -21,7 +34,7 @@ export const VenueStat = ({ stat }) => (
 
 VenueStat.propTypes = {
   stat: PropTypes.shape({
-    amount: PropTypes.string.isRequired,
+    count: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
     url: PropTypes.string.isRequired,
   }).isRequired,

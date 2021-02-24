@@ -1,7 +1,9 @@
 import '@testing-library/jest-dom'
-import { act, render, screen } from '@testing-library/react'
+import { act, render, screen, within } from '@testing-library/react'
 import React from 'react'
 import { MemoryRouter } from 'react-router'
+
+import * as pcapi from 'repository/pcapi/pcapi'
 
 import Venue from '../Venue'
 
@@ -13,16 +15,13 @@ jest.mock('react-router-dom', () => ({
   }),
 }))
 
-const renderVenue = async props => {
-  const venueDefaultProps = {
-    id: 'venue_id',
-    isVirtual: false,
-    name: 'My venue',
-    offererId: 'offerer_id',
-    publicNam: 'My venue public name',
-  }
+jest.mock('repository/pcapi/pcapi', () => ({
+  getVenueStats: jest.fn(),
+}))
 
-  return await act(async () => {
+let venueDefaultProps
+const renderVenue = async props =>
+  await act(async () => {
     await render(
       <MemoryRouter>
         <Venue
@@ -32,10 +31,55 @@ const renderVenue = async props => {
       </MemoryRouter>
     )
   })
-}
 
 describe('venues', () => {
+  beforeEach(() => {
+    venueDefaultProps = {
+      id: 'venue_id',
+      isVirtual: false,
+      name: 'My venue',
+      offererId: 'offerer_id',
+      publicNam: 'My venue public name',
+    }
+  })
   describe('render', () => {
+    it('should display stats tiles', async () => {
+      // Given
+      pcapi.getVenueStats.mockResolvedValue({ activeBookingsCount: 0 })
+
+      // When
+      await renderVenue()
+
+      // Then
+      expect(pcapi.getVenueStats).toHaveBeenCalledWith(venueDefaultProps.id)
+
+      const [
+        activeOffersStat,
+        activeBookingsStat,
+        validatedBookingsStat,
+        outOfStockOffersStat,
+      ] = screen.getAllByTestId('venue-stat')
+      expect(within(activeOffersStat).getByText('- -')).toBeInTheDocument()
+      expect(within(activeOffersStat).getByText('Offres actives')).toBeInTheDocument()
+
+      expect(within(activeBookingsStat).getByText('0')).toBeInTheDocument()
+      expect(within(activeBookingsStat).getByText('Réservations en cours')).toBeInTheDocument()
+
+      expect(within(validatedBookingsStat).getByText('- -')).toBeInTheDocument()
+      expect(within(validatedBookingsStat).getByText('Réservations validées')).toBeInTheDocument()
+
+      expect(within(outOfStockOffersStat).getByText('- -')).toBeInTheDocument()
+      expect(within(outOfStockOffersStat).getByText('Offres stocks épuisés')).toBeInTheDocument()
+    })
+
+    it('should contain a link for each stats', async () => {
+      // When
+      await renderVenue()
+
+      // Then
+      expect(screen.getAllByText('Voir')).toHaveLength(4)
+    })
+
     describe('render virtual venue', () => {
       beforeEach(async () => {
         await renderVenue({ isVirtual: true })
@@ -44,20 +88,9 @@ describe('venues', () => {
       it('should display create offer link', () => {
         expect(screen.getByText('Créer une nouvelle offre numérique')).toBeInTheDocument()
       })
-
-      it('should display stats titles', () => {
-        expect(screen.getByText('Offres actives')).toBeInTheDocument()
-        expect(screen.getByText('Reservations en cours')).toBeInTheDocument()
-        expect(screen.getByText('Reservations en validées')).toBeInTheDocument()
-        expect(screen.getByText('Offres stocks épuisés')).toBeInTheDocument()
-      })
-
-      it('should contain a link for each stats', () => {
-        expect(screen.getAllByText('Voir')).toHaveLength(4)
-      })
     })
 
-    describe('render physical nenue', () => {
+    describe('render physical venue', () => {
       beforeEach(async () => {
         await renderVenue({ isVirtual: false })
       })
