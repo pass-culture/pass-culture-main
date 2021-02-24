@@ -1,5 +1,7 @@
 import BetaPage from './BetaPage'
 import { compose } from 'redux'
+
+import withNotRequiredLogin from '../../hocs/with-login/withNotRequiredLogin'
 import withTracking from '../../hocs/withTracking'
 import { connect } from 'react-redux'
 import { ANDROID_APPLICATION_ID } from '../../../utils/config'
@@ -38,6 +40,7 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
 }
 
 export default compose(
+  withNotRequiredLogin,
   withTracking('BetaPage'),
   connect(mapStateToProps, null, mergeProps)
 )(BetaPage)
