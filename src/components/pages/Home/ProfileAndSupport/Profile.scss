@@ -1,0 +1,32 @@
+.profile-info-modal {
+  .pi-title {
+    @include title4();
+
+    text-align: center;
+  }
+
+  .pi-mandatory-message {
+    @include caption();
+
+    color: $grey-dark;
+    margin-top: rem(24px);
+  }
+
+  label {
+    margin-top: rem(16px);
+
+    &:first-child {
+      margin-top: rem(8px);
+    }
+  }
+
+  .actions-group {
+    display: flex;
+    justify-content: center;
+    margin-top: rem(24px);
+
+    .primary-button {
+      margin-left: rem(24px);
+    }
+  }
+}
