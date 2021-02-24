@@ -97,6 +97,7 @@
       @include body();
 
       .ico-bank-warning {
+        margin-left: rem(8px);
         vertical-align: middle;
       }
     }
@@ -109,8 +110,6 @@
       }
 
       .bi-banner {
-        border-radius: 0;
-
         p {
           color: $black;
         }
