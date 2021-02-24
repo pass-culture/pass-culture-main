@@ -46,7 +46,7 @@ class Returns204:
             "ymSf0"
         )
         confirmation_link = (
-            f"{settings.WEBAPP_URL}/email-change?token={confirmation_data_token}&expiration_timestamp=1602838800"
+            f"{settings.WEBAPP_URL}/changement-email?token={confirmation_data_token}&expiration_timestamp=1602838800"
         )
         confirmation_data = {
             "FromEmail": "support@example.com",

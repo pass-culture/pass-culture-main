@@ -245,7 +245,9 @@ def _build_link_for_email_change(current_email: str, new_email: str) -> str:
     expiration_date = datetime.now() + constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
     token = encode_jwt_payload(dict(current_email=current_email, new_email=new_email), expiration_date)
 
-    return f"{settings.WEBAPP_URL}/email-change?token={token}&expiration_timestamp={int(expiration_date.timestamp())}"
+    return (
+        f"{settings.WEBAPP_URL}/changement-email?token={token}&expiration_timestamp={int(expiration_date.timestamp())}"
+    )
 
 
 def user_expenses(user: User):
