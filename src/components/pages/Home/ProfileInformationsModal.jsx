@@ -15,6 +15,7 @@ const ProfileInformationsModal = ({
   const [firstName, setFirstName] = useState(user.firstName)
   const [email, setEmail] = useState(user.email)
   const [phoneNumber, setPhoneNumber] = useState(user.phoneNumber)
+  const [formErrors, setFormErrors] = useState([])
 
   const closeModal = useCallback(() => {
     setIsModalOpened(false)
@@ -35,9 +36,10 @@ const ProfileInformationsModal = ({
         .then(() => {
           setUserInformations(user, body)
           showSuccessNotification()
-        })
-        .finally(() => {
           setIsModalOpened(false)
+        })
+        .catch(error => {
+          setFormErrors(error.errors)
         })
     },
     [
@@ -94,24 +96,28 @@ const ProfileInformationsModal = ({
         </div>
         <form onSubmit={submitProfileInformations}>
           <TextInput
+            error={formErrors?.lastName}
             label="Nom"
             name="last-name-input"
             onChange={handleLastNameChange}
             value={lastName}
           />
           <TextInput
+            error={formErrors?.firstName}
             label="Prénom"
             name="first-name-input"
             onChange={handleFirstNameChange}
             value={firstName}
           />
           <TextInput
+            error={formErrors?.email}
             label="Email"
             name="email-input"
             onChange={handleEmailChange}
             value={email}
           />
           <TextInput
+            error={formErrors?.phoneNumber}
             label="Téléphone"
             name="phone-input"
             onChange={handlePhoneNumberChange}

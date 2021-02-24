@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { act, render, screen } from '@testing-library/react'
+import { act, render, screen, fireEvent } from '@testing-library/react'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
@@ -147,6 +147,61 @@ describe('homepage', () => {
         expect(faqLink.getAttribute('href')).toBe(
           'https://aide.passculture.app/fr/category/acteurs-culturels-1t20dhs/'
         )
+      })
+
+      describe('update informations modal', () => {
+        beforeEach(async () => {})
+        it('should display profile modifications modal when clicking on modify button', async () => {
+          // when
+          fireEvent.click(screen.getByText('Modifier', { selector: 'button' }))
+
+          // then
+          expect(await screen.findByLabelText('Nom')).toBeInTheDocument()
+          expect(await screen.findByLabelText('Prénom')).toBeInTheDocument()
+          expect(await screen.findByLabelText('Email')).toBeInTheDocument()
+          expect(await screen.findByLabelText('Téléphone')).toBeInTheDocument()
+        })
+
+        it('should close the modal when clicking on cancel button', async () => {
+          // given
+          fireEvent.click(screen.getByText('Modifier', { selector: 'button' }))
+
+          // when
+          fireEvent.click(screen.getByText('Annuler', { selector: 'button' }))
+
+          // then
+          expect(await screen.queryByLabelText('Nom')).not.toBeInTheDocument()
+        })
+
+        it('should update user info on submit', async () => {
+          // given
+          fireEvent.click(screen.getByText('Modifier', { selector: 'button' }))
+          fireEvent.change(screen.getByLabelText('Prénom'), {
+            target: { value: 'Johnny' },
+          })
+          fireEvent.change(screen.getByLabelText('Nom'), {
+            target: { value: 'Doe' },
+          })
+          fireEvent.change(screen.getByLabelText('Email'), {
+            target: { value: 'johnny.doe@dummy.xyz' },
+          })
+          fireEvent.change(screen.getByLabelText('Téléphone'), {
+            target: { value: '01 01 00 00 00' },
+          })
+
+          // when
+          await act(async () => {
+            await fireEvent.click(screen.getByText('Enregistrer', { selector: 'button' }))
+          })
+
+          // then
+          expect(pcapi.updateUserInformations).toHaveBeenCalledWith({
+            firstName: 'Johnny',
+            lastName: 'Doe',
+            email: 'johnny.doe@dummy.xyz',
+            phoneNumber: '01 01 00 00 00',
+          })
+        })
       })
     })
   })
