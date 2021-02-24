@@ -8,7 +8,7 @@ import { toast } from 'react-toastify'
 
 export const REQUEST_EMAIL_CHANGE_PAGE_LINK = '/profil/email'
 export const SIGNIN_PAGE_LINK = '/connexion'
-export const EMAIl_CHANGE_FAILED = "La modification de l'adresse email a échouée."
+export const EMAIl_CHANGE_FAILED = "La modification de l'adresse email a échoué."
 export const EMAIl_CHANGE_LINK_EXPIRED = 'Le lien a expiré, veuillez réessayer.'
 export const EMAIL_CHANGE_SUCCESS = "L'adresse email a bien été modifiée."
 
