@@ -16,6 +16,7 @@ class GetOffererVenueResponseModel(BaseModel):
     comment: Optional[str]
     dateCreated: datetime
     dateModifiedAtLastProvider: Optional[datetime]
+    demarchesSimplifieesApplicationId: Optional[str]
     departementCode: Optional[str]
     iban: Optional[str]
     id: str

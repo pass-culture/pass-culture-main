@@ -59,6 +59,7 @@ class Returns200:
                 {
                     "bic": venue_bank_information.bic,
                     "iban": venue_bank_information.iban,
+                    "demarchesSimplifieesApplicationId": str(venue.demarchesSimplifieesApplicationId),
                     "address": offererVenue.address,
                     "bookingEmail": offererVenue.bookingEmail,
                     "city": offererVenue.city,
