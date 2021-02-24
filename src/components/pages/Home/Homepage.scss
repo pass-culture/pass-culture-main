@@ -206,7 +206,9 @@
         margin-top: rem(24px);
 
         a {
+          flex: 1;
           margin-left: rem(16px);
+          max-width: rem(240px);
 
           &:first-child {
             margin-left: 0;
