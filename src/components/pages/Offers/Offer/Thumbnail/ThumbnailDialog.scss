@@ -39,8 +39,8 @@
 .tnf-form {
   margin-top: rem(48px);
 
-  svg {
-    width: 100%;
+  & > svg {
+    height: rem(128px);
   }
 
   .input-text {
@@ -92,6 +92,10 @@
 .tnf-url-button {
   color: $white;
   width: rem(334px);
+
+  svg {
+    height: rem(32px);
+  }
 }
 
 .tna-advices {
