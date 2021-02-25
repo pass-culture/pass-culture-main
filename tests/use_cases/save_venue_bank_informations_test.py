@@ -115,6 +115,7 @@ class SaveVenueBankInformationsTest:
                         iban="FR7630007000111234567890144",
                         idx=8,
                         state="closed",
+                        updated_at="2020-01-01T10:10:10.10Z",
                     )
                 )
 
@@ -128,6 +129,7 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.bic == "SOGEFRPP"
                 assert bank_information.iban == "FR7630007000111234567890144"
                 assert bank_information.status == BankInformationStatus.ACCEPTED
+                assert bank_information.dateModified == datetime(2020, 1, 1, 10, 10, 10, 100000)
 
             @pytest.mark.usefixtures("db_session")
             def test_when_dms_state_is_received_should_create_the_correct_bank_information(

@@ -80,6 +80,7 @@ class SaveVenueBankInformations:
         new_bank_informations.application_id = application_details.application_id
         new_bank_informations.venue_id = venue_id
         new_bank_informations.status = application_details.status
+        new_bank_informations.date_modified = application_details.modification_date
         if application_details.status == BankInformationStatus.ACCEPTED:
             new_bank_informations.iban = application_details.iban
             new_bank_informations.bic = application_details.bic

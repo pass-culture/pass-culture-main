@@ -226,7 +226,11 @@ class SaveOffererBankInformationsTest:
             )
             repository.save(offerer, new_offerer, bank_information)
             mock_application_details.return_value = offerer_demarche_simplifiee_application_detail_response(
-                siren="793875019", bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8
+                siren="793875019",
+                bic="SOGEFRPP",
+                iban="FR7630007000111234567890144",
+                idx=8,
+                updated_at="2020-01-01T10:10:10.10Z",
             )
 
             # When
@@ -239,6 +243,7 @@ class SaveOffererBankInformationsTest:
             assert bank_information.bic == "SOGEFRPP"
             assert bank_information.iban == "FR7630007000111234567890144"
             assert bank_information.offererId == new_offerer.id
+            assert bank_information.dateModified == datetime(2020, 1, 1, 10, 10, 10, 100000)
 
         @pytest.mark.usefixtures("db_session")
         def test_when_status_change_rib_should_be_correctly_updated(self, mock_application_details, app):
@@ -255,7 +260,12 @@ class SaveOffererBankInformationsTest:
             )
             repository.save(offerer, bank_information)
             mock_application_details.return_value = offerer_demarche_simplifiee_application_detail_response(
-                siren="793875030", bic="QSDFGH8Z555", iban="NL36INGB2682297498", idx=8, state="initiated"
+                siren="793875030",
+                bic="QSDFGH8Z555",
+                iban="NL36INGB2682297498",
+                idx=8,
+                state="initiated",
+                updated_at="2020-01-01T10:10:10.10Z",
             )
 
             # When
@@ -268,6 +278,7 @@ class SaveOffererBankInformationsTest:
             assert bank_information.bic == None
             assert bank_information.iban == None
             assert bank_information.status == BankInformationStatus.DRAFT
+            assert bank_information.dateModified == datetime(2020, 1, 1, 10, 10, 10, 100000)
 
         @pytest.mark.usefixtures("db_session")
         def test_when_overriding_another_bank_information_should_raise(self, mock_application_details, app):
@@ -326,7 +337,11 @@ class SaveOffererBankInformationsTest:
             )
             repository.save(offerer, bank_information)
             mock_application_details.return_value = offerer_demarche_simplifiee_application_detail_response(
-                siren="793875030", bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8
+                siren="793875030",
+                bic="SOGEFRPP",
+                iban="FR7630007000111234567890144",
+                idx=8,
+                updated_at="2020-01-01T10:10:10.10Z",
             )
 
             # When
@@ -339,6 +354,7 @@ class SaveOffererBankInformationsTest:
             assert bank_information.bic == "SOGEFRPP"
             assert bank_information.iban == "FR7630007000111234567890144"
             assert bank_information.applicationId == 8
+            assert bank_information.dateModified == datetime(2020, 1, 1, 10, 10, 10, 100000)
 
         @pytest.mark.usefixtures("db_session")
         def test_when_receive_new_application_with_draft_state_should_update_previously_rejected_bank_information(
