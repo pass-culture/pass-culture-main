@@ -13,6 +13,7 @@ from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.api import _set_offerer_departement_code
 from pcapi.core.users.api import create_id_check_token
+from pcapi.core.users.api import delete_expired_tokens
 from pcapi.core.users.api import fulfill_user_data
 from pcapi.core.users.api import generate_and_save_token
 from pcapi.core.users.api import set_pro_tuto_as_seen
@@ -183,6 +184,23 @@ class GenerateIdCheckTokenIfEligibleTest:
         user = users_factories.UserFactory(dateOfBirth=datetime(1999, 5, 1))
         token = create_id_check_token(user)
         assert not token
+
+
+class DeleteExpiredTokens:
+    def test_deletion(self):
+        user = users_factories.UserFactory()
+        token_type = TokenType.RESET_PASSWORD
+        life_time = timedelta(hours=24)
+
+        never_expire_token = generate_and_save_token(user, token_type)
+        not_expired_token = generate_and_save_token(user, token_type, life_time=life_time)
+        # Generate an expired token
+        with freeze_time(datetime.now() - life_time):
+            generate_and_save_token(user, token_type, life_time=life_time)
+
+        delete_expired_tokens()
+
+        assert set(Token.query.all()) == {never_expire_token, not_expired_token}
 
 
 class SuspendAccountTest:

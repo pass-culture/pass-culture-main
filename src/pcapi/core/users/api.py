@@ -80,6 +80,10 @@ def generate_and_save_token(user: User, token_type: TokenType, life_time: Option
     return token
 
 
+def delete_expired_tokens() -> None:
+    Token.query.filter(Token.expirationDate < datetime.now()).delete()
+
+
 def create_account(
     email: str,
     password: str,

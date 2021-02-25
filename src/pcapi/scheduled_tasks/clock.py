@@ -5,6 +5,7 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 from flask import Flask
 
 from pcapi import settings
+from pcapi.core.users import api as users_api
 from pcapi.core.users.repository import get_newly_eligible_users
 from pcapi.domain.user_emails import send_newly_eligible_user_email
 from pcapi.local_providers.fnac.fnac_stocks_provider import synchronize_fnac_venues_stocks
@@ -95,6 +96,12 @@ def pc_notify_newly_eligible_users(app: Flask) -> None:
         send_newly_eligible_user_email(user)
 
 
+@log_cron
+@cron_context
+def pc_clean_expired_tokens(app: Flask) -> None:
+    users_api.delete_expired_tokens()
+
+
 def main() -> None:
     from pcapi.flask_app import app
 
@@ -131,6 +138,8 @@ def main() -> None:
     )
 
     scheduler.add_job(pc_notify_newly_eligible_users, "cron", [app], day="*", hour="3")
+
+    scheduler.add_job(pc_clean_expired_tokens, "cron", [app], day="*", hour="2")
 
     scheduler.start()
 
