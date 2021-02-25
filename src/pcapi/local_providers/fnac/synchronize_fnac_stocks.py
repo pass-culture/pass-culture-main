@@ -2,10 +2,14 @@ from datetime import datetime
 from typing import Dict
 from typing import Generator
 from typing import List
+from typing import Set
 from typing import Tuple
 from typing import Union
 
+from flask import current_app as app
+
 from pcapi import settings
+from pcapi.connectors import redis
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.repository import get_offers_map_by_id_at_providers
@@ -15,6 +19,8 @@ from pcapi.infrastructure.repository.stock_provider.provider_api import Provider
 from pcapi.models import Product
 from pcapi.models import Venue
 from pcapi.models.db import db
+from pcapi.models.feature import FeatureToggle
+from pcapi.repository import feature_queries
 from pcapi.utils.logger import logger
 from pcapi.validation.models.entity_validator import validate
 
@@ -53,7 +59,7 @@ def synchronize_venue_stocks_from_fnac(venue: Venue) -> None:
         stocks_fnac_references = [stock["stocks_fnac_reference"] for stock in stock_details]
         stocks_by_fnac_reference = get_stocks_by_id_at_providers(stocks_fnac_references)
 
-        update_stock_mapping, new_stocks = _get_stocks_to_upsert(
+        update_stock_mapping, new_stocks, offer_ids = _get_stocks_to_upsert(
             stock_details, stocks_by_fnac_reference, offers_by_fnac_reference
         )
 
@@ -61,6 +67,8 @@ def synchronize_venue_stocks_from_fnac(venue: Venue) -> None:
         db.session.bulk_update_mappings(Stock, update_stock_mapping)
 
         db.session.commit()
+
+        _reindex_offers(offer_ids)
 
     logger.info("Ending synchronization of venue=%s provider=fnac", venue.id)
 
@@ -124,9 +132,10 @@ def _build_new_offers_from_stock_details(
 
 def _get_stocks_to_upsert(
     stock_details: List[Dict], stocks_by_fnac_reference: Dict[str, Dict], offers_by_fnac_reference: Dict[str, int]
-) -> Tuple[List, List[Stock]]:
+) -> Tuple[List[Dict], List[Stock], Set[int]]:
     update_stock_mapping = []
     new_stocks = []
+    offer_ids = set()
 
     for stock_detail in stock_details:
         if stock_detail["stocks_fnac_reference"] in stocks_by_fnac_reference:
@@ -138,6 +147,7 @@ def _get_stocks_to_upsert(
                     "price": stock_detail["price"],
                 }
             )
+            offer_ids.add(offers_by_fnac_reference[stock_detail["offers_fnac_reference"]])
 
         else:
             stock = _build_stock_from_stock_detail(
@@ -147,8 +157,9 @@ def _get_stocks_to_upsert(
                 continue
 
             new_stocks.append(stock)
+            offer_ids.add(stock.offerId)
 
-    return update_stock_mapping, new_stocks
+    return update_stock_mapping, new_stocks, offer_ids
 
 
 def _build_stock_from_stock_detail(stock_detail: Dict, offers_id: int) -> Stock:
@@ -186,3 +197,9 @@ def _build_new_offer(venue: Venue, product: Product, id_at_providers: str) -> Of
         venueId=venue.id,
         type=product.type,
     )
+
+
+def _reindex_offers(offer_ids: Set[int]) -> None:
+    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
+        for offer_id in offer_ids:
+            redis.add_offer_id(client=app.redis_client, offer_id=offer_id)

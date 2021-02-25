@@ -1,3 +1,6 @@
+from unittest import mock
+
+from flask import current_app as app
 import pytest
 import requests_mock
 
@@ -6,6 +9,7 @@ import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import factories
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import Offer
+from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.local_providers.fnac import synchronize_fnac_stocks
 from pcapi.models import ThingType
@@ -64,7 +68,9 @@ def create_stock(isbn, siret, **kwargs):
 class FnacCronTest:
     @pytest.mark.usefixtures("db_session")
     @override_settings(FNAC_API_URL="https://fnac_url", FNAC_API_TOKEN="fake_token")
-    def test_execution(self):
+    @override_features(SYNCHRONIZE_ALGOLIA=True)
+    @mock.patch("pcapi.connectors.redis.add_offer_id")
+    def test_execution(self, mocked_add_offer_id):
         # Given
         venue_provider = offerers_factories.VenueProviderFactory(isActive=True)
         siret = venue_provider.venue.siret
@@ -108,7 +114,8 @@ class FnacCronTest:
         assert Offer.query.filter_by(idAtProviders=f"{ISBNs[6]}@{siret}").count() == 0
 
         # Test second page is actually processed
-        assert Offer.query.filter_by(idAtProviders=f"{ISBNs[4]}@{siret}").count() == 1
+        second_created_offer = Offer.query.filter_by(idAtProviders=f"{ISBNs[4]}@{siret}").one()
+        assert second_created_offer.stocks[0].quantity == 17
 
         # Test existing bookings are added to quantity
         assert stock_with_booking.quantity == 17 + 1 + 2
@@ -129,6 +136,19 @@ class FnacCronTest:
         assert created_offer.venueId == venue_provider.venue.id
         assert created_offer.type == product.type
         assert created_offer.idAtProviders == f"{ISBNs[2]}@{siret}"
+
+        # Test it adds offer in redis
+        assert mocked_add_offer_id.call_count == 5
+        mocked_add_offer_id.assert_has_calls(
+            [
+                mock.call(client=app.redis_client, offer_id=offer.id),
+                mock.call(client=app.redis_client, offer_id=stock_with_booking.offer.id),
+                mock.call(client=app.redis_client, offer_id=created_offer.id),
+                mock.call(client=app.redis_client, offer_id=second_created_offer.id),
+                mock.call(client=app.redis_client, offer_id=stock.offer.id),
+            ],
+            any_order=True,
+        )
 
     def test_build_stock_details_from_raw_stocks(self):
         # Given
@@ -198,3 +218,46 @@ class FnacCronTest:
                 type="product_type",
             )
         ]
+
+    def test__get_stocks_to_upsert(self):
+        # Given
+        stock_details = [
+            {
+                "offers_fnac_reference": "offer_ref1",
+                "available_quantity": 15,
+                "price": 15.78,
+                "stocks_fnac_reference": "stock_ref1",
+            },
+            {
+                "available_quantity": 17,
+                "offers_fnac_reference": "offer_ref2",
+                "price": 28.989,
+                "products_fnac_reference": "product_ref",
+                "stocks_fnac_reference": "stock_ref2",
+            },
+        ]
+
+        stocks_by_fnac_reference = {"stock_ref1": {"id": 1, "booking_quantity": 3}}
+        offers_by_fnac_reference = {"offer_ref1": 123, "offer_ref2": 134}
+
+        # When
+        update_stock_mapping, new_stocks, offer_ids = synchronize_fnac_stocks._get_stocks_to_upsert(
+            stock_details, stocks_by_fnac_reference, offers_by_fnac_reference
+        )
+
+        assert update_stock_mapping == [
+            {
+                "id": 1,
+                "quantity": 15 + 3,
+                "price": 15.78,
+            }
+        ]
+
+        new_stock = new_stocks[0]
+        assert new_stock.quantity == 17
+        assert new_stock.bookingLimitDatetime is None
+        assert new_stock.offerId == 134
+        assert new_stock.price == 28.989
+        assert new_stock.idAtProviders == "stock_ref2"
+
+        assert offer_ids == set([123, 134])
