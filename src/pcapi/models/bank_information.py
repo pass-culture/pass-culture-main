@@ -1,4 +1,3 @@
-from datetime import datetime
 import enum
 
 from sqlalchemy import BigInteger
@@ -39,4 +38,4 @@ class BankInformation(PcObject, Model, VersionedMixin):
 
     status = Column(Enum(BankInformationStatus), nullable=False)
 
-    dateModified = Column(DateTime, nullable=True, default=datetime.utcnow)
+    dateModified = Column(DateTime, nullable=True)

@@ -128,6 +128,7 @@ class BankInformationsSQLRepositoryTest:
             application_id=8,
             iban="FR7630006000011234567890189",
             bic="QSDFGH8Z555",
+            date_modified=datetime(2000, 1, 1),
         )
 
         # when
