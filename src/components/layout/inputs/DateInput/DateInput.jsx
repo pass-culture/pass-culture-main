@@ -54,22 +54,24 @@ const DateInput = ({
 
 DateInput.defaultProps = {
   ariaLabel: undefined,
+  departmentCode: '',
   disabled: false,
   inError: false,
   maxUtcDateIsoFormat: undefined,
   minUtcDateIsoFormat: undefined,
+  utcDateIsoFormat: null,
 }
 
 DateInput.propTypes = {
   ariaLabel: PropTypes.string,
-  departmentCode: PropTypes.string.isRequired,
+  departmentCode: PropTypes.string,
   disabled: PropTypes.bool,
   inError: PropTypes.bool,
   maxUtcDateIsoFormat: PropTypes.string,
   minUtcDateIsoFormat: PropTypes.string,
   onChange: PropTypes.func.isRequired,
   openingUtcDateIsoFormat: PropTypes.string.isRequired,
-  utcDateIsoFormat: PropTypes.string.isRequired,
+  utcDateIsoFormat: PropTypes.string,
 }
 
 export default DateInput

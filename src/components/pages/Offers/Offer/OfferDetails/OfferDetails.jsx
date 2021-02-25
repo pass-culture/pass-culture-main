@@ -25,7 +25,7 @@ const OfferDetails = ({
 }) => {
   const [formInitialValues, setFormInitialValues] = useState({})
   const [formValues, setFormValues] = useState({})
-  const [offerType, setOfferType] = useState(null)
+  const [offerType, setOfferType] = useState({})
   const [formErrors, setFormErrors] = useState({})
   const [showThumbnailForm, setShowThumbnailForm] = useState(offer !== null)
   const [isLoading, setIsLoading] = useState(true)

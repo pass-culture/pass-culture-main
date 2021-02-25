@@ -53,6 +53,7 @@ export const CheckboxInput = ({
 
 CheckboxInput.defaultProps = {
   SvgElement: null,
+  checked: false,
   className: '',
   hiddenLabel: false,
   isInError: false,
@@ -62,7 +63,7 @@ CheckboxInput.defaultProps = {
 
 CheckboxInput.propTypes = {
   SvgElement: PropTypes.elementType,
-  checked: PropTypes.bool.isRequired,
+  checked: PropTypes.bool,
   className: PropTypes.string,
   hiddenLabel: PropTypes.bool,
   isInError: PropTypes.bool,

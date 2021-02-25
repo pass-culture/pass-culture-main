@@ -115,9 +115,13 @@ const OfferPreview = ({ formValues, offerType }) => {
   )
 }
 
+OfferPreview.defaultProps = {
+  offerType: {},
+}
+
 OfferPreview.propTypes = {
   formValues: PropTypes.shape().isRequired,
-  offerType: PropTypes.shape().isRequired,
+  offerType: PropTypes.shape(),
 }
 
 export default OfferPreview
