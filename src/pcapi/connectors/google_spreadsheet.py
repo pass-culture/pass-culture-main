@@ -1,3 +1,4 @@
+import base64
 import json
 
 from google.oauth2.service_account import Credentials
@@ -19,12 +20,7 @@ def get_credentials():
     google_key = settings.GOOGLE_KEY
     if not google_key:
         raise MissingGoogleKeyException()
-    # Newline characters must be escaped in JSON.
-    google_key = google_key.replace("\n", "\\n")
-    # FIXME(cgaunet, 2020-11-24): We need to do this because parsing env variables yml
-    # to give it to terraform, replaces double quotes with single quotes making it not json friendly
-    google_key = google_key.replace("'", '"')
-    account_info = json.loads(google_key)
+    account_info = json.loads(base64.b64decode(google_key))
     scopes = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
     return Credentials.from_service_account_info(account_info, scopes=scopes)
 

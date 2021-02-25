@@ -211,6 +211,6 @@ PASS_CULTURE_REMITTANCE_CODE = os.environ.get("PASS_CULTURE_REMITTANCE_CODE")
 
 
 # GOOGLE
-GOOGLE_KEY = os.environ.get("PC_GOOGLE_KEY")
+GOOGLE_KEY = os.environ.get("PC_GOOGLE_KEY_64")
 GCP_BUCKET_CREDENTIALS = json.loads(base64.b64decode(os.environ.get("GCP_BUCKET_CREDENTIALS", "")) or "{}")
 GCP_BUCKET_NAME = os.environ.get("GCP_BUCKET_NAME", "")
