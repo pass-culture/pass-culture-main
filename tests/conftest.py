@@ -17,6 +17,7 @@ import pcapi
 from pcapi import settings
 from pcapi.admin.install import install_admin_views
 import pcapi.core.mails.testing as mails_testing
+import pcapi.core.object_storage.testing as object_storage_testing
 import pcapi.core.testing
 from pcapi.flask_app import admin
 from pcapi.install_database_extensions import install_database_extensions
@@ -86,6 +87,14 @@ def clear_mail_outbox():
         yield
     finally:
         mails_testing.reset_outbox()
+
+
+@pytest.fixture()
+def clear_tests_assets_bucket():
+    try:
+        yield
+    finally:
+        object_storage_testing.reset_bucket()
 
 
 def clean_database(f: object) -> object:
