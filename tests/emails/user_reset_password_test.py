@@ -32,7 +32,7 @@ class MakeUserResetPasswordEmailDataTest:
 
 
 class NativeAppUserResetPasswordEmailDataTest:
-    def test_email_is_encoded_in_(self, app):
+    def test_email_is_encoded(self, app):
         # When
         reset_password_email_data = retrieve_data_for_reset_password_native_app_email(
             user_email="ewing+demo@example.com",
@@ -44,6 +44,7 @@ class NativeAppUserResetPasswordEmailDataTest:
         assert reset_password_email_data == {
             "MJ-TemplateID": 1838526,
             "MJ-TemplateLanguage": True,
+            "Mj-trackopen": 1,
             "Vars": {
                 "native_app_link": (
                     "https://app.passculture-testing.beta.gouv.fr/mot-de-passe-perdu"
