@@ -41,17 +41,16 @@ describe('venues', () => {
       offererId: 'offerer_id',
       publicNam: 'My venue public name',
     }
+    pcapi.getVenueStats.mockResolvedValue({
+      activeBookingsQuantity: 0,
+      activeOffersCount: 2,
+      soldOutOffersCount: 3,
+      usedBookingsQuantity: 1,
+    })
   })
+
   describe('render', () => {
     it('should display stats tiles', async () => {
-      // Given
-      pcapi.getVenueStats.mockResolvedValue({
-        activeBookingsQuantity: 0,
-        activeOffersCount: 2,
-        soldOutOffersCount: 3,
-        usedBookingsQuantity: 1,
-      })
-
       // When
       await renderVenue()
 
@@ -82,6 +81,33 @@ describe('venues', () => {
 
       // Then
       expect(screen.getAllByText('Voir')).toHaveLength(4)
+    })
+
+    it('should redirect to filtered bookings when clicking on link', async () => {
+      // When
+      await renderVenue()
+
+      // Then
+      const [
+        activeOffersStat,
+        activeBookingsStat,
+        validatedBookingsStat,
+        outOfStockOffersStat,
+      ] = screen.getAllByTestId('venue-stat')
+      expect(within(activeOffersStat).getByRole('link', { name: 'Voir' })).toHaveAttribute(
+        'href',
+        '/offres?lieu=venue_id&statut=active'
+      )
+      const byRole = within(validatedBookingsStat).getByRole('link', { name: 'Voir' })
+      expect(byRole).toHaveAttribute('href', '/reservations')
+      expect(within(activeBookingsStat).getByRole('link', { name: 'Voir' })).toHaveAttribute(
+        'href',
+        '/reservations'
+      )
+      expect(within(outOfStockOffersStat).getByRole('link', { name: 'Voir' })).toHaveAttribute(
+        'href',
+        '/offres?lieu=venue_id&statut=epuisee'
+      )
     })
 
     describe('render virtual venue', () => {

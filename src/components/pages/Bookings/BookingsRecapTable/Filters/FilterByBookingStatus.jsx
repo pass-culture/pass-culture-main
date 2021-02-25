@@ -9,7 +9,7 @@ class FilterByBookingStatus extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      bookingStatusFilters: [],
+      bookingStatusFilters: props.bookingStatuses,
       showFilterStatusTooltip: false,
     }
   }
@@ -161,6 +161,7 @@ class FilterByBookingStatus extends Component {
 }
 
 FilterByBookingStatus.propTypes = {
+  bookingStatuses: PropTypes.arrayOf(PropTypes.string).isRequired,
   bookingsRecap: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   updateGlobalFilters: PropTypes.func.isRequired,
 }

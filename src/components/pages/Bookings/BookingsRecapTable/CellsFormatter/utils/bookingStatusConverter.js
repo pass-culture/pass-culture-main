@@ -1,8 +1,16 @@
-import { FORMAT_DD_MM_YYYY, FORMAT_DD_MM_YYYY_HH_mm } from '../../../../../../utils/date'
+import { FORMAT_DD_MM_YYYY, FORMAT_DD_MM_YYYY_HH_mm } from 'utils/date'
+
+export const BOOKING_STATUS = {
+  BOOKED: 'booked',
+  CANCELLED: 'cancelled',
+  CONFIRMED: 'confirmed',
+  REIMBURSED: 'reimbursed',
+  VALIDATED: 'validated',
+}
 
 const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
   {
-    id: 'validated',
+    id: BOOKING_STATUS.VALIDATED,
     status: 'validé',
     label: 'Réservation validée',
     historyClassName: 'bs-history-validated',
@@ -11,7 +19,7 @@ const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
     svgIconFilename: 'ico-status-double-validated',
   },
   {
-    id: 'cancelled',
+    id: BOOKING_STATUS.CANCELLED,
     status: 'annulé',
     label: 'Réservation annulée',
     historyClassName: 'bs-history-cancelled',
@@ -21,7 +29,7 @@ const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
     svgIconFilename: 'ico-status-cancelled',
   },
   {
-    id: 'booked',
+    id: BOOKING_STATUS.BOOKED,
     status: 'réservé',
     label: 'Réservé',
     historyClassName: 'bs-history-booked',
@@ -30,7 +38,7 @@ const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
     svgIconFilename: 'ico-status-booked',
   },
   {
-    id: 'reimbursed',
+    id: BOOKING_STATUS.REIMBURSED,
     status: 'remboursé',
     label: 'Remboursée',
     historyClassName: 'bs-history-reimbursed',
@@ -39,7 +47,7 @@ const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
     svgIconFilename: 'ico-status-reimbursed',
   },
   {
-    id: 'confirmed',
+    id: BOOKING_STATUS.CONFIRMED,
     status: 'confirmé',
     label: 'Réservation confirmée',
     historyClassName: 'bs-history-confirmed',

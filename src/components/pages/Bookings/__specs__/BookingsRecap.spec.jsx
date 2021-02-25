@@ -18,6 +18,8 @@ describe('components | BookingsRecap', () => {
   let fetchBookingsRecapByPageStub
 
   let fetchBookingsRecapByPageSpy
+
+  let props
   beforeEach(() => {
     fetchBookingsRecapByPageStub = Promise.resolve({
       bookings_recap: [],
@@ -28,6 +30,11 @@ describe('components | BookingsRecap', () => {
     fetchBookingsRecapByPageSpy = jest
       .spyOn(bookingRecapsService, 'fetchBookingsRecapByPage')
       .mockImplementation(() => fetchBookingsRecapByPageStub)
+    props = {
+      location: {
+        state: null
+      }
+    }
   })
 
   afterEach(() => {
@@ -36,7 +43,7 @@ describe('components | BookingsRecap', () => {
 
   it('should render a Titles component and a NoBookingsMessage when api returned no bookings', async () => {
     // When
-    const wrapper = shallow(<BookingsRecap />)
+    const wrapper = shallow(<BookingsRecap {...props} />)
 
     // Then
     await flushPromises()
@@ -69,7 +76,7 @@ describe('components | BookingsRecap', () => {
     fetchBookingsRecapByPageStub = Promise.resolve(paginatedBookingRecapReturned)
 
     // When
-    const wrapper = shallow(<BookingsRecap />)
+    const wrapper = shallow(<BookingsRecap {...props} />)
 
     // Then
     await flushPromises()
@@ -118,7 +125,7 @@ describe('components | BookingsRecap', () => {
       .mockResolvedValueOnce(secondPaginatedBookingRecapReturned)
 
     // When
-    const wrapper = shallow(<BookingsRecap />)
+    const wrapper = shallow(<BookingsRecap {...props} />)
 
     // Then
     await flushPromises()
@@ -129,6 +136,7 @@ describe('components | BookingsRecap', () => {
     expect(bookingsTable.props()).toStrictEqual({
       bookingsRecap: [bookings1, bookings2],
       isLoading: false,
+      locationState: null,
     })
   })
 
@@ -151,7 +159,7 @@ describe('components | BookingsRecap', () => {
     fetchBookingsRecapByPageStub = Promise.resolve(paginatedBookingRecapReturned)
 
     // When
-    const wrapper = shallow(<BookingsRecap />)
+    const wrapper = shallow(<BookingsRecap {...props} />)
 
     // Then
     await flushPromises()
@@ -164,7 +172,7 @@ describe('components | BookingsRecap', () => {
 
   it('should render a spinner when data from first page are still loading', async () => {
     // When
-    const wrapper = shallow(<BookingsRecap />)
+    const wrapper = shallow(<BookingsRecap {...props} />)
 
     // Then
     const spinner = wrapper.find(Spinner)

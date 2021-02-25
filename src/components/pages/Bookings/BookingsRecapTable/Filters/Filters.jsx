@@ -28,14 +28,14 @@ class Filters extends Component {
         offerDate: EMPTY_FILTER_VALUE,
         offerISBN: EMPTY_FILTER_VALUE,
         offerName: EMPTY_FILTER_VALUE,
-        offerVenue: ALL_VENUES,
+        offerVenue: props.offerVenue,
       },
       keywords: EMPTY_FILTER_VALUE,
       selectedBookingBeginningDate: EMPTY_FILTER_VALUE,
       selectedBookingEndingDate: moment(),
       selectedOfferDate: EMPTY_FILTER_VALUE,
       selectedOmniSearchCriteria: DEFAULT_OMNISEARCH_CRITERIA,
-      selectedVenue: EMPTY_FILTER_VALUE,
+      selectedVenue: props.offerVenue !== ALL_VENUES ? props.offerVenue : EMPTY_FILTER_VALUE,
       venues: [],
     }
   }
@@ -146,6 +146,7 @@ class Filters extends Component {
 
 Filters.propTypes = {
   isLoading: PropTypes.bool.isRequired,
+  offerVenue: PropTypes.string.isRequired,
   oldestBookingDate: PropTypes.string.isRequired,
   updateGlobalFilters: PropTypes.func.isRequired,
 }

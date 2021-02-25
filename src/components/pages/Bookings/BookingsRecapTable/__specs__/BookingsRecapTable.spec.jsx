@@ -84,7 +84,7 @@ describe('components | BookingsRecapTable', () => {
         ],
       },
     ]
-
+    filterBookingsRecap.mockReturnValue(bookingsRecap)
     const props = {
       bookingsRecap: bookingsRecap,
       isLoading: false,
@@ -142,6 +142,7 @@ describe('components | BookingsRecapTable', () => {
       ],
       isLoading: false,
     }
+    filterBookingsRecap.mockReturnValue(props.bookingsRecap)
 
     // When
     const wrapper = mount(<BookingsRecapTable {...props} />)
@@ -198,6 +199,7 @@ describe('components | BookingsRecapTable', () => {
       ],
       isLoading: false,
     }
+    filterBookingsRecap.mockReturnValue(props.bookingsRecap)
 
     // When
     const wrapper = mount(<BookingsRecapTable {...props} />)
@@ -240,6 +242,7 @@ describe('components | BookingsRecapTable', () => {
         ],
       },
     ]
+    filterBookingsRecap.mockReturnValue(bookingsRecap)
 
     const props = {
       bookingsRecap: bookingsRecap,
@@ -307,6 +310,7 @@ describe('components | BookingsRecapTable', () => {
         ],
       },
     ]
+    filterBookingsRecap.mockReturnValue(bookingsRecap)
     const props = {
       bookingsRecap: bookingsRecap,
       isLoading: false,
@@ -358,6 +362,7 @@ describe('components | BookingsRecapTable', () => {
         ],
       },
     ]
+    filterBookingsRecap.mockReturnValue(bookingsRecap)
     const props = {
       bookingsRecap: bookingsRecap,
       isLoading: false,
@@ -382,6 +387,7 @@ describe('components | BookingsRecapTable', () => {
       bookingsRecap: bookingsRecap,
       isLoading: false,
     }
+    filterBookingsRecap.mockReturnValue(bookingsRecap)
 
     // When
     const wrapper = shallow(<BookingsRecapTable {...props} />)
@@ -453,6 +459,7 @@ describe('components | BookingsRecapTable', () => {
         ],
       },
     ]
+    filterBookingsRecap.mockReturnValue(bookingsRecap)
 
     const props = {
       bookingsRecap: bookingsRecap,
@@ -500,6 +507,7 @@ describe('components | BookingsRecapTable', () => {
       bookingsRecap: bookingsRecap,
       isLoading: true,
     }
+    filterBookingsRecap.mockReturnValueOnce(bookingsRecap)
 
     // When
     const wrapper = shallow(<BookingsRecapTable {...props} />)
@@ -510,6 +518,7 @@ describe('components | BookingsRecapTable', () => {
       isLoading: true,
       oldestBookingDate: '',
       updateGlobalFilters: expect.any(Function),
+      offerVenue: 'all',
     })
   })
 
@@ -533,6 +542,7 @@ describe('components | BookingsRecapTable', () => {
         venue_identifier: 'AE',
       },
     ]
+    filterBookingsRecap.mockReturnValue(bookingsRecap)
     const props = {
       bookingsRecap: bookingsRecap,
       isLoading: false,
@@ -836,7 +846,6 @@ describe('components | BookingsRecapTable', () => {
 
   it('should redirect to first page when applying filters', async () => {
     // given
-    filterBookingsRecap.mockReturnValue([])
     const booking = {
       stock: {
         offer_name: 'Avez-vous déjà vu',
@@ -867,6 +876,7 @@ describe('components | BookingsRecapTable', () => {
       ],
     }
     const bookingsRecap = [booking]
+    filterBookingsRecap.mockReturnValueOnce(bookingsRecap).mockReturnValue([])
     const props = {
       bookingsRecap: bookingsRecap,
       isLoading: false,
@@ -910,5 +920,64 @@ describe('components | BookingsRecapTable', () => {
     // then
     const table = wrapper.find(TableFrame)
     expect(table.prop('currentPage')).toStrictEqual(0)
+  })
+
+  it('should filter bookings on render', () => {
+    // Given
+    const props = {
+      bookingsRecap: [
+        {
+          stock: {
+            offer_name: 'Avez-vous déjà vu ?',
+            type: 'thing',
+          },
+          beneficiary: {
+            lastname: 'Klepi',
+            firstname: 'Sonia',
+            email: 'sonia.klepi@example.com',
+          },
+          booking_date: '2020-04-03T12:00:00Z',
+          booking_token: 'ZEHBGD',
+          booking_status: 'validated',
+          booking_is_duo: true,
+          venue: {
+            identifier: 'AE',
+            name: 'Librairie Kléber',
+          },
+          booking_status_history: [
+            {
+              status: 'booked',
+              date: '2020-04-03T12:00:00Z',
+            },
+            {
+              status: 'validated',
+              date: '2020-05-12T12:00:00Z',
+            },
+          ],
+        },
+      ],
+      isLoading: false,
+      locationState: {
+        venueId: 'BD',
+        statuses: ['booked', 'cancelled'],
+      },
+    }
+    filterBookingsRecap.mockReturnValue([])
+
+    // When
+    shallow(<BookingsRecapTable {...props} />)
+
+    // Then
+    expect(filterBookingsRecap).toHaveBeenCalledWith(props.bookingsRecap, {
+      offerVenue: props.locationState.venueId,
+      bookingStatus: props.locationState.statuses,
+      bookingBeneficiary: EMPTY_FILTER_VALUE,
+      bookingBeginningDate: EMPTY_FILTER_VALUE,
+      bookingEndingDate: EMPTY_FILTER_VALUE,
+      bookingToken: EMPTY_FILTER_VALUE,
+      offerDate: EMPTY_FILTER_VALUE,
+      offerISBN: EMPTY_FILTER_VALUE,
+      offerName: EMPTY_FILTER_VALUE,
+    })
   })
 })

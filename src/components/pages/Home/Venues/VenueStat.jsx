@@ -25,7 +25,7 @@ export const VenueStat = ({ stat }) => (
     </div>
     <Link
       className="tertiary-link"
-      to={stat.url}
+      to={stat.link}
     >
       {'Voir'}
     </Link>
@@ -36,7 +36,16 @@ VenueStat.propTypes = {
   stat: PropTypes.shape({
     count: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
-    url: PropTypes.string.isRequired,
+    link: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.shape({
+        pathname: PropTypes.string,
+        state: PropTypes.shape({
+          venueId: PropTypes.string,
+          statuses: PropTypes.arrayOf(PropTypes.string),
+        }),
+      }),
+    ]).isRequired,
   }).isRequired,
 }
 

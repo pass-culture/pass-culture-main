@@ -23,6 +23,7 @@ describe('components | Filters', () => {
       isLoading: false,
       oldestBookingDate: EMPTY_FILTER_VALUE,
       updateGlobalFilters: jest.fn(),
+      offerVenue: ALL_VENUES,
     }
     fetchAllVenuesByProUser.mockResolvedValue([
       {

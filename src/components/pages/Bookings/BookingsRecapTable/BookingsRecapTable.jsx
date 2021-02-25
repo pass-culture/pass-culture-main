@@ -78,6 +78,7 @@ class BookingsRecapTable extends Component {
           disableSortBy: true,
           Filter: () => (
             <FilterByBookingStatus
+              bookingStatuses={this.state.filters.bookingStatus}
               bookingsRecap={props.bookingsRecap}
               updateGlobalFilters={this.updateGlobalFilters}
             />
@@ -93,12 +94,18 @@ class BookingsRecapTable extends Component {
         offerDate: EMPTY_FILTER_VALUE,
         offerISBN: EMPTY_FILTER_VALUE,
         offerName: EMPTY_FILTER_VALUE,
-        offerVenue: ALL_VENUES,
-        bookingStatus: ALL_BOOKING_STATUS,
+        offerVenue: props.locationState?.venueId || ALL_VENUES,
+        bookingStatus: props.locationState?.statuses.length
+          ? props.locationState.statuses
+          : ALL_BOOKING_STATUS,
       },
       oldestBookingDate: findOldestBookingDate(props.bookingsRecap),
     }
     this.filtersRef = React.createRef()
+  }
+
+  componentDidMount() {
+    this.applyFilters()
   }
 
   componentDidUpdate(prevProps) {
@@ -159,6 +166,7 @@ class BookingsRecapTable extends Component {
       <div>
         <Filters
           isLoading={isLoading}
+          offerVenue={this.state.filters.offerVenue}
           oldestBookingDate={oldestBookingDate}
           ref={this.filtersRef}
           updateGlobalFilters={this.updateGlobalFilters}
@@ -189,6 +197,10 @@ class BookingsRecapTable extends Component {
 BookingsRecapTable.propTypes = {
   bookingsRecap: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   isLoading: PropTypes.bool.isRequired,
+  locationState: PropTypes.shape({
+    venueId: PropTypes.string,
+    statuses: PropTypes.arrayOf(PropTypes.string),
+  }).isRequired,
 }
 
 export default BookingsRecapTable

@@ -1,3 +1,4 @@
+import * as PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
 import AppLayout from 'app/AppLayout'
@@ -54,6 +55,7 @@ class BookingsRecap extends PureComponent {
 
   render() {
     const { bookingsRecap, isLoading } = this.state
+    const { state: locationState } = this.props.location
 
     return (
       <AppLayout layoutConfig={{ pageName: 'bookings-v2' }}>
@@ -63,6 +65,7 @@ class BookingsRecap extends PureComponent {
           <BookingsRecapTable
             bookingsRecap={bookingsRecap}
             isLoading={isLoading}
+            locationState={locationState}
           />
         ) : isLoading ? (
           <Spinner />
@@ -75,3 +78,12 @@ class BookingsRecap extends PureComponent {
 }
 
 export default BookingsRecap
+
+BookingsRecap.propTypes = {
+  location: PropTypes.shape({
+    state: PropTypes.shape({
+      venueId: PropTypes.string,
+      statuses: PropTypes.arrayOf(PropTypes.string),
+    }),
+  }).isRequired,
+}

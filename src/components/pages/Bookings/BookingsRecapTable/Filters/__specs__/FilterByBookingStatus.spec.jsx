@@ -53,6 +53,7 @@ describe('components | FilterByBookingStatus', () => {
           ],
         },
       ],
+      bookingStatuses: [],
       updateGlobalFilters: jest.fn(),
     }
   })
