@@ -5,7 +5,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
-import { getStubStore } from 'utils/stubStore'
+import { configureTestStore } from 'store/testUtils'
 
 import * as constants from '../_constants'
 import Header from '../Header'
@@ -37,10 +37,9 @@ describe('header', () => {
 })
 
 const renderHeader = props => {
-  const stubStore = getStubStore({
-    data: (state = {}) => state,
-  })
-  render(
+  const stubStore = configureTestStore()
+
+  return render(
     <Provider store={stubStore}>
       <MemoryRouter>
         <Header {...props} />

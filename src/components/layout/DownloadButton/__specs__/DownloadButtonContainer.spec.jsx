@@ -3,8 +3,8 @@ import React from 'react'
 import { Provider } from 'react-redux'
 
 import { showNotificationV1 } from 'store/reducers/notificationReducer'
+import { configureTestStore } from 'store/testUtils'
 
-import { getStubStore } from '../../../../utils/stubStore'
 import DownloadButtonContainer from '../DownloadButtonContainer'
 
 global.fetch = url => {
@@ -26,9 +26,7 @@ describe('src | components | Layout | DownloadButtonContainer', () => {
       children: 'Fake title',
       href: 'https://foo.com/reimbursements/csv',
     }
-    const store = getStubStore({
-      data: (state = {}) => state,
-    })
+    const store = configureTestStore()
     jest.spyOn(store, 'dispatch')
 
     // when
@@ -51,9 +49,7 @@ describe('src | components | Layout | DownloadButtonContainer', () => {
       children: 'Fake title',
       href: 'https://foo.com/wrong-url',
     }
-    const store = getStubStore({
-      data: (state = {}) => state,
-    })
+    const store = configureTestStore()
     jest.spyOn(store, 'dispatch')
 
     // when

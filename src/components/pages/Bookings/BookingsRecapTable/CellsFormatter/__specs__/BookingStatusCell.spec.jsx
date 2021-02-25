@@ -4,16 +4,15 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
-import { getStubStore } from '../../../../../../utils/stubStore'
+import { configureTestStore } from 'store/testUtils'
+
 import BookingStatusCell from '../BookingStatusCell'
 
 const renderBookingStatusCell = props => {
-  const stubbedStore = getStubStore({
-    data: (state = {}) => state,
-  })
+  const store = configureTestStore()
 
-  render(
-    <Provider store={stubbedStore}>
+  return render(
+    <Provider store={store}>
       <MemoryRouter>
         <BookingStatusCell {...props} />
       </MemoryRouter>

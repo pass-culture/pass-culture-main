@@ -4,28 +4,20 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
-import { getStubStore } from 'utils/stubStore'
+import { configureTestStore } from 'store/testUtils'
 import { queryByTextTrimHtml } from 'utils/testHelpers'
 
 import Desk from '../Desk'
 
 const renderDesk = props => {
-  const stubbedStore = getStubStore({
-    data: (
-      state = {
-        users: [{ publicName: 'USER' }],
-        offerers: [{}],
-      }
-    ) => state,
-    modal: (
-      state = {
-        config: {},
-      }
-    ) => state,
+  const store = configureTestStore({
+    data: {
+      users: [{ publicName: 'USER' }],
+    },
   })
 
   render(
-    <Provider store={stubbedStore}>
+    <Provider store={store}>
       <MemoryRouter>
         <Desk {...props} />
       </MemoryRouter>

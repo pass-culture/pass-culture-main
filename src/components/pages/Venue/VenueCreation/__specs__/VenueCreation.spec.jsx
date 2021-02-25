@@ -6,8 +6,8 @@ import { Provider } from 'react-redux'
 import { Router } from 'react-router-dom'
 
 import * as usersSelectors from 'store/selectors/data/usersSelectors'
+import { configureTestStore } from 'store/testUtils'
 
-import { getStubStore } from '../../../../../utils/stubStore'
 import AddressField from '../../fields/LocationFields/AddressField'
 import LocationFields from '../../fields/LocationFields/LocationFields'
 import VenueCreation from '../VenueCreation'
@@ -164,18 +164,7 @@ describe('src | components | pages | Venue', () => {
           publicName: 'fake public name',
         }
 
-        const store = getStubStore({
-          data: (
-            state = {
-              offerers: [],
-            }
-          ) => state,
-          modal: (
-            state = {
-              config: {},
-            }
-          ) => state,
-        })
+        const store = configureTestStore()
         const history = createBrowserHistory()
         history.push(`/structures/AE/lieux/TR?modification`)
 

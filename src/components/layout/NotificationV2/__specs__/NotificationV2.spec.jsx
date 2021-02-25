@@ -17,7 +17,6 @@ describe('src | components | layout | NotificationV2', () => {
   let store
 
   beforeEach(() => {
-    store = configureTestStore()
     hideNotification = jest.fn()
     props = {
       hideNotification,
@@ -25,7 +24,9 @@ describe('src | components | layout | NotificationV2', () => {
     }
   })
 
-  const renderNotificationV2 = (props, store) => {
+  const renderNotificationV2 = (props, sentNotification) => {
+    store = configureTestStore({ notification: sentNotification })
+
     return render(
       <Provider store={store}>
         <NotificationV2Container {...props} />
@@ -40,10 +41,9 @@ describe('src | components | layout | NotificationV2', () => {
       type: 'success',
       version: 2,
     }
-    store = configureTestStore({ notification: sentNotification })
 
     // when
-    renderNotificationV2(props, store)
+    renderNotificationV2(props, sentNotification)
 
     // then
     const notification = screen.getByText(sentNotification.text)
@@ -59,10 +59,9 @@ describe('src | components | layout | NotificationV2', () => {
       type: 'success',
       version: 2,
     }
-    store = configureTestStore({ notification: sentNotification })
 
     // when
-    renderNotificationV2(props, store)
+    renderNotificationV2(props, sentNotification)
 
     // then
     expect(screen.getByRole('img')).toHaveAttribute(
@@ -78,10 +77,9 @@ describe('src | components | layout | NotificationV2', () => {
       type: 'error',
       version: 2,
     }
-    store = configureTestStore({ notification: sentNotification })
 
     // when
-    renderNotificationV2(props, store)
+    renderNotificationV2(props, sentNotification)
 
     // then
     expect(screen.getByRole('img')).toHaveAttribute(
@@ -97,10 +95,9 @@ describe('src | components | layout | NotificationV2', () => {
       type: 'success',
       version: 2,
     }
-    store = configureTestStore({ notification: sentNotification })
 
     // when
-    renderNotificationV2(props, store)
+    renderNotificationV2(props, sentNotification)
 
     // then
     await waitFor(() => {
@@ -115,10 +112,9 @@ describe('src | components | layout | NotificationV2', () => {
       type: 'success',
       version: 2,
     }
-    store = configureTestStore({ notification: sentNotification })
 
     // when
-    renderNotificationV2(props, store)
+    renderNotificationV2(props, sentNotification)
 
     // then
     await waitFor(() => {

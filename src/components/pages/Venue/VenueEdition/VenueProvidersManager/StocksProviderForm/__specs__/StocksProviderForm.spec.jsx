@@ -9,17 +9,17 @@ import { configureTestStore } from 'store/testUtils'
 import * as fetch from 'utils/fetch'
 
 const renderStocksProviderForm = props => {
-  const stubbedStore = configureTestStore({ notification: {} })
+  const store = configureTestStore({ notification: {} })
 
   render(
-    <Provider store={stubbedStore}>
+    <Provider store={store}>
       <MemoryRouter>
         <StocksProviderFormContainer {...props} />
       </MemoryRouter>
     </Provider>
   )
 
-  return stubbedStore
+  return store
 }
 
 describe('src | StocksProviderForm', () => {
@@ -94,7 +94,7 @@ describe('src | StocksProviderForm', () => {
 
     it('should display a notification if there is something wrong with the server', async () => {
       // given
-      const stubbedStore = renderStocksProviderForm(props)
+      const store = renderStocksProviderForm(props)
       jest.spyOn(global, 'fetch').mockResolvedValue({
         json: () => Promise.resolve({ errors: ['error message'] }),
         ok: false,
@@ -106,7 +106,7 @@ describe('src | StocksProviderForm', () => {
 
       // then
       expect(props.cancelProviderSelection).toHaveBeenCalledTimes(1)
-      expect(stubbedStore.getState().notification).toStrictEqual({
+      expect(store.getState().notification).toStrictEqual({
         text: 'error message',
         type: 'danger',
         version: 1,

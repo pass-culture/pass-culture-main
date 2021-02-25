@@ -4,13 +4,25 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { Router } from 'react-router'
 
-import { getStubStore } from '../../../utils/stubStore'
+import { configureTestStore } from 'store/testUtils'
+
 import MatomoContainer from '../MatomoContainer'
+
+const renderMatomo = (history, storeData = {}) => {
+  const store = configureTestStore(storeData)
+
+  return mount(
+    <Provider store={store}>
+      <Router history={history}>
+        <MatomoContainer />
+      </Router>
+    </Provider>
+  )
+}
 
 describe('src | components | Matomo', () => {
   let fakeMatomo
   let history
-  let store
 
   beforeEach(() => {
     history = createBrowserHistory()
@@ -20,20 +32,11 @@ describe('src | components | Matomo', () => {
       push: jest.fn(),
     }
     window._paq = fakeMatomo
-    store = getStubStore({
-      data: (state = {}) => state,
-    })
   })
 
   it('should push a new page displayed event', () => {
     // when
-    mount(
-      <Router history={history}>
-        <Provider store={store}>
-          <MatomoContainer />
-        </Provider>
-      </Router>
-    )
+    renderMatomo(history)
 
     // then
     expect(fakeMatomo.push).toHaveBeenNthCalledWith(1, ['setCustomUrl', '/router/path'])
@@ -44,13 +47,7 @@ describe('src | components | Matomo', () => {
     document.title = 'pass Culture page title'
 
     // when
-    mount(
-      <Router history={history}>
-        <Provider store={store}>
-          <MatomoContainer />
-        </Provider>
-      </Router>
-    )
+    renderMatomo(history)
 
     // then
     expect(fakeMatomo.push).toHaveBeenNthCalledWith(2, [
@@ -62,13 +59,7 @@ describe('src | components | Matomo', () => {
   describe('when user is not logged', () => {
     it('should push Anonymous as userId', () => {
       // when
-      mount(
-        <Router history={history}>
-          <Provider store={store}>
-            <MatomoContainer />
-          </Provider>
-        </Router>
-      )
+      renderMatomo(history)
 
       // then
       expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', 'ANONYMOUS on PRO'])
@@ -79,13 +70,7 @@ describe('src | components | Matomo', () => {
       history.push(`/connexion`)
 
       // when
-      mount(
-        <Router history={history}>
-          <Provider store={store}>
-            <MatomoContainer />
-          </Provider>
-        </Router>
-      )
+      renderMatomo(history)
 
       // then
       expect(fakeMatomo.push).toHaveBeenNthCalledWith(4, ['resetUserId'])
@@ -95,26 +80,14 @@ describe('src | components | Matomo', () => {
   describe('when user is logged', () => {
     it('should dispatch setUserId with current user id', () => {
       // given
-      const store = getStubStore({
-        data: (
-          state = {
-            users: [
-              {
-                id: 'TY',
-              },
-            ],
-          }
-        ) => state,
-      })
+      const store = {
+        data: {
+          users: [{ id: 'TY' }],
+        },
+      }
 
       // when
-      mount(
-        <Router history={history}>
-          <Provider store={store}>
-            <MatomoContainer />
-          </Provider>
-        </Router>
-      )
+      renderMatomo(history, store)
 
       // then
       expect(fakeMatomo.push).toHaveBeenNthCalledWith(3, ['setUserId', 'TY on PRO'])
