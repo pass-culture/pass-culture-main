@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { useCallback, useRef, useState } from 'react'
+import React, { forwardRef, useCallback, useState } from 'react'
 import AvatarEditor from 'react-avatar-editor'
 
 import {
@@ -11,44 +11,23 @@ import {
 } from 'components/pages/Offers/Offer/Thumbnail/_constants'
 import CanvasTools from 'utils/canvas'
 
-const ImageEditor = ({ setCroppingRect, setEditedThumbnail, setStep, step, thumbnail, url }) => {
-  const image = url !== '' ? url : thumbnail
+export const ImageEditor = ({ image }, ref) => {
   const [scale, setScale] = useState(1)
-  const editorRef = useRef({})
-
-  const previousStep = useCallback(() => {
-    setStep(step - 1)
-  }, [setStep, step])
-
-  const nextStep = useCallback(() => {
-    if (editorRef.current) {
-      const canvas = editorRef.current.getImage()
-      const croppingRect = editorRef.current.getCroppingRect()
-      setCroppingRect(croppingRect)
-      setEditedThumbnail(canvas.toDataURL())
-      setStep(step + 1)
-    }
-  }, [setCroppingRect, setEditedThumbnail, setStep, step])
-
-  const onScaleChange = useCallback(event => {
-    setScale(event.target.value)
-  }, [])
 
   const drawCropBorder = useCallback(ctx => {
     const canvas = new CanvasTools(ctx)
-
     canvas.drawArea({
       width: 0,
       color: CROP_BORDER_COLOR,
       coordinates: [CROP_BORDER_WIDTH, CROP_BORDER_HEIGHT, CANVAS_WIDTH, CANVAS_HEIGHT],
     })
   }, [])
+  const onScaleChange = useCallback(event => {
+    setScale(event.target.value)
+  }, [])
 
   return (
     <>
-      <div className="tnd-subtitle">
-        {'Recadrer votre image'}
-      </div>
       <div className="tnr-canvas">
         <AvatarEditor
           border={[CROP_BORDER_WIDTH, CROP_BORDER_HEIGHT]}
@@ -56,7 +35,7 @@ const ImageEditor = ({ setCroppingRect, setEditedThumbnail, setStep, step, thumb
           height={CANVAS_HEIGHT}
           image={image}
           onImageChange={drawCropBorder}
-          ref={editorRef}
+          ref={ref}
           scale={Number(scale)}
           width={CANVAS_WIDTH}
         />
@@ -81,40 +60,11 @@ const ImageEditor = ({ setCroppingRect, setEditedThumbnail, setStep, step, thumb
           {'max'}
         </span>
       </div>
-      <div className="tnd-actions">
-        <button
-          className="secondary-button"
-          onClick={previousStep}
-          title="Retour"
-          type="button"
-        >
-          {'Retour'}
-        </button>
-        <button
-          className="primary-button"
-          onClick={nextStep}
-          title="Suivant"
-          type="button"
-        >
-          {'Prévisualiser'}
-        </button>
-      </div>
     </>
   )
 }
-
-ImageEditor.defaultProps = {
-  thumbnail: {},
-  url: '',
-}
+export default forwardRef(ImageEditor)
 
 ImageEditor.propTypes = {
-  setCroppingRect: PropTypes.func.isRequired,
-  setEditedThumbnail: PropTypes.func.isRequired,
-  setStep: PropTypes.func.isRequired,
-  step: PropTypes.number.isRequired,
-  thumbnail: PropTypes.shape(),
-  url: PropTypes.string,
+  image: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(File)]).isRequired,
 }
-
-export default ImageEditor

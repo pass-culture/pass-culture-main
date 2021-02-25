@@ -5,7 +5,7 @@ import { DialogBox } from 'components/layout/DialogBox/DialogBox'
 import { IMPORT_TAB_ID } from 'components/pages/Offers/Offer/Thumbnail/_constants'
 import Advices from 'components/pages/Offers/Offer/Thumbnail/Advices/Advices'
 import Credit from 'components/pages/Offers/Offer/Thumbnail/Credit/Credit'
-import ImageEditor from 'components/pages/Offers/Offer/Thumbnail/ImageEditor/ImageEditor'
+import ImageEditorWrapper from 'components/pages/Offers/Offer/Thumbnail/ImageEditor/ImageEditorWrapper'
 import ImportFromComputer from 'components/pages/Offers/Offer/Thumbnail/ImportFromComputer/ImportFromComputer'
 import ImportFromURL from 'components/pages/Offers/Offer/Thumbnail/ImportFromURL/ImportFromURL'
 import ImportTab from 'components/pages/Offers/Offer/Thumbnail/ImportTab/ImportTab'
@@ -127,7 +127,7 @@ const ThumbnailDialog = ({ setIsModalOpened, setPreview, setThumbnailInfo }) => 
           />
         )}
         {step === RESIZE_STEP && (
-          <ImageEditor
+          <ImageEditorWrapper
             setCroppingRect={setCroppingRect}
             setEditedThumbnail={setEditedThumbnail}
             setStep={setStep}
