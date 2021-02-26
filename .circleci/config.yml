@@ -318,7 +318,7 @@ jobs:
       HELM_EXPERIMENTAL_OCI: 1
       CHART_NAME: dbops-chart
       CHART_RELEASE: passculture-db-operations
-      NAMESPACE: passculture-db-operations
+      NAMESPACE: operations
       TAG: stable
     steps:
       - checkout
@@ -339,10 +339,10 @@ jobs:
           name: Export chart in local filesystem
           command: helm chart export ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:${TAG} -d tmp/
       - run: |
-          helm upgrade ${CHART_RELEASE} tmp/${CHART_NAME} \
+          helm upgrade ${CHART_RELEASE} tmp/${CHART_RELEASE} \
             --install --wait \
             --namespace ${NAMESPACE} \
-            --values tmp/${CHART_NAME}/values.${CIRCLE_BRANCH}.yaml \
+            --values tmp/${CHART_RELEASE}/values.${CIRCLE_BRANCH}.yaml \
             --version stable
 
   deploy-api:
