@@ -7,6 +7,7 @@ from flask_login import current_user
 from flask_login import login_required
 
 from pcapi.connectors import redis
+from pcapi.core.bookings.repository import count_active_bookings_for_venue
 from pcapi.domain.identifier.identifier import Identifier
 from pcapi.domain.iris import link_valid_venue_to_irises
 from pcapi.domain.offers import update_is_active_status
@@ -17,7 +18,6 @@ from pcapi.models import Venue
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
 from pcapi.repository import repository
-from pcapi.repository.booking_queries import count_active_bookings_for_venue
 from pcapi.repository.iris_venues_queries import delete_venue_from_iris_venues
 from pcapi.routes.serialization import as_dict
 from pcapi.routes.serialization.venues_serialize import VenueStatsResponseModel

@@ -7,9 +7,10 @@ from dateutil import tz
 import pytest
 from pytest import fixture
 
-from pcapi.core.bookings import factories
+import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.repository as booking_repository
 from pcapi.core.bookings.repository import find_by_pro_user_id
+import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.domain.booking_recap.booking_recap import BookBookingRecap
 from pcapi.domain.booking_recap.booking_recap import EventBookingRecap
@@ -325,9 +326,9 @@ class FindAllNotUsedAndNotCancelledTest:
     @pytest.mark.usefixtures("db_session")
     def test_find_not_used_and_not_cancelled(self):
         # Given
-        booking = factories.BookingFactory()
-        factories.BookingFactory(isCancelled=True)
-        factories.BookingFactory(isUsed=True)
+        booking = bookings_factories.BookingFactory()
+        bookings_factories.BookingFactory(isCancelled=True)
+        bookings_factories.BookingFactory(isUsed=True)
 
         # When
         bookings = booking_repository.find_not_used_and_not_cancelled()
@@ -996,13 +997,13 @@ class FindSoonToBeExpiredBookingsTest:
         too_old_expired_creation_date = date.today() - timedelta(days=22)
         too_old_expired_creation_date = datetime.combine(too_old_expired_creation_date, time(12, 34, 17))
 
-        expected_booking = factories.BookingFactory(
+        expected_booking = bookings_factories.BookingFactory(
             dateCreated=expired_creation_date, stock__offer__product__type=str(ThingType.AUDIOVISUEL)
         )
-        factories.BookingFactory(
+        bookings_factories.BookingFactory(
             dateCreated=non_expired_creation_date, stock__offer__product__type=str(ThingType.AUDIOVISUEL)
         )
-        factories.BookingFactory(
+        bookings_factories.BookingFactory(
             dateCreated=too_old_expired_creation_date, stock__offer__product__type=str(ThingType.AUDIOVISUEL)
         )
 
@@ -1011,3 +1012,46 @@ class FindSoonToBeExpiredBookingsTest:
 
         # Then
         assert expired_bookings == [expected_booking]
+
+
+class GetActiveBookingsCountTest:
+    @pytest.mark.usefixtures("db_session")
+    def test_return_bookings_quantity_for_venue(self):
+        # Given
+        booking = bookings_factories.BookingFactory()
+        venue = booking.stock.offer.venue
+        bookings_factories.BookingFactory(stock__offer__venue=venue)
+
+        # When
+        active_bookings_count = booking_repository.count_active_bookings_for_venue(venue.id)
+
+        # Then
+        assert active_bookings_count == 2
+
+    @pytest.mark.usefixtures("db_session")
+    def test_excludes_used_or_cancelled_bookings(self):
+        # Given
+        booking = bookings_factories.BookingFactory()
+        venue = booking.stock.offer.venue
+        bookings_factories.BookingFactory(isUsed=True, stock__offer__venue=venue)
+        bookings_factories.BookingFactory(isCancelled=True, stock__offer__venue=venue)
+
+        # When
+        active_bookings_count = booking_repository.count_active_bookings_for_venue(venue.id)
+
+        # Then
+        assert active_bookings_count == 1
+
+    @pytest.mark.usefixtures("db_session")
+    def test_excludes_other_venues_bookings(self):
+        # Given
+        booking = bookings_factories.BookingFactory()
+        venue = booking.stock.offer.venue
+        another_venue = offers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+        bookings_factories.BookingFactory(stock__offer__venue=another_venue)
+
+        # When
+        active_bookings_count = booking_repository.count_active_bookings_for_venue(venue.id)
+
+        # Then
+        assert active_bookings_count == 1

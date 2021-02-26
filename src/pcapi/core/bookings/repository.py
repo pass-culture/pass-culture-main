@@ -192,6 +192,15 @@ def find_expired_bookings_ordered_by_offerer(expired_on: date = None) -> Query:
     )
 
 
+def count_active_bookings_for_venue(venue_id: int) -> int:
+    return (
+        Booking.query.join(Stock)
+        .join(Offer)
+        .filter(venue_id == Offer.venueId, Booking.isUsed.is_(False), Booking.isCancelled.is_(False))
+        .count()
+    )
+
+
 def _query_keep_on_non_activation_offers() -> Query:
     offer_types = ["ThingType.ACTIVATION", "EventType.ACTIVATION"]
 
