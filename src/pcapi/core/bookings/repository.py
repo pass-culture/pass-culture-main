@@ -192,12 +192,23 @@ def find_expired_bookings_ordered_by_offerer(expired_on: date = None) -> Query:
     )
 
 
-def count_active_bookings_for_venue(venue_id: int) -> int:
+def get_active_bookings_quantity_for_venue(venue_id: int) -> int:
     return (
         Booking.query.join(Stock)
         .join(Offer)
         .filter(venue_id == Offer.venueId, Booking.isUsed.is_(False), Booking.isCancelled.is_(False))
-        .count()
+        .with_entities(func.sum(Booking.quantity))
+        .one()[0]
+    )
+
+
+def get_used_bookings_quantity_for_venue(venue_id: int) -> int:
+    return (
+        Booking.query.join(Stock)
+        .join(Offer)
+        .filter(venue_id == Offer.venueId, Booking.isUsed.is_(True), Booking.isCancelled.is_(False))
+        .with_entities(func.sum(Booking.quantity))
+        .one()[0]
     )
 
 

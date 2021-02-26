@@ -15,6 +15,7 @@ class Get:
             # given
             booking = bookings_factories.BookingFactory()
             venue = booking.stock.offer.venue
+            booking = bookings_factories.BookingFactory(isUsed=True, stock__offer__venue=venue)
             venue_owner = offers_factories.UserOffererFactory(offerer=venue.managingOfferer).user
 
             auth_request = TestClient(app.test_client()).with_auth(email=venue_owner.email)
@@ -25,7 +26,8 @@ class Get:
             # then
             assert response.status_code == 200
             response_json = response.json
-            assert response_json["activeBookingsCount"] == 1
+            assert response_json["activeBookingsQuantity"] == 1
+            assert response_json["usedBookingsQuantity"] == 1
 
     class Returns403:
         @pytest.mark.usefixtures("db_session")

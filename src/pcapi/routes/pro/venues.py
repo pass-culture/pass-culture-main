@@ -7,7 +7,8 @@ from flask_login import current_user
 from flask_login import login_required
 
 from pcapi.connectors import redis
-from pcapi.core.bookings.repository import count_active_bookings_for_venue
+from pcapi.core.bookings.repository import get_active_bookings_quantity_for_venue
+from pcapi.core.bookings.repository import get_used_bookings_quantity_for_venue
 from pcapi.domain.identifier.identifier import Identifier
 from pcapi.domain.iris import link_valid_venue_to_irises
 from pcapi.domain.offers import update_is_active_status
@@ -126,5 +127,8 @@ def deactivate_venue_offers(venue_id):
 def get_venue_stats(humanized_venue_id: str) -> VenueStatsResponseModel:
     venue = load_or_404(Venue, humanized_venue_id)
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
-    active_bookings_count = count_active_bookings_for_venue(venue.id)
-    return VenueStatsResponseModel(activeBookingsCount=active_bookings_count)
+    active_bookings_count = get_active_bookings_quantity_for_venue(venue.id)
+    used_bookings_count = get_used_bookings_quantity_for_venue(venue.id)
+    return VenueStatsResponseModel(
+        activeBookingsQuantity=active_bookings_count, usedBookingsQuantity=used_bookings_count
+    )
