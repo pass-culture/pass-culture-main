@@ -26,6 +26,7 @@ class Post:
                 phone_number="0612345678",
                 postal_code="93020",
                 public_name="Toto",
+                last_connection_date=datetime.datetime(2019, 1, 1),
             )
             user.isEmailValidated = True
             repository.save(user)
@@ -55,7 +56,7 @@ class Post:
                 "isAdmin": False,
                 "isBeneficiary": True,
                 "isEmailValidated": True,
-                "lastConnectionDate": None,
+                "lastConnectionDate": format_into_utc_date(user.lastConnectionDate),
                 "lastName": "Smisse",
                 "needsToFillCulturalSurvey": False,
                 "phoneNumber": "0612345678",
