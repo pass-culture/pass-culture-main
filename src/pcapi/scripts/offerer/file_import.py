@@ -4,9 +4,8 @@ from typing import Callable
 from typing import List
 
 from pcapi.core.offerers.api import create_digital_venue
+from pcapi.core.users.api import fulfill_account_password
 from pcapi.core.users.models import User
-from pcapi.domain.password import generate_reset_token
-from pcapi.domain.password import random_password
 from pcapi.models import Offerer
 from pcapi.models import UserOfferer
 from pcapi.repository import repository
@@ -100,8 +99,8 @@ def fill_user_from(csv_row: List[str], user: User) -> User:
     user.email = csv_row[USER_EMAIL_COLUMN_INDEX]
     user.departementCode = csv_row[USER_DEPARTMENT_CODE_COLUMN_INDEX]
     user.isBeneficiary = False
-    user.password = random_password()
-    generate_reset_token(user, validity_duration_hours=THIRTY_DAYS_IN_HOURS)
+
+    fulfill_account_password(user)
     return user
 
 

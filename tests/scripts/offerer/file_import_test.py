@@ -171,16 +171,12 @@ class FillUserFromTest:
         assert user.departementCode == "29"
         assert user.isBeneficiary == False
 
-    @patch("pcapi.scripts.offerer.file_import.random_password")
-    def test_returns_an_user_with_computed_password(self, random_password):
-        # given
-        random_password.return_value = "random_string"
-
+    def test_returns_an_user_with_computed_password(self):
         # when
         user = fill_user_from(self.csv_row, User())
 
         # then
-        assert user.password == "random_string"
+        assert user.password is not None
 
     def test_returns_only_the_first_firstname(self):
         # given

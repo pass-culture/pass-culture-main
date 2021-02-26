@@ -161,14 +161,24 @@ def request_password_reset(user: User) -> None:
         raise exceptions.EmailNotSent()
 
 
-def fulfill_user_data(user: User, deposit_source: str, deposit_version: int = None) -> User:
-    user.password = random_password()
-    generate_reset_token(user, validity_duration_hours=THIRTY_DAYS_IN_HOURS)
+def fulfill_account_password(user: User) -> User:
+    _generate_random_password(user)
+
+    return user
+
+
+def fulfill_beneficiary_data(user: User, deposit_source: str, deposit_version: int = None) -> User:
+    _generate_random_password(user)
 
     deposit = payment_api.create_deposit(user, deposit_source, version=deposit_version)
     user.deposits = [deposit]
 
     return user
+
+
+def _generate_random_password(user):
+    user.password = random_password()
+    generate_reset_token(user, validity_duration_hours=THIRTY_DAYS_IN_HOURS)
 
 
 def suspend_account(user: User, reason: constants.SuspensionReason, actor: User) -> None:

@@ -1,21 +1,18 @@
 from typing import Optional
 
 from pcapi.core.users import api as users_api
+from pcapi.core.users.api import fulfill_account_password
 from pcapi.core.users.models import User
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
-from pcapi.domain.password import generate_reset_token
-from pcapi.domain.password import random_password
 from pcapi.models import BeneficiaryImport
 from pcapi.models import ImportStatus
-from pcapi.scripts.beneficiary import THIRTY_DAYS_IN_HOURS
 
 
 def to_model(beneficiary_pre_subscription: BeneficiaryPreSubscription, user: Optional[User] = None) -> User:
     if not user:
         beneficiary = User()
         beneficiary.email = beneficiary_pre_subscription.email
-        beneficiary.password = random_password()
-        generate_reset_token(beneficiary, validity_duration_hours=THIRTY_DAYS_IN_HOURS)
+        fulfill_account_password(beneficiary)
     else:
         beneficiary = user
 

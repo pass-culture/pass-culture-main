@@ -14,7 +14,8 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users.api import _set_offerer_departement_code
 from pcapi.core.users.api import create_id_check_token
 from pcapi.core.users.api import delete_expired_tokens
-from pcapi.core.users.api import fulfill_user_data
+from pcapi.core.users.api import fulfill_account_password
+from pcapi.core.users.api import fulfill_beneficiary_data
 from pcapi.core.users.api import generate_and_save_token
 from pcapi.core.users.api import set_pro_tuto_as_seen
 from pcapi.core.users.models import Token
@@ -355,13 +356,13 @@ class CreateBeneficiaryTest:
         assert len(user.deposits) == 1
 
 
-class FulfillUserDataTest:
+class FulfillBeneficiaryDataTest:
     def test_fill_user_with_password_token_and_deposit(self):
         # given
         user = User()
 
         # when
-        user = fulfill_user_data(user, "deposit_source", None)
+        user = fulfill_beneficiary_data(user, "deposit_source", None)
 
         # then
         assert isinstance(user, User)
@@ -374,7 +375,7 @@ class FulfillUserDataTest:
         user = User()
 
         # when
-        user = fulfill_user_data(user, "deposit_source", 2)
+        user = fulfill_beneficiary_data(user, "deposit_source", 2)
 
         # then
         assert isinstance(user, User)
@@ -382,6 +383,21 @@ class FulfillUserDataTest:
         assert user.resetPasswordToken is not None
         assert len(user.deposits) == 1
         assert user.deposit_version == 2
+
+
+class FulfillAccountPasswordTest:
+    def test_fill_user_with_password_token(self):
+        # given
+        user = User()
+
+        # when
+        user = fulfill_account_password(user)
+
+        # then
+        assert isinstance(user, User)
+        assert user.password is not None
+        assert user.resetPasswordToken is not None
+        assert len(user.deposits) == 0
 
 
 class SetOffererDepartementCodeTest:

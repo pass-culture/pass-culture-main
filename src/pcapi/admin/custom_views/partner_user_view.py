@@ -13,9 +13,8 @@ from wtforms.validators import Length
 from wtforms.validators import Optional
 
 from pcapi.admin.base_configuration import BaseAdminView
+from pcapi.core.users.api import fulfill_account_password
 from pcapi.core.users.models import User
-from pcapi.domain.password import generate_reset_token
-from pcapi.domain.password import random_password
 from pcapi.models import UserOfferer
 
 
@@ -66,8 +65,7 @@ class PartnerUserView(BaseAdminView):
 
     def on_model_change(self, form: Form, model: User, is_created: bool) -> None:
         if is_created:
-            model.password = random_password()
-            generate_reset_token(model, 24 * 14)
+            fulfill_account_password(model)
 
         model.publicName = f"{model.firstName} {model.lastName}"
         model.isBeneficiary = False

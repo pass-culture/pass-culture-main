@@ -44,19 +44,15 @@ class FakeBeneficiaryJouveBackend:
 
 @patch("pcapi.use_cases.create_beneficiary_from_application.send_activation_email")
 @patch("pcapi.domain.password.random_token")
-@patch("pcapi.infrastructure.repository.beneficiary.beneficiary_pre_subscription_sql_converter.random_password")
 @patch(
     "pcapi.settings.JOUVE_APPLICATION_BACKEND",
     "tests.use_cases.create_beneficiary_from_application_test.FakeBeneficiaryJouveBackend",
 )
 @freeze_time("2013-05-15 09:00:00")
 @pytest.mark.usefixtures("db_session")
-def test_saved_a_beneficiary_from_application(
-    stubed_random_password, stubed_random_token, mocked_send_activation_email, app
-):
+def test_saved_a_beneficiary_from_application(stubed_random_token, mocked_send_activation_email, app):
     # Given
     application_id = 35
-    stubed_random_password.return_value = b"random-password"
     stubed_random_token.return_value = "token"
 
     # When
@@ -76,7 +72,7 @@ def test_saved_a_beneficiary_from_application(
     assert beneficiary.hasSeenTutorials is False
     assert beneficiary.isAdmin is False
     assert beneficiary.lastName == "DURAND"
-    assert beneficiary.password == b"random-password"
+    assert beneficiary.password is not None
     assert beneficiary.phoneNumber == "0123456789"
     assert beneficiary.postalCode == "35123"
     assert beneficiary.publicName == "Thomas DURAND"

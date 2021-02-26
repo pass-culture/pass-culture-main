@@ -10,13 +10,12 @@ from wtforms.validators import ValidationError
 
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.core.users.models import User
-from pcapi.domain.password import generate_reset_token
-from pcapi.domain.password import random_password
 from pcapi.models import UserOfferer
 from pcapi.models.offerer import Offerer
 from pcapi.validation.models.has_address_mixin import POSTAL_CODE_REGEX
 
 from ...core.offerers.api import create_digital_venue
+from ...core.users.api import fulfill_account_password
 from .mixins.suspension_mixin import SuspensionMixin
 
 
@@ -127,8 +126,7 @@ class ProUserView(SuspensionMixin, BaseAdminView):
 
         if is_created:
             model.isBeneficiary = False
-            model.password = random_password()
-            generate_reset_token(model, 24 * 14)
+            fulfill_account_password(model)
             offerer = create_offerer(form)
             create_digital_venue(offerer)
             user_offerer = create_user_offerer(user=model, offerer=offerer)
