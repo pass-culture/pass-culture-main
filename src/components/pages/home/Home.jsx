@@ -21,10 +21,13 @@ const Home = ({
   user,
 }) => {
   const geolocationRef = useRef(geolocation)
-  const { displayedModules, isError, isLoading, algoliaMapping } = useDisplayedHomemodules(
-    history,
-    geolocationRef.current
-  )
+  const {
+    displayedModules,
+    isError,
+    isLoading,
+    algoliaMapping,
+    recommendedHits,
+  } = useDisplayedHomemodules(history, geolocationRef.current)
 
   useEffect(() => {
     campaignTracker.home()
@@ -52,6 +55,7 @@ const Home = ({
       geolocation={geolocationRef.current}
       history={history}
       match={match}
+      recommendedHits={recommendedHits}
       trackAllModulesSeen={trackAllModulesSeen}
       trackAllTilesSeen={trackAllTilesSeen}
       trackConsultOffer={trackConsultOffer}

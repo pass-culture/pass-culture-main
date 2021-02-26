@@ -20,6 +20,7 @@ jest.mock('query-string', () => ({
 }))
 jest.mock('../../../../vendor/algolia/algolia', () => ({
   fetchAlgolia: jest.fn(),
+  fetchAlgoliaHits: jest.fn().mockResolvedValue({ results: [] }),
 }))
 jest.mock('../../../../notifications/setUpBatchSDK', () => ({
   setCustomUserId: jest.fn(),

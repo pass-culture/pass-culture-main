@@ -15,6 +15,8 @@ import OfferDetailsContainer from './OfferDetails/OfferDetailsContainer'
 import { setCustomUserId } from '../../../../notifications/setUpBatchSDK'
 import BusinessPane from './domain/ValueObjects/BusinessPane'
 import User from '../../profile/ValueObjects/User'
+import RecommendationPane from './domain/ValueObjects/RecommendationPane'
+import RecommendationModule from './Module/RecommendationModule'
 
 const MainView = props => {
   const {
@@ -25,6 +27,7 @@ const MainView = props => {
     user,
     updateCurrentUser,
     algoliaMapping,
+    recommendedHits,
   } = props
   const {
     trackAllModulesSeen,
@@ -78,15 +81,30 @@ const MainView = props => {
           trackSeeMoreHasBeenClicked={trackSeeMoreHasBeenClicked}
         />
       )
-    } else {
-      if (module instanceof ExclusivityPane) {
-        return (
-          <ExclusivityModule
-            key={`${row}-exclusivity-module`}
-            module={module}
-          />
-        )
-      }
+    }
+    if (module instanceof RecommendationPane) {
+      return (
+        <RecommendationModule
+          geolocation={geolocation}
+          historyPush={history.push}
+          hits={recommendedHits}
+          key={`${row}-recommendation`}
+          module={module}
+          row={row}
+          trackAllTilesSeen={trackAllTilesSeen}
+          trackConsultOffer={trackConsultOffer}
+        />
+      )
+    }
+    if (module instanceof ExclusivityPane) {
+      return (
+        <ExclusivityModule
+          key={`${row}-exclusivity-module`}
+          module={module}
+        />
+      )
+    }
+    if (module instanceof BusinessPane) {
       return (
         <BusinessModule
           key={`${row}-business-module`}
@@ -143,7 +161,7 @@ MainView.propTypes = {
     })
   ).isRequired,
   displayedModules: PropTypes.arrayOf(
-    PropTypes.shape(Offers, OffersWithCover, BusinessPane, ExclusivityPane)
+    PropTypes.shape(Offers, OffersWithCover, BusinessPane, ExclusivityPane, RecommendationPane)
   ).isRequired,
   geolocation: PropTypes.shape({
     latitude: PropTypes.number,
@@ -151,6 +169,7 @@ MainView.propTypes = {
   }).isRequired,
   history: PropTypes.shape().isRequired,
   match: PropTypes.shape().isRequired,
+  recommendedHits: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   trackAllModulesSeen: PropTypes.func.isRequired,
   trackAllTilesSeen: PropTypes.func.isRequired,
   trackConsultOffer: PropTypes.func.isRequired,
