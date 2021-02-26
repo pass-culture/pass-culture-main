@@ -1,6 +1,6 @@
 import Offers from './domain/ValueObjects/Offers'
 import { PANE_LAYOUT } from './domain/layout'
-import { shouldModuleBeDisplayed } from './useDisplayedHomemodules'
+import { getModulesToDisplay } from './useDisplayedHomeModules.utils'
 import BusinessPane from './domain/ValueObjects/BusinessPane'
 import ExclusivityPane from './domain/ValueObjects/ExclusivityPane'
 
@@ -59,16 +59,16 @@ const offerTwo = {
   },
 }
 
-describe('shouldModuleBeDisplayed', () => {
+describe('getModulesToDisplay', () => {
   it('should display module Business', () => {
     const algoliaMapping = {}
     const module = new BusinessPane({ title: 'Title' })
-    expect(shouldModuleBeDisplayed(algoliaMapping)(module)).toBeTruthy()
+    expect(getModulesToDisplay([module], algoliaMapping)).toHaveLength(1)
   })
   it('should display module Exclu', () => {
     const algoliaMapping = {}
     const module = new ExclusivityPane({ alt: 'alt', image: 'image', offerId: 'offerId' })
-    expect(shouldModuleBeDisplayed(algoliaMapping)(module)).toBeTruthy()
+    expect(getModulesToDisplay([module], algoliaMapping)).toHaveLength(1)
   })
   it('should display module Offer if enough offers', () => {
     const algoliaMapping = {
@@ -76,7 +76,7 @@ describe('shouldModuleBeDisplayed', () => {
     }
     display.minOffers = 2
     const module = new Offers({ algolia, display, moduleId: 'moduleId' })
-    expect(shouldModuleBeDisplayed(algoliaMapping)(module)).toBeTruthy()
+    expect(getModulesToDisplay([module], algoliaMapping)).toHaveLength(1)
   })
 
   it('should not display Offer when no hits', () => {
@@ -84,7 +84,7 @@ describe('shouldModuleBeDisplayed', () => {
       moduleId: { hits: [], nbHits: 0, parsedParameters: {} },
     }
     const module = new Offers({ algolia, display, moduleId: 'moduleId' })
-    expect(shouldModuleBeDisplayed(algoliaMapping)(module)).toBeFalsy()
+    expect(getModulesToDisplay([module], algoliaMapping)).toHaveLength(0)
   })
 
   it('should not display Offer when not enough offers to be displayed', () => {
@@ -93,6 +93,6 @@ describe('shouldModuleBeDisplayed', () => {
     }
     display.minOffers = 3
     const module = new Offers({ algolia, display, moduleId: 'moduleId' })
-    expect(shouldModuleBeDisplayed(algoliaMapping)(module)).toBeFalsy()
+    expect(getModulesToDisplay([module], algoliaMapping)).toHaveLength(0)
   })
 })

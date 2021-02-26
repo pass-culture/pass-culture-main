@@ -1,72 +1,23 @@
-import { parse } from 'query-string'
-import { useEffect, useState } from 'react'
-
-import { fetchAlgolia } from '../../../../vendor/algolia/algolia'
-import { fetchHomepage } from '../../../../vendor/contentful/contentful'
-import { parseAlgoliaParameters } from './domain/parseAlgoliaParameters'
-import Offers from './domain/ValueObjects/Offers'
-import OffersWithCover from './domain/ValueObjects/OffersWithCover'
-
-export const shouldModuleBeDisplayed = algoliaMapping => module => {
-  if (module instanceof Offers || module instanceof OffersWithCover) {
-    const { hits = [], nbHits = 0 } = algoliaMapping[module.moduleId] || {}
-    const atLeastOneHit = hits.length > 0
-    const minOffersHasBeenReached = nbHits >= module.display.minOffers
-    return atLeastOneHit && minOffersHasBeenReached
-  }
-  return true
-}
+import { getModulesToDisplay } from './useDisplayedHomeModules.utils'
+import useHomeAlgoliaModules from './useHomeAlgoliaModules'
+import useHomepageModules from './useHomepageModules'
 
 const useDisplayedHomemodules = (history, geolocation) => {
-  const [modules, setModules] = useState([])
-  const [algoliaMapping, setAlgoliaMapping] = useState({})
-  const [isError, setIsError] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
+  // 1. Get the list of modules from contentful
+  const homepageModules = useHomepageModules(history)
+  const { modules } = homepageModules
 
-  useEffect(() => {
-    const parsedSearch = parse(history.location.search)
-    setIsError(false)
-    setIsLoading(true)
-    fetchHomepage({ entryId: parsedSearch ? parsedSearch.entryId : '' })
-      .then(setModules)
-      .catch(() => setIsError(true))
-  }, [history.location.search])
+  // 2. Get the hits and nbHits for each algolia module
+  const algoliaModules = useHomeAlgoliaModules(modules, geolocation)
+  const { algoliaMapping } = algoliaModules
 
-  useEffect(() => {
-    if (modules.length) {
-      const fetchAlgoliaModules = async () => {
-        const algoliaModules = await Promise.all(
-          modules
-            .filter(module => module instanceof Offers || module instanceof OffersWithCover)
-            .map(async ({ algolia: parameters, moduleId }) => {
-              const parsedParameters = parseAlgoliaParameters({ geolocation, parameters })
-              if (!parsedParameters) return
-
-              const response = await fetchAlgolia(parsedParameters)
-              return { moduleId, parsedParameters, ...response }
-            })
-        )
-        const mapping = {}
-        algoliaModules.filter(Boolean).forEach(({ moduleId, nbHits, hits, parsedParameters }) => {
-          mapping[moduleId] = { nbHits, hits, parsedParameters }
-        })
-        setAlgoliaMapping(mapping)
-        setIsLoading(false)
-      }
-
-      try {
-        fetchAlgoliaModules()
-      } catch (error) {
-        setIsError(true)
-        setIsLoading(false)
-      }
-    }
-  }, [modules, geolocation])
+  // 3. Reconcile the two and filter the modules that will eventually be displayed
+  const displayedModules = getModulesToDisplay(modules, algoliaMapping)
 
   return {
-    displayedModules: modules.filter(shouldModuleBeDisplayed(algoliaMapping)),
-    isError,
-    isLoading,
+    displayedModules,
+    isError: homepageModules.isError || algoliaModules.isError,
+    isLoading: homepageModules.isLoading || algoliaModules.isLoading,
     algoliaMapping,
   }
 }

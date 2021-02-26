@@ -54,6 +54,8 @@ describe('src | components | home', () => {
       },
       trackAllModulesSeen: jest.fn(),
       trackAllTilesSeen: jest.fn(),
+      trackConsultOffer: jest.fn(),
+      trackSeeMoreHasBeenClicked: jest.fn(),
       updateCurrentUser: jest.fn(),
       user: new User({
         deposit_version: 1,
