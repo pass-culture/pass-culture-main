@@ -33,7 +33,13 @@ VenueList.defaultProps = {
 }
 
 VenueList.propTypes = {
-  physicalVenues: PropTypes.arrayOf(),
+  physicalVenues: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+      publicName: PropTypes.string,
+    })
+  ),
   selectedOffererId: PropTypes.string.isRequired,
   virtualVenue: PropTypes.shape(),
 }

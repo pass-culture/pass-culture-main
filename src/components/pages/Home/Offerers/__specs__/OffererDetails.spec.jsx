@@ -299,40 +299,6 @@ describe('offererDetails', () => {
     })
   })
 
-  describe("when offerer doesn't have neither physical venue nor virtual offers", () => {
-    it('should display add information link', async () => {
-      baseOfferers = [
-        {
-          ...baseOfferers[0],
-          managedVenues: [
-            {
-              id: 'test_venue_id_1',
-              isVirtual: true,
-              managingOffererId: 'GE',
-              name: 'Le Sous-sol (Offre numérique)',
-              offererName: 'Bar des amis',
-              publicName: null,
-              nOffers: 0,
-            },
-          ],
-        },
-      ]
-      pcapi.getOfferer.mockResolvedValue(baseOfferers[0])
-      await renderHomePage()
-
-      expect(
-        screen.getByRole('link', {
-          name: 'Créer un lieu',
-        })
-      ).toBeInTheDocument()
-      expect(
-        screen.getByRole('link', {
-          name: 'Créer une offre numérique',
-        })
-      ).toBeInTheDocument()
-    })
-  })
-
   describe("when offerer doesn't have bank informations", () => {
     it('should display add information link', async () => {
       baseOfferers = [
@@ -402,6 +368,7 @@ describe('offererDetails', () => {
       expect(warningIcons).not.toBeInTheDocument()
     })
   })
+
   describe('when offerer has no physical venues', () => {
     let offererWithNoPhysicalVenues
 

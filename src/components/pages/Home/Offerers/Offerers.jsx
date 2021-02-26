@@ -1,19 +1,17 @@
-import PropTypes from 'prop-types'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { Link, useHistory } from 'react-router-dom'
+import React, { useCallback, useEffect, useState } from 'react'
+import { useHistory } from 'react-router-dom'
 
 import { buildSelectOptions } from 'components/layout/inputs/Select'
 import Spinner from 'components/layout/Spinner'
 import { VenueList } from 'components/pages/Home/Venues/VenueList'
 import * as pcapi from 'repository/pcapi/pcapi'
-import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
+import CreationLinks from './CreationLinks'
 import OffererDetails from './OffererDetails'
 
 export const CREATE_OFFERER_SELECT_ID = 'creation'
 
-
-const Offerers = ({ isVenueCreationAvailable }) => {
+const Offerers = () => {
   const [offererOptions, setOffererOptions] = useState([])
   const [selectedOffererId, setSelectedOffererId] = useState(null)
   const [selectedOfferer, setSelectedOfferer] = useState(null)
@@ -41,19 +39,11 @@ const Offerers = ({ isVenueCreationAvailable }) => {
     pcapi.getOfferer(selectedOffererId).then(receivedOfferer => {
       setSelectedOfferer(receivedOfferer)
       setPhysicalVenues(receivedOfferer.managedVenues.filter(venue => !venue.isVirtual))
-      const virtualVenue = receivedOfferer.managedVenues.find(
-        venue => venue.isVirtual && venue.nOffers > 0
-      )
-      setVirtualVenue(virtualVenue || null)
+      const virtualVenue = receivedOfferer.managedVenues.find(venue => venue.isVirtual)
+      setVirtualVenue(virtualVenue)
       setIsLoading(false)
     })
   }, [setIsLoading, selectedOffererId])
-
-  const displayCreateVenueBanner = useMemo(() => {
-    if (!selectedOfferer) return false
-    const virtualVenue = selectedOfferer.managedVenues.find(venue => venue.isVirtual)
-    return !physicalVenues.length && !virtualVenue.nOffers
-  }, [selectedOfferer, physicalVenues])
 
   const handleChangeOfferer = useCallback(
     event => {
@@ -77,10 +67,6 @@ const Offerers = ({ isVenueCreationAvailable }) => {
     )
   }
 
-  const venueCreationUrl = isVenueCreationAvailable
-    ? `/structures/${selectedOffererId}/lieux/creation`
-    : UNAVAILABLE_ERROR_PAGE
-
   return (
     <>
       <OffererDetails
@@ -90,47 +76,19 @@ const Offerers = ({ isVenueCreationAvailable }) => {
         selectedOfferer={selectedOfferer}
       />
 
-      {displayCreateVenueBanner ? (
-        <div className="h-card venue-banner">
-          <div className="h-card-inner">
-            <h3 className="h-card-title">
-              {'Lieux'}
-            </h3>
+      <VenueList
+        physicalVenues={physicalVenues}
+        selectedOffererId={selectedOfferer.id}
+        virtualVenue={virtualVenue.nOffers ? virtualVenue : null}
+      />
 
-            <div className="h-card-content">
-              <p>
-                {'Avant de créer votre première offre physique vous devez avoir un lieu'}
-              </p>
-              <div className="actions-container">
-                <Link
-                  className="primary-link"
-                  to={venueCreationUrl}
-                >
-                  {'Créer un lieu'}
-                </Link>
-                <Link
-                  className="secondary-link"
-                  to={`/offres/creation?structure=${selectedOfferer.id}`}
-                >
-                  {'Créer une offre numérique'}
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : (
-        <VenueList
-          physicalVenues={physicalVenues}
-          selectedOffererId={selectedOfferer.id}
-          virtualVenue={virtualVenue}
-        />
-      )}
+      <CreationLinks
+        hasPhysicalVenue={physicalVenues.length > 0}
+        hasVirtualOffers={virtualVenue.nOffers > 0}
+        offererId={selectedOfferer.id}
+      />
     </>
   )
-}
-
-Offerers.propTypes = {
-  isVenueCreationAvailable: PropTypes.bool.isRequired,
 }
 
 export default Offerers
