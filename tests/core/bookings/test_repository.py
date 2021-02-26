@@ -1016,17 +1016,28 @@ class FindSoonToBeExpiredBookingsTest:
 
 class GetActiveBookingsQuantityForVenueTest:
     @pytest.mark.usefixtures("db_session")
-    def test_return_bookings_count_for_venue(self):
+    def test_return_bookings_quantity_for_venue(self):
         # Given
         booking = bookings_factories.BookingFactory(quantity=2)
         venue = booking.stock.offer.venue
         bookings_factories.BookingFactory(stock__offer__venue=venue)
 
         # When
-        active_bookings_count = booking_repository.get_active_bookings_quantity_for_venue(venue.id)
+        active_bookings_quantity = booking_repository.get_active_bookings_quantity_for_venue(venue.id)
 
         # Then
-        assert active_bookings_count == 3
+        assert active_bookings_quantity == 3
+
+    @pytest.mark.usefixtures("db_session")
+    def test_return_0_when_no_bookings_exist(self):
+        # Given
+        venue = offers_factories.VenueFactory()
+
+        # When
+        active_bookings_quantity = booking_repository.get_active_bookings_quantity_for_venue(venue.id)
+
+        # Then
+        assert active_bookings_quantity == 0
 
     @pytest.mark.usefixtures("db_session")
     def test_excludes_used_or_cancelled_bookings(self):
@@ -1037,10 +1048,10 @@ class GetActiveBookingsQuantityForVenueTest:
         bookings_factories.BookingFactory(isCancelled=True, stock__offer__venue=venue)
 
         # When
-        active_bookings_count = booking_repository.get_active_bookings_quantity_for_venue(venue.id)
+        active_bookings_quantity = booking_repository.get_active_bookings_quantity_for_venue(venue.id)
 
         # Then
-        assert active_bookings_count == 1
+        assert active_bookings_quantity == 1
 
     @pytest.mark.usefixtures("db_session")
     def test_excludes_other_venues_bookings(self):
@@ -1051,25 +1062,36 @@ class GetActiveBookingsQuantityForVenueTest:
         bookings_factories.BookingFactory(stock__offer__venue=another_venue)
 
         # When
-        active_bookings_count = booking_repository.get_active_bookings_quantity_for_venue(venue.id)
+        active_bookings_quantity = booking_repository.get_active_bookings_quantity_for_venue(venue.id)
 
         # Then
-        assert active_bookings_count == 1
+        assert active_bookings_quantity == 1
 
 
 class GetUsedBookingsQuantityForVenueTest:
     @pytest.mark.usefixtures("db_session")
-    def test_return_bookings_count_for_venue(self):
+    def test_return_bookings_quantity_for_venue(self):
         # Given
         booking = bookings_factories.BookingFactory(isUsed=True, quantity=2)
         venue = booking.stock.offer.venue
         bookings_factories.BookingFactory(isUsed=True, stock__offer__venue=venue)
 
         # When
-        active_bookings_count = booking_repository.get_used_bookings_quantity_for_venue(venue.id)
+        active_bookings_quantity = booking_repository.get_used_bookings_quantity_for_venue(venue.id)
 
         # Then
-        assert active_bookings_count == 3
+        assert active_bookings_quantity == 3
+
+    @pytest.mark.usefixtures("db_session")
+    def test_return_0_when_no_bookings_exist(self):
+        # Given
+        venue = offers_factories.VenueFactory()
+
+        # When
+        active_bookings_quantity = booking_repository.get_used_bookings_quantity_for_venue(venue.id)
+
+        # Then
+        assert active_bookings_quantity == 0
 
     @pytest.mark.usefixtures("db_session")
     def test_excludes_unused_or_cancelled_bookings(self):
@@ -1080,10 +1102,10 @@ class GetUsedBookingsQuantityForVenueTest:
         bookings_factories.BookingFactory(isCancelled=True, isUsed=True, stock__offer__venue=venue)
 
         # When
-        active_bookings_count = booking_repository.get_used_bookings_quantity_for_venue(venue.id)
+        active_bookings_quantity = booking_repository.get_used_bookings_quantity_for_venue(venue.id)
 
         # Then
-        assert active_bookings_count == 1
+        assert active_bookings_quantity == 1
 
     @pytest.mark.usefixtures("db_session")
     def test_excludes_other_venues_bookings(self):
@@ -1094,7 +1116,7 @@ class GetUsedBookingsQuantityForVenueTest:
         bookings_factories.BookingFactory(isUsed=True, stock__offer__venue=another_venue)
 
         # When
-        active_bookings_count = booking_repository.get_used_bookings_quantity_for_venue(venue.id)
+        active_bookings_quantity = booking_repository.get_used_bookings_quantity_for_venue(venue.id)
 
         # Then
-        assert active_bookings_count == 1
+        assert active_bookings_quantity == 1

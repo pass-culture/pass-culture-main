@@ -10,6 +10,7 @@ from sqlalchemy import cast
 from sqlalchemy import func
 from sqlalchemy import text
 from sqlalchemy.orm import Query
+from sqlalchemy.sql.functions import coalesce
 from sqlalchemy.util._collections import AbstractKeyedTuple
 
 from pcapi.core.bookings import conf
@@ -197,7 +198,7 @@ def get_active_bookings_quantity_for_venue(venue_id: int) -> int:
         Booking.query.join(Stock)
         .join(Offer)
         .filter(venue_id == Offer.venueId, Booking.isUsed.is_(False), Booking.isCancelled.is_(False))
-        .with_entities(func.sum(Booking.quantity))
+        .with_entities(coalesce(func.sum(Booking.quantity), 0))
         .one()[0]
     )
 
@@ -207,7 +208,7 @@ def get_used_bookings_quantity_for_venue(venue_id: int) -> int:
         Booking.query.join(Stock)
         .join(Offer)
         .filter(venue_id == Offer.venueId, Booking.isUsed.is_(True), Booking.isCancelled.is_(False))
-        .with_entities(func.sum(Booking.quantity))
+        .with_entities(coalesce(func.sum(Booking.quantity), 0))
         .one()[0]
     )
 
