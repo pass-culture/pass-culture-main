@@ -10,6 +10,7 @@ from pydantic.fields import Field
 
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users.models import ExpenseDomain
+from pcapi.core.users.models import NotificationSubscriptions
 from pcapi.core.users.models import User
 from pcapi.core.users.models import VOID_FIRST_NAME
 from pcapi.core.users.models import VOID_PUBLIC_NAME
@@ -61,6 +62,7 @@ class UserProfileResponse(BaseModel):
     hasAllowedRecommendations: bool
     is_eligible: bool
     lastName: Optional[str]
+    subscriptions: NotificationSubscriptions  # if we send user.notification_subscriptions, pydantic will take the column and not the property
     isBeneficiary: bool
     phoneNumber: Optional[str]
     publicName: Optional[str] = Field(None, alias="pseudo")
@@ -89,8 +91,9 @@ class UserProfileResponse(BaseModel):
         )
 
     @classmethod
-    def from_orm(cls, user):
+    def from_orm(cls, user: User):
         user.show_eligible_card = cls._show_eligible_card(user)
+        user.subscriptions = user.get_notification_subscriptions()
         return super().from_orm(user)
 
 

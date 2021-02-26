@@ -76,6 +76,7 @@ class AccountTest:
             # `now()` function, which is NOT overriden by
             # `freeze_time()`.
             deposit__expirationDate=datetime(2040, 1, 1),
+            notificationSubscriptions={"marketing_push": True},
             publicName="jdo",
             **USER_DATA,
         )
@@ -101,6 +102,7 @@ class AccountTest:
             "isEligible": True,
             "pseudo": "jdo",
             "showEligibleCard": False,
+            "subscriptions": {"marketing_push": True},
         }
         EXPECTED_DATA.update(USER_DATA)
 

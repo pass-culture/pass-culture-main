@@ -101,6 +101,11 @@ def check_password(clear_text: str, hashed: str) -> bool:
     return checker(clear_text, hashed)
 
 
+@dataclass
+class NotificationSubscriptions:
+    marketing_push: bool = False
+
+
 class User(PcObject, Model, NeedsValidationMixin, VersionedMixin):
     __tablename__ = "user"
 
@@ -289,6 +294,9 @@ class User(PcObject, Model, NeedsValidationMixin, VersionedMixin):
     def is_eligible(self) -> bool:
         age = self.calculate_age()
         return age is not None and age == constants.ELIGIBILITY_AGE
+
+    def get_notification_subscriptions(self) -> NotificationSubscriptions:
+        return NotificationSubscriptions(**self.notificationSubscriptions or {})
 
 
 class ExpenseDomain(enum.Enum):
