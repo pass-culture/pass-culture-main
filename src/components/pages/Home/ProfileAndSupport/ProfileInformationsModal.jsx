@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types'
 import React, { useCallback, useState } from 'react'
 
-import * as pcapi from '../../../repository/pcapi/pcapi'
-import { DialogBox } from '../../layout/DialogBox/DialogBox'
-import TextInput from '../../layout/inputs/TextInput/TextInput'
+import { DialogBox } from 'components/layout/DialogBox/DialogBox'
+import TextInput from 'components/layout/inputs/TextInput/TextInput'
+import * as pcapi from 'repository/pcapi/pcapi'
 
 const ProfileInformationsModal = ({
   setIsModalOpened,
