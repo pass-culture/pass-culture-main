@@ -10,6 +10,7 @@ import OffersWithCover from '../../components/pages/home/MainView/domain/ValueOb
 import Offers from '../../components/pages/home/MainView/domain/ValueObjects/Offers'
 import BusinessPane from '../../components/pages/home/MainView/domain/ValueObjects/BusinessPane'
 import ExclusivityPane from '../../components/pages/home/MainView/domain/ValueObjects/ExclusivityPane'
+import RecommendationPane from '../../components/pages/home/MainView/domain/ValueObjects/RecommendationPane'
 
 const DEPTH_LEVEL = 2
 
@@ -111,6 +112,11 @@ const _process = homepage => {
               image: buildImageUrl(fields),
               offerId: fields[CONTENT_FIELDS.OFFER_ID],
             })
+          }
+          if (matchesContentType(module, CONTENT_TYPES.RECOMMENDATION)) {
+            const displayParameters =
+              CONTENT_FIELDS.DISPLAY in fields ? fields[CONTENT_FIELDS.DISPLAY].fields : {}
+            return new RecommendationPane({ display: displayParameters })
           }
           return new BusinessPane({
             firstLine: fields[CONTENT_FIELDS.FIRST_LINE],

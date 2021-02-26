@@ -2,7 +2,8 @@ export const CONTENT_TYPES = {
   ALGOLIA: 'algolia',
   EXCLUSIVITY: 'exclusivity',
   HOMEPAGE: 'homepage',
-  INFORMATION: 'information'
+  INFORMATION: 'information',
+  RECOMMENDATION: 'recommendation',
 }
 
 export const CONTENT_FIELDS = {
