@@ -1,3 +1,4 @@
+from dataclasses import asdict
 from datetime import datetime
 
 from pcapi.connectors import api_recaptcha
@@ -38,6 +39,8 @@ def get_user_profile(user: User) -> serializers.UserProfileResponse:
 def update_user_profile(user: User, body: serializers.UserProfileUpdateRequest) -> serializers.UserProfileResponse:
     if body.hasAllowedRecommendations is not None:
         user.hasAllowedRecommendations = body.hasAllowedRecommendations
+    if body.subscriptions is not None:
+        user.notificationSubscriptions = asdict(body.subscriptions)
     repository.save(user)
     return serializers.UserProfileResponse.from_orm(user)
 

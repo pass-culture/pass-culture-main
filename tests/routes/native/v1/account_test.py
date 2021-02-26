@@ -197,12 +197,15 @@ class UserProfileUpdateTest:
         test_client = TestClient(app.test_client())
         test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
 
-        response = test_client.post("/native/v1/profile", json={"hasAllowedRecommendations": False})
+        response = test_client.post(
+            "/native/v1/profile", json={"hasAllowedRecommendations": False, "subscriptions": {"marketing_push": True}}
+        )
 
         assert response.status_code == 200
 
         user = User.query.filter_by(email=self.identifier).first()
         assert user.hasAllowedRecommendations == False
+        assert user.get_notification_subscriptions().marketing_push
 
         response = test_client.post("/native/v1/profile", json={"hasAllowedRecommendations": True})
 

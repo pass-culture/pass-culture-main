@@ -91,7 +91,7 @@ class UserProfileResponse(BaseModel):
         )
 
     @classmethod
-    def from_orm(cls, user: User):
+    def from_orm(cls, user: User):  # type: ignore
         user.show_eligible_card = cls._show_eligible_card(user)
         user.subscriptions = user.get_notification_subscriptions()
         return super().from_orm(user)
@@ -99,6 +99,7 @@ class UserProfileResponse(BaseModel):
 
 class UserProfileUpdateRequest(BaseModel):
     hasAllowedRecommendations: Optional[bool]
+    subscriptions: Optional[NotificationSubscriptions]
 
 
 class ResendEmailValidationRequest(BaseModel):
