@@ -14,9 +14,11 @@ import CanvasTools from 'utils/canvas'
 export const ImageEditor = ({ image }, ref) => {
   const [scale, setScale] = useState(1)
 
-  const drawCropBorder = useCallback(ctx => {
-    const canvas = new CanvasTools(ctx)
-    canvas.drawArea({
+  const drawCropBorder = useCallback(() => {
+    const canvas = document.querySelector('.tnr-canvas canvas')
+    const ctx = canvas.getContext('2d')
+    const canvasTools = new CanvasTools(ctx)
+    canvasTools.drawArea({
       width: 0,
       color: CROP_BORDER_COLOR,
       coordinates: [CROP_BORDER_WIDTH, CROP_BORDER_HEIGHT, CANVAS_WIDTH, CANVAS_HEIGHT],
@@ -35,6 +37,7 @@ export const ImageEditor = ({ image }, ref) => {
           height={CANVAS_HEIGHT}
           image={image}
           onImageChange={drawCropBorder}
+          onImageReady={drawCropBorder}
           ref={ref}
           scale={Number(scale)}
           width={CANVAS_WIDTH}

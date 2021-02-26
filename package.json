@@ -69,7 +69,7 @@
     "react": "^16.10.2",
     "react-autocomplete": "^1.8.1",
     "react-autosize-textarea": "^7.1.0",
-    "react-avatar-editor": "augnustin/react-avatar-editor#pass-culture",
+    "react-avatar-editor": "^11.1.0",
     "react-csv": "^2.0.3",
     "react-datepicker": "^1.8.0",
     "react-dom": "^16.13.1",
