@@ -20,6 +20,8 @@ from sqlalchemy import String
 from sqlalchemy import Text
 from sqlalchemy import func
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql.json import JSONB
+from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.orm import backref
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm import relationship
@@ -138,6 +140,8 @@ class User(PcObject, Model, NeedsValidationMixin, VersionedMixin):
     lastConnectionDate = Column(DateTime, nullable=True)
 
     needsToFillCulturalSurvey = Column(Boolean, server_default=expression.true(), default=True)
+
+    notificationSubscriptions = Column(MutableDict.as_mutable(JSONB), nullable=True)
 
     offerers = relationship("Offerer", secondary="user_offerer")
 
