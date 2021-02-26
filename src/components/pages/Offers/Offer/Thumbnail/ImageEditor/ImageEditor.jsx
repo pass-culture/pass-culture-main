@@ -9,13 +9,13 @@ import {
   CROP_BORDER_HEIGHT,
   CROP_BORDER_WIDTH,
 } from 'components/pages/Offers/Offer/Thumbnail/_constants'
-import CanvasTools from 'utils/canvas'
+import CanvasTools from 'components/pages/Offers/Offer/Thumbnail/ImageEditor/canvas'
 
 export const ImageEditor = ({ image }, ref) => {
   const [scale, setScale] = useState(1)
 
   const drawCropBorder = useCallback(() => {
-    const canvas = document.querySelector('.tnr-canvas canvas')
+    const canvas = document.querySelector('canvas')
     const ctx = canvas.getContext('2d')
     const canvasTools = new CanvasTools(ctx)
     canvasTools.drawArea({
@@ -38,6 +38,8 @@ export const ImageEditor = ({ image }, ref) => {
           image={image}
           onImageChange={drawCropBorder}
           onImageReady={drawCropBorder}
+          onMouseMove={drawCropBorder}
+          onMouseUp={drawCropBorder}
           ref={ref}
           scale={Number(scale)}
           width={CANVAS_WIDTH}

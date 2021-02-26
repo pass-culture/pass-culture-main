@@ -13,10 +13,10 @@ import {
   CROP_BORDER_HEIGHT,
   CROP_BORDER_WIDTH,
 } from 'components/pages/Offers/Offer/Thumbnail/_constants'
+import CanvasTools from 'components/pages/Offers/Offer/Thumbnail/ImageEditor/canvas.js'
 import * as pcapi from 'repository/pcapi/pcapi'
-import CanvasTools from 'utils/canvas.js'
 
-jest.mock('utils/canvas.js')
+jest.mock('components/pages/Offers/Offer/Thumbnail/ImageEditor/canvas.js')
 
 describe('thumbnail edition', () => {
   describe('when thumbnail exists', () => {
