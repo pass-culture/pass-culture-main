@@ -34,7 +34,7 @@ const SeeMore = ({
 }) => {
   function goToSearchPage(event) {
     if (!isSwitching) {
-      trackClickSeeMore()
+      if (trackClickSeeMore) trackClickSeeMore()
       historyPush({
         pathname: '/recherche/resultats',
         parametersFromHome: parameters,
@@ -76,6 +76,7 @@ const SeeMore = ({
 
 SeeMore.defaultProps = {
   layout: PANE_LAYOUT['ONE-ITEM-MEDIUM'],
+  trackClickSeeMore: undefined,
 }
 
 SeeMore.propTypes = {
@@ -84,7 +85,7 @@ SeeMore.propTypes = {
   isSwitching: PropTypes.bool.isRequired,
   layout: PropTypes.string,
   parameters: PropTypes.shape().isRequired,
-  trackClickSeeMore: PropTypes.func.isRequired,
+  trackClickSeeMore: PropTypes.func,
 }
 
 export default SeeMore

@@ -60,7 +60,7 @@ OneItem.propTypes = {
   parsedParameters: PropTypes.shape().isRequired,
   row: PropTypes.number.isRequired,
   tile: PropTypes.oneOfType([PropTypes.string, PropTypes.bool, PropTypes.shape()]).isRequired,
-  trackClickSeeMore: PropTypes.func.isRequired,
+  trackClickSeeMore: PropTypes.func,
   trackConsultOffer: PropTypes.func.isRequired,
 }
 

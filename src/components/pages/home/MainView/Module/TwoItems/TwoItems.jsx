@@ -87,7 +87,7 @@ TwoItems.propTypes = {
   tile: PropTypes.arrayOf(
     PropTypes.oneOfType([PropTypes.string, PropTypes.bool, PropTypes.shape()])
   ).isRequired,
-  trackClickSeeMore: PropTypes.func.isRequired,
+  trackClickSeeMore: PropTypes.func,
   trackConsultOffer: PropTypes.func.isRequired,
 }
 
