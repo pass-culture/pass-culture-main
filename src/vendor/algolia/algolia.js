@@ -58,6 +58,13 @@ export const fetchAlgolia = ({
   return index.search(keywords, searchParameters)
 }
 
+export const fetchAlgoliaHits = objectIds => {
+  const client = algoliasearch(ALGOLIA_APPLICATION_ID, ALGOLIA_SEARCH_API_KEY)
+  const index = client.initIndex(ALGOLIA_INDEX_NAME)
+
+  return index.getObjects(objectIds)
+}
+
 const buildFacetFilters = ({ offerCategories, offerTypes, offerIsDuo, tags }) => {
   if (offerCategories.length === 0 && offerTypes == null && offerIsDuo === false) {
     return
