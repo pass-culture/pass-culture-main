@@ -110,7 +110,10 @@ describe('homepage', () => {
 
     pcapi.getOfferer.mockResolvedValue(baseOfferers[0])
     pcapi.getAllOfferersNames.mockResolvedValue(baseOfferersNames)
-    pcapi.getVenueStats.mockResolvedValue({ activeBookingsCount: 4 })
+    pcapi.getVenueStats.mockResolvedValue({
+      activeBookingsQuantity: 4,
+      usedBookingsQuantity: 3,
+    })
   })
 
   afterEach(() => {

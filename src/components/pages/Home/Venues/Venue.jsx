@@ -20,12 +20,12 @@ const Venue = ({ id, isVirtual, name, offererId, publicName }) => {
       url: `/offres?lieu=${id}&statut=active`,
     },
     {
-      count: stats.activeBookingsCount,
+      count: stats.activeBookingsQuantity,
       label: 'Réservations en cours',
       url: `/reservations`,
     },
     {
-      count: '- -',
+      count: stats.usedBookingsQuantity,
       label: 'Réservations validées',
       url: `/reservations`,
     },
@@ -39,7 +39,8 @@ const Venue = ({ id, isVirtual, name, offererId, publicName }) => {
   useEffect(() => {
     pcapi.getVenueStats(id).then(stats => {
       setStats({
-        activeBookingsCount: stats.activeBookingsCount.toString(),
+        activeBookingsQuantity: stats.activeBookingsQuantity.toString(),
+        usedBookingsQuantity: stats.usedBookingsQuantity.toString(),
       })
     })
   }, [id])
@@ -69,9 +70,7 @@ const Venue = ({ id, isVirtual, name, offererId, publicName }) => {
           <div className="venue-stats">
             {venueStatData.map(stat => (
               <Fragment key={stat.label}>
-                <VenueStat
-                  stat={stat}
-                />
+                <VenueStat stat={stat} />
                 <div className="separator" />
               </Fragment>
             ))}

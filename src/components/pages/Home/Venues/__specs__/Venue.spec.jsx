@@ -45,7 +45,10 @@ describe('venues', () => {
   describe('render', () => {
     it('should display stats tiles', async () => {
       // Given
-      pcapi.getVenueStats.mockResolvedValue({ activeBookingsCount: 0 })
+      pcapi.getVenueStats.mockResolvedValue({
+        activeBookingsQuantity: 0,
+        usedBookingsQuantity: 1,
+      })
 
       // When
       await renderVenue()
@@ -65,7 +68,7 @@ describe('venues', () => {
       expect(within(activeBookingsStat).getByText('0')).toBeInTheDocument()
       expect(within(activeBookingsStat).getByText('Réservations en cours')).toBeInTheDocument()
 
-      expect(within(validatedBookingsStat).getByText('- -')).toBeInTheDocument()
+      expect(within(validatedBookingsStat).getByText('1')).toBeInTheDocument()
       expect(within(validatedBookingsStat).getByText('Réservations validées')).toBeInTheDocument()
 
       expect(within(outOfStockOffersStat).getByText('- -')).toBeInTheDocument()
