@@ -91,6 +91,7 @@ class GetOfferersNamesResponseModel(BaseModel):
 
 class GetOfferersNamesQueryModel(BaseModel):
     validated: Optional[bool]
+    validated_for_user: Optional[bool]
 
     class Config:
         extra = "forbid"

@@ -17,4 +17,10 @@ def get_all(user: User, filters: dict) -> List[Offerer]:
         else:
             query = query.filter(Offerer.validationToken.isnot(None))
 
+    if "validated_for_user" in filters and filters["validated_for_user"] is not None:
+        if filters["validated_for_user"] == True:
+            query = query.filter(UserOfferer.validationToken.is_(None))
+        else:
+            query = query.filter(UserOfferer.validationToken.isnot(None))
+
     return query.all()
