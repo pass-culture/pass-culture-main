@@ -115,7 +115,7 @@ class SharedLoginUserResponseModel(BaseModel):
     isAdmin: bool
     isBeneficiary: bool
     isEmailValidated: bool
-    lastConnectionDate: Optional[str]
+    lastConnectionDate: Optional[datetime]
     lastName: Optional[str]
     needsToFillCulturalSurvey: Optional[bool]
     phoneNumber: Optional[str]
