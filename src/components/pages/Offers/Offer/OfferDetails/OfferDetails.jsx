@@ -10,7 +10,6 @@ import OfferCreation from './OfferForm/OfferCreation'
 import OfferEditionContainer from './OfferForm/OfferEditionContainer'
 import OfferPreview from './OfferPreview/OfferPreview'
 import OfferThumbnail from './OfferThumbnail/OfferThumbnail'
-import OfferThumbnailPlaceholder from './OfferThumbnail/OfferThumbnailPlaceholder/OfferThumbnailPlaceholder'
 
 const OfferDetails = ({
   history,
@@ -168,18 +167,11 @@ const OfferDetails = ({
         {showThumbnailForm && (
           <div className="sidebar">
             <div className="sidebar-wrapper">
-              {offer?.thumbUrl ? (
-                <OfferThumbnail
-                  setThumbnailInfo={setThumbnailInfo}
-                  thumbnailError={thumbnailError}
-                  url={offer.thumbUrl}
-                />
-              ) : (
-                <OfferThumbnailPlaceholder
-                  setThumbnailInfo={setThumbnailInfo}
-                  thumbnailError={thumbnailError}
-                />
-              )}
+              <OfferThumbnail
+                setThumbnailInfo={setThumbnailInfo}
+                thumbnailError={thumbnailError}
+                url={offer?.thumbUrl}
+              />
               <OfferPreview
                 formValues={formValues}
                 offerType={offerType}

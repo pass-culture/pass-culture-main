@@ -2,9 +2,9 @@ import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState, useRef } from 'react'
 
 import Icon from 'components/layout/Icon'
+import { ReactComponent as AddThumbnailIcon } from 'components/pages/Offers/Offer/OfferDetails/OfferThumbnail/assets/add-thumbnail.svg'
+import { ReactComponent as ErrorAlertIcon } from 'components/pages/Offers/Offer/OfferDetails/OfferThumbnail/assets/error-alert.svg'
 import ThumbnailDialog from 'components/pages/Offers/Offer/Thumbnail/ThumbnailDialog'
-
-import { ReactComponent as ErrorAlertIcon } from './OfferThumbnailPlaceholder/assets/error-alert.svg'
 
 const OfferThumbnail = ({ setThumbnailInfo, thumbnailError, url }) => {
   const [isModalOpened, setIsModalOpened] = useState(false)
@@ -28,16 +28,26 @@ const OfferThumbnail = ({ setThumbnailInfo, thumbnailError, url }) => {
   return (
     <>
       <button
-        className={`of-placeholder of-image ${thumbnailError ? 'of-thumbnail-error' : ''}`}
+        className={`of-placeholder
+        ${preview ? 'of-image' : ''}
+        ${thumbnailError ? 'of-thumbnail-error' : ''}`}
         onClick={openModal}
         ref={thumbnailButtonRef}
-        title="Modifier l’image"
+        title={`${preview ? 'Modifier l’image' : 'Ajouter une image'}`}
         type="button"
       >
-        <Icon
-          alt="Image de l’offre"
-          src={preview}
-        />
+        {preview ? (
+          <Icon
+            alt="Image de l’offre"
+            src={preview}
+          />
+        ) : (
+          <>
+            <AddThumbnailIcon />
+            {'Ajouter une image'}
+          </>
+        )}
+
         {thumbnailError && (
           <span className="of-error-message">
             <ErrorAlertIcon />
