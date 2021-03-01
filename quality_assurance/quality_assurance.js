@@ -45,15 +45,24 @@ test('captures d’écran de toutes les pages du site', async () => {
     .navigateTo('/offres')
     .click(Selector('table a'))
     .takeScreenshot(optionsOfScreenshot('offre-edition'))
+    .click(Selector('.of-placeholder'))
+    .click(Selector('.tna-toggle'))
+    .takeScreenshot(optionsOfScreenshot('thumbnail-upload-from-computer'))
+    .click(Selector('.thumbnail-dialog .bc-step:not(.active) a'))
+    .takeScreenshot(optionsOfScreenshot('thumbnail-upload-from-url'))
+    .typeText(
+      Selector('.thumbnail-dialog .tnf-form input[name="url"]'),
+      'https://upload.wikimedia.org/wikipedia/commons/f/f9/Zebra_%28PSF%29.png'
+    )
+    .click(Selector('.thumbnail-dialog .tnf-url-button'))
+    .takeScreenshot(optionsOfScreenshot('thumbnail-credit'))
+    .click(Selector('.thumbnail-dialog .tnd-actions .primary-button'))
+    .takeScreenshot(optionsOfScreenshot('thumbnail-image-editor'))
+    .click(Selector('.thumbnail-dialog .tnd-actions .primary-button'))
+    .takeScreenshot(optionsOfScreenshot('thumbnail-preview'))
+    .click(Selector('.thumbnail-dialog .tnd-actions .primary-button'))
     .click(Selector('a').withText('Stock et prix'))
     .takeScreenshot(optionsOfScreenshot('offre-stocks'))
-  // .click(Selector('a').withText('Ajouter une accroche'))
-  // .typeText(
-  //   Selector("input[placeholder='URL du fichier']"),
-  //   'https://upload.wikimedia.org/wikipedia/commons/f/f9/Zebra_%28PSF%29.png'
-  // )
-  // .click(Selector('button').withText('OK'))
-  // .takeScreenshot(optionsOfScreenshot('offre-accroche'))
   await t
     .navigateTo('/offres/creation')
     .click(Selector('select').withText('Choisir un type'))
