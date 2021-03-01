@@ -573,9 +573,9 @@ describe('stocks page', () => {
 
           // Then
           expect(
-            screen.getByRole('row', {
-              name: 'Les évènements terminés depuis plus de 48h ne peuvent être supprimés',
-            })
+            screen.getByTitle(
+              'Les évènements terminés depuis plus de 48h ne peuvent être supprimés'
+            )
           ).toBeInTheDocument()
         })
 

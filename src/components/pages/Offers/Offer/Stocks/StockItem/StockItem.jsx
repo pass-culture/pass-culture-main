@@ -118,15 +118,20 @@ const StockItem = ({
     isNewStock || (isEvent ? initialStock.isEventDeletable : !isOfferSynchronized)
 
   const computeStockTitle = useCallback(() => {
-    if (initialStock.id) {
-      if (!isEventStockEditable) {
-        return 'Les évènements passés ne sont pas modifiables'
-      } else if (!initialStock.isEventDeletable) {
-        return 'Les évènements terminés depuis plus de 48h ne peuvent être supprimés'
-      }
+    if (initialStock.id && !isEventStockEditable) {
+      return 'Les évènements passés ne sont pas modifiables'
     }
-    return ''
-  }, [isEventStockEditable, initialStock.isEventDeletable, initialStock.id])
+  }, [isEventStockEditable, initialStock.id])
+
+  const computeStockDeleteButtonTitle = useCallback(() => {
+    if (isStockDeletable) {
+      return 'Supprimer le stock'
+    }
+
+    return isOfferSynchronized
+      ? 'Les stock synchronisés ne peuvent être supprimés'
+      : 'Les évènements terminés depuis plus de 48h ne peuvent être supprimés'
+  }, [isStockDeletable, isOfferSynchronized])
 
   const removeNewStockLine = useCallback(() => {
     removeStockInCreation(initialStock.key)
@@ -212,12 +217,10 @@ const StockItem = ({
           data-testid="stock-delete-button"
           disabled={!isStockDeletable || isDeleting}
           onClick={isNewStock ? removeNewStockLine : askDeletionConfirmation}
+          title={computeStockDeleteButtonTitle()}
           type="button"
         >
-          <DeleteStockIcon
-            alt="Supprimer le stock"
-            title={computeStockTitle() || 'Supprimer le stock'}
-          />
+          <DeleteStockIcon alt="Supprimer le stock" />
         </button>
         {isDeleting && (
           <DeleteStockDialogContainer
