@@ -8,6 +8,7 @@ import LoaderContainer from '../../layout/Loader/LoaderContainer'
 import { campaignTracker } from '../../../tracking/mediaCampaignsTracking'
 import AnyError from '../../layout/ErrorBoundaries/ErrorsPage/AnyError/AnyError'
 import User from '../profile/ValueObjects/User'
+import { dehumanizeId } from '../../../utils/dehumanizeId/dehumanizeId'
 
 const Home = ({
   geolocation,
@@ -27,7 +28,7 @@ const Home = ({
     isLoading,
     algoliaMapping,
     recommendedHits,
-  } = useDisplayedHomemodules(history, geolocationRef.current)
+  } = useDisplayedHomemodules(history, geolocationRef.current, dehumanizeId(user.id))
 
   useEffect(() => {
     campaignTracker.home()

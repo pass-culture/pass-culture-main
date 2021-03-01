@@ -1,30 +1,25 @@
 import { useEffect, useState } from 'react'
+import { RECOMMENDATION_ENDPOINT, RECOMMENDATION_TOKEN } from '../../../../utils/config'
 
 import { humanizeId } from '../../../../utils/dehumanizeId/dehumanizeId'
 import { fetchAlgoliaHits } from '../../../../vendor/algolia/algolia'
 
-const recommendedIds = [
-  '145932',
-  '145945',
-  '145926',
-  '145900',
-  '145909',
-  '145929',
-  '145902',
-  '145941',
-  '145906',
-  '145944',
-]
-
-export const useHomeRecommendedHits = () => {
+export const useHomeRecommendedHits = (recommendationModule, geolocation, userId) => {
   const [offerIds, setOfferIds] = useState([])
   const [recommendedHits, setRecommendedHits] = useState([])
 
   useEffect(() => {
-    // TODO (#6271) get the actual ids from the recommendation API
-    const ids = recommendedIds.map(id => humanizeId(+id)).filter(id => typeof id === 'string')
-    setOfferIds(ids)
-  }, [])
+    if (recommendationModule) {
+      fetch(getRecommendationEndpoint(userId, geolocation))
+        .then(res => res.json())
+        .then(({ recommended_offers: ids }) => {
+          setOfferIds(ids.map(id => humanizeId(+id)).filter(id => typeof id === 'string'))
+        })
+        .catch(() => [])
+    }
+    // we don't want to refetch the ids on each new position
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [recommendationModule, userId])
 
   useEffect(() => {
     if (offerIds.length > 0) {
@@ -36,4 +31,18 @@ export const useHomeRecommendedHits = () => {
   }, [offerIds])
 
   return recommendedHits
+}
+
+export const getRecommendationEndpoint = (userId, position) => {
+  if (!userId) return undefined
+  const endpoint = `${RECOMMENDATION_ENDPOINT}/recommendation/${userId}?token=${RECOMMENDATION_TOKEN}`
+
+  const { longitude = null, latitude = null } = position || {}
+
+  const parameters =
+    typeof longitude === 'number' && typeof latitude === 'number'
+      ? `&longitude=${longitude}&latitude=${latitude}`
+      : ''
+
+  return `${endpoint}${parameters}`
 }
