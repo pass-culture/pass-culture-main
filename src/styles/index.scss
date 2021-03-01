@@ -1,14 +1,11 @@
 // Global import.
 // Import's order is important.
-@import 'mixins/index.scss';
-@import 'variables/index.scss';
-// FIXME (asaunier, 18-12-2020): Remove Bulma once the stock modale is gone
-@import '~bulma/sass/utilities/_all';
-@import '~bulma/sass/components/_all';
+@import 'mixins/index';
+@import 'variables/index';
 @import '~react-datepicker/src/stylesheets/datepicker';
 @import '~leaflet/dist/leaflet';
-@import 'global/index.scss';
-@import 'components/index.scss';
+@import 'global/index';
+@import 'components/index';
 
 // Components scoped imports.
 @import 'src/components/layout/DialogBox/DialogBox';
@@ -18,8 +15,8 @@
 @import 'src/components/pages/Home/Homepage';
 @import 'src/components/pages/Home/Offerers/OffererDetails';
 @import 'src/components/pages/Home/Venues/VenueStat';
-@import 'src/components/pages/Home/ProfileAndSupport/Profile.scss';
-@import 'src/components/pages/Home/ProfileAndSupport/Support.scss';
+@import 'src/components/pages/Home/ProfileAndSupport/Profile';
+@import 'src/components/pages/Home/ProfileAndSupport/Support';
 @import 'src/components/pages/Offers/Offers/Offers';
 @import 'src/components/pages/Offers/Offers/OfferItem/OfferItem';
 @import 'src/components/pages/Offers/Offers/OffersStatusFiltersModal/OffersStatusFiltersModal';

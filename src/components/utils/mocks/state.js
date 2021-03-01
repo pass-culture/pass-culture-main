@@ -859,13 +859,6 @@ const state = {
       quantity: 10,
     },
   },
-  modal: {
-    $modal: null,
-    config: {
-      isUnclosable: true,
-    },
-    isActive: false,
-  },
   notification: null,
   tracker: {},
   offers: {

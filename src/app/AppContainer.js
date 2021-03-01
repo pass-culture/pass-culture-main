@@ -11,7 +11,6 @@ import { App } from './App'
 export function mapStateToProps(state) {
   return {
     currentUser: selectCurrentUser(state),
-    modalOpen: state.modal.isActive,
     isMaintenanceActivated: maintenanceSelector(state),
   }
 }

@@ -6,7 +6,6 @@ import ReactTooltip from 'react-tooltip'
 
 import HeaderContainer from 'components/layout/Header/HeaderContainer'
 import Icon from 'components/layout/Icon'
-import Modal from 'components/layout/Modal'
 import NotificationV1Container from 'components/layout/NotificationV1/NotificationV1Container'
 import NotificationV2Container from 'components/layout/NotificationV2/NotificationV2Container'
 import TutorialDialogContainer from 'components/layout/Tutorial/TutorialDialogContainer'
@@ -80,7 +79,6 @@ const AppLayout = props => {
         )}
         <TutorialDialogContainer />
         <NotificationV2Container />
-        <Modal key="modal" />
       </main>
     </>
   )

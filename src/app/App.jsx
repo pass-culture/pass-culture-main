@@ -15,7 +15,6 @@ export const App = props => {
     history,
     isMaintenanceActivated,
     location,
-    modalOpen,
   } = props
 
   const [isBusy, setIsBusy] = useState(false)
@@ -55,16 +54,11 @@ export const App = props => {
     return <Spinner />
   }
 
-  return (
-    <div className={modalOpen ? 'modal-open' : null}>
-      {children}
-    </div>
-  )
+  return children
 }
 
 App.propTypes = {
   children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.shape()), PropTypes.shape()])
     .isRequired,
   isMaintenanceActivated: PropTypes.bool.isRequired,
-  modalOpen: PropTypes.bool.isRequired,
 }

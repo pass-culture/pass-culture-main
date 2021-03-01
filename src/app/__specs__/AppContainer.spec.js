@@ -7,7 +7,6 @@ describe('src | AppContainer', () => {
       data: {
         users: [],
       },
-      modal: { isActive: true },
       maintenance: { isActivated: true },
     }
 
@@ -16,22 +15,5 @@ describe('src | AppContainer', () => {
 
     // Then
     expect(result).toHaveProperty('isMaintenanceActivated', true)
-  })
-
-  it('should map the modal status to App', () => {
-    // Given
-    const state = {
-      data: {
-        users: [],
-      },
-      modal: { isActive: false },
-      maintenance: { isActivated: true },
-    }
-
-    // When
-    const result = mapStateToProps(state)
-
-    // Then
-    expect(result).toHaveProperty('modalOpen', false)
   })
 })

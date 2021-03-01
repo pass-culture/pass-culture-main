@@ -11,7 +11,7 @@ const getCurrentUser = ({ handleSuccess }) => {
 describe('src | App', () => {
   it('should render App and children components when isMaintenanceActivated is false', () => {
     // Given
-    const props = { modalOpen: false, isMaintenanceActivated: false, getCurrentUser }
+    const props = { isMaintenanceActivated: false, getCurrentUser }
 
     // When
     const wrapper = mount(
@@ -30,7 +30,7 @@ describe('src | App', () => {
 
   it('should render a Redirect component when isMaintenanceActivated is true', () => {
     // Given
-    const props = { modalOpen: false, isMaintenanceActivated: true, getCurrentUser }
+    const props = { isMaintenanceActivated: true, getCurrentUser }
 
     // When
     const wrapper = shallow(

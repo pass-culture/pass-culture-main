@@ -6,7 +6,6 @@ import { initialState as bookingSummaryInitialState } from 'store/reducers/booki
 import { initialState as dataInitialState } from 'store/reducers/data'
 import { initialState as errorsInitialState } from 'store/reducers/errors'
 import { initialState as maintenanceInitialState } from 'store/reducers/maintenanceReducer'
-import { initialState as modalInitialState } from 'store/reducers/modal'
 import { initialState as notificationInitialState } from 'store/reducers/notificationReducer'
 
 export const configureTestStore = overrideData => {
@@ -15,7 +14,6 @@ export const configureTestStore = overrideData => {
     data: dataInitialState,
     errors: errorsInitialState,
     maintenance: maintenanceInitialState,
-    modal: modalInitialState,
     notification: notificationInitialState,
     offers: offersInitialState,
   }

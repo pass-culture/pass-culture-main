@@ -8,14 +8,12 @@ import bookingSummary from './bookingSummary/bookingSummary'
 import data from './data'
 import errors from './errors'
 import maintenanceReducer from './maintenanceReducer'
-import modal from './modal'
 import { notificationReducer } from './notificationReducer'
 
 const rootReducer = combineReducers({
   bookingSummary,
   data,
   errors,
-  modal,
   offers: offersReducer,
   notification: notificationReducer,
   tracker,
