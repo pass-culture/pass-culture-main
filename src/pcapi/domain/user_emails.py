@@ -45,6 +45,7 @@ from pcapi.models import Offerer
 from pcapi.models import UserOfferer
 from pcapi.repository.offerer_queries import find_new_offerer_user_email
 from pcapi.utils.logger import logger
+from pcapi.utils.mailing import make_admin_user_validation_email
 from pcapi.utils.mailing import make_offerer_driven_cancellation_email_for_offerer
 from pcapi.utils.mailing import make_pro_user_validation_email
 
@@ -159,8 +160,13 @@ def send_expired_bookings_recap_email_to_offerer(offerer: Offerer, bookings: Lis
     mails.send(recipients=recipients, data=data)
 
 
-def send_user_validation_email(user: User) -> None:
+def send_pro_user_validation_email(user: User) -> None:
     data = make_pro_user_validation_email(user)
+    mails.send(recipients=[user.email], data=data)
+
+
+def send_admin_user_validation_email(user: User) -> None:
+    data = make_admin_user_validation_email(user)
     mails.send(recipients=[user.email], data=data)
 
 

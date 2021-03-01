@@ -259,6 +259,18 @@ def make_pro_user_validation_email(user: User) -> Dict:
     }
 
 
+def make_admin_user_validation_email(user: User) -> Dict:
+    return {
+        "FromName": "pass Culture admin",
+        "Subject": "[pass Culture admin] Validation de votre adresse email pour le pass Culture",
+        "MJ-TemplateID": 778688,
+        "MJ-TemplateLanguage": True,
+        "Vars": {
+            "lien_validation_mail": f"{settings.PRO_URL}/inscription/validation/{user.validationToken}",
+        },
+    }
+
+
 def _add_template_debugging(message_data: Dict) -> None:
     message_data["TemplateErrorReporting"] = {
         "Email": settings.DEV_EMAIL_ADDRESS,

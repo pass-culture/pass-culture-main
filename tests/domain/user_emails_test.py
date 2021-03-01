@@ -14,6 +14,7 @@ from pcapi.core.offers.factories import UserOffererFactory
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import Token
 from pcapi.domain.user_emails import send_activation_email
+from pcapi.domain.user_emails import send_admin_user_validation_email
 from pcapi.domain.user_emails import send_attachment_validation_email_to_pro_offerer
 from pcapi.domain.user_emails import send_batch_cancellation_emails_to_users
 from pcapi.domain.user_emails import send_beneficiary_booking_cancellation_email
@@ -25,13 +26,13 @@ from pcapi.domain.user_emails import send_newly_eligible_user_email
 from pcapi.domain.user_emails import send_offerer_bookings_recap_email_after_offerer_cancellation
 from pcapi.domain.user_emails import send_offerer_driven_cancellation_email_to_offerer
 from pcapi.domain.user_emails import send_ongoing_offerer_attachment_information_email_to_pro
+from pcapi.domain.user_emails import send_pro_user_validation_email
 from pcapi.domain.user_emails import send_rejection_email_to_beneficiary_pre_subscription
 from pcapi.domain.user_emails import send_reset_password_email_to_native_app_user
 from pcapi.domain.user_emails import send_reset_password_email_to_pro
 from pcapi.domain.user_emails import send_reset_password_email_to_user
 from pcapi.domain.user_emails import send_soon_to_be_expired_bookings_recap_email_to_beneficiary
 from pcapi.domain.user_emails import send_user_driven_cancellation_email_to_offerer
-from pcapi.domain.user_emails import send_user_validation_email
 from pcapi.domain.user_emails import send_validation_confirmation_email_to_pro
 from pcapi.domain.user_emails import send_warning_to_beneficiary_after_pro_booking_cancellation
 from pcapi.model_creators.generic_creators import create_booking
@@ -282,7 +283,7 @@ class SendOffererBookingsRecapEmailAfterOffererCancellationTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class SendUserValidationEmailTest:
+class SendProUserValidationEmailTest:
     @patch("pcapi.domain.user_emails.make_pro_user_validation_email", return_value={"Html-part": ""})
     def when_feature_send_mail_to_users_enabled_sends_email_to_user(self, make_pro_user_validation_email):
         # Given
@@ -290,7 +291,22 @@ class SendUserValidationEmailTest:
         user.generate_validation_token()
 
         # When
-        send_user_validation_email(user)
+        send_pro_user_validation_email(user)
+
+        # Then
+        assert mails_testing.outbox[0].sent_data["To"] == user.email
+
+
+@pytest.mark.usefixtures("db_session")
+class SendAdminUserValidationEmailTest:
+    @patch("pcapi.domain.user_emails.make_admin_user_validation_email", return_value={"Html-part": ""})
+    def when_feature_send_mail_to_users_enabled_sends_email_to_user(self, make_admin_user_validation_email):
+        # Given
+        user = create_user()
+        user.generate_validation_token()
+
+        # When
+        send_admin_user_validation_email(user)
 
         # Then
         assert mails_testing.outbox[0].sent_data["To"] == user.email

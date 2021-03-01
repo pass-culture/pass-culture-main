@@ -330,7 +330,7 @@ def create_pro_user(pro_user: ProUserCreationBodyModel) -> User:
     repository.save(*objects_to_save)
 
     try:
-        user_emails.send_user_validation_email(new_pro_user)
+        user_emails.send_pro_user_validation_email(new_pro_user)
     except MailServiceException:
         logger.exception("Could not send validation email when creating pro user=%s", new_pro_user.id)
 
