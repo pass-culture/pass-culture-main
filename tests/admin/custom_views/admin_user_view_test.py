@@ -1,0 +1,112 @@
+from unittest.mock import patch
+
+import pcapi.core.mails.testing as mails_testing
+import pcapi.core.users.factories as users_factories
+from pcapi.core.users.models import User
+
+from tests.conftest import TestClient
+from tests.conftest import clean_database
+
+
+class AdminUserViewTest:
+    @clean_database
+    def test_admin_user_creation(self, app):
+        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+
+        data = dict(
+            email="new-admin@example.com",
+            firstName="Powerfull",
+            lastName="Admin",
+            departementCode="76",
+        )
+
+        client = TestClient(app.test_client()).with_auth("admin@example.com")
+        response = client.post("/pc/back-office/admin_users/new", form=data)
+
+        assert response.status_code == 302
+
+        user_created = User.query.filter_by(email="new-admin@example.com").one()
+        assert user_created.firstName == "Powerfull"
+        assert user_created.lastName == "Admin"
+        assert user_created.publicName == "Powerfull Admin"
+        assert user_created.dateOfBirth is None
+        assert user_created.departementCode == "76"
+        assert user_created.postalCode is None
+        assert user_created.isBeneficiary is False
+        assert user_created.isAdmin is True
+        assert user_created.hasSeenProTutorials is True
+        assert user_created.needsToFillCulturalSurvey is False
+
+    @clean_database
+    def test_admin_user_receive_an_activation_token(self, app):
+        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+
+        data = dict(
+            email="new-admin@example.com",
+            firstName="Powerfull",
+            lastName="Admin",
+            departementCode="76",
+        )
+
+        client = TestClient(app.test_client()).with_auth("admin@example.com")
+        response = client.post("/pc/back-office/admin_users/new", form=data)
+
+        assert response.status_code == 302
+
+        user_created = User.query.filter_by(email="new-admin@example.com").one()
+        assert user_created.validationToken is not None
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data == {
+            "FromEmail": "support@example.com",
+            "FromName": "pass Culture admin",
+            "Subject": "[pass Culture admin] Validation de votre adresse email pour le pass Culture",
+            "MJ-TemplateID": 778688,
+            "MJ-TemplateLanguage": True,
+            "To": "new-admin@example.com",
+            "Vars": {
+                "lien_validation_mail": "http://localhost:3001/inscription/validation/" + user_created.validationToken,
+                "env": "-development",
+            },
+        }
+
+    @patch("pcapi.settings.IS_PROD", return_value=True)
+    @patch("pcapi.settings.SUPER_ADMIN_EMAIL_ADDRESSES", return_value="")
+    def test_admin_user_creation_is_restricted_in_prod(
+        self, is_prod_mock, super_admin_email_addresses, app, db_session
+    ):
+        users_factories.UserFactory(email="user@example.com", isAdmin=True)
+
+        data = dict(
+            email="new-admin@example.com",
+            firstName="Powerfull",
+            lastName="Admin",
+            departementCode="76",
+        )
+
+        client = TestClient(app.test_client()).with_auth("user@example.com")
+        response = client.post("/pc/back-office/admin_users/new", form=data)
+
+        assert response.status_code == 302
+
+        filtered_users = User.query.filter_by(email="new-admin@example.com").all()
+        assert len(filtered_users) == 0
+
+    @patch("pcapi.settings.IS_PROD", return_value=True)
+    @patch("pcapi.settings.SUPER_ADMIN_EMAIL_ADDRESSES", return_value="")
+    def test_admin_user_deletion_is_restricted_in_prod(
+        self, is_prod_mock, super_admin_email_addresses, app, db_session
+    ):
+        user = users_factories.UserFactory(email="user@example.com", isAdmin=True)
+
+        data = dict(
+            id=user.id,
+        )
+
+        client = TestClient(app.test_client()).with_auth("user@example.com")
+        response = client.post("/pc/back-office/admin_users/delete", form=data)
+
+        assert response.status_code == 302
+
+        filtered_users = User.query.filter_by(isAdmin=True).all()
+        assert len(filtered_users) == 1

@@ -154,7 +154,7 @@ class BeneficiaryUserViewTest:
 
     @clean_database
     # FIXME (dbaty, 2020-12-16): I could not find a quick way to
-    # generate a valid CSRF token in tests. This should be fixed.
+    #  generate a valid CSRF token in tests. This should be fixed.
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_suspend_beneficiary(self, mocked_validate_csrf_token, app):
         admin = users_factories.UserFactory(email="admin15@example.com", isAdmin=True)
