@@ -72,13 +72,16 @@ class BookingRecap:
             raise TypeError("BookingRecap may not be instantiated")
         return object.__new__(cls)
 
-    @property
-    def booking_token(self) -> str:
+    def _get_booking_token(self) -> Optional[str]:
         return self._booking_token
 
-    @booking_token.setter
-    def booking_token(self, booking_token) -> str:
+    def _set_booking_token(self, booking_token: str) -> None:
         self._booking_token = booking_token
+
+    booking_token = property(
+        lambda self: self._get_booking_token(),
+        lambda self, booking_token: self._set_booking_token(booking_token),
+    )
 
     @property
     def booking_status(self) -> BookingRecapStatus:
@@ -122,8 +125,7 @@ class BookingRecap:
 
 
 class ThingBookingRecap(BookingRecap):
-    @BookingRecap.booking_token.getter
-    def booking_token(self) -> Optional[str]:  # pylint: disable=invalid-overridden-method
+    def _get_booking_token(self) -> Optional[str]:
         if not self.booking_is_used and not self.booking_is_cancelled:
             return None
         return self._booking_token
