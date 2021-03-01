@@ -583,21 +583,6 @@ workflows:
                 - production
                 - staging
                 - integration
-      - deploy-api:
-          filters:
-            branches:
-              only:
-                - integration
-      - deploy-pro:
-          requires:
-            - deploy-api
-      - deploy-webapp:
-          requires:
-            - deploy-api
-      - release-synthesis:
-          requires:
-            - deploy-pro
-            - deploy-webapp
 
   gcp-ehp:
     jobs:
