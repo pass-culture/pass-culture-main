@@ -67,6 +67,8 @@ function getClientEnvironment(publicUrl) {
         NODE_ENV: process.env.NODE_ENV,
         PUBLIC_URL: publicUrl,
         RECAPTCHA_SITE_KEY: process.env.RECAPTCHA_SITE_KEY,
+        RECOMMENDATION_ENDPOINT: process.env.RECOMMENDATION_ENDPOINT,
+        RECOMMENDATION_TOKEN: process.env.RECOMMENDATION_TOKEN,
         SENTRY_SAMPLE_RATE: process.env.SENTRY_SAMPLE_RATE,
         SENTRY_SERVER_URL: process.env.SENTRY_SERVER_URL,
         TYPEFORM_URL_CULTURAL_PRACTICES_POLL: process.env.TYPEFORM_URL_CULTURAL_PRACTICES_POLL,
