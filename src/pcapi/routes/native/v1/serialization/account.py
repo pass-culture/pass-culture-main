@@ -96,8 +96,13 @@ class UserProfileResponse(BaseModel):
         return super().from_orm(user)
 
 
+class NotificationSubscriptionsUpdate(BaseModel):
+    marketing_email: bool
+    marketing_push: bool
+
+
 class UserProfileUpdateRequest(BaseModel):
-    subscriptions: Optional[NotificationSubscriptions]
+    subscriptions: Optional[NotificationSubscriptionsUpdate]
 
 
 class ResendEmailValidationRequest(BaseModel):

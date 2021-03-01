@@ -4,6 +4,7 @@ from datetime import datetime
 from pcapi.connectors import api_recaptcha
 from pcapi.core.users import api
 from pcapi.core.users import exceptions
+from pcapi.core.users.models import NotificationSubscriptions
 from pcapi.core.users.models import User
 from pcapi.models import ApiErrors
 from pcapi.models.feature import FeatureToggle
@@ -38,7 +39,11 @@ def get_user_profile(user: User) -> serializers.UserProfileResponse:
 @authenticated_user_required
 def update_user_profile(user: User, body: serializers.UserProfileUpdateRequest) -> serializers.UserProfileResponse:
     if body.subscriptions is not None:
-        user.notificationSubscriptions = asdict(body.subscriptions)
+        user.notificationSubscriptions = asdict(
+            NotificationSubscriptions(
+                marketing_email=body.subscriptions.marketing_email, marketing_push=body.subscriptions.marketing_push
+            )
+        )
     repository.save(user)
     return serializers.UserProfileResponse.from_orm(user)
 
