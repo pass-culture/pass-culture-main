@@ -104,6 +104,7 @@ def check_password(clear_text: str, hashed: str) -> bool:
 @dataclass
 class NotificationSubscriptions:
     marketing_push: bool = False
+    marketing_email: bool = False
 
 
 class User(PcObject, Model, NeedsValidationMixin, VersionedMixin):

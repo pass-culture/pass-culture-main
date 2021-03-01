@@ -37,8 +37,6 @@ def get_user_profile(user: User) -> serializers.UserProfileResponse:
 )  # type: ignore
 @authenticated_user_required
 def update_user_profile(user: User, body: serializers.UserProfileUpdateRequest) -> serializers.UserProfileResponse:
-    if body.hasAllowedRecommendations is not None:
-        user.hasAllowedRecommendations = body.hasAllowedRecommendations
     if body.subscriptions is not None:
         user.notificationSubscriptions = asdict(body.subscriptions)
     repository.save(user)
@@ -77,7 +75,7 @@ def create_account(body: serializers.AccountRequest) -> None:
             email=body.email,
             password=body.password,
             birthdate=body.birthdate,
-            has_allowed_recommendations=body.has_allowed_recommendations,
+            marketing_email_subscription=body.marketing_email_subscription,
             is_email_validated=False,
         )
     except exceptions.UserAlreadyExistsException:

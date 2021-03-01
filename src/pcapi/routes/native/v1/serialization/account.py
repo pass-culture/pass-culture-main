@@ -24,7 +24,7 @@ class AccountRequest(BaseModel):
     email: str
     password: str
     birthdate: date
-    has_allowed_recommendations: bool
+    marketing_email_subscription: Optional[bool]
     token: str
 
     class Config:
@@ -59,7 +59,6 @@ class UserProfileResponse(BaseModel):
     email: str
     expenses: List[Expense]
     firstName: Optional[str]
-    hasAllowedRecommendations: bool
     is_eligible: bool
     lastName: Optional[str]
     subscriptions: NotificationSubscriptions  # if we send user.notification_subscriptions, pydantic will take the column and not the property
@@ -98,7 +97,6 @@ class UserProfileResponse(BaseModel):
 
 
 class UserProfileUpdateRequest(BaseModel):
-    hasAllowedRecommendations: Optional[bool]
     subscriptions: Optional[NotificationSubscriptions]
 
 

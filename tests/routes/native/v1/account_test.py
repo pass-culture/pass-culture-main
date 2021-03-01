@@ -65,7 +65,6 @@ class AccountTest:
             "firstName": "john",
             "lastName": "doe",
             "phoneNumber": "0102030405",
-            "hasAllowedRecommendations": False,
             "needsToFillCulturalSurvey": True,
         }
         user = users_factories.UserFactory(
@@ -102,7 +101,7 @@ class AccountTest:
             "isEligible": True,
             "pseudo": "jdo",
             "showEligibleCard": False,
-            "subscriptions": {"marketing_push": True},
+            "subscriptions": {"marketing_push": True, "marketing_email": False},
         }
         EXPECTED_DATA.update(USER_DATA)
 
@@ -136,7 +135,7 @@ class AccountTest:
             "birthdate": "1960-12-31",
             "notifications": True,
             "token": "gnagna",
-            "hasAllowedRecommendations": True,
+            "marketingEmailSubscription": True,
         }
 
         response = test_client.post("/native/v1/account", json=data)
@@ -145,6 +144,7 @@ class AccountTest:
         user = User.query.first()
         assert user is not None
         assert user.email == "john.doe@example.com"
+        assert user.get_notification_subscriptions().marketing_email
         assert user.isEmailValidated is False
         mocked_check_recaptcha_token_is_valid.assert_called()
         assert len(mails_testing.outbox) == 1
@@ -162,7 +162,7 @@ class AccountTest:
             "birthdate": "1960-12-31",
             "notifications": True,
             "token": "gnagna",
-            "hasAllowedRecommendations": True,
+            "marketingEmailSubscription": True,
         }
 
         response = test_client.post("/native/v1/account", json=data)
@@ -180,7 +180,7 @@ class AccountTest:
             "birthdate": (datetime.utcnow() - relativedelta(year=15)).date(),
             "notifications": True,
             "token": "gnagna",
-            "hasAllowedRecommendations": True,
+            "marketingEmailSubscription": True,
         }
 
         response = test_client.post("/native/v1/account", json=data)
@@ -191,26 +191,21 @@ class UserProfileUpdateTest:
     identifier = "email@example.com"
 
     def test_update_user_profile(self, app):
-        user = users_factories.UserFactory(email=self.identifier, hasAllowedRecommendations=True)
+        user = users_factories.UserFactory(email=self.identifier)
 
         access_token = create_access_token(identity=self.identifier)
         test_client = TestClient(app.test_client())
         test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
 
         response = test_client.post(
-            "/native/v1/profile", json={"hasAllowedRecommendations": False, "subscriptions": {"marketing_push": True}}
+            "/native/v1/profile", json={"subscriptions": {"marketing_push": True, "marketing_email": False}}
         )
 
         assert response.status_code == 200
 
         user = User.query.filter_by(email=self.identifier).first()
-        assert user.hasAllowedRecommendations == False
         assert user.get_notification_subscriptions().marketing_push
-
-        response = test_client.post("/native/v1/profile", json={"hasAllowedRecommendations": True})
-
-        user = User.query.filter_by(email=self.identifier).first()
-        assert user.hasAllowedRecommendations == True
+        assert not user.get_notification_subscriptions().marketing_email
 
 
 class CulturalSurveyTest:

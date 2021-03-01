@@ -1,3 +1,4 @@
+from dataclasses import asdict
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
@@ -15,6 +16,7 @@ from pcapi.core.bookings.conf import LIMIT_CONFIGURATIONS
 from pcapi.core.payments import api as payment_api
 from pcapi.core.users.models import Expense
 from pcapi.core.users.models import ExpenseDomain
+from pcapi.core.users.models import NotificationSubscriptions
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
@@ -88,7 +90,7 @@ def create_account(
     email: str,
     password: str,
     birthdate: date,
-    has_allowed_recommendations: bool = False,
+    marketing_email_subscription: bool = False,
     is_email_validated: bool = False,
     send_activation_mail: bool = True,
 ) -> User:
@@ -103,7 +105,7 @@ def create_account(
         publicName=VOID_PUBLIC_NAME,  # Required because model validation requires 3+ chars
         hasSeenTutorials=False,
         firstName=VOID_FIRST_NAME,
-        hasAllowedRecommendations=has_allowed_recommendations,
+        notificationSubscriptions=asdict(NotificationSubscriptions(marketing_email=marketing_email_subscription)),
     )
 
     age = user.calculate_age()
