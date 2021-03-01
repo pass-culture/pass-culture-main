@@ -149,8 +149,7 @@ describe('homepage', () => {
         )
       })
 
-      describe('update informations modal', () => {
-        beforeEach(async () => {})
+      describe('update profile informations modal', () => {
         it('should display profile modifications modal when clicking on modify button', async () => {
           // when
           fireEvent.click(screen.getByText('Modifier', { selector: 'button' }))
@@ -191,7 +190,7 @@ describe('homepage', () => {
 
           // when
           await act(async () => {
-            await fireEvent.click(screen.getByText('Enregistrer', { selector: 'button' }))
+            await fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }))
           })
 
           // then
@@ -201,6 +200,29 @@ describe('homepage', () => {
             email: 'johnny.doe@dummy.xyz',
             phoneNumber: '01 01 00 00 00',
           })
+        })
+
+        it('should show errors on submit', async () => {
+          // given
+          pcapi.updateUserInformations.mockRejectedValue({
+            errors: { firstName: ['Prénom en erreur'], email: ['Email en erreur'] },
+          })
+          fireEvent.click(screen.getByText('Modifier', { selector: 'button' }))
+          fireEvent.change(screen.getByLabelText('Prénom'), {
+            target: { value: 'Johnny' },
+          })
+          fireEvent.change(screen.getByLabelText('Email'), {
+            target: { value: 'johnny.doe@dummy.xyz' },
+          })
+
+          // when
+          await act(async () => {
+            await fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }))
+          })
+
+          // then
+          expect(screen.getByText('Prénom en erreur')).toBeInTheDocument()
+          expect(screen.getByText('Email en erreur')).toBeInTheDocument()
         })
       })
     })

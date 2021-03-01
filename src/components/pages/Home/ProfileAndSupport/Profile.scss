@@ -2,6 +2,7 @@
   .pi-title {
     @include title4();
 
+    line-height: normal;
     text-align: center;
   }
 

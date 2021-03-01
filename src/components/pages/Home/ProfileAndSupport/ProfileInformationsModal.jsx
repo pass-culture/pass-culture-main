@@ -6,20 +6,16 @@ import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import * as pcapi from 'repository/pcapi/pcapi'
 
 const ProfileInformationsModal = ({
-  setIsModalOpened,
+  hideProfileInfoModal,
   setUserInformations,
   showSuccessNotification,
   user,
 }) => {
-  const [lastName, setLastName] = useState(user.lastName)
-  const [firstName, setFirstName] = useState(user.firstName)
-  const [email, setEmail] = useState(user.email)
-  const [phoneNumber, setPhoneNumber] = useState(user.phoneNumber)
-  const [formErrors, setFormErrors] = useState([])
-
-  const closeModal = useCallback(() => {
-    setIsModalOpened(false)
-  }, [setIsModalOpened])
+  const [lastName, setLastName] = useState(user.lastName || '')
+  const [firstName, setFirstName] = useState(user.firstName || '')
+  const [email, setEmail] = useState(user.email || '')
+  const [phoneNumber, setPhoneNumber] = useState(user.phoneNumber || '')
+  const [formErrors, setFormErrors] = useState({})
 
   const submitProfileInformations = useCallback(
     event => {
@@ -36,7 +32,7 @@ const ProfileInformationsModal = ({
         .then(() => {
           setUserInformations(user, body)
           showSuccessNotification()
-          setIsModalOpened(false)
+          hideProfileInfoModal()
         })
         .catch(error => {
           setFormErrors(error.errors)
@@ -46,87 +42,64 @@ const ProfileInformationsModal = ({
       firstName,
       lastName,
       email,
+      hideProfileInfoModal,
       phoneNumber,
       setUserInformations,
-      user,
       showSuccessNotification,
-      setIsModalOpened,
+      user,
     ]
   )
 
-  const handleLastNameChange = useCallback(
-    event => {
-      setLastName(event.target.value)
-    },
-    [setLastName]
-  )
-
-  const handleFirstNameChange = useCallback(
-    event => {
-      setFirstName(event.target.value)
-    },
-    [setFirstName]
-  )
-
-  const handleEmailChange = useCallback(
-    event => {
-      setEmail(event.target.value)
-    },
-    [setEmail]
-  )
-
-  const handlePhoneNumberChange = useCallback(
-    event => {
-      setPhoneNumber(event.target.value)
-    },
-    [setPhoneNumber]
-  )
+  const setInput = setter => event => setter(event.target.value)
 
   return (
     <DialogBox
-      labelledBy="modal profile"
-      onDismiss={closeModal}
+      labelledBy="modal-profile"
+      onDismiss={hideProfileInfoModal}
     >
       <div className="profile-info-modal">
-        <div className="pi-title">
+        <h1
+          className="pi-title"
+          id="modal-profile"
+        >
           {'Profil'}
-        </div>
+        </h1>
         <div className="pi-mandatory-message">
           {'Tous les champs sont obligatoires'}
         </div>
         <form onSubmit={submitProfileInformations}>
           <TextInput
-            error={formErrors?.lastName}
+            error={formErrors.lastName?.[0]}
             label="Nom"
             name="last-name-input"
-            onChange={handleLastNameChange}
+            onChange={setInput(setLastName)}
             value={lastName}
           />
           <TextInput
-            error={formErrors?.firstName}
+            error={formErrors.firstName?.[0]}
             label="Prénom"
             name="first-name-input"
-            onChange={handleFirstNameChange}
+            onChange={setInput(setFirstName)}
             value={firstName}
           />
           <TextInput
-            error={formErrors?.email}
+            error={formErrors.email?.[0]}
             label="Email"
             name="email-input"
-            onChange={handleEmailChange}
+            onChange={setInput(setEmail)}
             value={email}
           />
           <TextInput
-            error={formErrors?.phoneNumber}
+            error={formErrors.phoneNumber?.[0]}
             label="Téléphone"
             name="phone-input"
-            onChange={handlePhoneNumberChange}
+            onChange={setInput(setPhoneNumber)}
             value={phoneNumber}
           />
           <div className="actions-group">
             <button
               className="secondary-button"
-              onClick={closeModal}
+              onClick={hideProfileInfoModal}
               type="button"
             >
               {'Annuler'}
@@ -145,10 +118,15 @@ const ProfileInformationsModal = ({
 }
 
 ProfileInformationsModal.propTypes = {
-  setIsModalOpened: PropTypes.func.isRequired,
+  hideProfileInfoModal: PropTypes.func.isRequired,
   setUserInformations: PropTypes.func.isRequired,
   showSuccessNotification: PropTypes.func.isRequired,
-  user: PropTypes.shape().isRequired,
+  user: PropTypes.shape({
+    firstName: PropTypes.string,
+    lastName: PropTypes.string,
+    email: PropTypes.string,
+    phoneNumber: PropTypes.string,
+  }).isRequired,
 }
 
 export default ProfileInformationsModal
