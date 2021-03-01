@@ -12,17 +12,11 @@ from pcapi.repository.user_queries import find_user_by_email
 from pcapi.repository.user_queries import find_user_by_reset_password_token
 from pcapi.routes.serialization import as_dict
 from pcapi.routes.serialization.users import LoginUserBodyModel
-from pcapi.routes.serialization.users import PatchUserBodyModel
-from pcapi.routes.serialization.users import PatchUserResponseModel
 from pcapi.routes.serialization.users import SharedLoginUserResponseModel
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.use_cases.update_user_informations import AlterableUserInformations
-from pcapi.use_cases.update_user_informations import update_user_informations
 from pcapi.utils.includes import USER_INCLUDES
 from pcapi.utils.login_manager import discard_session
 from pcapi.utils.login_manager import stamp_session
-from pcapi.utils.rest import expect_json_data
-from pcapi.utils.rest import login_or_api_key_required
 
 
 # @debt api-migration
@@ -41,18 +35,6 @@ def check_activation_token_exists(token):
         return jsonify(), 404
 
     return jsonify(), 200
-
-
-@private_api.route("/users/current", methods=["PATCH"])
-@login_or_api_key_required
-@expect_json_data
-@spectree_serialize(response_model=PatchUserResponseModel)  # type: ignore
-def patch_profile(body: PatchUserBodyModel) -> PatchUserResponseModel:
-    user_informations = AlterableUserInformations(user_id=current_user.id, **body.dict())
-    user = update_user_informations(user_informations)
-    response_user_model = PatchUserResponseModel.from_orm(user)
-
-    return response_user_model
 
 
 @private_api.route("/users/signin", methods=["POST"])
