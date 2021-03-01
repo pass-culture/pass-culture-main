@@ -4,6 +4,8 @@ from datetime import timedelta
 from apscheduler.schedulers.blocking import BlockingScheduler
 from flask import Flask
 
+# FIXME (xordoquy, 2021-03-01): this is to prevent circular imports when importing pcapi.core.users.api
+from pcapi import models  # pylint: disable=unused-import
 from pcapi import settings
 from pcapi.core.users import api as users_api
 from pcapi.core.users.repository import get_newly_eligible_users
