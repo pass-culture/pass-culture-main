@@ -37,7 +37,7 @@ export function renderWithStyles(ui, options = {}) {
   })
   if (options.stylesheet || options.componentStylesheet) {
     let stylesData = `
-    @import 'src/styles/variables/index.scss';
+    @import 'src/styles/variables/index';
     ${options.stylesheet ? `@import 'src/styles/${options.stylesheet}';` : ''}
     ${options.componentStylesheet ? `@import 'src/${options.componentStylesheet}';` : ''}
     `

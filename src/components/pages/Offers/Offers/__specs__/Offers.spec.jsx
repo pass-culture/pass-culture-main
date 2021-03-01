@@ -1484,7 +1484,7 @@ describe('src | components | pages | Offers | Offers', () => {
           </MemoryRouter>
         </Provider>,
         {
-          stylesheet: 'components/layout/ActionsBarPortal/_ActionsBarPortal.scss',
+          stylesheet: 'components/layout/ActionsBarPortal/_ActionsBarPortal',
         }
       )
 

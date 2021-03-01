@@ -14,7 +14,7 @@ const renderActionsBar = props => {
       </div>
     </ActionsBarPortal>,
     {
-      stylesheet: 'components/layout/ActionsBarPortal/_ActionsBarPortal.scss',
+      stylesheet: 'components/layout/ActionsBarPortal/_ActionsBarPortal',
     }
   )
 }
