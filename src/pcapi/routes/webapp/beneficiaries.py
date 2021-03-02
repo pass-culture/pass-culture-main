@@ -79,7 +79,7 @@ def change_beneficiary_email_request(body: ChangeBeneficiaryEmailRequestBody) ->
     try:
         user = users_repo.get_user_with_credentials(current_user.email, body.password)
     except users_exceptions.InvalidIdentifier as exc:
-        errors.add_error("identifier", "Identifiant ou mot de passe incorrect")
+        errors.add_error("password", "Mot de passe incorrect")
         raise errors from exc
     except users_exceptions.UnvalidatedAccount as exc:
         errors.add_error("identifier", "Ce compte n'est pas validé.")
