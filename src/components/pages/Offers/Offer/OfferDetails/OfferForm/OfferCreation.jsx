@@ -43,7 +43,7 @@ const OfferCreation = ({
         })
         requests.push(offererRequest)
       } else {
-        const offerersRequest = pcapi.getValidatedOfferersNames().then(receivedOfferers => {
+        const offerersRequest = pcapi.getUserValidatedOfferersNames().then(receivedOfferers => {
           offerersNames.current = receivedOfferers
         })
         const venuesRequest = pcapi.getVenuesForOfferer().then(receivedVenues => {
