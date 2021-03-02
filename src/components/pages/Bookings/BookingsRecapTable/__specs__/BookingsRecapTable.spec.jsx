@@ -3,6 +3,8 @@ import moment from 'moment'
 import React from 'react'
 import DatePicker from 'react-datepicker'
 
+import { ReactComponent } from 'utils/svgrMock'
+
 import BookingsRecapTable from '../BookingsRecapTable'
 import BeneficiaryCell from '../CellsFormatter/BeneficiaryCell'
 import BookingDateCell from '../CellsFormatter/BookingDateCell'
@@ -254,9 +256,8 @@ describe('components | BookingsRecapTable', () => {
       offer: { offer_name: 'Avez-vous déjà vu', type: 'thing' },
     })
     const duoCell = wrapper.find(BookingIsDuoCell)
-    expect(duoCell.find('Icon').props()).toMatchObject({
-      alt: 'Réservation DUO',
-      svg: 'ico-duo',
+    expect(duoCell.find(ReactComponent).props()).toMatchObject({
+      title: 'Réservation DUO',
     })
     const beneficiaryCell = wrapper.find(BeneficiaryCell)
     expect(beneficiaryCell).toHaveLength(1)
@@ -474,9 +475,8 @@ describe('components | BookingsRecapTable', () => {
       offer: { offer_name: 'Avez-vous déjà vu', type: 'thing' },
     })
     const duoCell = wrapper.find(BookingIsDuoCell)
-    expect(duoCell.find('Icon').props()).toMatchObject({
-      alt: 'Réservation DUO',
-      svg: 'ico-duo',
+    expect(duoCell.find(ReactComponent).props()).toStrictEqual({
+      title: 'Réservation DUO',
     })
     const beneficiaryCell = wrapper.find(BeneficiaryCell)
     expect(beneficiaryCell).toHaveLength(1)

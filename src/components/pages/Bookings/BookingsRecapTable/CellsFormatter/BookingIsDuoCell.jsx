@@ -1,17 +1,12 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import Icon from 'components/layout/Icon'
+import { ReactComponent as DuoSvg } from 'icons/ico-duo.svg'
 
 const BookingIsDuoCell = ({ isDuo }) => {
   return (
     <span className="bookings-duo-icon">
-      {isDuo && (
-        <Icon
-          alt="Réservation DUO"
-          svg="ico-duo"
-        />
-      )}
+      {isDuo && <DuoSvg title="Réservation DUO" />}
     </span>
   )
 }
