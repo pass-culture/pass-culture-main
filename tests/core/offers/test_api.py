@@ -483,7 +483,7 @@ class CreateMediationV2Test:
         image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
 
         # When
-        api.create_mediation_v2(user, offer, "©Photographe", image_as_bytes)
+        api.create_mediation(user, offer, "©Photographe", image_as_bytes)
 
         # Then
         mediation = models.Mediation.query.one()
@@ -501,13 +501,13 @@ class CreateMediationV2Test:
         image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
         existing_number_of_files = len(os.listdir(self.THUMBS_DIR))
 
-        mediation_1 = api.create_mediation_v2(user, offer, "©Photographe", image_as_bytes)
-        mediation_2 = api.create_mediation_v2(user, offer, "©Alice", image_as_bytes)
+        mediation_1 = api.create_mediation(user, offer, "©Photographe", image_as_bytes)
+        mediation_2 = api.create_mediation(user, offer, "©Alice", image_as_bytes)
         thumb_1_id = humanize(mediation_1.id)
         thumb_2_id = humanize(mediation_2.id)
 
         # When
-        api.create_mediation_v2(user, offer, "©moi", image_as_bytes)
+        api.create_mediation(user, offer, "©moi", image_as_bytes)
 
         # Then
         mediation_3 = models.Mediation.query.one()
@@ -533,7 +533,7 @@ class CreateMediationV2Test:
 
         # When
         with pytest.raises(ThumbnailStorageError):
-            api.create_mediation_v2(user, offer, "©Photographe", image_as_bytes)
+            api.create_mediation(user, offer, "©Photographe", image_as_bytes)
 
         # Then
         assert models.Mediation.query.count() == 0

@@ -377,7 +377,7 @@ def delete_stock(stock: Stock) -> None:
         redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
 
 
-def create_mediation_v2(
+def create_mediation(
     user: User,
     offer: Offer,
     credit: str,

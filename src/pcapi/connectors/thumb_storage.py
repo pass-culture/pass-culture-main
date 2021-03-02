@@ -1,6 +1,6 @@
 from pcapi.core import object_storage
 from pcapi.models.db import Model
-from pcapi.utils.image_conversion import standardize_image_v2
+from pcapi.utils.image_conversion import standardize_image
 
 
 def create_thumb(
@@ -10,7 +10,7 @@ def create_thumb(
     crop_params: tuple = None,
     symlink_path: str = None,
 ) -> None:
-    image_as_bytes = standardize_image_v2(image_as_bytes, crop_params)
+    image_as_bytes = standardize_image(image_as_bytes, crop_params)
 
     object_storage.store_public_object(
         bucket="thumbs",

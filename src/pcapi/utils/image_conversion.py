@@ -10,17 +10,17 @@ DO_NOT_CROP = (0, 0, 1)
 IMAGE_RATIO_V2 = 6 / 9
 
 
-def standardize_image_v2(image: bytes, crop_params: tuple = None) -> bytes:
+def standardize_image(image: bytes, crop_params: tuple = None) -> bytes:
     crop_params = crop_params or DO_NOT_CROP
     raw_image = PIL.Image.open(io.BytesIO(image)).convert("RGB")
     x_position, y_position, crop_size = crop_params
-    cropped_image = _crop_image_v2(x_position, y_position, crop_size, raw_image)
-    resized_image = _resize_image_v2(cropped_image)
+    cropped_image = _crop_image(x_position, y_position, crop_size, raw_image)
+    resized_image = _resize_image(cropped_image)
     standard_image = _convert_to_jpeg(resized_image)
     return standard_image
 
 
-def _crop_image_v2(crop_origin_x: int, crop_origin_y: int, crop_rect_height: int, image: Image) -> Image:
+def _crop_image(crop_origin_x: int, crop_origin_y: int, crop_rect_height: int, image: Image) -> Image:
     if (crop_origin_x, crop_origin_y, crop_rect_height) == DO_NOT_CROP:
         return image
 
@@ -38,7 +38,7 @@ def _crop_image_v2(crop_origin_x: int, crop_origin_y: int, crop_rect_height: int
     return cropped_img
 
 
-def _resize_image_v2(image: Image) -> Image:
+def _resize_image(image: Image) -> Image:
     if image.size[0] <= MAX_THUMB_WIDTH:
         return image
 
