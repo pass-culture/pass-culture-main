@@ -3,6 +3,7 @@ from datetime import timedelta
 from unittest.mock import call
 from unittest.mock import patch
 
+from dateutil.relativedelta import relativedelta
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
@@ -536,10 +537,11 @@ class SendSoonToBeExpiredBookingsRecapEmailToBeneficiaryTest:
         assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 12345
 
 
+@pytest.mark.usefixtures("db_session")
 class SendNewlyEligibleUserEmailTest:
     def test_send_activation_email(self):
         # given
-        beneficiary = users_factories.UserFactory.build()
+        beneficiary = users_factories.UserFactory(dateOfBirth=(datetime.now() - relativedelta(years=18, days=5)))
 
         # when
         send_newly_eligible_user_email(beneficiary)
@@ -547,6 +549,8 @@ class SendNewlyEligibleUserEmailTest:
         # then
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2030056
         assert (
-            mails_testing.outbox[0].sent_data["Vars"]["nativeAppLink"]
-            == "https://app.passculture-testing.beta.gouv.fr/"
+            mails_testing.outbox[0].sent_data["Vars"]["nativeAppLink"][:54]
+            == "https://app.passculture-testing.beta.gouv.fr/id-check?"
         )
+        assert "licenceToken" in mails_testing.outbox[0].sent_data["Vars"]["nativeAppLink"]
+        assert "email" in mails_testing.outbox[0].sent_data["Vars"]["nativeAppLink"]

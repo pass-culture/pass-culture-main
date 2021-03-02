@@ -5,6 +5,7 @@ from pcapi import settings
 from pcapi.core import mails
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
+from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
 from pcapi.core.users.models import User
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
@@ -43,6 +44,7 @@ from pcapi.emails.user_reset_password import retrieve_data_for_reset_password_us
 from pcapi.models import Offerer
 from pcapi.models import UserOfferer
 from pcapi.repository.offerer_queries import find_new_offerer_user_email
+from pcapi.utils.logger import logger
 from pcapi.utils.mailing import make_offerer_driven_cancellation_email_for_offerer
 from pcapi.utils.mailing import make_pro_user_validation_email
 
@@ -211,7 +213,11 @@ def send_rejection_email_to_beneficiary_pre_subscription(
 
 
 def send_newly_eligible_user_email(user: User) -> bool:
-    data = beneficiary_activation.get_newly_eligible_user_email_data()
+    token = users_api.create_id_check_token(user)
+    if not token:
+        logger.warning("Could not create token for user %s to notify its elibility", user.id)
+        return False
+    data = beneficiary_activation.get_newly_eligible_user_email_data(user, token)
     return mails.send(recipients=[user.email], data=data)
 
 

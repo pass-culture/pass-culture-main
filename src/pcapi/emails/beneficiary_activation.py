@@ -48,8 +48,12 @@ def get_accepted_as_beneficiary_email_data() -> Dict:
     }
 
 
-def get_newly_eligible_user_email_data() -> Dict:
-    email_link = f"{settings.NATIVE_APP_URL}/"
+def get_newly_eligible_user_email_data(user: users_models.User, token: users_models.Token) -> Dict:
+    expiration_timestamp = int(token.expirationDate.timestamp())
+    query_string = urlencode(
+        {"licenceToken": token.value, "expirationTimestamp": expiration_timestamp, "email": user.email}
+    )
+    email_link = f"{settings.NATIVE_APP_URL}/id-check?{query_string}"
     return {
         "Mj-TemplateID": 2030056,
         "Mj-TemplateLanguage": True,
