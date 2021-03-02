@@ -52,10 +52,10 @@ def delete_obsolete_thumbnails_in_object_storage(
     It will also delete Mediation with several thumbs (and its assets)
     """
     backend_path = BACKENDS_MAPPING[backend_name]
-    if backend_name in ("ovh", "local"):
+    if backend_name in ("OVH", "local"):
         backend = import_string(backend_path)
     else:
-        raise ImportError("backend must be 'ovh' or 'local'")
+        raise ImportError("backend must be 'OVH' or 'local'")
 
     if dry_run:
         logger.info("This a dry run; if you are sure about the changes, call this function with dry_run=False")
