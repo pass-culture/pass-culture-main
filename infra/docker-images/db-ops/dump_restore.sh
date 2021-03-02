@@ -1,8 +1,18 @@
 #!/bin/bash -e
 
 # pcapi app expects a DATABASE_URL environment variable
+export POSTGRES_CONNEXION_STRING_SRC=${DATABASE_URL}
 export DATABASE_URL=${PUBLIC_DATABASE_URL}
 export POSTGRES_CONNEXION_STRING_DEST=${PUBLIC_DATABASE_URL}
+
+if [ "$POSTGRES_REMOVE_UNNEEDED_TABLES" = "true" ];then
+    TABLES=$(
+        psql "${POSTGRES_CONNEXION_STRING_SRC}" \
+        -c "Copy (SELECT tablename FROM pg_catalog.pg_tables WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema') To STDOUT With CSV DELIMITER ',';" \
+        |egrep -v ${POSTGRES_UNNEEDED_TABLES} \
+        |tr '\n' ','
+    )
+fi
 
 if [ "$EXPORT_DATA" = "true" ];then
     # Check is an opeation is already running on the instance
@@ -24,12 +34,22 @@ if [ "$EXPORT_DATA" = "true" ];then
     # Export database in SQL format to encrypted bucket
     # Do not wait for answer as the operation might take some time and the connexion might drop
     echo "Starting: gcloud sql export"
-    gcloud sql export sql \
-        ${POSTGRES_INSTANCE_SRC} gs://${DUMP_BUCKET_NAME}/${DUMP_BUCKET_PATH} \
-        --database ${POSTGRES_DATABASE_SRC} \
-        --offload \
-        --async \
-        --quiet
+    if [ "$POSTGRES_REMOVE_UNNEEDED_TABLES" = "true" ];then
+        gcloud sql export sql \
+            ${POSTGRES_INSTANCE_SRC} gs://${DUMP_BUCKET_NAME}/${DUMP_BUCKET_PATH} \
+            --database ${POSTGRES_DATABASE_SRC} \
+            --offload \
+            --async \
+            --quiet \
+            --table=${TABLES}
+    else
+        gcloud sql export sql \
+            ${POSTGRES_INSTANCE_SRC} gs://${DUMP_BUCKET_NAME}/${DUMP_BUCKET_PATH} \
+            --database ${POSTGRES_DATABASE_SRC} \
+            --offload \
+            --async \
+            --quiet
+    fi
     echo "Ended: gcloud sql export"
 
     # Check is dump file is present in bucket (which means the export operation is over)
