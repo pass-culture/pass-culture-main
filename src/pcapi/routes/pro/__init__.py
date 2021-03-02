@@ -4,7 +4,6 @@ from flask import Flask
 def install_routes(app: Flask) -> None:
     # pylint: disable=unused-import
     from . import bookings
-    from . import mediations
     from . import offerers
     from . import offers
     from . import providers

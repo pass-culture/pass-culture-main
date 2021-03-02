@@ -377,45 +377,6 @@ def delete_stock(stock: Stock) -> None:
         redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
 
 
-# TODO(fseguin): cleanup after v2 is launched
-def create_mediation(
-    user: User,
-    offer: Offer,
-    credit: str,
-    image_as_bytes: bytes,
-    crop_params: tuple = None,
-) -> Mediation:
-    validation.check_mediation_thumb_quality(image_as_bytes)
-
-    mediation = Mediation(
-        author=user,
-        offer=offer,
-        credit=credit,
-    )
-    # `create_thumb()` requires the object to have an id, so we must save now.
-    repository.save(mediation)
-
-    create_thumb(mediation, image_as_bytes, image_index=0, crop_params=crop_params)
-    mediation.thumbCount = 1
-    repository.save(mediation)
-
-    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
-        redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
-
-    return mediation
-
-
-# TODO(fseguin): cleanup after v2 is launched
-def update_mediation(mediation: Mediation, is_active: bool) -> Mediation:
-    mediation.isActive = is_active
-    repository.save(mediation)
-
-    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
-        redis.add_offer_id(client=app.redis_client, offer_id=mediation.offerId)
-
-    return mediation
-
-
 def create_mediation_v2(
     user: User,
     offer: Offer,
@@ -437,8 +398,7 @@ def create_mediation_v2(
     repository.save(mediation)
 
     try:
-        # TODO(fseguin): cleanup after image upload v2 launch
-        create_thumb(mediation, image_as_bytes, image_index=0, crop_params=crop_params, use_v2=True)
+        create_thumb(mediation, image_as_bytes, image_index=0, crop_params=crop_params)
 
     except Exception as exc:
         app.logger.exception("An unexpected error was encountered during the thumbnail creation: %s", exc)

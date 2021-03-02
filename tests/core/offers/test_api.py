@@ -1,11 +1,9 @@
 from datetime import datetime
 from datetime import timedelta
-import io
 import os
 import pathlib
 from unittest import mock
 
-import PIL.Image
 from flask import current_app as app
 import pytest
 
@@ -462,47 +460,6 @@ class DeleteStockTest:
             api.delete_stock(stock)
         stock = models.Stock.query.one()
         assert not stock.isSoftDeleted
-
-
-@pytest.mark.usefixtures("db_session")
-class CreateMediationTest:
-    @mock.patch("pcapi.connectors.redis.add_offer_id")
-    def test_create_mediation_basics(self, mocked_add_offer_id):
-        user = users_factories.UserFactory()
-        offer = factories.ThingOfferFactory()
-        image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
-
-        mediation = api.create_mediation(user, offer, "credits", image_as_bytes)
-
-        assert mediation.author == user
-        assert mediation.offer == offer
-        assert mediation.credit == "credits"
-        assert mediation.thumbCount == 1
-        mocked_add_offer_id.assert_called_once_with(client=app.redis_client, offer_id=offer.id)
-
-    @mock.patch("pcapi.core.object_storage.store_public_object")
-    def test_crop_params(self, mocked_store_public_object):
-        user = users_factories.UserFactory()
-        offer = factories.ThingOfferFactory()
-        image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
-        crop_params = (0.8, 0.8, 1)
-
-        mediation = api.create_mediation(user, offer, "credits", image_as_bytes, crop_params)
-        assert mediation.thumbCount == 1
-        resized_as_bytes = mocked_store_public_object.call_args[1]["blob"]
-        resized = PIL.Image.open(io.BytesIO(resized_as_bytes))
-        assert resized.size == (357, 357)
-
-    def test_check_image_quality(self):
-        user = users_factories.UserFactory()
-        offer = factories.ThingOfferFactory()
-        image_as_bytes = (IMAGES_DIR / "mouette_small.jpg").read_bytes()
-
-        with pytest.raises(models.ApiErrors) as error:
-            api.create_mediation(user, offer, "credits", image_as_bytes)
-
-        assert error.value.errors["thumb"] == ["L'image doit faire 400 * 400 px minimum"]
-        assert models.Mediation.query.count() == 0
 
 
 @pytest.mark.usefixtures("db_session")
