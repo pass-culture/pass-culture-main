@@ -5,10 +5,10 @@ from pcapi.core.users import factories as users_factories
 from tests.conftest import TestClient
 
 
-def create_user_and_test_client(app, email, **kwargs):
-    user = users_factories.UserFactory(email=email, **kwargs)
+def create_user_and_test_client(app, **kwargs):
+    user = users_factories.UserFactory(**kwargs)
 
-    access_token = create_access_token(identity=email)
+    access_token = create_access_token(identity=user.email)
     test_client = TestClient(app.test_client())
     test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
 
