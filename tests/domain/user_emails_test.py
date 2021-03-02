@@ -285,7 +285,7 @@ class SendOffererBookingsRecapEmailAfterOffererCancellationTest:
 @pytest.mark.usefixtures("db_session")
 class SendProUserValidationEmailTest:
     @patch("pcapi.domain.user_emails.make_pro_user_validation_email", return_value={"Html-part": ""})
-    def when_feature_send_mail_to_users_enabled_sends_email_to_user(self, make_pro_user_validation_email):
+    def test_sends_email_to_pro_user(self, make_pro_user_validation_email):
         # Given
         user = create_user()
         user.generate_validation_token()
@@ -300,7 +300,7 @@ class SendProUserValidationEmailTest:
 @pytest.mark.usefixtures("db_session")
 class SendAdminUserValidationEmailTest:
     @patch("pcapi.domain.user_emails.make_admin_user_validation_email", return_value={"Html-part": ""})
-    def when_feature_send_mail_to_users_enabled_sends_email_to_user(self, make_admin_user_validation_email):
+    def test_send_mail_to_admin_user(self, make_admin_user_validation_email):
         # Given
         user = create_user()
         user.generate_validation_token()

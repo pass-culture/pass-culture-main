@@ -1,6 +1,5 @@
-from unittest.mock import patch
-
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import User
 
@@ -70,11 +69,9 @@ class AdminUserViewTest:
             },
         }
 
-    @patch("pcapi.settings.IS_PROD", return_value=True)
-    @patch("pcapi.settings.SUPER_ADMIN_EMAIL_ADDRESSES", return_value="")
-    def test_admin_user_creation_is_restricted_in_prod(
-        self, is_prod_mock, super_admin_email_addresses, app, db_session
-    ):
+    @override_settings(IS_PROD=True)
+    @override_settings(SUPER_ADMIN_EMAIL_ADDRESSES="")
+    def test_admin_user_creation_is_restricted_in_prod(self, app, db_session):
         users_factories.UserFactory(email="user@example.com", isAdmin=True)
 
         data = dict(
@@ -92,11 +89,9 @@ class AdminUserViewTest:
         filtered_users = User.query.filter_by(email="new-admin@example.com").all()
         assert len(filtered_users) == 0
 
-    @patch("pcapi.settings.IS_PROD", return_value=True)
-    @patch("pcapi.settings.SUPER_ADMIN_EMAIL_ADDRESSES", return_value="")
-    def test_admin_user_deletion_is_restricted_in_prod(
-        self, is_prod_mock, super_admin_email_addresses, app, db_session
-    ):
+    @override_settings(IS_PROD=True)
+    @override_settings(SUPER_ADMIN_EMAIL_ADDRESSES="")
+    def test_admin_user_deletion_is_restricted_in_prod(self, app, db_session):
         user = users_factories.UserFactory(email="user@example.com", isAdmin=True)
 
         data = dict(
