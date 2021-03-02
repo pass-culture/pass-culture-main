@@ -24,7 +24,7 @@ class AccountRequest(BaseModel):
     email: str
     password: str
     birthdate: date
-    marketing_email_subscription: Optional[bool]
+    marketing_email_subscription: Optional[bool] = False
     token: str
 
     class Config:
