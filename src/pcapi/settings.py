@@ -89,6 +89,8 @@ PAYMENTS_REPORT_RECIPIENTS = utils.parse_email_addresses(os.environ.get("PAYMENT
 PAYMENTS_DETAILS_RECIPIENTS = utils.parse_email_addresses(os.environ.get("PAYMENTS_DETAILS_RECIPIENTS"))
 WALLET_BALANCES_RECIPIENTS = utils.parse_email_addresses(os.environ.get("WALLET_BALANCES_RECIPIENTS"))
 
+# PUSH NOTIFICATIONS
+PUSH_NOTIFICATION_BACKEND = "pcapi.notifications.push.backends.batch.BatchBackend"
 
 # ALGOLIA
 ALGOLIA_API_KEY = os.environ.get("ALGOLIA_API_KEY")
@@ -110,6 +112,11 @@ ALGOLIA_OFFERS_BY_VENUE_CHUNK_SIZE = int(os.environ.get("ALGOLIA_OFFERS_BY_VENUE
 ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE = int(os.environ.get("ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE", 10000))
 ALGOLIA_SYNC_WORKERS_POOL_SIZE = int(os.environ.get("ALGOLIA_SYNC_WORKERS_POOL_SIZE", 10))
 
+# BATCH
+BATCH_API_URL = os.environ.get("BATCH_API_URL", "https://api.batch.com/1.0")
+BATCH_ANDROID_API_KEY = os.environ.get("BATCH_ANDROID_API_KEY", "")
+BATCH_IOS_API_KEY = os.environ.get("BATCH_IOS_API_KEY", "")
+BATCH_SECRET_API_KEY = os.environ.get("BATCH_SECRET_API_KEY", "")
 
 # SCALINGO
 SCALINGO_APP_TOKEN = os.environ.get("SCALINGO_APP_TOKEN")

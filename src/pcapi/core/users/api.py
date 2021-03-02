@@ -39,12 +39,14 @@ from pcapi.models.db import db
 from pcapi.models.offerer import Offerer
 from pcapi.models.user_offerer import UserOfferer
 from pcapi.models.user_session import UserSession
+from pcapi.notifications.push.user_attributes_updates import get_account_creation_attributes
 from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
 from pcapi.scripts.beneficiary import THIRTY_DAYS_IN_HOURS
 from pcapi.utils.logger import logger
 from pcapi.utils.mailing import MailServiceException
+from pcapi.workers.push_notification_job import update_user_attributes_job
 
 from . import constants
 from . import exceptions
@@ -115,8 +117,11 @@ def create_account(
     user.setPassword(password)
     repository.save(user)
 
+    update_user_attributes_job.delay(user.id, get_account_creation_attributes(user))
+
     if not is_email_validated and send_activation_mail:
         request_email_confirmation(user)
+
     return user
 
 
