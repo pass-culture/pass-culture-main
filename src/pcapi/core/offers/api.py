@@ -412,7 +412,7 @@ def create_mediation(
         # cleanup former thumbnails and mediations
         for previous_mediation in existing_mediations:
             try:
-                for thumb_index in range(0, mediation.thumbCount):
+                for thumb_index in range(0, previous_mediation.thumbCount):
                     remove_thumb(previous_mediation, image_index=thumb_index)
             except Exception as exc:  # pylint: disable=broad-except
                 app.logger.exception(
