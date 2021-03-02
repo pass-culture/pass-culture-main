@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.factories import StockFactory
 from pcapi.core.offers.factories import VenueFactory
@@ -11,7 +13,8 @@ from tests.conftest import clean_database
 
 class VenueViewTest:
     @clean_database
-    def test_update_venue_siret(self, app):
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_update_venue_siret(self, mocked_validate_csrf_token, app):
         UserFactory(email="user@example.com", isAdmin=True)
         venue = VenueFactory(siret="22222222222222")
         old_id_at_providers = "11111@22222222222222"
@@ -45,7 +48,8 @@ class VenueViewTest:
         assert offer_edited.idAtProviders == "11111@88888888888888"
 
     @clean_database
-    def test_update_venue_other_offer_id_at_provider(self, app):
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_update_venue_other_offer_id_at_provider(self, mocked_validate_csrf_token, app):
         UserFactory(email="user@example.com", isAdmin=True)
         venue = VenueFactory(siret="22222222222222")
         id_at_providers = "id_at_provider_ne_contenant_pas_le_siret"
@@ -77,7 +81,8 @@ class VenueViewTest:
         assert offer.idAtProviders == "id_at_provider_ne_contenant_pas_le_siret"
 
     @clean_database
-    def test_update_venue_without_siret(self, app):
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_update_venue_without_siret(self, mocked_validate_csrf_token, app):
         UserFactory(email="user@example.com", isAdmin=True)
         venue = VenueFactory(siret=None, comment="comment to allow null siret")
 

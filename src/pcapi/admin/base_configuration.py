@@ -1,5 +1,6 @@
 from flask import url_for
 from flask_admin.contrib.sqla import ModelView
+from flask_admin.form import SecureForm
 from flask_login import current_user
 from werkzeug.utils import redirect
 
@@ -12,6 +13,7 @@ class BaseAdminView(ModelView):
     can_create = False
     can_edit = False
     can_delete = False
+    form_base_class = SecureForm
 
     def is_accessible(self):
         authorized = current_user.is_authenticated and current_user.isAdmin

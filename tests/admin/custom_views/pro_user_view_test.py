@@ -17,7 +17,8 @@ from tests.conftest import clean_database
 
 class ProUserViewTest:
     @clean_database
-    def test_pro_user_creation(self, app):
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_pro_user_creation(self, mocked_validate_csrf_token, app):
         # Given
         users_factories.UserFactory(email="user@example.com", isAdmin=True)
         offers_factories.VirtualVenueTypeFactory()
@@ -34,6 +35,7 @@ class ProUserViewTest:
             offererName="Les films du plat pays",
             offererPostalCode="93000",
             offererCity="Nantes",
+            csrf_token="token",
         )
 
         # When

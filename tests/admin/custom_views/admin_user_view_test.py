@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
@@ -9,7 +11,8 @@ from tests.conftest import clean_database
 
 class AdminUserViewTest:
     @clean_database
-    def test_admin_user_creation(self, app):
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_admin_user_creation(self, mocked_validate_csrf_token, app):
         users_factories.UserFactory(email="admin@example.com", isAdmin=True)
 
         data = dict(
@@ -37,7 +40,8 @@ class AdminUserViewTest:
         assert user_created.needsToFillCulturalSurvey is False
 
     @clean_database
-    def test_admin_user_receive_a_reset_password_token(self, app):
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_admin_user_receive_a_reset_password_token(self, mocked_validate_csrf_token, app):
         users_factories.UserFactory(email="admin@example.com", isAdmin=True)
 
         data = dict(
@@ -72,7 +76,8 @@ class AdminUserViewTest:
 
     @override_settings(IS_PROD=True)
     @override_settings(SUPER_ADMIN_EMAIL_ADDRESSES="")
-    def test_admin_user_creation_is_restricted_in_prod(self, app, db_session):
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_admin_user_creation_is_restricted_in_prod(self, mocked_validate_csrf_token, app, db_session):
         users_factories.UserFactory(email="user@example.com", isAdmin=True)
 
         data = dict(

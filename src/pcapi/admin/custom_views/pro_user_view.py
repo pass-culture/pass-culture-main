@@ -98,6 +98,7 @@ class ProUserView(SuspensionMixin, BaseAdminView):
         "offererName",
         "offererPostalCode",
         "offererCity",
+        "csrf_token",
     )
 
     # This override is necessary to prevent SIREN and offererName to be in edit form as well

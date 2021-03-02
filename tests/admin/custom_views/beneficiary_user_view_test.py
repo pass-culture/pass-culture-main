@@ -16,7 +16,8 @@ from tests.conftest import clean_database
 
 class BeneficiaryUserViewTest:
     @clean_database
-    def test_beneficiary_user_creation(self, app):
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_beneficiary_user_creation(self, mocked_validate_csrf_token, app):
         users_factories.UserFactory(email="admin@example.com", isAdmin=True)
 
         data = dict(
@@ -29,6 +30,7 @@ class BeneficiaryUserViewTest:
             isBeneficiary="y",
             phoneNumber="0601020304",
             depositVersion="1",
+            csrf_token="token",
         )
 
         client = TestClient(app.test_client()).with_auth("admin@example.com")
@@ -64,7 +66,8 @@ class BeneficiaryUserViewTest:
         }
 
     @clean_database
-    def test_beneficiary_user_creation_for_deposit_v2(self, app):
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_beneficiary_user_creation_for_deposit_v2(self, mocked_validate_csrf_token, app):
         users_factories.UserFactory(email="user@example.com", isAdmin=True)
 
         data = dict(
@@ -217,7 +220,8 @@ class BeneficiaryUserViewTest:
 
     @clean_database
     @patch("pcapi.admin.custom_views.beneficiary_user_view.flash")
-    def test_beneficiary_user_edition_does_not_send_email(self, mocked_flask_flash, app):
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_beneficiary_user_edition_does_not_send_email(self, mocked_validate_csrf_token, mocked_flask_flash, app):
         users_factories.UserFactory(email="user@example.com", isAdmin=True)
         user_to_edit = users_factories.UserFactory(email="not_yet_edited@email.com", isAdmin=False)
 
