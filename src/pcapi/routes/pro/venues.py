@@ -49,10 +49,26 @@ def get_venue(venue_id):
 @private_api.route("/venues", methods=["GET"])
 @login_required
 def get_venues():
+    map_string_args = {
+        "true": True,
+        "false": False,
+    }
+    validated = request.args.get("validated", None)
+    if map_string_args.get(validated, None) is not None:
+        validated = map_string_args[validated]
+
+    validated_for_user = request.args.get("validated_for_user", None)
+    if map_string_args.get(validated_for_user, None) is not None:
+        validated_for_user = map_string_args[validated_for_user]
+
     offerer_identifier = Identifier.from_scrambled_id(request.args.get("offererId"))
 
     venues = get_all_venues_by_pro_user.execute(
-        pro_identifier=current_user.id, user_is_admin=current_user.isAdmin, offerer_id=offerer_identifier
+        pro_identifier=current_user.id,
+        user_is_admin=current_user.isAdmin,
+        offerer_id=offerer_identifier,
+        validated_offerer=validated,
+        validated_offerer_for_user=validated_for_user,
     )
     return jsonify(serialize_venues_with_offerer_name(venues)), 200
 

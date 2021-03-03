@@ -1,5 +1,7 @@
 import pytest
 
+import pcapi.core.offers.factories as offers_factories
+import pcapi.core.users.factories as users_factories
 from pcapi.domain.identifier.identifier import Identifier
 from pcapi.domain.venue.venue_with_offerer_name.venue_with_offerer_name import VenueWithOffererName
 from pcapi.infrastructure.repository.venue.venue_with_offerer_name import venue_with_offerer_name_domain_converter
@@ -45,19 +47,20 @@ class GetByProIdentifierTest:
     @pytest.mark.usefixtures("db_session")
     def should_return_all_existing_venues_for_admin_user(self, app: object):
         # given
-        admin_user = create_user(is_admin=True)
-        offerer = create_offerer()
-        other_offerer = create_offerer(siren="987654321")
-        venue_1 = create_venue(offerer=offerer, siret="12345678912345")
-        venue_2 = create_venue(offerer=other_offerer, siret="98765432198765")
+        admin_user = users_factories.UserFactory(isBeneficiary=False, isAdmin=True)
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(offerer=offerer)
+        venue_1 = offers_factories.VenueFactory(managingOfferer=offerer)
 
-        repository.save(venue_1, venue_2)
+        other_offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(offerer=other_offerer)
+        venue_2 = offers_factories.VenueFactory(managingOfferer=other_offerer)
 
         expected_venue_1 = venue_with_offerer_name_domain_converter.to_domain(venue_1)
         expected_venue_2 = venue_with_offerer_name_domain_converter.to_domain(venue_2)
 
         # when
-        found_venues = self.venue_sql_repository.get_by_pro_identifier(admin_user.id, True)
+        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_identifier=admin_user.id, user_is_admin=True)
 
         # then
         assert len(found_venues) == 2
@@ -104,20 +107,23 @@ class GetByProIdentifierTest:
     @pytest.mark.usefixtures("db_session")
     def should_not_return_venues_of_non_validated_offerer(self, app: object):
         # given
-        pro_user = create_user()
-        offerer_validated = create_offerer(siren="123456789")
-        offerer_not_validated = create_offerer(siren="987654321", validation_token="TOKEN")
-        create_user_offerer(user=pro_user, offerer=offerer_validated)
-        create_user_offerer(user=pro_user, offerer=offerer_not_validated, validation_token="NEKOT")
-        venue_of_validated_offerer = create_venue(offerer=offerer_validated, siret="12345678912345", name="B")
-        venue_of_unvalidated_offerer = create_venue(offerer=offerer_not_validated, siret="98765432198765", name="A")
+        pro_user = users_factories.UserFactory(isBeneficiary=False)
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        venue_of_validated_offerer = offers_factories.VenueFactory(managingOfferer=offerer)
 
-        repository.save(venue_of_validated_offerer, venue_of_unvalidated_offerer)
+        offerer_not_validated = offers_factories.OffererFactory(validationToken="token")
+        offers_factories.UserOffererFactory(user=pro_user, offerer=offerer_not_validated)
+        offers_factories.VenueFactory(managingOfferer=offerer_not_validated)
 
         expected_venue = venue_with_offerer_name_domain_converter.to_domain(venue_of_validated_offerer)
 
         # when
-        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id, False)
+        found_venues = self.venue_sql_repository.get_by_pro_identifier(
+            pro_identifier=pro_user.id,
+            user_is_admin=False,
+            validated_offerer=True,
+        )
 
         # then
         assert len(found_venues) == 1
@@ -126,15 +132,17 @@ class GetByProIdentifierTest:
     @pytest.mark.usefixtures("db_session")
     def should_not_return_venues_of_non_validated_user_offerer(self, app: object):
         # given
-        pro_user = create_user(email="john.doe@example.com")
-        offerer = create_offerer(siren="123456789")
-        create_user_offerer(user=pro_user, offerer=offerer, validation_token="NEKOT")
-        venue = create_venue(offerer=offerer, siret="98765432198765", name="A")
-
-        repository.save(venue)
+        pro_user = users_factories.UserFactory(isBeneficiary=False)
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=pro_user, offerer=offerer, validationToken="token")
+        offers_factories.VenueFactory(managingOfferer=offerer)
 
         # when
-        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id, False)
+        found_venues = self.venue_sql_repository.get_by_pro_identifier(
+            pro_identifier=pro_user.id,
+            user_is_admin=False,
+            validated_offerer_for_user=True,
+        )
 
         # then
         assert len(found_venues) == 0

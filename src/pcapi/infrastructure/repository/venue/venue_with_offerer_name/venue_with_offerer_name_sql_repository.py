@@ -16,17 +16,25 @@ class VenueWithOffererNameSQLRepository(VenueWithOffererNameRepository):
         pro_identifier: int,
         user_is_admin: bool,
         offerer_id: Optional[Identifier] = None,
+        validated_offerer: Optional[bool] = None,
+        validated_offerer_for_user: Optional[bool] = None,
     ) -> List[VenueWithOffererName]:
-        query = Venue.query
-
+        query = Venue.query.join(Offerer, Offerer.id == Venue.managingOffererId).join(
+            UserOfferer, UserOfferer.offererId == Offerer.id
+        )
         if not user_is_admin:
-            query = (
-                query.join(Offerer, Offerer.id == Venue.managingOffererId)
-                .filter(Offerer.validationToken.is_(None))
-                .join(UserOfferer, UserOfferer.offererId == Offerer.id)
-                .filter(UserOfferer.validationToken.is_(None))
-                .filter(UserOfferer.userId == pro_identifier)
-            )
+            query = query.filter(UserOfferer.userId == pro_identifier)
+
+        if validated_offerer is not None:
+            if validated_offerer:
+                query = query.filter(Offerer.validationToken.is_(None))
+            else:
+                query = query.filter(Offerer.validationToken.isnot(None))
+        if validated_offerer_for_user is not None:
+            if validated_offerer_for_user:
+                query = query.filter(UserOfferer.validationToken.is_(None))
+            else:
+                query = query.filter(UserOfferer.validationToken.isnot(None))
 
         if offerer_id:
             query = query.filter(Venue.managingOffererId == offerer_id.persisted)

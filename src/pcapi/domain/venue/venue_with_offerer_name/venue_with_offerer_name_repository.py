@@ -14,5 +14,7 @@ class VenueWithOffererNameRepository(ABC):
         pro_identifier: int,
         user_is_admin: bool,
         offerer_id: Optional[Identifier] = None,
+        validated_offerer: Optional[bool] = None,
+        validated_offerer_for_user: Optional[bool] = None,
     ) -> List[VenueWithOffererName]:
         pass
