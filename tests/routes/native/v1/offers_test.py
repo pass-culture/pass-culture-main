@@ -84,6 +84,7 @@ class OffersTest:
             "category": {"categoryType": "Event", "label": "Cinéma", "name": "CINEMA"},
             "description": "desk cryption",
             "externalTicketOfficeUrl": "https://url.com",
+            "expense_domains": ["all"],
             "extraData": {
                 "author": "mandibule",
                 "isbn": "3838",

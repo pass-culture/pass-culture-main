@@ -1,5 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
+from typing import Any
 from typing import Callable
 from typing import Dict
 from typing import List
@@ -9,7 +10,10 @@ from pydantic.class_validators import validator
 from pydantic.fields import Field
 
 from pcapi.core.bookings.api import compute_confirmation_date
+from pcapi.core.offers.api import get_expense_domains
+from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
+from pcapi.core.users.models import ExpenseDomain
 from pcapi.domain.music_types import MUSIC_SUB_TYPES_DICT
 from pcapi.domain.music_types import MUSIC_TYPES_DICT
 from pcapi.domain.show_types import SHOW_SUB_TYPES_DICT
@@ -147,7 +151,7 @@ class OfferImageResponse(BaseModel):
 
 class OfferResponse(BaseModel):
     @classmethod
-    def from_orm(cls, offer):  # type: ignore
+    def from_orm(cls: Any, offer: Offer):  # type: ignore
         offer.category = {
             "name": offer.offer_category,
             "label": offer.offerType["appLabel"],
@@ -159,6 +163,7 @@ class OfferResponse(BaseModel):
             "motorDisability": offer.motorDisabilityCompliant,
             "visualDisability": offer.visualDisabilityCompliant,
         }
+        offer.expense_domains = get_expense_domains(offer)
 
         if offer.extraData:
             offer.extraData["durationMinutes"] = offer.durationMinutes
@@ -170,6 +175,7 @@ class OfferResponse(BaseModel):
     id: int
     accessibility: OfferAccessibilityResponse
     description: Optional[str]
+    expense_domains: List[ExpenseDomain]
     externalTicketOfficeUrl: Optional[str]
     extraData: Optional[OfferExtraData]
     isActive: bool

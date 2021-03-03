@@ -14,6 +14,7 @@ import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import api
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories
+from pcapi.core.offers.api import get_expense_domains
 from pcapi.core.offers.api import update_offer_and_stock_id_at_providers
 from pcapi.core.offers.exceptions import ThumbnailStorageError
 from pcapi.core.offers.factories import OfferFactory
@@ -923,3 +924,18 @@ class UpdateOfferAndStockIdAtProvidersTest:
         assert offer.idAtProviders == "1111111111111@88888888888888"
         assert stock.idAtProviders == "1111111111111@88888888888888"
         assert other_venue_offer.idAtProviders == "3333333333333@12222222222222"
+
+
+class OfferExpenseDomainsTest:
+    def test_offer_expense_domains(self):
+        assert get_expense_domains(models.Offer(type=str(offer_type.EventType.JEUX))) == ["all"]
+        assert set(
+            get_expense_domains(models.Offer(type=str(offer_type.ThingType.JEUX_VIDEO), url="https://example.com"))
+        ) == {
+            "all",
+            "digital",
+        }
+        assert set(get_expense_domains(models.Offer(type=str(offer_type.ThingType.OEUVRE_ART)))) == {
+            "all",
+            "physical",
+        }

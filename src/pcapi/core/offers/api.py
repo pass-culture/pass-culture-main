@@ -10,8 +10,10 @@ from sqlalchemy.sql.functions import func
 from pcapi.connectors import redis
 from pcapi.connectors.thumb_storage import create_thumb
 from pcapi.connectors.thumb_storage import remove_thumb
+from pcapi.core.bookings.conf import LIMIT_CONFIGURATIONS
 import pcapi.core.bookings.repository as bookings_repository
 import pcapi.core.offers.repository as offers_repository
+from pcapi.core.users.models import ExpenseDomain
 from pcapi.core.users.models import User
 from pcapi.domain import admin_emails
 from pcapi.domain import user_emails
@@ -464,3 +466,15 @@ def update_offer_and_stock_id_at_providers(venue: Venue, old_siret: str) -> None
         )
         db.session.commit()
         stock_index = stock_index + batch_size
+
+
+def get_expense_domains(offer: Offer) -> List[ExpenseDomain]:
+    domains = {ExpenseDomain.ALL.value}
+
+    for configuration in LIMIT_CONFIGURATIONS.values():
+        if configuration.digital_cap_applies(offer):
+            domains.add(ExpenseDomain.DIGITAL.value)
+        if configuration.physical_cap_applies(offer):
+            domains.add(ExpenseDomain.PHYSICAL.value)
+
+    return list(domains)
