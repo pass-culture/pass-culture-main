@@ -115,16 +115,18 @@ def delete_obsolete_thumbnails_in_object_storage(
 
     # Assets of extra thumbs
     logger.info(
-        "%d assets that are not unique to a Mediation are about to be deleted: %s",
+        "%d assets that are not unique to a Mediation are about to be deleted",
         len(extra_thumb_asset_names),
-        extra_thumb_asset_names,
     )
     if dry_run:
         pass
     else:
         for asset_name in extra_thumb_asset_names:
             print(f"deleting asset:{asset_name}")
-            backend().delete_public_object(bucket=folder_name, object_id=asset_name)
+            try:
+                backend().delete_public_object(bucket=folder_name, object_id=asset_name)
+            except Exception as exc:  # pylint: disable=broad-except
+                logger.exception("An unexpected error was encountered during deletion: %s", exc)
 
     # Assets without mediations
     orphan_asset_mediation_ids = current_mediation_asset_ids - current_mediation_ids
@@ -142,7 +144,10 @@ def delete_obsolete_thumbnails_in_object_storage(
     else:
         for orphan_assets_name in orphan_assets_names:
             print(f"deleting asset:{orphan_assets_name}")
-            backend().delete_public_object(bucket=folder_name, object_id=orphan_assets_name)
+            try:
+                backend().delete_public_object(bucket=folder_name, object_id=orphan_assets_name)
+            except Exception as exc:  # pylint: disable=broad-except
+                logger.exception("An unexpected error was encountered during deletion: %s", exc)
 
     # MediationSQLEntities assets
     logger.info(
@@ -155,4 +160,7 @@ def delete_obsolete_thumbnails_in_object_storage(
     else:
         for asset_name in old_mediationsqlentities_asset_names:
             print(f"deleting asset:{asset_name}")
-            backend().delete_public_object(bucket=folder_name, object_id=asset_name)
+            try:
+                backend().delete_public_object(bucket=folder_name, object_id=asset_name)
+            except Exception as exc:  # pylint: disable=broad-except
+                logger.exception("An unexpected error was encountered during deletion: %s", exc)
