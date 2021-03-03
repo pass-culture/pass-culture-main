@@ -37,7 +37,7 @@ class AdminUserViewTest:
         assert user_created.needsToFillCulturalSurvey is False
 
     @clean_database
-    def test_admin_user_receive_an_activation_token(self, app):
+    def test_admin_user_receive_a_reset_password_token(self, app):
         users_factories.UserFactory(email="admin@example.com", isAdmin=True)
 
         data = dict(
@@ -53,7 +53,7 @@ class AdminUserViewTest:
         assert response.status_code == 302
 
         user_created = User.query.filter_by(email="new-admin@example.com").one()
-        assert user_created.validationToken is not None
+        assert user_created.resetPasswordToken is not None
 
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data == {
@@ -64,7 +64,8 @@ class AdminUserViewTest:
             "MJ-TemplateLanguage": True,
             "To": "new-admin@example.com",
             "Vars": {
-                "lien_validation_mail": "http://localhost:3001/inscription/validation/" + user_created.validationToken,
+                "lien_validation_mail": "http://localhost:3001/creation-de-mot-de-passe/"
+                + user_created.resetPasswordToken,
                 "env": "-development",
             },
         }

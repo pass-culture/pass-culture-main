@@ -3,6 +3,7 @@ import pcapi.core.users.factories as users_factories
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.utils.mailing import make_admin_user_validation_email
 from pcapi.utils.mailing import make_pro_user_validation_email
+from pcapi.utils.token import random_token
 
 from tests.conftest import clean_database
 
@@ -34,8 +35,8 @@ class AdminValidationEmailsTest:
     @clean_database
     def test_make_admin_user_validation_email_includes_validation_url_with_token_and_user_email(self, app):
         # Given
-        user = users_factories.UserFactory(email="admin@example.com", isAdmin=True)
-        user.generate_validation_token()
+        reset_token = random_token()
+        user = users_factories.UserFactory(email="admin@example.com", isAdmin=True, resetPasswordToken=reset_token)
 
         # When
         email = make_admin_user_validation_email(user)
@@ -45,7 +46,7 @@ class AdminValidationEmailsTest:
             "MJ-TemplateID": 778688,
             "MJ-TemplateLanguage": True,
             "Vars": {
-                "lien_validation_mail": f"{settings.PRO_URL}/inscription/validation/{user.validationToken}",
+                "lien_validation_mail": f"{settings.PRO_URL}/creation-de-mot-de-passe/{reset_token}",
             },
         }
 

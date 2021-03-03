@@ -56,17 +56,15 @@ class AdminUserView(BaseAdminView):
         return self.session.query(func.count(distinct(User.id))).select_from(User).filter(User.isAdmin.is_(True))
 
     def on_model_change(self, form: Form, model, is_created: bool) -> None:
+        # This is to prevent a circulary import dependency
+        from pcapi.core.users.api import fulfill_account_password
+
         model.publicName = f"{model.firstName} {model.lastName}"
         model.isAdmin = True
         model.hasSeenProTutorials = True
         model.needsToFillCulturalSurvey = False
-        model.generate_validation_token()
 
-        if is_created:
-            # This is to prevent a circulary import dependency
-            from pcapi.core.users.api import fulfill_account_password
-
-            fulfill_account_password(model)
-            send_admin_user_validation_email(model)
+        fulfill_account_password(model)
+        send_admin_user_validation_email(model)
 
         super().on_model_change(form, model, is_created)

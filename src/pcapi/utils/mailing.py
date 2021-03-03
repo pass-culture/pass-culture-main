@@ -266,7 +266,7 @@ def make_admin_user_validation_email(user: User) -> Dict:
         "MJ-TemplateID": 778688,
         "MJ-TemplateLanguage": True,
         "Vars": {
-            "lien_validation_mail": f"{settings.PRO_URL}/inscription/validation/{user.validationToken}",
+            "lien_validation_mail": f"{settings.PRO_URL}/creation-de-mot-de-passe/{user.resetPasswordToken}",
         },
     }
 
