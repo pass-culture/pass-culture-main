@@ -66,7 +66,7 @@ class VenueView(BaseAdminView):
 
         super().update_model(new_venue_form, venue)
 
-        if has_siret_changed:
+        if has_siret_changed and old_siret:
             update_offer_and_stock_id_at_providers(venue, old_siret)
 
         return True

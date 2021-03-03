@@ -45,7 +45,7 @@ class VenueViewTest:
         assert offer_edited.idAtProviders == "11111@88888888888888"
 
     @clean_database
-    def test_update_venue_without_siret_id_at_provider(self, app):
+    def test_update_venue_other_offer_id_at_provider(self, app):
         UserFactory(email="user@example.com", isAdmin=True)
         venue = VenueFactory(siret="22222222222222")
         id_at_providers = "id_at_provider_ne_contenant_pas_le_siret"
@@ -75,3 +75,25 @@ class VenueViewTest:
         assert venue_edited.siret == "88888888888888"
         assert stock.idAtProviders == "id_at_provider_ne_contenant_pas_le_siret"
         assert offer.idAtProviders == "id_at_provider_ne_contenant_pas_le_siret"
+
+    @clean_database
+    def test_update_venue_without_siret(self, app):
+        UserFactory(email="user@example.com", isAdmin=True)
+        venue = VenueFactory(siret=None, comment="comment to allow null siret")
+
+        data = dict(
+            name=venue.name,
+            siret="88888888888888",
+            city=venue.city,
+            postalCode=venue.postalCode,
+            address=venue.address,
+            publicName=venue.publicName,
+            latitude=venue.latitude,
+            longitude=venue.longitude,
+            isPermanent=venue.isPermanent,
+        )
+
+        client = TestClient(app.test_client()).with_auth("user@example.com")
+        response = client.post(f"/pc/back-office/venue/edit/?id={venue.id}", form=data)
+
+        assert response.status_code == 302
