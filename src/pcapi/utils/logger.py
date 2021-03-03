@@ -1,5 +1,6 @@
 from datetime import datetime
 import logging
+import sys
 
 from pythonjsonlogger import jsonlogger
 
@@ -27,12 +28,13 @@ logging.basicConfig(
     format="%(asctime)s %(levelname)-8s %(message)s",
     level=LOG_LEVEL,
     datefmt="%Y-%m-%d %H:%M:%S",
+    stream=sys.stdout,
 )
 json_logger = logging.getLogger(__name__)
 
 
 def configure_json_logger() -> None:
-    log_handler = logging.StreamHandler()
+    log_handler = logging.StreamHandler(sys.stdout)
     formatter = CustomJsonFormatter("%(timestamp) %(level) %(message)")
     log_handler.setFormatter(formatter)
     json_logger.addHandler(log_handler)
