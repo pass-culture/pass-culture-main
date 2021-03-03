@@ -86,6 +86,7 @@ class Returns200:
             offer__venue__name="La petite librairie",
             offer__venue__dateCreated=now,
             offer__venue__dateModifiedAtLastProvider=now,
+            offer__venue__bookingEmail="test@test.com",
             offer__venue__managingOfferer__dateCreated=now,
             offer__venue__managingOfferer__dateModifiedAtLastProvider=now,
             offer__venue__managingOfferer__siren="123456789",
@@ -94,6 +95,7 @@ class Returns200:
         offer = stock.offer
         venue = offer.venue
         offerer = venue.managingOfferer
+        offers_factories.BankInformationFactory(venue=venue)
 
         # When
         client = TestClient(app.test_client()).with_auth(email=beneficiary.email)

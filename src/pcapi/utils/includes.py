@@ -51,19 +51,32 @@ OFFER_INCLUDES = [
             "remainingQuantity",
         ],
     },
-    {
-        "key": "venue",
-        "includes": [
-            {"key": "managingOfferer", "includes": ["-validationToken", "isValidated", "bic", "iban"]},
-            "-validationToken",
-            "isValidated",
-            "bic",
-            "iban",
-        ],
-    },
 ]
 
+venue_key_with_bank_informations = {
+    "key": "venue",
+    "includes": [
+        {"key": "managingOfferer", "includes": ["-validationToken", "isValidated", "bic", "iban"]},
+        "-validationToken",
+        "isValidated",
+        "bic",
+        "iban",
+    ],
+}
+
+venue_key_without_bank_informations = {
+    "key": "venue",
+    "includes": [
+        {"key": "managingOfferer", "includes": ["-validationToken", "isValidated"]},
+        "-validationToken",
+        "-bookingEmail",
+        "isValidated",
+    ],
+}
+
 GET_OFFER_INCLUDES = copy.deepcopy(OFFER_INCLUDES)
+OFFER_INCLUDES.append(venue_key_with_bank_informations)
+GET_OFFER_INCLUDES.append(venue_key_without_bank_informations)
 GET_OFFER_INCLUDES.append("dateRange")
 
 

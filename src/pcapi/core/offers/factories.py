@@ -185,3 +185,13 @@ class CriterionFactory(BaseFactory):
         model = models.Criterion
 
     name = factory.Sequence("Criterion {}".format)
+
+
+class BankInformationFactory(BaseFactory):
+    class Meta:
+        model = models.BankInformation
+
+    bic = "12345678912"
+    iban = "FR1526172812718281"
+    applicationId = factory.Sequence(int)
+    status = "ACCEPTED"
