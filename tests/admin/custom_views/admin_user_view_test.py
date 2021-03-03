@@ -88,20 +88,3 @@ class AdminUserViewTest:
 
         filtered_users = User.query.filter_by(email="new-admin@example.com").all()
         assert len(filtered_users) == 0
-
-    @override_settings(IS_PROD=True)
-    @override_settings(SUPER_ADMIN_EMAIL_ADDRESSES="")
-    def test_admin_user_deletion_is_restricted_in_prod(self, app, db_session):
-        user = users_factories.UserFactory(email="user@example.com", isAdmin=True)
-
-        data = dict(
-            id=user.id,
-        )
-
-        client = TestClient(app.test_client()).with_auth("user@example.com")
-        response = client.post("/pc/back-office/admin_users/delete", form=data)
-
-        assert response.status_code == 302
-
-        filtered_users = User.query.filter_by(isAdmin=True).all()
-        assert len(filtered_users) == 1

@@ -11,16 +11,10 @@ from pcapi.domain.user_emails import send_admin_user_validation_email
 
 class AdminUserView(BaseAdminView):
     can_edit = False
+    can_delete = False
 
     @property
     def can_create(self) -> bool:
-        if settings.IS_PROD:
-            return current_user.email in settings.SUPER_ADMIN_EMAIL_ADDRESSES
-
-        return True
-
-    @property
-    def can_delete(self) -> bool:
         if settings.IS_PROD:
             return current_user.email in settings.SUPER_ADMIN_EMAIL_ADDRESSES
 
