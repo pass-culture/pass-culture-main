@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
@@ -19,6 +20,12 @@ const NotificationMessage = ({ venueId, offererId, dispatch }) => {
       {', ou en importer automatiquement. '}
     </p>
   )
+}
+
+NotificationMessage.propTypes = {
+  dispatch: PropTypes.func.isRequired,
+  offererId: PropTypes.string.isRequired,
+  venueId: PropTypes.string.isRequired,
 }
 
 export default NotificationMessage

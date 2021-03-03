@@ -3,7 +3,7 @@ import React from 'react'
 
 import { SVGOffers } from '../svg/SVGOffers'
 
-const Thumb = ({ url, alt = '' }) => {
+const Thumb = ({ url, alt }) => {
   return url ? (
     <img
       alt={alt}
@@ -19,10 +19,12 @@ const Thumb = ({ url, alt = '' }) => {
 }
 
 Thumb.defaultProps = {
+  alt: '',
   url: '',
 }
 
 Thumb.propTypes = {
+  alt: PropTypes.string,
   url: PropTypes.string,
 }
 

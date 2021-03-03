@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
 
 import { NBSP } from 'components/pages/Offers/Offer/Thumbnail/_constants'
@@ -111,6 +112,11 @@ const Advices = ({ hidden, setHidden }) => {
       </div>
     </div>
   )
+}
+
+Advices.propTypes = {
+  hidden: PropTypes.bool.isRequired,
+  setHidden: PropTypes.func.isRequired,
 }
 
 export default Advices

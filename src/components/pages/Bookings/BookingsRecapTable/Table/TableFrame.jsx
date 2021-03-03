@@ -63,9 +63,11 @@ TableFrame.propTypes = {
       Cell: PropTypes.func,
     })
   ).isRequired,
+  currentPage: PropTypes.number.isRequired,
   data: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   nbBookings: PropTypes.number.isRequired,
   nbBookingsPerPage: PropTypes.number.isRequired,
+  updateCurrentPage: PropTypes.func.isRequired,
 }
 
 export default TableFrame

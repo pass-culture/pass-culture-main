@@ -31,6 +31,7 @@ class FeaturedRoute extends PureComponent {
         />
       )
     }
+
     return (
       <Route {...routeProps}>
         {children || null}
@@ -41,6 +42,7 @@ class FeaturedRoute extends PureComponent {
 
 FeaturedRoute.propTypes = {
   areFeaturesLoaded: PropTypes.bool.isRequired,
+  children: PropTypes.shape().isRequired,
   isRouteDisabled: PropTypes.bool.isRequired,
   requestGetFeatures: PropTypes.func.isRequired,
 }

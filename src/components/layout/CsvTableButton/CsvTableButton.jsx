@@ -29,7 +29,9 @@ CsvTableButton.defaultProps = {
 
 CsvTableButton.propTypes = {
   children: PropTypes.string,
+  history: PropTypes.shape().isRequired,
   href: PropTypes.string.isRequired,
+  location: PropTypes.shape().isRequired,
 }
 
 export default CsvTableButton

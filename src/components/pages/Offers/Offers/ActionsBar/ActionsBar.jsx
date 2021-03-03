@@ -137,7 +137,9 @@ ActionsBar.defaultProps = {
 ActionsBar.propTypes = {
   areAllOffersSelected: PropTypes.bool,
   clearSelectedOfferIds: PropTypes.func.isRequired,
+  nbSelectedOffers: PropTypes.number.isRequired,
   refreshOffers: PropTypes.func.isRequired,
+  searchFilters: PropTypes.shape().isRequired,
   selectedOfferIds: PropTypes.arrayOf(PropTypes.string),
   showSuccessNotification: PropTypes.func.isRequired,
   toggleSelectAllCheckboxes: PropTypes.func.isRequired,

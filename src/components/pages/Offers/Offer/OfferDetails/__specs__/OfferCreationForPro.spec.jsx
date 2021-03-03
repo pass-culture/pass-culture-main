@@ -1,4 +1,4 @@
-import { prettyDOM, within } from '@testing-library/dom'
+import { within } from '@testing-library/dom'
 import '@testing-library/jest-dom'
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -1601,8 +1601,6 @@ describe('offerDetails - Creation - pro user', () => {
       fireEvent.click(screen.getByText('Enregistrer et passer aux stocks'))
 
       // Then
-
-      console.log(prettyDOM(screen.container, 99999))
       const addThumbnail = await screen.queryByText('Ajouter une image')
       expect(addThumbnail).toBeInTheDocument()
 

@@ -270,9 +270,7 @@ const Stocks = ({ offer, showErrorNotification, showSuccessNotification }) => {
 }
 
 Stocks.propTypes = {
-  offer: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-  }).isRequired,
+  offer: PropTypes.shape().isRequired,
   showErrorNotification: PropTypes.func.isRequired,
   showSuccessNotification: PropTypes.func.isRequired,
 }

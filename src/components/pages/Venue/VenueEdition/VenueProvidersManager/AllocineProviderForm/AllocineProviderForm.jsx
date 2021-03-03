@@ -158,8 +158,10 @@ class AllocineProviderForm extends PureComponent {
 }
 
 AllocineProviderForm.propTypes = {
+  createVenueProvider: PropTypes.func.isRequired,
   history: PropTypes.shape().isRequired,
   notify: PropTypes.func.isRequired,
+  offererId: PropTypes.string.isRequired,
   providerId: PropTypes.string.isRequired,
   venueId: PropTypes.string.isRequired,
 }

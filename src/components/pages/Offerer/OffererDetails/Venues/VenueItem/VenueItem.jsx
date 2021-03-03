@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import React from 'react'
 import Dotdotdot from 'react-dotdotdot'
 import { Link } from 'react-router-dom'
@@ -72,6 +73,14 @@ const VenueItem = ({ venue }) => {
       </div>
     </li>
   )
+}
+
+VenueItem.defaultProps = {
+  venue: {},
+}
+
+VenueItem.propTypes = {
+  venue: PropTypes.shape(),
 }
 
 export default VenueItem

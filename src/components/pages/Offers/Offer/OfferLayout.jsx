@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState, useRef } from 'react'
 import { Switch, Route } from 'react-router-dom'
 
@@ -91,6 +92,11 @@ const OfferLayout = props => {
       </div>
     </div>
   )
+}
+
+OfferLayout.propTypes = {
+  location: PropTypes.shape().isRequired,
+  match: PropTypes.shape().isRequired,
 }
 
 export default OfferLayout

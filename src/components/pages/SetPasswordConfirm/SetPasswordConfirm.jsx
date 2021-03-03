@@ -79,4 +79,5 @@ SetPasswordConfirm.defaultProps = {
 SetPasswordConfirm.propTypes = {
   currentUser: PropTypes.shape(),
   history: PropTypes.shape().isRequired,
+  location: PropTypes.shape().isRequired,
 }

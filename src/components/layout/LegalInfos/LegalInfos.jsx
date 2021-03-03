@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import React from 'react'
 
 import Icon from '../Icon'
@@ -50,3 +51,8 @@ export const LegalInfos = ({ title, className }) => (
     </a>
   </div>
 )
+
+LegalInfos.propTypes = {
+  className: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired,
+}

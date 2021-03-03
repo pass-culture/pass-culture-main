@@ -91,11 +91,14 @@ const OffererItem = ({ offerer, physicalVenues, venues, isVenueCreationAvailable
 }
 
 OffererItem.defaultProps = {
+  offerer: {},
   physicalVenues: [],
   venues: [],
 }
 
 OffererItem.propTypes = {
+  isVenueCreationAvailable: PropTypes.bool.isRequired,
+  offerer: PropTypes.shape(),
   physicalVenues: PropTypes.arrayOf(PropTypes.shape()),
   venues: PropTypes.arrayOf(PropTypes.shape()),
 }

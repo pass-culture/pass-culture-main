@@ -6,7 +6,6 @@ import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
 import VenueItem from './VenueItem/VenueItem'
 
-
 const Venues = ({ venues, offererId, isVenueCreationAvailable }) => {
   const venueCreationUrl = isVenueCreationAvailable
     ? `/structures/${offererId}/lieux/creation`
@@ -37,6 +36,7 @@ const Venues = ({ venues, offererId, isVenueCreationAvailable }) => {
   )
 }
 Venues.propTypes = {
+  isVenueCreationAvailable: PropTypes.bool.isRequired,
   offererId: PropTypes.string.isRequired,
   venues: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 }

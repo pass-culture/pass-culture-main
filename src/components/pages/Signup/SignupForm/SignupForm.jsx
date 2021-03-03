@@ -25,8 +25,8 @@ const required = value => (value ? undefined : 'Required')
 class SignupForm extends PureComponent {
   constructor(props) {
     super(props)
-    const { history, currentUser } = props
-    redirectLoggedUser(history, currentUser, props.isNewHomepageActive)
+    const { history, currentUser, isNewHomepageActive } = props
+    redirectLoggedUser(history, currentUser, isNewHomepageActive)
   }
 
   componentDidMount() {
@@ -256,10 +256,17 @@ class SignupForm extends PureComponent {
   }
 }
 
+SignupForm.defaultProps = {
+  currentUser: null,
+}
+
 SignupForm.propTypes = {
   closeNotification: PropTypes.func.isRequired,
   createNewProUser: PropTypes.func.isRequired,
+  currentUser: PropTypes.shape(),
   errors: PropTypes.shape().isRequired,
+  history: PropTypes.func.isRequired,
+  isNewHomepageActive: PropTypes.bool.isRequired,
   redirectToConfirmation: PropTypes.func.isRequired,
   showNotification: PropTypes.func.isRequired,
 }

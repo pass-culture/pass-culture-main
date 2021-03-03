@@ -47,6 +47,7 @@ BookingOfferCell.defaultValues = {
 
 BookingOfferCell.propTypes = {
   offer: PropTypes.shape({
+    event_beginning_datetime: PropTypes.string.isRequired,
     offer_isbn: PropTypes.string,
     offer_identifier: PropTypes.string,
     offer_name: PropTypes.string.isRequired,

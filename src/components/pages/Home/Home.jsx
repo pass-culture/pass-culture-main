@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import React from 'react'
 import { Redirect } from 'react-router'
 
@@ -27,5 +28,9 @@ const Home = ({ isNewHomepageActive }) =>
       />
     </div>
   )
+
+Home.propTypes = {
+  isNewHomepageActive: PropTypes.bool.isRequired,
+}
 
 export default Home

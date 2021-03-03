@@ -231,6 +231,7 @@ VenueEdition.propTypes = {
   handleSubmitRequestFail: PropTypes.func.isRequired,
   handleSubmitRequestSuccess: PropTypes.func.isRequired,
   history: PropTypes.shape().isRequired,
+  match: PropTypes.shape().isRequired,
   offerer: PropTypes.shape().isRequired,
   query: PropTypes.shape().isRequired,
   trackModifyVenue: PropTypes.func.isRequired,

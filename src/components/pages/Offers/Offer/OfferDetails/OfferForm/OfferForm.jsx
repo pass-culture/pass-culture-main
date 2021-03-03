@@ -828,6 +828,7 @@ OfferForm.defaultProps = {
 }
 
 OfferForm.propTypes = {
+  areAllVenuesVirtual: PropTypes.bool.isRequired,
   backUrl: PropTypes.string,
   formValues: PropTypes.shape().isRequired,
   initialValues: PropTypes.shape(),
@@ -844,6 +845,7 @@ OfferForm.propTypes = {
   readOnlyFields: PropTypes.arrayOf(PropTypes.string),
   setFormValues: PropTypes.func.isRequired,
   setPreviewOfferType: PropTypes.func.isRequired,
+  setSelectedOfferer: PropTypes.func.isRequired,
   setShowThumbnailForm: PropTypes.func.isRequired,
   showErrorNotification: PropTypes.func.isRequired,
   submitErrors: PropTypes.shape().isRequired,

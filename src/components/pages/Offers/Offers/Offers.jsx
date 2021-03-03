@@ -680,7 +680,9 @@ Offers.defaultProps = {
 Offers.propTypes = {
   closeNotification: PropTypes.func.isRequired,
   currentUser: PropTypes.shape().isRequired,
+  getOfferer: PropTypes.func.isRequired,
   loadOffers: PropTypes.func.isRequired,
+  notification: PropTypes.shape().isRequired,
   offers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   query: PropTypes.shape({
     change: PropTypes.func.isRequired,

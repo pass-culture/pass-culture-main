@@ -152,9 +152,15 @@ class Signin extends PureComponent {
   }
 }
 
+Signin.defaultProps = {
+  currentUser: null,
+}
+
 Signin.propTypes = {
+  currentUser: PropTypes.shape(),
   history: PropTypes.shape().isRequired,
   isAccountCreationAvailable: PropTypes.bool.isRequired,
+  isNewHomepageActive: PropTypes.bool.isRequired,
   submit: PropTypes.func.isRequired,
 }
 

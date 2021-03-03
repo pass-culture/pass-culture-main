@@ -146,6 +146,7 @@ class Filters extends Component {
 
 Filters.propTypes = {
   isLoading: PropTypes.bool.isRequired,
+  oldestBookingDate: PropTypes.string.isRequired,
   updateGlobalFilters: PropTypes.func.isRequired,
 }
 

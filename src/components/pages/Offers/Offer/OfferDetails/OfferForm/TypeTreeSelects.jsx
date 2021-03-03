@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import React, { Fragment, useCallback, useEffect, useState } from 'react'
 
 import Select, { buildSelectOptions } from 'components/layout/inputs/Select'
@@ -155,6 +156,24 @@ const TypeTreeSelects = props => {
       />
     </Fragment>
   )
+}
+
+TypeTreeSelects.defaultProps = {
+  areSubtypesVisible: true,
+}
+
+TypeTreeSelects.propTypes = {
+  areSubtypesVisible: PropTypes.bool,
+  isReadOnly: PropTypes.bool.isRequired,
+  typeValues: PropTypes.shape({
+    musicSubType: PropTypes.string,
+    musicType: PropTypes.string,
+    showSubType: PropTypes.string,
+    showType: PropTypes.string,
+    type: PropTypes.string,
+  }).isRequired,
+  types: PropTypes.arrayOf().isRequired,
+  updateTypeValues: PropTypes.func.isRequired,
 }
 
 export default TypeTreeSelects

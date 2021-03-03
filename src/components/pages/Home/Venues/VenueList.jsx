@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import React from 'react'
 
 import Venue from 'components/pages/Home/Venues/Venue'
@@ -25,3 +26,14 @@ export const VenueList = ({ physicalVenues, selectedOffererId, virtualVenue }) =
       ))}
   </div>
 )
+
+VenueList.defaultProps = {
+  physicalVenues: null,
+  virtualVenue: null,
+}
+
+VenueList.propTypes = {
+  physicalVenues: PropTypes.arrayOf(),
+  selectedOffererId: PropTypes.string.isRequired,
+  virtualVenue: PropTypes.shape(),
+}

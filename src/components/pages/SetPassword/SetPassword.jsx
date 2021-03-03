@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import React, { useCallback, Fragment, useState } from 'react'
 import { Field, Form } from 'react-final-form'
 
@@ -149,4 +150,15 @@ export const SetPassword = props => {
       </div>
     </Fragment>
   )
+}
+
+SetPassword.defaultProps = {
+  currentUser: null,
+}
+
+SetPassword.propTypes = {
+  currentUser: PropTypes.shape(),
+  history: PropTypes.shape().isRequired,
+  match: PropTypes.shape().isRequired,
+  showNotification: PropTypes.func.isRequired,
 }

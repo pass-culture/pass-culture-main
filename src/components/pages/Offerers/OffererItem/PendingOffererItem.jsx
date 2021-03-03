@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 import React from 'react'
 
 import { formatSirenOrSiret } from '../../../../utils/siren'
@@ -20,5 +21,9 @@ const PendingOffererItem = ({ offerer }) => (
     </div>
   </li>
 )
+
+PendingOffererItem.propTypes = {
+  offerer: PropTypes.shape().isRequired,
+}
 
 export default PendingOffererItem

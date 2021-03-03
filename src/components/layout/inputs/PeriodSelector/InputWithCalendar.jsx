@@ -24,6 +24,7 @@ InputWithCalendar.defaultProps = {
 
 InputWithCalendar.propTypes = {
   ariaLabel: PropTypes.string,
+  customClass: PropTypes.string.isRequired,
   props: PropTypes.shape({
     customClass: PropTypes.string,
   }),

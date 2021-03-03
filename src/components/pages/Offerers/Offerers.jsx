@@ -254,12 +254,17 @@ class Offerers extends PureComponent {
   }
 }
 
+Offerers.defaultProps = {
+  notification: null,
+}
+
 Offerers.propTypes = {
   closeNotification: PropTypes.func.isRequired,
   currentUser: PropTypes.shape().isRequired,
   isOffererCreationAvailable: PropTypes.bool.isRequired,
   loadOfferers: PropTypes.func.isRequired,
   location: PropTypes.shape().isRequired,
+  notification: PropTypes.shape(),
   offerers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   query: PropTypes.shape().isRequired,
   resetLoadedOfferers: PropTypes.func.isRequired,
