@@ -60,7 +60,7 @@ class VenueView(BaseAdminView):
         formatters.update(offres=_offers_links)
         return formatters
 
-    def update_model(self, new_venue_form: Form, venue: Venue) -> None:
+    def update_model(self, new_venue_form: Form, venue: Venue) -> bool:
         has_siret_changed = new_venue_form.siret.data != venue.siret
         old_siret = venue.siret
 
@@ -68,3 +68,5 @@ class VenueView(BaseAdminView):
 
         if has_siret_changed:
             update_offer_and_stock_id_at_providers(venue, old_siret)
+
+        return True

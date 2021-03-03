@@ -34,7 +34,7 @@ class VenueViewTest:
         client = TestClient(app.test_client()).with_auth("user@example.com")
         response = client.post(f"/pc/back-office/venue/edit/?id={venue.id}", form=data)
 
-        assert response.status_code == 200
+        assert response.status_code == 302
 
         venue_edited = Venue.query.get(venue.id)
         stock_edited = Stock.query.get(stock.id)
@@ -66,7 +66,7 @@ class VenueViewTest:
         client = TestClient(app.test_client()).with_auth("user@example.com")
         response = client.post(f"/pc/back-office/venue/edit/?id={venue.id}", form=data)
 
-        assert response.status_code == 200
+        assert response.status_code == 302
 
         venue_edited = Venue.query.get(venue.id)
         stock = Stock.query.get(stock.id)
