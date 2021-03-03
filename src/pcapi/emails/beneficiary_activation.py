@@ -32,6 +32,7 @@ def get_activation_email_data_for_native(user: users_models.User, token: users_m
     return {
         "Mj-TemplateID": 2015423,
         "Mj-TemplateLanguage": True,
+        "Mj-trackclick": 1,
         "Vars": {
             "nativeAppLink": email_confirmation_link,
             "isEligible": int(user.is_eligible),
@@ -57,6 +58,7 @@ def get_newly_eligible_user_email_data(user: users_models.User, token: users_mod
     return {
         "Mj-TemplateID": 2030056,
         "Mj-TemplateLanguage": True,
+        "Mj-trackclick": 1,
         "Vars": {
             "nativeAppLink": email_link,
         },

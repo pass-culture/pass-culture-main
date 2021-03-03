@@ -32,6 +32,6 @@ def retrieve_data_for_reset_password_native_app_email(
     return {
         "MJ-TemplateID": 1838526,
         "MJ-TemplateLanguage": True,
-        "Mj-trackopen": 1,
+        "Mj-trackclick": 1,
         "Vars": {"native_app_link": reset_password_link},
     }

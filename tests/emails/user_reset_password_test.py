@@ -44,7 +44,7 @@ class NativeAppUserResetPasswordEmailDataTest:
         assert reset_password_email_data == {
             "MJ-TemplateID": 1838526,
             "MJ-TemplateLanguage": True,
-            "Mj-trackopen": 1,
+            "Mj-trackclick": 1,
             "Vars": {
                 "native_app_link": (
                     "https://app.passculture-testing.beta.gouv.fr/mot-de-passe-perdu"
