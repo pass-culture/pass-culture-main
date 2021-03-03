@@ -4,9 +4,18 @@ from typing import Callable
 import requests
 from requests import Response
 
-# Keep this so that our monkey patch of Mailjet allows Mailjet code to
-# use `requests.exception` with this module.
-import requests.exceptions as exceptions  # pylint: disable=unused-import
+
+# fmt: off
+# isort: off
+# pylint: disable=unused-import
+# Keep these imports so that our monkey patch of mailjet_rest allows
+# its code to use `requests.exception` and get `RequestException`
+# from this module.
+from requests import RequestException
+import requests.exceptions as exceptions
+# pylint: enable=unused-import
+# isort: on
+# fmt: on
 
 from pcapi.utils.logger import json_logger
 
