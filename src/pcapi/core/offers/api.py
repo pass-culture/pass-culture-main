@@ -25,7 +25,6 @@ from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
-from pcapi.repository import mediation_queries
 from pcapi.repository import offer_queries
 from pcapi.repository import repository
 from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
@@ -387,8 +386,6 @@ def create_mediation(
     # checks image type, min dimensions
     validation.check_image(image_as_bytes)
 
-    existing_mediations = mediation_queries.get_mediations_for_offers([offer.id])
-
     mediation = Mediation(
         author=user,
         offer=offer,
@@ -410,7 +407,11 @@ def create_mediation(
         mediation.thumbCount = 1
         repository.save(mediation)
         # cleanup former thumbnails and mediations
-        for previous_mediation in existing_mediations:
+
+        previous_mediations = (
+            Mediation.query.filter(Mediation.offerId == offer.id).filter(Mediation.id != mediation.id).all()
+        )
+        for previous_mediation in previous_mediations:
             try:
                 for thumb_index in range(0, previous_mediation.thumbCount):
                     remove_thumb(previous_mediation, image_index=thumb_index)
