@@ -42,7 +42,7 @@ slack-fail-post-step: &slack-fail-post-step
 slack-send-deployment-notification: &slack-send-deployment-notification
   - slack/notify:
       event: pass
-      channel: ops
+      channel: alertes-deploiement
       custom: |
         {
           "blocks": [
@@ -71,7 +71,7 @@ slack-send-deployment-notification: &slack-send-deployment-notification
         }
   - slack/notify:
       event: fail
-      channel: ops
+      channel: alertes-deploiement
       custom: |
         {
           "blocks": [
