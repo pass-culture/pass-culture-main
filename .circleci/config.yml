@@ -409,6 +409,13 @@ jobs:
           helm_release_name: ${CIRCLE_BRANCH}
           kubernetes_namespace: ${CIRCLE_BRANCH}
           helm_values_file: values.${CIRCLE_BRANCH}.yaml
+      - run:
+          name: Send failure notification
+          command: |
+            VERSION_TO_DEPLOY=$(git describe --contains)
+            BOT_MESSAGE="'*"$CIRCLE_BRANCH"* : *API* deployment *"$VERSION_TO_DEPLOY"* seems to have *FAILED* :collision:'"
+            curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
+          when: on_fail
 
   deploy-pro:
     machine:
