@@ -8,6 +8,14 @@ import { getStubStore } from '../../../../../../utils/stubStore'
 import { Provider } from 'react-redux'
 import RecommendationPane from '../../domain/ValueObjects/RecommendationPane'
 
+let mockInView = jest.fn()
+jest.mock('react-intersection-observer', () => ({
+  useInView: () => ({
+    ref: jest.fn(),
+    inView: mockInView,
+  }),
+}))
+
 describe('src | components | RecommendationModule', () => {
   let display
   let offerOne
@@ -60,6 +68,7 @@ describe('src | components | RecommendationModule', () => {
       row: 1,
       trackAllTilesSeen: jest.fn(),
       trackConsultOffer: jest.fn(),
+      trackRecommendationModuleSeen: jest.fn(),
     }
     mockStore = getStubStore({
       data: (state = {}) => state,
@@ -212,6 +221,46 @@ describe('src | components | RecommendationModule', () => {
         // Then
         expect(props.trackAllTilesSeen).toHaveBeenCalledTimes(1)
       })
+    })
+  })
+
+  describe('recommendation module tracking', () => {
+    it('should not log RecommendationModuleSeen if it does not appear in the viewport', async () => {
+      // Given
+      mockInView = false
+      props.hits = [offerOne]
+      props.module = new RecommendationPane({ display })
+
+      // When
+      await mount(
+        <MemoryRouter>
+          <RecommendationModule {...props} />
+        </MemoryRouter>
+      )
+
+      // Then
+      expect(props.trackRecommendationModuleSeen).not.toHaveBeenCalled()
+    })
+
+    it('should log RecommendationModuleSeen if it does appear in the viewport', async () => {
+      // Given
+      mockInView = true
+      props.hits = [offerOne]
+      props.module = new RecommendationPane({ display })
+
+      // When
+      await mount(
+        <MemoryRouter>
+          <RecommendationModule {...props} />
+        </MemoryRouter>
+      )
+
+      // Then
+      expect(props.trackRecommendationModuleSeen).toHaveBeenCalledTimes(1)
+      expect(props.trackRecommendationModuleSeen).toHaveBeenCalledWith(
+        'Tes offres recommmandées!',
+        1
+      )
     })
   })
 })

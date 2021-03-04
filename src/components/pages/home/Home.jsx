@@ -17,6 +17,7 @@ const Home = ({
   trackAllModulesSeen,
   trackAllTilesSeen,
   trackConsultOffer,
+  trackRecommendationModuleSeen,
   trackSeeMoreHasBeenClicked,
   updateCurrentUser,
   user,
@@ -60,6 +61,7 @@ const Home = ({
       trackAllModulesSeen={trackAllModulesSeen}
       trackAllTilesSeen={trackAllTilesSeen}
       trackConsultOffer={trackConsultOffer}
+      trackRecommendationModuleSeen={trackRecommendationModuleSeen}
       trackSeeMoreHasBeenClicked={trackSeeMoreHasBeenClicked}
       updateCurrentUser={updateCurrentUser}
       user={user}
@@ -77,6 +79,7 @@ Home.propTypes = {
   trackAllModulesSeen: PropTypes.func.isRequired,
   trackAllTilesSeen: PropTypes.func.isRequired,
   trackConsultOffer: PropTypes.func.isRequired,
+  trackRecommendationModuleSeen: PropTypes.func.isRequired,
   trackSeeMoreHasBeenClicked: PropTypes.func.isRequired,
   updateCurrentUser: PropTypes.func.isRequired,
   user: PropTypes.shape(User).isRequired,

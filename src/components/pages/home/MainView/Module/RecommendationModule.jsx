@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types'
-import React, { useCallback, useState, useRef } from 'react'
+import React, { useCallback, useEffect, useState, useRef } from 'react'
+import { useInView } from 'react-intersection-observer'
 import SwipeableViews from 'react-swipeable-views'
 
 import { PANE_LAYOUT } from '../domain/layout'
@@ -12,15 +13,28 @@ const swipeRatio = 0.2
 
 const RecommendationModule = props => {
   const { historyPush, row, module, hits } = props
-  const { trackAllTilesSeen, trackConsultOffer: consultOffer } = props
+  const {
+    trackAllTilesSeen,
+    trackConsultOffer: consultOffer,
+    trackRecommendationModuleSeen,
+  } = props
   const { display } = module
   const { layout = PANE_LAYOUT['ONE-ITEM-MEDIUM'], title } = display || {}
 
   const [isSwitching, setIsSwitching] = useState(false)
   const onSwitching = useCallback(() => setIsSwitching(true), [])
   const onTransitionEnd = useCallback(() => setIsSwitching(false), [])
+  const { ref, inView } = useInView()
 
   const haveAlreadySeenAllTiles = useRef(false)
+  const haveSeenRecommendationModule = useRef(false)
+
+  useEffect(() => {
+    if (inView && haveSeenRecommendationModule && haveSeenRecommendationModule.current === false) {
+      trackRecommendationModuleSeen(title, hits.length)
+      haveSeenRecommendationModule.current = true
+    }
+  }, [inView, trackRecommendationModuleSeen, title, hits.length])
 
   const onChangeIndex = useCallback(
     numberOfTiles => index => {
@@ -45,7 +59,10 @@ const RecommendationModule = props => {
 
   const LayoutComponent = isOneItemLayout ? OneItem : TwoItems
   return (
-    <section className="module-wrapper">
+    <section
+      className="module-wrapper"
+      ref={ref}
+    >
       <h1>
         {title}
       </h1>
@@ -88,6 +105,7 @@ RecommendationModule.propTypes = {
   row: PropTypes.number.isRequired,
   trackAllTilesSeen: PropTypes.func.isRequired,
   trackConsultOffer: PropTypes.func.isRequired,
+  trackRecommendationModuleSeen: PropTypes.func.isRequired,
 }
 
 export default RecommendationModule

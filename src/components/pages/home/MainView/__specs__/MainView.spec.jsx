@@ -37,6 +37,13 @@ jest.mock('../../../../../notifications/setUpBatchSDK', () => ({
   setCustomUserId: jest.fn(),
 }))
 
+jest.mock('react-intersection-observer', () => ({
+  useInView: () => ({
+    ref: jest.fn(),
+    inView: true,
+  }),
+}))
+
 const moduleId = 'moduleId'
 
 describe('src | components | MainView', () => {
@@ -64,6 +71,7 @@ describe('src | components | MainView', () => {
       trackAllTilesSeen: jest.fn(),
       trackConsultOffer: jest.fn(),
       trackSeeMoreHasBeenClicked: jest.fn(),
+      trackRecommendationModuleSeen: jest.fn(),
       updateCurrentUser: jest.fn(),
       user: new User({
         deposit_version: 1,

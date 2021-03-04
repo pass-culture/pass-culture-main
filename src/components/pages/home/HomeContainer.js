@@ -24,10 +24,10 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => ({
       name: `Number of modules: ${numberOfModules}`,
     })
   },
-  trackAllTilesSeen: (moduleName, numberOfModules) => {
+  trackAllTilesSeen: (moduleName, numberOfTiles) => {
     ownProps.tracking.trackEvent({
       action: 'AllTilesSeen',
-      name: `Module name: ${moduleName} - Number of tiles: ${numberOfModules}`,
+      name: `Module name: ${moduleName} - Number of tiles: ${numberOfTiles}`,
     })
   },
   trackConsultOffer: (moduleName, offerId) => {
@@ -40,6 +40,12 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => ({
     ownProps.tracking.trackEvent({
       action: 'seeMoreHasBeenClicked',
       name: moduleName,
+    })
+  },
+  trackRecommendationModuleSeen: (moduleName, numberOfTiles) => {
+    ownProps.tracking.trackEvent({
+      action: 'RecommendationModuleSeen',
+      name: `Module name: ${moduleName} - Number of tiles: ${numberOfTiles}`,
     })
   },
 })

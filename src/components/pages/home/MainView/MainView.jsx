@@ -33,6 +33,7 @@ const MainView = props => {
     trackAllModulesSeen,
     trackAllTilesSeen,
     trackConsultOffer,
+    trackRecommendationModuleSeen,
     trackSeeMoreHasBeenClicked,
   } = props
   const haveSeenAllModules = useRef(false)
@@ -93,6 +94,7 @@ const MainView = props => {
           row={row}
           trackAllTilesSeen={trackAllTilesSeen}
           trackConsultOffer={trackConsultOffer}
+          trackRecommendationModuleSeen={trackRecommendationModuleSeen}
         />
       )
     }
@@ -177,6 +179,7 @@ MainView.propTypes = {
   trackAllModulesSeen: PropTypes.func.isRequired,
   trackAllTilesSeen: PropTypes.func.isRequired,
   trackConsultOffer: PropTypes.func.isRequired,
+  trackRecommendationModuleSeen: PropTypes.func.isRequired,
   trackSeeMoreHasBeenClicked: PropTypes.func.isRequired,
   updateCurrentUser: PropTypes.func.isRequired,
   user: PropTypes.shape(User).isRequired,
