@@ -71,6 +71,11 @@ class Patch:
                 "address": "1 rue des machines",
                 "city": "Paris",
                 "civility": None,
+                "domainsCredit": {
+                    "all": {"initial": 500.0, "remaining": 500.0},
+                    "digital": {"initial": 200.0, "remaining": 200.0},
+                    "physical": {"initial": 200.0, "remaining": 200.0},
+                },
                 "dateCreated": format_into_utc_date(user.dateCreated),
                 "dateOfBirth": "2000-01-01T00:00:00Z",
                 "departementCode": "97",

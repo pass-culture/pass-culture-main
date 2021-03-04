@@ -2,7 +2,9 @@ from dataclasses import asdict
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
+from decimal import Decimal
 import secrets
+from typing import List
 from typing import Optional
 
 from jwt import DecodeError
@@ -14,6 +16,8 @@ from pcapi import settings
 from pcapi.core import mails
 from pcapi.core.bookings.conf import LIMIT_CONFIGURATIONS
 from pcapi.core.payments import api as payment_api
+from pcapi.core.users.models import Credit
+from pcapi.core.users.models import DomainsCredit
 from pcapi.core.users.models import Expense
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.core.users.models import NotificationSubscriptions
@@ -270,36 +274,76 @@ def _build_link_for_email_change(current_email: str, new_email: str) -> str:
     )
 
 
-def user_expenses(user: User):
+def get_domains_credit(user: User) -> Optional[DomainsCredit]:
     version = user.deposit_version
-
-    if not version:
-        return []
+    if not version or version not in LIMIT_CONFIGURATIONS:
+        return None
 
     bookings = user.get_not_cancelled_bookings()
     config = LIMIT_CONFIGURATIONS[version]
 
-    limits = [
-        Expense(
-            domain=ExpenseDomain.ALL,
-            current=sum(booking.total_amount for booking in bookings),
-            limit=config.TOTAL_CAP,
+    domains_credit = DomainsCredit(
+        all=Credit(
+            initial=config.TOTAL_CAP,
+            remaining=max(config.TOTAL_CAP - sum(booking.total_amount for booking in bookings), Decimal("0"))
+            if user.has_active_deposit
+            else Decimal("0"),
         )
-    ]
+    )
+
     if config.DIGITAL_CAP:
         digital_bookings_total = sum(
             [booking.total_amount for booking in bookings if config.digital_cap_applies(booking.stock.offer)]
         )
-        limits.append(Expense(domain=ExpenseDomain.DIGITAL, current=digital_bookings_total, limit=config.DIGITAL_CAP))
+        domains_credit.digital = Credit(
+            initial=config.DIGITAL_CAP,
+            remaining=(
+                min(max(config.DIGITAL_CAP - digital_bookings_total, Decimal("0")), domains_credit.all.remaining)
+            ),
+        )
+
     if config.PHYSICAL_CAP:
         physical_bookings_total = sum(
             [booking.total_amount for booking in bookings if config.physical_cap_applies(booking.stock.offer)]
         )
+        domains_credit.physical = Credit(
+            initial=config.PHYSICAL_CAP,
+            remaining=(
+                min(max(config.PHYSICAL_CAP - physical_bookings_total, Decimal("0")), domains_credit.all.remaining)
+            ),
+        )
+
+    return domains_credit
+
+
+def user_expenses(user: User) -> List[Expense]:
+    domains_credit = get_domains_credit(user)
+    if not domains_credit:
+        return []
+
+    limits = [
+        Expense(
+            domain=ExpenseDomain.ALL,
+            current=domains_credit.all.initial - domains_credit.all.remaining,
+            limit=domains_credit.all.initial,
+        )
+    ]
+
+    if domains_credit.digital:
+        limits.append(
+            Expense(
+                domain=ExpenseDomain.DIGITAL,
+                current=domains_credit.digital.initial - domains_credit.digital.remaining,
+                limit=domains_credit.digital.initial,
+            )
+        )
+
+    if domains_credit.physical:
         limits.append(
             Expense(
                 domain=ExpenseDomain.PHYSICAL,
-                current=physical_bookings_total,
-                limit=config.PHYSICAL_CAP,
+                current=domains_credit.physical.initial - domains_credit.physical.remaining,
+                limit=domains_credit.physical.initial,
             )
         )
 

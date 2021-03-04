@@ -5,7 +5,9 @@ from typing import Optional
 from pydantic import BaseModel
 from pydantic.class_validators import validator
 
+from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.models import ExpenseDomain
+from pcapi.core.users.models import User
 from pcapi.models.api_errors import ApiErrors
 from pcapi.serialization.utils import humanize_field
 from pcapi.utils.date import format_into_utc_date
@@ -51,6 +53,23 @@ class Expense(BaseModel):
         orm_mode = True
 
 
+class Credit(BaseModel):
+    initial: float
+    remaining: float
+
+    class Config:
+        orm_mode = True
+
+
+class DomainsCredit(BaseModel):
+    all: Credit
+    digital: Optional[Credit]
+    physical: Optional[Credit]
+
+    class Config:
+        orm_mode = True
+
+
 class BeneficiaryAccountResponse(BaseModel):
     pk: int  # id not humanized
     activity: Optional[str]
@@ -61,6 +80,7 @@ class BeneficiaryAccountResponse(BaseModel):
     dateOfBirth: Optional[datetime]
     departementCode: str
     deposit_version: Optional[int]
+    domainsCredit: Optional[DomainsCredit]
     email: str
     expenses: List[Expense]
     firstName: Optional[str]
@@ -85,8 +105,9 @@ class BeneficiaryAccountResponse(BaseModel):
     _humanize_id = humanize_field("id")
 
     @classmethod
-    def from_orm(cls, user):  # type: ignore
+    def from_orm(cls, user: User):  # type: ignore
         user.pk = user.id
+        user.domainsCredit = get_domains_credit(user)
         return super().from_orm(user)
 
     class Config:

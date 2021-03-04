@@ -560,9 +560,9 @@ class ExpensesTest:
 
                 # Then
                 assert expenses == [
-                    Expense(domain=ExpenseDomain.ALL, current=Decimal(210.0), limit=Decimal(500)),
+                    Expense(domain=ExpenseDomain.ALL, current=Decimal(210), limit=Decimal(500)),
                     Expense(domain=ExpenseDomain.DIGITAL, current=Decimal(0.0), limit=Decimal(200)),
-                    Expense(domain=ExpenseDomain.PHYSICAL, current=Decimal(210.0), limit=Decimal(200)),
+                    Expense(domain=ExpenseDomain.PHYSICAL, current=Decimal(200.00), limit=Decimal(200)),
                 ]
 
             def test_returns_max_500_and_actual_0(self):

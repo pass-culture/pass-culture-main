@@ -90,6 +90,11 @@ class AccountTest:
 
         EXPECTED_DATA = {
             "id": user.id,
+            "domainsCredit": {
+                "all": {"initial": 50000, "remaining": 37655},
+                "digital": {"initial": 20000, "remaining": 20000},
+                "physical": {"initial": 20000, "remaining": 7655},
+            },
             "dateOfBirth": "2000-01-01T00:00:00",
             "depositVersion": 1,
             "depositExpirationDate": "2040-01-01T00:00:00",
@@ -108,6 +113,18 @@ class AccountTest:
 
         assert response.status_code == 200
         assert response.json == EXPECTED_DATA
+
+    def test_get_user_not_beneficiary(self, app):
+        users_factories.UserFactory(email=self.identifier, deposit=None, isBeneficiary=False)
+
+        access_token = create_access_token(identity=self.identifier)
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+
+        response = test_client.get("/native/v1/me")
+
+        assert response.status_code == 200
+        assert not response.json["domainsCredit"]
 
     def test_get_user_profile_empty_first_name(self, app):
         users_factories.UserFactory(

@@ -32,6 +32,7 @@ class Get:
             assert response.status_code == 200
             json = response.json
             assert json["email"] == "toto@example.com"
+            assert not json["domainsCredit"]
             assert json["expenses"] == []
             assert "password" not in json
             assert "clearTextPassword" not in json
@@ -79,6 +80,11 @@ class Get:
 
             # Then
             assert response.json["wallet_balance"] == 495.0
+            assert response.json["domainsCredit"] == {
+                "all": {"initial": 500.0, "remaining": 495.0},
+                "digital": {"initial": 200.0, "remaining": 200.0},
+                "physical": {"initial": 200.0, "remaining": 195.0},
+            }
             assert response.json["expenses"] == [
                 {"domain": "all", "current": 5.0, "limit": 500.0},
                 {"domain": "digital", "current": 0.0, "limit": 200.0},
@@ -95,6 +101,11 @@ class Get:
 
             # Then
             assert response.json["wallet_balance"] == 500.0
+            assert response.json["domainsCredit"] == {
+                "all": {"initial": 500.0, "remaining": 500.0},
+                "digital": {"initial": 200.0, "remaining": 200.0},
+                "physical": {"initial": 200.0, "remaining": 200.0},
+            }
             assert response.json["expenses"] == [
                 {"domain": "all", "current": 0.0, "limit": 500.0},
                 {"domain": "digital", "current": 0.0, "limit": 200.0},

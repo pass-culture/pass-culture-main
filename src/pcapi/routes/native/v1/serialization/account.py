@@ -9,6 +9,7 @@ from pydantic.class_validators import validator
 from pydantic.fields import Field
 
 from pcapi.core.users import constants as users_constants
+from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.core.users.models import User
 from pcapi.core.users.models import VOID_FIRST_NAME
@@ -60,8 +61,29 @@ class NotificationSubscriptions(BaseModel):
         orm_mode = True
 
 
+class Credit(BaseModel):
+    initial: int
+    remaining: int
+
+    _convert_initial = validator("initial", pre=True, allow_reuse=True)(convert_to_cent)
+    _convert_remaining = validator("remaining", pre=True, allow_reuse=True)(convert_to_cent)
+
+    class Config:
+        orm_mode = True
+
+
+class DomainsCredit(BaseModel):
+    all: Credit
+    digital: Optional[Credit]
+    physical: Optional[Credit]
+
+    class Config:
+        orm_mode = True
+
+
 class UserProfileResponse(BaseModel):
     id: int
+    domains_credit: Optional[DomainsCredit]
     dateOfBirth: Optional[datetime.datetime]
     deposit_expiration_date: Optional[datetime.datetime]
     deposit_version: Optional[int]
@@ -102,6 +124,7 @@ class UserProfileResponse(BaseModel):
     def from_orm(cls, user: User):  # type: ignore
         user.show_eligible_card = cls._show_eligible_card(user)
         user.subscriptions = user.get_notification_subscriptions()
+        user.domains_credit = get_domains_credit(user)
         return super().from_orm(user)
 
 

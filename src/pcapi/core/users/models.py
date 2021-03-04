@@ -4,6 +4,7 @@ from datetime import datetime
 from decimal import Decimal
 import enum
 from hashlib import md5
+from typing import List
 from typing import Optional
 
 import bcrypt
@@ -225,7 +226,7 @@ class User(PcObject, Model, NeedsValidationMixin, VersionedMixin):
         self.resetPasswordToken = None
         self.resetPasswordTokenValidityLimit = None
 
-    def get_not_cancelled_bookings(self) -> Booking:
+    def get_not_cancelled_bookings(self) -> List[Booking]:
         return (
             db.session.query(Booking)
             .with_parent(self)
@@ -257,6 +258,10 @@ class User(PcObject, Model, NeedsValidationMixin, VersionedMixin):
     @property
     def deposit_version(self) -> Optional[int]:
         return self.deposit.version if self.deposit else None
+
+    @property
+    def has_active_deposit(self):
+        return self.deposit_expiration_date and self.deposit_expiration_date > datetime.now()
 
     @property
     def real_wallet_balance(self):
@@ -311,3 +316,16 @@ class Expense:
     domain: ExpenseDomain
     current: Decimal
     limit: Decimal
+
+
+@dataclass
+class Credit:
+    initial: Decimal
+    remaining: Decimal
+
+
+@dataclass
+class DomainsCredit:
+    all: Credit
+    digital: Optional[Credit] = None
+    physical: Optional[Credit] = None
