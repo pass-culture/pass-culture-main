@@ -223,6 +223,15 @@ class OfferImage:
     credit: Optional[str] = None
 
 
+class OfferStatus(enum.Enum):
+    ACTIVE = "ACTIVE"
+    APPROVED = "APPROVED"
+    AWAITING = "AWAITING"
+    EXPIRED = "EXPIRED"
+    REJECTED = "REJECTED"
+    SOLD_OUT = "SOLD_OUT"
+
+
 class OfferValidationStatus(enum.Enum):
     APPROVED = "APPROVED"
     AWAITING = "AWAITING"
@@ -412,3 +421,25 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin, 
     def get_label_from_type_string(self):
         matching_type_thing = next(filter(lambda thing_type: str(thing_type) == self.type, ThingType))
         return matching_type_thing.value["proLabel"]
+
+    @property
+    def status(self) -> OfferStatus:
+        status = OfferStatus.APPROVED
+
+        if self.validation == OfferValidationStatus.REJECTED:
+            status = OfferStatus.REJECTED
+
+        elif self.validation == OfferValidationStatus.AWAITING:
+            status = OfferStatus.AWAITING
+
+        elif self.validation == OfferValidationStatus.APPROVED:
+            if self.hasBookingLimitDatetimesPassed:
+                status = OfferStatus.EXPIRED
+
+            elif not self.activeStocks:
+                status = OfferStatus.SOLD_OUT
+
+            elif self.isActive:
+                status = OfferStatus.ACTIVE
+
+        return status

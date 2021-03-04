@@ -5,6 +5,7 @@ import pytest
 import pcapi.core.offerers.factories as providers_factories
 from pcapi.core.offers import factories
 from pcapi.core.offers import models
+from pcapi.core.offers.models import OfferStatus
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.models.offer_type import ThingType
 from pcapi.utils.date import DateTimes
@@ -145,3 +146,44 @@ class OfferValidationTest:
     def test_factory_object_defaults_to_approved(self):
         offer = factories.OfferFactory()
         assert offer.validation == OfferValidationStatus.APPROVED
+
+
+@pytest.mark.usefixtures("db_session")
+class OfferStatusTest:
+    def test_rejected(self):
+        rejected_offer = factories.OfferFactory(validation=OfferValidationStatus.REJECTED)
+        assert rejected_offer.status == OfferStatus.REJECTED
+
+    def test_awaiting(self):
+        awaiting_offer = factories.OfferFactory(validation=OfferValidationStatus.AWAITING)
+        assert awaiting_offer.status == OfferStatus.AWAITING
+
+    def test_active(self):
+        active_offer = factories.OfferFactory(
+            validation=OfferValidationStatus.APPROVED, isActive=True, stocks=[factories.StockFactory()]
+        )
+        assert active_offer.status == OfferStatus.ACTIVE
+
+    def test_approved(self):
+        approved_offer = factories.OfferFactory(
+            validation=OfferValidationStatus.APPROVED, isActive=False, stocks=[factories.StockFactory()]
+        )
+        assert approved_offer.status == OfferStatus.APPROVED
+
+    def test_expired(self):
+        expiring_stock = factories.StockFactory(bookingLimitDatetime=datetime.datetime.utcnow())
+        expired_offer = factories.OfferFactory(
+            validation=OfferValidationStatus.APPROVED,
+            isActive=False,
+            stocks=[
+                expiring_stock,
+            ],
+        )
+        assert expired_offer.status == OfferStatus.EXPIRED
+
+    def test_sold_out(self):
+        soldout_offer = factories.OfferFactory(
+            validation=OfferValidationStatus.APPROVED,
+            isActive=False,
+        )
+        assert soldout_offer.status == OfferStatus.SOLD_OUT
