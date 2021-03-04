@@ -10,6 +10,7 @@ from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.model_creators.specific_creators import create_stock_from_offer
+from pcapi.models import FavoriteSQLEntity
 from pcapi.repository import repository
 
 from tests.conftest import TestClient
@@ -99,3 +100,25 @@ class Get:
 
             # Then
             assert response.status_code == 401
+
+
+class Post:
+    class Returns204:
+        def when_user_creates_a_favorite(self, app):
+            # Given
+            user, test_client = utils.create_user_and_test_client(app)
+            offerer = create_offerer()
+            venue = create_venue(offerer, postal_code="29100", siret="12345678912341")
+            offer1 = create_offer_with_thing_product(venue=venue, thumb_count=0)
+            repository.save(offer1)
+            assert FavoriteSQLEntity.query.count() == 0
+
+            # When
+            response = test_client.post(FAVORITES_URL, json={"offerId": offer1.id})
+
+            # Then
+            assert response.status_code == 204, response.data
+            assert FavoriteSQLEntity.query.count() == 1
+            favorite = FavoriteSQLEntity.query.first()
+            assert favorite.dateCreated
+            assert favorite.userId == user.id

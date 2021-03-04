@@ -73,3 +73,7 @@ class PaginatedFavoritesResponse(BaseModel):
     page: int
     nbFavorites: int
     favorites: List[FavoriteResponse]
+
+
+class FavoriteRequest(BaseModel):
+    offerId: int
