@@ -7,7 +7,7 @@ export const getModulesToDisplay = (modules, algoliaMapping, recommendedHits) =>
     if (module instanceof BusinessPane) return true
     if (module instanceof ExclusivityPane) return true
     if (module instanceof RecommendationPane) {
-      return recommendedHits.length > module.display.minOffers
+      return recommendedHits.length >= module.display.minOffers
     }
 
     if (module.moduleId in algoliaMapping) {
