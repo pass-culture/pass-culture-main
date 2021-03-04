@@ -15,8 +15,8 @@ class OfferView(BaseAdminView):
     can_create = False
     can_edit = True
     can_delete = False
-    column_list = ["id", "name", "type", "criteria"]
-    column_sortable_list = ["name", "type", "criteria"]
+    column_list = ["id", "name", "type", "criteria", "validation"]
+    column_sortable_list = ["name", "type", "criteria", "validation"]
     column_labels = {
         "name": "Nom",
         "type": "Type",
@@ -25,7 +25,7 @@ class OfferView(BaseAdminView):
     }
     # Do not add searchable column on offer view for performance reasons
     # use the filters feature instead
-    column_filters = ["type", "criteria.name", "name"]
+    column_filters = ["type", "criteria.name", "name", "validation"]
     form_columns = ["criteria"]
     simple_list_pager = True
 
