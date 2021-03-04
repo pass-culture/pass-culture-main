@@ -46,6 +46,9 @@ services:
       - postgres
       - redis
       - postgres-test
+    stdin_open: true
+    tty: true
+
 
   redis:
     image: scalingo/redis
