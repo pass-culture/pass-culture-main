@@ -5,6 +5,7 @@ import pytest
 import pcapi.core.offerers.factories as providers_factories
 from pcapi.core.offers import factories
 from pcapi.core.offers import models
+from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.models.offer_type import ThingType
 from pcapi.utils.date import DateTimes
 
@@ -137,3 +138,10 @@ class OfferCategoryTest:
     def test_offer_category(self):
         offer = models.Offer(type=str(ThingType.JEUX_VIDEO))
         assert offer.offer_category == "JEUX_VIDEO"
+
+
+@pytest.mark.usefixtures("db_session")
+class OfferValidationTest:
+    def test_factory_object_defaults_to_approved(self):
+        offer = factories.OfferFactory()
+        assert offer.validation == OfferValidationStatus.APPROVED

@@ -132,6 +132,7 @@ class Get:
                         "thumbUrl": None,
                         "type": "ThingType.AUDIOVISUEL",
                         "url": "https://host/path/{token}?offerId={offerId}&email={email}",
+                        "validation": "APPROVED",
                         "venue": {
                             "address": "123 rue de Paris",
                             "bookingEmail": None,

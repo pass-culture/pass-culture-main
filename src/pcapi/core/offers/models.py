@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 from datetime import timedelta
+import enum
 from typing import List
 from typing import Optional
 
@@ -11,6 +12,7 @@ from sqlalchemy import CheckConstraint
 from sqlalchemy import Column
 from sqlalchemy import DDL
 from sqlalchemy import DateTime
+from sqlalchemy import Enum
 from sqlalchemy import ForeignKey
 from sqlalchemy import Index
 from sqlalchemy import Integer
@@ -221,6 +223,12 @@ class OfferImage:
     credit: Optional[str] = None
 
 
+class OfferValidationStatus(enum.Enum):
+    APPROVED = "APPROVED"
+    AWAITING = "AWAITING"
+    REJECTED = "REJECTED"
+
+
 class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin, VersionedMixin):
     __tablename__ = "offer"
 
@@ -273,6 +281,14 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin, 
     visualDisabilityCompliant = Column(Boolean, nullable=True)
 
     externalTicketOfficeUrl = Column(String, nullable=True)
+
+    validation = Column(
+        Enum(OfferValidationStatus),
+        nullable=False,
+        default=OfferValidationStatus.APPROVED,
+        # changing the server_default will cost an UPDATE migration on all existing null rows
+        server_default="APPROVED",
+    )
 
     @property
     def activeMediation(self) -> Optional[Mediation]:
