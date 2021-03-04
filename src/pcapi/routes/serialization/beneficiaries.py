@@ -63,7 +63,6 @@ class BeneficiaryAccountResponse(BaseModel):
     deposit_version: Optional[int]
     email: str
     expenses: List[Expense]
-    # @debt api-data "asaunier: Seuls quelques comptes n'ont pas cette information. Elle devrait être rendue obligatoire"
     firstName: Optional[str]
     hasAllowedRecommendations: bool
     hasPhysicalVenues: bool
@@ -72,7 +71,6 @@ class BeneficiaryAccountResponse(BaseModel):
     isAdmin: bool
     isBeneficiary: bool
     isEmailValidated: bool
-    # @debt api-data "asaunier: Seuls quelques comptes n'ont pas cette information. Elle devrait être rendue obligatoire"
     lastName: Optional[str]
     needsToFillCulturalSurvey: bool
     needsToSeeTutorials: bool
