@@ -27,6 +27,7 @@ class OfferView(BaseAdminView):
     # use the filters feature instead
     column_filters = ["type", "criteria.name", "name"]
     form_columns = ["criteria"]
+    simple_list_pager = True
 
     def on_model_change(self, form: Form, offer: Offer, is_created: bool = False) -> None:
         redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
