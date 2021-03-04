@@ -14,6 +14,8 @@ import ExclusivityModule from '../ExclusivityModule/ExclusivityModule'
 import MainView from '../MainView'
 import Module from '../Module/Module'
 import { setCustomUserId } from '../../../../../notifications/setUpBatchSDK'
+import RecommendationPane from '../domain/ValueObjects/RecommendationPane'
+import RecommendationModule from '../Module/RecommendationModule'
 
 jest.mock('../Module/domain/buildTiles', () => ({
   buildPairedTiles: jest.fn().mockReturnValue([]),
@@ -44,11 +46,7 @@ describe('src | components | MainView', () => {
     fetchHomepage.mockResolvedValue([])
     parse.mockReturnValue({})
     props = {
-      algoliaMapping: {
-        hits: [],
-        nbHits: 0,
-        parsedParameters: {},
-      },
+      algoliaMapping: {},
       displayedModules: [],
       geolocation: {
         latitude: 5,
@@ -61,6 +59,7 @@ describe('src | components | MainView', () => {
         push: jest.fn(),
       },
       match: {},
+      recommendedHits: [],
       trackAllModulesSeen: jest.fn(),
       trackAllTilesSeen: jest.fn(),
       trackConsultOffer: jest.fn(),
@@ -113,8 +112,8 @@ describe('src | components | MainView', () => {
 
   it('should render a module component when module is for offers with cover', async () => {
     // given
-    const results = { moduleData: {} }
-    props.algoliaMapping = { moduleId: results, hits: [], nbHits: 0, parsedParameters: {} }
+    const results = { hits: [], nbHits: 0, parsedParameters: {} }
+    props.algoliaMapping = { moduleId: results }
     const offersWithCover = new OffersWithCover({
       moduleId,
       algolia: { isDuo: true },
@@ -223,6 +222,32 @@ describe('src | components | MainView', () => {
 
     // then
     const module = wrapper.find(ExclusivityModule)
+    expect(module).toHaveLength(1)
+  })
+
+  it('should render a recommendation module component when module is for recos', async () => {
+    // given
+    props.displayedModules = [
+      new RecommendationPane({
+        display: {
+          layout: 'one-item-medium',
+          minOffers: 0,
+          title: 'Voici tes offres recommandées',
+        },
+      }),
+    ]
+    props.recommendedHits = []
+
+    // when
+    const wrapper = await mount(
+      <MemoryRouter>
+        <MainView {...props} />
+      </MemoryRouter>
+    )
+    await wrapper.update()
+
+    // then
+    const module = wrapper.find(RecommendationModule)
     expect(module).toHaveLength(1)
   })
 

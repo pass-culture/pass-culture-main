@@ -153,7 +153,7 @@ const MainView = props => {
 }
 
 MainView.propTypes = {
-  algoliaMapping: PropTypes.shape(
+  algoliaMapping: PropTypes.objectOf(
     PropTypes.shape({
       hits: PropTypes.arrayOf(PropTypes.shape()).isRequired,
       nbHits: PropTypes.number.isRequired,
