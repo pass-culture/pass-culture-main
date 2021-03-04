@@ -143,7 +143,7 @@ export const getVenuesForOfferer = offererId => {
   if (offererId) {
     return client.get(`/venues?offererId=${offererId}`)
   } else {
-    return client.get('/venues')
+    return client.get('/venues?validated_for_user=true')
   }
 }
 
