@@ -9,6 +9,7 @@ from pcapi.admin.custom_views.beneficiary_import_view import BeneficiaryImportVi
 from pcapi.admin.custom_views.beneficiary_user_view import BeneficiaryUserView
 from pcapi.admin.custom_views.criteria_view import CriteriaView
 from pcapi.admin.custom_views.feature_view import FeatureView
+from pcapi.admin.custom_views.many_offers_operations_view import ManyOffersOperationsView
 from pcapi.admin.custom_views.offer_view import OfferForVenueSubview
 from pcapi.admin.custom_views.offer_view import OfferView
 from pcapi.admin.custom_views.offerer_view import OffererView
@@ -33,6 +34,7 @@ class Category(Enum):
 
     OFFRES_STRUCTURES_LIEUX = "Offre, Lieux & Structure"
     USERS = "Utilisateurs"
+    CUSTOM_OPERATIONS = "Autres fonctionnalités"
 
 
 def install_admin_views(admin: Admin, session: Session) -> None:
@@ -83,8 +85,15 @@ def install_admin_views(admin: Admin, session: Session) -> None:
     admin.add_view(
         PartnerUserView(User, session, name="Comptes Partenaires", category=Category.USERS, endpoint="/partner_users")
     )
-    admin.add_view(FeatureView(Feature, session, name="Fonctionnalités", category=None))
+    admin.add_view(FeatureView(Feature, session, name="Feature Flipping", category=None))
     admin.add_view(BeneficiaryImportView(BeneficiaryImport, session, name="Imports DMS", category=Category.USERS))
     admin.add_view(
         AllocinePivotView(AllocinePivot, session, name="Pivot Allocine", category=Category.OFFRES_STRUCTURES_LIEUX)
+    )
+    admin.add_view(
+        ManyOffersOperationsView(
+            name="Opérations sur plusieurs offres",
+            endpoint="/many_offers_operations",
+            category=Category.CUSTOM_OPERATIONS,
+        )
     )
