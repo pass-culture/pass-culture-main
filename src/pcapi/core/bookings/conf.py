@@ -1,9 +1,7 @@
 import datetime
 from decimal import Decimal
 
-from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_type import ThingType
-from pcapi.repository import feature_queries
 
 
 CONFIRM_BOOKING_AFTER_CREATION_DELAY = datetime.timedelta(hours=48)
@@ -57,11 +55,7 @@ class LimitConfigurationV1(BaseLimitConfiguration):
         ThingType.PRESSE_ABO,
     }
 
-    @property
-    def PHYSICAL_CAP(self):
-        if feature_queries.is_active(FeatureToggle.APPLY_BOOKING_LIMITS_V2):
-            return Decimal(300)
-        return Decimal(200)
+    PHYSICAL_CAP = 200
 
     PHYSICAL_CAPPED_TYPES = {
         ThingType.AUDIOVISUEL,

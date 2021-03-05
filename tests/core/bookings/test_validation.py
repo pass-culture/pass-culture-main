@@ -12,7 +12,6 @@ from pcapi.core.bookings import models
 from pcapi.core.bookings import validation
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
-from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.models import ThingType
 from pcapi.models import api_errors
@@ -117,11 +116,10 @@ class CheckStockIsBookableTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class CheckExpenseLimitsDepositVersion1BeforeSwitchTest:
+class CheckExpenseLimitsDepositVersion1Test:
     def _get_beneficiary(self):
         return users_factories.UserFactory(deposit__version=1)
 
-    @override_features(APPLY_BOOKING_LIMITS_V2=False)
     def test_physical_limit(self):
         beneficiary = self._get_beneficiary()
         offer = offers_factories.OfferFactory(product__type=str(ThingType.INSTRUMENT))
@@ -135,7 +133,6 @@ class CheckExpenseLimitsDepositVersion1BeforeSwitchTest:
             "Le plafond de 200 € pour les biens culturels ne vous permet pas de réserver cette offre."
         ]
 
-    @override_features(APPLY_BOOKING_LIMITS_V2=False)
     def test_physical_limit_on_uncapped_type(self):
         beneficiary = self._get_beneficiary()
         offer = offers_factories.OfferFactory(product__type=str(ThingType.CINEMA_ABO))
@@ -144,7 +141,6 @@ class CheckExpenseLimitsDepositVersion1BeforeSwitchTest:
         # should not raise because CINEMA_ABO is not capped
         validation.check_expenses_limits(beneficiary, 11, offer)
 
-    @override_features(APPLY_BOOKING_LIMITS_V2=False)
     def test_digital_limit(self):
         beneficiary = self._get_beneficiary()
         product = offers_factories.DigitalProductFactory(type=str(ThingType.AUDIOVISUEL))
@@ -163,7 +159,6 @@ class CheckExpenseLimitsDepositVersion1BeforeSwitchTest:
             "Le plafond de 200 € pour les offres numériques ne vous permet pas de réserver cette offre."
         ]
 
-    @override_features(APPLY_BOOKING_LIMITS_V2=False)
     def test_digital_limit_on_uncapped_type(self):
         beneficiary = self._get_beneficiary()
         product = offers_factories.DigitalProductFactory(type=str(ThingType.OEUVRE_ART))
@@ -173,86 +168,6 @@ class CheckExpenseLimitsDepositVersion1BeforeSwitchTest:
         # should not raise because OEUVRE_ART is not capped
         validation.check_expenses_limits(beneficiary, 11, offer)
 
-    @override_features(APPLY_BOOKING_LIMITS_V2=False)
-    def test_global_limit(self):
-        beneficiary = self._get_beneficiary()
-        factories.BookingFactory(user=beneficiary, stock__price=490)
-        offer = offers_factories.OfferFactory(type=str(ThingType.CINEMA_ABO))
-
-        validation.check_expenses_limits(beneficiary, 10, offer)  # should not raise
-
-        with pytest.raises(exceptions.UserHasInsufficientFunds) as error:
-            validation.check_expenses_limits(beneficiary, 11, offer)
-        assert error.value.errors["insufficientFunds"] == [
-            "Le solde de votre pass est insuffisant pour réserver cette offre."
-        ]
-
-
-@pytest.mark.usefixtures("db_session")
-class CheckExpenseLimitsDepositVersion1AfterSwitchTest:
-    def _get_beneficiary(self, **kwargs):
-        return users_factories.UserFactory(deposit__version=1, **kwargs)
-
-    def test_raise_if_deposit_expired(self):
-        yesterday = datetime.now() - timedelta(days=1)
-        beneficiary = self._get_beneficiary(deposit__expirationDate=yesterday)
-        offer = offers_factories.OfferFactory(product__type=str(ThingType.INSTRUMENT))
-        with pytest.raises(exceptions.UserHasInsufficientFunds):
-            validation.check_expenses_limits(beneficiary, 10, offer)
-
-    @override_features(APPLY_BOOKING_LIMITS_V2=True)
-    def test_physical_limit(self):
-        beneficiary = self._get_beneficiary()
-        offer = offers_factories.OfferFactory(product__type=str(ThingType.INSTRUMENT))
-        factories.BookingFactory(user=beneficiary, stock__price=290, stock__offer=offer)
-
-        validation.check_expenses_limits(beneficiary, 10, offer)  # should not raise
-
-        with pytest.raises(exceptions.PhysicalExpenseLimitHasBeenReached) as error:
-            validation.check_expenses_limits(beneficiary, 11, offer)
-        assert error.value.errors["global"] == [
-            "Le plafond de 300 € pour les biens culturels ne vous permet pas de réserver cette offre."
-        ]
-
-    @override_features(APPLY_BOOKING_LIMITS_V2=True)
-    def test_physical_limit_on_uncapped_type(self):
-        beneficiary = self._get_beneficiary()
-        offer = offers_factories.OfferFactory(product__type=str(ThingType.CINEMA_ABO))
-        factories.BookingFactory(user=beneficiary, stock__price=290, stock__offer=offer)
-
-        # should not raise because CINEMA_ABO is not capped
-        validation.check_expenses_limits(beneficiary, 11, offer)
-
-    @override_features(APPLY_BOOKING_LIMITS_V2=True)
-    def test_digital_limit(self):
-        beneficiary = self._get_beneficiary()
-        product = offers_factories.DigitalProductFactory(type=str(ThingType.AUDIOVISUEL))
-        offer = offers_factories.OfferFactory(product=product)
-        factories.BookingFactory(
-            user=beneficiary,
-            stock__price=190,
-            stock__offer=offer,
-        )
-
-        validation.check_expenses_limits(beneficiary, 10, offer)  # should not raise
-
-        with pytest.raises(exceptions.DigitalExpenseLimitHasBeenReached) as error:
-            validation.check_expenses_limits(beneficiary, 11, offer)
-        assert error.value.errors["global"] == [
-            "Le plafond de 200 € pour les offres numériques ne vous permet pas de réserver cette offre."
-        ]
-
-    @override_features(APPLY_BOOKING_LIMITS_V2=True)
-    def test_digital_limit_on_uncapped_type(self):
-        beneficiary = self._get_beneficiary()
-        product = offers_factories.DigitalProductFactory(type=str(ThingType.OEUVRE_ART))
-        offer = offers_factories.OfferFactory(product=product)
-        factories.BookingFactory(user=beneficiary, stock__price=190, stock__offer=offer)
-
-        # should not raise because OEUVRE_ART is not capped
-        validation.check_expenses_limits(beneficiary, 11, offer)
-
-    @override_features(APPLY_BOOKING_LIMITS_V2=True)
     def test_global_limit(self):
         beneficiary = self._get_beneficiary()
         factories.BookingFactory(user=beneficiary, stock__price=490)
