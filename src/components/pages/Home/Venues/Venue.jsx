@@ -10,10 +10,10 @@ import VenueStat from './VenueStat'
 
 const Venue = ({ id, isVirtual, name, offererId, publicName }) => {
   const [stats, setStats] = useState({
-    activeBookingsCount: '',
-    usedBookingsQuantity: '',
+    activeBookingsQuantity: '',
     activeOffersCount: '',
-    soldOutOffersQuantity: '',
+    soldOutOffersCount: '',
+    usedBookingsQuantity: '',
   })
 
   const venueStatData = [
