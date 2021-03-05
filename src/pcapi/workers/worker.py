@@ -29,8 +29,8 @@ from pcapi.workers.logger import build_job_log_message
 conn = redis.from_url(settings.REDIS_URL)
 logging.getLogger("rq.worker").setLevel(logging.CRITICAL)
 
-default_queue = Queue("default", connection=conn)
-low_queue = Queue("low", connection=conn, default_timeout=3600)
+default_queue = Queue("default", connection=conn, is_async=(not settings.IS_RUNNING_TESTS))
+low_queue = Queue("low", connection=conn, default_timeout=3600, is_async=(not settings.IS_RUNNING_TESTS))
 
 
 def log_worker_error(job: Job, exception_type: Type, exception_value: Exception, traceback: Any = None) -> None:
