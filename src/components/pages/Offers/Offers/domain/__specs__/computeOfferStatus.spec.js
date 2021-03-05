@@ -6,8 +6,7 @@ describe('compute offer status', () => {
       // Given
       const offer = {
         isActive: false,
-        hasBookingLimitDatetimesPassed: true,
-        isFullyBooked: true,
+        validation: 'VALIDATED',
       }
       const stocks = []
 
@@ -16,6 +15,23 @@ describe('compute offer status', () => {
 
       // Then
       expect(status).toBe('inactive')
+    })
+
+    describe('when offer is fraudulent', () => {
+      it('should be "refusée"', () => {
+        // Given
+        const offer = {
+          isActive: false,
+          validation: 'REJECTED',
+        }
+        const stocks = []
+
+        // When
+        const status = computeOfferStatus(offer, stocks)
+
+        // Then
+        expect(status).toBe('refusée')
+      })
     })
   })
 
@@ -27,6 +43,7 @@ describe('compute offer status', () => {
         isActive: true,
         hasBookingLimitDatetimesPassed: false,
         isFullyBooked: false,
+        validation: 'VALIDATED',
       }
     })
 
@@ -75,16 +92,6 @@ describe('compute offer status', () => {
     })
 
     describe('when offer is sold out but has not expired', () => {
-      let offer
-
-      beforeEach(() => {
-        offer = {
-          isActive: true,
-          hasBookingLimitDatetimesPassed: false,
-          isFullyBooked: true,
-        }
-      })
-
       it('should be "épuisée"', () => {
         // Given
         const stocks = [
@@ -93,6 +100,7 @@ describe('compute offer status', () => {
             remainingQuantity: 0,
           },
         ]
+        offer.isFullyBooked = true
 
         // When
         const status = computeOfferStatus(offer, stocks)
@@ -113,6 +121,20 @@ describe('compute offer status', () => {
 
         // Then
         expect(status).toBe('épuisée')
+      })
+    })
+
+    describe('when offer is awaiting', () => {
+      it('should be "en attente"', () => {
+        // Given
+        offer.validation = 'AWAITING'
+        const stocks = []
+
+        // When
+        const status = computeOfferStatus(offer, stocks)
+
+        // Then
+        expect(status).toBe('en attente')
       })
     })
   })

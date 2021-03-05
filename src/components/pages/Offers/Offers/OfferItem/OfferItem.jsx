@@ -28,6 +28,14 @@ const OFFER_STATUS_PROPERTIES = {
     className: 'status-active',
     icon: 'ico-status-validated',
   },
+  [OFFER_STATUS.REJECTED]: {
+    className: 'status-rejected',
+    icon: 'ico-status-rejected',
+  },
+  [OFFER_STATUS.AWAITING]: {
+    className: 'status-awaiting',
+    icon: 'ico-status-awaiting',
+  },
 }
 
 const OfferItem = ({ disabled, offer, stocks, venue, isSelected, selectOffer }) => {

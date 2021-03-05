@@ -84,7 +84,9 @@
 
   .status- {
     &inactive,
-    &expired {
+    &expired,
+    &rejected,
+    &awaiting {
       background-color: $grey-dark;
     }
 
