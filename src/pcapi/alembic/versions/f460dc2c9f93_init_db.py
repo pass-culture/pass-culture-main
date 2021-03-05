@@ -1,8 +1,8 @@
-"""Initialize database schema
+"""add_feature_flag_fnac_synchronisation_v2
 
-Revision ID: 5f81d0abe040
-Revises: ea836848f102
-Create Date: 2018-08-24 12:57:45.081918
+Revision ID: f460dc2c9f93
+Revises: None
+Create Date: 2021-02-16 15:23:13.378617
 
 """
 import os
@@ -12,7 +12,7 @@ from alembic import op
 
 
 # revision identifiers, used by Alembic.
-revision = "5f81d0abe040"
+revision = "f460dc2c9f93"
 down_revision = None
 branch_labels = None
 depends_on = None
