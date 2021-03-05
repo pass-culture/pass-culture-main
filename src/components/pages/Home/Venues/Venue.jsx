@@ -11,12 +11,14 @@ import VenueStat from './VenueStat'
 const Venue = ({ id, isVirtual, name, offererId, publicName }) => {
   const [stats, setStats] = useState({
     activeBookingsCount: '',
-    activeOffersQuantity: '',
+    usedBookingsQuantity: '',
+    activeOffersCount: '',
+    soldOutOffersQuantity: '',
   })
 
   const venueStatData = [
     {
-      count: stats.activeOffersQuantity,
+      count: stats.activeOffersCount,
       label: 'Offres actives',
       url: `/offres?lieu=${id}&statut=active`,
     },
@@ -31,7 +33,7 @@ const Venue = ({ id, isVirtual, name, offererId, publicName }) => {
       url: `/reservations`,
     },
     {
-      count: '- -',
+      count: stats.soldOutOffersCount,
       label: 'Offres stocks épuisés',
       url: `/offres?lieu=${id}&statut=epuisee`,
     },
@@ -41,7 +43,8 @@ const Venue = ({ id, isVirtual, name, offererId, publicName }) => {
     pcapi.getVenueStats(id).then(stats => {
       setStats({
         activeBookingsQuantity: stats.activeBookingsQuantity.toString(),
-        activeOffersQuantity: stats.activeOffersQuantity.toString(),
+        activeOffersCount: stats.activeOffersCount.toString(),
+        soldOutOffersCount: stats.soldOutOffersCount.toString(),
         usedBookingsQuantity: stats.usedBookingsQuantity.toString(),
       })
     })

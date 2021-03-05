@@ -47,7 +47,8 @@ describe('venues', () => {
       // Given
       pcapi.getVenueStats.mockResolvedValue({
         activeBookingsQuantity: 0,
-        activeOffersQuantity: 2,
+        activeOffersCount: 2,
+        soldOutOffersCount: 3,
         usedBookingsQuantity: 1,
       })
 
@@ -71,7 +72,7 @@ describe('venues', () => {
       expect(within(validatedBookingsStat).getByText('1')).toBeInTheDocument()
       expect(within(validatedBookingsStat).getByText('Réservations validées')).toBeInTheDocument()
 
-      expect(within(outOfStockOffersStat).getByText('- -')).toBeInTheDocument()
+      expect(within(outOfStockOffersStat).getByText('3')).toBeInTheDocument()
       expect(within(outOfStockOffersStat).getByText('Offres stocks épuisés')).toBeInTheDocument()
     })
 
