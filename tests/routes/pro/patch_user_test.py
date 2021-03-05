@@ -108,6 +108,7 @@ class Returns400:
             "firstName": "",
             "lastName": "",
             "email": "",
+            "phoneNumber": "",
         }
 
         # when
@@ -124,4 +125,5 @@ class Returns400:
             "email": ["Ce champ est obligatoire"],
             "firstName": ["Ce champ est obligatoire"],
             "lastName": ["Ce champ est obligatoire"],
+            "phoneNumber": ["Ce champ est obligatoire"],
         }

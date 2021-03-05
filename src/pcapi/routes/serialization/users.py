@@ -29,6 +29,7 @@ class PatchUserBodyModel(BaseModel):
     _validate_first_name = validate_not_empty_string_when_provided("first_name")
     _validate_last_name = validate_not_empty_string_when_provided("last_name")
     _validate_email = validate_not_empty_string_when_provided("email")
+    _validate_phone_number = validate_not_empty_string_when_provided("phone_number")
 
     class Config:
         alias_generator = to_camel
