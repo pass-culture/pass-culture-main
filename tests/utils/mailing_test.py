@@ -107,14 +107,12 @@ class BuildPcProOfferLinkTest:
         offer = create_offer_with_thing_product(venue)
         repository.save(offer)
         offer_id = humanize(offer.id)
-        venue_id = humanize(venue.id)
-        offerer_id = humanize(offerer.id)
 
         # When
         pc_pro_url = build_pc_pro_offer_link(offer)
 
         # Then
-        assert pc_pro_url == f"http://pcpro.com/offres/{offer_id}?lieu={venue_id}&structure={offerer_id}"
+        assert pc_pro_url == f"http://pcpro.com/offres/{offer_id}/edition"
 
 
 class BuildRecipientsListTest:

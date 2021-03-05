@@ -33,8 +33,6 @@ def make_booking(**kwargs):
 
 def get_expected_base_email_data(booking, **overrides):
     offer_id = humanize(booking.stock.offer.id)
-    venue_id = humanize(booking.stock.offer.venue.id)
-    offerer_id = humanize(booking.stock.offer.venue.managingOfferer.id)
     email_data = {
         "MJ-TemplateID": 2418750,
         "MJ-TemplateLanguage": True,
@@ -56,7 +54,7 @@ def get_expected_base_email_data(booking, **overrides):
             "can_expire": 0,
             "contremarque": "ABC123",
             "ISBN": "",
-            "lien_offre_pcpro": f"http://localhost:3001/offres/{offer_id}?lieu={venue_id}&structure={offerer_id}",
+            "lien_offre_pcpro": f"http://localhost:3001/offres/{offer_id}/edition",
             "offer_type": "EventType.SPECTACLE_VIVANT",
             "departement": "75",
         },

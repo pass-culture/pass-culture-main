@@ -28,10 +28,7 @@ class MailServiceException(Exception):
 
 
 def build_pc_pro_offer_link(offer: Offer) -> str:
-    return (
-        f"{settings.PRO_URL}/offres/{humanize(offer.id)}?lieu={humanize(offer.venueId)}"
-        f"&structure={humanize(offer.venue.managingOffererId)}"
-    )
+    return f"{settings.PRO_URL}/offres/{humanize(offer.id)}/edition"
 
 
 def extract_users_information_from_bookings(bookings: List[Booking]) -> List[dict]:
@@ -215,7 +212,7 @@ def make_wallet_balances_email(csv: str) -> Dict:
 
 
 def make_offer_creation_notification_email(offer: Offer, author: User) -> Dict:
-    pro_link_to_offer = f"{settings.PRO_URL}/offres/{humanize(offer.id)}"
+    pro_link_to_offer = f"{settings.PRO_URL}/offres/{humanize(offer.id)}/edition"
     webapp_link_to_offer = f"{settings.WEBAPP_URL}/offre/details/{humanize(offer.id)}"
     venue = offer.venue
     pro_venue_link = f"{settings.PRO_URL}/lieux/{humanize(venue.id)}"
