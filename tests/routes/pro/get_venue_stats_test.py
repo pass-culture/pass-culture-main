@@ -14,8 +14,8 @@ class Get:
         def when_pro_user_has_rights_on_managing_offerer(self, app):
             # given
             booking = bookings_factories.BookingFactory()
+            bookings_factories.BookingFactory(isUsed=True, stock=booking.stock)
             venue = booking.stock.offer.venue
-            booking = bookings_factories.BookingFactory(isUsed=True, stock__offer__venue=venue)
             venue_owner = offers_factories.UserOffererFactory(offerer=venue.managingOfferer).user
 
             auth_request = TestClient(app.test_client()).with_auth(email=venue_owner.email)
@@ -27,6 +27,7 @@ class Get:
             assert response.status_code == 200
             response_json = response.json
             assert response_json["activeBookingsQuantity"] == 1
+            assert response_json["activeOffersQuantity"] == 1
             assert response_json["usedBookingsQuantity"] == 1
 
     class Returns403:

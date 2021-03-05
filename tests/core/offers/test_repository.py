@@ -3,7 +3,9 @@ from datetime import timedelta
 
 import pytest
 
-from pcapi.core.offers import factories as offers_factories
+import pcapi.core.bookings.factories as bookings_factories
+import pcapi.core.offers.factories as offers_factories
+from pcapi.core.offers.repository import get_active_offers_quantity_for_venue
 from pcapi.core.offers.repository import get_offers_by_ids
 from pcapi.core.offers.repository import get_paginated_offers_for_filters
 from pcapi.core.users import factories as users_factories
@@ -1023,3 +1025,33 @@ class GetOffersByIdsTest:
         query = get_offers_by_ids(user, [offer1.id, offer2.id])
 
         assert query.count() == 2
+
+
+@pytest.mark.usefixtures("db_session")
+class GetActiveOffersQuantityForVenueTest:
+    def test_counts_active_offers_for_venue(self):
+        # Given
+        venue = offers_factories.VenueFactory()
+
+        active_offer = offers_factories.ThingOfferFactory(venue=venue)
+        offers_factories.StockFactory(offer=active_offer)
+
+        sold_out_offer = offers_factories.ThingOfferFactory(venue=venue)
+        sold_out_stock = offers_factories.StockFactory(quantity=1, offer=sold_out_offer)
+        bookings_factories.BookingFactory(stock=sold_out_stock)
+
+        expired_offer = offers_factories.EventOfferFactory(venue=venue)
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        offers_factories.EventStockFactory(offer=expired_offer, bookingLimitDatetime=yesterday)
+
+        inactive_offer = offers_factories.ThingOfferFactory(venue=venue, isActive=False)
+        offers_factories.StockFactory(offer=inactive_offer)
+
+        active_offer_on_another_venue = offers_factories.ThingOfferFactory()
+        offers_factories.StockFactory(offer=active_offer_on_another_venue)
+
+        # When
+        active_offers_count = get_active_offers_quantity_for_venue(venue.id)
+
+        # Then
+        assert active_offers_count == 1

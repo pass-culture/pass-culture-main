@@ -238,3 +238,10 @@ def get_stocks_by_id_at_providers(id_at_providers: List[str]) -> Dict:
         id_at_providers: {"id": id, "booking_quantity": booking_quantity}
         for (id, id_at_providers, booking_quantity) in stocks
     }
+
+
+def get_active_offers_quantity_for_venue(venue_id) -> int:
+    datetime_now = datetime.utcnow()
+    query = Offer.query.filter(Offer.venueId == venue_id)
+    query = _filter_by_status(query, datetime_now, "active")
+    return query.count()

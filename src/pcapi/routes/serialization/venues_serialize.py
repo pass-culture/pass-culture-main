@@ -26,4 +26,5 @@ def serialize_venue_with_offerer_name(venue: VenueWithOffererName) -> Dict:
 
 class VenueStatsResponseModel(BaseModel):
     activeBookingsQuantity: int
+    activeOffersQuantity: int
     usedBookingsQuantity: int
