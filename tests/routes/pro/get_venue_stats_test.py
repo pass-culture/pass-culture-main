@@ -27,8 +27,9 @@ class Get:
             assert response.status_code == 200
             response_json = response.json
             assert response_json["activeBookingsQuantity"] == 1
-            assert response_json["activeOffersQuantity"] == 1
             assert response_json["usedBookingsQuantity"] == 1
+            assert response_json["activeOffersCount"] == 1
+            assert response_json["soldOutOffersCount"] == 0
 
     class Returns403:
         @pytest.mark.usefixtures("db_session")
