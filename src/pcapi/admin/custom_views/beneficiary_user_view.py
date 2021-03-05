@@ -110,7 +110,9 @@ class BeneficiaryUserView(SuspensionMixin, BaseAdminView):
         super().after_model_change(form, model, is_created)
 
     def get_query(self) -> query:
-        return User.query.outerjoin(UserOfferer).filter(UserOfferer.userId.is_(None)).filter(User.isAdmin.is_(False))
+        return (
+            User.query.outerjoin(UserOfferer).filter(UserOfferer.userId.is_(None)).filter(User.isBeneficiary.is_(True))
+        )
 
     def get_count_query(self) -> query:
         return (
@@ -118,5 +120,5 @@ class BeneficiaryUserView(SuspensionMixin, BaseAdminView):
             .select_from(self.model)
             .outerjoin(UserOfferer)
             .filter(UserOfferer.userId.is_(None))
-            .filter(User.isAdmin.is_(False))
+            .filter(User.isBeneficiary.is_(True))
         )
