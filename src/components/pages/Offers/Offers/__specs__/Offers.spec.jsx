@@ -155,6 +155,7 @@ describe('src | components | pages | Offers | Offers', () => {
       hideActionsBar: jest.fn(),
       venue: { name: 'Ma Venue', id: 'JI' },
       getOfferer: jest.fn().mockResolvedValue({}),
+      notification: {},
     }
     fetchAllVenuesByProUser.mockResolvedValue(proVenues)
   })
@@ -1566,6 +1567,51 @@ describe('src | components | pages | Offers | Offers', () => {
         // Then
         expect(firstOfferCheckbox.checked).toStrictEqual(false)
         expect(secondOfferCheckbox.checked).toStrictEqual(false)
+      })
+    })
+  })
+
+  describe('should reset filters', () => {
+    it('when clicking on "afficher toutes les offres" when no offers are displayed', async () => {
+      props.savedSearchFilters = { lieu: proVenues[0].id }
+      props.offers = []
+      renderOffers(props, store)
+      expect(props.loadOffers).toHaveBeenCalledTimes(1)
+      expect(props.loadOffers).toHaveBeenNthCalledWith(1, {
+        ...DEFAULT_SEARCH_FILTERS,
+        page: DEFAULT_PAGE,
+      })
+
+      fireEvent.click(screen.getByText('Lancer la recherche'))
+      expect(props.loadOffers).toHaveBeenCalledTimes(2)
+      expect(props.loadOffers).toHaveBeenNthCalledWith(2, {
+        ...DEFAULT_SEARCH_FILTERS,
+        page: DEFAULT_PAGE,
+      })
+
+      await screen.findByText('Aucune offre trouvée pour votre recherche')
+      fireEvent.click(screen.getByText('afficher toutes les offres'))
+      expect(props.loadOffers).toHaveBeenCalledTimes(3)
+      expect(props.loadOffers).toHaveBeenNthCalledWith(3, {
+        ...DEFAULT_SEARCH_FILTERS,
+        page: DEFAULT_PAGE,
+      })
+    })
+
+    it('when clicking on "Réinitialiser les filtres"', () => {
+      props.savedSearchFilters = { lieu: proVenues[0].id }
+      renderOffers(props, store)
+      expect(props.loadOffers).toHaveBeenCalledTimes(1)
+      expect(props.loadOffers).toHaveBeenNthCalledWith(1, {
+        ...DEFAULT_SEARCH_FILTERS,
+        page: DEFAULT_PAGE,
+      })
+
+      fireEvent.click(screen.getByText('Réinitialiser les filtres'))
+      expect(props.loadOffers).toHaveBeenCalledTimes(2)
+      expect(props.loadOffers).toHaveBeenNthCalledWith(2, {
+        ...DEFAULT_SEARCH_FILTERS,
+        page: DEFAULT_PAGE,
       })
     })
   })

@@ -539,7 +539,7 @@ class Offers extends PureComponent {
 
   resetFilters = () => {
     const { searchFilters } = this.state
-    const hadOffererFilter = this.hasSearchFilters('offererId', searchFilters)
+    const hadOffererFilter = this.hasSearchFilters(searchFilters)
 
     this.setState({ offerer: null })
     this.setState({ searchFilters: { ...DEFAULT_SEARCH_FILTERS } }, () => {
