@@ -47,6 +47,7 @@ describe('venues', () => {
       // Given
       pcapi.getVenueStats.mockResolvedValue({
         activeBookingsQuantity: 0,
+        activeOffersQuantity: 2,
         usedBookingsQuantity: 1,
       })
 
@@ -55,14 +56,13 @@ describe('venues', () => {
 
       // Then
       expect(pcapi.getVenueStats).toHaveBeenCalledWith(venueDefaultProps.id)
-
       const [
         activeOffersStat,
         activeBookingsStat,
         validatedBookingsStat,
         outOfStockOffersStat,
       ] = screen.getAllByTestId('venue-stat')
-      expect(within(activeOffersStat).getByText('- -')).toBeInTheDocument()
+      expect(within(activeOffersStat).getByText('2')).toBeInTheDocument()
       expect(within(activeOffersStat).getByText('Offres actives')).toBeInTheDocument()
 
       expect(within(activeBookingsStat).getByText('0')).toBeInTheDocument()

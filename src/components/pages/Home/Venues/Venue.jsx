@@ -11,11 +11,12 @@ import VenueStat from './VenueStat'
 const Venue = ({ id, isVirtual, name, offererId, publicName }) => {
   const [stats, setStats] = useState({
     activeBookingsCount: '',
+    activeOffersQuantity: '',
   })
 
   const venueStatData = [
     {
-      count: '- -',
+      count: stats.activeOffersQuantity,
       label: 'Offres actives',
       url: `/offres?lieu=${id}&statut=active`,
     },
@@ -40,6 +41,7 @@ const Venue = ({ id, isVirtual, name, offererId, publicName }) => {
     pcapi.getVenueStats(id).then(stats => {
       setStats({
         activeBookingsQuantity: stats.activeBookingsQuantity.toString(),
+        activeOffersQuantity: stats.activeOffersQuantity.toString(),
         usedBookingsQuantity: stats.usedBookingsQuantity.toString(),
       })
     })

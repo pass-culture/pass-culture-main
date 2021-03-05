@@ -112,6 +112,7 @@ describe('homepage', () => {
     pcapi.getAllOfferersNames.mockResolvedValue(baseOfferersNames)
     pcapi.getVenueStats.mockResolvedValue({
       activeBookingsQuantity: 4,
+      activeOffersQuantity: 2,
       usedBookingsQuantity: 3,
     })
   })
