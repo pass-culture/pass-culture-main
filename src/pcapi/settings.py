@@ -90,7 +90,15 @@ PAYMENTS_DETAILS_RECIPIENTS = utils.parse_email_addresses(os.environ.get("PAYMEN
 WALLET_BALANCES_RECIPIENTS = utils.parse_email_addresses(os.environ.get("WALLET_BALANCES_RECIPIENTS"))
 
 # PUSH NOTIFICATIONS
-PUSH_NOTIFICATION_BACKEND = "pcapi.notifications.push.backends.batch.BatchBackend"
+if IS_PROD or IS_INTEGRATION or IS_STAGING or IS_TESTING:
+    _default_push_notification_backend = "pcapi.notifications.push.backends.batch.BatchBackend"
+elif IS_RUNNING_TESTS:
+    _default_push_notification_backend = "pcapi.notifications.push.backends.testing.TestingBackend"
+elif IS_DEV:
+    _default_push_notification_backend = "pcapi.notifications.push.backends.logger.LoggerBackend"
+else:
+    raise RuntimeError("Unknown environment")
+PUSH_NOTIFICATION_BACKEND = os.environ.get("PUSH_NOTIFICATION_BACKEND", _default_push_notification_backend)
 
 # ALGOLIA
 ALGOLIA_API_KEY = os.environ.get("ALGOLIA_API_KEY")

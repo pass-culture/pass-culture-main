@@ -14,6 +14,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import User
 from pcapi.core.users.models import VOID_PUBLIC_NAME
 from pcapi.core.users.repository import get_id_check_token
+from pcapi.notifications.push import testing as push_testing
 from pcapi.routes.native.v1.serialization import account as account_serializers
 
 from tests.conftest import TestClient
@@ -125,9 +126,8 @@ class AccountTest:
         assert response.json["pseudo"] is None
         assert not response.json["isBeneficiary"]
 
-    @patch("pcapi.core.users.api.update_user_attributes.delay")
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
-    def test_account_creation(self, mocked_check_recaptcha_token_is_valid, mocked_update_user_attributes, app):
+    def test_account_creation(self, mocked_check_recaptcha_token_is_valid, app):
         test_client = TestClient(app.test_client())
         assert User.query.first() is None
         data = {
@@ -150,22 +150,21 @@ class AccountTest:
         mocked_check_recaptcha_token_is_valid.assert_called()
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2015423
-        mocked_update_user_attributes.assert_called_once_with(
-            user.id,
+        assert push_testing.requests == [
             {
-                "date(u.date_created)": user.dateCreated.strftime("%Y-%m-%dT%H:%M:%S"),
-                "date(u.date_of_birth)": "1960-12-31T00:00:00",
-                "u.credit": 0,
-                "u.marketing_push_subscription": False,
-                "u.postal_code": None,
-            },
-        )
+                "attribute_values": {
+                    "date(u.date_created)": user.dateCreated.strftime("%Y-%m-%dT%H:%M:%S"),
+                    "date(u.date_of_birth)": "1960-12-31T00:00:00",
+                    "u.credit": 0,
+                    "u.marketing_push_subscription": False,
+                    "u.postal_code": None,
+                },
+                "user_id": user.id,
+            }
+        ]
 
-    @patch("pcapi.core.users.api.update_user_attributes.delay")
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
-    def test_account_creation_with_existing_email_sends_email(
-        self, mocked_check_recaptcha_token_is_valid, mocked_update_user_attributes, app
-    ):
+    def test_account_creation_with_existing_email_sends_email(self, mocked_check_recaptcha_token_is_valid, app):
         test_client = TestClient(app.test_client())
         users_factories.UserFactory(email=self.identifier)
         mocked_check_recaptcha_token_is_valid.return_value = None
@@ -183,13 +182,10 @@ class AccountTest:
         assert response.status_code == 204, response.json
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 1838526
-        mocked_update_user_attributes.assert_not_called()
+        assert push_testing.requests == []
 
-    @patch("pcapi.core.users.api.update_user_attributes.delay")
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
-    def test_too_young_account_creation(
-        self, mocked_check_recaptcha_token_is_valid, mocked_update_user_attributes, app
-    ):
+    def test_too_young_account_creation(self, mocked_check_recaptcha_token_is_valid, app):
         test_client = TestClient(app.test_client())
         assert User.query.first() is None
         data = {
@@ -203,7 +199,7 @@ class AccountTest:
 
         response = test_client.post("/native/v1/account", json=data)
         assert response.status_code == 400
-        mocked_update_user_attributes.assert_not_called()
+        assert push_testing.requests == []
 
 
 class UserProfileUpdateTest:

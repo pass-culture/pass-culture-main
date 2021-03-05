@@ -25,6 +25,7 @@ from pcapi.local_providers.install import install_local_providers
 from pcapi.model_creators.generic_creators import PLAIN_DEFAULT_TESTING_PASSWORD
 from pcapi.models.db import db
 from pcapi.models.install import install_activity
+from pcapi.notifications.push import testing as push_notifications_testing
 from pcapi.repository.clean_database import clean_all_database
 from pcapi.routes import install_routes
 from pcapi.routes.native.v1.blueprint import native_v1
@@ -87,6 +88,14 @@ def clear_mail_outbox():
         yield
     finally:
         mails_testing.reset_outbox()
+
+
+@pytest.fixture(autouse=True)
+def clear_push_notification_requests():
+    try:
+        yield
+    finally:
+        push_notifications_testing.reset_requests()
 
 
 @pytest.fixture()
