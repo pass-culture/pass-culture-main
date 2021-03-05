@@ -241,6 +241,7 @@ class User(PcObject, Model, NeedsValidationMixin, VersionedMixin):
 
         return relativedelta(date.today(), self.dateOfBirth.date()).years
 
+    # TODO(viconnex) Remove expenses once the webapp and app native use api.get_domains_credit
     @property
     def expenses(self):
         from pcapi.core.users.api import user_expenses

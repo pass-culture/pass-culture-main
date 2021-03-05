@@ -1,5 +1,6 @@
 import datetime
 from decimal import Decimal
+from typing import Union
 
 from pcapi.core.bookings import api
 from pcapi.core.bookings import conf
@@ -7,7 +8,7 @@ from pcapi.core.bookings import exceptions
 from pcapi.core.bookings.models import Booking
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
-from pcapi.core.users.models import ExpenseDomain
+from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.models import User
 from pcapi.models import api_errors
 from pcapi.models.db import db
@@ -57,26 +58,29 @@ def check_expenses_limits(user: User, requested_amount: Decimal, offer: Offer):
     """Raise an error if the requested amount would exceed the user's
     expense limits.
     """
+    domains_credit = get_domains_credit(user)
     deposit = user.deposit
-    if not deposit:
+    if not domains_credit or not deposit:
         raise exceptions.UserHasInsufficientFunds()
-    if deposit.expirationDate and deposit.expirationDate < datetime.datetime.now():
-        if requested_amount:
-            raise exceptions.UserHasInsufficientFunds()
 
-    config = conf.LIMIT_CONFIGURATIONS[deposit.version]
-    for expense in user.expenses:
-        if expense.domain == ExpenseDomain.ALL:
-            if expense.current + requested_amount > expense.limit:
-                raise exceptions.UserHasInsufficientFunds()
+    config: Union[conf.LimitConfigurationV1, conf.LimitConfigurationV2] = conf.LIMIT_CONFIGURATIONS[deposit.version]
 
-        if expense.domain == ExpenseDomain.DIGITAL and config.digital_cap_applies(offer):
-            if expense.current + requested_amount > expense.limit:
-                raise exceptions.DigitalExpenseLimitHasBeenReached(expense.limit)
+    if requested_amount > domains_credit.all.remaining:
+        raise exceptions.UserHasInsufficientFunds()
 
-        if expense.domain == ExpenseDomain.PHYSICAL and config.physical_cap_applies(offer):
-            if expense.current + requested_amount > expense.limit:
-                raise exceptions.PhysicalExpenseLimitHasBeenReached(expense.limit)
+    if (
+        domains_credit.digital
+        and config.digital_cap_applies(offer)
+        and requested_amount > domains_credit.digital.remaining
+    ):
+        raise exceptions.DigitalExpenseLimitHasBeenReached(domains_credit.digital.initial)
+
+    if (
+        domains_credit.physical
+        and config.physical_cap_applies(offer)
+        and requested_amount > domains_credit.physical.remaining
+    ):
+        raise exceptions.PhysicalExpenseLimitHasBeenReached(domains_credit.physical.initial)
 
 
 def check_beneficiary_can_cancel_booking(user: User, booking: Booking) -> None:
