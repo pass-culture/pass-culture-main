@@ -75,7 +75,7 @@ def install_admin_views(admin: Admin, session: Session) -> None:
         BeneficiaryUserView(
             User,
             session,
-            name="Comptes Jeunes/Grand Public",
+            name="Comptes Jeunes",
             category=Category.USERS,
             endpoint="/beneficiary_users",
         )
