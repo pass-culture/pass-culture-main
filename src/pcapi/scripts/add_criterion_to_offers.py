@@ -1,50 +1,42 @@
-from typing import Iterable
+from typing import List
 
 from flask import current_app as app
-from sqlalchemy import or_
 
 from pcapi.connectors import redis
 from pcapi.core.offers.models import Offer
 from pcapi.models import Criterion
 from pcapi.models import OfferCriterion
-from pcapi.repository import repository
+from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
+from pcapi.repository import feature_queries
 from pcapi.utils.logger import logger
 
 
-def add_criterion_to_offers(
-    criterion_name: str, isbns: Iterable[str] = None, offer_ids: Iterable[str] = None, batch_size: int = 100
-) -> None:
-    if isbns is None:
-        isbns = []
-    if offer_ids is None:
-        offer_ids = []
+def add_criterion_to_offers(criteria: List[Criterion], isbn: str) -> bool:
+    isbn = isbn.replace("-", "").replace(" ", "")
 
-    isbns = [isbn.replace("-", "").replace(" ", "") for isbn in isbns]
-
-    criterion = Criterion.query.filter_by(name=criterion_name).one()
-
-    offers = (
-        Offer.query.filter(or_(Offer.id.in_(offer_ids), Offer.extraData["isbn"].astext.in_(isbns)))
+    offer_ids_tuples = (
+        Offer.query.filter(Offer.extraData["isbn"].astext == isbn)
         .filter(Offer.isActive.is_(True))
+        .with_entities(Offer.id)
         .all()
     )
+    offer_ids = [offer_id[0] for offer_id in offer_ids_tuples]
 
-    if not offers:
-        logger.info("Did not match any offer: double-check the ISBN's")
-        return
+    if not offer_ids:
+        return False
 
-    logger.info("Adding criterion %s to %d offers", criterion, len(offers))
+    for criterion in criteria:
+        logger.info("Adding criterion %s to %d offers", criterion, len(offer_ids))
 
-    offer_criteria = []
-    for offer in offers:
-        offer_criteria.append(OfferCriterion(offer=offer, criterion=criterion))
+        offer_criteria: List[OfferCriterion] = []
+        offer_criteria.extend(OfferCriterion(offerId=offer_id, criterionId=criterion.id) for offer_id in offer_ids)
 
-        if len(offer_criteria) > batch_size:
-            repository.save(*offer_criteria)
-            offer_criteria = []
+        db.session.bulk_save_objects(offer_criteria)
+        db.session.commit()
 
-    repository.save(*offer_criteria)
+    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
+        for offer_id in offer_ids:
+            redis.add_offer_id(client=app.redis_client, offer_id=offer_id)
 
-    logger.info("Reindexing %d offers after addition of criterion %s", len(offers), criterion_name)
-    for offer in offers:
-        redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
+    return True
