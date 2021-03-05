@@ -560,6 +560,24 @@ describe('stocks page', () => {
           ).toBeInTheDocument()
         })
 
+        it('should inform user that stock cannot be updated when event is over when beginningDatetime is with milliseconds', async () => {
+          // When
+          const eventInThePast = {
+            ...defaultStock,
+            beginningDatetime: '2020-12-09T20:15:00.231Z',
+            isEventDeletable: true,
+            isEventEditable: false,
+          }
+
+          pcapi.loadStocks.mockResolvedValue({ stocks: [eventInThePast] })
+          await renderOffers(props, store)
+
+          // Then
+          expect(
+            screen.getByRole('row', { name: 'Les évènements passés ne sont pas modifiables' })
+          ).toBeInTheDocument()
+        })
+
         it('should inform user that stock cannot be deleted when event is over for more than 48h', async () => {
           // When
           const eventInThePast = {

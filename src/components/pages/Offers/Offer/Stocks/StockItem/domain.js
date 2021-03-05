@@ -93,11 +93,9 @@ export const hasStockBeenUpdated = (originalStock, updatedStock) => {
     )
   }
 
-  const momentBookingLimitDatetime = moment(originalStock.bookingLimitDatetime)
-
   return !(
-    originalStock.beginningDatetime === updatedStock.beginningDatetime &&
-    momentBookingLimitDatetime.isSame(updatedStock.bookingLimitDatetime, 'day') &&
+    moment(originalStock.beginningDatetime).isSame(updatedStock.beginningDatetime, 'minute') &&
+    moment(originalStock.bookingLimitDatetime).isSame(updatedStock.bookingLimitDatetime, 'day') &&
     originalStock.price === updatedStock.price &&
     originalStock.quantity === updatedStock.quantity
   )
