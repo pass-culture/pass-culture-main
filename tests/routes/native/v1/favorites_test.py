@@ -4,6 +4,7 @@ from datetime import timedelta
 import pytest
 
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_favorite
 from pcapi.model_creators.generic_creators import create_mediation
 from pcapi.model_creators.generic_creators import create_offerer
@@ -122,3 +123,53 @@ class Post:
             favorite = FavoriteSQLEntity.query.first()
             assert favorite.dateCreated
             assert favorite.userId == user.id
+
+
+class Delete:
+    class Returns204:
+        def when_user_delete_its_favorite(self, app):
+            # Given
+            user, test_client = utils.create_user_and_test_client(app)
+            offerer = create_offerer()
+            venue = create_venue(offerer, postal_code="29100", siret="12345678912341")
+            offer = create_offer_with_thing_product(venue=venue, thumb_count=0)
+            mediation = create_mediation(offer=offer, is_active=True, idx=123)
+            favorite = create_favorite(mediation=mediation, offer=offer, user=user)
+            repository.save(offer, favorite)
+            assert FavoriteSQLEntity.query.count() == 1
+
+            # When
+            response = test_client.delete(f"{FAVORITES_URL}/{favorite.id}")
+
+            # Then
+            assert response.status_code == 204
+            assert FavoriteSQLEntity.query.count() == 0
+
+        def when_user_delete_another_user_favorite(self, app):
+            # Given
+            _, test_client = utils.create_user_and_test_client(app)
+            other_user = users_factories.UserFactory()
+            offerer = create_offerer()
+            venue = create_venue(offerer, postal_code="29100", siret="12345678912341")
+            offer = create_offer_with_thing_product(venue=venue, thumb_count=0)
+            mediation = create_mediation(offer=offer, is_active=True, idx=123)
+            favorite = create_favorite(mediation=mediation, offer=offer, user=other_user)
+            repository.save(offer, favorite)
+            assert FavoriteSQLEntity.query.count() == 1
+
+            # When
+            response = test_client.delete(f"{FAVORITES_URL}/{favorite.id}")
+
+            # Then
+            assert response.status_code == 404
+            assert FavoriteSQLEntity.query.count() == 1
+
+        def when_user_delete_non_existent_favorite(self, app):
+            # Given
+            _, test_client = utils.create_user_and_test_client(app)
+
+            # When
+            response = test_client.delete(f"{FAVORITES_URL}/1203481310")
+
+            # Then
+            assert response.status_code == 404

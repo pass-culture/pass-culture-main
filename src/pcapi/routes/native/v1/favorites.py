@@ -11,6 +11,7 @@ from pcapi.models import Stock
 from pcapi.models import Venue
 from pcapi.models.db import db
 from pcapi.repository import repository
+from pcapi.repository import transaction
 from pcapi.routes.native.security import authenticated_user_required
 from pcapi.serialization.decorator import spectree_serialize
 
@@ -89,3 +90,12 @@ def create_favorite(user: User, body: serializers.FavoriteRequest) -> None:
         user=user,
     )
     repository.save(favorite)
+
+
+@blueprint.native_v1.route("/me/favorites/<int:favorite_id>", methods=["DELETE"])
+@spectree_serialize(on_success_status=204, api=blueprint.api)  # type: ignore
+@authenticated_user_required
+def delete_favorite(user: User, favorite_id: int) -> None:
+    with transaction():
+        favorite = FavoriteSQLEntity.query.filter_by(id=favorite_id, user=user).first_or_404()
+        db.session.delete(favorite)
