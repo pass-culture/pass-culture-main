@@ -16,12 +16,11 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
+SET search_path = public, pg_catalog;
+
 --
 -- Name: tiger; Type: SCHEMA; Schema: -; Owner: pass_culture
 --
-
-CREATE SCHEMA tiger;
-
 
 ALTER SCHEMA tiger OWNER TO pass_culture;
 
@@ -29,17 +28,11 @@ ALTER SCHEMA tiger OWNER TO pass_culture;
 -- Name: tiger_data; Type: SCHEMA; Schema: -; Owner: pass_culture
 --
 
-CREATE SCHEMA tiger_data;
-
-
 ALTER SCHEMA tiger_data OWNER TO pass_culture;
 
 --
 -- Name: topology; Type: SCHEMA; Schema: -; Owner: pass_culture
 --
-
-CREATE SCHEMA topology;
-
 
 ALTER SCHEMA topology OWNER TO pass_culture;
 
@@ -811,70 +804,6 @@ CREATE OPERATOR public.- (
 
 ALTER OPERATOR public.- (jsonb, jsonb) OWNER TO pass_culture;
 
---
--- Name: french_unaccent; Type: TEXT SEARCH CONFIGURATION; Schema: public; Owner: pass_culture
---
-
-CREATE TEXT SEARCH CONFIGURATION public.french_unaccent (
-    PARSER = pg_catalog."default" );
-
-ALTER TEXT SEARCH CONFIGURATION public.french_unaccent
-    ADD MAPPING FOR asciiword WITH french_stem;
-
-ALTER TEXT SEARCH CONFIGURATION public.french_unaccent
-    ADD MAPPING FOR word WITH public.unaccent, french_stem;
-
-ALTER TEXT SEARCH CONFIGURATION public.french_unaccent
-    ADD MAPPING FOR numword WITH simple;
-
-ALTER TEXT SEARCH CONFIGURATION public.french_unaccent
-    ADD MAPPING FOR email WITH simple;
-
-ALTER TEXT SEARCH CONFIGURATION public.french_unaccent
-    ADD MAPPING FOR url WITH simple;
-
-ALTER TEXT SEARCH CONFIGURATION public.french_unaccent
-    ADD MAPPING FOR host WITH simple;
-
-ALTER TEXT SEARCH CONFIGURATION public.french_unaccent
-    ADD MAPPING FOR sfloat WITH simple;
-
-ALTER TEXT SEARCH CONFIGURATION public.french_unaccent
-    ADD MAPPING FOR version WITH simple;
-
-ALTER TEXT SEARCH CONFIGURATION public.french_unaccent
-    ADD MAPPING FOR hword_numpart WITH simple;
-
-ALTER TEXT SEARCH CONFIGURATION public.french_unaccent
-    ADD MAPPING FOR hword_part WITH public.unaccent, french_stem;
-
-ALTER TEXT SEARCH CONFIGURATION public.french_unaccent
-    ADD MAPPING FOR hword_asciipart WITH french_stem;
-
-ALTER TEXT SEARCH CONFIGURATION public.french_unaccent
-    ADD MAPPING FOR numhword WITH simple;
-
-ALTER TEXT SEARCH CONFIGURATION public.french_unaccent
-    ADD MAPPING FOR asciihword WITH french_stem;
-
-ALTER TEXT SEARCH CONFIGURATION public.french_unaccent
-    ADD MAPPING FOR hword WITH public.unaccent, french_stem;
-
-ALTER TEXT SEARCH CONFIGURATION public.french_unaccent
-    ADD MAPPING FOR url_path WITH simple;
-
-ALTER TEXT SEARCH CONFIGURATION public.french_unaccent
-    ADD MAPPING FOR file WITH simple;
-
-ALTER TEXT SEARCH CONFIGURATION public.french_unaccent
-    ADD MAPPING FOR "float" WITH simple;
-
-ALTER TEXT SEARCH CONFIGURATION public.french_unaccent
-    ADD MAPPING FOR "int" WITH simple;
-
-ALTER TEXT SEARCH CONFIGURATION public.french_unaccent
-    ADD MAPPING FOR uint WITH simple;
-
 
 ALTER TEXT SEARCH CONFIGURATION public.french_unaccent OWNER TO pass_culture;
 
@@ -921,18 +850,6 @@ ALTER TABLE public.activity_id_seq OWNER TO pass_culture;
 --
 
 ALTER SEQUENCE public.activity_id_seq OWNED BY public.activity.id;
-
-
---
--- Name: alembic_version; Type: TABLE; Schema: public; Owner: pass_culture
---
-
-CREATE TABLE public.alembic_version (
-    version_num character varying(32) NOT NULL
-);
-
-
-ALTER TABLE public.alembic_version OWNER TO pass_culture;
 
 --
 -- Name: allocine_pivot; Type: TABLE; Schema: public; Owner: pass_culture
@@ -2550,412 +2467,90 @@ ALTER TABLE ONLY public.venue_type ALTER COLUMN id SET DEFAULT nextval('public.v
 
 
 --
--- Data for Name: activity; Type: TABLE DATA; Schema: public; Owner: pass_culture
---
-
-COPY public.activity (id, schema_name, table_name, relid, issued_at, native_transaction_id, verb, old_data, changed_data, transaction_id) FROM stdin;
-\.
-
-
---
--- Data for Name: alembic_version; Type: TABLE DATA; Schema: public; Owner: pass_culture
---
-
-COPY public.alembic_version (version_num) FROM stdin;
-f460dc2c9f93
-\.
-
-
---
--- Data for Name: allocine_pivot; Type: TABLE DATA; Schema: public; Owner: pass_culture
---
-
-COPY public.allocine_pivot (id, siret, "theaterId") FROM stdin;
-\.
-
-
---
--- Data for Name: allocine_venue_provider; Type: TABLE DATA; Schema: public; Owner: pass_culture
---
-
-COPY public.allocine_venue_provider (id, "isDuo", quantity) FROM stdin;
-\.
-
-
---
--- Data for Name: allocine_venue_provider_price_rule; Type: TABLE DATA; Schema: public; Owner: pass_culture
---
-
-COPY public.allocine_venue_provider_price_rule (id, "allocineVenueProviderId", "priceRule", price) FROM stdin;
-\.
-
-
---
--- Data for Name: api_key; Type: TABLE DATA; Schema: public; Owner: pass_culture
---
-
-COPY public.api_key (id, "offererId", value) FROM stdin;
-\.
-
-
---
--- Data for Name: bank_information; Type: TABLE DATA; Schema: public; Owner: pass_culture
---
-
-COPY public.bank_information (id, "offererId", "venueId", iban, bic, "applicationId", "dateModified", status) FROM stdin;
-\.
-
-
---
--- Data for Name: beneficiary_import; Type: TABLE DATA; Schema: public; Owner: pass_culture
---
-
-COPY public.beneficiary_import (id, "beneficiaryId", "applicationId", "sourceId", source) FROM stdin;
-\.
-
-
---
--- Data for Name: beneficiary_import_status; Type: TABLE DATA; Schema: public; Owner: pass_culture
---
-
-COPY public.beneficiary_import_status (id, status, date, detail, "beneficiaryImportId", "authorId") FROM stdin;
-\.
-
-
---
--- Data for Name: booking; Type: TABLE DATA; Schema: public; Owner: pass_culture
---
-
-COPY public.booking (id, "dateCreated", "stockId", quantity, token, "userId", amount, "isCancelled", "isUsed", "dateUsed", "cancellationDate", "confirmationDate", "cancellationReason") FROM stdin;
-\.
-
-
---
 -- Data for Name: criterion; Type: TABLE DATA; Schema: public; Owner: pass_culture
 --
 
-COPY public.criterion (id, name, description, "scoreDelta", "endDateTime", "startDateTime") FROM stdin;
-1	Bonne offre d’appel	Offre déjà beaucoup réservée par les autres jeunes	1	\N	\N
-2	Mauvaise accroche	Offre ne possèdant pas une accroche de qualité suffisante	-1	\N	\N
-3	Offre de médiation spécifique	Offre possédant une médiation orientée pour les jeunes de 18 ans	2	\N	\N
-\.
-
-
---
--- Data for Name: deposit; Type: TABLE DATA; Schema: public; Owner: pass_culture
---
-
-COPY public.deposit (id, amount, "userId", source, "dateCreated", version, "expirationDate") FROM stdin;
-\.
-
-
---
--- Data for Name: email; Type: TABLE DATA; Schema: public; Owner: pass_culture
---
-
-COPY public.email (id, content, status, datetime) FROM stdin;
-\.
-
-
---
--- Data for Name: favorite; Type: TABLE DATA; Schema: public; Owner: pass_culture
---
-
-COPY public.favorite (id, "userId", "offerId", "mediationId", "dateCreated") FROM stdin;
-\.
+INSERT INTO public.criterion (name, description, "scoreDelta")
+VALUES
+    ('Bonne offre d’appel', 'Offre déjà beaucoup réservée par les autres jeunes', 1),
+    ('Mauvaise accroche', 'Offre ne possèdant pas une accroche de qualité suffisante', -1),
+    ('Offre de médiation spécifique', 'Offre possédant une médiation orientée pour les jeunes de 18 ans', 2);
 
 
 --
 -- Data for Name: feature; Type: TABLE DATA; Schema: public; Owner: pass_culture
 --
 
-COPY public.feature (id, name, description, "isActive") FROM stdin;
-66	BENEFICIARIES_IMPORT	Permettre limport des comptes jeunes depuis DMS	t
-67	FULL_OFFERS_SEARCH_WITH_OFFERER_AND_VENUE	Permet la recherche de mots-clés dans les tables structures et lieux en plus de celles des offres	t
-68	QR_CODE	Permettre la validation dune contremarque via QR code	t
-69	SEARCH_ALGOLIA	Permettre la recherche via Algolia	t
-70	SYNCHRONIZE_ALGOLIA	Permettre la mise à jour des données pour la recherche via Algolia	t
-71	SYNCHRONIZE_ALLOCINE	Permettre la synchronisation journalière avec Allociné	t
-72	SYNCHRONIZE_BANK_INFORMATION	Permettre la synchronisation journalière avec DMS pour récupérer les informations bancaires des acteurs	t
-73	SYNCHRONIZE_LIBRAIRES	Permettre la synchronisation journalière avec leslibraires.fr	t
-74	SYNCHRONIZE_TITELIVE	Permettre la synchronisation journalière avec TiteLive / Epagine	t
-75	SYNCHRONIZE_TITELIVE_PRODUCTS	Permettre limport journalier du référentiel des livres	t
-76	SYNCHRONIZE_TITELIVE_PRODUCTS_DESCRIPTION	Permettre limport journalier des résumés des livres	t
-77	SYNCHRONIZE_TITELIVE_PRODUCTS_THUMBS	Permettre limport journalier des couvertures de livres	t
-78	UPDATE_BOOKING_USED	Permettre la validation automatique des contremarques 48h après la fin de lévènement	t
-79	WEBAPP_SIGNUP	Permettre aux bénéficiaires de créer un compte	t
-80	API_SIRENE_AVAILABLE	Active les fonctionnalitées liées à l'API Sirene	t
-81	WEBAPP_HOMEPAGE	Permettre l affichage de la nouvelle page d accueil de la webapp	t
-82	WEBAPP_PROFILE_PAGE	Permettre l affichage de la page profil (route dédiée + navbar)	t
-83	APPLY_BOOKING_LIMITS_V2	Permettre l affichage des nouvelles règles de génération de portefeuille des jeunes	f
-84	ALLOW_IDCHECK_REGISTRATION	Autoriser les utilisateurs à suivre le parcours d inscription ID Check	t
-85	WHOLE_FRANCE_OPENING	Ouvre le service à la France entière	f
-86	PRO_HOMEPAGE	Permettre l affichage de la nouvelle page d accueil du portail pro	f
-87	PRO_TUTO	Permettre l affichage des cartes tuto du portail pro	f
-88	PARALLEL_SYNCHRONIZATION_OF_VENUE_PROVIDER	Active la parallèlisation des opérations de synchronisation pour les VenueProvider	t
-89	ENABLE_WHOLE_VENUE_PROVIDER_ALGOLIA_INDEXATION	Active la réindexation globale sur Algolia des VenueProvider	t
-90	SYNCHRONIZE_VENUE_PROVIDER_IN_WORKER	Effectue la première synchronisation des venue_provider dans le worker	t
-91	ENABLE_NATIVE_APP_RECAPTCHA	Active le reCaptacha sur l'API native	t
-92	FNAC_SYNCHRONIZATION_V2	Active la synchronisation FNAC v2 : synchronisation par batch	t
-\.
-
-
---
--- Data for Name: iris_france; Type: TABLE DATA; Schema: public; Owner: pass_culture
---
-
-COPY public.iris_france (id, "irisCode", centroid, shape) FROM stdin;
-\.
-
-
---
--- Data for Name: iris_venues; Type: TABLE DATA; Schema: public; Owner: pass_culture
---
-
-COPY public.iris_venues (id, "irisId", "venueId") FROM stdin;
-\.
-
-
---
--- Data for Name: local_provider_event; Type: TABLE DATA; Schema: public; Owner: pass_culture
---
-
-COPY public.local_provider_event (id, "providerId", date, type, payload) FROM stdin;
-\.
-
-
---
--- Data for Name: mediation; Type: TABLE DATA; Schema: public; Owner: pass_culture
---
-
-COPY public.mediation ("thumbCount", "idAtProviders", "dateModifiedAtLastProvider", id, "dateCreated", "authorId", "lastProviderId", "offerId", credit, "isActive", "fieldsUpdated") FROM stdin;
-\.
-
-
---
--- Data for Name: offer; Type: TABLE DATA; Schema: public; Owner: pass_culture
---
-
-COPY public.offer ("idAtProviders", "dateModifiedAtLastProvider", id, "dateCreated", "productId", "venueId", "lastProviderId", "bookingEmail", "isActive", type, name, description, conditions, "ageMin", "ageMax", url, "mediaUrls", "durationMinutes", "isNational", "extraData", "isDuo", "fieldsUpdated", "withdrawalDetails", "audioDisabilityCompliant", "mentalDisabilityCompliant", "motorDisabilityCompliant", "visualDisabilityCompliant", "externalTicketOfficeUrl") FROM stdin;
-\.
-
-
---
--- Data for Name: offer_criterion; Type: TABLE DATA; Schema: public; Owner: pass_culture
---
-
-COPY public.offer_criterion (id, "offerId", "criterionId") FROM stdin;
-\.
-
-
---
--- Data for Name: offerer; Type: TABLE DATA; Schema: public; Owner: pass_culture
---
-
-COPY public.offerer ("isActive", "thumbCount", "idAtProviders", "dateModifiedAtLastProvider", address, "postalCode", city, "validationToken", id, "dateCreated", name, siren, "lastProviderId", "fieldsUpdated") FROM stdin;
-\.
-
-
---
--- Data for Name: payment; Type: TABLE DATA; Schema: public; Owner: pass_culture
---
-
-COPY public.payment (id, author, comment, "recipientName", iban, bic, "bookingId", amount, "reimbursementRule", "transactionEndToEndId", "recipientSiren", "reimbursementRate", "transactionLabel", "paymentMessageId") FROM stdin;
-\.
-
-
---
--- Data for Name: payment_message; Type: TABLE DATA; Schema: public; Owner: pass_culture
---
-
-COPY public.payment_message (id, name, checksum) FROM stdin;
-\.
-
-
---
--- Data for Name: payment_status; Type: TABLE DATA; Schema: public; Owner: pass_culture
---
-
-COPY public.payment_status (id, "paymentId", date, status, detail) FROM stdin;
-\.
-
-
---
--- Data for Name: product; Type: TABLE DATA; Schema: public; Owner: pass_culture
---
-
-COPY public.product ("extraData", "thumbCount", "idAtProviders", "dateModifiedAtLastProvider", id, type, name, description, conditions, "ageMin", "ageMax", "mediaUrls", "durationMinutes", "isNational", "lastProviderId", "owningOffererId", url, "fieldsUpdated", "isGcuCompatible") FROM stdin;
-\.
+INSERT INTO public.feature (name, description, "isActive")
+VALUES
+    ('BENEFICIARIES_IMPORT',	'Permettre limport des comptes jeunes depuis DMS', true),
+    ('FULL_OFFERS_SEARCH_WITH_OFFERER_AND_VENUE',	'Permet la recherche de mots-clés dans les tables structures et lieux en plus de celles des offres', true),
+    ('QR_CODE',	'Permettre la validation dune contremarque via QR code', true),
+    ('SEARCH_ALGOLIA',	'Permettre la recherche via Algolia', true),
+    ('SYNCHRONIZE_ALGOLIA',	'Permettre la mise à jour des données pour la recherche via Algolia', true),
+    ('SYNCHRONIZE_ALLOCINE',	'Permettre la synchronisation journalière avec Allociné', true),
+    ('SYNCHRONIZE_BANK_INFORMATION',	'Permettre la synchronisation journalière avec DMS pour récupérer les informations bancaires des acteurs', true),
+    ('SYNCHRONIZE_LIBRAIRES',	'Permettre la synchronisation journalière avec leslibraires.fr', true),
+    ('SYNCHRONIZE_TITELIVE',	'Permettre la synchronisation journalière avec TiteLive / Epagine', true),
+    ('SYNCHRONIZE_TITELIVE_PRODUCTS',	'Permettre limport journalier du référentiel des livres', true),
+    ('SYNCHRONIZE_TITELIVE_PRODUCTS_DESCRIPTION',	'Permettre limport journalier des résumés des livres', true),
+    ('SYNCHRONIZE_TITELIVE_PRODUCTS_THUMBS',	'Permettre limport journalier des couvertures de livres', true),
+    ('UPDATE_BOOKING_USED',	'Permettre la validation automatique des contremarques 48h après la fin de lévènement', true),
+    ('WEBAPP_SIGNUP',	'Permettre aux bénéficiaires de créer un compte', true),
+    ('API_SIRENE_AVAILABLE',	'Active les fonctionnalitées liées à l''API Sirene', true),
+    ('WEBAPP_HOMEPAGE',	'Permettre l affichage de la nouvelle page d accueil de la webapp', true),
+    ('WEBAPP_PROFILE_PAGE',	'Permettre l affichage de la page profil (route dédiée + navbar)', true),
+    ('APPLY_BOOKING_LIMITS_V2',	'Permettre l affichage des nouvelles règles de génération de portefeuille des jeunes', false),
+    ('ALLOW_IDCHECK_REGISTRATION',	'Autoriser les utilisateurs à suivre le parcours d inscription ID Check', true),
+    ('WHOLE_FRANCE_OPENING',	'Ouvre le service à la France entière', false),
+    ('PRO_HOMEPAGE',	'Permettre l affichage de la nouvelle page d accueil du portail pro', false),
+    ('PRO_TUTO',	'Permettre l affichage des cartes tuto du portail pro', false),
+    ('PARALLEL_SYNCHRONIZATION_OF_VENUE_PROVIDER', 'Active la parallèlisation des opérations de synchronisation pour les VenueProvider', true),
+    ('ENABLE_WHOLE_VENUE_PROVIDER_ALGOLIA_INDEXATION', 'Active la réindexation globale sur Algolia des VenueProvider', true),
+    ('SYNCHRONIZE_VENUE_PROVIDER_IN_WORKER',	'Effectue la première synchronisation des venue_provider dans le worker', true),
+    ('ENABLE_NATIVE_APP_RECAPTCHA',	'Active le reCaptacha sur l''API native', true),
+    ('FNAC_SYNCHRONIZATION_V2', 'Active la synchronisation FNAC v2 : synchronisation par batch', true);
 
 
 --
 -- Data for Name: provider; Type: TABLE DATA; Schema: public; Owner: pass_culture
 --
 
-COPY public.provider ("isActive", id, name, "localClass", "apiKey", "apiKeyGenerationDate", "enabledForPro", "requireProviderIdentifier") FROM stdin;
-f	1	TiteLive Stocks (Epagine / Place des libraires.com)	TiteLiveStocks	\N	\N	f	t
-f	2	TiteLive (Epagine / Place des libraires.com)	TiteLiveThings	\N	\N	f	t
-f	3	TiteLive (Epagine / Place des libraires.com) Descriptions	TiteLiveThingDescriptions	\N	\N	f	t
-f	4	TiteLive (Epagine / Place des libraires.com) Thumbs	TiteLiveThingThumbs	\N	\N	f	t
-f	5	Allociné	AllocineStocks	\N	\N	f	t
-f	6	Leslibraires.fr	LibrairesStocks	\N	\N	f	t
-f	7	FNAC	FnacStocks	\N	\N	f	t
-f	8	Praxiel/Inférence	PraxielStocks	\N	\N	f	t
-\.
-
-
---
--- Data for Name: spatial_ref_sys; Type: TABLE DATA; Schema: public; Owner: pass_culture
---
-
-COPY public.spatial_ref_sys (srid, auth_name, auth_srid, srtext, proj4text) FROM stdin;
-\.
-
-
---
--- Data for Name: stock; Type: TABLE DATA; Schema: public; Owner: pass_culture
---
-
-COPY public.stock ("idAtProviders", "dateModifiedAtLastProvider", id, "dateModified", price, quantity, "bookingLimitDatetime", "lastProviderId", "offerId", "isSoftDeleted", "beginningDatetime", "dateCreated", "fieldsUpdated") FROM stdin;
-\.
-
-
---
--- Data for Name: token; Type: TABLE DATA; Schema: public; Owner: pass_culture
---
-
-COPY public.token (id, "userId", value, type, "creationDate", "expirationDate") FROM stdin;
-\.
-
-
---
--- Data for Name: transaction; Type: TABLE DATA; Schema: public; Owner: pass_culture
---
-
-COPY public.transaction (id, native_transaction_id, issued_at, client_addr, actor_id) FROM stdin;
-\.
-
-
---
--- Data for Name: user; Type: TABLE DATA; Schema: public; Owner: pass_culture
---
-
-COPY public."user" (id, "validationToken", email, password, "publicName", "dateCreated", "departementCode", "isAdmin", "resetPasswordToken", "resetPasswordTokenValidityLimit", "firstName", "lastName", "postalCode", "phoneNumber", "dateOfBirth", "needsToFillCulturalSurvey", "culturalSurveyId", civility, activity, "culturalSurveyFilledDate", "hasSeenTutorials", address, city, "lastConnectionDate", "isEmailValidated", "isBeneficiary", "hasAllowedRecommendations", "suspensionReason", "isActive", "hasSeenProTutorials") FROM stdin;
-\.
-
-
---
--- Data for Name: user_offerer; Type: TABLE DATA; Schema: public; Owner: pass_culture
---
-
-COPY public.user_offerer (id, "validationToken", "userId", "offererId", rights) FROM stdin;
-\.
-
-
---
--- Data for Name: user_session; Type: TABLE DATA; Schema: public; Owner: pass_culture
---
-
-COPY public.user_session (id, uuid, "userId") FROM stdin;
-\.
-
-
---
--- Data for Name: venue; Type: TABLE DATA; Schema: public; Owner: pass_culture
---
-
-COPY public.venue ("thumbCount", "idAtProviders", "dateModifiedAtLastProvider", address, "postalCode", city, id, name, siret, "departementCode", latitude, longitude, "managingOffererId", "bookingEmail", "lastProviderId", "isVirtual", comment, "validationToken", "publicName", "fieldsUpdated", "venueTypeId", "venueLabelId", "dateCreated", "isPermanent") FROM stdin;
-\.
-
-
---
--- Data for Name: venue_label; Type: TABLE DATA; Schema: public; Owner: pass_culture
---
-
-COPY public.venue_label (id, label) FROM stdin;
-\.
-
-
---
--- Data for Name: venue_provider; Type: TABLE DATA; Schema: public; Owner: pass_culture
---
-
-COPY public.venue_provider ("isActive", id, "idAtProviders", "dateModifiedAtLastProvider", "venueId", "providerId", "venueIdAtOfferProvider", "lastSyncDate", "lastProviderId", "syncWorkerId", "fieldsUpdated") FROM stdin;
-\.
+INSERT INTO public.provider ("isActive", name, "localClass", "apiKey", "apiKeyGenerationDate", "enabledForPro", "requireProviderIdentifier")
+VALUES
+    (false, 'TiteLive Stocks (Epagine / Place des libraires.com)', 'TiteLiveStocks', null, null, false, true),
+    (false, 'TiteLive (Epagine / Place des libraires.com)', 'TiteLiveThings', null, null, false, true),
+    (false, 'TiteLive (Epagine / Place des libraires.com) Descriptions', 'TiteLiveThingDescriptions', null, null, false, true),
+    (false, 'TiteLive (Epagine / Place des libraires.com) Thumbs', 'TiteLiveThingThumbs', null, null, false, true),
+    (false, 'Allociné', 'AllocineStocks', null, null, false, true),
+    (false, 'Leslibraires.fr', 'LibrairesStocks', null, null, false, true),
+    (false, 'FNAC', 'FnacStocks', null, null, false, true),
+    (false, 'Praxiel/Inférence', 'PraxielStocks', null, null, false, true);
 
 
 --
 -- Data for Name: venue_type; Type: TABLE DATA; Schema: public; Owner: pass_culture
 --
 
-COPY public.venue_type (id, label) FROM stdin;
-1	Arts visuels, arts plastiques et galeries
-2	Centre culturel
-3	Cours et pratique artistiques
-4	Culture scientifique
-5	Festival
-6	Jeux / Jeux vidéos
-7	Librairie
-8	Bibliothèque ou médiathèque
-9	Musée
-10	Musique - Disquaire
-11	Musique - Magasin d’instruments
-12	Musique - Salle de concerts
-13	Offre numérique
-14	Patrimoine et tourisme
-15	Cinéma - Salle de projections
-16	Spectacle vivant
-17	Autre
-\.
-
-
---
--- Data for Name: geocode_settings; Type: TABLE DATA; Schema: tiger; Owner: pass_culture
---
-
-COPY tiger.geocode_settings (name, setting, unit, category, short_desc) FROM stdin;
-\.
-
-
---
--- Data for Name: pagc_gaz; Type: TABLE DATA; Schema: tiger; Owner: pass_culture
---
-
-COPY tiger.pagc_gaz (id, seq, word, stdword, token, is_custom) FROM stdin;
-\.
-
-
---
--- Data for Name: pagc_lex; Type: TABLE DATA; Schema: tiger; Owner: pass_culture
---
-
-COPY tiger.pagc_lex (id, seq, word, stdword, token, is_custom) FROM stdin;
-\.
-
-
---
--- Data for Name: pagc_rules; Type: TABLE DATA; Schema: tiger; Owner: pass_culture
---
-
-COPY tiger.pagc_rules (id, rule, is_custom) FROM stdin;
-\.
-
-
---
--- Data for Name: topology; Type: TABLE DATA; Schema: topology; Owner: pass_culture
---
-
-COPY topology.topology (id, name, srid, "precision", hasz) FROM stdin;
-\.
-
-
---
--- Data for Name: layer; Type: TABLE DATA; Schema: topology; Owner: pass_culture
---
-
-COPY topology.layer (topology_id, layer_id, schema_name, table_name, feature_column, feature_type, level, child_id) FROM stdin;
-\.
-
+INSERT INTO public.venue_type (label)
+VALUES
+    ('Arts visuels, arts plastiques et galeries'),
+    ('Centre culturel'),
+    ('Cours et pratique artistiques'),
+    ('Culture scientifique'),
+    ('Festival'),
+    ('Jeux / Jeux vidéos'),
+    ('Librairie'),
+    ('Bibliothèque ou médiathèque'),
+    ('Musée'),
+    ('Musique - Disquaire'),
+    ('Musique - Magasin d’instruments'),
+    ('Musique - Salle de concerts'),
+    ('Offre numérique'),
+    ('Patrimoine et tourisme'),
+    ('Cinéma - Salle de projections'),
+    ('Spectacle vivant'),
+    ('Autre');
 
 --
 -- Name: activity_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
@@ -3014,13 +2609,6 @@ SELECT pg_catalog.setval('public.booking_id_seq', 1, false);
 
 
 --
--- Name: criterion_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
---
-
-SELECT pg_catalog.setval('public.criterion_id_seq', 3, true);
-
-
---
 -- Name: deposit_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
 --
 
@@ -3039,13 +2627,6 @@ SELECT pg_catalog.setval('public.email_id_seq', 1, false);
 --
 
 SELECT pg_catalog.setval('public.favorite_id_seq', 1, false);
-
-
---
--- Name: feature_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
---
-
-SELECT pg_catalog.setval('public.feature_id_seq', 92, true);
 
 
 --
@@ -3126,13 +2707,6 @@ SELECT pg_catalog.setval('public.product_id_seq', 1, false);
 
 
 --
--- Name: provider_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
---
-
-SELECT pg_catalog.setval('public.provider_id_seq', 8, true);
-
-
---
 -- Name: stock_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
 --
 
@@ -3193,21 +2767,6 @@ SELECT pg_catalog.setval('public.venue_label_id_seq', 1, false);
 --
 
 SELECT pg_catalog.setval('public.venue_provider_id_seq', 1, false);
-
-
---
--- Name: venue_type_id_seq; Type: SEQUENCE SET; Schema: public; Owner: pass_culture
---
-
-SELECT pg_catalog.setval('public.venue_type_id_seq', 17, true);
-
-
---
--- Name: alembic_version alembic_version_pkc; Type: CONSTRAINT; Schema: public; Owner: pass_culture
---
-
-ALTER TABLE ONLY public.alembic_version
-    ADD CONSTRAINT alembic_version_pkc PRIMARY KEY (version_num);
 
 
 --
