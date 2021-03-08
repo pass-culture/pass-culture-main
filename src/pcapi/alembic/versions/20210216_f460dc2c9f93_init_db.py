@@ -1,4 +1,4 @@
-"""add_feature_flag_fnac_synchronisation_v2
+"""initialize database schema with anterior migrations squashed in a dump
 
 Revision ID: f460dc2c9f93
 Revises: None
