@@ -21,13 +21,13 @@ const getBookingLimitDatetimeForEvent = (stock, beginningDatetime) => {
   ) {
     return beginningDatetime
   } else {
-    return momentBookingLimitDatetime.utc().endOf('day').format()
+    return momentBookingLimitDatetime.endOf('day').utc().format()
   }
 }
 
 const getBookingLimitDatetimeForThing = stock => {
   if (stock.bookingLimitDatetime) {
-    return moment(stock.bookingLimitDatetime).utc().endOf('day').format()
+    return moment(stock.bookingLimitDatetime).endOf('day').utc().format()
   }
   return null
 }

@@ -817,7 +817,7 @@ describe('stocks page', () => {
               expect(pcapi.bulkCreateOrEditStock).toHaveBeenCalledWith(defaultOffer.id, [
                 {
                   beginningDatetime: '2020-12-26T23:00:00Z',
-                  bookingLimitDatetime: '2020-12-25T23:59:59Z',
+                  bookingLimitDatetime: '2020-12-26T02:59:59Z',
                   id: '2E',
                   price: '14.01',
                   quantity: '6',
@@ -890,7 +890,7 @@ describe('stocks page', () => {
               expect(savedStocks[0].bookingLimitDatetime).toBe('2020-12-20T22:00:00Z')
             })
 
-            it('should set booking limit time to end of selected day when specified and different than beginning date', async () => {
+            it('should set booking limit time to end of selected locale day when specified and different than beginning date in Cayenne TZ', async () => {
               // Given
               await renderOffers(props, store)
               userEvent.click(screen.getByLabelText('Date limite de réservation'))
@@ -903,7 +903,25 @@ describe('stocks page', () => {
 
               // Then
               const savedStocks = pcapi.bulkCreateOrEditStock.mock.calls[0][1]
-              expect(savedStocks[0].bookingLimitDatetime).toBe('2020-12-19T23:59:59Z')
+              expect(savedStocks[0].bookingLimitDatetime).toBe('2020-12-20T02:59:59Z')
+            })
+
+            it('should set booking limit time to end of selected locale day when specified and different than beginning date in Paris TZ', async () => {
+              // Given
+              eventOffer.venue.departementCode = '75'
+
+              await renderOffers(props, store)
+              userEvent.click(screen.getByLabelText('Date limite de réservation'))
+              userEvent.click(screen.getByLabelText('day-17'))
+
+              // When
+              await act(async () => {
+                await userEvent.click(screen.getByText('Enregistrer'))
+              })
+
+              // Then
+              const savedStocks = pcapi.bulkCreateOrEditStock.mock.calls[0][1]
+              expect(savedStocks[0].bookingLimitDatetime).toBe('2020-12-17T22:59:59Z')
             })
 
             it('should set price to 0 when not specified', async () => {
@@ -1384,7 +1402,7 @@ describe('stocks page', () => {
             // Then
             expect(pcapi.bulkCreateOrEditStock).toHaveBeenCalledWith(defaultOffer.id, [
               {
-                bookingLimitDatetime: '2020-12-25T23:59:59Z',
+                bookingLimitDatetime: '2020-12-26T02:59:59Z',
                 id: '2E',
                 price: '14.01',
                 quantity: '6',
@@ -1421,7 +1439,7 @@ describe('stocks page', () => {
             expect(pcapi.loadOffer).toHaveBeenCalledTimes(1)
           })
 
-          it('should set booking limit time to end of selected day when specified', async () => {
+          it('should set booking limit time to end of selected local day when specified in Cayenne TZ', async () => {
             // Given
             pcapi.bulkCreateOrEditStock.mockResolvedValue({})
             await renderOffers(props, store)
@@ -1433,7 +1451,24 @@ describe('stocks page', () => {
 
             // Then
             const savedStocks = pcapi.bulkCreateOrEditStock.mock.calls[0][1]
-            expect(savedStocks[0].bookingLimitDatetime).toBe('2020-12-19T23:59:59Z')
+            expect(savedStocks[0].bookingLimitDatetime).toBe('2020-12-20T02:59:59Z')
+          })
+
+          it('should set booking limit time to end of selected local day when specified in Paris TZ', async () => {
+            // Given
+            thingOffer.venue.departementCode = '75'
+
+            pcapi.bulkCreateOrEditStock.mockResolvedValue({})
+            await renderOffers(props, store)
+            userEvent.click(screen.getByLabelText('Date limite de réservation'))
+            userEvent.click(screen.getByLabelText('day-17'))
+
+            // When
+            userEvent.click(screen.getByText('Enregistrer'))
+
+            // Then
+            const savedStocks = pcapi.bulkCreateOrEditStock.mock.calls[0][1]
+            expect(savedStocks[0].bookingLimitDatetime).toBe('2020-12-17T22:59:59Z')
           })
 
           it('should set booking limit datetime to null when not specified', async () => {
@@ -1733,13 +1768,13 @@ describe('stocks page', () => {
         expect(pcapi.bulkCreateOrEditStock).toHaveBeenCalledWith(defaultOffer.id, [
           {
             beginningDatetime: '2020-12-25T23:00:00Z',
-            bookingLimitDatetime: '2020-12-23T23:59:59Z',
+            bookingLimitDatetime: '2020-12-24T02:59:59Z',
             price: 0,
             quantity: null,
           },
           {
             beginningDatetime: '2020-12-24T23:00:00Z',
-            bookingLimitDatetime: '2020-12-22T23:59:59Z',
+            bookingLimitDatetime: '2020-12-23T02:59:59Z',
             price: '15',
             quantity: '15',
           },
@@ -1968,7 +2003,7 @@ describe('stocks page', () => {
         // then
         expect(pcapi.bulkCreateOrEditStock).toHaveBeenCalledWith('AG3A', [
           {
-            bookingLimitDatetime: '2020-12-22T23:59:59Z',
+            bookingLimitDatetime: '2020-12-23T02:59:59Z',
             price: '15',
             quantity: '15',
           },
