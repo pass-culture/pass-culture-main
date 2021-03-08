@@ -20,12 +20,15 @@ from pcapi.models import Product
 from pcapi.models import Venue
 from pcapi.models.db import db
 from pcapi.models.feature import FeatureToggle
+from pcapi.models.venue_provider import VenueProvider
 from pcapi.repository import feature_queries
 from pcapi.utils.logger import logger
 from pcapi.validation.models.entity_validator import validate
 
 
-def synchronize_venue_stocks_from_fnac(venue: Venue) -> None:
+def synchronize_venue_stocks_from_fnac(venue_provider: VenueProvider) -> None:
+    venue = venue_provider.venue
+
     logger.info("Starting synchronization of venue=%s provider=fnac", venue.id)
     fnac_api = ProviderAPI(
         api_url=settings.FNAC_API_URL,

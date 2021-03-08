@@ -94,7 +94,7 @@ class FnacCronTest:
                     "Authorization": "Basic fake_token",
                 },
             )
-            synchronize_fnac_stocks.synchronize_venue_stocks_from_fnac(venue_provider.venue)
+            synchronize_fnac_stocks.synchronize_venue_stocks_from_fnac(venue_provider)
 
         # Then
         # Test updates stock if already exists
