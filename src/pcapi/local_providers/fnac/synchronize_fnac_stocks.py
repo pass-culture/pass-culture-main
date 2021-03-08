@@ -7,6 +7,7 @@ from typing import Tuple
 from typing import Union
 
 from flask import current_app as app
+from sqlalchemy.sql.sqltypes import DateTime
 
 from pcapi import settings
 from pcapi.connectors import redis
@@ -22,12 +23,14 @@ from pcapi.models.db import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.venue_provider import VenueProvider
 from pcapi.repository import feature_queries
+from pcapi.repository import repository
 from pcapi.utils.logger import logger
 from pcapi.validation.models.entity_validator import validate
 
 
 def synchronize_venue_stocks_from_fnac(venue_provider: VenueProvider) -> None:
     venue = venue_provider.venue
+    startSyncDate = datetime.utcnow()
 
     logger.info("Starting synchronization of venue=%s provider=fnac", venue.id)
     fnac_api = ProviderAPI(
@@ -36,7 +39,7 @@ def synchronize_venue_stocks_from_fnac(venue_provider: VenueProvider) -> None:
         authentication_token=settings.FNAC_API_TOKEN,
     )
 
-    for raw_stocks in _get_stocks_by_batch(venue.siret, fnac_api):
+    for raw_stocks in _get_stocks_by_batch(venue.siret, fnac_api, venue_provider.lastSyncDate):
         stock_details = _build_stock_details_from_raw_stocks(raw_stocks, venue.siret)
 
         products_fnac_references = [stock_detail["products_fnac_reference"] for stock_detail in stock_details]
@@ -73,17 +76,20 @@ def synchronize_venue_stocks_from_fnac(venue_provider: VenueProvider) -> None:
 
         _reindex_offers(offer_ids)
 
+    venue_provider.lastSyncDate = startSyncDate
+    repository.save(venue_provider)
     logger.info("Ending synchronization of venue=%s provider=fnac", venue.id)
 
 
-def _get_stocks_by_batch(siret: str, fnac_api: ProviderAPI) -> Generator:
+def _get_stocks_by_batch(siret: str, fnac_api: ProviderAPI, modified_since: DateTime) -> Generator:
+    modified_since = datetime.strftime(modified_since, "%Y-%m-%dT%H:%M:%SZ") if modified_since else ""
     last_processed_fnac_reference = ""
 
     while True:
         fnac_responses = fnac_api.validated_stocks(
             siret=siret,
             last_processed_reference=last_processed_fnac_reference,
-            modified_since="",  # Fnac API does not handle this parameter
+            modified_since=modified_since,
         )
         raw_stocks = fnac_responses.get("stocks", [])
 

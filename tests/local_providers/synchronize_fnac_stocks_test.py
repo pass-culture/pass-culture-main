@@ -1,6 +1,7 @@
 from unittest import mock
 
 from flask import current_app as app
+from freezegun.api import freeze_time
 import pytest
 import requests_mock
 
@@ -67,6 +68,7 @@ def create_stock(isbn, siret, **kwargs):
 
 class FnacCronTest:
     @pytest.mark.usefixtures("db_session")
+    @freeze_time("2020-10-15 09:00:00")
     @override_settings(FNAC_API_URL="https://fnac_url", FNAC_API_TOKEN="fake_token")
     @override_features(SYNCHRONIZE_ALGOLIA=True)
     @mock.patch("pcapi.connectors.redis.add_offer_id")
@@ -150,6 +152,17 @@ class FnacCronTest:
             any_order=True,
         )
 
+        # Ensure next synchronisation is done with modifiedSince parameter
+        with requests_mock.Mocker() as request_mock:
+            request_mock.get(
+                f"https://fnac_url/{siret}?limit=1000&modifiedSince=2020-10-15T09%3A00%3A00Z",
+                [{"json": r, "headers": {"content-type": "application/json"}} for r in fnac_responses],
+                request_headers={
+                    "Authorization": "Basic fake_token",
+                },
+            )
+            synchronize_fnac_stocks.synchronize_venue_stocks_from_fnac(venue_provider)
+
     def test_build_stock_details_from_raw_stocks(self):
         # Given
         raw_stocks = [
@@ -219,7 +232,7 @@ class FnacCronTest:
             )
         ]
 
-    def test__get_stocks_to_upsert(self):
+    def test_get_stocks_to_upsert(self):
         # Given
         stock_details = [
             {
