@@ -63,8 +63,8 @@ echo "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAsbMptXdns+vGlapjXzoff7r9j+i0iHtVW8ZlED
 echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC+cKCqDRewBQlz7G6fBYuCTS4khN3fjOKq2DNyfI0DAfCcJmTSaCTYrNUKmPqNklf0gIUgxGudvHRuBpdzdqzVW7xhsPHWCNpHtJJjVwNcZV54F62cNgdmeOzRGuWSJ3k92uS+V4pz/yOUhQlZCsU4Oqt8S3oXVc0p90SXuTUWt2FabaYCf2gi9axLq31VSFvVCS+I9X9ev4si4EKrvY3LPCYKFjoZLOoSad9eyFRXElK3SBf1tdez17jUYRXf0n/uo9ZRNmco4jp1Avjh+XhKXRXEtYaRHxYIkqtaCCfAPG1gKiqnUoMwaIjykwXfUR5tfWbBYqNR4/yxLXVICQzz Erwan" >> ~/.ssh/authorized_keys
 echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC0j45qbtAeutTXOHurfBlnORa2/b7YXI+IoOHbP4aCnrgzf9xdZIgHQChqUA6yEo///IdJEw5TPJxqsVDcfMX+Qyrpn1HDasgPcUNYpo2tuXA641MV6JlAqdKxeXjb0RAxfJUKKpbml7wg66twnNBS7llpT0sjDl+uCoCQ4GkNT65SvsyeYke6duVM/plAq4ghX1Qe0w8+vk/td0smUZBxE5R38ouUwUV20Oc/GZxG5us70ay+EgTmEFR0WmN2bEt8Ff9borx4CLB6GoAsbd4Jp2ITsRdCGibr7G3y/kwYFyJffrJ8moIlVXq7JyQF7s+ZsllNN02xqr9f8AhUwUsCudn+a2UbGM9fNycqNemDIIhk7gioZx7cBvrSvGrXcK5muNzAF9lIkNdKbAR3Ed2b74XYOe8aGHSufJku6bYJhsw/bgb/fick4PJnQhzfeBd+E6EDgXHB4EDWesIrh9tHj55vkifpoU0yooHwPtCBtkSVp6Wimie3Kv9dD+lbjBSBc1Hd5t9AeVYf2ssgWrOMSgRIQkNQL+E1wjId3qXq2tdAZvolZnK6E1ioMKZmPEP2ALwILBuRN4IK0HT4lFQ+rt25lSu9MpF/GZLfiEmLsKrrAaXm42NO4DZpoYeo43uSWC0co44TbY5PEHbZU7iisDZCX9wqH7eSSXwXxJReFw== Augustin" >> ~/.ssh/authorized_keys
 
-git clone https://github.com/betagouv/pass-culture-main
-cd pass-culture-main 
+git clone https://github.com/pass-culture/pass-culture-main
+cd pass-culture-main
 sed -i -e 's#git@github.com:#https://github.com/#' .gitmodules
 git submodule init
 git submodule update
@@ -75,7 +75,7 @@ sudo pacman -S certbot certbot-nginx cronie docker-compose docker lftp unzip
 sudo usermod -a -G docker deploy
 exec su -l deploy
 
-cd ~/pass-culture-main 
+cd ~/pass-culture-main
 
 sudo systemctl start docker
 sudo systemctl enable docker

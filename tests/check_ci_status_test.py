@@ -20,7 +20,7 @@ project_jobs_infos_mock =[{
     ],
     'vcs_revision': '56ePe4eVerbd4e9c52bce2342a0e28aa3003500f7b',
     'outcome': 'success',
-    'vcs_url': 'https://github.com/betagouv/pass-culture-api'
+    'vcs_url': 'https://github.com/pass-culture/pass-culture-api'
 }]
 
 class CheckCIStatusTest:
