@@ -135,24 +135,6 @@ describe('homepage', () => {
         expect(screen.getByText('Aide et support')).toBeInTheDocument()
       })
 
-      it('should display help links', () => {
-        const contactLink = screen.getByText('Contacter le support', { selector: 'a' })
-        const cguLink = screen.getByText('Conditions Générales d’Utilisation', {
-          selector: 'a',
-        })
-        const faqLink = screen.getByText('Foire Aux Questions', { selector: 'a' })
-
-        expect(contactLink).toBeInTheDocument()
-        expect(cguLink).toBeInTheDocument()
-        expect(faqLink).toBeInTheDocument()
-
-        expect(contactLink.getAttribute('href')).toBe('mailto:support@passculture.app')
-        expect(cguLink.getAttribute('href')).toBe('https://pass.culture.fr/cgu-professionnels/')
-        expect(faqLink.getAttribute('href')).toBe(
-          'https://aide.passculture.app/fr/category/acteurs-culturels-1t20dhs/'
-        )
-      })
-
       describe('update profile informations modal', () => {
         it('should display profile modifications modal when clicking on modify button', async () => {
           // when

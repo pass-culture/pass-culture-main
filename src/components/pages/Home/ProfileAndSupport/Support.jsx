@@ -15,6 +15,20 @@ const Support = () => {
             <li>
               <a
                 className="hs-link tertiary-link"
+                href="https://aide.passculture.app/fr/category/acteurs-culturels-1t20dhs/"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                <div className="ico-container">
+                  <Icon svg="ico-external-site" />
+                </div>
+                {"Centre d'aide"}
+              </a>
+            </li>
+
+            <li>
+              <a
+                className="hs-link tertiary-link"
                 href="mailto:support@passculture.app"
                 rel="noopener noreferrer"
                 target="_blank"
@@ -40,20 +54,6 @@ const Support = () => {
                   <Icon svg="ico-external-site" />
                 </div>
                 {'Conditions Générales d’Utilisation'}
-              </a>
-            </li>
-
-            <li>
-              <a
-                className="hs-link tertiary-link"
-                href="https://aide.passculture.app/fr/category/acteurs-culturels-1t20dhs/"
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                <div className="ico-container">
-                  <Icon svg="ico-external-site" />
-                </div>
-                {'Foire Aux Questions'}
               </a>
             </li>
           </ul>
