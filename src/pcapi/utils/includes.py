@@ -38,7 +38,7 @@ OFFER_INCLUDES = [
     "lastProvider",
     "offerType",
     "thumbUrl",
-    "validation",
+    "status",
     {"key": "activeMediation", "includes": ["thumbUrl"]},
     {"key": "mediations", "includes": ["thumbUrl"]},
     {"key": "product", "includes": ["-type"]},

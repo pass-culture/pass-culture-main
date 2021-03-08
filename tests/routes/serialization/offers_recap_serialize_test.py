@@ -1,4 +1,3 @@
-from pcapi.core.offers.models import OfferStatus
 from pcapi.domain.identifier.identifier import Identifier
 from pcapi.domain.pro_offers.paginated_offers_recap import OfferRecap
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
@@ -31,7 +30,7 @@ def should_return_serialized_offers_with_relevant_informations():
         venue_offerer_name="Gérant de petites librairies",
         venue_departement_code=departement_code,
         stocks=[stock],
-        validation=OfferStatus.APPROVED.name,
+        status="ACTIVE",
     )
     paginated_offers_recap = PaginatedOffersRecap(offers_recap=[offer], current_page=1, total_pages=2, total_offers=3)
 
@@ -48,6 +47,7 @@ def should_return_serialized_offers_with_relevant_informations():
             "isEvent": False,
             "isThing": True,
             "name": "Test Book",
+            "status": "ACTIVE",
             "stocks": [
                 {
                     "id": offer.stocks[0].identifier.scrambled,
@@ -68,7 +68,6 @@ def should_return_serialized_offers_with_relevant_informations():
                 "publicName": "Petite librairie",
             },
             "venueId": offer.venue.identifier.scrambled,
-            "validation": "APPROVED",
         }
     ]
     assert result["offers"] == expected_serialized_offer
@@ -99,7 +98,7 @@ def should_return_pagination_details():
         venue_offerer_name="Gérant de petites librairies",
         venue_departement_code=None,
         stocks=[stock],
-        validation=OfferStatus.APPROVED.name,
+        status="ACTIVE",
     )
     current_page = 1
     total_pages = 2

@@ -33,7 +33,7 @@ def _serialize_offer_paginated(offer: OfferRecap) -> Dict:
         "type": offer.offer_type,
         "venue": _serialize_venue(offer.venue),
         "venueId": offer.venue.identifier.scrambled,
-        "validation": offer.validation,
+        "status": offer.status,
     }
 
 

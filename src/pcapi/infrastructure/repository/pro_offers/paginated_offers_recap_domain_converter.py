@@ -37,7 +37,7 @@ def _offer_recap_to_domain(offer: Offer) -> OfferRecap:
         venue_public_name=offer.venue.publicName,
         venue_departement_code=offer.venue.departementCode,
         stocks=stocks,
-        validation=offer.validation.name,
+        status=offer.status.name,
     )
 
 

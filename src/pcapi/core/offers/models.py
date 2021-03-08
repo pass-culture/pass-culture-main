@@ -21,9 +21,12 @@ from sqlalchemy import Numeric
 from sqlalchemy import String
 from sqlalchemy import Text
 from sqlalchemy import and_
+from sqlalchemy import case
 from sqlalchemy import event
+from sqlalchemy import exists
 from sqlalchemy import false
 from sqlalchemy import func
+from sqlalchemy import or_
 from sqlalchemy import text
 from sqlalchemy.event import listens_for
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -107,13 +110,29 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin, VersionedMixin
     def hasBookingLimitDatetimePassed(cls):  # pylint: disable=no-self-argument
         return and_(cls.bookingLimitDatetime != None, cls.bookingLimitDatetime <= func.now())
 
-    @property
+    @hybrid_property
     def bookingsQuantity(self):
         return sum([booking.quantity for booking in self.bookings if not booking.isCancelled])
 
-    @property
+    @bookingsQuantity.expression
+    def bookingsQuantity(cls):  # pylint: disable=no-self-argument
+        from pcapi.core.bookings.models import Booking
+
+        return (
+            db.session.query(func.coalesce(func.sum(Booking.quantity), 0))
+            .filter(Booking.isCancelled.is_(False))
+            .filter(Booking.stockId == cls.id)
+            .as_scalar()
+        )
+
+    # TODO(fseguin, 2021-03-25): replace unlimited by None (also in the front-end)
+    @hybrid_property
     def remainingQuantity(self):
         return "unlimited" if self.quantity is None else self.quantity - self.bookingsQuantity
+
+    @remainingQuantity.expression
+    def remainingQuantity(cls):  # pylint: disable=no-self-argument
+        return case([(cls.quantity.is_(None), None)], else_=(cls.quantity - cls.bookingsQuantity))
 
     @hybrid_property
     def isEventExpired(self):
@@ -136,7 +155,14 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin, VersionedMixin
 
     @property
     def isSoldOut(self):
-        return self.isSoftDeleted or (self.quantity is not None and self.remainingQuantity <= 0)
+        # pylint: disable=comparison-with-callable
+        if (
+            not self.isSoftDeleted
+            and (self.beginningDatetime is None or self.beginningDatetime > datetime.utcnow())
+            and (self.remainingQuantity == "unlimited" or self.remainingQuantity > 0)
+        ):
+            return False
+        return True
 
     @classmethod
     def queryNotSoftDeleted(cls):
@@ -232,11 +258,11 @@ class OfferImage:
 
 class OfferStatus(enum.Enum):
     ACTIVE = "ACTIVE"
-    APPROVED = "APPROVED"
     AWAITING = "AWAITING"
     EXPIRED = "EXPIRED"
     REJECTED = "REJECTED"
     SOLD_OUT = "SOLD_OUT"
+    INACTIVE = "INACTIVE"
 
 
 class OfferValidationStatus(enum.Enum):
@@ -306,6 +332,27 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin, 
         server_default="APPROVED",
     )
 
+    @hybrid_property
+    def isSoldOut(self):
+        for stock in self.stocks:
+            if (
+                not stock.isSoftDeleted
+                and (stock.beginningDatetime is None or stock.beginningDatetime > datetime.utcnow())
+                and (stock.remainingQuantity == "unlimited" or stock.remainingQuantity > 0)
+            ):
+                return False
+        return True
+
+    @isSoldOut.expression
+    def isSoldOut(cls):  # pylint: disable=no-self-argument
+        return (
+            ~exists()
+            .where(Stock.offerId == cls.id)
+            .where(Stock.isSoftDeleted.is_(False))
+            .where(or_(Stock.beginningDatetime > func.now(), Stock.beginningDatetime.is_(None)))
+            .where(or_(Stock.remainingQuantity.is_(None), Stock.remainingQuantity > 0))
+        )
+
     @property
     def activeMediation(self) -> Optional[Mediation]:
         sorted_by_date_desc = sorted(self.mediations, key=lambda m: m.dateCreated, reverse=True)
@@ -329,10 +376,6 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin, 
             and self.venue.managingOfferer.isActive
             and self.venue.managingOfferer.isValidated
         )
-
-    @property
-    def isSoldOut(self) -> bool:
-        return all(stock.isSoldOut for stock in self.stocks)
 
     @hybrid_property
     def isPermanent(self) -> bool:
@@ -384,11 +427,21 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin, 
                 return True
         return False
 
-    @property
+    @hybrid_property
     def hasBookingLimitDatetimesPassed(self) -> bool:
         if self.activeStocks:
             return all(stock.hasBookingLimitDatetimePassed for stock in self.activeStocks)
         return False
+
+    @hasBookingLimitDatetimesPassed.expression
+    def hasBookingLimitDatetimesPassed(cls):  # pylint: disable=no-self-argument
+        return and_(
+            exists().where(Stock.offerId == cls.id).where(Stock.isSoftDeleted.is_(False)),
+            ~exists()
+            .where(Stock.offerId == cls.id)
+            .where(Stock.isSoftDeleted.is_(False))
+            .where(Stock.hasBookingLimitDatetimePassed.is_(False)),
+        )
 
     @property
     def activeStocks(self) -> List[Stock]:
@@ -459,24 +512,35 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin, 
         matching_type_thing = next(filter(lambda thing_type: str(thing_type) == self.type, ThingType))
         return matching_type_thing.value["proLabel"]
 
-    @property
+    @hybrid_property
     def status(self) -> OfferStatus:
-        status = OfferStatus.APPROVED
-
         if self.validation == OfferValidationStatus.REJECTED:
-            status = OfferStatus.REJECTED
+            return OfferStatus.REJECTED
 
-        elif self.validation == OfferValidationStatus.AWAITING:
-            status = OfferStatus.AWAITING
+        if self.validation == OfferValidationStatus.AWAITING:
+            return OfferStatus.AWAITING
 
-        elif self.validation == OfferValidationStatus.APPROVED:
-            if self.hasBookingLimitDatetimesPassed:
-                status = OfferStatus.EXPIRED
+        if not self.isActive:
+            return OfferStatus.INACTIVE
 
-            elif not self.activeStocks:
-                status = OfferStatus.SOLD_OUT
+        if self.validation == OfferValidationStatus.APPROVED:
+            if self.hasBookingLimitDatetimesPassed:  # pylint: disable=using-constant-test
+                return OfferStatus.EXPIRED
 
-            elif self.isActive:
-                status = OfferStatus.ACTIVE
+            if self.isSoldOut:  # pylint: disable=using-constant-test
+                return OfferStatus.SOLD_OUT
 
-        return status
+        return OfferStatus.ACTIVE
+
+    @status.expression
+    def status(cls):  # pylint: disable=no-self-argument
+        return case(
+            [
+                (cls.validation == OfferValidationStatus.REJECTED.name, OfferStatus.REJECTED.name),
+                (cls.validation == OfferValidationStatus.AWAITING.name, OfferStatus.AWAITING.name),
+                (cls.isActive.is_(False), OfferStatus.INACTIVE.name),
+                (cls.hasBookingLimitDatetimesPassed.is_(True), OfferStatus.EXPIRED.name),
+                (cls.isSoldOut.is_(True), OfferStatus.SOLD_OUT.name),
+            ],
+            else_=OfferStatus.ACTIVE.name,
+        )

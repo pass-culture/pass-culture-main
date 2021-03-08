@@ -174,8 +174,8 @@ class ListOffersOfferResponseModel(BaseModel):
     thumbUrl: Optional[str]
     type: str
     venue: ListOffersVenueResponseModel
+    status: str
     venueId: str
-    validation: str
 
 
 class ListOffersResponseModel(BaseModel):
@@ -389,7 +389,7 @@ class GetOfferResponseModel(BaseModel):
     venue: GetOfferVenueResponseModel
     venueId: str
     withdrawalDetails: Optional[str]
-    validation: str
+    status: str
 
     class Config:
         json_encoders = {datetime: format_into_utc_date}

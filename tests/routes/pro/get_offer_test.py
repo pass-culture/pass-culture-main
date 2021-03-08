@@ -176,7 +176,7 @@ class Returns200:
                 "url": None,
             },
             "productId": humanize(stock.offer.product.id),
-            "validation": "APPROVED",
+            "status": "ACTIVE",
             "stocks": [
                 {
                     "beginningDatetime": "2020-10-15T01:00:00Z",

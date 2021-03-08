@@ -90,7 +90,7 @@ class OffersTest:
                     "bookingLimitDatetime": "2019-12-30T23:00:00Z",
                     "cancellationLimitDatetime": "2020-01-01T00:00:00Z",
                     "isBookable": False,
-                    "isSoldOut": False,
+                    "isSoldOut": True,
                     "isExpired": True,
                 },
                 {

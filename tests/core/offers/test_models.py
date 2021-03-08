@@ -2,11 +2,14 @@ import datetime
 
 import pytest
 
+from pcapi.core.bookings.factories import BookingFactory
 import pcapi.core.offerers.factories as providers_factories
 from pcapi.core.offers import factories
 from pcapi.core.offers import models
+from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferStatus
 from pcapi.core.offers.models import OfferValidationStatus
+from pcapi.core.offers.models import Stock
 from pcapi.models.offer_type import ThingType
 from pcapi.utils.date import DateTimes
 
@@ -85,6 +88,43 @@ class OfferHasBookingLimitDatetimesPassedTest:
         stock = factories.StockFactory(bookingLimitDatetime=past)
         assert stock.offer.hasBookingLimitDatetimesPassed
 
+    def test_expression_with_stock_with_no_booking_limit_datetime(self):
+        stock = factories.StockFactory(bookingLimitDatetime=None)
+        offer = stock.offer
+
+        assert Offer.query.filter(Offer.hasBookingLimitDatetimesPassed.is_(True)).all() == []
+        assert Offer.query.filter(Offer.hasBookingLimitDatetimesPassed.is_(False)).all() == [offer]
+
+    def test_expression_with_stock_with_booking_limit_datetime_passed(self):
+        past = datetime.datetime.now() - datetime.timedelta(days=1)
+        stock = factories.StockFactory(bookingLimitDatetime=past)
+        offer = stock.offer
+
+        assert Offer.query.filter(Offer.hasBookingLimitDatetimesPassed.is_(True)).all() == [offer]
+        assert Offer.query.filter(Offer.hasBookingLimitDatetimesPassed.is_(False)).all() == []
+
+    def test_expression_with_stock_with_booking_limit_datetime_in_the_future(self):
+        future = datetime.datetime.now() + datetime.timedelta(days=2)
+        stock = factories.StockFactory(bookingLimitDatetime=future)
+        offer = stock.offer
+
+        assert Offer.query.filter(Offer.hasBookingLimitDatetimesPassed.is_(True)).all() == []
+        assert Offer.query.filter(Offer.hasBookingLimitDatetimesPassed.is_(False)).all() == [offer]
+
+    def test_expression_with_no_stock(self):
+        offer = factories.OfferFactory()
+
+        assert Offer.query.filter(Offer.hasBookingLimitDatetimesPassed.is_(True)).all() == []
+        assert Offer.query.filter(Offer.hasBookingLimitDatetimesPassed.is_(False)).all() == [offer]
+
+    def test_expression_with_soft_deleted_stock(self):
+        past = datetime.datetime.now() - datetime.timedelta(days=2)
+        stock = factories.StockFactory(bookingLimitDatetime=past, isSoftDeleted=True)
+        offer = stock.offer
+
+        assert Offer.query.filter(Offer.hasBookingLimitDatetimesPassed.is_(True)).all() == []
+        assert Offer.query.filter(Offer.hasBookingLimitDatetimesPassed.is_(False)).all() == [offer]
+
 
 @pytest.mark.usefixtures("db_session")
 class OfferActiveMediationTest:
@@ -151,51 +191,236 @@ class OfferValidationTest:
 @pytest.mark.usefixtures("db_session")
 class OfferStatusTest:
     def test_rejected(self):
-        rejected_offer = factories.OfferFactory(validation=OfferValidationStatus.REJECTED)
+        rejected_offer = factories.OfferFactory(validation=OfferValidationStatus.REJECTED, isActive=False)
+
         assert rejected_offer.status == OfferStatus.REJECTED
+
+    def test_expression_rejected(self):
+        rejected_offer = factories.OfferFactory(validation=OfferValidationStatus.REJECTED, isActive=False)
+        approved_offer = factories.OfferFactory()
+
+        assert Offer.query.filter(Offer.status == OfferStatus.REJECTED.name).all() == [rejected_offer]
+        assert Offer.query.filter(Offer.status != OfferStatus.REJECTED.name).all() == [approved_offer]
 
     def test_awaiting(self):
         awaiting_offer = factories.OfferFactory(validation=OfferValidationStatus.AWAITING)
+
         assert awaiting_offer.status == OfferStatus.AWAITING
 
+    def test_expression_awaiting(self):
+        awaiting_offer = factories.OfferFactory(validation=OfferValidationStatus.AWAITING, isActive=False)
+        approved_offer = factories.OfferFactory()
+
+        assert Offer.query.filter(Offer.status == OfferStatus.AWAITING.name).all() == [awaiting_offer]
+        assert Offer.query.filter(Offer.status != OfferStatus.AWAITING.name).all() == [approved_offer]
+
     def test_active(self):
-        active_offer = factories.OfferFactory(
-            validation=OfferValidationStatus.APPROVED, isActive=True, stocks=[factories.StockFactory()]
-        )
+        stock = factories.StockFactory()
+        active_offer = stock.offer
+
         assert active_offer.status == OfferStatus.ACTIVE
 
-    def test_approved(self):
-        approved_offer = factories.OfferFactory(
+    def test_expression_active(self):
+        stock = factories.StockFactory()
+        active_offer = stock.offer
+
+        assert Offer.query.filter(Offer.status == OfferStatus.ACTIVE.name).all() == [active_offer]
+        assert Offer.query.filter(Offer.status != OfferStatus.ACTIVE.name).all() == []
+
+    def test_inactive(self):
+        inactive_offer = factories.OfferFactory(
             validation=OfferValidationStatus.APPROVED, isActive=False, stocks=[factories.StockFactory()]
         )
-        assert approved_offer.status == OfferStatus.APPROVED
+
+        assert inactive_offer.status == OfferStatus.INACTIVE
+
+    def test_expression_inactive(self):
+        inactive_offer = factories.OfferFactory(validation=OfferValidationStatus.APPROVED, isActive=False)
+        approved_offer = factories.OfferFactory()
+
+        assert Offer.query.filter(Offer.status == OfferStatus.INACTIVE.name).all() == [inactive_offer]
+        assert Offer.query.filter(Offer.status != OfferStatus.INACTIVE.name).all() == [approved_offer]
 
     def test_expired(self):
-        expiring_stock = factories.StockFactory(bookingLimitDatetime=datetime.datetime.utcnow())
+        past = datetime.datetime.now() - datetime.timedelta(days=2)
+        expired_stock = factories.StockFactory(bookingLimitDatetime=past)
         expired_offer = factories.OfferFactory(
             validation=OfferValidationStatus.APPROVED,
-            isActive=False,
+            isActive=True,
             stocks=[
-                expiring_stock,
+                expired_stock,
             ],
         )
+
         assert expired_offer.status == OfferStatus.EXPIRED
 
+    def test_expression_expired(self):
+        expired_stock = factories.StockFactory(bookingLimitDatetime=datetime.datetime.utcnow())
+        expired_offer = expired_stock.offer
+        approved_offer = factories.OfferFactory()
+
+        assert Offer.query.filter(Offer.status == OfferStatus.EXPIRED.name).all() == [expired_offer]
+        assert Offer.query.filter(Offer.status != OfferStatus.EXPIRED.name).all() == [approved_offer]
+
     def test_sold_out(self):
-        soldout_offer = factories.OfferFactory(
+        sold_out_offer = factories.OfferFactory(
             validation=OfferValidationStatus.APPROVED,
-            isActive=False,
+            isActive=True,
         )
-        assert soldout_offer.status == OfferStatus.SOLD_OUT
+
+        assert sold_out_offer.status == OfferStatus.SOLD_OUT
+
+    def test_expression_sold_out(self):
+        sold_out_stock = factories.StockFactory(quantity=0)
+        sold_out_offer = sold_out_stock.offer
+        not_sold_out_stock = factories.StockFactory(quantity=10)
+        not_sold_out_offer = not_sold_out_stock.offer
+
+        assert Offer.query.filter(Offer.status == OfferStatus.SOLD_OUT.name).all() == [sold_out_offer]
+        assert Offer.query.filter(Offer.status != OfferStatus.SOLD_OUT.name).all() == [not_sold_out_offer]
+
+    def test_expression_sold_out_offer_without_stock(self):
+        offer = factories.OfferFactory()
+
+        assert Offer.query.filter(Offer.status == OfferStatus.SOLD_OUT.name).all() == [offer]
+        assert Offer.query.filter(Offer.status != OfferStatus.SOLD_OUT.name).count() == 0
+
+    def test_expression_sold_out_offer_with_passed_stock(self):
+        past = datetime.datetime.now() - datetime.timedelta(days=2)
+        future = datetime.datetime.now() + datetime.timedelta(days=2)
+        offer = factories.OfferFactory()
+        factories.StockFactory(offer=offer, quantity=10, beginningDatetime=past, bookingLimitDatetime=past)
+        factories.StockFactory(offer=offer, quantity=0, beginningDatetime=future, bookingLimitDatetime=future)
+
+        assert Offer.query.filter(Offer.status == OfferStatus.SOLD_OUT.name).all() == [offer]
+        assert Offer.query.filter(Offer.status != OfferStatus.SOLD_OUT.name).count() == 0
 
 
 @pytest.mark.usefixtures("db_session")
-class OfferisSoldOutTest:
-    def test_is_out_of_stock(self):
-        offer_without_stock = factories.OfferFactory()
-        offer_with_stock = factories.OfferFactory()
-        factories.StockFactory(offer=offer_with_stock)
-        factories.StockFactory(offer=offer_with_stock, quantity=0)
+class StockBookingsQuantityTest:
+    def test_bookings_quantity_without_bookings(self):
+        offer = factories.OfferFactory()
+        stock = factories.StockFactory(offer=offer, quantity=None)
 
-        assert offer_without_stock.isSoldOut
-        assert not offer_with_stock.isSoldOut
+        assert Stock.query.filter(Stock.bookingsQuantity == 0).one() == stock
+
+    def test_bookings_quantity_with_booking(self):
+        offer = factories.OfferFactory(product__type=str(ThingType.INSTRUMENT))
+        stock = factories.StockFactory(offer=offer, quantity=5)
+        BookingFactory(stock=stock)
+
+        assert Stock.query.filter(Stock.bookingsQuantity == 0).count() == 0
+        assert Stock.query.filter(Stock.bookingsQuantity == 1).one() == stock
+
+    def test_bookings_quantity_with_a_cancelled_booking(self):
+        offer = factories.OfferFactory(product__type=str(ThingType.INSTRUMENT))
+        stock = factories.StockFactory(offer=offer, quantity=5)
+        BookingFactory(stock=stock)
+        BookingFactory(stock=stock, isCancelled=True)
+
+        assert Stock.query.filter(Stock.bookingsQuantity == 1).one() == stock
+
+
+@pytest.mark.usefixtures("db_session")
+class OfferIsSoldOutTest:
+    def test_offer_with_stock_quantity_is_not_sold_out(self):
+        offer = factories.OfferFactory()
+        factories.StockFactory(offer=offer, quantity=5)
+
+        assert offer.isSoldOut is False
+        assert Offer.query.filter(Offer.isSoldOut.is_(True)).count() == 0
+        assert Offer.query.filter(Offer.isSoldOut.is_(False)).all() == [offer]
+
+    def test_offer_with_unlimited_stock_is_not_sold_out(self):
+        offer = factories.OfferFactory()
+        factories.StockFactory(offer=offer, quantity=None)
+
+        assert not offer.isSoldOut
+        assert Offer.query.filter(Offer.isSoldOut.is_(True)).count() == 0
+        assert Offer.query.filter(Offer.isSoldOut.is_(False)).one() == offer
+
+    def test_offer_with_fully_booked_stock(self):
+        offer = factories.OfferFactory()
+        stock = factories.StockFactory(offer=offer, quantity=1)
+        BookingFactory(stock=stock)
+
+        assert offer.isSoldOut
+        assert Offer.query.filter(Offer.isSoldOut.is_(True)).one() == offer
+        assert Offer.query.filter(Offer.isSoldOut.is_(False)).count() == 0
+
+    def test_offer_without_stocks(self):
+        offer = factories.OfferFactory()
+
+        assert offer.isSoldOut
+        assert Offer.query.filter(Offer.isSoldOut.is_(True)).one() == offer
+        assert Offer.query.filter(Offer.isSoldOut.is_(False)).count() == 0
+
+    def test_offer_with_passed_stock_date(self):
+        past = datetime.datetime.now() - datetime.timedelta(days=2)
+        stock = factories.StockFactory(quantity=10, beginningDatetime=past)
+        offer = stock.offer
+
+        assert offer.isSoldOut
+        assert Offer.query.filter(Offer.isSoldOut.is_(True)).one() == offer
+        assert Offer.query.filter(Offer.isSoldOut.is_(False)).count() == 0
+
+    def test_offer_with_soft_deleted_stock(self):
+        stock = factories.StockFactory(quantity=10, isSoftDeleted=True)
+        offer = stock.offer
+
+        assert offer.isSoldOut
+        assert Offer.query.filter(Offer.isSoldOut.is_(True)).one() == offer
+        assert Offer.query.filter(Offer.isSoldOut.is_(False)).count() == 0
+
+
+@pytest.mark.usefixtures("db_session")
+class StockRemainingQuantityTest:
+    def test_stock_with_unlimited_remaining_quantity(self):
+        offer = factories.OfferFactory()
+        stock = factories.StockFactory(offer=offer, quantity=None)
+
+        assert stock.remainingQuantity == "unlimited"
+        assert Offer.query.filter(Stock.remainingQuantity.is_(None)).one() == offer
+
+    def test_stock_with_unlimited_remaining_quantity_after_booking(self):
+        offer = factories.OfferFactory()
+        stock = factories.StockFactory(offer=offer, quantity=None)
+
+        BookingFactory(stock=stock)
+
+        assert stock.remainingQuantity == "unlimited"
+        assert Offer.query.filter(Stock.remainingQuantity.is_(None)).one() == offer
+
+    def test_stock_with_positive_remaining_quantity(self):
+        offer = factories.OfferFactory()
+        stock = factories.StockFactory(offer=offer, quantity=5)
+
+        assert stock.remainingQuantity == 5
+        assert Offer.query.filter(Stock.remainingQuantity == 5).one() == offer
+
+    def test_stock_with_positive_remaining_quantity_after_some_bookings(self):
+        offer = factories.OfferFactory()
+        stock = factories.StockFactory(offer=offer, quantity=5)
+
+        BookingFactory(stock=stock, quantity=2)
+
+        assert stock.remainingQuantity == 3
+        assert Offer.query.filter(Stock.remainingQuantity == 3).one() == offer
+
+    def test_stock_with_zero_remaining_quantity_after_booking(self):
+        offer = factories.OfferFactory()
+        stock = factories.StockFactory(offer=offer, quantity=1)
+
+        BookingFactory(stock=stock)
+
+        assert stock.remainingQuantity == 0
+        assert Offer.query.filter(Stock.remainingQuantity == 0).one() == offer
+
+    def test_stock_with_positive_remaining_quantity_after_cancelled_booking(self):
+        offer = factories.OfferFactory()
+        stock = factories.StockFactory(offer=offer, quantity=5)
+
+        BookingFactory(stock=stock, isCancelled=True)
+
+        assert stock.remainingQuantity == 5
+        assert Offer.query.filter(Stock.remainingQuantity == 5).one() == offer

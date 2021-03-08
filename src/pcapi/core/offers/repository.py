@@ -6,8 +6,6 @@ from typing import Optional
 
 from sqlalchemy import and_
 from sqlalchemy import func
-from sqlalchemy import not_
-from sqlalchemy import or_
 from sqlalchemy.orm import Query
 from sqlalchemy.orm import aliased
 from sqlalchemy.orm import joinedload
@@ -16,6 +14,7 @@ from sqlalchemy.sql.functions import coalesce
 from pcapi.core.bookings.models import Booking
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.exceptions import StockDoesNotExist
+from pcapi.core.offers.models import OfferStatus
 from pcapi.core.users.models import User
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
 from pcapi.infrastructure.repository.pro_offers.paginated_offers_recap_domain_converter import to_domain
@@ -30,13 +29,6 @@ from pcapi.models.offer_type import ThingType
 
 IMPORTED_CREATION_MODE = "imported"
 MANUAL_CREATION_MODE = "manual"
-
-INACTIVE_STATUS = "inactive"
-EXPIRED_STATUS = "expired"
-SOLD_OUT_STATUS = "soldOut"
-ACTIVE_STATUS = "active"
-REJECTED_STATUS = "rejected"
-AWAITING_STATUS = "awaiting"
 
 
 def get_paginated_offers_for_filters(
@@ -109,7 +101,6 @@ def get_offers_by_filters(
     period_beginning_date: Optional[datetime] = None,
     period_ending_date: Optional[datetime] = None,
 ) -> Query:
-    datetime_now = datetime.utcnow()
     query = Offer.query
 
     if not user_is_admin:
@@ -136,7 +127,7 @@ def get_offers_by_filters(
             search = "%{}%".format(name_keywords)
         query = query.filter(Offer.name.ilike(search))
     if status is not None:
-        query = _filter_by_status(query, datetime_now, status)
+        query = _filter_by_status(query, status)
     if period_beginning_date is not None or period_ending_date is not None:
         stock_alias = aliased(Stock)
         venue_alias = aliased(Venue)
@@ -174,47 +165,8 @@ def _filter_by_creation_mode(query: Query, creation_mode: str) -> Query:
     return query
 
 
-def _filter_by_status(query: Query, datetime_now: datetime, status: str) -> Query:
-    if status == ACTIVE_STATUS:
-        query = (
-            query.filter(Offer.isActive.is_(True))
-            .join(Stock)
-            .filter(Stock.isSoftDeleted.is_(False))
-            .filter(or_(Stock.bookingLimitDatetime.is_(None), Stock.bookingLimitDatetime >= datetime_now))
-            .outerjoin(Booking, and_(Stock.id == Booking.stockId, Booking.isCancelled.is_(False)))
-            .group_by(Offer.id, Stock.id)
-            .having(
-                or_(
-                    Stock.quantity.is_(None),
-                    Stock.quantity != coalesce(func.sum(Booking.quantity), 0),
-                )
-            )
-        )
-    elif status == SOLD_OUT_STATUS:
-        query = (
-            query.filter(Offer.isActive.is_(True))
-            .outerjoin(Stock, and_(Offer.id == Stock.offerId, not_(Stock.isSoftDeleted.is_(True))))
-            .filter(or_(Stock.bookingLimitDatetime.is_(None), Stock.bookingLimitDatetime >= datetime_now))
-            .filter(or_(Stock.id.is_(None), not_(Stock.quantity.is_(None))))
-            .outerjoin(Booking, and_(Stock.id == Booking.stockId, Booking.isCancelled.is_(False)))
-            .group_by(Offer.id)
-            .having(coalesce(func.sum(Stock.quantity), 0) == coalesce(func.sum(Booking.quantity), 0))
-        )
-    elif status == EXPIRED_STATUS:
-        query = (
-            query.filter(Offer.isActive.is_(True))
-            .join(Stock)
-            .filter(Stock.isSoftDeleted.is_(False))
-            .group_by(Offer.id)
-            .having(func.max(Stock.bookingLimitDatetime) < datetime_now)
-        )
-    elif status == INACTIVE_STATUS:
-        query = query.filter(Offer.isActive.is_(False))
-    elif status == AWAITING_STATUS:
-        query = query.filter(Offer.validation == "AWAITING")
-    elif status == REJECTED_STATUS:
-        query = query.filter(Offer.validation == "REJECTED")
-    return query
+def _filter_by_status(query: Query, status: str) -> Query:
+    return query.filter(Offer.status == OfferStatus[status].name)
 
 
 def get_stocks_for_offers(offer_ids: List[int]) -> List[Stock]:
@@ -265,16 +217,14 @@ def get_stocks_by_id_at_providers(id_at_providers: List[str]) -> Dict:
 
 
 def get_active_offers_count_for_venue(venue_id) -> int:
-    datetime_now = datetime.utcnow()
     query = Offer.query.filter(Offer.venueId == venue_id)
-    query = _filter_by_status(query, datetime_now, ACTIVE_STATUS)
+    query = _filter_by_status(query, OfferStatus.ACTIVE.name)
     return query.distinct(Offer.id).count()
 
 
 def get_sold_out_offers_count_for_venue(venue_id) -> int:
-    datetime_now = datetime.utcnow()
     query = Offer.query.filter(Offer.venueId == venue_id)
-    query = _filter_by_status(query, datetime_now, SOLD_OUT_STATUS)
+    query = _filter_by_status(query, OfferStatus.SOLD_OUT.name)
     return query.distinct(Offer.id).count()
 
 

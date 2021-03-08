@@ -727,7 +727,7 @@ class PaginatedOfferForFiltersTest:
 
             # when
             paginated_offers = get_paginated_offers_for_filters(
-                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=5, page=1, status="active"
+                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=5, page=1, status="ACTIVE"
             )
 
             # then
@@ -769,7 +769,7 @@ class PaginatedOfferForFiltersTest:
 
             # when
             paginated_offers = get_paginated_offers_for_filters(
-                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=5, page=1, status="inactive"
+                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=5, page=1, status="INACTIVE"
             )
 
             # then
@@ -816,7 +816,7 @@ class PaginatedOfferForFiltersTest:
 
             # when
             paginated_offers = get_paginated_offers_for_filters(
-                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=5, page=1, status="soldOut"
+                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=5, page=1, status="SOLD_OUT"
             )
 
             # then
@@ -863,7 +863,7 @@ class PaginatedOfferForFiltersTest:
 
             # when
             paginated_offers = get_paginated_offers_for_filters(
-                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=5, page=1, status="soldOut"
+                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=5, page=1, status="SOLD_OUT"
             )
 
             # then
@@ -878,7 +878,7 @@ class PaginatedOfferForFiltersTest:
 
             # when
             paginated_offers = get_paginated_offers_for_filters(
-                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=5, page=1, status="soldOut"
+                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=5, page=1, status="SOLD_OUT"
             )
 
             # then
@@ -892,7 +892,7 @@ class PaginatedOfferForFiltersTest:
 
             # when
             paginated_offers = get_paginated_offers_for_filters(
-                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=5, page=1, status="soldOut"
+                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=5, page=1, status="SOLD_OUT"
             )
 
             # then
@@ -909,7 +909,7 @@ class PaginatedOfferForFiltersTest:
 
             # when
             paginated_offers = get_paginated_offers_for_filters(
-                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=5, page=1, status="soldOut"
+                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=5, page=1, status="SOLD_OUT"
             )
 
             # then
@@ -926,7 +926,7 @@ class PaginatedOfferForFiltersTest:
 
             # when
             paginated_offers = get_paginated_offers_for_filters(
-                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=5, page=1, status="expired"
+                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=5, page=1, status="EXPIRED"
             )
 
             # then
@@ -981,13 +981,13 @@ class PaginatedOfferForFiltersTest:
 
             # when
             paginated_offers = get_paginated_offers_for_filters(
-                user_id=user.id, user_is_admin=True, offers_per_page=5, page=1, status="awaiting"
+                user_id=user.id, user_is_admin=True, offers_per_page=5, page=1, status="AWAITING"
             )
 
             # then
             assert len(paginated_offers.offers) == 1
             assert paginated_offers.offers[0].name == "Offre en attente"
-            assert paginated_offers.offers[0].validation == OfferStatus.AWAITING.name
+            assert paginated_offers.offers[0].status == OfferStatus.AWAITING.name
 
         @pytest.mark.usefixtures("db_session")
         def should_return_only_rejected_offers_when_requesting_rejected_status(self, app):
@@ -995,7 +995,7 @@ class PaginatedOfferForFiltersTest:
             unexpired_booking_limit_date = datetime.utcnow() + timedelta(days=3)
 
             rejected_offer = offers_factories.ThingOfferFactory(
-                validation=OfferStatus.REJECTED.name, name="Offre rejetée"
+                validation=OfferStatus.REJECTED.name, name="Offre rejetée", isActive=False
             )
             offers_factories.StockFactory(bookingLimitDatetime=unexpired_booking_limit_date, offer=rejected_offer)
 
@@ -1006,13 +1006,13 @@ class PaginatedOfferForFiltersTest:
 
             # when
             paginated_offers = get_paginated_offers_for_filters(
-                user_id=user.id, user_is_admin=True, offers_per_page=5, page=1, status="rejected"
+                user_id=user.id, user_is_admin=True, offers_per_page=5, page=1, status="REJECTED"
             )
 
             # then
             assert len(paginated_offers.offers) == 1
             assert paginated_offers.offers[0].name == "Offre rejetée"
-            assert paginated_offers.offers[0].validation == OfferStatus.REJECTED.name
+            assert paginated_offers.offers[0].status == OfferStatus.REJECTED.name
 
         @pytest.mark.usefixtures("db_session")
         def should_return_only_sold_out_offers_and_requested_venue_when_requesting_sold_out_status_and_specific_venue(
@@ -1030,7 +1030,7 @@ class PaginatedOfferForFiltersTest:
                 user_is_admin=self.pro.isAdmin,
                 offers_per_page=5,
                 page=1,
-                status="soldOut",
+                status="SOLD_OUT",
                 venue_id=other_venue.id,
             )
 
@@ -1069,7 +1069,7 @@ class PaginatedOfferForFiltersTest:
                 user_is_admin=self.pro.isAdmin,
                 offers_per_page=5,
                 page=1,
-                status="active",
+                status="ACTIVE",
                 period_beginning_date=in_six_days_beginning.isoformat(),
                 period_ending_date=in_six_days_ending.isoformat(),
             )

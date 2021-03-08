@@ -49,6 +49,7 @@ class Returns200:
                     "isEvent": False,
                     "isThing": True,
                     "name": "Test Book",
+                    "status": "ACTIVE",
                     "stocks": [
                         {
                             "id": humanize(stock.id),
@@ -69,7 +70,6 @@ class Returns200:
                         "publicName": None,
                     },
                     "venueId": humanize(requested_venue.id),
-                    "validation": "APPROVED",
                 }
             ],
             "page": 1,
@@ -129,6 +129,7 @@ class Returns200:
                     "isEvent": False,
                     "isThing": True,
                     "name": "Test Book",
+                    "status": "SOLD_OUT",
                     "stocks": [],
                     "thumbUrl": None,
                     "type": "ThingType.AUDIOVISUEL",
@@ -142,7 +143,6 @@ class Returns200:
                         "departementCode": "93",
                     },
                     "venueId": humanize(venue.id),
-                    "validation": "APPROVED",
                 }
             ],
             "page": 1,
