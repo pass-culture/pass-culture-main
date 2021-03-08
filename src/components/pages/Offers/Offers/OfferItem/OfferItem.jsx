@@ -63,7 +63,7 @@ const OfferItem = ({ disabled, offer, stocks, venue, isSelected, selectOffer }) 
   const isOfferInactiveOrExpired = !offer.isActive || offer.hasBookingLimitDatetimesPassed
   const shouldShowSoldOutWarning =
     computeNumberOfSoldOutStocks(stocks) > 0 && !isOfferFullyBooked(stocks)
-  const offerStatus = computeOfferStatus(offer, stocks)
+  const offerStatus = computeOfferStatus(offer)
 
   return (
     <tr className={`offer-item ${isOfferInactiveOrExpired ? 'inactive' : ''} offer-row`}>

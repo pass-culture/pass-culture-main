@@ -2,31 +2,29 @@ import { computeOfferStatus } from '../computeOfferStatus'
 
 describe('compute offer status', () => {
   describe('when offer is inactive', () => {
-    it('should be "validée" if also validated', () => {
+    it('should be "validée" if status is validated', () => {
       // Given
       const offer = {
         isActive: false,
-        validation: 'VALIDATED',
+        status: 'VALIDATED',
       }
-      const stocks = []
 
       // When
-      const status = computeOfferStatus(offer, stocks)
+      const status = computeOfferStatus(offer)
 
       // Then
-      expect(status).toBe('inactive')
+      expect(status).toBe('validée')
     })
 
-    it('should be "refusée" if validation is rejected', () => {
+    it('should be "refusée" if status is rejected', () => {
       // Given
       const offer = {
         isActive: false,
-        validation: 'REJECTED',
+        status: 'REJECTED',
       }
-      const stocks = []
 
       // When
-      const status = computeOfferStatus(offer, stocks)
+      const status = computeOfferStatus(offer)
 
       // Then
       expect(status).toBe('refusée')
@@ -34,106 +32,60 @@ describe('compute offer status', () => {
   })
 
   describe('when offer is active', () => {
-    let offer
-
-    beforeEach(() => {
-      offer = {
-        isActive: true,
-        hasBookingLimitDatetimesPassed: false,
-        isFullyBooked: false,
-        validation: 'VALIDATED',
-      }
-    })
-
     it('should be "active" when offer is not expired nor sold out', () => {
       // Given
-      const septemberSeventh2020 = 1599483337
-      jest.spyOn(Date, 'now').mockImplementationOnce(() => septemberSeventh2020)
-
-      const stocks = [
-        {
-          id: 1,
-          hasBookingLimitDatetimePassed: false,
-          remainingQuantity: 'unlimited',
-        },
-        {
-          id: 2,
-          hasBookingLimitDatetimePassed: false,
-          remainingQuantity: 'unlimited',
-        },
-      ]
+      const offer = {
+        isActive: true,
+        status: 'ACTIVE',
+      }
 
       // When
-      const status = computeOfferStatus(offer, stocks)
+      const status = computeOfferStatus(offer)
 
       // Then
       expect(status).toBe('active')
     })
 
-    describe('when offer is expired', () => {
-      it('should be "expirée" even when offer is sold out', () => {
-        // Given
-        const stocks = [
-          {
-            id: 1,
-          },
-        ]
-        offer.hasBookingLimitDatetimesPassed = true
-        offer.isFullyBooked = true
+    it('should be "expirée" when status is expired', () => {
+      // Given
+      const offer = {
+        isActive: true,
+        status: 'EXPIRED',
+      }
 
-        // When
-        const status = computeOfferStatus(offer, stocks)
+      // When
+      const status = computeOfferStatus(offer)
 
-        // Then
-        expect(status).toBe('expirée')
-      })
+      // Then
+      expect(status).toBe('expirée')
     })
 
-    describe('when offer is sold out but has not expired', () => {
-      it('should be "épuisée"', () => {
-        // Given
-        const stocks = [
-          {
-            id: 1,
-            remainingQuantity: 0,
-          },
-        ]
-        offer.isFullyBooked = true
+    it('should be "épuisée" when status is soldout', () => {
+      // Given
+      const offer = {
+        isActive: true,
+        status: 'SOLD_OUT',
+      }
 
-        // When
-        const status = computeOfferStatus(offer, stocks)
+      // When
+      const status = computeOfferStatus(offer)
 
-        // Then
-        expect(status).toBe('épuisée')
-      })
+      // Then
+      expect(status).toBe('épuisée')
     })
 
-    describe('when offer has no stock yet', () => {
-      it('should be "épuisée" even when offer is expired', () => {
-        // Given
-        const stocks = []
-        offer.hasBookingLimitDatetimesPassed = true
+    it('should be "validation" when offer is awaiting validation', () => {
+      // Given
+      const offer = {
+        isActive: true,
+        status: 'AWAITING',
+      }
 
-        // When
-        const status = computeOfferStatus(offer, stocks)
+      // When
+      const status = computeOfferStatus(offer)
 
-        // Then
-        expect(status).toBe('épuisée')
-      })
-    })
-
-    describe('when offer is awaiting', () => {
-      it('should be "en attente"', () => {
-        // Given
-        offer.validation = 'AWAITING'
-        const stocks = []
-
-        // When
-        const status = computeOfferStatus(offer, stocks)
-
-        // Then
-        expect(status).toBe('validation')
-      })
+      // Then
+      expect(status).toBe('validation')
     })
   })
 })
