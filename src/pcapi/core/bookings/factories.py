@@ -21,7 +21,10 @@ class BookingFactory(BaseFactory):
     amount = factory.SelfAttribute("stock.price")
 
     @factory.post_generation
-    def compute_confirmation_date(self, create, extracted, **kwargs):
-        self.confirmationDate = api.compute_confirmation_date(self.stock.beginningDatetime, self.dateCreated)
+    def confirmation_date(self, create, extracted, **kwargs):
+        if extracted:
+            self.confirmationDate = extracted
+        else:
+            self.confirmationDate = api.compute_confirmation_date(self.stock.beginningDatetime, self.dateCreated)
         db.session.add(self)
         db.session.flush()

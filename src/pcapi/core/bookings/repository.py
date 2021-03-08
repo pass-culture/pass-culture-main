@@ -8,6 +8,7 @@ from dateutil import tz
 from sqlalchemy import Date
 from sqlalchemy import cast
 from sqlalchemy import func
+from sqlalchemy import or_
 from sqlalchemy import text
 from sqlalchemy.orm import Query
 from sqlalchemy.sql.functions import coalesce
@@ -203,11 +204,12 @@ def get_active_bookings_quantity_for_venue(venue_id: int) -> int:
     )
 
 
-def get_used_bookings_quantity_for_venue(venue_id: int) -> int:
+def get_validated_bookings_quantity_for_venue(venue_id: int) -> int:
     return (
         Booking.query.join(Stock)
         .join(Offer)
-        .filter(venue_id == Offer.venueId, Booking.isUsed.is_(True), Booking.isCancelled.is_(False))
+        .filter(Booking.isCancelled.is_(False), venue_id == Offer.venueId)
+        .filter(or_(Booking.isUsed.is_(True), Booking.isConfirmed.is_(True)))
         .with_entities(coalesce(func.sum(Booking.quantity), 0))
         .one()[0]
     )

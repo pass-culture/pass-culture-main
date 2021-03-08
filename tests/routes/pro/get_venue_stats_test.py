@@ -27,7 +27,7 @@ class Get:
             assert response.status_code == 200
             response_json = response.json
             assert response_json["activeBookingsQuantity"] == 1
-            assert response_json["usedBookingsQuantity"] == 1
+            assert response_json["validatedBookingsQuantity"] == 1
             assert response_json["activeOffersCount"] == 1
             assert response_json["soldOutOffersCount"] == 0
 
