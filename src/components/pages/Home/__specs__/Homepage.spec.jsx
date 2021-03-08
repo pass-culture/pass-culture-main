@@ -133,7 +133,6 @@ describe('homepage', () => {
         expect(screen.getByText('Profil et aide', { selector: 'h2' })).toBeInTheDocument()
         expect(screen.getByText('Profil')).toBeInTheDocument()
         expect(screen.getByText('Aide et support')).toBeInTheDocument()
-        expect(screen.getByText('Modalités d’usage', { selector: 'h2' })).toBeInTheDocument()
       })
 
       it('should display help links', () => {

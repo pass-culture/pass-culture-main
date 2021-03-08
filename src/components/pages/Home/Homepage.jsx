@@ -5,33 +5,24 @@ import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Breadcrumb, { STEP_ID_OFFERERS } from './HomepageBreadcrumb'
 import OfferersContainer from './Offerers/OfferersContainer'
 import ProfileAndSupportContainer from './ProfileAndSupport/ProfileAndSupportContainer'
-import Usages from './Usages'
 
-const Homepage = () => {
-  const activeStep = STEP_ID_OFFERERS
+const Homepage = () => (
+  <div className="homepage">
+    <PageTitle title="Espace acteurs culturels" />
+    <h1>
+      {'Bienvenue dans l’espace acteurs culturels'}
+    </h1>
 
-  return (
-    <div className="homepage">
-      <PageTitle title="Espace acteurs culturels" />
-      <h1>
-        {'Bienvenue dans l’espace acteurs culturels'}
-      </h1>
+    <Breadcrumb activeStep={STEP_ID_OFFERERS} />
 
-      <Breadcrumb activeStep={activeStep} />
+    <section className="h-section">
+      <OfferersContainer />
+    </section>
 
-      <section className="h-section">
-        <OfferersContainer />
-      </section>
-
-      <section className="h-section">
-        <ProfileAndSupportContainer />
-      </section>
-
-      <section className="h-section">
-        <Usages />
-      </section>
-    </div>
-  )
-}
+    <section className="h-section">
+      <ProfileAndSupportContainer />
+    </section>
+  </div>
+)
 
 export default Homepage

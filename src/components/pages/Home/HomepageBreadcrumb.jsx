@@ -6,7 +6,6 @@ import Breadcrumb, { STYLE_TYPE_TAB } from 'components/layout/Breadcrumb'
 
 export const STEP_ID_OFFERERS = 'offerers'
 export const STEP_ID_PROFILE = 'profile'
-export const STEP_ID_USAGES = 'usages'
 
 export const steps = {
   [STEP_ID_OFFERERS]: {
@@ -18,11 +17,6 @@ export const steps = {
     id: STEP_ID_PROFILE,
     label: 'Profil et aide',
     hash: 'profil',
-  },
-  [STEP_ID_USAGES]: {
-    id: STEP_ID_USAGES,
-    label: 'Modalités d’usage',
-    hash: 'usages',
   },
 }
 
