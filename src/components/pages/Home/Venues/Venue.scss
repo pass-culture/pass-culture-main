@@ -1,0 +1,12 @@
+.offerer-venue {
+  .h-card-title {
+    overflow: hidden;
+
+    .title-text {
+      margin-right: rem(16px);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+}

@@ -69,7 +69,7 @@ const Venue = ({ id, isVirtual, name, offererId, publicName }) => {
   }, [id])
 
   return (
-    <div className="h-section-row nested">
+    <div className="h-section-row nested offerer-venue">
       <div className={`h-card h-card-${isVirtual ? 'primary' : 'secondary'}`}>
         <div className="h-card-inner">
           <div className="h-card-header-row">
@@ -78,7 +78,12 @@ const Venue = ({ id, isVirtual, name, offererId, publicName }) => {
                 className="h-card-title-ico"
                 svg={isVirtual ? 'ico-screen-play' : 'ico-box'}
               />
-              {publicName || name}
+              <span
+                className="title-text"
+                title={publicName || name}
+              >
+                {publicName || name}
+              </span>
             </h3>
             {!isVirtual && (
               <Link
