@@ -22,19 +22,16 @@ SET search_path = public, pg_catalog;
 -- Name: tiger; Type: SCHEMA; Schema: -; Owner: pass_culture
 --
 
-ALTER SCHEMA tiger OWNER TO pass_culture;
 
 --
 -- Name: tiger_data; Type: SCHEMA; Schema: -; Owner: pass_culture
 --
 
-ALTER SCHEMA tiger_data OWNER TO pass_culture;
 
 --
 -- Name: topology; Type: SCHEMA; Schema: -; Owner: pass_culture
 --
 
-ALTER SCHEMA topology OWNER TO pass_culture;
 
 --
 -- Name: SCHEMA topology; Type: COMMENT; Schema: -; Owner: pass_culture
@@ -152,7 +149,6 @@ CREATE TYPE public.cancellation_reason AS ENUM (
 );
 
 
-ALTER TYPE public.cancellation_reason OWNER TO pass_culture;
 
 --
 -- Name: emailstatus; Type: TYPE; Schema: public; Owner: pass_culture
@@ -164,7 +160,6 @@ CREATE TYPE public.emailstatus AS ENUM (
 );
 
 
-ALTER TYPE public.emailstatus OWNER TO pass_culture;
 
 --
 -- Name: eventtype; Type: TYPE; Schema: public; Owner: pass_culture
@@ -192,7 +187,6 @@ CREATE TYPE public.eventtype AS ENUM (
 );
 
 
-ALTER TYPE public.eventtype OWNER TO pass_culture;
 
 --
 -- Name: featuretoggle; Type: TYPE; Schema: public; Owner: pass_culture
@@ -230,7 +224,6 @@ CREATE TYPE public.featuretoggle AS ENUM (
 );
 
 
-ALTER TYPE public.featuretoggle OWNER TO pass_culture;
 
 --
 -- Name: importstatus; Type: TYPE; Schema: public; Owner: pass_culture
@@ -245,7 +238,6 @@ CREATE TYPE public.importstatus AS ENUM (
 );
 
 
-ALTER TYPE public.importstatus OWNER TO pass_culture;
 
 --
 -- Name: localprovidereventtype; Type: TYPE; Schema: public; Owner: pass_culture
@@ -260,7 +252,6 @@ CREATE TYPE public.localprovidereventtype AS ENUM (
 );
 
 
-ALTER TYPE public.localprovidereventtype OWNER TO pass_culture;
 
 --
 -- Name: pricerule; Type: TYPE; Schema: public; Owner: pass_culture
@@ -271,7 +262,6 @@ CREATE TYPE public.pricerule AS ENUM (
 );
 
 
-ALTER TYPE public.pricerule OWNER TO pass_culture;
 
 --
 -- Name: rightstype; Type: TYPE; Schema: public; Owner: pass_culture
@@ -283,7 +273,6 @@ CREATE TYPE public.rightstype AS ENUM (
 );
 
 
-ALTER TYPE public.rightstype OWNER TO pass_culture;
 
 --
 -- Name: status; Type: TYPE; Schema: public; Owner: pass_culture
@@ -296,7 +285,6 @@ CREATE TYPE public.status AS ENUM (
 );
 
 
-ALTER TYPE public.status OWNER TO pass_culture;
 
 --
 -- Name: transactionstatus; Type: TYPE; Schema: public; Owner: pass_culture
@@ -312,7 +300,6 @@ CREATE TYPE public.transactionstatus AS ENUM (
 );
 
 
-ALTER TYPE public.transactionstatus OWNER TO pass_culture;
 
 --
 -- Name: audit_table(regclass); Type: FUNCTION; Schema: public; Owner: pass_culture
@@ -325,7 +312,6 @@ SELECT public.audit_table(target_table, ARRAY[]::text[]);
 $$;
 
 
-ALTER FUNCTION public.audit_table(target_table regclass) OWNER TO pass_culture;
 
 --
 -- Name: audit_table(regclass, text[]); Type: FUNCTION; Schema: public; Owner: pass_culture
@@ -376,7 +362,6 @@ END;
 $$;
 
 
-ALTER FUNCTION public.audit_table(target_table regclass, ignored_cols text[]) OWNER TO pass_culture;
 
 --
 -- Name: check_booking(); Type: FUNCTION; Schema: public; Owner: pass_culture
@@ -428,7 +413,6 @@ CREATE FUNCTION public.check_booking() RETURNS trigger
     $$;
 
 
-ALTER FUNCTION public.check_booking() OWNER TO pass_culture;
 
 --
 -- Name: check_stock(); Type: FUNCTION; Schema: public; Owner: pass_culture
@@ -467,7 +451,6 @@ CREATE FUNCTION public.check_stock() RETURNS trigger
         $$;
 
 
-ALTER FUNCTION public.check_stock() OWNER TO pass_culture;
 
 --
 -- Name: create_activity(); Type: FUNCTION; Schema: public; Owner: pass_culture
@@ -560,7 +543,6 @@ END;
 $$;
 
 
-ALTER FUNCTION public.create_activity() OWNER TO pass_culture;
 
 --
 -- Name: event_is_in_less_than_10_days(bigint); Type: FUNCTION; Schema: public; Owner: pass_culture
@@ -581,7 +563,6 @@ CREATE FUNCTION public.event_is_in_less_than_10_days(offer_id bigint) RETURNS SE
         $$;
 
 
-ALTER FUNCTION public.event_is_in_less_than_10_days(offer_id bigint) OWNER TO pass_culture;
 
 --
 -- Name: get_active_offers_ids(boolean); Type: FUNCTION; Schema: public; Owner: pass_culture
@@ -611,7 +592,6 @@ CREATE FUNCTION public.get_active_offers_ids(with_mediation boolean) RETURNS SET
         $$;
 
 
-ALTER FUNCTION public.get_active_offers_ids(with_mediation boolean) OWNER TO pass_culture;
 
 --
 -- Name: get_offer_score(bigint); Type: FUNCTION; Schema: public; Owner: pass_culture
@@ -630,7 +610,6 @@ CREATE FUNCTION public.get_offer_score(offer_id bigint) RETURNS SETOF bigint
                 $$;
 
 
-ALTER FUNCTION public.get_offer_score(offer_id bigint) OWNER TO pass_culture;
 
 --
 -- Name: get_wallet_balance(bigint, boolean); Type: FUNCTION; Schema: public; Owner: pass_culture
@@ -667,7 +646,6 @@ CREATE FUNCTION public.get_wallet_balance(user_id bigint, only_used_bookings boo
     END; $$;
 
 
-ALTER FUNCTION public.get_wallet_balance(user_id bigint, only_used_bookings boolean) OWNER TO pass_culture;
 
 --
 -- Name: jsonb_change_key_name(jsonb, text, text); Type: FUNCTION; Schema: public; Owner: pass_culture
@@ -684,7 +662,6 @@ CREATE FUNCTION public.jsonb_change_key_name(data jsonb, old_key text, new_key t
 $$;
 
 
-ALTER FUNCTION public.jsonb_change_key_name(data jsonb, old_key text, new_key text) OWNER TO pass_culture;
 
 --
 -- Name: jsonb_subtract(jsonb, jsonb); Type: FUNCTION; Schema: public; Owner: pass_culture
@@ -702,7 +679,6 @@ WHERE
 $$;
 
 
-ALTER FUNCTION public.jsonb_subtract(arg1 jsonb, arg2 jsonb) OWNER TO pass_culture;
 
 --
 -- Name: offer_has_at_least_one_active_mediation(bigint); Type: FUNCTION; Schema: public; Owner: pass_culture
@@ -721,7 +697,6 @@ CREATE FUNCTION public.offer_has_at_least_one_active_mediation(offer_id bigint) 
                 $$;
 
 
-ALTER FUNCTION public.offer_has_at_least_one_active_mediation(offer_id bigint) OWNER TO pass_culture;
 
 --
 -- Name: offer_has_at_least_one_bookable_stock(bigint); Type: FUNCTION; Schema: public; Owner: pass_culture
@@ -751,7 +726,6 @@ CREATE FUNCTION public.offer_has_at_least_one_bookable_stock(offer_id bigint) RE
         $$;
 
 
-ALTER FUNCTION public.offer_has_at_least_one_bookable_stock(offer_id bigint) OWNER TO pass_culture;
 
 --
 -- Name: save_cancellation_date(); Type: FUNCTION; Schema: public; Owner: pass_culture
@@ -771,7 +745,6 @@ CREATE FUNCTION public.save_cancellation_date() RETURNS trigger
             $$;
 
 
-ALTER FUNCTION public.save_cancellation_date() OWNER TO pass_culture;
 
 --
 -- Name: save_stock_modification_date(); Type: FUNCTION; Schema: public; Owner: pass_culture
@@ -789,7 +762,6 @@ CREATE FUNCTION public.save_stock_modification_date() RETURNS trigger
         $$;
 
 
-ALTER FUNCTION public.save_stock_modification_date() OWNER TO pass_culture;
 
 --
 -- Name: -; Type: OPERATOR; Schema: public; Owner: pass_culture
@@ -802,10 +774,8 @@ CREATE OPERATOR public.- (
 );
 
 
-ALTER OPERATOR public.- (jsonb, jsonb) OWNER TO pass_culture;
 
 
-ALTER TEXT SEARCH CONFIGURATION public.french_unaccent OWNER TO pass_culture;
 
 SET default_tablespace = '';
 
@@ -829,7 +799,6 @@ CREATE TABLE public.activity (
 );
 
 
-ALTER TABLE public.activity OWNER TO pass_culture;
 
 --
 -- Name: activity_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
@@ -843,7 +812,6 @@ CREATE SEQUENCE public.activity_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.activity_id_seq OWNER TO pass_culture;
 
 --
 -- Name: activity_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
@@ -862,7 +830,6 @@ CREATE TABLE public.allocine_pivot (
 );
 
 
-ALTER TABLE public.allocine_pivot OWNER TO pass_culture;
 
 --
 -- Name: allocine_pivot_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
@@ -876,7 +843,6 @@ CREATE SEQUENCE public.allocine_pivot_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.allocine_pivot_id_seq OWNER TO pass_culture;
 
 --
 -- Name: allocine_pivot_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
@@ -896,7 +862,6 @@ CREATE TABLE public.allocine_venue_provider (
 );
 
 
-ALTER TABLE public.allocine_venue_provider OWNER TO pass_culture;
 
 --
 -- Name: allocine_venue_provider_price_rule; Type: TABLE; Schema: public; Owner: pass_culture
@@ -911,7 +876,6 @@ CREATE TABLE public.allocine_venue_provider_price_rule (
 );
 
 
-ALTER TABLE public.allocine_venue_provider_price_rule OWNER TO pass_culture;
 
 --
 -- Name: allocine_venue_provider_price_rule_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
@@ -925,7 +889,6 @@ CREATE SEQUENCE public.allocine_venue_provider_price_rule_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.allocine_venue_provider_price_rule_id_seq OWNER TO pass_culture;
 
 --
 -- Name: allocine_venue_provider_price_rule_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
@@ -945,7 +908,6 @@ CREATE TABLE public.api_key (
 );
 
 
-ALTER TABLE public.api_key OWNER TO pass_culture;
 
 --
 -- Name: api_key_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
@@ -959,7 +921,6 @@ CREATE SEQUENCE public.api_key_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.api_key_id_seq OWNER TO pass_culture;
 
 --
 -- Name: api_key_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
@@ -984,7 +945,6 @@ CREATE TABLE public.bank_information (
 );
 
 
-ALTER TABLE public.bank_information OWNER TO pass_culture;
 
 --
 -- Name: bank_information_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
@@ -998,7 +958,6 @@ CREATE SEQUENCE public.bank_information_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.bank_information_id_seq OWNER TO pass_culture;
 
 --
 -- Name: bank_information_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
@@ -1020,7 +979,6 @@ CREATE TABLE public.beneficiary_import (
 );
 
 
-ALTER TABLE public.beneficiary_import OWNER TO pass_culture;
 
 --
 -- Name: beneficiary_import_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
@@ -1034,7 +992,6 @@ CREATE SEQUENCE public.beneficiary_import_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.beneficiary_import_id_seq OWNER TO pass_culture;
 
 --
 -- Name: beneficiary_import_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
@@ -1057,7 +1014,6 @@ CREATE TABLE public.beneficiary_import_status (
 );
 
 
-ALTER TABLE public.beneficiary_import_status OWNER TO pass_culture;
 
 --
 -- Name: beneficiary_import_status_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
@@ -1071,7 +1027,6 @@ CREATE SEQUENCE public.beneficiary_import_status_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.beneficiary_import_status_id_seq OWNER TO pass_culture;
 
 --
 -- Name: beneficiary_import_status_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
@@ -1101,7 +1056,6 @@ CREATE TABLE public.booking (
 );
 
 
-ALTER TABLE public.booking OWNER TO pass_culture;
 
 --
 -- Name: booking_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
@@ -1115,7 +1069,6 @@ CREATE SEQUENCE public.booking_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.booking_id_seq OWNER TO pass_culture;
 
 --
 -- Name: booking_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
@@ -1138,7 +1091,6 @@ CREATE TABLE public.criterion (
 );
 
 
-ALTER TABLE public.criterion OWNER TO pass_culture;
 
 --
 -- Name: criterion_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
@@ -1152,7 +1104,6 @@ CREATE SEQUENCE public.criterion_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.criterion_id_seq OWNER TO pass_culture;
 
 --
 -- Name: criterion_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
@@ -1176,7 +1127,6 @@ CREATE TABLE public.deposit (
 );
 
 
-ALTER TABLE public.deposit OWNER TO pass_culture;
 
 --
 -- Name: deposit_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
@@ -1190,7 +1140,6 @@ CREATE SEQUENCE public.deposit_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.deposit_id_seq OWNER TO pass_culture;
 
 --
 -- Name: deposit_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
@@ -1211,7 +1160,6 @@ CREATE TABLE public.email (
 );
 
 
-ALTER TABLE public.email OWNER TO pass_culture;
 
 --
 -- Name: email_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
@@ -1225,7 +1173,6 @@ CREATE SEQUENCE public.email_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.email_id_seq OWNER TO pass_culture;
 
 --
 -- Name: email_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
@@ -1247,7 +1194,6 @@ CREATE TABLE public.favorite (
 );
 
 
-ALTER TABLE public.favorite OWNER TO pass_culture;
 
 --
 -- Name: favorite_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
@@ -1261,7 +1207,6 @@ CREATE SEQUENCE public.favorite_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.favorite_id_seq OWNER TO pass_culture;
 
 --
 -- Name: favorite_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
@@ -1282,7 +1227,6 @@ CREATE TABLE public.feature (
 );
 
 
-ALTER TABLE public.feature OWNER TO pass_culture;
 
 --
 -- Name: feature_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
@@ -1296,7 +1240,6 @@ CREATE SEQUENCE public.feature_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.feature_id_seq OWNER TO pass_culture;
 
 --
 -- Name: feature_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
@@ -1317,7 +1260,6 @@ CREATE TABLE public.iris_france (
 );
 
 
-ALTER TABLE public.iris_france OWNER TO pass_culture;
 
 --
 -- Name: iris_france_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
@@ -1331,7 +1273,6 @@ CREATE SEQUENCE public.iris_france_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.iris_france_id_seq OWNER TO pass_culture;
 
 --
 -- Name: iris_france_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
@@ -1351,7 +1292,6 @@ CREATE TABLE public.iris_venues (
 );
 
 
-ALTER TABLE public.iris_venues OWNER TO pass_culture;
 
 --
 -- Name: iris_venues_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
@@ -1365,7 +1305,6 @@ CREATE SEQUENCE public.iris_venues_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.iris_venues_id_seq OWNER TO pass_culture;
 
 --
 -- Name: iris_venues_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
@@ -1387,7 +1326,6 @@ CREATE TABLE public.local_provider_event (
 );
 
 
-ALTER TABLE public.local_provider_event OWNER TO pass_culture;
 
 --
 -- Name: local_provider_event_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
@@ -1401,7 +1339,6 @@ CREATE SEQUENCE public.local_provider_event_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.local_provider_event_id_seq OWNER TO pass_culture;
 
 --
 -- Name: local_provider_event_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
@@ -1430,7 +1367,6 @@ CREATE TABLE public.mediation (
 );
 
 
-ALTER TABLE public.mediation OWNER TO pass_culture;
 
 --
 -- Name: mediation_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
@@ -1444,7 +1380,6 @@ CREATE SEQUENCE public.mediation_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.mediation_id_seq OWNER TO pass_culture;
 
 --
 -- Name: mediation_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
@@ -1491,7 +1426,6 @@ CREATE TABLE public.offer (
 );
 
 
-ALTER TABLE public.offer OWNER TO pass_culture;
 
 --
 -- Name: offer_criterion; Type: TABLE; Schema: public; Owner: pass_culture
@@ -1504,7 +1438,6 @@ CREATE TABLE public.offer_criterion (
 );
 
 
-ALTER TABLE public.offer_criterion OWNER TO pass_culture;
 
 --
 -- Name: offer_criterion_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
@@ -1518,7 +1451,6 @@ CREATE SEQUENCE public.offer_criterion_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.offer_criterion_id_seq OWNER TO pass_culture;
 
 --
 -- Name: offer_criterion_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
@@ -1539,7 +1471,6 @@ CREATE SEQUENCE public.offer_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.offer_id_seq OWNER TO pass_culture;
 
 --
 -- Name: offer_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
@@ -1571,7 +1502,6 @@ CREATE TABLE public.offerer (
 );
 
 
-ALTER TABLE public.offerer OWNER TO pass_culture;
 
 --
 -- Name: offerer_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
@@ -1585,7 +1515,6 @@ CREATE SEQUENCE public.offerer_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.offerer_id_seq OWNER TO pass_culture;
 
 --
 -- Name: offerer_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
@@ -1616,7 +1545,6 @@ CREATE TABLE public.payment (
 );
 
 
-ALTER TABLE public.payment OWNER TO pass_culture;
 
 --
 -- Name: payment_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
@@ -1630,7 +1558,6 @@ CREATE SEQUENCE public.payment_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.payment_id_seq OWNER TO pass_culture;
 
 --
 -- Name: payment_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
@@ -1650,7 +1577,6 @@ CREATE TABLE public.payment_message (
 );
 
 
-ALTER TABLE public.payment_message OWNER TO pass_culture;
 
 --
 -- Name: payment_message_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
@@ -1664,7 +1590,6 @@ CREATE SEQUENCE public.payment_message_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.payment_message_id_seq OWNER TO pass_culture;
 
 --
 -- Name: payment_message_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
@@ -1686,7 +1611,6 @@ CREATE TABLE public.payment_status (
 );
 
 
-ALTER TABLE public.payment_status OWNER TO pass_culture;
 
 --
 -- Name: payment_status_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
@@ -1700,7 +1624,6 @@ CREATE SEQUENCE public.payment_status_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.payment_status_id_seq OWNER TO pass_culture;
 
 --
 -- Name: payment_status_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
@@ -1738,7 +1661,6 @@ CREATE TABLE public.product (
 );
 
 
-ALTER TABLE public.product OWNER TO pass_culture;
 
 --
 -- Name: product_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
@@ -1752,7 +1674,6 @@ CREATE SEQUENCE public.product_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.product_id_seq OWNER TO pass_culture;
 
 --
 -- Name: product_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
@@ -1778,7 +1699,6 @@ CREATE TABLE public.provider (
 );
 
 
-ALTER TABLE public.provider OWNER TO pass_culture;
 
 --
 -- Name: provider_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
@@ -1792,7 +1712,6 @@ CREATE SEQUENCE public.provider_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.provider_id_seq OWNER TO pass_culture;
 
 --
 -- Name: provider_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
@@ -1824,7 +1743,6 @@ CREATE TABLE public.stock (
 );
 
 
-ALTER TABLE public.stock OWNER TO pass_culture;
 
 --
 -- Name: stock_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
@@ -1838,7 +1756,6 @@ CREATE SEQUENCE public.stock_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.stock_id_seq OWNER TO pass_culture;
 
 --
 -- Name: stock_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
@@ -1861,7 +1778,6 @@ CREATE TABLE public.token (
 );
 
 
-ALTER TABLE public.token OWNER TO pass_culture;
 
 --
 -- Name: token_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
@@ -1875,7 +1791,6 @@ CREATE SEQUENCE public.token_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.token_id_seq OWNER TO pass_culture;
 
 --
 -- Name: token_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
@@ -1897,7 +1812,6 @@ CREATE TABLE public.transaction (
 );
 
 
-ALTER TABLE public.transaction OWNER TO pass_culture;
 
 --
 -- Name: transaction_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
@@ -1911,7 +1825,6 @@ CREATE SEQUENCE public.transaction_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.transaction_id_seq OWNER TO pass_culture;
 
 --
 -- Name: transaction_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
@@ -1959,7 +1872,6 @@ CREATE TABLE public."user" (
 );
 
 
-ALTER TABLE public."user" OWNER TO pass_culture;
 
 --
 -- Name: user_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
@@ -1973,7 +1885,6 @@ CREATE SEQUENCE public.user_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.user_id_seq OWNER TO pass_culture;
 
 --
 -- Name: user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
@@ -1995,7 +1906,6 @@ CREATE TABLE public.user_offerer (
 );
 
 
-ALTER TABLE public.user_offerer OWNER TO pass_culture;
 
 --
 -- Name: user_offerer_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
@@ -2009,7 +1919,6 @@ CREATE SEQUENCE public.user_offerer_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.user_offerer_id_seq OWNER TO pass_culture;
 
 --
 -- Name: user_offerer_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
@@ -2029,7 +1938,6 @@ CREATE TABLE public.user_session (
 );
 
 
-ALTER TABLE public.user_session OWNER TO pass_culture;
 
 --
 -- Name: user_session_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
@@ -2043,7 +1951,6 @@ CREATE SEQUENCE public.user_session_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.user_session_id_seq OWNER TO pass_culture;
 
 --
 -- Name: user_session_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
@@ -2087,7 +1994,6 @@ CREATE TABLE public.venue (
 );
 
 
-ALTER TABLE public.venue OWNER TO pass_culture;
 
 --
 -- Name: venue_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
@@ -2101,7 +2007,6 @@ CREATE SEQUENCE public.venue_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.venue_id_seq OWNER TO pass_culture;
 
 --
 -- Name: venue_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
@@ -2120,7 +2025,6 @@ CREATE TABLE public.venue_label (
 );
 
 
-ALTER TABLE public.venue_label OWNER TO pass_culture;
 
 --
 -- Name: venue_label_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
@@ -2135,7 +2039,6 @@ CREATE SEQUENCE public.venue_label_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.venue_label_id_seq OWNER TO pass_culture;
 
 --
 -- Name: venue_label_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
@@ -2164,7 +2067,6 @@ CREATE TABLE public.venue_provider (
 );
 
 
-ALTER TABLE public.venue_provider OWNER TO pass_culture;
 
 --
 -- Name: venue_provider_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
@@ -2178,7 +2080,6 @@ CREATE SEQUENCE public.venue_provider_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.venue_provider_id_seq OWNER TO pass_culture;
 
 --
 -- Name: venue_provider_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
@@ -2197,7 +2098,6 @@ CREATE TABLE public.venue_type (
 );
 
 
-ALTER TABLE public.venue_type OWNER TO pass_culture;
 
 --
 -- Name: venue_type_id_seq; Type: SEQUENCE; Schema: public; Owner: pass_culture
@@ -2212,7 +2112,6 @@ CREATE SEQUENCE public.venue_type_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.venue_type_id_seq OWNER TO pass_culture;
 
 --
 -- Name: venue_type_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: pass_culture
