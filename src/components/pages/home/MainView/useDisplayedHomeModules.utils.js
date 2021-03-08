@@ -7,13 +7,15 @@ export const getModulesToDisplay = (modules, algoliaMapping, recommendedHits) =>
     if (module instanceof BusinessPane) return true
     if (module instanceof ExclusivityPane) return true
     if (module instanceof RecommendationPane) {
-      return recommendedHits.length >= module.display.minOffers
+      const { minOffers = 0 } = module.display || {}
+      return recommendedHits.length >= minOffers
     }
 
     if (module.moduleId in algoliaMapping) {
       const { hits = [], nbHits = 0 } = algoliaMapping[module.moduleId] || {}
+      const { minOffers = 0 } = module.display || {}
       const atLeastOneHit = hits.length > 0
-      const minOffersHasBeenReached = nbHits >= module.display.minOffers
+      const minOffersHasBeenReached = nbHits >= minOffers
       return atLeastOneHit && minOffersHasBeenReached
     }
 

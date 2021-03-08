@@ -97,6 +97,21 @@ describe('getModulesToDisplay', () => {
     expect(getModulesToDisplay([module], algoliaMapping, [])).toHaveLength(0)
   })
 
+  it('should not filter out modules without displayParameters', () => {
+    // This can happen if the module is in draft in Contenful, but the parent algolia module is published
+    display = undefined
+    const algoliaMapping = {
+      moduleId: { hits: [offerOne, offerTwo], nbHits: 2, parsedParameters: {} },
+    }
+    const module = new Offers({ algolia, display, moduleId: 'moduleId' })
+    expect(getModulesToDisplay([module], algoliaMapping, [])).toHaveLength(1)
+    display = {
+      layout: PANE_LAYOUT['ONE-ITEM-MEDIUM'],
+      minOffers: 1,
+      title: 'Les offres près de chez toi!',
+    }
+  })
+
   it('should display Recommendation module only when enough offers', () => {
     display.minOffers = 3
     let module = new RecommendationPane({ display })
