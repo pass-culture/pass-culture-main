@@ -10,6 +10,7 @@ from pcapi.domain.password import check_password_strength
 from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
 from pcapi.serialization.utils import validate_not_empty_string_when_provided
+from pcapi.serialization.utils import validate_phone_number_format
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -30,6 +31,7 @@ class PatchUserBodyModel(BaseModel):
     _validate_last_name = validate_not_empty_string_when_provided("last_name")
     _validate_email = validate_not_empty_string_when_provided("email")
     _validate_phone_number = validate_not_empty_string_when_provided("phone_number")
+    _validate_phone_number_format = validate_phone_number_format("phone_number")
 
     class Config:
         alias_generator = to_camel

@@ -64,6 +64,29 @@ class Returns200:
             "publicName": "publicName",
         }
 
+    @pytest.mark.usefixtures("db_session")
+    def should_remove_spaces_from_phone_number(self, app):
+        # given
+        now = datetime.now()
+        beneficiary = users_factories.UserFactory(dateOfBirth=now, lastConnectionDate=now)
+        data = {
+            "publicName": "publicName",
+            "firstName": "firstName",
+            "lastName": "lastName",
+            "email": "new@example.com",
+            "postalCode": "93020",
+            "phoneNumber": "06 1 234 56 78",
+            "departementCode": "97",
+            "hasSeenTutorials": True,
+        }
+
+        # when
+        TestClient(app.test_client()).with_auth(email=beneficiary.email).patch("/users/current", json=data)
+
+        # then
+        user = User.query.get(beneficiary.id)
+        assert user.phoneNumber == "0612345678"
+
 
 class Returns400:
     @pytest.mark.usefixtures("db_session")
@@ -126,4 +149,84 @@ class Returns400:
             "firstName": ["Ce champ est obligatoire"],
             "lastName": ["Ce champ est obligatoire"],
             "phoneNumber": ["Ce champ est obligatoire"],
+        }
+
+    @pytest.mark.usefixtures("db_session")
+    def when_phone_number_contains_letters_or_special_chars(self, app):
+        # given
+        pro = users_factories.UserFactory(isBeneficiary=False)
+        data = {
+            "firstName": "Eren",
+            "lastName": "Jäger",
+            "email": "eren.kyojin@example.com",
+            "phoneNumber": "0x abc 23 7+ e",
+        }
+
+        # when
+        response = TestClient(app.test_client()).with_auth(email=pro.email).patch("/users/current", json=data)
+
+        # then
+        assert response.status_code == 400
+        assert response.json == {
+            "phoneNumber": ["Format de téléphone incorrect. Exemple de format correct : 06 06 06 06 06"],
+        }
+
+    @pytest.mark.usefixtures("db_session")
+    def when_phone_number_does_not_start_with_O(self, app):
+        # given
+        pro = users_factories.UserFactory(isBeneficiary=False)
+        data = {
+            "firstName": "Eren",
+            "lastName": "Jäger",
+            "email": "eren.kyojin@example.com",
+            "phoneNumber": "66 08 89 86 76",
+        }
+
+        # when
+        response = TestClient(app.test_client()).with_auth(email=pro.email).patch("/users/current", json=data)
+
+        # then
+        assert response.status_code == 400
+        assert response.json == {
+            "phoneNumber": ["Format de téléphone incorrect. Exemple de format correct : 06 06 06 06 06"],
+        }
+
+    @pytest.mark.usefixtures("db_session")
+    def when_phone_number_length_is_greater_than_10(self, app):
+        # given
+        pro = users_factories.UserFactory(isBeneficiary=False)
+        data = {
+            "firstName": "Eren",
+            "lastName": "Jäger",
+            "email": "eren.kyojin@example.com",
+            "phoneNumber": "06 08 89 86 76 66",
+        }
+
+        # when
+        response = TestClient(app.test_client()).with_auth(email=pro.email).patch("/users/current", json=data)
+
+        # then
+        assert response.status_code == 400
+        assert response.json == {
+            "phoneNumber": ["Format de téléphone incorrect. Exemple de format correct : 06 06 06 06 06"],
+        }
+
+    @pytest.mark.usefixtures("db_session")
+    def when_phone_number_length_is_less_than_10(self, app):
+        # given
+        pro = users_factories.UserFactory(isBeneficiary=False)
+        data = {
+            "firstName": "Eren",
+            "lastName": "Jäger",
+            "email": "eren.kyojin@example.com",
+            "phoneNumber": "06 08 89",
+        }
+
+        # when
+        response = TestClient(app.test_client()).with_auth(email=pro.email).patch("/users/current", json=data)
+
+        # then
+        assert response.status_code == 400
+        assert response.json == {
+            "phoneNumber": ["Format de téléphone incorrect. Exemple de format correct : 06 06 06 06 06"],
         }

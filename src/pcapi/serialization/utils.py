@@ -1,3 +1,4 @@
+import re
 from typing import Any
 from typing import Optional
 from typing import Union
@@ -85,6 +86,15 @@ def check_string_is_not_empty(string: str) -> str:
     return string
 
 
+def check_phone_number_format(string: str) -> str:
+    api_errors = ApiErrors()
+    spaceless_string = string.replace(" ", "")
+    if not re.match(r"^0\d{9}$", spaceless_string):
+        api_errors.add_error("phoneNumber", "Format de téléphone incorrect. Exemple de format correct : 06 06 06 06 06")
+        raise api_errors
+    return spaceless_string
+
+
 def humanize_field(field_name: str) -> classmethod:
     return validator(field_name, pre=True, allow_reuse=True)(humanize_id)
 
@@ -103,3 +113,7 @@ def cast_optional_field_str_to_int(field_name: str) -> classmethod:
 
 def validate_not_empty_string_when_provided(field_name: str) -> classmethod:
     return validator(field_name, pre=True, allow_reuse=True)(check_string_is_not_empty)
+
+
+def validate_phone_number_format(field_name: str) -> classmethod:
+    return validator(field_name, pre=True, allow_reuse=True)(check_phone_number_format)
