@@ -1036,8 +1036,9 @@ class GetActiveOffersCountForVenueTest:
 
         active_offer = offers_factories.ThingOfferFactory(venue=venue)
         offers_factories.StockFactory(offer=active_offer)
-        other_active_offer = offers_factories.ThingOfferFactory(venue=venue)
-        offers_factories.StockFactory(offer=other_active_offer)
+        other_active_offer = offers_factories.EventOfferFactory(venue=venue)
+        offers_factories.EventStockFactory(offer=other_active_offer)
+        offers_factories.EventStockFactory(offer=other_active_offer)
 
         sold_out_offer = offers_factories.ThingOfferFactory(venue=venue)
         sold_out_stock = offers_factories.StockFactory(quantity=1, offer=sold_out_offer)
@@ -1072,9 +1073,10 @@ class GetSoldOutOffersCountForVenueTest:
         sold_out_offer = offers_factories.ThingOfferFactory(venue=venue)
         sold_out_stock = offers_factories.StockFactory(quantity=1, offer=sold_out_offer)
         bookings_factories.BookingFactory(stock=sold_out_stock)
-        other_sold_out_offer = offers_factories.ThingOfferFactory(venue=venue)
-        other_sold_out_stock = offers_factories.StockFactory(quantity=1, offer=other_sold_out_offer)
+        other_sold_out_offer = offers_factories.EventOfferFactory(venue=venue)
+        other_sold_out_stock = offers_factories.EventStockFactory(quantity=1, offer=other_sold_out_offer)
         bookings_factories.BookingFactory(stock=other_sold_out_stock)
+        offers_factories.EventStockFactory(quantity=0, offer=other_sold_out_offer)
 
         expired_offer = offers_factories.EventOfferFactory(venue=venue)
         yesterday = datetime.utcnow() - timedelta(days=1)
@@ -1087,7 +1089,7 @@ class GetSoldOutOffersCountForVenueTest:
         offers_factories.StockFactory(offer=active_offer_on_another_venue)
 
         # When
-        active_offers_count = get_sold_out_offers_count_for_venue(venue.id)
+        sold_out_offers_count = get_sold_out_offers_count_for_venue(venue.id)
 
         # Then
-        assert active_offers_count == 2
+        assert sold_out_offers_count == 2
