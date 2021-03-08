@@ -14,7 +14,7 @@ const Venue = ({ id, isVirtual, name, offererId, publicName }) => {
     activeBookingsQuantity: '',
     activeOffersCount: '',
     soldOutOffersCount: '',
-    usedBookingsQuantity: '',
+    validatedBookingsQuantity: '',
   })
 
   const venueStatData = [
@@ -40,7 +40,7 @@ const Venue = ({ id, isVirtual, name, offererId, publicName }) => {
       },
     },
     {
-      count: stats.usedBookingsQuantity,
+      count: stats.validatedBookingsQuantity,
       label: 'Réservations validées',
       link: {
         pathname: '/reservations',
@@ -63,7 +63,7 @@ const Venue = ({ id, isVirtual, name, offererId, publicName }) => {
         activeBookingsQuantity: stats.activeBookingsQuantity.toString(),
         activeOffersCount: stats.activeOffersCount.toString(),
         soldOutOffersCount: stats.soldOutOffersCount.toString(),
-        usedBookingsQuantity: stats.usedBookingsQuantity.toString(),
+        validatedBookingsQuantity: stats.validatedBookingsQuantity.toString(),
       })
     })
   }, [id])

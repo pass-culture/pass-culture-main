@@ -124,7 +124,7 @@ describe('offererDetails', () => {
       activeBookingsQuantity: 4,
       activeOffersCount: 2,
       soldOutOffersCount: 3,
-      usedBookingsQuantity: 3,
+      validatedBookingsQuantity: 3,
     })
   })
 

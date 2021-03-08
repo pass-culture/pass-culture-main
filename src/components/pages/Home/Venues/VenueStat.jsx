@@ -34,7 +34,7 @@ export const VenueStat = ({ stat }) => (
 
 VenueStat.propTypes = {
   stat: PropTypes.shape({
-    count: PropTypes.string.isRequired,
+    count: PropTypes.string,
     label: PropTypes.string.isRequired,
     link: PropTypes.oneOfType([
       PropTypes.string,

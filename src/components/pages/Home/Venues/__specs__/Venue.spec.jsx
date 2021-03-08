@@ -45,7 +45,7 @@ describe('venues', () => {
       activeBookingsQuantity: 0,
       activeOffersCount: 2,
       soldOutOffersCount: 3,
-      usedBookingsQuantity: 1,
+      validatedBookingsQuantity: 1,
     })
   })
 
