@@ -14,9 +14,11 @@ import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import api
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories
+from pcapi.core.offers.api import add_criteria_to_offers
 from pcapi.core.offers.api import get_expense_domains
 from pcapi.core.offers.api import update_offer_and_stock_id_at_providers
 from pcapi.core.offers.exceptions import ThumbnailStorageError
+from pcapi.core.offers.factories import CriterionFactory
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import StockFactory
 from pcapi.core.offers.factories import VenueFactory
@@ -939,3 +941,47 @@ class OfferExpenseDomainsTest:
             "all",
             "physical",
         }
+
+
+@pytest.mark.usefixtures("db_session")
+class AddCriterionToOffersTest:
+    @mock.patch("pcapi.connectors.redis.add_offer_id")
+    def test_add_criteria(self, mocked_add_offer_id):
+        # Given
+        isbn = "2-221-00164-8"
+        offer1 = OfferFactory(extraData={"isbn": "2221001648"})
+        offer2 = OfferFactory(extraData={"isbn": "2221001648"})
+        inactive_offer = OfferFactory(extraData={"isbn": "2221001648"}, isActive=False)
+        unmatched_offer = OfferFactory()
+        criterion1 = CriterionFactory(name="Pretty good books")
+        criterion2 = CriterionFactory(name="Other pretty good books")
+
+        # When
+        is_successful = add_criteria_to_offers([criterion1, criterion2], isbn=isbn)
+
+        # Then
+        assert is_successful is True
+        assert offer1.criteria == [criterion1, criterion2]
+        assert offer2.criteria == [criterion1, criterion2]
+        assert not inactive_offer.criteria
+        assert not unmatched_offer.criteria
+        # fmt: off
+        reindexed_offer_ids = {
+            mocked_add_offer_id.call_args_list[i][1]["offer_id"]
+            for i in range(mocked_add_offer_id.call_count)
+        }
+        # fmt: on
+        assert reindexed_offer_ids == {offer1.id, offer2.id}
+
+    @mock.patch("pcapi.connectors.redis.add_offer_id")
+    def test_add_criteria_when_no_offers_is_found(self, mocked_add_offer_id):
+        # Given
+        isbn = "2-221-00164-8"
+        OfferFactory(extraData={"isbn": "2221001647"})
+        criterion = CriterionFactory(name="Pretty good books")
+
+        # When
+        is_successful = add_criteria_to_offers([criterion], isbn=isbn)
+
+        # Then
+        assert is_successful is False

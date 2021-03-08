@@ -18,8 +18,10 @@ from pcapi.core.users.models import User
 from pcapi.domain import admin_emails
 from pcapi.domain import user_emails
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
+from pcapi.models import Criterion
 from pcapi.models import EventType
 from pcapi.models import Offer
+from pcapi.models import OfferCriterion
 from pcapi.models import Product
 from pcapi.models import Stock
 from pcapi.models import Venue
@@ -33,6 +35,7 @@ from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
 from pcapi.routes.serialization.stock_serialize import StockCreationBodyModel
 from pcapi.routes.serialization.stock_serialize import StockEditionBodyModel
 from pcapi.utils import mailing
+from pcapi.utils.logger import logger
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.rest import load_or_raise_error
 
@@ -478,3 +481,33 @@ def get_expense_domains(offer: Offer) -> List[ExpenseDomain]:
             domains.add(ExpenseDomain.PHYSICAL.value)
 
     return list(domains)
+
+
+def add_criteria_to_offers(criteria: List[Criterion], isbn: str) -> bool:
+    isbn = isbn.replace("-", "").replace(" ", "")
+
+    offer_ids_tuples = (
+        Offer.query.filter(Offer.extraData["isbn"].astext == isbn)
+        .filter(Offer.isActive.is_(True))
+        .with_entities(Offer.id)
+        .all()
+    )
+    offer_ids = [offer_id[0] for offer_id in offer_ids_tuples]
+
+    if not offer_ids:
+        return False
+
+    for criterion in criteria:
+        logger.info("Adding criterion %s to %d offers", criterion, len(offer_ids))
+
+        offer_criteria: List[OfferCriterion] = []
+        offer_criteria.extend(OfferCriterion(offerId=offer_id, criterionId=criterion.id) for offer_id in offer_ids)
+
+        db.session.bulk_save_objects(offer_criteria)
+        db.session.commit()
+
+    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
+        for offer_id in offer_ids:
+            redis.add_offer_id(client=app.redis_client, offer_id=offer_id)
+
+    return True
