@@ -66,6 +66,7 @@
     @include caption();
 
     color: $white;
+    width: rem(145px);
 
     img {
       filter: brightness(0) invert(1);
@@ -83,18 +84,21 @@
   }
 
   .status- {
-    &inactive,
     &expired,
-    &rejected,
     &awaiting {
       background-color: $grey-dark;
+    }
+
+    &rejected {
+      background-color: $black;
     }
 
     &sold-out {
       background-color: $error;
     }
 
-    &active {
+    &active,
+    &validated {
       background-color: $green-valid;
     }
   }
@@ -126,10 +130,6 @@
 
   .stock-column {
     width: rem(100px);
-  }
-
-  .status-column {
-    width: rem(145px);
   }
 
   .switch-column {

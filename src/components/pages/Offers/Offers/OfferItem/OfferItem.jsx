@@ -12,10 +12,6 @@ import { computeOfferStatus } from '../domain/computeOfferStatus'
 import { OFFER_STATUS } from '../domain/offerStatus'
 
 const OFFER_STATUS_PROPERTIES = {
-  [OFFER_STATUS.INACTIVE]: {
-    className: 'status-inactive',
-    icon: 'ico-status-inactive',
-  },
   [OFFER_STATUS.EXPIRED]: {
     className: 'status-expired',
     icon: 'ico-status-expired',
@@ -35,6 +31,10 @@ const OFFER_STATUS_PROPERTIES = {
   [OFFER_STATUS.AWAITING]: {
     className: 'status-awaiting',
     icon: 'ico-status-awaiting',
+  },
+  [OFFER_STATUS.VALIDATED]: {
+    className: 'status-validated',
+    icon: 'ico-status-validated',
   },
 }
 

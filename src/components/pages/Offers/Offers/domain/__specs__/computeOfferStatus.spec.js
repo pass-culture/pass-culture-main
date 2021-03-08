@@ -2,7 +2,7 @@ import { computeOfferStatus } from '../computeOfferStatus'
 
 describe('compute offer status', () => {
   describe('when offer is inactive', () => {
-    it('should be "inactive" prior to any other status', () => {
+    it('should be "validée" if also validated', () => {
       // Given
       const offer = {
         isActive: false,
@@ -14,24 +14,22 @@ describe('compute offer status', () => {
       const status = computeOfferStatus(offer, stocks)
 
       // Then
-      expect(status).toBe('inactive')
+      expect(status).toBe('validée')
     })
 
-    describe('when offer is fraudulent', () => {
-      it('should be "refusée"', () => {
-        // Given
-        const offer = {
-          isActive: false,
-          validation: 'REJECTED',
-        }
-        const stocks = []
+    it('should be "refusée" if validation is rejected', () => {
+      // Given
+      const offer = {
+        isActive: false,
+        validation: 'REJECTED',
+      }
+      const stocks = []
 
-        // When
-        const status = computeOfferStatus(offer, stocks)
+      // When
+      const status = computeOfferStatus(offer, stocks)
 
-        // Then
-        expect(status).toBe('refusée')
-      })
+      // Then
+      expect(status).toBe('refusée')
     })
   })
 

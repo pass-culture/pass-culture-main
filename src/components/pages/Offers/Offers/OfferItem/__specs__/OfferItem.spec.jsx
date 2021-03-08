@@ -289,7 +289,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       })
     })
 
-    it('should display the offer status based on offer and stocks props', () => {
+    it('should display the offer status based on offer and stocks props', async () => {
       // given
       props.stocks = [{ remainingQuantity: 0 }]
 
@@ -297,7 +297,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       renderOfferItem(props)
 
       // then
-      expect(screen.queryByText('épuisée')).toBeInTheDocument()
+      expect(await screen.findByText('épuisée')).toBeInTheDocument()
     })
   })
 })

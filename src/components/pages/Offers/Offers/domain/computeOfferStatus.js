@@ -7,7 +7,7 @@ export const computeOfferStatus = (offer, stocks) => {
       return OFFER_STATUS.REJECTED
     }
 
-    return OFFER_STATUS.INACTIVE
+    return OFFER_STATUS.VALIDATED
   }
 
   if (offer.validation === 'AWAITING') return OFFER_STATUS.AWAITING
