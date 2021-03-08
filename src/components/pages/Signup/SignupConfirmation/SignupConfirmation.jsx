@@ -34,7 +34,7 @@ const SignupConfirmation = () => (
               {'Si vous n’avez rien reçu d’ici demain, merci de '}
               <a
                 className="quaternary-link"
-                href="mailto:pass@culture.gouv.fr?subject=Problème de création de compte pro"
+                href="mailto:support@passculture.app?subject=Problème de création de compte pro"
               >
                 {'contacter le support'}
               </a>
