@@ -513,11 +513,26 @@ def add_criteria_to_offers(criteria: List[Criterion], isbn: str) -> bool:
     return True
 
 
-def deactivate_inappropriate_offers(offer_ids: List[int]):
-    offers = Offer.query.filter(Offer.id.in_(offer_ids)).all()
-    for o in offers:
-        o.isActive = False
-        o.product.isGcuCompatible = False
-    repository.save(*offers)
-    for o in offers:
-        redis.add_offer_id(client=app.redis_client, offer_id=o.id)
+def deactivate_inappropriate_product(isbn: str) -> bool:
+    product = Product.query.filter(Product.extraData["isbn"].astext == isbn).first()
+    if not product:
+        return False
+
+    product.isGcuCompatible = False
+    db.session.add(product)
+
+    offers = Offer.query.filter_by(productId=product.id, isActive=True)
+    offer_ids = [offer_id for offer_id, in offers.with_entities(Offer.id).all()]
+    offers.update(values={"isActive": False})
+
+    try:
+        db.session.commit()
+    except Exception as exception:  # pylint: disable=broad-except
+        logger.exception("[ADMIN] error when trying to update GcuCompatible on a product %s", exception)
+        return False
+
+    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
+        for offer_id in offer_ids:
+            redis.add_offer_id(client=app.redis_client, offer_id=offer_id)
+
+    return True

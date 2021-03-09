@@ -5,6 +5,7 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 import pcapi.core.users.factories as users_factories
 from pcapi.models.criterion import Criterion
+from pcapi.models.product import Product
 
 from tests.conftest import TestClient
 from tests.conftest import clean_database
@@ -122,3 +123,35 @@ class ManyOffersOperationsViewTest:
 
         # Then
         assert result == expected_result
+
+    @patch("pcapi.connectors.redis.add_offer_id")
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_edit_product_gcu_compatibility(self, mocked_validate_csrf_token, mocked_add_offer_id, app, db_session):
+        # Given
+        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        offerer = offers_factories.OffererFactory()
+        product_1 = offers_factories.ThingProductFactory(
+            description="premier produit inapproprié", extraData={"isbn": "isbn-de-test"}
+        )
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        offers_factories.OfferFactory(product=product_1, venue=venue)
+        offers_factories.OfferFactory(product=product_1, venue=venue)
+
+        # When
+        client = TestClient(app.test_client()).with_auth("admin@example.com")
+        response = client.post("/pc/back-office/many_offers_operations/product_gcu_compatibility?isbn=isbn-de-test")
+
+        # Then
+        assert response.status_code == 302
+        assert response.headers["location"] == "http://localhost/pc/back-office/many_offers_operations/"
+        products = Product.query.all()
+        offers = Offer.query.all()
+        first_product = products[0]
+        first_offer = offers[0]
+        second_offer = offers[1]
+
+        assert not first_product.isGcuCompatible
+        assert not first_offer.isActive
+        assert not second_offer.isActive
+        for offer in offers:
+            mocked_add_offer_id.assert_any_call(client=app.redis_client, offer_id=offer.id)

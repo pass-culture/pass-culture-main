@@ -15,7 +15,7 @@ from pcapi.core.offers import api
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories
 from pcapi.core.offers.api import add_criteria_to_offers
-from pcapi.core.offers.api import deactivate_inappropriate_offers
+from pcapi.core.offers.api import deactivate_inappropriate_product
 from pcapi.core.offers.api import get_expense_domains
 from pcapi.core.offers.api import update_offer_and_stock_id_at_providers
 from pcapi.core.offers.exceptions import ThumbnailStorageError
@@ -991,31 +991,28 @@ class AddCriterionToOffersTest:
         assert is_successful is False
 
 
-class DeactivateInappropriateOffersTest:
+class DeactivateInappropriateProductTest:
     @mock.patch("pcapi.connectors.redis.add_offer_id")
     @pytest.mark.usefixtures("db_session")
-    def test_should_deactivate_offers_with_inappropriate_content(self, mocked_add_offer_id):
+    def test_should_deactivate_product_with_inappropriate_content(self, mocked_add_offer_id):
         # Given
         offerer = OffererFactory()
-        product_1 = ThingProductFactory(description="premier produit inapproprié")
-        product_2 = ThingProductFactory(description="second produit inapproprié")
+        product_1 = ThingProductFactory(description="premier produit inapproprié", extraData={"isbn": "isbn-de-test"})
         venue = VenueFactory(managingOfferer=offerer)
-        offer_1 = OfferFactory(product=product_1, venue=venue)
-        offer_2 = OfferFactory(product=product_2, venue=venue)
+        OfferFactory(product=product_1, venue=venue)
+        OfferFactory(product=product_1, venue=venue)
 
         # When
-        deactivate_inappropriate_offers([offer_1.id, offer_2.id])
+        deactivate_inappropriate_product("isbn-de-test")
 
         # Then
         products = Product.query.all()
         offers = Offer.query.all()
         first_product = products[0]
-        second_product = products[1]
         first_offer = offers[0]
         second_offer = offers[1]
 
         assert not first_product.isGcuCompatible
-        assert not second_product.isGcuCompatible
         assert not first_offer.isActive
         assert not second_offer.isActive
         for o in offers:

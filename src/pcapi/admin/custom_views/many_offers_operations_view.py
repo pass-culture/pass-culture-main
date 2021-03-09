@@ -15,6 +15,7 @@ from wtforms import StringField
 from wtforms import validators
 
 from pcapi.core.offers.api import add_criteria_to_offers
+from pcapi.core.offers.api import deactivate_inappropriate_product
 from pcapi.core.offers.models import Offer
 from pcapi.models.criterion import Criterion
 from pcapi.models.product import Product
@@ -119,6 +120,7 @@ class ManyOffersOperationsView(BaseView):
             "isbn": isbn,
             "offer_criteria_form": offer_criteria_form,
             "current_criteria_on_offers": current_criteria_on_offers,
+            "is_product_compatible": product.isGcuCompatible,
         }
 
         return self.render("admin/edit_many_offers.html", **context)
@@ -142,3 +144,17 @@ class ManyOffersOperationsView(BaseView):
 
         flash("Le formulaire est invalide")
         return redirect(url_for(".edit"))
+
+    @expose("/product_gcu_compatibility", methods=["POST"])
+    def product_gcu_compatibility(self) -> Response:
+        isbn = request.args.get("isbn")
+        if not isbn:
+            flash("Veuillez renseigner un ISBN valide", "error")
+            return redirect(url_for(".search"))
+
+        is_operation_successful = deactivate_inappropriate_product(isbn)
+        if is_operation_successful:
+            flash("Le produit a été rendu incompatible aux CGU et les offres ont été désactivées", "success")
+        else:
+            flash("Une erreur s'est produite lors de l'opération", "error")
+        return redirect(url_for(".search"))
