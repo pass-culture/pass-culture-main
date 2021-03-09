@@ -104,7 +104,7 @@ class Get:
 
 
 class Post:
-    class Returns204:
+    class Returns200:
         def when_user_creates_a_favorite(self, app):
             # Given
             user, test_client = utils.create_user_and_test_client(app)
@@ -118,11 +118,13 @@ class Post:
             response = test_client.post(FAVORITES_URL, json={"offerId": offer1.id})
 
             # Then
-            assert response.status_code == 204, response.data
+            assert response.status_code == 200, response.data
             assert FavoriteSQLEntity.query.count() == 1
             favorite = FavoriteSQLEntity.query.first()
             assert favorite.dateCreated
             assert favorite.userId == user.id
+            assert response.json["id"] == favorite.id
+            assert response.json["offer"]
 
 
 class Delete:

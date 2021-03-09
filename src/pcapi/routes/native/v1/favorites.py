@@ -10,7 +10,6 @@ from pcapi.models import Product
 from pcapi.models import Stock
 from pcapi.models import Venue
 from pcapi.models.db import db
-from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.routes.native.security import authenticated_user_required
 from pcapi.serialization.decorator import spectree_serialize
@@ -79,17 +78,20 @@ def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
 
 
 @blueprint.native_v1.route("/me/favorites", methods=["POST"])
-@spectree_serialize(on_success_status=204, on_error_statuses=[400], api=blueprint.api)  # type: ignore
+@spectree_serialize(response_model=serializers.FavoriteResponse, on_error_statuses=[400], api=blueprint.api)  # type: ignore
 @authenticated_user_required
-def create_favorite(user: User, body: serializers.FavoriteRequest) -> None:
-    offer = Offer.query.filter_by(id=body.offerId).first_or_404()
+def create_favorite(user: User, body: serializers.FavoriteRequest) -> serializers.FavoriteResponse:
+    with transaction():
+        offer = Offer.query.filter_by(id=body.offerId).first_or_404()
 
-    favorite = FavoriteSQLEntity(
-        mediation=offer.activeMediation,
-        offer=offer,
-        user=user,
-    )
-    repository.save(favorite)
+        favorite = FavoriteSQLEntity(
+            mediation=offer.activeMediation,
+            offer=offer,
+            user=user,
+        )
+        db.session.add(favorite)
+        db.session.flush()
+        return serializers.FavoriteResponse.from_orm(favorite)
 
 
 @blueprint.native_v1.route("/me/favorites/<int:favorite_id>", methods=["DELETE"])
