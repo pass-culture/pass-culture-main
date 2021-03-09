@@ -38,9 +38,13 @@ describe('compute offer status', () => {
       const stocks = [
         {
           id: 1,
+          hasBookingLimitDatetimePassed: false,
+          remainingQuantity: 'unlimited',
         },
         {
           id: 2,
+          hasBookingLimitDatetimePassed: false,
+          remainingQuantity: 'unlimited',
         },
       ]
 

@@ -255,7 +255,10 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
       it('should display a warning with number of stocks sold out when at least one stock is sold out', () => {
         // given
-        props.stocks = [{ remainingQuantity: 0 }, { remainingQuantity: 'unlimited' }]
+        props.stocks = [
+          { remainingQuantity: 0, hasBookingLimitDatetimePassed: false },
+          { remainingQuantity: 'unlimited', hasBookingLimitDatetimePassed: false },
+        ]
 
         // when
         renderOfferItem(props)
@@ -272,9 +275,9 @@ describe('src | components | pages | Offers | OfferItem', () => {
       it('should pluralize number of stocks sold out when at least two stocks are sold out', () => {
         // given
         props.stocks = [
-          { remainingQuantity: 0 },
-          { remainingQuantity: 0 },
-          { remainingQuantity: 12 },
+          { remainingQuantity: 0, hasBookingLimitDatetimePassed: false },
+          { remainingQuantity: 0, hasBookingLimitDatetimePassed: false },
+          { remainingQuantity: 12, hasBookingLimitDatetimePassed: false },
         ]
 
         // when
