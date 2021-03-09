@@ -12,40 +12,45 @@
   <div>
     <h3><span class="label label-default">Informations concernant les livres</span></h3>
     <p><b>Titre du livre :</b> {{ name }}</p>
-    <p><b>Nombre d'offres associées :</b> {{ offers_number }}</p>
+    <p><b>Nombre d'offres associées :</b></p>
+    <p><b>Actives : {{ active_offers_number }}</b></p>
+    <p><b>Inactives : {{ inactive_offers_number }}</b></p>
     <p><b>ISBN :</b> {{ isbn }}</p>
   </div>
 
-  <button data-toggle="collapse" data-target="#playlist-tag-form" class="btn btn-info" style="margin: 20px 0 2px;">
-    Ouvrir le formulaire de tag de playlist
-  </button>
-  <div id="playlist-tag-form" class="collapse" style="border: 2px gray solid; border-radius: 0.25em; padding: 10px;">
-  {% if current_criteria_on_offers.items()|length > 0 %}
-  <div>
-    <h3 style="margin-top: 0;"><span class="label label-default">Tags déjà présents sur les offres</span></h3>
-    <div>
-      {% for key, value in current_criteria_on_offers.items() %}
-        <p>{{ value["count"] }}/{{ offers_number }} offres ont déjà le tag {{ key }}</p>
-      {% endfor %}
+  {% if active_offers_number > 0 %}
+    <button data-toggle="collapse" data-target="#playlist-tag-form" class="btn btn-info" style="margin: 20px 0 2px;">
+      Ouvrir le formulaire de tag de playlist
+    </button>
+    <div id="playlist-tag-form" class="collapse" style="border: 2px gray solid; border-radius: 0.25em; padding: 10px;">
+      {% if current_criteria_on_offers.items()|length > 0 %}
+        <div>
+          <h3 style="margin-top: 0;"><span class="label label-default">Tags déjà présents sur les offres</span></h3>
+          <div>
+            {% for key, value in current_criteria_on_offers.items() %}
+              <p>{{ value["count"] }}/{{ active_offers_number }} offres actives ont déjà le tag {{ key }}</p>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+        <form action="{{ url_for('/many_offers_operations.add_criteria_to_offers') }}?isbn={{ isbn }}" method="POST" style="margin-top: 10px;">
+          {% for field in offer_criteria_form %}
+            {% if field.name == "csrf_token" %}
+              {{ field }}
+            {% else %}
+            <div class="form-group">
+                <label>{{ field.label }} {% if field.flags.required %}*{% endif %}</label>
+                {{ field(class_="form-control") }}
+            </div>
+            {% endif %}
+          {% endfor %}
+          <div>
+            <p>⚠️ {{ active_offers_number }} offres actives associées à cet ISBN seront affectées</p>
+            <input class="btn btn-success" type="submit" value="Tagguer les offres associées au produit">
+          </div>
+        </form>
     </div>
-  </div>
   {% endif %}
-  <form action="{{ action }}" method="POST" style="margin-top: 10px;">
-    {% for field in offer_criteria_form %}
-      {% if field.name == "csrf_token" %}
-        {{ field }}
-      {% else %}
-      <div class="form-group">
-          <label>{{ field.label }} {% if field.flags.required %}*{% endif %}</label>
-          {{ field(class_="form-control") }}
-      </div>
-      {% endif %}
-    {% endfor %}
-    <div>
-      <input class="btn btn-success" type="submit" value="Tagguer les offres associées au produit">
-    </div>
-  </form>
-  </div>
 </div>
 <div class="col-md-3"></div>
 

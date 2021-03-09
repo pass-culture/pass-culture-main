@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from pcapi.admin.custom_views.many_offers_operations_view import _get_current_criteria_on_offers
+from pcapi.admin.custom_views.many_offers_operations_view import _get_current_criteria_on_active_offers
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 import pcapi.core.users.factories as users_factories
@@ -71,7 +71,9 @@ class ManyOffersOperationsViewTest:
 
         # When
         client = TestClient(app.test_client()).with_auth("admin@example.com")
-        response = client.post("/pc/back-office/many_offers_operations/edit?isbn=9783161484100", form=data)
+        response = client.post(
+            "/pc/back-office/many_offers_operations/add_criteria_to_offers?isbn=9783161484100", form=data
+        )
 
         # Then
         assert response.status_code == 302
@@ -93,8 +95,6 @@ class ManyOffersOperationsViewTest:
     def test_edit_product_offers_criteria_without_offers(self, mocked_validate_csrf_token, app):
         # Given
         users_factories.UserFactory(email="admin@example.com", isAdmin=True)
-        offers_factories.ProductFactory(extraData={"isbn": "9783161484100"})
-        offers_factories.OfferFactory(extraData={"isbn": "9783161484200"})
 
         # When
         client = TestClient(app.test_client()).with_auth("admin@example.com")
@@ -104,26 +104,21 @@ class ManyOffersOperationsViewTest:
         assert response.status_code == 302
         assert response.headers["location"] == "http://localhost/pc/back-office/many_offers_operations/"
 
-    def test_get_current_criteria_on_offers(self):
+    def test_get_current_criteria_on_active_offers(self):
         # Given
         criterion1 = Criterion(name="One criterion")
         criterion2 = Criterion(name="Another criterion")
-        offer1 = Offer(criteria=[criterion1])
-        offer2 = Offer(criteria=[criterion1, criterion2])
-        offer3 = Offer(criteria=[])
+        offer1 = Offer(criteria=[criterion1], isActive=True)
+        offer2 = Offer(criteria=[criterion1, criterion2], isActive=True)
+        offer3 = Offer(criteria=[], isActive=True)
+        offer4 = Offer(criteria=[criterion1, criterion2], isActive=False)
         expected_result = {
             "One criterion": {"count": 2, "criterion": criterion1},
             "Another criterion": {"count": 1, "criterion": criterion2},
         }
 
         # When
-        result = _get_current_criteria_on_offers(
-            [
-                offer1,
-                offer2,
-                offer3,
-            ]
-        )
+        result = _get_current_criteria_on_active_offers([offer1, offer2, offer3, offer4])
 
         # Then
         assert result == expected_result
