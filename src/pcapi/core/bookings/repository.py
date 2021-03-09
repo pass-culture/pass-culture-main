@@ -16,6 +16,7 @@ from sqlalchemy.util._collections import AbstractKeyedTuple
 
 from pcapi.core.bookings import conf
 from pcapi.core.bookings.models import BookingCancellationReasons
+from pcapi.core.offerers.offerer import Offerer
 from pcapi.core.users.models import User
 from pcapi.domain.booking_recap.booking_recap import BookBookingRecap
 from pcapi.domain.booking_recap.booking_recap import BookingRecap
@@ -30,7 +31,6 @@ from pcapi.models import UserOfferer
 from pcapi.models import Venue
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.db import db
-from pcapi.models.offerer import Offerer
 from pcapi.models.payment import Payment
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.utils.date import get_department_timezone

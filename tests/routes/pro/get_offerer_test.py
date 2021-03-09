@@ -1,9 +1,9 @@
 import pytest
 
+import pcapi.core.offerers.offerer as offerer_models
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.model_creators.generic_creators import create_bank_information
-import pcapi.models.offerer as offerer_models
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
 

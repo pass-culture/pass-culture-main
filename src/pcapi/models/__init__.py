@@ -1,6 +1,7 @@
 from pcapi.core.bookings.models import Booking
 from pcapi.core.mails.models import Email
 from pcapi.core.offerers.models import Venue
+from pcapi.core.offerers.offerer import Offerer
 from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -31,7 +32,6 @@ from pcapi.models.needs_validation_mixin import NeedsValidationMixin
 from pcapi.models.offer_criterion import OfferCriterion
 from pcapi.models.offer_type import EventType
 from pcapi.models.offer_type import ThingType
-from pcapi.models.offerer import Offerer
 from pcapi.models.payment import Payment
 from pcapi.models.payment_message import PaymentMessage
 from pcapi.models.payment_status import PaymentStatus

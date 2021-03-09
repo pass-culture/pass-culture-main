@@ -5,11 +5,11 @@ from sqlalchemy import and_
 from wtforms.form import Form
 
 from pcapi.admin.custom_views.pro_user_view import ProUserView
+from pcapi.core.offerers.offerer import Offerer
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import User
 from pcapi.models import UserOfferer
-from pcapi.models.offerer import Offerer
 
 from tests.conftest import TestClient
 from tests.conftest import clean_database

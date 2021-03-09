@@ -1,3 +1,4 @@
+from pcapi.core.offerers.offerer import Offerer
 from pcapi.core.offers.models import Offer
 from pcapi.core.users.models import User
 from pcapi.models import BankInformation
@@ -5,7 +6,6 @@ from pcapi.models import Stock
 from pcapi.models import ThingType
 from pcapi.models import Venue
 from pcapi.models.offer_type import EventType
-from pcapi.models.offerer import Offerer
 from pcapi.repository.user_queries import filter_users_with_at_least_one_validated_offerer_validated_user_offerer
 from pcapi.sandboxes.scripts.utils.helpers import get_offer_helper
 from pcapi.sandboxes.scripts.utils.helpers import get_offerer_helper

@@ -1,10 +1,10 @@
 import pytest
 
+from pcapi.core.offerers.offerer import Offerer
 from pcapi.core.users.models import User
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue_type
-from pcapi.models.offerer import Offerer
 from pcapi.models.user_offerer import UserOfferer
 from pcapi.repository import repository
 

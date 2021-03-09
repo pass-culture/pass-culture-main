@@ -1,5 +1,5 @@
+from pcapi.core.offerers.offerer import Offerer
 from pcapi.core.users.models import User
-from pcapi.models.offerer import Offerer
 from pcapi.models.user_offerer import UserOfferer
 from pcapi.sandboxes.scripts.utils.helpers import get_offerer_helper
 from pcapi.sandboxes.scripts.utils.helpers import get_pro_helper
