@@ -26,9 +26,9 @@ def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
         db.session.query(
             FavoriteSQLEntity,
             func.min(Stock.price).over(partition_by=Stock.offerId).label("min_price"),
-            func.count(Stock.price).over(partition_by=Stock.offerId).label("price_count"),
+            func.max(Stock.price).over(partition_by=Stock.offerId).label("max_price"),
             func.min(Stock.beginningDatetime).over(partition_by=Stock.offerId).label("min_beginning_datetime"),
-            func.count(Stock.beginningDatetime).over(partition_by=Stock.offerId).label("beginning_datetime_count"),
+            func.max(Stock.beginningDatetime).over(partition_by=Stock.offerId).label("max_beginning_datetime"),
         )
         .options(Load(FavoriteSQLEntity).load_only("id"))
         .join(FavoriteSQLEntity.offer)
@@ -54,18 +54,18 @@ def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
         .all()
     )
 
-    for fav, min_price, price_count, min_beginning_datetime, beginning_datetime_count in favorites:
+    for fav, min_price, max_price, min_beginning_datetime, max_beginning_datetime in favorites:
         fav.offer.price = None
         fav.offer.startPrice = None
-        if price_count == 1:
+        if min_price == max_price:
             fav.offer.price = min_price
-        elif price_count > 1:
+        else:
             fav.offer.startPrice = min_price
         fav.offer.date = None
         fav.offer.startDate = None
-        if beginning_datetime_count == 1:
+        if min_beginning_datetime == max_beginning_datetime:
             fav.offer.date = min_beginning_datetime
-        elif beginning_datetime_count > 1:
+        else:
             fav.offer.startDate = min_beginning_datetime
     favorites = [fav for (fav, *_) in favorites]
 
