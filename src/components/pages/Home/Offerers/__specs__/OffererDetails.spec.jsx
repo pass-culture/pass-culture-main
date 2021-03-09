@@ -148,10 +148,12 @@ describe('offererDetails', () => {
     fireEvent.click(showButton)
 
     const selectedOfferer = baseOfferers[0]
-    const selectedOffererAddress = `${selectedOfferer.address} ${selectedOfferer.postalCode} ${selectedOfferer.city}`
     expect(screen.getByText(selectedOfferer.siren)).toBeInTheDocument()
     expect(screen.getByText(selectedOfferer.name, { selector: 'span' })).toBeInTheDocument()
-    expect(screen.getByText(selectedOffererAddress)).toBeInTheDocument()
+    expect(screen.getByText(selectedOfferer.address, { exact: false })).toBeInTheDocument()
+    expect(
+      screen.getByText(`${selectedOfferer.postalCode} ${selectedOfferer.city}`, { exact: false })
+    ).toBeInTheDocument()
   })
 
   it('should display first offerer bank information', async () => {
@@ -251,11 +253,14 @@ describe('offererDetails', () => {
     })
 
     it('should change displayed offerer informations', async () => {
-      const selectedOffererAddress = `${newSelectedOfferer.address} ${newSelectedOfferer.postalCode} ${newSelectedOfferer.city}`
-
       expect(screen.getByText(newSelectedOfferer.siren)).toBeInTheDocument()
       expect(screen.getByText(newSelectedOfferer.name, { selector: 'span' })).toBeInTheDocument()
-      expect(screen.getByText(selectedOffererAddress)).toBeInTheDocument()
+      expect(screen.getByText(newSelectedOfferer.address, { exact: false })).toBeInTheDocument()
+      expect(
+        screen.getByText(`${newSelectedOfferer.postalCode} ${newSelectedOfferer.city}`, {
+          exact: false,
+        })
+      ).toBeInTheDocument()
     })
 
     it('should change displayed bank information', async () => {
@@ -407,12 +412,19 @@ describe('offererDetails', () => {
       await renderHomePage()
 
       // Then
-      const selectedOffererAddress = `${offererWithNoPhysicalVenues.address} ${offererWithNoPhysicalVenues.postalCode} ${offererWithNoPhysicalVenues.city}`
       expect(screen.getByText(offererWithNoPhysicalVenues.siren)).toBeInTheDocument()
       expect(
         screen.getByText(offererWithNoPhysicalVenues.name, { selector: 'span' })
       ).toBeInTheDocument()
-      expect(screen.getByText(selectedOffererAddress)).toBeInTheDocument()
+      expect(
+        screen.getByText(offererWithNoPhysicalVenues.address, { exact: false })
+      ).toBeInTheDocument()
+      expect(
+        screen.getByText(
+          `${offererWithNoPhysicalVenues.postalCode} ${offererWithNoPhysicalVenues.city}`,
+          { exact: false }
+        )
+      ).toBeInTheDocument()
     })
 
     it('should hide offerer informations on click on hide button', async () => {
@@ -498,12 +510,19 @@ describe('offererDetails', () => {
       fireEvent.click(showButton)
 
       //Then
-      const selectedOffererAddress = `${offererWithPhysicalVenues.address} ${offererWithPhysicalVenues.postalCode} ${offererWithPhysicalVenues.city}`
       expect(screen.getByText(offererWithPhysicalVenues.siren)).toBeInTheDocument()
       expect(
         screen.getByText(offererWithPhysicalVenues.name, { selector: 'span' })
       ).toBeInTheDocument()
-      expect(screen.getByText(selectedOffererAddress)).toBeInTheDocument()
+      expect(
+        screen.getByText(offererWithPhysicalVenues.address, { exact: false })
+      ).toBeInTheDocument()
+      expect(
+        screen.getByText(
+          `${offererWithPhysicalVenues.postalCode} ${offererWithPhysicalVenues.city}`,
+          { exact: false }
+        )
+      ).toBeInTheDocument()
     })
   })
 })

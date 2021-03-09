@@ -119,13 +119,11 @@ const OffererDetails = ({
                       <span className="h-dl-title">
                         {'Siège social : '}
                       </span>
-                      <span className="h-dl-description">
-                        {selectedOfferer.address} 
-                        {' '}
-                        {selectedOfferer.postalCode}
-                        {' '}
-                        {selectedOfferer.city}
-                      </span>
+                      <address className="od-address">
+                        {selectedOfferer.address}
+                        <br />
+                        {`${selectedOfferer.postalCode} ${selectedOfferer.city}`}
+                      </address>
                     </li>
                   </ul>
                 </div>
