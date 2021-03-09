@@ -511,3 +511,13 @@ def add_criteria_to_offers(criteria: List[Criterion], isbn: str) -> bool:
             redis.add_offer_id(client=app.redis_client, offer_id=offer_id)
 
     return True
+
+
+def deactivate_inappropriate_offers(offer_ids: List[int]):
+    offers = Offer.query.filter(Offer.id.in_(offer_ids)).all()
+    for o in offers:
+        o.isActive = False
+        o.product.isGcuCompatible = False
+    repository.save(*offers)
+    for o in offers:
+        redis.add_offer_id(client=app.redis_client, offer_id=o.id)

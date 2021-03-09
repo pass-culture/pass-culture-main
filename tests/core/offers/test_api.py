@@ -15,12 +15,15 @@ from pcapi.core.offers import api
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories
 from pcapi.core.offers.api import add_criteria_to_offers
+from pcapi.core.offers.api import deactivate_inappropriate_offers
 from pcapi.core.offers.api import get_expense_domains
 from pcapi.core.offers.api import update_offer_and_stock_id_at_providers
 from pcapi.core.offers.exceptions import ThumbnailStorageError
 from pcapi.core.offers.factories import CriterionFactory
 from pcapi.core.offers.factories import OfferFactory
+from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import StockFactory
+from pcapi.core.offers.factories import ThingProductFactory
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -28,6 +31,7 @@ from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.models import api_errors
 from pcapi.models import offer_type
+from pcapi.models.product import Product
 from pcapi.routes.serialization import offers_serialize
 from pcapi.routes.serialization.stock_serialize import StockCreationBodyModel
 from pcapi.routes.serialization.stock_serialize import StockEditionBodyModel
@@ -985,3 +989,34 @@ class AddCriterionToOffersTest:
 
         # Then
         assert is_successful is False
+
+
+class DeactivateInappropriateOffersTest:
+    @mock.patch("pcapi.connectors.redis.add_offer_id")
+    @pytest.mark.usefixtures("db_session")
+    def test_should_deactivate_offers_with_inappropriate_content(self, mocked_add_offer_id):
+        # Given
+        offerer = OffererFactory()
+        product_1 = ThingProductFactory(description="premier produit inapproprié")
+        product_2 = ThingProductFactory(description="second produit inapproprié")
+        venue = VenueFactory(managingOfferer=offerer)
+        offer_1 = OfferFactory(product=product_1, venue=venue)
+        offer_2 = OfferFactory(product=product_2, venue=venue)
+
+        # When
+        deactivate_inappropriate_offers([offer_1.id, offer_2.id])
+
+        # Then
+        products = Product.query.all()
+        offers = Offer.query.all()
+        first_product = products[0]
+        second_product = products[1]
+        first_offer = offers[0]
+        second_offer = offers[1]
+
+        assert not first_product.isGcuCompatible
+        assert not second_product.isGcuCompatible
+        assert not first_offer.isActive
+        assert not second_offer.isActive
+        for o in offers:
+            mocked_add_offer_id.assert_any_call(client=app.redis_client, offer_id=o.id)
