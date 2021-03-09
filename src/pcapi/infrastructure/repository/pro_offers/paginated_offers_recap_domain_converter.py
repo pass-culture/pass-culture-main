@@ -41,4 +41,8 @@ def _offer_recap_to_domain(offer: Offer) -> OfferRecap:
 
 
 def _stock_serializer(stock: Stock) -> Dict:
-    return {"identifier": Identifier(stock.id), "remaining_quantity": stock.remainingQuantity}
+    return {
+        "identifier": Identifier(stock.id),
+        "has_booking_limit_datetime_passed": stock.hasBookingLimitDatetimePassed,
+        "remaining_quantity": stock.remainingQuantity,
+    }

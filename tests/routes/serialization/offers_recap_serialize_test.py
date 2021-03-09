@@ -10,7 +10,7 @@ def should_return_serialized_offers_with_relevant_informations():
     stock_id = 2
     venue_id = 3
     offerer_id = 4
-    stock = {"identifier": Identifier(stock_id), "is_event_expired": False, "remaining_quantity": 10}
+    stock = {"identifier": Identifier(stock_id), "has_booking_limit_datetime_passed": False, "remaining_quantity": 10}
     departement_code = 12
     offer = OfferRecap(
         identifier=Identifier(offer_id),
@@ -49,6 +49,7 @@ def should_return_serialized_offers_with_relevant_informations():
             "stocks": [
                 {
                     "id": offer.stocks[0].identifier.scrambled,
+                    "hasBookingLimitDatetimePassed": False,
                     "offerId": offer.identifier.scrambled,
                     "remainingQuantity": 10,
                 }
@@ -76,7 +77,7 @@ def should_return_pagination_details():
     stock_id = 2
     venue_id = 3
     offerer_id = 4
-    stock = {"identifier": Identifier(stock_id), "is_event_expired": False, "remaining_quantity": 10}
+    stock = {"identifier": Identifier(stock_id), "has_booking_limit_datetime_passed": False, "remaining_quantity": 10}
     offer = OfferRecap(
         identifier=Identifier(offer_id),
         has_booking_limit_datetimes_passed=False,

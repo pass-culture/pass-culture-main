@@ -40,6 +40,7 @@ def _serialize_stock(offer_identifier: Identifier, stock: OfferRecapStock) -> Di
     return {
         "id": stock.identifier.scrambled,
         "offerId": offer_identifier.scrambled,
+        "hasBookingLimitDatetimePassed": stock.has_booking_limit_datetime_passed,
         "remainingQuantity": stock.remaining_quantity,
     }
 

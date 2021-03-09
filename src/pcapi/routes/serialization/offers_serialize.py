@@ -151,6 +151,7 @@ class ListOffersVenueResponseModel(BaseModel):
 
 class ListOffersStockResponseModel(BaseModel):
     id: str
+    hasBookingLimitDatetimePassed: bool
     offerId: str
     remainingQuantity: Union[int, str]
 

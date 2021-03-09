@@ -6,8 +6,9 @@ from pcapi.domain.identifier.identifier import Identifier
 
 
 class OfferRecapStock:
-    def __init__(self, identifier: Identifier, remaining_quantity: int):
+    def __init__(self, identifier: Identifier, has_booking_limit_datetime_passed: bool, remaining_quantity: int):
         self.identifier = identifier
+        self.has_booking_limit_datetime_passed = has_booking_limit_datetime_passed
         self.remaining_quantity = remaining_quantity
 
 
@@ -70,7 +71,12 @@ class OfferRecap:
             venue_offerer_name,
             venue_departement_code,
         )
-        self.stocks = [OfferRecapStock(stock["identifier"], stock["remaining_quantity"]) for stock in stocks]
+        self.stocks = [
+            OfferRecapStock(
+                stock["identifier"], stock["has_booking_limit_datetime_passed"], stock["remaining_quantity"]
+            )
+            for stock in stocks
+        ]
 
 
 class PaginatedOffersRecap:

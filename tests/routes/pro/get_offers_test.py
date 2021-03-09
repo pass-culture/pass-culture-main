@@ -53,6 +53,7 @@ class Returns200:
                         {
                             "id": humanize(stock.id),
                             "offerId": humanize(offer_on_requested_venue.id),
+                            "hasBookingLimitDatetimePassed": False,
                             "remainingQuantity": "unlimited",
                         }
                     ],
