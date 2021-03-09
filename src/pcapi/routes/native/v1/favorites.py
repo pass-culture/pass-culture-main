@@ -1,4 +1,7 @@
+from datetime import datetime
+
 from sqlalchemy import func
+from sqlalchemy import or_
 from sqlalchemy.orm import Load
 from sqlalchemy.orm import joinedload
 
@@ -25,10 +28,34 @@ def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
     favorites = (
         db.session.query(
             FavoriteSQLEntity,
-            func.min(Stock.price).over(partition_by=Stock.offerId).label("min_price"),
-            func.max(Stock.price).over(partition_by=Stock.offerId).label("max_price"),
-            func.min(Stock.beginningDatetime).over(partition_by=Stock.offerId).label("min_beginning_datetime"),
-            func.max(Stock.beginningDatetime).over(partition_by=Stock.offerId).label("max_beginning_datetime"),
+            func.min(Stock.price)
+            .filter(
+                or_(Stock.beginningDatetime >= datetime.utcnow(), Stock.beginningDatetime == None),
+                or_(Stock.bookingLimitDatetime >= datetime.utcnow(), Stock.bookingLimitDatetime == None),
+            )
+            .over(partition_by=Stock.offerId)
+            .label("min_price"),
+            func.max(Stock.price)
+            .filter(
+                or_(Stock.beginningDatetime >= datetime.utcnow(), Stock.beginningDatetime == None),
+                or_(Stock.bookingLimitDatetime >= datetime.utcnow(), Stock.bookingLimitDatetime == None),
+            )
+            .over(partition_by=Stock.offerId)
+            .label("max_price"),
+            func.min(Stock.beginningDatetime)
+            .filter(
+                or_(Stock.beginningDatetime >= datetime.utcnow(), Stock.beginningDatetime == None),
+                or_(Stock.bookingLimitDatetime >= datetime.utcnow(), Stock.bookingLimitDatetime == None),
+            )
+            .over(partition_by=Stock.offerId)
+            .label("min_beginning_datetime"),
+            func.max(Stock.beginningDatetime)
+            .filter(
+                or_(Stock.beginningDatetime >= datetime.utcnow(), Stock.beginningDatetime == None),
+                or_(Stock.bookingLimitDatetime >= datetime.utcnow(), Stock.bookingLimitDatetime == None),
+            )
+            .over(partition_by=Stock.offerId)
+            .label("max_beginning_datetime"),
         )
         .options(Load(FavoriteSQLEntity).load_only("id"))
         .join(FavoriteSQLEntity.offer)

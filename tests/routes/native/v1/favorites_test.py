@@ -8,7 +8,7 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_favorite
 from pcapi.models import FavoriteSQLEntity
-from pcapi.repository import repository
+from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
 
@@ -35,28 +35,54 @@ class Get:
 
         def when_user_is_logged_in_and_has_favorite_offers(self, app):
             # Given
-            now = datetime.now()
-            yesterday = now - timedelta(days=1)
-            tomorow = now + timedelta(days=1)
+            today = datetime.now() + timedelta(hours=3)  # offset a bit to make sure it's > now()
+            yesterday = today - timedelta(days=1)
+            tomorow = today + timedelta(days=1)
             user, test_client = utils.create_user_and_test_client(app)
             offerer = offers_factories.OffererFactory()
             venue = offers_factories.VenueFactory(managingOfferer=offerer)
+
+            # Event offer with 1 expired stock, 2 futures ones and a mediation
             offer1 = offers_factories.EventOfferFactory(venue=venue)
+            offers_factories.MediationFactory(offer=offer1, thumbCount=1, credit="Pour hurlevent !")
             favorite1 = create_favorite(offer=offer1, user=user)
             # should be ignored because of the date in the past
+            offers_factories.EventStockFactory(offer=offer1, beginningDatetime=yesterday, price=10)
+            # 2 valid stocks (different dates and prices)
+            offers_factories.EventStockFactory(offer=offer1, beginningDatetime=today, price=30)
             offers_factories.EventStockFactory(offer=offer1, beginningDatetime=tomorow, price=20)
-            offers_factories.EventStockFactory(offer=offer1, beginningDatetime=now, price=30)
-            offers_factories.EventStockFactory(offer=offer1, beginningDatetime=yesterday, price=40)
+
+            # Event offer with soft deleted stock and product's image
             offer2 = offers_factories.EventOfferFactory(venue=venue, product__thumbCount=666)
             favorite2 = create_favorite(offer=offer2, user=user)
-            # Set min price / earlier date on soft deleted stock. It should only appear as one stock
-            offers_factories.EventStockFactory(offer=offer2, beginningDatetime=now, price=20, isSoftDeleted=True)
+            offers_factories.EventStockFactory(offer=offer2, beginningDatetime=today, price=20, isSoftDeleted=True)
             offers_factories.EventStockFactory(offer=offer2, beginningDatetime=tomorow, price=50)
+
+            # Thing offer with different stock prices
             offer3 = offers_factories.ThingOfferFactory(venue=venue)
             favorite3 = create_favorite(offer=offer3, user=user)
-            # Try a stock without date
-            offers_factories.ThingStockFactory(offer=offer3, price=0)
-            repository.save(favorite1, favorite2, favorite3)
+            offers_factories.ThingStockFactory(offer=offer3, price=10)
+
+            # Event offer with passed reservation date
+            offer4 = offers_factories.EventOfferFactory(venue=venue)
+            offers_factories.MediationFactory(offer=offer4)
+            favorite4 = create_favorite(offer=offer4, user=user)
+            stock4 = offers_factories.EventStockFactory(
+                offer=offer4, beginningDatetime=datetime.now() + timedelta(minutes=30), price=50
+            )
+            assert stock4.bookingLimitDatetime < datetime.now()
+
+            # Event offer in the past
+            offer5 = offers_factories.EventOfferFactory(venue=venue)
+            offers_factories.MediationFactory(offer=offer5)
+            favorite5 = create_favorite(offer=offer5, user=user)
+            offers_factories.EventStockFactory(offer=offer5, beginningDatetime=yesterday, price=50)
+
+            # Event offer with two times the same date / price
+            offer6 = offers_factories.EventOfferFactory(venue=venue)
+            favorite6 = create_favorite(offer=offer6, user=user)
+            offers_factories.EventStockFactory(offer=offer6, beginningDatetime=tomorow, price=30)
+            offers_factories.EventStockFactory(offer=offer6, beginningDatetime=tomorow, price=30)
 
             # When
             # QUERY_COUNT:
@@ -68,24 +94,61 @@ class Get:
             # Then
             assert response.status_code == 200
             favorites = response.json["favorites"]
-            assert len(favorites) == 3
+            assert len(favorites) == 6
 
+            # We have 2 valid stocks with different dates/prices and one mediation
+            assert favorites[0]["id"] == favorite1.id
             assert favorites[0]["offer"]["price"] is None
             assert favorites[0]["offer"]["startPrice"] == 2000
             assert favorites[0]["offer"]["date"] is None
-            assert favorites[0]["offer"]["startDate"] == yesterday.isoformat()
+            assert favorites[0]["offer"]["startDate"] == today.isoformat()
+            assert favorites[0]["offer"]["image"]["credit"] == "Pour hurlevent !"
+            assert favorites[0]["offer"]["image"]["url"] == "http://localhost/storage/thumbs/mediations/%s" % (
+                humanize(offer1.activeMediation.id)
+            )
 
+            # Only stock2b is valide and product has a thumb
+            assert favorites[1]["id"] == favorite2.id
             assert favorites[1]["offer"]["price"] == 5000
             assert favorites[1]["offer"]["startPrice"] is None
             assert favorites[1]["offer"]["date"] == tomorow.isoformat()
             assert favorites[1]["offer"]["startDate"] is None
             assert favorites[1]["offer"]["image"]["credit"] is None
-            assert favorites[1]["offer"]["image"]["url"][:41] == "http://localhost/storage/thumbs/products/"
+            assert favorites[1]["offer"]["image"]["url"] == "http://localhost/storage/thumbs/products/%s" % (
+                humanize(offer2.product.id)
+            )
 
-            assert favorites[2]["offer"]["price"] == 0
+            # No date
+            assert favorites[2]["id"] == favorite3.id
+            assert favorites[2]["offer"]["price"] == 1000
             assert favorites[2]["offer"]["startPrice"] is None
             assert favorites[2]["offer"]["date"] is None
             assert favorites[2]["offer"]["startDate"] is None
+            assert favorites[2]["offer"]["image"] is None
+
+            # Offer in the future but past the booking limit
+            assert favorites[3]["id"] == favorite4.id
+            assert favorites[3]["offer"]["price"] is None
+            assert favorites[3]["offer"]["startPrice"] is None
+            assert favorites[3]["offer"]["date"] is None
+            assert favorites[3]["offer"]["startDate"] is None
+            assert favorites[3]["offer"]["image"] is None
+
+            # Offer in the past, favorite should appear but no price/date are valid
+            assert favorites[4]["id"] == favorite5.id
+            assert favorites[4]["offer"]["price"] is None
+            assert favorites[4]["offer"]["startPrice"] is None
+            assert favorites[4]["offer"]["date"] is None
+            assert favorites[4]["offer"]["startDate"] is None
+            assert favorites[4]["offer"]["image"] is None
+
+            # best price/same date twice should appear as single price/date
+            assert favorites[5]["id"] == favorite6.id
+            assert favorites[5]["offer"]["price"] == 3000
+            assert favorites[5]["offer"]["startPrice"] is None
+            assert favorites[5]["offer"]["date"] == tomorow.isoformat()
+            assert favorites[5]["offer"]["startDate"] is None
+            assert favorites[5]["offer"]["image"] is None
 
     class Returns401:
         def when_user_is_not_logged_in(self, app):
