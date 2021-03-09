@@ -3,14 +3,10 @@ from datetime import timedelta
 
 import pytest
 
+from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_favorite
-from pcapi.model_creators.generic_creators import create_mediation
-from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_venue
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.model_creators.specific_creators import create_stock_from_offer
 from pcapi.models import FavoriteSQLEntity
 from pcapi.repository import repository
 
@@ -43,27 +39,24 @@ class Get:
             yesterday = now - timedelta(days=1)
             tomorow = now + timedelta(days=1)
             user, test_client = utils.create_user_and_test_client(app)
-            offerer = create_offerer()
-            venue = create_venue(offerer, postal_code="29100", siret="12345678912341")
-            offer1 = create_offer_with_thing_product(venue=venue, thumb_count=0)
-            mediation1 = create_mediation(offer=offer1, is_active=True, idx=123)
-            favorite1 = create_favorite(mediation=mediation1, offer=offer1, user=user)
-            # Min price and earlier date are on diffents stocks and product thumb
-            stock1a = create_stock_from_offer(offer1, beginning_datetime=tomorow, price=20)
-            stock1b = create_stock_from_offer(offer1, beginning_datetime=now, price=30)
-            stock1c = create_stock_from_offer(offer1, beginning_datetime=yesterday, price=40)
-            offer2 = create_offer_with_thing_product(venue=venue, thumb_count=1)
+            offerer = offers_factories.OffererFactory()
+            venue = offers_factories.VenueFactory(managingOfferer=offerer)
+            offer1 = offers_factories.EventOfferFactory(venue=venue)
+            favorite1 = create_favorite(offer=offer1, user=user)
+            # should be ignored because of the date in the past
+            offers_factories.EventStockFactory(offer=offer1, beginningDatetime=tomorow, price=20)
+            offers_factories.EventStockFactory(offer=offer1, beginningDatetime=now, price=30)
+            offers_factories.EventStockFactory(offer=offer1, beginningDatetime=yesterday, price=40)
+            offer2 = offers_factories.EventOfferFactory(venue=venue, product__thumbCount=666)
             favorite2 = create_favorite(offer=offer2, user=user)
             # Set min price / earlier date on soft deleted stock. It should only appear as one stock
-            stock2a = create_stock_from_offer(offer2, beginning_datetime=now, price=20, soft_deleted=True)
-            stock2b = create_stock_from_offer(offer2, beginning_datetime=tomorow, price=50)
-            offer3 = create_offer_with_thing_product(venue=venue, thumb_count=0)
+            offers_factories.EventStockFactory(offer=offer2, beginningDatetime=now, price=20, isSoftDeleted=True)
+            offers_factories.EventStockFactory(offer=offer2, beginningDatetime=tomorow, price=50)
+            offer3 = offers_factories.ThingOfferFactory(venue=venue)
             favorite3 = create_favorite(offer=offer3, user=user)
             # Try a stock without date
-            stock3 = create_stock_from_offer(offer3, beginning_datetime=None, price=0)
-            repository.save(
-                offer1, offer2, stock1a, stock1b, stock1c, stock2a, stock2b, stock3, favorite1, favorite2, favorite3
-            )
+            offers_factories.ThingStockFactory(offer=offer3, price=0)
+            repository.save(favorite1, favorite2, favorite3)
 
             # When
             # QUERY_COUNT:
@@ -108,10 +101,9 @@ class Post:
         def when_user_creates_a_favorite(self, app):
             # Given
             user, test_client = utils.create_user_and_test_client(app)
-            offerer = create_offerer()
-            venue = create_venue(offerer, postal_code="29100", siret="12345678912341")
-            offer1 = create_offer_with_thing_product(venue=venue, thumb_count=0)
-            repository.save(offer1)
+            offerer = offers_factories.OffererFactory()
+            venue = offers_factories.VenueFactory(managingOfferer=offerer)
+            offer1 = offers_factories.EventOfferFactory(venue=venue)
             assert FavoriteSQLEntity.query.count() == 0
 
             # When
@@ -132,12 +124,10 @@ class Delete:
         def when_user_delete_its_favorite(self, app):
             # Given
             user, test_client = utils.create_user_and_test_client(app)
-            offerer = create_offerer()
-            venue = create_venue(offerer, postal_code="29100", siret="12345678912341")
-            offer = create_offer_with_thing_product(venue=venue, thumb_count=0)
-            mediation = create_mediation(offer=offer, is_active=True, idx=123)
-            favorite = create_favorite(mediation=mediation, offer=offer, user=user)
-            repository.save(offer, favorite)
+            offerer = offers_factories.OffererFactory()
+            venue = offers_factories.VenueFactory(managingOfferer=offerer)
+            offer = offers_factories.ThingOfferFactory(venue=venue)
+            favorite = create_favorite(offer=offer, user=user)
             assert FavoriteSQLEntity.query.count() == 1
 
             # When
@@ -151,12 +141,10 @@ class Delete:
             # Given
             _, test_client = utils.create_user_and_test_client(app)
             other_user = users_factories.UserFactory()
-            offerer = create_offerer()
-            venue = create_venue(offerer, postal_code="29100", siret="12345678912341")
-            offer = create_offer_with_thing_product(venue=venue, thumb_count=0)
-            mediation = create_mediation(offer=offer, is_active=True, idx=123)
-            favorite = create_favorite(mediation=mediation, offer=offer, user=other_user)
-            repository.save(offer, favorite)
+            offerer = offers_factories.OffererFactory()
+            venue = offers_factories.VenueFactory(managingOfferer=offerer)
+            offer = offers_factories.ThingOfferFactory(venue=venue)
+            favorite = create_favorite(offer=offer, user=other_user)
             assert FavoriteSQLEntity.query.count() == 1
 
             # When
