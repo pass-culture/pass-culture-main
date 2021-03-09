@@ -18,6 +18,7 @@ from pcapi.models.local_provider_event import LocalProviderEventType
 from pcapi.repository import local_provider_event_queries
 from pcapi.repository import product_queries
 from pcapi.repository.product_queries import ProductWithBookingsException
+from pcapi.utils.logger import logger
 from pcapi.utils.string_processing import trim_with_elipsis
 
 
@@ -113,7 +114,9 @@ class TiteLiveThings(LocalProvider):
         )
         book_unique_identifier = self.product_infos["ean13"]
 
-        if self.product_is_not_eligible_for_offer_creation():
+        ineligibility_reason = self.get_ineligibility_reason()
+        if ineligibility_reason:
+            logger.info("Ignoring isbn=%s because reason=%s", book_unique_identifier, ineligibility_reason)
             try:
                 product_queries.delete_unwanted_existing_product(book_unique_identifier)
             except ProductWithBookingsException:
@@ -126,16 +129,20 @@ class TiteLiveThings(LocalProvider):
         providable_info = self.create_providable_info(Product, book_unique_identifier, book_information_last_update)
         return [providable_info]
 
-    def product_is_not_eligible_for_offer_creation(self) -> bool:
-        is_school_related_product = (
-            self.product_infos["is_scolaire"] == "1" or self.product_infos["code_csr"] in SCHOOL_RELATED_CSR_CODE
-        )
+    def get_ineligibility_reason(self) -> str:
+        if self.product_infos["is_scolaire"] == "1" or self.product_infos["code_csr"] in SCHOOL_RELATED_CSR_CODE:
+            return "school"
 
-        is_paper_press_product = (
+        if (
             self.product_infos["taux_tva"] == PAPER_PRESS_TVA
             and self.product_infos["code_support"] == PAPER_PRESS_SUPPORT_CODE
-        )
-        return is_school_related_product or is_paper_press_product or not self.product_type
+        ):
+            return "press"
+
+        if not self.product_type:
+            return "uneligible-product-type"
+
+        return None
 
     def fill_object_attributes(self, product: Product):
         product.name = trim_with_elipsis(self.product_infos["titre"], 140)
