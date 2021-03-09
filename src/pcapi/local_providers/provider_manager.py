@@ -4,7 +4,9 @@ from typing import Optional
 import pcapi.local_providers
 from pcapi.local_providers.fnac.fnac_stocks_provider import synchronize_fnac_stocks
 from pcapi.local_providers.local_provider import LocalProvider
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.venue_provider import VenueProvider
+from pcapi.repository import feature_queries
 from pcapi.repository import repository
 from pcapi.repository.venue_provider_queries import get_active_venue_providers_for_specific_provider
 from pcapi.scheduled_tasks.logger import CronStatus
@@ -47,7 +49,10 @@ def get_local_provider_class_by_name(class_name: str) -> Callable:
 
 
 def synchronize_venue_provider(venue_provider: VenueProvider, limit: Optional[int] = None):
-    if venue_provider.provider.localClass == "FnacStocks":
+    if (
+        feature_queries.is_active(FeatureToggle.FNAC_SYNCHRONIZATION_V2)
+        and venue_provider.provider.localClass == "FnacStocks"
+    ):
         synchronize_fnac_stocks.synchronize_venue_stocks_from_fnac(venue_provider)
 
     else:
