@@ -45,7 +45,7 @@ def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
         .options(
             joinedload(FavoriteSQLEntity.offer)
             .joinedload(Offer.mediations)
-            .load_only(Mediation.dateCreated, Mediation.isActive, Mediation.thumbCount)
+            .load_only(Mediation.dateCreated, Mediation.isActive, Mediation.thumbCount, Mediation.credit)
         )
         .options(
             joinedload(FavoriteSQLEntity.offer).joinedload(Offer.product).load_only(Product.id, Product.thumbCount)
