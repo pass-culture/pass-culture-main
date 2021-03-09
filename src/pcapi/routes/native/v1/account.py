@@ -14,6 +14,7 @@ from pcapi.repository import transaction
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.native.security import authenticated_user_required
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.workers.push_notification_job import update_user_attributes_job
 
 from . import blueprint
 from .serialization import account as serializers
@@ -45,6 +46,8 @@ def update_user_profile(user: User, body: serializers.UserProfileUpdateRequest) 
             )
         )
     repository.save(user)
+    update_user_attributes_job.delay(user)
+
     return serializers.UserProfileResponse.from_orm(user)
 
 

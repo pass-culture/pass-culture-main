@@ -222,6 +222,19 @@ class UserProfileUpdateTest:
         assert user.get_notification_subscriptions().marketing_push
         assert not user.get_notification_subscriptions().marketing_email
 
+        assert push_testing.requests == [
+            {
+                "attribute_values": {
+                    "date(u.date_created)": user.dateCreated.strftime("%Y-%m-%dT%H:%M:%S"),
+                    "date(u.date_of_birth)": "2000-01-01T00:00:00",
+                    "u.credit": 50000,
+                    "u.marketing_push_subscription": True,
+                    "u.postal_code": None,
+                },
+                "user_id": user.id,
+            }
+        ]
+
 
 class CulturalSurveyTest:
     identifier = "email@example.com"
