@@ -300,4 +300,4 @@ class NotificationSubscriptionsTest:
     def test_void_notification_subscriptions(self):
         user = UserFactory()
 
-        assert not user.get_notification_subscriptions().marketing_push
+        assert user.get_notification_subscriptions().marketing_push

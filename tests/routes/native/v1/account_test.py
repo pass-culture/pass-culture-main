@@ -102,7 +102,7 @@ class AccountTest:
             "isEligible": True,
             "pseudo": "jdo",
             "showEligibleCard": False,
-            "subscriptions": {"marketingPush": True, "marketingEmail": False},
+            "subscriptions": {"marketingPush": True, "marketingEmail": True},
         }
         EXPECTED_DATA.update(USER_DATA)
 
@@ -156,7 +156,7 @@ class AccountTest:
                     "date(u.date_created)": user.dateCreated.strftime("%Y-%m-%dT%H:%M:%S"),
                     "date(u.date_of_birth)": "1960-12-31T00:00:00",
                     "u.credit": 0,
-                    "u.marketing_push_subscription": False,
+                    "u.marketing_push_subscription": True,
                     "u.postal_code": None,
                 },
                 "user_id": user.id,
