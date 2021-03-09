@@ -536,6 +536,7 @@ class BuildObjectTest:
         result = build_object(offer)
 
         # Then
+        result["offer"]["tags"] = set(result["offer"]["tags"])
         assert result == {
             "objectID": "AM",
             "offer": {
@@ -565,7 +566,7 @@ class BuildObjectTest:
                 "stageDirector": None,
                 "stocksDateCreated": [1607166000.0],
                 "thumbUrl": f"http://localhost/storage/thumbs/products/{humanized_product_id}",
-                "tags": ["Mon tag associé", "Iron Man mon super héros"],
+                "tags": {"Mon tag associé", "Iron Man mon super héros"},
                 "times": [32400],
                 "type": "Écouter",
                 "visa": None,
