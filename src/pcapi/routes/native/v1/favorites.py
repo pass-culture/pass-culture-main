@@ -77,7 +77,7 @@ def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
         .options(
             joinedload(FavoriteSQLEntity.offer).joinedload(Offer.product).load_only(Product.id, Product.thumbCount)
         )
-        .order_by(FavoriteSQLEntity.id)
+        .order_by(FavoriteSQLEntity.id.desc())
         .all()
     )
 

@@ -97,58 +97,58 @@ class Get:
             assert len(favorites) == 6
 
             # We have 2 valid stocks with different dates/prices and one mediation
-            assert favorites[0]["id"] == favorite1.id
-            assert favorites[0]["offer"]["price"] is None
-            assert favorites[0]["offer"]["startPrice"] == 2000
-            assert favorites[0]["offer"]["date"] is None
-            assert favorites[0]["offer"]["startDate"] == today.isoformat()
-            assert favorites[0]["offer"]["image"]["credit"] == "Pour hurlevent !"
-            assert favorites[0]["offer"]["image"]["url"] == "http://localhost/storage/thumbs/mediations/%s" % (
+            assert favorites[5]["id"] == favorite1.id
+            assert favorites[5]["offer"]["price"] is None
+            assert favorites[5]["offer"]["startPrice"] == 2000
+            assert favorites[5]["offer"]["date"] is None
+            assert favorites[5]["offer"]["startDate"] == today.isoformat()
+            assert favorites[5]["offer"]["image"]["credit"] == "Pour hurlevent !"
+            assert favorites[5]["offer"]["image"]["url"] == "http://localhost/storage/thumbs/mediations/%s" % (
                 humanize(offer1.activeMediation.id)
             )
 
             # Only stock2b is valide and product has a thumb
-            assert favorites[1]["id"] == favorite2.id
-            assert favorites[1]["offer"]["price"] == 5000
-            assert favorites[1]["offer"]["startPrice"] is None
-            assert favorites[1]["offer"]["date"] == tomorow.isoformat()
-            assert favorites[1]["offer"]["startDate"] is None
-            assert favorites[1]["offer"]["image"]["credit"] is None
-            assert favorites[1]["offer"]["image"]["url"] == "http://localhost/storage/thumbs/products/%s" % (
+            assert favorites[4]["id"] == favorite2.id
+            assert favorites[4]["offer"]["price"] == 5000
+            assert favorites[4]["offer"]["startPrice"] is None
+            assert favorites[4]["offer"]["date"] == tomorow.isoformat()
+            assert favorites[4]["offer"]["startDate"] is None
+            assert favorites[4]["offer"]["image"]["credit"] is None
+            assert favorites[4]["offer"]["image"]["url"] == "http://localhost/storage/thumbs/products/%s" % (
                 humanize(offer2.product.id)
             )
 
             # No date
-            assert favorites[2]["id"] == favorite3.id
-            assert favorites[2]["offer"]["price"] == 1000
-            assert favorites[2]["offer"]["startPrice"] is None
-            assert favorites[2]["offer"]["date"] is None
-            assert favorites[2]["offer"]["startDate"] is None
-            assert favorites[2]["offer"]["image"] is None
-
-            # Offer in the future but past the booking limit
-            assert favorites[3]["id"] == favorite4.id
-            assert favorites[3]["offer"]["price"] is None
+            assert favorites[3]["id"] == favorite3.id
+            assert favorites[3]["offer"]["price"] == 1000
             assert favorites[3]["offer"]["startPrice"] is None
             assert favorites[3]["offer"]["date"] is None
             assert favorites[3]["offer"]["startDate"] is None
             assert favorites[3]["offer"]["image"] is None
 
+            # Offer in the future but past the booking limit
+            assert favorites[2]["id"] == favorite4.id
+            assert favorites[2]["offer"]["price"] is None
+            assert favorites[2]["offer"]["startPrice"] is None
+            assert favorites[2]["offer"]["date"] is None
+            assert favorites[2]["offer"]["startDate"] is None
+            assert favorites[2]["offer"]["image"] is None
+
             # Offer in the past, favorite should appear but no price/date are valid
-            assert favorites[4]["id"] == favorite5.id
-            assert favorites[4]["offer"]["price"] is None
-            assert favorites[4]["offer"]["startPrice"] is None
-            assert favorites[4]["offer"]["date"] is None
-            assert favorites[4]["offer"]["startDate"] is None
-            assert favorites[4]["offer"]["image"] is None
+            assert favorites[1]["id"] == favorite5.id
+            assert favorites[1]["offer"]["price"] is None
+            assert favorites[1]["offer"]["startPrice"] is None
+            assert favorites[1]["offer"]["date"] is None
+            assert favorites[1]["offer"]["startDate"] is None
+            assert favorites[1]["offer"]["image"] is None
 
             # best price/same date twice should appear as single price/date
-            assert favorites[5]["id"] == favorite6.id
-            assert favorites[5]["offer"]["price"] == 3000
-            assert favorites[5]["offer"]["startPrice"] is None
-            assert favorites[5]["offer"]["date"] == tomorow.isoformat()
-            assert favorites[5]["offer"]["startDate"] is None
-            assert favorites[5]["offer"]["image"] is None
+            assert favorites[0]["id"] == favorite6.id
+            assert favorites[0]["offer"]["price"] == 3000
+            assert favorites[0]["offer"]["startPrice"] is None
+            assert favorites[0]["offer"]["date"] == tomorow.isoformat()
+            assert favorites[0]["offer"]["startDate"] is None
+            assert favorites[0]["offer"]["image"] is None
 
     class Returns401:
         def when_user_is_not_logged_in(self, app):
