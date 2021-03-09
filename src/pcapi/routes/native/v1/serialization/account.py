@@ -100,6 +100,10 @@ class NotificationSubscriptionsUpdate(BaseModel):
     marketing_email: bool
     marketing_push: bool
 
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+
 
 class UserProfileUpdateRequest(BaseModel):
     subscriptions: Optional[NotificationSubscriptionsUpdate]

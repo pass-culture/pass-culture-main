@@ -213,7 +213,7 @@ class UserProfileUpdateTest:
         test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
 
         response = test_client.post(
-            "/native/v1/profile", json={"subscriptions": {"marketing_push": True, "marketing_email": False}}
+            "/native/v1/profile", json={"subscriptions": {"marketingPush": True, "marketingEmail": False}}
         )
 
         assert response.status_code == 200
