@@ -6,6 +6,7 @@ export default class User {
     this.expenses = user.expenses
     this.firstName = user.firstName
     this.id = user.id
+    this.pk = user.pk
     this.lastName = user.lastName
     this.publicName = user.publicName
     this.wallet_balance = user.wallet_balance
