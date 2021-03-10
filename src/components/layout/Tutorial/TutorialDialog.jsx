@@ -31,10 +31,10 @@ const steps = [
 ]
 const getStep = position => steps.find(step => step.position === position)
 
-const TutorialDialog = ({ currentUser, setUserHasSeenTuto, isFeatureActive }) => {
+const TutorialDialog = ({ currentUser, setUserHasSeenTuto }) => {
   const [activeStepPosition, setActiveStepPosition] = useState(1)
   const [areTutoDisplayed, setAreTutoDisplayed] = useState(
-    isFeatureActive && currentUser && !currentUser.hasSeenProTutorials
+    currentUser && !currentUser.hasSeenProTutorials
   )
 
   const closeTutoDialog = useCallback(() => {
@@ -123,7 +123,6 @@ const TutorialDialog = ({ currentUser, setUserHasSeenTuto, isFeatureActive }) =>
 
 TutorialDialog.propTypes = {
   currentUser: PropTypes.shape().isRequired,
-  isFeatureActive: PropTypes.bool.isRequired,
   setUserHasSeenTuto: PropTypes.func.isRequired,
 }
 

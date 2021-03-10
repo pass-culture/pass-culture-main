@@ -33,7 +33,7 @@ describe('src | components | pages | Profil', () => {
     }
     store = configureStore({
       data: {
-        users: [{ id: 'CMOI', publicName: 'user' }],
+        users: [{ id: 'CMOI', publicName: 'user', hasSeenProTutorials: true }],
         offerers: [],
       },
     }).store

@@ -12,7 +12,7 @@ import Desk from '../Desk'
 const renderDesk = props => {
   const store = configureTestStore({
     data: {
-      users: [{ publicName: 'USER' }],
+      users: [{ publicName: 'USER', hasSeenProTutorials: true }],
     },
   })
 

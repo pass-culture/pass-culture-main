@@ -42,15 +42,6 @@ describe('tutorial modal', () => {
   it('should show tutorial dialog if user has not seen it yet', async () => {
     store = configureTestStore({
       data: {
-        features: [
-          {
-            id: 'Test_id',
-            description: 'Dummy description',
-            isActive: true,
-            name: 'Dummy name',
-            nameKey: 'PRO_TUTO',
-          },
-        ],
         users: [
           {
             id: 'test_id',
@@ -69,15 +60,6 @@ describe('tutorial modal', () => {
   it("shouldn't show tutorial dialog if user has already seen it", async () => {
     store = configureTestStore({
       data: {
-        features: [
-          {
-            id: 'Test_id',
-            description: 'Dummy description',
-            isActive: true,
-            name: 'Dummy name',
-            nameKey: 'PRO_TUTO',
-          },
-        ],
         users: [
           {
             id: 'test_id',
@@ -98,15 +80,6 @@ describe('tutorial modal', () => {
     beforeEach(async () => {
       store = configureTestStore({
         data: {
-          features: [
-            {
-              id: 'Test_id',
-              description: 'Dummy description',
-              isActive: true,
-              name: 'Dummy name',
-              nameKey: 'PRO_TUTO',
-            },
-          ],
           users: [
             {
               id: 'test_id',
