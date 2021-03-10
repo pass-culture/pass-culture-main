@@ -42,6 +42,7 @@ CUSTOM_TIMEZONES = {
     # included because it has several timezones. Hopefully, we'll have
     # very few events, there...
 }
+METROPOLE_TIMEZONE = "Europe/Paris"
 
 
 class DateTimes:
@@ -72,7 +73,7 @@ def format_datetime(date_time: datetime) -> str:
 def get_department_timezone(departement_code: str) -> str:
     assert isinstance(departement_code, str)
 
-    return CUSTOM_TIMEZONES.get(departement_code, "Europe/Paris")
+    return CUSTOM_TIMEZONES.get(departement_code, METROPOLE_TIMEZONE)
 
 
 def utc_datetime_to_department_timezone(date_time: datetime, departement_code: str) -> datetime:

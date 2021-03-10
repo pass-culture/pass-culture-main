@@ -10,8 +10,10 @@ from sqlalchemy import Integer
 from sqlalchemy import Numeric
 from sqlalchemy import String
 from sqlalchemy import TEXT
+from sqlalchemy import case
 from sqlalchemy.event import listens_for
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 
 from pcapi.core.offers.models import Offer
@@ -25,6 +27,9 @@ from pcapi.models.needs_validation_mixin import NeedsValidationMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.providable_mixin import ProvidableMixin
 from pcapi.models.versioned_mixin import VersionedMixin
+from pcapi.utils.date import CUSTOM_TIMEZONES
+from pcapi.utils.date import METROPOLE_TIMEZONE
+from pcapi.utils.date import get_department_timezone
 
 
 CONSTRAINT_CHECK_IS_VIRTUAL_XOR_HAS_ADDRESS = """
@@ -140,6 +145,14 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ve
     @property
     def nOffers(self):
         return Offer.query.filter(Offer.venueId == self.id).with_entities(Offer.id).count()
+
+    @hybrid_property
+    def timezone(self):
+        return get_department_timezone(self.departementCode)
+
+    @timezone.expression
+    def timezone(cls):  # pylint: disable=no-self-argument
+        return case(CUSTOM_TIMEZONES, cls.departementCode, else_=METROPOLE_TIMEZONE)
 
 
 @listens_for(Venue, "before_insert")

@@ -146,6 +146,54 @@ class PaginatedOfferForFiltersTest:
         assert paginated_offers.offers[0].identifier.persisted == imported_offer.id
         assert paginated_offers.total_offers == 1
 
+    @pytest.mark.usefixtures("db_session")
+    def should_not_return_event_offers_with_only_deleted_stock_if_filtering_by_time_period(self, app: object):
+        # given
+        pro = users_factories.UserFactory(isAdmin=True)
+        offer_in_requested_time_period = offers_factories.OfferFactory()
+        offers_factories.EventStockFactory(
+            offer=offer_in_requested_time_period, beginningDatetime=datetime(2020, 1, 2), isSoftDeleted=True
+        )
+
+        # When
+        paginated_offers = get_paginated_offers_for_filters(
+            user_id=pro.id,
+            user_is_admin=pro.isAdmin,
+            page=1,
+            offers_per_page=1,
+            period_beginning_date="2020-01-01T00:00:00",
+        )
+
+        # then
+        offers_id = [offer.identifier for offer in paginated_offers.offers]
+        assert Identifier(offer_in_requested_time_period.id) not in offers_id
+        assert paginated_offers.total_offers == 0
+
+    @pytest.mark.usefixtures("db_session")
+    def should_consider_venue_locale_datetime_when_filtering_by_date(self, app: object):
+        # given
+        pro = users_factories.UserFactory(isAdmin=True)
+        offer_in_cayenne = offers_factories.OfferFactory(venue__postalCode="97300")
+        event_datetime = datetime(2020, 4, 22, 2, 0)
+        period_beginning_date = "2020-04-21T00:00:00"
+        period_ending_date = "2020-04-21T23:59:59"
+        offers_factories.EventStockFactory(offer=offer_in_cayenne, beginningDatetime=event_datetime)
+
+        # When
+        paginated_offers = get_paginated_offers_for_filters(
+            user_id=pro.id,
+            user_is_admin=pro.isAdmin,
+            page=1,
+            offers_per_page=1,
+            period_beginning_date=period_beginning_date,
+            period_ending_date=period_ending_date,
+        )
+
+        # then
+        offers_id = [offer.identifier for offer in paginated_offers.offers]
+        assert Identifier(offer_in_cayenne.id) in offers_id
+        assert paginated_offers.total_offers == 1
+
     class WhenUserIsAdmin:
         @pytest.mark.usefixtures("db_session")
         def should_return_offers_of_given_venue_when_user_is_not_attached_to_its_offerer(self, app):
@@ -245,29 +293,6 @@ class PaginatedOfferForFiltersTest:
             assert Identifier(offer_for_requested_offerer.id) in offers_id
             assert Identifier(offer_for_other_offerer.id) not in offers_id
             assert paginated_offers.total_offers == 1
-
-        @pytest.mark.usefixtures("db_session")
-        def should_not_return_event_offers_with_only_deleted_stock_if_filtering_by_time_period(self, app: object):
-            # given
-            pro = users_factories.UserFactory(isAdmin=True)
-            offer_in_requested_time_period = offers_factories.OfferFactory()
-            offers_factories.EventStockFactory(
-                offer=offer_in_requested_time_period, beginningDatetime=datetime(2020, 1, 2), isSoftDeleted=True
-            )
-
-            # When
-            paginated_offers = get_paginated_offers_for_filters(
-                user_id=pro.id,
-                user_is_admin=pro.isAdmin,
-                page=1,
-                offers_per_page=1,
-                period_beginning_date="2020-01-01T00:00:00",
-            )
-
-            # then
-            offers_id = [offer.identifier for offer in paginated_offers.offers]
-            assert Identifier(offer_in_requested_time_period.id) not in offers_id
-            assert paginated_offers.total_offers == 0
 
     class WhenUserIsPro:
         @pytest.mark.usefixtures("db_session")
