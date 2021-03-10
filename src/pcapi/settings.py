@@ -122,7 +122,7 @@ ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE = int(os.environ.get("ALGOLIA_OFFERS
 ALGOLIA_SYNC_WORKERS_POOL_SIZE = int(os.environ.get("ALGOLIA_SYNC_WORKERS_POOL_SIZE", 10))
 
 # BATCH
-BATCH_API_URL = os.environ.get("BATCH_API_URL", "https://api.batch.com/1.0")
+BATCH_API_URL = os.environ.get("BATCH_API_URL", "https://api.batch.com")
 BATCH_ANDROID_API_KEY = os.environ.get("BATCH_ANDROID_API_KEY", "")
 BATCH_IOS_API_KEY = os.environ.get("BATCH_IOS_API_KEY", "")
 BATCH_SECRET_API_KEY = os.environ.get("BATCH_SECRET_API_KEY", "")
