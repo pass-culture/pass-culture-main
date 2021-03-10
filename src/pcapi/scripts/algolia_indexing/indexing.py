@@ -1,11 +1,18 @@
 from datetime import datetime
 from datetime import timedelta
+from typing import List
 
 from redis import Redis
+from sqlalchemy.orm import joinedload
+from sqlalchemy.sql.functions import func
 
 from pcapi import settings
+from pcapi.algolia.infrastructure.api import init_connection
+from pcapi.algolia.infrastructure.builder import build_object
+from pcapi.algolia.usecase.orchestrator import _build_offer_details_to_be_indexed
 from pcapi.algolia.usecase.orchestrator import delete_expired_offers
 from pcapi.algolia.usecase.orchestrator import process_eligible_offers
+from pcapi.connectors.redis import add_to_indexed_offers
 from pcapi.connectors.redis import delete_offer_ids
 from pcapi.connectors.redis import delete_offer_ids_in_error
 from pcapi.connectors.redis import delete_venue_ids
@@ -15,8 +22,13 @@ from pcapi.connectors.redis import get_offer_ids
 from pcapi.connectors.redis import get_offer_ids_in_error
 from pcapi.connectors.redis import get_venue_ids
 from pcapi.connectors.redis import get_venue_providers
+from pcapi.core.offerers.models import Venue
+from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import Stock
+from pcapi.models import db
 from pcapi.repository import offer_queries
 from pcapi.utils.converter import from_tuple_to_int
+from pcapi.utils.human_ids import humanize
 from pcapi.utils.logger import logger
 
 
@@ -169,3 +181,43 @@ def _process_venue_provider(client: Redis, provider_id: str, venue_provider_id: 
         )
     finally:
         delete_venue_provider_currently_in_sync(client=client, venue_provider_id=venue_provider_id)
+
+
+def get_offers(min_id: int, batch_size: int) -> List[Offer]:
+    return (
+        Offer.query.filter(Offer.id.between(min_id, min_id + batch_size - 1))
+        .order_by(Offer.id)
+        .options(joinedload(Offer.venue).joinedload(Venue.managingOfferer))
+        .options(joinedload(Offer.stocks).joinedload(Stock.bookings))
+        .all()
+    )
+
+
+def replace_objects_in_algolia(client: Redis, batch_size: int = 1000) -> None:
+    modified_sum = 0
+    algolia_connection = init_connection()
+    pipeline = client.pipeline()
+    max_id = db.session.query(func.max(Offer.id)).scalar()
+    for batch_start in range(1, max_id + 1, batch_size):
+        offers = get_offers(batch_start, batch_size)
+        if len(offers) == 0:
+            continue
+        humanized_offer_ids = [humanize(offer.id) for offer in offers]
+        offers_to_add = [offer for offer in offers if offer.isBookable]
+        try:
+            algolia_connection.delete_objects(object_ids=humanized_offer_ids)
+            algolia_connection.save_objects(objects=[build_object(offer) for offer in offers_to_add])
+            for offer in offers_to_add:
+                add_to_indexed_offers(
+                    pipeline=pipeline, offer_id=offer.id, offer_details=_build_offer_details_to_be_indexed(offer)
+                )
+        except Exception as exception:  # pylint: disable=broad-except
+            logger.exception(
+                "Could not reindex batch [%d,%d] because of exception: %s", batch_start, offers[-1].id, exception
+            )
+        else:
+            logger.info("Reindexed [%d,%d]", batch_start, offers[-1].id)
+
+        modified_sum += len(offers)
+
+    logger.info("%d offers updated", modified_sum)
