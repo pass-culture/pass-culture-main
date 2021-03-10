@@ -353,8 +353,7 @@ def user_expenses(user: User) -> List[Expense]:
 def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> User:
     objects_to_save = []
 
-    new_pro_user = User(from_dict=pro_user.dict(by_alias=True))
-    new_pro_user.hasAllowedRecommendations = pro_user.contact_ok
+    new_pro_user = create_pro_user(pro_user)
 
     existing_offerer = Offerer.query.filter_by(siren=pro_user.siren).first()
 
@@ -367,12 +366,8 @@ def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> User:
         digital_venue = create_digital_venue(offerer)
         objects_to_save.extend([digital_venue, offerer])
     objects_to_save.append(user_offerer)
-    new_pro_user.isBeneficiary = False
-    new_pro_user.isAdmin = False
-    new_pro_user.needsToFillCulturalSurvey = False
     new_pro_user = _set_offerer_departement_code(new_pro_user, offerer)
 
-    new_pro_user.generate_validation_token()
     objects_to_save.append(new_pro_user)
 
     repository.save(*objects_to_save)
@@ -381,6 +376,17 @@ def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> User:
         user_emails.send_pro_user_validation_email(new_pro_user)
     except MailServiceException:
         logger.exception("Could not send validation email when creating pro user=%s", new_pro_user.id)
+
+    return new_pro_user
+
+
+def create_pro_user(pro_user: ProUserCreationBodyModel) -> User:
+    new_pro_user = User(from_dict=pro_user.dict(by_alias=True))
+    new_pro_user.hasAllowedRecommendations = pro_user.contact_ok
+    new_pro_user.isBeneficiary = False
+    new_pro_user.isAdmin = False
+    new_pro_user.needsToFillCulturalSurvey = False
+    new_pro_user.generate_validation_token()
 
     return new_pro_user
 
