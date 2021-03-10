@@ -251,6 +251,13 @@ class MarkAsUsedTest:
         api.mark_as_used(booking)
         assert booking.isUsed
 
+    def test_mark_as_used_with_uncancel(self):
+        booking = factories.BookingFactory(isCancelled=True, cancellationReason="BENEFICIARY")
+        api.mark_as_used(booking, uncancel=True)
+        assert booking.isUsed
+        assert not booking.isCancelled
+        assert not booking.cancellationReason
+
     def test_mark_as_used_when_stock_starts_soon(self):
         booking = factories.BookingFactory(stock__beginningDatetime=datetime.now() + timedelta(days=1))
         api.mark_as_used(booking)

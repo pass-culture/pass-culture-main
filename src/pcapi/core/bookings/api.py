@@ -116,7 +116,18 @@ def cancel_booking_by_offerer(booking: Booking) -> None:
         redis.add_offer_id(client=app.redis_client, offer_id=booking.stock.offerId)
 
 
-def mark_as_used(booking: Booking) -> None:
+def mark_as_used(booking: Booking, uncancel=False) -> None:
+    """Mark a booking as used.
+
+    The ``uncancel`` argument should be provided only if the booking
+    has been cancelled by mistake or fraudulently after the offer was
+    retrieved (for example, when a beneficiary retrieved a book from a
+    library and then cancelled their booking before the library marked
+    it as used).
+    """
+    if uncancel:
+        booking.isCancelled = False
+        booking.cancellationReason = None
     validation.check_is_usable(booking)
     booking.isUsed = True
     booking.dateUsed = datetime.datetime.utcnow()

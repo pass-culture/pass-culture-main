@@ -1,0 +1,42 @@
+{% extends 'admin/master.html' %}
+{% import 'admin/forms.html' as forms %}
+
+{% block body %}
+<h2>Réservations</h2>
+
+<form action="" method="POST">
+  {{ forms.display_form(search_form, "Rechercher la réservation") }}
+</form>
+
+{% if booking %}
+  <hr>
+  <p>
+    <div><b>Code :</b> {{ booking.token }}</div>
+    <div><b>Bénéficiaire :</b> {{ booking.user.email }} ({{ booking.user.id }})</div>
+    <div><b>Offre :</b> {{ booking.stock.offer.name }}</div>
+    <div><b>Date d'annulation :</b>
+      {% if booking.isCancelled %}
+        {{ booking.cancellationDate.strftime('%d/%m/%Y %H:%M') }}
+      {% else %}
+        non annulée
+      {% endif %}
+    </div>
+  </p>
+
+  {% if mark_as_used_form %}
+    <p>
+      Si cette réservation a été annulée par erreur (ou
+      frauduleusement) alors qu'elle a en fait été utilisée, il est
+      possible de la marquer comme utilisée.
+      <br>
+      <b>Attention : cette opération est irréversible.</b>
+    </p>
+    <form action="mark-as-used" method="POST">
+      {{ forms.display_form(mark_as_used_form) }}
+      <input class="btn btn-danger" type="submit" value="Marquer comme utilisée">
+    </form>
+  {% endif %}
+
+{% endif %} {# if booking #}
+
+{% endblock %}

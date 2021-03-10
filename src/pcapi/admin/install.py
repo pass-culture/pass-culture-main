@@ -7,6 +7,7 @@ from pcapi.admin.custom_views.admin_user_view import AdminUserView
 from pcapi.admin.custom_views.allocine_pivot_view import AllocinePivotView
 from pcapi.admin.custom_views.beneficiary_import_view import BeneficiaryImportView
 from pcapi.admin.custom_views.beneficiary_user_view import BeneficiaryUserView
+from pcapi.admin.custom_views.booking_view import BookingView
 from pcapi.admin.custom_views.criteria_view import CriteriaView
 from pcapi.admin.custom_views.feature_view import FeatureView
 from pcapi.admin.custom_views.many_offers_operations_view import ManyOffersOperationsView
@@ -94,6 +95,13 @@ def install_admin_views(admin: Admin, session: Session) -> None:
         ManyOffersOperationsView(
             name="Opérations sur plusieurs offres",
             endpoint="/many_offers_operations",
+            category=Category.CUSTOM_OPERATIONS,
+        )
+    )
+    admin.add_view(
+        BookingView(
+            name="Réservations",
+            endpoint="/bookings",
             category=Category.CUSTOM_OPERATIONS,
         )
     )
