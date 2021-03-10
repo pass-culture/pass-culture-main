@@ -16,6 +16,7 @@ import pcapi.core.payments.factories as payments_factories
 from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.models import api_errors
+import pcapi.notifications.push.testing as push_testing
 from pcapi.utils.token import random_token
 
 
@@ -210,12 +211,25 @@ class CancelByOffererTest:
         assert booking.isCancelled
         assert booking.cancellationReason == BookingCancellationReasons.OFFERER
 
+        assert push_testing.requests == [
+            {
+                "group_id": "Cancel_booking",
+                "message": {
+                    "body": f"""Ta commande "{booking.stock.offer.name}" a été annulée par l\'offreur.""",
+                    "title": "Commande annulée",
+                },
+                "user_ids": [booking.userId],
+            },
+        ]
+
     def test_raise_if_already_cancelled(self):
         booking = factories.BookingFactory(isCancelled=True, cancellationReason=BookingCancellationReasons.BENEFICIARY)
         with pytest.raises(api_errors.ResourceGoneError):
             api.cancel_booking_by_offerer(booking)
         assert booking.isCancelled
         assert booking.cancellationReason == BookingCancellationReasons.BENEFICIARY
+
+        assert push_testing.requests == []
 
     def test_raise_if_already_used(self):
         booking = factories.BookingFactory(isUsed=True)
@@ -226,6 +240,8 @@ class CancelByOffererTest:
         assert not booking.cancellationReason
 
         assert not booking.isCancelled
+
+        assert push_testing.requests == []
 
 
 @pytest.mark.usefixtures("db_session")

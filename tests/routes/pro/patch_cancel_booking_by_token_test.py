@@ -11,6 +11,7 @@ from pcapi.model_creators.specific_creators import create_offer_with_event_produ
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.models import ApiKey
 from pcapi.models import Booking
+import pcapi.notifications.push.testing as push_testing
 from pcapi.repository import repository
 from pcapi.utils.token import random_token
 
@@ -54,6 +55,17 @@ class Patch:
             assert response.status_code == 204
             updated_booking = Booking.query.first()
             assert updated_booking.isCancelled
+
+            assert push_testing.requests == [
+                {
+                    "group_id": "Cancel_booking",
+                    "message": {
+                        "body": 'Ta réservation "Test event" a été annulée par l\'offreur.',
+                        "title": "Réservation annulée",
+                    },
+                    "user_ids": [user.id],
+                },
+            ]
 
         @pytest.mark.usefixtures("db_session")
         def test_should_returns_204_with_lowercase_token(self, app):
@@ -104,6 +116,7 @@ class Patch:
 
             # Then
             assert response.status_code == 401
+            assert push_testing.requests == []
 
         @pytest.mark.usefixtures("db_session")
         def when_giving_an_api_key_that_does_not_exists(self, app):
@@ -125,6 +138,7 @@ class Patch:
             )
 
             assert response.status_code == 401
+            assert push_testing.requests == []
 
     class Returns403:
         @pytest.mark.usefixtures("db_session")
@@ -159,6 +173,7 @@ class Patch:
             # Then
             assert response.status_code == 403
             assert response.json["user"] == ["Vous n'avez pas les droits suffisants pour annuler cette réservation."]
+            assert push_testing.requests == []
 
         @pytest.mark.usefixtures("db_session")
         def when_the_logged_user_has_not_rights_on_offerer(self, app):
@@ -195,6 +210,7 @@ class Patch:
             assert response.json["global"] == [
                 "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."
             ]
+            assert push_testing.requests == []
 
         class WhenTheBookingIsUsed:
             @pytest.mark.usefixtures("db_session")
@@ -227,6 +243,7 @@ class Patch:
                 updated_booking = Booking.query.first()
                 assert updated_booking.isUsed
                 assert updated_booking.isCancelled is False
+                assert push_testing.requests == []
 
     class Returns404:
         @pytest.mark.usefixtures("db_session")
@@ -283,3 +300,4 @@ class Patch:
             # Then
             assert response.status_code == 410
             assert response.json["global"] == ["Cette contremarque a déjà été annulée"]
+            assert push_testing.requests == []
