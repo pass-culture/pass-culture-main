@@ -350,7 +350,7 @@ def user_expenses(user: User) -> List[Expense]:
     return limits
 
 
-def create_pro_user(pro_user: ProUserCreationBodyModel) -> User:
+def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> User:
     objects_to_save = []
 
     new_pro_user = User(from_dict=pro_user.dict(by_alias=True))
