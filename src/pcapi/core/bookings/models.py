@@ -11,6 +11,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
 from sqlalchemy import Numeric
 from sqlalchemy import String
+from sqlalchemy import and_
 from sqlalchemy import event
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
@@ -126,7 +127,11 @@ class Booking(PcObject, Model, VersionedMixin):
 
     @hybrid_property
     def isConfirmed(self):
-        return self.confirmationDate and self.confirmationDate <= datetime.utcnow()
+        return self.confirmationDate is not None and self.confirmationDate <= datetime.utcnow()
+
+    @isConfirmed.expression
+    def isConfirmed(cls):  # pylint: disable=no-self-argument
+        return and_(cls.confirmationDate.isnot(None), cls.confirmationDate <= datetime.utcnow())
 
 
 # FIXME (dbaty, 2020-02-08): once `Deposit.expirationDate` has been

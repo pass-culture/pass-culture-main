@@ -1,10 +1,12 @@
-import datetime
+from datetime import datetime
+from datetime import timedelta
 from decimal import Decimal
 
 import pytest
 
 from pcapi.core.bookings import factories
 from pcapi.core.bookings import models
+from pcapi.core.bookings.models import Booking
 from pcapi.core.offers.factories import MediationFactory
 import pcapi.core.users.factories as users_factories
 from pcapi.models import ApiErrors
@@ -106,7 +108,7 @@ class BookingQrCodeTest:
     def test_event_return_none_if_event_is_expired(self):
         booking = factories.BookingFactory(
             stock__offer__type=str(EventType.CINEMA),
-            stock__beginningDatetime=datetime.datetime.now() - datetime.timedelta(days=1),
+            stock__beginningDatetime=datetime.now() - timedelta(days=1),
         )
         assert booking.qrCode is None
 
@@ -136,3 +138,49 @@ class BookingQrCodeTest:
             stock__offer__product__type=str(ThingType.JEUX),
         )
         assert booking.qrCode is None
+
+
+@pytest.mark.usefixtures("db_session")
+class BookingIsConfirmedPropertyTest:
+    def test_booking_is_confirmed_when_confirmation_date_is_in_the_past(self):
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        booking = factories.BookingFactory(confirmation_date=yesterday)
+
+        assert booking.isConfirmed is True
+
+    def test_booking_is_not_confirmed_when_confirmation_date_is_in_the_future(self):
+        tomorrow = datetime.utcnow() + timedelta(days=1)
+        booking = factories.BookingFactory(confirmation_date=tomorrow)
+
+        assert booking.isConfirmed is False
+
+    def test_booking_is_not_confirmed_when_no_confirmation_date_exists(self):
+        booking = factories.BookingFactory()
+
+        assert booking.isConfirmed is False
+
+
+@pytest.mark.usefixtures("db_session")
+class BookingIsConfirmedSqlQueryTest:
+    def test_booking_is_confirmed_when_confirmation_date_is_in_the_past(self):
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        factories.BookingFactory(confirmation_date=yesterday)
+
+        query_result = Booking.query.filter(Booking.isConfirmed.is_(True)).all()
+
+        assert len(query_result) == 1
+
+    def test_booking_is_not_confirmed_when_confirmation_date_is_in_the_future(self):
+        tomorrow = datetime.utcnow() + timedelta(days=1)
+        factories.BookingFactory(confirmation_date=tomorrow)
+
+        query_result = Booking.query.filter(Booking.isConfirmed.is_(False)).all()
+
+        assert len(query_result) == 1
+
+    def test_booking_is_not_confirmed_when_no_confirmation_date_exists(self):
+        factories.BookingFactory()
+
+        query_result = Booking.query.filter(Booking.isConfirmed.is_(False)).all()
+
+        assert len(query_result) == 1
