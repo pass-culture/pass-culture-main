@@ -319,8 +319,6 @@ class GetOfferVenueResponseModel(BaseModel):
 
 
 class GetOfferLastProviderResponseModel(BaseModel):
-    apiKey: Optional[str]
-    apiKeyGenerationDate: Optional[str]
     enabledForPro: bool
     id: str
     isActive: bool

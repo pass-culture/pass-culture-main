@@ -340,8 +340,6 @@ def create_payment_message(checksum: str = None, idx: int = None, name: str = "A
 
 
 def create_provider(
-    api_key: str = None,
-    api_key_generation_date: datetime = None,
     idx: int = None,
     is_active: bool = True,
     is_enable_for_pro: bool = True,
@@ -350,8 +348,6 @@ def create_provider(
     require_provider_identifier: bool = True,
 ) -> Provider:
     provider = Provider()
-    provider.apiKey = api_key
-    provider.apiKeyGenerationDate = api_key_generation_date
     provider.id = idx
     provider.enabledForPro = is_enable_for_pro
     provider.isActive = is_active

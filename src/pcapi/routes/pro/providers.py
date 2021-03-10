@@ -19,8 +19,6 @@ def list_providers():
     result = []
     for provider in providers:
         p_dict = as_dict(provider)
-        del p_dict["apiKey"]
-        del p_dict["apiKeyGenerationDate"]
         result.append(p_dict)
     return jsonify(result)
 
@@ -39,7 +37,5 @@ def get_providers_by_venue(venue_id: str):
     result = []
     for provider in providers:
         provider_dict = as_dict(provider)
-        del provider_dict["apiKey"]
-        del provider_dict["apiKeyGenerationDate"]
         result.append(provider_dict)
     return jsonify(result)
