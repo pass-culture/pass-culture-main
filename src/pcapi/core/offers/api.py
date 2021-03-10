@@ -486,13 +486,12 @@ def get_expense_domains(offer: Offer) -> List[ExpenseDomain]:
 def add_criteria_to_offers(criteria: List[Criterion], isbn: str) -> bool:
     isbn = isbn.replace("-", "").replace(" ", "")
 
-    offer_ids_tuples = (
+    offer_ids_query = (
         Offer.query.filter(Offer.extraData["isbn"].astext == isbn)
         .filter(Offer.isActive.is_(True))
         .with_entities(Offer.id)
-        .all()
     )
-    offer_ids = [offer_id[0] for offer_id in offer_ids_tuples]
+    offer_ids = [offer_id for offer_id, in offer_ids_query.all()]
 
     if not offer_ids:
         return False
