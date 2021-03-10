@@ -1040,12 +1040,14 @@ class GetActiveBookingsQuantityForVenueTest:
         assert active_bookings_quantity == 0
 
     @pytest.mark.usefixtures("db_session")
-    def test_excludes_used_or_cancelled_bookings(self):
+    def test_excludes_confirmed_used_or_cancelled_bookings(self):
         # Given
         booking = bookings_factories.BookingFactory()
         venue = booking.stock.offer.venue
         bookings_factories.BookingFactory(isUsed=True, stock__offer__venue=venue)
         bookings_factories.BookingFactory(isCancelled=True, stock__offer__venue=venue)
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        bookings_factories.BookingFactory(confirmation_date=yesterday, quantity=2, stock__offer__venue=venue)
 
         # When
         active_bookings_quantity = booking_repository.get_active_bookings_quantity_for_venue(venue.id)

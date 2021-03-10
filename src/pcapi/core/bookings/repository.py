@@ -198,7 +198,12 @@ def get_active_bookings_quantity_for_venue(venue_id: int) -> int:
     return (
         Booking.query.join(Stock)
         .join(Offer)
-        .filter(venue_id == Offer.venueId, Booking.isUsed.is_(False), Booking.isCancelled.is_(False))
+        .filter(
+            venue_id == Offer.venueId,
+            Booking.isUsed.is_(False),
+            Booking.isCancelled.is_(False),
+            Booking.isConfirmed.is_(False),
+        )
         .with_entities(coalesce(func.sum(Booking.quantity), 0))
         .one()[0]
     )
