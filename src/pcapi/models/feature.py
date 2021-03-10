@@ -35,7 +35,6 @@ class FeatureToggle(enum.Enum):
     ALLOW_IDCHECK_REGISTRATION = "Autoriser les utilisateurs à suivre le parcours d inscription ID Check"
     WHOLE_FRANCE_OPENING = "Ouvre le service à la France entière"
     PRO_HOMEPAGE = "Permettre l affichage de la nouvelle page d accueil du portail pro"
-    PRO_TUTO = "Permettre l affichage des cartes tuto du portail pro"
     PARALLEL_SYNCHRONIZATION_OF_VENUE_PROVIDER = (
         "Active la parallèlisation des opérations de synchronisation pour les VenueProvider"
     )
@@ -58,5 +57,4 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.APPLY_BOOKING_LIMITS_V2,
     FeatureToggle.WHOLE_FRANCE_OPENING,
     FeatureToggle.PRO_HOMEPAGE,
-    FeatureToggle.PRO_TUTO,
 )
