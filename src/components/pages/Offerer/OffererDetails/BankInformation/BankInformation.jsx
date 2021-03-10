@@ -9,12 +9,12 @@ import { Offerer } from '../Offerer'
 
 const BankInformation = ({ offerer }) => (
   <div className="section op-content-section bank-information">
-    <h2 className="main-list-title">
-      {'Coordonnées bancaires de la structure'}
-    </h2>
+    <div className="main-list-title title-actions-container">
+      <h2 className="main-list-title-text">
+        {'Coordonnées bancaires de la structure'}
+      </h2>
 
-    {offerer.areBankInformationProvided ? (
-      <Fragment>
+      {offerer.areBankInformationProvided && (
         <a
           className="tertiary-link"
           href={DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL}
@@ -27,6 +27,11 @@ const BankInformation = ({ offerer }) => (
           />
           {'Modifier'}
         </a>
+      )}
+    </div>
+
+    {offerer.areBankInformationProvided ? (
+      <Fragment>
         <p className="bi-subtitle">
           {
             'Les coordonnées bancaires ci-dessous seront attribuées à tous les lieux sans coordonnées bancaires propres :'

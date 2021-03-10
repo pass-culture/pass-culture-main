@@ -26,9 +26,19 @@
       margin: 0.75rem 0;
       padding-bottom: 0.5rem;
 
+      .main-list-title-text {
+        @include title4();
+      }
+
       span {
         margin-top: 3.5px;
       }
+    }
+
+    .title-actions-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
     }
   }
 

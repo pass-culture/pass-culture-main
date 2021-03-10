@@ -1,4 +1,5 @@
-import { shallow } from 'enzyme'
+import '@testing-library/jest-dom'
+import { act, render, screen } from '@testing-library/react'
 import React from 'react'
 
 import { BicIbanFields } from '../BicIbanFields'
@@ -8,36 +9,28 @@ jest.mock('utils/config', () => ({
     'link/to/venue/demarchesSimplifiees/procedure',
 }))
 
-describe('src | Venue | BicIbanFields', () => {
-  it('should display bank informations', () => {
-    const props = {
-      bic: '123 456 789',
-      iban: 'FRBICAVECUNEVALEURPARDEFAUT',
-    }
-
-    //
-    const wrapper = shallow(<BicIbanFields {...props} />)
-
-    // then
-    expect(wrapper).toHaveLength(1)
-    const bic = wrapper.find({ children: '123 456 789' })
-    const iban = wrapper.find({ children: 'FRBICAVECUNEVALEURPARDEFAUT' })
-    expect(bic.exists()).toBe(true)
-    expect(iban.exists()).toBe(true)
+const renderBicIbanFields = async props => {
+  return await act(async () => {
+    await render(<BicIbanFields {...props} />)
   })
+}
 
-  it('should display modification link', () => {
+describe('src | Venue | BicIbanFields', () => {
+  it('should display bank informations', async () => {
+    // Given
     const props = {
       bic: '123 456 789',
       iban: 'FRBICAVECUNEVALEURPARDEFAUT',
     }
-
-    //
-    const wrapper = shallow(<BicIbanFields {...props} />)
+    await renderBicIbanFields(props)
 
     // then
-    const modificationLink = wrapper.find('a')
-    expect(modificationLink.exists()).toBe(true)
-    expect(modificationLink.prop('href')).toBe('link/to/venue/demarchesSimplifiees/procedure')
+    expect(
+      screen.getByText(
+        'Les remboursements des offres éligibles présentées dans ce lieu sont effectués sur le compte ci-dessous :'
+      )
+    ).toBeInTheDocument()
+    expect(screen.getByText('123 456 789')).toBeInTheDocument()
+    expect(screen.getByText('FRBICAVECUNEVALEURPARDEFAUT')).toBeInTheDocument()
   })
 })
