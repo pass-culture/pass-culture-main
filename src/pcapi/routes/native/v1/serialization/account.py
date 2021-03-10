@@ -10,7 +10,6 @@ from pydantic.fields import Field
 
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users.models import ExpenseDomain
-from pcapi.core.users.models import NotificationSubscriptions
 from pcapi.core.users.models import User
 from pcapi.core.users.models import VOID_FIRST_NAME
 from pcapi.core.users.models import VOID_PUBLIC_NAME
@@ -48,6 +47,16 @@ class Expense(BaseModel):
     _convert_limit = validator("limit", pre=True, allow_reuse=True)(convert_to_cent)
 
     class Config:
+        orm_mode = True
+
+
+class NotificationSubscriptions(BaseModel):
+    marketing_email: bool
+    marketing_push: bool
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
         orm_mode = True
 
 
@@ -96,17 +105,8 @@ class UserProfileResponse(BaseModel):
         return super().from_orm(user)
 
 
-class NotificationSubscriptionsUpdate(BaseModel):
-    marketing_email: bool
-    marketing_push: bool
-
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-
-
 class UserProfileUpdateRequest(BaseModel):
-    subscriptions: Optional[NotificationSubscriptionsUpdate]
+    subscriptions: Optional[NotificationSubscriptions]
 
 
 class ResendEmailValidationRequest(BaseModel):

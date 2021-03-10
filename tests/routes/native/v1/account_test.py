@@ -102,7 +102,7 @@ class AccountTest:
             "isEligible": True,
             "pseudo": "jdo",
             "showEligibleCard": False,
-            "subscriptions": {"marketing_push": True, "marketing_email": False},
+            "subscriptions": {"marketingPush": True, "marketingEmail": False},
         }
         EXPECTED_DATA.update(USER_DATA)
 
