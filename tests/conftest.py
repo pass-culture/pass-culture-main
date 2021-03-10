@@ -109,11 +109,9 @@ def clear_tests_assets_bucket():
 def clean_database(f: object) -> object:
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        clean_all_database()
         try:
             return_value = f(*args, **kwargs)
         finally:
-            db.session.rollback()
             clean_all_database()
         return return_value
 
