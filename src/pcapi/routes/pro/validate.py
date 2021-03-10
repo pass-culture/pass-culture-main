@@ -5,8 +5,6 @@ from pcapi.connectors import redis
 from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
 from pcapi.domain.iris import link_valid_venue_to_irises
 from pcapi.domain.user_emails import send_attachment_validation_email_to_pro_offerer
-from pcapi.domain.user_emails import send_ongoing_offerer_attachment_information_email_to_pro
-from pcapi.domain.user_emails import send_pro_user_waiting_for_validation_by_admin_email
 from pcapi.domain.user_emails import send_validation_confirmation_email_to_pro
 from pcapi.flask_app import private_api
 from pcapi.flask_app import public_api
@@ -17,7 +15,6 @@ from pcapi.repository import feature_queries
 from pcapi.repository import repository
 from pcapi.repository import user_offerer_queries
 from pcapi.repository import user_queries
-from pcapi.repository.user_offerer_queries import count_pro_attached_to_offerer
 from pcapi.utils.mailing import MailServiceException
 from pcapi.validation.routes.users import check_validation_token_has_been_already_used
 from pcapi.validation.routes.validate import check_valid_token_for_user_validation
@@ -81,30 +78,12 @@ def validate_user(token):
     user_offerer = user_offerer_queries.find_one_or_none_by_user_id(user_to_validate.id)
 
     if user_offerer:
-        number_of_pro_attached_to_offerer = count_pro_attached_to_offerer(user_offerer.offererId)
         offerer = user_offerer.offerer
 
         if settings.IS_INTEGRATION:
             _validate_offerer(offerer, user_offerer)
         else:
             _ask_for_validation(offerer, user_offerer)
-
-        if number_of_pro_attached_to_offerer > 1:
-            try:
-                send_ongoing_offerer_attachment_information_email_to_pro(user_offerer)
-            except MailServiceException as mail_service_exception:
-                app.logger.exception(
-                    "[send_ongoing_offerer_attachment_information_email_to_pro] " "Email service failure",
-                    mail_service_exception,
-                )
-        else:
-            try:
-                send_pro_user_waiting_for_validation_by_admin_email(user_to_validate, offerer)
-            except MailServiceException as mail_service_exception:
-                app.logger.exception(
-                    "[send_pro_user_waiting_for_validation_by_admin_email] " "Email service failure",
-                    mail_service_exception,
-                )
 
     return "", 204
 

@@ -25,7 +25,6 @@ from pcapi.domain.user_emails import send_expired_bookings_recap_email_to_offere
 from pcapi.domain.user_emails import send_newly_eligible_user_email
 from pcapi.domain.user_emails import send_offerer_bookings_recap_email_after_offerer_cancellation
 from pcapi.domain.user_emails import send_offerer_driven_cancellation_email_to_offerer
-from pcapi.domain.user_emails import send_ongoing_offerer_attachment_information_email_to_pro
 from pcapi.domain.user_emails import send_pro_user_validation_email
 from pcapi.domain.user_emails import send_rejection_email_to_beneficiary_pre_subscription
 from pcapi.domain.user_emails import send_reset_password_email_to_native_app_user
@@ -38,11 +37,9 @@ from pcapi.domain.user_emails import send_warning_to_beneficiary_after_pro_booki
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user
-from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_stock_with_event_offer
 from pcapi.models import offer_type
-from pcapi.repository import repository
 
 from tests.domain_creators.generic_creators import create_domain_beneficiary_pre_subcription
 from tests.test_utils import create_mocked_bookings
@@ -356,33 +353,6 @@ class SendAttachmentValidationEmailToProOffererTest:
         # then
         mocked_retrieve_data_for_offerer_attachment_validation_email.assert_called_once_with(user_offerer)
         assert mails_testing.outbox[0].sent_data["Html-part"] == ""
-
-
-@pytest.mark.usefixtures("db_session")
-class SendOngoingOffererAttachmentInformationEmailTest:
-    @patch(
-        "pcapi.domain.user_emails.retrieve_data_for_offerer_ongoing_attachment_email",
-        return_value={"Mj-TemplateID": 778749},
-    )
-    @pytest.mark.usefixtures("db_session")
-    def test_should_return_true_when_email_data_are_valid(
-        self, mock_retrieve_data_for_offerer_ongoing_attachment_email, app
-    ):
-        # given
-        pro = create_user()
-        offerer = create_offerer()
-        offerer2 = create_offerer(siren="123456788")
-        user_offerer_1 = create_user_offerer(pro, offerer)
-        user_offerer_2 = create_user_offerer(pro, offerer2)
-
-        repository.save(user_offerer_1, user_offerer_2)
-
-        # when
-        send_ongoing_offerer_attachment_information_email_to_pro(user_offerer_2)
-
-        # then
-        mock_retrieve_data_for_offerer_ongoing_attachment_email.assert_called_once_with(user_offerer_2)
-        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 778749
 
 
 @pytest.mark.usefixtures("db_session")

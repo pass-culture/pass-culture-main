@@ -33,9 +33,7 @@ from pcapi.emails.offerer_bookings_recap_after_deleting_stock import (
     retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation,
 )
 from pcapi.emails.offerer_expired_bookings import build_expired_bookings_recap_email_data_for_offerer
-from pcapi.emails.offerer_ongoing_attachment import retrieve_data_for_offerer_ongoing_attachment_email
 from pcapi.emails.pro_reset_password import retrieve_data_for_reset_password_pro_email
-from pcapi.emails.pro_waiting_validation import retrieve_data_for_pro_user_waiting_offerer_validation_email
 from pcapi.emails.user_notification_after_stock_update import (
     retrieve_data_to_warn_user_after_stock_update_affecting_booking,
 )
@@ -116,11 +114,6 @@ def send_validation_confirmation_email_to_pro(offerer: Offerer) -> None:
     mails.send(recipients=[offerer_email], data=data)
 
 
-def send_ongoing_offerer_attachment_information_email_to_pro(user_offerer: UserOfferer) -> None:
-    data = retrieve_data_for_offerer_ongoing_attachment_email(user_offerer)
-    mails.send(recipients=[user_offerer.user.email], data=data)
-
-
 def send_attachment_validation_email_to_pro_offerer(user_offerer: UserOfferer) -> None:
     data = retrieve_data_for_offerer_attachment_validation_email(user_offerer)
     mails.send(recipients=[user_offerer.user.email], data=data)
@@ -167,11 +160,6 @@ def send_pro_user_validation_email(user: User) -> None:
 
 def send_admin_user_validation_email(user: User) -> None:
     data = make_admin_user_validation_email(user)
-    mails.send(recipients=[user.email], data=data)
-
-
-def send_pro_user_waiting_for_validation_by_admin_email(user: User, offerer: Offerer) -> None:
-    data = retrieve_data_for_pro_user_waiting_offerer_validation_email(offerer)
     mails.send(recipients=[user.email], data=data)
 
 

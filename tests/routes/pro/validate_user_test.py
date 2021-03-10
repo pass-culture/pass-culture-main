@@ -35,54 +35,6 @@ class Patch:
             assert validated_user.isEmailValidated
 
         @pytest.mark.usefixtures("db_session")
-        @patch("pcapi.routes.pro.validate.send_ongoing_offerer_attachment_information_email_to_pro", return_value=True)
-        def test_send_ongoing_offerer_attachment_information_email_to_pro(
-            self, mock_send_ongoing_offerer_attachment_information_email_to_pro, app
-        ):
-            # Given
-            user = create_user()
-            user2 = create_user(email="pro2@example.com")
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(user, offerer)
-            user_offerer2 = create_user_offerer(user2, offerer)
-
-            user.generate_validation_token()
-
-            repository.save(user_offerer, user_offerer2)
-
-            # When
-            response = TestClient(app.test_client()).patch(
-                f"/validate/user/{user.validationToken}", headers={"origin": "http://localhost:3000"}
-            )
-
-            # Then
-            assert response.status_code == 204
-            mock_send_ongoing_offerer_attachment_information_email_to_pro.assert_called_once_with(user_offerer)
-
-        @pytest.mark.usefixtures("db_session")
-        @patch("pcapi.routes.pro.validate.send_pro_user_waiting_for_validation_by_admin_email", return_value=True)
-        def test_send_pro_user_waiting_for_validation_by_admin_email(
-            self, mock_send_pro_user_waiting_for_validation_by_admin_email, app
-        ):
-            # Given
-            user = create_user()
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(user, offerer)
-
-            user.generate_validation_token()
-
-            repository.save(user_offerer)
-
-            # When
-            response = TestClient(app.test_client()).patch(
-                f"/validate/user/{user.validationToken}", headers={"origin": "http://localhost:3000"}
-            )
-
-            # Then
-            assert response.status_code == 204
-            mock_send_pro_user_waiting_for_validation_by_admin_email.assert_called_once_with(user, offerer)
-
-        @pytest.mark.usefixtures("db_session")
         @patch("pcapi.settings.IS_INTEGRATION", False)
         @patch("pcapi.routes.pro.validate.maybe_send_offerer_validation_email", return_value=True)
         def test_maybe_send_offerer_validation_email_when_not_in_integration_env(

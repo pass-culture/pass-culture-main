@@ -8,10 +8,7 @@ from flask_login import login_required
 
 from pcapi.core.offerers.api import create_digital_venue
 from pcapi.core.offerers.repository import get_all
-from pcapi.core.users.models import User
 from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
-from pcapi.domain.user_emails import send_ongoing_offerer_attachment_information_email_to_pro
-from pcapi.domain.user_emails import send_pro_user_waiting_for_validation_by_admin_email
 from pcapi.flask_app import private_api
 from pcapi.infrastructure.container import list_offerers_for_pro_user
 from pcapi.models import ApiErrors
@@ -121,13 +118,6 @@ def create_offerer():
         user_offerer.generate_validation_token()
         repository.save(user_offerer)
 
-        try:
-            send_ongoing_offerer_attachment_information_email_to_pro(user_offerer)
-        except MailServiceException as mail_service_exception:
-            app.logger.exception(
-                "[send_ongoing_offerer_attachment_information_email_to_pro] " "Mail service failure",
-                mail_service_exception,
-            )
     else:
         offerer = Offerer()
         offerer.populate_from_dict(request.json)
@@ -135,22 +125,10 @@ def create_offerer():
         offerer.generate_validation_token()
         user_offerer = offerer.grant_access(current_user)
         repository.save(offerer, digital_venue, user_offerer)
-        user = User.query.filter_by(id=user_offerer.userId).first()
-
-        _send_to_pro_offer_validation_in_progress_email(user, offerer)
 
     _send_to_pc_admin_offerer_to_validate_email(offerer, user_offerer)
 
     return jsonify(get_dict_offerer(offerer)), 201
-
-
-def _send_to_pro_offer_validation_in_progress_email(user: User, offerer: Offerer) -> None:
-    try:
-        send_pro_user_waiting_for_validation_by_admin_email(user, offerer)
-    except MailServiceException as mail_service_exception:
-        app.logger.exception(
-            "[send_pro_user_waiting_for_validation_by_admin_email] " "Mail service failure", mail_service_exception
-        )
 
 
 def _send_to_pc_admin_offerer_to_validate_email(offerer: Offerer, user_offerer: UserOfferer) -> None:
