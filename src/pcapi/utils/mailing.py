@@ -247,7 +247,7 @@ def make_pro_user_validation_email(user: User) -> Dict:
     return {
         "FromName": "pass Culture pro",
         "Subject": "[pass Culture pro] Validation de votre adresse email pour le pass Culture",
-        "MJ-TemplateID": 778688,
+        "MJ-TemplateID": 1660341,
         "MJ-TemplateLanguage": True,
         "Vars": {
             "nom_structure": user.publicName,
@@ -260,7 +260,7 @@ def make_admin_user_validation_email(user: User) -> Dict:
     return {
         "FromName": "pass Culture admin",
         "Subject": "[pass Culture admin] Validation de votre adresse email pour le pass Culture",
-        "MJ-TemplateID": 778688,
+        "MJ-TemplateID": 1660341,
         "MJ-TemplateLanguage": True,
         "Vars": {
             "lien_validation_mail": f"{settings.PRO_URL}/creation-de-mot-de-passe/{user.resetPasswordToken}",

@@ -64,7 +64,7 @@ class AdminUserViewTest:
             "FromEmail": "support@example.com",
             "FromName": "pass Culture admin",
             "Subject": "[pass Culture admin] Validation de votre adresse email pour le pass Culture",
-            "MJ-TemplateID": 778688,
+            "MJ-TemplateID": 1660341,
             "MJ-TemplateLanguage": True,
             "To": "new-admin@example.com",
             "Vars": {
