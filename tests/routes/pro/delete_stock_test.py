@@ -1,6 +1,8 @@
+from pcapi.core.bookings.factories import BookingFactory
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.notifications.push import testing as push_testing
 from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
@@ -15,6 +17,7 @@ class Returns200:
             offerer=offer.venue.managingOfferer,
         )
         stock = offers_factories.StockFactory(offer=offer)
+        booking = BookingFactory(stock=stock)
 
         # when
         client = TestClient(app.test_client()).with_auth("pro@example.com")
@@ -24,6 +27,16 @@ class Returns200:
         assert response.status_code == 200
         assert response.json == {"id": humanize(stock.id)}
         assert stock.isSoftDeleted
+        assert push_testing.requests == [
+            {
+                "group_id": "Cancel_booking",
+                "message": {
+                    "body": f"""Ta commande "{offer.name}" a été annulée par l'offreur.""",
+                    "title": "Commande annulée",
+                },
+                "user_ids": [booking.userId],
+            }
+        ]
 
 
 class Returns400:

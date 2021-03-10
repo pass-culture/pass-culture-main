@@ -32,6 +32,7 @@ import pcapi.core.users.factories as users_factories
 from pcapi.models import api_errors
 from pcapi.models import offer_type
 from pcapi.models.product import Product
+from pcapi.notifications.push import testing as push_testing
 from pcapi.routes.serialization import offers_serialize
 from pcapi.routes.serialization.stock_serialize import StockCreationBodyModel
 from pcapi.routes.serialization.stock_serialize import StockEditionBodyModel
@@ -427,6 +428,17 @@ class DeleteStockTest:
         notified_bookings_offerers = mocked_send_to_offerer.call_args_list[0][0][0]
         assert notified_bookings_beneficiaries == notified_bookings_offerers
         assert notified_bookings_beneficiaries == [booking1]
+
+        assert push_testing.requests == [
+            {
+                "group_id": "Cancel_booking",
+                "user_ids": [booking1.userId],
+                "message": {
+                    "body": f"""Ta réservation "{stock.offer.name}" a été annulée par l'offreur.""",
+                    "title": "Réservation annulée",
+                },
+            }
+        ]
 
     def test_can_delete_if_stock_from_allocine(self):
         provider = offerers_factories.ProviderFactory(localClass="AllocineStocks")

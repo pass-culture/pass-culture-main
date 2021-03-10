@@ -28,6 +28,7 @@ from pcapi.models import Venue
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
+from pcapi.notifications.push.transactional_notifications import get_notification_data_on_booking_cancellation
 from pcapi.repository import feature_queries
 from pcapi.repository import offer_queries
 from pcapi.repository import repository
@@ -38,6 +39,7 @@ from pcapi.utils import mailing
 from pcapi.utils.logger import logger
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.rest import load_or_raise_error
+from pcapi.workers.push_notification_job import send_transactional_notification_job
 
 from . import validation
 from ..bookings.api import mark_as_unused
@@ -376,6 +378,10 @@ def delete_stock(stock: Stock) -> None:
             user_emails.send_offerer_bookings_recap_email_after_offerer_cancellation(cancelled_bookings)
         except mailing.MailServiceException as exc:
             app.logger.exception("Could not notify offerer about deletion of stock=%s: %s", stock.id, exc)
+
+    notification_data = get_notification_data_on_booking_cancellation(cancelled_bookings)
+    if notification_data:
+        send_transactional_notification_job.delay(notification_data)
 
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
