@@ -39,7 +39,7 @@ def build_object(offer: Offer) -> Dict:
     tags = [criterion.name for criterion in offer.criteria]
 
     object_to_index = {
-        "objectID": humanize_offer_id,
+        "objectID": offer.id,
         "offer": {
             "author": author,
             "category": offer.offer_category,
@@ -47,6 +47,7 @@ def build_object(offer: Offer) -> Dict:
             "dates": sorted(dates),
             "description": offer.description,
             "id": humanize_offer_id,
+            "pk": offer.id,
             "isbn": isbn,
             "isDigital": offer.isDigital,
             "isDuo": offer.isDuo,

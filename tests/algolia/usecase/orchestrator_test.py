@@ -18,7 +18,6 @@ from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.repository import repository
-from pcapi.utils.human_ids import humanize
 
 
 TOMORROW = datetime.now() + timedelta(days=1)
@@ -150,7 +149,7 @@ class ProcessEligibleOffersTest:
         mock_add_objects.assert_not_called()
         mock_add_to_indexed_offers.assert_not_called()
         mock_delete_objects.assert_called_once()
-        assert mock_delete_objects.call_args_list == [call(object_ids=[humanize(offer1.id), humanize(offer2.id)])]
+        assert mock_delete_objects.call_args_list == [call(object_ids=[offer1.id, offer2.id])]
         mock_delete_indexed_offers.assert_called_once()
         assert mock_delete_indexed_offers.call_args_list == [call(client=client, offer_ids=[offer1.id, offer2.id])]
         mock_pipeline.execute.assert_not_called()
@@ -246,7 +245,7 @@ class ProcessEligibleOffersTest:
         mock_add_objects.assert_not_called()
         mock_add_to_indexed_offers.assert_not_called()
         mock_delete_objects.assert_called_once()
-        assert mock_delete_objects.call_args_list == [call(object_ids=[humanize(offer1.id), humanize(offer2.id)])]
+        assert mock_delete_objects.call_args_list == [call(object_ids=[offer1.id, offer2.id])]
         mock_delete_indexed_offers.assert_not_called()
         mock_add_offer_ids_in_error.assert_called_once_with(client=client, offer_ids=[offer1.id, offer2.id])
         mock_pipeline.execute.assert_not_called()
@@ -373,9 +372,7 @@ class ProcessEligibleOffersTest:
         assert mock_get_offer_details.call_count == 0
         assert mock_add_to_indexed_offers.call_count == 0
         assert mock_delete_objects.call_count == 1
-        assert mock_delete_objects.call_args_list == [
-            call(object_ids=[humanize(offer1.id), humanize(offer2.id), humanize(offer3.id)])
-        ]
+        assert mock_delete_objects.call_args_list == [call(object_ids=[offer1.id, offer2.id, offer3.id])]
         assert mock_delete_indexed_offers.call_count == 1
         assert mock_delete_indexed_offers.call_args_list == [
             call(client=client, offer_ids=[offer1.id, offer2.id, offer3.id])
@@ -661,7 +658,7 @@ class DeleteExpiredOffersTest:
 
         # Then
         assert mock_delete_objects.call_count == 1
-        assert mock_delete_objects.call_args_list == [call(object_ids=["AE", "A9", "AM"])]
+        assert mock_delete_objects.call_args_list == [call(object_ids=[1, 2, 3])]
         assert mock_delete_indexed_offers.call_count == 1
         assert mock_delete_indexed_offers.call_args_list == [call(client=client, offer_ids=[1, 2, 3])]
 

@@ -16,7 +16,7 @@ def add_objects(objects: List[Dict]) -> None:
     init_connection().save_objects(objects)
 
 
-def delete_objects(object_ids: List[str]) -> None:
+def delete_objects(object_ids: List[int]) -> None:
     init_connection().delete_objects(object_ids)
 
 

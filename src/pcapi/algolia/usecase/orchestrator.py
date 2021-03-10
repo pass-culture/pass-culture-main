@@ -16,7 +16,6 @@ from pcapi.connectors.redis import delete_indexed_offers
 from pcapi.connectors.redis import get_offer_details
 from pcapi.models import Offer
 from pcapi.repository import offer_queries
-from pcapi.utils.human_ids import humanize
 from pcapi.utils.logger import logger
 
 
@@ -92,9 +91,8 @@ def _process_adding(pipeline: Pipeline, client: Redis, offer_ids: List[int], add
 
 
 def _process_deleting(client: Redis, offer_ids_to_delete: List[int]) -> None:
-    humanized_offer_ids_to_delete = [humanize(offer_id) for offer_id in offer_ids_to_delete]
     try:
-        delete_objects(object_ids=humanized_offer_ids_to_delete)
+        delete_objects(object_ids=offer_ids_to_delete)
         delete_indexed_offers(client=client, offer_ids=offer_ids_to_delete)
         logger.info("[ALGOLIA] %i objects were deleted from index!", len(offer_ids_to_delete))
     except AlgoliaException as error:

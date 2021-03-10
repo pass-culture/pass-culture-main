@@ -89,7 +89,7 @@ class BuildObjectTest:
 
         # Then
         assert result == {
-            "objectID": "AM",
+            "objectID": 3,
             "offer": {
                 "author": None,
                 "category": "MUSIQUE",
@@ -98,6 +98,7 @@ class BuildObjectTest:
                 "description": "Un lit sous une rivière",
                 "withdrawalDetails": "A emporter sur place",
                 "id": "AM",
+                "pk": 3,
                 "isbn": None,
                 "isDuo": False,
                 "isDigital": False,
@@ -448,7 +449,7 @@ class BuildObjectTest:
 
         # Then
         assert result == {
-            "objectID": "AM",
+            "objectID": 3,
             "offer": {
                 "author": None,
                 "category": "MUSIQUE",
@@ -457,6 +458,7 @@ class BuildObjectTest:
                 "description": "Un lit sous une rivière",
                 "withdrawalDetails": "A emporter sur place",
                 "id": "AM",
+                "pk": 3,
                 "isbn": None,
                 "isDuo": False,
                 "isDigital": False,
@@ -538,7 +540,7 @@ class BuildObjectTest:
         # Then
         result["offer"]["tags"] = set(result["offer"]["tags"])
         assert result == {
-            "objectID": "AM",
+            "objectID": 3,
             "offer": {
                 "author": None,
                 "category": "MUSIQUE",
@@ -547,6 +549,7 @@ class BuildObjectTest:
                 "description": "Un lit sous une rivière",
                 "withdrawalDetails": "A emporter sur place",
                 "id": "AM",
+                "pk": 3,
                 "isbn": None,
                 "isDuo": False,
                 "isDigital": False,
