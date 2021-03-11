@@ -58,7 +58,7 @@ class Get:
             offers_factories.EventStockFactory(offer=offer2, beginningDatetime=today, price=20, isSoftDeleted=True)
             offers_factories.EventStockFactory(offer=offer2, beginningDatetime=tomorow, price=50)
 
-            # Thing offer with different stock prices
+            # Thing offer with no date
             offer3 = offers_factories.ThingOfferFactory(venue=venue)
             favorite3 = create_favorite(offer=offer3, user=user)
             offers_factories.ThingStockFactory(offer=offer3, price=10)
@@ -149,6 +149,58 @@ class Get:
             assert favorites[0]["offer"]["date"] == tomorow.isoformat()
             assert favorites[0]["offer"]["startDate"] is None
             assert favorites[0]["offer"]["image"] is None
+
+        def test_expired_offer(self, app):
+            # Given
+            today = datetime.now() + timedelta(hours=3)  # offset a bit to make sure it's > now()
+            yesterday = today - timedelta(days=1)
+            tomorow = today + timedelta(days=1)
+            user, test_client = utils.create_user_and_test_client(app)
+            offerer = offers_factories.OffererFactory()
+            venue = offers_factories.VenueFactory(managingOfferer=offerer)
+
+            # Event offer future stock
+            offer1 = offers_factories.EventOfferFactory(venue=venue)
+            favorite1 = create_favorite(offer=offer1, user=user)
+            offers_factories.EventStockFactory(offer=offer1, beginningDatetime=tomorow, price=10)
+
+            # Thing offer with no date
+            offer2 = offers_factories.ThingOfferFactory(venue=venue)
+            favorite2 = create_favorite(offer=offer2, user=user)
+            offers_factories.ThingStockFactory(offer=offer2, price=10)
+
+            # Thing offer with past booking stock
+            offer3 = offers_factories.ThingOfferFactory(venue=venue)
+            favorite3 = create_favorite(offer=offer3, user=user)
+            offers_factories.ThingStockFactory(offer=offer3, bookingLimitDatetime=yesterday, price=10)
+
+            # Event offer with stock in the future but past booking
+            offer4 = offers_factories.EventOfferFactory(venue=venue)
+            favorite4 = create_favorite(offer=offer4, user=user)
+            offers_factories.EventStockFactory(
+                offer=offer4, beginningDatetime=today, bookingLimitDatetime=yesterday, price=10
+            )
+
+            # When
+            # QUERY_COUNT:
+            # 1: Fetch the user for auth
+            # 1: Fetch the favorites
+            with assert_num_queries(2):
+                response = test_client.get(FAVORITES_URL)
+
+            # Then
+            assert response.status_code == 200
+            favorites = response.json["favorites"]
+            assert len(favorites) == 4
+
+            assert favorites[3]["id"] == favorite1.id
+            assert favorites[3]["offer"]["isExpired"] is False
+            assert favorites[2]["id"] == favorite2.id
+            assert favorites[2]["offer"]["isExpired"] is False
+            assert favorites[1]["id"] == favorite3.id
+            assert favorites[1]["offer"]["isExpired"] is True
+            assert favorites[0]["id"] == favorite4.id
+            assert favorites[0]["offer"]["isExpired"] is True
 
     class Returns401:
         def when_user_is_not_logged_in(self, app):

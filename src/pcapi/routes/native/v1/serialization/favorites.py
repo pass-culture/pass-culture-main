@@ -43,6 +43,7 @@ class FavoriteOfferResponse(BaseModel):
     startPrice: Optional[int] = None
     date: Optional[datetime] = None
     startDate: Optional[datetime] = None
+    isExpired: bool = True
 
     _convert_price = validator("price", pre=True, allow_reuse=True)(convert_to_cent)
     _convert_start_price = validator("startPrice", pre=True, allow_reuse=True)(convert_to_cent)

@@ -19,9 +19,12 @@ from sqlalchemy import Integer
 from sqlalchemy import Numeric
 from sqlalchemy import String
 from sqlalchemy import Text
+from sqlalchemy import and_
 from sqlalchemy import event
 from sqlalchemy import false
+from sqlalchemy import func
 from sqlalchemy.event import listens_for
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 
 from pcapi.models.db import Model
@@ -86,7 +89,7 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin, VersionedMixin
 
     @property
     def isBookable(self):  # pylint: disable=too-many-return-statements
-        if self.hasBookingLimitDatetimePassed:
+        if self.hasBookingLimitDatetimePassed:  # pylint: disable=using-constant-test
             return False
         if not self.offer.venue.managingOfferer.isActive:
             return False
@@ -104,11 +107,13 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin, VersionedMixin
             return False
         return True
 
-    @property
+    @hybrid_property
     def hasBookingLimitDatetimePassed(self):
-        if not self.bookingLimitDatetime:
-            return False
-        return self.bookingLimitDatetime < datetime.utcnow()
+        return bool(self.bookingLimitDatetime and self.bookingLimitDatetime < datetime.utcnow())
+
+    @hasBookingLimitDatetimePassed.expression
+    def hasBookingLimitDatetimePassed(cls):  # pylint: disable=no-self-argument
+        return and_(cls.bookingLimitDatetime != None, cls.bookingLimitDatetime < func.now())
 
     @property
     def bookingsQuantity(self):
@@ -118,11 +123,13 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin, VersionedMixin
     def remainingQuantity(self):
         return "unlimited" if self.quantity is None else self.quantity - self.bookingsQuantity
 
-    @property
+    @hybrid_property
     def isEventExpired(self):
-        if not self.beginningDatetime:
-            return False
-        return self.beginningDatetime <= datetime.utcnow()
+        return bool(self.beginningDatetime and self.beginningDatetime <= datetime.utcnow())
+
+    @isEventExpired.expression
+    def isEventExpired(cls):  # pylint: disable=no-self-argument
+        return and_(cls.beginningDatetime != None, cls.beginningDatetime <= func.now())
 
     @property
     def isEventDeletable(self):

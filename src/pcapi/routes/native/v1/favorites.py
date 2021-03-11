@@ -1,7 +1,5 @@
-from datetime import datetime
-
 from sqlalchemy import func
-from sqlalchemy import or_
+from sqlalchemy import not_
 from sqlalchemy.orm import Load
 from sqlalchemy.orm import joinedload
 
@@ -29,33 +27,26 @@ def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
         db.session.query(
             FavoriteSQLEntity,
             func.min(Stock.price)
-            .filter(
-                or_(Stock.beginningDatetime >= datetime.utcnow(), Stock.beginningDatetime == None),
-                or_(Stock.bookingLimitDatetime >= datetime.utcnow(), Stock.bookingLimitDatetime == None),
-            )
+            .filter(not_(Stock.isEventExpired), not_(Stock.hasBookingLimitDatetimePassed))
             .over(partition_by=Stock.offerId)
             .label("min_price"),
             func.max(Stock.price)
-            .filter(
-                or_(Stock.beginningDatetime >= datetime.utcnow(), Stock.beginningDatetime == None),
-                or_(Stock.bookingLimitDatetime >= datetime.utcnow(), Stock.bookingLimitDatetime == None),
-            )
+            .filter(not_(Stock.isEventExpired), not_(Stock.hasBookingLimitDatetimePassed))
             .over(partition_by=Stock.offerId)
             .label("max_price"),
             func.min(Stock.beginningDatetime)
-            .filter(
-                or_(Stock.beginningDatetime >= datetime.utcnow(), Stock.beginningDatetime == None),
-                or_(Stock.bookingLimitDatetime >= datetime.utcnow(), Stock.bookingLimitDatetime == None),
-            )
+            .filter(not_(Stock.isEventExpired), not_(Stock.hasBookingLimitDatetimePassed))
             .over(partition_by=Stock.offerId)
             .label("min_beginning_datetime"),
             func.max(Stock.beginningDatetime)
-            .filter(
-                or_(Stock.beginningDatetime >= datetime.utcnow(), Stock.beginningDatetime == None),
-                or_(Stock.bookingLimitDatetime >= datetime.utcnow(), Stock.bookingLimitDatetime == None),
-            )
+            .filter(not_(Stock.isEventExpired), not_(Stock.hasBookingLimitDatetimePassed))
             .over(partition_by=Stock.offerId)
             .label("max_beginning_datetime"),
+            # count active
+            func.count(Stock.id)
+            .filter(not_(Stock.isEventExpired), not_(Stock.hasBookingLimitDatetimePassed))
+            .over(partition_by=Stock.offerId)
+            .label("not_expired"),
         )
         .options(Load(FavoriteSQLEntity).load_only("id"))
         .join(FavoriteSQLEntity.offer)
@@ -81,7 +72,7 @@ def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
         .all()
     )
 
-    for fav, min_price, max_price, min_beginning_datetime, max_beginning_datetime in favorites:
+    for fav, min_price, max_price, min_beginning_datetime, max_beginning_datetime, not_expired in favorites:
         fav.offer.price = None
         fav.offer.startPrice = None
         if min_price == max_price:
@@ -94,6 +85,7 @@ def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
             fav.offer.date = min_beginning_datetime
         else:
             fav.offer.startDate = min_beginning_datetime
+        fav.offer.isExpired = not not_expired
     favorites = [fav for (fav, *_) in favorites]
 
     paginated_favorites = {
