@@ -4,7 +4,7 @@ from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.native.security import authenticated_user_required
-from pcapi.routes.native.v1.serialization.booking import BookOfferRequest
+from pcapi.routes.native.v1.serialization.bookings import BookOfferRequest
 from pcapi.serialization.decorator import spectree_serialize
 
 from . import blueprint

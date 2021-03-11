@@ -5,7 +5,7 @@ def install_routes(app: Flask) -> None:
     # pylint: disable=unused-import
     from . import account
     from . import authentication
-    from . import booking
+    from . import bookings
     from . import favorites
     from . import offers
     from . import redirection
