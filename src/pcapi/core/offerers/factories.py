@@ -14,6 +14,14 @@ class ProviderFactory(BaseFactory):
     localClass = factory.Sequence("{}Stocks".format)
 
 
+class APIProviderFactory(BaseFactory):
+    class Meta:
+        model = models.Provider
+
+    name = factory.Sequence("Provider {}".format)
+    apiUrl = factory.Sequence("https://{}.example.org/stocks".format)
+
+
 class VenueProviderFactory(BaseFactory):
     class Meta:
         model = models.VenueProvider

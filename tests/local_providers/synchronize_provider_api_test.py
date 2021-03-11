@@ -11,8 +11,7 @@ from pcapi.core.offers import factories
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import Offer
 from pcapi.core.testing import override_features
-from pcapi.core.testing import override_settings
-from pcapi.local_providers.fnac import synchronize_fnac_stocks
+from pcapi.local_providers.provider_api import synchronize_provider_api
 from pcapi.models import ThingType
 from pcapi.models.product import Product
 
@@ -27,7 +26,7 @@ ISBNs = [
     "3010000108125",
     "3010000108126",
 ]
-fnac_responses = [
+provider_responses = [
     {
         "total": len(ISBNs),
         "limit": 4,
@@ -66,15 +65,18 @@ def create_stock(isbn, siret, **kwargs):
     return factories.StockFactory(offer=create_offer(isbn, siret), idAtProviders=f"{isbn}@{siret}", **kwargs)
 
 
-class FnacCronTest:
+class ProviderAPICronTest:
     @pytest.mark.usefixtures("db_session")
     @freeze_time("2020-10-15 09:00:00")
-    @override_settings(FNAC_API_URL="https://fnac_url", FNAC_API_TOKEN="fake_token")
     @override_features(SYNCHRONIZE_ALGOLIA=True)
     @mock.patch("pcapi.connectors.redis.add_offer_id")
     def test_execution(self, mocked_add_offer_id):
         # Given
-        venue_provider = offerers_factories.VenueProviderFactory(isActive=True)
+        provider = offerers_factories.APIProviderFactory(apiUrl="https://provider_url", authToken="fake_token")
+        venue_provider = offerers_factories.VenueProviderFactory(
+            isActive=True,
+            provider=provider,
+        )
         siret = venue_provider.venue.siret
 
         stock = create_stock(ISBNs[0], siret, quantity=20)
@@ -90,13 +92,13 @@ class FnacCronTest:
         # When
         with requests_mock.Mocker() as request_mock:
             request_mock.get(
-                f"https://fnac_url/{siret}?limit=1000",
-                [{"json": r, "headers": {"content-type": "application/json"}} for r in fnac_responses],
+                f"https://provider_url/{siret}?limit=1000",
+                [{"json": r, "headers": {"content-type": "application/json"}} for r in provider_responses],
                 request_headers={
                     "Authorization": "Basic fake_token",
                 },
             )
-            synchronize_fnac_stocks.synchronize_venue_stocks_from_fnac(venue_provider)
+            synchronize_provider_api.synchronize_venue_provider(venue_provider)
 
         # Then
         # Test updates stock if already exists
@@ -155,13 +157,13 @@ class FnacCronTest:
         # Ensure next synchronisation is done with modifiedSince parameter
         with requests_mock.Mocker() as request_mock:
             request_mock.get(
-                f"https://fnac_url/{siret}?limit=1000&modifiedSince=2020-10-15T09%3A00%3A00Z",
-                [{"json": r, "headers": {"content-type": "application/json"}} for r in fnac_responses],
+                f"https://provider_url/{siret}?limit=1000&modifiedSince=2020-10-15T09%3A00%3A00Z",
+                [{"json": r, "headers": {"content-type": "application/json"}} for r in provider_responses],
                 request_headers={
                     "Authorization": "Basic fake_token",
                 },
             )
-            synchronize_fnac_stocks.synchronize_venue_stocks_from_fnac(venue_provider)
+            synchronize_provider_api.synchronize_venue_provider(venue_provider)
 
     def test_build_stock_details_from_raw_stocks(self):
         # Given
@@ -171,23 +173,23 @@ class FnacCronTest:
         ]
 
         # When
-        result = synchronize_fnac_stocks._build_stock_details_from_raw_stocks(raw_stocks, "siret")
+        result = synchronize_provider_api._build_stock_details_from_raw_stocks(raw_stocks, "siret")
 
         # Then
         assert result == [
             {
                 "available_quantity": 17,
-                "offers_fnac_reference": "3010000108123@siret",
+                "offers_provider_reference": "3010000108123@siret",
                 "price": 23.989,
-                "products_fnac_reference": "3010000108123",
-                "stocks_fnac_reference": "3010000108123@siret",
+                "products_provider_reference": "3010000108123",
+                "stocks_provider_reference": "3010000108123@siret",
             },
             {
                 "available_quantity": 17,
-                "offers_fnac_reference": "3010000108124@siret",
+                "offers_provider_reference": "3010000108124@siret",
                 "price": 28.989,
-                "products_fnac_reference": "3010000108124",
-                "stocks_fnac_reference": "3010000108124@siret",
+                "products_provider_reference": "3010000108124",
+                "stocks_provider_reference": "3010000108124@siret",
             },
         ]
 
@@ -195,27 +197,27 @@ class FnacCronTest:
         # Given
         stock_details = [
             {
-                "offers_fnac_reference": "offer_ref1",
+                "offers_provider_reference": "offer_ref1",
             },
             {
                 "available_quantity": 17,
-                "offers_fnac_reference": "offer_ref_2",
+                "offers_provider_reference": "offer_ref_2",
                 "price": 28.989,
-                "products_fnac_reference": "product_ref",
-                "stocks_fnac_reference": "stock_ref",
+                "products_provider_reference": "product_ref",
+                "stocks_provider_reference": "stock_ref",
             },
         ]
 
-        existing_offers_by_fnac_reference = {"offer_ref1"}
+        existing_offers_by_provider_reference = {"offer_ref1"}
         venue = VenueFactory(bookingEmail="booking_email")
         product = Product(
             id=456, name="product_name", description="product_desc", extraData="extra", type="product_type"
         )
-        products_by_fnac_reference = {"product_ref": product}
+        products_by_provider_reference = {"product_ref": product}
 
         # When
-        new_offers = synchronize_fnac_stocks._build_new_offers_from_stock_details(
-            stock_details, existing_offers_by_fnac_reference, products_by_fnac_reference, venue
+        new_offers = synchronize_provider_api._build_new_offers_from_stock_details(
+            stock_details, existing_offers_by_provider_reference, products_by_provider_reference, venue
         )
 
         # Then
@@ -236,26 +238,26 @@ class FnacCronTest:
         # Given
         stock_details = [
             {
-                "offers_fnac_reference": "offer_ref1",
+                "offers_provider_reference": "offer_ref1",
                 "available_quantity": 15,
                 "price": 15.78,
-                "stocks_fnac_reference": "stock_ref1",
+                "stocks_provider_reference": "stock_ref1",
             },
             {
                 "available_quantity": 17,
-                "offers_fnac_reference": "offer_ref2",
+                "offers_provider_reference": "offer_ref2",
                 "price": 28.989,
-                "products_fnac_reference": "product_ref",
-                "stocks_fnac_reference": "stock_ref2",
+                "products_provider_reference": "product_ref",
+                "stocks_provider_reference": "stock_ref2",
             },
         ]
 
-        stocks_by_fnac_reference = {"stock_ref1": {"id": 1, "booking_quantity": 3}}
-        offers_by_fnac_reference = {"offer_ref1": 123, "offer_ref2": 134}
+        stocks_by_provider_reference = {"stock_ref1": {"id": 1, "booking_quantity": 3}}
+        offers_by_provider_reference = {"offer_ref1": 123, "offer_ref2": 134}
 
         # When
-        update_stock_mapping, new_stocks, offer_ids = synchronize_fnac_stocks._get_stocks_to_upsert(
-            stock_details, stocks_by_fnac_reference, offers_by_fnac_reference
+        update_stock_mapping, new_stocks, offer_ids = synchronize_provider_api._get_stocks_to_upsert(
+            stock_details, stocks_by_provider_reference, offers_by_provider_reference
         )
 
         assert update_stock_mapping == [

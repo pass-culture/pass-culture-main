@@ -4,7 +4,7 @@ import time
 from flask import current_app as app
 
 from pcapi.infrastructure.repository.stock_provider.provider_api import ProviderAPI
-from pcapi.local_providers.fnac import synchronize_fnac_stocks
+from pcapi.local_providers.provider_api import synchronize_provider_api
 
 
 @app.manager.option("-u", "--url", help="Endpoint url")
@@ -53,7 +53,7 @@ def check_provider_api(url, siret, token):
     stock_count = 0
     batch_count = 0
     start_time = time.time()
-    for raw_stocks in synchronize_fnac_stocks._get_stocks_by_batch(siret, provider_api, None):
+    for raw_stocks in synchronize_provider_api._get_stocks_by_batch(siret, provider_api, None):
         stock_count += len(raw_stocks)
         batch_count += 1
     duration = time.time() - start_time

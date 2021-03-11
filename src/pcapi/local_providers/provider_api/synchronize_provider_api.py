@@ -9,7 +9,6 @@ from typing import Union
 from flask import current_app as app
 from sqlalchemy.sql.sqltypes import DateTime
 
-from pcapi import settings
 from pcapi.connectors import redis
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -28,45 +27,42 @@ from pcapi.utils.logger import logger
 from pcapi.validation.models.entity_validator import validate
 
 
-def synchronize_venue_stocks_from_fnac(venue_provider: VenueProvider) -> None:
+def synchronize_venue_provider(venue_provider: VenueProvider) -> None:
     venue = venue_provider.venue
+    provider = venue_provider.provider
     startSyncDate = datetime.utcnow()
 
-    logger.info("Starting synchronization of venue=%s provider=fnac", venue.id)
-    fnac_api = ProviderAPI(
-        api_url=settings.FNAC_API_URL,
-        name="Fnac",
-        authentication_token=settings.FNAC_API_TOKEN,
-    )
+    logger.info("Starting synchronization of venue=%s provider=%s", venue.id, provider.name)
+    provider_api = provider.getProviderAPI()
 
-    for raw_stocks in _get_stocks_by_batch(venue.siret, fnac_api, venue_provider.lastSyncDate):
+    for raw_stocks in _get_stocks_by_batch(venue.siret, provider_api, venue_provider.lastSyncDate):
         stock_details = _build_stock_details_from_raw_stocks(raw_stocks, venue.siret)
 
-        products_fnac_references = [stock_detail["products_fnac_reference"] for stock_detail in stock_details]
-        products_by_fnac_reference = get_products_map_by_id_at_providers(products_fnac_references)
+        products_provider_references = [stock_detail["products_provider_reference"] for stock_detail in stock_details]
+        products_by_provider_reference = get_products_map_by_id_at_providers(products_provider_references)
 
         stock_details = [
-            stock for stock in stock_details if stock["products_fnac_reference"] in products_by_fnac_reference
+            stock for stock in stock_details if stock["products_provider_reference"] in products_by_provider_reference
         ]
 
-        offers_fnac_references = [stock_detail["offers_fnac_reference"] for stock_detail in stock_details]
-        offers_by_fnac_reference = get_offers_map_by_id_at_providers(offers_fnac_references)
+        offers_provider_references = [stock_detail["offers_provider_reference"] for stock_detail in stock_details]
+        offers_by_provider_reference = get_offers_map_by_id_at_providers(offers_provider_references)
 
         new_offers = _build_new_offers_from_stock_details(
-            stock_details, offers_by_fnac_reference, products_by_fnac_reference, venue
+            stock_details, offers_by_provider_reference, products_by_provider_reference, venue
         )
         new_offers_references = [new_offer.idAtProviders for new_offer in new_offers]
 
         db.session.bulk_save_objects(new_offers)
 
-        new_offers_by_fnac_reference = get_offers_map_by_id_at_providers(new_offers_references)
-        offers_by_fnac_reference = {**offers_by_fnac_reference, **new_offers_by_fnac_reference}
+        new_offers_by_provider_reference = get_offers_map_by_id_at_providers(new_offers_references)
+        offers_by_provider_reference = {**offers_by_provider_reference, **new_offers_by_provider_reference}
 
-        stocks_fnac_references = [stock["stocks_fnac_reference"] for stock in stock_details]
-        stocks_by_fnac_reference = get_stocks_by_id_at_providers(stocks_fnac_references)
+        stocks_provider_references = [stock["stocks_provider_reference"] for stock in stock_details]
+        stocks_by_provider_reference = get_stocks_by_id_at_providers(stocks_provider_references)
 
         update_stock_mapping, new_stocks, offer_ids = _get_stocks_to_upsert(
-            stock_details, stocks_by_fnac_reference, offers_by_fnac_reference
+            stock_details, stocks_by_provider_reference, offers_by_provider_reference
         )
 
         db.session.bulk_save_objects(new_stocks)
@@ -78,27 +74,27 @@ def synchronize_venue_stocks_from_fnac(venue_provider: VenueProvider) -> None:
 
     venue_provider.lastSyncDate = startSyncDate
     repository.save(venue_provider)
-    logger.info("Ending synchronization of venue=%s provider=fnac", venue.id)
+    logger.info("Ending synchronization of venue=%s provider=%s", venue.id, provider.name)
 
 
-def _get_stocks_by_batch(siret: str, fnac_api: ProviderAPI, modified_since: DateTime) -> Generator:
+def _get_stocks_by_batch(siret: str, provider_api: ProviderAPI, modified_since: DateTime) -> Generator:
     modified_since = datetime.strftime(modified_since, "%Y-%m-%dT%H:%M:%SZ") if modified_since else ""
-    last_processed_fnac_reference = ""
+    last_processed_provider_reference = ""
 
     while True:
-        fnac_responses = fnac_api.validated_stocks(
+        response = provider_api.validated_stocks(
             siret=siret,
-            last_processed_reference=last_processed_fnac_reference,
+            last_processed_reference=last_processed_provider_reference,
             modified_since=modified_since,
         )
-        raw_stocks = fnac_responses.get("stocks", [])
+        raw_stocks = response.get("stocks", [])
 
         if not raw_stocks:
             break
 
         yield raw_stocks
 
-        last_processed_fnac_reference = raw_stocks[-1]["ref"]
+        last_processed_provider_reference = raw_stocks[-1]["ref"]
 
 
 def _build_stock_details_from_raw_stocks(raw_stocks: List[Dict], venue_siret: str) -> List[Dict]:
@@ -106,9 +102,9 @@ def _build_stock_details_from_raw_stocks(raw_stocks: List[Dict], venue_siret: st
     for stock in raw_stocks:
         stock_details.append(
             {
-                "products_fnac_reference": stock["ref"],
-                "offers_fnac_reference": stock["ref"] + "@" + venue_siret,
-                "stocks_fnac_reference": stock["ref"] + "@" + venue_siret,
+                "products_provider_reference": stock["ref"],
+                "offers_provider_reference": stock["ref"] + "@" + venue_siret,
+                "stocks_provider_reference": stock["ref"] + "@" + venue_siret,
                 "available_quantity": stock["available"],
                 "price": stock["price"],
             }
@@ -119,17 +115,17 @@ def _build_stock_details_from_raw_stocks(raw_stocks: List[Dict], venue_siret: st
 
 def _build_new_offers_from_stock_details(
     stock_details: List,
-    existing_offers_by_fnac_reference: Dict[str, int],
-    products_by_fnac_reference: Dict[str, Product],
+    existing_offers_by_provider_reference: Dict[str, int],
+    products_by_provider_reference: Dict[str, Product],
     venue: Venue,
 ) -> List[Offer]:
     new_offers = []
     for stock_detail in stock_details:
-        if stock_detail["offers_fnac_reference"] in existing_offers_by_fnac_reference:
+        if stock_detail["offers_provider_reference"] in existing_offers_by_provider_reference:
             continue
 
-        product = products_by_fnac_reference[stock_detail["products_fnac_reference"]]
-        offer = _build_new_offer(venue, product, id_at_providers=stock_detail["offers_fnac_reference"])
+        product = products_by_provider_reference[stock_detail["products_provider_reference"]]
+        offer = _build_new_offer(venue, product, id_at_providers=stock_detail["offers_provider_reference"])
 
         if not _validate_stock_or_offer(offer):
             continue
@@ -140,15 +136,17 @@ def _build_new_offers_from_stock_details(
 
 
 def _get_stocks_to_upsert(
-    stock_details: List[Dict], stocks_by_fnac_reference: Dict[str, Dict], offers_by_fnac_reference: Dict[str, int]
+    stock_details: List[Dict],
+    stocks_by_provider_reference: Dict[str, Dict],
+    offers_by_provider_reference: Dict[str, int],
 ) -> Tuple[List[Dict], List[Stock], Set[int]]:
     update_stock_mapping = []
     new_stocks = []
     offer_ids = set()
 
     for stock_detail in stock_details:
-        if stock_detail["stocks_fnac_reference"] in stocks_by_fnac_reference:
-            stock = stocks_by_fnac_reference[stock_detail["stocks_fnac_reference"]]
+        if stock_detail["stocks_provider_reference"] in stocks_by_provider_reference:
+            stock = stocks_by_provider_reference[stock_detail["stocks_provider_reference"]]
             update_stock_mapping.append(
                 {
                     "id": stock["id"],
@@ -156,11 +154,11 @@ def _get_stocks_to_upsert(
                     "price": stock_detail["price"],
                 }
             )
-            offer_ids.add(offers_by_fnac_reference[stock_detail["offers_fnac_reference"]])
+            offer_ids.add(offers_by_provider_reference[stock_detail["offers_provider_reference"]])
 
         else:
             stock = _build_stock_from_stock_detail(
-                stock_detail, offers_by_fnac_reference[stock_detail["offers_fnac_reference"]]
+                stock_detail, offers_by_provider_reference[stock_detail["offers_provider_reference"]]
             )
             if not _validate_stock_or_offer(stock):
                 continue
@@ -178,7 +176,7 @@ def _build_stock_from_stock_detail(stock_detail: Dict, offers_id: int) -> Stock:
         offerId=offers_id,
         price=stock_detail["price"],
         dateModified=datetime.now(),
-        idAtProviders=stock_detail["stocks_fnac_reference"],
+        idAtProviders=stock_detail["stocks_provider_reference"],
     )
 
 
@@ -186,7 +184,7 @@ def _validate_stock_or_offer(model: Union[Offer, Stock]) -> bool:
     model_api_errors = validate(model)
     if model_api_errors.errors.keys():
         logger.exception(
-            "[FNAC SYNC] errors while trying to add stock or offer with ref %s: %s",
+            "[SYNC] errors while trying to add stock or offer with ref %s: %s",
             model.idAtProviders,
             model_api_errors.errors,
         )
