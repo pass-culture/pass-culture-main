@@ -11,7 +11,7 @@ from pcapi.models.db import Model
 from pcapi.models.pc_object import PcObject
 
 
-class FavoriteSQLEntity(PcObject, Model):
+class Favorite(PcObject, Model):
     __tablename__ = "favorite"
 
     userId = Column(BigInteger, ForeignKey("user.id"), index=True, nullable=False)

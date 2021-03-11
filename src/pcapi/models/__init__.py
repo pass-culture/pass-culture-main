@@ -21,7 +21,7 @@ from pcapi.models.db import db
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.deposit import Deposit
 from pcapi.models.extra_data_mixin import ExtraDataMixin
-from pcapi.models.favorite_sql_entity import FavoriteSQLEntity
+from pcapi.models.favorite_sql_entity import Favorite
 from pcapi.models.feature import Feature
 from pcapi.models.has_address_mixin import HasAddressMixin
 from pcapi.models.has_thumb_mixin import HasThumbMixin
@@ -67,7 +67,7 @@ __all__ = (
     "Email",
     "EventType",
     "ExtraDataMixin",
-    "FavoriteSQLEntity",
+    "Favorite",
     "Feature",
     "HasAddressMixin",
     "HasThumbMixin",
@@ -121,7 +121,7 @@ models = (
     Product,
     Offer,
     Mediation,
-    FavoriteSQLEntity,
+    Favorite,
     Feature,
     Stock,
     Booking,

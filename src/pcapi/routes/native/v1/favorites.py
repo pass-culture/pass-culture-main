@@ -6,7 +6,7 @@ from sqlalchemy.orm import joinedload
 
 from pcapi.core.offers.models import Offer
 from pcapi.core.users.models import User
-from pcapi.models import FavoriteSQLEntity
+from pcapi.models import Favorite
 from pcapi.models import Mediation
 from pcapi.models import Product
 from pcapi.models import Stock
@@ -32,7 +32,7 @@ def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
     )
     favorites = (
         db.session.query(
-            FavoriteSQLEntity,
+            Favorite,
             func.min(Stock.price).filter(stock_filters).over(partition_by=Stock.offerId).label("min_price"),
             func.max(Stock.price).filter(stock_filters).over(partition_by=Stock.offerId).label("max_price"),
             func.min(Stock.beginningDatetime).filter(stock_filters).over(partition_by=Stock.offerId).label("min_begin"),
@@ -40,23 +40,21 @@ def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
             # count active
             func.count(Stock.id).filter(stock_filters).over(partition_by=Stock.offerId).label("active_stock_count"),
         )
-        .options(Load(FavoriteSQLEntity).load_only("id"))
-        .join(FavoriteSQLEntity.offer)
+        .options(Load(Favorite).load_only("id"))
+        .join(Favorite.offer)
         .join(Offer.venue)
         .outerjoin(Offer.stocks)
-        .filter(FavoriteSQLEntity.userId == user.id)
-        .distinct(FavoriteSQLEntity.id)
-        .options(joinedload(FavoriteSQLEntity.offer).load_only(Offer.name, Offer.externalTicketOfficeUrl, Offer.type))
-        .options(joinedload(FavoriteSQLEntity.offer).joinedload(Offer.venue).load_only(Venue.latitude, Venue.longitude))
+        .filter(Favorite.userId == user.id)
+        .distinct(Favorite.id)
+        .options(joinedload(Favorite.offer).load_only(Offer.name, Offer.externalTicketOfficeUrl, Offer.type))
+        .options(joinedload(Favorite.offer).joinedload(Offer.venue).load_only(Venue.latitude, Venue.longitude))
         .options(
-            joinedload(FavoriteSQLEntity.offer)
+            joinedload(Favorite.offer)
             .joinedload(Offer.mediations)
             .load_only(Mediation.dateCreated, Mediation.isActive, Mediation.thumbCount, Mediation.credit)
         )
-        .options(
-            joinedload(FavoriteSQLEntity.offer).joinedload(Offer.product).load_only(Product.id, Product.thumbCount)
-        )
-        .order_by(FavoriteSQLEntity.id.desc())
+        .options(joinedload(Favorite.offer).joinedload(Offer.product).load_only(Product.id, Product.thumbCount))
+        .order_by(Favorite.id.desc())
         .all()
     )
 
@@ -91,7 +89,7 @@ def create_favorite(user: User, body: serializers.FavoriteRequest) -> serializer
     with transaction():
         offer = Offer.query.filter_by(id=body.offerId).first_or_404()
 
-        favorite = FavoriteSQLEntity(
+        favorite = Favorite(
             mediation=offer.activeMediation,
             offer=offer,
             user=user,
@@ -106,5 +104,5 @@ def create_favorite(user: User, body: serializers.FavoriteRequest) -> serializer
 @authenticated_user_required
 def delete_favorite(user: User, favorite_id: int) -> None:
     with transaction():
-        favorite = FavoriteSQLEntity.query.filter_by(id=favorite_id, user=user).first_or_404()
+        favorite = Favorite.query.filter_by(id=favorite_id, user=user).first_or_404()
         db.session.delete(favorite)

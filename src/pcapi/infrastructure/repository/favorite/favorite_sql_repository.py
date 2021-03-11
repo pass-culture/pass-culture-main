@@ -6,7 +6,7 @@ from pcapi.domain.favorite.favorite import FavoriteDomain
 from pcapi.domain.favorite.favorite_repository import FavoriteRepository
 from pcapi.infrastructure.repository.favorite import favorite_domain_converter
 from pcapi.models import Booking
-from pcapi.models import FavoriteSQLEntity
+from pcapi.models import Favorite
 from pcapi.models import Offer
 from pcapi.models import Stock
 from pcapi.models import Venue
@@ -15,12 +15,12 @@ from pcapi.models import Venue
 class FavoriteSQLRepository(FavoriteRepository):
     def find_by_beneficiary(self, beneficiary_identifier: int) -> List[FavoriteDomain]:
         favorite_sql_entities = (
-            FavoriteSQLEntity.query.filter(FavoriteSQLEntity.userId == beneficiary_identifier)
-            .options(joinedload(FavoriteSQLEntity.offer).joinedload(Offer.venue).joinedload(Venue.managingOfferer))
-            .options(joinedload(FavoriteSQLEntity.mediation))
-            .options(joinedload(FavoriteSQLEntity.offer).joinedload(Offer.stocks))
-            .options(joinedload(FavoriteSQLEntity.offer).joinedload(Offer.product))
-            .options(joinedload(FavoriteSQLEntity.offer).joinedload(Offer.mediations))
+            Favorite.query.filter(Favorite.userId == beneficiary_identifier)
+            .options(joinedload(Favorite.offer).joinedload(Offer.venue).joinedload(Venue.managingOfferer))
+            .options(joinedload(Favorite.mediation))
+            .options(joinedload(Favorite.offer).joinedload(Offer.stocks))
+            .options(joinedload(Favorite.offer).joinedload(Offer.product))
+            .options(joinedload(Favorite.offer).joinedload(Offer.mediations))
             .all()
         )
 

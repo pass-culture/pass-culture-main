@@ -6,7 +6,7 @@ from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.models import FavoriteSQLEntity
+from pcapi.models import Favorite
 from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
 
@@ -32,7 +32,7 @@ class Delete:
             # Then
             assert response.status_code == 200
             assert "id" in response.json
-            deleted_favorite = FavoriteSQLEntity.query.first()
+            deleted_favorite = Favorite.query.first()
             assert deleted_favorite is None
 
     class Returns404:
@@ -69,5 +69,5 @@ class Delete:
 
             # Then
             assert response.status_code == 404
-            deleted_favorite = FavoriteSQLEntity.query.first()
+            deleted_favorite = Favorite.query.first()
             assert deleted_favorite == favorite

@@ -13,7 +13,7 @@ from pcapi.models import BeneficiaryImportStatus
 from pcapi.models import Booking
 from pcapi.models import Criterion
 from pcapi.models import Deposit
-from pcapi.models import FavoriteSQLEntity
+from pcapi.models import Favorite
 from pcapi.models import IrisFrance
 from pcapi.models import IrisVenues
 from pcapi.models import LocalProviderEvent
@@ -52,7 +52,7 @@ def clean_all_database(*args, **kwargs):
     PaymentMessage.query.delete()
     Booking.query.delete()
     Stock.query.delete()
-    FavoriteSQLEntity.query.delete()
+    Favorite.query.delete()
     Mediation.query.delete()
     OfferCriterion.query.delete()
     Criterion.query.delete()

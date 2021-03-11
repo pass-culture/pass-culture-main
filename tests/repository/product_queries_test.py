@@ -10,7 +10,7 @@ from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.model_creators.specific_creators import create_product_with_thing_type
-from pcapi.models import FavoriteSQLEntity
+from pcapi.models import Favorite
 from pcapi.models import Offer
 from pcapi.models import Product
 from pcapi.models import Stock
@@ -154,7 +154,7 @@ class DeleteUnwantedExistingProductTest:
         assert Offer.query.count() == 0
         assert Stock.query.count() == 0
         assert Mediation.query.count() == 0
-        assert FavoriteSQLEntity.query.count() == 0
+        assert Favorite.query.count() == 0
 
 
 class FindActiveBookProductByIsbnTest:

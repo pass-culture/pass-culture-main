@@ -25,7 +25,7 @@ from pcapi.models import BeneficiaryImportSources
 from pcapi.models import BeneficiaryImportStatus
 from pcapi.models import Booking
 from pcapi.models import Criterion
-from pcapi.models import FavoriteSQLEntity
+from pcapi.models import Favorite
 from pcapi.models import ImportStatus
 from pcapi.models import IrisFrance
 from pcapi.models import IrisVenues
@@ -170,10 +170,8 @@ def create_booking(
     return booking
 
 
-def create_favorite(
-    idx: int = None, mediation: Mediation = None, offer: Offer = None, user: User = None
-) -> FavoriteSQLEntity:
-    favorite = FavoriteSQLEntity()
+def create_favorite(idx: int = None, mediation: Mediation = None, offer: Offer = None, user: User = None) -> Favorite:
+    favorite = Favorite()
     favorite.id = idx
     favorite.mediation = mediation
     favorite.offer = offer

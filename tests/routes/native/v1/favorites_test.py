@@ -7,7 +7,7 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.model_creators.generic_creators import create_favorite
-from pcapi.models import FavoriteSQLEntity
+from pcapi.models import Favorite
 from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
@@ -233,15 +233,15 @@ class Post:
             offerer = offers_factories.OffererFactory()
             venue = offers_factories.VenueFactory(managingOfferer=offerer)
             offer1 = offers_factories.EventOfferFactory(venue=venue)
-            assert FavoriteSQLEntity.query.count() == 0
+            assert Favorite.query.count() == 0
 
             # When
             response = test_client.post(FAVORITES_URL, json={"offerId": offer1.id})
 
             # Then
             assert response.status_code == 200, response.data
-            assert FavoriteSQLEntity.query.count() == 1
-            favorite = FavoriteSQLEntity.query.first()
+            assert Favorite.query.count() == 1
+            favorite = Favorite.query.first()
             assert favorite.dateCreated
             assert favorite.userId == user.id
             assert response.json["id"] == favorite.id
@@ -257,14 +257,14 @@ class Delete:
             venue = offers_factories.VenueFactory(managingOfferer=offerer)
             offer = offers_factories.ThingOfferFactory(venue=venue)
             favorite = create_favorite(offer=offer, user=user)
-            assert FavoriteSQLEntity.query.count() == 1
+            assert Favorite.query.count() == 1
 
             # When
             response = test_client.delete(f"{FAVORITES_URL}/{favorite.id}")
 
             # Then
             assert response.status_code == 204
-            assert FavoriteSQLEntity.query.count() == 0
+            assert Favorite.query.count() == 0
 
         def when_user_delete_another_user_favorite(self, app):
             # Given
@@ -274,14 +274,14 @@ class Delete:
             venue = offers_factories.VenueFactory(managingOfferer=offerer)
             offer = offers_factories.ThingOfferFactory(venue=venue)
             favorite = create_favorite(offer=offer, user=other_user)
-            assert FavoriteSQLEntity.query.count() == 1
+            assert Favorite.query.count() == 1
 
             # When
             response = test_client.delete(f"{FAVORITES_URL}/{favorite.id}")
 
             # Then
             assert response.status_code == 404
-            assert FavoriteSQLEntity.query.count() == 1
+            assert Favorite.query.count() == 1
 
         def when_user_delete_non_existent_favorite(self, app):
             # Given
