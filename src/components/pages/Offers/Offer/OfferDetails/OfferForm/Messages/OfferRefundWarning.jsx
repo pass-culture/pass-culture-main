@@ -8,7 +8,7 @@ const OfferRefundWarning = () => {
     <Banner
       href={CGU_URL}
       linkTitle={"Consulter les Conditions Générales d'Utilisation"}
-      subtitle={
+      message={
         "Cette offre numérique ne fera pas l'objet d'un remboursement. Pour plus d'informations sur les catégories éligibles au remboursement, merci de consulter les CGU."
       }
       type="attention"

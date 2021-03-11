@@ -61,7 +61,7 @@ describe('src | components | pages | Reimbursements', () => {
         href:
           'https://aide.passculture.app/fr/article/acteurs-calendrier-des-prochains-remboursements-54t3e/',
         icon: 'ico-external-site',
-        subtitle: '',
+        message: '',
       })
     })
   })

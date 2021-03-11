@@ -7,7 +7,7 @@ export const ApplicationBanner = ({ applicationId }) => (
   <Banner
     href={`https://www.demarches-simplifiees.fr/dossiers/${applicationId}`}
     linkTitle="Accéder au dossier"
-    subtitle="Votre dossier est en cours pour ce lieu"
+    message="Votre dossier est en cours pour ce lieu"
   />
 )
 

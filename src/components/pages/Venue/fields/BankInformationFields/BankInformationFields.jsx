@@ -42,7 +42,7 @@ const BankInformation = ({ venue, offerer }) => {
               <Banner
                 href={DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL}
                 linkTitle="Renseignez les coordonnées bancaires du lieu"
-                subtitle="Renseignez vos coordonnées bancaires pour ce lieu pour être remboursé de vos offres éligibles"
+                message="Renseignez vos coordonnées bancaires pour ce lieu pour être remboursé de vos offres éligibles"
               />
             </Fragment>
           )}

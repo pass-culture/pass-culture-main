@@ -7,7 +7,7 @@ import Banner from 'components/layout/Banner/Banner'
 describe('src | components | layout | Banner', () => {
   describe('render', () => {
     let props = {
-      subtitle: 'subtitle',
+      message: 'message',
       href: '/some/site',
       linkTitle: 'linkTitle',
     }
@@ -17,7 +17,7 @@ describe('src | components | layout | Banner', () => {
       render(<Banner {...props} />)
 
       // then
-      expect(screen.getByText(props.subtitle)).toBeInTheDocument()
+      expect(screen.getByText(props.message)).toBeInTheDocument()
       expect(screen.getByRole('img')).toBeInTheDocument()
       const link = screen.getByRole('link', { name: props.linkTitle })
       expect(link).toBeInTheDocument()
@@ -31,7 +31,7 @@ describe('src | components | layout | Banner', () => {
       render(<Banner {...props} />)
 
       // then
-      expect(screen.getByText(props.subtitle).closest('div')).toHaveAttribute(
+      expect(screen.getByText(props.message).closest('div')).toHaveAttribute(
         'class',
         'bi-banner attention'
       )
@@ -44,7 +44,7 @@ describe('src | components | layout | Banner', () => {
       render(<Banner {...props} />)
 
       // then
-      expect(screen.getByText(props.subtitle).closest('div')).toHaveAttribute(
+      expect(screen.getByText(props.message).closest('div')).toHaveAttribute(
         'class',
         'bi-banner notification-info'
       )

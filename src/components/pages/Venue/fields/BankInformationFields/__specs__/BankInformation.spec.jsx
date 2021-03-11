@@ -43,7 +43,7 @@ describe('src | Venue | BankInformation', () => {
         // then
         expect(wrapper.find('Banner').first().props()).toStrictEqual({
           type: 'attention',
-          subtitle:
+          message:
             'Renseignez vos coordonnées bancaires pour ce lieu pour être remboursé de vos offres éligibles',
           linkTitle: 'Renseignez les coordonnées bancaires du lieu',
           href: 'link/to/venue/demarchesSimplifiees/procedure',
@@ -55,7 +55,7 @@ describe('src | Venue | BankInformation', () => {
           href:
             'https://aide.passculture.app/fr/article/acteurs-determiner-ses-modalites-de-remboursement-1ab6g2m/',
           icon: 'ico-external-site',
-          subtitle: '',
+          message: '',
         })
       })
     })

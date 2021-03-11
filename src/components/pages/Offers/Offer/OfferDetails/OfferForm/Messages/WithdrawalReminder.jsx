@@ -8,7 +8,7 @@ const WithdrawalReminder = () => {
     <Banner
       href={CGU_URL}
       linkTitle={"Consulter les Conditions Générales d'Utilisation"}
-      subtitle={
+      message={
         "La livraison d'article n'est pas autorisée. Pour plus d'informations, veuillez consulter nos CGU."
       }
       type="notification-info"

@@ -51,13 +51,13 @@ const BankInformations = ({ offerer, hasMissingBankInformations }) => {
           <Banner
             href={`https://www.demarches-simplifiees.fr/dossiers/${offerer.demarchesSimplifieesApplicationId}`}
             linkTitle="Voir le dossier"
-            subtitle="Votre dossier est en cours pour cette structure"
+            message="Votre dossier est en cours pour cette structure"
           />
         ) : (
           <Banner
             href={DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL}
             linkTitle="Renseignez les coordonnées bancaires de la structure"
-            subtitle="Renseignez vos coordonnées bancaires pour être remboursé de vos offres éligibles"
+            message="Renseignez vos coordonnées bancaires pour être remboursé de vos offres éligibles"
           />
         )}
       </div>

@@ -7,7 +7,7 @@ const StyleguideBanners = () => {
     <Banner
       href="#"
       linkTitle="Lien vers une autre page"
-      subtitle="Sous-titre du lien"
+      message="Sous-titre du lien"
     />
   `
 
@@ -15,7 +15,7 @@ const StyleguideBanners = () => {
     <Banner
       href="#"
       linkTitle="Lien vers une autre page"
-      subtitle="Bannière de type 'information'"
+      message="Bannière de type 'information'"
       type="notification-info"
     />
   `
@@ -26,7 +26,7 @@ const StyleguideBanners = () => {
         <Banner
           href="#"
           linkTitle="Lien vers une autre page"
-          subtitle="Bannière de type 'Attention'"
+          message="Bannière de type 'Attention'"
         />
         <div className="it-description">
           <pre className="it-icon-snippet">
@@ -40,7 +40,7 @@ const StyleguideBanners = () => {
         <Banner
           href="#"
           linkTitle="Lien vers une autre page"
-          subtitle="Bannière de type 'information'"
+          message="Bannière de type 'information'"
           type="notification-info"
         />
         <div className="it-description">
