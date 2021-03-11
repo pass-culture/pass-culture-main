@@ -66,6 +66,7 @@ class Patch:
 
             # then
             assert response.json == {
+                "pk": user.id,
                 "activity": None,
                 "address": "1 rue des machines",
                 "city": "Paris",

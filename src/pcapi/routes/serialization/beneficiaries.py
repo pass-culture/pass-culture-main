@@ -52,6 +52,7 @@ class Expense(BaseModel):
 
 
 class BeneficiaryAccountResponse(BaseModel):
+    pk: int  # id not humanized
     activity: Optional[str]
     address: Optional[str]
     city: Optional[str]
@@ -84,6 +85,11 @@ class BeneficiaryAccountResponse(BaseModel):
     wallet_is_activated: bool
 
     _humanize_id = humanize_field("id")
+
+    @classmethod
+    def from_orm(cls, user):  # type: ignore
+        user.pk = user.id
+        return super().from_orm(user)
 
     class Config:
         orm_mode = True

@@ -17,4 +17,5 @@ class BeneficiaryAccountResponseTest:
         response = BeneficiaryAccountResponse.from_orm(beneficiary)
 
         # Then
+        assert response.pk == 1
         assert response.id == "AE"
