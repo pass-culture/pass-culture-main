@@ -95,6 +95,7 @@ describe('offererDetails', () => {
         city: 'Cayenne',
         name: 'Bar des amis',
         id: 'GE',
+        isValidated: true,
         postalCode: '97300',
         siren: '111111111',
         bic: 'test bic 01',
@@ -105,6 +106,7 @@ describe('offererDetails', () => {
         address: 'RUE DE NIEUPORT',
         city: 'Drancy',
         id: 'FQ',
+        isValidated: true,
         name: 'Club Dorothy',
         postalCode: '93700',
         siren: '222222222',
@@ -140,6 +142,20 @@ describe('offererDetails', () => {
 
     const selectedOffer = baseOfferers[0]
     expect(screen.getByDisplayValue(selectedOffer.name)).toBeInTheDocument()
+  })
+
+  it('should not warn user when offerer is validated', async () => {
+    // Given
+    await renderHomePage()
+    const showButton = screen.getByRole('button', { name: 'Afficher' })
+
+    // When
+    fireEvent.click(showButton)
+
+    // Then
+    expect(
+      screen.queryByText('Votre structure est en cours de rattachement')
+    ).not.toBeInTheDocument()
   })
 
   it('should display first offerer informations', async () => {
@@ -380,6 +396,7 @@ describe('offererDetails', () => {
     beforeEach(() => {
       const virtualVenue = {
         id: 'test_venue_id_1',
+        isValidated: true,
         isVirtual: true,
         managingOffererId: baseOfferers[0].id,
         name: 'Le Sous-sol (Offre numérique)',
@@ -391,6 +408,7 @@ describe('offererDetails', () => {
         city: 'Cayenne',
         name: 'Bar des amis',
         id: 'GE',
+        isValidated: true,
         managedVenues: [virtualVenue],
         postalCode: '97300',
         siren: '111111111',
@@ -472,6 +490,7 @@ describe('offererDetails', () => {
         city: 'Cayenne',
         name: 'Bar des amis',
         id: 'GE',
+        isValidated: true,
         managedVenues: offererVenues,
         postalCode: '97300',
         siren: '111111111',
@@ -523,6 +542,38 @@ describe('offererDetails', () => {
           { exact: false }
         )
       ).toBeInTheDocument()
+    })
+  })
+
+  describe('when offerer is not yet validated', () => {
+    beforeEach(() => {
+      virtualVenue = { ...virtualVenue, nOffers: 0 }
+      const nonValidatedOfferer = {
+        ...baseOfferers[0],
+        isValidated: false,
+        managedVenues: [virtualVenue],
+      }
+      pcapi.getOfferer.mockResolvedValue(nonValidatedOfferer)
+      pcapi.getAllOfferersNames.mockResolvedValue([
+        { name: nonValidatedOfferer.name, id: nonValidatedOfferer.id },
+      ])
+    })
+
+    it('should warn user offerer is being validated', async () => {
+      // When
+      await renderHomePage()
+
+      // Then
+      expect(screen.getByText('Votre structure est en cours de rattachement')).toBeInTheDocument()
+    })
+
+    it('should allow user to add venue and virtual offer', async () => {
+      // When
+      await renderHomePage()
+
+      // Then
+      expect(screen.getByRole('link', { name: 'Créer un lieu' })).toBeInTheDocument()
+      expect(screen.getByRole('link', { name: 'Créer une offre numérique' })).toBeInTheDocument()
     })
   })
 })

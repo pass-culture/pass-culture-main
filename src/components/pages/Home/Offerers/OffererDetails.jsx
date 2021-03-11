@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
+import Banner from 'components/layout/Banner/Banner'
 import Icon from 'components/layout/Icon'
 import Select from 'components/layout/inputs/Select'
 
@@ -90,6 +91,12 @@ const OffererDetails = ({
         {isVisible && (
           <>
             <div className="od-separator horizontal" />
+            {!selectedOfferer.isValidated && (
+              <Banner
+                message="Votre structure est en cours de rattachement"
+                type="notification-info"
+              />
+            )}
             <div className="h-card-cols">
               <div className="h-card-col">
                 <h3 className="h-card-secondary-title">
