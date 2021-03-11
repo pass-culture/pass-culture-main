@@ -1,6 +1,6 @@
 import pytest
 
-from pcapi.domain.favorite.favorite import Favorite
+from pcapi.domain.favorite.favorite import FavoriteDomain
 from pcapi.infrastructure.repository.favorite.favorite_sql_repository import FavoriteSQLRepository
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_favorite
@@ -35,8 +35,8 @@ class FindByBeneficiaryTest:
 
         # then
         assert len(favorites) == 2
-        assert isinstance(favorites[0], Favorite)
-        assert isinstance(favorites[1], Favorite)
+        assert isinstance(favorites[0], FavoriteDomain)
+        assert isinstance(favorites[1], FavoriteDomain)
 
     @pytest.mark.usefixtures("db_session")
     def test_should_not_return_favorites_of_other_beneficiary(self, app):

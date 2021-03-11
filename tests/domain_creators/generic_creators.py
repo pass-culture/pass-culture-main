@@ -7,7 +7,7 @@ from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription impo
 from pcapi.domain.booking_recap.booking_recap import BookBookingRecap
 from pcapi.domain.booking_recap.booking_recap import EventBookingRecap
 from pcapi.domain.booking_recap.booking_recap import ThingBookingRecap
-from pcapi.domain.favorite.favorite import Favorite
+from pcapi.domain.favorite.favorite import FavoriteDomain
 from pcapi.models import Offer
 
 
@@ -166,4 +166,4 @@ def create_domain_event_booking_recap(
 
 
 def create_domain_favorite(identifier: int, offer: Offer, mediation: Mediation = None, booking: dict = None):
-    return Favorite(identifier=identifier, offer=offer, mediation=mediation, booking=booking)
+    return FavoriteDomain(identifier=identifier, offer=offer, mediation=mediation, booking=booking)

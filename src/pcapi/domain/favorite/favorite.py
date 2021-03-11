@@ -4,7 +4,7 @@ from pcapi.core.offers.models import Mediation
 from pcapi.models import Offer
 
 
-class Favorite:
+class FavoriteDomain:
     def __init__(self, identifier: int, mediation: Mediation, offer: Offer, booking: Dict):
         self.identifier = identifier
         self.mediation = mediation

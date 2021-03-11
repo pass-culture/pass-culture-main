@@ -2,7 +2,7 @@ from typing import List
 
 from sqlalchemy.orm import joinedload
 
-from pcapi.domain.favorite.favorite import Favorite
+from pcapi.domain.favorite.favorite import FavoriteDomain
 from pcapi.domain.favorite.favorite_repository import FavoriteRepository
 from pcapi.infrastructure.repository.favorite import favorite_domain_converter
 from pcapi.models import Booking
@@ -13,7 +13,7 @@ from pcapi.models import Venue
 
 
 class FavoriteSQLRepository(FavoriteRepository):
-    def find_by_beneficiary(self, beneficiary_identifier: int) -> List[Favorite]:
+    def find_by_beneficiary(self, beneficiary_identifier: int) -> List[FavoriteDomain]:
         favorite_sql_entities = (
             FavoriteSQLEntity.query.filter(FavoriteSQLEntity.userId == beneficiary_identifier)
             .options(joinedload(FavoriteSQLEntity.offer).joinedload(Offer.venue).joinedload(Venue.managingOfferer))

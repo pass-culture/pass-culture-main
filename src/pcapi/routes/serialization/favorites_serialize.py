@@ -1,16 +1,16 @@
 from typing import Dict
 from typing import List
 
-from pcapi.domain.favorite.favorite import Favorite
+from pcapi.domain.favorite.favorite import FavoriteDomain
 from pcapi.routes.serialization.serializer import serialize
 from pcapi.utils.human_ids import humanize
 
 
-def serialize_favorites(favorites: List[Favorite]) -> List:
+def serialize_favorites(favorites: List[FavoriteDomain]) -> List:
     return [serialize_favorite(favorite) for favorite in favorites]
 
 
-def serialize_favorite(favorite: Favorite) -> Dict:
+def serialize_favorite(favorite: FavoriteDomain) -> Dict:
     offer = favorite.offer
     venue = offer.venue
     humanized_offer_id = humanize(offer.id)
