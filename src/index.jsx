@@ -3,6 +3,7 @@ import { Integrations as TracingIntegrations } from '@sentry/tracing'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import 'typeface-barlow'
+import smoothscroll from 'smoothscroll-polyfill'
 
 import Root from 'Root'
 import { ENVIRONMENT_NAME, SENTRY_SERVER_URL, SENTRY_SAMPLE_RATE } from 'utils/config'
@@ -22,6 +23,8 @@ if (SENTRY_SERVER_URL) {
     tracesSampleRate: parseFloat(SENTRY_SAMPLE_RATE),
   })
 }
+
+smoothscroll.polyfill()
 
 // Start app
 ReactDOM.render(

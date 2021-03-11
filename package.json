@@ -89,6 +89,7 @@
     "redux-saga-data": "3.3.0",
     "redux-thunk": "^2.3.0",
     "reselect": "4.0.0",
+    "smoothscroll-polyfill": "^0.4.4",
     "typeface-barlow": "^0.0.54"
   },
   "devDependencies": {

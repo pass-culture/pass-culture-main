@@ -3,7 +3,7 @@ import React, { useState, useCallback } from 'react'
 
 import Icon from 'components/layout/Icon'
 
-import { steps, STEP_ID_PROFILE } from '../HomepageBreadcrumb'
+import { STEP_PROFILE_HASH } from '../HomepageBreadcrumb'
 
 import ProfileInformationsModal from './ProfileInformationsModal'
 import Support from './Support'
@@ -60,7 +60,7 @@ const Profile = ({ setUserInformations, showSuccessNotification, user }) => {
     <>
       <h2
         className="h-section-title"
-        id={steps[STEP_ID_PROFILE].hash}
+        id={STEP_PROFILE_HASH}
       >
         {'Profil et aide'}
       </h2>

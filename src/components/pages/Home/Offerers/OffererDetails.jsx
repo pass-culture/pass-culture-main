@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import Icon from 'components/layout/Icon'
 import Select from 'components/layout/inputs/Select'
 
-import { STEP_ID_OFFERERS, steps } from '../HomepageBreadcrumb'
+import { STEP_OFFERER_HASH } from '../HomepageBreadcrumb'
 
 import { ReactComponent as ClosedEyeSvg } from './assets/ico-eye-close.svg'
 import { ReactComponent as OpenedEyeSvg } from './assets/ico-eye-open.svg'
@@ -46,7 +46,7 @@ const OffererDetails = ({
         <div className="od-header">
           <Select
             handleSelection={handleChangeOfferer}
-            id={steps[STEP_ID_OFFERERS].hash}
+            id={STEP_OFFERER_HASH}
             label=""
             name="offererId"
             options={offererOptions}

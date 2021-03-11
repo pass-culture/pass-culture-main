@@ -1,28 +1,38 @@
-import React from 'react'
+import React, { useRef } from 'react'
 
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 
-import Breadcrumb, { STEP_ID_OFFERERS } from './HomepageBreadcrumb'
+import HomepageBreadcrumb, { STEP_ID_OFFERERS } from './HomepageBreadcrumb'
 import Offerers from './Offerers/Offerers'
 import ProfileAndSupportContainer from './ProfileAndSupport/ProfileAndSupportContainer'
 
-const Homepage = () => (
-  <div className="homepage">
-    <PageTitle title="Espace acteurs culturels" />
-    <h1>
-      {'Bienvenue dans l’espace acteurs culturels'}
-    </h1>
+const Homepage = () => {
+  const profileRef = useRef(null)
 
-    <Breadcrumb activeStep={STEP_ID_OFFERERS} />
+  return (
+    <div className="homepage">
+      <PageTitle title="Espace acteurs culturels" />
+      <h1>
+        {'Bienvenue dans l’espace acteurs culturels'}
+      </h1>
 
-    <section className="h-section">
-      <Offerers />
-    </section>
+      <HomepageBreadcrumb
+        activeStep={STEP_ID_OFFERERS}
+        profileRef={profileRef}
+      />
 
-    <section className="h-section">
-      <ProfileAndSupportContainer />
-    </section>
-  </div>
-)
+      <section className="h-section">
+        <Offerers />
+      </section>
+
+      <section
+        className="h-section"
+        ref={profileRef}
+      >
+        <ProfileAndSupportContainer />
+      </section>
+    </div>
+  )
+}
 
 export default Homepage
