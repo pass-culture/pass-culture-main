@@ -30,7 +30,7 @@ let display = {
   title: 'Les offres près de chez toi!',
 }
 const offerOne = {
-  objectID: 'NE',
+  objectID: '105',
   offer: {
     dates: [],
     id: 'NE',
@@ -45,7 +45,7 @@ const offerOne = {
   },
 }
 const offerTwo = {
-  objectID: 'AE',
+  objectID: '1',
   offer: {
     dates: [],
     id: 'AE',

@@ -298,7 +298,7 @@ describe('components | Results', () => {
         fetchAlgolia.mockReturnValue(
           new Promise(resolve => {
             resolve({
-              hits: [{ objectID: 'AA', offer: { dates: [1586248757] } }],
+              hits: [{ objectID: '4', offer: { dates: [1586248757] } }],
               nbHits: 1,
               nbPages: 1,
               page: 0,
@@ -358,8 +358,8 @@ describe('components | Results', () => {
           new Promise(resolve => {
             resolve({
               hits: [
-                { objectID: 'AA', offer: { dates: [] } },
-                { objectID: 'BB', offer: { dates: [] } },
+                { objectID: '4', offer: { dates: [] } },
+                { objectID: '5', offer: { dates: [] } },
               ],
               nbHits: 2,
               nbPages: 0,
@@ -393,8 +393,8 @@ describe('components | Results', () => {
         expect(searchResultsListComponent.prop('resultsCount')).toBe(2)
         expect(searchResultsListComponent.prop('geolocation')).toStrictEqual(props.userGeolocation)
         expect(searchResultsListComponent.prop('results')).toStrictEqual([
-          { objectID: 'AA', offer: { dates: [] } },
-          { objectID: 'BB', offer: { dates: [] } },
+          { objectID: '4', offer: { dates: [] } },
+          { objectID: '5', offer: { dates: [] } },
         ])
         expect(searchResultsListComponent.prop('search')).toBe(props.history.location.search)
         expect(searchInput.prop('value')).toBe('une librairie')
@@ -407,7 +407,7 @@ describe('components | Results', () => {
         fetchAlgolia.mockReturnValue(
           new Promise(resolve => {
             resolve({
-              hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
+              hits: [{ objectID: '4' }, { objectID: '5' }],
               nbHits: 2,
               nbPages: 2,
               page: 0,
@@ -496,7 +496,7 @@ describe('components | Results', () => {
         fetchAlgolia.mockReturnValue(
           new Promise(resolve => {
             resolve({
-              hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
+              hits: [{ objectID: '4' }, { objectID: '5' }],
               nbHits: 2,
               nbPages: 2,
               page: 0,
@@ -537,7 +537,7 @@ describe('components | Results', () => {
         fetchAlgolia.mockReturnValue(
           new Promise(resolve => {
             resolve({
-              hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
+              hits: [{ objectID: '4' }, { objectID: '5' }],
               nbHits: 2,
               nbPages: 0,
               page: 0,
@@ -575,7 +575,7 @@ describe('components | Results', () => {
         fetchAlgolia.mockReturnValue(
           new Promise(resolve => {
             resolve({
-              hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
+              hits: [{ objectID: '4' }, { objectID: '5' }],
               nbHits: 2,
               nbPages: 2,
               page: 0,
@@ -665,7 +665,7 @@ describe('components | Results', () => {
         fetchAlgolia.mockReturnValue(
           new Promise(resolve => {
             resolve({
-              hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
+              hits: [{ objectID: '4' }, { objectID: '5' }],
               nbHits: 2,
               nbPages: 0,
               page: 0,
@@ -715,7 +715,7 @@ describe('components | Results', () => {
         fetchAlgolia.mockReturnValue(
           new Promise(resolve => {
             resolve({
-              hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
+              hits: [{ objectID: '4' }, { objectID: '5' }],
               nbHits: 2,
               nbPages: 0,
               page: 0,
@@ -862,7 +862,7 @@ describe('components | Results', () => {
       fetchAlgolia.mockReturnValue(
         new Promise(resolve => {
           resolve({
-            hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
+            hits: [{ objectID: '4' }, { objectID: '5' }],
             nbHits: 2,
             nbPages: 0,
             page: 0,
@@ -1056,7 +1056,7 @@ describe('components | Results', () => {
         fetchAlgolia.mockReturnValue(
           new Promise(resolve => {
             resolve({
-              hits: [{ objectID: 'AA', offer: { dates: [1586248757] } }],
+              hits: [{ objectID: '4', offer: { dates: [1586248757] } }],
               nbHits: 1,
               nbPages: 1,
               page: 0,
@@ -1116,8 +1116,8 @@ describe('components | Results', () => {
           new Promise(resolve => {
             resolve({
               hits: [
-                { objectID: 'AA', offer: { dates: [] } },
-                { objectID: 'BB', offer: { dates: [] } },
+                { objectID: '4', offer: { dates: [] } },
+                { objectID: '5', offer: { dates: [] } },
               ],
               nbHits: 2,
               nbPages: 0,
@@ -1151,8 +1151,8 @@ describe('components | Results', () => {
         expect(searchResultsListComponent.prop('resultsCount')).toBe(2)
         expect(searchResultsListComponent.prop('geolocation')).toStrictEqual(props.userGeolocation)
         expect(searchResultsListComponent.prop('results')).toStrictEqual([
-          { objectID: 'AA', offer: { dates: [] } },
-          { objectID: 'BB', offer: { dates: [] } },
+          { objectID: '4', offer: { dates: [] } },
+          { objectID: '5', offer: { dates: [] } },
         ])
         expect(searchResultsListComponent.prop('search')).toBe(props.history.location.search)
         expect(searchInput.prop('value')).toBe('une librairie')
@@ -1165,7 +1165,7 @@ describe('components | Results', () => {
         fetchAlgolia.mockReturnValue(
           new Promise(resolve => {
             resolve({
-              hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
+              hits: [{ objectID: '4' }, { objectID: '5' }],
               nbHits: 2,
               nbPages: 2,
               page: 0,
@@ -1254,7 +1254,7 @@ describe('components | Results', () => {
         fetchAlgolia.mockReturnValue(
           new Promise(resolve => {
             resolve({
-              hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
+              hits: [{ objectID: '4' }, { objectID: '5' }],
               nbHits: 2,
               nbPages: 2,
               page: 0,
@@ -1295,7 +1295,7 @@ describe('components | Results', () => {
         fetchAlgolia.mockReturnValue(
           new Promise(resolve => {
             resolve({
-              hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
+              hits: [{ objectID: '4' }, { objectID: '5' }],
               nbHits: 2,
               nbPages: 0,
               page: 0,
@@ -1333,7 +1333,7 @@ describe('components | Results', () => {
         fetchAlgolia.mockReturnValue(
           new Promise(resolve => {
             resolve({
-              hits: [{ objectID: 'AA' }, { objectID: 'BB' }],
+              hits: [{ objectID: '4' }, { objectID: '5' }],
               nbHits: 2,
               nbPages: 2,
               page: 0,
@@ -1586,7 +1586,7 @@ describe('components | Results', () => {
 
     it('should display results when search succeeded with at least one result', async () => {
       // given
-      const offer = { objectID: 'AE', offer: { name: 'Livre de folie' } }
+      const offer = { objectID: '1', offer: { name: 'Livre de folie' } }
       fetchAlgolia
         .mockReturnValueOnce(
           new Promise(resolve => {
@@ -1667,9 +1667,9 @@ describe('components | Results', () => {
       // given
       isGeolocationEnabled.mockReturnValue(false)
 
-      const offer1 = { objectID: 'AE', offer: { name: 'Livre de folie' } }
-      const offer2 = { objectID: 'AF', offer: { name: 'Livre bien' } }
-      const offer3 = { objectID: 'AG', offer: { name: 'Livre nul' } }
+      const offer1 = { objectID: '1', offer: { name: 'Livre de folie' } }
+      const offer2 = { objectID: '2', offer: { name: 'Livre bien' } }
+      const offer3 = { objectID: '3', offer: { name: 'Livre nul' } }
 
       fetchAlgolia.mockReturnValueOnce(
         new Promise(resolve => {
@@ -1793,7 +1793,7 @@ describe('components | Results', () => {
           geolocation: { latitude: null, longitude: null },
           name: null,
         },
-        results: [{ objectID: 'AG', offer: { name: 'Livre nul' } }],
+        results: [{ objectID: '3', offer: { name: 'Livre nul' } }],
         resultsCount: 1,
         searchedKeywords: 'vas-y',
         totalPagesNumber: 0,
@@ -1802,8 +1802,8 @@ describe('components | Results', () => {
 
     it('should not trigger a second search request when submitting same keywords twice', async () => {
       // given
-      const offer1 = { objectID: 'AE', offer: { name: 'Livre de folie de la librairie' } }
-      const offer2 = { objectID: 'AF', offer: { name: 'Livre bien de la librairie' } }
+      const offer1 = { objectID: '1', offer: { name: 'Livre de folie de la librairie' } }
+      const offer2 = { objectID: '2', offer: { name: 'Livre bien de la librairie' } }
       fetchAlgolia.mockReturnValueOnce(
         new Promise(resolve => {
           resolve({
@@ -2344,7 +2344,7 @@ describe('components | Results', () => {
       it('should not render header when search has been made', () => {
         // given
         history.push('/recherche/resultats?mots-cles=librairie&page=1')
-        const offer1 = { objectID: 'AE', offer: { name: 'Livre de folie de la librairie' } }
+        const offer1 = { objectID: '1', offer: { name: 'Livre de folie de la librairie' } }
         const offer2 = { objectID: 'AY', offer: { name: 'Livre bien de la librairie' } }
         fetchAlgolia.mockReturnValueOnce(
           new Promise(resolve => {

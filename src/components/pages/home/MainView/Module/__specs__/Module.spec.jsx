@@ -55,7 +55,7 @@ describe('src | components | Module', () => {
       longitude: 2,
     }
     offerOne = {
-      objectID: 'NE',
+      objectID: '105',
       offer: {
         dates: [],
         id: 'NE',
@@ -70,7 +70,7 @@ describe('src | components | Module', () => {
       },
     }
     offerTwo = {
-      objectID: 'AE',
+      objectID: '1',
       offer: {
         dates: [],
         id: 'AE',
@@ -352,7 +352,7 @@ describe('src | components | Module', () => {
 
       beforeEach(async () => {
         offerThree = {
-          objectID: 'BF',
+          objectID: '9',
           offer: {
             dates: [],
             id: 'BF',

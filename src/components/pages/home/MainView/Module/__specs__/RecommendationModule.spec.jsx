@@ -32,7 +32,7 @@ describe('src | components | RecommendationModule', () => {
       title: 'Tes offres recommmandées!',
     }
     offerOne = {
-      objectID: 'NE',
+      objectID: '105',
       offer: {
         dates: [],
         id: 'NE',
@@ -47,7 +47,7 @@ describe('src | components | RecommendationModule', () => {
       },
     }
     offerTwo = {
-      objectID: 'AE',
+      objectID: '1',
       offer: {
         dates: [],
         id: 'AE',
@@ -164,7 +164,7 @@ describe('src | components | RecommendationModule', () => {
 
       beforeEach(async () => {
         offerThree = {
-          objectID: 'BF',
+          objectID: '9',
           offer: {
             dates: [],
             id: 'BF',

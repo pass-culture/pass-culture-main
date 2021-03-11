@@ -32,7 +32,7 @@ describe('component | ResultsList', () => {
             prices: [8, 12],
             thumbUrl: '/lien-vers-mon-image',
           },
-          objectID: 'AE',
+          objectID: '1',
         },
         {
           _geoloc: {
@@ -51,7 +51,7 @@ describe('component | ResultsList', () => {
             prices: [8, 12],
             thumbUrl: '/lien-vers-mon-image',
           },
-          objectID: 'BF',
+          objectID: '9',
         },
       ],
       resultsCount: 2,
@@ -71,7 +71,7 @@ describe('component | ResultsList', () => {
       longitude: null,
       latitude: null,
     })
-    expect(resultsComponent.at(0).key()).toBe('AE')
+    expect(resultsComponent.at(0).key()).toBe('1')
     expect(resultsComponent.at(0).prop('result')).toStrictEqual({
       _geoloc: {
         lat: 0,
@@ -89,14 +89,14 @@ describe('component | ResultsList', () => {
         prices: [8, 12],
         thumbUrl: '/lien-vers-mon-image',
       },
-      objectID: 'AE',
+      objectID: '1',
     })
     expect(resultsComponent.at(0).prop('search')).toBe('')
     expect(resultsComponent.at(1).prop('geolocation')).toStrictEqual({
       longitude: null,
       latitude: null,
     })
-    expect(resultsComponent.at(1).key()).toBe('BF')
+    expect(resultsComponent.at(1).key()).toBe('9')
     expect(resultsComponent.at(1).prop('result')).toStrictEqual({
       _geoloc: {
         lat: 0,
@@ -114,7 +114,7 @@ describe('component | ResultsList', () => {
         prices: [8, 12],
         thumbUrl: '/lien-vers-mon-image',
       },
-      objectID: 'BF',
+      objectID: '9',
     })
     expect(resultsComponent.at(1).prop('search')).toBe('')
   })

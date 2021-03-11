@@ -38,7 +38,7 @@ describe('components | Result', () => {
         venue: {
           departementCode: 54,
         },
-        objectID: 'AE',
+        objectID: '1',
       },
       search: '?mots-cles=librairie&page=1',
     }

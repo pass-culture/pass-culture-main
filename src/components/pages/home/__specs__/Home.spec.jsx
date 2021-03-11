@@ -74,7 +74,7 @@ describe('src | components | home', () => {
     algoliaMockResponse = {
       hits: [
         {
-          objectID: 'NE',
+          objectID: '105',
           offer: {
             dates: [],
             id: 'NE',

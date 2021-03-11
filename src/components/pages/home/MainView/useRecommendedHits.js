@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { RECOMMENDATION_ENDPOINT, RECOMMENDATION_TOKEN } from '../../../../utils/config'
 
-import { humanizeId } from '../../../../utils/dehumanizeId/dehumanizeId'
 import { fetchAlgoliaHits } from '../../../../vendor/algolia/algolia'
 
 export const useHomeRecommendedHits = (recommendationModule, geolocation, userId) => {
@@ -13,7 +12,7 @@ export const useHomeRecommendedHits = (recommendationModule, geolocation, userId
       fetch(getRecommendationEndpoint(userId, geolocation))
         .then(res => res.json())
         .then(({ recommended_offers: ids }) => {
-          setOfferIds(ids.map(id => humanizeId(+id)).filter(id => typeof id === 'string'))
+          setOfferIds(ids)
         })
         .catch(() => [])
     }
