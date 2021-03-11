@@ -1,5 +1,4 @@
 from datetime import datetime
-from decimal import Decimal
 from typing import Any
 from typing import Callable
 from typing import Dict
@@ -21,15 +20,11 @@ from pcapi.domain.show_types import SHOW_TYPES_DICT
 from pcapi.models.offer_type import CategoryNameEnum
 from pcapi.models.offer_type import CategoryType
 from pcapi.routes.native.utils import convert_to_cent
+from pcapi.routes.native.v1.serialization.common_models import Coordinates
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.logger import logger
 
 from . import BaseModel
-
-
-class Coordinates(BaseModel):
-    latitude: Optional[Decimal]
-    longitude: Optional[Decimal]
 
 
 class OfferCategoryResponse(BaseModel):
@@ -149,14 +144,18 @@ class OfferImageResponse(BaseModel):
         orm_mode = True
 
 
+def get_serialized_offer_category(offer: Offer) -> dict:
+    return {
+        "name": offer.offer_category,
+        "label": offer.offerType["appLabel"],
+        "categoryType": offer.category_type,
+    }
+
+
 class OfferResponse(BaseModel):
     @classmethod
     def from_orm(cls: Any, offer: Offer):  # type: ignore
-        offer.category = {
-            "name": offer.offer_category,
-            "label": offer.offerType["appLabel"],
-            "categoryType": offer.category_type,
-        }
+        offer.category = get_serialized_offer_category(offer)
         offer.accessibility = {
             "audioDisability": offer.audioDisabilityCompliant,
             "mentalDisability": offer.mentalDisabilityCompliant,

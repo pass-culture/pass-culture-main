@@ -36,6 +36,7 @@ from pcapi.models.offer_type import ALL_OFFER_TYPES_DICT
 from pcapi.models.offer_type import CATEGORIES_LABEL_DICT
 from pcapi.models.offer_type import CategoryType
 from pcapi.models.offer_type import EXPIRABLE_OFFER_TYPES
+from pcapi.models.offer_type import PERMANENT_OFFER_TYPES
 from pcapi.models.offer_type import ProductType
 from pcapi.models.offer_type import ThingType
 from pcapi.models.pc_object import PcObject
@@ -319,7 +320,15 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin, 
 
     @canExpire.expression
     def canExpire(cls) -> bool:  # pylint: disable=no-self-argument
-        return cls.type.in_(list(EXPIRABLE_OFFER_TYPES))
+        return cls.type.in_(EXPIRABLE_OFFER_TYPES)
+
+    @hybrid_property
+    def isPermanent(self) -> bool:
+        return self.type in PERMANENT_OFFER_TYPES
+
+    @isPermanent.expression
+    def isPermanent(cls) -> bool:  # pylint: disable=no-self-argument
+        return cls.type.in_(PERMANENT_OFFER_TYPES)
 
     @property
     def dateRange(self) -> DateTimes:

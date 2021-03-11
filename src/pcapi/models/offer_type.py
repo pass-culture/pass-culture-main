@@ -300,6 +300,7 @@ class ThingType(Enum):
 ALL_OFFER_TYPES_DICT = {str(t): t.as_dict() for t in list(ThingType) + list(EventType)}
 
 EXPIRABLE_OFFER_TYPES = {str(offer_type) for offer_type in ThingType if offer_type.value.get("canExpire", False)}
+PERMANENT_OFFER_TYPES = {str(offer_type) for offer_type in ThingType if not offer_type.value.get("canExpire", False)}
 
 
 class ProductType:
