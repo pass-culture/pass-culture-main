@@ -2,6 +2,8 @@ import uuid
 
 import pytest
 
+import pcapi.core.bookings.factories as bookings_factories
+import pcapi.core.payments.factories as payments_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.model_creators.generic_creators import create_bank_information
 from pcapi.model_creators.generic_creators import create_booking
@@ -291,34 +293,10 @@ class FindNotProcessableWithBankInformationTest:
         assert not_processable_payment in payments_to_retry
 
 
-class FindByBookingIdTest:
-    @pytest.mark.usefixtures("db_session")
-    def test_should_return_a_payment_when_one_linked_to_booking(self, app):
-        # Given
-        beneficiary = users_factories.UserFactory()
-        offerer = create_offerer()
-        booking = create_booking(user=beneficiary)
-        valid_payment = create_payment(booking=booking, offerer=offerer)
-        repository.save(valid_payment)
+@pytest.mark.usefixtures("db_session")
+def test_has_payment():
+    booking = bookings_factories.BookingFactory()
+    assert not payment_queries.has_payment(booking)
 
-        # When
-        payment = payment_queries.find_by_booking_id(booking_id=booking.id)
-
-        # Then
-        assert payment == valid_payment
-
-    @pytest.mark.usefixtures("db_session")
-    def test_should_return_nothing_when_no_payment_linked_to_booking(self, app):
-        # Given
-        invalid_booking_id = "99999"
-        beneficiary = users_factories.UserFactory()
-        offerer = create_offerer()
-        booking = create_booking(user=beneficiary)
-        valid_payment = create_payment(booking=booking, offerer=offerer)
-        repository.save(valid_payment)
-
-        # When
-        payment = payment_queries.find_by_booking_id(booking_id=invalid_booking_id)
-
-        # Then
-        assert payment is None
+    payments_factories.PaymentFactory(booking=booking)
+    assert payment_queries.has_payment(booking)

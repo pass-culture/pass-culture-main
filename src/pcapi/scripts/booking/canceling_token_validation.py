@@ -7,9 +7,7 @@ def canceling_token_validation(token: str) -> None:
     booking = booking_repository.find_used_by_token(token)
 
     if booking:
-        payment = payment_queries.find_by_booking_id(booking_id=booking.id)
-
-        if payment is None:
+        if not payment_queries.has_payment(booking):
             booking.isUsed = False
             booking.dateUsed = None
             repository.save(booking)

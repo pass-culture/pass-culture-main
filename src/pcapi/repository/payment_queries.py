@@ -39,8 +39,8 @@ def get_payments_by_message_id(payment_message_id: str) -> List[Payment]:
     return Payment.query.join(PaymentMessage).filter(PaymentMessage.name == payment_message_id).all()
 
 
-def find_by_booking_id(booking_id: int) -> Optional[Payment]:
-    return Payment.query.filter_by(bookingId=booking_id).first()
+def has_payment(booking: Booking) -> Optional[Payment]:
+    return db.session.query(Payment.query.filter_by(bookingId=booking.id).exists()).scalar()
 
 
 def find_not_processable_with_bank_information() -> List[Payment]:

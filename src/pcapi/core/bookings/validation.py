@@ -110,8 +110,7 @@ def check_offerer_can_cancel_booking(booking: Booking) -> None:
 # desired HTTP-related exception (such as ResourceGone and Forbidden)
 # See also functions below.
 def check_is_usable(booking: Booking) -> None:
-    booking_payment = payment_queries.find_by_booking_id(booking.id)
-    if booking_payment is not None:
+    if payment_queries.has_payment(booking):
         forbidden = api_errors.ForbiddenError()
         forbidden.add_error("payment", "Cette réservation a été remboursée")
         raise forbidden
@@ -154,8 +153,7 @@ def check_can_be_mark_as_unused(booking: Booking) -> None:
         forbidden.add_error("booking", "Cette réservation a été annulée")
         raise forbidden
 
-    booking_payment = payment_queries.find_by_booking_id(booking.id)
-    if booking_payment is not None:
+    if payment_queries.has_payment(booking):
         gone = api_errors.ResourceGoneError()
         gone.add_error("payment", "Le remboursement est en cours de traitement")
         raise gone
