@@ -3,72 +3,93 @@
 # pcapi app expects a DATABASE_URL environment variable
 export DATABASE_URL=${PUBLIC_DATABASE_URL}
 export POSTGRES_CONNEXION_STRING_DEST=${PUBLIC_DATABASE_URL}
+export DUMP_BUCKET_PATH="$(date +'%y-%m-%d')_${DUMP_BUCKET_PATH}"
+
+function echo_time {
+    date +'%H:%M:%S:%N'
+}
+
+function export_running_output {
+    gcloud sql operations list \
+    --instance ${POSTGRES_INSTANCE_SRC} \
+    --filter TYPE=EXPORT \
+    --filter STATUS=RUNNING \
+    --format="value(name)"
+}
+
+function import_running_output {
+    gcloud sql operations list \
+    --instance ${POSTGRES_INSTANCE_DEST} \
+    --project ${PROJECT_DEST} \
+    --filter TYPE=IMPORT \
+    --filter STATUS=RUNNING \
+    --format="value(name)"
+}
 
 if [ "$EXPORT_DATA" = "true" ];then
     # Check is an opeation is already running on the instance
     # (export will fail is there is one)
-    echo "Starting: gcloud sql operations list"
-    export_running_output=$(gcloud sql operations list \
-                --instance ${POSTGRES_INSTANCE_SRC} \
-                --filter TYPE=EXPORT \
-                --filter STATUS=RUNNING 2>&1)
-    echo "Ended: gcloud sql operations list"
-
-    if [ "$export_running_output" = "Listed 0 items." ]; then
-        echo "No operation currently running on the instance; Continuing";
-    else
-        echo "An operations in currently running on the instance; Stopping"
-        exit
-    fi
+    echo "Starting: gcloud sql operations list $(echo_time)"
+    retries=5
+    while [ $(export_running_output) != "" ];do
+        if [ "${retries}" -gt 0 ];then
+            let "retries-=1"
+            echo "An operations in currently running on the instance; Retries left : ${retries}"
+        else
+            echo "An operations in currently running on the instance; Retries left : ${retries}; exiting"
+            exit
+        fi
+    done
+    echo "Ended: gcloud sql operations list $(echo_time)"
 
     # Export database in SQL format to encrypted bucket
     # Do not wait for answer as the operation might take some time and the connexion might drop
-    echo "Starting: gcloud sql export"
+    echo "Starting: gcloud sql export $(echo_time)"
     gcloud sql export sql \
         ${POSTGRES_INSTANCE_SRC} gs://${DUMP_BUCKET_NAME}/${DUMP_BUCKET_PATH} \
         --database ${POSTGRES_DATABASE_SRC} \
         --offload \
         --async \
         --quiet
-    echo "Ended: gcloud sql export"
+    echo "Ended: gcloud sql export $(echo_time)"
 
     # Check is dump file is present in bucket (which means the export operation is over)
     while ! gsutil ls gs://${DUMP_BUCKET_NAME}/${DUMP_BUCKET_PATH} 2>/dev/null;
     do
-        echo "Dump file not found in bucket; Export in progress";
+        echo "Dump file not found in bucket; Export in progress $(echo_time)";
         sleep 300
     done
 fi
 
 if [ "$RECREATE_DEST_DATABASE" = "true" ];then
-    echo "Starting: psql terminate connections"
+    echo "Starting: psql terminate connections $(echo_time)"
     psql "${POSTGRES_CONNEXION_STRING_DEST}" \
         -c 'SELECT pid, pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = current_database() AND pid <> pg_backend_pid();'
-    echo "Ending: psql terminate connections"
+    echo "Ending: psql terminate connections $(echo_time)"
 
     # Delete the destination database for clean start
-    echo "Starting: gcloud sql database delete"
+    echo "Starting: gcloud sql database delete $(echo_time)"
     gcloud sql databases delete \
         ${POSTGRES_DATABASE_DEST} \
         --instance ${POSTGRES_INSTANCE_DEST} \
         --project ${PROJECT_DEST} \
         --quiet
-    echo "Ended: gcloud database delete"
+    echo "Ended: gcloud database delete $(echo_time)"
 
 
     # Recreate the destination database
-    echo "Starting: gcloud sql database create"
+    echo "Starting: gcloud sql database create $(echo_time)"
     gcloud sql databases create \
         ${POSTGRES_DATABASE_DEST} \
         --instance ${POSTGRES_INSTANCE_DEST} \
         --project ${PROJECT_DEST} \
         --quiet
-    echo "Ended: gcloud database create"
+    echo "Ended: gcloud database create $(echo_time)"
 fi
 
 if [ "$IMPORT_DATA" = "true" ];then
     # Import the SQL dump to the destination database
-    echo "Starting: gcloud sql import"
+    echo "Starting: gcloud sql import $(echo_time)"
     gcloud sql import sql \
         ${POSTGRES_INSTANCE_DEST} gs://${DUMP_BUCKET_NAME}/${DUMP_BUCKET_PATH} \
         --database ${POSTGRES_DATABASE_DEST} \
@@ -76,51 +97,47 @@ if [ "$IMPORT_DATA" = "true" ];then
         --project ${PROJECT_DEST} \
         --async \
         --quiet
-    echo "Ended: gcloud sql import"
+    echo "Ended: gcloud sql import $(echo_time)"
 
     # Check is an operation is still running on the instance before continuing
-    echo "Starting: gcloud sql operations list"
+    echo "Starting: gcloud sql operations list $(echo_time)"
     import_running_output=""
-    until [ "$import_running_output" = "Listed 0 items." ]
+    until [ "$import_running_output" = "" ]
     do
-        import_running_output=$(gcloud sql operations list \
-                --instance ${POSTGRES_INSTANCE_DEST} \
-                --project ${PROJECT_DEST} \
-                --filter TYPE=IMPORT \
-                --filter STATUS=RUNNING 2>&1)
+        import_running_output=$(import_running_output)
         echo "Import operations currently running:\n $import_running_output"
         sleep 300
     done
-    echo "Ended: gcloud sql operations list"
+    echo "Ended: gcloud sql operations list $(echo_time)"
 fi
 
 if [ "$DELETE_DUMP_AFTER_IMPORT" = "true" ];then
     # Delete the SQL dump in the bucket
-    echo "Starting: gsutil rm"
+    echo "Starting: gsutil rm $(echo_time)"
     gsutil rm gs://${DUMP_BUCKET_NAME}/${DUMP_BUCKET_PATH}
-    echo "Ended: gsutil rm"
+    echo "Ended: gsutil rm $(echo_time)"
 fi
 
 
 if [ "$ANONYMISE_DEST" = "true" ];then
     # Launch anonymization SQL script
+    echo "Starting: psql anonymize script $(echo_time)"
     sed -i "s|##PASSWORD##|${DATABASE_ANONYMIZED_PASSWORD}|" ${POSTGRES_SCRIPT_PATH}
-    echo "Starting: psql anonymize script"
     psql "${POSTGRES_CONNEXION_STRING_DEST}" \
         --echo-errors \
         --file=${POSTGRES_SCRIPT_PATH}
-    echo "Ended: psql anonymize script"
+    echo "Ended: psql anonymize script $(echo_time)"
 fi
 
 if [ "$CREATE_USERS" = "true" ];then
     # Launch import user script
-    echo "Starting: python3"
+    echo "Starting: python3 $(echo_time)"
     python3 ${PC_API_ROOT_PATH}/${IMPORT_USERS_SCRIPT_PATH} ${USERS_CSV_PATH}
-    echo "Ended: python3"
+    echo "Ended: python3 $(echo_time)"
 fi
 
 if [ "$POSTGRES_REMOVE_UNNEEDED_TABLES" = "true" ];then
-    echo "Starting: pruning staging database"
+    echo "Starting: pruning staging database $(echo_time)"
     for TABLE in ${POSTGRES_UNNEEDED_TABLES};do
         execution=$(psql "${POSTGRES_CONNEXION_STRING_DEST}" \
             --echo-errors \
@@ -130,5 +147,5 @@ if [ "$POSTGRES_REMOVE_UNNEEDED_TABLES" = "true" ];then
             echo "${execution}"
         fi
     done
-    echo "Ended: pruning staging database"
+    echo "Ended: pruning staging database $(echo_time)"
 fi
