@@ -111,13 +111,26 @@ if [ "$IMPORT_DATA" = "true" ];then
     echo "Ended: gcloud sql operations list $(echo_time)"
 fi
 
+if [ "$POSTGRES_REMOVE_UNNEEDED_TABLES" = "true" ];then
+    echo "Starting: pruning staging database $(echo_time)"
+    for TABLE in ${POSTGRES_UNNEEDED_TABLES};do
+        execution=$(psql "${POSTGRES_CONNEXION_STRING_DEST}" \
+            --echo-errors \
+            -c "TRUNCATE TABLE ${TABLE};" 2>&1)
+        if [ "${execution}" != "TRUNCATE TABLE" ];then
+            echo "Pruning ${TABLE} failed : error found"
+            echo "${execution}"
+        fi
+    done
+    echo "Ended: pruning staging database $(echo_time)"
+fi
+
 if [ "$DELETE_DUMP_AFTER_IMPORT" = "true" ];then
     # Delete the SQL dump in the bucket
     echo "Starting: gsutil rm $(echo_time)"
     gsutil rm gs://${DUMP_BUCKET_NAME}/${DUMP_BUCKET_PATH}
     echo "Ended: gsutil rm $(echo_time)"
 fi
-
 
 if [ "$ANONYMISE_DEST" = "true" ];then
     # Launch anonymization SQL script
@@ -134,18 +147,4 @@ if [ "$CREATE_USERS" = "true" ];then
     echo "Starting: python3 $(echo_time)"
     python3 ${PC_API_ROOT_PATH}/${IMPORT_USERS_SCRIPT_PATH} ${USERS_CSV_PATH}
     echo "Ended: python3 $(echo_time)"
-fi
-
-if [ "$POSTGRES_REMOVE_UNNEEDED_TABLES" = "true" ];then
-    echo "Starting: pruning staging database $(echo_time)"
-    for TABLE in ${POSTGRES_UNNEEDED_TABLES};do
-        execution=$(psql "${POSTGRES_CONNEXION_STRING_DEST}" \
-            --echo-errors \
-            -c "TRUNCATE TABLE ${TABLE};" 2>&1)
-        if [ "${execution}" != "TRUNCATE TABLE" ];then
-            echo "Pruning ${TABLE} failed : error found"
-            echo "${execution}"
-        fi
-    done
-    echo "Ended: pruning staging database $(echo_time)"
 fi
