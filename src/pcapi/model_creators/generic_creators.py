@@ -407,6 +407,7 @@ def create_user(
     email: str = "john.doe@example.com",
     first_name: str = None,
     has_seen_tutorials: bool = None,
+    has_seen_pro_tutorials: bool = True,
     idx: int = None,
     is_admin: bool = False,
     is_beneficiary: bool = True,
@@ -433,6 +434,7 @@ def create_user(
     user.email = email
     user.firstName = first_name
     user.hasSeenTutorials = has_seen_tutorials
+    user.hasSeenProTutorials = has_seen_pro_tutorials
     user.id = idx
     user.isAdmin = is_admin
     user.isBeneficiary = is_beneficiary

@@ -51,7 +51,7 @@ class Post:
                 "hasAllowedRecommendations": False,
                 "hasOffers": False,
                 "hasPhysicalVenues": False,
-                "hasSeenProTutorials": False,
+                "hasSeenProTutorials": True,
                 "id": humanize(user.id),
                 "isAdmin": False,
                 "isBeneficiary": True,
