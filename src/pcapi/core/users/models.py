@@ -19,6 +19,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy import LargeBinary
 from sqlalchemy import String
 from sqlalchemy import Text
+from sqlalchemy import UniqueConstraint
 from sqlalchemy import func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.dialects.postgresql.json import JSONB
@@ -330,3 +331,29 @@ class DomainsCredit:
     all: Credit
     digital: Optional[Credit] = None
     physical: Optional[Credit] = None
+
+
+class Favorite(PcObject, Model):
+    __tablename__ = "favorite"
+
+    userId = Column(BigInteger, ForeignKey("user.id"), index=True, nullable=False)
+
+    user = relationship("User", foreign_keys=[userId], backref="favorites")
+
+    offerId = Column(BigInteger, ForeignKey("offer.id"), index=True, nullable=False)
+
+    offer = relationship("Offer", foreign_keys=[offerId], backref="favorites")
+
+    mediationId = Column(BigInteger, ForeignKey("mediation.id"), index=True, nullable=True)
+
+    mediation = relationship("Mediation", foreign_keys=[mediationId], backref="favorites")
+
+    dateCreated = Column(DateTime, nullable=True, default=datetime.utcnow)
+
+    __table_args__ = (
+        UniqueConstraint(
+            "userId",
+            "offerId",
+            name="unique_favorite",
+        ),
+    )

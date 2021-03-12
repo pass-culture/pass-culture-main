@@ -4,6 +4,7 @@ from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
+from pcapi.core.users.models import Favorite
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import User
 from pcapi.models.allocine_pivot import AllocinePivot
@@ -21,7 +22,6 @@ from pcapi.models.db import db
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.deposit import Deposit
 from pcapi.models.extra_data_mixin import ExtraDataMixin
-from pcapi.models.favorite_sql_entity import Favorite
 from pcapi.models.feature import Feature
 from pcapi.models.has_address_mixin import HasAddressMixin
 from pcapi.models.has_thumb_mixin import HasThumbMixin
