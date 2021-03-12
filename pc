@@ -2,6 +2,18 @@
 
 set -o nounset
 
+while test -d /
+do
+  echo "-----> Context actuel : "$(kubectl config current-context)"."
+  echo ""
+  echo "!!! Quittez, placez-vous sur le bon context et relancez le script si ce dernier n'est pas le bon !!!"
+  echo ""
+  echo "-----> Voulez-vous continuer ? (y/n)"
+  read rep
+  test $rep = "y" && echo "Lancement du commande pc sur le context "$(kubectl config current-context)"" && break
+  test $rep = "n" && exit
+done
+
 # =============================================
 #  Helper that describes all functionalities
 # =============================================
