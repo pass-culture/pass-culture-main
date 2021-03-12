@@ -3,7 +3,7 @@
 # pcapi app expects a DATABASE_URL environment variable
 export DATABASE_URL=${PUBLIC_DATABASE_URL}
 export POSTGRES_CONNEXION_STRING_DEST=${PUBLIC_DATABASE_URL}
-export DUMP_BUCKET_PATH="$(date +'%y-%m-%d')_${DUMP_BUCKET_PATH}"
+export DUMP_TIMESTAMPED_FILENAME="$(date +'%y-%m-%d')_${DUMP_FILENAME}"
 
 function echo_time {
     date +'%H:%M:%S:%N'
@@ -47,7 +47,7 @@ if [ "$EXPORT_DATA" = "true" ];then
     # Do not wait for answer as the operation might take some time and the connexion might drop
     echo "Starting: gcloud sql export $(echo_time)"
     gcloud sql export sql \
-        ${POSTGRES_INSTANCE_SRC} gs://${DUMP_BUCKET_NAME}/${DUMP_BUCKET_PATH} \
+        ${POSTGRES_INSTANCE_SRC} gs://${DUMP_BUCKET_NAME}/${DUMP_TIMESTAMPED_FILENAME} \
         --database ${POSTGRES_DATABASE_SRC} \
         --offload \
         --async \
@@ -55,7 +55,7 @@ if [ "$EXPORT_DATA" = "true" ];then
     echo "Ended: gcloud sql export $(echo_time)"
 
     # Check is dump file is present in bucket (which means the export operation is over)
-    while ! gsutil ls gs://${DUMP_BUCKET_NAME}/${DUMP_BUCKET_PATH} 2>/dev/null;
+    while ! gsutil ls gs://${DUMP_BUCKET_NAME}/${DUMP_TIMESTAMPED_FILENAME} 2>/dev/null;
     do
         echo "Dump file not found in bucket; Export in progress $(echo_time)";
         sleep 300
@@ -92,7 +92,7 @@ if [ "$IMPORT_DATA" = "true" ];then
     # Import the SQL dump to the destination database
     echo "Starting: gcloud sql import $(echo_time)"
     gcloud sql import sql \
-        ${POSTGRES_INSTANCE_DEST} gs://${DUMP_BUCKET_NAME}/${DUMP_BUCKET_PATH} \
+        ${POSTGRES_INSTANCE_DEST} gs://${DUMP_BUCKET_NAME}/${DUMP_TIMESTAMPED_FILENAME} \
         --database ${POSTGRES_DATABASE_DEST} \
         --user ${POSTGRES_USER_DEST} \
         --project ${PROJECT_DEST} \
@@ -129,7 +129,7 @@ fi
 if [ "$DELETE_DUMP_AFTER_IMPORT" = "true" ];then
     # Delete the SQL dump in the bucket
     echo "Starting: gsutil rm $(echo_time)"
-    gsutil rm gs://${DUMP_BUCKET_NAME}/${DUMP_BUCKET_PATH}
+    gsutil rm gs://${DUMP_BUCKET_NAME}/${DUMP_TIMESTAMPED_FILENAME}
     echo "Ended: gsutil rm $(echo_time)"
 fi
 
