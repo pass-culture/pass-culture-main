@@ -128,6 +128,48 @@ describe('homepage', () => {
       await renderHomePage()
     })
 
+    describe('when clicking on anchor link to profile', () => {
+      let scrollIntoViewMock
+      beforeEach(() => {
+        scrollIntoViewMock = jest.fn()
+        window.HTMLElement.prototype.scrollIntoView = scrollIntoViewMock
+      })
+
+      it('should smooth scroll to section if user doesnt prefer reduced motion', () => {
+        // given
+        Object.defineProperty(window, 'matchMedia', {
+          writable: true,
+          value: jest.fn().mockImplementation(query => ({
+            matches: false,
+            media: query,
+          })),
+        })
+
+        // when
+        fireEvent.click(screen.getByRole('link', { name: 'Profil et aide' }))
+
+        // then
+        expect(scrollIntoViewMock).toHaveBeenCalledWith({ behavior: 'smooth' })
+      })
+
+      it('should jump to section if user prefers reduced motion', () => {
+        // given
+        Object.defineProperty(window, 'matchMedia', {
+          writable: true,
+          value: jest.fn().mockImplementation(query => ({
+            matches: true,
+            media: query,
+          })),
+        })
+
+        // when
+        fireEvent.click(screen.getByRole('link', { name: 'Profil et aide' }))
+
+        // then
+        expect(scrollIntoViewMock).toHaveBeenCalledWith({ behavior: 'auto' })
+      })
+    })
+
     describe('profileAndSupport', () => {
       it('should display section and subsection titles', () => {
         expect(screen.getByText('Profil et aide', { selector: 'h2' })).toBeInTheDocument()

@@ -49,7 +49,7 @@ HomepageBreadcrumb.defaultProps = {
 
 HomepageBreadcrumb.propTypes = {
   activeStep: PropTypes.string.isRequired,
-  profileRef: PropTypes.element,
+  profileRef: PropTypes.shape(),
 }
 
 export default HomepageBreadcrumb
