@@ -87,11 +87,10 @@ def check_string_is_not_empty(string: str) -> str:
 
 
 def check_phone_number_format(string: str) -> str:
-    api_errors = ApiErrors()
     spaceless_string = string.replace(" ", "")
     if not re.match(r"^0\d{9}$", spaceless_string):
-        api_errors.add_error("phoneNumber", "Format de téléphone incorrect. Exemple de format correct : 06 06 06 06 06")
-        raise api_errors
+        raise ValueError("Format de téléphone incorrect. Exemple de format correct : 06 06 06 06 06")
+
     return spaceless_string
 
 
