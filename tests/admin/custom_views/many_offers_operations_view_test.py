@@ -1,5 +1,7 @@
 from unittest.mock import patch
 
+import pytest
+
 from pcapi.admin.custom_views.many_offers_operations_view import _get_current_criteria_on_active_offers
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
@@ -8,11 +10,10 @@ from pcapi.models.criterion import Criterion
 from pcapi.models.product import Product
 
 from tests.conftest import TestClient
-from tests.conftest import clean_database
 
 
+@pytest.mark.usefixtures("db_session")
 class ManyOffersOperationsViewTest:
-    @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_search_product_from_isbn(self, mocked_validate_csrf_token, app):
         # Given
@@ -33,7 +34,6 @@ class ManyOffersOperationsViewTest:
             == "http://localhost/pc/back-office/many_offers_operations/edit?isbn=9783161484100"
         )
 
-    @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_search_product_from_isbn_with_invalid_isbn(self, mocked_validate_csrf_token, app):
         # Given
@@ -50,7 +50,6 @@ class ManyOffersOperationsViewTest:
         # Then
         assert response.status_code == 200
 
-    @clean_database
     @patch("pcapi.connectors.redis.add_offer_id")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_edit_product_offers_criteria(self, mocked_validate_csrf_token, mocked_add_offer_id, app):
@@ -91,7 +90,6 @@ class ManyOffersOperationsViewTest:
         # fmt: on
         assert reindexed_offer_ids == {offer1.id, offer2.id}
 
-    @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_edit_product_offers_criteria_without_offers(self, mocked_validate_csrf_token, app):
         # Given
