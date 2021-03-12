@@ -34,6 +34,10 @@ jest.mock('repository/pcapi/pcapi', () => ({
   postThumbnail: jest.fn(),
 }))
 
+jest.mock('utils/windowMatchMedia', () => ({
+  doesUserPreferReducedMotion: jest.fn().mockReturnValue(false),
+}))
+
 const renderOffers = async (props, store, queryParams = null) => {
   await act(async () => {
     await render(

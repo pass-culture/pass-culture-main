@@ -6,6 +6,7 @@ import { MemoryRouter } from 'react-router'
 
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
+import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
 
 import Homepage from '../Homepage'
 
@@ -19,6 +20,10 @@ jest.mock('repository/pcapi/pcapi', () => ({
   getAllOfferersNames: jest.fn(),
   getVenueStats: jest.fn(),
   updateUserInformations: jest.fn().mockResolvedValue({}),
+}))
+
+jest.mock('utils/windowMatchMedia', () => ({
+  doesUserPreferReducedMotion: jest.fn(),
 }))
 
 const renderHomePage = async () => {
@@ -132,18 +137,12 @@ describe('homepage', () => {
       let scrollIntoViewMock
       beforeEach(() => {
         scrollIntoViewMock = jest.fn()
-        window.HTMLElement.prototype.scrollIntoView = scrollIntoViewMock
+        Element.prototype.scrollIntoView = scrollIntoViewMock
       })
 
       it('should smooth scroll to section if user doesnt prefer reduced motion', () => {
         // given
-        Object.defineProperty(window, 'matchMedia', {
-          writable: true,
-          value: jest.fn().mockImplementation(query => ({
-            matches: false,
-            media: query,
-          })),
-        })
+        doesUserPreferReducedMotion.mockReturnValue(false)
 
         // when
         fireEvent.click(screen.getByRole('link', { name: 'Profil et aide' }))
@@ -154,13 +153,7 @@ describe('homepage', () => {
 
       it('should jump to section if user prefers reduced motion', () => {
         // given
-        Object.defineProperty(window, 'matchMedia', {
-          writable: true,
-          value: jest.fn().mockImplementation(query => ({
-            matches: true,
-            media: query,
-          })),
-        })
+        doesUserPreferReducedMotion.mockReturnValue(true)
 
         // when
         fireEvent.click(screen.getByRole('link', { name: 'Profil et aide' }))

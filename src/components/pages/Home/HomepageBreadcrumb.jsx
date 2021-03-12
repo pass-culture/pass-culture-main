@@ -4,6 +4,8 @@ import React from 'react'
 
 import Breadcrumb, { STYLE_TYPE_TAB } from 'components/layout/Breadcrumb'
 
+import { doesUserPreferReducedMotion } from '../../../utils/windowMatchMedia'
+
 export const STEP_ID_OFFERERS = 'offerers'
 export const STEP_ID_PROFILE = 'profile'
 export const STEP_OFFERER_HASH = 'structures'
@@ -13,10 +15,8 @@ const HomepageBreadcrumb = ({ activeStep, profileRef }) => {
   const jumpToProfileSection = e => {
     e.preventDefault()
 
-    const doesUserPreferReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
-      .matches
     profileRef?.current.scrollIntoView({
-      behavior: doesUserPreferReducedMotion ? 'auto' : 'smooth',
+      behavior: doesUserPreferReducedMotion() ? 'auto' : 'smooth',
     })
   }
 

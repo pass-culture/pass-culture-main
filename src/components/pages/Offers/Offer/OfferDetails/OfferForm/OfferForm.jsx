@@ -10,6 +10,7 @@ import Select, { buildSelectOptions } from 'components/layout/inputs/Select'
 import TextareaInput from 'components/layout/inputs/TextareaInput'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import offerIsRefundable from 'components/pages/Offers/domain/offerIsRefundable'
+import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
 
 import SynchronizedProviderInformation from '../SynchronizedProviderInformation'
 
@@ -223,7 +224,12 @@ const OfferForm = ({
     if (formRef) {
       const invalidElement = formRef.current.querySelector('.error')
       if (invalidElement) {
-        invalidElement.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' })
+        const scrollBehavior = doesUserPreferReducedMotion() ? 'auto' : 'smooth'
+        invalidElement.scrollIntoView({
+          behavior: scrollBehavior,
+          block: 'center',
+          inline: 'center',
+        })
       }
     }
   }, [formRef, formErrors])

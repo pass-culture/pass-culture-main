@@ -38,6 +38,10 @@ jest.mock('../../../utils/computeOffersUrl', () => ({
   computeOffersUrl: jest.fn().mockReturnValue('/offres'),
 }))
 
+jest.mock('utils/windowMatchMedia', () => ({
+  doesUserPreferReducedMotion: jest.fn().mockReturnValue(false),
+}))
+
 const renderOffers = async (props, store, queryParams = '') => {
   await act(async () => {
     await render(
