@@ -215,7 +215,7 @@ def make_offer_creation_notification_email(offer: Offer, author: User) -> Dict:
     pro_link_to_offer = f"{settings.PRO_URL}/offres/{humanize(offer.id)}/edition"
     webapp_link_to_offer = f"{settings.WEBAPP_URL}/offre/details/{humanize(offer.id)}"
     venue = offer.venue
-    pro_venue_link = f"{settings.PRO_URL}/lieux/{humanize(venue.id)}"
+    pro_venue_link = f"{settings.PRO_URL}/structures/{humanize(venue.managingOffererId)}/lieux/{humanize(venue.id)}"
     html = render_template(
         "mails/offer_creation_notification_email.html",
         offer=offer,
