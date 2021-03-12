@@ -34,7 +34,8 @@ if [ "$EXPORT_DATA" = "true" ];then
     while [ $(export_running_output) != "" ];do
         if [ "${retries}" -gt 0 ];then
             let "retries-=1"
-            echo "An operations in currently running on the instance; Retries left : ${retries}"
+            echo "An operations in currently running on the instance; Retries left : ${retries}; waiting 5min"
+            sleep 300
         else
             echo "An operations in currently running on the instance; Retries left : ${retries}; exiting"
             exit
