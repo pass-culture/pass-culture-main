@@ -1,0 +1,36 @@
+.op-offer-status {
+  @include caption();
+
+  align-items: center;
+  border-radius: rem(4px);
+  color: $white;
+  display: inline-flex;
+  padding: rem(4px) rem(8px);
+
+  img {
+    filter: brightness(0) invert(1);
+    height: rem(17px);
+    margin-right: rem(5px);
+    width: rem(17px);
+  }
+}
+
+.status- {
+  &expired,
+  &awaiting {
+    background-color: $grey-dark;
+  }
+
+  &rejected {
+    background-color: $black;
+  }
+
+  &sold-out {
+    background-color: $error;
+  }
+
+  &active,
+  &validated {
+    background-color: $green-valid;
+  }
+}

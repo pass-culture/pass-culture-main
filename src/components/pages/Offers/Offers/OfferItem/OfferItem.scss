@@ -63,44 +63,7 @@
   }
 
   .status-column {
-    @include caption();
-
-    color: $white;
     width: rem(148px);
-
-    img {
-      filter: brightness(0) invert(1);
-      height: rem(17px);
-      margin-right: rem(5px);
-      width: rem(17px);
-    }
-
-    span {
-      align-items: center;
-      border-radius: rem(4px);
-      display: inline-flex;
-      padding: rem(4px) rem(8px);
-    }
-  }
-
-  .status- {
-    &inactive,
-    &expired,
-    &awaiting {
-      background-color: $grey-dark;
-    }
-
-    &rejected {
-      background-color: $black;
-    }
-
-    &sold-out {
-      background-color: $red-error;
-    }
-
-    &active {
-      background-color: $green-valid;
-    }
   }
 
   .secondary-link,

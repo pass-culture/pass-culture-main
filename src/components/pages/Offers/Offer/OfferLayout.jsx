@@ -11,6 +11,10 @@ import OfferDetailsContainer from 'components/pages/Offers/Offer/OfferDetails/Of
 import StocksContainer from 'components/pages/Offers/Offer/Stocks/StocksContainer'
 import * as pcapi from 'repository/pcapi/pcapi'
 
+
+import OfferStatus from "./OfferStatus/OfferStatus"
+
+
 const mapPathToStep = {
   creation: STEP_ID_DETAILS,
   edition: STEP_ID_DETAILS,
@@ -55,9 +59,13 @@ const OfferLayout = props => {
     pageTitle = 'Éditer une offre'
   }
 
+  const offerStatus = (offer?.status && (<OfferStatus status={offer.status} />))
   return (
     <div className="offer-page">
-      <Titles title={pageTitle} />
+      <Titles
+        action={offerStatus}
+        title={pageTitle}
+      />
 
       <Breadcrumb
         activeStep={activeStep}

@@ -14,6 +14,7 @@ import OfferPreview from './OfferPreview/OfferPreview'
 import OfferStatusBanner from './OfferStatusBanner/OfferStatusBanner'
 import OfferThumbnail from './OfferThumbnail/OfferThumbnail'
 
+
 const OfferDetails = ({
   history,
   isUserAdmin,

@@ -4,39 +4,11 @@ import { Link } from 'react-router-dom'
 
 import Icon from 'components/layout/Icon'
 import Thumb from 'components/layout/Thumb'
+import OfferStatus from 'components/pages/Offers/Offer/OfferStatus/OfferStatus'
 import { isOfferFullyBooked } from 'components/pages/Offers/Offers/domain/isOfferFullyBooked'
 import { computeVenueDisplayName } from 'repository/venuesService'
 import { pluralize } from 'utils/pluralize'
 
-import { computeOfferStatus } from '../domain/computeOfferStatus'
-import { OFFER_STATUS } from '../domain/offerStatus'
-
-const OFFER_STATUS_PROPERTIES = {
-  [OFFER_STATUS.EXPIRED]: {
-    className: 'status-expired',
-    icon: 'ico-status-expired',
-  },
-  [OFFER_STATUS.SOLD_OUT]: {
-    className: 'status-sold-out',
-    icon: 'ico-status-sold-out',
-  },
-  [OFFER_STATUS.ACTIVE]: {
-    className: 'status-active',
-    icon: 'ico-status-validated',
-  },
-  [OFFER_STATUS.REJECTED]: {
-    className: 'status-rejected',
-    icon: 'ico-status-rejected',
-  },
-  [OFFER_STATUS.AWAITING]: {
-    className: 'status-awaiting',
-    icon: 'ico-status-awaiting',
-  },
-  [OFFER_STATUS.INACTIVE]: {
-    className: 'status-inactive',
-    icon: 'ico-status-inactive',
-  },
-}
 
 const OfferItem = ({ disabled, offer, stocks, venue, isSelected, selectOffer }) => {
   function handleOnChangeSelected() {
@@ -63,7 +35,6 @@ const OfferItem = ({ disabled, offer, stocks, venue, isSelected, selectOffer }) 
   const isOfferInactiveOrExpired = !offer.isActive || offer.hasBookingLimitDatetimesPassed
   const shouldShowSoldOutWarning =
     computeNumberOfSoldOutStocks(stocks) > 0 && !isOfferFullyBooked(stocks)
-  const offerStatus = computeOfferStatus(offer)
 
   return (
     <tr className={`offer-item ${isOfferInactiveOrExpired ? 'inactive' : ''} offer-row`}>
@@ -124,10 +95,7 @@ const OfferItem = ({ disabled, offer, stocks, venue, isSelected, selectOffer }) 
         {computeRemainingStockValue(stocks)}
       </td>
       <td className="status-column">
-        <span className={OFFER_STATUS_PROPERTIES[offerStatus].className}>
-          <Icon svg={OFFER_STATUS_PROPERTIES[offerStatus].icon} />
-          {offerStatus}
-        </span>
+        <OfferStatus status={offer.status} />
       </td>
       <td className="switch-column">
         <Link

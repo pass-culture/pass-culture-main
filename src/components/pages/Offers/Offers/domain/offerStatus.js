@@ -1,8 +1,8 @@
 export const OFFER_STATUS = {
-  EXPIRED: 'expirée',
-  SOLD_OUT: 'épuisée',
-  ACTIVE: 'active',
-  REJECTED: 'refusée',
-  AWAITING: 'validation',
-  INACTIVE: 'inactive',
+  EXPIRED: 'EXPIRED',
+  SOLD_OUT: 'SOLD_OUT',
+  ACTIVE: 'ACTIVE',
+  REJECTED: 'REJECTED',
+  AWAITING: 'AWAITING',
+  VALIDATED: 'APPROVED',
 }

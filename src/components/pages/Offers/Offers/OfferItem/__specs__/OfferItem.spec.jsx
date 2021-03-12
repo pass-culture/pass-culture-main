@@ -39,6 +39,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       hasBookingLimitDatetimesPassed: false,
       name: 'My little offer',
       thumbUrl: '/my-fake-thumb',
+      status: 'APPROVED',
     }
 
     props = {
@@ -287,17 +288,6 @@ describe('src | components | pages | Offers | OfferItem', () => {
         const numberOfStocks = screen.getByText('3 dates').closest('span')
         expect(within(numberOfStocks).queryByText('2 dates épuisées')).toBeInTheDocument()
       })
-    })
-
-    it('should display the offer status based on offer and stocks props', async () => {
-      // given
-      props.stocks = [{ remainingQuantity: 0 }]
-
-      // when
-      renderOfferItem(props)
-
-      // then
-      expect(await screen.findByText('épuisée')).toBeInTheDocument()
     })
   })
 })
