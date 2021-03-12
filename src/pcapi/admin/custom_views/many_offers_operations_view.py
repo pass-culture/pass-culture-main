@@ -5,7 +5,6 @@ from flask import redirect
 from flask import request
 from flask.helpers import flash
 from flask.helpers import url_for
-from flask_admin import BaseView
 from flask_admin import expose
 from flask_admin.contrib.sqla.fields import QuerySelectMultipleField
 from flask_admin.form import SecureForm
@@ -14,6 +13,7 @@ from werkzeug.wrappers import Response
 from wtforms import StringField
 from wtforms import validators
 
+from pcapi.admin.base_configuration import BaseCustomAdminView
 from pcapi.core.offers.api import add_criteria_to_offers
 from pcapi.core.offers.api import deactivate_inappropriate_product
 from pcapi.core.offers.models import Offer
@@ -66,7 +66,7 @@ def _get_current_criteria_on_active_offers(offers: List[Offer]) -> Dict[str, Dic
     return current_criteria_on_offers
 
 
-class ManyOffersOperationsView(BaseView):
+class ManyOffersOperationsView(BaseCustomAdminView):
     @expose("/", methods=["GET", "POST"])
     def search(self) -> Response:
         form = SearchForm()
