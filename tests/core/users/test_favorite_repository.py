@@ -1,7 +1,7 @@
 import pytest
 
+from pcapi.core.users.repository import find_favorites_domain_by_beneficiary
 from pcapi.domain.favorite.favorite import FavoriteDomain
-from pcapi.infrastructure.repository.favorite.favorite_sql_repository import FavoriteSQLRepository
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_favorite
 from pcapi.model_creators.generic_creators import create_mediation
@@ -14,9 +14,6 @@ from pcapi.repository import repository
 
 
 class FindByBeneficiaryTest:
-    def setup_method(self):
-        self.favorite_sql_repository = FavoriteSQLRepository()
-
     @pytest.mark.usefixtures("db_session")
     def test_returns_a_list_of_beneficiary_favorites(self, app):
         # given
@@ -31,7 +28,7 @@ class FindByBeneficiaryTest:
         repository.save(favorite_1, favorite_2)
 
         # when
-        favorites = self.favorite_sql_repository.find_by_beneficiary(beneficiary.id)
+        favorites = find_favorites_domain_by_beneficiary(beneficiary.id)
 
         # then
         assert len(favorites) == 2
@@ -51,7 +48,7 @@ class FindByBeneficiaryTest:
         repository.save(favorite)
 
         # when
-        favorites = self.favorite_sql_repository.find_by_beneficiary(beneficiary.id)
+        favorites = find_favorites_domain_by_beneficiary(beneficiary.id)
 
         # then
         assert len(favorites) == 0
@@ -70,7 +67,7 @@ class FindByBeneficiaryTest:
         repository.save(favorite, booking)
 
         # when
-        favorites = self.favorite_sql_repository.find_by_beneficiary(beneficiary.id)
+        favorites = find_favorites_domain_by_beneficiary(beneficiary.id)
 
         # then
         assert len(favorites) == 1
@@ -94,7 +91,7 @@ class FindByBeneficiaryTest:
         repository.save(favorite, booking)
 
         # when
-        favorites = self.favorite_sql_repository.find_by_beneficiary(beneficiary.id)
+        favorites = find_favorites_domain_by_beneficiary(beneficiary.id)
 
         # then
         assert len(favorites) == 1

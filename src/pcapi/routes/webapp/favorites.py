@@ -4,13 +4,13 @@ from flask_login import current_user
 from flask_login import login_required
 
 from pcapi.core.offers.models import Mediation
+from pcapi.core.users.repository import find_favorite_for_offer_and_user
+from pcapi.core.users.repository import find_favorites_domain_by_beneficiary
 from pcapi.flask_app import private_api
-from pcapi.infrastructure.container import list_favorites_of_beneficiary
 from pcapi.infrastructure.repository.favorite import favorite_domain_converter
 from pcapi.models import Favorite
 from pcapi.models import Offer
 from pcapi.repository import repository
-from pcapi.repository.favorite_queries import find_favorite_for_offer_and_user
 from pcapi.routes.serialization import as_dict
 from pcapi.routes.serialization.favorites_serialize import serialize_favorite
 from pcapi.routes.serialization.favorites_serialize import serialize_favorites
@@ -59,6 +59,6 @@ def delete_favorite(offer_id):
 @private_api.route("/favorites", methods=["GET"])
 @login_required
 def get_favorites():
-    favorites = list_favorites_of_beneficiary.execute(current_user.id)
+    favorites = find_favorites_domain_by_beneficiary(current_user.id)
 
     return jsonify(serialize_favorites(favorites)), 200
