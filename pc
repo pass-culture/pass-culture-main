@@ -196,6 +196,10 @@ function exit_success_restoring_branch {
   exit 0
 }
 
+function pod_console {
+  kubectl get pod -n $ENV | grep pcapi-console | awk '{print $1}'
+}
+
 # =============================================
 # Local commands : use Docker
 # =============================================
@@ -211,11 +215,10 @@ elif [[ "$CMD" == "bash" ]]; then
   if [[ "$ENV" == "development" ]]; then
     RUN='docker exec -it pc-flask bash'
   else
-    if [ "$FILE_TO_UPLOAD" == 'none' ]; then 
-    kubectl -n $ENV exec -it "$(kubectl get po -n $ENV | grep pcapi-console | awk '{print $1}')"  -- bash
+    if [ "$FILE_TO_UPLOAD" == 'none' ]; then
+    kubectl -n $ENV exec -it $(pod_console)  -- bash
     else
-    #scalingo -a "$SCALINGO_APP" run --file "$FILE_TO_UPLOAD" bash'
-    kubectl cp "$FILE_TO_UPLOAD" $(kubectl get pod -n $ENV  | grep pcapi-console | awk '{print $1}'):"$FILE_TO_UPLOAD"
+    kubectl cp "$FILE_TO_UPLOAD" $(pod_console):"$FILE_TO_UPLOAD"
     fi
     exit
   fi
@@ -223,8 +226,7 @@ elif [[ "$CMD" == "bash" ]]; then
 # Create diff output between schema in staging & local backend
 elif [[ "$CMD" == "diff-schema" ]]; then
   docker exec pc-postgres pg_dump -d pass_culture -U pass_culture -s > /tmp/pc_schema_local
-  #scalingo -a pass-culture-api-staging run 'dbclient-fetcher postgresql 10.4 && pg_dump "$SCALINGO_POSTGRESQL_URL" -s' > /tmp/pc_schema_staging
-  kubectl -n $ENV exec -it "$(kubectl get po -n $ENV | grep pcapi-console | awk '{print $1}')" -- bash -c 'dbclient-fetcher postgresql 10.4 && pg_dump "$SCALINGO_POSTGRESQL_URL" -s' > /tmp/pc_schema_staging
+  kubectl -n $ENV exec -it $(pod_console) -- bash -c 'dbclient-fetcher postgresql 10.4 && pg_dump "$SCALINGO_POSTGRESQL_URL" -s' > /tmp/pc_schema_staging
   diff /tmp/pc_schema_staging /tmp/pc_schema_local
   exit
 
@@ -618,7 +620,7 @@ elif [[ "$CMD" == "psql" ]]; then
   if [[ "$ENV" == "development" ]]; then
     RUN='docker exec -it pc-postgres bash -c "COLUMNS=\"'$COLUMNS'\" psql -U pass_culture pass_culture $*"'
   else
-    kubectl -n $ENV exec -it "$(kubectl get po -n $ENV | grep pcapi-console | awk '{print $1}')"  -- bash -c 'psql "$DATABASE_URL"'
+    kubectl -n $ENV exec -it $(pod_console)  -- bash -c 'psql "$DATABASE_URL"'
     exit
   fi
 
@@ -639,7 +641,7 @@ elif [[ "$CMD" == "pgcli" ]]; then
     source "$ROOT_PATH"/env_file
     RUN='docker exec -it pc-flask bash -c "pgcli $DATABASE_URL"'
   else
-    kubectl -n $ENV exec -it "$(kubectl get po -n $ENV | grep pcapi-console | awk '{print $1}')"  -- bash -c 'pgcli "$DATABASE_URL"'
+    kubectl -n $ENV exec -it $(pod_console)  -- bash -c 'pgcli "$DATABASE_URL"'
     exit
   fi
 
@@ -651,12 +653,10 @@ elif [[ "$CMD" == "python" ]]; then
 		RUN='docker exec -it pc-flask bash -c "cd /opt/services/flaskapp/src/ && python -i src/pcapi/scripts/interact.py '"$CMD $*"'"'
 	else
     if [ "$FILE_TO_UPLOAD" == 'none' ]; then
-      #scalingo -a "$SCALINGO_APP" run "python -i src/pcapi/scripts/interact.py"
-      kubectl -n $ENV exec -it "$(kubectl get po -n $ENV | grep pcapi-console | awk '{print $1}')" -- python -i src/pcapi/scripts/interact.py
+      kubectl -n $ENV exec -it $(pod_console) -- python -i src/pcapi/scripts/interact.py
     else
-      #scalingo -a "$SCALINGO_APP" run --file "$FILE_TO_UPLOAD" "python -i src/pcapi/scripts/interact.py"
-      kubectl cp "$FILE_TO_UPLOAD" $(kubectl get pod -n $ENV | grep pcapi-console | awk '{print $1}'):"$FILE_TO_UPLOAD"
-      kubectl -n $ENV exec -it "$(kubectl get po -n $ENV | grep pcapi-console | awk '{print $1}')" -- python -i src/pcapi/scripts/interact.py
+      kubectl cp "$FILE_TO_UPLOAD" $(pod_console):"$FILE_TO_UPLOAD"
+      kubectl -n $ENV exec -it $(pod_console) -- python -i src/pcapi/scripts/interact.py
     fi
     exit
   fi
@@ -688,12 +688,10 @@ else
     RUN='docker exec pc-flask bash -c "cd /opt/services/flaskapp/src/ && python src/pcapi/scripts/pc.py '"$CMD $*"'"'
   else
     if [ "$FILE_TO_UPLOAD" == 'none' ]; then
-      #scalingo -a "$SCALINGO_APP" run 'python src/pcapi/scripts/pc.py '"$CMD $*"''
-      kubectl -n $ENV exec -it "$(kubectl get po -n $ENV | grep pcapi-console | awk '{print $1}')" -- python src/pcapi/scripts/pc.py '"$CMD $*"'
+      kubectl -n $ENV exec -it $(pod_console) -- python src/pcapi/scripts/pc.py '"$CMD $*"'
     else
-      #scalingo -a "$SCALINGO_APP" run --file "$FILE_TO_UPLOAD" 'python src/pcapi/scripts/pc.py '"$CMD $*"''
-      kubectl cp "$FILE_TO_UPLOAD" $(kubectl get pod -n $ENV | grep pcapi-console | awk '{print $1}'):"$FILE_TO_UPLOAD"
-      kubectl -n $ENV exec -it "$(kubectl get po -n $ENV | grep pcapi-console | awk '{print $1}')" -- python src/pcapi/scripts/pc.py '"$CMD $*"'
+      kubectl cp "$FILE_TO_UPLOAD" $(pod_console):"$FILE_TO_UPLOAD"
+      kubectl -n $ENV exec -it $(pod_console) -- python src/pcapi/scripts/pc.py '"$CMD $*"'
     fi
     exit
   fi
