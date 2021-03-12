@@ -6,7 +6,6 @@ import pytest
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
-from pcapi.model_creators.generic_creators import create_favorite
 from pcapi.models import Favorite
 from pcapi.utils.human_ids import humanize
 
@@ -45,7 +44,7 @@ class Get:
             # Event offer with 1 expired stock, 2 futures ones and a mediation
             offer1 = offers_factories.EventOfferFactory(venue=venue)
             offers_factories.MediationFactory(offer=offer1, thumbCount=1, credit="Pour hurlevent !")
-            favorite1 = create_favorite(offer=offer1, user=user)
+            favorite1 = users_factories.FavoriteFactory(offer=offer1, user=user)
             # should be ignored because of the date in the past
             offers_factories.EventStockFactory(offer=offer1, beginningDatetime=yesterday, price=10)
             # 2 valid stocks (different dates and prices)
@@ -54,19 +53,19 @@ class Get:
 
             # Event offer with soft deleted stock and product's image
             offer2 = offers_factories.EventOfferFactory(venue=venue, product__thumbCount=666)
-            favorite2 = create_favorite(offer=offer2, user=user)
+            favorite2 = users_factories.FavoriteFactory(offer=offer2, user=user)
             offers_factories.EventStockFactory(offer=offer2, beginningDatetime=today, price=20, isSoftDeleted=True)
             offers_factories.EventStockFactory(offer=offer2, beginningDatetime=tomorow, price=50)
 
             # Thing offer with no date
             offer3 = offers_factories.ThingOfferFactory(venue=venue)
-            favorite3 = create_favorite(offer=offer3, user=user)
+            favorite3 = users_factories.FavoriteFactory(offer=offer3, user=user)
             offers_factories.ThingStockFactory(offer=offer3, price=10)
 
             # Event offer with passed reservation date
             offer4 = offers_factories.EventOfferFactory(venue=venue)
             offers_factories.MediationFactory(offer=offer4)
-            favorite4 = create_favorite(offer=offer4, user=user)
+            favorite4 = users_factories.FavoriteFactory(offer=offer4, user=user)
             stock4 = offers_factories.EventStockFactory(
                 offer=offer4, beginningDatetime=datetime.now() + timedelta(minutes=30), price=50
             )
@@ -75,12 +74,12 @@ class Get:
             # Event offer in the past
             offer5 = offers_factories.EventOfferFactory(venue=venue)
             offers_factories.MediationFactory(offer=offer5)
-            favorite5 = create_favorite(offer=offer5, user=user)
+            favorite5 = users_factories.FavoriteFactory(offer=offer5, user=user)
             offers_factories.EventStockFactory(offer=offer5, beginningDatetime=yesterday, price=50)
 
             # Event offer with two times the same date / price
             offer6 = offers_factories.EventOfferFactory(venue=venue)
-            favorite6 = create_favorite(offer=offer6, user=user)
+            favorite6 = users_factories.FavoriteFactory(offer=offer6, user=user)
             offers_factories.EventStockFactory(offer=offer6, beginningDatetime=tomorow, price=30)
             offers_factories.EventStockFactory(offer=offer6, beginningDatetime=tomorow, price=30)
 
@@ -161,34 +160,34 @@ class Get:
 
             # Event offer future stock
             offer1 = offers_factories.EventOfferFactory(venue=venue)
-            favorite1 = create_favorite(offer=offer1, user=user)
+            favorite1 = users_factories.FavoriteFactory(offer=offer1, user=user)
             offers_factories.EventStockFactory(offer=offer1, beginningDatetime=tomorow, price=10)
 
             # Thing offer with no date
             offer2 = offers_factories.ThingOfferFactory(venue=venue)
-            favorite2 = create_favorite(offer=offer2, user=user)
+            favorite2 = users_factories.FavoriteFactory(offer=offer2, user=user)
             offers_factories.ThingStockFactory(offer=offer2, price=10)
 
             # Thing offer with past booking stock
             offer3 = offers_factories.ThingOfferFactory(venue=venue)
-            favorite3 = create_favorite(offer=offer3, user=user)
+            favorite3 = users_factories.FavoriteFactory(offer=offer3, user=user)
             offers_factories.ThingStockFactory(offer=offer3, bookingLimitDatetime=yesterday, price=10)
 
             # Event offer with stock in the future but past booking
             offer4 = offers_factories.EventOfferFactory(venue=venue)
-            favorite4 = create_favorite(offer=offer4, user=user)
+            favorite4 = users_factories.FavoriteFactory(offer=offer4, user=user)
             offers_factories.EventStockFactory(
                 offer=offer4, beginningDatetime=today, bookingLimitDatetime=yesterday, price=10
             )
 
             # Deactivated event offer future stock
             offer5 = offers_factories.EventOfferFactory(venue=venue, isActive=False)
-            favorite5 = create_favorite(offer=offer5, user=user)
+            favorite5 = users_factories.FavoriteFactory(offer=offer5, user=user)
             offers_factories.EventStockFactory(offer=offer5, beginningDatetime=tomorow, price=10)
 
             # Deactivated thing offer with no date
             offer6 = offers_factories.ThingOfferFactory(venue=venue, isActive=False)
-            favorite6 = create_favorite(offer=offer6, user=user)
+            favorite6 = users_factories.FavoriteFactory(offer=offer6, user=user)
             offers_factories.ThingStockFactory(offer=offer6, price=10)
 
             # When
@@ -256,7 +255,7 @@ class Delete:
             offerer = offers_factories.OffererFactory()
             venue = offers_factories.VenueFactory(managingOfferer=offerer)
             offer = offers_factories.ThingOfferFactory(venue=venue)
-            favorite = create_favorite(offer=offer, user=user)
+            favorite = users_factories.FavoriteFactory(offer=offer, user=user)
             assert Favorite.query.count() == 1
 
             # When
@@ -273,7 +272,7 @@ class Delete:
             offerer = offers_factories.OffererFactory()
             venue = offers_factories.VenueFactory(managingOfferer=offerer)
             offer = offers_factories.ThingOfferFactory(venue=venue)
-            favorite = create_favorite(offer=offer, user=other_user)
+            favorite = users_factories.FavoriteFactory(offer=offer, user=other_user)
             assert Favorite.query.count() == 1
 
             # When
