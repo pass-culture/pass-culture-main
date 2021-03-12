@@ -88,3 +88,11 @@ class UserSessionFactory(BaseFactory):
             raise ValueError('UserSessionFactory requires a "user" argument.')
         kwargs["userId"] = user.id
         return super()._create(model_class, *args, **kwargs)
+
+
+class FavoriteFactory(BaseFactory):
+    class Meta:
+        model = models.Favorite
+
+    offer = factory.SubFactory("pcapi.core.offers.factories.OfferFactory")
+    user = factory.SubFactory(UserFactory)
