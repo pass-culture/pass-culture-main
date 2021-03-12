@@ -20,6 +20,7 @@ const hasBankInformations = offererOrVenue =>
 const OffererDetails = ({
   handleChangeOfferer,
   hasPhysicalVenues,
+  isUserOffererValidated,
   offererOptions,
   selectedOfferer,
 }) => {
@@ -36,7 +37,7 @@ const OffererDetails = ({
     return (
       !hasBankInformations(selectedOfferer) &&
       selectedOfferer.managedVenues
-        .filter(venue => !venue.isVirtual)
+        ?.filter(venue => !venue.isVirtual)
         .some(venue => !hasBankInformations(venue))
     )
   }, [selectedOfferer])
@@ -79,13 +80,24 @@ const OffererDetails = ({
             />
           )}
           <div className="od-separator vertical small" />
-          <Link
-            className="tertiary-link"
-            to={`/structures/${selectedOfferer.id}`}
-          >
-            <Icon svg="ico-outer-pen" />
-            {'Modifier'}
-          </Link>
+          {isUserOffererValidated ? (
+            <Link
+              className="tertiary-link"
+              to={`/structures/${selectedOfferer.id}`}
+            >
+              <Icon svg="ico-outer-pen" />
+              {'Modifier'}
+            </Link>
+          ) : (
+            <button
+              className="tertiary-button"
+              disabled
+              type="button"
+            >
+              <Icon svg="ico-outer-pen" />
+              {'Modifier'}
+            </button>
+          )}
         </div>
 
         {isVisible && (
@@ -97,52 +109,54 @@ const OffererDetails = ({
                 type="notification-info"
               />
             )}
-            <div className="h-card-cols">
-              <div className="h-card-col">
-                <h3 className="h-card-secondary-title">
-                  {'Informations pratiques'}
-                </h3>
-                <div className="h-card-content">
-                  <ul className="h-description-list">
-                    <li className="h-dl-row">
-                      <span className="h-dl-title">
-                        {'Siren :'}
-                      </span>
-                      <span className="h-dl-description">
-                        {selectedOfferer.siren}
-                      </span>
-                    </li>
+            {isUserOffererValidated && (
+              <div className="h-card-cols">
+                <div className="h-card-col">
+                  <h3 className="h-card-secondary-title">
+                    {'Informations pratiques'}
+                  </h3>
+                  <div className="h-card-content">
+                    <ul className="h-description-list">
+                      <li className="h-dl-row">
+                        <span className="h-dl-title">
+                          {'Siren :'}
+                        </span>
+                        <span className="h-dl-description">
+                          {selectedOfferer.siren}
+                        </span>
+                      </li>
 
-                    <li className="h-dl-row">
-                      <span className="h-dl-title">
-                        {'Désignation :'}
-                      </span>
-                      <span className="h-dl-description">
-                        {selectedOfferer.name}
-                      </span>
-                    </li>
+                      <li className="h-dl-row">
+                        <span className="h-dl-title">
+                          {'Désignation :'}
+                        </span>
+                        <span className="h-dl-description">
+                          {selectedOfferer.name}
+                        </span>
+                      </li>
 
-                    <li className="h-dl-row">
-                      <span className="h-dl-title">
-                        {'Siège social : '}
-                      </span>
-                      <address className="od-address">
-                        {selectedOfferer.address}
-                        <br />
-                        {`${selectedOfferer.postalCode} ${selectedOfferer.city}`}
-                      </address>
-                    </li>
-                  </ul>
+                      <li className="h-dl-row">
+                        <span className="h-dl-title">
+                          {'Siège social : '}
+                        </span>
+                        <address className="od-address">
+                          {selectedOfferer.address}
+                          <br />
+                          {`${selectedOfferer.postalCode} ${selectedOfferer.city}`}
+                        </address>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="h-card-col">
+                  <BankInformations
+                    hasMissingBankInformations={hasMissingBankInformations}
+                    offerer={selectedOfferer}
+                  />
                 </div>
               </div>
-
-              <div className="h-card-col">
-                <BankInformations
-                  hasMissingBankInformations={hasMissingBankInformations}
-                  offerer={selectedOfferer}
-                />
-              </div>
-            </div>
+            )}
           </>
         )}
       </div>
@@ -153,6 +167,7 @@ const OffererDetails = ({
 OffererDetails.propTypes = {
   handleChangeOfferer: PropTypes.func.isRequired,
   hasPhysicalVenues: PropTypes.bool.isRequired,
+  isUserOffererValidated: PropTypes.bool.isRequired,
   offererOptions: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,

@@ -67,15 +67,15 @@ describe('pcapiClient', () => {
       expect(response).toStrictEqual(paginatedBookingRecapReturned)
     })
 
-    it('should return promise if return status is not ok', async () => {
+    it('should reject if return status is not ok', async () => {
       // Given
-      fetch.mockResponseOnce('Error happened', { status: 401 })
+      fetch.mockResponse(JSON.stringify('Forbidden'), { status: 403 })
 
       // When
-      const response = client.get('/bookings/pro')
-
-      // Then
-      await expect(response).toBe(response)
+      await expect(client.get('/bookings/pro')).rejects.toStrictEqual({
+        errors: 'Forbidden',
+        status: 403,
+      })
     })
   })
 
@@ -138,7 +138,7 @@ describe('pcapiClient', () => {
       // Then
       expect(fetch).toHaveBeenCalledWith(`${API_URL}${path}`, {
         credentials: 'include',
-        headers: { 'encode': 'multipart/form-data' },
+        headers: { encode: 'multipart/form-data' },
         method: 'POST',
         body: body,
       })
@@ -162,7 +162,7 @@ describe('pcapiClient', () => {
 
       // Then
       expect(fetch).toHaveBeenCalledWith(`${API_URL}${path}`, {
-        headers: { 'encode': 'multipart/form-data' },
+        headers: { encode: 'multipart/form-data' },
         method: 'POST',
         body: body,
       })

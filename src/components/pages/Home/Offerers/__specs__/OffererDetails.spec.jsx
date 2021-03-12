@@ -567,6 +567,15 @@ describe('offererDetails', () => {
       expect(screen.getByText('Votre structure est en cours de rattachement')).toBeInTheDocument()
     })
 
+    it('should allow user to view offerer informations', async () => {
+      // When
+      await renderHomePage()
+
+      // Then
+      expect(screen.getByText('Informations pratiques')).toBeInTheDocument()
+      expect(screen.getByText('Coordonnées bancaires')).toBeInTheDocument()
+    })
+
     it('should allow user to add venue and virtual offer', async () => {
       // When
       await renderHomePage()
@@ -574,6 +583,53 @@ describe('offererDetails', () => {
       // Then
       expect(screen.getByRole('link', { name: 'Créer un lieu' })).toBeInTheDocument()
       expect(screen.getByRole('link', { name: 'Créer une offre numérique' })).toBeInTheDocument()
+    })
+  })
+
+  describe('when user offerer is not yet validated', () => {
+    beforeEach(() => {
+      pcapi.getAllOfferersNames.mockResolvedValue([
+        { name: baseOfferers[0].name, id: baseOfferers[0].id },
+      ])
+      pcapi.getOfferer.mockRejectedValue({ status: 403 })
+    })
+
+    it('should warn user offerer is being validated', async () => {
+      // When
+      await renderHomePage()
+
+      // Then
+      expect(screen.getByText('Votre structure est en cours de rattachement')).toBeInTheDocument()
+    })
+
+    it('should not allow user to view offerer informations', async () => {
+      // When
+      await renderHomePage()
+
+      // Then
+      expect(screen.queryByText('Informations pratiques')).not.toBeInTheDocument()
+      expect(screen.queryByText('Coordonnées bancaires')).not.toBeInTheDocument()
+    })
+
+    it('should not allow user to update offerer informations', async () => {
+      // When
+      await renderHomePage()
+
+      // Then
+      const [offererUpdateButton] = screen.getAllByRole('button', { name: 'Modifier' })
+      expect(offererUpdateButton).toBeInTheDocument()
+      expect(offererUpdateButton).toBeDisabled()
+    })
+
+    it('should not allow user to add venue and virtual offer', async () => {
+      // When
+      await renderHomePage()
+
+      // Then
+      expect(screen.queryByRole('link', { name: 'Créer un lieu' })).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('link', { name: 'Créer une offre numérique' })
+      ).not.toBeInTheDocument()
     })
   })
 })

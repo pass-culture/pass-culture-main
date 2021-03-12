@@ -1,8 +1,11 @@
 import { API_URL } from 'utils/config'
 
+export const HTTP_STATUS = {
+  NO_CONTENT: 204,
+  FORBIDDEN: 403,
+}
 const GET_HTTP_METHOD = 'GET'
 const DELETE_HTTP_METHOD = 'DELETE'
-const HTTP_STATUS_NO_CONTENT = 204
 
 const buildOptions = (method, withCredentials = true) => {
   const options = {
@@ -22,9 +25,9 @@ const buildUrl = path => `${API_URL}${path}`
 
 const fetchWithErrorHandler = async (path, options) => {
   const response = await fetch(buildUrl(path), options)
-  const results = response.status !== HTTP_STATUS_NO_CONTENT ? await response.json() : null
+  const results = response.status !== HTTP_STATUS.NO_CONTENT ? await response.json() : null
   if (!response.ok) {
-    return Promise.reject(results ? { errors: results } : null)
+    return Promise.reject(results ? { errors: results, status: response.status } : null)
   }
   return Promise.resolve(results)
 }
@@ -42,7 +45,7 @@ export const client = {
   },
   postWithFormData: async (path, data, withCredentials = true) => {
     let options = buildOptions('POST', withCredentials)
-    options['headers'] = { 'encode': 'multipart/form-data' }
+    options['headers'] = { encode: 'multipart/form-data' }
     options = {
       ...options,
       body: data,
