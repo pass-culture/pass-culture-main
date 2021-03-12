@@ -382,3 +382,18 @@ class Post:
             assert response.status_code == 400
             created_user = User.query.filter_by(email="toto_pro@example.com").first()
             assert created_user is None
+
+        def when_invalid_phone_number(self, app):
+            # Given
+            data = BASE_DATA_PRO.copy()
+            data["phoneNumber"] = "abc 123"
+            venue_type = create_venue_type(label="Offre numérique")
+            repository.save(venue_type)
+
+            # When
+            response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
+
+            # Then
+            assert response.status_code == 400
+            error = response.json
+            assert "phoneNumber" in error

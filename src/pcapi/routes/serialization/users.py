@@ -73,7 +73,7 @@ class PatchUserResponseModel(BaseModel):
 class ProUserCreationBodyModel(BaseModel):
     address: Optional[str]
     city: Optional[str]
-    email: str
+    email: EmailStr
     first_name: Optional[str]
     last_name: Optional[str]
     latitude: Optional[float]
@@ -96,6 +96,8 @@ class ProUserCreationBodyModel(BaseModel):
         cls, contact_ok: Optional[bool]
     ) -> bool:
         return bool(contact_ok)
+
+    _validate_phone_number_format = validate_phone_number_format("phone_number")
 
     class Config:
         alias_generator = to_camel
