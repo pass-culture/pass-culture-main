@@ -45,15 +45,17 @@ def synchronize_allocine_stocks(app: Flask) -> None:
 @cron_context
 @cron_require_feature(FeatureToggle.SYNCHRONIZE_LIBRAIRES)
 def synchronize_libraires_stocks(app: Flask) -> None:
-    libraires_stocks_provider_id = get_provider_by_local_class("LibrairesStocks").id
-    synchronize_venue_providers_for_provider(libraires_stocks_provider_id)
+    libraires_stocks_provider = get_provider_by_local_class("LibrairesStocks")
+    if libraires_stocks_provider:
+        synchronize_venue_providers_for_provider(libraires_stocks_provider.id)
 
 
 @log_cron
 @cron_context
 def synchronize_provider_api(app: Flask) -> None:
-    fnac_stocks_provider_id = get_provider_by_local_class("FnacStocks").id
-    synchronize_venue_providers_for_provider(fnac_stocks_provider_id)
+    fnac_stocks_provider = get_provider_by_local_class("FnacStocks")
+    if fnac_stocks_provider:
+        synchronize_venue_providers_for_provider(fnac_stocks_provider.id)
 
     provider_api_stocks.synchronize_stocks()
 
@@ -61,8 +63,9 @@ def synchronize_provider_api(app: Flask) -> None:
 @log_cron
 @cron_context
 def synchronize_praxiel_stocks(app: Flask) -> None:
-    praxiel_stocks_provider_id = get_provider_by_local_class("PraxielStocks").id
-    synchronize_venue_providers_for_provider(praxiel_stocks_provider_id)
+    praxiel_stocks_provider = get_provider_by_local_class("PraxielStocks")
+    if praxiel_stocks_provider:
+        synchronize_venue_providers_for_provider(praxiel_stocks_provider.id)
 
 
 @log_cron
