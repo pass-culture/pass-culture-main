@@ -2,17 +2,17 @@
 
 set -o nounset
 
-while test -d /
-do
-  echo "-----> Context actuel : "$(kubectl config current-context)"."
-  echo ""
-  echo "!!! Quittez, placez-vous sur le bon context et relancez le script si ce dernier n'est pas le bon !!!"
-  echo ""
-  echo "-----> Voulez-vous continuer ? (y/n)"
-  read rep
-  test $rep = "y" && echo "Lancement du commande pc sur le context "$(kubectl config current-context)"" && break
-  test $rep = "n" && exit
-done
+echo "-----> Context actuel : "$(kubectl config current-context)"."
+echo ""
+echo "!!! Quittez, placez-vous sur le bon context et relancez le script si ce dernier n'est pas le bon !!!"
+echo ""
+echo "-----> Voulez-vous continuer ? (y/n)"
+read rep
+if test $rep != "y"; then
+  exit
+fi
+echo "Lancement du commande pc sur le context "$(kubectl config current-context)""
+
 
 # =============================================
 #  Helper that describes all functionalities
@@ -218,7 +218,8 @@ elif [[ "$CMD" == "bash" ]]; then
     if [ "$FILE_TO_UPLOAD" == 'none' ]; then
     kubectl -n $ENV exec -it $(pod_console)  -- bash
     else
-    kubectl cp "$FILE_TO_UPLOAD" $(pod_console):"$FILE_TO_UPLOAD"
+    kubectl cp "$FILE_TO_UPLOAD" $(pod_console):"$FILE_TO_UPLOAD" && \
+    kubectl -n $ENV exec -it $(pod_console)  -- bash
     fi
     exit
   fi
