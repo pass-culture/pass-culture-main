@@ -6,7 +6,7 @@ from pcapi.models import UserOfferer
 
 
 def get_all_offerers_for_user(user: User, filters: dict) -> List[Offerer]:
-    query = Offerer.query.distinct()
+    query = Offerer.query.filter(Offerer.isActive.is_(True))
 
     if not user.isAdmin:
         query = query.join(UserOfferer, UserOfferer.offererId == Offerer.id).filter(UserOfferer.userId == user.id)

@@ -60,6 +60,17 @@ class GetAllOfferersForUserTest:
         offerers_ids = [offerer.id for offerer in offerers]
         assert unvalidated_pro_offerer_attachment.offerer.id in offerers_ids
 
+    def should_not_return_deactivated_offerers(self) -> None:
+        # Given
+        admin = users_factories.UserFactory(isBeneficiary=False, isAdmin=True)
+        offers_factories.OffererFactory(isActive=False)
+
+        # When
+        offerers = get_all_offerers_for_user(user=admin, filters={})
+
+        # Then
+        assert len(offerers) == 0
+
     class WithValidatedFilterTest:
         def should_return_all_pro_offerers_when_filter_is_none(self) -> None:
             # Given
