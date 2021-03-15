@@ -19,13 +19,14 @@ from pcapi.serialization.decorator import spectree_serialize
 from . import blueprint
 
 
-@blueprint.native_v1.route("/book_offer", methods=["POST"])
-@spectree_serialize(api=blueprint.api, on_success_status=204)
+@blueprint.native_v1.route("/book_offer", methods=["POST"])  # TODO(viconnex): remove route when frontend uses /bookings
+@blueprint.native_v1.route("/bookings", methods=["POST"])
+@spectree_serialize(api=blueprint.api, on_success_status=204, on_error_statuses=[400])
 @authenticated_user_required
 def book_offer(user: User, body: BookOfferRequest) -> None:
     stock = Stock.query.get(body.stock_id)
     if not stock:
-        raise ApiErrors({"stock": "stock introuvable"}, status_code=404)
+        raise ApiErrors({"stock": "stock introuvable"}, status_code=400)
 
     try:
         bookings_api.book_offer(

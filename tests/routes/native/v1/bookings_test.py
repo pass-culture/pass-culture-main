@@ -20,7 +20,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class BookOfferTest:
     identifier = "pascal.ture@example.com"
 
-    def test_book_offer(self, app):
+    def test_post_bookings(self, app):
         stock = StockFactory()
         user = users_factories.UserFactory(email=self.identifier)
 
@@ -28,7 +28,7 @@ class BookOfferTest:
         test_client = TestClient(app.test_client())
         test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
 
-        response = test_client.post("/native/v1/book_offer", json={"stockId": stock.id, "quantity": 1})
+        response = test_client.post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
 
         assert response.status_code == 204
 
@@ -42,9 +42,9 @@ class BookOfferTest:
         test_client = TestClient(app.test_client())
         test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
 
-        response = test_client.post("/native/v1/book_offer", json={"stockId": 404, "quantity": 1})
+        response = test_client.post("/native/v1/bookings", json={"stockId": 400, "quantity": 1})
 
-        assert response.status_code == 404
+        assert response.status_code == 400
 
     def test_insufficient_credit(self, app):
         users_factories.UserFactory(email=self.identifier)
@@ -54,7 +54,7 @@ class BookOfferTest:
         test_client = TestClient(app.test_client())
         test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
 
-        response = test_client.post("/native/v1/book_offer", json={"stockId": stock.id, "quantity": 1})
+        response = test_client.post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
 
         assert response.status_code == 400
         assert response.json["code"] == "INSUFFICIENT_CREDIT"
@@ -67,7 +67,7 @@ class BookOfferTest:
         test_client = TestClient(app.test_client())
         test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
 
-        response = test_client.post("/native/v1/book_offer", json={"stockId": booking.stock.id, "quantity": 1})
+        response = test_client.post("/native/v1/bookings", json={"stockId": booking.stock.id, "quantity": 1})
 
         assert response.status_code == 400
         assert response.json["code"] == "ALREADY_BOOKED"
