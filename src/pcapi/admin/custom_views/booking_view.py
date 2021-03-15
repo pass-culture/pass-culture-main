@@ -41,8 +41,9 @@ class BookingView(BaseCustomAdminView):
         booking = None
         if request.method == "POST":
             if search_form.validate():
+                token = search_form.token.data.strip().upper()
                 booking = (
-                    Booking.query.filter_by(token=search_form.token.data)
+                    Booking.query.filter_by(token=token)
                     .options(joinedload(Booking.user))
                     .options(joinedload(Booking.stock).joinedload(Stock.offer))
                     .first()

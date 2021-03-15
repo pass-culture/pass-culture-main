@@ -26,10 +26,10 @@ class BookingViewTest:
 
     def test_show_mark_as_used_button(self, app):
         users_factories.UserFactory(email="admin@example.com", isAdmin=True)
-        booking = bookings_factories.BookingFactory(isCancelled=True)
+        bookings_factories.BookingFactory(isCancelled=True, token="ABCDEF")
 
         client = TestClient(app.test_client()).with_auth("admin@example.com")
-        response = client.post(f"/pc/back-office/bookings/", form={"token": booking.token})
+        response = client.post(f"/pc/back-office/bookings/", form={"token": "abcdeF"})
 
         assert response.status_code == 200
         content = response.data.decode(response.charset)
