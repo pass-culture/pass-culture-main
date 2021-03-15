@@ -22,6 +22,7 @@ from pcapi.core.offers.exceptions import ThumbnailStorageError
 from pcapi.core.offers.factories import CriterionFactory
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import OffererFactory
+from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.offers.factories import StockFactory
 from pcapi.core.offers.factories import ThingProductFactory
 from pcapi.core.offers.factories import VenueFactory
@@ -965,9 +966,10 @@ class AddCriterionToOffersTest:
     def test_add_criteria(self, mocked_add_offer_id):
         # Given
         isbn = "2-221-00164-8"
-        offer1 = OfferFactory(extraData={"isbn": "2221001648"})
-        offer2 = OfferFactory(extraData={"isbn": "2221001648"})
-        inactive_offer = OfferFactory(extraData={"isbn": "2221001648"}, isActive=False)
+        product = ProductFactory(extraData={"isbn": "2221001648"})
+        offer1 = OfferFactory(product=product)
+        offer2 = OfferFactory(product=product)
+        inactive_offer = OfferFactory(product=product, isActive=False)
         unmatched_offer = OfferFactory()
         criterion1 = CriterionFactory(name="Pretty good books")
         criterion2 = CriterionFactory(name="Other pretty good books")

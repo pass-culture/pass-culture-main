@@ -492,24 +492,24 @@ def get_expense_domains(offer: Offer) -> List[ExpenseDomain]:
 def add_criteria_to_offers(criteria: List[Criterion], isbn: str) -> bool:
     isbn = isbn.replace("-", "").replace(" ", "")
 
-    offer_ids_query = (
-        Offer.query.filter(Offer.extraData["isbn"].astext == isbn)
-        .filter(Offer.isActive.is_(True))
-        .with_entities(Offer.id)
-    )
+    product = Product.query.filter(Product.extraData["isbn"].astext == isbn).first()
+    if not product:
+        return False
+
+    offer_ids_query = Offer.query.filter_by(productId=product.id, isActive=True).with_entities(Offer.id)
     offer_ids = [offer_id for offer_id, in offer_ids_query.all()]
 
     if not offer_ids:
         return False
 
+    offer_criteria: List[OfferCriterion] = []
     for criterion in criteria:
         logger.info("Adding criterion %s to %d offers", criterion, len(offer_ids))
 
-        offer_criteria: List[OfferCriterion] = []
         offer_criteria.extend(OfferCriterion(offerId=offer_id, criterionId=criterion.id) for offer_id in offer_ids)
 
-        db.session.bulk_save_objects(offer_criteria)
-        db.session.commit()
+    db.session.bulk_save_objects(offer_criteria)
+    db.session.commit()
 
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         for offer_id in offer_ids:
