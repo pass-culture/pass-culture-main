@@ -51,7 +51,7 @@ def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
         .options(Load(FavoriteSQLEntity).load_only("id"))
         .join(FavoriteSQLEntity.offer)
         .join(Offer.venue)
-        .join(Offer.stocks)
+        .outerjoin(Offer.stocks)
         .filter(
             FavoriteSQLEntity.userId == user.id,
             Stock.isSoftDeleted == False,
