@@ -40,8 +40,7 @@ def get_booking_by_token(token: str):
 
     check_user_is_logged_in_or_email_is_provided(current_user, email)
 
-    booking_token_upper_case = token.upper()
-    booking = booking_repository.find_by(booking_token_upper_case, email, offer_id)
+    booking = booking_repository.find_by(token, email, offer_id)
     bookings_validation.check_is_usable(booking)
 
     if check_user_can_validate_bookings(current_user, booking.stock.offer.venue.managingOffererId):
@@ -56,8 +55,7 @@ def get_booking_by_token(token: str):
 def patch_booking_by_token(token: str):
     email = request.args.get("email", None)
     offer_id = dehumanize(request.args.get("offer_id", None))
-    booking_token_upper_case = token.upper()
-    booking = booking_repository.find_by(booking_token_upper_case, email, offer_id)
+    booking = booking_repository.find_by(token, email, offer_id)
 
     if current_user.is_authenticated:
         check_user_has_access_to_offerer(current_user, booking.stock.offer.venue.managingOffererId)
@@ -92,8 +90,7 @@ def get_all_bookings():
 @login_or_api_key_required_v2
 def get_booking_by_token_v2(token: str):
     valid_api_key = _get_api_key_from_header(request)
-    booking_token_upper_case = token.upper()
-    booking = booking_repository.find_by(token=booking_token_upper_case)
+    booking = booking_repository.find_by(token=token)
     offerer_id = booking.stock.offer.venue.managingOffererId
 
     if current_user.is_authenticated:
@@ -115,8 +112,7 @@ def get_booking_by_token_v2(token: str):
 @login_or_api_key_required_v2
 def patch_booking_use_by_token(token: str):
     """Let a pro user mark a booking as used."""
-    booking_token_upper_case = token.upper()
-    booking = booking_repository.find_by(token=booking_token_upper_case)
+    booking = booking_repository.find_by(token=token)
     offerer_id = booking.stock.offer.venue.managingOffererId
     valid_api_key = _get_api_key_from_header(request)
 
@@ -157,7 +153,7 @@ def patch_cancel_booking_by_token(token: str):
 @login_or_api_key_required_v2
 def patch_booking_keep_by_token(token: str):
     """Let a pro user mark a booking as _not_ used."""
-    booking = booking_repository.find_by(token=token.upper())
+    booking = booking_repository.find_by(token=token)
     offerer_id = booking.stock.offer.venue.managingOffererId
     valid_api_key = _get_api_key_from_header(request)
 

@@ -42,7 +42,7 @@ DUO_QUANTITY = 2
 
 
 def find_by(token: str, email: str = None, offer_id: int = None) -> Booking:
-    query = Booking.query.filter_by(token=token)
+    query = Booking.query.filter_by(token=token.upper())
 
     if email:
         query = query.join(User).filter(func.lower(User.email) == email.strip().lower())
@@ -102,7 +102,7 @@ def find_bookings_eligible_for_payment_for_venue(venue_id: int) -> List[Booking]
 
 
 def token_exists(token: str) -> bool:
-    return db.session.query(Booking.query.filter_by(token=token).exists()).scalar()
+    return db.session.query(Booking.query.filter_by(token=token.upper()).exists()).scalar()
 
 
 def find_not_used_and_not_cancelled() -> List[Booking]:
@@ -110,7 +110,7 @@ def find_not_used_and_not_cancelled() -> List[Booking]:
 
 
 def find_used_by_token(token: str) -> Booking:
-    return Booking.query.filter_by(token=token).filter_by(isUsed=True).first()
+    return Booking.query.filter_by(token=token.upper()).filter_by(isUsed=True).first()
 
 
 def count_not_cancelled_bookings_quantity_by_stock_id(stock_id: int) -> int:
