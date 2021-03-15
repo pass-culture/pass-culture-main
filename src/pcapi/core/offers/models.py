@@ -35,6 +35,7 @@ from pcapi.models.has_thumb_mixin import HasThumbMixin
 from pcapi.models.offer_type import ALL_OFFER_TYPES_DICT
 from pcapi.models.offer_type import CATEGORIES_LABEL_DICT
 from pcapi.models.offer_type import CategoryType
+from pcapi.models.offer_type import EXPIRABLE_OFFER_TYPES
 from pcapi.models.offer_type import ProductType
 from pcapi.models.offer_type import ThingType
 from pcapi.models.pc_object import PcObject
@@ -311,6 +312,14 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin, 
         sorted_by_date_desc = sorted(self.mediations, key=lambda m: m.dateCreated, reverse=True)
         only_active = list(filter(lambda m: m.isActive, sorted_by_date_desc))
         return only_active[0] if only_active else None
+
+    @hybrid_property
+    def canExpire(self) -> bool:
+        return self.type in EXPIRABLE_OFFER_TYPES
+
+    @canExpire.expression
+    def canExpire(cls) -> bool:  # pylint: disable=no-self-argument
+        return cls.type.in_(list(EXPIRABLE_OFFER_TYPES))
 
     @property
     def dateRange(self) -> DateTimes:

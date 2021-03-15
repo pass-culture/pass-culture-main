@@ -30,7 +30,6 @@ from pcapi.models import UserOfferer
 from pcapi.models import Venue
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.db import db
-from pcapi.models.offer_type import ThingType
 from pcapi.models.offerer import Offerer
 from pcapi.models.payment import Payment
 from pcapi.models.payment_status import TransactionStatus
@@ -122,16 +121,8 @@ def count_not_cancelled_bookings_quantity_by_stock_id(stock_id: int) -> int:
 
 
 def find_expiring_bookings() -> Query:
-    booking_types_names_that_can_expire = [str(t) for t in ThingType if t.value.get("canExpire", False)]
     today_at_midnight = datetime.combine(date.today(), time(0, 0))
-    return (
-        Booking.query.join(Stock)
-        .join(Offer)
-        .filter(Offer.type.in_(booking_types_names_that_can_expire))
-        .filter(Booking.isCancelled.is_(False))
-        .filter(Booking.isUsed.is_(False))
-        .filter(Booking.dateCreated <= today_at_midnight - conf.BOOKINGS_AUTO_EXPIRY_DELAY)
-    )
+    return Booking.query.join(Stock).join(Offer).filter(Booking.expirationDate <= today_at_midnight)
 
 
 def find_expiring_bookings_ids() -> Query:
@@ -140,22 +131,14 @@ def find_expiring_bookings_ids() -> Query:
 
 def find_soon_to_be_expiring_booking_ordered_by_user(given_date: date = None) -> Query:
     given_date = given_date or date.today()
-    given_date = (
-        datetime.combine(given_date, time(0, 0))
-        + conf.BOOKINGS_EXPIRY_NOTIFICATION_DELAY
-        - conf.BOOKINGS_AUTO_EXPIRY_DELAY
-    )
-    creation_date_to_check_start = datetime.combine(given_date, time(0, 0))
-    creation_date_to_check_end = datetime.combine(given_date, time(23, 59, 59))
-    booking_types_names_that_can_expire = [str(t) for t in ThingType if t.value.get("canExpire", False)]
+    given_date = datetime.combine(given_date, time(0, 0)) + conf.BOOKINGS_EXPIRY_NOTIFICATION_DELAY
+    given_date_start = datetime.combine(given_date, time(0, 0))
+    given_date_end = datetime.combine(given_date, time(23, 59, 59))
 
     return (
         Booking.query.join(Stock)
         .join(Offer)
-        .filter(Offer.type.in_(booking_types_names_that_can_expire))
-        .filter(Booking.isCancelled.is_(False))
-        .filter(Booking.isUsed.is_(False))
-        .filter(Booking.dateCreated.between(creation_date_to_check_start, creation_date_to_check_end))
+        .filter(Booking.expirationDate.between(given_date_start, given_date_end))
         .order_by(Booking.userId)
     )
 

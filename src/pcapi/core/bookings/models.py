@@ -1,5 +1,6 @@
 from datetime import datetime
 import enum
+from typing import Optional
 
 from sqlalchemy import BigInteger
 from sqlalchemy import Boolean
@@ -12,11 +13,14 @@ from sqlalchemy import Integer
 from sqlalchemy import Numeric
 from sqlalchemy import String
 from sqlalchemy import and_
+from sqlalchemy import case
 from sqlalchemy import event
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
 
+from pcapi.core.bookings.conf import BOOKINGS_AUTO_EXPIRY_DELAY
+from pcapi.core.offers.models import Offer
 from pcapi.models.db import Model
 from pcapi.models.pc_object import PcObject
 from pcapi.models.versioned_mixin import VersionedMixin
@@ -68,6 +72,24 @@ class Booking(PcObject, Model, VersionedMixin):
         ),
         nullable=True,
     )
+
+    @hybrid_property
+    def expirationDate(self) -> Optional[datetime]:
+        if not self.stock.offer.canExpire or self.isCancelled or self.isUsed:
+            return None
+        return self.dateCreated + BOOKINGS_AUTO_EXPIRY_DELAY
+
+    @expirationDate.expression
+    def expirationDate(cls):  # pylint: disable=no-self-argument
+        return case(
+            [
+                (
+                    and_(cls.isUsed == False, cls.isCancelled == False, Offer.canExpire == True),
+                    cls.dateCreated + BOOKINGS_AUTO_EXPIRY_DELAY,
+                )
+            ],
+            else_=None,
+        )
 
     @property
     def total_amount(self):

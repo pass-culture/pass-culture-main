@@ -1000,6 +1000,10 @@ class FindSoonToBeExpiredBookingsTest:
         expected_booking = bookings_factories.BookingFactory(
             dateCreated=expired_creation_date, stock__offer__product__type=str(ThingType.AUDIOVISUEL)
         )
+        # offer type not expirable
+        bookings_factories.BookingFactory(
+            dateCreated=expired_creation_date, stock__offer__product__type=str(ThingType.LIVRE_AUDIO)
+        )
         bookings_factories.BookingFactory(
             dateCreated=non_expired_creation_date, stock__offer__product__type=str(ThingType.AUDIOVISUEL)
         )
