@@ -8,9 +8,8 @@ import { getAccountDeletionEmail } from '../domain/getAccountDeletionEmail'
 
 const LegalNotice = ({ pathToProfile, userEmail }) => {
   const mailToHref = getAccountDeletionEmail(userEmail)
-  const termsAndConditionsUrl =
-    'https://docs.passculture.app/textes-normatifs/mentions-legales-et-conditions-generales-dutilisation-de-lapplication-pass-culture'
-  const gdprUrl = 'https://docs.passculture.app/textes-normatifs/charte-des-donnees-personnelles'
+  const termsAndConditionsUrl = 'https://pass.culture.fr/cgu/'
+  const gdprUrl = 'https://pass.culture.fr/donnees-personnelles/'
 
   return (
     <main className="pf-container">

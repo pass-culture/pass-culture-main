@@ -43,9 +43,7 @@ describe('legal notice page', () => {
       .find({ children: 'Conditions Générales d’Utilisation' })
       .parent()
 
-    expect(termsAndConditionsPage.prop('href')).toBe(
-      'https://docs.passculture.app/textes-normatifs/mentions-legales-et-conditions-generales-dutilisation-de-lapplication-pass-culture'
-    )
+    expect(termsAndConditionsPage.prop('href')).toBe('https://pass.culture.fr/cgu/')
     expect(termsAndConditionsPage.prop('rel')).toBe('noopener noreferrer')
     expect(termsAndConditionsPage.prop('target')).toBe('_blank')
     expect(termsAndConditionsPage.prop('title')).toBe(
@@ -66,9 +64,7 @@ describe('legal notice page', () => {
       .find({ children: 'Charte de protection des données personnelles' })
       .parent()
 
-    expect(gdprPage.prop('href')).toBe(
-      'https://docs.passculture.app/textes-normatifs/charte-des-donnees-personnelles'
-    )
+    expect(gdprPage.prop('href')).toBe('https://pass.culture.fr/donnees-personnelles/')
     expect(gdprPage.prop('rel')).toBe('noopener noreferrer')
     expect(gdprPage.prop('target')).toBe('_blank')
     expect(gdprPage.prop('title')).toBe(
