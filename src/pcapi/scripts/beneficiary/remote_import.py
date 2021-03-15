@@ -8,6 +8,7 @@ from typing import Optional
 
 from pcapi import settings
 from pcapi.connectors.api_demarches_simplifiees import get_application_details
+from pcapi.core.users.api import create_reset_password_token
 from pcapi.core.users.models import User
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_validator import get_beneficiary_duplicates
 from pcapi.domain.demarches_simplifiees import get_closed_application_ids_for_demarche_simplifiee
@@ -188,7 +189,8 @@ def _process_creation(
         update_user_attributes_job.delay(new_beneficiary.id)
         try:
             if user is None:
-                send_activation_email(new_beneficiary)
+                token = create_reset_password_token(new_beneficiary)
+                send_activation_email(new_beneficiary, token=token)
             else:
                 send_accepted_as_beneficiary_email(new_beneficiary)
         except MailServiceException as mail_service_exception:

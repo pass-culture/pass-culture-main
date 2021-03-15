@@ -60,7 +60,7 @@ class BeneficiaryUserViewTest:
             "To": "lama@example.com",
             "Vars": {
                 "prenom_user": "Serge",
-                "token": user_created.resetPasswordToken,
+                "token": user_created.tokens[0].value,
                 "email": "lama%40example.com",
                 "env": "-development",
             },

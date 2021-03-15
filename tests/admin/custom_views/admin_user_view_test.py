@@ -3,6 +3,7 @@ from unittest.mock import patch
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
+from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
 
 from tests.conftest import TestClient
@@ -59,7 +60,8 @@ class AdminUserViewTest:
         assert response.status_code == 302
 
         user_created = User.query.filter_by(email="new-admin@example.com").one()
-        assert user_created.resetPasswordToken is not None
+        assert len(user_created.tokens) == 1
+        assert user_created.tokens[0].type == TokenType.RESET_PASSWORD
 
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data == {
@@ -71,7 +73,7 @@ class AdminUserViewTest:
             "To": "new-admin@example.com",
             "Vars": {
                 "lien_validation_mail": "http://localhost:3001/creation-de-mot-de-passe/"
-                + user_created.resetPasswordToken,
+                + user_created.tokens[0].value,
                 "env": "-development",
             },
         }

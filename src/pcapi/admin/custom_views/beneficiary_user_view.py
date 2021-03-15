@@ -9,6 +9,7 @@ from wtforms.validators import DataRequired
 from pcapi import settings
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.admin.custom_views.mixins.suspension_mixin import SuspensionMixin
+from pcapi.core.users.api import create_reset_password_token
 from pcapi.core.users.models import User
 from pcapi.domain.user_emails import send_activation_email
 from pcapi.models import UserOfferer
@@ -33,7 +34,6 @@ class BeneficiaryUserView(SuspensionMixin, BaseAdminView):
         "departementCode",
         "phoneNumber",
         "postalCode",
-        "resetPasswordToken",
         "validationToken",
         "deposit_version",
         "actions",
@@ -48,7 +48,6 @@ class BeneficiaryUserView(SuspensionMixin, BaseAdminView):
         departementCode="Département",
         phoneNumber="Numéro de téléphone",
         postalCode="Code postal",
-        resetPasswordToken="Jeton d'activation et réinitialisation de mot de passe",
         validationToken="Jeton de validation d'adresse email",
         deposit_version="Version du dépot",
     )
@@ -119,7 +118,8 @@ class BeneficiaryUserView(SuspensionMixin, BaseAdminView):
 
     def after_model_change(self, form: Form, model: User, is_created: bool) -> None:
         update_user_attributes_job.delay(model.id)
-        if is_created and not send_activation_email(model):
+        token = create_reset_password_token(model)
+        if is_created and not send_activation_email(model, token=token):
             flash("L'envoi d'email a échoué", "error")
         super().after_model_change(form, model, is_created)
 

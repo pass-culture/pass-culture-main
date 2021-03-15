@@ -6,6 +6,7 @@ from flask_login import logout_user
 
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import repository as users_repo
+from pcapi.core.users.models import TokenType
 from pcapi.flask_app import private_api
 from pcapi.models.api_errors import ApiErrors
 from pcapi.repository.user_queries import find_user_by_email
@@ -32,7 +33,9 @@ def get_profile():
 # @debt api-migration
 @private_api.route("/users/token/<token>", methods=["GET"])
 def check_activation_token_exists(token):
-    user = find_user_by_reset_password_token(token)
+    user = users_repo.get_user_with_valid_token(token, [TokenType.RESET_PASSWORD])
+    if not user:
+        user = find_user_by_reset_password_token(token)
     if user is None:
         return jsonify(), 404
 

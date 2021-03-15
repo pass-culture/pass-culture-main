@@ -21,7 +21,7 @@ class MakeProResetPasswordEmailDataTest:
         repository.save(user_offerer)
 
         # When
-        reset_password_email_data = retrieve_data_for_reset_password_pro_email(user=pro)
+        reset_password_email_data = retrieve_data_for_reset_password_pro_email(user=pro, token=pro.tokens[0])
 
         # Then
         assert reset_password_email_data == {
@@ -41,7 +41,7 @@ class MakeProResetPasswordEmailDataTest:
         repository.save(user_offerer)
 
         # When
-        reset_password_email_data = retrieve_data_for_reset_password_pro_email(user=pro)
+        reset_password_email_data = retrieve_data_for_reset_password_pro_email(user=pro, token=pro.tokens[0])
 
         # Then
         assert reset_password_email_data == {

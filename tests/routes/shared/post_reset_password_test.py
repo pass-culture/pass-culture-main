@@ -5,7 +5,6 @@ from unittest.mock import patch
 from pcapi.connectors.api_recaptcha import InvalidRecaptchaTokenException
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import User
-from pcapi.domain.password import RESET_PASSWORD_TOKEN_LENGTH
 
 from tests.conftest import TestClient
 
@@ -109,28 +108,9 @@ class Returns204:
         # then
         assert response.status_code == 204
         user = User.query.get(user.id)
-        assert len(user.resetPasswordToken) == RESET_PASSWORD_TOKEN_LENGTH
+        assert len(user.tokens) == 1
         now = datetime.utcnow()
-        assert (now + timedelta(hours=23)) < user.resetPasswordTokenValidityLimit < (now + timedelta(hours=25))
-
-    @patch("pcapi.routes.shared.passwords.check_webapp_recaptcha_token", return_value=None)
-    @patch("pcapi.routes.shared.passwords.send_reset_password_email_to_user")
-    def test_should_send_reset_password_email_when_user_is_a_beneficiary(
-        self,
-        send_reset_password_email_to_user_mock,
-        check_recaptcha_token_is_valid_mock,
-        app,
-        db_session,
-    ):
-        # given
-        user = users_factories.UserFactory()
-        data = {"token": "dumbToken", "email": user.email}
-
-        # when
-        TestClient(app.test_client()).post("/users/reset-password", json=data)
-
-        # then
-        send_reset_password_email_to_user_mock.assert_called_once_with(user)
+        assert (now + timedelta(hours=23)) < user.tokens[0].expirationDate < (now + timedelta(hours=25))
 
     @patch("pcapi.routes.shared.passwords.check_webapp_recaptcha_token", return_value=None)
     @patch("pcapi.routes.shared.passwords.send_reset_password_email_to_pro")

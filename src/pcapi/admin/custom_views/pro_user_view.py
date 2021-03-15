@@ -56,7 +56,6 @@ class ProUserView(SuspensionMixin, BaseAdminView):
         "departementCode",
         "phoneNumber",
         "postalCode",
-        "resetPasswordToken",
         "validationToken",
         "actions",
     ]
@@ -70,7 +69,6 @@ class ProUserView(SuspensionMixin, BaseAdminView):
         departementCode="Département",
         phoneNumber="Numéro de téléphone",
         postalCode="Code postal",
-        resetPasswordToken="Jeton d'activation et réinitialisation de mot de passe",
         validationToken="Jeton de validation d'adresse email",
     )
     column_searchable_list = ["id", "publicName", "email", "firstName", "lastName"]

@@ -56,7 +56,6 @@ class ProUserViewTest:
         assert user_created.departementCode == "93"
         assert user_created.postalCode == "93000"
         assert user_created.isBeneficiary is False
-        assert user_created.resetPasswordToken is not None
         assert len(user_created.deposits) == 0
 
         offerers_filtered = Offerer.query.filter_by(siren="123654987").all()

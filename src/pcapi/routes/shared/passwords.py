@@ -6,10 +6,10 @@ from flask_login import login_required
 
 from pcapi import settings
 from pcapi.connectors.api_recaptcha import check_webapp_recaptcha_token
+from pcapi.core.users import repository as users_repo
+from pcapi.core.users.models import TokenType
 from pcapi.domain.password import check_password_strength
 from pcapi.domain.password import check_password_validity
-from pcapi.domain.password import check_reset_token_validity
-from pcapi.domain.password import generate_reset_token
 from pcapi.domain.password import validate_change_password_request
 from pcapi.domain.password import validate_new_password_request
 from pcapi.domain.user_emails import send_reset_password_email_to_pro
@@ -60,9 +60,6 @@ def post_for_password_token(body: ResetPasswordBodyModel) -> None:
         # Here we also return a 204 to prevent attacker from discovering which email exists in db
         return
 
-    generate_reset_token(user)
-    repository.save(user)
-
     if user.isBeneficiary:
         send_email = send_reset_password_email_to_user
     else:
@@ -83,14 +80,16 @@ def post_new_password():
     validate_new_password_request(request)
     token = request.get_json()["token"]
     new_password = request.get_json()["newPassword"]
-    user = find_user_by_reset_password_token(token)
+    user = users_repo.get_user_with_valid_token(token, [TokenType.RESET_PASSWORD])
+    # TODO(xordoquy): remove the fallback on "old-style" token once the migration is over
+    if not user:
+        user = find_user_by_reset_password_token(token)
 
     if not user:
         errors = ApiErrors()
         errors.add_error("token", "Votre lien de changement de mot de passe est invalide.")
         raise errors
 
-    check_reset_token_validity(user)
     check_password_strength("newPassword", new_password)
 
     user.setPassword(new_password)

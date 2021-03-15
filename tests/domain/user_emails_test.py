@@ -13,7 +13,6 @@ from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.offers.factories import UserOffererFactory
 from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
-from pcapi.core.users.models import Token
 from pcapi.domain.user_emails import send_activation_email
 from pcapi.domain.user_emails import send_admin_user_validation_email
 from pcapi.domain.user_emails import send_attachment_validation_email_to_pro_offerer
@@ -282,8 +281,7 @@ class SendOffererBookingsRecapEmailAfterOffererCancellationTest:
 
 @pytest.mark.usefixtures("db_session")
 class SendProUserValidationEmailTest:
-    @patch("pcapi.domain.user_emails.make_pro_user_validation_email", return_value={"Html-part": ""})
-    def test_sends_email_to_pro_user(self, make_pro_user_validation_email):
+    def test_sends_email_to_pro_user(self):
         # Given
         user = create_user()
         user.generate_validation_token()
@@ -297,14 +295,13 @@ class SendProUserValidationEmailTest:
 
 @pytest.mark.usefixtures("db_session")
 class SendAdminUserValidationEmailTest:
-    @patch("pcapi.domain.user_emails.make_admin_user_validation_email", return_value={"Html-part": ""})
-    def test_send_mail_to_admin_user(self, make_admin_user_validation_email):
+    def test_send_mail_to_admin_user(self):
         # Given
         user = create_user()
-        user.generate_validation_token()
+        token = users_factories.ResetPasswordToken(user=user)
 
         # When
-        send_admin_user_validation_email(user)
+        send_admin_user_validation_email(user, token)
 
         # Then
         assert mails_testing.outbox[0].sent_data["To"] == user.email
@@ -316,13 +313,14 @@ class SendActivationEmailTest:
     def test_send_activation_email(self, mocked_get_activation_email_data):
         # given
         beneficiary = users_factories.UserFactory.build()
+        token = users_factories.EmailValidationToken.build(user=beneficiary)
         mocked_get_activation_email_data.return_value = {"Html-part": ""}
 
         # when
-        send_activation_email(beneficiary)
+        send_activation_email(beneficiary, token=token)
 
         # then
-        mocked_get_activation_email_data.assert_called_once_with(user=beneficiary)
+        mocked_get_activation_email_data.assert_called_once_with(user=beneficiary, token=token)
         assert mails_testing.outbox[0].sent_data["Html-part"] == ""
 
     def test_send_activation_email_for_native(self):
@@ -365,13 +363,13 @@ class SendResetPasswordProEmailTest:
         self, mock_retrieve_data_for_reset_password_pro_email, app
     ):
         # given
-        user = create_user(email="pro@example.com", reset_password_token="AZ45KNB99H")
+        user = users_factories.UserFactory(email="pro@example.com")
 
         # when
         send_reset_password_email_to_pro(user)
 
         # then
-        mock_retrieve_data_for_reset_password_pro_email.assert_called_once_with(user)
+        mock_retrieve_data_for_reset_password_pro_email.assert_called_once_with(user, user.tokens[0])
         assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 779295
 
 
@@ -384,13 +382,13 @@ class SendResetPasswordUserEmailTest:
         self, mock_retrieve_data_for_reset_password_user_email, app
     ):
         # given
-        user = create_user(email="bobby@example.com", first_name="Bobby", reset_password_token="AZ45KNB99H")
+        user = users_factories.UserFactory(email="bobby@example.com")
 
         # when
         send_reset_password_email_to_user(user)
 
         # then
-        mock_retrieve_data_for_reset_password_user_email.assert_called_once_with(user)
+        mock_retrieve_data_for_reset_password_user_email.assert_called_once_with(user, user.tokens[0])
         assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 912168
 
     @patch(
@@ -401,16 +399,13 @@ class SendResetPasswordUserEmailTest:
         self, retrieve_data_for_reset_password_native_app_email
     ):
         # given
-        user = create_user(email="bobby@example.com", first_name="Bobby", reset_password_token="AZ45KNB99H")
-        token = Token(value="token-value", expirationDate=datetime.now())
+        user = users_factories.UserFactory(email="bobby@example.com")
 
         # when
-        send_reset_password_email_to_native_app_user(user.email, token.value, token.expirationDate)
+        send_reset_password_email_to_native_app_user(user)
 
         # then
-        retrieve_data_for_reset_password_native_app_email.assert_called_once_with(
-            user.email, token.value, token.expirationDate
-        )
+        retrieve_data_for_reset_password_native_app_email.assert_called_once_with(user, user.tokens[0])
         assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 12345
 
 

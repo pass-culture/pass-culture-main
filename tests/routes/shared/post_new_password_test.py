@@ -30,9 +30,7 @@ class PostNewPassword:
 
             # then
             assert response.status_code == 400
-            assert response.json["token"] == [
-                "Votre lien de changement de mot de passe est périmé. Veuillez effectuer une nouvelle demande."
-            ]
+            assert response.json["token"] == ["Votre lien de changement de mot de passe est invalide."]
 
         @pytest.mark.usefixtures("db_session")
         def when_the_token_is_unknown(self, app):

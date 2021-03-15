@@ -2,10 +2,8 @@ from typing import Optional
 
 from pcapi.core.payments import api as payments_api
 from pcapi.core.users.models import User
-from pcapi.domain.password import generate_reset_token
 from pcapi.domain.password import random_hashed_password
 from pcapi.models.beneficiary_import_status import ImportStatus
-from pcapi.scripts.beneficiary import THIRTY_DAYS_IN_HOURS
 
 
 IMPORT_STATUS_MODIFICATION_RULE = (
@@ -32,7 +30,6 @@ def create_beneficiary_from_application(application_detail: dict, user: Optional
     beneficiary.activity = application_detail["activity"]
     beneficiary.isAdmin = False
     beneficiary.hasSeenTutorials = False
-    generate_reset_token(beneficiary, validity_duration_hours=THIRTY_DAYS_IN_HOURS)
 
     beneficiary.isBeneficiary = True
     application_id = application_detail["application_id"]

@@ -16,7 +16,6 @@ class PartnerUserViewTest:
 
         # then
         assert user.password is not None
-        assert user.resetPasswordToken is not None
 
     def test_should_preserve_password_on_edition(self, app, db_session):
         # given

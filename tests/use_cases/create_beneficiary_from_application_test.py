@@ -7,6 +7,7 @@ import pytest
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users import api as users_api
+from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsADuplicate
@@ -77,8 +78,6 @@ def test_saved_a_beneficiary_from_application(stubed_random_token, mocked_send_a
     assert beneficiary.phoneNumber == "0123456789"
     assert beneficiary.postalCode == "35123"
     assert beneficiary.publicName == "Thomas DURAND"
-    assert beneficiary.resetPasswordToken == "token"
-    assert beneficiary.resetPasswordTokenValidityLimit == datetime(2013, 6, 14, 9)
     assert beneficiary.notificationSubscriptions == {"marketing_push": True, "marketing_email": True}
 
     deposit = Deposit.query.one()
@@ -90,6 +89,9 @@ def test_saved_a_beneficiary_from_application(stubed_random_token, mocked_send_a
     assert beneficiary_import.currentStatus == ImportStatus.CREATED
     assert beneficiary_import.applicationId == application_id
     assert beneficiary_import.beneficiary == beneficiary
+
+    assert len(beneficiary.tokens) == 1
+    assert beneficiary.tokens[0].type == TokenType.RESET_PASSWORD
 
     mocked_send_activation_email.assert_called_once()
 

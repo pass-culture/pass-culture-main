@@ -1,5 +1,4 @@
 from datetime import datetime
-from datetime import timedelta
 from decimal import Decimal
 
 import pytest
@@ -54,7 +53,6 @@ class IsImportStatusChangeAllowedTest:
 class CreateBeneficiaryFromApplicationTest:
     def test_return_newly_created_user(self):
         # given
-        THIRTY_DAYS_FROM_NOW = (datetime.utcnow() + timedelta(days=30)).date()
         beneficiary_information = {
             "department": "67",
             "last_name": "Doe",
@@ -83,15 +81,12 @@ class CreateBeneficiaryFromApplicationTest:
         assert beneficiary.isBeneficiary == True
         assert beneficiary.isAdmin == False
         assert beneficiary.password is not None
-        assert beneficiary.resetPasswordToken is not None
-        assert beneficiary.resetPasswordTokenValidityLimit.date() == THIRTY_DAYS_FROM_NOW
         assert beneficiary.activity == "Lycéen"
         assert beneficiary.civility == "Mme"
         assert beneficiary.hasSeenTutorials == False
 
     def test_updates_existing_user(self):
         # given
-        THIRTY_DAYS_FROM_NOW = (datetime.utcnow() + timedelta(days=30)).date()
         beneficiary_information = {
             "department": "67",
             "last_name": "Doe",
@@ -109,6 +104,7 @@ class CreateBeneficiaryFromApplicationTest:
             email=beneficiary_information["email"],
             password="123azerty@56",
             birthdate=beneficiary_information["birth_date"],
+            send_activation_mail=False,
         )
         db.session.add(user)
         db.session.flush()
@@ -131,8 +127,6 @@ class CreateBeneficiaryFromApplicationTest:
         assert beneficiary.isBeneficiary == True
         assert beneficiary.isAdmin == False
         assert beneficiary.password is not None
-        assert beneficiary.resetPasswordToken is not None
-        assert beneficiary.resetPasswordTokenValidityLimit.date() == THIRTY_DAYS_FROM_NOW
         assert beneficiary.activity == "Lycéen"
         assert beneficiary.civility == "Mme"
         assert beneficiary.hasSeenTutorials == False

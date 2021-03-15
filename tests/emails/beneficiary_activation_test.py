@@ -18,7 +18,7 @@ class GetActivationEmailTest:
         user = create_user(email="fabien+test@example.net", first_name="Fabien", reset_password_token="ABCD123")
 
         # When
-        activation_email_data = beneficiary_activation.get_activation_email_data(user)
+        activation_email_data = beneficiary_activation.get_activation_email_data(user, user.tokens[0])
 
         # Then
         assert activation_email_data == {

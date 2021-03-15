@@ -3,7 +3,6 @@ import pcapi.core.users.factories as users_factories
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.utils.mailing import make_admin_user_validation_email
 from pcapi.utils.mailing import make_pro_user_validation_email
-from pcapi.utils.token import random_token
 
 from tests.conftest import clean_database
 
@@ -35,18 +34,18 @@ class AdminValidationEmailsTest:
     @clean_database
     def test_make_admin_user_validation_email_includes_validation_url_with_token_and_user_email(self, app):
         # Given
-        reset_token = random_token()
-        user = users_factories.UserFactory(email="admin@example.com", isAdmin=True, resetPasswordToken=reset_token)
+        user = users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        users_factories.ResetPasswordToken(user=user, value="ABCDEF")
 
         # When
-        email = make_admin_user_validation_email(user)
+        email = make_admin_user_validation_email(user, user.tokens[0].value)
         expected = {
             "FromName": "pass Culture admin",
             "Subject": "[pass Culture admin] Validation de votre adresse email pour le pass Culture",
             "MJ-TemplateID": 1660341,
             "MJ-TemplateLanguage": True,
             "Vars": {
-                "lien_validation_mail": f"{settings.PRO_URL}/creation-de-mot-de-passe/{reset_token}",
+                "lien_validation_mail": f"{settings.PRO_URL}/creation-de-mot-de-passe/ABCDEF",
             },
         }
 

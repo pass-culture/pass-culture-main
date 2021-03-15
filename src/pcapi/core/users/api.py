@@ -12,6 +12,8 @@ from jwt import ExpiredSignatureError
 from jwt import InvalidSignatureError
 from jwt import InvalidTokenError
 
+# TODO (viconnex): fix circular import of pcapi/models/__init__.py
+from pcapi import models  # pylint: disable=unused-import
 from pcapi import settings
 from pcapi.core import mails
 from pcapi.core.bookings.conf import LIMIT_CONFIGURATIONS
@@ -30,7 +32,6 @@ from pcapi.core.users.utils import encode_jwt_payload
 from pcapi.core.users.utils import format_email
 from pcapi.domain import user_emails
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
-from pcapi.domain.password import generate_reset_token
 from pcapi.domain.password import random_hashed_password
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.emails.beneficiary_email_change import build_beneficiary_confirmation_email_change_data
@@ -43,7 +44,10 @@ from pcapi.models.user_session import UserSession
 from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
-from pcapi.scripts.beneficiary import THIRTY_DAYS_IN_HOURS
+
+
+logger = logging.getLogger(__name__)
+
 from pcapi.utils.mailing import MailServiceException
 from pcapi.workers.push_notification_job import update_user_attributes_job
 
@@ -166,11 +170,7 @@ def request_password_reset(user: User) -> None:
     if not user or not user.isActive:
         return
 
-    reset_password_token = create_reset_password_token(user)
-
-    is_email_sent = user_emails.send_reset_password_email_to_native_app_user(
-        user.email, reset_password_token.value, reset_password_token.expirationDate
-    )
+    is_email_sent = user_emails.send_reset_password_email_to_native_app_user(user)
 
     if not is_email_sent:
         logger.error("Email service failure when user requested password reset for email '%s'", user.email)
@@ -179,7 +179,6 @@ def request_password_reset(user: User) -> None:
 
 def fulfill_account_password(user: User) -> User:
     _generate_random_password(user)
-
     return user
 
 
@@ -194,7 +193,6 @@ def fulfill_beneficiary_data(user: User, deposit_source: str, deposit_version: i
 
 def _generate_random_password(user):
     user.password = random_hashed_password()
-    generate_reset_token(user, validity_duration_hours=THIRTY_DAYS_IN_HOURS)
 
 
 def suspend_account(user: User, reason: constants.SuspensionReason, actor: User) -> None:

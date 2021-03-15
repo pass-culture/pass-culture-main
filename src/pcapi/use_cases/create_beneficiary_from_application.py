@@ -1,4 +1,5 @@
 from pcapi.connectors.beneficiaries import get_application_by_id
+from pcapi.core.users.api import create_reset_password_token
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsADuplicate
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import CantRegisterBeneficiary
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_validator import validate
@@ -34,7 +35,8 @@ class CreateBeneficiaryFromApplication:
         else:
             beneficiary = self.beneficiary_repository.save(beneficiary_pre_subscription, user=user)
             if user is None:
-                send_activation_email(user=beneficiary)
+                token = create_reset_password_token(beneficiary)
+                send_activation_email(user=beneficiary, token=token)
             else:
                 send_accepted_as_beneficiary_email(user=beneficiary)
 

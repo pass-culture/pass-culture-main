@@ -12,6 +12,7 @@ from pcapi import settings
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.models import Mediation
+from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
 from pcapi.domain.payments import PaymentDetails
 from pcapi.domain.price_rule import PriceRule
@@ -37,6 +38,7 @@ from pcapi.models import PaymentStatus
 from pcapi.models import Provider
 from pcapi.models import Stock
 from pcapi.models import ThingType
+from pcapi.models import Token
 from pcapi.models import UserOfferer
 from pcapi.models import Venue
 from pcapi.models import VenueProvider
@@ -445,8 +447,14 @@ def create_user(
         user.setPassword(password)
     else:
         user.setPassword(PLAIN_DEFAULT_TESTING_PASSWORD)
-        user.resetPasswordToken = reset_password_token
-        user.resetPasswordTokenValidityLimit = reset_password_token_validity_limit
+
+    if reset_password_token:
+        Token(
+            user=user,
+            value=reset_password_token,
+            expirationDate=reset_password_token_validity_limit,
+            type=TokenType.RESET_PASSWORD,
+        )
 
     return user
 

@@ -1,4 +1,3 @@
-from datetime import datetime
 import logging
 from typing import List
 
@@ -9,6 +8,7 @@ from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
+from pcapi.core.users.models import Token
 from pcapi.core.users.models import User
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
 from pcapi.emails import beneficiary_activation
@@ -93,21 +93,20 @@ def send_warning_to_beneficiary_after_pro_booking_cancellation(booking: Booking)
 
 
 def send_reset_password_email_to_user(user: User) -> bool:
-    data = retrieve_data_for_reset_password_user_email(user)
+    token = users_api.create_reset_password_token(user)
+    data = retrieve_data_for_reset_password_user_email(user, token)
     return mails.send(recipients=[user.email], data=data)
 
 
-def send_reset_password_email_to_native_app_user(
-    user_email: str,
-    token_value: str,
-    expiration_date: datetime,
-) -> bool:
-    data = retrieve_data_for_reset_password_native_app_email(user_email, token_value, expiration_date)
-    return mails.send(recipients=[user_email], data=data)
+def send_reset_password_email_to_native_app_user(user: User) -> bool:
+    token = users_api.create_reset_password_token(user)
+    data = retrieve_data_for_reset_password_native_app_email(user, token)
+    return mails.send(recipients=[user.email], data=data)
 
 
 def send_reset_password_email_to_pro(user: User) -> None:
-    data = retrieve_data_for_reset_password_pro_email(user)
+    token = users_api.create_reset_password_token(user)
+    data = retrieve_data_for_reset_password_pro_email(user, token)
     mails.send(recipients=[user.email], data=data)
 
 
@@ -163,8 +162,8 @@ def send_pro_user_validation_email(user: User) -> None:
     mails.send(recipients=[user.email], data=data)
 
 
-def send_admin_user_validation_email(user: User) -> None:
-    data = make_admin_user_validation_email(user)
+def send_admin_user_validation_email(user: User, token: Token) -> None:
+    data = make_admin_user_validation_email(user, token.value)
     mails.send(recipients=[user.email], data=data)
 
 
@@ -175,11 +174,11 @@ def send_soon_to_be_expired_bookings_recap_email_to_beneficiary(beneficiary: Use
 
 def send_activation_email(
     user: User,
+    token: users_models.Token,
     native_version: bool = False,
-    token: users_models.Token = None,
 ) -> bool:
     if not native_version:
-        data = beneficiary_activation.get_activation_email_data(user=user)
+        data = beneficiary_activation.get_activation_email_data(user=user, token=token)
     else:
         data = beneficiary_activation.get_activation_email_data_for_native(user=user, token=token)
     return mails.send(recipients=[user.email], data=data)

@@ -31,7 +31,6 @@ class PartnerUserView(BaseAdminView):
         "departementCode",
         "phoneNumber",
         "postalCode",
-        "resetPasswordToken",
     ]
     column_labels = dict(
         email="Email",
@@ -42,7 +41,6 @@ class PartnerUserView(BaseAdminView):
         departementCode="Département",
         phoneNumber="Numéro de téléphone",
         postalCode="Code postal",
-        resetPasswordToken="Jeton de réinitialisation du mot de passe",
     )
     column_searchable_list = ["id", "publicName", "email", "firstName", "lastName"]
     column_filters: List[str] = []

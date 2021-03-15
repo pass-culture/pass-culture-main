@@ -6,6 +6,7 @@ from wtforms.validators import DataRequired
 from wtforms.validators import Length
 
 from pcapi.admin.base_configuration import BaseAdminView
+from pcapi.core.users import api as users_api
 from pcapi.domain.user_emails import send_admin_user_validation_email
 
 
@@ -68,6 +69,7 @@ class AdminUserView(BaseAdminView):
         model.needsToFillCulturalSurvey = False
 
         fulfill_account_password(model)
-        send_admin_user_validation_email(model)
+        token = users_api.create_reset_password_token(model)
+        send_admin_user_validation_email(model, token)
 
         super().on_model_change(form, model, is_created)

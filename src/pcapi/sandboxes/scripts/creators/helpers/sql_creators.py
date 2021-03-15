@@ -77,8 +77,6 @@ def create_user(
         user.setPassword(password)
     else:
         user.setPassword(PLAIN_DEFAULT_TESTING_PASSWORD)
-        user.resetPasswordToken = reset_password_token
-        user.resetPasswordTokenValidityLimit = reset_password_token_validity_limit
 
     return user
 

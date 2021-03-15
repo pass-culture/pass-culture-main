@@ -1,5 +1,3 @@
-from datetime import datetime
-from datetime import timedelta
 import random
 import re
 import string
@@ -8,7 +6,6 @@ from typing import Dict
 from pcapi.core.users.models import User
 from pcapi.core.users.models import hash_password
 from pcapi.models import ApiErrors
-from pcapi.repository import repository
 from pcapi.utils.token import random_token
 
 
@@ -58,12 +55,6 @@ def validate_change_password_request(json: Dict) -> None:
         raise api_errors
 
 
-def generate_reset_token(user: User, validity_duration_hours: int = 24) -> None:
-    token = random_token(length=RESET_PASSWORD_TOKEN_LENGTH)
-    user.resetPasswordToken = token
-    user.resetPasswordTokenValidityLimit = datetime.utcnow() + timedelta(hours=validity_duration_hours)
-
-
 def validate_new_password_request(request):
     if "token" not in request.get_json():
         errors = ApiErrors()
@@ -73,19 +64,6 @@ def validate_new_password_request(request):
     if "newPassword" not in request.get_json():
         errors = ApiErrors()
         errors.add_error("newPassword", "Vous devez renseigner un nouveau mot de passe.")
-        raise errors
-
-
-def check_reset_token_validity(user):
-    if datetime.utcnow() > user.resetPasswordTokenValidityLimit:
-        user.resetPasswordToken = None
-        user.resetPasswordTokenValidityLimit = None
-        repository.save(user)
-
-        errors = ApiErrors()
-        errors.add_error(
-            "token", "Votre lien de changement de mot de passe est périmé. Veuillez effectuer une nouvelle demande."
-        )
         raise errors
 
 

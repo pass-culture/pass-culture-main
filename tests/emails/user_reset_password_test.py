@@ -21,24 +21,27 @@ class MakeUserResetPasswordEmailDataTest:
         repository.save(user_offerer)
 
         # When
-        reset_password_email_data = retrieve_data_for_reset_password_user_email(user=user)
+        reset_password_email_data = retrieve_data_for_reset_password_user_email(user=user, token=user.tokens[0])
 
         # Then
         assert reset_password_email_data == {
             "MJ-TemplateID": 912168,
             "MJ-TemplateLanguage": True,
-            "Vars": {"prenom_user": "Bobby", "token": user.resetPasswordToken},
+            "Vars": {"prenom_user": "Bobby", "token": "ABCDEFG"},
         }
 
 
 class NativeAppUserResetPasswordEmailDataTest:
     def test_email_is_encoded(self, app):
-        # When
-        reset_password_email_data = retrieve_data_for_reset_password_native_app_email(
-            user_email="ewing+demo@example.com",
-            token_value="abc",
-            expiration_date=datetime(2020, 1, 1),
+        # Given
+        user = create_user(
+            email="ewing+demo@example.com",
+            first_name="Bobby",
+            reset_password_token="abc",
+            reset_password_token_validity_limit=datetime(2020, 1, 1),
         )
+        # When
+        reset_password_email_data = retrieve_data_for_reset_password_native_app_email(user, user.tokens[0])
 
         # Then
         assert reset_password_email_data == {

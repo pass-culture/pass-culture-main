@@ -375,7 +375,6 @@ class FulfillBeneficiaryDataTest:
         # then
         assert isinstance(user, User)
         assert user.password is not None
-        assert user.resetPasswordToken is not None
         assert len(user.deposits) == 1
 
     def test_fill_user_with_specific_deposit_version(self):
@@ -388,7 +387,6 @@ class FulfillBeneficiaryDataTest:
         # then
         assert isinstance(user, User)
         assert user.password is not None
-        assert user.resetPasswordToken is not None
         assert len(user.deposits) == 1
         assert user.deposit_version == 2
 
@@ -404,7 +402,6 @@ class FulfillAccountPasswordTest:
         # then
         assert isinstance(user, User)
         assert user.password is not None
-        assert user.resetPasswordToken is not None
         assert len(user.deposits) == 0
 
 
