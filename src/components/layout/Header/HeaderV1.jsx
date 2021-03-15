@@ -18,7 +18,7 @@ import { ReactComponent as RefundsSvg } from './assets/refunds.svg'
 
 // FIXME (Adrien S, 11/12/2020): Inject StyleGuide as a props, to avoid mocks and increase testability
 
-class Header extends PureComponent {
+class HeaderV1 extends PureComponent {
   onHandleSuccessRedirect = () => '/connexion'
 
   onSignoutClick = () => {
@@ -161,10 +161,10 @@ class Header extends PureComponent {
   }
 }
 
-Header.propTypes = {
+HeaderV1.propTypes = {
   dispatch: PropTypes.func.isRequired,
   name: PropTypes.string.isRequired,
   offerers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 }
 
-export default Header
+export default HeaderV1

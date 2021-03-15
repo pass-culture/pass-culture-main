@@ -4,7 +4,9 @@ import { compose } from 'redux'
 
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 
-import Header from './Header'
+import { selectIsFeatureActive } from '../../../store/selectors/data/featuresSelectors'
+
+import HeaderSwitch from './HeaderSwitch'
 
 export const mapStateToProps = state => {
   const { data } = state
@@ -13,9 +15,10 @@ export const mapStateToProps = state => {
   const { offerers } = data
 
   return {
+    isNewHomepageActive: selectIsFeatureActive(state, 'PRO_HOMEPAGE'),
     name,
     offerers,
   }
 }
 
-export default compose(withRouter, connect(mapStateToProps))(Header)
+export default compose(withRouter, connect(mapStateToProps))(HeaderSwitch)

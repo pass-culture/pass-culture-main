@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 
-import Header from '../Header/Header'
+import HeaderContainer from '../Header/HeaderContainer'
 import PageTitle from '../PageTitle/PageTitle'
 import Spinner from '../Spinner'
 
@@ -32,19 +32,14 @@ class CsvTable extends PureComponent {
   handlePrintCurrentView = () => window.print()
 
   render() {
-    const { currentUser } = this.props
     const { dataFromCsv, isLoading } = this.state
     const { data = [], headers = [] } = dataFromCsv
-    const { publicName } = currentUser
     const hasAtLeastData = data.length > 0
 
     return (
       <>
         <PageTitle title="Liste de vos remboursements" />
-        <Header
-          name={publicName}
-          offerers={[]}
-        />
+        <HeaderContainer />
         {isLoading && (
           <div id="spinner-container">
             <Spinner />
@@ -105,7 +100,6 @@ class CsvTable extends PureComponent {
 }
 
 CsvTable.propTypes = {
-  currentUser: PropTypes.shape().isRequired,
   downloadFileOrNotifyAnError: PropTypes.func.isRequired,
 }
 

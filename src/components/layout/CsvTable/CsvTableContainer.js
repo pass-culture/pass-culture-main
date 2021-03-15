@@ -2,17 +2,9 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
-import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
-
 import csvConverter from '../CsvTableButton/utils/csvConverter'
 
 import CsvTable from './CsvTable'
-
-export function mapStateToProps(state) {
-  return {
-    currentUser: selectCurrentUser(state),
-  }
-}
 
 export const mapDispatchToProps = (dispatch, ownProps) => {
   const { location } = ownProps
@@ -35,4 +27,4 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
   }
 }
 
-export default compose(withRouter, connect(mapStateToProps, mapDispatchToProps))(CsvTable)
+export default compose(withRouter, connect(null, mapDispatchToProps))(CsvTable)

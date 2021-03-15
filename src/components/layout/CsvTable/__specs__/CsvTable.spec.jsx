@@ -1,7 +1,7 @@
 import { shallow } from 'enzyme'
 import React from 'react'
 
-import Header from '../../Header/Header'
+import HeaderContainer from '../../Header/HeaderContainer'
 import Spinner from '../../Spinner'
 import CsvTable from '../CsvTable'
 
@@ -44,10 +44,8 @@ describe('src | components | layout | CsvTable', () => {
       const wrapper = shallow(<CsvTable {...props} />)
 
       // then
-      const header = wrapper.find(Header)
+      const header = wrapper.find(HeaderContainer)
       expect(header).toHaveLength(1)
-      expect(header.prop('name')).toBe('super nom')
-      expect(header.prop('offerers')).toStrictEqual([])
     })
 
     it('should render a Spinner component by default when CsvTable is mounted', () => {

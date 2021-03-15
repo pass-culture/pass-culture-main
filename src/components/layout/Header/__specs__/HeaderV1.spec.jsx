@@ -7,7 +7,7 @@ import { MemoryRouter } from 'react-router'
 import { configureTestStore } from 'store/testUtils'
 
 import * as constants from '../_constants'
-import Header from '../Header'
+import HeaderV1 from '../HeaderV1'
 
 const renderHeader = props => {
   const stubStore = configureTestStore()
@@ -15,7 +15,7 @@ const renderHeader = props => {
   return render(
     <Provider store={stubStore}>
       <MemoryRouter>
-        <Header {...props} />
+        <HeaderV1 {...props} />
       </MemoryRouter>
     </Provider>
   )
