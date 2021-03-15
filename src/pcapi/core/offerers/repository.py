@@ -5,7 +5,7 @@ from pcapi.models import Offerer
 from pcapi.models import UserOfferer
 
 
-def get_all(user: User, filters: dict) -> List[Offerer]:
+def get_all_offerers_for_user(user: User, filters: dict) -> List[Offerer]:
     query = Offerer.query.distinct()
 
     if not user.isAdmin:

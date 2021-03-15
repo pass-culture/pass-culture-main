@@ -7,7 +7,7 @@ from flask_login import current_user
 from flask_login import login_required
 
 from pcapi.core.offerers.api import create_digital_venue
-from pcapi.core.offerers.repository import get_all
+from pcapi.core.offerers.repository import get_all_offerers_for_user
 from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
 from pcapi.flask_app import private_api
 from pcapi.infrastructure.container import list_offerers_for_pro_user
@@ -82,7 +82,7 @@ def get_offerers():
 @login_required
 @spectree_serialize(response_model=GetOfferersNamesResponseModel)
 def list_offerers_names(query: GetOfferersNamesQueryModel) -> GetOfferersNamesResponseModel:
-    offerers = get_all(
+    offerers = get_all_offerers_for_user(
         user=current_user,
         filters={
             "validated": query.validated,
