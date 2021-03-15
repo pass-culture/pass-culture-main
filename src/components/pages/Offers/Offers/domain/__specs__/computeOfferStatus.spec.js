@@ -14,7 +14,7 @@ describe('compute offer status', () => {
       const status = computeOfferStatus(offer, stocks)
 
       // Then
-      expect(status).toBe('validée')
+      expect(status).toBe('inactive')
     })
 
     it('should be "refusée" if validation is rejected', () => {
@@ -132,7 +132,7 @@ describe('compute offer status', () => {
         const status = computeOfferStatus(offer, stocks)
 
         // Then
-        expect(status).toBe('en attente')
+        expect(status).toBe('validation')
       })
     })
   })

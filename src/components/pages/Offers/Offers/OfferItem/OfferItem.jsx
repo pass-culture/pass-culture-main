@@ -32,9 +32,9 @@ const OFFER_STATUS_PROPERTIES = {
     className: 'status-awaiting',
     icon: 'ico-status-awaiting',
   },
-  [OFFER_STATUS.VALIDATED]: {
-    className: 'status-validated',
-    icon: 'ico-status-validated',
+  [OFFER_STATUS.INACTIVE]: {
+    className: 'status-inactive',
+    icon: 'ico-status-inactive',
   },
 }
 

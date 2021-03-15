@@ -3,6 +3,6 @@ export const OFFER_STATUS = {
   SOLD_OUT: 'épuisée',
   ACTIVE: 'active',
   REJECTED: 'refusée',
-  AWAITING: 'en attente',
-  VALIDATED: 'validée',
+  AWAITING: 'validation',
+  INACTIVE: 'inactive',
 }
