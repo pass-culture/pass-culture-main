@@ -81,6 +81,13 @@ class VirtualVenueTypeFactory(BaseFactory):
     label = "Offre numérique"
 
 
+class VenueTypeFactory(BaseFactory):
+    class Meta:
+        model = models.VenueType
+
+    label = "Librairie"
+
+
 class ProductFactory(BaseFactory):
     class Meta:
         model = models.Product

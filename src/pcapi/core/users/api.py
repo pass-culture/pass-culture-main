@@ -388,6 +388,9 @@ def create_pro_user(pro_user: ProUserCreationBodyModel) -> User:
     new_pro_user.needsToFillCulturalSurvey = False
     new_pro_user.generate_validation_token()
 
+    if pro_user.postal_code:
+        new_pro_user.departementCode = PostalCode(pro_user.postal_code).get_departement_code()
+
     return new_pro_user
 
 

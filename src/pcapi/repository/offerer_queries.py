@@ -14,7 +14,7 @@ def find_by_id(id):  # pylint: disable=redefined-builtin
     return Offerer.query.filter_by(id=id).first()
 
 
-def find_by_siren(siren):
+def find_by_siren(siren) -> Offerer:
     return Offerer.query.filter_by(siren=siren).first()
 
 
