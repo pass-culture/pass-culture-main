@@ -5,6 +5,7 @@ from typing import Dict
 from pcapi.core.offerers.api import create_digital_venue
 from pcapi.core.offerers.models import Venue
 from pcapi.core.users.api import create_pro_user
+from pcapi.models import ApiErrors
 from pcapi.models import Offerer
 from pcapi.models import VenueType
 from pcapi.repository import repository
@@ -54,7 +55,7 @@ def create_venue_from_csv(row: Dict, offerer_siren: str) -> Venue:
     return venue
 
 
-def _get_postal_code(row):
+def _get_postal_code(row: Dict) -> str:
     return row["code_postal"] if row["code_postal"] else row["Postal Code"]
 
 
@@ -73,7 +74,7 @@ def create_user_model_from_csv(row: Dict) -> ProUserCreationBodyModel:
     return pro_user_creation_model
 
 
-def import_new_offerer_from_csv(row: Dict):
+def import_new_offerer_from_csv(row: Dict) -> None:
     # We can't process a row without a postal code
     if not row["Postal Code"] and not row["code_postal"]:
         json_logger.warning("Unable to import this line %s - %s", row[""], row["Company ID"])
@@ -101,7 +102,11 @@ def import_new_offerer_from_csv(row: Dict):
     if row["SIRET"]:
         venue = create_venue_from_csv(row, offerer.siren)
         venue.managingOfferer = offerer
-        repository.save(venue)
+        try:
+            repository.save(venue)
+        except ApiErrors:
+            json_logger.warning("Unable to save this venue %s - %s", row[""], row["Company ID"])
+
     else:
         json_logger.warning("Unable to import this venue %s - %s", row[""], row["Company ID"])
 

@@ -525,3 +525,45 @@ class CreateAnEntireOffererFromCSVRowTest:
         assert Offerer.query.count() == 0
         assert UserOfferer.query.count() == 0
         assert Venue.query.count() == 0
+
+    @pytest.mark.usefixtures("db_session")
+    def test_when_siret_wrong(self, app):
+        # Given
+        VirtualVenueTypeFactory()
+        UserFactory(email="librairie.fictive@example.com")
+        csv_row = OrderedDict(
+            [
+                ("", "104"),
+                ("Company ID", "1099515212"),
+                ("Email", "librairie.fictive@example.com"),
+                ("First Name", "Anthony"),
+                ("Last Name", "Champion"),
+                ("Phone", "01 02 34 56 78"),
+                ("Postal Code", "44016.0"),
+                ("City", "NANTES CEDEX 1"),
+                ("SIRET", "1"),
+                ("SIREN", "636710003"),
+                ("Département", "44"),
+                ("Name", "Fictive"),
+                ("Catégorie", "Librairie"),
+                ("Street Address", "45 RUE DU JOYEUX LURON"),
+                ("nom_structure", "SARL"),
+                ("adresse", "45 RUE DU JOYEUX LURON, 44000"),
+                ("code_postal", "44000"),
+                ("commune", "NANTES"),
+                ("geoloc", "[44.455621, -2.546101]"),
+                ("nom_lieu", "Ma librairie"),
+                ("siege_social", "45 RUE DU JOYEUX LURON, 44000"),
+                ("lieu_deja_inscrit", "0"),
+                ("structure_deja_inscrite", "0"),
+            ]
+        )
+
+        # When
+        import_new_offerer_from_csv(csv_row)
+
+        # Then
+        assert User.query.count() == 1
+        assert Offerer.query.count() == 1
+        assert UserOfferer.query.count() == 1
+        assert Venue.query.count() == 1
