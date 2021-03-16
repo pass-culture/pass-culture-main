@@ -4,7 +4,7 @@ import { ROOT_PATH } from 'utils/config'
 
 const Unavailable = () => {
   return (
-    <div className="page fullscreen unavailable-page">
+    <main className="page fullscreen unavailable-page">
       <div className="error-message">
         <img
           alt=""
@@ -24,7 +24,7 @@ const Unavailable = () => {
           src={`${ROOT_PATH}/icon/app-icon-spotlight.svg`}
         />
       </div>
-    </div>
+    </main>
   )
 }
 

@@ -53,7 +53,7 @@ class CsvTable extends PureComponent {
         )}
 
         {hasAtLeastData && !isLoading && (
-          <div id="main-container">
+          <main id="main-container">
             <div id="csv-container">
               <table id="csv-table">
                 <thead>
@@ -90,15 +90,15 @@ class CsvTable extends PureComponent {
                 {'Imprimer'}
               </button>
             </div>
-          </div>
+          </main>
         )}
 
         {!hasAtLeastData && !isLoading && (
-          <div className="no-data-container">
+          <main className="no-data-container">
             <p>
               {`Il n'y a pas de données à afficher.`}
             </p>
-          </div>
+          </main>
         )}
       </React.Fragment>
     )

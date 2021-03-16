@@ -38,8 +38,11 @@
 
 .no-data-container {
   align-items: center;
+  background-color: $white;
   display: flex;
   font-size: rem(20px);
+  grid-column-start: col-main;
+  grid-row-start: row-header;
   justify-content: center;
 
   p {
@@ -47,9 +50,19 @@
   }
 }
 
+#main-container {
+  background-color: $white;
+  grid-column-end: end-line;
+  grid-column-start: col-start;
+  grid-row-start: row-header;
+}
+
 #spinner-container {
   align-items: center;
+  background-color: $white;
   display: flex;
+  grid-column-start: col-main;
+  grid-row-start: row-header;
   height: 100%;
   justify-content: center;
   position: absolute;

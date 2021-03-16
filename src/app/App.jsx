@@ -8,14 +8,7 @@ import routes, { routesWithMain } from 'utils/routes_map'
 import RedirectToMaintenance from './RedirectToMaintenance'
 
 export const App = props => {
-  const {
-    children,
-    currentUser,
-    getCurrentUser,
-    history,
-    isMaintenanceActivated,
-    location,
-  } = props
+  const { children, currentUser, getCurrentUser, history, isMaintenanceActivated, location } = props
 
   const [isBusy, setIsBusy] = useState(false)
   const currentPathname = window.location.pathname
@@ -51,7 +44,11 @@ export const App = props => {
   }
 
   if (isBusy) {
-    return <Spinner />
+    return (
+      <main className="spinner-container">
+        <Spinner />
+      </main>
+    )
   }
 
   return children
