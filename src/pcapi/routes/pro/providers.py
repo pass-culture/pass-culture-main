@@ -12,20 +12,6 @@ from pcapi.utils.rest import load_or_404
 
 
 # @debt api-migration
-@private_api.route("/providers", methods=["GET"])
-@login_required
-def list_providers():
-    providers = get_enabled_providers_for_pro()
-    result = []
-    for provider in providers:
-        p_dict = as_dict(provider)
-        del p_dict["apiUrl"]
-        del p_dict["authToken"]
-        result.append(p_dict)
-    return jsonify(result)
-
-
-# @debt api-migration
 @private_api.route("/providers/<venue_id>", methods=["GET"])
 @login_required
 def get_providers_by_venue(venue_id: str):
