@@ -78,14 +78,13 @@ def synchronize_venue_provider(venue_provider: VenueProvider) -> None:
 
 
 def _get_stocks_by_batch(siret: str, provider_api: ProviderAPI, modified_since: DateTime) -> Generator:
-    modified_since = datetime.strftime(modified_since, "%Y-%m-%dT%H:%M:%SZ") if modified_since else ""
     last_processed_provider_reference = ""
 
     while True:
         response = provider_api.validated_stocks(
             siret=siret,
             last_processed_reference=last_processed_provider_reference,
-            modified_since=modified_since,
+            modified_since=modified_since.strftime("%Y-%m-%dT%H:%M:%SZ") if modified_since else "",
         )
         raw_stocks = response.get("stocks", [])
 
