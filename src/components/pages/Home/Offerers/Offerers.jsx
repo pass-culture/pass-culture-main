@@ -3,6 +3,10 @@ import { useHistory } from 'react-router-dom'
 
 import { buildSelectOptions } from 'components/layout/inputs/Select'
 import Spinner from 'components/layout/Spinner'
+import {
+  INITIAL_PHYSICAL_VENUES,
+  INITIAL_VIRTUAL_VENUE,
+} from 'components/pages/Home/Offerers/_constants'
 import { VenueList } from 'components/pages/Home/Venues/VenueList'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
@@ -16,8 +20,8 @@ const Offerers = () => {
   const [offererOptions, setOffererOptions] = useState([])
   const [selectedOffererId, setSelectedOffererId] = useState(null)
   const [selectedOfferer, setSelectedOfferer] = useState(null)
-  const [physicalVenues, setPhysicalVenues] = useState([])
-  const [virtualVenue, setVirtualVenue] = useState(null)
+  const [physicalVenues, setPhysicalVenues] = useState(INITIAL_PHYSICAL_VENUES)
+  const [virtualVenue, setVirtualVenue] = useState(INITIAL_VIRTUAL_VENUE)
   const [isLoading, setIsLoading] = useState(true)
   const [isUserOffererValidated, setIsUserOffererValidated] = useState(false)
 
@@ -49,7 +53,9 @@ const Offerers = () => {
       })
       .catch(error => {
         if (error.status === HTTP_STATUS.FORBIDDEN) {
-          setSelectedOfferer({ id: selectedOffererId })
+          setSelectedOfferer({ id: selectedOffererId, managedVenues: [] })
+          setPhysicalVenues(INITIAL_PHYSICAL_VENUES)
+          setVirtualVenue(INITIAL_VIRTUAL_VENUE)
           setIsUserOffererValidated(false)
         }
       })
@@ -67,7 +73,7 @@ const Offerers = () => {
         setSelectedOffererId(newOffererId)
       }
     },
-    [history, selectedOfferer, setSelectedOffererId]
+    [history, selectedOfferer]
   )
 
   if (isLoading) {

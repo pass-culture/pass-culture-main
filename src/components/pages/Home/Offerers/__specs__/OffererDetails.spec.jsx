@@ -1,5 +1,12 @@
 import '@testing-library/jest-dom'
-import { act, fireEvent, render, screen, within } from '@testing-library/react'
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitForElementToBeRemoved,
+  within,
+} from '@testing-library/react'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
@@ -559,7 +566,7 @@ describe('offererDetails', () => {
       ])
     })
 
-    it('should warn user offerer is being validated', async () => {
+    it('should warn user that offerer is being validated', async () => {
       // When
       await renderHomePage()
 
@@ -586,10 +593,11 @@ describe('offererDetails', () => {
     })
   })
 
-  describe('when user offerer is not yet validated', () => {
+  describe('when user attachment to offerer is not yet validated', () => {
     beforeEach(() => {
       pcapi.getAllOfferersNames.mockResolvedValue([
         { name: baseOfferers[0].name, id: baseOfferers[0].id },
+        baseOfferers[1],
       ])
       pcapi.getOfferer.mockRejectedValue({ status: 403 })
     })
@@ -630,6 +638,35 @@ describe('offererDetails', () => {
       expect(
         screen.queryByRole('link', { name: 'Créer une offre numérique' })
       ).not.toBeInTheDocument()
+    })
+
+    it('should not show venues of previously selected offerer', async () => {
+      // Given
+      pcapi.getAllOfferersNames.mockResolvedValue([
+        baseOfferers[1],
+        { name: baseOfferers[0].name, id: baseOfferers[0].id },
+      ])
+      pcapi.getOfferer
+        .mockResolvedValueOnce({ ...baseOfferers[1], managedVenues: [virtualVenue, physicalVenue] })
+        .mockRejectedValueOnce({ status: 403 })
+
+      await renderHomePage()
+
+      // When
+      fireEvent.change(screen.getByDisplayValue(baseOfferers[1].name), {
+        target: { value: baseOfferers[0].id },
+      })
+
+      // Then
+      expect(pcapi.getOfferer).toHaveBeenCalledTimes(2)
+      await waitForElementToBeRemoved(() =>
+        screen.getByRole('heading', { level: 3, name: 'Offres numériques' })
+      )
+      const previouslySelectedOfferersPhysicalVenueName = screen.queryByRole('heading', {
+        level: 3,
+        name: physicalVenue.name,
+      })
+      expect(previouslySelectedOfferersPhysicalVenueName).not.toBeInTheDocument()
     })
   })
 })

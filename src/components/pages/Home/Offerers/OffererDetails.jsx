@@ -37,7 +37,7 @@ const OffererDetails = ({
     return (
       !hasBankInformations(selectedOfferer) &&
       selectedOfferer.managedVenues
-        ?.filter(venue => !venue.isVirtual)
+        .filter(venue => !venue.isVirtual)
         .some(venue => !hasBankInformations(venue))
     )
   }, [selectedOfferer])
