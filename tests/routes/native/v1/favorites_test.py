@@ -181,6 +181,16 @@ class Get:
                 offer=offer4, beginningDatetime=today, bookingLimitDatetime=yesterday, price=10
             )
 
+            # Deactivated event offer future stock
+            offer5 = offers_factories.EventOfferFactory(venue=venue, isActive=False)
+            favorite5 = create_favorite(offer=offer5, user=user)
+            offers_factories.EventStockFactory(offer=offer5, beginningDatetime=tomorow, price=10)
+
+            # Deactivated thing offer with no date
+            offer6 = offers_factories.ThingOfferFactory(venue=venue, isActive=False)
+            favorite6 = create_favorite(offer=offer6, user=user)
+            offers_factories.ThingStockFactory(offer=offer6, price=10)
+
             # When
             # QUERY_COUNT:
             # 1: Fetch the user for auth
@@ -191,15 +201,19 @@ class Get:
             # Then
             assert response.status_code == 200
             favorites = response.json["favorites"]
-            assert len(favorites) == 4
+            assert len(favorites) == 6
 
-            assert favorites[3]["id"] == favorite1.id
-            assert favorites[3]["offer"]["isExpired"] is False
-            assert favorites[2]["id"] == favorite2.id
-            assert favorites[2]["offer"]["isExpired"] is False
-            assert favorites[1]["id"] == favorite3.id
+            assert favorites[5]["id"] == favorite1.id
+            assert favorites[5]["offer"]["isExpired"] is False
+            assert favorites[4]["id"] == favorite2.id
+            assert favorites[4]["offer"]["isExpired"] is False
+            assert favorites[3]["id"] == favorite3.id
+            assert favorites[3]["offer"]["isExpired"] is True
+            assert favorites[2]["id"] == favorite4.id
+            assert favorites[2]["offer"]["isExpired"] is True
+            assert favorites[1]["id"] == favorite5.id
             assert favorites[1]["offer"]["isExpired"] is True
-            assert favorites[0]["id"] == favorite4.id
+            assert favorites[0]["id"] == favorite6.id
             assert favorites[0]["offer"]["isExpired"] is True
 
     class Returns401:

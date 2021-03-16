@@ -1,3 +1,4 @@
+from sqlalchemy import and_
 from sqlalchemy import func
 from sqlalchemy import not_
 from sqlalchemy.orm import Load
@@ -23,40 +24,27 @@ from .serialization import favorites as serializers
 @spectree_serialize(response_model=serializers.PaginatedFavoritesResponse, api=blueprint.api)  # type: ignore
 @authenticated_user_required
 def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
+    stock_filters = and_(
+        not_(Stock.isEventExpired),
+        not_(Stock.hasBookingLimitDatetimePassed),
+        Offer.isActive == True,
+        Stock.isSoftDeleted == False,
+    )
     favorites = (
         db.session.query(
             FavoriteSQLEntity,
-            func.min(Stock.price)
-            .filter(not_(Stock.isEventExpired), not_(Stock.hasBookingLimitDatetimePassed))
-            .over(partition_by=Stock.offerId)
-            .label("min_price"),
-            func.max(Stock.price)
-            .filter(not_(Stock.isEventExpired), not_(Stock.hasBookingLimitDatetimePassed))
-            .over(partition_by=Stock.offerId)
-            .label("max_price"),
-            func.min(Stock.beginningDatetime)
-            .filter(not_(Stock.isEventExpired), not_(Stock.hasBookingLimitDatetimePassed))
-            .over(partition_by=Stock.offerId)
-            .label("min_beginning_datetime"),
-            func.max(Stock.beginningDatetime)
-            .filter(not_(Stock.isEventExpired), not_(Stock.hasBookingLimitDatetimePassed))
-            .over(partition_by=Stock.offerId)
-            .label("max_beginning_datetime"),
+            func.min(Stock.price).filter(stock_filters).over(partition_by=Stock.offerId).label("min_price"),
+            func.max(Stock.price).filter(stock_filters).over(partition_by=Stock.offerId).label("max_price"),
+            func.min(Stock.beginningDatetime).filter(stock_filters).over(partition_by=Stock.offerId).label("min_begin"),
+            func.max(Stock.beginningDatetime).filter(stock_filters).over(partition_by=Stock.offerId).label("max_begin"),
             # count active
-            func.count(Stock.id)
-            .filter(not_(Stock.isEventExpired), not_(Stock.hasBookingLimitDatetimePassed))
-            .over(partition_by=Stock.offerId)
-            .label("not_expired"),
+            func.count(Stock.id).filter(stock_filters).over(partition_by=Stock.offerId).label("active_stock_count"),
         )
         .options(Load(FavoriteSQLEntity).load_only("id"))
         .join(FavoriteSQLEntity.offer)
         .join(Offer.venue)
         .outerjoin(Offer.stocks)
-        .filter(
-            FavoriteSQLEntity.userId == user.id,
-            Stock.isSoftDeleted == False,
-            Offer.isActive == True,
-        )
+        .filter(FavoriteSQLEntity.userId == user.id)
         .distinct(FavoriteSQLEntity.id)
         .options(joinedload(FavoriteSQLEntity.offer).load_only(Offer.name, Offer.externalTicketOfficeUrl, Offer.type))
         .options(joinedload(FavoriteSQLEntity.offer).joinedload(Offer.venue).load_only(Venue.latitude, Venue.longitude))
@@ -72,7 +60,7 @@ def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
         .all()
     )
 
-    for fav, min_price, max_price, min_beginning_datetime, max_beginning_datetime, not_expired in favorites:
+    for fav, min_price, max_price, min_beginning_datetime, max_beginning_datetime, active_stock_count in favorites:
         fav.offer.price = None
         fav.offer.startPrice = None
         if min_price == max_price:
@@ -85,7 +73,7 @@ def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
             fav.offer.date = min_beginning_datetime
         else:
             fav.offer.startDate = min_beginning_datetime
-        fav.offer.isExpired = not not_expired
+        fav.offer.isExpired = not active_stock_count
     favorites = [fav for (fav, *_) in favorites]
 
     paginated_favorites = {
