@@ -4,9 +4,9 @@ from typing import Callable
 from typing import List
 
 from pcapi.core.offerers.api import create_digital_venue
+from pcapi.core.offerers.models import Offerer
 from pcapi.core.users.api import fulfill_account_password
 from pcapi.core.users.models import User
-from pcapi.models import Offerer
 from pcapi.models import UserOfferer
 from pcapi.repository import repository
 from pcapi.repository.offerer_queries import find_by_siren

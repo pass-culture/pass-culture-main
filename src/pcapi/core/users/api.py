@@ -15,7 +15,6 @@ from jwt import InvalidTokenError
 from pcapi import settings
 from pcapi.core import mails
 from pcapi.core.bookings.conf import LIMIT_CONFIGURATIONS
-from pcapi.core.offerers.offerer import Offerer
 from pcapi.core.payments import api as payment_api
 from pcapi.core.users.models import Credit
 from pcapi.core.users.models import DomainsCredit
@@ -54,6 +53,7 @@ from pcapi.workers.push_notification_job import update_user_attributes_job
 from . import constants
 from . import exceptions
 from ..offerers.api import create_digital_venue
+from ..offerers.models import Offerer
 
 
 def create_email_validation_token(user: User) -> Token:

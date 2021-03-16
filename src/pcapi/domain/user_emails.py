@@ -5,6 +5,7 @@ from pcapi import settings
 from pcapi.core import mails
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
+from pcapi.core.offerers.models import Offerer
 from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
 from pcapi.core.users.models import User
@@ -39,7 +40,6 @@ from pcapi.emails.user_notification_after_stock_update import (
 )
 from pcapi.emails.user_reset_password import retrieve_data_for_reset_password_native_app_email
 from pcapi.emails.user_reset_password import retrieve_data_for_reset_password_user_email
-from pcapi.models import Offerer
 from pcapi.models import UserOfferer
 from pcapi.repository.offerer_queries import find_new_offerer_user_email
 from pcapi.utils.logger import logger

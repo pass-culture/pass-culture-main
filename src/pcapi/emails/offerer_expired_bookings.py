@@ -1,8 +1,8 @@
 import typing
 
+from pcapi.core.offerers.models import Offerer
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models import Booking
-from pcapi.models import Offerer
 from pcapi.utils.mailing import build_pc_pro_offer_link
 
 

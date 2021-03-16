@@ -6,6 +6,7 @@ from typing import Tuple
 from lxml.etree import DocumentInvalid
 
 import pcapi.core.bookings.repository as booking_repository
+from pcapi.core.offerers.models import Offerer
 from pcapi.domain.admin_emails import send_payment_details_email
 from pcapi.domain.admin_emails import send_payment_message_email
 from pcapi.domain.admin_emails import send_payments_report_emails
@@ -25,7 +26,6 @@ from pcapi.domain.payments import keep_only_pending_payments
 from pcapi.domain.payments import validate_message_file_structure
 from pcapi.domain.reimbursement import RULES
 from pcapi.domain.reimbursement import find_all_booking_reimbursements
-from pcapi.models import Offerer
 from pcapi.models.db import db
 from pcapi.models.payment import Payment
 from pcapi.models.payment_status import TransactionStatus

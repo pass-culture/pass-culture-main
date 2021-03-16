@@ -5,7 +5,7 @@ from sqlalchemy import and_
 from wtforms.form import Form
 
 from pcapi.admin.custom_views.pro_user_view import ProUserView
-from pcapi.core.offerers.offerer import Offerer
+from pcapi.core.offerers.models import Offerer
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import User

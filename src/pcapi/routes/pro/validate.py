@@ -2,13 +2,13 @@ from flask import current_app as app
 
 from pcapi import settings
 from pcapi.connectors import redis
+from pcapi.core.offerers.models import Offerer
 from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
 from pcapi.domain.iris import link_valid_venue_to_irises
 from pcapi.domain.user_emails import send_attachment_validation_email_to_pro_offerer
 from pcapi.domain.user_emails import send_validation_confirmation_email_to_pro
 from pcapi.flask_app import private_api
 from pcapi.flask_app import public_api
-from pcapi.models import Offerer
 from pcapi.models import UserOfferer
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries

@@ -4,12 +4,12 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.core.offerers.models import Offerer
 from pcapi.core.testing import override_features
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
-from pcapi.models import Offerer
 from pcapi.repository import repository
 
 from tests.conftest import TestClient

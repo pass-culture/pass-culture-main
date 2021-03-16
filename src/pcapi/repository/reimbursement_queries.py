@@ -5,10 +5,10 @@ from sqlalchemy import subquery
 from sqlalchemy.orm import aliased
 
 from pcapi.core.bookings.models import Booking
+from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
-from pcapi.models import Offerer
 from pcapi.models import PaymentStatus
 from pcapi.models import Venue
 from pcapi.models.payment import Payment

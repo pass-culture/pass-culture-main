@@ -2,9 +2,9 @@ from typing import Optional
 
 from sqlalchemy import not_
 
+from pcapi.core.offerers.models import Offerer
 from pcapi.domain.pro_offerers.paginated_offerers import PaginatedOfferers
 from pcapi.domain.pro_offerers.paginated_offerers_repository import PaginatedOfferersRepository
-from pcapi.models import Offerer
 from pcapi.models import UserOfferer
 from pcapi.models import Venue
 from pcapi.repository.offerer_queries import filter_offerers_with_keywords_string

@@ -5,7 +5,7 @@ from sqlalchemy import and_
 from sqlalchemy import not_
 from sqlalchemy import or_
 
-from pcapi.models import Offerer
+from pcapi.core.offerers.models import Offerer
 from pcapi.models import Venue
 from pcapi.utils.human_ids import humanize
 from pcapi.utils.logger import logger

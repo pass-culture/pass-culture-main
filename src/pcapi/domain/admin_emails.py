@@ -3,9 +3,9 @@ from typing import List
 
 from pcapi import settings
 from pcapi.core import mails
+from pcapi.core.offerers.models import Offerer
 from pcapi.core.users.models import User
 from pcapi.models import Offer
-from pcapi.models import Offerer
 from pcapi.models import UserOfferer
 from pcapi.utils.mailing import make_offer_creation_notification_email
 from pcapi.utils.mailing import make_payment_details_email

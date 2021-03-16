@@ -1,7 +1,7 @@
 from typing import List
 
+from pcapi.core.offerers.models import Offerer
 from pcapi.core.users.models import User
-from pcapi.models import Offerer
 from pcapi.models import UserOfferer
 
 

@@ -4,11 +4,11 @@ from typing import Optional
 from flask import render_template
 from sqlalchemy import text
 
+from pcapi.core.offerers.models import Offerer
 from pcapi.domain.payments import keep_only_not_processable_payments
 from pcapi.models import BankInformation
 from pcapi.models import Booking
 from pcapi.models import Offer
-from pcapi.models import Offerer
 from pcapi.models import Payment
 from pcapi.models import PaymentMessage
 from pcapi.models import PaymentStatus

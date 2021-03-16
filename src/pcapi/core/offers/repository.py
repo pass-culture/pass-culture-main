@@ -14,11 +14,11 @@ from sqlalchemy.orm import joinedload
 from sqlalchemy.sql.functions import coalesce
 
 from pcapi.core.bookings.models import Booking
+from pcapi.core.offerers.models import Offerer
 from pcapi.core.users.models import User
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
 from pcapi.infrastructure.repository.pro_offers.paginated_offers_recap_domain_converter import to_domain
 from pcapi.models import Offer
-from pcapi.models import Offerer
 from pcapi.models import Product
 from pcapi.models import Stock
 from pcapi.models import UserOfferer

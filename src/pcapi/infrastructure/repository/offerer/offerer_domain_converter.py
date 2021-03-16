@@ -1,5 +1,5 @@
+from pcapi.core.offerers.models import Offerer as OffererSQLEntity
 from pcapi.domain.offerer.offerer import Offerer
-from pcapi.models import Offerer as OffererSQLEntity
 
 
 def to_domain(offerer_sql_entity: OffererSQLEntity) -> Offerer:

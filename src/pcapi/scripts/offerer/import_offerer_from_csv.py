@@ -1,12 +1,13 @@
-import ast
 import csv
+import json
+from json import JSONDecodeError
 from typing import Dict
 
 from pcapi.core.offerers.api import create_digital_venue
+from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.users.api import create_pro_user
 from pcapi.models import ApiErrors
-from pcapi.models import Offerer
 from pcapi.models import VenueType
 from pcapi.repository import repository
 from pcapi.repository.offerer_queries import find_by_siren
@@ -19,7 +20,7 @@ def create_offerer_from_csv(row: Dict) -> Offerer:
     offerer = Offerer()
     offerer.name = row["nom_structure"] if row["nom_structure"] else row["Name"]
     offerer.siren = row["SIREN"]
-    offerer.address = row["adresse"].split(",")[0]
+    offerer.address = _get_address_from_row(row)
     offerer.postalCode = _get_postal_code(row)
     offerer.city = row["City"]
 
@@ -28,31 +29,35 @@ def create_offerer_from_csv(row: Dict) -> Offerer:
 
 def create_venue_from_csv(row: Dict, offerer_siren: str) -> Venue:
     venue = Venue(
-        address=row["adresse"].split(",")[0],
+        address=_get_address_from_row(row),
         postalCode=_get_postal_code(row),
         city=row["commune"],
         departementCode=row["Département"],
-        siret=row["SIRET"].replace(".0", ""),
+        siret=row["SIRET"],
         publicName=row["nom_lieu"],
         bookingEmail=row["Email"],
-        venueType=VenueType.query.filter_by(label=row["Catégorie"]).first(),
+        venueType=VenueType.query.filter_by(label=row["Catégorie"]).one(),
     )
 
     if row["nom_lieu"]:
         venue.name = row["nom_lieu"]
     else:
+        json_logger.warning("Venue name missing for offerer with %s SIREN", offerer_siren)
         venue.name = (
             f"Lieu {Venue.query.filter(Venue.siret.startswith(offerer_siren)).count() + 1} - {row['nom_structure']}"
         )
 
     try:
-        geoloc = ast.literal_eval(row["geoloc"])
-        venue.latitude = geoloc[0]
-        venue.longitude = geoloc[1]
-    except SyntaxError:
+        geoloc = json.loads(row["geoloc"])
+        venue.latitude, venue.longitude = geoloc
+    except JSONDecodeError:
         pass
 
     return venue
+
+
+def _get_address_from_row(row: Dict) -> str:
+    return row["adresse"].split(",")[0]
 
 
 def _get_postal_code(row: Dict) -> str:

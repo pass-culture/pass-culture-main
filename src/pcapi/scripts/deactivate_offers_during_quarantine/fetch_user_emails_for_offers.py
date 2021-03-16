@@ -1,7 +1,7 @@
 from datetime import datetime
 
+from pcapi.core.offerers.models import Offerer
 from pcapi.core.users.models import User
-from pcapi.models import Offerer
 from pcapi.models import UserOfferer
 from pcapi.models import Venue
 from pcapi.scripts.deactivate_offers_during_quarantine.deactivate_offers import (

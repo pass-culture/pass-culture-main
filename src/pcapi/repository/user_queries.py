@@ -9,13 +9,13 @@ from sqlalchemy.orm import Query
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.functions import Function
 
+from pcapi.core.offerers.models import Offerer
 from pcapi.core.users.models import User
 from pcapi.core.users.utils import format_email
 from pcapi.models import BeneficiaryImport
 from pcapi.models import BeneficiaryImportSources
 from pcapi.models import BeneficiaryImportStatus
 from pcapi.models import ImportStatus
-from pcapi.models import Offerer
 from pcapi.models import UserOfferer
 from pcapi.models.db import db
 from pcapi.models.wallet_balance import WalletBalance

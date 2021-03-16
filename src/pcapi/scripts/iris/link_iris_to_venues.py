@@ -1,6 +1,6 @@
 from typing import List
 
-from pcapi.models import Offerer
+from pcapi.core.offerers.models import Offerer
 from pcapi.models import Venue
 from pcapi.repository.iris_venues_queries import find_ids_of_irises_located_near_venue
 from pcapi.repository.iris_venues_queries import insert_venue_in_iris_venue

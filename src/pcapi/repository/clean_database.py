@@ -1,5 +1,6 @@
 from pcapi import settings
 from pcapi.core.mails.models import Email
+from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.models import Mediation
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import User
@@ -19,7 +20,6 @@ from pcapi.models import IrisVenues
 from pcapi.models import LocalProviderEvent
 from pcapi.models import Offer
 from pcapi.models import OfferCriterion
-from pcapi.models import Offerer
 from pcapi.models import Payment
 from pcapi.models import PaymentMessage
 from pcapi.models import PaymentStatus

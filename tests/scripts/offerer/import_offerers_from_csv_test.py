@@ -2,8 +2,8 @@ from collections import OrderedDict
 
 import pytest
 
+from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
-from pcapi.core.offerers.offerer import Offerer
 from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.factories import VenueTypeFactory
@@ -160,32 +160,6 @@ class CreateVenueFromCSVTest:
         assert venue.postalCode == "92240"
 
     @pytest.mark.usefixtures("db_session")
-    def test_should_correct_wrong_siret(self, app):
-        # given
-        VenueTypeFactory(label="Librairie")
-        csv_row = OrderedDict(
-            [
-                ("Street Address", "46 AV DE LA ROUE"),
-                ("Email", "librairie.fictive@example.com"),
-                ("adresse", "46 AV DE LA ROUE, 92240"),
-                ("code_postal", "92240"),
-                ("commune", "MALAKOFF"),
-                ("Département", "92"),
-                ("nom_lieu", "Not_found"),
-                ("SIRET", "76800828012119.0"),
-                ("geoloc", "[45.847218, 12.360398]"),
-                ("Catégorie", "Librairie"),
-            ]
-        )
-
-        # when
-        venue = create_venue_from_csv(csv_row, "828768000")
-
-        # then
-        assert isinstance(venue, Venue)
-        assert venue.siret == "76800828012119"
-
-    @pytest.mark.usefixtures("db_session")
     def test_should_have_a_venue_type(self, app):
         # given
         VenueTypeFactory(label="Librairie")
@@ -292,7 +266,7 @@ class CreateProUserFromCSVTest:
         assert pro_model.first_name == "Anthony"
         assert pro_model.last_name == "Champion"
         assert pro_model.public_name == "Anthony Champion"
-        assert pro_model.phone_number == "01 02 34 56 78"
+        assert pro_model.phone_number == "0102345678"
         assert pro_model.postal_code == "44016"
         assert pro_model.city == "NANTES CEDEX 1"
 
@@ -322,6 +296,7 @@ class CreateAnEntireOffererFromCSVRowTest:
     @pytest.mark.usefixtures("db_session")
     def test_when_is_a_new_offerer(self, app):
         # Given
+        VenueTypeFactory(label="Librairie")
         VirtualVenueTypeFactory()
         csv_row = OrderedDict(
             [
@@ -333,7 +308,7 @@ class CreateAnEntireOffererFromCSVRowTest:
                 ("Phone", "01 02 34 56 78"),
                 ("Postal Code", "44016.0"),
                 ("City", "NANTES CEDEX 1"),
-                ("SIRET", "63671000326012.0"),
+                ("SIRET", "63671000326012"),
                 ("SIREN", "636710003"),
                 ("Département", "44"),
                 ("Name", "Fictive"),
@@ -364,6 +339,7 @@ class CreateAnEntireOffererFromCSVRowTest:
     def test_when_is_already_existing_offerer(self, app):
         # Given
         VirtualVenueTypeFactory()
+        VenueTypeFactory(label="Librairie")
         offerer = OffererFactory(siren="636710003")
         VenueFactory(managingOfferer=offerer)
         VirtualVenueFactory(managingOfferer=offerer)
@@ -377,7 +353,7 @@ class CreateAnEntireOffererFromCSVRowTest:
                 ("Phone", "01 02 34 56 78"),
                 ("Postal Code", "44016.0"),
                 ("City", "NANTES CEDEX 1"),
-                ("SIRET", "63671000326012.0"),
+                ("SIRET", "63671000326012"),
                 ("SIREN", "636710003"),
                 ("Département", "44"),
                 ("Name", "Fictive"),
@@ -529,6 +505,7 @@ class CreateAnEntireOffererFromCSVRowTest:
     @pytest.mark.usefixtures("db_session")
     def test_when_siret_wrong(self, app):
         # Given
+        VenueTypeFactory(label="Librairie")
         VirtualVenueTypeFactory()
         UserFactory(email="librairie.fictive@example.com")
         csv_row = OrderedDict(

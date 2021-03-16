@@ -1,6 +1,6 @@
 import pytest
 
-import pcapi.core.offerers.offerer as offerer_models
+import pcapi.core.offerers.models
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.model_creators.generic_creators import create_bank_information
@@ -37,7 +37,7 @@ class Returns200:
 
         offerer_bank_information = create_bank_information(offerer=offerer)
         venue_bank_information = create_bank_information(venue=venue, application_id=2)
-        offerer = offerer_models.Offerer.query.filter_by(id=offerer.id).first()
+        offerer = pcapi.core.offerers.models.Offerer.query.filter_by(id=offerer.id).first()
 
         # when
         response = TestClient(app.test_client()).with_auth(pro.email).get(f"/offerers/{humanize(offerer.id)}")

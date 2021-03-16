@@ -1,8 +1,8 @@
 from sqlalchemy.orm import joinedload
 
+from pcapi.core.offerers.models import Offerer
 from pcapi.core.users.models import User
 from pcapi.domain.postal_code.postal_code import PostalCode
-from pcapi.models import Offerer
 from pcapi.models import UserOfferer
 from pcapi.repository import repository
 

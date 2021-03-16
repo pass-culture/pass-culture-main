@@ -1,12 +1,12 @@
 import pytest
 
+from pcapi.core.offerers.models import Offerer
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.models import Offerer
 from pcapi.models import Venue
 from pcapi.repository import repository
 from pcapi.repository.offerer_queries import filter_offerers_with_keywords_string

@@ -9,12 +9,12 @@ from wtforms.fields.core import StringField
 from wtforms.validators import ValidationError
 
 from pcapi.admin.base_configuration import BaseAdminView
-from pcapi.core.offerers.offerer import Offerer
 from pcapi.core.users.models import User
 from pcapi.models import UserOfferer
 from pcapi.validation.models.has_address_mixin import POSTAL_CODE_REGEX
 
 from ...core.offerers.api import create_digital_venue
+from ...core.offerers.models import Offerer
 from ...core.users.api import fulfill_account_password
 from .mixins.suspension_mixin import SuspensionMixin
 

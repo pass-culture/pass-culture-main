@@ -1,6 +1,6 @@
+from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.models import Offer
 from pcapi.core.users.models import User
-from pcapi.models import Offerer
 from pcapi.models import ThingType
 from pcapi.models import Venue
 from pcapi.models.offer_type import EventType

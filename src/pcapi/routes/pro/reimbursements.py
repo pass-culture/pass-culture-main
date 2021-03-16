@@ -3,7 +3,7 @@ from itertools import chain
 from flask_login import current_user
 from flask_login import login_required
 
-from pcapi.core.offerers.offerer import Offerer
+from pcapi.core.offerers.models import Offerer
 from pcapi.flask_app import private_api
 from pcapi.repository.user_offerer_queries import filter_query_where_user_is_user_offerer_and_is_validated
 from pcapi.routes.serialization.reimbursement_csv_serialize import find_all_offerer_reimbursement_details

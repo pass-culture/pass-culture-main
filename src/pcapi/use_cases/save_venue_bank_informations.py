@@ -1,3 +1,4 @@
+from pcapi.core.offerers.models import Offerer
 from pcapi.domain.bank_information import CannotRegisterBankInformation
 from pcapi.domain.bank_information import check_new_bank_information_has_a_more_advanced_status
 from pcapi.domain.bank_information import check_new_bank_information_older_than_saved_one
@@ -13,7 +14,6 @@ from pcapi.domain.venue.venue_with_basic_information.venue_with_basic_informatio
 from pcapi.domain.venue.venue_with_basic_information.venue_with_basic_information_repository import (
     VenueWithBasicInformationRepository,
 )
-from pcapi.models import Offerer
 from pcapi.models.bank_information import BankInformationStatus
 
 

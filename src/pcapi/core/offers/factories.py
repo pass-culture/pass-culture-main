@@ -4,6 +4,7 @@ import uuid
 import factory
 
 from pcapi import models
+import pcapi.core.offerers.models
 from pcapi.core.testing import BaseFactory
 import pcapi.core.users.factories as users_factories
 from pcapi.models import offer_type
@@ -16,7 +17,7 @@ ALL_TYPES = {
 
 class OffererFactory(BaseFactory):
     class Meta:
-        model = models.Offerer
+        model = pcapi.core.offerers.models.Offerer
 
     name = factory.Sequence("Le Petit Rintintin Management {}".format)
     postalCode = "75000"
