@@ -17,6 +17,7 @@ const Home = ({
   trackAllModulesSeen,
   trackAllTilesSeen,
   trackConsultOffer,
+  trackGeolocation,
   trackRecommendationModuleSeen,
   trackSeeMoreHasBeenClicked,
   updateCurrentUser,
@@ -34,6 +35,13 @@ const Home = ({
   useEffect(() => {
     campaignTracker.home()
   }, [])
+
+  useEffect(() => {
+    const isGeolocated = geolocation && geolocation.latitude && geolocation.longitude
+    if (isGeolocated) {
+      trackGeolocation()
+    }
+  }, [geolocation, trackGeolocation])
 
   useEffect(() => {
     const waitForCoordinates = async () => {
@@ -79,6 +87,7 @@ Home.propTypes = {
   trackAllModulesSeen: PropTypes.func.isRequired,
   trackAllTilesSeen: PropTypes.func.isRequired,
   trackConsultOffer: PropTypes.func.isRequired,
+  trackGeolocation: PropTypes.func.isRequired,
   trackRecommendationModuleSeen: PropTypes.func.isRequired,
   trackSeeMoreHasBeenClicked: PropTypes.func.isRequired,
   updateCurrentUser: PropTypes.func.isRequired,

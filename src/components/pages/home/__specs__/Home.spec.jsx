@@ -56,6 +56,8 @@ describe('src | components | home', () => {
       trackAllModulesSeen: jest.fn(),
       trackAllTilesSeen: jest.fn(),
       trackConsultOffer: jest.fn(),
+      trackGeolocation: jest.fn(),
+      trackRecommendationModuleSeen: jest.fn(),
       trackSeeMoreHasBeenClicked: jest.fn(),
       updateCurrentUser: jest.fn(),
       user: new User({
@@ -242,5 +244,41 @@ describe('src | components | home', () => {
     // Then
     const anyError = wrapper.find(AnyError)
     expect(anyError).toHaveLength(1)
+  })
+
+  it('should track geolocation when user is geolocated', async () => {
+    // given
+    props.geolocation = {
+      longitude: 48.256756,
+      latitude: 2.8796567,
+      watchId: 1,
+    }
+
+    // when
+    await mount(
+      <MemoryRouter>
+        <Home {...props} />
+      </MemoryRouter>
+    )
+    await act(flushPromises)
+
+    // then
+    expect(props.trackGeolocation).toHaveBeenCalledWith()
+  })
+
+  it('should not track geolocation when user is not geolocated', async () => {
+    // given
+    props.geolocation = { latitude: null, longitude: null, watchId: null }
+
+    // when
+    await mount(
+      <MemoryRouter>
+        <Home {...props} />
+      </MemoryRouter>
+    )
+    await act(flushPromises)
+
+    // then
+    expect(props.trackGeolocation).not.toHaveBeenCalled()
   })
 })
