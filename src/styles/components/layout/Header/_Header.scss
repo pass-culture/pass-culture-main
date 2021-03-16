@@ -65,11 +65,10 @@ header.menu {
   grid-column-start: col-start;
   grid-row-end: row-main;
   grid-row-start: row-nav;
-  height: 9.375rem;
 
   nav {
     display: flex;
-    height: rem(54px);
+    height: rem(72px);
     justify-content: space-between;
     margin: 0 auto;
     max-width: $desktop;

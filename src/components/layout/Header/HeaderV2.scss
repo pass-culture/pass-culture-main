@@ -1,0 +1,58 @@
+header.menu-v2 {
+  background-image: $linear-gradient-to-right;
+  grid-column-end: end-line;
+  grid-column-start: col-start;
+  grid-row-end: row-main;
+  grid-row-start: row-nav;
+
+  nav {
+    display: grid;
+    grid-template-columns: [col-start] 1fr [col-main] rem(850px)  1fr;
+
+    .nav-menu {
+      display: flex;
+      height: rem(72px);
+
+      button.nav-item {
+        background: none;
+        border: none;
+      }
+
+      button.nav-item,
+      a.nav-item {
+        @include button();
+
+        align-items: center;
+        color: $white;
+        display: flex;
+        height: 100%;
+        padding: 0 rem(16px);
+
+        svg {
+          height: 40px;
+          margin-right: rem(8px);
+          width: 40px;
+        }
+
+        &.icon-only svg {
+          height: 32px;
+          margin-right: 0;
+          width: 32px;
+        }
+
+        &:hover,
+        &:focus {
+          background-color: $primary;
+        }
+      }
+
+      .separator {
+        align-self: center;
+        background-color: $white;
+        height: rem(24px);
+        margin: 0 rem(8px);
+        width: 1px;
+      }
+    }
+  }
+}

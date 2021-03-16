@@ -26,7 +26,7 @@ body {
 #root {
   display: grid;
   grid-template-columns: [col-start] 1fr [col-main] rem(850px)  1fr;
-  grid-template-rows: [row-nav] rem(54px) [row-header] rem(98px) [row-main] 1fr [row-footer] rem(48px);
+  grid-template-rows: [row-nav] rem(72px) [row-header] rem(80px) [row-main] 1fr [row-footer] rem(48px);
   min-height: 100%;
 }
 
