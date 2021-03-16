@@ -20,6 +20,7 @@ class TransactionStatus(enum.Enum):
     ERROR = "ERROR"
     RETRY = "RETRY"
     BANNED = "BANNED"
+    UNDER_REVIEW = "UNDER REVIEW"
 
 
 class PaymentStatus(PcObject, Model):
