@@ -52,12 +52,12 @@ const AppLayout = props => {
         })}
       >
         {fullscreen ? (
-          <Fragment>
+          <>
             <NotificationV1Container isFullscreen />
             {children}
-          </Fragment>
+          </>
         ) : (
-          <>
+          <div className="page-content">
             <NotificationV1Container />
             <div
               className={classnames('after-notification-content', {
@@ -75,7 +75,7 @@ const AppLayout = props => {
               )}
               {children}
             </div>
-          </>
+          </div>
         )}
         <TutorialDialogContainer />
         <NotificationV2Container />

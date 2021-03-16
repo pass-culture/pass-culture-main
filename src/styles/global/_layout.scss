@@ -8,6 +8,7 @@ html {
   @include body();
 
   color: $black;
+  height: 100%;
 }
 
 body,
@@ -18,10 +19,15 @@ textarea {
   font-family: 'Barlow', 'Helvetica Neue', arial, sans-serif;
 }
 
+body {
+  height: 100%;
+}
+
 #root {
   display: grid;
   grid-template-columns: [col-start] 1fr [col-main] rem(850px)  1fr;
   grid-template-rows: [row-nav] rem(54px) [row-header] rem(98px) [row-main] 1fr;
+  height: 100%;
 }
 
 table {

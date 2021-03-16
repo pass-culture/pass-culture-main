@@ -47,8 +47,11 @@ main {
   }
 
   &.fullscreen {
+    grid-column-end: end-line;
+    grid-column-start: col-start;
+    grid-row-end: end-line;
+    grid-row-start: row-nav;
     height: 100vh;
-    width: 100%;
 
     .container {
       display: flex;
@@ -63,29 +66,32 @@ main {
   }
 
   &.container {
-    background: $white;
-    box-shadow: 0 0 3.75rem $black-shadow;
     grid-column-start: col-main;
     grid-row-end: end-line;
     grid-row-start: row-header;
 
-    .after-notification-content {
-      padding: rem(24px);
-      position: relative;
+    .page-content {
+      background: $white;
+      box-shadow: 0 0 3.75rem $black-shadow;
 
-      &.with-padding {
-        padding-top: 4.625rem;
-      }
+      .after-notification-content {
+        padding: rem(24px);
+        position: relative;
 
-      .back-button {
-        font-weight: 600;
-        padding-left: rem(30px);
-        position: absolute;
-        top: rem(24px);
+        &.with-padding {
+          padding-top: 4.625rem;
+        }
 
-        img {
-          left: 0;
+        .back-button {
+          font-weight: 600;
+          padding-left: rem(30px);
           position: absolute;
+          top: rem(24px);
+
+          img {
+            left: 0;
+            position: absolute;
+          }
         }
       }
     }
