@@ -1,6 +1,10 @@
+import logging
+
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.repository import repository
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 DEACTIVATED_OFFERS_PICK_MODULO = 3

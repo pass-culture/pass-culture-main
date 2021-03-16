@@ -1,10 +1,14 @@
+import logging
+
 import pytest
 
 from pcapi.model_creators.provider_creators import assert_created_counts
 from pcapi.model_creators.provider_creators import save_counts
 from pcapi.models import Stock
 from pcapi.sandboxes.scripts.save_sandbox import save_sandbox
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 @pytest.mark.usefixtures("db_session")

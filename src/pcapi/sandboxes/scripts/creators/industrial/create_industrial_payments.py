@@ -1,5 +1,9 @@
+import logging
+
 from pcapi.scripts.payment.batch_steps import generate_new_payments
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 def create_industrial_payments():

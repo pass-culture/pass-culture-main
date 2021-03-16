@@ -1,4 +1,5 @@
 from datetime import datetime
+import logging
 from random import choice
 
 from pcapi.core.bookings.factories import BookingFactory
@@ -7,7 +8,9 @@ from pcapi.core.users.models import User
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.models.offer_type import EventType
 from pcapi.repository import repository
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 MAX_RATIO_OF_EXPENSES = 0.6

@@ -1,13 +1,16 @@
 from datetime import datetime
 from datetime import timedelta
 import itertools
+import logging
 import uuid
 
 import pcapi.core.bookings.conf as bookings_conf
 from pcapi.core.payments.api import create_deposit
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.repository import repository
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 DEPARTEMENT_CODES = ["93", "97"]

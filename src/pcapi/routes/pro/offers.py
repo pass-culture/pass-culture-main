@@ -1,4 +1,5 @@
 import base64
+import logging
 
 from flask import request
 from flask_login import current_user
@@ -28,7 +29,9 @@ from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailBodyM
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailResponseModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.includes import GET_OFFER_INCLUDES
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.rest import load_or_404
 from pcapi.utils.rest import login_or_api_key_required

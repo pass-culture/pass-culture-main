@@ -1,9 +1,12 @@
 import datetime
+import logging
 
 from pcapi.model_creators.specific_creators import create_event_occurrence
 from pcapi.sandboxes.scripts.utils.select import remove_every
 from pcapi.utils.date import strftime
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 TODAY = datetime.datetime.combine(datetime.datetime.utcnow(), datetime.time(hour=20))

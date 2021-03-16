@@ -1,5 +1,9 @@
+import logging
+
 from pcapi.core.users.models import User
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 def check_database_connection() -> bool:

@@ -1,10 +1,13 @@
 from decimal import Decimal
+import logging
 
 from pcapi.models import AllocineVenueProvider
 from pcapi.models import AllocineVenueProviderPriceRule
 from pcapi.models import Venue
 from pcapi.repository import repository
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 def modify_allocine_price_rule_for_venue_by_id(venue_id: int, new_price: Decimal) -> None:

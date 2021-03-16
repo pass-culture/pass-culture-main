@@ -1,8 +1,11 @@
+import logging
 from pathlib import Path
 
 import pcapi
 from pcapi.scripts.iris.import_iris import import_iris_shape_file_to_table
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 FILE_PATH = Path(pcapi.__path__[0]) / "sandboxes" / "iris" / "paris.shp"

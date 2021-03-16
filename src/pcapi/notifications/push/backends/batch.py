@@ -1,9 +1,12 @@
 from enum import Enum
+import logging
 
 from pcapi import settings
 from pcapi.notifications.push.transactional_notifications import TransactionalNotificationData
 from pcapi.utils import requests
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 class BatchAPI(Enum):

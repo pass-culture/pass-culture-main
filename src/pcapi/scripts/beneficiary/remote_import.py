@@ -1,4 +1,5 @@
 from datetime import datetime
+import logging
 import re
 from typing import Callable
 from typing import Dict
@@ -21,7 +22,9 @@ from pcapi.repository.beneficiary_import_queries import find_applications_ids_to
 from pcapi.repository.beneficiary_import_queries import is_already_imported
 from pcapi.repository.beneficiary_import_queries import save_beneficiary_import_with_status
 from pcapi.repository.user_queries import find_user_by_email
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 from pcapi.utils.mailing import MailServiceException
 
 

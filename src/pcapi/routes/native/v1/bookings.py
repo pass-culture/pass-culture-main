@@ -1,4 +1,5 @@
 from datetime import datetime
+import logging
 
 from sqlalchemy.orm import joinedload
 
@@ -16,7 +17,9 @@ from pcapi.routes.native.v1.serialization.bookings import BookOfferResponse
 from pcapi.routes.native.v1.serialization.bookings import BookingReponse
 from pcapi.routes.native.v1.serialization.bookings import BookingsResponse
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 from . import blueprint
 

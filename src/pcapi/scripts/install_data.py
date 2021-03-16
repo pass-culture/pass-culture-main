@@ -1,9 +1,13 @@
+import logging
+
 from flask import current_app as app
 
 from pcapi.install_database_extensions import install_database_extensions
 from pcapi.local_providers.install import install_local_providers
 from pcapi.models.install import install_activity
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 @app.manager.command

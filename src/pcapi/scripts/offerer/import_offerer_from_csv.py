@@ -1,6 +1,7 @@
 import csv
 import json
 from json import JSONDecodeError
+import logging
 from typing import Dict
 
 from pcapi.core.offerers.api import create_digital_venue
@@ -14,7 +15,9 @@ from pcapi.repository import repository
 from pcapi.repository.offerer_queries import find_by_siren
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
-from pcapi.utils.logger import json_logger
+
+
+logger = logging.getLogger(__name__)
 
 
 def create_offerer_from_csv(row: Dict) -> Offerer:
@@ -46,9 +49,7 @@ def create_venue_from_csv(row: Dict, offerer: Offerer) -> Venue:
         venue.name = (
             f"Lieu {Venue.query.filter(Venue.siret.startswith(offerer.siren)).count() + 1} - {row['nom_structure']}"
         )
-        json_logger.warning(
-            "Venue name missing for offerer with SIREN %s. Génerated name : %s", offerer.siren, venue.name
-        )
+        logger.warning("Venue name missing for offerer with SIREN %s. Génerated name : %s", offerer.siren, venue.name)
 
     try:
         geoloc = json.loads(row["geoloc"])
@@ -87,7 +88,7 @@ def create_user_model_from_csv(row: Dict) -> ProUserCreationBodyModel:
 def import_new_offerer_from_csv(row: Dict) -> None:
     # We can't process a row without a postal code
     if not row["Postal Code"] and not row["code_postal"]:
-        json_logger.warning("Unable to import this line %s - %s", row[""], row["Company ID"])
+        logger.warning("Unable to import this line %s - %s", row[""], row["Company ID"])
         return
 
     existing_pro = find_user_by_email(row["Email"])
@@ -113,10 +114,10 @@ def import_new_offerer_from_csv(row: Dict) -> None:
         try:
             repository.save(venue)
         except ApiErrors:
-            json_logger.warning("Unable to save this venue %s - %s", row[""], row["Company ID"])
+            logger.warning("Unable to save this venue %s - %s", row[""], row["Company ID"])
 
     else:
-        json_logger.warning("Unable to import this venue %s - %s", row[""], row["Company ID"])
+        logger.warning("Unable to import this venue %s - %s", row[""], row["Company ID"])
 
 
 def import_from_csv_file(csv_file_path: str) -> None:

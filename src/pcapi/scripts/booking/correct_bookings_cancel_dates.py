@@ -1,9 +1,12 @@
 import csv
+import logging
 
 from pcapi.models import Booking
 from pcapi.models.db import db
 from pcapi.repository import repository
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 BATCH_SIZE = 100

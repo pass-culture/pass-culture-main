@@ -1,3 +1,4 @@
+import logging
 from typing import Tuple
 
 from flask import jsonify
@@ -23,13 +24,15 @@ from pcapi.routes.serialization.beneficiaries import ChangeBeneficiaryEmailReque
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.use_cases.update_user_informations import AlterableUserInformations
 from pcapi.use_cases.update_user_informations import update_user_informations
-from pcapi.utils.logger import json_logger
 from pcapi.utils.login_manager import stamp_session
 from pcapi.utils.mailing import MailServiceException
 from pcapi.utils.rest import login_or_api_key_required
 from pcapi.validation.routes.users import check_allowed_changes_for_user
 from pcapi.validation.routes.users import check_valid_signin
 from pcapi.workers.beneficiary_job import beneficiary_job
+
+
+logger = logging.getLogger(__name__)
 
 
 @private_api.route("/beneficiaries/current", methods=["GET"])
@@ -159,7 +162,7 @@ def id_check_application_update(
         application_id = int(body.id)
     except ValueError:
         raise ApiErrors({"id": "Not a number"})  # pylint: disable=raise-missing-from
-    json_logger.info(
+    logger.info(
         "Received an application to process", extra={"category": "BeneficiaryAccount", "applicationId": application_id}
     )
     beneficiary_job.delay(application_id)

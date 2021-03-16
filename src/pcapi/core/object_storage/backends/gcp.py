@@ -1,9 +1,13 @@
+import logging
+
 from google.cloud.storage import Client
 from google.cloud.storage.bucket import Bucket
 from google.oauth2.service_account import Credentials
 
 from pcapi import settings
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 from .base import BaseBackend
 

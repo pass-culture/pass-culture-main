@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from datetime import timedelta
 import enum
+import logging
 from typing import List
 from typing import Optional
 
@@ -44,7 +45,9 @@ from pcapi.models.providable_mixin import ProvidableMixin
 from pcapi.models.soft_deletable_mixin import SoftDeletableMixin
 from pcapi.models.versioned_mixin import VersionedMixin
 from pcapi.utils.date import DateTimes
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 class Mediation(PcObject, Model, HasThumbMixin, ProvidableMixin, DeactivableMixin):

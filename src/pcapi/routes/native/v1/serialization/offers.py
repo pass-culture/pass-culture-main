@@ -1,4 +1,5 @@
 from datetime import datetime
+import logging
 from typing import Any
 from typing import Callable
 from typing import Dict
@@ -23,9 +24,11 @@ from pcapi.routes.native.utils import convert_to_cent
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
-from pcapi.utils.logger import logger
 
 from . import BaseModel
+
+
+logger = logging.getLogger(__name__)
 
 
 class OfferCategoryResponse(BaseModel):

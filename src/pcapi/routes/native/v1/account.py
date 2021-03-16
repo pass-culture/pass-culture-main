@@ -1,5 +1,6 @@
 from dataclasses import asdict
 from datetime import datetime
+import logging
 
 from pcapi.connectors import api_recaptcha
 from pcapi.core.users import api
@@ -14,7 +15,9 @@ from pcapi.repository import transaction
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.native.security import authenticated_user_required
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 from pcapi.workers.push_notification_job import update_user_attributes_job
 
 from . import blueprint

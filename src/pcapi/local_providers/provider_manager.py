@@ -1,3 +1,4 @@
+import logging
 from typing import Callable
 from typing import Optional
 
@@ -9,7 +10,9 @@ from pcapi.repository import repository
 from pcapi.repository.venue_provider_queries import get_active_venue_providers_for_specific_provider
 from pcapi.scheduled_tasks.logger import CronStatus
 from pcapi.scheduled_tasks.logger import build_cron_log_message
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 def synchronize_data_for_provider(provider_name: str, limit: Optional[int] = None) -> None:

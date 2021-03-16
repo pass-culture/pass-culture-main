@@ -1,8 +1,12 @@
+import logging
+
 from pcapi.model_creators.generic_creators import create_mediation
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.utils.select import remove_every
 from pcapi.sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 OFFERS_WITH_MEDIATION_REMOVE_MODULO = 5

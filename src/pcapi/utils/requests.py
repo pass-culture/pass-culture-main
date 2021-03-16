@@ -1,3 +1,4 @@
+import logging
 from typing import Any
 from typing import Callable
 
@@ -17,8 +18,7 @@ import requests.exceptions as exceptions
 # isort: on
 # fmt: on
 
-from pcapi.utils.logger import json_logger
-
+logger = logging.getLogger(__name__)
 
 REQUEST_TIMEOUT_IN_SECOND = 10
 
@@ -27,7 +27,7 @@ def _wrapper(request_func: Callable, method: str, url: str, **kwargs: Any) -> Re
     try:
         timeout = kwargs.pop("timeout", REQUEST_TIMEOUT_IN_SECOND)
         response = request_func(method=method, url=url, timeout=timeout, **kwargs)
-        json_logger.info(
+        logger.info(
             "External service called",
             extra={
                 "url": response.url,
@@ -36,7 +36,7 @@ def _wrapper(request_func: Callable, method: str, url: str, **kwargs: Any) -> Re
             },
         )
     except Exception as exc:
-        json_logger.exception("Call to external service failed with %s", exc, extra={"method": method, "url": url})
+        logger.exception("Call to external service failed with %s", exc, extra={"method": method, "url": url})
         raise exc
 
     return response

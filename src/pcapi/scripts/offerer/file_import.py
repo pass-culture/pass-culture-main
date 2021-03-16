@@ -1,5 +1,6 @@
 import csv
 from datetime import datetime
+import logging
 from typing import Callable
 from typing import List
 
@@ -13,7 +14,9 @@ from pcapi.repository.offerer_queries import find_by_siren
 from pcapi.repository.user_offerer_queries import find_one_or_none_by_user_id_and_offerer_id
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.repository.venue_queries import find_by_managing_offerer_id
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 USER_LAST_NAME_COLUMN_INDEX = 0

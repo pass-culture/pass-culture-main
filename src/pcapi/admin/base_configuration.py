@@ -1,3 +1,5 @@
+import logging
+
 from flask import url_for
 from flask_admin.base import BaseView
 from flask_admin.contrib.sqla import ModelView
@@ -6,7 +8,9 @@ from flask_login import current_user
 from werkzeug.utils import redirect
 
 from pcapi import settings
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 def is_accessible() -> bool:

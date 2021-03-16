@@ -1,3 +1,4 @@
+import logging
 import random
 import re
 from typing import Dict
@@ -8,7 +9,9 @@ from pcapi.model_creators.generic_creators import create_venue
 from pcapi.models.venue_type import VenueType
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.mocks.venue_mocks import MOCK_NAMES
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 OFFERERS_WITH_PHYSICAL_VENUE_REMOVE_MODULO = 3

@@ -1,5 +1,6 @@
 import datetime
 from itertools import groupby
+import logging
 from operator import attrgetter
 
 from pcapi import settings
@@ -9,7 +10,9 @@ import pcapi.core.bookings.repository as bookings_repository
 from pcapi.domain.user_emails import send_expired_bookings_recap_email_to_beneficiary
 from pcapi.domain.user_emails import send_expired_bookings_recap_email_to_offerer
 from pcapi.models import db
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 def handle_expired_bookings() -> None:

@@ -1,3 +1,5 @@
+import logging
+
 from flask import current_app as app
 
 from pcapi import settings
@@ -5,7 +7,9 @@ from pcapi.algolia.infrastructure.api import clear_index
 from pcapi.algolia.usecase.orchestrator import process_eligible_offers
 from pcapi.connectors.redis import delete_all_indexed_offers
 from pcapi.models import Offer
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 def create_industrial_algolia_indexed_objects() -> None:

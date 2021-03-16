@@ -1,3 +1,4 @@
+import logging
 from time import time
 
 from flask import current_app as app
@@ -6,7 +7,9 @@ from pcapi.local_providers.provider_manager import synchronize_data_for_provider
 from pcapi.local_providers.provider_manager import synchronize_venue_provider
 from pcapi.local_providers.provider_manager import synchronize_venue_providers_for_provider
 from pcapi.repository.venue_provider_queries import get_venue_provider_by_id
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 @app.manager.option("-p", "--provider-name", help="Limit update to this provider name")

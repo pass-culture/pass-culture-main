@@ -1,11 +1,14 @@
 import datetime
+import logging
 from typing import Iterable
 
 import mailjet_rest
 from requests import Response
 
 from pcapi import settings
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 from ..models import MailResult
 from .base import BaseBackend

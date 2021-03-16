@@ -1,3 +1,4 @@
+import logging
 from typing import List
 from typing import Tuple
 
@@ -14,7 +15,9 @@ from pcapi.scripts.payment.batch_steps import send_transactions
 from pcapi.scripts.payment.batch_steps import send_wallet_balances
 from pcapi.scripts.payment.batch_steps import set_not_processable_payments_with_bank_information_to_retry
 from pcapi.scripts.update_booking_used import update_booking_used_after_stock_occurrence
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 def generate_and_send_payments(payment_message_id: str = None):

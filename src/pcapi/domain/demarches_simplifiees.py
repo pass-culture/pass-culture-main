@@ -1,4 +1,5 @@
 from datetime import datetime
+import logging
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -12,7 +13,9 @@ from pcapi.domain.bank_account import format_raw_iban_and_bic
 from pcapi.domain.bank_information import CannotRegisterBankInformation
 from pcapi.models.bank_information import BankInformationStatus
 from pcapi.utils.date import DATE_ISO_FORMAT
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 FIELD_FOR_VENUE_WITH_SIRET = (

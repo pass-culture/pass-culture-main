@@ -1,4 +1,5 @@
 from datetime import datetime
+import logging
 from typing import Dict
 from typing import Generator
 from typing import List
@@ -24,7 +25,9 @@ from pcapi.models.provider import Provider
 from pcapi.models.venue_provider import VenueProvider
 from pcapi.repository import feature_queries
 from pcapi.repository import repository
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 from pcapi.validation.models.entity_validator import validate
 
 

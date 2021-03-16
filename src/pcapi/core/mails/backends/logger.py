@@ -1,9 +1,11 @@
 from datetime import date
+import logging
 from typing import Iterable
 
 from requests import Response
 
-from pcapi.utils.logger import logger
+
+logger = logging.getLogger(__name__)
 
 from ..models import MailResult
 from .base import BaseBackend

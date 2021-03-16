@@ -1,5 +1,6 @@
 import csv
 from io import StringIO
+import logging
 
 from sqlalchemy import and_
 from sqlalchemy import not_
@@ -8,7 +9,9 @@ from sqlalchemy import or_
 from pcapi.core.offerers.models import Offerer
 from pcapi.models import Venue
 from pcapi.utils.human_ids import humanize
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 CSV_HEADER = [

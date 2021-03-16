@@ -1,3 +1,4 @@
+import logging
 from time import sleep
 
 from pcapi import settings
@@ -11,7 +12,9 @@ from pcapi.repository import repository
 from pcapi.repository.venue_provider_queries import get_active_venue_providers_for_specific_provider
 from pcapi.repository.venue_provider_queries import get_nb_containers_at_work
 from pcapi.repository.venue_provider_queries import get_venue_providers_to_sync
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 WAIT_TIME_FOR_AVAILABLE_WORKER = 60

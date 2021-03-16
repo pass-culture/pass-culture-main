@@ -1,3 +1,5 @@
+import logging
+
 from flask import jsonify
 from flask import request
 
@@ -12,7 +14,9 @@ from pcapi.repository import repository
 from pcapi.routes.serialization import as_dict
 from pcapi.utils.feature import feature_required
 from pcapi.utils.includes import BENEFICIARY_INCLUDES
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 from pcapi.validation.routes.users import check_valid_signup_webapp
 
 

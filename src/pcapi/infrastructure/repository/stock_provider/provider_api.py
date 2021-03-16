@@ -1,7 +1,10 @@
+import logging
 from typing import Dict
 
 from pcapi.utils import requests
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 class ProviderAPIException(Exception):

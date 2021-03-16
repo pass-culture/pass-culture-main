@@ -1,3 +1,5 @@
+import logging
+
 from pcapi.domain.music_types import music_types
 from pcapi.domain.types import get_formatted_active_product_types
 from pcapi.model_creators.specific_creators import create_product_with_thing_type
@@ -7,7 +9,9 @@ from pcapi.sandboxes.scripts.mocks.thing_mocks import MOCK_DESCRIPTIONS
 from pcapi.sandboxes.scripts.mocks.thing_mocks import MOCK_NAMES
 from pcapi.sandboxes.scripts.mocks.user_mocks import MOCK_FIRST_NAMES
 from pcapi.sandboxes.scripts.mocks.user_mocks import MOCK_LAST_NAMES
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 from pcapi.utils.token import random_token
 
 

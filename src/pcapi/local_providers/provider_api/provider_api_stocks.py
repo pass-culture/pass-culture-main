@@ -1,8 +1,12 @@
+import logging
+
 from sqlalchemy.orm.util import aliased
 
 from pcapi.models import VenueProvider
 from pcapi.models.provider import Provider
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 from . import synchronize_provider_api
 

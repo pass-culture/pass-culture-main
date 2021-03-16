@@ -1,4 +1,5 @@
 import csv
+import logging
 from typing import Iterable
 from typing import List
 
@@ -7,7 +8,9 @@ from pcapi.models import Booking
 from pcapi.models import Offer
 from pcapi.models import Stock
 from pcapi.repository import repository
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 FIRST_TITLE = "id offre"

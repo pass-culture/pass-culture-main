@@ -1,5 +1,9 @@
+import logging
+
 from pcapi.notifications.push.transactional_notifications import TransactionalNotificationData
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 class LoggerBackend:

@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
+import logging
 
 from pcapi.model_creators.generic_creators import create_bank_information
 from pcapi.model_creators.generic_creators import create_offerer
@@ -15,7 +16,9 @@ from pcapi.sandboxes.scripts.utils.helpers import get_email
 from pcapi.sandboxes.scripts.utils.locations import OFFERER_PLACES
 from pcapi.sandboxes.scripts.utils.locations import create_locations_from_places
 from pcapi.sandboxes.scripts.utils.select import pick_every
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 ATTACHED_PRO_USERS_COUNT = 2

@@ -1,4 +1,5 @@
 import datetime
+import logging
 from typing import List
 from typing import Optional
 from typing import Union
@@ -36,7 +37,9 @@ from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
 from pcapi.routes.serialization.stock_serialize import StockCreationBodyModel
 from pcapi.routes.serialization.stock_serialize import StockEditionBodyModel
 from pcapi.utils import mailing
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.rest import load_or_raise_error
 from pcapi.workers.push_notification_job import send_transactional_notification_job

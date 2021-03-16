@@ -1,11 +1,14 @@
 from functools import wraps
+import logging
 
 from flask_jwt_extended.utils import get_jwt_identity
 from flask_jwt_extended.view_decorators import jwt_required
 
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.repository.user_queries import find_user_by_email
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 JWT_AUTH = "JWT"

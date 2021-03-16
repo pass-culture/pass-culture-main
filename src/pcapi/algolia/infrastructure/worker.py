@@ -1,3 +1,4 @@
+import logging
 from time import sleep
 from typing import Dict
 
@@ -10,7 +11,9 @@ from pcapi.connectors.redis import get_number_of_venue_providers_currently_in_sy
 from pcapi.connectors.redis import get_venue_providers
 from pcapi.connectors.scalingo_api import ScalingoApiException
 from pcapi.connectors.scalingo_api import run_process_in_one_off_container
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 ALGOLIA_WAIT_TIME_FOR_AVAILABLE_WORKER = 60

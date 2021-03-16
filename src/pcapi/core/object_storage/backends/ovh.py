@@ -1,10 +1,13 @@
+import logging
 from typing import Optional
 
 import swiftclient
 from swiftclient.client import Connection
 
 from pcapi import settings
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 from .base import BaseBackend
 

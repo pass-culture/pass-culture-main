@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
+import logging
 from typing import List
 
 from redis import Redis
@@ -29,7 +30,9 @@ from pcapi.models import db
 from pcapi.repository import offer_queries
 from pcapi.utils.converter import from_tuple_to_int
 from pcapi.utils.human_ids import humanize
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 def batch_indexing_offers_in_algolia_by_offer(client: Redis) -> None:

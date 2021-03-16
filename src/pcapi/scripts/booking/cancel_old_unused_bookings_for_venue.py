@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
+import logging
 from typing import List
 
 from sqlalchemy.sql.sqltypes import DateTime
@@ -10,7 +11,9 @@ from pcapi.core.offers.models import Stock
 from pcapi.repository import repository
 from pcapi.repository.venue_queries import find_by_id
 from pcapi.utils.human_ids import dehumanize
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 def cancel_old_unused_bookings_for_venue(humanized_venue_id: str) -> None:

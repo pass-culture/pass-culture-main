@@ -1,5 +1,6 @@
 from io import BytesIO
 from io import TextIOWrapper
+import logging
 import re
 from typing import Dict
 from typing import List
@@ -18,7 +19,9 @@ from pcapi.models.local_provider_event import LocalProviderEventType
 from pcapi.repository import local_provider_event_queries
 from pcapi.repository import product_queries
 from pcapi.repository.product_queries import ProductWithBookingsException
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 from pcapi.utils.string_processing import trim_with_elipsis
 
 

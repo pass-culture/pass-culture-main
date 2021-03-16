@@ -12,7 +12,9 @@ import pcapi.core.users.api as users_api
 from pcapi.core.users.models import User
 from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_email
-from pcapi.utils.logger import logger
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def create_or_update_users(rows: Iterable[dict]) -> List[User]:

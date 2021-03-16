@@ -1,7 +1,11 @@
+import logging
+
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.repository import repository
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 def create_industrial_user_offerers(users_by_name, offerers_by_name):

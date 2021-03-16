@@ -1,6 +1,7 @@
 import base64
 import datetime
 import io
+import logging
 import typing
 
 from PIL import Image
@@ -21,7 +22,9 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.notifications.push.transactional_notifications import get_notification_data_on_booking_cancellation
 from pcapi.repository import feature_queries
 from pcapi.repository import repository
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 from pcapi.utils.mailing import MailServiceException
 from pcapi.workers.push_notification_job import send_transactional_notification_job
 

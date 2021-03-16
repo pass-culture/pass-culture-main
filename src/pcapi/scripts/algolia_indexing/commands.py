@@ -1,3 +1,4 @@
+import logging
 from time import time
 
 from flask import current_app as app
@@ -10,7 +11,9 @@ from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_alg
 from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_by_venue
 from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_by_venue_provider
 from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_from_database
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 @app.manager.command

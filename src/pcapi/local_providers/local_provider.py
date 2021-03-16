@@ -1,6 +1,7 @@
 from abc import abstractmethod
 from collections.abc import Iterator
 from datetime import datetime
+import logging
 
 from flask import current_app as app
 
@@ -23,7 +24,9 @@ from pcapi.repository import feature_queries
 from pcapi.repository import repository
 from pcapi.repository.providable_queries import get_last_update_for_provider
 from pcapi.repository.provider_queries import get_provider_by_local_class
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 from pcapi.validation.models import entity_validator
 
 

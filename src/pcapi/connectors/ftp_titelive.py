@@ -1,12 +1,15 @@
 import ftplib
 from io import BytesIO
+import logging
 from typing import List
 from typing import Pattern
 from zipfile import ZipFile
 
 from pcapi import settings
 from pcapi.domain.titelive import put_today_file_at_end_of_list
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_titelive_ftp():

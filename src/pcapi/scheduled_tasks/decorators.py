@@ -1,11 +1,14 @@
 from functools import wraps
+import logging
 import time
 
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
 from pcapi.scheduled_tasks.logger import CronStatus
 from pcapi.scheduled_tasks.logger import build_cron_log_message
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 def cron_context(func):

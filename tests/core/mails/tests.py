@@ -175,7 +175,7 @@ class MailjetBackendTest:
             "ListID": "12345",
         }
 
-    @patch("pcapi.utils.requests.json_logger.info")
+    @patch("pcapi.utils.requests.logger.info")
     def test_use_our_requests_wrapper_that_logs(self, mocked_logger):
         backend = self._get_backend()
         with requests_mock.Mocker() as mock:

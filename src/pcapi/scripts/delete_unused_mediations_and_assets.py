@@ -1,3 +1,4 @@
+import logging
 from typing import Optional
 
 from pcapi.core.object_storage import BACKENDS_MAPPING
@@ -7,7 +8,9 @@ from pcapi.models import Favorite
 from pcapi.models import db
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import humanize
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 from pcapi.utils.module_loading import import_string
 
 

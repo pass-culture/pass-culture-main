@@ -3,6 +3,7 @@ from datetime import date
 from datetime import datetime
 from datetime import timedelta
 from decimal import Decimal
+import logging
 import secrets
 from typing import List
 from typing import Optional
@@ -46,7 +47,9 @@ from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
 from pcapi.scripts.beneficiary import THIRTY_DAYS_IN_HOURS
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 from pcapi.utils.mailing import MailServiceException
 from pcapi.workers.push_notification_job import update_user_attributes_job
 

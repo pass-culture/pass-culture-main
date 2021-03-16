@@ -1,4 +1,5 @@
 from datetime import datetime
+import logging
 from typing import List
 
 from algoliasearch.exceptions import AlgoliaException
@@ -16,7 +17,9 @@ from pcapi.connectors.redis import delete_indexed_offers
 from pcapi.connectors.redis import get_offer_details
 from pcapi.models import Offer
 from pcapi.repository import offer_queries
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 def process_eligible_offers(client: Redis, offer_ids: List[int], from_provider_update: bool = False) -> None:

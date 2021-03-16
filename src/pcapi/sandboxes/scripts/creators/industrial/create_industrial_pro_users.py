@@ -1,11 +1,14 @@
 from datetime import datetime
 from datetime import timedelta
+import logging
 from typing import Dict
 
 from pcapi.core.offers.factories import UserOffererFactory
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.repository import repository
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 PROS_COUNT = 1

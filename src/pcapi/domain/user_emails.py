@@ -1,4 +1,5 @@
 from datetime import datetime
+import logging
 from typing import List
 
 from pcapi import settings
@@ -42,7 +43,9 @@ from pcapi.emails.user_reset_password import retrieve_data_for_reset_password_na
 from pcapi.emails.user_reset_password import retrieve_data_for_reset_password_user_email
 from pcapi.models import UserOfferer
 from pcapi.repository.offerer_queries import find_new_offerer_user_email
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 from pcapi.utils.mailing import make_admin_user_validation_email
 from pcapi.utils.mailing import make_offerer_driven_cancellation_email_for_offerer
 from pcapi.utils.mailing import make_pro_user_validation_email

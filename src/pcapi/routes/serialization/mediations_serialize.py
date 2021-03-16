@@ -1,4 +1,5 @@
 from datetime import datetime
+import logging
 from pathlib import Path
 from typing import List
 from typing import Optional
@@ -12,7 +13,9 @@ from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
 from pcapi.utils import requests
 from pcapi.utils.date import format_into_utc_date
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 ALLOWED_IMAGE_SUFFIXES = {".gif", ".jpg", ".jpeg", ".png"}

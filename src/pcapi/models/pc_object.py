@@ -1,6 +1,7 @@
 from datetime import datetime
 from decimal import Decimal
 from decimal import InvalidOperation
+import logging
 from pprint import pprint
 import re
 from typing import Any
@@ -24,7 +25,9 @@ from pcapi.models.soft_deletable_mixin import SoftDeletableMixin
 from pcapi.utils.date import match_format
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import humanize
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 DUPLICATE_KEY_ERROR_CODE = "23505"

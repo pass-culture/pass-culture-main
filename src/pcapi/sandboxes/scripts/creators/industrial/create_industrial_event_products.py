@@ -1,3 +1,5 @@
+import logging
+
 from pcapi.domain.music_types import music_types
 from pcapi.domain.show_types import show_types
 from pcapi.domain.types import get_formatted_active_product_types
@@ -10,7 +12,9 @@ from pcapi.sandboxes.scripts.mocks.event_mocks import MOCK_DESCRIPTIONS
 from pcapi.sandboxes.scripts.mocks.event_mocks import MOCK_NAMES
 from pcapi.sandboxes.scripts.mocks.user_mocks import MOCK_FIRST_NAMES
 from pcapi.sandboxes.scripts.mocks.user_mocks import MOCK_LAST_NAMES
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 EVENT_COUNTS_PER_TYPE = 7

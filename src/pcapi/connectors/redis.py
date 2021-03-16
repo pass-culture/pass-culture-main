@@ -1,5 +1,6 @@
 from enum import Enum
 import json
+import logging
 from typing import Dict
 from typing import List
 
@@ -8,7 +9,9 @@ from redis import Redis
 from redis.client import Pipeline
 
 from pcapi import settings
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 class RedisBucket(Enum):

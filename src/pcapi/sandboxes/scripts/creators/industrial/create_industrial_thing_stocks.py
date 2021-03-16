@@ -1,7 +1,11 @@
+import logging
+
 from pcapi.model_creators.specific_creators import create_stock_from_offer
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.utils.select import remove_every
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 from .utils import get_occurrence_short_name
 from .utils import get_price_by_short_name

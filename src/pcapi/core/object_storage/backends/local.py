@@ -1,9 +1,11 @@
+import logging
 import os
 from pathlib import Path
 from pathlib import PurePath
 from typing import Optional
 
-from pcapi.utils.logger import logger
+
+logger = logging.getLogger(__name__)
 
 from .base import BaseBackend
 

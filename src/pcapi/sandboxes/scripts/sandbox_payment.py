@@ -1,5 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
+import logging
 
 import pcapi.core.payments.api as payments_api
 from pcapi.model_creators.generic_creators import create_bank_information
@@ -16,7 +17,9 @@ from pcapi.models import EventType
 from pcapi.models import ThingType
 from pcapi.models import Venue
 from pcapi.repository import repository
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 now = datetime.utcnow()

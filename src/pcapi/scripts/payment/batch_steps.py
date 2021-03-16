@@ -1,4 +1,5 @@
 from datetime import datetime
+import logging
 from typing import List
 from typing import Optional
 from typing import Tuple
@@ -32,7 +33,9 @@ from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository import payment_queries
 from pcapi.repository import repository
 from pcapi.repository.user_queries import get_all_users_wallet_balances
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 from pcapi.utils.mailing import MailServiceException
 
 

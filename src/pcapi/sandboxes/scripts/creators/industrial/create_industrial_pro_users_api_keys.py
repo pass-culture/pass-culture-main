@@ -1,6 +1,10 @@
+import logging
+
 from pcapi.model_creators.generic_creators import create_api_key
 from pcapi.repository import repository
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 PROS_COUNT = 1

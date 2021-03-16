@@ -1,8 +1,11 @@
 from functools import wraps
+import logging
 
 from pcapi.flask_app import app
 from pcapi.settings import IS_RUNNING_TESTS
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 from pcapi.workers.logger import JobStatus
 from pcapi.workers.logger import build_job_log_message
 

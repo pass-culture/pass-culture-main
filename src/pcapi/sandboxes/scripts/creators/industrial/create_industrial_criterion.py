@@ -1,7 +1,11 @@
+import logging
+
 from pcapi.models import Criterion
 from pcapi.models import OfferCriterion
 from pcapi.repository import repository
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 def create_industrial_criteria() -> dict:

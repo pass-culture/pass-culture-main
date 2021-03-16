@@ -1,6 +1,10 @@
+import logging
+
 from pcapi.repository.clean_database import clean_all_database
 from pcapi.sandboxes import scripts
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 def save_sandbox(name, with_clean=True):

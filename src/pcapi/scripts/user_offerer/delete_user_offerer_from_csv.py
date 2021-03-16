@@ -1,11 +1,14 @@
 import csv
+import logging
 from typing import Iterable
 from typing import List
 
 from pcapi.models import ApiErrors
 from pcapi.repository import repository
 from pcapi.repository.user_offerer_queries import find_one_or_none_by_user_id_and_offerer_id
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 FIRST_TITLE = "Lien structure sur le portail PRO"
