@@ -10,10 +10,8 @@ const ActionsBarPortal = ({ isVisible, children }) => (
       className={classnames('actions-bar', { 'actions-bar-visible': isVisible })}
       data-testid="actions-bar"
     >
-      <div className="container">
-        <div className="actions-bar-content">
-          {children}
-        </div>
+      <div className="actions-bar-content">
+        {children}
       </div>
     </div>
   </PortalContainer>

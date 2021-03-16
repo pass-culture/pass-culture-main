@@ -3,14 +3,8 @@
   display: flex;
   justify-content: space-between;
 
-  .nb-offers-description {
-    display: inline-block;
-    position: absolute;
-  }
-
   .actions-container {
     display: flex;
-    margin: auto;
 
     button {
       margin-left: 40px;

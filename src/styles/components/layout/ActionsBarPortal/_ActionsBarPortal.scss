@@ -9,17 +9,13 @@
   z-index: 10;
 
   &.actions-bar-visible {
-    display: block;
+    display: grid;
+    grid-template-columns: [col-start] 1fr [col-main] rem(850px)  1fr;
   }
 
   .actions-bar-content {
+    grid-column-start: col-main;
     margin: 0 5rem;
-    min-width: rem(850px);
     padding: 1.25rem 0;
-    position: relative;
-  }
-
-  .container {
-    width: rem(896px);
   }
 }

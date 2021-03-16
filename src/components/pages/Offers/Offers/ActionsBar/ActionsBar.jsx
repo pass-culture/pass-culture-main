@@ -96,7 +96,7 @@ const ActionsBar = props => {
       className="offers-actions-bar"
       data-testid="offers-actions-bar"
     >
-      <span className="nb-offers-description">
+      <span>
         {computeSelectedOffersLabel()}
       </span>
 
