@@ -3,8 +3,6 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.core.testing import override_features
-from pcapi.infrastructure.container import api_libraires_stocks
-from pcapi.local_providers import LibrairesStocks
 from pcapi.model_creators.generic_creators import create_allocine_pivot
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user
@@ -111,7 +109,7 @@ class Post:
 
         @pytest.mark.usefixtures("db_session")
         @patch("pcapi.routes.pro.venue_providers.find_by_id")
-        @patch("pcapi.routes.pro.venue_providers.get_allocine_theaterId_for_venue")
+        @patch("pcapi.use_cases.connect_venue_to_allocine.get_allocine_theaterId_for_venue")
         def when_add_allocine_stocks_provider_with_price_but_no_isDuo_config(
             self, stubbed_get_theaterid_for_venue, stubbed_find_by_id, app
         ):
@@ -378,16 +376,11 @@ class Post:
             auth_request.post("/venueProviders", json=venue_provider_data)
 
             # Then
-            mocked_connect_venue_to_provider.assert_called_once_with(
-                LibrairesStocks,
-                api_libraires_stocks,
-                {"providerId": humanize(provider.id), "venueId": humanize(venue.id)},
-                stubbed_find_by_id,
-            )
+            mocked_connect_venue_to_provider.assert_called_once_with(venue, provider)
 
         @pytest.mark.usefixtures("db_session")
         @patch("pcapi.use_cases.connect_venue_to_provider._check_venue_can_be_synchronized_with_provider")
-        @patch("pcapi.routes.pro.venue_providers.get_allocine_theaterId_for_venue")
+        @patch("pcapi.use_cases.connect_venue_to_allocine.get_allocine_theaterId_for_venue")
         @patch("pcapi.routes.pro.venue_providers.find_by_id")
         @patch("pcapi.routes.pro.venue_providers.connect_venue_to_allocine")
         def should_inject_no_repository_to_the_usecase_when_provider_is_not_concerned(
@@ -422,7 +415,6 @@ class Post:
 
             # Then
             mocked_connect_venue_to_allocine.assert_called_once_with(
+                venue,
                 {"providerId": humanize(provider.id), "venueId": humanize(venue.id)},
-                stubbed_find_by_id,
-                stubbed_get_theaterId_for_venue,
             )

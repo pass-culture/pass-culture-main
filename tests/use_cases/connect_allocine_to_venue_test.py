@@ -41,7 +41,7 @@ class ConnectAllocineToVenueTest:
         }
 
         # When
-        connect_venue_to_allocine(venue_provider_payload, self.find_by_id, self.get_theaterid_for_venue)
+        connect_venue_to_allocine(venue, venue_provider_payload)
 
         # Then
         allocine_venue_provider = AllocineVenueProvider.query.one()

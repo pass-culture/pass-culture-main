@@ -20,11 +20,17 @@ from pcapi.models import Product
 from pcapi.models import Venue
 from pcapi.models.db import db
 from pcapi.models.feature import FeatureToggle
+from pcapi.models.provider import Provider
 from pcapi.models.venue_provider import VenueProvider
 from pcapi.repository import feature_queries
 from pcapi.repository import repository
 from pcapi.utils.logger import logger
 from pcapi.validation.models.entity_validator import validate
+
+
+def check_siret_can_be_synchronized(siret: str, provider: Provider):
+    provider_api = provider.getProviderAPI()
+    return provider_api.is_siret_registered(siret)
 
 
 def synchronize_venue_provider(venue_provider: VenueProvider) -> None:

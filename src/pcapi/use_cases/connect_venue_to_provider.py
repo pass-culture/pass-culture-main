@@ -1,70 +1,74 @@
-from typing import Callable
-from typing import Dict
 from typing import Optional
 
-from pcapi.domain.stock_provider.stock_provider_repository import StockProviderRepository
-from pcapi.local_providers import FnacStocks
-from pcapi.local_providers import LibrairesStocks
-from pcapi.local_providers import PraxielStocks
-from pcapi.local_providers import TiteLiveStocks
+from pcapi.infrastructure.container import api_fnac_stocks
+from pcapi.infrastructure.container import api_libraires_stocks
+from pcapi.infrastructure.container import api_praxiel_stocks
+from pcapi.infrastructure.container import api_titelive_stocks
+from pcapi.local_providers.provider_api import synchronize_provider_api
 from pcapi.models import ApiErrors
 from pcapi.models import Venue
 from pcapi.models import VenueProvider
+from pcapi.models.provider import Provider
 from pcapi.repository import repository
-from pcapi.utils.human_ids import dehumanize
-from pcapi.validation.routes.venues import check_existing_venue
 
 
-STANDARD_STOCK_PROVIDERS = {
-    FnacStocks: "FNAC",
-    LibrairesStocks: "LesLibraires",
-    PraxielStocks: "Praxiel/Inférence",
-    TiteLiveStocks: "TiteLive",
+SPECIFIC_STOCK_PROVIDER = {
+    "LibrairesStocks": api_libraires_stocks,
+    "FnacStocks": api_fnac_stocks,
+    "TiteLiveStocks": api_titelive_stocks,
+    "PraxielStocks": api_praxiel_stocks,
 }
 ERROR_CODE_PROVIDER_NOT_SUPPORTED = 400
 ERROR_CODE_SIRET_NOT_SUPPORTED = 422
 
 
 def connect_venue_to_provider(
-    provider_class: object,
-    stock_provider_repository: StockProviderRepository,
-    venue_provider_payload: Dict,
-    find_venue_by_id: Callable,
+    venue: Venue,
+    provider: Provider,
 ) -> VenueProvider:
-    venue_id = dehumanize(venue_provider_payload["venueId"])
-    venue = find_venue_by_id(venue_id)
-    check_existing_venue(venue)
-    if provider_class not in STANDARD_STOCK_PROVIDERS:
-        api_errors = ApiErrors()
-        api_errors.status_code = ERROR_CODE_PROVIDER_NOT_SUPPORTED
-        api_errors.add_error("provider", "Provider non pris en charge")
-        raise api_errors
+    _check_provider_can_be_used(provider)
+    _check_venue_can_be_synchronized_with_provider(venue.siret, provider)
 
-    _check_venue_can_be_synchronized_with_provider(
-        venue.siret, stock_provider_repository.can_be_synchronized, STANDARD_STOCK_PROVIDERS[provider_class]
-    )
-    new_venue_provider = _connect_stock_providers_to_venue(venue, venue_provider_payload)
-    return new_venue_provider
-
-
-def _connect_stock_providers_to_venue(venue: Venue, venue_provider_payload: Dict) -> VenueProvider:
     venue_provider = VenueProvider()
     venue_provider.venue = venue
-    venue_provider.providerId = dehumanize(venue_provider_payload["providerId"])
+    venue_provider.provider = provider
     venue_provider.venueIdAtOfferProvider = venue.siret
 
     repository.save(venue_provider)
     return venue_provider
 
 
-def _check_venue_can_be_synchronized_with_provider(
-    siret: str, can_be_synchronized: Callable, provider_name: str
+def _check_provider_can_be_used(
+    provider: Provider,
 ) -> None:
-    if not siret or not can_be_synchronized(siret):
+    if not provider.implements_provider_api and provider.localClass not in SPECIFIC_STOCK_PROVIDER:
+        api_errors = ApiErrors()
+        api_errors.status_code = ERROR_CODE_PROVIDER_NOT_SUPPORTED
+        api_errors.add_error("provider", "Provider non pris en charge")
+        raise api_errors
+
+
+def _check_venue_can_be_synchronized_with_provider(
+    siret: str,
+    provider: Provider,
+) -> None:
+    if not _siret_can_be_synchronized(siret, provider):
         api_errors = ApiErrors()
         api_errors.status_code = ERROR_CODE_SIRET_NOT_SUPPORTED
-        api_errors.add_error("provider", _get_synchronization_error_message(provider_name, siret))
+        api_errors.add_error("provider", _get_synchronization_error_message(provider.name, siret))
         raise api_errors
+
+
+def _siret_can_be_synchronized(
+    siret: str,
+    provider: Provider,
+) -> bool:
+    if not siret:
+        return False
+
+    if provider.implements_provider_api:
+        return synchronize_provider_api.check_siret_can_be_synchronized(siret, provider)
+    return SPECIFIC_STOCK_PROVIDER[provider.localClass].can_be_synchronized(siret)
 
 
 def _get_synchronization_error_message(provider_name: str, siret: Optional[str]) -> str:
