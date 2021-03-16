@@ -67,7 +67,7 @@ main {
 
   &.container {
     grid-column-start: col-main;
-    grid-row-end: end-line;
+    grid-row-end: row-footer;
     grid-row-start: row-header;
 
     .page-content {
