@@ -7,6 +7,7 @@ from pcapi.core.offerers.api import create_digital_venue
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.users.api import create_pro_user
+from pcapi.domain.password import random_password
 from pcapi.models import ApiErrors
 from pcapi.models import VenueType
 from pcapi.repository import repository
@@ -27,7 +28,7 @@ def create_offerer_from_csv(row: Dict) -> Offerer:
     return offerer
 
 
-def create_venue_from_csv(row: Dict, offerer_siren: str) -> Venue:
+def create_venue_from_csv(row: Dict, offerer: Offerer) -> Venue:
     venue = Venue(
         address=_get_address_from_row(row),
         postalCode=_get_postal_code(row),
@@ -42,9 +43,11 @@ def create_venue_from_csv(row: Dict, offerer_siren: str) -> Venue:
     if row["nom_lieu"]:
         venue.name = row["nom_lieu"]
     else:
-        json_logger.warning("Venue name missing for offerer with %s SIREN", offerer_siren)
         venue.name = (
-            f"Lieu {Venue.query.filter(Venue.siret.startswith(offerer_siren)).count() + 1} - {row['nom_structure']}"
+            f"Lieu {Venue.query.filter(Venue.siret.startswith(offerer.siren)).count() + 1} - {row['nom_structure']}"
+        )
+        json_logger.warning(
+            "Venue name missing for offerer with SIREN %s. Génerated name : %s", offerer.siren, venue.name
         )
 
     try:
@@ -52,6 +55,8 @@ def create_venue_from_csv(row: Dict, offerer_siren: str) -> Venue:
         venue.latitude, venue.longitude = geoloc
     except JSONDecodeError:
         pass
+
+    venue.managingOfferer = offerer
 
     return venue
 
@@ -67,10 +72,10 @@ def _get_postal_code(row: Dict) -> str:
 def create_user_model_from_csv(row: Dict) -> ProUserCreationBodyModel:
     pro_user_creation_model = ProUserCreationBodyModel(
         email=row["Email"],
-        password="Azerty@123456",
+        password=random_password(),
         firstName=row["First Name"],
         lastName=row["Last Name"],
-        phoneNumber=row["Phone"],
+        phoneNumber=row["Phone"] if row["Phone"].strip() != "" else "00 00 00 00 00",
         postalCode=_get_postal_code(row),
         city=row["City"],
         publicName=f"{row['First Name']} {row['Last Name']}",
@@ -101,12 +106,10 @@ def import_new_offerer_from_csv(row: Dict) -> None:
 
     offerer.grant_access(pro)
 
-    if pro.departementCode:
-        repository.save(pro)
+    repository.save(pro)
 
     if row["SIRET"]:
-        venue = create_venue_from_csv(row, offerer.siren)
-        venue.managingOfferer = offerer
+        venue = create_venue_from_csv(row, offerer)
         try:
             repository.save(venue)
         except ApiErrors:

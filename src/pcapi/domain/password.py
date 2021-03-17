@@ -1,6 +1,8 @@
 from datetime import datetime
 from datetime import timedelta
+import random
 import re
+import string
 from typing import Dict
 
 from pcapi.core.users.models import User
@@ -13,8 +15,22 @@ from pcapi.utils.token import random_token
 RESET_PASSWORD_TOKEN_LENGTH = 10
 
 
-def random_password() -> bytes:
+def random_hashed_password() -> bytes:
     return hash_password(random_token(length=12))
+
+
+def random_password() -> str:
+    uppercase = random.choices(string.ascii_uppercase, k=12)
+    lowercase = random.choices(string.ascii_lowercase, k=12)
+    number = random.choices(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"], k=12)
+    special_chars = random.choices(
+        ["#", "~", "|", "=", ";", ":", ",", "+", ">", "<", "?", "!", "@", "$", "%", "^", "&", "*", "_", ".", "-"]
+    )
+
+    password_chars = uppercase + lowercase + special_chars + number
+    random.shuffle(password_chars)
+
+    return "".join(password_chars)
 
 
 def check_password_validity(new_password: str, new_confirmation_password: str, old_password: str, user: User) -> None:

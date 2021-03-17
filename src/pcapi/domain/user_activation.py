@@ -3,7 +3,7 @@ from typing import Optional
 from pcapi.core.payments import api as payments_api
 from pcapi.core.users.models import User
 from pcapi.domain.password import generate_reset_token
-from pcapi.domain.password import random_password
+from pcapi.domain.password import random_hashed_password
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.scripts.beneficiary import THIRTY_DAYS_IN_HOURS
 
@@ -16,7 +16,7 @@ IMPORT_STATUS_MODIFICATION_RULE = (
 def create_beneficiary_from_application(application_detail: dict, user: Optional[User] = None) -> User:
     if not user:
         beneficiary = User()
-        beneficiary.password = random_password()
+        beneficiary.password = random_hashed_password()
         beneficiary.email = application_detail["email"]
         beneficiary.dateOfBirth = application_detail["birth_date"]
     else:

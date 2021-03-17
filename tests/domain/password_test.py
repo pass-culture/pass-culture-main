@@ -6,8 +6,22 @@ from pcapi.domain.password import _ensure_given_old_password_is_correct
 from pcapi.domain.password import _ensure_new_password_is_different_from_old
 from pcapi.domain.password import _ensure_new_password_is_strong_enough
 from pcapi.domain.password import check_password_validity
+from pcapi.domain.password import random_password
 from pcapi.domain.password import validate_change_password_request
 from pcapi.models import ApiErrors
+
+
+class RandomPasswordTest:
+    def test_generate_a_valid_password(self):
+        # Given
+        errors = ApiErrors()
+
+        # When
+        password = random_password()
+
+        # Then
+        _ensure_new_password_is_strong_enough("password", password, errors)
+        errors.maybe_raise()
 
 
 class ValidateChangePasswordRequestTest:

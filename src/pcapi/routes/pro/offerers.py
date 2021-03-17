@@ -7,8 +7,8 @@ from flask_login import current_user
 from flask_login import login_required
 
 from pcapi.core.offerers.api import create_digital_venue
-from pcapi.core.offerers.repository import get_all_offerers_for_user
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offerers.repository import get_all_offerers_for_user
 from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
 from pcapi.flask_app import private_api
 from pcapi.infrastructure.container import list_offerers_for_pro_user

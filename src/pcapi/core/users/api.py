@@ -33,7 +33,7 @@ from pcapi.core.users.utils import format_email
 from pcapi.domain import user_emails
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
 from pcapi.domain.password import generate_reset_token
-from pcapi.domain.password import random_password
+from pcapi.domain.password import random_hashed_password
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.emails.beneficiary_email_change import build_beneficiary_confirmation_email_change_data
 from pcapi.emails.beneficiary_email_change import build_beneficiary_information_email_change_data
@@ -185,7 +185,7 @@ def fulfill_beneficiary_data(user: User, deposit_source: str, deposit_version: i
 
 
 def _generate_random_password(user):
-    user.password = random_password()
+    user.password = random_hashed_password()
     generate_reset_token(user, validity_duration_hours=THIRTY_DAYS_IN_HOURS)
 
 

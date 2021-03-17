@@ -100,6 +100,7 @@ class CreateVenueFromCSVTest:
     @pytest.mark.usefixtures("db_session")
     def test_map_a_venue_from_ordered_dict(self, app):
         # given
+        offerer = OffererFactory(siren="828768000")
         VenueTypeFactory(label="Librairie")
         csv_row = OrderedDict(
             [
@@ -117,7 +118,7 @@ class CreateVenueFromCSVTest:
         )
 
         # when
-        venue = create_venue_from_csv(csv_row, "828768000")
+        venue = create_venue_from_csv(csv_row, offerer)
 
         # then
         assert isinstance(venue, Venue)
@@ -135,6 +136,7 @@ class CreateVenueFromCSVTest:
     @pytest.mark.usefixtures("db_session")
     def test_use_Postal_code_when_no_SIRENE_code_postal(self, app):
         # given
+        offerer = OffererFactory(siren="828768000")
         VenueTypeFactory(label="Librairie")
         csv_row = OrderedDict(
             [
@@ -153,7 +155,7 @@ class CreateVenueFromCSVTest:
         )
 
         # when
-        venue = create_venue_from_csv(csv_row, "828768000")
+        venue = create_venue_from_csv(csv_row, offerer)
 
         # then
         assert isinstance(venue, Venue)
@@ -162,6 +164,7 @@ class CreateVenueFromCSVTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_have_a_venue_type(self, app):
         # given
+        offerer = OffererFactory(siren="828768000")
         VenueTypeFactory(label="Librairie")
         csv_row = OrderedDict(
             [
@@ -180,7 +183,7 @@ class CreateVenueFromCSVTest:
         )
 
         # when
-        venue = create_venue_from_csv(csv_row, "828768000")
+        venue = create_venue_from_csv(csv_row, offerer)
 
         # then
         assert venue.venueType is not None
@@ -189,6 +192,7 @@ class CreateVenueFromCSVTest:
     @pytest.mark.usefixtures("db_session")
     def test_create_venue_name_when_information_missing(self, app):
         # given
+        offerer = OffererFactory(siren="828768000")
         VenueTypeFactory(label="Librairie")
         VenueFactory()
         csv_row = OrderedDict(
@@ -208,7 +212,7 @@ class CreateVenueFromCSVTest:
         )
 
         # when
-        venue = create_venue_from_csv(csv_row, "828768000")
+        venue = create_venue_from_csv(csv_row, offerer)
 
         # then
         assert venue.name == "Lieu 1 - Ma structure"
@@ -216,6 +220,7 @@ class CreateVenueFromCSVTest:
     @pytest.mark.usefixtures("db_session")
     def test_when_geolocation_is_missing(self, app):
         # given
+        offerer = OffererFactory(siren="828768000")
         VenueTypeFactory(label="Librairie")
         VenueFactory()
         csv_row = OrderedDict(
@@ -235,7 +240,7 @@ class CreateVenueFromCSVTest:
         )
 
         # when
-        venue = create_venue_from_csv(csv_row, "828768000")
+        venue = create_venue_from_csv(csv_row, offerer)
 
         # then
         assert venue.latitude is None
@@ -269,6 +274,27 @@ class CreateProUserFromCSVTest:
         assert pro_model.phone_number == "0102345678"
         assert pro_model.postal_code == "44016"
         assert pro_model.city == "NANTES CEDEX 1"
+
+    def test_fill_missing_phone_with_fake_number(self):
+        # Given
+        csv_row = OrderedDict(
+            [
+                ("Email", "librairie.fictive@example.com"),
+                ("First Name", "Anthony"),
+                ("Last Name", "Champion"),
+                ("Phone", ""),
+                ("Postal Code", "44016.0"),
+                ("code_postal", "44016"),
+                ("City", "NANTES CEDEX 1"),
+            ]
+        )
+
+        # When
+        pro_model = create_user_model_from_csv(csv_row)
+
+        # Then
+        assert isinstance(pro_model, ProUserCreationBodyModel)
+        assert pro_model.phone_number == "0000000000"
 
     def test_use_Postal_code_when_sirene_postal_code_is_not_set(self):
         # Given
