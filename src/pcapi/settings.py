@@ -89,6 +89,7 @@ TRANSACTIONS_RECIPIENTS = utils.parse_email_addresses(os.environ.get("TRANSACTIO
 PAYMENTS_REPORT_RECIPIENTS = utils.parse_email_addresses(os.environ.get("PAYMENTS_REPORT_RECIPIENTS"))
 PAYMENTS_DETAILS_RECIPIENTS = utils.parse_email_addresses(os.environ.get("PAYMENTS_DETAILS_RECIPIENTS"))
 WALLET_BALANCES_RECIPIENTS = utils.parse_email_addresses(os.environ.get("WALLET_BALANCES_RECIPIENTS"))
+WHITELISTED_EMAIL_RECIPIENTS = utils.parse_email_addresses(os.environ.get("WHITELISTED_EMAIL_RECIPIENTS"))
 
 # PUSH NOTIFICATIONS
 if IS_PROD or IS_INTEGRATION or IS_STAGING or IS_TESTING:

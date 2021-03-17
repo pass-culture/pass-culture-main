@@ -107,6 +107,12 @@ class ToDevMailjetBackend(MailjetBackend):
         data["Html-part"] = notice + data["Html-part"]
 
     def send_mail(self, recipients: Iterable[str], data: dict) -> MailResult:
+        # FIXME (apibrac, 2021-03-17): we can delete this as soon as AppNative's beta test is finished
+        # WHITELISTED_EMAIL_RECIPIENTS should be deleted as well
+        some_recipients_are_whitelisted = set(recipients) & set(settings.WHITELISTED_EMAIL_RECIPIENTS)
+        if some_recipients_are_whitelisted:
+            return super().send_mail(recipients=recipients, data=data)
+
         self._inject_html_test_notice(recipients, data)
         recipients = [settings.DEV_EMAIL_ADDRESS]
         return super().send_mail(recipients=recipients, data=data)

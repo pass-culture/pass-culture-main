@@ -213,6 +213,16 @@ class ToDevMailjetBackendTest:
         assert posted.last_request.json() == expected
         assert result.successful
 
+    @override_settings(WHITELISTED_EMAIL_RECIPIENTS=["false1@example.com", "real2@example.com"])
+    def test_send_mail_if_any_recipient_is_whitelisted(self):
+        backend = self._get_backend()
+        with requests_mock.Mocker() as mock:
+            posted = mock.post("https://api.eu.mailjet.com/v3/send")
+            result = backend.send_mail(recipients=self.recipients, data=self.data)
+
+        assert posted.last_request.json() == self.expected_sent_data
+        assert result.successful
+
     def test_send_mail_inject_preamble_in_html(self):
         backend = self._get_backend()
         data = copy.deepcopy(self.data)
