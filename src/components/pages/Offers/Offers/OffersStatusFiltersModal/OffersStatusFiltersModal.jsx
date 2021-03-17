@@ -88,6 +88,20 @@ export const OffersStatusFiltersModal = ({
         onChange={handleStatusFilterChange}
         value="expired"
       />
+      <RadioInput
+        checked={status === 'awaiting'}
+        label="Validation en attente"
+        name="status"
+        onChange={handleStatusFilterChange}
+        value="awaiting"
+      />
+      <RadioInput
+        checked={status === 'rejected'}
+        label="Offre refusée"
+        name="status"
+        onChange={handleStatusFilterChange}
+        value="rejected"
+      />
       <button
         className="primary-button"
         onClick={refreshOffers}

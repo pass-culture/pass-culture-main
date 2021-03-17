@@ -1,4 +1,3 @@
-/* eslint-disable jest/no-disabled-tests */
 import '@testing-library/jest-dom'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { mount } from 'enzyme'
@@ -434,6 +433,8 @@ describe('src | components | pages | Offers | Offers', () => {
           expect(screen.queryByLabelText('Épuisée')).not.toBeInTheDocument()
           expect(screen.queryByLabelText('Expirée')).not.toBeInTheDocument()
           expect(screen.queryByLabelText('Appliquer')).not.toBeInTheDocument()
+          expect(screen.queryByLabelText('Validation en attente')).not.toBeInTheDocument()
+          expect(screen.queryByLabelText('Offre refusée')).not.toBeInTheDocument()
         })
 
         it('should display status filters with "Tous" as default value when clicking on "Statut" filter icon', async () => {
@@ -451,6 +452,8 @@ describe('src | components | pages | Offers | Offers', () => {
           expect(screen.getByLabelText('Inactive')).not.toBeChecked()
           expect(screen.getByLabelText('Épuisée')).not.toBeChecked()
           expect(screen.getByLabelText('Expirée')).not.toBeChecked()
+          expect(screen.getByLabelText('Validation en attente')).not.toBeChecked()
+          expect(screen.getByLabelText('Offre refusée')).not.toBeChecked()
           expect(screen.queryByText('Appliquer', { selector: 'button' })).toBeInTheDocument()
         })
 
