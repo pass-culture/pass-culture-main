@@ -1,6 +1,5 @@
 from datetime import datetime
 from datetime import timedelta
-import logging
 from unittest import mock
 
 import pytest
@@ -129,8 +128,7 @@ class CancelExpiredBookingsTest:
 @pytest.mark.usefixtures("db_session")
 class NotifyUsersOfExpiredBookingsTest:
     @mock.patch("pcapi.scripts.booking.handle_expired_bookings.send_expired_bookings_recap_email_to_beneficiary")
-    def should_notify_of_todays_expired_bookings(self, mocked_send_email_recap, app, caplog) -> None:
-        caplog.set_level(logging.INFO)
+    def should_notify_of_todays_expired_bookings(self, mocked_send_email_recap, app) -> None:
         now = datetime.utcnow()
         yesterday = now - timedelta(days=1)
         long_ago = now - timedelta(days=31)
@@ -161,11 +159,7 @@ class NotifyUsersOfExpiredBookingsTest:
 
         handle_expired_bookings.notify_users_of_expired_bookings()
 
-        assert (
-            caplog.records[1].message
-            == f"[notify_users_of_expired_bookings] 2 Users have been notified: [{expired_today_dvd_booking.user}, {expired_today_cd_booking.user}]"
-        )
-        assert str(expired_yesterday_painting_booking) not in caplog.text
+        assert mocked_send_email_recap.call_count == 2
         assert mocked_send_email_recap.call_args_list[0][0] == (
             expired_today_dvd_booking.user,
             [expired_today_dvd_booking],
@@ -179,8 +173,7 @@ class NotifyUsersOfExpiredBookingsTest:
 @pytest.mark.usefixtures("db_session")
 class NotifyOfferersOfExpiredBookingsTest:
     @mock.patch("pcapi.scripts.booking.handle_expired_bookings.send_expired_bookings_recap_email_to_offerer")
-    def should_notify_of_todays_expired_bookings(self, mocked_send_email_recap, app, caplog) -> None:
-        caplog.set_level(logging.INFO)
+    def should_notify_of_todays_expired_bookings(self, mocked_send_email_recap, app) -> None:
         now = datetime.utcnow()
         yesterday = now - timedelta(days=1)
         long_ago = now - timedelta(days=31)
@@ -211,12 +204,7 @@ class NotifyOfferersOfExpiredBookingsTest:
 
         handle_expired_bookings.notify_offerers_of_expired_bookings()
 
-        assert (
-            caplog.records[1].message
-            == f"[notify_users_of_expired_bookings] 2 Offerers have been notified: [{expired_today_dvd_booking.stock.offer.venue.managingOfferer},"
-            f" {expired_today_cd_booking.stock.offer.venue.managingOfferer}]"
-        )
-        assert str(expired_yesterday_painting_booking) not in caplog.text
+        assert mocked_send_email_recap.call_count == 2
         assert mocked_send_email_recap.call_args_list[0][0] == (
             expired_today_dvd_booking.stock.offer.venue.managingOfferer,
             [expired_today_dvd_booking],

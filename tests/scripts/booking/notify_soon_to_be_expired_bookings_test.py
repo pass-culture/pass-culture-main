@@ -1,8 +1,5 @@
 from datetime import date
-from datetime import datetime
-from datetime import time
 from datetime import timedelta
-import logging
 from unittest import mock
 
 import pytest
@@ -16,43 +13,6 @@ from pcapi.scripts.booking.notify_soon_to_be_expired_bookings import notify_user
 
 @pytest.mark.usefixtures("db_session")
 class NotifyUsersOfSoonToBeExpiredBookingsTest:
-    @mock.patch(
-        "pcapi.scripts.booking.notify_soon_to_be_expired_bookings.send_soon_to_be_expired_bookings_recap_email_to_beneficiary"
-    )
-    def should_log_notifications_of_bookings_which_will_expire_in_7_days(self, mocked_email_recap, app, caplog) -> None:
-        caplog.set_level(logging.INFO)
-        now = date.today()
-        booking_date_23_days_ago = datetime.combine(now - timedelta(days=23), time(15, 34))
-        booking_date_22_days_ago = datetime.combine(now - timedelta(days=22), time(12, 26))
-
-        dvd = ProductFactory(type=str(offer_type.ThingType.AUDIOVISUEL))
-        expire_in_7_days_dvd_booking = BookingFactory(
-            stock__offer__product=dvd,
-            dateCreated=booking_date_23_days_ago,
-            isCancelled=False,
-        )
-        cd = ProductFactory(type=str(offer_type.ThingType.MUSIQUE))
-        expire_in_7_days_cd_booking = BookingFactory(
-            stock__offer__product=cd,
-            dateCreated=booking_date_23_days_ago,
-            isCancelled=False,
-        )
-        non_expired_cd = ProductFactory(type=str(offer_type.ThingType.MUSIQUE))
-        dont_expire_in_7_days_cd_booking = BookingFactory(
-            stock__offer__product=non_expired_cd,
-            dateCreated=booking_date_22_days_ago,
-            isCancelled=False,
-        )
-        repository.save(dont_expire_in_7_days_cd_booking)
-
-        notify_users_of_soon_to_be_expired_bookings()
-
-        assert (
-            caplog.records[1].message
-            == f"[notify_users_of_soon_to_be_expired_bookings] 2 Users have been notified: [{expire_in_7_days_dvd_booking.user}, {expire_in_7_days_cd_booking.user}]"
-        )
-        assert str(dont_expire_in_7_days_cd_booking) not in caplog.text
-
     @mock.patch(
         "pcapi.scripts.booking.notify_soon_to_be_expired_bookings.send_soon_to_be_expired_bookings_recap_email_to_beneficiary"
     )

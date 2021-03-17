@@ -1,5 +1,4 @@
 from io import BytesIO
-import logging
 from pathlib import Path
 from unittest import mock
 
@@ -35,20 +34,18 @@ def offerer_fixture(offer):
 
 @pytest.mark.usefixtures("db_session")
 class CreateThumbnailWithoutImageTest:
-    def test_no_image(self, caplog, app, offer, offerer):
+    def test_no_image(self, app, offer, offerer):
         # given
         client = TestClient(app.test_client()).with_auth(email="user@example.com")
         data = {
             "offerId": humanize(offer.id),
             "offererId": humanize(offerer.id),
         }
-        caplog.set_level(logging.INFO)
 
         # when
         response = client.post("/offers/thumbnails", form=data)
 
         # Then
-        assert len(caplog.records) == 1
         assert response.status_code == 400
         assert response.json == {"errors": ["Nous n'avons pas réceptionné l'image, merci d'essayer à nouveau."]}
 
