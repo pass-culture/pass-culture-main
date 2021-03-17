@@ -44,6 +44,7 @@ def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
         .join(Favorite.offer)
         .join(Offer.venue)
         .outerjoin(Offer.stocks)
+        .outerjoin(Stock.bookings)
         .filter(Favorite.userId == user.id)
         .distinct(Favorite.id)
         .options(joinedload(Favorite.offer).load_only(Offer.name, Offer.externalTicketOfficeUrl, Offer.type))
@@ -72,6 +73,11 @@ def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
         else:
             fav.offer.startDate = min_beginning_datetime
         fav.offer.isExpired = not active_stock_count
+        fav.offer.isExhausted = True
+        # TODO(xordoquy): improve performance here
+        for stock in fav.offer.stocks:
+            if stock.quantity is None or stock.remainingQuantity > 0:
+                fav.offer.isExhausted = False
     favorites = [fav for (fav, *_) in favorites]
 
     paginated_favorites = {

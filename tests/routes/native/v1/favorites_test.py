@@ -3,6 +3,7 @@ from datetime import timedelta
 
 import pytest
 
+from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
@@ -87,7 +88,8 @@ class Get:
             # QUERY_COUNT:
             # 1: Fetch the user for auth
             # 1: Fetch the favorites
-            with assert_num_queries(2):
+            # 16: to get bookings and compute stock availability
+            with assert_num_queries(18):
                 response = test_client.get(FAVORITES_URL)
 
             # Then
@@ -190,30 +192,49 @@ class Get:
             favorite6 = users_factories.FavoriteFactory(offer=offer6, user=user)
             offers_factories.ThingStockFactory(offer=offer6, price=10)
 
+            # Event offer with soft deleted stock
+            offer7 = offers_factories.EventOfferFactory(venue=venue)
+            favorite7 = users_factories.FavoriteFactory(offer=offer7, user=user)
+            stock7 = offers_factories.EventStockFactory(
+                offer=offer7, beginningDatetime=tomorow, quantity=1, price=10, isSoftDeleted=True
+            )
+            bookings_factories.BookingFactory(stock=stock7, user=user)
+
             # When
             # QUERY_COUNT:
             # 1: Fetch the user for auth
             # 1: Fetch the favorites
-            with assert_num_queries(2):
+            # 14: to get bookings and compute stock availability
+            with assert_num_queries(16):
                 response = test_client.get(FAVORITES_URL)
 
             # Then
             assert response.status_code == 200
             favorites = response.json["favorites"]
-            assert len(favorites) == 6
+            count = 7
+            assert len(favorites) == count
 
-            assert favorites[5]["id"] == favorite1.id
-            assert favorites[5]["offer"]["isExpired"] is False
-            assert favorites[4]["id"] == favorite2.id
-            assert favorites[4]["offer"]["isExpired"] is False
-            assert favorites[3]["id"] == favorite3.id
-            assert favorites[3]["offer"]["isExpired"] is True
-            assert favorites[2]["id"] == favorite4.id
-            assert favorites[2]["offer"]["isExpired"] is True
-            assert favorites[1]["id"] == favorite5.id
-            assert favorites[1]["offer"]["isExpired"] is True
-            assert favorites[0]["id"] == favorite6.id
-            assert favorites[0]["offer"]["isExpired"] is True
+            favorites.reverse()
+
+            assert [fav["id"] for fav in favorites] == [
+                favorite1.id,
+                favorite2.id,
+                favorite3.id,
+                favorite4.id,
+                favorite5.id,
+                favorite6.id,
+                favorite7.id,
+            ]
+            assert [fav["offer"]["isExpired"] for fav in favorites] == [False, False, True, True, True, True, True]
+            assert [fav["offer"]["isExhausted"] for fav in favorites] == [
+                False,
+                False,
+                False,
+                False,
+                False,
+                False,
+                True,
+            ]
 
     class Returns401:
         def when_user_is_not_logged_in(self, app):
