@@ -486,6 +486,46 @@ describe('offerDetails - Edition', () => {
         // then
         expect(await screen.getAllByText('My edited withdrawal details')).toHaveLength(2)
       })
+
+      it('should display status informative message when offer is rejected', async () => {
+        // given
+        editedOffer = {
+          ...editedOffer,
+          validation: 'REJECTED',
+          isActive: false,
+        }
+        pcapi.loadOffer.mockResolvedValue(editedOffer)
+
+        // when
+        await renderOffers({}, store)
+
+        // then
+        expect(
+          await screen.getByText(
+            "Votre offre a été refusée car elle ne respecte pas les Conditions Générales d'Utilisation du pass. Un email contenant les conditions d'éligibilité d'une offre a été envoyé à l'adresse mail attachée à votre compte."
+          )
+        ).toBeInTheDocument()
+      })
+
+      it('should display status informative message when offer is awaiting for validation', async () => {
+        // given
+        editedOffer = {
+          ...editedOffer,
+          validation: 'AWAITING',
+          isActive: true,
+        }
+        pcapi.loadOffer.mockResolvedValue(editedOffer)
+
+        // when
+        await renderOffers({}, store)
+
+        // then
+        expect(
+          await screen.getByText(
+            "Votre offre est en cours de validation par l'équipe du pass Culture. Une fois validée, vous recevrez un email de confirmation et votre offre sera automatiquement mise en ligne."
+          )
+        ).toBeInTheDocument()
+      })
     })
 
     it('should change title with typed value', async () => {

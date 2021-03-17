@@ -4,11 +4,14 @@ import React, { useCallback, useEffect, useState } from 'react'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import OfferPreviewLink from 'components/pages/Offers/Offer/OfferPreviewLink/OfferPreviewLink'
+import { computeOfferStatus } from 'components/pages/Offers/Offers/domain/computeOfferStatus'
+import { OFFER_STATUS } from 'components/pages/Offers/Offers/domain/offerStatus'
 import * as pcapi from 'repository/pcapi/pcapi'
 
 import OfferCreation from './OfferForm/OfferCreation'
 import OfferEditionContainer from './OfferForm/OfferEditionContainer'
 import OfferPreview from './OfferPreview/OfferPreview'
+import OfferStatusBanner from './OfferStatusBanner/OfferStatusBanner'
 import OfferThumbnail from './OfferThumbnail/OfferThumbnail'
 
 const OfferDetails = ({
@@ -123,6 +126,11 @@ const OfferDetails = ({
     ]
   )
 
+  const offerStatus = offer ? computeOfferStatus(offer, offer.stocks) : null
+  const needsStatusInfosMessage = offerStatus
+    ? [OFFER_STATUS.REJECTED, OFFER_STATUS.AWAITING].includes(offerStatus)
+    : false
+
   return (
     <div className="offer-edit">
       <PageTitle title="Détails de l'offre" />
@@ -132,20 +140,23 @@ const OfferDetails = ({
       <div className="sidebar-container">
         <div className="content">
           {offer ? (
-            <OfferEditionContainer
-              formValues={formValues}
-              isLoading={isLoading}
-              isUserAdmin={isUserAdmin}
-              offer={offer}
-              onSubmit={handleSubmitOffer}
-              setFormValues={setFormValues}
-              setIsLoading={setIsLoading}
-              setPreviewOfferType={setOfferType}
-              setShowThumbnailForm={setShowThumbnailForm}
-              showErrorNotification={showErrorNotification}
-              submitErrors={formErrors}
-              userEmail={userEmail}
-            />
+            <>
+              {needsStatusInfosMessage && <OfferStatusBanner status={offerStatus} />}
+              <OfferEditionContainer
+                formValues={formValues}
+                isLoading={isLoading}
+                isUserAdmin={isUserAdmin}
+                offer={offer}
+                onSubmit={handleSubmitOffer}
+                setFormValues={setFormValues}
+                setIsLoading={setIsLoading}
+                setPreviewOfferType={setOfferType}
+                setShowThumbnailForm={setShowThumbnailForm}
+                showErrorNotification={showErrorNotification}
+                submitErrors={formErrors}
+                userEmail={userEmail}
+              />
+            </>
           ) : (
             <OfferCreation
               formValues={formValues}
