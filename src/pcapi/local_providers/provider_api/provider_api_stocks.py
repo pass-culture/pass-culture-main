@@ -14,8 +14,8 @@ def synchronize_stocks() -> None:
 
     venue_providers = (
         VenueProvider.query.join(provider_alias, provider_alias.id == VenueProvider.providerId)
-        .filter(provider_alias.apiUrl != None)
-        .filter(VenueProvider.isActive == True)
+        .filter(provider_alias.apiUrl.isnot(None))
+        .filter(VenueProvider.isActive.is_(True))
         .all()
     )
 
