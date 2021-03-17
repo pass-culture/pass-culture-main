@@ -160,9 +160,7 @@ describe('offererDetails', () => {
     fireEvent.click(showButton)
 
     // Then
-    expect(
-      screen.queryByText('Votre structure est en cours de rattachement')
-    ).not.toBeInTheDocument()
+    expect(screen.queryByText('Votre structure est en cours de validation')).not.toBeInTheDocument()
   })
 
   it('should display first offerer informations', async () => {
@@ -571,7 +569,7 @@ describe('offererDetails', () => {
       await renderHomePage()
 
       // Then
-      expect(screen.getByText('Votre structure est en cours de rattachement')).toBeInTheDocument()
+      expect(screen.getByText('Votre structure est en cours de validation')).toBeInTheDocument()
     })
 
     it('should allow user to view offerer informations', async () => {
@@ -607,7 +605,7 @@ describe('offererDetails', () => {
       await renderHomePage()
 
       // Then
-      expect(screen.getByText('Votre structure est en cours de rattachement')).toBeInTheDocument()
+      expect(screen.getByText('Votre structure est en cours de validation')).toBeInTheDocument()
     })
 
     it('should not allow user to view offerer informations', async () => {
