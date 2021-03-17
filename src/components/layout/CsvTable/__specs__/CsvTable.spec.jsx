@@ -18,7 +18,10 @@ describe('src | components | layout | CsvTable', () => {
       downloadFileOrNotifyAnError: jest.fn(),
     }
     dataFromCsv = {
-      data: [['data1', 'data2'], ['data3', 'data4']],
+      data: [
+        ['data1', 'data2'],
+        ['data3', 'data4'],
+      ],
       headers: ['column1', 'column2'],
     }
     props.downloadFileOrNotifyAnError.mockReturnValue(Promise.resolve().then(() => dataFromCsv))
@@ -43,7 +46,6 @@ describe('src | components | layout | CsvTable', () => {
       // then
       const header = wrapper.find(Header)
       expect(header).toHaveLength(1)
-      expect(header.prop('isSmall')).toBe(true)
       expect(header.prop('name')).toBe('super nom')
       expect(header.prop('offerers')).toStrictEqual([])
     })
@@ -105,7 +107,10 @@ describe('src | components | layout | CsvTable', () => {
       expect(props.downloadFileOrNotifyAnError).toHaveBeenCalledWith()
       expect(wrapper.state()).toStrictEqual({
         dataFromCsv: {
-          data: [['data1', 'data2'], ['data3', 'data4']],
+          data: [
+            ['data1', 'data2'],
+            ['data3', 'data4'],
+          ],
           headers: ['column1', 'column2'],
         },
         isLoading: false,

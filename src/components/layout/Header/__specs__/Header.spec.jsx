@@ -1,6 +1,5 @@
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
-import { shallow } from 'enzyme'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
@@ -9,32 +8,6 @@ import { configureTestStore } from 'store/testUtils'
 
 import * as constants from '../_constants'
 import Header from '../Header'
-
-describe('header', () => {
-  let props
-
-  beforeEach(() => {
-    props = {
-      dispatch: jest.fn(),
-      name: 'fake name',
-      offerers: [{}],
-      isSmall: false,
-    }
-  })
-
-  describe('render', () => {
-    it('should render a header element with the right css classes when is small', () => {
-      // given
-      props.isSmall = true
-
-      // when
-      const wrapper = shallow(<Header {...props} />)
-
-      // then
-      expect(wrapper.prop('className')).toBe('is-small menu')
-    })
-  })
-})
 
 const renderHeader = props => {
   const stubStore = configureTestStore()
@@ -177,6 +150,6 @@ describe('navigation menu', () => {
     expect(screen.queryByText('Styleguide')).not.toBeInTheDocument()
   })
 
-  // reste : les éléments conditionnels (Styleguide et !isSmall)
+  // reste : les éléments conditionnels (Styleguide)
   // devnote : comment tester que les élements du menu secondaire s'affichent au hover
 })

@@ -39,10 +39,9 @@ class CsvTable extends PureComponent {
     const hasAtLeastData = data.length > 0
 
     return (
-      <React.Fragment>
+      <>
         <PageTitle title="Liste de vos remboursements" />
         <Header
-          isSmall
           name={publicName}
           offerers={[]}
         />
@@ -100,7 +99,7 @@ class CsvTable extends PureComponent {
             </p>
           </main>
         )}
-      </React.Fragment>
+      </>
     )
   }
 }

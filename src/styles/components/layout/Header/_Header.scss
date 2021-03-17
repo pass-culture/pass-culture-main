@@ -65,10 +65,7 @@ header.menu {
   grid-column-start: col-start;
   grid-row-end: row-main;
   grid-row-start: row-nav;
-
-  &:not(.is-small) {
-    height: 9.375rem;
-  }
+  height: 9.375rem;
 
   nav {
     display: flex;

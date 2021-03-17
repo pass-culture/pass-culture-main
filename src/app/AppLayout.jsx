@@ -18,22 +18,16 @@ const AppLayout = props => {
     fullscreen: false,
     header: {},
     pageName: 'Accueil',
-    isSmall: false,
   }
 
-  const { backTo, fullscreen, header, pageName, isSmall } = {
+  const { backTo, fullscreen, header, pageName } = {
     ...defaultConfig,
     ...layoutConfig,
   }
 
   return (
     <>
-      {!fullscreen && (
-        <HeaderContainer
-          isSmall={isSmall}
-          {...header}
-        />
-      )}
+      {!fullscreen && <HeaderContainer {...header} />}
 
       <ReactTooltip
         className="flex-center items-center"
@@ -46,7 +40,6 @@ const AppLayout = props => {
         className={classnames({
           page: true,
           [`${pageName}-page`]: true,
-          isSmall,
           container: !fullscreen,
           fullscreen,
         })}

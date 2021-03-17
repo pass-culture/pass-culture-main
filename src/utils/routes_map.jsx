@@ -173,11 +173,6 @@ const routes = [
     exact: true,
     path: '/accueil',
     title: 'Accueil',
-    meta: {
-      layoutConfig: {
-        isSmall: false,
-      },
-    },
   },
   {
     component: SetPasswordContainer,

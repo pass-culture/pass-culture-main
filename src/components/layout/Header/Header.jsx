@@ -1,6 +1,5 @@
 import { Menu, MenuButton, MenuItem, MenuLink, MenuList } from '@reach/menu-button'
 import '@reach/menu-button/styles.css'
-import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { NavLink } from 'react-router-dom'
@@ -30,17 +29,10 @@ class Header extends PureComponent {
   }
 
   render() {
-    const { isSmall, name, offerers } = this.props
+    const { name, offerers } = this.props
 
     return (
-      <header
-        className={classnames(
-          {
-            'is-small': isSmall,
-          },
-          'menu'
-        )}
-      >
+      <header className="menu">
         <nav>
           <div className="nav-brand">
             <Logo className="nav-item" />
@@ -169,13 +161,8 @@ class Header extends PureComponent {
   }
 }
 
-Header.defaultProps = {
-  isSmall: false,
-}
-
 Header.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  isSmall: PropTypes.bool,
   name: PropTypes.string.isRequired,
   offerers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 }
