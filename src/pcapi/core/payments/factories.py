@@ -57,7 +57,7 @@ class PaymentFactory(BaseFactory):
 
         if not create:
             return None
-        if extracted:
+        if extracted is not None:
             return extracted
         status = PaymentStatusFactory(payment=obj, status=payment_status.TransactionStatus.PENDING)
         return [status]
