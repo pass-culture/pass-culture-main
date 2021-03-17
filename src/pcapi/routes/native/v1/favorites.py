@@ -55,6 +55,8 @@ def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
             .load_only(Mediation.dateCreated, Mediation.isActive, Mediation.thumbCount, Mediation.credit)
         )
         .options(joinedload(Favorite.offer).joinedload(Offer.product).load_only(Product.id, Product.thumbCount))
+        # TODO(xordoquy): drop this join and aggregate on stock
+        .options(joinedload(Favorite.offer).joinedload(Offer.stocks).joinedload(Stock.bookings))
         .order_by(Favorite.id.desc())
         .all()
     )
@@ -76,6 +78,8 @@ def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
         fav.offer.isExhausted = True
         # TODO(xordoquy): improve performance here
         for stock in fav.offer.stocks:
+            if stock.isSoftDeleted:
+                continue
             if stock.quantity is None or stock.remainingQuantity > 0:
                 fav.offer.isExhausted = False
     favorites = [fav for (fav, *_) in favorites]

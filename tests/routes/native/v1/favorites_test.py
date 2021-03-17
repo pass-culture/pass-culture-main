@@ -88,8 +88,7 @@ class Get:
             # QUERY_COUNT:
             # 1: Fetch the user for auth
             # 1: Fetch the favorites
-            # 16: to get bookings and compute stock availability
-            with assert_num_queries(18):
+            with assert_num_queries(2):
                 response = test_client.get(FAVORITES_URL)
 
             # Then
@@ -195,23 +194,27 @@ class Get:
             # Event offer with soft deleted stock
             offer7 = offers_factories.EventOfferFactory(venue=venue)
             favorite7 = users_factories.FavoriteFactory(offer=offer7, user=user)
-            stock7 = offers_factories.EventStockFactory(
+            offers_factories.EventStockFactory(
                 offer=offer7, beginningDatetime=tomorow, quantity=1, price=10, isSoftDeleted=True
             )
-            bookings_factories.BookingFactory(stock=stock7, user=user)
+
+            # Event offer with booked stock
+            offer8 = offers_factories.EventOfferFactory(venue=venue)
+            favorite8 = users_factories.FavoriteFactory(offer=offer8, user=user)
+            stock8 = offers_factories.EventStockFactory(offer=offer8, beginningDatetime=tomorow, quantity=1, price=10)
+            bookings_factories.BookingFactory(stock=stock8, user=user)
 
             # When
             # QUERY_COUNT:
             # 1: Fetch the user for auth
             # 1: Fetch the favorites
-            # 14: to get bookings and compute stock availability
-            with assert_num_queries(16):
+            with assert_num_queries(2):
                 response = test_client.get(FAVORITES_URL)
 
             # Then
             assert response.status_code == 200
             favorites = response.json["favorites"]
-            count = 7
+            count = 8
             assert len(favorites) == count
 
             favorites.reverse()
@@ -224,8 +227,18 @@ class Get:
                 favorite5.id,
                 favorite6.id,
                 favorite7.id,
+                favorite8.id,
             ]
-            assert [fav["offer"]["isExpired"] for fav in favorites] == [False, False, True, True, True, True, True]
+            assert [fav["offer"]["isExpired"] for fav in favorites] == [
+                False,
+                False,
+                True,
+                True,
+                True,
+                True,
+                True,
+                False,
+            ]
             assert [fav["offer"]["isExhausted"] for fav in favorites] == [
                 False,
                 False,
@@ -233,6 +246,7 @@ class Get:
                 False,
                 False,
                 False,
+                True,
                 True,
             ]
 
