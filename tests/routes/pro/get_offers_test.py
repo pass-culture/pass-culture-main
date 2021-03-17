@@ -69,6 +69,7 @@ class Returns200:
                         "publicName": None,
                     },
                     "venueId": humanize(requested_venue.id),
+                    "validation": "APPROVED",
                 }
             ],
             "page": 1,
@@ -141,6 +142,7 @@ class Returns200:
                         "departementCode": "93",
                     },
                     "venueId": humanize(venue.id),
+                    "validation": "APPROVED",
                 }
             ],
             "page": 1,

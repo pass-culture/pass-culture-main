@@ -175,6 +175,7 @@ class ListOffersOfferResponseModel(BaseModel):
     type: str
     venue: ListOffersVenueResponseModel
     venueId: str
+    validation: str
 
 
 class ListOffersResponseModel(BaseModel):
@@ -387,6 +388,7 @@ class GetOfferResponseModel(BaseModel):
     venue: GetOfferVenueResponseModel
     venueId: str
     withdrawalDetails: Optional[str]
+    validation: str
 
     class Config:
         json_encoders = {datetime: format_into_utc_date}

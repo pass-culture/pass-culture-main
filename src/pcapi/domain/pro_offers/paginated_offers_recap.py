@@ -52,6 +52,7 @@ class OfferRecap:
         venue_public_name: str,
         venue_departement_code: Optional[str],
         stocks: List[Dict],
+        validation: str,
     ):
         self.identifier = identifier
         self.has_booking_limit_datetimes_passed = has_booking_limit_datetimes_passed
@@ -77,6 +78,7 @@ class OfferRecap:
             )
             for stock in stocks
         ]
+        self.validation = validation
 
 
 class PaginatedOffersRecap:
