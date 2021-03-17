@@ -6,6 +6,7 @@ import pytest
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.models import Favorite
 from pcapi.utils.human_ids import humanize
@@ -280,6 +281,24 @@ class Post:
             assert favorite.userId == user.id
             assert response.json["id"] == favorite.id
             assert response.json["offer"]
+
+    class Returns400:
+        @override_settings(MAX_FAVORITES=1)
+        def when_user_creates_one_favorite_above_the_limit(self, app):
+            _, test_client = utils.create_user_and_test_client(app)
+            offer = offers_factories.EventOfferFactory()
+            assert Favorite.query.count() == 0
+
+            response = test_client.post(FAVORITES_URL, json={"offerId": offer.id})
+
+            assert response.status_code == 200, response.data
+            assert Favorite.query.count() == 1
+
+            response = test_client.post(FAVORITES_URL, json={"offerId": offer.id})
+
+            assert response.status_code == 400, response.data
+            assert response.json == {"code": "MAX_FAVORITES_REACHED"}
+            assert Favorite.query.count() == 1
 
 
 class Delete:

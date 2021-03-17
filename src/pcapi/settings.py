@@ -69,6 +69,11 @@ REDIS_VENUE_PROVIDERS_CHUNK_SIZE = int(os.environ.get("REDIS_VENUE_PROVIDERS_LRA
 SENTRY_DSN = os.environ.get("SENTRY_DSN", "https://0470142cf8d44893be88ecded2a14e42@logs.passculture.app/5")
 SENTRY_SAMPLE_RATE = float(os.environ.get("SENTRY_SAMPLE_RATE", 0))
 
+
+# USERS
+MAX_FAVORITES = int(os.environ.get("MAX_FAVORITES", 100))  # 0 is unlimited
+
+
 # MAILS
 if IS_PROD or IS_INTEGRATION:
     _default_email_backend = "pcapi.core.mails.backends.mailjet.MailjetBackend"

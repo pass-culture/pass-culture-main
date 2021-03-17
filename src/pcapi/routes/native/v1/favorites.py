@@ -4,6 +4,7 @@ from sqlalchemy import not_
 from sqlalchemy.orm import Load
 from sqlalchemy.orm import joinedload
 
+from pcapi import settings
 from pcapi.core.offers.models import Offer
 from pcapi.core.users.models import User
 from pcapi.models import Favorite
@@ -11,6 +12,7 @@ from pcapi.models import Mediation
 from pcapi.models import Product
 from pcapi.models import Stock
 from pcapi.models import Venue
+from pcapi.models.api_errors import ApiErrors
 from pcapi.models.db import db
 from pcapi.repository import transaction
 from pcapi.routes.native.security import authenticated_user_required
@@ -96,6 +98,9 @@ def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
 @spectree_serialize(response_model=serializers.FavoriteResponse, on_error_statuses=[400], api=blueprint.api)  # type: ignore
 @authenticated_user_required
 def create_favorite(user: User, body: serializers.FavoriteRequest) -> serializers.FavoriteResponse:
+    if settings.MAX_FAVORITES:
+        if Favorite.query.filter_by(user=user).count() >= settings.MAX_FAVORITES:
+            raise ApiErrors({"code": "MAX_FAVORITES_REACHED"})
     with transaction():
         offer = Offer.query.filter_by(id=body.offerId).first_or_404()
 
