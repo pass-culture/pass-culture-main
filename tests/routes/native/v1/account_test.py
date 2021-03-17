@@ -308,30 +308,30 @@ class CulturalSurveyTest:
         assert user.culturalSurveyId == None
         assert user.culturalSurveyFilledDate == None
 
-    @freeze_time("2018-06-01 14:44")
     def test_user_fills_again_the_cultural_survey(self, app):
         user, test_client = create_user_and_test_client(
             app,
             email=self.identifier,
             needsToFillCulturalSurvey=False,
             culturalSurveyId=self.UUID,
-            culturalSurveyFilledDate=datetime(2016, 6, 1, 14, 44),
+            culturalSurveyFilledDate=datetime(2016, 5, 1, 14, 44),
         )
+        new_uuid = uuid.uuid4()
 
         response = test_client.post(
             "/native/v1/me/cultural_survey",
             json={
                 "needsToFillCulturalSurvey": False,
-                "culturalSurveyId": uuid.uuid4(),
+                "culturalSurveyId": new_uuid,
             },
         )
 
-        assert response.status_code == 400
+        assert response.status_code == 204
 
         user = User.query.one()
         assert user.needsToFillCulturalSurvey == False
-        assert user.culturalSurveyId == self.UUID
-        assert user.culturalSurveyFilledDate == datetime(2016, 6, 1, 14, 44)
+        assert user.culturalSurveyId == new_uuid
+        assert user.culturalSurveyFilledDate > datetime(2016, 5, 1, 14, 44)
 
 
 class ResendEmailValidationTest:

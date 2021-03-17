@@ -14,6 +14,7 @@ from pcapi.repository import transaction
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.native.security import authenticated_user_required
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils.logger import logger
 from pcapi.workers.push_notification_job import update_user_attributes_job
 
 from . import blueprint
@@ -63,8 +64,7 @@ def update_cultural_survey(user: User, body: serializers.CulturalSurveyRequest) 
         if not body.needs_to_fill_cultural_survey:
             user.needsToFillCulturalSurvey = False
         if body.cultural_survey_id:
-            if user.culturalSurveyId:
-                raise ApiErrors({"culturalSurveyId": "L'utilisateur a déjà rempli le formulaire"})
+            logger.info("User %s updated cultural survey", user.id, extra={"actor": user.id})
             user.culturalSurveyId = body.cultural_survey_id
             user.culturalSurveyFilledDate = datetime.now()
     return
