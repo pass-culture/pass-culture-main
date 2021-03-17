@@ -34,6 +34,8 @@ INACTIVE_STATUS = "inactive"
 EXPIRED_STATUS = "expired"
 SOLD_OUT_STATUS = "soldOut"
 ACTIVE_STATUS = "active"
+REJECTED_STATUS = "rejected"
+AWAITING_STATUS = "awaiting"
 
 
 def get_paginated_offers_for_filters(
@@ -207,6 +209,10 @@ def _filter_by_status(query: Query, datetime_now: datetime, status: str) -> Quer
         )
     elif status == INACTIVE_STATUS:
         query = query.filter(Offer.isActive.is_(False))
+    elif status == AWAITING_STATUS:
+        query = query.filter(Offer.validation == "AWAITING")
+    elif status == REJECTED_STATUS:
+        query = query.filter(Offer.validation == "REJECTED")
     return query
 
 
