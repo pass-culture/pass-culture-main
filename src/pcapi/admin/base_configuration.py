@@ -5,6 +5,7 @@ from flask_admin.form import SecureForm
 from flask_login import current_user
 from werkzeug.utils import redirect
 
+from pcapi import settings
 from pcapi.utils.logger import logger
 
 
@@ -37,6 +38,12 @@ class BaseAdminView(ModelView):
         action = "Création" if is_created else "Modification"
         model_name = str(model)
         logger.info("[ADMIN] %s du modèle %s par l'utilisateur %s", action, model_name, current_user)
+
+    def check_super_admins(self) -> bool:
+        if settings.IS_PROD:
+            return current_user.email in settings.SUPER_ADMIN_EMAIL_ADDRESSES
+
+        return True
 
 
 class BaseCustomAdminView(BaseView):

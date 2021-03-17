@@ -1,10 +1,8 @@
-from flask_login import current_user
 from sqlalchemy.orm import query
 from sqlalchemy.sql.expression import distinct
 from sqlalchemy.sql.functions import func
 from wtforms import Form
 
-from pcapi import settings
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.domain.user_emails import send_admin_user_validation_email
 
@@ -15,10 +13,7 @@ class AdminUserView(BaseAdminView):
 
     @property
     def can_create(self) -> bool:
-        if settings.IS_PROD:
-            return current_user.email in settings.SUPER_ADMIN_EMAIL_ADDRESSES
-
-        return True
+        return self.check_super_admins()
 
     column_list = [
         "id",
