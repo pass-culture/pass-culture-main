@@ -34,10 +34,15 @@ header.menu-v2 {
           width: 40px;
         }
 
-        &.icon-only svg {
-          height: 32px;
-          margin-right: 0;
-          width: 32px;
+        &.icon-only {
+          flex-shrink: 0;
+          padding: 0 rem(8px);
+
+          svg {
+            height: 32px;
+            margin-right: 0;
+            width: 32px;
+          }
         }
 
         &:hover,
@@ -49,6 +54,7 @@ header.menu-v2 {
       .separator {
         align-self: center;
         background-color: $white;
+        flex-shrink: 0;
         height: rem(24px);
         margin: 0 rem(8px);
         width: 1px;

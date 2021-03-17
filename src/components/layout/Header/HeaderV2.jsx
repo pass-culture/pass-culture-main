@@ -1,9 +1,11 @@
+import PropTypes from 'prop-types'
 import React from 'react'
 import { useDispatch } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 import { reinitializeData } from 'redux-saga-data'
 
-import { signout } from '../../../repository/pcapi/pcapi'
+import { signout } from 'repository/pcapi/pcapi'
+
 import Logo from '../Logo'
 
 import { ReactComponent as BookingsSvg } from './assets/bookings.svg'
@@ -12,8 +14,9 @@ import { ReactComponent as HomeSvg } from './assets/home.svg'
 import { ReactComponent as OffersSvg } from './assets/offers.svg'
 import { ReactComponent as RefundsSvg } from './assets/refunds.svg'
 import { ReactComponent as SignoutSvg } from './assets/signout.svg'
+import { ReactComponent as StyleguideSvg } from './assets/styleguide.svg'
 
-const HeaderV2 = () => {
+const HeaderV2 = ({ isStyleguideActive }) => {
   const dispatch = useDispatch()
 
   function onSignoutClick() {
@@ -87,6 +90,17 @@ const HeaderV2 = () => {
 
           <div className="separator" />
 
+          {isStyleguideActive && (
+            <NavLink
+              className="nav-item icon-only"
+              data-testid="styleguide"
+              role="menuitem"
+              to="/styleguide"
+            >
+              <StyleguideSvg />
+            </NavLink>
+          )}
+
           <button
             className="nav-item icon-only"
             onClick={onSignoutClick}
@@ -99,6 +113,10 @@ const HeaderV2 = () => {
       </nav>
     </header>
   )
+}
+
+HeaderV2.propTypes = {
+  isStyleguideActive: PropTypes.bool.isRequired,
 }
 
 export default HeaderV2
