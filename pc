@@ -6,7 +6,7 @@ set -o nounset
 command -v kubectl
 if $? != 0; then
   echo "kubectl is not installed. Installing tools.. "
-  source ./install_tools.sh
+  source install_tools.sh
 fi
 
 ##
