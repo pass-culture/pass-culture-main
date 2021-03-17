@@ -6,6 +6,7 @@ import pytest
 from pcapi.utils.date import CUSTOM_TIMEZONES
 from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_department_timezone
+from pcapi.utils.date import get_postal_code_timezone
 from pcapi.utils.date import get_time_formatted_for_email
 
 
@@ -58,3 +59,11 @@ class GetDepartmentTimezone:
     def test_all_custom_timezones_are_valid(self):
         for timezone in CUSTOM_TIMEZONES.values():
             assert dateutil.tz.gettz(timezone) is not None, f"{timezone} is not a valid timezone"
+
+
+class GetPostalCodeTimezone:
+    def test_should_return_paris_as_default_timezone(self):
+        assert get_postal_code_timezone("75000") == "Europe/Paris"
+
+    def test_should_return_custom_timezones(self):
+        assert get_postal_code_timezone("97300") == "America/Cayenne"

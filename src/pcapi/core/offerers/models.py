@@ -11,16 +11,21 @@ from sqlalchemy import Numeric
 from sqlalchemy import String
 from sqlalchemy import TEXT
 from sqlalchemy import case
+from sqlalchemy import cast
+from sqlalchemy import func
 from sqlalchemy.event import listens_for
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.orm import aliased
 from sqlalchemy.orm import relationship
 
 from pcapi.core.offers.models import Offer
+from pcapi.domain.postal_code.postal_code import OVERSEAS_DEPARTEMENT_CODE_START
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.domain.ts_vector import create_ts_vector_and_table_args
 from pcapi.models.bank_information import BankInformationStatus
 from pcapi.models.db import Model
+from pcapi.models.db import db
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.has_address_mixin import HasAddressMixin
 from pcapi.models.has_thumb_mixin import HasThumbMixin
@@ -32,6 +37,7 @@ from pcapi.models.versioned_mixin import VersionedMixin
 from pcapi.utils.date import CUSTOM_TIMEZONES
 from pcapi.utils.date import METROPOLE_TIMEZONE
 from pcapi.utils.date import get_department_timezone
+from pcapi.utils.date import get_postal_code_timezone
 
 
 CONSTRAINT_CHECK_IS_VIRTUAL_XOR_HAS_ADDRESS = """
@@ -150,11 +156,28 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ve
 
     @hybrid_property
     def timezone(self):
+        if self.departementCode is None:
+            return get_postal_code_timezone(self.managingOfferer.postalCode)
         return get_department_timezone(self.departementCode)
 
     @timezone.expression
     def timezone(cls):  # pylint: disable=no-self-argument
-        return case(CUSTOM_TIMEZONES, cls.departementCode, else_=METROPOLE_TIMEZONE)
+        offerer_alias = aliased(Offerer)
+        return case(
+            [
+                (
+                    cls.departementCode.is_(None),
+                    case(
+                        CUSTOM_TIMEZONES,
+                        value=db.session.query(offerer_alias.departementCode)
+                        .filter(cls.managingOffererId == offerer_alias.id)
+                        .as_scalar(),
+                        else_=METROPOLE_TIMEZONE,
+                    ),
+                )
+            ],
+            else_=case(CUSTOM_TIMEZONES, value=cls.departementCode, else_=METROPOLE_TIMEZONE),
+        )
 
 
 @listens_for(Venue, "before_insert")
@@ -260,6 +283,22 @@ class Offerer(
             user_has_access_as_editor = False
 
         self.userHasAccess = user_has_access_as_editor
+
+    @hybrid_property
+    def departementCode(self):
+        return PostalCode(self.postalCode).get_departement_code()
+
+    @departementCode.expression
+    def departementCode(cls):  # pylint: disable=no-self-argument
+        return case(
+            [
+                (
+                    cast(func.substring(cls.postalCode, 1, 2), Integer) >= OVERSEAS_DEPARTEMENT_CODE_START,
+                    func.substring(cls.postalCode, 1, 3),
+                )
+            ],
+            else_=func.substring(cls.postalCode, 1, 2),
+        )
 
 
 offerer_ts_indexes = [

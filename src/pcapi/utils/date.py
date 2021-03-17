@@ -4,6 +4,8 @@ from babel.dates import format_date
 from babel.dates import format_datetime as babel_format_datetime
 from dateutil import tz
 
+from pcapi.domain.postal_code.postal_code import PostalCode
+
 
 DATE_ISO_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 DEFAULT_STORED_TIMEZONE = "UTC"
@@ -68,6 +70,10 @@ def match_format(value: str, fmt: str) -> str:
 
 def format_datetime(date_time: datetime) -> str:
     return babel_format_datetime(date_time, format="long", locale="fr")[:-9]
+
+
+def get_postal_code_timezone(postal_code: str) -> str:
+    return get_department_timezone(PostalCode(postal_code).get_departement_code())
 
 
 def get_department_timezone(departement_code: str) -> str:
