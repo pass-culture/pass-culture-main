@@ -123,7 +123,7 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ve
 
     venueLabelId = Column(Integer, ForeignKey("venue_label.id"), nullable=True)
 
-    dateCreated = Column(DateTime, nullable=True, default=datetime.utcnow)
+    dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow)
 
     def store_departement_code(self):
         self.departementCode = PostalCode(self.postalCode).get_departement_code()
