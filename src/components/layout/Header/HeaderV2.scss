@@ -9,6 +9,11 @@ header.menu-v2 {
     display: grid;
     grid-template-columns: [col-start] 1fr [col-main] rem(850px)  1fr;
 
+    .nav-brand {
+      justify-self: end;
+      margin-right: 5%;
+    }
+
     .nav-menu {
       display: flex;
       height: rem(72px);
