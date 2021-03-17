@@ -27,7 +27,7 @@ from pcapi.repository import repository
 
 class PaginatedOfferForFiltersTest:
     @pytest.mark.usefixtures("db_session")
-    def should_return_paginated_offers_with_details_of_pagination_and_offers_of_requested_page(self, app):
+    def should_return_paginated_offers_with_details_of_pagination_and_offers_of_requested_page(self):
         # Given
         user = create_user()
         offerer = create_offerer()
@@ -56,7 +56,7 @@ class PaginatedOfferForFiltersTest:
         assert paginated_offers.offers[0].identifier == Identifier(offer1.id)
 
     @pytest.mark.usefixtures("db_session")
-    def should_return_offers_sorted_by_id_desc(self, app):
+    def should_return_offers_sorted_by_id_desc(self):
         # Given
         user = create_user()
         offerer = create_offerer()
@@ -75,7 +75,7 @@ class PaginatedOfferForFiltersTest:
         assert paginated_offers.offers[0].identifier.persisted > paginated_offers.offers[1].identifier.persisted
 
     @pytest.mark.usefixtures("db_session")
-    def should_return_offers_of_given_type(self, app):
+    def should_return_offers_of_given_type(self):
         user_offerer = offers_factories.UserOffererFactory()
         requested_offer = offers_factories.OfferFactory(
             type=str(ThingType.AUDIOVISUEL), venue__managingOfferer=user_offerer.offerer
@@ -99,7 +99,7 @@ class PaginatedOfferForFiltersTest:
         assert paginated_offers.total_offers == 1
 
     @pytest.mark.usefixtures("db_session")
-    def test_returns_offers_filtered_by_manual_creation_mode_when_provided(self, app: object):
+    def test_returns_offers_filtered_by_manual_creation_mode_when_provided(self):
         # given
         pro_user = create_user()
         offerer = create_offerer()
@@ -123,7 +123,7 @@ class PaginatedOfferForFiltersTest:
         assert paginated_offers.total_offers == 1
 
     @pytest.mark.usefixtures("db_session")
-    def test_returns_offers_filtered_by_imported_creation_mode_when_provided(self, app: object):
+    def test_returns_offers_filtered_by_imported_creation_mode_when_provided(self):
         # given
         pro_user = create_user()
         offerer = create_offerer()
@@ -147,7 +147,7 @@ class PaginatedOfferForFiltersTest:
         assert paginated_offers.total_offers == 1
 
     @pytest.mark.usefixtures("db_session")
-    def should_not_return_event_offers_with_only_deleted_stock_if_filtering_by_time_period(self, app: object):
+    def should_not_return_event_offers_with_only_deleted_stock_if_filtering_by_time_period(self):
         # given
         pro = users_factories.UserFactory(isAdmin=True)
         offer_in_requested_time_period = offers_factories.OfferFactory()
@@ -170,21 +170,26 @@ class PaginatedOfferForFiltersTest:
         assert paginated_offers.total_offers == 0
 
     @pytest.mark.usefixtures("db_session")
-    def should_consider_venue_locale_datetime_when_filtering_by_date(self, app: object):
+    def should_consider_venue_locale_datetime_when_filtering_by_date(self):
         # given
-        pro = users_factories.UserFactory(isAdmin=True)
-        offer_in_cayenne = offers_factories.OfferFactory(venue__postalCode="97300")
-        event_datetime = datetime(2020, 4, 22, 2, 0)
+        admin = users_factories.UserFactory(isAdmin=True)
         period_beginning_date = "2020-04-21T00:00:00"
         period_ending_date = "2020-04-21T23:59:59"
-        offers_factories.EventStockFactory(offer=offer_in_cayenne, beginningDatetime=event_datetime)
+
+        offer_in_cayenne = offers_factories.OfferFactory(venue__postalCode="97300")
+        cayenne_event_datetime = datetime(2020, 4, 22, 2, 0)
+        offers_factories.EventStockFactory(offer=offer_in_cayenne, beginningDatetime=cayenne_event_datetime)
+
+        offer_in_mayotte = offers_factories.OfferFactory(venue__postalCode="97600")
+        mayotte_event_datetime = datetime(2020, 4, 20, 22, 0)
+        offers_factories.EventStockFactory(offer=offer_in_mayotte, beginningDatetime=mayotte_event_datetime)
 
         # When
         paginated_offers = get_paginated_offers_for_filters(
-            user_id=pro.id,
-            user_is_admin=pro.isAdmin,
+            user_id=admin.id,
+            user_is_admin=admin.isAdmin,
             page=1,
-            offers_per_page=1,
+            offers_per_page=10,
             period_beginning_date=period_beginning_date,
             period_ending_date=period_ending_date,
         )
@@ -192,7 +197,8 @@ class PaginatedOfferForFiltersTest:
         # then
         offers_id = [offer.identifier for offer in paginated_offers.offers]
         assert Identifier(offer_in_cayenne.id) in offers_id
-        assert paginated_offers.total_offers == 1
+        assert Identifier(offer_in_mayotte.id) in offers_id
+        assert paginated_offers.total_offers == 2
 
     class WhenUserIsAdmin:
         @pytest.mark.usefixtures("db_session")
@@ -245,7 +251,7 @@ class PaginatedOfferForFiltersTest:
             assert paginated_offers.total_offers == 1
 
         @pytest.mark.usefixtures("db_session")
-        def should_return_offers_of_given_offerer_when_user_is_not_attached_to_it(self, app: object):
+        def should_return_offers_of_given_offerer_when_user_is_not_attached_to_it(self):
             # given
             admin = users_factories.UserFactory(isAdmin=True)
             offer_for_requested_offerer = offers_factories.OfferFactory()
@@ -267,7 +273,7 @@ class PaginatedOfferForFiltersTest:
             assert paginated_offers.total_offers == 1
 
         @pytest.mark.usefixtures("db_session")
-        def should_return_offers_of_given_offerer_when_user_is_attached_to_it(self, app: object):
+        def should_return_offers_of_given_offerer_when_user_is_attached_to_it(self):
             # given
             admin = users_factories.UserFactory(isAdmin=True)
             admin_attachment_to_requested_offerer = offers_factories.UserOffererFactory(user=admin)
@@ -345,7 +351,7 @@ class PaginatedOfferForFiltersTest:
             assert paginated_offers.total_offers == 1
 
         @pytest.mark.usefixtures("db_session")
-        def should_not_return_offers_of_given_offerer_when_user_is_not_attached_to_it(self, app: object):
+        def should_not_return_offers_of_given_offerer_when_user_is_not_attached_to_it(self):
             # given
             pro = users_factories.UserFactory(isBeneficiary=False, isAdmin=False)
             offer_for_requested_offerer = offers_factories.OfferFactory()
@@ -367,7 +373,7 @@ class PaginatedOfferForFiltersTest:
             assert paginated_offers.total_offers == 0
 
         @pytest.mark.usefixtures("db_session")
-        def should_return_offers_of_given_offerer_when_user_is_attached_to_it(self, app: object):
+        def should_return_offers_of_given_offerer_when_user_is_attached_to_it(self):
             # given
             pro = users_factories.UserFactory(isBeneficiary=False, isAdmin=False)
             pro_attachment_to_requested_offerer = offers_factories.UserOffererFactory(user=pro)

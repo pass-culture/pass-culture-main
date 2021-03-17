@@ -140,7 +140,7 @@ def get_offers_by_filters(
         if period_beginning_date is not None:
             query = query.filter(
                 func.timezone(
-                    Offer.query.filter(Offer.id == stock_alias.offerId).first().venue.timezone,
+                    Venue.timezone,
                     func.timezone("UTC", stock_alias.beginningDatetime),
                 )
                 >= period_beginning_date
@@ -148,7 +148,7 @@ def get_offers_by_filters(
         if period_ending_date is not None:
             query = query.filter(
                 func.timezone(
-                    Offer.query.filter(Offer.id == stock_alias.offerId).first().venue.timezone,
+                    Venue.timezone,
                     func.timezone("UTC", stock_alias.beginningDatetime),
                 )
                 <= period_ending_date
