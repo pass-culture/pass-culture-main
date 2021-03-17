@@ -1,7 +1,7 @@
 """Add apiUrl to Providers
 
 Revision ID: ee190d0fbe21
-Revises: fccbd701588b
+Revises: bcb0407d88ea
 Create Date: 2021-03-10 10:22:41.026369
 
 """
@@ -12,7 +12,7 @@ from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
 revision = "ee190d0fbe21"
-down_revision = "fccbd701588b"
+down_revision = "bcb0407d88ea"
 branch_labels = None
 depends_on = None
 
