@@ -11,7 +11,10 @@ from sqlalchemy.sql.functions import func
 from pcapi.connectors import redis
 from pcapi.connectors.thumb_storage import create_thumb
 from pcapi.connectors.thumb_storage import remove_thumb
+from pcapi.core.bookings.api import mark_as_unused
+from pcapi.core.bookings.api import update_confirmation_dates
 from pcapi.core.bookings.conf import LIMIT_CONFIGURATIONS
+from pcapi.core.bookings.models import Booking
 import pcapi.core.bookings.repository as bookings_repository
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.users.models import ExpenseDomain
@@ -45,9 +48,6 @@ from pcapi.utils.rest import load_or_raise_error
 from pcapi.workers.push_notification_job import send_transactional_notification_job
 
 from . import validation
-from ..bookings.api import mark_as_unused
-from ..bookings.api import update_confirmation_dates
-from ..bookings.models import Booking
 from .exceptions import ThumbnailStorageError
 from .models import Mediation
 
