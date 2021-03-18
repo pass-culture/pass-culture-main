@@ -8,6 +8,7 @@ import { computeOfferStatus } from 'components/pages/Offers/Offers/domain/comput
 import { OFFER_STATUS } from 'components/pages/Offers/Offers/domain/offerStatus'
 import * as pcapi from 'repository/pcapi/pcapi'
 
+import { DEFAULT_FORM_VALUES } from './OfferForm/_constants'
 import OfferCreation from './OfferForm/OfferCreation'
 import OfferEditionContainer from './OfferForm/OfferEditionContainer'
 import OfferPreview from './OfferPreview/OfferPreview'
@@ -26,7 +27,7 @@ const OfferDetails = ({
   userEmail,
 }) => {
   const [formInitialValues, setFormInitialValues] = useState({})
-  const [formValues, setFormValues] = useState({})
+  const [formValues, setFormValues] = useState({ ...DEFAULT_FORM_VALUES })
   const [offerType, setOfferType] = useState({})
   const [formErrors, setFormErrors] = useState({})
   const [showThumbnailForm, setShowThumbnailForm] = useState(offer !== null)
