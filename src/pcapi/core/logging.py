@@ -1,8 +1,45 @@
 import json
 import logging
 import sys
+import uuid
+
+import flask
 
 from pcapi import settings
+
+
+def _is_within_app_context():
+    # If we are called before setting up an application context,
+    # accessing Flask global objects raise a RuntimeError.
+    try:
+        # Just accessing `flask.g` itself is not enough because it
+        # does exist even outside an app context. We need to look
+        # "inside" to trigger an exception.
+        "anything" in flask.g
+    except RuntimeError:
+        return False
+    else:
+        return True
+
+
+def get_or_set_correlation_id():
+    """Get a correlation id (set by Nginx upstream) if we are in the
+    context of an HTTP request, or get/set one from/in Flask global
+    object otherwise.
+    """
+    if not _is_within_app_context():
+        return ""
+    if flask.request:
+        # Our Nginx upstream should have set an HTTP header.
+        return flask.request.headers.get("X-Request-Id", "")
+    # XXX: the following block has not automated tests.
+    try:
+        return flask.g.correlation_id
+    except AttributeError:
+        flask.g.correlation_id = uuid.uuid4().hex
+        return flask.g.correlation_id
+
+
 
 
 class Logger(logging.Logger):
@@ -26,6 +63,7 @@ class Logger(logging.Logger):
 class JsonFormatter(logging.Formatter):
     def format(self, record):
         json_record = {
+            "logging.googleapis.com/trace": get_or_set_correlation_id(),
             "module": record.name,
             "severity": record.levelname,
             "message": record.msg % record.args,
