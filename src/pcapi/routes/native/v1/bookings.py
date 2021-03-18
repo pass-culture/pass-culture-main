@@ -16,6 +16,7 @@ from pcapi.routes.native.v1.serialization.bookings import BookOfferResponse
 from pcapi.routes.native.v1.serialization.bookings import BookingReponse
 from pcapi.routes.native.v1.serialization.bookings import BookingsResponse
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils.logger import logger
 
 from . import blueprint
 
@@ -94,3 +95,19 @@ def get_bookings(user: User) -> BookingsResponse:
             )
         ],
     )
+
+
+@blueprint.native_v1.route("/bookings/<int:booking_id>/cancel", methods=["POST"])
+@spectree_serialize(api=blueprint.api, on_success_status=204, on_error_statuses=[400, 404])
+@authenticated_user_required
+def cancel_booking(user: User, booking_id: int) -> None:
+    booking = Booking.query.filter_by(id=booking_id, userId=user.id).first_or_404()
+    try:
+        bookings_api.cancel_booking_by_beneficiary(user, booking)
+    except exceptions.BookingIsAlreadyUsed:
+        raise ApiErrors({"code": "ALREADY_USED", "message": "La réservation a déjà été utilisée"})
+    except exceptions.CannotCancelConfirmedBooking as e:
+        raise ApiErrors({"code": "CONFIRMED_BOOKING", "message": e.errors["booking"][0]})
+    except RuntimeError:
+        logger.error("Unexpected call to cancel_booking_by_beneficiary with non-beneficiary user %s", user.id)
+        raise ApiErrors()

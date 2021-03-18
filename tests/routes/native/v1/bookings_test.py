@@ -7,6 +7,7 @@ import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.models import Booking
+from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.offers.factories import StockFactory
 from pcapi.core.users import factories as users_factories
 from pcapi.models.offer_type import ThingType
@@ -17,7 +18,7 @@ from tests.conftest import TestClient
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class BookOfferTest:
+class PostBookingTest:
     identifier = "pascal.ture@example.com"
 
     def test_post_bookings(self, app):
@@ -137,4 +138,52 @@ class GetBookingsTest:
             },
             "token": used2.token,
             "totalAmount": 1000,
+        }
+
+
+class CancelBookingTest:
+    identifier = "pascal.ture@example.com"
+
+    def test_cancel_booking(self, app):
+        user = users_factories.UserFactory(email=self.identifier)
+        booking = BookingFactory(user=user)
+
+        access_token = create_access_token(identity=self.identifier)
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+
+        response = test_client.post(f"/native/v1/bookings/{booking.id}/cancel")
+
+        assert response.status_code == 204
+
+        booking = Booking.query.get(booking.id)
+        assert booking.isCancelled
+        assert booking.cancellationReason == BookingCancellationReasons.BENEFICIARY
+
+    def test_cancel_others_booking(self, app):
+        users_factories.UserFactory(email=self.identifier)
+        booking = BookingFactory()
+
+        access_token = create_access_token(identity=self.identifier)
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+
+        response = test_client.post(f"/native/v1/bookings/{booking.id}/cancel")
+
+        assert response.status_code == 404
+
+    def test_cancel_confirmed_booking(self, app):
+        user = users_factories.UserFactory(email=self.identifier)
+        booking = BookingFactory(user=user, confirmation_date=datetime.now() - timedelta(days=1))
+
+        access_token = create_access_token(identity=self.identifier)
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+
+        response = test_client.post(f"/native/v1/bookings/{booking.id}/cancel")
+
+        assert response.status_code == 400
+        assert response.json == {
+            "code": "CONFIRMED_BOOKING",
+            "message": "Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 48h avant le début de l'événement",
         }
