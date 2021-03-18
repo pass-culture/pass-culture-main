@@ -15,6 +15,7 @@ from pcapi.core.offers import api
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories
 from pcapi.core.offers.api import add_criteria_to_offers
+from pcapi.core.offers.api import compute_offer_validation_from_name
 from pcapi.core.offers.api import deactivate_inappropriate_product
 from pcapi.core.offers.api import get_expense_domains
 from pcapi.core.offers.api import update_offer_and_stock_id_at_providers
@@ -27,6 +28,7 @@ from pcapi.core.offers.factories import StockFactory
 from pcapi.core.offers.factories import ThingProductFactory
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import Stock
 from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
@@ -695,6 +697,49 @@ class CreateOfferTest:
         err = "Seuls les administrateurs du pass Culture peuvent créer des offres d'activation"
         assert error.value.errors["type"] == [err]
 
+    # TODO(fseguin): remove after the real implementation is added
+    def test_create_offer_with_validation(self):
+        venue = factories.VenueFactory()
+        offerer = venue.managingOfferer
+        user_offerer = factories.UserOffererFactory(offerer=offerer)
+        user = user_offerer.user
+        offer_args = {
+            "venueId": humanize(venue.id),
+            "type": str(offer_type.EventType.CINEMA),
+            "externalTicketOfficeUrl": "http://example.net",
+            "audioDisabilityCompliant": True,
+            "mentalDisabilityCompliant": True,
+            "motorDisabilityCompliant": True,
+            "visualDisabilityCompliant": True,
+        }
+        approved_offer_data = offers_serialize.PostOfferBodyModel(
+            **offer_args,
+            name="A great offer",
+        )
+        awaiting_offer_data = offers_serialize.PostOfferBodyModel(
+            **offer_args,
+            name="An AWAITING offer",
+        )
+        rejected_offer_data = offers_serialize.PostOfferBodyModel(
+            **offer_args,
+            name="A REJECTED offer",
+        )
+
+        approved_offer = api.create_offer(approved_offer_data, user)
+        awaiting_offer = api.create_offer(awaiting_offer_data, user)
+        rejected_offer = api.create_offer(rejected_offer_data, user)
+        with override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False):
+            another_approved_offer = api.create_offer(approved_offer_data, user)
+            not_an_awaiting_offer = api.create_offer(awaiting_offer_data, user)
+            not_a_rejected_offer = api.create_offer(rejected_offer_data, user)
+
+        assert approved_offer.validation == OfferValidationStatus.APPROVED
+        assert awaiting_offer.validation == OfferValidationStatus.AWAITING
+        assert rejected_offer.validation == OfferValidationStatus.REJECTED
+        assert another_approved_offer.validation == OfferValidationStatus.APPROVED
+        assert not_an_awaiting_offer.validation == OfferValidationStatus.APPROVED
+        assert not_a_rejected_offer.validation == OfferValidationStatus.APPROVED
+
 
 @pytest.mark.usefixtures("db_session")
 class CreateOfferBusinessLogicChecksTest:
@@ -1031,3 +1076,22 @@ class DeactivateInappropriateProductTest:
         assert not second_offer.isActive
         for o in offers:
             mocked_add_offer_id.assert_any_call(client=app.redis_client, offer_id=o.id)
+
+
+@pytest.mark.usefixtures("db_session")
+class ComputeOfferValidationTest:
+    def test_matching_keyword(self):
+        offer = Offer(name="An offer AWAITING validation")
+
+        assert compute_offer_validation_from_name(offer) == OfferValidationStatus.AWAITING
+
+    def test_not_matching_keyword(self):
+        offer = Offer(name="An offer awaiting validation")
+
+        assert compute_offer_validation_from_name(offer) == OfferValidationStatus.APPROVED
+
+    @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
+    def test_deactivated_check(self):
+        offer = Offer(name="An offer AWAITING validation")
+
+        assert compute_offer_validation_from_name(offer) == OfferValidationStatus.APPROVED

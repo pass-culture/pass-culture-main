@@ -8,6 +8,7 @@ from flask import current_app as app
 import pytz
 from sqlalchemy.sql.functions import func
 
+from pcapi import settings
 from pcapi.connectors import redis
 from pcapi.connectors.thumb_storage import create_thumb
 from pcapi.connectors.thumb_storage import remove_thumb
@@ -16,6 +17,7 @@ from pcapi.core.bookings.api import update_confirmation_dates
 from pcapi.core.bookings.conf import LIMIT_CONFIGURATIONS
 from pcapi.core.bookings.models import Booking
 import pcapi.core.bookings.repository as bookings_repository
+from pcapi.core.offers.models import OfferValidationStatus
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.core.users.models import User
@@ -55,6 +57,11 @@ from .models import Mediation
 DEFAULT_OFFERS_PER_PAGE = 10
 DEFAULT_PAGE = 1
 UNCHANGED = object()
+VALIDATION_KEYWORDS_MAPPING = {
+    "APPROVED": OfferValidationStatus.APPROVED,
+    "AWAITING": OfferValidationStatus.AWAITING,
+    "REJECTED": OfferValidationStatus.REJECTED,
+}
 
 
 def list_offers_for_pro_user(
@@ -128,6 +135,9 @@ def create_offer(offer_data: PostOfferBodyModel, user: User) -> Offer:
     offer.mentalDisabilityCompliant = offer_data.mental_disability_compliant
     offer.motorDisabilityCompliant = offer_data.motor_disability_compliant
     offer.visualDisabilityCompliant = offer_data.visual_disability_compliant
+    # TODO(fseguin): remove after the real implementation is added
+    offer.validation = compute_offer_validation_from_name(offer)
+
     repository.save(offer)
     admin_emails.send_offer_creation_notification_to_administration(offer, user)
 
@@ -544,3 +554,12 @@ def deactivate_inappropriate_product(isbn: str) -> bool:
             redis.add_offer_id(client=app.redis_client, offer_id=offer_id)
 
     return True
+
+
+def compute_offer_validation_from_name(offer: Offer) -> OfferValidationStatus:
+    """This is temporary logic, before real business rules are implemented"""
+    if not settings.IS_PROD and feature_queries.is_active(FeatureToggle.OFFER_VALIDATION_MOCK_COMPUTATION):
+        for keyword, validation_status in VALIDATION_KEYWORDS_MAPPING.items():
+            if keyword in offer.name:
+                return validation_status
+    return OfferValidationStatus.APPROVED
