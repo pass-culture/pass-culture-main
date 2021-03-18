@@ -68,7 +68,6 @@ if settings.PROFILE_REQUESTS:
     )
 
 if not settings.JWT_SECRET_KEY:
-    logger.error("JWT_SECRET_KEY not found in env")
     raise Exception("JWT_SECRET_KEY not found in env")
 
 app.secret_key = settings.FLASK_SECRET
