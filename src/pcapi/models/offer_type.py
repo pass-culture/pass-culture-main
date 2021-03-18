@@ -283,6 +283,17 @@ class ThingType(Enum):
         "isActive": True,
         "canExpire": True,
     }
+    MATERIEL_ART_CREA = {
+        "proLabel": "Matériel arts créatifs",
+        "appLabel": "Matériel arts créatifs",
+        "offlineOnly": True,
+        "onlineOnly": False,
+        "sublabel": "",
+        "description": "",
+        "conditionalFields": [],
+        "isActive": True,
+        "canExpire": True,
+    }
     SPECTACLE_VIVANT_ABO = {
         "proLabel": "Spectacle vivant - cartes d'abonnement",
         "appLabel": "Abonnement spectacles",

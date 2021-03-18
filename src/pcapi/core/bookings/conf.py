@@ -47,6 +47,7 @@ class LimitConfigurationV1(BaseLimitConfiguration):
     TOTAL_CAP = Decimal(500)
 
     DIGITAL_CAP = Decimal(200)
+
     DIGITAL_CAPPED_TYPES = {
         ThingType.AUDIOVISUEL,
         ThingType.JEUX_VIDEO,
@@ -58,7 +59,6 @@ class LimitConfigurationV1(BaseLimitConfiguration):
     }
 
     PHYSICAL_CAP = 200
-
     PHYSICAL_CAPPED_TYPES = {
         ThingType.AUDIOVISUEL,
         ThingType.INSTRUMENT,
@@ -66,6 +66,7 @@ class LimitConfigurationV1(BaseLimitConfiguration):
         ThingType.LIVRE_EDITION,
         ThingType.MUSIQUE,
         ThingType.OEUVRE_ART,
+        ThingType.MATERIEL_ART_CREA,
     }
 
 
