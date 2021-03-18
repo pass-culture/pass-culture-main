@@ -16,6 +16,7 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
   beforeEach(() => {
     props = {
       currentUser: {},
+      isNewHomepageActive: true,
       isVenueCreationAvailable: true,
       dispatch: dispatchMock,
       offerer: {
@@ -69,7 +70,7 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
         const navLink = caret.find(Link)
 
         // then
-        expect(navLink.prop('to')).toBe('/structures/AE')
+        expect(navLink.prop('to')).toBe('/accueil?structure=AE')
       })
     })
 
@@ -93,7 +94,7 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
 
         // then
         expect(navLink.text()).toBe('Fake Name')
-        expect(navLink.prop('to')).toBe('/structures/AE')
+        expect(navLink.prop('to')).toBe('/accueil?structure=AE')
       })
     })
 

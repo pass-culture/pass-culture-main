@@ -8,9 +8,15 @@ import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 import { pluralize } from '../../../../utils/pluralize'
 import { UNAVAILABLE_ERROR_PAGE } from '../../../../utils/routes'
 
-const OffererItem = ({ offerer, physicalVenues, venues, isVenueCreationAvailable }) => {
+const OffererItem = ({
+  offerer,
+  physicalVenues,
+  venues,
+  isNewHomepageActive,
+  isVenueCreationAvailable,
+}) => {
   const { id, name, nOffers } = offerer || {}
-  const showPath = `/structures/${id}`
+  const detailsPath = isNewHomepageActive ? `/accueil?structure=${id}` : `/structures/${id}`
 
   let createOfferLink = `/offres/creation?structure=${id}`
   const canCreateOnlyVirtualOffer = venues.length === 1 && venues[0].isVirtual
@@ -27,7 +33,7 @@ const OffererItem = ({ offerer, physicalVenues, venues, isVenueCreationAvailable
     <li className="offerer-item">
       <div className="list-content">
         <p className="name">
-          <Link to={showPath}>
+          <Link to={detailsPath}>
             {name}
           </Link>
         </p>
@@ -82,7 +88,7 @@ const OffererItem = ({ offerer, physicalVenues, venues, isVenueCreationAvailable
         </ul>
       </div>
       <div className="caret">
-        <Link to={showPath}>
+        <Link to={detailsPath}>
           <Icon svg="ico-next-S" />
         </Link>
       </div>
@@ -97,6 +103,7 @@ OffererItem.defaultProps = {
 }
 
 OffererItem.propTypes = {
+  isNewHomepageActive: PropTypes.bool.isRequired,
   isVenueCreationAvailable: PropTypes.bool.isRequired,
   offerer: PropTypes.shape(),
   physicalVenues: PropTypes.arrayOf(PropTypes.shape()),

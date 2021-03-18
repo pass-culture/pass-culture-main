@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import { Redirect } from 'react-router'
+import { Redirect, useLocation } from 'react-router'
 
 import { ReactComponent as CounterSvg } from 'components/layout/Header/assets/counter.svg'
 import { ReactComponent as OffersSvg } from 'components/layout/Header/assets/offers.svg'
@@ -8,9 +8,11 @@ import PageTitle from 'components/layout/PageTitle/PageTitle'
 
 import Card from './Card/Card'
 
-const Home = ({ isNewHomepageActive }) =>
-  isNewHomepageActive ? (
-    <Redirect to="/v2/accueil" />
+const Home = ({ isNewHomepageActive }) => {
+  const location = useLocation()
+
+  return isNewHomepageActive ? (
+    <Redirect to={`/v2/accueil${location.search}`} />
   ) : (
     <div className="home-cards columns">
       <PageTitle title="Accueil" />
@@ -28,6 +30,7 @@ const Home = ({ isNewHomepageActive }) =>
       />
     </div>
   )
+}
 
 Home.propTypes = {
   isNewHomepageActive: PropTypes.bool.isRequired,
