@@ -24,11 +24,11 @@ const OffererDetails = ({
   offererOptions,
   selectedOfferer,
 }) => {
-  const [isVisible, setIsVisible] = useState(!hasPhysicalVenues)
-  useEffect(() => setIsVisible(!hasPhysicalVenues), [hasPhysicalVenues])
+  const [isExpanded, setIsExpanded] = useState(!hasPhysicalVenues)
+  useEffect(() => setIsExpanded(!hasPhysicalVenues), [hasPhysicalVenues])
 
   const toggleVisibility = useCallback(
-    () => setIsVisible(currentVisibility => !currentVisibility),
+    () => setIsExpanded(currentVisibility => !currentVisibility),
     []
   )
 
@@ -44,7 +44,7 @@ const OffererDetails = ({
 
   return (
     <div className="h-card h-card-secondary">
-      <div className={`h-card-inner${isVisible ? '' : ' h-no-bottom'}`}>
+      <div className={`h-card-inner${isExpanded ? '' : ' h-no-bottom'}`}>
         <div className="od-header">
           <Select
             handleSelection={handleChangeOfferer}
@@ -56,11 +56,11 @@ const OffererDetails = ({
           />
           <div className="od-separator vertical" />
           <button
-            className={`tertiary-button${isVisible ? ' od-primary' : ''}`}
+            className={`tertiary-button${isExpanded ? ' od-primary' : ''}`}
             onClick={toggleVisibility}
             type="button"
           >
-            {isVisible ? (
+            {isExpanded ? (
               <>
                 <ClosedEyeSvg />
                 {'Masquer'}
@@ -100,7 +100,7 @@ const OffererDetails = ({
           )}
         </div>
 
-        {isVisible && (
+        {isExpanded && (
           <>
             <div className="od-separator horizontal" />
             {!selectedOfferer.isValidated && (
