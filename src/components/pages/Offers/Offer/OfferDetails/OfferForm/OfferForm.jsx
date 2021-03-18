@@ -221,7 +221,7 @@ const OfferForm = ({
     [initialValues.bookingEmail, venue, offerType, handleFormUpdate, userEmail, isEdition]
   )
   useEffect(() => {
-    if (formRef) {
+    if (formRef.current) {
       const invalidElement = formRef.current.querySelector('.error')
       if (invalidElement) {
         const scrollBehavior = doesUserPreferReducedMotion() ? 'auto' : 'smooth'
