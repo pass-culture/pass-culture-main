@@ -67,10 +67,14 @@ const OfferThumbnail = ({ setThumbnailInfo, thumbnailError, url }) => {
   )
 }
 
+OfferThumbnail.defaultProps = {
+  url: null,
+}
+
 OfferThumbnail.propTypes = {
   setThumbnailInfo: PropTypes.func.isRequired,
   thumbnailError: PropTypes.bool.isRequired,
-  url: PropTypes.string.isRequired,
+  url: PropTypes.string,
 }
 
 export default OfferThumbnail

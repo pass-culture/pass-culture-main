@@ -172,7 +172,7 @@ TypeTreeSelects.propTypes = {
     showType: PropTypes.string,
     type: PropTypes.string,
   }).isRequired,
-  types: PropTypes.arrayOf().isRequired,
+  types: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   updateTypeValues: PropTypes.func.isRequired,
 }
 

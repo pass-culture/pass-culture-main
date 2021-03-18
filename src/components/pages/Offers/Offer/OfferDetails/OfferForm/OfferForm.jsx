@@ -825,16 +825,18 @@ const OfferForm = ({
 }
 
 OfferForm.defaultProps = {
+  areAllVenuesVirtual: false,
   backUrl: null,
   initialValues: {},
   isEdition: false,
   isUserAdmin: false,
   providerName: null,
   readOnlyFields: [],
+  setSelectedOfferer: () => {},
 }
 
 OfferForm.propTypes = {
-  areAllVenuesVirtual: PropTypes.bool.isRequired,
+  areAllVenuesVirtual: PropTypes.bool,
   backUrl: PropTypes.string,
   formValues: PropTypes.shape().isRequired,
   initialValues: PropTypes.shape(),
@@ -851,7 +853,7 @@ OfferForm.propTypes = {
   readOnlyFields: PropTypes.arrayOf(PropTypes.string),
   setFormValues: PropTypes.func.isRequired,
   setPreviewOfferType: PropTypes.func.isRequired,
-  setSelectedOfferer: PropTypes.func.isRequired,
+  setSelectedOfferer: PropTypes.func,
   setShowThumbnailForm: PropTypes.func.isRequired,
   showErrorNotification: PropTypes.func.isRequired,
   submitErrors: PropTypes.shape().isRequired,
