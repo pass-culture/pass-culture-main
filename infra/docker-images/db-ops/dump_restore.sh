@@ -31,7 +31,7 @@ if [ "$EXPORT_DATA" = "true" ];then
     # (export will fail is there is one)
     echo "Starting: gcloud sql operations list $(echo_time)"
     retries=5
-    while [ $(export_running_output) != "" ];do
+    while [[ $(export_running_output) != "" ]];do
         if [ "${retries}" -gt 0 ];then
             let "retries-=1"
             echo "An operations in currently running on the instance; Retries left : ${retries}; waiting 5min"
@@ -102,11 +102,8 @@ if [ "$IMPORT_DATA" = "true" ];then
 
     # Check is an operation is still running on the instance before continuing
     echo "Starting: gcloud sql operations list $(echo_time)"
-    import_running_output=""
-    until [ "$import_running_output" = "" ]
-    do
-        import_running_output=$(import_running_output)
-        echo "Import operations currently running:\n $import_running_output"
+    while [[ $(import_running_output) != "" ]];do
+        echo "Import operations currently running
         sleep 300
     done
     echo "Ended: gcloud sql operations list $(echo_time)"
