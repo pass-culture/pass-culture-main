@@ -271,6 +271,17 @@ class CalculateAgeTest:
         assert create_user(date_of_birth=datetime(2000, 7, 1)).calculate_age() == 17
         assert create_user(date_of_birth=datetime(1999, 5, 1)).calculate_age() == 19
 
+    def test_eligibility_start_end_datetime(self):
+        assert create_user(date_of_birth=None).eligibility_start_datetime is None
+        assert create_user(date_of_birth=datetime(2000, 6, 1, 5, 1)).eligibility_start_datetime == datetime(
+            2018, 6, 1, 0, 0
+        )
+
+        assert create_user(date_of_birth=None).eligibility_end_datetime is None
+        assert create_user(date_of_birth=datetime(2000, 6, 1, 5, 1)).eligibility_end_datetime == datetime(
+            2019, 6, 1, 0, 0
+        )
+
 
 @pytest.mark.usefixtures("db_session")
 class DepositVersionTest:

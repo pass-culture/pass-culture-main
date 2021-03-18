@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import date
 from datetime import datetime
+from datetime import time
 from decimal import Decimal
 import enum
 from hashlib import md5
@@ -302,6 +303,22 @@ class User(PcObject, Model, NeedsValidationMixin, VersionedMixin):
     def is_eligible(self) -> bool:
         age = self.calculate_age()
         return age is not None and age == constants.ELIGIBILITY_AGE
+
+    @property
+    def eligibility_start_datetime(self) -> Optional[datetime]:
+        return (
+            datetime.combine(self.dateOfBirth, time(0, 0)) + relativedelta(years=constants.ELIGIBILITY_AGE)
+            if self.dateOfBirth
+            else None
+        )
+
+    @property
+    def eligibility_end_datetime(self) -> Optional[datetime]:
+        return (
+            datetime.combine(self.dateOfBirth, time(0, 0)) + relativedelta(years=constants.ELIGIBILITY_AGE + 1)
+            if self.dateOfBirth
+            else None
+        )
 
     def get_notification_subscriptions(self) -> NotificationSubscriptions:
         return NotificationSubscriptions(**self.notificationSubscriptions or {})

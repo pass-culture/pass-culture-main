@@ -85,13 +85,14 @@ class DomainsCredit(BaseModel):
 class UserProfileResponse(BaseModel):
     id: int
     domains_credit: Optional[DomainsCredit]
-    dateOfBirth: Optional[datetime.datetime]
+    dateOfBirth: Optional[datetime.date]
     deposit_expiration_date: Optional[datetime.datetime]
     deposit_version: Optional[int]
+    eligibility_end_datetime: Optional[datetime.datetime]
+    eligibility_start_datetime: Optional[datetime.datetime]
     email: str
     expenses: List[Expense]
     firstName: Optional[str]
-    is_eligible: bool
     lastName: Optional[str]
     subscriptions: NotificationSubscriptions  # if we send user.notification_subscriptions, pydantic will take the column and not the property
     isBeneficiary: bool
