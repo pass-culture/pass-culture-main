@@ -4,17 +4,17 @@ set -o nounset
 
 ## Check if kubectl is installed
 command -v kubectl
-if $? != 0; then
-  echo "kubectl is not installed. Installing tools.. "
+if [ "$?" -ne 0 ]; then
+  echo "------> kubectl is not installed. Installing tools.. "
   source install_tools.sh
 fi
 
 ##
-echo "-----> Context actuel : "$(kubectl config current-context)"."
+echo "------> Context actuel : "$(kubectl config current-context)"."
 echo ""
 echo "!!! Quittez, placez-vous sur le bon context et relancez le script si ce dernier n'est pas le bon !!!"
 echo ""
-echo "-----> Voulez-vous continuer ? (y/n)"
+echo "------> Voulez-vous continuer ? (y/n)"
 read rep
 if test $rep != "y"; then
   exit
