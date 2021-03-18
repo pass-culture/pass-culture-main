@@ -1,3 +1,4 @@
+import * as PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 
@@ -17,7 +18,7 @@ import VenueCreationLinks from './VenueCreationLinks'
 
 export const CREATE_OFFERER_SELECT_ID = 'creation'
 
-const Offerers = () => {
+const Offerers = ({ query }) => {
   const [offererOptions, setOffererOptions] = useState([])
   const [selectedOffererId, setSelectedOffererId] = useState(null)
   const [selectedOfferer, setSelectedOfferer] = useState(null)
@@ -28,20 +29,24 @@ const Offerers = () => {
 
   const history = useHistory()
 
-  useEffect(function fetchData() {
-    pcapi.getAllOfferersNames().then(receivedOffererNames => {
-      if (receivedOffererNames.length > 0) {
-        setSelectedOffererId(receivedOffererNames[0].id)
-      }
-      setOffererOptions([
-        ...buildSelectOptions('id', 'name', receivedOffererNames),
-        {
-          displayName: '+ Ajouter une structure',
-          id: CREATE_OFFERER_SELECT_ID,
-        },
-      ])
-    })
-  }, [])
+  useEffect(
+    function fetchData() {
+      const { offererId } = query.translate()
+      pcapi.getAllOfferersNames().then(receivedOffererNames => {
+        if (receivedOffererNames.length > 0) {
+          setSelectedOffererId(offererId || receivedOffererNames[0].id)
+        }
+        setOffererOptions([
+          ...buildSelectOptions('id', 'name', receivedOffererNames),
+          {
+            displayName: '+ Ajouter une structure',
+            id: CREATE_OFFERER_SELECT_ID,
+          },
+        ])
+      })
+    },
+    [query]
+  )
 
   useEffect(() => {
     if (selectedOffererId) {
@@ -77,9 +82,10 @@ const Offerers = () => {
         history.push('/structures/creation')
       } else if (newOffererId !== selectedOfferer.id) {
         setSelectedOffererId(newOffererId)
+        query.change({ offererId: newOffererId })
       }
     },
-    [history, selectedOfferer]
+    [history, query, selectedOfferer]
   )
 
   if (isLoading) {
@@ -123,6 +129,13 @@ const Offerers = () => {
       )}
     </>
   )
+}
+
+Offerers.propTypes = {
+  query: PropTypes.shape({
+    change: PropTypes.func.isRequired,
+    translate: PropTypes.func.isRequired,
+  }).isRequired,
 }
 
 export default Offerers

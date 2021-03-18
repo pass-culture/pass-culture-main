@@ -3,7 +3,7 @@ import React, { useRef } from 'react'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 
 import HomepageBreadcrumb, { STEP_ID_OFFERERS } from './HomepageBreadcrumb'
-import Offerers from './Offerers/Offerers'
+import OfferersContainer from './Offerers/OfferersContainer'
 import ProfileAndSupportContainer from './ProfileAndSupport/ProfileAndSupportContainer'
 
 const Homepage = () => {
@@ -22,7 +22,7 @@ const Homepage = () => {
       />
 
       <section className="h-section">
-        <Offerers />
+        <OfferersContainer />
       </section>
 
       <section
