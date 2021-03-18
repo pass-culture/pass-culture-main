@@ -136,11 +136,16 @@ def get_offers_by_filters(
         query = _filter_by_status(query, datetime_now, status)
     if period_beginning_date is not None or period_ending_date is not None:
         stock_alias = aliased(Stock)
-        query = query.join(Offer.stocks.of_type(stock_alias)).filter(stock_alias.isSoftDeleted.is_(False))
+        venue_alias = aliased(Venue)
+        query = (
+            query.join(stock_alias, Offer.id == stock_alias.offerId)
+            .join(venue_alias, Offer.venueId == venue_alias.id)
+            .filter(stock_alias.isSoftDeleted.is_(False))
+        )
         if period_beginning_date is not None:
             query = query.filter(
                 func.timezone(
-                    Venue.timezone,
+                    venue_alias.timezone,
                     func.timezone("UTC", stock_alias.beginningDatetime),
                 )
                 >= period_beginning_date
@@ -148,7 +153,7 @@ def get_offers_by_filters(
         if period_ending_date is not None:
             query = query.filter(
                 func.timezone(
-                    Venue.timezone,
+                    venue_alias.timezone,
                     func.timezone("UTC", stock_alias.beginningDatetime),
                 )
                 <= period_ending_date
