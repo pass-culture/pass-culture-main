@@ -2,19 +2,6 @@ p.tw-numbers {
   margin-bottom: rem(8px);
 }
 
-.tutorial-content.cv-content {
-  justify-content: space-evenly;
-}
-
-.tutorial-content .cv-venue-creation {
-  list-style-position: initial;
-  list-style-type: '-';
-
-  & > p:first-child {
-    margin-bottom: rem(8px);
-  }
-}
-
 .tw-strong {
   @include body-important();
 }
