@@ -4,6 +4,7 @@ import sys
 import uuid
 
 import flask
+from flask_login import current_user
 
 from pcapi import settings
 
@@ -40,6 +41,15 @@ def get_or_set_correlation_id():
         return flask.g.correlation_id
 
 
+def get_logged_in_user_id():
+    if not _is_within_app_context():
+        return None
+    if not current_user:
+        return None
+    try:
+        return current_user.id
+    except AttributeError:  # anonymous use
+        return None
 
 
 class Logger(logging.Logger):
@@ -66,6 +76,7 @@ class JsonFormatter(logging.Formatter):
             "logging.googleapis.com/trace": get_or_set_correlation_id(),
             "module": record.name,
             "severity": record.levelname,
+            "user_id": get_logged_in_user_id(),
             "message": record.msg % record.args,
             # `getattr()` is necessary for log records that have not
             # been created by our `Logger.makeRecord()` defined above.
