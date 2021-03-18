@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 
+import Spinner from 'components/layout/Spinner'
 import * as pcapi from 'repository/pcapi/pcapi'
 
 import OfferForm from './OfferForm'
@@ -8,12 +9,10 @@ import OfferForm from './OfferForm'
 const OfferCreation = ({
   formValues,
   initialValues,
-  isLoading,
   isUserAdmin,
   userEmail,
   onSubmit,
   showErrorNotification,
-  setIsLoading,
   setPreviewOfferType,
   setShowThumbnailForm,
   setFormValues,
@@ -22,6 +21,7 @@ const OfferCreation = ({
   const venues = useRef([])
   const types = useRef([])
   const offerersNames = useRef([])
+  const [isLoading, setIsLoading] = useState(true)
   const [displayedVenues, setDisplayedVenues] = useState([])
   const [selectedOfferer, setSelectedOfferer] = useState(initialValues.offererId)
 
@@ -83,7 +83,7 @@ const OfferCreation = ({
       : venues.current.every(venue => venue.isVirtual)
 
   if (isLoading) {
-    return null
+    return <Spinner />
   }
 
   return (
@@ -117,11 +117,9 @@ OfferCreation.defaultProps = {
 OfferCreation.propTypes = {
   formValues: PropTypes.shape().isRequired,
   initialValues: PropTypes.shape(),
-  isLoading: PropTypes.bool.isRequired,
   isUserAdmin: PropTypes.bool,
   onSubmit: PropTypes.func.isRequired,
   setFormValues: PropTypes.func.isRequired,
-  setIsLoading: PropTypes.func.isRequired,
   setPreviewOfferType: PropTypes.func.isRequired,
   setShowThumbnailForm: PropTypes.func.isRequired,
   showErrorNotification: PropTypes.func.isRequired,

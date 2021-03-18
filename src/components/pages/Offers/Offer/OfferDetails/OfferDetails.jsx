@@ -1,14 +1,12 @@
 import PropTypes from 'prop-types'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useRef, useState } from 'react'
 
 import PageTitle from 'components/layout/PageTitle/PageTitle'
-import Spinner from 'components/layout/Spinner'
 import OfferPreviewLink from 'components/pages/Offers/Offer/OfferPreviewLink/OfferPreviewLink'
 import { computeOfferStatus } from 'components/pages/Offers/Offers/domain/computeOfferStatus'
 import { OFFER_STATUS } from 'components/pages/Offers/Offers/domain/offerStatus'
 import * as pcapi from 'repository/pcapi/pcapi'
 
-import { DEFAULT_FORM_VALUES } from './OfferForm/_constants'
 import OfferCreation from './OfferForm/OfferCreation'
 import OfferEditionContainer from './OfferForm/OfferEditionContainer'
 import OfferPreview from './OfferPreview/OfferPreview'
@@ -26,32 +24,22 @@ const OfferDetails = ({
   showErrorNotification,
   userEmail,
 }) => {
-  const [formInitialValues, setFormInitialValues] = useState({})
-  const [formValues, setFormValues] = useState({ ...DEFAULT_FORM_VALUES })
+  const initialValues = {}
+  const queryParams = new URLSearchParams(location.search)
+  if (queryParams.has('structure')) {
+    initialValues.offererId = queryParams.get('structure')
+  }
+  if (queryParams.has('lieu')) {
+    initialValues.venueId = queryParams.get('lieu')
+  }
+
+  const formInitialValues = useRef(initialValues)
+  const [formValues, setFormValues] = useState({})
   const [offerType, setOfferType] = useState({})
   const [formErrors, setFormErrors] = useState({})
-  const [showThumbnailForm, setShowThumbnailForm] = useState(offer !== null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [isChildrenLoading, setIsChildrenLoading] = useState(true)
+  const [showThumbnailForm, setShowThumbnailForm] = useState(false)
   const [thumbnailInfo, setThumbnailInfo] = useState({})
   const [thumbnailError, setThumbnailError] = useState(false)
-
-  useEffect(() => {
-    const queryParams = new URLSearchParams(location.search)
-    if (queryParams.has('structure')) {
-      setFormInitialValues(oldFormInitialValues => ({
-        ...oldFormInitialValues,
-        offererId: queryParams.get('structure'),
-      }))
-    }
-    if (queryParams.has('lieu')) {
-      setFormInitialValues(oldFormInitialValues => ({
-        ...oldFormInitialValues,
-        venueId: queryParams.get('lieu'),
-      }))
-    }
-    setIsLoading(false)
-  }, [location.search])
 
   const handleSubmitOffer = useCallback(
     async offerValues => {
@@ -134,28 +122,21 @@ const OfferDetails = ({
     ? [OFFER_STATUS.REJECTED, OFFER_STATUS.AWAITING].includes(offerStatus)
     : false
 
-  const showSpinner = isLoading || isChildrenLoading
-
   return (
     <div className="offer-edit">
       <PageTitle title="Détails de l'offre" />
 
-      {showSpinner && <Spinner />}
-
-      {!isLoading && (
-        <div className="sidebar-container">
-          <div className="content">
-            {offer ? (
+      <div className={Object.entries(formValues).length !== 0 ? 'sidebar-container' : ''}>
+        <div className="content">
+          {offer ? (
             <>
               {needsStatusInfosMessage && <OfferStatusBanner status={offerStatus} />}
               <OfferEditionContainer
                 formValues={formValues}
-                isLoading={isChildrenLoading}
                 isUserAdmin={isUserAdmin}
                 offer={offer}
                 onSubmit={handleSubmitOffer}
                 setFormValues={setFormValues}
-                setIsLoading={setIsChildrenLoading}
                 setPreviewOfferType={setOfferType}
                 setShowThumbnailForm={setShowThumbnailForm}
                 showErrorNotification={showErrorNotification}
@@ -163,47 +144,44 @@ const OfferDetails = ({
                 userEmail={userEmail}
               />
             </>
-            ) : (
-              <OfferCreation
-                formValues={formValues}
-                initialValues={formInitialValues}
-                isLoading={isChildrenLoading}
-                isUserAdmin={isUserAdmin}
-                onSubmit={handleSubmitOffer}
-                setFormValues={setFormValues}
-                setIsLoading={setIsChildrenLoading}
-                setPreviewOfferType={setOfferType}
-                setShowThumbnailForm={setShowThumbnailForm}
-                showErrorNotification={showErrorNotification}
-                submitErrors={formErrors}
-                userEmail={userEmail}
-              />
-            )}
-          </div>
-
-          {showThumbnailForm && (
-            <div className="sidebar">
-              <div className="sidebar-wrapper">
-                <OfferThumbnail
-                  setThumbnailInfo={setThumbnailInfo}
-                  thumbnailError={thumbnailError}
-                  url={offer?.thumbUrl}
-                />
-                <OfferPreview
-                  formValues={formValues}
-                  offerType={offerType}
-                />
-              </div>
-              {offer ? (
-                <OfferPreviewLink
-                  mediationId={offer.activeMediation ? offer.activeMediation.id : null}
-                  offerId={offer.id}
-                />
-              ) : null}
-            </div>
+          ) : (
+            <OfferCreation
+              formValues={formValues}
+              initialValues={formInitialValues.current}
+              isUserAdmin={isUserAdmin}
+              onSubmit={handleSubmitOffer}
+              setFormValues={setFormValues}
+              setPreviewOfferType={setOfferType}
+              setShowThumbnailForm={setShowThumbnailForm}
+              showErrorNotification={showErrorNotification}
+              submitErrors={formErrors}
+              userEmail={userEmail}
+            />
           )}
         </div>
-      )}
+
+        {showThumbnailForm && (
+          <div className="sidebar">
+            <div className="sidebar-wrapper">
+              <OfferThumbnail
+                setThumbnailInfo={setThumbnailInfo}
+                thumbnailError={thumbnailError}
+                url={offer?.thumbUrl}
+              />
+              <OfferPreview
+                formValues={formValues}
+                offerType={offerType}
+              />
+            </div>
+            {offer ? (
+              <OfferPreviewLink
+                mediationId={offer.activeMediation ? offer.activeMediation.id : null}
+                offerId={offer.id}
+              />
+            ) : null}
+          </div>
+        )}
+      </div>
     </div>
   )
 }

@@ -9,6 +9,7 @@ import InputError from 'components/layout/inputs/Errors/InputError'
 import Select, { buildSelectOptions } from 'components/layout/inputs/Select'
 import TextareaInput from 'components/layout/inputs/TextareaInput'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
+import Spinner from 'components/layout/Spinner'
 import offerIsRefundable from 'components/pages/Offers/domain/offerIsRefundable'
 import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
 
@@ -85,6 +86,7 @@ const OfferForm = ({
   const [offerFormFields, setOfferFormFields] = useState(Object.keys(DEFAULT_FORM_VALUES))
   const [formErrors, setFormErrors] = useState(submitErrors)
   const formRef = useRef(null)
+  const [isLoading, setIsLoading] = useState(true)
 
   const handleFormUpdate = useCallback(
     newFormValues =>
@@ -108,6 +110,7 @@ const OfferForm = ({
         setReceiveNotificationEmails(true)
       }
       setFormValues({ ...DEFAULT_FORM_VALUES, ...initialValues })
+      setIsLoading(false)
     },
     [initialValues, setFormValues]
   )
@@ -203,9 +206,9 @@ const OfferForm = ({
   )
   useEffect(
     function showThumbnail() {
-      setShowThumbnailForm(formValues.type !== DEFAULT_FORM_VALUES.type)
+      setShowThumbnailForm(!isLoading && formValues.type !== DEFAULT_FORM_VALUES.type)
     },
-    [formValues.type, setShowThumbnailForm]
+    [formValues.type, isLoading, setShowThumbnailForm]
   )
   useEffect(
     function setBookingEmail() {
@@ -394,6 +397,10 @@ const OfferForm = ({
   }
 
   const isTypeOfflineButOnlyVirtualVenues = offerType?.offlineOnly && areAllVenuesVirtual
+
+  if (isLoading) {
+    return <Spinner />
+  }
 
   return (
     <form

@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { useEffect, useState } from 'react'
 
+import Spinner from 'components/layout/Spinner'
 import {
   isFieldReadOnlyForSynchronizedOffer,
   isSynchronizedOffer,
@@ -32,18 +33,17 @@ const computeNoDisabilityComplianceValue = offer => {
 const OfferEdition = ({
   formValues,
   isUserAdmin,
-  isLoading,
   offer,
   offersSearchFilters,
   onSubmit,
   setFormValues,
-  setIsLoading,
   setPreviewOfferType,
   setShowThumbnailForm,
   showErrorNotification,
   submitErrors,
   userEmail,
 }) => {
+  const [isLoading, setIsLoading] = useState(true)
   const [types, setTypes] = useState([])
   const [readOnlyFields, setReadOnlyFields] = useState([])
   const [initialValues, setInitialValues] = useState([])
@@ -92,7 +92,7 @@ const OfferEdition = ({
   }
 
   if (isLoading) {
-    return null
+    return <Spinner />
   }
 
   return (
@@ -127,7 +127,6 @@ OfferEdition.defaultProps = {
 
 OfferEdition.propTypes = {
   formValues: PropTypes.shape().isRequired,
-  isLoading: PropTypes.bool.isRequired,
   isUserAdmin: PropTypes.bool,
   offer: PropTypes.shape(),
   offersSearchFilters: PropTypes.shape({
@@ -143,7 +142,6 @@ OfferEdition.propTypes = {
   }).isRequired,
   onSubmit: PropTypes.func.isRequired,
   setFormValues: PropTypes.func.isRequired,
-  setIsLoading: PropTypes.func.isRequired,
   setPreviewOfferType: PropTypes.func.isRequired,
   setShowThumbnailForm: PropTypes.func.isRequired,
   showErrorNotification: PropTypes.func.isRequired,
