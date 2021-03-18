@@ -195,7 +195,8 @@
     }
   }
 
-  .venue-banner {
+  .venue-banner,
+  .offerer-banner {
     margin-top: rem(24px);
 
     .h-card-content {
@@ -216,6 +217,14 @@
         &:first-child {
           margin-left: 0;
         }
+      }
+    }
+  }
+
+  .offerer-banner {
+    .actions-container {
+      a {
+        max-width: rem(255px);
       }
     }
   }

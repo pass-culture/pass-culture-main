@@ -11,8 +11,9 @@ import { VenueList } from 'components/pages/Home/Venues/VenueList'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 
-import CreationLinks from './CreationLinks'
+import OffererCreationLinks from './OffererCreationLinks'
 import OffererDetails from './OffererDetails'
+import VenueCreationLinks from './VenueCreationLinks'
 
 export const CREATE_OFFERER_SELECT_ID = 'creation'
 
@@ -29,7 +30,9 @@ const Offerers = () => {
 
   useEffect(function fetchData() {
     pcapi.getAllOfferersNames().then(receivedOffererNames => {
-      setSelectedOffererId(receivedOffererNames[0].id)
+      if (receivedOffererNames.length > 0) {
+        setSelectedOffererId(receivedOffererNames[0].id)
+      }
       setOffererOptions([
         ...buildSelectOptions('id', 'name', receivedOffererNames),
         {
@@ -41,28 +44,31 @@ const Offerers = () => {
   }, [])
 
   useEffect(() => {
-    if (!selectedOffererId) return
-    pcapi
-      .getOfferer(selectedOffererId)
-      .then(receivedOfferer => {
-        setSelectedOfferer(receivedOfferer)
-        setPhysicalVenues(receivedOfferer.managedVenues.filter(venue => !venue.isVirtual))
-        const virtualVenue = receivedOfferer.managedVenues.find(venue => venue.isVirtual)
-        setVirtualVenue(virtualVenue)
-        setIsUserOffererValidated(true)
-      })
-      .catch(error => {
-        if (error.status === HTTP_STATUS.FORBIDDEN) {
-          setSelectedOfferer({ id: selectedOffererId, managedVenues: [] })
-          setPhysicalVenues(INITIAL_PHYSICAL_VENUES)
-          setVirtualVenue(INITIAL_VIRTUAL_VENUE)
-          setIsUserOffererValidated(false)
-        }
-      })
-      .finally(() => {
-        setIsLoading(false)
-      })
-  }, [setIsLoading, selectedOffererId])
+    if (selectedOffererId) {
+      pcapi
+        .getOfferer(selectedOffererId)
+        .then(receivedOfferer => {
+          setSelectedOfferer(receivedOfferer)
+          setPhysicalVenues(receivedOfferer.managedVenues.filter(venue => !venue.isVirtual))
+          const virtualVenue = receivedOfferer.managedVenues.find(venue => venue.isVirtual)
+          setVirtualVenue(virtualVenue)
+          setIsUserOffererValidated(true)
+        })
+        .catch(error => {
+          if (error.status === HTTP_STATUS.FORBIDDEN) {
+            setSelectedOfferer({ id: selectedOffererId, managedVenues: [] })
+            setPhysicalVenues(INITIAL_PHYSICAL_VENUES)
+            setVirtualVenue(INITIAL_VIRTUAL_VENUE)
+            setIsUserOffererValidated(false)
+          }
+        })
+        .finally(() => {
+          setIsLoading(false)
+        })
+    } else {
+      setIsLoading(false)
+    }
+  }, [selectedOffererId])
 
   const handleChangeOfferer = useCallback(
     event => {
@@ -88,25 +94,31 @@ const Offerers = () => {
 
   return (
     <>
-      <OffererDetails
-        handleChangeOfferer={handleChangeOfferer}
-        hasPhysicalVenues={physicalVenues.length > 0}
-        isUserOffererValidated={isUserOffererValidated}
-        offererOptions={offererOptions}
-        selectedOfferer={selectedOfferer}
-      />
+      {selectedOfferer && (
+        <>
+          <OffererDetails
+            handleChangeOfferer={handleChangeOfferer}
+            hasPhysicalVenues={physicalVenues.length > 0}
+            isUserOffererValidated={isUserOffererValidated}
+            offererOptions={offererOptions}
+            selectedOfferer={selectedOfferer}
+          />
 
-      <VenueList
-        physicalVenues={physicalVenues}
-        selectedOffererId={selectedOfferer.id}
-        virtualVenue={virtualVenue?.nOffers ? virtualVenue : null}
-      />
+          <VenueList
+            physicalVenues={physicalVenues}
+            selectedOffererId={selectedOfferer.id}
+            virtualVenue={virtualVenue?.nOffers ? virtualVenue : null}
+          />
+        </>
+      )}
+
+      {selectedOffererId === null && <OffererCreationLinks />}
 
       {isUserOffererValidated && (
-        <CreationLinks
+        <VenueCreationLinks
           hasPhysicalVenue={physicalVenues.length > 0}
-          hasVirtualOffers={virtualVenue?.nOffers > 0}
-          offererId={selectedOfferer.id}
+          hasVirtualOffers={virtualVenue && virtualVenue.nOffers > 0}
+          offererId={selectedOfferer ? selectedOfferer.id : null}
         />
       )}
     </>

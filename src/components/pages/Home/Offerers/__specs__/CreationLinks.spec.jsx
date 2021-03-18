@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { act, render, screen } from '@testing-library/react'
+import { act, render, screen, within } from '@testing-library/react'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
@@ -250,6 +250,47 @@ describe('ceationLinks', () => {
           name: 'Ajouter un lieu',
         })
       ).toBeInTheDocument()
+    })
+  })
+
+  describe('when user has no offerer', () => {
+    beforeEach(async () => {
+      pcapi.getAllOfferersNames.mockResolvedValue([])
+
+      await renderHomePage()
+    })
+
+    it('should display offerer creation links', () => {
+      expect(
+        screen.getByText(
+          'Votre précédente structure a été supprimée. Pour plus d’informations sur la suppression et vos données, veuillez contacter notre support.'
+        )
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('link', { name: 'Ajouter une nouvelle structure' })
+      ).toBeInTheDocument()
+
+      const offererBanner = screen.getByTestId('offerers-creation-links-card')
+      expect(
+        within(offererBanner).getByRole('link', { name: 'Contacter le support' })
+      ).toBeInTheDocument()
+    })
+
+    it('should not display venue creation links', () => {
+      expect(
+        screen.queryByText('Avant de créer votre première offre physique vous devez avoir un lieu')
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('link', {
+          name: 'Créer une offre numérique',
+        })
+      ).not.toBeInTheDocument()
+
+      expect(
+        screen.queryByRole('link', {
+          name: 'Ajouter un lieu',
+        })
+      ).not.toBeInTheDocument()
     })
   })
 })

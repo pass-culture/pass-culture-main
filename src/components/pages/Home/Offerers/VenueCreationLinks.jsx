@@ -6,14 +6,14 @@ import { Link } from 'react-router-dom'
 import { isAPISireneAvailable } from 'store/selectors/data/featuresSelectors'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
-const CreationLink = ({ hasPhysicalVenue, hasVirtualOffers, offererId }) => {
+const VenueCreationLinks = ({ hasPhysicalVenue, hasVirtualOffers, offererId }) => {
   const isVenueCreationAvailable = useSelector(isAPISireneAvailable)
 
   const venueCreationUrl = isVenueCreationAvailable
     ? `/structures/${offererId}/lieux/creation`
     : UNAVAILABLE_ERROR_PAGE
 
-  const renderCreationLinks = ({ insideCard }) => (
+  const renderLinks = ({ insideCard }) => (
     <div className="actions-container">
       <Link
         className={insideCard ? 'primary-link' : 'secondary-link'}
@@ -47,7 +47,7 @@ const CreationLink = ({ hasPhysicalVenue, hasVirtualOffers, offererId }) => {
           <p>
             {'Avant de créer votre première offre physique vous devez avoir un lieu'}
           </p>
-          {renderCreationLinks({ insideCard: true })}
+          {renderLinks({ insideCard: true })}
         </div>
       </div>
     </div>
@@ -57,15 +57,15 @@ const CreationLink = ({ hasPhysicalVenue, hasVirtualOffers, offererId }) => {
     <div className="venue-banner">
       {!(hasPhysicalVenue || hasVirtualOffers)
         ? renderCard()
-        : renderCreationLinks({ insideCard: false })}
+        : renderLinks({ insideCard: false })}
     </div>
   )
 }
 
-CreationLink.propTypes = {
+VenueCreationLinks.propTypes = {
   hasPhysicalVenue: PropTypes.bool.isRequired,
   hasVirtualOffers: PropTypes.bool.isRequired,
   offererId: PropTypes.string.isRequired,
 }
 
-export default CreationLink
+export default VenueCreationLinks
