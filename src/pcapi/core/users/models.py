@@ -237,11 +237,9 @@ class User(PcObject, Model, NeedsValidationMixin, VersionedMixin):
             .all()
         )
 
-    def calculate_age(self) -> Optional[int]:
-        if self.dateOfBirth is None:
-            return None
-
-        return relativedelta(date.today(), self.dateOfBirth.date()).years
+    @property
+    def age(self) -> Optional[int]:
+        return relativedelta(date.today(), self.dateOfBirth.date()).years if self.dateOfBirth is not None else None
 
     # TODO(viconnex) Remove expenses once the webapp and app native use api.get_domains_credit
     @property
@@ -301,8 +299,7 @@ class User(PcObject, Model, NeedsValidationMixin, VersionedMixin):
 
     @property
     def is_eligible(self) -> bool:
-        age = self.calculate_age()
-        return age is not None and age == constants.ELIGIBILITY_AGE
+        return self.age is not None and self.age == constants.ELIGIBILITY_AGE
 
     @property
     def eligibility_start_datetime(self) -> Optional[datetime]:

@@ -264,12 +264,12 @@ class ProdEnvironmentPasswordHasherTest:
 
 class CalculateAgeTest:
     @freeze_time("2018-06-01")
-    def test_calculate_age(self):
-        assert create_user(date_of_birth=None).calculate_age() is None
-        assert create_user(date_of_birth=datetime(2000, 6, 1)).calculate_age() == 18  # happy birthday
-        assert create_user(date_of_birth=datetime(1999, 7, 1)).calculate_age() == 18
-        assert create_user(date_of_birth=datetime(2000, 7, 1)).calculate_age() == 17
-        assert create_user(date_of_birth=datetime(1999, 5, 1)).calculate_age() == 19
+    def test_user_age(self):
+        assert create_user(date_of_birth=None).age is None
+        assert create_user(date_of_birth=datetime(2000, 6, 1, 5, 1)).age == 18  # happy birthday
+        assert create_user(date_of_birth=datetime(1999, 7, 1)).age == 18
+        assert create_user(date_of_birth=datetime(2000, 7, 1)).age == 17
+        assert create_user(date_of_birth=datetime(1999, 5, 1)).age == 19
 
     def test_eligibility_start_end_datetime(self):
         assert create_user(date_of_birth=None).eligibility_start_datetime is None

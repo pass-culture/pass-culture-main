@@ -113,8 +113,7 @@ def create_account(
         notificationSubscriptions=asdict(NotificationSubscriptions(marketing_email=marketing_email_subscription)),
     )
 
-    age = user.calculate_age()
-    if not age or age < constants.ACCOUNT_CREATION_MINIMUM_AGE:
+    if not user.age or user.age < constants.ACCOUNT_CREATION_MINIMUM_AGE:
         raise exceptions.UnderAgeUserException()
 
     user.setPassword(password)
