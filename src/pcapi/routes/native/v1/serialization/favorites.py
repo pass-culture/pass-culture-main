@@ -8,6 +8,7 @@ from pydantic.class_validators import validator
 from pcapi.models.offer_type import CategoryNameEnum
 from pcapi.models.offer_type import CategoryType
 from pcapi.routes.native.utils import convert_to_cent
+from pcapi.utils.date import format_into_utc_date
 
 from . import BaseModel
 
@@ -75,6 +76,9 @@ class PaginatedFavoritesResponse(BaseModel):
     page: int
     nbFavorites: int
     favorites: List[FavoriteResponse]
+
+    class Config:
+        json_encoders = {datetime: format_into_utc_date}
 
 
 class FavoriteRequest(BaseModel):

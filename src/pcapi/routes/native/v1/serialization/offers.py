@@ -22,6 +22,7 @@ from pcapi.models.offer_type import CategoryType
 from pcapi.routes.native.utils import convert_to_cent
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
 from pcapi.serialization.utils import to_camel
+from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.logger import logger
 
 from . import BaseModel
@@ -191,3 +192,4 @@ class OfferResponse(BaseModel):
         orm_mode = True
         alias_generator = to_camel
         allow_population_by_field_name = True
+        json_encoders = {datetime: format_into_utc_date}

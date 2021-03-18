@@ -114,7 +114,7 @@ class GetBookingsTest:
             "cancellationDate": None,
             "cancellationReason": None,
             "confirmationDate": None,
-            "dateUsed": "2021-03-02T00:00:00",
+            "dateUsed": "2021-03-02T00:00:00Z",
             "expirationDate": None,
             "quantity": 1,
             "id": used2.id,

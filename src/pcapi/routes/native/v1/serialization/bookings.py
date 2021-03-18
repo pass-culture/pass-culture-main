@@ -13,6 +13,7 @@ from pcapi.routes.native.v1.serialization.common_models import Coordinates
 from pcapi.routes.native.v1.serialization.offers import OfferCategoryResponse
 from pcapi.routes.native.v1.serialization.offers import get_serialized_offer_category
 from pcapi.serialization.utils import to_camel
+from pcapi.utils.date import format_into_utc_date
 
 from . import BaseModel
 
@@ -99,3 +100,6 @@ class BookingReponse(BaseModel):
 class BookingsResponse(BaseModel):
     ended_bookings: List[BookingReponse]
     ongoing_bookings: List[BookingReponse]
+
+    class Config:
+        json_encoders = {datetime: format_into_utc_date}

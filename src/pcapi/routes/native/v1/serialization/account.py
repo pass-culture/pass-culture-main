@@ -16,6 +16,7 @@ from pcapi.core.users.models import VOID_FIRST_NAME
 from pcapi.core.users.models import VOID_PUBLIC_NAME
 from pcapi.routes.native.utils import convert_to_cent
 from pcapi.serialization.utils import to_camel
+from pcapi.utils.date import format_into_utc_date
 
 from . import BaseModel
 
@@ -103,6 +104,7 @@ class UserProfileResponse(BaseModel):
         orm_mode = True
         alias_generator = to_camel
         allow_population_by_field_name = True
+        json_encoders = {datetime.datetime: format_into_utc_date}
 
     @validator("publicName", pre=True)
     def format_public_name(cls, publicName: str) -> Optional[str]:  # pylint: disable=no-self-argument

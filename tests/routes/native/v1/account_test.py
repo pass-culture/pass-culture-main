@@ -95,9 +95,9 @@ class AccountTest:
                 "digital": {"initial": 20000, "remaining": 20000},
                 "physical": {"initial": 20000, "remaining": 7655},
             },
-            "dateOfBirth": "2000-01-01T00:00:00",
+            "dateOfBirth": "2000-01-01T00:00:00Z",
             "depositVersion": 1,
-            "depositExpirationDate": "2040-01-01T00:00:00",
+            "depositExpirationDate": "2040-01-01T00:00:00Z",
             "expenses": [
                 {"current": 12345, "domain": "all", "limit": 50000},
                 {"current": 0, "domain": "digital", "limit": 20000},

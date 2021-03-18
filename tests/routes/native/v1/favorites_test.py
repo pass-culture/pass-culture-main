@@ -102,17 +102,17 @@ class Get:
             assert favorites[5]["offer"]["price"] is None
             assert favorites[5]["offer"]["startPrice"] == 2000
             assert favorites[5]["offer"]["date"] is None
-            assert favorites[5]["offer"]["startDate"] == today.isoformat()
+            assert favorites[5]["offer"]["startDate"] == today.isoformat() + "Z"
             assert favorites[5]["offer"]["image"]["credit"] == "Pour hurlevent !"
             assert favorites[5]["offer"]["image"]["url"] == "http://localhost/storage/thumbs/mediations/%s" % (
                 humanize(offer1.activeMediation.id)
             )
 
-            # Only stock2b is valide and product has a thumb
+            # Only stock2b is valid and product has a thumb
             assert favorites[4]["id"] == favorite2.id
             assert favorites[4]["offer"]["price"] == 5000
             assert favorites[4]["offer"]["startPrice"] is None
-            assert favorites[4]["offer"]["date"] == tomorow.isoformat()
+            assert favorites[4]["offer"]["date"] == tomorow.isoformat() + "Z"
             assert favorites[4]["offer"]["startDate"] is None
             assert favorites[4]["offer"]["image"]["credit"] is None
             assert favorites[4]["offer"]["image"]["url"] == "http://localhost/storage/thumbs/products/%s" % (
@@ -147,7 +147,7 @@ class Get:
             assert favorites[0]["id"] == favorite6.id
             assert favorites[0]["offer"]["price"] == 3000
             assert favorites[0]["offer"]["startPrice"] is None
-            assert favorites[0]["offer"]["date"] == tomorow.isoformat()
+            assert favorites[0]["offer"]["date"] == tomorow.isoformat() + "Z"
             assert favorites[0]["offer"]["startDate"] is None
             assert favorites[0]["offer"]["image"] is None
 
