@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from sqlalchemy import BigInteger
 from sqlalchemy import Boolean
@@ -125,19 +126,19 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ve
 
     dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow)
 
-    def store_departement_code(self):
+    def store_departement_code(self) -> None:
         self.departementCode = PostalCode(self.postalCode).get_departement_code()
 
     @property
-    def bic(self):
+    def bic(self) -> Optional[str]:
         return self.bankInformation.bic if self.bankInformation else None
 
     @property
-    def iban(self):
+    def iban(self) -> Optional[str]:
         return self.bankInformation.iban if self.bankInformation else None
 
     @property
-    def demarchesSimplifieesApplicationId(self):
+    def demarchesSimplifieesApplicationId(self) -> Optional[int]:
         if not self.bankInformation:
             return None
 
@@ -151,11 +152,11 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ve
         return self.bankInformation.applicationId
 
     @property
-    def nOffers(self):
+    def nOffers(self) -> int:
         return Offer.query.filter(Offer.venueId == self.id).with_entities(Offer.id).count()
 
     @hybrid_property
-    def timezone(self):
+    def timezone(self) -> str:
         if self.departementCode is None:
             return get_postal_code_timezone(self.managingOfferer.postalCode)
         return get_department_timezone(self.departementCode)
