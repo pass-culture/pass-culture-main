@@ -1,3 +1,4 @@
+from operator import or_
 from typing import List
 from typing import Optional
 
@@ -20,7 +21,7 @@ def get_providers_enabled_for_pro_excluding_specific_provider(allocine_local_cla
     return (
         Provider.query.filter_by(isActive=True)
         .filter_by(enabledForPro=True)
-        .filter(Provider.localClass != allocine_local_class)
+        .filter(or_(Provider.localClass != allocine_local_class, Provider.localClass.is_(None)))
         .order_by(Provider.name)
         .all()
     )

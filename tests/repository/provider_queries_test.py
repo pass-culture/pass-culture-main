@@ -1,5 +1,6 @@
 import pytest
 
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.model_creators.generic_creators import create_provider
 from pcapi.repository import repository
 from pcapi.repository.provider_queries import get_enabled_providers_for_pro
@@ -12,43 +13,43 @@ class GetEnabledProvidersForProTest:
     @pytest.mark.usefixtures("db_session")
     def test_get_enabled_providers_for_pro(self, app):
         # Given
-        provider1 = create_provider(local_class="OpenAgenda", is_active=False, is_enable_for_pro=False)
-        provider2 = create_provider(local_class="TiteLive", is_active=True, is_enable_for_pro=True)
-        repository.save(provider1, provider2)
+        offerers_factories.ProviderFactory(name="NotEnabledProvider", isActive=True, enabledForPro=False)
+        offerers_factories.ProviderFactory(name="InactiveProvider", isActive=False, enabledForPro=True)
+        offerers_factories.ProviderFactory(name="InactiveProvider2", isActive=False, enabledForPro=False)
+        provider1 = offerers_factories.ProviderFactory(name="Provider1", isActive=True, enabledForPro=True)
+
+        offerers_factories.APIProviderFactory(name="NotEnabledAPIProvider", isActive=True, enabledForPro=False)
+        offerers_factories.APIProviderFactory(name="InactiveAPIProvider", isActive=False, enabledForPro=True)
+        offerers_factories.APIProviderFactory(name="InactiveAPIProvider2", isActive=False, enabledForPro=False)
+        provider2 = offerers_factories.APIProviderFactory(name="Provider2", isActive=True, enabledForPro=True)
 
         # When
         enabled_providers = get_enabled_providers_for_pro()
 
         # Then
-        assert enabled_providers == [provider2]
+        assert enabled_providers == [provider1, provider2]
 
 
 class GetProvidersEnabledForProExcludingSpecificProviderTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_get_actives_and_enabled_providers_for_pro(self, app):
         # Given
-        provider1 = create_provider(local_class="OpenAgenda", is_active=False, is_enable_for_pro=False)
-        provider2 = create_provider(local_class="TiteLive", is_active=True, is_enable_for_pro=True)
-        repository.save(provider1, provider2)
+        offerers_factories.ProviderFactory(
+            name="AllocineProvider", localClass="AllocineStocks", isActive=True, enabledForPro=True
+        )
+        offerers_factories.ProviderFactory(name="NotEnabledProvider", isActive=True, enabledForPro=False)
+        offerers_factories.ProviderFactory(name="InactiveProvider", isActive=False, enabledForPro=True)
+        provider1 = offerers_factories.ProviderFactory(name="Provider1", isActive=True, enabledForPro=True)
+
+        offerers_factories.APIProviderFactory(name="NotEnabledAPIProvider", isActive=True, enabledForPro=False)
+        offerers_factories.APIProviderFactory(name="InactiveAPIProvider", isActive=False, enabledForPro=True)
+        provider2 = offerers_factories.APIProviderFactory(name="Provider2", isActive=True, enabledForPro=True)
 
         # When
         providers = get_providers_enabled_for_pro_excluding_specific_provider("AllocineStocks")
 
         # Then
-        assert providers == [provider2]
-
-    @pytest.mark.usefixtures("db_session")
-    def test_should_return_all_providers_actives_and_enabled_for_pro_except_excluded_provider(self, app):
-        # Given
-        provider1 = create_provider(local_class="OpenAgenda", is_active=True, is_enable_for_pro=True)
-        provider2 = create_provider(local_class="TiteLive", is_active=True, is_enable_for_pro=True)
-        repository.save(provider1, provider2)
-
-        # When
-        providers = get_providers_enabled_for_pro_excluding_specific_provider("OpenAgenda")
-
-        # Then
-        assert providers == [provider2]
+        assert providers == [provider1, provider2]
 
 
 class GetProviderEnabledForProByIdTest:
