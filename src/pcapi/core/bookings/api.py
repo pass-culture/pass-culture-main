@@ -15,21 +15,21 @@ from pcapi.core.bookings import conf
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.repository import generate_booking_token
-from pcapi.core.offers.models import Stock
+from pcapi.core.offers import repository as offers_repository
 from pcapi.core.users.models import User
 from pcapi.domain import user_emails
 from pcapi.models.feature import FeatureToggle
 from pcapi.notifications.push.transactional_notifications import get_notification_data_on_booking_cancellation
 from pcapi.repository import feature_queries
 from pcapi.repository import repository
-
-
-logger = logging.getLogger(__name__)
+from pcapi.repository import transaction
 from pcapi.utils.mailing import MailServiceException
 from pcapi.workers.push_notification_job import send_transactional_notification_job
 
 from . import validation
 
+
+logger = logging.getLogger(__name__)
 
 QR_CODE_PASS_CULTURE_VERSION = "v2"
 QR_CODE_VERSION = 2
@@ -39,40 +39,46 @@ QR_CODE_BOX_BORDER = 1
 
 def book_offer(
     beneficiary: User,
-    stock: Stock,
+    stock_id: int,
     quantity: int,
 ) -> Booking:
     """Return a booking or raise an exception if it's not possible."""
-    validation.check_can_book_free_offer(beneficiary, stock)
-    validation.check_offer_already_booked(beneficiary, stock.offer)
-    validation.check_quantity(stock.offer, quantity)
-    validation.check_stock_is_bookable(stock)
-    total_amount = quantity * stock.price
-    validation.check_expenses_limits(beneficiary, total_amount, stock.offer)
+    # The call to transaction here ensures we free the FOR UPDATE lock
+    # on the stock if validation issues an exception
+    with transaction():
+        stock = offers_repository.get_and_lock_stock(stock_id=stock_id)
+        validation.check_can_book_free_offer(beneficiary, stock)
+        validation.check_offer_already_booked(beneficiary, stock.offer)
+        validation.check_quantity(stock.offer, quantity)
+        validation.check_stock_is_bookable(stock)
+        total_amount = quantity * stock.price
+        validation.check_expenses_limits(beneficiary, total_amount, stock.offer)
 
-    # FIXME (dbaty, 2020-10-20): if we directly set relations (for
-    # example with `booking.user = beneficiary`) instead of foreign keys,
-    # the session tries to add the object when `get_user_expenses()`
-    # is called because autoflush is enabled. As such, the PostgreSQL
-    # exceptions (tooManyBookings and insufficientFunds) may raise at
-    # this point and will bubble up. If we want them to be caught, we
-    # have to set foreign keys, so that the session is NOT autoflushed
-    # in `get_user_expenses` and is only committed in `repository.save()`
-    # where exceptions are caught. Since we are using flask-sqlalchemy,
-    # I don't think that we should use autoflush, nor should we use
-    # the `pcapi.repository.repository` module.
-    booking = Booking(
-        userId=beneficiary.id,
-        stockId=stock.id,
-        amount=stock.price,
-        quantity=quantity,
-        token=generate_booking_token(),
-    )
+        # FIXME (dbaty, 2020-10-20): if we directly set relations (for
+        # example with `booking.user = beneficiary`) instead of foreign keys,
+        # the session tries to add the object when `get_user_expenses()`
+        # is called because autoflush is enabled. As such, the PostgreSQL
+        # exceptions (tooManyBookings and insufficientFunds) may raise at
+        # this point and will bubble up. If we want them to be caught, we
+        # have to set foreign keys, so that the session is NOT autoflushed
+        # in `get_user_expenses` and is only committed in `repository.save()`
+        # where exceptions are caught. Since we are using flask-sqlalchemy,
+        # I don't think that we should use autoflush, nor should we use
+        # the `pcapi.repository.repository` module.
+        booking = Booking(
+            userId=beneficiary.id,
+            stockId=stock.id,
+            amount=stock.price,
+            quantity=quantity,
+            token=generate_booking_token(),
+        )
 
-    booking.dateCreated = datetime.datetime.utcnow()
-    booking.confirmationDate = compute_confirmation_date(stock.beginningDatetime, booking.dateCreated)
+        booking.dateCreated = datetime.datetime.utcnow()
+        booking.confirmationDate = compute_confirmation_date(stock.beginningDatetime, booking.dateCreated)
 
-    repository.save(booking)
+        stock.dnBookedQuantity += booking.quantity
+
+        repository.save(booking, stock)
 
     try:
         user_emails.send_booking_recap_emails(booking)

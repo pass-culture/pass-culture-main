@@ -25,9 +25,9 @@ class BookOfferTest:
     @mock.patch("pcapi.connectors.redis.add_offer_id")
     def test_create_booking(self, mocked_add_offer_id):
         user = users_factories.UserFactory()
-        stock = offers_factories.StockFactory(price=10)
+        stock = offers_factories.StockFactory(price=10, dnBookedQuantity=5)
 
-        booking = api.book_offer(beneficiary=user, stock=stock, quantity=1)
+        booking = api.book_offer(beneficiary=user, stock_id=stock.id, quantity=1)
 
         assert booking.quantity == 1
         assert booking.amount == 10
@@ -36,6 +36,7 @@ class BookOfferTest:
         assert not booking.isCancelled
         assert not booking.isUsed
         assert booking.confirmationDate is None
+        assert stock.dnBookedQuantity == 6
 
         mocked_add_offer_id.assert_called_once_with(client=app.redis_client, offer_id=stock.offer.id)
 
@@ -48,13 +49,14 @@ class BookOfferTest:
     def test_create_event_booking(self):
         ten_days_from_now = datetime.utcnow() + timedelta(days=10)
         user = users_factories.UserFactory()
-        stock = offers_factories.StockFactory(price=10, beginningDatetime=ten_days_from_now)
+        stock = offers_factories.StockFactory(price=10, beginningDatetime=ten_days_from_now, dnBookedQuantity=5)
 
-        booking = api.book_offer(beneficiary=user, stock=stock, quantity=1)
+        booking = api.book_offer(beneficiary=user, stock_id=stock.id, quantity=1)
         two_days_after_booking = booking.dateCreated + timedelta(days=2)
         assert booking.quantity == 1
         assert booking.amount == 10
         assert booking.stock == stock
+        assert stock.dnBookedQuantity == 6
         assert len(booking.token) == 6
         assert not booking.isCancelled
         assert not booking.isUsed
@@ -66,7 +68,7 @@ class BookOfferTest:
         user = users_factories.UserFactory()
         stock = offers_factories.StockFactory()
 
-        api.book_offer(beneficiary=user, stock=stock, quantity=1)
+        api.book_offer(beneficiary=user, stock_id=stock.id, quantity=1)
         mocked_add_offer_id.assert_not_called()
 
     def test_raise_if_is_admin(self):
@@ -74,21 +76,21 @@ class BookOfferTest:
         stock = offers_factories.StockFactory()
 
         with pytest.raises(exceptions.UserHasInsufficientFunds):
-            api.book_offer(beneficiary=user, stock=stock, quantity=1)
+            api.book_offer(beneficiary=user, stock_id=stock.id, quantity=1)
 
     def test_raise_if_pro_user(self):
         user = users_factories.UserFactory(isBeneficiary=False, isAdmin=False)
         stock = offers_factories.StockFactory()
 
         with pytest.raises(exceptions.UserHasInsufficientFunds):
-            api.book_offer(beneficiary=user, stock=stock, quantity=1)
+            api.book_offer(beneficiary=user, stock_id=stock.id, quantity=1)
 
     def test_raise_if_no_more_stock(self):
         booking = factories.BookingFactory(stock__quantity=1)
         with pytest.raises(exceptions.StockIsNotBookable):
             api.book_offer(
                 beneficiary=users_factories.UserFactory(),
-                stock=booking.stock,
+                stock_id=booking.stock.id,
                 quantity=1,
             )
 
@@ -97,7 +99,7 @@ class BookOfferTest:
         with pytest.raises(exceptions.OfferIsAlreadyBooked):
             api.book_offer(
                 beneficiary=booking.user,
-                stock=booking.stock,
+                stock_id=booking.stock.id,
                 quantity=1,
             )
 
@@ -106,7 +108,7 @@ class BookOfferTest:
         with pytest.raises(exceptions.UserHasInsufficientFunds):
             api.book_offer(
                 beneficiary=users_factories.UserFactory(),
-                stock=stock,
+                stock_id=stock.id,
                 quantity=1,
             )
 
@@ -114,7 +116,7 @@ class BookOfferTest:
         with pytest.raises(exceptions.QuantityIsInvalid):
             api.book_offer(
                 beneficiary=users_factories.UserFactory(),
-                stock=offers_factories.StockFactory(),
+                stock_id=offers_factories.StockFactory().id,
                 quantity=2,
             )
 

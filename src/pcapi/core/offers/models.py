@@ -24,6 +24,7 @@ from sqlalchemy import and_
 from sqlalchemy import event
 from sqlalchemy import false
 from sqlalchemy import func
+from sqlalchemy import text
 from sqlalchemy.event import listens_for
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
@@ -91,6 +92,8 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin, VersionedMixin
     quantity = Column(Integer, nullable=True)
 
     bookingLimitDatetime = Column(DateTime, nullable=True)
+
+    dnBookedQuantity = Column(BigInteger, nullable=False, server_default=text("0"))
 
     @property
     def isBookable(self):

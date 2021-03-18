@@ -46,3 +46,7 @@ class MissingImage(ImageValidationError):
 
 class ThumbnailStorageError(ApiErrors):
     status_code = 500
+
+
+class StockDoesNotExist(ApiErrors):
+    status_code = 400

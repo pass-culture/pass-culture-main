@@ -7,6 +7,7 @@ import pcapi.core.bookings.api as bookings_api
 import pcapi.core.bookings.exceptions as exceptions
 from pcapi.core.bookings.models import Booking
 from pcapi.core.offerers.models import Venue
+from pcapi.core.offers.exceptions import StockDoesNotExist
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
@@ -37,9 +38,12 @@ def book_offer(user: User, body: BookOfferRequest) -> BookOfferResponse:
     try:
         booking = bookings_api.book_offer(
             beneficiary=user,
-            stock=stock,
+            stock_id=body.stock_id,
             quantity=body.quantity,
         )
+
+    except StockDoesNotExist:
+        raise ApiErrors({"stock": "stock introuvable"}, status_code=400)
 
     except (
         exceptions.UserHasInsufficientFunds,

@@ -1,12 +1,13 @@
+from flask import abort
 from flask import jsonify
 from flask_login import current_user
 from flask_login import login_required
 
 import pcapi.core.bookings.api as bookings_api
 from pcapi.core.bookings.models import Booking
+from pcapi.core.offers.exceptions import StockDoesNotExist
 from pcapi.flask_app import private_api
 from pcapi.infrastructure.container import get_bookings_for_beneficiary
-from pcapi.models import Stock
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
 from pcapi.routes.serialization import as_dict
@@ -42,13 +43,17 @@ def get_booking(booking_id: int):
 @expect_json_data
 @spectree_serialize(response_model=PostBookingResponseModel, on_success_status=201)
 def create_booking(body: PostBookingBodyModel) -> PostBookingResponseModel:
-    stock = Stock.query.filter_by(id=dehumanize(body.stock_id)).first_or_404() if body.stock_id else None
+    if not body.stock_id:
+        abort(404)
 
-    booking = bookings_api.book_offer(
-        beneficiary=current_user,
-        stock=stock,
-        quantity=body.quantity,
-    )
+    try:
+        booking = bookings_api.book_offer(
+            beneficiary=current_user,
+            stock_id=dehumanize(body.stock_id),
+            quantity=body.quantity,
+        )
+    except StockDoesNotExist:
+        abort(404)
 
     return PostBookingResponseModel(**serialize_booking_minimal(booking))
 

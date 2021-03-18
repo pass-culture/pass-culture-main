@@ -15,6 +15,7 @@ from sqlalchemy.sql.functions import coalesce
 
 from pcapi.core.bookings.models import Booking
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offers.exceptions import StockDoesNotExist
 from pcapi.core.users.models import User
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
 from pcapi.infrastructure.repository.pro_offers.paginated_offers_recap_domain_converter import to_domain
@@ -275,3 +276,20 @@ def get_sold_out_offers_count_for_venue(venue_id) -> int:
     query = Offer.query.filter(Offer.venueId == venue_id)
     query = _filter_by_status(query, datetime_now, SOLD_OUT_STATUS)
     return query.distinct(Offer.id).count()
+
+
+def get_and_lock_stock(stock_id: int) -> Stock:
+    """Returns `stock_id` stock with a FOR UPDATE lock
+    Raises StockDoesNotExist if no stock is found.
+    WARNING: MAKE SURE YOU FREE THE LOCK (with COMMIT or ROLLBACK) and don't hold it longer than
+    strictly necessary.
+    """
+    # Use `with_for_update()` to make sure we lock the stock while perfoming
+    # the booking checks and update the `dnBookedQuantity`
+    # This is required to prevent bugs due to concurent acces
+    # Also call `populate_existing()` to make sure we don't use something
+    # older from the SQLAlchemy's session.
+    stock = Stock.query.filter_by(id=stock_id).populate_existing().with_for_update().one_or_none()
+    if not stock:
+        raise StockDoesNotExist()
+    return stock
