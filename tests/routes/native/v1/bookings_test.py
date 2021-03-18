@@ -30,10 +30,11 @@ class BookOfferTest:
 
         response = test_client.post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
 
-        assert response.status_code == 204
+        assert response.status_code == 200
 
         booking = Booking.query.filter(Booking.stockId == stock.id).first()
         assert booking.userId == user.id
+        assert response.json["bookingId"] == booking.id
 
     def test_no_stock_found(self, app):
         users_factories.UserFactory(email=self.identifier)

@@ -25,6 +25,10 @@ class BookOfferRequest(BaseModel):
         alias_generator = to_camel
 
 
+class BookOfferResponse(BaseModel):
+    bookingId: int
+
+
 class BookingVenueResponse(BaseModel):
     id: int
     city: Optional[str]

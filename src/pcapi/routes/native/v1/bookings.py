@@ -12,6 +12,7 @@ from pcapi.core.users.models import User
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.native.security import authenticated_user_required
 from pcapi.routes.native.v1.serialization.bookings import BookOfferRequest
+from pcapi.routes.native.v1.serialization.bookings import BookOfferResponse
 from pcapi.routes.native.v1.serialization.bookings import BookingReponse
 from pcapi.routes.native.v1.serialization.bookings import BookingsResponse
 from pcapi.serialization.decorator import spectree_serialize
@@ -21,15 +22,15 @@ from . import blueprint
 
 @blueprint.native_v1.route("/book_offer", methods=["POST"])  # TODO(viconnex): remove route when frontend uses /bookings
 @blueprint.native_v1.route("/bookings", methods=["POST"])
-@spectree_serialize(api=blueprint.api, on_success_status=204, on_error_statuses=[400])
+@spectree_serialize(api=blueprint.api, response_model=BookOfferResponse, on_error_statuses=[400])
 @authenticated_user_required
-def book_offer(user: User, body: BookOfferRequest) -> None:
+def book_offer(user: User, body: BookOfferRequest) -> BookOfferResponse:
     stock = Stock.query.get(body.stock_id)
     if not stock:
         raise ApiErrors({"stock": "stock introuvable"}, status_code=400)
 
     try:
-        bookings_api.book_offer(
+        booking = bookings_api.book_offer(
             beneficiary=user,
             stock=stock,
             quantity=body.quantity,
@@ -47,6 +48,8 @@ def book_offer(user: User, body: BookOfferRequest) -> None:
 
     except exceptions.StockIsNotBookable:
         raise ApiErrors({"code": "STOCK_NOT_BOOKABLE"})
+
+    return BookOfferResponse(bookingId=booking.id)
 
 
 @blueprint.native_v1.route("/bookings", methods=["GET"])
