@@ -3,7 +3,6 @@ from sqlalchemy.orm import query
 from sqlalchemy.sql.functions import func
 from wtforms import Form
 from wtforms import SelectField
-from wtforms import validators
 from wtforms.validators import DataRequired
 
 from pcapi import settings
@@ -63,7 +62,6 @@ class BeneficiaryUserView(SuspensionMixin, BaseAdminView):
         "departementCode",
         "postalCode",
         "phoneNumber",
-        "isBeneficiary",
     ]
 
     form_args = dict(
@@ -89,11 +87,9 @@ class BeneficiaryUserView(SuspensionMixin, BaseAdminView):
 
     def on_model_change(self, form: Form, model: User, is_created: bool) -> None:
         model.publicName = f"{model.firstName} {model.lastName}"
-        # If a user is an admin, he shouldn't be able to be beneficiary
-        if form.isBeneficiary.data and model.isAdmin:
-            raise validators.ValidationError("Un admin ne peut pas être bénéficiaire")
 
         if is_created:
+            model.isBeneficiary = True
             # This is to prevent a circulary import dependency
             from pcapi.core.users.api import fulfill_beneficiary_data
 

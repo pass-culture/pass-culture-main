@@ -27,7 +27,6 @@ class BeneficiaryUserViewTest:
             dateOfBirth="2002-07-13 10:05:00",
             departementCode="93",
             postalCode="93000",
-            isBeneficiary="y",
             phoneNumber="0601020304",
             depositVersion="1",
             csrf_token="token",
@@ -45,7 +44,6 @@ class BeneficiaryUserViewTest:
         assert user_created.dateOfBirth == datetime(2002, 7, 13, 10, 5)
         assert user_created.departementCode == "93"
         assert user_created.postalCode == "93000"
-        assert user_created.isBeneficiary is True
         assert user_created.phoneNumber == "0601020304"
         assert len(user_created.deposits) == 1
         assert user_created.deposit.source == "pass-culture-admin"
@@ -77,7 +75,6 @@ class BeneficiaryUserViewTest:
             dateOfBirth="2002-07-13 10:05:00",
             departementCode="93",
             postalCode="93000",
-            isBeneficiary="y",
             phoneNumber="0601020304",
             depositVersion="2",
         )
@@ -104,7 +101,6 @@ class BeneficiaryUserViewTest:
             dateOfBirth="2002-07-13 10:05:00",
             departementCode="93",
             postalCode="93000",
-            isBeneficiary="y",
             phoneNumber="0601020304",
             depositVersion="2",
         )
@@ -142,7 +138,6 @@ class BeneficiaryUserViewTest:
             dateOfBirth="2002-07-13 10:05:00",
             departementCode="93",
             postalCode="93000",
-            isBeneficiary="y",
         )
 
         client = TestClient(app.test_client()).with_auth("user@example.com")
@@ -232,7 +227,6 @@ class BeneficiaryUserViewTest:
             dateOfBirth=user_to_edit.dateOfBirth,
             departementCode=user_to_edit.departementCode,
             postalCode=user_to_edit.postalCode,
-            isBeneficiary=user_to_edit.isBeneficiary,
         )
 
         client = TestClient(app.test_client()).with_auth("user@example.com")
