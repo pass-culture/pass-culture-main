@@ -38,10 +38,8 @@ const HeaderV2 = ({ isStyleguideActive }) => {
             role="menuitem"
             to="/accueil"
           >
-            <HomeSvg />
-            <span>
-              {'Accueil'}
-            </span>
+            <HomeSvg aria-hidden />
+            {'Accueil'}
           </NavLink>
 
           <NavLink
@@ -49,10 +47,8 @@ const HeaderV2 = ({ isStyleguideActive }) => {
             role="menuitem"
             to="/guichet"
           >
-            <CounterSvg />
-            <span>
-              {'Guichet'}
-            </span>
+            <CounterSvg aria-hidden />
+            {'Guichet'}
           </NavLink>
 
           <NavLink
@@ -60,10 +56,8 @@ const HeaderV2 = ({ isStyleguideActive }) => {
             role="menuitem"
             to="/offres"
           >
-            <OffersSvg />
-            <span>
-              {'Offres'}
-            </span>
+            <OffersSvg aria-hidden />
+            {'Offres'}
           </NavLink>
 
           <NavLink
@@ -71,10 +65,8 @@ const HeaderV2 = ({ isStyleguideActive }) => {
             role="menuitem"
             to="/reservations"
           >
-            <BookingsSvg />
-            <span>
-              {'Réservations'}
-            </span>
+            <BookingsSvg aria-hidden />
+            {'Réservations'}
           </NavLink>
 
           <NavLink
@@ -82,10 +74,8 @@ const HeaderV2 = ({ isStyleguideActive }) => {
             role="menuitem"
             to="/remboursements"
           >
-            <RefundsSvg />
-            <span>
-              {'Remboursements'}
-            </span>
+            <RefundsSvg aria-hidden />
+            {'Remboursements'}
           </NavLink>
 
           <div className="separator" />
