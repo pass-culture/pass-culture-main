@@ -115,6 +115,7 @@ class GetBookingsTest:
             "confirmationDate": None,
             "dateUsed": "2021-03-02T00:00:00",
             "expirationDate": None,
+            "quantity": 1,
             "id": used2.id,
             "stock": {
                 "beginningDatetime": None,
