@@ -299,14 +299,14 @@ class Offers extends PureComponent {
 
   changePeriodBeginningDateValue = periodBeginningDate => {
     const dateToFilter = periodBeginningDate
-      ? periodBeginningDate.format()
+      ? periodBeginningDate.utc(true).startOf('day').format()
       : DEFAULT_SEARCH_FILTERS.periodBeginningDate
     this.setSearchFilters({ periodBeginningDate: dateToFilter })
   }
 
   changePeriodEndingDateValue = periodEndingDate => {
     const dateToFilter = periodEndingDate
-      ? periodEndingDate.endOf('day').format()
+      ? periodEndingDate.utc(true).endOf('day').format()
       : DEFAULT_SEARCH_FILTERS.periodEndingDate
     this.setSearchFilters({ periodEndingDate: dateToFilter })
   }
@@ -319,10 +319,10 @@ class Offers extends PureComponent {
     const { searchFilters, typeOptions, venueOptions, offerer } = this.state
     const formattedTodayDate = moment(new Date().toISOString())
     const formattedPeriodBeginningDate = searchFilters.periodBeginningDate
-      ? moment(searchFilters.periodBeginningDate)
+      ? moment.utc(searchFilters.periodBeginningDate).local(true)
       : undefined
     const formattedPeriodEndingDate = searchFilters.periodEndingDate
-      ? moment(searchFilters.periodEndingDate)
+      ? moment.utc(searchFilters.periodEndingDate).local(true)
       : undefined
 
     return (
