@@ -1,7 +1,7 @@
-import * as PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 
+import useFrenchQuery from 'components/hooks/useFrenchQuery'
 import { buildSelectOptions } from 'components/layout/inputs/Select'
 import Spinner from 'components/layout/Spinner'
 import {
@@ -18,7 +18,7 @@ import VenueCreationLinks from './VenueCreationLinks'
 
 export const CREATE_OFFERER_SELECT_ID = 'creation'
 
-const Offerers = ({ query }) => {
+const Offerers = () => {
   const [offererOptions, setOffererOptions] = useState([])
   const [selectedOffererId, setSelectedOffererId] = useState(null)
   const [selectedOfferer, setSelectedOfferer] = useState(null)
@@ -28,10 +28,11 @@ const Offerers = ({ query }) => {
   const [isUserOffererValidated, setIsUserOffererValidated] = useState(false)
 
   const history = useHistory()
+  const [query, setQuery] = useFrenchQuery()
 
   useEffect(
     function fetchData() {
-      const { offererId } = query.translate()
+      const { offererId } = query
       pcapi.getAllOfferersNames().then(receivedOffererNames => {
         if (receivedOffererNames.length > 0) {
           setSelectedOffererId(offererId || receivedOffererNames[0].id)
@@ -82,10 +83,10 @@ const Offerers = ({ query }) => {
         history.push('/structures/creation')
       } else if (newOffererId !== selectedOfferer.id) {
         setSelectedOffererId(newOffererId)
-        query.change({ offererId: newOffererId })
+        setQuery({ offererId: newOffererId })
       }
     },
-    [history, query, selectedOfferer]
+    [history, selectedOfferer, setQuery]
   )
 
   if (isLoading) {
@@ -129,13 +130,6 @@ const Offerers = ({ query }) => {
       )}
     </>
   )
-}
-
-Offerers.propTypes = {
-  query: PropTypes.shape({
-    change: PropTypes.func.isRequired,
-    translate: PropTypes.func.isRequired,
-  }).isRequired,
 }
 
 export default Offerers

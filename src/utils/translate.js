@@ -94,7 +94,7 @@ export const mapBrowserToApi = {
   categorie: 'typeId',
   de: 'from',
   lieu: 'venueId',
-  ['mots-cles']: 'keywords',
+  'mots-cles': 'keywords',
   nom: 'name',
   remboursements: 'reimbursements',
   reservations: 'bookings',
@@ -110,8 +110,8 @@ export const mapBrowserToApi = {
   creation: 'creationMode',
   manuelle: 'manual',
   importee: 'imported',
-  [`periode-evenement-debut`]: 'periodBeginningDate',
-  [`periode-evenement-fin`]: 'periodEndingDate',
+  'periode-evenement-debut': 'periodBeginningDate',
+  'periode-evenement-fin': 'periodEndingDate',
 }
 
 export const mapApiToBrowser = invert(mapBrowserToApi)
