@@ -30,7 +30,7 @@ class BatchBackend:
                 )
                 return
 
-            if response.status_code != 200:
+            if not response.ok:
                 logger.error(
                     "Got %d status code from Batch Custom Data API: content=%s", response.status_code, response.content
                 )
@@ -62,7 +62,7 @@ class BatchBackend:
                 )
                 return
 
-            if response.status_code != 200:
+            if not response.ok:
                 logger.error(
                     "Got %d status code from Batch Transactional API: content=%s",
                     response.status_code,
