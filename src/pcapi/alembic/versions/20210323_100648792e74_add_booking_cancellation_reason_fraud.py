@@ -1,7 +1,7 @@
 """add_booking_cancellation_reason_fraud
 
 Revision ID: 100648792e74
-Revises: bd142e43ea07
+Revises: 508c975a420b
 Create Date: 2021-03-23 14:43:11.529718
 
 """
