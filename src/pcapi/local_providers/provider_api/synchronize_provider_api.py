@@ -1,5 +1,6 @@
 from datetime import datetime
 import logging
+import time
 from typing import Dict
 from typing import Generator
 from typing import List
@@ -39,11 +40,13 @@ def check_siret_can_be_synchronized(siret: str, provider: Provider):
 def synchronize_venue_provider(venue_provider: VenueProvider) -> None:
     venue = venue_provider.venue
     provider = venue_provider.provider
-    startSyncDate = datetime.utcnow()
+    start_sync_date = datetime.utcnow()
 
+    start = time.perf_counter()
     logger.info("Starting synchronization of venue=%s provider=%s", venue.id, provider.name)
     provider_api = provider.getProviderAPI()
 
+    stats = {"new_offers": 0, "new_stocks": 0, "updated_stocks": 0}
     for raw_stocks in _get_stocks_by_batch(venue.siret, provider_api, venue_provider.lastSyncDate):
         stock_details = _build_stock_details_from_raw_stocks(raw_stocks, venue.siret)
 
@@ -63,6 +66,7 @@ def synchronize_venue_provider(venue_provider: VenueProvider) -> None:
         new_offers_references = [new_offer.idAtProviders for new_offer in new_offers]
 
         db.session.bulk_save_objects(new_offers)
+        stats["new_offers"] += len(new_offers)
 
         new_offers_by_provider_reference = get_offers_map_by_id_at_providers(new_offers_references)
         offers_by_provider_reference = {**offers_by_provider_reference, **new_offers_by_provider_reference}
@@ -76,14 +80,26 @@ def synchronize_venue_provider(venue_provider: VenueProvider) -> None:
 
         db.session.bulk_save_objects(new_stocks)
         db.session.bulk_update_mappings(Stock, update_stock_mapping)
+        stats["new_stocks"] += len(new_stocks)
+        stats["updated_stocks"] += len(update_stock_mapping)
 
         db.session.commit()
 
         _reindex_offers(offer_ids)
 
-    venue_provider.lastSyncDate = startSyncDate
+    venue_provider.lastSyncDate = start_sync_date
     repository.save(venue_provider)
-    logger.info("Ending synchronization of venue=%s provider=%s", venue.id, provider.name)
+    logger.info(
+        "Ended synchronization of venue=%s provider=%s",
+        venue.id,
+        provider.name,
+        extra={
+            "venue": venue.id,
+            "provider": provider.name,
+            "duration": time.perf_counter() - start,
+            **stats,
+        },
+    )
 
 
 def _get_stocks_by_batch(siret: str, provider_api: ProviderAPI, modified_since: DateTime) -> Generator:

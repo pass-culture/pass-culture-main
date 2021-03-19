@@ -121,6 +121,7 @@ def create_account(
 
     user.setPassword(password)
     repository.save(user)
+    logger.info("Created user account", extra={"user": user.id})
 
     update_user_attributes_job.delay(user)
 
@@ -135,6 +136,7 @@ def activate_beneficiary(user: User, deposit_source: str) -> User:
     deposit = payment_api.create_deposit(user, deposit_source=deposit_source)
     db.session.add_all((user, deposit))
     db.session.commit()
+    logger.info("Activated beneficiary and created deposit", extra={"user": user.id})
     return user
 
 
@@ -203,7 +205,14 @@ def suspend_account(user: User, reason: constants.SuspensionReason, actor: User)
     sessions = UserSession.query.filter_by(userId=user.id)
     repository.delete(*sessions)
 
-    logger.info("user=%s has been suspended by actor=%s for reason=%s", user.id, actor.id, reason)
+    logger.info(
+        "Account has been suspended",
+        extra={
+            "actor": actor.id,
+            "user": user.id,
+            "reason": str(reason),
+        },
+    )
 
 
 def unsuspend_account(user: User, actor: User) -> None:
@@ -211,7 +220,13 @@ def unsuspend_account(user: User, actor: User) -> None:
     user.suspensionReason = ""
     repository.save(user)
 
-    logger.info("user=%s has been unsuspended by actor=%s", user.id, actor.id)
+    logger.info(
+        "Account has been unsuspended",
+        extra={
+            "actor": actor.id,
+            "user": user.id,
+        },
+    )
 
 
 def send_user_emails_for_email_change(user: User, new_email: str) -> None:
@@ -263,6 +278,8 @@ def change_user_email(token: str) -> None:
     sessions = UserSession.query.filter_by(userId=current_user.id)
     repository.delete(*sessions)
     repository.save(current_user)
+
+    logger.info("User has changed their email", extra={"user": current_user.id})
 
     return
 

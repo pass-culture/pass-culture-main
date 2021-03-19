@@ -141,6 +141,7 @@ def create_offer(offer_data: PostOfferBodyModel, user: User) -> Offer:
         offer.isActive = False
 
     repository.save(offer)
+    logger.info("Offer has been created", extra={"offer": offer.id, "venue": venue.id, "product": offer.productId})
     admin_emails.send_offer_creation_notification_to_administration(offer, user)
 
     return offer
@@ -197,8 +198,10 @@ def update_offer(  # pylint: disable=redefined-builtin
         offer.fieldsUpdated = list(set(offer.fieldsUpdated) | set(modifications))
 
     repository.save(offer)
+    logger.info("Offer has been updated", extra={"offer": offer.id})
     if product_has_been_updated:
         repository.save(offer.product)
+        logger.info("Product has been updated", extra={"product": offer.product.id})
 
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
@@ -306,9 +309,11 @@ def _notify_beneficiaries_upon_stock_edit(stock: Stock):
         except mailing.MailServiceException as exc:
             # fmt: off
             logger.exception(
-                "Could not notify beneficiaries about update of stock=%s: %s",
-                stock.id,
-                exc,
+                "Could not notify beneficiaries about update of stock",
+                extra={
+                    "exc": str(exc),
+                    "stock": stock.id,
+                }
             )
             # fmt: on
 
@@ -353,6 +358,7 @@ def upsert_stocks(
             stocks.append(created_stock)
 
     repository.save(*stocks)
+    logger.info("Stock has been created or updated", extra={"offer": offer_id})
 
     for stock in edited_stocks:
         previous_beginning = edited_stocks_previous_beginnings[stock.id]
@@ -383,16 +389,32 @@ def delete_stock(stock: Stock) -> None:
             cancelled_bookings.append(booking)
 
     repository.save(stock, *cancelled_bookings)
+    logger.info(
+        "Deleted stock and cancelled its bookings",
+        extra={"stock": stock.id, "bookings": [b.id for b in cancelled_bookings]},
+    )
 
     if cancelled_bookings:
         try:
             user_emails.send_batch_cancellation_emails_to_users(cancelled_bookings)
         except mailing.MailServiceException as exc:
-            logger.exception("Could not notify beneficiaries about deletion of stock=%s: %s", stock.id, exc)
+            logger.exception(
+                "Could not notify beneficiaries about deletion of stock",
+                extra={
+                    "exc": str(exc),
+                    "stock": stock.id,
+                },
+            )
         try:
             user_emails.send_offerer_bookings_recap_email_after_offerer_cancellation(cancelled_bookings)
         except mailing.MailServiceException as exc:
-            logger.exception("Could not notify offerer about deletion of stock=%s: %s", stock.id, exc)
+            logger.exception(
+                "Could not notify offerer about deletion of stock",
+                extra={
+                    "exc": str(exc),
+                    "stock": stock.id,
+                },
+            )
 
     notification_data = get_notification_data_on_booking_cancellation(cancelled_bookings)
     if notification_data:
@@ -556,6 +578,7 @@ def deactivate_inappropriate_products(isbn: str) -> bool:
             extra={"products": [p.id for p in products], "exc": str(exception)},
         )
         return False
+    logger.info("Deactivated inappropriate products", extra={"products": [p.id for p in products], "offers": offer_ids})
 
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         for offer_id in offer_ids:

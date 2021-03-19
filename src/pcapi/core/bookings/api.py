@@ -80,6 +80,15 @@ def book_offer(
 
         repository.save(booking, stock)
 
+    logger.info(
+        "Beneficiary booked an offer",
+        extra={
+            "actor": beneficiary.id,
+            "offer": stock.offerId,
+            "stock": stock.id,
+        },
+    )
+
     try:
         user_emails.send_booking_recap_emails(booking)
     except MailServiceException as error:
@@ -102,6 +111,13 @@ def _cancel_booking(booking: Booking, reason: BookingCancellationReasons) -> Non
         stock = offers_repository.get_and_lock_stock(stock_id=booking.stockId)
         stock.dnBookedQuantity -= booking.quantity
         repository.save(booking, stock)
+    logger.info(
+        "Booking has been cancelled",
+        extra={
+            "booking": booking.id,
+            "reason": str(reason),
+        },
+    )
 
 
 def cancel_booking_by_beneficiary(user: User, booking: Booking) -> None:
@@ -153,6 +169,7 @@ def mark_as_used(booking: Booking, uncancel: bool = False) -> None:
         booking.isUsed = True
         booking.dateUsed = datetime.datetime.utcnow()
         repository.save(*objects_to_save)
+    logger.info("Booking was marked as used", extra={"booking": booking.id})
 
 
 def mark_as_unused(booking: Booking) -> None:
@@ -160,6 +177,7 @@ def mark_as_unused(booking: Booking) -> None:
     booking.isUsed = False
     booking.dateUsed = None
     repository.save(booking)
+    logger.info("Booking was marked as unused", extra={"booking": booking.id})
 
 
 def generate_qr_code(booking_token: str, offer_extra_data: typing.Dict) -> str:
