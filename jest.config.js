@@ -4,12 +4,14 @@ module.exports = {
     '\\.(css|less|scss|sass)$': '<rootDir>/src/utils/styleMock.js',
   },
   modulePaths: ['node_modules', 'src'],
+  preset: 'jest-preset-stylelint',
   setupFiles: ['<rootDir>/jest.setup.js', 'jest-canvas-mock'],
   testEnvironment: 'jest-environment-jsdom-sixteen',
   testMatch: [
     '<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}',
     '<rootDir>/src/**/*.{spec,test}.{js,jsx,ts,tsx}',
     '<rootDir>/eslint-plugin-pass-culture/**/*.{spec,test}.{js,jsx,ts,tsx}',
+    '<rootDir>/stylelint-pass-culture/**/*.{spec,test}.{js,jsx,ts,tsx}',
   ],
   verbose: false,
 }
