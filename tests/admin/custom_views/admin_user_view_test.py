@@ -20,6 +20,7 @@ class AdminUserViewTest:
             firstName="Powerfull",
             lastName="Admin",
             departementCode="76",
+            postalCode="76001",
         )
 
         client = TestClient(app.test_client()).with_auth("admin@example.com")
@@ -33,7 +34,7 @@ class AdminUserViewTest:
         assert user_created.publicName == "Powerfull Admin"
         assert user_created.dateOfBirth is None
         assert user_created.departementCode == "76"
-        assert user_created.postalCode is None
+        assert user_created.postalCode == "76001"
         assert user_created.isBeneficiary is False
         assert user_created.isAdmin is True
         assert user_created.hasSeenProTutorials is True
@@ -49,6 +50,7 @@ class AdminUserViewTest:
             firstName="Powerfull",
             lastName="Admin",
             departementCode="76",
+            postalCode="76000",
         )
 
         client = TestClient(app.test_client()).with_auth("admin@example.com")
@@ -85,6 +87,7 @@ class AdminUserViewTest:
             firstName="Powerfull",
             lastName="Admin",
             departementCode="76",
+            postalCode="76000",
         )
 
         client = TestClient(app.test_client()).with_auth("user@example.com")

@@ -104,6 +104,7 @@ class ProUserView(SuspensionMixin, BaseAdminView):
     # This override is necessary to prevent SIREN and offererName to be in edit form as well
     def get_create_form(self) -> Form:
         form = super().get_form()
+        form.postalCode = StringField("Code postal", [validators.DataRequired()])
         form.offererSiren = StringField(
             "SIREN",
             [validators.DataRequired(), validators.Length(9, 9, "Un SIREN contient 9 caractères"), unique_siren],

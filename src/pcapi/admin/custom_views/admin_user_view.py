@@ -2,6 +2,8 @@ from sqlalchemy.orm import query
 from sqlalchemy.sql.expression import distinct
 from sqlalchemy.sql.functions import func
 from wtforms import Form
+from wtforms.validators import DataRequired
+from wtforms.validators import Length
 
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.domain.user_emails import send_admin_user_validation_email
@@ -33,12 +35,18 @@ class AdminUserView(BaseAdminView):
     column_searchable_list = ["id", "publicName", "email", "firstName", "lastName"]
     column_filters = ["email"]
 
-    form_columns = [
-        "email",
-        "firstName",
-        "lastName",
-        "departementCode",
-    ]
+    form_columns = ["email", "firstName", "lastName", "departementCode", "postalCode"]
+
+    form_args = dict(
+        departementCode=dict(
+            label="Département",
+            validators=[DataRequired(), Length(min=2, max=3, message="Mauvais format de département")],
+        ),
+        postalCode=dict(
+            label="Code postal",
+            validators=[DataRequired(), Length(min=5, max=5, message="Mauvais format de code postal")],
+        ),
+    )
 
     def get_query(self) -> query:
         from pcapi.core.users.models import User

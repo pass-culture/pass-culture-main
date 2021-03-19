@@ -253,7 +253,7 @@ class BeneficiaryUserViewTest:
             lastName=user_to_edit.lastName,
             dateOfBirth=user_to_edit.dateOfBirth,
             departementCode=user_to_edit.departementCode,
-            postalCode=user_to_edit.postalCode,
+            postalCode="76000",
         )
 
         client = TestClient(app.test_client()).with_auth("user@example.com")

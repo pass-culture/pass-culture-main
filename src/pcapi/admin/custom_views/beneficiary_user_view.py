@@ -71,6 +71,7 @@ class BeneficiaryUserView(SuspensionMixin, BaseAdminView):
         firstName=dict(validators=[DataRequired()]),
         lastName=dict(validators=[DataRequired()]),
         dateOfBirth=dict(validators=[DataRequired()]),
+        postalCode=dict(validators=[DataRequired()]),
     )
 
     def get_create_form(self):
