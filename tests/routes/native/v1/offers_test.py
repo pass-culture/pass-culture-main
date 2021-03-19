@@ -85,7 +85,6 @@ class OffersTest:
             "description": "desk cryption",
             "externalTicketOfficeUrl": "https://url.com",
             "expenseDomains": ["all"],
-            "expense_domains": ["all"],
             "extraData": {
                 "author": "mandibule",
                 "isbn": "3838",
