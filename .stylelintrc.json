@@ -9,6 +9,7 @@
     "./stylelint-pass-culture"
   ],
   "rules": {
+    "pass-culture/no-font-properties": true,
     "pass-culture/no-hexadecimal-color": [true,
       {
         "colors": {
