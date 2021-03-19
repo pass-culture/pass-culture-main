@@ -5,6 +5,7 @@ import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.testing import override_features
 from pcapi.models import Booking
 from pcapi.scripts.update_booking_used import update_booking_used_after_stock_occurrence
 
@@ -72,3 +73,9 @@ class UpdateBookingUsedTest:
         booking = Booking.query.first()
         assert not booking.isUsed
         assert booking.dateUsed is None
+
+    @pytest.mark.usefixtures("db_session")
+    @override_features(UPDATE_BOOKING_USED=False)
+    def test_raise_if_feature_flag_is_deactivated(self):
+        with pytest.raises(ValueError):
+            update_booking_used_after_stock_occurrence()
