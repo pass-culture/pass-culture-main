@@ -3,7 +3,6 @@
   color: $white;
   display: flex;
   flex-direction: column;
-  font-weight: 500;
   justify-content: center;
   text-align: center;
 
@@ -15,12 +14,13 @@
     text-align: center;
 
     h1 {
-      font-size: rem(40px);
+      @include hero();
+
       margin-bottom: rem(32px);
     }
 
     p {
-      font-size: rem(23px);
+      @include title3();
     }
   }
 

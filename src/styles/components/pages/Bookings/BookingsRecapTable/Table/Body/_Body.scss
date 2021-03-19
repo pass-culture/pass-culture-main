@@ -10,7 +10,8 @@
   }
 
   td {
-    font-size: rem(16px);
+    @include body();
+
     padding: rem(16px);
   }
 }

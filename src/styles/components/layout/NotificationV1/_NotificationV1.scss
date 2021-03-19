@@ -34,12 +34,12 @@
 
   a.close,
   button.close {
+    @include button();
+
     background: none;
     border: none;
     color: $black;
     float: right;
-    font-size: rem(16px);
-    font-weight: 600;
     height: auto;
     padding-left: rem(12px);
     text-decoration: underline;

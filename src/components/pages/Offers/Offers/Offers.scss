@@ -130,7 +130,7 @@
       padding: 0;
 
       input {
-        font-size: 1rem;
+        @include body-important();
 
         &:disabled {
           cursor: not-allowed;
@@ -266,8 +266,9 @@
   }
 
   .reset-filters-link {
+    @include body-important();
+
     color: $primary;
-    font-weight: 500;
     line-height: rem(22px);
 
     &:hover,
@@ -287,11 +288,12 @@
   }
 
   .no-search-results {
+    @include body();
+
     align-items: center;
     color: $grey-dark;
     display: flex;
     flex-direction: column;
-    font-size: rem(16px);
 
     .image {
       margin-top: rem(40px);

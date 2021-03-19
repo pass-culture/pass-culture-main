@@ -5,7 +5,7 @@
   margin-bottom: rem(30px);
 
   .bookings-header-loading .bookings-header-number {
-    font-weight: 400;
+    @include body();
   }
 
   .bookings-header-csv-download a {

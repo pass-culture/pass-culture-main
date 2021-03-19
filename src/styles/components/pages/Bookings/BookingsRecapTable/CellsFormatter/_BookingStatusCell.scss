@@ -1,9 +1,9 @@
 .bookings-table {
   .booking-status-label {
+    @include caption();
+
     border-radius: rem(5px);
     color: $white;
-    font-size: rem(14px);
-    font-weight: 500;
     padding: rem(5px) rem(7px);
   }
 
@@ -57,25 +57,27 @@
   }
 
   .bs-offer-title {
+    @include button();
+
     display: block;
-    font-size: rem(16px);
-    font-weight: 700;
   }
 
   .bs-offer-amount {
+    @include caption();
+
     display: block;
-    font-size: rem(14px);
-    font-weight: 500;
     margin-top: rem(7px);
   }
 
   .bs-history-title {
-    font-size: rem(16px);
+    @include body();
+
     margin-top: rem(16px);
   }
 
   .bs-history-label {
-    font-size: rem(16px);
+    @include body();
+
     margin-top: rem(12px);
   }
 

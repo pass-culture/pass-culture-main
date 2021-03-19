@@ -3,8 +3,6 @@ a.logo {
   color: $white;
   display: flex;
   flex-direction: column;
-  font-style: italic;
-  font-weight: 300;
   height: 100%;
   justify-content: center;
 
@@ -27,16 +25,16 @@ a.logo {
   }
 
   .logo-subtitle {
+    @include title4();
+
     color: $white;
-    font-size: rem(18px);
-    font-style: normal;
-    font-weight: 500;
     margin-top: rem(27px);
   }
 
   .logo-subtitle-highlighted {
+    @include body-important();
+
     color: $secondary;
-    font-weight: 500;
     margin: 0 rem(1px);
     padding: rem(1px) rem(4px);
     position: relative;

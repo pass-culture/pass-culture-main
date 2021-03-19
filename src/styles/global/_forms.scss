@@ -9,9 +9,9 @@
 }
 
 .field-label {
+  @include title4();
+
   color: $black;
-  font-size: rem(18px);
-  font-weight: 400;
   margin-bottom: rem(12px);
   padding-bottom: rem(6px);
   padding-right: rem(12px);
@@ -36,22 +36,23 @@
 .checkbox-field,
 .checkboxes-field {
   .field-inner {
+    @include body-important();
+
     border: none;
     border-radius: 0;
     color: $black;
-    font-weight: 500;
     padding-left: rem(4px);
   }
 }
 
 .field-select {
+  @include body-important();
+
   appearance: none;
   background-position: 97.5% 50%;
   background-repeat: no-repeat;
   border: none;
   border-radius: 16px;
-  font-size: rem(16px);
-  font-weight: 500;
   height: rem(36px);
   min-height: rem(36px);
   min-width: rem(250px);
@@ -81,11 +82,11 @@
 
 .field-input,
 .field-textarea {
+  @include body-important();
+
   border: 2px solid $grey-medium;
   border-radius: 1.125em;
   flex: 1;
-  font-size: rem(16px);
-  font-weight: 500;
   outline: none !important;
   padding: rem(6px) rem(18px);
 
@@ -103,9 +104,9 @@
   padding: rem(6px);
 
   input.date {
+    @include preview-text();
+
     border: 0;
-    font-size: rem(12px);
-    font-weight: 500;
     min-width: rem(60px);
     text-align: center;
     width: 100%;
@@ -138,7 +139,7 @@
   }
 
   .character-count {
-    font-size: rem(12px);
+    @include preview-text();
   }
 }
 
@@ -198,9 +199,10 @@
       .field-input,
       .field-textarea,
       .field-select {
+        @include body-important();
+
         background-color: transparent;
         border: 0;
-        font-weight: 500;
         opacity: 1;
 
         &:focus {
@@ -248,10 +250,10 @@
 }
 
 .field-errors {
+  @include caption();
+
   color: $primary;
   display: flex;
-  font-size: rem(14px);
-  font-weight: 500;
   min-height: rem(24px);
 
   .field-error-icon {
@@ -265,13 +267,14 @@
 .input[type="email"],
 .input[type="text"],
 .input[type="url"] {
+  @include body();
+
   align-items: center;
   appearance: none;
   border: rem(2px) solid $grey-medium;
   border-radius: rem(20px);
   box-shadow: none;
   display: inline-flex;
-  font-size: rem(16px);
   height: rem(36px);
   justify-content: flex-start;
   line-height: 1.5;

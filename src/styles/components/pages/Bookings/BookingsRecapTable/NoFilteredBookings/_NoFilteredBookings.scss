@@ -10,8 +10,9 @@
   }
 
   span {
+    @include body();
+
     color: $grey-dark;
-    font-size: rem(16px);
 
     &:first-of-type {
       margin-bottom: rem(16px);
@@ -19,10 +20,10 @@
   }
 
   button {
+    @include button();
+
     background: none;
     border: none;
     color: $primary;
-    font-size: rem(16px);
-    font-weight: 700;
   }
 }

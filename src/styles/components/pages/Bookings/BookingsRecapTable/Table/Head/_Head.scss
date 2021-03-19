@@ -1,9 +1,9 @@
 .bookings-head {
   tr {
     th {
+      @include caption();
+
       color: $black;
-      font-size: rem(14px);
-      font-weight: 500;
       padding: rem(14px);
 
       .sorting-icons > img {

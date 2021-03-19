@@ -4,32 +4,36 @@
   width: 100%;
 
   .provider-name-container {
+    @include caption();
+
     align-content: center;
     display: flex;
     flex: 2;
     flex-direction: column;
-    font-size: rem(14px);
     justify-content: center;
     margin-left: rem(20px);
     text-transform: uppercase;
   }
 
   .venue-id-at-offer-provider-container-with-message {
+    @include caption();
+
     display: inline;
     flex: 4;
-    font-size: rem(14px);
     margin-left: rem(20px);
   }
 
   .venue-id-at-offer-provider-container {
+    @include caption();
+
     display: flex;
     flex: 4;
     flex-direction: row;
-    font-size: rem(14px);
 
     .venue-id-at-offer-provider {
+      @include caption();
+
       flex: 1.5;
-      font-size: rem(14px);
     }
 
     .offers-container-counter {

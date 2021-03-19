@@ -42,9 +42,10 @@
     padding: 0 rem(20px);
 
     .class-name {
+      @include body-important();
+
       color: $primary;
       font-style: italic;
-      font-weight: 500;
     }
   }
 
@@ -60,9 +61,9 @@
 }
 
 .it-description {
-  text-align: center;
   flex: 3;
   margin-left: rem(10px);
+  text-align: center;
   text-align: center;
 }
 

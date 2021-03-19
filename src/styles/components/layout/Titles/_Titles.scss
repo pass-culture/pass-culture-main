@@ -33,11 +33,11 @@
 
   .title-action-links {
     .link {
+      @include caption();
+
       background-color: transparent;
       color: $primary;
       display: flex;
-      font-size: rem(14px);
-      font-weight: 600;
       justify-content: flex-end;
       line-height: rem(34px);
 
@@ -75,6 +75,5 @@
 }
 
 h3.section-title {
-  font-size: rem(22px);
-  font-weight: 700;
+  @include title3();
 }

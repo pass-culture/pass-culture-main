@@ -1,3 +1,4 @@
+/* stylelint-disable pass-culture/no-font-properties */
 // regular
 @font-face {
   font-family: 'Barlow';
@@ -55,7 +56,7 @@
 // bold
 @font-face {
   font-family: 'Barlow';
-  font-weight: bold;
+  font-weight: 700;
   src:
     url('../../fonts/barlow-latin-700.woff2') format('woff2'),
     url('../../fonts/barlow-latin-700.woff') format('woff');

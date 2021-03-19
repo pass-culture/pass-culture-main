@@ -7,7 +7,7 @@
 input.input,
 .select select,
 textarea.textarea {
-  font-size: rem(16px);
+  @include body();
 
   &[readonly]:not([type="checkbox"]) {
     background-color: transparent;
@@ -32,9 +32,10 @@ textarea.textarea {
     }
 
     .display-name {
+      @include button();
+
       color: $black;
       display: inline-block;
-      font-weight: 600;
       padding-left: 0.25rem;
       padding-top: 0.5rem;
       text-transform: uppercase;

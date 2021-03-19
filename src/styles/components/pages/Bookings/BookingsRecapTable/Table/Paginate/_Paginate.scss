@@ -1,8 +1,9 @@
 .paginate-wrapper {
+  @include body-important();
+
   align-items: center;
   color: $black;
   display: flex;
-  font-weight: 500;
   height: 100%;
   justify-content: center;
 
@@ -18,7 +19,8 @@
   }
 
   span {
-    font-size: rem(14px);
+    @include caption();
+
     height: inherit;
     margin: 0 rem(16px);
   }

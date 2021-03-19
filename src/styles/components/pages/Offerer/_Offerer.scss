@@ -45,8 +45,9 @@
     margin: rem(8px) 0;
 
     > :first-child {
+      @include body();
+
       color: $black;
-      font-size: rem(16px);
       margin-right: rem(5px);
     }
   }

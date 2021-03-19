@@ -1,10 +1,11 @@
 .blue-insert {
+  @include body();
+
   align-items: center;
   background-color: $notification-info;
   color: $black;
   display: flex;
   flex-grow: 1;
-  font-size: rem(16px);
   justify-content: flex-start;
   padding: rem(18px);
 
@@ -15,39 +16,5 @@
   img {
     align-self: baseline;
     height: auto;
-  }
-}
-
-.yellow-insert {
-  background-color: $attention;
-  border-radius: 6px;
-  font-size: rem(16px);
-  margin-bottom: 1.5rem;
-  padding: rem(18px);
-
-  .insert-action-link {
-    margin-top: 0.5rem;
-
-    a {
-      display: flex;
-      flex-start: start;
-      flex-wrap: wrap;
-      font-weight: 700;
-
-      p {
-        align-self: normal;
-        padding-left: 0.5rem;
-        padding-top: 0.25rem;
-      }
-
-      img {
-        align-self: center;
-      }
-    }
-
-    a:focus,
-    a:hover {
-      color: $black;
-    }
   }
 }

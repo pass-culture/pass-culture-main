@@ -22,12 +22,12 @@
   }
 
   select {
+    @include button();
+
     appearance: none;
     background: url(/icons/dropdown-disclosure-down-b.svg) no-repeat 92% 56%;
     border: 2px solid $grey-medium;
     border-radius: rem(20px);
-    font-size: rem(16px);
-    font-weight: 700;
     height: rem(40px);
     outline: none;
     padding-left: rem(10px);
@@ -38,12 +38,13 @@
     }
 
     &:disabled {
+      @include body-important();
+
       background-color: $grey-light;
       background-image: url(/icons/dropdown-disclosure-down-b-disabled.svg);
       border-color: $grey-light;
       color: $grey-dark;
       cursor: initial;
-      font-weight: normal;
       opacity: 1;
     }
   }
@@ -58,11 +59,12 @@
   }
 
   .fw-booking-text-filters-input {
+    @include body();
+
     border: 2px solid $grey-medium;
     border-left: none;
     border-radius: 0 rem(20px) rem(20px) 0;
     flex-grow: 1;
-    font-size: rem(16px);
     height: rem(40px);
     padding: rem(10px) rem(16px);
 
@@ -137,9 +139,10 @@
     }
 
     .fw-offer-date-input {
+      @include body();
+
       background: none;
       border: 0;
-      font-size: rem(16px);
       outline: none;
       padding-left: rem(10px);
       width: rem(150px);
@@ -162,16 +165,17 @@
     padding-left: rem(24px);
 
     .fw-offer-venue-label {
-      font-size: rem(16px);
+      @include body();
     }
 
     select {
+      @include body();
+
       appearance: none;
       background: url(/icons/dropdown-disclosure-down-b.svg) no-repeat 92% 56%;
       border: 2px solid $grey-medium;
       border-radius: rem(20px);
       box-shadow: 2px 2px 6px 0 $black-shadow;
-      font-size: rem(16px);
       height: rem(40px);
       margin-top: rem(12px);
       outline: none;
@@ -208,9 +212,9 @@
   position: relative;
 
   .bs-filter-label {
+    @include caption();
+
     color: $grey-dark;
-    font-size: rem(14px);
-    font-weight: 500;
     padding-bottom: rem(8px);
     white-space: nowrap;
   }

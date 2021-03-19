@@ -24,8 +24,8 @@
   }
 
   .account-value {
-    font-size: 1.2rem;
-    font-weight: 500;
+    @include title4();
+
     height: rem(36px);
   }
 

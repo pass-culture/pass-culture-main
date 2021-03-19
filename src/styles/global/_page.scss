@@ -83,7 +83,8 @@ main {
         }
 
         .back-button {
-          font-weight: 600;
+          @include button();
+
           padding-left: rem(30px);
           position: absolute;
           top: rem(24px);

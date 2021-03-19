@@ -120,8 +120,9 @@ button {
 
     ul.actions,
     ul.infos {
+      @include body();
+
       display: flex;
-      font-size: rem(16px);
       justify-content: space-between;
       list-style: none;
       margin: 0;

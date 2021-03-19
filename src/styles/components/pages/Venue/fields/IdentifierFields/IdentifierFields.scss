@@ -5,9 +5,10 @@
   }
 
   .field-label {
+    @include body();
+
     color: $black;
     flex: 1;
-    font-size: rem(16px);
     white-space: initial;
   }
 
@@ -27,12 +28,12 @@
 
   .select {
     select {
+      @include body-important();
+
       appearance: none;
       background-color: $white;
       border: rem(2px) solid $grey-medium;
       border-radius: rem(18px);
-      font-size: rem(16px);
-      font-weight: 500;
       height: rem(36px);
       max-width: 100%;
       outline: none;
@@ -77,5 +78,5 @@
 }
 
 .siret-label-bold {
-  font-weight: bold;
+  font-weight: 700;
 }
