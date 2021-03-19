@@ -345,41 +345,6 @@ jobs:
             --values tmp/${CHART_RELEASE}/values.${CIRCLE_BRANCH}.yaml \
             --version stable
 
-  deploy-api:
-    machine:
-      image: ubuntu-1604:201903-01
-    working_directory: ~/pass-culture
-    steps:
-      - checkout
-      - run: pyenv global 3.5.2
-      - run: pip install requests
-      - run: python scripts/check_ci_status.py $CIRCLE_SHA1 $(git describe --contains)
-      - run: git submodule sync
-      - run: git submodule update --init
-      - run:
-          name: Deploy API
-          no_output_timeout: 30m
-          command: |
-            env_remote_origin="$CIRCLE_BRANCH"_remote_origin
-            SCALINGO_APP_NAME=$(./scripts/compute_app_name.sh ${CIRCLE_BRANCH})
-            cd api
-            git remote add scalingo_agora git@ssh.agora-fr1.scalingo.com:${SCALINGO_APP_NAME}.git
-            git remote add scalingo_outscale git@ssh.osc-fr1.scalingo.com:${SCALINGO_APP_NAME}.git
-            git push -f ${!env_remote_origin:-scalingo_agora} HEAD:master
-      - run:
-          name: Check deployed version
-          command: |
-            COMPONENT_URL="https://backend.$(./scripts/compute_component_partial_url.sh ${CIRCLE_BRANCH})"
-            ./scripts/check_current_tag_is_deployed.sh "$COMPONENT_URL"
-      - run:
-          name: Send failure notification
-          command: |
-            VERSION_TO_DEPLOY=$(git describe --contains)
-            BOT_MESSAGE="'*"$CIRCLE_BRANCH"* : *API* deployment *"$VERSION_TO_DEPLOY"* seems to have *FAILED* :collision:'"
-            curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
-            curl -i -k -XPOST "$GRAFANA_INFLUXDB_URL/write?db=$GRAFANA_DB" --data-binary 'deployments,application=Api,environment='"$CIRCLE_BRANCH"',deployed=false version="'"$VERSION_TO_DEPLOY"'"'
-          when: on_fail
-
   deploy-pcapi:
     executor: helm
     environment:
@@ -525,27 +490,6 @@ jobs:
           build_path: ./webapp/build/
           bucket_name: ${GCP_PROJECT}-${CIRCLE_BRANCH}-webapp
 
-  deploy-sandbox-in-testing:
-    machine:
-      image: ubuntu-1604:201903-01
-    working_directory: ~/pass-culture
-    steps:
-      - checkout
-      - run:
-          name: Deploy Sandbox in Testing
-          command: |
-            sudo apt-get update
-            sudo apt-get install -y realpath
-            curl -O https://cli-dl.scalingo.io/install && bash install
-            scalingo login --api-token $SCALINGO_API_TOKEN
-            ./pc -e testing sandbox --name=industrial
-      - run:
-          name: Notify PC Ops Bot
-          when: on_fail
-          command: |
-            export BOT_MESSAGE="'Build *$CIRCLE_JOB* fail : $CIRCLE_BUILD_URL'"
-            curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
-
   release-synthesis:
     machine:
       image: ubuntu-1604:201903-01
@@ -687,14 +631,3 @@ workflows:
           requires:
             - deploy-pro
             - deploy-webapp
-
-  every-mondays-nights:
-    triggers:
-      - schedule:
-          cron: "0 23 * * 1"
-          filters:
-            branches:
-              only:
-                - master
-    jobs:
-      - deploy-sandbox-in-testing
