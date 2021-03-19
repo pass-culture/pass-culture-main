@@ -75,7 +75,7 @@ commands:
 jobs:
   quality:
     machine:
-      image: ubuntu-1604:201903-01
+      image: ubuntu-2004:202101-01
     working_directory: ~/
     steps:
       - run:
@@ -113,9 +113,9 @@ jobs:
             nvm install
             yarn lint:js
 
-  run-unit-tests:
+  unit-tests:
     machine:
-      image: ubuntu-1604:201903-01
+      image: ubuntu-2004:202101-01
     working_directory: ~/
     steps:
       - run:
@@ -155,9 +155,9 @@ jobs:
             yarn coveralls
             bash <(curl -s https://codecov.io/bash)
 
-  run-e2e-tests:
+  e2e-tests:
     machine:
-      image: ubuntu-1604:201903-01
+      image: ubuntu-2004:202101-01
     working_directory: ~/
     steps:
       - run:
@@ -166,7 +166,7 @@ jobs:
             git clone --single-branch --branch $CIRCLE_BRANCH https://github.com/betagouv/pass-culture-main.git pass-culture-main || git clone https://github.com/betagouv/pass-culture-main.git pass-culture-main
             cd pass-culture-main
             git clone --single-branch --branch $CIRCLE_BRANCH https://github.com/betagouv/pass-culture-api.git api || git clone https://github.com/betagouv/pass-culture-api.git api
-            ./install_lib_ci.sh
+            ./install_lib_ci_with_chrome.sh
       - checkout:
           path: *working_directory
       - restore_cache:
@@ -229,7 +229,7 @@ jobs:
 
   deploy-pro:
     machine:
-      image: ubuntu-1604:201903-01
+      image: ubuntu-2004:202101-01
     working_directory: ~/
     steps:
       - run:
@@ -283,8 +283,8 @@ workflows:
   version: 2
   commit:
     jobs:
-      - run-unit-tests
-      - run-e2e-tests
+      - unit-tests
+      - e2e-tests
       - quality
       - deploy-pro:
           filters:
@@ -292,8 +292,8 @@ workflows:
               only:
                 - master
           requires:
-            - run-unit-tests
-            - run-e2e-tests
+            - unit-tests
+            - e2e-tests
             - quality
 
   gcp:
