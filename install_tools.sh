@@ -3,37 +3,48 @@ set -o nounset
 
 ##################################################################
 # Bash script to install kubectl, kubectx, kubens and gcloud SDK #
+#                           LINUX/MAC                            #
 ##################################################################
 
-## Linux/Mac ##
 cd /tmp/
 
-## kubectl
-echo '###Installing kubectl..'
+## kubectl ##
+echo '-------> ###Installing kubectl..'
 curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl" && \
+if [ "$?" -ne 0 ]; then
+  echo '###ERROR path "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl" NOT FOUND'
+  exit
+fi
 chmod +x /tmp/kubectl && \
 sudo mv /tmp/kubectl /usr/local/bin/kubectl
 
-###Clone https://github.com/ahmetb/kubectx.. containe kubectx and kubens
-sudo git clone https://github.com/ahmetb/kubectx /opt/kubectx
-if $? != 0; then
-  echo "ERROR: cloning https://github.com/ahmetb/kubectx failed ..."
+## kubectx ##
+echo '-------> ###Installing kubectx..'
+curl -LO "https://raw.githubusercontent.com/ahmetb/kubectx/master/kubectx"
+if [ "$?" -ne 0 ]; then
+  echo '###ERROR path https://raw.githubusercontent.com/ahmetb/kubectx/master/kubectx NOT FOUND'
   exit
 fi
+chmod +x /tmp/kubectx && \
+sudo mv /tmp/kubectx /usr/local/bin/kubectx
 
-## kubectx
-echo '###Installing kubectx..'
-chmod +x /opt/kubectx/kubectx && \
-sudo mv /opt/kubectx/kubectx /usr/local/bin/kubectx
+curl -LO "https://raw.githubusercontent.com/ahmetb/kubectx/master/completion/kubectx.bash" && \
 echo "source /opt/kubectx/completion/kubectx.bash" >> ~/.bashrc
 
-## kubens
-echo '###Installing kubens..'
-chmod +x /opt/kubectx/kubens && \
-sudo mv /opt/kubectx/kubens /usr/local/bin/kubens
+## kubens ##
+echo '-------> ###Installing kubens..'
+curl -LO "https://raw.githubusercontent.com/ahmetb/kubectx/master/kubens"
+if [ "$?" -ne 0 ]; then
+  echo '###ERROR path https://raw.githubusercontent.com/ahmetb/kubectx/master/kubens NOT FOUND'
+  exit
+fi
+chmod +x /tmp/kubens && \
+sudo mv /tmp/kubens /usr/local/bin/kubens
+
+curl -LO "https://raw.githubusercontent.com/ahmetb/kubectx/master/completion/kubens.bash" && \
 echo "source /opt/kubectx/completion/kubens.bash" >> ~/.bashrc
 
-## SDK Google
+## SDK Google ##
 echo '###Installing SDK Google Cloud..'
 curl https://sdk.cloud.google.com > install.sh && \
-bash install.sh --disable-prompts
+bash install.sh --disable-prompts &> /dev/null

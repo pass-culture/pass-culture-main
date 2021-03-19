@@ -13,12 +13,14 @@ fi
 echo "------> Context actuel : "$(kubectl config current-context)"."
 echo ""
 echo "!!! Quittez, placez-vous sur le bon context et relancez le script si ce dernier n'est pas le bon !!!"
+
+sleep 5s
 echo ""
-echo "------> Voulez-vous continuer ? (y/n)"
-read rep
-if test $rep != "y"; then
-  exit
-fi
+# echo "------> Voulez-vous continuer ? (y/n)"
+# read rep
+# if test $rep != "y"; then
+#   exit
+# fi
 echo "Lancement du commande pc sur le context "$(kubectl config current-context)""
 
 # =============================================
