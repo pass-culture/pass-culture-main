@@ -10,5 +10,15 @@
         "FB:AE:23:38:2C:57:E8:A0:24:81:ED:2B:34:20:A7:B2:77:44:18:26:70:5C:80:95:25:D6:43:67:27:81:8D:67"
       ]
     }
+  },
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "PassCulture S",
+      "package_name": "com.passculture",
+      "sha256_cert_fingerprints": [
+        "DD:63:BD:54:53:52:DD:68:6D:DF:0A:FC:74:EE:B0:EB:82:29:31:69:C4:55:01:81:79:CF:CE:BF:77:A0:3A:AE"
+      ]
+    }
   }
 ]
