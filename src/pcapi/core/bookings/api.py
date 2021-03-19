@@ -95,15 +95,20 @@ def book_offer(
     return booking
 
 
+def _cancel_booking(booking: Booking, reason: BookingCancellationReasons) -> None:
+    with transaction():
+        booking.isCancelled = True
+        booking.cancellationReason = reason
+        stock = offers_repository.get_and_lock_stock(stock_id=booking.stockId)
+        stock.dnBookedQuantity -= booking.quantity
+        repository.save(booking, stock)
+
+
 def cancel_booking_by_beneficiary(user: User, booking: Booking) -> None:
     if not user.isBeneficiary:
         raise RuntimeError("Unexpected call to cancel_booking_by_beneficiary with non-beneficiary user %s" % user)
     validation.check_beneficiary_can_cancel_booking(user, booking)
-
-    booking.isCancelled = True
-    booking.cancellationReason = BookingCancellationReasons.BENEFICIARY
-    repository.save(booking)
-
+    _cancel_booking(booking, BookingCancellationReasons.BENEFICIARY)
     try:
         user_emails.send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason)
     except MailServiceException as error:
@@ -115,17 +120,14 @@ def cancel_booking_by_beneficiary(user: User, booking: Booking) -> None:
 
 def cancel_booking_by_offerer(booking: Booking) -> None:
     validation.check_offerer_can_cancel_booking(booking)
-    booking.isCancelled = True
-    booking.cancellationReason = BookingCancellationReasons.OFFERER
-    repository.save(booking)
-
+    _cancel_booking(booking, BookingCancellationReasons.OFFERER)
     send_transactional_notification_job.delay(get_notification_data_on_booking_cancellation([booking]))
 
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         redis.add_offer_id(client=app.redis_client, offer_id=booking.stock.offerId)
 
 
-def mark_as_used(booking: Booking, uncancel=False) -> None:
+def mark_as_used(booking: Booking, uncancel: bool = False) -> None:
     """Mark a booking as used.
 
     The ``uncancel`` argument should be provided only if the booking
