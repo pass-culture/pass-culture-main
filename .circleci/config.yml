@@ -73,7 +73,7 @@ commands:
 ###################
 
 jobs:
-  test:
+  quality:
     machine:
       image: ubuntu-1604:201903-01
     working_directory: ~/
@@ -112,6 +112,38 @@ jobs:
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             nvm install
             yarn lint:js
+
+  run-unit-tests:
+    machine:
+      image: ubuntu-1604:201903-01
+    working_directory: ~/
+    steps:
+      - run:
+          name: Initialization environment
+          command: |
+            git clone --single-branch --branch $CIRCLE_BRANCH https://github.com/betagouv/pass-culture-main.git pass-culture-main || git clone https://github.com/betagouv/pass-culture-main.git pass-culture-main
+            cd pass-culture-main
+            git clone --single-branch --branch $CIRCLE_BRANCH https://github.com/betagouv/pass-culture-api.git api || git clone https://github.com/betagouv/pass-culture-api.git api
+            ./install_lib_ci.sh
+      - checkout:
+          path: *working_directory
+      - restore_cache:
+          name: Restore Yarn Package Cache
+          keys:
+            - yarn-packages-{{ checksum "~/pass-culture-main/pro/yarn.lock" }}
+      - run:
+          name: Install dependencies
+          working_directory: *working_directory
+          command: |
+            export NVM_DIR="/opt/circleci/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm install
+            yarn install
+      - save_cache:
+          name: Save Yarn Package Cache
+          key: yarn-packages-{{ checksum "~/pass-culture-main/pro/yarn.lock" }}
+          paths:
+            - ~/.cache/yarn
       - run:
           name: Running Unit Tests
           working_directory: *working_directory
@@ -122,6 +154,38 @@ jobs:
             yarn test:unit --coverage --silent
             yarn coveralls
             bash <(curl -s https://codecov.io/bash)
+
+  run-e2e-tests:
+    machine:
+      image: ubuntu-1604:201903-01
+    working_directory: ~/
+    steps:
+      - run:
+          name: Initialization environment
+          command: |
+            git clone --single-branch --branch $CIRCLE_BRANCH https://github.com/betagouv/pass-culture-main.git pass-culture-main || git clone https://github.com/betagouv/pass-culture-main.git pass-culture-main
+            cd pass-culture-main
+            git clone --single-branch --branch $CIRCLE_BRANCH https://github.com/betagouv/pass-culture-api.git api || git clone https://github.com/betagouv/pass-culture-api.git api
+            ./install_lib_ci.sh
+      - checkout:
+          path: *working_directory
+      - restore_cache:
+          name: Restore Yarn Package Cache
+          keys:
+            - yarn-packages-{{ checksum "~/pass-culture-main/pro/yarn.lock" }}
+      - run:
+          name: Install dependencies
+          working_directory: *working_directory
+          command: |
+            export NVM_DIR="/opt/circleci/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm install
+            yarn install
+      - save_cache:
+          name: Save Yarn Package Cache
+          key: yarn-packages-{{ checksum "~/pass-culture-main/pro/yarn.lock" }}
+          paths:
+            - ~/.cache/yarn
       - run:
           name: Install dockerize
           command: |
@@ -219,14 +283,18 @@ workflows:
   version: 2
   commit:
     jobs:
-      - test
+      - run-unit-tests
+      - run-e2e-tests
+      - quality
       - deploy-pro:
           filters:
             branches:
               only:
                 - master
           requires:
-            - test
+            - run-unit-tests
+            - run-e2e-tests
+            - quality
 
   gcp:
     jobs:
