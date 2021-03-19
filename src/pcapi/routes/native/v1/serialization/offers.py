@@ -163,6 +163,7 @@ class OfferResponse(BaseModel):
             "visualDisability": offer.visualDisabilityCompliant,
         }
         offer.expense_domains = get_expense_domains(offer)
+        offer.expenseDomains = get_expense_domains(offer)
 
         if offer.extraData:
             offer.extraData["durationMinutes"] = offer.durationMinutes
@@ -175,6 +176,8 @@ class OfferResponse(BaseModel):
     accessibility: OfferAccessibilityResponse
     description: Optional[str]
     expense_domains: List[ExpenseDomain]
+    # TODO (viconnex): add to_camel alias generator and remove this field when frontend uses the camel_case version
+    expenseDomains: List[ExpenseDomain]
     externalTicketOfficeUrl: Optional[str]
     extraData: Optional[OfferExtraData]
     isActive: bool
