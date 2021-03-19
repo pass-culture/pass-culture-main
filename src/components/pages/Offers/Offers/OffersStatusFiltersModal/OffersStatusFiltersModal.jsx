@@ -97,7 +97,7 @@ export const OffersStatusFiltersModal = ({
       />
       <RadioInput
         checked={status === 'rejected'}
-        label="Offre refusée"
+        label="Refusée"
         name="status"
         onChange={handleStatusFilterChange}
         value="rejected"

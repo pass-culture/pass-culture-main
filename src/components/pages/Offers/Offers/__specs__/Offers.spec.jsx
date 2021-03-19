@@ -434,7 +434,7 @@ describe('src | components | pages | Offers | Offers', () => {
           expect(screen.queryByLabelText('Expirée')).not.toBeInTheDocument()
           expect(screen.queryByLabelText('Appliquer')).not.toBeInTheDocument()
           expect(screen.queryByLabelText('Validation en attente')).not.toBeInTheDocument()
-          expect(screen.queryByLabelText('Offre refusée')).not.toBeInTheDocument()
+          expect(screen.queryByLabelText('Refusée')).not.toBeInTheDocument()
         })
 
         it('should display status filters with "Tous" as default value when clicking on "Statut" filter icon', async () => {
@@ -453,7 +453,7 @@ describe('src | components | pages | Offers | Offers', () => {
           expect(screen.getByLabelText('Épuisée')).not.toBeChecked()
           expect(screen.getByLabelText('Expirée')).not.toBeChecked()
           expect(screen.getByLabelText('Validation en attente')).not.toBeChecked()
-          expect(screen.getByLabelText('Offre refusée')).not.toBeChecked()
+          expect(screen.getByLabelText('Refusée')).not.toBeChecked()
           expect(screen.queryByText('Appliquer', { selector: 'button' })).toBeInTheDocument()
         })
 
