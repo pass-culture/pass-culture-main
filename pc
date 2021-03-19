@@ -1,27 +1,17 @@
 #!/bin/bash
-
 set -o nounset
 
 ## Check if kubectl is installed
 command -v kubectl
 if [ "$?" -ne 0 ]; then
-  echo "------> kubectl is not installed. Installing tools.. "
+  echo "------> ##ERROR: kubectl is not installed. Installing tools.. "
   source install_tools.sh
 fi
 
-##
-echo "------> Context actuel : "$(kubectl config current-context)"."
-echo ""
-echo "!!! Quittez, placez-vous sur le bon context et relancez le script si ce dernier n'est pas le bon !!!"
-
+echo "" && echo "------> ##INFO: Current-context is "$(kubectl config current-context)""
+echo "" && echo "------> ##WARNING: !!! IF the context is not good - EXIT, select the good one and restart !!!"
 sleep 5s
-echo ""
-# echo "------> Voulez-vous continuer ? (y/n)"
-# read rep
-# if test $rep != "y"; then
-#   exit
-# fi
-echo "Lancement du commande pc sur le context "$(kubectl config current-context)""
+echo "" && echo "------> ##INFO: Running pc in context "$(kubectl config current-context)""
 
 # =============================================
 #  Helper that describes all functionalities
@@ -39,7 +29,6 @@ where:
   -c  command that you want to run"
   exit 0
 fi
-
 
 # =============================================
 # Get script parameters
@@ -373,7 +362,6 @@ elif [[ "$CMD" == "restart-metabase" ]]; then
   source "$INFRA_SCRIPTS_PATH"start-metabase.sh
   restart_metabase
 
-
 # =============================================
 # Deploy commands
 # =============================================
@@ -671,7 +659,6 @@ elif [[ "$CMD" == "python" ]]; then
     exit
   fi
 
-
 # Connect to administration instances
 elif [[ "$CMD" == "ssh" ]]; then
   if [[ "$ENV" == "production" ]]; then
@@ -685,8 +672,6 @@ elif [[ "$CMD" == "ssh" ]]; then
 elif [[ "$CMD" == "db_restore_infos" ]]; then
   source "$INFRA_SCRIPTS_PATH"get_restore_infos.sh
   get_restore_infos
-
-
 
 # =============================================
 # Python Scripts commands
