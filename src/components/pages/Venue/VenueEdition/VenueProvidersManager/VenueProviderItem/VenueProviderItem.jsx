@@ -2,25 +2,24 @@ import PropTypes from 'prop-types'
 import React from 'react'
 
 import Icon from 'components/layout/Icon'
+import { getProviderInfo } from 'components/pages/Offers/domain/getProviderInfo'
 
 import { pluralize } from '../../../../../../utils/pluralize'
-import { PROVIDER_ICONS } from '../../../../../utils/providers'
 
 const VenueProviderItem = ({ venueProvider }) => {
   const { lastSyncDate, nOffers, provider, venueIdAtOfferProvider } = venueProvider
-  const { name: providerName, localClass } = provider
-  const providerIcon = PROVIDER_ICONS[localClass]
+  const providerInfo = getProviderInfo(provider.name)
 
   return (
     <li className="venue-provider-row">
       <Icon
         height="64px"
-        svg={providerIcon}
+        svg={providerInfo.icon}
         width="64px"
       />
 
       <div className="provider-name-container">
-        {providerName}
+        {providerInfo.name}
       </div>
 
       {!lastSyncDate ? (

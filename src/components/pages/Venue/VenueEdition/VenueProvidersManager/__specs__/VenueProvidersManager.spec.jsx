@@ -60,7 +60,7 @@ describe('src | VenueProvidersManager', () => {
   describe('render', () => {
     it('should display a list of VenueProviderItem', () => {
       // given
-      props.venueProviders = [{ id: 'AD', provider: { name: 'AA' } }]
+      props.venueProviders = [{ id: 'AD', provider: { name: 'FNAC' } }]
 
       // when
       const wrapper = mount(<VenueProvidersManager {...props} />)
@@ -70,7 +70,7 @@ describe('src | VenueProvidersManager', () => {
       expect(venueProviderItem).toHaveLength(1)
       expect(venueProviderItem.at(0).prop('venueProvider')).toStrictEqual({
         id: 'AD',
-        provider: { name: 'AA' },
+        provider: { name: 'FNAC' },
       })
     })
 
@@ -108,7 +108,7 @@ describe('src | VenueProvidersManager', () => {
 
       it('is hidden when provider and a venue provider are given', () => {
         // Given
-        props.venueProviders = [{ id: 'AD', provider: { name: 'AA' } }]
+        props.venueProviders = [{ id: 'AD', provider: { name: 'TIteLive' } }]
 
         // when
         const wrapper = mount(<VenueProvidersManager {...props} />)

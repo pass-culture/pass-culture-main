@@ -1,30 +1,28 @@
-import { PROVIDER_ICONS } from '../../../utils/providers'
-
 export const getProviderInfo = providerName => {
   const providers = [
     {
       id: 'allociné',
-      icon: PROVIDER_ICONS['AllocineStocks'],
+      icon: 'logo-allocine',
       name: 'Allociné',
     },
     {
       id: 'leslibraires.fr',
-      icon: PROVIDER_ICONS['LibrairesStocks'],
+      icon: 'logo-libraires',
       name: 'Leslibraires.fr',
     },
     {
       id: 'titelive',
-      icon: PROVIDER_ICONS['TiteLiveStocks'],
+      icon: 'logo-titeLive',
       name: 'Tite Live',
     },
     {
       id: 'fnac',
-      icon: PROVIDER_ICONS['FnacStocks'],
+      icon: 'logo-fnac',
       name: 'Fnac',
     },
     {
       id: 'praxiel',
-      icon: PROVIDER_ICONS['PraxielStocks'],
+      icon: 'logo-praxiel',
       name: 'Praxiel',
     },
   ]

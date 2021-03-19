@@ -1,4 +1,3 @@
-import { PROVIDER_ICONS } from '../../../../utils/providers'
 import { getProviderInfo } from '../getProviderInfo'
 
 describe('src | getProviderInfo', () => {
@@ -12,7 +11,7 @@ describe('src | getProviderInfo', () => {
     // then
     expect(providerInfo).toStrictEqual({
       id: 'fnac',
-      icon: PROVIDER_ICONS['FnacStocks'],
+      icon: 'logo-fnac',
       name: 'Fnac',
     })
   })
@@ -27,7 +26,7 @@ describe('src | getProviderInfo', () => {
     // then
     expect(providerInfo).toStrictEqual({
       id: 'titelive',
-      icon: PROVIDER_ICONS['TiteLiveStocks'],
+      icon: 'logo-titeLive',
       name: 'Tite Live',
     })
   })

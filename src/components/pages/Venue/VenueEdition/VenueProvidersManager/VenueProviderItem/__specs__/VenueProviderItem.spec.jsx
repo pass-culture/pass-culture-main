@@ -16,8 +16,8 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
         lastSyncDate: '2018-01-01',
         nOffers: 1,
         provider: {
-          name: 'fake local class',
-          localClass: 'OpenAgendaEvents',
+          name: 'TiteLive',
+          localClass: 'FakeClass',
         },
         venueId: 1,
         venueIdAtOfferProvider: 'fake id',
@@ -33,7 +33,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
       // then
       const icon = wrapper.find(Icon).first()
       expect(icon).toHaveLength(1)
-      expect(icon.prop('svg')).toBe('logo-openAgenda')
+      expect(icon.prop('svg')).toBe('logo-titeLive')
     })
 
     it('should render provider local class when provided', () => {
@@ -41,8 +41,8 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
       const wrapper = shallow(<VenueProviderItem {...props} />)
 
       // then
-      const providerLocalClass = wrapper.find('.provider-name-container')
-      expect(providerLocalClass.text()).toBe('fake local class')
+      const providerName = wrapper.find('.provider-name-container')
+      expect(providerName.text()).toBe('Tite Live')
     })
 
     it('should display import message when venue provider is not synced yet', () => {
