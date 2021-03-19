@@ -4,8 +4,7 @@
     "stylelint-a11y/recommended"
   ],
   "plugins": [
-    "stylelint-order",
-    "stylelint-scss"
+    "stylelint-order"
   ],
   "rules": {
     "at-rule-no-unknown": [true, {

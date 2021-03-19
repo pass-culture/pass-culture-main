@@ -7917,11 +7917,6 @@ icss-utils@^4.0.0, icss-utils@^4.1.1:
   dependencies:
     postcss "^7.0.14"
 
-icu4c-data@^0.64.2:
-  version "0.64.2"
-  resolved "https://registry.yarnpkg.com/icu4c-data/-/icu4c-data-0.64.2.tgz#328c5e9bb65ce2ade45079e0473e64efdb6ee03c"
-  integrity sha512-BPuTfkRTkplmK1pNrqgyOLJ0qB2UcQ12EotVLwiWh4ErtZR1tEYoRZk/LBLmlDfK5v574/lQYLB4jT9vApBiBQ==
-
 ieee754@^1.1.4:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/ieee754/-/ieee754-1.2.1.tgz#8eb7a10a63fff25d15a57b001586d177d1b0d352"
@@ -14318,17 +14313,6 @@ stylelint-order@^4.1.0:
     lodash "^4.17.15"
     postcss "^7.0.31"
     postcss-sorting "^5.0.1"
-
-stylelint-scss@^3.18.0:
-  version "3.18.0"
-  resolved "https://registry.yarnpkg.com/stylelint-scss/-/stylelint-scss-3.18.0.tgz#8f06371c223909bf3f62e839548af1badeed31e9"
-  integrity sha512-LD7+hv/6/ApNGt7+nR/50ft7cezKP2HM5rI8avIdGaUWre3xlHfV4jKO/DRZhscfuN+Ewy9FMhcTq0CcS0C/SA==
-  dependencies:
-    lodash "^4.17.15"
-    postcss-media-query-parser "^0.2.3"
-    postcss-resolve-nested-selector "^0.1.1"
-    postcss-selector-parser "^6.0.2"
-    postcss-value-parser "^4.1.0"
 
 stylelint@^13.7.2:
   version "13.8.0"

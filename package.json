@@ -168,7 +168,6 @@
     "stylelint-a11y": "^1.2.3",
     "stylelint-config-standard": "^20.0.0",
     "stylelint-order": "^4.1.0",
-    "stylelint-scss": "^3.18.0",
     "svgo": "^2.1.0",
     "terser-webpack-plugin": "4.2.3",
     "testcafe": "^1.9.4",
