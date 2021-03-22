@@ -292,6 +292,13 @@ jobs:
               -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:$(cat ./api/version.txt)
             docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:$(cat ./api/version.txt)
           fi
+      - run:
+          name: Send failure notification
+          command: |
+            VERSION_TO_DEPLOY=$(git describe --contains)
+            BOT_MESSAGE="'*"$CIRCLE_BRANCH"* : *Build or Push image "$VERSION_TO_DEPLOY"* seems to have *FAILED* :collision:'"
+            curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
+          when: on_fail
 
   build-and-push-image-db-ops:
     executor: gcp-sdk
