@@ -4,10 +4,13 @@ from datetime import timedelta
 from freezegun import freeze_time
 import pytest
 
+from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.factories import MediationFactory
 from pcapi.core.offers.factories import OfferFactory
+from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.offers.factories import ThingStockFactory
+from pcapi.core.testing import assert_num_queries
 from pcapi.models.offer_type import EventType
 from pcapi.models.offer_type import ThingType
 
@@ -47,12 +50,15 @@ class OffersTest:
         )
         MediationFactory(id=111, offer=offer, thumbCount=1, credit="street credit")
 
-        bookableStock = EventStockFactory(offer=offer, price=12.34)
+        bookableStock = EventStockFactory(offer=offer, price=12.34, quantity=2)
         notBookableStock = EventStockFactory(
             offer=offer, price=45.68, beginningDatetime=datetime.utcnow() - timedelta(days=1)
         )
+        BookingFactory(stock=bookableStock)
 
-        response = TestClient(app.test_client()).get(f"/native/v1/offer/{offer.id}")
+        offer_id = offer.id
+        with assert_num_queries(1):
+            response = TestClient(app.test_client()).get(f"/native/v1/offer/{offer_id}")
 
         assert response.status_code == 200
         assert response.json == {
@@ -120,11 +126,14 @@ class OffersTest:
         }
 
     def test_get_thing_offer(self, app):
+        product = ProductFactory(thumbCount=1)
         offer_type = ThingType.MUSEES_PATRIMOINE_ABO
-        offer = OfferFactory(type=str(offer_type))
+        offer = OfferFactory(type=str(offer_type), product=product)
         ThingStockFactory(offer=offer, price=12.34)
 
-        response = TestClient(app.test_client()).get(f"/native/v1/offer/{offer.id}")
+        offer_id = offer.id
+        with assert_num_queries(1):
+            response = TestClient(app.test_client()).get(f"/native/v1/offer/{offer_id}")
 
         assert response.status_code == 200
         assert not response.json["stocks"][0]["beginningDatetime"]
@@ -134,7 +143,6 @@ class OffersTest:
             "label": "Musée, arts visuels et patrimoine",
             "name": "VISITE",
         }
-        assert response.json["image"] is None
 
     def test_get_offer_not_found(self, app):
         response = TestClient(app.test_client()).get("/native/v1/offer/1")
