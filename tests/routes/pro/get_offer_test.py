@@ -70,7 +70,7 @@ class Returns200:
             dateModified=now,
             dateModifiedAtLastProvider=now,
             beginningDatetime=now + timedelta(hours=1),
-            bookingLimitDatetime=now,
+            bookingLimitDatetime=now + timedelta(hours=1),
             offer__dateCreated=now,
             offer__dateModifiedAtLastProvider=now,
             offer__bookingEmail="offer.booking.email@example.com",
@@ -180,7 +180,7 @@ class Returns200:
             "stocks": [
                 {
                     "beginningDatetime": "2020-10-15T01:00:00Z",
-                    "bookingLimitDatetime": "2020-10-15T00:00:00Z",
+                    "bookingLimitDatetime": "2020-10-15T01:00:00Z",
                     "bookingsQuantity": 0,
                     "cancellationLimitDate": "2020-10-15T00:00:00Z",
                     "dateCreated": "2020-10-15T00:00:00Z",

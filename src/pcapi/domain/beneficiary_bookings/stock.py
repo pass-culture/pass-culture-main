@@ -35,7 +35,7 @@ class Stock:
 
     @property
     def has_booking_limit_datetime_passed(self) -> bool:
-        if self.booking_limit_datetime and self.booking_limit_datetime < datetime.utcnow():
+        if self.booking_limit_datetime and self.booking_limit_datetime <= datetime.utcnow():
             return True
         return False
 

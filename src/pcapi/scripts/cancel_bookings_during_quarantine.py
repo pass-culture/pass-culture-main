@@ -20,7 +20,7 @@ def find_bookings_to_cancel() -> List[Booking]:
         Booking.query.join(Stock)
         .filter(
             and_(Stock.beginningDatetime > minimal_date),
-            (Stock.beginningDatetime < datetime.utcnow()),
+            (Stock.beginningDatetime <= datetime.utcnow()),
         )
         .outerjoin(Payment, Payment.bookingId == Booking.id)
         .all()

@@ -98,11 +98,11 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin, VersionedMixin
 
     @hybrid_property
     def hasBookingLimitDatetimePassed(self):
-        return bool(self.bookingLimitDatetime and self.bookingLimitDatetime < datetime.utcnow())
+        return bool(self.bookingLimitDatetime and self.bookingLimitDatetime <= datetime.utcnow())
 
     @hasBookingLimitDatetimePassed.expression
     def hasBookingLimitDatetimePassed(cls):  # pylint: disable=no-self-argument
-        return and_(cls.bookingLimitDatetime != None, cls.bookingLimitDatetime < func.now())
+        return and_(cls.bookingLimitDatetime != None, cls.bookingLimitDatetime <= func.now())
 
     @property
     def bookingsQuantity(self):
