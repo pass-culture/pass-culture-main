@@ -128,7 +128,7 @@ class Get:
             assert favorites[3]["offer"]["date"] is None
             assert favorites[3]["offer"]["startDate"] is None
             assert favorites[3]["offer"]["image"] is None
-            assert favorites[3]["offer"]["expenseDomains"] == ["physical", "all"]
+            assert set(favorites[3]["offer"]["expenseDomains"]) == {"physical", "all"}
 
             # Offer in the future but past the booking limit
             assert favorites[2]["id"] == favorite4.id
