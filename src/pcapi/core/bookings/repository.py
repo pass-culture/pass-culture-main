@@ -203,6 +203,16 @@ def get_validated_bookings_quantity_for_venue(venue_id: int) -> int:
     )
 
 
+def find_offers_booked_by_beneficiaries(users: List[User]) -> List[Offer]:
+    return (
+        Offer.query.distinct(Offer.id)
+        .join(Stock)
+        .join(Booking)
+        .filter(Booking.userId.in_(user.id for user in users))
+        .all()
+    )
+
+
 def _query_keep_on_non_activation_offers() -> Query:
     offer_types = ["ThingType.ACTIVATION", "EventType.ACTIVATION"]
 

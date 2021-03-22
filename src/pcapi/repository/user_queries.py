@@ -30,8 +30,12 @@ def find_user_by_email(email: str) -> User:
 
 
 def find_beneficiary_users_by_email_provider(email_provider: str) -> List[User]:
-    formatted_email_provider = "%{}%".format(email_provider)
-    return User.query.filter(User.isBeneficiary.is_(True)).filter(User.email.like(formatted_email_provider)).all()
+    formatted_email_provider = f"%@%{email_provider}"
+    return (
+        User.query.filter_by(isBeneficiary=True, isActive=True)
+        .filter(func.lower(User.email).like(func.lower(formatted_email_provider)))
+        .all()
+    )
 
 
 def find_by_civility(first_name: str, last_name: str, date_of_birth: datetime) -> List[User]:
