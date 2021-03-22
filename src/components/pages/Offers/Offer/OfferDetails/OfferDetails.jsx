@@ -3,9 +3,10 @@ import React, { useCallback, useRef, useState } from 'react'
 
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import OfferPreviewLink from 'components/pages/Offers/Offer/OfferPreviewLink/OfferPreviewLink'
-import { computeOfferStatus } from 'components/pages/Offers/Offers/domain/computeOfferStatus'
-import { OFFER_STATUS } from 'components/pages/Offers/Offers/domain/offerStatus'
 import * as pcapi from 'repository/pcapi/pcapi'
+
+import { computeOfferStatus } from '../../Offers/domain/computeOfferStatus'
+import { OFFER_STATUS } from '../../Offers/domain/offerStatus'
 
 import OfferCreation from './OfferForm/OfferCreation'
 import OfferEditionContainer from './OfferForm/OfferEditionContainer'
@@ -123,7 +124,7 @@ const OfferDetails = ({
     : false
 
   return (
-    <div className="offer-edit">
+    <>
       <PageTitle title="Détails de l'offre" />
 
       <div className={Object.entries(formValues).length !== 0 ? 'sidebar-container' : ''}>
@@ -182,7 +183,7 @@ const OfferDetails = ({
           </div>
         )}
       </div>
-    </div>
+    </>
   )
 }
 

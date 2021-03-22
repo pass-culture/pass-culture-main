@@ -9,6 +9,11 @@
   .offer-content {
     margin-top: rem(25px);
 
+    .bi-banner {
+      margin-bottom: rem(24px);
+      margin-top: 0;
+    }
+
     .sidebar-container {
       display: flex;
       justify-content: space-between;

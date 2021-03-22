@@ -9,6 +9,10 @@ import { ReactComponent as AddStockSvg } from 'icons/ico-plus.svg'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { getDepartmentTimezone } from 'utils/timezone'
 
+import { computeOfferStatus } from '../../Offers/domain/computeOfferStatus'
+import { OFFER_STATUS } from '../../Offers/domain/offerStatus'
+import OfferStatusBanner from '../OfferDetails/OfferStatusBanner/OfferStatusBanner'
+
 import { EVENT_CANCELLATION_INFORMATION, THING_CANCELLATION_INFORMATION } from './_constants'
 import {
   createStockPayload,
@@ -150,9 +154,17 @@ const Stocks = ({ offer, showErrorNotification, showSuccessNotification }) => {
     return null
   }
 
+  const offerStatus = computeOfferStatus(offer, offer.stocks)
+  const needsStatusInfosMessage = offerStatus
+    ? [OFFER_STATUS.REJECTED, OFFER_STATUS.AWAITING].includes(offerStatus)
+    : false
+
   return (
     <div className="stocks-page">
       <PageTitle title="Vos stocks" />
+
+      {needsStatusInfosMessage && <OfferStatusBanner status={offerStatus} />}
+
       <h3 className="section-title">
         {'Stock et prix'}
       </h3>

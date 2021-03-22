@@ -278,6 +278,46 @@ describe('stocks page', () => {
       expect(cancelLink).toHaveAttribute('href', '/offres/AG3A/edition')
     })
 
+    it('should display status informative message when offer is rejected', async () => {
+      // given
+      const offer = {
+        ...defaultOffer,
+        validation: 'REJECTED',
+        isActive: false,
+      }
+      pcapi.loadOffer.mockResolvedValue(offer)
+
+      // when
+      await renderOffers(props, store)
+
+      // then
+      expect(
+        screen.getByText(
+          'Votre offre a été refusée car elle ne respecte pas les Conditions Générales d’Utilisation du pass. Un e-mail contenant les conditions d’éligibilité d’une offre a été envoyé à l’adresse e-mail attachée à votre compte.'
+        )
+      ).toBeInTheDocument()
+    })
+
+    it('should display status informative message when offer is awaiting for validation', async () => {
+      // given
+      const offer = {
+        ...defaultOffer,
+        validation: 'AWAITING',
+        isActive: true,
+      }
+      pcapi.loadOffer.mockResolvedValue(offer)
+
+      // when
+      await renderOffers({}, store)
+
+      // then
+      expect(
+        screen.getByText(
+          'Votre offre est en cours de validation par l’équipe du pass Culture. Une fois validée, vous recevrez un e-mail de confirmation et votre offre sera automatiquement mise en ligne.'
+        )
+      ).toBeInTheDocument()
+    })
+
     describe('render event offer', () => {
       let eventOffer
       beforeEach(() => {
