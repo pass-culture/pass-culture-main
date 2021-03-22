@@ -90,8 +90,11 @@ def create_account(body: serializers.AccountRequest) -> None:
             is_email_validated=False,
         )
     except exceptions.UserAlreadyExistsException:
-        user = find_user_by_email(body.email)
-        api.request_password_reset(user)
+        try:
+            user = find_user_by_email(body.email)
+            api.request_password_reset(user)
+        except exceptions.EmailNotSent:
+            raise ApiErrors({"email": ["L'email n'a pas pu être envoyé"]})
     except exceptions.UnderAgeUserException:
         raise ApiErrors({"dateOfBirth": "The birthdate is invalid"})
 
