@@ -94,15 +94,7 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin, VersionedMixin
 
     @property
     def isBookable(self):
-        if self.hasBookingLimitDatetimePassed:  # pylint: disable=using-constant-test
-            return False
-        if not self.offer.isReleased:
-            return False
-        if self.beginningDatetime and self.beginningDatetime < datetime.utcnow():
-            return False
-        if self.isSoldOut:
-            return False
-        return True
+        return not self.isExpired and self.offer.isReleased and not self.isSoldOut
 
     @hybrid_property
     def hasBookingLimitDatetimePassed(self):
@@ -127,6 +119,10 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin, VersionedMixin
     @isEventExpired.expression
     def isEventExpired(cls):  # pylint: disable=no-self-argument
         return and_(cls.beginningDatetime != None, cls.beginningDatetime <= func.now())
+
+    @property
+    def isExpired(self):
+        return self.isEventExpired or self.hasBookingLimitDatetimePassed
 
     @property
     def isEventDeletable(self):

@@ -51,7 +51,7 @@ class OffersTest:
         MediationFactory(id=111, offer=offer, thumbCount=1, credit="street credit")
 
         bookableStock = EventStockFactory(offer=offer, price=12.34, quantity=2)
-        notBookableStock = EventStockFactory(
+        expiredStock = EventStockFactory(
             offer=offer, price=45.68, beginningDatetime=datetime.utcnow() - timedelta(days=1)
         )
         exhaustedStock = EventStockFactory(offer=offer, price=12.34, quantity=1)
@@ -81,15 +81,17 @@ class OffersTest:
                     "cancellationLimitDatetime": "2020-01-03T00:00:00Z",
                     "isBookable": True,
                     "isSoldOut": False,
+                    "isExpired": False,
                 },
                 {
-                    "id": notBookableStock.id,
+                    "id": expiredStock.id,
                     "price": 4568,
                     "beginningDatetime": "2019-12-31T00:00:00Z",
                     "bookingLimitDatetime": "2019-12-30T23:00:00Z",
                     "cancellationLimitDatetime": "2020-01-01T00:00:00Z",
                     "isBookable": False,
                     "isSoldOut": False,
+                    "isExpired": True,
                 },
                 {
                     "id": exhaustedStock.id,
@@ -99,6 +101,7 @@ class OffersTest:
                     "cancellationLimitDatetime": "2020-01-03T00:00:00Z",
                     "isBookable": False,
                     "isSoldOut": True,
+                    "isExpired": False,
                 },
             ],
             "category": {"categoryType": "Event", "label": "Cinéma", "name": "CINEMA"},

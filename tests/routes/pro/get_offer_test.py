@@ -1,4 +1,5 @@
 from datetime import datetime
+from datetime import timedelta
 
 from freezegun import freeze_time
 import pytest
@@ -68,7 +69,7 @@ class Returns200:
             dateCreated=now,
             dateModified=now,
             dateModifiedAtLastProvider=now,
-            beginningDatetime=now,
+            beginningDatetime=now + timedelta(hours=1),
             bookingLimitDatetime=now,
             offer__dateCreated=now,
             offer__dateModifiedAtLastProvider=now,
@@ -111,7 +112,7 @@ class Returns200:
             "conditions": None,
             "dateCreated": "2020-10-15T00:00:00Z",
             "dateModifiedAtLastProvider": "2020-10-15T00:00:00Z",
-            "dateRange": ["2020-10-15T00:00:00Z", "2020-10-15T00:00:00Z"],
+            "dateRange": ["2020-10-15T01:00:00Z", "2020-10-15T01:00:00Z"],
             "description": "Tatort, but slower",
             "durationMinutes": 60,
             "extraData": None,
@@ -178,7 +179,7 @@ class Returns200:
             "validation": "APPROVED",
             "stocks": [
                 {
-                    "beginningDatetime": "2020-10-15T00:00:00Z",
+                    "beginningDatetime": "2020-10-15T01:00:00Z",
                     "bookingLimitDatetime": "2020-10-15T00:00:00Z",
                     "bookingsQuantity": 0,
                     "cancellationLimitDate": "2020-10-15T00:00:00Z",
@@ -190,7 +191,7 @@ class Returns200:
                     "idAtProviders": None,
                     "isBookable": True,
                     "isEventDeletable": True,
-                    "isEventExpired": True,
+                    "isEventExpired": False,
                     "isSoftDeleted": False,
                     "lastProviderId": None,
                     "offerId": humanize(stock.offer.id),
