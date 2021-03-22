@@ -1,3 +1,4 @@
+import logging
 from typing import List
 
 from sqlalchemy.sql.functions import func
@@ -6,7 +7,9 @@ from pcapi.models import db
 from pcapi.models.payment import Payment
 from pcapi.models.payment_status import PaymentStatus
 from pcapi.models.payment_status import TransactionStatus
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_payments_ids_under_review(min_id: int, batch_size: int, transaction_label: str) -> List[int]:
