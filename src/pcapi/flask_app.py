@@ -1,6 +1,6 @@
-from datetime import datetime
 import logging
 import re
+import time
 import typing
 
 from flask import Blueprint
@@ -94,24 +94,23 @@ jwt = JWTManager(app)
 
 @app.before_request
 def before_request() -> None:
-    g.start = datetime.utcnow()
+    g.request_start = time.perf_counter()
 
 
 @app.after_request
 def log_request_details(response: flask.wrappers.Response) -> flask.wrappers.Response:
-    request_duration = datetime.utcnow() - g.start
-    request_duration_in_milliseconds = round(request_duration.total_seconds() * 1000, 2)
-    request_data = {
+    duration = round((time.perf_counter() - g.request_start) * 1000)  # milliseconds
+    extra = {
         "statusCode": response.status_code,
         "method": request.method,
-        "route": request.url_rule,
+        "route": str(request.url_rule),  # e.g "/offers/<offer_id>"
         "path": request.path,
         "queryParams": request.query_string.decode("UTF-8"),
-        "duration": request_duration_in_milliseconds,
+        "duration": duration,
         "size": response.headers.get("Content-Length", type=int),
     }
 
-    logger.info("request details", extra=request_data)
+    logger.info("HTTP request at %s", request.path, extra=extra)
 
     return response
 
