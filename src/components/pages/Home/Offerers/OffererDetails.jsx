@@ -33,13 +33,16 @@ const OffererDetails = ({
   )
 
   const hasMissingBankInformations = useMemo(() => {
-    if (!selectedOfferer) return false
-    return (
-      !hasBankInformations(selectedOfferer) &&
-      selectedOfferer.managedVenues
-        .filter(venue => !venue.isVirtual)
-        .some(venue => !hasBankInformations(venue))
-    )
+    if (!selectedOfferer || hasBankInformations(selectedOfferer)) return false
+
+    const hasMissingDataForPhysicalVenues = selectedOfferer.managedVenues
+      .filter(venue => !venue.isVirtual)
+      .some(venue => !hasBankInformations(venue))
+    const virtualVenue = selectedOfferer.managedVenues.find(venue => venue.isVirtual)
+    const hasMissingDataForVirtualVenue =
+      !virtualVenue || (virtualVenue.nOffers > 0 && !hasBankInformations(virtualVenue))
+
+    return hasMissingDataForPhysicalVenues || hasMissingDataForVirtualVenue
   }, [selectedOfferer])
 
   return (

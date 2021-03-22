@@ -119,7 +119,13 @@ describe('offererDetails', () => {
         siren: '222222222',
         bic: 'test bic 02',
         iban: 'test iban 02',
-        managedVenues: [],
+        managedVenues: [
+          {
+            ...virtualVenue,
+            id: 'test_venue_id_4',
+            managingOffererId: 'FQ',
+          },
+        ],
       },
     ]
     baseOfferersNames = baseOfferers.map(offerer => ({
@@ -326,7 +332,7 @@ describe('offererDetails', () => {
   })
 
   describe("when offerer doesn't have bank informations", () => {
-    it('should display add information link', async () => {
+    it('should display add information link and bank informations warning', async () => {
       baseOfferers = [
         {
           ...baseOfferers[0],
@@ -350,6 +356,30 @@ describe('offererDetails', () => {
       expect(warningIcons).toHaveLength(nbWarningIcons)
     })
 
+    it('should display bank warning if virtual venue has offers and no bank informations', async () => {
+      // Given
+      baseOfferers = [
+        {
+          ...baseOfferers[0],
+          bic: '',
+          iban: '',
+          demarchesSimplifieesApplicationId: '',
+          managedVenues: [virtualVenue],
+        },
+      ]
+      pcapi.getOfferer.mockResolvedValue(baseOfferers[0])
+
+      // When
+      await renderHomePage()
+
+      // Then
+      const warningIcons = screen.getAllByAltText('Informations bancaires manquantes')
+      let nbWarningIcons = 0
+      nbWarningIcons += 1 // in offerers header
+      nbWarningIcons += 1 // in bank account card title
+      expect(warningIcons).toHaveLength(nbWarningIcons)
+    })
+
     it("shouldn't display bank warning if all physical venues have bank informations", async () => {
       physicalVenue = {
         ...physicalVenue,
@@ -359,6 +389,10 @@ describe('offererDetails', () => {
       physicalVenueWithPublicName = {
         ...physicalVenueWithPublicName,
         demarchesSimplifieesApplicationId: 'fake_demarchesSimplifieesApplicationId',
+      }
+      virtualVenue = {
+        ...virtualVenue,
+        nOffers: 0,
       }
       baseOfferers = [
         {
