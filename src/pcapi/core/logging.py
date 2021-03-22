@@ -44,7 +44,14 @@ def get_or_set_correlation_id():
 def get_logged_in_user_id():
     if not _is_within_app_context():
         return None
-    if not current_user:
+    try:
+        if not current_user:
+            return None
+    except AttributeError:
+        # For some reason, we may get an AttributeError if this
+        # function is called very soon (before some initialization is
+        # done, I guess):
+        #     'Flask' object has no attribute 'login_manager'
         return None
     try:
         return current_user.id
