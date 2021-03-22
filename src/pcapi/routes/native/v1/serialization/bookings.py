@@ -11,6 +11,7 @@ from pcapi.core.offers.models import Offer
 from pcapi.routes.native.utils import convert_to_cent
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
 from pcapi.routes.native.v1.serialization.offers import OfferCategoryResponse
+from pcapi.routes.native.v1.serialization.offers import OfferImageResponse
 from pcapi.routes.native.v1.serialization.offers import get_serialized_offer_category
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
@@ -55,6 +56,7 @@ class BookingOfferResponse(BaseModel):
     name: str
     category: OfferCategoryResponse
     extraData: Optional[BookingOfferExtraData]
+    image: Optional[OfferImageResponse]
     isPermanent: bool
     venue: BookingVenueResponse
     withdrawalDetails: Optional[str]

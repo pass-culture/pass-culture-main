@@ -8,6 +8,7 @@ import pytest
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
+from pcapi.core.offers.factories import MediationFactory
 from pcapi.core.offers.factories import StockFactory
 from pcapi.core.users import factories as users_factories
 from pcapi.models.offer_type import ThingType
@@ -92,6 +93,8 @@ class GetBookingsTest:
         used1 = BookingFactory(user=user, isUsed=True, dateUsed=datetime(2021, 3, 1))
         used2 = BookingFactory(user=user, isUsed=True, dateUsed=datetime(2021, 3, 2))
 
+        mediation = MediationFactory(id=111, offer=used2.stock.offer, thumbCount=1, credit="street credit")
+
         access_token = create_access_token(identity=self.identifier)
         test_client = TestClient(app.test_client())
         test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
@@ -125,6 +128,7 @@ class GetBookingsTest:
                     "category": {"categoryType": "Thing", "label": "Film", "name": "FILM"},
                     "extraData": None,
                     "id": used2.stock.offer.id,
+                    "image": {"credit": "street credit", "url": mediation.thumbUrl},
                     "isPermanent": False,
                     "name": used2.stock.offer.name,
                     "venue": {
