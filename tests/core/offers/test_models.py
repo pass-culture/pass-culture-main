@@ -187,3 +187,15 @@ class OfferStatusTest:
             isActive=False,
         )
         assert soldout_offer.status == OfferStatus.SOLD_OUT
+
+
+@pytest.mark.usefixtures("db_session")
+class OfferisSoldOutTest:
+    def test_is_out_of_stock(self):
+        offer_without_stock = factories.OfferFactory()
+        offer_with_stock = factories.OfferFactory()
+        factories.StockFactory(offer=offer_with_stock)
+        factories.StockFactory(offer=offer_with_stock, quantity=0)
+
+        assert offer_without_stock.isSoldOut
+        assert not offer_with_stock.isSoldOut

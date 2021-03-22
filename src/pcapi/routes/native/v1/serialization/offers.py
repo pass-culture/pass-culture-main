@@ -50,6 +50,7 @@ class OfferStockResponse(BaseModel):
     bookingLimitDatetime: Optional[datetime]
     cancellation_limit_datetime: Optional[datetime]
     isBookable: bool
+    isSoldOut: bool
     price: int
 
     _convert_price = validator("price", pre=True, allow_reuse=True)(convert_to_cent)
@@ -183,6 +184,7 @@ class OfferResponse(BaseModel):
     extraData: Optional[OfferExtraData]
     isActive: bool  # TODO (viconnex): remove field when frontend uses isReleased
     isReleased: bool
+    isSoldOut: bool
     isDigital: bool
     isDuo: bool
     name: str

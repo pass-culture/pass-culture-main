@@ -98,11 +98,9 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin, VersionedMixin
             return False
         if not self.offer.isReleased:
             return False
-        if self.isSoftDeleted:
-            return False
         if self.beginningDatetime and self.beginningDatetime < datetime.utcnow():
             return False
-        if self.quantity is not None and self.remainingQuantity == 0:
+        if self.isSoldOut:
             return False
         return True
 
@@ -136,6 +134,10 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin, VersionedMixin
             return True
         limit_date_for_stock_deletion = self.beginningDatetime + EVENT_AUTOMATIC_REFUND_DELAY
         return limit_date_for_stock_deletion >= datetime.utcnow()
+
+    @property
+    def isSoldOut(self):
+        return self.isSoftDeleted or (self.quantity is not None and self.remainingQuantity <= 0)
 
     @classmethod
     def queryNotSoftDeleted(cls):
@@ -328,6 +330,10 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin, 
             and self.venue.managingOfferer.isActive
             and self.venue.managingOfferer.isValidated
         )
+
+    @property
+    def isSoldOut(self) -> bool:
+        return all(stock.isSoldOut for stock in self.stocks)
 
     @hybrid_property
     def isPermanent(self) -> bool:

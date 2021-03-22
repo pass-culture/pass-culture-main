@@ -54,7 +54,10 @@ class OffersTest:
         notBookableStock = EventStockFactory(
             offer=offer, price=45.68, beginningDatetime=datetime.utcnow() - timedelta(days=1)
         )
+        exhaustedStock = EventStockFactory(offer=offer, price=12.34, quantity=1)
+
         BookingFactory(stock=bookableStock)
+        BookingFactory(stock=exhaustedStock)
 
         offer_id = offer.id
         with assert_num_queries(1):
@@ -77,14 +80,25 @@ class OffersTest:
                     "bookingLimitDatetime": "2020-01-05T23:00:00Z",
                     "cancellationLimitDatetime": "2020-01-03T00:00:00Z",
                     "isBookable": True,
+                    "isSoldOut": False,
                 },
                 {
                     "id": notBookableStock.id,
                     "price": 4568,
-                    "isBookable": False,
                     "beginningDatetime": "2019-12-31T00:00:00Z",
                     "bookingLimitDatetime": "2019-12-30T23:00:00Z",
                     "cancellationLimitDatetime": "2020-01-01T00:00:00Z",
+                    "isBookable": False,
+                    "isSoldOut": False,
+                },
+                {
+                    "id": exhaustedStock.id,
+                    "price": 1234,
+                    "beginningDatetime": "2020-01-06T00:00:00Z",
+                    "bookingLimitDatetime": "2020-01-05T23:00:00Z",
+                    "cancellationLimitDatetime": "2020-01-03T00:00:00Z",
+                    "isBookable": False,
+                    "isSoldOut": True,
                 },
             ],
             "category": {"categoryType": "Event", "label": "Cinéma", "name": "CINEMA"},
@@ -106,6 +120,7 @@ class OffersTest:
             },
             "image": {"url": "http://localhost/storage/thumbs/mediations/N4", "credit": "street credit"},
             "isActive": True,
+            "isSoldOut": False,
             "isDuo": True,
             "isDigital": False,
             "isReleased": True,
