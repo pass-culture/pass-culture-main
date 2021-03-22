@@ -9,6 +9,7 @@ from typing import List
 from typing import Optional
 
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.models import Criterion
 from pcapi.models import EventType
 from pcapi.models import Offer
@@ -65,6 +66,7 @@ def create_offer_with_event_product(
     offer.lastProvider = last_provider
     offer.idAtProviders = id_at_providers
     offer.isDuo = is_duo
+    offer.validation = OfferValidationStatus.APPROVED
     offer.withdrawalDetails = withdrawal_details
 
     return offer
@@ -151,6 +153,7 @@ def create_offer_with_thing_product(
     offer.id = idx
     offer.withdrawalDetails = withdrawal_details
     offer.isDuo = False
+    offer.validation = OfferValidationStatus.APPROVED
 
     if extra_data:
         offer.extraData = extra_data

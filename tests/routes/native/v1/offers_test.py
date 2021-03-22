@@ -108,6 +108,7 @@ class OffersTest:
             "isActive": True,
             "isDuo": True,
             "isDigital": False,
+            "isReleased": True,
             "name": "l'offre du siècle",
             "venue": {
                 "id": offer.venue.id,

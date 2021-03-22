@@ -93,16 +93,10 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin, VersionedMixin
     bookingLimitDatetime = Column(DateTime, nullable=True)
 
     @property
-    def isBookable(self):  # pylint: disable=too-many-return-statements
+    def isBookable(self):
         if self.hasBookingLimitDatetimePassed:  # pylint: disable=using-constant-test
             return False
-        if not self.offer.venue.managingOfferer.isActive:
-            return False
-        if not self.offer.venue.managingOfferer.isValidated:
-            return False
-        if not self.offer.venue.isValidated:
-            return False
-        if not self.offer.isActive:
+        if not self.offer.isReleased:
             return False
         if self.isSoftDeleted:
             return False
@@ -324,6 +318,16 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin, 
     @canExpire.expression
     def canExpire(cls) -> bool:  # pylint: disable=no-self-argument
         return cls.type.in_(EXPIRABLE_OFFER_TYPES)
+
+    @property
+    def isReleased(self) -> bool:
+        return (
+            self.isActive
+            and self.validation == OfferValidationStatus.APPROVED
+            and self.venue.isValidated
+            and self.venue.managingOfferer.isActive
+            and self.venue.managingOfferer.isValidated
+        )
 
     @hybrid_property
     def isPermanent(self) -> bool:
