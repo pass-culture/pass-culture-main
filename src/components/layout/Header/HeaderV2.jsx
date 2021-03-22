@@ -16,7 +16,7 @@ import { ReactComponent as RefundsSvg } from './assets/refunds.svg'
 import { ReactComponent as SignoutSvg } from './assets/signout.svg'
 import { ReactComponent as StyleguideSvg } from './assets/styleguide.svg'
 
-const HeaderV2 = ({ isStyleguideActive }) => {
+const HeaderV2 = ({ isStyleguideActive, isUserAdmin }) => {
   const dispatch = useDispatch()
 
   function onSignoutClick() {
@@ -29,14 +29,17 @@ const HeaderV2 = ({ isStyleguideActive }) => {
     <header className="menu-v2">
       <nav>
         <div className="nav-brand">
-          <Logo className="nav-item" />
+          <Logo
+            className="nav-item"
+            isUserAdmin={isUserAdmin}
+          />
         </div>
 
         <div className="nav-menu">
           <NavLink
             className="nav-item"
             role="menuitem"
-            to="/accueil"
+            to={isUserAdmin ? '/structures' : '/accueil'}
           >
             <HomeSvg aria-hidden />
             {'Accueil'}
@@ -107,6 +110,7 @@ const HeaderV2 = ({ isStyleguideActive }) => {
 
 HeaderV2.propTypes = {
   isStyleguideActive: PropTypes.bool.isRequired,
+  isUserAdmin: PropTypes.bool.isRequired,
 }
 
 export default HeaderV2

@@ -160,9 +160,9 @@ describe('src | components | pages | Signin | Signin', () => {
     })
 
     describe('when user is signed in', () => {
-      it('should redirect to offerers page', () => {
+      it('should redirect to offerers page if user is admin', () => {
         // Given
-        props.currentUser = {}
+        props.currentUser = { isAdmin: true }
         const wrapper = shallow(<Signin {...props} />)
 
         // when
@@ -170,6 +170,19 @@ describe('src | components | pages | Signin | Signin', () => {
 
         // then
         expect(props.history.push).toHaveBeenCalledWith('/structures')
+      })
+
+      it('should redirect to homepage if user is not admin', () => {
+        // Given
+        props.currentUser = { isAdmin: false }
+        props.isNewHomepageActive = true
+        const wrapper = shallow(<Signin {...props} />)
+
+        // when
+        wrapper.instance().onHandleSuccessRedirect()
+
+        // then
+        expect(props.history.push).toHaveBeenCalledWith('/accueil')
       })
     })
 

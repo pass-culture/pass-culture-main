@@ -36,4 +36,22 @@ describe('navigation menu', () => {
     // Then
     expect(screen.queryByTestId('styleguide')).not.toBeInTheDocument()
   })
+
+  describe('when clicking on Home icon', () => {
+    it('should redirect to /accueil when user is not admin', () => {
+      // When
+      renderHeader({ isUserAdmin: false, isStyleguideActive: false })
+
+      // Then
+      expect(screen.getByText('Accueil').closest('a')).toHaveAttribute('href', '/accueil')
+    })
+
+    it('should redirect to /structures when user is admin', () => {
+      // When
+      renderHeader({ isUserAdmin: true, isStyleguideActive: false })
+
+      // Then
+      expect(screen.getByText('Accueil').closest('a')).toHaveAttribute('href', '/structures')
+    })
+  })
 })

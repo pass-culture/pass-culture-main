@@ -11,11 +11,12 @@ import HeaderSwitch from './HeaderSwitch'
 export const mapStateToProps = state => {
   const { data } = state
   const user = selectCurrentUser(state)
-  const { publicName: name } = user
+  const { publicName: name, isAdmin: isUserAdmin } = user
   const { offerers } = data
 
   return {
     isNewHomepageActive: selectIsFeatureActive(state, 'PRO_HOMEPAGE'),
+    isUserAdmin,
     name,
     offerers,
   }
