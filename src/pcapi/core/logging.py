@@ -152,6 +152,7 @@ def install_logging():
 
 
 def _silence_noisy_loggers():
+    logging.getLogger("spectree.config").setLevel(logging.WARNING)
     # FIXME (dbaty, 2021-03-17): these log levels are historical.
     # Perhaps we should set them to WARNING instead?
     logging.getLogger("werkzeug").setLevel(logging.ERROR)
