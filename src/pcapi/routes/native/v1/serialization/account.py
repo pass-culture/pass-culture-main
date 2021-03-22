@@ -7,7 +7,11 @@ from uuid import UUID
 from dateutil.relativedelta import relativedelta
 from pydantic.class_validators import validator
 from pydantic.fields import Field
+from sqlalchemy.orm import joinedload
 
+from pcapi.core.bookings.models import Booking
+from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import Stock
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.models import ExpenseDomain
@@ -84,6 +88,7 @@ class DomainsCredit(BaseModel):
 
 class UserProfileResponse(BaseModel):
     id: int
+    booked_offers: dict
     domains_credit: Optional[DomainsCredit]
     dateOfBirth: Optional[datetime.date]
     deposit_expiration_date: Optional[datetime.datetime]
@@ -123,11 +128,20 @@ class UserProfileResponse(BaseModel):
             and user.is_eligible
         )
 
+    @staticmethod
+    def _get_booked_offers(user: User) -> dict:
+        not_cancelled_bookings = Booking.query.options(
+            joinedload(Booking.stock).joinedload(Stock.offer).load_only(Offer.id)
+        ).filter_by(userId=user.id, isCancelled=False)
+
+        return {booking.stock.offer.id: booking.id for booking in not_cancelled_bookings}
+
     @classmethod
     def from_orm(cls, user: User):  # type: ignore
         user.show_eligible_card = cls._show_eligible_card(user)
         user.subscriptions = user.get_notification_subscriptions()
         user.domains_credit = get_domains_credit(user)
+        user.booked_offers = cls._get_booked_offers(user)
         return super().from_orm(user)
 
 

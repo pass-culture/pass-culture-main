@@ -80,7 +80,8 @@ class AccountTest:
             publicName="jdo",
             **USER_DATA,
         )
-        BookingFactory(user=user, amount=Decimal("123.45"))
+        booking = BookingFactory(user=user, amount=Decimal("123.45"))
+        BookingFactory(user=user, amount=Decimal("123.45"), isCancelled=True)
 
         access_token = create_access_token(identity=self.identifier)
         test_client = TestClient(app.test_client())
@@ -90,6 +91,7 @@ class AccountTest:
 
         EXPECTED_DATA = {
             "id": user.id,
+            "bookedOffers": {str(booking.stock.offer.id): booking.id},
             "domainsCredit": {
                 "all": {"initial": 50000, "remaining": 37655},
                 "digital": {"initial": 20000, "remaining": 20000},
