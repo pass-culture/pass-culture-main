@@ -31,13 +31,6 @@ class VenueCreation extends PureComponent {
     handleInitialRequest()
   }
 
-  buildBackToInfos = (offererName, initialName, offererId) => {
-    return {
-      label: offererName === initialName ? 'STRUCTURE' : offererName,
-      path: `/structures/${offererId}`,
-    }
-  }
-
   handleFormFail = formResolver => (state, action) => {
     const { handleSubmitRequestFail } = this.props
     const { payload } = action
@@ -86,7 +79,6 @@ class VenueCreation extends PureComponent {
 
   onHandleRender = formProps => {
     const {
-      formInitialValues,
       history,
       match: {
         params: { offererId, venueId },
@@ -97,8 +89,6 @@ class VenueCreation extends PureComponent {
     } = this.props
     const { isRequestPending } = this.state
     const readOnly = false
-
-    const { siret: initialSiret, venueTypeId, venueLabelId } = formInitialValues || {}
 
     const canSubmit = getCanSubmit(formProps)
     const { form, handleSubmit, values } = formProps
@@ -119,12 +109,9 @@ class VenueCreation extends PureComponent {
         <IdentifierFields
           fieldReadOnlyBecauseFrozenFormSiret={siretValidOnCreation}
           formSiret={formSiret}
-          initialSiret={initialSiret}
           isCreatedEntity
           readOnly={readOnly}
-          venueLabelId={venueLabelId}
           venueLabels={venueLabels}
-          venueTypeId={venueTypeId}
           venueTypes={venueTypes}
         />
         <BankInformation offerer={offerer} />
@@ -170,29 +157,25 @@ class VenueCreation extends PureComponent {
       offerer,
     } = this.props
 
-    const { name: offererName } = offerer || {}
-    const { isVirtual: initialIsVirtual, name: initialName } = formInitialValues || {}
-
     const decorators = [
       bindGetSuggestionsToLatitude,
       bindGetSuggestionsToLongitude,
       bindGetSiretInformationToSiret,
     ]
 
-    const showForm = !initialIsVirtual && typeof offerer !== 'undefined'
+    const showForm = typeof offerer !== 'undefined'
 
     return (
       <AppLayout
         layoutConfig={{
-          backTo: this.buildBackToInfos(offererName, initialName, offererId),
+          backTo: this.props.isNewHomepageActive
+            ? { label: 'Accueil', path: `/accueil?structure=${offererId}` }
+            : { label: 'Structure', path: `/structures/${offererId}` },
           pageName: 'venue',
         }}
       >
         <PageTitle title="Créer un lieu" />
-        <Titles
-          subtitle={initialName}
-          title="Lieu"
-        />
+        <Titles title="Lieu" />
         <p className="advice">
           {'Ajoutez un lieu où accéder à vos offres.'}
         </p>
@@ -218,6 +201,7 @@ VenueCreation.propTypes = {
   handleSubmitRequestFail: PropTypes.func.isRequired,
   handleSubmitRequestSuccess: PropTypes.func.isRequired,
   history: PropTypes.shape().isRequired,
+  isNewHomepageActive: PropTypes.bool.isRequired,
   match: PropTypes.shape().isRequired,
   offerer: PropTypes.shape().isRequired,
   trackCreateVenue: PropTypes.func.isRequired,

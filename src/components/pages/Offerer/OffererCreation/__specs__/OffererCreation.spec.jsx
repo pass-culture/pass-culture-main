@@ -11,6 +11,7 @@ describe('src | components | OffererCreation', () => {
   beforeEach(() => {
     props = {
       createNewOfferer: jest.fn(),
+      isNewHomepageActive: true,
       showNotification: jest.fn(),
       closeNotification: jest.fn(),
       trackCreateOfferer: jest.fn(),

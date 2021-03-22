@@ -1,7 +1,6 @@
 import { mount, shallow } from 'enzyme'
 import { createBrowserHistory } from 'history'
 import React from 'react'
-import { Form } from 'react-final-form'
 import { Provider } from 'react-redux'
 import { Router } from 'react-router-dom'
 
@@ -32,6 +31,7 @@ describe('src | components | pages | Venue', () => {
       handleSubmitRequest: jest.fn(),
       handleSubmitRequestSuccess: jest.fn(),
       handleSubmitRequestFail: jest.fn(),
+      isNewHomepageActive: true,
       match: {
         params: {
           offererId: 'APEQ',
@@ -64,20 +64,6 @@ describe('src | components | pages | Venue', () => {
 
       // then
       expect(wrapper.state('isRequestPending')).toBe(false)
-    })
-
-    it('should not render a Form when venue is virtual', () => {
-      // given
-      props.formInitialValues = {
-        isVirtual: true,
-      }
-
-      // when
-      const wrapper = shallow(<VenueCreation {...props} />)
-
-      // then
-      const form = wrapper.find(Form)
-      expect(form).toHaveLength(0)
     })
 
     describe('when creating', () => {
@@ -118,8 +104,8 @@ describe('src | components | pages | Venue', () => {
 
         // then
         expect(wrapper.prop('layoutConfig').backTo).toStrictEqual({
-          label: 'Maison du chocolat',
-          path: '/structures/APEQ',
+          label: 'Accueil',
+          path: '/accueil?structure=APEQ',
         })
       })
     })

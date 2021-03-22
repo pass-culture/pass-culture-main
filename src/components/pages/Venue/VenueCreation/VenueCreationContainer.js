@@ -6,6 +6,7 @@ import { withQueryRouter } from 'components/hocs/with-query-router/withQueryRout
 import { CREATION } from 'components/hocs/withFrenchQueryRouter'
 import withTracking from 'components/hocs/withTracking'
 import { showNotificationV1 } from 'store/reducers/notificationReducer'
+import { selectIsFeatureActive } from 'store/selectors/data/featuresSelectors'
 import { selectOffererById } from 'store/selectors/data/offerersSelectors'
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 import { selectVenueLabels } from 'store/selectors/data/venueLabelsSelectors'
@@ -29,6 +30,7 @@ export const mapStateToProps = (state, ownProps) => {
   const currentUser = selectCurrentUser(state)
   return {
     currentUser: currentUser,
+    isNewHomepageActive: selectIsFeatureActive(state, 'PRO_HOMEPAGE'),
     venueTypes: selectVenueTypes(state).map(type => new VenueType(type)),
     venueLabels: selectVenueLabels(state).map(label => new VenueLabel(label)),
     formInitialValues: {

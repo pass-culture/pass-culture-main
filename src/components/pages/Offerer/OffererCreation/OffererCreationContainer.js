@@ -5,6 +5,7 @@ import { requestData } from 'redux-saga-data'
 
 import withTracking from 'components/hocs/withTracking'
 import { closeNotification, showNotificationV1 } from 'store/reducers/notificationReducer'
+import { selectIsFeatureActive } from 'store/selectors/data/featuresSelectors'
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 
 import OffererCreation from './OffererCreation'
@@ -12,6 +13,7 @@ import OffererCreation from './OffererCreation'
 export function mapStateToProps(state) {
   return {
     currentUser: selectCurrentUser(state),
+    isNewHomepageActive: selectIsFeatureActive(state, 'PRO_HOMEPAGE'),
   }
 }
 

@@ -48,7 +48,9 @@ class OffererCreation extends PureComponent {
     return (
       <AppLayout
         layoutConfig={{
-          backTo: { label: 'Structures juridiques', path: '/structures' },
+          backTo: this.props.isNewHomepageActive
+            ? { label: 'Accueil', path: '/accueil' }
+            : { label: 'Structures juridiques', path: '/structures' },
           pageName: 'offerer',
         }}
       >
@@ -68,6 +70,7 @@ class OffererCreation extends PureComponent {
 OffererCreation.propTypes = {
   closeNotification: PropTypes.func.isRequired,
   createNewOfferer: PropTypes.func.isRequired,
+  isNewHomepageActive: PropTypes.bool.isRequired,
   redirectToOfferersList: PropTypes.func.isRequired,
   showNotification: PropTypes.func.isRequired,
   trackCreateOfferer: PropTypes.func.isRequired,

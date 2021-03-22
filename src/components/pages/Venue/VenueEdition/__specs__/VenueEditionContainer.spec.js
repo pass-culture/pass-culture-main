@@ -1,11 +1,7 @@
 import { venueNormalizer } from '../../../../../utils/normalizers'
 import VenueLabel from '../../ValueObjects/VenueLabel'
 import VenueType from '../../ValueObjects/VenueType'
-import { mapDispatchToProps, mapStateToProps, mergeProps } from '../VenueCreationContainer'
-
-jest.mock('../../Notification', () => {
-  return jest.fn().mockImplementation(() => 'Some text')
-})
+import { mapDispatchToProps, mapStateToProps, mergeProps } from '../VenueEditionContainer'
 
 window.scroll = () => {}
 
@@ -26,6 +22,7 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
     let ownProps
     beforeEach(() => {
       ownProps = {
+        currentUser: { id: 1 },
         match: {
           params: {
             offererId: 1,
@@ -37,13 +34,17 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
 
     it('should return an object with props', () => {
       // given
-      const currentUser = { id: 1, email: 'john.doe@email.com' }
       const state = {
         data: {
           offerers: [{ id: 1 }],
           userOfferers: [{ offererId: 1, rights: 'admin', userId: 1 }],
-          venues: [],
-          users: [currentUser],
+          venues: [
+            {
+              id: 'WQ',
+              managingOffererId: 'M4',
+            },
+          ],
+          users: [],
         },
       }
 
@@ -52,11 +53,12 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
 
       // then
       expect(result).toStrictEqual({
-        currentUser: currentUser,
+        currentUser: undefined,
+        isNewHomepageActive: false,
         offerer: { id: 1 },
-        formInitialValues: {
-          bookingEmail: 'john.doe@email.com',
-          managingOffererId: 1,
+        venue: {
+          id: 'WQ',
+          managingOffererId: 'M4',
         },
         venueTypes: [],
         venueLabels: [],
@@ -86,7 +88,6 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
       const props = mapStateToProps(state, ownProps)
 
       // then
-      expect(props).toHaveProperty('venueTypes')
       const venueType = props.venueTypes[0]
       expect(venueType).toBeInstanceOf(VenueType)
       expect(props).toMatchObject({
@@ -120,7 +121,6 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
       const props = mapStateToProps(state, ownProps)
 
       // then
-      expect(props).toHaveProperty('venueLabels')
       const venueLabel = props.venueLabels[0]
       expect(venueLabel).toBeInstanceOf(VenueLabel)
       expect(props).toMatchObject({
@@ -140,6 +140,11 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
       params: {
         offererId: 'APEQ',
       },
+    },
+    query: {
+      context: () => ({
+        isCreatedEntity: true,
+      }),
     },
   }
 
@@ -186,8 +191,22 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
   })
 
   describe('handleSubmitRequest', () => {
-    it('should call patch method with proper params', function () {
+    it('should call patch method with proper params', () => {
       // given
+      const ownProps = {
+        match: {
+          params: {
+            venueId: 'TR',
+          },
+        },
+        query: {
+          context: () => ({
+            method: 'PATCH',
+            isCreatedEntity: false,
+          }),
+        },
+      }
+
       const formValues = {
         comment: 'Commentaire',
         address: '3 Place Saint-Michel',
@@ -206,7 +225,7 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
       // then
       expect(dispatch).toHaveBeenCalledWith({
         config: {
-          apiPath: '/venues/',
+          apiPath: '/venues/TR',
           body: {
             comment: 'Commentaire',
             address: '3 Place Saint-Michel',
@@ -215,10 +234,147 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
           },
           handleFail: handleFail,
           handleSuccess: handleSuccess,
-          method: 'POST',
+          method: 'PATCH',
           normalizer: venueNormalizer,
         },
-        type: 'REQUEST_DATA_POST_/VENUES/',
+        type: 'REQUEST_DATA_PATCH_/VENUES/TR',
+      })
+    })
+
+    describe('when creating a new venue', () => {
+      let ownProps
+      beforeEach(() => {
+        ownProps = {
+          match: {
+            params: {
+              venueId: 'TR',
+            },
+          },
+          query: {
+            context: () => ({
+              method: 'PATCH',
+              isCreatedEntity: true,
+            }),
+          },
+        }
+      })
+
+      it('should transform the form values into request payload', () => {
+        // given
+        const formValues = {
+          address: '3 Place Saint-Michel',
+          bic: '12345',
+          bookingEmail: 'contact@example.net',
+          city: 'Paris',
+          comment: 'Commentaire',
+          iban: 'BHJ2XRT2C',
+          latitude: '0.0',
+          longitude: '0.0',
+          managingOffererId: 'B45S',
+          name: 'Théatre Saint-Michel',
+          publicName: '',
+          postalCode: '75008',
+          siret: '25687265176',
+          venueTypeId: 'BA',
+          venueLabelId: 'DA',
+        }
+
+        const handleFail = jest.fn()
+        const handleSuccess = jest.fn()
+
+        // when
+        mapDispatchToProps(dispatch, ownProps).handleSubmitRequest({
+          formValues,
+          handleFail,
+          handleSuccess,
+        })
+
+        // then
+        const requestParameters = dispatch.mock.calls[0][0]
+        expect(requestParameters.config.body).toStrictEqual({
+          address: '3 Place Saint-Michel',
+          bookingEmail: 'contact@example.net',
+          city: 'Paris',
+          comment: 'Commentaire',
+          latitude: '0.0',
+          longitude: '0.0',
+          name: 'Théatre Saint-Michel',
+          postalCode: '75008',
+          publicName: '',
+          siret: '25687265176',
+          venueTypeId: 'BA',
+          venueLabelId: 'DA',
+        })
+      })
+    })
+
+    describe('when updating a venue', () => {
+      let ownProps
+      beforeEach(() => {
+        ownProps = {
+          match: {
+            params: {
+              venueId: 'TR',
+            },
+          },
+          query: {
+            context: () => ({
+              method: 'PATCH',
+              isCreatedEntity: false,
+            }),
+          },
+        }
+      })
+
+      it('should filter some information that should not be sent', () => {
+        // given
+        ownProps.query.context = () => ({
+          method: 'PATCH',
+          isCreatedEntity: false,
+        })
+        const formValues = {
+          address: '3 Place Saint-Michel',
+          bic: '12345',
+          bookingEmail: 'contact@example.net',
+          city: 'Paris',
+          comment: '',
+          iban: 'BHJ2XRT2C',
+          latitude: '0.0',
+          longitude: '0.0',
+          managingOffererId: 'B45S',
+          name: 'Théatre Saint-Michel',
+          publicName: '',
+          postalCode: '75008',
+          siret: '25687265176',
+          venueTypeId: 'BA',
+        }
+
+        const handleFail = jest.fn()
+        const handleSuccess = jest.fn()
+
+        // when
+        mapDispatchToProps(dispatch, ownProps).handleSubmitRequest({
+          formValues,
+          handleFail,
+          handleSuccess,
+        })
+
+        // then
+        const requestParameters = dispatch.mock.calls[0][0]
+        expect(requestParameters.config.body).toStrictEqual({
+          address: '3 Place Saint-Michel',
+          bookingEmail: 'contact@example.net',
+          city: 'Paris',
+          comment: '',
+          latitude: '0.0',
+          longitude: '0.0',
+          name: 'Théatre Saint-Michel',
+          publicName: '',
+          postalCode: '75008',
+          siret: '25687265176',
+          venueTypeId: 'BA',
+          venueLabelId: null,
+        })
       })
     })
   })
@@ -243,7 +399,7 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
 
       // then
       expect(dispatch.mock.calls[0][0]).toStrictEqual({
-        payload: { text: 'Some text', type: 'success' },
+        payload: { text: 'Lieu modifié avec succès !', type: 'success' },
         type: 'SHOW_NOTIFICATION_V1',
       })
     })
@@ -270,11 +426,11 @@ describe('src | components | pages | VenueContainer | mergeProps', () => {
     expect(mergedProps).toStrictEqual({
       match: ownProps.match,
       handleInitialRequest: expect.any(Function),
-      trackCreateVenue: expect.any(Function),
+      trackModifyVenue: expect.any(Function),
     })
   })
 
-  it('should map a tracking event for creating a venue', () => {
+  it('should map a tracking event for updating a venue', () => {
     // given
     const stateProps = {}
     const ownProps = {
@@ -282,13 +438,12 @@ describe('src | components | pages | VenueContainer | mergeProps', () => {
         trackEvent: jest.fn(),
       },
     }
-
     // when
-    mergeProps(stateProps, {}, ownProps).trackCreateVenue('RTgfd67')
+    mergeProps(stateProps, {}, ownProps).trackModifyVenue('RTgfd67')
 
     // then
     expect(ownProps.tracking.trackEvent).toHaveBeenCalledWith({
-      action: 'createVenue',
+      action: 'modifyVenue',
       name: 'RTgfd67',
     })
   })

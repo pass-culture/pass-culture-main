@@ -3,6 +3,7 @@ import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
 import withTracking from 'components/hocs/withTracking'
+import { selectIsFeatureActive } from 'store/selectors/data/featuresSelectors'
 import { selectOffererById } from 'store/selectors/data/offerersSelectors'
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 import { selectPhysicalVenuesByOffererId } from 'store/selectors/data/venuesSelectors'
@@ -19,6 +20,7 @@ export const mapStateToProps = (state, ownProps) => {
   const currentUser = selectCurrentUser(state)
   return {
     currentUser,
+    isNewHomepageActive: selectIsFeatureActive(state, 'PRO_HOMEPAGE'),
     offerer: makeOffererComponentValueObject(selectOffererById, offererId, state),
     offererId,
     venues: selectPhysicalVenuesByOffererId(state, offererId),

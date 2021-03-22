@@ -10,6 +10,7 @@ describe('src | components | pages | Offerer | OffererDetails', () => {
   let props
   beforeEach(() => {
     props = {
+      isNewHomepageActive: true,
       loadOffererById: () => {},
       offerer: new Offerer({
         id: 'AA',

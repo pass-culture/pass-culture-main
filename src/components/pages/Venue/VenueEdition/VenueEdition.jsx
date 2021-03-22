@@ -33,13 +33,6 @@ class VenueEdition extends PureComponent {
     handleInitialRequest()
   }
 
-  buildBackToInfos = (offererName, initialName, offererId) => {
-    return {
-      label: offererName === initialName ? 'STRUCTURE' : offererName,
-      path: `/structures/${offererId}`,
-    }
-  }
-
   handleFormFail = formResolver => (_state, action) => {
     const { handleSubmitRequestFail } = this.props
     const { payload } = action
@@ -174,7 +167,6 @@ class VenueEdition extends PureComponent {
       id: venueId,
     })
 
-    const { name: offererName } = offerer || {}
     const { id: initialId, isVirtual: initialIsVirtual, name: initialName } = venue || {}
 
     const decorators = [bindGetSuggestionsToLatitude, bindGetSuggestionsToLongitude]
@@ -198,7 +190,9 @@ class VenueEdition extends PureComponent {
     return (
       <AppLayout
         layoutConfig={{
-          backTo: this.buildBackToInfos(offererName, initialName, offererId),
+          backTo: this.props.isNewHomepageActive
+            ? { label: 'Accueil', path: `/accueil?structure=${offererId}` }
+            : { label: 'Structure', path: `/structures/${offererId}` },
           pageName: 'venue',
         }}
       >
@@ -231,6 +225,7 @@ VenueEdition.propTypes = {
   handleSubmitRequestFail: PropTypes.func.isRequired,
   handleSubmitRequestSuccess: PropTypes.func.isRequired,
   history: PropTypes.shape().isRequired,
+  isNewHomepageActive: PropTypes.bool.isRequired,
   match: PropTypes.shape().isRequired,
   offerer: PropTypes.shape().isRequired,
   query: PropTypes.shape().isRequired,
