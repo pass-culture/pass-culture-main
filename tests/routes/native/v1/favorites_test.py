@@ -107,6 +107,7 @@ class Get:
             assert favorites[5]["offer"]["image"]["url"] == "http://localhost/storage/thumbs/mediations/%s" % (
                 humanize(offer1.activeMediation.id)
             )
+            assert favorites[5]["offer"]["expenseDomains"] == ["all"]
 
             # Only stock2b is valid and product has a thumb
             assert favorites[4]["id"] == favorite2.id
@@ -118,6 +119,7 @@ class Get:
             assert favorites[4]["offer"]["image"]["url"] == "http://localhost/storage/thumbs/products/%s" % (
                 humanize(offer2.product.id)
             )
+            assert favorites[4]["offer"]["expenseDomains"] == ["all"]
 
             # No date
             assert favorites[3]["id"] == favorite3.id
@@ -126,6 +128,7 @@ class Get:
             assert favorites[3]["offer"]["date"] is None
             assert favorites[3]["offer"]["startDate"] is None
             assert favorites[3]["offer"]["image"] is None
+            assert favorites[3]["offer"]["expenseDomains"] == ["physical", "all"]
 
             # Offer in the future but past the booking limit
             assert favorites[2]["id"] == favorite4.id
@@ -134,6 +137,7 @@ class Get:
             assert favorites[2]["offer"]["date"] is None
             assert favorites[2]["offer"]["startDate"] is None
             assert favorites[2]["offer"]["image"] is None
+            assert favorites[2]["offer"]["expenseDomains"] == ["all"]
 
             # Offer in the past, favorite should appear but no price/date are valid
             assert favorites[1]["id"] == favorite5.id
@@ -142,6 +146,7 @@ class Get:
             assert favorites[1]["offer"]["date"] is None
             assert favorites[1]["offer"]["startDate"] is None
             assert favorites[1]["offer"]["image"] is None
+            assert favorites[1]["offer"]["expenseDomains"] == ["all"]
 
             # best price/same date twice should appear as single price/date
             assert favorites[0]["id"] == favorite6.id
@@ -150,6 +155,7 @@ class Get:
             assert favorites[0]["offer"]["date"] == tomorow.isoformat() + "Z"
             assert favorites[0]["offer"]["startDate"] is None
             assert favorites[0]["offer"]["image"] is None
+            assert favorites[0]["offer"]["expenseDomains"] == ["all"]
 
         def test_expired_offer(self, app):
             # Given

@@ -49,7 +49,7 @@ def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
         .outerjoin(Stock.bookings)
         .filter(Favorite.userId == user.id)
         .distinct(Favorite.id)
-        .options(joinedload(Favorite.offer).load_only(Offer.name, Offer.externalTicketOfficeUrl, Offer.type))
+        .options(joinedload(Favorite.offer).load_only(Offer.name, Offer.externalTicketOfficeUrl, Offer.url, Offer.type))
         .options(joinedload(Favorite.offer).joinedload(Offer.venue).load_only(Venue.latitude, Venue.longitude))
         .options(
             joinedload(Favorite.offer)

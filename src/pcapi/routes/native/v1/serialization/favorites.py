@@ -5,6 +5,8 @@ from typing import Optional
 
 from pydantic.class_validators import validator
 
+from pcapi.core.offers.api import get_expense_domains
+from pcapi.core.users.models import ExpenseDomain
 from pcapi.models.offer_type import CategoryNameEnum
 from pcapi.models.offer_type import CategoryType
 from pcapi.routes.native.utils import convert_to_cent
@@ -46,6 +48,7 @@ class FavoriteOfferResponse(BaseModel):
     startDate: Optional[datetime] = None
     isExpired: bool = False
     isExhausted: bool = False
+    expenseDomains: List[ExpenseDomain]
 
     _convert_price = validator("price", pre=True, allow_reuse=True)(convert_to_cent)
     _convert_start_price = validator("startPrice", pre=True, allow_reuse=True)(convert_to_cent)
@@ -61,6 +64,7 @@ class FavoriteOfferResponse(BaseModel):
             "categoryType": offer.category_type,
         }
         offer.coordinates = {"latitude": offer.venue.latitude, "longitude": offer.venue.longitude}
+        offer.expenseDomains = get_expense_domains(offer)
         return super().from_orm(offer)
 
 
