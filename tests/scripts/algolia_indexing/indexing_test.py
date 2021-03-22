@@ -3,8 +3,6 @@ from unittest import mock
 
 from freezegun import freeze_time
 
-from pcapi.algolia.infrastructure.builder import build_object
-import pcapi.core.offers.factories as offers_factories
 from pcapi.scripts.algolia_indexing.indexing import _process_venue_provider
 from pcapi.scripts.algolia_indexing.indexing import batch_deleting_expired_offers_in_algolia
 from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_by_offer
@@ -12,8 +10,6 @@ from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_alg
 from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_by_venue_provider
 from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_from_database
 from pcapi.scripts.algolia_indexing.indexing import batch_processing_offer_ids_in_error
-from pcapi.scripts.algolia_indexing.indexing import replace_objects_in_algolia
-from pcapi.utils.human_ids import humanize
 
 
 class BatchIndexingOffersInAlgoliaByOfferTest:
@@ -409,55 +405,3 @@ class ProcessVenueProviderTest:
         # Then
         assert mock_get_paginated_offer_ids.call_count == 1
         mock_delete_venue_provider_currently_in_sync.assert_called_once_with(client=client, venue_provider_id=1)
-
-
-class ReplaceObjectsTest:
-    @mock.patch("pcapi.scripts.algolia_indexing.indexing.init_connection")
-    @mock.patch("pcapi.scripts.algolia_indexing.indexing.add_to_indexed_offers")
-    def test_replace_objects_in_algolia(self, mocked_add_to_indexed_offers, mocked_init_connection, db_session):
-        # Given
-        mocked_client = mock.Mock()
-        mocked_client.pipeline.return_value = mock.Mock()
-        algolia_connection = mock.Mock()
-        mocked_init_connection.return_value = algolia_connection
-        offer_bookable_1 = offers_factories.OfferFactory(id=50)
-        offers_factories.StockFactory(offer=offer_bookable_1)
-        offer_bookable_2 = offers_factories.OfferFactory(id=51)
-        offers_factories.StockFactory(offer=offer_bookable_2)
-        offer_bookable_3 = offers_factories.OfferFactory(id=52)
-        offers_factories.StockFactory(offer=offer_bookable_3)
-        offer_not_bookable = offers_factories.OfferFactory(id=53)
-
-        # When
-        replace_objects_in_algolia(client=mocked_client, batch_size=2)
-
-        # Then
-        delete_calls = [
-            mock.call(object_ids=[humanize(offer_bookable_1.id)]),
-            mock.call(
-                object_ids=[
-                    humanize(offer_bookable_2.id),
-                    humanize(offer_bookable_3.id),
-                ]
-            ),
-            mock.call(object_ids=[humanize(offer_not_bookable.id)]),
-        ]
-        algolia_connection.delete_objects.assert_has_calls(delete_calls)
-
-        save_objects_calls = [
-            mock.call(
-                objects=[
-                    build_object(offer_bookable_1),
-                ]
-            ),
-            mock.call(objects=[build_object(offer_bookable_2), build_object(offer_bookable_3)]),
-        ]
-        algolia_connection.save_objects.assert_has_calls(save_objects_calls)
-
-        mocked_add_to_indexed_offers.assert_has_calls(
-            [
-                mock.call(pipeline=mock.ANY, offer_id=offer_bookable_1.id, offer_details=mock.ANY),
-                mock.call(pipeline=mock.ANY, offer_id=offer_bookable_2.id, offer_details=mock.ANY),
-                mock.call(pipeline=mock.ANY, offer_id=offer_bookable_3.id, offer_details=mock.ANY),
-            ]
-        )
