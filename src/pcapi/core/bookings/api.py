@@ -136,13 +136,23 @@ def mark_as_used(booking: Booking, uncancel: bool = False) -> None:
     library and then cancelled their booking before the library marked
     it as used).
     """
-    if uncancel:
-        booking.isCancelled = False
-        booking.cancellationReason = None
-    validation.check_is_usable(booking)
-    booking.isUsed = True
-    booking.dateUsed = datetime.datetime.utcnow()
-    repository.save(booking)
+    # I'm not 100% sure the transaction is required here
+    # It is not clear to me wether or not Flask-SQLAlchemy will make
+    # a rollback if we raise a validation exception.
+    # Since I lock the stock, I really want to make sure the lock is
+    # removed ASAP.
+    with transaction():
+        objects_to_save = [booking]
+        if uncancel and booking.isCancelled:
+            booking.isCancelled = False
+            booking.cancellationReason = None
+            stock = offers_repository.get_and_lock_stock(stock_id=booking.stockId)
+            stock.dnBookedQuantity += booking.quantity
+            objects_to_save.append(stock)
+        validation.check_is_usable(booking)
+        booking.isUsed = True
+        booking.dateUsed = datetime.datetime.utcnow()
+        repository.save(*objects_to_save)
 
 
 def mark_as_unused(booking: Booking) -> None:

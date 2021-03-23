@@ -2,16 +2,20 @@ from datetime import datetime
 from datetime import timedelta
 from unittest import mock
 
-from flask import current_app as app
 from freezegun import freeze_time
 import pytest
+from sqlalchemy import create_engine
+import sqlalchemy.exc
+from sqlalchemy.sql import text
 
 from pcapi.core.bookings import api
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings import factories
+from pcapi.core.bookings import models
 from pcapi.core.bookings.models import BookingCancellationReasons
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offers.factories as offers_factories
+import pcapi.core.offers.models as offers_models
 import pcapi.core.payments.factories as payments_factories
 from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
@@ -19,11 +23,49 @@ from pcapi.models import api_errors
 import pcapi.notifications.push.testing as push_testing
 from pcapi.utils.token import random_token
 
+from tests.conftest import clean_database
+
+
+class BookOfferConcurrencyTest:
+    @clean_database
+    def test_create_booking(self, app):
+        user = users_factories.UserFactory()
+        stock = offers_factories.StockFactory(price=10, dnBookedQuantity=5)
+        assert models.Booking.query.count() == 0
+
+        # open a second connection on purpose and lock the stock
+        engine = create_engine(app.config["SQLALCHEMY_DATABASE_URI"])
+        with engine.connect() as connection:
+            connection.execute(text("""SELECT * FROM stock WHERE stock.id = :stock_id FOR UPDATE"""), stock_id=stock.id)
+
+            with pytest.raises(sqlalchemy.exc.OperationalError):
+                api.book_offer(beneficiary=user, stock_id=stock.id, quantity=1)
+
+        assert models.Booking.query.count() == 0
+        assert offers_models.Stock.query.filter_by(id=stock.id, dnBookedQuantity=5).count() == 1
+
+    @clean_database
+    def test_cancel_booking(self, app):
+        booking = factories.BookingFactory(stock__dnBookedQuantity=1)
+
+        # open a second connection on purpose and lock the stock
+        engine = create_engine(app.config["SQLALCHEMY_DATABASE_URI"])
+        with engine.connect() as connection:
+            connection.execute(
+                text("""SELECT * FROM stock WHERE stock.id = :stock_id FOR UPDATE"""), stock_id=booking.stockId
+            )
+
+            with pytest.raises(sqlalchemy.exc.OperationalError):
+                api.cancel_booking_by_beneficiary(booking.user, booking)
+
+        assert models.Booking.query.filter().count() == 1
+        assert models.Booking.query.filter(models.Booking.isCancelled == True).count() == 0
+
 
 @pytest.mark.usefixtures("db_session")
 class BookOfferTest:
     @mock.patch("pcapi.connectors.redis.add_offer_id")
-    def test_create_booking(self, mocked_add_offer_id):
+    def test_create_booking(self, mocked_add_offer_id, app):
         user = users_factories.UserFactory()
         stock = offers_factories.StockFactory(price=10, dnBookedQuantity=5)
 
