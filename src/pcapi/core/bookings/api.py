@@ -135,12 +135,23 @@ def cancel_booking_by_beneficiary(user: User, booking: Booking) -> None:
 
 
 def cancel_booking_by_offerer(booking: Booking) -> None:
-    validation.check_offerer_can_cancel_booking(booking)
+    validation.check_booking_can_be_cancelled(booking)
     _cancel_booking(booking, BookingCancellationReasons.OFFERER)
     send_transactional_notification_job.delay(get_notification_data_on_booking_cancellation([booking]))
 
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         redis.add_offer_id(client=app.redis_client, offer_id=booking.stock.offerId)
+
+
+def cancel_booking_for_fraud(booking: Booking) -> None:
+    validation.check_booking_can_be_cancelled(booking)
+    _cancel_booking(booking, BookingCancellationReasons.FRAUD)
+    logger.info("Cancelled booking for fraud reason", extra={"booking": booking.id})
+
+    try:
+        user_emails.send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason)
+    except MailServiceException as error:
+        logger.exception("Could not send booking=%s cancellation emails to offerer: %s", booking.id, error)
 
 
 def mark_as_used(booking: Booking, uncancel: bool = False) -> None:

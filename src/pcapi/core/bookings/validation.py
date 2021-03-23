@@ -96,7 +96,7 @@ def check_beneficiary_can_cancel_booking(user: User, booking: Booking) -> None:
 
 
 # FIXME: should not raise exceptions from `api_errors` (see below for details).
-def check_offerer_can_cancel_booking(booking: Booking) -> None:
+def check_booking_can_be_cancelled(booking: Booking) -> None:
     if booking.isCancelled:
         gone = api_errors.ResourceGoneError()
         gone.add_error("global", "Cette contremarque a déjà été annulée")

@@ -1175,3 +1175,40 @@ class GetOffersBookedByFraudulentUsersTest:
         # Then
         assert len(offers) == 2
         assert set(offers) == {offer_booked_by_both, offer_booked_by_fraudulent_users}
+
+
+class FindBookingsByFraudulentUsersTest:
+    @pytest.mark.usefixtures("db_session")
+    def test_returns_only_bookings_by_fraudulent_users(self):
+        # Given
+        fraudulent_beneficiary_user = users_factories.UserFactory(
+            isBeneficiary=True, email="jesuisunefraude@example.com"
+        )
+        another_fraudulent_beneficiary_user = users_factories.UserFactory(
+            isBeneficiary=True, email="jesuisuneautrefraude@example.com"
+        )
+        beneficiary_user = users_factories.UserFactory(isBeneficiary=True, email="jenesuispasunefraude@EXAmple.com")
+        offer_booked_by_fraudulent_users = offers_factories.OfferFactory()
+        other_offer_booked_by_fraudulent_users = offers_factories.OfferFactory()
+        offer_booked_by_non_fraudulent_users = offers_factories.OfferFactory()
+
+        booking_booked_by_fraudulent_user = bookings_factories.BookingFactory(
+            user=fraudulent_beneficiary_user, stock__price=1, stock__offer=offer_booked_by_fraudulent_users
+        )
+        another_booking_booked_by_fraudulent_user = bookings_factories.BookingFactory(
+            user=another_fraudulent_beneficiary_user,
+            stock__price=1,
+            stock__offer=other_offer_booked_by_fraudulent_users,
+        )
+        bookings_factories.BookingFactory(
+            user=beneficiary_user, stock__price=1, stock__offer=offer_booked_by_non_fraudulent_users
+        )
+
+        # When
+        bookings = booking_repository.find_cancellable_bookings_by_beneficiaries(
+            [fraudulent_beneficiary_user, another_fraudulent_beneficiary_user]
+        )
+
+        # Then
+        assert len(bookings) == 2
+        assert set(bookings) == {booking_booked_by_fraudulent_user, another_booking_booked_by_fraudulent_user}

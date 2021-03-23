@@ -455,18 +455,18 @@ class CheckBeneficiaryCanCancelBookingTest:
 class CheckOffererCanCancelBookingTest:
     def test_can_cancel(self):
         booking = factories.BookingFactory()
-        validation.check_offerer_can_cancel_booking(booking)  # should not raise
+        validation.check_booking_can_be_cancelled(booking)  # should not raise
 
     def test_raise_if_already_cancelled(self):
         booking = factories.BookingFactory(isCancelled=True)
         with pytest.raises(api_errors.ResourceGoneError) as exc:
-            validation.check_offerer_can_cancel_booking(booking)
+            validation.check_booking_can_be_cancelled(booking)
         assert exc.value.errors["global"] == ["Cette contremarque a déjà été annulée"]
 
     def test_raise_if_already_used(self):
         booking = factories.BookingFactory(isUsed=True)
         with pytest.raises(api_errors.ForbiddenError) as exc:
-            validation.check_offerer_can_cancel_booking(booking)
+            validation.check_booking_can_be_cancelled(booking)
         assert exc.value.errors["global"] == ["Impossible d'annuler une réservation consommée"]
 
 

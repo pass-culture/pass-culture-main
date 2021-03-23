@@ -289,6 +289,15 @@ class CancelByOffererTest:
 
 
 @pytest.mark.usefixtures("db_session")
+class CancelForFraudTest:
+    def test_cancel(self):
+        booking = factories.BookingFactory()
+        api.cancel_booking_for_fraud(booking)
+        assert booking.isCancelled
+        assert booking.cancellationReason == BookingCancellationReasons.FRAUD
+
+
+@pytest.mark.usefixtures("db_session")
 class MarkAsUsedTest:
     def test_mark_as_used(self):
         booking = factories.BookingFactory()

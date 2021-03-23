@@ -143,6 +143,8 @@ def send_booking_cancellation_emails_to_user_and_offerer(
     if reason == BookingCancellationReasons.OFFERER:
         send_warning_to_beneficiary_after_pro_booking_cancellation(booking)
         send_offerer_driven_cancellation_email_to_offerer(booking)
+    if reason == BookingCancellationReasons.FRAUD:
+        send_user_driven_cancellation_email_to_offerer(booking)
 
 
 def send_expired_bookings_recap_email_to_beneficiary(beneficiary: User, bookings: List[Booking]) -> None:

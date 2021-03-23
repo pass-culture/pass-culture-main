@@ -1,6 +1,8 @@
 import logging
 from typing import List
 
+from pcapi.core.bookings.api import cancel_booking_for_fraud
+from pcapi.core.bookings.repository import find_cancellable_bookings_by_beneficiaries
 from pcapi.core.bookings.repository import find_offers_booked_by_beneficiaries
 from pcapi.core.users.api import suspend_account
 from pcapi.core.users.constants import SuspensionReason
@@ -32,3 +34,9 @@ def suspend_fraudulent_beneficiary_users_by_email_providers(
 def suspend_fraudulent_beneficiary_users(fraudulent_users: List[User], admin_user: User) -> None:
     for fraudulent_user in fraudulent_users:
         suspend_account(fraudulent_user, SuspensionReason.FRAUD, admin_user)
+
+
+def cancel_bookings_by_fraudulent_beneficiary_users(fraudulent_users: List[User]) -> None:
+    bookings_to_cancel = find_cancellable_bookings_by_beneficiaries(fraudulent_users)
+    for booking in bookings_to_cancel:
+        cancel_booking_for_fraud(booking)
