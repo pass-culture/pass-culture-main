@@ -11,6 +11,7 @@ from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import User
 from pcapi.models import Deposit
+import pcapi.notifications.push.testing as push_testing
 
 from tests.conftest import TestClient
 from tests.conftest import clean_database
@@ -65,6 +66,23 @@ class BeneficiaryUserViewTest:
             },
         }
 
+        assert push_testing.requests == [
+            {
+                "attribute_values": {
+                    "date(u.date_created)": user_created.dateCreated.strftime("%Y-%m-%dT%H:%M:%S"),
+                    "date(u.date_of_birth)": "2002-07-13T10:05:00",
+                    "date(u.deposit_expiration_date)": user_created.deposit.expirationDate.strftime(
+                        "%Y-%m-%dT%H:%M:%S"
+                    ),
+                    "u.credit": 50000,
+                    "u.is_beneficiary": True,
+                    "u.marketing_push_subscription": True,
+                    "u.postal_code": "93000",
+                },
+                "user_id": user_created.id,
+            },
+        ]
+
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_beneficiary_user_creation_for_deposit_v2(self, mocked_validate_csrf_token, app):
@@ -91,6 +109,8 @@ class BeneficiaryUserViewTest:
         assert user_created.deposit.version == 2
         assert user_created.deposit.source == "pass-culture-admin"
         assert user_created.deposit.amount == 300
+
+        assert push_testing.requests[0]["attribute_values"]["u.credit"] == 30000
 
     def test_the_deposit_version_is_specified(self, app, db_session):
         # Given
@@ -155,6 +175,7 @@ class BeneficiaryUserViewTest:
         deposits = Deposit.query.all()
         assert len(filtered_users) == 0
         assert len(deposits) == 0
+        assert len(push_testing.requests) == 0
 
     @clean_database
     # FIXME (dbaty, 2020-12-16): I could not find a quick way to
@@ -242,6 +263,7 @@ class BeneficiaryUserViewTest:
 
         user_edited = User.query.filter_by(email="edited@email.com").one_or_none()
         assert user_edited is not None
+        assert len(push_testing.requests) == 1
 
         mocked_flask_flash.assert_not_called()
         assert not mails_testing.outbox

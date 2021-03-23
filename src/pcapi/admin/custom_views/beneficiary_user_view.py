@@ -11,6 +11,7 @@ from pcapi.admin.custom_views.mixins.suspension_mixin import SuspensionMixin
 from pcapi.core.users.models import User
 from pcapi.domain.user_emails import send_activation_email
 from pcapi.models import UserOfferer
+from pcapi.workers.push_notification_job import update_user_attributes_job
 
 
 class BeneficiaryUserView(SuspensionMixin, BaseAdminView):
@@ -105,6 +106,7 @@ class BeneficiaryUserView(SuspensionMixin, BaseAdminView):
         super().on_model_change(form, model, is_created)
 
     def after_model_change(self, form: Form, model: User, is_created: bool) -> None:
+        update_user_attributes_job.delay(model)
         if is_created and not send_activation_email(model):
             flash("L'envoi d'email a échoué", "error")
         super().after_model_change(form, model, is_created)
