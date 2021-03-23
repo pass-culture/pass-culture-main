@@ -1,4 +1,5 @@
-from flask import current_app as app
+import logging
+
 from flask import request
 from flask_login import current_user
 from flask_login import login_required
@@ -22,6 +23,9 @@ from pcapi.routes.serialization.password_serialize import ResetPasswordBodyModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.mailing import MailServiceException
 from pcapi.utils.rest import expect_json_data
+
+
+logger = logging.getLogger(__name__)
 
 
 # @debt api-migration
@@ -65,12 +69,12 @@ def post_for_password_token(body: ResetPasswordBodyModel) -> None:
         try:
             send_reset_password_email_to_user(user)
         except MailServiceException as mail_service_exception:
-            app.logger.exception("[send_reset_password_email_to_user] " "Mail service failure", mail_service_exception)
+            logger.exception("[send_reset_password_email_to_user] " "Mail service failure", mail_service_exception)
     else:
         try:
             send_reset_password_email_to_pro(user)
         except MailServiceException as mail_service_exception:
-            app.logger.exception("[send_reset_password_email_to_pro] " "Mail service failure", mail_service_exception)
+            logger.exception("[send_reset_password_email_to_pro] " "Mail service failure", mail_service_exception)
 
 
 # @debt api-migration

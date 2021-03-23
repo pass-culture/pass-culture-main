@@ -1,3 +1,5 @@
+import logging
+
 from flask import current_app as app
 
 from pcapi import settings
@@ -21,6 +23,9 @@ from pcapi.validation.routes.validate import check_valid_token_for_user_validati
 from pcapi.validation.routes.validate import check_validation_request
 
 
+logger = logging.getLogger(__name__)
+
+
 # @debt api-migration
 @public_api.route("/validate/user-offerer/<token>", methods=["GET"])
 def validate_offerer_attachment(token):
@@ -34,7 +39,7 @@ def validate_offerer_attachment(token):
     try:
         send_attachment_validation_email_to_pro_offerer(user_offerer)
     except MailServiceException as mail_service_exception:
-        app.logger.exception("Email service failure", mail_service_exception)
+        logger.exception("Email service failure", mail_service_exception)
 
     return "Validation du rattachement de la structure effectuée", 202
 
@@ -61,7 +66,7 @@ def validate_new_offerer(token):
     try:
         send_validation_confirmation_email_to_pro(offerer)
     except MailServiceException as mail_service_exception:
-        app.logger.exception("Email service failure", mail_service_exception)
+        logger.exception("Email service failure", mail_service_exception)
     return "Validation effectuée", 202
 
 
@@ -93,7 +98,7 @@ def _ask_for_validation(offerer: Offerer, user_offerer: UserOfferer):
         maybe_send_offerer_validation_email(offerer, user_offerer)
 
     except MailServiceException as mail_service_exception:
-        app.logger.exception("Email service failure", mail_service_exception)
+        logger.exception("Email service failure", mail_service_exception)
 
 
 def _validate_offerer(offerer: Offerer, user_offerer: UserOfferer):

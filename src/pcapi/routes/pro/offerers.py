@@ -1,6 +1,6 @@
+import logging
 from typing import List
 
-from flask import current_app as app
 from flask import jsonify
 from flask import request
 from flask_login import current_user
@@ -30,6 +30,9 @@ from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.rest import expect_json_data
 from pcapi.utils.rest import load_or_404
 from pcapi.utils.rest import login_or_api_key_required
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_dict_offerer(offerer: Offerer) -> dict:
@@ -135,4 +138,4 @@ def _send_to_pc_admin_offerer_to_validate_email(offerer: Offerer, user_offerer: 
     try:
         maybe_send_offerer_validation_email(offerer, user_offerer)
     except MailServiceException as mail_service_exception:
-        app.logger.exception("[maybe_send_offerer_validation_email] " "Mail service failure", mail_service_exception)
+        logger.exception("[maybe_send_offerer_validation_email] " "Mail service failure", mail_service_exception)

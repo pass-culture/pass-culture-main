@@ -1,3 +1,4 @@
+import logging
 from typing import Dict
 from typing import Tuple
 from typing import Union
@@ -17,6 +18,9 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import DateTimeCastError
 from pcapi.models.api_errors import DecimalCastError
 from pcapi.utils.human_ids import NonDehumanizableId
+
+
+logger = logging.getLogger(__name__)
 
 
 @app.errorhandler(NotFound)
@@ -39,7 +43,7 @@ def internal_error(error: Exception) -> Union[Tuple[Dict, int], HTTPException]:
     # pass through HTTP errors
     if isinstance(error, HTTPException):
         return error
-    app.logger.exception("Unexpected error on method=%s url=%s: %s", request.method, request.url, error)
+    logger.exception("Unexpected error on method=%s url=%s: %s", request.method, request.url, error)
     errors = ApiErrors()
     errors.add_error("global", "Il semble que nous ayons des problèmes techniques :(" + " On répare ça au plus vite.")
     return jsonify(errors.errors), 500
@@ -49,7 +53,7 @@ def internal_error(error: Exception) -> Union[Tuple[Dict, int], HTTPException]:
 def method_not_allowed(error: MethodNotAllowed) -> Tuple[Dict, int]:
     api_errors = ApiErrors()
     api_errors.add_error("global", "La méthode que vous utilisez n'existe pas sur notre serveur")
-    app.logger.error("405 %s" % str(error))
+    logger.error("405 %s" % str(error))
     return jsonify(api_errors.errors), 405
 
 
@@ -58,14 +62,14 @@ def method_not_allowed(error: MethodNotAllowed) -> Tuple[Dict, int]:
 def invalid_id_for_dehumanize_error(error: NonDehumanizableId) -> Tuple[Dict, int]:
     api_errors = ApiErrors()
     api_errors.add_error("global", "La page que vous recherchez n'existe pas")
-    app.logger.error("404 %s" % str(error))
+    logger.error("404 %s" % str(error))
     return jsonify(api_errors.errors), 404
 
 
 @app.errorhandler(DecimalCastError)
 def decimal_cast_error(error: DecimalCastError) -> Tuple[Dict, int]:
     api_errors = ApiErrors()
-    app.logger.warning(json.dumps(error.errors))
+    logger.warning(json.dumps(error.errors))
     for field in error.errors.keys():
         api_errors.add_error(field, "Saisissez un nombre valide")
     return jsonify(api_errors.errors), 400
@@ -74,7 +78,7 @@ def decimal_cast_error(error: DecimalCastError) -> Tuple[Dict, int]:
 @app.errorhandler(DateTimeCastError)
 def date_time_cast_error(error: DateTimeCastError) -> Tuple[Dict, int]:
     api_errors = ApiErrors()
-    app.logger.warning(json.dumps(error.errors))
+    logger.warning(json.dumps(error.errors))
     for field in error.errors.keys():
         api_errors.add_error(field, "Format de date invalide")
     return jsonify(api_errors.errors), 400
@@ -82,5 +86,5 @@ def date_time_cast_error(error: DateTimeCastError) -> Tuple[Dict, int]:
 
 @app.errorhandler(AlreadyActivatedException)
 def already_activated_exception(error: AlreadyActivatedException) -> Tuple[Dict, int]:
-    app.logger.error(json.dumps(error.errors))
+    logger.error(json.dumps(error.errors))
     return jsonify(error.errors), 405

@@ -305,7 +305,7 @@ def _notify_beneficiaries_upon_stock_edit(stock: Stock):
             user_emails.send_batch_stock_postponement_emails_to_users(bookings)
         except mailing.MailServiceException as exc:
             # fmt: off
-            app.logger.exception(
+            logger.exception(
                 "Could not notify beneficiaries about update of stock=%s: %s",
                 stock.id,
                 exc,
@@ -388,11 +388,11 @@ def delete_stock(stock: Stock) -> None:
         try:
             user_emails.send_batch_cancellation_emails_to_users(cancelled_bookings)
         except mailing.MailServiceException as exc:
-            app.logger.exception("Could not notify beneficiaries about deletion of stock=%s: %s", stock.id, exc)
+            logger.exception("Could not notify beneficiaries about deletion of stock=%s: %s", stock.id, exc)
         try:
             user_emails.send_offerer_bookings_recap_email_after_offerer_cancellation(cancelled_bookings)
         except mailing.MailServiceException as exc:
-            app.logger.exception("Could not notify offerer about deletion of stock=%s: %s", stock.id, exc)
+            logger.exception("Could not notify offerer about deletion of stock=%s: %s", stock.id, exc)
 
     notification_data = get_notification_data_on_booking_cancellation(cancelled_bookings)
     if notification_data:
@@ -424,7 +424,7 @@ def create_mediation(
         create_thumb(mediation, image_as_bytes, image_index=0, crop_params=crop_params)
 
     except Exception as exc:
-        app.logger.exception("An unexpected error was encountered during the thumbnail creation: %s", exc)
+        logger.exception("An unexpected error was encountered during the thumbnail creation: %s", exc)
         # I could not use savepoints and rollbacks with SQLA
         repository.delete(mediation)
         raise ThumbnailStorageError
@@ -442,7 +442,7 @@ def create_mediation(
                 for thumb_index in range(0, previous_mediation.thumbCount):
                     remove_thumb(previous_mediation, image_index=thumb_index)
             except Exception as exc:  # pylint: disable=broad-except
-                app.logger.exception(
+                logger.exception(
                     "An unexpected error was encountered during the thumbnails deletion for %s: %s",
                     mediation,
                     exc,
