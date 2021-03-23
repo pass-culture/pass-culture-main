@@ -24,6 +24,12 @@ sudo chown <user>:<group> <revision_file>
 pc alembic upgrade <id>
 ```
 
+4. Tester la fonction de downgrade
+
+```bash
+pc alembic downgrade -1
+```
+
 ## Do
 
 Il est possible d'effectuer une migration soit par des commandes SQL :

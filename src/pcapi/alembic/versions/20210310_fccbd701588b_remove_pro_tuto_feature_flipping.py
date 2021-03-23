@@ -21,5 +21,5 @@ def upgrade():
 
 def downgrade():
     op.execute(
-        "INSERT INTO feature (name, description, \"isActive\") VALUES ('PRO_TUTO', 'Permettre l affichage des cartes tuto du portail pro', False"
+        "INSERT INTO feature (name, description, \"isActive\") VALUES ('PRO_TUTO', 'Permettre l affichage des cartes tuto du portail pro', False)"
     )
