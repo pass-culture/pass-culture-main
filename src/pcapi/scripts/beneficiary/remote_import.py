@@ -22,6 +22,7 @@ from pcapi.repository.beneficiary_import_queries import find_applications_ids_to
 from pcapi.repository.beneficiary_import_queries import is_already_imported
 from pcapi.repository.beneficiary_import_queries import save_beneficiary_import_with_status
 from pcapi.repository.user_queries import find_user_by_email
+from pcapi.workers.push_notification_job import update_user_attributes_job
 
 
 logger = logging.getLogger(__name__)
@@ -184,6 +185,7 @@ def _process_creation(
             user=new_beneficiary,
         )
         new_beneficiaries.append(new_beneficiary)
+        update_user_attributes_job.delay(new_beneficiary)
         try:
             if user is None:
                 send_activation_email(new_beneficiary)

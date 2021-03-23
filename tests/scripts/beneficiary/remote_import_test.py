@@ -15,6 +15,7 @@ from pcapi.model_creators.generic_creators import create_user
 from pcapi.models import ApiErrors
 from pcapi.models import BeneficiaryImport
 from pcapi.models import ImportStatus
+import pcapi.notifications.push.testing as push_testing
 from pcapi.repository import repository
 from pcapi.scripts.beneficiary import remote_import
 from pcapi.scripts.beneficiary.remote_import import parse_beneficiary_information
@@ -277,6 +278,21 @@ class ProcessBeneficiaryApplicationTest:
         assert first.civility == "Mme"
         assert first.activity == "Étudiant"
 
+        assert push_testing.requests == [
+            {
+                "attribute_values": {
+                    "date(u.date_created)": first.dateCreated.strftime("%Y-%m-%dT%H:%M:%S"),
+                    "date(u.date_of_birth)": "2000-05-01T00:00:00",
+                    "date(u.deposit_expiration_date)": first.deposit.expirationDate.strftime("%Y-%m-%dT%H:%M:%S"),
+                    "u.credit": 50000,
+                    "u.is_beneficiary": True,
+                    "u.marketing_push_subscription": True,
+                    "u.postal_code": "93130",
+                },
+                "user_id": first.id,
+            }
+        ]
+
     @pytest.mark.usefixtures("db_session")
     def test_an_import_status_is_saved_if_beneficiary_is_created(self, app):
         # given
@@ -369,6 +385,7 @@ class ProcessBeneficiaryApplicationTest:
 
         # then
         send_activation_email.assert_not_called()
+        assert len(push_testing.requests) == 0
         assert error_messages == ['{\n  "postalCode": [\n    "baaaaad value"\n  ]\n}']
         assert not new_beneficiaries
 
@@ -399,6 +416,7 @@ class ProcessBeneficiaryApplicationTest:
 
         # then
         send_activation_email.assert_not_called()
+        assert len(push_testing.requests) == 0
         mock_repository.save.assert_not_called()
         beneficiary_import = BeneficiaryImport.query.filter_by(applicationId=123).first()
         assert beneficiary_import.currentStatus == ImportStatus.DUPLICATE
@@ -649,6 +667,10 @@ class RunIntegrationTest:
         assert beneficiary_import.applicationId == 123
         assert beneficiary_import.beneficiary == user
         assert beneficiary_import.currentStatus == ImportStatus.CREATED
+        assert len(push_testing.requests) == 1
+        assert push_testing.requests[0]["attribute_values"][
+            "date(u.date_of_birth)"
+        ] == self.BENEFICIARY_BIRTH_DATE.strftime("%Y-%m-%dT%H:%M:%S")
 
     def test_import_duplicated_user(self):
         # given
@@ -680,6 +702,7 @@ class RunIntegrationTest:
             is_email_validated=True,
             send_activation_mail=False,
         )
+        push_testing.reset_requests()
 
         # when
         remote_import.run(
@@ -701,3 +724,6 @@ class RunIntegrationTest:
         assert beneficiary_import.currentStatus == ImportStatus.CREATED
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2016025
+
+        assert len(push_testing.requests) == 1
+        assert push_testing.requests[0]["attribute_values"]["u.is_beneficiary"]
