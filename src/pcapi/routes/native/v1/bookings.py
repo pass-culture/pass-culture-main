@@ -80,7 +80,14 @@ def get_bookings(user: User) -> BookingsResponse:
     ongoing_bookings = []
 
     for booking in bookings:
-        if (booking.dateUsed or booking.cancellationDate) and not booking.stock.offer.isPermanent:
+        if (
+            booking.stock.beginningDatetime
+            and not booking.isCancelled
+            and booking.stock.beginningDatetime >= datetime.utcnow()
+        ):
+            # consider future events events as "ongoing" even if they are used
+            ongoing_bookings.append(booking)
+        elif (booking.dateUsed or booking.cancellationDate) and not booking.stock.offer.isPermanent:
             ended_bookings.append(booking)
         else:
             ongoing_bookings.append(booking)
@@ -88,7 +95,11 @@ def get_bookings(user: User) -> BookingsResponse:
     return BookingsResponse(
         ended_bookings=[
             BookingReponse.from_orm(booking)
-            for booking in sorted(ended_bookings, key=lambda b: b.dateUsed or b.cancellationDate, reverse=True)
+            for booking in sorted(
+                ended_bookings,
+                key=lambda b: b.stock.beginningDatetime or b.dateUsed or b.cancellationDate,
+                reverse=True,
+            )
         ],
         # put permanent bookings at the end with datetime.max
         ongoing_bookings=[

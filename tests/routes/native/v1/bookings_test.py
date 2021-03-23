@@ -8,6 +8,7 @@ import pytest
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
+from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.factories import MediationFactory
 from pcapi.core.offers.factories import StockFactory
 from pcapi.core.users import factories as users_factories
@@ -86,8 +87,14 @@ class GetBookingsTest:
         permanent_booking = BookingFactory(
             user=user, stock__offer__type=str(ThingType.LIVRE_AUDIO), isUsed=True, dateUsed=datetime(2021, 2, 3)
         )
-        event_booking = BookingFactory(user=user, stock=StockFactory(beginningDatetime=datetime(2021, 3, 14)))
+        event_booking = BookingFactory(user=user, stock=EventStockFactory(beginningDatetime=datetime(2021, 3, 14)))
         expire_tomorrow = BookingFactory(user=user, dateCreated=datetime.now() - timedelta(days=29))
+        used_but_in_future = BookingFactory(
+            user=user,
+            isUsed=True,
+            dateUsed=datetime(2021, 3, 11),
+            stock=StockFactory(beginningDatetime=datetime(2021, 3, 15)),
+        )
 
         cancelled = BookingFactory(user=user, isCancelled=True)
         used1 = BookingFactory(user=user, isUsed=True, dateUsed=datetime(2021, 3, 1))
@@ -104,6 +111,7 @@ class GetBookingsTest:
         assert [b["id"] for b in response.json["ongoing_bookings"]] == [
             expire_tomorrow.id,
             event_booking.id,
+            used_but_in_future.id,
             permanent_booking.id,
         ]
 
