@@ -18,6 +18,7 @@ from pcapi.core.offers.repository import get_offers_map_by_id_at_providers
 from pcapi.core.offers.repository import get_products_map_by_id_at_providers
 from pcapi.core.offers.repository import get_stocks_by_id_at_providers
 from pcapi.infrastructure.repository.stock_provider.provider_api import ProviderAPI
+from pcapi.local_providers import TiteLiveStocks
 from pcapi.models import Product
 from pcapi.models import Venue
 from pcapi.models.db import db
@@ -26,10 +27,10 @@ from pcapi.models.provider import Provider
 from pcapi.models.venue_provider import VenueProvider
 from pcapi.repository import feature_queries
 from pcapi.repository import repository
+from pcapi.validation.models.entity_validator import validate
 
 
 logger = logging.getLogger(__name__)
-from pcapi.validation.models.entity_validator import validate
 
 
 def check_siret_can_be_synchronized(siret: str, provider: Provider):
@@ -48,7 +49,7 @@ def synchronize_venue_provider(venue_provider: VenueProvider) -> None:
 
     stats = {"new_offers": 0, "new_stocks": 0, "updated_stocks": 0}
     for raw_stocks in _get_stocks_by_batch(venue.siret, provider_api, venue_provider.lastSyncDate):
-        stock_details = _build_stock_details_from_raw_stocks(raw_stocks, venue.siret)
+        stock_details = _build_stock_details_from_raw_stocks(raw_stocks, venue.siret, provider)
 
         products_provider_references = [stock_detail["products_provider_reference"] for stock_detail in stock_details]
         products_by_provider_reference = get_products_map_by_id_at_providers(products_provider_references)
@@ -121,16 +122,22 @@ def _get_stocks_by_batch(siret: str, provider_api: ProviderAPI, modified_since: 
         last_processed_provider_reference = raw_stocks[-1]["ref"]
 
 
-def _build_stock_details_from_raw_stocks(raw_stocks: List[Dict], venue_siret: str) -> List[Dict]:
+def _build_stock_details_from_raw_stocks(raw_stocks: List[Dict], venue_siret: str, provider: Provider) -> List[Dict]:
     stock_details = []
     for stock in raw_stocks:
+
+        if provider.name == TiteLiveStocks.name:
+            price = stock["price"] / 100
+        else:
+            price = stock["price"]
+
         stock_details.append(
             {
                 "products_provider_reference": stock["ref"],
                 "offers_provider_reference": stock["ref"] + "@" + venue_siret,
                 "stocks_provider_reference": stock["ref"] + "@" + venue_siret,
                 "available_quantity": stock["available"],
-                "price": stock["price"],
+                "price": price,
             }
         )
 

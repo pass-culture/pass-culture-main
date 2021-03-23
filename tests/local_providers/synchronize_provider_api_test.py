@@ -11,8 +11,10 @@ from pcapi.core.offers import factories
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import Offer
 from pcapi.core.testing import override_features
+from pcapi.local_providers import TiteLiveStocks
 from pcapi.local_providers.provider_api import synchronize_provider_api
 from pcapi.models import ThingType
+from pcapi.models import VenueProvider
 from pcapi.models.product import Product
 
 
@@ -166,34 +168,6 @@ class ProviderAPICronTest:
             )
             synchronize_provider_api.synchronize_venue_provider(venue_provider)
 
-    def test_build_stock_details_from_raw_stocks(self):
-        # Given
-        raw_stocks = [
-            {"ref": ISBNs[4], "available": 17, "price": 23.989},
-            {"ref": ISBNs[5], "available": 17, "price": 28.989},
-        ]
-
-        # When
-        result = synchronize_provider_api._build_stock_details_from_raw_stocks(raw_stocks, "siret")
-
-        # Then
-        assert result == [
-            {
-                "available_quantity": 17,
-                "offers_provider_reference": "3010000108123@siret",
-                "price": 23.989,
-                "products_provider_reference": "3010000108123",
-                "stocks_provider_reference": "3010000108123@siret",
-            },
-            {
-                "available_quantity": 17,
-                "offers_provider_reference": "3010000108124@siret",
-                "price": 28.989,
-                "products_provider_reference": "3010000108124",
-                "stocks_provider_reference": "3010000108124@siret",
-            },
-        ]
-
     def test_build_new_offers_from_stock_details(self, db_session):
         # Given
         stock_details = [
@@ -279,3 +253,68 @@ class ProviderAPICronTest:
         assert new_stock.idAtProviders == "stock_ref2"
 
         assert offer_ids == set([123, 134])
+
+    class BuildStocksDetailsTest:
+        @pytest.mark.usefixtures("db_session")
+        def test_build_stock_details_from_raw_stocks(self):
+            # Given
+            provider = offerers_factories.ProviderFactory(localClass="TestLocalProvider")
+            raw_stocks = [
+                {"ref": ISBNs[4], "available": 17, "price": 23.989},
+                {"ref": ISBNs[5], "available": 17, "price": 28.989},
+            ]
+
+            # When
+            result = synchronize_provider_api._build_stock_details_from_raw_stocks(raw_stocks, "siret", provider)
+
+            # Then
+            assert result == [
+                {
+                    "available_quantity": 17,
+                    "offers_provider_reference": "3010000108123@siret",
+                    "price": 23.989,
+                    "products_provider_reference": "3010000108123",
+                    "stocks_provider_reference": "3010000108123@siret",
+                },
+                {
+                    "available_quantity": 17,
+                    "offers_provider_reference": "3010000108124@siret",
+                    "price": 28.989,
+                    "products_provider_reference": "3010000108124",
+                    "stocks_provider_reference": "3010000108124@siret",
+                },
+            ]
+
+        @pytest.mark.usefixtures("db_session")
+        def test_adjust_price_from_titelive_stocks(self):
+            # Given
+            venue_provider = VenueProvider()
+            venue_provider.venue = VenueFactory()
+            provider = TiteLiveStocks(venue_provider)
+            raw_stocks = [
+                {"ref": ISBNs[4], "available": 17, "price": 2398},
+                {"ref": ISBNs[5], "available": 17, "price": 2898},
+            ]
+
+            # When
+            result = synchronize_provider_api._build_stock_details_from_raw_stocks(
+                raw_stocks, "siret", provider=provider
+            )
+
+            # Then
+            assert result == [
+                {
+                    "available_quantity": 17,
+                    "offers_provider_reference": "3010000108123@siret",
+                    "price": 23.98,
+                    "products_provider_reference": "3010000108123",
+                    "stocks_provider_reference": "3010000108123@siret",
+                },
+                {
+                    "available_quantity": 17,
+                    "offers_provider_reference": "3010000108124@siret",
+                    "price": 28.98,
+                    "products_provider_reference": "3010000108124",
+                    "stocks_provider_reference": "3010000108124@siret",
+                },
+            ]

@@ -8,7 +8,7 @@ from pcapi.local_providers.provider_api import synchronize_provider_api
 
 
 @app.manager.option("-u", "--url", help="Endpoint url")
-@app.manager.option("-s", "--siret", help="A working siren")
+@app.manager.option("-s", "--siret", help="A working siret")
 @app.manager.option("-t", "--token", help="(Optionnal) Basic authentication token")
 def check_provider_api(url, siret, token):
     provider_api = ProviderAPI(
