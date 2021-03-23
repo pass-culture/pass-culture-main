@@ -321,6 +321,25 @@ class Get:
             assert response.status_code == 200
             assert response.headers["Total-Data-Count"] == "2"
 
+        @pytest.mark.usefixtures("db_session")
+        def test_returns_only_active_offerers(self, app):
+            # given
+            pro_user = create_user(email="user@test.com")
+            active_offerer = create_offerer(name="active_offerer", siren="1", is_active=True)
+            active_user_offerer = create_user_offerer(pro_user, active_offerer)
+            inactive_offerer = create_offerer(name="inactive_offerer", siren="2", is_active=False)
+            inactive_user_offerer = create_user_offerer(pro_user, inactive_offerer)
+            repository.save(active_user_offerer, inactive_user_offerer)
+
+            # when
+            request = TestClient(app.test_client()).with_auth(email=pro_user.email)
+            response = request.get("/offerers?is_active=true")
+
+            # then
+            assert response.status_code == 200
+            assert len(response.json) == 1
+            assert response.json[0]["name"] == active_offerer.name
+
     class Returns400:
         @pytest.mark.usefixtures("db_session")
         def when_param_validated_is_not_true_nor_false(self, app):

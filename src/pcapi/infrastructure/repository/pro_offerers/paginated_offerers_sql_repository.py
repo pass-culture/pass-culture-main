@@ -21,7 +21,7 @@ class PaginatedOfferersSQLRepository(PaginatedOfferersRepository):
         page: int = 0,
         keywords: Optional[str] = None,
     ) -> PaginatedOfferers:
-        query = Offerer.query.distinct()
+        query = Offerer.query.distinct().filter(Offerer.isActive.is_(True))
 
         if not user_is_admin:
             query = query.join(UserOfferer, UserOfferer.offererId == Offerer.id).filter(UserOfferer.userId == user_id)
