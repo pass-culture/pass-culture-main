@@ -139,11 +139,11 @@ export const setAllVenueOffersInactivate = async venueId => {
   return client.put(`/venues/${venueId}/offers/deactivate`)
 }
 
-export const getVenuesForOfferer = offererId => {
+export const getVenuesForOfferer = ({ offererId = null, activeOfferersOnly = false }) => {
   if (offererId) {
-    return client.get(`/venues?offererId=${offererId}`)
+    return client.get(`/venues?offererId=${offererId}&active_offerers_only=${activeOfferersOnly}`)
   } else {
-    return client.get('/venues?validated_for_user=true')
+    return client.get(`/venues?validated_for_user=true&active_offerers_only=${activeOfferersOnly}`)
   }
 }
 

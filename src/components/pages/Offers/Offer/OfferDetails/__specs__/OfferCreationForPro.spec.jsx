@@ -914,6 +914,14 @@ describe('offerDetails - Creation - pro user', () => {
           const venueIdError = queryInputErrorForField('venueId')
           expect(venueIdError).toBeNull()
         })
+
+        it('should only display venues from active offerers', async () => {
+          // when
+          await renderOffers(props, store)
+
+          // then
+          expect(pcapi.getVenuesForOfferer).toHaveBeenCalledWith({ activeOfferersOnly: true })
+        })
       })
 
       describe('with conditional fields', () => {

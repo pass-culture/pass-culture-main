@@ -46,13 +46,15 @@ const OfferCreation = ({
         const offerersRequest = pcapi.getUserValidatedOfferersNames().then(receivedOfferers => {
           offerersNames.current = receivedOfferers
         })
-        const venuesRequest = pcapi.getVenuesForOfferer().then(receivedVenues => {
-          venues.current = receivedVenues
-          const venuesToDisplay = initialValues.offererId
-            ? receivedVenues.filter(venue => venue.managingOffererId === initialValues.offererId)
-            : receivedVenues
-          setDisplayedVenues(venuesToDisplay)
-        })
+        const venuesRequest = pcapi
+          .getVenuesForOfferer({ activeOfferersOnly: true })
+          .then(receivedVenues => {
+            venues.current = receivedVenues
+            const venuesToDisplay = initialValues.offererId
+              ? receivedVenues.filter(venue => venue.managingOffererId === initialValues.offererId)
+              : receivedVenues
+            setDisplayedVenues(venuesToDisplay)
+          })
         requests.push(offerersRequest, venuesRequest)
       }
       Promise.all(requests).then(() => setIsLoading(false))
