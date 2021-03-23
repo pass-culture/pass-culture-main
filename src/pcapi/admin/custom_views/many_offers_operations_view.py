@@ -1,3 +1,4 @@
+import itertools
 from typing import Dict
 from typing import List
 
@@ -15,7 +16,7 @@ from wtforms import validators
 
 from pcapi.admin.base_configuration import BaseCustomAdminView
 from pcapi.core.offers.api import add_criteria_to_offers
-from pcapi.core.offers.api import deactivate_inappropriate_product
+from pcapi.core.offers.api import deactivate_inappropriate_products
 from pcapi.core.offers.models import Offer
 from pcapi.models.criterion import Criterion
 from pcapi.models.product import Product
@@ -89,18 +90,18 @@ class ManyOffersOperationsView(BaseCustomAdminView):
             flash("Veuillez renseigner un ISBN valide", "error")
             return redirect(url_for(".search"))
 
-        product = (
+        products = (
             Product.query.filter(Product.extraData["isbn"].astext == isbn)
             .options(joinedload(Product.offers).joinedload(Offer.criteria))
-            .first()
+            .all()
         )
-        if not product:
+        if not products:
             flash("Aucun livre n'a été trouvé avec cet ISBN", "error")
             return redirect(url_for(".search"))
 
         offer_criteria_form = OfferCriteriaForm()
 
-        offers = product.offers
+        offers = list(itertools.chain.from_iterable(p.offers for p in products))
         active_offers_number = len([offer for offer in offers if offer.isActive])
         inactive_offers_number = len(offers) - active_offers_number
         current_criteria_on_offers = _get_current_criteria_on_active_offers(offers)
@@ -114,13 +115,13 @@ class ManyOffersOperationsView(BaseCustomAdminView):
             offer_criteria_form.criteria.data = current_criteria_on_all_offers
 
         context = {
-            "name": product.name,
+            "name": products[0].name,
             "active_offers_number": active_offers_number,
             "inactive_offers_number": inactive_offers_number,
             "isbn": isbn,
             "offer_criteria_form": offer_criteria_form,
             "current_criteria_on_offers": current_criteria_on_offers,
-            "is_product_compatible": product.isGcuCompatible,
+            "is_product_compatible": all(p.isGcuCompatible for p in products),
         }
 
         return self.render("admin/edit_many_offers.html", **context)
@@ -152,7 +153,7 @@ class ManyOffersOperationsView(BaseCustomAdminView):
             flash("Veuillez renseigner un ISBN valide", "error")
             return redirect(url_for(".search"))
 
-        is_operation_successful = deactivate_inappropriate_product(isbn)
+        is_operation_successful = deactivate_inappropriate_products(isbn)
         if is_operation_successful:
             flash("Le produit a été rendu incompatible aux CGU et les offres ont été désactivées", "success")
         else:

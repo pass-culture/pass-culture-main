@@ -16,13 +16,12 @@ from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories
 from pcapi.core.offers.api import add_criteria_to_offers
 from pcapi.core.offers.api import compute_offer_validation_from_name
-from pcapi.core.offers.api import deactivate_inappropriate_product
+from pcapi.core.offers.api import deactivate_inappropriate_products
 from pcapi.core.offers.api import get_expense_domains
 from pcapi.core.offers.api import update_offer_and_stock_id_at_providers
 from pcapi.core.offers.exceptions import ThumbnailStorageError
 from pcapi.core.offers.factories import CriterionFactory
 from pcapi.core.offers.factories import OfferFactory
-from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.offers.factories import StockFactory
 from pcapi.core.offers.factories import ThingProductFactory
@@ -1011,10 +1010,12 @@ class AddCriterionToOffersTest:
     def test_add_criteria(self, mocked_add_offer_id):
         # Given
         isbn = "2-221-00164-8"
-        product = ProductFactory(extraData={"isbn": "2221001648"})
-        offer1 = OfferFactory(product=product)
-        offer2 = OfferFactory(product=product)
-        inactive_offer = OfferFactory(product=product, isActive=False)
+        product1 = ProductFactory(extraData={"isbn": "2221001648"})
+        offer11 = OfferFactory(product=product1)
+        offer12 = OfferFactory(product=product1)
+        product2 = ProductFactory(extraData={"isbn": "2221001648"})
+        offer21 = OfferFactory(product=product2)
+        inactive_offer = OfferFactory(product=product1, isActive=False)
         unmatched_offer = OfferFactory()
         criterion1 = CriterionFactory(name="Pretty good books")
         criterion2 = CriterionFactory(name="Other pretty good books")
@@ -1024,8 +1025,9 @@ class AddCriterionToOffersTest:
 
         # Then
         assert is_successful is True
-        assert offer1.criteria == [criterion1, criterion2]
-        assert offer2.criteria == [criterion1, criterion2]
+        assert offer11.criteria == [criterion1, criterion2]
+        assert offer12.criteria == [criterion1, criterion2]
+        assert offer21.criteria == [criterion1, criterion2]
         assert not inactive_offer.criteria
         assert not unmatched_offer.criteria
         # fmt: off
@@ -1034,7 +1036,7 @@ class AddCriterionToOffersTest:
             for i in range(mocked_add_offer_id.call_count)
         }
         # fmt: on
-        assert reindexed_offer_ids == {offer1.id, offer2.id}
+        assert reindexed_offer_ids == {offer11.id, offer12.id, offer21.id}
 
     @mock.patch("pcapi.connectors.redis.add_offer_id")
     def test_add_criteria_when_no_offers_is_found(self, mocked_add_offer_id):
@@ -1055,25 +1057,21 @@ class DeactivateInappropriateProductTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_deactivate_product_with_inappropriate_content(self, mocked_add_offer_id):
         # Given
-        offerer = OffererFactory()
-        product_1 = ThingProductFactory(description="premier produit inapproprié", extraData={"isbn": "isbn-de-test"})
-        venue = VenueFactory(managingOfferer=offerer)
-        OfferFactory(product=product_1, venue=venue)
-        OfferFactory(product=product_1, venue=venue)
+        product1 = ThingProductFactory(extraData={"isbn": "isbn-de-test"})
+        product2 = ThingProductFactory(extraData={"isbn": "isbn-de-test"})
+        OfferFactory(product=product1)
+        OfferFactory(product=product1)
+        OfferFactory(product=product2)
 
         # When
-        deactivate_inappropriate_product("isbn-de-test")
+        deactivate_inappropriate_products("isbn-de-test")
 
         # Then
         products = Product.query.all()
         offers = Offer.query.all()
-        first_product = products[0]
-        first_offer = offers[0]
-        second_offer = offers[1]
 
-        assert not first_product.isGcuCompatible
-        assert not first_offer.isActive
-        assert not second_offer.isActive
+        assert not any(product.isGcuCompatible for product in products)
+        assert not any(offer.isActive for offer in offers)
         for o in offers:
             mocked_add_offer_id.assert_any_call(client=app.redis_client, offer_id=o.id)
 

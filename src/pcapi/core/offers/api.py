@@ -505,11 +505,13 @@ def get_expense_domains(offer: Offer) -> List[ExpenseDomain]:
 def add_criteria_to_offers(criteria: List[Criterion], isbn: str) -> bool:
     isbn = isbn.replace("-", "").replace(" ", "")
 
-    product = Product.query.filter(Product.extraData["isbn"].astext == isbn).first()
-    if not product:
+    products = Product.query.filter(Product.extraData["isbn"].astext == isbn).all()
+    if not products:
         return False
 
-    offer_ids_query = Offer.query.filter_by(productId=product.id, isActive=True).with_entities(Offer.id)
+    offer_ids_query = Offer.query.filter(
+        Offer.productId.in_(p.id for p in products), Offer.isActive.is_(True)
+    ).with_entities(Offer.id)
     offer_ids = [offer_id for offer_id, in offer_ids_query.all()]
 
     if not offer_ids:
@@ -531,22 +533,26 @@ def add_criteria_to_offers(criteria: List[Criterion], isbn: str) -> bool:
     return True
 
 
-def deactivate_inappropriate_product(isbn: str) -> bool:
-    product = Product.query.filter(Product.extraData["isbn"].astext == isbn).first()
-    if not product:
+def deactivate_inappropriate_products(isbn: str) -> bool:
+    products = Product.query.filter(Product.extraData["isbn"].astext == isbn).all()
+    if not products:
         return False
 
-    product.isGcuCompatible = False
-    db.session.add(product)
+    for product in products:
+        product.isGcuCompatible = False
+        db.session.add(product)
 
-    offers = Offer.query.filter_by(productId=product.id, isActive=True)
+    offers = Offer.query.filter(Offer.productId.in_(p.id for p in products)).filter(Offer.isActive.is_(True))
     offer_ids = [offer_id for offer_id, in offers.with_entities(Offer.id).all()]
-    offers.update(values={"isActive": False})
+    offers.update(values={"isActive": False}, synchronize_session="fetch")
 
     try:
         db.session.commit()
     except Exception as exception:  # pylint: disable=broad-except
-        logger.exception("[ADMIN] error when trying to update GcuCompatible on a product %s", exception)
+        logger.exception(
+            "Could not mark product and offers as inappropriate: %s",
+            extra={"products": [p.id for p in products], "exc": str(exception)},
+        )
         return False
 
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
