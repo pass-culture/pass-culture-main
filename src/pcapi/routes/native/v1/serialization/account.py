@@ -1,5 +1,6 @@
 import datetime
 from datetime import date
+from typing import Dict
 from typing import List
 from typing import Optional
 from uuid import UUID
@@ -88,7 +89,7 @@ class DomainsCredit(BaseModel):
 
 class UserProfileResponse(BaseModel):
     id: int
-    booked_offers: dict
+    booked_offers: Dict[str, int]
     domains_credit: Optional[DomainsCredit]
     dateOfBirth: Optional[datetime.date]
     deposit_expiration_date: Optional[datetime.datetime]
