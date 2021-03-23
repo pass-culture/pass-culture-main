@@ -175,7 +175,9 @@ class AccountTest:
                 "attribute_values": {
                     "date(u.date_created)": user.dateCreated.strftime("%Y-%m-%dT%H:%M:%S"),
                     "date(u.date_of_birth)": "1960-12-31T00:00:00",
+                    "date(u.deposit_expiration_date)": None,
                     "u.credit": 0,
+                    "u.is_beneficiary": False,
                     "u.marketing_push_subscription": True,
                     "u.postal_code": None,
                 },
@@ -247,7 +249,9 @@ class UserProfileUpdateTest:
                 "attribute_values": {
                     "date(u.date_created)": user.dateCreated.strftime("%Y-%m-%dT%H:%M:%S"),
                     "date(u.date_of_birth)": "2000-01-01T00:00:00",
+                    "date(u.deposit_expiration_date)": user.deposit.expirationDate.strftime("%Y-%m-%dT%H:%M:%S"),
                     "u.credit": 50000,
+                    "u.is_beneficiary": True,
                     "u.marketing_push_subscription": True,
                     "u.postal_code": None,
                 },

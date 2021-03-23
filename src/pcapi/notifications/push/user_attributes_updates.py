@@ -11,4 +11,8 @@ def get_user_attributes(user: User) -> dict:
         "u.postal_code": user.postalCode,
         "date(u.date_created)": user.dateCreated.strftime(BATCH_DATETIME_FORMAT),
         "u.marketing_push_subscription": user.get_notification_subscriptions().marketing_push,
+        "u.is_beneficiary": user.isBeneficiary,
+        "date(u.deposit_expiration_date)": user.deposit_expiration_date.strftime(BATCH_DATETIME_FORMAT)
+        if user.deposit_expiration_date
+        else None,
     }
