@@ -53,7 +53,7 @@ def internal_error(error: Exception) -> Union[Tuple[Dict, int], HTTPException]:
 def method_not_allowed(error: MethodNotAllowed) -> Tuple[Dict, int]:
     api_errors = ApiErrors()
     api_errors.add_error("global", "La méthode que vous utilisez n'existe pas sur notre serveur")
-    logger.error("405 %s" % str(error))
+    logger.error("405 %s", error)
     return jsonify(api_errors.errors), 405
 
 
@@ -62,7 +62,7 @@ def method_not_allowed(error: MethodNotAllowed) -> Tuple[Dict, int]:
 def invalid_id_for_dehumanize_error(error: NonDehumanizableId) -> Tuple[Dict, int]:
     api_errors = ApiErrors()
     api_errors.add_error("global", "La page que vous recherchez n'existe pas")
-    logger.error("404 %s" % str(error))
+    logger.error("404 %s", error)
     return jsonify(api_errors.errors), 404
 
 

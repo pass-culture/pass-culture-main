@@ -138,4 +138,4 @@ def _send_to_pc_admin_offerer_to_validate_email(offerer: Offerer, user_offerer: 
     try:
         maybe_send_offerer_validation_email(offerer, user_offerer)
     except MailServiceException as mail_service_exception:
-        logger.exception("[maybe_send_offerer_validation_email] " "Mail service failure", mail_service_exception)
+        logger.exception("Could not send validation email to offerer", extra={"exc": str(mail_service_exception)})

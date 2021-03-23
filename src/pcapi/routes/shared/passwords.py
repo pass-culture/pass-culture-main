@@ -63,18 +63,17 @@ def post_for_password_token(body: ResetPasswordBodyModel) -> None:
     generate_reset_token(user)
     repository.save(user)
 
-    is_not_pro_user = user.isBeneficiary
-
-    if is_not_pro_user:
-        try:
-            send_reset_password_email_to_user(user)
-        except MailServiceException as mail_service_exception:
-            logger.exception("[send_reset_password_email_to_user] " "Mail service failure", mail_service_exception)
+    if user.isBeneficiary:
+        send_email = send_reset_password_email_to_user
     else:
-        try:
-            send_reset_password_email_to_pro(user)
-        except MailServiceException as mail_service_exception:
-            logger.exception("[send_reset_password_email_to_pro] " "Mail service failure", mail_service_exception)
+        send_email = send_reset_password_email_to_pro
+
+    try:
+        send_email(user)
+    except MailServiceException as mail_service_exception:
+        logger.exception(
+            "Could not send reset password email", extra={"user": user.id, "exc": str(mail_service_exception)}
+        )
 
 
 # @debt api-migration

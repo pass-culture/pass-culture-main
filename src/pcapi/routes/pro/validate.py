@@ -39,7 +39,9 @@ def validate_offerer_attachment(token):
     try:
         send_attachment_validation_email_to_pro_offerer(user_offerer)
     except MailServiceException as mail_service_exception:
-        logger.exception("Email service failure", mail_service_exception)
+        logger.exception(
+            "Could not send attachment validation email to offerer", extra={"exc": str(mail_service_exception)}
+        )
 
     return "Validation du rattachement de la structure effectuée", 202
 
@@ -66,7 +68,9 @@ def validate_new_offerer(token):
     try:
         send_validation_confirmation_email_to_pro(offerer)
     except MailServiceException as mail_service_exception:
-        logger.exception("Email service failure", mail_service_exception)
+        logger.exception(
+            "Could not send validation confirmation email to offerer", extra={"exc": str(mail_service_exception)}
+        )
     return "Validation effectuée", 202
 
 
@@ -98,7 +102,9 @@ def _ask_for_validation(offerer: Offerer, user_offerer: UserOfferer):
         maybe_send_offerer_validation_email(offerer, user_offerer)
 
     except MailServiceException as mail_service_exception:
-        logger.exception("Email service failure", mail_service_exception)
+        logger.exception(
+            "Could not send offerer validation email to offerer", extra={"exc": str(mail_service_exception)}
+        )
 
 
 def _validate_offerer(offerer: Offerer, user_offerer: UserOfferer):
