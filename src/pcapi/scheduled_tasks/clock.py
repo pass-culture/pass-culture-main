@@ -1,5 +1,6 @@
 from datetime import date
 from datetime import timedelta
+import logging
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 from flask import Flask
@@ -8,6 +9,7 @@ from flask import Flask
 from pcapi import models  # pylint: disable=unused-import
 from pcapi import settings
 from pcapi.core.logging import install_logging
+from pcapi.core.offers.repository import check_stock_consistence
 from pcapi.core.users import api as users_api
 from pcapi.core.users.repository import get_newly_eligible_users
 from pcapi.domain.user_emails import send_newly_eligible_user_email
@@ -28,6 +30,8 @@ from pcapi.scripts.update_booking_used import update_booking_used_after_stock_oc
 
 
 install_logging()
+
+logger = logging.getLogger(__name__)
 
 
 @log_cron
@@ -108,6 +112,13 @@ def pc_clean_expired_tokens(app: Flask) -> None:
     users_api.delete_expired_tokens()
 
 
+@log_cron
+@cron_context
+def pc_check_stock_quantity_consistency(app: Flask) -> None:
+    inconsistent_stocks = check_stock_consistence()
+    logger.error("Found inconsistent stocks: %s", ", ".join([str(stock.id) for stock in inconsistent_stocks]))
+
+
 def main() -> None:
     from pcapi.flask_app import app
 
@@ -146,6 +157,8 @@ def main() -> None:
     scheduler.add_job(pc_notify_newly_eligible_users, "cron", [app], day="*", hour="3")
 
     scheduler.add_job(pc_clean_expired_tokens, "cron", [app], day="*", hour="2")
+
+    scheduler.add_job(pc_check_stock_quantity_consistency, "cron", [app], day="*", hour="1")
 
     scheduler.start()
 

@@ -6,6 +6,7 @@ import pytest
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import OfferStatus
+from pcapi.core.offers.repository import check_stock_consistence
 from pcapi.core.offers.repository import get_active_offers_count_for_venue
 from pcapi.core.offers.repository import get_offers_by_ids
 from pcapi.core.offers.repository import get_paginated_offers_for_filters
@@ -1175,3 +1176,30 @@ class GetSoldOutOffersCountForVenueTest:
 
         # Then
         assert sold_out_offers_count == 2
+
+
+@pytest.mark.usefixtures("db_session")
+class CheckStockConsistenceTest:
+    def test_with_inconsistencies(self):
+        # consistent stock without booking
+        offers_factories.StockFactory(dnBookedQuantity=0)
+        # inconsistent stock without booking
+        stock2 = offers_factories.StockFactory(dnBookedQuantity=5)
+
+        # consistent stock with booking
+        stock3 = offers_factories.StockFactory(dnBookedQuantity=2)
+        bookings_factories.BookingFactory(stock=stock3, quantity=2)
+        # inconsistent stock with booking
+        stock4 = offers_factories.StockFactory(dnBookedQuantity=5)
+        bookings_factories.BookingFactory(stock=stock4, quantity=2)
+
+        # consistent stock with cancelled booking
+        stock5 = offers_factories.StockFactory(dnBookedQuantity=0)
+        bookings_factories.BookingFactory(stock=stock5, quantity=2, isCancelled=True)
+        # inconsistent stock with cancelled booking
+        stock6 = offers_factories.StockFactory(dnBookedQuantity=2)
+        bookings_factories.BookingFactory(stock=stock6, quantity=2, isCancelled=True)
+
+        stocks = check_stock_consistence()
+        stock_ids = {stock.id for stock in stocks}
+        assert stock_ids == {stock2.id, stock4.id, stock6.id}
