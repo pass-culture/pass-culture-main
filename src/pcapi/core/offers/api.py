@@ -137,6 +137,8 @@ def create_offer(offer_data: PostOfferBodyModel, user: User) -> Offer:
     offer.visualDisabilityCompliant = offer_data.visual_disability_compliant
     # TODO(fseguin): remove after the real implementation is added
     offer.validation = compute_offer_validation_from_name(offer)
+    if offer.validation == OfferValidationStatus.REJECTED:
+        offer.isActive = False
 
     repository.save(offer)
     admin_emails.send_offer_creation_notification_to_administration(offer, user)

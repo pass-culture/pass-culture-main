@@ -733,11 +733,17 @@ class CreateOfferTest:
             not_a_rejected_offer = api.create_offer(rejected_offer_data, user)
 
         assert approved_offer.validation == OfferValidationStatus.APPROVED
+        assert approved_offer.isActive
         assert awaiting_offer.validation == OfferValidationStatus.AWAITING
+        assert awaiting_offer.isActive
         assert rejected_offer.validation == OfferValidationStatus.REJECTED
+        assert not rejected_offer.isActive
         assert another_approved_offer.validation == OfferValidationStatus.APPROVED
+        assert another_approved_offer.isActive
         assert not_an_awaiting_offer.validation == OfferValidationStatus.APPROVED
+        assert not_an_awaiting_offer.isActive
         assert not_a_rejected_offer.validation == OfferValidationStatus.APPROVED
+        assert not_a_rejected_offer.isActive
 
 
 @pytest.mark.usefixtures("db_session")
