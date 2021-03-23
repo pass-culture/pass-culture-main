@@ -165,6 +165,7 @@ class LocalProvider(Iterator):
             logger.info("Provider %s is inactive", provider_name)
             return
 
+        # TODO (asaunier,2021-03-18): We may replace this log in BDD with logs in the monitoring system
         self.log_provider_event(LocalProviderEventType.SyncStart)
 
         chunk_to_insert = {}

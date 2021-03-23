@@ -46,6 +46,7 @@ class GenericStocks(LocalProvider):
             self.provider_stocks = next(self.stock_data)
 
         self.last_processed_isbn = str(self.provider_stocks["ref"])
+        # FIXME: This line create a lot of read queries on the database which slows the process very much.
         self.product = product_queries.find_active_book_product_by_isbn(self.provider_stocks["ref"])
         if not self.product:
             return []

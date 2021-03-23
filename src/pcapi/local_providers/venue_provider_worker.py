@@ -21,7 +21,7 @@ WAIT_TIME_FOR_AVAILABLE_WORKER = 60
 
 # FIXME (dbaty, 2021-02-05): if the new simplified implementation
 # stays, we can clean up a few things:
-# - rmeove the feature flag
+# - remove the feature flag
 # - remove `VenueProvider.syncWorkerId`
 # - remove `get_venue_providers_to_sync()`
 # - inline this function into `synchronize_titelive_stocks()`?
