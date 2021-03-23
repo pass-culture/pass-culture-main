@@ -5,8 +5,11 @@ BATCH_DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
 
 def get_user_attributes(user: User) -> dict:
+    from pcapi.core.users.api import get_domains_credit
+
+    credit = get_domains_credit(user)
     return {
-        "u.credit": int(user.wallet_balance * 100),
+        "u.credit": int(credit.all.remaining * 100) if credit else 0,
         "date(u.date_of_birth)": user.dateOfBirth.strftime(BATCH_DATETIME_FORMAT) if user.dateOfBirth else None,
         "u.postal_code": user.postalCode,
         "date(u.date_created)": user.dateCreated.strftime(BATCH_DATETIME_FORMAT),
