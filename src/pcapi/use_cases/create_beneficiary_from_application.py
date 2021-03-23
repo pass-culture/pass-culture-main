@@ -7,6 +7,7 @@ from pcapi.domain.user_emails import send_activation_email
 from pcapi.domain.user_emails import send_rejection_email_to_beneficiary_pre_subscription
 from pcapi.infrastructure.repository.beneficiary.beneficiary_sql_repository import BeneficiarySQLRepository
 from pcapi.repository.user_queries import find_user_by_email
+from pcapi.workers.push_notification_job import update_user_attributes_job
 
 
 class CreateBeneficiaryFromApplication:
@@ -36,6 +37,8 @@ class CreateBeneficiaryFromApplication:
                 send_activation_email(user=beneficiary)
             else:
                 send_accepted_as_beneficiary_email(user=beneficiary)
+
+            update_user_attributes_job.delay(beneficiary)
 
 
 create_beneficiary_from_application = CreateBeneficiaryFromApplication()

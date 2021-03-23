@@ -14,6 +14,7 @@ from pcapi.model_creators.generic_creators import create_user
 from pcapi.models import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.models.deposit import Deposit
+from pcapi.notifications.push import testing as push_testing
 from pcapi.repository import repository
 from pcapi.use_cases.create_beneficiary_from_application import create_beneficiary_from_application
 
@@ -91,6 +92,21 @@ def test_saved_a_beneficiary_from_application(stubed_random_token, mocked_send_a
 
     mocked_send_activation_email.assert_called_once()
 
+    assert push_testing.requests == [
+        {
+            "user_id": beneficiary.id,
+            "attribute_values": {
+                "u.credit": 50000,
+                "date(u.date_of_birth)": "1995-02-05T00:00:00",
+                "u.postal_code": "35123",
+                "date(u.date_created)": beneficiary.dateCreated.strftime("%Y-%m-%dT%H:%M:%S"),
+                "u.marketing_push_subscription": True,
+                "u.is_beneficiary": True,
+                "date(u.deposit_expiration_date)": "2015-05-15T09:00:00",
+            },
+        }
+    ]
+
 
 @patch("pcapi.use_cases.create_beneficiary_from_application.send_accepted_as_beneficiary_email")
 @patch(
@@ -109,6 +125,7 @@ def test_application_for_native_app_user(mocked_send_accepted_as_beneficiary_ema
         is_email_validated=True,
         send_activation_mail=False,
     )
+    push_testing.reset_requests()
 
     # When
     create_beneficiary_from_application.execute(application_id)
@@ -126,6 +143,21 @@ def test_application_for_native_app_user(mocked_send_accepted_as_beneficiary_ema
     assert beneficiary_import.currentStatus == ImportStatus.CREATED
     assert beneficiary_import.applicationId == application_id
     assert beneficiary_import.beneficiary == beneficiary
+
+    assert push_testing.requests == [
+        {
+            "user_id": beneficiary.id,
+            "attribute_values": {
+                "u.credit": 50000,
+                "date(u.date_of_birth)": "1995-02-05T00:00:00",
+                "u.postal_code": "35123",
+                "date(u.date_created)": beneficiary.dateCreated.strftime("%Y-%m-%dT%H:%M:%S"),
+                "u.marketing_push_subscription": True,
+                "u.is_beneficiary": True,
+                "date(u.deposit_expiration_date)": "2015-05-15T09:00:00",
+            },
+        }
+    ]
 
 
 @patch(
@@ -152,6 +184,8 @@ def test_cannot_save_beneficiary_if_email_is_already_taken(app):
     assert beneficiary_import.applicationId == application_id
     assert beneficiary_import.beneficiary is None
     assert beneficiary_import.detail == f"Email {email} is already taken."
+
+    assert push_testing.requests == []
 
 
 @patch(
