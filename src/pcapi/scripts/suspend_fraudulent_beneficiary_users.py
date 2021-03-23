@@ -1,3 +1,4 @@
+import logging
 from typing import List
 
 from pcapi.core.bookings.repository import find_offers_booked_by_beneficiaries
@@ -5,7 +6,9 @@ from pcapi.core.users.api import suspend_account
 from pcapi.core.users.constants import SuspensionReason
 from pcapi.core.users.models import User
 from pcapi.repository.user_queries import find_beneficiary_users_by_email_provider
-from pcapi.utils.logger import logger
+
+
+logger = logging.getLogger(__name__)
 
 
 def suspend_fraudulent_beneficiary_users_by_email_providers(
