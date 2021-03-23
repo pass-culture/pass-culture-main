@@ -168,3 +168,21 @@ class GetByProIdentifierTest:
         # then
         assert len(found_venues) == 1
         assert found_venues[0].name == venue_from_wanted_offerer.name
+
+    @pytest.mark.usefixtures("db_session")
+    def should_not_return_venues_with_inactive_offerer_for_validated_user_offerer(self, app):
+        # given
+        pro_user = users_factories.UserFactory(isBeneficiary=False)
+        offerer = offers_factories.OffererFactory(isActive=False)
+        offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        offers_factories.VenueFactory(managingOfferer=offerer)
+
+        # when
+        found_venues = self.venue_sql_repository.get_by_pro_identifier(
+            pro_identifier=pro_user.id,
+            user_is_admin=False,
+            active_offerers_only=True,
+        )
+
+        # then
+        assert len(found_venues) == 0

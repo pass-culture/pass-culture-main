@@ -18,6 +18,7 @@ class VenueWithOffererNameSQLRepository(VenueWithOffererNameRepository):
         offerer_id: Optional[Identifier] = None,
         validated_offerer: Optional[bool] = None,
         validated_offerer_for_user: Optional[bool] = None,
+        active_offerers_only: Optional[bool] = False,
     ) -> List[VenueWithOffererName]:
         query = Venue.query.join(Offerer, Offerer.id == Venue.managingOffererId).join(
             UserOfferer, UserOfferer.offererId == Offerer.id
@@ -35,6 +36,9 @@ class VenueWithOffererNameSQLRepository(VenueWithOffererNameRepository):
                 query = query.filter(UserOfferer.validationToken.is_(None))
             else:
                 query = query.filter(UserOfferer.validationToken.isnot(None))
+
+        if active_offerers_only:
+            query = query.filter(Offerer.isActive)
 
         if offerer_id:
             query = query.filter(Venue.managingOffererId == offerer_id.persisted)

@@ -62,6 +62,10 @@ def get_venues():
     if map_string_args.get(validated_for_user, None) is not None:
         validated_for_user = map_string_args[validated_for_user]
 
+    active_offerers_only = request.args.get("active_offerers_only", None)
+    if map_string_args.get(active_offerers_only, None) is not None:
+        active_offerers_only = map_string_args[active_offerers_only]
+
     offerer_identifier = Identifier.from_scrambled_id(request.args.get("offererId"))
 
     venues = get_all_venues_by_pro_user.execute(
@@ -70,6 +74,7 @@ def get_venues():
         offerer_id=offerer_identifier,
         validated_offerer=validated,
         validated_offerer_for_user=validated_for_user,
+        active_offerers_only=active_offerers_only,
     )
     return jsonify(serialize_venues_with_offerer_name(venues)), 200
 

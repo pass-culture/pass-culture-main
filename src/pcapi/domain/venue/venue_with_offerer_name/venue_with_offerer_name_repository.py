@@ -13,6 +13,7 @@ class VenueWithOffererNameRepository(ABC):
         self,
         pro_identifier: int,
         user_is_admin: bool,
+        active_offerers_only: bool = False,
         offerer_id: Optional[Identifier] = None,
         validated_offerer: Optional[bool] = None,
         validated_offerer_for_user: Optional[bool] = None,
