@@ -210,7 +210,9 @@ class ProviderAPICronTest:
         ]
 
         existing_offers_by_provider_reference = {"offer_ref1"}
+        provider = offerers_factories.APIProviderFactory(apiUrl="https://provider_url", authToken="fake_token")
         venue = VenueFactory(bookingEmail="booking_email")
+        venue_provider = offerers_factories.VenueProviderFactory(isActive=True, provider=provider, venue=venue)
         product = Product(
             id=456, name="product_name", description="product_desc", extraData="extra", type="product_type"
         )
@@ -218,7 +220,7 @@ class ProviderAPICronTest:
 
         # When
         new_offers = synchronize_provider_api._build_new_offers_from_stock_details(
-            stock_details, existing_offers_by_provider_reference, products_by_provider_reference, venue
+            stock_details, existing_offers_by_provider_reference, products_by_provider_reference, venue_provider
         )
 
         # Then

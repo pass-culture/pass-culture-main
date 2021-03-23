@@ -318,11 +318,14 @@ class GetOfferVenueResponseModel(BaseModel):
     venueTypeId: Optional[str]
 
 
+# FIXME (apibrac, 2021-03-23): we should not expose so much information to the fronts.
+# Only the name is needed in pro and nothing in webapp => can we just send a providerName field?
+# The field lastProviderId is not used anywhere in the fronts either.
 class GetOfferLastProviderResponseModel(BaseModel):
     enabledForPro: bool
     id: str
     isActive: bool
-    localClass: str
+    localClass: Optional[str]
     name: str
     requireProviderIdentifier: bool
 
