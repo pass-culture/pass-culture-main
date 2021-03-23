@@ -58,7 +58,7 @@ def synchronize_venue_provider(venue_provider: VenueProvider) -> None:
         offers_by_provider_reference = get_offers_map_by_id_at_providers(offers_provider_references)
 
         new_offers = _build_new_offers_from_stock_details(
-            stock_details, offers_by_provider_reference, products_by_provider_reference, venue
+            stock_details, offers_by_provider_reference, products_by_provider_reference, venue_provider
         )
         new_offers_references = [new_offer.idAtProviders for new_offer in new_offers]
 
@@ -125,7 +125,7 @@ def _build_new_offers_from_stock_details(
     stock_details: List,
     existing_offers_by_provider_reference: Dict[str, int],
     products_by_provider_reference: Dict[str, Product],
-    venue: Venue,
+    venue_provider: VenueProvider,
 ) -> List[Offer]:
     new_offers = []
     for stock_detail in stock_details:
@@ -133,7 +133,12 @@ def _build_new_offers_from_stock_details(
             continue
 
         product = products_by_provider_reference[stock_detail["products_provider_reference"]]
-        offer = _build_new_offer(venue, product, id_at_providers=stock_detail["offers_provider_reference"])
+        offer = _build_new_offer(
+            venue_provider.venue,
+            product,
+            id_at_providers=stock_detail["offers_provider_reference"],
+            provider_id=venue_provider.providerId,
+        )
 
         if not _validate_stock_or_offer(offer):
             continue
@@ -201,12 +206,13 @@ def _validate_stock_or_offer(model: Union[Offer, Stock]) -> bool:
     return True
 
 
-def _build_new_offer(venue: Venue, product: Product, id_at_providers: str) -> Offer:
+def _build_new_offer(venue: Venue, product: Product, id_at_providers: str, provider_id: str) -> Offer:
     return Offer(
         bookingEmail=venue.bookingEmail,
         description=product.description,
         extraData=product.extraData,
         idAtProviders=id_at_providers,
+        lastProviderId=provider_id,
         name=product.name,
         productId=product.id,
         venueId=venue.id,

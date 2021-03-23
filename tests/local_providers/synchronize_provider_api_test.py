@@ -140,6 +140,7 @@ class ProviderAPICronTest:
         assert created_offer.venueId == venue_provider.venue.id
         assert created_offer.type == product.type
         assert created_offer.idAtProviders == f"{ISBNs[2]}@{siret}"
+        assert created_offer.lastProviderId == provider.id
 
         # Test it adds offer in redis
         assert mocked_add_offer_id.call_count == 5
