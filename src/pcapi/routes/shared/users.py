@@ -17,6 +17,8 @@ from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.includes import USER_INCLUDES
 from pcapi.utils.login_manager import discard_session
 from pcapi.utils.login_manager import stamp_session
+from pcapi.utils.rate_limiting import email_rate_limiter
+from pcapi.utils.rate_limiting import ip_rate_limiter
 
 
 # @debt api-migration
@@ -39,6 +41,8 @@ def check_activation_token_exists(token):
 
 @private_api.route("/users/signin", methods=["POST"])
 @spectree_serialize(response_model=SharedLoginUserResponseModel)
+@ip_rate_limiter
+@email_rate_limiter
 def signin(body: LoginUserBodyModel) -> SharedLoginUserResponseModel:
     errors = ApiErrors()
     errors.status_code = 401

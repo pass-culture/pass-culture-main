@@ -29,6 +29,7 @@ from pcapi.models.db import db
 from pcapi.serialization.utils import before_handler
 from pcapi.utils.health_checker import read_version_from_file
 from pcapi.utils.json_encoder import EnumJSONEncoder
+from pcapi.utils.rate_limiting import rate_limiter
 
 
 # This must be called BEFORE creating `logger` below. Otherwise this
@@ -86,8 +87,11 @@ app.config["PERMANENT_SESSION_LIFETIME"] = 90 * 24 * 3600
 app.config["FLASK_ADMIN_SWATCH"] = "flatly"
 app.config["FLASK_ADMIN_FLUID_LAYOUT"] = True
 app.config["JWT_SECRET_KEY"] = settings.JWT_SECRET_KEY
+app.config["RATELIMIT_STORAGE_URL"] = settings.REDIS_URL
 
 jwt = JWTManager(app)
+
+rate_limiter.init_app(app)
 
 
 @app.before_request

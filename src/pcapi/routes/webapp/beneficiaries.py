@@ -26,6 +26,8 @@ from pcapi.use_cases.update_user_informations import AlterableUserInformations
 from pcapi.use_cases.update_user_informations import update_user_informations
 from pcapi.utils.login_manager import stamp_session
 from pcapi.utils.mailing import MailServiceException
+from pcapi.utils.rate_limiting import email_rate_limiter
+from pcapi.utils.rate_limiting import ip_rate_limiter
 from pcapi.utils.rest import login_or_api_key_required
 from pcapi.validation.routes.users import check_allowed_changes_for_user
 from pcapi.validation.routes.users import check_valid_signin
@@ -109,6 +111,8 @@ def change_beneficiary_email(body: ChangeBeneficiaryEmailBody) -> None:
 
 # @debt api-migration
 @private_api.route("/beneficiaries/signin", methods=["POST"])
+@email_rate_limiter
+@ip_rate_limiter
 def signin_beneficiary() -> Tuple[str, int]:
     json = request.get_json()
     identifier = json.get("identifier")

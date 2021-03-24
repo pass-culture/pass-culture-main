@@ -88,3 +88,19 @@ def date_time_cast_error(error: DateTimeCastError) -> Tuple[Dict, int]:
 def already_activated_exception(error: AlreadyActivatedException) -> Tuple[Dict, int]:
     logger.error(json.dumps(error.errors))
     return jsonify(error.errors), 405
+
+
+@app.errorhandler(429)
+def ratelimit_handler(error: Exception):
+    extra = {
+        "method": request.method,
+        "identifier": request.json["identifier"] if "identifier" in request.json else None,
+        "route": str(request.url_rule),
+        "path": request.path,
+        "queryParams": request.query_string.decode("UTF-8"),
+    }
+
+    logger.warning("Requests ratelimit exceeded on routes url=%s", request.url, extra=extra)
+    api_errors = ApiErrors()
+    api_errors.add_error("global", "Nombre de tentatives de connexion dépassé, veuillez réessayer dans une minute")
+    return jsonify(api_errors.errors), 429
