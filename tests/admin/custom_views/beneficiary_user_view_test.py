@@ -2,10 +2,12 @@ from datetime import datetime
 from unittest.mock import patch
 
 import pytest
+from requests.auth import _basic_auth_str
 
 from pcapi.admin.custom_views.beneficiary_user_view import BeneficiaryUserView
 from pcapi.admin.custom_views.mixins.suspension_mixin import _allow_suspension_and_unsuspension
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import User
 from pcapi.models import Deposit
@@ -114,14 +116,18 @@ class BeneficiaryUserViewTest:
         # Then
         assert user.deposit_version == 2
 
-    @patch("pcapi.settings.IS_PROD", return_value=True)
+    @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["admin@example.com"])
     def test_form_has_no_deposit_field_for_production(self, app, db_session):
-        # Given
-        beneficiary_view = BeneficiaryUserView(User, db_session)
-        beneficiary_view_create_form = beneficiary_view.get_create_form()
-        form = beneficiary_view_create_form(data=(dict()))
-
-        # then
+        # We need an authenticated user to initialize the admin class
+        # and call `get_create_form()`, because `scaffold_form()` is
+        # called, which in turn calls the `form_columns` property,
+        # which expects to see an authenticated user.
+        admin = users_factories.UserFactory(isAdmin=True)
+        headers = {"Authorization": _basic_auth_str(admin.email, users_factories.DEFAULT_PASSWORD)}
+        with app.test_request_context(headers=headers):
+            form_class = BeneficiaryUserView(User, db_session)
+            form = form_class.get_create_form()
+        assert hasattr(form, "phoneNumber")
         assert not hasattr(form, "depositVersion")
 
     @patch("pcapi.settings.IS_PROD", return_value=True)

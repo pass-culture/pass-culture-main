@@ -54,15 +54,19 @@ class BeneficiaryUserView(SuspensionMixin, BaseAdminView):
     )
     column_searchable_list = ["id", "publicName", "email", "firstName", "lastName"]
     column_filters = ["postalCode", "isBeneficiary"]
-    form_columns = [
-        "email",
-        "firstName",
-        "lastName",
-        "dateOfBirth",
-        "departementCode",
-        "postalCode",
-        "phoneNumber",
-    ]
+
+    @property
+    def form_columns(self):
+        fields = (
+            "email",
+            "dateOfBirth",
+            "departementCode",
+            "postalCode",
+            "phoneNumber",
+        )
+        if self.check_super_admins():
+            fields += ("firstName", "lastName")
+        return fields
 
     form_args = dict(
         firstName=dict(validators=[DataRequired()]),
@@ -71,6 +75,10 @@ class BeneficiaryUserView(SuspensionMixin, BaseAdminView):
     )
 
     def get_create_form(self):
+        # XXX: do not depend on the logged-in user (or anything that
+        # is runtime dependent) here because this function is called
+        # when the class is initialized: creation and edition forms
+        # are cached by Flask-Admin.
         form_class = super().scaffold_form()
 
         if not settings.IS_PROD:
