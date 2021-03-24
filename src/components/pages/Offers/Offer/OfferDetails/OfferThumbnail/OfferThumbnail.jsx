@@ -6,7 +6,7 @@ import { ReactComponent as AddThumbnailIcon } from 'components/pages/Offers/Offe
 import { ReactComponent as ErrorAlertIcon } from 'components/pages/Offers/Offer/OfferDetails/OfferThumbnail/assets/error-alert.svg'
 import ThumbnailDialog from 'components/pages/Offers/Offer/Thumbnail/ThumbnailDialog'
 
-const OfferThumbnail = ({ setThumbnailInfo, thumbnailError, url }) => {
+const OfferThumbnail = ({ isDisabled, setThumbnailInfo, thumbnailError, url }) => {
   const [isModalOpened, setIsModalOpened] = useState(false)
   const [preview, setPreview] = useState(url)
   const thumbnailButtonRef = useRef(null)
@@ -31,6 +31,7 @@ const OfferThumbnail = ({ setThumbnailInfo, thumbnailError, url }) => {
         className={`of-placeholder
         ${preview ? 'of-image' : ''}
         ${thumbnailError ? 'of-thumbnail-error' : ''}`}
+        disabled={isDisabled}
         onClick={openModal}
         ref={thumbnailButtonRef}
         title={`${preview ? 'Modifier l’image' : 'Ajouter une image'}`}
@@ -68,10 +69,12 @@ const OfferThumbnail = ({ setThumbnailInfo, thumbnailError, url }) => {
 }
 
 OfferThumbnail.defaultProps = {
+  isDisabled: false,
   url: null,
 }
 
 OfferThumbnail.propTypes = {
+  isDisabled: PropTypes.bool,
   setThumbnailInfo: PropTypes.func.isRequired,
   thumbnailError: PropTypes.bool.isRequired,
   url: PropTypes.string,

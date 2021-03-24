@@ -11,24 +11,22 @@ import TextareaInput from 'components/layout/inputs/TextareaInput'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import Spinner from 'components/layout/Spinner'
 import offerIsRefundable from 'components/pages/Offers/domain/offerIsRefundable'
-import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
-
-import SynchronizedProviderInformation from '../SynchronizedProviderInformation'
-
 import {
   BASE_OFFER_FIELDS,
   DEFAULT_FORM_VALUES,
   EXTRA_DATA_FIELDS,
   MANDATORY_FIELDS,
   TEXT_INPUT_DEFAULT_VALUE,
-} from './_constants'
-import { ReactComponent as AudioDisabilitySvg } from './assets/audio-disability.svg'
-import { ReactComponent as MentalDisabilitySvg } from './assets/mental-disability.svg'
-import { ReactComponent as MotorDisabilitySvg } from './assets/motor-disability.svg'
-import { ReactComponent as VisualDisabilitySvg } from './assets/visual-disability.svg'
-import OfferRefundWarning from './Messages/OfferRefundWarning'
-import WithdrawalReminder from './Messages/WithdrawalReminder'
-import TypeTreeSelects from './TypeTreeSelects'
+} from 'components/pages/Offers/Offer/OfferDetails/OfferForm/_constants'
+import { ReactComponent as AudioDisabilitySvg } from 'components/pages/Offers/Offer/OfferDetails/OfferForm/assets/audio-disability.svg'
+import { ReactComponent as MentalDisabilitySvg } from 'components/pages/Offers/Offer/OfferDetails/OfferForm/assets/mental-disability.svg'
+import { ReactComponent as MotorDisabilitySvg } from 'components/pages/Offers/Offer/OfferDetails/OfferForm/assets/motor-disability.svg'
+import { ReactComponent as VisualDisabilitySvg } from 'components/pages/Offers/Offer/OfferDetails/OfferForm/assets/visual-disability.svg'
+import OfferRefundWarning from 'components/pages/Offers/Offer/OfferDetails/OfferForm/Messages/OfferRefundWarning'
+import WithdrawalReminder from 'components/pages/Offers/Offer/OfferDetails/OfferForm/Messages/WithdrawalReminder'
+import TypeTreeSelects from 'components/pages/Offers/Offer/OfferDetails/OfferForm/TypeTreeSelects'
+import SynchronizedProviderInformation from 'components/pages/Offers/Offer/OfferDetails/SynchronizedProviderInformation'
+import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
 
 const getOfferConditionalFields = ({
   offerType = null,
@@ -63,6 +61,7 @@ const OfferForm = ({
   backUrl,
   formValues,
   initialValues,
+  isDisabled,
   isEdition,
   isUserAdmin,
   offerersNames,
@@ -689,6 +688,7 @@ const OfferForm = ({
             <CheckboxInput
               SvgElement={VisualDisabilitySvg}
               checked={formValues.visualDisabilityCompliant}
+              disabled={readOnlyFields.includes('visualDisabilityCompliant')}
               isInError={Boolean(getErrorMessage('disabilityCompliant'))}
               label="Visuel"
               name="visualDisabilityCompliant"
@@ -697,6 +697,7 @@ const OfferForm = ({
             <CheckboxInput
               SvgElement={MentalDisabilitySvg}
               checked={formValues.mentalDisabilityCompliant}
+              disabled={readOnlyFields.includes('mentalDisabilityCompliant')}
               isInError={Boolean(getErrorMessage('disabilityCompliant'))}
               label="Psychique ou cognitif"
               name="mentalDisabilityCompliant"
@@ -705,6 +706,7 @@ const OfferForm = ({
             <CheckboxInput
               SvgElement={MotorDisabilitySvg}
               checked={formValues.motorDisabilityCompliant}
+              disabled={readOnlyFields.includes('motorDisabilityCompliant')}
               isInError={Boolean(getErrorMessage('disabilityCompliant'))}
               label="Moteur"
               name="motorDisabilityCompliant"
@@ -713,6 +715,7 @@ const OfferForm = ({
             <CheckboxInput
               SvgElement={AudioDisabilitySvg}
               checked={formValues.audioDisabilityCompliant}
+              disabled={readOnlyFields.includes('audioDisabilityCompliant')}
               isInError={Boolean(getErrorMessage('disabilityCompliant'))}
               label="Auditif"
               name="audioDisabilityCompliant"
@@ -720,6 +723,7 @@ const OfferForm = ({
             />
             <CheckboxInput
               checked={formValues.noDisabilityCompliant}
+              disabled={readOnlyFields.includes('noDisabilityCompliant')}
               isInError={Boolean(getErrorMessage('disabilityCompliant'))}
               label="Non accessible"
               name="noDisabilityCompliant"
@@ -821,6 +825,7 @@ const OfferForm = ({
         ) : null}
         <button
           className="primary-button"
+          disabled={isDisabled}
           onClick={submitForm}
           type="button"
         >
@@ -835,6 +840,7 @@ OfferForm.defaultProps = {
   areAllVenuesVirtual: false,
   backUrl: null,
   initialValues: {},
+  isDisabled: false,
   isEdition: false,
   isUserAdmin: false,
   providerName: null,
@@ -847,6 +853,7 @@ OfferForm.propTypes = {
   backUrl: PropTypes.string,
   formValues: PropTypes.shape().isRequired,
   initialValues: PropTypes.shape(),
+  isDisabled: PropTypes.bool,
   isEdition: PropTypes.bool,
   isUserAdmin: PropTypes.bool,
   offerersNames: PropTypes.arrayOf(

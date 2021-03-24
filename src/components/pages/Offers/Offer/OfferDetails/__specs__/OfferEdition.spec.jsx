@@ -7,19 +7,17 @@ import { MemoryRouter, Route } from 'react-router'
 
 import NotificationV2Container from 'components/layout/NotificationV2/NotificationV2Container'
 import { getProviderInfo } from 'components/pages/Offers/domain/getProviderInfo'
-import * as pcapi from 'repository/pcapi/pcapi'
-import { configureTestStore } from 'store/testUtils'
-
-import * as computeUrl from '../../../utils/computeOffersUrl'
-import OfferLayoutContainer from '../../OfferLayoutContainer'
-import { DEFAULT_FORM_VALUES } from '../OfferForm/_constants'
-
 import {
   fieldLabels,
   findInputErrorForField,
   getOfferInputForField,
   setOfferValues,
-} from './helpers'
+} from 'components/pages/Offers/Offer/OfferDetails/__specs__/helpers'
+import { DEFAULT_FORM_VALUES } from 'components/pages/Offers/Offer/OfferDetails/OfferForm/_constants'
+import OfferLayoutContainer from 'components/pages/Offers/Offer/OfferLayoutContainer'
+import * as computeUrl from 'components/pages/Offers/utils/computeOffersUrl'
+import * as pcapi from 'repository/pcapi/pcapi'
+import { configureTestStore } from 'store/testUtils'
 
 Element.prototype.scrollIntoView = () => {}
 
@@ -491,44 +489,106 @@ describe('offerDetails - Edition', () => {
         expect(await screen.getAllByText('My edited withdrawal details')).toHaveLength(2)
       })
 
-      it('should display status informative message when offer is rejected', async () => {
-        // given
-        editedOffer = {
-          ...editedOffer,
-          status: 'REJECTED',
-          isActive: false,
-        }
-        pcapi.loadOffer.mockResolvedValue(editedOffer)
+      describe('when fraud detection', () => {
+        let fullConditionalFieldsType = {}
+        const fieldNames = { ...fieldLabels }
+        delete fieldNames.isNational
+        delete fieldNames.showSubType
+        delete fieldNames.showType
+        delete fieldNames.url
 
-        // when
-        await renderOffers({}, store)
+        beforeEach(() => {
+          editedOffer = {
+            ...editedOffer,
+            bookingEmail: 'booking@example.net',
+            isDuo: true,
+            audioDisabilityCompliant: true,
+            mentalDisabilityCompliant: true,
+            motorDisabilityCompliant: true,
+            visualDisabilityCompliant: true,
+            type: 'EventType.FULL_CONDITIONAL_FIELDS',
+            url: 'http://example.net',
+            extraData: {
+              author: 'Mr Offer Author',
+              isbn: '123456789123',
+              musicType: '501',
+              musicSubType: '502',
+              performer: 'Mr Offer Performer',
+              speaker: 'Mr Offer Speaker',
+              stageDirector: 'Mr Offer Stage Director',
+              visa: 'Courtesy of visa',
+            },
+          }
+          fullConditionalFieldsType = {
+            conditionalFields: [
+              'author',
+              'isbn',
+              'musicType',
+              'performer',
+              'speaker',
+              'stageDirector',
+              'visa',
+            ],
+            proLabel: 'Musique - concerts, festivals',
+            type: 'Event',
+            value: 'EventType.FULL_CONDITIONAL_FIELDS',
+          }
+        })
 
-        // then
-        expect(
-          screen.getByText(
-            'Votre offre a été refusée car elle ne respecte pas les Conditions Générales d’Utilisation du pass. Un e-mail contenant les conditions d’éligibilité d’une offre a été envoyé à l’adresse e-mail attachée à votre compte.'
-          )
-        ).toBeInTheDocument()
-      })
+        it('should display status informative message and disable all fields when offer is rejected', async () => {
+          // given
+          editedOffer.status = 'REJECTED'
+          editedOffer.isActive = false
+          pcapi.loadOffer.mockResolvedValue(editedOffer)
+          pcapi.loadTypes.mockResolvedValue([fullConditionalFieldsType])
 
-      it('should display status informative message when offer is awaiting for validation', async () => {
-        // given
-        editedOffer = {
-          ...editedOffer,
-          status: 'AWAITING',
-          isActive: true,
-        }
-        pcapi.loadOffer.mockResolvedValue(editedOffer)
+          // when
+          await renderOffers({}, store)
 
-        // when
-        await renderOffers({}, store)
+          // then
+          expect(
+            screen.getByText(
+              'Votre offre a été refusée car elle ne respecte pas les Conditions Générales d’Utilisation du pass. Un e-mail contenant les conditions d’éligibilité d’une offre a été envoyé à l’adresse e-mail attachée à votre compte.'
+            )
+          ).toBeInTheDocument()
 
-        // then
-        expect(
-          screen.getByText(
-            'Votre offre est en cours de validation par l’équipe du pass Culture. Une fois validée, vous recevrez un e-mail de confirmation et votre offre sera automatiquement mise en ligne.'
-          )
-        ).toBeInTheDocument()
+          for (const fieldName in fieldNames) {
+            expect(
+              screen.getByLabelText(fieldNames[fieldName].label, {
+                exact: fieldNames[fieldName].exact,
+              })
+            ).toBeDisabled()
+          }
+          expect(screen.getByText('Enregistrer')).toBeDisabled()
+          expect(screen.getByTitle('Ajouter une image')).toBeDisabled()
+        })
+
+        it('should display status informative message and disable all fields when offer is awaiting for validation', async () => {
+          // given
+          editedOffer.status = 'AWAITING'
+          editedOffer.isActive = true
+          pcapi.loadOffer.mockResolvedValue(editedOffer)
+          pcapi.loadTypes.mockResolvedValue([fullConditionalFieldsType])
+
+          // when
+          await renderOffers({}, store)
+
+          // then
+          expect(
+            screen.getByText(
+              'Votre offre est en cours de validation par l’équipe du pass Culture. Une fois validée, vous recevrez un e-mail de confirmation et votre offre sera automatiquement mise en ligne.'
+            )
+          ).toBeInTheDocument()
+          for (const fieldName in fieldNames) {
+            expect(
+              screen.getByLabelText(fieldNames[fieldName].label, {
+                exact: fieldNames[fieldName].exact,
+              })
+            ).toBeDisabled()
+          }
+          expect(screen.getByText('Enregistrer')).toBeDisabled()
+          expect(screen.getByTitle('Ajouter une image')).toBeDisabled()
+        })
       })
     })
 

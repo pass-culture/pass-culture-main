@@ -6,12 +6,13 @@ import {
   isFieldReadOnlyForSynchronizedOffer,
   isSynchronizedOffer,
 } from 'components/pages/Offers/domain/localProvider'
+import {
+  DEFAULT_FORM_VALUES,
+  EDITED_OFFER_READ_ONLY_FIELDS,
+} from 'components/pages/Offers/Offer/OfferDetails/OfferForm/_constants'
+import OfferForm from 'components/pages/Offers/Offer/OfferDetails/OfferForm/OfferForm'
+import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl'
 import * as pcapi from 'repository/pcapi/pcapi'
-
-import { computeOffersUrl } from '../../../utils/computeOffersUrl'
-
-import { DEFAULT_FORM_VALUES, EDITED_OFFER_READ_ONLY_FIELDS } from './_constants'
-import OfferForm from './OfferForm'
 
 const computeNoDisabilityComplianceValue = offer => {
   const disabilityCompliantValues = [
@@ -32,6 +33,7 @@ const computeNoDisabilityComplianceValue = offer => {
 
 const OfferEdition = ({
   formValues,
+  isDisabled,
   isUserAdmin,
   offer,
   offersSearchFilters,
@@ -68,23 +70,25 @@ const OfferEdition = ({
     return initialValues
   }
 
-  const computeReadOnlyFields = offer => {
-    if (isSynchronizedOffer(offer)) {
-      return Object.keys(DEFAULT_FORM_VALUES).filter(fieldName =>
-        isFieldReadOnlyForSynchronizedOffer(fieldName, offer.lastProvider)
-      )
-    } else {
-      return EDITED_OFFER_READ_ONLY_FIELDS
-    }
-  }
-
   useEffect(() => {
+    const computeReadOnlyFields = offer => {
+      if (isDisabled) {
+        return Object.keys(DEFAULT_FORM_VALUES).filter(() => true)
+      } else if (isSynchronizedOffer(offer)) {
+        return Object.keys(DEFAULT_FORM_VALUES).filter(fieldName =>
+          isFieldReadOnlyForSynchronizedOffer(fieldName, offer.lastProvider)
+        )
+      } else {
+        return EDITED_OFFER_READ_ONLY_FIELDS
+      }
+    }
+
     const initialValues = computeInitialValues(offer)
     const readOnlyFields = computeReadOnlyFields(offer)
     setInitialValues(initialValues)
     setReadOnlyFields(readOnlyFields)
     setIsLoading(false)
-  }, [offer, setIsLoading])
+  }, [isDisabled, offer, setIsLoading])
 
   let providerName = null
   if (isSynchronizedOffer(offer)) {
@@ -100,6 +104,7 @@ const OfferEdition = ({
       backUrl={computeOffersUrl(offersSearchFilters)}
       formValues={formValues}
       initialValues={initialValues}
+      isDisabled={isDisabled}
       isEdition
       isUserAdmin={isUserAdmin}
       offerersNames={[
@@ -121,12 +126,14 @@ const OfferEdition = ({
 }
 
 OfferEdition.defaultProps = {
+  isDisabled: false,
   isUserAdmin: false,
   offer: null,
 }
 
 OfferEdition.propTypes = {
   formValues: PropTypes.shape().isRequired,
+  isDisabled: PropTypes.bool,
   isUserAdmin: PropTypes.bool,
   offer: PropTypes.shape(),
   offersSearchFilters: PropTypes.shape({
