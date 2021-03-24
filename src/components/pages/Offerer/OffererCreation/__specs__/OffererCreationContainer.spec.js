@@ -36,7 +36,7 @@ describe('src | components | pages | Offerer | OfferCreation | OffererCreationCo
         closeNotification: expect.any(Function),
         createNewOfferer: expect.any(Function),
         showNotification: expect.any(Function),
-        redirectToOfferersList: expect.any(Function),
+        redirectAfterSubmit: expect.any(Function),
       })
     })
 

@@ -15,7 +15,7 @@ describe('src | components | OffererCreation', () => {
       showNotification: jest.fn(),
       closeNotification: jest.fn(),
       trackCreateOfferer: jest.fn(),
-      redirectToOfferersList: jest.fn(),
+      redirectAfterSubmit: jest.fn(),
     }
   })
 

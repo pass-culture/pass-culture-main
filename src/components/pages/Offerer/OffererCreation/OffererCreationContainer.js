@@ -41,8 +41,8 @@ export const mapDispatchToProps = (dispatch, ownProps) => ({
   closeNotification: () => {
     dispatch(closeNotification())
   },
-  redirectToOfferersList: () => {
-    ownProps.history.replace('/structures')
+  redirectAfterSubmit: isNewHomepageActive => {
+    ownProps.history.replace(isNewHomepageActive ? '/accueil' : '/structures')
   },
 })
 
