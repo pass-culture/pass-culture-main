@@ -6,6 +6,7 @@ import pytest
 
 from pcapi.core.testing import override_features
 from pcapi.core.users.models import User
+from pcapi.notifications.push import testing as push_testing
 from pcapi.routes.serialization import serialize
 
 from tests.conftest import TestClient
@@ -79,6 +80,8 @@ class Post:
             created_user = User.query.filter_by(email="toto@example.com").first()
             assert created_user.validationToken is None
             assert not created_user.isBeneficiary
+            assert len(push_testing.requests) == 1
+            assert not push_testing.requests[0]["attribute_values"]["u.is_beneficiary"]
 
         @patch("pcapi.routes.webapp.signup.get_authorized_emails_and_dept_codes")
         @pytest.mark.usefixtures("db_session")
@@ -123,6 +126,7 @@ class Post:
             assert response.status_code == 400
             error = response.json
             assert "email" in error
+            assert len(push_testing.requests) == 0
 
         @patch("pcapi.routes.webapp.signup.get_authorized_emails_and_dept_codes")
         @pytest.mark.usefixtures("db_session")

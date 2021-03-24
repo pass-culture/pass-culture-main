@@ -14,6 +14,7 @@ from pcapi.repository import repository
 from pcapi.routes.serialization import as_dict
 from pcapi.utils.feature import feature_required
 from pcapi.utils.includes import BENEFICIARY_INCLUDES
+from pcapi.workers.push_notification_job import update_user_attributes_job
 
 
 logger = logging.getLogger(__name__)
@@ -45,6 +46,8 @@ def signup_webapp():
     objects_to_save.append(new_user)
 
     repository.save(*objects_to_save)
+
+    update_user_attributes_job.delay(new_user)
 
     return jsonify(as_dict(new_user, includes=BENEFICIARY_INCLUDES)), 201
 
