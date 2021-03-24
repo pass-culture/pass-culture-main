@@ -11,6 +11,7 @@ from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.factories import MediationFactory
 from pcapi.core.offers.factories import StockFactory
+from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.models.offer_type import ThingType
 
@@ -106,7 +107,8 @@ class GetBookingsTest:
         test_client = TestClient(app.test_client())
         test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
 
-        response = test_client.get("/native/v1/bookings")
+        with assert_num_queries(2):
+            response = test_client.get("/native/v1/bookings")
 
         assert [b["id"] for b in response.json["ongoing_bookings"]] == [
             expire_tomorrow.id,

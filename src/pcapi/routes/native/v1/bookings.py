@@ -11,6 +11,7 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.product import Product
 from pcapi.routes.native.security import authenticated_user_required
 from pcapi.routes.native.v1.serialization.bookings import BookOfferRequest
 from pcapi.routes.native.v1.serialization.bookings import BookOfferResponse
@@ -67,6 +68,13 @@ def get_bookings(user: User) -> BookingsResponse:
             joinedload(Booking.stock)
             .joinedload(Stock.offer)
             .load_only(Offer.name, Offer.url, Offer.type, Offer.withdrawalDetails, Offer.extraData)
+        )
+        .options(joinedload(Booking.stock).joinedload(Stock.offer).joinedload(Offer.mediations))
+        .options(
+            joinedload(Booking.stock)
+            .joinedload(Stock.offer)
+            .joinedload(Offer.product)
+            .load_only(Product.id, Product.thumbCount)
         )
         .options(
             joinedload(Booking.stock)
