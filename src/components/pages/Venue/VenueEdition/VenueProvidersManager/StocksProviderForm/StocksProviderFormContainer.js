@@ -2,15 +2,15 @@ import { connect } from 'react-redux'
 
 import StocksProviderForm from 'components/pages/Venue/VenueEdition/VenueProvidersManager/StocksProviderForm/StocksProviderForm'
 import { getRequestErrorStringFromErrors } from 'components/pages/Venue/VenueEdition/VenueProvidersManager/utils/getRequestErrorStringFromErrors'
+import * as providersApi from 'repository/pcapi/providersApi'
 import { showNotificationV1 } from 'store/reducers/notificationReducer'
-import { fetchFromApiWithCredentials } from 'utils/fetch'
 
 const mapDispatchToProps = dispatch => ({
   createVenueProvider: payload =>
-    fetchFromApiWithCredentials('/venueProviders', 'POST', payload).then(venueProvider => {
+    providersApi.createVenueProvider(payload).then(venueProvider => {
       dispatch({
         type: 'SET_VENUE_PROVIDERS',
-        payload: venueProvider,
+        payload: [venueProvider],
       })
 
       return venueProvider

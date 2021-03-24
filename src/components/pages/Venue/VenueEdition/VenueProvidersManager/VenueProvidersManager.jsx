@@ -55,8 +55,9 @@ class VenueProvidersManager extends PureComponent {
   }
 
   handleChange = event => {
-    const valueFromSelectInput = event.target.value
-    const valueParsed = JSON.parse(valueFromSelectInput)
+    const { providers } = this.props
+    const selectedProviderId = event.target.value
+    const selectedProvider = providers.find(provider => provider.id === selectedProviderId)
     this.setState({
       providerSelectedIsAllocine: false,
       providerSelectedIsFnac: false,
@@ -65,31 +66,31 @@ class VenueProvidersManager extends PureComponent {
       providerSelectedIsTitelive: false,
     })
 
-    if (valueParsed && valueParsed.name === ALLOCINE_PROVIDER_OPTION.name) {
+    if (selectedProvider && selectedProvider.name === ALLOCINE_PROVIDER_OPTION.name) {
       this.setState({
         providerSelectedIsAllocine: true,
-        venueIdAtOfferProviderIsRequired: valueParsed.requireProviderIdentifier,
+        venueIdAtOfferProviderIsRequired: selectedProvider.requireProviderIdentifier,
       })
-    } else if (valueParsed && valueParsed.name === TITELIVE_PROVIDER_OPTION.name) {
+    } else if (selectedProvider && selectedProvider.name === TITELIVE_PROVIDER_OPTION.name) {
       this.setState({
         providerSelectedIsTitelive: true,
       })
-    } else if (valueParsed && valueParsed.name === LIBRAIRES_PROVIDER_OPTION.name) {
+    } else if (selectedProvider && selectedProvider.name === LIBRAIRES_PROVIDER_OPTION.name) {
       this.setState({
         providerSelectedIsLibraires: true,
       })
-    } else if (valueParsed && valueParsed.name === FNAC_PROVIDER_OPTION.name) {
+    } else if (selectedProvider && selectedProvider.name === FNAC_PROVIDER_OPTION.name) {
       this.setState({
         providerSelectedIsFnac: true,
       })
-    } else if (valueParsed && valueParsed.name === PRAXIEL_PROVIDER_OPTION.name) {
+    } else if (selectedProvider && selectedProvider.name === PRAXIEL_PROVIDER_OPTION.name) {
       this.setState({
         providerSelectedIsPraxiel: true,
       })
     }
 
     this.setState({
-      providerId: valueParsed.id,
+      providerId: selectedProviderId,
     })
   }
 
@@ -105,7 +106,7 @@ class VenueProvidersManager extends PureComponent {
   }
 
   render() {
-    const { history, providers, match, venueProviders, venueSiret } = this.props
+    const { history, providers, venueProviders, venue } = this.props
     const {
       isCreationMode,
       providerId,
@@ -154,14 +155,14 @@ class VenueProvidersManager extends PureComponent {
                     >
                       <option
                         key={DEFAULT_PROVIDER_OPTION.id}
-                        value={JSON.stringify(DEFAULT_PROVIDER_OPTION)}
+                        value={DEFAULT_PROVIDER_OPTION.id}
                       >
                         {DEFAULT_PROVIDER_OPTION.name}
                       </option>
                       {providers.map(provider => (
                         <option
                           key={`provider-${provider.id}`}
-                          value={JSON.stringify(provider)}
+                          value={provider.id}
                         >
                           {provider.name}
                         </option>
@@ -173,9 +174,9 @@ class VenueProvidersManager extends PureComponent {
               <div className="provider-form">
                 {providerSelectedIsAllocine && (
                   <AllocineProviderForm
-                    offererId={match.params.offererId}
+                    offererId={venue.managingOffererId}
                     providerId={providerId}
-                    venueId={match.params.venueId}
+                    venueId={venue.id}
                     venueIdAtOfferProviderIsRequired={venueIdAtOfferProviderIsRequired}
                   />
                 )}
@@ -184,10 +185,10 @@ class VenueProvidersManager extends PureComponent {
                   <StocksProviderForm
                     cancelProviderSelection={this.cancelProviderSelection}
                     historyPush={history.push}
-                    offererId={match.params.offererId}
+                    offererId={venue.managingOffererId}
                     providerId={providerId}
-                    siret={venueSiret}
-                    venueId={match.params.venueId}
+                    siret={venue.siret}
+                    venueId={venue.id}
                   />
                 )}
               </div>
@@ -218,12 +219,13 @@ class VenueProvidersManager extends PureComponent {
 VenueProvidersManager.propTypes = {
   history: PropTypes.shape().isRequired,
   loadProvidersAndVenueProviders: PropTypes.func.isRequired,
-  match: PropTypes.shape({
-    params: PropTypes.shape(),
-  }).isRequired,
   providers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  venue: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    managingOffererId: PropTypes.string.isRequired,
+    siret: PropTypes.string.isRequired,
+  }).isRequired,
   venueProviders: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  venueSiret: PropTypes.string.isRequired,
 }
 
 export default VenueProvidersManager

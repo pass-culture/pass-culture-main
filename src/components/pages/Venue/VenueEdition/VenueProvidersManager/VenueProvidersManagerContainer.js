@@ -1,42 +1,38 @@
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
-import { requestData } from 'redux-saga-data'
 
+import * as providersApi from 'repository/pcapi/providersApi'
 import { selectProviders } from 'store/selectors/data/providersSelectors'
+import { selectVenueProvidersByVenueId } from 'store/selectors/data/venueProvidersSelectors'
 
-import selectVenueProvidersByVenueId from './selectors/selectVenueProvidersByVenueId'
 import VenueProvidersManager from './VenueProvidersManager'
 
 export const mapStateToProps = (state, ownProps) => {
   const { venue } = ownProps
-  const { id: venueId, siret: venueSiret } = venue
   const providers = selectProviders(state)
-  const venueProviders = selectVenueProvidersByVenueId(state, venueId)
+  const venueProviders = selectVenueProvidersByVenueId(state, venue.id)
 
   return {
     providers,
     venueProviders,
-    venueSiret,
   }
 }
 
 export const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     loadProvidersAndVenueProviders: () => {
-      const {
-        match: {
-          params: { venueId },
-        },
-      } = ownProps
-      dispatch(
-        requestData({
-          apiPath: `/providers/${venueId}`,
+      const venueId = ownProps.venue.id
+      providersApi.loadProviders(venueId).then(providers =>
+        dispatch({
+          type: 'SET_PROVIDERS',
+          payload: providers,
         })
       )
-      dispatch(
-        requestData({
-          apiPath: `/venueProviders?venueId=${venueId}`,
+      providersApi.loadVenueProviders(venueId).then(venueProviders =>
+        dispatch({
+          type: 'SET_VENUE_PROVIDERS',
+          payload: venueProviders,
         })
       )
     },

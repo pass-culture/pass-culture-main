@@ -1,116 +1,136 @@
 import '@testing-library/jest-dom'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
-import StocksProviderFormContainer from 'components/pages/Venue/VenueEdition/VenueProvidersManager/StocksProviderForm/StocksProviderFormContainer'
+import NotificationV1Container from 'components/layout/NotificationV1/NotificationV1Container'
+import * as providersApi from 'repository/pcapi/providersApi'
 import { configureTestStore } from 'store/testUtils'
-import * as fetch from 'utils/fetch'
 
-const renderStocksProviderForm = props => {
-  const store = configureTestStore({ notification: {} })
+import VenueProvidersManagerContainer from '../../VenueProvidersManagerContainer'
 
-  render(
-    <Provider store={store}>
-      <MemoryRouter>
-        <StocksProviderFormContainer {...props} />
-      </MemoryRouter>
-    </Provider>
-  )
 
-  return store
+jest.mock('repository/pcapi/providersApi', () => ({
+  createVenueProvider: jest.fn(),
+  loadProviders: jest.fn(),
+  loadVenueProviders: jest.fn(),
+}))
+
+const renderVenueProvidersManager = async props => {
+  await act(async () => {
+    await render(
+      <Provider store={configureTestStore()}>
+        <MemoryRouter>
+          <VenueProvidersManagerContainer {...props} />
+          <NotificationV1Container />
+        </MemoryRouter>
+      </Provider>
+    )
+  })
+}
+
+const renderStocksProviderForm = async () => {
+  const importOffersButton = screen.getByText('Importer des offres')
+  fireEvent.click(importOffersButton)
+  const providersSelect = screen.getByRole('combobox')
+  fireEvent.change(providersSelect, { target: { value: 'titelive' } })
 }
 
 describe('src | StocksProviderForm', () => {
   let props
+  let provider
 
-  beforeEach(() => {
-    props = {
-      cancelProviderSelection: jest.fn(),
-      historyPush: jest.fn(),
-      offererId: 'O1',
-      providerId: 'P1',
+  beforeEach(async () => {
+    const venue = {
+      id: 'AB',
+      managingOffererId: 'BA',
+      name: 'Le lieu',
       siret: '12345678901234',
-      venueId: 'V1',
     }
+
+    props = {
+      venue,
+    }
+
+    providersApi.loadVenueProviders.mockResolvedValue([])
+    provider = { id: 'titelive', name: 'TiteLive Stocks (Epagine / Place des libraires.com)' }
+    providersApi.loadProviders.mockResolvedValue([provider])
+
+    await renderVenueProvidersManager(props)
   })
 
   afterEach(() => {
     jest.restoreAllMocks()
   })
 
-  describe('at first', () => {
-    it('should display an import button and the venue siret as provider identifier', () => {
-      // when
-      renderStocksProviderForm(props)
+  it('should display an import button and the venue siret as provider identifier', async () => {
+    // when
+    await renderStocksProviderForm()
 
-      // then
-      expect(screen.queryByRole('button', { name: 'Importer' })).toBeInTheDocument()
-      expect(screen.queryByText('Compte')).toBeInTheDocument()
-      expect(screen.queryByText('12345678901234')).toBeInTheDocument()
-    })
+    // then
+    expect(screen.queryByRole('button', { name: 'Importer' })).toBeInTheDocument()
+    expect(screen.queryByText('Compte')).toBeInTheDocument()
+    expect(screen.queryByText('12345678901234')).toBeInTheDocument()
   })
 
-  describe('when submit the form', () => {
-    it('should display the spinner', async () => {
+  describe('on form submit', () => {
+    it('should display the spinner while waiting for server response', async () => {
       // given
-      renderStocksProviderForm(props)
-      jest.spyOn(global, 'fetch').mockResolvedValue({
-        json: () => Promise.resolve(),
-        ok: true,
-      })
+      providersApi.createVenueProvider.mockReturnValue(new Promise(() => {}))
+      await renderStocksProviderForm()
       const submitButton = screen.getByRole('button', { name: 'Importer' })
-      jest.spyOn(fetch, 'fetchFromApiWithCredentials').mockResolvedValue()
 
       // when
-      await waitFor(() => fireEvent.click(submitButton))
+      await fireEvent.click(submitButton)
 
       // then
       expect(screen.getByText('Vérification de votre rattachement')).toBeInTheDocument()
-      expect(fetch.fetchFromApiWithCredentials).toHaveBeenCalledWith('/venueProviders', 'POST', {
-        providerId: 'P1',
-        venueId: 'V1',
-        venueIdAtOfferProvider: '12345678901234',
+      expect(providersApi.createVenueProvider).toHaveBeenCalledWith({
+        providerId: provider.id,
+        venueId: props.venue.id,
+        venueIdAtOfferProvider: props.venue.siret,
       })
     })
 
-    it('should display the venue page if the venue provider is created', async () => {
+    it('should remove the spinner when the server has responded', async () => {
       // given
-      renderStocksProviderForm(props)
-      jest.spyOn(global, 'fetch').mockResolvedValue({
-        json: () => Promise.resolve(),
-        ok: true,
-        status: 201,
-      })
+      const createdVenueProvider = {
+        id: 'AQ',
+        provider,
+        providerId: provider.id,
+        venueId: props.venue.id,
+        venueIdAtOfferProvider: props.venue.siret,
+      }
+      providersApi.createVenueProvider.mockResolvedValue(createdVenueProvider)
+      await renderStocksProviderForm()
       const submitButton = screen.getByRole('button', { name: 'Importer' })
 
       // when
-      await waitFor(() => fireEvent.click(submitButton))
+      await fireEvent.click(submitButton)
 
       // then
-      expect(props.historyPush).toHaveBeenCalledWith('/structures/O1/lieux/V1')
+      expect(screen.queryByText('Vérification de votre rattachement')).not.toBeInTheDocument()
     })
 
-    it('should display a notification if there is something wrong with the server', async () => {
+    it('should display a notification and unselect provider if there is something wrong with the server', async () => {
       // given
-      const store = renderStocksProviderForm(props)
-      jest.spyOn(global, 'fetch').mockResolvedValue({
-        json: () => Promise.resolve({ errors: ['error message'] }),
-        ok: false,
-      })
+      const apiError = {
+        errors: { provider: ['error message'] },
+        status: 400,
+      }
+      providersApi.createVenueProvider.mockRejectedValue(apiError)
+      await renderStocksProviderForm()
       const submitButton = screen.getByRole('button', { name: 'Importer' })
 
       // when
-      await waitFor(() => fireEvent.click(submitButton))
+      await fireEvent.click(submitButton)
 
       // then
-      expect(props.cancelProviderSelection).toHaveBeenCalledTimes(1)
-      expect(store.getState().notification).toStrictEqual({
-        text: 'error message',
-        type: 'danger',
-        version: 1,
-      })
+      const errorNotification = await screen.findByText(apiError.errors.provider[0])
+      expect(errorNotification).toBeInTheDocument()
+      const providersSelect = screen.queryByRole('combobox')
+      expect(providersSelect).not.toBeInTheDocument()
     })
   })
 })

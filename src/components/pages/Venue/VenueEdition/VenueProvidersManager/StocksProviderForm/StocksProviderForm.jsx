@@ -31,12 +31,10 @@ class StocksProviderForm extends Component {
         historyPush(`/structures/${offererId}/lieux/${venueId}`)
       })
       .catch(error => {
-        error.json().then(body => {
-          const { cancelProviderSelection, notify } = this.props
+        const { cancelProviderSelection, notify } = this.props
 
-          notify(body)
-          cancelProviderSelection()
-        })
+        notify(error.errors)
+        cancelProviderSelection()
       })
   }
 
