@@ -19,6 +19,7 @@
   label {
     @include body();
 
+    display: flex;
     margin-top: rem(16px);
   }
 
