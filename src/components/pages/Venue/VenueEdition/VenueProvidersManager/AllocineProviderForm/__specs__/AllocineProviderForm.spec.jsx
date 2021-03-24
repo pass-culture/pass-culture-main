@@ -1,324 +1,222 @@
-import { mount, shallow } from 'enzyme'
+import '@testing-library/jest-dom'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import React from 'react'
-import { Form } from 'react-final-form'
+import { Provider } from 'react-redux'
+import { MemoryRouter } from 'react-router'
+import ReactTooltip from 'react-tooltip'
 
-import CheckboxField from 'components/layout/form/fields/CheckboxField'
-import NumberField from 'components/layout/form/fields/NumberField'
-import Icon from 'components/layout/Icon'
+import NotificationV1Container from 'components/layout/NotificationV1/NotificationV1Container'
+import * as providersApi from 'repository/pcapi/providersApi'
+import { configureTestStore } from 'store/testUtils'
 
-import AllocineProviderForm from '../../AllocineProviderForm/AllocineProviderForm'
+import VenueProvidersManagerContainer from '../../VenueProvidersManagerContainer'
+
+
+
+jest.mock('repository/pcapi/providersApi', () => ({
+  createVenueProvider: jest.fn(),
+  loadProviders: jest.fn(),
+  loadVenueProviders: jest.fn(),
+}))
+
+const renderVenueProvidersManager = async props => {
+  await act(async () => {
+    await render(
+      <Provider store={configureTestStore()}>
+        <MemoryRouter>
+          <VenueProvidersManagerContainer {...props} />
+          <NotificationV1Container />
+          <ReactTooltip html />
+        </MemoryRouter>
+      </Provider>
+    )
+  })
+}
 
 describe('components | AllocineProviderForm', () => {
-  let createVenueProvider
   let props
-  let notify
-  let history
+  let provider
+  let createdVenueProvider
 
-  beforeEach(() => {
-    createVenueProvider = jest.fn()
-    history = {
-      push: jest.fn(),
+  beforeEach(async () => {
+    const venue = {
+      id: 'AB',
+      managingOffererId: 'BA',
+      name: 'Le lieu',
+      siret: '12345678901234',
     }
-    notify = jest.fn()
+
     props = {
-      createVenueProvider,
-      history,
-      notify,
-      offererId: 'CC',
-      providerId: 'AA',
-      venueId: 'BB',
+      venue,
     }
+
+    providersApi.loadVenueProviders.mockResolvedValue([])
+
+    provider = { id: 'ABC', name: 'Allociné' }
+    providersApi.loadProviders.mockResolvedValue([provider])
+    createdVenueProvider = {
+      id: 'AQ',
+      provider,
+      providerId: provider.id,
+      venueId: props.venue.id,
+      venueIdAtOfferProvider: props.venue.siret,
+    }
+    providersApi.createVenueProvider.mockResolvedValue(createdVenueProvider)
+
+    await renderVenueProvidersManager(props)
   })
 
-  it('should initialize AllocineProviderForm component with default state', () => {
+  afterEach(() => {
+    providersApi.loadVenueProviders.mockReset()
+    providersApi.loadProviders.mockReset()
+    providersApi.createVenueProvider.mockReset()
+  })
+
+  const renderAllocineProviderForm = async () => {
+    const importOffersButton = screen.getByText('Importer des offres')
+    fireEvent.click(importOffersButton)
+    const providersSelect = screen.getByRole('combobox')
+    fireEvent.change(providersSelect, { target: { value: provider.id } })
+  }
+
+  it('should display the price field with minimum value set to 0', async () => {
     // when
-    const wrapper = shallow(<AllocineProviderForm {...props} />)
+    await renderAllocineProviderForm()
 
     // then
-    expect(wrapper.state()).toStrictEqual({
-      isLoadingMode: false,
-    })
+    const priceField = screen.getByLabelText('Prix de vente/place', { exact: false })
+    expect(priceField).toBeInTheDocument()
+    expect(priceField).toHaveAttribute('min', '0')
+    expect(priceField).toHaveAttribute('step', '0.01')
   })
 
-  it('should display the price field with minimum value set to 0', () => {
+  it('should display the quantity field with default value set to Illimité', async () => {
     // when
-    const wrapper = mount(<AllocineProviderForm {...props} />)
+    await renderAllocineProviderForm()
 
     // then
-    const priceFieldLabel = wrapper
-      .findWhere(node => node.text() === 'Prix de vente/place ')
-      .first()
-
-    const priceFieldInput = wrapper
-      .findWhere(node => node.prop('placeholder') === 'Ex : 12€')
-      .first()
-
-    expect(priceFieldLabel).toHaveLength(1)
-    expect(priceFieldInput).toHaveLength(1)
-    expect(priceFieldInput.prop('min')).toBe('0')
-    expect(priceFieldInput.prop('step')).toBe(0.01)
+    const quantityField = screen.getByLabelText(`Nombre de places/séance`)
+    expect(quantityField).toBeInTheDocument()
+    expect(quantityField).toHaveAttribute('min', '0')
+    expect(quantityField).toHaveAttribute('step', '1')
   })
 
-  it('should display the quantity field with default value set to Illimité', () => {
+  it('should display the isDuo checkbox checked by default', async () => {
     // when
-    const wrapper = mount(<AllocineProviderForm {...props} />)
+    await renderAllocineProviderForm()
 
     // then
-    const quantityInputLabel = wrapper.find({
-      children: `Nombre de places/séance`,
-    })
-
-    const quantityInput = wrapper.findWhere(node => node.prop('placeholder') === 'Illimité').first()
-
-    expect(quantityInputLabel).toHaveLength(1)
-    expect(quantityInput).toHaveLength(1)
+    const isDuoCheckbox = screen.getByLabelText(`Accepter les réservations DUO`)
+    expect(isDuoCheckbox).toBeInTheDocument()
+    expect(isDuoCheckbox).toBeChecked()
   })
 
-  it('should display the isDuo checkbox unchecked by default', () => {
+  it('should display an import button disabled by default', async () => {
     // when
-    const wrapper = mount(<AllocineProviderForm {...props} />)
+    await renderAllocineProviderForm()
 
     // then
-    const isDuoCheckboxLabel = wrapper.find({
-      children: `Accepter les réservations DUO`,
-    })
-
-    const isDuoCheckbox = wrapper.findWhere(node => node.prop('type') === 'checkbox').first()
-
-    expect(isDuoCheckboxLabel).toHaveLength(1)
-    expect(isDuoCheckbox).toHaveLength(1)
+    const offerImportButton = screen.getByRole('button', { name: 'Importer les offres' })
+    expect(offerImportButton).toBeInTheDocument()
+    expect(offerImportButton).toHaveAttribute('type', 'submit')
+    expect(offerImportButton).toBeDisabled()
   })
 
-  it('should display a tooltip and an Icon component for price field', () => {
-    // when
-    const wrapper = mount(<AllocineProviderForm {...props} />)
-
-    // then
-    const priceToolTip = wrapper
-      .findWhere(
-        node =>
-          node.prop('data-tip') ===
-          '<p>Prix de vente/place : Prix auquel la place de cinéma sera vendue.</p>'
-      )
-      .first()
-
-    const toolTipIcon = priceToolTip.find(Icon)
-
-    expect(priceToolTip).toHaveLength(1)
-    expect(toolTipIcon).toHaveLength(1)
-    expect(toolTipIcon.prop('svg')).toBe('picto-info')
-  })
-
-  it('should display a tooltip and an Icon component for isDuo field', () => {
-    // when
-    const wrapper = mount(<AllocineProviderForm {...props} />)
-
-    // then
-    const isDuoToolTip = wrapper
-      .findWhere(
-        node =>
-          node.prop('data-tip') ===
-          '<p>En activant cette option, vous permettez au bénéficiaire du pass Culture de venir accompagné. La seconde place sera délivrée au même tarif que la première, quel que soit l’accompagnateur.</p>'
-      )
-      .first()
-
-    const isDuoToolTipIcon = isDuoToolTip.find(Icon)
-
-    expect(isDuoToolTip).toHaveLength(1)
-    expect(isDuoToolTipIcon).toHaveLength(1)
-    expect(isDuoToolTipIcon.prop('svg')).toBe('picto-info')
-  })
-
-  it('should display an import button disabled by default', () => {
-    // when
-    const wrapper = mount(<AllocineProviderForm {...props} />)
-
-    // then
-    const offerImportButton = wrapper.find({
-      children: `Importer les offres`,
-    })
-
-    expect(offerImportButton).toHaveLength(1)
-    expect(offerImportButton.prop('type')).toBe('submit')
-    expect(offerImportButton.prop('disabled')).toBe(true)
-  })
-
-  it('should get checkbox value when form is submitted', () => {
+  it('should be able to submit when price field is filled', async () => {
     // given
-    const props = {
-      id: 'checkbox-id',
-      name: 'checkbox-name',
-      label: 'checkbox-label',
-    }
-
-    function formWithCheckboxField({ handleSubmit }) {
-      return (
-        <form>
-          <CheckboxField {...props} />
-          <button
-            onClick={handleSubmit}
-            type="submit"
-          >
-            {'Submit'}
-          </button>
-        </form>
-      )
-    }
-
-    const wrapper = mount(
-      <Form
-        onSubmit={handleOnSubmit}
-        render={formWithCheckboxField}
-      />
-    )
+    await renderAllocineProviderForm()
+    const offerImportButton = screen.getByRole('button', { name: 'Importer les offres' })
+    const priceField = screen.getByLabelText('Prix de vente/place', { exact: false })
+    const quantityField = screen.getByLabelText('Nombre de places/séance')
+    const isDuoCheckbox = screen.getByLabelText(`Accepter les réservations DUO`)
 
     // when
-    wrapper.find('input').simulate('change', { target: { value: true } })
-
-    wrapper.find('button[type="submit"]').simulate('click')
-
-    // then
-    function handleOnSubmit(formValues) {
-      expect(formValues['checkbox-name']).toBe(true)
-    }
-  })
-
-  it('should be able to submit with filled payload when price field is filled', () => {
-    // given
-    const wrapper = mount(<AllocineProviderForm {...props} />)
-    const formSubmit = wrapper.find('button')
-    const priceSection = wrapper.findWhere(node => node.text() === 'Prix de vente/place *')
-    const priceInput = priceSection.find(NumberField).find('input')
-    priceInput.simulate('change', { target: { value: 10 } })
-
-    // when
-    formSubmit.simulate('click')
+    fireEvent.change(priceField, { target: { value: 10 } })
+    fireEvent.change(quantityField, { target: { value: 5 } })
+    fireEvent.click(isDuoCheckbox)
+    fireEvent.click(offerImportButton)
 
     // then
-    expect(createVenueProvider).toHaveBeenCalledWith(expect.any(Function), expect.any(Function), {
+    expect(providersApi.createVenueProvider).toHaveBeenCalledWith({
       price: 10,
-      quantity: undefined,
-      isDuo: true,
-      providerId: 'AA',
-      venueId: 'BB',
+      quantity: 5,
+      isDuo: false,
+      providerId: provider.id,
+      venueId: props.venue.id,
     })
   })
 
-  it('should be able to submit with filled payload when price field is filled to 0', () => {
+  it('should be able to submit when price field is filled to 0', async () => {
     // given
-    const wrapper = mount(<AllocineProviderForm {...props} />)
-    const formSubmit = wrapper.find('button')
-    const priceSection = wrapper.findWhere(node => node.text() === 'Prix de vente/place *')
-    const priceInput = priceSection.find(NumberField).find('input')
-    priceInput.simulate('change', { target: { value: 0 } })
+    await renderAllocineProviderForm()
+    const offerImportButton = screen.getByRole('button', { name: 'Importer les offres' })
+    const priceField = screen.getByLabelText('Prix de vente/place', { exact: false })
 
     // when
-    formSubmit.simulate('click')
+    fireEvent.change(priceField, { target: { value: 0 } })
+    fireEvent.click(offerImportButton)
 
     // then
-    expect(createVenueProvider).toHaveBeenCalledWith(expect.any(Function), expect.any(Function), {
+    expect(providersApi.createVenueProvider).toHaveBeenCalledWith({
       price: 0,
       quantity: undefined,
       isDuo: true,
-      providerId: 'AA',
-      venueId: 'BB',
+      providerId: provider.id,
+      venueId: props.venue.id,
     })
   })
 
-  it('should be able to submit with filled payload when price field is filled with a decimal', () => {
+  it('should be able to submit when price field is filled with a decimal', async () => {
     // given
-    const wrapper = mount(<AllocineProviderForm {...props} />)
-    const submitButton = wrapper.find('button')
-    const priceSection = wrapper.findWhere(node => node.text() === 'Prix de vente/place *')
-    const priceInput = priceSection.find(NumberField).find('input')
-    priceInput.simulate('change', { target: { value: '0,42' } })
+    await renderAllocineProviderForm()
+    const offerImportButton = screen.getByRole('button', { name: 'Importer les offres' })
+    const priceField = screen.getByLabelText('Prix de vente/place', { exact: false })
 
     // when
-    submitButton.simulate('click')
+    fireEvent.change(priceField, { target: { value: 0.42 } })
+    fireEvent.click(offerImportButton)
 
     // then
-    expect(createVenueProvider).toHaveBeenCalledWith(expect.any(Function), expect.any(Function), {
+    expect(providersApi.createVenueProvider).toHaveBeenCalledWith({
       price: 0.42,
       quantity: undefined,
       isDuo: true,
-      providerId: 'AA',
-      venueId: 'BB',
+      providerId: provider.id,
+      venueId: props.venue.id,
     })
   })
 
-  it('should not be able to submit when quantity is filled but price is not', () => {
+  it('should not be able to submit when quantity is filled but price is not', async () => {
     // given
-    const wrapper = mount(<AllocineProviderForm {...props} />)
-    const form = wrapper.find('form')
-    const quantitySection = wrapper.findWhere(node => node.text() === 'Nombre de places/séance')
-    const quantityInput = quantitySection.find(NumberField).find('input')
-
-    quantityInput.simulate('change', { target: { value: 10 } })
+    await renderAllocineProviderForm()
+    const offerImportButton = screen.getByRole('button', { name: 'Importer les offres' })
+    const quantityField = screen.getByLabelText('Nombre de places/séance')
 
     // when
-    form.simulate('click')
+    fireEvent.change(quantityField, { target: { value: 10 } })
+    fireEvent.click(offerImportButton)
 
     // then
-    expect(createVenueProvider).not.toHaveBeenCalled()
+    expect(providersApi.createVenueProvider).toHaveBeenCalledTimes(0)
   })
 
-  describe('handleSuccess', () => {
-    it('should update current url when action was handled successfully', () => {
-      // given
-      const wrapper = shallow(<AllocineProviderForm {...props} />)
+  it('should display a notification and unselect provider if there is something wrong with the server', async () => {
+    // given
+    const apiError = {
+      errors: { global: ['Le prix ne peut pas être négatif'] },
+      status: 400,
+    }
+    providersApi.createVenueProvider.mockRejectedValue(apiError)
+    await renderAllocineProviderForm()
+    const offerImportButton = screen.getByRole('button', { name: 'Importer les offres' })
+    const priceField = screen.getByLabelText('Prix de vente/place', { exact: false })
 
-      // when
-      wrapper.instance().handleSuccess()
+    // when
+    fireEvent.change(priceField, { target: { value: -10 } })
+    await fireEvent.click(offerImportButton)
 
-      // then
-      expect(history.push).toHaveBeenCalledWith('/structures/CC/lieux/BB')
-    })
-  })
-
-  describe('handleFail', () => {
-    it('should display a notification with the proper informations', () => {
-      // given
-      const wrapper = shallow(<AllocineProviderForm {...props} />)
-      const action = {
-        payload: {
-          errors: [
-            {
-              error: 'fake error',
-            },
-          ],
-        },
-      }
-      const form = {
-        batch: jest.fn(),
-      }
-      // when
-      wrapper.instance().handleFail(form)({}, action)
-      // then
-      expect(notify).toHaveBeenCalledWith([{ error: 'fake error' }])
-    })
-  })
-
-  describe('handleSubmit', () => {
-    it('should update venue provider using API', () => {
-      // given
-      const formValues = {
-        price: 12,
-        quantity: 50,
-        isDuo: true,
-      }
-      const wrapper = shallow(<AllocineProviderForm {...props} />)
-
-      // when
-      wrapper.instance().handleSubmit(formValues, {})
-
-      // then
-      expect(createVenueProvider).toHaveBeenCalledWith(expect.any(Function), expect.any(Function), {
-        price: 12,
-        quantity: 50,
-        isDuo: true,
-        providerId: 'AA',
-        venueId: 'BB',
-      })
-    })
+    // then
+    const errorNotification = await screen.findByText(apiError.errors.global[0])
+    expect(errorNotification).toBeInTheDocument()
   })
 })

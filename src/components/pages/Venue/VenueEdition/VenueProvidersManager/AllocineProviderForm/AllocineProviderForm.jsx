@@ -31,23 +31,17 @@ class AllocineProviderForm extends PureComponent {
 
     this.setState({ isLoadingMode: true })
 
-    createVenueProvider(this.handleFail, this.handleSuccess, payload)
-  }
+    createVenueProvider(payload)
+      .then(() => {
+        const { history, offererId, venueId } = this.props
 
-  handleSuccess = () => {
-    const { history, offererId, venueId } = this.props
-
-    history.push(`/structures/${offererId}/lieux/${venueId}`)
-  }
-
-  handleFail = () => (state, action) => {
-    this.setState({ isLoadingMode: false })
-    const { notify } = this.props
-    const {
-      payload: { errors },
-    } = action
-
-    notify(errors)
+        history.push(`/structures/${offererId}/lieux/${venueId}`)
+      })
+      .catch(error => {
+        this.setState({ isLoadingMode: false })
+        const { notify } = this.props
+        notify(error.errors)
+      })
   }
 
   required(value) {

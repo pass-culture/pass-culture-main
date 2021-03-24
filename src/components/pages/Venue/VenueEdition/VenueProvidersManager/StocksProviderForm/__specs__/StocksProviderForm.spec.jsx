@@ -10,7 +10,6 @@ import { configureTestStore } from 'store/testUtils'
 
 import VenueProvidersManagerContainer from '../../VenueProvidersManagerContainer'
 
-
 jest.mock('repository/pcapi/providersApi', () => ({
   createVenueProvider: jest.fn(),
   loadProviders: jest.fn(),
@@ -30,13 +29,6 @@ const renderVenueProvidersManager = async props => {
   })
 }
 
-const renderStocksProviderForm = async () => {
-  const importOffersButton = screen.getByText('Importer des offres')
-  fireEvent.click(importOffersButton)
-  const providersSelect = screen.getByRole('combobox')
-  fireEvent.change(providersSelect, { target: { value: 'titelive' } })
-}
-
 describe('src | StocksProviderForm', () => {
   let props
   let provider
@@ -54,15 +46,24 @@ describe('src | StocksProviderForm', () => {
     }
 
     providersApi.loadVenueProviders.mockResolvedValue([])
-    provider = { id: 'titelive', name: 'TiteLive Stocks (Epagine / Place des libraires.com)' }
+    provider = { id: 'ABC', name: 'TiteLive Stocks (Epagine / Place des libraires.com)' }
     providersApi.loadProviders.mockResolvedValue([provider])
 
     await renderVenueProvidersManager(props)
   })
 
   afterEach(() => {
-    jest.restoreAllMocks()
+    providersApi.loadVenueProviders.mockReset()
+    providersApi.loadProviders.mockReset()
+    providersApi.createVenueProvider.mockReset()
   })
+
+  const renderStocksProviderForm = async () => {
+    const importOffersButton = screen.getByText('Importer des offres')
+    fireEvent.click(importOffersButton)
+    const providersSelect = screen.getByRole('combobox')
+    fireEvent.change(providersSelect, { target: { value: provider.id } })
+  }
 
   it('should display an import button and the venue siret as provider identifier', async () => {
     // when

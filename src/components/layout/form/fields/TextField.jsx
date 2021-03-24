@@ -24,6 +24,7 @@ function TextField(props) {
   return (
     <Field
       format={props.format}
+      id={props.name}
       name={props.name}
       parse={props.parse || createParseNumberValue(props.type)}
       validate={composeValidators(props.validate, getRequiredValidate(props.required, props.type))}
