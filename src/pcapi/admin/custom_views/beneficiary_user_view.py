@@ -14,9 +14,7 @@ from pcapi.models import UserOfferer
 
 
 class BeneficiaryUserView(SuspensionMixin, BaseAdminView):
-    @property
-    def can_edit(self) -> bool:
-        return self.check_super_admins()
+    can_edit = True
 
     @property
     def can_create(self) -> bool:
