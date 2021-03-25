@@ -48,6 +48,6 @@ describe('findOldestBookingDate', () => {
     const result = findOldestBookingDate(bookingsRecap)
 
     // then
-    expect(result).toStrictEqual('2020-01-12T12:00:00Z')
+    expect(result.toISOString()).toStrictEqual('2020-01-12T12:00:00.000Z')
   })
 })

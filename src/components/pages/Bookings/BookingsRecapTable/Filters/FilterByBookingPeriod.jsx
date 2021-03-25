@@ -37,10 +37,10 @@ const FilterByBookingPeriod = ({
       changePeriodEndingDateValue={handleBookingEndingDateChange}
       isDisabled={isDisabled}
       label="Période de réservation"
-      maxDateEnding={new Date()}
       minDateBeginning={oldestBookingDate}
-      periodBeginningDate={selectedBookingBeginningDate}
+      periodBeginningDate={selectedBookingBeginningDate || undefined}
       periodEndingDate={selectedBookingEndingDate}
+      todayDate={new Date()}
     />
   )
 }

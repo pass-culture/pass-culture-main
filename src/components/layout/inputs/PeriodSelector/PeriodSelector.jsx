@@ -38,12 +38,12 @@ const PeriodSelector = ({
             dateFormat="dd/MM/yyyy"
             disabled={isDisabled}
             dropdownMode="select"
-            maxDate={periodEndingDate ? periodEndingDate : undefined}
-            minDate={minDateBeginning ? minDateBeginning : undefined}
+            maxDate={periodEndingDate}
+            minDate={minDateBeginning}
             onChange={changePeriodBeginningDateValue}
             openToDate={periodBeginningDate ? periodBeginningDate : todayDate}
             placeholderText="JJ/MM/AAAA"
-            selected={periodBeginningDate ? periodBeginningDate : undefined}
+            selected={periodBeginningDate}
           />
         </div>
         <span className="vertical-bar" />
@@ -58,12 +58,12 @@ const PeriodSelector = ({
             dateFormat="dd/MM/yyyy"
             disabled={isDisabled}
             dropdownMode="select"
-            maxDate={maxDateEnding ? maxDateEnding : undefined}
-            minDate={periodBeginningDate ? periodBeginningDate : undefined}
+            maxDate={maxDateEnding}
+            minDate={periodBeginningDate}
             onChange={changePeriodEndingDateValue}
             openToDate={periodEndingDate ? periodEndingDate : todayDate}
             placeholderText="JJ/MM/AAAA"
-            selected={periodEndingDate ? periodEndingDate : undefined}
+            selected={periodEndingDate}
           />
         </div>
       </div>
@@ -83,11 +83,11 @@ PeriodSelector.propTypes = {
   changePeriodEndingDateValue: PropTypes.func.isRequired,
   isDisabled: PropTypes.bool.isRequired,
   label: PropTypes.string.isRequired,
-  maxDateEnding: PropTypes.string,
-  minDateBeginning: PropTypes.string,
-  periodBeginningDate: PropTypes.oneOfType([PropTypes.shape(), PropTypes.string]),
-  periodEndingDate: PropTypes.oneOfType([PropTypes.shape(), PropTypes.string]),
-  todayDate: PropTypes.shape().isRequired,
+  maxDateEnding: PropTypes.instanceOf(Date),
+  minDateBeginning: PropTypes.instanceOf(Date),
+  periodBeginningDate: PropTypes.instanceOf(Date),
+  periodEndingDate: PropTypes.instanceOf(Date),
+  todayDate: PropTypes.instanceOf(Date).isRequired,
 }
 
 export default PeriodSelector
