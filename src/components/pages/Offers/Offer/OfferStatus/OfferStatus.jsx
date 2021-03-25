@@ -30,10 +30,10 @@ export const OFFER_STATUS_PROPERTIES = {
     icon: 'ico-status-awaiting',
     label: 'en attente',
   },
-  [OFFER_STATUS.VALIDATED]: {
-    className: 'status-validated',
-    icon: 'ico-status-validated',
-    label: 'validée',
+  [OFFER_STATUS.INACTIVE]: {
+    className: 'status-inactive',
+    icon: 'ico-status-inactive',
+    label: 'désactivée',
   },
 }
 

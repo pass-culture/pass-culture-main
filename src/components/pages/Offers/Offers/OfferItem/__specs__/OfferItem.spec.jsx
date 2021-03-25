@@ -39,7 +39,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       hasBookingLimitDatetimesPassed: false,
       name: 'My little offer',
       thumbUrl: '/my-fake-thumb',
-      status: 'APPROVED',
+      status: 'ACTIVE',
     }
 
     props = {

@@ -59,7 +59,7 @@ const offerTypes = [
     sublabel: 'Regarder',
     type: 'Event',
     value: 'EventType.CINEMA',
-    status: 'APPROVED',
+    status: 'ACTIVE',
   },
   {
     appLabel: 'Conférences, rencontres et découverte des métiers',
@@ -72,7 +72,7 @@ const offerTypes = [
     sublabel: 'Rencontrer',
     type: 'Event',
     value: 'EventType.CONFERENCE_DEBAT_DEDICACE',
-    status: 'APPROVED',
+    status: 'ACTIVE',
   },
 ]
 
@@ -141,7 +141,7 @@ describe('src | components | pages | Offers | Offers', () => {
         {
           id: 'N9',
           venueId: 'JI',
-          status: 'APPROVED',
+          status: 'ACTIVE',
         },
       ],
       query: {
@@ -191,7 +191,7 @@ describe('src | components | pages | Offers | Offers', () => {
 
     it('should display column titles when offers are returned', async () => {
       // Given
-      props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock', venueId: 'JI', status: 'APPROVED' }]
+      props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock', venueId: 'JI', status: 'ACTIVE' }]
 
       // When
       await renderOffers(props, store)
@@ -227,7 +227,7 @@ describe('src | components | pages | Offers | Offers', () => {
           name: 'My little offer',
           thumbUrl: '/my-fake-thumb',
           venueId: 'JI',
-          status: 'APPROVED',
+          status: 'ACTIVE',
         },
         {
           id: 'AE3',
@@ -240,7 +240,7 @@ describe('src | components | pages | Offers | Offers', () => {
           name: 'My other offer',
           thumbUrl: '/my-other-fake-thumb',
           venueId: 'JI',
-          status: 'APPROVED',
+          status: 'ACTIVE',
         },
       ]
 
@@ -267,7 +267,7 @@ describe('src | components | pages | Offers | Offers', () => {
           name: 'My little offer',
           thumbUrl: '/my-fake-thumb',
           venueId: 'JI',
-          status: 'APPROVED',
+          status: 'ACTIVE',
         },
         {
           id: 'AE3',
@@ -280,7 +280,7 @@ describe('src | components | pages | Offers | Offers', () => {
           name: 'My other offer',
           thumbUrl: '/my-other-fake-thumb',
           venueId: 'JI',
-          status: 'APPROVED',
+          status: 'ACTIVE',
         },
       ]
 
@@ -430,7 +430,7 @@ describe('src | components | pages | Offers | Offers', () => {
       describe('status filters', () => {
         it('should not display status filters modal', async () => {
           // Given
-          props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock', venueId: 'JI', status: 'APPROVED' }]
+          props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock', venueId: 'JI', status: 'ACTIVE' }]
 
           // When
           await renderOffers(props, store)
@@ -450,7 +450,7 @@ describe('src | components | pages | Offers | Offers', () => {
 
         it('should display status filters with "Tous" as default value when clicking on "Statut" filter icon', async () => {
           // Given
-          props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock', venueId: 'JI', status: 'APPROVED' }]
+          props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock', venueId: 'JI', status: 'ACTIVE' }]
           await renderOffers(props, store)
 
           // When
@@ -470,7 +470,7 @@ describe('src | components | pages | Offers | Offers', () => {
 
         it('should filter offers given status filter when clicking on "Appliquer"', async () => {
           // Given
-          props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock', venueId: 'JI', status: 'APPROVED' }]
+          props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock', venueId: 'JI', status: 'ACTIVE' }]
           await renderOffers(props, store)
           fireEvent.click(screen.getByAltText('Afficher ou masquer le filtre par statut'))
           fireEvent.click(screen.getByLabelText('Expirée'))
@@ -494,7 +494,7 @@ describe('src | components | pages | Offers | Offers', () => {
 
         it('should hide status filters when clicking outside the modal', async () => {
           // Given
-          props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock', venueId: 'JI', status: 'APPROVED' }]
+          props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock', venueId: 'JI', status: 'ACTIVE' }]
           await renderOffers(props, store)
           fireEvent.click(screen.getByAltText('Afficher ou masquer le filtre par statut'))
 
@@ -1245,7 +1245,7 @@ describe('src | components | pages | Offers | Offers', () => {
 
     it('should have status value when user filters by status', async () => {
       // Given
-      props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock', status: 'APPROVED' }]
+      props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock', status: 'ACTIVE' }]
       await renderOffers(props, store)
       fireEvent.click(screen.getByAltText('Afficher ou masquer le filtre par statut'))
       fireEvent.click(screen.getByLabelText('Épuisée'))
@@ -1270,7 +1270,7 @@ describe('src | components | pages | Offers | Offers', () => {
 
     it('should have status value be removed when user ask for all status', async () => {
       // Given
-      props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock', status: 'APPROVED' }]
+      props.offers = [{ id: 'KE', availabilityMessage: 'Pas de stock', status: 'ACTIVE' }]
       await renderOffers(props, store)
       fireEvent.click(screen.queryByAltText('Afficher ou masquer le filtre par statut'))
       fireEvent.click(screen.queryByLabelText('Tous'))
@@ -1542,7 +1542,7 @@ describe('src | components | pages | Offers | Offers', () => {
             name: 'My little offer',
             thumbUrl: '/my-fake-thumb',
             venueId: 'JI',
-            status: 'APPROVED',
+            status: 'ACTIVE',
           },
           {
             id: 'AE3',
@@ -1555,7 +1555,7 @@ describe('src | components | pages | Offers | Offers', () => {
             name: 'My other offer',
             thumbUrl: '/my-other-fake-thumb',
             venueId: 'JI',
-            status: 'APPROVED',
+            status: 'ACTIVE',
           },
         ]
         await renderOffers(props, store)

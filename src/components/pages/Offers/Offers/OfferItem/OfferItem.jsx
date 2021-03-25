@@ -5,9 +5,10 @@ import { Link } from 'react-router-dom'
 import Icon from 'components/layout/Icon'
 import Thumb from 'components/layout/Thumb'
 import OfferStatus from 'components/pages/Offers/Offer/OfferStatus/OfferStatus'
-import { isOfferFullyBooked } from 'components/pages/Offers/Offers/domain/isOfferFullyBooked'
 import { computeVenueDisplayName } from 'repository/venuesService'
 import { pluralize } from 'utils/pluralize'
+
+import { OFFER_STATUS } from "../domain/offerStatus"
 
 
 const OfferItem = ({ disabled, offer, stocks, venue, isSelected, selectOffer }) => {
@@ -33,8 +34,7 @@ const OfferItem = ({ disabled, offer, stocks, venue, isSelected, selectOffer }) 
   const stockSize = stocks ? stocks.length : null
   const isOfferEditable = offer ? offer.isEditable : null
   const isOfferInactiveOrExpired = !offer.isActive || offer.hasBookingLimitDatetimesPassed
-  const shouldShowSoldOutWarning =
-    computeNumberOfSoldOutStocks(stocks) > 0 && !isOfferFullyBooked(stocks)
+  const shouldShowSoldOutWarning = offer.status === OFFER_STATUS.SOLD_OUT
 
   return (
     <tr className={`offer-item ${isOfferInactiveOrExpired ? 'inactive' : ''} offer-row`}>

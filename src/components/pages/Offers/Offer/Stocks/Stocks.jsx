@@ -7,7 +7,6 @@ import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { ReactComponent as AddStockSvg } from 'icons/ico-plus.svg'
 import * as pcapi from 'repository/pcapi/pcapi'
 
-import { computeOfferStatus } from '../../Offers/domain/computeOfferStatus'
 import { OFFER_STATUS } from '../../Offers/domain/offerStatus'
 import OfferStatusBanner from '../OfferDetails/OfferStatusBanner/OfferStatusBanner'
 
@@ -152,8 +151,8 @@ const Stocks = ({ offer, showErrorNotification, showSuccessNotification }) => {
     return null
   }
 
-  const offerStatus = computeOfferStatus(offer, offer.stocks)
-  const needsStatusInfosMessage = offerStatus
+  const offerStatus = offer.status
+  const needsStatusInfosMessage = offer.status
     ? [OFFER_STATUS.REJECTED, OFFER_STATUS.AWAITING].includes(offerStatus)
     : false
 

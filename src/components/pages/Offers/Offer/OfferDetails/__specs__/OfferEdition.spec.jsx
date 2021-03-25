@@ -150,7 +150,7 @@ describe('offerDetails - Edition', () => {
             mentalDisabilityCompliant: null,
             motorDisabilityCompliant: null,
             visualDisabilityCompliant: null,
-            status: 'APPROVED',
+            status: 'ACTIVE',
           }
           pcapi.loadOffer.mockResolvedValue(editedOffer)
 
@@ -241,7 +241,7 @@ describe('offerDetails - Edition', () => {
             mentalDisabilityCompliant: true,
             motorDisabilityCompliant: true,
             visualDisabilityCompliant: true,
-            status: 'APPROVED',
+            status: 'ACTIVE',
           }
           pcapi.loadOffer.mockResolvedValue(editedOffer)
 
@@ -313,7 +313,7 @@ describe('offerDetails - Edition', () => {
             mentalDisabilityCompliant: false,
             motorDisabilityCompliant: false,
             visualDisabilityCompliant: false,
-            status: 'APPROVED',
+            status: 'ACTIVE',
           }
           pcapi.loadOffer.mockResolvedValue(editedOffer)
 
@@ -495,7 +495,7 @@ describe('offerDetails - Edition', () => {
         // given
         editedOffer = {
           ...editedOffer,
-          validation: 'REJECTED',
+          status: 'REJECTED',
           isActive: false,
         }
         pcapi.loadOffer.mockResolvedValue(editedOffer)
@@ -515,7 +515,7 @@ describe('offerDetails - Edition', () => {
         // given
         editedOffer = {
           ...editedOffer,
-          validation: 'AWAITING',
+          status: 'AWAITING',
           isActive: true,
         }
         pcapi.loadOffer.mockResolvedValue(editedOffer)
@@ -566,7 +566,7 @@ describe('offerDetails - Edition', () => {
         venue: editedOfferVenue,
         venueId: editedOfferVenue.id,
         withdrawalDetails: 'Offer withdrawal details',
-        status: 'APPROVED',
+        status: 'ACTIVE',
         extraData: {
           author: 'Mr Offer Author',
           isbn: '123456789123',
@@ -729,7 +729,7 @@ describe('offerDetails - Edition', () => {
           musicSubType: '502',
         },
         bookingEmail: 'booking@example.net',
-        status: 'APPROVED',
+        status: 'ACTIVE',
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
       types.push({
@@ -885,7 +885,7 @@ describe('offerDetails - Edition', () => {
           lastProvider: {
             name: 'leslibraires.fr',
           },
-          status: 'APPROVED',
+          status: 'ACTIVE',
         }
         pcapi.loadOffer.mockResolvedValue(editedOffer)
         const providerInformation = getProviderInfo(editedOffer.lastProvider.name)
@@ -922,7 +922,7 @@ describe('offerDetails - Edition', () => {
           lastProvider: {
             name: 'Leslibraires.fr',
           },
-          status: 'APPROVED',
+          status: 'ACTIVE',
         }
         pcapi.loadOffer.mockResolvedValue(editedOffer)
         types.push({
@@ -1003,7 +1003,7 @@ describe('offerDetails - Edition', () => {
           lastProvider: {
             name: 'Leslibraires.fr',
           },
-          status: 'APPROVED',
+          status: 'ACTIVE',
         }
         pcapi.loadOffer.mockResolvedValue(editedOffer)
         types.push({
@@ -1127,7 +1127,7 @@ describe('offerDetails - Edition', () => {
           lastProvider: {
             name: 'Allociné',
           },
-          status: 'APPROVED',
+          status: 'ACTIVE',
         }
         pcapi.loadOffer.mockResolvedValue(editedOffer)
         const cinemaType = {
@@ -1168,7 +1168,7 @@ describe('offerDetails - Edition', () => {
           mentalDisabilityCompliant: false,
           motorDisabilityCompliant: false,
           visualDisabilityCompliant: false,
-          status: 'APPROVED',
+          status: 'ACTIVE',
         }
         pcapi.loadOffer.mockResolvedValue(editedOffer)
         await renderOffers(props, store)
@@ -1241,7 +1241,7 @@ describe('offerDetails - Edition', () => {
         visualDisabilityCompliant: true,
         motorDisabilityCompliant: false,
         mentalDisabilityCompliant: false,
-        status: 'APPROVED',
+        status: 'ACTIVE',
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
       await renderOffers(props, store)
@@ -1275,7 +1275,7 @@ describe('offerDetails - Edition', () => {
         visualDisabilityCompliant: true,
         motorDisabilityCompliant: false,
         mentalDisabilityCompliant: false,
-        status: 'APPROVED',
+        status: 'ACTIVE',
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
       await renderOffers(props, store)
@@ -1309,7 +1309,7 @@ describe('offerDetails - Edition', () => {
         lastProvider: {
           name: 'Allociné',
         },
-        status: 'APPROVED',
+        status: 'ACTIVE',
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
       const cinemaType = {
@@ -1356,7 +1356,7 @@ describe('offerDetails - Edition', () => {
         lastProvider: {
           name: 'Allociné',
         },
-        status: 'APPROVED',
+        status: 'ACTIVE',
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
       const cinemaType = {
@@ -1402,7 +1402,7 @@ describe('offerDetails - Edition', () => {
         visualDisabilityCompliant: true,
         motorDisabilityCompliant: false,
         mentalDisabilityCompliant: false,
-        status: 'APPROVED',
+        status: 'ACTIVE',
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
       await renderOffers(props, store)
@@ -1439,7 +1439,7 @@ describe('offerDetails - Edition', () => {
         visualDisabilityCompliant: true,
         motorDisabilityCompliant: false,
         mentalDisabilityCompliant: false,
-        status: 'APPROVED',
+        status: 'ACTIVE',
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
       await renderOffers(props, store)
@@ -1473,7 +1473,7 @@ describe('offerDetails - Edition', () => {
         mentalDisabilityCompliant: false,
         motorDisabilityCompliant: false,
         visualDisabilityCompliant: false,
-        status: 'APPROVED',
+        status: 'ACTIVE',
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
       await renderOffers(props, store)
@@ -1502,7 +1502,7 @@ describe('offerDetails - Edition', () => {
         venue: editedOfferVenue,
         withdrawalDetails: 'Offer withdrawal details',
         bookingEmail: null,
-        status: 'APPROVED',
+        status: 'ACTIVE',
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
       await renderOffers(props, store)
@@ -1534,7 +1534,7 @@ describe('offerDetails - Edition', () => {
         withdrawalDetails: 'Offer withdrawal details',
         bookingEmail: 'booking@example.net',
         extraData: null,
-        status: 'APPROVED',
+        status: 'ACTIVE',
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
       pcapi.updateOffer.mockRejectedValue({ errors: { name: "Ce nom n'est pas valide" } })
@@ -1657,7 +1657,7 @@ describe('offerDetails - Edition', () => {
         withdrawalDetails: 'Offer withdrawal details',
         bookingEmail: 'booking@example.net',
         extraData: null,
-        status: 'APPROVED',
+        status: 'ACTIVE',
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
       await renderOffers(props, store)
@@ -1686,7 +1686,7 @@ describe('offerDetails - Edition', () => {
         venue: editedOfferVenue,
         withdrawalDetails: 'Offer withdrawal details',
         bookingEmail: null,
-        status: 'APPROVED',
+        status: 'ACTIVE',
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
 

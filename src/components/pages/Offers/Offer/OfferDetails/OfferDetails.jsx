@@ -5,7 +5,6 @@ import PageTitle from 'components/layout/PageTitle/PageTitle'
 import OfferPreviewLink from 'components/pages/Offers/Offer/OfferPreviewLink/OfferPreviewLink'
 import * as pcapi from 'repository/pcapi/pcapi'
 
-import { computeOfferStatus } from '../../Offers/domain/computeOfferStatus'
 import { OFFER_STATUS } from '../../Offers/domain/offerStatus'
 
 import OfferCreation from './OfferForm/OfferCreation'
@@ -119,7 +118,7 @@ const OfferDetails = ({
     ]
   )
 
-  const offerStatus = offer ? computeOfferStatus(offer, offer.stocks) : null
+  const offerStatus = offer?.status ?? null
   const needsStatusInfosMessage = offerStatus
     ? [OFFER_STATUS.REJECTED, OFFER_STATUS.AWAITING].includes(offerStatus)
     : false

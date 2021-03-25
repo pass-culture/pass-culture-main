@@ -9,15 +9,16 @@
 
   img {
     filter: brightness(0) invert(1);
-    height: rem(17px);
-    margin-right: rem(5px);
-    width: rem(17px);
+    height: rem(16px);
+    margin-right: rem(4px);
+    width: rem(16px);
   }
 }
 
 .status- {
   &expired,
-  &awaiting {
+  &awaiting,
+  &inactive {
     background-color: $grey-dark;
   }
 
@@ -26,7 +27,7 @@
   }
 
   &sold-out {
-    background-color: $error;
+    background-color: $red-error;
   }
 
   &active,

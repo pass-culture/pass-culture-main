@@ -1448,7 +1448,7 @@ describe('offerDetails - Creation - pro user', () => {
         mentalDisabilityCompliant: false,
       }
 
-      const createdOffer = { ...offerValues, id: 'CREATED', stocks: [], venue: venues[0] }
+      const createdOffer = { ...offerValues, id: 'CREATED', stocks: [], venue: venues[0], status: "ACTIVE" }
       pcapi.createOffer.mockResolvedValue(createdOffer)
       await renderOffers(props, store)
       pcapi.loadOffer.mockResolvedValue(createdOffer)

@@ -63,7 +63,7 @@ describe('offerLayout', () => {
       expect(title).toBeInTheDocument()
     })
 
-    it('should display offer status', async () => {
+    it('should always display offer status', async () => {
       // when
       await renderOfferDetails(props, store)
 
