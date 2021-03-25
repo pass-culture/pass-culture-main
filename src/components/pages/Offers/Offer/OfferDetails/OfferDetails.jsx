@@ -2,13 +2,13 @@ import PropTypes from 'prop-types'
 import React, { useCallback, useRef, useState } from 'react'
 
 import PageTitle from 'components/layout/PageTitle/PageTitle'
+import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import OfferCreation from 'components/pages/Offers/Offer/OfferDetails/OfferForm/OfferCreation'
 import OfferEditionContainer from 'components/pages/Offers/Offer/OfferDetails/OfferForm/OfferEditionContainer'
 import OfferPreview from 'components/pages/Offers/Offer/OfferDetails/OfferPreview/OfferPreview'
 import OfferStatusBanner from 'components/pages/Offers/Offer/OfferDetails/OfferStatusBanner/OfferStatusBanner'
 import OfferThumbnail from 'components/pages/Offers/Offer/OfferDetails/OfferThumbnail/OfferThumbnail'
 import OfferPreviewLink from 'components/pages/Offers/Offer/OfferPreviewLink/OfferPreviewLink'
-import { OFFER_STATUS } from 'components/pages/Offers/Offers/domain/offerStatus'
 import * as pcapi from 'repository/pcapi/pcapi'
 
 const OfferDetails = ({
@@ -116,9 +116,7 @@ const OfferDetails = ({
   )
 
   const offerStatus = offer?.status
-  const isDisabled = offerStatus
-    ? [OFFER_STATUS.REJECTED, OFFER_STATUS.AWAITING].includes(offerStatus)
-    : false
+  const isDisabled = offerStatus ? isOfferDisabled(offerStatus) : false
 
   return (
     <>

@@ -6,12 +6,11 @@ import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
 import NotificationV2Container from 'components/layout/NotificationV2/NotificationV2Container'
+import OfferLayoutContainer from 'components/pages/Offers/Offer/OfferLayoutContainer'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 import { getToday } from 'utils/date'
 import { queryByTextTrimHtml } from 'utils/testHelpers'
-
-import OfferLayoutContainer from '../../OfferLayoutContainer'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   deleteStock: jest.fn(),
@@ -243,44 +242,78 @@ describe('stocks page', () => {
       expect(cancelLink).toHaveAttribute('href', '/offres/AG3A/edition')
     })
 
-    it('should display status informative message when offer is rejected', async () => {
-      // given
-      const offer = {
-        ...defaultOffer,
-        status: 'REJECTED',
-        isActive: false,
-      }
-      pcapi.loadOffer.mockResolvedValue(offer)
+    describe('when fraud detection', () => {
+      let offer = {}
+      let stocks = {}
 
-      // when
-      await renderOffers(props, store)
+      beforeEach(() => {
+        offer = {
+          ...defaultOffer,
+          isEvent: true,
+          stocks: [],
+        }
+        stocks = {
+          stocks: [
+            {
+              ...defaultStock,
+              beginningDatetime: '2222-12-20T22:00:00Z',
+              quantity: 10,
+            },
+          ],
+        }
+      })
 
-      // then
-      expect(
-        screen.getByText(
-          'Votre offre a été refusée car elle ne respecte pas les Conditions Générales d’Utilisation du pass. Un e-mail contenant les conditions d’éligibilité d’une offre a été envoyé à l’adresse e-mail attachée à votre compte.'
-        )
-      ).toBeInTheDocument()
-    })
+      it('should display status informative message and disable all fields when offer is rejected', async () => {
+        // given
+        offer.status = 'REJECTED'
+        offer.isActive = false
+        pcapi.loadOffer.mockResolvedValue(offer)
+        pcapi.loadStocks.mockResolvedValue(stocks)
 
-    it('should display status informative message when offer is awaiting for validation', async () => {
-      // given
-      const offer = {
-        ...defaultOffer,
-        status: 'AWAITING',
-        isActive: true,
-      }
-      pcapi.loadOffer.mockResolvedValue(offer)
+        // when
+        await renderOffers(props, store)
 
-      // when
-      await renderOffers({}, store)
+        // then
+        expect(
+          screen.getByText(
+            'Votre offre a été refusée car elle ne respecte pas les Conditions Générales d’Utilisation du pass. Un e-mail contenant les conditions d’éligibilité d’une offre a été envoyé à l’adresse e-mail attachée à votre compte.'
+          )
+        ).toBeInTheDocument()
+        expect(screen.getByText('Ajouter une date')).toBeDisabled()
+        expect(screen.getByLabelText('Date de l’événement')).toBeDisabled()
+        expect(screen.getByLabelText('Heure de l’événement')).toBeDisabled()
+        expect(screen.getByLabelText('Prix')).toBeDisabled()
+        expect(screen.getByLabelText('Date limite de réservation')).toBeDisabled()
+        expect(screen.getByLabelText('Quantité')).toBeDisabled()
+        expect(screen.getByTitle('Supprimer le stock')).toBeDisabled()
+        expect(screen.getByText('Enregistrer')).toBeDisabled()
+      })
 
-      // then
-      expect(
-        screen.getByText(
-          'Votre offre est en cours de validation par l’équipe du pass Culture. Une fois validée, vous recevrez un e-mail de confirmation et votre offre sera automatiquement mise en ligne.'
-        )
-      ).toBeInTheDocument()
+      it('should display status informative message and disable all fields when offer is awaiting for validation', async () => {
+        // given
+        offer.status = 'AWAITING'
+        offer.isActive = true
+        pcapi.loadOffer.mockResolvedValue(offer)
+        pcapi.loadStocks.mockResolvedValue(stocks)
+
+        // when
+        await renderOffers({}, store)
+
+        // then
+        expect(
+          screen.getByText(
+            'Votre offre est en cours de validation par l’équipe du pass Culture. Une fois validée, vous recevrez un e-mail de confirmation et votre offre sera automatiquement mise en ligne.'
+          )
+        ).toBeInTheDocument()
+        expect(screen.getByText('Ajouter une date')).toBeDisabled()
+        expect(screen.getByLabelText('Date de l’événement')).toBeDisabled()
+        expect(screen.getByLabelText('Heure de l’événement')).toBeDisabled()
+        expect(screen.getByLabelText('Prix')).toBeDisabled()
+        expect(screen.getByLabelText('Date limite de réservation')).toBeDisabled()
+        expect(screen.getByLabelText('Quantité')).toBeDisabled()
+        expect(screen.getByTitle('Supprimer le stock')).toBeDisabled()
+        expect(screen.getByText('Enregistrer')).toBeDisabled()
+      })
     })
 
     describe('render event offer', () => {

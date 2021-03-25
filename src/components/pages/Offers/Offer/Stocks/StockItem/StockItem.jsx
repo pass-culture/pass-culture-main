@@ -6,17 +6,17 @@ import DateInput from 'components/layout/inputs/DateInput/DateInput'
 import TimeInput from 'components/layout/inputs/TimeInput/TimeInput'
 import { isAllocineProvider } from 'components/pages/Offers/domain/localProvider'
 import DeleteStockDialogContainer from 'components/pages/Offers/Offer/Stocks/DeleteStockDialog/DeleteStockDialogContainer'
+import { ReactComponent as DeleteStockIcon } from 'components/pages/Offers/Offer/Stocks/StockItem/assets/delete-stock.svg'
+import { hasStockBeenUpdated } from 'components/pages/Offers/Offer/Stocks/StockItem/domain'
 import { getToday } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
-
-import { ReactComponent as DeleteStockIcon } from './assets/delete-stock.svg'
-import { hasStockBeenUpdated } from './domain'
 
 const StockItem = ({
   departmentCode,
   errors,
   isEvent,
   isNewStock,
+  isDisabled: isOfferDisabled,
   lastProvider,
   onChange,
   onDelete,
@@ -145,7 +145,7 @@ const StockItem = ({
             <DateInput
               ariaLabel="Date de l’événement"
               dateTime={beginningDate}
-              disabled={isOfferSynchronized || !isStockEditable}
+              disabled={isOfferDisabled || isOfferSynchronized || !isStockEditable}
               inError={'beginningDate' in errors}
               minDateTime={today}
               onChange={changeBeginningDate}
@@ -156,7 +156,7 @@ const StockItem = ({
             <TimeInput
               ariaLabel="Heure de l’événement"
               dateTime={beginningTime}
-              disabled={isOfferSynchronized || !isStockEditable}
+              disabled={isOfferDisabled || isOfferSynchronized || !isStockEditable}
               inError={'beginningTime' in errors}
               onChange={changeBeginningHour}
             />
@@ -169,7 +169,11 @@ const StockItem = ({
           className={`it-input ${priceValue ? 'with-euro-icon' : ''} ${
             'price' in errors ? 'error' : ''
           }`}
-          disabled={(isOfferSynchronized && !isOfferSynchronizedWithAllocine) || !isStockEditable}
+          disabled={
+            isOfferDisabled ||
+            (isOfferSynchronized && !isOfferSynchronizedWithAllocine) ||
+            !isStockEditable
+          }
           name="price"
           onChange={changePrice}
           placeholder="Gratuit"
@@ -181,7 +185,11 @@ const StockItem = ({
         <DateInput
           ariaLabel="Date limite de réservation"
           dateTime={bookingLimitDatetime}
-          disabled={(isOfferSynchronized && !isOfferSynchronizedWithAllocine) || !isStockEditable}
+          disabled={
+            isOfferDisabled ||
+            (isOfferSynchronized && !isOfferSynchronizedWithAllocine) ||
+            !isStockEditable
+          }
           maxDateTime={beginningDate}
           onChange={changeBookingLimitDatetime}
           openingDateTime={today}
@@ -191,7 +199,11 @@ const StockItem = ({
         <input
           aria-label="Quantité"
           className={`it-input ${'quantity' in errors ? 'error' : ''}`}
-          disabled={(isOfferSynchronized && !isOfferSynchronizedWithAllocine) || !isStockEditable}
+          disabled={
+            isOfferDisabled ||
+            (isOfferSynchronized && !isOfferSynchronizedWithAllocine) ||
+            !isStockEditable
+          }
           name="quantity"
           onChange={changeTotalQuantity}
           placeholder="Illimité"
@@ -209,7 +221,7 @@ const StockItem = ({
         <button
           className="tertiary-button"
           data-testid="stock-delete-button"
-          disabled={!isStockDeletable || isDeleting}
+          disabled={isOfferDisabled || !isStockDeletable || isDeleting}
           onClick={isNewStock ? removeNewStockLine : askDeletionConfirmation}
           title={computeStockDeleteButtonTitle()}
           type="button"
@@ -231,6 +243,7 @@ const StockItem = ({
 StockItem.defaultProps = {
   departmentCode: '',
   errors: {},
+  isDisabled: false,
   isNewStock: false,
   lastProvider: null,
   removeStockInCreation: null,
@@ -250,6 +263,7 @@ StockItem.propTypes = {
     quantity: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     updated: PropTypes.bool,
   }).isRequired,
+  isDisabled: PropTypes.bool,
   isEvent: PropTypes.bool.isRequired,
   isNewStock: PropTypes.bool,
   lastProvider: PropTypes.shape(),

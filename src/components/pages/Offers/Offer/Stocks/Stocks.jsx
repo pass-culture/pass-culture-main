@@ -4,20 +4,21 @@ import { Link } from 'react-router-dom'
 import { v4 as generateRandomUuid } from 'uuid'
 
 import PageTitle from 'components/layout/PageTitle/PageTitle'
-import { ReactComponent as AddStockSvg } from 'icons/ico-plus.svg'
-import * as pcapi from 'repository/pcapi/pcapi'
-
-import { OFFER_STATUS } from '../../Offers/domain/offerStatus'
-import OfferStatusBanner from '../OfferDetails/OfferStatusBanner/OfferStatusBanner'
-
-import { EVENT_CANCELLATION_INFORMATION, THING_CANCELLATION_INFORMATION } from './_constants'
+import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
+import OfferStatusBanner from 'components/pages/Offers/Offer/OfferDetails/OfferStatusBanner/OfferStatusBanner'
+import {
+  EVENT_CANCELLATION_INFORMATION,
+  THING_CANCELLATION_INFORMATION,
+} from 'components/pages/Offers/Offer/Stocks/_constants'
 import {
   createStockPayload,
   formatAndSortStocks,
   validateCreatedStock,
   validateUpdatedStock,
-} from './StockItem/domain'
-import StockItem from './StockItem/StockItem'
+} from 'components/pages/Offers/Offer/Stocks/StockItem/domain'
+import StockItem from 'components/pages/Offers/Offer/Stocks/StockItem/StockItem'
+import { ReactComponent as AddStockSvg } from 'icons/ico-plus.svg'
+import * as pcapi from 'repository/pcapi/pcapi'
 
 const Stocks = ({ offer, showErrorNotification, showSuccessNotification }) => {
   const offerId = offer.id
@@ -151,16 +152,13 @@ const Stocks = ({ offer, showErrorNotification, showSuccessNotification }) => {
     return null
   }
 
-  const offerStatus = offer.status
-  const needsStatusInfosMessage = offer.status
-    ? [OFFER_STATUS.REJECTED, OFFER_STATUS.AWAITING].includes(offerStatus)
-    : false
+  const isDisabled = offer.status ? isOfferDisabled(offer.status) : false
 
   return (
     <div className="stocks-page">
       <PageTitle title="Vos stocks" />
 
-      {needsStatusInfosMessage && <OfferStatusBanner status={offerStatus} />}
+      {isDisabled && <OfferStatusBanner status={offer.status} />}
 
       <h3 className="section-title">
         {'Stock et prix'}
@@ -172,6 +170,7 @@ const Stocks = ({ offer, showErrorNotification, showSuccessNotification }) => {
       {stocks.length === 0 ? (
         <button
           className="primary-button with-icon add-first-stock-button"
+          disabled={isDisabled}
           onClick={addNewStock}
           type="button"
         >
@@ -183,7 +182,7 @@ const Stocks = ({ offer, showErrorNotification, showSuccessNotification }) => {
           {offer.isEvent && (
             <button
               className="tertiary-button with-icon"
-              disabled={hasOfferThingOneStockAlready || isOfferSynchronized}
+              disabled={isDisabled || hasOfferThingOneStockAlready || isOfferSynchronized}
               onClick={addNewStock}
               type="button"
             >
@@ -246,6 +245,7 @@ const Stocks = ({ offer, showErrorNotification, showSuccessNotification }) => {
                   departmentCode={offer.venue.departementCode}
                   errors={formErrors[stock.key]}
                   initialStock={stock}
+                  isDisabled={isDisabled}
                   isEvent={offer.isEvent}
                   key={stock.id}
                   lastProvider={offer.lastProvider}
@@ -266,6 +266,7 @@ const Stocks = ({ offer, showErrorNotification, showSuccessNotification }) => {
             </Link>
             <button
               className="primary-button"
+              disabled={isDisabled}
               onClick={submitStocks}
               type="button"
             >

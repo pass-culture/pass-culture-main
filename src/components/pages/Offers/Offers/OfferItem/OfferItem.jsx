@@ -4,12 +4,11 @@ import { Link } from 'react-router-dom'
 
 import Icon from 'components/layout/Icon'
 import Thumb from 'components/layout/Thumb'
+import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import OfferStatus from 'components/pages/Offers/Offer/OfferStatus/OfferStatus'
+import { OFFER_STATUS } from 'components/pages/Offers/Offers/domain/offerStatus'
 import { computeVenueDisplayName } from 'repository/venuesService'
 import { pluralize } from 'utils/pluralize'
-
-import { OFFER_STATUS } from "../domain/offerStatus"
-
 
 const OfferItem = ({ disabled, offer, stocks, venue, isSelected, selectOffer }) => {
   function handleOnChangeSelected() {
@@ -39,15 +38,17 @@ const OfferItem = ({ disabled, offer, stocks, venue, isSelected, selectOffer }) 
   return (
     <tr className={`offer-item ${isOfferInactiveOrExpired ? 'inactive' : ''} offer-row`}>
       <td className="select-column">
-        <input
-          checked={isSelected}
-          className="select-offer-checkbox"
-          data-testid={`select-offer-${offer.id}`}
-          disabled={disabled}
-          id={`select-offer-${offer.id}`}
-          onChange={handleOnChangeSelected}
-          type="checkbox"
-        />
+        {!isOfferDisabled(offer.status) && (
+          <input
+            checked={isSelected}
+            className="select-offer-checkbox"
+            data-testid={`select-offer-${offer.id}`}
+            disabled={disabled}
+            id={`select-offer-${offer.id}`}
+            onChange={handleOnChangeSelected}
+            type="checkbox"
+          />
+        )}
       </td>
       <td className="thumb-column">
         <Link

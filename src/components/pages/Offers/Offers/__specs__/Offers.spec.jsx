@@ -5,11 +5,6 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
-import * as pcapi from 'repository/pcapi/pcapi'
-import { fetchAllVenuesByProUser } from 'repository/venuesService'
-import { configureTestStore } from 'store/testUtils'
-import { queryByTextTrimHtml, renderWithStyles } from 'utils/testHelpers'
-
 import {
   ALL_OFFERERS,
   ALL_OFFERS,
@@ -23,8 +18,12 @@ import {
   DEFAULT_CREATION_MODE,
   DEFAULT_PAGE,
   DEFAULT_SEARCH_FILTERS,
-} from '../_constants'
-import Offers from '../Offers'
+} from 'components/pages/Offers/Offers/_constants'
+import Offers from 'components/pages/Offers/Offers/Offers'
+import * as pcapi from 'repository/pcapi/pcapi'
+import { fetchAllVenuesByProUser } from 'repository/venuesService'
+import { configureTestStore } from 'store/testUtils'
+import { queryByTextTrimHtml, renderWithStyles } from 'utils/testHelpers'
 
 const mountOffers = (props, store) => {
   return mount(
@@ -808,6 +807,38 @@ describe('src | components | pages | Offers | Offers', () => {
             expect(selectAllOffersCheckbox).not.toBeDisabled()
           })
         })
+      })
+    })
+
+    describe('when fraud detection', () => {
+      it('should remove checkbox when offer is rejected or awaiting for validation', async () => {
+        // Given
+        props.currentUser.isAdmin = false
+        props.offers = [
+          {
+            id: 'ORE',
+            isActive: false,
+            status: 'REJECTED',
+          },
+          {
+            id: 'OAW',
+            isActive: true,
+            status: 'AWAITING',
+          },
+          {
+            id: 'OAC',
+            isActive: true,
+            status: 'ACTIVE',
+          },
+        ]
+
+        // When
+        await renderOffers(props, store)
+
+        // Then
+        expect(screen.queryByTestId('select-offer-ORE')).not.toBeInTheDocument()
+        expect(screen.queryByTestId('select-offer-OAW')).not.toBeInTheDocument()
+        expect(screen.queryByTestId('select-offer-OAC')).toBeInTheDocument()
       })
     })
   })
