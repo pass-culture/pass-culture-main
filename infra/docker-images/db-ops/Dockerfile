@@ -25,7 +25,6 @@ ENV PATH="/usr/local/bin/google-cloud-sdk/bin:$PATH"
 
 COPY ./dump_restore.sh /scripts/dump_restore.sh
 COPY ./anonymize.sql /scripts/anonymize.sql
-COPY ./data_pass-culture-api-staging.csv /scripts/data_pass-culture-api-staging.csv
 
 RUN chmod 700 /scripts/dump_restore.sh
 
