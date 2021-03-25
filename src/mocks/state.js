@@ -8,11 +8,11 @@ const state = {
     departementCode: '93',
     email: 'pctest.jeune.93@example.com',
     deposit_version: 1,
-    expenses: [
-      { domain: 'all', current: 230, limit: 500 },
-      { domain: 'digital', current: 0, limit: 200 },
-      { domain: 'physical', current: 0, limit: 200 },
-    ],
+    domainsCredit: {
+      all: { initial: 500, remaining: 270 },
+      digital: { initial: 200, remaining: 200 },
+      physical: { initial: 200, remaining: 200 },
+    },
     firstName: 'PC Test',
     isAdmin: false,
     lastName: 'Jeune 93',
@@ -305,11 +305,11 @@ const state = {
     departementCode: '93',
     email: 'pctest.jeune.93@example.com',
     deposit_version: 1,
-    expenses: [
-      { domain: 'all', current: 230, limit: 500 },
-      { domain: 'digital', current: 0, limit: 200 },
-      { domain: 'physical', current: 0, limit: 100 },
-    ],
+    domainsCredit: {
+      all: { initial: 500, remaining: 270 },
+      digital: { initial: 200, remaining: 200 },
+      physical: { initial: 200, remaining: 200 },
+    },
     firstName: 'PC Test',
     isAdmin: false,
     lastName: 'Jeune 93',

@@ -76,11 +76,11 @@ describe('src | components | MainView', () => {
       user: new User({
         deposit_version: 1,
         email: 'john.doe@example.fr',
-        expenses: [
-          { domain: 'all', current: 287, limit: 500 },
-          { domain: 'digital', current: 11, limit: 200 },
-          { domain: 'physical', current: 23, limit: 200 },
-        ],
+        domainsCredit: {
+          all: { initial: 500, remaining: 213 },
+          digital: { initial: 200, remaining: 189 },
+          physical: { initial: 200, remaining: 177 },
+        },
         firstName: 'PC Test Jeune',
         publicName: 'Iron Man',
         wallet_balance: 200.1,
@@ -277,11 +277,11 @@ describe('src | components | MainView', () => {
     props.user = new User({
       deposit_version: 1,
       email: 'john.doe@example.fr',
-      expenses: [
-        { domain: 'all', current: 287, limit: 500 },
-        { domain: 'digital', current: 11, limit: 200 },
-        { domain: 'physical', current: 23, limit: 200 },
-      ],
+      domainsCredit: {
+        all: { initial: 500, remaining: 213 },
+        digital: { initial: 200, remaining: 189 },
+        physical: { initial: 200, remaining: 177 },
+      },
       firstName: 'PC Test Jeune',
       publicName: 'Iron Man',
       wallet_balance: 200.1,

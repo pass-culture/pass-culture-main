@@ -2,8 +2,8 @@ export default class User {
   constructor(user = {}) {
     this.departementCode = user.departementCode
     this.deposit_version = user.deposit_version
+    this.domainsCredit = user.domainsCredit
     this.email = user.email
-    this.expenses = user.expenses
     this.firstName = user.firstName
     this.id = user.id
     this.pk = user.pk

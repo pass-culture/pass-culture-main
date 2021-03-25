@@ -33,7 +33,7 @@ describe('currentUser selector', () => {
           new User({
             departementCode: undefined,
             email: undefined,
-            expenses: undefined,
+            domainsCredit: undefined,
             firstName: undefined,
             id: 'EF',
             lastName: undefined,
