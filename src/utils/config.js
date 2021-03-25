@@ -1,9 +1,3 @@
-import moment from 'moment'
-import 'moment/locale/fr'
-import 'moment-timezone'
-
-moment.locale('fr-fr')
-
 const NODE_ENV = process.env.NODE_ENV || 'development'
 // NOTE -> le script PC remplace
 // la valeur de `LAST_DEPLOYED_COMMIT`

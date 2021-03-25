@@ -8,7 +8,6 @@ const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin')
 const ESLintPlugin = require('eslint-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const MomentTimezoneDataPlugin = require('moment-timezone-data-webpack-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const PnpWebpackPlugin = require('pnp-webpack-plugin')
 const postcssNormalize = require('postcss-normalize')
@@ -618,12 +617,6 @@ module.exports = function (webpackEnv) {
           }
         },
       }),
-      // Moment.js is an extremely popular library that bundles large locale files
-      // by default due to how webpack interprets its code. This is a practical
-      // solution that requires the user to opt into importing specific locales.
-      // https://github.com/jmblog/how-to-optimize-momentjs-with-webpack
-      // You can remove this if you don't use Moment.js:
-      new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
       // Generate a service worker script that will precache, and keep up to date,
       // the HTML & assets that are part of the webpack build.
       isEnvProduction &&
@@ -681,22 +674,6 @@ module.exports = function (webpackEnv) {
             }),
           },
         },
-      }),
-      new MomentTimezoneDataPlugin({
-        matchZones: [
-          'America/Cayenne',
-          'America/Guadeloupe',
-          'America/Martinique',
-          'America/Miquelon',
-          'America/St_Barthelemy',
-          'Europe/Paris',
-          'Indian/Mayotte',
-          'Indian/Reunion',
-          'Pacific/Noumea',
-          'Pacific/Pitcairn',
-          'Pacific/Tahiti',
-          'Pacific/Wallis',
-        ],
       }),
     ].filter(Boolean),
     // Some libraries import Node modules but don't use them in the browser.
