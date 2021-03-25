@@ -317,103 +317,47 @@ def _serialize_date_with_timezone(date_without_timezone: datetime, booking: Abst
 
 
 def _serialize_booking_recap(booking: AbstractKeyedTuple) -> BookingRecap:
+    kwargs = {
+        "offer_identifier": booking.offerId,
+        "offer_name": booking.offerName,
+        "offerer_name": booking.offererName,
+        "beneficiary_email": booking.beneficiaryEmail,
+        "beneficiary_firstname": booking.beneficiaryFirstname,
+        "beneficiary_lastname": booking.beneficiaryLastname,
+        "booking_amount": booking.bookingAmount,
+        "booking_token": booking.bookingToken,
+        "booking_date": _serialize_date_with_timezone(booking.bookingDate, booking),
+        "booking_is_used": booking.isUsed,
+        "booking_is_cancelled": booking.isCancelled,
+        "booking_is_confirmed": False,
+        "booking_is_reimbursed": booking.paymentStatus == TransactionStatus.SENT,
+        "booking_is_duo": booking.quantity == DUO_QUANTITY,
+        "venue_identifier": booking.venueId,
+        "date_used": _serialize_date_with_timezone(booking.dateUsed, booking),
+        "payment_date": _serialize_date_with_timezone(booking.paymentDate, booking),
+        "cancellation_date": _serialize_date_with_timezone(booking.cancellationDate, booking=booking),
+        "confirmation_date": None,
+        "venue_name": booking.venuePublicName if booking.venuePublicName else booking.venueName,
+        "venue_is_virtual": booking.venueIsVirtual,
+    }
+
     if booking.stockBeginningDatetime:
-        return _serialize_event_booking_recap(booking)
+        klass = EventBookingRecap
+        kwargs.update(
+            event_beginning_datetime=_apply_departement_timezone(
+                booking.stockBeginningDatetime, booking.venueDepartementCode
+            ),
+            booking_is_confirmed=booking.isConfirmed,
+            confirmation_date=_serialize_date_with_timezone(booking.confirmationDate, booking),
+        )
 
-    if booking.offerExtraData and "isbn" in booking.offerExtraData:
-        return _serialize_book_booking_recap(booking)
+    elif booking.offerExtraData and "isbn" in booking.offerExtraData:
+        klass = BookBookingRecap
+        kwargs["offer_isbn"] = booking.offerExtraData["isbn"]
+    else:
+        klass = ThingBookingRecap
 
-    return _serialize_thing_booking_recap(booking)
-
-
-def _serialize_thing_booking_recap(booking: AbstractKeyedTuple) -> ThingBookingRecap:
-    return ThingBookingRecap(
-        offer_identifier=booking.offerId,
-        offer_name=booking.offerName,
-        offerer_name=booking.offererName,
-        beneficiary_email=booking.beneficiaryEmail,
-        beneficiary_firstname=booking.beneficiaryFirstname,
-        beneficiary_lastname=booking.beneficiaryLastname,
-        booking_amount=booking.bookingAmount,
-        booking_token=booking.bookingToken,
-        booking_date=_serialize_date_with_timezone(date_without_timezone=booking.bookingDate, booking=booking),
-        booking_is_used=booking.isUsed,
-        booking_is_cancelled=booking.isCancelled,
-        booking_is_confirmed=False,
-        booking_is_reimbursed=booking.paymentStatus == TransactionStatus.SENT,
-        booking_is_duo=booking.quantity == DUO_QUANTITY,
-        venue_identifier=booking.venueId,
-        date_used=_serialize_date_with_timezone(date_without_timezone=booking.dateUsed, booking=booking),
-        payment_date=_serialize_date_with_timezone(date_without_timezone=booking.paymentDate, booking=booking),
-        cancellation_date=_serialize_date_with_timezone(
-            date_without_timezone=booking.cancellationDate, booking=booking
-        ),
-        confirmation_date=None,
-        venue_name=booking.venuePublicName if booking.venuePublicName else booking.venueName,
-        venue_is_virtual=booking.venueIsVirtual,
-    )
-
-
-def _serialize_book_booking_recap(booking: AbstractKeyedTuple) -> BookBookingRecap:
-    return BookBookingRecap(
-        offer_identifier=booking.offerId,
-        offer_name=booking.offerName,
-        offerer_name=booking.offererName,
-        offer_isbn=booking.offerExtraData["isbn"],
-        beneficiary_email=booking.beneficiaryEmail,
-        beneficiary_firstname=booking.beneficiaryFirstname,
-        beneficiary_lastname=booking.beneficiaryLastname,
-        booking_amount=booking.bookingAmount,
-        booking_token=booking.bookingToken,
-        booking_date=_serialize_date_with_timezone(date_without_timezone=booking.bookingDate, booking=booking),
-        booking_is_used=booking.isUsed,
-        booking_is_cancelled=booking.isCancelled,
-        booking_is_confirmed=False,
-        booking_is_reimbursed=booking.paymentStatus == TransactionStatus.SENT,
-        booking_is_duo=booking.quantity == DUO_QUANTITY,
-        venue_identifier=booking.venueId,
-        date_used=_serialize_date_with_timezone(date_without_timezone=booking.dateUsed, booking=booking),
-        payment_date=_serialize_date_with_timezone(date_without_timezone=booking.paymentDate, booking=booking),
-        cancellation_date=_serialize_date_with_timezone(
-            date_without_timezone=booking.cancellationDate, booking=booking
-        ),
-        confirmation_date=None,
-        venue_name=booking.venuePublicName if booking.venuePublicName else booking.venueName,
-        venue_is_virtual=booking.venueIsVirtual,
-    )
-
-
-def _serialize_event_booking_recap(booking: AbstractKeyedTuple) -> EventBookingRecap:
-    return EventBookingRecap(
-        offer_identifier=booking.offerId,
-        offer_name=booking.offerName,
-        offerer_name=booking.offererName,
-        beneficiary_email=booking.beneficiaryEmail,
-        beneficiary_firstname=booking.beneficiaryFirstname,
-        beneficiary_lastname=booking.beneficiaryLastname,
-        booking_amount=booking.bookingAmount,
-        booking_token=booking.bookingToken,
-        booking_date=_serialize_date_with_timezone(date_without_timezone=booking.bookingDate, booking=booking),
-        booking_is_used=booking.isUsed,
-        booking_is_cancelled=booking.isCancelled,
-        booking_is_confirmed=booking.isConfirmed,
-        booking_is_reimbursed=booking.paymentStatus == TransactionStatus.SENT,
-        booking_is_duo=booking.quantity == DUO_QUANTITY,
-        event_beginning_datetime=_apply_departement_timezone(
-            naive_datetime=booking.stockBeginningDatetime, departement_code=booking.venueDepartementCode
-        ),
-        date_used=_serialize_date_with_timezone(date_without_timezone=booking.dateUsed, booking=booking),
-        confirmation_date=_serialize_date_with_timezone(
-            date_without_timezone=booking.confirmationDate, booking=booking
-        ),
-        payment_date=_serialize_date_with_timezone(date_without_timezone=booking.paymentDate, booking=booking),
-        cancellation_date=_serialize_date_with_timezone(
-            date_without_timezone=booking.cancellationDate, booking=booking
-        ),
-        venue_identifier=booking.venueId,
-        venue_name=booking.venuePublicName if booking.venuePublicName else booking.venueName,
-        venue_is_virtual=booking.venueIsVirtual,
-    )
+    return klass(**kwargs)
 
 
 def _find_bookings_eligible_for_payment() -> Query:
