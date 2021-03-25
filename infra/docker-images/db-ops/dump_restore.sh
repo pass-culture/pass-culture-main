@@ -103,7 +103,7 @@ if [ "$IMPORT_DATA" = "true" ];then
     # Check is an operation is still running on the instance before continuing
     echo "Starting: gcloud sql operations list $(echo_time)"
     while [[ $(import_running_output) != "" ]];do
-        echo "Import operations currently running
+        echo "Import operations currently running"
         sleep 300
     done
     echo "Ended: gcloud sql operations list $(echo_time)"
