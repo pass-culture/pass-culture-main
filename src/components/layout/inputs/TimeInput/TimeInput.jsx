@@ -1,43 +1,10 @@
 import * as PropTypes from 'prop-types'
-import React, { useCallback } from 'react'
+import React from 'react'
 import DatePicker from 'react-datepicker'
 
 import InputWithCalendar from 'components/layout/inputs/PeriodSelector/InputWithCalendar'
-import {
-  getLocalDepartementDateTimeFromUtc,
-  getUtcDateTimeFromLocalDepartement,
-} from 'utils/timezone'
 
-const TimeInput = ({
-  ariaLabel,
-  departmentCode,
-  disabled,
-  inError,
-  onChange,
-  utcDateIsoFormat,
-}) => {
-  const getDepartementDateTime = date => {
-    if (date) {
-      return getLocalDepartementDateTimeFromUtc(date, departmentCode)
-    }
-    return undefined
-  }
-
-  const onChangeWrapper = useCallback(
-    dateTimeInDepartementTimezone => {
-      if (dateTimeInDepartementTimezone) {
-        const dateTimeInUtcTimezone = getUtcDateTimeFromLocalDepartement(
-          dateTimeInDepartementTimezone,
-          departmentCode
-        )
-        onChange(dateTimeInUtcTimezone)
-      } else {
-        onChange(null)
-      }
-    },
-    [departmentCode, onChange]
-  )
-
+const TimeInput = ({ ariaLabel, disabled, inError, onChange, dateTime }) => {
   return (
     <DatePicker
       className="datetime-input"
@@ -52,9 +19,9 @@ const TimeInput = ({
       dateFormat="HH:mm"
       disabled={disabled}
       dropdownMode="scroll"
-      onChange={onChangeWrapper}
+      onChange={onChange}
       placeholderText="HH:MM"
-      selected={getDepartementDateTime(utcDateIsoFormat)}
+      selected={dateTime}
       showTimeSelect
       showTimeSelectOnly
       timeCaption="Horaire"
@@ -66,17 +33,17 @@ const TimeInput = ({
 
 TimeInput.defaultProps = {
   ariaLabel: undefined,
+  dateTime: null,
   disabled: false,
   inError: false,
 }
 
 TimeInput.propTypes = {
   ariaLabel: PropTypes.string,
-  departmentCode: PropTypes.string.isRequired,
+  dateTime: PropTypes.instanceOf(Date),
   disabled: PropTypes.bool,
   inError: PropTypes.bool,
   onChange: PropTypes.func.isRequired,
-  utcDateIsoFormat: PropTypes.string.isRequired,
 }
 
 export default TimeInput

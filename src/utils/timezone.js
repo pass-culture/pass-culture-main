@@ -9,8 +9,13 @@ export const formatLocalTimeDateString = (
   return format(zonedDate, dateFormat, { timeZone: getDepartmentTimezone(departementCode) })
 }
 
-export const getLocalDepartementDateTimeFromUtc = (date, departementCode) =>
-  utcToZonedTime(date, getDepartmentTimezone(departementCode))
+export const getLocalDepartementDateTimeFromUtc = (date, departementCode) => {
+  if (date) {
+    return utcToZonedTime(date, getDepartmentTimezone(departementCode))
+  } else {
+    return null
+  }
+}
 
 export const getUtcDateTimeFromLocalDepartement = (zonedDate, departementCode) =>
   zonedTimeToUtc(zonedDate, getDepartmentTimezone(departementCode))

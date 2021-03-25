@@ -1,48 +1,19 @@
 import * as PropTypes from 'prop-types'
-import React, { useCallback } from 'react'
+import React from 'react'
 import DatePicker from 'react-datepicker'
 
 import InputWithCalendar from 'components/layout/inputs/PeriodSelector/InputWithCalendar'
-import {
-  getLocalDepartementDateTimeFromUtc,
-  getUtcDateTimeFromLocalDepartement,
-} from 'utils/timezone'
 
 const DateInput = ({
   ariaLabel,
-  departmentCode,
   disabled,
   inError,
-  maxUtcDateIsoFormat,
-  minUtcDateIsoFormat,
-  openingUtcDateIsoFormat,
+  maxDateTime,
+  minDateTime,
+  openingDateTime,
   onChange,
-  utcDateIsoFormat,
+  dateTime,
 }) => {
-  const getDepartementDateTime = date => {
-    if (date) {
-      return getLocalDepartementDateTimeFromUtc(date, departmentCode)
-    }
-    return undefined
-  }
-
-  const selectedDate = getDepartementDateTime(utcDateIsoFormat)
-
-  const onChangeWrapper = useCallback(
-    dateTimeInDepartementTimezone => {
-      if (dateTimeInDepartementTimezone) {
-        const dateTimeInUtcTimezone = getUtcDateTimeFromLocalDepartement(
-          dateTimeInDepartementTimezone,
-          departmentCode
-        )
-        onChange(dateTimeInUtcTimezone)
-      } else {
-        onChange(null)
-      }
-    },
-    [departmentCode, onChange]
-  )
-
   return (
     <DatePicker
       className="datetime-input"
@@ -55,36 +26,35 @@ const DateInput = ({
       dateFormat="dd/MM/yyyy"
       disabled={disabled}
       dropdownMode="scroll"
-      maxDate={getDepartementDateTime(maxUtcDateIsoFormat)}
-      minDate={getDepartementDateTime(minUtcDateIsoFormat)}
-      onChange={onChangeWrapper}
-      openToDate={selectedDate ? selectedDate : getDepartementDateTime(openingUtcDateIsoFormat)}
+      maxDate={maxDateTime}
+      minDate={minDateTime}
+      onChange={onChange}
+      openToDate={dateTime ? dateTime : openingDateTime}
       placeholderText="JJ/MM/AAAA"
-      selected={selectedDate}
+      selected={dateTime}
     />
   )
 }
 
 DateInput.defaultProps = {
   ariaLabel: undefined,
-  departmentCode: '',
+  dateTime: null,
   disabled: false,
   inError: false,
-  maxUtcDateIsoFormat: undefined,
-  minUtcDateIsoFormat: undefined,
-  utcDateIsoFormat: null,
+  maxDateTime: undefined,
+  minDateTime: undefined,
+  openingDateTime: undefined,
 }
 
 DateInput.propTypes = {
   ariaLabel: PropTypes.string,
-  departmentCode: PropTypes.string,
+  dateTime: PropTypes.instanceOf(Date),
   disabled: PropTypes.bool,
   inError: PropTypes.bool,
-  maxUtcDateIsoFormat: PropTypes.string,
-  minUtcDateIsoFormat: PropTypes.string,
+  maxDateTime: PropTypes.instanceOf(Date),
+  minDateTime: PropTypes.instanceOf(Date),
   onChange: PropTypes.func.isRequired,
-  openingUtcDateIsoFormat: PropTypes.string.isRequired,
-  utcDateIsoFormat: PropTypes.string,
+  openingDateTime: PropTypes.instanceOf(Date),
 }
 
 export default DateInput

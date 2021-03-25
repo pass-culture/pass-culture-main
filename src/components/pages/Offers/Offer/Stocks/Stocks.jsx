@@ -32,12 +32,15 @@ const Stocks = ({ offer, showErrorNotification, showSuccessNotification }) => {
       return pcapi.loadStocks(offerId).then(receivedStocks => {
         setStocks(oldStocks => {
           const stocksOnCreation = keepCreationStocks ? oldStocks.filter(stock => !stock.id) : []
-          return [...stocksOnCreation, ...formatAndSortStocks(receivedStocks.stocks)]
+          return [
+            ...stocksOnCreation,
+            ...formatAndSortStocks(receivedStocks.stocks, offer.venue.departementCode),
+          ]
         })
         setIsLoading(false)
       })
     },
-    [offerId]
+    [offerId, offer.venue.departementCode]
   )
 
   const onDelete = useCallback(() => {
@@ -59,10 +62,10 @@ const Stocks = ({ offer, showErrorNotification, showSuccessNotification }) => {
       key: generateRandomUuid(),
       price: 0,
       quantity: null,
-      bookingLimitDatetime: '',
+      bookingLimitDatetime: null,
     }
     if (offer.isEvent) {
-      newStock.beginningDatetime = ''
+      newStock.beginningDatetime = null
     }
     setStocks(currentStocks => [newStock, ...currentStocks])
   }, [offer.isEvent])

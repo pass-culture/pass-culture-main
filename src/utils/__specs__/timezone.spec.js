@@ -40,7 +40,7 @@ describe('formatLocalTimeDateString', () => {
   })
 })
 
-describe('getTimezone', () => {
+describe('getDepartmentTimezone', () => {
   it('should return Paris timezone for Paris', () => {
     // given
     const departementCode = '75'

@@ -1,4 +1,4 @@
-/* eslint-disable react/prop-types */
+import { isAfter } from 'date-fns'
 import PropTypes from 'prop-types'
 import React, { Fragment, useCallback, useEffect, useState } from 'react'
 
@@ -7,6 +7,7 @@ import TimeInput from 'components/layout/inputs/TimeInput/TimeInput'
 import { isAllocineProvider } from 'components/pages/Offers/domain/localProvider'
 import DeleteStockDialogContainer from 'components/pages/Offers/Offer/Stocks/DeleteStockDialog/DeleteStockDialogContainer'
 import { getToday } from 'utils/date'
+import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import { ReactComponent as DeleteStockIcon } from './assets/delete-stock.svg'
 import { hasStockBeenUpdated } from './domain'
@@ -22,7 +23,7 @@ const StockItem = ({
   removeStockInCreation,
   initialStock,
 }) => {
-  const today = getToday().toISOString()
+  const today = getLocalDepartementDateTimeFromUtc(getToday(), departmentCode)
 
   const [isDeleting, setIsDeleting] = useState(false)
   const [beginningDate, setBeginningDate] = useState(initialStock.beginningDatetime)
@@ -41,15 +42,16 @@ const StockItem = ({
         price: initialStock.price,
         quantity: initialStock.quantity,
       }
-      const updatedStock = {
+      let updatedStock = {
         key: initialStock.key,
-        beginningDate,
-        beginningTime,
         bookingLimitDatetime,
         price,
         quantity: totalQuantity,
       }
-      if (hasStockBeenUpdated(initialValues, updatedStock)) {
+      if (isEvent) {
+        updatedStock = { ...updatedStock, beginningDate, beginningTime }
+      }
+      if (isNewStock || hasStockBeenUpdated(initialValues, updatedStock)) {
         onChange(updatedStock)
       }
     },
@@ -62,45 +64,37 @@ const StockItem = ({
       initialStock.key,
       initialStock.price,
       initialStock.quantity,
+      isEvent,
+      isNewStock,
       onChange,
       price,
       totalQuantity,
     ]
   )
 
-  const getSelectedDatetime = useCallback(dateTime => (dateTime ? dateTime.toISOString() : ''), [])
-
   const changeBeginningDate = useCallback(
-    dateTime => {
-      if (dateTime) {
-        const selectedDatetime = getSelectedDatetime(dateTime)
-        setBeginningDate(selectedDatetime)
-        if (bookingLimitDatetime > selectedDatetime) {
-          setBookingLimitDatetime(selectedDatetime)
+    selectedDateTime => {
+      if (selectedDateTime) {
+        setBeginningDate(selectedDateTime)
+        if (isAfter(bookingLimitDatetime, selectedDateTime)) {
+          setBookingLimitDatetime(selectedDateTime)
         }
       } else {
-        setBeginningDate('')
+        setBeginningDate(null)
       }
     },
-    [bookingLimitDatetime, getSelectedDatetime]
+    [bookingLimitDatetime]
   )
 
-  const changeBeginningHour = useCallback(
-    dateTime => {
-      if (dateTime) {
-        const selectedTime = getSelectedDatetime(dateTime)
-        setBeginningTime(selectedTime)
-      } else {
-        setBeginningTime('')
-      }
-    },
-    [getSelectedDatetime]
-  )
+  const changeBeginningHour = useCallback(selectedTime => {
+    if (selectedTime) {
+      setBeginningTime(selectedTime)
+    } else {
+      setBeginningTime(null)
+    }
+  }, [])
 
-  const changeBookingLimitDatetime = useCallback(
-    dateTime => setBookingLimitDatetime(dateTime ? dateTime.toISOString() : ''),
-    []
-  )
+  const changeBookingLimitDatetime = useCallback(dateTime => setBookingLimitDatetime(dateTime), [])
 
   const changePrice = useCallback(event => setPrice(event.target.value), [])
 
@@ -112,7 +106,7 @@ const StockItem = ({
   const totalQuantityValue = totalQuantity !== null ? totalQuantity : ''
   const computedRemainingQuantity = totalQuantityValue - initialStock.bookingsQuantity
   const remainingQuantityValue = totalQuantityValue !== '' ? computedRemainingQuantity : 'Illimité'
-  const isEventStockEditable = initialStock.updated || beginningDate > today
+  const isEventStockEditable = initialStock.updated || isAfter(beginningDate, today)
   const isOfferSynchronized = lastProvider !== null
   const isOfferSynchronizedWithAllocine = isAllocineProvider(lastProvider)
   const isThingStockEditable = !isOfferSynchronized
@@ -150,23 +144,21 @@ const StockItem = ({
           <td>
             <DateInput
               ariaLabel="Date de l’événement"
-              departmentCode={departmentCode}
+              dateTime={beginningDate}
               disabled={isOfferSynchronized || !isStockEditable}
               inError={'beginningDate' in errors}
-              minUtcDateIsoFormat={today}
+              minDateTime={today}
               onChange={changeBeginningDate}
-              openingUtcDateIsoFormat={today}
-              utcDateIsoFormat={beginningDate}
+              openingDateTime={today}
             />
           </td>
           <td className="resized-input">
             <TimeInput
               ariaLabel="Heure de l’événement"
-              departmentCode={departmentCode}
+              dateTime={beginningTime}
               disabled={isOfferSynchronized || !isStockEditable}
               inError={'beginningTime' in errors}
               onChange={changeBeginningHour}
-              utcDateIsoFormat={beginningTime}
             />
           </td>
         </Fragment>
@@ -188,12 +180,11 @@ const StockItem = ({
       <td className={`${!isEvent ? 'resized-input' : ''}`}>
         <DateInput
           ariaLabel="Date limite de réservation"
-          departmentCode={departmentCode}
+          dateTime={bookingLimitDatetime}
           disabled={(isOfferSynchronized && !isOfferSynchronizedWithAllocine) || !isStockEditable}
-          maxUtcDateIsoFormat={beginningDate}
+          maxDateTime={beginningDate}
           onChange={changeBookingLimitDatetime}
-          openingUtcDateIsoFormat={today}
-          utcDateIsoFormat={bookingLimitDatetime}
+          openingDateTime={today}
         />
       </td>
       <td className="resized-input input-text">
@@ -253,10 +244,11 @@ StockItem.propTypes = {
     key: PropTypes.string,
     bookingsQuantity: PropTypes.number,
     isEventDeletable: PropTypes.bool,
-    beginningDatetime: PropTypes.string,
-    bookingLimitDatetime: PropTypes.string,
+    beginningDatetime: PropTypes.instanceOf(Date),
+    bookingLimitDatetime: PropTypes.instanceOf(Date),
     price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     quantity: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    updated: PropTypes.bool,
   }).isRequired,
   isEvent: PropTypes.bool.isRequired,
   isNewStock: PropTypes.bool,

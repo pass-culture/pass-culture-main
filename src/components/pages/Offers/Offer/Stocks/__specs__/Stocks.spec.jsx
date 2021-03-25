@@ -1979,10 +1979,8 @@ describe('stocks page', () => {
           price: 15,
           remainingQuantity: 15,
           bookingsQuantity: 0,
-          beginningDatetime: '2020-12-24T23:00:00Z',
           bookingLimitDatetime: '2020-12-22T23:59:59Z',
           id: stockId,
-          isEventDeletable: true,
         }
         pcapi.loadStocks
           .mockResolvedValueOnce({ stocks: [] })
