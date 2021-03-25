@@ -87,7 +87,6 @@ class Patch:
                     {"current": 0.0, "domain": "physical", "limit": 200.0},
                 ],
                 "firstName": "Jeanne",
-                "hasAllowedRecommendations": False,
                 "hasPhysicalVenues": False,
                 "id": humanize(user.id),
                 "isActive": True,

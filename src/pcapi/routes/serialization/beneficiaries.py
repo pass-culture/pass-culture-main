@@ -84,7 +84,6 @@ class BeneficiaryAccountResponse(BaseModel):
     email: str
     expenses: List[Expense]
     firstName: Optional[str]
-    hasAllowedRecommendations: bool
     hasPhysicalVenues: bool
     id: str
     isActive: bool
