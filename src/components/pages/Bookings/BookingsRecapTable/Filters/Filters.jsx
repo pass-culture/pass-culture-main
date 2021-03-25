@@ -1,5 +1,4 @@
 import debounce from 'lodash.debounce'
-import moment from 'moment'
 import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
@@ -32,7 +31,7 @@ class Filters extends Component {
       },
       keywords: EMPTY_FILTER_VALUE,
       selectedBookingBeginningDate: EMPTY_FILTER_VALUE,
-      selectedBookingEndingDate: moment(),
+      selectedBookingEndingDate: new Date(),
       selectedOfferDate: EMPTY_FILTER_VALUE,
       selectedOmniSearchCriteria: DEFAULT_OMNISEARCH_CRITERIA,
       selectedVenue: props.offerVenue !== ALL_VENUES ? props.offerVenue : EMPTY_FILTER_VALUE,
@@ -69,7 +68,7 @@ class Filters extends Component {
         },
         keywords: EMPTY_FILTER_VALUE,
         selectedBookingBeginningDate: EMPTY_FILTER_VALUE,
-        selectedBookingEndingDate: moment(),
+        selectedBookingEndingDate: new Date(),
         selectedOfferDate: EMPTY_FILTER_VALUE,
         selectedVenue: EMPTY_FILTER_VALUE,
       },

@@ -17,7 +17,7 @@ describe('generateBookingsCsvFile', () => {
     const bookings = [
       {
         stock: {
-          event_beginning_datetime: '2020-05-12T11:03:28+04:00',
+          event_beginning_datetime: '2020-05-12T11:03:28+05:00',
           offer_name: 'Avez-vous déjà vu',
           type: 'event',
         },
@@ -33,8 +33,8 @@ describe('generateBookingsCsvFile', () => {
         booking_amount: 2,
         venue: {
           identifier: 'AE',
-          name: 'Librairie Kléber'
-        }
+          name: 'Librairie Kléber',
+        },
       },
       {
         stock: {
@@ -53,8 +53,8 @@ describe('generateBookingsCsvFile', () => {
         booking_amount: 5,
         venue: {
           identifier: 'AB',
-          name: 'La FNAC Lyon'
-        }
+          name: 'La FNAC Lyon',
+        },
       },
     ]
 
@@ -112,8 +112,8 @@ describe('generateBookingsCsvFile', () => {
         booking_amount: 1,
         venue: {
           identifier: 'AB',
-          name: 'La FNAC Lyon'
-        }
+          name: 'La FNAC Lyon',
+        },
       },
       {
         stock: {
@@ -132,8 +132,8 @@ describe('generateBookingsCsvFile', () => {
         booking_amount: 2,
         venue: {
           identifier: 'KF',
-          name: 'Librairie Kléber'
-        }
+          name: 'Librairie Kléber',
+        },
       },
     ]
 
@@ -191,8 +191,8 @@ describe('generateBookingsCsvFile', () => {
         booking_amount: 1,
         venue: {
           identifier: 'AB',
-          name: 'La FNAC Lyon'
-        }
+          name: 'La FNAC Lyon',
+        },
       },
       {
         stock: {
@@ -211,8 +211,8 @@ describe('generateBookingsCsvFile', () => {
         booking_amount: 2,
         venue: {
           identifier: 'KF',
-          name: 'Librairie Kléber'
-        }
+          name: 'Librairie Kléber',
+        },
       },
     ]
 
@@ -224,7 +224,7 @@ describe('generateBookingsCsvFile', () => {
       CSV_HEADERS,
       [
         'La FNAC Lyon',
-        "Avez-vous \"\"déjà\"\" \"\"vu\"\"",
+        'Avez-vous ""déjà"" ""vu""',
         '',
         '9781234567654',
         'Klepi Sonia',
@@ -236,7 +236,7 @@ describe('generateBookingsCsvFile', () => {
       ],
       [
         'Librairie Kléber',
-        "Jurassic \"\"Park\"\"",
+        'Jurassic ""Park""',
         '',
         '',
         'LaGuez Anthony',
@@ -269,13 +269,13 @@ describe('generateBookingsCsvFile', () => {
         booking_is_duo: false,
         booking_amount: 2,
         offerer: {
-          name: 'Le conseil des librairies'
+          name: 'Le conseil des librairies',
         },
         venue: {
           identifier: 'AE',
           name: 'Librairie Kléber',
-          is_virtual: false
-        }
+          is_virtual: false,
+        },
       },
       {
         stock: {
@@ -293,13 +293,13 @@ describe('generateBookingsCsvFile', () => {
         booking_is_duo: false,
         booking_amount: 5,
         offerer: {
-          name: 'Le conseil des FNAC'
+          name: 'Le conseil des FNAC',
         },
         venue: {
           identifier: 'AB',
           name: 'La FNAC Lyon',
-          is_virtual: true
-        }
+          is_virtual: true,
+        },
       },
     ]
 

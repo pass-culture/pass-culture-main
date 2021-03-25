@@ -91,6 +91,11 @@ jest.mock('store/selectors/data/venuesSelectors', () => ({
   }),
 }))
 
+jest.mock('utils/date', () => ({
+  ...jest.requireActual('utils/date'),
+  getToday: jest.fn().mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
+}))
+
 describe('src | components | pages | Offers | Offers', () => {
   let change
   let parse
@@ -113,7 +118,6 @@ describe('src | components | pages | Offers | Offers', () => {
   ]
 
   beforeEach(() => {
-    jest.spyOn(Date.prototype, 'toISOString').mockImplementation(() => '2020-12-15T12:00:00Z')
     change = jest.fn()
     parse = jest.fn().mockReturnValue({})
     currentUser = { id: 'EY', isAdmin: false, name: 'Current User', publicName: 'USER' }
@@ -916,7 +920,7 @@ describe('src | components | pages | Offers | Offers', () => {
       await renderOffers(props, store)
 
       fireEvent.click(screen.getAllByPlaceholderText('JJ/MM/AAAA')[0])
-      fireEvent.click(screen.getByLabelText('day-25'))
+      fireEvent.click(screen.getByText('25'))
 
       // when
       fireEvent.click(screen.getByText('Lancer la recherche'))
@@ -940,7 +944,7 @@ describe('src | components | pages | Offers | Offers', () => {
       await renderOffers(props, store)
 
       fireEvent.click(screen.getAllByPlaceholderText('JJ/MM/AAAA')[1])
-      fireEvent.click(screen.getByLabelText('day-27'))
+      fireEvent.click(screen.getByText('27'))
 
       // when
       fireEvent.click(screen.getByText('Lancer la recherche'))
@@ -1075,12 +1079,10 @@ describe('src | components | pages | Offers | Offers', () => {
       renderOffers(props, store)
 
       // When
-      let nextIcon
-      await waitFor(() => (nextIcon = screen.getByAltText('Aller à la page suivante')))
+      const nextIcon = await screen.findByAltText('Aller à la page suivante')
       fireEvent.click(nextIcon)
 
-      let prevIcon
-      await waitFor(() => (prevIcon = screen.getByAltText('Aller à la page précédente')))
+      const prevIcon = await screen.findByAltText('Aller à la page précédente')
       fireEvent.click(prevIcon)
 
       // Then
@@ -1396,8 +1398,7 @@ describe('src | components | pages | Offers | Offers', () => {
       // Given
       props.loadOffers.mockResolvedValueOnce({ page: 1, pageCount: 4, offersCount: 5 })
       renderOffers(props, store)
-      let nextIcon
-      await waitFor(() => (nextIcon = screen.getByAltText('Aller à la page suivante')))
+      const nextIcon = await screen.findByAltText('Aller à la page suivante')
 
       // When
       fireEvent.click(nextIcon)
@@ -1421,8 +1422,7 @@ describe('src | components | pages | Offers | Offers', () => {
       props.loadOffers.mockResolvedValueOnce({ page: 2, pageCount: 2, offersCount: 5 })
 
       renderOffers(props, store)
-      let nextIcon
-      await waitFor(() => (nextIcon = screen.getByAltText('Aller à la page suivante')))
+      const nextIcon = await screen.findByAltText('Aller à la page suivante')
 
       // When
       fireEvent.click(nextIcon)

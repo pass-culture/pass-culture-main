@@ -10,10 +10,12 @@ describe('bookings status history cell', () => {
   it('should display the corresponding status and date when the offer is booked', () => {
     // Given
     const props = {
-      bookingStatusHistory: [{
-        status: 'booked',
-        date: '2020-01-04T20:31:12+01:00',
-      }],
+      bookingStatusHistory: [
+        {
+          status: 'booked',
+          date: '2020-01-04T20:31:12+02:00',
+        },
+      ],
     }
 
     // When
@@ -27,10 +29,12 @@ describe('bookings status history cell', () => {
     it('for booked status', () => {
       // Given
       const props = {
-        bookingStatusHistory: [{
-          status: 'booked',
-          date: '2020-01-04T20:31:12+01:00',
-        }],
+        bookingStatusHistory: [
+          {
+            status: 'booked',
+            date: '2020-01-04T20:31:12+01:00',
+          },
+        ],
       }
 
       // When
@@ -42,10 +46,12 @@ describe('bookings status history cell', () => {
     it('for validated status', () => {
       // Given
       const props = {
-        bookingStatusHistory: [{
-          status: 'validated',
-          date: '2020-01-05T20:31:12+01:00',
-        }],
+        bookingStatusHistory: [
+          {
+            status: 'validated',
+            date: '2020-01-05T20:31:12+01:00',
+          },
+        ],
       }
 
       // When
@@ -57,10 +63,12 @@ describe('bookings status history cell', () => {
     it('for reimbursed status', () => {
       // Given
       const props = {
-        bookingStatusHistory: [{
-          status: 'reimbursed',
-          date: '2020-01-06T20:31:12+01:00',
-        }],
+        bookingStatusHistory: [
+          {
+            status: 'reimbursed',
+            date: '2020-01-06T20:31:12+01:00',
+          },
+        ],
       }
 
       // When
@@ -72,10 +80,12 @@ describe('bookings status history cell', () => {
     it('for confirmed status', () => {
       // Given
       const props = {
-        bookingStatusHistory: [{
-          status: 'confirmed',
-          date: '2020-01-06T20:31:12+01:00',
-        }],
+        bookingStatusHistory: [
+          {
+            status: 'confirmed',
+            date: '2020-01-06T20:31:12+01:00',
+          },
+        ],
       }
 
       // When
@@ -89,10 +99,12 @@ describe('bookings status history cell', () => {
   it('should display only the date without the time for reimbursed status history', () => {
     // Given
     const props = {
-      bookingStatusHistory: [{
-        status: 'reimbursed',
-        date: '2020-01-06T20:31:12+01:00',
-      }],
+      bookingStatusHistory: [
+        {
+          status: 'reimbursed',
+          date: '2020-01-06T20:31:12+01:00',
+        },
+      ],
     }
 
     // When
@@ -105,10 +117,12 @@ describe('bookings status history cell', () => {
   it('should display a "-" when the date is not available', () => {
     // Given
     const props = {
-      bookingStatusHistory: [{
-        status: 'reimbursed',
-        date: null,
-      }],
+      bookingStatusHistory: [
+        {
+          status: 'reimbursed',
+          date: null,
+        },
+      ],
     }
 
     // When

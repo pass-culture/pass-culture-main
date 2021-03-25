@@ -1,4 +1,5 @@
-import moment from 'moment/moment'
+import { utcToZonedTime } from 'date-fns-tz'
+import endOfDay from 'date-fns/endOfDay'
 import PropTypes from 'prop-types'
 import React, { Fragment, PureComponent } from 'react'
 import { Link } from 'react-router-dom'
@@ -14,18 +15,19 @@ import Titles from 'components/layout/Titles/Titles'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { fetchAllVenuesByProUser, formatAndOrderVenues } from 'repository/venuesService'
+import { formatBrowserTimezonedDateAsUTC, getToday } from 'utils/date'
 import { mapApiToBrowser, mapBrowserToApi, translateQueryParamsToApiParams } from 'utils/translate'
 
 import PeriodSelector from '../../../layout/inputs/PeriodSelector/PeriodSelector'
 
 import {
-  DEFAULT_SEARCH_FILTERS,
-  ALL_VENUES_OPTION,
+  ADMINS_DISABLED_FILTERS_MESSAGE,
   ALL_TYPES_OPTION,
+  ALL_VENUES_OPTION,
   CREATION_MODES_FILTERS,
   DEFAULT_CREATION_MODE,
   DEFAULT_PAGE,
-  ADMINS_DISABLED_FILTERS_MESSAGE,
+  DEFAULT_SEARCH_FILTERS,
 } from './_constants'
 import ActionsBarContainer from './ActionsBar/ActionsBarContainer'
 import OfferItemContainer from './OfferItem/OfferItemContainer'
@@ -299,14 +301,14 @@ class Offers extends PureComponent {
 
   changePeriodBeginningDateValue = periodBeginningDate => {
     const dateToFilter = periodBeginningDate
-      ? periodBeginningDate.utc(true).startOf('day').format()
+      ? formatBrowserTimezonedDateAsUTC(periodBeginningDate)
       : DEFAULT_SEARCH_FILTERS.periodBeginningDate
     this.setSearchFilters({ periodBeginningDate: dateToFilter })
   }
 
   changePeriodEndingDateValue = periodEndingDate => {
     const dateToFilter = periodEndingDate
-      ? periodEndingDate.utc(true).endOf('day').format()
+      ? formatBrowserTimezonedDateAsUTC(endOfDay(periodEndingDate))
       : DEFAULT_SEARCH_FILTERS.periodEndingDate
     this.setSearchFilters({ periodEndingDate: dateToFilter })
   }
@@ -317,13 +319,6 @@ class Offers extends PureComponent {
 
   renderSearchFilters = () => {
     const { searchFilters, typeOptions, venueOptions, offerer } = this.state
-    const formattedTodayDate = moment(new Date().toISOString())
-    const formattedPeriodBeginningDate = searchFilters.periodBeginningDate
-      ? moment.utc(searchFilters.periodBeginningDate).local(true)
-      : undefined
-    const formattedPeriodEndingDate = searchFilters.periodEndingDate
-      ? moment.utc(searchFilters.periodEndingDate).local(true)
-      : undefined
 
     return (
       <Fragment>
@@ -379,11 +374,27 @@ class Offers extends PureComponent {
               changePeriodEndingDateValue={this.changePeriodEndingDateValue}
               isDisabled={false}
               label="Période de l’évènement"
-              maxDateBeginning={formattedPeriodEndingDate}
-              minDateEnding={formattedPeriodBeginningDate}
-              periodBeginningDate={formattedPeriodBeginningDate}
-              periodEndingDate={formattedPeriodEndingDate}
-              todayDate={formattedTodayDate}
+              maxDateBeginning={
+                searchFilters.periodEndingDate
+                  ? utcToZonedTime(searchFilters.periodEndingDate, 'UTC')
+                  : undefined
+              }
+              minDateEnding={
+                searchFilters.periodBeginningDate
+                  ? utcToZonedTime(searchFilters.periodBeginningDate, 'UTC')
+                  : undefined
+              }
+              periodBeginningDate={
+                searchFilters.periodBeginningDate
+                  ? utcToZonedTime(searchFilters.periodBeginningDate, 'UTC')
+                  : undefined
+              }
+              periodEndingDate={
+                searchFilters.periodEndingDate
+                  ? utcToZonedTime(searchFilters.periodEndingDate, 'UTC')
+                  : undefined
+              }
+              todayDate={getToday()}
             />
           </div>
           <div className="search-separator">
@@ -440,7 +451,6 @@ class Offers extends PureComponent {
               className="select-offer-checkbox"
               disabled={this.isAdminForbidden(savedSearchFilters) || !offers.length}
               id="select-offer-checkbox"
-              label="Selectionner toutes les offres"
               onChange={this.selectAllOffers}
               type="checkbox"
             />

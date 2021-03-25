@@ -1,6 +1,8 @@
-import moment from 'moment'
+import { format } from 'date-fns-tz'
 import PropTypes from 'prop-types'
 import React from 'react'
+
+import { toDateStrippedOfTimezone } from 'utils/date'
 
 import { getBookingStatusDisplayInformations } from './utils/bookingStatusConverter'
 
@@ -19,7 +21,7 @@ const BookingStatusCellHistory = ({ bookingStatusHistory }) => {
   })
 
   function computeDateForStatus(item, dateFormat) {
-    return item.date ? moment.parseZone(item.date).format(dateFormat) : '-'
+    return item.date ? format(toDateStrippedOfTimezone(item.date), dateFormat) : '-'
   }
 
   return (

@@ -56,7 +56,7 @@ class BookingsRecapTable extends Component {
           id: 4,
           headerTitle: 'Réservation',
           accessor: 'booking_date',
-          Cell: ({ value }) => <BookingDateCell bookingDate={value} />,
+          Cell: ({ value }) => <BookingDateCell bookingDateIsoString={value} />,
           className: 'column-booking-date',
           defaultCanSort: true,
           sortType: sortByBookingDate,

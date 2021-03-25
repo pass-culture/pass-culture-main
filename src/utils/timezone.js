@@ -1,13 +1,19 @@
-import moment from 'moment-timezone'
+import { format, utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz'
 
 export const formatLocalTimeDateString = (
-  date,
+  dateIsoString,
   departementCode,
-  dateFormat = 'dddd DD/MM/YYYY à HH:mm'
+  dateFormat = 'EEEE dd/MM/yyyy à HH:mm'
 ) => {
-  const tz = getDepartmentTimezone(departementCode)
-  return moment(date).tz(tz).format(dateFormat)
+  const zonedDate = getLocalDepartementDateTimeFromUtc(dateIsoString, departementCode)
+  return format(zonedDate, dateFormat, { timeZone: getDepartmentTimezone(departementCode) })
 }
+
+export const getLocalDepartementDateTimeFromUtc = (date, departementCode) =>
+  utcToZonedTime(date, getDepartmentTimezone(departementCode))
+
+export const getUtcDateTimeFromLocalDepartement = (zonedDate, departementCode) =>
+  zonedTimeToUtc(zonedDate, getDepartmentTimezone(departementCode))
 
 // Cayenne              UTC          Paris                St Denis
 //    | ---------------- | ----------- | --------------------|

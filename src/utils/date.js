@@ -1,3 +1,20 @@
-export const FORMAT_DD_MM_YYYY_HH_mm = 'DD/MM/YYYY HH:mm'
-export const FORMAT_DD_MM_YYYY = 'DD/MM/YYYY'
+import { format } from 'date-fns-tz'
+
+export const FORMAT_ISO = "yyyy-MM-dd'T'HH:mm:ssX"
+export const FORMAT_DD_MM_YYYY_HH_mm = 'dd/MM/yyyy HH:mm'
+export const FORMAT_DD_MM_YYYY = 'dd/MM/yyyy'
 export const FORMAT_HH_mm = 'HH:mm'
+
+export const getToday = () => new Date()
+
+export const formatBrowserTimezonedDateAsUTC = (date, dateFormat = FORMAT_ISO) =>
+  format(date, dateFormat, { timeZone: 'UTC' })
+
+export const toDateStrippedOfTimezone = dateIsoString => {
+  const dateIsoStringWithoutTimezone = dateIsoString.replace(/[+-][0-2]\d:[0-5]\d|Z/, '')
+  return new Date(dateIsoStringWithoutTimezone)
+}
+
+export const toISOStringWithoutMilliseconds = date => {
+  return date.toISOString().replace(/\.\d{3}/, '')
+}

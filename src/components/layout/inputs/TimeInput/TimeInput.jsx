@@ -1,32 +1,39 @@
-import moment from 'moment'
 import * as PropTypes from 'prop-types'
-import React from 'react'
+import React, { useCallback } from 'react'
 import DatePicker from 'react-datepicker'
 
 import InputWithCalendar from 'components/layout/inputs/PeriodSelector/InputWithCalendar'
-import { formatLocalTimeDateString } from 'utils/timezone'
+import {
+  getLocalDepartementDateTimeFromUtc,
+  getUtcDateTimeFromLocalDepartement,
+} from 'utils/timezone'
 
 const TimeInput = ({
   ariaLabel,
   departmentCode,
   disabled,
   inError,
-  maxUtcDateIsoFormat,
-  minUtcDateIsoFormat,
   onChange,
   utcDateIsoFormat,
 }) => {
-  const getMomentDate = date => {
+  const getDepartementDate = date => {
     if (date) {
-      const timezonedDateIsoFormat = formatLocalTimeDateString(
-        date,
-        departmentCode,
-        'YYYY-MM-DD HH:mm'
-      )
-      return moment(timezonedDateIsoFormat)
+      return getLocalDepartementDateTimeFromUtc(date, departmentCode)
     }
     return undefined
   }
+
+  const onChangeWrapper = useCallback(
+    zonedDate => {
+      if (zonedDate) {
+        const utcDate = getUtcDateTimeFromLocalDepartement(zonedDate, departmentCode)
+        onChange(utcDate)
+      } else {
+        onChange(zonedDate)
+      }
+    },
+    [departmentCode, onChange]
+  )
 
   return (
     <DatePicker
@@ -42,11 +49,9 @@ const TimeInput = ({
       dateFormat="HH:mm"
       disabled={disabled}
       dropdownMode="scroll"
-      maxDate={getMomentDate(maxUtcDateIsoFormat)}
-      minDate={getMomentDate(minUtcDateIsoFormat)}
-      onChange={onChange}
+      onChange={onChangeWrapper}
       placeholderText="HH:MM"
-      selected={getMomentDate(utcDateIsoFormat)}
+      selected={getDepartementDate(utcDateIsoFormat)}
       showTimeSelect
       showTimeSelectOnly
       timeCaption="Horaire"
@@ -60,8 +65,6 @@ TimeInput.defaultProps = {
   ariaLabel: undefined,
   disabled: false,
   inError: false,
-  maxUtcDateIsoFormat: undefined,
-  minUtcDateIsoFormat: undefined,
 }
 
 TimeInput.propTypes = {
@@ -69,8 +72,6 @@ TimeInput.propTypes = {
   departmentCode: PropTypes.string.isRequired,
   disabled: PropTypes.bool,
   inError: PropTypes.bool,
-  maxUtcDateIsoFormat: PropTypes.string,
-  minUtcDateIsoFormat: PropTypes.string,
   onChange: PropTypes.func.isRequired,
   utcDateIsoFormat: PropTypes.string.isRequired,
 }

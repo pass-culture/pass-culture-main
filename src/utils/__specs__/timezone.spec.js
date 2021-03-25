@@ -5,7 +5,7 @@ describe('formatLocalTimeDateString', () => {
     // given
     const date = '2019-02-28T21:59:00Z'
     const departementCode = '75'
-    const dateFormat = 'dddd D MMMM YYYY, HH:mm'
+    const dateFormat = 'EEEE d MMMM yyyy, HH:mm'
 
     // when
     const formattedDate = formatLocalTimeDateString(date, departementCode, dateFormat)
@@ -18,7 +18,7 @@ describe('formatLocalTimeDateString', () => {
     // given
     const date = '2019-02-28T21:59:00Z'
     const departementCode = '973'
-    const dateFormat = 'dddd D MMMM YYYY, HH:mm'
+    const dateFormat = 'EEEE d MMMM yyyy, HH:mm'
 
     // when
     const formattedDate = formatLocalTimeDateString(date, departementCode, dateFormat)

@@ -1,11 +1,14 @@
-import moment from 'moment'
+import { format } from 'date-fns-tz'
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import { FORMAT_DD_MM_YYYY_HH_mm } from '../../../../../utils/date'
+import { FORMAT_DD_MM_YYYY_HH_mm, toDateStrippedOfTimezone } from 'utils/date'
 
 const BookingOfferCellForEvent = ({ eventDatetime, offerName }) => {
-  const eventDatetimeFormatted = moment.parseZone(eventDatetime).format(FORMAT_DD_MM_YYYY_HH_mm)
+  const eventDatetimeFormatted = format(
+    toDateStrippedOfTimezone(eventDatetime),
+    FORMAT_DD_MM_YYYY_HH_mm
+  )
 
   return (
     <span className="booking-offer-info">

@@ -6,6 +6,7 @@ import DateInput from 'components/layout/inputs/DateInput/DateInput'
 import TimeInput from 'components/layout/inputs/TimeInput/TimeInput'
 import { isAllocineProvider } from 'components/pages/Offers/domain/localProvider'
 import DeleteStockDialogContainer from 'components/pages/Offers/Offer/Stocks/DeleteStockDialog/DeleteStockDialogContainer'
+import { getToday } from 'utils/date'
 
 import { ReactComponent as DeleteStockIcon } from './assets/delete-stock.svg'
 import { hasStockBeenUpdated } from './domain'
@@ -21,7 +22,7 @@ const StockItem = ({
   removeStockInCreation,
   initialStock,
 }) => {
-  const today = new Date().toISOString()
+  const today = getToday().toISOString()
 
   const [isDeleting, setIsDeleting] = useState(false)
   const [beginningDate, setBeginningDate] = useState(initialStock.beginningDatetime)
@@ -67,12 +68,12 @@ const StockItem = ({
     ]
   )
 
-  const getSelectedDatetime = useCallback(momentDateTime => momentDateTime.utc().format(), [])
+  const getSelectedDatetime = useCallback(dateTime => (dateTime ? dateTime.toISOString() : ''), [])
 
   const changeBeginningDate = useCallback(
-    momentDateTime => {
-      if (momentDateTime) {
-        const selectedDatetime = getSelectedDatetime(momentDateTime)
+    dateTime => {
+      if (dateTime) {
+        const selectedDatetime = getSelectedDatetime(dateTime)
         setBeginningDate(selectedDatetime)
         if (bookingLimitDatetime > selectedDatetime) {
           setBookingLimitDatetime(selectedDatetime)
@@ -85,9 +86,9 @@ const StockItem = ({
   )
 
   const changeBeginningHour = useCallback(
-    momentDateTime => {
-      if (momentDateTime) {
-        const selectedTime = getSelectedDatetime(momentDateTime)
+    dateTime => {
+      if (dateTime) {
+        const selectedTime = getSelectedDatetime(dateTime)
         setBeginningTime(selectedTime)
       } else {
         setBeginningTime('')
@@ -96,9 +97,10 @@ const StockItem = ({
     [getSelectedDatetime]
   )
 
-  const changeBookingLimitDatetime = useCallback(momentDateTime => {
-    setBookingLimitDatetime(momentDateTime ? momentDateTime.utc().format() : '')
-  }, [])
+  const changeBookingLimitDatetime = useCallback(
+    dateTime => setBookingLimitDatetime(dateTime ? dateTime.toISOString() : ''),
+    []
+  )
 
   const changePrice = useCallback(event => setPrice(event.target.value), [])
 

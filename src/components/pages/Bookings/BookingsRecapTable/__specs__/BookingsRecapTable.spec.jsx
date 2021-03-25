@@ -1,5 +1,4 @@
 import { mount, shallow } from 'enzyme'
-import moment from 'moment'
 import React from 'react'
 import DatePicker from 'react-datepicker'
 
@@ -742,7 +741,7 @@ describe('components | BookingsRecapTable', () => {
     const offerNameInput = wrapper.find(Filters).find({ placeholder: "Rechercher par nom d'offre" })
     await offerNameInput.simulate('change', { target: { value: 'not findable' } })
 
-    const selectedDate = moment('2020-05-20')
+    const selectedDate = new Date('2020-05-20')
     const offerDatePicker = wrapper.find(Filters).find(DatePicker).at(0)
     await offerDatePicker.simulate('change', selectedDate)
 

@@ -1,4 +1,3 @@
-import moment from 'moment'
 import { getStateKeyFromApiPath, getStateKeyFromUrl } from 'redux-saga-data'
 
 const initialState = {}
@@ -14,7 +13,7 @@ export const tracker = (state = initialState, action) => {
       (action.config.url && getStateKeyFromUrl(action.config.url))
 
     return Object.assign({}, state, {
-      [stateKey]: moment(),
+      [stateKey]: new Date(),
     })
   }
   return state

@@ -1,4 +1,3 @@
-import moment from 'moment-timezone'
 import PropTypes from 'prop-types'
 import React, { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -7,7 +6,6 @@ import { v4 as generateRandomUuid } from 'uuid'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { ReactComponent as AddStockSvg } from 'icons/ico-plus.svg'
 import * as pcapi from 'repository/pcapi/pcapi'
-import { getDepartmentTimezone } from 'utils/timezone'
 
 import { computeOfferStatus } from '../../Offers/domain/computeOfferStatus'
 import { OFFER_STATUS } from '../../Offers/domain/offerStatus'
@@ -47,12 +45,8 @@ const Stocks = ({ offer, showErrorNotification, showSuccessNotification }) => {
   }, [loadStocks])
 
   useEffect(() => {
-    moment.tz.setDefault(getDepartmentTimezone(offer.venue.departementCode))
     loadStocks()
-    return () => {
-      moment.tz.setDefault()
-    }
-  }, [loadStocks, offer.venue.departementCode])
+  }, [loadStocks])
 
   useEffect(() => {
     if (Object.values(formErrors).length > 0) {
@@ -125,10 +119,10 @@ const Stocks = ({ offer, showErrorNotification, showSuccessNotification }) => {
     const updatedStocks = existingStocks.filter(stock => stock.updated)
     if (areValid([...stocksInCreation, ...updatedStocks])) {
       const stocksToCreate = stocksInCreation.map(stockInCreation =>
-        createStockPayload(stockInCreation, offer.isEvent)
+        createStockPayload(stockInCreation, offer.isEvent, offer.venue.departementCode)
       )
       const stocksToUpdate = updatedStocks.map(updatedStock => {
-        const payload = createStockPayload(updatedStock, offer.isEvent)
+        const payload = createStockPayload(updatedStock, offer.isEvent, offer.venue.departementCode)
         payload.id = updatedStock.id
         return payload
       })
@@ -142,12 +136,13 @@ const Stocks = ({ offer, showErrorNotification, showSuccessNotification }) => {
     }
   }, [
     existingStocks,
-    loadStocks,
-    offer.isEvent,
-    offer.id,
-    showErrorNotification,
-    showSuccessNotification,
     stocksInCreation,
+    offer.id,
+    offer.isEvent,
+    offer.venue.departementCode,
+    loadStocks,
+    showSuccessNotification,
+    showErrorNotification,
   ])
 
   if (isLoading) {

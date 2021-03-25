@@ -35,14 +35,15 @@ const PeriodSelector = ({
                 customClass={`field-date-only field-date-begin ${isDisabled ? 'disabled' : ''}`}
               />
             )}
+            dateFormat="dd/MM/yyyy"
             disabled={isDisabled}
             dropdownMode="select"
-            maxDate={periodEndingDate}
-            minDate={minDateBeginning}
+            maxDate={periodEndingDate ? periodEndingDate : undefined}
+            minDate={minDateBeginning ? minDateBeginning : undefined}
             onChange={changePeriodBeginningDateValue}
             openToDate={periodBeginningDate ? periodBeginningDate : todayDate}
             placeholderText="JJ/MM/AAAA"
-            selected={periodBeginningDate}
+            selected={periodBeginningDate ? periodBeginningDate : undefined}
           />
         </div>
         <span className="vertical-bar" />
@@ -54,14 +55,15 @@ const PeriodSelector = ({
                 customClass={`field-date-only field-date-end ${isDisabled ? 'disabled' : ''}`}
               />
             )}
+            dateFormat="dd/MM/yyyy"
             disabled={isDisabled}
             dropdownMode="select"
-            maxDate={maxDateEnding}
-            minDate={periodBeginningDate}
+            maxDate={maxDateEnding ? maxDateEnding : undefined}
+            minDate={periodBeginningDate ? periodBeginningDate : undefined}
             onChange={changePeriodEndingDateValue}
             openToDate={periodEndingDate ? periodEndingDate : todayDate}
             placeholderText="JJ/MM/AAAA"
-            selected={periodEndingDate}
+            selected={periodEndingDate ? periodEndingDate : undefined}
           />
         </div>
       </div>

@@ -31,7 +31,7 @@ class Desk extends Component {
       : formatLocalTimeDateString(
         booking.datetime,
         booking.venueDepartementCode,
-        'DD/MM/YYYY - HH[h]mm'
+        "dd/MM/yyyy - HH'h'mm"
       )
 
   firstErrorMessageFromApi = body => Object.keys(body)[0]

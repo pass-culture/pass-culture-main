@@ -1,4 +1,4 @@
-import moment from 'moment/moment'
+import format from 'date-fns/format'
 import PropTypes from 'prop-types'
 import React from 'react'
 
@@ -15,7 +15,9 @@ const FilterByBookingPeriod = ({
 }) => {
   function handleBookingBeginningDateChange(bookingBeginningDate) {
     const dateToFilter =
-      bookingBeginningDate === null ? EMPTY_FILTER_VALUE : bookingBeginningDate.format('YYYY-MM-DD')
+      bookingBeginningDate === null
+        ? EMPTY_FILTER_VALUE
+        : format(bookingBeginningDate, 'yyyy-MM-dd')
     const updatedFilter = { bookingBeginningDate: dateToFilter }
     const updatedSelectedContent = { selectedBookingBeginningDate: bookingBeginningDate }
     updateFilters(updatedFilter, updatedSelectedContent)
@@ -23,7 +25,7 @@ const FilterByBookingPeriod = ({
 
   function handleBookingEndingDateChange(bookingEndingDate) {
     const dateToFilter =
-      bookingEndingDate === null ? EMPTY_FILTER_VALUE : bookingEndingDate.format('YYYY-MM-DD')
+      bookingEndingDate === null ? EMPTY_FILTER_VALUE : format(bookingEndingDate, 'yyyy-MM-dd')
     const updatedFilter = { bookingEndingDate: dateToFilter }
     const updatedSelectedContent = { selectedBookingEndingDate: bookingEndingDate }
     updateFilters(updatedFilter, updatedSelectedContent)
@@ -35,7 +37,7 @@ const FilterByBookingPeriod = ({
       changePeriodEndingDateValue={handleBookingEndingDateChange}
       isDisabled={isDisabled}
       label="Période de réservation"
-      maxDateEnding={moment()}
+      maxDateEnding={new Date()}
       minDateBeginning={oldestBookingDate}
       periodBeginningDate={selectedBookingBeginningDate}
       periodEndingDate={selectedBookingEndingDate}

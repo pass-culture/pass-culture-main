@@ -1,5 +1,4 @@
 import { shallow } from 'enzyme'
-import moment from 'moment/moment'
 import React from 'react'
 
 import { EMPTY_FILTER_VALUE } from '../_constants'
@@ -25,7 +24,7 @@ describe('components | FilterByEventDate', () => {
 
   it('should apply offerDate filter when choosing an offer date', async () => {
     // Given
-    const selectedDate = moment('2020-05-20')
+    const selectedDate = new Date('2020-05-20')
     const wrapper = shallow(<FilterByEventDate {...props} />)
     const offerDateInput = wrapper.find({ placeholderText: 'JJ/MM/AAAA' }).at(0)
 

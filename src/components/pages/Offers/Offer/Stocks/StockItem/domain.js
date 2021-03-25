@@ -1,47 +1,77 @@
-import moment from 'moment-timezone'
+import endOfDay from 'date-fns/endOfDay'
+import isEqual from 'date-fns/isEqual'
+import isSameDay from 'date-fns/isSameDay'
+import startOfDay from 'date-fns/startOfDay'
+import startOfMinute from 'date-fns/startOfMinute'
 
-const buildBeginningDatetime = (beginningDate, beginningTime) => {
-  if (beginningDate === '' || beginningTime === '') {
+import { toISOStringWithoutMilliseconds } from 'utils/date'
+import {
+  getLocalDepartementDateTimeFromUtc,
+  getUtcDateTimeFromLocalDepartement,
+} from 'utils/timezone'
+
+const buildBeginningDatetime = (beginningDateIsoString, beginningTimeIsoString) => {
+  if (beginningDateIsoString === '' || beginningTimeIsoString === '') {
     return ''
   }
-  const momentBeginningDate = moment(beginningDate)
-  const momentBeginningTime = moment(beginningTime)
 
-  momentBeginningDate.hours(momentBeginningTime.hours())
-  momentBeginningDate.minutes(momentBeginningTime.minutes())
-
-  return momentBeginningDate.utc().format()
+  const beginningDate = beginningDateIsoString.split('T')[0]
+  const beginningTime = beginningTimeIsoString.split('T')[1].replace(/\.\d{3}/, '')
+  return `${beginningDate}T${beginningTime}`
 }
 
-const getBookingLimitDatetimeForEvent = (stock, beginningDatetime) => {
-  const momentBookingLimitDatetime = moment(stock.bookingLimitDatetime)
-  if (
-    stock.bookingLimitDatetime === '' ||
-    momentBookingLimitDatetime.isSame(beginningDatetime, 'day')
-  ) {
-    return beginningDatetime
+const getBookingLimitDatetimeForEvent = (stock, beginningDatetimeIsoString, departementCode) => {
+  if (stock.bookingLimitDatetime === '') {
+    return beginningDatetimeIsoString
+  }
+  const bookingLimitLocalDatetime = getLocalDepartementDateTimeFromUtc(
+    stock.bookingLimitDatetime,
+    departementCode
+  )
+  const beginningLocalDatetime = getLocalDepartementDateTimeFromUtc(
+    beginningDatetimeIsoString,
+    departementCode
+  )
+  if (isSameDay(bookingLimitLocalDatetime, beginningLocalDatetime)) {
+    return beginningDatetimeIsoString
   } else {
-    return momentBookingLimitDatetime.endOf('day').utc().format()
+    const endOfBookingLimitDayUtcDatetime = getUtcDateTimeFromLocalDepartement(
+      endOfDay(bookingLimitLocalDatetime),
+      departementCode
+    )
+    return toISOStringWithoutMilliseconds(endOfBookingLimitDayUtcDatetime)
   }
 }
 
-const getBookingLimitDatetimeForThing = stock => {
-  if (stock.bookingLimitDatetime) {
-    return moment(stock.bookingLimitDatetime).endOf('day').utc().format()
+const getBookingLimitDatetimeForThing = (stock, departementCode) => {
+  if (!stock.bookingLimitDatetime) {
+    return null
   }
-  return null
+  const bookingLimitLocalDatetime = getLocalDepartementDateTimeFromUtc(
+    stock.bookingLimitDatetime,
+    departementCode
+  )
+  const endOfBookingLimitDayUtcDatetime = getUtcDateTimeFromLocalDepartement(
+    endOfDay(bookingLimitLocalDatetime),
+    departementCode
+  )
+  return toISOStringWithoutMilliseconds(endOfBookingLimitDayUtcDatetime)
 }
 
-export const createStockPayload = (stock, isEvent) => {
+export const createStockPayload = (stock, isEvent, departementCode) => {
   let payload = {
     price: stock.price ? stock.price : 0,
     quantity: stock.quantity ? stock.quantity : null,
   }
   if (isEvent) {
     payload.beginningDatetime = buildBeginningDatetime(stock.beginningDate, stock.beginningTime)
-    payload.bookingLimitDatetime = getBookingLimitDatetimeForEvent(stock, payload.beginningDatetime)
+    payload.bookingLimitDatetime = getBookingLimitDatetimeForEvent(
+      stock,
+      payload.beginningDatetime,
+      departementCode
+    )
   } else {
-    payload.bookingLimitDatetime = getBookingLimitDatetimeForThing(stock)
+    payload.bookingLimitDatetime = getBookingLimitDatetimeForThing(stock, departementCode)
   }
   return payload
 }
@@ -94,8 +124,14 @@ export const hasStockBeenUpdated = (originalStock, updatedStock) => {
   }
 
   return !(
-    moment(originalStock.beginningDatetime).isSame(updatedStock.beginningDatetime, 'minute') &&
-    moment(originalStock.bookingLimitDatetime).isSame(updatedStock.bookingLimitDatetime, 'day') &&
+    isEqual(
+      startOfMinute(new Date(originalStock.beginningDatetime)),
+      startOfMinute(new Date(updatedStock.beginningDatetime))
+    ) &&
+    isEqual(
+      startOfDay(new Date(originalStock.bookingLimitDatetime)),
+      startOfDay(new Date(updatedStock.bookingLimitDatetime))
+    ) &&
     originalStock.price === updatedStock.price &&
     originalStock.quantity === updatedStock.quantity
   )
@@ -106,6 +142,6 @@ export const formatAndSortStocks = stocks => {
     .map(stock => ({ ...stock, key: stock.id }))
     .sort(
       (stock1, stock2) =>
-        moment(stock2.beginningDatetime).unix() - moment(stock1.beginningDatetime).unix()
+        new Date(stock2.beginningDatetime).getTime() - new Date(stock1.beginningDatetime).getTime()
     )
 }

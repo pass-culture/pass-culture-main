@@ -1,6 +1,7 @@
-import moment from 'moment'
+import { format } from 'date-fns-tz'
 
-import { FORMAT_DD_MM_YYYY_HH_mm } from '../../../../../utils/date'
+import { FORMAT_DD_MM_YYYY_HH_mm, toDateStrippedOfTimezone } from 'utils/date'
+
 import { getBookingStatusDisplayInformations } from '../CellsFormatter/utils/bookingStatusConverter'
 
 export const CSV_HEADERS = [
@@ -18,7 +19,10 @@ export const CSV_HEADERS = [
 
 function formatEventDatetimeIfEventType(booking) {
   if (booking.stock.type === 'event') {
-    return moment.parseZone(booking.stock.event_beginning_datetime).format(FORMAT_DD_MM_YYYY_HH_mm)
+    return format(
+      toDateStrippedOfTimezone(booking.stock.event_beginning_datetime),
+      FORMAT_DD_MM_YYYY_HH_mm
+    )
   } else {
     return ''
   }
@@ -41,9 +45,10 @@ const generateBookingsCsvFile = bookings => {
     bookingArray.push(booking.stock.offer_isbn || '')
     bookingArray.push(`${booking.beneficiary.lastname} ${booking.beneficiary.firstname}`)
     bookingArray.push(booking.beneficiary.email)
-    const bookingDatetimeFormatted = moment
-      .parseZone(booking.booking_date)
-      .format(FORMAT_DD_MM_YYYY_HH_mm)
+    const bookingDatetimeFormatted = format(
+      toDateStrippedOfTimezone(booking.booking_date),
+      FORMAT_DD_MM_YYYY_HH_mm
+    )
     bookingArray.push(bookingDatetimeFormatted)
     bookingArray.push(booking.booking_token)
     bookingArray.push(booking.booking_amount)

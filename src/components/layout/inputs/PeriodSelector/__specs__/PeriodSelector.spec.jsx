@@ -1,5 +1,4 @@
-import { shallow } from 'enzyme/build/index'
-import moment from 'moment/moment'
+import { shallow } from 'enzyme'
 import React from 'react'
 
 import PeriodSelector from '../PeriodSelector'
@@ -19,7 +18,7 @@ describe('components | PeriodSelector', () => {
 
   it('should call on changePeriodBeginningDateValue', async () => {
     // Given
-    const selectedDate = moment('2020-05-20')
+    const selectedDate = new Date('2020-05-20')
     const wrapper = shallow(<PeriodSelector {...props} />)
     const beginningDateInput = wrapper.find({ placeholderText: 'JJ/MM/AAAA' }).at(0)
 
@@ -32,7 +31,7 @@ describe('components | PeriodSelector', () => {
 
   it('should call on changePeriodEndingDateValue', async () => {
     // Given
-    const selectedDate = moment('2020-05-20')
+    const selectedDate = new Date('2020-05-20')
     const wrapper = shallow(<PeriodSelector {...props} />)
     const endingDateInput = wrapper.find({ placeholderText: 'JJ/MM/AAAA' }).at(1)
 
@@ -45,7 +44,7 @@ describe('components | PeriodSelector', () => {
 
   it('should not allow to select beginning date superior to ending date value', async () => {
     // Given
-    const selectedDate = moment('2020-04-03')
+    const selectedDate = new Date('2020-04-03')
     props.periodEndingDate = selectedDate
     const wrapper = shallow(<PeriodSelector {...props} />)
 
@@ -58,7 +57,7 @@ describe('components | PeriodSelector', () => {
 
   it('should not allow to select ending date inferior to beginning date value', async () => {
     // Given
-    const selectedDate = moment('2020-02-18')
+    const selectedDate = new Date('2020-02-18')
     props.periodBeginningDate = selectedDate
     const wrapper = shallow(<PeriodSelector {...props} />)
 

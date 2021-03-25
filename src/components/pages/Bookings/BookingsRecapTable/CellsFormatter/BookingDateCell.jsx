@@ -1,13 +1,13 @@
-import moment from 'moment'
+import format from 'date-fns/format'
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import { FORMAT_DD_MM_YYYY, FORMAT_HH_mm } from '../../../../../utils/date'
+import { FORMAT_DD_MM_YYYY, FORMAT_HH_mm, toDateStrippedOfTimezone } from 'utils/date'
 
-const BookingDateCell = ({ bookingDate }) => {
-  const bookingDateMoment = moment.parseZone(bookingDate)
-  const bookingDateDay = bookingDateMoment.format(FORMAT_DD_MM_YYYY)
-  const bookingDateHour = bookingDateMoment.format(FORMAT_HH_mm)
+const BookingDateCell = ({ bookingDateIsoString }) => {
+  const bookingDate = toDateStrippedOfTimezone(bookingDateIsoString)
+  const bookingDateDay = format(bookingDate, FORMAT_DD_MM_YYYY)
+  const bookingDateHour = format(bookingDate, FORMAT_HH_mm)
 
   return (
     <div>
@@ -23,7 +23,7 @@ const BookingDateCell = ({ bookingDate }) => {
 }
 
 BookingDateCell.propTypes = {
-  bookingDate: PropTypes.string.isRequired,
+  bookingDateIsoString: PropTypes.string.isRequired,
 }
 
 export default BookingDateCell

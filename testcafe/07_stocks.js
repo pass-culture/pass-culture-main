@@ -25,7 +25,7 @@ test("Je peux créer un stock pour un événement en passant par la page de l'of
   const dateInput = Selector('.react-datepicker-wrapper').nth(0)
   const hourInput = Selector('.react-datepicker-wrapper').nth(1)
   const datePickerLastDay = Selector(
-    '.react-datepicker__week:last-child .react-datepicker__day--sun'
+    '.react-datepicker__week:last-child .react-datepicker__day:last-child'
   )
   const hourPickerLastHour = Selector('.react-datepicker__time-list-item:last-child')
   await navigateToOfferAs(user, offer, createUserRole(user))(t)
@@ -61,7 +61,7 @@ test('Je peux modifier un stock pour un événement', async t => {
   const hourInput = Selector('.react-datepicker-wrapper').nth(1)
   const datePickerPopin = Selector('.react-datepicker')
   const datePickerLastDay = Selector(
-    '.react-datepicker__week:last-child .react-datepicker__day--sun'
+    '.react-datepicker__week:last-child .react-datepicker__day:last-child'
   )
   const hourPickerLastHour = Selector('.react-datepicker__time-list-item:last-child')
   await navigateToStocksAs(user, offer, createUserRole(user))(t)

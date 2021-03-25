@@ -1,10 +1,12 @@
-import moment from 'moment'
 import * as PropTypes from 'prop-types'
-import React from 'react'
+import React, { useCallback } from 'react'
 import DatePicker from 'react-datepicker'
 
 import InputWithCalendar from 'components/layout/inputs/PeriodSelector/InputWithCalendar'
-import { formatLocalTimeDateString } from 'utils/timezone'
+import {
+  getLocalDepartementDateTimeFromUtc,
+  getUtcDateTimeFromLocalDepartement,
+} from 'utils/timezone'
 
 const DateInput = ({
   ariaLabel,
@@ -17,19 +19,26 @@ const DateInput = ({
   onChange,
   utcDateIsoFormat,
 }) => {
-  const getMomentDate = date => {
+  const getDepartementDate = date => {
     if (date) {
-      const timezonedDateIsoFormat = formatLocalTimeDateString(
-        date,
-        departmentCode,
-        'YYYY-MM-DD HH:mm'
-      )
-      return moment(timezonedDateIsoFormat)
+      return getLocalDepartementDateTimeFromUtc(date, departmentCode)
     }
     return undefined
   }
 
-  const selectedDate = getMomentDate(utcDateIsoFormat)
+  const selectedDate = getDepartementDate(utcDateIsoFormat)
+
+  const onChangeWrapper = useCallback(
+    zonedDate => {
+      if (zonedDate) {
+        const utcDate = getUtcDateTimeFromLocalDepartement(zonedDate, departmentCode)
+        onChange(utcDate)
+      } else {
+        onChange(zonedDate)
+      }
+    },
+    [departmentCode, onChange]
+  )
 
   return (
     <DatePicker
@@ -40,14 +49,15 @@ const DateInput = ({
           customClass={`field-date-only${disabled ? ' disabled' : ''}${inError ? ' error' : ''}`}
         />
       )}
+      dateFormat="dd/MM/yyyy"
       disabled={disabled}
       dropdownMode="scroll"
-      maxDate={getMomentDate(maxUtcDateIsoFormat)}
-      minDate={getMomentDate(minUtcDateIsoFormat)}
-      onChange={onChange}
-      openToDate={selectedDate ? selectedDate : getMomentDate(openingUtcDateIsoFormat)}
+      maxDate={getDepartementDate(maxUtcDateIsoFormat)}
+      minDate={getDepartementDate(minUtcDateIsoFormat)}
+      onChange={onChangeWrapper}
+      openToDate={selectedDate ? selectedDate : getDepartementDate(openingUtcDateIsoFormat)}
       placeholderText="JJ/MM/AAAA"
-      selected={getMomentDate(utcDateIsoFormat)}
+      selected={selectedDate}
     />
   )
 }
