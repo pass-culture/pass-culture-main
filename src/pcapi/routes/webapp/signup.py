@@ -1,3 +1,4 @@
+from dataclasses import asdict
 import logging
 
 from flask import jsonify
@@ -6,6 +7,7 @@ from flask import request
 from pcapi import settings
 from pcapi.connectors.google_spreadsheet import get_authorized_emails_and_dept_codes
 from pcapi.core.payments import api as payments_api
+from pcapi.core.users.models import NotificationSubscriptions
 from pcapi.core.users.models import User
 from pcapi.flask_app import private_api
 from pcapi.models import ApiErrors
@@ -29,8 +31,9 @@ def signup_webapp():
     check_valid_signup_webapp(request)
 
     new_user = User(from_dict=request.json)
-    if request.json.get("contact_ok"):
-        new_user.hasAllowedRecommendations = True
+    new_user.notificationSubscriptions = asdict(
+        NotificationSubscriptions(marketing_email=bool(request.json.get("contact_ok")))
+    )
 
     if settings.IS_INTEGRATION:
         new_user.departementCode = "00"

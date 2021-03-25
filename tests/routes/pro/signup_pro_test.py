@@ -55,7 +55,7 @@ class Post:
             assert user.publicName == "Toto Pro"
             assert user.dateOfBirth is None
             assert user.dateCreated is not None
-            assert user.hasAllowedRecommendations is False
+            assert user.notificationSubscriptions == {"marketing_push": True, "marketing_email": False}
             offerer = Offerer.query.filter_by(siren="349974931").first()
             assert offerer is not None
             assert offerer.validationToken is not None
@@ -81,7 +81,7 @@ class Post:
             assert "Set-Cookie" not in response.headers
             user = User.query.filter_by(email="toto_pro@example.com").first()
             assert user is not None
-            assert user.hasAllowedRecommendations is True
+            assert user.notificationSubscriptions == {"marketing_push": True, "marketing_email": True}
             offerer = Offerer.query.filter_by(siren="349974931").first()
             assert offerer is not None
             assert offerer.validationToken is not None

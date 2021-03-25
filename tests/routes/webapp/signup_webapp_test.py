@@ -61,6 +61,9 @@ class Post:
             for key in other_expected_keys:
                 assert key in json
 
+            user = User.query.filter_by(email="toto@example.com").first()
+            assert user.notificationSubscriptions == {"marketing_push": True, "marketing_email": True}
+
         @patch("pcapi.routes.webapp.signup.get_authorized_emails_and_dept_codes")
         @pytest.mark.usefixtures("db_session")
         def test_created_user_does_not_have_validation_token_and_cannot_book_free_offers(

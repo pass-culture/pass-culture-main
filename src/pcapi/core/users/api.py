@@ -401,7 +401,7 @@ def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> User:
 
 def create_pro_user(pro_user: ProUserCreationBodyModel) -> User:
     new_pro_user = User(from_dict=pro_user.dict(by_alias=True))
-    new_pro_user.hasAllowedRecommendations = pro_user.contact_ok
+    new_pro_user.notificationSubscriptions = asdict(NotificationSubscriptions(marketing_email=pro_user.contact_ok))
     new_pro_user.isBeneficiary = False
     new_pro_user.isAdmin = False
     new_pro_user.needsToFillCulturalSurvey = False
