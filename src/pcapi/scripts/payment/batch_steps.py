@@ -122,7 +122,7 @@ def send_transactions(
     logger.info("[BATCH][PAYMENTS] Updating status of %d payments", len(payments))
     if successfully_sent_payments:
         for payment in payments:
-            payment.setStatus(TransactionStatus.SENT)
+            payment.setStatus(TransactionStatus.UNDER_REVIEW)
     else:
         for payment in payments:
             payment.setStatus(TransactionStatus.ERROR, detail="Erreur d'envoi à MailJet")

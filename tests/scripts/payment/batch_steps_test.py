@@ -169,7 +169,7 @@ def test_send_transactions_set_status_to_sent_if_email_was_sent_properly(app):
     updated_payments = Payment.query.all()
     for payment in updated_payments:
         assert len(payment.statuses) == 2
-        assert payment.currentStatus.status == TransactionStatus.SENT
+        assert payment.currentStatus.status == TransactionStatus.UNDER_REVIEW
 
 
 @pytest.mark.usefixtures("db_session")
