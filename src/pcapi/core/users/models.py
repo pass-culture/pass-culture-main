@@ -1,3 +1,4 @@
+from dataclasses import asdict
 from dataclasses import dataclass
 from datetime import date
 from datetime import datetime
@@ -150,7 +151,12 @@ class User(PcObject, Model, NeedsValidationMixin, VersionedMixin):
 
     needsToFillCulturalSurvey = Column(Boolean, server_default=expression.true(), default=True)
 
-    notificationSubscriptions = Column(MutableDict.as_mutable(JSONB), nullable=True)
+    notificationSubscriptions = Column(
+        MutableDict.as_mutable(JSONB),
+        nullable=True,
+        default=asdict(NotificationSubscriptions()),
+        server_default="""{"marketing_push": true, "marketing_email": true}""",
+    )
 
     offerers = relationship("Offerer", secondary="user_offerer")
 

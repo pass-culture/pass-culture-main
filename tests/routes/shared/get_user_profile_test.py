@@ -61,7 +61,7 @@ class Get:
                 "lastConnectionDate": None,
                 "lastName": "Smisse",
                 "needsToFillCulturalSurvey": False,
-                "notificationSubscriptions": None,
+                "notificationSubscriptions": {"marketing_email": True, "marketing_push": True},
                 "phoneNumber": "0612345678",
                 "postalCode": "93020",
                 "publicName": "Toto",

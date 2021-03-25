@@ -79,6 +79,7 @@ def test_saved_a_beneficiary_from_application(stubed_random_token, mocked_send_a
     assert beneficiary.publicName == "Thomas DURAND"
     assert beneficiary.resetPasswordToken == "token"
     assert beneficiary.resetPasswordTokenValidityLimit == datetime(2013, 6, 14, 9)
+    assert beneficiary.notificationSubscriptions == {"marketing_push": True, "marketing_email": True}
 
     deposit = Deposit.query.one()
     assert deposit.amount == 500
@@ -124,6 +125,7 @@ def test_application_for_native_app_user(mocked_send_accepted_as_beneficiary_ema
         birthdate=PRE_SUBSCRIPTION_BASE_DATA["date_of_birth"],
         is_email_validated=True,
         send_activation_mail=False,
+        marketing_email_subscription=False,
     )
     push_testing.reset_requests()
 
@@ -143,6 +145,7 @@ def test_application_for_native_app_user(mocked_send_accepted_as_beneficiary_ema
     assert beneficiary_import.currentStatus == ImportStatus.CREATED
     assert beneficiary_import.applicationId == application_id
     assert beneficiary_import.beneficiary == beneficiary
+    assert beneficiary.notificationSubscriptions == {"marketing_push": True, "marketing_email": False}
 
     assert push_testing.requests == [
         {

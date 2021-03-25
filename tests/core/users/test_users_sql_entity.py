@@ -304,11 +304,12 @@ class DepositVersionTest:
 @pytest.mark.usefixtures("db_session")
 class NotificationSubscriptionsTest:
     def test_notification_subscriptions(self):
-        user = UserFactory(notificationSubscriptions={"marketing_push": True})
+        user = UserFactory(notificationSubscriptions={"marketing_push": False})
 
-        assert user.get_notification_subscriptions().marketing_push
+        assert not user.get_notification_subscriptions().marketing_push
 
     def test_void_notification_subscriptions(self):
         user = UserFactory()
+        assert user.notificationSubscriptions == {"marketing_push": True, "marketing_email": True}
 
         assert user.get_notification_subscriptions().marketing_push
