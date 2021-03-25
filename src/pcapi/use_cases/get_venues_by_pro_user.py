@@ -14,16 +14,16 @@ class GetVenuesByProUser:
         self,
         pro_identifier: int,
         user_is_admin: bool,
+        active_offerers_only: bool = False,
         offerer_id: Optional[Identifier] = None,
         validated_offerer: Optional[bool] = None,
         validated_offerer_for_user: Optional[bool] = None,
-        active_offerers_only: bool = False,
     ) -> List[VenueWithOffererName]:
         return self.venue_repository.get_by_pro_identifier(
             pro_identifier,
             user_is_admin,
+            active_offerers_only,
             offerer_id,
             validated_offerer,
             validated_offerer_for_user,
-            active_offerers_only,
         )

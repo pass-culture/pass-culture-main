@@ -38,6 +38,13 @@ class Returns200ForProUser:
             managingOfferer=offerer_not_validated_for_user,
         )
 
+        inactive_offerer = offers_factories.OffererFactory(isActive=False)
+        offers_factories.UserOffererFactory(user=user, offerer=inactive_offerer)
+        venue_from_inactive_offerer = offers_factories.VenueFactory(
+            name="venue_from_inactive_offerer",
+            managingOfferer=inactive_offerer,
+        )
+
         other_offerer = offers_factories.OffererFactory()
         other_user_offerer = offers_factories.UserOffererFactory(offerer=other_offerer)
         other_venue = offers_factories.VenueFactory(
@@ -59,6 +66,7 @@ class Returns200ForProUser:
             "owned_venue_not_validated_for_user": venue_not_validated_for_user,
             "other_venue_user": other_venue,
             "other_venue_not_validated": other_venue_not_validated,
+            "venue_from_inactive_offerer": venue_from_inactive_offerer,
         }
 
     @pytest.mark.usefixtures("db_session")
@@ -97,7 +105,7 @@ class Returns200ForProUser:
 
         # then
         assert response.status_code == 200
-        assert len(response.json) == 4
+        assert len(response.json) == 5
 
         venue_ids = [venue["id"] for venue in response.json]
         assert humanize(venues["owned_venue_validated"].id) in venue_ids
@@ -116,7 +124,7 @@ class Returns200ForProUser:
 
         # then
         assert response.status_code == 200
-        assert len(response.json) == 3
+        assert len(response.json) == 4
 
         venue_ids = [venue["id"] for venue in response.json]
         assert humanize(venues["owned_venue_validated"].id) in venue_ids
@@ -146,11 +154,11 @@ class Returns200ForProUser:
         venues = self._setup_venues_for_pro_user(pro_user)
 
         # when
-        response = TestClient(app.test_client()).with_auth(pro_user.email).get("/venues?validated_for_user=true")
+        response = TestClient(app.test_client()).with_auth(pro_user.email).get("/venues?validatedForUser=true")
 
         # then
         assert response.status_code == 200
-        assert len(response.json) == 3
+        assert len(response.json) == 4
 
         venue_ids = [venue["id"] for venue in response.json]
         assert humanize(venues["owned_venue_validated"].id) in venue_ids
@@ -164,7 +172,7 @@ class Returns200ForProUser:
         venues = self._setup_venues_for_pro_user(pro_user)
 
         # when
-        response = TestClient(app.test_client()).with_auth(pro_user.email).get("/venues?validated_for_user=false")
+        response = TestClient(app.test_client()).with_auth(pro_user.email).get("/venues?validatedForUser=false")
 
         # then
         assert response.status_code == 200
@@ -172,6 +180,38 @@ class Returns200ForProUser:
 
         venue_ids = [venue["id"] for venue in response.json]
         assert humanize(venues["owned_venue_not_validated_for_user"].id) in venue_ids
+
+    @pytest.mark.usefixtures("db_session")
+    def test_get_all_venues_from_active_offerers_only(self, app):
+        # given
+        pro_user = users_factories.UserFactory(isBeneficiary=False)
+        venues = self._setup_venues_for_pro_user(pro_user)
+
+        # when
+        response = TestClient(app.test_client()).with_auth(pro_user.email).get("/venues?activeOfferersOnly=true")
+
+        # then
+        assert response.status_code == 200
+        assert len(response.json) == 4
+
+        venue_ids = [venue["id"] for venue in response.json]
+        assert humanize(venues["venue_from_inactive_offerer"].id) not in venue_ids
+
+    @pytest.mark.usefixtures("db_session")
+    def test_get_all_venues_from_active_and_inactive_offerers(self, app):
+        # given
+        pro_user = users_factories.UserFactory(isBeneficiary=False)
+        venues = self._setup_venues_for_pro_user(pro_user)
+
+        # when
+        response = TestClient(app.test_client()).with_auth(pro_user.email).get("/venues?activeOfferersOnly=false")
+
+        # then
+        assert response.status_code == 200
+        assert len(response.json) == 5
+
+        venue_ids = [venue["id"] for venue in response.json]
+        assert humanize(venues["venue_from_inactive_offerer"].id) in venue_ids
 
 
 class Returns200ForAdmin:

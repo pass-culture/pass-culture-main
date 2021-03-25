@@ -36,7 +36,7 @@ class GetByProIdentifierTest:
         expected_venue_2 = venue_with_offerer_name_domain_converter.to_domain(venue_2)
 
         # when
-        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id, False)
+        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id, False, False)
 
         # then
         assert len(found_venues) == 2
@@ -60,7 +60,9 @@ class GetByProIdentifierTest:
         expected_venue_2 = venue_with_offerer_name_domain_converter.to_domain(venue_2)
 
         # when
-        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_identifier=admin_user.id, user_is_admin=True)
+        found_venues = self.venue_sql_repository.get_by_pro_identifier(
+            pro_identifier=admin_user.id, user_is_admin=True, active_offerers_only=False
+        )
 
         # then
         assert len(found_venues) == 2
@@ -77,7 +79,7 @@ class GetByProIdentifierTest:
         repository.save(user_offerer)
 
         # when
-        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id, False)
+        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id, False, False)
 
         # then
         assert found_venues == []
@@ -97,7 +99,7 @@ class GetByProIdentifierTest:
         expected_venue_2 = venue_with_offerer_name_domain_converter.to_domain(venue_2)
 
         # when
-        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id, False)
+        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id, False, False)
 
         # then
         assert len(found_venues) == 2
@@ -122,6 +124,7 @@ class GetByProIdentifierTest:
         found_venues = self.venue_sql_repository.get_by_pro_identifier(
             pro_identifier=pro_user.id,
             user_is_admin=False,
+            active_offerers_only=False,
             validated_offerer=True,
         )
 
@@ -141,6 +144,7 @@ class GetByProIdentifierTest:
         found_venues = self.venue_sql_repository.get_by_pro_identifier(
             pro_identifier=pro_user.id,
             user_is_admin=False,
+            active_offerers_only=False,
             validated_offerer_for_user=True,
         )
 
@@ -163,7 +167,9 @@ class GetByProIdentifierTest:
         repository.save(venue_from_wanted_offerer, venue_from_unwanted_offerer)
 
         # when
-        found_venues = self.venue_sql_repository.get_by_pro_identifier(pro_user.id, False, Identifier(1))
+        found_venues = self.venue_sql_repository.get_by_pro_identifier(
+            pro_identifier=pro_user.id, user_is_admin=False, active_offerers_only=False, offerer_id=Identifier(1)
+        )
 
         # then
         assert len(found_venues) == 1
@@ -173,9 +179,14 @@ class GetByProIdentifierTest:
     def should_not_return_venues_with_inactive_offerer_for_validated_user_offerer(self, app):
         # given
         pro_user = users_factories.UserFactory(isBeneficiary=False)
-        offerer = offers_factories.OffererFactory(isActive=False)
-        offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
-        offers_factories.VenueFactory(managingOfferer=offerer)
+        active_offerer = offers_factories.OffererFactory(isActive=True)
+        inactive_offerer = offers_factories.OffererFactory(isActive=False)
+        offers_factories.UserOffererFactory(user=pro_user, offerer=active_offerer)
+        offers_factories.UserOffererFactory(user=pro_user, offerer=inactive_offerer)
+        venue_from_active_offerer = offers_factories.VenueFactory(
+            name="venue_from_active_offerer", managingOfferer=active_offerer
+        )
+        offers_factories.VenueFactory(name="venue_from_inactive_offerer", managingOfferer=inactive_offerer)
 
         # when
         found_venues = self.venue_sql_repository.get_by_pro_identifier(
@@ -185,4 +196,5 @@ class GetByProIdentifierTest:
         )
 
         # then
-        assert len(found_venues) == 0
+        assert len(found_venues) == 1
+        assert found_venues[0].name == venue_from_active_offerer.name

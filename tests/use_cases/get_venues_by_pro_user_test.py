@@ -30,3 +30,20 @@ class GetAllVenuesByProUserTest:
         # Then
         assert len(pro_venues) == 1
         assert venue in pro_venues
+
+    def test_set_default_values_when_not_specified(self) -> None:
+        # Given
+        venue = VenueWithOffererName(
+            identifier=10,
+            managing_offerer_identifier=20,
+            name="Librairie Kléber",
+            offerer_name="Gilbert Joseph",
+            is_virtual=False,
+        )
+        self.venue_repository.get_by_pro_identifier.return_value = [venue]
+
+        # When
+        self.get_all_venues_by_pro_user.execute(pro_identifier=24, user_is_admin=False)
+
+        # Then
+        self.venue_repository.get_by_pro_identifier.assert_called_once_with(24, False, False, None, None, None)
