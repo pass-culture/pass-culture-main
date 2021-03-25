@@ -19,22 +19,25 @@ const DateInput = ({
   onChange,
   utcDateIsoFormat,
 }) => {
-  const getDepartementDate = date => {
+  const getDepartementDateTime = date => {
     if (date) {
       return getLocalDepartementDateTimeFromUtc(date, departmentCode)
     }
     return undefined
   }
 
-  const selectedDate = getDepartementDate(utcDateIsoFormat)
+  const selectedDate = getDepartementDateTime(utcDateIsoFormat)
 
   const onChangeWrapper = useCallback(
-    zonedDate => {
-      if (zonedDate) {
-        const utcDate = getUtcDateTimeFromLocalDepartement(zonedDate, departmentCode)
-        onChange(utcDate)
+    dateTimeInDepartementTimezone => {
+      if (dateTimeInDepartementTimezone) {
+        const dateTimeInUtcTimezone = getUtcDateTimeFromLocalDepartement(
+          dateTimeInDepartementTimezone,
+          departmentCode
+        )
+        onChange(dateTimeInUtcTimezone)
       } else {
-        onChange(zonedDate)
+        onChange(null)
       }
     },
     [departmentCode, onChange]
@@ -52,10 +55,10 @@ const DateInput = ({
       dateFormat="dd/MM/yyyy"
       disabled={disabled}
       dropdownMode="scroll"
-      maxDate={getDepartementDate(maxUtcDateIsoFormat)}
-      minDate={getDepartementDate(minUtcDateIsoFormat)}
+      maxDate={getDepartementDateTime(maxUtcDateIsoFormat)}
+      minDate={getDepartementDateTime(minUtcDateIsoFormat)}
       onChange={onChangeWrapper}
-      openToDate={selectedDate ? selectedDate : getDepartementDate(openingUtcDateIsoFormat)}
+      openToDate={selectedDate ? selectedDate : getDepartementDateTime(openingUtcDateIsoFormat)}
       placeholderText="JJ/MM/AAAA"
       selected={selectedDate}
     />

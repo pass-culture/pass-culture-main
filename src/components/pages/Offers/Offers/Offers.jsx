@@ -1,5 +1,5 @@
+import { endOfDay } from 'date-fns'
 import { utcToZonedTime } from 'date-fns-tz'
-import endOfDay from 'date-fns/endOfDay'
 import PropTypes from 'prop-types'
 import React, { Fragment, PureComponent } from 'react'
 import { Link } from 'react-router-dom'

@@ -10,7 +10,7 @@ describe('bookings date cell', () => {
   it('should display the date and the time', () => {
     // Given
     const props = {
-      bookingDate: '2020-04-03T12:00:00+04:00',
+      bookingDateTimeIsoString: '2020-04-03T12:00:00+04:00',
     }
 
     // When

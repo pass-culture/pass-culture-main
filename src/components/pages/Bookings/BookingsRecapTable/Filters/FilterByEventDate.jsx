@@ -1,4 +1,4 @@
-import format from 'date-fns/format'
+import { format } from 'date-fns'
 import PropTypes from 'prop-types'
 import React from 'react'
 import DatePicker from 'react-datepicker'

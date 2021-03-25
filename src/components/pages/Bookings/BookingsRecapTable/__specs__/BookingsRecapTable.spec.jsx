@@ -268,7 +268,9 @@ describe('components | BookingsRecapTable', () => {
     })
     const bookingDateCell = wrapper.find(BookingDateCell)
     expect(bookingDateCell).toHaveLength(1)
-    expect(bookingDateCell.props()).toStrictEqual({ bookingDateIsoString: '2020-04-03T12:00:00Z' })
+    expect(bookingDateCell.props()).toStrictEqual({
+      bookingDateTimeIsoString: '2020-04-03T12:00:00Z',
+    })
     const bookingTokenCell = wrapper.find(BookingTokenCell)
     expect(bookingTokenCell).toHaveLength(1)
     expect(bookingTokenCell.props()).toStrictEqual({ bookingToken: 'ZEHBGD' })
@@ -491,7 +493,9 @@ describe('components | BookingsRecapTable', () => {
     })
     const bookingDateCell = wrapper.find(BookingDateCell)
     expect(bookingDateCell).toHaveLength(1)
-    expect(bookingDateCell.props()).toStrictEqual({ bookingDateIsoString: '2020-04-03T12:00:00Z' })
+    expect(bookingDateCell.props()).toStrictEqual({
+      bookingDateTimeIsoString: '2020-04-03T12:00:00Z',
+    })
     const bookingTokenCell = wrapper.find(BookingTokenCell)
     expect(bookingTokenCell).toHaveLength(1)
     expect(bookingTokenCell.props()).toStrictEqual({ bookingToken: 'ZEHBGD' })

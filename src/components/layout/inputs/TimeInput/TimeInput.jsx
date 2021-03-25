@@ -16,7 +16,7 @@ const TimeInput = ({
   onChange,
   utcDateIsoFormat,
 }) => {
-  const getDepartementDate = date => {
+  const getDepartementDateTime = date => {
     if (date) {
       return getLocalDepartementDateTimeFromUtc(date, departmentCode)
     }
@@ -24,12 +24,15 @@ const TimeInput = ({
   }
 
   const onChangeWrapper = useCallback(
-    zonedDate => {
-      if (zonedDate) {
-        const utcDate = getUtcDateTimeFromLocalDepartement(zonedDate, departmentCode)
-        onChange(utcDate)
+    dateTimeInDepartementTimezone => {
+      if (dateTimeInDepartementTimezone) {
+        const dateTimeInUtcTimezone = getUtcDateTimeFromLocalDepartement(
+          dateTimeInDepartementTimezone,
+          departmentCode
+        )
+        onChange(dateTimeInUtcTimezone)
       } else {
-        onChange(zonedDate)
+        onChange(null)
       }
     },
     [departmentCode, onChange]
@@ -51,7 +54,7 @@ const TimeInput = ({
       dropdownMode="scroll"
       onChange={onChangeWrapper}
       placeholderText="HH:MM"
-      selected={getDepartementDate(utcDateIsoFormat)}
+      selected={getDepartementDateTime(utcDateIsoFormat)}
       showTimeSelect
       showTimeSelectOnly
       timeCaption="Horaire"
