@@ -17,7 +17,7 @@ export function mapStateToProps(state) {
   }
 }
 
-export const mapDispatchToProps = (dispatch, ownProps) => ({
+export const mapDispatchToProps = dispatch => ({
   createNewOfferer: (payload, onHandleFail, onHandleSuccess) => {
     const { siren } = payload
     dispatch(
@@ -41,9 +41,6 @@ export const mapDispatchToProps = (dispatch, ownProps) => ({
   closeNotification: () => {
     dispatch(closeNotification())
   },
-  redirectAfterSubmit: isNewHomepageActive => {
-    ownProps.history.replace(isNewHomepageActive ? '/accueil' : '/structures')
-  },
 })
 
 export const mergeProps = (stateProps, dispatchProps, ownProps) => {
@@ -53,6 +50,9 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
     ...ownProps,
     trackCreateOfferer: createdOffererId => {
       ownProps.tracking.trackEvent({ action: 'createOfferer', name: createdOffererId })
+    },
+    redirectAfterSubmit: () => {
+      ownProps.history.replace(stateProps.isNewHomepageActive ? '/accueil' : '/structures')
     },
   }
 }
