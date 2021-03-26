@@ -1,3 +1,4 @@
+import { setUser } from '@sentry/browser'
 import PropTypes from 'prop-types'
 import React, { useEffect, useState } from 'react'
 import { matchPath } from 'react-router'
@@ -32,6 +33,9 @@ export const App = props => {
           setIsBusy(false)
         },
       })
+    }
+    if (currentUser) {
+      setUser({ id: currentUser.pk })
     }
   }, [currentUser, currentPathname, getCurrentUser, history, location])
 
