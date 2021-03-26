@@ -6,14 +6,12 @@ import { MemoryRouter } from 'react-router'
 import ReactTooltip from 'react-tooltip'
 
 import NotificationV1Container from 'components/layout/NotificationV1/NotificationV1Container'
-import * as providersApi from 'repository/pcapi/providersApi'
+import * as pcApi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
 import VenueProvidersManagerContainer from '../../VenueProvidersManagerContainer'
 
-
-
-jest.mock('repository/pcapi/providersApi', () => ({
+jest.mock('repository/pcapi/pcapi', () => ({
   createVenueProvider: jest.fn(),
   loadProviders: jest.fn(),
   loadVenueProviders: jest.fn(),
@@ -40,8 +38,8 @@ describe('components | AllocineProviderForm', () => {
 
   beforeEach(async () => {
     const venue = {
-      id: 'AB',
-      managingOffererId: 'BA',
+      id: 'venueId',
+      managingOffererId: 'managingOffererId',
       name: 'Le lieu',
       siret: '12345678901234',
     }
@@ -50,26 +48,26 @@ describe('components | AllocineProviderForm', () => {
       venue,
     }
 
-    providersApi.loadVenueProviders.mockResolvedValue([])
+    pcApi.loadVenueProviders.mockResolvedValue([])
 
-    provider = { id: 'ABC', name: 'Allociné' }
-    providersApi.loadProviders.mockResolvedValue([provider])
+    provider = { id: 'providerId', name: 'Allociné' }
+    pcApi.loadProviders.mockResolvedValue([provider])
     createdVenueProvider = {
-      id: 'AQ',
+      id: 'venueProviderId',
       provider,
       providerId: provider.id,
       venueId: props.venue.id,
       venueIdAtOfferProvider: props.venue.siret,
     }
-    providersApi.createVenueProvider.mockResolvedValue(createdVenueProvider)
+    pcApi.createVenueProvider.mockResolvedValue(createdVenueProvider)
 
     await renderVenueProvidersManager(props)
   })
 
   afterEach(() => {
-    providersApi.loadVenueProviders.mockReset()
-    providersApi.loadProviders.mockReset()
-    providersApi.createVenueProvider.mockReset()
+    pcApi.loadVenueProviders.mockReset()
+    pcApi.loadProviders.mockReset()
+    pcApi.createVenueProvider.mockReset()
   })
 
   const renderAllocineProviderForm = async () => {
@@ -137,7 +135,7 @@ describe('components | AllocineProviderForm', () => {
     fireEvent.click(offerImportButton)
 
     // then
-    expect(providersApi.createVenueProvider).toHaveBeenCalledWith({
+    expect(pcApi.createVenueProvider).toHaveBeenCalledWith({
       price: 10,
       quantity: 5,
       isDuo: false,
@@ -157,7 +155,7 @@ describe('components | AllocineProviderForm', () => {
     fireEvent.click(offerImportButton)
 
     // then
-    expect(providersApi.createVenueProvider).toHaveBeenCalledWith({
+    expect(pcApi.createVenueProvider).toHaveBeenCalledWith({
       price: 0,
       quantity: undefined,
       isDuo: true,
@@ -177,7 +175,7 @@ describe('components | AllocineProviderForm', () => {
     fireEvent.click(offerImportButton)
 
     // then
-    expect(providersApi.createVenueProvider).toHaveBeenCalledWith({
+    expect(pcApi.createVenueProvider).toHaveBeenCalledWith({
       price: 0.42,
       quantity: undefined,
       isDuo: true,
@@ -197,7 +195,7 @@ describe('components | AllocineProviderForm', () => {
     fireEvent.click(offerImportButton)
 
     // then
-    expect(providersApi.createVenueProvider).toHaveBeenCalledTimes(0)
+    expect(pcApi.createVenueProvider).toHaveBeenCalledTimes(0)
   })
 
   it('should display a notification and unselect provider if there is something wrong with the server', async () => {
@@ -206,7 +204,7 @@ describe('components | AllocineProviderForm', () => {
       errors: { global: ['Le prix ne peut pas être négatif'] },
       status: 400,
     }
-    providersApi.createVenueProvider.mockRejectedValue(apiError)
+    pcApi.createVenueProvider.mockRejectedValue(apiError)
     await renderAllocineProviderForm()
     const offerImportButton = screen.getByRole('button', { name: 'Importer les offres' })
     const priceField = screen.getByLabelText('Prix de vente/place', { exact: false })

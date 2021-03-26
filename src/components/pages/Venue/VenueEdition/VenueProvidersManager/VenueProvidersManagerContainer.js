@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
-import * as providersApi from 'repository/pcapi/providersApi'
+import * as pcApi from 'repository/pcapi/pcapi'
 import { selectProviders } from 'store/selectors/data/providersSelectors'
 import { selectVenueProvidersByVenueId } from 'store/selectors/data/venueProvidersSelectors'
 
@@ -23,13 +23,13 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     loadProvidersAndVenueProviders: () => {
       const venueId = ownProps.venue.id
-      providersApi.loadProviders(venueId).then(providers =>
+      pcApi.loadProviders(venueId).then(providers =>
         dispatch({
           type: 'SET_PROVIDERS',
           payload: providers,
         })
       )
-      providersApi.loadVenueProviders(venueId).then(venueProviders =>
+      pcApi.loadVenueProviders(venueId).then(venueProviders =>
         dispatch({
           type: 'SET_VENUE_PROVIDERS',
           payload: venueProviders,

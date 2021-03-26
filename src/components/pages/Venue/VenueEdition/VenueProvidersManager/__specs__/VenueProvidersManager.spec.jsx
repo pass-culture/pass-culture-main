@@ -4,13 +4,13 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
-import * as providersApi from 'repository/pcapi/providersApi'
+import * as pcApi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
 import { DEFAULT_PROVIDER_OPTION } from '../utils/providerOptions'
 import VenueProvidersManagerContainer from '../VenueProvidersManagerContainer'
 
-jest.mock('repository/pcapi/providersApi', () => ({
+jest.mock('repository/pcapi/pcapi', () => ({
   loadProviders: jest.fn(),
   loadVenueProviders: jest.fn(),
 }))
@@ -34,8 +34,8 @@ describe('src | VenueProvidersManager', () => {
 
   beforeEach(() => {
     const venue = {
-      id: 'AB',
-      managingOffererId: 'BA',
+      id: 'venueId',
+      managingOffererId: 'managingOffererId',
       name: 'Le lieu',
       siret: '12345678901234',
     }
@@ -45,17 +45,17 @@ describe('src | VenueProvidersManager', () => {
     }
 
     providers = [
-      { id: 'DD', requireProviderIdentifier: true, name: 'Cinema provider' },
-      { id: 'EE', requireProviderIdentifier: true, name: 'Movies provider' },
+      { id: 'providerId1', requireProviderIdentifier: true, name: 'Cinema provider' },
+      { id: 'providerId2', requireProviderIdentifier: true, name: 'Movies provider' },
     ]
     venueProviders = []
-    providersApi.loadProviders.mockResolvedValue(providers)
-    providersApi.loadVenueProviders.mockResolvedValue(venueProviders)
+    pcApi.loadProviders.mockResolvedValue(providers)
+    pcApi.loadVenueProviders.mockResolvedValue(venueProviders)
   })
 
   afterEach(() => {
-    providersApi.loadProviders.mockClear()
-    providersApi.loadVenueProviders.mockClear()
+    pcApi.loadProviders.mockClear()
+    pcApi.loadVenueProviders.mockClear()
   })
 
   it('should retrieve providers and venue providers when component is mounted', async () => {
@@ -63,17 +63,17 @@ describe('src | VenueProvidersManager', () => {
     await renderVenueProvidersManager(props)
 
     // then
-    expect(providersApi.loadProviders).toHaveBeenCalledTimes(1)
-    expect(providersApi.loadVenueProviders).toHaveBeenCalledTimes(1)
+    expect(pcApi.loadProviders).toHaveBeenCalledTimes(1)
+    expect(pcApi.loadVenueProviders).toHaveBeenCalledTimes(1)
   })
 
   describe('when venue has providers synchronized', () => {
     it('should display the list of synchronized providers', async () => {
       // given
       venueProviders = [
-        { id: 'AD', provider: { id: 'fnac', name: 'FNAC' }, venueId: props.venue.id },
+        { id: 'AD', provider: { id: 'providerId', name: 'FNAC' }, venueId: props.venue.id },
       ]
-      providersApi.loadVenueProviders.mockResolvedValue(venueProviders)
+      pcApi.loadVenueProviders.mockResolvedValue(venueProviders)
 
       // when
       await renderVenueProvidersManager(props)
@@ -86,9 +86,9 @@ describe('src | VenueProvidersManager', () => {
     it('should not show import button', async () => {
       // Given
       venueProviders = [
-        { id: 'AD', provider: { id: 'titelive', name: 'TiteLive' }, venueId: props.venue.id },
+        { id: 'AD', provider: { id: 'providerId', name: 'TiteLive' }, venueId: props.venue.id },
       ]
-      providersApi.loadVenueProviders.mockResolvedValue(venueProviders)
+      pcApi.loadVenueProviders.mockResolvedValue(venueProviders)
 
       // when
       await renderVenueProvidersManager(props)
@@ -102,7 +102,7 @@ describe('src | VenueProvidersManager', () => {
     it('should not show import button when no providers are given', async () => {
       // given
       providers = []
-      providersApi.loadProviders.mockResolvedValue(providers)
+      pcApi.loadProviders.mockResolvedValue(providers)
 
       // when
       await renderVenueProvidersManager(props)
@@ -139,8 +139,8 @@ describe('src | VenueProvidersManager', () => {
     describe('when selecting a provider', () => {
       it('should display the allocine form when the user choose Allocine onChange', async () => {
         // given
-        providers = [{ id: 'allocine', name: 'Allociné', lastSyncDate: '2020-01-01' }]
-        providersApi.loadProviders.mockResolvedValue(providers)
+        providers = [{ id: 'providerId', name: 'Allociné', lastSyncDate: '2020-01-01' }]
+        pcApi.loadProviders.mockResolvedValue(providers)
         await renderVenueProvidersManager(props)
         const importOffersButton = screen.getByText('Importer des offres')
         fireEvent.click(importOffersButton)
@@ -157,8 +157,8 @@ describe('src | VenueProvidersManager', () => {
 
       it('should display the allocine form when the user choose Allocine onBlur', async () => {
         // given
-        providers = [{ id: 'allocine', name: 'Allociné', lastSyncDate: '2020-01-01' }]
-        providersApi.loadProviders.mockResolvedValue(providers)
+        providers = [{ id: 'providerId', name: 'Allociné', lastSyncDate: '2020-01-01' }]
+        pcApi.loadProviders.mockResolvedValue(providers)
         await renderVenueProvidersManager(props)
         const importOffersButton = screen.getByText('Importer des offres')
         fireEvent.click(importOffersButton)
@@ -176,9 +176,9 @@ describe('src | VenueProvidersManager', () => {
       it('should display the stock form when the user choose another provider than Allociné', async () => {
         // given
         providers = [
-          { id: 'titelive', name: 'TiteLive Stocks (Epagine / Place des libraires.com)' },
+          { id: 'providerId', name: 'TiteLive Stocks (Epagine / Place des libraires.com)' },
         ]
-        providersApi.loadProviders.mockResolvedValue(providers)
+        pcApi.loadProviders.mockResolvedValue(providers)
         await renderVenueProvidersManager(props)
         const importOffersButton = screen.getByText('Importer des offres')
         fireEvent.click(importOffersButton)

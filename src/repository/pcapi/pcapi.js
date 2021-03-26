@@ -219,3 +219,18 @@ export const setPassword = (token, newPassword) => {
 export const setHasSeenTutos = userId => {
   return client.patch(`/users/${userId}/tuto-seen`)
 }
+
+//
+// Providers
+//
+export const createVenueProvider = async venueProvider => {
+  return client.post('/venueProviders', venueProvider)
+}
+
+export const loadProviders = async venueId => {
+  return client.get(`/providers/${venueId}`)
+}
+
+export const loadVenueProviders = async venueId => {
+  return client.get(`/venueProviders?venueId=${venueId}`)
+}

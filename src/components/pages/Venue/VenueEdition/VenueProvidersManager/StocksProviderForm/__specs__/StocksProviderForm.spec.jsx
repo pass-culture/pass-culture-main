@@ -5,12 +5,12 @@ import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
 import NotificationV1Container from 'components/layout/NotificationV1/NotificationV1Container'
-import * as providersApi from 'repository/pcapi/providersApi'
+import * as pcApi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
 import VenueProvidersManagerContainer from '../../VenueProvidersManagerContainer'
 
-jest.mock('repository/pcapi/providersApi', () => ({
+jest.mock('repository/pcapi/pcapi', () => ({
   createVenueProvider: jest.fn(),
   loadProviders: jest.fn(),
   loadVenueProviders: jest.fn(),
@@ -35,8 +35,8 @@ describe('src | StocksProviderForm', () => {
 
   beforeEach(async () => {
     const venue = {
-      id: 'AB',
-      managingOffererId: 'BA',
+      id: 'venueId',
+      managing_offerer_id: 'managing_offerer_id',
       name: 'Le lieu',
       siret: '12345678901234',
     }
@@ -45,17 +45,17 @@ describe('src | StocksProviderForm', () => {
       venue,
     }
 
-    providersApi.loadVenueProviders.mockResolvedValue([])
-    provider = { id: 'ABC', name: 'TiteLive Stocks (Epagine / Place des libraires.com)' }
-    providersApi.loadProviders.mockResolvedValue([provider])
+    pcApi.loadVenueProviders.mockResolvedValue([])
+    provider = { id: 'providerId', name: 'TiteLive Stocks (Epagine / Place des libraires.com)' }
+    pcApi.loadProviders.mockResolvedValue([provider])
 
     await renderVenueProvidersManager(props)
   })
 
   afterEach(() => {
-    providersApi.loadVenueProviders.mockReset()
-    providersApi.loadProviders.mockReset()
-    providersApi.createVenueProvider.mockReset()
+    pcApi.loadVenueProviders.mockReset()
+    pcApi.loadProviders.mockReset()
+    pcApi.createVenueProvider.mockReset()
   })
 
   const renderStocksProviderForm = async () => {
@@ -72,13 +72,13 @@ describe('src | StocksProviderForm', () => {
     // then
     expect(screen.queryByRole('button', { name: 'Importer' })).toBeInTheDocument()
     expect(screen.queryByText('Compte')).toBeInTheDocument()
-    expect(screen.queryByText('12345678901234')).toBeInTheDocument()
+    expect(screen.queryByText(props.venue.siret)).toBeInTheDocument()
   })
 
   describe('on form submit', () => {
     it('should display the spinner while waiting for server response', async () => {
       // given
-      providersApi.createVenueProvider.mockReturnValue(new Promise(() => {}))
+      pcApi.createVenueProvider.mockReturnValue(new Promise(() => {}))
       await renderStocksProviderForm()
       const submitButton = screen.getByRole('button', { name: 'Importer' })
 
@@ -87,7 +87,7 @@ describe('src | StocksProviderForm', () => {
 
       // then
       expect(screen.getByText('Vérification de votre rattachement')).toBeInTheDocument()
-      expect(providersApi.createVenueProvider).toHaveBeenCalledWith({
+      expect(pcApi.createVenueProvider).toHaveBeenCalledWith({
         providerId: provider.id,
         venueId: props.venue.id,
         venueIdAtOfferProvider: props.venue.siret,
@@ -97,13 +97,13 @@ describe('src | StocksProviderForm', () => {
     it('should remove the spinner when the server has responded', async () => {
       // given
       const createdVenueProvider = {
-        id: 'AQ',
+        id: 'venueProviderId',
         provider,
         providerId: provider.id,
         venueId: props.venue.id,
         venueIdAtOfferProvider: props.venue.siret,
       }
-      providersApi.createVenueProvider.mockResolvedValue(createdVenueProvider)
+      pcApi.createVenueProvider.mockResolvedValue(createdVenueProvider)
       await renderStocksProviderForm()
       const submitButton = screen.getByRole('button', { name: 'Importer' })
 
@@ -120,7 +120,7 @@ describe('src | StocksProviderForm', () => {
         errors: { provider: ['error message'] },
         status: 400,
       }
-      providersApi.createVenueProvider.mockRejectedValue(apiError)
+      pcApi.createVenueProvider.mockRejectedValue(apiError)
       await renderStocksProviderForm()
       const submitButton = screen.getByRole('button', { name: 'Importer' })
 

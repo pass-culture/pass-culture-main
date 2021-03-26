@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
-import * as providersApi from 'repository/pcapi/providersApi'
+import * as pcApi from 'repository/pcapi/pcapi'
 import { showNotificationV1 } from 'store/reducers/notificationReducer'
 
 import { getRequestErrorStringFromErrors } from '../utils/getRequestErrorStringFromErrors'
@@ -11,7 +11,7 @@ import AllocineProviderForm from './AllocineProviderForm'
 
 export const mapDispatchToProps = dispatch => ({
   createVenueProvider: payload =>
-    providersApi.createVenueProvider(payload).then(venueProvider => {
+    pcApi.createVenueProvider(payload).then(venueProvider => {
       dispatch({
         type: 'SET_VENUE_PROVIDERS',
         payload: [venueProvider],
