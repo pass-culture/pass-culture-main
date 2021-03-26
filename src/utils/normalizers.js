@@ -13,32 +13,6 @@ export const bookingNormalizer = {
   user: 'users',
 }
 
-export const productNormalizer = {
-  offers: 'offers',
-}
-
-export const offerNormalizer = {
-  mediations: 'mediations',
-  product: {
-    normalizer: productNormalizer,
-    stateKey: 'products',
-  },
-  stocks: 'stocks',
-  venue: {
-    normalizer: {
-      managingOfferer: 'offerers',
-    },
-    stateKey: 'venues',
-  },
-}
-
-export const mediationNormalizer = {
-  product: {
-    normalizer: productNormalizer,
-    stateKey: 'products',
-  },
-}
-
 export const offererNormalizer = {
   managedVenues: {
     normalizer: {
@@ -56,5 +30,4 @@ export const venueNormalizer = {
     },
     stateKey: 'offers',
   },
-  venueProviders: 'venueProviders',
 }

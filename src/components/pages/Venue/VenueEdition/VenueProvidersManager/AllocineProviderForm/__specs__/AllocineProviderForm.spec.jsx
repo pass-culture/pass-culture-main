@@ -6,7 +6,7 @@ import { MemoryRouter } from 'react-router'
 import ReactTooltip from 'react-tooltip'
 
 import NotificationV1Container from 'components/layout/NotificationV1/NotificationV1Container'
-import * as pcApi from 'repository/pcapi/pcapi'
+import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
 import VenueProvidersManagerContainer from '../../VenueProvidersManagerContainer'
@@ -17,7 +17,7 @@ jest.mock('repository/pcapi/pcapi', () => ({
   loadVenueProviders: jest.fn(),
 }))
 
-const renderVenueProvidersManager = async props => {
+const renderVenueProvidersManagerContainer = async props => {
   await act(async () => {
     await render(
       <Provider store={configureTestStore()}>
@@ -48,10 +48,10 @@ describe('components | AllocineProviderForm', () => {
       venue,
     }
 
-    pcApi.loadVenueProviders.mockResolvedValue([])
+    pcapi.loadVenueProviders.mockResolvedValue([])
 
     provider = { id: 'providerId', name: 'Allociné' }
-    pcApi.loadProviders.mockResolvedValue([provider])
+    pcapi.loadProviders.mockResolvedValue([provider])
     createdVenueProvider = {
       id: 'venueProviderId',
       provider,
@@ -59,15 +59,15 @@ describe('components | AllocineProviderForm', () => {
       venueId: props.venue.id,
       venueIdAtOfferProvider: props.venue.siret,
     }
-    pcApi.createVenueProvider.mockResolvedValue(createdVenueProvider)
+    pcapi.createVenueProvider.mockResolvedValue(createdVenueProvider)
 
-    await renderVenueProvidersManager(props)
+    await renderVenueProvidersManagerContainer(props)
   })
 
   afterEach(() => {
-    pcApi.loadVenueProviders.mockReset()
-    pcApi.loadProviders.mockReset()
-    pcApi.createVenueProvider.mockReset()
+    pcapi.loadVenueProviders.mockReset()
+    pcapi.loadProviders.mockReset()
+    pcapi.createVenueProvider.mockReset()
   })
 
   const renderAllocineProviderForm = async () => {
@@ -123,6 +123,7 @@ describe('components | AllocineProviderForm', () => {
   it('should be able to submit when price field is filled', async () => {
     // given
     await renderAllocineProviderForm()
+    console.log(await pcapi.loadProviders().then(value => value))
     const offerImportButton = screen.getByRole('button', { name: 'Importer les offres' })
     const priceField = screen.getByLabelText('Prix de vente/place', { exact: false })
     const quantityField = screen.getByLabelText('Nombre de places/séance')
@@ -135,7 +136,7 @@ describe('components | AllocineProviderForm', () => {
     fireEvent.click(offerImportButton)
 
     // then
-    expect(pcApi.createVenueProvider).toHaveBeenCalledWith({
+    expect(pcapi.createVenueProvider).toHaveBeenCalledWith({
       price: 10,
       quantity: 5,
       isDuo: false,
@@ -155,7 +156,7 @@ describe('components | AllocineProviderForm', () => {
     fireEvent.click(offerImportButton)
 
     // then
-    expect(pcApi.createVenueProvider).toHaveBeenCalledWith({
+    expect(pcapi.createVenueProvider).toHaveBeenCalledWith({
       price: 0,
       quantity: undefined,
       isDuo: true,
@@ -175,7 +176,7 @@ describe('components | AllocineProviderForm', () => {
     fireEvent.click(offerImportButton)
 
     // then
-    expect(pcApi.createVenueProvider).toHaveBeenCalledWith({
+    expect(pcapi.createVenueProvider).toHaveBeenCalledWith({
       price: 0.42,
       quantity: undefined,
       isDuo: true,
@@ -195,7 +196,7 @@ describe('components | AllocineProviderForm', () => {
     fireEvent.click(offerImportButton)
 
     // then
-    expect(pcApi.createVenueProvider).toHaveBeenCalledTimes(0)
+    expect(pcapi.createVenueProvider).toHaveBeenCalledTimes(0)
   })
 
   it('should display a notification and unselect provider if there is something wrong with the server', async () => {
@@ -204,7 +205,7 @@ describe('components | AllocineProviderForm', () => {
       errors: { global: ['Le prix ne peut pas être négatif'] },
       status: 400,
     }
-    pcApi.createVenueProvider.mockRejectedValue(apiError)
+    pcapi.createVenueProvider.mockRejectedValue(apiError)
     await renderAllocineProviderForm()
     const offerImportButton = screen.getByRole('button', { name: 'Importer les offres' })
     const priceField = screen.getByLabelText('Prix de vente/place', { exact: false })

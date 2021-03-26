@@ -8,14 +8,7 @@ import NumberField from 'components/layout/form/fields/NumberField'
 import Icon from 'components/layout/Icon'
 import Insert from 'components/layout/Insert/Insert'
 
-const AllocineProviderForm = ({
-  createVenueProvider,
-  history,
-  notify,
-  offererId,
-  providerId,
-  venueId,
-}) => {
+const AllocineProviderForm = ({ createVenueProvider, providerId, venueId }) => {
   const [isLoading, setIsLoading] = useState(false)
 
   const handleSubmit = useCallback(
@@ -33,16 +26,8 @@ const AllocineProviderForm = ({
       setIsLoading(true)
 
       createVenueProvider(payload)
-        .then(() => {
-          setIsLoading(false)
-          history.push(`/structures/${offererId}/lieux/${venueId}`)
-        })
-        .catch(error => {
-          setIsLoading(false)
-          notify(error.errors)
-        })
     },
-    [createVenueProvider, history, notify, offererId, providerId, venueId]
+    [createVenueProvider, providerId, venueId]
   )
 
   const required = useCallback(value => {
@@ -154,9 +139,6 @@ const AllocineProviderForm = ({
 
 AllocineProviderForm.propTypes = {
   createVenueProvider: PropTypes.func.isRequired,
-  history: PropTypes.shape().isRequired,
-  notify: PropTypes.func.isRequired,
-  offererId: PropTypes.string.isRequired,
   providerId: PropTypes.string.isRequired,
   venueId: PropTypes.string.isRequired,
 }

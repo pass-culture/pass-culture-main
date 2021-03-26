@@ -5,7 +5,7 @@ import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
 import NotificationV1Container from 'components/layout/NotificationV1/NotificationV1Container'
-import * as pcApi from 'repository/pcapi/pcapi'
+import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
 import VenueProvidersManagerContainer from '../../VenueProvidersManagerContainer'
@@ -16,7 +16,7 @@ jest.mock('repository/pcapi/pcapi', () => ({
   loadVenueProviders: jest.fn(),
 }))
 
-const renderVenueProvidersManager = async props => {
+const renderVenueProvidersManagerContainer = async props => {
   await act(async () => {
     await render(
       <Provider store={configureTestStore()}>
@@ -45,17 +45,17 @@ describe('src | StocksProviderForm', () => {
       venue,
     }
 
-    pcApi.loadVenueProviders.mockResolvedValue([])
+    pcapi.loadVenueProviders.mockResolvedValue([])
     provider = { id: 'providerId', name: 'TiteLive Stocks (Epagine / Place des libraires.com)' }
-    pcApi.loadProviders.mockResolvedValue([provider])
+    pcapi.loadProviders.mockResolvedValue([provider])
 
-    await renderVenueProvidersManager(props)
+    await renderVenueProvidersManagerContainer(props)
   })
 
   afterEach(() => {
-    pcApi.loadVenueProviders.mockReset()
-    pcApi.loadProviders.mockReset()
-    pcApi.createVenueProvider.mockReset()
+    pcapi.loadVenueProviders.mockReset()
+    pcapi.loadProviders.mockReset()
+    pcapi.createVenueProvider.mockReset()
   })
 
   const renderStocksProviderForm = async () => {
@@ -78,7 +78,7 @@ describe('src | StocksProviderForm', () => {
   describe('on form submit', () => {
     it('should display the spinner while waiting for server response', async () => {
       // given
-      pcApi.createVenueProvider.mockReturnValue(new Promise(() => {}))
+      pcapi.createVenueProvider.mockReturnValue(new Promise(() => {}))
       await renderStocksProviderForm()
       const submitButton = screen.getByRole('button', { name: 'Importer' })
 
@@ -87,7 +87,7 @@ describe('src | StocksProviderForm', () => {
 
       // then
       expect(screen.getByText('Vérification de votre rattachement')).toBeInTheDocument()
-      expect(pcApi.createVenueProvider).toHaveBeenCalledWith({
+      expect(pcapi.createVenueProvider).toHaveBeenCalledWith({
         providerId: provider.id,
         venueId: props.venue.id,
         venueIdAtOfferProvider: props.venue.siret,
@@ -103,7 +103,7 @@ describe('src | StocksProviderForm', () => {
         venueId: props.venue.id,
         venueIdAtOfferProvider: props.venue.siret,
       }
-      pcApi.createVenueProvider.mockResolvedValue(createdVenueProvider)
+      pcapi.createVenueProvider.mockResolvedValue(createdVenueProvider)
       await renderStocksProviderForm()
       const submitButton = screen.getByRole('button', { name: 'Importer' })
 
@@ -120,7 +120,7 @@ describe('src | StocksProviderForm', () => {
         errors: { provider: ['error message'] },
         status: 400,
       }
-      pcApi.createVenueProvider.mockRejectedValue(apiError)
+      pcapi.createVenueProvider.mockRejectedValue(apiError)
       await renderStocksProviderForm()
       const submitButton = screen.getByRole('button', { name: 'Importer' })
 

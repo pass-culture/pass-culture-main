@@ -3,16 +3,7 @@ import React, { useState, useCallback } from 'react'
 
 import Spinner from 'components/layout/Spinner'
 
-const StocksProviderForm = ({
-  cancelProviderSelection,
-  createVenueProvider,
-  historyPush,
-  notify,
-  offererId,
-  providerId,
-  siret,
-  venueId,
-}) => {
+const StocksProviderForm = ({ createVenueProvider, providerId, siret, venueId }) => {
   const [isCheckingApi, setIsCheckingApi] = useState(false)
 
   const handleFormSubmit = useCallback(
@@ -28,24 +19,8 @@ const StocksProviderForm = ({
       }
 
       createVenueProvider(payload)
-        .then(() => {
-          historyPush(`/structures/${offererId}/lieux/${venueId}`)
-        })
-        .catch(error => {
-          notify(error.errors)
-          cancelProviderSelection()
-        })
     },
-    [
-      cancelProviderSelection,
-      createVenueProvider,
-      historyPush,
-      notify,
-      offererId,
-      providerId,
-      siret,
-      venueId,
-    ]
+    [createVenueProvider, providerId, siret, venueId]
   )
 
   if (isCheckingApi) {
@@ -78,11 +53,7 @@ const StocksProviderForm = ({
 }
 
 StocksProviderForm.propTypes = {
-  cancelProviderSelection: PropTypes.func.isRequired,
   createVenueProvider: PropTypes.func.isRequired,
-  historyPush: PropTypes.func.isRequired,
-  notify: PropTypes.func.isRequired,
-  offererId: PropTypes.string.isRequired,
   providerId: PropTypes.string.isRequired,
   siret: PropTypes.string.isRequired,
   venueId: PropTypes.string.isRequired,

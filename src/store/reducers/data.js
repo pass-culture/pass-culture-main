@@ -4,8 +4,6 @@ const GET_DESK_BOOKINGS = 'GET_DESK_BOOKINGS'
 const SET_MEDIATIONS = 'SET_MEDIATIONS'
 const SET_STOCKS = 'SET_STOCKS'
 const SET_VENUES = 'SET_VENUES'
-const SET_PROVIDERS = 'SET_PROVIDERS'
-const SET_VENUE_PROVIDERS = 'SET_VENUE_PROVIDERS'
 const SET_USERS = 'SET_USERS'
 
 export const initialState = {
@@ -14,7 +12,6 @@ export const initialState = {
   features: [],
   mediations: [],
   offerers: [],
-  providers: [],
   stocks: [],
   things: [],
   types: [],
@@ -22,7 +19,6 @@ export const initialState = {
   userOfferers: [],
   venues: [],
   'venue-types': [],
-  venueProviders: [],
 }
 
 const dataReducer = createDataReducer(initialState)
@@ -57,10 +53,6 @@ const dataAndOffersRecapReducer = (state = initialState, action) => {
       return { ...state, ...{ stocks: action.stocks } }
     case SET_VENUES:
       return { ...state, ...{ venues: action.venues } }
-    case SET_PROVIDERS:
-      return { ...state, ...{ providers: action.payload } }
-    case SET_VENUE_PROVIDERS:
-      return { ...state, ...{ venueProviders: action.payload } }
     case SET_USERS:
       return { ...state, ...{ users: action.users } }
     default:
