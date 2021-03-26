@@ -169,6 +169,7 @@ class OfferResponse(BaseModel):
             "visualDisability": offer.visualDisabilityCompliant,
         }
         offer.expense_domains = get_expense_domains(offer)
+        offer.isExpired = offer.hasBookingLimitDatetimesPassed
 
         if offer.extraData:
             offer.extraData["durationMinutes"] = offer.durationMinutes
@@ -184,6 +185,7 @@ class OfferResponse(BaseModel):
     externalTicketOfficeUrl: Optional[str]
     extraData: Optional[OfferExtraData]
     isActive: bool  # TODO (viconnex): remove field when frontend uses isReleased
+    isExpired: bool
     isReleased: bool
     isSoldOut: bool
     isDigital: bool

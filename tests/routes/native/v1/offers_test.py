@@ -123,6 +123,7 @@ class OffersTest:
             },
             "image": {"url": "http://localhost/storage/thumbs/mediations/N4", "credit": "street credit"},
             "isActive": True,
+            "isExpired": False,
             "isSoldOut": False,
             "isDuo": True,
             "isDigital": False,
@@ -162,6 +163,17 @@ class OffersTest:
             "label": "Musée, arts visuels et patrimoine",
             "name": "VISITE",
         }
+        assert not response.json["isExpired"]
+
+    @freeze_time("2020-01-01")
+    def test_get_expired_offer(self, app):
+        stock = EventStockFactory(beginningDatetime=datetime.utcnow() - timedelta(days=1))
+
+        offer_id = stock.offer.id
+        with assert_num_queries(1):
+            response = TestClient(app.test_client()).get(f"/native/v1/offer/{offer_id}")
+
+        assert response.json["isExpired"]
 
     def test_get_offer_not_found(self, app):
         response = TestClient(app.test_client()).get("/native/v1/offer/1")
