@@ -28,10 +28,10 @@ class RemainingCredit extends PureComponent {
       depositVersion === 1
         ? `Le but du pass Culture est de renforcer tes pratiques culturelles,
                 mais aussi d’en créer de nouvelles. Ces plafonds ont été mis en place
-                pour favoriser la diversification des pratiques culturelles.`
+                pour favoriser la diversification des pratiques culturelles. Aucune dérogation à ces plafonds n'est possible.`
         : `Le but du pass Culture est de renforcer tes pratiques culturelles,
                 mais aussi d’en créer de nouvelles. Ce plafond a été mis en place
-                pour favoriser la diversification des pratiques culturelles.`
+                pour favoriser la diversification des pratiques culturelles. Aucune dérogation à ce plafond n'est possible.`
 
     return (
       <div className="rc-read-more">
