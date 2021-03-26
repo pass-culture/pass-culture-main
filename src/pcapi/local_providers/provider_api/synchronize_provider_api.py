@@ -18,7 +18,6 @@ from pcapi.core.offers.repository import get_offers_map_by_id_at_providers
 from pcapi.core.offers.repository import get_products_map_by_id_at_providers
 from pcapi.core.offers.repository import get_stocks_by_id_at_providers
 from pcapi.infrastructure.repository.stock_provider.provider_api import ProviderAPI
-from pcapi.local_providers import TiteLiveStocks
 from pcapi.models import Product
 from pcapi.models import Venue
 from pcapi.models.db import db
@@ -33,7 +32,7 @@ from pcapi.validation.models.entity_validator import validate
 logger = logging.getLogger(__name__)
 
 
-def check_siret_can_be_synchronized(siret: str, provider: Provider):
+def check_siret_can_be_synchronized(siret: str, provider: Provider) -> bool:
     provider_api = provider.getProviderAPI()
     return provider_api.is_siret_registered(siret)
 
@@ -49,7 +48,7 @@ def synchronize_venue_provider(venue_provider: VenueProvider) -> None:
 
     stats = {"new_offers": 0, "new_stocks": 0, "updated_stocks": 0}
     for raw_stocks in _get_stocks_by_batch(venue.siret, provider_api, venue_provider.lastSyncDate):
-        stock_details = _build_stock_details_from_raw_stocks(raw_stocks, venue.siret, provider)
+        stock_details = _build_stock_details_from_raw_stocks(raw_stocks, venue.siret)
 
         products_provider_references = [stock_detail["products_provider_reference"] for stock_detail in stock_details]
         products_by_provider_reference = get_products_map_by_id_at_providers(products_provider_references)
@@ -74,9 +73,11 @@ def synchronize_venue_provider(venue_provider: VenueProvider) -> None:
 
         stocks_provider_references = [stock["stocks_provider_reference"] for stock in stock_details]
         stocks_by_provider_reference = get_stocks_by_id_at_providers(stocks_provider_references)
-
         update_stock_mapping, new_stocks, offer_ids = _get_stocks_to_upsert(
-            stock_details, stocks_by_provider_reference, offers_by_provider_reference
+            stock_details,
+            stocks_by_provider_reference,
+            offers_by_provider_reference,
+            products_by_provider_reference,
         )
 
         db.session.bulk_save_objects(new_stocks)
@@ -122,22 +123,15 @@ def _get_stocks_by_batch(siret: str, provider_api: ProviderAPI, modified_since: 
         last_processed_provider_reference = raw_stocks[-1]["ref"]
 
 
-def _build_stock_details_from_raw_stocks(raw_stocks: List[Dict], venue_siret: str, provider: Provider) -> List[Dict]:
+def _build_stock_details_from_raw_stocks(raw_stocks: List[Dict], venue_siret: str) -> List[Dict]:
     stock_details = []
     for stock in raw_stocks:
-
-        if provider.name == TiteLiveStocks.name:
-            price = stock["price"] / 100
-        else:
-            price = stock["price"]
-
         stock_details.append(
             {
                 "products_provider_reference": stock["ref"],
                 "offers_provider_reference": stock["ref"] + "@" + venue_siret,
                 "stocks_provider_reference": stock["ref"] + "@" + venue_siret,
                 "available_quantity": stock["available"],
-                "price": price,
             }
         )
 
@@ -175,26 +169,33 @@ def _get_stocks_to_upsert(
     stock_details: List[Dict],
     stocks_by_provider_reference: Dict[str, Dict],
     offers_by_provider_reference: Dict[str, int],
+    products_by_provider_reference: Dict[str, Product],
 ) -> Tuple[List[Dict], List[Stock], Set[int]]:
     update_stock_mapping = []
     new_stocks = []
     offer_ids = set()
 
     for stock_detail in stock_details:
-        if stock_detail["stocks_provider_reference"] in stocks_by_provider_reference:
-            stock = stocks_by_provider_reference[stock_detail["stocks_provider_reference"]]
+        stock_provider_reference = stock_detail["stocks_provider_reference"]
+        product = products_by_provider_reference[stock_detail["products_provider_reference"]]
+        book_price = product.extraData["prix_livre"]
+        if stock_provider_reference in stocks_by_provider_reference:
+            stock = stocks_by_provider_reference[stock_provider_reference]
+
             update_stock_mapping.append(
                 {
                     "id": stock["id"],
                     "quantity": stock_detail["available_quantity"] + stock["booking_quantity"],
-                    "price": stock_detail["price"],
+                    "price": book_price,
                 }
             )
             offer_ids.add(offers_by_provider_reference[stock_detail["offers_provider_reference"]])
 
         else:
             stock = _build_stock_from_stock_detail(
-                stock_detail, offers_by_provider_reference[stock_detail["offers_provider_reference"]]
+                stock_detail,
+                offers_by_provider_reference[stock_detail["offers_provider_reference"]],
+                book_price,
             )
             if not _validate_stock_or_offer(stock):
                 continue
@@ -205,12 +206,12 @@ def _get_stocks_to_upsert(
     return update_stock_mapping, new_stocks, offer_ids
 
 
-def _build_stock_from_stock_detail(stock_detail: Dict, offers_id: int) -> Stock:
+def _build_stock_from_stock_detail(stock_detail: Dict, offers_id: int, price: float) -> Stock:
     return Stock(
         quantity=stock_detail["available_quantity"],
         bookingLimitDatetime=None,
         offerId=offers_id,
-        price=stock_detail["price"],
+        price=price,
         dateModified=datetime.now(),
         idAtProviders=stock_detail["stocks_provider_reference"],
     )

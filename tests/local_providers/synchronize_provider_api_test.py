@@ -1,3 +1,4 @@
+from decimal import Decimal
 from unittest import mock
 
 from flask import current_app as app
@@ -11,10 +12,8 @@ from pcapi.core.offers import factories
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import Offer
 from pcapi.core.testing import override_features
-from pcapi.local_providers import TiteLiveStocks
 from pcapi.local_providers.provider_api import synchronize_provider_api
 from pcapi.models import ThingType
-from pcapi.models import VenueProvider
 from pcapi.models.product import Product
 
 
@@ -55,16 +54,23 @@ provider_responses = [
 ]
 
 
-def create_product(isbn, **kwargs):
-    return factories.ProductFactory(idAtProviders=isbn, type=str(ThingType.LIVRE_EDITION), **kwargs)
+def create_product(isbn, product_price, **kwargs):
+    return factories.ProductFactory(
+        idAtProviders=isbn,
+        type=str(ThingType.LIVRE_EDITION),
+        extraData={"prix_livre": product_price},
+        **kwargs,
+    )
 
 
-def create_offer(isbn, siret):
-    return factories.OfferFactory(product=create_product(isbn), idAtProviders=f"{isbn}@{siret}")
+def create_offer(isbn, siret, product_price):
+    return factories.OfferFactory(product=create_product(isbn, product_price), idAtProviders=f"{isbn}@{siret}")
 
 
-def create_stock(isbn, siret, **kwargs):
-    return factories.StockFactory(offer=create_offer(isbn, siret), idAtProviders=f"{isbn}@{siret}", **kwargs)
+def create_stock(isbn, siret, product_price, **kwargs):
+    return factories.StockFactory(
+        offer=create_offer(isbn, siret, product_price), idAtProviders=f"{isbn}@{siret}", **kwargs
+    )
 
 
 class ProviderAPICronTest:
@@ -81,13 +87,18 @@ class ProviderAPICronTest:
         )
         siret = venue_provider.venue.siret
 
-        stock = create_stock(ISBNs[0], siret, quantity=20)
-        offer = create_offer(ISBNs[1], siret)
-        product = create_product(ISBNs[2])
-        create_product(ISBNs[4])
-        create_product(ISBNs[6], isGcuCompatible=False)
+        stock = create_stock(
+            ISBNs[0],
+            siret,
+            quantity=20,
+            product_price=5.01,
+        )
+        offer = create_offer(ISBNs[1], siret, product_price=5.02)
+        product = create_product(ISBNs[2], product_price=8.01)
+        create_product(ISBNs[4], product_price=10.02)
+        create_product(ISBNs[6], isGcuCompatible=False, product_price=10.04)
 
-        stock_with_booking = create_stock(ISBNs[5], siret, quantity=20)
+        stock_with_booking = create_stock(ISBNs[5], siret, quantity=20, product_price=18.01)
         BookingFactory(stock=stock_with_booking)
         BookingFactory(stock=stock_with_booking, quantity=2)
 
@@ -127,11 +138,11 @@ class ProviderAPICronTest:
         assert stock_with_booking.quantity == 17 + 1 + 2
 
         # Test fill stock attributes
-        assert created_stock.price == 30
+        assert created_stock.price == Decimal("5.02")
         assert created_stock.idAtProviders == f"{ISBNs[1]}@{siret}"
 
         # Test override stock price attribute
-        assert stock.price == 35
+        assert stock.price == Decimal("5.01")
 
         # Test fill offers attributes
         assert created_offer.bookingEmail == venue_provider.venue.bookingEmail
@@ -218,30 +229,38 @@ class ProviderAPICronTest:
                 "offers_provider_reference": "offer_ref1",
                 "available_quantity": 15,
                 "price": 15.78,
+                "products_provider_reference": "product_ref1",
                 "stocks_provider_reference": "stock_ref1",
             },
             {
                 "available_quantity": 17,
                 "offers_provider_reference": "offer_ref2",
                 "price": 28.989,
-                "products_provider_reference": "product_ref",
+                "products_provider_reference": "product_ref2",
                 "stocks_provider_reference": "stock_ref2",
             },
         ]
 
         stocks_by_provider_reference = {"stock_ref1": {"id": 1, "booking_quantity": 3}}
         offers_by_provider_reference = {"offer_ref1": 123, "offer_ref2": 134}
+        products_by_provider_reference = {
+            "product_ref1": Product(extraData={"prix_livre": 7.01}),
+            "product_ref2": Product(extraData={"prix_livre": 9.02}),
+        }
 
         # When
         update_stock_mapping, new_stocks, offer_ids = synchronize_provider_api._get_stocks_to_upsert(
-            stock_details, stocks_by_provider_reference, offers_by_provider_reference
+            stock_details,
+            stocks_by_provider_reference,
+            offers_by_provider_reference,
+            products_by_provider_reference,
         )
 
         assert update_stock_mapping == [
             {
                 "id": 1,
                 "quantity": 15 + 3,
-                "price": 15.78,
+                "price": 7.01,
             }
         ]
 
@@ -249,7 +268,7 @@ class ProviderAPICronTest:
         assert new_stock.quantity == 17
         assert new_stock.bookingLimitDatetime is None
         assert new_stock.offerId == 134
-        assert new_stock.price == 28.989
+        assert new_stock.price == 9.02
         assert new_stock.idAtProviders == "stock_ref2"
 
         assert offer_ids == set([123, 134])
@@ -258,62 +277,25 @@ class ProviderAPICronTest:
         @pytest.mark.usefixtures("db_session")
         def test_build_stock_details_from_raw_stocks(self):
             # Given
-            provider = offerers_factories.ProviderFactory(localClass="TestLocalProvider")
             raw_stocks = [
                 {"ref": ISBNs[4], "available": 17, "price": 23.989},
                 {"ref": ISBNs[5], "available": 17, "price": 28.989},
             ]
 
             # When
-            result = synchronize_provider_api._build_stock_details_from_raw_stocks(raw_stocks, "siret", provider)
+            result = synchronize_provider_api._build_stock_details_from_raw_stocks(raw_stocks, "siret")
 
             # Then
             assert result == [
                 {
                     "available_quantity": 17,
                     "offers_provider_reference": "3010000108123@siret",
-                    "price": 23.989,
                     "products_provider_reference": "3010000108123",
                     "stocks_provider_reference": "3010000108123@siret",
                 },
                 {
                     "available_quantity": 17,
                     "offers_provider_reference": "3010000108124@siret",
-                    "price": 28.989,
-                    "products_provider_reference": "3010000108124",
-                    "stocks_provider_reference": "3010000108124@siret",
-                },
-            ]
-
-        @pytest.mark.usefixtures("db_session")
-        def test_adjust_price_from_titelive_stocks(self):
-            # Given
-            venue_provider = VenueProvider()
-            venue_provider.venue = VenueFactory()
-            provider = TiteLiveStocks(venue_provider)
-            raw_stocks = [
-                {"ref": ISBNs[4], "available": 17, "price": 2398},
-                {"ref": ISBNs[5], "available": 17, "price": 2898},
-            ]
-
-            # When
-            result = synchronize_provider_api._build_stock_details_from_raw_stocks(
-                raw_stocks, "siret", provider=provider
-            )
-
-            # Then
-            assert result == [
-                {
-                    "available_quantity": 17,
-                    "offers_provider_reference": "3010000108123@siret",
-                    "price": 23.98,
-                    "products_provider_reference": "3010000108123",
-                    "stocks_provider_reference": "3010000108123@siret",
-                },
-                {
-                    "available_quantity": 17,
-                    "offers_provider_reference": "3010000108124@siret",
-                    "price": 28.98,
                     "products_provider_reference": "3010000108124",
                     "stocks_provider_reference": "3010000108124@siret",
                 },

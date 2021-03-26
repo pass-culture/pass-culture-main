@@ -29,7 +29,6 @@ def check_provider_api(url, siret, token):
     assert isinstance(stock, dict), "Chaque stock devrait être un objet (dictionnaire)."
     assert "ref" in stock, 'Chaque stock devrait avoir une clé "ref".'
     assert "available" in stock, 'Chaque stock devrait avoir une clé "available".'
-    assert "price" in stock, 'Chaque stock devrait avoir une clé "price".'
 
     two_stocks = provider_api.stocks(siret, limit=2)
     assert (
