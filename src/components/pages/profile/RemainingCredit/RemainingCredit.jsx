@@ -67,7 +67,7 @@ class RemainingCredit extends PureComponent {
               {`Tu peux encore dépenser jusqu’à${NON_BREAKING_SPACE}:`}
             </div>
             <div className="rc-gauges">
-              {domainsCredit.digital && (
+              {domainsCredit && domainsCredit.digital && (
                 <CreditGauge
                   creditLimit={domainsCredit.digital.initial}
                   extraClassName="gauge-digital"
@@ -77,7 +77,7 @@ class RemainingCredit extends PureComponent {
                   {`en offres\u000Anumériques\u000A(streaming…)`}
                 </CreditGauge>
               )}
-              {domainsCredit.physical && (
+              {domainsCredit && domainsCredit.physical && (
                 <CreditGauge
                   creditLimit={domainsCredit.physical.initial}
                   extraClassName="gauge-physical"
@@ -88,10 +88,10 @@ class RemainingCredit extends PureComponent {
                 </CreditGauge>
               )}
               <CreditGauge
-                creditLimit={domainsCredit.all.initial}
+                creditLimit={domainsCredit ? domainsCredit.all.initial : 0}
                 extraClassName="gauge-total"
                 picto={depositVersion === 1 ? 'picto-ticket' : 'picto-all-goods'}
-                remainingCredit={domainsCredit.all.remaining}
+                remainingCredit={domainsCredit ? domainsCredit.all.remaining : 0}
               >
                 {depositVersion === 1
                   ? 'en sorties\u000A(spectacles…)'
