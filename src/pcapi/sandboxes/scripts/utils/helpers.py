@@ -25,6 +25,7 @@ def get_offer_helper(offer):
             "venueCity": offer.venue.city,
             "venueName": offer.venue.name,
             "thingName": offer.product.name,
+            "status": offer.status.name,
         },
     )
 
