@@ -122,7 +122,16 @@ def count_not_cancelled_bookings_quantity_by_stock_id(stock_id: int) -> int:
 
 def find_expiring_bookings() -> Query:
     today_at_midnight = datetime.combine(date.today(), time(0, 0))
-    return Booking.query.join(Stock).join(Offer).filter(Booking.expirationDate <= today_at_midnight)
+    return (
+        Booking.query.join(Stock)
+        .join(Offer)
+        .filter(
+            ~Booking.isCancelled,
+            ~Booking.isUsed,
+            (Booking.dateCreated + conf.BOOKINGS_AUTO_EXPIRY_DELAY) <= today_at_midnight,
+            Offer.canExpire,
+        )
+    )
 
 
 def find_expiring_bookings_ids() -> Query:
@@ -132,13 +141,17 @@ def find_expiring_bookings_ids() -> Query:
 def find_soon_to_be_expiring_booking_ordered_by_user(given_date: date = None) -> Query:
     given_date = given_date or date.today()
     given_date = datetime.combine(given_date, time(0, 0)) + conf.BOOKINGS_EXPIRY_NOTIFICATION_DELAY
-    given_date_start = datetime.combine(given_date, time(0, 0))
-    given_date_end = datetime.combine(given_date, time(23, 59, 59))
+    window = (datetime.combine(given_date, time(0, 0)), datetime.combine(given_date, time(23, 59, 59)))
 
     return (
         Booking.query.join(Stock)
         .join(Offer)
-        .filter(Booking.expirationDate.between(given_date_start, given_date_end))
+        .filter(
+            ~Booking.isCancelled,
+            ~Booking.isUsed,
+            (Booking.dateCreated + conf.BOOKINGS_AUTO_EXPIRY_DELAY).between(*window),
+            Offer.canExpire,
+        )
         .order_by(Booking.userId)
     )
 
