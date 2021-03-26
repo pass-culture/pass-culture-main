@@ -186,6 +186,7 @@ def _get_stocks_to_upsert(
                 {
                     "id": stock["id"],
                     "quantity": stock_detail["available_quantity"] + stock["booking_quantity"],
+                    "rawProviderQuantity": stock_detail["available_quantity"],
                     "price": book_price,
                 }
             )
@@ -209,6 +210,7 @@ def _get_stocks_to_upsert(
 def _build_stock_from_stock_detail(stock_detail: Dict, offers_id: int, price: float) -> Stock:
     return Stock(
         quantity=stock_detail["available_quantity"],
+        rawProviderQuantity=stock_detail["available_quantity"],
         bookingLimitDatetime=None,
         offerId=offers_id,
         price=price,

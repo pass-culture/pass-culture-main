@@ -105,6 +105,7 @@ WEBAPP_GET_BOOKING_INCLUDES = [
             "isEventExpired",
             "remainingQuantity",
             "-dnBookedQuantity",
+            "-rawProviderQuantity",
             {
                 "key": "offer",
                 "includes": [
@@ -116,7 +117,13 @@ WEBAPP_GET_BOOKING_INCLUDES = [
                     "offerType",
                     {
                         "key": "stocks",
-                        "includes": ["isBookable", "isEventExpired", "remainingQuantity", "-dnBookedQuantity"],
+                        "includes": [
+                            "isBookable",
+                            "isEventExpired",
+                            "remainingQuantity",
+                            "-dnBookedQuantity",
+                            "-rawProviderQuantity",
+                        ],
                     },
                     {"key": "venue", "includes": ["-validationToken"]},
                 ],

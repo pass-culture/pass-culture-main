@@ -98,6 +98,8 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin, VersionedMixin
 
     dnBookedQuantity = Column(BigInteger, nullable=False, server_default=text("0"))
 
+    rawProviderQuantity = Column(Integer, nullable=True)
+
     @property
     def isBookable(self):
         return not self.isExpired and self.offer.isReleased and not self.isSoldOut
