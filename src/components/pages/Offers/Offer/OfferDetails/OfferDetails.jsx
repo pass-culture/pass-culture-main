@@ -13,7 +13,6 @@ import OfferPreview from './OfferPreview/OfferPreview'
 import OfferStatusBanner from './OfferStatusBanner/OfferStatusBanner'
 import OfferThumbnail from './OfferThumbnail/OfferThumbnail'
 
-
 const OfferDetails = ({
   history,
   isUserAdmin,
@@ -118,7 +117,7 @@ const OfferDetails = ({
     ]
   )
 
-  const offerStatus = offer?.status ?? null
+  const offerStatus = offer?.status
   const needsStatusInfosMessage = offerStatus
     ? [OFFER_STATUS.REJECTED, OFFER_STATUS.AWAITING].includes(offerStatus)
     : false

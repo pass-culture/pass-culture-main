@@ -260,6 +260,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           { remainingQuantity: 0, hasBookingLimitDatetimePassed: false },
           { remainingQuantity: 'unlimited', hasBookingLimitDatetimePassed: false },
         ]
+        eventOffer.status = 'SOLD_OUT'
 
         // when
         renderOfferItem(props)
@@ -280,6 +281,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
           { remainingQuantity: 0, hasBookingLimitDatetimePassed: false },
           { remainingQuantity: 12, hasBookingLimitDatetimePassed: false },
         ]
+        eventOffer.status = 'SOLD_OUT'
 
         // when
         renderOfferItem(props)

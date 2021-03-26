@@ -61,46 +61,46 @@ export const OffersStatusFiltersModal = ({
         value={ALL_STATUS}
       />
       <RadioInput
-        checked={status === 'active'}
+        checked={status === 'ACTIVE'}
         label="Active"
         name="status"
         onChange={handleStatusFilterChange}
-        value="active"
+        value="ACTIVE"
       />
       <RadioInput
-        checked={status === 'inactive'}
+        checked={status === 'INACTIVE'}
         label="Inactive"
         name="status"
         onChange={handleStatusFilterChange}
-        value="inactive"
+        value="INACTIVE"
       />
       <RadioInput
-        checked={status === 'soldOut'}
+        checked={status === 'SOLD_OUT'}
         label="Épuisée"
         name="status"
         onChange={handleStatusFilterChange}
-        value="soldOut"
+        value="SOLD_OUT"
       />
       <RadioInput
-        checked={status === 'expired'}
+        checked={status === 'EXPIRED'}
         label="Expirée"
         name="status"
         onChange={handleStatusFilterChange}
-        value="expired"
+        value="EXPIRED"
       />
       <RadioInput
-        checked={status === 'awaiting'}
+        checked={status === 'AWAITING'}
         label="Validation en attente"
         name="status"
         onChange={handleStatusFilterChange}
-        value="awaiting"
+        value="AWAITING"
       />
       <RadioInput
-        checked={status === 'rejected'}
+        checked={status === 'REJECTED'}
         label="Refusée"
         name="status"
         onChange={handleStatusFilterChange}
-        value="rejected"
+        value="REJECTED"
       />
       <button
         className="primary-button"

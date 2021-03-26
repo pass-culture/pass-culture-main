@@ -1,9 +1,9 @@
-export const OFFER_STATUS_ACTIVE = 'active'
-export const OFFER_STATUS_INACTIVE = 'inactive'
-export const OFFER_STATUS_SOLDOUT = 'soldOut'
-export const OFFER_STATUS_EXPIRED = 'expired'
-export const OFFER_STATUS_AWAITING = 'awaiting'
-export const OFFER_STATUS_REJECTED = 'rejected'
+export const OFFER_STATUS_ACTIVE = 'ACTIVE'
+export const OFFER_STATUS_INACTIVE = 'INACTIVE'
+export const OFFER_STATUS_SOLDOUT = 'SOLD_OUT'
+export const OFFER_STATUS_EXPIRED = 'EXPIRED'
+export const OFFER_STATUS_AWAITING = 'AWAITING'
+export const OFFER_STATUS_REJECTED = 'REJECTED'
 export const OFFER_STATUS_LIST = [
   OFFER_STATUS_ACTIVE,
   OFFER_STATUS_INACTIVE,
