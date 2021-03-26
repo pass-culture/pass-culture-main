@@ -7,6 +7,7 @@ import { fetchCurrentUser } from '../../../redux/actions/currentUser'
 import LoadingPage from '../../layout/LoadingPage/LoadingPage'
 import selectIsFeatureDisabled from '../../router/selectors/selectIsFeatureDisabled'
 import { FEATURES } from '../../router/selectors/features'
+import { setUser }from '@sentry/browser'
 
 export default ({
   isRequired,
@@ -21,7 +22,10 @@ export default ({
       dispatchFetchCurrentUser().then(({ value: currentUser }) => {
         const isLoggedIn = !!currentUser
 
-        if (isLoggedIn) handleSuccess({ currentUser, history, isHomepageDisabled, location })
+        if (isLoggedIn) {
+          setUser({ id: currentUser.pk });
+          handleSuccess({ currentUser, history, isHomepageDisabled, location })
+        }
         else handleFail(history, location)
 
         if (!isRequired || isLoggedIn) setLoading(false)
