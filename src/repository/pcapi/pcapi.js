@@ -140,11 +140,12 @@ export const setAllVenueOffersInactivate = async venueId => {
 }
 
 export const getVenuesForOfferer = ({ offererId = null, activeOfferersOnly = false }) => {
-  if (offererId) {
-    return client.get(`/venues?offererId=${offererId}&active_offerers_only=${activeOfferersOnly}`)
-  } else {
-    return client.get(`/venues?validated_for_user=true&active_offerers_only=${activeOfferersOnly}`)
-  }
+  const request = {}
+  offererId ? (request.offererId = offererId) : (request.validatedForUser = true)
+  if (activeOfferersOnly) request.activeOfferersOnly = true
+  const queryParams = stringify(request)
+
+  return client.get(`/venues?${queryParams}`)
 }
 
 export const getVenue = venueId => client.get(`/venues/${venueId}`)
