@@ -9,7 +9,7 @@ from pcapi.repository import repository
 STOCK_BATCH_UPDATE = 100
 
 
-def fully_sync_library(venue_id: int) -> None:
+def fully_sync_venue(venue_id: int) -> None:
     stocks = Stock.query.join(Offer).filter(Offer.venueId == venue_id).filter(Offer.idAtProviders != None).all()
 
     stocks_to_update = []

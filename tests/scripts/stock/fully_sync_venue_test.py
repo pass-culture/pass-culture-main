@@ -9,12 +9,12 @@ from pcapi.core.offers.factories import VenueFactory
 from pcapi.model_creators.generic_creators import create_venue_provider
 from pcapi.model_creators.provider_creators import activate_provider
 from pcapi.repository import repository
-from pcapi.scripts.stock.fully_sync_library import fully_sync_library
+from pcapi.scripts.stock.fully_sync_venue import fully_sync_venue
 
 
-class FullySyncLibraryTest:
+class FullySyncVenueTest:
     @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.scripts.stock.fully_sync_library.synchronize_venue_provider")
+    @patch("pcapi.scripts.stock.fully_sync_venue.synchronize_venue_provider")
     def should_call_synchronize_on_expected_venue_provider(self, mock_synchronize_venue_provider):
         # Given
         venue = VenueFactory()
@@ -26,13 +26,13 @@ class FullySyncLibraryTest:
         repository.save(venue_provider, stock)
 
         # When
-        fully_sync_library(venue_id=venue.id)
+        fully_sync_venue(venue_id=venue.id)
 
         # Then
         mock_synchronize_venue_provider.assert_called_once_with(venue_provider)
 
     @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.scripts.stock.fully_sync_library.synchronize_venue_provider")
+    @patch("pcapi.scripts.stock.fully_sync_venue.synchronize_venue_provider")
     def should_update_quantity_to_booking_amount_for_each_synchronized_stock_on_venue(
         self, mock_synchronize_venue_provider
     ):
@@ -47,7 +47,7 @@ class FullySyncLibraryTest:
         repository.save(venue_provider, booking)
 
         # When
-        fully_sync_library(venue_id=venue.id)
+        fully_sync_venue(venue_id=venue.id)
 
         # Then
         assert stock.quantity == 1
