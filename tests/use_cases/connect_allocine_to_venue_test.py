@@ -1,36 +1,20 @@
 from decimal import Decimal
-from unittest.mock import MagicMock
 
-import pytest
-
-from pcapi.model_creators.generic_creators import create_allocine_pivot
-from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_venue
+from pcapi.core.offers.factories import VenueFactory
+from pcapi.core.providers.factories import AllocinePivotFactory
 from pcapi.model_creators.provider_creators import activate_provider
 from pcapi.models import AllocineVenueProvider
 from pcapi.models import AllocineVenueProviderPriceRule
-from pcapi.repository import repository
 from pcapi.use_cases.connect_venue_to_allocine import connect_venue_to_allocine
 from pcapi.utils.human_ids import humanize
 
 
 class ConnectAllocineToVenueTest:
-    def setup_class(self):
-        self.find_by_id = MagicMock()
-        self.get_theaterid_for_venue = MagicMock()
-
-    @pytest.mark.usefixtures("db_session")
-    def should_connect_venue_to_allocine_provider(self, app):
+    def should_connect_venue_to_allocine_provider(self, app, db_session):
         # Given
-        offerer = create_offerer()
-        venue = create_venue(offerer)
+        venue = VenueFactory()
         provider = activate_provider("AllocineStocks")
-        allocine_pivot = create_allocine_pivot(siret=venue.siret)
-
-        repository.save(venue, allocine_pivot)
-
-        self.find_by_id.return_value = venue
-        self.get_theaterid_for_venue.return_value = allocine_pivot.theaterId
+        AllocinePivotFactory(siret=venue.siret, internalId="PXXXXXX")
 
         venue_provider_payload = {
             "providerId": humanize(provider.id),
@@ -50,4 +34,5 @@ class ConnectAllocineToVenueTest:
         assert allocine_venue_provider.venue == venue
         assert allocine_venue_provider.isDuo
         assert allocine_venue_provider.quantity == 50
+        assert allocine_venue_provider.internalId == "PXXXXXX"
         assert venue_provider_price_rule.price == Decimal("9.99")

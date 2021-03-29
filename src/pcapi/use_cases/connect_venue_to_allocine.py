@@ -6,8 +6,9 @@ from pcapi.models import AllocineVenueProvider
 from pcapi.models import AllocineVenueProviderPriceRule
 from pcapi.models import Venue
 from pcapi.models import VenueProvider
+from pcapi.models.allocine_pivot import AllocinePivot
 from pcapi.repository import repository
-from pcapi.repository.allocine_pivot_queries import get_allocine_theaterId_for_venue
+from pcapi.repository.allocine_pivot_queries import get_allocine_pivot_for_venue
 from pcapi.utils.human_ids import dehumanize
 
 
@@ -16,8 +17,8 @@ ERROR_CODE_SIRET_NOT_SUPPORTED = 422
 
 
 def connect_venue_to_allocine(venue: Venue, venue_provider_payload: Dict) -> AllocineVenueProvider:
-    theater_id = get_allocine_theaterId_for_venue(venue)
-    venue_provider = _create_allocine_venue_provider(theater_id, venue_provider_payload, venue)
+    allocine_pivot = get_allocine_pivot_for_venue(venue)
+    venue_provider = _create_allocine_venue_provider(allocine_pivot, venue_provider_payload, venue)
     venue_provider_price_rule = _create_allocine_venue_provider_price_rule(
         venue_provider, venue_provider_payload.get("price")
     )
@@ -39,13 +40,14 @@ def _create_allocine_venue_provider_price_rule(
 
 
 def _create_allocine_venue_provider(
-    allocine_theater_id: str, venue_provider_payload: Dict, venue: Venue
+    allocine_pivot: AllocinePivot, venue_provider_payload: Dict, venue: Venue
 ) -> AllocineVenueProvider:
     allocine_venue_provider = AllocineVenueProvider()
     allocine_venue_provider.venue = venue
     allocine_venue_provider.providerId = dehumanize(venue_provider_payload["providerId"])
-    allocine_venue_provider.venueIdAtOfferProvider = allocine_theater_id
+    allocine_venue_provider.venueIdAtOfferProvider = allocine_pivot.id
     allocine_venue_provider.isDuo = venue_provider_payload.get("isDuo")
     allocine_venue_provider.quantity = venue_provider_payload.get("quantity")
+    allocine_venue_provider.internalId = allocine_pivot.internalId
 
     return allocine_venue_provider

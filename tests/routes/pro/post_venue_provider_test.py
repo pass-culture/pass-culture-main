@@ -2,11 +2,10 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.core.offers import factories as offer_factories
+from pcapi.core.providers.factories import AllocinePivotFactory
 from pcapi.core.testing import override_features
-from pcapi.model_creators.generic_creators import create_allocine_pivot
-from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_user
-from pcapi.model_creators.generic_creators import create_venue
+from pcapi.core.users import factories as user_factories
 from pcapi.model_creators.generic_creators import create_venue_provider
 from pcapi.model_creators.provider_creators import activate_provider
 from pcapi.models import ApiErrors
@@ -25,17 +24,12 @@ class Post:
         @override_features(SYNCHRONIZE_VENUE_PROVIDER_IN_WORKER=False)
         @patch("pcapi.routes.pro.venue_providers.subprocess.Popen")
         @patch("pcapi.use_cases.connect_venue_to_provider._check_venue_can_be_synchronized_with_provider")
-        @patch("pcapi.routes.pro.venue_providers.find_by_id")
         def when_venue_provider_is_successfully_created_and_using_subprocesses(
-            self, stubbed_find_by_id, stubbed_check, mock_subprocess, app
+            self, stubbed_check, mock_subprocess, app
         ):
             # Given
-            user = create_user(is_admin=True, is_beneficiary=False)
-            offerer = create_offerer()
-            venue = create_venue(offerer, siret="12345678912345")
-            repository.save(venue, user)
-
-            stubbed_find_by_id.return_value = venue
+            user = user_factories.UserFactory(isAdmin=True)
+            venue = offer_factories.VenueFactory(siret="12345678912345")
 
             provider = activate_provider("LibrairesStocks")
 
@@ -72,17 +66,10 @@ class Post:
         @override_features(SYNCHRONIZE_VENUE_PROVIDER_IN_WORKER=True)
         @patch("pcapi.workers.venue_provider_job.venue_provider_job.delay")
         @patch("pcapi.use_cases.connect_venue_to_provider._check_venue_can_be_synchronized_with_provider")
-        @patch("pcapi.routes.pro.venue_providers.find_by_id")
-        def when_venue_provider_is_successfully_created(
-            self, stubbed_find_by_id, stubbed_check, mock_synchronize_venue_provider, app
-        ):
+        def when_venue_provider_is_successfully_created(self, stubbed_check, mock_synchronize_venue_provider, app):
             # Given
-            user = create_user(is_admin=True, is_beneficiary=False)
-            offerer = create_offerer()
-            venue = create_venue(offerer, siret="12345678912345")
-            repository.save(venue, user)
-
-            stubbed_find_by_id.return_value = venue
+            user = user_factories.UserFactory(isAdmin=True)
+            venue = offer_factories.VenueFactory(siret="12345678912345")
 
             provider = activate_provider("LibrairesStocks")
 
@@ -108,19 +95,11 @@ class Post:
             mock_synchronize_venue_provider.assert_called_once_with(dehumanize(venue_provider_id))
 
         @pytest.mark.usefixtures("db_session")
-        @patch("pcapi.routes.pro.venue_providers.find_by_id")
-        @patch("pcapi.use_cases.connect_venue_to_allocine.get_allocine_theaterId_for_venue")
-        def when_add_allocine_stocks_provider_with_price_but_no_isDuo_config(
-            self, stubbed_get_theaterid_for_venue, stubbed_find_by_id, app
-        ):
+        def when_add_allocine_stocks_provider_with_price_but_no_isDuo_config(self, app):
             # Given
-            offerer = create_offerer(siren="775671464")
-            venue = create_venue(offerer)
-            user = create_user(is_admin=True, is_beneficiary=False)
-            allocine_pivot = create_allocine_pivot(siret=venue.siret)
-            repository.save(venue, user, allocine_pivot)
-            stubbed_find_by_id.return_value = venue
-            stubbed_get_theaterid_for_venue.return_value = allocine_pivot.theaterId
+            venue = offer_factories.VenueFactory(managingOfferer__siren="775671464")
+            user = user_factories.UserFactory(isAdmin=True)
+            AllocinePivotFactory(siret=venue.siret)
 
             provider = activate_provider("AllocineStocks")
 
@@ -139,14 +118,11 @@ class Post:
             assert json["venueId"] == humanize(venue_provider.venueId)
 
         @pytest.mark.usefixtures("db_session")
-        @patch("pcapi.routes.pro.venue_providers.find_by_id")
-        def when_add_allocine_stocks_provider_with_default_settings_at_import(self, stubbed_find_by_id, app):
+        def when_add_allocine_stocks_provider_with_default_settings_at_import(self, app):
             # Given
-            offerer = create_offerer(siren="775671464")
-            venue = create_venue(offerer)
-            user = create_user(is_admin=True, is_beneficiary=False)
-            repository.save(venue, user)
-            stubbed_find_by_id.return_value = venue
+            venue = offer_factories.VenueFactory(managingOfferer__siren="775671464")
+            user = user_factories.UserFactory(isAdmin=True)
+            AllocinePivotFactory(siret=venue.siret)
 
             provider = activate_provider("AllocineStocks")
 
@@ -177,8 +153,7 @@ class Post:
 
             mock_check_new_venue_provider_information.side_effect = api_errors
 
-            user = create_user(is_beneficiary=False, is_admin=True)
-            repository.save(user)
+            user = user_factories.UserFactory(isAdmin=True)
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
             venue_provider_data = {
                 "providerId": "B9",
@@ -194,16 +169,13 @@ class Post:
 
         @pytest.mark.usefixtures("db_session")
         @patch("pcapi.use_cases.connect_venue_to_provider._check_venue_can_be_synchronized_with_provider")
-        @patch("pcapi.routes.pro.venue_providers.find_by_id")
-        def when_trying_to_add_existing_provider(self, stubbed_find_by_id, stubbed_check, app):
+        def when_trying_to_add_existing_provider(self, stubbed_check, app):
             # Given
-            user = create_user(is_admin=True, is_beneficiary=False)
-            offerer = create_offerer()
-            venue = create_venue(offerer, siret="12345678912345")
+            user = user_factories.UserFactory(isAdmin=True)
+            venue = offer_factories.VenueFactory(siret="12345678912345")
             provider = activate_provider("LibrairesStocks")
             venue_provider = create_venue_provider(venue, provider, venue_id_at_offer_provider="12345678912345")
-            repository.save(user, venue_provider)
-            stubbed_find_by_id.return_value = venue
+            repository.save(venue_provider)
 
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
             venue_provider_data = {
@@ -220,14 +192,11 @@ class Post:
             assert response.json["global"] == ["Votre lieu est déjà lié à cette source"]
 
         @clean_database
-        @patch("pcapi.routes.pro.venue_providers.find_by_id")
-        def when_add_allocine_stocks_provider_with_wrong_format_price(self, stubbed_find_by_id, app):
+        def when_add_allocine_stocks_provider_with_wrong_format_price(self, app):
             # Given
-            offerer = create_offerer(siren="775671464")
-            venue = create_venue(offerer)
-            user = create_user(is_admin=True, is_beneficiary=False)
-            repository.save(venue, user)
-            stubbed_find_by_id.return_value = venue
+            venue = offer_factories.VenueFactory(managingOfferer__siren="775671464")
+            user = user_factories.UserFactory(isAdmin=True)
+            AllocinePivotFactory(siret=venue.siret)
 
             provider = activate_provider("AllocineStocks")
 
@@ -248,14 +217,11 @@ class Post:
             assert VenueProvider.query.count() == 0
 
         @pytest.mark.usefixtures("db_session")
-        @patch("pcapi.routes.pro.venue_providers.find_by_id")
-        def when_add_allocine_stocks_provider_with_no_price(self, stubbed_find_by_id, app):
+        def when_add_allocine_stocks_provider_with_no_price(self, app):
             # Given
-            offerer = create_offerer(siren="775671464")
-            venue = create_venue(offerer)
-            user = create_user(is_admin=True, is_beneficiary=False)
-            repository.save(venue, user)
-            stubbed_find_by_id.return_value = venue
+            venue = offer_factories.VenueFactory(managingOfferer__siren="775671464")
+            user = user_factories.UserFactory(isAdmin=True)
+            AllocinePivotFactory(siret=venue.siret)
 
             provider = activate_provider("AllocineStocks")
 
@@ -285,13 +251,9 @@ class Post:
 
     class Returns404:
         @pytest.mark.usefixtures("db_session")
-        @patch("pcapi.routes.pro.venue_providers.find_by_id")
-        def when_venue_does_not_exist(self, stubbed_find_by_id, app):
+        def when_venue_does_not_exist(self, app):
             # Given
-            user = create_user(is_admin=True, is_beneficiary=False)
-            offerer = create_offerer(siren="775671464")
-            repository.save(user, offerer)
-            stubbed_find_by_id.return_value = None
+            user = user_factories.UserFactory(isAdmin=True)
 
             provider = activate_provider("LibrairesStocks")
 
@@ -311,14 +273,10 @@ class Post:
     class Returns422:
         @pytest.mark.usefixtures("db_session")
         @patch("pcapi.use_cases.connect_venue_to_provider._check_venue_can_be_synchronized_with_provider")
-        @patch("pcapi.routes.pro.venue_providers.find_by_id")
-        def when_provider_api_not_available(self, stubbed_find_by_id, stubbed_check, app):
+        def when_provider_api_not_available(self, stubbed_check, app):
             # Given
-            user = create_user(is_admin=True, is_beneficiary=False)
-            offerer = create_offerer()
-            venue = create_venue(offerer, siret="12345678912345")
-            repository.save(venue, user)
-            stubbed_find_by_id.return_value = venue
+            user = user_factories.UserFactory(isAdmin=True)
+            venue = offer_factories.VenueFactory(siret="12345678912345")
 
             provider = activate_provider("LibrairesStocks")
 
@@ -350,17 +308,13 @@ class Post:
     class ConnectProviderToVenueTest:
         @pytest.mark.usefixtures("db_session")
         @patch("pcapi.use_cases.connect_venue_to_provider._check_venue_can_be_synchronized_with_provider")
-        @patch("pcapi.routes.pro.venue_providers.find_by_id")
         @patch("pcapi.routes.pro.venue_providers.connect_venue_to_provider")
         def should_inject_the_appropriate_repository_to_the_usecase(
-            self, mocked_connect_venue_to_provider, stubbed_find_by_id, stubbed_check, app
+            self, mocked_connect_venue_to_provider, stubbed_check, app
         ):
             # Given
-            user = create_user(is_admin=True, is_beneficiary=False)
-            offerer = create_offerer()
-            venue = create_venue(offerer, siret="12345678912345")
-            repository.save(venue, user)
-            stubbed_find_by_id.return_value = venue
+            user = user_factories.UserFactory(isAdmin=True)
+            venue = offer_factories.VenueFactory(siret="12345678912345")
 
             provider = activate_provider("LibrairesStocks")
 
@@ -380,25 +334,17 @@ class Post:
 
         @pytest.mark.usefixtures("db_session")
         @patch("pcapi.use_cases.connect_venue_to_provider._check_venue_can_be_synchronized_with_provider")
-        @patch("pcapi.use_cases.connect_venue_to_allocine.get_allocine_theaterId_for_venue")
-        @patch("pcapi.routes.pro.venue_providers.find_by_id")
         @patch("pcapi.routes.pro.venue_providers.connect_venue_to_allocine")
         def should_inject_no_repository_to_the_usecase_when_provider_is_not_concerned(
             self,
             mocked_connect_venue_to_allocine,
-            stubbed_find_by_id,
-            stubbed_get_theaterId_for_venue,
             stubbed_check,
             app,
         ):
             # Given
-            user = create_user(is_admin=True, is_beneficiary=False)
-            offerer = create_offerer()
-            venue = create_venue(offerer, siret="12345678912345")
-            allocine_pivot = create_allocine_pivot(siret=venue.siret)
-            repository.save(venue, user)
-            stubbed_find_by_id.return_value = venue
-            stubbed_get_theaterId_for_venue.return_value = allocine_pivot.theaterId
+            user = user_factories.UserFactory(isAdmin=True)
+            venue = offer_factories.VenueFactory(siret="12345678912345")
+            AllocinePivotFactory(siret=venue.siret)
 
             provider = activate_provider("AllocineStocks")
 
