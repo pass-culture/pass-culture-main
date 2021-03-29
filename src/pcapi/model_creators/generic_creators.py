@@ -521,7 +521,7 @@ def create_venue_provider(
     is_active: bool = True,
     last_provider_id: int = None,
     last_sync_date: datetime = None,
-    venue_id_at_offer_provider: str = "123456789",
+    venue_id_at_offer_provider: str = None,
     sync_worker_id: str = None,
 ) -> VenueProvider:
     venue_provider = VenueProvider()
@@ -533,7 +533,7 @@ def create_venue_provider(
     venue_provider.lastSyncDate = last_sync_date
     venue_provider.provider = provider
     venue_provider.venue = venue
-    venue_provider.venueIdAtOfferProvider = venue_id_at_offer_provider
+    venue_provider.venueIdAtOfferProvider = venue_id_at_offer_provider or venue.siret
     venue_provider.syncWorkerId = sync_worker_id
 
     return venue_provider
