@@ -1,32 +1,22 @@
 import PropTypes from 'prop-types'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
+import Select, { buildSelectOptions } from 'components/layout/inputs/Select'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 import * as pcapi from 'repository/pcapi/pcapi'
 
 import AllocineProviderForm from './AllocineProviderForm/AllocineProviderForm'
 import StocksProviderForm from './StocksProviderForm/StocksProviderForm'
-import {
-  ALLOCINE_PROVIDER_OPTION,
-  DEFAULT_PROVIDER_OPTION,
-  FNAC_PROVIDER_OPTION,
-  LIBRAIRES_PROVIDER_OPTION,
-  PRAXIEL_PROVIDER_OPTION,
-  TITELIVE_PROVIDER_OPTION,
-} from './utils/providerOptions'
+import { ALLOCINE_PROVIDER_OPTION, DEFAULT_PROVIDER_OPTION } from './utils/providerOptions'
 import VenueProviderItem from './VenueProviderItem/VenueProviderItem'
 
 const VenueProvidersManagerContainer = ({ notify, venue }) => {
   const [isCreationMode, setIsCreationMode] = useState(false)
-  const [providerId, setProviderId] = useState(null)
+  const [selectedProviderId, setSelectedProviderId] = useState(DEFAULT_PROVIDER_OPTION.id)
   const [providers, setProviders] = useState([])
   const [venueProviders, setVenueProviders] = useState([])
   const [isAllocineProviderSelected, setIsAllocineProviderSelected] = useState(false)
-  const [providerSelectedIsFnac, setProviderSelectedIsFnac] = useState(false)
-  const [providerSelectedIsLibraires, setProviderSelectedIsLibraires] = useState(false)
-  const [providerSelectedIsPraxiel, setProviderSelectedIsPraxiel] = useState(false)
-  const [providerSelectedIsTitelive, setProviderSelectedIsTitelive] = useState(false)
-  const [venueIdAtOfferProviderIsRequired, setVenueIdAtOfferProviderIsRequired] = useState(true)
+  const [providerIdentifierIsRequired, setProviderIdentifierIsRequired] = useState(true)
 
   useEffect(() => {
     pcapi.loadProviders(venue.id).then(providers => setProviders(providers))
@@ -46,25 +36,12 @@ const VenueProvidersManagerContainer = ({ notify, venue }) => {
       const selectedProviderId = event.target.value
       const selectedProvider = providers.find(provider => provider.id === selectedProviderId)
       setIsAllocineProviderSelected(false)
-      setProviderSelectedIsFnac(false)
-      setProviderSelectedIsLibraires(false)
-      setProviderSelectedIsPraxiel(false)
-      setProviderSelectedIsTitelive(false)
+      setProviderIdentifierIsRequired(selectedProvider?.requireProviderIdentifier)
+      setSelectedProviderId(selectedProviderId)
 
       if (selectedProvider && selectedProvider.name === ALLOCINE_PROVIDER_OPTION.name) {
         setIsAllocineProviderSelected(true)
-        setVenueIdAtOfferProviderIsRequired(selectedProvider.requireProviderIdentifier)
-      } else if (selectedProvider && selectedProvider.name === TITELIVE_PROVIDER_OPTION.name) {
-        setProviderSelectedIsTitelive(true)
-      } else if (selectedProvider && selectedProvider.name === LIBRAIRES_PROVIDER_OPTION.name) {
-        setProviderSelectedIsLibraires(true)
-      } else if (selectedProvider && selectedProvider.name === FNAC_PROVIDER_OPTION.name) {
-        setProviderSelectedIsFnac(true)
-      } else if (selectedProvider && selectedProvider.name === PRAXIEL_PROVIDER_OPTION.name) {
-        setProviderSelectedIsPraxiel(true)
       }
-
-      setProviderId(selectedProviderId)
     },
     [providers]
   )
@@ -72,11 +49,7 @@ const VenueProvidersManagerContainer = ({ notify, venue }) => {
   const cancelProviderSelection = useCallback(() => {
     setIsCreationMode(false)
     setIsAllocineProviderSelected(false)
-    setProviderSelectedIsFnac(false)
-    setProviderSelectedIsLibraires(false)
-    setProviderSelectedIsPraxiel(false)
-    setProviderSelectedIsTitelive(false)
-    setProviderId(null)
+    setSelectedProviderId(null)
   }, [])
 
   const createVenueProvider = useCallback(
@@ -99,11 +72,8 @@ const VenueProvidersManagerContainer = ({ notify, venue }) => {
 
   const hasAtLeastOneProvider = providers.length > 0
   const hasNoVenueProvider = venueProviders.length === 0
-  const isStocksProvider =
-    providerSelectedIsTitelive ||
-    providerSelectedIsLibraires ||
-    providerSelectedIsFnac ||
-    providerSelectedIsPraxiel
+
+  const providersOptions = useMemo(() => buildSelectOptions('id', 'name', providers), [providers])
 
   return (
     <div className="venue-providers-manager section">
@@ -118,60 +88,36 @@ const VenueProvidersManagerContainer = ({ notify, venue }) => {
             venueProvider={venueProvider}
           />
         ))}
-
-        {isCreationMode && (
-          <li className="add-provider-form">
-            <div className="field-control">
-              <div className="select-provider-section">
-                <div className="select-source">
-                  <label htmlFor="provider-options">
-                    {'Source'}
-                  </label>
-                  <select
-                    className="field-select"
-                    id="provider-options"
-                    onChange={handleChange}
-                  >
-                    <option
-                      key={DEFAULT_PROVIDER_OPTION.id}
-                      value={DEFAULT_PROVIDER_OPTION.id}
-                    >
-                      {DEFAULT_PROVIDER_OPTION.name}
-                    </option>
-                    {providers.map(provider => (
-                      <option
-                        key={`provider-${provider.id}`}
-                        value={provider.id}
-                      >
-                        {provider.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            </div>
-            <div className="provider-form">
-              {isAllocineProviderSelected && (
-                <AllocineProviderForm
-                  createVenueProvider={createVenueProvider}
-                  providerId={providerId}
-                  venueId={venue.id}
-                  venueIdAtOfferProviderIsRequired={venueIdAtOfferProviderIsRequired}
-                />
-              )}
-
-              {isStocksProvider && (
-                <StocksProviderForm
-                  createVenueProvider={createVenueProvider}
-                  providerId={providerId}
-                  siret={venue.siret}
-                  venueId={venue.id}
-                />
-              )}
-            </div>
-          </li>
-        )}
       </ul>
+
+      {isCreationMode && (
+        <>
+          <Select
+            defaultOption={DEFAULT_PROVIDER_OPTION}
+            handleSelection={handleChange}
+            label="Source"
+            name="provider"
+            options={providersOptions}
+            selectedValue={selectedProviderId}
+          />
+          {selectedProviderId !== DEFAULT_PROVIDER_OPTION.id &&
+            (isAllocineProviderSelected ? (
+              <AllocineProviderForm
+                createVenueProvider={createVenueProvider}
+                providerId={selectedProviderId}
+                venueId={venue.id}
+                venueIdAtOfferProviderIsRequired={providerIdentifierIsRequired}
+              />
+            ) : (
+              <StocksProviderForm
+                createVenueProvider={createVenueProvider}
+                providerId={selectedProviderId}
+                siret={venue.siret}
+                venueId={venue.id}
+              />
+            ))}
+        </>
+      )}
 
       {hasAtLeastOneProvider && hasNoVenueProvider && !isCreationMode && (
         <div className="has-text-centered">

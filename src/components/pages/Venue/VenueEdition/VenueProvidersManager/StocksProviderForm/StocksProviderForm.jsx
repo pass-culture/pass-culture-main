@@ -29,7 +29,7 @@ const StocksProviderForm = ({ createVenueProvider, providerId, siret, venueId })
 
   return (
     <form
-      className="provider-form"
+      className="stocks-provider-form"
       onSubmit={handleFormSubmit}
     >
       <div className="account-section">

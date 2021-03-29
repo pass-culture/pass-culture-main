@@ -3,7 +3,8 @@
     width: 100%;
   }
 
-  .provider-form {
+  .stocks-provider-form {
+    align-items: center;
     display: flex;
     flex-direction: row;
   }
@@ -46,18 +47,6 @@
     }
   }
 
-  .select-source label {
-    display: block;
-  }
-
-  .select-source .field-select {
-    background-image: url(/icons/dropdown-disclosure-down-s-w.svg);
-    border: 2px solid $grey-medium;
-    border-radius: 17px;
-    margin-top: rem(8px);
-    width: 100%;
-  }
-
   .venue-id-at-offer-provider-container {
     display: flex;
     flex: 6;
@@ -70,5 +59,9 @@
       margin-left: rem(70px);
       padding: rem(4px);
     }
+  }
+
+  .input-select {
+    padding: rem(8px) 0;
   }
 }

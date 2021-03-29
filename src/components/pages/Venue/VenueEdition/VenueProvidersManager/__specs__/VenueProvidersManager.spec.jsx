@@ -71,7 +71,12 @@ describe('src | VenueProvidersManager', () => {
     it('should display the list of synchronized providers', async () => {
       // given
       venueProviders = [
-        { id: 'AD', provider: { id: 'providerId', name: 'FNAC' }, venueId: props.venue.id },
+        {
+          id: 'AD',
+          nOffers: 0,
+          provider: { id: 'providerId', name: 'FNAC' },
+          venueId: props.venue.id,
+        },
       ]
       pcapi.loadVenueProviders.mockResolvedValue(venueProviders)
 
@@ -80,7 +85,7 @@ describe('src | VenueProvidersManager', () => {
 
       // then
       expect(screen.getByText('Fnac')).toBeInTheDocument()
-      expect(screen.queryByText(DEFAULT_PROVIDER_OPTION.name)).not.toBeInTheDocument()
+      expect(screen.queryByText(DEFAULT_PROVIDER_OPTION.displayName)).not.toBeInTheDocument()
     })
 
     it('should not show import button', async () => {
@@ -136,6 +141,19 @@ describe('src | VenueProvidersManager', () => {
       expect(providersOptions[2]).toHaveTextContent(providers[1].name)
     })
 
+    it('should not display the stock form when no provider is selected', async () => {
+      // given
+      await renderVenueProvidersManager(props)
+      const importOffersButton = screen.getByText('Importer des offres')
+
+      // when
+      fireEvent.click(importOffersButton)
+
+      // then
+      expect(screen.queryByText('Compte')).not.toBeInTheDocument()
+      expect(screen.queryByText(props.venue.siret)).not.toBeInTheDocument()
+    })
+
     describe('when selecting a provider', () => {
       it('should display the allocine form when the user choose Allocine onChange', async () => {
         // given
@@ -157,9 +175,7 @@ describe('src | VenueProvidersManager', () => {
 
       it('should display the stock form when the user choose another provider than Allociné', async () => {
         // given
-        providers = [
-          { id: 'providerId', name: 'TiteLive Stocks (Epagine / Place des libraires.com)' },
-        ]
+        providers = [{ id: 'providerId', name: 'My little provider' }]
         pcapi.loadProviders.mockResolvedValue(providers)
         await renderVenueProvidersManager(props)
         const importOffersButton = screen.getByText('Importer des offres')
