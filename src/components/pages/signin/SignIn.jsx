@@ -24,13 +24,17 @@ class SignIn extends PureComponent {
 
   handleFail = formResolver => (state, action) => {
     const {
-      payload: { errors },
+      payload: { errors, status },
     } = action
 
     const formErrors = parseSubmitErrors(errors)
 
     if (formErrors.signin) {
       this.setState({ genericError: formErrors.signin[0] })
+    } else if (status === 429) {
+      this.setState({
+        genericError: 'Nombre de tentatives de connexion dépassé. Réessaye dans 1 minute.',
+      })
     }
 
     formResolver(formErrors)
