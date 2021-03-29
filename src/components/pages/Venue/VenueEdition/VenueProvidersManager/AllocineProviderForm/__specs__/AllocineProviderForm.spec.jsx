@@ -123,7 +123,6 @@ describe('components | AllocineProviderForm', () => {
   it('should be able to submit when price field is filled', async () => {
     // given
     await renderAllocineProviderForm()
-    console.log(await pcapi.loadProviders().then(value => value))
     const offerImportButton = screen.getByRole('button', { name: 'Importer les offres' })
     const priceField = screen.getByLabelText('Prix de vente/place', { exact: false })
     const quantityField = screen.getByLabelText('Nombre de places/séance')
