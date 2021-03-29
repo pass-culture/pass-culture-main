@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 
 import SirenField from 'components/layout/form/fields/SirenField/SirenField'
 
-const OffererCreationForm = ({ handleSubmit, invalid, pristine }) => {
+const OffererCreationForm = ({ backTo, handleSubmit, invalid, pristine }) => {
   const renderAddress = useCallback(
     ({ values }) => (
       <div className="op-detail-creation-form">
@@ -49,7 +49,7 @@ const OffererCreationForm = ({ handleSubmit, invalid, pristine }) => {
           <div className="control">
             <Link
               className="secondary-link"
-              to="/structures"
+              to={backTo}
             >
               {'Retour'}
             </Link>
@@ -70,6 +70,7 @@ const OffererCreationForm = ({ handleSubmit, invalid, pristine }) => {
 }
 
 OffererCreationForm.propTypes = {
+  backTo: PropTypes.string.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   invalid: PropTypes.bool.isRequired,
   pristine: PropTypes.bool.isRequired,

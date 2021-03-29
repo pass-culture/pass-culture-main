@@ -45,10 +45,11 @@ class OffererCreation extends PureComponent {
   }
 
   render() {
+    const { isNewHomepageActive } = this.props
     return (
       <AppLayout
         layoutConfig={{
-          backTo: this.props.isNewHomepageActive
+          backTo: isNewHomepageActive
             ? { label: 'Accueil', path: '/accueil' }
             : { label: 'Structures juridiques', path: '/structures' },
           pageName: 'offerer',
@@ -58,6 +59,7 @@ class OffererCreation extends PureComponent {
         <Titles title="Structure" />
 
         <Form
+          backTo={isNewHomepageActive ? '/accueil' : '/structures'}
           component={OffererCreationForm}
           decorators={this.createDecorators()}
           onSubmit={this.handleSubmit}
