@@ -39,8 +39,9 @@ def synchronize_titelive_thing_thumbs(app):
 @cron_context
 @cron_require_feature(FeatureToggle.SYNCHRONIZE_TITELIVE)
 def synchronize_titelive_stocks(app):
-    titelive_stocks_provider_id = get_provider_by_local_class("TiteLiveStocks").id
-    update_venues_for_specific_provider(titelive_stocks_provider_id)
+    titelive_stocks_provider = get_provider_by_local_class("TiteLiveStocks")
+    if titelive_stocks_provider:
+        update_venues_for_specific_provider(titelive_stocks_provider.id)
 
 
 def main():
