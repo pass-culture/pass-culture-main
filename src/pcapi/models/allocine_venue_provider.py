@@ -4,6 +4,7 @@ from sqlalchemy import Column
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
 from sqlalchemy import true
+from sqlalchemy.sql.sqltypes import Text
 
 from pcapi.models.venue_provider import VenueProvider
 
@@ -16,6 +17,8 @@ class AllocineVenueProvider(VenueProvider):
     isDuo = Column(Boolean, default=True, server_default=true(), nullable=False)
 
     quantity = Column(Integer, nullable=True)
+
+    internalId = Column(Text, nullable=True, unique=True)
 
     __mapper_args__ = {
         "polymorphic_identity": "allocine_venue_provider",
