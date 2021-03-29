@@ -25,6 +25,11 @@ export const getProviderInfo = providerName => {
       icon: 'logo-praxiel',
       name: 'Praxiel',
     },
+    {
+      id: '2dcom',
+      icon: 'logo-2dcom',
+      name: '2DCOM',
+    },
   ]
 
   return providers.find(providerInfo => providerName.toLowerCase().startsWith(providerInfo.id))
