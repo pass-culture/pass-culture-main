@@ -560,6 +560,7 @@ def create_allocine_venue_provider(
     is_duo: bool = False,
     quantity: Optional[int] = None,
     venue_id_at_offer_provider: str = None,
+    internal_id: str = "PXXXXX",
 ) -> AllocineVenueProvider:
     allocine_venue_provider = AllocineVenueProvider()
     allocine_venue_provider.venue = venue
@@ -567,6 +568,7 @@ def create_allocine_venue_provider(
     allocine_venue_provider.isDuo = is_duo
     allocine_venue_provider.quantity = quantity
     allocine_venue_provider.venueIdAtOfferProvider = venue_id_at_offer_provider
+    allocine_venue_provider.internalId = internal_id
     return allocine_venue_provider
 
 

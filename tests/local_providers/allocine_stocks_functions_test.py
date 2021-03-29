@@ -106,6 +106,7 @@ class RetrieveMovieInformationTest:
             "stageDirector": "Farkhondeh Torabi",
             "duration": 110,
             "poster_url": "https://fr.web.img6.acsta.net/medias/nmedia/00/02/32/64/69215979_af.jpg",
+            "internal_id": 37832,
         }
 
     def test_should_not_add_operating_visa_and_stageDirector_keys_when_nodes_are_missing(self):
@@ -162,6 +163,7 @@ class RetrieveMovieInformationTest:
             "Tous les détails du film sur AlloCiné: http://www.allocine.fr/film/fichefilm_gen_cfilm=37832.html",
             "duration": 110,
             "poster_url": "https://fr.web.img6.acsta.net/medias/nmedia/00/02/32/64/69215979_af.jpg",
+            "internal_id": 37832,
         }
 
     def test_should_raise_key_error_exception_when_missing_required_keys_in_movie_information(self):

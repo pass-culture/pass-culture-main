@@ -48,9 +48,10 @@ class AllocineStocks(LocalProvider):
         self.movies_showtimes = get_movies_showtimes(self.api_key, self.theater_id)
         self.isDuo = allocine_venue_provider.isDuo
         self.quantity = allocine_venue_provider.quantity
+        self.room_internal_id = allocine_venue_provider.internalId
 
-        self.movie_information = None
-        self.filtered_movie_showtimes = None
+        self.movie_information: Optional[Dict] = None
+        self.filtered_movie_showtimes: Optional[List[Dict]] = None
         self.last_product_id = None
         self.last_vf_offer_id = None
         self.last_vo_offer_id = None
@@ -128,7 +129,7 @@ class AllocineStocks(LocalProvider):
             allocine_product.id = get_next_product_id_from_database()
         self.last_product_id = allocine_product.id
 
-    def fill_offer_attributes(self, allocine_offer: Offer):
+    def fill_offer_attributes(self, allocine_offer: Offer) -> None:
         allocine_offer.venueId = self.venue.id
         allocine_offer.bookingEmail = self.venue.bookingEmail
         if "description" in self.movie_information:
@@ -137,6 +138,12 @@ class AllocineStocks(LocalProvider):
             allocine_offer.durationMinutes = self.movie_information["duration"]
         if not allocine_offer.extraData:
             allocine_offer.extraData = {}
+
+        allocine_offer.extraData["theater"] = {
+            "allocine_movie_id": self.movie_information["internal_id"],
+            "allocine_room_id": self.room_internal_id,
+        }
+
         if "visa" in self.movie_information:
             allocine_offer.extraData["visa"] = self.movie_information["visa"]
         if "stageDirector" in self.movie_information:
@@ -221,6 +228,7 @@ def retrieve_movie_information(raw_movie_information: Dict) -> Dict:
     parsed_movie_information = dict()
     parsed_movie_information["id"] = raw_movie_information["id"]
     parsed_movie_information["title"] = raw_movie_information["title"]
+    parsed_movie_information["internal_id"] = raw_movie_information["internalId"]
     try:
         parsed_movie_information["description"] = _build_description(raw_movie_information)
         parsed_movie_information["duration"] = _parse_movie_duration(raw_movie_information["runtime"])

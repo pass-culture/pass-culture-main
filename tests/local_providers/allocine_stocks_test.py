@@ -780,7 +780,7 @@ class UpdateObjectsTest:
 
         allocine_provider = get_provider_by_local_class("AllocineStocks")
         allocine_provider.isActive = True
-        allocine_venue_provider = create_allocine_venue_provider(venue, allocine_provider)
+        allocine_venue_provider = create_allocine_venue_provider(venue, allocine_provider, internal_id="P12345")
         venue_provider_price_rule = create_allocine_venue_provider_price_rule(allocine_venue_provider)
         repository.save(venue, allocine_venue_provider, venue_provider_price_rule)
 
@@ -795,7 +795,7 @@ class UpdateObjectsTest:
 
         assert created_product.durationMinutes == 110
         assert created_product.extraData == {}
-        assert created_offer.extraData == {}
+        assert created_offer.extraData == {"theater": {"allocine_movie_id": 37832, "allocine_room_id": "P12345"}}
         assert created_offer.type == str(EventType.CINEMA)
         assert created_offer.name == "Les Contes de la mère poule - VF"
 
@@ -1581,10 +1581,10 @@ class UpdateObjectsTest:
             allocine_provider = get_provider_by_local_class("AllocineStocks")
             allocine_provider.isActive = True
 
-            venue_provider1 = create_allocine_venue_provider(venue1, allocine_provider)
+            venue_provider1 = create_allocine_venue_provider(venue1, allocine_provider, internal_id="P12345")
             venue_provider1.venueIdAtOfferProvider = theater_token1
             venue_provider_price_rule1 = create_allocine_venue_provider_price_rule(venue_provider1)
-            venue_provider2 = create_allocine_venue_provider(venue2, allocine_provider)
+            venue_provider2 = create_allocine_venue_provider(venue2, allocine_provider, internal_id="C12345")
             venue_provider2.venueIdAtOfferProvider = theater_token2
             venue_provider_price_rule2 = create_allocine_venue_provider_price_rule(venue_provider2)
             repository.save(venue_provider1, venue_provider2, venue_provider_price_rule1, venue_provider_price_rule2)
