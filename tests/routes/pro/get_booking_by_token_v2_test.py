@@ -43,7 +43,17 @@ class Get:
             offerer = create_offerer()
             create_user_offerer(admin_user, offerer)
             venue = create_venue(offerer, name="Venue name", address="Venue address")
-            offer = create_offer_with_event_product(venue=venue, event_name="Event Name", event_type=EventType.CINEMA)
+            offer = create_offer_with_event_product(
+                venue=venue,
+                event_name="Event Name",
+                event_type=EventType.CINEMA,
+                extra_data={
+                    "theater": {
+                        "allocine_movie_id": 165,
+                        "allocine_room_id": 987,
+                    }
+                },
+            )
             four_days_from_now = datetime.utcnow() + timedelta(days=4)
             event_occurrence = create_event_occurrence(offer, beginning_datetime=four_days_from_now)
             stock = create_stock_from_event_occurrence(event_occurrence, price=12)
@@ -74,6 +84,10 @@ class Get:
                 "price": 12.0,
                 "publicOfferId": humanize(offer.id),
                 "quantity": 3,
+                "theater": {
+                    "allocine_movie_id": 165,
+                    "allocine_room_id": 987,
+                },
                 "userName": "John Doe",
                 "venueAddress": "Venue address",
                 "venueDepartementCode": "93",

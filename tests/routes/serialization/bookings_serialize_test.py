@@ -57,6 +57,7 @@ class SerializeBookingTest:
             "phoneNumber": "",
             "price": 12,
             "quantity": 3,
+            "theater": {},
             "userName": "John Doe",
             "venueAddress": "Venue address",
             "venueDepartementCode": "93",
@@ -92,7 +93,18 @@ class SerializeBookingTest:
         product = create_product_with_thing_type(
             thing_name="Event Name", thing_type=ThingType.CINEMA_ABO, extra_data={"isbn": "123456789"}
         )
-        offer = create_offer_with_thing_product(venue, product=product, idx=999)
+        offer = create_offer_with_thing_product(
+            venue,
+            product=product,
+            idx=999,
+            extra_data={
+                "theater": {
+                    "allocine_movie_id": 165,
+                    "allocine_room_id": 987,
+                },
+                "isbn": "123456789",
+            },
+        )
         stock = create_stock(offer=offer, price=12)
         booking = create_booking(user=user, quantity=3, stock=stock, venue=venue)
 
@@ -115,6 +127,10 @@ class SerializeBookingTest:
             "phoneNumber": "",
             "price": 12,
             "quantity": 3,
+            "theater": {
+                "allocine_movie_id": 165,
+                "allocine_room_id": 987,
+            },
             "userName": "John Doe",
             "venueAddress": "Venue address",
             "venueDepartementCode": "93",

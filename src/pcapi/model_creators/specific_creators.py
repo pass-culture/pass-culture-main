@@ -39,6 +39,7 @@ def create_offer_with_event_product(
     last_provider: Provider = None,
     thumb_count: int = 0,
     withdrawal_details: Optional[str] = None,
+    extra_data: Optional[Dict] = None,
 ) -> Offer:
     offer = Offer()
     if product is None:
@@ -68,6 +69,7 @@ def create_offer_with_event_product(
     offer.isDuo = is_duo
     offer.validation = OfferValidationStatus.APPROVED
     offer.withdrawalDetails = withdrawal_details
+    offer.extraData = extra_data
 
     return offer
 

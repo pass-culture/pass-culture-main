@@ -32,8 +32,13 @@ def serialize_booking(booking: Booking) -> Dict:
     quantity = booking.quantity
     offer_extra_data = booking.stock.offer.extraData
     product_isbn = ""
-    if offer_extra_data and "isbn" in offer_extra_data:
-        product_isbn = offer_extra_data["isbn"]
+    theater = {}
+    if offer_extra_data:
+        if "isbn" in offer_extra_data:
+            product_isbn = offer_extra_data["isbn"]
+        if "theater" in offer_extra_data:
+            theater = offer_extra_data["theater"]
+
     date_of_birth = ""
     phone_number = ""
     if booking.stock.offer.product.type == str(EventType.ACTIVATION):
@@ -55,6 +60,7 @@ def serialize_booking(booking: Booking) -> Dict:
         "phoneNumber": phone_number,
         "price": price,
         "quantity": quantity,
+        "theater": theater,
         "userName": user_name,
         "venueAddress": venue_address,
         "venueDepartementCode": venue_departement_code,
