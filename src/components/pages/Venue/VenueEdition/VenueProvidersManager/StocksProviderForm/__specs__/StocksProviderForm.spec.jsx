@@ -16,7 +16,7 @@ jest.mock('repository/pcapi/pcapi', () => ({
   loadVenueProviders: jest.fn(),
 }))
 
-const renderVenueProvidersManagerContainer = async props => {
+const renderVenueProvidersManager = async props => {
   await act(async () => {
     await render(
       <Provider store={configureTestStore()}>
@@ -36,7 +36,7 @@ describe('src | StocksProviderForm', () => {
   beforeEach(async () => {
     const venue = {
       id: 'venueId',
-      managing_offerer_id: 'managing_offerer_id',
+      managingOffererId: 'managingOffererId',
       name: 'Le lieu',
       siret: '12345678901234',
     }
@@ -49,7 +49,7 @@ describe('src | StocksProviderForm', () => {
     provider = { id: 'providerId', name: 'TiteLive Stocks (Epagine / Place des libraires.com)' }
     pcapi.loadProviders.mockResolvedValue([provider])
 
-    await renderVenueProvidersManagerContainer(props)
+    await renderVenueProvidersManager(props)
   })
 
   afterEach(() => {

@@ -15,7 +15,7 @@ jest.mock('repository/pcapi/pcapi', () => ({
   loadVenueProviders: jest.fn(),
 }))
 
-const renderVenueProvidersManagerContainer = async props => {
+const renderVenueProvidersManager = async props => {
   await act(async () => {
     await render(
       <Provider store={configureTestStore()}>
@@ -60,7 +60,7 @@ describe('src | VenueProvidersManager', () => {
 
   it('should retrieve providers and venue providers when component is mounted', async () => {
     // when
-    await renderVenueProvidersManagerContainer(props)
+    await renderVenueProvidersManager(props)
 
     // then
     expect(pcapi.loadProviders).toHaveBeenCalledTimes(1)
@@ -76,7 +76,7 @@ describe('src | VenueProvidersManager', () => {
       pcapi.loadVenueProviders.mockResolvedValue(venueProviders)
 
       // when
-      await renderVenueProvidersManagerContainer(props)
+      await renderVenueProvidersManager(props)
 
       // then
       expect(screen.getByText('Fnac')).toBeInTheDocument()
@@ -91,7 +91,7 @@ describe('src | VenueProvidersManager', () => {
       pcapi.loadVenueProviders.mockResolvedValue(venueProviders)
 
       // when
-      await renderVenueProvidersManagerContainer(props)
+      await renderVenueProvidersManager(props)
 
       // then
       expect(screen.queryByText('Importer des offres')).not.toBeInTheDocument()
@@ -105,7 +105,7 @@ describe('src | VenueProvidersManager', () => {
       pcapi.loadProviders.mockResolvedValue(providers)
 
       // when
-      await renderVenueProvidersManagerContainer(props)
+      await renderVenueProvidersManager(props)
 
       // then
       expect(screen.queryByText('Importer des offres')).not.toBeInTheDocument()
@@ -113,7 +113,7 @@ describe('src | VenueProvidersManager', () => {
 
     it('should show import button when at least one provider is given', async () => {
       // when
-      await renderVenueProvidersManagerContainer(props)
+      await renderVenueProvidersManager(props)
 
       // then
       expect(screen.getByText('Importer des offres')).toBeInTheDocument()
@@ -121,7 +121,7 @@ describe('src | VenueProvidersManager', () => {
 
     it('should display a select input to choose a provider on import button click', async () => {
       // given
-      await renderVenueProvidersManagerContainer(props)
+      await renderVenueProvidersManager(props)
       const importOffersButton = screen.getByText('Importer des offres')
 
       // when
@@ -141,7 +141,7 @@ describe('src | VenueProvidersManager', () => {
         // given
         providers = [{ id: 'providerId', name: 'Allociné', lastSyncDate: '2020-01-01' }]
         pcapi.loadProviders.mockResolvedValue(providers)
-        await renderVenueProvidersManagerContainer(props)
+        await renderVenueProvidersManager(props)
         const importOffersButton = screen.getByText('Importer des offres')
         fireEvent.click(importOffersButton)
         const providersSelect = screen.getByRole('combobox')
@@ -161,7 +161,7 @@ describe('src | VenueProvidersManager', () => {
           { id: 'providerId', name: 'TiteLive Stocks (Epagine / Place des libraires.com)' },
         ]
         pcapi.loadProviders.mockResolvedValue(providers)
-        await renderVenueProvidersManagerContainer(props)
+        await renderVenueProvidersManager(props)
         const importOffersButton = screen.getByText('Importer des offres')
         fireEvent.click(importOffersButton)
         const providersSelect = screen.getByRole('combobox')

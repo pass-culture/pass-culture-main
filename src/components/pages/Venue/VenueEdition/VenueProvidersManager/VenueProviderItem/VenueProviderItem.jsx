@@ -3,8 +3,7 @@ import React from 'react'
 
 import Icon from 'components/layout/Icon'
 import { getProviderInfo } from 'components/pages/Offers/domain/getProviderInfo'
-
-import { pluralize } from '../../../../../../utils/pluralize'
+import { pluralize } from 'utils/pluralize'
 
 const VenueProviderItem = ({ venueProvider }) => {
   const { lastSyncDate, nOffers, provider, venueIdAtOfferProvider } = venueProvider
@@ -61,7 +60,14 @@ const VenueProviderItem = ({ venueProvider }) => {
 }
 
 VenueProviderItem.propTypes = {
-  venueProvider: PropTypes.shape().isRequired,
+  venueProvider: PropTypes.shape({
+    provider: PropTypes.shape({
+      name: PropTypes.string.isRequired,
+    }).isRequired,
+    lastSyncDate: PropTypes.string,
+    nOffers: PropTypes.number.isRequired,
+    venueIdAtOfferProvider: PropTypes.string,
+  }).isRequired,
 }
 
 export default VenueProviderItem

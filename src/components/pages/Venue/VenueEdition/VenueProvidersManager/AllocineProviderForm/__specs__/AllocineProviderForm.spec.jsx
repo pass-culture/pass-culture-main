@@ -17,7 +17,7 @@ jest.mock('repository/pcapi/pcapi', () => ({
   loadVenueProviders: jest.fn(),
 }))
 
-const renderVenueProvidersManagerContainer = async props => {
+const renderVenueProvidersManager = async props => {
   await act(async () => {
     await render(
       <Provider store={configureTestStore()}>
@@ -61,7 +61,7 @@ describe('components | AllocineProviderForm', () => {
     }
     pcapi.createVenueProvider.mockResolvedValue(createdVenueProvider)
 
-    await renderVenueProvidersManagerContainer(props)
+    await renderVenueProvidersManager(props)
   })
 
   afterEach(() => {
