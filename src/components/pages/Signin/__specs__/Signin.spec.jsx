@@ -206,5 +206,29 @@ describe('src | components | pages | Signin | Signin', () => {
         expect(genericError.prop('message')).toBe('Identifiant ou mot de passe incorrect.')
       })
     })
+
+    describe('when login rate limit exceeded', () => {
+      it('should display an error message', () => {
+        const action = {
+          payload: {
+            errors: {
+              global: 'Trop de tentatives',
+            },
+            status: 429,
+          },
+        }
+        const state = {}
+        const wrapper = shallow(<Signin {...props} />)
+
+        // when
+        wrapper.instance().onHandleFail(state, action)
+
+        // then
+        const genericError = wrapper.find(GenericError)
+        expect(genericError.prop('message')).toBe(
+          'Nombre de tentatives de connexion dépassé. Veuillez réessayer dans 1 minute.'
+        )
+      })
+    })
   })
 })

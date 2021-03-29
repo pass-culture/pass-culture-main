@@ -22,7 +22,7 @@ class Signin extends PureComponent {
       emailValue: '',
       passwordValue: '',
       isPasswordHidden: true,
-      hasErrorMessage: false,
+      errorMessage: null,
     }
   }
 
@@ -33,18 +33,23 @@ class Signin extends PureComponent {
 
   onHandleFail = (state, action) => {
     if (action.payload.errors.password || action.payload.errors.identifier) {
-      this.setState({ hasErrorMessage: true })
+      this.setState({ errorMessage: 'Identifiant ou mot de passe incorrect.' })
+    } else if (action.payload.status === 429) {
+      this.setState({
+        errorMessage:
+          'Nombre de tentatives de connexion dépassé. Veuillez réessayer dans 1 minute.',
+      })
     }
   }
 
   handleInputEmailChange = event => {
     this.setState({ emailValue: event.target.value })
-    this.setState({ hasErrorMessage: false })
+    this.setState({ errorMessage: null })
   }
 
   handleInputPasswordChange = event => {
     this.setState({ passwordValue: event.target.value })
-    this.setState({ hasErrorMessage: false })
+    this.setState({ errorMessage: null })
   }
 
   handleToggleHidden = e => {
@@ -64,7 +69,7 @@ class Signin extends PureComponent {
 
   render() {
     const { isAccountCreationAvailable } = this.props
-    const { isPasswordHidden, emailValue, passwordValue, hasErrorMessage } = this.state
+    const { isPasswordHidden, emailValue, passwordValue, errorMessage } = this.state
     const isSubmitButtonDisabled = emailValue === '' || passwordValue === ''
     const accountCreationUrl = isAccountCreationAvailable ? '/inscription' : UNAVAILABLE_ERROR_PAGE
 
@@ -93,7 +98,7 @@ class Signin extends PureComponent {
             <span className="has-text-grey">
               {'Tous les champs sont obligatoires'}
             </span>
-            {hasErrorMessage && <GenericError message="Identifiant ou mot de passe incorrect." />}
+            {errorMessage && <GenericError message={errorMessage} />}
             <form
               noValidate
               onSubmit={this.handleOnSubmit}
