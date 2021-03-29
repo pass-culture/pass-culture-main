@@ -1,7 +1,7 @@
 """Add notificationSubscriptions default
 
 Revision ID: 4a0337b7cbbc
-Revises: 508c975a420b
+Revises: 100648792e74
 Create Date: 2021-03-25 15:39:51.516966
 
 """
@@ -10,7 +10,7 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "4a0337b7cbbc"
-down_revision = "508c975a420b"
+down_revision = "100648792e74"
 branch_labels = None
 depends_on = None
 
