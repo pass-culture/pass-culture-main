@@ -1,11 +1,8 @@
 import pytest
 
-from pcapi.model_creators.generic_creators import create_bank_information
-from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_user
-from pcapi.model_creators.generic_creators import create_user_offerer
-from pcapi.model_creators.generic_creators import create_venue
-from pcapi.repository import repository
+import pcapi.core.offers.factories as offers_factories
+import pcapi.core.users.factories as users_factories
+from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
@@ -16,39 +13,74 @@ class Get:
         @pytest.mark.usefixtures("db_session")
         def when_user_has_rights_on_managing_offerer(self, app):
             # given
-            offerer = create_offerer()
-            user = create_user(email="user.pro@test.com")
-            user_offerer = create_user_offerer(user, offerer)
-            venue = create_venue(offerer, name="L'encre et la plume")
-            bank_information = create_bank_information(
-                bic="QSDFGH8Z555", iban="FR7630006000011234567890189", venue=venue, application_id=1234
-            )
-            repository.save(user_offerer, bank_information)
-            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
+            user_offerer = offers_factories.UserOffererFactory(user__email="user.pro@test.com")
+            venue = offers_factories.VenueFactory(name="L'encre et la plume", managingOfferer=user_offerer.offerer)
+            bank_information = offers_factories.BankInformationFactory(venue=venue)
+
+            expected_serialized_venue = {
+                "address": venue.address,
+                "bic": bank_information.bic,
+                "bookingEmail": venue.bookingEmail,
+                "city": venue.city,
+                "comment": venue.comment,
+                "dateCreated": format_into_utc_date(venue.dateCreated),
+                "dateModifiedAtLastProvider": format_into_utc_date(venue.dateModifiedAtLastProvider),
+                "demarchesSimplifieesApplicationId": str(venue.demarchesSimplifieesApplicationId),
+                "departementCode": venue.departementCode,
+                "fieldsUpdated": venue.fieldsUpdated,
+                "iban": bank_information.iban,
+                "id": humanize(venue.id),
+                "idAtProviders": venue.idAtProviders,
+                "isValidated": venue.isValidated,
+                "isVirtual": venue.isVirtual,
+                "latitude": float(venue.latitude),
+                "lastProviderId": venue.lastProviderId,
+                "longitude": float(venue.longitude),
+                "managingOfferer": {
+                    "address": venue.managingOfferer.address,
+                    "bic": venue.managingOfferer.bic,
+                    "city": venue.managingOfferer.city,
+                    "dateCreated": format_into_utc_date(venue.managingOfferer.dateCreated),
+                    "dateModifiedAtLastProvider": format_into_utc_date(
+                        venue.managingOfferer.dateModifiedAtLastProvider
+                    ),
+                    "demarchesSimplifieesApplicationId": venue.managingOfferer.demarchesSimplifieesApplicationId,
+                    "fieldsUpdated": venue.managingOfferer.fieldsUpdated,
+                    "iban": venue.managingOfferer.iban,
+                    "id": humanize(venue.managingOfferer.id),
+                    "idAtProviders": venue.managingOfferer.idAtProviders,
+                    "isValidated": venue.managingOfferer.isValidated,
+                    "lastProviderId": venue.managingOfferer.lastProviderId,
+                    "name": venue.managingOfferer.name,
+                    "postalCode": venue.managingOfferer.postalCode,
+                    "siren": venue.managingOfferer.siren,
+                },
+                "managingOffererId": humanize(venue.managingOffererId),
+                "name": venue.name,
+                "postalCode": venue.postalCode,
+                "publicName": venue.publicName,
+                "siret": venue.siret,
+                "venueLabelId": humanize(venue.venueLabelId),
+                "venueTypeId": humanize(venue.venueTypeId),
+            }
 
             # when
+            auth_request = TestClient(app.test_client()).with_auth(email=user_offerer.user.email)
             response = auth_request.get("/venues/%s" % humanize(venue.id))
 
             # then
             assert response.status_code == 200
-            response_json = response.json
-            assert response_json["bic"] == "QSDFGH8Z555"
-            assert response_json["iban"] == "FR7630006000011234567890189"
-            assert response_json["demarchesSimplifieesApplicationId"] == 1234
-            assert "validationToken" not in response_json
-            assert "validationToken" not in response_json["managingOfferer"]
+            assert response.json == expected_serialized_venue
 
     class Returns403:
         @pytest.mark.usefixtures("db_session")
         def when_current_user_doesnt_have_rights(self, app):
             # given
-            offerer = create_offerer()
-            user = create_user(email="user.pro@test.com")
-            venue = create_venue(offerer, name="L'encre et la plume")
-            repository.save(user, venue)
-            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
+            user = users_factories.UserFactory(email="user.pro@test.com")
+            venue = offers_factories.VenueFactory(name="L'encre et la plume")
 
             # when
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
             response = auth_request.get("/venues/%s" % humanize(venue.id))
 
             # then

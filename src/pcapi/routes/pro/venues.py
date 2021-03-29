@@ -9,6 +9,7 @@ from flask_login import login_required
 from pcapi.connectors import redis
 from pcapi.core.bookings.repository import get_active_bookings_quantity_for_venue
 from pcapi.core.bookings.repository import get_validated_bookings_quantity_for_venue
+from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.repository import get_active_offers_count_for_venue
 from pcapi.core.offers.repository import get_sold_out_offers_count_for_venue
 from pcapi.domain.identifier.identifier import Identifier
@@ -17,12 +18,12 @@ from pcapi.domain.offers import update_is_active_status
 from pcapi.domain.venues import is_algolia_indexing
 from pcapi.flask_app import private_api
 from pcapi.infrastructure.container import get_all_venues_by_pro_user
-from pcapi.models import Venue
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
 from pcapi.repository import repository
 from pcapi.repository.iris_venues_queries import delete_venue_from_iris_venues
 from pcapi.routes.serialization import as_dict
+from pcapi.routes.serialization.venues_serialize import GetVenueResponseModel
 from pcapi.routes.serialization.venues_serialize import VenueStatsResponseModel
 from pcapi.routes.serialization.venues_serialize import serialize_venues_with_offerer_name
 from pcapi.serialization.decorator import spectree_serialize
@@ -37,13 +38,14 @@ from pcapi.validation.routes.venues import check_valid_edition
 from pcapi.validation.routes.venues import validate_coordinates
 
 
-# @debt api-migration
 @private_api.route("/venues/<venue_id>", methods=["GET"])
 @login_required
-def get_venue(venue_id):
+@spectree_serialize(response_model=GetVenueResponseModel)
+def get_venue(venue_id: str) -> GetVenueResponseModel:
     venue = load_or_404(Venue, venue_id)
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
-    return jsonify(as_dict(venue, includes=VENUE_INCLUDES)), 200
+
+    return GetVenueResponseModel.from_orm(venue)
 
 
 # @debt api-migration
