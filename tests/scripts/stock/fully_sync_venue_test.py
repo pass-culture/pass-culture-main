@@ -1,53 +1,58 @@
-from unittest.mock import patch
-
 import pytest
+import requests_mock
 
-from pcapi.core.bookings.factories import BookingFactory
-from pcapi.core.offers.factories import OfferFactory
-from pcapi.core.offers.factories import StockFactory
-from pcapi.core.offers.factories import VenueFactory
-from pcapi.model_creators.generic_creators import create_venue_provider
-from pcapi.model_creators.provider_creators import activate_provider
-from pcapi.repository import repository
-from pcapi.scripts.stock.fully_sync_venue import fully_sync_venue
+import pcapi.core.bookings.factories as bookings_factories
+import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offers.factories as offers_factories
+import pcapi.core.offers.models as offers_models
+from pcapi.models.offer_type import ThingType
+from pcapi.scripts.stock import fully_sync_venue
 
 
-class FullySyncVenueTest:
-    @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.scripts.stock.fully_sync_venue.synchronize_venue_provider")
-    def should_call_synchronize_on_expected_venue_provider(self, mock_synchronize_venue_provider):
-        # Given
-        venue = VenueFactory()
-        offer = OfferFactory(venue=venue)
-        stock = StockFactory(offer=offer)
-        titelive = activate_provider(provider_classname="TiteLiveStocks")
-        venue_provider = create_venue_provider(venue=venue, provider=titelive)
+@pytest.mark.usefixtures("db_session")
+def test_fully_sync_venue():
+    api_url = "https://example.com/provider/api"
+    provider = offerers_factories.APIProviderFactory(apiUrl=api_url)
+    venue_provider = offerers_factories.VenueProviderFactory(provider=provider)
+    venue = venue_provider.venue
+    stock = offers_factories.StockFactory(quantity=10, offer__venue=venue)
+    bookings_factories.BookingFactory(stock=stock)
+    product2 = offers_factories.ProductFactory(
+        idAtProviders="1234",
+        extraData={"prix_livre": 10},
+        type=str(ThingType.LIVRE_EDITION),
+    )
 
-        repository.save(venue_provider, stock)
+    with requests_mock.Mocker() as mock:
+        response = {
+            "total": 1,
+            "stocks": [{"ref": "1234", "available": 5}],
+        }
+        mock.get(f"{api_url}/{venue.siret}", [{"json": response}, {"json": {"stocks": []}}])
+        fully_sync_venue.fully_sync_venue(venue)
 
-        # When
-        fully_sync_venue(venue_id=venue.id)
+    # Check that the quantity of existing stocks has been reset.
+    assert stock.quantity == 1
+    # Check that offers and stocks have been created or updated.
+    offer2 = offers_models.Offer.query.filter_by(product=product2).one()
+    assert offer2.stocks[0].quantity == 5
 
-        # Then
-        mock_synchronize_venue_provider.assert_called_once_with(venue_provider)
 
-    @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.scripts.stock.fully_sync_venue.synchronize_venue_provider")
-    def should_update_quantity_to_booking_amount_for_each_synchronized_stock_on_venue(
-        self, mock_synchronize_venue_provider
-    ):
-        # Given
-        titelive = activate_provider(provider_classname="TiteLiveStocks")
-        venue = VenueFactory()
-        offer = OfferFactory(venue=venue, idAtProviders="titelive")
-        stock = StockFactory(offer=offer, quantity=2, lastProviderId=titelive.id, idAtProviders="titelive")
-        booking = BookingFactory(stock=stock)
-        venue_provider = create_venue_provider(venue=venue, provider=titelive)
+@pytest.mark.usefixtures("db_session")
+def test_reset_stock_quantity():
+    offer = offers_factories.OfferFactory()
+    stock1_no_bookings = offers_factories.StockFactory(offer=offer, quantity=10)
+    stock2_only_cancelled_bookings = offers_factories.StockFactory(offer=offer, quantity=10)
+    bookings_factories.BookingFactory(stock=stock2_only_cancelled_bookings, isCancelled=True)
+    stock3_mix_of_bookings = offers_factories.StockFactory(offer=offer, quantity=10)
+    bookings_factories.BookingFactory(stock=stock3_mix_of_bookings)
+    bookings_factories.BookingFactory(stock=stock3_mix_of_bookings, isCancelled=True)
+    stock4_other_venue = offers_factories.StockFactory(quantity=10)
+    venue = offer.venue
 
-        repository.save(venue_provider, booking)
+    fully_sync_venue._reset_stock_quantity(venue)
 
-        # When
-        fully_sync_venue(venue_id=venue.id)
-
-        # Then
-        assert stock.quantity == 1
+    assert stock1_no_bookings.quantity == 0
+    assert stock2_only_cancelled_bookings.quantity == 0
+    assert stock3_mix_of_bookings.quantity == 1
+    assert stock4_other_venue.quantity == 10
