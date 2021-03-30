@@ -6,7 +6,7 @@ gunicorn \
     --bind 0.0.0.0:$GUNICORN_PORT \
     --worker-class gthread \
     --max-requests $GUNICORN_MAX_REQUESTS \
-    --max_requests_jitter $GUNICORN_MAX_REQUESTS_JITTER \
+    --max-requests-jitter $GUNICORN_MAX_REQUESTS_JITTER \
     --workers $GUNICORN_WORKERS \
     --threads $GUNICORN_THREADS \
     --timeout $GUNICORN_TIMEOUT \
