@@ -13,6 +13,7 @@ from pcapi.admin.custom_views.feature_view import FeatureView
 from pcapi.admin.custom_views.many_offers_operations_view import ManyOffersOperationsView
 from pcapi.admin.custom_views.offer_view import OfferForVenueSubview
 from pcapi.admin.custom_views.offer_view import OfferView
+from pcapi.admin.custom_views.offer_view import ValidationView
 from pcapi.admin.custom_views.offerer_view import OffererView
 from pcapi.admin.custom_views.partner_user_view import PartnerUserView
 from pcapi.admin.custom_views.pro_user_view import ProUserView
@@ -102,6 +103,15 @@ def install_admin_views(admin: Admin, session: Session) -> None:
         BookingView(
             name="Réservations",
             endpoint="/bookings",
+            category=Category.CUSTOM_OPERATIONS,
+        )
+    )
+    admin.add_view(
+        ValidationView(
+            Offer,
+            session,
+            name="Validation",
+            endpoint="/validation",
             category=Category.CUSTOM_OPERATIONS,
         )
     )
