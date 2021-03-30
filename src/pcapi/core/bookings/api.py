@@ -19,12 +19,11 @@ from pcapi.core.offers import repository as offers_repository
 from pcapi.core.users.models import User
 from pcapi.domain import user_emails
 from pcapi.models.feature import FeatureToggle
-from pcapi.notifications.push.transactional_notifications import get_notification_data_on_booking_cancellation
 from pcapi.repository import feature_queries
 from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.utils.mailing import MailServiceException
-from pcapi.workers.push_notification_job import send_transactional_notification_job
+from pcapi.workers.push_notification_job import send_cancel_booking_notification
 
 from . import validation
 
@@ -137,7 +136,7 @@ def cancel_booking_by_beneficiary(user: User, booking: Booking) -> None:
 def cancel_booking_by_offerer(booking: Booking) -> None:
     validation.check_booking_can_be_cancelled(booking)
     _cancel_booking(booking, BookingCancellationReasons.OFFERER)
-    send_transactional_notification_job.delay(get_notification_data_on_booking_cancellation([booking]))
+    send_cancel_booking_notification.delay([booking.id])
 
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         redis.add_offer_id(client=app.redis_client, offer_id=booking.stock.offerId)

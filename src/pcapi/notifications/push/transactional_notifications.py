@@ -23,7 +23,9 @@ class TransactionalNotificationData:
     message: TransactionalNotificationMessage
 
 
-def get_notification_data_on_booking_cancellation(bookings: List[Booking]) -> Optional[TransactionalNotificationData]:
+def get_bookings_cancellation_notification_data(booking_ids: List[int]) -> Optional[TransactionalNotificationData]:
+    bookings = Booking.query.filter(Booking.id.in_(booking_ids))
+
     if not bookings:
         return None
 

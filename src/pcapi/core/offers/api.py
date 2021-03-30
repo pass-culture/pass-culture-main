@@ -34,7 +34,6 @@ from pcapi.models import Venue
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
-from pcapi.notifications.push.transactional_notifications import get_notification_data_on_booking_cancellation
 from pcapi.repository import feature_queries
 from pcapi.repository import offer_queries
 from pcapi.repository import repository
@@ -47,7 +46,7 @@ from pcapi.utils import mailing
 logger = logging.getLogger(__name__)
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.rest import load_or_raise_error
-from pcapi.workers.push_notification_job import send_transactional_notification_job
+from pcapi.workers.push_notification_job import send_cancel_booking_notification
 
 from . import validation
 from .exceptions import ThumbnailStorageError
@@ -416,9 +415,7 @@ def delete_stock(stock: Stock) -> None:
                 },
             )
 
-    notification_data = get_notification_data_on_booking_cancellation(cancelled_bookings)
-    if notification_data:
-        send_transactional_notification_job.delay(notification_data)
+        send_cancel_booking_notification.delay([booking.id for booking in cancelled_bookings])
 
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
