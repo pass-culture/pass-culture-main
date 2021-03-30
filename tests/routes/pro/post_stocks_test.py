@@ -3,6 +3,7 @@ from datetime import datetime
 import pytest
 
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.offers.models import OfferValidationStatus
 import pcapi.core.users.factories as users_factories
 from pcapi.models import Stock
 from pcapi.routes.serialization import serialize
@@ -177,6 +178,23 @@ class Returns400:
         persisted_stock = Stock.query.filter_by(offerId=offer.id)
         assert persisted_stock.count() == 1
         assert persisted_stock[0].price == 10
+
+    def test_patch_non_approved_offer_fails(self, app):
+        awaiting_validation_offer = offers_factories.OfferFactory(validation=OfferValidationStatus.AWAITING)
+        stock = offers_factories.StockFactory(offer=awaiting_validation_offer)
+        offers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=awaiting_validation_offer.venue.managingOfferer,
+        )
+        stock_data = {
+            "offerId": humanize(awaiting_validation_offer.id),
+            "stocks": [{"id": humanize(stock.id), "price": 20}],
+        }
+
+        response = TestClient(app.test_client()).with_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+
+        assert response.status_code == 400
+        assert response.json["global"] == ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
 
 
 @pytest.mark.usefixtures("db_session")

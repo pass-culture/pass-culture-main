@@ -369,6 +369,32 @@ class UpsertStocksTest:
         # Then
         assert error.value.errors == {"global": ["Pour les offres importées, certains champs ne sont pas modifiables"]}
 
+    def test_create_stock_for_non_approved_offer_fails(self):
+        offer = factories.ThingOfferFactory(validation=OfferValidationStatus.AWAITING)
+        created_stock_data = StockCreationBodyModel(price=10, quantity=7)
+
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.upsert_stocks(offer_id=offer.id, stock_data_list=[created_stock_data])
+
+        assert error.value.errors == {
+            "global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
+        }
+        assert Stock.query.count() == 0
+
+    def test_edit_stock_of_non_approved_offer_fails(self):
+        offer = factories.ThingOfferFactory(validation=OfferValidationStatus.AWAITING)
+        existing_stock = factories.StockFactory(offer=offer, price=10)
+        edited_stock_data = StockEditionBodyModel(id=existing_stock.id, price=5, quantity=7)
+
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.upsert_stocks(offer_id=offer.id, stock_data_list=[edited_stock_data])
+
+        assert error.value.errors == {
+            "global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
+        }
+        existing_stock = Stock.query.one()
+        assert existing_stock.price == 10
+
 
 @pytest.mark.usefixtures("db_session")
 class DeleteStockTest:
@@ -914,6 +940,18 @@ class UpdateOfferTest:
         assert offer.isDuo == False
         assert offer.audioDisabilityCompliant == True
 
+    def test_update_non_approved_offer_fails(self):
+        awaiting_offer = factories.OfferFactory(name="Soliloquy", validation=OfferValidationStatus.AWAITING)
+
+        with pytest.raises(models.ApiErrors) as error:
+            api.update_offer(awaiting_offer, name="Monologue")
+
+        assert error.value.errors == {
+            "global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
+        }
+        awaiting_offer = models.Offer.query.one()
+        assert awaiting_offer.name == "Soliloquy"
+
 
 @pytest.mark.usefixtures("db_session")
 class UpdateOffersActiveStatusTest:
@@ -922,13 +960,15 @@ class UpdateOffersActiveStatusTest:
         offer1 = factories.OfferFactory(isActive=False)
         offer2 = factories.OfferFactory(isActive=False)
         offer3 = factories.OfferFactory(isActive=False)
+        rejected_offer = factories.OfferFactory(isActive=False, validation=OfferValidationStatus.REJECTED)
 
-        query = models.Offer.query.filter(models.Offer.id.in_({offer1.id, offer2.id}))
+        query = models.Offer.query.filter(models.Offer.id.in_({offer1.id, offer2.id, rejected_offer.id}))
         api.update_offers_active_status(query, is_active=True)
 
         assert models.Offer.query.get(offer1.id).isActive
         assert models.Offer.query.get(offer2.id).isActive
         assert not models.Offer.query.get(offer3.id).isActive
+        assert not models.Offer.query.get(rejected_offer.id).isActive
         assert mocked_add_offer_id.call_count == 2
         mocked_add_offer_id.assert_has_calls(
             [
@@ -942,13 +982,15 @@ class UpdateOffersActiveStatusTest:
         offer1 = factories.OfferFactory()
         offer2 = factories.OfferFactory()
         offer3 = factories.OfferFactory()
+        rejected_offer = factories.OfferFactory(validation=OfferValidationStatus.AWAITING)
 
-        query = models.Offer.query.filter(models.Offer.id.in_({offer1.id, offer2.id}))
+        query = models.Offer.query.filter(models.Offer.id.in_({offer1.id, offer2.id, rejected_offer.id}))
         api.update_offers_active_status(query, is_active=False)
 
         assert not models.Offer.query.get(offer1.id).isActive
         assert not models.Offer.query.get(offer2.id).isActive
         assert models.Offer.query.get(offer3.id).isActive
+        assert models.Offer.query.get(rejected_offer.id).isActive
 
 
 class UpdateOfferAndStockIdAtProvidersTest:

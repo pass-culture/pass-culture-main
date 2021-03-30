@@ -8,6 +8,7 @@ import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories
 from pcapi.core.offers import validation
+from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.models.api_errors import ApiErrors
 
 import tests
@@ -17,20 +18,36 @@ IMAGES_DIR = pathlib.Path(tests.__path__[0]) / "files"
 
 
 @pytest.mark.usefixtures("db_session")
-class CheckOfferIsEditableTest:
-    def test_raises_error_when_offer_is_not_editable(self):
-        offerer = offerers_factories.ProviderFactory()
-        offer = factories.OfferFactory(lastProvider=offerer, idAtProviders="1")
+class CheckOfferExistingStocksAreEditableTest:
+    def test_approved_offer(self):
+        offer = factories.OfferFactory()
+
+        validation.check_offer_existing_stocks_are_editable(offer)
+
+    def test_awaiting_offer(self):
+        awaiting_validation_offer = factories.OfferFactory(validation=OfferValidationStatus.AWAITING)
 
         with pytest.raises(ApiErrors) as error:
-            validation.check_offer_is_editable(offer)
+            validation.check_offer_existing_stocks_are_editable(awaiting_validation_offer)
+
+        assert error.value.errors["global"] == [
+            "Les offres refusées ou en attente de validation ne sont pas modifiables"
+        ]
+
+    def test_allocine_offer(self):
+        provider = offerers_factories.ProviderFactory(localClass="AllocineStocks")
+        offer = factories.OfferFactory(lastProvider=provider, idAtProviders="1")
+
+        validation.check_offer_existing_stocks_are_editable(offer)
+
+    def test_non_allocine_provider_offer(self):
+        offerer = offerers_factories.ProviderFactory()
+        provider_offer = factories.OfferFactory(lastProvider=offerer, idAtProviders="1")
+
+        with pytest.raises(ApiErrors) as error:
+            validation.check_offer_existing_stocks_are_editable(provider_offer)
 
         assert error.value.errors["global"] == ["Les offres importées ne sont pas modifiables"]
-
-    def test_does_not_raise_error_when_offer_type_is_editable(self):
-        offer = factories.OfferFactory(lastProviderId=None)
-
-        validation.check_offer_is_editable(offer)  # should not raise
 
 
 @pytest.mark.usefixtures("db_session")
@@ -100,51 +117,130 @@ class CheckRequiredDatesForStock:
 
 
 @pytest.mark.usefixtures("db_session")
-class CheckStocksAreEditableForOfferTest:
-    def should_fail_when_offer_is_from_provider(self, app):
+class CheckStockCanBeCreatedForOfferTest:
+    def test_approved_offer_not_from_provider(self):
+        offer = factories.OfferFactory(lastProvider=None)
+
+        validation.check_stock_can_be_created_for_offer(offer)
+
+    def test_offer_from_provider(self, app):
         provider = offerers_factories.ProviderFactory()
         offer = factories.OfferFactory(lastProvider=provider, idAtProviders="1")
 
         with pytest.raises(ApiErrors) as error:
-            validation.check_stocks_are_editable_for_offer(offer)
+            validation.check_stock_can_be_created_for_offer(offer)
 
         assert error.value.errors["global"] == ["Les offres importées ne sont pas modifiables"]
 
-    def should_not_raise_an_error_when_offer_is_not_from_provider(self):
-        offer = factories.OfferFactory(lastProvider=None)
-        validation.check_stocks_are_editable_for_offer(offer)  # should not raise
+    def test_awaiting_offer_not_from_provider(self):
+        offer = factories.OfferFactory(lastProvider=None, validation=OfferValidationStatus.AWAITING)
+
+        with pytest.raises(ApiErrors) as error:
+            validation.check_stock_can_be_created_for_offer(offer)
+
+        assert error.value.errors["global"] == [
+            "Les offres refusées ou en attente de validation ne sont pas modifiables"
+        ]
 
 
 @pytest.mark.usefixtures("db_session")
 class CheckStockIsDeletableTest:
-    def test_ok_if_stock_from_allocine(self):
+    def test_approved_offer(self):
+        offer = factories.OfferFactory()
+        stock = factories.StockFactory(offer=offer)
+
+        validation.check_stock_is_deletable(stock)
+
+    def test_allocine_offer(self):
         provider = offerers_factories.ProviderFactory(localClass="AllocineStocks")
         offer = factories.OfferFactory(lastProvider=provider, idAtProviders="1")
         stock = factories.StockFactory(offer=offer)
 
-        validation.check_stock_is_deletable(stock)  # should not raise
+        validation.check_stock_is_deletable(stock)
 
-    def test_raise_if_stock_from_provider_that_is_not_allocine(self):
+    def test_non_approved_offer(self):
+        offer = factories.OfferFactory(validation=OfferValidationStatus.AWAITING)
+        stock = factories.StockFactory(offer=offer)
+
+        with pytest.raises(ApiErrors) as error:
+            validation.check_stock_is_deletable(stock)
+
+        assert error.value.errors["global"] == [
+            "Les offres refusées ou en attente de validation ne sont pas modifiables"
+        ]
+
+    def test_offer_from_non_allocine_provider(self):
         provider = offerers_factories.ProviderFactory()
         offer = factories.OfferFactory(lastProvider=provider, idAtProviders="1")
         stock = factories.StockFactory(offer=offer)
 
         with pytest.raises(ApiErrors) as error:
             validation.check_stock_is_deletable(stock)
+
         assert error.value.errors["global"] == ["Les offres importées ne sont pas modifiables"]
 
-    def test_ok_if_event_stock_started_recently_enough(self):
+    def test_recently_begun_event_stock(self):
         recently = datetime.datetime.now() - datetime.timedelta(days=1)
         stock = factories.EventStockFactory(beginningDatetime=recently)
 
-        validation.check_stock_is_deletable(stock)  # should not raise
+        validation.check_stock_is_deletable(stock)
 
-    def test_raise_if_event_stock_started_long_ago(self):
+    def test_long_begun_event_stock(self):
         too_long_ago = datetime.datetime.now() - datetime.timedelta(days=3)
         stock = factories.EventStockFactory(beginningDatetime=too_long_ago)
 
-        with pytest.raises(exceptions.TooLateToDeleteStock):
+        with pytest.raises(exceptions.TooLateToDeleteStock) as error:
             validation.check_stock_is_deletable(stock)
+
+        assert error.value.errors["global"] == [
+            "L'événement s'est terminé il y a plus de deux jours, la suppression est impossible."
+        ]
+
+
+@pytest.mark.usefixtures("db_session")
+class CheckStockIsUpdatableTest:
+    def test_approved_offer(self):
+        offer = factories.OfferFactory()
+        stock = factories.StockFactory(offer=offer)
+
+        validation.check_stock_is_updatable(stock)
+
+    def test_allocine_offer(self):
+        provider = offerers_factories.ProviderFactory(localClass="AllocineStocks")
+        offer = factories.OfferFactory(lastProvider=provider, idAtProviders="1")
+        stock = factories.StockFactory(offer=offer)
+
+        validation.check_stock_is_updatable(stock)
+
+    def test_non_approved_offer(self):
+        offer = factories.OfferFactory(validation=OfferValidationStatus.AWAITING)
+        stock = factories.StockFactory(offer=offer)
+
+        with pytest.raises(ApiErrors) as error:
+            validation.check_stock_is_updatable(stock)
+
+        assert error.value.errors["global"] == [
+            "Les offres refusées ou en attente de validation ne sont pas modifiables"
+        ]
+
+    def test_offer_from_non_allocine_provider(self):
+        provider = offerers_factories.ProviderFactory()
+        offer = factories.OfferFactory(lastProvider=provider, idAtProviders="1")
+        stock = factories.StockFactory(offer=offer)
+
+        with pytest.raises(ApiErrors) as error:
+            validation.check_stock_is_updatable(stock)
+
+        assert error.value.errors["global"] == ["Les offres importées ne sont pas modifiables"]
+
+    def test_past_event_stock(self):
+        recently = datetime.datetime.now() - datetime.timedelta(minutes=1)
+        stock = factories.EventStockFactory(beginningDatetime=recently)
+
+        with pytest.raises(ApiErrors) as error:
+            validation.check_stock_is_updatable(stock)
+
+        assert error.value.errors["global"] == ["Les événements passés ne sont pas modifiables"]
 
 
 class CheckThumbQualityTest:
@@ -303,3 +399,31 @@ class CheckImageTest:
                 min_width=1,
                 min_height=1,
             )
+
+
+@pytest.mark.usefixtures("db_session")
+class CheckValidationStatus:
+    def test_approved_offer(self):
+        approved_offer = factories.OfferFactory()
+
+        validation.check_validation_status(approved_offer)
+
+    def test_awaiting_offer(self):
+        awaiting_validation_offer = factories.OfferFactory(validation=OfferValidationStatus.AWAITING)
+
+        with pytest.raises(ApiErrors) as error:
+            validation.check_validation_status(awaiting_validation_offer)
+
+        assert error.value.errors["global"] == [
+            "Les offres refusées ou en attente de validation ne sont pas modifiables"
+        ]
+
+    def test_rejected_offer(self):
+        rejected_offer = factories.OfferFactory(validation=OfferValidationStatus.REJECTED)
+
+        with pytest.raises(ApiErrors) as error:
+            validation.check_validation_status(rejected_offer)
+
+        assert error.value.errors["global"] == [
+            "Les offres refusées ou en attente de validation ne sont pas modifiables"
+        ]

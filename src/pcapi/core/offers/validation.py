@@ -8,11 +8,13 @@ from PIL import Image
 from pcapi.models import Offer
 from pcapi.models import Provider
 from pcapi.models import Stock
+from pcapi.models import User
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.utils import requests as pcapi_requests
 
 from . import exceptions
+from .models import OfferValidationStatus
 
 
 EDITABLE_FIELDS_FOR_OFFER_FROM_PROVIDER = {
@@ -37,15 +39,16 @@ DISTANT_IMAGE_REQUEST_TIMEOUT = 5
 CHUNK_SIZE_IN_BYTES = 4096
 
 
-def check_user_can_create_activation_event(user):
+def check_user_can_create_activation_event(user: User) -> None:
     if not user.isAdmin:
         error = ForbiddenError()
         error.add_error("type", "Seuls les administrateurs du pass Culture peuvent créer des offres d'activation")
         raise error
 
 
-def check_offer_is_editable(offer: Offer):
-    if not offer.isEditable:
+def check_offer_existing_stocks_are_editable(offer: Offer) -> None:
+    check_validation_status(offer)
+    if offer.isEditable:
         error = ApiErrors()
         error.status_code = 400
         error.add_error("global", "Les offres importées ne sont pas modifiables")
@@ -63,13 +66,6 @@ def check_update_only_allowed_fields_for_offer_from_provider(updated_fields: set
             api_error.add_error(field, "Vous ne pouvez pas modifier ce champ")
 
         raise api_error
-
-
-def check_stocks_are_editable_for_offer(offer: Offer) -> None:
-    if offer.isFromProvider:
-        api_errors = ApiErrors()
-        api_errors.add_error("global", "Les offres importées ne sont pas modifiables")
-        raise api_errors
 
 
 def check_stock_quantity(quantity: Union[int, None], bookingQuantity: int = 0) -> None:
@@ -114,9 +110,16 @@ def check_required_dates_for_stock(
             raise ApiErrors({"bookingLimitDatetime": ["Ce paramètre est obligatoire"]})
 
 
-def check_stock_is_updatable(stock: Stock) -> None:
-    check_offer_is_editable(stock.offer)
+def check_stock_can_be_created_for_offer(offer: Offer) -> None:
+    check_validation_status(offer)
+    if offer.isFromProvider:
+        api_errors = ApiErrors()
+        api_errors.add_error("global", "Les offres importées ne sont pas modifiables")
+        raise api_errors
 
+
+def check_stock_is_updatable(stock: Stock) -> None:
+    check_offer_existing_stocks_are_editable(stock.offer)
     if stock.isEventExpired:
         api_errors = ApiErrors()
         api_errors.add_error("global", "Les événements passés ne sont pas modifiables")
@@ -124,8 +127,7 @@ def check_stock_is_updatable(stock: Stock) -> None:
 
 
 def check_stock_is_deletable(stock: Stock) -> None:
-    check_offer_is_editable(stock.offer)
-
+    check_offer_existing_stocks_are_editable(stock.offer)
     if not stock.isEventDeletable:
         raise exceptions.TooLateToDeleteStock()
 
@@ -195,3 +197,10 @@ def check_image(
 
     if image.width < min_width or image.height < min_height:
         raise exceptions.ImageTooSmall(min_width, min_height)
+
+
+def check_validation_status(offer: Offer) -> None:
+    if offer.validation != OfferValidationStatus.APPROVED:
+        error = ApiErrors()
+        error.add_error("global", "Les offres refusées ou en attente de validation ne sont pas modifiables")
+        raise error

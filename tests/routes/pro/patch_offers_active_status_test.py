@@ -1,6 +1,7 @@
 import pytest
 
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.models import Offer
 from pcapi.utils.human_ids import humanize
 
@@ -44,3 +45,23 @@ class Returns204:
         assert response.status_code == 204
         assert not Offer.query.get(offer1.id).isActive
         assert not Offer.query.get(offer2.id).isActive
+
+    def test_only_approved_offers_patch(self, app):
+        approved_offer = offers_factories.OfferFactory()
+        venue = approved_offer.venue
+        awaiting_offer = offers_factories.OfferFactory(venue=venue, validation=OfferValidationStatus.AWAITING)
+        rejected_offer = offers_factories.OfferFactory(venue=venue, validation=OfferValidationStatus.REJECTED)
+        offerer = venue.managingOfferer
+        offers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
+
+        client = TestClient(app.test_client()).with_auth("pro@example.com")
+        data = {
+            "ids": [humanize(approved_offer.id), humanize(awaiting_offer.id), humanize(rejected_offer.id)],
+            "isActive": False,
+        }
+        response = client.patch("/offers/active-status", json=data)
+
+        assert response.status_code == 204
+        assert not approved_offer.isActive
+        assert awaiting_offer.isActive
+        assert rejected_offer.isActive

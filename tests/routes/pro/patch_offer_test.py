@@ -3,6 +3,7 @@ from datetime import datetime
 import pytest
 
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.offers.models import OfferValidationStatus
 import pcapi.core.users.factories as users_factories
 from pcapi.models import Offer
 from pcapi.routes.serialization import serialize
@@ -162,6 +163,22 @@ class Returns400:
         # Then
         assert response.status_code == 400
         assert response.json["externalTicketOfficeUrl"] == ['L\'URL doit terminer par une extension (ex. ".fr")']
+
+    def test_patch_non_approved_offer_fails(self, app):
+        offer = offers_factories.OfferFactory(validation=OfferValidationStatus.AWAITING)
+        offers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        client = TestClient(app.test_client()).with_auth("user@example.com")
+        data = {
+            "visualDisabilityCompliant": True,
+        }
+        response = client.patch(f"/offers/{humanize(offer.id)}", json=data)
+
+        assert response.status_code == 400
+        assert response.json["global"] == ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
 
 
 @pytest.mark.usefixtures("db_session")

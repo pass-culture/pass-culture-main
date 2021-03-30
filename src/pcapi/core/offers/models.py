@@ -410,6 +410,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin, 
 
     @property
     def isEditable(self) -> bool:
+        """This property is used by the pro frontend, to display the Edit button in the Offers list"""
         if not self.isFromProvider:
             return True
         return self.isFromAllocine

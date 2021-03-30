@@ -171,6 +171,7 @@ def update_offer(  # pylint: disable=redefined-builtin
     motorDisabilityCompliant: bool = UNCHANGED,
     visualDisabilityCompliant: bool = UNCHANGED,
 ) -> Offer:
+    validation.check_validation_status(offer)
     # fmt: off
     modifications = {
         field: new_value
@@ -209,6 +210,7 @@ def update_offer(  # pylint: disable=redefined-builtin
 
 
 def update_offers_active_status(query, is_active):
+    query = query.filter(Offer.validation == OfferValidationStatus.APPROVED)
     # We cannot just call `query.update()` because `distinct()` may
     # already have been called on `query`.
     query_to_update = Offer.query.filter(Offer.id.in_(query.with_entities(Offer.id)))
@@ -229,8 +231,7 @@ def _create_stock(
     booking_limit_datetime: datetime.datetime = None,
 ) -> Stock:
     validation.check_required_dates_for_stock(offer, beginning, booking_limit_datetime)
-    validation.check_offer_is_editable(offer)
-    validation.check_stocks_are_editable_for_offer(offer)
+    validation.check_stock_can_be_created_for_offer(offer)
     validation.check_stock_price(price)
     validation.check_stock_quantity(quantity)
 

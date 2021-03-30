@@ -1,6 +1,7 @@
 from pcapi.core.bookings.factories import BookingFactory
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.offers.models import OfferValidationStatus
 import pcapi.core.users.factories as users_factories
 from pcapi.notifications.push import testing as push_testing
 from pcapi.utils.human_ids import humanize
@@ -55,6 +56,17 @@ class Returns400:
         # then
         assert response.status_code == 400
         assert response.json["global"] == ["Les offres importées ne sont pas modifiables"]
+
+    def test_delete_non_approved_offer_fails(self, app, db_session):
+        awaiting_validation_offer = offers_factories.OfferFactory(validation=OfferValidationStatus.AWAITING)
+        stock = offers_factories.StockFactory(offer=awaiting_validation_offer)
+        user = users_factories.UserFactory(isAdmin=True)
+
+        client = TestClient(app.test_client()).with_auth(user.email)
+        response = client.delete(f"/stocks/{humanize(stock.id)}")
+
+        assert response.status_code == 400
+        assert response.json["global"] == ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
 
 
 class Returns403:
