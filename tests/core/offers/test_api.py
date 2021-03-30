@@ -48,9 +48,8 @@ IMAGES_DIR = pathlib.Path(tests.__path__[0]) / "files"
 
 @pytest.mark.usefixtures("db_session")
 class UpsertStocksTest:
-    @mock.patch("pcapi.domain.user_emails.send_batch_stock_postponement_emails_to_users")
     @mock.patch("pcapi.connectors.redis.add_offer_id")
-    def test_upsert_multiple_stocks(self, mocked_add_offer_id, mock_update_confirmation_dates):
+    def test_upsert_multiple_stocks(self, mocked_add_offer_id):
         # Given
         offer = factories.ThingOfferFactory()
         existing_stock = factories.StockFactory(offer=offer, price=10)
@@ -116,8 +115,7 @@ class UpsertStocksTest:
         # Then
         mock_update_confirmation_dates.assert_called_once_with([booking], event_reported_in_10_days)
 
-    @mock.patch("pcapi.domain.user_emails.send_batch_stock_postponement_emails_to_users")
-    def should_invalidate_booking_token_when_event_is_reported(self, mock_update_confirmation_dates):
+    def should_invalidate_booking_token_when_event_is_reported(self):
         # Given
         now = datetime.now()
         booking_made_3_days_ago = now - timedelta(days=3)
@@ -144,11 +142,7 @@ class UpsertStocksTest:
         assert updated_booking.dateUsed is None
         assert updated_booking.confirmationDate == booking.confirmationDate
 
-    @mock.patch("pcapi.domain.user_emails.send_batch_stock_postponement_emails_to_users")
-    @mock.patch("pcapi.core.offers.api.mark_as_unused")
-    def should_not_invalidate_booking_token_when_event_is_reported_in_less_than_48_hours(
-        self, mock_mark_as_unused, mock_update_confirmation_dates
-    ):
+    def should_not_invalidate_booking_token_when_event_is_reported_in_less_than_48_hours(self):
         # Given
         now = datetime.now()
         date_used_in_48_hours = datetime.now() + timedelta(days=2)
@@ -175,9 +169,11 @@ class UpsertStocksTest:
         assert updated_booking.dateUsed == date_used_in_48_hours
 
     @override_features(SYNCHRONIZE_ALGOLIA=False)
-    @mock.patch("pcapi.domain.user_emails.send_batch_stock_postponement_emails_to_users")
     @mock.patch("pcapi.connectors.redis.add_offer_id")
-    def test_do_not_sync_algolia_if_feature_is_disabled(self, mocked_add_offer_id, mock_update_confirmation_dates):
+    def test_do_not_sync_algolia_if_feature_is_disabled(
+        self,
+        mocked_add_offer_id,
+    ):
         # Given
         offer = factories.ThingOfferFactory()
         created_stock_data = StockCreationBodyModel(price=10)
@@ -188,8 +184,7 @@ class UpsertStocksTest:
         # Then
         mocked_add_offer_id.assert_not_called()
 
-    @mock.patch("pcapi.domain.user_emails.send_batch_stock_postponement_emails_to_users")
-    def test_does_not_allow_edition_of_stock_of_another_offer_than_given(self, mock_update_confirmation_dates):
+    def test_does_not_allow_edition_of_stock_of_another_offer_than_given(self):
         # Given
         offer = factories.ThingOfferFactory()
         other_offer = factories.ThingOfferFactory()
@@ -206,8 +201,7 @@ class UpsertStocksTest:
             "global": ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
         }
 
-    @mock.patch("pcapi.domain.user_emails.send_batch_stock_postponement_emails_to_users")
-    def test_does_not_allow_invalid_quantity_on_creation_and_edition(self, mock_update_confirmation_dates):
+    def test_does_not_allow_invalid_quantity_on_creation_and_edition(self):
         # Given
         offer = factories.ThingOfferFactory()
         existing_stock = factories.StockFactory(offer=offer, price=10)
@@ -221,8 +215,7 @@ class UpsertStocksTest:
         # Then
         assert error.value.errors == {"quantity": ["Le stock doit être positif"]}
 
-    @mock.patch("pcapi.domain.user_emails.send_batch_stock_postponement_emails_to_users")
-    def test_does_not_allow_invalid_price_on_creation_and_edition(self, mock_update_confirmation_dates):
+    def test_does_not_allow_invalid_price_on_creation_and_edition(self):
         # Given
         offer = factories.ThingOfferFactory()
         existing_stock = factories.StockFactory(offer=offer, price=10)
@@ -238,10 +231,7 @@ class UpsertStocksTest:
             "price": ["Le prix doit être positif"],
         }
 
-    @mock.patch("pcapi.domain.user_emails.send_batch_stock_postponement_emails_to_users")
-    def test_does_not_allow_beginning_datetime_on_thing_offer_on_creation_and_edition(
-        self, mock_update_confirmation_dates
-    ):
+    def test_does_not_allow_beginning_datetime_on_thing_offer_on_creation_and_edition(self):
         # Given
         offer = factories.ThingOfferFactory()
         beginning_date = datetime.utcnow() + timedelta(days=4)
@@ -262,8 +252,7 @@ class UpsertStocksTest:
             "global": ["Impossible de mettre une date de début si l'offre ne porte pas sur un événement"],
         }
 
-    @mock.patch("pcapi.domain.user_emails.send_batch_stock_postponement_emails_to_users")
-    def test_does_not_allow_a_negative_remaining_quantity_on_edition(self, mock_update_confirmation_dates):
+    def test_does_not_allow_a_negative_remaining_quantity_on_edition(self):
         # Given
         offer = factories.ThingOfferFactory()
         booking = bookings_factories.BookingFactory(stock__offer=offer, stock__quantity=10)
@@ -277,10 +266,7 @@ class UpsertStocksTest:
         # Then
         assert error.value.errors == {"quantity": ["Le stock total ne peut être inférieur au nombre de réservations"]}
 
-    @mock.patch("pcapi.domain.user_emails.send_batch_stock_postponement_emails_to_users")
-    def test_does_not_allow_missing_dates_for_an_event_offer_on_creation_and_edition(
-        self, mock_update_confirmation_dates
-    ):
+    def test_does_not_allow_missing_dates_for_an_event_offer_on_creation_and_edition(self):
         # Given
         offer = factories.EventOfferFactory()
         created_stock_data = StockCreationBodyModel(price=10, beginningDatetime=None, bookingLimitDatetime=None)
@@ -292,10 +278,7 @@ class UpsertStocksTest:
         # Then
         assert error.value.errors == {"beginningDatetime": ["Ce paramètre est obligatoire"]}
 
-    @mock.patch("pcapi.domain.user_emails.send_batch_stock_postponement_emails_to_users")
-    def test_does_not_allow_booking_limit_after_beginning_for_an_event_offer_on_creation_and_edition(
-        self, mock_update_confirmation_dates
-    ):
+    def test_does_not_allow_booking_limit_after_beginning_for_an_event_offer_on_creation_and_edition(self):
         # Given
         offer = factories.EventOfferFactory()
         beginning_date = datetime.utcnow() + timedelta(days=4)
@@ -315,8 +298,7 @@ class UpsertStocksTest:
             ]
         }
 
-    @mock.patch("pcapi.domain.user_emails.send_batch_stock_postponement_emails_to_users")
-    def test_does_not_allow_edition_of_a_past_event_stock(self, mock_update_confirmation_dates):
+    def test_does_not_allow_edition_of_a_past_event_stock(self):
         # Given
         offer = factories.ThingOfferFactory()
         date_in_the_past = datetime.utcnow() - timedelta(days=4)
@@ -330,8 +312,7 @@ class UpsertStocksTest:
         # Then
         assert error.value.errors == {"global": ["Les événements passés ne sont pas modifiables"]}
 
-    @mock.patch("pcapi.domain.user_emails.send_batch_stock_postponement_emails_to_users")
-    def test_does_not_allow_upsert_stocks_on_a_synchronized_offer(self, mock_update_confirmation_dates):
+    def test_does_not_allow_upsert_stocks_on_a_synchronized_offer(self):
         # Given
         offer = factories.ThingOfferFactory(
             lastProvider=offerers_factories.ProviderFactory(localClass="TiteLiveStocks")
@@ -345,10 +326,7 @@ class UpsertStocksTest:
         # Then
         assert error.value.errors == {"global": ["Les offres importées ne sont pas modifiables"]}
 
-    @mock.patch("pcapi.domain.user_emails.send_batch_stock_postponement_emails_to_users")
-    def test_allow_edition_of_price_and_quantity_for_stocks_of_offers_synchronized_with_allocine(
-        self, mock_update_confirmation_dates
-    ):
+    def test_allow_edition_of_price_and_quantity_for_stocks_of_offers_synchronized_with_allocine(self):
         # Given
         offer = factories.EventOfferFactory(
             lastProvider=offerers_factories.ProviderFactory(localClass="AllocineStocks")
@@ -369,10 +347,7 @@ class UpsertStocksTest:
         edited_stock = Stock.query.filter_by(id=existing_stock.id).first()
         assert edited_stock.price == 4
 
-    @mock.patch("pcapi.domain.user_emails.send_batch_stock_postponement_emails_to_users")
-    def test_does_not_allow_edition_of_beginningDateTime_for_stocks_of_offers_synchronized_with_allocine(
-        self, mock_update_confirmation_dates
-    ):
+    def test_does_not_allow_edition_of_beginningDateTime_for_stocks_of_offers_synchronized_with_allocine(self):
         # Given
         offer = factories.EventOfferFactory(
             lastProvider=offerers_factories.ProviderFactory(localClass="AllocineStocks")
