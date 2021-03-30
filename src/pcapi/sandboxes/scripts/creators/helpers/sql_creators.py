@@ -48,8 +48,6 @@ def create_user(
     phone_number: str = None,
     postal_code: str = None,
     public_name: str = "John Doe",
-    reset_password_token: str = None,
-    reset_password_token_validity_limit: datetime = None,
     validation_token: str = None,
 ) -> User:
     user = User()

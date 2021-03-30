@@ -1,3 +1,7 @@
+from datetime import datetime
+
+from pcapi.core.users.models import TokenType
+from pcapi.core.users.models import User
 from pcapi.model_creators.generic_creators import PLAIN_DEFAULT_TESTING_PASSWORD
 from pcapi.routes.serialization import as_dict
 from pcapi.utils.includes import BENEFICIARY_INCLUDES
@@ -58,7 +62,7 @@ def get_pro_helper(user):
     return dict(
         as_dict(user, includes=USER_INCLUDES),
         **{
-            "resetPasswordToken": user.resetPasswordToken,
+            "resetPasswordToken": _get_reset_password_token(user),
             "password": PLAIN_DEFAULT_TESTING_PASSWORD,
             "validationToken": user.validationToken,
         },
@@ -69,7 +73,7 @@ def get_beneficiary_helper(user):
     return dict(
         as_dict(user, includes=BENEFICIARY_INCLUDES),
         **{
-            "resetPasswordToken": user.resetPasswordToken,
+            "resetPasswordToken": _get_reset_password_token(user),
             "password": PLAIN_DEFAULT_TESTING_PASSWORD,
             "validationToken": user.validationToken,
         },
@@ -78,3 +82,10 @@ def get_beneficiary_helper(user):
 
 def get_venue_helper(venue):
     return as_dict(venue)
+
+
+def _get_reset_password_token(user: User):
+    for token in user.tokens:
+        if token.type == TokenType.RESET_PASSWORD and token.expirationDate > datetime.now():
+            return token.value
+    return None
