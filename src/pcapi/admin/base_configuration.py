@@ -45,7 +45,7 @@ class BaseAdminView(ModelView):
 
     def check_super_admins(self) -> bool:
         if settings.IS_PROD:
-            return current_user.email in settings.SUPER_ADMIN_EMAIL_ADDRESSES
+            return current_user and current_user.email in settings.SUPER_ADMIN_EMAIL_ADDRESSES
 
         return True
 
