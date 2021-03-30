@@ -45,6 +45,7 @@ class Results extends PureComponent {
           isThing: false,
         },
         offerIsFilteredByDate: false,
+        offerIsFilteredByTime: false,
         date: {
           selectedDate: null,
           option: DATE_FILTER.TODAY.value,
@@ -303,6 +304,7 @@ class Results extends PureComponent {
       aroundRadius,
       date,
       offerIsFilteredByDate,
+      offerIsFilteredByTime,
       offerCategories,
       offerIsDuo,
       offerIsFree,
@@ -310,6 +312,7 @@ class Results extends PureComponent {
       offerTypes,
       priceRange,
       searchAround,
+      timeRange,
     } = filters
     this.setState({
       isLoading: true,
@@ -329,6 +332,9 @@ class Results extends PureComponent {
     }
     if (offerIsFilteredByDate) {
       options.date = date
+    }
+    if (offerIsFilteredByTime) {
+      options.timeRange = timeRange
     }
     fetchAlgolia(options)
       .then(offers => {
