@@ -41,6 +41,7 @@ def get_token_detail_response(token: str) -> Dict:
 @patch("pcapi.settings.JOUVE_API_PASSWORD", "secret-password")
 @patch("pcapi.settings.JOUVE_API_USERNAME", "username")
 @patch("pcapi.settings.JOUVE_API_VAULT_GUID", "12")
+@patch("pcapi.settings.IS_PROD", True)
 @patch("pcapi.connectors.beneficiaries.jouve_backend.requests.post")
 def test_calls_jouve_api_with_previously_fetched_token(mocked_requests_post):
     # Given

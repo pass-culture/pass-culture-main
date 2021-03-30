@@ -51,6 +51,12 @@ class BeneficiaryJouveBackend:
             )
 
         content = response.json()
+
+        # There is a bug in Jouve that invert first_name and last_name (only on testing and staging env)
+        # TODO 05/2021: remove this code when Jouve fixed the bug
+        first_name = content["firstName"] if settings.IS_PROD else content["lastName"]
+        last_name = content["lastName"] if settings.IS_PROD else content["firstName"]
+
         return BeneficiaryPreSubscription(
             activity=content["activity"],
             address=content["address"],
@@ -59,8 +65,8 @@ class BeneficiaryJouveBackend:
             civility="Mme" if content["gender"] == "F" else "M.",
             date_of_birth=datetime.datetime.strptime(content["birthDate"], "%m/%d/%Y"),
             email=content["email"],
-            first_name=content["firstName"],
-            last_name=content["lastName"],
+            first_name=first_name,
+            last_name=last_name,
             phone_number=content["phoneNumber"],
             postal_code=content["postalCode"],
             source=BeneficiaryImportSources.jouve.value,
