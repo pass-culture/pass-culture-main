@@ -1,4 +1,5 @@
 from flask.helpers import flash
+from flask_admin.helpers import get_form_data
 from sqlalchemy.orm import query
 from sqlalchemy.sql.functions import func
 from wtforms import Form
@@ -74,11 +75,21 @@ class BeneficiaryUserView(SuspensionMixin, BaseAdminView):
         postalCode=dict(validators=[DataRequired()]),
     )
 
+    # We need to override `create_form()` and `edit_form()`, otherwise
+    # Flask-Admin loads the form classes from its cache, which is
+    # populated when the admin view is registered. It does not work
+    # for us because we want the form to be different depending on the
+    # logged-in user's privileges (see `form_columns()`). Thus, we
+    # don't use the cache.
+    def create_form(self, obj=None):
+        form_class = self.get_create_form()
+        return form_class(get_form_data(), obj=obj)
+
+    def edit_form(self, obj=None):
+        form_class = self.get_edit_form()
+        return form_class(get_form_data(), obj=obj)
+
     def get_create_form(self):
-        # XXX: do not depend on the logged-in user (or anything that
-        # is runtime dependent) here because this function is called
-        # when the class is initialized: creation and edition forms
-        # are cached by Flask-Admin.
         form_class = super().scaffold_form()
 
         if not settings.IS_PROD:
