@@ -16,7 +16,9 @@ from pcapi.utils.human_ids import humanize
 from tests.conftest import TestClient
 
 
-api_entreprise_json_mock = {"unite_legale": {"etablissement_siege": {}, "etablissements": []}}
+api_entreprise_json_mock = {
+    "unite_legale": {"etablissement_siege": {"siret": ""}, "etablissements": [], "activite_principale": ""}
+}
 DEFAULT_DIGITAL_VENUE_LABEL = "Offre numérique"
 
 

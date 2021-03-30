@@ -31,6 +31,10 @@ def build_pc_pro_offer_link(offer: Offer) -> str:
     return f"{settings.PRO_URL}/offres/{humanize(offer.id)}/edition"
 
 
+def build_pc_pro_offerer_link(offerer: Offerer) -> str:
+    return f"{settings.PRO_URL}/accueil?structure={humanize(offerer.id)}"
+
+
 def extract_users_information_from_bookings(bookings: List[Booking]) -> List[dict]:
     users_keys = ("firstName", "lastName", "email", "contremarque")
     users_properties = [
@@ -73,6 +77,9 @@ def make_validation_email_object(
         offerer=offerer,
         offerer_vars_user_offerer=pformat(vars(user_offerer.offerer)),
         offerer_vars=pformat(vars(offerer)),
+        offerer_pro_link=build_pc_pro_offerer_link(offerer),
+        offerer_summary=pformat(_summarize_offerer_vars(offerer, api_entreprise)),
+        user_summary=pformat(_summarize_user_vars(user_offerer)),
         api_entreprise=pformat(api_entreprise),
         api_url=settings.API_URL,
     )
@@ -272,4 +279,26 @@ def _add_template_debugging(message_data: Dict) -> None:
     message_data["TemplateErrorReporting"] = {
         "Email": settings.DEV_EMAIL_ADDRESS,
         "Name": "Mailjet Template Errors",
+    }
+
+
+def _summarize_offerer_vars(offerer: Offerer, api_entreprise: Dict) -> Dict:
+    return {
+        "name": offerer.name,
+        "siren": offerer.siren,
+        "address": offerer.address,
+        "city": offerer.city,
+        "postalCode": offerer.postalCode,
+        "siret": api_entreprise["unite_legale"]["etablissement_siege"]["siret"],
+        "legal_main_activity": api_entreprise["unite_legale"]["activite_principale"],
+    }
+
+
+def _summarize_user_vars(user_offerer: UserOfferer) -> Dict:
+    return {
+        "firstName": user_offerer.user.firstName,
+        "lastName": user_offerer.user.lastName,
+        "email": user_offerer.user.email,
+        "phoneNumber": user_offerer.user.phoneNumber,
+        "activity": user_offerer.user.activity,
     }

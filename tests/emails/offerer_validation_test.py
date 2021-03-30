@@ -16,6 +16,7 @@ def test_write_object_validation_email(app):
     # Given
     validation_token = secrets.token_urlsafe(20)
     offerer = create_offerer(
+        idx=123,
         siren="732075312",
         address="122 AVENUE DE FRANCE",
         city="Paris",
@@ -41,21 +42,36 @@ def test_write_object_validation_email(app):
     html = BeautifulSoup(email["Html-part"], features="html.parser")
     assert html.h1.text == "Inscription ou rattachement PRO à valider"
 
-    div_offerer = html.select("div.offerer")[0]
-    assert div_offerer.h2.text == "Nouvelle structure :"
-    assert div_offerer.h3.text == "Infos API entreprise :"
-    assert div_offerer.strong.a["href"] == "http://localhost/validate/offerer/{}".format(offerer.validationToken)
-    assert div_offerer.strong.a.text == "cliquez ici"
-
-    div_user_offerer = html.select("div.user_offerer")[0]
-    assert div_user_offerer.h2.text == "Nouveau rattachement :"
-    assert div_user_offerer.h3.text == "Utilisateur :"
-    assert div_user_offerer.strong.a["href"] == "http://localhost/validate/user-offerer/{}".format(
+    summary_section = html.select_one("section[data-testId='summary']")
+    assert summary_section.select("h2")[0].a.text == "Structure :"
+    assert summary_section.select("h2")[0].a["href"] == "http://localhost:3001/accueil?structure=PM"
+    assert summary_section.select("h2")[1].text == "Utilisateur :"
+    assert summary_section.select("h2")[2].text == "Nouveau rattachement :"
+    assert summary_section.select("strong")[0].a["href"] == "http://localhost/validate/user-offerer/{}".format(
         user_offerer.validationToken
     )
-    assert div_user_offerer.strong.a.text == "cliquez ici"
+    assert summary_section.select("strong")[0].a.text == "cliquez ici"
+    assert summary_section.select("h2")[3].text == "Nouvelle structure :"
+    assert summary_section.select("strong")[1].a["href"] == "http://localhost/validate/offerer/{}".format(
+        offerer.validationToken
+    )
+    assert summary_section.select("strong")[1].a.text == "cliquez ici"
 
-    offerer_data = div_offerer.select("pre.offerer-data")[0].text
+    offerer_section = html.select_one("section[data-testId='offerer']")
+    assert offerer_section.h2.text == "Nouvelle structure :"
+    assert offerer_section.h3.text == "Infos API entreprise :"
+    assert offerer_section.strong.a["href"] == "http://localhost/validate/offerer/{}".format(offerer.validationToken)
+    assert offerer_section.strong.a.text == "cliquez ici"
+
+    user_offerer_section = html.select_one("section[data-testId='user_offerer']")
+    assert user_offerer_section.h2.text == "Nouveau rattachement :"
+    assert user_offerer_section.h3.text == "Utilisateur :"
+    assert user_offerer_section.strong.a["href"] == "http://localhost/validate/user-offerer/{}".format(
+        user_offerer.validationToken
+    )
+    assert user_offerer_section.strong.a.text == "cliquez ici"
+
+    offerer_data = offerer_section.select_one("pre.offerer-data").text
     assert "'address': '122 AVENUE DE FRANCE'" in offerer_data
     assert "'city': 'Paris'" in offerer_data
     assert "'name': 'Accenture'" in offerer_data
@@ -63,7 +79,7 @@ def test_write_object_validation_email(app):
     assert "'siren': '732075312'" in offerer_data
     assert "'validationToken': '{}'".format(validation_token) in offerer_data
 
-    api_entreprise_data = div_offerer.select("pre.api-entreprise-data")[0].text
+    api_entreprise_data = offerer_section.select_one("pre.api-entreprise-data").text
     assert "'other_etablissements_sirets':['39525144000032','39525144000065']" in api_entreprise_data.replace(
         " ", ""
     ).replace("\n", "")
@@ -82,14 +98,15 @@ def test_validation_email_object_does_not_include_validation_link_if_user_offere
 
     # Then
     html = BeautifulSoup(email["Html-part"], features="html.parser")
-    assert not html.select("div.user_offerer strong.validation a")
-    assert html.select("div.user_offerer h2")[0].text == "Rattachement :"
+    assert "Nouveau rattachement :" not in [h2.text for h2 in html.select("section[data-testId='summary'] h2")]
+    assert not html.select("section[data-testId='user_offerer'] strong.validation a")
+    assert html.select("section[data-testId='user_offerer'] h2")[0].text == "Rattachement :"
 
 
 @pytest.mark.usefixtures("db_session")
 def test_validation_email_object_does_not_include_validation_link_if_offerer_is_already_validated(app):
     # Given
-    offerer = create_offerer()
+    offerer = create_offerer(idx=123)
     user = create_user()
     user_offerer = create_user_offerer(user=user, offerer=offerer)
 
@@ -98,8 +115,9 @@ def test_validation_email_object_does_not_include_validation_link_if_offerer_is_
 
     # Then
     html = BeautifulSoup(email["Html-part"], features="html.parser")
-    assert not html.select("div.offerer strong.validation a")
-    assert html.select("div.offerer h2")[0].text == "Structure :"
+    assert "Nouvelle structure :" not in [h2.text for h2 in html.select("section[data-testId='summary'] h2")]
+    assert not html.select("section[data-testId='offerer'] strong.validation a")
+    assert html.select("section[data-testId='offerer'] h2")[0].text == "Structure :"
 
 
 @pytest.mark.usefixtures("db_session")

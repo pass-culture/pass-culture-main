@@ -41,6 +41,7 @@ def get_by_siren_stub(offerer):
                 "siret": "39525144000016",
                 "etablissement_siege": "true",
             },
+            "activite_principale": "59.14Z",
         },
         "other_etablissements_sirets": ["39525144000032", "39525144000065"],
     }

@@ -22,7 +22,9 @@ def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_when_ob
     # Given
     response_return_value = MagicMock(status_code=200, text="")
     response_return_value.json = MagicMock(
-        return_value={"unite_legale": {"etablissement_siege": {}, "etablissements": []}}
+        return_value={
+            "unite_legale": {"etablissement_siege": {"siret": ""}, "etablissements": [], "activite_principale": ""}
+        }
     )
     mock_api_entreprise.return_value = response_return_value
 
