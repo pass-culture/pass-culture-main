@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import PropTypes from 'prop-types'
 import React from 'react'
 
@@ -6,9 +5,11 @@ import Breadcrumb, { STYLE_TYPE_TAB, STYLE_TYPE_DEFAULT } from 'components/layou
 
 export const STEP_ID_DETAILS = 'details'
 export const STEP_ID_STOCKS = 'stocks'
+export const STEP_ID_CONFIRMATION = 'confirmation'
 
-const OfferBreadcrumb = ({ activeStep, isCreatingOffer, offerId }) => {
-  let steps
+const OfferBreadcrumb = ({ activeStep, isCreatingOffer, isOfferCreatingIsFinished, offerId }) => {
+  let steps = []
+
   if (offerId) {
     steps = [
       {
@@ -22,6 +23,14 @@ const OfferBreadcrumb = ({ activeStep, isCreatingOffer, offerId }) => {
         url: isCreatingOffer ? null : `/offres/${offerId}/stocks`,
       },
     ]
+
+    if (!isOfferCreatingIsFinished) {
+      steps.push({
+        id: STEP_ID_CONFIRMATION,
+        label: 'Confirmation',
+        url: `/offres/${offerId}/confirmation`,
+      })
+    }
   } else {
     steps = [
       {
@@ -31,6 +40,10 @@ const OfferBreadcrumb = ({ activeStep, isCreatingOffer, offerId }) => {
       {
         id: STEP_ID_STOCKS,
         label: 'Stock et prix',
+      },
+      {
+        id: STEP_ID_CONFIRMATION,
+        label: 'Confirmation',
       },
     ]
   }
@@ -44,12 +57,15 @@ const OfferBreadcrumb = ({ activeStep, isCreatingOffer, offerId }) => {
   )
 }
 
-Breadcrumb.defaultProps = {
+OfferBreadcrumb.defaultProps = {
+  isOfferCreatingIsFinished: true,
   offerId: null,
 }
 
-Breadcrumb.PropTypess = {
+OfferBreadcrumb.propTypes = {
+  activeStep: PropTypes.string.isRequired,
   isCreatingOffer: PropTypes.bool.isRequired,
+  isOfferCreatingIsFinished: PropTypes.bool,
   offerId: PropTypes.string,
 }
 

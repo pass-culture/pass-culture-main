@@ -1425,6 +1425,15 @@ describe('offerDetails - Creation - pro user', () => {
 
       await setOfferValues({ type: offerValues.type })
       await setOfferValues(offerValues)
+      const createdOffer = {
+        ...offerValues,
+        id: 'CREATED',
+        stocks: [],
+        venue: venues[0],
+        status: 'ACTIVE',
+      }
+      pcapi.createOffer.mockResolvedValue(createdOffer)
+      pcapi.loadOffer.mockResolvedValue(createdOffer)
 
       // When
       await userEvent.click(screen.getByText('Étape suivante'))

@@ -4,9 +4,11 @@ import { Route, Switch } from 'react-router-dom'
 
 import Titles from 'components/layout/Titles/Titles'
 import Breadcrumb, {
+  STEP_ID_CONFIRMATION,
   STEP_ID_DETAILS,
   STEP_ID_STOCKS,
 } from 'components/pages/Offers/Offer/Breadcrumb'
+import ConfirmationContainer from 'components/pages/Offers/Offer/Confirmation/ConfirmationContainer'
 import OfferDetailsContainer from 'components/pages/Offers/Offer/OfferDetails/OfferDetailsContainer'
 import { OfferHeader } from 'components/pages/Offers/Offer/OfferStatus/OfferHeader'
 import StocksContainer from 'components/pages/Offers/Offer/Stocks/StocksContainer'
@@ -19,6 +21,7 @@ const mapPathToStep = {
   creation: STEP_ID_DETAILS,
   edition: STEP_ID_DETAILS,
   stocks: STEP_ID_STOCKS,
+  confirmation: STEP_ID_CONFIRMATION,
 }
 
 const OfferLayout = props => {
@@ -26,12 +29,17 @@ const OfferLayout = props => {
 
   const [offer, setOffer] = useState(null)
   const [isCreatingOffer, setIsCreatingOffer] = useState(true)
+  const [haveStocks, setHaveStocks] = useState(false)
 
   const loadOffer = useCallback(
     async offerId => {
       const existingOffer = await pcapi.loadOffer(offerId)
       setOffer(existingOffer)
       setIsCreatingOffer(existingOffer.status === OFFER_STATUS_DRAFT)
+
+      if (existingOffer.stocks.length > 0) {
+        setHaveStocks(true)
+      }
     },
     [setOffer]
   )
@@ -89,6 +97,7 @@ const OfferLayout = props => {
       <Breadcrumb
         activeStep={activeStep}
         isCreatingOffer={isCreatingOffer}
+        isOfferCreatingIsFinished={haveStocks}
         offerId={offer?.id}
       />
 
@@ -117,6 +126,12 @@ const OfferLayout = props => {
               offer={offer}
               reloadOffer={reloadOffer}
             />
+          </Route>
+          <Route
+            exact
+            path={`${match.url}/confirmation`}
+          >
+            <ConfirmationContainer offer={offer} />
           </Route>
         </Switch>
       </div>
