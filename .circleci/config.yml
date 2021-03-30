@@ -561,10 +561,6 @@ workflows:
     jobs:
       - run-tests:
           name: "Run tests after commit"
-          filters:
-            branches:
-              ignore:
-                - production
       - quality:
           name: "Run quality checks after commit"
       - build-container:
@@ -572,10 +568,10 @@ workflows:
             branches:
               only:
                 - master
-
-  gcp:
-    jobs:
       - build-and-push-image:
+          requires:
+            - "Run tests after commit"
+            - "Run quality checks after commit"
           filters:
             branches:
               only:
