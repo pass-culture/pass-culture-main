@@ -8,12 +8,9 @@ import Breadcrumb, {
   STEP_ID_STOCKS,
 } from 'components/pages/Offers/Offer/Breadcrumb'
 import OfferDetailsContainer from 'components/pages/Offers/Offer/OfferDetails/OfferDetailsContainer'
+import OfferStatus from 'components/pages/Offers/Offer/OfferStatus/OfferStatus'
 import StocksContainer from 'components/pages/Offers/Offer/Stocks/StocksContainer'
 import * as pcapi from 'repository/pcapi/pcapi'
-
-
-import OfferStatus from "./OfferStatus/OfferStatus"
-
 
 const mapPathToStep = {
   creation: STEP_ID_DETAILS,
@@ -59,7 +56,7 @@ const OfferLayout = props => {
     pageTitle = 'Éditer une offre'
   }
 
-  const offerStatus = (offer?.status && (<OfferStatus status={offer.status} />))
+  const offerStatus = offer?.status && <OfferStatus status={offer.status} />
   return (
     <div className="offer-page">
       <Titles
@@ -94,7 +91,10 @@ const OfferLayout = props => {
             exact
             path={`${match.url}/stocks`}
           >
-            <StocksContainer offer={offer} />
+            <StocksContainer
+              offer={offer}
+              reloadOffer={reloadOffer}
+            />
           </Route>
         </Switch>
       </div>

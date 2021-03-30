@@ -1115,6 +1115,61 @@ describe('stocks page', () => {
               const errorMessage = await screen.findByText('Vos stocks ont bien été sauvegardés.')
               expect(errorMessage).toBeInTheDocument()
             })
+
+            it('should refresh offer', async () => {
+              // Given
+              pcapi.bulkCreateOrEditStock.mockResolvedValue({})
+              const initialOffer = {
+                ...eventOffer,
+                status: 'SOLD_OUT',
+              }
+              const updatedOffer = {
+                ...eventOffer,
+                status: 'ACTIVE',
+              }
+              pcapi.loadOffer
+                .mockResolvedValueOnce(initialOffer)
+                .mockResolvedValueOnce(updatedOffer)
+              await renderOffers(props, store)
+              pcapi.loadOffer.mockClear()
+
+              // When
+              await fireEvent.click(screen.getByText('Enregistrer'))
+
+              //Then
+              expect(pcapi.loadOffer).toHaveBeenCalledTimes(1)
+            })
+
+            it('should update displayed offer status', async () => {
+              // Given
+              pcapi.bulkCreateOrEditStock.mockResolvedValue({})
+              const initialOffer = {
+                ...eventOffer,
+                status: 'SOLD_OUT',
+              }
+              const updatedOffer = {
+                ...eventOffer,
+                status: 'ACTIVE',
+              }
+              pcapi.loadOffer
+                .mockResolvedValueOnce(initialOffer)
+                .mockResolvedValueOnce(updatedOffer)
+
+              // When
+              await renderOffers(props, store)
+
+              // Then
+              const soldOutOfferStatus = await screen.findByText('épuisée')
+              expect(soldOutOfferStatus).toBeInTheDocument()
+
+              await fireEvent.click(screen.getByText('Enregistrer'))
+
+              const successMessage = await screen.findByText('Vos stocks ont bien été sauvegardés.')
+              expect(successMessage).toBeInTheDocument()
+
+              const activeOfferStatus = await screen.findByText('active')
+              expect(activeOfferStatus).toBeInTheDocument()
+            })
           })
         })
 
@@ -1472,7 +1527,7 @@ describe('stocks page', () => {
             })
 
             // Then
-            expect(pcapi.loadOffer).toHaveBeenCalledTimes(1)
+            expect(pcapi.loadStocks).toHaveBeenCalledTimes(1)
           })
 
           it('should set booking limit time to end of selected local day when specified in Cayenne TZ', async () => {

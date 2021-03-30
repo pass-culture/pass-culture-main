@@ -20,7 +20,7 @@ import StockItem from 'components/pages/Offers/Offer/Stocks/StockItem/StockItem'
 import { ReactComponent as AddStockSvg } from 'icons/ico-plus.svg'
 import * as pcapi from 'repository/pcapi/pcapi'
 
-const Stocks = ({ offer, showErrorNotification, showSuccessNotification }) => {
+const Stocks = ({ offer, showErrorNotification, showSuccessNotification, reloadOffer }) => {
   const offerId = offer.id
   const [isLoading, setIsLoading] = useState(true)
   const [stocks, setStocks] = useState([])
@@ -133,6 +133,7 @@ const Stocks = ({ offer, showErrorNotification, showSuccessNotification }) => {
         .bulkCreateOrEditStock(offer.id, [...stocksToCreate, ...stocksToUpdate])
         .then(() => {
           loadStocks()
+          reloadOffer()
           showSuccessNotification()
         })
         .catch(() => showErrorNotification())
@@ -144,6 +145,7 @@ const Stocks = ({ offer, showErrorNotification, showSuccessNotification }) => {
     offer.isEvent,
     offer.venue.departementCode,
     loadStocks,
+    reloadOffer,
     showSuccessNotification,
     showErrorNotification,
   ])
@@ -281,6 +283,7 @@ const Stocks = ({ offer, showErrorNotification, showSuccessNotification }) => {
 
 Stocks.propTypes = {
   offer: PropTypes.shape().isRequired,
+  reloadOffer: PropTypes.func.isRequired,
   showErrorNotification: PropTypes.func.isRequired,
   showSuccessNotification: PropTypes.func.isRequired,
 }
