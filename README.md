@@ -13,6 +13,8 @@ pour être informé des différentes lignes de commande associées à ce repo.
 virtualenv pass-culture-api
 pip install -r requirements.txt
 ```
+Troubleshooting:
+- if you got errors, during requirements installation, about `psycopg`, this may help you: https://stackoverflow.com/questions/9678408/cant-install-psycopg2-with-pip-in-virtualenv-on-mac-os-x-10-7/62931654#62931654
 
 Lancer postgres et redis via docker-compose (par exemple):
 ```bash
