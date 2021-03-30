@@ -50,7 +50,7 @@ def update_user_profile(user: User, body: serializers.UserProfileUpdateRequest) 
             )
         )
     repository.save(user)
-    update_user_attributes_job.delay(user)
+    update_user_attributes_job.delay(user.id)
 
     return serializers.UserProfileResponse.from_orm(user)
 

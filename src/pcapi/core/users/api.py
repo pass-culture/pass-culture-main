@@ -123,7 +123,7 @@ def create_account(
     repository.save(user)
     logger.info("Created user account", extra={"user": user.id})
 
-    update_user_attributes_job.delay(user)
+    update_user_attributes_job.delay(user.id)
 
     if not is_email_validated and send_activation_mail:
         request_email_confirmation(user)

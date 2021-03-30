@@ -107,7 +107,7 @@ class BeneficiaryUserView(SuspensionMixin, BaseAdminView):
         super().on_model_change(form, model, is_created)
 
     def after_model_change(self, form: Form, model: User, is_created: bool) -> None:
-        update_user_attributes_job.delay(model)
+        update_user_attributes_job.delay(model.id)
         if is_created and not send_activation_email(model):
             flash("L'envoi d'email a échoué", "error")
         super().after_model_change(form, model, is_created)

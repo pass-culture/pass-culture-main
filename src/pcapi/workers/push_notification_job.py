@@ -1,3 +1,5 @@
+import logging
+
 from rq.decorators import job
 
 from pcapi.core.users.models import User
@@ -10,10 +12,18 @@ from pcapi.workers.decorators import job_context
 from pcapi.workers.decorators import log_job
 
 
+logger = logging.getLogger(__name__)
+
+
 @job(worker.default_queue, connection=worker.conn)
 @job_context
 @log_job
-def update_user_attributes_job(user: User) -> None:
+def update_user_attributes_job(user_id: int) -> None:
+    user = User.query.get(user_id)
+    if not user:
+        logger.error("No user with id=%s found to send push attributes updates requests", user_id)
+        return
+
     update_user_attributes(user.id, get_user_attributes(user))
 
 

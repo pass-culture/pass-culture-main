@@ -185,7 +185,7 @@ def _process_creation(
             user=new_beneficiary,
         )
         new_beneficiaries.append(new_beneficiary)
-        update_user_attributes_job.delay(new_beneficiary)
+        update_user_attributes_job.delay(new_beneficiary.id)
         try:
             if user is None:
                 send_activation_email(new_beneficiary)

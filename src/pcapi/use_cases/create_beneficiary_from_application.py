@@ -38,7 +38,7 @@ class CreateBeneficiaryFromApplication:
             else:
                 send_accepted_as_beneficiary_email(user=beneficiary)
 
-            update_user_attributes_job.delay(beneficiary)
+            update_user_attributes_job.delay(beneficiary.id)
 
 
 create_beneficiary_from_application = CreateBeneficiaryFromApplication()

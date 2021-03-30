@@ -50,7 +50,7 @@ def signup_webapp():
 
     repository.save(*objects_to_save)
 
-    update_user_attributes_job.delay(new_user)
+    update_user_attributes_job.delay(new_user.id)
 
     return jsonify(as_dict(new_user, includes=BENEFICIARY_INCLUDES)), 201
 
