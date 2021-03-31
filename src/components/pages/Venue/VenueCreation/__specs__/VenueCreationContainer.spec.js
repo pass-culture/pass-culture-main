@@ -245,7 +245,7 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
       // then
       expect(dispatch.mock.calls[0][0]).toStrictEqual({
         payload: { text: 'Some text', type: 'success' },
-        type: 'SHOW_NOTIFICATION_V1',
+        type: 'SHOW_NOTIFICATION_V2',
       })
     })
   })

@@ -39,9 +39,9 @@ export const navigateToOffererAs = (user, offerer) => async t => {
 }
 
 export const navigateAfterVenueSubmit = creationOrModification => async t => {
-  const closeAnchor = Selector('button.close').withText('OK')
-  const notificationError = Selector('.notification.is-danger')
-  const notificationSuccess = Selector('.notification.is-success')
+  const notificationSuccess = Selector('.notification-v2.is-success').withText(
+    'Lieu créé. Vous pouvez maintenant y créer une offre, ou en importer automatiquement.'
+  )
   const submitButton = Selector('button[type="submit"]')
   const redirectUrl =
     creationOrModification === 'creation'
@@ -51,15 +51,7 @@ export const navigateAfterVenueSubmit = creationOrModification => async t => {
   await t.click(submitButton)
   const location = await t.eval(() => window.location)
 
-  await t
-    .expect(location.pathname)
-    .match(redirectUrl)
-    .expect(notificationSuccess.innerText)
-    .contains(
-      'Lieu créé. Vous pouvez maintenant y créer une offre, ou en importer automatiquement.\n\nOK'
-    )
-
-  await t.click(closeAnchor).expect(notificationError.exists).notOk()
+  await t.expect(location.pathname).match(redirectUrl).expect(notificationSuccess.exists).ok()
 }
 
 export const navigateToNewOfferAs = (user, offerer, venue, userRole) => async t => {
