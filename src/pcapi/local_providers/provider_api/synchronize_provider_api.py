@@ -47,8 +47,10 @@ def synchronize_venue_provider(venue_provider: VenueProvider) -> None:
     provider_api = provider.getProviderAPI()
 
     stats = {"new_offers": 0, "new_stocks": 0, "updated_stocks": 0}
-    for raw_stocks in _get_stocks_by_batch(venue.siret, provider_api, venue_provider.lastSyncDate):
-        stock_details = _build_stock_details_from_raw_stocks(raw_stocks, venue.siret)
+    for raw_stocks in _get_stocks_by_batch(
+        venue_provider.venueIdAtOfferProvider, provider_api, venue_provider.lastSyncDate
+    ):
+        stock_details = _build_stock_details_from_raw_stocks(raw_stocks, venue_provider.venueIdAtOfferProvider)
 
         products_provider_references = [stock_detail["products_provider_reference"] for stock_detail in stock_details]
         products_by_provider_reference = get_products_map_by_id_at_providers(products_provider_references)

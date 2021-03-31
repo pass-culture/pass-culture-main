@@ -28,7 +28,7 @@ def test_fully_sync_venue():
             "total": 1,
             "stocks": [{"ref": "1234", "available": 5}],
         }
-        mock.get(f"{api_url}/{venue.siret}", [{"json": response}, {"json": {"stocks": []}}])
+        mock.get(f"{api_url}/{venue_provider.venueIdAtOfferProvider}", [{"json": response}, {"json": {"stocks": []}}])
         fully_sync_venue.fully_sync_venue(venue)
 
     # Check that the quantity of existing stocks has been reset.
