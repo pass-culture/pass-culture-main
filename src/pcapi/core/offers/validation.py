@@ -48,7 +48,7 @@ def check_user_can_create_activation_event(user: User) -> None:
 
 def check_offer_existing_stocks_are_editable(offer: Offer) -> None:
     check_validation_status(offer)
-    if offer.isEditable:
+    if not offer.isEditable:
         error = ApiErrors()
         error.status_code = 400
         error.add_error("global", "Les offres importées ne sont pas modifiables")
