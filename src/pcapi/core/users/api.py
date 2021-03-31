@@ -67,8 +67,10 @@ def create_email_validation_token(user: User) -> Token:
     )
 
 
-def create_reset_password_token(user: User) -> Token:
-    return generate_and_save_token(user, TokenType.RESET_PASSWORD, life_time=constants.RESET_PASSWORD_TOKEN_LIFE_TIME)
+def create_reset_password_token(user: User, token_life_time: timedelta = None) -> Token:
+    return generate_and_save_token(
+        user, TokenType.RESET_PASSWORD, life_time=token_life_time or constants.RESET_PASSWORD_TOKEN_LIFE_TIME
+    )
 
 
 def create_id_check_token(user: User) -> Optional[Token]:

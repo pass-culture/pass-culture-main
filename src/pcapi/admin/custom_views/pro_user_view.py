@@ -140,7 +140,7 @@ class ProUserView(SuspensionMixin, BaseAdminView):
 
     def after_model_change(self, form: Form, model: User, is_created: bool) -> None:
         if is_created:
-            resetPasswordToken = create_reset_password_token(model)
+            resetPasswordToken = create_reset_password_token(model, token_life_time=timedelta(days=30))
             flash(f"Lien de création de mot de passe : {build_pc_pro_create_password_link(resetPasswordToken.value)}")
         super().after_model_change(form, model, is_created)
 
