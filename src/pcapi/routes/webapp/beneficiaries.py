@@ -128,7 +128,7 @@ def signin_beneficiary() -> Tuple[str, int]:
     except users_exceptions.UnvalidatedAccount as exc:
         errors.add_error("identifier", "Ce compte n'est pas validé.")
         raise errors from exc
-    login_user(user, remember=True)
+    login_user(user)
     stamp_session(user)
     return jsonify(), 200
 

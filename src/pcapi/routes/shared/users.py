@@ -55,7 +55,7 @@ def signin(body: LoginUserBodyModel) -> SharedLoginUserResponseModel:
         errors.add_error("identifier", "Ce compte n'est pas validé.")
         raise errors from exc
 
-    login_user(user, remember=True)
+    login_user(user)
     stamp_session(user)
 
     return SharedLoginUserResponseModel.from_orm(user)
