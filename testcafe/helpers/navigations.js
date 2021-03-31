@@ -2,16 +2,17 @@ import { Selector } from 'testcafe'
 
 import { createUserRole } from './roles'
 
-export const navigateToOfferersAs = (user, userRole) => async t => {
-  const dropdownMenu = Selector('button').withText(user.publicName).filterVisible()
-  const offerersMenuItem = Selector("a[role='menuitem']").withText(/Structure[s]? juridique[s]?/)
+export const HOME_URL = '/v2/accueil'
+
+export const navigateToHomeAs = (user, userRole) => async t => {
+  const homepageNavItem = Selector('.nav-item').withText('Accueil')
 
   if (!userRole) {
     await t.useRole(createUserRole(user))
   } else {
     await t.useRole(userRole)
   }
-  await t.click(dropdownMenu).click(offerersMenuItem())
+  await t.click(homepageNavItem)
 }
 
 export const navigateToOffersAs = user => async t => {
@@ -22,20 +23,21 @@ export const navigateToOffersAs = user => async t => {
 }
 
 export const navigateToNewOffererAs = (user, userRole) => async t => {
-  await navigateToOfferersAs(user, userRole)(t)
-  const newOffererAnchor = Selector('a').withText('Ajouter une structure')
+  await navigateToHomeAs(user, userRole)(t)
 
-  await t.click(newOffererAnchor)
+  const offererSelect = Selector('#offererId')
+  const offererOption = offererSelect.find('option')
+
+  await t.click(offererSelect).click(offererOption.withText('+ Ajouter une structure'))
 }
 
-export const navigateToOffererAs = (user, offerer) => async t => {
-  const searchInput = Selector('#search').find('input')
-  const submitButton = Selector('button[type="submit"]')
-  const offererAnchor = Selector('li.offerer-item').find(`a[href^="/structures/${offerer.id}"]`)
+export const navigateToOffererAs = (user, offerer, userRole) => async t => {
+  await navigateToHomeAs(user, userRole)(t)
 
-  await navigateToOfferersAs(user)(t)
+  const offererSelect = Selector('#offererId')
+  const offererOption = offererSelect.find('option')
 
-  await t.typeText(searchInput, offerer.keywordsString).click(submitButton).click(offererAnchor)
+  await t.click(offererSelect).click(offererOption.withText(offerer.name))
 }
 
 export const navigateAfterVenueSubmit = creationOrModification => async t => {
@@ -43,46 +45,48 @@ export const navigateAfterVenueSubmit = creationOrModification => async t => {
     'Lieu créé. Vous pouvez maintenant y créer une offre, ou en importer automatiquement.'
   )
   const submitButton = Selector('button[type="submit"]')
-  const redirectUrl =
-    creationOrModification === 'creation'
-      ? /\/structures\/([A-Z0-9]*)$/
-      : /\/structures\/([A-Z0-9]*)\/lieux\/([A-Z0-9]*)$/
 
   await t.click(submitButton)
   const location = await t.eval(() => window.location)
 
-  await t.expect(location.pathname).match(redirectUrl).expect(notificationSuccess.exists).ok()
+  creationOrModification === 'creation'
+    ? await t.expect(location.pathname).eql(HOME_URL)
+    : await t.expect(location.pathname).match(/\/structures\/([A-Z0-9]*)\/lieux\/([A-Z0-9]*)$/)
+
+  await t.expect(notificationSuccess.exists).ok()
 }
 
 export const navigateToNewOfferAs = (user, offerer, venue, userRole) => async t => {
   if (venue) {
-    const newOfferAnchor = Selector("a[href^='/structures/']")
+    const newOfferAnchor = Selector('h3.h-card-title')
       .withText(venue.name)
-      .parent('div.list-content')
-      .find("a[href^='/offres/creation?lieu=']")
+      .parent('div.h-card-inner')
+      .find("a[href^='/offres/creation']")
 
-    await navigateToOffererAs(user, offerer)(t)
+    await navigateToOffererAs(user, offerer, userRole)(t)
 
     await t.click(newOfferAnchor)
     return
-  }
-  if (offerer) {
-    const newOfferAnchor = Selector("a[href^='/structures/']")
-      .withText(offerer.name)
-      .parent('div.list-content')
+  } else if (offerer) {
+    const newOfferAnchor = Selector('h3.h-card-title')
+      .withText('Offres numériques')
+      .parent('div.h-card-inner')
       .find("a[href^='/offres/creation?structure=']")
 
-    await navigateToOfferersAs(user)(t)
+    await navigateToOffererAs(user, offerer, userRole)(t)
 
     await t.click(newOfferAnchor)
     return
-  }
-  const newOfferAnchor = Selector("a[href^='/offres/creation']")
-
-  if (userRole) {
-    await t.useRole(userRole).click(newOfferAnchor)
   } else {
-    await t.useRole(createUserRole(user)).click(newOfferAnchor)
+    const newOfferAnchor = Selector("a[href^='/offres/creation']")
+
+    await navigateToHomeAs(user, userRole)
+
+    if (userRole) {
+      await t.useRole(userRole).click(newOfferAnchor)
+    } else {
+      await t.useRole(createUserRole(user)).click(newOfferAnchor)
+    }
   }
 }
 

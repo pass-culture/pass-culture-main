@@ -66,7 +66,8 @@ test('je peux créer une offre de type événement', async t => {
     "Atelier d'initiation pour reconnaître tout ce qui est du pipotron dans vos lectures de tous les jours. ",
     "Suivi d'une séance de dédicaces.",
   ].join('')
-  await navigateToNewOfferAs(user, null, null, userRole)(t)
+
+  await navigateToNewOfferAs(user, offerer, venue, userRole)(t)
 
   await t
     .click(typeInput)
@@ -95,7 +96,7 @@ test('je peux créer une offre avec des sous-types', async t => {
   const musicSubTypeOption = Selector('.offer-form [name="musicSubType"] option')
   const eventMusicType = 'Hip-Hop/Rap'
   const eventMusicSubType = 'Rap Alternatif'
-  await navigateToNewOfferAs(user)(t)
+  await navigateToNewOfferAs(user, offerer, venue)(t)
 
   await t
     .click(typeInput)
@@ -129,7 +130,7 @@ test('une offre Event est duo par défaut', async t => {
     'pro_07_offer',
     'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue'
   )
-  await navigateToNewOfferAs(user)(t)
+  await navigateToNewOfferAs(user, offerer, venue)(t)
 
   await t
     .click(typeInput)
@@ -164,7 +165,7 @@ test("je peux modifier la thumbnail d'une offre", async t => {
     'pro_06_offers',
     'get_existing_pro_validated_user_with_at_least_one_offer_with_at_least_one_thumbnail'
   )
-  await navigateToOfferAs(user, offer, createUserRole(user))(t)
+  await navigateToOfferAs(user, offer)(t)
 
   const previousThumbnailSrc = await offerThumbnail().attributes['src']
   await t

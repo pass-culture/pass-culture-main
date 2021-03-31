@@ -1,7 +1,7 @@
 import { ClientFunction, Selector } from 'testcafe'
 
 import { getPathname } from './helpers/location'
-import { navigateToNewOffererAs } from './helpers/navigations'
+import { HOME_URL, navigateToNewOffererAs } from './helpers/navigations'
 import { createUserRole } from './helpers/roles'
 import { fetchSandbox } from './helpers/sandboxes'
 import { getSirenRequestMockAs, getSirenRequestMockWithNoResult } from './helpers/sirenes'
@@ -24,7 +24,7 @@ test('en étant sur la page de création d’une structure', async t => {
   })
   await navigateToNewOffererAs(user, userRole)(t)
 
-  // Je peux créer une nouvelle structure avec un nouveau SIREN n'existant pas en base de données, et je suis redirigé·e vers mes structures
+  // Je peux créer une nouvelle structure avec un nouveau SIREN n'existant pas en base de données, et je suis redirigé·e vers la page d'accueil
   const offererWithAddress = {
     address: '10 PLACE JEAN JAURES',
     city: 'Paris',
@@ -44,9 +44,9 @@ test('en étant sur la page de création d’une structure', async t => {
     .contains('10 PLACE JEAN JAURES - 75000 Paris')
     .click(submitButton())
     .expect(getPathname())
-    .eql('/structures')
+    .eql(HOME_URL)
 
-  // Je peux créer une nouvelle structure avec un SIREN dont l'adresse n'est pas renvoyée par l'API sirene, et je suis redirigé·e vers mes structures
+  // Je peux créer une nouvelle structure avec un SIREN dont l'adresse n'est pas renvoyée par l'API sirene, et je suis redirigé·e vers la page d'accueil
   await navigateToNewOffererAs(user, userRole)(t)
 
   const offererWithoutAddress = {
@@ -64,7 +64,7 @@ test('en étant sur la page de création d’une structure', async t => {
     .typeText(sirenInput, offererWithoutAddress.siren)
     .click(submitButton)
     .expect(getPathname())
-    .eql('/structures')
+    .eql(HOME_URL)
 
   // Je ne peux pas créer une nouvelle structure avec un SIREN invalide
   await navigateToNewOffererAs(user, userRole)(t)

@@ -58,6 +58,7 @@ test('Je peux modifier un stock pour un événement', async t => {
     'pro_08_stocks',
     'get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_stock'
   )
+
   const dateInput = Selector('.react-datepicker-wrapper').nth(0)
   const hourInput = Selector('.react-datepicker-wrapper').nth(1)
   const datePickerPopin = Selector('.react-datepicker')
@@ -97,7 +98,7 @@ test('Je peux modifier un stock pour un événement', async t => {
     .expect(priceInput.value)
     .contains('15')
     .expect(stockItem.count)
-    .eql(3)
+    .eql(1)
 })
 
 test('Je peux supprimer un stock pour un événement', async t => {
@@ -118,5 +119,5 @@ test('Je peux supprimer un stock pour un événement', async t => {
     .expect(deleteSuccess.exists)
     .ok()
     .expect(stockItem.count)
-    .eql(2)
+    .eql(0)
 })
