@@ -5,8 +5,6 @@ from dateutil.relativedelta import relativedelta
 import pcapi.core.bookings.conf as bookings_conf
 from pcapi.core.users.models import User
 from pcapi.models.deposit import Deposit
-from pcapi.models.feature import FeatureToggle
-from pcapi.repository import feature_queries
 
 from . import exceptions
 
@@ -29,7 +27,7 @@ def create_deposit(beneficiary: User, deposit_source: str, version: int = None) 
         raise exceptions.AlreadyActivatedException({"user": ["Cet utilisateur a déjà crédité son pass Culture"]})
 
     if version is None:
-        version = 2 if feature_queries.is_active(FeatureToggle.APPLY_BOOKING_LIMITS_V2) else 1
+        version = bookings_conf.get_current_deposit_version()
     booking_configuration = bookings_conf.LIMIT_CONFIGURATIONS[version]
 
     deposit = Deposit(

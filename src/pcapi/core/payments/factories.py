@@ -7,8 +7,6 @@ from pcapi.core.testing import BaseFactory
 import pcapi.core.users.factories as users_factories
 from pcapi.domain import reimbursement
 from pcapi.models import payment_status
-from pcapi.models.feature import FeatureToggle
-from pcapi.repository import feature_queries
 
 from . import api
 
@@ -29,9 +27,7 @@ class DepositFactory(BaseFactory):
     def _create(cls, model_class, *args, **kwargs):
         if "amount" in kwargs:
             raise ValueError("You cannot directly set deposit amount: set version instead")
-        version = kwargs.get("version")
-        if not version:
-            version = 2 if feature_queries.is_active(FeatureToggle.APPLY_BOOKING_LIMITS_V2) else 1
+        version = kwargs.get("version", bookings_conf.get_current_deposit_version())
         amount = bookings_conf.LIMIT_CONFIGURATIONS[version].TOTAL_CAP
         kwargs["version"] = version
         kwargs["amount"] = amount

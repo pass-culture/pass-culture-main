@@ -9,4 +9,5 @@ def install_routes(app: Flask) -> None:
     from . import favorites
     from . import offers
     from . import redirection
+    from . import settings
     from . import universal_links
