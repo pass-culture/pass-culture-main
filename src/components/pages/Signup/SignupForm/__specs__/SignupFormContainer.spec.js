@@ -1,8 +1,8 @@
-import { closeNotification, showNotificationV1 } from 'store/reducers/notificationReducer'
+import { showNotificationV2 } from 'store/reducers/notificationReducer'
 
 import { mapDispatchToProps } from '../SignupFormContainer'
 
-describe('src | components | pages | Signup | SignupForm', () => {
+describe('src | components | pages | Signup | SignupFormContainer', () => {
   describe('mapDispatchToProps', () => {
     let dispatch
     let props
@@ -25,7 +25,6 @@ describe('src | components | pages | Signup | SignupForm', () => {
         createNewProUser: expect.any(Function),
         redirectToConfirmation: expect.any(Function),
         showNotification: expect.any(Function),
-        closeNotification: expect.any(Function),
       })
     })
 
@@ -152,24 +151,11 @@ describe('src | components | pages | Signup | SignupForm', () => {
 
         // then
         expect(dispatch).toHaveBeenCalledWith(
-          showNotificationV1({
+          showNotificationV2({
             text: messageText,
             type: messageType,
           })
         )
-      })
-    })
-
-    describe('closeNotification', () => {
-      it('should close a notification', () => {
-        // given
-        const functions = mapDispatchToProps(dispatch, props)
-
-        // when
-        functions.closeNotification()
-
-        // then
-        expect(dispatch).toHaveBeenCalledWith(closeNotification())
       })
     })
   })

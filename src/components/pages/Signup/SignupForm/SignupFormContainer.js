@@ -6,7 +6,7 @@ import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
 import { removeErrors } from 'store/reducers/errors'
-import { closeNotification, showNotificationV1 } from 'store/reducers/notificationReducer'
+import { showNotificationV2 } from 'store/reducers/notificationReducer'
 import { selectIsFeatureActive } from 'store/selectors/data/featuresSelectors'
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 
@@ -43,15 +43,11 @@ export const mapDispatchToProps = (dispatch, ownProps) => ({
 
   showNotification: (message, type) => {
     dispatch(
-      showNotificationV1({
+      showNotificationV2({
         text: message,
         type: type,
       })
     )
-  },
-
-  closeNotification: () => {
-    dispatch(closeNotification())
   },
 })
 

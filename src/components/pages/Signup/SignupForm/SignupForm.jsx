@@ -42,8 +42,6 @@ class SignupForm extends PureComponent {
   }
 
   componentWillUnmount() {
-    const { closeNotification } = this.props
-    closeNotification()
     const script = document.getElementById('hs-script-loader')
     document.body.removeChild(script)
   }
@@ -57,7 +55,7 @@ class SignupForm extends PureComponent {
   onHandleFail = () => {
     const { showNotification } = this.props
 
-    showNotification('Formulaire non validé.', 'danger')
+    showNotification('Formulaire non validé.', 'error')
   }
 
   handleSubmit = values => {
@@ -261,7 +259,6 @@ SignupForm.defaultProps = {
 }
 
 SignupForm.propTypes = {
-  closeNotification: PropTypes.func.isRequired,
   createNewProUser: PropTypes.func.isRequired,
   currentUser: PropTypes.shape(),
   errors: PropTypes.shape().isRequired,

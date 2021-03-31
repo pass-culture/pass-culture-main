@@ -12,7 +12,6 @@ describe('src | components | pages | Signup | SignupForm', () => {
 
   beforeEach(() => {
     props = {
-      closeNotification: jest.fn(),
       createNewProUser: jest.fn(),
       errors: {},
       redirectToConfirmation: jest.fn(),
