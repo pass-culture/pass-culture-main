@@ -160,6 +160,7 @@ const EligibilityCheck = ({
                 <label>
                   {'Quel est ton code postal de résidence ?'}
                   <input
+                    autoComplete="postal-code"
                     inputMode="numeric"
                     maxLength="5"
                     onChange={handlePostalCodeInputChange}
@@ -172,11 +173,12 @@ const EligibilityCheck = ({
               <label>
                 {'Quelle est ta date de naissance ?'}
                 <InputMask
+                  autoComplete="bday"
                   className={`date-of-birth-input ${
                     hasAnErrorMessage ? 'date-of-birth-input-error' : ''
                   }`}
                   inputMode="numeric"
-                  mask="99/99/9999"
+                  mask={dateOfBirthInputValue.length > 0 ? '99/99/9999' : null}
                   onChange={handleDOBInputChange}
                   placeholder="JJ/MM/AAAA"
                   value={dateOfBirthInputValue}
