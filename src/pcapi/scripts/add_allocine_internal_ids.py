@@ -1,6 +1,7 @@
 import base64
 import logging
 from typing import List
+from typing import Tuple
 
 from sqlalchemy.orm.util import aliased
 
@@ -34,17 +35,19 @@ def add_allocine_internal_ids() -> None:
 
     # Approx 48 rows so no performance issue to select all
     venue_alias = aliased(Venue)
-    allocine_venue_providers: List[AllocineVenueProvider] = (
+    allocine_venue_providers_with_pivot: List[Tuple[AllocineVenueProvider, AllocinePivot]] = (
         AllocineVenueProvider.query.join(venue_alias, venue_alias.id == AllocineVenueProvider.venueId)
         .join(AllocinePivot, AllocinePivot.siret == venue_alias.siret)
         .with_entities(AllocineVenueProvider, AllocinePivot)
         .all()
     )
-    logger.info("%d allocine venue providers found", len(allocine_venue_providers))
 
-    for allocine_venue_provider, allocine_pivot in allocine_venue_providers:
+    logger.info("%d allocine venue providers found", len(allocine_venue_providers_with_pivot))
+    for allocine_venue_provider, allocine_pivot in allocine_venue_providers_with_pivot:
         allocine_venue_provider.internalId = allocine_pivot.internalId
 
-    db.session.bulk_save_objects(allocine_venue_providers)
+    db.session.bulk_save_objects(
+        [allocine_venue_provider for allocine_venue_provider, _unused in allocine_venue_providers_with_pivot]
+    )
     db.session.commit()
     logger.info("Allocine venue providers have been updated")
