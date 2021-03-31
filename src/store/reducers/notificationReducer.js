@@ -23,12 +23,6 @@ export const closeNotification = () => ({
   type: CLOSE_NOTIFICATION,
 })
 
-// DEPRECATED
-export const showNotificationV1 = payload => ({
-  payload,
-  type: SHOW_NOTIFICATION_V1,
-})
-
 export const showNotificationV2 = payload => ({
   payload,
   type: SHOW_NOTIFICATION_V2,

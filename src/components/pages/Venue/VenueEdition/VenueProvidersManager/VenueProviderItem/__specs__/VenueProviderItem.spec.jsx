@@ -4,13 +4,12 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
-import NotificationV1Container from 'components/layout/NotificationV1/NotificationV1Container'
+import NotificationV2Container from 'components/layout/NotificationV2/NotificationV2Container'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 import { queryByTextTrimHtml } from 'utils/testHelpers'
 
 import VenueProvidersManagerContainer from '../../VenueProvidersManagerContainer'
-
 
 jest.mock('repository/pcapi/pcapi', () => ({
   createVenueProvider: jest.fn(),
@@ -24,7 +23,7 @@ const renderVenueProvidersManager = async props => {
       <Provider store={configureTestStore()}>
         <MemoryRouter>
           <VenueProvidersManagerContainer {...props} />
-          <NotificationV1Container />
+          <NotificationV2Container />
         </MemoryRouter>
       </Provider>
     )
