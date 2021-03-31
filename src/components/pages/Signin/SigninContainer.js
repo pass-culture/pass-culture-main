@@ -3,6 +3,7 @@ import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
+import { showNotificationV2 } from 'store/reducers/notificationReducer'
 import { isAPISireneAvailable, selectIsFeatureActive } from 'store/selectors/data/featuresSelectors'
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 
@@ -17,6 +18,13 @@ export const mapStateToProps = state => {
 }
 
 export const mapDispatchToProps = dispatch => ({
+  showErrorNotification: errorText =>
+    dispatch(
+      showNotificationV2({
+        type: 'error',
+        text: errorText,
+      })
+    ),
   submit: (emailValue, passwordValue, success, fail) => {
     dispatch(
       requestData({

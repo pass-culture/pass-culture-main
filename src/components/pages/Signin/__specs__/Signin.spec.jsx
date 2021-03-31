@@ -3,7 +3,6 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
-import GenericError from 'components/layout/errors/GenericError'
 import configureStore from 'store'
 
 import Signin from '../Signin'
@@ -22,6 +21,7 @@ describe('src | components | pages | Signin | Signin', () => {
         push: jest.fn(),
       },
       isAccountCreationAvailable: true,
+      showErrorNotification: jest.fn(),
     }
 
     store = configureStore({
@@ -202,8 +202,9 @@ describe('src | components | pages | Signin | Signin', () => {
         wrapper.instance().onHandleFail(state, action)
 
         // then
-        const genericError = wrapper.find(GenericError)
-        expect(genericError.prop('message')).toBe('Identifiant ou mot de passe incorrect.')
+        expect(props.showErrorNotification).toHaveBeenCalledWith(
+          'Identifiant ou mot de passe incorrect.'
+        )
       })
     })
 
@@ -224,8 +225,7 @@ describe('src | components | pages | Signin | Signin', () => {
         wrapper.instance().onHandleFail(state, action)
 
         // then
-        const genericError = wrapper.find(GenericError)
-        expect(genericError.prop('message')).toBe(
+        expect(props.showErrorNotification).toHaveBeenCalledWith(
           'Nombre de tentatives de connexion dépassé. Veuillez réessayer dans 1 minute.'
         )
       })

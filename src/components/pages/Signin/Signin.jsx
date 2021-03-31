@@ -3,7 +3,6 @@ import React, { PureComponent } from 'react'
 import { Link } from 'react-router-dom'
 
 import AppLayout from 'app/AppLayout'
-import GenericError from 'components/layout/errors/GenericError'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import TextInputWithIcon from 'components/layout/inputs/TextInputWithIcon/TextInputWithIcon'
 import Logo from 'components/layout/Logo'
@@ -22,7 +21,6 @@ class Signin extends PureComponent {
       emailValue: '',
       passwordValue: '',
       isPasswordHidden: true,
-      errorMessage: null,
     }
   }
 
@@ -32,24 +30,22 @@ class Signin extends PureComponent {
   }
 
   onHandleFail = (state, action) => {
+    const { showErrorNotification } = this.props
     if (action.payload.errors.password || action.payload.errors.identifier) {
-      this.setState({ errorMessage: 'Identifiant ou mot de passe incorrect.' })
+      showErrorNotification('Identifiant ou mot de passe incorrect.')
     } else if (action.payload.status === 429) {
-      this.setState({
-        errorMessage:
-          'Nombre de tentatives de connexion dépassé. Veuillez réessayer dans 1 minute.',
-      })
+      showErrorNotification(
+        'Nombre de tentatives de connexion dépassé. Veuillez réessayer dans 1 minute.'
+      )
     }
   }
 
   handleInputEmailChange = event => {
     this.setState({ emailValue: event.target.value })
-    this.setState({ errorMessage: null })
   }
 
   handleInputPasswordChange = event => {
     this.setState({ passwordValue: event.target.value })
-    this.setState({ errorMessage: null })
   }
 
   handleToggleHidden = e => {
@@ -69,7 +65,7 @@ class Signin extends PureComponent {
 
   render() {
     const { isAccountCreationAvailable } = this.props
-    const { isPasswordHidden, emailValue, passwordValue, errorMessage } = this.state
+    const { isPasswordHidden, emailValue, passwordValue } = this.state
     const isSubmitButtonDisabled = emailValue === '' || passwordValue === ''
     const accountCreationUrl = isAccountCreationAvailable ? '/inscription' : UNAVAILABLE_ERROR_PAGE
 
@@ -98,7 +94,6 @@ class Signin extends PureComponent {
             <span className="has-text-grey">
               {'Tous les champs sont obligatoires'}
             </span>
-            {errorMessage && <GenericError message={errorMessage} />}
             <form
               noValidate
               onSubmit={this.handleOnSubmit}
@@ -166,6 +161,7 @@ Signin.propTypes = {
   history: PropTypes.shape().isRequired,
   isAccountCreationAvailable: PropTypes.bool.isRequired,
   isNewHomepageActive: PropTypes.bool.isRequired,
+  showErrorNotification: PropTypes.func.isRequired,
   submit: PropTypes.func.isRequired,
 }
 
