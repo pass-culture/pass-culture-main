@@ -1,6 +1,6 @@
 import { mapStateToProps } from '../LostPasswordContainer'
 
-describe('src | components | pages | LostPassword', () => {
+describe('src | components | pages | LostPasswordContainer', () => {
   let props
   let state
 

@@ -3,7 +3,6 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
-import GenericError from 'components/layout/errors/GenericError'
 import configureStore from 'store'
 
 import LostPassword from '../LostPassword'
@@ -19,6 +18,7 @@ describe('src | components | pages | LostPassword', () => {
       history: {
         push: jest.fn(),
       },
+      showErrorNotification: jest.fn(),
       submitResetPassword: jest.fn(),
       submitResetPasswordRequest: jest.fn(),
     }
@@ -97,8 +97,7 @@ describe('src | components | pages | LostPassword', () => {
         wrapper.instance().displayPasswordResetRequestErrorMessage()
 
         // then
-        const genericError = wrapper.find(GenericError)
-        expect(genericError.prop('message')).toBe(
+        expect(props.showErrorNotification).toHaveBeenCalledWith(
           'Un problème est survenu pendant la réinitialisation du mot de passe, veuillez réessayer plus tard.'
         )
       })
@@ -191,9 +190,7 @@ describe('src | components | pages | LostPassword', () => {
         wrapper.instance().displayPasswordResetErrorMessages(state, action)
 
         // then
-
-        const genericError = wrapper.find(GenericError)
-        expect(genericError.prop('message')).toBe(
+        expect(props.showErrorNotification).toHaveBeenCalledWith(
           "Une erreur s'est produite, veuillez réessayer ultérieurement."
         )
       })

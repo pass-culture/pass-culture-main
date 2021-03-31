@@ -2,12 +2,13 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
+import { showNotificationV2 } from 'store/reducers/notificationReducer'
 import { selectIsFeatureActive } from 'store/selectors/data/featuresSelectors'
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 import { searchSelector } from 'store/selectors/search'
+import { IS_DEV } from 'utils/config'
 import { getReCaptchaToken } from 'utils/recaptcha'
 
-import { IS_DEV } from '../../../utils/config'
 
 import LostPassword from './LostPassword'
 
@@ -28,6 +29,13 @@ export const mapStateToProps = (state, ownProps) => {
 }
 
 export const mapDispatchToProps = dispatch => ({
+  showErrorNotification: errorText =>
+    dispatch(
+      showNotificationV2({
+        type: 'error',
+        text: errorText,
+      })
+    ),
   submitResetPasswordRequest: (emailValue, success, fail) => {
     if (!IS_DEV) {
       getReCaptchaToken('resetPassword').then(token =>

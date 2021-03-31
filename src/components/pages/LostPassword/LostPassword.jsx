@@ -3,7 +3,6 @@ import React, { PureComponent } from 'react'
 import { Link } from 'react-router-dom'
 
 import AppLayout from 'app/AppLayout'
-import GenericError from 'components/layout/errors/GenericError'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import TextInputWithIcon from 'components/layout/inputs/TextInputWithIcon/TextInputWithIcon'
 import Logo from 'components/layout/Logo'
@@ -21,8 +20,6 @@ class LostPassword extends PureComponent {
 
     this.state = {
       emailValue: '',
-      hasPasswordResetRequestErrorMessage: false,
-      hasPasswordResetErrorMessage: false,
       newPasswordErrorMessage: '',
       newPasswordValue: '',
       isPasswordHidden: true,
@@ -43,10 +40,11 @@ class LostPassword extends PureComponent {
   }
 
   displayPasswordResetErrorMessages = (state, action) => {
+    const { showErrorNotification } = this.props
     if (action.payload.errors.newPassword) {
       this.setState({ newPasswordErrorMessage: action.payload.errors.newPassword[0] })
     } else {
-      this.setState({ hasPasswordResetErrorMessage: true })
+      showErrorNotification("Une erreur s'est produite, veuillez réessayer ultérieurement.")
     }
   }
 
@@ -55,8 +53,12 @@ class LostPassword extends PureComponent {
     history.push('/mot-de-passe-perdu?envoye=1')
   }
 
-  displayPasswordResetRequestErrorMessage = () =>
-    this.setState({ hasPasswordResetRequestErrorMessage: true })
+  displayPasswordResetRequestErrorMessage = () => {
+    const { showErrorNotification } = this.props
+    showErrorNotification(
+      'Un problème est survenu pendant la réinitialisation du mot de passe, veuillez réessayer plus tard.'
+    )
+  }
 
   submitResetPasswordRequest = event => {
     event.preventDefault()
@@ -85,12 +87,10 @@ class LostPassword extends PureComponent {
 
   handleInputEmailChange = event => {
     this.setState({ emailValue: event.target.value })
-    this.setState({ hasPasswordResetRequestErrorMessage: false })
   }
 
   handleInputPasswordChange = event => {
     this.setState({ newPasswordValue: event.target.value })
-    this.setState({ hasPasswordResetErrorMessage: false })
   }
 
   handleToggleHidden = event => {
@@ -113,14 +113,7 @@ class LostPassword extends PureComponent {
   }
 
   render() {
-    const {
-      emailValue,
-      hasPasswordResetRequestErrorMessage,
-      hasPasswordResetErrorMessage,
-      newPasswordErrorMessage,
-      isPasswordHidden,
-      newPasswordValue,
-    } = this.state
+    const { emailValue, newPasswordErrorMessage, isPasswordHidden, newPasswordValue } = this.state
     const { change, envoye, token } = this.props
 
     return (
@@ -187,11 +180,6 @@ class LostPassword extends PureComponent {
                     {'Saisissez le nouveau mot de passe'}
                   </h2>
 
-                  {hasPasswordResetErrorMessage && (
-                    <GenericError
-                      message={"Une erreur s'est produite, veuillez réessayer ultérieurement."}
-                    />
-                  )}
                   <form
                     className="new-password-form"
                     noValidate
@@ -237,10 +225,6 @@ class LostPassword extends PureComponent {
                     }
                   </h2>
 
-                  {hasPasswordResetRequestErrorMessage && (
-                    <GenericError message="Un problème est survenu pendant la réinitialisation du mot de passe, veuillez réessayer plus tard." />
-                  )}
-
                   <form
                     noValidate
                     onSubmit={this.submitResetPasswordRequest}
@@ -284,6 +268,7 @@ LostPassword.propTypes = {
   envoye: PropTypes.bool.isRequired,
   history: PropTypes.shape().isRequired,
   isNewHomepageActive: PropTypes.bool.isRequired,
+  showErrorNotification: PropTypes.func.isRequired,
   submitResetPassword: PropTypes.func.isRequired,
   submitResetPasswordRequest: PropTypes.func.isRequired,
   token: PropTypes.string.isRequired,
