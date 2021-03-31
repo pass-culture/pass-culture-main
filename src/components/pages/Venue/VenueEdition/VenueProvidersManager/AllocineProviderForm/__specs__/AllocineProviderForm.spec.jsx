@@ -5,7 +5,7 @@ import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 import ReactTooltip from 'react-tooltip'
 
-import NotificationV1Container from 'components/layout/NotificationV1/NotificationV1Container'
+import NotificationV2Container from 'components/layout/NotificationV2/NotificationV2Container'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
@@ -23,7 +23,7 @@ const renderVenueProvidersManager = async props => {
       <Provider store={configureTestStore()}>
         <MemoryRouter>
           <VenueProvidersManagerContainer {...props} />
-          <NotificationV1Container />
+          <NotificationV2Container />
           <ReactTooltip html />
         </MemoryRouter>
       </Provider>
@@ -198,7 +198,22 @@ describe('components | AllocineProviderForm', () => {
     expect(pcapi.createVenueProvider).toHaveBeenCalledTimes(0)
   })
 
-  it('should display a notification and unselect provider if there is something wrong with the server', async () => {
+  it('should display a success notification when venue provider was correctly saved', async () => {
+    // given
+    await renderAllocineProviderForm()
+    const offerImportButton = screen.getByRole('button', { name: 'Importer les offres' })
+    const priceField = screen.getByLabelText('Prix de vente/place', { exact: false })
+    fireEvent.change(priceField, { target: { value: 10 } })
+
+    // when
+    fireEvent.click(offerImportButton)
+
+    // then
+    const successNotification = await screen.findByText('La synchronisation a bien été initiée.')
+    expect(successNotification).toBeInTheDocument()
+  })
+
+  it('should display an error notification if there is something wrong with the server', async () => {
     // given
     const apiError = {
       errors: { global: ['Le prix ne peut pas être négatif'] },

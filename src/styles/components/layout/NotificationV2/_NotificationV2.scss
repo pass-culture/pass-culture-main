@@ -10,7 +10,7 @@
   transform: translateX(-50%);
   visibility: hidden;
   white-space: pre-line;
-  z-index: 100;
+  z-index: 1000;
 
   &.show {
     animation-duration: 0.8s;

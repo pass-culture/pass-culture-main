@@ -4,7 +4,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
-import NotificationV1Container from 'components/layout/NotificationV1/NotificationV1Container'
+import NotificationV2Container from 'components/layout/NotificationV2/NotificationV2Container'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
@@ -22,7 +22,7 @@ const renderVenueProvidersManager = async props => {
       <Provider store={configureTestStore()}>
         <MemoryRouter>
           <VenueProvidersManagerContainer {...props} />
-          <NotificationV1Container />
+          <NotificationV2Container />
         </MemoryRouter>
       </Provider>
     )
@@ -94,7 +94,7 @@ describe('src | StocksProviderForm', () => {
       })
     })
 
-    it('should remove the spinner when the server has responded', async () => {
+    it('should remove the spinner and display a success notification when venue provider was correctly saved', async () => {
       // given
       const createdVenueProvider = {
         id: 'venueProviderId',
@@ -111,6 +111,8 @@ describe('src | StocksProviderForm', () => {
       await fireEvent.click(submitButton)
 
       // then
+      const successNotification = await screen.findByText('La synchronisation a bien été initiée.')
+      expect(successNotification).toBeInTheDocument()
       expect(screen.queryByText('Vérification de votre rattachement')).not.toBeInTheDocument()
     })
 

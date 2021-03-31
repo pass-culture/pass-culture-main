@@ -1,16 +1,24 @@
 import { connect } from 'react-redux'
 
-import { showNotificationV1 } from 'store/reducers/notificationReducer'
+import { showNotificationV2 } from 'store/reducers/notificationReducer'
 
 import { getRequestErrorStringFromErrors } from './utils/getRequestErrorStringFromErrors'
 import VenueProvidersManager from './VenueProvidersManager'
 
 const mapDispatchToProps = dispatch => ({
-  notify: errors => {
+  notifyError: errors => {
     dispatch(
-      showNotificationV1({
+      showNotificationV2({
         text: getRequestErrorStringFromErrors(errors),
-        type: 'danger',
+        type: 'error',
+      })
+    )
+  },
+  notifySuccess: () => {
+    dispatch(
+      showNotificationV2({
+        text: 'La synchronisation a bien été initiée.',
+        type: 'success',
       })
     )
   },

@@ -10,7 +10,7 @@ import StocksProviderForm from './StocksProviderForm/StocksProviderForm'
 import { ALLOCINE_PROVIDER_OPTION, DEFAULT_PROVIDER_OPTION } from './utils/providerOptions'
 import VenueProviderItem from './VenueProviderItem/VenueProviderItem'
 
-const VenueProvidersManagerContainer = ({ notify, venue }) => {
+const VenueProvidersManagerContainer = ({ notifyError, notifySuccess, venue }) => {
   const [isCreationMode, setIsCreationMode] = useState(false)
   const [selectedProviderId, setSelectedProviderId] = useState(DEFAULT_PROVIDER_OPTION.id)
   const [providers, setProviders] = useState([])
@@ -59,15 +59,16 @@ const VenueProvidersManagerContainer = ({ notify, venue }) => {
         .then(createdVenueProvider => {
           setVenueProviders([createdVenueProvider])
           setIsCreationMode(false)
+          notifySuccess()
         })
         .catch(error => {
-          notify(error.errors)
+          notifyError(error.errors)
           if (!isAllocineProviderSelected) {
             cancelProviderSelection()
           }
         })
     },
-    [cancelProviderSelection, notify, isAllocineProviderSelected]
+    [cancelProviderSelection, notifyError, notifySuccess, isAllocineProviderSelected]
   )
 
   const hasAtLeastOneProvider = providers.length > 0
@@ -139,7 +140,8 @@ const VenueProvidersManagerContainer = ({ notify, venue }) => {
 }
 
 VenueProvidersManagerContainer.propTypes = {
-  notify: PropTypes.func.isRequired,
+  notifyError: PropTypes.func.isRequired,
+  notifySuccess: PropTypes.func.isRequired,
   venue: PropTypes.shape({
     id: PropTypes.string.isRequired,
     managingOffererId: PropTypes.string.isRequired,
