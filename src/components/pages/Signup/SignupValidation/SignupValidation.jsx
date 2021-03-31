@@ -4,7 +4,7 @@ import { Redirect } from 'react-router-dom'
 import { requestData } from 'redux-saga-data'
 
 import { redirectLoggedUser } from 'components/router/helpers'
-import { showNotificationV1 } from 'store/reducers/notificationReducer'
+import { showNotificationV2 } from 'store/reducers/notificationReducer'
 import { campaignTracker } from 'tracking/mediaCampaignsTracking'
 
 class SignupValidation extends PureComponent {
@@ -44,9 +44,9 @@ class SignupValidation extends PureComponent {
 
       const { dispatch } = this.props
       dispatch(
-        showNotificationV1({
+        showNotificationV2({
           text: errors.global,
-          type: 'danger',
+          type: 'error',
         })
       )
     }
@@ -57,7 +57,7 @@ class SignupValidation extends PureComponent {
       const { dispatch } = this.props
 
       dispatch(
-        showNotificationV1({
+        showNotificationV2({
           text:
             'Votre compte a été créé. Vous pouvez vous connecter avec les identifiants que vous avez choisis.',
           type: 'success',

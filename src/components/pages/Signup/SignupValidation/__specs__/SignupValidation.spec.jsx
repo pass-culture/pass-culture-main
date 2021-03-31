@@ -96,7 +96,7 @@ describe('src | components | pages | Signup | validation', () => {
             'Votre compte a été créé. Vous pouvez vous connecter avec les identifiants que vous avez choisis.',
           type: 'success',
         },
-        type: 'SHOW_NOTIFICATION_V1',
+        type: 'SHOW_NOTIFICATION_V2',
       })
     })
   })
@@ -123,9 +123,9 @@ describe('src | components | pages | Signup | validation', () => {
       expect(notifyFailureCall).toStrictEqual({
         payload: {
           text: ['error1', 'error2'],
-          type: 'danger',
+          type: 'error',
         },
-        type: 'SHOW_NOTIFICATION_V1',
+        type: 'SHOW_NOTIFICATION_V2',
       })
     })
   })
