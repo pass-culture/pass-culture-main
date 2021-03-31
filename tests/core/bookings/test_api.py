@@ -61,6 +61,25 @@ class BookOfferConcurrencyTest:
         assert models.Booking.query.filter().count() == 1
         assert models.Booking.query.filter(models.Booking.isCancelled == True).count() == 0
 
+    @clean_database
+    def test_cancel_all_bookings_from_stock(self, app):
+        stock = offers_factories.StockFactory(dnBookedQuantity=1)
+        factories.BookingFactory(stock=stock)
+        factories.BookingFactory(stock=stock)
+        factories.BookingFactory(stock=stock, isUsed=True)
+        factories.BookingFactory(stock=stock, isCancelled=True)
+
+        # open a second connection on purpose and lock the stock
+        engine = create_engine(app.config["SQLALCHEMY_DATABASE_URI"])
+        with engine.connect() as connection:
+            connection.execute(text("""SELECT * FROM stock WHERE stock.id = :stock_id FOR UPDATE"""), stock_id=stock.id)
+
+            with pytest.raises(sqlalchemy.exc.OperationalError):
+                api.cancel_bookings_when_offerer_deletes_stock(stock)
+
+        assert models.Booking.query.filter().count() == 4
+        assert models.Booking.query.filter(models.Booking.isCancelled == True).count() == 1
+
 
 @pytest.mark.usefixtures("db_session")
 class BookOfferTest:
@@ -286,6 +305,29 @@ class CancelByOffererTest:
         assert not booking.isCancelled
 
         assert push_testing.requests == []
+
+    def test_cancel_all_bookings_from_stock(self, app):
+        stock = offers_factories.StockFactory(dnBookedQuantity=1)
+        booking_1 = factories.BookingFactory(stock=stock)
+        booking_2 = factories.BookingFactory(stock=stock)
+        used_booking = factories.BookingFactory(stock=stock, isUsed=True)
+        cancelled_booking = factories.BookingFactory(
+            stock=stock, isCancelled=True, cancellationReason=BookingCancellationReasons.BENEFICIARY
+        )
+
+        api.cancel_bookings_when_offerer_deletes_stock(stock)
+
+        assert models.Booking.query.filter().count() == 4
+        assert models.Booking.query.filter(models.Booking.isCancelled == True).count() == 3
+        assert models.Booking.query.filter(models.Booking.isUsed == True).count() == 1
+        assert booking_1.isCancelled
+        assert booking_1.cancellationReason == BookingCancellationReasons.OFFERER
+        assert booking_2.isCancelled
+        assert booking_2.cancellationReason == BookingCancellationReasons.OFFERER
+        assert not used_booking.isCancelled
+        assert not used_booking.cancellationReason
+        assert cancelled_booking.isCancelled
+        assert cancelled_booking.cancellationReason == BookingCancellationReasons.BENEFICIARY
 
 
 @pytest.mark.usefixtures("db_session")

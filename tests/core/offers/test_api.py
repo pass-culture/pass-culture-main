@@ -10,6 +10,7 @@ import pytest
 from pcapi import models
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import Booking
+from pcapi.core.bookings.models import BookingCancellationReasons
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import api
 from pcapi.core.offers import exceptions
@@ -413,7 +414,9 @@ class DeleteStockTest:
     def test_delete_stock_cancel_bookings_and_send_emails(self, mocked_send_to_beneficiaries, mocked_send_to_offerer):
         stock = factories.EventStockFactory()
         booking1 = bookings_factories.BookingFactory(stock=stock)
-        booking2 = bookings_factories.BookingFactory(stock=stock, isCancelled=True)
+        booking2 = bookings_factories.BookingFactory(
+            stock=stock, isCancelled=True, cancellationReason=BookingCancellationReasons.BENEFICIARY
+        )
         booking3 = bookings_factories.BookingFactory(stock=stock, isUsed=True)
 
         api.delete_stock(stock)
@@ -422,10 +425,13 @@ class DeleteStockTest:
         assert stock.isSoftDeleted
         booking1 = models.Booking.query.get(booking1.id)
         assert booking1.isCancelled
+        assert booking1.cancellationReason == BookingCancellationReasons.OFFERER
         booking2 = models.Booking.query.get(booking2.id)
         assert booking2.isCancelled  # unchanged
+        assert booking2.cancellationReason == BookingCancellationReasons.BENEFICIARY
         booking3 = models.Booking.query.get(booking3.id)
         assert not booking3.isCancelled  # unchanged
+        assert not booking3.cancellationReason
 
         notified_bookings_beneficiaries = mocked_send_to_beneficiaries.call_args_list[0][0][0]
         notified_bookings_offerers = mocked_send_to_offerer.call_args_list[0][0][0]

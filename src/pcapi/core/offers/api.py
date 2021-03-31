@@ -12,6 +12,7 @@ from pcapi import settings
 from pcapi.connectors import redis
 from pcapi.connectors.thumb_storage import create_thumb
 from pcapi.connectors.thumb_storage import remove_thumb
+from pcapi.core.bookings.api import cancel_bookings_when_offerer_deletes_stock
 from pcapi.core.bookings.api import mark_as_unused
 from pcapi.core.bookings.api import update_confirmation_dates
 from pcapi.core.bookings.conf import LIMIT_CONFIGURATIONS
@@ -381,19 +382,15 @@ def delete_stock(stock: Stock) -> None:
     validation.check_stock_is_deletable(stock)
 
     stock.isSoftDeleted = True
+    repository.save(stock)
 
-    cancelled_bookings = []
-    for booking in stock.bookings:
-        if not booking.isCancelled and not booking.isUsed:
-            booking.isCancelled = True
-            cancelled_bookings.append(booking)
+    # the algolia sync for the stock will happen within this function
+    cancelled_bookings = cancel_bookings_when_offerer_deletes_stock(stock)
 
-    repository.save(stock, *cancelled_bookings)
     logger.info(
         "Deleted stock and cancelled its bookings",
         extra={"stock": stock.id, "bookings": [b.id for b in cancelled_bookings]},
     )
-
     if cancelled_bookings:
         try:
             user_emails.send_batch_cancellation_emails_to_users(cancelled_bookings)
@@ -417,9 +414,6 @@ def delete_stock(stock: Stock) -> None:
             )
 
         send_cancel_booking_notification.delay([booking.id for booking in cancelled_bookings])
-
-    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
-        redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
 
 
 def create_mediation(

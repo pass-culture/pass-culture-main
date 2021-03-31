@@ -16,6 +16,7 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.repository import generate_booking_token
 from pcapi.core.offers import repository as offers_repository
+from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
 from pcapi.domain import user_emails
 from pcapi.models.feature import FeatureToggle
@@ -117,6 +118,26 @@ def _cancel_booking(booking: Booking, reason: BookingCancellationReasons) -> Non
             "reason": str(reason),
         },
     )
+    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
+        redis.add_offer_id(client=app.redis_client, offer_id=booking.stock.offerId)
+
+
+def _cancel_bookings_from_stock(stock: Stock, reason: BookingCancellationReasons) -> typing.List[Booking]:
+    with transaction():
+        deleted_bookings = []
+        stock = offers_repository.get_and_lock_stock(stock_id=stock.id)
+        for booking in stock.bookings:
+            if not booking.isCancelled and not booking.isUsed:
+                booking.isCancelled = True
+                booking.cancellationReason = reason
+                stock.dnBookedQuantity -= booking.quantity
+                deleted_bookings.append(booking)
+        repository.save(*deleted_bookings)
+
+    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
+        redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
+
+    return deleted_bookings
 
 
 def cancel_booking_by_beneficiary(user: User, booking: Booking) -> None:
@@ -129,17 +150,15 @@ def cancel_booking_by_beneficiary(user: User, booking: Booking) -> None:
     except MailServiceException as error:
         logger.exception("Could not send booking=%s cancellation emails to user and offerer: %s", booking.id, error)
 
-    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
-        redis.add_offer_id(client=app.redis_client, offer_id=booking.stock.offerId)
-
 
 def cancel_booking_by_offerer(booking: Booking) -> None:
     validation.check_booking_can_be_cancelled(booking)
     _cancel_booking(booking, BookingCancellationReasons.OFFERER)
     send_cancel_booking_notification.delay([booking.id])
 
-    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
-        redis.add_offer_id(client=app.redis_client, offer_id=booking.stock.offerId)
+
+def cancel_bookings_when_offerer_deletes_stock(stock: Stock) -> typing.List[Booking]:
+    return _cancel_bookings_from_stock(stock, BookingCancellationReasons.OFFERER)
 
 
 def cancel_booking_for_fraud(booking: Booking) -> None:
