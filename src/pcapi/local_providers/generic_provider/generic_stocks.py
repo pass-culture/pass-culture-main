@@ -29,7 +29,7 @@ class GenericStocks(LocalProvider):
     ):
         super().__init__(venue_provider, **options)
         self.venue = venue_provider.venue
-        self.venueIdAtProvider = self.venue_provider.venueIdAtOfferProvider
+        self.id_at_provider = self.venue_provider.venueIdAtOfferProvider
         self.last_processed_isbn = ""
         self.stock_data = iter([])
         self.modified_since = venue_provider.lastSyncDate
@@ -41,7 +41,7 @@ class GenericStocks(LocalProvider):
             self.provider_stocks = next(self.stock_data)
         except StopIteration:
             self.stock_data = self.get_provider_stock_information(  # pylint: disable=not-callable
-                self.venueIdAtProvider, self.last_processed_isbn, self.modified_since
+                self.id_at_provider, self.last_processed_isbn, self.modified_since
             )
             self.provider_stocks = next(self.stock_data)
 
@@ -52,10 +52,10 @@ class GenericStocks(LocalProvider):
             return []
 
         providable_info_offer = self.create_providable_info(
-            Offer, f"{self.provider_stocks['ref']}@{self.venueIdAtProvider}", datetime.utcnow()
+            Offer, f"{self.provider_stocks['ref']}@{self.id_at_provider}", datetime.utcnow()
         )
         providable_info_stock = self.create_providable_info(
-            Stock, f"{self.provider_stocks['ref']}@{self.venueIdAtProvider}", datetime.utcnow()
+            Stock, f"{self.provider_stocks['ref']}@{self.id_at_provider}", datetime.utcnow()
         )
 
         return [providable_info_offer, providable_info_stock]
