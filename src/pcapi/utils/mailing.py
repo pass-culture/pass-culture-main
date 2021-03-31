@@ -35,6 +35,18 @@ def build_pc_pro_offerer_link(offerer: Offerer) -> str:
     return f"{settings.PRO_URL}/accueil?structure={humanize(offerer.id)}"
 
 
+def build_pc_pro_create_password_link(token_value: str) -> str:
+    return f"{settings.PRO_URL}/creation-de-mot-de-passe/{token_value}"
+
+
+def build_pc_pro_reset_password_link(token_value: str) -> str:
+    return f"{settings.PRO_URL}/mot-de-passe-perdu?token={token_value}"
+
+
+def build_pc_webapp_reset_password_link(token_value: str) -> str:
+    return f"{settings.WEBAPP_URL}/mot-de-passe-perdu?token={token_value}"
+
+
 def extract_users_information_from_bookings(bookings: List[Booking]) -> List[dict]:
     users_keys = ("firstName", "lastName", "email", "contremarque")
     users_properties = [

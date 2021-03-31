@@ -1,3 +1,6 @@
+from datetime import timedelta
+
+from flask.helpers import flash
 from flask_admin.form import rules
 from sqlalchemy.orm import query
 from sqlalchemy.sql.expression import distinct
@@ -11,10 +14,12 @@ from wtforms.validators import ValidationError
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.core.users.models import User
 from pcapi.models import UserOfferer
+from pcapi.utils.mailing import build_pc_pro_create_password_link
 from pcapi.validation.models.has_address_mixin import POSTAL_CODE_REGEX
 
 from ...core.offerers.api import create_digital_venue
 from ...core.offerers.models import Offerer
+from ...core.users.api import create_reset_password_token
 from ...core.users.api import fulfill_account_password
 from .mixins.suspension_mixin import SuspensionMixin
 
@@ -131,8 +136,13 @@ class ProUserView(SuspensionMixin, BaseAdminView):
             create_digital_venue(offerer)
             user_offerer = create_user_offerer(user=model, offerer=offerer)
             model.userOfferers = [user_offerer]
-
         super().on_model_change(form, model, is_created)
+
+    def after_model_change(self, form: Form, model: User, is_created: bool) -> None:
+        if is_created:
+            resetPasswordToken = create_reset_password_token(model)
+            flash(f"Lien de création de mot de passe : {build_pc_pro_create_password_link(resetPasswordToken.value)}")
+        super().after_model_change(form, model, is_created)
 
     def get_query(self) -> query:
         return User.query.join(UserOfferer).distinct(User.id).from_self()

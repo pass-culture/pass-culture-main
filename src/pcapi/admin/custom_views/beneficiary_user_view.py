@@ -13,6 +13,7 @@ from pcapi.core.users.api import create_reset_password_token
 from pcapi.core.users.models import User
 from pcapi.domain.user_emails import send_activation_email
 from pcapi.models import UserOfferer
+from pcapi.utils.mailing import build_pc_webapp_reset_password_link
 from pcapi.workers.push_notification_job import update_user_attributes_job
 
 
@@ -120,7 +121,10 @@ class BeneficiaryUserView(SuspensionMixin, BaseAdminView):
         update_user_attributes_job.delay(model.id)
         token = create_reset_password_token(model)
         if is_created and not send_activation_email(model, token=token):
-            flash("L'envoi d'email a échoué", "error")
+            flash(
+                f"L'envoi d'email a échoué. Le mot de passe peut être réinitialisé depuis le lien suivant : {build_pc_webapp_reset_password_link(token.value)}",
+                "error",
+            )
         super().after_model_change(form, model, is_created)
 
     def get_query(self) -> query:

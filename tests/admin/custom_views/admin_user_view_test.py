@@ -1,8 +1,11 @@
+from datetime import datetime
+from datetime import timedelta
 from unittest.mock import patch
 
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
+from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
 
@@ -40,6 +43,10 @@ class AdminUserViewTest:
         assert user_created.isAdmin is True
         assert user_created.hasSeenProTutorials is True
         assert user_created.needsToFillCulturalSurvey is False
+
+        token = Token.query.filter_by(userId=user_created.id).first()
+        assert token.type == TokenType.RESET_PASSWORD
+        assert token.expirationDate > datetime.now() + timedelta(hours=20)
 
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")

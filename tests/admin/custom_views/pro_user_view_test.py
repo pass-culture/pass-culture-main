@@ -1,4 +1,5 @@
 from datetime import datetime
+from datetime import timedelta
 from unittest.mock import patch
 
 from sqlalchemy import and_
@@ -8,6 +9,8 @@ from pcapi.admin.custom_views.pro_user_view import ProUserView
 from pcapi.core.offerers.models import Offerer
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.core.users.models import Token
+from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
 from pcapi.models import UserOfferer
 
@@ -69,6 +72,9 @@ class ProUserViewTest:
             and_(UserOfferer.userId == user_created.id, UserOfferer.offererId == offerer_created.id)
         ).all()
         assert len(user_offerers_filtered) == 1
+
+        token = Token.query.filter_by(userId=user_created.id).first()
+        assert token.type == TokenType.RESET_PASSWORD
 
     def test_it_gives_a_random_password_to_user(self, app, db_session):
         # Given

@@ -1,4 +1,5 @@
 from datetime import datetime
+from datetime import timedelta
 from unittest.mock import patch
 
 import pytest
@@ -9,6 +10,8 @@ from pcapi.admin.custom_views.mixins.suspension_mixin import _allow_suspension_a
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
+from pcapi.core.users.models import Token
+from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
 from pcapi.models import Deposit
 import pcapi.notifications.push.testing as push_testing
@@ -51,6 +54,10 @@ class BeneficiaryUserViewTest:
         assert len(user_created.deposits) == 1
         assert user_created.deposit.source == "pass-culture-admin"
         assert user_created.deposit.amount == 500
+
+        token = Token.query.filter_by(userId=user_created.id).first()
+        assert token.type == TokenType.RESET_PASSWORD
+        assert token.expirationDate > datetime.now() + timedelta(hours=20)
 
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data == {

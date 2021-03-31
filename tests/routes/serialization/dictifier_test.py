@@ -38,14 +38,13 @@ class AsDictTest:
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
         repository.save(user_offerer)
-        USER_INCLUDES = ["-password", "-resetPasswordToken"]
+        USER_INCLUDES = ["-password"]
 
         # when
         dict_result = as_dict(user, includes=USER_INCLUDES)
 
         # then
         assert "password" not in dict_result
-        assert "resetPasswordToken" not in dict_result
 
     @pytest.mark.usefixtures("db_session")
     def test_does_not_return_properties_by_default(self, app):

@@ -1,5 +1,6 @@
 from typing import List
 
+from flask.helpers import flash
 from sqlalchemy import distinct
 from sqlalchemy.orm import query
 from sqlalchemy.sql.functions import func
@@ -13,9 +14,11 @@ from wtforms.validators import Length
 from wtforms.validators import Optional
 
 from pcapi.admin.base_configuration import BaseAdminView
+from pcapi.core.users.api import create_reset_password_token
 from pcapi.core.users.api import fulfill_account_password
 from pcapi.core.users.models import User
 from pcapi.models import UserOfferer
+from pcapi.utils.mailing import build_pc_webapp_reset_password_link
 
 
 class PartnerUserView(BaseAdminView):
@@ -70,6 +73,13 @@ class PartnerUserView(BaseAdminView):
         model.publicName = f"{model.firstName} {model.lastName}"
         model.isBeneficiary = False
         model.isAdmin = False
+
+    def after_model_change(self, form: Form, model: User, is_created: bool) -> None:
+        if is_created:
+            resetPasswordToken = create_reset_password_token(model)
+            flash(
+                f"Lien de réinitialisation du mot de passe : {build_pc_webapp_reset_password_link(resetPasswordToken.value)}"
+            )
 
     def get_query(self) -> query:
         return (

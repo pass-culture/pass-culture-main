@@ -1,3 +1,4 @@
+from flask.helpers import flash
 from sqlalchemy.orm import query
 from sqlalchemy.sql.expression import distinct
 from sqlalchemy.sql.functions import func
@@ -8,6 +9,7 @@ from wtforms.validators import Length
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.core.users import api as users_api
 from pcapi.domain.user_emails import send_admin_user_validation_email
+from pcapi.utils.mailing import build_pc_webapp_reset_password_link
 
 
 class AdminUserView(BaseAdminView):
@@ -69,7 +71,13 @@ class AdminUserView(BaseAdminView):
         model.needsToFillCulturalSurvey = False
 
         fulfill_account_password(model)
-        token = users_api.create_reset_password_token(model)
-        send_admin_user_validation_email(model, token)
 
         super().on_model_change(form, model, is_created)
+
+    def after_model_change(self, form: Form, model, is_created: bool) -> None:
+        if is_created:
+            token = users_api.create_reset_password_token(model)
+            send_admin_user_validation_email(model, token)
+            flash(f"Lien de réinitialisation du mot de passe : {build_pc_webapp_reset_password_link(token.value)}")
+
+        super().after_model_change(form, model, is_created)
