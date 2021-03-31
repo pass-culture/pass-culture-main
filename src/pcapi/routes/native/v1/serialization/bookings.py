@@ -57,6 +57,7 @@ class BookingOfferResponse(BaseModel):
     category: OfferCategoryResponse
     extraData: Optional[BookingOfferExtraData]
     image: Optional[OfferImageResponse]
+    isDigital: bool
     isPermanent: bool
     venue: BookingVenueResponse
     withdrawalDetails: Optional[str]

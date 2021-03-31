@@ -139,6 +139,7 @@ class GetBookingsTest:
                     "extraData": None,
                     "id": used2.stock.offer.id,
                     "image": {"credit": "street credit", "url": mediation.thumbUrl},
+                    "isDigital": False,
                     "isPermanent": False,
                     "name": used2.stock.offer.name,
                     "venue": {
