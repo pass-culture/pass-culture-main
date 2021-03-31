@@ -97,7 +97,7 @@ class BookingsRecapTable extends Component {
         offerVenue: props.locationState?.venueId || ALL_VENUES,
         bookingStatus: props.locationState?.statuses.length
           ? props.locationState.statuses
-          : ALL_BOOKING_STATUS,
+          : [...ALL_BOOKING_STATUS],
       },
       oldestBookingDate: findOldestBookingDate(props.bookingsRecap),
     }

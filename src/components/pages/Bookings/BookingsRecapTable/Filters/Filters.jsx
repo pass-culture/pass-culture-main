@@ -64,7 +64,7 @@ class Filters extends Component {
           offerISBN: EMPTY_FILTER_VALUE,
           offerName: EMPTY_FILTER_VALUE,
           offerVenue: ALL_VENUES,
-          bookingStatus: ALL_BOOKING_STATUS,
+          bookingStatus: [...ALL_BOOKING_STATUS],
         },
         keywords: EMPTY_FILTER_VALUE,
         selectedBookingBeginningDate: EMPTY_FILTER_VALUE,
