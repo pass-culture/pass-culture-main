@@ -63,6 +63,7 @@ const renderHomePage = async () => {
 
 describe('offererDetails', () => {
   let baseOfferers
+  let firstOffererByAlphabeticalOrder
   let baseOfferersNames
   let virtualVenue
   let physicalVenue
@@ -98,18 +99,6 @@ describe('offererDetails', () => {
     }
     baseOfferers = [
       {
-        address: 'LA COULÉE D’OR',
-        city: 'Cayenne',
-        name: 'Bar des amis',
-        id: 'GE',
-        isValidated: true,
-        postalCode: '97300',
-        siren: '111111111',
-        bic: 'test bic 01',
-        iban: 'test iban 01',
-        managedVenues: [virtualVenue, physicalVenue, physicalVenueWithPublicName],
-      },
-      {
         address: 'RUE DE NIEUPORT',
         city: 'Drancy',
         id: 'FQ',
@@ -127,13 +116,26 @@ describe('offererDetails', () => {
           },
         ],
       },
+      {
+        address: 'LA COULÉE D’OR',
+        city: 'Cayenne',
+        name: 'Bar des amis',
+        id: 'GE',
+        isValidated: true,
+        postalCode: '97300',
+        siren: '111111111',
+        bic: 'test bic 01',
+        iban: 'test iban 01',
+        managedVenues: [virtualVenue, physicalVenue, physicalVenueWithPublicName],
+      },
     ]
+    firstOffererByAlphabeticalOrder = baseOfferers[1]
     baseOfferersNames = baseOfferers.map(offerer => ({
       id: offerer.id,
       name: offerer.name,
     }))
 
-    pcapi.getOfferer.mockResolvedValue(baseOfferers[0])
+    pcapi.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
     pcapi.getAllOfferersNames.mockResolvedValue(baseOfferersNames)
     pcapi.getVenueStats.mockResolvedValue({
       activeBookingsQuantity: 4,
@@ -153,8 +155,7 @@ describe('offererDetails', () => {
     const showButton = screen.getByRole('button', { name: 'Afficher' })
     fireEvent.click(showButton)
 
-    const selectedOffer = baseOfferers[0]
-    expect(screen.getByDisplayValue(selectedOffer.name)).toBeInTheDocument()
+    expect(screen.getByDisplayValue(firstOffererByAlphabeticalOrder.name)).toBeInTheDocument()
   })
 
   it('should not warn user when offerer is validated', async () => {
@@ -174,7 +175,7 @@ describe('offererDetails', () => {
     const showButton = screen.getByRole('button', { name: 'Afficher' })
     fireEvent.click(showButton)
 
-    const selectedOfferer = baseOfferers[0]
+    const selectedOfferer = firstOffererByAlphabeticalOrder
     expect(screen.getByText(selectedOfferer.siren)).toBeInTheDocument()
     expect(screen.getByText(selectedOfferer.name, { selector: 'span' })).toBeInTheDocument()
     expect(screen.getByText(selectedOfferer.address, { exact: false })).toBeInTheDocument()
@@ -188,7 +189,7 @@ describe('offererDetails', () => {
     const showButton = screen.getByRole('button', { name: 'Afficher' })
     fireEvent.click(showButton)
 
-    const selectedOfferer = baseOfferers[0]
+    const selectedOfferer = firstOffererByAlphabeticalOrder
     expect(screen.getByText(selectedOfferer.iban)).toBeInTheDocument()
     expect(screen.getByText(selectedOfferer.bic)).toBeInTheDocument()
   })
@@ -198,7 +199,7 @@ describe('offererDetails', () => {
     const showButton = screen.getByRole('button', { name: 'Afficher' })
     fireEvent.click(showButton)
 
-    const selectedOfferer = baseOfferers[0]
+    const selectedOfferer = firstOffererByAlphabeticalOrder
     const virtualVenueTitle = screen.getByText('Offres numériques')
     expect(virtualVenueTitle).toBeInTheDocument()
 
@@ -215,7 +216,7 @@ describe('offererDetails', () => {
 
   it('should not display virtual venue informations when no virtual offers', async () => {
     // Given
-    baseOfferers[0].managedVenues = [
+    firstOffererByAlphabeticalOrder.managedVenues = [
       {
         ...virtualVenue,
         nOffers: 0,
@@ -235,34 +236,34 @@ describe('offererDetails', () => {
   describe('when selected offerer change', () => {
     let newSelectedOfferer
     beforeEach(async () => {
-      const selectedOffer = baseOfferers[0]
+      const selectedOffer = firstOffererByAlphabeticalOrder
       newSelectedOfferer = {
-        ...baseOfferers[1],
+        ...baseOfferers[0],
         managedVenues: [
           {
             id: 'test_venue_id_3',
             isVirtual: true,
-            managingOffererId: baseOfferers[1].id,
+            managingOffererId: baseOfferers[0].id,
             name: 'New venue (Offre numérique)',
-            offererName: baseOfferers[1].name,
+            offererName: baseOfferers[0].name,
             publicName: null,
             nOffers: 2,
           },
           {
             id: 'test_venue_id_4',
             isVirtual: false,
-            managingOffererId: baseOfferers[1].id,
+            managingOffererId: baseOfferers[0].id,
             name: 'New venue (Offre physique)',
-            offererName: baseOfferers[1].name,
+            offererName: baseOfferers[0].name,
             publicName: null,
             nOffers: 2,
           },
           {
             id: 'test_venue_id_5',
             isVirtual: false,
-            managingOffererId: baseOfferers[1].id,
+            managingOffererId: baseOfferers[0].id,
             name: 'Second new venue (Offre physique)',
-            offererName: baseOfferers[1].name,
+            offererName: baseOfferers[0].name,
             publicName: 'Second new venue public name',
             nOffers: 2,
           },
@@ -316,7 +317,7 @@ describe('offererDetails', () => {
   describe('when selecting "add offerer" option"', () => {
     it('should redirect to offerer creation page', async () => {
       // Given
-      const selectedOffer = baseOfferers[0]
+      const selectedOffer = firstOffererByAlphabeticalOrder
       await renderHomePage()
 
       // When
@@ -335,7 +336,7 @@ describe('offererDetails', () => {
     it('should display add information link and bank informations warning', async () => {
       baseOfferers = [
         {
-          ...baseOfferers[0],
+          ...firstOffererByAlphabeticalOrder,
           bic: '',
           iban: '',
         },
@@ -360,7 +361,7 @@ describe('offererDetails', () => {
       // Given
       baseOfferers = [
         {
-          ...baseOfferers[0],
+          ...firstOffererByAlphabeticalOrder,
           bic: '',
           iban: '',
           demarchesSimplifieesApplicationId: '',
@@ -396,13 +397,13 @@ describe('offererDetails', () => {
       }
       baseOfferers = [
         {
-          ...baseOfferers[0],
+          ...firstOffererByAlphabeticalOrder,
           bic: '',
           iban: '',
           managedVenues: [virtualVenue, physicalVenue, physicalVenueWithPublicName],
         },
       ]
-      pcapi.getOfferer.mockResolvedValue(baseOfferers[0])
+      pcapi.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
       await renderHomePage()
 
       const warningIcons = await screen.queryByAltText('Informations bancaires manquantes')
@@ -412,7 +413,7 @@ describe('offererDetails', () => {
     it('should display file information for pending registration', async () => {
       baseOfferers = [
         {
-          ...baseOfferers[0],
+          ...firstOffererByAlphabeticalOrder,
           bic: '',
           iban: '',
           demarchesSimplifieesApplicationId: 'demarchesSimplifieesApplication_fake_id',
@@ -437,7 +438,7 @@ describe('offererDetails', () => {
         id: 'test_venue_id_1',
         isValidated: true,
         isVirtual: true,
-        managingOffererId: baseOfferers[0].id,
+        managingOffererId: firstOffererByAlphabeticalOrder.id,
         name: 'Le Sous-sol (Offre numérique)',
         offererName: 'Bar des amis',
         publicName: null,
@@ -510,7 +511,7 @@ describe('offererDetails', () => {
         {
           id: 'test_venue_id_1',
           isVirtual: true,
-          managingOffererId: baseOfferers[0].id,
+          managingOffererId: firstOffererByAlphabeticalOrder.id,
           name: 'Le Sous-sol (Offre numérique)',
           offererName: 'Bar des amis',
           publicName: null,
@@ -518,7 +519,7 @@ describe('offererDetails', () => {
         {
           id: 'test_venue_id_2',
           isVirtual: false,
-          managingOffererId: baseOfferers[0].id,
+          managingOffererId: firstOffererByAlphabeticalOrder.id,
           name: 'Le Sous-sol (Offre physique)',
           offererName: 'Bar des amis',
           publicName: null,
@@ -588,7 +589,7 @@ describe('offererDetails', () => {
     beforeEach(() => {
       virtualVenue = { ...virtualVenue, nOffers: 0 }
       const nonValidatedOfferer = {
-        ...baseOfferers[0],
+        ...firstOffererByAlphabeticalOrder,
         isValidated: false,
         managedVenues: [virtualVenue],
       }
@@ -628,8 +629,8 @@ describe('offererDetails', () => {
   describe('when user attachment to offerer is not yet validated', () => {
     beforeEach(() => {
       pcapi.getAllOfferersNames.mockResolvedValue([
+        { name: firstOffererByAlphabeticalOrder.name, id: firstOffererByAlphabeticalOrder.id },
         { name: baseOfferers[0].name, id: baseOfferers[0].id },
-        baseOfferers[1],
       ])
       pcapi.getOfferer.mockRejectedValue({ status: 403 })
     })
@@ -675,17 +676,20 @@ describe('offererDetails', () => {
     it('should not show venues of previously selected offerer', async () => {
       // Given
       pcapi.getAllOfferersNames.mockResolvedValue([
-        baseOfferers[1],
         { name: baseOfferers[0].name, id: baseOfferers[0].id },
+        { name: firstOffererByAlphabeticalOrder.name, id: firstOffererByAlphabeticalOrder.id },
       ])
       pcapi.getOfferer
-        .mockResolvedValueOnce({ ...baseOfferers[1], managedVenues: [virtualVenue, physicalVenue] })
+        .mockResolvedValueOnce({
+          ...firstOffererByAlphabeticalOrder,
+          managedVenues: [virtualVenue, physicalVenue],
+        })
         .mockRejectedValueOnce({ status: 403 })
 
       await renderHomePage()
 
       // When
-      fireEvent.change(screen.getByDisplayValue(baseOfferers[1].name), {
+      fireEvent.change(screen.getByDisplayValue(firstOffererByAlphabeticalOrder.name), {
         target: { value: baseOfferers[0].id },
       })
 

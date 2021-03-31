@@ -34,11 +34,12 @@ const Offerers = () => {
     function fetchData() {
       const { offererId } = query
       pcapi.getAllOfferersNames().then(receivedOffererNames => {
-        if (receivedOffererNames.length > 0) {
-          setSelectedOffererId(offererId || receivedOffererNames[0].id)
+        const offererOptions = buildSelectOptions('id', 'name', receivedOffererNames)
+        if (offererOptions.length > 0) {
+          setSelectedOffererId(offererId || offererOptions[0].id)
         }
         setOffererOptions([
-          ...buildSelectOptions('id', 'name', receivedOffererNames),
+          ...offererOptions,
           {
             displayName: '+ Ajouter une structure',
             id: CREATE_OFFERER_SELECT_ID,
