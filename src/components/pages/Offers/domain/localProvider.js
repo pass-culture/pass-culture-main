@@ -1,14 +1,6 @@
 import { SYNCHRONIZED_OFFER_EDITABLE_FIELDS } from 'components/pages/Offers/Offer/OfferDetails/OfferForm/_constants'
 
-const doesLastProviderExist = offer => offer !== null && offer.lastProvider
-
-const localProvidersNames = [
-  'fnac',
-  'leslibraires.fr',
-  'praxiel/inférence',
-  'titelive (epagine / place des libraires.com)',
-  'titelive stocks (epagine / place des libraires.com)',
-]
+const doesLastProviderExist = offer => Boolean(offer !== null && offer.lastProvider)
 
 export const isSynchronizedOffer = (offer = null) => {
   return isOfferFromStockProvider(offer) || isAllocineOffer(offer)
@@ -16,8 +8,6 @@ export const isSynchronizedOffer = (offer = null) => {
 
 export const isOfferFromStockProvider = (offer = null) => {
   return doesLastProviderExist(offer)
-    ? localProvidersNames.includes(offer.lastProvider.name.toLowerCase())
-    : false
 }
 
 export const isAllocineProvider = provider => provider?.name.toLowerCase() === 'allociné'

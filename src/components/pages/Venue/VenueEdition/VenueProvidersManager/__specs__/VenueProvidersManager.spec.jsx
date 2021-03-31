@@ -7,7 +7,7 @@ import { MemoryRouter } from 'react-router'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
-import { DEFAULT_PROVIDER_OPTION } from '../utils/providerOptions'
+import { DEFAULT_PROVIDER_OPTION } from '../utils/_constants'
 import VenueProvidersManagerContainer from '../VenueProvidersManagerContainer'
 
 jest.mock('repository/pcapi/pcapi', () => ({

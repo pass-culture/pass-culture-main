@@ -2,12 +2,13 @@ import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 
 import Select, { buildSelectOptions } from 'components/layout/inputs/Select'
+import { isAllocineProvider } from 'components/pages/Offers/domain/localProvider'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 import * as pcapi from 'repository/pcapi/pcapi'
 
 import AllocineProviderForm from './AllocineProviderForm/AllocineProviderForm'
 import StocksProviderForm from './StocksProviderForm/StocksProviderForm'
-import { ALLOCINE_PROVIDER_OPTION, DEFAULT_PROVIDER_OPTION } from './utils/providerOptions'
+import { DEFAULT_PROVIDER_OPTION } from './utils/_constants'
 import VenueProviderItem from './VenueProviderItem/VenueProviderItem'
 
 const VenueProvidersManagerContainer = ({ notifyError, notifySuccess, venue }) => {
@@ -39,7 +40,7 @@ const VenueProvidersManagerContainer = ({ notifyError, notifySuccess, venue }) =
       setProviderIdentifierIsRequired(selectedProvider?.requireProviderIdentifier)
       setSelectedProviderId(selectedProviderId)
 
-      if (selectedProvider && selectedProvider.name === ALLOCINE_PROVIDER_OPTION.name) {
+      if (isAllocineProvider(selectedProvider)) {
         setIsAllocineProviderSelected(true)
       }
     },
