@@ -80,7 +80,11 @@ def post_new_password():
     validate_new_password_request(request)
     token = request.get_json()["token"]
     new_password = request.get_json()["newPassword"]
-    user = users_repo.get_user_with_valid_token(token, [TokenType.RESET_PASSWORD])
+
+    check_password_strength("newPassword", new_password)
+
+    user = users_repo.get_user_with_valid_token(token, [TokenType.RESET_PASSWORD], delete_token=True)
+
     # TODO(xordoquy): remove the fallback on "old-style" token once the migration is over
     if not user:
         user = find_user_by_reset_password_token(token)
@@ -89,8 +93,6 @@ def post_new_password():
         errors = ApiErrors()
         errors.add_error("token", "Votre lien de changement de mot de passe est invalide.")
         raise errors
-
-    check_password_strength("newPassword", new_password)
 
     user.setPassword(new_password)
     if not user.isEmailValidated:

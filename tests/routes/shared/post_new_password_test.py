@@ -130,5 +130,4 @@ class PostNewPassword:
             user = User.query.get(user_id)
             assert response.status_code == 204
             assert user.checkPassword("N3W_p4ssw0rd")
-            assert user.resetPasswordToken is None
-            assert user.resetPasswordTokenValidityLimit is None
+            assert len(user.tokens) == 0

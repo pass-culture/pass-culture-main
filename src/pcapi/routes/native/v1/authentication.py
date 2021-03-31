@@ -86,12 +86,14 @@ def request_password_reset(body: RequestPasswordResetRequest) -> None:
 @blueprint.native_v1.route("/reset_password", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400])
 def reset_password(body: ResetPasswordRequest) -> None:
-    user = users_repo.get_user_with_valid_token(body.reset_password_token, [TokenType.RESET_PASSWORD])
+    check_password_strength("newPassword", body.new_password)
+
+    user = users_repo.get_user_with_valid_token(
+        body.reset_password_token, [TokenType.RESET_PASSWORD], delete_token=True
+    )
 
     if not user:
         raise ApiErrors({"token": ["Le token de changement de mot de passe est invalide."]})
-
-    check_password_strength("newPassword", body.new_password)
 
     user.setPassword(body.new_password)
     user.isEmailValidated = True

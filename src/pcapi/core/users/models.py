@@ -229,8 +229,6 @@ class User(PcObject, Model, NeedsValidationMixin, VersionedMixin):
     def setPassword(self, newpass):
         self.clearTextPassword = newpass
         self.password = hash_password(newpass)
-        self.resetPasswordToken = None
-        self.resetPasswordTokenValidityLimit = None
 
     def get_not_cancelled_bookings(self) -> List[Booking]:
         return (

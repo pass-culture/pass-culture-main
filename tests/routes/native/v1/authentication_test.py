@@ -1,5 +1,4 @@
 from datetime import datetime
-from datetime import timedelta
 from unittest.mock import patch
 
 from flask_jwt_extended import decode_token
@@ -13,9 +12,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import hash_password
-from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_id
-from pcapi.utils.token import random_token
 
 from tests.conftest import TestClient
 
@@ -197,9 +194,7 @@ def test_reset_password_success(app):
     new_password = "New_password1998!"
 
     user = users_factories.UserFactory()
-
-    token = Token(from_dict={"userId": user.id, "value": "secret-value", "type": TokenType.RESET_PASSWORD})
-    repository.save(token)
+    token = users_factories.ResetPasswordToken(user=user)
 
     data = {"reset_password_token": token.value, "new_password": new_password}
     response = TestClient(app.test_client()).post("/native/v1/reset_password", json=data)
@@ -207,15 +202,14 @@ def test_reset_password_success(app):
     user = find_user_by_id(user.id)
     assert response.status_code == 204
     assert user.password == hash_password(new_password)
+    assert Token.query.get(token.id) is None
 
 
 def test_reset_password_for_unvalidated_email(app):
     new_password = "New_password1998!"
 
     user = users_factories.UserFactory(isEmailValidated=False)
-
-    token = Token(from_dict={"userId": user.id, "value": "secret-value", "type": TokenType.RESET_PASSWORD})
-    repository.save(token)
+    token = users_factories.ResetPasswordToken(user=user)
 
     data = {"reset_password_token": token.value, "new_password": new_password}
     response = TestClient(app.test_client()).post("/native/v1/reset_password", json=data)
@@ -227,21 +221,20 @@ def test_reset_password_for_unvalidated_email(app):
 
 
 def test_reset_password_fail_for_password_strength(app):
-    reset_token = random_token()
-    user = users_factories.UserFactory(
-        resetPasswordToken=reset_token,
-        resetPasswordTokenValidityLimit=(datetime.utcnow() + timedelta(hours=1)),
-    )
+    user = users_factories.UserFactory()
+    token = users_factories.ResetPasswordToken(user=user)
+
     old_password = user.password
     new_password = "weak_password"
 
-    data = {"reset_password_token": reset_token, "new_password": new_password}
+    data = {"reset_password_token": token.value, "new_password": new_password}
 
     response = TestClient(app.test_client()).post("/native/v1/reset_password", json=data)
 
     user = find_user_by_id(user.id)
     assert response.status_code == 400
     assert user.password == old_password
+    assert Token.query.get(token.id)
 
 
 def test_change_password_success(app):

@@ -38,13 +38,18 @@ def get_user_with_credentials(identifier: str, password: str) -> User:
     return user
 
 
-def get_user_with_valid_token(token_value: str, token_types: List[models.TokenType]) -> Optional[User]:
+def get_user_with_valid_token(
+    token_value: str, token_types: List[models.TokenType], delete_token: bool = False
+) -> Optional[User]:
     token = models.Token.query.filter(models.Token.value == token_value, models.Token.type.in_(token_types)).first()
     if not token:
         return None
 
     if token.expirationDate and token.expirationDate < datetime.now():
         return None
+
+    if delete_token:
+        models.Token.query.filter_by(id=token.id).delete()
 
     return token.user
 
