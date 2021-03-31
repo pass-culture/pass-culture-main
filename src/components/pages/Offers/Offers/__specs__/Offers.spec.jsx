@@ -130,10 +130,7 @@ describe('src | components | pages | Offers | Offers', () => {
     })
 
     props = {
-      closeNotification: jest.fn(),
       currentUser,
-      handleOnActivateAllVenueOffersClick: jest.fn(),
-      handleOnDeactivateAllVenueOffersClick: jest.fn(),
       loadOffers: jest.fn().mockResolvedValue({ page: 1, pageCount: 2, offersCount: 5 }),
       saveSearchFilters: jest.fn(),
       offers: [
@@ -1402,42 +1399,6 @@ describe('src | components | pages | Offers | Offers', () => {
         statut: null,
         structure: null,
       })
-    })
-  })
-
-  describe('when leaving page', () => {
-    it('should close offers activation / deactivation notification', () => {
-      // Given
-      props = {
-        ...props,
-        closeNotification: jest.fn(),
-        notification: {
-          tag: 'offers-activation',
-        },
-      }
-      const { unmount } = renderOffers(props, store)
-
-      // When
-      unmount()
-
-      // Then
-      expect(props.closeNotification).toHaveBeenCalledWith()
-    })
-
-    it('should not fail on null notification', () => {
-      // Given
-      props = {
-        ...props,
-        closeNotification: jest.fn(),
-        notification: null,
-      }
-      const { unmount } = renderOffers(props, store)
-
-      // When
-      unmount()
-
-      // Then
-      expect(props.closeNotification).not.toHaveBeenCalledWith()
     })
   })
 

@@ -81,13 +81,6 @@ class Offers extends PureComponent {
     this.fetchTypeOptions()
   }
 
-  componentWillUnmount() {
-    const { closeNotification, notification } = this.props
-    if (notification && notification.tag === 'offers-activation') {
-      closeNotification()
-    }
-  }
-
   updateUrlMatchingState = () => {
     const { query } = this.props
 
@@ -688,11 +681,9 @@ Offers.defaultProps = {
 }
 
 Offers.propTypes = {
-  closeNotification: PropTypes.func.isRequired,
   currentUser: PropTypes.shape().isRequired,
   getOfferer: PropTypes.func.isRequired,
   loadOffers: PropTypes.func.isRequired,
-  notification: PropTypes.shape().isRequired,
   offers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   query: PropTypes.shape({
     change: PropTypes.func.isRequired,
