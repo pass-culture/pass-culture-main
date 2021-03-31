@@ -52,10 +52,11 @@ class BeneficiaryJouveBackend:
 
         content = response.json()
 
-        # There is a bug in Jouve that invert first_name and last_name (only on testing and staging env)
+        # There is a bug in Jouve that invert first_name and last_name (only testing and staging env)
+        # More explanations here: https://passculture.atlassian.net/secure/RapidBoard.jspa?rapidView=34&modal=detail&selectedIssue=PC-7845&quickFilter=278
         # TODO 05/2021: remove this code when Jouve fixed the bug
-        first_name = content["firstName"] if settings.IS_PROD else content["lastName"]
-        last_name = content["lastName"] if settings.IS_PROD else content["firstName"]
+        first_name = content["lastName"] if settings.IS_TESTING or settings.IS_STAGING else content["firstName"]
+        last_name = content["firstName"] if settings.IS_TESTING or settings.IS_STAGING else content["lastName"]
 
         return BeneficiaryPreSubscription(
             activity=content["activity"],
