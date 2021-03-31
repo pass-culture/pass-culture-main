@@ -59,22 +59,27 @@ def get_logged_in_user_id():
         return None
 
 
-class Logger(logging.Logger):
+def monkey_patch_logger_makeRecord():
     def makeRecord(self, name, level, fn, lno, msg, args, exc_info, func=None, extra=None, sinfo=None):
-        """Make a record (as the parent class does), but store ``extra``
-        arguments in an ``extra`` attribute, not as direct attributes
-        of the object itself.
+        """Make a record but store ``extra`` arguments in an ``extra``
+        attribute (not only as direct attributes of the object itself,
+        like the original method does).
 
-        Otherwise, JsonFormatter cannot distinguish ``extra``
+        Otherwise, our JsonFormatter cannot distinguish ``extra``
         arguments from regular record attributes (most of which we
         don't use).
 
-        Note that we cannot customize the record factory because it
-        does not handle the ``extra`` arguments.
+        Note that we cannot monkey patch `logging._logRecordFactory`
+        because it does not handle the ``extra`` argument.
         """
-        record = logging._logRecordFactory(name, level, fn, lno, msg, args, exc_info, func, sinfo)
+        record = self.__original_makeRecord(
+            name, level, fn, lno, msg, args, exc_info, func=None, extra=None, sinfo=None
+        )
         record.extra = extra or {}
         return record
+
+    logging.Logger.__original_makeRecord = logging.Logger.makeRecord
+    logging.Logger.makeRecord = makeRecord
 
 
 class JsonFormatter(logging.Formatter):
@@ -87,11 +92,7 @@ class JsonFormatter(logging.Formatter):
             "message": record.msg % record.args,
             # `getattr()` is necessary for log records that have not
             # been created by our `Logger.makeRecord()` defined above.
-            # It's possible if a logger was created *before* we have
-            # called `install_logging()`. It should not happen in
-            # `pcapi`, but does happen for external libraries (e.g. in
-            # `rq` which is imported by `pcapi.workers.worker` before
-            # we call `install_logging()`).
+            # It should not happen, but let's be defensive.
             "extra": getattr(record, "extra", {}),
         }
         try:
@@ -121,7 +122,7 @@ def install_logging():
     if _internal_logger is not None:
         return
 
-    logging.setLoggerClass(Logger)
+    monkey_patch_logger_makeRecord()
     handler = logging.StreamHandler(stream=sys.stdout)
     handler.setFormatter(JsonFormatter())
     handlers = [handler]

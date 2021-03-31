@@ -32,13 +32,9 @@ from pcapi.utils.json_encoder import EnumJSONEncoder
 from pcapi.utils.rate_limiting import rate_limiter
 
 
-# This must be called BEFORE creating `logger` below. Otherwise this
-# logger won't work with our JSON formatter.
-install_logging()
-
-
 logger = logging.getLogger(__name__)
 
+install_logging()
 
 if settings.IS_DEV is False:
     sentry_sdk.init(
