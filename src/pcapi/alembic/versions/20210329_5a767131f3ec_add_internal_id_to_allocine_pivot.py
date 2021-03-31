@@ -1,7 +1,7 @@
 """add_internal_id_to_allocine_pivot
 
 Revision ID: 5a767131f3ec
-Revises: 2a602bd22f5d
+Revises: 0f9f0a4ae98d
 Create Date: 2021-03-29 09:10:45.541428
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = "5a767131f3ec"
-down_revision = "2a602bd22f5d"
+down_revision = "0f9f0a4ae98d"
 branch_labels = None
 depends_on = None
 
