@@ -11,11 +11,6 @@ import { bindAddressAndDesignationFromSiren } from './decorators/bindSirenFieldT
 import OffererCreationForm from './OffererCreationForm/OffererCreationForm'
 
 class OffererCreation extends PureComponent {
-  componentWillUnmount() {
-    const { closeNotification } = this.props
-    closeNotification()
-  }
-
   handleSubmit = values => {
     const { createNewOfferer } = this.props
     createNewOfferer(values, this.onHandleFail, this.onHandleSuccess)
@@ -32,7 +27,7 @@ class OffererCreation extends PureComponent {
 
   onHandleFail = () => {
     const { showNotification } = this.props
-    showNotification('Vous étes déjà rattaché à cette structure.', 'danger')
+    showNotification('Vous étes déjà rattaché à cette structure.', 'error')
   }
 
   createDecorators = () => {
@@ -70,7 +65,6 @@ class OffererCreation extends PureComponent {
 }
 
 OffererCreation.propTypes = {
-  closeNotification: PropTypes.func.isRequired,
   createNewOfferer: PropTypes.func.isRequired,
   isNewHomepageActive: PropTypes.bool.isRequired,
   redirectAfterSubmit: PropTypes.func.isRequired,

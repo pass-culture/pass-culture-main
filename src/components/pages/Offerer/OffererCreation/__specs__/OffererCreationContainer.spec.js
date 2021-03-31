@@ -33,7 +33,6 @@ describe('src | components | pages | Offerer | OfferCreation | OffererCreationCo
 
       // then
       expect(functions).toStrictEqual({
-        closeNotification: expect.any(Function),
         createNewOfferer: expect.any(Function),
         showNotification: expect.any(Function),
       })
@@ -66,19 +65,7 @@ describe('src | components | pages | Offerer | OfferCreation | OffererCreationCo
             text: 'my message',
             type: 'success',
           },
-          type: 'SHOW_NOTIFICATION_V1',
-        })
-      })
-    })
-
-    describe('closeNotification', () => {
-      it('enable to close notification', () => {
-        // when
-        mapDispatchToProps(dispatch).closeNotification()
-
-        // then
-        expect(dispatch).toHaveBeenCalledWith({
-          type: 'CLOSE_NOTIFICATION',
+          type: 'SHOW_NOTIFICATION_V2',
         })
       })
     })
