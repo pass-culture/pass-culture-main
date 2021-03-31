@@ -1,22 +1,24 @@
-from pcapi.core.users.models import User
-from pcapi.models.user_offerer import UserOfferer
+from pcapi.core.offers import factories as offers_factories
+from pcapi.core.users import factories as users_factories
 from pcapi.sandboxes.scripts.utils.helpers import get_offerer_helper
 from pcapi.sandboxes.scripts.utils.helpers import get_pro_helper
 
 
 def get_existing_pro_user_with_offerer():
-    query = User.query.join(UserOfferer)
-    user = query.first()
-
-    offerer = [uo.offerer for uo in user.UserOfferers][0]
-
-    return {"offerer": get_offerer_helper(offerer), "user": get_pro_helper(user)}
+    user_offerer = offers_factories.UserOffererFactory(
+        user__isAdmin=False,
+        user__isBeneficiary=False,
+        user__validationToken=None,
+    )
+    return {"offerer": get_offerer_helper(user_offerer.offerer), "user": get_pro_helper(user_offerer.user)}
 
 
 def get_existing_pro_not_validated_user_with_real_offerer():
-    users = User.query.filter(User.validationToken is not None).join(UserOfferer).all()
-
-    for user in users:
-        if len(user.UserOfferers) == 1:
-            return {"user": get_pro_helper(user)}
-    return None
+    return {
+        "user": get_pro_helper(
+            users_factories.UserFactory(
+                isAdmin=False,
+                isBeneficiary=False,
+            )
+        )
+    }

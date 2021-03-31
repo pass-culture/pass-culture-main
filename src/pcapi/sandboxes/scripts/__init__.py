@@ -4,3 +4,4 @@ from pcapi.sandboxes.scripts import sandbox_beneficiary_import
 from pcapi.sandboxes.scripts import sandbox_bookings_recap
 from pcapi.sandboxes.scripts import sandbox_industrial
 from pcapi.sandboxes.scripts import sandbox_payment
+from pcapi.sandboxes.scripts import sandbox_testcafe

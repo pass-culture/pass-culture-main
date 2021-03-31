@@ -1,42 +1,15 @@
-from pcapi.core.users.models import User
-from pcapi.repository.offerer_queries import keep_offerers_with_at_least_one_physical_venue
-from pcapi.repository.offerer_queries import keep_offerers_with_no_physical_venue
-from pcapi.repository.user_queries import filter_users_with_at_least_one_validated_offerer_validated_user_offerer
+from pcapi.core.offers import factories as offers_factories
 from pcapi.sandboxes.scripts.utils.helpers import get_offerer_helper
 from pcapi.sandboxes.scripts.utils.helpers import get_pro_helper
-from pcapi.sandboxes.scripts.utils.helpers import get_venue_helper
 
 
 def get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_no_physical_venue():
-    query = User.query.filter(User.validationToken == None)
-    query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
-    query = keep_offerers_with_no_physical_venue(query)
-    user = query.first()
-
-    offerer = [
-        uo.offerer
-        for uo in user.UserOfferers
-        if uo.offerer.validationToken == None
-        and uo.validationToken == None
-        and all(v.isVirtual for v in uo.offerer.managedVenues)
-    ][0]
-
-    return {"offerer": get_offerer_helper(offerer), "user": get_pro_helper(user)}
-
-
-def get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_at_least_one_physical_venue():
-    query = User.query.filter(User.validationToken == None)
-    query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
-    query = keep_offerers_with_at_least_one_physical_venue(query)
-    user = query.first()
-
-    for uo in user.UserOfferers:
-        if uo.validationToken == None and uo.offerer.validationToken == None:
-            for venue in uo.offerer.managedVenues:
-                if not venue.isVirtual:
-                    return {
-                        "offerer": get_offerer_helper(uo.offerer),
-                        "user": get_pro_helper(user),
-                        "venue": get_venue_helper(venue),
-                    }
-    return None
+    user_offerer = offers_factories.UserOffererFactory(
+        validationToken=None,
+        offerer__validationToken=None,
+        user__isAdmin=False,
+        user__isBeneficiary=False,
+        user__validationToken=None,
+    )
+    offers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
+    return {"offerer": get_offerer_helper(user_offerer.offerer), "user": get_pro_helper(user_offerer.user)}

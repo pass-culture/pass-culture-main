@@ -20,6 +20,7 @@ class OffererFactory(BaseFactory):
         model = pcapi.core.offerers.models.Offerer
 
     name = factory.Sequence("Le Petit Rintintin Management {}".format)
+    address = "1 boulevard Poissonnière"
     postalCode = "75000"
     city = "Paris"
 
@@ -207,7 +208,7 @@ class BankInformationFactory(BaseFactory):
     class Meta:
         model = models.BankInformation
 
-    bic = "12345678912"
-    iban = "FR1526172812718281"
+    bic = factory.Sequence(lambda n: f"{n:011}")
+    iban = factory.LazyAttributeSequence(lambda o, n: f"FR{n:016}")
     applicationId = factory.Sequence(int)
     status = "ACCEPTED"

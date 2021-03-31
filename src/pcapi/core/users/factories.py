@@ -28,6 +28,7 @@ class UserFactory(BaseFactory):
     publicName = "Jeanne Doux"
     isEmailValidated = True
     isBeneficiary = True
+    hasSeenProTutorials = True
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):

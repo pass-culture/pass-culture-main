@@ -219,7 +219,7 @@ class Returns200:
                 "latitude": 48.87004,
                 "longitude": 2.37850,
                 "managingOfferer": {
-                    "address": None,
+                    "address": "1 boulevard Poissonnière",
                     "city": "Paris",
                     "dateCreated": "2020-10-15T00:00:00Z",
                     "dateModifiedAtLastProvider": "2020-10-15T00:00:00Z",

@@ -69,6 +69,7 @@ def create_industrial_offerers_with_pro_users():
             first_name=first_name,
             last_name=last_name,
             postal_code="{}100".format(departement_code),
+            phone_number="01 00 00 00 00",
             public_name="{} {}".format(first_name, last_name),
             validation_token="{}{}".format(user_validation_prefix, user_validation_suffix),
         )
@@ -141,6 +142,7 @@ def create_industrial_offerers_with_pro_users():
             first_name=first_name,
             last_name=last_name,
             postal_code="{}100".format(departement_code),
+            phone_number="01 00 00 00 00",
             public_name="{} {}".format(first_name, last_name),
             validation_token=user_validation_token,
         )
@@ -174,6 +176,7 @@ def create_industrial_offerers_with_pro_users():
                 first_name=first_name,
                 last_name=last_name,
                 postal_code="{}100".format(departement_code),
+                phone_number="01 00 00 00 00",
                 public_name="{} {}".format(first_name, last_name),
                 validation_token=user_validation_token,
             )

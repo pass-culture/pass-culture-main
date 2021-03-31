@@ -1,12 +1,4 @@
-from pcapi.core.offerers.models import Offerer
-from pcapi.core.offers.models import Offer
-from pcapi.core.users.models import User
-from pcapi.models import BankInformation
-from pcapi.models import Stock
-from pcapi.models import ThingType
-from pcapi.models import Venue
-from pcapi.models.offer_type import EventType
-from pcapi.repository.user_queries import filter_users_with_at_least_one_validated_offerer_validated_user_offerer
+from pcapi.core.offers import factories as offers_factories
 from pcapi.sandboxes.scripts.utils.helpers import get_offer_helper
 from pcapi.sandboxes.scripts.utils.helpers import get_offerer_helper
 from pcapi.sandboxes.scripts.utils.helpers import get_pro_helper
@@ -15,126 +7,65 @@ from pcapi.sandboxes.scripts.utils.helpers import get_venue_helper
 
 
 def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_no_stock():
-    query = User.query.filter(User.validationToken == None)
-    query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
-    query = query.join(BankInformation)
-    query = (
-        query.join(Venue, Venue.managingOffererId == Offerer.id)
-        .join(Offer)
-        .filter((Offer.type.in_([str(event_type) for event_type in EventType])) & (~Offer.stocks.any()))
+    user_offerer = offers_factories.UserOffererFactory(
+        validationToken=None,
+        offerer__validationToken=None,
+        user__isAdmin=False,
+        user__isBeneficiary=False,
+        user__validationToken=None,
     )
-    user = query.first()
+    offers_factories.BankInformationFactory(offerer=user_offerer.offerer)
+    venue = offers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
+    offer = offers_factories.EventOfferFactory(venue=venue, isActive=True)
 
-    for uo in user.UserOfferers:
-        if uo.validationToken == None and uo.offerer.validationToken == None and uo.offerer.iban:
-            for venue in uo.offerer.managedVenues:
-                for offer in venue.offers:
-                    if offer.isEvent and len(offer.stocks) == 0:
-                        return {
-                            "offer": get_offer_helper(offer),
-                            "offerer": get_offerer_helper(uo.offerer),
-                            "user": get_pro_helper(user),
-                            "venue": get_venue_helper(venue),
-                        }
-    return None
+    return {
+        "offer": get_offer_helper(offer),
+        "offerer": get_offerer_helper(user_offerer.offerer),
+        "user": get_pro_helper(user_offerer.user),
+        "venue": get_venue_helper(venue),
+    }
 
 
 def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_stock():
-    query = User.query.filter(User.validationToken == None)
-    query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
-    query = query.join(BankInformation)
-    query = (
-        query.join(Venue, Venue.managingOffererId == Offerer.id)
-        .join(Offer)
-        .join(Stock)
-        .filter((Stock.beginningDatetime != None))
+    user_offerer = offers_factories.UserOffererFactory(
+        validationToken=None,
+        offerer__validationToken=None,
+        user__isAdmin=False,
+        user__isBeneficiary=False,
+        user__validationToken=None,
     )
-    user = query.first()
+    offers_factories.BankInformationFactory(offerer=user_offerer.offerer)
+    venue = offers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
+    offer = offers_factories.EventOfferFactory(venue=venue, isActive=True)
+    stock = offers_factories.EventStockFactory(offer=offer)
 
-    for uo in user.UserOfferers:
-        if not uo.isValidated or not uo.offerer.isValidated:
-            continue
-        if not uo.offerer.iban:
-            continue
-        for venue in uo.offerer.managedVenues:
-            for offer in [o for o in venue.offers if o.isEvent]:
-                for stock in offer.stocks:
-                    if stock.beginningDatetime:
-                        return {
-                            "offer": get_offer_helper(offer),
-                            "offerer": get_offerer_helper(uo.offerer),
-                            "stock": get_stock_helper(stock),
-                            "user": get_pro_helper(user),
-                            "venue": get_venue_helper(venue),
-                        }
-    return None
+    return {
+        "offer": get_offer_helper(offer),
+        "offerer": get_offerer_helper(user_offerer.offerer),
+        "stock": get_stock_helper(stock),
+        "user": get_pro_helper(user_offerer.user),
+        "venue": get_venue_helper(venue),
+    }
 
 
 def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_thing_offer_with_stock():
-    query = User.query.filter(User.validationToken == None)
-    query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
-    query = query.join(BankInformation)
-    query = query.join(Venue, Venue.managingOffererId == Offerer.id).join(Offer).join(Offer.stocks)
-    user = query.first()
-
-    for uo in user.UserOfferers:
-        if uo.validationToken == None and uo.offerer.validationToken == None and uo.offerer.iban:
-            for venue in uo.offerer.managedVenues:
-                for offer in venue.offers:
-                    if offer.isThing and offer.stocks and offer.isEditable:
-                        return {
-                            "offer": get_offer_helper(offer),
-                            "offerer": get_offerer_helper(uo.offerer),
-                            "stock": get_stock_helper(offer.stocks[0]),
-                            "user": get_pro_helper(user),
-                            "venue": get_venue_helper(venue),
-                        }
-    return None
-
-
-def get_existing_pro_validated_user_with_validated_offerer_with_no_iban_validated_user_offerer_with_thing_offer_with_no_stock():
-    query = User.query.filter(User.validationToken == None)
-    query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
-    query = query.filter(Offerer.bankInformation == None)
-    query = query.join(Venue).filter(
-        Venue.offers.any((Offer.type.in_([str(thing_type) for thing_type in ThingType])) & (~Offer.stocks.any()))
+    user_offerer = offers_factories.UserOffererFactory(
+        validationToken=None,
+        offerer__validationToken=None,
+        user__isAdmin=False,
+        user__isBeneficiary=False,
+        user__validationToken=None,
     )
-    user = query.first()
+    offers_factories.BankInformationFactory(offerer=user_offerer.offerer)
+    venue = offers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
+    venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+    offer = offers_factories.ThingOfferFactory(venue=venue, isActive=True)
+    stock = offers_factories.ThingStockFactory(offer=offer)
 
-    for uo in user.UserOfferers:
-        if uo.validationToken == None and uo.offerer.validationToken == None and not uo.offerer.iban:
-            for venue in uo.offerer.managedVenues:
-                for offer in venue.offers:
-                    if offer.isThing and len(offer.stocks) == 0 and offer.isEditable:
-                        return {
-                            "offer": get_offer_helper(offer),
-                            "offerer": get_offerer_helper(uo.offerer),
-                            "user": get_pro_helper(user),
-                            "venue": get_venue_helper(venue),
-                        }
-    return None
-
-
-def get_existing_pro_validated_user_with_validated_offerer_with_no_iban_validated_user_offerer_with_event_offer():
-    query = User.query.filter(User.validationToken == None)
-    query = filter_users_with_at_least_one_validated_offerer_validated_user_offerer(query)
-    query = query.filter(Offerer.bankInformation == None)
-    query = query.join(Venue).join(Offer).filter(Offer.type.in_([str(thing_type) for thing_type in ThingType]))
-    query = query.filter(Venue.isVirtual == False)
-    user = query.first()
-
-    for uo in user.UserOfferers:
-        if not uo.isValidated or not uo.offerer.isValidated:
-            continue
-        if uo.offerer.iban:
-            continue
-        for venue in [v for v in uo.offerer.managedVenues if not v.isVirtual]:
-            for offer in venue.offers:
-                if offer.isEvent:
-                    return {
-                        "offer": get_offer_helper(offer),
-                        "offerer": get_offerer_helper(uo.offerer),
-                        "user": get_pro_helper(user),
-                        "venue": get_venue_helper(venue),
-                    }
-    return None
+    return {
+        "offer": get_offer_helper(offer),
+        "offerer": get_offerer_helper(user_offerer.offerer),
+        "stock": get_stock_helper(stock),
+        "user": get_pro_helper(user_offerer.user),
+        "venue": get_venue_helper(venue),
+    }

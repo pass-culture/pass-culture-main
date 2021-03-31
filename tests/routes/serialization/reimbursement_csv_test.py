@@ -72,7 +72,7 @@ class ReimbursementDetailsCSVTest:
         stock = offers_factories.StockFactory(price=10, offer__name='Mon titre ; un peu "spécial"')
         venue = stock.offer.venue
         user_offerer = offers_factories.UserOffererFactory(offerer=venue.managingOfferer)
-        offers_factories.BankInformationFactory(venue=venue)
+        bank_informations = offers_factories.BankInformationFactory(venue=venue)
         bookings_factories.BookingFactory(stock=stock, isUsed=True, token="0E2722")
         bookings_factories.BookingFactory(stock=stock, token="LDVNNW")
 
@@ -87,7 +87,7 @@ class ReimbursementDetailsCSVTest:
         assert _count_non_empty_lines(csv) == 2
         assert (
             _get_header(csv, 1)
-            == f'"2019";"Juillet : remboursement 1ère quinzaine";"{venue.name}";"{venue.siret}";"1 boulevard Poissonnière";"FR1526172812718281";"{venue.name}";"Mon titre ; un peu ""spécial""";"Doux";"Jeanne";"0E2722";"";10.00;"Remboursement initié"'
+            == f'"2019";"Juillet : remboursement 1ère quinzaine";"{venue.name}";"{venue.siret}";"1 boulevard Poissonnière";"{bank_informations.iban}";"{venue.name}";"Mon titre ; un peu ""spécial""";"Doux";"Jeanne";"0E2722";"";10.00;"Remboursement initié"'
         )
 
 

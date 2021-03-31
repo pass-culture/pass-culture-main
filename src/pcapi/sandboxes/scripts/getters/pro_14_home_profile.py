@@ -1,14 +1,17 @@
 from pcapi.core.offers import factories as offers_factories
-from pcapi.sandboxes.scripts.utils.helpers import get_offerer_helper
 from pcapi.sandboxes.scripts.utils.helpers import get_pro_helper
 
 
-def get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer():
+def get_pro_user():
     user_offerer = offers_factories.UserOffererFactory(
         validationToken=None,
         offerer__validationToken=None,
         user__isAdmin=False,
         user__isBeneficiary=False,
         user__validationToken=None,
+        user__phoneNumber="01 00 00 00 00",
     )
-    return {"offerer": get_offerer_helper(user_offerer.offerer), "user": get_pro_helper(user_offerer.user)}
+    venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+    offers_factories.ThingOfferFactory(venue=venue, isActive=True)
+
+    return {"user": get_pro_helper(user_offerer.user)}
