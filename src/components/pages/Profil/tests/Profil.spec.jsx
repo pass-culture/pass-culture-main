@@ -132,7 +132,7 @@ describe('src | components | pages | Profil', () => {
             text: 'Informations mises à jour avec succès.',
             type: 'success',
           },
-          type: 'SHOW_NOTIFICATION_V1',
+          type: 'SHOW_NOTIFICATION_V2',
         })
         expect(wrapper.state('isLoading')).toBe(false)
       })
@@ -150,9 +150,9 @@ describe('src | components | pages | Profil', () => {
         expect(dispatch).toHaveBeenCalledWith({
           payload: {
             text: 'Erreur lors de la mise à jour de vos informations.',
-            type: 'fail',
+            type: 'error',
           },
-          type: 'SHOW_NOTIFICATION_V1',
+          type: 'SHOW_NOTIFICATION_V2',
         })
         expect(wrapper.state('isLoading')).toBe(false)
       })
