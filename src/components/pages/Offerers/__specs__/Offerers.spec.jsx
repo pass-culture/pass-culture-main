@@ -100,24 +100,6 @@ describe('src | components | Offerers', () => {
         expect(props.closeNotification).not.toHaveBeenCalled()
       })
 
-      it('should close offerer notifcation', () => {
-        // given
-        props = {
-          ...props,
-          closeNotification: jest.fn(),
-          notification: {
-            tag: 'offerers',
-          },
-        }
-        const wrapper = shallow(<Offerers {...props} />)
-
-        // when
-        wrapper.unmount()
-
-        // then
-        expect(props.closeNotification).toHaveBeenCalledWith()
-      })
-
       it('should not fail on null notifcation', () => {
         // given
         props = {
@@ -214,31 +196,6 @@ describe('src | components | Offerers', () => {
 
           // then
           expect(link.prop('to')).toBe('/erreur/indisponible')
-        })
-      })
-    })
-
-    describe('when user has no physical venue', () => {
-      describe('when the api sirene feature is available', () => {
-        it('should display a notification', () => {
-          // when
-          shallow(<Offerers {...props} />)
-
-          // then
-          expect(props.showNotification).toHaveBeenCalledWith('/structures/AE/lieux/creation')
-        })
-      })
-
-      describe('when the api sirene feature is disabled', () => {
-        it('should display a notification', () => {
-          // given
-          props.isOffererCreationAvailable = false
-
-          // when
-          shallow(<Offerers {...props} />)
-
-          // then
-          expect(props.showNotification).toHaveBeenCalledWith('/erreur/indisponible')
         })
       })
     })

@@ -19,7 +19,6 @@ import { mapApiToBrowser } from '../../../utils/translate'
 import OffererItemContainer from './OffererItem/OffererItemContainer'
 import PendingOffererItem from './OffererItem/PendingOffererItem'
 import createVenueForOffererUrl from './utils/createVenueForOffererUrl'
-import userHasNoOffersInAPhysicalVenueYet from './utils/userHasNoOffersInAPhysicalVenueYet'
 
 class Offerers extends PureComponent {
   constructor(props) {
@@ -33,24 +32,10 @@ class Offerers extends PureComponent {
   }
 
   componentDidMount() {
-    const {
-      currentUser,
-      offerers,
-      query,
-      showNotification,
-      isOffererCreationAvailable,
-    } = this.props
+    const { query } = this.props
     // We need to use this system because of this issue:
     // https://github.com/danbovey/react-infinite-scroller/issues/12#issuecomment-339375017
     this.forceRenderKey = 0
-
-    if (userHasNoOffersInAPhysicalVenueYet(currentUser)) {
-      const url = isOffererCreationAvailable
-        ? createVenueForOffererUrl(offerers)
-        : UNAVAILABLE_ERROR_PAGE
-
-      showNotification(url)
-    }
 
     const queryParams = query.parse()
     if (queryParams.page) {
@@ -65,13 +50,6 @@ class Offerers extends PureComponent {
 
     if (location.search !== prevProps.location.search) {
       this.handleRequestData()
-    }
-  }
-
-  componentWillUnmount() {
-    const { closeNotification, notification } = this.props
-    if (notification && notification.tag === 'offerers') {
-      closeNotification()
     }
   }
 
@@ -254,21 +232,13 @@ class Offerers extends PureComponent {
   }
 }
 
-Offerers.defaultProps = {
-  notification: null,
-}
-
 Offerers.propTypes = {
-  closeNotification: PropTypes.func.isRequired,
-  currentUser: PropTypes.shape().isRequired,
   isOffererCreationAvailable: PropTypes.bool.isRequired,
   loadOfferers: PropTypes.func.isRequired,
   location: PropTypes.shape().isRequired,
-  notification: PropTypes.shape(),
   offerers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   query: PropTypes.shape().isRequired,
   resetLoadedOfferers: PropTypes.func.isRequired,
-  showNotification: PropTypes.func.isRequired,
 }
 
 export default Offerers

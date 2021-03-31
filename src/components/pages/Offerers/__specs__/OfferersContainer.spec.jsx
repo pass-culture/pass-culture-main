@@ -12,9 +12,7 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
 
       // then
       const expected = {
-        currentUser: state.data.users[0],
         isOffererCreationAvailable: false,
-        notification: null,
         offerers: [
           {
             address: 'RUE DES SAPOTILLES',
@@ -109,18 +107,6 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
 
     beforeEach(() => {
       dispatch = jest.fn()
-    })
-
-    describe('closeNotification', () => {
-      it('enable to close notification', () => {
-        // when
-        mapDispatchToProps(dispatch).closeNotification()
-
-        // then
-        expect(dispatch).toHaveBeenCalledWith({
-          type: 'CLOSE_NOTIFICATION',
-        })
-      })
     })
 
     describe('loadOfferers', () => {
@@ -264,29 +250,6 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
             // then
             expect(result).toStrictEqual('/offerers?keywords=example+keyword')
           })
-        })
-      })
-    })
-
-    describe('showNotification', () => {
-      it('enable to show notification', () => {
-        // given
-        const url = '/offerers'
-
-        //when
-        mapDispatchToProps(dispatch).showNotification(url)
-
-        // then
-        expect(dispatch).toHaveBeenCalledWith({
-          payload: {
-            tag: 'offerers',
-            text:
-              'Commencez par créer un lieu pour accueillir vos offres physiques (événements, livres, abonnements…)',
-            type: 'info',
-            url: '/offerers',
-            urlLabel: 'Nouveau lieu',
-          },
-          type: 'SHOW_NOTIFICATION_V1',
         })
       })
     })
