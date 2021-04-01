@@ -24,7 +24,7 @@ describe('src | components | pages | Signup | SignupFormContainer', () => {
       expect(result).toStrictEqual({
         createNewProUser: expect.any(Function),
         redirectToConfirmation: expect.any(Function),
-        showNotification: expect.any(Function),
+        notifyError: expect.any(Function),
       })
     })
 
@@ -144,16 +144,15 @@ describe('src | components | pages | Signup | SignupFormContainer', () => {
         // given
         const functions = mapDispatchToProps(dispatch, props)
         const messageText = 'message text'
-        const messageType = 'message type'
 
         // when
-        functions.showNotification(messageText, messageType)
+        functions.notifyError(messageText)
 
         // then
         expect(dispatch).toHaveBeenCalledWith(
           showNotificationV2({
             text: messageText,
-            type: messageType,
+            type: 'error',
           })
         )
       })

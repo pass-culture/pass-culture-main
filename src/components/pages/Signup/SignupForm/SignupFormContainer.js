@@ -41,11 +41,11 @@ export const mapDispatchToProps = (dispatch, ownProps) => ({
     ownProps.history.replace('/inscription/confirmation')
   },
 
-  showNotification: (message, type) => {
+  notifyError: message => {
     dispatch(
       showNotificationV2({
         text: message,
-        type: type,
+        type: 'error',
       })
     )
   },

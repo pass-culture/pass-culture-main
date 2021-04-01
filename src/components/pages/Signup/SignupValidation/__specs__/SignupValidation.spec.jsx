@@ -15,6 +15,8 @@ describe('src | components | pages | Signup | validation', () => {
   beforeEach(() => {
     history = createBrowserHistory()
     dispatch = jest.fn()
+    const notifyError = jest.fn()
+    const notifySuccess = jest.fn()
     props = {
       dispatch,
       match: {
@@ -22,6 +24,8 @@ describe('src | components | pages | Signup | validation', () => {
           token: 'AAA',
         },
       },
+      notifyError,
+      notifySuccess,
     }
   })
 
@@ -89,15 +93,9 @@ describe('src | components | pages | Signup | validation', () => {
       notifySuccess()
 
       // then
-      const notifySuccessCall = dispatch.mock.calls[1][0]
-      expect(notifySuccessCall).toStrictEqual({
-        payload: {
-          text:
-            'Votre compte a été créé. Vous pouvez vous connecter avec les identifiants que vous avez choisis.',
-          type: 'success',
-        },
-        type: 'SHOW_NOTIFICATION_V2',
-      })
+      expect(props.notifySuccess).toHaveBeenCalledWith(
+        'Votre compte a été créé. Vous pouvez vous connecter avec les identifiants que vous avez choisis.'
+      )
     })
   })
 
@@ -119,14 +117,7 @@ describe('src | components | pages | Signup | validation', () => {
       notifyFailure(state, action)
 
       // then
-      const notifyFailureCall = dispatch.mock.calls[1][0]
-      expect(notifyFailureCall).toStrictEqual({
-        payload: {
-          text: ['error1', 'error2'],
-          type: 'error',
-        },
-        type: 'SHOW_NOTIFICATION_V2',
-      })
+      expect(props.notifyError).toHaveBeenCalledWith(['error1', 'error2'])
     })
   })
 })

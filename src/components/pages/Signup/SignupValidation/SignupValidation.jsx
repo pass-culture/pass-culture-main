@@ -4,7 +4,6 @@ import { Redirect } from 'react-router-dom'
 import { requestData } from 'redux-saga-data'
 
 import { redirectLoggedUser } from 'components/router/helpers'
-import { showNotificationV2 } from 'store/reducers/notificationReducer'
 import { campaignTracker } from 'tracking/mediaCampaignsTracking'
 
 class SignupValidation extends PureComponent {
@@ -42,26 +41,16 @@ class SignupValidation extends PureComponent {
         payload: { errors },
       } = action
 
-      const { dispatch } = this.props
-      dispatch(
-        showNotificationV2({
-          text: errors.global,
-          type: 'error',
-        })
-      )
+      const { notifyError } = this.props
+      notifyError(errors.global)
     }
   }
 
   notifySuccess = () => {
     return () => {
-      const { dispatch } = this.props
-
-      dispatch(
-        showNotificationV2({
-          text:
-            'Votre compte a été créé. Vous pouvez vous connecter avec les identifiants que vous avez choisis.',
-          type: 'success',
-        })
+      const { notifySuccess } = this.props
+      notifySuccess(
+        'Votre compte a été créé. Vous pouvez vous connecter avec les identifiants que vous avez choisis.'
       )
     }
   }
@@ -85,6 +74,8 @@ SignupValidation.propTypes = {
       token: PropTypes.string.isRequired,
     }),
   }).isRequired,
+  notifyError: PropTypes.func.isRequired,
+  notifySuccess: PropTypes.func.isRequired,
 }
 
 export default SignupValidation

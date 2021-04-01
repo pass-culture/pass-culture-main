@@ -53,9 +53,9 @@ class SignupForm extends PureComponent {
   }
 
   onHandleFail = () => {
-    const { showNotification } = this.props
+    const { notifyError } = this.props
 
-    showNotification('Formulaire non validé.', 'error')
+    notifyError('Formulaire non validé.')
   }
 
   handleSubmit = values => {
@@ -264,8 +264,8 @@ SignupForm.propTypes = {
   errors: PropTypes.shape().isRequired,
   history: PropTypes.func.isRequired,
   isNewHomepageActive: PropTypes.bool.isRequired,
+  notifyError: PropTypes.func.isRequired,
   redirectToConfirmation: PropTypes.func.isRequired,
-  showNotification: PropTypes.func.isRequired,
 }
 
 export default SignupForm
