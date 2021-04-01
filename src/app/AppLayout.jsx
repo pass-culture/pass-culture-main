@@ -6,7 +6,7 @@ import ReactTooltip from 'react-tooltip'
 
 import HeaderContainer from 'components/layout/Header/HeaderContainer'
 import Icon from 'components/layout/Icon'
-import NotificationV2Container from 'components/layout/NotificationV2/NotificationV2Container'
+import NotificationContainer from 'components/layout/Notification/NotificationContainer'
 import TutorialDialogContainer from 'components/layout/Tutorial/TutorialDialogContainer'
 
 const AppLayout = props => {
@@ -66,7 +66,7 @@ const AppLayout = props => {
           </div>
         )}
         <TutorialDialogContainer />
-        <NotificationV2Container />
+        <NotificationContainer />
       </main>
     </>
   )

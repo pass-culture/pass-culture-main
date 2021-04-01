@@ -6,7 +6,7 @@ import { requestData } from 'redux-saga-data'
 import AppLayout from 'app/AppLayout'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import Titles from 'components/layout/Titles/Titles'
-import { showNotificationV2 } from 'store/reducers/notificationReducer'
+import { showNotification } from 'store/reducers/notificationReducer'
 
 import { version } from '../../../../package.json'
 import PageTitle from '../../layout/PageTitle/PageTitle'
@@ -59,7 +59,7 @@ class Profil extends PureComponent {
     this.setState({ isLoading: false })
 
     dispatch(
-      showNotificationV2({
+      showNotification({
         text: 'Erreur lors de la mise à jour de vos informations.',
         type: 'error',
       })
@@ -71,7 +71,7 @@ class Profil extends PureComponent {
     this.setState({ isLoading: false })
 
     dispatch(
-      showNotificationV2({
+      showNotification({
         text: 'Informations mises à jour avec succès.',
         type: 'success',
       })

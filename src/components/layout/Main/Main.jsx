@@ -2,7 +2,7 @@ import get from 'lodash.get'
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import { showNotificationV2 } from 'store/reducers/notificationReducer'
+import { showNotification } from 'store/reducers/notificationReducer'
 
 /**
  * @deprecated Since 04/12/2020. This component should not be used anymore.
@@ -44,7 +44,7 @@ class Main extends React.PureComponent {
   handleDataFail = (state, action) => {
     const { dispatch, payload } = action
     dispatch(
-      showNotificationV2({
+      showNotification({
         type: 'error',
         text: get(payload, 'errors.0.global') || 'Erreur de chargement',
       })

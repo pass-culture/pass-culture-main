@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 
-import { showNotificationV2 } from 'store/reducers/notificationReducer'
+import { showNotification } from 'store/reducers/notificationReducer'
 
 import DownloadButton from './DownloadButton'
 
@@ -32,7 +32,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
         }
 
         dispatch(
-          showNotificationV2({
+          showNotification({
             text: 'Il y a une erreur avec le chargement du fichier csv.',
             type: 'error',
           })

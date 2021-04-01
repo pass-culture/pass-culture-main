@@ -4,7 +4,7 @@ import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
 import withTracking from 'components/hocs/withTracking'
-import { showNotificationV2 } from 'store/reducers/notificationReducer'
+import { showNotification } from 'store/reducers/notificationReducer'
 import { selectIsFeatureActive } from 'store/selectors/data/featuresSelectors'
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 
@@ -32,7 +32,7 @@ export const mapDispatchToProps = dispatch => ({
   },
   showNotification: (message, type) => {
     dispatch(
-      showNotificationV2({
+      showNotification({
         text: message,
         type: type,
       })

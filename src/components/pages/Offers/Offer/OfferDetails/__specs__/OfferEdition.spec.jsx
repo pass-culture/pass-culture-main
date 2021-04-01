@@ -5,7 +5,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
-import NotificationV2Container from 'components/layout/NotificationV2/NotificationV2Container'
+import NotificationContainer from 'components/layout/Notification/NotificationContainer'
 import { getProviderInfo } from 'components/pages/Offers/domain/getProviderInfo'
 import {
   fieldLabels,
@@ -48,7 +48,7 @@ const renderOffers = async (props, store, queryParams = '') => {
           <Route path="/offres/:offerId([A-Z0-9]+)/">
             <>
               <OfferLayoutContainer {...props} />
-              <NotificationV2Container />
+              <NotificationContainer />
             </>
           </Route>
         </MemoryRouter>

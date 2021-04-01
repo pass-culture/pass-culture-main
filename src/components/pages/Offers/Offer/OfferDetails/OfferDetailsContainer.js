@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
-import { showNotificationV2 } from 'store/reducers/notificationReducer'
+import { showNotification } from 'store/reducers/notificationReducer'
 import { selectCurrentUser, selectIsUserAdmin } from 'store/selectors/data/usersSelectors'
 
 import OfferDetails from './OfferDetails'
@@ -15,21 +15,21 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   showErrorNotification: () =>
     dispatch(
-      showNotificationV2({
+      showNotification({
         type: 'error',
         text: 'Une ou plusieurs erreurs sont présentes dans le formulaire',
       })
     ),
   showCreationSuccessNotification: () =>
     dispatch(
-      showNotificationV2({
+      showNotification({
         type: 'success',
         text: 'Votre offre a bien été créée',
       })
     ),
   showEditionSuccessNotification: () =>
     dispatch(
-      showNotificationV2({
+      showNotification({
         type: 'success',
         text: 'Votre offre a bien été modifiée',
       })

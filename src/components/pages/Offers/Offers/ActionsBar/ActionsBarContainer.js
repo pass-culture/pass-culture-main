@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 
 import withTracking from 'components/hocs/withTracking'
-import { showNotificationV2 } from 'store/reducers/notificationReducer'
+import { showNotification } from 'store/reducers/notificationReducer'
 
 import ActionsBar from './ActionsBar'
 
@@ -16,7 +16,7 @@ export const mapDispatchToProps = dispatch => {
   return {
     showSuccessNotification: text =>
       dispatch(
-        showNotificationV2({
+        showNotification({
           type: 'success',
           text,
         })

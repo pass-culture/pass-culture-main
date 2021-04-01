@@ -1,19 +1,19 @@
 import { connect } from 'react-redux'
 
 import DeleteStockDialog from 'components/pages/Offers/Offer/Stocks/DeleteStockDialog/DeleteStockDialog'
-import { showNotificationV2 } from 'store/reducers/notificationReducer'
+import { showNotification } from 'store/reducers/notificationReducer'
 
 const mapDispatchToProps = dispatch => ({
   notifyDeletionSuccess: () =>
     dispatch(
-      showNotificationV2({
+      showNotification({
         type: 'success',
         text: 'Le stock a été supprimé.',
       })
     ),
   notifyDeletionError: () =>
     dispatch(
-      showNotificationV2({
+      showNotification({
         type: 'error',
         text: 'Une erreur est survenue lors de la suppression du stock.',
       })

@@ -1,4 +1,4 @@
-import { showNotificationV2 } from 'store/reducers/notificationReducer'
+import { showNotification } from 'store/reducers/notificationReducer'
 
 import { mapDispatchToProps } from '../SignupFormContainer'
 
@@ -150,7 +150,7 @@ describe('src | components | pages | Signup | SignupFormContainer', () => {
 
         // then
         expect(dispatch).toHaveBeenCalledWith(
-          showNotificationV2({
+          showNotification({
             text: messageText,
             type: 'error',
           })

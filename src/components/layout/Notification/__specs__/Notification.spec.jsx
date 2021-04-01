@@ -3,7 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
 import { Provider } from 'react-redux'
 
-import NotificationV2Container from 'components/layout/NotificationV2/NotificationV2Container'
+import NotificationContainer from 'components/layout/Notification/NotificationContainer'
 import { configureTestStore } from 'store/testUtils'
 
 jest.mock('../_constants', () => ({
@@ -11,7 +11,7 @@ jest.mock('../_constants', () => ({
   NOTIFICATION_TRANSITION_DURATION: 10,
 }))
 
-describe('src | components | layout | NotificationV2', () => {
+describe('src | components | layout | Notification', () => {
   let props
   let hideNotification
   let store
@@ -24,12 +24,12 @@ describe('src | components | layout | NotificationV2', () => {
     }
   })
 
-  const renderNotificationV2 = (props, sentNotification) => {
+  const renderNotification = (props, sentNotification) => {
     store = configureTestStore({ notification: sentNotification })
 
     return render(
       <Provider store={store}>
-        <NotificationV2Container {...props} />
+        <NotificationContainer {...props} />
       </Provider>
     )
   }
@@ -43,7 +43,7 @@ describe('src | components | layout | NotificationV2', () => {
     }
 
     // when
-    renderNotificationV2(props, sentNotification)
+    renderNotification(props, sentNotification)
 
     // then
     const notification = screen.getByText(sentNotification.text)
@@ -61,7 +61,7 @@ describe('src | components | layout | NotificationV2', () => {
     }
 
     // when
-    renderNotificationV2(props, sentNotification)
+    renderNotification(props, sentNotification)
 
     // then
     expect(screen.getByRole('img')).toHaveAttribute(
@@ -79,7 +79,7 @@ describe('src | components | layout | NotificationV2', () => {
     }
 
     // when
-    renderNotificationV2(props, sentNotification)
+    renderNotification(props, sentNotification)
 
     // then
     expect(screen.getByRole('img')).toHaveAttribute(
@@ -97,7 +97,7 @@ describe('src | components | layout | NotificationV2', () => {
     }
 
     // when
-    renderNotificationV2(props, sentNotification)
+    renderNotification(props, sentNotification)
 
     // then
     await waitFor(() => {
@@ -114,7 +114,7 @@ describe('src | components | layout | NotificationV2', () => {
     }
 
     // when
-    renderNotificationV2(props, sentNotification)
+    renderNotification(props, sentNotification)
 
     // then
     await waitFor(() => {

@@ -5,7 +5,7 @@ import { requestData } from 'redux-saga-data'
 import { withQueryRouter } from 'components/hocs/with-query-router/withQueryRouter'
 import { CREATION } from 'components/hocs/withFrenchQueryRouter'
 import withTracking from 'components/hocs/withTracking'
-import { showNotificationV2 } from 'store/reducers/notificationReducer'
+import { showNotification } from 'store/reducers/notificationReducer'
 import { selectIsFeatureActive } from 'store/selectors/data/featuresSelectors'
 import { selectOffererById } from 'store/selectors/data/offerersSelectors'
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
@@ -100,7 +100,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
       }
 
       dispatch(
-        showNotificationV2({
+        showNotification({
           text,
           type: 'error',
         })
@@ -124,7 +124,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
       }
 
       dispatch(
-        showNotificationV2({
+        showNotification({
           text: notificationMessage,
           type: 'success',
         })

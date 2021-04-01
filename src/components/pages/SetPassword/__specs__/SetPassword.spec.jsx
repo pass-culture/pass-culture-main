@@ -7,7 +7,7 @@ import { act } from 'react-dom/test-utils'
 import { Provider } from 'react-redux'
 import { Router, Route } from 'react-router'
 
-import NotificationV2Container from 'components/layout/NotificationV2/NotificationV2Container'
+import NotificationContainer from 'components/layout/Notification/NotificationContainer'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
@@ -29,7 +29,7 @@ const renderSetPassword = (store, history) =>
         <Route path="/creation-de-mot-de-passe/:token?">
           <>
             <SetPasswordContainer />
-            <NotificationV2Container />
+            <NotificationContainer />
           </>
         </Route>
       </Router>

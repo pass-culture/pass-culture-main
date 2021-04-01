@@ -132,7 +132,7 @@ describe('src | components | pages | Profil', () => {
             text: 'Informations mises à jour avec succès.',
             type: 'success',
           },
-          type: 'SHOW_NOTIFICATION_V2',
+          type: 'SHOW_NOTIFICATION',
         })
         expect(wrapper.state('isLoading')).toBe(false)
       })
@@ -152,7 +152,7 @@ describe('src | components | pages | Profil', () => {
             text: 'Erreur lors de la mise à jour de vos informations.',
             type: 'error',
           },
-          type: 'SHOW_NOTIFICATION_V2',
+          type: 'SHOW_NOTIFICATION',
         })
         expect(wrapper.state('isLoading')).toBe(false)
       })

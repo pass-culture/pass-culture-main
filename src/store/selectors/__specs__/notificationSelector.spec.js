@@ -1,24 +1,13 @@
-import { notificationV2Selector } from '../notificationSelector'
+import { notificationSelector } from '../notificationSelector'
 
 describe('src | selectors | notification', () => {
-  describe('notificationV2Selector', () => {
+  describe('notificationSelector', () => {
     it('should return empty state when no notification is stored', () => {
       // given
       const state = { notification: {} }
 
       // when
-      const notification = notificationV2Selector(state)
-
-      // then
-      expect(notification).toStrictEqual({})
-    })
-
-    it('should return empty state when V1 notification is stored', () => {
-      // given
-      const state = { notification: { type: 'success', text: 'My success message', version: 1 } }
-
-      // when
-      const notification = notificationV2Selector(state)
+      const notification = notificationSelector(state)
 
       // then
       expect(notification).toStrictEqual({})
@@ -26,10 +15,10 @@ describe('src | selectors | notification', () => {
 
     it('should return notification details when V2 notification is stored', () => {
       // given
-      const state = { notification: { type: 'success', text: 'My success message', version: 2 } }
+      const state = { notification: { type: 'success', text: 'My success message' } }
 
       // when
-      const notification = notificationV2Selector(state)
+      const notification = notificationSelector(state)
 
       // then
       expect(notification).toStrictEqual(state.notification)

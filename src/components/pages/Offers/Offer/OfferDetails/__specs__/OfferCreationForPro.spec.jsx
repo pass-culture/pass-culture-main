@@ -6,7 +6,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
-import NotificationV2Container from 'components/layout/NotificationV2/NotificationV2Container'
+import NotificationContainer from 'components/layout/Notification/NotificationContainer'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
@@ -46,7 +46,7 @@ const renderOffers = async (props, store, queryParams = null) => {
           <Route path={['/offres/creation', '/offres/:offerId([A-Z0-9]+)']}>
             <>
               <OfferLayoutContainer {...props} />
-              <NotificationV2Container />
+              <NotificationContainer />
             </>
           </Route>
         </MemoryRouter>
@@ -1456,7 +1456,13 @@ describe('offerDetails - Creation - pro user', () => {
         mentalDisabilityCompliant: false,
       }
 
-      const createdOffer = { ...offerValues, id: 'CREATED', stocks: [], venue: venues[0], status: "ACTIVE" }
+      const createdOffer = {
+        ...offerValues,
+        id: 'CREATED',
+        stocks: [],
+        venue: venues[0],
+        status: 'ACTIVE',
+      }
       pcapi.createOffer.mockResolvedValue(createdOffer)
       await renderOffers(props, store)
       pcapi.loadOffer.mockResolvedValue(createdOffer)

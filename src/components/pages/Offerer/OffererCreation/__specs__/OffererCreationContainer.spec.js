@@ -65,7 +65,7 @@ describe('src | components | pages | Offerer | OfferCreation | OffererCreationCo
             text: 'my message',
             type: 'success',
           },
-          type: 'SHOW_NOTIFICATION_V2',
+          type: 'SHOW_NOTIFICATION',
         })
       })
     })

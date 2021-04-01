@@ -1,7 +1,7 @@
 import {
   closeNotification,
   notificationReducer,
-  showNotificationV2,
+  showNotification,
 } from 'store/reducers/notificationReducer'
 
 describe('src | reducers | notification', () => {
@@ -23,20 +23,20 @@ describe('src | reducers | notification', () => {
     })
   })
 
-  describe('when action.type is SHOW_NOTIFICATION_V2', () => {
+  describe('when action.type is SHOW_NOTIFICATION', () => {
     it('should return correct update state', () => {
       // given
       const notificationMessage = {
         text: 'Votre structure a bien été enregistrée, elle est en cours de validation.',
         type: 'success',
       }
-      const action = showNotificationV2(notificationMessage)
+      const action = showNotification(notificationMessage)
 
       // when
       const state = notificationReducer(initialState, action)
 
       // then
-      expect(state).toStrictEqual({ version: 2, ...notificationMessage })
+      expect(state).toStrictEqual({ ...notificationMessage })
     })
   })
 })

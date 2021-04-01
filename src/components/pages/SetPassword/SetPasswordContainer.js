@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
-import { showNotificationV2 } from 'store/reducers/notificationReducer'
+import { showNotification } from 'store/reducers/notificationReducer'
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 
 import { SetPassword } from './SetPassword'
@@ -16,7 +16,7 @@ export const mapStateToProps = state => {
 export const mapDispatchToProps = dispatch => ({
   showNotification: (type, text) =>
     dispatch(
-      showNotificationV2({
+      showNotification({
         type: type,
         text: text,
       })

@@ -5,7 +5,7 @@ import Icon from 'components/layout/Icon'
 
 import { NOTIFICATION_SHOW_DURATION, NOTIFICATION_TRANSITION_DURATION } from './_constants'
 
-const NotificationV2 = ({ hideNotification, notification }) => {
+const Notification = ({ hideNotification, notification }) => {
   const [isVisible, setIsVisible] = useState(false)
   const [isInDom, setIsInDom] = useState(false)
 
@@ -40,7 +40,7 @@ const NotificationV2 = ({ hideNotification, notification }) => {
 
   if (isInDom) {
     return (
-      <div className={`notification-v2 is-${type || 'info'} ${isVisible ? 'show' : 'hide'}`}>
+      <div className={`notification is-${type || 'info'} ${isVisible ? 'show' : 'hide'}`}>
         <Icon svg={svg} />
         {text}
       </div>
@@ -50,7 +50,7 @@ const NotificationV2 = ({ hideNotification, notification }) => {
   }
 }
 
-NotificationV2.propTypes = {
+Notification.propTypes = {
   hideNotification: PropTypes.func.isRequired,
   notification: PropTypes.shape({
     text: PropTypes.string,
@@ -58,4 +58,4 @@ NotificationV2.propTypes = {
   }).isRequired,
 }
 
-export default NotificationV2
+export default Notification

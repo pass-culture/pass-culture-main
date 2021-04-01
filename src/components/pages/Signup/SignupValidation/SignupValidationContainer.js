@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
-import { showNotificationV2 } from 'store/reducers/notificationReducer'
+import { showNotification } from 'store/reducers/notificationReducer'
 import { selectIsFeatureActive } from 'store/selectors/data/featuresSelectors'
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 
@@ -19,7 +19,7 @@ export const mapDispatchToProps = dispatch => ({
   dispatch,
   notifyError: message => {
     dispatch(
-      showNotificationV2({
+      showNotification({
         text: message,
         type: 'error',
       })
@@ -27,7 +27,7 @@ export const mapDispatchToProps = dispatch => ({
   },
   notifySuccess: message => {
     dispatch(
-      showNotificationV2({
+      showNotification({
         text: message,
         type: 'success',
       })
