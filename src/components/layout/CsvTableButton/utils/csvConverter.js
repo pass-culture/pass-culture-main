@@ -1,21 +1,16 @@
 const CSV_SEMI_COLON_SEPARATOR = ';'
+const parse = require('csv-parse/lib/sync')
 
 const convertFromCsvToObject = csv => {
-  const lines = csv.split('\n')
-  const headers = lines[0].split(CSV_SEMI_COLON_SEPARATOR)
-  const data = []
+  const rows = parse(csv, {
+    delimiter: CSV_SEMI_COLON_SEPARATOR,
+    skip_empty_lines: true,
+  })
 
-  for (let i = 1; i < lines.length; i++) {
-    const currentLine = lines[i].split(CSV_SEMI_COLON_SEPARATOR)
-
-    if (currentLine.length > 1) {
-      data.push(currentLine)
-    }
-  }
-
+  const headers = rows.shift()
   return {
     headers,
-    data,
+    data: rows,
   }
 }
 
