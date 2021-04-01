@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-const InternalBanner = ({ href, linkTitle, subtitle, type }) => {
+const InternalBanner = ({ extraClassName, href, linkTitle, subtitle, type }) => {
   return (
-    <div className={`bi-banner ${type}`}>
+    <div className={`bi-banner ${type} ${extraClassName}`}>
       <p>
         {subtitle}
       </p>
@@ -21,11 +21,13 @@ const InternalBanner = ({ href, linkTitle, subtitle, type }) => {
 }
 
 InternalBanner.defaultProps = {
+  extraClassName: '',
   subtitle: '',
   type: 'attention',
 }
 
 InternalBanner.propTypes = {
+  extraClassName: PropTypes.string,
   href: PropTypes.string.isRequired,
   linkTitle: PropTypes.string.isRequired,
   subtitle: PropTypes.string,

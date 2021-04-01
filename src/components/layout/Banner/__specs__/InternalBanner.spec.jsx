@@ -31,7 +31,7 @@ describe('src | components | layout | InternalBanner', () => {
       // then
       expect(screen.getByText(props.subtitle).closest('div')).toHaveAttribute(
         'class',
-        'bi-banner attention'
+        'bi-banner attention '
       )
     })
 
@@ -44,7 +44,7 @@ describe('src | components | layout | InternalBanner', () => {
       // then
       expect(screen.getByText(props.subtitle).closest('div')).toHaveAttribute(
         'class',
-        'bi-banner notification-info'
+        'bi-banner notification-info '
       )
     })
   })
