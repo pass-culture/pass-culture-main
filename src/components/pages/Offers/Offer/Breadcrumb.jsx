@@ -7,7 +7,7 @@ export const STEP_ID_DETAILS = 'details'
 export const STEP_ID_STOCKS = 'stocks'
 export const STEP_ID_CONFIRMATION = 'confirmation'
 
-const OfferBreadcrumb = ({ activeStep, isCreatingOffer, isOfferCreatingIsFinished, offerId }) => {
+const OfferBreadcrumb = ({ activeStep, isCreatingOffer, isOfferCreationFinished, offerId }) => {
   let steps = []
 
   if (offerId) {
@@ -24,7 +24,7 @@ const OfferBreadcrumb = ({ activeStep, isCreatingOffer, isOfferCreatingIsFinishe
       },
     ]
 
-    if (!isOfferCreatingIsFinished) {
+    if (!isOfferCreationFinished) {
       steps.push({
         id: STEP_ID_CONFIRMATION,
         label: 'Confirmation',
@@ -57,14 +57,14 @@ const OfferBreadcrumb = ({ activeStep, isCreatingOffer, isOfferCreatingIsFinishe
 }
 
 OfferBreadcrumb.defaultProps = {
-  isOfferCreatingIsFinished: true,
+  isOfferCreationFinished: true,
   offerId: null,
 }
 
 OfferBreadcrumb.propTypes = {
   activeStep: PropTypes.string.isRequired,
   isCreatingOffer: PropTypes.bool.isRequired,
-  isOfferCreatingIsFinished: PropTypes.bool,
+  isOfferCreationFinished: PropTypes.bool,
   offerId: PropTypes.string,
 }
 

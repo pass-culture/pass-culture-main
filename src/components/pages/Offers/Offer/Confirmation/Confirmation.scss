@@ -1,0 +1,23 @@
+.offer-confirmation {
+  text-align: center;
+}
+
+.oc-validate {
+  height: rem(56px);
+}
+
+.oc-title {
+  @include title3();
+
+  margin-bottom: rem(24px);
+}
+
+.oc-details {
+  margin-bottom: rem(56px);
+}
+
+.oc-actions {
+  .secondary-link {
+    margin-right: rem(24px);
+  }
+}
