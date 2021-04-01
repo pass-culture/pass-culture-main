@@ -1,5 +1,9 @@
 from unittest.mock import patch
 
+import pytest
+
+from pcapi.admin.custom_views.venue_view import _get_venue_provider_link
+from pcapi.core.offerers.factories import VenueProviderFactory
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.factories import StockFactory
 from pcapi.core.offers.factories import VenueFactory
@@ -102,3 +106,28 @@ class VenueViewTest:
         response = client.post(f"/pc/back-office/venue/edit/?id={venue.id}", form=data)
 
         assert response.status_code == 302
+
+
+class GetVenueProviderLinkTest:
+    @pytest.mark.usefixtures("db_session")
+    def test_return_empty_link_when_no_venue_provider(self, app):
+        # Given
+        venue = VenueFactory()
+
+        # When
+        link = _get_venue_provider_link(None, None, venue, None)
+
+        # Then
+        assert not link
+
+    @pytest.mark.usefixtures("db_session")
+    def test_return_link_to_venue_provider(self, app):
+        # Given
+        venue_provider = VenueProviderFactory()
+        venue = venue_provider.venue
+
+        # When
+        link = _get_venue_provider_link(None, None, venue, None)
+
+        # Then
+        assert f"{venue.id}" in link

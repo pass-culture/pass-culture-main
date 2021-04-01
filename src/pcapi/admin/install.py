@@ -19,6 +19,7 @@ from pcapi.admin.custom_views.offerer_view import OffererView
 from pcapi.admin.custom_views.partner_user_view import PartnerUserView
 from pcapi.admin.custom_views.pro_user_view import ProUserView
 from pcapi.admin.custom_views.user_offerer_view import UserOffererView
+from pcapi.admin.custom_views.venue_provider_view import VenueProviderView
 from pcapi.admin.custom_views.venue_view import VenueView
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.users.models import User
@@ -30,6 +31,7 @@ from pcapi.models import Feature
 from pcapi.models import Offer
 from pcapi.models import UserOfferer
 from pcapi.models import Venue
+from pcapi.models import VenueProvider
 
 
 class Category(Enum):
@@ -66,6 +68,13 @@ def install_admin_views(admin: Admin, session: Session) -> None:
             name="Comptes Pros",
             category=Category.USERS,
             endpoint="/pro_users",
+        )
+    )
+    admin.add_view(
+        VenueProviderView(
+            VenueProvider,
+            session,
+            endpoint="venue_providers",
         )
     )
     admin.add_view(

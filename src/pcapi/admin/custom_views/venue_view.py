@@ -1,3 +1,5 @@
+from typing import Union
+
 from flask import url_for
 from markupsafe import Markup
 from wtforms import Form
@@ -14,6 +16,15 @@ def _offers_links(view, context, model, name) -> Markup:
     return Markup(f'<a href="{url}">{text}</a>')
 
 
+def _get_venue_provider_link(view, context, model, name) -> Union[Markup, None]:
+
+    if not model.venueProviders:
+        return None
+
+    url = url_for("venue_providers.index_view", id=model.id)
+    return Markup(f'<a href="{url}">{"Voir"}</a>')
+
+
 class VenueView(BaseAdminView):
     can_edit = True
     column_list = [
@@ -28,6 +39,7 @@ class VenueView(BaseAdminView):
         "latitude",
         "longitude",
         "isPermanent",
+        "offer_import",
     ]
     column_labels = dict(
         name="Nom",
@@ -39,6 +51,7 @@ class VenueView(BaseAdminView):
         latitude="Latitude",
         longitude="Longitude",
         isPermanent="Lieu permanent",
+        offer_import="Import d'offres",
     )
     column_searchable_list = ["name", "siret", "publicName"]
     column_filters = ["postalCode", "city", "publicName"]
@@ -58,6 +71,7 @@ class VenueView(BaseAdminView):
     def column_formatters(self):
         formatters = super().column_formatters
         formatters.update(offres=_offers_links)
+        formatters.update(offer_import=_get_venue_provider_link)
         return formatters
 
     def update_model(self, new_venue_form: Form, venue: Venue) -> bool:
