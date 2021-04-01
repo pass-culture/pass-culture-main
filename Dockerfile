@@ -1,4 +1,4 @@
-FROM python:3.7.6-slim
+FROM python:3.8.8-slim
 
 ENV PYTHONUNBUFFERED 1
 WORKDIR /usr/local/bin
