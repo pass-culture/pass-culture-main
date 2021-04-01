@@ -7,12 +7,6 @@ from pcapi import settings
 from pcapi.core.users.models import ALGORITHM_HS_256
 
 
-def create_custom_jwt_token(user_id: int, token_type: str, expiration_date: Optional[datetime] = None) -> str:
-    payload = {"userId": user_id, "type": token_type}
-
-    return encode_jwt_payload(payload, expiration_date)
-
-
 def encode_jwt_payload(token_payload: dict, expiration_date: Optional[datetime] = None) -> str:
     if expiration_date:
         # do not fill exp key if expiration_date is None or jwt.decode would fail

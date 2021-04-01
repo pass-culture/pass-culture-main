@@ -28,7 +28,6 @@ from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
 from pcapi.core.users.repository import get_user_with_valid_token
-from pcapi.core.users.utils import decode_jwt_token
 from pcapi.core.users.utils import encode_jwt_payload
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user
@@ -36,8 +35,6 @@ from pcapi.models.offer_type import EventType
 from pcapi.models.offer_type import ThingType
 from pcapi.models.user_session import UserSession
 from pcapi.repository import repository
-
-from tests.conftest import TestClient
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -55,20 +52,6 @@ class GenerateAndSaveTokenTest:
 
         assert generated_token.id == saved_token.id
         assert saved_token.type == token_type
-        decoded = decode_jwt_token(saved_token.value)
-        assert decoded["userId"] == user.id
-        assert decoded["type"] == token_type.value
-        assert decoded["exp"] is not None
-
-        with freeze_time(datetime.now() + timedelta(hours=48)):
-            with pytest.raises(jwt.exceptions.ExpiredSignatureError):
-                decode_jwt_token(saved_token.value)
-
-        # ensure token is not valid for authentication
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {saved_token.value}"}
-        response = test_client.get("/native/v1/me")
-        assert response.status_code == 422
 
     def test_generate_and_save_token_without_expiration_date(self):
         user = users_factories.UserFactory(email="py@test.com")
@@ -80,12 +63,6 @@ class GenerateAndSaveTokenTest:
 
         assert generated_token.type == token_type
         assert generated_token.expirationDate is None
-
-        decoded = decode_jwt_token(generated_token.value)
-
-        assert decoded["userId"] == user.id
-        assert decoded["type"] == token_type.value
-        assert "exp" not in decoded
 
     def test_generate_and_save_token_with_wrong_type(self):
         user = users_factories.UserFactory(email="py@test.com")

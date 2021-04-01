@@ -26,7 +26,6 @@ from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
 from pcapi.core.users.models import VOID_FIRST_NAME
 from pcapi.core.users.models import VOID_PUBLIC_NAME
-from pcapi.core.users.utils import create_custom_jwt_token
 from pcapi.core.users.utils import decode_jwt_token
 from pcapi.core.users.utils import encode_jwt_payload
 from pcapi.core.users.utils import format_email
@@ -81,12 +80,10 @@ def create_id_check_token(user: User) -> Optional[Token]:
 
 
 def generate_and_save_token(user: User, token_type: TokenType, life_time: Optional[timedelta] = None) -> Token:
-    expiration_date = datetime.now() + life_time if life_time else None
-    token_value = create_custom_jwt_token(user.id, token_type.value, expiration_date)
+    assert token_type.name in TokenType.__members__, "Only registered token types are allowed"
 
-    token_with_same_value = Token.query.filter_by(value=token_value).first()
-    if token_with_same_value:
-        return token_with_same_value
+    expiration_date = datetime.now() + life_time if life_time else None
+    token_value = secrets.token_urlsafe(32)
 
     token = Token(userId=user.id, value=token_value, type=token_type, expirationDate=expiration_date)
     repository.save(token)
