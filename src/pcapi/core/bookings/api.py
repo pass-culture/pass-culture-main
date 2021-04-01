@@ -209,7 +209,18 @@ def mark_as_unused(booking: Booking) -> None:
     logger.info("Booking was marked as unused", extra={"booking": booking.id})
 
 
-def generate_qr_code(booking_token: str, offer_extra_data: typing.Dict) -> str:
+def get_qr_code_data(booking_token: str, offer_extra_data: typing.Optional[typing.Dict]):
+    data = f"PASSCULTURE:{QR_CODE_PASS_CULTURE_VERSION};"
+
+    if offer_extra_data and "isbn" in offer_extra_data:
+        data += f"EAN13:{offer_extra_data['isbn']};"
+
+    data += f"TOKEN:{booking_token}"
+
+    return data
+
+
+def generate_qr_code(booking_token: str, offer_extra_data: typing.Optional[typing.Dict]) -> str:
     qr = qrcode.QRCode(
         version=QR_CODE_VERSION,
         error_correction=qrcode.constants.ERROR_CORRECT_Q,
@@ -217,18 +228,8 @@ def generate_qr_code(booking_token: str, offer_extra_data: typing.Dict) -> str:
         border=QR_CODE_BOX_BORDER,
     )
 
-    product_isbn = ""
-    if offer_extra_data and "isbn" in offer_extra_data:
-        product_isbn = offer_extra_data["isbn"]
+    qr.add_data(get_qr_code_data(booking_token, offer_extra_data))
 
-    data = f"PASSCULTURE:{QR_CODE_PASS_CULTURE_VERSION};"
-
-    if product_isbn != "":
-        data += f"EAN13:{product_isbn};"
-
-    data += f"TOKEN:{booking_token}"
-
-    qr.add_data(data)
     image = qr.make_image(fill_color="black", back_color="white")
     return _convert_image_to_base64(image)
 

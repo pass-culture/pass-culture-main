@@ -130,6 +130,7 @@ class GetBookingsTest:
             "dateUsed": "2021-03-02T00:00:00Z",
             "expirationDate": None,
             "quantity": 1,
+            "qrCodeData": None,
             "id": used2.id,
             "stock": {
                 "beginningDatetime": None,
@@ -154,6 +155,9 @@ class GetBookingsTest:
             "token": used2.token,
             "totalAmount": 1000,
         }
+
+        for booking in response.json["ongoing_bookings"]:
+            assert booking["qrCodeData"] is not None
 
 
 class CancelBookingTest:

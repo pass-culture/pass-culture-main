@@ -87,6 +87,7 @@ class BookingReponse(BaseModel):
     confirmationDate: Optional[datetime]
     dateUsed: Optional[datetime]
     expirationDate: Optional[datetime]
+    qrCodeData: Optional[str]
     quantity: int
     stock: BookingStockResponse
     total_amount: int

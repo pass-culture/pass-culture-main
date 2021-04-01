@@ -92,17 +92,11 @@ def get_bookings(user: User) -> BookingsResponse:
     ongoing_bookings = []
 
     for booking in bookings:
-        if (
-            booking.stock.beginningDatetime
-            and not booking.isCancelled
-            and booking.stock.beginningDatetime >= datetime.utcnow()
-        ):
-            # consider future events events as "ongoing" even if they are used
-            ongoing_bookings.append(booking)
-        elif (booking.dateUsed or booking.cancellationDate) and not booking.stock.offer.isPermanent:
+        if is_ended_booking(booking):
             ended_bookings.append(booking)
         else:
             ongoing_bookings.append(booking)
+            booking.qrCodeData = bookings_api.get_qr_code_data(booking.token, booking.stock.offer.extraData)
 
     return BookingsResponse(
         ended_bookings=[
@@ -121,6 +115,18 @@ def get_bookings(user: User) -> BookingsResponse:
             )
         ],
     )
+
+
+def is_ended_booking(booking: Booking) -> bool:
+    if (
+        booking.stock.beginningDatetime
+        and not booking.isCancelled
+        and booking.stock.beginningDatetime >= datetime.utcnow()
+    ):
+        # consider future events events as "ongoing" even if they are used
+        return False
+
+    return (booking.dateUsed or booking.cancellationDate) and not booking.stock.offer.isPermanent
 
 
 @blueprint.native_v1.route("/bookings/<int:booking_id>/cancel", methods=["POST"])
