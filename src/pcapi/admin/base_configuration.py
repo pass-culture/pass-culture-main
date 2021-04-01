@@ -16,9 +16,7 @@ logger = logging.getLogger(__name__)
 def is_accessible() -> bool:
     authorized = current_user.is_authenticated and current_user.isAdmin
 
-    if authorized:
-        logger.info("[ADMIN] Accès autorisé à l'interface d'administation pour %s", current_user)
-    else:
+    if not authorized:
         logger.warning("[ADMIN] Tentative d'accès non autorisé à l'interface d'administation par %s", current_user)
 
     return authorized
