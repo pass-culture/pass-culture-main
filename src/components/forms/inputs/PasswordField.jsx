@@ -25,7 +25,10 @@ class PasswordField extends PureComponent {
     const inputType = hidden ? 'password' : 'text'
 
     return (
-      <label className="label-password-inner">
+      <label
+        className="label-password-inner"
+        htmlFor={id || name}
+      >
         <InputLabel
           label={label}
           required={required}
@@ -34,6 +37,7 @@ class PasswordField extends PureComponent {
         <div className={`input-inner${hasErrorMessage(meta)}`}>
           <input
             {...input}
+            aria-label="Mot de passe (Exemple : IoPms44*)"
             autoComplete={autoComplete ? 'on' : 'off'}
             className="form-input"
             disabled={disabled}

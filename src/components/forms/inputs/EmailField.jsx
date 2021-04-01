@@ -19,7 +19,10 @@ class EmailField extends PureComponent {
     const { autoComplete, disabled, id, label, name, placeholder, required, sublabel } = this.props
 
     return (
-      <label className="label-email-inner">
+      <label
+        className="label-email-inner"
+        htmlFor={id || name}
+      >
         <InputLabel
           label={label}
           required={required}
@@ -28,6 +31,7 @@ class EmailField extends PureComponent {
         <div className={`input-inner${hasErrorMessage(meta)}`}>
           <input
             {...input}
+            aria-label="Adresse e-mail (Exemple : nom@domaine.fr)"
             autoComplete={autoComplete ? 'on' : 'off'}
             className="form-input"
             disabled={disabled}

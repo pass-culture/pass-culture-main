@@ -80,13 +80,13 @@ class SignIn extends PureComponent {
             id="user-identifier"
             label="Adresse e-mail"
             name="identifier"
-            placeholder="Ex : nom@domaine.fr"
+            placeholder="Exemple : nom@domaine.fr"
           />
           <PasswordField
             id="user-password"
             label="Mot de passe"
             name="password"
-            placeholder="Ex : IoPms44*"
+            placeholder="Exemple : IoPms44*"
           />
           {displayErrorMessage && <FormError customMessage={genericError} />}
 

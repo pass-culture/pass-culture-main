@@ -10,6 +10,7 @@ import hasErrorMessage from '../utils/hasErrorMessage'
 class InputField extends PureComponent {
   renderField = ({ input, meta }) => {
     const {
+      ariaLabel,
       autoComplete,
       disabled,
       label,
@@ -21,7 +22,10 @@ class InputField extends PureComponent {
     } = this.props
 
     return (
-      <label className="label-text-inner">
+      <label
+        className="label-text-inner"
+        htmlFor={name}
+      >
         <InputLabel
           label={label}
           required={required}
@@ -30,6 +34,7 @@ class InputField extends PureComponent {
         <div className={`input-inner${hasErrorMessage(meta)}`}>
           <input
             {...input}
+            aria-label={ariaLabel}
             autoComplete={autoComplete ? 'on' : 'off'}
             className="form-input"
             disabled={disabled}
@@ -65,6 +70,7 @@ class InputField extends PureComponent {
 }
 
 InputField.defaultProps = {
+  ariaLabel: null,
   autoComplete: false,
   disabled: false,
   placeholder: 'Veuillez saisir une valeur',
@@ -74,6 +80,7 @@ InputField.defaultProps = {
 }
 
 InputField.propTypes = {
+  ariaLabel: PropTypes.string,
   autoComplete: PropTypes.bool,
   disabled: PropTypes.bool,
   label: PropTypes.string.isRequired,

@@ -19,10 +19,11 @@ export const RequestEmailForm = ({ canSubmit, hasSubmitErrors, isLoading }) => (
       </div>
       <div>
         <InputField
+          ariaLabel="Adresse e-mail (Exemple : nom@domaine.fr)"
           disabled={isLoading}
           label="Adresse e-mail"
           name="email"
-          placeholder="Ex. : nom@domaine.fr"
+          placeholder="Exemple : nom@domaine.fr"
           theme="white"
         />
         {hasSubmitErrors && (

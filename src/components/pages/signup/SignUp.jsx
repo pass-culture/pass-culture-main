@@ -98,7 +98,7 @@ class SignUp extends PureComponent {
             autoComplete="email"
             label="Adresse e-mail"
             name="email"
-            placeholder="nom@exemple.fr"
+            placeholder="Exemple : nom@domaine.fr"
             required
             sublabel="...pour se connecter et récupérer son mot de passe en cas d’oubli : "
           />
