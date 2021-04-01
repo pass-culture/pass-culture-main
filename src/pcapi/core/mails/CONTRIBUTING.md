@@ -87,7 +87,7 @@ def test_frobulation():
 
 Définissez les variables d'environnement suivantes :
 
-- `EMAIL_BACKEND="pcapi.core.mails.backends.ToDevMailjetBackend"` ;
+- `EMAIL_BACKEND="pcapi.core.mails.backends.mailjet.ToDevMailjetBackend"` ;
 - `SUPPORT_EMAIL_ADDRESS` : c'est l'adresse de l'émetteur, qui doit
   avoir été validée par Mailjet. Le plus simple est d'utiliser la même
   adresse que sur les environnements de testing, staging ou prod ;
