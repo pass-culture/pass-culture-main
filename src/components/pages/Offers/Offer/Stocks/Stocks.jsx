@@ -25,6 +25,7 @@ import * as pcapi from 'repository/pcapi/pcapi'
 const EMPTY_STRING_VALUE = ''
 
 const Stocks = ({
+  history,
   offer,
   showErrorNotification,
   showSuccessNotification,
@@ -35,6 +36,7 @@ const Stocks = ({
   const offerId = offer.id
   const [isLoading, setIsLoading] = useState(true)
   const [stocks, setStocks] = useState([])
+  const [initialStocks, setInitialStocks] = useState([])
   const isOfferSynchronized = Boolean(offer.lastProvider)
   const [formErrors, setFormErrors] = useState({})
   const isOfferDraft = offer.status === OFFER_STATUS_DRAFT
@@ -45,10 +47,12 @@ const Stocks = ({
       return pcapi.loadStocks(offerId).then(receivedStocks => {
         setStocks(oldStocks => {
           const stocksOnCreation = keepCreationStocks ? oldStocks.filter(stock => !stock.id) : []
-          return [
+          const newStocks = [
             ...stocksOnCreation,
             ...formatAndSortStocks(receivedStocks.stocks, offer.venue.departementCode),
           ]
+          setInitialStocks(newStocks)
+          return newStocks
         })
         setIsLoading(false)
       })
@@ -149,11 +153,16 @@ const Stocks = ({
           loadStocks()
           reloadOffer()
           isOfferDraft ? showSuccessNotificationStocksAndOffer() : showSuccessNotification()
+          if (initialStocks.length === 0) {
+            history.push(`/offres/${offer.id}/confirmation`)
+          }
         })
         .catch(() => showErrorNotification())
     }
   }, [
     existingStocks,
+    history,
+    initialStocks,
     stocksInCreation,
     offer.id,
     offer.isEvent,
@@ -316,6 +325,7 @@ const Stocks = ({
 
 Stocks.propTypes = {
   autoActivateDigitalBookings: PropTypes.bool.isRequired,
+  history: PropTypes.shape().isRequired,
   offer: PropTypes.shape().isRequired,
   reloadOffer: PropTypes.func.isRequired,
   showErrorNotification: PropTypes.func.isRequired,

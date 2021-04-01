@@ -32,7 +32,9 @@ describe('confirmation on offer form', () => {
       await renderOffer('/offres/creation')
 
       // Then
-      expect(screen.getByText('Confirmation')).toBeInTheDocument()
+      const confirmationStep = screen.getByText('Confirmation')
+      expect(confirmationStep).toBeInTheDocument()
+      expect(confirmationStep).not.toHaveAttribute('href')
       expect(await screen.findByText("Type d'offre")).toBeInTheDocument()
     })
   })
@@ -48,7 +50,9 @@ describe('confirmation on offer form', () => {
       await renderOffer(`/offres/${offer.id}/edition`)
 
       // Then
-      expect(screen.getByText('Confirmation')).toBeInTheDocument()
+      const confirmationStep = screen.getByText('Confirmation')
+      expect(confirmationStep).toBeInTheDocument()
+      expect(confirmationStep).not.toHaveAttribute('href')
       expect(await screen.findByText("Type d'offre")).toBeInTheDocument()
     })
   })

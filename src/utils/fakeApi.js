@@ -1,5 +1,8 @@
 import * as pcapi from 'repository/pcapi/pcapi'
 
+export const bulkFakeApiCreateOrEditStock = ({ ...stockIds }) =>
+  jest.spyOn(pcapi, 'bulkCreateOrEditStock').mockResolvedValue([stockIds])
+
 export const getFakeApiUserValidatedOfferersNames = ({ ...offerers }) =>
   jest.spyOn(pcapi, 'getUserValidatedOfferersNames').mockResolvedValue([offerers])
 

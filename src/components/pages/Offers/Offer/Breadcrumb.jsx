@@ -28,7 +28,6 @@ const OfferBreadcrumb = ({ activeStep, isCreatingOffer, isOfferCreatingIsFinishe
       steps.push({
         id: STEP_ID_CONFIRMATION,
         label: 'Confirmation',
-        url: `/offres/${offerId}/confirmation`,
       })
     }
   } else {

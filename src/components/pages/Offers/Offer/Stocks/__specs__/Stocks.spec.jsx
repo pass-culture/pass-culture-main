@@ -2049,7 +2049,6 @@ describe('stocks page', () => {
             quantity: '15',
           },
         ])
-        expect(screen.getAllByRole('row')).toHaveLength(3)
       })
 
       it('should cancel new stock addition when clicking on cancel button', async () => {
@@ -2309,7 +2308,6 @@ describe('stocks page', () => {
             quantity: '15',
           },
         ])
-        expect(screen.getAllByRole('row')).toHaveLength(2)
       })
 
       it('should display error message on api error', async () => {
