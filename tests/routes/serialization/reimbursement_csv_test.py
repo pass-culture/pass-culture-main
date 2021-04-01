@@ -62,17 +62,18 @@ class ReimbursementDetailsCSVTest:
         # then
         assert (
             _get_header(csv, 0)
-            == "Année;Virement;Créditeur;SIRET créditeur;Adresse créditeur;IBAN;Raison sociale du lieu;Nom de l'offre;Nom utilisateur;Prénom utilisateur;Contremarque;Date de validation de la réservation;Montant remboursé;Statut du remboursement"
+            == '"Année";"Virement";"Créditeur";"SIRET créditeur";"Adresse créditeur";"IBAN";"Raison sociale du lieu";"Nom de l\'offre";"Nom utilisateur";"Prénom utilisateur";"Contremarque";"Date de validation de la réservation";"Montant remboursé";"Statut du remboursement"'
         )
 
     @freeze_time("2019-07-05 12:00:00")
     @pytest.mark.usefixtures("db_session")
     def test_generate_payment_details_csv_with_right_values(self, app):
         # given
-        stock = offers_factories.StockFactory(price=10)
-        user_offerer = offers_factories.UserOffererFactory(offerer=stock.offer.venue.managingOfferer)
-        offers_factories.BankInformationFactory(venue=stock.offer.venue)
-        bookings_factories.BookingFactory(stock=stock, isUsed=True, token="YEEGVR")
+        stock = offers_factories.StockFactory(price=10, offer__name='Mon titre ; un peu "spécial"')
+        venue = stock.offer.venue
+        user_offerer = offers_factories.UserOffererFactory(offerer=venue.managingOfferer)
+        offers_factories.BankInformationFactory(venue=venue)
+        bookings_factories.BookingFactory(stock=stock, isUsed=True, token="0E2722")
         bookings_factories.BookingFactory(stock=stock, token="LDVNNW")
 
         generate_new_payments()
@@ -86,7 +87,7 @@ class ReimbursementDetailsCSVTest:
         assert _count_non_empty_lines(csv) == 2
         assert (
             _get_header(csv, 1)
-            == "2019;Juillet : remboursement 1ère quinzaine;Le Petit Rintintin 0;00000000000000;1 boulevard Poissonnière;FR1526172812718281;Le Petit Rintintin 0;Product 0;Doux;Jeanne;YEEGVR;;10.00;Remboursement initié"
+            == f'"2019";"Juillet : remboursement 1ère quinzaine";"{venue.name}";"{venue.siret}";"1 boulevard Poissonnière";"FR1526172812718281";"{venue.name}";"Mon titre ; un peu ""spécial""";"Doux";"Jeanne";"0E2722";"";10.00;"Remboursement initié"'
         )
 
 
