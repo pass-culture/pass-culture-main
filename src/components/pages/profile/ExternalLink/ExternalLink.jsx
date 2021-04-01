@@ -3,11 +3,11 @@ import React from 'react'
 
 import Icon from '../../../layout/Icon/Icon'
 
-const ExternalLink = ({ href, icon, title, label }) => (
+const ExternalLink = ({ href, icon, title, label, rel, target }) => (
   <a
     href={href}
-    rel="noopener noreferrer"
-    target="_blank"
+    rel={rel}
+    target={target}
     title={title}
   >
     <Icon svg={icon} />
@@ -22,7 +22,14 @@ ExternalLink.propTypes = {
   href: PropTypes.string.isRequired,
   icon: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
+  rel: PropTypes.string,
+  target: PropTypes.string,
   title: PropTypes.string.isRequired,
+}
+
+ExternalLink.defaultProps = {
+  rel: 'noopener noreferrer',
+  target: '_blank',
 }
 
 export default ExternalLink

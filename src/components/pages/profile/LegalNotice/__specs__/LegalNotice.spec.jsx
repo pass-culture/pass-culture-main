@@ -85,7 +85,10 @@ describe('legal notice page', () => {
 
     // Then
     expect(deleteAccountMailTo.prop('href')).toBe('mailto:deletionEmailAddress')
-    expect(deleteAccountMailTo.prop('rel')).toBe('noopener noreferrer')
+    expect(deleteAccountMailTo.prop('rel')).not.toBe('noopener noreferrer')
+    expect(deleteAccountMailTo.prop('rel')).toBe('')
+    expect(deleteAccountMailTo.prop('target')).not.toBe('_blank')
+    expect(deleteAccountMailTo.prop('target')).toBe('')
     expect(deleteAccountMailTo.prop('title')).toBe('Envoyer un e-mail à support@passculture.app')
   })
 })

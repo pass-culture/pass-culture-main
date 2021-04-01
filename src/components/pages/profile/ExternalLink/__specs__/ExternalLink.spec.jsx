@@ -11,6 +11,8 @@ describe('external link component', () => {
       icon: 'ico-test',
       title: 'Title URL',
       label: 'Link Label',
+      rel: 'noopener',
+      target: '_self',
     }
   })
 
@@ -25,6 +27,8 @@ describe('external link component', () => {
 
     expect(externalLink.prop('href')).toBe('http://example.com')
     expect(externalLink.prop('title')).toBe('Title URL')
+    expect(externalLink.prop('rel')).toBe('noopener')
+    expect(externalLink.prop('target')).toBe('_self')
     expect(externalLinkIcon).toHaveLength(2)
   })
 })

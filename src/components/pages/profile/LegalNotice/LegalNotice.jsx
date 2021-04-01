@@ -40,6 +40,8 @@ const LegalNotice = ({ pathToProfile, userEmail }) => {
               href={mailToHref}
               icon="ico-delete-account"
               label="Suppression du compte"
+              rel=""
+              target=""
               title={`Envoyer un e-mail à ${SUPPORT_EMAIL}`}
             />
           </li>
