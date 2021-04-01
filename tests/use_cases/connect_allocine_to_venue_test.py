@@ -14,7 +14,11 @@ class ConnectAllocineToVenueTest:
         # Given
         venue = VenueFactory()
         provider = activate_provider("AllocineStocks")
-        AllocinePivotFactory(siret=venue.siret, internalId="PXXXXXX")
+        AllocinePivotFactory(
+            siret=venue.siret,
+            internalId="PXXXXXX",
+            theaterId="123VHJ==",
+        )
 
         venue_provider_payload = {
             "providerId": humanize(provider.id),
@@ -35,4 +39,5 @@ class ConnectAllocineToVenueTest:
         assert allocine_venue_provider.isDuo
         assert allocine_venue_provider.quantity == 50
         assert allocine_venue_provider.internalId == "PXXXXXX"
+        assert allocine_venue_provider.venueIdAtOfferProvider == "123VHJ=="
         assert venue_provider_price_rule.price == Decimal("9.99")

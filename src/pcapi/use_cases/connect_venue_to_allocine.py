@@ -45,7 +45,7 @@ def _create_allocine_venue_provider(
     allocine_venue_provider = AllocineVenueProvider()
     allocine_venue_provider.venue = venue
     allocine_venue_provider.providerId = dehumanize(venue_provider_payload["providerId"])
-    allocine_venue_provider.venueIdAtOfferProvider = allocine_pivot.id
+    allocine_venue_provider.venueIdAtOfferProvider = allocine_pivot.theaterId
     allocine_venue_provider.isDuo = venue_provider_payload.get("isDuo")
     allocine_venue_provider.quantity = venue_provider_payload.get("quantity")
     allocine_venue_provider.internalId = allocine_pivot.internalId
