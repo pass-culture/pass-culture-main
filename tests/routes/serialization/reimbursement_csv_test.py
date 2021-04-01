@@ -1,6 +1,8 @@
 from freezegun import freeze_time
 import pytest
 
+import pcapi.core.bookings.factories as bookings_factories
+import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.model_creators.generic_creators import create_bank_information
 from pcapi.model_creators.generic_creators import create_booking
@@ -67,20 +69,15 @@ class ReimbursementDetailsCSVTest:
     @pytest.mark.usefixtures("db_session")
     def test_generate_payment_details_csv_with_right_values(self, app):
         # given
-        user = users_factories.UserFactory(firstName="John", lastName="Doe")
-        offerer1 = create_offerer(siren="123456789", address="123 rue de Paris")
-        user_offerer1 = create_user_offerer(user, offerer1, validation_token=None)
-        venue1 = create_venue(offerer1)
-        bank_information1 = create_bank_information(venue=venue1)
-        stock1 = create_stock_with_thing_offer(offerer=offerer1, venue=venue1, price=10)
-        booking1 = create_booking(user=user, stock=stock1, is_used=True, token="ABCDEF", venue=venue1)
-        booking2 = create_booking(user=user, stock=stock1, token="ABCDEG", venue=venue1)
-
-        repository.save(booking1, booking2, user_offerer1, bank_information1)
+        stock = offers_factories.StockFactory(price=10)
+        user_offerer = offers_factories.UserOffererFactory(offerer=stock.offer.venue.managingOfferer)
+        offers_factories.BankInformationFactory(venue=stock.offer.venue)
+        bookings_factories.BookingFactory(stock=stock, isUsed=True, token="YEEGVR")
+        bookings_factories.BookingFactory(stock=stock, token="LDVNNW")
 
         generate_new_payments()
 
-        reimbursement_details = find_all_offerer_reimbursement_details(offerer1.id)
+        reimbursement_details = find_all_offerer_reimbursement_details(user_offerer.offererId)
 
         # when
         csv = generate_reimbursement_details_csv(reimbursement_details)
@@ -89,7 +86,7 @@ class ReimbursementDetailsCSVTest:
         assert _count_non_empty_lines(csv) == 2
         assert (
             _get_header(csv, 1)
-            == "2019;Juillet : remboursement 1ère quinzaine;La petite librairie;12345678912345;123 rue de Paris;FR7630006000011234567890189;La petite librairie;Test Book;Doe;John;ABCDEF;;10.00;Remboursement initié"
+            == "2019;Juillet : remboursement 1ère quinzaine;Le Petit Rintintin 0;00000000000000;1 boulevard Poissonnière;FR1526172812718281;Le Petit Rintintin 0;Product 0;Doux;Jeanne;YEEGVR;;10.00;Remboursement initié"
         )
 
 
