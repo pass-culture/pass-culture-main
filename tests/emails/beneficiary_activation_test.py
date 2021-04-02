@@ -1,10 +1,15 @@
 from datetime import datetime
 
 from freezegun import freeze_time
+import pytest
 
+from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.emails import beneficiary_activation
 from pcapi.model_creators.generic_creators import create_user
+
+
+pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class GetActivationEmailTest:
@@ -44,7 +49,8 @@ class GetActivationEmailTest:
         assert isinstance(activation_email_data["Vars"]["isMinor"], int)
 
     @freeze_time("2011-05-15 09:00:00")
-    def test_return_dict_for_native_under_age_user(self):
+    @override_features(APPLY_BOOKING_LIMITS_V2=False)
+    def test_return_dict_for_native_under_age_user_v1(self):
         # Given
         user = create_user(email="fabien+test@example.net", date_of_birth=datetime(1995, 2, 5))
         token = users_factories.EmailValidationToken.build(user=user)
@@ -57,3 +63,21 @@ class GetActivationEmailTest:
         assert "email=fabien%2Btest%40example.net" in activation_email_data["Vars"]["nativeAppLink"]
         assert not activation_email_data["Vars"]["isEligible"]
         assert activation_email_data["Vars"]["isMinor"]
+        assert activation_email_data["Vars"]["depositAmount"] == 500
+
+    @freeze_time("2011-05-15 09:00:00")
+    @override_features(APPLY_BOOKING_LIMITS_V2=True)
+    def test_return_dict_for_native_under_age_user_v2(self):
+        # Given
+        user = create_user(email="fabien+test@example.net", date_of_birth=datetime(1995, 2, 5))
+        token = users_factories.EmailValidationToken.build(user=user)
+
+        # When
+        activation_email_data = beneficiary_activation.get_activation_email_data_for_native(user, token)
+
+        # Then
+        assert activation_email_data["Vars"]["nativeAppLink"]
+        assert "email=fabien%2Btest%40example.net" in activation_email_data["Vars"]["nativeAppLink"]
+        assert not activation_email_data["Vars"]["isEligible"]
+        assert activation_email_data["Vars"]["isMinor"]
+        assert activation_email_data["Vars"]["depositAmount"] == 300

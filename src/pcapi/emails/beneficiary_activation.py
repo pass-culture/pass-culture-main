@@ -6,6 +6,7 @@ from urllib.parse import urlencode
 from dateutil.relativedelta import relativedelta
 
 from pcapi import settings
+from pcapi.core.bookings import conf
 from pcapi.core.users import models as users_models
 
 
@@ -29,6 +30,8 @@ def get_activation_email_data_for_native(user: users_models.User, token: users_m
     expiration_timestamp = int(token.expirationDate.timestamp())
     query_string = urlencode({"token": token.value, "expiration_timestamp": expiration_timestamp, "email": user.email})
     email_confirmation_link = f"{settings.NATIVE_APP_URL}/signup-confirmation?{query_string}"
+    limit_configuration = conf.LIMIT_CONFIGURATIONS[conf.get_current_deposit_version()]
+    deposit_amount = limit_configuration.TOTAL_CAP
     return {
         "Mj-TemplateID": 2015423,
         "Mj-TemplateLanguage": True,
@@ -37,6 +40,7 @@ def get_activation_email_data_for_native(user: users_models.User, token: users_m
             "nativeAppLink": email_confirmation_link,
             "isEligible": int(user.is_eligible),
             "isMinor": int(user.dateOfBirth + relativedelta(years=18) > datetime.today()),
+            "depositAmount": int(deposit_amount),
         },
     }
 
