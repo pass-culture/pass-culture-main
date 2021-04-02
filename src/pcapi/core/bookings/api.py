@@ -186,6 +186,9 @@ def mark_as_used(booking: Booking, uncancel: bool = False) -> None:
     library and then cancelled their booking before the library marked
     it as used).
     """
+    if booking.isUsed:
+        logger.info("Booking was already marked as used", extra={"booking": booking.id})
+        return
     # I'm not 100% sure the transaction is required here
     # It is not clear to me wether or not Flask-SQLAlchemy will make
     # a rollback if we raise a validation exception.

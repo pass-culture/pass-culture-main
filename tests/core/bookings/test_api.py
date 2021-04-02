@@ -368,10 +368,9 @@ class MarkAsUsedTest:
         api.mark_as_used(booking)
         assert booking.isUsed
 
-    def test_raise_if_already_used(self):
+    def test_no_op_if_already_used(self):
         booking = factories.BookingFactory(isUsed=True)
-        with pytest.raises(api_errors.ResourceGoneError):
-            api.mark_as_used(booking)
+        api.mark_as_used(booking)
         assert booking.isUsed  # unchanged
 
     def test_raise_if_cancelled(self):
@@ -380,12 +379,11 @@ class MarkAsUsedTest:
             api.mark_as_used(booking)
         assert not booking.isUsed
 
-    def test_raise_if_refunded(self):
+    def test_no_op_if_refunded(self):
         booking = factories.BookingFactory(isUsed=True)
         payments_factories.PaymentFactory(booking=booking)
-        with pytest.raises(api_errors.ForbiddenError):
-            api.mark_as_used(booking)
-        assert booking.isUsed
+        api.mark_as_used(booking)
+        assert booking.isUsed  # unchanged
 
     def test_raise_if_too_soon_to_mark_as_used(self):
         booking = factories.BookingFactory(stock__beginningDatetime=datetime.now() + timedelta(days=4))

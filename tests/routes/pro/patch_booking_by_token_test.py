@@ -4,7 +4,6 @@ import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.payments.factories import PaymentFactory
 from pcapi.core.users.factories import UserFactory
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
@@ -195,20 +194,6 @@ class Returns403:  # Forbidden
         assert response.json["booking"] == ["Cette réservation a été annulée"]
         assert Booking.query.get(booking.id).isUsed is False
 
-    def when_booking_has_been_refunded(self, app):
-        # Given
-        admin = UserFactory(isAdmin=True)
-        booking = BookingFactory(isUsed=True)
-        PaymentFactory(booking=booking)
-        url = f"/bookings/token/{booking.token}"
-
-        # When
-        response = TestClient(app.test_client()).with_auth(admin.email).patch(url)
-
-        # Then
-        assert response.status_code == 403
-        assert response.json["payment"] == ["Cette réservation a été remboursée"]
-
 
 @pytest.mark.usefixtures("db_session")
 class Returns404:
@@ -290,28 +275,3 @@ class Returns404:
             # Then
             assert response.status_code == 404
             assert Booking.query.get(booking_id).isUsed is False
-
-
-@pytest.mark.usefixtures("db_session")
-class Returns410:  # Gone
-    def when_booking_has_been_validated_already(self, app):
-        # Given
-        user = create_user()
-        admin_user = create_user(email="admin@email.fr")
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(admin_user, offerer)
-        venue = create_venue(offerer)
-        stock = create_stock_with_event_offer(offerer, venue, price=0)
-        booking = create_booking(user=user, stock=stock, venue=venue)
-        booking.isUsed = True
-        repository.save(booking, user_offerer)
-        booking_id = booking.id
-        url = "/bookings/token/{}".format(booking.token)
-
-        # When
-        response = TestClient(app.test_client()).with_auth("admin@email.fr").patch(url)
-
-        # Then
-        assert response.status_code == 410
-        assert response.json["booking"] == ["Cette réservation a déjà été validée"]
-        assert Booking.query.get(booking_id).isUsed is True
