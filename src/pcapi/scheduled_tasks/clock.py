@@ -9,7 +9,7 @@ from flask import Flask
 from pcapi import models  # pylint: disable=unused-import
 from pcapi import settings
 from pcapi.core.logging import install_logging
-from pcapi.core.offers.repository import check_stock_consistence
+from pcapi.core.offers.repository import check_stock_consistency
 from pcapi.core.users import api as users_api
 from pcapi.core.users.repository import get_newly_eligible_users
 from pcapi.domain.user_emails import send_newly_eligible_user_email
@@ -115,8 +115,9 @@ def pc_clean_expired_tokens(app: Flask) -> None:
 @log_cron
 @cron_context
 def pc_check_stock_quantity_consistency(app: Flask) -> None:
-    inconsistent_stocks = check_stock_consistence()
-    logger.error("Found inconsistent stocks: %s", ", ".join([str(stock.id) for stock in inconsistent_stocks]))
+    inconsistent_stocks = check_stock_consistency()
+    if inconsistent_stocks:
+        logger.error("Found inconsistent stocks: %s", ", ".join([str(stock_id) for stock_id in inconsistent_stocks]))
 
 
 def main() -> None:

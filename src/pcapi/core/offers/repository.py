@@ -245,12 +245,14 @@ def get_and_lock_stock(stock_id: int) -> Stock:
     return stock
 
 
-def check_stock_consistence() -> List[Stock]:
-    return (
-        Stock.query.outerjoin(Stock.bookings)
+def check_stock_consistency() -> List[int]:
+    return [
+        item[0]
+        for item in db.session.query(Stock.id)
+        .outerjoin(Stock.bookings)
         .group_by(Stock.id)
         .having(
             Stock.dnBookedQuantity != func.coalesce(func.sum(Booking.quantity).filter(Booking.isCancelled == False), 0)
         )
         .all()
-    )
+    ]

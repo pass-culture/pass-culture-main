@@ -6,7 +6,7 @@ import pytest
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import OfferStatus
-from pcapi.core.offers.repository import check_stock_consistence
+from pcapi.core.offers.repository import check_stock_consistency
 from pcapi.core.offers.repository import get_active_offers_count_for_venue
 from pcapi.core.offers.repository import get_offers_by_ids
 from pcapi.core.offers.repository import get_paginated_offers_for_filters
@@ -1179,6 +1179,5 @@ class CheckStockConsistenceTest:
 
         repository.save(stock3, stock4, stock5, stock6)
 
-        stocks = check_stock_consistence()
-        stock_ids = {stock.id for stock in stocks}
+        stock_ids = set(check_stock_consistency())
         assert stock_ids == {stock2.id, stock4.id, stock6.id}
