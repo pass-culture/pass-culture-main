@@ -107,6 +107,16 @@ class BookOfferTest:
         email_data2 = mails_testing.outbox[1].sent_data
         assert email_data2["MJ-TemplateID"] == 1163067  # to beneficiary
 
+    @override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True)
+    def test_create_booking_on_digital_offer(self):
+        offer = offers_factories.OfferFactory(product=offers_factories.DigitalProductFactory())
+        stock = offers_factories.StockFactory(price=10, dnBookedQuantity=5, offer=offer)
+        user = users_factories.UserFactory()
+
+        booking = api.book_offer(beneficiary=user, stock_id=stock.id, quantity=1)
+
+        assert booking.isUsed
+
     def test_create_event_booking(self):
         ten_days_from_now = datetime.utcnow() + timedelta(days=10)
         user = users_factories.UserFactory()

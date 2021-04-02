@@ -43,6 +43,9 @@ class FeatureToggle(enum.Enum):
     ENABLE_NATIVE_APP_RECAPTCHA = "Active le reCaptacha sur l'API native"
     FNAC_SYNCHRONIZATION_V2 = "Active la synchronisation FNAC v2 : synchronisation par batch"
     OFFER_VALIDATION_MOCK_COMPUTATION = "Active le calcul automatique de validation d'offre depuis le nom de l'offre"
+    AUTO_ACTIVATE_DIGITAL_BOOKINGS = (
+        "Activer (marquer comme utilisée) les réservations dès leur création pour les offres digitales"
+    )
 
 
 class Feature(PcObject, Model, DeactivableMixin):
@@ -58,4 +61,5 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.APPLY_BOOKING_LIMITS_V2,
     FeatureToggle.WHOLE_FRANCE_OPENING,
     FeatureToggle.PRO_HOMEPAGE,
+    FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS,
 )

@@ -75,6 +75,9 @@ def book_offer(
 
         booking.dateCreated = datetime.datetime.utcnow()
         booking.confirmationDate = compute_confirmation_date(stock.beginningDatetime, booking.dateCreated)
+        if stock.offer.isDigital and feature_queries.is_active(FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS):
+            booking.isUsed = True
+            booking.dateUsed = datetime.datetime.utcnow()
 
         stock.dnBookedQuantity += booking.quantity
 
@@ -86,6 +89,8 @@ def book_offer(
             "actor": beneficiary.id,
             "offer": stock.offerId,
             "stock": stock.id,
+            "booking": booking.id,
+            "used": booking.isUsed,
         },
     )
 
