@@ -14,6 +14,7 @@ describe('bookingFormContent', () => {
   beforeEach(() => {
     handleSubmit = jest.fn()
     props = {
+      autoActivateDigitalBookings: true,
       canExpire: true,
       extraClassName: 'fake className',
       formId: 'fake formId',
@@ -235,11 +236,31 @@ describe('bookingFormContent', () => {
       expect(wrapper.find({ children: 'cette offre pour 12 €.' })).toHaveLength(1)
     })
 
-    it('should display a booking modalities message when it is a digital offer but is not a press subscription', () => {
+    it('should display correct cancellation policy for a digital offer (new rules)', () => {
       // given
       props.isEvent = false
       props.canExpire = true
       props.isDigital = true
+      props.autoActivateDigitalBookings = true
+
+      // when
+      const wrapper = shallow(<BookingFormContent {...props} />)
+
+      // then
+      expect(
+        wrapper.find({
+          children:
+            "Pour cette offre numérique, ta réservation sera définitivement validée. Tu ne pourras pas l'annuler par la suite.",
+        })
+      ).toHaveLength(1)
+    })
+
+    it('should display correct cancellation policy for a digital offer that expires (legacy rules)', () => {
+      // given
+      props.isEvent = false
+      props.canExpire = true
+      props.isDigital = true
+      props.autoActivateDigitalBookings = false
 
       // when
       const wrapper = shallow(<BookingFormContent {...props} />)
@@ -253,7 +274,7 @@ describe('bookingFormContent', () => {
       ).toHaveLength(1)
     })
 
-    it('should display a booking modalities message when it is a physical offer but is not a press subscription', () => {
+    it('should display correct cancellation policy for a physical offer that expires', () => {
       // given
       props.isEvent = false
       props.canExpire = true

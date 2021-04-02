@@ -24,6 +24,7 @@ describe('src | components | BookingFormContentContainer', () => {
               remainingQuantity: 3,
             },
           ],
+          features: [{ nameKey: 'AUTO_ACTIVATE_DIGITAL_BOOKINGS', isActive: true }],
         },
       }
 
@@ -42,6 +43,7 @@ describe('src | components | BookingFormContentContainer', () => {
         canExpire: false,
         isDigital: true,
         isStockDuo: true,
+        autoActivateDigitalBookings: true,
       })
     })
   })

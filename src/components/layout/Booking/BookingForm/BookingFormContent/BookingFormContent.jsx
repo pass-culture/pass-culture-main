@@ -105,6 +105,7 @@ class BookingFormContent extends PureComponent {
       isEvent,
       isReadOnly,
       isStockDuo,
+      autoActivateDigitalBookings,
       values,
     } = this.props
     const { price, isDuo } = values
@@ -115,8 +116,6 @@ class BookingFormContent extends PureComponent {
     const displayPriceWarning = !isEvent || (bookableTimes && hasBookableTimes)
     const computedPrice = isDuo ? price * 2 : price
     const formattedComputedPrice = formatDecimals(computedPrice)
-    const isADigitalOffer = isDigital
-    const isAPhysicalOffer = !isDigital
 
     return (
       <form
@@ -165,7 +164,7 @@ class BookingFormContent extends PureComponent {
           </p>
         )}
 
-        {!isEvent && canExpire && isADigitalOffer && (
+        {!isEvent && canExpire && isDigital && !autoActivateDigitalBookings && (
           <p className="bc-notification">
             {
               'Tu as 30 jours pour faire valider ta contremarque. Passé ce délai, ta réservation sera automatiquement annulée.'
@@ -173,7 +172,15 @@ class BookingFormContent extends PureComponent {
           </p>
         )}
 
-        {!isEvent && canExpire && isAPhysicalOffer && (
+        {!isEvent && canExpire && isDigital && autoActivateDigitalBookings && (
+          <p className="bc-notification">
+            {
+              "Pour cette offre numérique, ta réservation sera définitivement validée. Tu ne pourras pas l'annuler par la suite."
+            }
+          </p>
+        )}
+
+        {!isEvent && canExpire && !isDigital && (
           <p className="bc-notification">
             {
               'Tu as 30 jours pour récupérer ton bien et faire valider ta contremarque. Passé ce délai, ta réservation sera automatiquement annulée.'
@@ -196,6 +203,7 @@ BookingFormContent.defaultProps = {
 }
 
 BookingFormContent.propTypes = {
+  autoActivateDigitalBookings: PropTypes.bool.isRequired,
   canExpire: PropTypes.bool.isRequired,
   extraClassName: PropTypes.string,
   formId: PropTypes.string.isRequired,
