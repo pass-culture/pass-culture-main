@@ -225,16 +225,34 @@ describe('src | components | pages | Venue', () => {
           },
         }
 
-        it('should redirect to offerer page', () => {
-          // given
-          const wrapper = shallow(<VenueCreation {...props} />)
-          const state = wrapper.state()
+        describe('when new homepage is active', () => {
+          it('should redirect to homepage with selected offerer', () => {
+            // given
+            props.isNewHomepageActive = true
+            const wrapper = shallow(<VenueCreation {...props} />)
+            const state = wrapper.state()
 
-          // when
-          wrapper.instance().handleFormSuccess(jest.fn())(state, action)
+            // when
+            wrapper.instance().handleFormSuccess(jest.fn())(state, action)
 
-          // then
-          expect(push).toHaveBeenCalledWith('/structures/APEQ')
+            // then
+            expect(push).toHaveBeenCalledWith('/accueil?structure=APEQ')
+          })
+        })
+
+        describe('when new homepage is inactive', () => {
+          it('should redirect to offerer page', () => {
+            // given
+            props.isNewHomepageActive = false
+            const wrapper = shallow(<VenueCreation {...props} />)
+            const state = wrapper.state()
+
+            // when
+            wrapper.instance().handleFormSuccess(jest.fn())(state, action)
+
+            // then
+            expect(push).toHaveBeenCalledWith('/structures/APEQ')
+          })
         })
 
         it('should call handleSubmitRequestSuccess with the right parameters when venue is created', () => {

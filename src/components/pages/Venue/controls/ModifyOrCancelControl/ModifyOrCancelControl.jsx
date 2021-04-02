@@ -4,12 +4,15 @@ import { Link } from 'react-router-dom'
 
 class ModifyOrCancelControl extends PureComponent {
   handleOnCLick = () => {
-    const { isCreatedEntity, form, history, offererId, venueId } = this.props
+    const { isCreatedEntity, isNewHomepageActive, form, history, offererId, venueId } = this.props
 
     form.reset()
-    const next = isCreatedEntity
-      ? `/structures/${offererId}`
-      : `/structures/${offererId}/lieux/${venueId}`
+    let next
+    if (isCreatedEntity) {
+      next = isNewHomepageActive ? `/accueil?structure=${offererId}` : `/structures/${offererId}`
+    } else {
+      next = `/structures/${offererId}/lieux/${venueId}`
+    }
     history.push(next)
   }
 
@@ -42,6 +45,7 @@ class ModifyOrCancelControl extends PureComponent {
 
 ModifyOrCancelControl.defaultProps = {
   isCreatedEntity: false,
+  isNewHomepageActive: false,
   venueId: null,
 }
 
@@ -49,6 +53,7 @@ ModifyOrCancelControl.propTypes = {
   form: PropTypes.shape().isRequired,
   history: PropTypes.shape().isRequired,
   isCreatedEntity: PropTypes.bool,
+  isNewHomepageActive: PropTypes.bool,
   offererId: PropTypes.string.isRequired,
   readOnly: PropTypes.bool.isRequired,
   venueId: PropTypes.string,
