@@ -256,6 +256,16 @@ class Get:
                 True,
                 True,
             ]
+            assert [fav["offer"]["isReleased"] for fav in favorites] == [
+                True,
+                True,
+                True,
+                True,
+                False,
+                False,
+                True,
+                True,
+            ]
 
     class Returns401:
         def when_user_is_not_logged_in(self, app):

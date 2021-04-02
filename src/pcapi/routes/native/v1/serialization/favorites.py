@@ -48,6 +48,7 @@ class FavoriteOfferResponse(BaseModel):
     startDate: Optional[datetime] = None
     isExpired: bool = False
     expenseDomains: List[ExpenseDomain]
+    isReleased: bool
     isSoldOut: bool = False
 
     _convert_price = validator("price", pre=True, allow_reuse=True)(convert_to_cent)

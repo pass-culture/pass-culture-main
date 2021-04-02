@@ -9,6 +9,7 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.users.models import User
 from pcapi.models import Favorite
 from pcapi.models import Mediation
+from pcapi.models import Offerer
 from pcapi.models import Product
 from pcapi.models import Stock
 from pcapi.models import Venue
@@ -49,8 +50,22 @@ def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
         .outerjoin(Stock.bookings)
         .filter(Favorite.userId == user.id)
         .distinct(Favorite.id)
-        .options(joinedload(Favorite.offer).load_only(Offer.name, Offer.externalTicketOfficeUrl, Offer.url, Offer.type))
-        .options(joinedload(Favorite.offer).joinedload(Offer.venue).load_only(Venue.latitude, Venue.longitude))
+        .options(
+            joinedload(Favorite.offer).load_only(
+                Offer.name, Offer.externalTicketOfficeUrl, Offer.url, Offer.type, Offer.isActive, Offer.validation
+            )
+        )
+        .options(
+            joinedload(Favorite.offer)
+            .joinedload(Offer.venue)
+            .load_only(Venue.latitude, Venue.longitude, Venue.validationToken)
+        )
+        .options(
+            joinedload(Favorite.offer)
+            .joinedload(Offer.venue)
+            .joinedload(Venue.managingOfferer)
+            .load_only(Offerer.validationToken, Offerer.isActive)
+        )
         .options(
             joinedload(Favorite.offer)
             .joinedload(Offer.mediations)
