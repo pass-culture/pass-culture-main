@@ -511,6 +511,54 @@ describe('stocks page', () => {
         })
       })
     })
+
+    describe('render digital offer', () => {
+      let digitalOffer
+      beforeEach(() => {
+        digitalOffer = {
+          ...defaultOffer,
+          isDigital: true,
+          isEvent: false,
+        }
+        pcapi.loadOffer.mockResolvedValue(digitalOffer)
+        pcapi.loadStocks.mockResolvedValue({ stocks: [{ ...defaultStock }] })
+      })
+
+      afterEach(() => {
+        pcapi.loadOffer.mockReset()
+        pcapi.loadStocks.mockReset()
+        pcapi.bulkCreateOrEditStock.mockReset()
+      })
+
+      it('should display an information message regarding booking cancellation (new rules)', async () => {
+        store = configureTestStore({
+          data: {
+            users: [{ publicName: 'François', isAdmin: false }],
+            features: [{ isActive: true, nameKey: 'AUTO_ACTIVATE_DIGITAL_BOOKINGS' }],
+          },
+        })
+
+        // when
+        await renderOffers(props, store)
+
+        // then
+        const informationMessage = screen.getByText(
+          "Les utilisateurs ne peuvent pas annuler leurs réservations d'offres numériques. Toute réservation est définitive et sera immédiatement validée."
+        )
+        expect(informationMessage).toBeInTheDocument()
+      })
+
+      it('should display an information message regarding booking cancellation (legacy rules)', async () => {
+        // when
+        await renderOffers(props, store)
+
+        // then
+        const informationMessage = screen.getByText(
+          'Les utilisateurs ont 30 jours pour faire valider leur contremarque. Passé ce délai, la réservation est automatiquement annulée et l’offre remise en vente.'
+        )
+        expect(informationMessage).toBeInTheDocument()
+      })
+    })
   })
 
   describe('edit', () => {

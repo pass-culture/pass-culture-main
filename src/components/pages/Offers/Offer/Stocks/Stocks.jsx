@@ -7,6 +7,7 @@ import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import OfferStatusBanner from 'components/pages/Offers/Offer/OfferDetails/OfferStatusBanner/OfferStatusBanner'
 import {
+  DIGITAL_CANCELLATION_INFORMATION,
   EVENT_CANCELLATION_INFORMATION,
   THING_CANCELLATION_INFORMATION,
 } from 'components/pages/Offers/Offer/Stocks/_constants'
@@ -20,7 +21,13 @@ import StockItem from 'components/pages/Offers/Offer/Stocks/StockItem/StockItem'
 import { ReactComponent as AddStockSvg } from 'icons/ico-plus.svg'
 import * as pcapi from 'repository/pcapi/pcapi'
 
-const Stocks = ({ offer, showErrorNotification, showSuccessNotification, reloadOffer }) => {
+const Stocks = ({
+  offer,
+  showErrorNotification,
+  showSuccessNotification,
+  reloadOffer,
+  autoActivateDigitalBookings,
+}) => {
   const offerId = offer.id
   const [isLoading, setIsLoading] = useState(true)
   const [stocks, setStocks] = useState([])
@@ -167,7 +174,14 @@ const Stocks = ({ offer, showErrorNotification, showSuccessNotification, reloadO
       </h3>
 
       <div className="cancellation-information">
-        {offer.isEvent ? EVENT_CANCELLATION_INFORMATION : THING_CANCELLATION_INFORMATION}
+        {autoActivateDigitalBookings &&
+          (offer.isDigital
+            ? DIGITAL_CANCELLATION_INFORMATION
+            : offer.isEvent
+              ? EVENT_CANCELLATION_INFORMATION
+              : THING_CANCELLATION_INFORMATION)}
+        {!autoActivateDigitalBookings &&
+          (offer.isEvent ? EVENT_CANCELLATION_INFORMATION : THING_CANCELLATION_INFORMATION)}
       </div>
       {stocks.length === 0 ? (
         <button
@@ -282,6 +296,7 @@ const Stocks = ({ offer, showErrorNotification, showSuccessNotification, reloadO
 }
 
 Stocks.propTypes = {
+  autoActivateDigitalBookings: PropTypes.bool.isRequired,
   offer: PropTypes.shape().isRequired,
   reloadOffer: PropTypes.func.isRequired,
   showErrorNotification: PropTypes.func.isRequired,

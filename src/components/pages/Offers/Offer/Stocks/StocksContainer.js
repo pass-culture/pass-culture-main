@@ -3,12 +3,14 @@ import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
 import { showNotification } from 'store/reducers/notificationReducer'
+import { selectIsFeatureActive } from 'store/selectors/data/featuresSelectors'
 import { selectIsUserAdmin } from 'store/selectors/data/usersSelectors'
 
 import Stocks from './Stocks'
 
 const mapStateToProps = state => ({
   isUserAdmin: selectIsUserAdmin(state),
+  autoActivateDigitalBookings: selectIsFeatureActive(state, 'AUTO_ACTIVATE_DIGITAL_BOOKINGS'),
 })
 
 const mapDispatchToProps = dispatch => ({
