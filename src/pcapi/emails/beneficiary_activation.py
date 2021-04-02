@@ -46,10 +46,14 @@ def get_activation_email_data_for_native(user: users_models.User, token: users_m
 
 
 def get_accepted_as_beneficiary_email_data() -> Dict:
+    limit_configuration = conf.LIMIT_CONFIGURATIONS[conf.get_current_deposit_version()]
+    deposit_amount = limit_configuration.TOTAL_CAP
     return {
         "Mj-TemplateID": 2016025,
         "Mj-TemplateLanguage": True,
-        "Vars": {},
+        "Vars": {
+            "depositAmount": int(deposit_amount),
+        },
     }
 
 

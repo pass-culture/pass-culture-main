@@ -81,3 +81,35 @@ class GetActivationEmailTest:
         assert not activation_email_data["Vars"]["isEligible"]
         assert activation_email_data["Vars"]["isMinor"]
         assert activation_email_data["Vars"]["depositAmount"] == 300
+
+
+@freeze_time("2011-05-15 09:00:00")
+class GetAcceptedAsBeneficiaryEmailTest:
+    def test_return_correct_email_metadata(self):
+        # When
+        email_data = beneficiary_activation.get_accepted_as_beneficiary_email_data()
+
+        # Then
+        assert email_data == {
+            "Mj-TemplateID": 2016025,
+            "Mj-TemplateLanguage": True,
+            "Vars": {
+                "depositAmount": 500,
+            },
+        }
+
+    @override_features(APPLY_BOOKING_LIMITS_V2=False)
+    def test_return_deposit_amount_500_for_eligible_user_v1(self):
+        # When
+        email_data = beneficiary_activation.get_accepted_as_beneficiary_email_data()
+
+        # Then
+        assert email_data["Vars"]["depositAmount"] == 500
+
+    @override_features(APPLY_BOOKING_LIMITS_V2=True)
+    def test_return_deposit_amount_300_for_eligible_user_v2(self):
+        # When
+        email_data = beneficiary_activation.get_accepted_as_beneficiary_email_data()
+
+        # Then
+        assert email_data["Vars"]["depositAmount"] == 300
