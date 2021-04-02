@@ -41,7 +41,6 @@ describe('src | components | pages | Offerers | OffererItem | OffererItemContain
             name: 'Le Sous-sol (Offre numérique)',
             postalCode: null,
             siret: null,
-            thumbCount: 0,
             validationToken: null,
           },
         ],

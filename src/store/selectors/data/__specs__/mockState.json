@@ -24,8 +24,7 @@
           "nOffers": 5,
           "name": "Bar des amis",
           "postalCode": "97300",
-          "siren": "222222233",
-          "thumbCount": 0
+          "siren": "222222233"
       }],
     "offers": [
       {
@@ -82,7 +81,6 @@
           "lastProviderId": null,
           "modelName": "Mediation",
           "offerId": "AX8Q",
-          "thumbCount": 1,
           "tutoIndex": null
         },
         "mediationId": "AMCQ",
@@ -137,7 +135,6 @@
             "modelName": "Product",
             "name": "Nice offre",
             "owningOffererId": "4Y",
-            "thumbCount": 0,
             "thumbUrl": "http://localhost/storage/thumbs/products/BAUQ",
             "type": "EventType.CINEMA",
             "url": null
@@ -204,7 +201,6 @@
               "name": "Club Dorothy",
               "postalCode": "93700",
               "siren": "222222223",
-              "thumbCount": 0,
               "validationToken": null
             },
             "managingOffererId": "4Y",
@@ -213,7 +209,6 @@
             "postalCode": "93700",
             "publicName": null,
             "siret": "22222222311111",
-            "thumbCount": 0,
             "validationToken": null
           },
           "venueId": "AFCA"

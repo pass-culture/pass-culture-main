@@ -31,7 +31,6 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
             name: 'Bar des amis',
             postalCode: '97300',
             siren: '222222233',
-            thumbCount: 0,
             validationToken: null,
           },
           {
@@ -49,7 +48,6 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
             name: 'Cinéma du coin',
             postalCode: '97300',
             siren: '222222232',
-            thumbCount: 0,
             validationToken: 'w3hDQgjYRIyYTxOYY08nwgH3BzI',
           },
         ],

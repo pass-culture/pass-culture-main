@@ -26,7 +26,6 @@ describe('formatPatch', () => {
         publicName: 'Cinéma de la fin des fins',
         postalCode: '93600',
         siret: '22222222911111',
-        thumbCount: 0,
         venueProvidersIds: [],
       }
 
@@ -79,7 +78,6 @@ describe('formatPatch', () => {
         publicName: 'Cinéma de la fin publique',
         postalCode: '93600',
         siret: '22222222911111',
-        thumbCount: 0,
         venueProvidersIds: [],
       }
 

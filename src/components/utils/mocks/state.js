@@ -16,7 +16,6 @@ const state = {
         lastProviderId: null,
         modelName: 'Mediation',
         offerId: 'UU',
-        thumbCount: 1,
         tutoIndex: null,
       },
       {
@@ -32,7 +31,6 @@ const state = {
         lastProviderId: null,
         modelName: 'Mediation',
         offerId: 'UM',
-        thumbCount: 1,
         tutoIndex: null,
       },
       {
@@ -48,7 +46,6 @@ const state = {
         lastProviderId: null,
         modelName: 'Mediation',
         offerId: 'UE',
-        thumbCount: 1,
         tutoIndex: null,
       },
       {
@@ -64,7 +61,6 @@ const state = {
         lastProviderId: null,
         modelName: 'Mediation',
         offerId: 'T4',
-        thumbCount: 1,
         tutoIndex: null,
       },
       {
@@ -80,7 +76,6 @@ const state = {
         lastProviderId: null,
         modelName: 'Mediation',
         offerId: 'TU',
-        thumbCount: 1,
         tutoIndex: null,
       },
     ],
@@ -102,7 +97,6 @@ const state = {
         name: 'Bar des amis',
         postalCode: '97300',
         siren: '222222233',
-        thumbCount: 0,
         validationToken: null,
       },
       {
@@ -120,7 +114,6 @@ const state = {
         name: 'Cinéma du coin',
         postalCode: '97300',
         siren: '222222232',
-        thumbCount: 0,
         validationToken: 'w3hDQgjYRIyYTxOYY08nwgH3BzI',
       },
     ],
@@ -257,7 +250,6 @@ const state = {
           type: 'Thing',
           value: 'ThingType.JEUX_VIDEO',
         },
-        thumbCount: 1,
         url: 'https://ilestencoretemps.fr/',
       },
       {
@@ -283,7 +275,6 @@ const state = {
           type: 'Thing',
           value: 'ThingType.PRESSE_ABO',
         },
-        thumbCount: 1,
         url: 'https://ilestencoretemps.fr/',
       },
       {
@@ -310,7 +301,6 @@ const state = {
           type: 'Thing',
           value: 'ThingType.JEUX_VIDEO',
         },
-        thumbCount: 1,
         url: 'https://ilestencoretemps.fr/',
       },
       {
@@ -337,7 +327,6 @@ const state = {
           type: 'Thing',
           value: 'ThingType.PRESSE_ABO',
         },
-        thumbCount: 1,
         url: 'https://ilestencoretemps.fr/',
       },
       {
@@ -364,7 +353,6 @@ const state = {
           type: 'Thing',
           value: 'ThingType.JEUX_VIDEO',
         },
-        thumbCount: 1,
         url: 'https://ilestencoretemps.fr/',
       },
       {
@@ -391,7 +379,6 @@ const state = {
           type: 'Thing',
           value: 'ThingType.PRESSE_ABO',
         },
-        thumbCount: 1,
         url: 'https://ilestencoretemps.fr/',
       },
       {
@@ -418,7 +405,6 @@ const state = {
           type: 'Thing',
           value: 'ThingType.MUSIQUE',
         },
-        thumbCount: 1,
         url: null,
       },
       {
@@ -445,7 +431,6 @@ const state = {
           type: 'Thing',
           value: 'ThingType.MUSEES_PATRIMOINE_ABO',
         },
-        thumbCount: 1,
         url: null,
       },
       {
@@ -472,7 +457,6 @@ const state = {
           type: 'Thing',
           value: 'ThingType.JEUX_VIDEO',
         },
-        thumbCount: 1,
         url: 'https://ilestencoretemps.fr/',
       },
       {
@@ -499,7 +483,6 @@ const state = {
           type: 'Thing',
           value: 'ThingType.CINEMA_ABO',
         },
-        thumbCount: 1,
         url: null,
       },
     ],
@@ -750,7 +733,6 @@ const state = {
         phoneNumber: '0612345678',
         postalCode: '93100',
         publicName: 'PC Test Admin 93 0',
-        thumbCount: 0,
       },
     ],
     userOfferers: [
@@ -780,7 +762,6 @@ const state = {
         name: 'Le Sous-sol (Offre numérique)',
         postalCode: null,
         siret: null,
-        thumbCount: 0,
         validationToken: null,
       },
       {
@@ -802,7 +783,6 @@ const state = {
         name: 'Terrain vague (Offre numérique)',
         postalCode: null,
         siret: null,
-        thumbCount: 0,
         validationToken: null,
       },
       {
@@ -824,7 +804,6 @@ const state = {
         name: 'Terrain vague',
         postalCode: '97300',
         siret: '22222223211111',
-        thumbCount: 0,
         validationToken: null,
       },
     ],
@@ -1040,7 +1019,6 @@ const state = {
     phoneNumber: '67856557574',
     postalCode: '93100',
     publicName: 'PC Test Admin 93 0',
-    thumbCount: 0,
   },
   _persist: {
     version: -1,

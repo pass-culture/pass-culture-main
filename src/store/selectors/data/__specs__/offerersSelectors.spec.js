@@ -69,7 +69,6 @@ describe('src | selectors | data | offerersSelectors', () => {
         name: 'Bar des amis',
         postalCode: '97300',
         siren: '222222233',
-        thumbCount: 0,
       }
       const offererId = '4Q'
 
