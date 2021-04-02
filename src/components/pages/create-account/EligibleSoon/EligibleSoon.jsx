@@ -72,8 +72,11 @@ const EligibleSoon = ({ birthDate, body, postalCode, title, visual }) => {
       <div className="buttons-container">
         <form onSubmit={handleSubmit}>
           <input
+            aria-label="Adresse e-mail"
+            autoComplete="email"
             onChange={handleEmailInputChange}
             placeholder="Adresse e-mail"
+            title="Adresse e-mail"
             type="email"
             value={emailValue}
           />
