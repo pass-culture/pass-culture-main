@@ -12,13 +12,15 @@ from pcapi.repository import feature_queries
 from pcapi.repository.provider_queries import get_provider_enabled_for_pro_by_id
 from pcapi.repository.venue_queries import find_by_id
 from pcapi.routes.serialization import as_dict
+from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
+from pcapi.routes.serialization.venue_provider_serialize import VenueProviderResponse
+from pcapi.serialization.decorator import spectree_serialize
 from pcapi.use_cases.connect_venue_to_allocine import connect_venue_to_allocine
 from pcapi.use_cases.connect_venue_to_provider import connect_venue_to_provider
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.includes import VENUE_PROVIDER_INCLUDES
 from pcapi.utils.rest import expect_json_data
 from pcapi.validation.routes.venue_providers import check_existing_provider
-from pcapi.validation.routes.venue_providers import check_new_venue_provider_information
 from pcapi.validation.routes.venues import check_existing_venue
 from pcapi.workers.venue_provider_job import venue_provider_job
 
@@ -41,15 +43,15 @@ def list_venue_providers():
 @private_api.route("/venueProviders", methods=["POST"])
 @login_required
 @expect_json_data
-def create_venue_provider():
-    venue_provider_payload = request.json
-    check_new_venue_provider_information(venue_provider_payload)
+@spectree_serialize(on_success_status=201, response_model=VenueProviderResponse)
+def create_venue_provider(body: PostVenueProviderBody):
+    venue_provider_payload = body
 
-    provider_id = dehumanize(venue_provider_payload["providerId"])
+    provider_id = dehumanize(venue_provider_payload.providerId)
     provider = get_provider_enabled_for_pro_by_id(provider_id)
     check_existing_provider(provider)
 
-    venue_id = dehumanize(venue_provider_payload["venueId"])
+    venue_id = dehumanize(venue_provider_payload.venueId)
     venue = find_by_id(venue_id)
     check_existing_venue(venue)
 
@@ -60,7 +62,7 @@ def create_venue_provider():
 
     _run_first_synchronization(new_venue_provider)
 
-    return jsonify(as_dict(new_venue_provider, includes=VENUE_PROVIDER_INCLUDES)), 201
+    return VenueProviderResponse.from_orm(new_venue_provider)
 
 
 def _run_first_synchronization(new_venue_provider: VenueProvider):

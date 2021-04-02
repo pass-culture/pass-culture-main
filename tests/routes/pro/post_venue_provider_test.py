@@ -11,6 +11,7 @@ from pcapi.model_creators.provider_creators import activate_provider
 from pcapi.models import ApiErrors
 from pcapi.models import VenueProvider
 from pcapi.repository import repository
+from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import humanize
 
@@ -91,6 +92,7 @@ class Post:
             assert venue_provider.providerId == provider.id
             assert venue_provider.venueIdAtOfferProvider == "12345678912345"
             assert "id" in response.json
+
             venue_provider_id = response.json["id"]
             mock_synchronize_venue_provider.assert_called_once_with(dehumanize(venue_provider_id))
 
@@ -142,30 +144,70 @@ class Post:
             # Then
             assert response.status_code == 201
 
+        @pytest.mark.usefixtures("db_session")
+        @override_features(SYNCHRONIZE_VENUE_PROVIDER_IN_WORKER=True)
+        @patch("pcapi.workers.venue_provider_job.venue_provider_job.delay")
+        @patch("pcapi.use_cases.connect_venue_to_provider._check_venue_can_be_synchronized_with_provider")
+        def when_no_regression_on_format(self, stubbed_check, mock_synchronize_venue_provider, app):
+            # Given
+            user = user_factories.UserFactory(isAdmin=True)
+            venue = offer_factories.VenueFactory(siret="12345678912345")
+
+            provider = activate_provider("LibrairesStocks")
+
+            venue_provider_data = {
+                "providerId": humanize(provider.id),
+                "venueId": humanize(venue.id),
+            }
+
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
+            stubbed_check.return_value = True
+
+            # When
+            response = auth_request.post("/venueProviders", json=venue_provider_data)
+
+            # Then
+            assert response.status_code == 201
+            assert set(response.json.keys()) == {
+                "dateModifiedAtLastProvider",
+                "fieldsUpdated",
+                "id",
+                "idAtProviders",
+                "isActive",
+                "isFromAllocineProvider",
+                "lastProviderId",
+                "lastSyncDate",
+                "nOffers",
+                "provider",
+                "providerId",
+                "syncWorkerId",
+                "venueId",
+                "venueIdAtOfferProvider",
+            }
+            assert set(response.json["provider"].keys()) == {
+                "enabledForPro",
+                "id",
+                "isActive",
+                "localClass",
+                "name",
+                "requireProviderIdentifier",
+            }
+
     class Returns400:
         @pytest.mark.usefixtures("db_session")
-        @patch("pcapi.routes.pro.venue_providers.check_new_venue_provider_information")
-        def when_api_error_raise_from_payload_validation(self, mock_check_new_venue_provider_information, app):
+        def when_api_error_raise_when_missing_fields(self, app):
             # Given
-            api_errors = ApiErrors()
-            api_errors.status_code = 400
-            api_errors.add_error("errors", "error received")
-
-            mock_check_new_venue_provider_information.side_effect = api_errors
-
             user = user_factories.UserFactory(isAdmin=True)
             auth_request = TestClient(app.test_client()).with_auth(email=user.email)
-            venue_provider_data = {
-                "providerId": "B9",
-                "venueId": "B9",
-            }
+            venue_provider_data = {}
 
             # When
             response = auth_request.post("/venueProviders", json=venue_provider_data)
 
             # Then
             assert response.status_code == 400
-            assert ["error received"] == response.json["errors"]
+            assert response.json["venueId"] == ["Ce champ est obligatoire"]
+            assert response.json["providerId"] == ["Ce champ est obligatoire"]
 
         @pytest.mark.usefixtures("db_session")
         @patch("pcapi.use_cases.connect_venue_to_provider._check_venue_can_be_synchronized_with_provider")
@@ -361,6 +403,5 @@ class Post:
 
             # Then
             mocked_connect_venue_to_allocine.assert_called_once_with(
-                venue,
-                {"providerId": humanize(provider.id), "venueId": humanize(venue.id)},
+                venue, PostVenueProviderBody(providerId=humanize(provider.id), venueId=humanize(venue.id))
             )
