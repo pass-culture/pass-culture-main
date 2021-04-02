@@ -1,6 +1,7 @@
 /* stylelint-disable pass-culture/no-font-properties */
 @mixin hero() {
   font-size: rem(40px);
+  font-style: normal;
   font-weight: 500;
 }
 

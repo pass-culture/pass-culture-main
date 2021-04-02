@@ -1,0 +1,36 @@
+.unavailable-page {
+  background: linear-gradient(125deg, $primary, $secondary);
+  color: $white;
+  display: grid;
+  grid-template-columns: 1fr rem(308px) 1fr;
+  grid-template-rows: 90% 10%;
+  padding: rem(40px);
+  text-align: center;
+
+  .u-main {
+    display: flex;
+    flex-direction: column;
+    grid-column: 2/3;
+    grid-row: 1/2;
+    justify-content: center;
+  }
+
+  h1 {
+    @include hero();
+
+    color: $white;
+    line-height: normal;
+    margin: 33px 0 14px;
+  }
+
+  p {
+    @include title2();
+  }
+
+  img:last-of-type {
+    grid-column: 2/3;
+    grid-row: 2/3;
+    margin: 0 auto;
+    max-height: 100%;
+  }
+}
