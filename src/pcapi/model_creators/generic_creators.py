@@ -14,6 +14,7 @@ from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.models import Mediation
 from pcapi.core.users.models import TokenType
 from pcapi.core.providers.allocine_venue_provider import AllocineVenueProvider
+from pcapi.core.providers.models import Provider
 from pcapi.core.users.models import User
 from pcapi.domain.payments import PaymentDetails
 from pcapi.domain.price_rule import PriceRule
@@ -35,7 +36,6 @@ from pcapi.models import Offer
 from pcapi.models import Payment
 from pcapi.models import PaymentMessage
 from pcapi.models import PaymentStatus
-from pcapi.models import Provider
 from pcapi.models import Stock
 from pcapi.models import ThingType
 from pcapi.models import Token

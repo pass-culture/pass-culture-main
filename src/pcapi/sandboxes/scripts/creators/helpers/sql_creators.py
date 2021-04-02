@@ -7,6 +7,7 @@ from typing import Optional
 
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.providers.models import Provider
 from pcapi.core.users.models import User
 from pcapi.models import Booking
 from pcapi.models import EventType
@@ -14,7 +15,6 @@ from pcapi.models import Offer
 from pcapi.models import Payment
 from pcapi.models import PaymentMessage
 from pcapi.models import Product
-from pcapi.models import Provider
 from pcapi.models import Stock
 from pcapi.models import ThingType
 from pcapi.models import UserOfferer

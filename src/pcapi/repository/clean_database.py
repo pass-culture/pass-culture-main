@@ -3,6 +3,7 @@ from pcapi.core.mails.models import Email
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.models import Mediation
 from pcapi.core.providers.allocine_venue_provider import AllocineVenueProvider
+from pcapi.core.providers.models import Provider
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import User
 from pcapi.local_providers.install import install_local_providers
@@ -25,7 +26,6 @@ from pcapi.models import Payment
 from pcapi.models import PaymentMessage
 from pcapi.models import PaymentStatus
 from pcapi.models import Product
-from pcapi.models import Provider
 from pcapi.models import Stock
 from pcapi.models import UserOfferer
 from pcapi.models import UserSession

@@ -1,5 +1,5 @@
+from pcapi.core.providers.models import Provider
 from pcapi.models import ApiErrors
-from pcapi.models import Provider
 
 
 def check_existing_provider(provider: Provider):

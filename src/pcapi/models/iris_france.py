@@ -3,8 +3,8 @@ from sqlalchemy import Column
 from sqlalchemy import Index
 from sqlalchemy import VARCHAR
 
-from pcapi.models import PcObject
 from pcapi.models.db import Model
+from pcapi.models.pc_object import PcObject
 
 
 class IrisFrance(PcObject, Model):

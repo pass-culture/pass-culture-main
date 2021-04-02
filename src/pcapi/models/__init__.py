@@ -6,7 +6,7 @@ from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.providers.allocine_venue_provider import AllocineVenueProvider
-from pcapi.core.providers.provider import Provider
+from pcapi.core.providers.models import Provider
 from pcapi.core.providers.venue_provider import VenueProvider
 from pcapi.core.users.models import Favorite
 from pcapi.core.users.models import Token
@@ -88,7 +88,6 @@ __all__ = (
     "Payment",
     "PaymentStatus",
     "PaymentMessage",
-    "Provider",
     "Product",
     "ThingType",
     "Token",

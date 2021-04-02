@@ -1,7 +1,7 @@
 from operator import or_
 from typing import Optional
 
-from pcapi.core.providers.provider import Provider
+from pcapi.core.providers.models import Provider
 
 
 def get_provider_enabled_for_pro_by_id(provider_id: int) -> Optional[Provider]:

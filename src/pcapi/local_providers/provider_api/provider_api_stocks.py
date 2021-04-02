@@ -2,7 +2,7 @@ import logging
 
 from sqlalchemy.orm.util import aliased
 
-from pcapi.core.providers.provider import Provider
+from pcapi.core.providers.models import Provider
 from pcapi.core.providers.venue_provider import VenueProvider
 from pcapi.models import db
 

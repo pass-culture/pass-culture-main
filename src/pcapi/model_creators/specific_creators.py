@@ -8,11 +8,11 @@ from typing import Optional
 
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.models import OfferValidationStatus
+from pcapi.core.providers.models import Provider
 from pcapi.models import Criterion
 from pcapi.models import EventType
 from pcapi.models import Offer
 from pcapi.models import Product
-from pcapi.models import Provider
 from pcapi.models import Stock
 from pcapi.models import ThingType
 from pcapi.models import Venue

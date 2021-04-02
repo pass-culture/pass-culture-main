@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pcapi.core.providers.provider import Provider
+from pcapi.core.providers.models import Provider
 from pcapi.infrastructure.container import api_fnac_stocks
 from pcapi.infrastructure.container import api_libraires_stocks
 from pcapi.infrastructure.container import api_praxiel_stocks

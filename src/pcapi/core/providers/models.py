@@ -1,4 +1,3 @@
-""" provider """
 from sqlalchemy import BigInteger
 from sqlalchemy import Boolean
 from sqlalchemy import CheckConstraint

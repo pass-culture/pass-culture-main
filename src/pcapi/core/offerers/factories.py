@@ -2,12 +2,13 @@ import factory
 
 from pcapi import models
 from pcapi.core.offers.factories import VenueFactory
+import pcapi.core.providers.models
 from pcapi.core.testing import BaseFactory
 
 
 class ProviderFactory(BaseFactory):
     class Meta:
-        model = models.Provider
+        model = pcapi.core.providers.models.Provider
         sqlalchemy_get_or_create = ["localClass"]
 
     name = factory.Sequence("Provider {}".format)
@@ -16,7 +17,7 @@ class ProviderFactory(BaseFactory):
 
 class APIProviderFactory(BaseFactory):
     class Meta:
-        model = models.Provider
+        model = pcapi.core.providers.models.Provider
 
     name = factory.Sequence("Provider {}".format)
     apiUrl = factory.Sequence("https://{}.example.org/stocks".format)

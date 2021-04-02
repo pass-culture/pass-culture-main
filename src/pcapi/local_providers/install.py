@@ -1,4 +1,4 @@
-from pcapi.core.providers.provider import Provider
+from pcapi.core.providers.models import Provider
 import pcapi.local_providers
 from pcapi.models.db import db
 from pcapi.repository.provider_queries import get_provider_by_local_class

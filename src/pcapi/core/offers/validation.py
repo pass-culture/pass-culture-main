@@ -6,7 +6,6 @@ from typing import Union
 from PIL import Image
 
 from pcapi.models import Offer
-from pcapi.models import Provider
 from pcapi.models import Stock
 from pcapi.models import User
 from pcapi.models.api_errors import ApiErrors
@@ -14,6 +13,7 @@ from pcapi.models.api_errors import ForbiddenError
 from pcapi.utils import requests as pcapi_requests
 
 from . import exceptions
+from ..providers.models import Provider
 from .models import OfferValidationStatus
 
 

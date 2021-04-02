@@ -12,11 +12,11 @@ from sqlalchemy.orm import column_property
 from sqlalchemy.orm import relationship
 
 from pcapi.core.offers.models import Offer
+from pcapi.core.providers.models import Provider
 from pcapi.models.db import Model
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.providable_mixin import ProvidableMixin
-from pcapi.core.providers.provider import Provider
 
 
 class VenueProvider(PcObject, Model, ProvidableMixin, DeactivableMixin):
