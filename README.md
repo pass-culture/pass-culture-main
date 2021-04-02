@@ -71,7 +71,7 @@ C'est tout le framework du Pass Culture!
 
 Les actions suivantes sont requises afin de faire fonctionner l'IDE correctement côté API et de pouvoir lancer les `hooks` de `pre-commit`
 
-- Installer Python 3.7 (via le marketplace)
+- Installer Python 3.8
 - `cd pass-culture-main/api`
 - `python3 -m venv venv`
 - `source venv/bin/activate`
@@ -99,7 +99,7 @@ Les actions suivantes sont requises afin de faire fonctionner l'IDE correctement
 
 Pour pouvoir lancer les `hooks` de `pre-commit` sur le projet API, il faut installer l'environnement python en local.
 
-- installer Python 3.7 et `pip`
+- installer Python 3.8 et `pip`
 - monter un [virtualenv](https://python-guide-pt-br.readthedocs.io/fr/latest/dev/virtualenvs.html) afin d'avoir un environnement isolé et contextualisé pour les besoins de l'API
   1. `pip install virtualenv`
   2. `cd pass-culture-main/api`
