@@ -51,8 +51,9 @@ const Stocks = ({
   )
 
   const onDelete = useCallback(() => {
+    reloadOffer()
     loadStocks(true)
-  }, [loadStocks])
+  }, [reloadOffer, loadStocks])
 
   useEffect(() => {
     loadStocks()
