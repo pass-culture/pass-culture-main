@@ -4,10 +4,10 @@ from flask import jsonify
 from flask import request
 from flask_login import login_required
 
+from pcapi.core.providers.venue_provider import VenueProvider
 from pcapi.flask_app import private_api
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
-from pcapi.models.venue_provider import VenueProvider
 from pcapi.repository import feature_queries
 from pcapi.repository.provider_queries import get_provider_enabled_for_pro_by_id
 from pcapi.repository.venue_queries import find_by_id

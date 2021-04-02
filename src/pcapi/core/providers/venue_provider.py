@@ -16,7 +16,7 @@ from pcapi.models.db import Model
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.providable_mixin import ProvidableMixin
-from pcapi.models.provider import Provider
+from pcapi.core.providers.provider import Provider
 
 
 class VenueProvider(PcObject, Model, ProvidableMixin, DeactivableMixin):

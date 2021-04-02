@@ -2,10 +2,10 @@ import logging
 from typing import Callable
 from typing import Optional
 
+from pcapi.core.providers.venue_provider import VenueProvider
 import pcapi.local_providers
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.provider_api import synchronize_provider_api
-from pcapi.models.venue_provider import VenueProvider
 from pcapi.repository import repository
 from pcapi.repository.venue_provider_queries import get_active_venue_providers_for_specific_provider
 from pcapi.scheduled_tasks.logger import CronStatus

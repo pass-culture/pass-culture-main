@@ -13,6 +13,7 @@ from pcapi.core.bookings import api as bookings_api
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.models import Mediation
 from pcapi.core.users.models import TokenType
+from pcapi.core.providers.allocine_venue_provider import AllocineVenueProvider
 from pcapi.core.users.models import User
 from pcapi.domain.payments import PaymentDetails
 from pcapi.domain.price_rule import PriceRule
@@ -41,7 +42,6 @@ from pcapi.models import Token
 from pcapi.models import UserOfferer
 from pcapi.models import Venue
 from pcapi.models import VenueProvider
-from pcapi.models.allocine_venue_provider import AllocineVenueProvider
 from pcapi.models.bank_information import BankInformationStatus
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.models.venue_label_sql_entity import VenueLabelSQLEntity

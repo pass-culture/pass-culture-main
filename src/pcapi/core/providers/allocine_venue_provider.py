@@ -6,7 +6,7 @@ from sqlalchemy import Integer
 from sqlalchemy import true
 from sqlalchemy.sql.sqltypes import Text
 
-from pcapi.models.venue_provider import VenueProvider
+from pcapi.core.providers.venue_provider import VenueProvider
 
 
 class AllocineVenueProvider(VenueProvider):

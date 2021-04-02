@@ -5,11 +5,13 @@ from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
+from pcapi.core.providers.allocine_venue_provider import AllocineVenueProvider
+from pcapi.core.providers.provider import Provider
+from pcapi.core.providers.venue_provider import VenueProvider
 from pcapi.core.users.models import Favorite
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import User
 from pcapi.models.allocine_pivot import AllocinePivot
-from pcapi.models.allocine_venue_provider import AllocineVenueProvider
 from pcapi.models.allocine_venue_provider_price_rule import AllocineVenueProviderPriceRule
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_key import ApiKey
@@ -39,11 +41,9 @@ from pcapi.models.pc_object import PcObject
 from pcapi.models.product import BookFormat
 from pcapi.models.product import Product
 from pcapi.models.providable_mixin import ProvidableMixin
-from pcapi.models.provider import Provider
 from pcapi.models.user_offerer import UserOfferer
 from pcapi.models.user_session import UserSession
 from pcapi.models.venue_label_sql_entity import VenueLabelSQLEntity
-from pcapi.models.venue_provider import VenueProvider
 from pcapi.models.venue_type import VenueType
 from pcapi.models.versioned_mixin import VersionedMixin
 

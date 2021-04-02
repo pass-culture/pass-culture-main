@@ -13,13 +13,13 @@ from pcapi.core.offers.models import Stock
 from pcapi.core.offers.repository import get_offers_map_by_id_at_providers
 from pcapi.core.offers.repository import get_products_map_by_id_at_providers
 from pcapi.core.offers.repository import get_stocks_by_id_at_providers
+from pcapi.core.providers.provider import Provider
+from pcapi.core.providers.venue_provider import VenueProvider
 from pcapi.infrastructure.repository.stock_provider.provider_api import ProviderAPI
 from pcapi.models import Product
 from pcapi.models import Venue
 from pcapi.models.db import db
 from pcapi.models.feature import FeatureToggle
-from pcapi.models.provider import Provider
-from pcapi.models.venue_provider import VenueProvider
 from pcapi.repository import feature_queries
 from pcapi.repository import repository
 from pcapi.validation.models.entity_validator import validate

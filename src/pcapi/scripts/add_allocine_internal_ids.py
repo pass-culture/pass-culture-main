@@ -4,9 +4,9 @@ import logging
 from sqlalchemy.orm.util import aliased
 
 from pcapi.core.offerers.models import Venue
+from pcapi.core.providers.allocine_venue_provider import AllocineVenueProvider
 from pcapi.models import db
 from pcapi.models.allocine_pivot import AllocinePivot
-from pcapi.models.allocine_venue_provider import AllocineVenueProvider
 
 
 logger = logging.getLogger(__name__)

@@ -2,9 +2,9 @@ import logging
 
 from sqlalchemy.orm.util import aliased
 
-from pcapi.models import VenueProvider
+from pcapi.core.providers.provider import Provider
+from pcapi.core.providers.venue_provider import VenueProvider
 from pcapi.models import db
-from pcapi.models.provider import Provider
 
 
 logger = logging.getLogger(__name__)
