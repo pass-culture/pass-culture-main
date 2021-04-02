@@ -9,7 +9,7 @@ export const mapStateToProps = (state, ownProps) => {
   const { stockId } = values
   const isStockDuo = selectIsStockDuo(state, stockId, offerId)
   const offer = selectOfferById(state, offerId)
-  const canExpire = offer && offer.offerType && offer.offerType.canExpire === false
+  const canExpire = offer && offer.offerType && offer.offerType.canExpire
   const isDigital = offer.isDigital
 
   return {

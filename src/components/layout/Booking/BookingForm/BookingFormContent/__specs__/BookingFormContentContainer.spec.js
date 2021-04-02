@@ -39,7 +39,7 @@ describe('src | components | BookingFormContentContainer', () => {
 
       // then
       expect(props).toStrictEqual({
-        canExpire: true,
+        canExpire: false,
         isDigital: true,
         isStockDuo: true,
       })

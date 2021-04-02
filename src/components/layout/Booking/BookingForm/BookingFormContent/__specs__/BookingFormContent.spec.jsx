@@ -238,7 +238,7 @@ describe('bookingFormContent', () => {
     it('should display a booking modalities message when it is a digital offer but is not a press subscription', () => {
       // given
       props.isEvent = false
-      props.canExpire = false
+      props.canExpire = true
       props.isDigital = true
 
       // when
@@ -256,7 +256,7 @@ describe('bookingFormContent', () => {
     it('should display a booking modalities message when it is a physical offer but is not a press subscription', () => {
       // given
       props.isEvent = false
-      props.canExpire = false
+      props.canExpire = true
       props.isDigital = false
 
       // when

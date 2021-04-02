@@ -165,7 +165,7 @@ class BookingFormContent extends PureComponent {
           </p>
         )}
 
-        {!isEvent && !canExpire && isADigitalOffer && (
+        {!isEvent && canExpire && isADigitalOffer && (
           <p className="bc-notification">
             {
               'Tu as 30 jours pour faire valider ta contremarque. Passé ce délai, ta réservation sera automatiquement annulée.'
@@ -173,7 +173,7 @@ class BookingFormContent extends PureComponent {
           </p>
         )}
 
-        {!isEvent && !canExpire && isAPhysicalOffer && (
+        {!isEvent && canExpire && isAPhysicalOffer && (
           <p className="bc-notification">
             {
               'Tu as 30 jours pour récupérer ton bien et faire valider ta contremarque. Passé ce délai, ta réservation sera automatiquement annulée.'
