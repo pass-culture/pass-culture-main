@@ -60,7 +60,6 @@ def patch_beneficiary() -> BeneficiaryAccountResponse:
         cultural_survey_id=request.json.get("culturalSurveyId"),
         cultural_survey_filled_date=request.json.get("culturalSurveyFilledDate"),
         department_code=request.json.get("departementCode"),
-        email=request.json.get("email"),
         last_connection_date=request.json.get("lastConnectionDate"),
         needs_to_fill_cultural_survey=request.json.get("needsToFillCulturalSurvey"),
         phone_number=request.json.get("phoneNumber"),

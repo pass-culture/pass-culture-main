@@ -20,7 +20,6 @@ class UpdateUserInformationsTest:
             has_seen_tutorials=True,
             cultural_survey_id=None,
             cultural_survey_filled_date=datetime(2020, 4, 22),
-            email="han@example.com",
             first_name="Han",
             last_name="Solo",
             last_connection_date=datetime(2020, 1, 1),
@@ -37,7 +36,6 @@ class UpdateUserInformationsTest:
         assert user.hasSeenTutorials == True
         assert user.culturalSurveyId == None
         assert user.culturalSurveyFilledDate == datetime(2020, 4, 22)
-        assert user.email == "han@example.com"
         assert user.firstName == "Han"
         assert user.lastName == "Solo"
         assert user.lastConnectionDate == datetime(2020, 1, 1)

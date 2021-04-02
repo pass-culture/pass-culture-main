@@ -13,7 +13,6 @@ def check_allowed_changes_for_user(data) -> None:
         "culturalSurveyId",
         "culturalSurveyFilledDate",
         "departementCode",
-        "email",
         "lastConnectionDate",
         "hasSeenTutorials",
         "needsToFillCulturalSurvey",

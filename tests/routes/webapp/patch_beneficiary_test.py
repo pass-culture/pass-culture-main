@@ -13,7 +13,6 @@ def test_patch_beneficiary(app):
     user = UserFactory(address="1 rue des machines")
     data = {
         "publicName": "Anne",
-        "email": "new@example.com",
         "postalCode": "93020",
         "phoneNumber": "1234567890",
         "departementCode": "97",
@@ -24,7 +23,6 @@ def test_patch_beneficiary(app):
     response = client.patch("/beneficiaries/current", json=data)
 
     assert user.publicName == data["publicName"]
-    assert user.email == data["email"]
     assert user.postalCode == data["postalCode"]
     assert user.phoneNumber == data["phoneNumber"]
     assert user.departementCode == data["departementCode"]
@@ -44,7 +42,7 @@ def test_patch_beneficiary(app):
         "dateOfBirth": "2000-01-01T00:00:00Z",
         "departementCode": "97",
         "deposit_version": 1,
-        "email": "new@example.com",
+        "email": user.email,
         "expenses": [
             {"current": 0.0, "domain": "all", "limit": 500.0},
             {"current": 0.0, "domain": "digital", "limit": 200.0},
@@ -75,6 +73,7 @@ def test_forbid_some_attributes(app):
     user = UserFactory()
     # It's tedious to test all attributes. We focus on the most sensitive ones.
     forbidden_attributes = {
+        "email": "new@example.com",
         "isAdmin": True,
         "isBeneficiary": False,
         "firstName": "Jean",

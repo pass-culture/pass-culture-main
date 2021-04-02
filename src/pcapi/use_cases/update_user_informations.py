@@ -11,7 +11,6 @@ class AlterableUserInformations:
         cultural_survey_id: str = None,
         cultural_survey_filled_date: datetime = None,
         department_code: str = None,
-        email: str = None,
         first_name: str = None,
         last_name: str = None,
         last_connection_date: datetime = None,
@@ -25,7 +24,6 @@ class AlterableUserInformations:
         self.cultural_survey_id = cultural_survey_id
         self.cultural_survey_filled_date = cultural_survey_filled_date
         self.department_code = department_code
-        self.email = email
         self.first_name = first_name
         self.last_name = last_name
         self.last_connection_date = last_connection_date
@@ -46,9 +44,6 @@ def update_user_informations(user_informations: AlterableUserInformations):
 
     if user_informations.department_code is not None:
         current_user.departementCode = user_informations.department_code
-
-    if user_informations.email is not None:
-        current_user.email = user_informations.email
 
     if user_informations.first_name is not None:
         current_user.firstName = user_informations.first_name
