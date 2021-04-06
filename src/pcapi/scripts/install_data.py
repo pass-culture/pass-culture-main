@@ -3,7 +3,6 @@ import logging
 from flask import current_app as app
 
 from pcapi.install_database_extensions import install_database_extensions
-from pcapi.local_providers.install import install_local_providers
 from pcapi.models.install import install_activity
 
 
@@ -14,8 +13,7 @@ logger = logging.getLogger(__name__)
 def install_data():
     with app.app_context():
         install_activity()
-        install_local_providers()
-    logger.info("Models and LocalProviders installed")
+    logger.info("Models installed")
 
 
 @app.manager.command
