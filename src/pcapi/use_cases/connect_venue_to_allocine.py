@@ -1,8 +1,8 @@
 from decimal import Decimal
 
+from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import VenueProvider
 from pcapi.domain.price_rule import PriceRule
-from pcapi.models import AllocineVenueProvider
 from pcapi.models import AllocineVenueProviderPriceRule
 from pcapi.models import Venue
 from pcapi.models.allocine_pivot import AllocinePivot

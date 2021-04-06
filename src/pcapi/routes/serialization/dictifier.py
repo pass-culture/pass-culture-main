@@ -4,7 +4,7 @@ from typing import Iterable
 
 from sqlalchemy.orm.collections import InstrumentedList
 
-from pcapi.core.providers.allocine_venue_provider import AllocineVenueProvider
+from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import VenueProvider
 from pcapi.domain.reimbursement import BookingReimbursement
 from pcapi.models.pc_object import PcObject

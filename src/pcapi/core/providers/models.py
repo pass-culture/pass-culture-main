@@ -4,12 +4,15 @@ from sqlalchemy import CheckConstraint
 from sqlalchemy import Column
 from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
+from sqlalchemy import Integer
 from sqlalchemy import String
+from sqlalchemy import Text
 from sqlalchemy import UniqueConstraint
 from sqlalchemy import and_
 from sqlalchemy import case
 from sqlalchemy import exists
 from sqlalchemy import select
+from sqlalchemy import true
 from sqlalchemy.orm import column_property
 from sqlalchemy.orm import relationship
 
@@ -111,3 +114,19 @@ class VenueProvider(PcObject, Model, ProvidableMixin, DeactivableMixin):
     def nOffers(self):
         # pylint: disable=comparison-with-callable
         return Offer.query.filter(Offer.venueId == self.venueId).filter(Offer.lastProviderId == self.providerId).count()
+
+
+class AllocineVenueProvider(VenueProvider):
+    __tablename__ = "allocine_venue_provider"
+
+    id = Column(BigInteger, ForeignKey("venue_provider.id"), primary_key=True)
+
+    isDuo = Column(Boolean, default=True, server_default=true(), nullable=False)
+
+    quantity = Column(Integer, nullable=True)
+
+    internalId = Column(Text, nullable=False, unique=True)
+
+    __mapper_args__ = {
+        "polymorphic_identity": "allocine_venue_provider",
+    }

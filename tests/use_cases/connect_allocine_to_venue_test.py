@@ -2,8 +2,8 @@ from decimal import Decimal
 
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.providers.factories import AllocinePivotFactory
+from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.model_creators.provider_creators import activate_provider
-from pcapi.models import AllocineVenueProvider
 from pcapi.models import AllocineVenueProviderPriceRule
 from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
 from pcapi.use_cases.connect_venue_to_allocine import connect_venue_to_allocine

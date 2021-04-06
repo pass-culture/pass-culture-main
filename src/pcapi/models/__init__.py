@@ -5,7 +5,7 @@ from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
-from pcapi.core.providers.allocine_venue_provider import AllocineVenueProvider
+from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users.models import Favorite
@@ -56,7 +56,6 @@ __all__ = (
     "ApiErrors",
     "ApiKey",
     "AllocinePivot",
-    "AllocineVenueProvider",
     "BankInformation",
     "BeneficiaryImport",
     "BeneficiaryImportStatus",

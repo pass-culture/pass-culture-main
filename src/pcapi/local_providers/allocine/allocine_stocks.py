@@ -8,12 +8,12 @@ from dateutil.parser import parse
 from sqlalchemy import Sequence
 
 from pcapi import settings
+from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.domain.allocine import get_movie_poster
 from pcapi.domain.allocine import get_movies_showtimes
 from pcapi.domain.price_rule import AllocineStocksPriceRule
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
-from pcapi.models import AllocineVenueProvider
 from pcapi.models import EventType
 from pcapi.models import Offer
 from pcapi.models import Product

@@ -2,7 +2,7 @@ from pcapi import settings
 from pcapi.core.mails.models import Email
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.models import Mediation
-from pcapi.core.providers.allocine_venue_provider import AllocineVenueProvider
+from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users.models import Token
