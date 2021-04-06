@@ -26,9 +26,9 @@ export const getProviderInfo = providerName => {
       name: 'Praxiel',
     },
     {
-      id: '2dcom',
-      icon: 'logo-2dcom',
-      name: '2DCOM',
+      id: 'librisoft',
+      icon: 'logo-librisoft',
+      name: 'Librisoft',
     },
   ]
 
