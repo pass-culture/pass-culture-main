@@ -59,7 +59,7 @@ C'est tout le framework du Pass Culture!
 - `pc start-webapp`
 - `http://localhost:3000/` devrait être lancé et fonctionnel
 
-- Connectez-vous avec `pctest.jeune93.has-booked-some@example.com` et `user@AZERTY123`
+- Connectez-vous avec `pctest.jeune93.has-booked-some.v1@example.com` et `user@AZERTY123`
 
 #### Le portail pro
 
@@ -76,6 +76,10 @@ Les actions suivantes sont requises afin de faire fonctionner l'IDE correctement
 - `python3 -m venv venv`
 - `source venv/bin/activate`
 - `pip install -r requirements.txt`
+Troubleshooting:
+
+if you got errors, during requirements installation, about psycopg, this may help you: https://stackoverflow.com/questions/9678408/cant-install-psycopg2-with-pip-in-virtualenv-on-mac-os-x-10-7/62931654#62931654
+
 - `pip install -e .`
 - Installation de nltk:
   - Version Ubuntu: `python -m nltk.downloader punkt stopwords`
