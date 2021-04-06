@@ -30,9 +30,9 @@ def validate_coordinates(raw_latitude, raw_longitude):
         raise api_errors
 
 
-def check_valid_edition(request, venue):
-    managing_offerer_id = request.json.get("managingOffererId")
-    siret = request.json.get("siret")
+def check_venue_edition(modifications, venue):
+    managing_offerer_id = modifications.get("managingOffererId")
+    siret = modifications.get("siret")
     if managing_offerer_id:
         errors = ApiErrors()
         errors.add_error("managingOffererId", "Vous ne pouvez pas changer la structure d'un lieu")

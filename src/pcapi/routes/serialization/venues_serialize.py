@@ -1,15 +1,19 @@
 from datetime import datetime
+from typing import List
 from typing import Optional
+from typing import Union
 
 from pydantic import BaseModel
 
 from pcapi.domain.venue.venue_with_offerer_name.venue_with_offerer_name import VenueWithOffererName
+from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import humanize_field
+from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
 
 
-def serialize_venues_with_offerer_name(venues: list[VenueWithOffererName]) -> list[dict]:
+def serialize_venues_with_offerer_name(venues: List[VenueWithOffererName]) -> List[dict]:
     return [serialize_venue_with_offerer_name(venue) for venue in venues]
 
 
@@ -39,7 +43,7 @@ class GetVenueManagingOffererResponseModel(BaseModel):
     dateCreated: datetime
     dateModifiedAtLastProvider: Optional[datetime]
     demarchesSimplifieesApplicationId: Optional[str]
-    fieldsUpdated: list[str]
+    fieldsUpdated: List[str]
     iban: Optional[str]
     id: str
     idAtProviders: Optional[str]
@@ -67,7 +71,7 @@ class GetVenueResponseModel(BaseModel):
     dateModifiedAtLastProvider: Optional[datetime]
     demarchesSimplifieesApplicationId: Optional[str]
     departementCode: Optional[str]
-    fieldsUpdated: list[str]
+    fieldsUpdated: List[str]
     iban: Optional[str]
     id: str
     idAtProviders: Optional[str]
@@ -93,3 +97,24 @@ class GetVenueResponseModel(BaseModel):
     class Config:
         orm_mode = True
         json_encoders = {datetime: format_into_utc_date}
+
+
+class EditVenueBodyModel(BaseModel):
+    name: Optional[str]
+    siret: Optional[str]
+    latitude: Optional[Union[float, str]]
+    longitude: Optional[Union[float, str]]
+    bookingEmail: Optional[str]
+    postalCode: Optional[str]
+    city: Optional[str]
+    publicName: Optional[str]
+    comment: Optional[str]
+    venueTypeId: Optional[int]
+    venueLabelId: Optional[int]
+
+    _dehumanize_venue_label_id = dehumanize_field("venueLabelId")
+    _dehumanize_venue_type_id = dehumanize_field("venueTypeId")
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
