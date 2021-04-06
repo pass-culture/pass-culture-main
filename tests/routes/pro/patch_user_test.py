@@ -20,6 +20,7 @@ class Returns200:
             "publicName": "publicName",
             "firstName": "firstName",
             "lastName": "lastName",
+            "email": "new@example.com",
             "postalCode": "93020",
             "phoneNumber": "0612345678",
             "departementCode": "97",
@@ -34,6 +35,7 @@ class Returns200:
         assert user.publicName == "publicName"
         assert user.firstName == "firstName"
         assert user.lastName == "lastName"
+        assert user.email == "new@example.com"
         assert user.postalCode == "93020"
         assert user.departementCode == "97"
         assert user.phoneNumber == "0612345678"
@@ -48,7 +50,7 @@ class Returns200:
             "dateCreated": format_into_utc_date(user.dateCreated),
             "dateOfBirth": format_into_utc_date(now),
             "departementCode": beneficiary.departementCode,
-            "email": beneficiary.email,
+            "email": "new@example.com",
             "firstName": "firstName",
             "hasOffers": False,
             "hasPhysicalVenues": False,
@@ -71,6 +73,7 @@ class Returns200:
             "publicName": "publicName",
             "firstName": "firstName",
             "lastName": "lastName",
+            "email": "new@example.com",
             "postalCode": "93020",
             "phoneNumber": "06 1 234 56 78",
             "departementCode": "97",
@@ -88,10 +91,15 @@ class Returns200:
 class Returns400:
     @pytest.mark.usefixtures("db_session")
     def when_changes_are_forbidden(self, app):
-        user = users_factories.UserFactory()
-        # It's tedious to test all attributes. We focus on the most sensitive ones.
-        forbidden_attributes = {
-            "email": "new@example.com",
+        # given
+        beneficiary = users_factories.UserFactory()
+
+        data = {
+            # Changing this field is allowed...
+            "publicName": "plop",
+            "firstName": "Jean",
+            "lastName": "Martin",
+            # ... but none of the following fields.
             "isAdmin": True,
             "isBeneficiary": False,
             "dateCreated": "2018-08-01 12:00:00",
@@ -99,19 +107,21 @@ class Returns400:
             "resetPasswordTokenValidityLimit": "2020-07-01 12:00:00",
         }
 
-        client = TestClient(app.test_client()).with_auth(email=user.email)
+        # when
+        response = TestClient(app.test_client()).with_auth(email=beneficiary.email).patch("/users/current", json=data)
 
-        data = {
-            "publicName": "plop",
-            "firstName": "Jean",
-            "lastName": "Martin",
-        }
-        for attribute, value in forbidden_attributes.items():
-            response = client.patch("/users/current", json={attribute: value, **data})
-            # assert response.status_code == 400
-            assert response.json[attribute] == ["Vous ne pouvez pas changer cette information"]
-            user = User.query.get(user.id)
-            assert getattr(user, attribute) != value
+        # then
+        user = User.query.get(beneficiary.id)
+        assert user.publicName != "plop"  # not updated
+        assert response.status_code == 400
+        assert "publicName" not in response.json
+        assert "firstName" not in response.json
+        assert "lastName" not in response.json
+        data.pop("publicName")
+        data.pop("firstName")
+        data.pop("lastName")
+        for key in data:
+            assert response.json[key] == ["Vous ne pouvez pas changer cette information"]
 
     @pytest.mark.usefixtures("db_session")
     def when_optional_fields_are_provided_but_emtpy(self, app):
@@ -120,6 +130,7 @@ class Returns400:
         data = {
             "firstName": "",
             "lastName": "",
+            "email": "",
             "phoneNumber": "",
         }
 
@@ -131,8 +142,10 @@ class Returns400:
         user = User.query.get(pro.id)
         assert user.firstName == pro.firstName
         assert user.lastName == pro.lastName
+        assert user.email == pro.email
 
         assert response.json == {
+            "email": ["Ce champ est obligatoire"],
             "firstName": ["Ce champ est obligatoire"],
             "lastName": ["Ce champ est obligatoire"],
             "phoneNumber": ["Ce champ est obligatoire"],
@@ -145,6 +158,7 @@ class Returns400:
         data = {
             "firstName": "Eren",
             "lastName": "Jäger",
+            "email": "eren.kyojin@example.com",
             "phoneNumber": "0x abc 23 7+ e",
         }
 
@@ -164,6 +178,7 @@ class Returns400:
         data = {
             "firstName": "Eren",
             "lastName": "Jäger",
+            "email": "eren.kyojin@example.com",
             "phoneNumber": "66 08 89 86 76",
         }
 
@@ -183,6 +198,7 @@ class Returns400:
         data = {
             "firstName": "Eren",
             "lastName": "Jäger",
+            "email": "eren.kyojin@example.com",
             "phoneNumber": "06 08 89 86 76 66",
         }
 
@@ -202,6 +218,7 @@ class Returns400:
         data = {
             "firstName": "Eren",
             "lastName": "Jäger",
+            "email": "eren.kyojin@example.com",
             "phoneNumber": "06 08 89",
         }
 

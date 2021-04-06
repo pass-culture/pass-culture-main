@@ -18,6 +18,7 @@ class PatchUserBodyModel(BaseModel):
     cultural_survey_id: Optional[str]
     cultural_survey_filled_date: Optional[str]
     department_code: Optional[str] = Field(None, alias="departementCode")
+    email: Optional[EmailStr]
     first_name: Optional[str]
     last_name: Optional[str]
     needs_to_fill_cultural_survey: Optional[bool]
@@ -28,6 +29,7 @@ class PatchUserBodyModel(BaseModel):
 
     _validate_first_name = validate_not_empty_string_when_provided("first_name")
     _validate_last_name = validate_not_empty_string_when_provided("last_name")
+    _validate_email = validate_not_empty_string_when_provided("email")
     _validate_phone_number = validate_not_empty_string_when_provided("phone_number")
     _validate_phone_number_format = validate_phone_number_format("phone_number")
 
