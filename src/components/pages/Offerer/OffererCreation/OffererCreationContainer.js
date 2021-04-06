@@ -48,8 +48,10 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
     trackCreateOfferer: createdOffererId => {
       ownProps.tracking.trackEvent({ action: 'createOfferer', name: createdOffererId })
     },
-    redirectAfterSubmit: () => {
-      ownProps.history.replace(stateProps.isNewHomepageActive ? '/accueil' : '/structures')
+    redirectAfterSubmit: createdOffererId => {
+      ownProps.history.replace(
+        stateProps.isNewHomepageActive ? `/accueil?structure=${createdOffererId}` : '/structures'
+      )
     },
   }
 }

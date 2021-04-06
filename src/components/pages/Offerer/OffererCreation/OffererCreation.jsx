@@ -22,7 +22,7 @@ class OffererCreation extends PureComponent {
     const createdOffererId = payload.datum.id
 
     trackCreateOfferer(createdOffererId)
-    redirectAfterSubmit()
+    redirectAfterSubmit(createdOffererId)
   }
 
   onHandleFail = () => {
