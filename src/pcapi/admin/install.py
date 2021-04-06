@@ -5,6 +5,7 @@ from sqlalchemy.orm.session import Session
 
 from pcapi.admin.custom_views.admin_user_view import AdminUserView
 from pcapi.admin.custom_views.allocine_pivot_view import AllocinePivotView
+from pcapi.admin.custom_views.api_key_view import ApiKeyView
 from pcapi.admin.custom_views.beneficiary_import_view import BeneficiaryImportView
 from pcapi.admin.custom_views.beneficiary_user_view import BeneficiaryUserView
 from pcapi.admin.custom_views.booking_view import BookingView
@@ -22,6 +23,7 @@ from pcapi.admin.custom_views.venue_view import VenueView
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.users.models import User
 from pcapi.models import AllocinePivot
+from pcapi.models import ApiKey
 from pcapi.models import BeneficiaryImport
 from pcapi.models import Criterion
 from pcapi.models import Feature
@@ -89,6 +91,7 @@ def install_admin_views(admin: Admin, session: Session) -> None:
     )
     admin.add_view(FeatureView(Feature, session, name="Feature Flipping", category=None))
     admin.add_view(BeneficiaryImportView(BeneficiaryImport, session, name="Imports DMS", category=Category.USERS))
+    admin.add_view(ApiKeyView(ApiKey, session, name="Clés API", category=Category.USERS))
     admin.add_view(
         AllocinePivotView(AllocinePivot, session, name="Pivot Allocine", category=Category.OFFRES_STRUCTURES_LIEUX)
     )
