@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.core.providers.models import VenueProvider
 from pcapi.local_providers.provider_manager import _remove_worker_id_after_venue_provider_sync_error
 from pcapi.local_providers.provider_manager import do_update
 from pcapi.local_providers.provider_manager import synchronize_data_for_provider
@@ -15,7 +16,6 @@ from pcapi.model_creators.generic_creators import create_provider
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.generic_creators import create_venue_provider
 from pcapi.model_creators.provider_creators import activate_provider
-from pcapi.models import VenueProvider
 from pcapi.repository import repository
 
 from tests.local_providers.provider_test_utils import TestLocalProvider

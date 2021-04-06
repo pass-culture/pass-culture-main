@@ -4,12 +4,12 @@ import pytest
 
 from pcapi.core.offers import factories as offer_factories
 from pcapi.core.providers.factories import AllocinePivotFactory
+from pcapi.core.providers.models import VenueProvider
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as user_factories
 from pcapi.model_creators.generic_creators import create_venue_provider
 from pcapi.model_creators.provider_creators import activate_provider
 from pcapi.models import ApiErrors
-from pcapi.models import VenueProvider
 from pcapi.repository import repository
 from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
 from pcapi.utils.human_ids import dehumanize

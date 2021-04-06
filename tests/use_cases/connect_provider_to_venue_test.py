@@ -4,12 +4,12 @@ from unittest.mock import patch
 import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.providers.models import VenueProvider
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_provider
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.provider_creators import activate_provider
 from pcapi.models import ApiErrors
-from pcapi.models import VenueProvider
 from pcapi.repository import repository
 from pcapi.use_cases.connect_venue_to_provider import connect_venue_to_provider
 

@@ -2,7 +2,7 @@ from flask import request
 from sqlalchemy.orm import query
 
 from pcapi.admin.base_configuration import BaseAdminView
-from pcapi.models import VenueProvider
+from pcapi.core.providers.models import VenueProvider
 
 
 class VenueProviderView(BaseAdminView):

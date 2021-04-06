@@ -1,6 +1,6 @@
 from sqlalchemy import not_
 
-from pcapi.models import VenueProvider
+from pcapi.core.providers.models import VenueProvider
 
 
 def get_active_venue_providers_for_specific_provider(provider_id: int) -> list[VenueProvider]:

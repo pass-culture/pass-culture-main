@@ -1,6 +1,7 @@
 from typing import Optional
 
 from pcapi.core.providers.models import Provider
+from pcapi.core.providers.models import VenueProvider
 from pcapi.infrastructure.container import api_fnac_stocks
 from pcapi.infrastructure.container import api_libraires_stocks
 from pcapi.infrastructure.container import api_praxiel_stocks
@@ -8,7 +9,6 @@ from pcapi.infrastructure.container import api_titelive_stocks
 from pcapi.local_providers.provider_api import synchronize_provider_api
 from pcapi.models import ApiErrors
 from pcapi.models import Venue
-from pcapi.models import VenueProvider
 from pcapi.repository import repository
 
 

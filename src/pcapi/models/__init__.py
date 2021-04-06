@@ -7,7 +7,7 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.providers.allocine_venue_provider import AllocineVenueProvider
 from pcapi.core.providers.models import Provider
-from pcapi.core.providers.venue_provider import VenueProvider
+from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users.models import Favorite
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import User
@@ -80,7 +80,6 @@ __all__ = (
     "Mediation",
     "Stock",
     "Offerer",
-    "VenueProvider",
     "AllocineVenueProviderPriceRule",
     "LocalProviderEvent",
     "OfferCriterion",

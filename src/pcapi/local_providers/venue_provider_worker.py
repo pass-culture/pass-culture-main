@@ -4,8 +4,8 @@ from time import sleep
 from pcapi import settings
 from pcapi.connectors.scalingo_api import ScalingoApiException
 from pcapi.connectors.scalingo_api import run_process_in_one_off_container
+from pcapi.core.providers.models import VenueProvider
 from pcapi.local_providers.provider_manager import synchronize_venue_provider
-from pcapi.models import VenueProvider
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
 from pcapi.repository import repository

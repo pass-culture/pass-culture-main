@@ -3,11 +3,11 @@ from datetime import datetime
 from sqlalchemy import Sequence
 
 from pcapi.core.bookings.repository import count_not_cancelled_bookings_quantity_by_stock_id
+from pcapi.core.providers.models import VenueProvider
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Offer
 from pcapi.models import Stock
-from pcapi.models import VenueProvider
 from pcapi.models.db import Model
 from pcapi.models.db import db
 from pcapi.repository import product_queries

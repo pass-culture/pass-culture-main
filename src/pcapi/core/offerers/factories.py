@@ -1,6 +1,5 @@
 import factory
 
-from pcapi import models
 from pcapi.core.offers.factories import VenueFactory
 import pcapi.core.providers.models
 from pcapi.core.testing import BaseFactory
@@ -25,7 +24,7 @@ class APIProviderFactory(BaseFactory):
 
 class VenueProviderFactory(BaseFactory):
     class Meta:
-        model = models.VenueProvider
+        model = pcapi.core.providers.models.VenueProvider
 
     venue = factory.SubFactory(VenueFactory)
     provider = factory.SubFactory(ProviderFactory)

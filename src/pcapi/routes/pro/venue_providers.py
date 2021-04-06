@@ -4,7 +4,7 @@ from flask import jsonify
 from flask import request
 from flask_login import login_required
 
-from pcapi.core.providers.venue_provider import VenueProvider
+from pcapi.core.providers.models import VenueProvider
 from pcapi.flask_app import private_api
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle

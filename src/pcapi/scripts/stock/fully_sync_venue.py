@@ -1,8 +1,8 @@
 import logging
 
 from pcapi.core.offerers.models import Venue
+from pcapi.core.providers.models import VenueProvider
 from pcapi.local_providers.provider_manager import synchronize_venue_provider
-from pcapi.models import VenueProvider
 from pcapi.models import db
 from pcapi.repository import repository
 

@@ -4,6 +4,7 @@ from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.models import Mediation
 from pcapi.core.providers.allocine_venue_provider import AllocineVenueProvider
 from pcapi.core.providers.models import Provider
+from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import User
 from pcapi.local_providers.install import install_local_providers
@@ -30,7 +31,6 @@ from pcapi.models import Stock
 from pcapi.models import UserOfferer
 from pcapi.models import UserSession
 from pcapi.models import Venue
-from pcapi.models import VenueProvider
 from pcapi.models import VenueType
 from pcapi.models.activity import load_activity
 from pcapi.models.db import db

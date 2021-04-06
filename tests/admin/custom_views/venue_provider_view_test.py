@@ -6,7 +6,7 @@ from pcapi.admin.custom_views.venue_provider_view import VenueProviderView
 from pcapi.admin.custom_views.venue_view import _get_venue_provider_link
 from pcapi.core.offerers.factories import VenueProviderFactory
 from pcapi.core.offers.factories import VenueFactory
-from pcapi.models import VenueProvider
+from pcapi.core.providers.models import VenueProvider
 
 
 class VenueProviderViewTest:

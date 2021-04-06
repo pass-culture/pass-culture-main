@@ -2,7 +2,7 @@ import logging
 from typing import Callable
 from typing import Optional
 
-from pcapi.core.providers.venue_provider import VenueProvider
+from pcapi.core.providers.models import VenueProvider
 import pcapi.local_providers
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.provider_api import synchronize_provider_api
