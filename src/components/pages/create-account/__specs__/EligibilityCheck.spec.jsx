@@ -245,6 +245,39 @@ describe('eligibility check page', () => {
       const eligibilityDateOfBirthInputUpdated = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
       expect(eligibilityDateOfBirthInputUpdated.prop('value')).toBe('05/03/1997')
     })
+
+    it('should not display mask if user hasnt fill dob input yet', () => {
+      // when
+      const wrapper = mount(
+        <MemoryRouter>
+          <EligibilityCheck {...props} />
+        </MemoryRouter>
+      )
+
+      // then
+      const dateOfBirthInput = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
+      expect(dateOfBirthInput.prop('value')).toBe('')
+    })
+
+    it('should display mask once user starts entering their day of birth', () => {
+      // given
+      const wrapper = mount(
+        <MemoryRouter>
+          <EligibilityCheck {...props} />
+        </MemoryRouter>
+      )
+      const dateOfBirthInput = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
+
+      // when
+      act(() => {
+        dateOfBirthInput.invoke('onChange')({ target: { value: '1' } })
+      })
+      wrapper.update()
+
+      // then
+      const updatedDateOfBirthInput = wrapper.find('input[placeholder="JJ/MM/AAAA"]')
+      expect(updatedDateOfBirthInput.prop('value')).toBe('1_/__/____')
+    })
   })
 
   describe('when user submits form', () => {

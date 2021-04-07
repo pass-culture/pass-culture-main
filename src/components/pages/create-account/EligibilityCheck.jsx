@@ -157,12 +157,11 @@ const EligibilityCheck = ({
           >
             <div>
               {!wholeFranceOpening && (
-                <label htmlFor="postal-code">
+                <label>
                   {'Quel est ton code postal de résidence ?'}
                   <input
-                    aria-label="Renseigne ton code postal de résidence (Exemple: 75017)"
+                    aria-label="Renseigne ton code postal de résidence (Exemple : 75017)"
                     autoComplete="postal-code"
-                    id="postal-code"
                     inputMode="numeric"
                     maxLength="5"
                     onChange={handlePostalCodeInputChange}
@@ -172,7 +171,7 @@ const EligibilityCheck = ({
                   />
                 </label>
               )}
-              <label htmlFor="birth-date">
+              <label>
                 {'Quelle est ta date de naissance ?'}
                 <InputMask
                   aria-label="Renseigne ta date de naissance sous la forme JJ/MM/AAAA"
@@ -180,7 +179,6 @@ const EligibilityCheck = ({
                   className={`date-of-birth-input ${
                     hasAnErrorMessage ? 'date-of-birth-input-error' : ''
                   }`}
-                  id="birth-date"
                   inputMode="numeric"
                   mask={dateOfBirthInputValue.length > 0 ? '99/99/9999' : null}
                   onChange={handleDOBInputChange}

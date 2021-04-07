@@ -8,6 +8,7 @@ import ContactSaved from '../ContactSaved/ContactSaved'
 import { checkIfEmailIsValid } from '../domain/checkIfEmailIsValid'
 
 const HYPHEN = '-'
+const EMAIL_ADRESS_LABEL = 'Adresse e-mail'
 
 const EligibleSoon = ({ birthDate, body, postalCode, title, visual }) => {
   const [emailValue, setEmailValue] = useState('')
@@ -72,11 +73,11 @@ const EligibleSoon = ({ birthDate, body, postalCode, title, visual }) => {
       <div className="buttons-container">
         <form onSubmit={handleSubmit}>
           <input
-            aria-label="Adresse e-mail"
+            aria-label={EMAIL_ADRESS_LABEL}
             autoComplete="email"
             onChange={handleEmailInputChange}
-            placeholder="Adresse e-mail"
-            title="Adresse e-mail"
+            placeholder={EMAIL_ADRESS_LABEL}
+            title={EMAIL_ADRESS_LABEL}
             type="email"
             value={emailValue}
           />
