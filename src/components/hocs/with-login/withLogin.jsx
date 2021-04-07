@@ -23,7 +23,7 @@ export default ({
         const isLoggedIn = !!currentUser
 
         if (isLoggedIn) {
-          setUser({ id: currentUser.pk });
+          setUser({ id: currentUser.pk })
           handleSuccess({ currentUser, history, isHomepageDisabled, location })
         }
         else handleFail(history, location)

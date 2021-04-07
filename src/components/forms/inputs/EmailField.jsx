@@ -25,7 +25,7 @@ class EmailField extends PureComponent {
       >
         <InputLabel
           label={label}
-          required={required}
+          required={!!required}
           sublabel={sublabel}
         />
         <div className={`input-inner${hasErrorMessage(meta)}`}>

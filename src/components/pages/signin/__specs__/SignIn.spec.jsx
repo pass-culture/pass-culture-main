@@ -65,7 +65,7 @@ describe('component | SignIn', () => {
       wrapper
         .find(PasswordField)
         .find('input')
-        .simulate('change', { target: { value: 'abcdef1234' } })
+        .simulate('change', { target: { value: 'a!@d1d@#bcdeFf1234' } })
       const signInButton = wrapper.findWhere(node => node.text() === 'Connexion').first()
 
       // when
@@ -73,7 +73,35 @@ describe('component | SignIn', () => {
 
       // then
       expect(props.signIn).toHaveBeenCalledWith(
-        { identifier: 'pc-beneficiary@example.com', password: 'abcdef1234' },
+        { identifier: 'pc-beneficiary@example.com', password: 'a!@d1d@#bcdeFf1234' },
+        expect.any(Function),
+        expect.any(Function)
+      )
+    })
+
+    it('should fail to trigger sign in when form is incorrect and user click on sign in button', () => {
+      // given
+      const wrapper = mount(
+        <Router history={history}>
+          <SignIn {...props} />
+        </Router>
+      )
+      wrapper
+        .find(EmailField)
+        .find('input')
+        .simulate('change', { target: { value: '' } })
+      wrapper
+        .find(PasswordField)
+        .find('input')
+        .simulate('change', { target: { value: 'abcdef1234' } })
+      const signInButton = wrapper.findWhere(node => node.text() === 'Connexion').first()
+
+      // when
+      signInButton.simulate('submit')
+
+      // then
+      expect(props.signIn).not.toHaveBeenCalledWith(
+        { identifier: '', password: 'abcdef1234' },
         expect.any(Function),
         expect.any(Function)
       )
@@ -93,7 +121,7 @@ describe('component | SignIn', () => {
       wrapper
         .find(PasswordField)
         .find('input')
-        .simulate('change', { target: { value: 'abcdef1234' } })
+        .simulate('change', { target: { value: 'abcdef@!E4C12q1234' } })
       const signInButton = wrapper.findWhere(node => node.text() === 'Connexion').first()
 
       // when
@@ -118,7 +146,7 @@ describe('component | SignIn', () => {
       wrapper
         .find(PasswordField)
         .find('input')
-        .simulate('change', { target: { value: 'abcdef1234' } })
+        .simulate('change', { target: { value: 'abcdeFEW56124e!ff1234' } })
       const signInButton = wrapper.findWhere(node => node.text() === 'Connexion').first()
 
       // when
@@ -152,7 +180,7 @@ describe('component | SignIn', () => {
       wrapper
         .find(PasswordField)
         .find('input')
-        .simulate('change', { target: { value: 'abcdef1234' } })
+        .simulate('change', { target: { value: 'abcde!4f32563Ff1234' } })
       const signInButton = wrapper.findWhere(node => node.text() === 'Connexion').first()
 
       // when

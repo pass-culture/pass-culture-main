@@ -9,6 +9,8 @@ import FormError from '../../forms/FormError'
 import FormFooter from '../../forms/FormFooter'
 import parseSubmitErrors from '../../forms/utils/parseSubmitErrors'
 import { campaignTracker } from '../../../tracking/mediaCampaignsTracking'
+import validateEmailField from '../../forms/validators/validateEmailField'
+import validatePasswordField from '../../forms/validators/validatePasswordField'
 
 class SignIn extends PureComponent {
   constructor(props) {
@@ -81,12 +83,14 @@ class SignIn extends PureComponent {
             label="Adresse e-mail"
             name="identifier"
             placeholder="Exemple : nom@domaine.fr"
+            required={validateEmailField}
           />
           <PasswordField
             id="user-password"
             label="Mot de passe"
             name="password"
             placeholder="Exemple : IoPms44*"
+            required={validatePasswordField}
           />
           {displayErrorMessage && <FormError customMessage={genericError} />}
 
