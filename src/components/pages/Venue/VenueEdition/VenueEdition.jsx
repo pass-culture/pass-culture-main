@@ -72,6 +72,7 @@ class VenueEdition extends PureComponent {
 
   onHandleRender = formProps => {
     const {
+      isNewHomepageActive,
       venue,
       history,
       match: {
@@ -144,6 +145,7 @@ class VenueEdition extends PureComponent {
           />
           <ReturnOrSubmitControl
             canSubmit={canSubmit}
+            isNewHomepageActive={isNewHomepageActive}
             isRequestPending={isRequestPending}
             offererId={offererId}
             readOnly={readOnly}

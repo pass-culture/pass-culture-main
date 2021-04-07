@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom'
 const ReturnOrSubmitControl = ({
   canSubmit,
   isCreatedEntity,
+  isNewHomepageActive,
   isRequestPending,
   offererId,
   readOnly,
@@ -19,7 +20,9 @@ const ReturnOrSubmitControl = ({
         {readOnly ? (
           <Link
             className="primary-link"
-            to={`/structures/${offererId}`}
+            to={
+              isNewHomepageActive ? `/accueil?structure=${offererId}` : `/structures/${offererId}`
+            }
           >
             {'Terminer'}
           </Link>
@@ -41,6 +44,7 @@ const ReturnOrSubmitControl = ({
 
 ReturnOrSubmitControl.defaultProps = {
   isCreatedEntity: false,
+  isNewHomepageActive: false,
   isRequestPending: false,
   offererId: null,
   readOnly: true,
@@ -49,6 +53,7 @@ ReturnOrSubmitControl.defaultProps = {
 ReturnOrSubmitControl.propTypes = {
   canSubmit: PropTypes.bool.isRequired,
   isCreatedEntity: PropTypes.bool,
+  isNewHomepageActive: PropTypes.bool,
   isRequestPending: PropTypes.bool,
   offererId: PropTypes.string,
   readOnly: PropTypes.bool,
