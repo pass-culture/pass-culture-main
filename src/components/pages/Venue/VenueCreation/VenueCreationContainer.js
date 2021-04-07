@@ -94,7 +94,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
         payload: { errors },
       } = action
 
-      let text = 'Formulaire non validé.'
+      let text = 'Une ou plusieurs erreurs sont présentes dans le formulaire.'
       if (errors.global) {
         text = `${text} ${errors.global[0]}`
       }

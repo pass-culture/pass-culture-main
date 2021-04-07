@@ -80,7 +80,7 @@ export const mapDispatchToProps = (
     },
 
     handleSubmitRequestFail: ({ payload: { errors } }) => {
-      let text = 'Formulaire non validé.'
+      let text = 'Une ou plusieurs erreurs sont présentes dans le formulaire.'
       if (errors.global) {
         text = `${text} ${errors.global[0]}`
       }

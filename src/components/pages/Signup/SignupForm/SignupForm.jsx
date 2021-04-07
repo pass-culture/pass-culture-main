@@ -55,7 +55,7 @@ class SignupForm extends PureComponent {
   onHandleFail = () => {
     const { notifyError } = this.props
 
-    notifyError('Formulaire non validé.')
+    notifyError('Une ou plusieurs erreurs sont présentes dans le formulaire.')
   }
 
   handleSubmit = values => {
