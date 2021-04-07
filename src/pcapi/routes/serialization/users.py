@@ -36,35 +36,19 @@ class PatchProUserBodyModel(BaseModel):
 
 
 class PatchProUserResponseModel(BaseModel):
-    id: str
-    email: EmailStr
-    publicName: str
-    postalCode: str
-    phoneNumber: Optional[str]
-    departementCode: str
-    activity: Optional[str]
-    address: Optional[str]
-    isBeneficiary: bool
-    city: Optional[str]
-    civility: Optional[str]
-    dateCreated: datetime
-    dateOfBirth: Optional[datetime]
     firstName: Optional[str]
-    hasOffers: bool
-    hasPhysicalVenues: bool
-    isAdmin: bool
-    lastConnectionDate: Optional[datetime]
     lastName: Optional[str]
-    needsToFillCulturalSurvey: bool
-
-    _normalize_id = humanize_field("id")
+    email: EmailStr
+    phoneNumber: Optional[str]
+    # FIXME (dbaty, 2021-04-07): remove `public_name` and
+    # `_validate_public_name` when we remove PRO_HOMEPAGE (since the
+    # new profile update form does not allow to update the public
+    # name).
+    publicName: str
 
     class Config:
-        json_encoders = {datetime: format_into_utc_date}
         orm_mode = True
         alias_generator = to_camel
-        allow_population_by_field_name = True
-        arbitrary_types_allowed = True
 
 
 class ProUserCreationBodyModel(BaseModel):
