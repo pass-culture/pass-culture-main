@@ -447,3 +447,26 @@ class SetProTutoAsSeenTest:
 
         # Then
         assert User.query.one().hasSeenProTutorials == True
+
+
+@pytest.mark.usefixtures("db_session")
+class UpdateUserInfoTest:
+    def test_update_user_info(self):
+        user = users_factories.UserFactory(email="initial@example.com")
+
+        users_api.update_user_info(user, public_name="New Name")
+        user = User.query.one()
+        assert user.email == "initial@example.com"
+        assert user.publicName == "New Name"
+
+        users_api.update_user_info(user, email="new@example.com")
+        user = User.query.one()
+        assert user.email == "new@example.com"
+        assert user.publicName == "New Name"
+
+    def test_update_user_info_sanitizes_email(self):
+        user = users_factories.UserFactory(email="initial@example.com")
+
+        users_api.update_user_info(user, email="  NEW@example.com   ")
+        user = User.query.one()
+        assert user.email == "new@example.com"

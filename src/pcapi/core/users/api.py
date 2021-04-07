@@ -47,9 +47,6 @@ from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
 from pcapi.scripts.beneficiary import THIRTY_DAYS_IN_HOURS
-
-
-logger = logging.getLogger(__name__)
 from pcapi.utils.mailing import MailServiceException
 from pcapi.workers.push_notification_job import update_user_attributes_job
 
@@ -57,6 +54,10 @@ from . import constants
 from . import exceptions
 from ..offerers.api import create_digital_venue
 from ..offerers.models import Offerer
+
+
+UNCHANGED = object()
+logger = logging.getLogger(__name__)
 
 
 def create_email_validation_token(user: User) -> Token:
@@ -282,6 +283,22 @@ def change_user_email(token: str) -> None:
     logger.info("User has changed their email", extra={"user": current_user.id})
 
     return
+
+
+def update_user_info(
+    user, email=UNCHANGED, first_name=UNCHANGED, last_name=UNCHANGED, phone_number=UNCHANGED, public_name=UNCHANGED
+):
+    if email is not UNCHANGED:
+        user.email = format_email(email)
+    if first_name is not UNCHANGED:
+        user.firstName = first_name
+    if last_name is not UNCHANGED:
+        user.lastName = last_name
+    if phone_number is not UNCHANGED:
+        user.phoneNumber = phone_number
+    if public_name is not UNCHANGED:
+        user.publicName = public_name
+    repository.save(user)
 
 
 def _build_link_for_email_change(current_email: str, new_email: str) -> str:

@@ -10,6 +10,8 @@ from pcapi.core.users.models import ExpenseDomain
 from pcapi.core.users.models import User
 from pcapi.models.api_errors import ApiErrors
 from pcapi.serialization.utils import humanize_field
+from pcapi.serialization.utils import to_camel
+from pcapi.serialization.utils import validate_not_empty_string_when_provided
 from pcapi.utils.date import format_into_utc_date
 
 
@@ -112,3 +114,13 @@ class BeneficiaryAccountResponse(BaseModel):
     class Config:
         orm_mode = True
         json_encoders = {datetime: format_into_utc_date}
+
+
+class PatchBeneficiaryBodyModel(BaseModel):
+    public_name: Optional[str]
+
+    _validate_public_name = validate_not_empty_string_when_provided("public_name")
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"

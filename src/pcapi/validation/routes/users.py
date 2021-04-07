@@ -8,27 +8,6 @@ from pcapi.models import ApiErrors
 from pcapi.models.api_errors import ResourceNotFoundError
 
 
-def check_allowed_changes_for_user(data) -> None:
-    changes_allowed = {
-        "culturalSurveyId",
-        "culturalSurveyFilledDate",
-        "departementCode",
-        "lastConnectionDate",
-        "hasSeenTutorials",
-        "needsToFillCulturalSurvey",
-        "phoneNumber",
-        "postalCode",
-        "publicName",
-    }
-    changes_asked = set(data)
-    api_errors = ApiErrors()
-    changes_not_allowed = changes_asked.difference(changes_allowed)
-    if changes_not_allowed:
-        for change in changes_not_allowed:
-            api_errors.add_error(change, "Vous ne pouvez pas changer cette information")
-        raise api_errors
-
-
 def check_valid_signup_webapp(request: Request) -> None:
     contact_ok = request.json.get("contact_ok")
     password = request.json.get("password")

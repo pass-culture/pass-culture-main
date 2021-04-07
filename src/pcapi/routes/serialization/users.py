@@ -3,7 +3,6 @@ from typing import Optional
 
 from pydantic import BaseModel
 from pydantic import EmailStr
-from pydantic import Field
 from pydantic.class_validators import validator
 
 from pcapi.domain.password import check_password_strength
@@ -14,18 +13,16 @@ from pcapi.serialization.utils import validate_phone_number_format
 from pcapi.utils.date import format_into_utc_date
 
 
-class PatchUserBodyModel(BaseModel):
-    cultural_survey_id: Optional[str]
-    cultural_survey_filled_date: Optional[str]
-    department_code: Optional[str] = Field(None, alias="departementCode")
-    email: Optional[EmailStr]
+class PatchProUserBodyModel(BaseModel):
     first_name: Optional[str]
     last_name: Optional[str]
-    needs_to_fill_cultural_survey: Optional[bool]
+    email: Optional[EmailStr]
     phone_number: Optional[str]
-    postal_code: Optional[str]
+    # FIXME (dbaty, 2021-04-07): remove `public_name` and
+    # `_validate_public_name` when we remove PRO_HOMEPAGE (since the
+    # new profile update form does not allow to update the public
+    # name).
     public_name: Optional[str]
-    has_seen_tutorials: Optional[bool]
 
     _validate_first_name = validate_not_empty_string_when_provided("first_name")
     _validate_last_name = validate_not_empty_string_when_provided("last_name")
@@ -38,7 +35,7 @@ class PatchUserBodyModel(BaseModel):
         extra = "forbid"
 
 
-class PatchUserResponseModel(BaseModel):
+class PatchProUserResponseModel(BaseModel):
     id: str
     email: EmailStr
     publicName: str

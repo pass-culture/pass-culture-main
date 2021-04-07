@@ -10,27 +10,20 @@ from tests.conftest import TestClient
 
 @pytest.mark.usefixtures("db_session")
 def test_patch_beneficiary(app):
-    user = UserFactory(address="1 rue des machines")
+    user = UserFactory()
     data = {
         "publicName": "Anne",
-        "postalCode": "93020",
-        "phoneNumber": "1234567890",
-        "departementCode": "97",
-        "hasSeenTutorials": True,
     }
 
     client = TestClient(app.test_client()).with_auth(email=user.email)
     response = client.patch("/beneficiaries/current", json=data)
 
     assert user.publicName == data["publicName"]
-    assert user.postalCode == data["postalCode"]
-    assert user.phoneNumber == data["phoneNumber"]
-    assert user.departementCode == data["departementCode"]
     assert response.status_code == 200
     assert response.json == {
         "pk": user.id,
         "activity": None,
-        "address": "1 rue des machines",
+        "address": user.address,
         "city": "Paris",
         "civility": None,
         "domainsCredit": {
@@ -40,7 +33,7 @@ def test_patch_beneficiary(app):
         },
         "dateCreated": format_into_utc_date(user.dateCreated),
         "dateOfBirth": "2000-01-01T00:00:00Z",
-        "departementCode": "97",
+        "departementCode": user.departementCode,
         "deposit_version": 1,
         "email": user.email,
         "expenses": [
@@ -57,15 +50,35 @@ def test_patch_beneficiary(app):
         "isEmailValidated": True,
         "lastName": "Doux",
         "needsToFillCulturalSurvey": True,
-        "needsToSeeTutorials": False,
-        "phoneNumber": "1234567890",
-        "postalCode": "93020",
+        "needsToSeeTutorials": True,
+        "phoneNumber": user.phoneNumber,
+        "postalCode": user.postalCode,
         "publicName": "Anne",
         "suspensionReason": "",
         "wallet_balance": 500.0,
         "deposit_expiration_date": format_into_utc_date(user.deposit_expiration_date),
         "wallet_is_activated": True,
     }
+
+
+@pytest.mark.usefixtures("db_session")
+def test_reject_pro_user(app):
+    pro = UserFactory(isBeneficiary=False)
+    initial = {
+        "email": pro.email,
+        "publicName": pro.publicName,
+    }
+    data = {
+        "email": "new@example.com",
+        "publicName": "New name",
+    }
+    client = TestClient(app.test_client()).with_auth(email=pro.email)
+    response = client.patch("/beneficiaries/current", json=data)
+
+    assert response.status_code == 400
+    pro = User.query.get(pro.id)
+    assert pro.email == initial["email"]
+    assert pro.publicName == initial["publicName"]
 
 
 @pytest.mark.usefixtures("db_session")

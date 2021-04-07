@@ -1,6 +1,7 @@
 import logging
 from typing import Tuple
 
+from flask import abort
 from flask import jsonify
 from flask import request
 from flask_login import current_user
@@ -10,10 +11,9 @@ from jwt import InvalidTokenError
 
 from pcapi import settings
 from pcapi.connectors.api_recaptcha import check_webapp_recaptcha_token
+from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import repository as users_repo
-from pcapi.core.users.api import change_user_email
-from pcapi.core.users.api import send_user_emails_for_email_change
 from pcapi.flask_app import private_api
 from pcapi.flask_app import public_api
 from pcapi.models.api_errors import ApiErrors
@@ -21,15 +21,13 @@ from pcapi.routes.serialization import beneficiaries as serialization_beneficiar
 from pcapi.routes.serialization.beneficiaries import BeneficiaryAccountResponse
 from pcapi.routes.serialization.beneficiaries import ChangeBeneficiaryEmailBody
 from pcapi.routes.serialization.beneficiaries import ChangeBeneficiaryEmailRequestBody
+from pcapi.routes.serialization.beneficiaries import PatchBeneficiaryBodyModel
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.use_cases.update_user_informations import AlterableUserInformations
-from pcapi.use_cases.update_user_informations import update_user_informations
 from pcapi.utils.login_manager import stamp_session
 from pcapi.utils.mailing import MailServiceException
 from pcapi.utils.rate_limiting import email_rate_limiter
 from pcapi.utils.rate_limiting import ip_rate_limiter
 from pcapi.utils.rest import login_or_api_key_required
-from pcapi.validation.routes.users import check_allowed_changes_for_user
 from pcapi.validation.routes.users import check_valid_signin
 from pcapi.workers.beneficiary_job import beneficiary_job
 
@@ -47,29 +45,16 @@ def get_beneficiary_profile() -> BeneficiaryAccountResponse:
     return response
 
 
-# @debt api-migration
 @private_api.route("/beneficiaries/current", methods=["PATCH"])
 @login_or_api_key_required
 @spectree_serialize(response_model=BeneficiaryAccountResponse)
-def patch_beneficiary() -> BeneficiaryAccountResponse:
-    data = request.json.keys()
-    check_allowed_changes_for_user(data)
-
-    user_informations = AlterableUserInformations(
-        user_id=current_user.id,
-        cultural_survey_id=request.json.get("culturalSurveyId"),
-        cultural_survey_filled_date=request.json.get("culturalSurveyFilledDate"),
-        department_code=request.json.get("departementCode"),
-        last_connection_date=request.json.get("lastConnectionDate"),
-        needs_to_fill_cultural_survey=request.json.get("needsToFillCulturalSurvey"),
-        phone_number=request.json.get("phoneNumber"),
-        postal_code=request.json.get("postalCode"),
-        public_name=request.json.get("publicName"),
-        has_seen_tutorials=request.json.get("hasSeenTutorials"),
-    )
-
-    user = update_user_informations(user_informations)
-
+def patch_beneficiary(body: PatchBeneficiaryBodyModel) -> BeneficiaryAccountResponse:
+    user = current_user._get_current_object()
+    # This route should ony be used by "beneficiary" users because it
+    # allows to update different infos from `/users/current`.
+    if not user.isBeneficiary:
+        abort(400)
+    users_api.update_user_info(user, **body.dict())
     return BeneficiaryAccountResponse.from_orm(user)
 
 
@@ -90,7 +75,7 @@ def change_beneficiary_email_request(body: ChangeBeneficiaryEmailRequestBody) ->
         raise errors from exc
 
     try:
-        send_user_emails_for_email_change(user, body.new_email)
+        users_api.send_user_emails_for_email_change(user, body.new_email)
     except MailServiceException as mail_service_exception:
         errors.status_code = 503
         errors.add_error("email", "L'envoi d'email a échoué")
@@ -101,7 +86,7 @@ def change_beneficiary_email_request(body: ChangeBeneficiaryEmailRequestBody) ->
 @spectree_serialize(on_success_status=204, on_error_statuses=[400])
 def change_beneficiary_email(body: ChangeBeneficiaryEmailBody) -> None:
     try:
-        change_user_email(body.token)
+        users_api.change_user_email(body.token)
     except InvalidTokenError as error:
         errors = ApiErrors()
         errors.status_code = 400
