@@ -5,6 +5,8 @@ import pytest
 
 from pcapi.connectors.api_entreprises import ApiEntrepriseException
 from pcapi.connectors.api_entreprises import get_by_offerer
+from pcapi.connectors.api_entreprises import get_offerer_legal_category
+from pcapi.connectors.utils.legal_category_code_to_labels import CODE_TO_CATEGORY_MAPPING
 from pcapi.model_creators.generic_creators import create_offerer
 
 
@@ -239,3 +241,69 @@ class GetByOffererTest:
 
         # Then
         assert set(response["other_etablissements_sirets"]) == {"39525144000032"}
+
+    @patch("pcapi.connectors.api_entreprises.get_by_offerer")
+    @patch.dict(CODE_TO_CATEGORY_MAPPING, {5202: "Société en nom collectif"})
+    def test_returns_legal_category_code_and_label(self, get_by_offerer_mock):
+        offerer = create_offerer(siren="395251440")
+
+        get_by_offerer_mock.return_value = {
+            "unite_legale": {
+                "siren": "395251440",
+                "denomination": "UGC CINE CITE ILE DE FRANCE",
+                "categorie_juridique": "5202",
+                "etablissement_siege": {
+                    "siren": "395251440",
+                    "siret": "39525144000016",
+                },
+                "etablissements": [],
+            }
+        }
+
+        legal_category = get_offerer_legal_category(offerer)
+        assert legal_category["legal_category_code"] == "5202"
+        assert legal_category["legal_category_label"] == "Société en nom collectif"
+
+    @patch("pcapi.connectors.api_entreprises.get_by_offerer")
+    @patch.dict(CODE_TO_CATEGORY_MAPPING, {5202: "Société en nom collectif"})
+    def test_returns_legal_category_code_and_label_when_no_label_matches_to_code(self, get_by_offerer_mock):
+        offerer = create_offerer(siren="395251440")
+
+        get_by_offerer_mock.return_value = {
+            "unite_legale": {
+                "siren": "395251440",
+                "denomination": "UGC CINE CITE ILE DE FRANCE",
+                "categorie_juridique": "5201",
+                "etablissement_siege": {
+                    "siren": "395251440",
+                    "siret": "39525144000016",
+                },
+                "etablissements": [],
+            }
+        }
+
+        legal_category = get_offerer_legal_category(offerer)
+        assert legal_category["legal_category_code"] == "5201"
+        assert legal_category["legal_category_label"] is None
+
+    @patch("pcapi.connectors.api_entreprises.get_by_offerer")
+    @patch.dict(CODE_TO_CATEGORY_MAPPING, {5202: "Société en nom collectif"})
+    def test_returns_legal_category_code_and_label_when_code_is_none(self, get_by_offerer_mock):
+        offerer = create_offerer(siren="395251440")
+
+        get_by_offerer_mock.return_value = {
+            "unite_legale": {
+                "siren": "395251440",
+                "denomination": "UGC CINE CITE ILE DE FRANCE",
+                "categorie_juridique": None,
+                "etablissement_siege": {
+                    "siren": "395251440",
+                    "siret": "39525144000016",
+                },
+                "etablissements": [],
+            }
+        }
+
+        legal_category = get_offerer_legal_category(offerer)
+        assert legal_category["legal_category_code"] is None
+        assert legal_category["legal_category_label"] is None

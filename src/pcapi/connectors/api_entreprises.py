@@ -1,6 +1,7 @@
 from typing import Dict
 from typing import List
 
+from pcapi.connectors.utils.legal_category_code_to_labels import CODE_TO_CATEGORY_MAPPING
 from pcapi.core.offerers.models import Offerer
 from pcapi.utils import requests
 
@@ -29,3 +30,10 @@ def _extract_etablissements_communs_siren(etablissements: List[dict]) -> List[di
         etablissement for etablissement in etablissements if etablissement["etablissement_siege"] == "false"
     ]
     return [etablissement["siret"] for etablissement in etablissements_communs]
+
+
+def get_offerer_legal_category(offerer: Offerer) -> Dict:
+    legal_category = get_by_offerer(offerer)["unite_legale"]["categorie_juridique"]
+    legal_category_label = CODE_TO_CATEGORY_MAPPING.get(int(legal_category)) if legal_category else None
+
+    return {"legal_category_code": legal_category, "legal_category_label": legal_category_label}
