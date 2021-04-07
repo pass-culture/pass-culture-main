@@ -22,7 +22,6 @@ def check_provider_api(url, siret, token):
     stocks = provider_api.stocks(siret, limit=1)
     assert stocks.get("total") != None, "Le total est manquant."
     assert int(stocks.get("total")) > 0, "Le total n'est pas strictement supérieur à 0."
-    assert int(stocks.get("offset")) == 0, "L'offset est manquant."
 
     assert "stocks" in stocks, 'La clé "stocks" est manquante.'
     stock = stocks["stocks"][0]
@@ -40,9 +39,6 @@ def check_provider_api(url, siret, token):
         next_stock.get("stocks")[0]["ref"] == two_stocks.get("stocks")[1]["ref"]
     ), "Le after doit correctement décaller les résultats"
     assert int(stocks.get("total")) == int(next_stock.get("total")), "Le after ne doit pas impacter le total"
-    assert (
-        int(next_stock.get("offset")) == 1
-    ), "Le after doit avoir un impacter le décalage remonté dans le champ offset"
 
     no_stocks = provider_api.stocks(
         siret, limit=1, modified_since=datetime.strftime(datetime.now(), "%Y-%m-%dT%H:%M:%SZ")
