@@ -41,7 +41,7 @@ def check_provider_api(url, siret, token):
     assert int(stocks.get("total")) == int(next_stock.get("total")), "Le after ne doit pas impacter le total"
 
     no_stocks = provider_api.stocks(
-        siret, limit=1, modified_since=datetime.strftime(datetime.now(), "%Y-%m-%dT%H:%M:%SZ")
+        siret, limit=1, modified_since=datetime.strftime(datetime.utcnow(), "%Y-%m-%dT%H:%M:%SZ")
     )
     modified_since_is_implemented = int(stocks.get("total")) > int(no_stocks.get("total"))
 
