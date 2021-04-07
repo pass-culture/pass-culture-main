@@ -41,7 +41,7 @@ const renderHomePage = async () => {
   })
 }
 
-describe('ceationLinks', () => {
+describe('creationLinks', () => {
   let baseOfferers
   let baseOfferersNames
   let virtualVenue

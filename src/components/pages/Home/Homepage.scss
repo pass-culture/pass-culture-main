@@ -32,6 +32,13 @@
 
     &.h-card-placeholder {
       min-height: rem(205px);
+
+      .h-card-inner {
+        align-items: center;
+        display: flex;
+        justify-content: center;
+        min-height: rem(205px);
+      }
     }
 
     .h-card-inner {
