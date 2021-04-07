@@ -47,6 +47,7 @@ provider_responses = [
             {"ref": ISBNs[4], "available": 17, "price": 23.989},
             {"ref": ISBNs[5], "available": 17, "price": 28.989},
             {"ref": ISBNs[6], "available": 17, "price": 28.989},
+            {"ref": ISBNs[6], "available": 17, "price": 28.989},
             {"ref": ISBNs[7], "price": 28.989},
         ],
     },
@@ -278,7 +279,6 @@ class ProviderAPICronTest:
         assert offer_ids == set([123, 134])
 
     class BuildStocksDetailsTest:
-        @pytest.mark.usefixtures("db_session")
         def test_build_stock_details_from_raw_stocks(self):
             # Given
             raw_stocks = [
@@ -302,5 +302,25 @@ class ProviderAPICronTest:
                     "offers_provider_reference": "3010000108124@siret",
                     "products_provider_reference": "3010000108124",
                     "stocks_provider_reference": "3010000108124@siret",
+                },
+            ]
+
+        def test_build_stock_details_from_raw_stocks_excludes_duplicates(self):
+            # Given
+            raw_stocks = [
+                {"ref": ISBNs[4], "available": 17, "price": 23.989},
+                {"ref": ISBNs[4], "available": 17, "price": 28.989},
+            ]
+
+            # When
+            result = synchronize_provider_api._build_stock_details_from_raw_stocks(raw_stocks, "siret")
+
+            # Then
+            assert result == [
+                {
+                    "available_quantity": 17,
+                    "offers_provider_reference": "3010000108123@siret",
+                    "products_provider_reference": "3010000108123",
+                    "stocks_provider_reference": "3010000108123@siret",
                 },
             ]

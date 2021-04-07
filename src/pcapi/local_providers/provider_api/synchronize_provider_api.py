@@ -126,18 +126,16 @@ def _get_stocks_by_batch(siret: str, provider_api: ProviderAPI, modified_since: 
 
 
 def _build_stock_details_from_raw_stocks(raw_stocks: List[Dict], venue_siret: str) -> List[Dict]:
-    stock_details = []
+    stock_details = {}
     for stock in raw_stocks:
-        stock_details.append(
-            {
-                "products_provider_reference": stock["ref"],
-                "offers_provider_reference": stock["ref"] + "@" + venue_siret,
-                "stocks_provider_reference": stock["ref"] + "@" + venue_siret,
-                "available_quantity": stock["available"],
-            }
-        )
+        stock_details[stock["ref"]] = {
+            "products_provider_reference": stock["ref"],
+            "offers_provider_reference": stock["ref"] + "@" + venue_siret,
+            "stocks_provider_reference": stock["ref"] + "@" + venue_siret,
+            "available_quantity": stock["available"],
+        }
 
-    return stock_details
+    return list(stock_details.values())
 
 
 def _build_new_offers_from_stock_details(
