@@ -3,6 +3,7 @@ import logging
 from sqlalchemy.orm.util import aliased
 
 from pcapi.models import VenueProvider
+from pcapi.models import db
 from pcapi.models.provider import Provider
 
 
@@ -24,7 +25,11 @@ def synchronize_stocks() -> None:
     )
 
     for venue_provider in venue_providers:
+        # We need to stock this value inside a variable to prevent a crash
+        # if the session is broken and we need to log the id
+        venue_provider_id = venue_provider.id
         try:
             synchronize_provider_api.synchronize_venue_provider(venue_provider)
         except Exception as exc:  # pylint: disable=broad-except
-            logger.exception("Could not synchronize venue_provider=%s: %s", venue_provider.id, exc)
+            logger.exception("Could not synchronize venue_provider=%s: %s", venue_provider_id, exc)
+            db.session.rollback()
