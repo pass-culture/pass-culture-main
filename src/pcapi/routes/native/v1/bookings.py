@@ -96,7 +96,7 @@ def get_bookings(user: User) -> BookingsResponse:
             ended_bookings.append(booking)
         else:
             ongoing_bookings.append(booking)
-            booking.qrCodeData = bookings_api.get_qr_code_data(booking.token, booking.stock.offer.extraData)
+            booking.qrCodeData = bookings_api.get_qr_code_data(booking.token)
 
     return BookingsResponse(
         ended_bookings=[

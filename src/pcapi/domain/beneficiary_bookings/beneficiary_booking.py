@@ -142,7 +142,7 @@ class BeneficiaryBooking:
     @property
     def qr_code(self) -> Optional[str]:
         if not self.is_event_expired and not self.isCancelled:
-            return bookings_api.generate_qr_code(booking_token=self.token, offer_extra_data=self.extraData)
+            return bookings_api.generate_qr_code(booking_token=self.token)
         if not self.isUsed and not self.isCancelled:
-            return bookings_api.generate_qr_code(booking_token=self.token, offer_extra_data=self.extraData)
+            return bookings_api.generate_qr_code(booking_token=self.token)
         return None

@@ -131,10 +131,10 @@ class Booking(PcObject, Model, VersionedMixin):
         if offer.isEvent:
             if self.isEventExpired or self.isCancelled:
                 return None
-            return api.generate_qr_code(self.token, self.stock.offer.extraData)
+            return api.generate_qr_code(self.token)
         if self.isUsed or self.isCancelled:
             return None
-        return api.generate_qr_code(self.token, self.stock.offer.extraData)
+        return api.generate_qr_code(self.token)
 
     @hybrid_property
     def isConfirmed(self):

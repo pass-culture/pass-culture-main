@@ -31,7 +31,7 @@ from . import validation
 
 logger = logging.getLogger(__name__)
 
-QR_CODE_PASS_CULTURE_VERSION = "v2"
+QR_CODE_PASS_CULTURE_VERSION = "v3"
 QR_CODE_VERSION = 2
 QR_CODE_BOX_SIZE = 5
 QR_CODE_BOX_BORDER = 1
@@ -226,18 +226,11 @@ def mark_as_unused(booking: Booking) -> None:
     logger.info("Booking was marked as unused", extra={"booking": booking.id})
 
 
-def get_qr_code_data(booking_token: str, offer_extra_data: typing.Optional[typing.Dict]):
-    data = f"PASSCULTURE:{QR_CODE_PASS_CULTURE_VERSION};"
-
-    if offer_extra_data and "isbn" in offer_extra_data:
-        data += f"EAN13:{offer_extra_data['isbn']};"
-
-    data += f"TOKEN:{booking_token}"
-
-    return data
+def get_qr_code_data(booking_token: str) -> str:
+    return f"PASSCULTURE:{QR_CODE_PASS_CULTURE_VERSION};TOKEN:{booking_token}"
 
 
-def generate_qr_code(booking_token: str, offer_extra_data: typing.Optional[typing.Dict]) -> str:
+def generate_qr_code(booking_token: str) -> str:
     qr = qrcode.QRCode(
         version=QR_CODE_VERSION,
         error_correction=qrcode.constants.ERROR_CORRECT_Q,
@@ -245,7 +238,7 @@ def generate_qr_code(booking_token: str, offer_extra_data: typing.Optional[typin
         border=QR_CODE_BOX_BORDER,
     )
 
-    qr.add_data(get_qr_code_data(booking_token, offer_extra_data))
+    qr.add_data(get_qr_code_data(booking_token=booking_token))
 
     image = qr.make_image(fill_color="black", back_color="white")
     return _convert_image_to_base64(image)

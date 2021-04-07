@@ -436,7 +436,7 @@ class MarkAsUnusedTest:
 class GenerateQrCodeTest:
     @mock.patch("qrcode.QRCode")
     def test_correct_technical_parameters(self, build_qr_code):
-        api.generate_qr_code(random_token(), offer_extra_data={})
+        api.generate_qr_code(random_token())
         build_qr_code.assert_called_once_with(
             version=2,
             error_correction=3,
@@ -446,7 +446,7 @@ class GenerateQrCodeTest:
 
     @mock.patch("qrcode.QRCode.make_image")
     def test_should_build_qr_code_with_correct_image_parameters(self, build_qr_code_image_parameters):
-        api.generate_qr_code(booking_token="ABCDE", offer_extra_data={})
+        api.generate_qr_code(booking_token="ABCDE")
         build_qr_code_image_parameters.assert_called_once_with(
             back_color="white",
             fill_color="black",
@@ -454,25 +454,25 @@ class GenerateQrCodeTest:
 
     @mock.patch("qrcode.QRCode.add_data")
     def test_include_product_isbn_if_provided(self, build_qr_code_booking_info):
-        api.generate_qr_code("ABCDE", offer_extra_data={})
-        build_qr_code_booking_info.assert_called_once_with("PASSCULTURE:v2;TOKEN:ABCDE")
-
-        build_qr_code_booking_info.reset_mock()
-        api.generate_qr_code("ABCDE", offer_extra_data={"isbn": "123456789"})
-        build_qr_code_booking_info.assert_called_once_with("PASSCULTURE:v2;EAN13:123456789;TOKEN:ABCDE")
+        api.generate_qr_code("ABCDE")
+        build_qr_code_booking_info.assert_called_once_with("PASSCULTURE:v3;TOKEN:ABCDE")
 
     def test_generated_qr_code(self):
-        qr_code = api.generate_qr_code("ABCDE", offer_extra_data={})
+        qr_code = api.generate_qr_code("ABCDE")
         assert isinstance(qr_code, str)
         assert qr_code == (
             "data:image/png;base64,"
-            "iVBORw0KGgoAAAANSUhEUgAAAJsAAACbAQAAAABdGtQhAAABs0lEQVR4nL1XMY7bMBCcFQXQqagf0EDeYSlp8o/8w7Hko/8VyfcR6gdURw"
-            "KSJ4VdxYc0580WJDDFDHZJzoBCPNVcPWPAZ8EiIlKq5ZcUkWEWkfrTnB+DHRnRukDHBJAclIQoNeyI8758wwVFmhdwflD1fWMF2HNjXsL5"
-            "b9BEdBw0hYQrIAkoXXOEZdIRQgaA3LoQc+tCBGCiihBJkiMMLVNPklQSmsiIjqvPrVs9mbQ6mpLhY2GI6BiUhG5uBW8uRDu6QMDpjK4uP3"
-            "DxkLR9LSds+/wlKV1v+wYz4brYyGnmBGp5Xfk+r750zXEulav9ruOq5QxOxI6uhh2x7e3bSzifqwaW1QscPNikvuzQ/9Tp6ODDxBu2fekT"
-            "AKFWHgFbhytMtL+bC3ZYdM4IWRJgR0daJkN7czoPtsLBD76cgDnTD8jvSS0m5nUGFtlLhU3ktOhE+d29c5d6kskwt0qje+SRcPBoXYhZy+"
-            "uQOzJydCFaJsMsWnmUW5jIKT16g9boHuChMbyn31XpHT3AK46wZwlx176M829QuKL0Cdi1rp7t6HQs6H4yvOGIDPR6t07+12/iD1lz9hCJ"
-            "WM0gAAAAAElFTkSuQmCC"
+            "iVBORw0KGgoAAAANSUhEUgAAAJsAAACbAQAAAABdGtQhAAABrUlEQVR4nL1XQW7bMB"
+            "CcFQVQN6ovoD9isf1XE8mhgT6rUvoR6gf0jQRoTw/OpU3QS7zdC4E5zGAXw+FSiHe1"
+            "d+8x4LNgFRGp3WXZq8iyi0j"
+            "/ac6PwUAmHP1TcMwAyUVJiNLDxvwj1a84o8r4AM5/gJcF9jQ+lvOP6u/H8UsDAs96Q"
+            "h2EDZB92QvH77DMOkIoAFAmF1OZXEwATFLpyJKkfQG83fbmSTadjriRCYHNY3LNk1m"
+            "nIxTJhmSG58aYEBiVhOCYuLpIu7pIwFFHiDcXyZsjMbnFF6GeUAO3PCcyz6moua5+y"
+            "4YDANTO9X4ISq7rsI0nAX0Pu+J6sC+P4PyoClzzXDGzwJEFmHVGhwlmw+TkgJABCLX"
+            "eI+AUAJhkf45nDLgoJUORbJJdXYNlNrQ3p3NhOxx9DfUZhoV+QfmVtcwQGJNdAQBuA"
+            "YJW1pEky+RIMhuWSWl0b++RcPGYXExFLetKIBNXmGSZDdWy7r4FQfL1cJHxKsNxPGt"
+            "uQccRHoHNl1ele/QGvmJO9iQxDdPDOP8GhQ11zsAQ2O92dToRdHcdt2xSAWY918n/+"
+            "k38Bmlp+NQ0I934AAAAAElFTkSuQmCC"
         )
 
 
