@@ -306,7 +306,16 @@ class User(PcObject, Model, NeedsValidationMixin, VersionedMixin):
 
     @property
     def is_eligible(self) -> bool:
-        return self.age is not None and self.age == constants.ELIGIBILITY_AGE
+        # To avoid import loops
+        from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_validator import (
+            _is_postal_code_eligible,
+        )
+
+        return (
+            self.age is not None
+            and self.age == constants.ELIGIBILITY_AGE
+            and _is_postal_code_eligible(self.departementCode)
+        )
 
     @property
     def eligibility_start_datetime(self) -> Optional[datetime]:

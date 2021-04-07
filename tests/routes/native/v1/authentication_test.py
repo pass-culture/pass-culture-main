@@ -305,7 +305,7 @@ def test_validate_email_with_invalid_token(mock_get_user_with_valid_token, app):
 
 @freeze_time("2018-06-01")
 def test_validate_email_when_eligible(app):
-    user = users_factories.UserFactory(isEmailValidated=False, dateOfBirth=datetime(2000, 6, 1))
+    user = users_factories.UserFactory(isEmailValidated=False, dateOfBirth=datetime(2000, 6, 1), departementCode="93")
     token = users_factories.TokenFactory(userId=user.id, type=TokenType.EMAIL_VALIDATION)
 
     assert not user.isEmailValidated

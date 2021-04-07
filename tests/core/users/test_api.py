@@ -168,7 +168,7 @@ class ValidateJwtTokenTest:
 class GenerateIdCheckTokenIfEligibleTest:
     @freeze_time("2018-06-01")
     def test_when_elible(self):
-        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1))
+        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="93")
         token = create_id_check_token(user)
         assert token
 

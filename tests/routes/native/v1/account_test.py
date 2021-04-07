@@ -382,7 +382,7 @@ class ResendEmailValidationTest:
 @freeze_time("2018-06-01")
 class GetIdCheckTokenTest:
     def test_get_id_check_token_eligible(self, app):
-        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1))
+        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="93")
         access_token = create_access_token(identity=user.email)
 
         test_client = TestClient(app.test_client())
@@ -410,7 +410,7 @@ class ShowEligibleCardTest:
         date_of_birth = datetime.now() - relativedelta(years=age, days=5)
         date_of_creation = datetime.now() - relativedelta(years=4)
         user = users_factories.UserFactory.build(
-            dateOfBirth=date_of_birth, dateCreated=date_of_creation, isBeneficiary=False
+            dateOfBirth=date_of_birth, dateCreated=date_of_creation, isBeneficiary=False, departementCode="93"
         )
         assert account_serializers.UserProfileResponse._show_eligible_card(user) == expected
 
@@ -419,7 +419,16 @@ class ShowEligibleCardTest:
         date_of_birth = datetime.now() - relativedelta(years=18, days=5)
         date_of_creation = datetime.now() - relativedelta(years=4)
         user = users_factories.UserFactory.build(
-            dateOfBirth=date_of_birth, dateCreated=date_of_creation, isBeneficiary=beneficiary
+            dateOfBirth=date_of_birth, dateCreated=date_of_creation, isBeneficiary=beneficiary, departementCode="93"
+        )
+        assert account_serializers.UserProfileResponse._show_eligible_card(user) == expected
+
+    @pytest.mark.parametrize("departement,expected", [("93", True), ("92", False)])
+    def test_against_departement(self, departement, expected):
+        date_of_birth = datetime.now() - relativedelta(years=18, days=5)
+        date_of_creation = datetime.now() - relativedelta(years=4)
+        user = users_factories.UserFactory.build(
+            dateOfBirth=date_of_birth, dateCreated=date_of_creation, isBeneficiary=False, departementCode=departement
         )
         assert account_serializers.UserProfileResponse._show_eligible_card(user) == expected
 
