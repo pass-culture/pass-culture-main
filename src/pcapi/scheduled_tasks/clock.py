@@ -6,11 +6,11 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 from flask import Flask
 
 # FIXME (xordoquy, 2021-03-01): this is to prevent circular imports when importing pcapi.core.users.api
-from pcapi import models  # pylint: disable=unused-import
 from pcapi import settings
 from pcapi.core.logging import install_logging
 from pcapi.core.offers.repository import check_stock_consistency
 from pcapi.core.offers.repository import find_tomorrow_event_stock_ids
+from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.users import api as users_api
 from pcapi.core.users.repository import get_newly_eligible_users
 from pcapi.domain.user_emails import send_newly_eligible_user_email
@@ -18,7 +18,6 @@ from pcapi.local_providers.provider_api import provider_api_stocks
 from pcapi.local_providers.provider_manager import synchronize_venue_providers_for_provider
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository.provider_queries import get_provider_by_local_class
 from pcapi.repository.user_queries import find_most_recent_beneficiary_creation_date_for_source
 from pcapi.scheduled_tasks import utils
 from pcapi.scheduled_tasks.decorators import cron_context

@@ -10,6 +10,7 @@ from pcapi.connectors.redis import send_venue_provider_data_to_redis
 from pcapi.connectors.thumb_storage import create_thumb
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
+from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.local_providers.chunk_manager import get_existing_pc_obj
 from pcapi.local_providers.chunk_manager import save_chunks
 from pcapi.local_providers.providable_info import ProvidableInfo
@@ -23,7 +24,6 @@ from pcapi.models.local_provider_event import LocalProviderEventType
 from pcapi.repository import feature_queries
 from pcapi.repository import repository
 from pcapi.repository.providable_queries import get_last_update_for_provider
-from pcapi.repository.provider_queries import get_provider_by_local_class
 
 
 logger = logging.getLogger(__name__)

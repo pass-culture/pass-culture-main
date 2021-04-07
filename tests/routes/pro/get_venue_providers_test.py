@@ -1,12 +1,12 @@
 import pytest
 
+from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.model_creators.generic_creators import create_allocine_venue_provider
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.generic_creators import create_venue_provider
 from pcapi.repository import repository
-from pcapi.repository.provider_queries import get_provider_by_local_class
 from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient

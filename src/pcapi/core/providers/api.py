@@ -1,9 +1,9 @@
 import subprocess
 
 from pcapi.core.providers.models import VenueProvider
+from pcapi.core.providers.repository import get_provider_enabled_for_pro_by_id
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
-from pcapi.repository.provider_queries import get_provider_enabled_for_pro_by_id
 from pcapi.repository.venue_queries import find_by_id
 from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
 from pcapi.use_cases.connect_venue_to_allocine import connect_venue_to_allocine

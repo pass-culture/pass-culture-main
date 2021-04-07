@@ -1,6 +1,6 @@
+from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.models import Stock
 from pcapi.repository import repository
-from pcapi.repository.provider_queries import get_provider_by_local_class
 
 
 def delete_corrupted_allocine_stocks():

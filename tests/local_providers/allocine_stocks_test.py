@@ -5,6 +5,7 @@ from unittest.mock import patch
 from freezegun import freeze_time
 import pytest
 
+from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.local_providers import AllocineStocks
 from pcapi.model_creators.generic_creators import create_allocine_venue_provider
 from pcapi.model_creators.generic_creators import create_allocine_venue_provider_price_rule
@@ -18,7 +19,6 @@ from pcapi.models import Offer
 from pcapi.models import Product
 from pcapi.models import Stock
 from pcapi.repository import repository
-from pcapi.repository.provider_queries import get_provider_by_local_class
 import pcapi.sandboxes
 from pcapi.utils.human_ids import humanize
 

@@ -1,12 +1,12 @@
 from flask import jsonify
 from flask_login import login_required
 
+from pcapi.core.providers.repository import get_enabled_providers_for_pro
+from pcapi.core.providers.repository import get_providers_enabled_for_pro_excluding_specific_provider
 from pcapi.flask_app import private_api
 from pcapi.local_providers import AllocineStocks
 from pcapi.models import Venue
 from pcapi.repository.allocine_pivot_queries import has_allocine_pivot_for_venue
-from pcapi.repository.provider_queries import get_enabled_providers_for_pro
-from pcapi.repository.provider_queries import get_providers_enabled_for_pro_excluding_specific_provider
 from pcapi.routes.serialization import as_dict
 from pcapi.utils.rest import load_or_404
 

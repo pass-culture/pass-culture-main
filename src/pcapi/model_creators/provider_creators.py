@@ -2,13 +2,13 @@ from datetime import datetime
 from inspect import isclass
 
 from pcapi.core.providers.models import Provider
+from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.local_providers.providable_info import ProvidableInfo
 import pcapi.models
 from pcapi.models import Product
 from pcapi.models.db import Model
 from pcapi.models.pc_object import PcObject
 from pcapi.repository import repository
-from pcapi.repository.provider_queries import get_provider_by_local_class
 
 
 SAVED_COUNTS = {}

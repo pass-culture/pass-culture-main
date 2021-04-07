@@ -3,9 +3,9 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.local_providers import TiteLiveThingDescriptions
 from pcapi.repository import repository
-from pcapi.repository.provider_queries import get_provider_by_local_class
 
 
 class TiteLiveThingDescriptionsTest:

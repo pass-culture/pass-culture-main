@@ -1,5 +1,6 @@
 import pytest
 
+from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.domain.price_rule import PriceRule
 from pcapi.model_creators.generic_creators import create_allocine_venue_provider
 from pcapi.model_creators.generic_creators import create_allocine_venue_provider_price_rule
@@ -9,7 +10,6 @@ from pcapi.model_creators.provider_creators import activate_provider
 from pcapi.models import AllocineVenueProviderPriceRule
 from pcapi.models import ApiErrors
 from pcapi.repository import repository
-from pcapi.repository.provider_queries import get_provider_by_local_class
 
 
 class AllocineVenueProviderPriceRuleTest:
