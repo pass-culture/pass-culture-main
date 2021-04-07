@@ -23,7 +23,7 @@ class Post:
     class Returns201:
         @pytest.mark.usefixtures("db_session")
         @override_features(SYNCHRONIZE_VENUE_PROVIDER_IN_WORKER=False)
-        @patch("pcapi.routes.pro.venue_providers.subprocess.Popen")
+        @patch("pcapi.core.providers.api.subprocess.Popen")
         @patch("pcapi.use_cases.connect_venue_to_provider._check_venue_can_be_synchronized_with_provider")
         def when_venue_provider_is_successfully_created_and_using_subprocesses(
             self, stubbed_check, mock_subprocess, app
@@ -350,7 +350,7 @@ class Post:
     class ConnectProviderToVenueTest:
         @pytest.mark.usefixtures("db_session")
         @patch("pcapi.use_cases.connect_venue_to_provider._check_venue_can_be_synchronized_with_provider")
-        @patch("pcapi.routes.pro.venue_providers.connect_venue_to_provider")
+        @patch("pcapi.core.providers.api.connect_venue_to_provider")
         def should_inject_the_appropriate_repository_to_the_usecase(
             self, mocked_connect_venue_to_provider, stubbed_check, app
         ):
@@ -376,7 +376,7 @@ class Post:
 
         @pytest.mark.usefixtures("db_session")
         @patch("pcapi.use_cases.connect_venue_to_provider._check_venue_can_be_synchronized_with_provider")
-        @patch("pcapi.routes.pro.venue_providers.connect_venue_to_allocine")
+        @patch("pcapi.core.providers.api.connect_venue_to_allocine")
         def should_inject_no_repository_to_the_usecase_when_provider_is_not_concerned(
             self,
             mocked_connect_venue_to_allocine,
