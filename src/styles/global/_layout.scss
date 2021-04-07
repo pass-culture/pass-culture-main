@@ -118,14 +118,14 @@ button {
       margin-bottom: 0.5rem;
     }
 
-    ul.actions,
-    ul.infos {
+    ul.actions {
       @include body();
 
       display: flex;
       justify-content: space-between;
       list-style: none;
       margin: 0;
+      white-space: nowrap;
       width: 100%;
 
       img {
