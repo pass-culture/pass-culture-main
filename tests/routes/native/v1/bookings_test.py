@@ -83,6 +83,7 @@ class GetBookingsTest:
 
     @freeze_time("2021-03-12")
     def test_get_bookings(self, app):
+        EXTERNAL_TICKET_OFFICE_URL = "https://demo.pass/some/path"
         user = users_factories.UserFactory(email=self.identifier)
 
         permanent_booking = BookingFactory(
@@ -99,7 +100,12 @@ class GetBookingsTest:
 
         cancelled = BookingFactory(user=user, isCancelled=True)
         used1 = BookingFactory(user=user, isUsed=True, dateUsed=datetime(2021, 3, 1))
-        used2 = BookingFactory(user=user, isUsed=True, dateUsed=datetime(2021, 3, 2))
+        used2 = BookingFactory(
+            user=user,
+            isUsed=True,
+            dateUsed=datetime(2021, 3, 2),
+            stock__offer__externalTicketOfficeUrl=EXTERNAL_TICKET_OFFICE_URL,
+        )
 
         mediation = MediationFactory(id=111, offer=used2.stock.offer, thumbCount=1, credit="street credit")
 
@@ -137,6 +143,7 @@ class GetBookingsTest:
                 "id": used2.stock.id,
                 "offer": {
                     "category": {"categoryType": "Thing", "label": "Film", "name": "FILM"},
+                    "externalTicketOfficeUrl": EXTERNAL_TICKET_OFFICE_URL,
                     "extraData": None,
                     "id": used2.stock.offer.id,
                     "image": {"credit": "street credit", "url": mediation.thumbUrl},
