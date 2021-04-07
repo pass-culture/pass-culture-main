@@ -1,16 +1,22 @@
 from flask import abort
+from flask import flash
 from flask import request
 from flask import url_for
 from flask_admin.base import expose
+from flask_admin.form import SecureForm
 from markupsafe import Markup
 from sqlalchemy import func
 from sqlalchemy.orm import query
+from werkzeug import Response
 from wtforms import Form
+from wtforms import SelectField
 
 from pcapi import settings
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.connectors import redis
+from pcapi.connectors.api_entreprises import get_offerer_legal_category
 from pcapi.core.offerers.models import Venue
+from pcapi.core.offers.api import update_awaiting_offer_validation_status
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.flask_app import app
 from pcapi.models import Offer
@@ -81,25 +87,39 @@ class OfferForVenueSubview(OfferView):
         return venue.name
 
 
-def _offer_pc_links(view, context, model, name) -> Markup:
-    url = settings.PRO_URL + f"/offres/{humanize(model.id)}/edition"
+def _pro_offer_url(offer_id: int) -> str:
+    return f"{settings.PRO_URL}/offres/{humanize(offer_id)}/edition"
+
+
+def _metabase_offer_url(offer_id: int) -> str:
+    return f"https://data-analytics.internal-passculture.app/question/901?offerid={offer_id}"
+
+
+def _pro_offer_link(view, context, model, name) -> Markup:
+    url = _pro_offer_url(model.id)
     text = "Offre PC"
 
     return Markup(f'<a href="{url}" target="_blank" rel="noopener noreferrer">{text}</a>')
 
 
-def _related_offers_links(view, context, model, name) -> Markup:
+def _related_offers_link(view, context, model, name) -> Markup:
     url = url_for("offer_for_venue.index", id=model.venue.id)
     text = "Offres associées"
 
     return Markup(f'<a href="{url}">{text}</a>')
 
 
-def _metabase_offers_links(view, context, model, name) -> Markup:
-    url = f"https://data-analytics.internal-passculture.app/question/901?offerid={model.id}"
+def _metabase_offer_link(view, context, model, name) -> Markup:
+    url = _metabase_offer_url(model.id)
     text = "Offre"
 
     return Markup(f'<a href="{url}" target="_blank" rel="noopener noreferrer">{text}</a>')
+
+
+class OfferValidationForm(SecureForm):
+    validation = SelectField(
+        "validation", choices=[(choice.name, choice.value) for choice in OfferValidationStatus], coerce=str
+    )
 
 
 class ValidationView(BaseAdminView):
@@ -121,15 +141,14 @@ class ValidationView(BaseAdminView):
         "metabase": "Metabase",
     }
     column_filters = ["type"]
-    form_columns = ["validation"]
     simple_list_pager = True
 
     @property
     def column_formatters(self):
         formatters = super().column_formatters
-        formatters.update(offer=_offer_pc_links)
-        formatters.update(offers=_related_offers_links)
-        formatters.update(metabase=_metabase_offers_links)
+        formatters.update(offer=_pro_offer_link)
+        formatters.update(offers=_related_offers_link)
+        formatters.update(metabase=_metabase_offer_link)
         return formatters
 
     def on_model_change(self, form: Form, offer: Offer, is_created: bool = False) -> None:
@@ -141,3 +160,36 @@ class ValidationView(BaseAdminView):
 
     def get_count_query(self):
         return self.session.query(func.count("*")).filter(self.model.validation == OfferValidationStatus.AWAITING)
+
+    @expose("/edit/", methods=["GET", "POST"])
+    def edit(self) -> Response:
+        offer_id = request.args["id"]
+        offer = Offer.query.get(offer_id)
+        form = OfferValidationForm()
+        if request.method == "POST":
+            form = OfferValidationForm(request.form)
+            if form.validate():
+                is_offer_updated = update_awaiting_offer_validation_status(
+                    offer, OfferValidationStatus[form.validation.data]
+                )
+                if is_offer_updated:
+                    flash("Le statut de l'offre a bien été modifié", "success")
+                else:
+                    flash("Une erreur s'est produite lors de la mise à jour du statut de validation", "error")
+
+        form.validation.default = offer.validation.value
+        form.process()
+        legal_category = get_offerer_legal_category(offer.venue.managingOfferer)
+        legal_category_code = legal_category["legal_category_code"] or "Ce lieu n'a pas de code de catégorie juridique"
+        legal_category_label = (
+            legal_category["legal_category_label"] or "Ce lieu n'a pas de libellé de catégorie juridique"
+        )
+        context = {
+            "form": form,
+            "legal_category_code": legal_category_code,
+            "legal_category_label": legal_category_label,
+            "pc_offer_url": _pro_offer_url(offer.id),
+            "metabase_offer_url": _metabase_offer_url(offer.id) if IS_PROD else None,
+            "offer_name": offer.name,
+        }
+        return self.render("admin/edit_offer_validation.html", **context)

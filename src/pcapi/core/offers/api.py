@@ -586,3 +586,27 @@ def compute_offer_validation_from_name(offer: Offer) -> OfferValidationStatus:
             if keyword in offer.name:
                 return validation_status
     return OfferValidationStatus.APPROVED
+
+
+def update_awaiting_offer_validation_status(offer: Offer, validation_status: OfferValidationStatus) -> bool:
+    offer = offer_queries.get_offer_by_id(offer.id)
+    if offer.validation != OfferValidationStatus.AWAITING:
+        logger.exception(
+            "Offer validation status cannot be updated, initial validation status is not AWAITING. %s",
+            extra={"offer": offer},
+        )
+        return False
+    offer.validation = validation_status
+    if validation_status == OfferValidationStatus.REJECTED:
+        offer.isActive = False
+
+    try:
+        db.session.commit()
+    except Exception as exception:  # pylint: disable=broad-except
+        logger.exception(
+            "Could not update offer validation status: %s",
+            extra={"offer": offer, "validation_status": validation_status, "exc": str(exception)},
+        )
+        return False
+    logger.info("Offer validation status updated", extra={"offer": offer})
+    return True

@@ -19,6 +19,7 @@ from pcapi.core.offers.api import add_criteria_to_offers
 from pcapi.core.offers.api import compute_offer_validation_from_name
 from pcapi.core.offers.api import deactivate_inappropriate_products
 from pcapi.core.offers.api import get_expense_domains
+from pcapi.core.offers.api import update_awaiting_offer_validation_status
 from pcapi.core.offers.api import update_offer_and_stock_id_at_providers
 from pcapi.core.offers.exceptions import ThumbnailStorageError
 from pcapi.core.offers.factories import CriterionFactory
@@ -1122,3 +1123,31 @@ class ComputeOfferValidationTest:
         offer = Offer(name="An offer AWAITING validation")
 
         assert compute_offer_validation_from_name(offer) == OfferValidationStatus.APPROVED
+
+
+@pytest.mark.usefixtures("db_session")
+class UpdateOfferValidationStatusTest:
+    def test_update_awaiting_offer_validation_status_to_approved(self):
+        offer = OfferFactory(validation=OfferValidationStatus.AWAITING)
+
+        is_offer_updated = update_awaiting_offer_validation_status(offer, OfferValidationStatus.APPROVED)
+
+        assert is_offer_updated is True
+        assert offer.validation == OfferValidationStatus.APPROVED
+
+    def test_update_awaiting_offer_validation_status_to_rejected(self):
+        offer = OfferFactory(validation=OfferValidationStatus.AWAITING)
+
+        is_offer_updated = update_awaiting_offer_validation_status(offer, OfferValidationStatus.REJECTED)
+
+        assert is_offer_updated is True
+        assert offer.validation == OfferValidationStatus.REJECTED
+        assert offer.isActive is False
+
+    def test_cannot_update_awaiting_offer_validation_with_a_rejected_offer(self):
+        offer = OfferFactory(validation=OfferValidationStatus.REJECTED)
+
+        is_offer_updated = update_awaiting_offer_validation_status(offer, OfferValidationStatus.APPROVED)
+
+        assert is_offer_updated is False
+        assert offer.validation == OfferValidationStatus.REJECTED
