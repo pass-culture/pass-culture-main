@@ -1,8 +1,10 @@
 import enum
 
+from alembic import op
 from sqlalchemy import Column
 from sqlalchemy import String
 from sqlalchemy import Text
+from sqlalchemy.sql import text
 
 from pcapi.models.db import Model
 from pcapi.models.deactivable_mixin import DeactivableMixin
@@ -63,3 +65,29 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.PRO_HOMEPAGE,
     FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS,
 )
+
+
+def add_feature_to_database(feature: FeatureToggle) -> None:
+    """This function is to be used as the "upgrade" function of a
+    migration when introducing a new feature flag.
+    """
+    statement = text(
+        """
+        INSERT INTO feature (name, description, "isActive")
+        VALUES (:name, :description, :initial_value)
+        """
+    )
+    statement = statement.bindparams(
+        name=feature.name,
+        description=feature.value,
+        initial_value=feature not in FEATURES_DISABLED_BY_DEFAULT,
+    )
+    op.execute(statement)
+
+
+def remove_feature_from_database(feature: FeatureToggle) -> None:
+    """This function is to be used as the "downgrade" function of a
+    migration when introducing a new feature flag.
+    """
+    statement = text("DELETE FROM feature WHERE name = :name").bindparams(name=feature.name)
+    op.execute(statement)
