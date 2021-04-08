@@ -9,7 +9,6 @@ from pcapi.flask_app import app
 from pcapi.flask_app import db
 from pcapi.local_providers.install import install_local_providers
 from pcapi.models.install import install_activity
-from pcapi.models.install import install_features
 from pcapi.routes import install_routes
 from pcapi.routes.native.v1.blueprint import native_v1
 
@@ -29,7 +28,6 @@ with app.app_context():
     if settings.IS_DEV:
         install_activity()
         install_local_providers()
-        install_features()
 
     install_login_manager()
     install_documentation()
