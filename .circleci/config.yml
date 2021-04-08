@@ -350,8 +350,8 @@ jobs:
       GKE_CLUSTER_NAME: cluster-metier-ehp
       HELM_EXPERIMENTAL_OCI: 1
       CHART_NAME: pcapi-chart
-      TAG: stable
     steps:
+      - checkout
       - authenticate_gcp:
           gcp-key-name: GCP_METIER_KEY
       - run:
@@ -362,10 +362,10 @@ jobs:
           command: echo ${GCP_INFRA_KEY} | helm registry login  -u _json_key --password-stdin ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}
       - run:
           name: Pull chart from registry
-          command: helm chart pull ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:${TAG}
+          command: helm chart pull ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:$(cat version_chart.txt)
       - run:
           name: Export chart in local filesystem
-          command: helm chart export ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:${TAG} -d tmp/
+          command: helm chart export ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:$(cat version_chart.txt) -d tmp/
       - deploy-pcapi-gke:
           helm_chart_name: pcapi
           helm_release_name: testing
