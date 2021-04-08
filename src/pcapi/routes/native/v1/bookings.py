@@ -77,7 +77,6 @@ def get_bookings(user: User) -> BookingsResponse:
                 Offer.type,
                 Offer.withdrawalDetails,
                 Offer.extraData,
-                Offer.externalTicketOfficeUrl,
             )
         )
         .options(joinedload(Booking.stock).joinedload(Stock.offer).joinedload(Offer.mediations))
