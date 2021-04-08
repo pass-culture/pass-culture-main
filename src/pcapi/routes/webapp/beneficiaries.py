@@ -52,7 +52,7 @@ def patch_beneficiary(body: PatchBeneficiaryBodyModel) -> BeneficiaryAccountResp
     user = current_user._get_current_object()
     # This route should ony be used by "beneficiary" users because it
     # allows to update different infos from `/users/current`.
-    if not user.isBeneficiary:
+    if not user.isBeneficiary and not user.isAdmin:
         abort(400)
     users_api.update_user_info(user, **body.dict())
     return BeneficiaryAccountResponse.from_orm(user)
