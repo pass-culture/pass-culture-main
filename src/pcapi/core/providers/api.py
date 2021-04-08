@@ -26,7 +26,7 @@ def create_venue_provider(venue_provider: PostVenueProviderBody) -> VenueProvide
     if provider.localClass == "AllocineStocks":
         new_venue_provider = connect_venue_to_allocine(venue, venue_provider)
     else:
-        new_venue_provider = connect_venue_to_provider(venue, provider)
+        new_venue_provider = connect_venue_to_provider(venue, provider, venue_provider.venueIdAtOfferProvider)
 
     _run_first_synchronization(new_venue_provider)
 

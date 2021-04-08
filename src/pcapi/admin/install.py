@@ -74,7 +74,9 @@ def install_admin_views(admin: Admin, session: Session) -> None:
         VenueProviderView(
             VenueProvider,
             session,
+            name="Imports automatiques",
             endpoint="venue_providers",
+            category=Category.CUSTOM_OPERATIONS,
         )
     )
     admin.add_view(

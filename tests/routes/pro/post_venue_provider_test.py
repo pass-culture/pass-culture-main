@@ -372,7 +372,7 @@ class Post:
             auth_request.post("/venueProviders", json=venue_provider_data)
 
             # Then
-            mocked_connect_venue_to_provider.assert_called_once_with(venue, provider)
+            mocked_connect_venue_to_provider.assert_called_once_with(venue, provider, None)
 
         @pytest.mark.usefixtures("db_session")
         @patch("pcapi.use_cases.connect_venue_to_provider._check_venue_can_be_synchronized_with_provider")

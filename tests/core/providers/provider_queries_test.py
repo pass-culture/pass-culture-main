@@ -1,12 +1,12 @@
 import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
-from pcapi.model_creators.generic_creators import create_provider
-from pcapi.repository import repository
 from pcapi.core.providers.repository import get_enabled_providers_for_pro
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.providers.repository import get_provider_enabled_for_pro_by_id
 from pcapi.core.providers.repository import get_providers_enabled_for_pro_excluding_specific_provider
+from pcapi.model_creators.generic_creators import create_provider
+from pcapi.repository import repository
 
 
 class GetEnabledProvidersForProTest:

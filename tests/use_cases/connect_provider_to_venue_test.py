@@ -4,6 +4,7 @@ from unittest.mock import patch
 import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.providers.models import VenueProvider
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_provider
@@ -12,6 +13,45 @@ from pcapi.model_creators.provider_creators import activate_provider
 from pcapi.models import ApiErrors
 from pcapi.repository import repository
 from pcapi.use_cases.connect_venue_to_provider import connect_venue_to_provider
+
+
+@pytest.mark.usefixtures("db_session")
+@patch(
+    "pcapi.use_cases.connect_venue_to_provider.api_libraires_stocks.can_be_synchronized",
+    return_value=True,
+)
+def test_when_venue_id_at_offer_provider_is_given(can_be_synchronized, app):
+    # Given
+    venue_id_at_offer_provider = "id_for_remote_system"
+    venue = VenueFactory(siret="12345678912345")
+    provider = activate_provider("LibrairesStocks")
+
+    # When
+    connect_venue_to_provider(venue, provider, venue_id_at_offer_provider)
+
+    # Then
+    venue_provider = VenueProvider.query.one()
+    assert venue_provider.venueIdAtOfferProvider == venue_id_at_offer_provider
+    can_be_synchronized.assert_called_once_with("id_for_remote_system")
+
+
+@pytest.mark.usefixtures("db_session")
+@patch(
+    "pcapi.use_cases.connect_venue_to_provider.api_libraires_stocks.can_be_synchronized",
+    return_value=True,
+)
+def test_use_siret_as_default(can_be_synchronized, app):
+    # Given
+    venue = VenueFactory(siret="12345678912345")
+    provider = activate_provider("LibrairesStocks")
+
+    # When
+    connect_venue_to_provider(venue, provider, None)
+
+    # Then
+    venue_provider = VenueProvider.query.one()
+    assert venue_provider.venueIdAtOfferProvider == "12345678912345"
+    can_be_synchronized.assert_called_once_with("12345678912345")
 
 
 class WhenProviderIsLibraires:

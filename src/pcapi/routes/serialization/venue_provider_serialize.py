@@ -10,6 +10,7 @@ from pcapi.serialization.utils import humanize_field
 class PostVenueProviderBody(BaseModel):
     venueId: str
     providerId: str
+    venueIdAtOfferProvider: Optional[str]
     price: Optional[str]
     isDuo: Optional[bool]
     quantity: Optional[int]

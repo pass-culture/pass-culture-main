@@ -4,8 +4,9 @@ from sqlalchemy.orm.util import aliased
 
 from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import VenueProvider
-from . import synchronize_provider_api
 from pcapi.models import db
+
+from . import synchronize_provider_api
 
 
 logger = logging.getLogger(__name__)
