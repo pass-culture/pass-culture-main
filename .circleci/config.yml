@@ -362,10 +362,10 @@ jobs:
           command: echo ${GCP_INFRA_KEY} | helm registry login  -u _json_key --password-stdin ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}
       - run:
           name: Pull chart from registry
-          command: helm chart pull ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:$(cat version_chart.txt)
+          command: helm chart pull ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:$(cat helm_versions/pcapi_chart_version.txt)
       - run:
           name: Export chart in local filesystem
-          command: helm chart export ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:$(cat version_chart.txt) -d tmp/
+          command: helm chart export ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:$(cat helm_versions/pcapi_chart_version.txt) -d tmp/
       - deploy-pcapi-gke:
           helm_chart_name: pcapi
           helm_release_name: testing
