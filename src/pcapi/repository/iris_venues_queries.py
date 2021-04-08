@@ -7,12 +7,15 @@ from pcapi.repository import repository
 
 
 def find_ids_of_irises_located_near_venue(venue_id: int, search_radius: int) -> List[int]:
-    query = f""" WITH venue_coordinates AS (SELECT longitude, latitude from venue WHERE id = {venue_id})
-                 SELECT id FROM iris_france, venue_coordinates
-                 WHERE ST_DISTANCE(centroid, CAST(ST_SetSRID(ST_MakePoint(longitude, latitude), 4326) AS GEOGRAPHY))
-                 < {search_radius} ;
+    query = """
+    WITH venue_coordinates AS (SELECT longitude, latitude from venue WHERE id = :venue_id)
+    SELECT id FROM iris_france, venue_coordinates
+    WHERE
+      ST_DISTANCE(centroid, CAST(ST_SetSRID(ST_MakePoint(longitude, latitude), 4326) AS GEOGRAPHY))
+      < :search_radius
     """
-    iris = db.session.execute(query).fetchall()
+    params = {"venue_id": venue_id, "search_radius": search_radius}
+    iris = db.session.execute(query, params).fetchall()
     return [iris.id for iris in iris]
 
 
