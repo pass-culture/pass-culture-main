@@ -54,7 +54,7 @@ def patch_beneficiary(body: PatchBeneficiaryBodyModel) -> BeneficiaryAccountResp
     # allows to update different infos from `/users/current`.
     if not user.isBeneficiary and not user.isAdmin:
         abort(400)
-    users_api.update_user_info(user, **body.dict())
+    users_api.update_user_info(user, **body.dict(exclude_unset=True))
     return BeneficiaryAccountResponse.from_orm(user)
 
 

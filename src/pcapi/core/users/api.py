@@ -286,14 +286,31 @@ def change_user_email(token: str) -> None:
 
 
 def update_user_info(
-    user, email=UNCHANGED, first_name=UNCHANGED, last_name=UNCHANGED, phone_number=UNCHANGED, public_name=UNCHANGED
+    user,
+    cultural_survey_filled_date=UNCHANGED,
+    cultural_survey_id=UNCHANGED,
+    email=UNCHANGED,
+    first_name=UNCHANGED,
+    has_seen_tutorials=UNCHANGED,
+    last_name=UNCHANGED,
+    needs_to_fill_cultural_survey=UNCHANGED,
+    phone_number=UNCHANGED,
+    public_name=UNCHANGED,
 ):
+    if cultural_survey_filled_date is not UNCHANGED:
+        user.culturalSurveyFilledDate = cultural_survey_filled_date
+    if cultural_survey_id is not UNCHANGED:
+        user.culturalSurveyId = cultural_survey_id
     if email is not UNCHANGED:
         user.email = format_email(email)
     if first_name is not UNCHANGED:
         user.firstName = first_name
+    if has_seen_tutorials is not UNCHANGED:
+        user.hasSeenTutorials = has_seen_tutorials
     if last_name is not UNCHANGED:
         user.lastName = last_name
+    if needs_to_fill_cultural_survey is not UNCHANGED:
+        user.needsToFillCulturalSurvey = needs_to_fill_cultural_survey
     if phone_number is not UNCHANGED:
         user.phoneNumber = phone_number
     if public_name is not UNCHANGED:

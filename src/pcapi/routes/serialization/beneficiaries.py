@@ -118,9 +118,16 @@ class BeneficiaryAccountResponse(BaseModel):
 
 class PatchBeneficiaryBodyModel(BaseModel):
     public_name: Optional[str]
+    has_seen_tutorials: Optional[bool]
+    needs_to_fill_cultural_survey: Optional[bool]
+    cultural_survey_id: Optional[str]
+    cultural_survey_filled_date: Optional[datetime]
 
     _validate_public_name = validate_not_empty_string_when_provided("public_name")
+    _validate_cultural_survey_id = validate_not_empty_string_when_provided("cultural_survey_id")
+    _validate_cultural_survey_filled_date = validate_not_empty_string_when_provided("cultural_survey_filled_date")
 
     class Config:
         alias_generator = to_camel
         extra = "forbid"
+        json_encoders = {datetime: format_into_utc_date}

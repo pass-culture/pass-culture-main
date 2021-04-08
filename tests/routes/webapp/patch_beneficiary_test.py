@@ -1,3 +1,6 @@
+import datetime
+import uuid
+
 import pytest
 
 from pcapi.core.users.factories import UserFactory
@@ -59,6 +62,36 @@ def test_patch_beneficiary(app):
         "deposit_expiration_date": format_into_utc_date(user.deposit_expiration_date),
         "wallet_is_activated": True,
     }
+
+
+@pytest.mark.usefixtures("db_session")
+def test_patch_beneficiary_tutorial_related_attributes(app):
+    user = UserFactory()
+
+    client = TestClient(app.test_client()).with_auth(email=user.email)
+    data = {"hasSeenTutorials": True}
+    response = client.patch("/beneficiaries/current", json=data)
+
+    assert response.status_code == 200
+
+
+@pytest.mark.usefixtures("db_session")
+def test_patch_beneficiary_survey_related_attributes(app):
+    user = UserFactory()
+
+    client = TestClient(app.test_client()).with_auth(email=user.email)
+    survey_id = uuid.uuid4()
+    data = {
+        "needsToFillCulturalSurvey": False,
+        "culturalSurveyId": str(survey_id),
+        "culturalSurveyFilledDate": "2021-01-01T12:00:00Z",
+    }
+    response = client.patch("/beneficiaries/current", json=data)
+
+    assert response.status_code == 200
+    assert not user.needsToFillCulturalSurvey
+    assert user.culturalSurveyId == survey_id
+    assert user.culturalSurveyFilledDate == datetime.datetime(2021, 1, 1, 12, 0)
 
 
 @pytest.mark.usefixtures("db_session")
