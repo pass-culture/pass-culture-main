@@ -48,6 +48,7 @@ class FeatureToggle(enum.Enum):
     AUTO_ACTIVATE_DIGITAL_BOOKINGS = (
         "Activer (marquer comme utilisée) les réservations dès leur création pour les offres digitales"
     )
+    ENABLE_ACTIVATION_CODES = "Permet la création de codes d'activation"
 
 
 class Feature(PcObject, Model, DeactivableMixin):
@@ -64,6 +65,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.WHOLE_FRANCE_OPENING,
     FeatureToggle.PRO_HOMEPAGE,
     FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS,
+    FeatureToggle.ENABLE_ACTIVATION_CODES,
 )
 
 
