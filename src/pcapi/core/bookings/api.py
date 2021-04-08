@@ -110,6 +110,15 @@ def book_offer(
 
 
 def _cancel_booking(booking: Booking, reason: BookingCancellationReasons) -> None:
+    if booking.isCancelled:
+        logger.info(
+            "Booking was already cancelled",
+            extra={
+                "booking": booking.id,
+                "reason": str(reason),
+            },
+        )
+        return
     with transaction():
         booking.isCancelled = True
         booking.cancellationReason = reason

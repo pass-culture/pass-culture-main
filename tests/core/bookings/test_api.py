@@ -207,6 +207,20 @@ class CancelByBeneficiaryTest:
         email_data2 = mails_testing.outbox[1].sent_data
         assert email_data2["MJ-TemplateID"] == 780015  # to offerer
 
+    def test_cancel_booking_twice(self):
+        booking = factories.BookingFactory()
+        initial_quantity = booking.stock.dnBookedQuantity
+
+        api.cancel_booking_by_beneficiary(booking.user, booking)
+
+        assert booking.isCancelled
+        assert booking.stock.dnBookedQuantity == (initial_quantity - 1)
+
+        api.cancel_booking_by_beneficiary(booking.user, booking)
+
+        assert booking.isCancelled
+        assert booking.stock.dnBookedQuantity == (initial_quantity - 1)
+
     @override_features(SYNCHRONIZE_ALGOLIA=False)
     @mock.patch("pcapi.connectors.redis.add_offer_id")
     def test_do_not_sync_algolia_if_feature_is_disabled(self, mocked_add_offer_id):
