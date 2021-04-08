@@ -340,16 +340,16 @@ jobs:
           command: echo ${GCP_INFRA_KEY} | helm registry login  -u _json_key --password-stdin ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}
       - run:
           name: Pull chart from registry
-          command: helm chart pull ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:$(cat infra/docker-images/db-ops/version.txt)
+          command: helm chart pull ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:$(cat infra/docker-images/db-ops/helm/version.txt)
       - run:
           name: Export chart in local filesystem
-          command: helm chart export ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:$(cat infra/docker-images/db-ops/version.txt) -d tmp/
+          command: helm chart export ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:$(cat infra/docker-images/db-ops/helm/version.txt) -d tmp/
       - run: |
           helm upgrade ${CHART_RELEASE} tmp/${CHART_RELEASE} \
             --install --wait \
             --namespace ${NAMESPACE} \
             --values tmp/${CHART_RELEASE}/values.${CIRCLE_BRANCH}.yaml \
-            --version "$(cat infra/docker-images/db-ops/version.txt)"
+            --version "$(cat infra/docker-images/db-ops/helm/version.txt)"
 
   deploy-pcapi:
     executor: helm
