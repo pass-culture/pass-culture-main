@@ -32,6 +32,7 @@ class AccountRequest(BaseModel):
     birthdate: date
     marketing_email_subscription: Optional[bool] = False
     token: str
+    postal_code: Optional[str] = None
 
     class Config:
         alias_generator = to_camel
