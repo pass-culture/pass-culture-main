@@ -45,7 +45,7 @@ describe('src | components | Desk', () => {
     const title = screen.getByText('Guichet', { selector: 'h1' })
     expect(title).toBeInTheDocument()
     const description = screen.getByText(
-      'Saisissez les contremarques présentées par les jeunes afin de les valider ou de les invalider.'
+      'Saisissez les contremarques présentées par les bénéficiaires afin de les valider ou de les invalider.'
     )
     expect(description).toBeInTheDocument()
     const input = screen.getByPlaceholderText('ex : AZE123')
@@ -270,5 +270,21 @@ describe('src | components | Desk', () => {
       const responseFromApi = await screen.findByText('error message')
       expect(responseFromApi).toBeInTheDocument()
     })
+  })
+
+  it('should display an informative message', () => {
+    // When
+    renderDesk(props)
+
+    // Then
+    expect(
+      screen.getByText(
+        'N’oubliez pas de vérifier l’identité du bénéficiaire avant de valider la contremarque. Les pièces d’identité doivent impérativement être présentées physiquement. Merci de ne pas accepter les pièces d’identité au format numérique.',
+        { selector: 'p' }
+      )
+    ).toBeInTheDocument()
+    expect(screen.getByText('En savoir plus', { selector: 'a' }).getAttribute('href')).toBe(
+      'https://aide.passculture.app/fr/article/acteurs-modalites-de-retrait-dun-bien-dans-ma-structure-mq85is/'
+    )
   })
 })

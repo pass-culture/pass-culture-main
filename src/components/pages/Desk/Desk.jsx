@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
 import AppLayout from 'app/AppLayout'
+import Banner from 'components/layout/Banner/Banner'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
@@ -174,7 +175,7 @@ class Desk extends Component {
         <Titles title="Guichet" />
         <p className="advice">
           {
-            'Saisissez les contremarques présentées par les jeunes afin de les valider ou de les invalider.'
+            'Saisissez les contremarques présentées par les bénéficiaires afin de les valider ou de les invalider.'
           }
         </p>
         <form>
@@ -258,6 +259,12 @@ class Desk extends Component {
           >
             {message}
           </div>
+          <Banner
+            href="https://aide.passculture.app/fr/article/acteurs-modalites-de-retrait-dun-bien-dans-ma-structure-mq85is/"
+            linkTitle="En savoir plus"
+            message="N’oubliez pas de vérifier l’identité du bénéficiaire avant de valider la contremarque. Les pièces d’identité doivent impérativement être présentées physiquement. Merci de ne pas accepter les pièces d’identité au format numérique."
+            type="notification-info"
+          />
         </form>
       </AppLayout>
     )
