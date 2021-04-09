@@ -11,6 +11,7 @@ import pcapi.core.mails.testing as mails_testing
 from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.offers.factories import UserOffererFactory
+from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import Token
 from pcapi.domain.user_emails import send_activation_email
@@ -525,7 +526,8 @@ class SendSoonToBeExpiredBookingsRecapEmailToBeneficiaryTest:
 
 @pytest.mark.usefixtures("db_session")
 class SendNewlyEligibleUserEmailTest:
-    def test_send_activation_email(self):
+    @override_features(APPLY_BOOKING_LIMITS_V2=False)
+    def test_send_activation_email_before_opening(self):
         # given
         beneficiary = users_factories.UserFactory(
             dateOfBirth=(datetime.now() - relativedelta(years=18, days=5)), departementCode="93"
@@ -542,3 +544,24 @@ class SendNewlyEligibleUserEmailTest:
         )
         assert "licenceToken" in mails_testing.outbox[0].sent_data["Vars"]["nativeAppLink"]
         assert "email" in mails_testing.outbox[0].sent_data["Vars"]["nativeAppLink"]
+        assert mails_testing.outbox[0].sent_data["Vars"]["depositAmount"] == 500
+
+    @override_features(APPLY_BOOKING_LIMITS_V2=True)
+    def test_send_activation_email_after_opening(self):
+        # given
+        beneficiary = users_factories.UserFactory(
+            dateOfBirth=(datetime.now() - relativedelta(years=18, days=5)), departementCode="93"
+        )
+
+        # when
+        send_newly_eligible_user_email(beneficiary)
+
+        # then
+        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2030056
+        assert (
+            mails_testing.outbox[0].sent_data["Vars"]["nativeAppLink"][:54]
+            == "https://app.passculture-testing.beta.gouv.fr/id-check?"
+        )
+        assert "licenceToken" in mails_testing.outbox[0].sent_data["Vars"]["nativeAppLink"]
+        assert "email" in mails_testing.outbox[0].sent_data["Vars"]["nativeAppLink"]
+        assert mails_testing.outbox[0].sent_data["Vars"]["depositAmount"] == 300

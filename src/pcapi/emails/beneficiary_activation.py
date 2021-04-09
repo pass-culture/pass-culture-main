@@ -63,11 +63,14 @@ def get_newly_eligible_user_email_data(user: users_models.User, token: users_mod
         {"licenceToken": token.value, "expirationTimestamp": expiration_timestamp, "email": user.email}
     )
     email_link = f"{settings.NATIVE_APP_URL}/id-check?{query_string}"
+    limit_configuration = conf.LIMIT_CONFIGURATIONS[conf.get_current_deposit_version()]
+    deposit_amount = limit_configuration.TOTAL_CAP
     return {
         "Mj-TemplateID": 2030056,
         "Mj-TemplateLanguage": True,
         "Mj-trackclick": 1,
         "Vars": {
             "nativeAppLink": email_link,
+            "depositAmount": int(deposit_amount),
         },
     }
