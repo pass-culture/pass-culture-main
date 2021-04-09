@@ -7,6 +7,7 @@ from dateutil.relativedelta import relativedelta
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.query import Query
 
+from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_validator import _is_postal_code_eligible
 from pcapi.domain.favorite.favorite import FavoriteDomain
 from pcapi.infrastructure.repository.favorite import favorite_domain_converter
 from pcapi.models import Booking
@@ -59,7 +60,7 @@ def get_newly_eligible_users(since: date) -> List[User]:
     created their account before `since`"""
     today = datetime.combine(datetime.today(), datetime.min.time())
     since = datetime.combine(since, datetime.min.time())
-    return (
+    eligible_users = (
         User.query.outerjoin(UserOfferer)
         .filter(
             User.isBeneficiary == False,  # not already beneficiary
@@ -72,6 +73,8 @@ def get_newly_eligible_users(since: date) -> List[User]:
         )
         .all()
     )
+    eligible_users = [user for user in eligible_users if _is_postal_code_eligible(user.departementCode)]
+    return eligible_users
 
 
 def find_favorite_for_offer_and_user(offer_id: int, user_id: int) -> Query:
