@@ -79,6 +79,7 @@ describe('components | TableFrame', () => {
           getSortByToggleProps: jest.fn(),
         },
       ],
+      currentPage: 0,
       data: [{}],
       nbBookings: 1,
       nbBookingsPerPage: 1,
@@ -96,7 +97,6 @@ describe('components | TableFrame', () => {
     expect(tableHead.props()).toStrictEqual({
       headerGroups: mockedValues.headerGroups,
     })
-    useTableSpy.mockRestore()
   })
 
   it('should display the correct numbers of rows', () => {

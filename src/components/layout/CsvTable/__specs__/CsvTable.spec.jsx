@@ -5,7 +5,6 @@ import HeaderContainer from '../../Header/HeaderContainer'
 import Spinner from '../../Spinner'
 import CsvTable from '../CsvTable'
 
-jest.spyOn(global, 'print').mockImplementation(() => {})
 describe('src | components | layout | CsvTable', () => {
   let props
   let dataFromCsv
@@ -69,6 +68,7 @@ describe('src | components | layout | CsvTable', () => {
 
     it('should open a new window for printing when clicking on print button', () => {
       // given
+      jest.spyOn(window, 'print').mockImplementation()
       const wrapper = shallow(<CsvTable {...props} />)
       wrapper.setState({
         dataFromCsv: dataFromCsv,
