@@ -102,19 +102,25 @@ def create_account(
     marketing_email_subscription: bool = False,
     is_email_validated: bool = False,
     send_activation_mail: bool = True,
+    postal_code: str = None,
 ) -> User:
     if find_user_by_email(email):
         raise exceptions.UserAlreadyExistsException()
 
+    if postal_code:
+        departementCode = PostalCode(postal_code).get_departement_code()
+    else:
+        departementCode = "007"
     user = User(
         email=format_email(email),
         dateOfBirth=datetime.combine(birthdate, datetime.min.time()),
         isEmailValidated=is_email_validated,
-        departementCode="007",
         publicName=VOID_PUBLIC_NAME,  # Required because model validation requires 3+ chars
         hasSeenTutorials=False,
         firstName=VOID_FIRST_NAME,
         notificationSubscriptions=asdict(NotificationSubscriptions(marketing_email=marketing_email_subscription)),
+        postalCode=postal_code,
+        departementCode=departementCode,
     )
 
     if not user.age or user.age < constants.ACCOUNT_CREATION_MINIMUM_AGE:
