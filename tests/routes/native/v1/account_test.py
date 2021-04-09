@@ -10,6 +10,7 @@ import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import User
 from pcapi.core.users.models import VOID_PUBLIC_NAME
@@ -78,6 +79,7 @@ class AccountTest:
             deposit__expirationDate=datetime(2040, 1, 1),
             notificationSubscriptions={"marketing_push": True},
             publicName="jdo",
+            departementCode="93",
             **USER_DATA,
         )
         booking = BookingFactory(user=user, amount=Decimal("123.45"))
@@ -108,6 +110,57 @@ class AccountTest:
                 {"current": 12345, "domain": "physical", "limit": 20000},
             ],
             "isBeneficiary": True,
+            "pseudo": "jdo",
+            "showEligibleCard": False,
+            "subscriptions": {"marketingPush": True, "marketingEmail": True},
+        }
+        EXPECTED_DATA.update(USER_DATA)
+
+        assert response.status_code == 200
+        assert response.json == EXPECTED_DATA
+
+    @override_features(WHOLE_FRANCE_OPENING=False)
+    @freeze_time("2018-06-01")
+    def test_get_user_profile_from_non_eligible_area(self, app):
+        USER_DATA = {
+            "email": self.identifier,
+            "firstName": "john",
+            "lastName": "doe",
+            "phoneNumber": "0102030405",
+            "needsToFillCulturalSurvey": True,
+        }
+        user = users_factories.UserFactory(
+            dateOfBirth=datetime(2000, 1, 1),
+            deposit__version=1,
+            # The expiration date is taken in account in
+            # `get_wallet_balance` and compared against the SQL
+            # `now()` function, which is NOT overriden by
+            # `freeze_time()`.
+            deposit__expirationDate=datetime(2040, 1, 1),
+            notificationSubscriptions={"marketing_push": True},
+            publicName="jdo",
+            departementCode="92",
+            isBeneficiary=False,
+            **USER_DATA,
+        )
+
+        access_token = create_access_token(identity=self.identifier)
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+
+        response = test_client.get("/native/v1/me")
+
+        EXPECTED_DATA = {
+            "id": user.id,
+            "bookedOffers": {},
+            "domainsCredit": None,
+            "dateOfBirth": "2000-01-01",
+            "depositVersion": None,
+            "depositExpirationDate": None,
+            "eligibilityEndDatetime": None,
+            "eligibilityStartDatetime": None,
+            "expenses": [],
+            "isBeneficiary": False,
             "pseudo": "jdo",
             "showEligibleCard": False,
             "subscriptions": {"marketingPush": True, "marketingEmail": True},
