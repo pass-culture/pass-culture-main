@@ -68,7 +68,7 @@ describe('src | components | layout | CsvTable', () => {
 
     it('should open a new window for printing when clicking on print button', () => {
       // given
-      jest.spyOn(window, 'print').mockImplementation()
+      jest.spyOn(global, 'print').mockImplementation()
       const wrapper = shallow(<CsvTable {...props} />)
       wrapper.setState({
         dataFromCsv: dataFromCsv,

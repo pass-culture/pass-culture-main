@@ -81,13 +81,6 @@ describe('offerDetails - Creation - admin user', () => {
     jest.spyOn(window, 'scrollTo').mockImplementation()
   })
 
-  afterEach(() => {
-    pcapi.createOffer.mockClear()
-    pcapi.getValidatedOfferersNames.mockClear()
-    pcapi.getVenuesForOfferer.mockClear()
-    pcapi.loadTypes.mockClear()
-  })
-
   describe('render when creating a new offer as admin', () => {
     it('should get selected offerer from API', async () => {
       // When

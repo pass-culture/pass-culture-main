@@ -52,12 +52,6 @@ describe('src | StocksProviderForm', () => {
     await renderVenueProvidersManager(props)
   })
 
-  afterEach(() => {
-    pcapi.loadVenueProviders.mockReset()
-    pcapi.loadProviders.mockReset()
-    pcapi.createVenueProvider.mockReset()
-  })
-
   const renderStocksProviderForm = async () => {
     const importOffersButton = screen.getByText('Importer des offres')
     fireEvent.click(importOffersButton)

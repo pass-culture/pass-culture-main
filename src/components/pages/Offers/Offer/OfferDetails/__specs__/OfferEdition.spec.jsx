@@ -121,13 +121,6 @@ describe('offerDetails - Edition', () => {
     pcapi.loadStocks.mockReturnValue(Promise.resolve({ stocks: [] }))
   })
 
-  afterEach(() => {
-    pcapi.loadOffer.mockClear()
-    pcapi.loadTypes.mockClear()
-    pcapi.getVenue.mockClear()
-    pcapi.loadStocks.mockClear()
-  })
-
   describe('render when editing an existing offer', () => {
     describe('when interacting with disability fields', () => {
       let audioDisabilityCompliantCheckbox

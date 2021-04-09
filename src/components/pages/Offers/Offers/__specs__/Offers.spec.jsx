@@ -162,10 +162,6 @@ describe('src | components | pages | Offers | Offers', () => {
     fetchAllVenuesByProUser.mockResolvedValue(proVenues)
   })
 
-  afterEach(() => {
-    fetchAllVenuesByProUser.mockReset()
-  })
-
   describe('render', () => {
     it('should load offers from API with defaults props', () => {
       // When

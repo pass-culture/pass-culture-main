@@ -22,10 +22,6 @@ jest.mock('repository/pcapi/pcapiClient', () => ({
 }))
 
 describe('pcapi', () => {
-  afterEach(() => {
-    client.get.mockReset()
-  })
-
   describe('loadFilteredOffers', () => {
     const returnedResponse = {
       offers: [

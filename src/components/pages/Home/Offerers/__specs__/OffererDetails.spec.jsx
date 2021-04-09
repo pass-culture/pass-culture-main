@@ -145,11 +145,6 @@ describe('offererDetails', () => {
     })
   })
 
-  afterEach(() => {
-    pcapi.getOfferer.mockClear()
-    pcapi.getAllOfferersNames.mockClear()
-  })
-
   it('should display offerer select', async () => {
     await renderHomePage()
     const showButton = screen.getByRole('button', { name: 'Afficher' })

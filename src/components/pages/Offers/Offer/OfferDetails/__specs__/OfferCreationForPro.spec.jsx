@@ -172,13 +172,6 @@ describe('offerDetails - Creation - pro user', () => {
     jest.spyOn(window, 'scrollTo').mockImplementation()
   })
 
-  afterEach(() => {
-    pcapi.createOffer.mockClear()
-    pcapi.getUserValidatedOfferersNames.mockClear()
-    pcapi.getVenuesForOfferer.mockClear()
-    pcapi.loadTypes.mockClear()
-  })
-
   describe('render when creating a new offer as pro user', () => {
     it('should get types from API', async () => {
       // When

@@ -123,11 +123,6 @@ describe('homepage', () => {
     })
   })
 
-  afterEach(() => {
-    pcapi.getOfferer.mockClear()
-    pcapi.getAllOfferersNames.mockClear()
-  })
-
   describe('render', () => {
     beforeEach(async () => {
       await renderHomePage()

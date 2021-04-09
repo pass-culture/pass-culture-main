@@ -12,10 +12,6 @@ jest.mock('../getSirenInformation', () => {
 })
 
 describe('bindAddressAndDesignationFromSiren', () => {
-  beforeEach(() => {
-    getSirenInformation.mockClear()
-  })
-
   describe('when the SIREN is not complete', () => {
     it('should not load SIREN information', () => {
       // Given

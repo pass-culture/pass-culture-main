@@ -64,12 +64,6 @@ describe('components | AllocineProviderForm', () => {
     await renderVenueProvidersManager(props)
   })
 
-  afterEach(() => {
-    pcapi.loadVenueProviders.mockReset()
-    pcapi.loadProviders.mockReset()
-    pcapi.createVenueProvider.mockReset()
-  })
-
   const renderAllocineProviderForm = async () => {
     const importOffersButton = screen.getByText('Importer des offres')
     fireEvent.click(importOffersButton)

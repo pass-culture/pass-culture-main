@@ -9,7 +9,6 @@ import BookingsRecap from '../BookingsRecap'
 import BookingsRecapTable from '../BookingsRecapTable/BookingsRecapTable'
 import NoBookingsMessage from '../NoBookingsMessage/NoBookingsMessage'
 
-
 function flushPromises() {
   return new Promise(resolve => setImmediate(resolve))
 }
@@ -32,13 +31,9 @@ describe('components | BookingsRecap', () => {
       .mockImplementation(() => fetchBookingsRecapByPageStub)
     props = {
       location: {
-        state: null
-      }
+        state: null,
+      },
     }
-  })
-
-  afterEach(() => {
-    fetchBookingsRecapByPageSpy.mockReset()
   })
 
   it('should render a Titles component and a NoBookingsMessage when api returned no bookings', async () => {

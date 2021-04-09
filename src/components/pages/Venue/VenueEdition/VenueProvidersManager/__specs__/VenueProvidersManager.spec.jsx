@@ -53,11 +53,6 @@ describe('src | VenueProvidersManager', () => {
     pcapi.loadVenueProviders.mockResolvedValue(venueProviders)
   })
 
-  afterEach(() => {
-    pcapi.loadProviders.mockClear()
-    pcapi.loadVenueProviders.mockClear()
-  })
-
   it('should retrieve providers and venue providers when component is mounted', async () => {
     // when
     await renderVenueProvidersManager(props)

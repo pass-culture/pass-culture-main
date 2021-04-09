@@ -14,5 +14,6 @@ module.exports = {
     '<rootDir>/stylelint-pass-culture/**/*.{spec,test}.{js,jsx,ts,tsx}',
   ],
   verbose: false,
+  clearMocks: true,
   restoreMocks: true,
 }

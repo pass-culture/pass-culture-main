@@ -61,11 +61,6 @@ describe('src | components | pages | Venue | VenueProvidersManager | VenueProvid
     pcapi.loadProviders.mockResolvedValue([])
   })
 
-  afterEach(() => {
-    pcapi.loadProviders.mockClear()
-    pcapi.loadVenueProviders.mockClear()
-  })
-
   it('should render provider name and logo', async () => {
     // when
     await renderVenueProvidersManager(props)

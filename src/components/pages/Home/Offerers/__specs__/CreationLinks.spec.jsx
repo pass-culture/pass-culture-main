@@ -116,12 +116,6 @@ describe('creationLinks', () => {
     })
   })
 
-  afterEach(() => {
-    pcapi.getOfferer.mockClear()
-    pcapi.getAllOfferersNames.mockClear()
-    pcapi.getVenueStats.mockClear()
-  })
-
   describe("when offerer doesn't have neither physical venue nor virtual offers", () => {
     it('should display add information link', async () => {
       // Given

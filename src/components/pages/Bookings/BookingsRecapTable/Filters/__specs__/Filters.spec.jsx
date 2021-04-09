@@ -41,10 +41,6 @@ describe('components | Filters', () => {
     ])
   })
 
-  afterEach(() => {
-    fetchAllVenuesByProUser.mockReset()
-  })
-
   it('should render all filters component with expected props', async () => {
     // when
     const wrapper = await shallow(<Filters {...props} />)

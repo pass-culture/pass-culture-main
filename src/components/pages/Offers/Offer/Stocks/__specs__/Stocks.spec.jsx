@@ -75,13 +75,6 @@ describe('stocks page', () => {
     pcapi.deleteStock.mockResolvedValue({ id: stockId })
   })
 
-  afterEach(() => {
-    pcapi.loadOffer.mockReset()
-    pcapi.loadStocks.mockReset()
-    pcapi.deleteStock.mockReset()
-    pcapi.bulkCreateOrEditStock.mockReset()
-  })
-
   describe('render', () => {
     describe('when no stocks yet', () => {
       it('should not display empty stock list', async () => {
@@ -332,12 +325,6 @@ describe('stocks page', () => {
         pcapi.loadStocks.mockResolvedValue({ stocks: [eventStock] })
       })
 
-      afterEach(() => {
-        pcapi.loadOffer.mockReset()
-        pcapi.loadStocks.mockReset()
-        pcapi.bulkCreateOrEditStock.mockReset()
-      })
-
       it('should display an information message regarding booking cancellation', async () => {
         // when
         await renderOffers(props, store)
@@ -404,12 +391,6 @@ describe('stocks page', () => {
         }
         pcapi.loadOffer.mockResolvedValue(thingOffer)
         pcapi.loadStocks.mockResolvedValue({ stocks: [{ ...defaultStock }] })
-      })
-
-      afterEach(() => {
-        pcapi.loadOffer.mockReset()
-        pcapi.loadStocks.mockReset()
-        pcapi.bulkCreateOrEditStock.mockReset()
       })
 
       it('should display an information message regarding booking cancellation', async () => {
@@ -486,12 +467,6 @@ describe('stocks page', () => {
           pcapi.loadStocks.mockResolvedValue({ stocks: [] })
         })
 
-        afterEach(() => {
-          pcapi.loadOffer.mockReset()
-          pcapi.loadStocks.mockReset()
-          pcapi.bulkCreateOrEditStock.mockReset()
-        })
-
         it('should not be able to add a stock', async () => {
           // Given
           pcapi.loadStocks.mockResolvedValue({
@@ -522,12 +497,6 @@ describe('stocks page', () => {
         }
         pcapi.loadOffer.mockResolvedValue(digitalOffer)
         pcapi.loadStocks.mockResolvedValue({ stocks: [{ ...defaultStock }] })
-      })
-
-      afterEach(() => {
-        pcapi.loadOffer.mockReset()
-        pcapi.loadStocks.mockReset()
-        pcapi.bulkCreateOrEditStock.mockReset()
       })
 
       it('should display an information message regarding booking cancellation (new rules)', async () => {
@@ -576,12 +545,6 @@ describe('stocks page', () => {
 
         pcapi.loadOffer.mockResolvedValue(eventOffer)
         pcapi.loadStocks.mockResolvedValue({ stocks: [eventStock] })
-      })
-
-      afterEach(() => {
-        pcapi.loadOffer.mockReset()
-        pcapi.loadStocks.mockReset()
-        pcapi.bulkCreateOrEditStock.mockReset()
       })
 
       describe('when offer has been manually created', () => {
@@ -865,12 +828,6 @@ describe('stocks page', () => {
           describe('when clicking on submit button', () => {
             beforeEach(() => {
               pcapi.bulkCreateOrEditStock.mockResolvedValue({})
-            })
-
-            afterEach(() => {
-              pcapi.loadOffer.mockReset()
-              pcapi.loadStocks.mockReset()
-              pcapi.bulkCreateOrEditStock.mockReset()
             })
 
             it('should save changes done to stock', async () => {
@@ -1387,12 +1344,6 @@ describe('stocks page', () => {
           pcapi.loadOffer.mockResolvedValue(eventOfferFromAllocine)
         })
 
-        afterEach(() => {
-          pcapi.loadOffer.mockReset()
-          pcapi.loadStocks.mockReset()
-          pcapi.bulkCreateOrEditStock.mockReset()
-        })
-
         describe('when editing stock', () => {
           it('should be able to update price and quantity but not beginning date nor hour fields', async () => {
             // When
@@ -1422,12 +1373,6 @@ describe('stocks page', () => {
         }
         pcapi.loadOffer.mockResolvedValue(thingOffer)
         pcapi.loadStocks.mockResolvedValue({ stocks: [thingStock] })
-      })
-
-      afterEach(() => {
-        pcapi.loadOffer.mockReset()
-        pcapi.loadStocks.mockReset()
-        pcapi.bulkCreateOrEditStock.mockReset()
       })
 
       describe('when offer has been manually created', () => {
@@ -1718,12 +1663,6 @@ describe('stocks page', () => {
           pcapi.loadOffer.mockResolvedValue(synchronisedThingOffer)
         })
 
-        afterEach(() => {
-          pcapi.loadOffer.mockReset()
-          pcapi.loadStocks.mockReset()
-          pcapi.bulkCreateOrEditStock.mockReset()
-        })
-
         it('should not be able to edit a stock', async () => {
           // When
           await renderOffers(props, store)
@@ -1756,12 +1695,6 @@ describe('stocks page', () => {
         }
 
         pcapi.loadOffer.mockResolvedValue(noStockOffer)
-      })
-
-      afterEach(() => {
-        pcapi.loadOffer.mockReset()
-        pcapi.loadStocks.mockReset()
-        pcapi.bulkCreateOrEditStock.mockReset()
       })
 
       it('should not display remaining stocks and bookings columns when no stocks yet', async () => {
@@ -2028,12 +1961,6 @@ describe('stocks page', () => {
         }
 
         pcapi.loadOffer.mockResolvedValue(noStockOffer)
-      })
-
-      afterEach(() => {
-        pcapi.loadOffer.mockReset()
-        pcapi.loadStocks.mockReset()
-        pcapi.bulkCreateOrEditStock.mockReset()
       })
 
       it('should not display remaining stocks and bookings columns when no stocks yet', async () => {
