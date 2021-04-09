@@ -166,47 +166,28 @@ describe('selectEventBookingsOfTheWeek', () => {
 })
 
 describe('selectUpComingBookings', () => {
-  it('should return up coming bookings', () => {
+  it('should return upcoming bookings', () => {
     // given
-    const permanent = null
     const state = {
       data: {
         bookings: [
           {
-            id: 'b1',
+            id: 'bookingOnPastEvent',
             isCancelled: false,
             isUsed: false,
-            stockId: 's1',
+            stockId: 'pastEvent',
           },
           {
-            id: 'b2',
+            id: 'bookingOnFutureEvent',
             isCancelled: false,
             isUsed: false,
-            stockId: 's2',
+            stockId: 'futureEvent',
           },
           {
-            id: 'b3',
-            isCancelled: false,
-            isUsed: false,
-            stockId: 's3',
-          },
-          {
-            id: 'b4',
-            isCancelled: false,
-            isUsed: false,
-            stockId: 's4',
-          },
-          {
-            id: 'b5',
-            isCancelled: true,
-            isUsed: false,
-            stockId: 's5',
-          },
-          {
-            id: 'b6',
+            id: 'usedBookingOnFutureEvent',
             isCancelled: false,
             isUsed: true,
-            stockId: 's6',
+            stockId: 'anotherFutureEvent',
           },
         ],
         offers: [
@@ -215,67 +196,38 @@ describe('selectUpComingBookings', () => {
             venue: {
               departementCode: '97',
             },
+            isEvent: true,
           },
-          {
-            id: 'o2',
-            venue: {
-              departementCode: '97',
-            },
-          },
+
           {
             id: 'o3',
             venue: {
               departementCode: '97',
             },
-          },
-          {
-            id: 'o4',
-            venue: {
-              departementCode: '97',
-            },
-          },
-          {
-            id: 'o5',
-            venue: {
-              departementCode: '97',
-            },
+            isEvent: true,
           },
           {
             id: 'o6',
             venue: {
               departementCode: '97',
             },
+            isEvent: true,
           },
         ],
         stocks: [
           {
             beginningDatetime: oneDayBeforeNow,
-            id: 's1',
+            id: 'pastEvent',
             offerId: 'o1',
           },
           {
-            beginningDatetime: fourDaysAfterNow,
-            id: 's2',
-            offerId: 'o2',
-          },
-          {
             beginningDatetime: nineDaysAfterNow,
-            id: 's3',
+            id: 'futureEvent',
             offerId: 'o3',
           },
           {
-            beginningDatetime: permanent,
-            id: 's4',
-            offerId: 'o4',
-          },
-          {
             beginningDatetime: nineDaysAfterNow,
-            id: 's5',
-            offerId: 'o5',
-          },
-          {
-            beginningDatetime: nineDaysAfterNow,
-            id: 's6',
+            id: 'anotherFutureEvent',
             offerId: 'o6',
           },
         ],
@@ -288,27 +240,21 @@ describe('selectUpComingBookings', () => {
     // then
     expect(bookings).toStrictEqual([
       {
-        id: 'b3',
+        id: 'bookingOnFutureEvent',
         isCancelled: false,
         isUsed: false,
-        stockId: 's3',
+        stockId: 'futureEvent',
       },
       {
-        id: 'b6',
+        id: 'usedBookingOnFutureEvent',
         isCancelled: false,
         isUsed: true,
-        stockId: 's6',
-      },
-      {
-        id: 'b4',
-        isCancelled: false,
-        isUsed: false,
-        stockId: 's4',
+        stockId: 'anotherFutureEvent',
       },
     ])
   })
 
-  it('should return booking in upcoming bookings when it is used but an event', () => {
+  it('should return a booking on upcoming event when it is used', () => {
     // given
     const state = {
       data: {
@@ -325,7 +271,6 @@ describe('selectUpComingBookings', () => {
             id: 'eventOffer',
             hasBookingLimitDatetimesPassed: false,
             isEvent: true,
-            isThing: false,
           },
         ],
         stocks: [
@@ -352,7 +297,121 @@ describe('selectUpComingBookings', () => {
     ])
   })
 
-  it('should not return booking in upcoming bookings when it is used but a thing', () => {
+  it('should not return a booking on past event', () => {
+    // given
+    const state = {
+      data: {
+        bookings: [
+          {
+            id: 'bookingOnPastEvent',
+            isUsed: false,
+            isCancelled: false,
+            stockId: 'pastEventStock',
+          },
+        ],
+        offers: [
+          {
+            id: 'eventOffer',
+            hasBookingLimitDatetimesPassed: false,
+            isEvent: true,
+          },
+        ],
+        stocks: [
+          {
+            beginningDatetime: yesterday,
+            id: 'pastEventStock',
+            offerId: 'eventOffer',
+          },
+        ],
+      },
+    }
+
+    // when
+    const bookings = selectUpComingBookings(state)
+
+    // then
+    expect(bookings).toStrictEqual([])
+  })
+
+  it('should not return a booking on an event in less than seven days', () => {
+    // given
+    const state = {
+      data: {
+        bookings: [
+          {
+            id: 'bookingInLessThanSevenDays',
+            isUsed: false,
+            isCancelled: false,
+            stockId: 'inFourDaysEventStock',
+          },
+        ],
+        offers: [
+          {
+            id: 'eventOffer',
+            hasBookingLimitDatetimesPassed: false,
+            isEvent: true,
+          },
+        ],
+        stocks: [
+          {
+            beginningDatetime: fourDaysAfterNow,
+            id: 'inFourDaysEventStock',
+            offerId: 'eventOffer',
+          },
+        ],
+      },
+    }
+
+    // when
+    const bookings = selectUpComingBookings(state)
+
+    // then
+    expect(bookings).toStrictEqual([])
+  })
+
+  it('should return a booking on a thing when it is not used', () => {
+    // given
+    const state = {
+      data: {
+        bookings: [
+          {
+            id: 'bookingForThing',
+            isUsed: false,
+            isCancelled: false,
+            stockId: 'thingStock',
+          },
+        ],
+        offers: [
+          {
+            id: 'thingOffer',
+            hasBookingLimitDatetimesPassed: false,
+            isEvent: false,
+          },
+        ],
+        stocks: [
+          {
+            id: 'thingStock',
+            offerId: 'thingOffer',
+          },
+        ],
+      },
+    }
+
+    // when
+    const bookings = selectUpComingBookings(state)
+
+    // then
+    expect(bookings).toStrictEqual([
+      {
+        id: 'bookingForThing',
+        isUsed: false,
+        isCancelled: false,
+        stockId: 'thingStock',
+      },
+    ])
+  })
+
+  it('should not return a booking on a thing when it is used', () => {
     // given
     const state = {
       data: {
@@ -369,7 +428,41 @@ describe('selectUpComingBookings', () => {
             id: 'thingOffer',
             hasBookingLimitDatetimesPassed: false,
             isEvent: false,
-            isThing: true,
+          },
+        ],
+        stocks: [
+          {
+            id: 'thingStock',
+            offerId: 'thingOffer',
+          },
+        ],
+      },
+    }
+
+    // when
+    const bookings = selectUpComingBookings(state)
+
+    // then
+    expect(bookings).toStrictEqual([])
+  })
+
+  it('should not a return a cancelled booking', () => {
+    // given
+    const state = {
+      data: {
+        bookings: [
+          {
+            id: 'cancelledBookingForThing',
+            isUsed: false,
+            isCancelled: true,
+            stockId: 'thingStock',
+          },
+        ],
+        offers: [
+          {
+            id: 'thingOffer',
+            hasBookingLimitDatetimesPassed: false,
+            isEvent: false,
           },
         ],
         stocks: [

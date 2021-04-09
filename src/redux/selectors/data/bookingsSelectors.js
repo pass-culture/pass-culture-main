@@ -79,18 +79,16 @@ export const selectUpComingBookings = createSelector(
     const sevenDaysFromNow = moment().clone().add(SLIDING_DAYS, 'days')
 
     const filteredBookings = bookings.filter(booking => {
-      const filteredStock = selectStockById({ data: { stocks } }, booking.stockId)
-      const filteredOffer = selectOfferById({ data: { offers } }, filteredStock.offerId)
+      const bookingStock = selectStockById({ data: { stocks } }, booking.stockId)
+      const bookingOffer = selectOfferById({ data: { offers } }, bookingStock.offerId)
 
-      const isUsedThingBoooking = booking.isUsed && filteredOffer.isThing
-      if (booking.isCancelled || isUsedThingBoooking) return false
+      if (booking.isCancelled) return false
 
-      const isPermanent = filteredStock.beginningDatetime === null
-      const isAfterSevenDaysFromNow = moment(filteredStock.beginningDatetime).isAfter(
-        sevenDaysFromNow
-      )
-
-      return isPermanent || isAfterSevenDaysFromNow
+      if (bookingOffer.isEvent) {
+        return moment(bookingStock.beginningDatetime).isAfter(sevenDaysFromNow)
+      } else {
+        return !booking.isUsed
+      }
     })
 
     return selectBookingsOrderedByBeginningDateTimeAsc(
