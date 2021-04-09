@@ -13,6 +13,7 @@ from flask_admin import Admin
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_login import LoginManager
+from flask_login import current_user
 import redis
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
@@ -24,6 +25,7 @@ from sqlalchemy import orm
 from werkzeug.middleware.profiler import ProfilerMiddleware
 
 from pcapi import settings
+from pcapi.core.logging import get_or_set_correlation_id
 from pcapi.core.logging import install_logging
 from pcapi.models.db import db
 from pcapi.serialization.utils import before_handler
@@ -91,6 +93,13 @@ rate_limiter.init_app(app)
 
 @app.before_request
 def before_request() -> None:
+    if current_user and current_user.is_authenticated:
+        sentry_sdk.set_user(
+            {
+                "id": current_user.id,
+            }
+        )
+    sentry_sdk.set_tag("correlation-id", get_or_set_correlation_id())
     g.request_start = time.perf_counter()
 
 
