@@ -15,7 +15,7 @@ def check_user_is_logged_in_or_email_is_provided(user: User, email: str):
         raise api_errors
 
 
-def login_or_api_key_required_v2(function):
+def login_or_api_key_required(function):
     @wraps(function)
     def wrapper(*args, **kwds):
         mandatory_authorization_type = "Bearer "
