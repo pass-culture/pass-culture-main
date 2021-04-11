@@ -28,7 +28,6 @@ from pcapi.utils.mailing import MailServiceException
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.rest import expect_json_data
 from pcapi.utils.rest import load_or_404
-from pcapi.utils.rest import login_or_api_key_required
 
 
 logger = logging.getLogger(__name__)
@@ -109,7 +108,7 @@ def get_offerer(offerer_id: str) -> GetOffererResponseModel:
 
 # @debt api-migration
 @private_api.route("/offerers", methods=["POST"])
-@login_or_api_key_required
+@login_required
 @expect_json_data
 def create_offerer():
     siren = request.json["siren"]

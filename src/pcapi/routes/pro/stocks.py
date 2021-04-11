@@ -1,4 +1,5 @@
 from flask_login import current_user
+from flask_login import login_required
 
 import pcapi.core.offers.api as offers_api
 from pcapi.core.offers.repository import get_stocks_for_offer
@@ -15,11 +16,10 @@ from pcapi.routes.serialization.stock_serialize import StocksUpsertBodyModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.rest import check_user_has_access_to_offerer
-from pcapi.utils.rest import login_or_api_key_required
 
 
 @private_api.route("/offers/<offer_id>/stocks", methods=["GET"])
-@login_or_api_key_required
+@login_required
 @spectree_serialize(response_model=StocksResponseModel)
 def get_stocks(offer_id: str) -> StocksResponseModel:
     offerer = offerer_queries.get_by_offer_id(dehumanize(offer_id))
@@ -32,7 +32,7 @@ def get_stocks(offer_id: str) -> StocksResponseModel:
 
 
 @private_api.route("/stocks/bulk", methods=["POST"])
-@login_or_api_key_required
+@login_required
 @spectree_serialize(on_success_status=201, response_model=StockIdsResponseModel)
 def upsert_stocks(body: StocksUpsertBodyModel) -> StockIdsResponseModel:
     offerer = offerer_queries.get_by_offer_id(body.offer_id)
@@ -45,7 +45,7 @@ def upsert_stocks(body: StocksUpsertBodyModel) -> StockIdsResponseModel:
 
 
 @private_api.route("/stocks/<stock_id>", methods=["DELETE"])
-@login_or_api_key_required
+@login_required
 @spectree_serialize(response_model=StockIdResponseModel)
 def delete_stock(stock_id: str) -> StockIdResponseModel:
     # fmt: off

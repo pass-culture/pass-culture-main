@@ -48,7 +48,7 @@ class Returns403:
 
         # then
         updated_user = User.query.one()
-        assert response.status_code == 403
+        assert response.status_code == 401
         assert updated_user.hasSeenProTutorials == False
 
     def when_user_has_no_rights(self, app):

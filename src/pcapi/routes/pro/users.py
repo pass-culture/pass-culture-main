@@ -1,5 +1,6 @@
 from flask import abort
 from flask_login import current_user
+from flask_login import login_required
 
 from pcapi.core.users import api as users_api
 from pcapi.core.users.models import User
@@ -10,11 +11,10 @@ from pcapi.routes.serialization.users import PatchProUserResponseModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.rest import load_or_404
-from pcapi.utils.rest import login_or_api_key_required
 
 
 @private_api.route("/users/<user_id>/tuto-seen", methods=["PATCH"])
-@login_or_api_key_required
+@login_required
 @spectree_serialize(response_model=None, on_success_status=204)
 def patch_user_tuto_seen(user_id: str) -> None:
     user = load_or_404(User, user_id)
@@ -23,7 +23,7 @@ def patch_user_tuto_seen(user_id: str) -> None:
 
 
 @private_api.route("/users/current", methods=["PATCH"])
-@login_or_api_key_required
+@login_required
 @spectree_serialize(response_model=PatchProUserResponseModel)  # type: ignore
 def patch_profile(body: PatchProUserBodyModel) -> PatchProUserResponseModel:
     user = current_user._get_current_object()  # get underlying User object from proxy

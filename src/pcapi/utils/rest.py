@@ -3,7 +3,6 @@ from functools import wraps
 import re
 
 from flask import request
-from flask_login import current_user
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.sql.elements import UnaryExpression
 from sqlalchemy.sql.functions import random
@@ -11,17 +10,6 @@ from sqlalchemy.sql.functions import random
 from pcapi.core.users.models import User
 from pcapi.models.api_errors import ApiErrors
 from pcapi.utils.human_ids import dehumanize
-
-
-def login_or_api_key_required(f):
-    @wraps(f)
-    def wrapper(*args, **kwds):
-        if not current_user.is_authenticated:
-            return "API key or login required", 403
-
-        return f(*args, **kwds)
-
-    return wrapper
 
 
 def expect_json_data(f):

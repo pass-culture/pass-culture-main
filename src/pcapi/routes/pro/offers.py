@@ -32,7 +32,6 @@ from pcapi.serialization.decorator import spectree_serialize
 logger = logging.getLogger(__name__)
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.rest import load_or_404
-from pcapi.utils.rest import login_or_api_key_required
 
 
 @private_api.route("/offers", methods=["GET"])
@@ -66,7 +65,7 @@ def get_offer(offer_id: str) -> GetOfferResponseModel:
 
 
 @private_api.route("/offers", methods=["POST"])
-@login_or_api_key_required
+@login_required
 @spectree_serialize(response_model=OfferResponseIdModel, on_success_status=201)  # type: ignore
 def post_offer(body: PostOfferBodyModel) -> OfferResponseIdModel:
     offer = offers_api.create_offer(offer_data=body, user=current_user)
@@ -74,7 +73,7 @@ def post_offer(body: PostOfferBodyModel) -> OfferResponseIdModel:
 
 
 @private_api.route("/offers/active-status", methods=["PATCH"])
-@login_or_api_key_required
+@login_required
 @spectree_serialize(response_model=None, on_success_status=204)  # type: ignore
 def patch_offers_active_status(body: PatchOfferActiveStatusBodyModel) -> None:
     query = offers_repository.get_offers_by_ids(current_user, body.ids)
@@ -82,7 +81,7 @@ def patch_offers_active_status(body: PatchOfferActiveStatusBodyModel) -> None:
 
 
 @private_api.route("/offers/all-active-status", methods=["PATCH"])
-@login_or_api_key_required
+@login_required
 @spectree_serialize(response_model=None, on_success_status=204)
 def patch_all_offers_active_status(body: PatchAllOffersActiveStatusBodyModel) -> None:
     query = offers_repository.get_offers_by_filters(
@@ -101,7 +100,7 @@ def patch_all_offers_active_status(body: PatchAllOffersActiveStatusBodyModel) ->
 
 
 @private_api.route("/offers/<offer_id>", methods=["PATCH"])
-@login_or_api_key_required
+@login_required
 @spectree_serialize(response_model=OfferResponseIdModel)  # type: ignore
 def patch_offer(offer_id: str, body: PatchOfferBodyModel) -> OfferResponseIdModel:
     offer = load_or_404(Offer, human_id=offer_id)
@@ -113,7 +112,7 @@ def patch_offer(offer_id: str, body: PatchOfferBodyModel) -> OfferResponseIdMode
 
 
 @private_api.route("/offers/thumbnail-url-validation", methods=["POST"])
-@login_or_api_key_required
+@login_required
 @spectree_serialize(response_model=ImageResponseModel)
 def validate_distant_image(body: ImageBodyModel) -> ImageResponseModel:
     errors = []

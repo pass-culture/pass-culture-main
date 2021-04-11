@@ -26,7 +26,6 @@ from pcapi.utils.login_manager import stamp_session
 from pcapi.utils.mailing import MailServiceException
 from pcapi.utils.rate_limiting import email_rate_limiter
 from pcapi.utils.rate_limiting import ip_rate_limiter
-from pcapi.utils.rest import login_or_api_key_required
 from pcapi.validation.routes.users import check_valid_signin
 from pcapi.workers.beneficiary_job import beneficiary_job
 
@@ -45,7 +44,7 @@ def get_beneficiary_profile() -> BeneficiaryAccountResponse:
 
 
 @private_api.route("/beneficiaries/current", methods=["PATCH"])
-@login_or_api_key_required
+@login_required
 @spectree_serialize(response_model=BeneficiaryAccountResponse)
 def patch_beneficiary(body: PatchBeneficiaryBodyModel) -> BeneficiaryAccountResponse:
     user = current_user._get_current_object()
@@ -58,7 +57,7 @@ def patch_beneficiary(body: PatchBeneficiaryBodyModel) -> BeneficiaryAccountResp
 
 
 @private_api.route("/beneficiaries/change_email_request", methods=["PUT"])
-@login_or_api_key_required
+@login_required
 @spectree_serialize(on_success_status=204, on_error_statuses=[401, 503])
 def change_beneficiary_email_request(body: ChangeBeneficiaryEmailRequestBody) -> None:
     errors = ApiErrors()
