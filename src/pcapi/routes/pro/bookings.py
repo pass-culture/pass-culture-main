@@ -10,10 +10,8 @@ import pcapi.core.bookings.validation as bookings_validation
 from pcapi.domain.users import check_is_authorized_to_access_bookings_recap
 from pcapi.flask_app import private_api
 from pcapi.flask_app import public_api
-from pcapi.models import ApiKey
 from pcapi.models import EventType
 from pcapi.models.offer_type import ProductType
-from pcapi.repository.api_key_queries import find_api_key_by_value
 from pcapi.routes.serialization import serialize
 from pcapi.routes.serialization import serialize_booking
 from pcapi.routes.serialization.bookings_recap_serialize import serialize_bookings_recap_paginated
@@ -23,6 +21,7 @@ from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.validation.routes.bookings import check_email_and_offer_id_for_anonymous_user
 from pcapi.validation.routes.bookings import check_page_format_is_number
 from pcapi.validation.routes.users_authentifications import check_user_is_logged_in_or_email_is_provided
+from pcapi.validation.routes.users_authentifications import current_api_key
 from pcapi.validation.routes.users_authentifications import login_or_api_key_required
 from pcapi.validation.routes.users_authorizations import check_api_key_allows_to_cancel_booking
 from pcapi.validation.routes.users_authorizations import check_api_key_allows_to_validate_booking
@@ -87,7 +86,6 @@ def get_all_bookings():
 @public_api.route("/v2/bookings/token/<token>", methods=["GET"])
 @login_or_api_key_required
 def get_booking_by_token_v2(token: str):
-    valid_api_key = _get_api_key_from_header(request)
     booking = booking_repository.find_by(token=token)
     offerer_id = booking.stock.offer.venue.managingOffererId
 
@@ -95,8 +93,8 @@ def get_booking_by_token_v2(token: str):
         # warning : current user is not none when user is not logged in
         check_user_can_validate_bookings_v2(current_user, offerer_id)
 
-    if valid_api_key:
-        check_api_key_allows_to_validate_booking(valid_api_key, offerer_id)
+    if current_api_key:
+        check_api_key_allows_to_validate_booking(current_api_key, offerer_id)
 
     bookings_validation.check_is_usable(booking)
 
@@ -112,13 +110,12 @@ def patch_booking_use_by_token(token: str):
     """Let a pro user mark a booking as used."""
     booking = booking_repository.find_by(token=token)
     offerer_id = booking.stock.offer.venue.managingOffererId
-    valid_api_key = _get_api_key_from_header(request)
 
     if current_user.is_authenticated:
         check_user_can_validate_bookings_v2(current_user, offerer_id)
 
-    if valid_api_key:
-        check_api_key_allows_to_validate_booking(valid_api_key, offerer_id)
+    if current_api_key:
+        check_api_key_allows_to_validate_booking(current_api_key, offerer_id)
 
     bookings_api.mark_as_used(booking)
 
@@ -130,7 +127,6 @@ def patch_booking_use_by_token(token: str):
 @login_or_api_key_required
 def patch_cancel_booking_by_token(token: str):
     """Let a pro user cancel a booking."""
-    valid_api_key = _get_api_key_from_header(request)
     token = token.upper()
     booking = booking_repository.find_by(token=token)
     offerer_id = booking.stock.offer.venue.managingOffererId
@@ -138,8 +134,8 @@ def patch_cancel_booking_by_token(token: str):
     if current_user.is_authenticated:
         check_user_has_access_to_offerer(current_user, offerer_id)
 
-    if valid_api_key:
-        check_api_key_allows_to_cancel_booking(valid_api_key, offerer_id)
+    if current_api_key:
+        check_api_key_allows_to_cancel_booking(current_api_key, offerer_id)
 
     bookings_api.cancel_booking_by_offerer(booking)
 
@@ -153,29 +149,16 @@ def patch_booking_keep_by_token(token: str):
     """Let a pro user mark a booking as _not_ used."""
     booking = booking_repository.find_by(token=token)
     offerer_id = booking.stock.offer.venue.managingOffererId
-    valid_api_key = _get_api_key_from_header(request)
 
     if current_user.is_authenticated:
         check_user_can_validate_bookings_v2(current_user, offerer_id)
 
-    if valid_api_key:
-        check_api_key_allows_to_validate_booking(valid_api_key, offerer_id)
+    if current_api_key:
+        check_api_key_allows_to_validate_booking(current_api_key, offerer_id)
 
     bookings_api.mark_as_unused(booking)
 
     return "", 204
-
-
-def _get_api_key_from_header(received_request: dict) -> ApiKey:
-    authorization_header = received_request.headers.get("Authorization", None)
-    headers_contains_api_key_authorization = authorization_header and "Bearer" in authorization_header
-
-    if headers_contains_api_key_authorization:
-        app_authorization_api_key = authorization_header.replace("Bearer ", "")
-    else:
-        app_authorization_api_key = None
-
-    return find_api_key_by_value(app_authorization_api_key)
 
 
 def _create_response_to_get_booking_by_token(booking: Booking) -> dict:

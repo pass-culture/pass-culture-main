@@ -1,7 +1,9 @@
 from functools import wraps
 
+from flask import g
 from flask import request
 from flask_login import current_user
+from werkzeug.local import LocalProxy
 
 from pcapi.core.users.models import User
 from pcapi.models import ApiErrors
@@ -19,15 +21,23 @@ def login_or_api_key_required(function):
     @wraps(function)
     def wrapper(*args, **kwds):
         mandatory_authorization_type = "Bearer "
-        is_valid_api_key = False
         authorization_header = request.headers.get("Authorization")
+        g.current_api_key = None
 
         if authorization_header and mandatory_authorization_type in authorization_header:
             app_authorization_credentials = authorization_header.replace(mandatory_authorization_type, "")
-            is_valid_api_key = bool(find_api_key_by_value(app_authorization_credentials))
+            g.current_api_key = find_api_key_by_value(app_authorization_credentials)
 
-        if not is_valid_api_key and not current_user.is_authenticated:
+        if not g.current_api_key and not current_user.is_authenticated:
             return "API key or login required", 401
         return function(*args, **kwds)
 
     return wrapper
+
+
+def _get_current_api_key():
+    assert "current_api_key" in g, "Can only be used in a route wrapped with login_or_api_key_required"
+    return g.current_api_key
+
+
+current_api_key = LocalProxy(_get_current_api_key)
