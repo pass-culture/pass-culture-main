@@ -143,9 +143,9 @@ def cancel_booking(user: User, booking_id: int) -> None:
     try:
         bookings_api.cancel_booking_by_beneficiary(user, booking)
     except exceptions.BookingIsAlreadyUsed:
-        raise ApiErrors({"code": "ALREADY_USED", "message": "La réservation a déjà été utilisée"})
-    except exceptions.CannotCancelConfirmedBooking as e:
-        raise ApiErrors({"code": "CONFIRMED_BOOKING", "message": e.errors["booking"][0]})
+        raise ApiErrors({"code": "ALREADY_USED", "message": "La réservation a déjà été utilisée."})
+    except exceptions.CannotCancelConfirmedBooking:
+        raise ApiErrors({"code": "CONFIRMED_BOOKING", "message": "La date limite d'annulation est dépassée."})
     except RuntimeError:
         logger.error("Unexpected call to cancel_booking_by_beneficiary with non-beneficiary user %s", user.id)
         raise ApiErrors()

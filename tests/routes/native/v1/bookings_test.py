@@ -211,5 +211,5 @@ class CancelBookingTest:
         assert response.status_code == 400
         assert response.json == {
             "code": "CONFIRMED_BOOKING",
-            "message": "Impossible d'annuler une réservation plus de 48h après l'avoir réservée et moins de 48h avant le début de l'événement",
+            "message": "La date limite d'annulation est dépassée.",
         }
