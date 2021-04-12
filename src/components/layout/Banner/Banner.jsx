@@ -4,11 +4,11 @@ import React from 'react'
 import Icon from 'components/layout/Icon'
 import { requiredIfComponentHasProp } from 'utils/propTypes'
 
-const Banner = ({ icon, href, linkTitle, message, type }) => {
+const Banner = ({ icon, href, linkTitle, children, type }) => {
   return (
     <div className={`bi-banner ${type}`}>
       <p>
-        {message}
+        {children}
       </p>
 
       {href && linkTitle && (
@@ -29,18 +29,18 @@ const Banner = ({ icon, href, linkTitle, message, type }) => {
 }
 
 Banner.defaultProps = {
+  children: null,
   href: null,
   icon: 'ico-external-site',
   linkTitle: null,
-  message: '',
   type: 'attention',
 }
 
 Banner.propTypes = {
+  children: PropTypes.node,
   href: requiredIfComponentHasProp('linkTitle', 'string'),
   icon: PropTypes.string,
   linkTitle: requiredIfComponentHasProp('href', 'string'),
-  message: PropTypes.string,
   type: PropTypes.oneOf(['notification-info', 'attention']),
 }
 

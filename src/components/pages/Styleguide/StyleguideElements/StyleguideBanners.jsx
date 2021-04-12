@@ -7,17 +7,19 @@ const StyleguideBanners = () => {
     <Banner
       href="#"
       linkTitle="Lien vers une autre page"
-      message="Sous-titre du lien"
-    />
+    >
+      {'Sous-titre du lien'}
+    </Banner>
   `
 
   const informationBanner = String.raw`
     <Banner
       href="#"
       linkTitle="Lien vers une autre page"
-      message="Bannière de type 'information'"
       type="notification-info"
-    />
+    >
+      {"Bannière de type 'information'"}
+    </Banner>
   `
 
   return (
@@ -26,8 +28,9 @@ const StyleguideBanners = () => {
         <Banner
           href="#"
           linkTitle="Lien vers une autre page"
-          message="Bannière de type 'Attention'"
-        />
+        >
+          {"Bannière de type 'Attention'"}
+        </Banner>
         <div className="it-description">
           <pre className="it-icon-snippet">
             <code>
@@ -40,9 +43,10 @@ const StyleguideBanners = () => {
         <Banner
           href="#"
           linkTitle="Lien vers une autre page"
-          message="Bannière de type 'information'"
           type="notification-info"
-        />
+        >
+          {"Bannière de type 'information'"}
+        </Banner>
         <div className="it-description">
           <pre className="it-icon-snippet">
             <code>

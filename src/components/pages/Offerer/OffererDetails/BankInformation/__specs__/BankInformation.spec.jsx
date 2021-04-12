@@ -16,7 +16,7 @@ const expectReimbursementBannerToBePresent = wrapper => {
     href:
       'https://aide.passculture.app/fr/article/acteurs-determiner-ses-modalites-de-remboursement-1ab6g2m/',
     icon: 'ico-external-site',
-    message: '',
+    children: null,
   })
 }
 
@@ -37,7 +37,7 @@ describe('src | Offerer | BankInformation', () => {
     // then
     expect(wrapper.find('Banner').first().props()).toStrictEqual({
       type: 'attention',
-      message: 'Renseignez vos coordonnées bancaires pour être remboursé de vos offres éligibles',
+      children: 'Renseignez vos coordonnées bancaires pour être remboursé de vos offres éligibles',
       linkTitle: 'Renseignez les coordonnées bancaires de la structure',
       href: 'link/to/offerer/demarchesSimplifiees/procedure',
       icon: 'ico-external-site',
@@ -93,7 +93,7 @@ describe('src | Offerer | BankInformation', () => {
     // then
     expect(wrapper.find('Banner').first().props()).toStrictEqual({
       type: 'attention',
-      message: 'Votre dossier est en cours pour cette structure',
+      children: 'Votre dossier est en cours pour cette structure',
       linkTitle: 'Accéder au dossier',
       href: 'https://www.demarches-simplifiees.fr/dossiers/12',
       icon: 'ico-external-site',

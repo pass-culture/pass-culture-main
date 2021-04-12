@@ -16,7 +16,7 @@ describe('when offerer has no bank informations', () => {
     // then
     expect(wrapper.find('Banner').props()).toStrictEqual({
       type: 'attention',
-      message: 'Votre dossier est en cours pour ce lieu',
+      children: 'Votre dossier est en cours pour ce lieu',
       linkTitle: 'Accéder au dossier',
       href: 'https://www.demarches-simplifiees.fr/dossiers/12',
       icon: 'ico-external-site',

@@ -262,9 +262,13 @@ class Desk extends Component {
           <Banner
             href="https://aide.passculture.app/fr/article/acteurs-modalites-de-retrait-dun-bien-dans-ma-structure-mq85is/"
             linkTitle="En savoir plus"
-            message="N’oubliez pas de vérifier l’identité du bénéficiaire avant de valider la contremarque. Les pièces d’identité doivent impérativement être présentées physiquement. Merci de ne pas accepter les pièces d’identité au format numérique."
             type="notification-info"
-          />
+          >
+            <strong>
+              {'N’oubliez pas de vérifier l’identité du bénéficiaire avant de valider la contremarque.'}
+            </strong>
+            {' Les pièces d’identité doivent impérativement être présentées physiquement. Merci de ne pas accepter les pièces d’identité au format numérique.'}
+          </Banner>
         </form>
       </AppLayout>
     )

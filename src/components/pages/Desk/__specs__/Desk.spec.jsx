@@ -277,12 +277,12 @@ describe('src | components | Desk', () => {
     renderDesk(props)
 
     // Then
-    expect(
-      screen.getByText(
-        'N’oubliez pas de vérifier l’identité du bénéficiaire avant de valider la contremarque. Les pièces d’identité doivent impérativement être présentées physiquement. Merci de ne pas accepter les pièces d’identité au format numérique.',
-        { selector: 'p' }
-      )
-    ).toBeInTheDocument()
+    const bannerMessage = queryByTextTrimHtml(
+      screen,
+      'N’oubliez pas de vérifier l’identité du bénéficiaire avant de valider la contremarque. Les pièces d’identité doivent impérativement être présentées physiquement. Merci de ne pas accepter les pièces d’identité au format numérique.',
+      { selector: 'p' }
+    )
+    expect(bannerMessage).toBeInTheDocument()
     expect(screen.getByText('En savoir plus', { selector: 'a' }).getAttribute('href')).toBe(
       'https://aide.passculture.app/fr/article/acteurs-modalites-de-retrait-dun-bien-dans-ma-structure-mq85is/'
     )

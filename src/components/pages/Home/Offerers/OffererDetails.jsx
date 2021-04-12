@@ -108,9 +108,10 @@ const OffererDetails = ({
             <div className="od-separator horizontal" />
             {!selectedOfferer.isValidated && (
               <Banner
-                message="Votre structure est en cours de validation"
                 type="notification-info"
-              />
+              >
+                {'Votre structure est en cours de validation'}
+              </Banner>
             )}
             {isUserOffererValidated && (
               <div className="h-card-cols">

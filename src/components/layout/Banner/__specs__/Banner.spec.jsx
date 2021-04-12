@@ -7,17 +7,23 @@ import Banner from 'components/layout/Banner/Banner'
 describe('src | components | layout | Banner', () => {
   describe('render', () => {
     let props = {
-      message: 'message',
       href: '/some/site',
       linkTitle: 'linkTitle',
     }
 
     it('should render the Banner with the default props', () => {
+      // given
+      const message = 'message'
+
       // when
-      render(<Banner {...props} />)
+      render(
+        <Banner {...props}>
+          {message}
+        </Banner>
+      )
 
       // then
-      expect(screen.getByText(props.message)).toBeInTheDocument()
+      expect(screen.getByText(message)).toBeInTheDocument()
       expect(screen.getByRole('img')).toBeInTheDocument()
       const link = screen.getByRole('link', { name: props.linkTitle })
       expect(link).toBeInTheDocument()
@@ -27,24 +33,37 @@ describe('src | components | layout | Banner', () => {
     })
 
     it('should change the banner type - attention', () => {
+      // given
+      const message = 'message'
+
       // when
-      render(<Banner {...props} />)
+      render(
+        <Banner {...props}>
+          {message}
+        </Banner>
+      )
 
       // then
-      expect(screen.getByText(props.message).closest('div')).toHaveAttribute(
+      expect(screen.getByText(message).closest('div')).toHaveAttribute(
         'class',
         'bi-banner attention'
       )
     })
 
     it('should change the banner type - notification-info', () => {
+      // given
+      const message = 'message'
       props.type = 'notification-info'
 
       // when
-      render(<Banner {...props} />)
+      render(
+        <Banner {...props}>
+          {message}
+        </Banner>
+      )
 
       // then
-      expect(screen.getByText(props.message).closest('div')).toHaveAttribute(
+      expect(screen.getByText(message).closest('div')).toHaveAttribute(
         'class',
         'bi-banner notification-info'
       )

@@ -58,8 +58,9 @@ const BankInformation = ({ offerer }) => (
       <Banner
         href={`https://www.demarches-simplifiees.fr/dossiers/${offerer.demarchesSimplifieesApplicationId}`}
         linkTitle="Accéder au dossier"
-        message="Votre dossier est en cours pour cette structure"
-      />
+      >
+        {'Votre dossier est en cours pour cette structure'}
+      </Banner>
     ) : (
       <Fragment>
         <p className="bi-subtitle">
@@ -68,8 +69,9 @@ const BankInformation = ({ offerer }) => (
         <Banner
           href={DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL}
           linkTitle="Renseignez les coordonnées bancaires de la structure"
-          message="Renseignez vos coordonnées bancaires pour être remboursé de vos offres éligibles"
-        />
+        >
+          {'Renseignez vos coordonnées bancaires pour être remboursé de vos offres éligibles'}
+        </Banner>
       </Fragment>
     )}
     <Banner
