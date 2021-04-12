@@ -184,9 +184,6 @@ class User(PcObject, Model, NeedsValidationMixin, VersionedMixin):
 
     isBeneficiary = Column(Boolean, nullable=False, server_default=expression.false())
 
-    # TODO (viconnex) remove column in next deployment
-    hasAllowedRecommendations = Column(Boolean, nullable=False, server_default=expression.false())
-
     # FIXME (dbaty, 2020-12-14): once v114 has been deployed, populate
     # existing rows with the empty string and add NOT NULL constraint.
     suspensionReason = Column(Text, nullable=True, default="")

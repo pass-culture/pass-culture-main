@@ -50,7 +50,6 @@ class Get:
                 "departementCode": "93",
                 "email": "toto@example.com",
                 "firstName": "Jean",
-                "hasAllowedRecommendations": False,
                 "hasOffers": False,
                 "hasPhysicalVenues": False,
                 "hasSeenProTutorials": True,
