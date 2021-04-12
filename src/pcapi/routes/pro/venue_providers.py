@@ -38,6 +38,7 @@ def list_venue_providers() -> Tuple[Any, int]:
 @spectree_serialize(on_success_status=201, response_model=VenueProviderResponse)
 def create_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
     venue_provider_payload = body
+    venue_provider_payload.venueIdAtOfferProvider = None
 
     new_venue_provider = api.create_venue_provider(venue_provider_payload)
 

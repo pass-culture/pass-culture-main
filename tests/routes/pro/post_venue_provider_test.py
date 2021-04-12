@@ -193,6 +193,47 @@ class Post:
                 "requireProviderIdentifier",
             }
 
+        @pytest.mark.usefixtures("db_session")
+        @override_features(SYNCHRONIZE_VENUE_PROVIDER_IN_WORKER=False)
+        @patch("pcapi.core.providers.api.subprocess.Popen")
+        @patch("pcapi.use_cases.connect_venue_to_provider._check_venue_can_be_synchronized_with_provider")
+        def when_venue_id_at_offer_provider_is_ignored_for_pro(self, stubbed_check, mock_subprocess, app):
+            # Given
+            user = user_factories.UserFactory(isAdmin=True)
+            venue = offer_factories.VenueFactory(siret="12345678912345")
+
+            provider = activate_provider("LibrairesStocks")
+
+            venue_provider_data = {
+                "providerId": humanize(provider.id),
+                "venueId": humanize(venue.id),
+                "venueIdAtOfferProvider": "====VY24G1AGF56",
+            }
+
+            auth_request = TestClient(app.test_client()).with_auth(email=user.email)
+            stubbed_check.return_value = True
+
+            # When
+            response = auth_request.post("/venueProviders", json=venue_provider_data)
+
+            # Then
+            assert response.status_code == 201
+            venue_provider = VenueProvider.query.one()
+            assert venue_provider.venueId == venue.id
+            assert venue_provider.providerId == provider.id
+            assert venue_provider.venueIdAtOfferProvider == "12345678912345"
+            assert "id" in response.json
+            venue_provider_id = response.json["id"]
+            mock_subprocess.assert_called_once_with(
+                [
+                    "python",
+                    "src/pcapi/scripts/pc.py",
+                    "update_providables",
+                    "--venue-provider-id",
+                    str(dehumanize(venue_provider_id)),
+                ]
+            )
+
     class Returns400:
         @pytest.mark.usefixtures("db_session")
         def when_api_error_raise_when_missing_fields(self, app):
