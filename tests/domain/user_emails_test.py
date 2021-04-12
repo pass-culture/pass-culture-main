@@ -8,9 +8,12 @@ import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.offers.factories import UserOffererFactory
+from pcapi.core.offers.factories import VenueFactory
+from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.domain.user_emails import send_activation_email
@@ -23,6 +26,7 @@ from pcapi.domain.user_emails import send_booking_recap_emails
 from pcapi.domain.user_emails import send_expired_bookings_recap_email_to_beneficiary
 from pcapi.domain.user_emails import send_expired_bookings_recap_email_to_offerer
 from pcapi.domain.user_emails import send_newly_eligible_user_email
+from pcapi.domain.user_emails import send_offer_validation_status_update_email
 from pcapi.domain.user_emails import send_offerer_bookings_recap_email_after_offerer_cancellation
 from pcapi.domain.user_emails import send_offerer_driven_cancellation_email_to_offerer
 from pcapi.domain.user_emails import send_pro_user_validation_email
@@ -40,6 +44,7 @@ from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_stock_with_event_offer
 from pcapi.models import offer_type
+from pcapi.utils.human_ids import humanize
 
 from tests.domain_creators.generic_creators import create_domain_beneficiary_pre_subcription
 from tests.test_utils import create_mocked_bookings
@@ -560,3 +565,23 @@ class SendNewlyEligibleUserEmailTest:
         assert "licenceToken" in mails_testing.outbox[0].sent_data["Vars"]["nativeAppLink"]
         assert "email" in mails_testing.outbox[0].sent_data["Vars"]["nativeAppLink"]
         assert mails_testing.outbox[0].sent_data["Vars"]["depositAmount"] == 300
+
+
+@pytest.mark.usefixtures("db_session")
+class SendOfferValidationTest:
+    def test_send_offer_approval_email(
+        self,
+    ):
+        # Given
+        venue = VenueFactory(name="Sibérie orientale")
+        offer = OfferFactory(name="Michel Strogoff", venue=venue)
+
+        # When
+        send_offer_validation_status_update_email(offer, OfferValidationStatus.APPROVED, ["jules.verne@example.com"])
+
+        # Then
+        assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 2613721
+        assert mails_testing.outbox[0].sent_data["Vars"]["offer_name"] == "Michel Strogoff"
+        assert mails_testing.outbox[0].sent_data["Vars"]["venue_name"] == "Sibérie orientale"
+        assert humanize(offer.id) in mails_testing.outbox[0].sent_data["Vars"]["pc_pro_offer_link"]
+        assert mails_testing.outbox[0].sent_data["To"] == "jules.verne@example.com"

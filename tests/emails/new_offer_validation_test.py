@@ -1,6 +1,6 @@
 from pcapi import settings
 import pcapi.core.offers.factories as offer_factories
-from pcapi.emails.new_offer_validation import retrieve_data_for_new_offer_validation_email
+from pcapi.emails.new_offer_validation import retrieve_data_for_offer_approval_email
 from pcapi.utils.human_ids import humanize
 
 
@@ -10,15 +10,15 @@ class MakeNewOfferValidationEmailTest:
         offer = offer_factories.OfferFactory(name="Ma petite offre", venue__name="Mon stade")
 
         # When
-        new_offer_validation_email = retrieve_data_for_new_offer_validation_email(offer)
+        new_offer_validation_email = retrieve_data_for_offer_approval_email(offer)
 
         # Then
         assert new_offer_validation_email == {
             "MJ-TemplateID": 2613721,
             "MJ-TemplateLanguage": True,
             "Vars": {
-                "nom_offre": "Ma petite offre",
-                "nom_lieu": "Mon stade",
-                "lien_offre_pcpro": f"{settings.PRO_URL}/offres/{humanize(offer.id)}/edition",
+                "offer_name": "Ma petite offre",
+                "venue_name": "Mon stade",
+                "pc_pro_offer_link": f"{settings.PRO_URL}/offres/{humanize(offer.id)}/edition",
             },
         }

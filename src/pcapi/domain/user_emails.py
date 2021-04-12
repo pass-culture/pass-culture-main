@@ -6,6 +6,7 @@ from pcapi.core import mails
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
 from pcapi.core.users.models import Token
@@ -28,6 +29,7 @@ from pcapi.emails.beneficiary_soon_to_be_expired_bookings import (
 from pcapi.emails.beneficiary_warning_after_pro_booking_cancellation import (
     retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation,
 )
+from pcapi.emails.new_offer_validation import retrieve_data_for_offer_approval_email
 from pcapi.emails.new_offerer_validation import retrieve_data_for_new_offerer_validation_email
 from pcapi.emails.offerer_attachment_validation import retrieve_data_for_offerer_attachment_validation_email
 from pcapi.emails.offerer_booking_recap import retrieve_data_for_offerer_booking_recap_email
@@ -42,6 +44,7 @@ from pcapi.emails.user_notification_after_stock_update import (
 )
 from pcapi.emails.user_reset_password import retrieve_data_for_reset_password_native_app_email
 from pcapi.emails.user_reset_password import retrieve_data_for_reset_password_user_email
+from pcapi.models import Offer
 from pcapi.models import UserOfferer
 from pcapi.repository.offerer_queries import find_new_offerer_user_email
 
@@ -223,6 +226,15 @@ def send_newly_eligible_user_email(user: User) -> bool:
 def send_reset_password_link_to_admin_email(created_user: User, admin_email: User, reset_password_link: str) -> bool:
     data = retrieve_data_for_reset_password_link_to_admin_email(created_user, reset_password_link)
     return mails.send(recipients=[admin_email], data=data)
+
+
+def send_offer_validation_status_update_email(
+    offer: Offer, validation_status: OfferValidationStatus, recipient_email: List[str]
+) -> bool:
+    if validation_status is OfferValidationStatus.APPROVED:
+        offer_data = retrieve_data_for_offer_approval_email(offer)
+        return mails.send(recipients=recipient_email, data=offer_data)
+    return False  # False until end of implement in ticket 7855
 
 
 def _build_recipients_list(booking: Booking) -> str:

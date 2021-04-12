@@ -19,6 +19,7 @@ from pcapi.connectors.api_entreprises import get_offerer_legal_category
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.api import update_pending_offer_validation_status
 from pcapi.core.offers.models import OfferValidationStatus
+from pcapi.domain.user_emails import send_offer_validation_status_update_email
 from pcapi.flask_app import app
 from pcapi.models import Offer
 from pcapi.models.feature import FeatureToggle
@@ -170,11 +171,20 @@ class ValidationView(BaseAdminView):
         if request.method == "POST":
             form = OfferValidationForm(request.form)
             if form.validate():
+                validation_status = OfferValidationStatus[form.validation.data]
                 is_offer_updated = update_pending_offer_validation_status(
                     offer, OfferValidationStatus[form.validation.data]
                 )
                 if is_offer_updated:
                     flash("Le statut de l'offre a bien été modifié", "success")
+
+                    recipients = (
+                        [offer.venue.bookingEmail]
+                        if offer.venue.bookingEmail
+                        else [recipient.user.email for recipient in offer.venue.managingOfferer.UserOfferers]
+                    )
+
+                    send_offer_validation_status_update_email(offer, validation_status, recipients)
                     if request.form["action"] == "save-and-go-next":
                         next_offer_query = (
                             Offer.query.filter(Offer.validation == OfferValidationStatus.PENDING)
