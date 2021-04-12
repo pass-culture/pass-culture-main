@@ -156,9 +156,14 @@ pc alembic  revision --autogenerate -m nom_de_la_migration
 
 4. Jouer la migration : `pc alembic upgrade head`
 
+5. Tester la fonction de downgrade
+
+```bash
+pc alembic downgrade -1
+```
+
 Autres commandes utiles :
 
-- Revenir 1 migration en arrière : `pc alembic downgrade -1`
 - Afficher le sql généré entre 2 migrations sans la jouer : `pc alembic upgrade e7b46b06f6dd:head --sql`
 
 ### Test
