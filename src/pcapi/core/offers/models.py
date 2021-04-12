@@ -263,6 +263,7 @@ class OfferStatus(enum.Enum):
 class OfferValidationStatus(enum.Enum):
     APPROVED = "APPROVED"
     AWAITING = "AWAITING"
+    DRAFT = "DRAFT"
     REJECTED = "REJECTED"
 
 
