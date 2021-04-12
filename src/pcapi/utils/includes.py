@@ -10,7 +10,6 @@ BENEFICIARY_INCLUDES = [
     "-resetPasswordToken",
     "-resetPasswordTokenValidityLimit",
     "-validationToken",
-    "expenses",
     "wallet_balance",
     "wallet_is_activated",
     "deposit_expiration_date",

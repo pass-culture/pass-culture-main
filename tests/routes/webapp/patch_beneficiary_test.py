@@ -39,11 +39,6 @@ def test_patch_beneficiary(app):
         "departementCode": user.departementCode,
         "deposit_version": 1,
         "email": user.email,
-        "expenses": [
-            {"current": 0.0, "domain": "all", "limit": 500.0},
-            {"current": 0.0, "domain": "digital", "limit": 200.0},
-            {"current": 0.0, "domain": "physical", "limit": 200.0},
-        ],
         "firstName": "Jeanne",
         "hasPhysicalVenues": False,
         "id": humanize(user.id),

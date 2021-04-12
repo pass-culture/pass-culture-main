@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import List
 from typing import Optional
 
 from pydantic import BaseModel
@@ -84,7 +83,6 @@ class BeneficiaryAccountResponse(BaseModel):
     deposit_version: Optional[int]
     domainsCredit: Optional[DomainsCredit]
     email: str
-    expenses: List[Expense]
     firstName: Optional[str]
     hasPhysicalVenues: bool
     id: str

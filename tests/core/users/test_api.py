@@ -1,6 +1,7 @@
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
+from decimal import Decimal
 from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
@@ -8,6 +9,8 @@ from freezegun import freeze_time
 import jwt
 import pytest
 
+from pcapi.core.bookings import factories as booking_factories
+from pcapi.core.payments.api import DEPOSIT_VALIDITY_IN_YEARS
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
@@ -17,7 +20,10 @@ from pcapi.core.users.api import delete_expired_tokens
 from pcapi.core.users.api import fulfill_account_password
 from pcapi.core.users.api import fulfill_beneficiary_data
 from pcapi.core.users.api import generate_and_save_token
+from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.api import set_pro_tuto_as_seen
+from pcapi.core.users.models import Credit
+from pcapi.core.users.models import DomainsCredit
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
@@ -26,6 +32,8 @@ from pcapi.core.users.utils import decode_jwt_token
 from pcapi.core.users.utils import encode_jwt_payload
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user
+from pcapi.models.offer_type import EventType
+from pcapi.models.offer_type import ThingType
 from pcapi.models.user_session import UserSession
 from pcapi.repository import repository
 
@@ -470,3 +478,83 @@ class UpdateUserInfoTest:
         users_api.update_user_info(user, email="  NEW@example.com   ")
         user = User.query.one()
         assert user.email == "new@example.com"
+
+
+@pytest.mark.usefixtures("db_session")
+class DomainsCreditTest:
+    def test_get_domains_credit_v1(self):
+        user = users_factories.UserFactory(deposit__version=1)
+
+        # booking only in all domains
+        booking_factories.BookingFactory(
+            user=user,
+            amount=50,
+            stock__offer__type=str(EventType.CINEMA),
+        )
+        booking_factories.BookingFactory(
+            user=user,
+            amount=5,
+            stock__offer__type=str(EventType.CINEMA),
+        )
+
+        # booking in digital domain
+        booking_factories.BookingFactory(
+            user=user,
+            amount=80,
+            stock__offer__type=str(ThingType.JEUX_VIDEO),
+            stock__offer__url="http://on.line",
+        )
+
+        # booking in physical domain
+        booking_factories.BookingFactory(
+            user=user,
+            amount=150,
+            stock__offer__type=str(ThingType.JEUX),
+        )
+
+        # cancelled booking
+        booking_factories.BookingFactory(
+            user=user, amount=150, stock__offer__type=str(ThingType.JEUX), isCancelled=True
+        )
+
+        assert get_domains_credit(user) == DomainsCredit(
+            all=Credit(initial=Decimal(500), remaining=Decimal(215)),
+            digital=Credit(initial=Decimal(200), remaining=Decimal(120)),
+            physical=Credit(initial=Decimal(200), remaining=Decimal(50)),
+        )
+
+    def test_get_domains_credit_v2(self):
+        user = users_factories.UserFactory(deposit__version=2)
+
+        # booking in physical domain
+        booking_factories.BookingFactory(
+            user=user,
+            amount=250,
+            stock__offer__type=str(ThingType.JEUX),
+        )
+
+        assert get_domains_credit(user) == DomainsCredit(
+            all=Credit(initial=Decimal(300), remaining=Decimal(50)),
+            digital=Credit(initial=Decimal(100), remaining=Decimal(50)),
+            physical=None,
+        )
+
+    def test_get_domains_credit_deposit_expired(self):
+        user = users_factories.UserFactory(deposit__version=2)
+        booking_factories.BookingFactory(
+            user=user,
+            amount=250,
+            stock__offer__type=str(ThingType.JEUX),
+        )
+
+        with freeze_time(datetime.now() + relativedelta(years=DEPOSIT_VALIDITY_IN_YEARS, days=2)):
+            assert get_domains_credit(user) == DomainsCredit(
+                all=Credit(initial=Decimal(300), remaining=Decimal(0)),
+                digital=Credit(initial=Decimal(100), remaining=Decimal(0)),
+                physical=None,
+            )
+
+    def test_get_domains_credit_no_deposit(self):
+        user = users_factories.UserFactory(isBeneficiary=False)
+
+        assert not get_domains_credit(user)

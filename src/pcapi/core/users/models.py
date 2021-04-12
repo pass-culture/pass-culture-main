@@ -248,13 +248,6 @@ class User(PcObject, Model, NeedsValidationMixin, VersionedMixin):
     def age(self) -> Optional[int]:
         return relativedelta(date.today(), self.dateOfBirth.date()).years if self.dateOfBirth is not None else None
 
-    # TODO(viconnex) Remove expenses once the webapp and app native use api.get_domains_credit
-    @property
-    def expenses(self):
-        from pcapi.core.users.api import user_expenses
-
-        return user_expenses(self)
-
     @property
     def deposit(self) -> Optional[Deposit]:
         return self.deposits[0] if len(self.deposits) > 0 else None

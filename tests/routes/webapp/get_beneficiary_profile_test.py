@@ -33,7 +33,6 @@ class Get:
             json = response.json
             assert json["email"] == "toto@example.com"
             assert not json["domainsCredit"]
-            assert json["expenses"] == []
             assert "password" not in json
             assert "clearTextPassword" not in json
             assert "resetPasswordToken" not in json
@@ -85,11 +84,6 @@ class Get:
                 "digital": {"initial": 200.0, "remaining": 200.0},
                 "physical": {"initial": 200.0, "remaining": 195.0},
             }
-            assert response.json["expenses"] == [
-                {"domain": "all", "current": 5.0, "limit": 500.0},
-                {"domain": "digital", "current": 0.0, "limit": 200.0},
-                {"domain": "physical", "current": 5.0, "limit": 200.0},
-            ]
 
         @pytest.mark.usefixtures("db_session")
         def when_user_has_cancelled_some_offers(self, app):
@@ -106,11 +100,6 @@ class Get:
                 "digital": {"initial": 200.0, "remaining": 200.0},
                 "physical": {"initial": 200.0, "remaining": 200.0},
             }
-            assert response.json["expenses"] == [
-                {"domain": "all", "current": 0.0, "limit": 500.0},
-                {"domain": "digital", "current": 0.0, "limit": 200.0},
-                {"domain": "physical", "current": 0.0, "limit": 200.0},
-            ]
 
         @pytest.mark.usefixtures("db_session")
         def when_user_is_created_without_postal_code(self, app):

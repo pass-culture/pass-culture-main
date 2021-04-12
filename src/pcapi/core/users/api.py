@@ -5,7 +5,6 @@ from datetime import timedelta
 from decimal import Decimal
 import logging
 import secrets
-from typing import List
 from typing import Optional
 
 from jwt import DecodeError
@@ -19,8 +18,6 @@ from pcapi.core.bookings.conf import LIMIT_CONFIGURATIONS
 from pcapi.core.payments import api as payment_api
 from pcapi.core.users.models import Credit
 from pcapi.core.users.models import DomainsCredit
-from pcapi.core.users.models import Expense
-from pcapi.core.users.models import ExpenseDomain
 from pcapi.core.users.models import NotificationSubscriptions
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
@@ -373,40 +370,6 @@ def get_domains_credit(user: User) -> Optional[DomainsCredit]:
         )
 
     return domains_credit
-
-
-def user_expenses(user: User) -> List[Expense]:
-    domains_credit = get_domains_credit(user)
-    if not domains_credit:
-        return []
-
-    limits = [
-        Expense(
-            domain=ExpenseDomain.ALL,
-            current=domains_credit.all.initial - domains_credit.all.remaining,
-            limit=domains_credit.all.initial,
-        )
-    ]
-
-    if domains_credit.digital:
-        limits.append(
-            Expense(
-                domain=ExpenseDomain.DIGITAL,
-                current=domains_credit.digital.initial - domains_credit.digital.remaining,
-                limit=domains_credit.digital.initial,
-            )
-        )
-
-    if domains_credit.physical:
-        limits.append(
-            Expense(
-                domain=ExpenseDomain.PHYSICAL,
-                current=domains_credit.physical.initial - domains_credit.physical.remaining,
-                limit=domains_credit.physical.initial,
-            )
-        )
-
-    return limits
 
 
 def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> User:

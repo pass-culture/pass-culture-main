@@ -1,7 +1,6 @@
 import datetime
 from datetime import date
 from typing import Dict
-from typing import List
 from typing import Optional
 from uuid import UUID
 
@@ -98,7 +97,6 @@ class UserProfileResponse(BaseModel):
     eligibility_end_datetime: Optional[datetime.datetime]
     eligibility_start_datetime: Optional[datetime.datetime]
     email: str
-    expenses: List[Expense]
     firstName: Optional[str]
     lastName: Optional[str]
     subscriptions: NotificationSubscriptions  # if we send user.notification_subscriptions, pydantic will take the column and not the property

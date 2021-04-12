@@ -3,7 +3,7 @@ import logging
 from random import choice
 
 from pcapi.core.bookings.factories import BookingFactory
-from pcapi.core.users.models import ExpenseDomain
+from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.models import User
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.models.offer_type import EventType
@@ -13,7 +13,7 @@ from pcapi.repository import repository
 logger = logging.getLogger(__name__)
 
 
-MAX_RATIO_OF_EXPENSES = 0.6
+MAX_RATIO_OF_INITIAL_CREDIT = 0.4
 OFFER_WITH_BOOKINGS_RATIO = 3
 OFFER_WITH_SEVERAL_STOCKS_REMOVE_MODULO = 2
 BOOKINGS_USED_REMOVE_MODULO = 5
@@ -123,13 +123,14 @@ def _create_has_booked_some_bookings(bookings_by_name, offers_by_name, user, use
         if offer_index % OFFER_WITH_BOOKINGS_RATIO != 0:
             continue
 
-        digital_expenses = next(expense for expense in user.expenses if expense.domain == ExpenseDomain.DIGITAL)
-        all_expenses = next(expense for expense in user.expenses if expense.domain == ExpenseDomain.ALL)
+        domains_credit = get_domains_credit(user)
+        digital_credit = domains_credit.digital
+        all_credit = domains_credit.all
 
-        if digital_expenses.current > MAX_RATIO_OF_EXPENSES * float(digital_expenses.limit):
+        if digital_credit and digital_credit.remaining < MAX_RATIO_OF_INITIAL_CREDIT * float(digital_credit.initial):
             break
 
-        if all_expenses.current > MAX_RATIO_OF_EXPENSES * float(all_expenses.limit):
+        if all_credit.remaining < MAX_RATIO_OF_INITIAL_CREDIT * float(all_credit.initial):
             break
 
         is_activation_offer = offer.product.offerType["value"] == str(EventType.ACTIVATION)
