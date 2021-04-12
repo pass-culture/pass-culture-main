@@ -66,7 +66,8 @@ class TestLocalProviderWithThumb(LocalProvider):
 
     def get_object_thumb(self) -> bytes:
         file_path = Path(pcapi.sandboxes.__path__[0]) / "providers" / "titelive_mocks" / "provider_thumb.jpeg"
-        return open(file_path, "rb").read()
+        with open(file_path, "rb") as f:
+            return f.read()
 
     def get_object_thumb_index(self) -> int:
         return 1
@@ -89,7 +90,8 @@ class TestLocalProviderWithThumbIndexAt4(LocalProvider):
 
     def get_object_thumb(self) -> bytes:
         file_path = Path(pcapi.sandboxes.__path__[0]) / "providers" / "titelive_mocks" / "provider_thumb.jpeg"
-        return open(file_path, "rb").read()
+        with open(file_path, "rb") as f:
+            return f.read()
 
     def get_object_thumb_index(self) -> int:
         return 4

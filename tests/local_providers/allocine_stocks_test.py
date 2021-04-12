@@ -923,7 +923,8 @@ class UpdateObjectsTest:
             ]
         )
         file_path = Path(pcapi.sandboxes.__path__[0]) / "providers" / "titelive_mocks" / "provider_thumb.jpeg"
-        mock_get_object_thumb.return_value = open(file_path, "rb").read()
+        with open(file_path, "rb") as thumb_file:
+            mock_get_object_thumb.return_value = thumb_file.read()
 
         product = create_product_with_event_type(
             event_name="Test event",
@@ -1024,7 +1025,8 @@ class UpdateObjectsTest:
             ]
         )
         file_path = Path(pcapi.sandboxes.__path__[0]) / "providers" / "titelive_mocks" / "provider_thumb.jpeg"
-        mock_get_object_thumb.return_value = open(file_path, "rb").read()
+        with open(file_path, "rb") as thumb_file:
+            mock_get_object_thumb.return_value = thumb_file.read()
 
         product = create_product_with_event_type(
             event_name="Test event",

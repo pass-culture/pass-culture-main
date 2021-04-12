@@ -28,15 +28,15 @@ class LocalBackend(BaseBackend):
         try:
             os.makedirs(self.local_dir(bucket, object_id), exist_ok=True)
             file_local_path = self.local_path(bucket, object_id)
-            new_type_file = open(str(file_local_path) + ".type", "w")
-            new_type_file.write(content_type)
+            with open(str(file_local_path) + ".type", "w") as new_type_file:
+                new_type_file.write(content_type)
 
             if symlink_path and not os.path.isfile(file_local_path) and not os.path.islink(file_local_path):
                 os.symlink(symlink_path, file_local_path)
                 return
 
-            new_file = open(file_local_path, "wb")
-            new_file.write(blob)
+            with open(file_local_path, "wb") as new_file:
+                new_file.write(blob)
 
         except Exception as exc:
             logger.exception("An error has occured while trying to upload file on local file storage: %s", exc)
