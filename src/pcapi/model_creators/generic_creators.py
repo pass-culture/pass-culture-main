@@ -14,6 +14,7 @@ from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.models import Mediation
 from pcapi.core.users.models import TokenType
 from pcapi.core.providers.models import AllocineVenueProvider
+from pcapi.core.providers.models import AllocineVenueProviderPriceRule
 from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users.models import User
@@ -21,7 +22,6 @@ from pcapi.domain.payments import PaymentDetails
 from pcapi.domain.price_rule import PriceRule
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
-from pcapi.models import AllocineVenueProviderPriceRule
 from pcapi.models import ApiKey
 from pcapi.models import BankInformation
 from pcapi.models import BeneficiaryImport

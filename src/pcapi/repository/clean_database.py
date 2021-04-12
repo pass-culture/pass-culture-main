@@ -3,13 +3,13 @@ from pcapi.core.mails.models import Email
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.models import Mediation
 from pcapi.core.providers.models import AllocineVenueProvider
+from pcapi.core.providers.models import AllocineVenueProviderPriceRule
 from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import User
 from pcapi.local_providers.install import install_local_providers
 from pcapi.models import AllocinePivot
-from pcapi.models import AllocineVenueProviderPriceRule
 from pcapi.models import ApiKey
 from pcapi.models import BankInformation
 from pcapi.models import BeneficiaryImport

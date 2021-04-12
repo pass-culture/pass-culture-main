@@ -2,7 +2,7 @@ from decimal import Decimal
 import logging
 
 from pcapi.core.providers.models import AllocineVenueProvider
-from pcapi.models import AllocineVenueProviderPriceRule
+from pcapi.core.providers.models import AllocineVenueProviderPriceRule
 from pcapi.models import Venue
 from pcapi.repository import repository
 

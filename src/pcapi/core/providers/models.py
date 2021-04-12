@@ -3,8 +3,10 @@ from sqlalchemy import Boolean
 from sqlalchemy import CheckConstraint
 from sqlalchemy import Column
 from sqlalchemy import DateTime
+from sqlalchemy import Enum
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
+from sqlalchemy import Numeric
 from sqlalchemy import String
 from sqlalchemy import Text
 from sqlalchemy import UniqueConstraint
@@ -17,6 +19,7 @@ from sqlalchemy.orm import column_property
 from sqlalchemy.orm import relationship
 
 from pcapi.core.offers.models import Offer
+from pcapi.domain.price_rule import PriceRule
 from pcapi.infrastructure.repository.stock_provider.provider_api import ProviderAPI
 from pcapi.models.db import Model
 from pcapi.models.deactivable_mixin import DeactivableMixin
@@ -130,3 +133,35 @@ class AllocineVenueProvider(VenueProvider):
     __mapper_args__ = {
         "polymorphic_identity": "allocine_venue_provider",
     }
+
+
+class AllocineVenueProviderPriceRule(PcObject, Model):
+    priceRule = Column(Enum(PriceRule), nullable=False)
+
+    allocineVenueProviderId = Column(BigInteger, ForeignKey("allocine_venue_provider.id"), index=True, nullable=False)
+
+    allocineVenueProvider = relationship(
+        "AllocineVenueProvider", foreign_keys=[allocineVenueProviderId], backref="priceRules"
+    )
+
+    price = Column(Numeric(10, 2), CheckConstraint("price >= 0", name="check_price_is_not_negative"), nullable=False)
+
+    UniqueConstraint(
+        allocineVenueProviderId,
+        priceRule,
+        name="unique_allocine_venue_provider_price_rule",
+    )
+
+    @staticmethod
+    def restize_integrity_error(internal_error):
+        if "unique_allocine_venue_provider_price_rule" in str(internal_error.orig):
+            return ["global", "Vous ne pouvez avoir qu''un seul prix par catégorie"]
+        if "check_price_is_not_negative" in str(internal_error.orig):
+            return ["global", "Vous ne pouvez renseigner un prix négatif"]
+        return PcObject.restize_integrity_error(internal_error)
+
+    @staticmethod
+    def restize_data_error(data_error):
+        if "wrong_price" in str(data_error):
+            return ["global", "Le prix doit être un nombre décimal"]
+        return PcObject.restize_integrity_error(data_error)

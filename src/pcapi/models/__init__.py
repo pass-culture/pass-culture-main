@@ -6,13 +6,13 @@ from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.providers.models import AllocineVenueProvider
+from pcapi.core.providers.models import AllocineVenueProviderPriceRule
 from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users.models import Favorite
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import User
 from pcapi.models.allocine_pivot import AllocinePivot
-from pcapi.models.allocine_venue_provider_price_rule import AllocineVenueProviderPriceRule
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_key import ApiKey
 from pcapi.models.bank_information import BankInformation
@@ -79,7 +79,6 @@ __all__ = (
     "Mediation",
     "Stock",
     "Offerer",
-    "AllocineVenueProviderPriceRule",
     "LocalProviderEvent",
     "OfferCriterion",
     "Offer",
