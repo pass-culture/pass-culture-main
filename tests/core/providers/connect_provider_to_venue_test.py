@@ -5,6 +5,7 @@ import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.factories import VenueFactory
+from pcapi.core.providers.api import connect_venue_to_provider
 from pcapi.core.providers.models import VenueProvider
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_provider
@@ -12,12 +13,11 @@ from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.provider_creators import activate_provider
 from pcapi.models import ApiErrors
 from pcapi.repository import repository
-from pcapi.use_cases.connect_venue_to_provider import connect_venue_to_provider
 
 
 @pytest.mark.usefixtures("db_session")
 @patch(
-    "pcapi.use_cases.connect_venue_to_provider.api_libraires_stocks.can_be_synchronized",
+    "pcapi.core.providers.api.api_libraires_stocks.can_be_synchronized",
     return_value=True,
 )
 def test_when_venue_id_at_offer_provider_is_given(can_be_synchronized, app):
@@ -37,7 +37,7 @@ def test_when_venue_id_at_offer_provider_is_given(can_be_synchronized, app):
 
 @pytest.mark.usefixtures("db_session")
 @patch(
-    "pcapi.use_cases.connect_venue_to_provider.api_libraires_stocks.can_be_synchronized",
+    "pcapi.core.providers.api.api_libraires_stocks.can_be_synchronized",
     return_value=True,
 )
 def test_use_siret_as_default(can_be_synchronized, app):
@@ -60,7 +60,7 @@ class WhenProviderIsLibraires:
 
     @pytest.mark.usefixtures("db_session")
     @patch(
-        "pcapi.use_cases.connect_venue_to_provider.api_libraires_stocks.can_be_synchronized",
+        "pcapi.core.providers.api.api_libraires_stocks.can_be_synchronized",
         return_value=True,
     )
     def should_connect_venue_when_synchronization_is_allowed(self, app):
@@ -84,7 +84,7 @@ class WhenProviderIsLibraires:
 
     @pytest.mark.usefixtures("db_session")
     @patch(
-        "pcapi.use_cases.connect_venue_to_provider.api_libraires_stocks.can_be_synchronized",
+        "pcapi.core.providers.api.api_libraires_stocks.can_be_synchronized",
         return_value=False,
     )
     def should_not_connect_venue_when_synchronization_is_not_allowed(self, app):
@@ -135,7 +135,7 @@ class WhenProviderIsTiteLive:
 
     @pytest.mark.usefixtures("db_session")
     @patch(
-        "pcapi.use_cases.connect_venue_to_provider.api_titelive_stocks.can_be_synchronized",
+        "pcapi.core.providers.api.api_titelive_stocks.can_be_synchronized",
         return_value=True,
     )
     def should_connect_venue_when_synchronization_is_allowed(self, app):
@@ -159,7 +159,7 @@ class WhenProviderIsTiteLive:
 
     @pytest.mark.usefixtures("db_session")
     @patch(
-        "pcapi.use_cases.connect_venue_to_provider.api_titelive_stocks.can_be_synchronized",
+        "pcapi.core.providers.api.api_titelive_stocks.can_be_synchronized",
         return_value=False,
     )
     def should_not_connect_venue_when_synchronization_is_not_allowed(self, app):
@@ -212,7 +212,7 @@ class WhenProviderImplementsProviderAPI:
 
     @pytest.mark.usefixtures("db_session")
     @patch(
-        "pcapi.use_cases.connect_venue_to_provider.synchronize_provider_api.check_siret_can_be_synchronized",
+        "pcapi.core.providers.api.synchronize_provider_api.check_siret_can_be_synchronized",
         return_value=True,
     )
     def should_connect_venue_when_synchronization_is_allowed(self, app):
@@ -237,7 +237,7 @@ class WhenProviderImplementsProviderAPI:
 
     @pytest.mark.usefixtures("db_session")
     @patch(
-        "pcapi.use_cases.connect_venue_to_provider.synchronize_provider_api.check_siret_can_be_synchronized",
+        "pcapi.core.providers.api.synchronize_provider_api.check_siret_can_be_synchronized",
         return_value=False,
     )
     def should_not_connect_venue_when_synchronization_is_not_allowed(self, app):
@@ -288,7 +288,7 @@ class WhenProviderIsPraxiel:
 
     @pytest.mark.usefixtures("db_session")
     @patch(
-        "pcapi.use_cases.connect_venue_to_provider.api_praxiel_stocks.can_be_synchronized",
+        "pcapi.core.providers.api.api_praxiel_stocks.can_be_synchronized",
         return_value=True,
     )
     def should_connect_venue_when_synchronization_is_allowed(self, app):
@@ -312,7 +312,7 @@ class WhenProviderIsPraxiel:
 
     @pytest.mark.usefixtures("db_session")
     @patch(
-        "pcapi.use_cases.connect_venue_to_provider.api_praxiel_stocks.can_be_synchronized",
+        "pcapi.core.providers.api.api_praxiel_stocks.can_be_synchronized",
         return_value=False,
     )
     def should_not_connect_venue_when_synchronization_is_not_allowed(self, app):

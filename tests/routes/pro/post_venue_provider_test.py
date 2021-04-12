@@ -24,7 +24,7 @@ class Post:
         @pytest.mark.usefixtures("db_session")
         @override_features(SYNCHRONIZE_VENUE_PROVIDER_IN_WORKER=False)
         @patch("pcapi.core.providers.api.subprocess.Popen")
-        @patch("pcapi.use_cases.connect_venue_to_provider._check_venue_can_be_synchronized_with_provider")
+        @patch("pcapi.core.providers.api._check_venue_can_be_synchronized_with_provider")
         def when_venue_provider_is_successfully_created_and_using_subprocesses(
             self, stubbed_check, mock_subprocess, app
         ):
@@ -66,7 +66,7 @@ class Post:
         @pytest.mark.usefixtures("db_session")
         @override_features(SYNCHRONIZE_VENUE_PROVIDER_IN_WORKER=True)
         @patch("pcapi.workers.venue_provider_job.venue_provider_job.delay")
-        @patch("pcapi.use_cases.connect_venue_to_provider._check_venue_can_be_synchronized_with_provider")
+        @patch("pcapi.core.providers.api._check_venue_can_be_synchronized_with_provider")
         def when_venue_provider_is_successfully_created(self, stubbed_check, mock_synchronize_venue_provider, app):
             # Given
             user = user_factories.UserFactory(isAdmin=True)
@@ -147,7 +147,7 @@ class Post:
         @pytest.mark.usefixtures("db_session")
         @override_features(SYNCHRONIZE_VENUE_PROVIDER_IN_WORKER=True)
         @patch("pcapi.workers.venue_provider_job.venue_provider_job.delay")
-        @patch("pcapi.use_cases.connect_venue_to_provider._check_venue_can_be_synchronized_with_provider")
+        @patch("pcapi.core.providers.api._check_venue_can_be_synchronized_with_provider")
         def when_no_regression_on_format(self, stubbed_check, mock_synchronize_venue_provider, app):
             # Given
             user = user_factories.UserFactory(isAdmin=True)
@@ -196,7 +196,7 @@ class Post:
         @pytest.mark.usefixtures("db_session")
         @override_features(SYNCHRONIZE_VENUE_PROVIDER_IN_WORKER=False)
         @patch("pcapi.core.providers.api.subprocess.Popen")
-        @patch("pcapi.use_cases.connect_venue_to_provider._check_venue_can_be_synchronized_with_provider")
+        @patch("pcapi.core.providers.api._check_venue_can_be_synchronized_with_provider")
         def when_venue_id_at_offer_provider_is_ignored_for_pro(self, stubbed_check, mock_subprocess, app):
             # Given
             user = user_factories.UserFactory(isAdmin=True)
@@ -251,7 +251,7 @@ class Post:
             assert response.json["providerId"] == ["Ce champ est obligatoire"]
 
         @pytest.mark.usefixtures("db_session")
-        @patch("pcapi.use_cases.connect_venue_to_provider._check_venue_can_be_synchronized_with_provider")
+        @patch("pcapi.core.providers.api._check_venue_can_be_synchronized_with_provider")
         def when_trying_to_add_existing_provider(self, stubbed_check, app):
             # Given
             user = user_factories.UserFactory(isAdmin=True)
@@ -355,7 +355,7 @@ class Post:
 
     class Returns422:
         @pytest.mark.usefixtures("db_session")
-        @patch("pcapi.use_cases.connect_venue_to_provider._check_venue_can_be_synchronized_with_provider")
+        @patch("pcapi.core.providers.api._check_venue_can_be_synchronized_with_provider")
         def when_provider_api_not_available(self, stubbed_check, app):
             # Given
             user = user_factories.UserFactory(isAdmin=True)
@@ -390,7 +390,7 @@ class Post:
 
     class ConnectProviderToVenueTest:
         @pytest.mark.usefixtures("db_session")
-        @patch("pcapi.use_cases.connect_venue_to_provider._check_venue_can_be_synchronized_with_provider")
+        @patch("pcapi.core.providers.api._check_venue_can_be_synchronized_with_provider")
         @patch("pcapi.core.providers.api.connect_venue_to_provider")
         def should_inject_the_appropriate_repository_to_the_usecase(
             self, mocked_connect_venue_to_provider, stubbed_check, app
@@ -416,7 +416,7 @@ class Post:
             mocked_connect_venue_to_provider.assert_called_once_with(venue, provider, None)
 
         @pytest.mark.usefixtures("db_session")
-        @patch("pcapi.use_cases.connect_venue_to_provider._check_venue_can_be_synchronized_with_provider")
+        @patch("pcapi.core.providers.api._check_venue_can_be_synchronized_with_provider")
         @patch("pcapi.core.providers.api.connect_venue_to_allocine")
         def should_inject_no_repository_to_the_usecase_when_provider_is_not_concerned(
             self,
