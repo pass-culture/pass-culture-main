@@ -66,6 +66,8 @@ class PartnerUserView(BaseAdminView):
     def on_model_change(self, form: Form, model: User, is_created: bool) -> None:
         if is_created:
             fulfill_account_password(model)
+            model.needsToFillCulturalSurvey = False
+            model.hasSeenTutorials = True
 
         model.publicName = f"{model.firstName} {model.lastName}"
         model.isBeneficiary = False

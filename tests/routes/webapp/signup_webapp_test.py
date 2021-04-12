@@ -63,6 +63,8 @@ class Post:
 
             user = User.query.filter_by(email="toto@example.com").first()
             assert user.notificationSubscriptions == {"marketing_push": True, "marketing_email": True}
+            assert user.hasSeenTutorials is True
+            assert user.needsToFillCulturalSurvey is False
 
         @patch("pcapi.routes.webapp.signup.get_authorized_emails_and_dept_codes")
         @pytest.mark.usefixtures("db_session")
