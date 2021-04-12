@@ -6,6 +6,7 @@ from flask import request
 
 from pcapi import settings
 from pcapi.connectors.google_spreadsheet import get_authorized_emails_and_dept_codes
+from pcapi.connectors.google_spreadsheet import get_ttl_hash
 from pcapi.core.payments import api as payments_api
 from pcapi.core.users.models import NotificationSubscriptions
 from pcapi.core.users.models import User
@@ -39,7 +40,7 @@ def signup_webapp():
         new_user.departementCode = "00"
         objects_to_save.append(payments_api.create_deposit(new_user, "test"))
     else:
-        authorized_emails, departement_codes = get_authorized_emails_and_dept_codes()
+        authorized_emails, departement_codes = get_authorized_emails_and_dept_codes(ttl_hash=get_ttl_hash())
         departement_code = _get_departement_code_when_authorized_or_error(authorized_emails, departement_codes)
         new_user.departementCode = departement_code
 
