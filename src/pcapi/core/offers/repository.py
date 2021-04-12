@@ -60,7 +60,7 @@ def get_paginated_offers_for_filters(
 
     query = (
         query.options(joinedload(Offer.venue).joinedload(Venue.managingOfferer))
-        .options(joinedload(Offer.stocks).joinedload(Stock.bookings))
+        .options(joinedload(Offer.stocks))
         .options(joinedload(Offer.mediations))
         .options(joinedload(Offer.product))
         .order_by(Offer.id.desc())

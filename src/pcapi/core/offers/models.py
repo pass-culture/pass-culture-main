@@ -114,18 +114,11 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin, VersionedMixin
 
     @hybrid_property
     def bookingsQuantity(self):
-        return sum([booking.quantity for booking in self.bookings if not booking.isCancelled])
+        return self.dnBookedQuantity
 
     @bookingsQuantity.expression
     def bookingsQuantity(cls):  # pylint: disable=no-self-argument
-        from pcapi.core.bookings.models import Booking
-
-        return (
-            db.session.query(func.coalesce(func.sum(Booking.quantity), 0))
-            .filter(Booking.isCancelled.is_(False))
-            .filter(Booking.stockId == cls.id)
-            .as_scalar()
-        )
+        return cls.dnBookedQuantity
 
     # TODO(fseguin, 2021-03-25): replace unlimited by None (also in the front-end)
     @hybrid_property

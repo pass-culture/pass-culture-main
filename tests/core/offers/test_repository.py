@@ -1187,18 +1187,24 @@ class CheckStockConsistenceTest:
         stock2 = offers_factories.StockFactory(dnBookedQuantity=5)
 
         # consistent stock with booking
-        stock3 = offers_factories.StockFactory(dnBookedQuantity=2)
-        bookings_factories.BookingFactory(stock=stock3, quantity=2)
+        stock3_bookings = bookings_factories.BookingFactory(quantity=2, stock__dnBookedQuantity=3)
+        stock3 = stock3_bookings.stock
+        stock3.dnBookedQuantity = 2
         # inconsistent stock with booking
-        stock4 = offers_factories.StockFactory(dnBookedQuantity=5)
-        bookings_factories.BookingFactory(stock=stock4, quantity=2)
+        stock4_bookings = bookings_factories.BookingFactory(quantity=2)
+        stock4 = stock4_bookings.stock
+        stock4.dnBookedQuantity = 5
 
         # consistent stock with cancelled booking
-        stock5 = offers_factories.StockFactory(dnBookedQuantity=0)
-        bookings_factories.BookingFactory(stock=stock5, quantity=2, isCancelled=True)
+        stock5_bookings = bookings_factories.BookingFactory(quantity=2, isCancelled=True)
+        stock5 = stock5_bookings.stock
+        stock5.dnBookedQuantity = 0
         # inconsistent stock with cancelled booking
-        stock6 = offers_factories.StockFactory(dnBookedQuantity=2)
-        bookings_factories.BookingFactory(stock=stock6, quantity=2, isCancelled=True)
+        stock6_bookings = bookings_factories.BookingFactory(quantity=2, isCancelled=True)
+        stock6 = stock6_bookings.stock
+        stock6.dnBookedQuantity = 2
+
+        repository.save(stock3, stock4, stock5, stock6)
 
         stocks = check_stock_consistence()
         stock_ids = {stock.id for stock in stocks}

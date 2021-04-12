@@ -1,10 +1,8 @@
 from sqlalchemy.orm import joinedload
 
-from pcapi.core.bookings.models import Booking
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import Stock
 from pcapi.models.product import Product
 from pcapi.serialization.decorator import spectree_serialize
 
@@ -18,9 +16,7 @@ from .serialization import offers as serializers
 )  # type: ignore
 def get_offer(offer_id: str) -> serializers.OfferResponse:
     offer = (
-        Offer.query.options(
-            joinedload(Offer.stocks).joinedload(Stock.bookings).load_only(Booking.isCancelled, Booking.quantity)
-        )
+        Offer.query.options(joinedload(Offer.stocks))
         .options(
             joinedload(Offer.venue)
             .joinedload(Venue.managingOfferer)
