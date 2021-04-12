@@ -12,6 +12,8 @@ from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.models import User
 from pcapi.models import api_errors
 from pcapi.models.db import db
+from pcapi.models.feature import FeatureToggle
+from pcapi.repository import feature_queries
 from pcapi.repository import payment_queries
 
 
@@ -151,6 +153,11 @@ def check_can_be_mark_as_unused(booking: Booking) -> None:
         gone = api_errors.ResourceGoneError()
         gone.add_error("booking", "Cette réservation n'a pas encore été validée")
         raise gone
+
+    if booking.stock.offer.isDigital and feature_queries.is_active(FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS):
+        forbidden = api_errors.ForbiddenError()
+        forbidden.add_error("booking", "Cette réservation ne peut pas être marquée comme inutilisée")
+        raise forbidden
 
     if booking.isCancelled:
         forbidden = api_errors.ForbiddenError()

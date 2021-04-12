@@ -432,6 +432,14 @@ class MarkAsUnusedTest:
             api.mark_as_unused(booking)
         assert booking.isUsed  # unchanged
 
+    @override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True)
+    def test_raise_if_booking_was_automatically_used(self):
+        offer = offers_factories.OfferFactory(product=offers_factories.DigitalProductFactory())
+        booking = factories.BookingFactory(isUsed=True, stock__offer=offer)
+        with pytest.raises(api_errors.ForbiddenError):
+            api.mark_as_unused(booking)
+        assert booking.isUsed  # unchanged
+
 
 class GenerateQrCodeTest:
     @mock.patch("qrcode.QRCode")
