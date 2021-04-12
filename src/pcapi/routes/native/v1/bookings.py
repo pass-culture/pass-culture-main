@@ -26,7 +26,6 @@ logger = logging.getLogger(__name__)
 from . import blueprint
 
 
-@blueprint.native_v1.route("/book_offer", methods=["POST"])  # TODO(viconnex): remove route when frontend uses /bookings
 @blueprint.native_v1.route("/bookings", methods=["POST"])
 @spectree_serialize(api=blueprint.api, response_model=BookOfferResponse, on_error_statuses=[400])
 @authenticated_user_required
