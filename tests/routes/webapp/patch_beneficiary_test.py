@@ -98,19 +98,16 @@ def test_patch_beneficiary_survey_related_attributes(app):
 def test_reject_pro_user(app):
     pro = UserFactory(isBeneficiary=False)
     initial = {
-        "email": pro.email,
         "publicName": pro.publicName,
     }
     data = {
-        "email": "new@example.com",
         "publicName": "New name",
     }
     client = TestClient(app.test_client()).with_auth(email=pro.email)
     response = client.patch("/beneficiaries/current", json=data)
 
-    assert response.status_code == 400
+    assert response.status_code == 403
     pro = User.query.get(pro.id)
-    assert pro.email == initial["email"]
     assert pro.publicName == initial["publicName"]
 
 
