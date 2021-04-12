@@ -3,7 +3,9 @@ from typing import Union
 
 from flask import flash
 from flask import request
+from flask import url_for
 from flask_admin.helpers import get_form_data
+from markupsafe import Markup
 from sqlalchemy.orm import query
 from wtforms import BooleanField
 from wtforms import DecimalField
@@ -21,11 +23,18 @@ from pcapi.routes.serialization.venue_provider_serialize import PostVenueProvide
 from pcapi.utils.human_ids import humanize
 
 
+def _venue_link(view, context, model, name) -> Markup:
+    url = url_for("venue.index_view", id=model.venueId)
+    text = "Lieu associé"
+
+    return Markup(f'<a href="{url}">{text}</a>')
+
+
 class VenueProviderView(BaseAdminView):
     can_edit = True
     can_create = True
 
-    column_list = ["provider.name", "venueIdAtOfferProvider", "isActive", "provider.isActive"]
+    column_list = ["provider.name", "venueIdAtOfferProvider", "isActive", "provider.isActive", "lieu"]
     column_labels = {
         "provider.name": "Source de données",
         "venueIdAtOfferProvider": "Identifiant pivot (SIRET, ID Allociné …)",
@@ -49,10 +58,20 @@ class VenueProviderView(BaseAdminView):
     def get_count_query(self) -> query:
         return self._extend_query(super().get_count_query())
 
+    @property
+    def column_formatters(self):
+        formatters = super().column_formatters
+        formatters.update(lieu=_venue_link)
+        return formatters
+
     @staticmethod
     def _extend_query(query_to_override: query) -> query:
         venue_id = request.args.get("id")
-        return query_to_override.filter(VenueProvider.venueId == venue_id)
+
+        if venue_id:
+            return query_to_override.filter(VenueProvider.venueId == venue_id)
+
+        return query_to_override
 
     def scaffold_form(self) -> BaseForm:
         form_class = super().scaffold_form()

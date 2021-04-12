@@ -1,7 +1,9 @@
 from typing import Union
 
+from flask import request
 from flask import url_for
 from markupsafe import Markup
+from sqlalchemy.orm import query
 from wtforms import Form
 
 from pcapi.admin.base_configuration import BaseAdminView
@@ -9,7 +11,7 @@ from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.api import update_offer_and_stock_id_at_providers
 
 
-def _offers_links(view, context, model, name) -> Markup:
+def _offers_link(view, context, model, name) -> Markup:
     url = url_for("offer_for_venue.index", id=model.id)
     text = "Offres associées"
 
@@ -67,10 +69,25 @@ class VenueView(BaseAdminView):
         "isPermanent",
     ]
 
+    def get_query(self) -> query:
+        return self._extend_query(super().get_query())
+
+    def get_count_query(self) -> query:
+        return self._extend_query(super().get_count_query())
+
+    @staticmethod
+    def _extend_query(query_to_override: query) -> query:
+        venue_id = request.args.get("id")
+
+        if venue_id:
+            return query_to_override.filter(Venue.id == venue_id)
+
+        return query_to_override
+
     @property
     def column_formatters(self):
         formatters = super().column_formatters
-        formatters.update(offres=_offers_links)
+        formatters.update(offres=_offers_link)
         formatters.update(offer_import=_get_venue_provider_link)
         return formatters
 
