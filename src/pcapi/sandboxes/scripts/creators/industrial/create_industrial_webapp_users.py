@@ -27,7 +27,15 @@ DEPOSIT_VERSIONS = bookings_conf.LIMIT_CONFIGURATIONS.keys()
 
 
 def create_industrial_webapp_users():
-    logger.info("create_industrial_webapp_users")
+    young_users = create_industrial_webapp_young_users()
+    not_beneficiary_users = create_industrial_webapp_not_beneficiary_users()
+
+    webapp_users = dict(young_users, **not_beneficiary_users)
+    return webapp_users
+
+
+def create_industrial_webapp_young_users():
+    logger.info("create_industrial_webapp_young_users")
 
     users_by_name = {}
     deposit_versions = {}
@@ -90,6 +98,54 @@ def create_industrial_webapp_users():
             )
             repository.save(deposit)
 
-    logger.info("created %d users", len(users_by_name))
+    logger.info("created %d young users", len(users_by_name))
+
+    return users_by_name
+
+
+AGE_TAGS = ["age-more-than-18yo", "age-less-than-18yo", "age-18yo"]
+
+
+def create_industrial_webapp_not_beneficiary_users():
+    logger.info("create_industrial_webapp_not_beneficiary_users")
+
+    users_by_name = {}
+    deposit_versions = {}
+
+    variants = itertools.product(AGE_TAGS, DEPOSIT_VERSIONS)
+
+    for age, deposit_version in variants:
+        short_age = "".join([chunk[0].upper() for chunk in age.split("-")])
+        email = f"pctest.grandpublic.{age}.v{deposit_version}@example.com"
+        departement_code = 39
+        today = datetime.today()
+        date_of_birth = datetime(today.year - 18, today.month, today.day - 1)
+
+        if age == "age-more-than-18yo":
+            date_of_birth = datetime(today.year - 20, today.month, today.day - 1)
+
+        if age == "age-less-than-18yo":
+            date_of_birth = datetime(today.year - 16, today.month, today.day - 1)
+
+        user = create_user(
+            cultural_survey_id=None,
+            departement_code=str(departement_code),
+            email=email,
+            first_name="PC Test Grand Public",
+            date_of_birth=date_of_birth,
+            has_seen_tutorials=False,
+            last_name=f"{short_age} {deposit_version}",
+            needs_to_fill_cultural_survey=True,
+            postal_code="{}100".format(departement_code),
+            public_name=f"PC Test Grand Public {short_age} {deposit_version}",
+            reset_password_token=None,
+            reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24),
+        )
+        user_key = f"grandpublic{age}v{deposit_version}"
+        users_by_name[user_key] = user
+        deposit_versions[user_key] = deposit_version
+
+    repository.save(*users_by_name.values())
+    logger.info("created %d not beneficiary users", len(users_by_name))
 
     return users_by_name
