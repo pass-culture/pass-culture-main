@@ -14,15 +14,12 @@ from pcapi.core.offers.repository import get_sold_out_offers_count_for_venue
 from pcapi.core.users import factories as users_factories
 from pcapi.domain.identifier.identifier import Identifier
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
-from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_provider
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
-from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.model_creators.specific_creators import create_stock_from_offer
 from pcapi.models import ThingType
 from pcapi.repository import repository
 
@@ -502,228 +499,212 @@ class PaginatedOfferForFiltersTest:
             assert paginated_offers.total_offers == 1
 
     class StatusFiltersTest:
-        def setup_method(self):
-            self.offerer = create_offerer()
-            self.venue = create_venue(self.offerer)
-            self.pro = create_user()
-            self.user_offerer = create_user_offerer(self.pro, self.offerer)
+        def init_test_data(self):
+            self.venue = offers_factories.VenueFactory()
+            self.offerer = self.venue.managingOfferer
+            self.other_venue = offers_factories.VenueFactory(managingOfferer=self.offerer)
+            self.pro = users_factories.UserFactory(isBeneficiary=False)
+            self.user_offerer = offers_factories.UserOffererFactory(user=self.pro, offerer=self.offerer)
 
-            self.inactive_thing_offer_with_stock_with_remaining_quantity = create_offer_with_thing_product(
-                self.venue, is_active=False, description="inactive_thing_offer_with_stock_with_remaining_quantity"
+            self.sold_out_offer_on_other_venue = offers_factories.ThingOfferFactory(
+                venue=self.other_venue, description="sold_out_offer_on_other_venue"
             )
-            self.inactive_thing_offer_without_remaining_quantity = create_offer_with_thing_product(
-                self.venue, is_active=False, description="inactive_thing_offer_without_remaining_quantity"
+            self.inactive_thing_offer_with_stock_with_remaining_quantity = offers_factories.ThingOfferFactory(
+                venue=self.venue, isActive=False, description="inactive_thing_offer_with_stock_with_remaining_quantity"
             )
-            self.inactive_thing_offer_without_stock = create_offer_with_thing_product(
-                self.venue, is_active=False, description="inactive_thing_offer_without_stock"
+            self.inactive_thing_offer_without_remaining_quantity = offers_factories.ThingOfferFactory(
+                venue=self.venue, isActive=False, description="inactive_thing_offer_without_remaining_quantity"
             )
-            self.inactive_expired_event_offer = create_offer_with_event_product(
-                self.venue, is_active=False, description="inactive_expired_event_offer"
+            self.inactive_thing_offer_without_stock = offers_factories.ThingOfferFactory(
+                venue=self.venue, isActive=False, description="inactive_thing_offer_without_stock"
             )
-            self.active_thing_offer_with_one_stock_with_remaining_quantity = create_offer_with_thing_product(
-                self.venue, is_active=True, description="active_thing_offer_with_one_stock_with_remaining_quantity"
+            self.inactive_expired_event_offer = offers_factories.EventOfferFactory(
+                venue=self.venue, isActive=False, description="inactive_expired_event_offer"
             )
-            self.active_thing_offer_with_all_stocks_without_quantity = create_offer_with_thing_product(
-                self.venue, is_active=True, description="active_thing_offer_with_all_stocks_without_quantity"
+            self.active_thing_offer_with_one_stock_with_remaining_quantity = offers_factories.ThingOfferFactory(
+                venue=self.venue, isActive=True, description="active_thing_offer_with_one_stock_with_remaining_quantity"
             )
-            self.active_event_offer_with_stock_in_the_future_without_quantity = create_offer_with_event_product(
+            self.active_thing_offer_with_all_stocks_without_quantity = offers_factories.ThingOfferFactory(
+                venue=self.venue, isActive=True, description="active_thing_offer_with_all_stocks_without_quantity"
+            )
+            self.active_event_offer_with_stock_in_the_future_without_quantity = offers_factories.EventOfferFactory(
                 venue=self.venue, description="active_event_offer_with_stock_in_the_future_without_quantity"
             )
             self.active_event_offer_with_one_stock_in_the_future_with_remaining_quantity = (
-                create_offer_with_event_product(
+                offers_factories.EventOfferFactory(
                     venue=self.venue,
                     description="active_event_offer_with_one_stock_in_the_future_with_remaining_quantity",
                 )
             )
-            self.sold_old_thing_offer_with_all_stocks_empty = create_offer_with_thing_product(
-                self.venue, description="sold_old_thing_offer_with_all_stocks_empty"
+            self.sold_old_thing_offer_with_all_stocks_empty = offers_factories.ThingOfferFactory(
+                venue=self.venue, description="sold_old_thing_offer_with_all_stocks_empty"
             )
             self.sold_out_event_offer_with_all_stocks_in_the_future_with_zero_remaining_quantity = (
-                create_offer_with_event_product(
+                offers_factories.EventOfferFactory(
                     venue=self.venue,
                     description="sold_out_event_offer_with_all_stocks_in_the_future_with_zero_remaining_quantity",
                 )
             )
-            self.sold_out_thing_offer_without_stock = create_offer_with_thing_product(
-                self.venue, description="sold_out_thing_offer_without_stock"
+            self.sold_out_thing_offer_without_stock = offers_factories.ThingOfferFactory(
+                venue=self.venue, description="sold_out_thing_offer_without_stock"
             )
-            self.sold_out_event_offer_without_stock = create_offer_with_event_product(
+            self.sold_out_event_offer_without_stock = offers_factories.EventOfferFactory(
                 venue=self.venue, description="sold_out_event_offer_without_stock"
             )
-            self.sold_out_event_offer_with_only_one_stock_soft_deleted = create_offer_with_event_product(
+            self.sold_out_event_offer_with_only_one_stock_soft_deleted = offers_factories.EventOfferFactory(
                 venue=self.venue, description="sold_out_event_offer_with_only_one_stock_soft_deleted"
             )
-            self.expired_event_offer_with_stock_in_the_past_without_quantity = create_offer_with_event_product(
+            self.expired_event_offer_with_stock_in_the_past_without_quantity = offers_factories.EventOfferFactory(
                 venue=self.venue, description="expired_event_offer_with_stock_in_the_past_without_quantity"
             )
             self.expired_event_offer_with_all_stocks_in_the_past_with_remaining_quantity = (
-                create_offer_with_event_product(
+                offers_factories.EventOfferFactory(
                     venue=self.venue,
                     description="expired_event_offer_with_all_stocks_in_the_past_with_remaining_quantity",
                 )
             )
             self.expired_event_offer_with_all_stocks_in_the_past_with_zero_remaining_quantity = (
-                create_offer_with_event_product(
+                offers_factories.EventOfferFactory(
                     venue=self.venue,
                     description="expired_event_offer_with_all_stocks_in_the_past_with_zero_remaining_quantity",
                 )
             )
-            self.expired_thing_offer_with_a_stock_expired_with_remaining_quantity = create_offer_with_event_product(
+            self.expired_thing_offer_with_a_stock_expired_with_remaining_quantity = offers_factories.EventOfferFactory(
                 venue=self.venue,
                 description="expired_thing_offer_with_a_stock_expired_with_remaining_quantity",
             )
             self.expired_thing_offer_with_a_stock_expired_with_zero_remaining_quantity = (
-                create_offer_with_event_product(
+                offers_factories.EventOfferFactory(
                     venue=self.venue,
                     description="expired_thing_offer_with_a_stock_expired_with_zero_remaining_quantity",
                 )
             )
 
-        def save_data_set(self):
             five_days_ago = datetime.now() - timedelta(days=5)
             in_five_days = datetime.now() + timedelta(days=5)
             beneficiary = create_user(email="jane.doe@example.com")
-            stock_1 = create_stock_from_offer(self.sold_old_thing_offer_with_all_stocks_empty, quantity=0)
-            stock_2 = create_stock_from_offer(
-                self.active_thing_offer_with_one_stock_with_remaining_quantity, quantity=5
+            offers_factories.ThingStockFactory(offer=self.sold_old_thing_offer_with_all_stocks_empty, quantity=0)
+            offers_factories.ThingStockFactory(
+                offer=self.active_thing_offer_with_one_stock_with_remaining_quantity, quantity=5
             )
-            stock_3 = create_stock_from_offer(
-                self.active_thing_offer_with_one_stock_with_remaining_quantity, quantity=0
+            offers_factories.ThingStockFactory(
+                offer=self.active_thing_offer_with_one_stock_with_remaining_quantity, quantity=0
             )
-            stock_4 = create_stock_from_offer(self.active_thing_offer_with_all_stocks_without_quantity, quantity=None)
-            stock_5 = create_stock_from_offer(
-                self.expired_event_offer_with_stock_in_the_past_without_quantity,
-                beginning_datetime=five_days_ago,
-                booking_limit_datetime=five_days_ago,
+            offers_factories.ThingStockFactory(
+                offer=self.active_thing_offer_with_all_stocks_without_quantity, quantity=None
+            )
+            offers_factories.EventStockFactory(
+                offer=self.expired_event_offer_with_stock_in_the_past_without_quantity,
+                beginningDatetime=five_days_ago,
+                bookingLimitDatetime=five_days_ago,
                 quantity=None,
             )
-            stock_17 = create_stock_from_offer(
-                self.expired_event_offer_with_stock_in_the_past_without_quantity,
-                beginning_datetime=in_five_days,
-                booking_limit_datetime=in_five_days,
+            offers_factories.EventStockFactory(
+                offer=self.expired_event_offer_with_stock_in_the_past_without_quantity,
+                beginningDatetime=in_five_days,
+                bookingLimitDatetime=in_five_days,
                 quantity=None,
-                soft_deleted=True,
+                isSoftDeleted=True,
             )
-            stock_6 = create_stock_from_offer(
-                self.active_event_offer_with_stock_in_the_future_without_quantity,
-                beginning_datetime=in_five_days,
-                booking_limit_datetime=in_five_days,
+            offers_factories.EventStockFactory(
+                offer=self.active_event_offer_with_stock_in_the_future_without_quantity,
+                beginningDatetime=in_five_days,
+                bookingLimitDatetime=in_five_days,
                 quantity=None,
             )
-            stock_7 = create_stock_from_offer(
-                self.expired_event_offer_with_all_stocks_in_the_past_with_remaining_quantity,
-                beginning_datetime=five_days_ago,
-                booking_limit_datetime=five_days_ago,
+            offers_factories.EventStockFactory(
+                offer=self.expired_event_offer_with_all_stocks_in_the_past_with_remaining_quantity,
+                beginningDatetime=five_days_ago,
+                bookingLimitDatetime=five_days_ago,
                 quantity=5,
             )
-            stock_8 = create_stock_from_offer(
-                self.expired_event_offer_with_all_stocks_in_the_past_with_remaining_quantity,
-                beginning_datetime=five_days_ago,
-                booking_limit_datetime=five_days_ago,
+            offers_factories.EventStockFactory(
+                offer=self.expired_event_offer_with_all_stocks_in_the_past_with_remaining_quantity,
+                beginningDatetime=five_days_ago,
+                bookingLimitDatetime=five_days_ago,
                 quantity=4,
             )
-            stock_9 = create_stock_from_offer(
-                self.active_event_offer_with_one_stock_in_the_future_with_remaining_quantity,
-                beginning_datetime=in_five_days,
-                booking_limit_datetime=in_five_days,
+            stock_with_some_bookings = offers_factories.EventStockFactory(
+                offer=self.active_event_offer_with_one_stock_in_the_future_with_remaining_quantity,
+                beginningDatetime=in_five_days,
+                bookingLimitDatetime=in_five_days,
                 quantity=1,
             )
-            stock_10 = create_stock_from_offer(
-                self.active_event_offer_with_one_stock_in_the_future_with_remaining_quantity,
-                beginning_datetime=in_five_days,
-                booking_limit_datetime=in_five_days,
+            bookings_factories.BookingFactory(user=beneficiary, stock=stock_with_some_bookings, isCancelled=True)
+            offers_factories.EventStockFactory(
+                offer=self.active_event_offer_with_one_stock_in_the_future_with_remaining_quantity,
+                beginningDatetime=in_five_days,
+                bookingLimitDatetime=in_five_days,
                 quantity=0,
             )
-            stock_11 = create_stock_from_offer(
-                self.expired_event_offer_with_all_stocks_in_the_past_with_zero_remaining_quantity,
-                beginning_datetime=five_days_ago,
-                booking_limit_datetime=five_days_ago,
+            offers_factories.EventStockFactory(
+                offer=self.expired_event_offer_with_all_stocks_in_the_past_with_zero_remaining_quantity,
+                beginningDatetime=five_days_ago,
+                bookingLimitDatetime=five_days_ago,
                 quantity=0,
             )
-            stock_12 = create_stock_from_offer(
-                self.expired_event_offer_with_all_stocks_in_the_past_with_zero_remaining_quantity,
-                beginning_datetime=five_days_ago,
-                booking_limit_datetime=five_days_ago,
+            offers_factories.EventStockFactory(
+                offer=self.expired_event_offer_with_all_stocks_in_the_past_with_zero_remaining_quantity,
+                beginningDatetime=five_days_ago,
+                bookingLimitDatetime=five_days_ago,
                 quantity=0,
             )
-            stock_13 = create_stock_from_offer(
-                self.sold_out_event_offer_with_all_stocks_in_the_future_with_zero_remaining_quantity,
-                beginning_datetime=five_days_ago,
-                booking_limit_datetime=five_days_ago,
+            offers_factories.EventStockFactory(
+                offer=self.sold_out_event_offer_with_all_stocks_in_the_future_with_zero_remaining_quantity,
+                beginningDatetime=five_days_ago,
+                bookingLimitDatetime=five_days_ago,
                 quantity=5,
             )
-            stock_14 = create_stock_from_offer(
-                self.sold_out_event_offer_with_all_stocks_in_the_future_with_zero_remaining_quantity,
-                beginning_datetime=in_five_days,
-                booking_limit_datetime=in_five_days,
+            stock_all_booked = offers_factories.EventStockFactory(
+                offer=self.sold_out_event_offer_with_all_stocks_in_the_future_with_zero_remaining_quantity,
+                beginningDatetime=in_five_days,
+                bookingLimitDatetime=in_five_days,
                 quantity=1,
                 price=0,
             )
-            stock_15 = create_stock_from_offer(self.inactive_thing_offer_with_stock_with_remaining_quantity, quantity=4)
-            stock_16 = create_stock_from_offer(
-                self.active_event_offer_with_stock_in_the_future_without_quantity,
-                beginning_datetime=five_days_ago,
-                booking_limit_datetime=five_days_ago,
+            bookings_factories.BookingFactory(user=beneficiary, stock=stock_all_booked)
+            offers_factories.ThingStockFactory(
+                offer=self.inactive_thing_offer_with_stock_with_remaining_quantity, quantity=4
+            )
+            offers_factories.EventStockFactory(
+                offer=self.active_event_offer_with_stock_in_the_future_without_quantity,
+                beginningDatetime=five_days_ago,
+                bookingLimitDatetime=five_days_ago,
                 quantity=None,
             )
-            stock_18 = create_stock_from_offer(
-                self.inactive_expired_event_offer,
-                beginning_datetime=five_days_ago,
-                booking_limit_datetime=five_days_ago,
+            offers_factories.EventStockFactory(
+                offer=self.inactive_expired_event_offer,
+                beginningDatetime=five_days_ago,
+                bookingLimitDatetime=five_days_ago,
                 quantity=None,
             )
-            stock_19 = create_stock_from_offer(self.inactive_thing_offer_without_remaining_quantity, quantity=0)
-            stock_20 = create_stock_from_offer(
-                self.sold_out_event_offer_with_only_one_stock_soft_deleted, quantity=10, soft_deleted=True
+            offers_factories.ThingStockFactory(offer=self.inactive_thing_offer_without_remaining_quantity, quantity=0)
+            offers_factories.EventStockFactory(
+                offer=self.sold_out_event_offer_with_only_one_stock_soft_deleted, quantity=10, isSoftDeleted=True
             )
-            stock_21 = create_stock_from_offer(
-                self.expired_thing_offer_with_a_stock_expired_with_remaining_quantity,
-                booking_limit_datetime=five_days_ago,
+            offers_factories.ThingStockFactory(
+                offer=self.expired_thing_offer_with_a_stock_expired_with_remaining_quantity,
+                bookingLimitDatetime=five_days_ago,
                 quantity=4,
             )
-            stock_22 = create_stock_from_offer(
-                self.expired_thing_offer_with_a_stock_expired_with_zero_remaining_quantity,
-                booking_limit_datetime=five_days_ago,
+            offers_factories.ThingStockFactory(
+                offer=self.expired_thing_offer_with_a_stock_expired_with_zero_remaining_quantity,
+                bookingLimitDatetime=five_days_ago,
                 quantity=0,
             )
-            booking = create_booking(user=beneficiary, stock=stock_14)
-            booking_cancelled = create_booking(user=beneficiary, stock=stock_9, is_cancelled=True)
-            stocks = [
-                stock_1,
-                stock_2,
-                stock_3,
-                stock_4,
-                stock_5,
-                stock_6,
-                stock_7,
-                stock_8,
-                stock_10,
-                stock_11,
-                stock_12,
-                stock_13,
-                stock_15,
-                stock_16,
-                stock_17,
-                stock_18,
-                stock_19,
-                stock_20,
-                stock_21,
-                stock_22,
-            ]
-
-            repository.save(
-                self.user_offerer,
-                self.inactive_thing_offer_without_stock,
-                self.sold_out_thing_offer_without_stock,
-                self.sold_out_event_offer_without_stock,
-                *stocks,
-                booking,
-                booking_cancelled,
+            in_six_days = datetime.now() + timedelta(days=6)
+            self.active_event_in_six_days_offer = offers_factories.EventOfferFactory(venue=self.venue)
+            offers_factories.EventStockFactory(
+                offer=self.active_event_in_six_days_offer,
+                beginningDatetime=in_six_days,
+                bookingLimitDatetime=in_six_days,
+                quantity=10,
             )
 
         @pytest.mark.usefixtures("db_session")
-        def should_return_only_active_offers_when_requesting_active_status(self, app):
-            self.save_data_set()
+        def should_return_only_active_offers_when_requesting_active_status(self):
+            # given
+            self.init_test_data()
 
             # when
             paginated_offers = get_paginated_offers_for_filters(
@@ -733,6 +714,7 @@ class PaginatedOfferForFiltersTest:
             # then
             offer_ids = [offer.identifier for offer in paginated_offers.offers]
             assert Identifier(self.active_thing_offer_with_one_stock_with_remaining_quantity.id) in offer_ids
+            assert Identifier(self.active_event_in_six_days_offer.id) in offer_ids
             assert Identifier(self.active_thing_offer_with_all_stocks_without_quantity.id) in offer_ids
             assert Identifier(self.active_event_offer_with_stock_in_the_future_without_quantity.id) in offer_ids
             assert (
@@ -760,12 +742,12 @@ class PaginatedOfferForFiltersTest:
                 Identifier(self.expired_event_offer_with_all_stocks_in_the_past_with_zero_remaining_quantity.id)
                 not in offer_ids
             )
-            assert paginated_offers.total_offers == 4
+            assert paginated_offers.total_offers == 5
 
         @pytest.mark.usefixtures("db_session")
-        def should_return_only_inactive_offers_when_requesting_inactive_status(self, app):
+        def should_return_only_inactive_offers_when_requesting_inactive_status(self):
             # given
-            self.save_data_set()
+            self.init_test_data()
 
             # when
             paginated_offers = get_paginated_offers_for_filters(
@@ -810,13 +792,13 @@ class PaginatedOfferForFiltersTest:
             assert paginated_offers.total_offers == 4
 
         @pytest.mark.usefixtures("db_session")
-        def should_return_only_sold_out_offers_when_requesting_sold_out_status(self, app):
+        def should_return_only_sold_out_offers_when_requesting_sold_out_status(self):
             # given
-            self.save_data_set()
+            self.init_test_data()
 
             # when
             paginated_offers = get_paginated_offers_for_filters(
-                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=5, page=1, status="SOLD_OUT"
+                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=10, page=1, status="SOLD_OUT"
             )
 
             # then
@@ -840,6 +822,7 @@ class PaginatedOfferForFiltersTest:
             )
             assert Identifier(self.sold_out_event_offer_with_only_one_stock_soft_deleted.id) in offer_ids
             assert Identifier(self.sold_out_event_offer_without_stock.id) in offer_ids
+            assert Identifier(self.sold_out_offer_on_other_venue.id) in offer_ids
             assert Identifier(self.expired_event_offer_with_stock_in_the_past_without_quantity.id) not in offer_ids
             assert Identifier(self.expired_thing_offer_with_a_stock_expired_with_remaining_quantity.id) not in offer_ids
             assert (
@@ -854,12 +837,12 @@ class PaginatedOfferForFiltersTest:
                 Identifier(self.expired_event_offer_with_all_stocks_in_the_past_with_zero_remaining_quantity.id)
                 not in offer_ids
             )
-            assert paginated_offers.total_offers == 5
+            assert paginated_offers.total_offers == 6
 
         @pytest.mark.usefixtures("db_session")
-        def should_return_offers_with_no_stocks_when_requesting_sold_out_status(self, app):
+        def should_return_offers_with_no_stocks_when_requesting_sold_out_status(self):
             # given
-            self.save_data_set()
+            self.init_test_data()
 
             # when
             paginated_offers = get_paginated_offers_for_filters(
@@ -872,9 +855,9 @@ class PaginatedOfferForFiltersTest:
             assert Identifier(self.sold_out_event_offer_with_only_one_stock_soft_deleted.id) in offer_ids
 
         @pytest.mark.usefixtures("db_session")
-        def should_return_offers_with_no_remaining_quantity_and_no_bookings_when_requesting_sold_out_status(self, app):
+        def should_return_offers_with_no_remaining_quantity_and_no_bookings_when_requesting_sold_out_status(self):
             # given
-            self.save_data_set()
+            self.init_test_data()
 
             # when
             paginated_offers = get_paginated_offers_for_filters(
@@ -886,9 +869,9 @@ class PaginatedOfferForFiltersTest:
             assert Identifier(self.sold_old_thing_offer_with_all_stocks_empty.id) in offer_ids
 
         @pytest.mark.usefixtures("db_session")
-        def should_return_offers_with_no_remaining_quantity_in_the_future_when_requesting_sold_out_status(self, app):
+        def should_return_offers_with_no_remaining_quantity_in_the_future_when_requesting_sold_out_status(self):
             # given
-            self.save_data_set()
+            self.init_test_data()
 
             # when
             paginated_offers = get_paginated_offers_for_filters(
@@ -903,9 +886,9 @@ class PaginatedOfferForFiltersTest:
             )
 
         @pytest.mark.usefixtures("db_session")
-        def should_exclude_offers_with_cancelled_bookings_when_requesting_sold_out_status(self, app):
+        def should_exclude_offers_with_cancelled_bookings_when_requesting_sold_out_status(self):
             # given
-            self.save_data_set()
+            self.init_test_data()
 
             # when
             paginated_offers = get_paginated_offers_for_filters(
@@ -920,9 +903,9 @@ class PaginatedOfferForFiltersTest:
             )
 
         @pytest.mark.usefixtures("db_session")
-        def should_return_only_expired_offers_when_requesting_expired_status(self, app):
+        def should_return_only_expired_offers_when_requesting_expired_status(self):
             # given
-            self.save_data_set()
+            self.init_test_data()
 
             # when
             paginated_offers = get_paginated_offers_for_filters(
@@ -965,7 +948,7 @@ class PaginatedOfferForFiltersTest:
             assert paginated_offers.total_offers == 5
 
         @pytest.mark.usefixtures("db_session")
-        def should_return_only_awaiting_offers_when_requesting_awaiting_status(self, app):
+        def should_return_only_awaiting_offers_when_requesting_awaiting_status(self):
             # given
             unexpired_booking_limit_date = datetime.utcnow() + timedelta(days=3)
 
@@ -990,7 +973,7 @@ class PaginatedOfferForFiltersTest:
             assert paginated_offers.offers[0].status == OfferStatus.AWAITING.name
 
         @pytest.mark.usefixtures("db_session")
-        def should_return_only_rejected_offers_when_requesting_rejected_status(self, app):
+        def should_return_only_rejected_offers_when_requesting_rejected_status(self):
             # given
             unexpired_booking_limit_date = datetime.utcnow() + timedelta(days=3)
 
@@ -1016,13 +999,10 @@ class PaginatedOfferForFiltersTest:
 
         @pytest.mark.usefixtures("db_session")
         def should_return_only_sold_out_offers_and_requested_venue_when_requesting_sold_out_status_and_specific_venue(
-            self, app
+            self,
         ):
             # given
-            self.save_data_set()
-            other_venue = create_venue(offerer=self.offerer, siret="12345678998765")
-            sold_out_offer_on_other_venue = create_offer_with_thing_product(other_venue)
-            repository.save(sold_out_offer_on_other_venue)
+            self.init_test_data()
 
             # when
             paginated_offers = get_paginated_offers_for_filters(
@@ -1031,7 +1011,7 @@ class PaginatedOfferForFiltersTest:
                 offers_per_page=5,
                 page=1,
                 status="SOLD_OUT",
-                venue_id=other_venue.id,
+                venue_id=self.other_venue.id,
             )
 
             # then
@@ -1044,24 +1024,17 @@ class PaginatedOfferForFiltersTest:
             )
             assert Identifier(self.sold_out_event_offer_with_only_one_stock_soft_deleted.id) not in offer_ids
             assert Identifier(self.sold_out_event_offer_without_stock.id) not in offer_ids
-            assert Identifier(sold_out_offer_on_other_venue.id) in offer_ids
+            assert Identifier(self.sold_out_offer_on_other_venue.id) in offer_ids
             assert paginated_offers.total_offers == 1
 
         @pytest.mark.usefixtures("db_session")
-        def should_return_only_active_offer_on_specific_period_when_requesting_active_status_and_time_period(self, app):
+        def should_return_only_active_offer_on_specific_period_when_requesting_active_status_and_time_period(self):
             # given
+            self.init_test_data()
+
             in_six_days = datetime.now() + timedelta(days=6)
             in_six_days_beginning = in_six_days.replace(hour=0, minute=0, second=0)
             in_six_days_ending = in_six_days.replace(hour=23, minute=59, second=59)
-            active_event_in_six_days_offer = create_offer_with_event_product(venue=self.venue)
-            stock = create_stock_from_offer(
-                offer=active_event_in_six_days_offer,
-                beginning_datetime=in_six_days,
-                booking_limit_datetime=in_six_days,
-                quantity=10,
-            )
-            self.save_data_set()
-            repository.save(stock)
 
             # when
             paginated_offers = get_paginated_offers_for_filters(
@@ -1076,7 +1049,7 @@ class PaginatedOfferForFiltersTest:
 
             # then
             offer_ids = [offer.identifier for offer in paginated_offers.offers]
-            assert Identifier(active_event_in_six_days_offer.id) in offer_ids
+            assert Identifier(self.active_event_in_six_days_offer.id) in offer_ids
             assert (
                 Identifier(self.active_event_offer_with_one_stock_in_the_future_with_remaining_quantity.id)
                 not in offer_ids
