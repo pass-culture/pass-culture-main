@@ -20,7 +20,7 @@ from . import BaseModel
 
 
 class BookOfferRequest(BaseModel):
-    stock_id: str
+    stock_id: int
     quantity: int
 
     class Config:
