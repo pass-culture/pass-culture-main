@@ -166,6 +166,7 @@ const EligibilityCheck = ({
                     maxLength="5"
                     onChange={handlePostalCodeInputChange}
                     placeholder="Ex: 75017"
+                    required
                     type="text"
                     value={postalCodeInputValue}
                   />
@@ -183,6 +184,7 @@ const EligibilityCheck = ({
                   mask={dateOfBirthInputValue.length > 0 ? '99/99/9999' : null}
                   onChange={handleDOBInputChange}
                   placeholder="JJ/MM/AAAA"
+                  required
                   value={dateOfBirthInputValue}
                 />
                 {hasAnErrorMessage && (

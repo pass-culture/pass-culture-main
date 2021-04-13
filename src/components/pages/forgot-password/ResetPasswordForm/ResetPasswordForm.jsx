@@ -42,7 +42,10 @@ export const ResetPasswordForm = ({
             {'ton nouveau mot de passe.'}
           </span>
         </h2>
-        <p className="mt12 fs16">
+        <p
+          className="mt12 fs16"
+          id="password-rules"
+        >
           {
             'Il doit contenir au minimum 12 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial.'
           }
@@ -57,6 +60,7 @@ export const ResetPasswordForm = ({
       </div>
       <div>
         <PasswordField
+          describedBy="password-rules"
           disabled={isLoading}
           label="Saisis ton nouveau mot de passe"
           name="newPassword"

@@ -19,7 +19,17 @@ class PasswordField extends PureComponent {
   }
 
   renderField = ({ input, meta }) => {
-    const { autoComplete, disabled, id, label, name, placeholder, required, sublabel } = this.props
+    const {
+      autoComplete,
+      describedBy,
+      disabled,
+      id,
+      label,
+      name,
+      placeholder,
+      required,
+      sublabel,
+    } = this.props
     const { hidden } = this.state
     const status = hidden ? 'open' : 'close'
     const inputType = hidden ? 'password' : 'text'
@@ -37,6 +47,7 @@ class PasswordField extends PureComponent {
         <div className={`input-inner${hasErrorMessage(meta)}`}>
           <input
             {...input}
+            aria-describedby={describedBy}
             aria-label="Mot de passe (Exemple : IoPms44*)"
             autoComplete={autoComplete ? 'on' : 'off'}
             className="form-input"
@@ -83,6 +94,7 @@ class PasswordField extends PureComponent {
 
 PasswordField.defaultProps = {
   autoComplete: false,
+  describedBy: null,
   disabled: false,
   id: null,
   placeholder: '',
@@ -92,6 +104,7 @@ PasswordField.defaultProps = {
 
 PasswordField.propTypes = {
   autoComplete: PropTypes.bool,
+  describedBy: PropTypes.string,
   disabled: PropTypes.bool,
   id: PropTypes.string,
   label: PropTypes.string.isRequired,
