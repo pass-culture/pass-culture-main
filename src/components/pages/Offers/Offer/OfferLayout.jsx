@@ -56,9 +56,7 @@ const OfferLayout = props => {
     pageTitle = 'Éditer une offre'
   }
 
-  const offerStatus =
-    offer?.status && offer?.stocks.length > 0 ? <OfferStatus status={offer.status} /> : null
-
+  const offerStatus = offer?.status && <OfferStatus status={offer.status} />
   return (
     <div className="offer-page">
       <Titles
