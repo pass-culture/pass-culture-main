@@ -71,6 +71,39 @@ class UpsertStocksTest:
         assert edited_stock.quantity == 7
         mocked_add_offer_id.assert_called_once_with(client=app.redis_client, offer_id=offer.id)
 
+    def test_upsert_stocks_triggers_draft_offer_validation(self):
+        # Given draft offers and new stock data
+        draft_approvable_offer = OfferFactory(name="a great offer", validation=OfferValidationStatus.DRAFT)
+        draft_suspicious_offer = OfferFactory(name="An AWAITING offer", validation=OfferValidationStatus.DRAFT)
+        draft_fraudulent_offer = OfferFactory(name="A REJECTED offer", validation=OfferValidationStatus.DRAFT)
+        created_stock_data = StockCreationBodyModel(price=10, quantity=7)
+
+        # When stocks are upserted
+        api.upsert_stocks(offer_id=draft_approvable_offer.id, stock_data_list=[created_stock_data])
+        api.upsert_stocks(offer_id=draft_suspicious_offer.id, stock_data_list=[created_stock_data])
+        api.upsert_stocks(offer_id=draft_fraudulent_offer.id, stock_data_list=[created_stock_data])
+
+        # Then validations statuses are correctly computed
+        assert draft_approvable_offer.validation == OfferValidationStatus.APPROVED
+        assert draft_approvable_offer.isActive
+        assert draft_suspicious_offer.validation == OfferValidationStatus.AWAITING
+        assert draft_suspicious_offer.isActive
+        assert draft_fraudulent_offer.validation == OfferValidationStatus.REJECTED
+        assert not draft_fraudulent_offer.isActive
+
+    def test_upsert_stocks_does_not_trigger_approved_offer_validation(self):
+        # Given offers with stock and new stock data
+        approved_offer = OfferFactory(name="a great offer that should be REJECTED")
+        factories.StockFactory(offer=approved_offer, price=10)
+        created_stock_data = StockCreationBodyModel(price=8, quantity=7)
+
+        # When stocks are upserted
+        api.upsert_stocks(offer_id=approved_offer.id, stock_data_list=[created_stock_data])
+
+        # Then validations status is not recomputed
+        assert approved_offer.validation == OfferValidationStatus.APPROVED
+        assert approved_offer.isActive
+
     @mock.patch("pcapi.domain.user_emails.send_batch_stock_postponement_emails_to_users")
     def test_sends_email_if_beginning_date_changes_on_edition(self, mocked_send_email):
         # Given
@@ -599,6 +632,7 @@ class CreateOfferTest:
         assert offer.mentalDisabilityCompliant
         assert offer.motorDisabilityCompliant
         assert offer.visualDisabilityCompliant
+        assert offer.validation == OfferValidationStatus.DRAFT
         assert not offer.bookingEmail
         assert Offer.query.count() == 1
         mocked_offer_creation_notification_to_admin.assert_called_once_with(offer, user)
@@ -633,6 +667,7 @@ class CreateOfferTest:
         assert offer.mentalDisabilityCompliant
         assert offer.motorDisabilityCompliant
         assert offer.visualDisabilityCompliant
+        assert offer.validation == OfferValidationStatus.DRAFT
         assert Offer.query.count() == 1
         mocked_offer_creation_notification_to_admin.assert_called_once_with(offer, user)
 
@@ -703,55 +738,6 @@ class CreateOfferTest:
             api.create_offer(data, user)
         err = "Seuls les administrateurs du pass Culture peuvent créer des offres d'activation"
         assert error.value.errors["type"] == [err]
-
-    # TODO(fseguin): remove after the real implementation is added
-    def test_create_offer_with_validation(self):
-        venue = factories.VenueFactory()
-        offerer = venue.managingOfferer
-        user_offerer = factories.UserOffererFactory(offerer=offerer)
-        user = user_offerer.user
-        offer_args = {
-            "venueId": humanize(venue.id),
-            "type": str(offer_type.EventType.CINEMA),
-            "externalTicketOfficeUrl": "http://example.net",
-            "audioDisabilityCompliant": True,
-            "mentalDisabilityCompliant": True,
-            "motorDisabilityCompliant": True,
-            "visualDisabilityCompliant": True,
-        }
-        approved_offer_data = offers_serialize.PostOfferBodyModel(
-            **offer_args,
-            name="A great offer",
-        )
-        awaiting_offer_data = offers_serialize.PostOfferBodyModel(
-            **offer_args,
-            name="An AWAITING offer",
-        )
-        rejected_offer_data = offers_serialize.PostOfferBodyModel(
-            **offer_args,
-            name="A REJECTED offer",
-        )
-
-        approved_offer = api.create_offer(approved_offer_data, user)
-        awaiting_offer = api.create_offer(awaiting_offer_data, user)
-        rejected_offer = api.create_offer(rejected_offer_data, user)
-        with override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False):
-            another_approved_offer = api.create_offer(approved_offer_data, user)
-            not_an_awaiting_offer = api.create_offer(awaiting_offer_data, user)
-            not_a_rejected_offer = api.create_offer(rejected_offer_data, user)
-
-        assert approved_offer.validation == OfferValidationStatus.APPROVED
-        assert approved_offer.isActive
-        assert awaiting_offer.validation == OfferValidationStatus.AWAITING
-        assert awaiting_offer.isActive
-        assert rejected_offer.validation == OfferValidationStatus.REJECTED
-        assert not rejected_offer.isActive
-        assert another_approved_offer.validation == OfferValidationStatus.APPROVED
-        assert another_approved_offer.isActive
-        assert not_an_awaiting_offer.validation == OfferValidationStatus.APPROVED
-        assert not_an_awaiting_offer.isActive
-        assert not_a_rejected_offer.validation == OfferValidationStatus.APPROVED
-        assert not_a_rejected_offer.isActive
 
 
 @pytest.mark.usefixtures("db_session")

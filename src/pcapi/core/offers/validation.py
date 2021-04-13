@@ -200,7 +200,7 @@ def check_image(
 
 
 def check_validation_status(offer: Offer) -> None:
-    if offer.validation != OfferValidationStatus.APPROVED:
+    if offer.validation in (OfferValidationStatus.REJECTED, OfferValidationStatus.AWAITING):
         error = ApiErrors()
         error.add_error("global", "Les offres refusées ou en attente de validation ne sont pas modifiables")
         raise error

@@ -75,6 +75,26 @@ class PaginatedOfferForFiltersTest:
         assert paginated_offers.offers[0].identifier.persisted > paginated_offers.offers[1].identifier.persisted
 
     @pytest.mark.usefixtures("db_session")
+    def should_exclude_draft_offers_when_requesting_all_offers(self, app):
+        # given
+        user_offerer = offers_factories.UserOffererFactory()
+        offers_factories.OfferFactory(venue__managingOfferer=user_offerer.offerer)
+        draft_offer = offers_factories.OfferFactory(
+            venue__managingOfferer=user_offerer.offerer,
+            validation=OfferValidationStatus.DRAFT,
+        )
+
+        # when
+        paginated_offers = get_paginated_offers_for_filters(
+            user_id=user_offerer.user.id, user_is_admin=user_offerer.user.isAdmin, page=1, offers_per_page=10
+        )
+
+        # then
+        offers_id = [offer.identifier for offer in paginated_offers.offers]
+        assert len(offers_id) == 1
+        assert not Identifier(draft_offer.id) in offers_id
+
+    @pytest.mark.usefixtures("db_session")
     def should_return_offers_of_given_type(self):
         user_offerer = offers_factories.UserOffererFactory()
         requested_offer = offers_factories.OfferFactory(
@@ -700,6 +720,9 @@ class PaginatedOfferForFiltersTest:
                 beginningDatetime=in_six_days,
                 bookingLimitDatetime=in_six_days,
                 quantity=10,
+            )
+            self.draft_offer = offers_factories.EventOfferFactory(
+                venue=self.venue, validation=OfferValidationStatus.DRAFT, description="draft event offer"
             )
 
         @pytest.mark.usefixtures("db_session")

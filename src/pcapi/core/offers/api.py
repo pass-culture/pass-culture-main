@@ -135,10 +135,7 @@ def create_offer(offer_data: PostOfferBodyModel, user: User) -> Offer:
     offer.mentalDisabilityCompliant = offer_data.mental_disability_compliant
     offer.motorDisabilityCompliant = offer_data.motor_disability_compliant
     offer.visualDisabilityCompliant = offer_data.visual_disability_compliant
-    # TODO(fseguin): remove after the real implementation is added
-    offer.validation = compute_offer_validation_from_name(offer)
-    if offer.validation == OfferValidationStatus.REJECTED:
-        offer.isActive = False
+    offer.validation = OfferValidationStatus.DRAFT
 
     repository.save(offer)
     logger.info("Offer has been created", extra={"offer": offer.id, "venue": venue.id, "product": offer.productId})
@@ -360,6 +357,13 @@ def upsert_stocks(
 
     repository.save(*stocks)
     logger.info("Stock has been created or updated", extra={"offer": offer_id})
+
+    if offer.validation == OfferValidationStatus.DRAFT:
+        # TODO(fseguin): remove after the real implementation is added
+        offer.validation = compute_offer_validation_from_name(offer)
+        if offer.validation == OfferValidationStatus.REJECTED:
+            offer.isActive = False
+        repository.save(offer)
 
     for stock in edited_stocks:
         previous_beginning = edited_stocks_previous_beginnings[stock.id]

@@ -15,6 +15,7 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.exceptions import StockDoesNotExist
 from pcapi.core.offers.models import OfferStatus
+from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.users.models import User
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
 from pcapi.infrastructure.repository.pro_offers.paginated_offers_recap_domain_converter import to_domain
@@ -101,7 +102,7 @@ def get_offers_by_filters(
     period_beginning_date: Optional[datetime] = None,
     period_ending_date: Optional[datetime] = None,
 ) -> Query:
-    query = Offer.query
+    query = Offer.query.filter(Offer.validation != OfferValidationStatus.DRAFT)
 
     if not user_is_admin:
         query = (

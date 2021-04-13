@@ -40,6 +40,7 @@ def create_offer_with_event_product(
     thumb_count: int = 0,
     withdrawal_details: Optional[str] = None,
     extra_data: Optional[Dict] = None,
+    validation: OfferValidationStatus = OfferValidationStatus.APPROVED,
 ) -> Offer:
     offer = Offer()
     if product is None:
@@ -67,7 +68,7 @@ def create_offer_with_event_product(
     offer.lastProvider = last_provider
     offer.idAtProviders = id_at_providers
     offer.isDuo = is_duo
-    offer.validation = OfferValidationStatus.APPROVED
+    offer.validation = validation
     offer.withdrawalDetails = withdrawal_details
     offer.extraData = extra_data
 
@@ -109,6 +110,7 @@ def create_offer_with_thing_product(
     extra_data: Dict = None,
     withdrawal_details: Optional[str] = None,
     date_modified_at_last_provider: Optional[datetime] = datetime.utcnow(),
+    validation: OfferValidationStatus = OfferValidationStatus.APPROVED,
 ) -> Offer:
     offer = Offer()
     if product:
@@ -155,7 +157,7 @@ def create_offer_with_thing_product(
     offer.id = idx
     offer.withdrawalDetails = withdrawal_details
     offer.isDuo = False
-    offer.validation = OfferValidationStatus.APPROVED
+    offer.validation = validation
 
     if extra_data:
         offer.extraData = extra_data

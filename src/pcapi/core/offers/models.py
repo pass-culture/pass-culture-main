@@ -258,6 +258,7 @@ class OfferStatus(enum.Enum):
     REJECTED = "REJECTED"
     SOLD_OUT = "SOLD_OUT"
     INACTIVE = "INACTIVE"
+    DRAFT = "DRAFT"
 
 
 class OfferValidationStatus(enum.Enum):
@@ -511,11 +512,15 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin, 
 
     @hybrid_property
     def status(self) -> OfferStatus:
+        # pylint: disable=too-many-return-statements
         if self.validation == OfferValidationStatus.REJECTED:
             return OfferStatus.REJECTED
 
         if self.validation == OfferValidationStatus.AWAITING:
             return OfferStatus.AWAITING
+
+        if self.validation == OfferValidationStatus.DRAFT:
+            return OfferStatus.DRAFT
 
         if not self.isActive:
             return OfferStatus.INACTIVE
@@ -535,6 +540,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin, 
             [
                 (cls.validation == OfferValidationStatus.REJECTED.name, OfferStatus.REJECTED.name),
                 (cls.validation == OfferValidationStatus.AWAITING.name, OfferStatus.AWAITING.name),
+                (cls.validation == OfferValidationStatus.DRAFT.name, OfferStatus.DRAFT.name),
                 (cls.isActive.is_(False), OfferStatus.INACTIVE.name),
                 (cls.hasBookingLimitDatetimesPassed.is_(True), OfferStatus.EXPIRED.name),
                 (cls.isSoldOut.is_(True), OfferStatus.SOLD_OUT.name),

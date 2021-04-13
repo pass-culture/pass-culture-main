@@ -408,6 +408,11 @@ class CheckValidationStatus:
 
         validation.check_validation_status(approved_offer)
 
+    def test_draft_offer(self):
+        draft_offer = factories.OfferFactory(validation=OfferValidationStatus.DRAFT)
+
+        validation.check_validation_status(draft_offer)
+
     def test_awaiting_offer(self):
         awaiting_validation_offer = factories.OfferFactory(validation=OfferValidationStatus.AWAITING)
 
