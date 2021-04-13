@@ -2,6 +2,7 @@ from datetime import timedelta
 
 from flask.helpers import flash
 from flask_admin.form import rules
+from flask_login import current_user
 from sqlalchemy.orm import query
 from sqlalchemy.sql.expression import distinct
 from sqlalchemy.sql.functions import func
@@ -13,6 +14,7 @@ from wtforms.validators import ValidationError
 
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.core.users.models import User
+from pcapi.domain.user_emails import send_reset_password_link_to_admin_email
 from pcapi.models import UserOfferer
 from pcapi.utils.mailing import build_pc_pro_create_password_link
 from pcapi.validation.models.has_address_mixin import POSTAL_CODE_REGEX
@@ -141,7 +143,10 @@ class ProUserView(SuspensionMixin, BaseAdminView):
     def after_model_change(self, form: Form, model: User, is_created: bool) -> None:
         if is_created:
             resetPasswordToken = create_reset_password_token(model, token_life_time=timedelta(days=30))
-            flash(f"Lien de création de mot de passe : {build_pc_pro_create_password_link(resetPasswordToken.value)}")
+            reset_password_link = build_pc_pro_create_password_link(resetPasswordToken.value)
+            flash(f"Lien de création de mot de passe : {reset_password_link}")
+            if current_user:
+                send_reset_password_link_to_admin_email(model, current_user.email, reset_password_link)
         super().after_model_change(form, model, is_created)
 
     def get_query(self) -> query:

@@ -35,6 +35,7 @@ from pcapi.emails.offerer_bookings_recap_after_deleting_stock import (
     retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation,
 )
 from pcapi.emails.offerer_expired_bookings import build_expired_bookings_recap_email_data_for_offerer
+from pcapi.emails.pro_reset_password import retrieve_data_for_reset_password_link_to_admin_email
 from pcapi.emails.pro_reset_password import retrieve_data_for_reset_password_pro_email
 from pcapi.emails.user_notification_after_stock_update import (
     retrieve_data_to_warn_user_after_stock_update_affecting_booking,
@@ -217,6 +218,11 @@ def send_newly_eligible_user_email(user: User) -> bool:
         return False
     data = beneficiary_activation.get_newly_eligible_user_email_data(user, token)
     return mails.send(recipients=[user.email], data=data)
+
+
+def send_reset_password_link_to_admin_email(created_user: User, admin_email: User, reset_password_link: str) -> bool:
+    data = retrieve_data_for_reset_password_link_to_admin_email(created_user, reset_password_link)
+    return mails.send(recipients=[admin_email], data=data)
 
 
 def _build_recipients_list(booking: Booking) -> str:
