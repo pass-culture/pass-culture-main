@@ -73,10 +73,7 @@ venue_key_without_bank_informations = {
     ],
 }
 
-GET_OFFER_INCLUDES = copy.deepcopy(OFFER_INCLUDES)
 OFFER_INCLUDES.append(venue_key_with_bank_informations)
-GET_OFFER_INCLUDES.append(venue_key_without_bank_informations)
-GET_OFFER_INCLUDES.append("dateRange")
 
 
 USER_INCLUDES = [

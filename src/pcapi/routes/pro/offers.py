@@ -13,7 +13,6 @@ from pcapi.core.offers.validation import get_distant_image
 from pcapi.flask_app import private_api
 from pcapi.models import Offer
 from pcapi.repository.offer_queries import get_offer_by_id
-from pcapi.routes.serialization.dictifier import as_dict
 from pcapi.routes.serialization.offers_recap_serialize import serialize_offers_recap_paginated
 from pcapi.routes.serialization.offers_serialize import GetOfferResponseModel
 from pcapi.routes.serialization.offers_serialize import ImageBodyModel
@@ -28,7 +27,6 @@ from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailBodyModel
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailResponseModel
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils.includes import GET_OFFER_INCLUDES
 
 
 logger = logging.getLogger(__name__)
@@ -64,7 +62,7 @@ def list_offers(query: ListOffersQueryModel) -> ListOffersResponseModel:
 @spectree_serialize(response_model=GetOfferResponseModel)
 def get_offer(offer_id: str) -> GetOfferResponseModel:
     offer = load_or_404(Offer, offer_id)
-    return GetOfferResponseModel(**as_dict(offer, includes=GET_OFFER_INCLUDES))
+    return GetOfferResponseModel.from_orm(offer)
 
 
 @private_api.route("/offers", methods=["POST"])

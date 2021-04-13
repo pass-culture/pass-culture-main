@@ -25,10 +25,10 @@ class Returns200:
         # Then
         response_json = response.json
         assert response.status_code == 200
-        assert "iban" in response_json["venue"]
-        assert "bic" in response_json["venue"]
-        assert "iban" in response_json["venue"]["managingOfferer"]
-        assert "bic" in response_json["venue"]["managingOfferer"]
+        assert "iban" not in response_json["venue"]
+        assert "bic" not in response_json["venue"]
+        assert "iban" not in response_json["venue"]["managingOfferer"]
+        assert "bic" not in response_json["venue"]["managingOfferer"]
         assert "validationToken" not in response_json["venue"]["managingOfferer"]
         assert "thumbUrl" in response_json
 
@@ -205,15 +205,12 @@ class Returns200:
             "url": None,
             "venue": {
                 "address": "1 boulevard Poissonnière",
-                "bic": None,
-                "bookingEmail": None,
                 "city": "Paris",
                 "comment": None,
                 "dateCreated": "2020-10-15T00:00:00Z",
                 "dateModifiedAtLastProvider": "2020-10-15T00:00:00Z",
                 "departementCode": "75",
                 "fieldsUpdated": [],
-                "iban": None,
                 "id": humanize(venue.id),
                 "idAtProviders": None,
                 "isValidated": True,
@@ -223,12 +220,10 @@ class Returns200:
                 "longitude": 2.37850,
                 "managingOfferer": {
                     "address": None,
-                    "bic": None,
                     "city": "Paris",
                     "dateCreated": "2020-10-15T00:00:00Z",
                     "dateModifiedAtLastProvider": "2020-10-15T00:00:00Z",
                     "fieldsUpdated": [],
-                    "iban": None,
                     "id": humanize(offerer.id),
                     "idAtProviders": None,
                     "isActive": True,

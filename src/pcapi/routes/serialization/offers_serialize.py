@@ -5,15 +5,18 @@ from typing import Optional
 from typing import Union
 
 from pydantic import BaseModel
+from pydantic import Field
 from pydantic import HttpUrl
 from pydantic import validator
 
+from pcapi.core.offers.models import OfferStatus
 from pcapi.serialization.utils import cast_optional_field_str_to_int
 from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import dehumanize_list_field
 from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.cancellation_date import get_cancellation_limit_date
+from pcapi.utils.date import DateTimes
 from pcapi.utils.date import format_into_utc_date
 from pcapi.validation.routes.offers import check_offer_name_length_is_valid
 from pcapi.validation.routes.offers import check_offer_type_is_valid
@@ -221,12 +224,15 @@ class GetOfferOfferTypeResponseModel(BaseModel):
     type: str
     value: str
 
+    class Config:
+        orm_mode = True
+
 
 class GetOfferProductResponseModel(BaseModel):
     ageMax: Optional[int]
     ageMin: Optional[int]
     conditions: Optional[str]
-    dateModifiedAtLastProvider: Optional[str]
+    dateModifiedAtLastProvider: Optional[datetime]
     description: Optional[str]
     durationMinutes: Optional[int]
     extraData: Any
@@ -242,15 +248,23 @@ class GetOfferProductResponseModel(BaseModel):
     thumbCount: int
     url: Optional[str]
 
+    _humanize_id = humanize_field("id")
+    _humanize_last_provider_id = humanize_field("lastProviderId")
+    _humanize_owning_offerer_id = humanize_field("owningOffererId")
+
+    class Config:
+        orm_mode = True
+        json_encoders = {datetime: format_into_utc_date}
+
 
 class GetOfferStockResponseModel(BaseModel):
-    beginningDatetime: Optional[str]
-    bookingLimitDatetime: Optional[str]
-    bookingsQuantity: int
-    cancellationLimitDate: Optional[str]
-    dateCreated: str
-    dateModified: str
-    dateModifiedAtLastProvider: Optional[str]
+    beginningDatetime: Optional[datetime]
+    bookingLimitDatetime: Optional[datetime]
+    dnBookedQuantity: int = Field(alias="bookingsQuantity")
+    cancellationLimitDate: Optional[datetime]
+    dateCreated: datetime
+    dateModified: datetime
+    dateModifiedAtLastProvider: Optional[datetime]
     fieldsUpdated: List[str]
     id: str
     idAtProviders: Optional[str]
@@ -264,19 +278,26 @@ class GetOfferStockResponseModel(BaseModel):
     quantity: Optional[int]
     remainingQuantity: Optional[Union[int, str]]
 
+    _humanize_id = humanize_field("id")
+    _humanize_last_provider_id = humanize_field("lastProviderId")
+    _humanize_offer_id = humanize_field("offerId")
+
     @validator("cancellationLimitDate", pre=True, always=True)
     def validate_cancellation_limit_date(cls, cancellation_limit_date, values):  # pylint: disable=no-self-argument
         return get_cancellation_limit_date(values.get("beginningDatetime"), cancellation_limit_date)
 
+    class Config:
+        allow_population_by_field_name = True
+        orm_mode = True
+        json_encoders = {datetime: format_into_utc_date}
+
 
 class GetOfferManagingOffererResponseModel(BaseModel):
     address: Optional[str]
-    bic: Optional[str]
     city: str
-    dateCreated: str
-    dateModifiedAtLastProvider: Optional[str]
+    dateCreated: datetime
+    dateModifiedAtLastProvider: Optional[datetime]
     fieldsUpdated: List[str]
-    iban: Optional[str]
     id: str
     idAtProviders: Optional[str]
     isActive: bool
@@ -288,18 +309,21 @@ class GetOfferManagingOffererResponseModel(BaseModel):
     siren: Optional[str]
     thumbCount: int
 
+    _humanize_id = humanize_field("id")
+    _humanize_last_provider_id = humanize_field("lastProviderId")
+
+    class Config:
+        orm_mode = True
+
 
 class GetOfferVenueResponseModel(BaseModel):
     address: Optional[str]
-    bic: Optional[str]
-    bookingEmail: Optional[str]
     city: Optional[str]
     comment: Optional[str]
-    dateCreated: Optional[str]
-    dateModifiedAtLastProvider: Optional[str]
+    dateCreated: Optional[datetime]
+    dateModifiedAtLastProvider: Optional[datetime]
     departementCode: Optional[str]
     fieldsUpdated: List[str]
-    iban: Optional[str]
     id: str
     idAtProviders: Optional[str]
     isValidated: bool
@@ -317,6 +341,16 @@ class GetOfferVenueResponseModel(BaseModel):
     venueLabelId: Optional[str]
     venueTypeId: Optional[str]
 
+    _humanize_id = humanize_field("id")
+    _humanize_managing_offerer_id = humanize_field("managingOffererId")
+    _humanize_last_provider_id = humanize_field("lastProviderId")
+    _humanize_venue_label_id = humanize_field("venueLabelId")
+    _humanize_venue_type_id = humanize_field("venueTypeId")
+
+    class Config:
+        orm_mode = True
+        json_encoders = {datetime: format_into_utc_date}
+
 
 # FIXME (apibrac, 2021-03-23): we should not expose so much information to the fronts.
 # Only the name is needed in pro and nothing in webapp => can we just send a providerName field?
@@ -329,12 +363,17 @@ class GetOfferLastProviderResponseModel(BaseModel):
     name: str
     requireProviderIdentifier: bool
 
+    _humanize_id = humanize_field("id")
+
+    class Config:
+        orm_mode = True
+
 
 class GetOfferMediationResponseModel(BaseModel):
     authorId: Optional[str]
     credit: Optional[str]
-    dateCreated: str
-    dateModifiedAtLastProvider: Optional[str]
+    dateCreated: datetime
+    dateModifiedAtLastProvider: Optional[datetime]
     fieldsUpdated: List[str]
     id: str
     idAtProviders: Optional[str]
@@ -344,6 +383,14 @@ class GetOfferMediationResponseModel(BaseModel):
     thumbCount: int
     thumbUrl: Optional[str]
 
+    _humanize_id = humanize_field("id")
+    _humanize_offer_id = humanize_field("offerId")
+    _humanize_last_provider_id = humanize_field("lastProviderId")
+
+    class Config:
+        orm_mode = True
+        json_encoders = {datetime: format_into_utc_date}
+
 
 class GetOfferResponseModel(BaseModel):
     activeMediation: Optional[GetOfferMediationResponseModel]
@@ -351,9 +398,9 @@ class GetOfferResponseModel(BaseModel):
     ageMin: Optional[int]
     bookingEmail: Optional[str]
     conditions: Optional[str]
-    dateCreated: str
-    dateModifiedAtLastProvider: Optional[str]
-    dateRange: List[str]
+    dateCreated: datetime
+    dateModifiedAtLastProvider: Optional[datetime]
+    dateRange: List[datetime]
     description: Optional[str]
     durationMinutes: Optional[int]
     extraData: Any
@@ -389,10 +436,25 @@ class GetOfferResponseModel(BaseModel):
     venue: GetOfferVenueResponseModel
     venueId: str
     withdrawalDetails: Optional[str]
-    status: str
+    status: OfferStatus
+
+    _humanize_id = humanize_field("id")
+    _humanize_product_id = humanize_field("productId")
+    _humanize_venue_id = humanize_field("venueId")
+    _humanize_last_provider_id = humanize_field("lastProviderId")
+
+    @validator("dateRange", pre=True)
+    def extract_datetime_list_from_DateTimes_type(  # pylint: disable=no-self-argument
+        cls, date_range: DateTimes
+    ) -> [datetime]:
+        if isinstance(date_range, DateTimes):
+            return date_range.datetimes
+        return date_range
 
     class Config:
+        orm_mode = True
         json_encoders = {datetime: format_into_utc_date}
+        use_enum_values = True
 
 
 class ImageBodyModel(BaseModel):

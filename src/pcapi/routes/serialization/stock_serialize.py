@@ -4,6 +4,7 @@ from typing import Optional
 from typing import Union
 
 from pydantic import BaseModel
+from pydantic import Field
 
 from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import humanize_field
@@ -14,7 +15,7 @@ from pcapi.utils.date import format_into_utc_date
 class StockResponseModel(BaseModel):
     beginningDatetime: Optional[datetime]
     bookingLimitDatetime: Optional[datetime]
-    bookingsQuantity: int
+    dnBookedQuantity: int = Field(alias="bookingsQuantity")
     dateCreated: datetime
     dateModified: datetime
     id: str
@@ -28,6 +29,7 @@ class StockResponseModel(BaseModel):
     _humanize_offer_id = humanize_field("offerId")
 
     class Config:
+        allow_population_by_field_name = True
         json_encoders = {datetime: format_into_utc_date}
         orm_mode = True
 
