@@ -111,6 +111,7 @@ describe('offerDetails - Edition', () => {
       description: 'My edited description',
       withdrawalDetails: 'My edited withdrawal details',
       status: 'SOLD_OUT',
+      stocks: [],
     }
     props = {
       setShowThumbnailForm: jest.fn(),
@@ -142,6 +143,7 @@ describe('offerDetails - Edition', () => {
             motorDisabilityCompliant: null,
             visualDisabilityCompliant: null,
             status: 'ACTIVE',
+            stocks: [],
           }
           pcapi.loadOffer.mockResolvedValue(editedOffer)
 
@@ -233,6 +235,7 @@ describe('offerDetails - Edition', () => {
             motorDisabilityCompliant: true,
             visualDisabilityCompliant: true,
             status: 'ACTIVE',
+            stocks: [],
           }
           pcapi.loadOffer.mockResolvedValue(editedOffer)
 
@@ -305,6 +308,7 @@ describe('offerDetails - Edition', () => {
             motorDisabilityCompliant: false,
             visualDisabilityCompliant: false,
             status: 'ACTIVE',
+            stocks: [],
           }
           pcapi.loadOffer.mockResolvedValue(editedOffer)
 
@@ -511,6 +515,7 @@ describe('offerDetails - Edition', () => {
               stageDirector: 'Mr Offer Stage Director',
               visa: 'Courtesy of visa',
             },
+            stocks: [],
           }
           fullConditionalFieldsType = {
             conditionalFields: [
@@ -630,6 +635,7 @@ describe('offerDetails - Edition', () => {
           stageDirector: 'Mr Offer Stage Director',
           visa: 'Courtesy of visa',
         },
+        stocks: [],
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
       const fullConditionalFieldsType = {
@@ -783,6 +789,7 @@ describe('offerDetails - Edition', () => {
         },
         bookingEmail: 'booking@example.net',
         status: 'ACTIVE',
+        stocks: [],
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
       types.push({
@@ -939,6 +946,7 @@ describe('offerDetails - Edition', () => {
             name: 'leslibraires.fr',
           },
           status: 'ACTIVE',
+          stocks: [],
         }
         pcapi.loadOffer.mockResolvedValue(editedOffer)
         const providerInformation = getProviderInfo(editedOffer.lastProvider.name)
@@ -976,6 +984,7 @@ describe('offerDetails - Edition', () => {
             name: 'Leslibraires.fr',
           },
           status: 'ACTIVE',
+          stocks: [],
         }
         pcapi.loadOffer.mockResolvedValue(editedOffer)
         types.push({
@@ -1057,6 +1066,7 @@ describe('offerDetails - Edition', () => {
             name: 'Leslibraires.fr',
           },
           status: 'ACTIVE',
+          stocks: [],
         }
         pcapi.loadOffer.mockResolvedValue(editedOffer)
         types.push({
@@ -1181,6 +1191,7 @@ describe('offerDetails - Edition', () => {
             name: 'Allociné',
           },
           status: 'ACTIVE',
+          stocks: [],
         }
         pcapi.loadOffer.mockResolvedValue(editedOffer)
         const cinemaType = {
@@ -1222,6 +1233,7 @@ describe('offerDetails - Edition', () => {
           motorDisabilityCompliant: false,
           visualDisabilityCompliant: false,
           status: 'ACTIVE',
+          stocks: [],
         }
         pcapi.loadOffer.mockResolvedValue(editedOffer)
         await renderOffers(props, store)
@@ -1295,6 +1307,7 @@ describe('offerDetails - Edition', () => {
         motorDisabilityCompliant: false,
         mentalDisabilityCompliant: false,
         status: 'ACTIVE',
+        stocks: [],
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
       await renderOffers(props, store)
@@ -1329,6 +1342,7 @@ describe('offerDetails - Edition', () => {
         motorDisabilityCompliant: false,
         mentalDisabilityCompliant: false,
         status: 'ACTIVE',
+        stocks: [],
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
       await renderOffers(props, store)
@@ -1363,6 +1377,7 @@ describe('offerDetails - Edition', () => {
           name: 'Allociné',
         },
         status: 'ACTIVE',
+        stocks: [],
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
       const cinemaType = {
@@ -1410,6 +1425,7 @@ describe('offerDetails - Edition', () => {
           name: 'Allociné',
         },
         status: 'ACTIVE',
+        stocks: [],
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
       const cinemaType = {
@@ -1456,6 +1472,7 @@ describe('offerDetails - Edition', () => {
         motorDisabilityCompliant: false,
         mentalDisabilityCompliant: false,
         status: 'ACTIVE',
+        stocks: [],
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
       await renderOffers(props, store)
@@ -1493,6 +1510,7 @@ describe('offerDetails - Edition', () => {
         motorDisabilityCompliant: false,
         mentalDisabilityCompliant: false,
         status: 'ACTIVE',
+        stocks: [],
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
       await renderOffers(props, store)
@@ -1527,6 +1545,7 @@ describe('offerDetails - Edition', () => {
         motorDisabilityCompliant: false,
         visualDisabilityCompliant: false,
         status: 'ACTIVE',
+        stocks: [],
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
       await renderOffers(props, store)
@@ -1556,6 +1575,7 @@ describe('offerDetails - Edition', () => {
         withdrawalDetails: 'Offer withdrawal details',
         bookingEmail: null,
         status: 'ACTIVE',
+        stocks: [],
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
       await renderOffers(props, store)
@@ -1588,6 +1608,7 @@ describe('offerDetails - Edition', () => {
         bookingEmail: 'booking@example.net',
         extraData: null,
         status: 'ACTIVE',
+        stocks: [],
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
       pcapi.updateOffer.mockRejectedValue({ errors: { name: "Ce nom n'est pas valide" } })
@@ -1711,6 +1732,7 @@ describe('offerDetails - Edition', () => {
         bookingEmail: 'booking@example.net',
         extraData: null,
         status: 'ACTIVE',
+        stocks: [],
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
       await renderOffers(props, store)
@@ -1740,6 +1762,7 @@ describe('offerDetails - Edition', () => {
         withdrawalDetails: 'Offer withdrawal details',
         bookingEmail: null,
         status: 'ACTIVE',
+        stocks: [],
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
 
