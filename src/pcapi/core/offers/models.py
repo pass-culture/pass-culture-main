@@ -112,22 +112,14 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin, VersionedMixin
     def hasBookingLimitDatetimePassed(cls):  # pylint: disable=no-self-argument
         return and_(cls.bookingLimitDatetime != None, cls.bookingLimitDatetime <= func.now())
 
-    @hybrid_property
-    def bookingsQuantity(self):
-        return self.dnBookedQuantity
-
-    @bookingsQuantity.expression
-    def bookingsQuantity(cls):  # pylint: disable=no-self-argument
-        return cls.dnBookedQuantity
-
     # TODO(fseguin, 2021-03-25): replace unlimited by None (also in the front-end)
     @hybrid_property
     def remainingQuantity(self):
-        return "unlimited" if self.quantity is None else self.quantity - self.bookingsQuantity
+        return "unlimited" if self.quantity is None else self.quantity - self.dnBookedQuantity
 
     @remainingQuantity.expression
     def remainingQuantity(cls):  # pylint: disable=no-self-argument
-        return case([(cls.quantity.is_(None), None)], else_=(cls.quantity - cls.bookingsQuantity))
+        return case([(cls.quantity.is_(None), None)], else_=(cls.quantity - cls.dnBookedQuantity))
 
     @hybrid_property
     def isEventExpired(self):

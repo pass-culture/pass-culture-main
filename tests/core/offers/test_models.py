@@ -302,15 +302,15 @@ class StockBookingsQuantityTest:
         offer = factories.OfferFactory()
         stock = factories.StockFactory(offer=offer, quantity=None)
 
-        assert Stock.query.filter(Stock.bookingsQuantity == 0).one() == stock
+        assert Stock.query.filter(Stock.dnBookedQuantity == 0).one() == stock
 
     def test_bookings_quantity_with_booking(self):
         offer = factories.OfferFactory(product__type=str(ThingType.INSTRUMENT))
         stock = factories.StockFactory(offer=offer, quantity=5)
         BookingFactory(stock=stock)
 
-        assert Stock.query.filter(Stock.bookingsQuantity == 0).count() == 0
-        assert Stock.query.filter(Stock.bookingsQuantity == 1).one() == stock
+        assert Stock.query.filter(Stock.dnBookedQuantity == 0).count() == 0
+        assert Stock.query.filter(Stock.dnBookedQuantity == 1).one() == stock
 
     def test_bookings_quantity_with_a_cancelled_booking(self):
         offer = factories.OfferFactory(product__type=str(ThingType.INSTRUMENT))
@@ -318,7 +318,7 @@ class StockBookingsQuantityTest:
         BookingFactory(stock=stock)
         BookingFactory(stock=stock, isCancelled=True)
 
-        assert Stock.query.filter(Stock.bookingsQuantity == 1).one() == stock
+        assert Stock.query.filter(Stock.dnBookedQuantity == 1).one() == stock
 
 
 @pytest.mark.usefixtures("db_session")

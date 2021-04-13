@@ -44,7 +44,6 @@ OFFER_INCLUDES = [
     {
         "key": "stocks",
         "includes": [
-            "bookingsQuantity",
             "isBookable",
             "isEventDeletable",
             "isEventExpired",

@@ -252,7 +252,7 @@ def _edit_stock(
     validation.check_stock_is_updatable(stock)
     validation.check_required_dates_for_stock(stock.offer, beginning, booking_limit_datetime)
     validation.check_stock_price(price)
-    validation.check_stock_quantity(quantity, stock.bookingsQuantity)
+    validation.check_stock_quantity(quantity, stock.dnBookedQuantity)
 
     # FIXME (dbaty, 2020-11-25): We need this ugly workaround because
     # the frontend sends us datetimes like "2020-12-03T14:00:00Z"
