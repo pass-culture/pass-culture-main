@@ -13,7 +13,7 @@
         <div>Code de catégorie juridique : <strong>{{ legal_category_code }}</strong></div>
         <div>Libellé de catégorie juridique : <strong>{{ legal_category_label }}</strong></div>
     </p>
-    <form action="{{ action }}" method="POST">
+    <form method="POST">
         {% for field in form %}
             {% if field.name == "csrf_token" %}
                 {{ field }}
@@ -29,12 +29,13 @@
             {% endif %}
         {% endfor %}
         <div class="row">
-            <div class="col-md-5"></div>
-            <div class="col-md-2">
+            <div class="col-md-4"></div>
+            <div class="col-md-4">
                 <a class="btn btn-default" href="{{ cancel_link_url }}" role="button">Annuler</a>
-                <input class="btn btn-success" type="submit" value="Enregistrer">
+                <button class="btn btn-success" name="action" type="submit" value="save">Enregistrer</button>
+                <button class="btn btn-success" name="action" type="submit" value="save-and-go-next">Enregistrer et passer à l'offre suivante</button>
             </div>
-            <div class="col-md-5"></div>
+            <div class="col-md-4"></div>
         </div>
     </form>
 {% endblock %}

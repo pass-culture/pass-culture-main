@@ -1,5 +1,6 @@
 from flask import abort
 from flask import flash
+from flask import redirect
 from flask import request
 from flask import url_for
 from flask_admin.base import expose
@@ -174,6 +175,16 @@ class ValidationView(BaseAdminView):
                 )
                 if is_offer_updated:
                     flash("Le statut de l'offre a bien été modifié", "success")
+                    if request.form["action"] == "save-and-go-next":
+                        next_offer_query = (
+                            Offer.query.filter(Offer.validation == OfferValidationStatus.AWAITING)
+                            .filter(Offer.id != offer_id)
+                            .limit(1)
+                        )
+                        if next_offer_query.count() > 0:
+                            next_offer = next_offer_query.one()
+                            return redirect(url_for(".edit", id=next_offer.id))
+                        return redirect(url_for("/validation.index_view"))
                 else:
                     flash("Une erreur s'est produite lors de la mise à jour du statut de validation", "error")
 
