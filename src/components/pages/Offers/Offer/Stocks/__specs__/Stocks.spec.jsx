@@ -1127,12 +1127,10 @@ describe('stocks page', () => {
               const initialOffer = {
                 ...eventOffer,
                 status: 'SOLD_OUT',
-                stocks: [],
               }
               const updatedOffer = {
                 ...eventOffer,
                 status: 'ACTIVE',
-                stocks: [{}],
               }
               pcapi.loadOffer
                 .mockResolvedValueOnce(initialOffer)
@@ -1153,12 +1151,10 @@ describe('stocks page', () => {
               const initialOffer = {
                 ...eventOffer,
                 status: 'SOLD_OUT',
-                stocks: [],
               }
               const updatedOffer = {
                 ...eventOffer,
                 status: 'ACTIVE',
-                stocks: [{}],
               }
               pcapi.loadOffer
                 .mockResolvedValueOnce(initialOffer)
@@ -1168,14 +1164,14 @@ describe('stocks page', () => {
               await renderOffers(props, store)
 
               // Then
-              expect(screen.queryByText('épuisée')).not.toBeInTheDocument()
+              const soldOutOfferStatus = await screen.findByText('épuisée')
+              expect(soldOutOfferStatus).toBeInTheDocument()
 
-              // When
               await fireEvent.click(screen.getByText('Enregistrer'))
 
-              // Then
               const successMessage = await screen.findByText('Vos stocks ont bien été sauvegardés.')
               expect(successMessage).toBeInTheDocument()
+
               const activeOfferStatus = await screen.findByText('active')
               expect(activeOfferStatus).toBeInTheDocument()
             })
@@ -1331,44 +1327,6 @@ describe('stocks page', () => {
 
             // then
             expect(screen.getByTitle('Supprimer le stock').closest('button')).toBeDisabled()
-          })
-
-          it('should update displayed offer status', async () => {
-            // Given
-            const initialOffer = {
-              ...eventOffer,
-              status: 'ACTIVE',
-              stocks: [{}],
-            }
-            const updatedOffer = {
-              ...eventOffer,
-              status: 'SOLD_OUT',
-              stocks: [],
-            }
-            pcapi.loadOffer.mockResolvedValueOnce(initialOffer).mockResolvedValueOnce(updatedOffer)
-
-            const initialStock = {
-              ...defaultStock,
-              beginningDatetime: '2020-12-20T22:00:00Z',
-            }
-            pcapi.loadStocks
-              .mockResolvedValueOnce({ stocks: [initialStock] })
-              .mockResolvedValueOnce({ stocks: [] })
-
-            // When
-            await renderOffers(props, store)
-
-            // Then
-            expect(screen.getByText('active')).toBeInTheDocument()
-
-            // When
-            await act(async () => {
-              fireEvent.click(screen.getByTitle('Supprimer le stock'))
-              await fireEvent.click(await screen.findByText('Supprimer', { selector: 'button' }))
-            })
-
-            // Then
-            expect(screen.queryByText('active')).not.toBeInTheDocument()
           })
         })
       })
