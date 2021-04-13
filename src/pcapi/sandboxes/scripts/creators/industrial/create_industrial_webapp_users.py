@@ -28,9 +28,9 @@ DEPOSIT_VERSIONS = bookings_conf.LIMIT_CONFIGURATIONS.keys()
 
 def create_industrial_webapp_users():
     young_users = create_industrial_webapp_young_users()
-    not_beneficiary_users = create_industrial_webapp_not_beneficiary_users()
+    general_public_users = create_industrial_webapp_general_public_users()
 
-    webapp_users = dict(young_users, **not_beneficiary_users)
+    webapp_users = dict(young_users, **general_public_users)
     return webapp_users
 
 
@@ -106,8 +106,8 @@ def create_industrial_webapp_young_users():
 AGE_TAGS = ["age-more-than-18yo", "age-less-than-18yo", "age-18yo"]
 
 
-def create_industrial_webapp_not_beneficiary_users():
-    logger.info("create_industrial_webapp_not_beneficiary_users")
+def create_industrial_webapp_general_public_users():
+    logger.info("create_industrial_webapp_general_public_users")
 
     users_by_name = {}
     deposit_versions = {}
@@ -146,6 +146,6 @@ def create_industrial_webapp_not_beneficiary_users():
         deposit_versions[user_key] = deposit_version
 
     repository.save(*users_by_name.values())
-    logger.info("created %d not beneficiary users", len(users_by_name))
+    logger.info("created %d general public users", len(users_by_name))
 
     return users_by_name
