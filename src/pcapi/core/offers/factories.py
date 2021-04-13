@@ -195,6 +195,14 @@ class CriterionFactory(BaseFactory):
     name = factory.Sequence("Criterion {}".format)
 
 
+class OfferCriterionFactory(BaseFactory):
+    class Meta:
+        model = models.OfferCriterion
+
+    offer = factory.SubFactory(OfferFactory)
+    criterion = factory.SubFactory(CriterionFactory)
+
+
 class BankInformationFactory(BaseFactory):
     class Meta:
         model = models.BankInformation

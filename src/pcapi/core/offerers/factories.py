@@ -30,3 +30,24 @@ class VenueProviderFactory(BaseFactory):
     provider = factory.SubFactory(ProviderFactory)
 
     venueIdAtOfferProvider = factory.SelfAttribute("venue.siret")
+
+
+class AllocineVenueProviderFactory(BaseFactory):
+    class Meta:
+        model = models.AllocineVenueProvider
+
+    venue = factory.SubFactory(VenueFactory)
+    provider = factory.SubFactory(ProviderFactory)
+    venueIdAtOfferProvider = factory.SelfAttribute("venue.siret")
+    internalId = factory.Sequence("P{}".format)
+    isDuo = True
+    quantity = 1000
+
+
+class AllocineVenueProviderPriceRuleFactory(BaseFactory):
+    class Meta:
+        model = models.AllocineVenueProviderPriceRule
+
+    allocineVenueProvider = factory.SubFactory(AllocineVenueProviderFactory)
+    priceRule = "default"
+    price = 5.5
