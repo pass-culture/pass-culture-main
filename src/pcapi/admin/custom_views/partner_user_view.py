@@ -16,6 +16,7 @@ from wtforms.validators import Optional
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.core.users.api import create_reset_password_token
 from pcapi.core.users.api import fulfill_account_password
+from pcapi.core.users.constants import RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED
 from pcapi.core.users.models import User
 from pcapi.models import UserOfferer
 from pcapi.utils.mailing import build_pc_webapp_reset_password_link
@@ -76,7 +77,9 @@ class PartnerUserView(BaseAdminView):
 
     def after_model_change(self, form: Form, model: User, is_created: bool) -> None:
         if is_created:
-            resetPasswordToken = create_reset_password_token(model)
+            resetPasswordToken = create_reset_password_token(
+                model, token_life_time=RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED
+            )
             flash(
                 f"Lien de réinitialisation du mot de passe : {build_pc_webapp_reset_password_link(resetPasswordToken.value)}"
             )

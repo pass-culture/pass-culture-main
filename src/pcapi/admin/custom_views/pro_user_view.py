@@ -1,5 +1,3 @@
-from datetime import timedelta
-
 from flask.helpers import flash
 from flask_admin.form import rules
 from flask_login import current_user
@@ -13,6 +11,7 @@ from wtforms.fields.core import StringField
 from wtforms.validators import ValidationError
 
 from pcapi.admin.base_configuration import BaseAdminView
+from pcapi.core.users.constants import RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED
 from pcapi.core.users.models import User
 from pcapi.domain.user_emails import send_reset_password_link_to_admin_email
 from pcapi.models import UserOfferer
@@ -142,7 +141,9 @@ class ProUserView(SuspensionMixin, BaseAdminView):
 
     def after_model_change(self, form: Form, model: User, is_created: bool) -> None:
         if is_created:
-            resetPasswordToken = create_reset_password_token(model, token_life_time=timedelta(days=30))
+            resetPasswordToken = create_reset_password_token(
+                model, token_life_time=RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED
+            )
             reset_password_link = build_pc_pro_create_password_link(resetPasswordToken.value)
             flash(f"Lien de création de mot de passe : {reset_password_link}")
             if current_user:

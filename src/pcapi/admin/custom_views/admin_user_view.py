@@ -8,6 +8,7 @@ from wtforms.validators import Length
 
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.core.users import api as users_api
+from pcapi.core.users.constants import RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED
 from pcapi.domain.user_emails import send_admin_user_validation_email
 from pcapi.utils.mailing import build_pc_webapp_reset_password_link
 
@@ -76,7 +77,9 @@ class AdminUserView(BaseAdminView):
 
     def after_model_change(self, form: Form, model, is_created: bool) -> None:
         if is_created:
-            token = users_api.create_reset_password_token(model)
+            token = users_api.create_reset_password_token(
+                model, token_life_time=RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED
+            )
             send_admin_user_validation_email(model, token)
             flash(f"Lien de réinitialisation du mot de passe : {build_pc_webapp_reset_password_link(token.value)}")
 
