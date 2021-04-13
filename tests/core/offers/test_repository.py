@@ -6,6 +6,7 @@ import pytest
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import OfferStatus
+from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.repository import check_stock_consistency
 from pcapi.core.offers.repository import get_active_offers_count_for_venue
 from pcapi.core.offers.repository import get_offers_by_ids
@@ -953,7 +954,7 @@ class PaginatedOfferForFiltersTest:
             unexpired_booking_limit_date = datetime.utcnow() + timedelta(days=3)
 
             awaiting_offer = offers_factories.ThingOfferFactory(
-                validation=OfferStatus.AWAITING.name, name="Offre en attente"
+                validation=OfferValidationStatus.AWAITING, name="Offre en attente"
             )
             offers_factories.StockFactory(bookingLimitDatetime=unexpired_booking_limit_date, offer=awaiting_offer)
 
@@ -978,7 +979,7 @@ class PaginatedOfferForFiltersTest:
             unexpired_booking_limit_date = datetime.utcnow() + timedelta(days=3)
 
             rejected_offer = offers_factories.ThingOfferFactory(
-                validation=OfferStatus.REJECTED.name, name="Offre rejetée", isActive=False
+                validation=OfferValidationStatus.REJECTED, name="Offre rejetée", isActive=False
             )
             offers_factories.StockFactory(bookingLimitDatetime=unexpired_booking_limit_date, offer=rejected_offer)
 
