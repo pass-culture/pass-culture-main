@@ -119,13 +119,13 @@ def create_industrial_webapp_general_public_users():
         email = f"pctest.grandpublic.{age}.v{deposit_version}@example.com"
         departement_code = 39
         today = datetime.today()
-        date_of_birth = datetime(today.year - 18, today.month, today.day - 1)
+        date_of_birth = today - timedelta(18 * 366)
 
         if age == "age-more-than-18yo":
-            date_of_birth = datetime(today.year - 20, today.month, today.day - 1)
+            date_of_birth = today - timedelta(20 * 366)
 
         if age == "age-less-than-18yo":
-            date_of_birth = datetime(today.year - 16, today.month, today.day - 1)
+            date_of_birth = today - timedelta(16 * 366)
 
         user = create_user(
             cultural_survey_id=None,
