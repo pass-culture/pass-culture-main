@@ -136,7 +136,18 @@
 
     a {
       color: $primary;
+      line-height: rem(22px);
+
+      &:hover,
+      &:focus {
+        text-decoration: underline;
+        text-underline: $primary;
+      }
     }
+  }
+
+  .ico-external-site {
+    vertical-align: bottom;
   }
 }
 

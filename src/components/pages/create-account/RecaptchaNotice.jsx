@@ -1,4 +1,5 @@
 import React, { Fragment } from 'react'
+import Icon from '../../layout/Icon/Icon'
 
 export const RecaptchaNotice = () => (
   <Fragment>
@@ -12,6 +13,11 @@ export const RecaptchaNotice = () => (
         rel="noopener noreferrer"
         target="_blank"
       >
+        <Icon
+          alt="Icône lien vers site externe"
+          className="ico-external-site"
+          svg="ico-external-site-red"
+        />
         {'Charte des Données Personnelles'}
       </a>
       {' et les '}
@@ -20,6 +26,11 @@ export const RecaptchaNotice = () => (
         rel="noopener noreferrer"
         target="_blank"
       >
+        <Icon
+          alt="Icône lien vers site externe"
+          className="ico-external-site"
+          svg="ico-external-site-red"
+        />
         {'Conditions Générales d’Utilisation'}
       </a>
       {' s’appliquent.'}
