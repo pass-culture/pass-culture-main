@@ -197,6 +197,7 @@ class ValidationView(BaseAdminView):
         )
         context = {
             "form": form,
+            "cancel_link_url": url_for("/validation.index_view"),
             "legal_category_code": legal_category_code,
             "legal_category_label": legal_category_label,
             "pc_offer_url": _pro_offer_url(offer.id),
