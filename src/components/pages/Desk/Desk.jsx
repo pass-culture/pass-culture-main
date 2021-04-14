@@ -164,6 +164,14 @@ class Desk extends Component {
           isDisabledButton: false,
         })
       })
+      .catch(error => {
+        error.json().then(body => {
+          this.setState({
+            level: 'error',
+            message: body[this.firstErrorMessageFromApi(body)],
+          })
+        })
+      })
   }
 
   render() {

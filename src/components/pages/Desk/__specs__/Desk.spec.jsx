@@ -252,7 +252,7 @@ describe('src | components | Desk', () => {
       expect(newSubmitButton).toBeEnabled()
     })
 
-    it('should display an error message when the booking registration has failed', async () => {
+    it('should display an error message when the booking validation has failed', async () => {
       // given
       jest.spyOn(props, 'getBooking').mockResolvedValue()
       jest
@@ -268,6 +268,29 @@ describe('src | components | Desk', () => {
 
       // then
       const responseFromApi = await screen.findByText('error message')
+      expect(responseFromApi).toBeInTheDocument()
+    })
+
+    it('should display an error message when the booking invalidation has failed', async () => {
+      // given
+      jest.spyOn(props, 'getBooking').mockRejectedValue({
+        json: () => Promise.resolve({ booking: 'token is already validated' }),
+        status: 410,
+      })
+      jest.spyOn(props, 'invalidateBooking').mockRejectedValue({
+        json: () => Promise.resolve({ booking: 'cannot invalidate booking' }),
+        status: 403,
+      })
+      renderDesk(props)
+      const tokenInput = screen.getByLabelText('Contremarque')
+      fireEvent.change(tokenInput, { target: { value: 'MEFA01' } })
+      const submitButton = await screen.findByRole('button', { name: 'Invalider la contremarque' })
+
+      // when
+      fireEvent.click(submitButton)
+
+      // then
+      const responseFromApi = await screen.findByText('cannot invalidate booking')
       expect(responseFromApi).toBeInTheDocument()
     })
   })
