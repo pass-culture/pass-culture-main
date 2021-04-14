@@ -19,6 +19,7 @@ from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
 from pcapi.domain import user_emails
+from pcapi.flask_app import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
 from pcapi.repository import repository
@@ -281,3 +282,27 @@ def update_confirmation_dates(
         )
     repository.save(*bookings_to_update)
     return bookings_to_update
+
+
+def recompute_dnBookedQuantity(stock_ids: typing.List[int]) -> None:
+    query = """
+      WITH bookings_per_stock AS (
+        SELECT
+          stock.id AS stock_id,
+          COALESCE(SUM(booking.quantity), 0) AS total_bookings
+        FROM stock
+        -- The `NOT isCancelled` condition MUST be part of the JOIN.
+        -- If it were part of the WHERE clause, that would exclude
+        -- stocks that only have cancelled bookings.
+        LEFT OUTER JOIN booking
+          ON booking."stockId" = stock.id
+          AND NOT booking."isCancelled"
+        WHERE stock.id IN :stock_ids
+        GROUP BY stock.id
+      )
+      UPDATE stock
+      SET "dnBookedQuantity" = bookings_per_stock.total_bookings
+      FROM bookings_per_stock
+      WHERE stock.id = bookings_per_stock.stock_id
+    """
+    db.session.execute(query, {"stock_ids": tuple(stock_ids)})

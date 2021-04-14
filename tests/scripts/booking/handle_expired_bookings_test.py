@@ -27,6 +27,7 @@ class CancelExpiredBookingsTest:
         assert old_book_booking.isCancelled
         assert old_book_booking.cancellationDate.timestamp() == pytest.approx(datetime.utcnow().timestamp(), rel=1)
         assert old_book_booking.cancellationReason == BookingCancellationReasons.EXPIRED
+        assert old_book_booking.stock.dnBookedQuantity == 0
 
     def should_not_cancel_new_thing_that_can_expire_booking(self, app) -> None:
         book = ProductFactory(type=str(offer_type.ThingType.LIVRE_EDITION))
@@ -116,9 +117,12 @@ class CancelExpiredBookingsTest:
         BookingFactory.create_batch(size=10, stock__offer__product=book, dateCreated=two_months_ago, user=user)
         n_queries = (
             1  # select count
-            + 1  # select initial ids
+            + 1  # select initial booking ids
+            + 1  # select associated stocks
             + 1  # release savepoint/COMMIT
             + 4 * 3  # update, release savepoint/COMMIT, select next ids
+            + 1  # recompute denormalized booking quantity in stock
+            + 1  # commit previous computation
         )
 
         with assert_num_queries(n_queries):
