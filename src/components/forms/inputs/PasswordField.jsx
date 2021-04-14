@@ -94,7 +94,7 @@ class PasswordField extends PureComponent {
 
 PasswordField.defaultProps = {
   autoComplete: false,
-  describedBy: null,
+  describedBy: '',
   disabled: false,
   id: null,
   placeholder: '',
