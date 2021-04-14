@@ -165,7 +165,7 @@ class Returns400:
         assert response.json["externalTicketOfficeUrl"] == ['L\'URL doit terminer par une extension (ex. ".fr")']
 
     def test_patch_non_approved_offer_fails(self, app):
-        offer = offers_factories.OfferFactory(validation=OfferValidationStatus.AWAITING)
+        offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING)
         offers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,

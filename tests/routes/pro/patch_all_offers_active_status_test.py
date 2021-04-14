@@ -89,7 +89,7 @@ class Returns204:
     def test_only_approved_offers_patch(self, app):
         approved_offer = offers_factories.OfferFactory()
         venue = approved_offer.venue
-        awaiting_offer = offers_factories.OfferFactory(venue=venue, validation=OfferValidationStatus.AWAITING)
+        pending_offer = offers_factories.OfferFactory(venue=venue, validation=OfferValidationStatus.PENDING)
         rejected_offer = offers_factories.OfferFactory(venue=venue, validation=OfferValidationStatus.REJECTED)
         offerer = venue.managingOfferer
         offers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
@@ -100,5 +100,5 @@ class Returns204:
 
         assert response.status_code == 204
         assert not approved_offer.isActive
-        assert awaiting_offer.isActive
+        assert pending_offer.isActive
         assert rejected_offer.isActive

@@ -26,7 +26,7 @@ class OfferValidationViewTest:
     @patch("pcapi.admin.custom_views.offer_view.get_offerer_legal_category")
     def test_approve_offer(self, mocked_get_offerer_legal_category, mocked_validate_csrf_token, app):
         users_factories.UserFactory(email="admin@example.com", isAdmin=True)
-        offer = offers_factories.OfferFactory(validation=OfferValidationStatus.AWAITING)
+        offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING)
         mocked_get_offerer_legal_category.return_value = {
             "legal_category_code": 5202,
             "legal_category_label": "Société en nom collectif",
@@ -42,7 +42,7 @@ class OfferValidationViewTest:
     @patch("pcapi.admin.custom_views.offer_view.get_offerer_legal_category")
     def test_reject_offer(self, mocked_get_offerer_legal_category, mocked_validate_csrf_token, app):
         users_factories.UserFactory(email="admin@example.com", isAdmin=True)
-        offer = offers_factories.OfferFactory(validation=OfferValidationStatus.AWAITING, isActive=True)
+        offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING, isActive=True)
         mocked_get_offerer_legal_category.return_value = {
             "legal_category_code": 5202,
             "legal_category_label": "Société en nom collectif",
@@ -61,8 +61,8 @@ class OfferValidationViewTest:
         self, mocked_get_offerer_legal_category, mocked_validate_csrf_token, app
     ):
         users_factories.UserFactory(email="admin@example.com", isAdmin=True)
-        first_offer = offers_factories.OfferFactory(validation=OfferValidationStatus.AWAITING, isActive=True)
-        second_offer = offers_factories.OfferFactory(validation=OfferValidationStatus.AWAITING, isActive=True)
+        first_offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING, isActive=True)
+        second_offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING, isActive=True)
         mocked_get_offerer_legal_category.return_value = {
             "legal_category_code": 5202,
             "legal_category_label": "Société en nom collectif",
@@ -78,11 +78,11 @@ class OfferValidationViewTest:
 
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.admin.custom_views.offer_view.get_offerer_legal_category")
-    def test_approve_last_awaiting_offer_and_go_to_the_next_offer_redirect_to_validation_page(
+    def test_approve_last_pending_offer_and_go_to_the_next_offer_redirect_to_validation_page(
         self, mocked_get_offerer_legal_category, mocked_validate_csrf_token, app
     ):
         users_factories.UserFactory(email="admin@example.com", isAdmin=True)
-        offer = offers_factories.OfferFactory(validation=OfferValidationStatus.AWAITING, isActive=True)
+        offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING, isActive=True)
         mocked_get_offerer_legal_category.return_value = {
             "legal_category_code": 5202,
             "legal_category_label": "Société en nom collectif",

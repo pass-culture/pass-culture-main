@@ -972,29 +972,29 @@ class PaginatedOfferForFiltersTest:
             assert paginated_offers.total_offers == 5
 
         @pytest.mark.usefixtures("db_session")
-        def should_return_only_awaiting_offers_when_requesting_awaiting_status(self):
+        def should_return_only_pending_offers_when_requesting_pending_status(self):
             # given
             unexpired_booking_limit_date = datetime.utcnow() + timedelta(days=3)
 
-            awaiting_offer = offers_factories.ThingOfferFactory(
-                validation=OfferValidationStatus.AWAITING, name="Offre en attente"
+            pending_offer = offers_factories.ThingOfferFactory(
+                validation=OfferStatus.PENDING.name, name="Offre en attente"
             )
-            offers_factories.StockFactory(bookingLimitDatetime=unexpired_booking_limit_date, offer=awaiting_offer)
+            offers_factories.StockFactory(bookingLimitDatetime=unexpired_booking_limit_date, offer=pending_offer)
 
             offer = offers_factories.OfferFactory(product__type=str(ThingType.INSTRUMENT))
             offers_factories.StockFactory(bookingLimitDatetime=unexpired_booking_limit_date, offer=offer)
 
-            user = awaiting_offer.venue.managingOfferer
+            user = pending_offer.venue.managingOfferer
 
             # when
             paginated_offers = get_paginated_offers_for_filters(
-                user_id=user.id, user_is_admin=True, offers_per_page=5, page=1, status="AWAITING"
+                user_id=user.id, user_is_admin=True, offers_per_page=5, page=1, status="PENDING"
             )
 
             # then
             assert len(paginated_offers.offers) == 1
             assert paginated_offers.offers[0].name == "Offre en attente"
-            assert paginated_offers.offers[0].status == OfferStatus.AWAITING.name
+            assert paginated_offers.offers[0].status == OfferStatus.PENDING.name
 
         @pytest.mark.usefixtures("db_session")
         def should_return_only_rejected_offers_when_requesting_rejected_status(self):

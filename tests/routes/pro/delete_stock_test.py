@@ -58,8 +58,8 @@ class Returns400:
         assert response.json["global"] == ["Les offres importées ne sont pas modifiables"]
 
     def test_delete_non_approved_offer_fails(self, app, db_session):
-        awaiting_validation_offer = offers_factories.OfferFactory(validation=OfferValidationStatus.AWAITING)
-        stock = offers_factories.StockFactory(offer=awaiting_validation_offer)
+        pending_validation_offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING)
+        stock = offers_factories.StockFactory(offer=pending_validation_offer)
         user = users_factories.UserFactory(isAdmin=True)
 
         client = TestClient(app.test_client()).with_auth(user.email)

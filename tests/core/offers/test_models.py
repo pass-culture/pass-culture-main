@@ -202,17 +202,17 @@ class OfferStatusTest:
         assert Offer.query.filter(Offer.status == OfferStatus.REJECTED.name).all() == [rejected_offer]
         assert Offer.query.filter(Offer.status != OfferStatus.REJECTED.name).all() == [approved_offer]
 
-    def test_awaiting(self):
-        awaiting_offer = factories.OfferFactory(validation=OfferValidationStatus.AWAITING)
+    def test_pending(self):
+        pending_offer = factories.OfferFactory(validation=OfferValidationStatus.PENDING)
 
-        assert awaiting_offer.status == OfferStatus.AWAITING
+        assert pending_offer.status == OfferStatus.PENDING
 
-    def test_expression_awaiting(self):
-        awaiting_offer = factories.OfferFactory(validation=OfferValidationStatus.AWAITING, isActive=False)
+    def test_expression_pending(self):
+        pending_offer = factories.OfferFactory(validation=OfferValidationStatus.PENDING, isActive=False)
         approved_offer = factories.OfferFactory()
 
-        assert Offer.query.filter(Offer.status == OfferStatus.AWAITING.name).all() == [awaiting_offer]
-        assert Offer.query.filter(Offer.status != OfferStatus.AWAITING.name).all() == [approved_offer]
+        assert Offer.query.filter(Offer.status == OfferStatus.PENDING.name).all() == [pending_offer]
+        assert Offer.query.filter(Offer.status != OfferStatus.PENDING.name).all() == [approved_offer]
 
     def test_active(self):
         stock = factories.StockFactory()

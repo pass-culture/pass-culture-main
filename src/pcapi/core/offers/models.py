@@ -253,7 +253,7 @@ class OfferImage:
 
 class OfferStatus(enum.Enum):
     ACTIVE = "ACTIVE"
-    AWAITING = "AWAITING"
+    PENDING = "PENDING"
     EXPIRED = "EXPIRED"
     REJECTED = "REJECTED"
     SOLD_OUT = "SOLD_OUT"
@@ -263,8 +263,8 @@ class OfferStatus(enum.Enum):
 
 class OfferValidationStatus(enum.Enum):
     APPROVED = "APPROVED"
-    AWAITING = "AWAITING"
     DRAFT = "DRAFT"
+    PENDING = "PENDING"
     REJECTED = "REJECTED"
 
 
@@ -516,8 +516,8 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin, 
         if self.validation == OfferValidationStatus.REJECTED:
             return OfferStatus.REJECTED
 
-        if self.validation == OfferValidationStatus.AWAITING:
-            return OfferStatus.AWAITING
+        if self.validation == OfferValidationStatus.PENDING:
+            return OfferStatus.PENDING
 
         if self.validation == OfferValidationStatus.DRAFT:
             return OfferStatus.DRAFT
@@ -539,7 +539,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin, 
         return case(
             [
                 (cls.validation == OfferValidationStatus.REJECTED.name, OfferStatus.REJECTED.name),
-                (cls.validation == OfferValidationStatus.AWAITING.name, OfferStatus.AWAITING.name),
+                (cls.validation == OfferValidationStatus.PENDING.name, OfferStatus.PENDING.name),
                 (cls.validation == OfferValidationStatus.DRAFT.name, OfferStatus.DRAFT.name),
                 (cls.isActive.is_(False), OfferStatus.INACTIVE.name),
                 (cls.hasBookingLimitDatetimesPassed.is_(True), OfferStatus.EXPIRED.name),

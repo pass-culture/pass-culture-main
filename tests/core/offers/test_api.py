@@ -19,8 +19,8 @@ from pcapi.core.offers.api import add_criteria_to_offers
 from pcapi.core.offers.api import compute_offer_validation_from_name
 from pcapi.core.offers.api import deactivate_inappropriate_products
 from pcapi.core.offers.api import get_expense_domains
-from pcapi.core.offers.api import update_awaiting_offer_validation_status
 from pcapi.core.offers.api import update_offer_and_stock_id_at_providers
+from pcapi.core.offers.api import update_pending_offer_validation_status
 from pcapi.core.offers.exceptions import ThumbnailStorageError
 from pcapi.core.offers.factories import CriterionFactory
 from pcapi.core.offers.factories import OfferFactory
@@ -74,7 +74,7 @@ class UpsertStocksTest:
     def test_upsert_stocks_triggers_draft_offer_validation(self):
         # Given draft offers and new stock data
         draft_approvable_offer = OfferFactory(name="a great offer", validation=OfferValidationStatus.DRAFT)
-        draft_suspicious_offer = OfferFactory(name="An AWAITING offer", validation=OfferValidationStatus.DRAFT)
+        draft_suspicious_offer = OfferFactory(name="An PENDING offer", validation=OfferValidationStatus.DRAFT)
         draft_fraudulent_offer = OfferFactory(name="A REJECTED offer", validation=OfferValidationStatus.DRAFT)
         created_stock_data = StockCreationBodyModel(price=10, quantity=7)
 
@@ -86,7 +86,7 @@ class UpsertStocksTest:
         # Then validations statuses are correctly computed
         assert draft_approvable_offer.validation == OfferValidationStatus.APPROVED
         assert draft_approvable_offer.isActive
-        assert draft_suspicious_offer.validation == OfferValidationStatus.AWAITING
+        assert draft_suspicious_offer.validation == OfferValidationStatus.PENDING
         assert draft_suspicious_offer.isActive
         assert draft_fraudulent_offer.validation == OfferValidationStatus.REJECTED
         assert not draft_fraudulent_offer.isActive
@@ -405,7 +405,7 @@ class UpsertStocksTest:
         assert error.value.errors == {"global": ["Pour les offres importées, certains champs ne sont pas modifiables"]}
 
     def test_create_stock_for_non_approved_offer_fails(self):
-        offer = factories.ThingOfferFactory(validation=OfferValidationStatus.AWAITING)
+        offer = factories.ThingOfferFactory(validation=OfferValidationStatus.PENDING)
         created_stock_data = StockCreationBodyModel(price=10, quantity=7)
 
         with pytest.raises(api_errors.ApiErrors) as error:
@@ -417,7 +417,7 @@ class UpsertStocksTest:
         assert Stock.query.count() == 0
 
     def test_edit_stock_of_non_approved_offer_fails(self):
-        offer = factories.ThingOfferFactory(validation=OfferValidationStatus.AWAITING)
+        offer = factories.ThingOfferFactory(validation=OfferValidationStatus.PENDING)
         existing_stock = factories.StockFactory(offer=offer, price=10)
         edited_stock_data = StockEditionBodyModel(id=existing_stock.id, price=5, quantity=7)
 
@@ -934,16 +934,16 @@ class UpdateOfferTest:
         assert offer.audioDisabilityCompliant == True
 
     def test_update_non_approved_offer_fails(self):
-        awaiting_offer = factories.OfferFactory(name="Soliloquy", validation=OfferValidationStatus.AWAITING)
+        pending_offer = factories.OfferFactory(name="Soliloquy", validation=OfferValidationStatus.PENDING)
 
         with pytest.raises(models.ApiErrors) as error:
-            api.update_offer(awaiting_offer, name="Monologue")
+            api.update_offer(pending_offer, name="Monologue")
 
         assert error.value.errors == {
             "global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
         }
-        awaiting_offer = models.Offer.query.one()
-        assert awaiting_offer.name == "Soliloquy"
+        pending_offer = models.Offer.query.one()
+        assert pending_offer.name == "Soliloquy"
 
 
 @pytest.mark.usefixtures("db_session")
@@ -975,7 +975,7 @@ class UpdateOffersActiveStatusTest:
         offer1 = factories.OfferFactory()
         offer2 = factories.OfferFactory()
         offer3 = factories.OfferFactory()
-        rejected_offer = factories.OfferFactory(validation=OfferValidationStatus.AWAITING)
+        rejected_offer = factories.OfferFactory(validation=OfferValidationStatus.PENDING)
 
         query = models.Offer.query.filter(models.Offer.id.in_({offer1.id, offer2.id, rejected_offer.id}))
         api.update_offers_active_status(query, is_active=False)
@@ -1095,45 +1095,45 @@ class DeactivateInappropriateProductTest:
 @pytest.mark.usefixtures("db_session")
 class ComputeOfferValidationTest:
     def test_matching_keyword(self):
-        offer = Offer(name="An offer AWAITING validation")
+        offer = Offer(name="An offer PENDING validation")
 
-        assert compute_offer_validation_from_name(offer) == OfferValidationStatus.AWAITING
+        assert compute_offer_validation_from_name(offer) == OfferValidationStatus.PENDING
 
     def test_not_matching_keyword(self):
-        offer = Offer(name="An offer awaiting validation")
+        offer = Offer(name="An offer pending validation")
 
         assert compute_offer_validation_from_name(offer) == OfferValidationStatus.APPROVED
 
     @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
     def test_deactivated_check(self):
-        offer = Offer(name="An offer AWAITING validation")
+        offer = Offer(name="An offer PENDING validation")
 
         assert compute_offer_validation_from_name(offer) == OfferValidationStatus.APPROVED
 
 
 @pytest.mark.usefixtures("db_session")
 class UpdateOfferValidationStatusTest:
-    def test_update_awaiting_offer_validation_status_to_approved(self):
-        offer = OfferFactory(validation=OfferValidationStatus.AWAITING)
+    def test_update_pending_offer_validation_status_to_approved(self):
+        offer = OfferFactory(validation=OfferValidationStatus.PENDING)
 
-        is_offer_updated = update_awaiting_offer_validation_status(offer, OfferValidationStatus.APPROVED)
+        is_offer_updated = update_pending_offer_validation_status(offer, OfferValidationStatus.APPROVED)
 
         assert is_offer_updated is True
         assert offer.validation == OfferValidationStatus.APPROVED
 
-    def test_update_awaiting_offer_validation_status_to_rejected(self):
-        offer = OfferFactory(validation=OfferValidationStatus.AWAITING)
+    def test_update_pending_offer_validation_status_to_rejected(self):
+        offer = OfferFactory(validation=OfferValidationStatus.PENDING)
 
-        is_offer_updated = update_awaiting_offer_validation_status(offer, OfferValidationStatus.REJECTED)
+        is_offer_updated = update_pending_offer_validation_status(offer, OfferValidationStatus.REJECTED)
 
         assert is_offer_updated is True
         assert offer.validation == OfferValidationStatus.REJECTED
         assert offer.isActive is False
 
-    def test_cannot_update_awaiting_offer_validation_with_a_rejected_offer(self):
+    def test_cannot_update_pending_offer_validation_with_a_rejected_offer(self):
         offer = OfferFactory(validation=OfferValidationStatus.REJECTED)
 
-        is_offer_updated = update_awaiting_offer_validation_status(offer, OfferValidationStatus.APPROVED)
+        is_offer_updated = update_pending_offer_validation_status(offer, OfferValidationStatus.APPROVED)
 
         assert is_offer_updated is False
         assert offer.validation == OfferValidationStatus.REJECTED

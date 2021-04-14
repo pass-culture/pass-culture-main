@@ -17,7 +17,7 @@ from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.connectors import redis
 from pcapi.connectors.api_entreprises import get_offerer_legal_category
 from pcapi.core.offerers.models import Venue
-from pcapi.core.offers.api import update_awaiting_offer_validation_status
+from pcapi.core.offers.api import update_pending_offer_validation_status
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.flask_app import app
 from pcapi.models import Offer
@@ -157,10 +157,10 @@ class ValidationView(BaseAdminView):
             redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
 
     def get_query(self):
-        return self.session.query(self.model).filter(self.model.validation == OfferValidationStatus.AWAITING)
+        return self.session.query(self.model).filter(self.model.validation == OfferValidationStatus.PENDING)
 
     def get_count_query(self):
-        return self.session.query(func.count("*")).filter(self.model.validation == OfferValidationStatus.AWAITING)
+        return self.session.query(func.count("*")).filter(self.model.validation == OfferValidationStatus.PENDING)
 
     @expose("/edit/", methods=["GET", "POST"])
     def edit(self) -> Response:
@@ -170,14 +170,14 @@ class ValidationView(BaseAdminView):
         if request.method == "POST":
             form = OfferValidationForm(request.form)
             if form.validate():
-                is_offer_updated = update_awaiting_offer_validation_status(
+                is_offer_updated = update_pending_offer_validation_status(
                     offer, OfferValidationStatus[form.validation.data]
                 )
                 if is_offer_updated:
                     flash("Le statut de l'offre a bien été modifié", "success")
                     if request.form["action"] == "save-and-go-next":
                         next_offer_query = (
-                            Offer.query.filter(Offer.validation == OfferValidationStatus.AWAITING)
+                            Offer.query.filter(Offer.validation == OfferValidationStatus.PENDING)
                             .filter(Offer.id != offer_id)
                             .limit(1)
                         )

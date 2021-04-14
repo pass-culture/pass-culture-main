@@ -59,7 +59,7 @@ DEFAULT_PAGE = 1
 UNCHANGED = object()
 VALIDATION_KEYWORDS_MAPPING = {
     "APPROVED": OfferValidationStatus.APPROVED,
-    "AWAITING": OfferValidationStatus.AWAITING,
+    "PENDING": OfferValidationStatus.PENDING,
     "REJECTED": OfferValidationStatus.REJECTED,
 }
 
@@ -592,11 +592,11 @@ def compute_offer_validation_from_name(offer: Offer) -> OfferValidationStatus:
     return OfferValidationStatus.APPROVED
 
 
-def update_awaiting_offer_validation_status(offer: Offer, validation_status: OfferValidationStatus) -> bool:
+def update_pending_offer_validation_status(offer: Offer, validation_status: OfferValidationStatus) -> bool:
     offer = offer_queries.get_offer_by_id(offer.id)
-    if offer.validation != OfferValidationStatus.AWAITING:
+    if offer.validation != OfferValidationStatus.PENDING:
         logger.exception(
-            "Offer validation status cannot be updated, initial validation status is not AWAITING. %s",
+            "Offer validation status cannot be updated, initial validation status is not PENDING. %s",
             extra={"offer": offer.id},
         )
         return False

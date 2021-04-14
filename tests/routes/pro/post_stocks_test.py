@@ -180,14 +180,14 @@ class Returns400:
         assert persisted_stock[0].price == 10
 
     def test_patch_non_approved_offer_fails(self, app):
-        awaiting_validation_offer = offers_factories.OfferFactory(validation=OfferValidationStatus.AWAITING)
-        stock = offers_factories.StockFactory(offer=awaiting_validation_offer)
+        pending_validation_offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING)
+        stock = offers_factories.StockFactory(offer=pending_validation_offer)
         offers_factories.UserOffererFactory(
             user__email="user@example.com",
-            offerer=awaiting_validation_offer.venue.managingOfferer,
+            offerer=pending_validation_offer.venue.managingOfferer,
         )
         stock_data = {
-            "offerId": humanize(awaiting_validation_offer.id),
+            "offerId": humanize(pending_validation_offer.id),
             "stocks": [{"id": humanize(stock.id), "price": 20}],
         }
 

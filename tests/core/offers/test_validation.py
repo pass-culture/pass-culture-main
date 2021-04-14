@@ -24,11 +24,11 @@ class CheckOfferExistingStocksAreEditableTest:
 
         validation.check_offer_existing_stocks_are_editable(offer)
 
-    def test_awaiting_offer(self):
-        awaiting_validation_offer = factories.OfferFactory(validation=OfferValidationStatus.AWAITING)
+    def test_pending_offer(self):
+        pending_validation_offer = factories.OfferFactory(validation=OfferValidationStatus.PENDING)
 
         with pytest.raises(ApiErrors) as error:
-            validation.check_offer_existing_stocks_are_editable(awaiting_validation_offer)
+            validation.check_offer_existing_stocks_are_editable(pending_validation_offer)
 
         assert error.value.errors["global"] == [
             "Les offres refusées ou en attente de validation ne sont pas modifiables"
@@ -132,8 +132,8 @@ class CheckStockCanBeCreatedForOfferTest:
 
         assert error.value.errors["global"] == ["Les offres importées ne sont pas modifiables"]
 
-    def test_awaiting_offer_not_from_provider(self):
-        offer = factories.OfferFactory(lastProvider=None, validation=OfferValidationStatus.AWAITING)
+    def test_pending_offer_not_from_provider(self):
+        offer = factories.OfferFactory(lastProvider=None, validation=OfferValidationStatus.PENDING)
 
         with pytest.raises(ApiErrors) as error:
             validation.check_stock_can_be_created_for_offer(offer)
@@ -159,7 +159,7 @@ class CheckStockIsDeletableTest:
         validation.check_stock_is_deletable(stock)
 
     def test_non_approved_offer(self):
-        offer = factories.OfferFactory(validation=OfferValidationStatus.AWAITING)
+        offer = factories.OfferFactory(validation=OfferValidationStatus.PENDING)
         stock = factories.StockFactory(offer=offer)
 
         with pytest.raises(ApiErrors) as error:
@@ -213,7 +213,7 @@ class CheckStockIsUpdatableTest:
         validation.check_stock_is_updatable(stock)
 
     def test_non_approved_offer(self):
-        offer = factories.OfferFactory(validation=OfferValidationStatus.AWAITING)
+        offer = factories.OfferFactory(validation=OfferValidationStatus.PENDING)
         stock = factories.StockFactory(offer=offer)
 
         with pytest.raises(ApiErrors) as error:
@@ -413,11 +413,11 @@ class CheckValidationStatus:
 
         validation.check_validation_status(draft_offer)
 
-    def test_awaiting_offer(self):
-        awaiting_validation_offer = factories.OfferFactory(validation=OfferValidationStatus.AWAITING)
+    def test_pending_offer(self):
+        pending_validation_offer = factories.OfferFactory(validation=OfferValidationStatus.PENDING)
 
         with pytest.raises(ApiErrors) as error:
-            validation.check_validation_status(awaiting_validation_offer)
+            validation.check_validation_status(pending_validation_offer)
 
         assert error.value.errors["global"] == [
             "Les offres refusées ou en attente de validation ne sont pas modifiables"
