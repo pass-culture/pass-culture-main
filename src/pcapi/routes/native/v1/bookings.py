@@ -131,7 +131,7 @@ def is_ended_booking(booking: Booking) -> bool:
         # consider future events events as "ongoing" even if they are used
         return False
 
-    return bool(booking.dateUsed or booking.cancellationDate) and not booking.stock.offer.isPermanent
+    return not booking.stock.offer.isPermanent if booking.isUsed else booking.isCancelled
 
 
 @blueprint.native_v1.route("/bookings/<int:booking_id>/cancel", methods=["POST"])

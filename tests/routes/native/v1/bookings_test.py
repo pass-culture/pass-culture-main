@@ -89,6 +89,12 @@ class GetBookingsTest:
         permanent_booking = BookingFactory(
             user=user, stock__offer__type=str(ThingType.LIVRE_AUDIO), isUsed=True, dateUsed=datetime(2021, 2, 3)
         )
+        cancelled_permanent_booking = BookingFactory(
+            user=user,
+            stock__offer__type=str(ThingType.LIVRE_AUDIO),
+            isCancelled=True,
+            cancellationDate=datetime(2021, 2, 3),
+        )
         event_booking = BookingFactory(user=user, stock=EventStockFactory(beginningDatetime=datetime(2021, 3, 14)))
         expire_tomorrow = BookingFactory(user=user, dateCreated=datetime.now() - timedelta(days=29))
         used_but_in_future = BookingFactory(
@@ -124,12 +130,13 @@ class GetBookingsTest:
         ]
 
         assert [b["id"] for b in response.json["ended_bookings"]] == [
+            cancelled_permanent_booking.id,
             cancelled.id,
             used2.id,
             used1.id,
         ]
 
-        assert response.json["ended_bookings"][1] == {
+        assert response.json["ended_bookings"][2] == {
             "cancellationDate": None,
             "cancellationReason": None,
             "confirmationDate": None,
