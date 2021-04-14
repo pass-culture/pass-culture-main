@@ -33,9 +33,9 @@ logger = logging.getLogger(__name__)
 @login_required
 @expect_json_data
 def post_change_password():
+    user = current_user._get_current_object()  # get underlying User object from proxy
     json = request.get_json()
     validate_change_password_request(json)
-    user = find_user_by_email(current_user.email)
     new_password = json["newPassword"]
     new_confirmation_password = json["newConfirmationPassword"]
     old_password = json["oldPassword"]

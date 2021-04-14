@@ -9,7 +9,6 @@ from pcapi.core.users import repository as users_repo
 from pcapi.core.users.models import TokenType
 from pcapi.flask_app import private_api
 from pcapi.models.api_errors import ApiErrors
-from pcapi.repository.user_queries import find_user_by_email
 from pcapi.repository.user_queries import find_user_by_reset_password_token
 from pcapi.routes.serialization import as_dict
 from pcapi.routes.serialization.users import LoginUserBodyModel
@@ -26,7 +25,7 @@ from pcapi.utils.rate_limiting import ip_rate_limiter
 @private_api.route("/users/current", methods=["GET"])
 @login_required
 def get_profile():
-    user = find_user_by_email(current_user.email)
+    user = current_user._get_current_object()  # get underlying User object from proxy
     return jsonify(as_dict(user, includes=USER_INCLUDES)), 200
 
 

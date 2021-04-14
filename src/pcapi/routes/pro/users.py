@@ -26,7 +26,7 @@ def patch_user_tuto_seen(user_id: str) -> None:
 @login_or_api_key_required
 @spectree_serialize(response_model=PatchProUserResponseModel)  # type: ignore
 def patch_profile(body: PatchProUserBodyModel) -> PatchProUserResponseModel:
-    user = current_user._get_current_object()
+    user = current_user._get_current_object()  # get underlying User object from proxy
     # This route should ony be used by "pro" users because it allows
     # to update different infos from `/beneficiaries/current`.
     if not user.UserOfferers and not user.isAdmin:
