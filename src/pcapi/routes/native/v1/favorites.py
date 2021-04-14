@@ -27,11 +27,14 @@ from .serialization import favorites as serializers
 @spectree_serialize(response_model=serializers.PaginatedFavoritesResponse, api=blueprint.api)  # type: ignore
 @authenticated_user_required
 def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
+    active_stock_filters = and_(
+        Offer.isActive == True,
+        Stock.isSoftDeleted == False,
+    )
     stock_filters = and_(
         not_(Stock.isEventExpired),
         not_(Stock.hasBookingLimitDatetimePassed),
-        Offer.isActive == True,
-        Stock.isSoftDeleted == False,
+        active_stock_filters,
     )
     favorites = (
         db.session.query(
@@ -40,8 +43,10 @@ def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
             func.max(Stock.price).filter(stock_filters).over(partition_by=Stock.offerId).label("max_price"),
             func.min(Stock.beginningDatetime).filter(stock_filters).over(partition_by=Stock.offerId).label("min_begin"),
             func.max(Stock.beginningDatetime).filter(stock_filters).over(partition_by=Stock.offerId).label("max_begin"),
-            # count active
-            func.count(Stock.id).filter(stock_filters).over(partition_by=Stock.offerId).label("active_stock_count"),
+            # count future active
+            func.count(Stock.id).filter(stock_filters).over(partition_by=Stock.offerId).label("non_expired_count"),
+            # count all active
+            func.count(Stock.id).filter(active_stock_filters).over(partition_by=Stock.offerId).label("active_count"),
         )
         .options(Load(Favorite).load_only("id"))
         .join(Favorite.offer)
@@ -77,7 +82,15 @@ def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
         .all()
     )
 
-    for fav, min_price, max_price, min_beginning_datetime, max_beginning_datetime, active_stock_count in favorites:
+    for (
+        fav,
+        min_price,
+        max_price,
+        min_beginning_datetime,
+        max_beginning_datetime,
+        non_expired_count,
+        active_count,
+    ) in favorites:
         fav.offer.price = None
         fav.offer.startPrice = None
         if min_price == max_price:
@@ -90,7 +103,10 @@ def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
             fav.offer.date = min_beginning_datetime
         else:
             fav.offer.startDate = min_beginning_datetime
-        fav.offer.isExpired = not active_stock_count
+        if active_count and not non_expired_count:
+            fav.offer.isExpired = True
+        else:
+            fav.offer.isExpired = False
 
     favorites = [fav for (fav, *_) in favorites]
 

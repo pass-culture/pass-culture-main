@@ -241,9 +241,9 @@ class Get:
                 False,
                 True,
                 True,
-                True,
-                True,
-                True,
+                False,
+                False,
+                False,
                 False,
             ]
             assert [fav["offer"]["isSoldOut"] for fav in favorites] == [
