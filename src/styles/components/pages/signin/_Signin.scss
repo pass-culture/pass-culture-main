@@ -78,6 +78,11 @@
     font-weight: 700;
     line-height: rem(19px);
     text-align: center;
+
+    &:hover {
+      text-decoration: underline;
+      text-underline: $white;
+    }
   }
 }
 
