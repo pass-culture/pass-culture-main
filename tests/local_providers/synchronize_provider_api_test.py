@@ -9,12 +9,10 @@ import requests_mock
 from pcapi.core.bookings.factories import BookingFactory
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import factories
-from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import Offer
 from pcapi.core.testing import override_features
 from pcapi.local_providers.provider_api import synchronize_provider_api
 from pcapi.models import ThingType
-from pcapi.models.product import Product
 
 
 ISBNs = [
@@ -182,101 +180,6 @@ class ProviderAPICronTest:
                 },
             )
             synchronize_provider_api.synchronize_venue_provider(venue_provider)
-
-    def test_build_new_offers_from_stock_details(self, db_session):
-        # Given
-        stock_details = [
-            {
-                "offers_provider_reference": "offer_ref1",
-            },
-            {
-                "available_quantity": 17,
-                "offers_provider_reference": "offer_ref_2",
-                "price": 28.989,
-                "products_provider_reference": "product_ref",
-                "stocks_provider_reference": "stock_ref",
-            },
-        ]
-
-        existing_offers_by_provider_reference = {"offer_ref1"}
-        provider = offerers_factories.APIProviderFactory(apiUrl="https://provider_url", authToken="fake_token")
-        venue = VenueFactory(bookingEmail="booking_email")
-        venue_provider = offerers_factories.VenueProviderFactory(isActive=True, provider=provider, venue=venue)
-        product = Product(
-            id=456, name="product_name", description="product_desc", extraData="extra", type="product_type"
-        )
-        products_by_provider_reference = {"product_ref": product}
-
-        # When
-        new_offers = synchronize_provider_api._build_new_offers_from_stock_details(
-            stock_details, existing_offers_by_provider_reference, products_by_provider_reference, venue_provider
-        )
-
-        # Then
-        assert new_offers == [
-            Offer(
-                bookingEmail="booking_email",
-                description="product_desc",
-                extraData="extra",
-                idAtProviders="offer_ref_2",
-                name="product_name",
-                productId=456,
-                venueId=venue.id,
-                type="product_type",
-            )
-        ]
-
-    def test_get_stocks_to_upsert(self):
-        # Given
-        stock_details = [
-            {
-                "offers_provider_reference": "offer_ref1",
-                "available_quantity": 15,
-                "price": 15.78,
-                "products_provider_reference": "product_ref1",
-                "stocks_provider_reference": "stock_ref1",
-            },
-            {
-                "available_quantity": 17,
-                "offers_provider_reference": "offer_ref2",
-                "price": 28.989,
-                "products_provider_reference": "product_ref2",
-                "stocks_provider_reference": "stock_ref2",
-            },
-        ]
-
-        stocks_by_provider_reference = {"stock_ref1": {"id": 1, "booking_quantity": 3}}
-        offers_by_provider_reference = {"offer_ref1": 123, "offer_ref2": 134}
-        products_by_provider_reference = {
-            "product_ref1": Product(extraData={"prix_livre": 7.01}),
-            "product_ref2": Product(extraData={"prix_livre": 9.02}),
-        }
-
-        # When
-        update_stock_mapping, new_stocks, offer_ids = synchronize_provider_api._get_stocks_to_upsert(
-            stock_details,
-            stocks_by_provider_reference,
-            offers_by_provider_reference,
-            products_by_provider_reference,
-        )
-
-        assert update_stock_mapping == [
-            {
-                "id": 1,
-                "quantity": 15 + 3,
-                "price": 7.01,
-                "rawProviderQuantity": 15,
-            }
-        ]
-
-        new_stock = new_stocks[0]
-        assert new_stock.quantity == 17
-        assert new_stock.bookingLimitDatetime is None
-        assert new_stock.offerId == 134
-        assert new_stock.price == 9.02
-        assert new_stock.idAtProviders == "stock_ref2"
-
-        assert offer_ids == set([123, 134])
 
     class BuildStocksDetailsTest:
         def test_build_stock_details_from_raw_stocks(self):
