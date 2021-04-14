@@ -593,7 +593,7 @@ def update_awaiting_offer_validation_status(offer: Offer, validation_status: Off
     if offer.validation != OfferValidationStatus.AWAITING:
         logger.exception(
             "Offer validation status cannot be updated, initial validation status is not AWAITING. %s",
-            extra={"offer": offer},
+            extra={"offer": offer.id},
         )
         return False
     offer.validation = validation_status
@@ -605,8 +605,8 @@ def update_awaiting_offer_validation_status(offer: Offer, validation_status: Off
     except Exception as exception:  # pylint: disable=broad-except
         logger.exception(
             "Could not update offer validation status: %s",
-            extra={"offer": offer, "validation_status": validation_status, "exc": str(exception)},
+            extra={"offer": offer.id, "validation_status": validation_status, "exc": str(exception)},
         )
         return False
-    logger.info("Offer validation status updated", extra={"offer": offer})
+    logger.info("Offer validation status updated", extra={"offer": offer.id})
     return True
