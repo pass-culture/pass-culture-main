@@ -531,6 +531,36 @@ describe('stocks page', () => {
   })
 
   describe('edit', () => {
+    it('should update displayed offer status', async () => {
+      // Given
+      const initialOffer = {
+        ...defaultOffer,
+        status: 'ACTIVE',
+      }
+      const updatedOffer = {
+        ...defaultOffer,
+        status: 'SOLD_OUT',
+      }
+      pcapi.loadOffer.mockResolvedValueOnce(initialOffer).mockResolvedValueOnce(updatedOffer)
+      pcapi.loadStocks
+        .mockResolvedValueOnce({ stocks: [defaultStock] })
+        .mockResolvedValueOnce({ stocks: [] })
+
+      // When
+      await renderOffers(props, store)
+
+      // Then
+      expect(screen.getByText('active')).toBeInTheDocument()
+
+      // When
+      await act(async () => {
+        fireEvent.click(screen.getByTitle('Supprimer le stock'))
+        await fireEvent.click(await screen.findByText('Supprimer', { selector: 'button' }))
+      })
+
+      // Then
+      expect(screen.queryByText('épuisée')).toBeInTheDocument()
+    })
     describe('event offer', () => {
       let eventOffer
       beforeEach(() => {
@@ -1685,6 +1715,35 @@ describe('stocks page', () => {
   })
 
   describe('create', () => {
+    it('should update displayed offer status', async () => {
+      // Given
+      const initialOffer = {
+        ...defaultOffer,
+        status: 'DRAFT',
+      }
+      const updatedOffer = {
+        ...defaultOffer,
+        status: 'ACTIVE',
+      }
+      pcapi.loadOffer.mockResolvedValueOnce(initialOffer).mockResolvedValueOnce(updatedOffer)
+      pcapi.bulkCreateOrEditStock.mockResolvedValue({})
+
+      // When
+      await renderOffers(props, store)
+
+      // Then
+      expect(screen.queryByText('épuisée')).not.toBeInTheDocument()
+
+      // When
+      await act(async () => {
+        await fireEvent.click(screen.getByText('Ajouter un stock'))
+        await fireEvent.click(screen.getByText('Enregistrer'))
+      })
+
+      // Then
+      expect(screen.getByText('active')).toBeInTheDocument()
+    })
+
     describe('event offer', () => {
       let noStockOffer
       beforeEach(() => {

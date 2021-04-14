@@ -40,7 +40,7 @@ describe('offerLayout', () => {
       editedOffer = {
         id: 'AB',
         name: 'My edited offer',
-        status: 'SOLD_OUT'
+        status: 'SOLD_OUT',
       }
       props = {
         match: {
@@ -61,14 +61,6 @@ describe('offerLayout', () => {
       // Then
       const title = await screen.findByText('Éditer une offre', { selector: 'h1' })
       expect(title).toBeInTheDocument()
-    })
-
-    it('should always display offer status', async () => {
-      // when
-      await renderOfferDetails(props, store)
-
-      // then
-      expect(await screen.getByText('épuisée')).toBeInTheDocument()
     })
   })
 

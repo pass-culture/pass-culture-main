@@ -3,7 +3,7 @@ import invert from 'lodash.invert'
 import {
   OFFER_STATUS_ACTIVE,
   OFFER_STATUS_INACTIVE,
-  OFFER_STATUS_SOLDOUT,
+  OFFER_STATUS_SOLD_OUT,
   OFFER_STATUS_EXPIRED,
   OFFER_STATUS_AWAITING,
   OFFER_STATUS_REJECTED,
@@ -102,7 +102,7 @@ export const mapBrowserToApi = {
   stock: 'stockIdOrNew',
   active: OFFER_STATUS_ACTIVE,
   inactive: OFFER_STATUS_INACTIVE,
-  epuisee: OFFER_STATUS_SOLDOUT,
+  epuisee: OFFER_STATUS_SOLD_OUT,
   expiree: OFFER_STATUS_EXPIRED,
   'en-attente': OFFER_STATUS_AWAITING,
   refusee: OFFER_STATUS_REJECTED,

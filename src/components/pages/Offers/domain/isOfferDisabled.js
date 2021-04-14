@@ -1,5 +1,8 @@
-import { OFFER_STATUS } from 'components/pages/Offers/Offers/domain/offerStatus'
+import {
+  OFFER_STATUS_AWAITING,
+  OFFER_STATUS_REJECTED,
+} from 'components/pages/Offers/Offers/_constants'
 
 export const isOfferDisabled = status => {
-  return [OFFER_STATUS.REJECTED, OFFER_STATUS.AWAITING].includes(status)
+  return [OFFER_STATUS_REJECTED, OFFER_STATUS_AWAITING].includes(status)
 }

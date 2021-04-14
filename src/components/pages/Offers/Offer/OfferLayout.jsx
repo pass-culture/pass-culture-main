@@ -10,6 +10,7 @@ import Breadcrumb, {
 import OfferDetailsContainer from 'components/pages/Offers/Offer/OfferDetails/OfferDetailsContainer'
 import OfferStatus from 'components/pages/Offers/Offer/OfferStatus/OfferStatus'
 import StocksContainer from 'components/pages/Offers/Offer/Stocks/StocksContainer'
+import { OFFER_STATUS_DRAFT } from 'components/pages/Offers/Offers/_constants'
 import * as pcapi from 'repository/pcapi/pcapi'
 
 const mapPathToStep = {
@@ -56,7 +57,11 @@ const OfferLayout = props => {
     pageTitle = 'Éditer une offre'
   }
 
-  const offerStatus = offer?.status && <OfferStatus status={offer.status} />
+  const offerStatus =
+    offer?.status && offer?.status !== OFFER_STATUS_DRAFT ? (
+      <OfferStatus status={offer.status} />
+    ) : null
+
   return (
     <div className="offer-page">
       <Titles

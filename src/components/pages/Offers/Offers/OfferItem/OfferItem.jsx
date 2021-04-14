@@ -6,7 +6,7 @@ import Icon from 'components/layout/Icon'
 import Thumb from 'components/layout/Thumb'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import OfferStatus from 'components/pages/Offers/Offer/OfferStatus/OfferStatus'
-import { OFFER_STATUS } from 'components/pages/Offers/Offers/domain/offerStatus'
+import { OFFER_STATUS_SOLD_OUT } from 'components/pages/Offers/Offers/_constants'
 import { computeVenueDisplayName } from 'repository/venuesService'
 import { pluralize } from 'utils/pluralize'
 
@@ -33,7 +33,7 @@ const OfferItem = ({ disabled, offer, stocks, venue, isSelected, selectOffer }) 
   const stockSize = stocks ? stocks.length : null
   const isOfferEditable = offer ? offer.isEditable : null
   const isOfferInactiveOrExpired = !offer.isActive || offer.hasBookingLimitDatetimesPassed
-  const shouldShowSoldOutWarning = offer.status === OFFER_STATUS.SOLD_OUT
+  const shouldShowSoldOutWarning = offer.status === OFFER_STATUS_SOLD_OUT
 
   return (
     <tr className={`offer-item ${isOfferInactiveOrExpired ? 'inactive' : ''} offer-row`}>
