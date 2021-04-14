@@ -39,6 +39,7 @@ logger = logging.getLogger(__name__)
 install_logging()
 
 if settings.IS_DEV is False:
+    # pylint: disable=abstract-class-instantiated
     sentry_sdk.init(
         dsn=settings.SENTRY_DSN,
         integrations=[FlaskIntegration(), RedisIntegration(), RqIntegration(), SqlalchemyIntegration()],

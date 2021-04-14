@@ -69,6 +69,7 @@ if __name__ == "__main__":
     log_database_connection_status()
 
     if settings.IS_DEV is False:
+        # pylint: disable=abstract-class-instantiated
         sentry_sdk.init(
             dsn=settings.SENTRY_DSN,
             integrations=[RedisIntegration(), RqIntegration(), SqlalchemyIntegration()],
