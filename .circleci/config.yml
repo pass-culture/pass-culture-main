@@ -164,7 +164,7 @@ jobs:
         default: false
     working_directory: ~/pass-culture-api-ci
     docker:
-      - image: circleci/python:3.8.8
+      - image: circleci/python:3.9.4
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
@@ -249,7 +249,7 @@ jobs:
   quality:
     working_directory: ~/pass-culture-api-ci
     docker:
-      - image: circleci/python:3.8.8
+      - image: circleci/python:3.9.4
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
