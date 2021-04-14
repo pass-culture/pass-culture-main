@@ -3,7 +3,7 @@ import React from 'react'
 
 import Banner from 'components/layout/Banner/Banner'
 import {
-  OFFER_STATUS_AWAITING,
+  OFFER_STATUS_PENDING,
   OFFER_STATUS_REJECTED,
 } from 'components/pages/Offers/Offers/_constants'
 import { CGU_URL } from 'utils/config'
@@ -28,7 +28,7 @@ const OfferStatusBanner = ({ status }) => {
 }
 
 OfferStatusBanner.propTypes = {
-  status: PropTypes.oneOf([OFFER_STATUS_REJECTED, OFFER_STATUS_AWAITING]).isRequired,
+  status: PropTypes.oneOf([OFFER_STATUS_REJECTED, OFFER_STATUS_PENDING]).isRequired,
 }
 
 export default OfferStatusBanner

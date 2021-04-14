@@ -5,7 +5,7 @@ import {
   OFFER_STATUS_INACTIVE,
   OFFER_STATUS_SOLD_OUT,
   OFFER_STATUS_EXPIRED,
-  OFFER_STATUS_AWAITING,
+  OFFER_STATUS_PENDING,
   OFFER_STATUS_REJECTED,
 } from 'components/pages/Offers/Offers/_constants'
 
@@ -104,7 +104,7 @@ export const mapBrowserToApi = {
   inactive: OFFER_STATUS_INACTIVE,
   epuisee: OFFER_STATUS_SOLD_OUT,
   expiree: OFFER_STATUS_EXPIRED,
-  'en-attente': OFFER_STATUS_AWAITING,
+  'en-attente': OFFER_STATUS_PENDING,
   refusee: OFFER_STATUS_REJECTED,
   statut: 'status',
   creation: 'creationMode',

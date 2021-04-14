@@ -556,9 +556,9 @@ describe('offerDetails - Edition', () => {
           expect(screen.getByTitle('Ajouter une image')).toBeDisabled()
         })
 
-        it('should display status informative message and disable all fields when offer is awaiting for validation', async () => {
+        it('should display status informative message and disable all fields when offer is pending for validation', async () => {
           // given
-          editedOffer.status = 'AWAITING'
+          editedOffer.status = 'PENDING'
           editedOffer.isActive = true
           pcapi.loadOffer.mockResolvedValue(editedOffer)
           pcapi.loadTypes.mockResolvedValue([fullConditionalFieldsType])

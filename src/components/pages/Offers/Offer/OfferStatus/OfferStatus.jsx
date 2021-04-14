@@ -4,7 +4,7 @@ import React from 'react'
 import Icon from 'components/layout/Icon'
 import {
   OFFER_STATUS_ACTIVE,
-  OFFER_STATUS_AWAITING,
+  OFFER_STATUS_PENDING,
   OFFER_STATUS_EXPIRED,
   OFFER_STATUS_INACTIVE,
   OFFER_STATUS_REJECTED,
@@ -32,9 +32,9 @@ export const OFFER_STATUS_PROPERTIES = {
     icon: 'ico-status-rejected',
     label: 'refusée',
   },
-  [OFFER_STATUS_AWAITING]: {
-    className: 'status-awaiting',
-    icon: 'ico-status-awaiting',
+  [OFFER_STATUS_PENDING]: {
+    className: 'status-pending',
+    icon: 'ico-status-pending',
     label: 'en attente',
   },
   [OFFER_STATUS_INACTIVE]: {

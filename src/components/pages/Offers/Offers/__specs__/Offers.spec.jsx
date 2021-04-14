@@ -804,7 +804,7 @@ describe('src | components | pages | Offers | Offers', () => {
     })
 
     describe('when fraud detection', () => {
-      it('should remove checkbox when offer is rejected or awaiting for validation', async () => {
+      it('should remove checkbox when offer is rejected or pending for validation', async () => {
         // Given
         props.currentUser.isAdmin = false
         props.offers = [
@@ -816,7 +816,7 @@ describe('src | components | pages | Offers | Offers', () => {
           {
             id: 'OAW',
             isActive: true,
-            status: 'AWAITING',
+            status: 'PENDING',
           },
           {
             id: 'OAC',

@@ -17,7 +17,7 @@
 
 .status- {
   &expired,
-  &awaiting,
+  &pending,
   &inactive {
     background-color: $grey-dark;
   }

@@ -89,11 +89,11 @@ export const OffersStatusFiltersModal = ({
         value="EXPIRED"
       />
       <RadioInput
-        checked={status === 'AWAITING'}
+        checked={status === 'PENDING'}
         label="Validation en attente"
         name="status"
         onChange={handleStatusFilterChange}
-        value="AWAITING"
+        value="PENDING"
       />
       <RadioInput
         checked={status === 'REJECTED'}

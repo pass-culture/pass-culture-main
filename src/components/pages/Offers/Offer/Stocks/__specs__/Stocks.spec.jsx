@@ -282,9 +282,9 @@ describe('stocks page', () => {
         expect(screen.getByText('Enregistrer')).toBeDisabled()
       })
 
-      it('should display status informative message and disable all fields when offer is awaiting for validation', async () => {
+      it('should display status informative message and disable all fields when offer is pending for validation', async () => {
         // given
-        offer.status = 'AWAITING'
+        offer.status = 'PENDING'
         offer.isActive = true
         pcapi.loadOffer.mockResolvedValue(offer)
         pcapi.loadStocks.mockResolvedValue(stocks)
