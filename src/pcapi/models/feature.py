@@ -36,7 +36,6 @@ class FeatureToggle(enum.Enum):
     APPLY_BOOKING_LIMITS_V2 = "Permettre l affichage des nouvelles règles de génération de portefeuille des jeunes"
     ALLOW_IDCHECK_REGISTRATION = "Autoriser les utilisateurs à suivre le parcours d inscription ID Check"
     WHOLE_FRANCE_OPENING = "Ouvre le service à la France entière"
-    PRO_HOMEPAGE = "Permettre l affichage de la nouvelle page d accueil du portail pro"
     PARALLEL_SYNCHRONIZATION_OF_VENUE_PROVIDER = (
         "Active la parallèlisation des opérations de synchronisation pour les VenueProvider"
     )

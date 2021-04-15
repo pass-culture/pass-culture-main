@@ -32,14 +32,6 @@ def patch_profile(body: PatchProUserBodyModel) -> PatchProUserResponseModel:
     if not user.UserOfferers and not user.isAdmin:
         abort(400)
     attributes = body.dict()
-    # FIXME (dbaty, 2021-04-07): remove this hack once when we remove
-    # PRO_HOMEPAGE (since the new profile update form does not allow
-    # to update the public name). The new profile update form does
-    # not send the publicName. pydantic hence stores a `None` value,
-    # which is rejected by `validate_generic()` because the database
-    # column is not nullable.
-    if attributes["public_name"] is None:
-        attributes["public_name"] = user.publicName
     users_api.update_user_info(user, **attributes)
     return PatchProUserResponseModel.from_orm(user)
 

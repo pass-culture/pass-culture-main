@@ -18,11 +18,6 @@ class PatchProUserBodyModel(BaseModel):
     last_name: Optional[str]
     email: Optional[EmailStr]
     phone_number: Optional[str]
-    # FIXME (dbaty, 2021-04-07): remove `public_name` and
-    # `_validate_public_name` when we remove PRO_HOMEPAGE (since the
-    # new profile update form does not allow to update the public
-    # name).
-    public_name: Optional[str]
 
     _validate_first_name = validate_not_empty_string_when_provided("first_name")
     _validate_last_name = validate_not_empty_string_when_provided("last_name")
@@ -40,11 +35,6 @@ class PatchProUserResponseModel(BaseModel):
     lastName: Optional[str]
     email: EmailStr
     phoneNumber: Optional[str]
-    # FIXME (dbaty, 2021-04-07): remove `public_name` and
-    # `_validate_public_name` when we remove PRO_HOMEPAGE (since the
-    # new profile update form does not allow to update the public
-    # name).
-    publicName: str
 
     class Config:
         orm_mode = True
