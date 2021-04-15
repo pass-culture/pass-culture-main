@@ -68,6 +68,7 @@ export const ResetPasswordForm = ({
           theme="primary"
         />
         <PasswordField
+          describedBy="password-rules"
           disabled={isLoading}
           label="Confirmes ton nouveau mot de passe"
           name="newPasswordConfirm"

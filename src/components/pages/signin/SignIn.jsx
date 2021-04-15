@@ -79,7 +79,7 @@ class SignIn extends PureComponent {
             </h2>
           </div>
           <span className="mandatory-fields">
-            {'Tous les champs sont obligatoires'}
+            {'* Champs obligatoires'}
           </span>
           <EmailField
             id="user-identifier"
