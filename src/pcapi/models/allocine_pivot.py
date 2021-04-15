@@ -11,4 +11,4 @@ class AllocinePivot(PcObject, Model):
 
     theaterId = Column(String(20), nullable=False, unique=True)
 
-    internalId = Column(Text, nullable=True, unique=True)
+    internalId = Column(Text, nullable=False, unique=True)

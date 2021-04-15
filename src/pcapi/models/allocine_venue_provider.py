@@ -18,7 +18,7 @@ class AllocineVenueProvider(VenueProvider):
 
     quantity = Column(Integer, nullable=True)
 
-    internalId = Column(Text, nullable=True, unique=True)
+    internalId = Column(Text, nullable=False, unique=True)
 
     __mapper_args__ = {
         "polymorphic_identity": "allocine_venue_provider",
