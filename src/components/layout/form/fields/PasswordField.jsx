@@ -21,6 +21,21 @@ class PasswordField extends PureComponent {
     }
   }
 
+  getErrorMessage = errors => {
+    // When the error reason is identified to be invalid password, we override the backend error message
+    // Why ? For legacy reasons, we used to display the backend error message but the tight couplage has become an hindrance to us
+    if (errors[0].startsWith('Ton mot de passe')) {
+      return `Votre mot de passe doit contenir au moins :
+      - 12 caractères
+      - Un chiffre
+      - Une majuscule et une minuscule
+      - Un caractère spécial
+      `
+    }
+
+    return errors[0]
+  }
+
   handleToggleHidden = e => {
     e.preventDefault()
     this.setState(previousState => ({
@@ -46,7 +61,7 @@ class PasswordField extends PureComponent {
 
     return (
       <TextInputWithIcon
-        error={errors && (meta.touched || meta.modified) ? errors[0] : null}
+        error={errors && (meta.touched || meta.modified) ? this.getErrorMessage(errors) : null}
         icon={isPasswordHidden ? 'ico-eye-close' : 'ico-eye-open'}
         iconAlt={isPasswordHidden ? 'Afficher le mot de passe' : 'Cacher le mot de passe'}
         label={label}

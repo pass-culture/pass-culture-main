@@ -123,7 +123,7 @@ describe('src | components | pages | SetPassword', () => {
 
   it('should display the form error', async () => {
     // Given
-    const passwordErrorMessage = 'character problem'
+    const passwordErrorMessage = 'Ton mot de passe est trop faible'
     pcapi.setPassword.mockRejectedValue({ errors: { newPassword: [passwordErrorMessage] } })
     renderSetPassword(store, history)
     const passwordInput = screen.getByLabelText('Mot de passe')
@@ -138,7 +138,11 @@ describe('src | components | pages | SetPassword', () => {
     // Then
     await waitFor(() => {
       expect(screen.getByText(INVALID_FORM_MESSAGE)).toBeVisible()
-      expect(screen.getByText(passwordErrorMessage)).toBeVisible()
+      expect(
+        screen.getByText(
+          'Votre mot de passe doit contenir au moins : - 12 caractères - Un chiffre - Une majuscule et une minuscule - Un caractère spécial'
+        )
+      ).toBeVisible()
     })
   })
 
