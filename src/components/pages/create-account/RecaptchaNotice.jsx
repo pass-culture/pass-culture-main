@@ -12,9 +12,9 @@ export const RecaptchaNotice = () => (
         href="https://policies.google.com/privacy"
         rel="noopener noreferrer"
         target="_blank"
+        title="Charte des Données Personnelles - Nouvelle fenêtre"
       >
         <Icon
-          alt="Icône lien vers site externe"
           className="ico-external-site"
           svg="ico-external-site-red"
         />
@@ -25,9 +25,9 @@ export const RecaptchaNotice = () => (
         href="https://policies.google.com/terms"
         rel="noopener noreferrer"
         target="_blank"
+        title="Conditions Générales d’Utilisation - Nouvelle fenêtre"
       >
         <Icon
-          alt="Icône lien vers site externe"
           className="ico-external-site"
           svg="ico-external-site-red"
         />
