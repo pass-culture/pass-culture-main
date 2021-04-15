@@ -19,6 +19,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import aliased
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import expression
 
 from pcapi.core.offers.models import Offer
 from pcapi.domain.postal_code.postal_code import OVERSEAS_DEPARTEMENT_CODE_START
@@ -102,6 +103,7 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ve
         CheckConstraint(CONSTRAINT_CHECK_IS_VIRTUAL_XOR_HAS_ADDRESS, name="check_is_virtual_xor_has_address"),
         nullable=False,
         default=False,
+        server_default=expression.false(),
     )
 
     isPermanent = Column(

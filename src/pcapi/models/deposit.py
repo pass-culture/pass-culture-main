@@ -6,6 +6,7 @@ from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
 from sqlalchemy import Numeric
 from sqlalchemy import String
+from sqlalchemy import func
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.sqltypes import SmallInteger
 
@@ -24,7 +25,7 @@ class Deposit(PcObject, Model):
 
     source = Column(String(300), nullable=False)
 
-    dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
 
     expirationDate = Column(DateTime, nullable=True)
 

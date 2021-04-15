@@ -79,7 +79,7 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin, VersionedMixin
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
 
-    dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
 
     dateModified = Column(DateTime, nullable=False, default=datetime.utcnow)
 
@@ -294,7 +294,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin, 
 
     durationMinutes = Column(Integer, nullable=True)
 
-    isNational = Column(Boolean, server_default=false(), default=False, nullable=False)
+    isNational = Column(Boolean, default=False, nullable=False)
 
     isDuo = Column(Boolean, server_default=false(), default=False, nullable=False)
 

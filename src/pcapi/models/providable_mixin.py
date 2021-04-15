@@ -33,4 +33,4 @@ class ProvidableMixin:
 
     dateModifiedAtLastProvider = Column(DateTime, nullable=True, default=datetime.utcnow)
 
-    fieldsUpdated = Column(ARRAY(String(100)), nullable=False, default=[])
+    fieldsUpdated = Column(ARRAY(String(100)), nullable=False, default=[], server_default="{}")

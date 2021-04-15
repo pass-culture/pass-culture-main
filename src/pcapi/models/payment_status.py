@@ -7,6 +7,7 @@ from sqlalchemy import DateTime
 from sqlalchemy import Enum
 from sqlalchemy import ForeignKey
 from sqlalchemy import Text
+from sqlalchemy import func
 from sqlalchemy.orm import relationship
 
 from pcapi.models.db import Model
@@ -30,7 +31,7 @@ class PaymentStatus(PcObject, Model):
 
     payment = relationship("Payment", foreign_keys=[paymentId], backref="statuses")
 
-    date = Column(DateTime, nullable=False, default=datetime.utcnow)
+    date = Column(DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
 
     status = Column(Enum(TransactionStatus), nullable=False)
 

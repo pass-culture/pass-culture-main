@@ -34,6 +34,7 @@ def run_migrations() -> None:
             include_object=include_object,
             include_schemas=True,
             transaction_per_migration=True,
+            compare_server_default=True,
         )
         with context.begin_transaction():
             context.run_migrations()

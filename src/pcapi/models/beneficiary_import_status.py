@@ -7,6 +7,7 @@ from sqlalchemy import DateTime
 from sqlalchemy import Enum
 from sqlalchemy import ForeignKey
 from sqlalchemy import String
+from sqlalchemy import func
 from sqlalchemy.orm import relationship
 
 from pcapi.models.db import Model
@@ -29,7 +30,7 @@ class BeneficiaryImportStatus(PcObject, Model):
 
     status = Column(Enum(ImportStatus), nullable=False)
 
-    date = Column(DateTime, nullable=False, default=datetime.utcnow)
+    date = Column(DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
 
     detail = Column(String(255), nullable=True)
 

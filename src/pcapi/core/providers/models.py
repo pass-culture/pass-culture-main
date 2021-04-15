@@ -17,6 +17,7 @@ from sqlalchemy import select
 from sqlalchemy import true
 from sqlalchemy.orm import column_property
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import expression
 
 from pcapi.core.offers.models import Offer
 from pcapi.domain.price_rule import PriceRule
@@ -47,9 +48,9 @@ class Provider(PcObject, Model, DeactivableMixin):
 
     authToken = Column(String, nullable=True)
 
-    enabledForPro = Column(Boolean, nullable=False, default=False)
+    enabledForPro = Column(Boolean, nullable=False, default=False, server_default=expression.false())
 
-    requireProviderIdentifier = Column(Boolean, nullable=False, default=True)
+    requireProviderIdentifier = Column(Boolean, nullable=False, default=True, server_default=expression.true())
 
     @property
     def isAllocine(self) -> bool:

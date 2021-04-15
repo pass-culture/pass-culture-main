@@ -1,7 +1,7 @@
 """replace_awaiting_by_pending_on_offer_validation_status
 
 Revision ID: e8d9aaa3890e
-Revises: ccf69bc028ef
+Revises: 719b8b8e632f
 Create Date: 2021-04-14 13:43:11.560125
 
 """

@@ -59,7 +59,7 @@ class Booking(PcObject, Model, VersionedMixin):
 
     cancellationDate = Column(DateTime, nullable=True)
 
-    isUsed = Column(Boolean, nullable=False, default=False)
+    isUsed = Column(Boolean, nullable=False, default=False, server_default=expression.false())
 
     confirmationDate = Column(DateTime, nullable=True)
 
