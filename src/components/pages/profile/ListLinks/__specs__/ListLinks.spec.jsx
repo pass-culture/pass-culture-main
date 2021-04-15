@@ -72,7 +72,7 @@ describe('my informations', () => {
     const linkToHelpPage = wrapper.find({ children: 'Aide' }).parent()
 
     expect(linkToHelpPage.prop('href')).toBe(
-      'https://aide.passculture.app/fr/category/18-ans-1dnil5r/'
+      'https://aide.passculture.app/collections/2834459-beneficiaires'
     )
     expect(linkToHelpPage.prop('rel')).toBe('noopener noreferrer')
     expect(linkToHelpPage.prop('target')).toBe('_blank')

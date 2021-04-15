@@ -6,7 +6,7 @@ import InternalLink from '../InternalLink/InternalLink'
 import { signOut } from '../repository/signOut'
 import SignOutLinkContainer from '../SignOutLink/SignOutLinkContainer'
 
-const contactUrl = 'https://aide.passculture.app/fr/category/18-ans-1dnil5r/'
+const contactUrl = 'https://aide.passculture.app/collections/2834459-beneficiaires'
 
 const ListLinks = ({ historyPush }) => (
   <section className="list-links pf-section">
