@@ -16,14 +16,14 @@ executors:
     docker:
       - image: ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/helm-gcp:3.4.1
         auth:
-          username: _json_key  # default username when using a JSON key file to authenticate
+          username: _json_key # default username when using a JSON key file to authenticate
           password: $GCP_INFRA_KEY
 
   node-gcp:
     docker:
       - image: ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/node-gcp:12
         auth:
-          username: _json_key  # default username when using a JSON key file to authenticate
+          username: _json_key # default username when using a JSON key file to authenticate
           password: $GCP_INFRA_KEY
 
 ###################
@@ -31,7 +31,6 @@ executors:
 ###################
 
 commands:
-
   authenticate_gcp:
     description: Authenticate to a GCP project
     parameters:
@@ -326,7 +325,7 @@ jobs:
       CHART_NAME: dbops-chart
       CHART_RELEASE: passculture-db-operations
       NAMESPACE: operations
-      TAG: stable
+      TAG: 0.2.0
     steps:
       - checkout
       - run: git submodule sync
@@ -350,14 +349,14 @@ jobs:
             --install --wait \
             --namespace ${NAMESPACE} \
             --values tmp/${CHART_RELEASE}/values.${CIRCLE_BRANCH}.yaml \
-            --version stable
+            --version 0.2.0
 
   deploy-pcapi:
     executor: helm
     environment:
       HELM_EXPERIMENTAL_OCI: 1
       CHART_NAME: pcapi-chart
-      TAG: stable
+      TAG: 0.2.2
     steps:
       - checkout
       - run: git submodule sync
