@@ -64,6 +64,8 @@ class OffersTest:
             response = TestClient(app.test_client()).get(f"/native/v1/offer/{offer_id}")
 
         assert response.status_code == 200
+        response_content = response.json
+        response_content["stocks"].sort(key=lambda stock: stock["id"])
         assert response.json == {
             "id": offer.id,
             "accessibility": {
