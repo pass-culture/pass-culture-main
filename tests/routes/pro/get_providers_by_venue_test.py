@@ -1,11 +1,9 @@
 import pytest
 
-from pcapi.model_creators.generic_creators import create_allocine_pivot
-from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_user
-from pcapi.model_creators.generic_creators import create_venue
+from pcapi.core.offers.factories import VenueFactory
+from pcapi.core.providers.factories import AllocinePivotFactory
+from pcapi.core.users.factories import UserFactory
 from pcapi.model_creators.provider_creators import activate_provider
-from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
@@ -16,11 +14,9 @@ class Get:
         @pytest.mark.usefixtures("db_session")
         def when_venue_has_known_allocine_id(self, app):
             # Given
-            user = create_user(email="user@test.com")
-            offerer = create_offerer()
-            venue = create_venue(offerer, siret="12345678912345")
-            allocine_pivot = create_allocine_pivot(siret="12345678912345", theater_id="XXXXXXXXXXXXXXXXXX==")
-            repository.save(user, venue, allocine_pivot)
+            UserFactory(email="user@test.com")
+            venue = VenueFactory(siret="12345678912345")
+            AllocinePivotFactory(siret="12345678912345")
 
             titelive_stocks = activate_provider("TiteLiveStocks")
             allocine_stocks = activate_provider("AllocineStocks")
@@ -55,10 +51,8 @@ class Get:
         @pytest.mark.usefixtures("db_session")
         def when_venue_has_no_allocine_id(self, app):
             # Given
-            user = create_user(email="user@test.com")
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            repository.save(user, venue)
+            UserFactory(email="user@test.com")
+            venue = VenueFactory()
 
             titelive_stocks = activate_provider("TiteLiveStocks")
             activate_provider("AllocineStocks")
@@ -86,11 +80,9 @@ class Get:
             @pytest.mark.usefixtures("db_session")
             def when_venue_does_not_exists(self, app):
                 # Given
-                user = create_user(email="user@test.com")
-                offerer = create_offerer()
-                venue = create_venue(offerer)
-                allocine_pivot = create_allocine_pivot()
-                repository.save(user, venue, allocine_pivot)
+                UserFactory(email="user@test.com")
+                VenueFactory()
+                AllocinePivotFactory()
 
                 activate_provider("TiteLiveStocks")
                 activate_provider("AllocineStocks")

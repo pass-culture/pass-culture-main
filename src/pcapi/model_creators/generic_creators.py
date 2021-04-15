@@ -18,7 +18,6 @@ from pcapi.domain.payments import PaymentDetails
 from pcapi.domain.price_rule import PriceRule
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
-from pcapi.models import AllocinePivot
 from pcapi.models import AllocineVenueProviderPriceRule
 from pcapi.models import ApiKey
 from pcapi.models import BankInformation
@@ -593,13 +592,6 @@ def create_allocine_venue_provider_price_rule(
     venue_provider_price_rule.allocineVenueProvider = allocine_venue_provider
 
     return venue_provider_price_rule
-
-
-def create_allocine_pivot(siret: str = "12345678912345", theater_id: str = "XXXXXXXXXXXXXXXXXX==") -> AllocinePivot:
-    allocine_pivot = AllocinePivot()
-    allocine_pivot.siret = siret
-    allocine_pivot.theaterId = theater_id
-    return allocine_pivot
 
 
 def create_payment_status(
