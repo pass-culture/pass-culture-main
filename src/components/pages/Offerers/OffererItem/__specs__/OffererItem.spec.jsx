@@ -16,7 +16,6 @@ describe('src | components | pages | Offerers | OffererItem | OffererItem', () =
   beforeEach(() => {
     props = {
       currentUser: {},
-      isNewHomepageActive: true,
       isVenueCreationAvailable: true,
       dispatch: dispatchMock,
       offerer: {

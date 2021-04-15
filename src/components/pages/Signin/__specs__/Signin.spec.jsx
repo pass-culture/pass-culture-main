@@ -175,7 +175,6 @@ describe('src | components | pages | Signin | Signin', () => {
       it('should redirect to homepage if user is not admin', () => {
         // Given
         props.currentUser = { isAdmin: false }
-        props.isNewHomepageActive = true
         const wrapper = shallow(<Signin {...props} />)
 
         // when

@@ -17,35 +17,17 @@ describe('src | components | pages | Venue | controls | ReturnOrSubmitControl', 
     }
   })
 
-  describe('when new homepage is not active', () => {
-    it("should display a return link to offerer's page when read-only mode", () => {
-      // given
-      props.readOnly = true
+  it("should display a return link to offerer's page when read-only mode", () => {
+    // given
+    props.readOnly = true
 
-      // when
-      const wrapper = shallow(<ReturnOrSubmitControl {...props} />)
+    // when
+    const wrapper = shallow(<ReturnOrSubmitControl {...props} />)
 
-      // then
-      const navLink = wrapper.find(Link)
-      expect(navLink).toHaveLength(1)
-      expect(navLink.prop('to')).toBe('/structures/ABC')
-    })
-  })
-
-  describe('when new homepage is active', () => {
-    it("should display a return link to offerer's page when read-only mode", () => {
-      // given
-      props.readOnly = true
-      props.isNewHomepageActive = true
-
-      // when
-      const wrapper = shallow(<ReturnOrSubmitControl {...props} />)
-
-      // then
-      const navLink = wrapper.find(Link)
-      expect(navLink).toHaveLength(1)
-      expect(navLink.prop('to')).toBe('/accueil?structure=ABC')
-    })
+    // then
+    const navLink = wrapper.find(Link)
+    expect(navLink).toHaveLength(1)
+    expect(navLink.prop('to')).toBe('/accueil?structure=ABC')
   })
 
   it('should display a button with the right props when not read-only mode, is not request pending, can submit, and is in creation mode', () => {

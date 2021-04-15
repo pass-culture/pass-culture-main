@@ -2,7 +2,7 @@ import { Selector } from 'testcafe'
 
 import { createUserRole } from './roles'
 
-export const HOME_URL = '/v2/accueil'
+export const HOME_URL = '/accueil'
 
 export const navigateToHomeAs = (user, userRole) => async t => {
   const homepageNavItem = Selector('.nav-item').withText('Accueil')

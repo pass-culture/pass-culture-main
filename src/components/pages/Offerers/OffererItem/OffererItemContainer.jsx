@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 
-import { isAPISireneAvailable, selectIsFeatureActive } from 'store/selectors/data/featuresSelectors'
+import { isAPISireneAvailable } from 'store/selectors/data/featuresSelectors'
 import {
   selectPhysicalVenuesByOffererId,
   selectVenuesByOffererId,
@@ -13,7 +13,6 @@ export const mapStateToProps = (state, ownProps) => {
     offerer: { id: offererId },
   } = ownProps
   return {
-    isNewHomepageActive: selectIsFeatureActive(state, 'PRO_HOMEPAGE'),
     isVenueCreationAvailable: isAPISireneAvailable(state),
     physicalVenues: selectPhysicalVenuesByOffererId(state, offererId),
     venues: selectVenuesByOffererId(state, offererId),

@@ -1,9 +1,9 @@
-export const redirectLoggedUser = (history, currentUser, isNewHomepageActive) => {
+export const redirectLoggedUser = (history, currentUser) => {
   if (currentUser) {
     if (currentUser.isAdmin) {
       history.push('/structures')
     } else {
-      history.push(isNewHomepageActive ? '/accueil' : '/structures')
+      history.push('/accueil')
     }
   }
 }

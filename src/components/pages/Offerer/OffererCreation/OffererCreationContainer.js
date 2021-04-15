@@ -5,7 +5,6 @@ import { requestData } from 'redux-saga-data'
 
 import withTracking from 'components/hocs/withTracking'
 import { showNotification } from 'store/reducers/notificationReducer'
-import { selectIsFeatureActive } from 'store/selectors/data/featuresSelectors'
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 
 import OffererCreation from './OffererCreation'
@@ -13,7 +12,6 @@ import OffererCreation from './OffererCreation'
 export function mapStateToProps(state) {
   return {
     currentUser: selectCurrentUser(state),
-    isNewHomepageActive: selectIsFeatureActive(state, 'PRO_HOMEPAGE'),
   }
 }
 
@@ -49,9 +47,7 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
       ownProps.tracking.trackEvent({ action: 'createOfferer', name: createdOffererId })
     },
     redirectAfterSubmit: createdOffererId => {
-      ownProps.history.replace(
-        stateProps.isNewHomepageActive ? `/accueil?structure=${createdOffererId}` : '/structures'
-      )
+      ownProps.history.replace(`/accueil?structure=${createdOffererId}`)
     },
   }
 }

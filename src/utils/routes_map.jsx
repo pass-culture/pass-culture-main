@@ -5,7 +5,6 @@ import CsvDetailViewContainer from 'components/layout/CsvTable/CsvTableContainer
 import BookingsRecapContainer from 'components/pages/Bookings/BookingsRecapContainer'
 import DeskContainer from 'components/pages/Desk/DeskContainer'
 import Unavailable from 'components/pages/Errors/Unavailable/Unavailable'
-import HomeContainer from 'components/pages/Home/HomeContainer'
 import Homepage from 'components/pages/Home/Homepage'
 import LostPasswordContainer from 'components/pages/LostPassword/LostPasswordContainer'
 import OffererCreationContainer from 'components/pages/Offerer/OffererCreation/OffererCreationContainer'
@@ -13,7 +12,6 @@ import OffererDetailsContainer from 'components/pages/Offerer/OffererDetails/Off
 import Offerers from 'components/pages/Offerers/OfferersContainer'
 import OfferLayoutContainer from 'components/pages/Offers/Offer/OfferLayoutContainer'
 import Offers from 'components/pages/Offers/Offers/OffersContainer'
-import ProfilContainer from 'components/pages/Profil/ProfilContainer'
 import ReimbursementsContainer from 'components/pages/Reimbursements/ReimbursementsContainer'
 import SetPasswordContainer from 'components/pages/SetPassword/SetPasswordContainer'
 import SetPasswordConfirmContainer from 'components/pages/SetPasswordConfirm/SetPasswordConfirmContainer'
@@ -132,12 +130,6 @@ export const routesWithMain = [
     title: 'Offres',
   },
   {
-    component: ProfilContainer,
-    exact: true,
-    path: '/profil',
-    title: 'Profil',
-  },
-  {
     component: CsvDetailViewContainer,
     exact: true,
     path: '/reservations/detail',
@@ -169,7 +161,7 @@ export const routesWithMain = [
 // Routes that does not use <Main> and are now functional components
 const routes = [
   {
-    component: HomeContainer,
+    component: Homepage,
     exact: true,
     path: '/accueil',
     title: 'Accueil',
@@ -186,13 +178,6 @@ const routes = [
         pageName: 'sign-in',
       },
     },
-  },
-  {
-    component: Homepage,
-    exact: true,
-    featureName: 'PRO_HOMEPAGE',
-    path: '/v2/accueil',
-    title: 'Accueil',
   },
   {
     component: SetPasswordConfirmContainer,

@@ -31,7 +31,6 @@ describe('src | components | pages | LostPasswordContainer', () => {
         change: '1',
         envoye: undefined,
         errors: [],
-        isNewHomepageActive: false,
         token: 'ABC',
       })
     })

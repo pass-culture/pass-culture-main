@@ -72,7 +72,6 @@ class VenueEdition extends PureComponent {
 
   onHandleRender = formProps => {
     const {
-      isNewHomepageActive,
       venue,
       history,
       match: {
@@ -145,7 +144,6 @@ class VenueEdition extends PureComponent {
           />
           <ReturnOrSubmitControl
             canSubmit={canSubmit}
-            isNewHomepageActive={isNewHomepageActive}
             isRequestPending={isRequestPending}
             offererId={offererId}
             readOnly={readOnly}
@@ -192,9 +190,7 @@ class VenueEdition extends PureComponent {
     return (
       <AppLayout
         layoutConfig={{
-          backTo: this.props.isNewHomepageActive
-            ? { label: 'Accueil', path: `/accueil?structure=${offererId}` }
-            : { label: 'Structure', path: `/structures/${offererId}` },
+          backTo: { label: 'Accueil', path: `/accueil?structure=${offererId}` },
           pageName: 'venue',
         }}
       >
@@ -227,7 +223,6 @@ VenueEdition.propTypes = {
   handleSubmitRequestFail: PropTypes.func.isRequired,
   handleSubmitRequestSuccess: PropTypes.func.isRequired,
   history: PropTypes.shape().isRequired,
-  isNewHomepageActive: PropTypes.bool.isRequired,
   match: PropTypes.shape().isRequired,
   offerer: PropTypes.shape().isRequired,
   query: PropTypes.shape().isRequired,

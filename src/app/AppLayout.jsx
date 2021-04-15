@@ -15,18 +15,17 @@ const AppLayout = props => {
   const defaultConfig = {
     backTo: null,
     fullscreen: false,
-    header: {},
     pageName: 'Accueil',
   }
 
-  const { backTo, fullscreen, header, pageName } = {
+  const { backTo, fullscreen, pageName } = {
     ...defaultConfig,
     ...layoutConfig,
   }
 
   return (
     <>
-      {!fullscreen && <HeaderContainer {...header} />}
+      {!fullscreen && <HeaderContainer />}
 
       <ReactTooltip
         className="flex-center items-center"

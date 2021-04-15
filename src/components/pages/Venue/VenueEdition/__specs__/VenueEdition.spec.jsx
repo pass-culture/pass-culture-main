@@ -32,7 +32,6 @@ describe('src | components | pages | VenueEdition', () => {
       handleSubmitRequest: jest.fn(),
       handleSubmitRequestSuccess: jest.fn(),
       handleSubmitRequestFail: jest.fn(),
-      isNewHomepageActive: true,
       match: {
         params: {
           offererId: 'APEQ',

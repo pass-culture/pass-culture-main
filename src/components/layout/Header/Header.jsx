@@ -16,7 +16,7 @@ import { ReactComponent as RefundsSvg } from './assets/refunds.svg'
 import { ReactComponent as SignoutSvg } from './assets/signout.svg'
 import { ReactComponent as StyleguideSvg } from './assets/styleguide.svg'
 
-const HeaderV2 = ({ isStyleguideActive, isUserAdmin }) => {
+const Header = ({ isStyleguideActive, isUserAdmin }) => {
   const dispatch = useDispatch()
 
   function onSignoutClick() {
@@ -108,9 +108,9 @@ const HeaderV2 = ({ isStyleguideActive, isUserAdmin }) => {
   )
 }
 
-HeaderV2.propTypes = {
+Header.propTypes = {
   isStyleguideActive: PropTypes.bool.isRequired,
   isUserAdmin: PropTypes.bool.isRequired,
 }
 
-export default HeaderV2
+export default Header

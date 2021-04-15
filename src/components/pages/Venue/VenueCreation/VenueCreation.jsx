@@ -44,7 +44,6 @@ class VenueCreation extends PureComponent {
     const {
       handleSubmitRequestSuccess,
       history,
-      isNewHomepageActive,
       match: {
         params: { offererId },
       },
@@ -60,9 +59,7 @@ class VenueCreation extends PureComponent {
 
     const createdVenueId = action.payload.datum.id
 
-    const next = isNewHomepageActive
-      ? `/accueil?structure=${offererId}`
-      : `/structures/${offererId}`
+    const next = `/accueil?structure=${offererId}`
     history.push(next)
     trackCreateVenue(createdVenueId)
   }
@@ -87,7 +84,6 @@ class VenueCreation extends PureComponent {
       match: {
         params: { offererId, venueId },
       },
-      isNewHomepageActive,
       venueTypes,
       venueLabels,
       offerer,
@@ -137,7 +133,6 @@ class VenueCreation extends PureComponent {
             form={form}
             history={history}
             isCreatedEntity
-            isNewHomepageActive={isNewHomepageActive}
             offererId={offererId}
             readOnly={readOnly}
             venueId={venueId}
@@ -160,7 +155,6 @@ class VenueCreation extends PureComponent {
       match: {
         params: { offererId },
       },
-      isNewHomepageActive,
       offerer,
     } = this.props
 
@@ -175,9 +169,7 @@ class VenueCreation extends PureComponent {
     return (
       <AppLayout
         layoutConfig={{
-          backTo: isNewHomepageActive
-            ? { label: 'Accueil', path: `/accueil?structure=${offererId}` }
-            : { label: 'Structure', path: `/structures/${offererId}` },
+          backTo: { label: 'Accueil', path: `/accueil?structure=${offererId}` },
           pageName: 'venue',
         }}
       >
@@ -208,7 +200,6 @@ VenueCreation.propTypes = {
   handleSubmitRequestFail: PropTypes.func.isRequired,
   handleSubmitRequestSuccess: PropTypes.func.isRequired,
   history: PropTypes.shape().isRequired,
-  isNewHomepageActive: PropTypes.bool.isRequired,
   match: PropTypes.shape().isRequired,
   offerer: PropTypes.shape().isRequired,
   trackCreateVenue: PropTypes.func.isRequired,

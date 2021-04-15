@@ -38,7 +38,7 @@ describe('src | components | pages | SetPassword', () => {
     renderSetPassword(store, history)
 
     // Then
-    expect(historyPushSpy).toHaveBeenCalledWith('/structures')
+    expect(historyPushSpy).toHaveBeenCalledWith('/accueil')
   })
 
   it('should render the default page without redirect', async () => {

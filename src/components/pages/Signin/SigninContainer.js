@@ -4,7 +4,7 @@ import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
 import { showNotification } from 'store/reducers/notificationReducer'
-import { isAPISireneAvailable, selectIsFeatureActive } from 'store/selectors/data/featuresSelectors'
+import { isAPISireneAvailable } from 'store/selectors/data/featuresSelectors'
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 
 import Signin from './Signin'
@@ -13,7 +13,6 @@ export const mapStateToProps = state => {
   return {
     currentUser: selectCurrentUser(state),
     isAccountCreationAvailable: isAPISireneAvailable(state),
-    isNewHomepageActive: selectIsFeatureActive(state, 'PRO_HOMEPAGE'),
   }
 }
 

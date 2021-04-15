@@ -16,13 +16,11 @@ class OffererDetails extends PureComponent {
   }
 
   render() {
-    const { isNewHomepageActive, offerer, venues } = this.props
+    const { offerer, venues } = this.props
     return (
       <AppLayout
         layoutConfig={{
-          backTo: isNewHomepageActive
-            ? { label: 'Accueil', path: `/accueil?structure=${offerer.id}` }
-            : { label: 'Structures juridiques', path: '/structures' },
+          backTo: { label: 'Accueil', path: `/accueil?structure=${offerer.id}` },
           pageName: 'offerer',
         }}
       >
@@ -74,7 +72,6 @@ class OffererDetails extends PureComponent {
 }
 
 OffererDetails.propTypes = {
-  isNewHomepageActive: PropTypes.bool.isRequired,
   loadOffererById: PropTypes.func.isRequired,
   offerer: PropTypes.instanceOf(Offerer).isRequired,
   offererId: PropTypes.string.isRequired,

@@ -56,7 +56,6 @@ describe('src | components | pages | Offerer | OffererDetails | OffererDetailsCo
         currentUser: {
           id: 'TY56er',
         },
-        isNewHomepageActive: false,
         offerer: expect.objectContaining({
           id: 'AGH',
           name: 'Gaumont cinéma',

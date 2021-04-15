@@ -40,13 +40,10 @@ class OffererCreation extends PureComponent {
   }
 
   render() {
-    const { isNewHomepageActive } = this.props
     return (
       <AppLayout
         layoutConfig={{
-          backTo: isNewHomepageActive
-            ? { label: 'Accueil', path: '/accueil' }
-            : { label: 'Structures juridiques', path: '/structures' },
+          backTo: { label: 'Accueil', path: '/accueil' },
           pageName: 'offerer',
         }}
       >
@@ -54,7 +51,7 @@ class OffererCreation extends PureComponent {
         <Titles title="Structure" />
 
         <Form
-          backTo={isNewHomepageActive ? '/accueil' : '/structures'}
+          backTo="/accueil"
           component={OffererCreationForm}
           decorators={this.createDecorators()}
           onSubmit={this.handleSubmit}
@@ -66,7 +63,6 @@ class OffererCreation extends PureComponent {
 
 OffererCreation.propTypes = {
   createNewOfferer: PropTypes.func.isRequired,
-  isNewHomepageActive: PropTypes.bool.isRequired,
   redirectAfterSubmit: PropTypes.func.isRequired,
   showNotification: PropTypes.func.isRequired,
   trackCreateOfferer: PropTypes.func.isRequired,

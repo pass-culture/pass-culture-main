@@ -53,7 +53,6 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
       // then
       expect(result).toStrictEqual({
         currentUser: currentUser,
-        isNewHomepageActive: false,
         offerer: { id: 1 },
         formInitialValues: {
           bookingEmail: 'john.doe@email.com',

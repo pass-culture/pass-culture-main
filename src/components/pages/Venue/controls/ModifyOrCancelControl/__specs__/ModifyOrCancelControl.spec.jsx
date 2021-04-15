@@ -10,124 +10,60 @@ const history = {
 }
 
 describe('src | components | pages | Venue | controls | ModifyOrCancelControl', () => {
-  describe('when new homepage is active', () => {
-    it('should redirect to homepage with offerer selected', async () => {
-      await new Promise(done => {
-        // given
-        const props = {
-          isCreatedEntity: true,
-          isNewHomepageActive: true,
-          offererId: 'AE',
-          readOnly: false,
-        }
+  it('should redirect to homepage with offerer selected', async () => {
+    await new Promise(done => {
+      // given
+      const props = {
+        isCreatedEntity: true,
+        offererId: 'AE',
+        readOnly: false,
+      }
 
-        const wrapper = mount(
-          <Form
-            onSubmit={() => jest.fn()}
-            render={({ form, handleSubmit }) => (
-              <Fragment>
-                <Field
-                  name="foo"
-                  render={({ input }) => (
-                    <input
-                      name="foo"
-                      {...input}
-                    />
-                  )}
-                />
-                <ModifyOrCancelControl
-                  form={form}
-                  handleSubmit={handleSubmit}
-                  history={history}
-                  {...props}
-                />
-              </Fragment>
-            )}
-          />
-        )
+      const wrapper = mount(
+        <Form
+          onSubmit={() => jest.fn()}
+          render={({ form, handleSubmit }) => (
+            <Fragment>
+              <Field
+                name="foo"
+                render={({ input }) => (
+                  <input
+                    name="foo"
+                    {...input}
+                  />
+                )}
+              />
+              <ModifyOrCancelControl
+                form={form}
+                handleSubmit={handleSubmit}
+                history={history}
+                {...props}
+              />
+            </Fragment>
+          )}
+        />
+      )
 
-        // when
-        wrapper.find("input[name='foo']").simulate('change', { target: { value: 'bar' } })
+      // when
+      wrapper.find("input[name='foo']").simulate('change', { target: { value: 'bar' } })
 
-        // when
-        setTimeout(() => {
-          // then
-          wrapper.update()
-          expect(wrapper.find("input[name='foo']").props().value).toStrictEqual('bar')
-
-          // when
-          const cancelButton = wrapper.find('button[type="reset"]')
-          cancelButton.simulate('click')
-
-          // then
-          const expectedPush = `/accueil?structure=${props.offererId}`
-          expect(wrapper.find("input[name='foo']").props().value).toStrictEqual('')
-          expect(history.push).toHaveBeenCalledWith(expectedPush)
-
-          // done
-          done()
-        })
-      })
-    })
-  })
-
-  describe('when new homepage is inactive', () => {
-    it('should redirect to offerer page and reset form when click on cancel creation form', async () => {
-      await new Promise(done => {
-        // given
-        const props = {
-          isCreatedEntity: true,
-          isNewHomepageActive: false,
-          offererId: 'AE',
-          readOnly: false,
-        }
-
-        const wrapper = mount(
-          <Form
-            onSubmit={() => jest.fn()}
-            render={({ form, handleSubmit }) => (
-              <Fragment>
-                <Field
-                  name="foo"
-                  render={({ input }) => (
-                    <input
-                      name="foo"
-                      {...input}
-                    />
-                  )}
-                />
-                <ModifyOrCancelControl
-                  form={form}
-                  handleSubmit={handleSubmit}
-                  history={history}
-                  {...props}
-                />
-              </Fragment>
-            )}
-          />
-        )
+      // when
+      setTimeout(() => {
+        // then
+        wrapper.update()
+        expect(wrapper.find("input[name='foo']").props().value).toStrictEqual('bar')
 
         // when
-        wrapper.find("input[name='foo']").simulate('change', { target: { value: 'bar' } })
+        const cancelButton = wrapper.find('button[type="reset"]')
+        cancelButton.simulate('click')
 
-        // when
-        setTimeout(() => {
-          // then
-          wrapper.update()
-          expect(wrapper.find("input[name='foo']").props().value).toStrictEqual('bar')
+        // then
+        const expectedPush = `/accueil?structure=${props.offererId}`
+        expect(wrapper.find("input[name='foo']").props().value).toStrictEqual('')
+        expect(history.push).toHaveBeenCalledWith(expectedPush)
 
-          // when
-          const cancelButton = wrapper.find('button[type="reset"]')
-          cancelButton.simulate('click')
-
-          // then
-          const expectedPush = `/structures/${props.offererId}`
-          expect(wrapper.find("input[name='foo']").props().value).toStrictEqual('')
-          expect(history.push).toHaveBeenCalledWith(expectedPush)
-
-          // done
-          done()
-        })
+        // done
+        done()
       })
     })
   })
