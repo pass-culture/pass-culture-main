@@ -88,3 +88,12 @@ class StocksUpsertBodyModel(BaseModel):
 
 class StockIdsResponseModel(BaseModel):
     stockIds: list[StockIdResponseModel]
+
+
+class UpdateVenueStockBodyModel(BaseModel):
+    ref: str
+    available: int
+
+
+class UpdateVenueStocksBodyModel(BaseModel):
+    stocks: list[UpdateVenueStockBodyModel]

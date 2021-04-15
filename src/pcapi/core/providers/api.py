@@ -143,7 +143,7 @@ def _get_synchronization_error_message(provider_name: str, siret: Optional[str])
     return f"L’importation d’offres avec {provider_name} n’est pas disponible sans SIRET associé au lieu. Ajoutez un SIRET pour pouvoir importer les offres."
 
 
-def synchronize_stocks(stock_details, venue, provider_id):
+def synchronize_stocks(stock_details, venue: Venue, provider_id: Optional[int] = None):
     products_provider_references = [stock_detail["products_provider_reference"] for stock_detail in stock_details]
     products_by_provider_reference = get_products_map_by_id_at_providers(products_provider_references)
 
@@ -188,7 +188,7 @@ def _build_new_offers_from_stock_details(
     existing_offers_by_provider_reference: Dict[str, int],
     products_by_provider_reference: Dict[str, Product],
     venue: Venue,
-    provider_id=None,
+    provider_id: Optional[int],
 ) -> List[Offer]:
     new_offers = []
     for stock_detail in stock_details:

@@ -20,13 +20,7 @@ def check_user_is_logged_in_or_email_is_provided(user: User, email: str):
 def login_or_api_key_required(function):
     @wraps(function)
     def wrapper(*args, **kwds):
-        mandatory_authorization_type = "Bearer "
-        authorization_header = request.headers.get("Authorization")
-        g.current_api_key = None
-
-        if authorization_header and mandatory_authorization_type in authorization_header:
-            app_authorization_credentials = authorization_header.replace(mandatory_authorization_type, "")
-            g.current_api_key = find_api_key_by_value(app_authorization_credentials)
+        _fill_current_api_key()
 
         if not g.current_api_key and not current_user.is_authenticated:
             return "API key or login required", 401
@@ -35,8 +29,30 @@ def login_or_api_key_required(function):
     return wrapper
 
 
+def api_key_required(function):
+    @wraps(function)
+    def wrapper(*args, **kwds):
+        _fill_current_api_key()
+
+        if not g.current_api_key:
+            return "API key required", 401
+        return function(*args, **kwds)
+
+    return wrapper
+
+
+def _fill_current_api_key():
+    mandatory_authorization_type = "Bearer "
+    authorization_header = request.headers.get("Authorization")
+    g.current_api_key = None
+
+    if authorization_header and mandatory_authorization_type in authorization_header:
+        app_authorization_credentials = authorization_header.replace(mandatory_authorization_type, "")
+        g.current_api_key = find_api_key_by_value(app_authorization_credentials)
+
+
 def _get_current_api_key():
-    assert "current_api_key" in g, "Can only be used in a route wrapped with login_or_api_key_required"
+    assert "current_api_key" in g, "Can only be used in a route wrapped with api_key_required"
     return g.current_api_key
 
 
