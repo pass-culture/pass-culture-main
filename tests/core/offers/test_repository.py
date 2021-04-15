@@ -4,10 +4,13 @@ from datetime import timedelta
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.bookings.factories import BookingFactory
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.models import OfferStatus
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.repository import check_stock_consistency
+from pcapi.core.offers.repository import find_tomorrow_event_stock_ids
 from pcapi.core.offers.repository import get_active_offers_count_for_venue
 from pcapi.core.offers.repository import get_offers_by_ids
 from pcapi.core.offers.repository import get_paginated_offers_for_filters
@@ -1205,3 +1208,26 @@ class CheckStockConsistenceTest:
 
         stock_ids = set(check_stock_consistency())
         assert stock_ids == {stock2.id, stock4.id, stock6.id}
+
+
+@pytest.mark.usefixtures("db_session")
+class TomorrowStockTest:
+    def test_find_tomorrow_event_stock_ids(self):
+        tomorrow = datetime.now() + timedelta(days=1)
+        stocks_tomorrow = EventStockFactory.create_batch(2, beginningDatetime=tomorrow)
+        stocks_tomorrow_cancelled = EventStockFactory.create_batch(3, beginningDatetime=tomorrow)
+
+        next_week = datetime.now() + timedelta(days=7)
+        stocks_next_week = EventStockFactory.create_batch(3, beginningDatetime=next_week)
+
+        for stock in stocks_tomorrow:
+            BookingFactory.create_batch(2, stock=stock, isCancelled=False)
+
+        for stock in stocks_tomorrow_cancelled:
+            BookingFactory.create_batch(2, stock=stock, isCancelled=True)
+
+        for stock in stocks_next_week:
+            BookingFactory.create_batch(2, stock=stock, isCancelled=False)
+
+        stock_ids = find_tomorrow_event_stock_ids()
+        assert set(stock_ids) == set(stock.id for stock in stocks_tomorrow)

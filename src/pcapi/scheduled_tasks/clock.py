@@ -10,6 +10,7 @@ from pcapi import models  # pylint: disable=unused-import
 from pcapi import settings
 from pcapi.core.logging import install_logging
 from pcapi.core.offers.repository import check_stock_consistency
+from pcapi.core.offers.repository import find_tomorrow_event_stock_ids
 from pcapi.core.users import api as users_api
 from pcapi.core.users.repository import get_newly_eligible_users
 from pcapi.domain.user_emails import send_newly_eligible_user_email
@@ -27,6 +28,7 @@ from pcapi.scripts.beneficiary import remote_import
 from pcapi.scripts.booking.handle_expired_bookings import handle_expired_bookings
 from pcapi.scripts.booking.notify_soon_to_be_expired_bookings import notify_soon_to_be_expired_bookings
 from pcapi.scripts.update_booking_used import update_booking_used_after_stock_occurrence
+from pcapi.workers.push_notification_job import send_tomorrow_stock_notification
 
 
 install_logging()
@@ -120,6 +122,14 @@ def pc_check_stock_quantity_consistency(app: Flask) -> None:
         logger.error("Found inconsistent stocks: %s", ", ".join([str(stock_id) for stock_id in inconsistent_stocks]))
 
 
+@log_cron
+@cron_context
+def pc_send_tomorrow_events_notifications(app: Flask) -> None:
+    stock_ids = find_tomorrow_event_stock_ids()
+    for stock_id in stock_ids:
+        send_tomorrow_stock_notification.delay(stock_id)
+
+
 def main() -> None:
     from pcapi.flask_app import app
 
@@ -160,6 +170,8 @@ def main() -> None:
     scheduler.add_job(pc_clean_expired_tokens, "cron", [app], day="*", hour="2")
 
     scheduler.add_job(pc_check_stock_quantity_consistency, "cron", [app], day="*", hour="1")
+
+    scheduler.add_job(pc_send_tomorrow_events_notifications, "cron", [app], day="*", hour="18")
 
     scheduler.start()
 

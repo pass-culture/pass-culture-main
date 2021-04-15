@@ -1,4 +1,6 @@
 from datetime import datetime
+from datetime import time
+from datetime import timedelta
 import math
 from typing import Dict
 from typing import List
@@ -9,6 +11,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import Query
 from sqlalchemy.orm import aliased
 from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import load_only
 from sqlalchemy.sql.functions import coalesce
 
 from pcapi.core.bookings.models import Booking
@@ -257,3 +260,19 @@ def check_stock_consistency() -> List[int]:
         )
         .all()
     ]
+
+
+def find_tomorrow_event_stock_ids() -> List[int]:
+    """Find stocks linked to offers that happen tomorrow (and that are not cancelled)"""
+    tomorrow = datetime.now() + timedelta(days=1)
+    tomorrow_min = datetime.combine(tomorrow, time.min)
+    tomorrow_max = datetime.combine(tomorrow, time.max)
+
+    stocks = (
+        Stock.query.filter(Stock.beginningDatetime.between(tomorrow_min, tomorrow_max))
+        .join(Booking)
+        .filter(Booking.isCancelled == False)
+        .options(load_only(Stock.id))
+    )
+
+    return [stock.id for stock in stocks]
