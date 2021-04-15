@@ -36,7 +36,6 @@ class BeneficiaryUserView(SuspensionMixin, BaseAdminView):
         "phoneNumber",
         "postalCode",
         "isEmailValidated",
-        "validationToken",
         "deposit_version",
         "actions",
     ]
@@ -51,7 +50,6 @@ class BeneficiaryUserView(SuspensionMixin, BaseAdminView):
         phoneNumber="Numéro de téléphone",
         postalCode="Code postal",
         isEmailValidated="Email validé ?",
-        validationToken="Jeton de validation d'adresse email",
         deposit_version="Version du dépot",
     )
     column_searchable_list = ["id", "publicName", "email", "firstName", "lastName"]
