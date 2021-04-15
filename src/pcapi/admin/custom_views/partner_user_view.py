@@ -1,5 +1,3 @@
-from typing import List
-
 from flask.helpers import flash
 from sqlalchemy import distinct
 from sqlalchemy.orm import query
@@ -35,6 +33,7 @@ class PartnerUserView(BaseAdminView):
         "departementCode",
         "phoneNumber",
         "postalCode",
+        "isEmailValidated",
     ]
     column_labels = dict(
         email="Email",
@@ -45,9 +44,10 @@ class PartnerUserView(BaseAdminView):
         departementCode="Département",
         phoneNumber="Numéro de téléphone",
         postalCode="Code postal",
+        isEmailValidated="Email validé ?",
     )
     column_searchable_list = ["id", "publicName", "email", "firstName", "lastName"]
-    column_filters: List[str] = []
+    column_filters = ["isEmailValidated"]
 
     form_columns = ["email", "firstName", "lastName", "dateOfBirth", "departementCode", "postalCode", "phoneNumber"]
 

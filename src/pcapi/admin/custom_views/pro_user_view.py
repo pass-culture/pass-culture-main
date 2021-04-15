@@ -62,6 +62,7 @@ class ProUserView(SuspensionMixin, BaseAdminView):
         "departementCode",
         "phoneNumber",
         "postalCode",
+        "isEmailValidated",
         "validationToken",
         "actions",
     ]
@@ -75,10 +76,11 @@ class ProUserView(SuspensionMixin, BaseAdminView):
         departementCode="Département",
         phoneNumber="Numéro de téléphone",
         postalCode="Code postal",
+        isEmailValidated="Email validé ?",
         validationToken="Jeton de validation d'adresse email",
     )
     column_searchable_list = ["id", "publicName", "email", "firstName", "lastName"]
-    column_filters = ["postalCode", "isBeneficiary"]
+    column_filters = ["postalCode", "isBeneficiary", "isEmailValidated"]
     form_columns = [
         "email",
         "firstName",

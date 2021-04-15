@@ -28,16 +28,19 @@ class AdminUserView(BaseAdminView):
         "email",
         "publicName",
         "isBeneficiary",
+        "isEmailValidated",
         "validationToken",
     ]
     column_labels = dict(
         email="Email",
         firstName="Prénom",
         lastName="Nom",
+        isBeneficiary="Bénéficiaire ?",
+        isEmailValidated="Email validé ?",
         publicName="Nom d'utilisateur",
     )
     column_searchable_list = ["id", "publicName", "email", "firstName", "lastName"]
-    column_filters = ["email"]
+    column_filters = ["email", "isEmailValidated"]
 
     form_columns = ["email", "firstName", "lastName", "departementCode", "postalCode"]
 
