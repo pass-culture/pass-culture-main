@@ -23,7 +23,7 @@ const NoMatch = ({ redirect }) => (
 )
 
 NoMatch.defaultProps = {
-  redirect: '/offres',
+  redirect: '/accueil',
 }
 
 NoMatch.propTypes = {
