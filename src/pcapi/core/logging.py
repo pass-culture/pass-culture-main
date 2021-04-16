@@ -89,7 +89,7 @@ class JsonFormatter(logging.Formatter):
             "module": record.name,
             "severity": record.levelname,
             "user_id": get_logged_in_user_id(),
-            "message": record.msg % record.args,
+            "message": record.getMessage(),
             # `getattr()` is necessary for log records that have not
             # been created by our `Logger.makeRecord()` defined above.
             # It should not happen, but let's be defensive.
