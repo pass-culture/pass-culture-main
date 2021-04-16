@@ -2,7 +2,6 @@ import logging
 
 from flask import current_app as app
 
-from pcapi import settings
 from pcapi.connectors import redis
 from pcapi.core.offerers.models import Offerer
 from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
@@ -88,11 +87,7 @@ def validate_user(token):
 
     if user_offerer:
         offerer = user_offerer.offerer
-
-        if settings.IS_INTEGRATION:
-            _validate_offerer(offerer, user_offerer)
-        else:
-            _ask_for_validation(offerer, user_offerer)
+        _ask_for_validation(offerer, user_offerer)
 
     return "", 204
 
