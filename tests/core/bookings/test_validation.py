@@ -387,8 +387,28 @@ class CheckIsUsableTest:
 
         # Then
         assert exception.value.errors["booking"] == [
-            "Cette réservation a été effectuée le 14/10/2020 à 09:00. Veuillez "
-            "attendre jusqu’au 16/10/2020 à 09:00 pour valider la contremarque."
+            "Cette réservation a été effectuée le 14/10/2020 à 11:00. Veuillez "
+            "attendre jusqu’au 16/10/2020 à 11:00 pour valider la contremarque."
+        ]
+
+    @freeze_time("2020-10-15 09:00:00")
+    def should_use_timezone_of_venue_departmentCode(self):
+        # Given
+        next_week = datetime.utcnow() + timedelta(weeks=1)
+        one_day_before = datetime.utcnow() - timedelta(days=1)
+
+        booking = factories.BookingFactory(
+            dateCreated=one_day_before, stock__beginningDatetime=next_week, stock__offer__venue__postalCode="97300"
+        )
+
+        # When
+        with pytest.raises(api_errors.ForbiddenError) as exception:
+            validation.check_is_usable(booking)
+
+        # Then
+        assert exception.value.errors["booking"] == [
+            "Cette réservation a été effectuée le 14/10/2020 à 06:00. Veuillez "
+            "attendre jusqu’au 16/10/2020 à 06:00 pour valider la contremarque."
         ]
 
 

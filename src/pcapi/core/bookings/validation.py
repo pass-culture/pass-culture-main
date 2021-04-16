@@ -15,6 +15,7 @@ from pcapi.models.db import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
 from pcapi.repository import payment_queries
+from pcapi.utils.date import utc_datetime_to_department_timezone
 
 
 def check_can_book_free_offer(user: User, stock: Stock) -> None:
@@ -56,7 +57,7 @@ def check_stock_is_bookable(stock: Stock) -> None:
         raise exceptions.StockIsNotBookable()
 
 
-def check_expenses_limits(user: User, requested_amount: Decimal, offer: Offer):
+def check_expenses_limits(user: User, requested_amount: Decimal, offer: Offer) -> None:
     """Raise an error if the requested amount would exceed the user's
     expense limits.
     """
@@ -134,9 +135,19 @@ def check_is_usable(booking: Booking) -> None:
     is_booking_for_event_and_not_confirmed = booking.stock.beginningDatetime and not booking.isConfirmed
     if is_booking_for_event_and_not_confirmed:
         forbidden = api_errors.ForbiddenError()
-        booking_date = datetime.datetime.strftime(booking.dateCreated, "%d/%m/%Y à %H:%M")
+        venue_departement_code = booking.stock.offer.venue.departementCode
+        booking_date = datetime.datetime.strftime(
+            utc_datetime_to_department_timezone(booking.dateCreated, venue_departement_code), "%d/%m/%Y à %H:%M"
+        )
         max_cancellation_date = datetime.datetime.strftime(
-            api.compute_confirmation_date(booking.stock.beginningDatetime, booking.dateCreated), "%d/%m/%Y à %H:%M"
+            utc_datetime_to_department_timezone(
+                api.compute_confirmation_date(
+                    booking.stock.beginningDatetime,
+                    booking.dateCreated,
+                ),
+                venue_departement_code,
+            ),
+            "%d/%m/%Y à %H:%M",
         )
 
         forbidden.add_error(
