@@ -9,13 +9,13 @@ from pydantic import Field
 from pydantic import HttpUrl
 from pydantic import validator
 
+from pcapi.core.bookings.api import compute_confirmation_date
 from pcapi.core.offers.models import OfferStatus
 from pcapi.serialization.utils import cast_optional_field_str_to_int
 from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import dehumanize_list_field
 from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
-from pcapi.utils.cancellation_date import get_cancellation_limit_date
 from pcapi.utils.date import DateTimes
 from pcapi.utils.date import format_into_utc_date
 from pcapi.validation.routes.offers import check_offer_name_length_is_valid
@@ -284,7 +284,7 @@ class GetOfferStockResponseModel(BaseModel):
 
     @validator("cancellationLimitDate", pre=True, always=True)
     def validate_cancellation_limit_date(cls, cancellation_limit_date, values):  # pylint: disable=no-self-argument
-        return get_cancellation_limit_date(values.get("beginningDatetime"), cancellation_limit_date)
+        return compute_confirmation_date(values.get("beginningDatetime"), datetime.now())
 
     class Config:
         allow_population_by_field_name = True
