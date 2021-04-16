@@ -22,7 +22,7 @@ const Activation = () => (
       </Route>
       <Route
         exact
-        path="/activation/:token([A-Z0-9]+)"
+        path="/activation/:token"
       >
         <PasswordFormContainer />
       </Route>

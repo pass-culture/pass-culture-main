@@ -7,7 +7,7 @@ import { getStubStore } from '../../../../utils/stubStore'
 import Activation from '../Activation'
 
 describe('activation', () => {
-  it('should render route for activating password when token adn email are given', () => {
+  it('should render route for activating password when token and email are given', () => {
     // when
     const mockStore = getStubStore({
       token: (
@@ -18,7 +18,11 @@ describe('activation', () => {
     })
     const wrapper = mount(
       <Provider store={mockStore}>
-        <MemoryRouter initialEntries={['/activation/MEFA?email=beneficiary@example.com']}>
+        <MemoryRouter
+          initialEntries={[
+            '/activation/A98Aq5IB-ttPPhsZaMX0aKuEJGjpv-_47vIezkegpM4?email=beneficiary@example.com',
+          ]}
+        >
           <Activation />
         </MemoryRouter>
       </Provider>
@@ -33,19 +37,6 @@ describe('activation', () => {
     // given
     const wrapper = mount(
       <MemoryRouter initialEntries={['/activation/error']}>
-        <Activation />
-      </MemoryRouter>
-    )
-
-    // then
-    const title = wrapper.find({ children: 'Il semblerait que le lien cliqué soit incorrect.' })
-    expect(title).toHaveLength(1)
-  })
-
-  it('should redirect to error page when current URLs does not match any mapped URLs', () => {
-    // given
-    const wrapper = mount(
-      <MemoryRouter initialEntries={['/activation/wrong-url']}>
         <Activation />
       </MemoryRouter>
     )
