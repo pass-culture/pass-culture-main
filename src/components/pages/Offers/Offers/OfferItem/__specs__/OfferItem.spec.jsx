@@ -291,5 +291,49 @@ describe('src | components | pages | Offers | OfferItem', () => {
         expect(within(numberOfStocks).queryByText('2 dates épuisées')).toBeInTheDocument()
       })
     })
+
+    it('should display the offer greyed when offer has pending status', () => {
+      // Given
+      props.offer.status = 'PENDING'
+
+      // When
+      renderOfferItem(props)
+
+      // Then
+      expect(screen.getByText('My little offer').closest('tr')).toHaveClass('inactive')
+    })
+
+    it('should display the offer greyed when offer has rejected status', () => {
+      // Given
+      props.offer.status = 'REJECTED'
+
+      // When
+      renderOfferItem(props)
+
+      // Then
+      expect(screen.getByText('My little offer').closest('tr')).toHaveClass('inactive')
+    })
+
+    it('should display the offer greyed when offer is inactive', () => {
+      // Given
+      props.offer.isActive = false
+
+      // When
+      renderOfferItem(props)
+
+      // Then
+      expect(screen.getByText('My little offer').closest('tr')).toHaveClass('inactive')
+    })
+
+    it('should not display the offer greyed when offer is active', () => {
+      // Given
+      props.offer.status = 'ACTIVE'
+
+      // When
+      renderOfferItem(props)
+
+      // Then
+      expect(screen.getByText('My little offer').closest('tr')).not.toHaveClass('inactive')
+    })
   })
 })
