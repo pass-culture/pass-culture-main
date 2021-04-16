@@ -72,7 +72,7 @@ class GetNewlyEligibleUsersTest:
         user_just_18_in_eligible_area = factories.UserFactory(
             isBeneficiary=False,
             dateOfBirth=datetime(2000, 1, 1),
-            dateCreated=datetime(2017, 12, 1),
+            dateCreated=datetime(2017, 12, 31),
             departementCode="93",
         )
         # Same as above in a non eligible area
@@ -128,7 +128,7 @@ class GetNewlyEligibleUsersTest:
         user_just_18_in_eligible_area = factories.UserFactory(
             isBeneficiary=False,
             dateOfBirth=datetime(2000, 1, 1),
-            dateCreated=datetime(2017, 12, 1),
+            dateCreated=datetime(2017, 12, 31),
             departementCode="93",
         )
         user_just_18_in_ineligible_area = factories.UserFactory(
