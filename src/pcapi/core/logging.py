@@ -116,6 +116,13 @@ class JsonFormatter(logging.Formatter):
 
 
 def install_logging():
+    if settings.IS_DEV and not settings.IS_RUNNING_TESTS:
+        # JSON is hard to read, keep the default plain text logger.
+        logging.basicConfig(level=settings.LOG_LEVEL)
+        _silence_noisy_loggers()
+
+        return
+
     global _internal_logger  # pylint: disable=global-statement
 
     # Avoid side effects of calling this function more than once.

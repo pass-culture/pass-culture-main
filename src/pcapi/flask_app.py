@@ -50,8 +50,9 @@ if settings.IS_DEV is False:
 
 app = Flask(__name__, static_url_path="/static")
 
-# Remove default logger/handler, since we use our own (see pcapi.core.logging)
-app.logger.removeHandler(default_handler)
+if not settings.IS_DEV or settings.IS_RUNNING_TESTS:
+    # Remove default logger/handler, since we use our own (see pcapi.core.logging)
+    app.logger.removeHandler(default_handler)
 
 api = SpecTree("flask", MODE="strict", before=before_handler)
 api.register(app)
