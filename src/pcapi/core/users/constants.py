@@ -7,6 +7,7 @@ RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED = timedelta(days=30)
 EMAIL_VALIDATION_TOKEN_LIFE_TIME = timedelta(hours=24)
 EMAIL_CHANGE_TOKEN_LIFE_TIME = timedelta(hours=24)
 ID_CHECK_TOKEN_LIFE_TIME = timedelta(days=1)
+PHONE_VALIDATION_TOKEN_LIFE_TIME = timedelta(minutes=10)
 
 ELIGIBILITY_AGE = 18
 ACCOUNT_CREATION_MINIMUM_AGE = 16
@@ -30,3 +31,19 @@ SUSPENSION_REASON_CHOICES = (
 )
 
 assert set(_t[0] for _t in SUSPENSION_REASON_CHOICES) == set(SuspensionReason)
+
+PHONE_PREFIX_BY_DEPARTEMENT_CODE = {
+    "971": "590",  # Guadeloupe
+    "972": "596",  # Martinique
+    "973": "594",  # Guyane
+    "974": "262",  # Réunion
+    "975": "509",  # Saint-Pierre-et-Miquelon
+    "976": "262",  # Mayotte
+    "977": "590",  # Saint-Barthélémy
+    "978": "590",  # Saint-Martin
+    "986": "681",  # Wallis-et-Futuna
+    "987": "689",  # Tahiti
+    "988": "687",  # Nouvelle-Calédonie
+}
+
+METROPOLE_PHONE_PREFIX = "33"

@@ -128,3 +128,13 @@ def get_id_check_token(user: User) -> serializers.GetIdCheckTokenResponse:
     id_check_token = api.create_id_check_token(user)
 
     return serializers.GetIdCheckTokenResponse(token=id_check_token.value if id_check_token else None)
+
+
+@blueprint.native_v1.route("/send_phone_validation_code", methods=["POST"])
+@spectree_serialize(api=blueprint.api, on_success_status=204)
+@authenticated_user_required
+def send_phone_validation_code(user: User) -> None:
+    try:
+        api.send_phone_validation_code(user)
+    except exceptions.PhoneVerificationCodeSendingException:
+        raise ApiErrors({"general": "Unable to send phone validation code"}, status_code=400)

@@ -140,6 +140,9 @@ BATCH_ANDROID_API_KEY = os.environ.get("BATCH_ANDROID_API_KEY", "")
 BATCH_IOS_API_KEY = os.environ.get("BATCH_IOS_API_KEY", "")
 BATCH_SECRET_API_KEY = os.environ.get("BATCH_SECRET_API_KEY", "")
 
+# SENDINBLUE
+SENDINBLUE_API_KEY = os.environ.get("SENDINBLUE_API_KEY", "")
+
 # SCALINGO
 SCALINGO_APP_TOKEN = os.environ.get("SCALINGO_APP_TOKEN")
 SCALINGO_AUTH_URL = "https://auth.scalingo.com/v1"

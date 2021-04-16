@@ -153,3 +153,15 @@ def id_check_application_update(
     )
     beneficiary_job.delay(application_id)
     return serialization_beneficiaries.ApplicationUpdateResponse()
+
+
+@private_api.route("/send_phone_validation_code", methods=["POST"])
+@login_required
+@spectree_serialize(on_success_status=204)
+def send_phone_validation_code() -> None:
+    user = current_user._get_current_object()
+
+    try:
+        users_api.send_phone_validation_code(user)
+    except users_exceptions.PhoneVerificationCodeSendingException:
+        raise ApiErrors({"general": "Unable to send phone validation code"}, status_code=400)

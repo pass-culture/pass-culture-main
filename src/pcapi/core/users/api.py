@@ -4,6 +4,7 @@ from datetime import datetime
 from datetime import timedelta
 from decimal import Decimal
 import logging
+import random
 import secrets
 from typing import Optional
 
@@ -28,6 +29,7 @@ from pcapi.core.users.models import VOID_PUBLIC_NAME
 from pcapi.core.users.utils import decode_jwt_token
 from pcapi.core.users.utils import encode_jwt_payload
 from pcapi.core.users.utils import format_email
+from pcapi.core.users.utils import format_phone_number_with_country_code
 from pcapi.domain import user_emails
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
 from pcapi.domain.password import random_hashed_password
@@ -40,6 +42,7 @@ from pcapi.models import ImportStatus
 from pcapi.models.db import db
 from pcapi.models.user_offerer import UserOfferer
 from pcapi.models.user_session import UserSession
+from pcapi.notifications.sms.sendinblue import SendinblueBackend
 from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
@@ -79,11 +82,21 @@ def create_id_check_token(user: User) -> Optional[Token]:
     return generate_and_save_token(user, TokenType.ID_CHECK, constants.ID_CHECK_TOKEN_LIFE_TIME)
 
 
-def generate_and_save_token(user: User, token_type: TokenType, life_time: Optional[timedelta] = None) -> Token:
+def create_phone_validation_token(user: User) -> Optional[Token]:
+    random_code = "".join([str(random.randint(0, 9)) for _ in range(0, 6)])
+
+    return generate_and_save_token(
+        user, TokenType.PHONE_VALIDATION, constants.PHONE_VALIDATION_TOKEN_LIFE_TIME, token_value=random_code
+    )
+
+
+def generate_and_save_token(
+    user: User, token_type: TokenType, life_time: Optional[timedelta] = None, token_value: Optional[str] = None
+) -> Token:
     assert token_type.name in TokenType.__members__, "Only registered token types are allowed"
 
     expiration_date = datetime.now() + life_time if life_time else None
-    token_value = secrets.token_urlsafe(32)
+    token_value = token_value or secrets.token_urlsafe(32)
 
     token = Token(userId=user.id, value=token_value, type=token_type, expirationDate=expiration_date)
     repository.save(token)
@@ -445,3 +458,19 @@ def _set_offerer_departement_code(new_user: User, offerer: Offerer) -> User:
 def set_pro_tuto_as_seen(user: User) -> None:
     user.hasSeenProTutorials = True
     repository.save(user)
+
+
+def send_phone_validation_code(user: User) -> None:
+    if not user.isEmailValidated:
+        raise exceptions.UnvalidatedEmail()
+
+    if user.isBeneficiary:
+        raise exceptions.UserAlreadyBeneficiary()
+
+    # TODO: add condition on user.isPhoneValidated
+
+    phone_validation_token = create_phone_validation_token(user)
+    content = f"{phone_validation_token.value} est ton code d'activation du pass Culture"
+
+    if not SendinblueBackend().send_transac_sms(recipient=format_phone_number_with_country_code(user), content=content):
+        raise exceptions.PhoneVerificationCodeSendingException()

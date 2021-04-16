@@ -1,4 +1,5 @@
 from datetime import datetime
+from datetime import timedelta
 from decimal import Decimal
 from unittest.mock import patch
 import uuid
@@ -12,6 +13,8 @@ from pcapi.core.bookings.factories import BookingFactory
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users.models import Token
+from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
 from pcapi.core.users.models import VOID_PUBLIC_NAME
 from pcapi.core.users.repository import get_id_check_token
@@ -625,3 +628,43 @@ class ShowEligibleCardTest:
             dateOfBirth=date_of_birth, dateCreated=date_of_creation, isBeneficiary=False
         )
         assert account_serializers.UserProfileResponse._show_eligible_card(user) == False
+
+
+class SendPhoneValidationCodeTest:
+    @patch("pcapi.core.users.api.SendinblueBackend")
+    def test_send_phone_validation_code(self, mocked_sendinblue, app):
+        mocked_sendinblue().send_transac_sms.return_value = True
+
+        user = users_factories.UserFactory(
+            departementCode="93", isEmailValidated=True, isBeneficiary=False, phoneNumber="060102030405"
+        )
+        access_token = create_access_token(identity=user.email)
+
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+
+        response = test_client.post("/native/v1/send_phone_validation_code")
+
+        assert response.status_code == 204
+
+        token = Token.query.filter_by(userId=user.id, type=TokenType.PHONE_VALIDATION).first()
+
+        assert token.expirationDate >= datetime.now() + timedelta(minutes=2)
+        assert token.expirationDate < datetime.now() + timedelta(minutes=30)
+
+        mocked_sendinblue().send_transac_sms.assert_called_once_with(
+            content=f"{token.value} est ton code d'activation du pass Culture", recipient="3360102030405"
+        )
+
+    def test_send_phone_validation_code_already_beneficiary(self, app):
+        user = users_factories.UserFactory(isEmailValidated=True, isBeneficiary=True, phoneNumber="060102030405")
+        access_token = create_access_token(identity=user.email)
+
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+
+        response = test_client.post("/native/v1/send_phone_validation_code")
+
+        assert response.status_code == 400
+
+        assert not Token.query.filter_by(userId=user.id).first()

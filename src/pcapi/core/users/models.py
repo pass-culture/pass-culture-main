@@ -53,6 +53,7 @@ class TokenType(enum.Enum):
     RESET_PASSWORD = "reset-password"
     EMAIL_VALIDATION = "email-validation"
     ID_CHECK = "id-check"
+    PHONE_VALIDATION = "phone-validation"
 
 
 class PhoneValidationStatusType(enum.Enum):

@@ -24,3 +24,19 @@ class UnderAgeUserException(Exception):
 
 class EmailNotSent(Exception):
     pass
+
+
+class PhoneVerificationCodeSendingException(Exception):
+    pass
+
+
+class UnvalidatedEmail(PhoneVerificationCodeSendingException):
+    pass
+
+
+class UserWithoutPhoneNumberException(PhoneVerificationCodeSendingException):
+    pass
+
+
+class UserAlreadyBeneficiary(PhoneVerificationCodeSendingException):
+    pass
