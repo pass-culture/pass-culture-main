@@ -49,6 +49,7 @@ class FeatureToggle(enum.Enum):
         "Activer (marquer comme utilisée) les réservations dès leur création pour les offres digitales"
     )
     ENABLE_ACTIVATION_CODES = "Permet la création de codes d'activation"
+    ENABLE_PHONE_VALIDATION = "Active la validation du numéro de téléphone"
 
 
 class Feature(PcObject, Model, DeactivableMixin):
