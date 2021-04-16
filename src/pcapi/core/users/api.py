@@ -24,7 +24,6 @@ from pcapi.core.users.models import NotificationSubscriptions
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
-from pcapi.core.users.models import VOID_FIRST_NAME
 from pcapi.core.users.models import VOID_PUBLIC_NAME
 from pcapi.core.users.utils import decode_jwt_token
 from pcapi.core.users.utils import encode_jwt_payload
@@ -107,17 +106,14 @@ def create_account(
     if find_user_by_email(email):
         raise exceptions.UserAlreadyExistsException()
 
-    if postal_code:
-        departementCode = PostalCode(postal_code).get_departement_code()
-    else:
-        departementCode = "007"
+    departementCode = PostalCode(postal_code).get_departement_code() if postal_code else "007"
+
     user = User(
         email=format_email(email),
         dateOfBirth=datetime.combine(birthdate, datetime.min.time()),
         isEmailValidated=is_email_validated,
         publicName=VOID_PUBLIC_NAME,  # Required because model validation requires 3+ chars
         hasSeenTutorials=False,
-        firstName=VOID_FIRST_NAME,
         notificationSubscriptions=asdict(NotificationSubscriptions(marketing_email=marketing_email_subscription)),
         postalCode=postal_code,
         departementCode=departementCode,
