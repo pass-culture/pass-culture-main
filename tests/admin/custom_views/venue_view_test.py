@@ -130,4 +130,4 @@ class GetVenueProviderLinkTest:
         link = _get_venue_provider_link(None, None, venue, None)
 
         # Then
-        assert f"{venue.id}" in link
+        assert str(venue.id) in link

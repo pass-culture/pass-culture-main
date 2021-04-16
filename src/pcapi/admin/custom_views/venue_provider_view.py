@@ -39,7 +39,7 @@ class VenueProviderView(BaseAdminView):
         "provider.name": "Source de données",
         "venueIdAtOfferProvider": "Identifiant pivot (SIRET, ID Allociné …)",
         "isActive": "Import des offres et stocks activé",
-        "provider.isActive": "Source de données disponible",
+        "provider.isActive": "Provider activé",
     }
     form_columns = ["venueId", "provider", "venueIdAtOfferProvider", "isActive"]
 

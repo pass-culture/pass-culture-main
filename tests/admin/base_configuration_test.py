@@ -52,7 +52,7 @@ class BaseAdminViewTest:
             view = DummyAdminView(Booking, fake_db_session)
 
             # then
-            assert view.is_accessible() is False
+            assert not view.is_accessible()
 
         @patch("pcapi.admin.base_configuration.current_user")
         def test_access_is_forbidden_for_non_admin_users(self, current_user):
@@ -64,7 +64,7 @@ class BaseAdminViewTest:
             view = DummyAdminView(Booking, fake_db_session)
 
             # then
-            assert view.is_accessible() is False
+            assert not view.is_accessible()
 
         @patch("pcapi.admin.base_configuration.current_user")
         def test_access_is_authorized_for_admin_users(self, current_user):

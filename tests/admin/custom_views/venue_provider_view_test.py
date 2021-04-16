@@ -18,7 +18,7 @@ class VenueProviderViewTest:
         view = VenueProviderView(VenueProvider, db_session)
 
         # Then
-        assert view.is_accessible() is False
+        assert not view.is_accessible()
 
     @patch("pcapi.admin.base_configuration.current_user")
     def test_prevent_access_missing_venue_access(self, current_user, app, db_session):
@@ -30,7 +30,7 @@ class VenueProviderViewTest:
         view = VenueProviderView(VenueProvider, db_session)
 
         # Then
-        assert view.is_accessible() is False
+        assert not view.is_accessible()
 
 
 class CreateModelTest:
@@ -85,5 +85,5 @@ class GetVenueProviderLinkTest:
         link = _get_venue_provider_link(None, None, venue, None)
 
         # Then
-        assert f"{venue.id}" in link
+        assert str(venue.id) in link
         assert "venue_providers" in link

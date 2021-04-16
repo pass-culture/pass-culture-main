@@ -2,6 +2,8 @@ import factory
 
 from pcapi.core.offers.factories import VenueFactory
 import pcapi.core.providers.models
+from pcapi.core.providers.models import AllocineVenueProvider
+from pcapi.core.providers.models import AllocineVenueProviderPriceRule
 from pcapi.core.testing import BaseFactory
 
 
@@ -34,7 +36,7 @@ class VenueProviderFactory(BaseFactory):
 
 class AllocineVenueProviderFactory(BaseFactory):
     class Meta:
-        model = models.AllocineVenueProvider
+        model = AllocineVenueProvider
 
     venue = factory.SubFactory(VenueFactory)
     provider = factory.SubFactory(ProviderFactory)
@@ -46,7 +48,7 @@ class AllocineVenueProviderFactory(BaseFactory):
 
 class AllocineVenueProviderPriceRuleFactory(BaseFactory):
     class Meta:
-        model = models.AllocineVenueProviderPriceRule
+        model = AllocineVenueProviderPriceRule
 
     allocineVenueProvider = factory.SubFactory(AllocineVenueProviderFactory)
     priceRule = "default"

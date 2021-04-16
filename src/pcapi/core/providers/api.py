@@ -69,7 +69,7 @@ ERROR_CODE_SIRET_NOT_SUPPORTED = 422
 
 
 def connect_venue_to_provider(venue: Venue, provider: Provider, venueIdAtOfferProvider: str = None) -> VenueProvider:
-    id_at_provider = venueIdAtOfferProvider if venueIdAtOfferProvider else venue.siret
+    id_at_provider = venueIdAtOfferProvider or venue.siret
     _check_provider_can_be_used(provider)
     _check_venue_can_be_synchronized_with_provider(id_at_provider, provider)
 

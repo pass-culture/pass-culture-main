@@ -24,7 +24,7 @@ def _get_venue_provider_link(view, context, model, name) -> Union[Markup, None]:
         return None
 
     url = url_for("venue_providers.index_view", id=model.id)
-    return Markup(f'<a href="{url}">{"Voir"}</a>')
+    return Markup(f'<a href="{url}">Voir</a>')
 
 
 class VenueView(BaseAdminView):

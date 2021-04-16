@@ -15,7 +15,6 @@ from pcapi.routes.serialization.venue_provider_serialize import VenueProviderRes
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.includes import VENUE_PROVIDER_INCLUDES
-from pcapi.utils.rest import expect_json_data
 
 
 # @debt api-migration
@@ -34,12 +33,10 @@ def list_venue_providers() -> Tuple[Any, int]:
 
 @private_api.route("/venueProviders", methods=["POST"])
 @login_required
-@expect_json_data
 @spectree_serialize(on_success_status=201, response_model=VenueProviderResponse)
 def create_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
-    venue_provider_payload = body
-    venue_provider_payload.venueIdAtOfferProvider = None
+    body.venueIdAtOfferProvider = None
 
-    new_venue_provider = api.create_venue_provider(venue_provider_payload)
+    new_venue_provider = api.create_venue_provider(body)
 
     return VenueProviderResponse.from_orm(new_venue_provider)

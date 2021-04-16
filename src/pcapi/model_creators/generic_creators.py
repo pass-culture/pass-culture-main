@@ -12,11 +12,11 @@ from pcapi import settings
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.models import Mediation
-from pcapi.core.users.models import TokenType
 from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import AllocineVenueProviderPriceRule
 from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import VenueProvider
+from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
 from pcapi.domain.payments import PaymentDetails
 from pcapi.domain.price_rule import PriceRule
