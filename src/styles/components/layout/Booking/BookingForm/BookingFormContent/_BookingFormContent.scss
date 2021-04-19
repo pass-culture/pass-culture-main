@@ -45,14 +45,17 @@
       height: rem(36px);
       line-height: rem(36px);
       width: rem(36px);
+      font-weight: 500;
 
       &:hover,
       &:focus {
-        background-color: $grey-light;
+        text-decoration: underline;
       }
     }
 
     .react-datepicker__day--disabled {
+      font-weight: initial;
+
       &:hover,
       &:focus {
         background-color: $white;
@@ -61,11 +64,18 @@
 
     .react-datepicker__day--keyboard-selected {
       background-color: $white;
-      color: $black;
+      -webkit-box-shadow:inset 0px 0px 0px 1px $primary;
+      -moz-box-shadow:inset 0px 0px 0px 1px $primary;
+      box-shadow:inset 0px 0px 0px 1px $primary;
+      color: $primary;
 
       &:hover,
       &:focus {
         background-color: $grey-light;
+        -webkit-box-shadow: none;
+        -moz-box-shadow: none;
+        box-shadow: none;
+        color: $black;
       }
     }
 
@@ -91,6 +101,11 @@
     border-top: 0;
     color: $primary;
     padding: rem(12px 0);
+  }
+
+  .react-datepicker__day--today {
+    font-weight: initial;
+    font-size: 1.2rem !important;
   }
 
   /* ----- TRIANGLE ----- */
