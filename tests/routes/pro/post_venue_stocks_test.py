@@ -19,7 +19,7 @@ class Post:
         test_client = TestClient(app.test_client())
         test_client.auth_header = {"Authorization": f"Bearer {api_key.value}"}
 
-        response = test_client.post("/venue/3/stocks", json={"stocks": [{"ref": "123456789", "available": 4}]})
+        response = test_client.post("/pro/v1/venue/3/stocks", json={"stocks": [{"ref": "123456789", "available": 4}]})
 
         assert response.status_code == 204
         mock_synchronize_stocks.assert_called_once_with(
@@ -44,7 +44,7 @@ class Post:
 
         test_client = TestClient(app.test_client())
 
-        response = test_client.post("/venue/3/stocks", json={"stocks": [{"ref": "123456789", "available": 4}]})
+        response = test_client.post("/pro/v1/venue/3/stocks", json={"stocks": [{"ref": "123456789", "available": 4}]})
 
         assert response.status_code == 401
         mock_synchronize_stocks.assert_not_called()
@@ -63,8 +63,10 @@ class Post:
         test_client = TestClient(app.test_client())
         test_client.auth_header = {"Authorization": f"Bearer {api_key.value}"}
 
-        response1 = test_client.post("/venue/3/stocks", json={"stocks": [{"ref": "123456789", "available": 4}]})
-        response2 = test_client.post("/venue/123/stocks", json={"stocks": [{"ref": "123456789", "available": 4}]})
+        response1 = test_client.post("/pro/v1/venue/3/stocks", json={"stocks": [{"ref": "123456789", "available": 4}]})
+        response2 = test_client.post(
+            "/pro/v1/venue/123/stocks", json={"stocks": [{"ref": "123456789", "available": 4}]}
+        )
 
         assert response1.status_code == 404
         assert response2.status_code == 404

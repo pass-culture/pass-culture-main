@@ -10,6 +10,9 @@ from pcapi.models import ApiErrors
 from pcapi.repository.api_key_queries import find_api_key_by_value
 
 
+API_KEY = "ApiKey"
+
+
 def check_user_is_logged_in_or_email_is_provided(user: User, email: str):
     if not (user.is_authenticated or email):
         api_errors = ApiErrors()
@@ -29,14 +32,18 @@ def login_or_api_key_required(function):
     return wrapper
 
 
-def api_key_required(function):
-    @wraps(function)
+def api_key_required(route_function):
+    if not hasattr(route_function, "requires_authentication"):
+        route_function.requires_authentication = []
+    route_function.requires_authentication.append(API_KEY)
+
+    @wraps(route_function)
     def wrapper(*args, **kwds):
         _fill_current_api_key()
 
         if not g.current_api_key:
             return "API key required", 401
-        return function(*args, **kwds)
+        return route_function(*args, **kwds)
 
     return wrapper
 
