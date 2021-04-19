@@ -85,8 +85,7 @@ class AdminUserViewTest:
             },
         }
 
-    @override_settings(IS_PROD=True)
-    @override_settings(SUPER_ADMIN_EMAIL_ADDRESSES="")
+    @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_admin_user_creation_is_restricted_in_prod(self, mocked_validate_csrf_token, app, db_session):
         users_factories.UserFactory(email="user@example.com", isAdmin=True)
@@ -106,3 +105,60 @@ class AdminUserViewTest:
 
         filtered_users = User.query.filter_by(email="new-admin@example.com").all()
         assert len(filtered_users) == 0
+
+    @clean_database
+    @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="superadmin@example.com")
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_super_admin_can_suspend_then_unsuspend_simple_admin(self, mocked_validate_csrf_token, app):
+        super_admin = users_factories.UserFactory(email="superadmin@example.com", isAdmin=True)
+        admin = users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        client = TestClient(app.test_client()).with_auth(super_admin.email)
+
+        # Suspend
+        url = f"/pc/back-office/admin_users/suspend?user_id={admin.id}"
+        suspend_response = client.post(url, form={"reason": "fraud", "csrf_token": "token"})
+        assert suspend_response.status_code == 302
+        assert not admin.isActive
+
+        # Unsuspend
+        url = f"/pc/back-office/admin_users/unsuspend?user_id={admin.id}"
+        unsuspend_response = client.post(url, form={"reason": "fraud", "csrf_token": "token"})
+        assert unsuspend_response.status_code == 302
+        assert admin.isActive
+
+    @clean_database
+    @override_settings(IS_PROD=True)
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_simple_admin_can_not_suspend_admin(self, mocked_validate_csrf_token, app):
+        admin_1 = users_factories.UserFactory(email="admin1@example.com", isAdmin=True)
+        admin_2 = users_factories.UserFactory(email="admin2@example.com", isAdmin=True)
+        client = TestClient(app.test_client()).with_auth(admin_1.email)
+
+        # admin_1 tries to suspend admin_2 (and fails to)
+        url = f"/pc/back-office/admin_users/suspend?user_id={admin_2.id}"
+        response = client.post(url, form={"reason": "fraud", "csrf_token": "token"})
+
+        assert response.status_code == 403
+        assert admin_2.isActive
+
+    @clean_database
+    @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="superadmin@example.com")
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_simple_admin_can_not_unsuspend_simple_admin(self, mocked_validate_csrf_token, app):
+        super_admin = users_factories.UserFactory(email="superadmin@example.com", isAdmin=True)
+        admin_1 = users_factories.UserFactory(email="admin1@example.com", isAdmin=True)
+        admin_2 = users_factories.UserFactory(email="admin2@example.com", isAdmin=True)
+        super_admin_client = TestClient(app.test_client()).with_auth(super_admin.email)
+        admin_1_client = TestClient(app.test_client()).with_auth(admin_1.email)
+
+        # super_admin suspends admin_2
+        url = f"/pc/back-office/admin_users/suspend?user_id={admin_2.id}"
+        suspend_response = super_admin_client.post(url, form={"reason": "fraud", "csrf_token": "token"})
+        assert suspend_response.status_code == 302
+        assert not admin_2.isActive
+
+        # admin_1 tries to unsuspend admin_2 (and fails to)
+        url = f"/pc/back-office/admin_users/unsuspend?user_id={admin_2.id}"
+        unsuspend_response = admin_1_client.post(url, form={"reason": "fraud", "csrf_token": "token"})
+        assert unsuspend_response.status_code == 403
+        assert not admin_2.isActive

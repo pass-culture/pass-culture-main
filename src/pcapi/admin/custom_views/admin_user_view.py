@@ -7,13 +7,14 @@ from wtforms.validators import DataRequired
 from wtforms.validators import Length
 
 from pcapi.admin.base_configuration import BaseAdminView
+from pcapi.admin.custom_views.mixins.suspension_mixin import SuspensionMixin
 from pcapi.core.users import api as users_api
 from pcapi.core.users.constants import RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED
 from pcapi.domain.user_emails import send_admin_user_validation_email
 from pcapi.utils.mailing import build_pc_webapp_reset_password_link
 
 
-class AdminUserView(BaseAdminView):
+class AdminUserView(SuspensionMixin, BaseAdminView):
     can_edit = False
     can_delete = False
 
@@ -30,6 +31,7 @@ class AdminUserView(BaseAdminView):
         "isBeneficiary",
         "isEmailValidated",
         "validationToken",
+        "actions",
     ]
     column_labels = dict(
         email="Email",

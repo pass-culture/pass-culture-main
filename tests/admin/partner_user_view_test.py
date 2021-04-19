@@ -1,7 +1,14 @@
+from unittest.mock import patch
+
 from wtforms import Form
 
 from pcapi.admin.custom_views.partner_user_view import PartnerUserView
+from pcapi.core.testing import override_settings
+import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import User
+
+from tests.conftest import TestClient
+from tests.conftest import clean_database
 
 
 class PartnerUserViewTest:
@@ -86,3 +93,23 @@ class PartnerUserViewTest:
 
         # then
         assert user.publicName == "Ken Thompson"
+
+    @clean_database
+    @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="superadmin@example.com")
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_super_admin_can_suspend_then_unsuspend_partner(self, mocked_validate_csrf_token, app):
+        super_admin = users_factories.UserFactory(email="superadmin@example.com", isAdmin=True)
+        partner = users_factories.UserFactory(email="partner@example.com")
+        client = TestClient(app.test_client()).with_auth(super_admin.email)
+
+        # Super admin suspends partner
+        url = f"/pc/back-office/partner_users/suspend?user_id={partner.id}"
+        suspend_response = client.post(url, form={"reason": "fraud", "csrf_token": "token"})
+        assert suspend_response.status_code == 302
+        assert not partner.isActive
+
+        # Super admin unsuspends partner
+        url = f"/pc/back-office/partner_users/unsuspend?user_id={partner.id}"
+        unsuspend_response = client.post(url, form={"reason": "fraud", "csrf_token": "token"})
+        assert unsuspend_response.status_code == 302
+        assert partner.isActive
