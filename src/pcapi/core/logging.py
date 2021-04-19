@@ -139,13 +139,7 @@ def install_logging():
         handler2 = logging.StreamHandler(stream=open("/proc/1/fd/1", "w"))
         handler2.setFormatter(JsonFormatter())
         handlers.append(handler2)
-    # FIXME (dbaty, 2021-03-17): `basicConfig()` accepts `force=True`
-    # as of Python 3.8. Use that instead of this `for` loop (which is
-    # what Python 3.7 does).
-    for _handler in logging.root.handlers[:]:
-        logging.root.removeHandler(_handler)
-        _handler.close()
-    logging.basicConfig(level=settings.LOG_LEVEL, handlers=handlers)
+    logging.basicConfig(level=settings.LOG_LEVEL, handlers=handlers, force=True)
 
     _internal_logger = logging.getLogger(__name__)
 
