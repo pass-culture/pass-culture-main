@@ -1,10 +1,11 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
+import { Form } from 'react-final-form'
 import { Link } from 'react-router-dom'
 
 import AppLayout from 'app/AppLayout'
+import PasswordField from 'components/layout/form/fields/PasswordField'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
-import TextInputWithIcon from 'components/layout/inputs/TextInputWithIcon/TextInputWithIcon'
 import Logo from 'components/layout/Logo'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { redirectLoggedUser } from 'components/router/helpers'
@@ -22,7 +23,6 @@ class LostPassword extends PureComponent {
       emailValue: '',
       newPasswordErrorMessage: '',
       newPasswordValue: '',
-      isPasswordHidden: true,
     }
   }
 
@@ -72,10 +72,9 @@ class LostPassword extends PureComponent {
     )
   }
 
-  submitResetPassword = event => {
-    event.preventDefault()
+  submitResetPassword = values => {
     const { submitResetPassword, token } = this.props
-    const { newPasswordValue } = this.state
+    const { newPasswordValue } = values
 
     return submitResetPassword(
       newPasswordValue,
@@ -87,10 +86,6 @@ class LostPassword extends PureComponent {
 
   handleInputEmailChange = event => {
     this.setState({ emailValue: event.target.value })
-  }
-
-  handleInputPasswordChange = event => {
-    this.setState({ newPasswordValue: event.target.value })
   }
 
   handleToggleHidden = event => {
@@ -113,7 +108,7 @@ class LostPassword extends PureComponent {
   }
 
   render() {
-    const { emailValue, newPasswordErrorMessage, isPasswordHidden, newPasswordValue } = this.state
+    const { emailValue, newPasswordErrorMessage } = this.state
     const { change, envoye, token } = this.props
 
     return (
@@ -179,37 +174,33 @@ class LostPassword extends PureComponent {
                   <h2>
                     {'Saisissez le nouveau mot de passe'}
                   </h2>
-
-                  <form
-                    className="new-password-form"
-                    noValidate
-                    onSubmit={this.submitResetPassword}
-                  >
-                    <TextInputWithIcon
-                      error={newPasswordErrorMessage ? newPasswordErrorMessage : null}
-                      icon={isPasswordHidden ? 'ico-eye-close' : 'ico-eye-open'}
-                      iconAlt={
-                        isPasswordHidden ? 'Afficher le mot de passe' : 'Cacher le mot de passe'
-                      }
-                      label="Nouveau mot de passe"
-                      name="password"
-                      onChange={this.handleInputPasswordChange}
-                      onIconClick={this.handleToggleHidden}
-                      placeholder="Mon nouveau mot de passe"
-                      required
-                      subLabel="obligatoire"
-                      type={isPasswordHidden ? 'password' : 'text'}
-                      value={newPasswordValue}
-                    />
-
-                    <button
-                      className="primary-button submit-button"
-                      disabled={this.isResetPasswordSubmitDisabled()}
-                      type="submit"
-                    >
-                      {'Envoyer'}
-                    </button>
-                  </form>
+                  <Form onSubmit={this.submitResetPassword}>
+                    {({ handleSubmit, errors }) => (
+                      <form
+                        className="new-password-form"
+                        onSubmit={handleSubmit}
+                      >
+                        <PasswordField
+                          errors={
+                            errors?.newPasswordValue
+                              ? errors?.newPasswordValue
+                              : newPasswordErrorMessage
+                                ? [newPasswordErrorMessage]
+                                : null
+                          }
+                          label="Nouveau mot de passe"
+                          name="newPasswordValue"
+                          placeholder="Mon nouveau mot de passe"
+                        />
+                        <button
+                          className="primary-button submit-button"
+                          type="submit"
+                        >
+                          {'Envoyer'}
+                        </button>
+                      </form>
+                    )}
+                  </Form>
                 </div>
               </section>
             )}

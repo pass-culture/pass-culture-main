@@ -10,7 +10,7 @@ const forgotPasswordLink = Selector('#lostPasswordLink')
 const sendTokenButton = Selector('.password-reset-request button')
 const pageH1 = Selector('h1')
 const submitNewPasswordButton = Selector('.password-reset-request-form .submit-button')
-const userNewPasswordInput = Selector('input[name="password"]')
+const userNewPasswordInput = Selector('input[name="newPasswordValue"]')
 
 fixture('En étant déconnecté de l’application').page(`${ROOT_PATH}connexion`)
 
