@@ -295,7 +295,7 @@ jobs:
 
   build-container:
     machine:
-      image: ubuntu-1604:201903-01
+      image: ubuntu-2004:202101-01
     working_directory: ~/pass-culture-main/api
     steps:
       - checkout:
@@ -421,7 +421,7 @@ jobs:
 
   functional-tests-webapp:
     machine:
-      image: ubuntu-1604:201903-01
+      image: ubuntu-2004:202101-01
     working_directory: ~/
     steps:
       - run:
@@ -430,7 +430,7 @@ jobs:
             git clone https://github.com/betagouv/pass-culture-main.git
             cd pass-culture-main
             git clone https://github.com/betagouv/pass-culture-browser.git webapp
-            ./install_lib_ci.sh
+            ./install_lib_ci_with_chrome.sh
       - checkout:
           path: ~/pass-culture-main/api
       - run:
@@ -486,7 +486,7 @@ jobs:
 
   functional-tests-pro:
     machine:
-      image: ubuntu-1604:201903-01
+      image: ubuntu-2004:202101-01
     working_directory: ~/
     steps:
       - run:
@@ -495,7 +495,7 @@ jobs:
             git clone https://github.com/betagouv/pass-culture-main.git
             cd pass-culture-main
             git clone https://github.com/betagouv/pass-culture-pro.git pro
-            ./install_lib_ci.sh
+            ./install_lib_ci_with_chrome.sh
       - checkout:
           path: ~/pass-culture-main/api
       - run:
