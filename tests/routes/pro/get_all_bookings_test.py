@@ -13,15 +13,16 @@ from pcapi.utils.human_ids import humanize
 from tests.conftest import TestClient
 
 
-@patch("pcapi.core.bookings.repository.find_by_pro_user_id")
 class GetAllBookingsTest:
     @pytest.mark.usefixtures("db_session")
+    @patch("pcapi.core.bookings.repository.find_by_pro_user_id")
     def test_call_repository_with_user_and_page(self, find_by_pro_user_id, app):
         user = users_factories.UserFactory()
         TestClient(app.test_client()).with_auth(user.email).get("/bookings/pro?page=3")
         find_by_pro_user_id.assert_called_once_with(user_id=user.id, page=3)
 
     @pytest.mark.usefixtures("db_session")
+    @patch("pcapi.core.bookings.repository.find_by_pro_user_id")
     def test_call_repository_with_page_1(self, find_by_pro_user_id, app):
         user = users_factories.UserFactory()
         TestClient(app.test_client()).with_auth(user.email).get("/bookings/pro")
