@@ -13,6 +13,8 @@ import StocksContainer from 'components/pages/Offers/Offer/Stocks/StocksContaine
 import { OFFER_STATUS_DRAFT } from 'components/pages/Offers/Offers/_constants'
 import * as pcapi from 'repository/pcapi/pcapi'
 
+import LeavingOfferCreationDialog from './LeavingOfferCreationDialog/LeavingOfferCreationDialog'
+
 const mapPathToStep = {
   creation: STEP_ID_DETAILS,
   edition: STEP_ID_DETAILS,
@@ -38,6 +40,17 @@ const OfferLayout = props => {
     loadOffer,
     offer,
   ])
+
+  const shouldBlockNavigation = useCallback(
+    nextLocation => {
+      const stocksPathRegex = /\/offres\/([A-Z0-9]+)\/stocks/g
+      if (isCreatingOffer && nextLocation.pathname.match(stocksPathRegex)) {
+        return false
+      }
+      return true
+    },
+    [isCreatingOffer]
+  )
 
   useEffect(() => {
     if (match.params.offerId) {
@@ -107,6 +120,10 @@ const OfferLayout = props => {
           </Route>
         </Switch>
       </div>
+      <LeavingOfferCreationDialog
+        shouldBlockNavigation={shouldBlockNavigation}
+        when={isCreatingOffer || offer.status === OFFER_STATUS_DRAFT}
+      />
     </div>
   )
 }

@@ -25,6 +25,14 @@ const creditSubmitButton = Selector('.thumbnail-dialog .tnd-actions .primary-but
 const previewSubmitButton = Selector('.thumbnail-dialog .tnd-actions .primary-button')
 const validateThumbnailButton = Selector('.thumbnail-dialog .tnd-actions .primary-button')
 const submitButton = Selector('.actions-section .primary-button')
+const navBrandLogoItem = Selector('.nav-brand .logo')
+const exitOfferCreationDialogConfirmButton = Selector('.exit-offer-creation-dialog .primary-button')
+const exitOfferCreationDialogCancelButton = Selector(
+  '.exit-offer-creation-dialog .secondary-button'
+)
+const exitOfferCreationDialogQuestion = Selector('.exit-offer-creation-dialog p').withText(
+  'Voulez-vous quitter la création d’offre ?'
+)
 
 fixture('En étant sur la page des offres,')
 
@@ -186,4 +194,65 @@ test("Je suis scrollé sur l'élément incorrect du formulaire d'édition d'offr
     .click(submitButton)
     .expect(isElementInViewport('.offer-form [name="name"]'))
     .ok({ timeout: 2000 })
+})
+
+test("Je suis empêché de quitter la création d'offre sans confirmation", async t => {
+  const { offerer, user, venue } = await fetchSandbox(
+    'pro_07_offer',
+    'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue'
+  )
+  const userRole = createUserRole(user)
+  await navigateToNewOfferAs(user, null, null, userRole)(t)
+
+  await t
+    .click(typeInput)
+    .click(typeOption.withText('Audiovisuel - films sur supports physiques et VOD'))
+    .typeText(nameInput, 'Rencontre avec Franck Lepage')
+    .click(offererInput)
+    .click(offererOption.withText(offerer.name))
+    .click(venueInput)
+    .click(venueOption.withText(venue.name))
+    .click(noDisabilityCompliantCheckbox)
+    .click(navBrandLogoItem)
+    .expect(
+      Selector('.exit-offer-creation-dialog p').withText(
+        'Voulez-vous quitter la création d’offre ?'
+      ).exists
+    )
+    .ok()
+    .click(exitOfferCreationDialogCancelButton)
+    .click(submitButton)
+    .expect(getPathname())
+    .match(/\/offres\/([A-Z0-9]+)\/stocks$/)
+    .click(navBrandLogoItem())
+    .expect(exitOfferCreationDialogQuestion.exists)
+    .ok()
+    .click(exitOfferCreationDialogCancelButton)
+    .expect(getPathname())
+    .match(/\/offres\/([A-Z0-9]+)\/stocks$/)
+})
+
+test("Je peux quitter la création d'offre avec confirmation", async t => {
+  const { offerer, user, venue } = await fetchSandbox(
+    'pro_07_offer',
+    'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue'
+  )
+  const userRole = createUserRole(user)
+  await navigateToNewOfferAs(user, null, null, userRole)(t)
+
+  await t
+    .click(typeInput)
+    .click(typeOption.withText('Audiovisuel - films sur supports physiques et VOD'))
+    .typeText(nameInput, 'Rencontre avec Franck Lepage')
+    .click(offererInput)
+    .click(offererOption.withText(offerer.name))
+    .click(venueInput)
+    .click(venueOption.withText(venue.name))
+    .click(noDisabilityCompliantCheckbox)
+    .click(navBrandLogoItem)
+    .expect(exitOfferCreationDialogQuestion.exists)
+    .ok()
+    .click(exitOfferCreationDialogConfirmButton)
+    .expect(getPathname())
+    .match(/\/accueil$/)
 })
