@@ -66,7 +66,7 @@ commands:
 jobs:
   test:
     machine:
-      image: ubuntu-1604:201903-01
+      image: ubuntu-2004:202101-01
     working_directory: ~/
     steps:
       - run:
@@ -75,7 +75,7 @@ jobs:
             git clone --single-branch --branch $CIRCLE_BRANCH https://github.com/betagouv/pass-culture-main.git pass-culture-main || git clone https://github.com/betagouv/pass-culture-main.git pass-culture-main
             cd pass-culture-main
             git clone --single-branch --branch $CIRCLE_BRANCH https://github.com/betagouv/pass-culture-api.git api || git clone https://github.com/betagouv/pass-culture-api.git api
-            ./install_lib_ci.sh
+            ./install_lib_ci_with_chrome.sh
       - checkout:
           path: ~/pass-culture-main/webapp
       - run:
@@ -131,7 +131,7 @@ jobs:
 
   deploy-webapp:
     machine:
-      image: ubuntu-1604:201903-01
+      image: ubuntu-2004:202101-01
     working_directory: ~/
     steps:
       - run:
@@ -142,9 +142,7 @@ jobs:
           path: ~/pass-culture-main/webapp
       - run:
           name: Install Lib CI
-          command: |
-            cd ~/pass-culture-main/webapp
-            ./scripts/install_lib_ci_webapp.sh
+          command: ./install_lib_ci.sh
       - run:
           name: Build and Deploy
           command: |
