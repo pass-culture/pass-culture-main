@@ -35,6 +35,14 @@ class BookingFactory(BaseFactory):
         db.session.add(self)
         db.session.flush()
 
+    @factory.post_generation
+    def cancellation_date(self, create, extracted, **kwargs):
+        # the public.save_cancellation_date() psql trigger overrides the extracted cancellationDate
+        if extracted:
+            self.cancellationDate = extracted
+            db.session.add(self)
+            db.session.flush()
+
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
         if kwargs.get("stock") and not kwargs.get("isCancelled", False):

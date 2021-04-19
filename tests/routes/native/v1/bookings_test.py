@@ -89,12 +89,7 @@ class GetBookingsTest:
         permanent_booking = BookingFactory(
             user=user, stock__offer__type=str(ThingType.LIVRE_AUDIO), isUsed=True, dateUsed=datetime(2021, 2, 3)
         )
-        cancelled_permanent_booking = BookingFactory(
-            user=user,
-            stock__offer__type=str(ThingType.LIVRE_AUDIO),
-            isCancelled=True,
-            cancellationDate=datetime(2021, 2, 3),
-        )
+
         event_booking = BookingFactory(user=user, stock=EventStockFactory(beginningDatetime=datetime(2021, 3, 14)))
         expire_tomorrow = BookingFactory(user=user, dateCreated=datetime.now() - timedelta(days=29))
         used_but_in_future = BookingFactory(
@@ -104,7 +99,13 @@ class GetBookingsTest:
             stock=StockFactory(beginningDatetime=datetime(2021, 3, 15)),
         )
 
-        cancelled = BookingFactory(user=user, isCancelled=True)
+        cancelled_permanent_booking = BookingFactory(
+            user=user,
+            stock__offer__type=str(ThingType.LIVRE_AUDIO),
+            isCancelled=True,
+            cancellation_date=datetime(2021, 3, 10),
+        )
+        cancelled = BookingFactory(user=user, isCancelled=True, cancellation_date=datetime(2021, 3, 8))
         used1 = BookingFactory(user=user, isUsed=True, dateUsed=datetime(2021, 3, 1))
         used2 = BookingFactory(
             user=user,
