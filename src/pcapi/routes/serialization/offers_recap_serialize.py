@@ -1,5 +1,4 @@
 from typing import Any
-from typing import Dict
 
 from pcapi.domain.identifier.identifier import Identifier
 from pcapi.domain.pro_offers.paginated_offers_recap import OfferRecap
@@ -8,7 +7,7 @@ from pcapi.domain.pro_offers.paginated_offers_recap import OfferRecapVenue
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
 
 
-def serialize_offers_recap_paginated(paginated_offers: PaginatedOffersRecap) -> Dict[str, Any]:
+def serialize_offers_recap_paginated(paginated_offers: PaginatedOffersRecap) -> dict[str, Any]:
     return {
         "offers": [_serialize_offer_paginated(offer) for offer in paginated_offers.offers],
         "page": paginated_offers.current_page,
@@ -17,7 +16,7 @@ def serialize_offers_recap_paginated(paginated_offers: PaginatedOffersRecap) -> 
     }
 
 
-def _serialize_offer_paginated(offer: OfferRecap) -> Dict:
+def _serialize_offer_paginated(offer: OfferRecap) -> dict:
     serialized_stocks = [_serialize_stock(offer.identifier, stock) for stock in offer.stocks]
 
     return {
@@ -37,7 +36,7 @@ def _serialize_offer_paginated(offer: OfferRecap) -> Dict:
     }
 
 
-def _serialize_stock(offer_identifier: Identifier, stock: OfferRecapStock) -> Dict:
+def _serialize_stock(offer_identifier: Identifier, stock: OfferRecapStock) -> dict:
     return {
         "id": stock.identifier.scrambled,
         "offerId": offer_identifier.scrambled,
@@ -46,7 +45,7 @@ def _serialize_stock(offer_identifier: Identifier, stock: OfferRecapStock) -> Di
     }
 
 
-def _serialize_venue(venue: OfferRecapVenue) -> Dict:
+def _serialize_venue(venue: OfferRecapVenue) -> dict:
     return {
         "id": venue.identifier.scrambled,
         "isVirtual": venue.is_virtual,

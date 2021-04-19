@@ -1,6 +1,5 @@
 from datetime import datetime
 from decimal import Decimal
-from typing import List
 from typing import Optional
 
 from pydantic.class_validators import validator
@@ -47,7 +46,7 @@ class FavoriteOfferResponse(BaseModel):
     date: Optional[datetime] = None
     startDate: Optional[datetime] = None
     isExpired: bool = False
-    expenseDomains: List[ExpenseDomain]
+    expenseDomains: list[ExpenseDomain]
     isReleased: bool
     isSoldOut: bool = False
 
@@ -80,7 +79,7 @@ class FavoriteResponse(BaseModel):
 class PaginatedFavoritesResponse(BaseModel):
     page: int
     nbFavorites: int
-    favorites: List[FavoriteResponse]
+    favorites: list[FavoriteResponse]
 
     class Config:
         json_encoders = {datetime: format_into_utc_date}

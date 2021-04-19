@@ -1,5 +1,4 @@
 from decimal import Decimal
-from typing import Dict
 
 from pcapi.domain.price_rule import PriceRule
 from pcapi.models import AllocineVenueProvider
@@ -16,7 +15,7 @@ ERROR_CODE_PROVIDER_NOT_SUPPORTED = 400
 ERROR_CODE_SIRET_NOT_SUPPORTED = 422
 
 
-def connect_venue_to_allocine(venue: Venue, venue_provider_payload: Dict) -> AllocineVenueProvider:
+def connect_venue_to_allocine(venue: Venue, venue_provider_payload: dict) -> AllocineVenueProvider:
     allocine_pivot = get_allocine_pivot_for_venue(venue)
     venue_provider = _create_allocine_venue_provider(allocine_pivot, venue_provider_payload, venue)
     venue_provider_price_rule = _create_allocine_venue_provider_price_rule(
@@ -40,7 +39,7 @@ def _create_allocine_venue_provider_price_rule(
 
 
 def _create_allocine_venue_provider(
-    allocine_pivot: AllocinePivot, venue_provider_payload: Dict, venue: Venue
+    allocine_pivot: AllocinePivot, venue_provider_payload: dict, venue: Venue
 ) -> AllocineVenueProvider:
     allocine_venue_provider = AllocineVenueProvider()
     allocine_venue_provider.venue = venue

@@ -1,5 +1,3 @@
-from typing import Dict
-
 from flask import jsonify
 from flask import request
 from flask_login import current_user
@@ -168,7 +166,7 @@ def patch_booking_keep_by_token(token: str):
     return "", 204
 
 
-def _get_api_key_from_header(received_request: Dict) -> ApiKey:
+def _get_api_key_from_header(received_request: dict) -> ApiKey:
     authorization_header = received_request.headers.get("Authorization", None)
     headers_contains_api_key_authorization = authorization_header and "Bearer" in authorization_header
 
@@ -180,7 +178,7 @@ def _get_api_key_from_header(received_request: Dict) -> ApiKey:
     return find_api_key_by_value(app_authorization_api_key)
 
 
-def _create_response_to_get_booking_by_token(booking: Booking) -> Dict:
+def _create_response_to_get_booking_by_token(booking: Booking) -> dict:
     offer_name = booking.stock.offer.product.name
     date = None
     offer = booking.stock.offer

@@ -1,5 +1,3 @@
-from typing import List
-
 from pcapi.admin.base_configuration import BaseAdminView
 
 
@@ -25,7 +23,7 @@ class UserOffererView(BaseAdminView):
         "offerer.name": "Nom de la structure",
         "offerer.id": "Identifiant de la structure",
     }
-    column_sortable_list: List[str] = []
+    column_sortable_list: list[str] = []
     column_searchable_list = [
         "user.email",
         "user.firstName",

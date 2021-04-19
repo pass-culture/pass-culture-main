@@ -1,7 +1,6 @@
 from functools import wraps
 from typing import Any
 from typing import Callable
-from typing import List
 from typing import Optional
 from typing import Type
 
@@ -46,7 +45,7 @@ def spectree_serialize(  # pylint: disable=dangerous-default-value
     response_by_alias: bool = True,
     exclude_none: bool = False,
     on_success_status: int = 200,
-    on_error_statuses: List[int] = [],
+    on_error_statuses: list[int] = [],
     api: SpecTree = default_api,
 ) -> Callable[[Any], Any]:
     """A decorator that serialize/deserialize and validate input/output
@@ -60,7 +59,7 @@ def spectree_serialize(  # pylint: disable=dangerous-default-value
         response_by_alias (bool, optional): whether or not the alias generator will be used. Defaults to True.
         exclude_none (bool, optional): whether or not to remove the none values. Defaults to False.
         on_success_status (int, optional): status returned when the validation is a success. Defaults to 200.
-        on_error_statuses (List[int], optional): list of possible error statuses. Defaults to [].
+        on_error_statuses (list[int], optional): list of possible error statuses. Defaults to [].
         api (SpecTree, optional): [description]. Defaults to default_api.
 
     Returns:

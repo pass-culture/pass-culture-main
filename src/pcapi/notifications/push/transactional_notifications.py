@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import List
 from typing import Optional
 
 from pcapi.core.bookings.models import Booking
@@ -21,11 +20,11 @@ class TransactionalNotificationMessage:
 @dataclass
 class TransactionalNotificationData:
     group_id: str  # Name of the campaign, useful for analytics purpose
-    user_ids: List[int]
+    user_ids: list[int]
     message: TransactionalNotificationMessage
 
 
-def get_bookings_cancellation_notification_data(booking_ids: List[int]) -> Optional[TransactionalNotificationData]:
+def get_bookings_cancellation_notification_data(booking_ids: list[int]) -> Optional[TransactionalNotificationData]:
     bookings = Booking.query.filter(Booking.id.in_(booking_ids))
 
     if not bookings:

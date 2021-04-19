@@ -1,4 +1,3 @@
-from typing import List
 from typing import Optional
 
 from pcapi.domain.identifier.identifier import Identifier
@@ -18,7 +17,7 @@ class GetVenuesByProUser:
         offerer_id: Optional[Identifier] = None,
         validated_offerer: Optional[bool] = None,
         validated_offerer_for_user: Optional[bool] = None,
-    ) -> List[VenueWithOffererName]:
+    ) -> list[VenueWithOffererName]:
         return self.venue_repository.get_by_pro_identifier(
             pro_identifier,
             user_is_admin,

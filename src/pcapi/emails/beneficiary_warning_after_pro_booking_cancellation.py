@@ -1,5 +1,4 @@
 import datetime
-from typing import Dict
 
 from babel.dates import format_date
 
@@ -8,7 +7,7 @@ from pcapi.utils.mailing import format_booking_hours_for_email
 from pcapi.utils.mailing import get_event_datetime
 
 
-def retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking: Booking) -> Dict:
+def retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation(booking: Booking) -> dict:
     stock = booking.stock
     offer = stock.offer
     event_date = ""

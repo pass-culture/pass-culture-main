@@ -1,6 +1,4 @@
 import itertools
-from typing import Dict
-from typing import List
 
 from flask import redirect
 from flask import request
@@ -31,7 +29,7 @@ class SearchForm(SecureForm):
     )
 
 
-def _select_criteria() -> List[Criterion]:
+def _select_criteria() -> list[Criterion]:
     return Criterion.query.all()
 
 
@@ -53,8 +51,8 @@ class OfferCriteriaForm(SecureForm):
     )
 
 
-def _get_current_criteria_on_active_offers(offers: List[Offer]) -> Dict[str, Dict]:
-    current_criteria_on_offers: Dict[str, Dict] = {}
+def _get_current_criteria_on_active_offers(offers: list[Offer]) -> dict[str, dict]:
+    current_criteria_on_offers: dict[str, dict] = {}
     for offer in offers:
         if not offer.isActive:
             continue

@@ -6,10 +6,6 @@ from hashlib import sha256
 from io import BytesIO
 from io import StringIO
 import itertools
-from typing import Dict
-from typing import List
-from typing import Set
-from typing import Tuple
 import uuid
 from uuid import UUID
 
@@ -26,7 +22,7 @@ from pcapi.utils.human_ids import humanize
 
 
 class UnmatchedPayments(Exception):
-    def __init__(self, payment_ids: Set[int]):
+    def __init__(self, payment_ids: set[int]):
         super().__init__()
         self.payment_ids = payment_ids
 
@@ -148,25 +144,25 @@ def create_payment_for_booking(booking_reimbursement: BookingReimbursement) -> P
 
 
 def filter_out_already_paid_for_bookings(
-    booking_reimbursements: List[BookingReimbursement],
-) -> List[BookingReimbursement]:
+    booking_reimbursements: list[BookingReimbursement],
+) -> list[BookingReimbursement]:
     return list(filter(lambda x: not x.booking.payments, booking_reimbursements))
 
 
-def filter_out_bookings_without_cost(booking_reimbursements: List[BookingReimbursement]) -> List[BookingReimbursement]:
+def filter_out_bookings_without_cost(booking_reimbursements: list[BookingReimbursement]) -> list[BookingReimbursement]:
     return list(filter(lambda x: x.reimbursed_amount > Decimal(0), booking_reimbursements))
 
 
-def keep_only_pending_payments(payments: List[Payment]) -> List[Payment]:
+def keep_only_pending_payments(payments: list[Payment]) -> list[Payment]:
     return list(filter(lambda x: x.currentStatus.status == TransactionStatus.PENDING, payments))
 
 
-def keep_only_not_processable_payments(payments: List[Payment]) -> List[Payment]:
+def keep_only_not_processable_payments(payments: list[Payment]) -> list[Payment]:
     return list(filter(lambda x: x.currentStatus.status == TransactionStatus.NOT_PROCESSABLE, payments))
 
 
 def generate_message_file(
-    payments: List[Payment], pass_culture_iban: str, pass_culture_bic: str, message_name: str, remittance_code: str
+    payments: list[Payment], pass_culture_iban: str, pass_culture_bic: str, message_name: str, remittance_code: str
 ) -> str:
     transactions = _group_payments_into_transactions(payments)
     total_amount = sum([transaction.amount for transaction in transactions])
@@ -203,7 +199,7 @@ def generate_file_checksum(file: str):
     return sha256(encoded_file).digest()
 
 
-def create_all_payments_details(payments: List[Payment]) -> List[PaymentDetails]:
+def create_all_payments_details(payments: list[Payment]) -> list[PaymentDetails]:
     return [create_payment_details(payment) for payment in payments]
 
 
@@ -211,7 +207,7 @@ def create_payment_details(payment: Payment) -> PaymentDetails:
     return PaymentDetails(payment, payment.booking.dateUsed)
 
 
-def generate_payment_details_csv(payments_details: List[PaymentDetails]) -> str:
+def generate_payment_details_csv(payments_details: list[PaymentDetails]) -> str:
     output = StringIO()
     csv_lines = [details.as_csv_row() for details in payments_details]
     writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
@@ -220,7 +216,7 @@ def generate_payment_details_csv(payments_details: List[PaymentDetails]) -> str:
     return output.getvalue()
 
 
-def generate_wallet_balances_csv(wallet_balances: List[WalletBalance]) -> str:
+def generate_wallet_balances_csv(wallet_balances: list[WalletBalance]) -> str:
     output = StringIO()
     csv_lines = [balance.as_csv_row() for balance in wallet_balances]
     writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
@@ -235,7 +231,7 @@ def make_transaction_label(date: datetime.date) -> str:
     return "pass Culture Pro - remboursement %s quinzaine %s" % (period, month_and_year)
 
 
-def generate_payment_message(name: str, checksum: str, payments: List[Payment]) -> PaymentMessage:
+def generate_payment_message(name: str, checksum: str, payments: list[Payment]) -> PaymentMessage:
     payment_message = PaymentMessage()
     payment_message.name = name
     payment_message.checksum = checksum
@@ -243,7 +239,7 @@ def generate_payment_message(name: str, checksum: str, payments: List[Payment]) 
     return payment_message
 
 
-def group_payments_by_status(payments: List[Payment]) -> Dict:
+def group_payments_by_status(payments: list[Payment]) -> dict:
     groups = {}
     for p in payments:
         status_name = p.currentStatus.status.name
@@ -255,7 +251,7 @@ def group_payments_by_status(payments: List[Payment]) -> Dict:
     return groups
 
 
-def apply_banishment(payments: List[Payment], ids_to_ban: List[int]) -> Tuple[List[Payment], List[Payment]]:
+def apply_banishment(payments: list[Payment], ids_to_ban: list[int]) -> tuple[list[Payment], list[Payment]]:
     if not ids_to_ban:
         return [], []
 
@@ -274,7 +270,7 @@ def apply_banishment(payments: List[Payment], ids_to_ban: List[int]) -> Tuple[Li
     return banned_payments, retry_payments
 
 
-def _group_payments_into_transactions(payments: List[Payment]) -> List[Transaction]:
+def _group_payments_into_transactions(payments: list[Payment]) -> list[Transaction]:
     payments_with_iban = sorted(filter(lambda x: x.iban, payments), key=lambda x: (x.iban, x.bic))
     payments_by_iban = itertools.groupby(payments_with_iban, lambda x: (x.iban, x.bic))
 

@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import List
 
 from sqlalchemy import Sequence
 
@@ -36,7 +35,7 @@ class GenericStocks(LocalProvider):
         self.product = None
         self.offer_id = None
 
-    def __next__(self) -> List[ProvidableInfo]:
+    def __next__(self) -> list[ProvidableInfo]:
         try:
             self.provider_stocks = next(self.stock_data)
         except StopIteration:

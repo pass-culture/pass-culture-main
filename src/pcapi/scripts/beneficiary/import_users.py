@@ -3,7 +3,7 @@ import csv
 from datetime import datetime
 import sys
 from typing import Iterable
-from typing import List
+
 
 import pcapi.models  # pylint: disable=unused-import
 from pcapi import settings
@@ -17,7 +17,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def create_or_update_users(rows: Iterable[dict]) -> List[User]:
+def create_or_update_users(rows: Iterable[dict]) -> list[User]:
     # The purpose of this function is to recreate test users on
     # staging after the staging database is reset. It's not meant to
     # be used anywhere else, and certainly not on production.

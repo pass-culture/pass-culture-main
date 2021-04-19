@@ -1,7 +1,6 @@
 import ftplib
 from io import BytesIO
 import logging
-from typing import List
 from typing import Pattern
 from zipfile import ZipFile
 
@@ -35,7 +34,7 @@ def get_zip_file_from_ftp(zip_file_name: str, folder_name: str) -> ZipFile:
     return ZipFile(data_file, "r")
 
 
-def get_files_to_process_from_titelive_ftp(titelive_folder_name: str, date_regexp: Pattern[str]) -> List[str]:
+def get_files_to_process_from_titelive_ftp(titelive_folder_name: str, date_regexp: Pattern[str]) -> list[str]:
     ftp_titelive = connect_to_titelive_ftp()
     files_list = ftp_titelive.nlst(titelive_folder_name)
 

@@ -1,12 +1,10 @@
-from typing import List
-
 import pcapi.core.payments.api as payments_api
 from pcapi.core.users.models import User
 from pcapi.models import UserOfferer
 from pcapi.repository import repository
 
 
-def change_pro_users_to_beneficiary(pro_users_ids: List[int]) -> None:
+def change_pro_users_to_beneficiary(pro_users_ids: list[int]) -> None:
     users = User.query.filter(User.id.in_(pro_users_ids)).all()
     for user in users:
         user.isBeneficiary = True

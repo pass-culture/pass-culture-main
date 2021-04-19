@@ -1,5 +1,3 @@
-from typing import Dict
-
 from babel.dates import format_date
 
 from pcapi.models import Booking
@@ -7,7 +5,7 @@ from pcapi.utils.mailing import format_booking_hours_for_email
 from pcapi.utils.mailing import get_event_datetime
 
 
-def retrieve_data_to_warn_user_after_stock_update_affecting_booking(booking: Booking) -> Dict:
+def retrieve_data_to_warn_user_after_stock_update_affecting_booking(booking: Booking) -> dict:
     stock = booking.stock
     offer = stock.offer
     offer_name = offer.name

@@ -1,7 +1,6 @@
 import random
 import re
 import string
-from typing import Dict
 
 from pcapi.core.users.models import User
 from pcapi.core.users.models import hash_password
@@ -40,7 +39,7 @@ def check_password_validity(new_password: str, new_confirmation_password: str, o
         raise api_errors
 
 
-def validate_change_password_request(json: Dict) -> None:
+def validate_change_password_request(json: dict) -> None:
     api_errors = ApiErrors()
     if "oldPassword" not in json or not json["oldPassword"]:
         api_errors.add_error("oldPassword", "Ancien mot de passe manquant")

@@ -1,6 +1,5 @@
 from datetime import MINYEAR
 from datetime import datetime
-from typing import List
 
 from sqlalchemy import Column
 from sqlalchemy import func
@@ -29,7 +28,7 @@ def find_user_by_email(email: str) -> User:
     return User.query.filter(func.lower(User.email) == format_email(email)).first()
 
 
-def find_beneficiary_users_by_email_provider(email_provider: str) -> List[User]:
+def find_beneficiary_users_by_email_provider(email_provider: str) -> list[User]:
     formatted_email_provider = f"%@%{email_provider}"
     return (
         User.query.filter_by(isBeneficiary=True, isActive=True)
@@ -38,7 +37,7 @@ def find_beneficiary_users_by_email_provider(email_provider: str) -> List[User]:
     )
 
 
-def find_by_civility(first_name: str, last_name: str, date_of_birth: datetime) -> List[User]:
+def find_by_civility(first_name: str, last_name: str, date_of_birth: datetime) -> list[User]:
     civility_predicate = (
         (_matching(User.firstName, first_name))
         & (_matching(User.lastName, last_name))
@@ -56,7 +55,7 @@ def find_user_by_reset_password_token(token: str) -> User:
     return User.query.filter_by(resetPasswordToken=token).first()
 
 
-def get_all_users_wallet_balances() -> List[WalletBalance]:
+def get_all_users_wallet_balances() -> list[WalletBalance]:
     """Return wallet balances.
 
     WARNING: it ignores the expiration date of the deposits.

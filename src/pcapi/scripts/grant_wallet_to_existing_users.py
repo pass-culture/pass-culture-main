@@ -1,12 +1,10 @@
-from typing import List
-
 from pcapi import settings
 import pcapi.core.payments.api as payments_api
 from pcapi.core.users.models import User
 from pcapi.repository import repository
 
 
-def grant_wallet_to_existing_users(user_ids: List[int]):
+def grant_wallet_to_existing_users(user_ids: list[int]):
     if settings.IS_PROD:
         raise ValueError("This action is not available on production")
     users = User.query.filter(User.id.in_(user_ids)).all()

@@ -1,4 +1,3 @@
-from typing import Dict
 from typing import Optional
 
 
@@ -9,7 +8,7 @@ def offerer_demarche_simplifiee_application_detail_response(
     idx: int = 1,
     updated_at: str = "2020-01-21T18:55:03.387Z",
     state: str = "closed",
-) -> Dict:
+) -> dict:
     return {
         "dossier": {
             "id": idx,
@@ -52,7 +51,7 @@ def venue_demarche_simplifiee_application_detail_response_with_siret(
     updated_at: str = "2020-01-21T18:55:03.387Z",
     siren: Optional[str] = None,
     state: str = "closed",
-) -> Dict:
+) -> dict:
     return {
         "dossier": {
             "id": idx,
@@ -111,7 +110,7 @@ def venue_demarche_simplifiee_application_detail_response_without_siret(
     idx: int = 1,
     updated_at: str = "2020-01-21T18:55:03.387Z",
     state: str = "closed",
-) -> Dict:
+) -> dict:
     return {
         "dossier": {
             "id": idx,

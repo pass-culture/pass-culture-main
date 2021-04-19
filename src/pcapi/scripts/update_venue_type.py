@@ -1,5 +1,4 @@
 import csv
-from typing import List
 
 from pcapi.models import ApiErrors
 from pcapi.models import Venue
@@ -34,7 +33,7 @@ def update_venue_type(file_path: str):
     print(f"{updated_venue_count} venues have been updated")
 
 
-def _read_venue_type_from_file(file_path: str) -> List[tuple]:
+def _read_venue_type_from_file(file_path: str) -> list[tuple]:
     with open(file_path, mode="r", newline="\n") as file:
         data = [tuple(line) for line in csv.reader(file, delimiter=";")]
         return data

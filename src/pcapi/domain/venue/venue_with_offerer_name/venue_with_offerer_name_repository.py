@@ -1,6 +1,5 @@
 from abc import ABC
 from abc import abstractmethod
-from typing import List
 from typing import Optional
 
 from pcapi.domain.identifier.identifier import Identifier
@@ -17,5 +16,5 @@ class VenueWithOffererNameRepository(ABC):
         offerer_id: Optional[Identifier] = None,
         validated_offerer: Optional[bool] = None,
         validated_offerer_for_user: Optional[bool] = None,
-    ) -> List[VenueWithOffererName]:
+    ) -> list[VenueWithOffererName]:
         pass

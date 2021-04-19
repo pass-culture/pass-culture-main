@@ -2,14 +2,14 @@
 from base64 import b32decode
 from base64 import b32encode
 import binascii
+from typing import Optional
+
 
 # This library creates IDs for use in our URLs,
 # trying to achieve a balance between having a short
 # length and being usable by humans
 # We use base32, but replace O and I, which can be mistaken for 0 and 1
 # by 8 and 9
-from typing import List
-from typing import Optional
 
 
 class NonDehumanizableId(Exception):
@@ -37,7 +37,7 @@ def humanize(integer):
     return b32.decode("ascii").replace("O", "8").replace("I", "9").rstrip("=")
 
 
-def dehumanize_ids_list(humanized_list: List):
+def dehumanize_ids_list(humanized_list: list):
     return list(map(dehumanize, humanized_list)) if humanized_list else []
 
 

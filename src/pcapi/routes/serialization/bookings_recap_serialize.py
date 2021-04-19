@@ -1,7 +1,5 @@
 from datetime import datetime
 from typing import Any
-from typing import Dict
-from typing import List
 
 from pcapi.domain.booking_recap.booking_recap import BookBookingRecap
 from pcapi.domain.booking_recap.booking_recap import BookingRecap
@@ -17,7 +15,7 @@ from pcapi.utils.date import format_into_timezoned_date
 from pcapi.utils.human_ids import humanize
 
 
-def serialize_bookings_recap_paginated(bookings_recap_paginated: BookingsRecapPaginated) -> Dict[str, Any]:
+def serialize_bookings_recap_paginated(bookings_recap_paginated: BookingsRecapPaginated) -> dict[str, Any]:
     return {
         "bookings_recap": [
             _serialize_booking_recap(booking_recap) for booking_recap in bookings_recap_paginated.bookings_recap
@@ -28,7 +26,7 @@ def serialize_bookings_recap_paginated(bookings_recap_paginated: BookingsRecapPa
     }
 
 
-def _serialize_booking_status_info(booking_status: BookingRecapStatus, booking_status_date: datetime) -> Dict[str, str]:
+def _serialize_booking_status_info(booking_status: BookingRecapStatus, booking_status_date: datetime) -> dict[str, str]:
 
     serialized_booking_status_date = format_into_timezoned_date(booking_status_date) if booking_status_date else None
 
@@ -38,7 +36,7 @@ def _serialize_booking_status_info(booking_status: BookingRecapStatus, booking_s
     }
 
 
-def _serialize_booking_status_history(booking_status_history: BookingRecapHistory) -> List[Dict[str, str]]:
+def _serialize_booking_status_history(booking_status_history: BookingRecapHistory) -> list[dict[str, str]]:
     serialized_booking_status_history = [
         _serialize_booking_status_info(BookingRecapStatus.booked, booking_status_history.booking_date)
     ]
@@ -65,7 +63,7 @@ def _serialize_booking_status_history(booking_status_history: BookingRecapHistor
     return serialized_booking_status_history
 
 
-def _serialize_booking_recap(booking_recap: BookingRecap) -> Dict[str, Any]:
+def _serialize_booking_recap(booking_recap: BookingRecap) -> dict[str, Any]:
     serialized_booking_recap = {
         "stock": {
             "type": "thing",

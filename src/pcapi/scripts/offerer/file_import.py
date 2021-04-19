@@ -2,7 +2,6 @@ import csv
 from datetime import datetime
 import logging
 from typing import Callable
-from typing import List
 
 from pcapi.core.offerers.api import create_digital_venue
 from pcapi.core.offerers.models import Offerer
@@ -37,7 +36,7 @@ class OffererNotCreatedException(Exception):
     pass
 
 
-def iterate_rows_for_user_offerers(csv_rows: List[List[str]]) -> List:
+def iterate_rows_for_user_offerers(csv_rows: list[list[str]]) -> list:
     user_offerers = []
     for row in csv_rows:
         if _is_header_or_blank_line(row):
@@ -51,7 +50,7 @@ def iterate_rows_for_user_offerers(csv_rows: List[List[str]]) -> List:
 
 
 def create_activated_user_offerer(
-    csv_row: List[str],
+    csv_row: list[str],
     find_user: Callable = find_user_by_email,
     find_offerer: Callable = find_by_siren,
     find_user_offerer: Callable = find_one_or_none_by_user_id_and_offerer_id,
@@ -93,7 +92,7 @@ def fill_user_offerer_from(user_offerer: UserOfferer, created_user: User, create
     return user_offerer
 
 
-def fill_user_from(csv_row: List[str], user: User) -> User:
+def fill_user_from(csv_row: list[str], user: User) -> User:
     user.lastName = csv_row[USER_LAST_NAME_COLUMN_INDEX]
     user.firstName = csv_row[USER_FIRST_NAME_COLUMN_INDEX].split(" ")[0]
     user.publicName = "%s %s" % (user.firstName, user.lastName)
@@ -105,7 +104,7 @@ def fill_user_from(csv_row: List[str], user: User) -> User:
     return user
 
 
-def fill_offerer_from(csv_row: List[str], offerer: Offerer) -> Offerer:
+def fill_offerer_from(csv_row: list[str], offerer: Offerer) -> Offerer:
     offerer.siren = csv_row[OFFERER_SIREN_COLUMN_INDEX]
     offerer.name = csv_row[OFFERER_NAME_COLUMN_INDEX]
     offerer.thumbCount = 0

@@ -1,11 +1,9 @@
-from typing import Dict
-
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import User
 from pcapi.utils.mailing import build_pc_pro_reset_password_link
 
 
-def retrieve_data_for_reset_password_pro_email(user: User, token: Token) -> Dict:
+def retrieve_data_for_reset_password_pro_email(user: User, token: Token) -> dict:
     reinit_password_url = build_pc_pro_reset_password_link(token.value)
 
     return {
@@ -15,7 +13,7 @@ def retrieve_data_for_reset_password_pro_email(user: User, token: Token) -> Dict
     }
 
 
-def retrieve_data_for_reset_password_link_to_admin_email(created_user: User, reset_password_link: str) -> Dict:
+def retrieve_data_for_reset_password_link_to_admin_email(created_user: User, reset_password_link: str) -> dict:
     return {
         "Subject": "Création d'un compte pro",
         "Html-part": (

@@ -1,5 +1,3 @@
-from typing import List
-
 from pcapi.models import VenueLabelSQLEntity
 from pcapi.repository import repository
 
@@ -39,7 +37,7 @@ def create_venue_labels():
     save_new_venue_labels(venue_labels)
 
 
-def save_new_venue_labels(venue_labels: List[str]):
+def save_new_venue_labels(venue_labels: list[str]):
     venue_label_sql_entities = []
     for venue_label in venue_labels:
         venue_label_sql_entity = VenueLabelSQLEntity()

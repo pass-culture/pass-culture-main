@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import List
 
 from sqlalchemy import and_
 
@@ -14,7 +13,7 @@ def cancel_booking_status_for_events_happening_during_quarantine():
     cancel_bookings(bookings)
 
 
-def find_bookings_to_cancel() -> List[Booking]:
+def find_bookings_to_cancel() -> list[Booking]:
     minimal_date = datetime(2020, 3, 14, 0, 0, 0)
     return (
         Booking.query.join(Stock)
@@ -27,7 +26,7 @@ def find_bookings_to_cancel() -> List[Booking]:
     )
 
 
-def cancel_bookings(bookings: List[Booking]):
+def cancel_bookings(bookings: list[Booking]):
     for booking in bookings:
         booking.isUsed = False
         booking.dateUsed = None

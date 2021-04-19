@@ -1,7 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
 import logging
-from typing import List
 
 from sqlalchemy.sql.sqltypes import DateTime
 
@@ -38,7 +37,7 @@ def cancel_old_unused_bookings_for_venue(humanized_venue_id: str) -> None:
         logger.info("'%i' bookings cancelled for venue '%s'", len(old_unused_bookings), venue.name)
 
 
-def _get_old_unused_bookings_from_venue_id(venue_id: int, limit_date: DateTime) -> List[Booking]:
+def _get_old_unused_bookings_from_venue_id(venue_id: int, limit_date: DateTime) -> list[Booking]:
     return (
         Booking.query.join(Stock, Stock.id == Booking.stockId)
         .join(Offer, Offer.id == Stock.offerId)

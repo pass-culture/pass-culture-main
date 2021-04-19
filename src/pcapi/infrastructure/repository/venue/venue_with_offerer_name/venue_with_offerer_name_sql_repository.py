@@ -1,4 +1,3 @@
-from typing import List
 from typing import Optional
 
 from pcapi.core.offerers.models import Offerer
@@ -19,7 +18,7 @@ class VenueWithOffererNameSQLRepository(VenueWithOffererNameRepository):
         offerer_id: Optional[Identifier] = None,
         validated_offerer: Optional[bool] = None,
         validated_offerer_for_user: Optional[bool] = None,
-    ) -> List[VenueWithOffererName]:
+    ) -> list[VenueWithOffererName]:
         query = Venue.query.join(Offerer, Offerer.id == Venue.managingOffererId).join(
             UserOfferer, UserOfferer.offererId == Offerer.id
         )

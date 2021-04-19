@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import List
 from typing import Optional
 from typing import Union
 
@@ -35,7 +34,7 @@ class StockResponseModel(BaseModel):
 
 
 class StocksResponseModel(BaseModel):
-    stocks: List[StockResponseModel]
+    stocks: list[StockResponseModel]
 
     class Config:
         json_encoders = {datetime: format_into_utc_date}
@@ -79,7 +78,7 @@ class StockIdResponseModel(BaseModel):
 
 class StocksUpsertBodyModel(BaseModel):
     offer_id: int
-    stocks: List[Union[StockCreationBodyModel, StockEditionBodyModel]]
+    stocks: list[Union[StockCreationBodyModel, StockEditionBodyModel]]
 
     _dehumanize_offer_id = dehumanize_field("offer_id")
 
@@ -88,4 +87,4 @@ class StocksUpsertBodyModel(BaseModel):
 
 
 class StockIdsResponseModel(BaseModel):
-    stockIds: List[StockIdResponseModel]
+    stockIds: list[StockIdResponseModel]

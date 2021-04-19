@@ -1,11 +1,9 @@
-from typing import List
-
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.users.models import User
 from pcapi.models import UserOfferer
 
 
-def get_all_offerers_for_user(user: User, filters: dict) -> List[Offerer]:
+def get_all_offerers_for_user(user: User, filters: dict) -> list[Offerer]:
     query = Offerer.query.filter(Offerer.isActive.is_(True))
 
     if not user.isAdmin:

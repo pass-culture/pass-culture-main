@@ -1,5 +1,4 @@
 import logging
-from typing import Tuple
 
 from flask import abort
 from flask import jsonify
@@ -97,7 +96,7 @@ def change_beneficiary_email(body: ChangeBeneficiaryEmailBody) -> None:
 @private_api.route("/beneficiaries/signin", methods=["POST"])
 @email_rate_limiter
 @ip_rate_limiter
-def signin_beneficiary() -> Tuple[str, int]:
+def signin_beneficiary() -> tuple[str, int]:
     json = request.get_json()
     identifier = json.get("identifier")
     password = json.get("password")

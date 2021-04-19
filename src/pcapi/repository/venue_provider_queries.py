@@ -1,17 +1,15 @@
-from typing import List
-
 from sqlalchemy import not_
 
 from pcapi.models import VenueProvider
 
 
-def get_active_venue_providers_for_specific_provider(provider_id: int) -> List[VenueProvider]:
+def get_active_venue_providers_for_specific_provider(provider_id: int) -> list[VenueProvider]:
     return (
         VenueProvider.query.filter(VenueProvider.providerId == provider_id).filter(VenueProvider.isActive == True).all()
     )
 
 
-def get_venue_providers_to_sync(provider_id: int) -> List[VenueProvider]:
+def get_venue_providers_to_sync(provider_id: int) -> list[VenueProvider]:
     return (
         VenueProvider.query.filter(VenueProvider.isActive == True)
         .filter(VenueProvider.providerId == provider_id)

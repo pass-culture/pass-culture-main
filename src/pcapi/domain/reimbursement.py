@@ -3,7 +3,6 @@ from abc import abstractmethod
 import datetime
 from decimal import Decimal
 from enum import Enum
-from typing import List
 
 from pcapi.models import Booking
 from pcapi.models import ThingType
@@ -168,8 +167,8 @@ class BookingReimbursement:
 
 
 def find_all_booking_reimbursements(
-    bookings: List[Booking], active_rules: List[ReimbursementRules]
-) -> List[BookingReimbursement]:
+    bookings: list[Booking], active_rules: list[ReimbursementRules]
+) -> list[BookingReimbursement]:
     reimbursements = []
     cumulative_bookings_value_by_year = {}
 
@@ -192,7 +191,7 @@ def find_all_booking_reimbursements(
     return reimbursements
 
 
-def determine_elected_rule(booking: Booking, potential_rules: List[AppliedReimbursement]) -> AppliedReimbursement:
+def determine_elected_rule(booking: Booking, potential_rules: list[AppliedReimbursement]) -> AppliedReimbursement:
     if any(map(lambda r: r.rule == ReimbursementRules.BOOK_REIMBURSEMENT, potential_rules)):
         elected_rule = AppliedReimbursement(
             ReimbursementRules.BOOK_REIMBURSEMENT, ReimbursementRules.BOOK_REIMBURSEMENT.value.apply(booking)
@@ -203,8 +202,8 @@ def determine_elected_rule(booking: Booking, potential_rules: List[AppliedReimbu
 
 
 def _find_potential_rules(
-    booking: Booking, rules: List[ReimbursementRules], cumulative_bookings_value: Decimal
-) -> List:
+    booking: Booking, rules: list[ReimbursementRules], cumulative_bookings_value: Decimal
+) -> list:
     relevant_rules = []
     for rule in rules:
         if rule.value.is_active and rule.value.is_relevant(booking, cumulative_value=cumulative_bookings_value):

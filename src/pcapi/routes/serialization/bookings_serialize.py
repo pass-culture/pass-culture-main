@@ -1,4 +1,3 @@
-from typing import Dict
 from typing import Optional
 
 from pydantic import BaseModel
@@ -11,7 +10,7 @@ from pcapi.serialization.utils import to_camel
 from pcapi.utils.human_ids import humanize
 
 
-def serialize_booking(booking: Booking) -> Dict:
+def serialize_booking(booking: Booking) -> dict:
     booking_id = humanize(booking.id)
     user_email = booking.user.email
     is_used = booking.isUsed
@@ -68,7 +67,7 @@ def serialize_booking(booking: Booking) -> Dict:
     }
 
 
-def serialize_booking_minimal(booking: Booking) -> Dict:
+def serialize_booking_minimal(booking: Booking) -> dict:
     return {
         "amount": float(booking.amount),
         "completedUrl": booking.completedUrl,

@@ -1,5 +1,3 @@
-from typing import Dict
-from typing import List
 from typing import Optional
 
 from pcapi.domain.identifier.identifier import Identifier
@@ -51,7 +49,7 @@ class OfferRecap:
         venue_offerer_name: str,
         venue_public_name: str,
         venue_departement_code: Optional[str],
-        stocks: List[Dict],
+        stocks: list[dict],
         status: str,
     ):
         self.identifier = identifier
@@ -82,7 +80,7 @@ class OfferRecap:
 
 
 class PaginatedOffersRecap:
-    def __init__(self, offers_recap: List[OfferRecap], current_page: int, total_pages: int, total_offers: int):
+    def __init__(self, offers_recap: list[OfferRecap], current_page: int, total_pages: int, total_offers: int):
         self.offers = offers_recap
         self.current_page = current_page
         self.total_pages = total_pages

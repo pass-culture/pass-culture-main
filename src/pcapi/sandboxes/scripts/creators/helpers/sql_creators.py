@@ -2,7 +2,6 @@ from datetime import datetime
 from hashlib import sha256
 import random
 import string
-from typing import Dict
 from typing import Iterable
 from typing import Optional
 
@@ -290,7 +289,7 @@ def create_product_with_thing_type(
     thumb_count: int = 1,
     url: str = None,
     owning_offerer: Offerer = None,
-    extra_data: Dict = None,
+    extra_data: dict = None,
 ) -> Product:
     product = Product()
     product.type = str(thing_type)
@@ -340,7 +339,7 @@ def create_offer_with_thing_product(
     url: Optional[str] = None,
     last_provider_id: int = None,
     last_provider: Provider = None,
-    extra_data: Dict = None,
+    extra_data: dict = None,
     withdrawal_details: Optional[str] = None,
 ) -> Offer:
     offer = Offer()

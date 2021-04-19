@@ -1,6 +1,4 @@
 import logging
-from typing import Dict
-from typing import Tuple
 from typing import Union
 
 from flask import current_app as app
@@ -24,22 +22,22 @@ logger = logging.getLogger(__name__)
 
 
 @app.errorhandler(NotFound)
-def restize_not_found_route_errors(error: NotFound) -> Tuple[Dict, int]:
+def restize_not_found_route_errors(error: NotFound) -> tuple[dict, int]:
     return {}, 404
 
 
 @app.errorhandler(ApiErrors)
-def restize_api_errors(error: ApiErrors) -> Tuple[Dict, int]:
+def restize_api_errors(error: ApiErrors) -> tuple[dict, int]:
     return jsonify(error.errors), error.status_code or 400
 
 
 @app.errorhandler(offers_exceptions.TooLateToDeleteStock)
-def restize_too_late_to_delete_stock(error: offers_exceptions.TooLateToDeleteStock) -> Tuple[Dict, int]:
+def restize_too_late_to_delete_stock(error: offers_exceptions.TooLateToDeleteStock) -> tuple[dict, int]:
     return jsonify(error.errors), 400
 
 
 @app.errorhandler(Exception)
-def internal_error(error: Exception) -> Union[Tuple[Dict, int], HTTPException]:
+def internal_error(error: Exception) -> Union[tuple[dict, int], HTTPException]:
     # pass through HTTP errors
     if isinstance(error, HTTPException):
         return error
@@ -50,7 +48,7 @@ def internal_error(error: Exception) -> Union[Tuple[Dict, int], HTTPException]:
 
 
 @app.errorhandler(MethodNotAllowed)
-def method_not_allowed(error: MethodNotAllowed) -> Tuple[Dict, int]:
+def method_not_allowed(error: MethodNotAllowed) -> tuple[dict, int]:
     api_errors = ApiErrors()
     api_errors.add_error("global", "La méthode que vous utilisez n'existe pas sur notre serveur")
     logger.error("405 %s", error)
@@ -59,7 +57,7 @@ def method_not_allowed(error: MethodNotAllowed) -> Tuple[Dict, int]:
 
 @app.errorhandler(NonProperlyFormattedScrambledId)
 @app.errorhandler(NonDehumanizableId)
-def invalid_id_for_dehumanize_error(error: NonDehumanizableId) -> Tuple[Dict, int]:
+def invalid_id_for_dehumanize_error(error: NonDehumanizableId) -> tuple[dict, int]:
     api_errors = ApiErrors()
     api_errors.add_error("global", "La page que vous recherchez n'existe pas")
     logger.error("404 %s", error)
@@ -67,7 +65,7 @@ def invalid_id_for_dehumanize_error(error: NonDehumanizableId) -> Tuple[Dict, in
 
 
 @app.errorhandler(DecimalCastError)
-def decimal_cast_error(error: DecimalCastError) -> Tuple[Dict, int]:
+def decimal_cast_error(error: DecimalCastError) -> tuple[dict, int]:
     api_errors = ApiErrors()
     logger.warning(json.dumps(error.errors))
     for field in error.errors.keys():
@@ -76,7 +74,7 @@ def decimal_cast_error(error: DecimalCastError) -> Tuple[Dict, int]:
 
 
 @app.errorhandler(DateTimeCastError)
-def date_time_cast_error(error: DateTimeCastError) -> Tuple[Dict, int]:
+def date_time_cast_error(error: DateTimeCastError) -> tuple[dict, int]:
     api_errors = ApiErrors()
     logger.warning(json.dumps(error.errors))
     for field in error.errors.keys():
@@ -85,7 +83,7 @@ def date_time_cast_error(error: DateTimeCastError) -> Tuple[Dict, int]:
 
 
 @app.errorhandler(AlreadyActivatedException)
-def already_activated_exception(error: AlreadyActivatedException) -> Tuple[Dict, int]:
+def already_activated_exception(error: AlreadyActivatedException) -> tuple[dict, int]:
     logger.error(json.dumps(error.errors))
     return jsonify(error.errors), 405
 

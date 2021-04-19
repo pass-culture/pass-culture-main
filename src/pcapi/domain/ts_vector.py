@@ -1,5 +1,3 @@
-from typing import List
-
 from nltk.corpus import stopwords
 from sqlalchemy import Index
 from sqlalchemy import and_
@@ -58,7 +56,7 @@ def create_filter_matching_all_keywords_in_any_model(get_filter_matching_ts_quer
     return and_(*ts_filters)
 
 
-def _get_ts_queries_from_keywords_string(keywords_string) -> List[str]:
+def _get_ts_queries_from_keywords_string(keywords_string) -> list[str]:
     keywords = tokenize_for_search(keywords_string)
     keywords_without_single_letter = remove_single_letters_for_search(keywords)
 

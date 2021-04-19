@@ -1,5 +1,4 @@
 from collections import namedtuple
-from typing import List
 
 from sqlalchemy import subquery
 from sqlalchemy.orm import aliased
@@ -14,7 +13,7 @@ from pcapi.models import Venue
 from pcapi.models.payment import Payment
 
 
-def find_all_offerer_payments(offerer_id: int) -> List[namedtuple]:
+def find_all_offerer_payments(offerer_id: int) -> list[namedtuple]:
     payment_status_query = _build_payment_status_subquery()
 
     return (

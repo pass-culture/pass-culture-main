@@ -1,5 +1,3 @@
-from typing import Dict
-
 from flask import request
 
 from pcapi import settings
@@ -7,7 +5,7 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
 
 
-def check_demarches_simplifiees_webhook_payload(payload: Dict):
+def check_demarches_simplifiees_webhook_payload(payload: dict):
     try:
         request.form["dossier_id"]
     except:

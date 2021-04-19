@@ -6,7 +6,6 @@ from pprint import pprint
 import re
 from typing import Any
 from typing import Iterable
-from typing import Set
 import uuid
 
 from sqlalchemy import BigInteger
@@ -168,7 +167,7 @@ class PcObject:
         return PcObject.restize_global_error(value_error)
 
     @staticmethod
-    def _get_keys_to_populate(columns: Iterable[str], data: dict, skipped_keys: Iterable[str]) -> Set[str]:
+    def _get_keys_to_populate(columns: Iterable[str], data: dict, skipped_keys: Iterable[str]) -> set[str]:
         requested_columns_to_update = set(data.keys())
         forbidden_columns = {"id", "deleted"} | set(skipped_keys)
         allowed_columns_to_update = requested_columns_to_update - forbidden_columns

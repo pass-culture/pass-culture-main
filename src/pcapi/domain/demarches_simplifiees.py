@@ -1,7 +1,5 @@
 from datetime import datetime
 import logging
-from typing import Dict
-from typing import List
 from typing import Optional
 from typing import Union
 
@@ -51,7 +49,7 @@ def get_all_application_ids_for_demarche_simplifiee(
     token: str,
     last_update: datetime = None,
     accepted_states: DmsApplicationStates = DmsApplicationStates,
-) -> List[int]:
+) -> list[int]:
     current_page = 1
     number_of_pages = 1
     applications = []
@@ -78,7 +76,7 @@ def get_all_application_ids_for_demarche_simplifiee(
 
 def get_closed_application_ids_for_demarche_simplifiee(
     procedure_id: str, token: str, last_update: datetime
-) -> List[int]:
+) -> list[int]:
     return get_all_application_ids_for_demarche_simplifiee(
         procedure_id, token, last_update, accepted_states=[DmsApplicationStates.closed]
     )
@@ -134,7 +132,7 @@ def _was_last_updated_after(application: dict, last_update: datetime = None) -> 
     return datetime.strptime(application["updated_at"], DATE_ISO_FORMAT) >= last_update
 
 
-def _sort_applications_by_date(applications: List) -> List:
+def _sort_applications_by_date(applications: list) -> list:
     return sorted(applications, key=lambda application: datetime.strptime(application["updated_at"], DATE_ISO_FORMAT))
 
 
@@ -155,7 +153,7 @@ def _get_status_from_demarches_simplifiees_application_state(state: str) -> Unio
     raise ValueError(f"Unexpected DMS status: '{state}'")
 
 
-def _find_value_in_fields(fields: List[Dict], value_name: str) -> dict:
+def _find_value_in_fields(fields: list[dict], value_name: str) -> dict:
     for field in fields:
         if field["type_de_champ"]["libelle"] == value_name:
             return field["value"]

@@ -1,7 +1,6 @@
 from datetime import datetime
 import logging
 from pathlib import Path
-from typing import List
 from typing import Optional
 
 from pydantic import BaseModel
@@ -107,7 +106,7 @@ class UpdateMediationResponseModel(BaseModel):
     credit: Optional[str]
     dateCreated: Optional[datetime]
     dateModifiedAtLastProvider: Optional[datetime]
-    fieldsUpdated: Optional[List[str]]
+    fieldsUpdated: Optional[list[str]]
     id: str
     idAtProviders: Optional[str]
     isActive: bool

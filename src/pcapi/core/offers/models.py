@@ -3,7 +3,6 @@ from datetime import datetime
 from datetime import timedelta
 import enum
 import logging
-from typing import List
 from typing import Optional
 
 from sqlalchemy import ARRAY
@@ -434,11 +433,11 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin, 
         )
 
     @property
-    def activeStocks(self) -> List[Stock]:
+    def activeStocks(self) -> list[Stock]:
         return [stock for stock in self.stocks if not stock.isSoftDeleted]
 
     @property
-    def bookableStocks(self) -> List[Stock]:
+    def bookableStocks(self) -> list[Stock]:
         return [stock for stock in self.stocks if stock.isBookable]
 
     @property

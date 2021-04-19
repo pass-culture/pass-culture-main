@@ -1,5 +1,4 @@
 import logging
-from typing import List
 
 from pcapi.core.users.models import User
 from pcapi.model_creators.generic_creators import create_beneficiary_import
@@ -28,7 +27,7 @@ def create_admin_user():
     logger.info("created 1 admin user")
 
 
-def create_beneficiary_imports(beneficiary_user: User) -> List[BeneficiaryImport]:
+def create_beneficiary_imports(beneficiary_user: User) -> list[BeneficiaryImport]:
     beneficiary_imports = []
     index_of_beneficiary_imports = 1
     for status in ImportStatus:

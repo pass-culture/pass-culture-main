@@ -1,6 +1,5 @@
 from datetime import datetime
 from typing import Any
-from typing import List
 from typing import Optional
 
 from pydantic.class_validators import validator
@@ -103,8 +102,8 @@ class BookingReponse(BaseModel):
 
 
 class BookingsResponse(BaseModel):
-    ended_bookings: List[BookingReponse]
-    ongoing_bookings: List[BookingReponse]
+    ended_bookings: list[BookingReponse]
+    ongoing_bookings: list[BookingReponse]
 
     class Config:
         json_encoders = {datetime: format_into_utc_date}

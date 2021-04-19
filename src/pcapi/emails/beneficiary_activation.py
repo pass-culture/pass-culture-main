@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Dict
 from urllib.parse import quote
 from urllib.parse import urlencode
 
@@ -10,7 +9,7 @@ from pcapi.core.bookings import conf
 from pcapi.core.users import models as users_models
 
 
-def get_activation_email_data(user: users_models.User, token: users_models.Token) -> Dict:
+def get_activation_email_data(user: users_models.User, token: users_models.Token) -> dict:
     first_name = user.firstName.capitalize()
     email = user.email
 
@@ -25,7 +24,7 @@ def get_activation_email_data(user: users_models.User, token: users_models.Token
     }
 
 
-def get_activation_email_data_for_native(user: users_models.User, token: users_models.Token) -> Dict:
+def get_activation_email_data_for_native(user: users_models.User, token: users_models.Token) -> dict:
     expiration_timestamp = int(token.expirationDate.timestamp())
     query_string = urlencode({"token": token.value, "expiration_timestamp": expiration_timestamp, "email": user.email})
     email_confirmation_link = f"{settings.NATIVE_APP_URL}/signup-confirmation?{query_string}"
@@ -44,7 +43,7 @@ def get_activation_email_data_for_native(user: users_models.User, token: users_m
     }
 
 
-def get_accepted_as_beneficiary_email_data() -> Dict:
+def get_accepted_as_beneficiary_email_data() -> dict:
     limit_configuration = conf.LIMIT_CONFIGURATIONS[conf.get_current_deposit_version()]
     deposit_amount = limit_configuration.TOTAL_CAP
     return {
@@ -56,7 +55,7 @@ def get_accepted_as_beneficiary_email_data() -> Dict:
     }
 
 
-def get_newly_eligible_user_email_data(user: users_models.User, token: users_models.Token) -> Dict:
+def get_newly_eligible_user_email_data(user: users_models.User, token: users_models.Token) -> dict:
     expiration_timestamp = int(token.expirationDate.timestamp())
     query_string = urlencode(
         {"licenceToken": token.value, "expirationTimestamp": expiration_timestamp, "email": user.email}

@@ -1,5 +1,4 @@
 import copy
-from typing import Dict
 
 
 APPLICATION_DETAIL_STANDARD_RESPONSE = {
@@ -225,7 +224,7 @@ def make_new_beneficiary_application_details(
     department_code: str = "67 - Bas-Rhin",
     civility: str = "Mme",
     activity: str = "Étudiant",
-) -> Dict:
+) -> dict:
     application = copy.deepcopy(APPLICATION_DETAIL_STANDARD_RESPONSE)
     application["dossier"]["id"] = application_id
     application["dossier"]["state"] = state

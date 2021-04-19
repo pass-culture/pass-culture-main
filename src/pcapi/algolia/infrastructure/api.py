@@ -1,6 +1,3 @@
-from typing import Dict
-from typing import List
-
 from algoliasearch.search_client import SearchClient
 from algoliasearch.search_index import SearchIndex
 
@@ -12,11 +9,11 @@ def init_connection() -> SearchIndex:
     return client.init_index(settings.ALGOLIA_INDEX_NAME)
 
 
-def add_objects(objects: List[Dict]) -> None:
+def add_objects(objects: list[dict]) -> None:
     init_connection().save_objects(objects)
 
 
-def delete_objects(object_ids: List[int]) -> None:
+def delete_objects(object_ids: list[int]) -> None:
     init_connection().delete_objects(object_ids)
 
 

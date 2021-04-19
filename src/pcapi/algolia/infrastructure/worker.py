@@ -1,6 +1,5 @@
 import logging
 from time import sleep
-from typing import Dict
 
 from redis import Redis
 
@@ -36,7 +35,7 @@ def process_multi_indexing(client: Redis) -> None:
             sleep(ALGOLIA_WAIT_TIME_FOR_AVAILABLE_WORKER)
 
 
-def _run_indexing(client: Redis, venue_provider: Dict) -> None:
+def _run_indexing(client: Redis, venue_provider: dict) -> None:
     venue_provider_id = venue_provider["id"]
     provider_id = venue_provider["providerId"]
     venue_id = venue_provider["venueId"]

@@ -1,8 +1,6 @@
 from datetime import datetime
 import logging
-from typing import List
 from typing import Optional
-from typing import Tuple
 
 from lxml.etree import DocumentInvalid
 
@@ -39,7 +37,7 @@ logger = logging.getLogger(__name__)
 from pcapi.utils.mailing import MailServiceException
 
 
-def concatenate_payments_with_errors_and_retries(payments: List[Payment]) -> List[Payment]:
+def concatenate_payments_with_errors_and_retries(payments: list[Payment]) -> list[Payment]:
     error_payments = payment_queries.find_error_payments()
     retry_payments = payment_queries.find_retry_payments()
     payments = payments + error_payments + retry_payments
@@ -51,7 +49,7 @@ def concatenate_payments_with_errors_and_retries(payments: List[Payment]) -> Lis
     return payments
 
 
-def generate_new_payments() -> Tuple[List[Payment], List[Payment]]:
+def generate_new_payments() -> tuple[list[Payment], list[Payment]]:
     offerers = Offerer.query.all()
     all_payments = []
 
@@ -82,11 +80,11 @@ def generate_new_payments() -> Tuple[List[Payment], List[Payment]]:
 
 
 def send_transactions(
-    payments: List[Payment],
+    payments: list[Payment],
     pass_culture_iban: Optional[str],
     pass_culture_bic: Optional[str],
     pass_culture_remittance_code: Optional[str],
-    recipients: List[str],
+    recipients: list[str],
 ) -> None:
     if not pass_culture_iban or not pass_culture_bic or not pass_culture_remittance_code:
         raise Exception(
@@ -129,7 +127,7 @@ def send_transactions(
     repository.save(message, *payments)
 
 
-def send_payments_details(payments: List[Payment], recipients: List[str]) -> None:
+def send_payments_details(payments: list[Payment], recipients: list[str]) -> None:
     if not recipients:
         raise Exception("[BATCH][PAYMENTS] Missing PASS_CULTURE_PAYMENTS_DETAILS_RECIPIENTS in environment variables")
 
@@ -146,7 +144,7 @@ def send_payments_details(payments: List[Payment], recipients: List[str]) -> Non
             logger.exception("[BATCH][PAYMENTS] Error while sending payment details email to MailJet: %s", exception)
 
 
-def send_wallet_balances(recipients: List[str]) -> None:
+def send_wallet_balances(recipients: list[str]) -> None:
     if not recipients:
         raise Exception("[BATCH][PAYMENTS] Missing PASS_CULTURE_WALLET_BALANCES_RECIPIENTS in environment variables")
 
@@ -160,7 +158,7 @@ def send_wallet_balances(recipients: List[str]) -> None:
         logger.exception("[BATCH][PAYMENTS] Error while sending users wallet balances email to MailJet: %s", exception)
 
 
-def send_payments_report(payments: List[Payment], recipients: List[str]) -> None:
+def send_payments_report(payments: list[Payment], recipients: list[str]) -> None:
     if not payments:
         logger.info("[BATCH][PAYMENTS] No payments to report to the pass Culture team")
         return

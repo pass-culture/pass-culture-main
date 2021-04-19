@@ -1,6 +1,3 @@
-from typing import Dict
-from typing import List
-
 from pcapi import settings
 from pcapi.core import mails
 from pcapi.core.offerers.models import Offerer
@@ -23,17 +20,17 @@ def maybe_send_offerer_validation_email(offerer: Offerer, user_offerer: UserOffe
     return mails.send(recipients=recipients, data=email)
 
 
-def send_payment_message_email(xml_attachment: str, checksum: bytes, recipients: List[str]) -> bool:
+def send_payment_message_email(xml_attachment: str, checksum: bytes, recipients: list[str]) -> bool:
     email = make_payment_message_email(xml_attachment, checksum)
     return mails.send(recipients=recipients, data=email)
 
 
-def send_payment_details_email(csv_attachment: str, recipients: List[str]) -> bool:
+def send_payment_details_email(csv_attachment: str, recipients: list[str]) -> bool:
     email = make_payment_details_email(csv_attachment)
     return mails.send(recipients=recipients, data=email)
 
 
-def send_wallet_balances_email(csv_attachment: str, recipients: List[str]) -> bool:
+def send_wallet_balances_email(csv_attachment: str, recipients: list[str]) -> bool:
     email = make_wallet_balances_email(csv_attachment)
     return mails.send(recipients=recipients, data=email)
 
@@ -41,8 +38,8 @@ def send_wallet_balances_email(csv_attachment: str, recipients: List[str]) -> bo
 def send_payments_report_emails(
     not_processable_payments_csv: str,
     error_payments_csv: str,
-    grouped_payments: Dict,
-    recipients: List[str],
+    grouped_payments: dict,
+    recipients: list[str],
 ) -> bool:
     email = make_payments_report_email(not_processable_payments_csv, error_payments_csv, grouped_payments)
     return mails.send(recipients=recipients, data=email)

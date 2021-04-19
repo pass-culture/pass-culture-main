@@ -2,8 +2,6 @@ from datetime import datetime
 from datetime import time
 from datetime import timedelta
 import math
-from typing import Dict
-from typing import List
 from typing import Optional
 
 from sqlalchemy import and_
@@ -83,7 +81,7 @@ def get_paginated_offers_for_filters(
     )
 
 
-def get_offers_by_ids(user: User, offer_ids: List[int]) -> Query:
+def get_offers_by_ids(user: User, offer_ids: list[int]) -> Query:
     query = Offer.query
     if not user.isAdmin:
         query = query.join(Venue, Offerer, UserOfferer).filter(
@@ -173,11 +171,11 @@ def _filter_by_status(query: Query, status: str) -> Query:
     return query.filter(Offer.status == OfferStatus[status].name)
 
 
-def get_stocks_for_offers(offer_ids: List[int]) -> List[Stock]:
+def get_stocks_for_offers(offer_ids: list[int]) -> list[Stock]:
     return Stock.query.filter(Stock.offerId.in_(offer_ids)).all()
 
 
-def get_stocks_for_offer(offer_id: int) -> List[Stock]:
+def get_stocks_for_offer(offer_id: int) -> list[Stock]:
     return (
         Stock.query.options(joinedload(Stock.bookings))
         .filter(Stock.offerId == offer_id)
@@ -186,7 +184,7 @@ def get_stocks_for_offer(offer_id: int) -> List[Stock]:
     )
 
 
-def get_products_map_by_id_at_providers(id_at_providers: List[str]) -> Dict[str, Product]:
+def get_products_map_by_id_at_providers(id_at_providers: list[str]) -> dict[str, Product]:
     products = (
         Product.query.filter(Product.isGcuCompatible)
         .filter(Product.type == str(ThingType.LIVRE_EDITION))
@@ -196,7 +194,7 @@ def get_products_map_by_id_at_providers(id_at_providers: List[str]) -> Dict[str,
     return {product.idAtProviders: product for product in products}
 
 
-def get_offers_map_by_id_at_providers(id_at_providers: List[str]) -> Dict[str, int]:
+def get_offers_map_by_id_at_providers(id_at_providers: list[str]) -> dict[str, int]:
     offers_map = {}
     for offer_id, offer_id_at_providers in (
         db.session.query(Offer.id, Offer.idAtProviders).filter(Offer.idAtProviders.in_(id_at_providers)).all()
@@ -206,7 +204,7 @@ def get_offers_map_by_id_at_providers(id_at_providers: List[str]) -> Dict[str, i
     return offers_map
 
 
-def get_stocks_by_id_at_providers(id_at_providers: List[str]) -> Dict:
+def get_stocks_by_id_at_providers(id_at_providers: list[str]) -> dict:
     stocks = (
         Stock.query.filter(Stock.idAtProviders.in_(id_at_providers))
         .outerjoin(Booking, and_(Stock.id == Booking.stockId, Booking.isCancelled.is_(False)))
@@ -249,7 +247,7 @@ def get_and_lock_stock(stock_id: int) -> Stock:
     return stock
 
 
-def check_stock_consistency() -> List[int]:
+def check_stock_consistency() -> list[int]:
     return [
         item[0]
         for item in db.session.query(Stock.id)
@@ -262,7 +260,7 @@ def check_stock_consistency() -> List[int]:
     ]
 
 
-def find_tomorrow_event_stock_ids() -> List[int]:
+def find_tomorrow_event_stock_ids() -> list[int]:
     """Find stocks linked to offers that happen tomorrow (and that are not cancelled)"""
     tomorrow = datetime.now() + timedelta(days=1)
     tomorrow_min = datetime.combine(tomorrow, time.min)

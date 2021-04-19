@@ -2,8 +2,6 @@ from io import BytesIO
 from io import TextIOWrapper
 import logging
 import re
-from typing import Dict
-from typing import List
 from typing import Optional
 
 from pcapi.connectors.ftp_titelive import connect_to_titelive_ftp
@@ -95,7 +93,7 @@ class TiteLiveThings(LocalProvider):
         self.products_file = None
         self.product_extra_data = {}
 
-    def __next__(self) -> Optional[List[ProvidableInfo]]:
+    def __next__(self) -> Optional[list[ProvidableInfo]]:
         if self.data_lines is None:
             self.open_next_file()
 
@@ -250,7 +248,7 @@ def get_thing_type_and_extra_data_from_titelive_type(titelive_type):
     return None, None
 
 
-def get_infos_from_data_line(elts: []) -> Dict:
+def get_infos_from_data_line(elts: []) -> dict:
     infos = dict()
     infos["ean13"] = elts[0]
     infos["isbn"] = elts[1]
@@ -294,7 +292,7 @@ def get_infos_from_data_line(elts: []) -> Dict:
     return infos
 
 
-def get_extra_data_from_infos(infos: Dict) -> Dict:
+def get_extra_data_from_infos(infos: dict) -> dict:
     extra_data = dict()
     extra_data["author"] = infos["auteurs"]
     extra_data["isbn"] = infos["ean13"]

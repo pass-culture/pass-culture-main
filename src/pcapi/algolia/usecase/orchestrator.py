@@ -1,6 +1,5 @@
 from datetime import datetime
 import logging
-from typing import List
 
 from algoliasearch.exceptions import AlgoliaException
 from redis import Redis
@@ -22,7 +21,7 @@ from pcapi.repository import offer_queries
 logger = logging.getLogger(__name__)
 
 
-def process_eligible_offers(client: Redis, offer_ids: List[int], from_provider_update: bool = False) -> None:
+def process_eligible_offers(client: Redis, offer_ids: list[int], from_provider_update: bool = False) -> None:
     offers_to_add = []
     offers_to_delete = []
     pipeline = client.pipeline()
@@ -58,7 +57,7 @@ def process_eligible_offers(client: Redis, offer_ids: List[int], from_provider_u
         logger.info("[ALGOLIA] no objects were added nor deleted!")
 
 
-def delete_expired_offers(client: Redis, offer_ids: List[int]) -> None:
+def delete_expired_offers(client: Redis, offer_ids: list[int]) -> None:
     offer_ids_to_delete = []
     for offer_id in offer_ids:
         offer_exists = check_offer_exists(client=client, offer_id=offer_id)
@@ -81,7 +80,7 @@ def _build_offer_details_to_be_indexed(offer: Offer) -> dict:
     return {"name": offer.name, "dates": event_dates, "prices": prices}
 
 
-def _process_adding(pipeline: Pipeline, client: Redis, offer_ids: List[int], adding_objects: List[dict]) -> None:
+def _process_adding(pipeline: Pipeline, client: Redis, offer_ids: list[int], adding_objects: list[dict]) -> None:
     try:
         add_objects(objects=adding_objects)
         logger.info("[ALGOLIA] %i objects were indexed!", len(adding_objects))
@@ -93,7 +92,7 @@ def _process_adding(pipeline: Pipeline, client: Redis, offer_ids: List[int], add
         pipeline.reset()
 
 
-def _process_deleting(client: Redis, offer_ids_to_delete: List[int]) -> None:
+def _process_deleting(client: Redis, offer_ids_to_delete: list[int]) -> None:
     try:
         delete_objects(object_ids=offer_ids_to_delete)
         delete_indexed_offers(client=client, offer_ids=offer_ids_to_delete)

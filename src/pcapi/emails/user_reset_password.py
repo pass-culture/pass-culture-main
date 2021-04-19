@@ -1,4 +1,3 @@
-from typing import Dict
 from urllib.parse import urlencode
 
 from pcapi import settings
@@ -6,7 +5,7 @@ from pcapi.core.users.models import Token
 from pcapi.core.users.models import User
 
 
-def retrieve_data_for_reset_password_user_email(user: User, token: Token) -> Dict:
+def retrieve_data_for_reset_password_user_email(user: User, token: Token) -> dict:
     return {
         "MJ-TemplateID": 912168,
         "MJ-TemplateLanguage": True,
@@ -14,7 +13,7 @@ def retrieve_data_for_reset_password_user_email(user: User, token: Token) -> Dic
     }
 
 
-def retrieve_data_for_reset_password_native_app_email(user: User, token: Token) -> Dict:
+def retrieve_data_for_reset_password_native_app_email(user: User, token: Token) -> dict:
     query_string = urlencode(
         {
             "token": token.value,

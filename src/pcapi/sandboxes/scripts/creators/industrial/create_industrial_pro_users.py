@@ -1,7 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
 import logging
-from typing import Dict
 
 from pcapi.core.offers.factories import UserOffererFactory
 from pcapi.model_creators.generic_creators import create_user
@@ -15,7 +14,7 @@ PROS_COUNT = 1
 departement_codes = ["93", "97"]
 
 
-def create_industrial_pro_users(offerers_by_name: Dict) -> Dict:
+def create_industrial_pro_users(offerers_by_name: dict) -> dict:
     logger.info("create_industrial_pro_users")
 
     users_by_name = {}

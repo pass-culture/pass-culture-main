@@ -2,8 +2,6 @@ import base64
 from datetime import datetime
 import io
 from pprint import pformat
-from typing import Dict
-from typing import List
 import zipfile
 
 from flask import render_template
@@ -47,7 +45,7 @@ def build_pc_webapp_reset_password_link(token_value: str) -> str:
     return f"{settings.WEBAPP_URL}/mot-de-passe-perdu?token={token_value}"
 
 
-def extract_users_information_from_bookings(bookings: List[Booking]) -> List[dict]:
+def extract_users_information_from_bookings(bookings: list[Booking]) -> list[dict]:
     users_keys = ("firstName", "lastName", "email", "contremarque")
     users_properties = [
         [booking.user.firstName, booking.user.lastName, booking.user.email, booking.token] for booking in bookings
@@ -75,7 +73,7 @@ def format_booking_hours_for_email(booking: Booking) -> str:
 
 def make_validation_email_object(
     offerer: Offerer, user_offerer: UserOfferer, get_by_siren=api_entreprises.get_by_offerer
-) -> Dict:
+) -> dict:
     vars_obj_user = vars(user_offerer.user)
     vars_obj_user.pop("clearTextPassword", None)
     api_entreprise = get_by_siren(offerer)
@@ -103,7 +101,7 @@ def make_validation_email_object(
     }
 
 
-def make_offerer_driven_cancellation_email_for_offerer(booking: Booking) -> Dict:
+def make_offerer_driven_cancellation_email_for_offerer(booking: Booking) -> dict:
     stock_name = booking.stock.offer.name
     venue = booking.stock.offer.venue
     user_name = booking.user.publicName
@@ -135,7 +133,7 @@ def make_offerer_driven_cancellation_email_for_offerer(booking: Booking) -> Dict
     }
 
 
-def make_payment_message_email(xml: str, checksum: bytes) -> Dict:
+def make_payment_message_email(xml: str, checksum: bytes) -> dict:
     now = datetime.utcnow()
     xml_b64encode = base64.b64encode(xml.encode("utf-8")).decode()
     file_name = "message_banque_de_france_{}.xml".format(datetime.strftime(now, "%Y%m%d"))
@@ -160,7 +158,7 @@ def _get_zipfile_content(content: str, filename: str):
     return stream.read()
 
 
-def make_payment_details_email(csv: str) -> Dict:
+def make_payment_details_email(csv: str) -> dict:
     now = datetime.utcnow()
     csv_filename = f"details_des_paiements_{datetime.strftime(now, '%Y%m%d')}.csv"
     zipfile_content = _get_zipfile_content(csv, csv_filename)
@@ -178,7 +176,7 @@ def make_payment_details_email(csv: str) -> Dict:
     }
 
 
-def make_payments_report_email(not_processable_csv: str, error_csv: str, grouped_payments: Dict) -> Dict:
+def make_payments_report_email(not_processable_csv: str, error_csv: str, grouped_payments: dict) -> dict:
     now = datetime.utcnow()
     not_processable_csv_b64encode = base64.b64encode(not_processable_csv.encode("utf-8")).decode()
     error_csv_b64encode = base64.b64encode(error_csv.encode("utf-8")).decode()
@@ -213,7 +211,7 @@ def make_payments_report_email(not_processable_csv: str, error_csv: str, grouped
     }
 
 
-def make_wallet_balances_email(csv: str) -> Dict:
+def make_wallet_balances_email(csv: str) -> dict:
     now = datetime.utcnow()
     csv_b64encode = base64.b64encode(csv.encode("utf-8")).decode()
     return {
@@ -230,7 +228,7 @@ def make_wallet_balances_email(csv: str) -> Dict:
     }
 
 
-def make_offer_creation_notification_email(offer: Offer, author: User) -> Dict:
+def make_offer_creation_notification_email(offer: Offer, author: User) -> dict:
     pro_link_to_offer = f"{settings.PRO_URL}/offres/{humanize(offer.id)}/edition"
     webapp_link_to_offer = f"{settings.WEBAPP_URL}/offre/details/{humanize(offer.id)}"
     venue = offer.venue
@@ -262,7 +260,7 @@ def get_event_datetime(stock: Stock) -> datetime:
     return date_in_tz
 
 
-def make_pro_user_validation_email(user: User) -> Dict:
+def make_pro_user_validation_email(user: User) -> dict:
     return {
         "FromName": "pass Culture pro",
         "Subject": "[pass Culture pro] Validation de votre adresse email pour le pass Culture",
@@ -275,7 +273,7 @@ def make_pro_user_validation_email(user: User) -> Dict:
     }
 
 
-def make_admin_user_validation_email(user: User, token: str) -> Dict:
+def make_admin_user_validation_email(user: User, token: str) -> dict:
     return {
         "FromName": "pass Culture admin",
         "Subject": "[pass Culture admin] Validation de votre adresse email pour le pass Culture",
@@ -287,14 +285,14 @@ def make_admin_user_validation_email(user: User, token: str) -> Dict:
     }
 
 
-def _add_template_debugging(message_data: Dict) -> None:
+def _add_template_debugging(message_data: dict) -> None:
     message_data["TemplateErrorReporting"] = {
         "Email": settings.DEV_EMAIL_ADDRESS,
         "Name": "Mailjet Template Errors",
     }
 
 
-def _summarize_offerer_vars(offerer: Offerer, api_entreprise: Dict) -> Dict:
+def _summarize_offerer_vars(offerer: Offerer, api_entreprise: dict) -> dict:
     return {
         "name": offerer.name,
         "siren": offerer.siren,
@@ -306,7 +304,7 @@ def _summarize_offerer_vars(offerer: Offerer, api_entreprise: Dict) -> Dict:
     }
 
 
-def _summarize_user_vars(user_offerer: UserOfferer) -> Dict:
+def _summarize_user_vars(user_offerer: UserOfferer) -> dict:
     return {
         "firstName": user_offerer.user.firstName,
         "lastName": user_offerer.user.lastName,

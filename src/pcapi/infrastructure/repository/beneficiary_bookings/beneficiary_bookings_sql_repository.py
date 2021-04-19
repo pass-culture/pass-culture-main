@@ -1,5 +1,3 @@
-from typing import List
-
 from pcapi.core.offers.models import Mediation
 from pcapi.core.users.models import User
 from pcapi.domain.beneficiary_bookings.beneficiary_booking import BeneficiaryBooking
@@ -71,7 +69,7 @@ class BeneficiaryBookingsSQLRepository(BeneficiaryBookingsRepository):
         return BeneficiaryBookingsWithStocks(bookings=beneficiary_bookings, stocks=stocks)
 
 
-def _get_mediations_information(offers_ids: List[int]) -> List[object]:
+def _get_mediations_information(offers_ids: list[int]) -> list[object]:
     return (
         Mediation.query.join(Offer, Offer.id == Mediation.offerId)
         .filter(Mediation.offerId.in_(offers_ids))
@@ -81,7 +79,7 @@ def _get_mediations_information(offers_ids: List[int]) -> List[object]:
     )
 
 
-def _get_stocks_information(offers_ids: List[int]) -> List[object]:
+def _get_stocks_information(offers_ids: list[int]) -> list[object]:
     return (
         Stock.query.join(Offer, Offer.id == Stock.offerId)
         .filter(Stock.offerId.in_(offers_ids))
@@ -101,7 +99,7 @@ def _get_stocks_information(offers_ids: List[int]) -> List[object]:
     )
 
 
-def _get_bookings_information(beneficiary_id: int) -> List[object]:
+def _get_bookings_information(beneficiary_id: int) -> list[object]:
     offer_activation_types = ["ThingType.ACTIVATION", "EventType.ACTIVATION"]
     return (
         Booking.query.join(User, User.id == Booking.userId)

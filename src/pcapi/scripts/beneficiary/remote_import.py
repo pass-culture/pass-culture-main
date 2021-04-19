@@ -2,8 +2,6 @@ from datetime import datetime
 import logging
 import re
 from typing import Callable
-from typing import Dict
-from typing import List
 from typing import Optional
 
 from pcapi import settings
@@ -33,9 +31,9 @@ from pcapi.utils.mailing import MailServiceException
 
 def run(
     process_applications_updated_after: datetime,
-    get_all_applications_ids: Callable[..., List[int]] = get_closed_application_ids_for_demarche_simplifiee,
-    get_applications_ids_to_retry: Callable[..., List[int]] = find_applications_ids_to_retry,
-    get_details: Callable[..., Dict] = get_application_details,
+    get_all_applications_ids: Callable[..., list[int]] = get_closed_application_ids_for_demarche_simplifiee,
+    get_applications_ids_to_retry: Callable[..., list[int]] = find_applications_ids_to_retry,
+    get_details: Callable[..., dict] = get_application_details,
     already_imported: Callable[..., bool] = is_already_imported,
     already_existing_user: Callable[..., User] = find_user_by_email,
 ) -> None:
@@ -46,8 +44,8 @@ def run(
         procedure_id,
         procedure_id,
     )
-    error_messages: List[str] = []
-    new_beneficiaries: List[User] = []
+    error_messages: list[str] = []
+    new_beneficiaries: list[User] = []
     applications_ids = get_all_applications_ids(procedure_id, settings.DMS_TOKEN, process_applications_updated_after)
     retry_ids = get_applications_ids_to_retry()
 
@@ -106,10 +104,10 @@ def run(
 
 
 def process_beneficiary_application(
-    information: Dict,
-    error_messages: List[str],
-    new_beneficiaries: List[User],
-    retry_ids: List[int],
+    information: dict,
+    error_messages: list[str],
+    new_beneficiaries: list[User],
+    retry_ids: list[int],
     procedure_id: int,
     user: Optional[User] = None,
 ) -> None:
@@ -125,7 +123,7 @@ def process_beneficiary_application(
         _process_duplication(duplicate_users, error_messages, information, procedure_id)
 
 
-def parse_beneficiary_information(application_detail: Dict) -> Dict:
+def parse_beneficiary_information(application_detail: dict) -> dict:
     dossier = application_detail["dossier"]
 
     information = {
@@ -156,9 +154,9 @@ def parse_beneficiary_information(application_detail: Dict) -> Dict:
 
 
 def _process_creation(
-    error_messages: List[str],
-    information: Dict,
-    new_beneficiaries: List[User],
+    error_messages: list[str],
+    information: dict,
+    new_beneficiaries: list[User],
     procedure_id: int,
     user: Optional[User] = None,
 ) -> None:
@@ -206,7 +204,7 @@ def _process_creation(
 
 
 def _process_duplication(
-    duplicate_users: List[User], error_messages: List[str], information: Dict, procedure_id: int
+    duplicate_users: list[User], error_messages: list[str], information: dict, procedure_id: int
 ) -> None:
     number_of_beneficiaries = len(duplicate_users)
     duplicate_ids = ", ".join([str(u.id) for u in duplicate_users])
@@ -222,7 +220,7 @@ def _process_duplication(
     )
 
 
-def _process_rejection(information: Dict, procedure_id: int) -> None:
+def _process_rejection(information: dict, procedure_id: int) -> None:
     save_beneficiary_import_with_status(
         ImportStatus.REJECTED,
         information["application_id"],

@@ -1,6 +1,3 @@
-from typing import Dict
-from typing import List
-
 from pcapi.domain.identifier.identifier import Identifier
 from pcapi.domain.pro_offers.paginated_offers_recap import OfferRecap
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
@@ -8,7 +5,7 @@ from pcapi.models import Offer
 from pcapi.models import Stock
 
 
-def to_domain(offers: List[Offer], current_page: int, total_pages: int, total_offers: int) -> PaginatedOffersRecap:
+def to_domain(offers: list[Offer], current_page: int, total_pages: int, total_offers: int) -> PaginatedOffersRecap:
     offers_recap = [_offer_recap_to_domain(offer) for offer in offers]
 
     return PaginatedOffersRecap(
@@ -41,7 +38,7 @@ def _offer_recap_to_domain(offer: Offer) -> OfferRecap:
     )
 
 
-def _stock_serializer(stock: Stock) -> Dict:
+def _stock_serializer(stock: Stock) -> dict:
     return {
         "identifier": Identifier(stock.id),
         "has_booking_limit_datetime_passed": stock.hasBookingLimitDatetimePassed,

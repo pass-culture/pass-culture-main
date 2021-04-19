@@ -1,6 +1,5 @@
 from abc import ABC
 from abc import abstractmethod
-from typing import List
 
 from pcapi.domain.venue.venue_with_basic_information.venue_with_basic_information import VenueWithBasicInformation
 
@@ -11,5 +10,5 @@ class VenueWithBasicInformationRepository(ABC):
         pass
 
     @abstractmethod
-    def find_by_name(self, name: str, offerer_id: int) -> List[VenueWithBasicInformation]:
+    def find_by_name(self, name: str, offerer_id: int) -> list[VenueWithBasicInformation]:
         pass

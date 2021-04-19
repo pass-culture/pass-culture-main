@@ -1,8 +1,6 @@
 from collections import OrderedDict
 from functools import singledispatch
 from typing import Iterable
-from typing import List
-from typing import Set
 
 from sqlalchemy.orm.collections import InstrumentedList
 
@@ -74,17 +72,17 @@ def _(model, column=None, includes: Iterable = ()):
     return result
 
 
-def _joins_to_serialize(includes: Iterable) -> List[dict]:
+def _joins_to_serialize(includes: Iterable) -> list[dict]:
     dict_joins = filter(lambda a: isinstance(a, dict), includes)
     return list(dict_joins)
 
 
-def _keys_to_serialize(model, includes: Iterable) -> Set[str]:
+def _keys_to_serialize(model, includes: Iterable) -> set[str]:
     model_attributes = model.__mapper__.c.keys()
     return set(model_attributes).union(_included_properties(includes)) - _excluded_keys(includes)
 
 
-def _included_properties(includes: Iterable) -> Set[str]:
+def _included_properties(includes: Iterable) -> set[str]:
     string_keys = filter(lambda a: isinstance(a, str), includes)
     included_keys = filter(lambda a: not a.startswith("-"), string_keys)
     return set(included_keys)

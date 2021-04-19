@@ -1,10 +1,8 @@
-from typing import Dict
-
 from pcapi.core.offers.models import Offer
 from pcapi.utils.mailing import build_pc_pro_offer_link
 
 
-def retrieve_data_for_offer_approval_email(offer: Offer) -> Dict:
+def retrieve_data_for_offer_approval_email(offer: Offer) -> dict:
     return {
         "MJ-TemplateID": 2613721,
         "MJ-TemplateLanguage": True,

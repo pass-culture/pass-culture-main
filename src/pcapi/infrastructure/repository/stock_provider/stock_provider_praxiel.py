@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Dict
 from typing import Iterator
 
 from pcapi.domain.stock_provider.stock_provider_repository import StockProviderRepository
@@ -12,7 +11,7 @@ class StockProviderPraxielRepository(StockProviderRepository):
 
     def stocks_information(
         self, siret: str, last_processed_reference: str = "", modified_since: datetime = None
-    ) -> Iterator[Dict]:
+    ) -> Iterator[dict]:
         modified_since = datetime.strftime(modified_since, "%Y-%m-%dT%H:%M:%SZ") if modified_since else ""
         stocks = self.praxiel_api.stocks(
             siret=siret, last_processed_reference=last_processed_reference, modified_since=modified_since

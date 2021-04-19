@@ -1,5 +1,3 @@
-from typing import List
-
 from sqlalchemy.exc import DataError
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.exc import InternalError
@@ -11,7 +9,7 @@ from pcapi.models.db import db
 from pcapi.validation.models import entity_validator
 
 
-def delete(*models: List[Model]) -> None:
+def delete(*models: list[Model]) -> None:
     for model in models:
         db.session.delete(model)
     db.session.commit()

@@ -1,5 +1,4 @@
 import logging
-from typing import Dict
 
 from pcapi.utils import requests
 
@@ -22,7 +21,7 @@ class ProviderAPI:
 
     def stocks(
         self, siret: str, last_processed_reference: str = "", modified_since: str = "", limit: int = 1000
-    ) -> Dict:
+    ) -> dict:
         api_url = self._build_local_provider_url(siret)
         params = self._build_local_provider_params(last_processed_reference, modified_since, limit)
         headers = {}
@@ -50,7 +49,7 @@ class ProviderAPI:
         last_processed_reference: str = "",
         modified_since: str = "",
         limit: int = 1000,
-    ) -> Dict:
+    ) -> dict:
         api_responses = self.stocks(siret, last_processed_reference, modified_since, limit)
         stock_responses = api_responses.get("stocks", [])
         validated_stock_responses = []
@@ -94,7 +93,7 @@ class ProviderAPI:
     def _build_local_provider_url(self, siret: str) -> str:
         return f"{self.api_url}/{siret}"
 
-    def _build_local_provider_params(self, last_processed_isbn: str, modified_since: str, limit: int) -> Dict:
+    def _build_local_provider_params(self, last_processed_isbn: str, modified_since: str, limit: int) -> dict:
         params = {"limit": str(limit)}
 
         if last_processed_isbn:

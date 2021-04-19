@@ -137,7 +137,7 @@ def _cancel_booking(booking: Booking, reason: BookingCancellationReasons) -> Non
         redis.add_offer_id(client=app.redis_client, offer_id=booking.stock.offerId)
 
 
-def _cancel_bookings_from_stock(stock: Stock, reason: BookingCancellationReasons) -> typing.List[Booking]:
+def _cancel_bookings_from_stock(stock: Stock, reason: BookingCancellationReasons) -> list[Booking]:
     with transaction():
         deleted_bookings = []
         stock = offers_repository.get_and_lock_stock(stock_id=stock.id)
@@ -172,7 +172,7 @@ def cancel_booking_by_offerer(booking: Booking) -> None:
     send_cancel_booking_notification.delay([booking.id])
 
 
-def cancel_bookings_when_offerer_deletes_stock(stock: Stock) -> typing.List[Booking]:
+def cancel_bookings_when_offerer_deletes_stock(stock: Stock) -> list[Booking]:
     return _cancel_bookings_from_stock(stock, BookingCancellationReasons.OFFERER)
 
 
@@ -274,8 +274,8 @@ def compute_confirmation_date(
 
 
 def update_confirmation_dates(
-    bookings_to_update: typing.List[Booking], new_beginning_datetime: datetime.datetime
-) -> typing.List[Booking]:
+    bookings_to_update: list[Booking], new_beginning_datetime: datetime.datetime
+) -> list[Booking]:
     for booking in bookings_to_update:
         booking.confirmationDate = compute_confirmation_date(
             event_beginning=new_beginning_datetime, booking_creation_or_event_edition=datetime.datetime.utcnow()
@@ -284,7 +284,7 @@ def update_confirmation_dates(
     return bookings_to_update
 
 
-def recompute_dnBookedQuantity(stock_ids: typing.List[int]) -> None:
+def recompute_dnBookedQuantity(stock_ids: list[int]) -> None:
     query = """
       WITH bookings_per_stock AS (
         SELECT

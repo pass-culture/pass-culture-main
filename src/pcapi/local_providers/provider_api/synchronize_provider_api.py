@@ -1,11 +1,7 @@
 from datetime import datetime
 import logging
 import time
-from typing import Dict
 from typing import Generator
-from typing import List
-from typing import Set
-from typing import Tuple
 from typing import Union
 
 from flask import current_app as app
@@ -125,7 +121,7 @@ def _get_stocks_by_batch(siret: str, provider_api: ProviderAPI, modified_since: 
         last_processed_provider_reference = raw_stocks[-1]["ref"]
 
 
-def _build_stock_details_from_raw_stocks(raw_stocks: List[Dict], venue_siret: str) -> List[Dict]:
+def _build_stock_details_from_raw_stocks(raw_stocks: list[dict], venue_siret: str) -> list[dict]:
     stock_details = {}
     for stock in raw_stocks:
         stock_details[stock["ref"]] = {
@@ -139,11 +135,11 @@ def _build_stock_details_from_raw_stocks(raw_stocks: List[Dict], venue_siret: st
 
 
 def _build_new_offers_from_stock_details(
-    stock_details: List,
-    existing_offers_by_provider_reference: Dict[str, int],
-    products_by_provider_reference: Dict[str, Product],
+    stock_details: list,
+    existing_offers_by_provider_reference: dict[str, int],
+    products_by_provider_reference: dict[str, Product],
     venue_provider: VenueProvider,
-) -> List[Offer]:
+) -> list[Offer]:
     new_offers = []
     for stock_detail in stock_details:
         if stock_detail["offers_provider_reference"] in existing_offers_by_provider_reference:
@@ -166,11 +162,11 @@ def _build_new_offers_from_stock_details(
 
 
 def _get_stocks_to_upsert(
-    stock_details: List[Dict],
-    stocks_by_provider_reference: Dict[str, Dict],
-    offers_by_provider_reference: Dict[str, int],
-    products_by_provider_reference: Dict[str, Product],
-) -> Tuple[List[Dict], List[Stock], Set[int]]:
+    stock_details: list[dict],
+    stocks_by_provider_reference: dict[str, dict],
+    offers_by_provider_reference: dict[str, int],
+    products_by_provider_reference: dict[str, Product],
+) -> tuple[list[dict], list[Stock], set[int]]:
     update_stock_mapping = []
     new_stocks = []
     offer_ids = set()
@@ -207,7 +203,7 @@ def _get_stocks_to_upsert(
     return update_stock_mapping, new_stocks, offer_ids
 
 
-def _build_stock_from_stock_detail(stock_detail: Dict, offers_id: int, price: float) -> Stock:
+def _build_stock_from_stock_detail(stock_detail: dict, offers_id: int, price: float) -> Stock:
     return Stock(
         quantity=stock_detail["available_quantity"],
         rawProviderQuantity=stock_detail["available_quantity"],
@@ -246,7 +242,7 @@ def _build_new_offer(venue: Venue, product: Product, id_at_providers: str, provi
     )
 
 
-def _reindex_offers(offer_ids: Set[int]) -> None:
+def _reindex_offers(offer_ids: set[int]) -> None:
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         for offer_id in offer_ids:
             redis.add_offer_id(client=app.redis_client, offer_id=offer_id)

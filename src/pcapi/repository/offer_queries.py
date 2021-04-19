@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import List
 
 from sqlalchemy import func
 from sqlalchemy.orm import aliased
@@ -45,19 +44,19 @@ def get_offer_by_id(offer_id: int):
     return Offer.query.get(offer_id)
 
 
-def get_offers_by_venue_id(venue_id: int) -> List[Offer]:
+def get_offers_by_venue_id(venue_id: int) -> list[Offer]:
     return Offer.query.filter_by(venueId=venue_id).all()
 
 
-def get_offers_by_product_id(product_id: int) -> List[Offer]:
+def get_offers_by_product_id(product_id: int) -> list[Offer]:
     return Offer.query.filter_by(productId=product_id).all()
 
 
-def get_offers_by_ids(offer_ids: List[int]) -> List[Offer]:
+def get_offers_by_ids(offer_ids: list[int]) -> list[Offer]:
     return Offer.query.filter(Offer.id.in_(offer_ids)).options(joinedload("stocks")).all()
 
 
-def get_paginated_active_offer_ids(limit: int, page: int) -> List[tuple]:
+def get_paginated_active_offer_ids(limit: int, page: int) -> list[tuple]:
     return (
         Offer.query.with_entities(Offer.id)
         .filter(Offer.isActive == True)
@@ -68,7 +67,7 @@ def get_paginated_active_offer_ids(limit: int, page: int) -> List[tuple]:
     )
 
 
-def get_paginated_offer_ids_by_venue_id(venue_id: int, limit: int, page: int) -> List[tuple]:
+def get_paginated_offer_ids_by_venue_id(venue_id: int, limit: int, page: int) -> list[tuple]:
     return (
         Offer.query.with_entities(Offer.id)
         .filter(Offer.venueId == venue_id)
@@ -81,7 +80,7 @@ def get_paginated_offer_ids_by_venue_id(venue_id: int, limit: int, page: int) ->
 
 def get_paginated_offer_ids_by_venue_id_and_last_provider_id(
     last_provider_id: str, limit: int, page: int, venue_id: int
-) -> List[tuple]:
+) -> list[tuple]:
     return (
         Offer.query.with_entities(Offer.id)
         .filter(Offer.lastProviderId == last_provider_id)  # pylint: disable=comparison-with-callable
@@ -95,7 +94,7 @@ def get_paginated_offer_ids_by_venue_id_and_last_provider_id(
 
 def get_paginated_offer_ids_given_booking_limit_datetime_interval(
     limit: int, page: int, from_date: datetime, to_date: datetime
-) -> List[tuple]:
+) -> list[tuple]:
     start_limit = from_date <= func.max(Stock.bookingLimitDatetime)
     end_limit = func.max(Stock.bookingLimitDatetime) <= to_date
 

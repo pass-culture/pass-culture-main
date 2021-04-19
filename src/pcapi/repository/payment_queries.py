@@ -1,4 +1,3 @@
-from typing import List
 from typing import Optional
 
 from flask import render_template
@@ -19,23 +18,23 @@ from pcapi.models.db import db
 from pcapi.models.payment_status import TransactionStatus
 
 
-def find_error_payments() -> List[Payment]:
+def find_error_payments() -> list[Payment]:
     query = render_template("sql/find_payment_ids_with_last_status.sql", status="ERROR")
     error_payment_ids = db.session.query(PaymentStatus.paymentId).from_statement(text(query)).all()
     return Payment.query.filter(Payment.id.in_(error_payment_ids)).all()
 
 
-def find_retry_payments() -> List[Payment]:
+def find_retry_payments() -> list[Payment]:
     query = render_template("sql/find_payment_ids_with_last_status.sql", status="RETRY")
     retry_payment_ids = db.session.query(PaymentStatus.paymentId).from_statement(text(query)).all()
     return Payment.query.filter(Payment.id.in_(retry_payment_ids)).all()
 
 
-def find_payments_by_message(message_name: str) -> List[Payment]:
+def find_payments_by_message(message_name: str) -> list[Payment]:
     return Payment.query.join(PaymentMessage).filter(PaymentMessage.name == message_name).all()
 
 
-def get_payments_by_message_id(payment_message_id: str) -> List[Payment]:
+def get_payments_by_message_id(payment_message_id: str) -> list[Payment]:
     return Payment.query.join(PaymentMessage).filter(PaymentMessage.name == payment_message_id).all()
 
 
@@ -43,7 +42,7 @@ def has_payment(booking: Booking) -> Optional[Payment]:
     return db.session.query(Payment.query.filter_by(bookingId=booking.id).exists()).scalar()
 
 
-def find_not_processable_with_bank_information() -> List[Payment]:
+def find_not_processable_with_bank_information() -> list[Payment]:
     most_recent_payment_status = (
         PaymentStatus.query.with_entities(PaymentStatus.id)
         .distinct(PaymentStatus.paymentId)

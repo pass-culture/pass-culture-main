@@ -1,4 +1,3 @@
-from typing import Dict
 from typing import Optional
 
 from pcapi.local_providers.providable_info import ProvidableInfo
@@ -9,7 +8,7 @@ from pcapi.repository.providable_queries import update_chunk
 
 
 def get_existing_pc_obj(
-    providable_info: ProvidableInfo, chunk_to_insert: Dict, chunk_to_update: Dict
+    providable_info: ProvidableInfo, chunk_to_insert: dict, chunk_to_update: dict
 ) -> Optional[Model]:
     object_in_current_chunk = get_object_from_current_chunks(providable_info, chunk_to_insert, chunk_to_update)
     if object_in_current_chunk is None:
@@ -19,7 +18,7 @@ def get_existing_pc_obj(
 
 
 def get_object_from_current_chunks(
-    providable_info: ProvidableInfo, chunk_to_insert: Dict, chunk_to_update: Dict
+    providable_info: ProvidableInfo, chunk_to_insert: dict, chunk_to_update: dict
 ) -> Optional[Model]:
     chunk_key = f"{providable_info.id_at_providers}|{providable_info.type.__name__}"
     pc_object = chunk_to_insert.get(chunk_key)
@@ -31,7 +30,7 @@ def get_object_from_current_chunks(
     return None
 
 
-def save_chunks(chunk_to_insert: Dict[str, Model], chunk_to_update: Dict[str, Model]):
+def save_chunks(chunk_to_insert: dict[str, Model], chunk_to_update: dict[str, Model]):
     if len(chunk_to_insert) > 0:
         insert_chunk(chunk_to_insert)
 

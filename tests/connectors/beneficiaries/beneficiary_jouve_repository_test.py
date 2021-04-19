@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Dict
 from unittest.mock import MagicMock
 from unittest.mock import call
 from unittest.mock import patch
@@ -15,7 +14,7 @@ from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription impo
 def get_application_by_detail_response(
     application_id: int = 2,
     birth_date: str = "09/08/1995",
-) -> Dict:
+) -> dict:
     return {
         "id": application_id,
         "birthDate": birth_date,
@@ -32,7 +31,7 @@ def get_application_by_detail_response(
     }
 
 
-def get_token_detail_response(token: str) -> Dict:
+def get_token_detail_response(token: str) -> dict:
     return {"Value": token}
 
 

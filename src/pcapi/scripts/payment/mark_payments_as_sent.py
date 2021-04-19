@@ -1,5 +1,4 @@
 import logging
-from typing import List
 
 from sqlalchemy.sql.functions import func
 
@@ -12,7 +11,7 @@ from pcapi.models.payment_status import TransactionStatus
 logger = logging.getLogger(__name__)
 
 
-def get_payments_ids_under_review(min_id: int, batch_size: int, transaction_label: str) -> List[int]:
+def get_payments_ids_under_review(min_id: int, batch_size: int, transaction_label: str) -> list[int]:
     payments_ids_query = (
         Payment.query.filter(Payment.transactionLabel == transaction_label)
         .filter(Payment.id.between(min_id, min_id + batch_size - 1))
@@ -41,7 +40,7 @@ def mark_payments_as_sent(transaction_label: str, batch_size: int = 1000) -> Non
         if len(payments_ids) == 0:
             continue
 
-        payment_statuses_to_add: List[PaymentStatus] = []
+        payment_statuses_to_add: list[PaymentStatus] = []
         for payment_id in payments_ids:
             payment_statuses_to_add.append(PaymentStatus(paymentId=payment_id, status=TransactionStatus.SENT))
 

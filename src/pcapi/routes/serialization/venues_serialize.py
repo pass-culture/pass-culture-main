@@ -1,6 +1,4 @@
 from datetime import datetime
-from typing import Dict
-from typing import List
 from typing import Optional
 
 from pydantic import BaseModel
@@ -11,11 +9,11 @@ from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
 
 
-def serialize_venues_with_offerer_name(venues: List[VenueWithOffererName]) -> List[Dict]:
+def serialize_venues_with_offerer_name(venues: list[VenueWithOffererName]) -> list[dict]:
     return [serialize_venue_with_offerer_name(venue) for venue in venues]
 
 
-def serialize_venue_with_offerer_name(venue: VenueWithOffererName) -> Dict:
+def serialize_venue_with_offerer_name(venue: VenueWithOffererName) -> dict:
     return {
         "id": humanize(venue.identifier),
         "managingOffererId": humanize(venue.managing_offerer_identifier),
@@ -41,7 +39,7 @@ class GetVenueManagingOffererResponseModel(BaseModel):
     dateCreated: datetime
     dateModifiedAtLastProvider: Optional[datetime]
     demarchesSimplifieesApplicationId: Optional[str]
-    fieldsUpdated: List[str]
+    fieldsUpdated: list[str]
     iban: Optional[str]
     id: str
     idAtProviders: Optional[str]
@@ -69,7 +67,7 @@ class GetVenueResponseModel(BaseModel):
     dateModifiedAtLastProvider: Optional[datetime]
     demarchesSimplifieesApplicationId: Optional[str]
     departementCode: Optional[str]
-    fieldsUpdated: List[str]
+    fieldsUpdated: list[str]
     iban: Optional[str]
     id: str
     idAtProviders: Optional[str]

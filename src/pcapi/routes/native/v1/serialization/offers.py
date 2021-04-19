@@ -2,8 +2,6 @@ from datetime import datetime
 import logging
 from typing import Any
 from typing import Callable
-from typing import Dict
-from typing import List
 from typing import Optional
 
 from pydantic.class_validators import validator
@@ -95,7 +93,7 @@ class OfferVenueResponse(BaseModel):
 LABELS_BY_DICT_MAPPING = {"musicSubType": ""}
 
 
-def get_id_converter(labels_by_id: Dict, field_name: str) -> Callable[[Optional[str]], Optional[str]]:
+def get_id_converter(labels_by_id: dict, field_name: str) -> Callable[[Optional[str]], Optional[str]]:
     def convert_id_into_label(value_id: Optional[str]) -> Optional[str]:
         try:
             return labels_by_id[int(value_id)] if value_id else None
@@ -181,7 +179,7 @@ class OfferResponse(BaseModel):
     id: int
     accessibility: OfferAccessibilityResponse
     description: Optional[str]
-    expense_domains: List[ExpenseDomain]
+    expense_domains: list[ExpenseDomain]
     externalTicketOfficeUrl: Optional[str]
     extraData: Optional[OfferExtraData]
     isActive: bool  # TODO (viconnex): remove field when frontend uses isReleased
@@ -192,7 +190,7 @@ class OfferResponse(BaseModel):
     isDuo: bool
     name: str
     category: OfferCategoryResponse
-    stocks: List[OfferStockResponse]
+    stocks: list[OfferStockResponse]
     image: Optional[OfferImageResponse]
     venue: OfferVenueResponse
     withdrawalDetails: Optional[str]

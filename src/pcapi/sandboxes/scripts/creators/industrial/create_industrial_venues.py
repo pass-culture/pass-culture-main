@@ -1,8 +1,6 @@
 import logging
 import random
 import re
-from typing import Dict
-from typing import List
 
 from pcapi.model_creators.generic_creators import create_bank_information
 from pcapi.model_creators.generic_creators import create_venue
@@ -18,7 +16,7 @@ OFFERERS_WITH_PHYSICAL_VENUE_REMOVE_MODULO = 3
 OFFERERS_WITH_PHYSICAL_VENUE_WITH_SIRET_REMOVE_MODULO = OFFERERS_WITH_PHYSICAL_VENUE_REMOVE_MODULO * 2
 
 
-def create_industrial_venues(offerers_by_name: Dict, venue_types: List[VenueType]) -> Dict:
+def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType]) -> dict:
     logger.info("create_industrial_venues")
 
     venue_by_name = {}

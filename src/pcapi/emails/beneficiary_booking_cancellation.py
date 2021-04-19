@@ -1,5 +1,4 @@
 import datetime
-from typing import Dict
 
 from pcapi.models import Booking
 from pcapi.utils.date import get_date_formatted_for_email
@@ -8,7 +7,7 @@ from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.human_ids import humanize
 
 
-def make_beneficiary_booking_cancellation_email_data(booking: Booking) -> Dict:
+def make_beneficiary_booking_cancellation_email_data(booking: Booking) -> dict:
     stock = booking.stock
     beneficiary = booking.user
     offer = stock.offer

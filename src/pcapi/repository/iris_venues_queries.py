@@ -1,12 +1,9 @@
-from typing import Dict
-from typing import List
-
 from pcapi.models import IrisVenues
 from pcapi.models.db import db
 from pcapi.repository import repository
 
 
-def find_ids_of_irises_located_near_venue(venue_id: int, search_radius: int) -> List[int]:
+def find_ids_of_irises_located_near_venue(venue_id: int, search_radius: int) -> list[int]:
     query = """
     WITH venue_coordinates AS (SELECT longitude, latitude from venue WHERE id = :venue_id)
     SELECT id FROM iris_france, venue_coordinates
@@ -19,7 +16,7 @@ def find_ids_of_irises_located_near_venue(venue_id: int, search_radius: int) -> 
     return [iris.id for iris in iris]
 
 
-def insert_venue_in_iris_venue(venue_id: int, iris_ids_near_venue: List[int]) -> None:
+def insert_venue_in_iris_venue(venue_id: int, iris_ids_near_venue: list[int]) -> None:
     irises_venues = [{"venueId": venue_id, "irisId": iris_id} for iris_id in iris_ids_near_venue]
     _bulk_insert_iris_venues(irises_venues)
 
@@ -29,6 +26,6 @@ def delete_venue_from_iris_venues(venue_id: int) -> None:
     repository.delete(*iris_venues_to_delete)
 
 
-def _bulk_insert_iris_venues(iris_venue_information: List[Dict]) -> None:
+def _bulk_insert_iris_venues(iris_venue_information: list[dict]) -> None:
     db.session.bulk_insert_mappings(IrisVenues, iris_venue_information)
     db.session.commit()

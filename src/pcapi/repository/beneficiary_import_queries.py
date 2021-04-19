@@ -1,5 +1,3 @@
-from typing import List
-
 from sqlalchemy import asc
 
 from pcapi.core.users.models import User
@@ -41,7 +39,7 @@ def save_beneficiary_import_with_status(
     repository.save(beneficiary_import)
 
 
-def find_applications_ids_to_retry() -> List[int]:
+def find_applications_ids_to_retry() -> list[int]:
     ids = (
         db.session.query(BeneficiaryImport.applicationId)
         .filter(BeneficiaryImport.currentStatus == ImportStatus.RETRY)

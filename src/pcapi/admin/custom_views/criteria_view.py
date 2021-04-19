@@ -1,5 +1,3 @@
-from typing import List
-
 from wtforms.fields.core import StringField
 from wtforms.form import Form
 from wtforms.validators import DataRequired
@@ -19,7 +17,7 @@ class CriteriaView(BaseAdminView):
         endDateTime="Date de fin",
     )
     column_searchable_list = ["name", "description", "startDateTime", "endDateTime"]
-    column_filters: List[str] = []
+    column_filters: list[str] = []
     form_columns = ["description", "startDateTime", "endDateTime"]
     form_create_rules = ("name", "description", "startDateTime", "endDateTime")
 

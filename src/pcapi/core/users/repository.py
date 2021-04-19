@@ -1,6 +1,5 @@
 from datetime import date
 from datetime import datetime
-from typing import List
 from typing import Optional
 
 from dateutil.relativedelta import relativedelta
@@ -39,7 +38,7 @@ def get_user_with_credentials(identifier: str, password: str) -> User:
 
 
 def get_user_with_valid_token(
-    token_value: str, token_types: List[models.TokenType], delete_token: bool = False
+    token_value: str, token_types: list[models.TokenType], delete_token: bool = False
 ) -> Optional[User]:
     token = models.Token.query.filter(models.Token.value == token_value, models.Token.type.in_(token_types)).first()
     if not token:
@@ -60,7 +59,7 @@ def get_id_check_token(token_value: str) -> models.Token:
     ).first()
 
 
-def get_newly_eligible_users(since: date) -> List[User]:
+def get_newly_eligible_users(since: date) -> list[User]:
     """get users that are eligible between `since` (excluded) and now (included) and that have
     created their account before `since`"""
     today = datetime.combine(datetime.today(), datetime.min.time())
@@ -86,11 +85,11 @@ def find_favorite_for_offer_and_user(offer_id: int, user_id: int) -> Query:
     return models.Favorite.query.filter(models.Favorite.offerId == offer_id, models.Favorite.userId == user_id)
 
 
-def get_favorites_for_offers(offer_ids: List[int]) -> List[models.Favorite]:
+def get_favorites_for_offers(offer_ids: list[int]) -> list[models.Favorite]:
     return models.Favorite.query.filter(models.Favorite.offerId.in_(offer_ids)).all()
 
 
-def find_favorites_domain_by_beneficiary(beneficiary_identifier: int) -> List[FavoriteDomain]:
+def find_favorites_domain_by_beneficiary(beneficiary_identifier: int) -> list[FavoriteDomain]:
     favorite_sql_entities = (
         models.Favorite.query.filter(models.Favorite.userId == beneficiary_identifier)
         .options(joinedload(models.Favorite.offer).joinedload(Offer.venue).joinedload(Venue.managingOfferer))

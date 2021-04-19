@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import List
 from typing import Optional
 
 from pydantic import BaseModel
@@ -52,13 +51,13 @@ class GetOffererResponseModel(BaseModel):
     dateCreated: datetime
     dateModifiedAtLastProvider: Optional[datetime]
     demarchesSimplifieesApplicationId: Optional[str]
-    fieldsUpdated: List[str]
+    fieldsUpdated: list[str]
     iban: Optional[str]
     id: str
     idAtProviders: Optional[str]
     isValidated: bool
     lastProviderId: Optional[str]
-    managedVenues: List[GetOffererVenueResponseModel]
+    managedVenues: list[GetOffererVenueResponseModel]
     name: str
     nOffers: int
     postalCode: str
@@ -83,7 +82,7 @@ class GetOffererNameResponseModel(BaseModel):
 
 
 class GetOfferersNamesResponseModel(BaseModel):
-    offerersNames: List[GetOffererNameResponseModel]
+    offerersNames: list[GetOffererNameResponseModel]
 
     class Config:
         orm_mode = True

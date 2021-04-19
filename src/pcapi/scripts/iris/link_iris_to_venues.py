@@ -1,5 +1,3 @@
-from typing import List
-
 from pcapi.core.offerers.models import Offerer
 from pcapi.models import Venue
 from pcapi.repository.iris_venues_queries import find_ids_of_irises_located_near_venue
@@ -13,7 +11,7 @@ def link_irises_to_existing_physical_venues(search_radius: int):
         insert_venue_in_iris_venue(venue_id, iris_ids)
 
 
-def _find_all_venue_ids_to_link() -> List[int]:
+def _find_all_venue_ids_to_link() -> list[int]:
     venues = (
         Venue.query.join(Offerer)
         .filter(Venue.isVirtual.is_(False))

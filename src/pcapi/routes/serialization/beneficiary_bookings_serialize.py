@@ -1,6 +1,3 @@
-from typing import Dict
-from typing import List
-
 from pcapi.domain.beneficiary_bookings.beneficiary_booking import BeneficiaryBooking
 from pcapi.domain.beneficiary_bookings.beneficiary_bookings_with_stocks import BeneficiaryBookingsWithStocks
 from pcapi.domain.beneficiary_bookings.stock import Stock
@@ -10,7 +7,7 @@ from pcapi.utils.human_ids import humanize
 
 def serialize_beneficiary_bookings(
     beneficiary_bookings: BeneficiaryBookingsWithStocks, with_qr_code: bool = False
-) -> List:
+) -> list:
     results = []
     for beneficiary_booking in beneficiary_bookings.bookings:
         serialized_stocks = _serialize_stocks_for_beneficiary_bookings(
@@ -23,7 +20,7 @@ def serialize_beneficiary_bookings(
     return results
 
 
-def _serialize_stock_for_beneficiary_booking(stock: Stock) -> Dict:
+def _serialize_stock_for_beneficiary_booking(stock: Stock) -> dict:
     return {
         "dateCreated": serialize(stock.date_created),
         "beginningDatetime": serialize(stock.beginning_datetime),
@@ -38,18 +35,18 @@ def _serialize_stock_for_beneficiary_booking(stock: Stock) -> Dict:
     }
 
 
-def _serialize_stocks_for_beneficiary_bookings(matched_offer_id: int, stocks: List[Stock]) -> List[Dict]:
+def _serialize_stocks_for_beneficiary_bookings(matched_offer_id: int, stocks: list[Stock]) -> list[dict]:
     return [_serialize_stock_for_beneficiary_booking(stock) for stock in stocks if stock.offer_id == matched_offer_id]
 
 
-def _serialize_offer_is_bookable(serialized_stocks: List[Dict]) -> bool:
+def _serialize_offer_is_bookable(serialized_stocks: list[dict]) -> bool:
     are_stocks_bookable = [stock["isBookable"] for stock in serialized_stocks]
     return True in are_stocks_bookable
 
 
 def _serialize_beneficiary_booking(
-    beneficiary_booking: BeneficiaryBooking, serialized_stocks: List[Dict], with_qr_code: bool = False
-) -> Dict:
+    beneficiary_booking: BeneficiaryBooking, serialized_stocks: list[dict], with_qr_code: bool = False
+) -> dict:
     dictified_booking = {
         "completedUrl": beneficiary_booking.booking_access_url,
         "isEventExpired": beneficiary_booking.is_event_expired,

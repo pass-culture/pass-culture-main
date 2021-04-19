@@ -1,5 +1,3 @@
-from typing import List
-
 from sqlalchemy import func
 
 from pcapi.domain.venue.venue_with_basic_information.venue_with_basic_information import VenueWithBasicInformation
@@ -17,7 +15,7 @@ class VenueWithBasicInformationSQLRepository(VenueWithBasicInformationRepository
         venue_sql_entity = Venue.query.filter_by(siret=siret).one_or_none()
         return venue_with_basic_information_domain_converter.to_domain(venue_sql_entity) if venue_sql_entity else None
 
-    def find_by_name(self, name: str, offerer_id: int) -> List[VenueWithBasicInformation]:
+    def find_by_name(self, name: str, offerer_id: int) -> list[VenueWithBasicInformation]:
         venue_sql_entities = (
             Venue.query.filter_by(managingOffererId=offerer_id)
             .filter(Venue.siret.is_(None))

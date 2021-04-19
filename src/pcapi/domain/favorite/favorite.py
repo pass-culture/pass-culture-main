@@ -1,11 +1,9 @@
-from typing import Dict
-
 from pcapi.core.offers.models import Mediation
 from pcapi.models import Offer
 
 
 class FavoriteDomain:
-    def __init__(self, identifier: int, mediation: Mediation, offer: Offer, booking: Dict):
+    def __init__(self, identifier: int, mediation: Mediation, offer: Offer, booking: dict):
         self.identifier = identifier
         self.mediation = mediation
         self.offer = offer

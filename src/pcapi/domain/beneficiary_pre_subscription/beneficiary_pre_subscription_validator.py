@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import List
 
 from pcapi.core.users.models import User
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
@@ -52,7 +51,7 @@ def _is_postal_code_eligible(code: str) -> bool:
     return True
 
 
-def get_beneficiary_duplicates(first_name: str, last_name: str, date_of_birth: datetime) -> List[User]:
+def get_beneficiary_duplicates(first_name: str, last_name: str, date_of_birth: datetime) -> list[User]:
     return find_by_civility(first_name=first_name, last_name=last_name, date_of_birth=date_of_birth)
 
 

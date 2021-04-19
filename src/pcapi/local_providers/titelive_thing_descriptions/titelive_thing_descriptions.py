@@ -1,6 +1,5 @@
 from pathlib import PurePath
 import re
-from typing import List
 
 from pcapi.connectors.ftp_titelive import get_files_to_process_from_titelive_ftp
 from pcapi.connectors.ftp_titelive import get_zip_file_from_ftp
@@ -32,7 +31,7 @@ class TiteLiveThingDescriptions(LocalProvider):
         self.zip_file = None
         self.date_modified = None
 
-    def __next__(self) -> List[ProvidableInfo]:
+    def __next__(self) -> list[ProvidableInfo]:
         if self.description_zip_infos is None:
             self.open_next_file()
 

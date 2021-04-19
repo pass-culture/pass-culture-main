@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Dict
 from typing import Iterator
 
 from pcapi import settings
@@ -17,7 +16,7 @@ class StockProviderFnacRepository(StockProviderRepository):
 
     def stocks_information(
         self, siret: str, last_processed_reference: str = "", modified_since: datetime = None
-    ) -> Iterator[Dict]:
+    ) -> Iterator[dict]:
         modified_since = datetime.strftime(modified_since, "%Y-%m-%dT%H:%M:%SZ") if modified_since else ""
         stocks = self.fnac_api.stocks(
             siret=siret, last_processed_reference=last_processed_reference, modified_since=modified_since

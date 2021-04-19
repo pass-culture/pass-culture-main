@@ -1,12 +1,8 @@
-import typing
-
 from pcapi.core.users.models import User
 from pcapi.models import Booking
 
 
-def build_expired_bookings_recap_email_data_for_beneficiary(
-    beneficiary: User, bookings: typing.List[Booking]
-) -> typing.Dict:
+def build_expired_bookings_recap_email_data_for_beneficiary(beneficiary: User, bookings: list[Booking]) -> dict:
     return {
         "Mj-TemplateID": 1951103,
         "Mj-TemplateLanguage": True,
@@ -17,7 +13,7 @@ def build_expired_bookings_recap_email_data_for_beneficiary(
     }
 
 
-def _extract_bookings_information_from_bookings_list(bookings: typing.List[Booking]) -> typing.List[dict]:
+def _extract_bookings_information_from_bookings_list(bookings: list[Booking]) -> list[dict]:
     bookings_info = []
     for booking in bookings:
         stock = booking.stock

@@ -1,5 +1,4 @@
 import logging
-from typing import List
 
 from pcapi import settings
 from pcapi.core import mails
@@ -125,12 +124,12 @@ def send_attachment_validation_email_to_pro_offerer(user_offerer: UserOfferer) -
     mails.send(recipients=[user_offerer.user.email], data=data)
 
 
-def send_batch_cancellation_emails_to_users(bookings: List[Booking]) -> None:
+def send_batch_cancellation_emails_to_users(bookings: list[Booking]) -> None:
     for booking in bookings:
         send_warning_to_beneficiary_after_pro_booking_cancellation(booking)
 
 
-def send_offerer_bookings_recap_email_after_offerer_cancellation(bookings: List[Booking]) -> None:
+def send_offerer_bookings_recap_email_after_offerer_cancellation(bookings: list[Booking]) -> None:
     recipients = _build_recipients_list(bookings[0])
     data = retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation(bookings)
     mails.send(recipients=recipients, data=data)
@@ -150,12 +149,12 @@ def send_booking_cancellation_emails_to_user_and_offerer(
         send_user_driven_cancellation_email_to_offerer(booking)
 
 
-def send_expired_bookings_recap_email_to_beneficiary(beneficiary: User, bookings: List[Booking]) -> None:
+def send_expired_bookings_recap_email_to_beneficiary(beneficiary: User, bookings: list[Booking]) -> None:
     data = build_expired_bookings_recap_email_data_for_beneficiary(beneficiary, bookings)
     mails.send(recipients=[beneficiary.email], data=data)
 
 
-def send_expired_bookings_recap_email_to_offerer(offerer: Offerer, bookings: List[Booking]) -> None:
+def send_expired_bookings_recap_email_to_offerer(offerer: Offerer, bookings: list[Booking]) -> None:
     recipients = _build_recipients_list(bookings[0])
     data = build_expired_bookings_recap_email_data_for_offerer(offerer, bookings)
     mails.send(recipients=recipients, data=data)
@@ -171,7 +170,7 @@ def send_admin_user_validation_email(user: User, token: Token) -> None:
     mails.send(recipients=[user.email], data=data)
 
 
-def send_soon_to_be_expired_bookings_recap_email_to_beneficiary(beneficiary: User, bookings: List[Booking]) -> None:
+def send_soon_to_be_expired_bookings_recap_email_to_beneficiary(beneficiary: User, bookings: list[Booking]) -> None:
     data = build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary(beneficiary, bookings)
     mails.send(recipients=[beneficiary.email], data=data)
 
@@ -193,7 +192,7 @@ def send_accepted_as_beneficiary_email(user: User) -> bool:
     return mails.send(recipients=[user.email], data=data)
 
 
-def send_batch_stock_postponement_emails_to_users(bookings: List[Booking]) -> None:
+def send_batch_stock_postponement_emails_to_users(bookings: list[Booking]) -> None:
     for booking in bookings:
         send_booking_postponement_emails_to_users(booking)
 
@@ -229,7 +228,7 @@ def send_reset_password_link_to_admin_email(created_user: User, admin_email: Use
 
 
 def send_offer_validation_status_update_email(
-    offer: Offer, validation_status: OfferValidationStatus, recipient_email: List[str]
+    offer: Offer, validation_status: OfferValidationStatus, recipient_email: list[str]
 ) -> bool:
     if validation_status is OfferValidationStatus.APPROVED:
         offer_data = retrieve_data_for_offer_approval_email(offer)

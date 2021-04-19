@@ -1,6 +1,5 @@
 from datetime import datetime
 from typing import Callable
-from typing import List
 
 from sqlalchemy import func
 
@@ -14,7 +13,7 @@ from pcapi.repository import repository
 
 def get_offers_with_max_stock_date_between_today_and_end_of_quarantine(
     first_day_after_quarantine: datetime, today: datetime
-) -> List[Offer]:
+) -> list[Offer]:
     quarantine_offers_query = build_query_offers_with_max_stock_date_between_today_and_end_of_quarantine(
         first_day_after_quarantine, today
     )
@@ -35,7 +34,7 @@ def build_query_offers_with_max_stock_date_between_today_and_end_of_quarantine(f
     return quarantine_offers_query
 
 
-def deactivate_offers(offers: List[Offer]):
+def deactivate_offers(offers: list[Offer]):
     for offer in offers:
         offer.isActive = False
     repository.save(*offers)

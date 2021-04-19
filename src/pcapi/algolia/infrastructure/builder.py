@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Dict
 
 from pcapi.models import Offer
 from pcapi.utils.date import get_time_in_seconds_from_datetime
@@ -10,7 +9,7 @@ DEFAULT_LONGITUDE_FOR_NUMERIC_OFFER = 2.409289
 DEFAULT_LATITUDE_FOR_NUMERIC_OFFER = 47.158459
 
 
-def build_object(offer: Offer) -> Dict:
+def build_object(offer: Offer) -> dict:
     venue = offer.venue
     offerer = venue.managingOfferer
     humanize_offer_id = humanize(offer.id)

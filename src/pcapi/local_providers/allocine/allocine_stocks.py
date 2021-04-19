@@ -1,7 +1,5 @@
 from datetime import datetime
 import re
-from typing import Dict
-from typing import List
 from typing import Optional
 from typing import Union
 
@@ -50,13 +48,13 @@ class AllocineStocks(LocalProvider):
         self.quantity = allocine_venue_provider.quantity
         self.room_internal_id = allocine_venue_provider.internalId
 
-        self.movie_information: Optional[Dict] = None
-        self.filtered_movie_showtimes: Optional[List[Dict]] = None
+        self.movie_information: Optional[dict] = None
+        self.filtered_movie_showtimes: Optional[list[dict]] = None
         self.last_product_id = None
         self.last_vf_offer_id = None
         self.last_vo_offer_id = None
 
-    def __next__(self) -> List[ProvidableInfo]:
+    def __next__(self) -> list[ProvidableInfo]:
         raw_movie_information = next(self.movies_showtimes)
         try:
             self.movie_information = retrieve_movie_information(raw_movie_information["node"]["movie"])
@@ -224,7 +222,7 @@ def get_next_offer_id_from_database():
     return db.session.execute(sequence)
 
 
-def retrieve_movie_information(raw_movie_information: Dict) -> Dict:
+def retrieve_movie_information(raw_movie_information: dict) -> dict:
     parsed_movie_information = dict()
     parsed_movie_information["id"] = raw_movie_information["id"]
     parsed_movie_information["title"] = raw_movie_information["title"]
@@ -241,7 +239,7 @@ def retrieve_movie_information(raw_movie_information: Dict) -> Dict:
     return parsed_movie_information
 
 
-def retrieve_showtime_information(showtime_information: Dict) -> Dict:
+def retrieve_showtime_information(showtime_information: dict) -> dict:
     return {
         "startsAt": parse(showtime_information["startsAt"]),
         "diffusionVersion": showtime_information["diffusionVersion"],
@@ -250,7 +248,7 @@ def retrieve_showtime_information(showtime_information: Dict) -> Dict:
     }
 
 
-def _filter_only_digital_and_non_experience_showtimes(showtimes_information: List[Dict]) -> List[Dict]:
+def _filter_only_digital_and_non_experience_showtimes(showtimes_information: list[dict]) -> list[dict]:
     return list(
         filter(
             lambda showtime: showtime["projection"][0] == DIGITAL_PROJECTION and showtime["experience"] is None,
@@ -259,7 +257,7 @@ def _filter_only_digital_and_non_experience_showtimes(showtimes_information: Lis
     )
 
 
-def _find_showtime_by_showtime_uuid(showtimes: List[Dict], showtime_uuid: str) -> Union[Dict, None]:
+def _find_showtime_by_showtime_uuid(showtimes: list[dict], showtime_uuid: str) -> Union[dict, None]:
     for showtime in showtimes:
         if _build_showtime_uuid(showtime) == showtime_uuid:
             return showtime
@@ -277,7 +275,7 @@ def _get_showtimes_uuid_by_idAtProvider(id_at_provider: str):
     return id_at_provider.split("#")[1]
 
 
-def _build_description(movie_info: Dict) -> str:
+def _build_description(movie_info: dict) -> str:
     allocine_movie_url = movie_info["backlink"]["url"].replace("\\", "")
     return f"{movie_info['synopsis']}\n{movie_info['backlink']['label']}: {allocine_movie_url}"
 
@@ -286,11 +284,11 @@ def _format_poster_url(url: str) -> str:
     return url.replace(r"\/", "/")
 
 
-def _get_operating_visa(movie_info: Dict) -> Optional[str]:
+def _get_operating_visa(movie_info: dict) -> Optional[str]:
     return movie_info["releases"][0]["data"]["visa_number"]
 
 
-def _build_stage_director_full_name(movie_info: Dict) -> str:
+def _build_stage_director_full_name(movie_info: dict) -> str:
     stage_director_first_name = movie_info["credits"]["edges"][0]["node"]["person"]["firstName"]
     stage_director_last_name = movie_info["credits"]["edges"][0]["node"]["person"]["lastName"]
     return f"{stage_director_first_name} {stage_director_last_name}"
@@ -307,11 +305,11 @@ def _parse_movie_duration(duration: str) -> Optional[int]:
     return movie_duration_hours * 60 + movie_duration_minutes
 
 
-def _has_original_version_product(movies_showtimes: List[Dict]) -> bool:
+def _has_original_version_product(movies_showtimes: list[dict]) -> bool:
     return ORIGINAL_VERSION in list(map(lambda movie: movie["diffusionVersion"], movies_showtimes))
 
 
-def _has_french_version_product(movies_showtimes: List[Dict]) -> bool:
+def _has_french_version_product(movies_showtimes: list[dict]) -> bool:
     movies = list(map(lambda movie: movie["diffusionVersion"], movies_showtimes))
     return LOCAL_VERSION in movies or DUBBED_VERSION in movies
 
@@ -320,21 +318,21 @@ def _is_original_version_offer(id_at_providers: str) -> bool:
     return id_at_providers[-3:] == f"-{ORIGINAL_VERSION_SUFFIX}"
 
 
-def _build_movie_uuid(movie_information: Dict, venue: Venue) -> str:
+def _build_movie_uuid(movie_information: dict, venue: Venue) -> str:
     return f"{movie_information['id']}%{venue.siret}"
 
 
-def _build_french_movie_uuid(movie_information: Dict, venue: Venue) -> str:
+def _build_french_movie_uuid(movie_information: dict, venue: Venue) -> str:
     return f"{_build_movie_uuid(movie_information, venue)}-{FRENCH_VERSION_SUFFIX}"
 
 
-def _build_original_movie_uuid(movie_information: Dict, venue: Venue) -> str:
+def _build_original_movie_uuid(movie_information: dict, venue: Venue) -> str:
     return f"{_build_movie_uuid(movie_information, venue)}-{ORIGINAL_VERSION_SUFFIX}"
 
 
-def _build_showtime_uuid(showtime_details: Dict) -> str:
+def _build_showtime_uuid(showtime_details: dict) -> str:
     return f"{showtime_details['diffusionVersion']}/{showtime_details['startsAt']}"
 
 
-def _build_stock_uuid(movie_information: Dict, venue: Venue, showtime_details: Dict) -> str:
+def _build_stock_uuid(movie_information: dict, venue: Venue, showtime_details: dict) -> str:
     return f"{_build_movie_uuid(movie_information, venue)}#{_build_showtime_uuid(showtime_details)}"

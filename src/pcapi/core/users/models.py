@@ -6,7 +6,6 @@ from datetime import time
 from decimal import Decimal
 import enum
 from hashlib import md5
-from typing import List
 from typing import Optional
 
 import bcrypt
@@ -230,7 +229,7 @@ class User(PcObject, Model, NeedsValidationMixin, VersionedMixin):
         self.clearTextPassword = newpass
         self.password = hash_password(newpass)
 
-    def get_not_cancelled_bookings(self) -> List[Booking]:
+    def get_not_cancelled_bookings(self) -> list[Booking]:
         return (
             db.session.query(Booking)
             .with_parent(self)

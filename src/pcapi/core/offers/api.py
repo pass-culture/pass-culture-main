@@ -1,6 +1,5 @@
 import datetime
 import logging
-from typing import List
 from typing import Optional
 from typing import Union
 
@@ -158,7 +157,7 @@ def update_offer(  # pylint: disable=redefined-builtin
     isActive: bool = UNCHANGED,
     isDuo: bool = UNCHANGED,
     durationMinutes: int = UNCHANGED,
-    mediaUrls: List[str] = UNCHANGED,
+    mediaUrls: list[str] = UNCHANGED,
     ageMin: int = UNCHANGED,
     ageMax: int = UNCHANGED,
     conditions: str = UNCHANGED,
@@ -317,8 +316,8 @@ def _notify_beneficiaries_upon_stock_edit(stock: Stock):
 
 
 def upsert_stocks(
-    offer_id: int, stock_data_list: List[Union[StockCreationBodyModel, StockEditionBodyModel]]
-) -> List[Stock]:
+    offer_id: int, stock_data_list: list[Union[StockCreationBodyModel, StockEditionBodyModel]]
+) -> list[Stock]:
     stocks = []
     edited_stocks = []
     edited_stocks_previous_beginnings = {}
@@ -375,7 +374,7 @@ def upsert_stocks(
     return stocks
 
 
-def _invalidate_bookings(bookings: List[Booking]) -> List[Booking]:
+def _invalidate_bookings(bookings: list[Booking]) -> list[Booking]:
     for booking in bookings:
         if booking.isUsed:
             mark_as_unused(booking)
@@ -510,7 +509,7 @@ def update_offer_and_stock_id_at_providers(venue: Venue, old_siret: str) -> None
         stock_index = stock_index + batch_size
 
 
-def get_expense_domains(offer: Offer) -> List[ExpenseDomain]:
+def get_expense_domains(offer: Offer) -> list[ExpenseDomain]:
     domains = {ExpenseDomain.ALL.value}
 
     for configuration in LIMIT_CONFIGURATIONS.values():
@@ -522,7 +521,7 @@ def get_expense_domains(offer: Offer) -> List[ExpenseDomain]:
     return list(domains)
 
 
-def add_criteria_to_offers(criteria: List[Criterion], isbn: str) -> bool:
+def add_criteria_to_offers(criteria: list[Criterion], isbn: str) -> bool:
     isbn = isbn.replace("-", "").replace(" ", "")
 
     products = Product.query.filter(Product.extraData["isbn"].astext == isbn).all()
@@ -537,7 +536,7 @@ def add_criteria_to_offers(criteria: List[Criterion], isbn: str) -> bool:
     if not offer_ids:
         return False
 
-    offer_criteria: List[OfferCriterion] = []
+    offer_criteria: list[OfferCriterion] = []
     for criterion in criteria:
         logger.info("Adding criterion %s to %d offers", criterion, len(offer_ids))
 

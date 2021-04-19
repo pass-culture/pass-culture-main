@@ -1,5 +1,4 @@
 import logging
-from typing import List
 
 from flask import jsonify
 from flask import request
@@ -41,7 +40,7 @@ def get_dict_offerer(offerer: Offerer) -> dict:
     return as_dict(offerer, includes=OFFERER_INCLUDES)
 
 
-def get_dict_offerers(offerers: List[Offerer]) -> list:
+def get_dict_offerers(offerers: list[Offerer]) -> list:
     return [as_dict(offerer, includes=OFFERER_INCLUDES) for offerer in offerers]
 
 

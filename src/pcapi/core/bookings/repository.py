@@ -2,7 +2,6 @@ from datetime import date
 from datetime import datetime
 from datetime import time
 import math
-from typing import List
 
 from dateutil import tz
 from sqlalchemy import Date
@@ -81,15 +80,15 @@ def find_by_pro_user_id(user_id: int, page: int = 1, per_page_limit: int = 1000)
     )
 
 
-def find_ongoing_bookings_by_stock(stock_id: int) -> List[Booking]:
+def find_ongoing_bookings_by_stock(stock_id: int) -> list[Booking]:
     return Booking.query.filter_by(stockId=stock_id, isCancelled=False, isUsed=False).all()
 
 
-def find_not_cancelled_bookings_by_stock(stock: Stock) -> List[Booking]:
+def find_not_cancelled_bookings_by_stock(stock: Stock) -> list[Booking]:
     return Booking.query.filter_by(stockId=stock.id, isCancelled=False).all()
 
 
-def find_bookings_eligible_for_payment_for_venue(venue_id: int) -> List[Booking]:
+def find_bookings_eligible_for_payment_for_venue(venue_id: int) -> list[Booking]:
     return (
         _find_bookings_eligible_for_payment()
         .filter(Venue.id == venue_id)
@@ -104,7 +103,7 @@ def token_exists(token: str) -> bool:
     return db.session.query(Booking.query.filter_by(token=token.upper()).exists()).scalar()
 
 
-def find_not_used_and_not_cancelled() -> List[Booking]:
+def find_not_used_and_not_cancelled() -> list[Booking]:
     return Booking.query.filter(Booking.isUsed.is_(False)).filter(Booking.isCancelled.is_(False)).all()
 
 
@@ -216,7 +215,7 @@ def get_validated_bookings_quantity_for_venue(venue_id: int) -> int:
     )
 
 
-def find_offers_booked_by_beneficiaries(users: List[User]) -> List[Offer]:
+def find_offers_booked_by_beneficiaries(users: list[User]) -> list[Offer]:
     return (
         Offer.query.distinct(Offer.id)
         .join(Stock)
@@ -226,7 +225,7 @@ def find_offers_booked_by_beneficiaries(users: List[User]) -> List[Offer]:
     )
 
 
-def find_cancellable_bookings_by_beneficiaries(users: List[User]) -> List[Booking]:
+def find_cancellable_bookings_by_beneficiaries(users: list[User]) -> list[Booking]:
     return (
         Booking.query.filter(Booking.userId.in_(user.id for user in users))
         .filter(Booking.isCancelled.is_(False))
@@ -289,7 +288,7 @@ def _build_bookings_recap_query(user_id: int) -> Query:
 
 
 def _paginated_bookings_sql_entities_to_bookings_recap(
-    paginated_bookings: List[object], page: int, per_page_limit: int, total_bookings_recap: int
+    paginated_bookings: list[object], page: int, per_page_limit: int, total_bookings_recap: int
 ) -> BookingsRecapPaginated:
     return BookingsRecapPaginated(
         bookings_recap=[_serialize_booking_recap(booking) for booking in paginated_bookings],

@@ -1,4 +1,3 @@
-from typing import List
 from unittest.mock import Mock
 
 from shapely.geometry import Polygon
@@ -6,7 +5,7 @@ from shapely.geometry import Polygon
 from pcapi.models import Booking
 
 
-def create_mocked_bookings(num_bookings: int, venue_email: str, name: str = "Offer name") -> List[Booking]:
+def create_mocked_bookings(num_bookings: int, venue_email: str, name: str = "Offer name") -> list[Booking]:
     bookings = []
 
     for counter in range(num_bookings):

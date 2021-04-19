@@ -1,5 +1,3 @@
-from typing import List
-
 from pcapi.core.offerers.models import Offerer
 from pcapi.domain.bank_informations.bank_informations import BankInformations
 from pcapi.domain.venue.venue_with_basic_information.venue_with_basic_information import VenueWithBasicInformation
@@ -23,7 +21,7 @@ def check_venue_presence(venue: VenueWithBasicInformation):
         raise CannotRegisterBankInformation("Venue not found")
 
 
-def check_venue_queried_by_name(venues: List[VenueWithBasicInformation]):
+def check_venue_queried_by_name(venues: list[VenueWithBasicInformation]):
     if len(venues) == 0:
         raise CannotRegisterBankInformation("Venue name not found")
     if len(venues) > 1:

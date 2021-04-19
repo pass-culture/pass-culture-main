@@ -1,5 +1,4 @@
 import logging
-from typing import List
 
 from pcapi.model_creators.generic_creators import create_venue_type
 from pcapi.models.venue_type import VenueType
@@ -9,7 +8,7 @@ from pcapi.repository import repository
 logger = logging.getLogger(__name__)
 
 
-def create_industrial_venue_types() -> List[VenueType]:
+def create_industrial_venue_types() -> list[VenueType]:
     logger.info("create_industrial_venue_types")
 
     labels = [

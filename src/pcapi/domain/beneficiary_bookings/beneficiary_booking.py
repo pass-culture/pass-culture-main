@@ -1,6 +1,4 @@
 from datetime import datetime
-from typing import Dict
-from typing import List
 from typing import Optional
 
 import pcapi.core.bookings.api as bookings_api
@@ -38,10 +36,10 @@ class BeneficiaryBooking:
         departementCode: str,
         description: str,
         durationMinutes: int,
-        extraData: Dict,
+        extraData: dict,
         isDuo: bool,
         withdrawalDetails: Optional[str],
-        mediaUrls: List[str],
+        mediaUrls: list[str],
         isNational: bool,
         venueName: str,
         address: str,
@@ -52,7 +50,7 @@ class BeneficiaryBooking:
         price: float,
         productId: int,
         thumbCount: int,
-        active_mediations: List[ActiveMediation],
+        active_mediations: list[ActiveMediation],
     ):
         self.price = price
         self.longitude = longitude
@@ -93,7 +91,7 @@ class BeneficiaryBooking:
 
     @staticmethod
     def _compute_thumb_url(
-        active_mediations: List[ActiveMediation], product_id: int, product_thumb_count: int
+        active_mediations: list[ActiveMediation], product_id: int, product_thumb_count: int
     ) -> Optional[str]:
         if len(active_mediations) > 0:
             newest_mediation_id = sorted(active_mediations, key=lambda mediation: mediation.date_created, reverse=True)[

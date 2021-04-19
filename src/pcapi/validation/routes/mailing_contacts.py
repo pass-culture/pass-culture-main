@@ -1,9 +1,7 @@
-from typing import Dict
-
 from pcapi.models import ApiErrors
 
 
-def validate_save_mailing_contact_request(json: Dict):
+def validate_save_mailing_contact_request(json: dict):
     if "email" not in json or not json["email"]:
         errors = ApiErrors()
         errors.add_error("email", "L'email est manquant")

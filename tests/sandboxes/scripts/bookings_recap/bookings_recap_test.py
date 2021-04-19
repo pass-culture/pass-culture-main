@@ -1,5 +1,3 @@
-from typing import List
-
 import pytest
 from pytest import fixture
 
@@ -28,5 +26,5 @@ class BookingsRecapTest:
         assert self._find_bookings_by_user_firstname("Fifi") == 4
         assert self._find_bookings_by_user_firstname("Loulou") == 6
 
-    def _find_bookings_by_user_firstname(self, name: str) -> List[Booking]:
+    def _find_bookings_by_user_firstname(self, name: str) -> list[Booking]:
         return Booking.query.join(User).filter(User.firstName == name).count()

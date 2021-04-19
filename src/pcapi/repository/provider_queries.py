@@ -1,5 +1,4 @@
 from operator import or_
-from typing import List
 from typing import Optional
 
 from pcapi.models.provider import Provider
@@ -13,11 +12,11 @@ def get_provider_by_local_class(local_class: str) -> Provider:
     return Provider.query.filter_by(localClass=local_class).first()
 
 
-def get_enabled_providers_for_pro() -> List[Provider]:
+def get_enabled_providers_for_pro() -> list[Provider]:
     return Provider.query.filter_by(isActive=True).filter_by(enabledForPro=True).order_by(Provider.name).all()
 
 
-def get_providers_enabled_for_pro_excluding_specific_provider(allocine_local_class: str) -> List[Provider]:
+def get_providers_enabled_for_pro_excluding_specific_provider(allocine_local_class: str) -> list[Provider]:
     return (
         Provider.query.filter_by(isActive=True)
         .filter_by(enabledForPro=True)

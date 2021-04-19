@@ -1,5 +1,4 @@
 import logging
-from typing import List
 
 from rq.decorators import job
 
@@ -32,7 +31,7 @@ def update_user_attributes_job(user_id: int) -> None:
 @job(worker.default_queue, connection=worker.conn)
 @job_context
 @log_job
-def send_cancel_booking_notification(bookings_ids: List[int]) -> None:
+def send_cancel_booking_notification(bookings_ids: list[int]) -> None:
     notification_data = get_bookings_cancellation_notification_data(bookings_ids)
     if notification_data:
         send_transactional_notification(notification_data)

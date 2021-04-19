@@ -1,5 +1,3 @@
-from typing import List
-
 import pytest
 
 from pcapi.domain.venue.venue_label.venue_label import VenueLabel
@@ -29,7 +27,7 @@ class VenueLabelSQLRepositoryTest:
         assert self._are_venue_label_present(expected_house_label, venue_labels)
         assert self._are_venue_label_present(expected_monuments_label, venue_labels)
 
-    def _are_venue_label_present(self, expected_venue_label: VenueLabel, venue_labels: List[VenueLabel]) -> bool:
+    def _are_venue_label_present(self, expected_venue_label: VenueLabel, venue_labels: list[VenueLabel]) -> bool:
         for venue_label in venue_labels:
             if (
                 expected_venue_label.identifier == venue_label.identifier

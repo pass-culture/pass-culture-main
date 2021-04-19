@@ -1,11 +1,11 @@
 # This file is intended to be helpers for the pcapi.settings
 # Please do not import other pcapi modules as it may lead to
 # circular imports resulting in environ variables not be loaded.
-from typing import List
+
 from typing import Optional
 
 
-def parse_email_addresses(addresses: Optional[str]) -> List[str]:
+def parse_email_addresses(addresses: Optional[str]) -> list[str]:
     if not addresses:
         return []
     if "," in addresses:

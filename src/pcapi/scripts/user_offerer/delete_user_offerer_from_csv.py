@@ -1,7 +1,6 @@
 import csv
 import logging
 from typing import Iterable
-from typing import List
 
 from pcapi.models import ApiErrors
 from pcapi.repository import repository
@@ -80,5 +79,5 @@ def _delete_user_offerers_from_rows(csv_rows: Iterable) -> None:
         logger.error(user_offerers_in_error)
 
 
-def _is_blank_row(row: List[str]) -> bool:
+def _is_blank_row(row: list[str]) -> bool:
     return not row or not row[0] or row[0] == FIRST_TITLE

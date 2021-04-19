@@ -2,7 +2,6 @@ import csv
 import json
 from json import JSONDecodeError
 import logging
-from typing import Dict
 
 from pcapi.core.offerers.api import create_digital_venue
 from pcapi.core.offerers.models import Offerer
@@ -20,7 +19,7 @@ from pcapi.routes.serialization.users import ProUserCreationBodyModel
 logger = logging.getLogger(__name__)
 
 
-def create_offerer_from_csv(row: Dict) -> Offerer:
+def create_offerer_from_csv(row: dict) -> Offerer:
     offerer = Offerer()
     offerer.name = row["nom_structure"] if row["nom_structure"] else row["Name"]
     offerer.siren = row["SIREN"]
@@ -31,7 +30,7 @@ def create_offerer_from_csv(row: Dict) -> Offerer:
     return offerer
 
 
-def create_venue_from_csv(row: Dict, offerer: Offerer) -> Venue:
+def create_venue_from_csv(row: dict, offerer: Offerer) -> Venue:
     venue = Venue(
         address=_get_address_from_row(row),
         postalCode=_get_postal_code(row),
@@ -62,15 +61,15 @@ def create_venue_from_csv(row: Dict, offerer: Offerer) -> Venue:
     return venue
 
 
-def _get_address_from_row(row: Dict) -> str:
+def _get_address_from_row(row: dict) -> str:
     return row["adresse"].split(",")[0]
 
 
-def _get_postal_code(row: Dict) -> str:
+def _get_postal_code(row: dict) -> str:
     return row["code_postal"] if row["code_postal"] else row["Postal Code"]
 
 
-def create_user_model_from_csv(row: Dict) -> ProUserCreationBodyModel:
+def create_user_model_from_csv(row: dict) -> ProUserCreationBodyModel:
     pro_user_creation_model = ProUserCreationBodyModel(
         email=row["Email"],
         password=random_password(),
@@ -85,7 +84,7 @@ def create_user_model_from_csv(row: Dict) -> ProUserCreationBodyModel:
     return pro_user_creation_model
 
 
-def import_new_offerer_from_csv(row: Dict) -> None:
+def import_new_offerer_from_csv(row: dict) -> None:
     # We can't process a row without a postal code
     if not row["Postal Code"] and not row["code_postal"]:
         logger.warning("Unable to import this line %s - %s", row[""], row["Company ID"])
@@ -122,7 +121,7 @@ def import_new_offerer_from_csv(row: Dict) -> None:
 
 def import_from_csv_file(csv_file_path: str) -> None:
     csv_file = open(csv_file_path)
-    csv_reader = csv.DictReader(csv_file)
+    csv_reader = csv.dictReader(csv_file)
 
     for row in csv_reader:
         import_new_offerer_from_csv(row)

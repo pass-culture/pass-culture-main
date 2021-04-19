@@ -1,8 +1,6 @@
 from enum import Enum
 import json
 import logging
-from typing import Dict
-from typing import List
 
 import redis
 from redis import Redis
@@ -55,7 +53,7 @@ def _add_venue_provider(client: Redis, venue_provider) -> None:
         logger.exception("[REDIS] %s", error)
 
 
-def get_offer_ids(client: Redis) -> List[int]:
+def get_offer_ids(client: Redis) -> list[int]:
     try:
         offer_ids = client.lrange(RedisBucket.REDIS_LIST_OFFER_IDS_NAME.value, 0, settings.REDIS_OFFER_IDS_CHUNK_SIZE)
         return offer_ids
@@ -64,7 +62,7 @@ def get_offer_ids(client: Redis) -> List[int]:
         return []
 
 
-def get_venue_ids(client: Redis) -> List[int]:
+def get_venue_ids(client: Redis) -> list[int]:
     try:
         venue_ids = client.lrange(RedisBucket.REDIS_LIST_VENUE_IDS_NAME.value, 0, settings.REDIS_VENUE_IDS_CHUNK_SIZE)
         return venue_ids
@@ -73,7 +71,7 @@ def get_venue_ids(client: Redis) -> List[int]:
         return []
 
 
-def get_venue_providers(client: Redis) -> List[dict]:
+def get_venue_providers(client: Redis) -> list[dict]:
     try:
         venue_providers_as_string = client.lrange(
             RedisBucket.REDIS_LIST_VENUE_PROVIDERS_NAME.value, 0, settings.REDIS_VENUE_PROVIDERS_CHUNK_SIZE
@@ -113,7 +111,7 @@ def add_to_indexed_offers(pipeline: Pipeline, offer_id: int, offer_details: dict
         logger.exception("[REDIS] %s", error)
 
 
-def delete_indexed_offers(client: Redis, offer_ids: List[int]) -> None:
+def delete_indexed_offers(client: Redis, offer_ids: list[int]) -> None:
     try:
         client.hdel(RedisBucket.REDIS_HASHMAP_INDEXED_OFFERS_NAME.value, *offer_ids)
     except redis.exceptions.RedisError as error:
@@ -129,7 +127,7 @@ def check_offer_exists(client: Redis, offer_id: int) -> bool:
         return False
 
 
-def get_offer_details(client: Redis, offer_id: int) -> Dict:
+def get_offer_details(client: Redis, offer_id: int) -> dict:
     try:
         offer_details = client.hget(RedisBucket.REDIS_HASHMAP_INDEXED_OFFERS_NAME.value, offer_id)
 
@@ -171,14 +169,14 @@ def get_number_of_venue_providers_currently_in_sync(client: Redis) -> int:
         return 0
 
 
-def add_offer_ids_in_error(client: Redis, offer_ids: List[int]) -> None:
+def add_offer_ids_in_error(client: Redis, offer_ids: list[int]) -> None:
     try:
         client.rpush(RedisBucket.REDIS_LIST_OFFER_IDS_IN_ERROR_NAME.value, *offer_ids)
     except redis.exceptions.RedisError as error:
         logger.exception("[REDIS] %s", error)
 
 
-def get_offer_ids_in_error(client: Redis) -> List[int]:
+def get_offer_ids_in_error(client: Redis) -> list[int]:
     try:
         offer_ids = client.lrange(
             RedisBucket.REDIS_LIST_OFFER_IDS_IN_ERROR_NAME.value, 0, settings.REDIS_OFFER_IDS_CHUNK_SIZE

@@ -1,6 +1,4 @@
 import logging
-from typing import List
-from typing import Tuple
 
 from pcapi import settings
 from pcapi.models.feature import FeatureToggle
@@ -60,7 +58,7 @@ def generate_and_send_payments(payment_message_id: str = None):
     logger.info("[BATCH][PAYMENTS] generate_and_send_payments is done")
 
 
-def generate_or_collect_payments(payment_message_id: str = None) -> Tuple[List[Payment], List[Payment]]:
+def generate_or_collect_payments(payment_message_id: str = None) -> tuple[list[Payment], list[Payment]]:
     if payment_message_id is None:
         logger.info("[BATCH][PAYMENTS] STEP 1 : generate payments")
         pending_payments, not_processable_payments = generate_new_payments()

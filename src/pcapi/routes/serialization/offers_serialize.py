@@ -1,6 +1,5 @@
 from datetime import datetime
 from typing import Any
-from typing import List
 from typing import Optional
 from typing import Union
 
@@ -30,7 +29,7 @@ class PostOfferBodyModel(BaseModel):
     booking_email: Optional[str]
     external_ticket_office_url: Optional[HttpUrl]
     url: Optional[HttpUrl]
-    media_urls: Optional[List[str]]
+    media_urls: Optional[list[str]]
     description: Optional[str]
     withdrawal_details: Optional[str]
     conditions: Optional[str]
@@ -81,7 +80,7 @@ class PatchOfferBodyModel(BaseModel):
     isActive: Optional[bool]
     isDuo: Optional[bool]
     durationMinutes: Optional[int]
-    mediaUrls: Optional[List[str]]
+    mediaUrls: Optional[list[str]]
     ageMin: Optional[int]
     ageMax: Optional[int]
     conditions: Optional[str]
@@ -116,7 +115,7 @@ class OfferResponseIdModel(BaseModel):
 
 class PatchOfferActiveStatusBodyModel(BaseModel):
     is_active: bool
-    ids: List[int]
+    ids: list[int]
 
     _dehumanize_ids = dehumanize_list_field("ids")
 
@@ -173,7 +172,7 @@ class ListOffersOfferResponseModel(BaseModel):
     isEvent: bool
     isThing: bool
     name: str
-    stocks: List[ListOffersStockResponseModel]
+    stocks: list[ListOffersStockResponseModel]
     thumbUrl: Optional[str]
     type: str
     venue: ListOffersVenueResponseModel
@@ -182,7 +181,7 @@ class ListOffersOfferResponseModel(BaseModel):
 
 
 class ListOffersResponseModel(BaseModel):
-    offers: List[ListOffersOfferResponseModel]
+    offers: list[ListOffersOfferResponseModel]
     page: int
     page_count: int
     total_count: int
@@ -214,7 +213,7 @@ class ListOffersQueryModel(BaseModel):
 class GetOfferOfferTypeResponseModel(BaseModel):
     appLabel: str
     canExpire: Optional[bool]
-    conditionalFields: List[Optional[str]]
+    conditionalFields: list[Optional[str]]
     description: str
     isActive: bool
     offlineOnly: bool
@@ -236,13 +235,13 @@ class GetOfferProductResponseModel(BaseModel):
     description: Optional[str]
     durationMinutes: Optional[int]
     extraData: Any
-    fieldsUpdated: List[str]
+    fieldsUpdated: list[str]
     id: str
     idAtProviders: Optional[str]
     isGcuCompatible: bool
     isNational: bool
     lastProviderId: Optional[str]
-    mediaUrls: List[str]
+    mediaUrls: list[str]
     name: str
     owningOffererId: Optional[str]
     thumbCount: int
@@ -265,7 +264,7 @@ class GetOfferStockResponseModel(BaseModel):
     dateCreated: datetime
     dateModified: datetime
     dateModifiedAtLastProvider: Optional[datetime]
-    fieldsUpdated: List[str]
+    fieldsUpdated: list[str]
     id: str
     idAtProviders: Optional[str]
     isBookable: bool
@@ -297,7 +296,7 @@ class GetOfferManagingOffererResponseModel(BaseModel):
     city: str
     dateCreated: datetime
     dateModifiedAtLastProvider: Optional[datetime]
-    fieldsUpdated: List[str]
+    fieldsUpdated: list[str]
     id: str
     idAtProviders: Optional[str]
     isActive: bool
@@ -323,7 +322,7 @@ class GetOfferVenueResponseModel(BaseModel):
     dateCreated: Optional[datetime]
     dateModifiedAtLastProvider: Optional[datetime]
     departementCode: Optional[str]
-    fieldsUpdated: List[str]
+    fieldsUpdated: list[str]
     id: str
     idAtProviders: Optional[str]
     isValidated: bool
@@ -374,7 +373,7 @@ class GetOfferMediationResponseModel(BaseModel):
     credit: Optional[str]
     dateCreated: datetime
     dateModifiedAtLastProvider: Optional[datetime]
-    fieldsUpdated: List[str]
+    fieldsUpdated: list[str]
     id: str
     idAtProviders: Optional[str]
     isActive: bool
@@ -400,11 +399,11 @@ class GetOfferResponseModel(BaseModel):
     conditions: Optional[str]
     dateCreated: datetime
     dateModifiedAtLastProvider: Optional[datetime]
-    dateRange: List[datetime]
+    dateRange: list[datetime]
     description: Optional[str]
     durationMinutes: Optional[int]
     extraData: Any
-    fieldsUpdated: List[str]
+    fieldsUpdated: list[str]
     hasBookingLimitDatetimesPassed: bool
     id: str
     idAtProviders: Optional[str]
@@ -422,13 +421,13 @@ class GetOfferResponseModel(BaseModel):
     visualDisabilityCompliant: Optional[bool]
     lastProvider: Optional[GetOfferLastProviderResponseModel]
     lastProviderId: Optional[str]
-    mediaUrls: List[str]
-    mediations: List[GetOfferMediationResponseModel]
+    mediaUrls: list[str]
+    mediations: list[GetOfferMediationResponseModel]
     name: str
     offerType: GetOfferOfferTypeResponseModel
     product: GetOfferProductResponseModel
     productId: str
-    stocks: List[GetOfferStockResponseModel]
+    stocks: list[GetOfferStockResponseModel]
     thumbUrl: Optional[str]
     type: str
     externalTicketOfficeUrl: Optional[str]
@@ -462,5 +461,5 @@ class ImageBodyModel(BaseModel):
 
 
 class ImageResponseModel(BaseModel):
-    errors: Optional[List[str]]
+    errors: Optional[list[str]]
     image: Optional[str]

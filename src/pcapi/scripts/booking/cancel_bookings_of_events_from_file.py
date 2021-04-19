@@ -1,7 +1,6 @@
 import csv
 import logging
 from typing import Iterable
-from typing import List
 
 from pcapi.models import ApiErrors
 from pcapi.models import Booking
@@ -78,15 +77,15 @@ def _cancel_bookings_of_offers_from_rows(csv_rows: Iterable) -> None:
         logger.error(offers_in_error)
 
 
-def _is_header_or_blank_row(row: List[str]) -> bool:
+def _is_header_or_blank_row(row: list[str]) -> bool:
     return not row or not row[0] or row[0] == FIRST_TITLE
 
 
-def _is_not_flagged_for_cancellation(row: List[str]) -> bool:
+def _is_not_flagged_for_cancellation(row: list[str]) -> bool:
     return row[CANCELATION_FLAG_COLUMN_INDEX] == NO_FLAG
 
 
-def _get_bookings_from_offer(offer_id: int) -> List[Booking]:
+def _get_bookings_from_offer(offer_id: int) -> list[Booking]:
     return (
         Booking.query.filter(Booking.token.notin_(BOOKINGS_TOKEN_NOT_TO_UPDATE))
         .join(Stock, Stock.id == Booking.stockId)

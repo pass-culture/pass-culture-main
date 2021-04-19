@@ -1,13 +1,10 @@
-from typing import Dict
-from typing import List
-
 from pcapi.models import Booking
 from pcapi.utils.mailing import build_pc_pro_offer_link
 from pcapi.utils.mailing import format_booking_date_for_email
 from pcapi.utils.mailing import format_booking_hours_for_email
 
 
-def retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation(bookings: List[Booking]) -> Dict:
+def retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation(bookings: list[Booking]) -> dict:
     booking = bookings[0]
     stock = booking.stock
     offer = stock.offer
@@ -36,7 +33,7 @@ def retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation(bookin
     }
 
 
-def _extract_users_information_from_bookings_list(bookings: List[Booking]) -> List[dict]:
+def _extract_users_information_from_bookings_list(bookings: list[Booking]) -> list[dict]:
     users_keys = ("firstName", "lastName", "email", "countermark")
     users_properties = [
         [booking.user.firstName, booking.user.lastName, booking.user.email, booking.token] for booking in bookings

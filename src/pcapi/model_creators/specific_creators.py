@@ -3,9 +3,7 @@ from datetime import timedelta
 from decimal import Decimal
 import random
 import string
-from typing import Dict
 from typing import Iterable
-from typing import List
 from typing import Optional
 
 from pcapi.core.offerers.models import Offerer
@@ -23,7 +21,7 @@ from pcapi.models import Venue
 def create_offer_with_event_product(
     venue: Venue = None,
     booking_email: str = "booking@example.net",
-    criteria: List[Criterion] = None,
+    criteria: list[Criterion] = None,
     date_created: datetime = datetime.utcnow(),
     description: Optional[str] = None,
     duration_minutes: Optional[int] = 60,
@@ -39,7 +37,7 @@ def create_offer_with_event_product(
     last_provider: Provider = None,
     thumb_count: int = 0,
     withdrawal_details: Optional[str] = None,
-    extra_data: Optional[Dict] = None,
+    extra_data: Optional[dict] = None,
     validation: OfferValidationStatus = OfferValidationStatus.APPROVED,
 ) -> Offer:
     offer = Offer()
@@ -77,7 +75,7 @@ def create_offer_with_event_product(
 
 def create_event_occurrence(
     offer: Offer, beginning_datetime: datetime = datetime.utcnow() + timedelta(hours=2)
-) -> Dict:
+) -> dict:
     event_occurrence = {}
     event_occurrence["offer"] = offer
     event_occurrence["offerId"] = offer.id
@@ -107,7 +105,7 @@ def create_offer_with_thing_product(
     url: Optional[str] = None,
     last_provider_id: int = None,
     last_provider: Provider = None,
-    extra_data: Dict = None,
+    extra_data: dict = None,
     withdrawal_details: Optional[str] = None,
     date_modified_at_last_provider: Optional[datetime] = datetime.utcnow(),
     validation: OfferValidationStatus = OfferValidationStatus.APPROVED,
@@ -211,7 +209,7 @@ def create_product_with_thing_type(
     thumb_count: int = 1,
     url: str = None,
     owning_offerer: Offerer = None,
-    extra_data: Dict = None,
+    extra_data: dict = None,
 ) -> Product:
     product = Product()
     product.id = idx
@@ -243,7 +241,7 @@ def create_product_with_thing_type(
 
 
 def create_stock_from_event_occurrence(
-    event_occurrence: Dict,
+    event_occurrence: dict,
     price: int = 10,
     quantity: int = 10,
     soft_deleted: bool = False,
