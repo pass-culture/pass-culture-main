@@ -24,10 +24,8 @@ from pcapi.infrastructure.container import api_fnac_stocks
 from pcapi.infrastructure.container import api_libraires_stocks
 from pcapi.infrastructure.container import api_praxiel_stocks
 from pcapi.infrastructure.container import api_titelive_stocks
-from pcapi.local_providers.provider_api import synchronize_provider_api
 from pcapi.models import ApiErrors
 from pcapi.models import Product
-from pcapi.models import Venue
 from pcapi.models.db import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
@@ -39,7 +37,6 @@ from pcapi.utils.human_ids import dehumanize
 from pcapi.validation.models.entity_validator import validate
 from pcapi.validation.routes.venue_providers import check_existing_provider
 from pcapi.validation.routes.venues import check_existing_venue
-from pcapi.workers.venue_provider_job import venue_provider_job
 
 
 logger = logging.getLogger(__name__)
@@ -76,6 +73,9 @@ def _run_first_synchronization(new_venue_provider: VenueProvider) -> None:
             ]
         )
         return
+
+    # FIXME (apibrac, 2021-04-19): we shouldn't import infra function from core
+    from pcapi.workers.venue_provider_job import venue_provider_job
 
     venue_provider_job.delay(new_venue_provider.id)
 
@@ -126,15 +126,17 @@ def _check_venue_can_be_synchronized_with_provider(
 
 
 def _siret_can_be_synchronized(
-    id_at_provider: str,
+    siret: str,
     provider: Provider,
 ) -> bool:
-    if not id_at_provider:
+    if not siret:
         return False
 
     if provider.implements_provider_api:
-        return synchronize_provider_api.check_siret_can_be_synchronized(id_at_provider, provider)
-    return SPECIFIC_STOCK_PROVIDER[provider.localClass].can_be_synchronized(id_at_provider)
+        provider_api = provider.getProviderAPI()
+        return provider_api.is_siret_registered(siret)
+
+    return SPECIFIC_STOCK_PROVIDER[provider.localClass].can_be_synchronized(siret)
 
 
 def _get_synchronization_error_message(provider_name: str, siret: Optional[str]) -> str:

@@ -212,7 +212,7 @@ class WhenProviderImplementsProviderAPI:
 
     @pytest.mark.usefixtures("db_session")
     @patch(
-        "pcapi.core.providers.api.synchronize_provider_api.check_siret_can_be_synchronized",
+        "pcapi.core.providers.api._siret_can_be_synchronized",
         return_value=True,
     )
     def should_connect_venue_when_synchronization_is_allowed(self, app):
@@ -237,7 +237,7 @@ class WhenProviderImplementsProviderAPI:
 
     @pytest.mark.usefixtures("db_session")
     @patch(
-        "pcapi.core.providers.api.synchronize_provider_api.check_siret_can_be_synchronized",
+        "pcapi.core.providers.api._siret_can_be_synchronized",
         return_value=False,
     )
     def should_not_connect_venue_when_synchronization_is_not_allowed(self, app):

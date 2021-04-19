@@ -2,25 +2,17 @@ from datetime import datetime
 import logging
 import time
 from typing import Counter
-from typing import Dict
 from typing import Generator
-from typing import List
 
 from sqlalchemy.sql.sqltypes import DateTime
 
 from pcapi.core.providers.api import synchronize_stocks
-from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import VenueProvider
 from pcapi.infrastructure.repository.stock_provider.provider_api import ProviderAPI
 from pcapi.repository import repository
 
 
 logger = logging.getLogger(__name__)
-
-
-def check_siret_can_be_synchronized(siret: str, provider: Provider) -> bool:
-    provider_api = provider.getProviderAPI()
-    return provider_api.is_siret_registered(siret)
 
 
 def synchronize_venue_provider(venue_provider: VenueProvider) -> None:
