@@ -34,7 +34,7 @@ function tag_hotfix {
     echo --- Tag Main $TAG_VERSION ---
     cd "$ROOT_PATH"
     git checkout -b hotfix-$TAG_VERSION
-    git add api doc pro shared webapp
+    git add api doc pro webapp
     git commit -m "🚀 $TAG_VERSION"
     git tag "$TAG_VERSION"
     git push origin "$BRANCH_NAME"
