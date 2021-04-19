@@ -90,6 +90,13 @@ class BookOfferTest:
 
         booking = api.book_offer(beneficiary=user, stock_id=stock.id, quantity=1)
 
+        # One request should have been sent to Batch with the user's
+        # updated attributes
+        assert len(push_testing.requests) == 1
+
+        data = push_testing.requests[0]
+        assert data["attribute_values"]["u.credit"] == 49_000  # values in cents
+
         assert booking.quantity == 1
         assert booking.amount == 10
         assert booking.stock == stock
@@ -115,6 +122,13 @@ class BookOfferTest:
 
         booking = api.book_offer(beneficiary=user, stock_id=stock.id, quantity=1)
 
+        # One request should have been sent to Batch with the user's
+        # updated attributes
+        assert len(push_testing.requests) == 1
+
+        data = push_testing.requests[0]
+        assert data["attribute_values"]["u.credit"] == 49_000  # values in cents
+
         assert booking.isUsed
 
     def test_create_event_booking(self):
@@ -123,6 +137,14 @@ class BookOfferTest:
         stock = offers_factories.StockFactory(price=10, beginningDatetime=ten_days_from_now, dnBookedQuantity=5)
 
         booking = api.book_offer(beneficiary=user, stock_id=stock.id, quantity=1)
+
+        # One request should have been sent to Batch with the user's
+        # updated attributes
+        assert len(push_testing.requests) == 1
+
+        data = push_testing.requests[0]
+        assert data["attribute_values"]["u.credit"] == 49_000  # values in cents
+
         two_days_after_booking = booking.dateCreated + timedelta(days=2)
         assert booking.quantity == 1
         assert booking.amount == 10
@@ -199,6 +221,9 @@ class CancelByBeneficiaryTest:
 
         api.cancel_booking_by_beneficiary(booking.user, booking)
 
+        # cancellation can trigger more than one request to Batch
+        assert len(push_testing.requests) >= 1
+
         assert booking.isCancelled
         assert booking.cancellationReason == BookingCancellationReasons.BENEFICIARY
         assert len(mails_testing.outbox) == 2
@@ -213,10 +238,16 @@ class CancelByBeneficiaryTest:
 
         api.cancel_booking_by_beneficiary(booking.user, booking)
 
+        # cancellation can trigger more than one request to Batch
+        assert len(push_testing.requests) >= 1
+
         assert booking.isCancelled
         assert booking.stock.dnBookedQuantity == (initial_quantity - 1)
 
         api.cancel_booking_by_beneficiary(booking.user, booking)
+
+        # cancellation can trigger more than one request to Batch
+        assert len(push_testing.requests) >= 1
 
         assert booking.isCancelled
         assert booking.stock.dnBookedQuantity == (initial_quantity - 1)
@@ -294,20 +325,26 @@ class CancelByBeneficiaryTest:
 class CancelByOffererTest:
     def test_cancel(self):
         booking = factories.BookingFactory()
+
         api.cancel_booking_by_offerer(booking)
+
+        # cancellation can trigger more than one request to Batch
+        assert len(push_testing.requests) >= 1
+
         assert booking.isCancelled
         assert booking.cancellationReason == BookingCancellationReasons.OFFERER
 
-        assert push_testing.requests == [
-            {
-                "group_id": "Cancel_booking",
-                "message": {
-                    "body": f"""Ta commande "{booking.stock.offer.name}" a été annulée par l\'offreur.""",
-                    "title": "Commande annulée",
-                },
-                "user_ids": [booking.userId],
+        cancel_notification_request = next(
+            req for req in push_testing.requests if req.get("group_id") == "Cancel_booking"
+        )
+        assert cancel_notification_request == {
+            "group_id": "Cancel_booking",
+            "message": {
+                "body": f"""Ta commande "{booking.stock.offer.name}" a été annulée par l\'offreur.""",
+                "title": "Commande annulée",
             },
-        ]
+            "user_ids": [booking.userId],
+        }
 
     def test_raise_if_already_cancelled(self):
         booking = factories.BookingFactory(isCancelled=True, cancellationReason=BookingCancellationReasons.BENEFICIARY)
@@ -341,6 +378,9 @@ class CancelByOffererTest:
 
         api.cancel_bookings_when_offerer_deletes_stock(stock)
 
+        # cancellation can trigger more than one request to Batch
+        assert len(push_testing.requests) >= 1
+
         assert models.Booking.query.filter().count() == 4
         assert models.Booking.query.filter(models.Booking.isCancelled == True).count() == 3
         assert models.Booking.query.filter(models.Booking.isUsed == True).count() == 1
@@ -358,7 +398,12 @@ class CancelByOffererTest:
 class CancelForFraudTest:
     def test_cancel(self):
         booking = factories.BookingFactory()
+
         api.cancel_booking_for_fraud(booking)
+
+        # cancellation can trigger more than one request to Batch
+        assert len(push_testing.requests) >= 1
+
         assert booking.isCancelled
         assert booking.cancellationReason == BookingCancellationReasons.FRAUD
 

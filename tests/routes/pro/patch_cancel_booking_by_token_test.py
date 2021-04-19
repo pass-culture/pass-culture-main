@@ -51,21 +51,22 @@ class Patch:
                 headers={"Authorization": "Bearer " + api_key, "Origin": "http://localhost"},
             )
 
+            # cancellation can trigger more than one request to Batch
+            assert len(push_testing.requests) >= 1
+
             # Then
             assert response.status_code == 204
             updated_booking = Booking.query.first()
             assert updated_booking.isCancelled
 
-            assert push_testing.requests == [
-                {
-                    "group_id": "Cancel_booking",
-                    "message": {
-                        "body": 'Ta réservation "Test event" a été annulée par l\'offreur.',
-                        "title": "Réservation annulée",
-                    },
-                    "user_ids": [user.id],
+            assert push_testing.requests[-1] == {
+                "group_id": "Cancel_booking",
+                "message": {
+                    "body": 'Ta réservation "Test event" a été annulée par l\'offreur.',
+                    "title": "Réservation annulée",
                 },
-            ]
+                "user_ids": [user.id],
+            }
 
         @pytest.mark.usefixtures("db_session")
         def test_should_returns_204_with_lowercase_token(self, app):
@@ -91,6 +92,9 @@ class Patch:
                 "/v2/bookings/cancel/token/{}".format(token),
                 headers={"Authorization": "Bearer " + api_key, "Origin": "http://localhost"},
             )
+
+            # cancellation can trigger more than one request to Batch
+            assert len(push_testing.requests) >= 1
 
             # Then
             assert response.status_code == 204
@@ -271,6 +275,7 @@ class Patch:
             # Then
             assert response.status_code == 404
             assert response.json["global"] == ["Cette contremarque n'a pas été trouvée"]
+            assert push_testing.requests == []
 
     class Returns410:
         @pytest.mark.usefixtures("db_session")

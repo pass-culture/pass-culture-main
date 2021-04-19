@@ -26,6 +26,7 @@ from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.utils.mailing import MailServiceException
 from pcapi.workers.push_notification_job import send_cancel_booking_notification
+from pcapi.workers.push_notification_job import update_user_attributes_job
 
 from . import validation
 
@@ -43,7 +44,10 @@ def book_offer(
     stock_id: int,
     quantity: int,
 ) -> Booking:
-    """Return a booking or raise an exception if it's not possible."""
+    """
+    Return a booking or raise an exception if it's not possible.
+    Update a user's credit information on Batch.
+    """
     # The call to transaction here ensures we free the FOR UPDATE lock
     # on the stock if validation issues an exception
     with transaction():
@@ -107,10 +111,13 @@ def book_offer(
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
 
+    update_user_attributes_job.delay(beneficiary.id)
+
     return booking
 
 
 def _cancel_booking(booking: Booking, reason: BookingCancellationReasons) -> None:
+    """Cancel booking and update a user's credit information on Batch"""
     if booking.isCancelled:
         logger.info(
             "Booking was already cancelled",
@@ -133,13 +140,19 @@ def _cancel_booking(booking: Booking, reason: BookingCancellationReasons) -> Non
             "reason": str(reason),
         },
     )
+
+    update_user_attributes_job.delay(booking.user.id)
+
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         redis.add_offer_id(client=app.redis_client, offer_id=booking.stock.offerId)
 
 
 def _cancel_bookings_from_stock(stock: Stock, reason: BookingCancellationReasons) -> list[Booking]:
+    """
+    Cancel multiple bookings and update the users' credit information on Batch.
+    """
+    deleted_bookings = []
     with transaction():
-        deleted_bookings = []
         stock = offers_repository.get_and_lock_stock(stock_id=stock.id)
         for booking in stock.bookings:
             if not booking.isCancelled and not booking.isUsed:
@@ -148,6 +161,9 @@ def _cancel_bookings_from_stock(stock: Stock, reason: BookingCancellationReasons
                 stock.dnBookedQuantity -= booking.quantity
                 deleted_bookings.append(booking)
         repository.save(*deleted_bookings)
+
+    for booking in deleted_bookings:
+        update_user_attributes_job.delay(booking.user.id)
 
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)

@@ -455,6 +455,9 @@ class DeleteStockTest:
 
         api.delete_stock(stock)
 
+        # cancellation can trigger more than one request to Batch
+        assert len(push_testing.requests) >= 1
+
         stock = models.Stock.query.one()
         assert stock.isSoftDeleted
         booking1 = models.Booking.query.get(booking1.id)
@@ -472,16 +475,14 @@ class DeleteStockTest:
         assert notified_bookings_beneficiaries == notified_bookings_offerers
         assert notified_bookings_beneficiaries == [booking1]
 
-        assert push_testing.requests == [
-            {
-                "group_id": "Cancel_booking",
-                "user_ids": [booking1.userId],
-                "message": {
-                    "body": f"""Ta réservation "{stock.offer.name}" a été annulée par l'offreur.""",
-                    "title": "Réservation annulée",
-                },
-            }
-        ]
+        assert push_testing.requests[-1] == {
+            "group_id": "Cancel_booking",
+            "user_ids": [booking1.userId],
+            "message": {
+                "body": f"""Ta réservation "{stock.offer.name}" a été annulée par l'offreur.""",
+                "title": "Réservation annulée",
+            },
+        }
 
     def test_can_delete_if_stock_from_allocine(self):
         provider = offerers_factories.ProviderFactory(localClass="AllocineStocks")

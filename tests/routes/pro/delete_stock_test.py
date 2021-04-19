@@ -28,16 +28,14 @@ class Returns200:
         assert response.status_code == 200
         assert response.json == {"id": humanize(stock.id)}
         assert stock.isSoftDeleted
-        assert push_testing.requests == [
-            {
-                "group_id": "Cancel_booking",
-                "message": {
-                    "body": f"""Ta commande "{offer.name}" a été annulée par l'offreur.""",
-                    "title": "Commande annulée",
-                },
-                "user_ids": [booking.userId],
-            }
-        ]
+        assert push_testing.requests[-1] == {
+            "group_id": "Cancel_booking",
+            "message": {
+                "body": f"""Ta commande "{offer.name}" a été annulée par l'offreur.""",
+                "title": "Commande annulée",
+            },
+            "user_ids": [booking.userId],
+        }
 
 
 class Returns400:
