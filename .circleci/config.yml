@@ -113,7 +113,6 @@ jobs:
           name: Install requirements
           command: |
             sudo apt-get update
-            sudo apt-get install -y realpath
             sudo ./pc symlink
       - run:
           name: Run PC tests
