@@ -17,7 +17,6 @@
       ```
 
       ```
-      import { requestData } from 'pass-culture-shared'
       import React from 'react'
       import { connect } from 'react-redux'
       import { withRouter } form 'react-router'
