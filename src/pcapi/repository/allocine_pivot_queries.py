@@ -8,7 +8,4 @@ def has_allocine_pivot_for_venue(venue: Venue) -> bool:
 
 
 def get_allocine_pivot_for_venue(venue: Venue) -> AllocinePivot:
-    allocine_pivot = AllocinePivot.query.filter_by(siret=venue.siret).first_or_404(
-        f"No Allocine pivot was found for the venue with SIRET: {venue.siret}"
-    )
-    return allocine_pivot
+    return AllocinePivot.query.filter_by(siret=venue.siret).first()

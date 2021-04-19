@@ -1,5 +1,4 @@
 import pytest
-from werkzeug.exceptions import NotFound
 
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.providers.factories import AllocinePivotFactory
@@ -29,11 +28,10 @@ class GetAllocinePivotForVenueTest:
         AllocinePivotFactory(siret="12345678912345")
 
         # When
-        with pytest.raises(NotFound) as exception:
-            get_allocine_pivot_for_venue(venue)
+        allocine_pivot = get_allocine_pivot_for_venue(venue)
 
         # Then
-        assert str(exception.value) == "404 Not Found: No Allocine pivot was found for the venue with SIRET: None"
+        assert not allocine_pivot
 
     @pytest.mark.usefixtures("db_session")
     def test_should_not_return_value_when_not_matching_in_allocine_pivot(self, app):
@@ -42,14 +40,10 @@ class GetAllocinePivotForVenueTest:
         AllocinePivotFactory(siret="12345678912345")
 
         # When
-        with pytest.raises(NotFound) as exception:
-            get_allocine_pivot_for_venue(venue)
+        allocine_pivot = get_allocine_pivot_for_venue(venue)
 
         # Then
-        assert (
-            str(exception.value)
-            == "404 Not Found: No Allocine pivot was found for the venue with SIRET: 12345678912346"
-        )
+        assert not allocine_pivot
 
     @pytest.mark.usefixtures("db_session")
     def test_should_return_allocine_pivot_when_siret_is_present_in_allocine_pivot(self, app):

@@ -4,6 +4,7 @@ from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import AllocineVenueProviderPriceRule
 from pcapi.core.providers.models import VenueProvider
 from pcapi.domain.price_rule import PriceRule
+from pcapi.models import ApiErrors
 from pcapi.models import Venue
 from pcapi.models.allocine_pivot import AllocinePivot
 from pcapi.repository import repository
@@ -16,8 +17,17 @@ ERROR_CODE_PROVIDER_NOT_SUPPORTED = 400
 ERROR_CODE_SIRET_NOT_SUPPORTED = 422
 
 
+def _check_allocine_pivot(allocine_pivot: AllocinePivot):
+    if not allocine_pivot:
+        errors = ApiErrors(status_code=404)
+        errors.add_error("global", "No Allocine pivot was found for this venue")
+        raise errors
+
+
 def connect_venue_to_allocine(venue: Venue, venue_provider_payload: PostVenueProviderBody) -> AllocineVenueProvider:
     allocine_pivot = get_allocine_pivot_for_venue(venue)
+    _check_allocine_pivot(allocine_pivot)
+
     venue_provider = _create_allocine_venue_provider(allocine_pivot, venue_provider_payload, venue)
     venue_provider_price_rule = _create_allocine_venue_provider_price_rule(venue_provider, venue_provider_payload.price)
 

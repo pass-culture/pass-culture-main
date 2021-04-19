@@ -353,6 +353,28 @@ class Returns404:
         # Then
         assert response.status_code == 404
 
+    @pytest.mark.usefixtures("db_session")
+    def when_add_allocine_pivot_is_missing(self, app):
+        # Given
+        venue = offer_factories.VenueFactory(managingOfferer__siren="775671464")
+        user = user_factories.UserFactory(isAdmin=True)
+        provider = activate_provider("AllocineStocks")
+
+        venue_provider_data = {
+            "providerId": humanize(provider.id),
+            "venueId": humanize(venue.id),
+        }
+
+        auth_request = TestClient(app.test_client()).with_auth(email=user.email)
+
+        # When
+        response = auth_request.post("/venueProviders", json=venue_provider_data)
+
+        # Then
+        assert response.status_code == 404
+        assert response.json == {"global": ["No Allocine pivot was found for this venue"]}
+        assert VenueProvider.query.count() == 0
+
 
 class Returns422:
     @pytest.mark.usefixtures("db_session")
