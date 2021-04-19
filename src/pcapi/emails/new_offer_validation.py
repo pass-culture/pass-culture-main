@@ -8,7 +8,19 @@ def retrieve_data_for_offer_approval_email(offer: Offer) -> dict:
         "MJ-TemplateLanguage": True,
         "Vars": {
             "offer_name": offer.name,
-            "venue_name": offer.venue.publicName if offer.venue.publicName else offer.venue.name,
+            "venue_name": offer.venue.publicName or offer.venue.name,
+            "pc_pro_offer_link": build_pc_pro_offer_link(offer),
+        },
+    }
+
+
+def retrieve_data_for_offer_rejection_email(offer: Offer) -> dict:
+    return {
+        "MJ-TemplateID": 2613942,
+        "MJ-TemplateLanguage": True,
+        "Vars": {
+            "offer_name": offer.name,
+            "venue_name": offer.venue.publicName or offer.venue.name,
             "pc_pro_offer_link": build_pc_pro_offer_link(offer),
         },
     }

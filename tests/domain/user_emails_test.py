@@ -585,3 +585,20 @@ class SendOfferValidationTest:
         assert mails_testing.outbox[0].sent_data["Vars"]["venue_name"] == "Sibérie orientale"
         assert humanize(offer.id) in mails_testing.outbox[0].sent_data["Vars"]["pc_pro_offer_link"]
         assert mails_testing.outbox[0].sent_data["To"] == "jules.verne@example.com"
+
+    def test_send_offer_refusing_email(
+        self,
+    ):
+        # Given
+        venue = VenueFactory(name="Sibérie orientale")
+        offer = OfferFactory(name="Michel Strogoff", venue=venue)
+
+        # When
+        send_offer_validation_status_update_email(offer, OfferValidationStatus.REJECTED, ["jules.verne@example.com"])
+
+        # Then
+        assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 2613942
+        assert mails_testing.outbox[0].sent_data["Vars"]["offer_name"] == "Michel Strogoff"
+        assert mails_testing.outbox[0].sent_data["Vars"]["venue_name"] == "Sibérie orientale"
+        assert mails_testing.outbox[0].sent_data["To"] == "jules.verne@example.com"
+        assert humanize(offer.id) in mails_testing.outbox[0].sent_data["Vars"]["pc_pro_offer_link"]

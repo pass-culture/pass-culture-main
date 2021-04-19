@@ -29,6 +29,7 @@ from pcapi.emails.beneficiary_warning_after_pro_booking_cancellation import (
     retrieve_data_to_warn_beneficiary_after_pro_booking_cancellation,
 )
 from pcapi.emails.new_offer_validation import retrieve_data_for_offer_approval_email
+from pcapi.emails.new_offer_validation import retrieve_data_for_offer_rejection_email
 from pcapi.emails.new_offerer_validation import retrieve_data_for_new_offerer_validation_email
 from pcapi.emails.offerer_attachment_validation import retrieve_data_for_offerer_attachment_validation_email
 from pcapi.emails.offerer_booking_recap import retrieve_data_for_offerer_booking_recap_email
@@ -228,15 +229,19 @@ def send_reset_password_link_to_admin_email(created_user: User, admin_email: Use
 
 
 def send_offer_validation_status_update_email(
-    offer: Offer, validation_status: OfferValidationStatus, recipient_email: list[str]
+    offer: Offer, validation_status: OfferValidationStatus, recipient_emails: list[str]
 ) -> bool:
     if validation_status is OfferValidationStatus.APPROVED:
         offer_data = retrieve_data_for_offer_approval_email(offer)
-        return mails.send(recipients=recipient_email, data=offer_data)
-    return False  # False until end of implement in ticket 7855
+        return mails.send(recipients=recipient_emails, data=offer_data)
+
+    if validation_status is OfferValidationStatus.REJECTED:
+        offer_data = retrieve_data_for_offer_rejection_email(offer)
+        return mails.send(recipients=recipient_emails, data=offer_data)
+    return False
 
 
-def _build_recipients_list(booking: Booking) -> str:
+def _build_recipients_list(booking: Booking) -> list[str]:
     recipients = []
     offerer_booking_email = booking.stock.offer.bookingEmail
     if offerer_booking_email:
