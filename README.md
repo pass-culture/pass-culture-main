@@ -342,27 +342,6 @@ A la fin de l'opération, une fenêtre de votre navigateur s'ouvrira sur le work
 
 Après avoir livré en production, ne pas oublier de livrer ensuite sur les environnements d'integration.
 
-#### Publier pass-culture-shared sur npm
-
-Pour publier une version de pass-culture-shared sur npm
-
-```bash
-cd shared
-npm adduser
-yarn version
-yarn install
-npm publish
-```
-
-Puis sur webapp et/ou pro, mettre à jour la version de pass-culture-shared dans le fichier `package.json` :
-
-```bash
-yarn add pass-culture-shared@x.x.x
-git add package.json yarn.lock
-```
-
-avec `x.x.x`, étant la nouvelle version déployée sur pass-culture-shared.
-
 ## Administration
 
 ### Connexion à la base postgreSQL d'un environnement
