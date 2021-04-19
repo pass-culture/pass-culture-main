@@ -51,6 +51,8 @@ class Booking(PcObject, Model, VersionedMixin):
 
     userId = Column(BigInteger, ForeignKey("user.id"), index=True, nullable=False)
 
+    activationCode = relationship("ActivationCode", uselist=False, back_populates="booking")
+
     user = relationship("User", foreign_keys=[userId], backref="userBookings")
 
     amount = Column(Numeric(10, 2), nullable=False)

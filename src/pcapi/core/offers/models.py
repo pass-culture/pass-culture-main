@@ -99,6 +99,8 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin, VersionedMixin
 
     rawProviderQuantity = Column(Integer, nullable=True)
 
+    activationCodes = relationship("ActivationCode", back_populates="stock")
+
     @property
     def isBookable(self):
         return not self.isExpired and self.offer.isReleased and not self.isSoldOut
@@ -538,3 +540,21 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin, 
             ],
             else_=OfferStatus.ACTIVE.name,
         )
+
+
+class ActivationCode(PcObject, Model):
+    __tablename__ = "activation_code"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+
+    code = Column(Text, nullable=False)
+
+    expirationDate = Column(DateTime, nullable=True, default=None)
+
+    stockId = Column(BigInteger, ForeignKey("stock.id"), index=True, nullable=False)
+
+    stock = relationship("Stock", back_populates="activationCodes")
+
+    bookingId = Column(BigInteger, ForeignKey("booking.id"), index=True, nullable=True)
+
+    booking = relationship("Booking", back_populates="activationCode")

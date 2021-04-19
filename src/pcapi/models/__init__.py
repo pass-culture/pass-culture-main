@@ -2,6 +2,7 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.mails.models import Email
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
+from pcapi.core.offers.models import ActivationCode
 from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -53,6 +54,7 @@ from pcapi.models.iris_france import IrisFrance  # isort:skip
 
 __all__ = (
     "VersionedMixin",
+    "ActivationCode",
     "ApiErrors",
     "ApiKey",
     "AllocinePivot",
