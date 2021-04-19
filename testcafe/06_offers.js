@@ -6,7 +6,6 @@ import { navigateToNewOfferAs, navigateToOfferAs, navigateToOffersAs } from './h
 import { createUserRole } from './helpers/roles'
 import { fetchSandbox } from './helpers/sandboxes'
 
-const offerDetailsTab = Selector('a').withText("Détail de l'offre")
 const nameInput = Selector('.offer-form [name="name"]')
 const offererInput = Selector('.offer-form [name="offererId"]')
 const offererOption = Selector('.offer-form [name="offererId"] option')
@@ -116,13 +115,6 @@ test('je peux créer une offre avec des sous-types', async t => {
     .click(submitButton)
     .expect(getPathname())
     .match(/\/offres\/([A-Z0-9]+)\/stocks$/)
-    .click(offerDetailsTab)
-    .expect(musicTypeOption.withText(eventMusicType).exists)
-    .ok()
-    .expect(musicTypeOption.withText(eventMusicType).selected)
-    .ok()
-    .expect(musicSubTypeOption.withText(eventMusicSubType).selected)
-    .ok()
 })
 
 test('une offre Event est duo par défaut', async t => {
@@ -148,15 +140,8 @@ test('une offre Event est duo par défaut', async t => {
     .click(venueOption.withText(venue.name))
     .click(noDisabilityCompliantCheckbox)
     .click(submitButton)
-    .click(offerDetailsTab)
-    .expect(isDuo.checked)
-    .ok()
-    .expect(isDuo.checked)
-    .ok()
-    .click(isDuo) // Uncheck isDuo
-    .click(submitButton)
-    .expect(isDuo.checked)
-    .notOk()
+    .expect(getPathname())
+    .match(/\/offres\/([A-Z0-9]+)\/stocks$/)
 })
 
 test("je peux modifier la thumbnail d'une offre", async t => {

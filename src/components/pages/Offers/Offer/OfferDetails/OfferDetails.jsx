@@ -17,7 +17,6 @@ const OfferDetails = ({
   location,
   offer,
   reloadOffer,
-  showCreationSuccessNotification,
   showEditionSuccessNotification,
   showErrorNotification,
   userEmail,
@@ -78,7 +77,6 @@ const OfferDetails = ({
               croppingRect?.height
             )
           }
-          showCreationSuccessNotification()
           history.push(`/offres/${createdOfferId}/stocks`)
         }
       } catch (error) {
@@ -108,7 +106,6 @@ const OfferDetails = ({
       history,
       offer,
       reloadOffer,
-      showCreationSuccessNotification,
       showEditionSuccessNotification,
       showErrorNotification,
       thumbnailInfo,
@@ -195,7 +192,6 @@ OfferDetails.propTypes = {
   location: PropTypes.shape().isRequired,
   offer: PropTypes.shape(),
   reloadOffer: PropTypes.func,
-  showCreationSuccessNotification: PropTypes.func.isRequired,
   showEditionSuccessNotification: PropTypes.func.isRequired,
   showErrorNotification: PropTypes.func.isRequired,
   userEmail: PropTypes.string.isRequired,

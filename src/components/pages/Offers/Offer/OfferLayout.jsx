@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Route, Switch } from 'react-router-dom'
 
 import Titles from 'components/layout/Titles/Titles'
@@ -22,13 +22,14 @@ const mapPathToStep = {
 const OfferLayout = props => {
   const { location, match } = props
 
-  const isCreatingOffer = useRef(!match.params.offerId)
   const [offer, setOffer] = useState(null)
+  const [isCreatingOffer, setIsCreatingOffer] = useState(true)
 
   const loadOffer = useCallback(
     async offerId => {
       const existingOffer = await pcapi.loadOffer(offerId)
       setOffer(existingOffer)
+      setIsCreatingOffer(existingOffer.status === OFFER_STATUS_DRAFT)
     },
     [setOffer]
   )
@@ -53,7 +54,7 @@ const OfferLayout = props => {
     return null
   }
 
-  if (!isCreatingOffer.current) {
+  if (!isCreatingOffer) {
     pageTitle = 'Éditer une offre'
   }
 
@@ -74,7 +75,7 @@ const OfferLayout = props => {
 
       <Breadcrumb
         activeStep={activeStep}
-        isCreatingOffer={isCreatingOffer.current}
+        isCreatingOffer={isCreatingOffer}
         offerId={offer?.id}
       />
 

@@ -171,6 +171,17 @@ describe('offerLayout', () => {
       // Then
       expect(screen.getByText('Nouvelle offre', { selector: 'h1' })).toBeInTheDocument()
     })
+
+    it('should have inactive tab "Stock et prix" and "Détail de l’offre"', async () => {
+      // When
+      await renderOfferDetails(props, store)
+
+      // Then
+      expect(screen.getByText("Détail de l'offre")).toBeInTheDocument()
+      expect(screen.getByText('Stock et prix')).toBeInTheDocument()
+      expect(screen.queryByText("Détail de l'offre", { selector: 'a' })).not.toBeInTheDocument()
+      expect(screen.queryByText('Stock et prix', { selector: 'a' })).not.toBeInTheDocument()
+    })
   })
 
   describe('render when editing stocks', () => {

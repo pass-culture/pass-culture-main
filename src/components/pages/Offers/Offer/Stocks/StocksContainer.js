@@ -28,6 +28,13 @@ const mapDispatchToProps = dispatch => ({
         text: 'Vos stocks ont bien été sauvegardés.',
       })
     ),
+  showSuccessNotificationStocksAndOffer: () =>
+    dispatch(
+      showNotification({
+        type: 'success',
+        text: 'Votre offre a bien été créée et vos stocks sauvegardés.',
+      })
+    ),
 })
 
 export default compose(withRouter, connect(mapStateToProps, mapDispatchToProps))(Stocks)

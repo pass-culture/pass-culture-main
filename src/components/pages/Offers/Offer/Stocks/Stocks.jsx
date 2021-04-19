@@ -18,6 +18,7 @@ import {
   validateUpdatedStock,
 } from 'components/pages/Offers/Offer/Stocks/StockItem/domain'
 import StockItemContainer from 'components/pages/Offers/Offer/Stocks/StockItem/StockItemContainer'
+import { OFFER_STATUS_DRAFT } from 'components/pages/Offers/Offers/_constants'
 import { ReactComponent as AddStockSvg } from 'icons/ico-plus.svg'
 import * as pcapi from 'repository/pcapi/pcapi'
 
@@ -27,6 +28,7 @@ const Stocks = ({
   offer,
   showErrorNotification,
   showSuccessNotification,
+  showSuccessNotificationStocksAndOffer,
   reloadOffer,
   autoActivateDigitalBookings,
 }) => {
@@ -35,6 +37,8 @@ const Stocks = ({
   const [stocks, setStocks] = useState([])
   const isOfferSynchronized = Boolean(offer.lastProvider)
   const [formErrors, setFormErrors] = useState({})
+  const isOfferDraft = offer.status === OFFER_STATUS_DRAFT
+  const editionOfferLink = `/offres/${offerId}/edition`
 
   const loadStocks = useCallback(
     (keepCreationStocks = false) => {
@@ -144,7 +148,7 @@ const Stocks = ({
         .then(() => {
           loadStocks()
           reloadOffer()
-          showSuccessNotification()
+          isOfferDraft ? showSuccessNotificationStocksAndOffer() : showSuccessNotification()
         })
         .catch(() => showErrorNotification())
     }
@@ -153,10 +157,12 @@ const Stocks = ({
     stocksInCreation,
     offer.id,
     offer.isEvent,
+    isOfferDraft,
     offer.venue.departementCode,
     loadStocks,
     reloadOffer,
     showSuccessNotification,
+    showSuccessNotificationStocksAndOffer,
     showErrorNotification,
   ])
 
@@ -165,6 +171,8 @@ const Stocks = ({
   }
 
   const isDisabled = offer.status ? isOfferDisabled(offer.status) : false
+  const hasNoStock = stocks.length === 0
+  const hasAtLeastOneStock = stocks.length > 0
 
   return (
     <div className="stocks-page">
@@ -186,7 +194,7 @@ const Stocks = ({
         {!autoActivateDigitalBookings &&
           (offer.isEvent ? EVENT_CANCELLATION_INFORMATION : THING_CANCELLATION_INFORMATION)}
       </div>
-      {stocks.length === 0 ? (
+      {hasNoStock ? (
         <button
           className="primary-button with-icon add-first-stock-button"
           disabled={isDisabled}
@@ -276,22 +284,28 @@ const Stocks = ({
               ))}
             </tbody>
           </table>
+        </Fragment>
+      )}
+      {(isOfferDraft || hasAtLeastOneStock) && (
+        <Fragment>
           <div className="interval cover" />
           <div className="interval shadow" />
           <section className="actions-section">
-            <Link
-              className="secondary-link"
-              to={`/offres/${offerId}/edition`}
-            >
-              {'Annuler et quitter'}
-            </Link>
+            {!isOfferDraft && (
+              <Link
+                className="secondary-link"
+                to={editionOfferLink}
+              >
+                {'Annuler et quitter'}
+              </Link>
+            )}
             <button
               className="primary-button"
-              disabled={isDisabled}
+              disabled={isDisabled || hasNoStock}
               onClick={submitStocks}
               type="button"
             >
-              {'Enregistrer'}
+              {isOfferDraft ? 'Valider et créer l’offre' : 'Enregistrer'}
             </button>
           </section>
         </Fragment>
@@ -306,6 +320,7 @@ Stocks.propTypes = {
   reloadOffer: PropTypes.func.isRequired,
   showErrorNotification: PropTypes.func.isRequired,
   showSuccessNotification: PropTypes.func.isRequired,
+  showSuccessNotificationStocksAndOffer: PropTypes.func.isRequired,
 }
 
 export default Stocks

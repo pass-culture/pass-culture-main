@@ -98,7 +98,7 @@ describe('stocks page', () => {
         expect(await screen.queryByRole('table')).not.toBeInTheDocument()
       })
 
-      it('should not display action buttons', async () => {
+      it('should not display action buttons if offer already created', async () => {
         // given
         pcapi.loadStocks.mockResolvedValue({ stocks: [] })
 
@@ -223,6 +223,64 @@ describe('stocks page', () => {
       const cancelLink = screen.getByRole('link', { name: 'Annuler et quitter' })
       expect(cancelLink).toBeInTheDocument()
       expect(cancelLink).toHaveAttribute('href', '/offres/AG3A/edition')
+    })
+
+    describe('when offer is being created (DRAFT status)', () => {
+      beforeEach(() => {
+        const draftOffer = {
+          ...defaultOffer,
+          status: 'DRAFT',
+        }
+
+        pcapi.loadOffer.mockResolvedValue(draftOffer)
+      })
+
+      it('should have inactive tab "Stock et prix" and "Détail de l’offre"', async () => {
+        // When
+        await renderOffers(props, store)
+
+        // Then
+        expect(queryByTextTrimHtml(screen, "Détail de l'offre", { selector: 'li', leafOnly: false})).toBeInTheDocument()
+        expect(queryByTextTrimHtml(screen, "Stock et prix", { selector: 'li', leafOnly: false})).toBeInTheDocument()
+
+        expect(screen.queryByText("Détail de l'offre", { selector: 'a' })).not.toBeInTheDocument()
+        expect(screen.queryByText('Stock et prix', { selector: 'a' })).not.toBeInTheDocument()
+      })
+
+      describe('when no stock yet', () => {
+        it('should display a disabled "Valider et créer l’offre" button', async () => {
+          // Given
+          pcapi.loadStocks.mockResolvedValue({ stocks: [] })
+
+          // When
+          await renderOffers(props, store)
+
+          // Then
+          expect(
+            screen.getByText('Valider et créer l’offre', { selector: 'button' })
+          ).toBeDisabled()
+        })
+      })
+
+      describe('when at least one stock', () => {
+        it('should display a "Valider et créer l’offre" button', async () => {
+          // Given
+          pcapi.loadStocks.mockResolvedValue({
+            stocks: [
+              {
+                ...defaultStock,
+                quantity: 10,
+              },
+            ],
+          })
+
+          // When
+          await renderOffers(props, store)
+
+          // Then
+          expect(screen.getByText('Valider et créer l’offre', { selector: 'button' })).toBeEnabled()
+        })
+      })
     })
 
     describe('when fraud detection', () => {
@@ -1224,7 +1282,7 @@ describe('stocks page', () => {
               // When
               await fireEvent.click(screen.getByText('Enregistrer'))
 
-              //Then
+              // Then
               expect(pcapi.loadOffer).toHaveBeenCalledTimes(1)
             })
 
@@ -1777,31 +1835,56 @@ describe('stocks page', () => {
   describe('create', () => {
     it('should update displayed offer status', async () => {
       // Given
-      const initialOffer = {
+      const draftOffer = {
         ...defaultOffer,
-        status: 'SOLD_OUT',
+        status: 'DRAFT',
       }
-      const updatedOffer = {
+      const createdOffer = {
         ...defaultOffer,
         status: 'ACTIVE',
       }
-      pcapi.loadOffer.mockResolvedValueOnce(initialOffer).mockResolvedValueOnce(updatedOffer)
+      pcapi.loadOffer.mockResolvedValueOnce(draftOffer).mockResolvedValueOnce(createdOffer)
       pcapi.bulkCreateOrEditStock.mockResolvedValue({})
 
       await renderOffers(props, store)
-      const initialStatus = screen.getByText('épuisée')
+      const initialStatus = screen.queryByText('épuisée')
       fireEvent.click(screen.getByText('Ajouter un stock'))
       fireEvent.change(screen.getByLabelText('Prix'), { target: { value: '15' } })
 
       // When
-      fireEvent.click(screen.getByText('Enregistrer'))
+      fireEvent.click(screen.getByText('Valider et créer l’offre'))
 
       // Then
-      expect(initialStatus).toBeInTheDocument()
+      expect(initialStatus).not.toBeInTheDocument()
       await waitFor(() => {
         expect(screen.queryByText('épuisée')).not.toBeInTheDocument()
         expect(screen.getByText('active')).toBeInTheDocument()
       })
+    })
+
+    it('should display a specific success notification when the user has finished the offer creation process', async () => {
+      // Given
+      const draftOffer = {
+        ...defaultOffer,
+        status: 'DRAFT',
+      }
+
+      pcapi.loadOffer.mockResolvedValue(draftOffer)
+      pcapi.bulkCreateOrEditStock.mockResolvedValue({})
+
+      await renderOffers(props, store)
+
+      fireEvent.click(screen.getByText('Ajouter un stock'))
+      fireEvent.change(screen.getByLabelText('Prix'), { target: { value: '15' } })
+
+      // When
+      fireEvent.click(screen.getByText('Valider et créer l’offre'))
+
+      // Then
+      const successMessage = await screen.findByText(
+        'Votre offre a bien été créée et vos stocks sauvegardés.'
+      )
+      expect(successMessage).toBeInTheDocument()
     })
 
     describe('event offer', () => {
@@ -1818,16 +1901,10 @@ describe('stocks page', () => {
 
       it('should not display remaining stocks and bookings columns when no stocks yet', async () => {
         // given
-        const eventOffer = {
-          ...defaultOffer,
-          isEvent: true,
-          stocks: [],
-        }
-        pcapi.loadOffer.mockResolvedValue(eventOffer)
         await renderOffers(props, store)
 
         // when
-        userEvent.click(screen.getByText('Ajouter une date'))
+        fireEvent.click(await screen.findByText('Ajouter une date'))
 
         // then
         expect(screen.queryByText('Stock restant')).not.toBeInTheDocument()

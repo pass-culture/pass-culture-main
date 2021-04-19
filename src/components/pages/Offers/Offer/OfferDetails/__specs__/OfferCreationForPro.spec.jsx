@@ -1355,10 +1355,24 @@ describe('offerDetails - Creation - pro user', () => {
         expect(noDisabilityCompliantCheckbox).not.toBeChecked()
       })
     })
+
+    describe('when clicking on cancel link', () => {
+      it('should redirect to offers page', async () => {
+        // When
+        await renderOffers(props, store)
+
+        // Then
+        expect(await screen.findByText('Annuler et quitter', { selector: 'a' })).toHaveAttribute(
+          'href',
+          '/offres'
+        )
+      })
+    })
   })
 
   describe('when submitting form', () => {
     beforeEach(() => {
+      pcapi.loadOffer.mockResolvedValue( { status: 'DRAFT' })
       pcapi.loadStocks.mockResolvedValue({ stocks: [] })
     })
 
@@ -1390,7 +1404,7 @@ describe('offerDetails - Creation - pro user', () => {
       await setOfferValues(offerValues)
 
       // When
-      await userEvent.click(screen.getByText('Enregistrer et passer aux stocks'))
+      await userEvent.click(screen.getByText('Étape suivante'))
 
       // Then
       expect(pcapi.createOffer).toHaveBeenCalledWith({
@@ -1418,7 +1432,7 @@ describe('offerDetails - Creation - pro user', () => {
       await setOfferValues(offerValues)
 
       // When
-      await userEvent.click(screen.getByText('Enregistrer et passer aux stocks'))
+      await userEvent.click(screen.getByText('Étape suivante'))
 
       // Then
       expect(pcapi.createOffer).toHaveBeenCalledWith(
@@ -1428,7 +1442,7 @@ describe('offerDetails - Creation - pro user', () => {
       )
     })
 
-    it('should show a success notification and redirect to stock page when form was correctly submitted', async () => {
+    it('should redirect to stock page when form was correctly submitted', async () => {
       // Given
       const offerValues = {
         name: 'Ma petite offre',
@@ -1454,7 +1468,7 @@ describe('offerDetails - Creation - pro user', () => {
         id: 'CREATED',
         stocks: [],
         venue: venues[0],
-        status: 'ACTIVE',
+        status: 'DRAFT',
       }
       pcapi.createOffer.mockResolvedValue(createdOffer)
       await renderOffers(props, store)
@@ -1464,11 +1478,11 @@ describe('offerDetails - Creation - pro user', () => {
       await setOfferValues(offerValues)
 
       // When
-      userEvent.click(screen.getByText('Enregistrer et passer aux stocks'))
+      await act(async () => {
+        await fireEvent.click(screen.getByText('Étape suivante'))
+      })
 
       // Then
-      const successNotification = await screen.findByText('Votre offre a bien été créée')
-      expect(successNotification).toBeInTheDocument()
       expect(screen.getByRole('heading', { name: 'Nouvelle offre', level: 1 })).toBeInTheDocument()
       expect(screen.getByRole('heading', { name: 'Stock et prix', level: 3 })).toBeInTheDocument()
     })
@@ -1479,7 +1493,7 @@ describe('offerDetails - Creation - pro user', () => {
       await setOfferValues({ type: 'EventType.MUSIQUE' })
 
       // When
-      userEvent.click(screen.getByText('Enregistrer et passer aux stocks'))
+      userEvent.click(screen.getByText('Étape suivante'))
 
       // Then
       expect(pcapi.createOffer).not.toHaveBeenCalled()
@@ -1521,7 +1535,7 @@ describe('offerDetails - Creation - pro user', () => {
       await setOfferValues({ type: 'EventType.MUSIQUE' })
 
       // When
-      userEvent.click(screen.getByText('Enregistrer et passer aux stocks'))
+      userEvent.click(screen.getByText('Étape suivante'))
 
       // Then
       const errorNotification = await screen.findByText(
@@ -1538,7 +1552,7 @@ describe('offerDetails - Creation - pro user', () => {
 
       // When
       await setOfferValues({ bookingEmail: '' })
-      fireEvent.click(screen.getByText('Enregistrer et passer aux stocks'))
+      fireEvent.click(screen.getByText('Étape suivante'))
 
       // Then
       const bookingEmailInput = await findInputErrorForField('bookingEmail')
@@ -1573,7 +1587,7 @@ describe('offerDetails - Creation - pro user', () => {
       await setOfferValues(offerValues)
 
       // When
-      userEvent.click(screen.getByText('Enregistrer et passer aux stocks'))
+      userEvent.click(screen.getByText('Étape suivante'))
 
       // Then
       const nameError = await screen.findByText("Ce nom n'est pas valide")
@@ -1609,7 +1623,7 @@ describe('offerDetails - Creation - pro user', () => {
       await setOfferValues(offerValues)
 
       // When
-      fireEvent.click(screen.getByText('Enregistrer et passer aux stocks'))
+      fireEvent.click(screen.getByText('Étape suivante'))
 
       // Then
       const addThumbnail = await screen.queryByText('Ajouter une image')

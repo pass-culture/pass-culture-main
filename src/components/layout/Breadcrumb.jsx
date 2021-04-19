@@ -13,13 +13,13 @@ const Breadcrumb = ({ activeStep, isDisabled, styleType, steps }) => {
   const lastStepIndex = steps.length - 1
 
   return (
-    <div className={className}>
+    <ul className={className}>
       {steps.map((step, stepIndex) => {
         const isActive = activeStep === step.id
         const isLastStep = lastStepIndex === stepIndex
 
         return (
-          <span
+          <li
             className={`bc-step ${isActive ? 'active' : ''}`}
             key={`breadcrumb-step-${step.id}`}
           >
@@ -51,10 +51,10 @@ const Breadcrumb = ({ activeStep, isDisabled, styleType, steps }) => {
                 <BreadcumbSeparator />
               </div>
             )}
-          </span>
+          </li>
         )
       })}
-    </div>
+    </ul>
   )
 }
 
