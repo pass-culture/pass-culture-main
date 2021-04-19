@@ -203,7 +203,32 @@ jobs:
             export BOT_MESSAGE="'Build *$CIRCLE_JOB* fail : $CIRCLE_BUILD_URL'"
             curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
 
-  tests-pro:
+  tests-pro-unit-tests:
+    machine:
+      image: ubuntu-1604:201903-01
+    working_directory: ~/pass-culture
+    steps:
+      - checkout
+      - run: git submodule sync
+      - run: git submodule update --init
+      - run: ./install_lib_ci.sh
+      - run:
+          name: Run Unit Test PRO
+          command: |
+            export NVM_DIR="/opt/circleci/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            cd pro
+            nvm install
+            yarn install
+            yarn test:unit
+      - run:
+          name: Notify PC Ops Bot
+          when: on_fail
+          command: |
+            export BOT_MESSAGE="'Build *$CIRCLE_JOB* fail : $CIRCLE_BUILD_URL'"
+            curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
+
+  tests-pro-e2e-tests:
     machine:
       image: ubuntu-1604:201903-01
     working_directory: ~/pass-culture
@@ -214,15 +239,6 @@ jobs:
       - run: ./install_lib_ci.sh
       - run: sudo ./pc symlink
       - run: ./scripts/install_dockerize.sh $DOCKERIZE_VERSION
-      - run:
-          name: Run Unit Test PRO
-          command: |
-            export NVM_DIR="/opt/circleci/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            cd pro
-            nvm install
-            yarn install
-            yarn test:unit
       - run:
           name: Running API server
           command: |
@@ -236,6 +252,7 @@ jobs:
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             cd pro
             nvm install
+            yarn install
             yarn start
           background: true
       - run:
@@ -532,7 +549,14 @@ workflows:
                 - production
                 - staging
                 - integration
-      - tests-pro:
+      - tests-pro-unit-tests:
+          filters:
+            branches:
+              ignore:
+                - production
+                - staging
+                - integration
+      - tests-pro-e2e-tests:
           filters:
             branches:
               ignore:
