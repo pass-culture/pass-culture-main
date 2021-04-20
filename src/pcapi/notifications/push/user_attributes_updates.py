@@ -1,4 +1,12 @@
+from dataclasses import dataclass
+
 from pcapi.core.users.models import User
+
+
+@dataclass
+class UserUpdateData:
+    user_id: str
+    attributes: dict
 
 
 BATCH_DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S"

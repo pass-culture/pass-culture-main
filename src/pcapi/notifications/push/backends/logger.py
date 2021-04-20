@@ -1,6 +1,7 @@
 import logging
 
 from pcapi.notifications.push.transactional_notifications import TransactionalNotificationData
+from pcapi.notifications.push.user_attributes_updates import UserUpdateData
 
 
 logger = logging.getLogger(__name__)
@@ -12,6 +13,13 @@ class LoggerBackend:
             "A request to update user attributes would be sent for user with id=%d with new attributes=%s",
             user_id,
             attribute_values,
+        )
+
+    def update_users_attributes(self, users_data: list[UserUpdateData]) -> None:
+        logger.info(
+            "A request to update users attributes would be sent for %d users: %s",
+            len(users_data),
+            [user.user_id for user in users_data],
         )
 
     def send_transactional_notification(self, notification_data: TransactionalNotificationData) -> None:

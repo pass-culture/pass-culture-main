@@ -3,6 +3,7 @@ import logging
 
 from pcapi import settings
 from pcapi.notifications.push.transactional_notifications import TransactionalNotificationData
+from pcapi.notifications.push.user_attributes_updates import UserUpdateData
 from pcapi.utils import requests
 
 
@@ -36,6 +37,34 @@ class BatchBackend:
             if not response.ok:
                 logger.error(
                     "Got %d status code from Batch Custom Data API: content=%s", response.status_code, response.content
+                )
+
+        make_post_request(BatchAPI.ANDROID)
+        make_post_request(BatchAPI.IOS)
+
+    def update_users_attributes(self, users_data: list[UserUpdateData]) -> None:
+        def payload_template(user: UserUpdateData) -> dict:
+            return {
+                "id": user.user_id,
+                "update": {"overwrite": False, "values": user.attributes},
+            }
+
+        def make_post_request(api: BatchAPI) -> None:
+            try:
+                response = requests.post(
+                    f"{settings.BATCH_API_URL}/1.0/{api.value}/data/users/",
+                    headers=self.headers,
+                    json=[payload_template(user) for user in users_data],
+                )
+            except Exception as exc:  # pylint: disable=broad-except
+                logger.exception("Error with Batch Custom Data API trying to update attributes of users: %s", exc)
+                return
+
+            if not response.ok:
+                logger.error(
+                    "Got %d status code from Batch Custom Data API (batch update): content=%s",
+                    response.status_code,
+                    response.content,
                 )
 
         make_post_request(BatchAPI.ANDROID)
