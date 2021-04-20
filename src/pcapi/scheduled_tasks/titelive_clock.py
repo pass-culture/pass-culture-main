@@ -1,5 +1,10 @@
+"""
+    isort:skip_file
+"""
 from apscheduler.schedulers.blocking import BlockingScheduler
 
+# FIXME (asaunier, 2021-04-20): this is to prevent circular imports
+import pcapi.models  # pylint: disable=unused-import
 from pcapi.core.logging import install_logging
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.local_providers.provider_manager import synchronize_data_for_provider
