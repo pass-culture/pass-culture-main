@@ -11,26 +11,12 @@ logger = logging.getLogger(__name__)
 
 
 def _reset_stock_quantity(venue: Venue) -> None:
+    """Reset all stock quantity with the number of non-cancelled bookings."""
     query = """
-      WITH bookings_per_stock AS (
-        SELECT
-          stock.id AS stock_id,
-          COALESCE(SUM(booking.quantity), 0) AS total_bookings
-        FROM stock
-        JOIN offer ON offer.id = stock."offerId"
-        -- The `NOT isCancelled` condition MUST be part of the JOIN.
-        -- If it were part of the WHERE clause, that would exclude
-        -- stocks that only have cancelled bookings.
-        LEFT OUTER JOIN booking
-          ON booking."stockId" = stock.id
-          AND NOT booking."isCancelled"
-        WHERE offer."venueId" = :venue_id
-        GROUP BY stock.id
-      )
       UPDATE stock
-      SET quantity = bookings_per_stock.total_bookings
-      FROM bookings_per_stock
-      WHERE stock.id = bookings_per_stock.stock_id
+      SET quantity = "dnBookedQuantity"
+      FROM offer
+      WHERE offer.id = stock."offerId" and offer."venueId" = :venue_id
     """
     db.session.execute(query, {"venue_id": venue.id})
     db.session.commit()
