@@ -69,7 +69,7 @@ describe('navigation menu', () => {
       const helpLink = screen.queryByText('Aide')
       expect(helpLink.closest('a')).toHaveAttribute(
         'href',
-        'https://aide.passculture.app/fr/category/acteurs-culturels-1t20dhs/'
+        'https://aide.passculture.app'
       )
       expect(helpLink.closest('a')).toHaveAttribute('target', '_blank')
     })

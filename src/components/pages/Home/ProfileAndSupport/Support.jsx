@@ -15,7 +15,7 @@ const Support = () => {
             <li>
               <a
                 className="hs-link tertiary-link"
-                href="https://aide.passculture.app/fr/category/acteurs-culturels-1t20dhs/"
+                href="https://aide.passculture.app"
                 rel="noopener noreferrer"
                 target="_blank"
               >

@@ -268,7 +268,7 @@ class Desk extends Component {
             {message}
           </div>
           <Banner
-            href="https://aide.passculture.app/fr/article/acteurs-modalites-de-retrait-dun-bien-dans-ma-structure-mq85is/"
+            href="https://aide.passculture.app/fr/articles/5147999-modalites-de-retrait-d-un-bien-dans-ma-structure"
             linkTitle="En savoir plus"
             type="notification-info"
           >

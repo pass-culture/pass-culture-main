@@ -59,7 +59,7 @@ describe('src | components | pages | Reimbursements', () => {
         type: 'notification-info',
         linkTitle: 'En savoir plus sur les prochains remboursements',
         href:
-          'https://aide.passculture.app/fr/article/acteurs-calendrier-des-prochains-remboursements-54t3e/',
+          'https://aide.passculture.app/fr/articles/5096833-calendrier-des-prochains-remboursements',
         icon: 'ico-external-site',
         children: null,
       })

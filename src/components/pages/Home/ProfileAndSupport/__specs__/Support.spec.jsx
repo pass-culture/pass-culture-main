@@ -30,7 +30,7 @@ describe('homepage: ProfileAndSupport: Support', () => {
       expect(contactLink.getAttribute('href')).toBe('mailto:support@passculture.app')
       expect(cguLink.getAttribute('href')).toBe('https://pass.culture.fr/cgu-professionnels/')
       expect(helpCenterLink.getAttribute('href')).toBe(
-        'https://aide.passculture.app/fr/category/acteurs-culturels-1t20dhs/'
+        'https://aide.passculture.app'
       )
     })
   })

@@ -66,7 +66,7 @@ const BankInformation = ({ venue, offerer }) => {
             </Fragment>
           )}
           <Banner
-            href="https://aide.passculture.app/fr/article/acteurs-determiner-ses-modalites-de-remboursement-1ab6g2m/"
+            href="https://aide.passculture.app/fr/articles/5096833-calendrier-des-prochains-remboursements"
             linkTitle="En savoir plus sur les remboursements"
             type="notification-info"
           />

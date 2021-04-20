@@ -7,7 +7,7 @@ export const LAST_DEPLOYED_COMMIT = '##LAST_DEPLOYED_COMMIT##'
 export const IS_DEV = NODE_ENV === 'development'
 export const IS_PROD = !IS_DEV
 
-export const HELP_PAGE_URL = 'https://aide.passculture.app/fr/category/acteurs-culturels-1t20dhs/'
+export const HELP_PAGE_URL = 'https://aide.passculture.app'
 export const CGU_URL = 'https://pass.culture.fr/cgu-professionnels/'
 
 export const API_URL = process.env.API_URL || 'http://localhost'

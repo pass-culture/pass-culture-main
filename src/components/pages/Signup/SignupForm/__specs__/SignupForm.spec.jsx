@@ -80,7 +80,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
       const helpCenterLink = wrapper.find({ children: 'Consulter notre centre d’aide' }).parent('a')
       expect(helpCenterLink).toHaveLength(1)
       expect(helpCenterLink.prop('href')).toBe(
-        'https://aide.passculture.app/fr/article/acteurs-creer-un-compte-professionnel-t0m1hj/'
+        'https://aide.passculture.app/fr/articles/5095632-comment-creer-un-compte-d-acteur-partenaire'
       )
     })
 

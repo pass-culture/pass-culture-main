@@ -23,7 +23,7 @@ const Reimbursements = () => (
       {'Le fichier est au format CSV, compatible avec tous les tableurs et éditeurs de texte.'}
     </p>
     <Banner
-      href="https://aide.passculture.app/fr/article/acteurs-calendrier-des-prochains-remboursements-54t3e/"
+      href="https://aide.passculture.app/fr/articles/5096833-calendrier-des-prochains-remboursements"
       linkTitle="En savoir plus sur les prochains remboursements"
       type="notification-info"
     />

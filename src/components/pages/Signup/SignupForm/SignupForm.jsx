@@ -155,7 +155,7 @@ class SignupForm extends PureComponent {
             </a>
             <a
               className="tertiary-link"
-              href="https://aide.passculture.app/fr/article/acteurs-creer-un-compte-professionnel-t0m1hj/"
+              href="https://aide.passculture.app/fr/articles/5095632-comment-creer-un-compte-d-acteur-partenaire"
               rel="noopener noreferrer"
               target="_blank"
             >

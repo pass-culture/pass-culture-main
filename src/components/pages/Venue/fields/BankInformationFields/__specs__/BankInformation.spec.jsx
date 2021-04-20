@@ -65,7 +65,7 @@ describe('src | Venue | BankInformation', () => {
         expect(informationLink).toBeInTheDocument()
         expect(informationLink).toHaveAttribute(
           'href',
-          'https://aide.passculture.app/fr/article/acteurs-determiner-ses-modalites-de-remboursement-1ab6g2m/'
+          'https://aide.passculture.app/fr/articles/5096833-calendrier-des-prochains-remboursements'
         )
       })
     })
