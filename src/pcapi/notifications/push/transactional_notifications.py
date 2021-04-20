@@ -55,6 +55,6 @@ def get_tomorrow_stock_notification_data(stock_id: int) -> Optional[Transactiona
         user_ids=[booking.userId for booking in bookings],
         message=TransactionalNotificationMessage(
             title=f"{stock.offer.name}, c'est demain !",
-            body="Retrouve les détails de la réservation sur l’appli Pass Culture",
+            body="Retrouve les détails de la réservation sur l’application pass Culture",
         ),
     )

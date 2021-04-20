@@ -260,7 +260,7 @@ def check_stock_consistency() -> list[int]:
     ]
 
 
-def find_tomorrow_event_stock_ids() -> list[int]:
+def find_tomorrow_event_stock_ids() -> set[int]:
     """Find stocks linked to offers that happen tomorrow (and that are not cancelled)"""
     tomorrow = datetime.now() + timedelta(days=1)
     tomorrow_min = datetime.combine(tomorrow, time.min)
@@ -273,4 +273,4 @@ def find_tomorrow_event_stock_ids() -> list[int]:
         .options(load_only(Stock.id))
     )
 
-    return [stock.id for stock in stocks]
+    return {stock.id for stock in stocks}
