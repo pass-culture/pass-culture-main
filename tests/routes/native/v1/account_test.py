@@ -19,6 +19,7 @@ from pcapi.core.users.models import User
 from pcapi.core.users.models import VOID_PUBLIC_NAME
 from pcapi.core.users.repository import get_id_check_token
 from pcapi.notifications.push import testing as push_testing
+from pcapi.notifications.sms import testing as sms_testing
 from pcapi.routes.native.v1.serialization import account as account_serializers
 
 from tests.conftest import TestClient
@@ -631,10 +632,7 @@ class ShowEligibleCardTest:
 
 
 class SendPhoneValidationCodeTest:
-    @patch("pcapi.core.users.api.SendinblueBackend")
-    def test_send_phone_validation_code(self, mocked_sendinblue, app):
-        mocked_sendinblue().send_transac_sms.return_value = True
-
+    def test_send_phone_validation_code(self, app):
         user = users_factories.UserFactory(
             departementCode="93", isEmailValidated=True, isBeneficiary=False, phoneNumber="060102030405"
         )
@@ -652,9 +650,9 @@ class SendPhoneValidationCodeTest:
         assert token.expirationDate >= datetime.now() + timedelta(minutes=2)
         assert token.expirationDate < datetime.now() + timedelta(minutes=30)
 
-        mocked_sendinblue().send_transac_sms.assert_called_once_with(
-            content=f"{token.value} est ton code d'activation du pass Culture", recipient="3360102030405"
-        )
+        assert sms_testing.requests == [
+            {"recipient": "3360102030405", "content": f"{token.value} est ton code de confirmation pass Culture"}
+        ]
 
     def test_send_phone_validation_code_already_beneficiary(self, app):
         user = users_factories.UserFactory(isEmailValidated=True, isBeneficiary=True, phoneNumber="060102030405")

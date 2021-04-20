@@ -42,7 +42,7 @@ from pcapi.models import ImportStatus
 from pcapi.models.db import db
 from pcapi.models.user_offerer import UserOfferer
 from pcapi.models.user_session import UserSession
-from pcapi.notifications.sms.sendinblue import SendinblueBackend
+from pcapi.notifications.sms import send_transactional_sms
 from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
@@ -470,7 +470,7 @@ def send_phone_validation_code(user: User) -> None:
     # TODO: add condition on user.isPhoneValidated
 
     phone_validation_token = create_phone_validation_token(user)
-    content = f"{phone_validation_token.value} est ton code d'activation du pass Culture"
+    content = f"{phone_validation_token.value} est ton code de confirmation pass Culture"
 
-    if not SendinblueBackend().send_transac_sms(recipient=format_phone_number_with_country_code(user), content=content):
+    if not send_transactional_sms(format_phone_number_with_country_code(user), content):
         raise exceptions.PhoneVerificationCodeSendingException()

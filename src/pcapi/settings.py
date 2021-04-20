@@ -84,14 +84,23 @@ MAX_FAVORITES = int(os.environ.get("MAX_FAVORITES", 100))  # 0 is unlimited
 # MAILS
 if IS_PROD or IS_INTEGRATION:
     _default_email_backend = "pcapi.core.mails.backends.mailjet.MailjetBackend"
+    _default_push_notification_backend = "pcapi.notifications.push.backends.batch.BatchBackend"
+    _default_sms_notification_backend = "pcapi.notifications.sms.backends.sendinblue.SendinblueBackend"
 elif IS_STAGING or IS_TESTING:
     _default_email_backend = "pcapi.core.mails.backends.mailjet.ToDevMailjetBackend"
+    _default_push_notification_backend = "pcapi.notifications.push.backends.batch.BatchBackend"
+    _default_sms_notification_backend = "pcapi.notifications.sms.backends.sendinblue.SendinblueBackend"
 elif IS_RUNNING_TESTS:
     _default_email_backend = "pcapi.core.mails.backends.testing.TestingBackend"
+    _default_push_notification_backend = "pcapi.notifications.push.backends.testing.TestingBackend"
+    _default_sms_notification_backend = "pcapi.notifications.sms.backends.testing.TestingBackend"
 elif IS_DEV:
     _default_email_backend = "pcapi.core.mails.backends.logger.LoggerBackend"
+    _default_push_notification_backend = "pcapi.notifications.push.backends.logger.LoggerBackend"
+    _default_sms_notification_backend = "pcapi.notifications.sms.backends.logger.LoggerBackend"
 else:
     raise RuntimeError("Unknown environment")
+
 EMAIL_BACKEND = os.environ.get("EMAIL_BACKEND", _default_email_backend)
 SUPPORT_EMAIL_ADDRESS = os.environ.get("SUPPORT_EMAIL_ADDRESS")
 ADMINISTRATION_EMAIL_ADDRESS = os.environ.get("ADMINISTRATION_EMAIL_ADDRESS")
@@ -103,16 +112,9 @@ PAYMENTS_DETAILS_RECIPIENTS = utils.parse_email_addresses(os.environ.get("PAYMEN
 WALLET_BALANCES_RECIPIENTS = utils.parse_email_addresses(os.environ.get("WALLET_BALANCES_RECIPIENTS"))
 WHITELISTED_EMAIL_RECIPIENTS = utils.parse_email_addresses(os.environ.get("WHITELISTED_EMAIL_RECIPIENTS"))
 
-# PUSH NOTIFICATIONS
-if IS_PROD or IS_INTEGRATION or IS_STAGING or IS_TESTING:
-    _default_push_notification_backend = "pcapi.notifications.push.backends.batch.BatchBackend"
-elif IS_RUNNING_TESTS:
-    _default_push_notification_backend = "pcapi.notifications.push.backends.testing.TestingBackend"
-elif IS_DEV:
-    _default_push_notification_backend = "pcapi.notifications.push.backends.logger.LoggerBackend"
-else:
-    raise RuntimeError("Unknown environment")
+# NOTIFICATIONS
 PUSH_NOTIFICATION_BACKEND = os.environ.get("PUSH_NOTIFICATION_BACKEND", _default_push_notification_backend)
+SMS_NOTIFICATION_BACKEND = os.environ.get("SMS_NOTIFICATION_BACKEND", _default_sms_notification_backend)
 
 # ALGOLIA
 ALGOLIA_API_KEY = os.environ.get("ALGOLIA_API_KEY")
