@@ -59,6 +59,7 @@
       &:hover,
       &:focus {
         background-color: $white;
+        text-decoration: none;
       }
     }
 
@@ -103,9 +104,9 @@
     padding: rem(12px 0);
   }
 
-  .react-datepicker__day--today {
+  .react-datepicker__day.react-datepicker__day--today {
     font-weight: initial;
-    font-size: 1.2rem !important;
+    font-size: 1.2rem;
   }
 
   /* ----- TRIANGLE ----- */
