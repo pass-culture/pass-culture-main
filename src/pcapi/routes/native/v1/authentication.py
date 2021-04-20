@@ -62,6 +62,8 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
 def refresh() -> authentication.RefreshResponse:
     email = get_jwt_identity()
     user = find_user_by_email(email)
+    if not user:
+        raise ApiErrors({"email": "unknown"}, status_code=401)
     return authentication.RefreshResponse(access_token=create_user_access_token(user))
 
 
