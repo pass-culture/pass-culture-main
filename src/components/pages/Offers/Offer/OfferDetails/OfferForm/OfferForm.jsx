@@ -692,6 +692,7 @@ const OfferForm = ({
               disabled={readOnlyFields.includes('visualDisabilityCompliant')}
               isInError={Boolean(getErrorMessage('disabilityCompliant'))}
               label="Visuel"
+              labelClass={isDisabled ? 'disable-accessibility-label' : ''}
               name="visualDisabilityCompliant"
               onChange={handleDisabilityCompliantUpdate}
             />
@@ -701,6 +702,7 @@ const OfferForm = ({
               disabled={readOnlyFields.includes('mentalDisabilityCompliant')}
               isInError={Boolean(getErrorMessage('disabilityCompliant'))}
               label="Psychique ou cognitif"
+              labelClass={isDisabled ? 'disable-accessibility-label' : ''}
               name="mentalDisabilityCompliant"
               onChange={handleDisabilityCompliantUpdate}
             />
@@ -710,6 +712,7 @@ const OfferForm = ({
               disabled={readOnlyFields.includes('motorDisabilityCompliant')}
               isInError={Boolean(getErrorMessage('disabilityCompliant'))}
               label="Moteur"
+              labelClass={isDisabled ? 'disable-accessibility-label' : ''}
               name="motorDisabilityCompliant"
               onChange={handleDisabilityCompliantUpdate}
             />
@@ -719,6 +722,7 @@ const OfferForm = ({
               disabled={readOnlyFields.includes('audioDisabilityCompliant')}
               isInError={Boolean(getErrorMessage('disabilityCompliant'))}
               label="Auditif"
+              labelClass={isDisabled ? 'disable-accessibility-label' : ''}
               name="audioDisabilityCompliant"
               onChange={handleDisabilityCompliantUpdate}
             />
@@ -727,6 +731,7 @@ const OfferForm = ({
               disabled={readOnlyFields.includes('noDisabilityCompliant')}
               isInError={Boolean(getErrorMessage('disabilityCompliant'))}
               label="Non accessible"
+              labelClass={isDisabled ? 'disable-accessibility-label' : ''}
               name="noDisabilityCompliant"
               onChange={handleDisabilityCompliantUpdate}
             />

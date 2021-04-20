@@ -8,6 +8,7 @@ export const CheckboxInput = ({
   checked,
   isInError,
   labelAttributes,
+  labelClass,
   className,
   hiddenLabel,
   subLabel,
@@ -15,6 +16,9 @@ export const CheckboxInput = ({
   ...attributes
 }) => {
   let labelClasses = ['field', 'field-checkbox']
+  if (labelClass) {
+    labelClasses.push(labelClass)
+  }
   if (isInError) {
     labelClasses.push('error')
   }
@@ -58,6 +62,7 @@ CheckboxInput.defaultProps = {
   hiddenLabel: false,
   isInError: false,
   labelAttributes: {},
+  labelClass: '',
   subLabel: null,
 }
 
@@ -69,6 +74,7 @@ CheckboxInput.propTypes = {
   isInError: PropTypes.bool,
   label: PropTypes.string.isRequired,
   labelAttributes: PropTypes.shape(),
+  labelClass: PropTypes.string,
   name: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
   subLabel: PropTypes.string,
