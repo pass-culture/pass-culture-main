@@ -174,7 +174,7 @@ def main() -> None:
 
     scheduler.add_job(pc_check_stock_quantity_consistency, "cron", [app], day="*", hour="1")
 
-    scheduler.add_job(pc_send_tomorrow_events_notifications, "cron", [app], day="*", hour="18")
+    scheduler.add_job(pc_send_tomorrow_events_notifications, "cron", [app], day="*", hour="16")
 
     scheduler.start()
 
