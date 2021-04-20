@@ -1,5 +1,6 @@
+import { fireEvent } from '@testing-library/dom'
 import '@testing-library/jest-dom'
-import { act, render, screen } from '@testing-library/react'
+import { act, render, screen, waitForElementToBeRemoved } from '@testing-library/react'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
@@ -11,6 +12,7 @@ import OfferLayout from '../OfferLayout'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   loadOffer: jest.fn(),
+  updateOffersActiveStatus: jest.fn(),
 }))
 
 const renderOfferDetails = async (props, store) => {
@@ -61,6 +63,48 @@ describe('offerLayout', () => {
       // Then
       const title = await screen.findByText('Éditer une offre', { selector: 'h1' })
       expect(title).toBeInTheDocument()
+    })
+
+    it('should allow to activate inactive offer', async () => {
+      // Given
+      pcapi.updateOffersActiveStatus.mockReturnValue(Promise.resolve())
+      pcapi.loadOffer
+        .mockResolvedValueOnce({ ...editedOffer, isActive: false })
+        .mockResolvedValue({ ...editedOffer, isActive: true })
+      await renderOfferDetails(props, store)
+
+      // When
+      fireEvent.click(screen.getByRole('button', { name: "Activer l'offre" }))
+
+      // Then
+      expect(pcapi.updateOffersActiveStatus).toHaveBeenCalledWith(false, {
+        ids: [editedOffer.id],
+        isActive: true,
+      })
+      await waitForElementToBeRemoved(() => screen.getByRole('button', { name: "Activer l'offre" }))
+      expect(screen.getByRole('button', { name: "Désactiver l'offre" })).toBeInTheDocument()
+    })
+
+    it('should allow to deactivate active offer', async () => {
+      // Given
+      pcapi.updateOffersActiveStatus.mockReturnValue(Promise.resolve())
+      pcapi.loadOffer
+        .mockResolvedValueOnce({ ...editedOffer, isActive: true })
+        .mockResolvedValue({ ...editedOffer, isActive: false })
+      await renderOfferDetails(props, store)
+
+      // When
+      fireEvent.click(screen.getByRole('button', { name: "Désactiver l'offre" }))
+
+      // Then
+      expect(pcapi.updateOffersActiveStatus).toHaveBeenCalledWith(false, {
+        ids: [editedOffer.id],
+        isActive: false,
+      })
+      await waitForElementToBeRemoved(() =>
+        screen.getByRole('button', { name: "Désactiver l'offre" })
+      )
+      expect(screen.getByRole('button', { name: "Activer l'offre" })).toBeInTheDocument()
     })
   })
 

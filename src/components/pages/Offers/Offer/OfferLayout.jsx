@@ -38,6 +38,17 @@ const OfferLayout = props => {
     offer,
   ])
 
+  const toggleOfferActiveStatus = useCallback(() => {
+    pcapi
+      .updateOffersActiveStatus(false, {
+        ids: [offer.id],
+        isActive: !offer.isActive,
+      })
+      .then(() => {
+        reloadOffer()
+      })
+  }, [offer, reloadOffer])
+
   useEffect(() => {
     if (match.params.offerId) {
       loadOffer(match.params.offerId)
@@ -59,7 +70,15 @@ const OfferLayout = props => {
 
   const offerStatus =
     offer?.status && offer?.status !== OFFER_STATUS_DRAFT ? (
-      <OfferStatus status={offer.status} />
+      <>
+        <button
+          onClick={toggleOfferActiveStatus}
+          type="button"
+        >
+          {offer.isActive ? "Désactiver l'offre" : "Activer l'offre"}
+        </button>
+        <OfferStatus status={offer.status} />
+      </>
     ) : null
 
   return (
