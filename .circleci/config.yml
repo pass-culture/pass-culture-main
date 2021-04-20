@@ -153,7 +153,7 @@ jobs:
       - checkout
       - run: git submodule sync
       - run: git submodule update --init
-      - run: ./install_lib_ci.sh
+      - run: ./install_lib_ci_with_chrome.sh
       - run: sudo ./pc symlink
       - run: ./scripts/install_dockerize.sh $DOCKERIZE_VERSION
       - run:
@@ -236,7 +236,7 @@ jobs:
       - checkout
       - run: git submodule sync
       - run: git submodule update --init
-      - run: ./install_lib_ci.sh
+      - run: ./install_lib_ci_with_chrome.sh
       - run: sudo ./pc symlink
       - run: ./scripts/install_dockerize.sh $DOCKERIZE_VERSION
       - run:
