@@ -1,6 +1,7 @@
 import pytest
 from shapely.geometry import Polygon
 
+from pcapi.core.bookings.exceptions import CannotDeleteOffererWithBookingsException
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import Booking
 import pcapi.core.offerers.factories as offerers_factories
@@ -39,11 +40,13 @@ def test_delete_cascade_offerer_should_abort_when_offerer_has_any_bookings():
     bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=offerer_to_delete)
 
     # When
-    with pytest.raises(AttributeError) as exception:
+    with pytest.raises(CannotDeleteOffererWithBookingsException) as exception:
         delete_cascade_offerer_by_id(offerer_to_delete.id)
 
     # Then
-    assert "Structure juridique non supprimable car elle contient des réservations" in str(exception)
+    assert exception.value.errors["cannotDeleteOffererWithBookingsException"] == [
+        "Structure juridique non supprimable car elle contient des réservations"
+    ]
     assert Offerer.query.count() == 1
     assert Venue.query.count() == 2
     assert Offer.query.count() == 2

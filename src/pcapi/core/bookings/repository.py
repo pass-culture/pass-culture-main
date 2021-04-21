@@ -234,6 +234,18 @@ def find_cancellable_bookings_by_beneficiaries(users: list[User]) -> list[Bookin
     )
 
 
+def find_cancellable_bookings_by_offerer(offerer_id: int) -> list[Booking]:
+    return (
+        Booking.query.join(Stock)
+        .join(Offer)
+        .join(Venue)
+        .filter(Venue.managingOffererId == offerer_id)
+        .filter(Booking.isCancelled.is_(False))
+        .filter(Booking.isUsed.is_(False))
+        .all()
+    )
+
+
 def _query_keep_on_non_activation_offers() -> Query:
     offer_types = ["ThingType.ACTIVATION", "EventType.ACTIVATION"]
 

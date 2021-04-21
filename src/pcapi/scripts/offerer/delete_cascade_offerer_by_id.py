@@ -1,5 +1,6 @@
 import logging
 
+from pcapi.core.bookings.exceptions import CannotDeleteOffererWithBookingsException
 from pcapi.core.bookings.models import Booking
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
@@ -28,7 +29,7 @@ def delete_cascade_offerer_by_id(offerer_id: int) -> None:
     ).scalar()
 
     if offerer_has_bookings:
-        raise AttributeError("Structure juridique non supprimable car elle contient des réservations")
+        raise CannotDeleteOffererWithBookingsException()
 
     deleted_stocks_count = Stock.query.filter(
         Stock.offerId == Offer.id, Offer.venueId == Venue.id, Venue.managingOffererId == offerer_id

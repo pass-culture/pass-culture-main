@@ -37,6 +37,15 @@ def find_beneficiary_users_by_email_provider(email_provider: str) -> list[User]:
     )
 
 
+def find_pro_users_by_email_provider(email_provider: str) -> list[User]:
+    formatted_email_provider = f"%@%{email_provider}"
+    return (
+        User.query.filter_by(isBeneficiary=False, isActive=True)
+        .filter(func.lower(User.email).like(func.lower(formatted_email_provider)))
+        .all()
+    )
+
+
 def find_by_civility(first_name: str, last_name: str, date_of_birth: datetime) -> list[User]:
     civility_predicate = (
         (_matching(User.firstName, first_name))

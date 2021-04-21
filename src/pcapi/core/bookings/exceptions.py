@@ -56,3 +56,11 @@ class CannotCancelConfirmedBooking(ClientError):
 class BookingDoesntExist(ClientError):
     def __init__(self):
         super().__init__("bookingId", "bookingId ne correspond à aucune réservation")
+
+
+class CannotDeleteOffererWithBookingsException(ClientError):
+    def __init__(self):
+        super().__init__(
+            "cannotDeleteOffererWithBookingsException",
+            "Structure juridique non supprimable car elle contient des réservations",
+        )
