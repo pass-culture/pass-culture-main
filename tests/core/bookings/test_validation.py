@@ -492,7 +492,7 @@ class CheckOffererCanCancelBookingTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class CheckCanBeMarkAsUnused:
+class CheckCanBeMarkAsUnusedTest:
     def should_raises_resource_gone_error_if_not_used(self, app):
         booking = factories.BookingFactory(isUsed=False)
         with pytest.raises(api_errors.ResourceGoneError) as exc:
@@ -512,26 +512,6 @@ class CheckCanBeMarkAsUnused:
             validation.check_can_be_mark_as_unused(booking)
         assert exc.value.errors["payment"] == ["Le remboursement est en cours de traitement"]
 
-    def should_dont_raise_if_stock_beginning_datetime_in_more_than_72_hours(self):
-        booking = factories.BookingFactory(
-            isUsed=True,
-            stock__beginningDatetime=datetime.utcnow() + timedelta(days=4),
-        )
-        validation.check_booking_token_is_keepable(booking)  # should not raise
-
-    def should_dont_raise_if_stock_beginning_datetime_in_less_than_72_hours(self):
-        booking = factories.BookingFactory(
-            isUsed=True,
-            stock__beginningDatetime=datetime.utcnow() + timedelta(days=2),
-        )
-        validation.check_booking_token_is_keepable(booking)  # should not raise
-
-    def should_does_not_raise_error_if_not_cancelled_but_used_and_no_beginning_datetime(self):
-        booking = factories.BookingFactory(
-            isUsed=True,
-            stock__beginningDatetime=None,
-        )
-        validation.check_booking_token_is_keepable(booking)  # should not raise
 
 @pytest.mark.usefixtures("db_session")
 class CheckHasAvailableActivationCodeTest:
