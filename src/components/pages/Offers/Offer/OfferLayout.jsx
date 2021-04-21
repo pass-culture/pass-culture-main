@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
-import React, { useCallback, useEffect, useState, useRef } from 'react'
-import { Switch, Route } from 'react-router-dom'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { Route, Switch } from 'react-router-dom'
 
 import Titles from 'components/layout/Titles/Titles'
 import Breadcrumb, {
@@ -8,13 +8,9 @@ import Breadcrumb, {
   STEP_ID_STOCKS,
 } from 'components/pages/Offers/Offer/Breadcrumb'
 import OfferDetailsContainer from 'components/pages/Offers/Offer/OfferDetails/OfferDetailsContainer'
-import OfferStatus from 'components/pages/Offers/Offer/OfferStatus/OfferStatus'
+import TitleOfferStatus from 'components/pages/Offers/Offer/OfferStatus/TitleOfferStatusContainer'
 import StocksContainer from 'components/pages/Offers/Offer/Stocks/StocksContainer'
-import {
-  OFFER_STATUS_DRAFT,
-  OFFER_STATUS_PENDING,
-  OFFER_STATUS_REJECTED,
-} from 'components/pages/Offers/Offers/_constants'
+import { OFFER_STATUS_DRAFT } from 'components/pages/Offers/Offers/_constants'
 import * as pcapi from 'repository/pcapi/pcapi'
 
 const mapPathToStep = {
@@ -42,17 +38,6 @@ const OfferLayout = props => {
     offer,
   ])
 
-  const toggleOfferActiveStatus = useCallback(() => {
-    pcapi
-      .updateOffersActiveStatus(false, {
-        ids: [offer.id],
-        isActive: !offer.isActive,
-      })
-      .then(() => {
-        reloadOffer()
-      })
-  }, [offer, reloadOffer])
-
   useEffect(() => {
     if (match.params.offerId) {
       loadOffer(match.params.offerId)
@@ -74,16 +59,10 @@ const OfferLayout = props => {
 
   const offerStatus =
     offer?.status && offer?.status !== OFFER_STATUS_DRAFT ? (
-      <>
-        <button
-          disabled={offer.status === OFFER_STATUS_PENDING || offer.status === OFFER_STATUS_REJECTED}
-          onClick={toggleOfferActiveStatus}
-          type="button"
-        >
-          {offer.isActive ? "Désactiver l'offre" : "Activer l'offre"}
-        </button>
-        <OfferStatus status={offer.status} />
-      </>
+      <TitleOfferStatus
+        offer={offer}
+        reloadOffer={reloadOffer}
+      />
     ) : null
 
   return (

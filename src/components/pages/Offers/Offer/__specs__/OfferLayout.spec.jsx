@@ -5,6 +5,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
+import NotificationContainer from 'components/layout/Notification/NotificationContainer'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
@@ -20,7 +21,10 @@ const renderOfferDetails = async (props, store) => {
     await render(
       <Provider store={store}>
         <MemoryRouter>
-          <OfferLayout {...props} />
+          <>
+            <OfferLayout {...props} />
+            <NotificationContainer />
+          </>
         </MemoryRouter>
       </Provider>
     )
@@ -82,6 +86,7 @@ describe('offerLayout', () => {
         isActive: true,
       })
       await waitForElementToBeRemoved(() => screen.getByRole('button', { name: "Activer l'offre" }))
+      expect(screen.getByText('L’offre a bien été activée.')).toBeInTheDocument()
       expect(screen.getByRole('button', { name: "Désactiver l'offre" })).toBeInTheDocument()
     })
 
@@ -104,6 +109,7 @@ describe('offerLayout', () => {
       await waitForElementToBeRemoved(() =>
         screen.getByRole('button', { name: "Désactiver l'offre" })
       )
+      expect(screen.getByText('L’offre a bien été désactivée.')).toBeInTheDocument()
       expect(screen.getByRole('button', { name: "Activer l'offre" })).toBeInTheDocument()
     })
 
