@@ -10,7 +10,11 @@ import Breadcrumb, {
 import OfferDetailsContainer from 'components/pages/Offers/Offer/OfferDetails/OfferDetailsContainer'
 import OfferStatus from 'components/pages/Offers/Offer/OfferStatus/OfferStatus'
 import StocksContainer from 'components/pages/Offers/Offer/Stocks/StocksContainer'
-import { OFFER_STATUS_DRAFT } from 'components/pages/Offers/Offers/_constants'
+import {
+  OFFER_STATUS_DRAFT,
+  OFFER_STATUS_PENDING,
+  OFFER_STATUS_REJECTED,
+} from 'components/pages/Offers/Offers/_constants'
 import * as pcapi from 'repository/pcapi/pcapi'
 
 const mapPathToStep = {
@@ -72,6 +76,7 @@ const OfferLayout = props => {
     offer?.status && offer?.status !== OFFER_STATUS_DRAFT ? (
       <>
         <button
+          disabled={offer.status === OFFER_STATUS_PENDING || offer.status === OFFER_STATUS_REJECTED}
           onClick={toggleOfferActiveStatus}
           type="button"
         >

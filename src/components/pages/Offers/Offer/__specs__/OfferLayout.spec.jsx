@@ -106,6 +106,28 @@ describe('offerLayout', () => {
       )
       expect(screen.getByRole('button', { name: "Activer l'offre" })).toBeInTheDocument()
     })
+
+    it('should not allow to deactivate pending offer', async () => {
+      // Given
+      pcapi.loadOffer.mockResolvedValue({ ...editedOffer, status: 'PENDING', isActive: true })
+
+      // When
+      await renderOfferDetails(props, store)
+
+      // Then
+      expect(screen.getByRole('button', { name: "Désactiver l'offre" })).toBeDisabled()
+    })
+
+    it('should not allow to deactivate rejected offer', async () => {
+      // Given
+      pcapi.loadOffer.mockResolvedValue({ ...editedOffer, status: 'REJECTED', isActive: false })
+
+      // When
+      await renderOfferDetails(props, store)
+
+      // Then
+      expect(screen.getByRole('button', { name: "Activer l'offre" })).toBeDisabled()
+    })
   })
 
   describe('render when creating a new offer', () => {
