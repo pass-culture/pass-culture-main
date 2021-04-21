@@ -10,9 +10,9 @@ from sqlalchemy.orm import query
 from wtforms import BooleanField
 from wtforms import DecimalField
 from wtforms import Form
-from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from wtforms.form import BaseForm
 from wtforms.validators import Optional
+from wtforms_sqlalchemy.fields import QuerySelectField
 
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.core.providers import api
