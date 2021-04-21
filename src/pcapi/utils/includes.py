@@ -27,55 +27,6 @@ OFFERER_INCLUDES = [
     "-validationToken",
 ]
 
-OFFER_INCLUDES = [
-    "isDigital",
-    "isEditable",
-    "isEvent",
-    "hasBookingLimitDatetimesPassed",
-    "isBookable",
-    "isThing",
-    "lastProvider",
-    "offerType",
-    "thumbUrl",
-    "status",
-    {"key": "activeMediation", "includes": ["thumbUrl"]},
-    {"key": "mediations", "includes": ["thumbUrl"]},
-    {"key": "product", "includes": ["-type"]},
-    {
-        "key": "stocks",
-        "includes": [
-            "isBookable",
-            "isEventDeletable",
-            "isEventExpired",
-            "remainingQuantity",
-        ],
-    },
-]
-
-venue_key_with_bank_informations = {
-    "key": "venue",
-    "includes": [
-        {"key": "managingOfferer", "includes": ["-validationToken", "isValidated", "bic", "iban"]},
-        "-validationToken",
-        "isValidated",
-        "bic",
-        "iban",
-    ],
-}
-
-venue_key_without_bank_informations = {
-    "key": "venue",
-    "includes": [
-        {"key": "managingOfferer", "includes": ["-validationToken", "isValidated"]},
-        "-validationToken",
-        "-bookingEmail",
-        "isValidated",
-    ],
-}
-
-OFFER_INCLUDES.append(venue_key_with_bank_informations)
-
-
 USER_INCLUDES = [
     "-culturalSurveyId",
     "-culturalSurveyFilledDate",
