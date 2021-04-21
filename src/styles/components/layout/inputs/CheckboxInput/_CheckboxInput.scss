@@ -74,6 +74,10 @@ input[type="checkbox"] {
 
     color: $grey-dark;
     margin-top: rem(8px);
+
+    &.disabled {
+      color: $grey-medium;
+    }
   }
 }
 
@@ -100,5 +104,10 @@ input[type="checkbox"] {
       color: $red-error;
       font-weight: 700;
     }
+  }
+
+  &.disabled {
+    color: $grey-medium;
+    fill: $grey-medium;
   }
 }

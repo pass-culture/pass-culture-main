@@ -691,8 +691,8 @@ const OfferForm = ({
               checked={formValues.visualDisabilityCompliant}
               disabled={readOnlyFields.includes('visualDisabilityCompliant')}
               isInError={Boolean(getErrorMessage('disabilityCompliant'))}
+              isLabelDisable={isDisabled}
               label="Visuel"
-              labelClass={isDisabled ? 'disable-accessibility-label' : ''}
               name="visualDisabilityCompliant"
               onChange={handleDisabilityCompliantUpdate}
             />
@@ -701,8 +701,8 @@ const OfferForm = ({
               checked={formValues.mentalDisabilityCompliant}
               disabled={readOnlyFields.includes('mentalDisabilityCompliant')}
               isInError={Boolean(getErrorMessage('disabilityCompliant'))}
+              isLabelDisable={isDisabled}
               label="Psychique ou cognitif"
-              labelClass={isDisabled ? 'disable-accessibility-label' : ''}
               name="mentalDisabilityCompliant"
               onChange={handleDisabilityCompliantUpdate}
             />
@@ -711,8 +711,8 @@ const OfferForm = ({
               checked={formValues.motorDisabilityCompliant}
               disabled={readOnlyFields.includes('motorDisabilityCompliant')}
               isInError={Boolean(getErrorMessage('disabilityCompliant'))}
+              isLabelDisable={isDisabled}
               label="Moteur"
-              labelClass={isDisabled ? 'disable-accessibility-label' : ''}
               name="motorDisabilityCompliant"
               onChange={handleDisabilityCompliantUpdate}
             />
@@ -721,8 +721,8 @@ const OfferForm = ({
               checked={formValues.audioDisabilityCompliant}
               disabled={readOnlyFields.includes('audioDisabilityCompliant')}
               isInError={Boolean(getErrorMessage('disabilityCompliant'))}
+              isLabelDisable={isDisabled}
               label="Auditif"
-              labelClass={isDisabled ? 'disable-accessibility-label' : ''}
               name="audioDisabilityCompliant"
               onChange={handleDisabilityCompliantUpdate}
             />
@@ -730,8 +730,8 @@ const OfferForm = ({
               checked={formValues.noDisabilityCompliant}
               disabled={readOnlyFields.includes('noDisabilityCompliant')}
               isInError={Boolean(getErrorMessage('disabilityCompliant'))}
+              isLabelDisable={isDisabled}
               label="Non accessible"
-              labelClass={isDisabled ? 'disable-accessibility-label' : ''}
               name="noDisabilityCompliant"
               onChange={handleDisabilityCompliantUpdate}
             />
@@ -771,6 +771,7 @@ const OfferForm = ({
                 <CheckboxInput
                   checked={formValues.isNational || false}
                   disabled={readOnlyFields.includes('isNational') ? 'disabled' : ''}
+                  isLabelDisable={isDisabled}
                   label="Rayonnement national"
                   name="isNational"
                   onChange={handleSingleFormUpdate}
@@ -782,6 +783,7 @@ const OfferForm = ({
                 <CheckboxInput
                   checked={formValues.isDuo || false}
                   disabled={readOnlyFields.includes('isDuo') ? 'disabled' : ''}
+                  isLabelDisable={isDisabled}
                   label={'Accepter les réservations "duo"'}
                   name="isDuo"
                   onChange={handleSingleFormUpdate}
@@ -795,6 +797,7 @@ const OfferForm = ({
               <CheckboxInput
                 checked={receiveNotificationEmails}
                 disabled={readOnlyFields.includes('bookingEmail')}
+                isLabelDisable={isDisabled}
                 label="Être notifié par email des réservations"
                 name="receiveNotificationEmails"
                 onChange={toggleReceiveNotification}
