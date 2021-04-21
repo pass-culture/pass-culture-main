@@ -68,7 +68,7 @@ const Stocks = ({
   const addNewStock = useCallback(() => {
     let newStock = {
       key: generateRandomUuid(),
-      price: 0,
+      price: null,
       quantity: null,
       bookingLimitDatetime: null,
     }

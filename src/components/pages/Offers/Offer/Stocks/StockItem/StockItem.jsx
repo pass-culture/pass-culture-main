@@ -96,13 +96,16 @@ const StockItem = ({
 
   const changeBookingLimitDatetime = useCallback(dateTime => setBookingLimitDatetime(dateTime), [])
 
-  const changePrice = useCallback(event => setPrice(event.target.value), [])
+  const changePrice = useCallback(event => {
+    const priceValue = event.target.value
+    setPrice(priceValue === '' ? null : priceValue)
+  }, [])
 
   const changeTotalQuantity = useCallback(event => setTotalQuantity(event.target.value), [])
 
   const askDeletionConfirmation = useCallback(() => setIsDeleting(true), [])
 
-  const priceValue = price !== 0 ? price : ''
+  const priceValue = price !== null ? price : ''
   const totalQuantityValue = totalQuantity !== null ? totalQuantity : ''
   const computedRemainingQuantity = totalQuantityValue - initialStock.bookingsQuantity
   const remainingQuantityValue = totalQuantityValue !== '' ? computedRemainingQuantity : 'Illimité'
@@ -176,7 +179,7 @@ const StockItem = ({
           }
           name="price"
           onChange={changePrice}
-          placeholder="Gratuit"
+          placeholder="Ex : 20€"
           type="number"
           value={priceValue}
         />
@@ -259,7 +262,7 @@ StockItem.propTypes = {
     isEventDeletable: PropTypes.bool,
     beginningDatetime: PropTypes.instanceOf(Date),
     bookingLimitDatetime: PropTypes.instanceOf(Date),
-    price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     quantity: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     updated: PropTypes.bool,
   }).isRequired,

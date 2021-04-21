@@ -40,7 +40,7 @@ const getBookingLimitDatetimeForThing = (stock, departementCode) => {
 
 export const createStockPayload = (stock, isEvent, departementCode) => {
   let payload = {
-    price: stock.price ? stock.price : 0,
+    price: stock.price,
     quantity: stock.quantity ? stock.quantity : null,
   }
   if (isEvent) {
@@ -81,6 +81,10 @@ export const validateCreatedStock = stock => {
 
   if (stock.beginningTime === null) {
     errors.beginningTime = 'Ce champ est obligatoire.'
+  }
+
+  if (stock.price === null) {
+    errors.price = 'Ce champ est obligatoire.'
   }
 
   return errors
