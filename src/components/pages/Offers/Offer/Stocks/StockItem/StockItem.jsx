@@ -96,16 +96,12 @@ const StockItem = ({
 
   const changeBookingLimitDatetime = useCallback(dateTime => setBookingLimitDatetime(dateTime), [])
 
-  const changePrice = useCallback(event => {
-    const priceValue = event.target.value
-    setPrice(priceValue === '' ? null : priceValue)
-  }, [])
+  const changePrice = useCallback(event => setPrice(event.target.value), [])
 
   const changeTotalQuantity = useCallback(event => setTotalQuantity(event.target.value), [])
 
   const askDeletionConfirmation = useCallback(() => setIsDeleting(true), [])
 
-  const priceValue = price !== null ? price : ''
   const totalQuantityValue = totalQuantity !== null ? totalQuantity : ''
   const computedRemainingQuantity = totalQuantityValue - initialStock.bookingsQuantity
   const remainingQuantityValue = totalQuantityValue !== '' ? computedRemainingQuantity : 'Illimité'
@@ -169,7 +165,7 @@ const StockItem = ({
       <td className="resized-input input-text">
         <input
           aria-label="Prix"
-          className={`it-input ${priceValue ? 'with-euro-icon' : ''} ${
+          className={`it-input ${price ? 'with-euro-icon' : ''} ${
             'price' in errors ? 'error' : ''
           }`}
           disabled={
@@ -181,7 +177,7 @@ const StockItem = ({
           onChange={changePrice}
           placeholder="Ex : 20€"
           type="number"
-          value={priceValue}
+          value={price}
         />
       </td>
       <td className={`${!isEvent ? 'resized-input' : ''}`}>

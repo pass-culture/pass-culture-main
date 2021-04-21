@@ -83,7 +83,7 @@ export const validateCreatedStock = stock => {
     errors.beginningTime = 'Ce champ est obligatoire.'
   }
 
-  if (stock.price === null) {
+  if (stock.price === '') {
     errors.price = 'Ce champ est obligatoire.'
   }
 

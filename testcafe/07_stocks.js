@@ -37,6 +37,7 @@ test("Je peux créer un stock pour un événement en passant par la page de l'of
     .click(datePickerLastDay)
     .click(hourInput)
     .click(hourPickerLastHour)
+    .typeText(priceInput, '15')
     .click(submitButton)
 
   await t.expect(submitSuccess.exists).ok().expect(stockItem.count).eql(1)

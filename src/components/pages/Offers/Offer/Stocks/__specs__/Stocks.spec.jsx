@@ -1986,6 +1986,8 @@ describe('stocks page', () => {
         userEvent.click(screen.getByLabelText('Heure de l’événement'))
         userEvent.click(screen.getByText('20:00'))
 
+        userEvent.type(screen.getByLabelText('Prix'), '10')
+
         // When
         await userEvent.click(screen.getByText('Enregistrer'))
 
@@ -2023,7 +2025,7 @@ describe('stocks page', () => {
 
       it('should display success message on success', async () => {
         // Given
-        pcapi.bulkCreateOrEditStock.mockResolvedValue({})
+        pcapi.bulkCreateOrEditStock.mockResolvedValueOnce({})
         await renderOffers(props, store)
         fireEvent.click(screen.getByText('Ajouter une date'))
 
