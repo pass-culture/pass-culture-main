@@ -22,8 +22,6 @@ from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.domain.user_emails import send_offer_validation_status_update_email
 from pcapi.flask_app import app
 from pcapi.models import Offer
-from pcapi.models.feature import FeatureToggle
-from pcapi.repository import feature_queries
 from pcapi.settings import IS_PROD
 from pcapi.utils.human_ids import humanize
 
@@ -152,10 +150,6 @@ class ValidationView(BaseAdminView):
         formatters.update(offers=_related_offers_link)
         formatters.update(metabase=_metabase_offer_link)
         return formatters
-
-    def on_model_change(self, form: Form, offer: Offer, is_created: bool = False) -> None:
-        if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
-            redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
 
     def get_query(self):
         return self.session.query(self.model).filter(self.model.validation == OfferValidationStatus.PENDING)

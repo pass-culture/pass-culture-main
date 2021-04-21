@@ -611,5 +611,7 @@ def update_pending_offer_validation_status(offer: Offer, validation_status: Offe
             extra={"offer": offer.id, "validation_status": validation_status, "exc": str(exception)},
         )
         return False
+    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
+        redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
     logger.info("Offer validation status updated", extra={"offer": offer.id})
     return True

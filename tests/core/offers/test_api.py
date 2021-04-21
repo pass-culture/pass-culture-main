@@ -1137,3 +1137,11 @@ class UpdateOfferValidationStatusTest:
 
         assert is_offer_updated is False
         assert offer.validation == OfferValidationStatus.REJECTED
+
+    @mock.patch("pcapi.connectors.redis.add_offer_id")
+    def test_update_pending_offer_validation_status_and_reindex_in_algolia(self, mocked_add_offer_id):
+        offer = OfferFactory(validation=OfferValidationStatus.PENDING)
+
+        update_pending_offer_validation_status(offer, OfferValidationStatus.APPROVED)
+
+        mocked_add_offer_id.assert_called_once_with(client=app.redis_client, offer_id=offer.id)
