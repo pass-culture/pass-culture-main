@@ -2,6 +2,7 @@ import pytest
 
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import humanize
 
@@ -29,6 +30,33 @@ class Returns201:
             "stock": {"price": 10.0},
             "stockId": humanize(stock.id),
             "token": booking.token,
+            "activationCode": None,
+        }
+
+    @override_features(ENABLE_ACTIVATION_CODES=True)
+    def test_booking_creation_with_activation_code(self, app):
+        # Given
+        user = users_factories.UserFactory()
+        stock = offers_factories.StockWithActivationCodesFactory(activationCodes=["code-vgya451afvyux"])
+
+        # When
+        data = {"stockId": humanize(stock.id), "quantity": 1}
+        client = TestClient(app.test_client()).with_auth(user.email)
+        response = client.post("/bookings", json=data)
+
+        # Then
+        assert response.status_code == 201
+        booking = bookings_models.Booking.query.one()
+        assert response.json == {
+            "amount": 10.0,
+            "completedUrl": booking.completedUrl,
+            "id": humanize(booking.id),
+            "isCancelled": False,
+            "quantity": 1,
+            "stock": {"price": 10.0},
+            "stockId": humanize(stock.id),
+            "token": booking.token,
+            "activationCode": "code-vgya451afvyux",
         }
 
 

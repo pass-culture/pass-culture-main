@@ -12,6 +12,7 @@ from pcapi.core.bookings import api
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings import factories
 from pcapi.core.bookings import models
+from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offers.factories as offers_factories
@@ -212,6 +213,83 @@ class BookOfferTest:
                 stock_id=offers_factories.StockFactory().id,
                 quantity=2,
             )
+
+    class WhenBookingWithActivationCodeTest:
+        @override_features(ENABLE_ACTIVATION_CODES=False)
+        def test_when_activation_code_is_disabled(self):
+            # Given
+            user = users_factories.UserFactory()
+            stock = offers_factories.StockWithActivationCodesFactory()
+
+            # When
+            booking = api.book_offer(beneficiary=user, stock_id=stock.id, quantity=1)
+
+            # Then
+            assert not booking.activationCode
+
+        @override_features(ENABLE_ACTIVATION_CODES=True)
+        def test_book_offer_with_first_activation_code_available(self):
+            # Given
+            user = users_factories.UserFactory()
+            stock = offers_factories.StockWithActivationCodesFactory()
+            first_activation_code = stock.activationCodes[0]
+
+            # When
+            booking = api.book_offer(beneficiary=user, stock_id=stock.id, quantity=1)
+
+            # Then
+            assert booking.activationCode == first_activation_code
+
+        @override_features(ENABLE_ACTIVATION_CODES=True)
+        def test_ignore_activation_that_is_already_used_for_booking(self):
+            # Given
+            user = users_factories.UserFactory()
+            booking = factories.BookingFactory(isUsed=True, token="ABCDEF")
+            stock = offers_factories.StockWithActivationCodesFactory(
+                activationCodes=["code-vgya451afvyux", "code-bha45k15fuz"]
+            )
+            stock.activationCodes[0].booking = booking
+
+            # When
+            booking = api.book_offer(beneficiary=user, stock_id=stock.id, quantity=1)
+
+            # Then
+            assert booking.activationCode.code == "code-bha45k15fuz"
+
+        @override_features(ENABLE_ACTIVATION_CODES=True)
+        def test_raise_when_no_activation_code_available(self):
+            # Given
+            user = users_factories.UserFactory()
+            booking = factories.BookingFactory(isUsed=True, token="ABCDEF")
+            stock = offers_factories.StockWithActivationCodesFactory(activationCodes=["code-vgya451afvyux"])
+            stock.activationCodes[0].booking = booking
+
+            # When
+            with pytest.raises(exceptions.NoActivationCodeAvailable) as error:
+                api.book_offer(beneficiary=user, stock_id=stock.id, quantity=1)
+
+            # Then
+            assert Booking.query.count() == 1
+            assert error.value.errors == {
+                "noActivationCodeAvailable": ["Ce stock ne contient plus de code d'activation disponible."]
+            }
+
+        @override_features(ENABLE_ACTIVATION_CODES=True)
+        def test_raise_when_activation_codes_are_expired(self):
+            # Given
+            user = users_factories.UserFactory()
+            stock = offers_factories.StockWithActivationCodesFactory(
+                activationCodes__expirationDate=datetime(2000, 1, 1)
+            )
+
+            # When
+            with pytest.raises(exceptions.NoActivationCodeAvailable) as error:
+                api.book_offer(beneficiary=user, stock_id=stock.id, quantity=1)
+
+            # Then
+            assert error.value.errors == {
+                "noActivationCodeAvailable": ["Ce stock ne contient plus de code d'activation disponible."]
+            }
 
 
 @pytest.mark.usefixtures("db_session")

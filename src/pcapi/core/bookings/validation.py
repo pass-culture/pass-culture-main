@@ -5,7 +5,9 @@ from typing import Union
 from pcapi.core.bookings import api
 from pcapi.core.bookings import conf
 from pcapi.core.bookings import exceptions
+from pcapi.core.bookings.exceptions import NoActivationCodeAvailable
 from pcapi.core.bookings.models import Booking
+from pcapi.core.offers.models import ActivationCode
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.users.api import get_domains_credit
@@ -179,3 +181,18 @@ def check_can_be_mark_as_unused(booking: Booking) -> None:
         gone = api_errors.ResourceGoneError()
         gone.add_error("payment", "Le remboursement est en cours de traitement")
         raise gone
+
+
+def check_activation_is_bookable(activation_code: ActivationCode) -> bool:
+    return not activation_code.bookingId and (
+        not activation_code.expirationDate or activation_code.expirationDate > datetime.datetime.utcnow()
+    )
+
+
+def check_has_available_activation_code(activation_codes: list[ActivationCode]):
+    available_activation_codes = [
+        activation_code for activation_code in activation_codes if check_activation_is_bookable(activation_code)
+    ]
+
+    if not available_activation_codes:
+        raise NoActivationCodeAvailable()

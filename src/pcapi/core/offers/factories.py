@@ -150,6 +150,10 @@ class ThingOfferFactory(OfferFactory):
     product = factory.SubFactory(ThingProductFactory)
 
 
+class DigitalOfferFactory(OfferFactory):
+    product = factory.SubFactory(DigitalProductFactory)
+
+
 class StockFactory(BaseFactory):
     class Meta:
         model = models.Stock
@@ -178,6 +182,25 @@ class EventStockFactory(StockFactory):
     offer = factory.SubFactory(EventOfferFactory)
     beginningDatetime = factory.LazyFunction(lambda: datetime.datetime.now() + datetime.timedelta(days=5))
     bookingLimitDatetime = factory.LazyAttribute(lambda stock: stock.beginningDatetime - datetime.timedelta(minutes=60))
+
+
+class StockWithActivationCodesFactory(StockFactory):
+    offer = factory.SubFactory(DigitalOfferFactory)
+
+    @factory.post_generation
+    def activationCodes(self, create, extracted, **kwargs):
+        if extracted:
+            for code in extracted:
+                ActivationCodeFactory(stockId=self.id, code=code)
+        else:
+            ActivationCodeFactory.create_batch(size=5, stockId=self.id, **kwargs)
+
+
+class ActivationCodeFactory(BaseFactory):
+    class Meta:
+        model = models.ActivationCode
+
+    code = factory.Faker("lexify", text="code-?????????")
 
 
 class MediationFactory(BaseFactory):

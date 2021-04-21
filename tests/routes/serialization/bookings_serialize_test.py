@@ -222,4 +222,5 @@ class SerializeBookingMinimalTest:
             },
             "token": "GQTQR9",
             "completedUrl": None,
+            "activationCode": None,
         }

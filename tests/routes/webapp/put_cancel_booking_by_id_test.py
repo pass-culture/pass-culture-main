@@ -36,6 +36,7 @@ class Returns200:
             "stock": {"price": 10.0},
             "stockId": humanize(stock.id),
             "token": booking.token,
+            "activationCode": None,
         }
 
 

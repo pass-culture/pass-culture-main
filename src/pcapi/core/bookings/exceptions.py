@@ -38,6 +38,11 @@ class CannotBookFreeOffers(ClientError):
         super().__init__("cannotBookFreeOffers", "Votre compte ne vous permet pas de faire de réservation.")
 
 
+class NoActivationCodeAvailable(ClientError):
+    def __init__(self):
+        super().__init__("noActivationCodeAvailable", "Ce stock ne contient plus de code d'activation disponible.")
+
+
 class UserHasInsufficientFunds(ClientError):
     def __init__(self):
         super().__init__("insufficientFunds", "Le solde de votre pass est insuffisant pour réserver cette offre.")
