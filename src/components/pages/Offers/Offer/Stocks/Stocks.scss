@@ -70,7 +70,7 @@ $buttonHeight: rem(40px);
   .actions-section {
     background: $white;
     bottom: 0;
-    margin-top: 0;
+    margin-top: rem(60px);
     padding-bottom: $actionsPaddingBottom;
     padding-top: $actionsPaddingTop;
     position: sticky;

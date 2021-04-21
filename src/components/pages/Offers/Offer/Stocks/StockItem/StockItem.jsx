@@ -11,6 +11,8 @@ import { hasStockBeenUpdated } from 'components/pages/Offers/Offer/Stocks/StockI
 import { getToday } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
+import StockItemOptionsMenu from '../StockItemOptionsMenu/StockItemOptionsMenu'
+
 const StockItem = ({
   departmentCode,
   errors,
@@ -219,16 +221,27 @@ const StockItem = ({
         {!isNewStock && initialStock.bookingsQuantity}
       </td>
       <td className="action-column">
-        <button
-          className="tertiary-button"
-          data-testid="stock-delete-button"
-          disabled={isOfferDisabled || !isStockDeletable || isDeleting}
-          onClick={isNewStock ? removeNewStockLine : askDeletionConfirmation}
-          title={computeStockDeleteButtonTitle()}
-          type="button"
-        >
-          <DeleteStockIcon alt="Supprimer le stock" />
-        </button>
+        {isActivationCodesEnabled ? (
+          <StockItemOptionsMenu
+            canAddActivationCodes={isDigital}
+            deleteButtonTitle={computeStockDeleteButtonTitle()}
+            deleteStock={isNewStock ? removeNewStockLine : askDeletionConfirmation}
+            disableDeleteButton={isOfferDisabled || !isStockDeletable || isDeleting}
+            isNewStock={isNewStock}
+            isOfferDisabled={isOfferDisabled}
+          />
+        ) : (
+          <button
+            className="tertiary-button"
+            data-testid="stock-delete-button"
+            disabled={isOfferDisabled || !isStockDeletable || isDeleting}
+            onClick={isNewStock ? removeNewStockLine : askDeletionConfirmation}
+            title={computeStockDeleteButtonTitle()}
+            type="button"
+          >
+            <DeleteStockIcon alt="Supprimer le stock" />
+          </button>
+        )}
         {isDeleting && (
           <DeleteStockDialogContainer
             onDelete={onDelete}

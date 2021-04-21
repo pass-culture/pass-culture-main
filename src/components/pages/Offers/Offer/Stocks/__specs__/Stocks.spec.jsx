@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
@@ -48,7 +48,17 @@ describe('stocks page', () => {
   let stockId
   let store
   beforeEach(() => {
-    store = configureTestStore({ data: { users: [{ publicName: 'François', isAdmin: false }] } })
+    store = configureTestStore({
+      data: {
+        users: [{ publicName: 'François', isAdmin: false }],
+        features: [
+          {
+            nameKey: 'ENABLE_ACTIVATION_CODES',
+            isActive: true,
+          },
+        ],
+      },
+    })
     props = {}
 
     defaultOffer = {
@@ -258,7 +268,7 @@ describe('stocks page', () => {
         expect(screen.getByLabelText('Prix')).toBeDisabled()
         expect(screen.getByLabelText('Date limite de réservation')).toBeDisabled()
         expect(screen.getByLabelText('Quantité')).toBeDisabled()
-        expect(screen.getByTitle('Supprimer le stock')).toBeDisabled()
+        expect(screen.getByTitle('Supprimer le stock')).toHaveAttribute('aria-disabled', 'true')
         expect(screen.getByText('Enregistrer')).toBeDisabled()
       })
 
@@ -284,7 +294,7 @@ describe('stocks page', () => {
         expect(screen.getByLabelText('Prix')).toBeDisabled()
         expect(screen.getByLabelText('Date limite de réservation')).toBeDisabled()
         expect(screen.getByLabelText('Quantité')).toBeDisabled()
-        expect(screen.getByTitle('Supprimer le stock')).toBeDisabled()
+        expect(screen.getByTitle('Supprimer le stock')).toHaveAttribute('aria-disabled', 'true')
         expect(screen.getByText('Enregistrer')).toBeDisabled()
       })
     })
@@ -358,7 +368,7 @@ describe('stocks page', () => {
         expect(columnHeaders[6].textContent).toBe('Réservations')
         expect(columnCells[6].textContent).toBe('4')
 
-        expect(columnCells[7].querySelector('[alt="Supprimer le stock"]')).toBeInTheDocument()
+        expect(columnCells[7].querySelector('button').title).toBe('Opérations sur le stock')
       })
     })
 
@@ -430,7 +440,7 @@ describe('stocks page', () => {
         expect(columnHeaders[4].textContent).toBe('Réservations')
         expect(columnCells[4].textContent).toBe('4')
 
-        expect(columnCells[5].querySelector('[alt="Supprimer le stock"]')).toBeInTheDocument()
+        expect(columnCells[5].querySelector('button').title).toBe('Opérations sur le stock')
       })
 
       describe('when offer is synchronized', () => {
@@ -612,8 +622,8 @@ describe('stocks page', () => {
 
       // When
       await act(async () => {
-        fireEvent.click(screen.getByTitle('Supprimer le stock'))
-        await fireEvent.click(await screen.findByText('Supprimer', { selector: 'button' }))
+        userEvent.click(screen.getByTitle('Supprimer le stock'))
+        fireEvent.click(await screen.findByText('Supprimer', { selector: 'button' }))
       })
 
       // Then
@@ -673,7 +683,7 @@ describe('stocks page', () => {
           userEvent.click(screen.getByTitle('Supprimer le stock'))
 
           // Then
-          expect(screen.getByTitle('Supprimer le stock').closest('button')).toBeDisabled()
+          expect(screen.getByTitle('Supprimer le stock')).toHaveAttribute('aria-disabled', 'true')
           expect(pcapi.deleteStock).not.toHaveBeenCalled()
         })
 
@@ -1339,7 +1349,6 @@ describe('stocks page', () => {
 
             await renderOffers(props, store)
             await fireEvent.click(await screen.findByText('Ajouter une date'))
-            const existingStock = screen.getByTestId(`stock-item-${initialStock.id}`)
 
             let nbExpectedRows = 0
             nbExpectedRows += 1 // header row
@@ -1349,9 +1358,9 @@ describe('stocks page', () => {
 
             // When
             await act(async () => {
-              const existingStockScreen = within(existingStock)
-              userEvent.click(await existingStockScreen.findByTitle('Supprimer le stock'))
-              await userEvent.click(await screen.findByRole('button', { name: 'Supprimer' }))
+              userEvent.click(screen.getAllByTitle('Opérations sur le stock')[0])
+              userEvent.click(screen.getAllByText('Supprimer le stock')[0])
+              fireEvent.click(await screen.findByRole('button', { name: 'Supprimer' }))
             })
 
             // Then
@@ -1394,12 +1403,13 @@ describe('stocks page', () => {
             await renderOffers(props, store)
 
             // when
+            const deleteButton = screen.getByTitle('Supprimer le stock')
             await act(async () => {
-              userEvent.click(await screen.findByTitle('Supprimer le stock'))
+              userEvent.click(deleteButton)
             })
 
             // then
-            expect(screen.getByTitle('Supprimer le stock').closest('button')).toBeDisabled()
+            expect(deleteButton).toHaveAttribute('aria-disabled', 'true')
           })
         })
       })
@@ -1734,11 +1744,31 @@ describe('stocks page', () => {
         })
 
         it('should not be able to delete a stock', async () => {
-          // When
+          // Given
           await renderOffers(props, store)
+          const deleteButton = screen.getByTitle('Les stock synchronisés ne peuvent être supprimés')
+
+          // When
+          fireEvent.click(deleteButton)
 
           // Then
-          expect(screen.getByTestId('stock-delete-button')).toBeDisabled()
+          expect(deleteButton).toHaveAttribute('aria-disabled', 'true')
+          expect(screen.getAllByRole('row')).toHaveLength(2)
+        })
+      })
+
+      describe('digital offer', () => {
+        it('should disable add activation codes option', async () => {
+          // when
+          pcapi.loadOffer.mockResolvedValue({ ...thingOffer, isDigital: true })
+          await renderOffers(props, store)
+
+          // then
+          const informationMessage = screen
+            .getByText('Ajouter des codes d’activation')
+            .closest('div')
+          expect(informationMessage).toBeInTheDocument()
+          expect(informationMessage).toHaveAttribute('aria-disabled', 'true')
         })
       })
     })
@@ -1951,6 +1981,7 @@ describe('stocks page', () => {
         userEvent.click(screen.getByText('Ajouter une date'))
 
         // When
+        userEvent.click(screen.getByTitle('Opérations sur le stock'))
         userEvent.click(screen.getByTitle('Supprimer le stock'))
 
         // Then
@@ -2056,6 +2087,40 @@ describe('stocks page', () => {
         }
 
         pcapi.loadOffer.mockResolvedValue(noStockOffer)
+      })
+
+      it('should allow the user to add activation codes option when offer is digital', async () => {
+        // given
+        const digitalOffer = {
+          ...noStockOffer,
+          isDigital: true,
+        }
+        pcapi.loadOffer.mockResolvedValue(digitalOffer)
+        await renderOffers(props, store)
+
+        // when
+        fireEvent.click(screen.getByText('Ajouter un stock'))
+
+        // then
+        const informationMessage = screen.getByText('Ajouter des codes d’activation').closest('div')
+        expect(informationMessage).toBeInTheDocument()
+        expect(informationMessage).not.toHaveAttribute('aria-disabled', 'true')
+      })
+
+      it('should not display add activation codes option when not digital', async () => {
+        // given
+        const digitalOffer = {
+          ...noStockOffer,
+          isDigital: false,
+        }
+        pcapi.loadOffer.mockResolvedValue(digitalOffer)
+        await renderOffers(props, store)
+
+        // when
+        fireEvent.click(screen.getByText('Ajouter un stock'))
+
+        // then
+        expect(screen.queryByText('Ajouter des codes d’activation')).not.toBeInTheDocument()
       })
 
       it('should not display remaining stocks and bookings columns when no stocks yet', async () => {
