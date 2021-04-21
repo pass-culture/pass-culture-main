@@ -131,14 +131,6 @@ export const getOfferer = offererId => {
 //
 // venues
 //
-export const setAllVenueOffersActivate = async venueId => {
-  return client.put(`/venues/${venueId}/offers/activate`)
-}
-
-export const setAllVenueOffersInactivate = async venueId => {
-  return client.put(`/venues/${venueId}/offers/deactivate`)
-}
-
 export const getVenuesForOfferer = ({ offererId = null, activeOfferersOnly = false }) => {
   const request = {}
   offererId ? (request.offererId = offererId) : (request.validatedForUser = true)

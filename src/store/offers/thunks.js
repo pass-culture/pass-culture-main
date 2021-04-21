@@ -3,22 +3,6 @@ import { setMediations, setStocks, setVenues } from 'store/reducers/data'
 
 import { setOffers } from './actions'
 
-export const setAllVenueOffersActivate = venueId => {
-  return dispatch => {
-    return pcapi.setAllVenueOffersActivate(venueId).then(offersRecap => {
-      dispatch(setOffersRecap(offersRecap))
-    })
-  }
-}
-
-export const setAllVenueOffersInactivate = venueId => {
-  return dispatch => {
-    return pcapi.setAllVenueOffersInactivate(venueId).then(offersRecap => {
-      dispatch(setOffersRecap(offersRecap))
-    })
-  }
-}
-
 export const loadOffer = offerId => {
   return dispatch => {
     return pcapi.loadOffer(offerId).then(rawOffer => {
