@@ -250,6 +250,7 @@ const Stocks = ({
                   departmentCode={offer.venue.departementCode}
                   errors={formErrors[stockInCreation.key]}
                   initialStock={stockInCreation}
+                  isDigital={offer.isDigital}
                   isEvent={offer.isEvent}
                   isNewStock
                   key={stockInCreation.key}
@@ -264,6 +265,7 @@ const Stocks = ({
                   departmentCode={offer.venue.departementCode}
                   errors={formErrors[stock.key]}
                   initialStock={stock}
+                  isDigital={offer.isDigital}
                   isDisabled={isDisabled}
                   isEvent={offer.isEvent}
                   key={stock.id}
