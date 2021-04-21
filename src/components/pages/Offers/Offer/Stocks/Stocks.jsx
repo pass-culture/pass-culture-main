@@ -21,6 +21,8 @@ import StockItem from 'components/pages/Offers/Offer/Stocks/StockItem/StockItem'
 import { ReactComponent as AddStockSvg } from 'icons/ico-plus.svg'
 import * as pcapi from 'repository/pcapi/pcapi'
 
+const EMPTY_STRING_VALUE = ''
+
 const Stocks = ({
   offer,
   showErrorNotification,
@@ -68,7 +70,7 @@ const Stocks = ({
   const addNewStock = useCallback(() => {
     let newStock = {
       key: generateRandomUuid(),
-      price: '',
+      price: EMPTY_STRING_VALUE,
       quantity: null,
       bookingLimitDatetime: null,
     }

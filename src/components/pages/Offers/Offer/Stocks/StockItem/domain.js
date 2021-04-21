@@ -6,6 +6,8 @@ import {
   getUtcDateTimeFromLocalDepartement,
 } from 'utils/timezone'
 
+const EMPTY_STRING_VALUE = ''
+
 const buildBeginningDatetime = (beginningDateIsoString, beginningTimeIsoString) => {
   if (beginningDateIsoString === null || beginningTimeIsoString === null) {
     return ''
@@ -83,7 +85,7 @@ export const validateCreatedStock = stock => {
     errors.beginningTime = 'Ce champ est obligatoire.'
   }
 
-  if (stock.price === '') {
+  if (stock.price === EMPTY_STRING_VALUE) {
     errors.price = 'Ce champ est obligatoire.'
   }
 
