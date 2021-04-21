@@ -17,7 +17,7 @@ import {
   validateCreatedStock,
   validateUpdatedStock,
 } from 'components/pages/Offers/Offer/Stocks/StockItem/domain'
-import StockItem from 'components/pages/Offers/Offer/Stocks/StockItem/StockItem'
+import StockItemContainer from 'components/pages/Offers/Offer/Stocks/StockItem/StockItemContainer'
 import { ReactComponent as AddStockSvg } from 'icons/ico-plus.svg'
 import * as pcapi from 'repository/pcapi/pcapi'
 
@@ -246,7 +246,7 @@ const Stocks = ({
             </thead>
             <tbody>
               {stocksInCreation.map(stockInCreation => (
-                <StockItem
+                <StockItemContainer
                   departmentCode={offer.venue.departementCode}
                   errors={formErrors[stockInCreation.key]}
                   initialStock={stockInCreation}
@@ -260,7 +260,7 @@ const Stocks = ({
               ))}
 
               {existingStocks.map(stock => (
-                <StockItem
+                <StockItemContainer
                   departmentCode={offer.venue.departementCode}
                   errors={formErrors[stock.key]}
                   initialStock={stock}

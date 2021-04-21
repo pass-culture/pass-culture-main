@@ -14,6 +14,7 @@ import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 const StockItem = ({
   departmentCode,
   errors,
+  isActivationCodesEnabled,
   isEvent,
   isNewStock,
   isDisabled: isOfferDisabled,
@@ -242,6 +243,7 @@ const StockItem = ({
 StockItem.defaultProps = {
   departmentCode: '',
   errors: {},
+  isActivationCodesEnabled: false,
   isDisabled: false,
   isNewStock: false,
   lastProvider: null,
@@ -262,6 +264,7 @@ StockItem.propTypes = {
     quantity: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     updated: PropTypes.bool,
   }).isRequired,
+  isActivationCodesEnabled: PropTypes.bool,
   isDisabled: PropTypes.bool,
   isEvent: PropTypes.bool.isRequired,
   isNewStock: PropTypes.bool,
