@@ -251,6 +251,7 @@ describe('selectBookables', () => {
             id: 'AB',
             offerId: 'AA',
             beginningDatetime: moment(),
+            isBookable: true,
           },
         ],
       },
@@ -272,8 +273,39 @@ describe('selectBookables', () => {
         offerId: 'AA',
         userHasAlreadyBookedThisDate: true,
         userHasCancelledThisDate: false,
+        isBookable: true,
       },
     ])
+  })
+
+  it('should not return stock when it is not bookable', () => {
+    // given
+    const state = {
+      data: {
+        bookings: [
+          {
+            stockId: 'AB',
+          },
+        ],
+        stocks: [
+          {
+            id: 'AB',
+            offerId: 'AA',
+            beginningDatetime: moment(),
+            isBookable: false,
+          },
+        ],
+      },
+    }
+    const offer = {
+      id: 'AA',
+    }
+
+    // when
+    const result = selectBookables(state, offer)
+
+    // then
+    expect(result).toStrictEqual([])
   })
 })
 
@@ -288,16 +320,19 @@ describe('selectBookablesWithoutDateNotAvailable', () => {
             id: 'AB',
             offerId: 'ZZ',
             remainingQuantity: 0,
+            isBookable: true,
           },
           {
             id: 'AC',
             offerId: 'AA',
             remainingQuantity: 1,
+            isBookable: true,
           },
           {
             id: 'AD',
             offerId: 'AA',
             remainingQuantity: 'unlimited',
+            isBookable: true,
           },
         ],
       },
@@ -318,6 +353,7 @@ describe('selectBookablesWithoutDateNotAvailable', () => {
         userHasAlreadyBookedThisDate: false,
         userHasCancelledThisDate: false,
         remainingQuantity: 1,
+        isBookable: true,
       },
       {
         __modifiers__: ['selectBookables'],
@@ -326,7 +362,38 @@ describe('selectBookablesWithoutDateNotAvailable', () => {
         userHasAlreadyBookedThisDate: false,
         userHasCancelledThisDate: false,
         remainingQuantity: 'unlimited',
+        isBookable: true,
       },
     ])
+  })
+
+  it('should not return stock when it is not bookable', () => {
+    // given
+    const state = {
+      data: {
+        bookings: [
+          {
+            stockId: 'AB',
+          },
+        ],
+        stocks: [
+          {
+            id: 'AD',
+            offerId: 'AA',
+            remainingQuantity: 'unlimited',
+            isBookable: false,
+          },
+        ],
+      },
+    }
+    const offer = {
+      id: 'AA',
+    }
+
+    // when
+    const result = selectBookablesWithoutDateNotAvailable(state, offer)
+
+    // then
+    expect(result).toStrictEqual([])
   })
 })

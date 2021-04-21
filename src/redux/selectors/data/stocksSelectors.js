@@ -25,6 +25,12 @@ export const selectStocksByOfferId = createCachedSelector(
   (stocks, offerId) => stocks.filter(stock => stock.offerId === offerId)
 )((state, offerId = '') => offerId)
 
+export const selectBookableStocks = createCachedSelector(
+  (state, offerId) => offerId,
+  selectStocksByOfferId,
+  (offerId, stocks) => stocks.filter(stock => stock.isBookable)
+)((state, offerId = '') => offerId)
+
 export const selectIsEnoughStockForOfferDuo = createCachedSelector(
   (state, offerId) => offerId,
   selectStocksByOfferId,
@@ -55,7 +61,7 @@ export const selectBookables = createCachedSelector(
   (state, offer) => offer,
   (bookings, allStocks, offer) => {
     let { venue } = offer || {}
-    const stocks = selectStocksByOfferId({ data: { stocks: allStocks } }, offer && offer.id)
+    const stocks = selectBookableStocks({ data: { stocks: allStocks } }, offer && offer.id)
     const { departementCode } = venue || {}
     const tz = getTimezone(departementCode)
 
@@ -81,7 +87,7 @@ export const selectBookablesWithoutDateNotAvailable = createCachedSelector(
   (state, offer) => offer,
   (bookings, allStocks, offer) => {
     let { venue } = offer || {}
-    const stocks = selectStocksByOfferId({ data: { stocks: allStocks } }, offer && offer.id)
+    const stocks = selectBookableStocks({ data: { stocks: allStocks } }, offer && offer.id)
     const { departementCode } = venue || {}
     const tz = getTimezone(departementCode)
 
