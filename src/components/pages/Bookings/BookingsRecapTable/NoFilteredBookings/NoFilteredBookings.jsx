@@ -8,7 +8,7 @@ const NoFilteredBookings = ({ resetFilters }) => {
     <div className='no-filtered-bookings-wrapper'>
       <Icon
         className='nfb-icon'
-        svg="ico-search"
+        svg="ico-search-gray"
       />
       <span>
         {'Aucune réservation trouvée pour votre recherche'}
