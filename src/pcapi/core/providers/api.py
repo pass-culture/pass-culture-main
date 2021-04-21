@@ -196,6 +196,8 @@ def _build_new_offers_from_stock_details(
     for stock_detail in stock_details:
         if stock_detail["offers_provider_reference"] in existing_offers_by_provider_reference:
             continue
+        if not stock_detail["available_quantity"]:
+            continue
 
         product = products_by_provider_reference[stock_detail["products_provider_reference"]]
         offer = _build_new_offer(
@@ -241,6 +243,8 @@ def _get_stocks_to_upsert(
             offer_ids.add(offers_by_provider_reference[stock_detail["offers_provider_reference"]])
 
         else:
+            if not stock_detail["available_quantity"]:
+                continue
             stock = _build_stock_from_stock_detail(
                 stock_detail,
                 offers_by_provider_reference[stock_detail["offers_provider_reference"]],

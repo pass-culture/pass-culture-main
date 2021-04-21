@@ -148,12 +148,19 @@ class SynchronizeStocksTest:
     def test_build_new_offers_from_stock_details(self, db_session):
         # Given
         spec = [
-            {
+            {  # known offer, must be ignored
                 "offers_provider_reference": "offer_ref1",
             },
-            {
+            {  # new one, will be created
                 "available_quantity": 17,
                 "offers_provider_reference": "offer_ref_2",
+                "price": 28.989,
+                "products_provider_reference": "product_ref",
+                "stocks_provider_reference": "stock_ref",
+            },
+            {  # no quantity, must be ignored
+                "available_quantity": 0,
+                "offers_provider_reference": "offer_ref_3",
                 "price": 28.989,
                 "products_provider_reference": "product_ref",
                 "stocks_provider_reference": "stock_ref",
@@ -195,19 +202,26 @@ class SynchronizeStocksTest:
     def test_get_stocks_to_upsert(self):
         # Given
         spec = [
-            {
+            {  # existing, will update
                 "offers_provider_reference": "offer_ref1",
                 "available_quantity": 15,
                 "price": 15.78,
                 "products_provider_reference": "product_ref1",
                 "stocks_provider_reference": "stock_ref1",
             },
-            {
+            {  # new, will be added
                 "available_quantity": 17,
                 "offers_provider_reference": "offer_ref2",
                 "price": 28.989,
                 "products_provider_reference": "product_ref2",
                 "stocks_provider_reference": "stock_ref2",
+            },
+            {  # no quantity, must be ignored
+                "available_quantity": 0,
+                "offers_provider_reference": "offer_ref3",
+                "price": 28.989,
+                "products_provider_reference": "product_ref3",
+                "stocks_provider_reference": "stock_ref3",
             },
         ]
 
@@ -216,6 +230,7 @@ class SynchronizeStocksTest:
         products_by_provider_reference = {
             "product_ref1": Product(extraData={"prix_livre": 7.01}),
             "product_ref2": Product(extraData={"prix_livre": 9.02}),
+            "product_ref3": Product(extraData={"prix_livre": 11.03}),
         }
 
         # When
