@@ -3,7 +3,6 @@ from datetime import datetime
 
 from sqlalchemy import Column
 from sqlalchemy import func
-from sqlalchemy import not_
 from sqlalchemy.orm import Query
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.functions import Function
@@ -91,22 +90,6 @@ def filter_users_with_at_least_one_validated_offerer_validated_user_offerer(quer
         query.join(UserOfferer)
         .join(Offerer)
         .filter((Offerer.validationToken.is_(None)) & (UserOfferer.validationToken.is_(None)))
-    )
-
-
-def filter_users_with_at_least_one_validated_offerer_not_validated_user_offerer(query: Query) -> Query:
-    return (
-        query.join(UserOfferer)
-        .join(Offerer)
-        .filter((Offerer.validationToken.is_(None)) & (not_(UserOfferer.validationToken.is_(None))))
-    )
-
-
-def filter_users_with_at_least_one_not_validated_offerer_validated_user_offerer(query: Query) -> Query:
-    return (
-        query.join(UserOfferer)
-        .join(Offerer)
-        .filter((not_(Offerer.validationToken.is_(None))) & (UserOfferer.validationToken.is_(None)))
     )
 
 
