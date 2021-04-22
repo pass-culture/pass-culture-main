@@ -31,6 +31,7 @@ from pcapi.emails.beneficiary_warning_after_pro_booking_cancellation import (
 from pcapi.emails.new_offer_validation import retrieve_data_for_offer_approval_email
 from pcapi.emails.new_offer_validation import retrieve_data_for_offer_rejection_email
 from pcapi.emails.new_offerer_validation import retrieve_data_for_new_offerer_validation_email
+from pcapi.emails.offer_webapp_link import build_data_for_offer_webapp_link
 from pcapi.emails.offerer_attachment_validation import retrieve_data_for_offerer_attachment_validation_email
 from pcapi.emails.offerer_booking_recap import retrieve_data_for_offerer_booking_recap_email
 from pcapi.emails.offerer_bookings_recap_after_deleting_stock import (
@@ -73,6 +74,11 @@ def send_booking_confirmation_email_to_beneficiary(booking: Booking) -> None:
 def send_beneficiary_booking_cancellation_email(booking: Booking) -> None:
     data = make_beneficiary_booking_cancellation_email_data(booking)
     mails.send(recipients=[booking.user.email], data=data)
+
+
+def send_user_webapp_offer_link_email(user: User, offer: Offer) -> None:
+    data = build_data_for_offer_webapp_link(user, offer)
+    mails.send(recipients=[user.email], data=data)
 
 
 def send_user_driven_cancellation_email_to_offerer(booking: Booking) -> None:

@@ -5,6 +5,7 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
+import pcapi.core.mails.testing as mails_testing
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.factories import MediationFactory
 from pcapi.core.offers.factories import OfferFactory
@@ -15,6 +16,8 @@ from pcapi.models.offer_type import EventType
 from pcapi.models.offer_type import ThingType
 
 from tests.conftest import TestClient
+
+from .utils import create_user_and_test_client
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -181,3 +184,34 @@ class OffersTest:
         response = TestClient(app.test_client()).get("/native/v1/offer/1")
 
         assert response.status_code == 404
+
+
+class SendOfferWebAppLinkTest:
+    def test_send_offer_webapp_link_by_email(self, app):
+        offer_id = OfferFactory().id
+        user, test_client = create_user_and_test_client(app)
+
+        # expected queries:
+        #   * get User
+        #   * find Offer
+        #   * save email to DB (testing backend)
+        #   * release savepoint after saving email
+        with assert_num_queries(4):
+            response = test_client.post(f"/native/v1/send_offer_webapp_link_by_email/{offer_id}")
+            assert response.status_code == 204
+
+        assert len(mails_testing.outbox) == 1
+
+        mail = mails_testing.outbox[0]
+        assert mail.sent_data["To"] == user.email
+
+    def test_send_offer_webapp_link_by_email_not_found(self, app):
+        _, test_client = create_user_and_test_client(app)
+
+        # expected queries:
+        #   * get User
+        #   * try to find Offer
+        with assert_num_queries(2):
+            response = test_client.post("/native/v1/send_offer_webapp_link_by_email/98765432123456789")
+            assert response.status_code == 404
+        assert not mails_testing.outbox
