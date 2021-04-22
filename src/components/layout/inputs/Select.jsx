@@ -12,6 +12,19 @@ export const buildSelectOptions = (idField, valueField, data) => {
     .sort((a, b) => a.displayName.localeCompare(b.displayName, 'fr'))
 }
 
+export const buildSelectOptionsWithOptionalFields = (idField, valueFields, data) => {
+  return data
+    .map(item => {
+      const [desiredValueField, defaultValueField] = valueFields
+
+      return {
+        id: item[idField].toString(),
+        displayName: item[desiredValueField] ? item[desiredValueField] : item[defaultValueField],
+      }
+    })
+    .sort((a, b) => a.displayName.localeCompare(b.displayName, 'fr'))
+}
+
 const Select = ({
   defaultOption,
   error,

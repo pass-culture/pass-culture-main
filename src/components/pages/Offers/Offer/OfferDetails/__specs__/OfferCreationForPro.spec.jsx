@@ -163,6 +163,14 @@ describe('offerDetails - Creation - pro user', () => {
         name: "L'autre lieu (Offre numérique)",
         offererName: "L'autre structure",
       },
+      {
+        id: 'ABCDE',
+        isVirtual: true,
+        managingOffererId: offerer2Id,
+        name: "L'autre lieu du lieu",
+        offererName: "L'autre structure",
+        publicName: "Le nom d'usage de l'autre autre lieu",
+      },
     ]
     pcapi.loadTypes.mockResolvedValue(types)
     pcapi.getUserValidatedOfferersNames.mockResolvedValue(offerers)
@@ -914,6 +922,21 @@ describe('offerDetails - Creation - pro user', () => {
 
           // then
           expect(pcapi.getVenuesForOfferer).toHaveBeenCalledWith({ activeOfferersOnly: true })
+        })
+
+        it('should display venues publicName instead of name if exists', async () => {
+          // Given
+          await renderOffers(props, store)
+
+          // When
+          await setOfferValues({ type: 'EventType.MUSIQUE' })
+
+          // Then
+          expect(screen.getByText(venues[0].name)).toBeInTheDocument()
+          expect(screen.getByText(venues[1].name)).toBeInTheDocument()
+          expect(screen.getByText(venues[2].name)).toBeInTheDocument()
+          expect(screen.queryByText(venues[3].name)).not.toBeInTheDocument()
+          expect(screen.getByText(venues[3].publicName)).toBeInTheDocument()
         })
       })
 

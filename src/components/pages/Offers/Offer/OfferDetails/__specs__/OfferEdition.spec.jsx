@@ -919,6 +919,19 @@ describe('offerDetails - Edition', () => {
       expect(visualDisabilityCompliant).toBeEnabled()
     })
 
+    it("should display venue's publicName instead of name if exists", async () => {
+      // Given
+      editedOfferVenue.publicName = 'Le publicName du lieu'
+      pcapi.loadOffer.mockResolvedValue(editedOffer)
+
+      // When
+      await renderOffers(props, store)
+
+      // Then
+      expect(screen.queryByText(editedOfferVenue.name)).not.toBeInTheDocument()
+      expect(screen.getByText(editedOfferVenue.publicName)).toBeInTheDocument()
+    })
+
     describe('for synchronized offers', () => {
       it('should show a banner stating the synchronization and the provider', async () => {
         // Given

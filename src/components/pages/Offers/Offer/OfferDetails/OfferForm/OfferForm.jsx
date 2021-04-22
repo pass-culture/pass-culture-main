@@ -7,7 +7,10 @@ import InternalBanner from 'components/layout/Banner/InternalBanner'
 import { CheckboxInput } from 'components/layout/inputs/CheckboxInput/CheckboxInput'
 import DurationInput from 'components/layout/inputs/DurationInput/DurationInput'
 import InputError from 'components/layout/inputs/Errors/InputError'
-import Select, { buildSelectOptions } from 'components/layout/inputs/Select'
+import Select, {
+  buildSelectOptions,
+  buildSelectOptionsWithOptionalFields,
+} from 'components/layout/inputs/Select'
 import TextareaInput from 'components/layout/inputs/TextareaInput'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import Spinner from 'components/layout/Spinner'
@@ -82,7 +85,9 @@ const OfferForm = ({
   const [offerType, setOfferType] = useState(null)
   const [receiveNotificationEmails, setReceiveNotificationEmails] = useState(false)
   const [venue, setVenue] = useState(null)
-  const [venueOptions, setVenueOptions] = useState(buildSelectOptions('id', 'name', venues))
+  const [venueOptions, setVenueOptions] = useState(
+    buildSelectOptionsWithOptionalFields('id', ['publicName', 'name'], venues)
+  )
   const [offerFormFields, setOfferFormFields] = useState(Object.keys(DEFAULT_FORM_VALUES))
   const [formErrors, setFormErrors] = useState(submitErrors)
   const formRef = useRef(null)
@@ -176,7 +181,9 @@ const OfferForm = ({
       } else if (offerType?.onlineOnly) {
         venuesToShow = venuesToShow.filter(venue => venue.isVirtual)
       }
-      setVenueOptions(buildSelectOptions('id', 'name', venuesToShow))
+      setVenueOptions(
+        buildSelectOptionsWithOptionalFields('id', ['publicName', 'name'], venuesToShow)
+      )
 
       if (venuesToShow.length === 0 && venues.length > 0) {
         setFormErrors(oldFormErrors => ({
