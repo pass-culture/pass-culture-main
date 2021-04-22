@@ -240,7 +240,7 @@ jobs:
           path: ~/pass-culture-main/pro
       - run:
           name: Install Lib CI
-          command: ./install_lib_ci.sh
+          command: ~/pass-culture-main/install_lib_ci.sh
       - run:
           name: Build and Deploy
           command: |
