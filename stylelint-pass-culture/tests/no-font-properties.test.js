@@ -4,6 +4,7 @@ const { messages, ruleName } = require('../no-font-properties')
 testRule({
   plugins: ['./stylelint-pass-culture'],
   ruleName,
+  config: [],
   reject: [
     {
       code: 'font: 14px arial;',
