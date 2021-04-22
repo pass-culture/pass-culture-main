@@ -8,6 +8,7 @@ export const offerFactory = (
   return {
     id: 'O1',
     isEvent: false,
+    status: 'ACTIVE',
     stocks,
     venue: customVenue,
     ...customOffer,

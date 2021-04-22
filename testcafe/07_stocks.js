@@ -1,6 +1,5 @@
 import { Selector } from 'testcafe'
 
-import { getPathname } from './helpers/location'
 import { navigateToOfferAs, navigateToStocksAs } from './helpers/navigations'
 import { createUserRole } from './helpers/roles'
 import { fetchSandbox } from './helpers/sandboxes'
@@ -41,11 +40,7 @@ test("Je peux créer un stock pour un événement en passant par la page de l'of
     .typeText(priceInput, '15')
     .click(submitButton)
 
-  await t
-    .expect(submitSuccess.exists)
-    .ok()
-    .expect(getPathname())
-    .eql(`/offres/${offer.id}/confirmation`)
+  await t.expect(submitSuccess.exists).ok().expect(stockItem.count).eql(1)
 })
 
 test('Je ne peux pas créer un nouveau stock pour un objet ayant déjà un stock en passant par la page des offres', async t => {

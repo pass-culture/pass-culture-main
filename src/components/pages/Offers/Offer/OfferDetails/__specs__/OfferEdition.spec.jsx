@@ -630,7 +630,6 @@ describe('offerDetails - Edition', () => {
           stageDirector: 'Mr Offer Stage Director',
           visa: 'Courtesy of visa',
         },
-        stocks: [],
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
       const fullConditionalFieldsType = {

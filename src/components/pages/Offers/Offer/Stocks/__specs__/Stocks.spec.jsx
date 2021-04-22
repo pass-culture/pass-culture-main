@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
@@ -1833,33 +1833,19 @@ describe('stocks page', () => {
   })
 
   describe('create', () => {
-    it('should update displayed offer status', async () => {
+    it('should not display offer status', async () => {
       // Given
       const draftOffer = {
         ...defaultOffer,
         status: 'DRAFT',
       }
-      const createdOffer = {
-        ...defaultOffer,
-        status: 'ACTIVE',
-      }
-      pcapi.loadOffer.mockResolvedValueOnce(draftOffer).mockResolvedValueOnce(createdOffer)
-      pcapi.bulkCreateOrEditStock.mockResolvedValue({})
-
-      await renderOffers(props, store)
-      const initialStatus = screen.queryByText('épuisée')
-      fireEvent.click(screen.getByText('Ajouter un stock'))
-      fireEvent.change(screen.getByLabelText('Prix'), { target: { value: '15' } })
+      pcapi.loadOffer.mockResolvedValueOnce(draftOffer)
 
       // When
-      fireEvent.click(screen.getByText('Valider et créer l’offre'))
+      await renderOffers(props, store)
 
       // Then
-      expect(initialStatus).not.toBeInTheDocument()
-      await waitFor(() => {
-        expect(screen.queryByText('épuisée')).not.toBeInTheDocument()
-        expect(screen.getByText('active')).toBeInTheDocument()
-      })
+      expect(screen.queryByText('épuisée')).not.toBeInTheDocument()
     })
 
     it('should display a specific success notification when the user has finished the offer creation process', async () => {

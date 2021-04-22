@@ -36,7 +36,6 @@ const Stocks = ({
   const offerId = offer.id
   const [isLoading, setIsLoading] = useState(true)
   const [stocks, setStocks] = useState([])
-  const [initialStocks, setInitialStocks] = useState([])
   const isOfferSynchronized = Boolean(offer.lastProvider)
   const [formErrors, setFormErrors] = useState({})
   const isOfferDraft = offer.status === OFFER_STATUS_DRAFT
@@ -47,12 +46,10 @@ const Stocks = ({
       return pcapi.loadStocks(offerId).then(receivedStocks => {
         setStocks(oldStocks => {
           const stocksOnCreation = keepCreationStocks ? oldStocks.filter(stock => !stock.id) : []
-          const newStocks = [
+          return [
             ...stocksOnCreation,
             ...formatAndSortStocks(receivedStocks.stocks, offer.venue.departementCode),
           ]
-          setInitialStocks(newStocks)
-          return newStocks
         })
         setIsLoading(false)
       })
@@ -153,7 +150,7 @@ const Stocks = ({
           loadStocks()
           reloadOffer()
           isOfferDraft ? showSuccessNotificationStocksAndOffer() : showSuccessNotification()
-          if (initialStocks.length === 0) {
+          if (offer.status === OFFER_STATUS_DRAFT) {
             history.push(`/offres/${offer.id}/confirmation`)
           }
         })
@@ -162,11 +159,11 @@ const Stocks = ({
   }, [
     existingStocks,
     history,
-    initialStocks,
     stocksInCreation,
     offer.id,
     offer.isEvent,
     isOfferDraft,
+    offer.status,
     offer.venue.departementCode,
     loadStocks,
     reloadOffer,

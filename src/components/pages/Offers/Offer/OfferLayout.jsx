@@ -29,7 +29,7 @@ const OfferLayout = props => {
 
   const [offer, setOffer] = useState(null)
   const [isCreatingOffer, setIsCreatingOffer] = useState(true)
-  const [haveStocks, setHaveStocks] = useState(false)
+  const [isDraft, setIsDraft] = useState(false)
 
   const loadOffer = useCallback(
     async offerId => {
@@ -37,8 +37,8 @@ const OfferLayout = props => {
       setOffer(existingOffer)
       setIsCreatingOffer(existingOffer.status === OFFER_STATUS_DRAFT)
 
-      if (existingOffer.stocks.length > 0) {
-        setHaveStocks(true)
+      if (existingOffer.status === OFFER_STATUS_DRAFT) {
+        setIsDraft(true)
       }
     },
     [setOffer]
@@ -80,12 +80,14 @@ const OfferLayout = props => {
   }
 
   const offerStatus =
-    offer?.status && offer?.status !== OFFER_STATUS_DRAFT ? (
-      <OfferHeader
-        offer={offer}
-        reloadOffer={reloadOffer}
-      />
-    ) : null
+      offer?.status &&
+      offer?.status !== OFFER_STATUS_DRAFT &&
+      !location.pathname.includes('/confirmation') ? (
+        <OfferHeader
+          offer={offer}
+          reloadOffer={reloadOffer}
+        />
+          ) : null
 
   return (
     <div className="offer-page">
@@ -97,7 +99,7 @@ const OfferLayout = props => {
       <Breadcrumb
         activeStep={activeStep}
         isCreatingOffer={isCreatingOffer}
-        isOfferCreatingIsFinished={haveStocks}
+        isDraft={isDraft}
         offerId={offer?.id}
       />
 
