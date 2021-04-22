@@ -1,0 +1,16 @@
+.title-offer-status {
+  align-items: center;
+  display: grid;
+  grid-column-gap: rem(24px);
+  grid-template-columns: auto 1px auto;
+  height: 100%;
+
+  .tertiary-button img {
+    filter: brightness(1) invert(1);
+  }
+
+  .separator {
+    background-color: $grey-medium;
+    height: rem(24px);
+  }
+}

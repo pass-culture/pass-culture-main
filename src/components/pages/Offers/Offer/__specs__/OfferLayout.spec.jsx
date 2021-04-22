@@ -78,16 +78,16 @@ describe('offerLayout', () => {
       await renderOfferDetails(props, store)
 
       // When
-      fireEvent.click(screen.getByRole('button', { name: "Activer l'offre" }))
+      fireEvent.click(screen.getByRole('button', { name: 'Activer' }))
 
       // Then
       expect(pcapi.updateOffersActiveStatus).toHaveBeenCalledWith(false, {
         ids: [editedOffer.id],
         isActive: true,
       })
-      await waitForElementToBeRemoved(() => screen.getByRole('button', { name: "Activer l'offre" }))
+      await waitForElementToBeRemoved(() => screen.getByRole('button', { name: 'Activer' }))
       expect(screen.getByText('L’offre a bien été activée.')).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: "Désactiver l'offre" })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Désactiver' })).toBeInTheDocument()
     })
 
     it('should allow to deactivate active offer', async () => {
@@ -99,18 +99,16 @@ describe('offerLayout', () => {
       await renderOfferDetails(props, store)
 
       // When
-      fireEvent.click(screen.getByRole('button', { name: "Désactiver l'offre" }))
+      fireEvent.click(screen.getByRole('button', { name: 'Désactiver' }))
 
       // Then
       expect(pcapi.updateOffersActiveStatus).toHaveBeenCalledWith(false, {
         ids: [editedOffer.id],
         isActive: false,
       })
-      await waitForElementToBeRemoved(() =>
-        screen.getByRole('button', { name: "Désactiver l'offre" })
-      )
+      await waitForElementToBeRemoved(() => screen.getByRole('button', { name: 'Désactiver' }))
       expect(screen.getByText('L’offre a bien été désactivée.')).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: "Activer l'offre" })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Activer' })).toBeInTheDocument()
     })
 
     it('should not allow to deactivate pending offer', async () => {
@@ -121,7 +119,7 @@ describe('offerLayout', () => {
       await renderOfferDetails(props, store)
 
       // Then
-      expect(screen.getByRole('button', { name: "Désactiver l'offre" })).toBeDisabled()
+      expect(screen.getByRole('button', { name: 'Désactiver' })).toBeDisabled()
     })
 
     it('should not allow to deactivate rejected offer', async () => {
@@ -132,7 +130,7 @@ describe('offerLayout', () => {
       await renderOfferDetails(props, store)
 
       // Then
-      expect(screen.getByRole('button', { name: "Activer l'offre" })).toBeDisabled()
+      expect(screen.getByRole('button', { name: 'Activer' })).toBeDisabled()
     })
   })
 

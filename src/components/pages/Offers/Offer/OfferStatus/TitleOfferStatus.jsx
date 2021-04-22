@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
 
+import Icon from 'components/layout/Icon'
 import OfferStatus from 'components/pages/Offers/Offer/OfferStatus/OfferStatus'
 import {
   OFFER_STATUS_PENDING,
@@ -26,16 +27,28 @@ export const TitleOfferStatus = ({
   }, [offer, notifySuccessfulOfferActivationStatusToggle, reloadOffer])
 
   return (
-    <>
+    <div className="title-offer-status">
       <button
+        className="tertiary-button with-icon"
         disabled={offer.status === OFFER_STATUS_PENDING || offer.status === OFFER_STATUS_REJECTED}
         onClick={toggleOfferActiveStatus}
         type="button"
       >
-        {offer.isActive ? "Désactiver l'offre" : "Activer l'offre"}
+        {offer.isActive ? (
+          <>
+            <Icon svg="ico-status-inactive" />
+            {'Désactiver'}
+          </>
+        ) : (
+          <>
+            <Icon svg="ico-status-validated" />
+            {'Activer'}
+          </>
+        )}
       </button>
+      <div className="separator" />
       <OfferStatus status={offer.status} />
-    </>
+    </div>
   )
 }
 
