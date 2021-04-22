@@ -26,7 +26,7 @@ class Returns204:
         response = client.patch("/offers/all-active-status", json=data)
 
         # Then
-        assert response.status_code == 204
+        assert response.status_code == 202
         assert Offer.query.get(offer1.id).isActive
         assert Offer.query.get(offer2.id).isActive
 
@@ -44,7 +44,7 @@ class Returns204:
         response = client.patch("/offers/all-active-status", json=data)
 
         # Then
-        assert response.status_code == 204
+        assert response.status_code == 202
         assert not Offer.query.get(offer1.id).isActive
         assert not Offer.query.get(offer2.id).isActive
 
@@ -79,7 +79,7 @@ class Returns204:
         response = client.patch("/offers/all-active-status", json=data)
 
         # Then
-        assert response.status_code == 204
+        assert response.status_code == 202
         assert not Offer.query.get(matching_offer1.id).isActive
         assert not Offer.query.get(matching_offer2.id).isActive
         assert Offer.query.get(offer_out_of_date_range.id).isActive
@@ -98,7 +98,7 @@ class Returns204:
         data = {"isActive": False, "page": 1, "venueId": humanize(venue.id)}
         response = client.patch("/offers/all-active-status", json=data)
 
-        assert response.status_code == 204
+        assert response.status_code == 202
         assert not approved_offer.isActive
         assert pending_offer.isActive
         assert rejected_offer.isActive

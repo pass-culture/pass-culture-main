@@ -141,6 +141,10 @@ class PatchAllOffersActiveStatusBodyModel(BaseModel):
         alias_generator = to_camel
 
 
+class PatchAllOffersActiveStatusResponseModel(BaseModel):
+    pass
+
+
 class ListOffersVenueResponseModel(BaseModel):
     id: str
     isVirtual: bool
@@ -445,7 +449,7 @@ class GetOfferResponseModel(BaseModel):
     @validator("dateRange", pre=True)
     def extract_datetime_list_from_DateTimes_type(  # pylint: disable=no-self-argument
         cls, date_range: DateTimes
-    ) -> [datetime]:
+    ) -> list[datetime]:
         if isinstance(date_range, DateTimes):
             return date_range.datetimes
         return date_range

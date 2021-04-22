@@ -21,12 +21,14 @@ from pcapi.routes.serialization.offers_serialize import ListOffersQueryModel
 from pcapi.routes.serialization.offers_serialize import ListOffersResponseModel
 from pcapi.routes.serialization.offers_serialize import OfferResponseIdModel
 from pcapi.routes.serialization.offers_serialize import PatchAllOffersActiveStatusBodyModel
+from pcapi.routes.serialization.offers_serialize import PatchAllOffersActiveStatusResponseModel
 from pcapi.routes.serialization.offers_serialize import PatchOfferActiveStatusBodyModel
 from pcapi.routes.serialization.offers_serialize import PatchOfferBodyModel
 from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailBodyModel
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailResponseModel
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.workers.update_all_offers_active_status_job import update_all_offers_active_status_job
 
 
 logger = logging.getLogger(__name__)
@@ -82,21 +84,24 @@ def patch_offers_active_status(body: PatchOfferActiveStatusBodyModel) -> None:
 
 @private_api.route("/offers/all-active-status", methods=["PATCH"])
 @login_required
-@spectree_serialize(response_model=None, on_success_status=204)
-def patch_all_offers_active_status(body: PatchAllOffersActiveStatusBodyModel) -> None:
-    query = offers_repository.get_offers_by_filters(
-        user_id=current_user.id,
-        user_is_admin=current_user.isAdmin,
-        offerer_id=body.offerer_id,
-        status=body.status,
-        venue_id=body.venue_id,
-        type_id=body.type_id,
-        name_keywords=body.name,
-        creation_mode=body.creation_mode,
-        period_beginning_date=body.period_beginning_date,
-        period_ending_date=body.period_ending_date,
-    )
-    offers_api.update_offers_active_status(query, body.is_active)
+@spectree_serialize(response_model=None, on_success_status=202)
+def patch_all_offers_active_status(
+    body: PatchAllOffersActiveStatusBodyModel,
+) -> PatchAllOffersActiveStatusResponseModel:
+    filters = {
+        "user_id": current_user.id,
+        "is_user_admin": current_user.isAdmin,
+        "offerer_id": body.offerer_id,
+        "status": body.status,
+        "venue_id": body.venue_id,
+        "type_id": body.type_id,
+        "name": body.name,
+        "creation_mode": body.creation_mode,
+        "period_beginning_date": body.period_beginning_date,
+        "period_ending_date": body.period_ending_date,
+    }
+    update_all_offers_active_status_job.delay(filters, body.is_active)
+    return PatchAllOffersActiveStatusResponseModel()
 
 
 @private_api.route("/offers/<offer_id>", methods=["PATCH"])
