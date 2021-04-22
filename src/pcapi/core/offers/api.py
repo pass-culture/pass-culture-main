@@ -207,17 +207,23 @@ def update_offer(  # pylint: disable=redefined-builtin
 
 
 def update_offers_active_status(query, is_active):
-    query = query.filter(Offer.validation == OfferValidationStatus.APPROVED)
-    # We cannot just call `query.update()` because `distinct()` may
-    # already have been called on `query`.
-    query_to_update = Offer.query.filter(Offer.id.in_(query.with_entities(Offer.id)))
-    query_to_update.update({"isActive": is_active}, synchronize_session=False)
-    db.session.commit()
+    offer_ids_tuples = query.filter(Offer.validation == OfferValidationStatus.APPROVED).with_entities(Offer.id)
 
-    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
-        offer_ids = {offer_id for offer_id, in query.with_entities(Offer.id)}
-        for offer_id in offer_ids:
-            redis.add_offer_id(client=app.redis_client, offer_id=offer_id)
+    offer_ids = [offer_id for offer_id, in offer_ids_tuples]
+    number_of_offers_to_update = len(offer_ids)
+    batch_size = 1000
+    for current_start_index in range(0, number_of_offers_to_update, batch_size):
+        offer_ids_batch = offer_ids[
+            current_start_index : min(current_start_index + batch_size, number_of_offers_to_update)
+        ]
+
+        query_to_update = Offer.query.filter(Offer.id.in_(offer_ids_batch))
+        query_to_update.update({"isActive": is_active}, synchronize_session=False)
+        db.session.commit()
+
+        if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
+            for offer_id in offer_ids_batch:
+                redis.add_offer_id(client=app.redis_client, offer_id=offer_id)
 
 
 def _create_stock(
