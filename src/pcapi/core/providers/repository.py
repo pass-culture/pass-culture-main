@@ -15,10 +15,10 @@ def get_provider_by_local_class(local_class: str) -> Provider:
 
 
 def get_enabled_providers_for_pro() -> list[Provider]:
-    return get_enabled_provider_for_pro_query().all()
+    return get_enabled_providers_for_pro_query().all()
 
 
-def get_enabled_provider_for_pro_query() -> query:
+def get_enabled_providers_for_pro_query() -> query:
     return Provider.query.filter_by(isActive=True).filter_by(enabledForPro=True).order_by(Provider.name)
 
 

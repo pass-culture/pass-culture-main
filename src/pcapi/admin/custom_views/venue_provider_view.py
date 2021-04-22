@@ -17,7 +17,7 @@ from wtforms_sqlalchemy.fields import QuerySelectField
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.core.providers import api
 from pcapi.core.providers.models import VenueProvider
-from pcapi.core.providers.repository import get_enabled_provider_for_pro_query
+from pcapi.core.providers.repository import get_enabled_providers_for_pro_query
 from pcapi.models import ApiErrors
 from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
 from pcapi.utils.human_ids import humanize
@@ -75,7 +75,7 @@ class VenueProviderView(BaseAdminView):
 
     def scaffold_form(self) -> BaseForm:
         form_class = super().scaffold_form()
-        form_class.provider = QuerySelectField(query_factory=get_enabled_provider_for_pro_query, get_label="name")
+        form_class.provider = QuerySelectField(query_factory=get_enabled_providers_for_pro_query, get_label="name")
         form_class.price = DecimalField("(Exclusivement Allociné) Prix", [Optional()])
         form_class.isDuo = BooleanField("(Exclusivement Allociné) Offre duo", [Optional()])
 
