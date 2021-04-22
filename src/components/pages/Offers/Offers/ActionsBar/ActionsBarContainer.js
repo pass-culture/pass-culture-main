@@ -21,6 +21,13 @@ export const mapDispatchToProps = dispatch => {
           text,
         })
       ),
+    showPendingNotification: text =>
+      dispatch(
+        showNotification({
+          type: 'pending',
+          text,
+        })
+      ),
   }
 }
 

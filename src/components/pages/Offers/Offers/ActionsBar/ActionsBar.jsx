@@ -2,8 +2,7 @@ import PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
 
 import Icon from 'components/layout/Icon'
-
-import { updateOffersActiveStatus } from '../../../../../repository/pcapi/pcapi'
+import { updateOffersActiveStatus } from 'repository/pcapi/pcapi'
 
 const computeActivationSuccessMessage = nbSelectedOffers => {
   const successMessage =
@@ -15,12 +14,27 @@ const computeDeactivationSuccessMessage = nbSelectedOffers => {
     nbSelectedOffers > 1 ? 'offres ont bien été désactivées' : 'offre a bien été désactivée'
   return `${nbSelectedOffers} ${successMessage}`
 }
+const computeAllActivationSuccessMessage = nbSelectedOffers => {
+  const successMessage =
+    nbSelectedOffers > 1
+      ? 'offres sont en cours d’activation, veuillez rafraichir dans quelques instants'
+      : 'offre est en cours d’activation, veuillez rafraichir dans quelques instants'
+  return `${nbSelectedOffers} ${successMessage}`
+}
+const computeAllDeactivationSuccessMessage = nbSelectedOffers => {
+  const successMessage =
+    nbSelectedOffers > 1
+      ? 'offres sont en cours de désactivation, veuillez rafraichir dans quelques instants'
+      : 'offre est en cours de désactivation, veuillez rafraichir dans quelques instants'
+  return `${nbSelectedOffers} ${successMessage}`
+}
 
 const ActionsBar = props => {
   const {
     refreshOffers,
     selectedOfferIds,
     clearSelectedOfferIds,
+    showPendingNotification,
     showSuccessNotification,
     trackActivateOffers,
     trackDeactivateOffers,
@@ -49,11 +63,17 @@ const ActionsBar = props => {
 
       updateOffersActiveStatus(areAllOffersSelected, body).then(() => {
         refreshOffers({ shouldTriggerSpinner: false })
-        showSuccessNotification(
-          isActivating
-            ? computeActivationSuccessMessage(nbSelectedOffers)
-            : computeDeactivationSuccessMessage(nbSelectedOffers)
-        )
+        areAllOffersSelected
+          ? showPendingNotification(
+            isActivating
+              ? computeAllActivationSuccessMessage(nbSelectedOffers)
+              : computeAllDeactivationSuccessMessage(nbSelectedOffers)
+          )
+          : showSuccessNotification(
+            isActivating
+              ? computeActivationSuccessMessage(nbSelectedOffers)
+              : computeDeactivationSuccessMessage(nbSelectedOffers)
+          )
         handleClose()
         if (!areAllOffersSelected) {
           isActivating
@@ -63,15 +83,16 @@ const ActionsBar = props => {
       })
     },
     [
-      areAllOffersSelected,
       searchFilters,
+      selectedOfferIds,
+      areAllOffersSelected,
       refreshOffers,
+      showPendingNotification,
+      nbSelectedOffers,
       showSuccessNotification,
+      handleClose,
       trackActivateOffers,
       trackDeactivateOffers,
-      handleClose,
-      nbSelectedOffers,
-      selectedOfferIds,
     ]
   )
 
@@ -141,6 +162,7 @@ ActionsBar.propTypes = {
   refreshOffers: PropTypes.func.isRequired,
   searchFilters: PropTypes.shape().isRequired,
   selectedOfferIds: PropTypes.arrayOf(PropTypes.string),
+  showPendingNotification: PropTypes.func.isRequired,
   showSuccessNotification: PropTypes.func.isRequired,
   toggleSelectAllCheckboxes: PropTypes.func.isRequired,
   trackActivateOffers: PropTypes.func.isRequired,

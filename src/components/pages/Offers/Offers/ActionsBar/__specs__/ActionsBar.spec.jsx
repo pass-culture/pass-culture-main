@@ -23,6 +23,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
       clearSelectedOfferIds: jest.fn(),
       toggleSelectAllCheckboxes: jest.fn(),
       showSuccessNotification: jest.fn(),
+      showPendingNotification: jest.fn(),
       trackActivateOffers: jest.fn(),
       trackDeactivateOffers: jest.fn(),
       searchFilters: {

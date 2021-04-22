@@ -36,6 +36,8 @@ const Notification = ({ hideNotification, notification }) => {
     svg = 'ico-notification-success-white'
   } else if (type === 'error') {
     svg = 'ico-notification-error-white'
+  } else if (type === 'pending') {
+    svg = 'ico-notification-pending'
   }
 
   if (isInDom) {
@@ -54,7 +56,7 @@ Notification.propTypes = {
   hideNotification: PropTypes.func.isRequired,
   notification: PropTypes.shape({
     text: PropTypes.string,
-    type: PropTypes.string,
+    type: PropTypes.oneOf(['error', 'success']),
   }).isRequired,
 }
 

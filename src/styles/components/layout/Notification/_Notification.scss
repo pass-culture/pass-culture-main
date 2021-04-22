@@ -66,6 +66,11 @@
     color: $white;
   }
 
+  &.is-pending {
+    background-color: $accent;
+    color: $white;
+  }
+
   img {
     flex: 0 0 rem(40px);
     padding-right: rem(8px);
