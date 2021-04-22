@@ -140,7 +140,3 @@ def _sanitized_string(value: str) -> Function:
     sanitized = func.unaccent(sanitized)
     sanitized = func.lower(sanitized)
     return sanitized
-
-
-def find_user_by_id(user_id: int) -> User:
-    return User.query.get(user_id)

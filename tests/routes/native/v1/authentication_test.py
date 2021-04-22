@@ -12,7 +12,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import hash_password
-from pcapi.repository.user_queries import find_user_by_id
+from pcapi.models import db
 
 from tests.conftest import TestClient
 
@@ -199,8 +199,8 @@ def test_reset_password_success(app):
     data = {"reset_password_token": token.value, "new_password": new_password}
     response = TestClient(app.test_client()).post("/native/v1/reset_password", json=data)
 
-    user = find_user_by_id(user.id)
     assert response.status_code == 204
+    db.session.refresh(user)
     assert user.password == hash_password(new_password)
     assert Token.query.get(token.id) is None
 
@@ -214,8 +214,8 @@ def test_reset_password_for_unvalidated_email(app):
     data = {"reset_password_token": token.value, "new_password": new_password}
     response = TestClient(app.test_client()).post("/native/v1/reset_password", json=data)
 
-    user = find_user_by_id(user.id)
     assert response.status_code == 204
+    db.session.refresh(user)
     assert user.password == hash_password(new_password)
     assert user.isEmailValidated
 
@@ -231,8 +231,8 @@ def test_reset_password_fail_for_password_strength(app):
 
     response = TestClient(app.test_client()).post("/native/v1/reset_password", json=data)
 
-    user = find_user_by_id(user.id)
     assert response.status_code == 400
+    db.session.refresh(user)
     assert user.password == old_password
     assert Token.query.get(token.id)
 
@@ -251,7 +251,7 @@ def test_change_password_success(app):
     )
 
     assert response.status_code == 204
-    user = find_user_by_id(user.id)
+    db.session.refresh(user)
     assert user.password == hash_password(new_password)
 
 
@@ -278,8 +278,7 @@ def test_change_password_failures(app):
 
     assert response.status_code == 400
     assert response.json["code"] == "WEAK_PASSWORD"
-
-    user = find_user_by_id(user.id)
+    db.session.refresh(user)
     assert user.password == hash_password(users_factories.DEFAULT_PASSWORD)
 
 
