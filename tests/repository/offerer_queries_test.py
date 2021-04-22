@@ -11,7 +11,6 @@ from pcapi.models import Venue
 from pcapi.repository import repository
 from pcapi.repository.offerer_queries import filter_offerers_with_keywords_string
 from pcapi.repository.offerer_queries import find_by_id
-from pcapi.repository.offerer_queries import find_first_by_user_offerer_id
 from pcapi.repository.offerer_queries import find_new_offerer_user_email
 
 
@@ -45,24 +44,6 @@ def test_find_email_of_user_offerer_should_returns_email(app):
 
     # Then
     assert result == "pro@example.com"
-
-
-@pytest.mark.usefixtures("db_session")
-def test_find_first_by_user_offerer_id_returns_the_first_offerer_that_was_created(app):
-    # given
-    user = create_user()
-    offerer1 = create_offerer(name="offerer1", siren="123456789")
-    offerer2 = create_offerer(name="offerer2", siren="789456123")
-    offerer3 = create_offerer(name="offerer2", siren="987654321")
-    user_offerer1 = create_user_offerer(user, offerer1)
-    user_offerer2 = create_user_offerer(user, offerer2)
-    repository.save(user_offerer1, user_offerer2, offerer3)
-
-    # when
-    offerer = find_first_by_user_offerer_id(user_offerer1.id)
-
-    # then
-    assert offerer.id == offerer1.id
 
 
 @pytest.mark.usefixtures("db_session")

@@ -26,10 +26,6 @@ def find_new_offerer_user_email(offerer_id):
     return UserOfferer.query.filter_by(offererId=offerer_id).join(User).with_entities(User.email).first()[0]
 
 
-def find_first_by_user_offerer_id(user_offerer_id):
-    return Offerer.query.join(UserOfferer).filter_by(id=user_offerer_id).first()
-
-
 def filter_offerers_with_keywords_string(query, keywords_string):
     keywords_filter = create_filter_matching_all_keywords_in_any_model(
         get_filter_matching_ts_query_for_offerer, keywords_string

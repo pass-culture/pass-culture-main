@@ -127,7 +127,7 @@ def send_validation_confirmation_email_to_pro(offerer: Offerer) -> None:
 
 
 def send_attachment_validation_email_to_pro_offerer(user_offerer: UserOfferer) -> None:
-    data = retrieve_data_for_offerer_attachment_validation_email(user_offerer)
+    data = retrieve_data_for_offerer_attachment_validation_email(user_offerer.offerer)
     mails.send(recipients=[user_offerer.user.email], data=data)
 
 

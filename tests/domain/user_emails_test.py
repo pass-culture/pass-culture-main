@@ -355,7 +355,7 @@ class SendAttachmentValidationEmailToProOffererTest:
         send_attachment_validation_email_to_pro_offerer(user_offerer)
 
         # then
-        mocked_retrieve_data_for_offerer_attachment_validation_email.assert_called_once_with(user_offerer)
+        mocked_retrieve_data_for_offerer_attachment_validation_email.assert_called_once_with(user_offerer.offerer)
         assert mails_testing.outbox[0].sent_data["Html-part"] == ""
 
 
