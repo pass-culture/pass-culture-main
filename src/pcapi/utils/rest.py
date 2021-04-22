@@ -64,7 +64,7 @@ def load_or_404(obj_class, human_id):
 
 
 def load_or_raise_error(obj_class, human_id):
-    data = obj_class.query.filter_by(id=dehumanize(human_id)).first()
+    data = obj_class.query.filter_by(id=dehumanize(human_id)).one_or_none()
     if data is None:
         errors = ApiErrors()
         errors.add_error("global", "Aucun objet ne correspond à cet identifiant dans notre base de données")

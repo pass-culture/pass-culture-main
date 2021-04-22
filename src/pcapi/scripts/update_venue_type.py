@@ -13,10 +13,10 @@ def update_venue_type(file_path: str):
 
     for venue_to_update in venues_to_update:
         venue_id = int(venue_to_update[0])
-        venue = Venue.query.filter_by(id=venue_id).first()
+        venue = Venue.query.filter_by(id=venue_id).one_or_none()
         if venue:
             venue_type_label = venue_to_update[1]
-            venue_type = VenueType.query.filter_by(label=venue_type_label).first()
+            venue_type = VenueType.query.filter_by(label=venue_type_label).one_or_none()
             if venue_type:
                 venue.venueTypeId = venue_type.id
                 try:

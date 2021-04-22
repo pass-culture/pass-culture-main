@@ -19,7 +19,9 @@ class BankInformationsSQLRepository(BankInformationsRepository):
         return bank_informations_domain_converter.to_domain(bank_informations_sql_entity)
 
     def get_by_application(self, application_id: str) -> BankInformations:
-        bank_informations_sql_entity = BankInformationsSQLEntity.query.filter_by(applicationId=application_id).first()
+        bank_informations_sql_entity = BankInformationsSQLEntity.query.filter_by(
+            applicationId=application_id
+        ).one_or_none()
         if not bank_informations_sql_entity:
             return None
         return bank_informations_domain_converter.to_domain(bank_informations_sql_entity)

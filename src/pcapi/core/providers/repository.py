@@ -7,11 +7,11 @@ from pcapi.core.providers.models import Provider
 
 
 def get_provider_enabled_for_pro_by_id(provider_id: int) -> Optional[Provider]:
-    return Provider.query.filter_by(id=provider_id).filter_by(isActive=True).filter_by(enabledForPro=True).first()
+    return Provider.query.filter_by(id=provider_id, isActive=True, enabledForPro=True).one_or_none()
 
 
 def get_provider_by_local_class(local_class: str) -> Provider:
-    return Provider.query.filter_by(localClass=local_class).first()
+    return Provider.query.filter_by(localClass=local_class).one_or_none()
 
 
 def get_enabled_providers_for_pro() -> list[Provider]:

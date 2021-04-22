@@ -26,7 +26,7 @@ from .mixins.suspension_mixin import SuspensionMixin
 
 
 def unique_siren(form: Form, field: Field) -> None:
-    if Offerer.query.filter_by(siren=field.data).first():
+    if Offerer.query.filter_by(siren=field.data).one_or_none():
         raise ValidationError("Une structure avec le même Siren existe déjà.")
 
 

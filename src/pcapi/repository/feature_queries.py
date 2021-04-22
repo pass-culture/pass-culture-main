@@ -22,7 +22,7 @@ def is_active(feature_toggle: FeatureToggle) -> bool:
         if cached_value is not None:
             return cached_value
 
-    value = Feature.query.filter_by(name=feature_toggle.name).first().isActive
+    value = Feature.query.filter_by(name=feature_toggle.name).one().isActive
 
     if has_request_context():
         request._cached_features[feature_toggle.name] = value

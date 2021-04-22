@@ -46,7 +46,7 @@ class BookingView(BaseCustomAdminView):
                     Booking.query.filter_by(token=token)
                     .options(joinedload(Booking.user))
                     .options(joinedload(Booking.stock).joinedload(Stock.offer))
-                    .first()
+                    .one_or_none()
                 )
                 if not booking:
                     flash("Aucune réservation n'existe avec ce code de contremarque.", "error")
@@ -54,10 +54,9 @@ class BookingView(BaseCustomAdminView):
                     mark_as_used_form = MarkAsUsedForm(booking_id=booking.id)
         elif "id" in request.args:
             booking = (
-                Booking.query.filter_by(id=request.args["id"])
-                .options(joinedload(Booking.user))
+                Booking.query.options(joinedload(Booking.user))
                 .options(joinedload(Booking.stock).joinedload(Stock.offer))
-                .first()
+                .get(request.args["id"])
             )
 
         return self.render(

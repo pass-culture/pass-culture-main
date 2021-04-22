@@ -376,7 +376,7 @@ def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> User:
 
     new_pro_user = create_pro_user(pro_user)
 
-    existing_offerer = Offerer.query.filter_by(siren=pro_user.siren).first()
+    existing_offerer = Offerer.query.filter_by(siren=pro_user.siren).one_or_none()
 
     if existing_offerer:
         user_offerer = _generate_user_offerer_when_existing_offerer(new_pro_user, existing_offerer)

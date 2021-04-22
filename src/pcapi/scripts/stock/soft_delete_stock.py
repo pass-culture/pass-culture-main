@@ -5,7 +5,7 @@ from pcapi.repository import repository
 
 
 def soft_delete_stock(stock_id):
-    stock = Stock.query.filter(Stock.id == stock_id).first()
+    stock = Stock.query.get(stock_id)
     bookings = _get_bookings_for_stock(stock_id)
     can_soft_delete = _check_bookings(bookings)
 

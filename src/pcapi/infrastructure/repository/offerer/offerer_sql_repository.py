@@ -6,7 +6,7 @@ from pcapi.infrastructure.repository.offerer import offerer_domain_converter
 
 class OffererSQLRepository(OffererRepository):
     def find_by_siren(self, siren: str) -> Offerer:
-        offerer_sql_entity = OffererSQLEntity.query.filter_by(siren=siren).first()
+        offerer_sql_entity = OffererSQLEntity.query.filter_by(siren=siren).one_or_none()
         if not offerer_sql_entity:
             return None
         return offerer_domain_converter.to_domain(offerer_sql_entity)

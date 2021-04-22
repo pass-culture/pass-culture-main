@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 @public_api.route("/validate/user-offerer/<token>", methods=["GET"])
 def validate_offerer_attachment(token):
     check_validation_request(token)
-    user_offerer = UserOfferer.query.filter_by(validationToken=token).first()
+    user_offerer = UserOfferer.query.filter_by(validationToken=token).one_or_none()
     check_validation_token_has_been_already_used(user_offerer)
 
     user_offerer.validationToken = None
@@ -49,7 +49,7 @@ def validate_offerer_attachment(token):
 @public_api.route("/validate/offerer/<token>", methods=["GET"])
 def validate_new_offerer(token):
     check_validation_request(token)
-    offerer = Offerer.query.filter_by(validationToken=token).first()
+    offerer = Offerer.query.filter_by(validationToken=token).one_or_none()
     check_validation_token_has_been_already_used(offerer)
     offerer.validationToken = None
     managed_venues = offerer.managedVenues

@@ -26,7 +26,7 @@ def create_digital_venue(offerer):
 
 
 def _get_digital_venue_type_id() -> int:
-    return VenueType.query.filter_by(label="Offre numérique").first().id
+    return VenueType.query.filter_by(label="Offre numérique").one().id
 
 
 def update_venue(

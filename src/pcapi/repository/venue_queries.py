@@ -2,11 +2,11 @@ from pcapi.models import Venue
 
 
 def find_by_id(venue_id: int) -> Venue:
-    return Venue.query.filter_by(id=venue_id).first()
+    return Venue.query.filter_by(id=venue_id).one_or_none()
 
 
 def find_by_siret(siret):
-    return Venue.query.filter_by(siret=siret).first()
+    return Venue.query.filter_by(siret=siret).one_or_none()
 
 
 def find_by_managing_offerer_id(offerer_id: int) -> Venue:

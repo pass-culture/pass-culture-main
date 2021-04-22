@@ -49,7 +49,7 @@ def find_by(token: str, email: str = None, offer_id: int = None) -> Booking:
         query_offer = Booking.query.join(Stock).join(Offer).filter_by(id=offer_id)
         query = query.intersect_all(query_offer)
 
-    booking = query.first()
+    booking = query.one_or_none()
 
     if booking is None:
         errors = ResourceNotFoundError()
@@ -108,7 +108,7 @@ def find_not_used_and_not_cancelled() -> list[Booking]:
 
 
 def find_used_by_token(token: str) -> Booking:
-    return Booking.query.filter_by(token=token.upper()).filter_by(isUsed=True).first()
+    return Booking.query.filter_by(token=token.upper(), isUsed=True).one_or_none()
 
 
 def count_not_cancelled_bookings_quantity_by_stock_id(stock_id: int) -> int:

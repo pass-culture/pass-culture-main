@@ -9,6 +9,9 @@ from pcapi.repository import repository
 
 
 def is_already_imported(application_id: int) -> bool:
+    # FIXME (dbaty, 2021-04-22): `BeneficiaryImport.applicationId` is
+    # not unique, we should probably look for a `(applicationId,  sourceId)`
+    # pair (which is unique).
     beneficiary_import = BeneficiaryImport.query.filter(BeneficiaryImport.applicationId == application_id).first()
 
     if beneficiary_import is None:
@@ -25,6 +28,7 @@ def save_beneficiary_import_with_status(
     detail: str = None,
     user: User = None,
 ) -> None:
+    # FIXME (dbaty, 2021-04-22): see comment above about the non-uniqueness of application_id
     existing_beneficiary_import = BeneficiaryImport.query.filter_by(applicationId=application_id).first()
 
     beneficiary_import = existing_beneficiary_import or BeneficiaryImport()
