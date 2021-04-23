@@ -16,12 +16,24 @@ const mustHaveTheProperLength = value => {
   return value.length < 11 ? 'SIREN trop court' : undefined
 }
 
-export const existsInINSEERegistry = async value => {
+const simpleMemoize = fn => {
+  let lastArg
+  let lastResult
+  return arg => {
+    if (arg !== lastArg) {
+      lastArg = arg
+      lastResult = fn(arg)
+    }
+    return lastResult
+  }
+}
+
+export const existsInINSEERegistry = simpleMemoize(async value => {
   value = removeWhitespaces(value)
   const sirenInformation = await getSirenInformation(value)
   if (sirenInformation.error) return "Ce SIREN n'est pas reconnu"
   return undefined
-}
+})
 
 const SirenField = props => {
   return (
