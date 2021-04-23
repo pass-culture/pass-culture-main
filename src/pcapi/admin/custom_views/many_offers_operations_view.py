@@ -65,6 +65,25 @@ def _get_current_criteria_on_active_offers(offers: list[Offer]) -> dict[str, dic
     return current_criteria_on_offers
 
 
+def _get_products_compatible_status(products: list[Product]) -> dict[str, str]:
+    if all(product.isGcuCompatible for product in products):
+        return {
+            "status": "compatible_products",
+            "text": "Oui",
+        }
+
+    if all(not product.isGcuCompatible for product in products):
+        return {
+            "status": "incompatible_products",
+            "text": "Non",
+        }
+
+    return {
+        "status": "partially_incompatible_products",
+        "text": "Partiellement",
+    }
+
+
 class ManyOffersOperationsView(BaseCustomAdminView):
     @expose("/", methods=["GET", "POST"])
     def search(self) -> Response:
@@ -119,7 +138,7 @@ class ManyOffersOperationsView(BaseCustomAdminView):
             "isbn": isbn,
             "offer_criteria_form": offer_criteria_form,
             "current_criteria_on_offers": current_criteria_on_offers,
-            "is_product_compatible": all(p.isGcuCompatible for p in products),
+            "product_compatibility": _get_products_compatible_status(products),
         }
 
         return self.render("admin/edit_many_offers.html", **context)

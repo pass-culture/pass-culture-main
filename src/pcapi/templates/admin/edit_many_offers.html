@@ -16,7 +16,7 @@
     <p><b>Nombre d'offres associées :</b></p>
     <p><b>Actives : {{ active_offers_number }}</b></p>
     <p><b>Inactives : {{ inactive_offers_number }}</b></p>
-    <p><b>compatible avec les CGU :</b> {{ 'Oui' if is_product_compatible else 'Non' }}</p>
+    <p><b>compatible avec les CGU :</b> {{ product_compatibility["text"] }}</p>
     <p><b>ISBN :</b> {{ isbn }}</p>
   </div>
 

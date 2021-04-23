@@ -3,6 +3,7 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.admin.custom_views.many_offers_operations_view import _get_current_criteria_on_active_offers
+from pcapi.admin.custom_views.many_offers_operations_view import _get_products_compatible_status
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 import pcapi.core.users.factories as users_factories
@@ -153,3 +154,27 @@ class ManyOffersOperationsViewTest:
         assert not second_offer.isActive
         for offer in offers:
             mocked_add_offer_id.assert_any_call(client=app.redis_client, offer_id=offer.id)
+
+    def test_get_products_compatible_status(self):
+        # Given
+        products = []
+        products.append(Product(isGcuCompatible=True))
+        products.append(Product(isGcuCompatible=True))
+
+        # Then
+        assert _get_products_compatible_status(products) == {
+            "status": "compatible_products",
+            "text": "Oui",
+        }
+
+        products[0].isGcuCompatible = False
+        assert _get_products_compatible_status(products) == {
+            "status": "partially_incompatible_products",
+            "text": "Partiellement",
+        }
+
+        products[1].isGcuCompatible = False
+        assert _get_products_compatible_status(products) == {
+            "status": "incompatible_products",
+            "text": "Non",
+        }
