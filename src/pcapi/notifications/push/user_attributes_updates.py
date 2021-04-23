@@ -32,11 +32,19 @@ def get_user_attributes(user: User) -> dict:
 def get_user_booking_attributes(user: User) -> dict:
     from pcapi.core.users.api import get_domains_credit
     from pcapi.core.users.api import get_last_booking_date
+    from pcapi.core.users.repository import get_booking_categories
 
     credit = get_domains_credit(user)
     last_booking_date = get_last_booking_date(user)
+    booking_categories = get_booking_categories(user)
 
-    return {
-        "date(u.lastBookingDate)": last_booking_date.strftime(BATCH_DATETIME_FORMAT) if last_booking_date else None,
+    attributes = {
+        "date(u.last_booking_date)": last_booking_date.strftime(BATCH_DATETIME_FORMAT) if last_booking_date else None,
         "u.credit": int(credit.all.remaining * 100) if credit else 0,
     }
+
+    # A Batch tag can't be an empty list, otherwise the API returns an error
+    if booking_categories:
+        attributes["ut.booking_categories"] = booking_categories
+
+    return attributes
