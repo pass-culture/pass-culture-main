@@ -22,7 +22,6 @@ class LostPassword extends PureComponent {
     this.state = {
       emailValue: '',
       newPasswordErrorMessage: '',
-      newPasswordValue: '',
     }
   }
 
@@ -101,10 +100,12 @@ class LostPassword extends PureComponent {
     return emailValue === ''
   }
 
-  isResetPasswordSubmitDisabled = () => {
-    const { newPasswordValue } = this.state
+  isResetPasswordSubmitDisabled = values => {
+    if (!values.newPasswordValue) {
+      return true
+    }
 
-    return newPasswordValue === ''
+    return values.newPasswordValue === ''
   }
 
   render() {
@@ -175,7 +176,7 @@ class LostPassword extends PureComponent {
                     {'Saisissez le nouveau mot de passe'}
                   </h2>
                   <Form onSubmit={this.submitResetPassword}>
-                    {({ handleSubmit, errors }) => (
+                    {({ handleSubmit, errors, values }) => (
                       <form
                         className="new-password-form"
                         onSubmit={handleSubmit}
@@ -194,6 +195,7 @@ class LostPassword extends PureComponent {
                         />
                         <button
                           className="primary-button submit-button"
+                          disabled={this.isResetPasswordSubmitDisabled(values)}
                           type="submit"
                         >
                           {'Envoyer'}

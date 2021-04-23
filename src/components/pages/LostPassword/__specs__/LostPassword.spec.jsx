@@ -14,6 +14,7 @@ describe('src | components | pages | LostPassword', () => {
     props = {
       change: false,
       envoye: false,
+      isNewHomepageActive: true,
       token: 'ABC',
       history: {
         push: jest.fn(),
@@ -134,6 +135,34 @@ describe('src | components | pages | LostPassword', () => {
         .findWhere(node => node.text() === 'Envoyer')
         .first()
       expect(submitButton).toHaveLength(1)
+      expect(submitButton.props()['disabled']).toBe(true)
+    })
+
+    describe('when user starts writing password', () => {
+      it('submit button should not be disabled', () => {
+        // given
+        const store = configureStore({
+          data: {
+            users: [{ id: 'CMOI' }],
+          },
+        }).store
+
+        // when
+        const wrapper = mount(
+          <Provider store={store}>
+            <MemoryRouter>
+              <LostPassword {...props} />
+            </MemoryRouter>
+          </Provider>
+        )
+        wrapper
+          .find('input[name="newPasswordValue"]')
+          .simulate('change', { target: { value: 'password' } })
+
+        // then
+        const submitButton = wrapper.find({ children: 'Envoyer' }).find('button')
+        expect(submitButton.prop('disabled')).toBe(false)
+      })
     })
 
     describe('when user successfully change password', () => {
