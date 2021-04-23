@@ -116,7 +116,7 @@ class AccountTest:
 
     @override_features(WHOLE_FRANCE_OPENING=False)
     @freeze_time("2018-06-01")
-    def test_get_user_profile_from_non_eligible_area(self, app):
+    def test_get_eligible_user_profile_from_non_eligible_area(self, app):
         USER_DATA = {
             "email": self.identifier,
             "firstName": "john",
@@ -154,6 +154,56 @@ class AccountTest:
             "depositExpirationDate": None,
             "eligibilityEndDatetime": None,
             "eligibilityStartDatetime": None,
+            "isBeneficiary": False,
+            "pseudo": "jdo",
+            "showEligibleCard": False,
+            "subscriptions": {"marketingPush": True, "marketingEmail": True},
+        }
+        EXPECTED_DATA.update(USER_DATA)
+
+        assert response.status_code == 200
+        assert response.json == EXPECTED_DATA
+
+    @override_features(WHOLE_FRANCE_OPENING=False)
+    @freeze_time("2022-06-01")
+    def test_get_non_eligible_user_profile_from_non_eligible_area(self, app):
+        USER_DATA = {
+            "email": self.identifier,
+            "firstName": "john",
+            "lastName": "doe",
+            "phoneNumber": "0102030405",
+            "needsToFillCulturalSurvey": True,
+        }
+        user = users_factories.UserFactory(
+            dateOfBirth=datetime(2000, 1, 1),
+            deposit__version=1,
+            # The expiration date is taken in account in
+            # `get_wallet_balance` and compared against the SQL
+            # `now()` function, which is NOT overriden by
+            # `freeze_time()`.
+            deposit__expirationDate=datetime(2040, 1, 1),
+            notificationSubscriptions={"marketing_push": True},
+            publicName="jdo",
+            departementCode="92",
+            isBeneficiary=False,
+            **USER_DATA,
+        )
+
+        access_token = create_access_token(identity=self.identifier)
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+
+        response = test_client.get("/native/v1/me")
+
+        EXPECTED_DATA = {
+            "id": user.id,
+            "bookedOffers": {},
+            "domainsCredit": None,
+            "dateOfBirth": "2000-01-01",
+            "depositVersion": None,
+            "depositExpirationDate": None,
+            "eligibilityEndDatetime": "2019-01-01T00:00:00Z",
+            "eligibilityStartDatetime": "2018-01-01T00:00:00Z",
             "isBeneficiary": False,
             "pseudo": "jdo",
             "showEligibleCard": False,

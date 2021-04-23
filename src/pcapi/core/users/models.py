@@ -311,11 +311,19 @@ class User(PcObject, Model, NeedsValidationMixin, VersionedMixin):
             _is_postal_code_eligible,
         )
 
-        return (
-            datetime.combine(self.dateOfBirth, time(0, 0)) + relativedelta(years=constants.ELIGIBILITY_AGE)
-            if self.dateOfBirth and _is_postal_code_eligible(self.departementCode)
-            else None
+        if not self.dateOfBirth:
+            return None
+
+        eligibility_start = datetime.combine(self.dateOfBirth, time(0, 0)) + relativedelta(
+            years=constants.ELIGIBILITY_AGE
         )
+        eligibility_stop = datetime.combine(self.dateOfBirth, time(0, 0)) + relativedelta(
+            years=constants.ELIGIBILITY_AGE + 1
+        )
+        now = datetime.combine(date.today(), time(0, 0))
+        if not _is_postal_code_eligible(self.departementCode) and eligibility_start <= now < eligibility_stop:
+            return None
+        return eligibility_start
 
     @property
     def eligibility_end_datetime(self) -> Optional[datetime]:
@@ -324,11 +332,19 @@ class User(PcObject, Model, NeedsValidationMixin, VersionedMixin):
             _is_postal_code_eligible,
         )
 
-        return (
-            datetime.combine(self.dateOfBirth, time(0, 0)) + relativedelta(years=constants.ELIGIBILITY_AGE + 1)
-            if self.dateOfBirth and _is_postal_code_eligible(self.departementCode)
-            else None
+        if not self.dateOfBirth:
+            return None
+
+        eligibility_start = datetime.combine(self.dateOfBirth, time(0, 0)) + relativedelta(
+            years=constants.ELIGIBILITY_AGE
         )
+        eligibility_stop = datetime.combine(self.dateOfBirth, time(0, 0)) + relativedelta(
+            years=constants.ELIGIBILITY_AGE + 1
+        )
+        now = datetime.combine(date.today(), time(0, 0))
+        if not _is_postal_code_eligible(self.departementCode) and eligibility_start <= now < eligibility_stop:
+            return None
+        return eligibility_stop
 
     def get_notification_subscriptions(self) -> NotificationSubscriptions:
         return NotificationSubscriptions(**self.notificationSubscriptions or {})
