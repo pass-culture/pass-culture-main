@@ -273,9 +273,13 @@ class Desk extends Component {
             type="notification-info"
           >
             <strong>
-              {'N’oubliez pas de vérifier l’identité du bénéficiaire avant de valider la contremarque.'}
+              {
+                'N’oubliez pas de vérifier l’identité du bénéficiaire avant de valider la contremarque.'
+              }
             </strong>
-            {' Les pièces d’identité doivent impérativement être présentées physiquement. Merci de ne pas accepter les pièces d’identité au format numérique.'}
+            {
+              ' Les pièces d’identité doivent impérativement être présentées physiquement. Merci de ne pas accepter les pièces d’identité au format numérique.'
+            }
           </Banner>
         </form>
       </AppLayout>

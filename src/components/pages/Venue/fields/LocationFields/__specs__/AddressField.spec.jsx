@@ -6,7 +6,6 @@ import { addressFieldRender } from '../AddressField'
 import LocationViewer from '../LocationViewer'
 
 describe('src | components | pages | Venue | fields | AddressField', () => {
-
   describe('addressFieldRender', () => {
     let props
     let input

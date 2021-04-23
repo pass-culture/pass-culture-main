@@ -44,7 +44,6 @@ export const getSiretRequestMockAs = venue => {
     )
 }
 
-
 export const getSirenRequestMockWithDefaultValues = () =>
   RequestMock()
     .onRequestTo(/\/entreprise.data.gouv.fr\/api\/sirene\/v3\/unites_legales\/.*/)
@@ -62,17 +61,19 @@ export const getSirenRequestMockWithDefaultValues = () =>
             latitude: '48.893131',
             geo_l4: '2 RUE PAUL VAILLANT COUTURIER',
           },
-        }
+        },
       },
-      200, {
+      200,
+      {
         'content-type': 'application/json; charset=utf-8',
-        'access-control-allow-origin': '*'
-      })
+        'access-control-allow-origin': '*',
+      }
+    )
 
 export const getSirenRequestMockWithNoResult = () =>
   RequestMock()
     .onRequestTo(/\/entreprise.data.gouv.fr\/api\/sirene\/v3\/unites_legales\/.*/)
     .respond({}, 404, {
       'content-type': 'application/json; charset=utf-8',
-      'access-control-allow-origin': '*'
+      'access-control-allow-origin': '*',
     })

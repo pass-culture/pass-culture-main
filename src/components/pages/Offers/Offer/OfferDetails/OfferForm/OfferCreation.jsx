@@ -80,8 +80,8 @@ const OfferCreation = ({
   const areAllVenuesVirtual =
     isComingFromOffererPage && selectedOfferer === initialValues.offererId
       ? venues.current
-          .filter(venue => venue.managingOffererId === selectedOfferer)
-          .every(venue => venue.isVirtual)
+        .filter(venue => venue.managingOffererId === selectedOfferer)
+        .every(venue => venue.isVirtual)
       : venues.current.every(venue => venue.isVirtual)
 
   if (isLoading) {

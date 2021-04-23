@@ -55,9 +55,7 @@ const VenueCreationLinks = ({ hasPhysicalVenue, hasVirtualOffers, offererId }) =
 
   return (
     <div className="venue-banner">
-      {!(hasPhysicalVenue || hasVirtualOffers)
-        ? renderCard()
-        : renderLinks({ insideCard: false })}
+      {!(hasPhysicalVenue || hasVirtualOffers) ? renderCard() : renderLinks({ insideCard: false })}
     </div>
   )
 }

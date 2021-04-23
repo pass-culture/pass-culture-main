@@ -6,8 +6,8 @@ describe('src | components | router | FeaturedRouteContainer', () => {
       // given
       const state = {
         data: {
-          features: []
-        }
+          features: [],
+        },
       }
       const ownProps = { featureName: 'FOO' }
 
@@ -28,9 +28,10 @@ describe('src | components | router | FeaturedRouteContainer', () => {
           features: [
             {
               isActive: false,
-              nameKey: 'FOO'
-            }]
-        }
+              nameKey: 'FOO',
+            },
+          ],
+        },
       }
       const ownProps = { featureName: 'FOO' }
 
@@ -51,9 +52,10 @@ describe('src | components | router | FeaturedRouteContainer', () => {
           features: [
             {
               isActive: true,
-              nameKey: 'FOO'
-            }]
-        }
+              nameKey: 'FOO',
+            },
+          ],
+        },
       }
       const ownProps = { featureName: 'FOO' }
 
@@ -74,9 +76,10 @@ describe('src | components | router | FeaturedRouteContainer', () => {
           features: [
             {
               isActive: true,
-              nameKey: 'FOO'
-            }]
-        }
+              nameKey: 'FOO',
+            },
+          ],
+        },
       }
       const ownProps = {}
 

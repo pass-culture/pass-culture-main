@@ -26,6 +26,7 @@ class IdentifierFields extends PureComponent {
     ReactTooltip.rebuild()
   }
 
+  /* eslint-disable react/no-unstable-nested-components */
   handleRenderValue = (fieldReadOnlyBecauseFrozenFormSiret, readOnly) => () => {
     if (readOnly) {
       return null
@@ -55,6 +56,7 @@ class IdentifierFields extends PureComponent {
     )
   }
 
+  /* eslint-disable react/no-unstable-nested-components */
   handleRender = readOnly => () => {
     if (readOnly) {
       return null

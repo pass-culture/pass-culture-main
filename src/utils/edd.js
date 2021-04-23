@@ -384,7 +384,10 @@ export const showOptions = [
   {
     code: 1400,
     label: 'Pluridisciplinaire',
-    children: [{ code: 1401, label: 'Performance' }, { code: 1402, label: 'Poésie' }],
+    children: [
+      { code: 1401, label: 'Performance' },
+      { code: 1402, label: 'Poésie' },
+    ],
   },
   {
     code: 1500,

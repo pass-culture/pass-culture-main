@@ -1,6 +1,7 @@
+import PropTypes from 'prop-types'
 import React from 'react'
 
-export const SVGOffers = ({ alt = '' }) => (
+const SVGOffers = ({ alt }) => (
   <svg
     height="40px"
     viewBox="0 0 39 40"
@@ -43,3 +44,13 @@ export const SVGOffers = ({ alt = '' }) => (
     </g>
   </svg>
 )
+
+SVGOffers.defaultProps = {
+  alt: '',
+}
+
+SVGOffers.propTypes = {
+  alt: PropTypes.string,
+}
+
+export { SVGOffers }

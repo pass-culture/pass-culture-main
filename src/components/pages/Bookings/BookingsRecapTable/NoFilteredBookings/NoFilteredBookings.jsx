@@ -5,9 +5,9 @@ import Icon from 'components/layout/Icon'
 
 const NoFilteredBookings = ({ resetFilters }) => {
   return (
-    <div className='no-filtered-bookings-wrapper'>
+    <div className="no-filtered-bookings-wrapper">
       <Icon
-        className='nfb-icon'
+        className="nfb-icon"
         svg="ico-search-gray"
       />
       <span>

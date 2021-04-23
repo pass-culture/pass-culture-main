@@ -1,6 +1,6 @@
 import { removeWhitespaces } from 'react-final-form-utils'
 
-export const formatSiret = (string) => {
+export const formatSiret = string => {
   const value = removeWhitespaces(string)
 
   if (!value) {

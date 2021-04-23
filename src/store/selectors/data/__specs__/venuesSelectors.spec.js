@@ -23,8 +23,7 @@ describe('src | selectors | data | venuesSelectors', () => {
     describe('when venues attribute does not not', () => {
       it('should return an empty array', () => {
         const store = {
-          data: {
-          },
+          data: {},
         }
         expect(selectVenues(store)).toStrictEqual([])
       })

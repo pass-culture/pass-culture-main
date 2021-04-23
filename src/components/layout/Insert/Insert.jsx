@@ -5,10 +5,7 @@ import Icon from '../Icon'
 
 const Insert = ({ icon, children, className }) => (
   <div className={className}>
-    {
-      icon &&
-        <Icon png="picto-info-solid-black" />
-    }
+    {icon && <Icon png="picto-info-solid-black" />}
     <span>
       {children}
     </span>
@@ -17,13 +14,13 @@ const Insert = ({ icon, children, className }) => (
 
 Insert.defaultProps = {
   className: 'blue-insert',
-  icon: null
+  icon: null,
 }
 
 Insert.propTypes = {
   children: PropTypes.node.isRequired,
   className: PropTypes.node,
-  icon: PropTypes.string
+  icon: PropTypes.string,
 }
 
 export default Insert

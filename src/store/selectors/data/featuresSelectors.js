@@ -17,4 +17,4 @@ export const selectIsFeatureActive = createCachedSelector(
   }
 )(mapArgsToCacheKey)
 
-export const isAPISireneAvailable = (state) => selectIsFeatureActive(state, 'API_SIRENE_AVAILABLE')
+export const isAPISireneAvailable = state => selectIsFeatureActive(state, 'API_SIRENE_AVAILABLE')

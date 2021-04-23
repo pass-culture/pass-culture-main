@@ -5,7 +5,7 @@ import DownloadButton from '../DownloadButton'
 
 describe('src | components | Layout | DownloadButton', () => {
   describe('render', () => {
-    it('should set loading and disabled during onClick', async() => {
+    it('should set loading and disabled during onClick', async () => {
       await new Promise(resolve => {
         // given
         const props = {

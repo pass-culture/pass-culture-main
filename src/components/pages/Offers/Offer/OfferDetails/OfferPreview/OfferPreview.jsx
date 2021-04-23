@@ -21,8 +21,8 @@ const OfferPreview = ({ formValues, offerType }) => {
   useEffect(() => {
     formValues.venueId
       ? pcapi.getVenue(formValues.venueId).then(venue => {
-          setVenue(venue)
-        })
+        setVenue(venue)
+      })
       : setVenue(null)
   }, [formValues.venueId])
 

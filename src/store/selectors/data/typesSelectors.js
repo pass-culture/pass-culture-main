@@ -6,7 +6,7 @@ export const selectTypesByIsVenueVirtual = createSelector(
   selectTypes,
   (state, isVenueVirtual) => isVenueVirtual,
   (types, isVenueVirtual) => {
-    let filteredTypes = [ ...types ]
+    let filteredTypes = [...types]
     if (typeof isVenueVirtual !== 'undefined') {
       if (isVenueVirtual) {
         filteredTypes = filteredTypes.filter(type => !type.offlineOnly)

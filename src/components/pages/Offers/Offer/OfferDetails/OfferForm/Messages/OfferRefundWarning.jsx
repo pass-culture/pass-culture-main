@@ -10,7 +10,9 @@ const OfferRefundWarning = () => {
       linkTitle={"Consulter les Conditions Générales d'Utilisation"}
       type="attention"
     >
-      {"Cette offre numérique ne fera pas l'objet d'un remboursement. Pour plus d'informations sur les catégories éligibles au remboursement, merci de consulter les CGU."}
+      {
+        "Cette offre numérique ne fera pas l'objet d'un remboursement. Pour plus d'informations sur les catégories éligibles au remboursement, merci de consulter les CGU."
+      }
     </Banner>
   )
 }
