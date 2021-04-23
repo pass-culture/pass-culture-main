@@ -237,6 +237,7 @@ class RunTest:
                 "phone": "0123456789",
                 "birth_date": datetime(2000, 5, 1, 0, 0),
                 "activity": "Étudiant",
+                "address": "35 Rue Saint Denis 93130 Noisy-le-Sec",
                 "postal_code": "67200",
             },
             error_messages=[],
@@ -261,6 +262,7 @@ class ProcessBeneficiaryApplicationTest:
             "email": "jane.doe@example.com",
             "phone": "0612345678",
             "postal_code": "93130",
+            "address": "11 Rue du Test",
             "application_id": 123,
             "civility": "Mme",
             "activity": "Étudiant",
@@ -306,6 +308,7 @@ class ProcessBeneficiaryApplicationTest:
             "email": "jane.doe@example.com",
             "phone": "0612345678",
             "postal_code": "93130",
+            "address": "11 Rue du Test",
             "application_id": 123,
             "civility": "Mme",
             "activity": "Étudiant",
@@ -433,6 +436,7 @@ class ProcessBeneficiaryApplicationTest:
             "email": "jane.doe@example.com",
             "phone": "0612345678",
             "postal_code": "93130",
+            "address": "11 Rue du Test",
             "application_id": 123,
             "civility": "Mme",
             "activity": "Étudiant",
@@ -640,6 +644,10 @@ class RunIntegrationTest:
                         "type_de_champ": {"libelle": "Quel est le code postal de votre commune de résidence ?"},
                         "value": "93450",
                     },
+                    {
+                        "type_de_champ": {"libelle": "Quelle est votre adresse de résidence"},
+                        "value": "11 Rue du Test",
+                    },
                     {"type_de_champ": {"libelle": "Veuillez indiquer votre statut"}, "value": "Etudiant"},
                 ],
             }
@@ -661,6 +669,7 @@ class RunIntegrationTest:
         user = User.query.first()
         assert user.firstName == "john"
         assert user.postalCode == "93450"
+        assert user.address == "11 Rue du Test"
         assert BeneficiaryImport.query.count() == 1
         beneficiary_import = BeneficiaryImport.query.first()
         assert beneficiary_import.source == "demarches_simplifiees"

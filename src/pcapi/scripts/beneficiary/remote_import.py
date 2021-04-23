@@ -149,6 +149,8 @@ def parse_beneficiary_information(application_detail: dict) -> dict:
             information["postal_code"] = re.search("^[0-9]{5}", space_free).group(0)
         if label == "Veuillez indiquer votre statut":
             information["activity"] = value
+        if label == "Quelle est votre adresse de résidence":
+            information["address"] = value
 
     return information
 

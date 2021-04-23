@@ -63,6 +63,7 @@ class CreateBeneficiaryFromApplicationTest:
             "email": "jane.doe@test.com",
             "phone": "0612345678",
             "postal_code": "67200",
+            "address": "11 Rue du Test",
             "application_id": 123,
         }
 
@@ -77,6 +78,7 @@ class CreateBeneficiaryFromApplicationTest:
         assert beneficiary.phoneNumber == "0612345678"
         assert beneficiary.departementCode == "67"
         assert beneficiary.postalCode == "67200"
+        assert beneficiary.address == "11 Rue du Test"
         assert beneficiary.dateOfBirth == datetime(2000, 5, 1)
         assert beneficiary.isBeneficiary == True
         assert beneficiary.isAdmin == False
@@ -97,6 +99,7 @@ class CreateBeneficiaryFromApplicationTest:
             "email": "jane.doe@test.com",
             "phone": "0612345678",
             "postal_code": "67200",
+            "address": "11 Rue du Test",
             "application_id": 123,
         }
 
@@ -123,6 +126,7 @@ class CreateBeneficiaryFromApplicationTest:
         assert beneficiary.phoneNumber == "0612345678"
         assert beneficiary.departementCode == "67"
         assert beneficiary.postalCode == "67200"
+        assert beneficiary.address == "11 Rue du Test"
         assert beneficiary.dateOfBirth == datetime(2000, 5, 1)
         assert beneficiary.isBeneficiary == True
         assert beneficiary.isAdmin == False
@@ -143,6 +147,7 @@ class CreateBeneficiaryFromApplicationTest:
             "email": "jane.doe@test.com",
             "phone": "0612345678",
             "postal_code": "67200",
+            "address": "11 Rue du Test",
             "application_id": 123,
         }
         # when

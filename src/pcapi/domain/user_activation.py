@@ -26,6 +26,7 @@ def create_beneficiary_from_application(application_detail: dict, user: Optional
     beneficiary.phoneNumber = application_detail["phone"]
     beneficiary.departementCode = application_detail["department"]
     beneficiary.postalCode = application_detail["postal_code"]
+    beneficiary.address = application_detail["address"]
     beneficiary.civility = application_detail["civility"]
     beneficiary.activity = application_detail["activity"]
     beneficiary.isAdmin = False
