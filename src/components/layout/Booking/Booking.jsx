@@ -204,6 +204,7 @@ class Booking extends PureComponent {
 
                   {bookedPayload && (
                     <BookingSuccess
+                      activationCode={bookedPayload.activationCode}
                       bookedPayload={bookedPayload}
                       isEvent={isEvent}
                       offerUrl={offerAccessUrl}

@@ -34,9 +34,8 @@
 }
 
 .qr-code-token {
-  color: $primary;
+  @include token();
   font-size: rem(48px);
-  font-weight: 300;
   line-height: 58px;
   margin-bottom: rem(20px);
   text-align: center;

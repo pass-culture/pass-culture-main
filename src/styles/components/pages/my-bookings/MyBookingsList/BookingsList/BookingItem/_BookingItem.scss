@@ -129,9 +129,8 @@
 }
 
 .mb-token {
-  color: $primary;
-  font-size: rem(32px);
-  font-weight: 300;
+  @include token();
+
   text-align: center;
   width: 50%;
 }
@@ -143,9 +142,8 @@
 }
 
 .mb-token-flipped {
-  color: $primary;
-  font-size: rem(32px);
-  font-weight: 300;
+  @include token();
+
   text-align: center;
   width: 100%;
 }

@@ -40,6 +40,12 @@
   font-weight: 400;
 }
 
+@mixin token() {
+  color: $primary;
+  font-size: rem(32px);
+  font-weight: 300;
+}
+
 @mixin caption() {
   font-size: rem(14px);
   font-weight: 500;

@@ -1,11 +1,12 @@
 import PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
 import { Link } from 'react-router-dom'
+import moment from 'moment'
 
 import getDisplayPrice from '../../../../utils/getDisplayPrice'
 import Icon from '../../../layout/Icon/Icon'
 
-const BookingSuccess = ({ quantity, price, token, isEvent, offerUrl }) => {
+const BookingSuccess = ({ quantity, price, token, activationCode, isEvent, offerUrl }) => {
   const isDuo = quantity === 2
   const cssClass = (isEvent && 'event') || 'thing'
   return (
@@ -22,7 +23,7 @@ const BookingSuccess = ({ quantity, price, token, isEvent, offerUrl }) => {
             </i>
           )}
           {isEvent && 'est validée.'}
-          {!isEvent && (
+          {!isEvent && !activationCode && (
             <Fragment>
               <span className="is-block">
                 {'Tu peux accéder à cette offre '}
@@ -30,6 +31,23 @@ const BookingSuccess = ({ quantity, price, token, isEvent, offerUrl }) => {
               <span className="is-block">
                 {'à tout moment.'}
               </span>
+            </Fragment>
+          )}
+
+          {activationCode != null && (
+            <Fragment>
+              <span className="is-block">
+                {"Ton code d'activation : "}
+              </span>
+              <span className="is-block bs-activation-code">
+                {activationCode.code}
+              </span>
+
+              {activationCode.expirationDate != null && (
+                <span className="is-block">
+                  {` A activer avant le ${moment(activationCode.expirationDate).format('LL')}.`}
+                </span>
+              )}
             </Fragment>
           )}
         </span>
@@ -111,10 +129,15 @@ const BookingSuccess = ({ quantity, price, token, isEvent, offerUrl }) => {
 }
 
 BookingSuccess.defaultProps = {
+  activationCode: null,
   offerUrl: null,
 }
 
 BookingSuccess.propTypes = {
+  activationCode: PropTypes.shape({
+    code: PropTypes.string,
+    expirationDate: PropTypes.string,
+  }),
   isEvent: PropTypes.bool.isRequired,
   offerUrl: PropTypes.string,
   price: PropTypes.number.isRequired,

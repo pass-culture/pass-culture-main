@@ -1,0 +1,7 @@
+.bs-activation-code {
+  @include token();
+
+  text-align: center;
+  width: auto;
+  padding-bottom: 2rem;
+}
