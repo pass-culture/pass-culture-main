@@ -8,7 +8,7 @@ import Breadcrumb, {
   STEP_ID_STOCKS,
 } from 'components/pages/Offers/Offer/Breadcrumb'
 import OfferDetailsContainer from 'components/pages/Offers/Offer/OfferDetails/OfferDetailsContainer'
-import TitleOfferStatus from 'components/pages/Offers/Offer/OfferStatus/TitleOfferStatusContainer'
+import { OfferHeader } from 'components/pages/Offers/Offer/OfferStatus/OfferHeader'
 import StocksContainer from 'components/pages/Offers/Offer/Stocks/StocksContainer'
 import { OFFER_STATUS_DRAFT } from 'components/pages/Offers/Offers/_constants'
 import * as pcapi from 'repository/pcapi/pcapi'
@@ -59,7 +59,7 @@ const OfferLayout = props => {
 
   const offerStatus =
     offer?.status && offer?.status !== OFFER_STATUS_DRAFT ? (
-      <TitleOfferStatus
+      <OfferHeader
         offer={offer}
         reloadOffer={reloadOffer}
       />

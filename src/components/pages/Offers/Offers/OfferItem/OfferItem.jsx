@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import Icon from 'components/layout/Icon'
 import Thumb from 'components/layout/Thumb'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
-import OfferStatus from 'components/pages/Offers/Offer/OfferStatus/OfferStatus'
+import StatusLabel from 'components/pages/Offers/Offer/OfferStatus/StatusLabel'
 import { OFFER_STATUS_SOLD_OUT } from 'components/pages/Offers/Offers/_constants'
 import { computeVenueDisplayName } from 'repository/venuesService'
 import { pluralize } from 'utils/pluralize'
@@ -97,7 +97,7 @@ const OfferItem = ({ disabled, offer, stocks, venue, isSelected, selectOffer }) 
         {computeRemainingStockValue(stocks)}
       </td>
       <td className="status-column">
-        <OfferStatus status={offer.status} />
+        <StatusLabel status={offer.status} />
       </td>
       <td className="switch-column">
         <Link

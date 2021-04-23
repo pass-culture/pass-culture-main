@@ -71,7 +71,7 @@ describe('offerLayout', () => {
 
     it('should allow to activate inactive offer', async () => {
       // Given
-      pcapi.updateOffersActiveStatus.mockReturnValue(Promise.resolve())
+      pcapi.updateOffersActiveStatus.mockResolvedValue()
       pcapi.loadOffer
         .mockResolvedValueOnce({ ...editedOffer, isActive: false })
         .mockResolvedValue({ ...editedOffer, isActive: true })
@@ -92,7 +92,7 @@ describe('offerLayout', () => {
 
     it('should allow to deactivate active offer', async () => {
       // Given
-      pcapi.updateOffersActiveStatus.mockReturnValue(Promise.resolve())
+      pcapi.updateOffersActiveStatus.mockResolvedValue()
       pcapi.loadOffer
         .mockResolvedValueOnce({ ...editedOffer, isActive: true })
         .mockResolvedValue({ ...editedOffer, isActive: false })
@@ -131,6 +131,23 @@ describe('offerLayout', () => {
 
       // Then
       expect(screen.getByRole('button', { name: 'Activer' })).toBeDisabled()
+    })
+
+    it('should inform user something went wrong when impossible to toggle offer status', async () => {
+      // Given
+      pcapi.loadOffer.mockResolvedValue({ ...editedOffer, isActive: true })
+      pcapi.updateOffersActiveStatus.mockRejectedValue()
+      await renderOfferDetails(props, store)
+
+      // When
+      fireEvent.click(screen.getByRole('button', { name: 'Désactiver' }))
+
+      // Then
+      expect(
+        await screen.findByText('Une erreur est survenue, veuillez réessayer ultérieurement.')
+      ).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Désactiver' })).toBeInTheDocument()
+      expect(screen.queryByRole('button', { name: 'Activer' })).not.toBeInTheDocument()
     })
   })
 

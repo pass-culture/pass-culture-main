@@ -44,7 +44,7 @@ export const OFFER_STATUS_PROPERTIES = {
   },
 }
 
-const OfferStatus = ({ status }) => {
+const StatusLabel = ({ status }) => {
   return (
     <span className={`op-offer-status ${OFFER_STATUS_PROPERTIES[status].className}`}>
       <Icon svg={OFFER_STATUS_PROPERTIES[status].icon} />
@@ -53,8 +53,8 @@ const OfferStatus = ({ status }) => {
   )
 }
 
-OfferStatus.propTypes = {
+StatusLabel.propTypes = {
   status: PropTypes.string.isRequired,
 }
 
-export default OfferStatus
+export default StatusLabel
