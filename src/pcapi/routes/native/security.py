@@ -1,6 +1,7 @@
 from functools import wraps
 import logging
 
+from flask import _request_ctx_stack
 from flask_jwt_extended.utils import get_jwt_identity
 from flask_jwt_extended.view_decorators import jwt_required
 
@@ -27,6 +28,10 @@ def authenticated_user_required(route_function):  # type: ignore
         if user is None or not user.isActive:
             logger.error("Authenticated user with email %s not found or inactive", email)
             raise ForbiddenError({"email": ["Utilisateur introuvable"]})
+
+        # push the user to the current context - similar to flask-login
+        ctx = _request_ctx_stack.top
+        ctx.user = user
 
         return route_function(user, *args, **kwargs)
 
