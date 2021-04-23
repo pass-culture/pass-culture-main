@@ -22,6 +22,7 @@ from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.models import api_errors
 import pcapi.notifications.push.testing as push_testing
+from pcapi.notifications.push.user_attributes_updates import BATCH_DATETIME_FORMAT
 from pcapi.utils.token import random_token
 
 from tests.conftest import clean_database
@@ -98,6 +99,9 @@ class BookOfferTest:
         data = push_testing.requests[0]
         assert data["attribute_values"]["u.credit"] == 49_000  # values in cents
 
+        expected_date = booking.dateCreated.strftime(BATCH_DATETIME_FORMAT)
+        assert data["attribute_values"]["date(u.lastBookingDate)"] == expected_date
+
         assert booking.quantity == 1
         assert booking.amount == 10
         assert booking.stock == stock
@@ -115,6 +119,23 @@ class BookOfferTest:
         email_data2 = mails_testing.outbox[1].sent_data
         assert email_data2["MJ-TemplateID"] == 1163067  # to beneficiary
 
+    def test_last_booking_date_update(self, app):
+        user = users_factories.UserFactory()
+        stock = offers_factories.StockFactory(price=10, dnBookedQuantity=5)
+
+        date_created = datetime.now() - timedelta(days=5)
+        factories.BookingFactory.create_batch(3, user=user, dateCreated=date_created)
+
+        booking = api.book_offer(beneficiary=user, stock_id=stock.id, quantity=1)
+
+        # One request should have been sent to Batch with the user's
+        # updated attributes
+        assert len(push_testing.requests) == 1
+
+        data = push_testing.requests[0]
+        expected_date = booking.dateCreated.strftime(BATCH_DATETIME_FORMAT)
+        assert data["attribute_values"]["date(u.lastBookingDate)"] == expected_date
+
     @override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True)
     def test_create_booking_on_digital_offer(self):
         offer = offers_factories.OfferFactory(product=offers_factories.DigitalProductFactory())
@@ -129,6 +150,9 @@ class BookOfferTest:
 
         data = push_testing.requests[0]
         assert data["attribute_values"]["u.credit"] == 49_000  # values in cents
+
+        expected_date = booking.dateCreated.strftime(BATCH_DATETIME_FORMAT)
+        assert data["attribute_values"]["date(u.lastBookingDate)"] == expected_date
 
         assert booking.isUsed
 
@@ -145,6 +169,9 @@ class BookOfferTest:
 
         data = push_testing.requests[0]
         assert data["attribute_values"]["u.credit"] == 49_000  # values in cents
+
+        expected_date = booking.dateCreated.strftime(BATCH_DATETIME_FORMAT)
+        assert data["attribute_values"]["date(u.lastBookingDate)"] == expected_date
 
         two_days_after_booking = booking.dateCreated + timedelta(days=2)
         assert booking.quantity == 1

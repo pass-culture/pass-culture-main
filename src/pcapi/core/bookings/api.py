@@ -28,6 +28,7 @@ from pcapi.repository import transaction
 from pcapi.utils.mailing import MailServiceException
 from pcapi.workers.push_notification_job import send_cancel_booking_notification
 from pcapi.workers.push_notification_job import update_user_attributes_job
+from pcapi.workers.push_notification_job import update_user_bookings_attributes_job
 
 from . import validation
 from .exceptions import NoActivationCodeAvailable
@@ -128,7 +129,7 @@ def book_offer(
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
 
-    update_user_attributes_job.delay(beneficiary.id)
+    update_user_bookings_attributes_job.delay(beneficiary.id)
 
     return booking
 
