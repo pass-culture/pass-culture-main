@@ -1,7 +1,7 @@
 .vertical-bar {
   background-color: $grey-medium;
   height: rem(40px);
-  width: 2px;
+  width: rem(1px);
 }
 
 .fw-first-line {
@@ -26,7 +26,7 @@
 
     appearance: none;
     background: url(/icons/dropdown-disclosure-down-b.svg) no-repeat 92% 56%;
-    border: 2px solid $grey-medium;
+    border: 1px solid $grey-medium;
     border-radius: rem(20px);
     height: rem(40px);
     outline: none;
@@ -61,7 +61,7 @@
   .fw-booking-text-filters-input {
     @include body();
 
-    border: 2px solid $grey-medium;
+    border: 1px solid $grey-medium;
     border-left: none;
     border-radius: 0 rem(20px) rem(20px) 0;
     flex-grow: 1;
@@ -126,6 +126,7 @@
     }
 
     .field-date {
+      border: 1px solid $grey-medium;
       box-shadow: 2px 2px 6px 0 $black-shadow;
       margin-top: rem(12px);
       width: rem(233px);
@@ -173,9 +174,9 @@
 
       appearance: none;
       background: url(/icons/dropdown-disclosure-down-b.svg) no-repeat 92% 56%;
-      border: 2px solid $grey-medium;
+      border: 1px solid $grey-medium;
       border-radius: rem(20px);
-      box-shadow: 2px 2px 6px 0 $black-shadow;
+      box-shadow: 1px 2px 6px 0 $black-shadow;
       height: rem(40px);
       margin-top: rem(12px);
       outline: none;
@@ -201,6 +202,10 @@
         opacity: 1;
       }
     }
+  }
+
+  .field-date-only {
+    border: 1px solid $grey-medium;
   }
 }
 
