@@ -145,11 +145,6 @@ module.exports = {
               from: `${paths.appAssetLinksDirectory}/assetlinks-${process.env.ENVIRONMENT_NAME}.json`,
               to: `${paths.appBuild}/.well-known/assetlinks.json`,
             },
-            {
-              from: `${paths.appAssetLinksDirectory}/apple-app-site-association`,
-              to: `${paths.appBuild}/.well-known/apple-app-site-association`,
-              toType: 'file',
-            },
           ]),
         ]
       : []),
