@@ -5,7 +5,7 @@ from pcapi.serialization.utils import before_handler
 from pcapi.validation.routes import users_authentifications
 
 
-pro_api_v1 = Blueprint("pro_api_v1", __name__)
+pro_api_v2 = Blueprint("pro_api_v2", __name__)
 
 
 API_KEY_AUTH = "ApiKeyAuth"
@@ -41,4 +41,4 @@ class ProApiV1BluePrints(SpecTree):
 
 
 api = ProApiV1BluePrints("flask", MODE="strict", before=before_handler, PATH="/")
-api.register(pro_api_v1)
+api.register(pro_api_v2)

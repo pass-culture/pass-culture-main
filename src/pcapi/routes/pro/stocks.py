@@ -26,7 +26,7 @@ from pcapi.validation.routes.users_authentifications import current_api_key
 from pcapi.workers.synchronize_stocks_job import synchronize_stocks_job
 
 from .blueprints import api
-from .blueprints import pro_api_v1
+from .blueprints import pro_api_v2
 
 
 @private_api.route("/offers/<offer_id>/stocks", methods=["GET"])
@@ -76,7 +76,7 @@ def delete_stock(stock_id: str) -> StockIdResponseModel:
     return StockIdResponseModel.from_orm(stock)
 
 
-@pro_api_v1.route("/venue/<int:venue_id>/stocks", methods=["POST"])
+@pro_api_v2.route("/venue/<int:venue_id>/stocks", methods=["POST"])
 @api_key_required
 @spectree_serialize(on_success_status=204, on_error_statuses=[401, 404], api=api)
 def update_stocks(venue_id: int, body: UpdateVenueStocksBodyModel) -> None:

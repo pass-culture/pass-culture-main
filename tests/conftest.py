@@ -29,7 +29,7 @@ from pcapi.notifications.push import testing as push_notifications_testing
 from pcapi.repository.clean_database import clean_all_database
 from pcapi.routes import install_routes
 from pcapi.routes.native.v1.blueprint import native_v1
-from pcapi.routes.pro.blueprints import pro_api_v1
+from pcapi.routes.pro.blueprints import pro_api_v2
 from pcapi.utils.json_encoder import EnumJSONEncoder
 
 
@@ -77,7 +77,7 @@ def app():
 
     app.redis_client = Mock()
     app.register_blueprint(native_v1, url_prefix="/native/v1")
-    app.register_blueprint(pro_api_v1, url_prefix="/pro/v1")
+    app.register_blueprint(pro_api_v2, url_prefix="/v2")
 
     JWTManager(app)
 
