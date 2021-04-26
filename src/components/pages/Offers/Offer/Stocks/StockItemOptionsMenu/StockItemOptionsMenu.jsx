@@ -6,6 +6,7 @@ import { ReactComponent as OptionMenuIcon } from 'icons/ico-more-horiz.svg'
 
 import { ReactComponent as AddActivationCodeIcon } from './assets/add-activation-code-light.svg'
 import { ReactComponent as DeleteStockLightIcon } from './assets/delete-stock-light.svg'
+import '@reach/menu-button/styles.css'
 
 const StockItemOptionsMenu = ({
   canAddActivationCodes,

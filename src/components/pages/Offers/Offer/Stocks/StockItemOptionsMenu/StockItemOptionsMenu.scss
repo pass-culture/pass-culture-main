@@ -2,6 +2,9 @@
   .stock-options-menu-button {
     @include title2();
 
+    background-color: transparent;
+    border: none;
+    display: flex;
     padding: rem(8px) rem(10px);
 
     .stock-options-menu-button-icon {
@@ -16,10 +19,6 @@
       }
     }
   }
-
-  [data-reach-menu-button][aria-expanded="true"] {
-    background: transparent;
-  }
 }
 
 .stock-options-menu-item-icon {
@@ -30,6 +29,7 @@
 .stock-options-menu-item {
   @include button();
 
+  align-items: center;
   column-gap: 4px;
   display: grid;
   grid-template-columns: 32px 1fr;
@@ -62,4 +62,5 @@
 
 [data-reach-menu-popover] {
   box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.3);
+  z-index: 3;
 }

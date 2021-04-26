@@ -47,7 +47,7 @@
   },
   "dependencies": {
     "@reach/dialog": "^0.12.1",
-    "@reach/menu-button": "^0.12.1",
+    "@reach/menu-button": "^0.15.1",
     "@sentry/browser": "^5.27.3",
     "@sentry/tracing": "^5.27.3",
     "classnames": "^2.2.6",
