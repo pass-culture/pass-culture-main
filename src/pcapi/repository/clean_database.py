@@ -39,7 +39,7 @@ from pcapi.models.venue_label_sql_entity import VenueLabelSQLEntity
 
 
 def clean_all_database(*args, **kwargs):
-    """ Order of deletions matters because of foreign key constraints """
+    """Order of deletions matters because of foreign key constraints"""
     if settings.ENV not in ("development", "testing"):
         raise ValueError(f"You cannot do this on this environment: '{settings.ENV}'")
     Activity = load_activity()

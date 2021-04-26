@@ -30,7 +30,7 @@ def dehumanize(public_id: str) -> Optional[int]:
 
 
 def humanize(integer):
-    """ Create a human-compatible ID from and integer """
+    """Create a human-compatible ID from and integer"""
     if integer is None:
         return None
     b32 = b32encode(int_to_bytes(integer))
