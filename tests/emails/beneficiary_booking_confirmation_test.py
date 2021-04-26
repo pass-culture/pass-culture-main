@@ -6,6 +6,7 @@ import pytest
 from pcapi import models
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.testing import override_features
 from pcapi.emails.beneficiary_booking_confirmation import retrieve_data_for_beneficiary_booking_confirmation_email
 from pcapi.utils.human_ids import humanize
 
@@ -55,6 +56,7 @@ def get_expected_base_email_data(booking, mediation, **overrides):
             "can_expire": 0,
             "offer_id": humanize(booking.stock.offer.id),
             "mediation_id": humanize(mediation.id),
+            "code_expiration_date": None,
         },
     }
     email_data["Vars"].update(overrides)
@@ -113,14 +115,108 @@ def test_should_return_thing_specific_data_for_email_when_offer_is_a_thing():
     assert email_data == expected
 
 
+class DigitalOffersTest:
+    @pytest.mark.usefixtures("db_session")
+    def test_should_return_digital_thing_specific_data_for_email_when_offer_is_a_digital_thing(self):
+        booking = make_booking(
+            quantity=10,
+            stock__price=0,
+            stock__offer__product__type=str(models.ThingType.AUDIOVISUEL),
+            stock__offer__product__url="http://example.com",
+            stock__offer__name="Super offre numérique",
+        )
+        mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
+
+        email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)
+
+        expected = get_expected_base_email_data(
+            booking,
+            mediation,
+            all_but_not_virtual_thing=0,
+            all_things_not_virtual_thing=0,
+            event_date="",
+            event_hour="",
+            is_event=0,
+            is_single_event=0,
+            offer_name="Super offre numérique",
+            offer_price="Gratuit",
+            can_expire=1,
+        )
+        assert email_data == expected
+
+    @override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True)
+    @pytest.mark.usefixtures("db_session")
+    def test_hide_cancellation_policy_when_auto_validation_activated(self):
+        booking = make_booking(
+            quantity=10,
+            stock__price=0,
+            stock__offer__product__type=str(models.ThingType.AUDIOVISUEL),
+            stock__offer__product__url="http://example.com",
+            stock__offer__name="Super offre numérique",
+        )
+        mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
+
+        email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)
+        expected = get_expected_base_email_data(
+            booking,
+            mediation,
+            all_but_not_virtual_thing=0,
+            all_things_not_virtual_thing=0,
+            event_date="",
+            event_hour="",
+            is_event=0,
+            is_single_event=0,
+            offer_name="Super offre numérique",
+            offer_price="Gratuit",
+            can_expire=0,
+        )
+
+        assert email_data == expected
+
+
 @pytest.mark.usefixtures("db_session")
-def test_should_return_digital_thing_specific_data_for_email_when_offer_is_a_digital_thing():
+def test_use_activation_code_instead_of_token_if_possible():
     booking = make_booking(
         quantity=10,
         stock__price=0,
         stock__offer__product__type=str(models.ThingType.AUDIOVISUEL),
         stock__offer__product__url="http://example.com",
         stock__offer__name="Super offre numérique",
+    )
+    offers_factories.ActivationCodeFactory(stock=booking.stock, booking=booking, code="code-5uzk15fbha4")
+    mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
+
+    email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)
+
+    expected = get_expected_base_email_data(
+        booking,
+        mediation,
+        all_but_not_virtual_thing=0,
+        all_things_not_virtual_thing=0,
+        event_date="",
+        event_hour="",
+        is_event=0,
+        is_single_event=0,
+        offer_name="Super offre numérique",
+        offer_price="Gratuit",
+        can_expire=1,
+        offer_token="code-5uzk15fbha4",
+        code_expiration_date=None,
+    )
+    assert email_data == expected
+
+
+@pytest.mark.usefixtures("db_session")
+def test_add_expiration_date_from_activation_code():
+    booking = make_booking(
+        quantity=10,
+        stock__price=0,
+        stock__offer__product__type=str(models.ThingType.AUDIOVISUEL),
+        stock__offer__product__url="http://example.com",
+        stock__offer__name="Super offre numérique",
+    )
+    offers_factories.ActivationCodeFactory(
+        stock=booking.stock, booking=booking, code="code-5uzk15fbha4", expirationDate=datetime(2030, 1, 1)
     )
     mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
 
@@ -138,6 +234,8 @@ def test_should_return_digital_thing_specific_data_for_email_when_offer_is_a_dig
         offer_name="Super offre numérique",
         offer_price="Gratuit",
         can_expire=1,
+        offer_token="code-5uzk15fbha4",
+        code_expiration_date="1 janvier 2030",
     )
     assert email_data == expected
 

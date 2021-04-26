@@ -1,5 +1,7 @@
 from pcapi.core.bookings.models import Booking
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_type import ProductType
+from pcapi.repository import feature_queries
 from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_time_formatted_for_email
 from pcapi.utils.date import utc_datetime_to_department_timezone
@@ -15,7 +17,11 @@ def retrieve_data_for_beneficiary_booking_confirmation_email(booking: Booking) -
     is_digital_offer = offer.isDigital
     is_physical_offer = ProductType.is_thing(name=offer.type) and not is_digital_offer
     is_event = ProductType.is_event(name=offer.type)
-    can_expire = int(offer.offerType.get("canExpire", False))
+
+    if is_digital_offer and feature_queries.is_active(FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS):
+        can_expire = 0
+    else:
+        can_expire = int(offer.offerType.get("canExpire", False))
 
     department_code = venue.departementCode if not is_digital_offer else beneficiary.departementCode
     booking_date_in_tz = utc_datetime_to_department_timezone(booking.dateCreated, department_code)
@@ -30,7 +36,6 @@ def retrieve_data_for_beneficiary_booking_confirmation_email(booking: Booking) -
     formatted_event_beginning_date = ""
     # FIXME: booking.price == stock.price, so we should just write str(booking.total_amount), right?
     stock_price = str(stock.price * booking.quantity) if stock.price > 0 else "Gratuit"
-    booking_token = booking.token
     venue_name = venue.name
     venue_address = venue.address or ""
     venue_postal_code = venue.postalCode or ""
@@ -47,6 +52,12 @@ def retrieve_data_for_beneficiary_booking_confirmation_email(booking: Booking) -
         formatted_event_beginning_time = get_time_formatted_for_email(event_beginning_date_in_tz)
         formatted_event_beginning_date = get_date_formatted_for_email(event_beginning_date_in_tz)
 
+    code_expiration_date = None
+    if booking.activationCode and booking.activationCode.expirationDate:
+        code_expiration_date = get_date_formatted_for_email(booking.activationCode.expirationDate)
+
+    booking_token = booking.activationCode.code if booking.activationCode else booking.token
+
     return {
         "MJ-TemplateID": 1163067,
         "MJ-TemplateLanguage": True,
@@ -60,6 +71,7 @@ def retrieve_data_for_beneficiary_booking_confirmation_email(booking: Booking) -
             "event_hour": formatted_event_beginning_time,
             "offer_price": stock_price,
             "offer_token": booking_token,
+            "code_expiration_date": code_expiration_date,
             "venue_name": venue_name,
             "venue_address": venue_address,
             "venue_postal_code": venue_postal_code,
