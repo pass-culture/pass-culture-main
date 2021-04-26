@@ -1,0 +1,56 @@
+.activation-codes-upload {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  width: rem(540px);
+
+  .activation-codes-upload-icon {
+    fill: $grey-dark;
+    margin-top: rem(16px);
+    width: rem(120px);
+  }
+
+  .activation-codes-upload-title {
+    @include title4();
+
+    margin-top: rem(8px);
+  }
+
+  .activation-codes-upload-section {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .activation-codes-upload-description {
+    @include body();
+
+    display: grid;
+    grid-row-gap: rem(16px);
+    margin-top: rem(20px);
+  }
+
+  .activation-codes-upload-button-section {
+    display: grid;
+    margin-top: rem(30px);
+
+    .activation-codes-upload-button {
+      @include button();
+    }
+
+    .activation-codes-upload-button-caption {
+      @include caption();
+
+      color: $grey-dark;
+      display: flex;
+      flex-direction: column;
+      margin-top: rem(36px);
+    }
+  }
+
+  .activation-codes-upload-separator {
+    border: 1px solid $grey-medium;
+    margin-top: rem(24px);
+  }
+}
