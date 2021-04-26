@@ -16,8 +16,11 @@ const StockItemOptionsMenu = ({
   disableDeleteButton,
   isNewStock,
   isOfferDisabled,
+  setIsActivationCodesDialogOpen,
 }) => {
-  const addActivationCodes = useCallback(() => {}, [])
+  const openActivationCodesDialog = useCallback(() => setIsActivationCodesDialogOpen(true), [
+    setIsActivationCodesDialogOpen,
+  ])
 
   return (
     <Menu className="stock-options-menu-container">
@@ -52,7 +55,7 @@ const StockItemOptionsMenu = ({
           <MenuItem
             className="stock-options-menu-item"
             disabled={!isNewStock}
-            onSelect={addActivationCodes}
+            onSelect={openActivationCodesDialog}
             title={
               isNewStock
                 ? "Ajouter des codes d'activation"
@@ -81,6 +84,7 @@ StockItemOptionsMenu.propTypes = {
   disableDeleteButton: PropTypes.bool.isRequired,
   isNewStock: PropTypes.bool.isRequired,
   isOfferDisabled: PropTypes.bool.isRequired,
+  setIsActivationCodesDialogOpen: PropTypes.func.isRequired,
 }
 
 export default StockItemOptionsMenu

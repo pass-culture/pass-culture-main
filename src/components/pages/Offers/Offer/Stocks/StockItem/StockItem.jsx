@@ -11,6 +11,7 @@ import { hasStockBeenUpdated } from 'components/pages/Offers/Offer/Stocks/StockI
 import { getToday } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
+import ActivationCodesUploadDialog from '../ActivationCodesUploadDialog/ActivationCodesUploadDialog'
 import StockItemOptionsMenu from '../StockItemOptionsMenu/StockItemOptionsMenu'
 
 const StockItem = ({
@@ -37,6 +38,7 @@ const StockItem = ({
   )
   const [price, setPrice] = useState(initialStock.price)
   const [totalQuantity, setTotalQuantity] = useState(initialStock.quantity)
+  const [isActivationCodesDialogOpen, setIsActivationCodesDialogOpen] = useState(false)
 
   useEffect(
     function updateStock() {
@@ -105,6 +107,8 @@ const StockItem = ({
   const changeTotalQuantity = useCallback(event => setTotalQuantity(event.target.value), [])
 
   const askDeletionConfirmation = useCallback(() => setIsDeleting(true), [])
+
+  const closeActivationCodesDialog = useCallback(() => setIsActivationCodesDialogOpen(false), [])
 
   const totalQuantityValue = totalQuantity !== null ? totalQuantity : ''
   const computedRemainingQuantity = totalQuantityValue - initialStock.bookingsQuantity
@@ -229,6 +233,7 @@ const StockItem = ({
             disableDeleteButton={isOfferDisabled || !isStockDeletable || isDeleting}
             isNewStock={isNewStock}
             isOfferDisabled={isOfferDisabled}
+            setIsActivationCodesDialogOpen={setIsActivationCodesDialogOpen}
           />
         ) : (
           <button
@@ -248,6 +253,9 @@ const StockItem = ({
             setIsDeleting={setIsDeleting}
             stockId={initialStock.id}
           />
+        )}
+        {isActivationCodesDialogOpen && (
+          <ActivationCodesUploadDialog closeDialog={closeActivationCodesDialog} />
         )}
       </td>
     </tr>
