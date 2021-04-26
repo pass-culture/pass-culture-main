@@ -3,6 +3,7 @@ import React, { useCallback } from 'react'
 
 import Icon from 'components/layout/Icon'
 import {
+  OFFER_STATUS_INACTIVE,
   OFFER_STATUS_PENDING,
   OFFER_STATUS_REJECTED,
 } from 'components/pages/Offers/Offers/_constants'
@@ -31,7 +32,7 @@ export const StatusToggleButton = ({ notifyError, notifySuccess, offer, reloadOf
       onClick={toggleOfferActiveStatus}
       type="button"
     >
-      {offer.isActive ? (
+      {offer.status !== OFFER_STATUS_INACTIVE ? (
         <>
           <Icon svg="ico-status-inactive" />
           {'Désactiver'}

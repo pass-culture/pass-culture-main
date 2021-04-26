@@ -73,8 +73,8 @@ describe('offerLayout', () => {
       // Given
       pcapi.updateOffersActiveStatus.mockResolvedValue()
       pcapi.loadOffer
-        .mockResolvedValueOnce({ ...editedOffer, isActive: false })
-        .mockResolvedValue({ ...editedOffer, isActive: true })
+        .mockResolvedValueOnce({ ...editedOffer, isActive: false, status: 'INACTIVE' })
+        .mockResolvedValue({ ...editedOffer, isActive: true, status: 'ACTIVE' })
       await renderOfferDetails(props, store)
 
       // When
@@ -94,8 +94,8 @@ describe('offerLayout', () => {
       // Given
       pcapi.updateOffersActiveStatus.mockResolvedValue()
       pcapi.loadOffer
-        .mockResolvedValueOnce({ ...editedOffer, isActive: true })
-        .mockResolvedValue({ ...editedOffer, isActive: false })
+        .mockResolvedValueOnce({ ...editedOffer, isActive: true, status: 'ACTIVE' })
+        .mockResolvedValue({ ...editedOffer, isActive: false, status: 'INACTIVE' })
       await renderOfferDetails(props, store)
 
       // When
@@ -130,7 +130,7 @@ describe('offerLayout', () => {
       await renderOfferDetails(props, store)
 
       // Then
-      expect(screen.getByRole('button', { name: 'Activer' })).toBeDisabled()
+      expect(screen.getByRole('button', { name: 'Désactiver' })).toBeDisabled()
     })
 
     it('should inform user something went wrong when impossible to toggle offer status', async () => {
