@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 
 from pydantic import BaseModel
@@ -68,7 +69,7 @@ def serialize_booking(booking: Booking) -> dict:
 
 
 def serialize_booking_minimal(booking: Booking) -> dict:
-    return {
+    serializable_fields = {
         "amount": float(booking.amount),
         "completedUrl": booking.completedUrl,
         "id": humanize(booking.id),
@@ -77,8 +78,16 @@ def serialize_booking_minimal(booking: Booking) -> dict:
         "stockId": humanize(booking.stockId),
         "stock": {"price": booking.stock.price},
         "token": booking.token,
-        "activationCode": booking.activationCode.code if booking.activationCode else None,
+        "activationCode": None,
     }
+
+    if booking.activationCode:
+        serializable_fields["activationCode"] = {
+            "code": booking.activationCode.code,
+            "expirationDate": booking.activationCode.expirationDate,
+        }
+
+    return serializable_fields
 
 
 class PostBookingStockModel(BaseModel):
@@ -93,6 +102,11 @@ class PostBookingBodyModel(BaseModel):
         alias_generator = to_camel
 
 
+class ActivationCode(BaseModel):
+    code: str
+    expirationDate: Optional[datetime]
+
+
 class PostBookingResponseModel(BaseModel):
     amount: float
     completedUrl: Optional[str]
@@ -102,7 +116,7 @@ class PostBookingResponseModel(BaseModel):
     stock: PostBookingStockModel
     stockId: str
     token: str
-    activationCode: Optional[str]
+    activationCode: Optional[ActivationCode]
 
     class Config:
         allow_population_by_field_name = True

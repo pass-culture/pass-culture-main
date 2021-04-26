@@ -1,6 +1,7 @@
 from pcapi import settings
 from pcapi.core.mails.models import Email
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offers.models import ActivationCode
 from pcapi.core.offers.models import Mediation
 from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import AllocineVenueProviderPriceRule
@@ -44,6 +45,7 @@ def clean_all_database(*args, **kwargs):
         raise ValueError(f"You cannot do this on this environment: '{settings.ENV}'")
     Activity = load_activity()
     LocalProviderEvent.query.delete()
+    ActivationCode.query.delete()
     AllocineVenueProviderPriceRule.query.delete()
     AllocineVenueProvider.query.delete()
     VenueProvider.query.delete()

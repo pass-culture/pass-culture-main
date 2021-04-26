@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from pcapi.core.offers.factories import StockWithActivationCodesFactory
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_activation_offers import (
     create_industrial_activation_offers,
@@ -21,6 +22,9 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_iris import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_iris_venues import create_industrial_iris_venues
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_mediations import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offerers_with_pro_users import *
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_offers_with_activation_codes import (
+    create_industrial_offers_with_activation_codes,
+)
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_payments import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_pro_users import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_pro_users_api_keys import *
@@ -53,6 +57,8 @@ def save_industrial_sandbox() -> None:
     event_offers_by_name = create_industrial_event_offers(event_products_by_name, offerers_by_name)
 
     thing_offers_by_name = create_industrial_thing_offers(thing_products_by_name, offerers_by_name, venues_by_name)
+
+    create_industrial_offers_with_activation_codes()
 
     offers_by_name = dict(event_offers_by_name, **thing_offers_by_name)
 

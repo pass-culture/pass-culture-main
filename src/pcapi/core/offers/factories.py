@@ -114,6 +114,7 @@ class ThingProductFactory(ProductFactory):
 
 
 class DigitalProductFactory(ThingProductFactory):
+    name = factory.Sequence("Digital product {}".format)
     url = factory.Sequence("http://example.com/product/{}".format)
     isNational = True
 
@@ -193,7 +194,9 @@ class StockWithActivationCodesFactory(StockFactory):
             for code in extracted:
                 ActivationCodeFactory(stockId=self.id, code=code)
         else:
-            ActivationCodeFactory.create_batch(size=5, stockId=self.id, **kwargs)
+            available_activation_counts = 5
+            self.quantity = available_activation_counts
+            ActivationCodeFactory.create_batch(size=available_activation_counts, stockId=self.id, **kwargs)
 
 
 class ActivationCodeFactory(BaseFactory):

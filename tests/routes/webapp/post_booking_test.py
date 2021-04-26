@@ -56,7 +56,7 @@ class Returns201:
             "stock": {"price": 10.0},
             "stockId": humanize(stock.id),
             "token": booking.token,
-            "activationCode": "code-vgya451afvyux",
+            "activationCode": {"code": "code-vgya451afvyux", "expirationDate": None},
         }
 
 

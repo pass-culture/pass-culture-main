@@ -4,6 +4,7 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.offers.factories import StockWithActivationCodesFactory
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_stock
@@ -223,4 +224,28 @@ class SerializeBookingMinimalTest:
             "token": "GQTQR9",
             "completedUrl": None,
             "activationCode": None,
+        }
+
+    def test_should_return_booking_with_activation_code(self):
+        # Given
+        stocks = StockWithActivationCodesFactory(activationCodes__expirationDate=datetime(2030, 2, 5, 9, 0, 0))
+        activation_code = stocks.activationCodes[0]
+        booking = BookingFactory(amount=1, quantity=1, token="GQTQR9", stock__price=10, activationCode=activation_code)
+
+        # When
+        serialized = serialize_booking_minimal(booking)
+
+        # Then
+        assert serialized == {
+            "amount": 1.0,
+            "isCancelled": booking.isCancelled,
+            "id": humanize(booking.id),
+            "stockId": humanize(booking.stockId),
+            "quantity": 1,
+            "stock": {
+                "price": 10,
+            },
+            "token": "GQTQR9",
+            "completedUrl": None,
+            "activationCode": {"code": activation_code.code, "expirationDate": activation_code.expirationDate},
         }
