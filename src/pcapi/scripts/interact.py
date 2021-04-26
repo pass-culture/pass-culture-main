@@ -50,8 +50,16 @@ def set_python_prompt():
         color = "\x1b[1;49;36m"  # cyan
     else:
         color = None
+
     if color:
-        sys.ps1 = f"{color}{env} >>>\x1b[0m "
+        color = _non_printable(color)
+        reset = _non_printable("\x1b[0m")
+
+        sys.ps1 = f"{color}{env} >>> {reset}"
+
+
+def _non_printable(seq):
+    return f"\001{seq}\002"
 
 
 set_python_prompt()
