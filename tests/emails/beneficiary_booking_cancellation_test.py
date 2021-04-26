@@ -69,7 +69,7 @@ class MakeBeneficiaryBookingCancellationEmailDataTest:
             "Mj-TemplateLanguage": True,
             "Vars": {
                 "can_book_again": 1,
-                "event_date": "26 novembre",
+                "event_date": "26 novembre 2019",
                 "event_hour": "19h29",
                 "is_event": 1,
                 "is_free_offer": 0,

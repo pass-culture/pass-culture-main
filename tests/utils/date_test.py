@@ -19,7 +19,7 @@ class GetDateFormattedForEmail:
         date_formatted_for_email = get_date_formatted_for_email(december_23)
 
         # Then
-        assert date_formatted_for_email == "23 décembre"
+        assert date_formatted_for_email == "23 décembre 2019"
 
     def test_should_return_1_digit_day_when_day_is_less_than_10(self):
         # Given
@@ -29,7 +29,7 @@ class GetDateFormattedForEmail:
         date_formatted_for_email = get_date_formatted_for_email(december_09)
 
         # Then
-        assert date_formatted_for_email == "9 décembre"
+        assert date_formatted_for_email == "9 décembre 2019"
 
 
 class GetTimeFormattedForEmail:

@@ -98,7 +98,7 @@ def format_into_timezoned_date(date_to_format: datetime) -> str:
 
 
 def get_date_formatted_for_email(date_time: datetime) -> str:
-    return format_date(date_time, format="d MMMM", locale="fr")
+    return format_date(date_time, format="d MMMM YYYY", locale="fr")
 
 
 def get_time_formatted_for_email(date_time: datetime) -> str:

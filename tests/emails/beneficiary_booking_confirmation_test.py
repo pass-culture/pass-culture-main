@@ -35,11 +35,11 @@ def get_expected_base_email_data(booking, mediation, **overrides):
         "MJ-TemplateLanguage": True,
         "Vars": {
             "user_first_name": "Joe",
-            "booking_date": "3 octobre",
+            "booking_date": "3 octobre 2019",
             "booking_hour": "15h24",
             "offer_name": "Super événement",
             "offerer_name": "Théâtre du coin",
-            "event_date": "6 novembre",
+            "event_date": "6 novembre 2019",
             "event_hour": "15h59",
             "offer_price": "23.99",
             "offer_token": "ABC123",
