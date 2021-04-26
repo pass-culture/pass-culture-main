@@ -18,10 +18,10 @@ USER_ID_COLUMN_HEADER = "ID Utilisateur"
 def run(csv_file_path: str) -> None:
     logger.info("[DELETE USER_OFFERERS FROM FILE] START")
     logger.info("[DELETE USER_OFFERERS FROM FILE] STEP 1 - Lecture du fichier CSV")
-    csv_file = open(csv_file_path)
-    csv_reader = csv.reader(csv_file)
-    logger.info("[DELETE USER_OFFERERS FROM FILE] STEP 2 - Suppression des user_offerers")
-    _delete_user_offerers_from_rows(csv_reader)
+    with open(csv_file_path) as csv_file:
+        csv_reader = csv.reader(csv_file)
+        logger.info("[DELETE USER_OFFERERS FROM FILE] STEP 2 - Suppression des user_offerers")
+        _delete_user_offerers_from_rows(csv_reader)
     logger.info("[DELETE USER_OFFERERS FROM FILE] END")
 
 

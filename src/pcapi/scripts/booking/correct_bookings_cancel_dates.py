@@ -15,8 +15,8 @@ BATCH_SIZE = 100
 def run(csv_file_path: str) -> None:
     logger.info("[CORRECT BOOKINGS CANCEL_DATE] START")
     logger.info("[CORRECT BOOKINGS CANCEL_DATE] STEP 1 - Read CSV file")
-    csv_file = open(csv_file_path)
-    csv_rows = list(csv.reader(csv_file))
+    with open(csv_file_path) as csv_file:
+        csv_rows = list(csv.reader(csv_file))
 
     csv_rows_iterable = csv_rows[1:]
     batches = [csv_rows_iterable[index : index + BATCH_SIZE] for index in range(0, len(csv_rows_iterable), BATCH_SIZE)]

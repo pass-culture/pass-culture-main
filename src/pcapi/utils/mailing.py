@@ -151,9 +151,8 @@ def _get_zipfile_content(content: str, filename: str):
     with the requested content and filename.
     """
     stream = io.BytesIO()
-    zf = zipfile.ZipFile(stream, mode="w", compression=zipfile.ZIP_DEFLATED, compresslevel=9)
-    zf.writestr(filename, content)
-    zf.close()
+    with zipfile.ZipFile(stream, mode="w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as zf:
+        zf.writestr(filename, content)
     stream.seek(0)
     return stream.read()
 

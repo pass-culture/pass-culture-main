@@ -120,8 +120,8 @@ def import_new_offerer_from_csv(row: dict) -> None:
 
 
 def import_from_csv_file(csv_file_path: str) -> None:
-    csv_file = open(csv_file_path)
-    csv_reader = csv.dictReader(csv_file)
+    with open(csv_file_path) as csv_file:
+        csv_reader = csv.dictReader(csv_file)
 
-    for row in csv_reader:
-        import_new_offerer_from_csv(row)
+        for row in csv_reader:
+            import_new_offerer_from_csv(row)

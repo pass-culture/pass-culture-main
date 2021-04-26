@@ -113,7 +113,7 @@ def test_make_payment_details_email():
     assert attachment["Filename"] == f"{expected_csv_name}.zip"
     encoded_zip_content = attachment["Content"]
     zip_content = base64.b64decode(encoded_zip_content)
-    zf = zipfile.ZipFile(io.BytesIO(zip_content))
-    assert zf.namelist() == [expected_csv_name]
-    csv_in_zip_file = zf.open(expected_csv_name).read().decode("utf-8")
-    assert csv_in_zip_file == csv
+    with zipfile.ZipFile(io.BytesIO(zip_content)) as zf:
+        assert zf.namelist() == [expected_csv_name]
+        csv_in_zip_file = zf.open(expected_csv_name).read().decode("utf-8")
+        assert csv_in_zip_file == csv

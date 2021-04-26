@@ -120,11 +120,11 @@ def run(csv_file_path: str) -> None:
     logger.info("-------------------------------------------------------------------------------\n")
 
     logger.info("[STEP 1] Lecture du fichier CSV")
-    csv_file = open(csv_file_path)
-    csv_reader = csv.reader(csv_file)
+    with open(csv_file_path) as csv_file:
+        csv_reader = csv.reader(csv_file)
 
-    logger.info("[STEP 2] Enregistrement des structures et lieux")
-    user_offerers = iterate_rows_for_user_offerers(csv_reader)
+        logger.info("[STEP 2] Enregistrement des structures et lieux")
+        user_offerers = iterate_rows_for_user_offerers(csv_reader)
     logger.info("Enregistrement des comptes pro terminé\n")
 
     logger.info("[STEP 3] Décompte des objets")
