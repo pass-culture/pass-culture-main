@@ -11,7 +11,7 @@ exclude = '''
 '''
 include = '\.pyi?$'
 line-length = 120
-target-version = ['py37']
+target-version = ['py39']
 
 [tool.isort]
 combine_as_imports = true
