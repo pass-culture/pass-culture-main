@@ -1,7 +1,7 @@
 """create_activation_code_table
 
 Revision ID: ddd5b5980f31
-Revises: 40754eda1d0f
+Revises: 2f3af262e528
 Create Date: 2021-04-19 14:55:09.619714
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = "ddd5b5980f31"
-down_revision = "40754eda1d0f"
+down_revision = "2f3af262e528"
 branch_labels = None
 depends_on = None
 
