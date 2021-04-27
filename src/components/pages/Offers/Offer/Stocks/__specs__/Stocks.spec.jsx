@@ -1879,6 +1879,7 @@ describe('stocks page', () => {
       // Given
       const draftOffer = {
         ...defaultOffer,
+        name: 'mon offre',
         status: 'DRAFT',
       }
 
@@ -1902,7 +1903,7 @@ describe('stocks page', () => {
 
     it('should redirect to confirmation page after validating of stocks', async () => {
       // Given
-      const offer = offerFactory({ id: 'AG3A', status: 'DRAFT' })
+      const offer = offerFactory({ name: 'mon offre', id: 'AG3A', status: 'DRAFT' })
       loadFakeApiOffer(offer)
       loadFakeApiStocks([])
       bulkFakeApiCreateOrEditStock({ id: 'MEFA' })

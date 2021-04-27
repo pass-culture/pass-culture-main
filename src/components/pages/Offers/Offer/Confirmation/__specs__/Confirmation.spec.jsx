@@ -6,9 +6,9 @@ import { offerFactory } from 'utils/apiFactories'
 import { loadFakeApiOffer } from 'utils/fakeApi'
 
 describe('confirmation page', () => {
-  it('should display the rights information', async () => {
+  it('should display the rights information when offer is draft', async () => {
     // Given
-    const offer = offerFactory({ status: 'DRAFT' })
+    const offer = offerFactory({ name: 'mon offre', status: 'DRAFT' })
     loadFakeApiOffer(offer)
 
     // When
@@ -33,9 +33,36 @@ describe('confirmation page', () => {
     )
   })
 
+  it('should display the rights information when offer is pending', async () => {
+    // Given
+    const offer = offerFactory({ name: 'PENDING', status: 'PENDING' })
+    loadFakeApiOffer(offer)
+
+    // When
+    await renderOffer(`/offres/${offer.id}/confirmation`)
+
+    // Then
+    expect(screen.queryByText('active')).not.toBeInTheDocument()
+    expect(screen.getByText('Offre en cours de validation', { selector: 'h2' })).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        'Votre offre est en cours de validation par l’équipe du pass Culture. Vous recevrez un e-mail de confirmation une fois votre offre validée et disponible à la réservation.',
+        { selector: 'p' }
+      )
+    ).toBeInTheDocument()
+    expect(screen.getByText('Prévisualiser dans l’app', { selector: 'a' })).toHaveAttribute(
+      'href',
+      `http://localhost/offre/details/${offer.id}`
+    )
+    expect(screen.getByText('Créer une nouvelle offre', { selector: 'a' })).toHaveAttribute(
+      'href',
+      '/offres/creation'
+    )
+  })
+
   it('should redirect to edition when the offer is not a draft', async () => {
     // Given
-    const offer = offerFactory({ status: 'ACTIVE' })
+    const offer = offerFactory({ name: 'mon offre', status: 'ACTIVE' })
     loadFakeApiOffer(offer)
 
     // When

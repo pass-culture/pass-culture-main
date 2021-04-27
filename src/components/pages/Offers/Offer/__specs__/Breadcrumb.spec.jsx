@@ -112,7 +112,7 @@ describe('confirmation step', () => {
   describe('in creation mode', () => {
     it('should display breadcrumb without link', async () => {
       // Given
-      const offer = offerFactory({ status: 'DRAFT' })
+      const offer = offerFactory({ name: 'mon offer', status: 'DRAFT' })
       loadFakeApiOffer(offer)
 
       // When
