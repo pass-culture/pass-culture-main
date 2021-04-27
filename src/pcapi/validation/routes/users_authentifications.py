@@ -8,9 +8,8 @@ from werkzeug.local import LocalProxy
 from pcapi.core.users.models import User
 from pcapi.models import ApiErrors
 from pcapi.repository.api_key_queries import find_api_key_by_value
-
-
-API_KEY = "ApiKey"
+from pcapi.routes.pro.blueprints import API_KEY_AUTH
+from pcapi.serialization.spec_tree import add_security_scheme
 
 
 def check_user_is_logged_in_or_email_is_provided(user: User, email: str):
@@ -33,9 +32,7 @@ def login_or_api_key_required(function):
 
 
 def api_key_required(route_function):
-    if not hasattr(route_function, "requires_authentication"):
-        route_function.requires_authentication = []
-    route_function.requires_authentication.append(API_KEY)
+    add_security_scheme(route_function, API_KEY_AUTH)
 
     @wraps(route_function)
     def wrapper(*args, **kwds):

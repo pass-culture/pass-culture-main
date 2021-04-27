@@ -7,18 +7,15 @@ from flask_jwt_extended.view_decorators import jwt_required
 
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.repository.user_queries import find_user_by_email
+from pcapi.routes.native.v1.blueprint import JWT_AUTH
+from pcapi.serialization.spec_tree import add_security_scheme
 
 
 logger = logging.getLogger(__name__)
 
 
-JWT_AUTH = "JWT"
-
-
 def authenticated_user_required(route_function):  # type: ignore
-    if not hasattr(route_function, "requires_authentication"):
-        route_function.requires_authentication = []
-    route_function.requires_authentication.append(JWT_AUTH)
+    add_security_scheme(route_function, JWT_AUTH)
 
     @wraps(route_function)
     @jwt_required
