@@ -43,11 +43,13 @@ const OfferLayout = ({ location, match }) => {
 
   const shouldBlockNavigation = useCallback(
     nextLocation => {
+      const offerCreationPath = '/offres/creation'
       const stocksPathRegex = /\/offres\/([A-Z0-9]+)\/stocks/g
       const confirmationPathRegex = /\/offres\/([A-Z0-9]+)\/confirmation/g
       if (
         isCreatingOffer &&
-        (nextLocation.pathname.match(stocksPathRegex) ||
+        (nextLocation.pathname.startsWith(offerCreationPath) ||
+          nextLocation.pathname.match(stocksPathRegex) ||
           nextLocation.pathname.match(confirmationPathRegex))
       ) {
         return false

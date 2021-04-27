@@ -256,3 +256,32 @@ test("Je peux quitter la création d'offre avec confirmation", async t => {
     .expect(getPathname())
     .match(/\/accueil$/)
 })
+
+test('Je peux créer une offre avec médiation', async t => {
+  const { user } = await fetchSandbox(
+    'pro_07_offer',
+    'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue'
+  )
+
+  const userRole = createUserRole(user)
+  await navigateToNewOfferAs(user, null, null, userRole)(t)
+
+  await t
+    .click(typeInput)
+    .click(typeOption.withText('Audiovisuel - films sur supports physiques et VOD'))
+    .typeText(nameInput, 'Rencontre avec Franck Lepage')
+    .click(thumbnailButton)
+    .click(importFromUrlButton)
+    .typeText(
+      importFromUrlInput,
+      'https://upload.wikimedia.org/wikipedia/commons/f/f9/Zebra_%28PSF%29.png'
+    )
+    .click(importFromUrlSubmitButton)
+    .click(creditSubmitButton)
+    .click(previewSubmitButton)
+    .click(validateThumbnailButton)
+    .click(noDisabilityCompliantCheckbox)
+    .click(submitButton)
+    .expect(getPathname())
+    .match(/\/offres\/([A-Z0-9]+)\/stocks$/)
+})

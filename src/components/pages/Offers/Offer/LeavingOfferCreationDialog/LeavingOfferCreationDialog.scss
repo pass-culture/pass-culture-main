@@ -16,6 +16,10 @@
     display: flex;
     justify-content: space-between;
     margin: rem(30px) auto 0;
-    width: 65%;
+    width: 90%;
+
+    button {
+      padding: 0 rem(44px);
+    }
   }
 }
