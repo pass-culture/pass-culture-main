@@ -190,9 +190,7 @@ def check_activation_is_bookable(activation_code: ActivationCode) -> bool:
 
 
 def check_has_available_activation_code(activation_codes: list[ActivationCode]):
-    available_activation_codes = [
-        activation_code for activation_code in activation_codes if check_activation_is_bookable(activation_code)
-    ]
+    next_available_code = any(check_activation_is_bookable(activation_code) for activation_code in activation_codes)
 
-    if not available_activation_codes:
+    if not next_available_code:
         raise NoActivationCodeAvailable()

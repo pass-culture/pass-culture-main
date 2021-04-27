@@ -215,19 +215,6 @@ class BookOfferTest:
             )
 
     class WhenBookingWithActivationCodeTest:
-        @override_features(ENABLE_ACTIVATION_CODES=False)
-        def test_when_activation_code_is_disabled(self):
-            # Given
-            user = users_factories.UserFactory()
-            stock = offers_factories.StockWithActivationCodesFactory()
-
-            # When
-            booking = api.book_offer(beneficiary=user, stock_id=stock.id, quantity=1)
-
-            # Then
-            assert not booking.activationCode
-
-        @override_features(ENABLE_ACTIVATION_CODES=True)
         def test_book_offer_with_first_activation_code_available(self):
             # Given
             user = users_factories.UserFactory()
@@ -240,7 +227,6 @@ class BookOfferTest:
             # Then
             assert booking.activationCode == first_activation_code
 
-        @override_features(ENABLE_ACTIVATION_CODES=True)
         def test_ignore_activation_that_is_already_used_for_booking(self):
             # Given
             user = users_factories.UserFactory()
@@ -256,7 +242,6 @@ class BookOfferTest:
             # Then
             assert booking.activationCode.code == "code-bha45k15fuz"
 
-        @override_features(ENABLE_ACTIVATION_CODES=True)
         def test_raise_when_no_activation_code_available(self):
             # Given
             user = users_factories.UserFactory()
@@ -274,7 +259,6 @@ class BookOfferTest:
                 "noActivationCodeAvailable": ["Ce stock ne contient plus de code d'activation disponible."]
             }
 
-        @override_features(ENABLE_ACTIVATION_CODES=True)
         def test_raise_when_activation_codes_are_expired(self):
             # Given
             user = users_factories.UserFactory()

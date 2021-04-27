@@ -18,6 +18,7 @@ from pcapi.core.bookings.conf import LIMIT_CONFIGURATIONS
 from pcapi.core.bookings.models import Booking
 import pcapi.core.bookings.repository as bookings_repository
 from pcapi.core.offers.models import OfferValidationStatus
+from pcapi.core.offers.models import Stock
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.core.users.models import User
@@ -29,7 +30,6 @@ from pcapi.models import EventType
 from pcapi.models import Offer
 from pcapi.models import OfferCriterion
 from pcapi.models import Product
-from pcapi.models import Stock
 from pcapi.models import Venue
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
@@ -41,9 +41,6 @@ from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
 from pcapi.routes.serialization.stock_serialize import StockCreationBodyModel
 from pcapi.routes.serialization.stock_serialize import StockEditionBodyModel
 from pcapi.utils import mailing
-
-
-logger = logging.getLogger(__name__)
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.rest import load_or_raise_error
 from pcapi.workers.push_notification_job import send_cancel_booking_notification
@@ -51,6 +48,9 @@ from pcapi.workers.push_notification_job import send_cancel_booking_notification
 from . import validation
 from .exceptions import ThumbnailStorageError
 from .models import Mediation
+
+
+logger = logging.getLogger(__name__)
 
 
 DEFAULT_OFFERS_PER_PAGE = 10
