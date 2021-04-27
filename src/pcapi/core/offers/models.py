@@ -19,6 +19,7 @@ from sqlalchemy import Integer
 from sqlalchemy import Numeric
 from sqlalchemy import String
 from sqlalchemy import Text
+from sqlalchemy import UniqueConstraint
 from sqlalchemy import and_
 from sqlalchemy import case
 from sqlalchemy import event
@@ -558,3 +559,11 @@ class ActivationCode(PcObject, Model):
     bookingId = Column(BigInteger, ForeignKey("booking.id"), index=True, nullable=True)
 
     booking = relationship("Booking", back_populates="activationCode")
+
+    __table_args__ = (
+        UniqueConstraint(
+            "stockId",
+            "code",
+            name="unique_code_in_stock",
+        ),
+    )
