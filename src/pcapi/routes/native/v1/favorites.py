@@ -52,7 +52,6 @@ def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
         .join(Favorite.offer)
         .join(Offer.venue)
         .outerjoin(Offer.stocks)
-        .outerjoin(Stock.bookings)
         .filter(Favorite.userId == user.id)
         .distinct(Favorite.id)
         .options(
