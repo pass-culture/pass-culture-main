@@ -7,9 +7,12 @@ from itertools import islice
 import logging
 from typing import Generator
 
+from pcapi.core.users.api import get_last_booking_date
+from pcapi.core.users.repository import get_booking_categories
 from pcapi.models import User
 from pcapi.notifications.push import update_users_attributes
 from pcapi.notifications.push.user_attributes_updates import UserUpdateData
+from pcapi.notifications.push.user_attributes_updates import format_booking_date
 from pcapi.notifications.push.user_attributes_updates import get_user_attributes
 
 
@@ -43,7 +46,15 @@ def format_users(users: list[User]) -> list[UserUpdateData]:
     res = []
     for user in users:
         attributes = get_user_attributes(user)
-        res.append(UserUpdateData(user_id=user.id, attributes=attributes))
+
+        last_booking_date = get_last_booking_date(user)
+        attributes["date(u.last_booking_date)"] = format_booking_date(last_booking_date)
+
+        booking_categories = get_booking_categories(user)
+        if booking_categories:
+            attributes["ut.booking_categories"] = booking_categories
+
+        res.append(UserUpdateData(user_id=str(user.id), attributes=attributes))
     print("%d users formatted...", len(res))
     return res
 
@@ -54,10 +65,3 @@ def run(chunk_size: int) -> None:
         users_data = format_users(chunk)
         update_users_attributes(users_data)
     logger.info("Update multiple user attributes in Batch finished")
-
-
-if __name__ == "__main__":
-    from pcapi.flask_app import app
-
-    with app.app_context():
-        run(2000)

@@ -1,4 +1,6 @@
 from dataclasses import dataclass
+from datetime import datetime
+from typing import Optional
 
 from pcapi.core.users.models import User
 
@@ -29,6 +31,10 @@ def get_user_attributes(user: User) -> dict:
     }
 
 
+def format_booking_date(booking_date: datetime) -> Optional[str]:
+    return booking_date.strftime(BATCH_DATETIME_FORMAT) if booking_date else None
+
+
 def get_user_booking_attributes(user: User) -> dict:
     from pcapi.core.users.api import get_domains_credit
     from pcapi.core.users.api import get_last_booking_date
@@ -39,7 +45,7 @@ def get_user_booking_attributes(user: User) -> dict:
     booking_categories = get_booking_categories(user)
 
     attributes = {
-        "date(u.last_booking_date)": last_booking_date.strftime(BATCH_DATETIME_FORMAT) if last_booking_date else None,
+        "date(u.last_booking_date)": format_booking_date(last_booking_date),
         "u.credit": int(credit.all.remaining * 100) if credit else 0,
     }
 
