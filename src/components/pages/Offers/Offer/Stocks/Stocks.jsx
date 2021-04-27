@@ -147,11 +147,13 @@ const Stocks = ({
       pcapi
         .bulkCreateOrEditStock(offer.id, [...stocksToCreate, ...stocksToUpdate])
         .then(() => {
-          loadStocks()
-          reloadOffer()
-          isOfferDraft ? showSuccessNotificationStocksAndOffer() : showSuccessNotification()
-          if (offer.status === OFFER_STATUS_DRAFT) {
+          if (isOfferDraft) {
+            showSuccessNotificationStocksAndOffer()
             history.push(`/offres/${offer.id}/confirmation`)
+          } else {
+            loadStocks()
+            reloadOffer()
+            showSuccessNotification()
           }
         })
         .catch(() => showErrorNotification())
@@ -163,7 +165,6 @@ const Stocks = ({
     offer.id,
     offer.isEvent,
     isOfferDraft,
-    offer.status,
     offer.venue.departementCode,
     loadStocks,
     reloadOffer,

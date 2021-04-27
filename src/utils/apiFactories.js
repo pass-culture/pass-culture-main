@@ -1,3 +1,8 @@
+let offerId = 1
+let venueId = 1
+let offererId = 1
+let stockId = 1
+
 export const offerFactory = (
   customOffer = {},
   customStock = stockFactory(),
@@ -6,7 +11,7 @@ export const offerFactory = (
   const stocks = customStock === null ? [] : [customStock]
 
   return {
-    id: 'O1',
+    id: `OFFER${offerId++}`,
     isEvent: false,
     status: 'ACTIVE',
     stocks,
@@ -17,7 +22,7 @@ export const offerFactory = (
 
 export const venueFactory = (customVenue = {}, customOfferer = offererFactory()) => {
   return {
-    id: 'V1',
+    id: `VENUE${venueId++}`,
     managingOfferer: customOfferer,
     managingOffererId: customOfferer.id,
     name: 'Le nom du lieu',
@@ -27,7 +32,7 @@ export const venueFactory = (customVenue = {}, customOfferer = offererFactory())
 
 export const offererFactory = (customOfferer = {}) => {
   return {
-    id: 'OR1',
+    id: `OFFERER${offererId++}`,
     name: 'La nom de la structure',
     ...customOfferer,
   }
@@ -36,8 +41,8 @@ export const offererFactory = (customOfferer = {}) => {
 export const stockFactory = (customStock = {}) => {
   return {
     bookingsQuantity: 0,
-    id: 'S1',
-    offerId: 'O1',
+    id: `STOCK${stockId++}`,
+    offerId: `OFFER${offerId}`,
     price: 10,
     quantity: null,
     ...customStock,

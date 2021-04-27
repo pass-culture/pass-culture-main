@@ -9,13 +9,12 @@ import Breadcrumb, {
   STEP_ID_STOCKS,
 } from 'components/pages/Offers/Offer/Breadcrumb'
 import ConfirmationContainer from 'components/pages/Offers/Offer/Confirmation/ConfirmationContainer'
+import LeavingOfferCreationDialog from 'components/pages/Offers/Offer/LeavingOfferCreationDialog/LeavingOfferCreationDialog'
 import OfferDetailsContainer from 'components/pages/Offers/Offer/OfferDetails/OfferDetailsContainer'
 import { OfferHeader } from 'components/pages/Offers/Offer/OfferStatus/OfferHeader'
 import StocksContainer from 'components/pages/Offers/Offer/Stocks/StocksContainer'
 import { OFFER_STATUS_DRAFT } from 'components/pages/Offers/Offers/_constants'
 import * as pcapi from 'repository/pcapi/pcapi'
-
-import LeavingOfferCreationDialog from './LeavingOfferCreationDialog/LeavingOfferCreationDialog'
 
 const mapPathToStep = {
   creation: STEP_ID_DETAILS,
@@ -24,22 +23,15 @@ const mapPathToStep = {
   confirmation: STEP_ID_CONFIRMATION,
 }
 
-const OfferLayout = props => {
-  const { location, match } = props
-
+const OfferLayout = ({ location, match }) => {
   const [offer, setOffer] = useState(null)
   const [isCreatingOffer, setIsCreatingOffer] = useState(true)
-  const [isDraft, setIsDraft] = useState(false)
 
   const loadOffer = useCallback(
     async offerId => {
       const existingOffer = await pcapi.loadOffer(offerId)
       setOffer(existingOffer)
       setIsCreatingOffer(existingOffer.status === OFFER_STATUS_DRAFT)
-
-      if (existingOffer.status === OFFER_STATUS_DRAFT) {
-        setIsDraft(true)
-      }
     },
     [setOffer]
   )
@@ -52,7 +44,12 @@ const OfferLayout = props => {
   const shouldBlockNavigation = useCallback(
     nextLocation => {
       const stocksPathRegex = /\/offres\/([A-Z0-9]+)\/stocks/g
-      if (isCreatingOffer && nextLocation.pathname.match(stocksPathRegex)) {
+      const confirmationPathRegex = /\/offres\/([A-Z0-9]+)\/confirmation/g
+      if (
+        isCreatingOffer &&
+        (nextLocation.pathname.match(stocksPathRegex) ||
+          nextLocation.pathname.match(confirmationPathRegex))
+      ) {
         return false
       }
       return true
@@ -79,27 +76,24 @@ const OfferLayout = props => {
     pageTitle = 'Éditer une offre'
   }
 
-  const offerStatus =
-      offer?.status &&
-      offer?.status !== OFFER_STATUS_DRAFT &&
-      !location.pathname.includes('/confirmation') ? (
-        <OfferHeader
-          offer={offer}
-          reloadOffer={reloadOffer}
-        />
-          ) : null
+  const offerHeader =
+    !isCreatingOffer && !location.pathname.includes('/confirmation') ? (
+      <OfferHeader
+        offer={offer}
+        reloadOffer={reloadOffer}
+      />
+    ) : null
 
   return (
     <div className="offer-page">
       <Titles
-        action={offerStatus}
+        action={offerHeader}
         title={pageTitle}
       />
 
       <Breadcrumb
         activeStep={activeStep}
         isCreatingOffer={isCreatingOffer}
-        isDraft={isDraft}
         offerId={offer?.id}
       />
 
@@ -139,7 +133,7 @@ const OfferLayout = props => {
       </div>
       <LeavingOfferCreationDialog
         shouldBlockNavigation={shouldBlockNavigation}
-        when={isCreatingOffer || offer.status === OFFER_STATUS_DRAFT}
+        when={isCreatingOffer}
       />
     </div>
   )

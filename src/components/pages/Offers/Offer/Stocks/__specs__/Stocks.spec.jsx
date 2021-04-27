@@ -9,7 +9,9 @@ import NotificationContainer from 'components/layout/Notification/NotificationCo
 import OfferLayoutContainer from 'components/pages/Offers/Offer/OfferLayoutContainer'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
+import { offerFactory, stockFactory } from 'utils/apiFactories'
 import { getToday } from 'utils/date'
+import { bulkFakeApiCreateOrEditStock, loadFakeApiOffer, loadFakeApiStocks } from 'utils/fakeApi'
 import { queryByTextTrimHtml } from 'utils/testHelpers'
 
 jest.mock('repository/pcapi/pcapi', () => ({
@@ -67,6 +69,7 @@ describe('stocks page', () => {
         departementCode: '973',
       },
       isEvent: false,
+      status: 'ACTIVE',
       stocks: [],
     }
 
@@ -233,18 +236,6 @@ describe('stocks page', () => {
         }
 
         pcapi.loadOffer.mockResolvedValue(draftOffer)
-      })
-
-      it('should have inactive tab "Stock et prix" and "Détail de l’offre"', async () => {
-        // When
-        await renderOffers(props, store)
-
-        // Then
-        expect(queryByTextTrimHtml(screen, "Détail de l'offre", { selector: 'li', leafOnly: false})).toBeInTheDocument()
-        expect(queryByTextTrimHtml(screen, "Stock et prix", { selector: 'li', leafOnly: false})).toBeInTheDocument()
-
-        expect(screen.queryByText("Détail de l'offre", { selector: 'a' })).not.toBeInTheDocument()
-        expect(screen.queryByText('Stock et prix', { selector: 'a' })).not.toBeInTheDocument()
       })
 
       describe('when no stock yet', () => {
@@ -687,6 +678,22 @@ describe('stocks page', () => {
       // Then
       expect(screen.queryByText('épuisée')).toBeInTheDocument()
     })
+
+    it('should stay on stocks page after validating of stocks', async () => {
+      // Given
+      const stock = stockFactory()
+      const offer = offerFactory({ id: 'AG3A', status: 'ACTIVE' })
+      loadFakeApiOffer(offer)
+      loadFakeApiStocks([stock])
+      await renderOffers(props, store)
+
+      // When
+      fireEvent.click(screen.getByText('Enregistrer', { selector: 'button' }))
+
+      // Then
+      expect(screen.getByText('Stock et prix', { selector: 'h3' })).toBeInTheDocument()
+    })
+
     describe('event offer', () => {
       let eventOffer
       beforeEach(() => {
@@ -1845,7 +1852,7 @@ describe('stocks page', () => {
       await renderOffers(props, store)
 
       // Then
-      expect(screen.queryByText('épuisée')).not.toBeInTheDocument()
+      expect(screen.queryByText('brouillon')).not.toBeInTheDocument()
     })
 
     it('should display a specific success notification when the user has finished the offer creation process', async () => {
@@ -1871,6 +1878,23 @@ describe('stocks page', () => {
         'Votre offre a bien été créée et vos stocks sauvegardés.'
       )
       expect(successMessage).toBeInTheDocument()
+    })
+
+    it('should redirect to confirmation page after validating of stocks', async () => {
+      // Given
+      const offer = offerFactory({ id: 'AG3A', status: 'DRAFT' })
+      loadFakeApiOffer(offer)
+      loadFakeApiStocks([])
+      bulkFakeApiCreateOrEditStock({ id: 'MEFA' })
+      await renderOffers(props, store)
+      fireEvent.click(screen.getByText('Ajouter un stock', { selector: 'button' }))
+      fireEvent.change(screen.getByLabelText('Prix'), { target: { value: 20 } })
+
+      // When
+      fireEvent.click(screen.getByText('Valider et créer l’offre', { selector: 'button' }))
+
+      // Then
+      expect(await screen.findByText('Offre créée !', { selectof: 'h2' })).toBeInTheDocument()
     })
 
     describe('event offer', () => {

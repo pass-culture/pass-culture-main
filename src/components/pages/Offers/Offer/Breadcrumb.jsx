@@ -7,29 +7,22 @@ export const STEP_ID_DETAILS = 'details'
 export const STEP_ID_STOCKS = 'stocks'
 export const STEP_ID_CONFIRMATION = 'confirmation'
 
-const OfferBreadcrumb = ({ activeStep, isCreatingOffer, isDraft, offerId }) => {
+const OfferBreadcrumb = ({ activeStep, isCreatingOffer, offerId }) => {
   let steps = []
 
-  if (offerId) {
+  if (!isCreatingOffer) {
     steps = [
       {
         id: STEP_ID_DETAILS,
         label: "Détail de l'offre",
-        url: isCreatingOffer ? null : `/offres/${offerId}/edition`,
+        url: `/offres/${offerId}/edition`,
       },
       {
         id: STEP_ID_STOCKS,
         label: 'Stock et prix',
-        url: isCreatingOffer ? null : `/offres/${offerId}/stocks`,
+        url: `/offres/${offerId}/stocks`,
       },
     ]
-
-    if (isDraft) {
-      steps.push({
-        id: STEP_ID_CONFIRMATION,
-        label: 'Confirmation',
-      })
-    }
   } else {
     steps = [
       {
@@ -57,14 +50,12 @@ const OfferBreadcrumb = ({ activeStep, isCreatingOffer, isDraft, offerId }) => {
 }
 
 OfferBreadcrumb.defaultProps = {
-  isDraft: true,
   offerId: null,
 }
 
 OfferBreadcrumb.propTypes = {
   activeStep: PropTypes.string.isRequired,
   isCreatingOffer: PropTypes.bool.isRequired,
-  isDraft: PropTypes.bool,
   offerId: PropTypes.string,
 }
 

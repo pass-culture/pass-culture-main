@@ -1395,7 +1395,7 @@ describe('offerDetails - Creation - pro user', () => {
 
   describe('when submitting form', () => {
     beforeEach(() => {
-      pcapi.loadOffer.mockResolvedValue( { status: 'DRAFT' })
+      pcapi.loadOffer.mockResolvedValue({ status: 'DRAFT' })
       pcapi.loadStocks.mockResolvedValue({ stocks: [] })
     })
 
@@ -1433,7 +1433,6 @@ describe('offerDetails - Creation - pro user', () => {
         status: 'ACTIVE',
       }
       pcapi.createOffer.mockResolvedValue(createdOffer)
-      pcapi.loadOffer.mockResolvedValue(createdOffer)
 
       // When
       await userEvent.click(screen.getByText('Étape suivante'))
