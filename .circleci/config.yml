@@ -373,52 +373,6 @@ jobs:
           helm_values_file: values.testing.yaml
       - <<: *slack-send-deployment-notification
 
-  tests-data-analytics:
-    docker:
-      - image: circleci/python:3.6.11
-        auth:
-          username: $DOCKERHUB_USER
-          password: $DOCKERHUB_PASSWORD
-        environment:
-          DATABASE_URL: postgresql://pass_culture:passq@postgres-product:5432/pass_culture
-      - image: circleci/postgres:12.3-postgis
-        auth:
-          username: $DOCKERHUB_USER
-          password: $DOCKERHUB_PASSWORD
-        name: postgres-product
-        environment:
-          POSTGRES_USER: pass_culture
-          POSTGRES_PASSWORD: passq
-          POSTGRES_DB: pass_culture
-    steps:
-      - checkout
-      - run:
-          name: Initialize api environment
-          command: |
-            git clone --single-branch --branch $CIRCLE_BRANCH https://github.com/betagouv/pass-culture-api.git || git clone https://github.com/betagouv/pass-culture-api.git;
-            cd pass-culture-api;
-            python3 -m venv venv
-            . venv/bin/activate
-            pip install --upgrade pip
-            pip install -e .
-            pip install -r requirements.txt;
-            python -m nltk.downloader punkt stopwords;
-            python -m pcapi.install_database_extensions;
-            alembic upgrade head;
-      - run:
-          name: Run data-analytics tests
-          command: |
-            git clone https://github.com/betagouv/pass-culture-data-analytics.git
-            cd pass-culture-data-analytics
-            pipenv install -e .
-            pipenv run pytest
-      - run:
-          name: Notify PC Ops Bot
-          when: on_fail
-          command: |
-            export BOT_MESSAGE="'Build *$CIRCLE_JOB* fail : $CIRCLE_BUILD_URL'"
-            curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
-
   functional-tests-webapp:
     machine:
       image: ubuntu-2004:202101-01
@@ -598,9 +552,6 @@ workflows:
           context: Slack
           <<: *slack-fail-post-step
       - functional-tests-pro:
-          context: Slack
-          <<: *slack-fail-post-step
-      - tests-data-analytics:
           context: Slack
           <<: *slack-fail-post-step
       - run-tests:
