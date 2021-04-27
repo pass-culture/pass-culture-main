@@ -95,6 +95,13 @@ def check_phone_number_format(string: str) -> str:
     return spaceless_string
 
 
+def string_to_boolean(string: str) -> Optional[bool]:
+    try:
+        return {"true": True, "false": False}[string]
+    except KeyError:
+        raise ValidationError("La valeur reçu doit être soit 'true' soit 'false'")
+
+
 def humanize_field(field_name: str) -> classmethod:
     return validator(field_name, pre=True, allow_reuse=True)(humanize_id)
 
@@ -117,3 +124,7 @@ def validate_not_empty_string_when_provided(field_name: str) -> classmethod:
 
 def validate_phone_number_format(field_name: str) -> classmethod:
     return validator(field_name, pre=True, allow_reuse=True)(check_phone_number_format)
+
+
+def string_to_boolean_field(field_name: str) -> classmethod:
+    return validator(field_name, pre=True, allow_reuse=True)(string_to_boolean)

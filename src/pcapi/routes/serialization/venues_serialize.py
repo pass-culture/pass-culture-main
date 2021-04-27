@@ -4,28 +4,11 @@ from typing import Union
 
 from pydantic import BaseModel
 
-from pcapi.domain.venue.venue_with_offerer_name.venue_with_offerer_name import VenueWithOffererName
 from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import humanize_field
+from pcapi.serialization.utils import string_to_boolean_field
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
-from pcapi.utils.human_ids import humanize
-
-
-def serialize_venues_with_offerer_name(venues: list[VenueWithOffererName]) -> list[dict]:
-    return [serialize_venue_with_offerer_name(venue) for venue in venues]
-
-
-def serialize_venue_with_offerer_name(venue: VenueWithOffererName) -> dict:
-    return {
-        "id": humanize(venue.identifier),
-        "managingOffererId": humanize(venue.managing_offerer_identifier),
-        "name": venue.name,
-        "offererName": venue.offerer_name,
-        "publicName": venue.public_name,
-        "isVirtual": venue.is_virtual,
-        "bookingEmail": venue.booking_email,
-    }
 
 
 class VenueStatsResponseModel(BaseModel):
@@ -114,6 +97,35 @@ class EditVenueBodyModel(BaseModel):
 
     _dehumanize_venue_label_id = dehumanize_field("venueLabelId")
     _dehumanize_venue_type_id = dehumanize_field("venueTypeId")
+
+
+class VenueListItemResponseModel(BaseModel):
+    id: str
+    managingOffererId: str
+    name: str
+    offererName: str
+    publicName: Optional[str]
+    isVirtual: bool
+    bookingEmail: Optional[str]
+
+    _humanize_id = humanize_field("id")
+    _humanize_managing_offerer_id = humanize_field("managingOffererId")
+
+
+class GetVenueListResponseModel(BaseModel):
+    venues: list[VenueListItemResponseModel]
+
+
+class VenueListQueryModel(BaseModel):
+    validated_for_user: Optional[bool]
+    validated: Optional[bool]
+    active_offerers_only: Optional[bool]
+    offerer_id: Optional[int]
+
+    _dehumanize_offerer_id = dehumanize_field("offerer_id")
+    _string_to_boolean_validated_for_user = string_to_boolean_field("validated_for_user")
+    _string_to_boolean_validated = string_to_boolean_field("validated")
+    _string_to_boolean_active_offerers_only = string_to_boolean_field("active_offerers_only")
 
     class Config:
         alias_generator = to_camel

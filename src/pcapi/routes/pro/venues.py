@@ -6,19 +6,20 @@ from flask_login import login_required
 from pcapi.core.bookings.repository import get_active_bookings_quantity_for_venue
 from pcapi.core.bookings.repository import get_validated_bookings_quantity_for_venue
 from pcapi.core.offerers import api as offerers_api
+from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.validation import validate_coordinates
 from pcapi.core.offers.repository import get_active_offers_count_for_venue
 from pcapi.core.offers.repository import get_sold_out_offers_count_for_venue
-from pcapi.domain.identifier.identifier import Identifier
 from pcapi.flask_app import private_api
-from pcapi.infrastructure.container import get_all_venues_by_pro_user
 from pcapi.repository import repository
 from pcapi.routes.serialization import as_dict
 from pcapi.routes.serialization.venues_serialize import EditVenueBodyModel
+from pcapi.routes.serialization.venues_serialize import GetVenueListResponseModel
 from pcapi.routes.serialization.venues_serialize import GetVenueResponseModel
+from pcapi.routes.serialization.venues_serialize import VenueListItemResponseModel
+from pcapi.routes.serialization.venues_serialize import VenueListQueryModel
 from pcapi.routes.serialization.venues_serialize import VenueStatsResponseModel
-from pcapi.routes.serialization.venues_serialize import serialize_venues_with_offerer_name
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.use_cases.create_venue import create_venue
 from pcapi.utils.includes import VENUE_INCLUDES
@@ -37,37 +38,33 @@ def get_venue(venue_id: str) -> GetVenueResponseModel:
     return GetVenueResponseModel.from_orm(venue)
 
 
-# @debt api-migration
 @private_api.route("/venues", methods=["GET"])
 @login_required
-def get_venues():
-    map_string_args = {
-        "true": True,
-        "false": False,
-    }
-    validated = request.args.get("validated", None)
-    if map_string_args.get(validated, None) is not None:
-        validated = map_string_args[validated]
-
-    validated_for_user = request.args.get("validatedForUser", None)
-    if map_string_args.get(validated_for_user, None) is not None:
-        validated_for_user = map_string_args[validated_for_user]
-
-    active_offerers_only = request.args.get("activeOfferersOnly", None)
-    if map_string_args.get(active_offerers_only, None) is not None:
-        active_offerers_only = map_string_args[active_offerers_only]
-
-    offerer_identifier = Identifier.from_scrambled_id(request.args.get("offererId"))
-
-    venues = get_all_venues_by_pro_user.execute(
-        pro_identifier=current_user.id,
+@spectree_serialize(response_model=GetVenueListResponseModel)
+def get_venues(query: VenueListQueryModel) -> GetVenueListResponseModel:
+    venue_list = offerers_repository.get_filtered_venues(
+        pro_user_id=current_user.id,
         user_is_admin=current_user.isAdmin,
-        active_offerers_only=active_offerers_only,
-        offerer_id=offerer_identifier,
-        validated_offerer=validated,
-        validated_offerer_for_user=validated_for_user,
+        active_offerers_only=query.active_offerers_only,
+        offerer_id=query.offerer_id,
+        validated_offerer=query.validated,
+        validated_offerer_for_user=query.validated_for_user,
     )
-    return jsonify(serialize_venues_with_offerer_name(venues)), 200
+
+    return GetVenueListResponseModel(
+        venues=[
+            VenueListItemResponseModel(
+                id=venue.id,
+                managingOffererId=venue.managingOfferer.id,
+                name=venue.name,
+                offererName=venue.managingOfferer.name,
+                publicName=venue.publicName,
+                isVirtual=venue.isVirtual,
+                bookingEmail=venue.bookingEmail,
+            )
+            for venue in venue_list
+        ]
+    )
 
 
 # @debt api-migration

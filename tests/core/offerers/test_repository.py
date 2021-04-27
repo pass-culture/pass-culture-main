@@ -1,6 +1,7 @@
 import pytest
 
 from pcapi.core.offerers.repository import get_all_offerers_for_user
+from pcapi.core.offerers.repository import get_filtered_venues
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.users import factories as users_factories
 
@@ -198,3 +199,29 @@ class GetAllOfferersForUserTest:
             offerers_ids = [offerer.id for offerer in offerers]
             assert validated_pro_offerer_attachment.offerer.id not in offerers_ids
             assert unvalidated_pro_offerer_attachment.offerer.id in offerers_ids
+
+
+@pytest.mark.usefixtures("db_session")
+class GetFilteredVenuesTest:
+    def test_get_all_venue_by_pro_user(self) -> None:
+        # Given
+        user_offerer = offers_factories.UserOffererFactory(
+            offerer__name="Gilbert Joseph",
+            offerer__validationToken=None,
+            user__isAdmin=False,
+            user__isBeneficiary=False,
+            validationToken=None,
+        )
+        venue = offers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer,
+            name="Librairie Kléber",
+            isVirtual=False,
+        )
+        offers_factories.VenueFactory()
+
+        # When
+        venue_list = get_filtered_venues(pro_user_id=user_offerer.user.id, user_is_admin=False)
+
+        # Then
+        assert len(venue_list) == 1
+        assert venue_list[0].id == venue.id

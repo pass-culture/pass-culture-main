@@ -9,9 +9,6 @@ from pcapi.infrastructure.repository.stock_provider.stock_provider_libraires imp
 from pcapi.infrastructure.repository.stock_provider.stock_provider_praxiel import StockProviderPraxielRepository
 from pcapi.infrastructure.repository.stock_provider.stock_provider_titelive import StockProviderTiteLiveRepository
 from pcapi.infrastructure.repository.venue.venue_label.venue_label_sql_repository import VenueLabelSQLRepository
-from pcapi.infrastructure.repository.venue.venue_with_basic_information.venue_with_basic_information_sql_repository import (
-    VenueWithBasicInformationSQLRepository,
-)
 from pcapi.use_cases.get_bookings_for_beneficiary import GetBookingsForBeneficiary
 from pcapi.use_cases.get_venue_labels import GetVenueLabels
 from pcapi.use_cases.list_offerers_for_pro_user import ListOfferersForProUser

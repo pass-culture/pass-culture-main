@@ -70,29 +70,35 @@ class Returns200ForProUser:
         }
 
     @pytest.mark.usefixtures("db_session")
-    def test_response_serializer(self, app):
+    def test_response_serializer_and_order(self, app):
         # given
         pro_user = users_factories.UserFactory(email="user.pro@test.com", isBeneficiary=False)
         offerer = offers_factories.OffererFactory()
         offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue_2 = offers_factories.VenueFactory(name="BB - name", managingOfferer=offerer)
+        venue_1 = offers_factories.VenueFactory(name="AA - name", managingOfferer=offerer)
+        venue_3 = offers_factories.VenueFactory(name="CC - name", managingOfferer=offerer)
 
         # when
         response = TestClient(app.test_client()).with_auth(pro_user.email).get("/venues")
 
         # then
         assert response.status_code == 200
-        assert len(response.json) == 1
+        assert "venues" in response.json
+        assert len(response.json["venues"]) == 3
         expected_venue = {
-            "id": humanize(venue.id),
-            "managingOffererId": humanize(venue.managingOffererId),
-            "name": venue.name,
+            "id": humanize(venue_1.id),
+            "managingOffererId": humanize(venue_1.managingOffererId),
+            "name": venue_1.name,
             "offererName": offerer.name,
-            "publicName": venue.publicName,
-            "isVirtual": venue.isVirtual,
-            "bookingEmail": venue.bookingEmail,
+            "publicName": venue_1.publicName,
+            "isVirtual": venue_1.isVirtual,
+            "bookingEmail": venue_1.bookingEmail,
         }
-        assert response.json[0] == expected_venue
+
+        assert response.json["venues"][0] == expected_venue
+        assert response.json["venues"][1]["name"] == venue_2.name
+        assert response.json["venues"][2]["name"] == venue_3.name
 
     @pytest.mark.usefixtures("db_session")
     def test_get_all_venues(self, app):
@@ -105,9 +111,9 @@ class Returns200ForProUser:
 
         # then
         assert response.status_code == 200
-        assert len(response.json) == 5
+        assert len(response.json["venues"]) == 5
 
-        venue_ids = [venue["id"] for venue in response.json]
+        venue_ids = [venue["id"] for venue in response.json["venues"]]
         assert humanize(venues["owned_venue_validated"].id) in venue_ids
         assert humanize(venues["owned_venue_not_validated"].id) in venue_ids
         assert humanize(venues["owned_venue_validated_for_user"].id) in venue_ids
@@ -124,12 +130,33 @@ class Returns200ForProUser:
 
         # then
         assert response.status_code == 200
-        assert len(response.json) == 4
+        assert len(response.json["venues"]) == 4
 
-        venue_ids = [venue["id"] for venue in response.json]
+        venue_ids = [venue["id"] for venue in response.json["venues"]]
         assert humanize(venues["owned_venue_validated"].id) in venue_ids
         assert humanize(venues["owned_venue_validated_for_user"].id) in venue_ids
         assert humanize(venues["owned_venue_not_validated_for_user"].id) in venue_ids
+
+    @pytest.mark.usefixtures("db_session")
+    def test_get_venues_for_offerer_id(self, app):
+        # given
+        pro_user = users_factories.UserFactory(isBeneficiary=False)
+        venues = self._setup_venues_for_pro_user(pro_user)
+        expected_venue = venues["owned_venue_validated"]
+
+        # when
+        response = (
+            TestClient(app.test_client())
+            .with_auth(pro_user.email)
+            .get(f"/venues?offererId={humanize(expected_venue.managingOfferer.id)}")
+        )
+
+        # then
+        assert response.status_code == 200
+        assert len(response.json["venues"]) == 1
+
+        venue_ids = [venue["id"] for venue in response.json["venues"]]
+        assert humanize(expected_venue.id) in venue_ids
 
     @pytest.mark.usefixtures("db_session")
     def test_get_all_not_validated_venues(self, app):
@@ -142,9 +169,9 @@ class Returns200ForProUser:
 
         # then
         assert response.status_code == 200
-        assert len(response.json) == 1
+        assert len(response.json["venues"]) == 1
 
-        venue_ids = [venue["id"] for venue in response.json]
+        venue_ids = [venue["id"] for venue in response.json["venues"]]
         assert humanize(venues["owned_venue_not_validated"].id) in venue_ids
 
     @pytest.mark.usefixtures("db_session")
@@ -158,9 +185,9 @@ class Returns200ForProUser:
 
         # then
         assert response.status_code == 200
-        assert len(response.json) == 4
+        assert len(response.json["venues"]) == 4
 
-        venue_ids = [venue["id"] for venue in response.json]
+        venue_ids = [venue["id"] for venue in response.json["venues"]]
         assert humanize(venues["owned_venue_validated"].id) in venue_ids
         assert humanize(venues["owned_venue_not_validated"].id) in venue_ids
         assert humanize(venues["owned_venue_validated_for_user"].id) in venue_ids
@@ -176,9 +203,9 @@ class Returns200ForProUser:
 
         # then
         assert response.status_code == 200
-        assert len(response.json) == 1
+        assert len(response.json["venues"]) == 1
 
-        venue_ids = [venue["id"] for venue in response.json]
+        venue_ids = [venue["id"] for venue in response.json["venues"]]
         assert humanize(venues["owned_venue_not_validated_for_user"].id) in venue_ids
 
     @pytest.mark.usefixtures("db_session")
@@ -192,9 +219,9 @@ class Returns200ForProUser:
 
         # then
         assert response.status_code == 200
-        assert len(response.json) == 4
+        assert len(response.json["venues"]) == 4
 
-        venue_ids = [venue["id"] for venue in response.json]
+        venue_ids = [venue["id"] for venue in response.json["venues"]]
         assert humanize(venues["venue_from_inactive_offerer"].id) not in venue_ids
 
     @pytest.mark.usefixtures("db_session")
@@ -208,9 +235,9 @@ class Returns200ForProUser:
 
         # then
         assert response.status_code == 200
-        assert len(response.json) == 5
+        assert len(response.json["venues"]) == 5
 
-        venue_ids = [venue["id"] for venue in response.json]
+        venue_ids = [venue["id"] for venue in response.json["venues"]]
         assert humanize(venues["venue_from_inactive_offerer"].id) in venue_ids
 
 
@@ -255,9 +282,9 @@ class Returns200ForAdmin:
 
         # then
         assert response.status_code == 200
-        assert len(response.json) == 4
+        assert len(response.json["venues"]) == 4
 
-        venue_ids = [venue["id"] for venue in response.json]
+        venue_ids = [venue["id"] for venue in response.json["venues"]]
         assert humanize(venues["venue"].id) in venue_ids
         assert humanize(venues["venue_not_validated"].id) in venue_ids
         assert humanize(venues["other_venue"].id) in venue_ids
@@ -274,9 +301,9 @@ class Returns200ForAdmin:
 
         # then
         assert response.status_code == 200
-        assert len(response.json) == 2
+        assert len(response.json["venues"]) == 2
 
-        venue_ids = [venue["id"] for venue in response.json]
+        venue_ids = [venue["id"] for venue in response.json["venues"]]
         assert humanize(venues["venue"].id) in venue_ids
         assert humanize(venues["other_venue"].id) in venue_ids
 
@@ -291,9 +318,9 @@ class Returns200ForAdmin:
 
         # then
         assert response.status_code == 200
-        assert len(response.json) == 2
+        assert len(response.json["venues"]) == 2
 
-        venue_ids = [venue["id"] for venue in response.json]
+        venue_ids = [venue["id"] for venue in response.json["venues"]]
         assert humanize(venues["venue_not_validated"].id) in venue_ids
         assert humanize(venues["other_venue_not_validated"].id) in venue_ids
 
