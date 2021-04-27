@@ -256,7 +256,7 @@ const Stocks = ({
                     </th>
                   </Fragment>
                 )}
-                <th className="action-column" />
+                <th />
               </tr>
             </thead>
             <tbody>

@@ -85,6 +85,11 @@
     }
   }
 
+  .price-input {
+    padding-left: rem(10px);
+    padding-right: rem(10px);
+  }
+
   &.disabled {
     box-shadow: none;
   }
