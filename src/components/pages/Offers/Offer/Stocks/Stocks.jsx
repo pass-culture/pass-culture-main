@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { v4 as generateRandomUuid } from 'uuid'
 
 import PageTitle from 'components/layout/PageTitle/PageTitle'
+import SubmitButton from 'components/layout/SubmitButton/SubmitButton'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import OfferStatusBanner from 'components/pages/Offers/Offer/OfferDetails/OfferStatusBanner/OfferStatusBanner'
 import {
@@ -35,6 +36,7 @@ const Stocks = ({
 }) => {
   const offerId = offer.id
   const [isLoading, setIsLoading] = useState(true)
+  const [isSendingStocksOfferCreation, setIsSendingStocksOfferCreation] = useState(false)
   const [stocks, setStocks] = useState([])
   const isOfferSynchronized = Boolean(offer.lastProvider)
   const [formErrors, setFormErrors] = useState({})
@@ -134,6 +136,7 @@ const Stocks = ({
   }
 
   const submitStocks = useCallback(() => {
+    setIsSendingStocksOfferCreation(true)
     const updatedStocks = existingStocks.filter(stock => stock.updated)
     if (areValid([...stocksInCreation, ...updatedStocks])) {
       const stocksToCreate = stocksInCreation.map(stockInCreation =>
@@ -157,6 +160,7 @@ const Stocks = ({
           }
         })
         .catch(() => showErrorNotification())
+        .finally(() => setIsSendingStocksOfferCreation(false))
     }
   }, [
     existingStocks,
@@ -306,14 +310,13 @@ const Stocks = ({
                 {'Annuler et quitter'}
               </Link>
             )}
-            <button
-              className="primary-button"
+            <SubmitButton
               disabled={isDisabled || hasNoStock}
+              isLoading={isSendingStocksOfferCreation}
               onClick={submitStocks}
-              type="button"
             >
               {isOfferDraft ? 'Valider et créer l’offre' : 'Enregistrer'}
-            </button>
+            </SubmitButton>
           </section>
         </Fragment>
       )}

@@ -2,7 +2,7 @@ import * as PropTypes from 'prop-types'
 import React, { useCallback, useState } from 'react'
 
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
-import { ReactComponent as SpinnerIcon } from 'components/pages/Offers/Offer/Thumbnail/assets/loader.svg'
+import SubmitButton from 'components/layout/SubmitButton/SubmitButton'
 import { ReactComponent as ThumbnailSampleIcon } from 'components/pages/Offers/Offer/Thumbnail/assets/thumbnail-sample.svg'
 import * as pcapi from 'repository/pcapi/pcapi'
 
@@ -73,14 +73,14 @@ const ImportFromURL = ({ isLoading, setIsLoading, setStep, setPreviewBase64, set
         placeholder="Ex : http://..."
         value={localUrl}
       />
-      <button
-        className="primary-button loading-spinner tnf-url-button"
+      <SubmitButton
+        className="primary-button tnf-url-button"
         disabled={isButtonDisabled}
+        isLoading={isLoading}
         onClick={isThereAnError}
-        type="submit"
       >
-        {isLoading ? <SpinnerIcon /> : 'Valider'}
-      </button>
+        {'Valider'}
+      </SubmitButton>
     </form>
   )
 }

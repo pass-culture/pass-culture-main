@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useCallback, useState } from 'react'
 
 import Icon from 'components/layout/Icon'
+import SubmitButton from 'components/layout/SubmitButton/SubmitButton'
 
 const StyleguideButtons = () => {
   const primaryButton = (
@@ -93,6 +94,36 @@ const StyleguideButtons = () => {
     </div>
   )
 
+  const submitButtonSnippet = `
+    <SubmitButton
+        className={className}
+        disabled={disabled}
+        onClick={onClick}
+        isLoading={isLoading}
+    >
+      {"Valeur"}
+    </SubmitButton>
+  `
+  const [isLoading, setIsLoading] = useState()
+  const handleOnClick = useCallback(() => setIsLoading(true), [])
+  const SubmitButtonSample = (
+    <div className="flex-block">
+      <SubmitButton
+        isLoading={isLoading}
+        onClick={handleOnClick}
+      >
+        {'Submit Button'}
+      </SubmitButton>
+      <div className="it-description">
+        <pre className="it-icon-snippet">
+          <code>
+            {submitButtonSnippet}
+          </code>
+        </pre>
+      </div>
+    </div>
+  )
+
   return (
     <div>
       {primaryButton}
@@ -102,6 +133,8 @@ const StyleguideButtons = () => {
       {tertiaryLink}
       <hr />
       {quaternaryLink}
+      <hr />
+      {SubmitButtonSample}
       <br />
     </div>
   )
