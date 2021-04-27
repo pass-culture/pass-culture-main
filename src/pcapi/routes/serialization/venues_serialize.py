@@ -100,6 +100,7 @@ class GetVenueResponseModel(BaseModel):
 
 class EditVenueBodyModel(BaseModel):
     name: Optional[str]
+    address: Optional[str]
     siret: Optional[str]
     latitude: Optional[Union[float, str]]
     longitude: Optional[Union[float, str]]

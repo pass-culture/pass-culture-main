@@ -31,6 +31,7 @@ def _get_digital_venue_type_id() -> int:
 
 def update_venue(
     venue: Venue,
+    address: str = UNCHANGED,
     name: str = UNCHANGED,
     siret: str = UNCHANGED,
     latitude: float = UNCHANGED,
