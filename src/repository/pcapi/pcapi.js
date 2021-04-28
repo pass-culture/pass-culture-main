@@ -137,7 +137,7 @@ export const getVenuesForOfferer = ({ offererId = null, activeOfferersOnly = fal
   if (activeOfferersOnly) request.activeOfferersOnly = true
   const queryParams = stringify(request)
 
-  return client.get(`/venues?${queryParams}`)
+  return client.get(`/venues?${queryParams}`).then(response => response.venues)
 }
 
 export const getVenue = venueId => client.get(`/venues/${venueId}`)

@@ -6,7 +6,9 @@ export const fetchAllVenuesByProUser = offererId => {
   const apiUrl =
     offererId && offererId !== ALL_OFFERERS ? `/venues?offererId=${offererId}` : '/venues'
 
-  return fetchFromApiWithCredentials(apiUrl).catch(() => [])
+  return fetchFromApiWithCredentials(apiUrl)
+    .then(response => response.venues)
+    .catch(() => [])
 }
 
 export const computeVenueDisplayName = venue => {

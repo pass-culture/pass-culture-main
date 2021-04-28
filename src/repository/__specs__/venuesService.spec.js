@@ -11,13 +11,15 @@ describe('venuesService', () => {
 
   describe('fetchAllVenuesByProUser', () => {
     beforeEach(() => {
-      mockJsonPromise = Promise.resolve([
-        {
-          id: 'AE',
-          name: 'Librairie Kléber',
-          isVirtual: false,
-        },
-      ])
+      mockJsonPromise = Promise.resolve({
+        venues: [
+          {
+            id: 'AE',
+            name: 'Librairie Kléber',
+            isVirtual: false,
+          },
+        ]
+      })
       jest.spyOn(fetch, 'fetchFromApiWithCredentials').mockImplementation(() => mockJsonPromise)
     })
 
