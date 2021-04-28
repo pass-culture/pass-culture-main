@@ -57,6 +57,7 @@ def get_expected_base_email_data(booking, mediation, **overrides):
             "offer_id": humanize(booking.stock.offer.id),
             "mediation_id": humanize(mediation.id),
             "code_expiration_date": None,
+            "has_expiration_date": 0,
         },
     }
     email_data["Vars"].update(overrides)
@@ -235,6 +236,7 @@ def test_add_expiration_date_from_activation_code():
         offer_price="Gratuit",
         can_expire=1,
         offer_token="code-5uzk15fbha4",
+        has_expiration_date=1,
         code_expiration_date="1 janvier 2030",
     )
     assert email_data == expected
