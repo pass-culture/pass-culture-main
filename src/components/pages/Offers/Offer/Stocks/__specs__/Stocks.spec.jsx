@@ -2186,11 +2186,17 @@ describe('stocks page', () => {
 
         // when
         fireEvent.click(screen.getByText('Ajouter un stock'))
+        const activationCodeButton = screen
+          .getByText('Ajouter des codes d’activation')
+          .closest('div')
+        await act(async () => {
+          userEvent.click(activationCodeButton)
+        })
 
         // then
-        const informationMessage = screen.getByText('Ajouter des codes d’activation').closest('div')
-        expect(informationMessage).toBeInTheDocument()
-        expect(informationMessage).not.toHaveAttribute('aria-disabled', 'true')
+        expect(
+          screen.getByLabelText("Importer un fichier .csv depuis l'ordinateur")
+        ).toBeInTheDocument()
       })
 
       it('should not display add activation codes option when not digital', async () => {

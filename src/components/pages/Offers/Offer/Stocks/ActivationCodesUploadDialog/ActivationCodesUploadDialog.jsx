@@ -1,13 +1,45 @@
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { Fragment, useCallback, useRef, useState } from 'react'
 
 import { DialogBox } from 'components/layout/DialogBox/DialogBox'
+import Icon from 'components/layout/Icon'
 
-import { ReactComponent as AddActivationCodeIcon } from '../assets/add-activation-code-light.svg'
+import { ActivationCodeCsvForm } from './ActivationCodesCsvForm/ActivationCodesCsvForm'
 
 export const ACTIVATION_CODES_UPLOAD_ID = 'ACTIVATION_CODES_UPLOAD_ID'
 
+const getActivationCodesFromFileContent = fileContent => {
+  const parsedFileContent = fileContent.split('\n')
+  parsedFileContent.shift()
+
+  return parsedFileContent
+}
+
 const ActivationCodesUploadDialog = ({ closeDialog }) => {
+  const file = useRef({})
+
+  const [isFileInputDisabled, setIsFileInputDisabled] = useState(false)
+  const [activationCodes, setActivationCodes] = useState([])
+
+  const submitThumbnail = useCallback(() => {
+    setIsFileInputDisabled(true)
+    const currentFile = file.current.files[0]
+    const reader = new FileReader()
+    if (currentFile == null) {
+      return
+    }
+    reader.readAsText(currentFile)
+    reader.onload = function () {
+      const fileContent = reader.result
+      setActivationCodes(getActivationCodesFromFileContent(fileContent))
+      setIsFileInputDisabled(false)
+    }
+    reader.onerror = function () {
+      // Errors should be handled in another ticket (7791)
+      setIsFileInputDisabled(false)
+    }
+  }, [setIsFileInputDisabled])
+
   return (
     <DialogBox
       extraClassNames="activation-codes-upload"
@@ -15,45 +47,40 @@ const ActivationCodesUploadDialog = ({ closeDialog }) => {
       labelledBy={ACTIVATION_CODES_UPLOAD_ID}
       onDismiss={closeDialog}
     >
-      <section className="activation-codes-upload-section">
-        <h4 className="activation-codes-upload-title">
-          {'Ajouter des codes d’activation'}
-        </h4>
-        <AddActivationCodeIcon
-          alt="Ajouter des codes d'activation"
-          aria-hidden
-          className="activation-codes-upload-icon"
-        />
-      </section>
-      <div className="activation-codes-upload-description">
-        <span>
-          {
-            'Pour les offres nécessitants une activation par code sur une plateforme extérieure, vous pouvez importer directement un fichier .csv.'
-          }
-        </span>
-        <span>
-          {
-            'Le stock disponible sera automatiquement mis à jour. Les jeunes auront accès à ce code dans leur espace réservation.'
-          }
-        </span>
-      </div>
-      <div className="activation-codes-upload-button-section">
-        <button
-          className="primary-button activation-codes-upload-button"
-          type="button"
-        >
-          {"Importer un fichier .csv depuis l'ordinateur"}
-        </button>
-        <div className="activation-codes-upload-button-caption">
-          <span>
-            {'Format supporté : CSV'}
-          </span>
-          <span>
-            {'Le poids du fichier ne doit pas dépasser 1 Mo'}
-          </span>
-        </div>
-      </div>
-      <div className="activation-codes-upload-separator" />
+      <Fragment>
+        <section className="activation-codes-upload-section">
+          <h4
+            className="activation-codes-upload-title"
+            id={ACTIVATION_CODES_UPLOAD_ID}
+          >
+            {"Ajouter des codes d'activation"}
+          </h4>
+          <Icon
+            alt="Ajouter des codes d'activation"
+            aria-hidden
+            className="activation-codes-upload-icon"
+            role="img"
+            svg="add-activation-code-light"
+          />
+        </section>
+        {activationCodes.length == 0 && (
+          <ActivationCodeCsvForm
+            isFileInputDisabled={isFileInputDisabled}
+            ref={file}
+            submitThumbnail={submitThumbnail}
+          />
+        )}
+        {activationCodes.length > 0 && (
+          <div className="activation-codes-upload-information-message">
+            <p>
+              {`Vous êtes sur le point d'ajouter ${activationCodes.length} codes d'activation.`}
+            </p>
+            <p>
+              {'La quantité disponible pour cette offre sera mise à jour dans vos stocks'}
+            </p>
+          </div>
+        )}
+      </Fragment>
     </DialogBox>
   )
 }

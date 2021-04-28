@@ -1,0 +1,36 @@
+.activation-codes-upload {
+  .activation-codes-upload-description {
+    @include body();
+
+    display: grid;
+    grid-row-gap: rem(16px);
+    margin-top: rem(20px);
+  }
+
+  .activation-codes-upload-button-section {
+    display: grid;
+    margin-top: rem(30px);
+
+    .activation-codes-upload-label {
+      @include button();
+
+      cursor: pointer;
+
+      &:focus-within {
+        @include primary-focus();
+      }
+    }
+
+    .activation-codes-upload-input {
+      height: 0;
+      width: 0;
+    }
+
+    .activation-codes-upload-button-caption {
+      @include caption();
+
+      color: $grey-dark;
+      margin-top: rem(16px);
+    }
+  }
+}
