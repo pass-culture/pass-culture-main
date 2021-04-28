@@ -62,6 +62,20 @@ def get_offer_ids(client: Redis) -> list[int]:
         return []
 
 
+def pop_offer_ids(client: Redis) -> list[int]:
+    try:
+        # FIXME (dbaty, 2021-04-28): `lpop()` does not yet allow to
+        # specify the number of arguments to pop. See
+        # https://github.com/andymccurdy/redis-py/pull/1467/files
+        # Until it is implemented upstream, manually send the command.
+        return client.execute_command(
+            "LPOP", RedisBucket.REDIS_LIST_OFFER_IDS_NAME.value, settings.REDIS_OFFER_IDS_CHUNK_SIZE
+        )
+    except redis.exceptions.RedisError as error:
+        logger.exception("[REDIS] %s", error)
+        return []
+
+
 def get_venue_ids(client: Redis) -> list[int]:
     try:
         venue_ids = client.lrange(RedisBucket.REDIS_LIST_VENUE_IDS_NAME.value, 0, settings.REDIS_VENUE_IDS_CHUNK_SIZE)

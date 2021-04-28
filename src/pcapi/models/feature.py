@@ -49,6 +49,7 @@ class FeatureToggle(enum.Enum):
     )
     ENABLE_ACTIVATION_CODES = "Permet la création de codes d'activation"
     ENABLE_PHONE_VALIDATION = "Active la validation du numéro de téléphone"
+    USE_NEW_BATCH_INDEX_OFFERS_BEHAVIOUR = "Utilise une boucle dans le cron de réindexation Algolia"
 
 
 class Feature(PcObject, Model, DeactivableMixin):
@@ -65,6 +66,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.WHOLE_FRANCE_OPENING,
     FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS,
     FeatureToggle.ENABLE_ACTIVATION_CODES,
+    FeatureToggle.USE_NEW_BATCH_INDEX_OFFERS_BEHAVIOUR,
 )
 
 

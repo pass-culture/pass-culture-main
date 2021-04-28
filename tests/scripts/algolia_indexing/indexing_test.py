@@ -2,7 +2,9 @@ from datetime import datetime
 from unittest import mock
 
 from freezegun import freeze_time
+import redis
 
+from pcapi.core.testing import override_settings
 from pcapi.scripts.algolia_indexing.indexing import _process_venue_provider
 from pcapi.scripts.algolia_indexing.indexing import batch_deleting_expired_offers_in_algolia
 from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_by_offer
@@ -10,9 +12,95 @@ from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_alg
 from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_by_venue_provider
 from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_from_database
 from pcapi.scripts.algolia_indexing.indexing import batch_processing_offer_ids_in_error
+from pcapi.scripts.algolia_indexing.indexing import legacy_batch_indexing_offers_in_algolia_by_offer
 
 
+# FIXME (dbaty, 2021-04-28): the lack of Redis in tests makes these
+# tests painful to write and read.
+@override_settings(REDIS_OFFER_IDS_CHUNK_SIZE=3)
+@mock.patch("pcapi.scripts.algolia_indexing.indexing.process_eligible_offers")
 class BatchIndexingOffersInAlgoliaByOfferTest:
+    def test_cron_behaviour(self, mocked_process_eligible_offers):
+        queue = list(range(1, 9))  # 8 items: 1..8
+
+        def fake_pop(client):
+            popped = []
+            for i in range(3):  # overriden REDIS_OFFER_IDS_CHUNK_SIZE
+                try:
+                    popped.append(queue.pop(0))
+                except IndexError:  # queue is empty
+                    break
+            return popped
+
+        def fake_len(self, queue_name):
+            return len(queue)
+
+        redis_client = redis.Redis()
+        with mock.patch("pcapi.scripts.algolia_indexing.indexing.pop_offer_ids", fake_pop):
+            with mock.patch("redis.Redis.llen", fake_len):
+                batch_indexing_offers_in_algolia_by_offer(redis_client)
+
+        # First run pops and indexes 1, 2, 3. Second run pops and
+        # indexes 4, 5, 6. And stops because there are less than
+        # REDIS_OFFER_IDS_CHUNK_SIZE items left in the queue.
+        assert mocked_process_eligible_offers.mock_calls == [
+            mock.call(
+                client=redis_client,
+                offer_ids=[1, 2, 3],
+                from_provider_update=False,
+            ),
+            mock.call(
+                client=redis_client,
+                offer_ids=[4, 5, 6],
+                from_provider_update=False,
+            ),
+        ]
+        assert queue == [7, 8]
+
+    def test_command_behaviour(self, mocked_process_eligible_offers):
+        queue = list(range(1, 9))  # 8 items: 1..8
+
+        def fake_pop(client):
+            popped = []
+            for i in range(3):  # overriden REDIS_OFFER_IDS_CHUNK_SIZE
+                try:
+                    popped.append(queue.pop(0))
+                except IndexError:  # queue is empty
+                    break
+            return popped
+
+        def fake_len(self, queue_name):
+            return len(queue)
+
+        redis_client = redis.Redis()
+        with mock.patch("pcapi.scripts.algolia_indexing.indexing.pop_offer_ids", fake_pop):
+            with mock.patch("redis.Redis.llen", fake_len):
+                batch_indexing_offers_in_algolia_by_offer(redis_client, stop_only_when_empty=True)
+
+        # First run pops and indexes 1, 2, 3. Second run pops and
+        # indexes 4, 5, 6. Third run pops 7, 8 and stop because the
+        # queue is empty.
+        assert mocked_process_eligible_offers.mock_calls == [
+            mock.call(
+                client=redis_client,
+                offer_ids=[1, 2, 3],
+                from_provider_update=False,
+            ),
+            mock.call(
+                client=redis_client,
+                offer_ids=[4, 5, 6],
+                from_provider_update=False,
+            ),
+            mock.call(
+                client=redis_client,
+                offer_ids=[7, 8],
+                from_provider_update=False,
+            ),
+        ]
+        assert queue == []
+
+
+class LegacyBatchIndexingOffersInAlgoliaByOfferTest:
     @mock.patch("pcapi.scripts.algolia_indexing.indexing.process_eligible_offers")
     @mock.patch("pcapi.scripts.algolia_indexing.indexing.delete_offer_ids")
     @mock.patch("pcapi.scripts.algolia_indexing.indexing.get_offer_ids")
@@ -24,7 +112,7 @@ class BatchIndexingOffersInAlgoliaByOfferTest:
         mock_get_offer_ids.return_value = [1]
 
         # When
-        batch_indexing_offers_in_algolia_by_offer(client=client)
+        legacy_batch_indexing_offers_in_algolia_by_offer(client=client)
 
         # Then
         mock_get_offer_ids.assert_called_once()
@@ -44,7 +132,7 @@ class BatchIndexingOffersInAlgoliaByOfferTest:
         mock_get_offer_ids.return_value = []
 
         # When
-        batch_indexing_offers_in_algolia_by_offer(client=client)
+        legacy_batch_indexing_offers_in_algolia_by_offer(client=client)
 
         # Then
         mock_get_offer_ids.assert_called_once()
