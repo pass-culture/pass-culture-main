@@ -116,6 +116,24 @@ def test_should_return_thing_specific_data_for_email_when_offer_is_a_thing():
     assert email_data == expected
 
 
+@pytest.mark.usefixtures("db_session")
+def test_should_use_public_name_when_available():
+    booking = make_booking(
+        stock__offer__venue__name="LIBRAIRIE GENERALE UNIVERSITAIRE COLBERT",
+        stock__offer__venue__publicName="Librairie Colbert",
+    )
+    mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
+
+    email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)
+
+    expected = get_expected_base_email_data(
+        booking,
+        mediation,
+        venue_name="Librairie Colbert",
+    )
+    assert email_data == expected
+
+
 class DigitalOffersTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_digital_thing_specific_data_for_email_when_offer_is_a_digital_thing(self):

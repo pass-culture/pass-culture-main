@@ -238,6 +238,19 @@ def test_should_not_truncate_price():
 
 
 @pytest.mark.usefixtures("db_session")
+def test_should_use_venue_public_name_when_available():
+    booking = make_booking(
+        stock__offer__venue__name="Legal name",
+        stock__offer__venue__publicName="Public name",
+    )
+
+    email_data = retrieve_data_for_offerer_booking_recap_email(booking)
+
+    expected = get_expected_base_email_data(booking, nom_lieu="Public name")
+    assert email_data == expected
+
+
+@pytest.mark.usefixtures("db_session")
 def test_should_add_user_phone_number_to_vars():
     # given
     booking = make_booking(user__phoneNumber="0123456789")

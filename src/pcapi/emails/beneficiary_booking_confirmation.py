@@ -35,7 +35,7 @@ def retrieve_data_for_beneficiary_booking_confirmation_email(booking: Booking) -
     formatted_event_beginning_time = ""
     formatted_event_beginning_date = ""
     stock_price = f"{booking.total_amount} €" if stock.price > 0 else "Gratuit"
-    venue_name = venue.name
+    venue_name = venue.publicName if venue.publicName else venue.name
     venue_address = venue.address or ""
     venue_postal_code = venue.postalCode or ""
     venue_city = venue.city or ""
