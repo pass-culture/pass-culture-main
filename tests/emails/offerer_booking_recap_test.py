@@ -5,6 +5,7 @@ import pytest
 
 from pcapi import models
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.testing import override_features
 from pcapi.emails.offerer_booking_recap import retrieve_data_for_offerer_booking_recap_email
 from pcapi.utils.human_ids import humanize
 
@@ -51,7 +52,7 @@ def get_expected_base_email_data(booking, **overrides):
             "user_email": "john@example.com",
             "user_phoneNumber": "",
             "is_event": 1,
-            "can_expire": 0,
+            "can_expire_after_30_days": 0,
             "contremarque": "ABC123",
             "ISBN": "",
             "lien_offre_pcpro": f"http://localhost:3001/offres/{offer_id}/edition",
@@ -98,7 +99,38 @@ def test_with_book():
         is_event=0,
         nom_offre="Le récit de voyage",
         offer_type="book",
-        can_expire=1,
+        can_expire_after_30_days=1,
+    )
+    assert email_data == expected
+
+
+@override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True)
+@pytest.mark.usefixtures("db_session")
+def test_non_digital_bookings_can_expire_after_30_days():
+    booking = make_booking(
+        stock__offer__name="Le récit de voyage",
+        stock__offer__product__extraData={"isbn": "123456789"},
+        stock__offer__product__name="Le récit de voyage",
+        stock__offer__product__type=str(models.ThingType.LIVRE_EDITION),
+        stock__offer__venue__address=None,
+        stock__offer__venue__city=None,
+        stock__offer__venue__departementCode=None,
+        stock__offer__venue__isVirtual=True,
+        stock__offer__venue__postalCode=None,
+        stock__offer__venue__siret=None,
+    )
+
+    email_data = retrieve_data_for_offerer_booking_recap_email(booking)
+
+    expected = get_expected_base_email_data(
+        booking,
+        date="",
+        departement="numérique",
+        heure="",
+        is_event=0,
+        nom_offre="Le récit de voyage",
+        offer_type="book",
+        can_expire_after_30_days=1,
     )
     assert email_data == expected
 
@@ -129,7 +161,64 @@ def test_with_book_with_missing_isbn():
         nom_offre="Le récit de voyage",
         offer_type="book",
         ISBN="",
-        can_expire=1,
+        can_expire_after_30_days=1,
+    )
+    assert email_data == expected
+
+
+@pytest.mark.usefixtures("db_session")
+def test_a_digital_booking_expires_after_30_days():
+    # Given
+    booking = make_booking(
+        quantity=10,
+        stock__price=0,
+        stock__offer__product__type=str(models.ThingType.AUDIOVISUEL),
+        stock__offer__product__url="http://example.com",
+        stock__offer__name="Super offre numérique",
+    )
+
+    # When
+    email_data = retrieve_data_for_offerer_booking_recap_email(booking)
+
+    # Then
+    expected = get_expected_base_email_data(
+        booking,
+        date="",
+        heure="",
+        is_event=0,
+        nom_offre="Super offre numérique",
+        offer_type="ThingType.AUDIOVISUEL",
+        quantity=10,
+        can_expire_after_30_days=1,
+    )
+    assert email_data == expected
+
+
+@override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True)
+@pytest.mark.usefixtures("db_session")
+def test_a_digital_booking_is_automatically_used():
+    # Given
+    booking = make_booking(
+        quantity=10,
+        stock__price=0,
+        stock__offer__product__type=str(models.ThingType.AUDIOVISUEL),
+        stock__offer__product__url="http://example.com",
+        stock__offer__name="Super offre numérique",
+    )
+
+    # When
+    email_data = retrieve_data_for_offerer_booking_recap_email(booking)
+
+    # Then
+    expected = get_expected_base_email_data(
+        booking,
+        date="",
+        heure="",
+        is_event=0,
+        nom_offre="Super offre numérique",
+        offer_type="ThingType.AUDIOVISUEL",
+        quantity=10,
+        can_expire_after_30_days=0,
     )
     assert email_data == expected
 

@@ -1,5 +1,7 @@
 from pcapi.core.bookings.models import Booking
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_type import ProductType
+from pcapi.repository import feature_queries
 from pcapi.utils.mailing import build_pc_pro_offer_link
 from pcapi.utils.mailing import format_booking_date_for_email
 from pcapi.utils.mailing import format_booking_hours_for_email
@@ -18,7 +20,11 @@ def retrieve_data_for_offerer_booking_recap_email(booking: Booking) -> dict:
     departement_code = offer.venue.departementCode or "numérique"
     offer_type = offer.type
     is_event = int(offer.isEvent)
-    can_expire = int(offer.offerType.get("canExpire", False))
+
+    if offer.isDigital and feature_queries.is_active(FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS):
+        can_expire_after_30_days = 0
+    else:
+        can_expire_after_30_days = int(offer.offerType.get("canExpire", False))
 
     offer_link = build_pc_pro_offer_link(offer)
 
@@ -45,7 +51,7 @@ def retrieve_data_for_offerer_booking_recap_email(booking: Booking) -> dict:
             "user_email": user_email,
             "lien_offre_pcpro": offer_link,
             "departement": departement_code,
-            "can_expire": can_expire,
+            "can_expire_after_30_days": can_expire_after_30_days,
         },
     }
 
