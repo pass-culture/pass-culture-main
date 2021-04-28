@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
+import semver
 
 from .utils import settings as utils
 
@@ -55,6 +56,12 @@ PROFILE_REQUESTS_LINES_LIMIT = int(os.environ.get("PROFILE_REQUESTS_LINES_LIMIT"
 FLASK_PORT = int(os.environ.get("PORT", 5000))
 FLASK_SECRET = os.environ.get("FLASK_SECRET", "+%+3Q23!zbc+!Dd@")
 CORS_ALLOWED_ORIGIN = os.environ.get("CORS_ALLOWED_ORIGIN")
+
+
+# NATIVE APP SPECIFIC SETTINGS
+NATIVE_APP_MINIMAL_CLIENT_VERSION = semver.VersionInfo.parse(
+    os.environ.get("NATIVE_APP_MINIMAL_CLIENT_VERSION", "1.132.1")
+)
 
 
 # REDIS

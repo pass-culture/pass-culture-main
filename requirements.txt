@@ -58,6 +58,7 @@ qrcode==6.1
 requests_mock==1.8.0
 rq==1.5.2
 schwifty==2020.9.0
+semver==2.13.0
 sentry-sdk==0.18.0
 simplejson==3.17.2
 spectree==0.3.15

@@ -2,10 +2,12 @@ from flask import Blueprint
 from spectree import SpecTree
 
 from pcapi.routes.native import security
+from pcapi.routes.native import utils
 from pcapi.serialization.utils import before_handler
 
 
 native_v1 = Blueprint("native_v1", __name__)
+native_v1.before_request(utils.check_client_version)
 
 
 class NativeSpecTree(SpecTree):
