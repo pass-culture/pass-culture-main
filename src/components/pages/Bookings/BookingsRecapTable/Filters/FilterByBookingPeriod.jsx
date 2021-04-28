@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import React from 'react'
 
 import PeriodSelector from 'components/layout/inputs/PeriodSelector/PeriodSelector'
+import { getToday } from 'utils/date'
 
 import { EMPTY_FILTER_VALUE } from './_constants'
 
@@ -37,17 +38,18 @@ const FilterByBookingPeriod = ({
       changePeriodEndingDateValue={handleBookingEndingDateChange}
       isDisabled={isDisabled}
       label="Période de réservation"
+      maxDateEnding={getToday()}
       minDateBeginning={oldestBookingDate}
       periodBeginningDate={selectedBookingBeginningDate || undefined}
       periodEndingDate={selectedBookingEndingDate}
-      todayDate={new Date()}
+      todayDate={getToday()}
     />
   )
 }
 
 FilterByBookingPeriod.propTypes = {
   isDisabled: PropTypes.bool.isRequired,
-  oldestBookingDate: PropTypes.string.isRequired,
+  oldestBookingDate: PropTypes.instanceOf(Date).isRequired,
   selectedBookingBeginningDate: PropTypes.oneOfType([PropTypes.shape(), PropTypes.string])
     .isRequired,
   selectedBookingEndingDate: PropTypes.oneOfType([PropTypes.shape(), PropTypes.string]).isRequired,

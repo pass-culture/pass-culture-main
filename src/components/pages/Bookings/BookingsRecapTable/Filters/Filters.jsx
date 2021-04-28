@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import React, { Component } from 'react'
 
 import { formatAndOrderVenues, fetchAllVenuesByProUser } from 'repository/venuesService'
+import { getToday } from 'utils/date'
 
 import {
   ALL_BOOKING_STATUS,
@@ -31,7 +32,7 @@ class Filters extends Component {
       },
       keywords: EMPTY_FILTER_VALUE,
       selectedBookingBeginningDate: EMPTY_FILTER_VALUE,
-      selectedBookingEndingDate: new Date(),
+      selectedBookingEndingDate: getToday(),
       selectedOfferDate: EMPTY_FILTER_VALUE,
       selectedOmniSearchCriteria: DEFAULT_OMNISEARCH_CRITERIA,
       selectedVenue: props.offerVenue !== ALL_VENUES ? props.offerVenue : EMPTY_FILTER_VALUE,
@@ -68,7 +69,7 @@ class Filters extends Component {
         },
         keywords: EMPTY_FILTER_VALUE,
         selectedBookingBeginningDate: EMPTY_FILTER_VALUE,
-        selectedBookingEndingDate: new Date(),
+        selectedBookingEndingDate: getToday(),
         selectedOfferDate: EMPTY_FILTER_VALUE,
         selectedVenue: EMPTY_FILTER_VALUE,
       },
@@ -146,7 +147,7 @@ class Filters extends Component {
 Filters.propTypes = {
   isLoading: PropTypes.bool.isRequired,
   offerVenue: PropTypes.string.isRequired,
-  oldestBookingDate: PropTypes.string.isRequired,
+  oldestBookingDate: PropTypes.instanceOf(Date).isRequired,
   updateGlobalFilters: PropTypes.func.isRequired,
 }
 
