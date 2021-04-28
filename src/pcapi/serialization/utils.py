@@ -44,7 +44,8 @@ def before_handler(
         api_errors = ApiErrors()
         for error in pydantic_error.errors():
             message = error_messages.get(error["type"], error["msg"])
-            api_errors.add_error(error["loc"][0], message)
+            location = ".".join(str(loc) for loc in error["loc"])
+            api_errors.add_error(location, message)
         raise api_errors
 
 

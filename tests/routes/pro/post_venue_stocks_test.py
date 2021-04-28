@@ -69,3 +69,26 @@ class Post:
         assert response1.status_code == 404
         assert response2.status_code == 404
         mock_synchronize_stocks.assert_not_called()
+
+    @clean_database
+    @patch("pcapi.core.providers.api.synchronize_stocks")
+    def test_returns_comprehensive_errors(self, mock_synchronize_stocks, app):
+        api_key = offers_factories.ApiKeyFactory()
+
+        mock_synchronize_stocks.return_value = {}
+
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {api_key.value}"}
+
+        response1 = test_client.post("/v2/venue/3/stocks", json={})
+        response2 = test_client.post(
+            "/v2/venue/3/stocks", json={"stocks": [{"ref": "123456789"}, {"wrong_key": "123456789"}]}
+        )
+
+        assert response1.status_code == 400
+        assert response1.json["stocks"] == ["Ce champ est obligatoire"]
+        assert response2.status_code == 400
+        assert response2.json["stocks.0.available"] == ["Ce champ est obligatoire"]
+        assert response2.json["stocks.1.available"] == ["Ce champ est obligatoire"]
+        assert response2.json["stocks.1.ref"] == ["Ce champ est obligatoire"]
+        mock_synchronize_stocks.assert_not_called()
