@@ -59,7 +59,7 @@ def retrieve_data_for_beneficiary_booking_confirmation_email(booking: Booking) -
     booking_token = booking.activationCode.code if booking.activationCode else booking.token
 
     return {
-        "MJ-TemplateID": 1163067,
+        "MJ-TemplateID": 2841128,
         "MJ-TemplateLanguage": True,
         "Vars": {
             "user_first_name": beneficiary_first_name,

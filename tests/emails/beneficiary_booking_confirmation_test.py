@@ -32,7 +32,7 @@ def make_booking(**kwargs):
 
 def get_expected_base_email_data(booking, mediation, **overrides):
     email_data = {
-        "MJ-TemplateID": 1163067,
+        "MJ-TemplateID": 2841128,
         "MJ-TemplateLanguage": True,
         "Vars": {
             "user_first_name": "Joe",

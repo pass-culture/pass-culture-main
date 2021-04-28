@@ -191,7 +191,7 @@ class SendWarningToBeneficiaryAfterProBookingCancellationTest:
 class SendBookingConfirmationEmailToBeneficiaryTest:
     @patch(
         "pcapi.domain.user_emails.retrieve_data_for_beneficiary_booking_confirmation_email",
-        return_value={"MJ-TemplateID": 1163067},
+        return_value={"MJ-TemplateID": 2841128},
     )
     def when_called_calls_send_email(self, mocked_retrieve_data_for_beneficiary_booking_confirmation_email):
         # Given
@@ -203,7 +203,7 @@ class SendBookingConfirmationEmailToBeneficiaryTest:
 
         # Then
         mocked_retrieve_data_for_beneficiary_booking_confirmation_email.assert_called_once_with(booking)
-        assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 1163067
+        assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 2841128
 
 
 @pytest.mark.usefixtures("db_session")
