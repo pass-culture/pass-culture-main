@@ -91,9 +91,17 @@ class StockIdsResponseModel(BaseModel):
 
 
 class UpdateVenueStockBodyModel(BaseModel):
-    ref: str
+    """Available stock quantity for a book"""
+
+    ref: str = Field(title="ISBN", description="Format: EAN13")
     available: int
+
+    class Config:
+        title = "Stock"
 
 
 class UpdateVenueStocksBodyModel(BaseModel):
     stocks: list[UpdateVenueStockBodyModel]
+
+    class Config:
+        title = "Venue's stocks update body"

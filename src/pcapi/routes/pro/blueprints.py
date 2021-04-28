@@ -13,9 +13,17 @@ security_schemes = {
     API_KEY_AUTH: {
         "type": "http",
         "scheme": "bearer",
+        "description": "Api key issued by passculture",
     }
 }
 
 
-api = ExtendedSpecTree("flask", MODE="strict", before=before_handler, PATH="/", security_schemes=security_schemes)
+api = ExtendedSpecTree(
+    "flask",
+    title="Pass Culture public API version 2",
+    MODE="strict",
+    before=before_handler,
+    PATH="/",
+    security_schemes=security_schemes,
+)
 api.register(pro_api_v2)

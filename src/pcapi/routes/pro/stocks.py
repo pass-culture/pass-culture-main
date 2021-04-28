@@ -78,8 +78,15 @@ def delete_stock(stock_id: str) -> StockIdResponseModel:
 
 @pro_api_v2.route("/venue/<int:venue_id>/stocks", methods=["POST"])
 @api_key_required
-@spectree_serialize(on_success_status=204, on_error_statuses=[401, 404], api=api)
+@spectree_serialize(on_success_status=204, on_error_statuses=[401, 404], api=api, tags=["API Stocks"])
 def update_stocks(venue_id: int, body: UpdateVenueStocksBodyModel) -> None:
+    """Public endpoint to update stocks of a venue registered on pass Passculture.
+
+    This endpoint can only works for venues attached to the same account the api key was issued for.
+    Only books, pre existing on the pass Culture database and whitelisted by pass Culture's cgu will be taken, all other stocks are filtered.
+    Stocks are references by their isbn format EAN13.
+    The 'available' quantity is the number of items that could be bought at the library.
+    """
     offerer_id = current_api_key.offererId
     venue = Venue.query.join(Offerer).filter(Venue.id == venue_id, Offerer.id == offerer_id).first_or_404()
 
