@@ -37,7 +37,7 @@ const Notification = ({ hideNotification, notification }) => {
   } else if (type === 'error') {
     svg = 'ico-notification-error-white'
   } else if (type === 'pending') {
-    svg = 'ico-notification-pending'
+    svg = 'ico-status-pending'
   }
 
   if (isInDom) {
