@@ -23,7 +23,7 @@ def retrieve_data_for_offerer_booking_recap_email(booking: Booking) -> dict:
     offer_link = build_pc_pro_offer_link(offer)
 
     mailjet_json = {
-        "MJ-TemplateID": 2418750,
+        "MJ-TemplateID": 2843165,
         "MJ-TemplateLanguage": True,
         "Headers": {
             "Reply-To": user_email,

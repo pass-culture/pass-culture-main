@@ -34,7 +34,7 @@ def make_booking(**kwargs):
 def get_expected_base_email_data(booking, **overrides):
     offer_id = humanize(booking.stock.offer.id)
     email_data = {
-        "MJ-TemplateID": 2418750,
+        "MJ-TemplateID": 2843165,
         "MJ-TemplateLanguage": True,
         "Headers": {
             "Reply-To": "john@example.com",
