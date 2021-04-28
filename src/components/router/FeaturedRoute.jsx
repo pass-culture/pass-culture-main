@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Route } from 'react-router-dom'
 
-import NotMatch from 'components/pages/Errors/NoMatch/NoMatch'
+import NotMatch from 'components/pages/Errors/NotFound/NotFound'
 
 class FeaturedRoute extends PureComponent {
   componentDidMount() {

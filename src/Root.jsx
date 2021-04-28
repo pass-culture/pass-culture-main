@@ -6,7 +6,7 @@ import { PersistGate } from 'redux-persist/integration/react'
 import AppContainer from 'app/AppContainer'
 import AppLayout from 'app/AppLayout'
 import MatomoContainer from 'components/matomo/MatomoContainer'
-import NoMatchPage from 'components/pages/Errors/NoMatch/NoMatch'
+import NotFound from 'components/pages/Errors/NotFound/NotFound'
 import FeaturedRouteContainer from 'components/router/FeaturedRouteContainer'
 import configureStore from 'store'
 import routes, { routesWithMain } from 'utils/routes_map'
@@ -48,7 +48,7 @@ const Root = () => {
                   />
                 )
               })}
-              <Route component={NoMatchPage} />
+              <Route component={NotFound} />
             </Switch>
             <MatomoContainer />
           </AppContainer>

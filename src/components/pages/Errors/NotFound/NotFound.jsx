@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 
 import Icon from 'components/layout/Icon'
 
-const NoMatch = ({ redirect }) => (
+const NotFound = ({ redirect }) => (
   <main className="page fullscreen no-match">
     <Icon svg="ico-404" />
     <div className="nm-title">
@@ -22,12 +22,12 @@ const NoMatch = ({ redirect }) => (
   </main>
 )
 
-NoMatch.defaultProps = {
+NotFound.defaultProps = {
   redirect: '/accueil',
 }
 
-NoMatch.propTypes = {
+NotFound.propTypes = {
   redirect: PropTypes.string,
 }
 
-export default NoMatch
+export default NotFound

@@ -2,14 +2,14 @@ import { mount } from 'enzyme'
 import React from 'react'
 import { MemoryRouter } from 'react-router'
 
-import NoMatch from '../NoMatch'
+import NotFound from '../NotFound'
 
-describe('src | components | pages | NoMatch', () => {
+describe('src | components | pages | NotFound', () => {
   it('should display a message notifying the user they are on a wrong path and add a link to home', () => {
     // when
     const wrapper = mount(
       <MemoryRouter>
-        <NoMatch />
+        <NotFound />
       </MemoryRouter>
     )
 
@@ -30,7 +30,7 @@ describe('src | components | pages | NoMatch', () => {
     }
     const wrapper = mount(
       <MemoryRouter>
-        <NoMatch {...props} />
+        <NotFound {...props} />
       </MemoryRouter>
     )
 
