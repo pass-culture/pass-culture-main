@@ -42,7 +42,7 @@ def get_expected_base_email_data(booking, mediation, **overrides):
             "offerer_name": "Théâtre du coin",
             "event_date": "6 novembre 2019",
             "event_hour": "15h59",
-            "offer_price": "23.99",
+            "offer_price": "23.99 €",
             "offer_token": "ABC123",
             "venue_name": "Lieu de l'offreur",
             "venue_address": "25 avenue du lieu",
@@ -87,7 +87,7 @@ def test_should_return_event_specific_data_for_email_when_offer_is_a_duo_event()
         mediation,
         is_duo_event=1,
         is_single_event=0,
-        offer_price="47.98",
+        offer_price="47.98 €",
     )
     assert email_data == expected
 
@@ -246,4 +246,4 @@ def test_add_expiration_date_from_activation_code():
 def test_should_return_total_price_for_duo_offers():
     booking = bookings_factories.BookingFactory(quantity=2, stock__price=10)
     email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)
-    assert email_data["Vars"]["offer_price"] == "20.00"
+    assert email_data["Vars"]["offer_price"] == "20.00 €"

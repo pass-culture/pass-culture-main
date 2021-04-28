@@ -17,7 +17,7 @@ def make_beneficiary_booking_cancellation_email_data(booking: Booking) -> dict:
     is_event = int(offer.isEvent)
     offer_id = humanize(offer.id)
     offer_name = offer.name
-    price = str(stock.price * booking.quantity)
+    price = str(booking.total_amount)
     is_free_offer = 1 if stock.price == 0 else 0
     can_book_again = int(beneficiary.deposit.expirationDate > datetime.datetime.now())
 

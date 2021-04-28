@@ -34,8 +34,7 @@ def retrieve_data_for_beneficiary_booking_confirmation_email(booking: Booking) -
     offerer_name = venue.managingOfferer.name
     formatted_event_beginning_time = ""
     formatted_event_beginning_date = ""
-    # FIXME: booking.price == stock.price, so we should just write str(booking.total_amount), right?
-    stock_price = str(stock.price * booking.quantity) if stock.price > 0 else "Gratuit"
+    stock_price = f"{booking.total_amount} €" if stock.price > 0 else "Gratuit"
     venue_name = venue.name
     venue_address = venue.address or ""
     venue_postal_code = venue.postalCode or ""

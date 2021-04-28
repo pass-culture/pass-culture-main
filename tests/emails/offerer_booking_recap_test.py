@@ -18,7 +18,7 @@ def make_booking(**kwargs):
         user__lastName="Doe",
         user__email="john@example.com",
         stock__beginningDatetime=datetime(2019, 11, 6, 14, 59, 5, tzinfo=timezone.utc),
-        stock__price=0,
+        stock__price=10,
         stock__offer__name="Super événement",
         stock__offer__product__name="Super événement",
         stock__offer__product__type=str(models.EventType.SPECTACLE_VIVANT),
@@ -43,7 +43,7 @@ def get_expected_base_email_data(booking, **overrides):
         "Vars": {
             "nom_offre": "Super événement",
             "nom_lieu": "Lieu de l'offreur",
-            "prix": "Gratuit",
+            "prix": "10.00 €",
             "date": "06-Nov-2019",
             "heure": "15h59",
             "quantity": 1,
@@ -187,6 +187,7 @@ def test_a_digital_booking_expires_after_30_days():
         date="",
         heure="",
         is_event=0,
+        prix="Gratuit",
         nom_offre="Super offre numérique",
         offer_type="ThingType.AUDIOVISUEL",
         quantity=10,
@@ -215,6 +216,7 @@ def test_a_digital_booking_is_automatically_used():
         booking,
         date="",
         heure="",
+        prix="Gratuit",
         is_event=0,
         nom_offre="Super offre numérique",
         offer_type="ThingType.AUDIOVISUEL",
@@ -231,7 +233,7 @@ def test_should_not_truncate_price():
 
     email_data = retrieve_data_for_offerer_booking_recap_email(booking)
 
-    expected = get_expected_base_email_data(booking, prix="5.86")
+    expected = get_expected_base_email_data(booking, prix="5.86 €")
     assert email_data == expected
 
 
