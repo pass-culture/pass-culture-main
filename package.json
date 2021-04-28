@@ -23,27 +23,17 @@
     "test:eslint": "jest eslint-plugin-pass-culture/tests",
     "test:stylelint": "jest stylelint-pass-culture/tests",
     "test:unit": "NODE_ICU_DATA=node_modules/full-icu TZ=UTC jest",
-    "testcafe": "testcafe --assertion-timeout 5000 --selector-timeout 15000 -S -s testcafe_screenshots 'chrome:headless'"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
+    "testcafe": "testcafe --assertion-timeout 5000 --selector-timeout 15000 -S -s testcafe_screenshots 'chrome:headless'",
+    "prepare": "husky install"
   },
   "lint-staged": {
-    "./public/**/*.svg": [
-      "svgo"
-    ],
-    "./src/**/*.svg": [
-      "svgo"
-    ],
+    "./public/**/*.svg": "svgo",
+    "./src/**/*.svg": "svgo",
     "*.{js,jsx}": [
       "prettier --write",
       "eslint --max-warnings=0 --fix"
     ],
-    "*.scss": [
-      "stylelint --syntax=scss"
-    ]
+    "*.scss": "stylelint --syntax=scss --fix"
   },
   "dependencies": {
     "@reach/dialog": "^0.12.1",
@@ -138,7 +128,7 @@
     "fs-extra": "^9.0.1",
     "history": "^4.7.2",
     "html-webpack-plugin": "^4.5.0",
-    "husky": "^4.3.8",
+    "husky": "^6.0.0",
     "jest": "^26.6.3",
     "jest-canvas-mock": "^2.3.0",
     "jest-environment-jsdom-sixteen": "^1.0.3",
