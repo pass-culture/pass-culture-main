@@ -50,7 +50,24 @@ commands:
       - run: gcloud auth activate-service-account --key-file ${HOME}/gcp-key.json
       - run: gcloud --quiet config set project ${GCP_PROJECT}
 
-  deploy-pcapi-gke:
+  export_app_version:
+    description: Export APP version number as environment variable
+    parameters:
+      version_file:
+        type: string
+        default: ./api/version.txt
+    steps:
+    - run: echo "export APP_VERSION=$(cat << parameters.version_file >> | tr -d '[:space:]')" >> $BASH_ENV
+
+  export_chart_version:
+    description: Export Helm chart version number as environment variable
+    parameters:
+      version_file:
+        type: string
+    steps:
+    - run: echo "export CHART_VERSION=$(cat << parameters.version_file >> | tr -d '[:space:]')" >> $BASH_ENV
+
+  deploy-helm-chart:
     description: Deploy Crons and worker via helm to Kubernetes Cluster
     parameters:
       helm_release_name:
@@ -61,13 +78,16 @@ commands:
         type: string
       helm_values_file:
         type: string
+      app_version:
+        type: string
     steps:
       - run: |
+          source ${BASH_ENV}
           helm upgrade << parameters.helm_release_name >> tmp/<< parameters.helm_chart_name >> \
             --install --wait \
             --namespace << parameters.kubernetes_namespace >> \
-            --values tmp/<< parameters.helm_chart_name >>/<< parameters.helm_values_file >> \
-            --set-string image.tag=$(cat ./api/version.txt)
+            --values << parameters.helm_values_file >> \
+            --set-string image.tag=<< parameters.app_version >>
 
   build-frontend-app:
     description: Build a frontend app with yarn
@@ -309,13 +329,15 @@ jobs:
           docker_layer_caching: true
       - authenticate_gcp:
           gcp-key-name: GCP_INFRA_KEY
+      - export_app_version
       - run: |
+          source ${BASH_ENV}
           if [[ ${CIRCLE_BRANCH} == "staging" ]];then
             gcloud beta auth configure-docker ${GCP_REGION}-docker.pkg.dev
             docker build ./api \
               -f ./api/Dockerfile.gcp \
-              -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:$(cat ./api/version.txt)
-            docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:$(cat ./api/version.txt)
+              -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:${APP_VERSION}
+            docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:${APP_VERSION}
           fi
       - run:
           name: Send failure notification
@@ -336,11 +358,13 @@ jobs:
           docker_layer_caching: true
       - authenticate_gcp:
           gcp-key-name: GCP_INFRA_KEY
+      - export_app_version
       - run: gcloud beta auth configure-docker ${GCP_REGION}-docker.pkg.dev
       - run: |
+          source ${BASH_ENV}
           docker build ./infra/docker-images/db-ops \
             -f ./infra/docker-images/db-ops/Dockerfile \
-            --build-arg "BASE_PCAPI_TAG=$(cat ./api/version.txt)" \
+            --build-arg BASE_PCAPI_TAG=${APP_VERSION} \
             -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/db-ops:latest
       - run: docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/db-ops:latest
 
@@ -357,6 +381,8 @@ jobs:
       - run: git submodule update --init
       - authenticate_gcp:
           gcp-key-name: GCP_METIER_KEY
+      - export_chart_version:
+          version_file: ./api/helm/db-ops/chart_version.txt
       - run:
           name: Get GKE cluster credentials
           command: gcloud container clusters get-credentials --region ${GCP_REGION} ${GKE_CLUSTER_NAME}
@@ -365,16 +391,20 @@ jobs:
           command: echo ${GCP_INFRA_KEY} | helm registry login  -u _json_key --password-stdin ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}
       - run:
           name: Pull chart from registry
-          command: helm chart pull ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:$(cat api/helm_versions/db_ops_version.txt)
+          command: |
+            source ${BASH_ENV}
+            helm chart pull ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:${CHART_VERSION}
       - run:
           name: Export chart in local filesystem
-          command: helm chart export ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:$(cat api/helm_versions/db_ops_version.txt) -d tmp/
-      - run: |
-          helm upgrade ${CHART_RELEASE} tmp/${CHART_RELEASE} \
-            --install --wait \
-            --namespace ${NAMESPACE} \
-            --values tmp/${CHART_RELEASE}/values.${CIRCLE_BRANCH}.yaml \
-            --version "$(cat api/helm_versions/db_ops_version.txt)"
+          command: |
+            source ${BASH_ENV}
+            helm chart export ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:${CHART_VERSION} -d tmp/
+      - deploy-helm-chart:
+          helm_chart_name: ${CHART_NAME}
+          helm_release_name: ${CHART_RELEASE}
+          kubernetes_namespace: ${NAMESPACE}
+          helm_values_file: ./api/helm/db-ops/values.${CIRCLE_BRANCH}.yaml
+          app_version: latest
 
   deploy-pcapi:
     executor: helm
@@ -387,6 +417,9 @@ jobs:
       - run: git submodule update --init
       - authenticate_gcp:
           gcp-key-name: GCP_METIER_KEY
+      - export_app_version
+      - export_chart_version:
+          version_file: ./api/helm/pcapi/chart_version.txt
       - run:
           name: Get GKE cluster credentials
           command: gcloud container clusters get-credentials --region ${GCP_REGION} ${GKE_CLUSTER_NAME}
@@ -395,15 +428,20 @@ jobs:
           command: echo ${GCP_INFRA_KEY} | helm registry login  -u _json_key --password-stdin ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}
       - run:
           name: Pull chart from registry
-          command: helm chart pull ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:$(cat api/helm_versions/pcapi_chart_version.txt)
+          command: |
+            source ${BASH_ENV}
+            helm chart pull ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:${CHART_VERSION}
       - run:
           name: Export chart in local filesystem
-          command: helm chart export ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:$(cat api/helm_versions/pcapi_chart_version.txt) -d tmp/
-      - deploy-pcapi-gke:
+          command: |
+            source ${BASH_ENV}
+            helm chart export ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:${CHART_VERSION}
+      - deploy-helm-chart:
           helm_chart_name: pcapi
           helm_release_name: ${CIRCLE_BRANCH}
           kubernetes_namespace: ${CIRCLE_BRANCH}
-          helm_values_file: values.${CIRCLE_BRANCH}.yaml
+          helm_values_file: ./api/helm/pcapi/values.${CIRCLE_BRANCH}.yaml
+          app_version: ${APP_VERSION}
       - run:
           name: Send failure notification
           command: |
