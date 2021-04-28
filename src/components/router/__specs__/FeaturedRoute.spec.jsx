@@ -2,7 +2,7 @@ import { shallow } from 'enzyme'
 import React from 'react'
 import { Route } from 'react-router-dom'
 
-import NotMatch from 'components/pages/NoMatch/NoMatch'
+import NotMatch from 'components/pages/Errors/NoMatch/NoMatch'
 
 import FeaturedRoute from '../FeaturedRoute'
 
