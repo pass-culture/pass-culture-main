@@ -245,6 +245,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       it('should not display a warning when all stocks are sold out', () => {
         // given
         props.stocks = [{ remainingQuantity: 0 }, { remainingQuantity: 0 }]
+        eventOffer.status = 'SOLD_OUT'
 
         // when
         renderOfferItem(props)
@@ -260,7 +261,6 @@ describe('src | components | pages | Offers | OfferItem', () => {
           { remainingQuantity: 0, hasBookingLimitDatetimePassed: false },
           { remainingQuantity: 'unlimited', hasBookingLimitDatetimePassed: false },
         ]
-        eventOffer.status = 'SOLD_OUT'
 
         // when
         renderOfferItem(props)
@@ -281,7 +281,6 @@ describe('src | components | pages | Offers | OfferItem', () => {
           { remainingQuantity: 0, hasBookingLimitDatetimePassed: false },
           { remainingQuantity: 12, hasBookingLimitDatetimePassed: false },
         ]
-        eventOffer.status = 'SOLD_OUT'
 
         // when
         renderOfferItem(props)

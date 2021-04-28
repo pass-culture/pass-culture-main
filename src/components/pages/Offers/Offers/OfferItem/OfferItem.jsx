@@ -34,7 +34,8 @@ const OfferItem = ({ disabled, offer, stocks, venue, isSelected, selectOffer }) 
   const isOfferEditable = offer ? offer.isEditable : null
   const isOfferInactiveOrExpiredOrDisabled =
     !offer.isActive || offer.hasBookingLimitDatetimesPassed || isOfferDisabled(offer.status)
-  const shouldShowSoldOutWarning = offer.status === OFFER_STATUS_SOLD_OUT
+  const shouldShowSoldOutWarning =
+    computeNumberOfSoldOutStocks(stocks) > 0 && offer.status !== OFFER_STATUS_SOLD_OUT
 
   return (
     <tr className={`offer-item ${isOfferInactiveOrExpiredOrDisabled ? 'inactive' : ''} offer-row`}>
