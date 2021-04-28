@@ -23,8 +23,10 @@ def retrieve_data_for_offerer_booking_recap_email(booking: Booking) -> dict:
 
     if offer.isDigital and feature_queries.is_active(FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS):
         can_expire_after_30_days = 0
+        is_booking_autovalidated = 1
     else:
         can_expire_after_30_days = int(offer.offerType.get("canExpire", False))
+        is_booking_autovalidated = 0
 
     offer_link = build_pc_pro_offer_link(offer)
 
@@ -52,6 +54,7 @@ def retrieve_data_for_offerer_booking_recap_email(booking: Booking) -> dict:
             "lien_offre_pcpro": offer_link,
             "departement": departement_code,
             "can_expire_after_30_days": can_expire_after_30_days,
+            "is_booking_autovalidated": is_booking_autovalidated,
         },
     }
 

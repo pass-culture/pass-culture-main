@@ -53,6 +53,7 @@ def get_expected_base_email_data(booking, **overrides):
             "user_phoneNumber": "",
             "is_event": 1,
             "can_expire_after_30_days": 0,
+            "is_booking_autovalidated": 0,
             "contremarque": "ABC123",
             "ISBN": "",
             "lien_offre_pcpro": f"http://localhost:3001/offres/{offer_id}/edition",
@@ -219,6 +220,7 @@ def test_a_digital_booking_is_automatically_used():
         offer_type="ThingType.AUDIOVISUEL",
         quantity=10,
         can_expire_after_30_days=0,
+        is_booking_autovalidated=1,
     )
     assert email_data == expected
 
