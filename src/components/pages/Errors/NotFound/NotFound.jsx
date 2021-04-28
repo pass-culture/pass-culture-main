@@ -3,16 +3,18 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 import Icon from 'components/layout/Icon'
+import PageTitle from 'components/layout/PageTitle/PageTitle'
 
 const NotFound = ({ redirect }) => (
   <main className="page fullscreen no-match">
+    <PageTitle title="Page inaccessible" />
     <Icon svg="ico-404" />
-    <div className="nm-title">
+    <h1>
       {'Oh non !'}
-    </div>
-    <div className="nm-subtitle">
+    </h1>
+    <p>
       {"Cette page n'existe pas."}
-    </div>
+    </p>
     <Link
       className="nm-redirection-link"
       to={redirect}

@@ -1,20 +1,25 @@
 .no-match {
-  background-image: $linear-gradient-to-bottom-right;
+  align-items: center;
+  background: linear-gradient(125deg, $primary, $secondary);
   color: $white;
   display: flex;
   flex-direction: column;
-  text-align: center;
+  justify-content: center;
 
-  .nm-title {
+  h1 {
     @include hero();
 
-    padding-top: rem(32px);
+    color: $white;
+    line-height: normal;
+    margin: rem(32px) 0 rem(16px);
   }
 
-  .nm-subtitle {
+  p {
     @include title2();
+  }
 
-    padding-top: rem(22px);
+  img {
+    width: rem(350px);
   }
 
   .nm-redirection-link {
@@ -26,7 +31,7 @@
     border-radius: rem(24px);
     color: $white;
     justify-content: center;
-    margin: rem(48px) auto 0 auto;
+    margin-top: rem(48px);
     max-height: rem(50px);
     outline: none;
     padding: rem(12px) rem(52px);
