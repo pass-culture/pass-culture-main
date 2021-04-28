@@ -576,10 +576,13 @@ def deactivate_inappropriate_products(isbn: str) -> bool:
     except Exception as exception:  # pylint: disable=broad-except
         logger.exception(
             "Could not mark product and offers as inappropriate: %s",
-            extra={"products": [p.id for p in products], "exc": str(exception)},
+            extra={"isbn": isbn, "products": [p.id for p in products], "exc": str(exception)},
         )
         return False
-    logger.info("Deactivated inappropriate products", extra={"products": [p.id for p in products], "offers": offer_ids})
+    logger.info(
+        "Deactivated inappropriate products",
+        extra={"isbn": isbn, "products": [p.id for p in products], "offers": offer_ids},
+    )
 
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         for offer_id in offer_ids:
