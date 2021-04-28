@@ -202,7 +202,7 @@ const StockItem = ({
           openingDateTime={today}
         />
       </td>
-      <td className="resized-input input-text">
+      <td className="resized-input input-text quantity-input">
         <input
           aria-label="Quantité"
           className={`it-input ${'quantity' in errors ? 'error' : ''}`}
