@@ -594,7 +594,7 @@ describe('stocks page', () => {
       fireEvent.change(screen.getByLabelText('Prix'), { target: { value: '10' } })
 
       // When
-      await fireEvent.click(screen.getByText('Enregistrer'))
+      fireEvent.click(screen.getByText('Enregistrer'))
 
       // Then
       const errorMessage = await screen.findByText(
@@ -615,7 +615,7 @@ describe('stocks page', () => {
       fireEvent.change(screen.getByLabelText('Prix'), { target: { value: '10' } })
 
       // When
-      await fireEvent.click(screen.getByText('Enregistrer'))
+      fireEvent.click(screen.getByText('Enregistrer'))
 
       // Then
       const errorMessage = await screen.findByText(
@@ -637,7 +637,7 @@ describe('stocks page', () => {
       fireEvent.click(screen.getByText('20:00'))
 
       // When
-      await fireEvent.click(screen.getByText('Enregistrer'))
+      fireEvent.click(screen.getByText('Enregistrer'))
 
       // Then
       const errorMessage = await screen.findByText(
@@ -813,8 +813,8 @@ describe('stocks page', () => {
             await renderOffers(props, store)
 
             // when
-            userEvent.click(screen.getByDisplayValue('20/12/2020'))
-            userEvent.click(screen.getByText('21'))
+            fireEvent.click(screen.getByDisplayValue('20/12/2020'))
+            fireEvent.click(screen.getByText('21'))
 
             // then
             expect(screen.queryByDisplayValue('20/12/2020')).not.toBeInTheDocument()
@@ -826,8 +826,8 @@ describe('stocks page', () => {
             await renderOffers(props, store)
 
             // when
-            userEvent.click(screen.getByDisplayValue('20/12/2020'))
-            userEvent.click(screen.getByText('13'))
+            fireEvent.click(screen.getByDisplayValue('20/12/2020'))
+            fireEvent.click(screen.getByText('13'))
 
             // then
             expect(screen.queryByDisplayValue('13/12/2020')).not.toBeInTheDocument()
@@ -839,7 +839,9 @@ describe('stocks page', () => {
             await renderOffers(props, store)
 
             // when
-            userEvent.clear(screen.getByLabelText('Date de l’événement'))
+            fireEvent.change(screen.getByLabelText('Date de l’événement'), {
+              target: { value: null },
+            })
 
             // then
             expect(screen.getByLabelText('Date de l’événement')).toBeEnabled()
@@ -850,8 +852,8 @@ describe('stocks page', () => {
             await renderOffers(props, store)
 
             // when
-            userEvent.click(screen.getByDisplayValue('19:00'))
-            userEvent.click(screen.getByText('18:30'))
+            fireEvent.click(screen.getByDisplayValue('19:00'))
+            fireEvent.click(screen.getByText('18:30'))
 
             // then
             expect(screen.queryByDisplayValue('19:00')).not.toBeInTheDocument()
@@ -864,8 +866,8 @@ describe('stocks page', () => {
             const priceField = screen.getByDisplayValue('10.01')
 
             // when
-            userEvent.clear(priceField)
-            userEvent.type(priceField, '127.03')
+            fireEvent.change(priceField)
+            fireEvent.change(priceField, { target: { value: '127.03' } })
 
             // then
             expect(screen.queryByDisplayValue('10.01')).not.toBeInTheDocument()
@@ -877,8 +879,8 @@ describe('stocks page', () => {
             await renderOffers(props, store)
 
             // when
-            userEvent.click(screen.getByDisplayValue('18/12/2020'))
-            userEvent.click(screen.getByText('17'))
+            fireEvent.click(screen.getByDisplayValue('18/12/2020'))
+            fireEvent.click(screen.getByText('17'))
 
             // then
             expect(screen.queryByDisplayValue('18/12/2020')).not.toBeInTheDocument()
@@ -890,8 +892,8 @@ describe('stocks page', () => {
             await renderOffers(props, store)
 
             // when
-            userEvent.click(screen.getByDisplayValue('18/12/2020'))
-            userEvent.click(screen.getByText('21'))
+            fireEvent.click(screen.getByDisplayValue('18/12/2020'))
+            fireEvent.click(screen.getByText('21'))
 
             // then
             expect(screen.queryByDisplayValue('21/12/2020')).not.toBeInTheDocument()
@@ -903,8 +905,8 @@ describe('stocks page', () => {
             await renderOffers(props, store)
 
             // when
-            userEvent.click(screen.getByDisplayValue('20/12/2020'))
-            userEvent.click(screen.getByText('17'))
+            fireEvent.click(screen.getByDisplayValue('20/12/2020'))
+            fireEvent.click(screen.getByText('17'))
 
             // then
             expect(screen.getByLabelText('Date limite de réservation').value).toBe('17/12/2020')
@@ -916,8 +918,8 @@ describe('stocks page', () => {
             const quantityField = screen.getByDisplayValue('10')
 
             // when
-            userEvent.clear(quantityField)
-            userEvent.type(quantityField, '23')
+            fireEvent.change(quantityField, { target: { value: null } })
+            fireEvent.change(quantityField, { target: { value: '23' } })
 
             // then
             expect(screen.queryByDisplayValue('10')).not.toBeInTheDocument()
@@ -929,7 +931,7 @@ describe('stocks page', () => {
             await renderOffers(props, store)
 
             // when
-            userEvent.clear(screen.getByDisplayValue('19:00'))
+            fireEvent.change(screen.getByDisplayValue('19:00'), { target: { value: null } })
 
             // then
             expect(screen.queryByDisplayValue('20/12/2020')).toBeInTheDocument()
@@ -941,8 +943,8 @@ describe('stocks page', () => {
             const quantityField = screen.getByDisplayValue('10')
 
             // when
-            userEvent.clear(quantityField)
-            userEvent.type(quantityField, '9')
+            fireEvent.change(quantityField, { target: { value: null } })
+            fireEvent.change(quantityField, { target: { value: '9' } })
 
             // then
             const initialRemainingQuantity = screen.queryByText(6)
@@ -957,7 +959,7 @@ describe('stocks page', () => {
             await renderOffers(props, store)
 
             // when
-            userEvent.clear(screen.getByDisplayValue('10'))
+            fireEvent.change(screen.getByDisplayValue('10'), { target: { value: null } })
 
             // then
             const computedRemainingQuantity = screen.getByText('Illimité')
@@ -997,25 +999,25 @@ describe('stocks page', () => {
               // Given
               await renderOffers(props, store)
 
-              userEvent.click(screen.getByLabelText('Date de l’événement'))
-              userEvent.click(screen.getByText('26'))
+              fireEvent.click(screen.getByLabelText('Date de l’événement'))
+              fireEvent.click(screen.getByText('26'))
 
-              userEvent.click(screen.getByLabelText('Heure de l’événement'))
-              userEvent.click(screen.getByText('20:00'))
+              fireEvent.click(screen.getByLabelText('Heure de l’événement'))
+              fireEvent.click(screen.getByText('20:00'))
 
               const priceField = screen.getByLabelText('Prix')
-              userEvent.clear(priceField)
-              userEvent.type(priceField, '14.01')
+              fireEvent.change(priceField, { target: { value: null } })
+              fireEvent.change(priceField, { target: { value: '14.01' } })
 
-              userEvent.click(screen.getByLabelText('Date limite de réservation'))
-              userEvent.click(screen.getByText('25'))
+              fireEvent.click(screen.getByLabelText('Date limite de réservation'))
+              fireEvent.click(screen.getByText('25'))
 
               const quantityField = screen.getByLabelText('Quantité')
-              userEvent.clear(quantityField)
-              userEvent.type(quantityField, '6')
+              fireEvent.change(quantityField, { target: { value: null } })
+              fireEvent.change(quantityField, { target: { value: '6' } })
 
               // When
-              userEvent.click(screen.getByText('Enregistrer'))
+              fireEvent.click(screen.getByText('Enregistrer'))
 
               // Then
               expect(pcapi.bulkCreateOrEditStock).toHaveBeenCalledWith(defaultOffer.id, [
@@ -1056,7 +1058,7 @@ describe('stocks page', () => {
 
               // When
               await act(async () => {
-                await userEvent.click(screen.getByText('Enregistrer'))
+                fireEvent.click(screen.getByText('Enregistrer'))
               })
 
               // Then
@@ -1066,11 +1068,13 @@ describe('stocks page', () => {
             it('should set booking limit datetime to exact beginning datetime when not specified', async () => {
               // Given
               await renderOffers(props, store)
-              userEvent.clear(screen.getByLabelText('Date limite de réservation'))
+              fireEvent.change(screen.getByLabelText('Date limite de réservation'), {
+                target: { value: '' },
+              })
 
               // When
               await act(async () => {
-                await userEvent.click(screen.getByText('Enregistrer'))
+                fireEvent.click(screen.getByText('Enregistrer'))
               })
 
               // Then
@@ -1081,12 +1085,12 @@ describe('stocks page', () => {
             it('should set booking limit datetime to exact beginning datetime when same as beginning date', async () => {
               // Given
               await renderOffers(props, store)
-              userEvent.click(screen.getByLabelText('Date limite de réservation'))
-              userEvent.click(screen.getByText('20'))
+              fireEvent.click(screen.getByLabelText('Date limite de réservation'))
+              fireEvent.click(screen.getByText('20'))
 
               // When
               await act(async () => {
-                await userEvent.click(screen.getByText('Enregistrer'))
+                fireEvent.click(screen.getByText('Enregistrer'))
               })
 
               // Then
@@ -1097,12 +1101,12 @@ describe('stocks page', () => {
             it('should set booking limit time to end of selected locale day when specified and different than beginning date in Cayenne TZ', async () => {
               // Given
               await renderOffers(props, store)
-              userEvent.click(screen.getByLabelText('Date limite de réservation'))
-              userEvent.click(screen.getByText('19'))
+              fireEvent.click(screen.getByLabelText('Date limite de réservation'))
+              fireEvent.click(screen.getByText('19'))
 
               // When
               await act(async () => {
-                await userEvent.click(screen.getByText('Enregistrer'))
+                fireEvent.click(screen.getByText('Enregistrer'))
               })
 
               // Then
@@ -1115,12 +1119,12 @@ describe('stocks page', () => {
               eventOffer.venue.departementCode = '75'
 
               await renderOffers(props, store)
-              userEvent.click(screen.getByLabelText('Date limite de réservation'))
-              userEvent.click(screen.getByText('17'))
+              fireEvent.click(screen.getByLabelText('Date limite de réservation'))
+              fireEvent.click(screen.getByText('17'))
 
               // When
               await act(async () => {
-                await userEvent.click(screen.getByText('Enregistrer'))
+                fireEvent.click(screen.getByText('Enregistrer'))
               })
 
               // Then
@@ -1131,11 +1135,11 @@ describe('stocks page', () => {
             it('should set quantity to null when not specified', async () => {
               // Given
               await renderOffers(props, store)
-              userEvent.clear(screen.getByLabelText('Quantité'))
+              fireEvent.change(screen.getByLabelText('Quantité'), { target: { value: null } })
 
               // When
               await act(async () => {
-                await userEvent.click(screen.getByText('Enregistrer'))
+                fireEvent.click(screen.getByText('Enregistrer'))
               })
 
               // Then
@@ -1153,15 +1157,15 @@ describe('stocks page', () => {
               })
               await renderOffers(props, store)
 
-              userEvent.click(screen.getByLabelText('Date de l’événement'))
-              userEvent.click(screen.getByText('26'))
+              fireEvent.click(screen.getByLabelText('Date de l’événement'))
+              fireEvent.click(screen.getByText('26'))
 
-              userEvent.click(screen.getByLabelText('Heure de l’événement'))
-              userEvent.click(screen.getByText('20:00'))
+              fireEvent.click(screen.getByLabelText('Heure de l’événement'))
+              fireEvent.click(screen.getByText('20:00'))
 
               // When
               await act(async () => {
-                await userEvent.click(screen.getByText('Enregistrer'))
+                fireEvent.click(screen.getByText('Enregistrer'))
               })
 
               // Then
@@ -1175,10 +1179,12 @@ describe('stocks page', () => {
               // given
               await renderOffers(props, store)
               const beginningDateField = screen.getByDisplayValue('20/12/2020')
-              userEvent.clear(beginningDateField)
+              fireEvent.change(beginningDateField, { target: { value: null } })
 
               // when
-              userEvent.click(screen.getByText('Enregistrer'))
+              await act(async () => {
+                fireEvent.click(screen.getByText('Enregistrer'))
+              })
 
               // then
               const errorMessage = await screen.findByText(
@@ -1192,10 +1198,12 @@ describe('stocks page', () => {
               // given
               await renderOffers(props, store)
               const beginningHourField = screen.getByDisplayValue('19:00')
-              userEvent.clear(beginningHourField)
+              fireEvent.change(beginningHourField, { target: { value: null } })
 
               // when
-              userEvent.click(screen.getByText('Enregistrer'))
+              await act(async () => {
+                fireEvent.click(screen.getByText('Enregistrer'))
+              })
 
               // then
               const errorMessage = await screen.findByText(
@@ -1216,11 +1224,13 @@ describe('stocks page', () => {
               pcapi.bulkCreateOrEditStock.mockResolvedValue({})
 
               await renderOffers(props, store)
-              userEvent.click(screen.getByLabelText('Heure de l’événement'))
-              userEvent.click(screen.getByText('20:00'))
+              fireEvent.click(screen.getByLabelText('Heure de l’événement'))
+              fireEvent.click(screen.getByText('20:00'))
 
               // When
-              await userEvent.click(screen.getByText('Enregistrer'))
+              await act(async () => {
+                fireEvent.click(screen.getByText('Enregistrer'))
+              })
 
               // Then
               const errorMessage = await screen.findByText('Vos stocks ont bien été sauvegardés.')
@@ -1231,17 +1241,19 @@ describe('stocks page', () => {
               // Given
               await renderOffers(props, store)
 
-              userEvent.click(screen.getByLabelText('Date de l’événement'))
-              userEvent.click(screen.getByText('26'))
+              fireEvent.click(screen.getByLabelText('Date de l’événement'))
+              fireEvent.click(screen.getByText('26'))
 
-              userEvent.click(screen.getByLabelText('Heure de l’événement'))
-              userEvent.click(screen.getByText('20:00'))
+              fireEvent.click(screen.getByLabelText('Heure de l’événement'))
+              fireEvent.click(screen.getByText('20:00'))
 
-              userEvent.type(screen.getByLabelText('Prix'), '-10')
-              userEvent.type(screen.getByLabelText('Quantité'), '-20')
+              fireEvent.change(screen.getByLabelText('Prix'), { target: { value: '-10' } })
+              fireEvent.change(screen.getByLabelText('Quantité'), { target: { value: '-20' } })
 
               // When
-              await userEvent.click(screen.getByText('Enregistrer'))
+              await act(async () => {
+                fireEvent.click(screen.getByText('Enregistrer'))
+              })
 
               // Then
               const errorMessage = await screen.findByText(
@@ -1255,14 +1267,16 @@ describe('stocks page', () => {
               pcapi.bulkCreateOrEditStock.mockResolvedValue({})
               await renderOffers(props, store)
 
-              userEvent.click(screen.getByLabelText('Date de l’événement'))
-              userEvent.click(screen.getByText('26'))
+              fireEvent.click(screen.getByLabelText('Date de l’événement'))
+              fireEvent.click(screen.getByText('26'))
 
-              userEvent.click(screen.getByLabelText('Heure de l’événement'))
-              userEvent.click(screen.getByText('20:00'))
+              fireEvent.click(screen.getByLabelText('Heure de l’événement'))
+              fireEvent.click(screen.getByText('20:00'))
 
               // When
-              await userEvent.click(screen.getByText('Enregistrer'))
+              await act(async () => {
+                fireEvent.click(screen.getByText('Enregistrer'))
+              })
 
               // Then
               const errorMessage = await screen.findByText('Vos stocks ont bien été sauvegardés.')
@@ -1287,7 +1301,9 @@ describe('stocks page', () => {
               pcapi.loadOffer.mockClear()
 
               // When
-              await fireEvent.click(screen.getByText('Enregistrer'))
+              await act(async () => {
+                fireEvent.click(screen.getByText('Enregistrer'))
+              })
 
               // Then
               expect(pcapi.loadOffer).toHaveBeenCalledTimes(1)
@@ -1315,7 +1331,7 @@ describe('stocks page', () => {
               const soldOutOfferStatus = await screen.findByText('épuisée')
               expect(soldOutOfferStatus).toBeInTheDocument()
 
-              await fireEvent.click(screen.getByText('Enregistrer'))
+              fireEvent.click(screen.getByText('Enregistrer'))
 
               const successMessage = await screen.findByText('Vos stocks ont bien été sauvegardés.')
               expect(successMessage).toBeInTheDocument()
@@ -1361,7 +1377,7 @@ describe('stocks page', () => {
 
             // When
             userEvent.click(screen.getByTitle('Supprimer le stock'))
-            userEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
+            fireEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
 
             // Then
             expect(pcapi.deleteStock).toHaveBeenCalledWith(stockId)
@@ -1373,7 +1389,7 @@ describe('stocks page', () => {
 
             // When
             userEvent.click(screen.getByTitle('Supprimer le stock'))
-            userEvent.click(screen.getByRole('button', { name: 'Annuler' }))
+            fireEvent.click(screen.getByRole('button', { name: 'Annuler' }))
 
             // Then
             expect(pcapi.deleteStock).not.toHaveBeenCalled()
@@ -1394,7 +1410,7 @@ describe('stocks page', () => {
             // When
             await act(async () => {
               userEvent.click(await screen.findByTitle('Supprimer le stock'))
-              await userEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
+              fireEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
             })
 
             // Then
@@ -1442,7 +1458,7 @@ describe('stocks page', () => {
 
             // When
             userEvent.click(screen.getByTitle('Supprimer le stock'))
-            userEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
+            fireEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
 
             // Then
             expect(await screen.findByText('Le stock a été supprimé.')).toBeInTheDocument()
@@ -1455,7 +1471,7 @@ describe('stocks page', () => {
 
             // When
             userEvent.click(screen.getByTitle('Supprimer le stock'))
-            userEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
+            fireEvent.click(screen.getByRole('button', { name: 'Supprimer' }))
 
             // Then
             expect(
@@ -1530,8 +1546,8 @@ describe('stocks page', () => {
           const priceField = screen.getByDisplayValue('10.01')
 
           // when
-          userEvent.clear(priceField)
-          userEvent.type(priceField, '127.03')
+          fireEvent.change(priceField)
+          fireEvent.change(priceField, { target: { value: '127.03' } })
 
           // then
           expect(screen.queryByDisplayValue('10.01')).not.toBeInTheDocument()
@@ -1543,8 +1559,8 @@ describe('stocks page', () => {
           await renderOffers(props, store)
 
           // when
-          userEvent.click(screen.getByDisplayValue('18/12/2020'))
-          userEvent.click(screen.getByText('17'))
+          fireEvent.click(screen.getByDisplayValue('18/12/2020'))
+          fireEvent.click(screen.getByText('17'))
 
           // then
           expect(screen.queryByDisplayValue('18/12/2020')).not.toBeInTheDocument()
@@ -1557,8 +1573,8 @@ describe('stocks page', () => {
           const quantityField = screen.getByDisplayValue('10')
 
           // when
-          userEvent.clear(quantityField)
-          userEvent.type(quantityField, '23')
+          fireEvent.change(quantityField, { target: { value: null } })
+          fireEvent.change(quantityField, { target: { value: '23' } })
 
           // then
           expect(screen.queryByDisplayValue('10')).not.toBeInTheDocument()
@@ -1571,8 +1587,8 @@ describe('stocks page', () => {
           const quantityField = screen.getByDisplayValue('10')
 
           // when
-          userEvent.clear(quantityField)
-          userEvent.type(quantityField, '9')
+          fireEvent.change(quantityField, { target: { value: null } })
+          fireEvent.change(quantityField, { target: { value: '9' } })
 
           // then
           const initialRemainingQuantity = screen.queryByText(6)
@@ -1587,7 +1603,7 @@ describe('stocks page', () => {
           await renderOffers(props, store)
 
           // when
-          userEvent.clear(screen.getByDisplayValue('10'))
+          fireEvent.change(screen.getByDisplayValue('10'), { target: { value: null } })
 
           // then
           const computedRemainingQuantity = screen.getByText('Illimité')
@@ -1618,18 +1634,20 @@ describe('stocks page', () => {
             await renderOffers(props, store)
 
             const priceField = screen.getByLabelText('Prix')
-            userEvent.clear(priceField)
-            userEvent.type(priceField, '14.01')
+            fireEvent.change(priceField, { target: { value: null } })
+            fireEvent.change(priceField, { target: { value: '14.01' } })
 
-            userEvent.click(screen.getByLabelText('Date limite de réservation'))
-            userEvent.click(screen.getByText('25'))
+            fireEvent.click(screen.getByLabelText('Date limite de réservation'))
+            fireEvent.click(screen.getByText('25'))
 
             const quantityField = screen.getByLabelText('Quantité')
-            userEvent.clear(quantityField)
-            userEvent.type(quantityField, '6')
+            fireEvent.change(quantityField, { target: { value: null } })
+            fireEvent.change(quantityField, { target: { value: '6' } })
 
             // When
-            userEvent.click(screen.getByText('Enregistrer'))
+            await act(async () => {
+              fireEvent.click(screen.getByText('Enregistrer'))
+            })
 
             // Then
             expect(pcapi.bulkCreateOrEditStock).toHaveBeenCalledWith(defaultOffer.id, [
@@ -1664,7 +1682,7 @@ describe('stocks page', () => {
 
             // When
             await act(async () => {
-              await userEvent.click(screen.getByText('Enregistrer'))
+              fireEvent.click(screen.getByText('Enregistrer'))
             })
 
             // Then
@@ -1675,11 +1693,11 @@ describe('stocks page', () => {
             // Given
             pcapi.bulkCreateOrEditStock.mockResolvedValue({})
             await renderOffers(props, store)
-            userEvent.click(screen.getByLabelText('Date limite de réservation'))
-            userEvent.click(screen.getByText('19'))
+            fireEvent.click(screen.getByLabelText('Date limite de réservation'))
+            fireEvent.click(screen.getByText('19'))
 
             // When
-            userEvent.click(screen.getByText('Enregistrer'))
+            fireEvent.click(screen.getByText('Enregistrer'))
 
             // Then
             const savedStocks = pcapi.bulkCreateOrEditStock.mock.calls[0][1]
@@ -1692,11 +1710,11 @@ describe('stocks page', () => {
 
             pcapi.bulkCreateOrEditStock.mockResolvedValue({})
             await renderOffers(props, store)
-            userEvent.click(screen.getByLabelText('Date limite de réservation'))
-            userEvent.click(screen.getByText('17'))
+            fireEvent.click(screen.getByLabelText('Date limite de réservation'))
+            fireEvent.click(screen.getByText('17'))
 
             // When
-            userEvent.click(screen.getByText('Enregistrer'))
+            fireEvent.click(screen.getByText('Enregistrer'))
 
             // Then
             const savedStocks = pcapi.bulkCreateOrEditStock.mock.calls[0][1]
@@ -1707,10 +1725,12 @@ describe('stocks page', () => {
             // Given
             pcapi.bulkCreateOrEditStock.mockResolvedValue({})
             await renderOffers(props, store)
-            userEvent.clear(screen.getByLabelText('Date limite de réservation'))
+            fireEvent.change(screen.getByLabelText('Date limite de réservation'), {
+              target: { value: null },
+            })
 
             // When
-            userEvent.click(screen.getByText('Enregistrer'))
+            fireEvent.click(screen.getByText('Enregistrer'))
 
             // Then
             const savedStocks = pcapi.bulkCreateOrEditStock.mock.calls[0][1]
@@ -1721,10 +1741,10 @@ describe('stocks page', () => {
             // Given
             pcapi.bulkCreateOrEditStock.mockResolvedValue({})
             await renderOffers(props, store)
-            userEvent.clear(screen.getByLabelText('Quantité'))
+            fireEvent.change(screen.getByLabelText('Quantité'), { target: { value: null } })
 
             // When
-            userEvent.click(screen.getByText('Enregistrer'))
+            fireEvent.click(screen.getByText('Enregistrer'))
             // Then
             const savedStocks = pcapi.bulkCreateOrEditStock.mock.calls[0][1]
             expect(savedStocks[0].quantity).toBeNull()
@@ -1740,10 +1760,10 @@ describe('stocks page', () => {
             })
             await renderOffers(props, store)
 
-            userEvent.type(screen.getByLabelText('Quantité'), '10')
+            fireEvent.change(screen.getByLabelText('Quantité'), { target: { value: '10' } })
 
             // When
-            await userEvent.click(screen.getByText('Enregistrer'))
+            fireEvent.click(screen.getByText('Enregistrer'))
 
             // Then
             const errorMessage = await screen.findByText(
@@ -1756,11 +1776,11 @@ describe('stocks page', () => {
             // Given
             await renderOffers(props, store)
 
-            userEvent.type(screen.getByLabelText('Prix'), '-10')
-            userEvent.type(screen.getByLabelText('Quantité'), '-20')
+            fireEvent.change(screen.getByLabelText('Prix'), { target: { value: '-10' } })
+            fireEvent.change(screen.getByLabelText('Quantité'), { target: { value: '-20' } })
 
             // When
-            await userEvent.click(screen.getByText('Enregistrer'))
+            fireEvent.click(screen.getByText('Enregistrer'))
 
             // Then
             const errorMessage = await screen.findByText(
@@ -1774,10 +1794,10 @@ describe('stocks page', () => {
             pcapi.bulkCreateOrEditStock.mockResolvedValue({})
             await renderOffers(props, store)
 
-            userEvent.type(screen.getByLabelText('Quantité'), '10')
+            fireEvent.change(screen.getByLabelText('Quantité'), { target: { value: '10' } })
 
             // When
-            await userEvent.click(screen.getByText('Enregistrer'))
+            fireEvent.click(screen.getByText('Enregistrer'))
 
             // Then
             const errorMessage = await screen.findByText('Vos stocks ont bien été sauvegardés.')
@@ -1929,10 +1949,10 @@ describe('stocks page', () => {
         }
         pcapi.loadStocks.mockResolvedValue({ stocks: [eventStock] })
         await renderOffers(props, store)
-        userEvent.click(screen.getByText('Ajouter une date'))
+        fireEvent.click(screen.getByText('Ajouter une date'))
 
         // when
-        userEvent.click(screen.getByText('Ajouter une date'))
+        fireEvent.click(screen.getByText('Ajouter une date'))
 
         // then
         expect(screen.getAllByRole('row')).toHaveLength(4)
@@ -1947,7 +1967,7 @@ describe('stocks page', () => {
         await renderOffers(props, store)
 
         // when
-        userEvent.click(screen.getByText('Ajouter une date'))
+        fireEvent.click(screen.getByText('Ajouter une date'))
 
         // then
         expect(screen.getByLabelText('Date de l’événement').value).toBe('')
@@ -1962,7 +1982,7 @@ describe('stocks page', () => {
         await renderOffers(props, store)
 
         // when
-        userEvent.click(screen.getByText('Ajouter une date'))
+        fireEvent.click(screen.getByText('Ajouter une date'))
 
         // then
         const columnCells = screen.getAllByRole('cell')
@@ -1975,7 +1995,7 @@ describe('stocks page', () => {
         await renderOffers(props, store)
 
         // when
-        userEvent.click(screen.getByText('Ajouter une date'))
+        fireEvent.click(screen.getByText('Ajouter une date'))
 
         // then
         expect(screen.queryByTitle('Supprimer le stock')).toBeInTheDocument()
@@ -2041,7 +2061,7 @@ describe('stocks page', () => {
 
         // when
         await act(async () => {
-          await fireEvent.click(screen.getByText('Enregistrer'))
+          fireEvent.click(screen.getByText('Enregistrer'))
         })
 
         // then
@@ -2064,10 +2084,11 @@ describe('stocks page', () => {
       it('should cancel new stock addition when clicking on cancel button', async () => {
         // Given
         await renderOffers(props, store)
-        userEvent.click(screen.getByText('Ajouter une date'))
+        fireEvent.click(screen.getByText('Ajouter une date'))
 
         // When
         userEvent.click(screen.getByTitle('Opérations sur le stock'))
+
         userEvent.click(screen.getByTitle('Supprimer le stock'))
 
         // Then
@@ -2080,7 +2101,7 @@ describe('stocks page', () => {
         await renderOffers(props, store)
 
         // When
-        userEvent.click(screen.getByText('Ajouter une date'))
+        fireEvent.click(screen.getByText('Ajouter une date'))
 
         // Then
         expect(screen.getByText('Ajouter une date')).toBeEnabled()
@@ -2095,18 +2116,18 @@ describe('stocks page', () => {
           },
         })
         await renderOffers(props, store)
-        userEvent.click(screen.getByText('Ajouter une date'))
+        fireEvent.click(screen.getByText('Ajouter une date'))
 
-        userEvent.click(screen.getByLabelText('Date de l’événement'))
-        userEvent.click(screen.getByText('26'))
+        fireEvent.click(screen.getByLabelText('Date de l’événement'))
+        fireEvent.click(screen.getByText('26'))
 
-        userEvent.click(screen.getByLabelText('Heure de l’événement'))
-        userEvent.click(screen.getByText('20:00'))
+        fireEvent.click(screen.getByLabelText('Heure de l’événement'))
+        fireEvent.click(screen.getByText('20:00'))
 
-        userEvent.type(screen.getByLabelText('Prix'), '10')
+        fireEvent.change(screen.getByLabelText('Prix'), { target: { value: '10' } })
 
         // When
-        await userEvent.click(screen.getByText('Enregistrer'))
+        fireEvent.click(screen.getByText('Enregistrer'))
 
         // Then
         const errorMessage = await screen.findByText(
@@ -2118,19 +2139,19 @@ describe('stocks page', () => {
       it('should display error message on pre-submit error', async () => {
         // Given
         await renderOffers(props, store)
-        userEvent.click(screen.getByText('Ajouter une date'))
+        fireEvent.click(screen.getByText('Ajouter une date'))
 
-        userEvent.click(screen.getByLabelText('Date de l’événement'))
-        userEvent.click(screen.getByText('26'))
+        fireEvent.click(screen.getByLabelText('Date de l’événement'))
+        fireEvent.click(screen.getByText('26'))
 
-        userEvent.click(screen.getByLabelText('Heure de l’événement'))
-        userEvent.click(screen.getByText('20:00'))
+        fireEvent.click(screen.getByLabelText('Heure de l’événement'))
+        fireEvent.click(screen.getByText('20:00'))
 
-        userEvent.type(screen.getByLabelText('Prix'), '-10')
-        userEvent.type(screen.getByLabelText('Quantité'), '-20')
+        fireEvent.change(screen.getByLabelText('Prix'), { target: { value: '-10' } })
+        fireEvent.change(screen.getByLabelText('Quantité'), { target: { value: '-20' } })
 
         // When
-        await userEvent.click(screen.getByText('Enregistrer'))
+        fireEvent.click(screen.getByText('Enregistrer'))
 
         // Then
         const errorMessage = await screen.findByText(
@@ -2155,7 +2176,7 @@ describe('stocks page', () => {
         fireEvent.change(screen.getByLabelText('Prix'), { target: { value: '10' } })
 
         // When
-        await fireEvent.click(screen.getByText('Enregistrer'))
+        fireEvent.click(screen.getByText('Enregistrer'))
 
         // Then
         const errorMessage = await screen.findByText('Vos stocks ont bien été sauvegardés.')
@@ -2226,7 +2247,7 @@ describe('stocks page', () => {
         await renderOffers(props, store)
 
         // when
-        userEvent.click(screen.getByText('Ajouter un stock'))
+        fireEvent.click(screen.getByText('Ajouter un stock'))
 
         // then
         expect(screen.queryByText('Stock restant')).not.toBeInTheDocument()
@@ -2244,7 +2265,7 @@ describe('stocks page', () => {
         await renderOffers(props, store)
 
         // when
-        userEvent.click(screen.getByText('Ajouter un stock'))
+        fireEvent.click(screen.getByText('Ajouter un stock'))
 
         // then
         expect(screen.getAllByRole('row')).toHaveLength(2)
@@ -2255,7 +2276,7 @@ describe('stocks page', () => {
         await renderOffers(props, store)
 
         // when
-        userEvent.click(screen.getByText('Ajouter un stock'))
+        fireEvent.click(screen.getByText('Ajouter un stock'))
 
         // then
         expect(screen.getByLabelText('Prix').value).toBe('')
@@ -2268,7 +2289,7 @@ describe('stocks page', () => {
         await renderOffers(props, store)
 
         // when
-        userEvent.click(screen.getByText('Ajouter un stock'))
+        fireEvent.click(screen.getByText('Ajouter un stock'))
 
         // then
         expect(screen.queryByText('Stock restant')).not.toBeInTheDocument()
@@ -2280,7 +2301,7 @@ describe('stocks page', () => {
         await renderOffers(props, store)
 
         // when
-        userEvent.click(screen.getByText('Ajouter un stock'))
+        fireEvent.click(screen.getByText('Ajouter un stock'))
 
         // then
         expect(screen.queryByTitle('Supprimer le stock')).toBeInTheDocument()
@@ -2302,18 +2323,18 @@ describe('stocks page', () => {
           .mockResolvedValueOnce({ stocks: [createdStock] })
         await renderOffers(props, store)
 
-        userEvent.click(screen.getByText('Ajouter un stock'))
+        fireEvent.click(screen.getByText('Ajouter un stock'))
 
-        userEvent.type(screen.getByLabelText('Prix'), '15')
+        fireEvent.change(screen.getByLabelText('Prix'), { target: { value: '15' } })
 
-        userEvent.click(screen.getByLabelText('Date limite de réservation'))
-        userEvent.click(screen.getByText('22'))
+        fireEvent.click(screen.getByLabelText('Date limite de réservation'))
+        fireEvent.click(screen.getByText('22'))
 
-        userEvent.type(screen.getByLabelText('Quantité'), '15')
+        fireEvent.change(screen.getByLabelText('Quantité'), { target: { value: '15' } })
 
         // when
         await act(async () => {
-          await userEvent.click(screen.getByText('Enregistrer'))
+          fireEvent.click(screen.getByText('Enregistrer'))
         })
 
         // then
@@ -2335,12 +2356,12 @@ describe('stocks page', () => {
           },
         })
         await renderOffers(props, store)
-        userEvent.click(screen.getByText('Ajouter un stock'))
+        fireEvent.click(screen.getByText('Ajouter un stock'))
 
-        userEvent.type(screen.getByLabelText('Quantité'), '15')
+        fireEvent.change(screen.getByLabelText('Quantité'), { target: { value: '15' } })
 
         // When
-        await userEvent.click(screen.getByText('Enregistrer'))
+        fireEvent.click(screen.getByText('Enregistrer'))
 
         // Then
         const errorMessage = await screen.findByText(
@@ -2352,13 +2373,13 @@ describe('stocks page', () => {
       it('should display error message on pre-submit error', async () => {
         // Given
         await renderOffers(props, store)
-        userEvent.click(screen.getByText('Ajouter un stock'))
+        fireEvent.click(screen.getByText('Ajouter un stock'))
 
-        userEvent.type(screen.getByLabelText('Prix'), '-10')
-        userEvent.type(screen.getByLabelText('Quantité'), '-20')
+        fireEvent.change(screen.getByLabelText('Prix'), { target: { value: '-10' } })
+        fireEvent.change(screen.getByLabelText('Quantité'), { target: { value: '-20' } })
 
         // When
-        await userEvent.click(screen.getByText('Enregistrer'))
+        fireEvent.click(screen.getByText('Enregistrer'))
 
         // Then
         const errorMessage = await screen.findByText(
@@ -2372,13 +2393,13 @@ describe('stocks page', () => {
         // Given
         pcapi.bulkCreateOrEditStock.mockResolvedValue({})
         await renderOffers(props, store)
-        userEvent.click(screen.getByText('Ajouter un stock'))
+        fireEvent.click(screen.getByText('Ajouter un stock'))
 
-        userEvent.type(screen.getByLabelText('Prix'), '15')
-        userEvent.type(screen.getByLabelText('Quantité'), '15')
+        fireEvent.change(screen.getByLabelText('Prix'), { target: { value: '15' } })
+        fireEvent.change(screen.getByLabelText('Quantité'), { target: { value: '15' } })
 
         // When
-        await userEvent.click(screen.getByText('Enregistrer'))
+        fireEvent.click(screen.getByText('Enregistrer'))
 
         // Then
         const errorMessage = await screen.findByText('Vos stocks ont bien été sauvegardés.')
@@ -2388,7 +2409,7 @@ describe('stocks page', () => {
       it('should cancel new stock addition when clicking on cancel button', async () => {
         // Given
         await renderOffers(props, store)
-        userEvent.click(screen.getByText('Ajouter un stock'))
+        fireEvent.click(screen.getByText('Ajouter un stock'))
 
         // When
         userEvent.click(screen.getByTitle('Supprimer le stock'))
