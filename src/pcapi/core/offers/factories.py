@@ -84,7 +84,7 @@ class VenueTypeFactory(BaseFactory):
 
 class VenueLabelFactory(BaseFactory):
     class Meta:
-        model = models.VenueLabelSQLEntity
+        model = models.VenueLabel
 
     label = "Cinéma d'art et d'essai"
 

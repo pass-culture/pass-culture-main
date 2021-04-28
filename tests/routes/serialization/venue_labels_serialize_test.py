@@ -1,14 +1,15 @@
-from pcapi.domain.venue.venue_label.venue_label import VenueLabel
-from pcapi.routes.serialization.venue_labels_serialize import serialize_venue_label
+from pcapi.core.offerers.models import VenueLabel
+from pcapi.routes.serialization.venue_labels_serialize import VenueLabelResponseModel
+from pcapi.utils.human_ids import humanize
 
 
 class SerializeVenueLabelsTest:
-    def test_should_return_dict_with_expected_information(self):
+    def should_return_dict_with_expected_information(self):
         # Given
-        venue_label = VenueLabel(identifier=12, label="Maison des illustres")
+        venue_label = VenueLabel(id=1, label="Maison des illustres")
 
         # When
-        response = serialize_venue_label(venue_label)
+        serialized_label_response = VenueLabelResponseModel.from_orm(venue_label)
 
         # Then
-        assert response == {"id": "BQ", "label": "Maison des illustres"}
+        assert serialized_label_response == {"id": humanize(venue_label.id), "label": venue_label.label}

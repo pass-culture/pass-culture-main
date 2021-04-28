@@ -189,6 +189,14 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ve
         )
 
 
+class VenueLabel(PcObject, Model):
+    __tablename__ = "venue_label"
+
+    label = Column(String(100), nullable=False)
+
+    venue = relationship("Venue")
+
+
 @listens_for(Venue, "before_insert")
 def before_insert(mapper, connect, self):
     _fill_departement_code_from_postal_code(self)

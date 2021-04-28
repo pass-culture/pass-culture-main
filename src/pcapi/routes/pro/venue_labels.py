@@ -1,14 +1,17 @@
-from flask import jsonify
 from flask_login import login_required
 
+from pcapi.core.offerers import repository as offerers_repository
 from pcapi.flask_app import private_api
-from pcapi.infrastructure.container import get_venue_labels
-from pcapi.routes.serialization.venue_labels_serialize import serialize_venue_label
+from pcapi.routes.serialization.venue_labels_serialize import VenueLabelListResponseModel
+from pcapi.routes.serialization.venue_labels_serialize import VenueLabelResponseModel
+from pcapi.serialization.decorator import spectree_serialize
 
 
-# @debt api-migration
 @private_api.route("/venue-labels", methods=["GET"])
 @login_required
-def fetch_venue_labels():
-    venue_labels = get_venue_labels.execute()
-    return jsonify([serialize_venue_label(venue_label) for venue_label in venue_labels]), 200
+@spectree_serialize(response_model=VenueLabelListResponseModel)
+def fetch_venue_labels() -> VenueLabelListResponseModel:
+    venue_label_list = [
+        VenueLabelResponseModel.from_orm(venue_label) for venue_label in offerers_repository.get_all_venue_labels()
+    ]
+    return VenueLabelListResponseModel(__root__=venue_label_list)

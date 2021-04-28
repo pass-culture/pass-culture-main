@@ -8,14 +8,11 @@ from pcapi.infrastructure.repository.stock_provider.stock_provider_fnac import S
 from pcapi.infrastructure.repository.stock_provider.stock_provider_libraires import StockProviderLibrairesRepository
 from pcapi.infrastructure.repository.stock_provider.stock_provider_praxiel import StockProviderPraxielRepository
 from pcapi.infrastructure.repository.stock_provider.stock_provider_titelive import StockProviderTiteLiveRepository
-from pcapi.infrastructure.repository.venue.venue_label.venue_label_sql_repository import VenueLabelSQLRepository
 from pcapi.use_cases.get_bookings_for_beneficiary import GetBookingsForBeneficiary
-from pcapi.use_cases.get_venue_labels import GetVenueLabels
 from pcapi.use_cases.list_offerers_for_pro_user import ListOfferersForProUser
 
 
 beneficiary_bookings_repository = BeneficiaryBookingsSQLRepository()
-venue_label_repository = VenueLabelSQLRepository()
 paginated_offerers_repository = PaginatedOfferersSQLRepository()
 
 api_libraires_stocks = StockProviderLibrairesRepository()
@@ -24,8 +21,6 @@ api_titelive_stocks = StockProviderTiteLiveRepository()
 api_praxiel_stocks = StockProviderPraxielRepository()
 
 # Usecases
-get_venue_labels = GetVenueLabels(venue_label_repository=venue_label_repository)
-
 get_bookings_for_beneficiary = GetBookingsForBeneficiary(
     beneficiary_bookings_repository=beneficiary_bookings_repository
 )

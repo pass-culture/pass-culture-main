@@ -2,6 +2,7 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.mails.models import Email
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
+from pcapi.core.offerers.models import VenueLabel
 from pcapi.core.offers.models import ActivationCode
 from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
@@ -44,7 +45,6 @@ from pcapi.models.product import Product
 from pcapi.models.providable_mixin import ProvidableMixin
 from pcapi.models.user_offerer import UserOfferer
 from pcapi.models.user_session import UserSession
-from pcapi.models.venue_label_sql_entity import VenueLabelSQLEntity
 from pcapi.models.venue_type import VenueType
 from pcapi.models.versioned_mixin import VersionedMixin
 
@@ -95,7 +95,7 @@ __all__ = (
     "UserSession",
     "Venue",
     "VenueType",
-    "VenueLabelSQLEntity",
+    "VenueLabel",
 )
 
 # Order matters
@@ -105,7 +105,7 @@ models = (
     Provider,
     Offerer,
     UserOfferer,
-    VenueLabelSQLEntity,
+    VenueLabel,
     VenueType,
     Venue,
     ApiKey,

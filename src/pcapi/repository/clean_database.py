@@ -1,6 +1,7 @@
 from pcapi import settings
 from pcapi.core.mails.models import Email
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offerers.models import VenueLabel
 from pcapi.core.offers.models import ActivationCode
 from pcapi.core.offers.models import Mediation
 from pcapi.core.providers.models import AllocineVenueProvider
@@ -36,7 +37,6 @@ from pcapi.models import VenueType
 from pcapi.models.activity import load_activity
 from pcapi.models.db import db
 from pcapi.models.install import install_features
-from pcapi.models.venue_label_sql_entity import VenueLabelSQLEntity
 
 
 def clean_all_database(*args, **kwargs):
@@ -79,7 +79,7 @@ def clean_all_database(*args, **kwargs):
     Provider.query.delete()
     AllocinePivot.query.delete()
     VenueType.query.delete()
-    VenueLabelSQLEntity.query.delete()
+    VenueLabel.query.delete()
     db.session.commit()
     install_features()
     install_local_providers()

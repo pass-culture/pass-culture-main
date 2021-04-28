@@ -1,9 +1,17 @@
-from pcapi.domain.venue.venue_label.venue_label import VenueLabel
-from pcapi.utils.human_ids import humanize
+from pydantic import BaseModel
+
+from pcapi.serialization.utils import humanize_field
 
 
-def serialize_venue_label(venue_label: VenueLabel) -> dict:
-    return {
-        "id": humanize(venue_label.identifier),
-        "label": venue_label.label,
-    }
+class VenueLabelResponseModel(BaseModel):
+    id: str
+    label: str
+
+    _humanize_id = humanize_field("id")
+
+    class Config:
+        orm_mode = True
+
+
+class VenueLabelListResponseModel(BaseModel):
+    __root__: list[VenueLabelResponseModel]

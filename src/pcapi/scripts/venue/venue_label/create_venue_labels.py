@@ -1,9 +1,9 @@
-from pcapi.models import VenueLabelSQLEntity
+from pcapi.core.offerers.models import VenueLabel
 from pcapi.repository import repository
 
 
 def create_venue_labels():
-    venue_labels = [
+    venue_label_strings = [
         "Architecture contemporaine remarquable",
         "CAC - Centre d'art contemporain d'intérêt national",
         "CCN - Centre chorégraphique national",
@@ -34,13 +34,13 @@ def create_venue_labels():
         "Ville et Pays d'art et d'histoire",
     ]
 
-    save_new_venue_labels(venue_labels)
+    save_new_venue_labels(venue_label_strings)
 
 
-def save_new_venue_labels(venue_labels: list[str]):
-    venue_label_sql_entities = []
-    for venue_label in venue_labels:
-        venue_label_sql_entity = VenueLabelSQLEntity()
-        venue_label_sql_entity.label = venue_label
-        venue_label_sql_entities.append(venue_label_sql_entity)
-    repository.save(*venue_label_sql_entities)
+def save_new_venue_labels(venue_label_strings: list[str]):
+    venue_label_list = []
+    for label_string in venue_label_strings:
+        venue_label = VenueLabel()
+        venue_label.label = label_string
+        venue_label_list.append(venue_label)
+    repository.save(*venue_label_list)

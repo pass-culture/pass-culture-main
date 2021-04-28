@@ -2,8 +2,13 @@ from typing import Optional
 
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
+from pcapi.core.offerers.models import VenueLabel
 from pcapi.core.users.models import User
 from pcapi.models.user_offerer import UserOfferer
+
+
+def get_all_venue_labels() -> list[VenueLabel]:
+    return VenueLabel.query.all()
 
 
 def get_all_offerers_for_user(user: User, filters: dict) -> list[Offerer]:
