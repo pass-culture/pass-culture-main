@@ -1,0 +1,373 @@
+# Default values for passculture.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+gcp:
+  projectId: passculture-metier-ehp
+  appName: pcapi-testing
+
+image:
+  repository: europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry/pcapi
+  tag: latest
+  pullPolicy: Always
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+podAnnotations: {}
+podSecurityContext: {}
+securityContext: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}
+serviceAccount:
+  create: true
+  annotations:
+    iam.gke.io/gcp-service-account: metier-testing-pcapi@passculture-metier-ehp.iam.gserviceaccount.com
+
+### API deployment ###
+api:
+  enabled: true
+
+  containerPort : 5000
+
+  probePath: /health/api
+
+  service:
+    type: ClusterIP
+    port: 80
+
+  resources:
+    limits:
+      cpu: 1
+      memory: 2Gi
+    requests:
+      cpu: 700m
+      memory: 1536Mi
+
+  replicaCount: 1
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 2
+    targetCPUUtilization: 70
+    # Enable this option to scale on memory percentage
+    # targetMemoryUtilization: 70
+
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/use-regex: "true"
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/proxy-body-size: 10m
+      cert-manager.io/cluster-issuer: letsencrypt-production
+    hosts:
+      - host: backend.passculture-testing.beta.gouv.fr
+        paths:
+          - path: /
+    tls:
+    - secretName: pcapi-ingress-cert
+      hosts:
+      - backend.passculture-testing.beta.gouv.fr
+
+### High Latency API deployment ###
+highLatencyApi:
+  enabled: true
+
+  containerPort : 5000
+
+  probePath: /health/api
+
+  resources:
+    limits:
+      cpu: 1
+      memory: 2Gi
+    requests:
+      cpu: 700m
+      memory: 1536Mi
+
+  replicaCount: 1
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 2
+    targetCPUUtilization: 70
+    # Enable this option to scale on memory percentage
+    # targetMemoryUtilization: 70
+
+  service:
+    type: ClusterIP
+    port: 80
+
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/use-regex: "true"
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/proxy-body-size: 10m
+      cert-manager.io/cluster-issuer: letsencrypt-production
+    hosts:
+      - host: backend.passculture-testing.beta.gouv.fr
+        paths:
+          - path: /bookings/pro$
+          - path: /offers$
+          - path: /offers/all-active-status$
+          - path: /offerers$
+          - path: /venues$
+          - path: /venues/(.*)/stats$
+          - path: /venueProviders$
+    tls:
+    - secretName: pcapi-ingress-cert
+      hosts:
+      - backend.passculture-testing.beta.gouv.fr
+
+### Admin deployment ###
+admin:
+  enabled: true
+
+  containerPort : 5000
+
+  probePath: /health/api
+
+  resources:
+    limits:
+      cpu: 1
+      memory: 2Gi
+    requests:
+      cpu: 500m
+      memory: 1Gi
+
+  service:
+    type: ClusterIP
+    port: 80
+
+  replicaCount: 1
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/use-regex: "true"
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/proxy-body-size: 10m
+      cert-manager.io/cluster-issuer: letsencrypt-production
+    hosts:
+      - host: backend.passculture-testing.beta.gouv.fr
+        paths:
+          - path: /pc/back-office/
+    tls:
+    - secretName: pcapi-ingress-cert
+      hosts:
+      - backend.passculture-testing.beta.gouv.fr
+
+### Worker deployment ###
+workers:
+  - name: worker
+    enabled: true
+    replicaCount: 1
+    command:
+      - python
+    args:
+      - src/pcapi/workers/worker.py
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 300m
+        memory: 384Mi
+  - name: worker-low
+    enabled: true
+    replicaCount: 1
+    command:
+      - python
+    args:
+      - src/pcapi/workers/worker.py
+      - low
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 300m
+        memory: 384Mi
+
+### Cron deployments ###
+crons:
+
+  replicaCount: 1
+
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 300m
+      memory: 768Mi
+
+  cron:
+    import_users:
+      enabled: false
+      command:
+        - python
+      args:
+        - echo
+        - "Wrong_Env"
+    clock:
+      enabled: true
+      command:
+        - python
+      args:
+        - src/pcapi/scheduled_tasks/clock.py
+    algolia:
+      enabled: true
+      command:
+        - python
+      args:
+        - src/pcapi/scheduled_tasks/algolia_clock.py
+    titelive:
+      enabled: true
+      command:
+        - python
+      args:
+        - src/pcapi/scheduled_tasks/titelive_clock.py
+    sandbox_deployer:
+      enabled: true
+      schedule: "0 23 * * 1"
+      command:
+        - python
+      args:
+        - src/pcapi/scripts/pc.py
+        - sandbox
+        - --name=industrial
+
+### Console deployment ###
+console:
+  enabled: true
+
+  replicaCount: 1
+
+  resources:
+    limits:
+      cpu: 1
+      memory: 2Gi
+    requests:
+      cpu: 200m
+      memory: 512Mi
+
+aide:
+  enabled: false
+
+configmapApi:
+   DATABASE_STATEMENT_TIMEOUT: 60000
+
+configmap:
+  ENV: testing
+  NLTK_DATA: /root/nltk_data
+  GCP_BUCKET_NAME: passculture-metier-ehp-testing-assets
+  GUNICORN_PORT: 5000
+  GUNICORN_MAX_REQUESTS: 3000
+  GUNICORN_MAX_REQUESTS_JITTER: 10
+  GUNICORN_WORKERS: 2
+  GUNICORN_THREADS: 10
+  GUNICORN_TIMEOUT: 90
+  OBJECT_STORAGE_PROVIDER: OVH,GCP
+
+secrets:
+  - name: ADMINISTRATION_EMAIL_ADDRESS
+    version: 3
+  - name: ALGOLIA_API_KEY
+    version: 3
+  - name: ALGOLIA_APPLICATION_ID
+    version: 2
+  - name: ALLOCINE_API_KEY
+    version: 2
+  - name: BATCH_SECRET_API_KEY
+    version: 1
+  - name: DATABASE_URL
+    version: 4
+  - name: DEMARCHES_SIMPLIFIEES_TOKEN
+    version: 2
+  - name: DEMARCHES_SIMPLIFIEES_WEBHOOK_TOKEN
+    version: 2
+  - name: DEV_EMAIL_ADDRESS
+    version: 4
+  - name: EXPORT_TOKEN
+    version: 2
+  - name: FLASK_SECRET
+    version: 2
+  - name: FTP_TITELIVE_PWD
+    version: 2
+  - name: FTP_TITELIVE_URI
+    version: 2
+  - name: FTP_TITELIVE_USER
+    version: 2
+  - name: GCP_BUCKET_CREDENTIALS
+    version: 7
+  - name: JOUVE_API_DOMAIN
+    version: 5
+  - name: JOUVE_PASSWORD
+    version: 3
+  - name: JOUVE_USERNAME
+    version: 3
+  - name: JOUVE_VAULT_GUID
+    version: 4
+  - name: JWT_SECRET_KEY
+    version: 2
+  - name: MAILJET_API_KEY
+    version: 2
+  - name: MAILJET_API_SECRET
+    version: 2
+  - name: NATIVE_RECAPTCHA_SECRET
+    version: 1
+  - name: OVH_BUCKET_NAME
+    version: 2
+  - name: OVH_PASSWORD
+    version: 2
+  - name: OVH_REGION_NAME
+    version: 2
+  - name: OVH_TENANT_NAME
+    version: 2
+  - name: OVH_USER
+    version: 2
+  - name: PASS_CULTURE_BIC
+    version: 2
+  - name: PASS_CULTURE_IBAN
+    version: 2
+  - name: PASS_CULTURE_REMITTANCE_CODE
+    version: 2
+  - name: PAYMENTS_DETAILS_RECIPIENTS
+    version: 2
+  - name: PAYMENTS_REPORT_RECIPIENTS
+    version: 2
+  - name: PC_GOOGLE_KEY
+    version: 4
+  - name: PC_GOOGLE_KEY_64
+    version: 2
+  - name: PROVIDER_FNAC_BASIC_AUTHENTICATION_TOKEN
+    version: 2
+  - name: RECAPTCHA_SECRET
+    version: 2
+  - name: REDIS_URL
+    version: 2
+  - name: SENDINBLUE_API_KEY
+    version: 1
+  - name: SENTRY_DSN
+    version: 2
+  - name: SUPPORT_EMAIL_ADDRESS
+    version: 2
+  - name: TRANSACTIONS_RECIPIENTS
+    version: 2
+  - name: WALLET_BALANCES_RECIPIENTS
+    version: 2
+  - name: WHITELISTED_EMAIL_RECIPIENTS
+    version: 1
+  - name: WHITELISTED_SMS_RECIPIENTS
+    version: 1
+    
