@@ -245,7 +245,7 @@ class SynchronizeStocksTest:
             {
                 "id": 1,
                 "quantity": 15 + 3,
-                "price": 7.01,
+                "price": 15.78,
                 "rawProviderQuantity": 15,
             }
         ]
@@ -254,7 +254,7 @@ class SynchronizeStocksTest:
         assert new_stock.quantity == 17
         assert new_stock.bookingLimitDatetime is None
         assert new_stock.offerId == 134
-        assert new_stock.price == 9.02
+        assert new_stock.price == 28.989
         assert new_stock.idAtProviders == "stock_ref2"
 
         assert offer_ids == set([123, 134])

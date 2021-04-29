@@ -4,6 +4,8 @@ from typing import Union
 
 from pydantic import BaseModel
 from pydantic import Field
+from pydantic import condecimal
+from pydantic import validator
 
 from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import humanize_field
@@ -95,6 +97,21 @@ class UpdateVenueStockBodyModel(BaseModel):
 
     ref: str = Field(title="ISBN", description="Format: EAN13")
     available: int
+    price: condecimal(decimal_places=2) = Field(None, description="prix en Euros avec 2 décimales possibles")
+
+    @validator("price", pre=True)
+    def empty_string_price_casted_to_none(cls, v):  # pylint: disable=no-self-argument
+        # Performed before Pydantic validators to catch empty strings but will not get "0"
+        if not v:
+            return None
+        return v
+
+    @validator("price")
+    def zero_price_casted_to_none(cls, v):  # pylint: disable=no-self-argument
+        # Performed before Pydantic validators to catch empty strings but will not get "0"
+        if not v:
+            return None
+        return v
 
     class Config:
         title = "Stock"

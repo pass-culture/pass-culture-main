@@ -84,7 +84,7 @@ def update_stocks(venue_id: int, body: UpdateVenueStocksBodyModel) -> None:
 
     This endpoint can only works for venues attached to the same account the api key was issued for.
     Only books, pre existing on the pass Culture database and whitelisted by pass Culture's cgu will be taken, all other stocks are filtered.
-    Stocks are references by their isbn format EAN13.
+    Stocks are referenced by their isbn format EAN13.
     The 'available' quantity is the number of items that could be bought at the library.
     """
     offerer_id = current_api_key.offererId
@@ -102,5 +102,6 @@ def _build_stock_details_from_body(raw_stocks: List[UpdateVenueStockBodyModel], 
             "offers_provider_reference": f"{stock.ref}@{str(venue_id)}",
             "stocks_provider_reference": f"{stock.ref}@{str(venue_id)}",
             "available_quantity": stock.available,
+            "price": stock.price,
         }
     return list(stock_details.values())
