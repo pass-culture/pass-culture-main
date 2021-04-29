@@ -58,6 +58,7 @@ def retrieve_data_for_beneficiary_booking_confirmation_email(booking: Booking) -
         code_expiration_date = get_date_formatted_for_email(booking.activationCode.expirationDate)
 
     booking_token = booking.activationCode.code if booking.activationCode else booking.token
+    has_offer_url = 1 if is_digital_offer else 0
 
     return {
         "MJ-TemplateID": 2841128,
@@ -86,5 +87,7 @@ def retrieve_data_for_beneficiary_booking_confirmation_email(booking: Booking) -
             "offer_id": offer_id,
             "mediation_id": mediation_id,
             "can_expire": can_expire,
+            "has_offer_url": has_offer_url,
+            "digital_offer_url": booking.completedUrl,
         },
     }

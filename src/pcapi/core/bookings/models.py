@@ -97,10 +97,11 @@ class Booking(PcObject, Model, VersionedMixin):
             return None
         if not url.startswith("http"):
             url = "http://" + url
+
+        token = self.activationCode.code if self.activationCode else self.token
+
         return (
-            url.replace("{token}", self.token)
-            .replace("{offerId}", humanize(offer.id))
-            .replace("{email}", self.user.email)
+            url.replace("{token}", token).replace("{offerId}", humanize(offer.id)).replace("{email}", self.user.email)
         )
 
     @staticmethod

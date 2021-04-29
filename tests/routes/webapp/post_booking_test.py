@@ -37,7 +37,9 @@ class Returns201:
     def test_booking_creation_with_activation_code(self, app):
         # Given
         user = users_factories.UserFactory()
-        stock = offers_factories.StockWithActivationCodesFactory(activationCodes=["code-vgya451afvyux"])
+        stock = offers_factories.StockWithActivationCodesFactory(
+            activationCodes=["code-vgya451afvyux"], offer__url="https://new.example.com?token={token}"
+        )
 
         # When
         data = {"stockId": humanize(stock.id), "quantity": 1}
@@ -49,7 +51,7 @@ class Returns201:
         booking = bookings_models.Booking.query.one()
         assert response.json == {
             "amount": 10.0,
-            "completedUrl": booking.completedUrl,
+            "completedUrl": "https://new.example.com?token=code-vgya451afvyux",
             "id": humanize(booking.id),
             "isCancelled": False,
             "quantity": 1,

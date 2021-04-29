@@ -58,6 +58,8 @@ def get_expected_base_email_data(booking, mediation, **overrides):
             "mediation_id": humanize(mediation.id),
             "code_expiration_date": None,
             "has_expiration_date": 0,
+            "has_offer_url": 0,
+            "digital_offer_url": None,
         },
     }
     email_data["Vars"].update(overrides)
@@ -160,6 +162,8 @@ class DigitalOffersTest:
             offer_name="Super offre numérique",
             offer_price="Gratuit",
             can_expire=1,
+            has_offer_url=1,
+            digital_offer_url="http://example.com",
         )
         assert email_data == expected
 
@@ -188,6 +192,8 @@ class DigitalOffersTest:
             offer_name="Super offre numérique",
             offer_price="Gratuit",
             can_expire=0,
+            has_offer_url=1,
+            digital_offer_url="http://example.com",
         )
 
         assert email_data == expected
@@ -196,10 +202,11 @@ class DigitalOffersTest:
 @pytest.mark.usefixtures("db_session")
 def test_use_activation_code_instead_of_token_if_possible():
     booking = make_booking(
+        user__email="used-email@example.com",
         quantity=10,
         stock__price=0,
         stock__offer__product__type=str(models.ThingType.AUDIOVISUEL),
-        stock__offer__product__url="http://example.com",
+        stock__offer__product__url="http://example.com?token={token}&offerId={offerId}&email={email}",
         stock__offer__name="Super offre numérique",
     )
     offers_factories.ActivationCodeFactory(stock=booking.stock, booking=booking, code="code-5uzk15fbha4")
@@ -221,6 +228,8 @@ def test_use_activation_code_instead_of_token_if_possible():
         can_expire=1,
         offer_token="code-5uzk15fbha4",
         code_expiration_date=None,
+        has_offer_url=1,
+        digital_offer_url=f"http://example.com?token=code-5uzk15fbha4&offerId={humanize(booking.stock.offer.id)}&email=used-email@example.com",
     )
     assert email_data == expected
 
@@ -256,6 +265,8 @@ def test_add_expiration_date_from_activation_code():
         offer_token="code-5uzk15fbha4",
         has_expiration_date=1,
         code_expiration_date="1 janvier 2030",
+        has_offer_url=1,
+        digital_offer_url="http://example.com",
     )
     assert email_data == expected
 

@@ -1,7 +1,3 @@
-from datetime import datetime
-
-from pcapi.core.offers.factories import StockWithActivationCodesFactory
-from pcapi.repository import repository
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_activation_offers import (
     create_industrial_activation_offers,
 )
