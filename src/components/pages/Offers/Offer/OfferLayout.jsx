@@ -135,7 +135,7 @@ const OfferLayout = ({ location, match }) => {
       </div>
       <LeavingOfferCreationDialog
         shouldBlockNavigation={shouldBlockNavigation}
-        when={isCreatingOffer}
+        when={isCreatingOffer && !location.pathname.includes('/confirmation')}
       />
     </div>
   )
