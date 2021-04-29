@@ -19,9 +19,17 @@ executors:
           username: _json_key  # default username when using a JSON key file to authenticate
           password: $GCP_INFRA_KEY
 
-  node-gcp:
+  node-gcp-12:
     docker:
       - image: ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/node-gcp:12
+        auth:
+          username: _json_key  # default username when using a JSON key file to authenticate
+          password: $GCP_INFRA_KEY
+
+
+  node-gcp-14:
+    docker:
+      - image: ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/node-gcp:14
         auth:
           username: _json_key  # default username when using a JSON key file to authenticate
           password: $GCP_INFRA_KEY
@@ -443,7 +451,7 @@ jobs:
           when: on_fail
 
   deploy-pro-cloudstorage:
-    executor: node-gcp
+    executor: node-gcp-14
     steps:
       - checkout
       - run: git submodule sync
@@ -497,7 +505,7 @@ jobs:
           when: on_fail
 
   deploy-webapp-cloudstorage:
-    executor: node-gcp
+    executor: node-gcp-12
     steps:
       - checkout
       - run: git submodule sync
