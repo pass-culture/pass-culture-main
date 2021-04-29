@@ -89,6 +89,11 @@ class BeneficiaryImport(PcObject, Model):
     def history(self):
         return "\n".join([repr(s) for s in self.statuses])
 
+    def get_detailed_source(self) -> str:
+        if self.source == BeneficiaryImportSources.demarches_simplifiees.value:
+            return f"démarches simplifiées dossier [{self.applicationId}]"
+        return f"dossier {self.source} [{self.applicationId}]"
+
     @classmethod
     def _query_last_status(cls, column: Column):
         return (

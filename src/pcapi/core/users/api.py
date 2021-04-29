@@ -3,6 +3,7 @@ from datetime import date
 from datetime import datetime
 from datetime import timedelta
 from decimal import Decimal
+from enum import Enum
 import logging
 import random
 import secrets
@@ -26,6 +27,7 @@ from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
 from pcapi.core.users.models import VOID_PUBLIC_NAME
+from pcapi.core.users.repository import get_beneficiary_import_for_beneficiary
 from pcapi.core.users.utils import decode_jwt_token
 from pcapi.core.users.utils import encode_jwt_payload
 from pcapi.core.users.utils import format_email
@@ -40,9 +42,11 @@ from pcapi.models import BeneficiaryImport
 from pcapi.models import Booking
 from pcapi.models import ImportStatus
 from pcapi.models.db import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.user_offerer import UserOfferer
 from pcapi.models.user_session import UserSession
 from pcapi.notifications.sms import send_transactional_sms
+from pcapi.repository import feature_queries
 from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
@@ -61,6 +65,11 @@ from ..offerers.models import Offerer
 
 UNCHANGED = object()
 logger = logging.getLogger(__name__)
+
+
+class BeneficiaryValidationStep(Enum):
+    PHONE_VALIDATION = "phone-validation"
+    ID_CHECK = "id-check"
 
 
 def create_email_validation_token(user: User) -> Token:
@@ -146,6 +155,24 @@ def create_account(
         request_email_confirmation(user)
 
     return user
+
+
+def check_and_activate_beneficiary(user: User) -> list[BeneficiaryValidationStep]:
+    missing_steps = []
+
+    if feature_queries.is_active(FeatureToggle.ENABLE_PHONE_VALIDATION) and not user.is_phone_validated:
+        missing_steps.append(BeneficiaryValidationStep.PHONE_VALIDATION)
+
+    beneficiary_import = get_beneficiary_import_for_beneficiary(user)
+    if not beneficiary_import:
+        missing_steps.append(BeneficiaryValidationStep.ID_CHECK)
+
+    if not missing_steps:
+        deposit_source = beneficiary_import.get_detailed_source()
+        activate_beneficiary(user, deposit_source)
+        repository.save(user)
+
+    return missing_steps
 
 
 def activate_beneficiary(user: User, deposit_source: str) -> User:

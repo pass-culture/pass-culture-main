@@ -10,7 +10,10 @@ from sqlalchemy.orm.query import Query
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_validator import _is_postal_code_eligible
 from pcapi.domain.favorite.favorite import FavoriteDomain
 from pcapi.infrastructure.repository.favorite import favorite_domain_converter
+from pcapi.models import BeneficiaryImport
+from pcapi.models import BeneficiaryImportStatus
 from pcapi.models import Booking
+from pcapi.models import ImportStatus
 from pcapi.models import Offer
 from pcapi.models import Stock
 from pcapi.models import UserOfferer
@@ -137,3 +140,13 @@ def get_booking_categories(user: User) -> list[str]:
     """Get a list of a user's (unique) categories"""
     offers = Offer.query.join(Stock).join(Booking).filter(Booking.userId == user.id).options(load_only(Offer.type))
     return list(set(offer.type for offer in offers))
+
+
+def get_beneficiary_import_for_beneficiary(user: User) -> Optional[BeneficiaryImport]:
+    return (
+        BeneficiaryImport.query.join(BeneficiaryImportStatus)
+        .filter(BeneficiaryImportStatus.status == ImportStatus.CREATED)
+        .filter(BeneficiaryImport.beneficiaryId == user.id)
+        .order_by(BeneficiaryImportStatus.date.desc())
+        .first()
+    )

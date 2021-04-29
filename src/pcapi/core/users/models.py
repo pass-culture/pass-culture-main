@@ -355,6 +355,10 @@ class User(PcObject, Model, NeedsValidationMixin, VersionedMixin):
             return None
         return eligibility_stop
 
+    @property
+    def is_phone_validated(self):
+        return self.phoneValidationStatus == PhoneValidationStatusType.VALIDATED
+
     def get_notification_subscriptions(self) -> NotificationSubscriptions:
         return NotificationSubscriptions(**self.notificationSubscriptions or {})
 

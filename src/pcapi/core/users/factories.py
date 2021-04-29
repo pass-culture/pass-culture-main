@@ -5,7 +5,11 @@ import factory
 
 from pcapi.core.testing import BaseFactory
 import pcapi.core.users.models
+from pcapi.models import BeneficiaryImport
+from pcapi.models import BeneficiaryImportStatus
 from pcapi.models import user_session
+from pcapi.models.beneficiary_import import BeneficiaryImportSources
+from pcapi.models.beneficiary_import_status import ImportStatus
 
 from . import constants
 from . import models
@@ -97,3 +101,23 @@ class FavoriteFactory(BaseFactory):
 
     offer = factory.SubFactory("pcapi.core.offers.factories.OfferFactory")
     user = factory.SubFactory(UserFactory)
+
+
+class BeneficiaryImportFactory(BaseFactory):
+    class Meta:
+        model = BeneficiaryImport
+
+    applicationId = factory.Sequence(lambda n: n)
+    beneficiary = factory.SubFactory("pcapi.core.users.factories.UserFactory")
+    source = BeneficiaryImportSources.jouve.value
+
+
+class BeneficiaryImportStatusFactory(BaseFactory):
+    class Meta:
+        model = BeneficiaryImportStatus
+
+    status = ImportStatus.CREATED.value
+    date = factory.Faker("date_time_between", start_date="-30d", end_date="-1d")
+    detail = factory.Faker("sentence", nb_words=3)
+    beneficiaryImport = factory.SubFactory(BeneficiaryImportFactory)
+    author = factory.SubFactory("pcapi.core.users.factories.UserFactory")
