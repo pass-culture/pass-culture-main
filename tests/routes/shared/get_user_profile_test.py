@@ -62,6 +62,7 @@ class Get:
                 "needsToFillCulturalSurvey": False,
                 "notificationSubscriptions": {"marketing_email": True, "marketing_push": True},
                 "phoneNumber": "0612345678",
+                "phoneValidationStatus": None,
                 "postalCode": "93020",
                 "publicName": "Toto",
             }

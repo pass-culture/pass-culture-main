@@ -55,6 +55,12 @@ class TokenType(enum.Enum):
     ID_CHECK = "id-check"
 
 
+class PhoneValidationStatusType(enum.Enum):
+    BLOCKED_TOO_MANY_CODE_SENDINGS = "blocked-too-many-code-sendings"
+    BLOCKED_TOO_MANY_CODE_VERIFICATION_TRIES = "blocked-too-many-code-verification-tries"
+    VALIDATED = "validated"
+
+
 class Token(PcObject, Model):
     __tablename__ = "token"
 
@@ -182,6 +188,8 @@ class User(PcObject, Model, NeedsValidationMixin, VersionedMixin):
     isEmailValidated = Column(Boolean, nullable=True, server_default=expression.false())
 
     isBeneficiary = Column(Boolean, nullable=False, server_default=expression.false())
+
+    phoneValidationStatus = Column(Enum(PhoneValidationStatusType, create_constraint=False), nullable=True)
 
     # FIXME (dbaty, 2020-12-14): once v114 has been deployed, populate
     # existing rows with the empty string and add NOT NULL constraint.
