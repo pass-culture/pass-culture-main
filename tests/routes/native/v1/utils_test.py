@@ -15,7 +15,7 @@ class CheckClientVersionTest:
         response = test_client.post("/native/v1/signin", json={}, headers={"app-version": "caramba"})
         assert response.status_code == 403
         assert response.content_type == "application/json"
-        assert response.json == {"ERROR": "UPGRADE_REQUIRED"}
+        assert response.json == {"code": "UPGRADE_REQUIRED"}
 
     @override_settings(NATIVE_APP_MINIMAL_CLIENT_VERSION=semver.VersionInfo.parse("1.0.1"))
     def test_with_exact_version(self, app):
@@ -42,4 +42,4 @@ class CheckClientVersionTest:
         test_client = TestClient(app.test_client())
         response = test_client.post("/native/v1/signin", json={}, headers={"app-version": "1.0.0"})
         assert response.status_code == 403
-        assert response.json == {"ERROR": "UPGRADE_REQUIRED"}
+        assert response.json == {"code": "UPGRADE_REQUIRED"}

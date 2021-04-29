@@ -21,7 +21,7 @@ def check_client_version() -> None:
     try:
         client_version = semver.VersionInfo.parse(client_version_header)
     except ValueError:
-        raise ForbiddenError(errors={"ERROR": "UPGRADE_REQUIRED"})
+        raise ForbiddenError(errors={"code": "UPGRADE_REQUIRED"})
 
     if client_version < settings.NATIVE_APP_MINIMAL_CLIENT_VERSION:
-        raise ForbiddenError(errors={"ERROR": "UPGRADE_REQUIRED"})
+        raise ForbiddenError(errors={"code": "UPGRADE_REQUIRED"})
