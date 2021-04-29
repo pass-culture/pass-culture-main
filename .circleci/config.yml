@@ -259,7 +259,7 @@ jobs:
           command: |
             dockerize -wait http://localhost/health/api -timeout 5m -wait-retry-interval 5s
             dockerize -wait http://localhost/health/database -timeout 5m -wait-retry-interval 5s
-            pc sandbox --name=industrial
+            pc sandbox --name=testcafe
       - run:
           name: Running functional tests PRO
           command: |
@@ -267,6 +267,7 @@ jobs:
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
             cd pro
             nvm install
+            dockerize -wait http://localhost:3001 -timeout 5m -wait-retry-interval 5s
             yarn test:cafe
       - store_artifacts:
           path: ~/pass-culture/pro/testcafe_screenshots
