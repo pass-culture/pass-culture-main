@@ -134,6 +134,7 @@ def create_industrial_webapp_general_public_users():
             first_name="PC Test Grand Public",
             date_of_birth=date_of_birth,
             has_seen_tutorials=False,
+            is_beneficiary=False,
             last_name=f"{short_age} {deposit_version}",
             needs_to_fill_cultural_survey=True,
             postal_code="{}100".format(departement_code),
