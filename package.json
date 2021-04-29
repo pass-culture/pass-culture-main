@@ -36,7 +36,7 @@
     "*.scss": "stylelint --syntax=scss --fix"
   },
   "dependencies": {
-    "@reach/dialog": "^0.12.1",
+    "@reach/dialog": "^0.15.0",
     "@reach/menu-button": "^0.15.1",
     "@sentry/browser": "^6.3.1",
     "@sentry/tracing": "^6.3.1",
