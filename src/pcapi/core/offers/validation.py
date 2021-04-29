@@ -1,4 +1,5 @@
 from datetime import datetime
+from datetime import timedelta
 from io import BytesIO
 from typing import Optional
 from typing import Union
@@ -204,3 +205,35 @@ def check_validation_status(offer: Offer) -> None:
         error = ApiErrors()
         error.add_error("global", "Les offres refusées ou en attente de validation ne sont pas modifiables")
         raise error
+
+
+def check_offer_is_digital(offer: Offer) -> None:
+    if not offer.isDigital:
+        errors = ApiErrors()
+        errors.add_error(
+            "global",
+            "Impossible de créer des codes d'activation sur une offre non-numérique",
+        )
+        raise errors
+
+
+def check_activation_codes_expiration_datetime(
+    activation_codes_expiration_datetime: Optional[datetime],
+    booking_limit_datetime: Optional[datetime],
+) -> None:
+    if activation_codes_expiration_datetime is None:
+        return
+
+    if (
+        booking_limit_datetime is not None
+        and activation_codes_expiration_datetime < booking_limit_datetime + timedelta(days=7)  # type: ignore[operator]
+    ):
+        errors = ApiErrors()
+        errors.add_error(
+            "activationCodesExpirationDatetime",
+            (
+                "La date limite de validité des codes d'activation doit être ultérieure"
+                "d'au moins 7 jours à la date limite de réservation"
+            ),
+        )
+        raise errors

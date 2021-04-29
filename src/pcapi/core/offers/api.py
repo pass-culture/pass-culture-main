@@ -47,6 +47,7 @@ from pcapi.workers.push_notification_job import send_cancel_booking_notification
 
 from . import validation
 from .exceptions import ThumbnailStorageError
+from .models import ActivationCode
 from .models import Mediation
 
 
@@ -324,6 +325,7 @@ def _notify_beneficiaries_upon_stock_edit(stock: Stock):
 def upsert_stocks(
     offer_id: int, stock_data_list: list[Union[StockCreationBodyModel, StockEditionBodyModel]]
 ) -> list[Stock]:
+    activation_codes = []
     stocks = []
     edited_stocks = []
     edited_stocks_previous_beginnings = {}
@@ -351,16 +353,38 @@ def upsert_stocks(
             edited_stocks.append(edited_stock)
             stocks.append(edited_stock)
         else:
+            activation_codes_exist = stock_data.activation_codes is not None and len(stock_data.activation_codes) > 0  # type: ignore[arg-type]
+
+            if activation_codes_exist:
+                validation.check_offer_is_digital(offer)
+                validation.check_activation_codes_expiration_datetime(
+                    stock_data.activation_codes_expiration_datetime,
+                    stock_data.booking_limit_datetime,
+                )
+
+            quantity = len(stock_data.activation_codes) if activation_codes_exist else stock_data.quantity  # type: ignore[arg-type]
+
             created_stock = _create_stock(
                 offer=offer,
                 price=stock_data.price,
-                quantity=stock_data.quantity,
+                quantity=quantity,
                 beginning=stock_data.beginning_datetime,
                 booking_limit_datetime=stock_data.booking_limit_datetime,
             )
+
+            if activation_codes_exist:
+                for activation_code in stock_data.activation_codes:  # type: ignore[union-attr]
+                    activation_codes.append(
+                        ActivationCode(
+                            code=activation_code,
+                            expirationDate=stock_data.activation_codes_expiration_datetime,
+                            stock=created_stock,
+                        )
+                    )
+
             stocks.append(created_stock)
 
-    repository.save(*stocks)
+    repository.save(*(stocks + activation_codes))
     logger.info("Stock has been created or updated", extra={"offer": offer_id})
 
     if offer.validation == OfferValidationStatus.DRAFT:

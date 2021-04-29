@@ -41,6 +41,45 @@ class Returns201:
         assert offer.id == created_stock.offerId
         assert created_stock.price == 20
 
+    def test_create_one_stock_with_activation_codes(self, app):
+        # Given
+        offer = offers_factories.ThingOfferFactory(url="https://chartreu.se")
+        offers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+        activation_codes = ["AZ3", "3ZE"]
+
+        # When
+        stock_data = {
+            "offerId": humanize(offer.id),
+            "stocks": [
+                {
+                    "price": 20,
+                    "quantity": 30,
+                    "activationCodes": activation_codes,
+                    "bookingLimitDatetime": "2021-06-15T23:59:59Z",
+                    "activationCodesExpirationDatetime": "2021-06-22T23:59:59Z",
+                }
+            ],
+        }
+
+        response = TestClient(app.test_client()).with_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+
+        # Then
+        assert response.status_code == 201
+
+        response_dict = response.json
+        assert len(response_dict["stockIds"]) == len(stock_data["stocks"])
+
+        created_stock: Stock = Stock.query.get(dehumanize(response_dict["stockIds"][0]["id"]))
+        assert offer.id == created_stock.offerId
+        assert created_stock.price == 20
+        assert created_stock.quantity == 2  # Same as the activation codes length
+        assert [activation_code.code for activation_code in created_stock.activationCodes] == activation_codes
+        for activation_code in created_stock.activationCodes:
+            assert activation_code.expirationDate == datetime(2021, 6, 22, 23, 59, 59)
+
     def test_edit_one_stock(self, app):
         # Given
         offer = offers_factories.ThingOfferFactory()
@@ -195,6 +234,65 @@ class Returns400:
 
         assert response.status_code == 400
         assert response.json["global"] == ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
+
+    def test_invalid_activation_codes_expiration_datetime(self, app):
+        # Given
+        offer = offers_factories.ThingOfferFactory(url="https://chartreu.se")
+        offers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        # When
+        stock_data = {
+            "offerId": humanize(offer.id),
+            "stocks": [
+                {
+                    "price": 20,
+                    "activationCodes": ["AZ3"],
+                    "bookingLimitDatetime": "2021-06-15T02:59:59Z",
+                    "activationCodesExpirationDatetime": "2021-06-16T02:59:59Z",
+                }
+            ],
+        }
+
+        response = TestClient(app.test_client()).with_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+
+        # Then
+        assert response.status_code == 400
+        assert response.json["activationCodesExpirationDatetime"] == [
+            (
+                "La date limite de validité des codes d'activation doit être ultérieure"
+                "d'au moins 7 jours à la date limite de réservation"
+            )
+        ]
+
+    def test_when_offer_is_not_digital(self, app):
+        # Given
+        offer = offers_factories.ThingOfferFactory(url=None)
+        offers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        # When
+        stock_data = {
+            "offerId": humanize(offer.id),
+            "stocks": [
+                {
+                    "price": 20,
+                    "activationCodes": ["AZ3"],
+                    "bookingLimitDatetime": "2021-06-15T02:59:59Z",
+                    "activationCodesExpirationDatetime": "2021-07-15T02:59:59Z",
+                }
+            ],
+        }
+
+        response = TestClient(app.test_client()).with_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+
+        # Then
+        assert response.status_code == 400
+        assert response.json["global"] == ["Impossible de créer des codes d'activation sur une offre non-numérique"]
 
 
 @pytest.mark.usefixtures("db_session")

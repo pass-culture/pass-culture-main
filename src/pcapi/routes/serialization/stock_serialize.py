@@ -43,6 +43,8 @@ class StocksResponseModel(BaseModel):
 
 
 class StockCreationBodyModel(BaseModel):
+    activation_codes: Optional[list[str]]
+    activation_codes_expiration_datetime: Optional[datetime]
     beginning_datetime: Optional[datetime]
     booking_limit_datetime: Optional[datetime]
     price: float
