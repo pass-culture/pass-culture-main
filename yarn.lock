@@ -11965,10 +11965,10 @@ react-tooltip@^3.8.4:
   dependencies:
     prop-types "^15.6.0"
 
-react-tracking@^7.1.0:
-  version "7.3.0"
-  resolved "https://registry.yarnpkg.com/react-tracking/-/react-tracking-7.3.0.tgz#7f4bd05b0e333e062d55044d1f58d8b409e22c11"
-  integrity sha512-xDpUyq0NIWltTnyaSyUEMIB+W1Fqk0OXY2aAfbV/wpvUTHvEtLrpOu5flPwkn6h0t1JstG5RYJgfUfEoyT1SiQ==
+react-tracking@^8.1.0:
+  version "8.1.0"
+  resolved "https://registry.yarnpkg.com/react-tracking/-/react-tracking-8.1.0.tgz#6c2c69db7aa1e741f2c14c97477f5725ccf29ce5"
+  integrity sha512-iQGkQM6OP2Vxxpn8ckR6WVvxdR501fygXff5DQhOVKp7hnVtg0jaUUIBWEVUVhXlMeOylZhDoLehR5hsZZy+4w==
   dependencies:
     core-js "^3.3.2"
     deepmerge "^4.1.1"
