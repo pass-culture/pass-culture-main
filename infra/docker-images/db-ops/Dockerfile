@@ -10,7 +10,7 @@ RUN apt-get update \
 
 ### Install gcloud
 
-ARG GCLOUD_VERSION=318.0.0
+ARG GCLOUD_VERSION=338.0.0
 
 ENV GCLOUD_BASE_URL=https://dl.google.com/dl/cloudsdk/channels/rapid/downloads
 ENV GCLOUD_TAR_FILE=google-cloud-sdk-${GCLOUD_VERSION}-linux-x86_64.tar.gz
