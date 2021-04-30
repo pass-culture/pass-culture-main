@@ -63,17 +63,34 @@ def get_offer_ids(client: Redis) -> list[int]:
 
 
 def pop_offer_ids(client: Redis) -> list[int]:
+    # FIXME (dbaty, 2021-04-30): Here we should use `LPOP` but its
+    # `count` argument has been added in Redis 6.2. GCP currently has
+    # an earlier version of Redis (5.0), where we can pop only one
+    # item at once. As a work around, we get and delete items within a
+    # pipeline, which should be atomic.
+    #
+    # The error handling is minimal:
+    # - if the get fails, the function returns an empty list. It's
+    #   fine, the next run may have more chance and may work;
+    # - if the delete fails, we'll process the same batch twice. It's
+    #   not optimal, but it's ok.
+    #
+    # Fun fact: if we stored offer ids in a set (and not a list), we
+    # could use `SPOP` (where the `count` argument has been added in
+    # Redis 3.2).
+    offer_ids = []
+
     try:
-        # FIXME (dbaty, 2021-04-28): `lpop()` does not yet allow to
-        # specify the number of arguments to pop. See
-        # https://github.com/andymccurdy/redis-py/pull/1467/files
-        # Until it is implemented upstream, manually send the command.
-        return client.execute_command(
-            "LPOP", RedisBucket.REDIS_LIST_OFFER_IDS_NAME.value, settings.REDIS_OFFER_IDS_CHUNK_SIZE
-        )
+        pipeline = client.pipeline(transaction=True)
+        pipeline.lrange(RedisBucket.REDIS_LIST_OFFER_IDS_NAME.value, 0, settings.REDIS_OFFER_IDS_CHUNK_SIZE - 1)
+        pipeline.ltrim(RedisBucket.REDIS_LIST_OFFER_IDS_NAME.value, settings.REDIS_OFFER_IDS_CHUNK_SIZE, -1)
+        results = pipeline.execute()
+        offer_ids = results[0]
     except redis.exceptions.RedisError as error:
-        logger.exception("[REDIS] %s", error)
-        return []
+        logger.exception("Got Redis error in pop_offer_ids: %s", error)
+    finally:
+        pipeline.reset()
+    return offer_ids
 
 
 def get_venue_ids(client: Redis) -> list[int]:
