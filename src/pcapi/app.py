@@ -40,4 +40,13 @@ with app.app_context():
 
 if __name__ == "__main__":
     port = settings.FLASK_PORT
-    app.run(host="0.0.0.0", port=port, debug=settings.IS_DEV, use_reloader=True)
+    if settings.IS_DEV and settings.DEBUG_ACTIVATED:
+        import debugpy
+
+        if not debugpy.is_client_connected():
+            debugpy.listen(("0.0.0.0", 10002))
+            print("⏳ Code debugger can now be attached, press F5 in VS Code for example ⏳", flush=True)
+            debugpy.wait_for_client()
+            print("🎉 Code debugger attached, enjoy debugging 🎉", flush=True)
+
+    app.run(host="0.0.0.0", port=port, debug=True, use_reloader=True)

@@ -1,0 +1,14 @@
+{
+    "configurations": [{
+        "name": "Python: Remote Attach",
+        "type": "python",
+        "request": "attach",
+        "port": 10002,
+        "host": "localhost",
+        "subProcess": true,
+        "pathMappings": [{
+            "localRoot": "${workspaceFolder}",
+            "remoteRoot": "/opt/services/flaskapp/src"
+        }]
+    }]
+}

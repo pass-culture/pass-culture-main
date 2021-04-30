@@ -7,6 +7,7 @@ beautifulsoup4==4.9.3
 black
 blinker==1.4
 coveralls==2.1.2
+debugpy
 factory-boy
 Flask==1.1.*
 Flask-Admin==1.5.6
