@@ -60,6 +60,7 @@
 
     .verso-info-block {
       margin-top: rem(12px);
+      white-space: pre-line;
 
       h3 {
         color: $primary;
