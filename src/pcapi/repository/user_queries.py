@@ -9,7 +9,7 @@ from sqlalchemy.sql.functions import Function
 
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.users.models import User
-from pcapi.core.users.utils import format_email
+from pcapi.core.users.utils import sanitize_email
 from pcapi.models import BeneficiaryImport
 from pcapi.models import BeneficiaryImportSources
 from pcapi.models import BeneficiaryImportStatus
@@ -20,11 +20,15 @@ from pcapi.models.wallet_balance import WalletBalance
 
 
 def count_users_by_email(email: str) -> int:
-    return User.query.filter_by(email=email).count()
+    # FIXME (dbaty, 2021-05-02): remove call to `func.lower()` once
+    # all emails have been sanitized in the database.
+    return User.query.filter(func.lower(User.email) == sanitize_email(email)).count()
 
 
 def find_user_by_email(email: str) -> User:
-    return User.query.filter(func.lower(User.email) == format_email(email)).first()
+    # FIXME (dbaty, 2021-05-02): remove call to `func.lower()` once
+    # all emails have been sanitized in the database.
+    return User.query.filter(func.lower(User.email) == sanitize_email(email)).one_or_none()
 
 
 def find_beneficiary_users_by_email_provider(email_provider: str) -> list[User]:

@@ -27,7 +27,7 @@ class BeneficiaryUserViewTest:
         users_factories.UserFactory(email="admin@example.com", isAdmin=True)
 
         data = dict(
-            email="lama@example.com",
+            email="LAMA@example.com",
             firstName="Serge",
             lastName="Lama",
             dateOfBirth="2002-07-13 10:05:00",

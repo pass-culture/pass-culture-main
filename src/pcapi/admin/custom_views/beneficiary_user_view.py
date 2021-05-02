@@ -1,3 +1,5 @@
+from typing import Optional
+
 from flask.helpers import flash
 from flask_admin.helpers import get_form_data
 from sqlalchemy.orm import query
@@ -11,10 +13,17 @@ from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.admin.custom_views.mixins.suspension_mixin import SuspensionMixin
 from pcapi.core.users.api import create_reset_password_token
 from pcapi.core.users.models import User
+from pcapi.core.users.utils import sanitize_email
 from pcapi.domain.user_emails import send_activation_email
 from pcapi.models import UserOfferer
 from pcapi.utils.mailing import build_pc_webapp_reset_password_link
 from pcapi.workers.push_notification_job import update_user_attributes_job
+
+
+def filter_email(value: Optional[str]) -> Optional[str]:
+    if not value:
+        return value
+    return sanitize_email(value)
 
 
 class BeneficiaryUserView(SuspensionMixin, BaseAdminView):
@@ -73,6 +82,7 @@ class BeneficiaryUserView(SuspensionMixin, BaseAdminView):
         lastName=dict(validators=[DataRequired()]),
         dateOfBirth=dict(validators=[DataRequired()]),
         postalCode=dict(validators=[DataRequired()]),
+        email=dict(validators=[DataRequired()], filters=[filter_email]),
     )
 
     # We need to override `create_form()` and `edit_form()`, otherwise

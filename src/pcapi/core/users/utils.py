@@ -32,7 +32,7 @@ def decode_jwt_token(jwt_token: str) -> dict:
     return jwt.decode(jwt_token, settings.JWT_SECRET_KEY, algorithms=ALGORITHM_HS_256)  # type: ignore # known as str in build assertion
 
 
-def format_email(email: str) -> str:
+def sanitize_email(email: str) -> str:
     return email.strip().lower()
 
 

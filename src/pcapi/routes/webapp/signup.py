@@ -10,6 +10,7 @@ from pcapi.connectors.google_spreadsheet import get_ttl_hash
 from pcapi.core.payments import api as payments_api
 from pcapi.core.users.models import NotificationSubscriptions
 from pcapi.core.users.models import User
+from pcapi.core.users.utils import sanitize_email
 from pcapi.flask_app import private_api
 from pcapi.models import ApiErrors
 from pcapi.models.feature import FeatureToggle
@@ -32,6 +33,7 @@ def signup_webapp():
     check_valid_signup_webapp(request)
 
     new_user = User(from_dict=request.json)
+    new_user.email = sanitize_email(new_user.email)
     new_user.notificationSubscriptions = asdict(
         NotificationSubscriptions(marketing_email=bool(request.json.get("contact_ok")))
     )

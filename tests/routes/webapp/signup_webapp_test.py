@@ -112,7 +112,7 @@ class Post:
 
             # Then
             assert response.status_code == 201
-            created_user = User.query.filter_by(email="pctest.isAdmin.canBook@example.com").one()
+            created_user = User.query.filter_by(email="pctest.isadmin.canbook@example.com").one()
             assert not created_user.isAdmin
 
     class Returns400:

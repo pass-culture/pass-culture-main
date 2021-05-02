@@ -2,6 +2,7 @@ from typing import Optional
 
 from pcapi.core.payments import api as payments_api
 from pcapi.core.users.models import User
+from pcapi.core.users.utils import sanitize_email
 from pcapi.domain.password import random_hashed_password
 from pcapi.models.beneficiary_import_status import ImportStatus
 
@@ -15,7 +16,7 @@ def create_beneficiary_from_application(application_detail: dict, user: Optional
     if not user:
         beneficiary = User()
         beneficiary.password = random_hashed_password()
-        beneficiary.email = application_detail["email"]
+        beneficiary.email = sanitize_email(application_detail["email"])
         beneficiary.dateOfBirth = application_detail["birth_date"]
     else:
         beneficiary = user

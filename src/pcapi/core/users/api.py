@@ -31,8 +31,8 @@ from pcapi.core.users.models import VOID_PUBLIC_NAME
 from pcapi.core.users.repository import get_beneficiary_import_for_beneficiary
 from pcapi.core.users.utils import decode_jwt_token
 from pcapi.core.users.utils import encode_jwt_payload
-from pcapi.core.users.utils import format_email
 from pcapi.core.users.utils import format_phone_number_with_country_code
+from pcapi.core.users.utils import sanitize_email
 from pcapi.domain import user_emails
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
 from pcapi.domain.password import random_hashed_password
@@ -127,13 +127,14 @@ def create_account(
     send_activation_mail: bool = True,
     postal_code: str = None,
 ) -> User:
+    email = sanitize_email(email)
     if find_user_by_email(email):
         raise exceptions.UserAlreadyExistsException()
 
     departementCode = PostalCode(postal_code).get_departement_code() if postal_code else "007"
 
     user = User(
-        email=format_email(email),
+        email=email,
         dateOfBirth=datetime.combine(birthdate, datetime.min.time()),
         isEmailValidated=is_email_validated,
         publicName=VOID_PUBLIC_NAME,  # Required because model validation requires 3+ chars
@@ -269,7 +270,7 @@ def unsuspend_account(user: User, actor: User) -> None:
 
 
 def send_user_emails_for_email_change(user: User, new_email: str) -> None:
-    user_with_new_email = User.query.filter_by(email=new_email).first()
+    user_with_new_email = find_user_by_email(new_email)
     if user_with_new_email:
         return
 
@@ -304,12 +305,11 @@ def change_user_email(token: str) -> None:
     if not {"exp", "new_email", "current_email"} <= set(jwt_payload):
         raise InvalidTokenError()
 
-    new_email = jwt_payload["new_email"]
-    if User.query.filter_by(email=new_email).first():
+    new_email = sanitize_email(jwt_payload["new_email"])
+    if find_user_by_email(new_email):
         return
 
-    current_email = jwt_payload["current_email"]
-    current_user = User.query.filter_by(email=current_email).first()
+    current_user = find_user_by_email(jwt_payload["current_email"])
     if not current_user:
         return
 
@@ -340,7 +340,7 @@ def update_user_info(
     if cultural_survey_id is not UNCHANGED:
         user.culturalSurveyId = cultural_survey_id
     if email is not UNCHANGED:
-        user.email = format_email(email)
+        user.email = sanitize_email(email)
     if first_name is not UNCHANGED:
         user.firstName = first_name
     if has_seen_tutorials is not UNCHANGED:

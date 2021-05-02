@@ -20,7 +20,7 @@ class AdminUserViewTest:
         users_factories.UserFactory(email="admin@example.com", isAdmin=True)
 
         data = dict(
-            email="new-admin@example.com",
+            email="NEW-ADMIN@example.com",
             firstName="Powerfull",
             lastName="Admin",
             departementCode="76",

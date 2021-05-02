@@ -16,6 +16,7 @@ from sqlalchemy.util._collections import AbstractKeyedTuple
 from pcapi.core.bookings import conf
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.users.api import sanitize_email
 from pcapi.core.users.models import User
 from pcapi.domain.booking_recap.booking_recap import BookBookingRecap
 from pcapi.domain.booking_recap.booking_recap import BookingRecap
@@ -43,7 +44,9 @@ def find_by(token: str, email: str = None, offer_id: int = None) -> Booking:
     query = Booking.query.filter_by(token=token.upper())
 
     if email:
-        query = query.join(User).filter(func.lower(User.email) == email.strip().lower())
+        # FIXME (dbaty, 2021-05-02): remove call to `func.lower()` once
+        # all emails have been sanitized in the database.
+        query = query.join(User).filter(func.lower(User.email) == sanitize_email(email))
 
     if offer_id:
         query_offer = Booking.query.join(Stock).join(Offer).filter_by(id=offer_id)

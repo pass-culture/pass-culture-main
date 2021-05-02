@@ -23,7 +23,7 @@ class ProUserViewTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_pro_user_creation(self, mocked_validate_csrf_token, app):
         # Given
-        users_factories.UserFactory(email="user@example.com", isAdmin=True)
+        users_factories.UserFactory(email="USER@example.com", isAdmin=True)
         offers_factories.VirtualVenueTypeFactory()
 
         data = dict(

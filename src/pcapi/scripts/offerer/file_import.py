@@ -7,6 +7,7 @@ from pcapi.core.offerers.api import create_digital_venue
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.users.api import fulfill_account_password
 from pcapi.core.users.models import User
+from pcapi.core.users.utils import sanitize_email
 from pcapi.models import UserOfferer
 from pcapi.repository import repository
 from pcapi.repository.offerer_queries import find_by_siren
@@ -96,7 +97,7 @@ def fill_user_from(csv_row: list[str], user: User) -> User:
     user.lastName = csv_row[USER_LAST_NAME_COLUMN_INDEX]
     user.firstName = csv_row[USER_FIRST_NAME_COLUMN_INDEX].split(" ")[0]
     user.publicName = "%s %s" % (user.firstName, user.lastName)
-    user.email = csv_row[USER_EMAIL_COLUMN_INDEX]
+    user.email = sanitize_email(csv_row[USER_EMAIL_COLUMN_INDEX])
     user.departementCode = csv_row[USER_DEPARTMENT_CODE_COLUMN_INDEX]
     user.isBeneficiary = False
 

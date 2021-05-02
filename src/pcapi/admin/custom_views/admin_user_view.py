@@ -1,3 +1,5 @@
+from typing import Optional
+
 from flask.helpers import flash
 from sqlalchemy.orm import query
 from sqlalchemy.sql.expression import distinct
@@ -10,8 +12,15 @@ from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.admin.custom_views.mixins.suspension_mixin import SuspensionMixin
 from pcapi.core.users import api as users_api
 from pcapi.core.users.constants import RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED
+from pcapi.core.users.utils import sanitize_email
 from pcapi.domain.user_emails import send_admin_user_validation_email
 from pcapi.utils.mailing import build_pc_webapp_reset_password_link
+
+
+def filter_email(value: Optional[str]) -> Optional[str]:
+    if not value:
+        return value
+    return sanitize_email(value)
 
 
 class AdminUserView(SuspensionMixin, BaseAdminView):
@@ -55,6 +64,7 @@ class AdminUserView(SuspensionMixin, BaseAdminView):
             label="Code postal",
             validators=[DataRequired(), Length(min=5, max=5, message="Mauvais format de code postal")],
         ),
+        email=dict(validators=[DataRequired()], filters=[filter_email]),
     )
 
     def get_query(self) -> query:

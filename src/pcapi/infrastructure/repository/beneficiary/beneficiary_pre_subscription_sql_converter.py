@@ -3,6 +3,7 @@ from typing import Optional
 from pcapi.core.users import api as users_api
 from pcapi.core.users.api import fulfill_account_password
 from pcapi.core.users.models import User
+from pcapi.core.users.utils import sanitize_email
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
 from pcapi.models import BeneficiaryImport
 from pcapi.models import ImportStatus
@@ -11,7 +12,7 @@ from pcapi.models import ImportStatus
 def to_model(beneficiary_pre_subscription: BeneficiaryPreSubscription, user: Optional[User] = None) -> User:
     if not user:
         beneficiary = User()
-        beneficiary.email = beneficiary_pre_subscription.email
+        beneficiary.email = sanitize_email(beneficiary_pre_subscription.email)
         fulfill_account_password(beneficiary)
     else:
         beneficiary = user

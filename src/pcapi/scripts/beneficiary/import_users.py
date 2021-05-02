@@ -10,6 +10,7 @@ from pcapi import settings
 import pcapi.core.payments.api as payments_api
 import pcapi.core.users.api as users_api
 from pcapi.core.users.models import User
+from pcapi.core.users.utils import sanitize_email
 from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_email
 import logging
@@ -33,7 +34,7 @@ def create_or_update_users(rows: Iterable[dict]) -> list[User]:
             user.setPassword(settings.STAGING_TEST_USER_PASSWORD)
         else:
             user = users_api.create_account(
-                email=row["Mail"],
+                email=sanitize_email(row["Mail"]),
                 password=settings.STAGING_TEST_USER_PASSWORD,
                 birthdate=birthdate,
                 is_email_validated=True,

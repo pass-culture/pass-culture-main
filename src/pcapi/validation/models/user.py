@@ -6,6 +6,11 @@ from pcapi.repository import user_queries
 
 
 def validate(user: User, api_errors: ApiErrors) -> ApiErrors:
+    # FIXME (dbaty, 2021-05-02): I suppose that SQLAlchemy could flush
+    # changes when this SELECT query is performed, which could raise
+    # an error on the UNIQUE constraint. However, I don't understand
+    # why we're checking the uniqueness of the email only if the user
+    # is new (which we do with `if user.id is None`).
     try:
         user_count = user_queries.count_users_by_email(user.email)
     except IntegrityError:
