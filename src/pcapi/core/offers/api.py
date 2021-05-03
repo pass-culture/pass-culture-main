@@ -255,11 +255,6 @@ def _edit_stock(
     beginning: datetime.datetime,
     booking_limit_datetime: datetime.datetime,
 ) -> Stock:
-    validation.check_stock_is_updatable(stock)
-    validation.check_required_dates_for_stock(stock.offer, beginning, booking_limit_datetime)
-    validation.check_stock_price(price)
-    validation.check_stock_quantity(quantity, stock.dnBookedQuantity)
-
     # FIXME (dbaty, 2020-11-25): We need this ugly workaround because
     # the frontend sends us datetimes like "2020-12-03T14:00:00Z"
     # (note the "Z" suffix). Pydantic deserializes it as a datetime
@@ -275,6 +270,11 @@ def _edit_stock(
         beginning = as_utc_without_timezone(beginning)
     if booking_limit_datetime:
         booking_limit_datetime = as_utc_without_timezone(booking_limit_datetime)
+
+    validation.check_stock_is_updatable(stock)
+    validation.check_required_dates_for_stock(stock.offer, beginning, booking_limit_datetime)
+    validation.check_stock_price(price)
+    validation.check_stock_quantity(quantity, stock.dnBookedQuantity)
 
     updates = {
         "price": price,
