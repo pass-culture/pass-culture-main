@@ -247,7 +247,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
       expect(field.text()).toBe('SIREN de la structure que vous représentez')
       const input = field.find('input')
       expect(input.prop('name')).toBe('siren')
-      expect(input.prop('placeholder')).toBe('123 456 789')
+      expect(input.prop('placeholder')).toBe('123456789')
       expect(input.prop('type')).toBe('text')
     })
 

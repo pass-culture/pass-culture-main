@@ -12,7 +12,7 @@ const required = value => {
 }
 
 const mustHaveTheProperLength = value => {
-  return value.length < 11 ? 'SIREN trop court' : undefined
+  return value.length < 9 ? 'SIREN trop court' : undefined
 }
 
 const simpleMemoize = fn => {
@@ -49,7 +49,7 @@ const SirenField = () => (
           maxLength="11"
           name="siren"
           onChange={input.onChange}
-          placeholder="123 456 789"
+          placeholder="123456789"
           sublabel="obligatoire"
           value={input.value}
         />

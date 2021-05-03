@@ -11,8 +11,7 @@ const formatSiren = input => {
     return ''
   }
 
-  const groupThreeNumbersRegex = /.{1,3}/g
-  return sirenWithOnlyDigits.match(groupThreeNumbersRegex).join(' ')
+  return sirenWithOnlyDigits
 }
 
 export default formatSiren

@@ -49,7 +49,7 @@ describe('src | components | pages | OffererCreation | siren | formatSiren', () 
       const formatedSiret = formatSiren(siren)
 
       // then
-      expect(formatedSiret).toBe('418 166 096')
+      expect(formatedSiret).toBe('418166096')
     })
   })
 
@@ -62,7 +62,7 @@ describe('src | components | pages | OffererCreation | siren | formatSiren', () 
       const formatedSiret = formatSiren(siren)
 
       // then
-      expect(formatedSiret).toBe('418 166 096')
+      expect(formatedSiret).toBe('418166096')
     })
   })
 })

@@ -13,7 +13,7 @@ const required = value => {
 }
 
 const mustHaveTheProperLength = value => {
-  return value.length < 11 ? 'SIREN trop court' : undefined
+  return value.length < 9 ? 'SIREN trop court' : undefined
 }
 
 const simpleMemoize = fn => {
@@ -52,7 +52,7 @@ const SirenField = props => {
               label="SIREN de la structure que vous représentez"
               maxLength="11"
               name="siren"
-              placeholder="123 456 789"
+              placeholder="123456789"
             />
 
             {props.value && (

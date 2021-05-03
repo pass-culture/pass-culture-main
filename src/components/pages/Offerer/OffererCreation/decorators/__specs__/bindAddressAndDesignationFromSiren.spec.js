@@ -88,7 +88,7 @@ describe('bindAddressAndDesignationFromSiren', () => {
     expect(result).toStrictEqual({
       address: null,
       name: null,
-      siren: '841 166 096',
+      siren: '841166096',
       postalCode: null,
       city: null,
     })

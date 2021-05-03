@@ -62,7 +62,7 @@ describe('src | components | pages | OffererCreation | siren | formatSiren', () 
       const formatedSiren = formatSiren(siren)
 
       // then
-      expect(formatedSiren).toBe('418 166 096')
+      expect(formatedSiren).toBe('418166096')
     })
   })
 
@@ -75,7 +75,7 @@ describe('src | components | pages | OffererCreation | siren | formatSiren', () 
       const formatedSiren = formatSiren(siren)
 
       // then
-      expect(formatedSiren).toBe('418 166 096')
+      expect(formatedSiren).toBe('418166096')
     })
   })
 })
