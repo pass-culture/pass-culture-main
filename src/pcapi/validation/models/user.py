@@ -16,7 +16,7 @@ def validate(user: User, api_errors: ApiErrors) -> ApiErrors:
     if user.id is None and user_count > 0:
         api_errors.add_error("email", "Un compte lié à cet e-mail existe déjà")
     if user.publicName is not None:
-        api_errors.check_min_length("publicName", user.publicName, 3)
+        api_errors.check_min_length("publicName", user.publicName, 1)
     if user.email:
         api_errors.check_email("email", user.email)
     if user.isAdmin and user.isBeneficiary:

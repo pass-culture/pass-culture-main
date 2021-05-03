@@ -154,14 +154,14 @@ def test_should_not_return_errors_when_valid_stock():
 @patch("pcapi.validation.models.user.user_queries.count_users_by_email")
 def test_should_return_errors_when_invalid_user(mock_count_users_by_email, app):
     # Given
-    user = create_user(public_name="Jo")
+    user = create_user(public_name="")
     mock_count_users_by_email.return_value = 0
 
     # When
     api_errors = validate(user)
 
     # Then
-    assert api_errors.errors == {"publicName": ["Tu dois saisir au moins 3 caractères."]}
+    assert api_errors.errors == {"publicName": ["Tu dois saisir au moins 1 caractères."]}
 
 
 @patch("pcapi.validation.models.user.user_queries.count_users_by_email")

@@ -191,24 +191,6 @@ class Post:
 
         @patch("pcapi.routes.webapp.signup.get_authorized_emails_and_dept_codes")
         @pytest.mark.usefixtures("db_session")
-        def when_public_name_is_too_short(self, get_authorized_emails_and_dept_codes, app):
-            # Given
-            get_authorized_emails_and_dept_codes.return_value = (["toto@example.com"], ["93"])
-            data = BASE_DATA.copy()
-            data["publicName"] = "t"
-
-            # When
-            response = TestClient(app.test_client()).post(
-                "/users/signup/webapp", json=data, headers={"origin": "http://localhost:3000"}
-            )
-
-            # Then
-            assert response.status_code == 400
-            error = response.json
-            assert "publicName" in error
-
-        @patch("pcapi.routes.webapp.signup.get_authorized_emails_and_dept_codes")
-        @pytest.mark.usefixtures("db_session")
         def when_public_name_is_too_long(self, get_authorized_emails_and_dept_codes, app):
             # Given
             get_authorized_emails_and_dept_codes.return_value = (["toto@example.com"], ["93"])

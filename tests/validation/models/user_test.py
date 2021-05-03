@@ -70,17 +70,6 @@ class UserAlreadyExistsTest:
 
 
 class PublicNameTest:
-    def test_should_return_error_message_when_user_public_name_is_less_than_3_characters(self, app):
-        # Given
-        user = create_user(public_name="Jo")
-        api_errors = ApiErrors()
-
-        # When
-        api_error = validate(user, api_errors)
-
-        # Then
-        assert api_error.errors["publicName"] == ["Tu dois saisir au moins 3 caractères."]
-
     def test_should_return_error_message_when_user_public_name_is_empty(self, app):
         # Given
         user = create_user(public_name="")
@@ -90,12 +79,12 @@ class PublicNameTest:
         api_error = validate(user, api_errors)
 
         # Then
-        assert api_error.errors["publicName"] == ["Tu dois saisir au moins 3 caractères."]
+        assert api_error.errors["publicName"] == ["Tu dois saisir au moins 1 caractères."]
 
     @patch("pcapi.validation.models.user.user_queries.count_users_by_email")
     def test_should_not_return_error_message_when_user_public_name_is_correct(self, mocked_count_users_by_email, app):
         # Given
-        user = create_user(public_name="Joel")
+        user = create_user(public_name="Jo")
         mocked_count_users_by_email.return_value = 0
         api_errors = ApiErrors()
 

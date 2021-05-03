@@ -233,21 +233,6 @@ class Post:
             error = response.json
             assert "publicName" in error
 
-        def when_public_name_is_too_short(self, app):
-            # Given
-            data = BASE_DATA_PRO.copy()
-            data["publicName"] = "t"
-            venue_type = create_venue_type(label="Offre numérique")
-            repository.save(venue_type)
-
-            # When
-            response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
-
-            # Then
-            assert response.status_code == 400
-            error = response.json
-            assert "publicName" in error
-
         def when_public_name_is_too_long(self, app):
             # Given
             data = BASE_DATA_PRO.copy()
