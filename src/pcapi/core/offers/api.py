@@ -394,7 +394,7 @@ def upsert_stocks(
 
             stocks.append(created_stock)
 
-    repository.save(*(stocks + activation_codes))
+    repository.save(*stocks, *activation_codes)
     logger.info("Stock has been created or updated", extra={"offer": offer_id})
 
     if offer.validation == OfferValidationStatus.DRAFT:
