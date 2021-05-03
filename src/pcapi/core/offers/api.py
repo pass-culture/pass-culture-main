@@ -5,6 +5,7 @@ from typing import Union
 
 from flask import current_app as app
 import pytz
+from sqlalchemy.orm import joinedload
 from sqlalchemy.sql.functions import func
 
 from pcapi import settings
@@ -275,6 +276,10 @@ def _edit_stock(
     validation.check_required_dates_for_stock(stock.offer, beginning, booking_limit_datetime)
     validation.check_stock_price(price)
     validation.check_stock_quantity(quantity, stock.dnBookedQuantity)
+    validation.check_activation_codes_expiration_datetime_on_stock_edition(
+        stock.activationCodes,
+        booking_limit_datetime,
+    )
 
     updates = {
         "price": price,
@@ -334,7 +339,12 @@ def upsert_stocks(
 
     for stock_data in stock_data_list:
         if isinstance(stock_data, StockEditionBodyModel):
-            stock = Stock.queryNotSoftDeleted().filter_by(id=stock_data.id).first_or_404()
+            stock = (
+                Stock.queryNotSoftDeleted()
+                .filter_by(id=stock_data.id)
+                .options(joinedload(Stock.activationCodes))
+                .first_or_404()
+            )
             if stock.offerId != offer_id:
                 errors = ApiErrors()
                 errors.add_error(

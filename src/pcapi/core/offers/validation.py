@@ -15,6 +15,7 @@ from pcapi.utils import requests as pcapi_requests
 
 from . import exceptions
 from ..providers.models import Provider
+from .models import ActivationCode
 from .models import OfferValidationStatus
 
 
@@ -237,3 +238,14 @@ def check_activation_codes_expiration_datetime(
             ),
         )
         raise errors
+
+
+def check_activation_codes_expiration_datetime_on_stock_edition(
+    activation_codes: Optional[list[ActivationCode]],
+    booking_limit_datetime: Optional[datetime],
+) -> None:
+    if activation_codes is None or len(activation_codes) == 0:
+        return
+
+    activation_codes_expiration_datetime = activation_codes[0].expirationDate
+    check_activation_codes_expiration_datetime(activation_codes_expiration_datetime, booking_limit_datetime)

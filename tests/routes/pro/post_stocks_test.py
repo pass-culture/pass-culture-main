@@ -267,6 +267,41 @@ class Returns400:
             )
         ]
 
+    def test_invalid_booking_limit_datetime(self, app):
+        # Given
+        offer = offers_factories.ThingOfferFactory(url="https://chartreu.se")
+        offers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+        existing_stock = offers_factories.StockFactory(offer=offer)
+        offers_factories.ActivationCodeFactory(expirationDate=datetime(2020, 5, 2, 23, 59, 59), stock=existing_stock)
+        offers_factories.ActivationCodeFactory(expirationDate=datetime(2020, 5, 2, 23, 59, 59), stock=existing_stock)
+
+        # When
+        stock_data = {
+            "offerId": humanize(offer.id),
+            "stocks": [
+                {
+                    "id": humanize(existing_stock.id),
+                    "bookingLimitDatetime": "2020-05-2T23:59:59Z",
+                    "price": 20.0,
+                }
+            ],
+        }
+
+        response = TestClient(app.test_client()).with_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+
+        # Then
+        assert response.status_code == 400
+        print(response.json)
+        assert response.json["activationCodesExpirationDatetime"] == [
+            (
+                "La date limite de validité des codes d'activation doit être ultérieure"
+                "d'au moins 7 jours à la date limite de réservation"
+            )
+        ]
+
     def test_when_offer_is_not_digital(self, app):
         # Given
         offer = offers_factories.ThingOfferFactory(url=None)
