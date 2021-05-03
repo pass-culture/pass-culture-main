@@ -6,6 +6,7 @@ from typing import Union
 
 from PIL import Image
 
+from pcapi import settings
 from pcapi.models import Offer
 from pcapi.models import Stock
 from pcapi.models import User
@@ -39,6 +40,34 @@ ACCEPTED_THUMBNAIL_FORMATS = (
 )
 DISTANT_IMAGE_REQUEST_TIMEOUT = 5
 CHUNK_SIZE_IN_BYTES = 4096
+
+VALID_KEY_VALIDATION_YAML = {
+    "init": ["minimum_score", "parameters"],
+    "parameters": ["name", "description", "price_all_types", "price_books", "email", "siren", "withdrawal",
+                   "virtual_venue", "venue_providers", "venue_category", "venue_permanence"],
+    "name": ["model", "attribute", "type", "condition", "factor"],
+    "description": ["model", "attribute", "condition", "factor"],
+    "price_all_types": ["model", "attribute", "condition", "factor"],
+    "price_books": ["model", "attribute", "type", "condition", "factor"],
+    "email": ["model", "attribute", "condition", "factor"],
+    "siren": ["model", "attribute", "condition", "factor"],
+    "withdrawal": ["model", "attribute", "condition", "factor"],
+    "virtual_venue": ["model", "attribute", "condition", "factor"],
+    "venue_providers": ["model", "attribute", "condition", "factor"],
+    "venue_category": ["model", "attribute", "condition", "factor"],
+    "venue_permanence": ["model", "attribute", "condition", "factor"],
+    "condition": ["operator", "comparated"],
+}
+
+VALID_VALUE_VALIDATION_YAML = {
+    "model": ["Offer", "Venue", "Offerer"],
+    "attribute": [str],
+    "type": [str, list],
+    "factor": [float, int],
+    "operator": [">", ">=", "<", "<=", "==", "is", "in", "not in"],
+    "comparated": [str, bool, float, int, list],
+    "minimum_score": [float, int],
+}
 
 
 def check_user_can_create_activation_event(user: User) -> None:
@@ -249,3 +278,21 @@ def check_activation_codes_expiration_datetime_on_stock_edition(
 
     activation_codes_expiration_datetime = activation_codes[0].expirationDate
     check_activation_codes_expiration_datetime(activation_codes_expiration_datetime, booking_limit_datetime)
+
+
+def check_user_can_load_config(user: User) -> None:
+    if user.email not in settings.SUPER_ADMIN_EMAIL_ADDRESSES:
+        error = ForbiddenError()
+        error.add_error("type", "Seuls les membres de l'équipe de validation peuvent éditer cette configuration")
+        raise error
+
+
+def check_config_parameters(config_as_dict: dict, valid_keys: list) -> None:
+    for key, value in config_as_dict.items():
+        if isinstance(value, dict):
+            check_config_parameters(value, VALID_KEY_VALIDATION_YAML[key])
+        # Note that these are case-senstive
+        elif not (value in VALID_VALUE_VALIDATION_YAML[key] or type(value) in VALID_VALUE_VALIDATION_YAML[key]):
+            raise TypeError(f"{value} of type {type(value)} not in : {VALID_VALUE_VALIDATION_YAML[key]}")
+        if key not in valid_keys:
+            raise KeyError(f"Wrong key : {key}")

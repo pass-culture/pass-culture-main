@@ -16,6 +16,7 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.exceptions import StockDoesNotExist
 from pcapi.core.offers.models import OfferStatus
+from pcapi.core.offers.models import OfferValidationConfig
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.users.models import User
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap

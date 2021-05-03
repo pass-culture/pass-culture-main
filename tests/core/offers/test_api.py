@@ -16,9 +16,10 @@ from pcapi.core.offers import api
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories
 from pcapi.core.offers.api import add_criteria_to_offers
-from pcapi.core.offers.api import compute_offer_validation_from_name
+from pcapi.core.offers.api import compute_offer_validation
 from pcapi.core.offers.api import deactivate_inappropriate_products
 from pcapi.core.offers.api import get_expense_domains
+from pcapi.core.offers.api import import_offer_validation_config
 from pcapi.core.offers.api import update_offer_and_stock_id_at_providers
 from pcapi.core.offers.api import update_pending_offer_validation_status
 from pcapi.core.offers.exceptions import ThumbnailStorageError
@@ -29,8 +30,11 @@ from pcapi.core.offers.factories import StockFactory
 from pcapi.core.offers.factories import ThingProductFactory
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import OfferValidationConfig
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import Stock
+from pcapi.core.offers.offer_validation import OfferValidationItem
+from pcapi.core.offers.offer_validation import parse_offer_validation_config
 from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.models import api_errors

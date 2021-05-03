@@ -7,6 +7,7 @@ from flask import current_app as app
 import pytz
 from sqlalchemy.orm import joinedload
 from sqlalchemy.sql.functions import func
+import yaml
 
 from pcapi import settings
 from pcapi.connectors import redis
@@ -18,9 +19,12 @@ from pcapi.core.bookings.api import update_confirmation_dates
 from pcapi.core.bookings.conf import LIMIT_CONFIGURATIONS
 from pcapi.core.bookings.models import Booking
 import pcapi.core.bookings.repository as bookings_repository
+from pcapi.core.offers.models import OfferValidationConfig
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import Stock
+from pcapi.core.offers.offer_validation import VALID_KEY_VALIDATION_YAML
 import pcapi.core.offers.repository as offers_repository
+from pcapi.core.offers.validation import check_config_parameters
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.core.users.models import User
 from pcapi.domain import admin_emails
@@ -658,3 +662,29 @@ def update_pending_offer_validation_status(offer: Offer, validation_status: Offe
         redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
     logger.info("Offer validation status updated", extra={"offer": offer.id})
     return True
+
+
+def import_offer_validation_config(config_as_yaml: str, user: User = None) -> OfferValidationConfig:
+    try:
+        check_user_can_load_config(user)
+    except ForbiddenError as error:
+        logger.exception(
+            "User is not permitted to upload fraud configuration file: %s",
+            extra={"User": user, "exc": str(error)},
+        )
+        raise error
+
+    config_as_dict = yaml.safe_load(config_as_yaml)
+
+    try:
+        check_config_parameters(config_as_dict, VALID_KEY_VALIDATION_YAML["init"])
+    except (KeyError, TypeError) as error:
+        logger.exception(
+            "Wrong configuration file format: %s",
+            extra={"exc": str(error)},
+        )
+        raise error
+
+    config = OfferValidationConfig(specs=config_as_dict, user=user)
+    repository.save(config)
+    return config

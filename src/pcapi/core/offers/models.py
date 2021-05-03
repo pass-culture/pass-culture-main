@@ -28,6 +28,7 @@ from sqlalchemy import false
 from sqlalchemy import func
 from sqlalchemy import or_
 from sqlalchemy import text
+from sqlalchemy.dialects.postgresql import JSON
 from sqlalchemy.event import listens_for
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
@@ -542,6 +543,10 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin, 
             else_=OfferStatus.ACTIVE.name,
         )
 
+    @property
+    def max_price(self) -> float:
+        return max(stock.price for stock in self.stocks if not stock.isSoftDeleted)
+
 
 class ActivationCode(PcObject, Model):
     __tablename__ = "activation_code"
@@ -567,3 +572,17 @@ class ActivationCode(PcObject, Model):
             name="unique_code_in_stock",
         ),
     )
+
+
+class OfferValidationConfig(PcObject, Model):
+    __tablename__ = "offer_validation_config"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+
+    dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow)
+
+    userId = Column(BigInteger, ForeignKey("user.id"))
+
+    user = relationship("User", foreign_keys=[userId], backref="offer_validation_configs")
+
+    specs = Column(JSON)
