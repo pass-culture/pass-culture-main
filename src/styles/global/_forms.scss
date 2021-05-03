@@ -1,6 +1,7 @@
 .logout-form-main {
   @extend .page;
 
+  background-color: $primary;
   background-image: $linear-gradient-to-right;
   color: $white;
   overflow: auto;

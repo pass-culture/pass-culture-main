@@ -173,6 +173,7 @@ img {
 }
 
 #root {
+  background-color: $primary;
   background-image: $linear-gradient-to-right;
   height: 100%;
   overflow: hidden;
