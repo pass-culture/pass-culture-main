@@ -6,9 +6,9 @@
   width: rem(540px);
 
   .activation-codes-upload-icon {
+    height: rem(120px);
     margin-top: rem(16px);
     width: rem(120px);
-    height: rem(120px);
   }
 
   .activation-codes-upload-title {
@@ -32,8 +32,24 @@
   .activation-codes-upload-information-message {
     @include body();
 
-    display: flex;
-    flex-direction: column;
     margin-top: rem(8px);
+  }
+
+  .activation-codes-upload-confirmation-message {
+    @include body();
+
+    margin-top: rem(24px);
+  }
+
+  .activation-codes-upload-confirmation-buttons {
+    display: grid;
+    grid-column-gap: rem(24px);
+    grid-template-columns: 1fr 1fr;
+    margin-top: rem(24px);
+    width: 100%;
+  }
+
+  .activation-codes-upload-confirmation-button {
+    width: 100%;
   }
 }

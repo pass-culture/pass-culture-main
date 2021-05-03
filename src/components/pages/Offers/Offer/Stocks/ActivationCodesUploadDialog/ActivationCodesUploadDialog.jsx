@@ -40,6 +40,8 @@ const ActivationCodesUploadDialog = ({ closeDialog }) => {
     }
   }, [setIsFileInputDisabled])
 
+  const clearActivationCodes = useCallback(() => setActivationCodes([]), [])
+
   return (
     <DialogBox
       extraClassNames="activation-codes-upload"
@@ -71,14 +73,36 @@ const ActivationCodesUploadDialog = ({ closeDialog }) => {
           />
         )}
         {activationCodes.length > 0 && (
-          <div className="activation-codes-upload-information-message">
-            <p>
-              {`Vous êtes sur le point d'ajouter ${activationCodes.length} codes d'activation.`}
-            </p>
-            <p>
-              {'La quantité disponible pour cette offre sera mise à jour dans vos stocks'}
-            </p>
-          </div>
+          <Fragment>
+            <div className="activation-codes-upload-information-message">
+              <p>
+                {`Vous êtes sur le point d'ajouter ${activationCodes.length} codes d'activation.`}
+              </p>
+              <p>
+                {'La quantité disponible pour cette offre sera mise à jour dans vos stocks'}
+              </p>
+            </div>
+            <div className="activation-codes-upload-confirmation-message">
+              <p>
+                {"Souhaitez-vous valider l'opération ?"}
+              </p>
+            </div>
+            <span className="activation-codes-upload-confirmation-buttons">
+              <button
+                className="secondary-button activation-codes-upload-confirmation-button"
+                onClick={clearActivationCodes}
+                type="button"
+              >
+                {'Retour'}
+              </button>
+              <button
+                className="primary-button activation-codes-upload-confirmation-button"
+                type="button"
+              >
+                {'Valider'}
+              </button>
+            </span>
+          </Fragment>
         )}
       </Fragment>
     </DialogBox>
