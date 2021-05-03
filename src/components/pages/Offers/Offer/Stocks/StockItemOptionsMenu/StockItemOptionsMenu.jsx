@@ -14,6 +14,7 @@ const StockItemOptionsMenu = ({
   deleteButtonTitle,
   deleteStock,
   disableDeleteButton,
+  hasActivationCodes,
   isNewStock,
   isOfferDisabled,
   setIsActivationCodesDialogOpen,
@@ -54,7 +55,7 @@ const StockItemOptionsMenu = ({
         {canAddActivationCodes && (
           <MenuItem
             className="stock-options-menu-item"
-            disabled={!isNewStock}
+            disabled={!isNewStock || hasActivationCodes}
             onSelect={openActivationCodesDialog}
             title={
               isNewStock
@@ -82,6 +83,7 @@ StockItemOptionsMenu.propTypes = {
   deleteButtonTitle: PropTypes.string.isRequired,
   deleteStock: PropTypes.func.isRequired,
   disableDeleteButton: PropTypes.bool.isRequired,
+  hasActivationCodes: PropTypes.bool.isRequired,
   isNewStock: PropTypes.bool.isRequired,
   isOfferDisabled: PropTypes.bool.isRequired,
   setIsActivationCodesDialogOpen: PropTypes.func.isRequired,

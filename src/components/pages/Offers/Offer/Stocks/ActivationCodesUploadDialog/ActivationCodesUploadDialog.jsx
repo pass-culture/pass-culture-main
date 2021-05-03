@@ -15,11 +15,15 @@ const getActivationCodesFromFileContent = fileContent => {
   return parsedFileContent
 }
 
-const ActivationCodesUploadDialog = ({ closeDialog }) => {
+const ActivationCodesUploadDialog = ({
+  activationCodes,
+  closeDialog,
+  validateActivationCodes,
+  setActivationCodes,
+}) => {
   const file = useRef({})
 
   const [isFileInputDisabled, setIsFileInputDisabled] = useState(false)
-  const [activationCodes, setActivationCodes] = useState([])
 
   const submitThumbnail = useCallback(() => {
     setIsFileInputDisabled(true)
@@ -38,9 +42,12 @@ const ActivationCodesUploadDialog = ({ closeDialog }) => {
       // Errors should be handled in another ticket (7791)
       setIsFileInputDisabled(false)
     }
-  }, [setIsFileInputDisabled])
+  }, [setActivationCodes, setIsFileInputDisabled])
 
-  const clearActivationCodes = useCallback(() => setActivationCodes([]), [])
+  const clearActivationCodes = useCallback(() => setActivationCodes([]), [setActivationCodes])
+  const submitActivationCodes = useCallback(() => {
+    validateActivationCodes(activationCodes)
+  }, [activationCodes, validateActivationCodes])
 
   return (
     <DialogBox
@@ -97,6 +104,7 @@ const ActivationCodesUploadDialog = ({ closeDialog }) => {
               </button>
               <button
                 className="primary-button activation-codes-upload-confirmation-button"
+                onClick={submitActivationCodes}
                 type="button"
               >
                 {'Valider'}
@@ -110,7 +118,10 @@ const ActivationCodesUploadDialog = ({ closeDialog }) => {
 }
 
 ActivationCodesUploadDialog.propTypes = {
+  activationCodes: PropTypes.arrayOf(PropTypes.string).isRequired,
   closeDialog: PropTypes.func.isRequired,
+  setActivationCodes: PropTypes.func.isRequired,
+  validateActivationCodes: PropTypes.func.isRequired,
 }
 
 export default ActivationCodesUploadDialog

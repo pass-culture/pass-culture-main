@@ -39,6 +39,7 @@ const StockItem = ({
   const [price, setPrice] = useState(initialStock.price)
   const [totalQuantity, setTotalQuantity] = useState(initialStock.quantity)
   const [isActivationCodesDialogOpen, setIsActivationCodesDialogOpen] = useState(false)
+  const [activationCodes, setActivationCodes] = useState([])
 
   useEffect(
     function updateStock() {
@@ -108,7 +109,10 @@ const StockItem = ({
 
   const askDeletionConfirmation = useCallback(() => setIsDeleting(true), [])
 
-  const closeActivationCodesDialog = useCallback(() => setIsActivationCodesDialogOpen(false), [])
+  const closeActivationCodesDialog = useCallback(() => {
+    setIsActivationCodesDialogOpen(false)
+    setActivationCodes([])
+  }, [])
 
   const totalQuantityValue = totalQuantity !== null ? totalQuantity : ''
   const computedRemainingQuantity = totalQuantityValue - initialStock.bookingsQuantity
@@ -140,6 +144,11 @@ const StockItem = ({
   const removeNewStockLine = useCallback(() => {
     removeStockInCreation(initialStock.key)
   }, [removeStockInCreation, initialStock.key])
+
+  const validateActivationCodes = useCallback(activationCodes => {
+    setTotalQuantity(activationCodes.length)
+    setIsActivationCodesDialogOpen(false)
+  }, [])
 
   return (
     <tr
@@ -209,7 +218,8 @@ const StockItem = ({
           disabled={
             isOfferDisabled ||
             (isOfferSynchronized && !isOfferSynchronizedWithAllocine) ||
-            !isStockEditable
+            !isStockEditable ||
+            activationCodes.length > 0
           }
           name="quantity"
           onChange={changeTotalQuantity}
@@ -231,6 +241,7 @@ const StockItem = ({
             deleteButtonTitle={computeStockDeleteButtonTitle()}
             deleteStock={isNewStock ? removeNewStockLine : askDeletionConfirmation}
             disableDeleteButton={isOfferDisabled || !isStockDeletable || isDeleting}
+            hasActivationCodes={activationCodes.length > 0}
             isNewStock={isNewStock}
             isOfferDisabled={isOfferDisabled}
             setIsActivationCodesDialogOpen={setIsActivationCodesDialogOpen}
@@ -255,7 +266,12 @@ const StockItem = ({
           />
         )}
         {isActivationCodesDialogOpen && (
-          <ActivationCodesUploadDialog closeDialog={closeActivationCodesDialog} />
+          <ActivationCodesUploadDialog
+            activationCodes={activationCodes}
+            closeDialog={closeActivationCodesDialog}
+            setActivationCodes={setActivationCodes}
+            validateActivationCodes={validateActivationCodes}
+          />
         )}
       </td>
     </tr>

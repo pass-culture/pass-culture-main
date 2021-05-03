@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
@@ -2244,30 +2244,6 @@ describe('stocks page', () => {
         pcapi.loadOffer.mockResolvedValue(noStockOffer)
       })
 
-      it('should allow the user to add activation codes option when offer is digital', async () => {
-        // given
-        const digitalOffer = {
-          ...noStockOffer,
-          isDigital: true,
-        }
-        pcapi.loadOffer.mockResolvedValue(digitalOffer)
-        await renderOffers(props, store)
-
-        // when
-        fireEvent.click(screen.getByText('Ajouter un stock'))
-        const activationCodeButton = screen
-          .getByText('Ajouter des codes d’activation')
-          .closest('div')
-        await act(async () => {
-          userEvent.click(activationCodeButton)
-        })
-
-        // then
-        expect(
-          screen.getByLabelText("Importer un fichier .csv depuis l'ordinateur")
-        ).toBeInTheDocument()
-      })
-
       it('should not display add activation codes option when not digital', async () => {
         // given
         const digitalOffer = {
@@ -2465,6 +2441,191 @@ describe('stocks page', () => {
         // Then
         expect(pcapi.bulkCreateOrEditStock).not.toHaveBeenCalled()
         expect(screen.queryByRole('row')).not.toBeInTheDocument()
+      })
+
+      describe('digital offer', () => {
+        let digitalOffer
+        beforeEach(() => {
+          digitalOffer = {
+            ...defaultOffer,
+            isDigital: true,
+            isEvent: false,
+            stocks: [],
+          }
+
+          pcapi.loadOffer.mockResolvedValue(digitalOffer)
+        })
+        it('should allow the user to add activation codes when offer is digital', async () => {
+          // given
+          await renderOffers(props, store)
+
+          // when
+          fireEvent.click(screen.getByText('Ajouter un stock'))
+          const activationCodeButton = screen
+            .getByText('Ajouter des codes d’activation')
+            .closest('div')
+          userEvent.click(activationCodeButton)
+
+          // then
+          expect(
+            screen.getByLabelText("Importer un fichier .csv depuis l'ordinateur")
+          ).toBeInTheDocument()
+        })
+
+        it('should display number of activation codes to be added', async () => {
+          // Given
+          await renderOffers(props, store)
+
+          fireEvent.click(screen.getByText('Ajouter un stock'))
+          const activationCodeButton = screen
+            .getByText('Ajouter des codes d’activation')
+            .closest('div')
+          userEvent.click(activationCodeButton)
+          const uploadButton = screen.getByLabelText("Importer un fichier .csv depuis l'ordinateur")
+          const file = new File(["Vos codes d'activations\nABH\nJHB"], 'activation_codes.csv', {
+            type: 'text/csv',
+          })
+
+          // When
+          fireEvent.change(uploadButton, {
+            target: {
+              files: [file],
+            },
+          })
+
+          // Then
+          await waitFor(() =>
+            expect(
+              screen.getByText("Vous êtes sur le point d'ajouter 2 codes d'activation.")
+            ).toBeInTheDocument()
+          )
+        })
+
+        it('should not change step when file is null', async () => {
+          // Given
+          await renderOffers(props, store)
+
+          fireEvent.click(screen.getByText('Ajouter un stock'))
+          const activationCodeButton = screen
+            .getByText('Ajouter des codes d’activation')
+            .closest('div')
+          userEvent.click(activationCodeButton)
+          const uploadButton = screen.getByLabelText("Importer un fichier .csv depuis l'ordinateur")
+
+          // When
+          fireEvent.change(uploadButton, {
+            target: {
+              files: [null],
+            },
+          })
+
+          // Then
+          await waitFor(() => {
+            expect(
+              screen.queryByText("Vous êtes sur le point d'ajouter 2 codes d'activations.")
+            ).not.toBeInTheDocument()
+            expect(
+              screen.getByLabelText("Importer un fichier .csv depuis l'ordinateur")
+            ).toBeInTheDocument()
+          })
+        })
+
+        it('should allow user to go back', async () => {
+          // Given
+          await renderOffers(props, store)
+
+          fireEvent.click(screen.getByText('Ajouter un stock'))
+          const activationCodeButton = screen
+            .getByText('Ajouter des codes d’activation')
+            .closest('div')
+          userEvent.click(activationCodeButton)
+          const uploadButton = screen.getByLabelText("Importer un fichier .csv depuis l'ordinateur")
+          const file = new File(["Vos codes d'activations\nABH\nJHB"], 'activation_codes.csv', {
+            type: 'text/csv',
+          })
+
+          // When
+          fireEvent.change(uploadButton, {
+            target: {
+              files: [file],
+            },
+          })
+          await waitFor(() => {
+            fireEvent.click(screen.getByText('Retour'))
+          })
+
+          // Then
+          expect(
+            screen.getByLabelText("Importer un fichier .csv depuis l'ordinateur")
+          ).toBeInTheDocument()
+        })
+
+        it('should change stock quantity and disable activation codes button on upload', async () => {
+          // Given
+          await renderOffers(props, store)
+
+          fireEvent.click(screen.getByText('Ajouter un stock'))
+          const activationCodeButton = screen
+            .getByText('Ajouter des codes d’activation')
+            .closest('div')
+          userEvent.click(activationCodeButton)
+          const uploadButton = screen.getByLabelText("Importer un fichier .csv depuis l'ordinateur")
+          const file = new File(["Vos codes d'activations\nABH\nJHB"], 'activation_codes.csv', {
+            type: 'text/csv',
+          })
+
+          // When
+          fireEvent.change(uploadButton, {
+            target: {
+              files: [file],
+            },
+          })
+          await waitFor(() => {
+            fireEvent.click(screen.getByText('Valider'))
+          })
+
+          // Then
+          expect(screen.getByLabelText('Quantité').value).toBe('2')
+          expect(screen.getByLabelText('Quantité')).toBeDisabled()
+          expect(screen.getByText('Ajouter des codes d’activation').closest('div')).toHaveAttribute(
+            'aria-disabled',
+            'true'
+          )
+          expect(screen.queryByText('Valider')).not.toBeInTheDocument()
+        })
+
+        it('should discard activation codes and close modal on close button click', async () => {
+          // Given
+          await renderOffers(props, store)
+
+          fireEvent.click(screen.getByText('Ajouter un stock'))
+          const activationCodeButton = screen
+            .getByText('Ajouter des codes d’activation')
+            .closest('div')
+          userEvent.click(activationCodeButton)
+          const uploadButton = screen.getByLabelText("Importer un fichier .csv depuis l'ordinateur")
+          const file = new File(["Vos codes d'activations\nABH\nJHB"], 'activation_codes.csv', {
+            type: 'text/csv',
+          })
+
+          // When
+          fireEvent.change(uploadButton, {
+            target: {
+              files: [file],
+            },
+          })
+          await waitFor(() => {
+            fireEvent.click(screen.getByTitle('Fermer la modale'))
+          })
+
+          // Then
+          expect(screen.getByLabelText('Quantité').value).toBe('')
+          expect(screen.getByLabelText('Quantité')).not.toBeDisabled()
+          expect(
+            screen.getByText('Ajouter des codes d’activation').closest('div')
+          ).not.toHaveAttribute('aria-disabled', 'true')
+          expect(screen.queryByText('Valider')).not.toBeInTheDocument()
+        })
       })
     })
   })
