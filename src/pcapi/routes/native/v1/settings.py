@@ -12,10 +12,7 @@ from .serialization import settings as serializers
 def get_settings() -> serializers.SettingsResponse:
     current_deposit_version = conf.get_current_deposit_version()
     booking_configuration = conf.LIMIT_CONFIGURATIONS[current_deposit_version]
-
-    is_recaptcha_enabled = False
-    if feature_queries.is_active(FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA):
-        is_recaptcha_enabled = True
+    is_recaptcha_enabled = feature_queries.is_active(FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA)
 
     return serializers.SettingsResponse(
         deposit_amount=booking_configuration.TOTAL_CAP,
