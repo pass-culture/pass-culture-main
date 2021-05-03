@@ -34,9 +34,11 @@ from pcapi.core.offers.models import OfferValidationConfig
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.offer_validation import OfferValidationItem
+from pcapi.core.offers.offer_validation import compute_offer_validation_score
 from pcapi.core.offers.offer_validation import parse_offer_validation_config
 from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
+from pcapi.core.users.factories import UserFactory
 from pcapi.models import api_errors
 from pcapi.models import offer_type
 from pcapi.models.product import Product
@@ -91,7 +93,7 @@ class UpsertStocksTest:
         assert draft_approvable_offer.validation == OfferValidationStatus.APPROVED
         assert draft_approvable_offer.isActive
         assert draft_suspicious_offer.validation == OfferValidationStatus.PENDING
-        assert draft_suspicious_offer.isActive
+        assert not draft_suspicious_offer.isActive
         assert draft_fraudulent_offer.validation == OfferValidationStatus.REJECTED
         assert not draft_fraudulent_offer.isActive
 
@@ -1102,18 +1104,18 @@ class ComputeOfferValidationTest:
     def test_matching_keyword(self):
         offer = Offer(name="An offer PENDING validation")
 
-        assert compute_offer_validation_from_name(offer) == OfferValidationStatus.PENDING
+        assert compute_offer_validation(offer) == OfferValidationStatus.PENDING
 
     def test_not_matching_keyword(self):
         offer = Offer(name="An offer pending validation")
 
-        assert compute_offer_validation_from_name(offer) == OfferValidationStatus.APPROVED
+        assert compute_offer_validation(offer) == OfferValidationStatus.APPROVED
 
     @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
     def test_deactivated_check(self):
         offer = Offer(name="An offer PENDING validation")
 
-        assert compute_offer_validation_from_name(offer) == OfferValidationStatus.APPROVED
+        assert compute_offer_validation(offer) == OfferValidationStatus.APPROVED
 
 
 @pytest.mark.usefixtures("db_session")
@@ -1150,3 +1152,335 @@ class UpdateOfferValidationStatusTest:
         update_pending_offer_validation_status(offer, OfferValidationStatus.APPROVED)
 
         mocked_add_offer_id.assert_called_once_with(client=app.redis_client, offer_id=offer.id)
+
+
+@pytest.mark.usefixtures("db_session")
+class ImportOfferValidationConfigTest:
+    @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
+    def test_raise_a_key_error(self):
+        user = UserFactory(email="superadmin@example.com")
+        config_yaml = """
+        minimum_score: 0.6
+        parameters:
+            name:
+                model: "Offer"
+                attribute: "name"
+                condition:
+                    operator: "not in"
+                    WRONG_KEY: "REJECTED"
+                factor: 0
+            price_all_types:
+                model: "Offer"
+                attribute: "max_price"
+                condition:
+                    operator: ">"
+                    comparated: 100
+                factor: 0.7
+        """
+        with pytest.raises(KeyError) as error:
+            import_offer_validation_config(config_yaml, user)
+        assert error.value.args[0] == "WRONG_KEY"
+
+    @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
+    def test_raise_a_type_error_for_wrong_type(self):
+        user = UserFactory(email="superadmin@example.com")
+        config_yaml = """
+            minimum_score: 0.6
+            parameters:
+                name:
+                    model: "Offer"
+                    attribute: "name"
+                    condition:
+                        operator: "not in"
+                        comparated: "REJECTED"
+                    factor: "0"
+                price_all_types:
+                    model: "Offer"
+                    attribute: "max_price"
+                    condition:
+                        operator: ">"
+                        comparated: 100
+                    factor: 0.7
+
+            """
+        with pytest.raises(TypeError) as error:
+            import_offer_validation_config(config_yaml, user)
+        assert "0" in error.value.args[0]
+
+    @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
+    def test_raise_a_type_error_for_wrong_leaf_value(self):
+        user = UserFactory(email="superadmin@example.com")
+        config_yaml = """
+                minimum_score: 0.6
+                parameters:
+                    name:
+                        model: "Offer"
+                        attribute: "name"
+                        condition:
+                            operator: "?"
+                            comparated: "REJECTED"
+                        factor: 0
+                    price_all_types:
+                        model: "Offer"
+                        attribute: "max_price"
+                        condition:
+                            operator: ">"
+                            comparated: 100
+                        factor: 0.7
+
+                """
+        with pytest.raises(TypeError) as error:
+            import_offer_validation_config(config_yaml, user)
+        assert "?" in error.value.args[0]
+
+    @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
+    def test_raise_a_type_error_for_wrong_value(self):
+        user = UserFactory(email="superadmin@example.com")
+        config_yaml = """
+                    minimum_score: 0.6
+                    parameters:
+                        name:
+                            model: "Stock"
+                            attribute: "name"
+                            condition:
+                                operator: "not in"
+                                comparated: "REJECTED"
+                            factor: 0
+                        price_all_types:
+                            model: "Offer"
+                            attribute: "max_price"
+                            condition:
+                                operator: ">"
+                                comparated: 100
+                            factor: 0.7
+
+                    """
+        with pytest.raises(TypeError) as error:
+            import_offer_validation_config(config_yaml, user)
+        assert "Stock" in error.value.args[0]
+
+    @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
+    def test_is_saved(self):
+        user = UserFactory(email="superadmin@example.com")
+        config_yaml = """
+        minimum_score: 0.6
+        parameters:
+            name:
+                model: "Offer"
+                attribute: "name"
+                condition:
+                    operator: "not in"
+                    comparated: "REJECTED"
+                factor: 0
+            price_all_types:
+                model: "Offer"
+                attribute: "max_price"
+                condition:
+                    operator: ">"
+                    comparated: 100
+                factor: 0.7
+
+        """
+        import_offer_validation_config(config_yaml, user)
+
+        current_config = OfferValidationConfig.query.one()
+        assert current_config is not None
+
+    @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
+    def test_is_saved_with_list_value_for_comparated(self):
+        user = UserFactory(email="superadmin@example.com")
+        config_yaml = """
+        minimum_score: 0.6
+        parameters:
+            name:
+                model: "Offer"
+                attribute: "name"
+                condition:
+                    operator: "not in"
+                    comparated:
+                      - "REJECTED"
+                      - "PENDING"
+                      - "DRAFT"
+                factor: 0
+            price_all_types:
+                model: "Offer"
+                attribute: "max_price"
+                condition:
+                    operator: ">"
+                    comparated: 100
+                factor: 0.7
+            price_books:
+                model: "Offer"
+                attribute: "max_price"
+                type:
+                    - "Livres audio numériques"
+                    - "Livres papier ou numérique, abonnements lecture"
+                condition:
+                    operator: ">"
+                    comparated: 100
+                factor: 0.7
+
+        """
+        import_offer_validation_config(config_yaml, user)
+
+        current_config = OfferValidationConfig.query.one()
+        assert current_config is not None
+
+
+@pytest.mark.usefixtures("db_session")
+class ParseOfferValidationConfigTest:
+    @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
+    def test_parse_offer_validation_config(self):
+        offer = OfferFactory(name="REJECTED")
+        config_yaml = """
+        minimum_score: 0.6
+        parameters:
+            name:
+                model: "Offer"
+                attribute: "name"
+                condition:
+                    operator: "not in"
+                    comparated:
+                      - "REJECTED"
+                      - "PENDING"
+                      - "DRAFT"
+                factor: 0
+        """
+        offer_validation_config = import_offer_validation_config(config_yaml)
+        min_score, validation_items = parse_offer_validation_config(offer, offer_validation_config)
+        assert min_score == 0.6
+        assert len(validation_items) == 1
+        assert validation_items[0].model == offer
+        assert validation_items[0].attribute == "name"
+
+
+@pytest.mark.usefixtures("db_session")
+class FinalComputeOfferValidationTest:
+    @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
+    def test_matching_keyword(self):
+        offer = OfferFactory(name="A suspicious offer")
+        StockFactory(price=10, offer=offer)
+        example_yaml = """
+        minimum_score: 0.6
+        parameters:
+            name:
+                model: "Offer"
+                attribute: "name"
+                condition:
+                    operator: "not in"
+                    comparated: "suspicious"
+                factor: 0
+            price_all_types:
+                model: "Offer"
+                attribute: "max_price"
+                condition:
+                    operator: ">"
+                    comparated: 100
+                factor: 0.7
+        """
+        import_offer_validation_config(example_yaml)
+        assert compute_offer_validation(offer) == OfferValidationStatus.PENDING
+
+
+@pytest.mark.usefixtures("db_session")
+class ComputeOfferValidationScoreTest:
+    @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
+    def test_offer_validation_with_one_item_config_with_in(self):
+        offer = OfferFactory(name="REJECTED")
+        validation_item = OfferValidationItem(
+            model=offer, attribute="name", type=None, condition={"operator": "in", "comparated": "REJECTED"}, factor=0.2
+        )
+
+        score = compute_offer_validation_score([validation_item])
+
+        assert score == 0.2
+
+    @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
+    def test_offer_validation_with_one_item_config_with_greater_than(self):
+        offer = OfferFactory(name="REJECTED")
+        StockFactory(offer=offer, price=12)
+        validation_item = OfferValidationItem(
+            model=offer, attribute="max_price", type=None, condition={"operator": ">", "comparated": 10}, factor=0.2
+        )
+
+        score = compute_offer_validation_score([validation_item])
+
+        assert score == 0.2
+
+    def test_offer_validation_with_one_item_config_with_lessier_than(self):
+        offer = OfferFactory(name="REJECTED")
+        StockFactory(offer=offer, price=8)
+        validation_item = OfferValidationItem(
+            model=offer, attribute="max_price", type=None, condition={"operator": "<", "comparated": 10}, factor=0.2
+        )
+
+        score = compute_offer_validation_score([validation_item])
+
+        assert score == 0.2
+
+    @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
+    def test_offer_validation_with_one_item_config_with_greater_or_equal_than(self):
+        offer = OfferFactory(name="REJECTED")
+        StockFactory(offer=offer, price=12)
+        validation_item = OfferValidationItem(
+            model=offer, attribute="max_price", type=None, condition={"operator": ">=", "comparated": 10}, factor=0.2
+        )
+
+        score = compute_offer_validation_score([validation_item])
+
+        assert score == 0.2
+
+    def test_offer_validation_with_one_item_config_with_lessier_or_equal_than(self):
+        offer = OfferFactory(name="REJECTED")
+        StockFactory(offer=offer, price=8)
+        validation_item = OfferValidationItem(
+            model=offer, attribute="max_price", type=None, condition={"operator": "<=", "comparated": 10}, factor=0.2
+        )
+
+        score = compute_offer_validation_score([validation_item])
+
+        assert score == 0.2
+
+    @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
+    def test_offer_validation_with_one_item_config_with_equal(self):
+        offer = OfferFactory(name="test offer")
+        StockFactory(offer=offer, price=15)
+        validation_item_1 = OfferValidationItem(
+            model=offer,
+            attribute="name",
+            type=None,
+            condition={"operator": "==", "comparated": "test offer"},
+            factor=0.3,
+        )
+        score = compute_offer_validation_score([validation_item_1])
+        assert score == 0.3
+
+    @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
+    def test_offer_validation_with_one_item_config_with_not_in(self):
+        offer = OfferFactory(name="rejected")
+        validation_item = OfferValidationItem(
+            model=offer,
+            attribute="name",
+            type=None,
+            condition={"operator": "not in", "comparated": "[approved]"},
+            factor=0.3,
+        )
+        score = compute_offer_validation_score([validation_item])
+        assert score == 0.3
+
+    @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
+    def test_offer_validation_with_multiple_item_config(self):
+        offer = OfferFactory(name="test offer")
+        StockFactory(offer=offer, price=15)
+        validation_item_1 = OfferValidationItem(
+            model=offer,
+            attribute="name",
+            type=None,
+            condition={"operator": "==", "comparated": "test offer"},
+            factor=0.3,
+        )
+        validation_item_2 = OfferValidationItem(
+            model=offer, attribute="max_price", type=None, condition={"operator": ">", "comparated": 10}, factor=0.2
+        )
+        score = compute_offer_validation_score([validation_item_1, validation_item_2])
+        assert score == 0.06

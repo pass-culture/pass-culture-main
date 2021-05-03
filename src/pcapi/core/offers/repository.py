@@ -275,3 +275,7 @@ def find_tomorrow_event_stock_ids() -> set[int]:
     )
 
     return {stock.id for stock in stocks}
+
+
+def get_current_offer_validation_config() -> Optional[OfferValidationConfig]:
+    return OfferValidationConfig.query.order_by(OfferValidationConfig.id.desc()).first()

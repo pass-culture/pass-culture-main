@@ -22,8 +22,10 @@ import pcapi.core.bookings.repository as bookings_repository
 from pcapi.core.offers.models import OfferValidationConfig
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import Stock
-from pcapi.core.offers.offer_validation import VALID_KEY_VALIDATION_YAML
+from pcapi.core.offers.offer_validation import compute_offer_validation_score
+from pcapi.core.offers.offer_validation import parse_offer_validation_config
 import pcapi.core.offers.repository as offers_repository
+from pcapi.core.offers.validation import VALID_KEY_VALIDATION_YAML
 from pcapi.core.offers.validation import check_config_parameters
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.core.users.models import User
@@ -403,8 +405,8 @@ def upsert_stocks(
 
     if offer.validation == OfferValidationStatus.DRAFT:
         # TODO(fseguin): remove after the real implementation is added
-        offer.validation = compute_offer_validation_from_name(offer)
-        if offer.validation == OfferValidationStatus.REJECTED:
+        offer.validation = compute_offer_validation(offer)
+        if offer.validation == OfferValidationStatus.PENDING or offer.validation == OfferValidationStatus.REJECTED:
             offer.isActive = False
         repository.save(offer)
 
@@ -629,13 +631,27 @@ def deactivate_inappropriate_products(isbn: str) -> bool:
     return True
 
 
-def compute_offer_validation_from_name(offer: Offer) -> OfferValidationStatus:
-    """This is temporary logic, before real business rules are implemented"""
+def compute_offer_validation(offer: Offer) -> OfferValidationStatus:
+    # TODO (rchaffal) supprimer
     if not settings.IS_PROD and feature_queries.is_active(FeatureToggle.OFFER_VALIDATION_MOCK_COMPUTATION):
         for keyword, validation_status in VALIDATION_KEYWORDS_MAPPING.items():
             if keyword in offer.name:
                 return validation_status
-    return OfferValidationStatus.APPROVED
+
+    current_config = offers_repository.get_current_offer_validation_config()
+    if not current_config:
+        return OfferValidationStatus.APPROVED
+
+    minimum_score, validation_items = parse_offer_validation_config(offer, current_config)
+
+    score = compute_offer_validation_score(validation_items)
+    if score < minimum_score:
+        status = OfferValidationStatus.PENDING
+    else:
+        status = OfferValidationStatus.APPROVED
+
+    logger.info("Computed offer validation", extra={"offer": offer, "score": score, "status": status})
+    return status
 
 
 def update_pending_offer_validation_status(offer: Offer, validation_status: OfferValidationStatus) -> bool:
@@ -665,15 +681,6 @@ def update_pending_offer_validation_status(offer: Offer, validation_status: Offe
 
 
 def import_offer_validation_config(config_as_yaml: str, user: User = None) -> OfferValidationConfig:
-    try:
-        check_user_can_load_config(user)
-    except ForbiddenError as error:
-        logger.exception(
-            "User is not permitted to upload fraud configuration file: %s",
-            extra={"User": user, "exc": str(error)},
-        )
-        raise error
-
     config_as_dict = yaml.safe_load(config_as_yaml)
 
     try:

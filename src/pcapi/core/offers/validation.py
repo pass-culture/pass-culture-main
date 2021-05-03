@@ -43,8 +43,19 @@ CHUNK_SIZE_IN_BYTES = 4096
 
 VALID_KEY_VALIDATION_YAML = {
     "init": ["minimum_score", "parameters"],
-    "parameters": ["name", "description", "price_all_types", "price_books", "email", "siren", "withdrawal",
-                   "virtual_venue", "venue_providers", "venue_category", "venue_permanence"],
+    "parameters": [
+        "name",
+        "description",
+        "price_all_types",
+        "price_books",
+        "email",
+        "siren",
+        "withdrawal",
+        "virtual_venue",
+        "venue_providers",
+        "venue_category",
+        "venue_permanence",
+    ],
     "name": ["model", "attribute", "type", "condition", "factor"],
     "description": ["model", "attribute", "condition", "factor"],
     "price_all_types": ["model", "attribute", "condition", "factor"],
