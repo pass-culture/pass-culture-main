@@ -156,14 +156,14 @@ class SynchronizeStocksTest:
                 "available_quantity": 17,
                 "offers_provider_reference": "offer_ref_2",
                 "price": 28.989,
-                "products_provider_reference": "product_ref",
+                "products_provider_reference": "isbn_product_ref",
                 "stocks_provider_reference": "stock_ref",
             },
             {  # no quantity, must be ignored
                 "available_quantity": 0,
                 "offers_provider_reference": "offer_ref_3",
                 "price": 28.989,
-                "products_provider_reference": "product_ref",
+                "products_provider_reference": "isbn_product_ref",
                 "stocks_provider_reference": "stock_ref",
             },
         ]
@@ -174,7 +174,7 @@ class SynchronizeStocksTest:
         product = Product(
             id=456, name="product_name", description="product_desc", extraData="extra", type="product_type"
         )
-        products_by_provider_reference = {"product_ref": product}
+        products_by_provider_reference = {"isbn_product_ref": product}
 
         # When
         new_offers = api._build_new_offers_from_stock_details(
@@ -197,8 +197,19 @@ class SynchronizeStocksTest:
                 productId=456,
                 venueId=venue.id,
                 type="product_type",
-            )
+            ),
         ]
+        new_offer = new_offers[0]
+        assert new_offer.bookingEmail == "booking_email"
+        assert new_offer.description == "product_desc"
+        assert new_offer.extraData == "extra"
+        assert new_offer.idAtProviders == "offer_ref_2"
+        assert new_offer.idAtProvider == "isbn_product_ref"
+        assert new_offer.lastProviderId == provider.id
+        assert new_offer.name == "product_name"
+        assert new_offer.productId == 456
+        assert new_offer.venueId == venue.id
+        assert new_offer.type == "product_type"
 
     def test_get_stocks_to_upsert(self):
         # Given

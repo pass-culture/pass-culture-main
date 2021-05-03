@@ -49,8 +49,10 @@ class LibrairesStocksTest:
 
             assert offer_providable_info.type == Offer
             assert offer_providable_info.id_at_providers == "9780199536986@12345678912345"
+            assert offer_providable_info.new_id_at_provider == "9780199536986"
             assert stock_providable_info.type == Stock
             assert stock_providable_info.id_at_providers == "9780199536986@12345678912345"
+            assert stock_providable_info.new_id_at_provider == "9780199536986"
 
     class UpdateObjectsTest:
         @pytest.mark.usefixtures("db_session")

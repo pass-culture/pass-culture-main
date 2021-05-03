@@ -204,6 +204,7 @@ def _build_new_offers_from_stock_details(
             venue,
             product,
             id_at_providers=stock_detail["offers_provider_reference"],
+            id_at_provider=stock_detail["products_provider_reference"],
             provider_id=provider_id,
         )
 
@@ -300,12 +301,15 @@ def _validate_stock_or_offer(model: Union[Offer, Stock]) -> bool:
     return True
 
 
-def _build_new_offer(venue: Venue, product: Product, id_at_providers: str, provider_id: str) -> Offer:
+def _build_new_offer(
+    venue: Venue, product: Product, id_at_providers: str, id_at_provider: str, provider_id: str
+) -> Offer:
     return Offer(
         bookingEmail=venue.bookingEmail,
         description=product.description,
         extraData=product.extraData,
         idAtProviders=id_at_providers,
+        idAtProvider=id_at_provider,
         lastProviderId=provider_id,
         name=product.name,
         productId=product.id,

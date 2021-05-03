@@ -69,13 +69,15 @@ class AllocineStocks(LocalProvider):
 
         showtimes_number = len(self.filtered_movie_showtimes)
         providable_information_list = [
-            self.create_providable_info(Product, self.movie_information["id"], datetime.utcnow())
+            self.create_providable_info(
+                Product, self.movie_information["id"], datetime.utcnow(), self.movie_information["id"]
+            )
         ]
 
         if _has_original_version_product(self.filtered_movie_showtimes):
             venue_movie_original_version_unique_id = _build_original_movie_uuid(self.movie_information, self.venue)
             original_version_offer_providable_information = self.create_providable_info(
-                Offer, venue_movie_original_version_unique_id, datetime.utcnow()
+                Offer, venue_movie_original_version_unique_id, datetime.utcnow(), venue_movie_original_version_unique_id
             )
 
             providable_information_list.append(original_version_offer_providable_information)
@@ -83,7 +85,7 @@ class AllocineStocks(LocalProvider):
         if _has_french_version_product(self.filtered_movie_showtimes):
             venue_movie_french_version_unique_id = _build_french_movie_uuid(self.movie_information, self.venue)
             french_version_offer_providable_information = self.create_providable_info(
-                Offer, venue_movie_french_version_unique_id, datetime.utcnow()
+                Offer, venue_movie_french_version_unique_id, datetime.utcnow(), venue_movie_french_version_unique_id
             )
             providable_information_list.append(french_version_offer_providable_information)
 
@@ -91,7 +93,9 @@ class AllocineStocks(LocalProvider):
             showtime = self.filtered_movie_showtimes[showtime_number]
             id_at_providers = _build_stock_uuid(self.movie_information, self.venue, showtime)
 
-            stock_providable_information = self.create_providable_info(Stock, id_at_providers, datetime.utcnow())
+            stock_providable_information = self.create_providable_info(
+                Stock, id_at_providers, datetime.utcnow(), id_at_providers
+            )
             providable_information_list.append(stock_providable_information)
 
         return providable_information_list

@@ -63,7 +63,9 @@ def create_product(isbn, product_price, **kwargs):
 
 
 def create_offer(isbn, siret, product_price):
-    return factories.OfferFactory(product=create_product(isbn, product_price), idAtProviders=f"{isbn}@{siret}")
+    return factories.OfferFactory(
+        product=create_product(isbn, product_price), idAtProviders=f"{isbn}@{siret}", idAtProvider=isbn
+    )
 
 
 def create_stock(isbn, siret, product_price, **kwargs):
@@ -155,6 +157,7 @@ class ProviderAPICronTest:
         assert created_offer.venueId == venue_provider.venue.id
         assert created_offer.type == product.type
         assert created_offer.idAtProviders == f"{ISBNs[2]}@{siret}"
+        assert created_offer.idAtProvider == ISBNs[2]
         assert created_offer.lastProviderId == provider.id
 
         # Test it adds offer in redis

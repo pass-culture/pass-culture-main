@@ -72,6 +72,7 @@ def _get_stocks_by_batch(siret: str, provider_api: ProviderAPI, modified_since: 
 
 def _build_stock_details_from_raw_stocks(raw_stocks: list[dict], venue_siret: str, provider: Provider) -> list[dict]:
     stock_details = {}
+
     for stock in raw_stocks:
         price = stock.get("price")  # if missing, we'll use `Product.price`
         if price is not None:

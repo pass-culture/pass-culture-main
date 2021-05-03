@@ -36,6 +36,7 @@ from pcapi.repository import repository
 
 
 NOW = datetime.utcnow()
+YESTERDAY = NOW - timedelta(days=1)
 TWO_DAYS_AGO = NOW - timedelta(days=2)
 THREE_DAYS_AGO = NOW - timedelta(days=3)
 FOUR_DAYS_AGO = NOW - timedelta(days=4)
@@ -97,9 +98,11 @@ class FindPaymentEligibleBookingsForVenueTest:
         future_event_stock = create_stock_with_event_offer(
             offerer=offerer, venue=venue, beginning_datetime=ONE_WEEK_FROM_NOW
         )
-        past_event_booking = create_booking(user=beneficiary, is_used=True, stock=past_event_stock, venue=venue)
+        past_event_booking = create_booking(
+            user=beneficiary, is_used=True, stock=past_event_stock, venue=venue, date_created=YESTERDAY
+        )
         future_event_booking = create_booking(user=beneficiary, is_used=True, stock=future_event_stock, venue=venue)
-        thing_booking = create_booking(user=beneficiary, is_used=True, venue=venue)
+        thing_booking = create_booking(user=beneficiary, is_used=True, venue=venue, date_created=NOW)
 
         another_offerer = create_offerer(siren="987654321")
         another_venue = create_venue(another_offerer, siret=f"{another_offerer.siren}12345")

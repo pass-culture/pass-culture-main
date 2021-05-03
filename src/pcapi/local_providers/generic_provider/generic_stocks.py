@@ -51,10 +51,16 @@ class GenericStocks(LocalProvider):
             return []
 
         providable_info_offer = self.create_providable_info(
-            Offer, f"{self.provider_stocks['ref']}@{self.id_at_provider}", datetime.utcnow()
+            Offer,
+            f"{self.provider_stocks['ref']}@{self.id_at_provider}",
+            datetime.utcnow(),
+            self.provider_stocks["ref"],
         )
         providable_info_stock = self.create_providable_info(
-            Stock, f"{self.provider_stocks['ref']}@{self.id_at_provider}", datetime.utcnow()
+            Stock,
+            f"{self.provider_stocks['ref']}@{self.id_at_provider}",
+            datetime.utcnow(),
+            self.provider_stocks["ref"],
         )
 
         return [providable_info_offer, providable_info_stock]

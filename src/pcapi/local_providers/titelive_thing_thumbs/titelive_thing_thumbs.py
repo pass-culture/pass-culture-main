@@ -44,7 +44,7 @@ class TiteLiveThingThumbs(LocalProvider):
 
         file_identifier = path.name.split("_", 1)[0]
         file_date = datetime(*self.thumb_zipinfo.date_time)
-        product_providable_info = self.create_providable_info(Product, file_identifier, file_date)
+        product_providable_info = self.create_providable_info(Product, file_identifier, file_date, file_identifier)
 
         return [product_providable_info]
 

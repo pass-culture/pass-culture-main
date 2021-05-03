@@ -17,10 +17,10 @@ from pcapi.models.local_provider_event import LocalProviderEventType
 from pcapi.repository import local_provider_event_queries
 from pcapi.repository import product_queries
 from pcapi.repository.product_queries import ProductWithBookingsException
+from pcapi.utils.string_processing import trim_with_elipsis
 
 
 logger = logging.getLogger(__name__)
-from pcapi.utils.string_processing import trim_with_elipsis
 
 
 DATE_REGEXP = re.compile(r"([a-zA-Z]+)(\d+).tit")
@@ -127,7 +127,9 @@ class TiteLiveThings(LocalProvider):
             return []
 
         book_information_last_update = read_things_date(self.product_infos["date_updated"])
-        providable_info = self.create_providable_info(Product, book_unique_identifier, book_information_last_update)
+        providable_info = self.create_providable_info(
+            Product, book_unique_identifier, book_information_last_update, book_information_last_update
+        )
         return [providable_info]
 
     def get_ineligibility_reason(self) -> str:

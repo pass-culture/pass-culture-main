@@ -43,7 +43,9 @@ class TiteLiveThingDescriptions(LocalProvider):
 
         path = PurePath(self.description_zip_info.filename)
         date_from_filename = path.name.split("_", 1)[0]
-        product_providable_info = self.create_providable_info(Product, date_from_filename, self.date_modified)
+        product_providable_info = self.create_providable_info(
+            Product, date_from_filename, self.date_modified, date_from_filename
+        )
         return [product_providable_info]
 
     def fill_object_attributes(self, product: Product):

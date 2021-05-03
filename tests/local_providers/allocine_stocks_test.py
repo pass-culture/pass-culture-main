@@ -140,14 +140,19 @@ class AllocineStocksTest:
 
             assert product_providable_info.type == Product
             assert product_providable_info.id_at_providers == "TW92aWU6Mzc4MzI="
+            assert product_providable_info.new_id_at_provider == "TW92aWU6Mzc4MzI="
             assert product_providable_info.date_modified_at_provider == datetime(year=2019, month=10, day=15, hour=9)
 
             assert offer_providable_info.type == Offer
             assert offer_providable_info.id_at_providers == "TW92aWU6Mzc4MzI=%77567146400110-VF"
+            assert offer_providable_info.new_id_at_provider == "TW92aWU6Mzc4MzI=%77567146400110-VF"
             assert offer_providable_info.date_modified_at_provider == datetime(year=2019, month=10, day=15, hour=9)
 
             assert stock_providable_info.type == Stock
             assert stock_providable_info.id_at_providers == "TW92aWU6Mzc4MzI=%77567146400110#DUBBED/2019-10-29T10:30:00"
+            assert (
+                stock_providable_info.new_id_at_provider == "TW92aWU6Mzc4MzI=%77567146400110#DUBBED/2019-10-29T10:30:00"
+            )
             assert stock_providable_info.date_modified_at_provider == datetime(year=2019, month=10, day=15, hour=9)
 
 

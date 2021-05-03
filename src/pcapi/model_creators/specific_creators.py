@@ -66,6 +66,7 @@ def create_offer_with_event_product(
     offer.lastProviderId = last_provider_id
     offer.lastProvider = last_provider
     offer.idAtProviders = id_at_providers
+    offer.idAtProvider = id_at_providers
     offer.isDuo = is_duo
     offer.validation = validation
     offer.withdrawalDetails = withdrawal_details
@@ -166,6 +167,7 @@ def create_offer_with_thing_product(
         offer.idAtProviders = id_at_providers
     elif venue is not None:
         offer.idAtProviders = "%s@%s" % (offer.product.idAtProviders, venue.siret or venue.id)
+        offer.idAtProvider = "%s" % offer.product.idAtProviders
 
     return offer
 

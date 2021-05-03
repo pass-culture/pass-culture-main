@@ -57,8 +57,10 @@ class TiteliveStocksTest:
 
             assert offer_providable_info.type == Offer
             assert offer_providable_info.id_at_providers == "0002730757438@12345678912345"
+            assert offer_providable_info.new_id_at_provider == "0002730757438"
             assert stock_providable_info.type == Stock
             assert stock_providable_info.id_at_providers == "0002730757438@12345678912345"
+            assert stock_providable_info.new_id_at_provider == "0002730757438"
 
     class UpdateObjectsTest:
         @pytest.mark.usefixtures("db_session")

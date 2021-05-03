@@ -24,10 +24,10 @@ from pcapi.models.local_provider_event import LocalProviderEventType
 from pcapi.repository import feature_queries
 from pcapi.repository import repository
 from pcapi.repository.providable_queries import get_last_update_for_provider
+from pcapi.validation.models import entity_validator
 
 
 logger = logging.getLogger(__name__)
-from pcapi.validation.models import entity_validator
 
 
 CHUNK_MAX_SIZE = 1000
@@ -56,13 +56,14 @@ class LocalProvider(Iterator):
         pass
 
     def create_providable_info(
-        self, pc_object: Model, id_at_providers: str, date_modified_at_provider: datetime
+        self, pc_object: Model, id_at_providers: str, date_modified_at_provider: datetime, new_id_at_provider: str
     ) -> ProvidableInfo:
         if "|" in id_at_providers:
             raise Exception("Invalid character in idAtProviders field")
         providable_info = ProvidableInfo()
         providable_info.type = pc_object
         providable_info.id_at_providers = id_at_providers
+        providable_info.new_id_at_provider = new_id_at_provider
         providable_info.date_modified_at_provider = date_modified_at_provider
         return providable_info
 
@@ -93,6 +94,7 @@ class LocalProvider(Iterator):
     def _create_object(self, providable_info: ProvidableInfo) -> Model:
         pc_object = providable_info.type()
         pc_object.idAtProviders = providable_info.id_at_providers
+        pc_object.idAtProvider = providable_info.new_id_at_provider
         pc_object.lastProviderId = self.provider.id
         pc_object.dateModifiedAtLastProvider = providable_info.date_modified_at_provider
 
