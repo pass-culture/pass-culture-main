@@ -567,6 +567,53 @@ describe('stocks page', () => {
         expect(informationMessage).toBeInTheDocument()
       })
     })
+
+    describe('when the user clicks several time on the "Enregistrer" button', () => {
+      it('should display a disabled "Enregistrer" button when no errors', async () => {
+        // Given
+        const stock = stockFactory()
+        const offer = offerFactory({ id: 'AG3A', status: 'ACTIVE' })
+        loadFakeApiOffer(offer)
+        loadFakeApiStocks([stock])
+        bulkFakeApiCreateOrEditStock({ id: stock.id })
+        await renderOffers(props, store)
+
+        // When
+        fireEvent.click(screen.getByText('Enregistrer', { selector: 'button' }))
+
+        // Then
+        expect(screen.queryByText('Enregistrer', { selector: 'button' })).not.toBeInTheDocument()
+        expect(screen.getAllByRole('button').pop()).toBeDisabled()
+      })
+
+      it('should display an enabled "Enregistrer" button after clicking on it when there is an error in the form', async () => {
+        // Given
+        let eventOffer = {
+          ...defaultOffer,
+          isEvent: true,
+        }
+
+        pcapi.loadOffer.mockResolvedValue(eventOffer)
+        pcapi.loadStocks.mockResolvedValue({ stocks: [] })
+        pcapi.bulkCreateOrEditStock.mockResolvedValue({})
+
+        await renderOffers(props, store)
+
+        fireEvent.click(await screen.findByText('Ajouter une date'))
+
+        fireEvent.click(screen.getByLabelText('Date de l’événement'))
+        fireEvent.click(screen.getByText('26'))
+
+        fireEvent.click(screen.getByLabelText('Heure de l’événement'))
+        fireEvent.click(screen.getByText('20:00'))
+
+        // When
+        fireEvent.click(screen.getByText('Enregistrer'))
+
+        // Then
+        expect(screen.getByText('Enregistrer', { selector: 'button' })).toBeEnabled()
+      })
+    })
   })
 
   describe('mandatory fields', () => {

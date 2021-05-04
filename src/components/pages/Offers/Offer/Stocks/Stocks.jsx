@@ -136,9 +136,9 @@ const Stocks = ({
   }
 
   const submitStocks = useCallback(() => {
-    setIsSendingStocksOfferCreation(true)
     const updatedStocks = existingStocks.filter(stock => stock.updated)
     if (areValid([...stocksInCreation, ...updatedStocks])) {
+      setIsSendingStocksOfferCreation(true)
       const stocksToCreate = stocksInCreation.map(stockInCreation =>
         createStockPayload(stockInCreation, offer.isEvent, offer.venue.departementCode)
       )

@@ -16,15 +16,15 @@ describe('src | components | layout | SubmitButton', () => {
     children: 'Enregistrer',
   }
   describe('render', () => {
-    it('should display the text value of the button when is not loading', async () => {
+    it('should display the text value of the button when is not loading and the button should be enabled', async () => {
       // When
       await renderSubmitButton(props)
 
       // Then
-      expect(screen.queryByText('Enregistrer')).toBeInTheDocument()
+      expect(screen.getByText('Enregistrer', { selector: 'button' })).toBeEnabled()
     })
 
-    it('should not display the text value of the button when is loading', async () => {
+    it('should not display the text value of the button when is loading, and the button should be disabled', async () => {
       // Given
       props.isLoading = true
 
@@ -32,7 +32,8 @@ describe('src | components | layout | SubmitButton', () => {
       await renderSubmitButton(props)
 
       // Then
-      expect(screen.queryByText('Enregistrer')).not.toBeInTheDocument()
+      expect(screen.queryByText('Enregistrer', { selector: 'button' })).not.toBeInTheDocument()
+      expect(screen.getByRole('button')).toBeDisabled()
     })
   })
 })
