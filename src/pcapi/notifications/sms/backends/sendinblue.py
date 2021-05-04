@@ -4,6 +4,7 @@ import sib_api_v3_sdk
 from sib_api_v3_sdk.rest import ApiException
 
 from pcapi import settings
+from pcapi.core import mails
 
 
 logger = logging.getLogger(__name__)
@@ -30,3 +31,20 @@ class SendinblueBackend:
         except ApiException as e:
             logger.exception("Exception when calling TransactionalSMSApi->send_transac_sms: %s\n", e)
             return False
+
+
+class ToDevSendinblueBackend(SendinblueBackend):
+    def send_transactional_sms(self, recipient: str, content: str) -> bool:
+        if recipient in settings.WHITELISTED_SMS_RECIPIENTS:
+            if not super().send_transactional_sms(recipient, content):
+                return False
+
+        mail_content = {
+            "Subject": "Code de validation du téléphone",
+            "Html-part": (
+                f"<div>Le contenu suivant serait envoyé par sms au numéro {recipient}</div>"
+                f"<div>{content}</div></div>"
+            ),
+        }
+
+        return mails.send(recipients=[settings.DEV_EMAIL_ADDRESS], data=mail_content)

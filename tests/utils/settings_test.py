@@ -20,3 +20,17 @@ class ParseEmailAddressesTest:
         assert utils.parse_email_addresses("one@test.com;two@test.com") == ["one@test.com", "two@test.com"]
         assert utils.parse_email_addresses("one@test.com; two@test.com") == ["one@test.com", "two@test.com"]
         assert utils.parse_email_addresses("  one@test.com  ; two@test.com   ") == ["one@test.com", "two@test.com"]
+
+
+class ParsePhoneNumbersTest:
+    def test_returns_phones(self):
+        assert utils.parse_phone_numbers("prenom.nom:33601020304; prenom.nom:33602030405") == [
+            "33601020304",
+            "33602030405",
+        ]
+
+    def test_does_not_fail(self):
+        assert not utils.parse_phone_numbers("33601020304; prenom.nom:33602030405")
+
+    def test_void_phone_numbers(self):
+        assert not utils.parse_phone_numbers(None)

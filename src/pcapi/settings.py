@@ -89,7 +89,7 @@ if IS_PROD or IS_INTEGRATION:
 elif IS_STAGING or IS_TESTING:
     _default_email_backend = "pcapi.core.mails.backends.mailjet.ToDevMailjetBackend"
     _default_push_notification_backend = "pcapi.notifications.push.backends.batch.BatchBackend"
-    _default_sms_notification_backend = "pcapi.notifications.sms.backends.sendinblue.SendinblueBackend"
+    _default_sms_notification_backend = "pcapi.notifications.sms.backends.sendinblue.ToDevSendinblueBackend"
 elif IS_RUNNING_TESTS:
     _default_email_backend = "pcapi.core.mails.backends.testing.TestingBackend"
     _default_push_notification_backend = "pcapi.notifications.push.backends.testing.TestingBackend"
@@ -111,6 +111,7 @@ PAYMENTS_REPORT_RECIPIENTS = utils.parse_email_addresses(os.environ.get("PAYMENT
 PAYMENTS_DETAILS_RECIPIENTS = utils.parse_email_addresses(os.environ.get("PAYMENTS_DETAILS_RECIPIENTS"))
 WALLET_BALANCES_RECIPIENTS = utils.parse_email_addresses(os.environ.get("WALLET_BALANCES_RECIPIENTS"))
 WHITELISTED_EMAIL_RECIPIENTS = utils.parse_email_addresses(os.environ.get("WHITELISTED_EMAIL_RECIPIENTS"))
+WHITELISTED_SMS_RECIPIENTS = utils.parse_phone_numbers(os.environ.get("WHITELISTED_SMS_RECIPIENTS"))
 
 # NOTIFICATIONS
 PUSH_NOTIFICATION_BACKEND = os.environ.get("PUSH_NOTIFICATION_BACKEND", _default_push_notification_backend)
