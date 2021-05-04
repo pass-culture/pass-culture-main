@@ -223,14 +223,25 @@ class SynchronizeStocksTest:
                 "products_provider_reference": "product_ref3",
                 "stocks_provider_reference": "stock_ref3",
             },
+            {  # existing, will update but set product's price
+                "offers_provider_reference": "offer_ref4",
+                "available_quantity": 15,
+                "price": None,
+                "products_provider_reference": "product_ref4",
+                "stocks_provider_reference": "stock_ref4",
+            },
         ]
 
-        stocks_by_provider_reference = {"stock_ref1": {"id": 1, "booking_quantity": 3}}
-        offers_by_provider_reference = {"offer_ref1": 123, "offer_ref2": 134}
+        stocks_by_provider_reference = {
+            "stock_ref1": {"id": 1, "booking_quantity": 3},
+            "stock_ref4": {"id": 2, "booking_quantity": 3},
+        }
+        offers_by_provider_reference = {"offer_ref1": 123, "offer_ref2": 134, "offer_ref4": 123}
         products_by_provider_reference = {
             "product_ref1": Product(extraData={"prix_livre": 7.01}),
             "product_ref2": Product(extraData={"prix_livre": 9.02}),
             "product_ref3": Product(extraData={"prix_livre": 11.03}),
+            "product_ref4": Product(extraData={"prix_livre": 7.01}),
         }
 
         # When
@@ -247,7 +258,13 @@ class SynchronizeStocksTest:
                 "quantity": 15 + 3,
                 "price": 15.78,
                 "rawProviderQuantity": 15,
-            }
+            },
+            {
+                "id": 2,
+                "quantity": 15 + 3,
+                "price": 7.01,
+                "rawProviderQuantity": 15,
+            },
         ]
 
         new_stock = new_stocks[0]

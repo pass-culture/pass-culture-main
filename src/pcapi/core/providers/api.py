@@ -228,7 +228,7 @@ def _get_stocks_to_upsert(
     for stock_detail in stock_details:
         stock_provider_reference = stock_detail["stocks_provider_reference"]
         product = products_by_provider_reference[stock_detail["products_provider_reference"]]
-        book_price = stock_detail.get("price", float(product.extraData["prix_livre"]))
+        book_price = stock_detail.get("price") or float(product.extraData["prix_livre"])
         if stock_provider_reference in stocks_by_provider_reference:
             stock = stocks_by_provider_reference[stock_provider_reference]
 
