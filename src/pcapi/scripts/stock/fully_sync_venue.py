@@ -16,7 +16,10 @@ def _reset_stock_quantity(venue: Venue) -> None:
       UPDATE stock
       SET quantity = "dnBookedQuantity"
       FROM offer
-      WHERE offer.id = stock."offerId" and offer."venueId" = :venue_id
+      WHERE
+          offer."idAtProviders" IS NOT NULL
+          AND offer.id = stock."offerId"
+          AND offer."venueId" = :venue_id
     """
     db.session.execute(query, {"venue_id": venue.id})
     db.session.commit()
