@@ -36,17 +36,6 @@ def test_suspend_pros_in_given_emails_providers_list():
 
 
 @pytest.mark.usefixtures("db_session")
-def test_not_suspend_none_beneficiary_and_none_pro_in_given_email_providers_list():
-    fraudulent_emails_providers = ["example.com"]
-    admin_user = UserFactory(isBeneficiary=False, isAdmin=True, email="admin@example.net")
-    fraudulent_user = UserFactory(isBeneficiary=False, email="jenesuispasbenificiairenipro@example.com")
-
-    suspend_fraudulent_pro_by_email_providers(fraudulent_emails_providers, admin_user, dry_run=False)
-
-    assert fraudulent_user.isActive
-
-
-@pytest.mark.usefixtures("db_session")
 def test_only_suspend_pro_users_in_given_emails_providers_list():
     # Given
     fraudulent_emails_providers = ["example.com"]
@@ -80,6 +69,25 @@ def test_dont_suspend_users_not_in_given_emails_providers_list():
 
     # Then
     assert non_fraudulent_pro.isActive
+
+
+@pytest.mark.usefixtures("db_session")
+def test_suspend_pro_user_with_many_offerers_and_delete_all_offerers():
+    fraudulent_emails_providers = ["example.com"]
+    admin_user = UserFactory(isBeneficiary=False, isAdmin=True, email="admin@example.net")
+    fraudulent_user = UserFactory(
+        isBeneficiary=False,
+        email="jesuisunefraude@example.com",
+    )
+    first_offerer = OffererFactory()
+    UserOffererFactory(user=fraudulent_user, offerer=first_offerer)
+    second_offerer = OffererFactory()
+    UserOffererFactory(user=fraudulent_user, offerer=second_offerer)
+
+    suspend_fraudulent_pro_by_email_providers(fraudulent_emails_providers, admin_user, dry_run=False)
+
+    assert not fraudulent_user.isActive
+    assert Offerer.query.count() == 0
 
 
 @pytest.mark.usefixtures("db_session")

@@ -4,7 +4,6 @@ from pcapi.core.bookings.repository import find_cancellable_bookings_by_offerer
 from pcapi.core.users.api import suspend_account
 from pcapi.core.users.constants import SuspensionReason
 from pcapi.core.users.models import User
-from pcapi.repository.user_offerer_queries import find_one_or_none_by_user_id
 from pcapi.repository.user_queries import find_pro_users_by_email_provider
 from pcapi.scripts.offerer.delete_cascade_offerer_by_id import delete_cascade_offerer_by_id
 
@@ -19,11 +18,11 @@ def suspend_fraudulent_pro_by_email_providers(
 
     if not dry_run:
         for fraudulent_pro in fraudulent_pros:
-            user_offerrer = find_one_or_none_by_user_id(user_id=fraudulent_pro.id)
-            try:
-                delete_cascade_offerer_by_id(offerer_id=user_offerrer.offererId)
-            except CannotDeleteOffererWithBookingsException:
-                _cancel_bookings_by_fraudulent_pro(offerer_id=user_offerrer.offererId)
+            for offerer in fraudulent_pro.offerers:
+                try:
+                    delete_cascade_offerer_by_id(offerer_id=offerer.id)
+                except CannotDeleteOffererWithBookingsException:
+                    _cancel_bookings_by_fraudulent_pro(offerer_id=offerer.id)
 
         _suspend_fraudulent_pro_users(users=fraudulent_pros, admin_user=admin_user)
     else:
