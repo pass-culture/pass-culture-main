@@ -80,6 +80,14 @@ class BookingStockResponse(BaseModel):
         orm_mode = True
 
 
+class BookingActivationCodeResponse(BaseModel):
+    code: str
+    expirationDate: Optional[datetime]
+
+    class Config:
+        orm_mode = True
+
+
 class BookingReponse(BaseModel):
     id: int
     cancellationDate: Optional[datetime]
@@ -92,6 +100,7 @@ class BookingReponse(BaseModel):
     stock: BookingStockResponse
     total_amount: int
     token: str
+    activationCode: Optional[BookingActivationCodeResponse]
 
     _convert_total_amount = validator("total_amount", pre=True, allow_reuse=True)(convert_to_cent)
 

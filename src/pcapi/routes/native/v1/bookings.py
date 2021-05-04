@@ -91,6 +91,7 @@ def get_bookings(user: User) -> BookingsResponse:
             .joinedload(Offer.venue)
             .load_only(Venue.name, Venue.city, Venue.latitude, Venue.longitude)
         )
+        .options(joinedload(Booking.activationCode))
     ).all()
 
     ended_bookings = []

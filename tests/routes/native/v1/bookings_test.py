@@ -11,6 +11,7 @@ from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.factories import MediationFactory
 from pcapi.core.offers.factories import StockFactory
+from pcapi.core.offers.factories import StockWithActivationCodesFactory
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.models.offer_type import ThingType
@@ -91,6 +92,10 @@ class GetBookingsTest:
         )
 
         event_booking = BookingFactory(user=user, stock=EventStockFactory(beginningDatetime=datetime(2021, 3, 14)))
+
+        digital_stock = StockWithActivationCodesFactory()
+        first_activation_code = digital_stock.activationCodes[0]
+        digital_booking = BookingFactory(user=user, stock=digital_stock, activationCode=first_activation_code)
         expire_tomorrow = BookingFactory(user=user, dateCreated=datetime.now() - timedelta(days=29))
         used_but_in_future = BookingFactory(
             user=user,
@@ -127,8 +132,11 @@ class GetBookingsTest:
             expire_tomorrow.id,
             event_booking.id,
             used_but_in_future.id,
+            digital_booking.id,
             permanent_booking.id,
         ]
+
+        assert response.json["ongoing_bookings"][3]["activationCode"]
 
         assert [b["id"] for b in response.json["ended_bookings"]] == [
             cancelled_permanent_booking.id,
@@ -138,6 +146,7 @@ class GetBookingsTest:
         ]
 
         assert response.json["ended_bookings"][2] == {
+            "activationCode": None,
             "cancellationDate": None,
             "cancellationReason": None,
             "confirmationDate": None,
