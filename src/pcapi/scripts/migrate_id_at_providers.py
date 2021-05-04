@@ -1,5 +1,3 @@
-import math
-
 from pcapi.core.offers.models import Offer
 from pcapi.flask_app import logger
 from pcapi.models import db
@@ -11,48 +9,47 @@ def _get_isbn_from_idAtProviders(idAtProvider: str) -> str:
 
 def migrate_id_at_providers() -> None:
     OFFER_BY_PAGE = 1000
-    page = 0
 
-    offers = (
+    pagination = (
         Offer.query.filter(Offer.idAtProviders.isnot(None))
         .with_entities(Offer.id, Offer.idAtProviders, Offer.idAtProvider)
-        .all()
+        .paginate(per_page=OFFER_BY_PAGE)
     )
 
-    offer_count = len(offers)
-    logger.info("Start migration of idAtProviders to idAtProvider", extra={"offer_count": offer_count})
+    has_items_to_process = True
 
-    mapping = []
+    while has_items_to_process:
+        offers = pagination.items
 
-    for offer in offers:
-        isbn = _get_isbn_from_idAtProviders(offer[1])
+        offer_count = len(offers)
+        logger.info("Start migration of idAtProviders to idAtProvider", extra={"offer_count": offer_count})
 
-        mapping.append(
-            {
-                "id": offer[0],
-                "idAtProviders": offer[1],
-                "idAtProvider": isbn,
-            }
-        )
+        mapping = []
 
-        if len(mapping) > OFFER_BY_PAGE:
-            page += 1
-            logger.info(
-                "Saving 1000 offers",
-                extra={
-                    "page": page,
-                    "total_page": math.ceil(offer_count / OFFER_BY_PAGE),
-                },
+        for offer in offers:
+            isbn = _get_isbn_from_idAtProviders(offer[1])
+
+            mapping.append(
+                {
+                    "id": offer[0],
+                    "idAtProviders": offer[1],
+                    "idAtProvider": isbn,
+                }
             )
-            db.session.bulk_update_mappings(Offer, mapping)
-            mapping[:] = []
 
-    logger.info(
-        "Saving the remaining offers",
-        extra={
-            "page": page,
-            "total_page": math.ceil(offer_count / OFFER_BY_PAGE),
-        },
-    )
-    db.session.bulk_update_mappings(Offer, mapping)
+        logger.info(
+            "Saving %s offers",
+            offer_count,
+            extra={
+                "page": pagination.page,
+                "total_page": pagination.pages,
+            },
+        )
+        db.session.bulk_update_mappings(Offer, mapping)
+
+        if pagination.has_next:
+            pagination = pagination.next()
+        else:
+            break
+
     db.session.commit()
