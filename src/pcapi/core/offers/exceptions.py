@@ -50,3 +50,7 @@ class ThumbnailStorageError(ApiErrors):
 
 class StockDoesNotExist(ApiErrors):
     status_code = 400
+
+
+class WrongFormatInFraudConfigurationFile(Exception):
+    pass

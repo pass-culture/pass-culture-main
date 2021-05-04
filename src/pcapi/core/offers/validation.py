@@ -41,7 +41,7 @@ ACCEPTED_THUMBNAIL_FORMATS = (
 DISTANT_IMAGE_REQUEST_TIMEOUT = 5
 CHUNK_SIZE_IN_BYTES = 4096
 
-VALID_KEY_VALIDATION_YAML = {
+KEY_VALIDATION_CONFIG = {
     "init": ["minimum_score", "parameters"],
     "parameters": [
         "name",
@@ -70,12 +70,12 @@ VALID_KEY_VALIDATION_YAML = {
     "condition": ["operator", "comparated"],
 }
 
-VALID_VALUE_VALIDATION_YAML = {
+VALUE_VALIDATION_CONFIG = {
     "model": ["Offer", "Venue", "Offerer"],
     "attribute": [str],
     "type": [str, list],
     "factor": [float, int],
-    "operator": [">", ">=", "<", "<=", "==", "is", "in", "not in"],
+    "operator": [">", ">=", "<", "<=", "==", "is", "in", "not in", "contains"],
     "comparated": [str, bool, float, int, list],
     "minimum_score": [float, int],
 }
@@ -298,12 +298,12 @@ def check_user_can_load_config(user: User) -> None:
         raise error
 
 
-def check_config_parameters(config_as_dict: dict, valid_keys: list) -> None:
+def check_validation_config_parameters(config_as_dict: dict, valid_keys: list) -> None:
     for key, value in config_as_dict.items():
         if isinstance(value, dict):
-            check_config_parameters(value, VALID_KEY_VALIDATION_YAML[key])
+            check_validation_config_parameters(value, KEY_VALIDATION_CONFIG[key])
         # Note that these are case-senstive
-        elif not (value in VALID_VALUE_VALIDATION_YAML[key] or type(value) in VALID_VALUE_VALIDATION_YAML[key]):
-            raise TypeError(f"{value} of type {type(value)} not in : {VALID_VALUE_VALIDATION_YAML[key]}")
+        elif not (value in VALUE_VALIDATION_CONFIG[key] or type(value) in VALUE_VALIDATION_CONFIG[key]):
+            raise ValueError(f"{value} of type {type(value)} not in: {VALUE_VALIDATION_CONFIG[key]}")
         if key not in valid_keys:
-            raise KeyError(f"Wrong key : {key}")
+            raise KeyError(f"Wrong key: {key}")

@@ -31,4 +31,5 @@ OPERATIONS = {
     "<=": less_or_equal,
     "in": lambda a, b: a in b if "__contains__" in dir(b) else False,
     "not in": lambda a, b: not (a in b) if "__contains__" in dir(b) else True,
+    "contains": lambda a, b: any(element in a for element in b) if "__contains__" in dir(b) else b in a,
 }

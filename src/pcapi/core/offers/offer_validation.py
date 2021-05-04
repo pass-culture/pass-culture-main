@@ -10,7 +10,7 @@ from pcapi.utils.custom_logic import OPERATIONS
 class OfferValidationItem:
     model: PcObject
     attribute: str
-    type: list
+    type: list[str]
     condition: dict
     factor: float
 

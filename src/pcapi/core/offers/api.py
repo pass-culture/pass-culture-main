@@ -19,14 +19,15 @@ from pcapi.core.bookings.api import update_confirmation_dates
 from pcapi.core.bookings.conf import LIMIT_CONFIGURATIONS
 from pcapi.core.bookings.models import Booking
 import pcapi.core.bookings.repository as bookings_repository
+from pcapi.core.offers.exceptions import WrongFormatInFraudConfigurationFile
 from pcapi.core.offers.models import OfferValidationConfig
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.offer_validation import compute_offer_validation_score
 from pcapi.core.offers.offer_validation import parse_offer_validation_config
 import pcapi.core.offers.repository as offers_repository
-from pcapi.core.offers.validation import VALID_KEY_VALIDATION_YAML
-from pcapi.core.offers.validation import check_config_parameters
+from pcapi.core.offers.validation import KEY_VALIDATION_CONFIG
+from pcapi.core.offers.validation import check_validation_config_parameters
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.core.users.models import User
 from pcapi.domain import admin_emails
@@ -405,7 +406,7 @@ def upsert_stocks(
 
     if offer.validation == OfferValidationStatus.DRAFT:
         # TODO(fseguin): remove after the real implementation is added
-        offer.validation = compute_offer_validation(offer)
+        offer.validation = set_offer_status_based_on_fraud_criteria(offer)
         if offer.validation == OfferValidationStatus.PENDING or offer.validation == OfferValidationStatus.REJECTED:
             offer.isActive = False
         repository.save(offer)
@@ -631,8 +632,8 @@ def deactivate_inappropriate_products(isbn: str) -> bool:
     return True
 
 
-def compute_offer_validation(offer: Offer) -> OfferValidationStatus:
-    # TODO (rchaffal) supprimer
+def set_offer_status_based_on_fraud_criteria(offer: Offer) -> OfferValidationStatus:
+    # TODO (rchaffal) to delete after implementation is completed
     if not settings.IS_PROD and feature_queries.is_active(FeatureToggle.OFFER_VALIDATION_MOCK_COMPUTATION):
         for keyword, validation_status in VALIDATION_KEYWORDS_MAPPING.items():
             if keyword in offer.name:
@@ -684,13 +685,13 @@ def import_offer_validation_config(config_as_yaml: str, user: User = None) -> Of
     config_as_dict = yaml.safe_load(config_as_yaml)
 
     try:
-        check_config_parameters(config_as_dict, VALID_KEY_VALIDATION_YAML["init"])
-    except (KeyError, TypeError) as error:
+        check_validation_config_parameters(config_as_dict, KEY_VALIDATION_CONFIG["init"])
+    except (KeyError, ValueError) as error:
         logger.exception(
             "Wrong configuration file format: %s",
             extra={"exc": str(error)},
         )
-        raise error
+        raise WrongFormatInFraudConfigurationFile(str(error))
 
     config = OfferValidationConfig(specs=config_as_dict, user=user)
     repository.save(config)

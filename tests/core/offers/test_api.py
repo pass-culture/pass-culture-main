@@ -16,13 +16,14 @@ from pcapi.core.offers import api
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories
 from pcapi.core.offers.api import add_criteria_to_offers
-from pcapi.core.offers.api import compute_offer_validation
 from pcapi.core.offers.api import deactivate_inappropriate_products
 from pcapi.core.offers.api import get_expense_domains
 from pcapi.core.offers.api import import_offer_validation_config
+from pcapi.core.offers.api import set_offer_status_based_on_fraud_criteria
 from pcapi.core.offers.api import update_offer_and_stock_id_at_providers
 from pcapi.core.offers.api import update_pending_offer_validation_status
 from pcapi.core.offers.exceptions import ThumbnailStorageError
+from pcapi.core.offers.exceptions import WrongFormatInFraudConfigurationFile
 from pcapi.core.offers.factories import CriterionFactory
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import ProductFactory
@@ -38,7 +39,6 @@ from pcapi.core.offers.offer_validation import compute_offer_validation_score
 from pcapi.core.offers.offer_validation import parse_offer_validation_config
 from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
-from pcapi.core.users.factories import UserFactory
 from pcapi.models import api_errors
 from pcapi.models import offer_type
 from pcapi.models.product import Product
@@ -1104,18 +1104,37 @@ class ComputeOfferValidationTest:
     def test_matching_keyword(self):
         offer = Offer(name="An offer PENDING validation")
 
-        assert compute_offer_validation(offer) == OfferValidationStatus.PENDING
+        assert set_offer_status_based_on_fraud_criteria(offer) == OfferValidationStatus.PENDING
 
     def test_not_matching_keyword(self):
         offer = Offer(name="An offer pending validation")
 
-        assert compute_offer_validation(offer) == OfferValidationStatus.APPROVED
+        assert set_offer_status_based_on_fraud_criteria(offer) == OfferValidationStatus.APPROVED
 
     @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
     def test_deactivated_check(self):
         offer = Offer(name="An offer PENDING validation")
 
-        assert compute_offer_validation(offer) == OfferValidationStatus.APPROVED
+        assert set_offer_status_based_on_fraud_criteria(offer) == OfferValidationStatus.APPROVED
+
+    @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
+    def test_matching_keyword_in_name(self):
+        offer = OfferFactory(name="A suspicious offer")
+        StockFactory(price=10, offer=offer)
+        example_yaml = """
+        minimum_score: 0.6
+        parameters:
+            name:
+                model: "Offer"
+                attribute: "name"
+                condition:
+                    operator: "contains"
+                    comparated:
+                    - "suspicious"
+                factor: 0
+        """
+        import_offer_validation_config(example_yaml)
+        assert set_offer_status_based_on_fraud_criteria(offer) == OfferValidationStatus.PENDING
 
 
 @pytest.mark.usefixtures("db_session")
@@ -1157,8 +1176,7 @@ class UpdateOfferValidationStatusTest:
 @pytest.mark.usefixtures("db_session")
 class ImportOfferValidationConfigTest:
     @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
-    def test_raise_a_key_error(self):
-        user = UserFactory(email="superadmin@example.com")
+    def test_raise_a_WrongFormatInFraudConfigurationFile_error_for_key_error(self):
         config_yaml = """
         minimum_score: 0.6
         parameters:
@@ -1177,13 +1195,12 @@ class ImportOfferValidationConfigTest:
                     comparated: 100
                 factor: 0.7
         """
-        with pytest.raises(KeyError) as error:
-            import_offer_validation_config(config_yaml, user)
-        assert error.value.args[0] == "WRONG_KEY"
+        with pytest.raises(WrongFormatInFraudConfigurationFile) as error:
+            import_offer_validation_config(config_yaml)
+        assert "WRONG_KEY" in error.value.args[0]
 
     @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
-    def test_raise_a_type_error_for_wrong_type(self):
-        user = UserFactory(email="superadmin@example.com")
+    def test_raise_a_WrongFormatInFraudConfigurationFile_error_for_wrong_type(self):
         config_yaml = """
             minimum_score: 0.6
             parameters:
@@ -1203,13 +1220,12 @@ class ImportOfferValidationConfigTest:
                     factor: 0.7
 
             """
-        with pytest.raises(TypeError) as error:
-            import_offer_validation_config(config_yaml, user)
+        with pytest.raises(WrongFormatInFraudConfigurationFile) as error:
+            import_offer_validation_config(config_yaml)
         assert "0" in error.value.args[0]
 
     @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
-    def test_raise_a_type_error_for_wrong_leaf_value(self):
-        user = UserFactory(email="superadmin@example.com")
+    def test_raise_a_WrongFormatInFraudConfigurationFile_error_for_wrong_leaf_value(self):
         config_yaml = """
                 minimum_score: 0.6
                 parameters:
@@ -1229,66 +1245,12 @@ class ImportOfferValidationConfigTest:
                         factor: 0.7
 
                 """
-        with pytest.raises(TypeError) as error:
-            import_offer_validation_config(config_yaml, user)
+        with pytest.raises(WrongFormatInFraudConfigurationFile) as error:
+            import_offer_validation_config(config_yaml)
         assert "?" in error.value.args[0]
 
     @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
-    def test_raise_a_type_error_for_wrong_value(self):
-        user = UserFactory(email="superadmin@example.com")
-        config_yaml = """
-                    minimum_score: 0.6
-                    parameters:
-                        name:
-                            model: "Stock"
-                            attribute: "name"
-                            condition:
-                                operator: "not in"
-                                comparated: "REJECTED"
-                            factor: 0
-                        price_all_types:
-                            model: "Offer"
-                            attribute: "max_price"
-                            condition:
-                                operator: ">"
-                                comparated: 100
-                            factor: 0.7
-
-                    """
-        with pytest.raises(TypeError) as error:
-            import_offer_validation_config(config_yaml, user)
-        assert "Stock" in error.value.args[0]
-
-    @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
     def test_is_saved(self):
-        user = UserFactory(email="superadmin@example.com")
-        config_yaml = """
-        minimum_score: 0.6
-        parameters:
-            name:
-                model: "Offer"
-                attribute: "name"
-                condition:
-                    operator: "not in"
-                    comparated: "REJECTED"
-                factor: 0
-            price_all_types:
-                model: "Offer"
-                attribute: "max_price"
-                condition:
-                    operator: ">"
-                    comparated: 100
-                factor: 0.7
-
-        """
-        import_offer_validation_config(config_yaml, user)
-
-        current_config = OfferValidationConfig.query.one()
-        assert current_config is not None
-
-    @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
-    def test_is_saved_with_list_value_for_comparated(self):
-        user = UserFactory(email="superadmin@example.com")
         config_yaml = """
         minimum_score: 0.6
         parameters:
@@ -1321,10 +1283,13 @@ class ImportOfferValidationConfigTest:
                 factor: 0.7
 
         """
-        import_offer_validation_config(config_yaml, user)
+        import_offer_validation_config(config_yaml)
 
         current_config = OfferValidationConfig.query.one()
         assert current_config is not None
+        assert current_config.specs["minimum_score"] == 0.6
+        assert current_config.specs["parameters"]["name"]["condition"]["comparated"] == ["REJECTED", "PENDING", "DRAFT"]
+        assert current_config.specs["parameters"]["price_all_types"]["attribute"] == "max_price"
 
 
 @pytest.mark.usefixtures("db_session")
@@ -1355,34 +1320,6 @@ class ParseOfferValidationConfigTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class FinalComputeOfferValidationTest:
-    @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
-    def test_matching_keyword(self):
-        offer = OfferFactory(name="A suspicious offer")
-        StockFactory(price=10, offer=offer)
-        example_yaml = """
-        minimum_score: 0.6
-        parameters:
-            name:
-                model: "Offer"
-                attribute: "name"
-                condition:
-                    operator: "not in"
-                    comparated: "suspicious"
-                factor: 0
-            price_all_types:
-                model: "Offer"
-                attribute: "max_price"
-                condition:
-                    operator: ">"
-                    comparated: 100
-                factor: 0.7
-        """
-        import_offer_validation_config(example_yaml)
-        assert compute_offer_validation(offer) == OfferValidationStatus.PENDING
-
-
-@pytest.mark.usefixtures("db_session")
 class ComputeOfferValidationScoreTest:
     @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
     def test_offer_validation_with_one_item_config_with_in(self):
@@ -1407,7 +1344,7 @@ class ComputeOfferValidationScoreTest:
 
         assert score == 0.2
 
-    def test_offer_validation_with_one_item_config_with_lessier_than(self):
+    def test_offer_validation_with_one_item_config_with_less_than(self):
         offer = OfferFactory(name="REJECTED")
         StockFactory(offer=offer, price=8)
         validation_item = OfferValidationItem(
@@ -1430,7 +1367,7 @@ class ComputeOfferValidationScoreTest:
 
         assert score == 0.2
 
-    def test_offer_validation_with_one_item_config_with_lessier_or_equal_than(self):
+    def test_offer_validation_with_one_item_config_with_less_or_equal_than(self):
         offer = OfferFactory(name="REJECTED")
         StockFactory(offer=offer, price=8)
         validation_item = OfferValidationItem(
