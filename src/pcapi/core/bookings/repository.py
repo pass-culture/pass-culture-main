@@ -190,6 +190,7 @@ def find_expired_bookings_ordered_by_offerer(expired_on: date = None) -> Query:
 
 
 def get_active_bookings_quantity_for_venue(venue_id: int) -> int:
+    # Stock.dnBookedQuantity cannot be used here because we exclude used/confirmed bookings.
     return (
         Booking.query.join(Stock)
         .join(Offer)

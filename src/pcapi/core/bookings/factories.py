@@ -15,13 +15,7 @@ class BookingFactory(BaseFactory):
         model = models.Booking
 
     quantity = 1
-    stock = factory.Maybe(
-        "isCancelled",
-        yes_declaration=factory.SubFactory(offers_factories.StockFactory),
-        no_declaration=factory.SubFactory(
-            offers_factories.StockFactory, dnBookedQuantity=factory.SelfAttribute("..quantity")
-        ),
-    )
+    stock = factory.SubFactory(offers_factories.StockFactory)
     token = factory.LazyFunction(random_token)
     user = factory.SubFactory(users_factories.UserFactory)
     amount = factory.SelfAttribute("stock.price")
@@ -45,7 +39,7 @@ class BookingFactory(BaseFactory):
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
-        if kwargs.get("stock") and not kwargs.get("isCancelled", False):
+        if not kwargs.get("isCancelled", False):
             stock = kwargs.get("stock")
             stock.dnBookedQuantity = stock.dnBookedQuantity + kwargs.get("quantity", 1)
             kwargs["stock"] = stock
