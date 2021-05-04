@@ -14,6 +14,7 @@ from pcapi.models import ImportStatus
 from pcapi.repository import repository
 from pcapi.repository.user_queries import find_by_civility
 from pcapi.repository.user_queries import find_most_recent_beneficiary_creation_date_for_source
+from pcapi.repository.user_queries import find_pro_users_by_email_provider
 from pcapi.repository.user_queries import get_all_users_wallet_balances
 
 
@@ -65,6 +66,42 @@ class GetAllUsersWalletBalancesTest:
         balance = balances[0]
         assert balance.current_balance == 500 - (20 + 40 * 2)
         assert balance.real_balance == 500 - (40 * 2)
+
+
+class FindProUsersByEmailProviderTest:
+    @pytest.mark.usefixtures("db_session")
+    def test_returns_pro_users_with_matching_email_provider(self):
+        pro_user_with_matching_email = users_factories.UserFactory(
+            email="pro_user@suspect.com", isBeneficiary=False, isActive=True
+        )
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=pro_user_with_matching_email, offerer=offerer)
+
+        pro_user_with_not_matching_email = users_factories.UserFactory(
+            email="pro_user@example.com", isBeneficiary=False, isActive=True
+        )
+        offerer2 = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=pro_user_with_not_matching_email, offerer=offerer2)
+
+        users = find_pro_users_by_email_provider("suspect.com")
+
+        assert len(users) == 1
+        assert users[0] == pro_user_with_matching_email
+
+    @pytest.mark.usefixtures("db_session")
+    def test_returns_only_pro_users_with_matching_email_provider(self):
+        pro_user_with_matching_email = users_factories.UserFactory(
+            email="pro_user_with_matching_email@suspect.com", isBeneficiary=False, isActive=True
+        )
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=pro_user_with_matching_email, offerer=offerer)
+
+        users_factories.UserFactory(email="not_pro_with_matching_email@suspect.com", isBeneficiary=False, isActive=True)
+
+        users = find_pro_users_by_email_provider("suspect.com")
+
+        assert len(users) == 1
+        assert users[0] == pro_user_with_matching_email
 
 
 class FindByCivilityTest:

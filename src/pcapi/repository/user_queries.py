@@ -40,6 +40,8 @@ def find_pro_users_by_email_provider(email_provider: str) -> list[User]:
     formatted_email_provider = f"%@%{email_provider}"
     return (
         User.query.filter_by(isBeneficiary=False, isActive=True)
+        .join(UserOfferer)
+        .filter(User.offerers.any())
         .filter(func.lower(User.email).like(func.lower(formatted_email_provider)))
         .all()
     )
