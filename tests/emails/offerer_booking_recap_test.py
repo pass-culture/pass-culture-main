@@ -5,6 +5,7 @@ import pytest
 
 from pcapi import models
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.offers.factories import ActivationCodeFactory
 from pcapi.core.testing import override_features
 from pcapi.emails.offerer_booking_recap import retrieve_data_for_offerer_booking_recap_email
 from pcapi.utils.human_ids import humanize
@@ -59,6 +60,7 @@ def get_expected_base_email_data(booking, **overrides):
             "lien_offre_pcpro": f"http://localhost:3001/offres/{offer_id}/edition",
             "offer_type": "EventType.SPECTACLE_VIVANT",
             "departement": "75",
+            "must_use_token_for_payment": 1,
         },
     }
     email_data["Vars"].update(overrides)
@@ -192,6 +194,76 @@ def test_a_digital_booking_expires_after_30_days():
         offer_type="ThingType.AUDIOVISUEL",
         quantity=10,
         can_expire_after_30_days=1,
+        must_use_token_for_payment=0,
+    )
+    assert email_data == expected
+
+
+@pytest.mark.usefixtures("db_session")
+def test_when_use_token_for_payment():
+    # Given
+    booking = make_booking(
+        stock__price=10,
+    )
+
+    # When
+    email_data = retrieve_data_for_offerer_booking_recap_email(booking)
+
+    # Then
+    expected = get_expected_base_email_data(booking, must_use_token_for_payment=1)
+    assert email_data == expected
+
+
+@pytest.mark.usefixtures("db_session")
+def test_no_need_when_price_is_free():
+    # Given
+    booking = make_booking(
+        stock__price=0,
+    )
+
+    # When
+    email_data = retrieve_data_for_offerer_booking_recap_email(booking)
+
+    # Then
+    expected = get_expected_base_email_data(booking, prix="Gratuit", must_use_token_for_payment=0)
+    assert email_data == expected
+
+
+@pytest.mark.usefixtures("db_session")
+def test_no_need_when_using_activation_code():
+    # Given
+    booking = make_booking()
+    ActivationCodeFactory(stock=booking.stock, booking=booking, code="code-5uzk15fbha4")
+
+    # When
+    email_data = retrieve_data_for_offerer_booking_recap_email(booking)
+
+    # Then
+    expected = get_expected_base_email_data(booking, must_use_token_for_payment=0)
+    assert email_data == expected
+
+
+@override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True)
+@pytest.mark.usefixtures("db_session")
+def test_no_need_when_booking_is_autovalidated():
+    # Given
+    booking = make_booking(
+        stock__offer__product__type=str(models.ThingType.AUDIOVISUEL),
+        stock__offer__product__url="http://example.com",
+    )
+
+    # When
+    email_data = retrieve_data_for_offerer_booking_recap_email(booking)
+
+    # Then
+    expected = get_expected_base_email_data(
+        booking,
+        date="",
+        heure="",
+        is_event=0,
+        is_booking_autovalidated=1,
+        must_use_token_for_payment=0,
+        offer_type="ThingType.AUDIOVISUEL",
     )
     assert email_data == expected
 
@@ -223,6 +295,7 @@ def test_a_digital_booking_is_automatically_used():
         quantity=10,
         can_expire_after_30_days=0,
         is_booking_autovalidated=1,
+        must_use_token_for_payment=0,
     )
     assert email_data == expected
 

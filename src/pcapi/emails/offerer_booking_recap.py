@@ -31,6 +31,11 @@ def retrieve_data_for_offerer_booking_recap_email(booking: Booking) -> dict:
 
     offer_link = build_pc_pro_offer_link(offer)
 
+    if booking.stock.price == 0 or booking.activationCode or is_booking_autovalidated:
+        must_use_token_for_payment = 0
+    else:
+        must_use_token_for_payment = 1
+
     mailjet_json = {
         "MJ-TemplateID": 2843165,
         "MJ-TemplateLanguage": True,
@@ -56,6 +61,7 @@ def retrieve_data_for_offerer_booking_recap_email(booking: Booking) -> dict:
             "departement": departement_code,
             "can_expire_after_30_days": can_expire_after_30_days,
             "is_booking_autovalidated": is_booking_autovalidated,
+            "must_use_token_for_payment": must_use_token_for_payment,
         },
     }
 
