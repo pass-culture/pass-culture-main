@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types'
 import React, { useEffect, useState } from 'react'
 
-import Icon from 'components/layout/Icon'
-
 import { NOTIFICATION_SHOW_DURATION, NOTIFICATION_TRANSITION_DURATION } from './_constants'
+import { ReactComponent as ErrorIcon } from './assets/notification-error-white.svg'
+import { ReactComponent as SuccessIcon } from './assets/notification-success-white.svg'
+import { ReactComponent as PendingIcon } from './assets/status-pending.svg'
 
 const Notification = ({ hideNotification, notification }) => {
   const [isVisible, setIsVisible] = useState(false)
@@ -31,19 +32,17 @@ const Notification = ({ hideNotification, notification }) => {
   }, [hideNotification, isVisible, notification.text])
 
   const { text, type } = notification
-  let svg
-  if (type === 'success') {
-    svg = 'ico-notification-success-white'
-  } else if (type === 'error') {
-    svg = 'ico-notification-error-white'
+  let iconComponent = <SuccessIcon />
+  if (type === 'error') {
+    iconComponent = <ErrorIcon />
   } else if (type === 'pending') {
-    svg = 'ico-status-pending'
+    iconComponent = <PendingIcon />
   }
 
   if (isInDom) {
     return (
       <div className={`notification is-${type || 'info'} ${isVisible ? 'show' : 'hide'}`}>
-        <Icon svg={svg} />
+        {iconComponent}
         {text}
       </div>
     )

@@ -49,43 +49,6 @@ describe('src | components | layout | Notification', () => {
     const notification = screen.getByText(sentNotification.text)
     expect(notification).toBeInTheDocument()
     expect(notification).toHaveClass('show')
-    expect(screen.getByRole('img')).toBeInTheDocument()
-  })
-
-  it('should success icon when notification is type success', () => {
-    // given
-    const sentNotification = {
-      text: 'Mon petit succès',
-      type: 'success',
-      version: 2,
-    }
-
-    // when
-    renderNotification(props, sentNotification)
-
-    // then
-    expect(screen.getByRole('img')).toHaveAttribute(
-      'src',
-      expect.stringContaining('ico-notification-success-white')
-    )
-  })
-
-  it('should error icon when notification is type error', () => {
-    // given
-    const sentNotification = {
-      text: 'Ma petite erreur',
-      type: 'error',
-      version: 2,
-    }
-
-    // when
-    renderNotification(props, sentNotification)
-
-    // then
-    expect(screen.getByRole('img')).toHaveAttribute(
-      'src',
-      expect.stringContaining('ico-notification-error-white')
-    )
   })
 
   it('should hide notification after fixed show duration', async () => {
