@@ -40,6 +40,7 @@ const StockItem = ({
   const [totalQuantity, setTotalQuantity] = useState(initialStock.quantity)
   const [isActivationCodesDialogOpen, setIsActivationCodesDialogOpen] = useState(false)
   const [activationCodes, setActivationCodes] = useState([])
+  const [activationCodesExpirationDatetime, setActivationCodesExpirationDatetime] = useState(null)
 
   useEffect(
     function updateStock() {
@@ -151,10 +152,7 @@ const StockItem = ({
   }, [])
 
   return (
-    <tr
-      data-testid={`stock-item-${initialStock.key}`}
-      title={computeStockTitle()}
-    >
+    <tr data-testid={`stock-item-${initialStock.key}`} title={computeStockTitle()}>
       {isEvent && (
         <Fragment>
           <td>
@@ -228,12 +226,8 @@ const StockItem = ({
           value={totalQuantityValue}
         />
       </td>
-      <td>
-        {!isNewStock && remainingQuantityValue}
-      </td>
-      <td>
-        {!isNewStock && initialStock.bookingsQuantity}
-      </td>
+      <td>{!isNewStock && remainingQuantityValue}</td>
+      <td>{!isNewStock && initialStock.bookingsQuantity}</td>
       <td className="action-column">
         {isActivationCodesEnabled ? (
           <StockItemOptionsMenu
@@ -270,6 +264,7 @@ const StockItem = ({
             activationCodes={activationCodes}
             closeDialog={closeActivationCodesDialog}
             setActivationCodes={setActivationCodes}
+            setActivationCodesExpirationDatetime={setActivationCodesExpirationDatetime}
             validateActivationCodes={validateActivationCodes}
           />
         )}

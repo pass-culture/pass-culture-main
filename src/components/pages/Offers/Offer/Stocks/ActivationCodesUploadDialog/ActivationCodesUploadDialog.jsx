@@ -5,6 +5,7 @@ import { DialogBox } from 'components/layout/DialogBox/DialogBox'
 import Icon from 'components/layout/Icon'
 
 import { ActivationCodeCsvForm } from './ActivationCodesCsvForm/ActivationCodesCsvForm'
+import ActivationCodesConfirmationForm from './ActivationCodesConfirmationForm/ActivationCodesConfirmationForm'
 
 export const ACTIVATION_CODES_UPLOAD_ID = 'ACTIVATION_CODES_UPLOAD_ID'
 
@@ -20,6 +21,7 @@ const ActivationCodesUploadDialog = ({
   closeDialog,
   validateActivationCodes,
   setActivationCodes,
+  setActivationCodesExpirationDatetime,
 }) => {
   const file = useRef({})
 
@@ -58,10 +60,7 @@ const ActivationCodesUploadDialog = ({
     >
       <Fragment>
         <section className="activation-codes-upload-section">
-          <h4
-            className="activation-codes-upload-title"
-            id={ACTIVATION_CODES_UPLOAD_ID}
-          >
+          <h4 className="activation-codes-upload-title" id={ACTIVATION_CODES_UPLOAD_ID}>
             {"Ajouter des codes d'activation"}
           </h4>
           <Icon
@@ -80,37 +79,12 @@ const ActivationCodesUploadDialog = ({
           />
         )}
         {activationCodes.length > 0 && (
-          <Fragment>
-            <div className="activation-codes-upload-information-message">
-              <p>
-                {`Vous êtes sur le point d'ajouter ${activationCodes.length} codes d'activation.`}
-              </p>
-              <p>
-                {'La quantité disponible pour cette offre sera mise à jour dans vos stocks'}
-              </p>
-            </div>
-            <div className="activation-codes-upload-confirmation-message">
-              <p>
-                {"Souhaitez-vous valider l'opération ?"}
-              </p>
-            </div>
-            <span className="activation-codes-upload-confirmation-buttons">
-              <button
-                className="secondary-button activation-codes-upload-confirmation-button"
-                onClick={clearActivationCodes}
-                type="button"
-              >
-                {'Retour'}
-              </button>
-              <button
-                className="primary-button activation-codes-upload-confirmation-button"
-                onClick={submitActivationCodes}
-                type="button"
-              >
-                {'Valider'}
-              </button>
-            </span>
-          </Fragment>
+          <ActivationCodesConfirmationForm
+            activationCodes={activationCodes}
+            clearActivationCodes={clearActivationCodes}
+            setActivationCodesExpirationDatetime={setActivationCodesExpirationDatetime}
+            submitActivationCodes={submitActivationCodes}
+          />
         )}
       </Fragment>
     </DialogBox>
@@ -121,6 +95,7 @@ ActivationCodesUploadDialog.propTypes = {
   activationCodes: PropTypes.arrayOf(PropTypes.string).isRequired,
   closeDialog: PropTypes.func.isRequired,
   setActivationCodes: PropTypes.func.isRequired,
+  setActivationCodesExpirationDatetime: PropTypes.func.isRequired,
   validateActivationCodes: PropTypes.func.isRequired,
 }
 
