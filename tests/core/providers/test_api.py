@@ -233,8 +233,8 @@ class SynchronizeStocksTest:
         ]
 
         stocks_by_provider_reference = {
-            "stock_ref1": {"id": 1, "booking_quantity": 3},
-            "stock_ref4": {"id": 2, "booking_quantity": 3},
+            "stock_ref1": {"id": 1, "booking_quantity": 3, "price": 18.0, "quantity": 2},
+            "stock_ref4": {"id": 2, "booking_quantity": 3, "price": 18.0, "quantity": 2},
         }
         offers_by_provider_reference = {"offer_ref1": 123, "offer_ref2": 134, "offer_ref4": 123}
         products_by_provider_reference = {
@@ -275,3 +275,16 @@ class SynchronizeStocksTest:
         assert new_stock.idAtProviders == "stock_ref2"
 
         assert offer_ids == set([123, 134])
+
+    @pytest.mark.parametrize(
+        "new_quantity,new_price,existing_stock,expected_result",
+        [
+            (1, 18.01, {"price": 18.02, "quantity": 4, "booking_quantity": 2}, True),
+            (2, 18.01, {"price": 18.01, "quantity": 1, "booking_quantity": 1}, True),
+            (0, 18.01, {"price": 18.01, "quantity": 2, "booking_quantity": 1}, True),
+            (3, 18.01, {"price": 18.01, "quantity": 2, "booking_quantity": 1}, False),
+            (2, 18.01, {"price": 18.01, "quantity": 3, "booking_quantity": 1}, False),
+        ],
+    )
+    def should_reindex_offers(self, new_quantity, new_price, existing_stock, expected_result):
+        assert api._should_reindex_offer(new_quantity, new_price, existing_stock) == expected_result

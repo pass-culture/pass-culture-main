@@ -210,12 +210,23 @@ def get_stocks_by_id_at_providers(id_at_providers: list[str]) -> dict:
         Stock.query.filter(Stock.idAtProviders.in_(id_at_providers))
         .outerjoin(Booking, and_(Stock.id == Booking.stockId, Booking.isCancelled.is_(False)))
         .group_by(Stock.id)
-        .with_entities(Stock.id, Stock.idAtProviders, coalesce(func.sum(Booking.quantity), 0))
+        .with_entities(
+            Stock.id,
+            Stock.idAtProviders,
+            coalesce(func.sum(Booking.quantity), 0),
+            Stock.quantity,
+            Stock.price,
+        )
         .all()
     )
     return {
-        id_at_providers: {"id": id, "booking_quantity": booking_quantity}
-        for (id, id_at_providers, booking_quantity) in stocks
+        id_at_providers: {
+            "id": id,
+            "booking_quantity": booking_quantity,
+            "quantity": quantity,
+            "price": price,
+        }
+        for (id, id_at_providers, booking_quantity, quantity, price) in stocks
     }
 
 

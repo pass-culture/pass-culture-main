@@ -240,7 +240,8 @@ def _get_stocks_to_upsert(
                     "price": book_price,
                 }
             )
-            offer_ids.add(offers_by_provider_reference[stock_detail["offers_provider_reference"]])
+            if _should_reindex_offer(stock_detail["available_quantity"], book_price, stock):
+                offer_ids.add(offers_by_provider_reference[stock_detail["offers_provider_reference"]])
 
         else:
             if not stock_detail["available_quantity"]:
@@ -302,3 +303,13 @@ def _reindex_offers(offer_ids: Set[int]) -> None:
     if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
         for offer_id in offer_ids:
             redis.add_offer_id(client=app.redis_client, offer_id=offer_id)
+
+
+def _should_reindex_offer(new_quantity: int, new_price: float, existing_stock: dict) -> bool:
+    if existing_stock["price"] != new_price:
+        return True
+
+    is_existing_stock_empty = existing_stock["quantity"] <= existing_stock["booking_quantity"]
+    is_new_quantity_stock_empty = new_quantity == 0
+
+    return is_existing_stock_empty != is_new_quantity_stock_empty
