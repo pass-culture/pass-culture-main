@@ -1,5 +1,4 @@
-from datetime import datetime
-from datetime import timedelta
+import datetime
 import logging
 
 from redis import Redis
@@ -18,6 +17,8 @@ from pcapi.connectors.redis import get_offer_ids_in_error
 from pcapi.connectors.redis import get_venue_ids
 from pcapi.connectors.redis import get_venue_providers
 from pcapi.connectors.redis import pop_offer_ids
+from pcapi.core.offers.models import Offer
+import pcapi.core.offers.repository as offers_repository
 from pcapi.repository import offer_queries
 from pcapi.utils.converter import from_tuple_to_int
 
@@ -149,29 +150,30 @@ def batch_indexing_offers_in_algolia_from_database(
 
 
 def batch_deleting_expired_offers_in_algolia(client: Redis, process_all_expired: bool = False) -> None:
+    """Request an asynchronous unindex of offers that have expired within
+    the last 2 days.
+
+    For example, if run on Thursday (whatever the time), this function
+    handles offers that have expired between Tuesday 00:00 and
+    Wednesday 23:59 (included).
+    """
+    start_of_day = datetime.datetime.combine(datetime.date.today(), datetime.time.min)
+    interval = [start_of_day - datetime.timedelta(days=2), start_of_day]
+    if process_all_expired:
+        interval[0] = datetime.datetime(2000, 1, 1)  # arbitrary old date
+
     page = 0
-    has_still_offers = True
-    one_day_before_now = datetime.utcnow() - timedelta(days=1)
-    two_days_before_now = datetime.utcnow() - timedelta(days=2)
-    arbitrary_oldest_date = datetime(2000, 1, 1)
-    from_date = two_days_before_now if not process_all_expired else arbitrary_oldest_date
+    limit = settings.ALGOLIA_DELETING_OFFERS_CHUNK_SIZE
+    while True:
+        offers = offers_repository.get_expired_offers(interval)
+        offers = offers.offset(page * limit).limit(limit)
+        offer_ids = [offer_id for offer_id, in offers.with_entities(Offer.id)]
 
-    while has_still_offers:
-        expired_offer_ids_as_tuple = offer_queries.get_paginated_offer_ids_given_booking_limit_datetime_interval(
-            limit=settings.ALGOLIA_DELETING_OFFERS_CHUNK_SIZE,
-            page=page,
-            from_date=from_date,
-            to_date=one_day_before_now,
-        )
-        expired_offer_ids_as_int = from_tuple_to_int(offer_ids=expired_offer_ids_as_tuple)
+        if not offer_ids:
+            break
 
-        if len(expired_offer_ids_as_int) > 0:
-            logger.info("[ALGOLIA] processing deletion of expired offers from page %s...", page)
-            delete_expired_offers(client=client, offer_ids=expired_offer_ids_as_int)
-            logger.info("[ALGOLIA] expired offers from page %s processed!", page)
-        else:
-            has_still_offers = False
-            logger.info("[ALGOLIA] deleting expired offers finished!")
+        logger.info("[ALGOLIA] Found %d expired offers to unindex", len(offer_ids))
+        delete_expired_offers(client=client, offer_ids=offer_ids)
         page += 1
 
 

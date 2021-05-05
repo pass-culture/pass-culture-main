@@ -290,3 +290,22 @@ def find_tomorrow_event_stock_ids() -> set[int]:
 
 def get_current_offer_validation_config() -> Optional[OfferValidationConfig]:
     return OfferValidationConfig.query.order_by(OfferValidationConfig.id.desc()).first()
+
+
+def get_expired_offers(interval: [datetime, datetime]) -> Query:
+    """Return a query of offers whose latest booking limit occurs within
+    the given interval.
+
+    Inactive or deleted offers are ignored.
+    """
+    return (
+        Offer.query.join(Stock)
+        .filter(
+            Offer.isActive.is_(True),
+            Stock.isSoftDeleted.is_(False),
+            Stock.bookingLimitDatetime.isnot(None),
+        )
+        .having(func.max(Stock.bookingLimitDatetime).between(*interval))
+        .group_by(Offer.id)
+        .order_by(Offer.id)
+    )

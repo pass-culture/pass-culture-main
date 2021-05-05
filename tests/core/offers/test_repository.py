@@ -12,6 +12,7 @@ from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.repository import check_stock_consistency
 from pcapi.core.offers.repository import find_tomorrow_event_stock_ids
 from pcapi.core.offers.repository import get_active_offers_count_for_venue
+from pcapi.core.offers.repository import get_expired_offers
 from pcapi.core.offers.repository import get_offers_by_ids
 from pcapi.core.offers.repository import get_paginated_offers_for_filters
 from pcapi.core.offers.repository import get_sold_out_offers_count_for_venue
@@ -1231,3 +1232,39 @@ class TomorrowStockTest:
 
         stock_ids = find_tomorrow_event_stock_ids()
         assert set(stock_ids) == set(stock.id for stock in stocks_tomorrow)
+
+
+@pytest.mark.usefixtures("db_session")
+class GetExpiredOffersTest:
+    interval = [datetime(2021, 1, 1, 0, 0), datetime(2021, 1, 2, 0, 0)]
+    dt_before = datetime(2020, 12, 31)
+    dt_within = datetime(2021, 1, 1)
+    dt_after = datetime(2021, 1, 3)
+
+    def test_basics(self):
+        offer1 = offers_factories.OfferFactory()
+        offers_factories.StockFactory(offer=offer1, bookingLimitDatetime=self.dt_within)
+        offer2 = offers_factories.OfferFactory()
+        offers_factories.StockFactory(offer=offer2, bookingLimitDatetime=self.dt_within)
+        offers_factories.StockFactory(offer=offer2, bookingLimitDatetime=self.dt_within)
+        offer3 = offers_factories.OfferFactory()
+        offers_factories.StockFactory(offer=offer3, bookingLimitDatetime=self.dt_before)
+        offers_factories.StockFactory(offer=offer3, bookingLimitDatetime=self.dt_within)
+        offers_factories.StockFactory(bookingLimitDatetime=None)
+        offers_factories.StockFactory(bookingLimitDatetime=self.dt_before)
+        offers_factories.StockFactory(bookingLimitDatetime=self.dt_after)
+
+        offers = get_expired_offers(self.interval)
+
+        assert offers.all() == [offer1, offer2, offer3]
+
+    def test_exclude_if_latest_stock_outside_interval(self):
+        offer1 = offers_factories.OfferFactory()
+        offers_factories.StockFactory(offer=offer1, bookingLimitDatetime=self.dt_within)
+        offer2 = offers_factories.OfferFactory()
+        offers_factories.StockFactory(offer=offer2, bookingLimitDatetime=self.dt_within)
+        offers_factories.StockFactory(offer=offer2, bookingLimitDatetime=self.dt_after)
+
+        offers = get_expired_offers(self.interval)
+
+        assert offers.all() == [offer1]

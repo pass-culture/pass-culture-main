@@ -90,25 +90,3 @@ def get_paginated_offer_ids_by_venue_id_and_last_provider_id(
         .limit(limit)
         .all()
     )
-
-
-def get_paginated_offer_ids_given_booking_limit_datetime_interval(
-    limit: int, page: int, from_date: datetime, to_date: datetime
-) -> list[tuple]:
-    start_limit = from_date <= func.max(Stock.bookingLimitDatetime)
-    end_limit = func.max(Stock.bookingLimitDatetime) <= to_date
-
-    return (
-        Offer.query.join(Stock)
-        .with_entities(Offer.id)
-        .filter(Offer.isActive == True)
-        .filter(Stock.isSoftDeleted == False)
-        .filter(Stock.bookingLimitDatetime is not None)
-        .having(start_limit)
-        .having(end_limit)
-        .group_by(Offer.id)
-        .order_by(Offer.id)
-        .offset(page * limit)
-        .limit(limit)
-        .all()
-    )
