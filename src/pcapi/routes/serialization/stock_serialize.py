@@ -99,7 +99,9 @@ class UpdateVenueStockBodyModel(BaseModel):
 
     ref: str = Field(title="ISBN", description="Format: EAN13")
     available: int
-    price: condecimal(decimal_places=2) = Field(None, description="prix en Euros avec 2 décimales possibles")
+    price: condecimal(decimal_places=2) = Field(
+        None, description="(Optionnel) Prix en Euros avec 2 décimales possibles"
+    )
 
     @validator("price", pre=True)
     def empty_string_price_casted_to_none(cls, v):  # pylint: disable=no-self-argument
