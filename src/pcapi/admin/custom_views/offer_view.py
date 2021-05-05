@@ -126,10 +126,10 @@ class ValidationView(BaseAdminView):
     can_create = False
     can_edit = True
     can_delete = False
-    column_list = ["id", "name", "validation", "venue.name", "score", "offer", "offers"]
+    column_list = ["id", "name", "validation", "venue.name", "score", "offer", "offers", "dateCreated"]
     if IS_PROD:
         column_list.append("metabase")
-    column_sortable_list = ["id", "name", "validation"]
+    column_sortable_list = ["id", "name", "validation", "dateCreated"]
     column_labels = {
         "name": "Nom",
         "type": "Type",
@@ -139,9 +139,11 @@ class ValidationView(BaseAdminView):
         "offers": "Offres",
         "score": "Score",
         "metabase": "Metabase",
+        "dateCreated": "Date de création",
     }
     column_filters = ["type"]
     simple_list_pager = True
+    column_default_sort = ("dateCreated", True)
 
     @property
     def column_formatters(self):
