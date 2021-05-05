@@ -23,6 +23,7 @@ from pcapi.core.payments import api as payment_api
 from pcapi.core.users.models import Credit
 from pcapi.core.users.models import DomainsCredit
 from pcapi.core.users.models import NotificationSubscriptions
+from pcapi.core.users.models import PhoneValidationStatusType
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
@@ -488,16 +489,40 @@ def set_pro_tuto_as_seen(user: User) -> None:
 
 
 def send_phone_validation_code(user: User) -> None:
-    if not user.isEmailValidated:
-        raise exceptions.UnvalidatedEmail()
-
-    if user.isBeneficiary:
-        raise exceptions.UserAlreadyBeneficiary()
-
-    # TODO: add condition on user.isPhoneValidated
+    _check_phone_number_validation_is_authorized(user)
 
     phone_validation_token = create_phone_validation_token(user)
     content = f"{phone_validation_token.value} est ton code de confirmation pass Culture"
 
     if not send_transactional_sms(format_phone_number_with_country_code(user), content):
         raise exceptions.PhoneVerificationCodeSendingException()
+
+
+def validate_phone_number(user: User, code: str) -> None:
+    _check_phone_number_validation_is_authorized(user)
+
+    token = Token.query.filter(
+        Token.user == user, Token.value == code, Token.type == TokenType.PHONE_VALIDATION
+    ).one_or_none()
+
+    if not token:
+        raise exceptions.NotValidCode()
+
+    if token.expirationDate and token.expirationDate < datetime.now():
+        raise exceptions.ExpiredCode()
+
+    db.session.delete(token)
+
+    user.phoneValidationStatus = PhoneValidationStatusType.VALIDATED
+    db.session.add(user)
+
+
+def _check_phone_number_validation_is_authorized(user: User) -> None:
+    if user.is_phone_validated:
+        raise exceptions.UserPhoneNumberAlreadyValidated()
+
+    if not user.isEmailValidated:
+        raise exceptions.UnvalidatedEmail()
+
+    if user.isBeneficiary:
+        raise exceptions.UserAlreadyBeneficiary()

@@ -154,3 +154,7 @@ class ResendEmailValidationRequest(BaseModel):
 
 class GetIdCheckTokenResponse(BaseModel):
     token: Optional[str]
+
+
+class ValidatePhoneNumberRequest(BaseModel):
+    code: str

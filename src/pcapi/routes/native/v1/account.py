@@ -136,5 +136,22 @@ def get_id_check_token(user: User) -> serializers.GetIdCheckTokenResponse:
 def send_phone_validation_code(user: User) -> None:
     try:
         api.send_phone_validation_code(user)
-    except exceptions.PhoneVerificationCodeSendingException:
-        raise ApiErrors({"general": "Unable to send phone validation code"}, status_code=400)
+    except exceptions.UserPhoneNumberAlreadyValidated:
+        raise ApiErrors({"message": "Le numéro de téléphone est déjà validé"}, status_code=400)
+    except exceptions.UserWithoutPhoneNumberException:
+        raise ApiErrors({"message": "Le numéro de téléphone est invalide"}, status_code=400)
+    except exceptions.PhoneVerificationException:
+        raise ApiErrors({"message": "L'envoi du code a échoué"}, status_code=400)
+
+
+@blueprint.native_v1.route("/validate_phone_number", methods=["POST"])
+@spectree_serialize(api=blueprint.api, on_success_status=204)
+@authenticated_user_required
+def validate_phone_number(user: User, body: serializers.ValidatePhoneNumberRequest) -> None:
+    with transaction():
+        try:
+            api.validate_phone_number(user, body.code)
+        except exceptions.ExpiredCode:
+            raise ApiErrors({"message": "Le code saisi a expiré", "code": "EXPIRED_VALIDATION_CODE"}, status_code=400)
+        except exceptions.NotValidCode:
+            raise ApiErrors({"message": "Le code est invalide", "code": "INVALID_VALIDATION_CODE"}, status_code=400)

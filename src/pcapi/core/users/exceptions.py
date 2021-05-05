@@ -26,17 +26,33 @@ class EmailNotSent(Exception):
     pass
 
 
-class PhoneVerificationCodeSendingException(Exception):
+class PhoneVerificationException(Exception):
     pass
 
 
-class UnvalidatedEmail(PhoneVerificationCodeSendingException):
+class PhoneVerificationCodeSendingException(PhoneVerificationException):
     pass
 
 
-class UserWithoutPhoneNumberException(PhoneVerificationCodeSendingException):
+class UnvalidatedEmail(PhoneVerificationException):
     pass
 
 
-class UserAlreadyBeneficiary(PhoneVerificationCodeSendingException):
+class UserPhoneNumberAlreadyValidated(PhoneVerificationException):
+    pass
+
+
+class UserWithoutPhoneNumberException(PhoneVerificationException):
+    pass
+
+
+class UserAlreadyBeneficiary(PhoneVerificationException):
+    pass
+
+
+class NotValidCode(PhoneVerificationException):
+    pass
+
+
+class ExpiredCode(NotValidCode):
     pass

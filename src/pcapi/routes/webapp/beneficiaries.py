@@ -16,6 +16,7 @@ from pcapi.core.users import repository as users_repo
 from pcapi.flask_app import private_api
 from pcapi.flask_app import public_api
 from pcapi.models.api_errors import ApiErrors
+from pcapi.repository import transaction
 from pcapi.routes.serialization import beneficiaries as serialization_beneficiaries
 from pcapi.routes.serialization.beneficiaries import BeneficiaryAccountResponse
 from pcapi.routes.serialization.beneficiaries import ChangeBeneficiaryEmailBody
@@ -163,5 +164,24 @@ def send_phone_validation_code() -> None:
 
     try:
         users_api.send_phone_validation_code(user)
-    except users_exceptions.PhoneVerificationCodeSendingException:
-        raise ApiErrors({"general": "Unable to send phone validation code"}, status_code=400)
+    except users_exceptions.UserPhoneNumberAlreadyValidated:
+        raise ApiErrors({"message": "Le numéro de téléphone est déjà validé"}, status_code=400)
+    except users_exceptions.UserWithoutPhoneNumberException:
+        raise ApiErrors({"message": "Le numéro de téléphone est invalide"}, status_code=400)
+    except users_exceptions.PhoneVerificationException:
+        raise ApiErrors({"message": "L'envoi du code a échoué"}, status_code=400)
+
+
+@private_api.route("/validate_phone_number", methods=["POST"])
+@login_required
+@spectree_serialize(on_success_status=204)
+def validate_phone_nymber(body: serialization_beneficiaries.ValidatePhoneNumberRequest) -> None:
+    user = current_user._get_current_object()
+
+    with transaction():
+        try:
+            users_api.validate_phone_number(user, body.code)
+        except users_exceptions.ExpiredCode:
+            raise ApiErrors({"message": "Le code saisi a expiré", "code": "EXPIRED_VALIDATION_CODE"}, status_code=400)
+        except users_exceptions.NotValidCode:
+            raise ApiErrors({"message": "Le code est invalide", "code": "INVALID_VALIDATION_CODE"}, status_code=400)

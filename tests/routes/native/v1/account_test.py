@@ -13,6 +13,7 @@ from pcapi.core.bookings.factories import BookingFactory
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users.api import create_phone_validation_token
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
@@ -633,9 +634,7 @@ class ShowEligibleCardTest:
 
 class SendPhoneValidationCodeTest:
     def test_send_phone_validation_code(self, app):
-        user = users_factories.UserFactory(
-            departementCode="93", isEmailValidated=True, isBeneficiary=False, phoneNumber="060102030405"
-        )
+        user = users_factories.UserFactory(departementCode="93", isBeneficiary=False, phoneNumber="060102030405")
         access_token = create_access_token(identity=user.email)
 
         test_client = TestClient(app.test_client())
@@ -653,6 +652,14 @@ class SendPhoneValidationCodeTest:
         assert sms_testing.requests == [
             {"recipient": "3360102030405", "content": f"{token.value} est ton code de confirmation pass Culture"}
         ]
+        assert 0 <= int(token.value) < 1000000
+
+        # validate phone number with generated code
+        response = test_client.post("/native/v1/validate_phone_number", json={"code": token.value})
+
+        assert response.status_code == 204
+        user = User.query.get(user.id)
+        assert user.is_phone_validated
 
     def test_send_phone_validation_code_already_beneficiary(self, app):
         user = users_factories.UserFactory(isEmailValidated=True, isBeneficiary=True, phoneNumber="060102030405")
@@ -666,3 +673,55 @@ class SendPhoneValidationCodeTest:
         assert response.status_code == 400
 
         assert not Token.query.filter_by(userId=user.id).first()
+
+
+class ValidatePhoneNumberTest:
+    def test_validate_phone_number(self, app):
+        user = users_factories.UserFactory(isBeneficiary=False)
+        access_token = create_access_token(identity=user.email)
+        token = create_phone_validation_token(user)
+
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+
+        response = test_client.post("/native/v1/validate_phone_number", {"code": token.value})
+
+        assert response.status_code == 204
+        user = User.query.get(user.id)
+        assert user.is_phone_validated
+
+        token = Token.query.filter_by(userId=user.id, type=TokenType.PHONE_VALIDATION).first()
+
+        assert not token
+
+    def test_wrong_code(self, app):
+        user = users_factories.UserFactory(isBeneficiary=False)
+        access_token = create_access_token(identity=user.email)
+        create_phone_validation_token(user)
+
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+
+        response = test_client.post("/native/v1/validate_phone_number", {"code": "mauvais-code"})
+
+        assert response.status_code == 400
+        assert response.json["code"] == "INVALID_VALIDATION_CODE"
+
+        assert not User.query.get(user.id).is_phone_validated
+        assert Token.query.filter_by(userId=user.id, type=TokenType.PHONE_VALIDATION).first()
+
+    def test_expired_code(self, app):
+        user = users_factories.UserFactory(isBeneficiary=False)
+        token = create_phone_validation_token(user)
+
+        with freeze_time(datetime.now() + timedelta(minutes=20)):
+            access_token = create_access_token(identity=user.email)
+            test_client = TestClient(app.test_client())
+            test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+            response = test_client.post("/native/v1/validate_phone_number", {"code": token.value})
+
+        assert response.status_code == 400
+        assert response.json["code"] == "EXPIRED_VALIDATION_CODE"
+
+        assert not User.query.get(user.id).is_phone_validated
+        assert Token.query.filter_by(userId=user.id, type=TokenType.PHONE_VALIDATION).first()

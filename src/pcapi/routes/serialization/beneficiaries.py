@@ -129,3 +129,7 @@ class PatchBeneficiaryBodyModel(BaseModel):
         alias_generator = to_camel
         extra = "forbid"
         json_encoders = {datetime: format_into_utc_date}
+
+
+class ValidatePhoneNumberRequest(BaseModel):
+    code: str
