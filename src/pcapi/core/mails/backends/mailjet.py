@@ -7,11 +7,11 @@ from requests import Response
 
 from pcapi import settings
 
-
-logger = logging.getLogger(__name__)
-
 from ..models import MailResult
 from .base import BaseBackend
+
+
+logger = logging.getLogger(__name__)
 
 
 def monkey_patch_mailjet_requests():
@@ -28,10 +28,7 @@ monkey_patch_mailjet_requests()
 
 
 def _add_template_debugging(message_data: dict) -> None:
-    message_data["TemplateErrorReporting"] = {
-        "Email": settings.DEV_EMAIL_ADDRESS,
-        "Name": "Mailjet Template Errors",
-    }
+    message_data["MJ-TemplateErrorReporting"] = settings.DEV_EMAIL_ADDRESS
 
 
 class MailjetBackend(BaseBackend):

@@ -46,10 +46,7 @@ class SendTest:
     @override_settings(EMAIL_BACKEND="pcapi.core.mails.backends.mailjet.MailjetBackend")
     def test_send_with_mailjet(self):
         expected = copy.deepcopy(self.expected_sent_data)
-        expected["TemplateErrorReporting"] = {
-            "Email": "dev@example.com",
-            "Name": "Mailjet Template Errors",
-        }
+        expected["MJ-TemplateErrorReporting"] = "dev@example.com"
         with requests_mock.Mocker() as mock:
             posted = mock.post("https://api.eu.mailjet.com/v3/send")
             successful = mails.send(recipients=self.recipients, data=self.data)
@@ -106,10 +103,7 @@ class MailjetBackendTest:
             "other-key": "other-value",
             "env": "-development",
         },
-        "TemplateErrorReporting": {
-            "Email": "dev@example.com",
-            "Name": "Mailjet Template Errors",
-        },
+        "MJ-TemplateErrorReporting": "dev@example.com",
     }
 
     def _get_backend(self):
@@ -193,10 +187,7 @@ class ToDevMailjetBackendTest:
         "FromEmail": "support@example.com",
         "To": ", ".join(recipients),
         "key": "value",
-        "TemplateErrorReporting": {
-            "Email": "dev@example.com",
-            "Name": "Mailjet Template Errors",
-        },
+        "MJ-TemplateErrorReporting": "dev@example.com",
     }
 
     def _get_backend(self):
