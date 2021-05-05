@@ -11,6 +11,33 @@ from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 
 
+class PostVenueBodyModel(BaseModel):
+    address: str
+    bookingEmail: str
+    city: str
+    comment: Optional[str]
+    latitude: float
+    longitude: float
+    managingOffererId: str
+    name: str
+    publicName: Optional[str]
+    postalCode: str
+    siret: str
+    venueLabelId: str
+    venueTypeId: str
+
+
+class VenueResponseModel(BaseModel):
+    id: str
+
+    _humanize_id = humanize_field("id")
+
+    class Config:
+        orm_mode = True
+        allow_population_by_field_name = True
+        arbitrary_types_allowed = True
+
+
 class VenueStatsResponseModel(BaseModel):
     activeBookingsQuantity: int
     validatedBookingsQuantity: int

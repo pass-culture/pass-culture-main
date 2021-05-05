@@ -17,8 +17,10 @@ from pcapi.routes.serialization import as_dict
 from pcapi.routes.serialization.venues_serialize import EditVenueBodyModel
 from pcapi.routes.serialization.venues_serialize import GetVenueListResponseModel
 from pcapi.routes.serialization.venues_serialize import GetVenueResponseModel
+from pcapi.routes.serialization.venues_serialize import PostVenueBodyModel
 from pcapi.routes.serialization.venues_serialize import VenueListItemResponseModel
 from pcapi.routes.serialization.venues_serialize import VenueListQueryModel
+from pcapi.routes.serialization.venues_serialize import VenueResponseModel
 from pcapi.routes.serialization.venues_serialize import VenueStatsResponseModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.use_cases.create_venue import create_venue
@@ -70,13 +72,13 @@ def get_venues(query: VenueListQueryModel) -> GetVenueListResponseModel:
 # @debt api-migration
 @private_api.route("/venues", methods=["POST"])
 @login_required
-@expect_json_data
-def post_create_venue():
-    validate_coordinates(request.json.get("latitude", None), request.json.get("longitude", None))
+@spectree_serialize(response_model=VenueResponseModel, on_success_status=201)  # type: ignore
+def post_create_venue(body: PostVenueBodyModel) -> VenueResponseModel:
+    validate_coordinates(body.latitude, body.longitude)
 
-    venue = create_venue(venue_properties=request.json, save=repository.save)
+    venue = create_venue(venue_properties=body.dict(), save=repository.save)
 
-    return jsonify(as_dict(venue, includes=VENUE_INCLUDES)), 201
+    return VenueResponseModel.from_orm(venue)
 
 
 @private_api.route("/venues/<venue_id>", methods=["PATCH"])
