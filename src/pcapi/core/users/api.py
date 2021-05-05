@@ -107,7 +107,7 @@ def generate_and_save_token(
     expiration_date = datetime.now() + life_time if life_time else None
     token_value = token_value or secrets.token_urlsafe(32)
 
-    token = Token(userId=user.id, value=token_value, type=token_type, expirationDate=expiration_date)
+    token = Token(user=user, value=token_value, type=token_type, expirationDate=expiration_date)
     repository.save(token)
 
     return token

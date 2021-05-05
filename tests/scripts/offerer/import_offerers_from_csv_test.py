@@ -1,5 +1,7 @@
 from collections import OrderedDict
+from datetime import datetime
 
+from freezegun import freeze_time
 import pytest
 
 from pcapi.core.offerers.models import Offerer
@@ -10,6 +12,7 @@ from pcapi.core.offers.factories import VenueTypeFactory
 from pcapi.core.offers.factories import VirtualVenueFactory
 from pcapi.core.offers.factories import VirtualVenueTypeFactory
 from pcapi.core.users.factories import UserFactory
+from pcapi.core.users.models import Token
 from pcapi.core.users.models import User
 from pcapi.models import UserOfferer
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
@@ -319,6 +322,54 @@ class CreateProUserFromCSVTest:
 
 
 class CreateAnEntireOffererFromCSVRowTest:
+    @freeze_time("2021-05-04 00:00:00")
+    @pytest.mark.usefixtures("db_session")
+    def test_created_pro_is_activated_with_90_days_reset_password(self, app):
+        # Given
+        VirtualVenueTypeFactory()
+        VenueTypeFactory(label="Librairie")
+        offerer = OffererFactory(siren="636710003")
+        VenueFactory(managingOfferer=offerer)
+        VirtualVenueFactory(managingOfferer=offerer)
+        csv_row = OrderedDict(
+            [
+                ("", "104"),
+                ("Company ID", "1099515212"),
+                ("Email", "librairie.fictive@example.com"),
+                ("First Name", "Anthony"),
+                ("Last Name", "Champion"),
+                ("Phone", "01 02 34 56 78"),
+                ("Postal Code", "44016.0"),
+                ("City", "NANTES CEDEX 1"),
+                ("SIRET", "63671000326012"),
+                ("SIREN", "636710003"),
+                ("Département", "44"),
+                ("Name", "Fictive"),
+                ("Catégorie", "Librairie"),
+                ("Street Address", "45 RUE DU JOYEUX LURON"),
+                ("nom_structure", "SARL"),
+                ("adresse", "45 RUE DU JOYEUX LURON, 44000"),
+                ("code_postal", "44000"),
+                ("commune", "NANTES"),
+                ("geoloc", "[44.455621, -2.546101]"),
+                ("nom_lieu", "Ma librairie"),
+                ("siege_social", "45 RUE DU JOYEUX LURON, 44000"),
+                ("lieu_deja_inscrit", "0"),
+                ("structure_deja_inscrite", "0"),
+            ]
+        )
+
+        # When
+        import_new_offerer_from_csv(csv_row)
+
+        # Then
+        user = User.query.first()
+        token = Token.query.first()
+        assert not user.validationToken
+        assert user.resetPasswordToken is None
+        assert token.user == user
+        assert token.expirationDate == datetime(2021, 8, 2)
+
     @pytest.mark.usefixtures("db_session")
     def test_when_is_a_new_offerer(self, app):
         # Given
