@@ -52,5 +52,5 @@ class StockDoesNotExist(ApiErrors):
     status_code = 400
 
 
-class WrongFormatInFraudConfigurationFile(Exception):
+class WrongFormatInFraudConfigurationFile(ApiErrors):
     pass

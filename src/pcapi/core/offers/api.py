@@ -8,6 +8,7 @@ import pytz
 from sqlalchemy.orm import joinedload
 from sqlalchemy.sql.functions import func
 import yaml
+from yaml.scanner import ScannerError
 
 from pcapi import settings
 from pcapi.connectors import redis
@@ -691,11 +692,10 @@ def update_pending_offer_validation_status(offer: Offer, validation_status: Offe
 
 
 def import_offer_validation_config(config_as_yaml: str, user: User = None) -> OfferValidationConfig:
-    config_as_dict = yaml.safe_load(config_as_yaml)
-
     try:
+        config_as_dict = yaml.safe_load(config_as_yaml)
         check_validation_config_parameters(config_as_dict, KEY_VALIDATION_CONFIG["init"])
-    except (KeyError, ValueError) as error:
+    except (KeyError, ValueError, ScannerError) as error:
         logger.exception(
             "Wrong configuration file format: %s",
             extra={"exc": str(error)},

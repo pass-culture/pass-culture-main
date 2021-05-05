@@ -1,3 +1,4 @@
+import datetime
 from unittest.mock import patch
 
 import pytest
@@ -5,7 +6,9 @@ import pytest
 from pcapi.admin.custom_views.offer_view import OfferView
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.factories import VenueFactory
+from pcapi.core.offers.models import OfferValidationConfig
 from pcapi.core.offers.models import OfferValidationStatus
+from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 from pcapi.models import Offer
 
@@ -176,3 +179,125 @@ class OfferValidationViewTest:
         mocked_send_offer_validation_status_update_email.assert_called_once_with(
             offer, OfferValidationStatus.APPROVED, ["venue@example.com"]
         )
+
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="super_admin@example.com")
+    def test_import_validation_config(self, mocked_validate_csrf_token, app):
+        # Given
+        users_factories.UserFactory(email="super_admin@example.com", isAdmin=True)
+        config_yaml = """
+                    minimum_score: 0.6
+                    parameters:
+                        name:
+                            model: "Offer"
+                            attribute: "name"
+                            condition:
+                                operator: "not in"
+                                comparated: "REJECTED"
+                            factor: 0
+                        price_all_types:
+                            model: "Offer"
+                            attribute: "max_price"
+                            condition:
+                                operator: ">"
+                                comparated: 100
+                            factor: 0.7
+
+                    """
+
+        data = dict(specs=config_yaml, action="save")
+        client = TestClient(app.test_client()).with_auth("super_admin@example.com")
+
+        # When
+        response = client.post("pc/back-office/fraud_rules_configuration/new/", form=data)
+        saved_config = OfferValidationConfig.query.one()
+
+        # Then
+        assert response.status_code == 302
+        assert saved_config.user.email == "super_admin@example.com"
+        assert saved_config.dateCreated.timestamp() == pytest.approx(datetime.datetime.utcnow().timestamp(), rel=1)
+        assert saved_config.specs == {
+            "minimum_score": 0.6,
+            "parameters": {
+                "name": {
+                    "attribute": "name",
+                    "condition": {"comparated": "REJECTED", "operator": "not in"},
+                    "factor": 0,
+                    "model": "Offer",
+                },
+                "price_all_types": {
+                    "attribute": "max_price",
+                    "condition": {"comparated": 100, "operator": ">"},
+                    "factor": 0.7,
+                    "model": "Offer",
+                },
+            },
+        }
+
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="super_admin@example.com")
+    def test_import_validation_config_fail_with_wrong_value(self, mocked_validate_csrf_token, app):
+        # Given
+        users_factories.UserFactory(email="super_admin@example.com", isAdmin=True)
+        config_yaml = """
+                    minimum_score: 0.6
+                    parameters:
+                        name:
+                            model: "Offer"
+                            attribute: "name"
+                            condition:
+                                operator: "wrong value"
+                                comparated: "REJECTED"
+                            factor: 0
+                        price_all_types:
+                            model: "Offer"
+                            attribute: "max_price"
+                            condition:
+                                operator: ">"
+                                comparated: 100
+                            factor: 0.7
+
+                    """
+
+        data = dict(specs=config_yaml, action="save")
+        client = TestClient(app.test_client()).with_auth("super_admin@example.com")
+
+        # When
+        response = client.post("pc/back-office/fraud_rules_configuration/new/", form=data)
+
+        # Then
+        assert response.status_code == 400
+
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="super_admin@example.com")
+    def test_import_validation_config_fail_when_user_is_not_super_admin(self, mocked_validate_csrf_token, app):
+        # Given
+        users_factories.UserFactory(email="not_super_admin@example.com", isAdmin=True)
+        config_yaml = """
+                    minimum_score: 0.6
+                    parameters:
+                        name:
+                            model: "Offer"
+                            attribute: "name"
+                            condition:
+                                operator: "not in"
+                                comparated: "REJECTED"
+                            factor: 0
+                        price_all_types:
+                            model: "Offer"
+                            attribute: "max_price"
+                            condition:
+                                operator: ">"
+                                comparated: 100
+                            factor: 0.7
+
+                    """
+
+        data = dict(specs=config_yaml, action="save")
+        client = TestClient(app.test_client()).with_auth("not_super_admin@example.com")
+
+        # When
+        response = client.post("pc/back-office/fraud_rules_configuration/new/", form=data)
+
+        # Then
+        assert response.status_code == 403

@@ -12,6 +12,7 @@ from pcapi.admin.custom_views.booking_view import BookingView
 from pcapi.admin.custom_views.criteria_view import CriteriaView
 from pcapi.admin.custom_views.feature_view import FeatureView
 from pcapi.admin.custom_views.many_offers_operations_view import ManyOffersOperationsView
+from pcapi.admin.custom_views.offer_view import ImportConfigValidationOfferView
 from pcapi.admin.custom_views.offer_view import OfferForVenueSubview
 from pcapi.admin.custom_views.offer_view import OfferView
 from pcapi.admin.custom_views.offer_view import ValidationView
@@ -22,6 +23,7 @@ from pcapi.admin.custom_views.user_offerer_view import UserOffererView
 from pcapi.admin.custom_views.venue_provider_view import VenueProviderView
 from pcapi.admin.custom_views.venue_view import VenueView
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offers.models import OfferValidationConfig
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users.models import User
 from pcapi.models import AllocinePivot
@@ -126,6 +128,16 @@ def install_admin_views(admin: Admin, session: Session) -> None:
             session,
             name="Validation",
             endpoint="/validation",
+            category=Category.CUSTOM_OPERATIONS,
+        )
+    )
+
+    admin.add_view(
+        ImportConfigValidationOfferView(
+            OfferValidationConfig,
+            session,
+            name="Configuration des règles de fraude",
+            endpoint="/fraud_rules_configuration",
             category=Category.CUSTOM_OPERATIONS,
         )
     )

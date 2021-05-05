@@ -1,3 +1,5 @@
+from typing import Union
+
 from flask import abort
 from flask import flash
 from flask import redirect
@@ -5,20 +7,30 @@ from flask import request
 from flask import url_for
 from flask_admin.base import expose
 from flask_admin.form import SecureForm
+from flask_admin.helpers import get_form_data
+from flask_admin.helpers import is_form_submitted
+from flask_login import current_user
 from markupsafe import Markup
 from sqlalchemy import func
 from sqlalchemy.orm import query
 from werkzeug import Response
 from wtforms import Form
 from wtforms import SelectField
+from wtforms import TextAreaField
+from wtforms.validators import InputRequired
+import yaml
 
 from pcapi import settings
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.connectors import redis
 from pcapi.connectors.api_entreprises import get_offerer_legal_category
 from pcapi.core.offerers.models import Venue
+from pcapi.core.offers.api import import_offer_validation_config
 from pcapi.core.offers.api import update_pending_offer_validation_status
+from pcapi.core.offers.models import OfferValidationConfig
 from pcapi.core.offers.models import OfferValidationStatus
+import pcapi.core.offers.repository as offers_repository
+from pcapi.core.offers.validation import check_user_can_load_config
 from pcapi.domain.user_emails import send_offer_validation_status_update_email
 from pcapi.flask_app import app
 from pcapi.models import Offer
@@ -211,3 +223,65 @@ class ValidationView(BaseAdminView):
             "offer_name": offer.name,
         }
         return self.render("admin/edit_offer_validation.html", **context)
+
+
+def yaml_formatter(view, context, model, name):
+    value = getattr(model, name)
+    yaml_value = yaml.dump(value, indent=4)
+    return Markup("<pre>{}</pre>".format(yaml_value))
+
+
+def user_formatter(view, context, model, name):
+    author = getattr(model, name)
+    return author.email if author else ""
+
+
+def date_formatter(view, context, model, name):
+    config_date = getattr(model, name)
+    return config_date.strftime("%Y-%m-%d %H:%M:%S")
+
+
+class OfferValidationConfigForm(SecureForm):
+    specs = TextAreaField("Configuration", [InputRequired()])
+
+
+class ImportConfigValidationOfferView(BaseAdminView):
+    can_create = True
+    can_edit = False
+    can_view_details = True
+    can_delete = False
+    column_list = ["id", "dateCreated", "userId", "user"]
+    column_sortable_list = ["id", "dateCreated"]
+    column_labels = {
+        "id": "Id",
+        "dateCreated": "Date de création",
+        "userId": "ID Utilisateur",
+        "user": "Utilisateur",
+    }
+
+    simple_list_pager = True
+    column_default_sort = ("dateCreated", True)
+
+    column_formatters = {
+        "specs": yaml_formatter,
+        "user": user_formatter,
+        "dateCreated": date_formatter,
+    }
+
+    form_excluded_columns = ("id", "dateCreated", "userId", "user")
+    form_widget_args = {"specs": {"rows": 40, "style": "color: black"}}
+
+    def create_form(self, obj=None):
+        if not is_form_submitted():
+            current_config = offers_repository.get_current_offer_validation_config()
+            if current_config:
+                form = OfferValidationConfigForm()
+                form.specs.data = yaml.dump(current_config.specs, indent=4, allow_unicode=True)
+                return form
+
+        return OfferValidationConfigForm(get_form_data())
+
+    def create_model(self, form: Form) -> Union[None, OfferValidationConfig]:
+        check_user_can_load_config(current_user)
+        config = import_offer_validation_config(form.specs.data, current_user)
+        return config

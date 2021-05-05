@@ -1276,7 +1276,7 @@ class ImportOfferValidationConfigTest:
         """
         with pytest.raises(WrongFormatInFraudConfigurationFile) as error:
             import_offer_validation_config(config_yaml)
-        assert "WRONG_KEY" in error.value.args[0]
+        assert "WRONG_KEY" in str(error.value)
 
     @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
     def test_raise_a_WrongFormatInFraudConfigurationFile_error_for_wrong_type(self):
@@ -1301,7 +1301,7 @@ class ImportOfferValidationConfigTest:
             """
         with pytest.raises(WrongFormatInFraudConfigurationFile) as error:
             import_offer_validation_config(config_yaml)
-        assert "0" in error.value.args[0]
+        assert "0" in str(error.value)
 
     @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
     def test_raise_a_WrongFormatInFraudConfigurationFile_error_for_wrong_leaf_value(self):
@@ -1326,7 +1326,7 @@ class ImportOfferValidationConfigTest:
                 """
         with pytest.raises(WrongFormatInFraudConfigurationFile) as error:
             import_offer_validation_config(config_yaml)
-        assert "?" in error.value.args[0]
+        assert "?" in str(error.value)
 
     @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
     def test_is_saved(self):
