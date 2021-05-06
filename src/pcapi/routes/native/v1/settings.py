@@ -18,4 +18,5 @@ def get_settings() -> serializers.SettingsResponse:
         is_recaptcha_enabled=feature_queries.is_active(FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA),
         allow_id_check_registration=feature_queries.is_active(FeatureToggle.ALLOW_IDCHECK_REGISTRATION),
         auto_activate_digital_bookings=feature_queries.is_active(FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS),
+        enable_native_id_check_version=feature_queries.is_active(FeatureToggle.ENABLE_NATIVE_ID_CHECK_VERSION),
     )

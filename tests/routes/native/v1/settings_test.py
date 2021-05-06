@@ -14,6 +14,7 @@ class SettingsTest:
         ALLOW_IDCHECK_REGISTRATION=True,
         ENABLE_NATIVE_APP_RECAPTCHA=True,
         AUTO_ACTIVATE_DIGITAL_BOOKINGS=False,
+        ENABLE_NATIVE_ID_CHECK_VERSION=False,
     )
     def test_get_settings_feature_combination_1(self, app):
         response = TestClient(app.test_client()).get("/native/v1/settings")
@@ -22,6 +23,7 @@ class SettingsTest:
             "allowIdCheckRegistration": True,
             "autoActivateDigitalBookings": False,
             "depositAmount": 50000,
+            "enableNativeIdCheckVersion": False,
             "isRecaptchaEnabled": True,
         }
 
@@ -30,6 +32,7 @@ class SettingsTest:
         ALLOW_IDCHECK_REGISTRATION=False,
         ENABLE_NATIVE_APP_RECAPTCHA=False,
         AUTO_ACTIVATE_DIGITAL_BOOKINGS=True,
+        ENABLE_NATIVE_ID_CHECK_VERSION=True,
     )
     def test_get_settings_feature_combination_2(self, app):
         response = TestClient(app.test_client()).get("/native/v1/settings")
@@ -38,5 +41,6 @@ class SettingsTest:
             "allowIdCheckRegistration": False,
             "autoActivateDigitalBookings": True,
             "depositAmount": 30000,
+            "enableNativeIdCheckVersion": True,
             "isRecaptchaEnabled": False,
         }
