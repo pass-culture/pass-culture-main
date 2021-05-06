@@ -255,6 +255,9 @@ console:
       cpu: 200m
       memory: 512Mi
 
+aide:
+  enabled: false
+
 configmapApi:
    DATABASE_STATEMENT_TIMEOUT: 60000
 
