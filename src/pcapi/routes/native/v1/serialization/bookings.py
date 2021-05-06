@@ -116,3 +116,7 @@ class BookingsResponse(BaseModel):
 
     class Config:
         json_encoders = {datetime: format_into_utc_date}
+
+
+class BookingDisplayStatusRequest(BaseModel):
+    ended: bool

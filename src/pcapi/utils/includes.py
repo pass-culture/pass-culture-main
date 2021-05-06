@@ -43,6 +43,7 @@ USER_INCLUDES = [
 
 WEBAPP_GET_BOOKING_INCLUDES = [
     "completedUrl",
+    "-displayAsEnded",
     "isEventExpired",
     {
         "key": "stock",

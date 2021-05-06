@@ -13,7 +13,9 @@ from pcapi.core.offers.factories import MediationFactory
 from pcapi.core.offers.factories import StockFactory
 from pcapi.core.offers.factories import StockWithActivationCodesFactory
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
+from pcapi.models.db import db
 from pcapi.models.offer_type import ThingType
 
 from tests.conftest import TestClient
@@ -83,6 +85,7 @@ class GetBookingsTest:
     identifier = "pascal.ture@example.com"
 
     @freeze_time("2021-03-12")
+    @override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True)
     def test_get_bookings(self, app):
         OFFER_URL = "https://demo.pass/some/path"
         user = users_factories.UserFactory(email=self.identifier)
@@ -95,7 +98,18 @@ class GetBookingsTest:
 
         digital_stock = StockWithActivationCodesFactory()
         first_activation_code = digital_stock.activationCodes[0]
-        digital_booking = BookingFactory(user=user, stock=digital_stock, activationCode=first_activation_code)
+        second_activation_code = digital_stock.activationCodes[1]
+        digital_booking = BookingFactory(
+            user=user, isUsed=True, dateUsed=datetime.now(), stock=digital_stock, activationCode=first_activation_code
+        )
+        ended_digital_booking = BookingFactory(
+            user=user,
+            displayAsEnded=True,
+            isUsed=True,
+            dateUsed=datetime.now(),
+            stock=digital_stock,
+            activationCode=second_activation_code,
+        )
         expire_tomorrow = BookingFactory(user=user, dateCreated=datetime.now() - timedelta(days=29))
         used_but_in_future = BookingFactory(
             user=user,
@@ -114,6 +128,7 @@ class GetBookingsTest:
         used1 = BookingFactory(user=user, isUsed=True, dateUsed=datetime(2021, 3, 1))
         used2 = BookingFactory(
             user=user,
+            displayAsEnded=True,
             isUsed=True,
             dateUsed=datetime(2021, 3, 2),
             stock__offer__url=OFFER_URL,
@@ -125,8 +140,13 @@ class GetBookingsTest:
         test_client = TestClient(app.test_client())
         test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
 
-        with assert_num_queries(2):
+        # 1: get the user
+        # 1: get the bookings
+        # 1: get AUTO_ACTIVATE_DIGITAL_BOOKINGS feature
+        with assert_num_queries(3):
             response = test_client.get("/native/v1/bookings")
+
+        assert response.status_code == 200
 
         assert [b["id"] for b in response.json["ongoing_bookings"]] == [
             expire_tomorrow.id,
@@ -139,13 +159,14 @@ class GetBookingsTest:
         assert response.json["ongoing_bookings"][3]["activationCode"]
 
         assert [b["id"] for b in response.json["ended_bookings"]] == [
+            ended_digital_booking.id,
             cancelled_permanent_booking.id,
             cancelled.id,
             used2.id,
             used1.id,
         ]
 
-        assert response.json["ended_bookings"][2] == {
+        assert response.json["ended_bookings"][3] == {
             "activationCode": None,
             "cancellationDate": None,
             "cancellationReason": None,
@@ -230,3 +251,74 @@ class CancelBookingTest:
             "code": "CONFIRMED_BOOKING",
             "message": "La date limite d'annulation est dépassée.",
         }
+
+
+class ToggleBookingVisibilityTest:
+    identifier = "pascal.ture@example.com"
+
+    def test_toggle_visibility(self, app):
+        user = users_factories.UserFactory(email=self.identifier)
+        access_token = create_access_token(identity=self.identifier)
+
+        booking = BookingFactory(user=user, displayAsEnded=None)
+        booking_id = booking.id
+
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+
+        response = test_client.post(f"/native/v1/bookings/{booking_id}/toggle_display", json={"ended": True})
+
+        assert response.status_code == 204
+        db.session.refresh(booking)
+        assert booking.displayAsEnded
+
+        response = test_client.post(f"/native/v1/bookings/{booking_id}/toggle_display", json={"ended": False})
+
+        assert response.status_code == 204
+        db.session.refresh(booking)
+        assert not booking.displayAsEnded
+
+    @override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True)
+    def test_integration_toggle_visibility(self, app):
+        user = users_factories.UserFactory(email=self.identifier)
+        access_token = create_access_token(identity=self.identifier)
+
+        stock = StockWithActivationCodesFactory()
+        activation_code = stock.activationCodes[0]
+        booking = BookingFactory(
+            user=user,
+            displayAsEnded=None,
+            isUsed=True,
+            dateUsed=datetime.now(),
+            stock=stock,
+            activationCode=activation_code,
+        )
+
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+
+        response = test_client.get("/native/v1/bookings")
+        assert response.status_code == 200
+
+        assert [b["id"] for b in response.json["ongoing_bookings"]] == [booking.id]
+        assert [b["id"] for b in response.json["ended_bookings"]] == []
+
+        response = test_client.post(f"/native/v1/bookings/{booking.id}/toggle_display", json={"ended": True})
+
+        assert response.status_code == 204
+
+        response = test_client.get("/native/v1/bookings")
+        assert response.status_code == 200
+
+        assert [b["id"] for b in response.json["ongoing_bookings"]] == []
+        assert [b["id"] for b in response.json["ended_bookings"]] == [booking.id]
+
+        response = test_client.post(f"/native/v1/bookings/{booking.id}/toggle_display", json={"ended": False})
+
+        assert response.status_code == 204
+
+        response = test_client.get("/native/v1/bookings")
+        assert response.status_code == 200
+
+        assert [b["id"] for b in response.json["ongoing_bookings"]] == [booking.id]
+        assert [b["id"] for b in response.json["ended_bookings"]] == []

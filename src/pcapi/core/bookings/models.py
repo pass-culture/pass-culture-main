@@ -63,6 +63,8 @@ class Booking(PcObject, Model, VersionedMixin):
 
     isUsed = Column(Boolean, nullable=False, default=False, server_default=expression.false())
 
+    displayAsEnded = Column(Boolean, nullable=True)
+
     confirmationDate = Column(DateTime, nullable=True)
 
     cancellationReason = Column(

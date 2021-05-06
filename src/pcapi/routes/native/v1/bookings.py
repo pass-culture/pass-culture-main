@@ -12,10 +12,14 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.product import Product
+from pcapi.repository import feature_queries
+from pcapi.repository import repository
 from pcapi.routes.native.security import authenticated_user_required
 from pcapi.routes.native.v1.serialization.bookings import BookOfferRequest
 from pcapi.routes.native.v1.serialization.bookings import BookOfferResponse
+from pcapi.routes.native.v1.serialization.bookings import BookingDisplayStatusRequest
 from pcapi.routes.native.v1.serialization.bookings import BookingReponse
 from pcapi.routes.native.v1.serialization.bookings import BookingsResponse
 from pcapi.serialization.decorator import spectree_serialize
@@ -132,6 +136,11 @@ def is_ended_booking(booking: Booking) -> bool:
         # consider future events events as "ongoing" even if they are used
         return False
 
+    if booking.stock.offer.isDigital and feature_queries.is_active(FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS):
+        # consider digital bookings as special: isUsed should be true anyway so
+        # let's use displayAsEnded
+        return booking.displayAsEnded
+
     return not booking.stock.offer.isPermanent if booking.isUsed else booking.isCancelled
 
 
@@ -149,3 +158,12 @@ def cancel_booking(user: User, booking_id: int) -> None:
     except RuntimeError:
         logger.error("Unexpected call to cancel_booking_by_beneficiary with non-beneficiary user %s", user.id)
         raise ApiErrors()
+
+
+@blueprint.native_v1.route("/bookings/<int:booking_id>/toggle_display", methods=["POST"])
+@spectree_serialize(api=blueprint.api, on_success_status=204, on_error_statuses=[400])
+@authenticated_user_required
+def flag_booking_as_used(user: User, booking_id: int, body: BookingDisplayStatusRequest) -> None:
+    booking = Booking.query.filter_by(id=booking_id, userId=user.id).first_or_404()
+    booking.displayAsEnded = body.ended
+    repository.save(booking)
