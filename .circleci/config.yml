@@ -435,7 +435,7 @@ jobs:
           name: Export chart in local filesystem
           command: |
             source ${BASH_ENV}
-            helm chart export ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:${CHART_VERSION}
+            helm chart export ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:${CHART_VERSION} -d tmp/
       - deploy-helm-chart:
           helm_chart_name: pcapi
           helm_release_name: ${CIRCLE_BRANCH}
