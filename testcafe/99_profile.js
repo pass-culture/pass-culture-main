@@ -24,23 +24,12 @@ test('je peux changer mes informations', async t => {
   const personalInformationsPath = `${profilePath}/informations`
   const personalInformationsLink = Selector('a').withText('Informations personnelles')
   const nicknameInput = Selector('input[name="publicName"]')
-  const newNickname = 'aa'
   const validNickname = 'pseudo different'
-  const errorMessage = Selector('pre').withText('Tu dois saisir au moins 3 caractères.')
   const updatedNickname = Selector('main').withText(validNickname)
 
-  // Je saisis un pseudo invalide et j'ai un message d'erreur
+  // Je modifie mon pseudo et je suis redirigé vers mon profil à la soumission
   await t.click(personalInformationsLink).expect(getPageUrl()).contains(personalInformationsPath)
 
-  await t
-    .click(nicknameInput)
-    .pressKey(emptyField)
-    .typeText(nicknameInput, newNickname)
-    .click(submitInput)
-    .expect(errorMessage.exists)
-    .ok()
-
-  // Je modifie mon pseudo pour le rendre valide et je suis redirigé vers mon profil à la soumission
   await t
     .click(nicknameInput)
     .pressKey(emptyField)
