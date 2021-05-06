@@ -68,13 +68,13 @@ api:
       nginx.ingress.kubernetes.io/proxy-body-size: 10m
       cert-manager.io/cluster-issuer: letsencrypt-production
     hosts:
-      - host: backend-perf.ehp.internal-passculture.app
+      - host: backend.perf.internal-passculture.app
         paths:
           - path: /
     tls:
     - secretName: pcapi-ingress-cert
       hosts:
-      - backend-perf.ehp.internal-passculture.app
+      - backend.perf.internal-passculture.app
 
 ### High Latency API deployment ###
 highLatencyApi:
@@ -114,7 +114,7 @@ highLatencyApi:
       nginx.ingress.kubernetes.io/proxy-body-size: 10m
       cert-manager.io/cluster-issuer: letsencrypt-production
     hosts:
-      - host: backend-perf.ehp.internal-passculture.app
+      - host: backend.perf.internal-passculture.app
         paths:
           - path: /bookings/pro$
           - path: /offers$
@@ -126,7 +126,7 @@ highLatencyApi:
     tls:
     - secretName: pcapi-ingress-cert
       hosts:
-      - backend-perf.ehp.internal-passculture.app
+      - backend.perf.internal-passculture.app
 
 ### Admin deployment ###
 admin:
@@ -159,13 +159,13 @@ admin:
       nginx.ingress.kubernetes.io/proxy-body-size: 10m
       cert-manager.io/cluster-issuer: letsencrypt-production
     hosts:
-      - host: backend-perf.ehp.internal-passculture.app
+      - host: backend.perf.internal-passculture.app
         paths:
           - path: /pc/back-office/
     tls:
     - secretName: pcapi-ingress-cert
       hosts:
-      - backend-perf.ehp.internal-passculture.app
+      - backend.perf.internal-passculture.app
 
 ### Worker deployment ###
 workers:
