@@ -52,7 +52,7 @@ def retrieve_data_for_beneficiary_booking_confirmation_email(booking: Booking) -
         formatted_event_beginning_date = get_date_formatted_for_email(event_beginning_date_in_tz)
 
     has_expiration_date = 0
-    code_expiration_date = None
+    code_expiration_date = ""
     if booking.activationCode and booking.activationCode.expirationDate:
         has_expiration_date = 1
         code_expiration_date = get_date_formatted_for_email(booking.activationCode.expirationDate)
@@ -88,6 +88,6 @@ def retrieve_data_for_beneficiary_booking_confirmation_email(booking: Booking) -
             "mediation_id": mediation_id,
             "can_expire": can_expire,
             "has_offer_url": has_offer_url,
-            "digital_offer_url": booking.completedUrl,
+            "digital_offer_url": booking.completedUrl or "",
         },
     }

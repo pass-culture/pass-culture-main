@@ -56,10 +56,10 @@ def get_expected_base_email_data(booking, mediation, **overrides):
             "can_expire": 0,
             "offer_id": humanize(booking.stock.offer.id),
             "mediation_id": humanize(mediation.id),
-            "code_expiration_date": None,
+            "code_expiration_date": "",
             "has_expiration_date": 0,
             "has_offer_url": 0,
-            "digital_offer_url": None,
+            "digital_offer_url": "",
         },
     }
     email_data["Vars"].update(overrides)
@@ -227,7 +227,7 @@ def test_use_activation_code_instead_of_token_if_possible():
         offer_price="Gratuit",
         can_expire=1,
         offer_token="code-5uzk15fbha4",
-        code_expiration_date=None,
+        code_expiration_date="",
         has_offer_url=1,
         digital_offer_url=f"http://example.com?token=code-5uzk15fbha4&offerId={humanize(booking.stock.offer.id)}&email=used-email@example.com",
     )
