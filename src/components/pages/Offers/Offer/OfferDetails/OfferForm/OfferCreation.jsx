@@ -9,6 +9,7 @@ import * as pcapi from 'repository/pcapi/pcapi'
 const OfferCreation = ({
   formValues,
   initialValues,
+  isSubmitLoading,
   isUserAdmin,
   userEmail,
   onSubmit,
@@ -94,6 +95,7 @@ const OfferCreation = ({
       backUrl={computeOffersUrl({})}
       formValues={formValues}
       initialValues={initialValues}
+      isSubmitLoading={isSubmitLoading}
       isUserAdmin={isUserAdmin}
       offerersNames={offerersNames.current}
       onSubmit={onSubmit}
@@ -120,6 +122,7 @@ OfferCreation.defaultProps = {
 OfferCreation.propTypes = {
   formValues: PropTypes.shape().isRequired,
   initialValues: PropTypes.shape(),
+  isSubmitLoading: PropTypes.bool.isRequired,
   isUserAdmin: PropTypes.bool,
   onSubmit: PropTypes.func.isRequired,
   setFormValues: PropTypes.func.isRequired,

@@ -34,6 +34,7 @@ const computeNoDisabilityComplianceValue = offer => {
 const OfferEdition = ({
   formValues,
   isDisabled,
+  isSubmitLoading,
   isUserAdmin,
   offer,
   offersSearchFilters,
@@ -106,6 +107,7 @@ const OfferEdition = ({
       initialValues={initialValues}
       isDisabled={isDisabled}
       isEdition
+      isSubmitLoading={isSubmitLoading}
       isUserAdmin={isUserAdmin}
       offerersNames={[
         { id: offer.venue.managingOfferer.id, name: offer.venue.managingOfferer.name },
@@ -134,6 +136,7 @@ OfferEdition.defaultProps = {
 OfferEdition.propTypes = {
   formValues: PropTypes.shape().isRequired,
   isDisabled: PropTypes.bool,
+  isSubmitLoading: PropTypes.bool.isRequired,
   isUserAdmin: PropTypes.bool,
   offer: PropTypes.shape(),
   offersSearchFilters: PropTypes.shape({

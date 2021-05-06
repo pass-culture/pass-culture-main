@@ -1433,11 +1433,13 @@ describe('offerDetails - Creation - pro user', () => {
         status: 'ACTIVE',
       }
       pcapi.createOffer.mockResolvedValue(createdOffer)
+      const submitButton = screen.getByText('Étape suivante')
 
       // When
-      await userEvent.click(screen.getByText('Étape suivante'))
+      userEvent.click(submitButton)
 
       // Then
+      expect(submitButton).toBeDisabled()
       expect(pcapi.createOffer).toHaveBeenCalledWith({
         ...offerValues,
         bookingEmail: null,

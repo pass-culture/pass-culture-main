@@ -14,6 +14,7 @@ import Select, {
 import TextareaInput from 'components/layout/inputs/TextareaInput'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import Spinner from 'components/layout/Spinner'
+import SubmitButton from 'components/layout/SubmitButton/SubmitButton'
 import offerIsRefundable from 'components/pages/Offers/domain/offerIsRefundable'
 import {
   BASE_OFFER_FIELDS,
@@ -67,6 +68,7 @@ const OfferForm = ({
   initialValues,
   isDisabled,
   isEdition,
+  isSubmitLoading,
   isUserAdmin,
   offerersNames,
   onSubmit,
@@ -284,48 +286,53 @@ const OfferForm = ({
     return Object.keys(newFormErrors).length === 0
   }, [offerFormFields, formValues])
 
-  const submitForm = useCallback(() => {
-    if (isValid()) {
-      const editableFields = offerFormFields.filter(field => !readOnlyFields.includes(field))
-      const submittedValuesAccumulator = editableFields.some(editableField =>
-        EXTRA_DATA_FIELDS.includes(editableField)
-      )
-        ? { extraData: null }
-        : {}
-      const submittedValues = editableFields.reduce((submittedValues, fieldName) => {
-        if (!EXTRA_DATA_FIELDS.includes(fieldName)) {
-          const fieldValue =
-            formValues[fieldName] === TEXT_INPUT_DEFAULT_VALUE ? null : formValues[fieldName]
-          submittedValues = {
-            ...submittedValues,
-            [fieldName]: fieldValue,
+  const submitForm = useCallback(
+    event => {
+      event.preventDefault()
+
+      if (isValid()) {
+        const editableFields = offerFormFields.filter(field => !readOnlyFields.includes(field))
+        const submittedValuesAccumulator = editableFields.some(editableField =>
+          EXTRA_DATA_FIELDS.includes(editableField)
+        )
+          ? { extraData: null }
+          : {}
+        const submittedValues = editableFields.reduce((submittedValues, fieldName) => {
+          if (!EXTRA_DATA_FIELDS.includes(fieldName)) {
+            const fieldValue =
+              formValues[fieldName] === TEXT_INPUT_DEFAULT_VALUE ? null : formValues[fieldName]
+            submittedValues = {
+              ...submittedValues,
+              [fieldName]: fieldValue,
+            }
+          } else if (formValues[fieldName] !== DEFAULT_FORM_VALUES[fieldName]) {
+            submittedValues.extraData = {
+              ...submittedValues.extraData,
+              [fieldName]: formValues[fieldName],
+            }
           }
-        } else if (formValues[fieldName] !== DEFAULT_FORM_VALUES[fieldName]) {
-          submittedValues.extraData = {
-            ...submittedValues.extraData,
-            [fieldName]: formValues[fieldName],
-          }
+          return submittedValues
+        }, submittedValuesAccumulator)
+
+        if (!receiveNotificationEmails) {
+          submittedValues.bookingEmail = null
         }
-        return submittedValues
-      }, submittedValuesAccumulator)
 
-      if (!receiveNotificationEmails) {
-        submittedValues.bookingEmail = null
+        onSubmit(submittedValues)
+      } else {
+        showErrorNotification()
       }
-
-      onSubmit(submittedValues)
-    } else {
-      showErrorNotification()
-    }
-  }, [
-    offerFormFields,
-    formValues,
-    isValid,
-    onSubmit,
-    readOnlyFields,
-    receiveNotificationEmails,
-    showErrorNotification,
-  ])
+    },
+    [
+      offerFormFields,
+      formValues,
+      isValid,
+      onSubmit,
+      readOnlyFields,
+      receiveNotificationEmails,
+      showErrorNotification,
+    ]
+  )
 
   const handleSingleFormUpdate = useCallback(
     event => {
@@ -838,14 +845,14 @@ const OfferForm = ({
         >
           {'Annuler et quitter'}
         </Link>
-        <button
+        <SubmitButton
           className="primary-button"
           disabled={isDisabled}
+          isLoading={isSubmitLoading}
           onClick={submitForm}
-          type="button"
         >
           {isEdition ? 'Enregistrer' : 'Étape suivante'}
-        </button>
+        </SubmitButton>
       </section>
     </form>
   )
@@ -870,6 +877,7 @@ OfferForm.propTypes = {
   initialValues: PropTypes.shape(),
   isDisabled: PropTypes.bool,
   isEdition: PropTypes.bool,
+  isSubmitLoading: PropTypes.bool.isRequired,
   isUserAdmin: PropTypes.bool,
   offerersNames: PropTypes.arrayOf(
     PropTypes.shape({

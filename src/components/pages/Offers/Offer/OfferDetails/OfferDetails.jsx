@@ -37,9 +37,12 @@ const OfferDetails = ({
   const [showThumbnailForm, setShowThumbnailForm] = useState(false)
   const [thumbnailInfo, setThumbnailInfo] = useState({})
   const [thumbnailError, setThumbnailError] = useState(false)
+  const [isSubmitLoading, setIsSubmitLoading] = useState(false)
 
   const handleSubmitOffer = useCallback(
     async offerValues => {
+      setIsSubmitLoading(true)
+
       try {
         if (offer) {
           await pcapi.updateOffer(offer.id, offerValues)
@@ -100,6 +103,8 @@ const OfferDetails = ({
           showErrorNotification()
         }
       }
+
+      setIsSubmitLoading(false)
     },
     [
       formValues.offererId,
@@ -127,6 +132,7 @@ const OfferDetails = ({
               <OfferEditionContainer
                 formValues={formValues}
                 isDisabled={isDisabled}
+                isSubmitLoading={isSubmitLoading}
                 isUserAdmin={isUserAdmin}
                 offer={offer}
                 onSubmit={handleSubmitOffer}
@@ -142,6 +148,7 @@ const OfferDetails = ({
             <OfferCreation
               formValues={formValues}
               initialValues={formInitialValues.current}
+              isSubmitLoading={isSubmitLoading}
               isUserAdmin={isUserAdmin}
               onSubmit={handleSubmitOffer}
               setFormValues={setFormValues}

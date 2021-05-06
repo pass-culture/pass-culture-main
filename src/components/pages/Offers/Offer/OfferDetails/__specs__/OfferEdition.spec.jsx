@@ -1345,11 +1345,13 @@ describe('offerDetails - Edition', () => {
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
       await renderOffers(props, store)
+      const submitButton = screen.getByText('Enregistrer')
 
       // When
-      userEvent.click(screen.getByText('Enregistrer'))
+      userEvent.click(submitButton)
 
       // Then
+      expect(submitButton).toBeDisabled()
       const successNotification = await screen.findByText('Votre offre a bien été modifiée')
       expect(successNotification).toBeInTheDocument()
     })
