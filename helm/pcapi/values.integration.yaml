@@ -170,7 +170,7 @@ admin:
 ### Worker deployment ###
 workers:
   - name: worker
-    enabled: false
+    enabled: true
     replicaCount: 1
     command:
       - python
@@ -184,7 +184,7 @@ workers:
         cpu: 300m
         memory: 384Mi
   - name: worker-low
-    enabled: false
+    enabled: true
     replicaCount: 1
     command:
       - python
