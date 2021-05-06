@@ -330,6 +330,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin):
 
     rankingWeight = Column(Integer, nullable=True)
 
+    # This field will replace the idAtProviders coming from ProvidableMixin
     idAtProvider = Column(
         Text,
         CheckConstraint(
