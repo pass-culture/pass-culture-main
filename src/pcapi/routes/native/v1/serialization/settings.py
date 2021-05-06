@@ -9,6 +9,9 @@ from . import BaseModel
 class SettingsResponse(BaseModel):
     deposit_amount: int
     is_recaptcha_enabled: bool
+    auto_activate_digital_bookings: bool
+    allow_id_check_registration: bool
+
     _convert_deposit_amount = validator("deposit_amount", pre=True, allow_reuse=True)(convert_to_cent)
 
     class Config:
