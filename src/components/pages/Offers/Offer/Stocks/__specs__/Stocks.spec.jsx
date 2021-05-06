@@ -577,13 +577,14 @@ describe('stocks page', () => {
         loadFakeApiStocks([stock])
         bulkFakeApiCreateOrEditStock({ id: stock.id })
         await renderOffers(props, store)
+        const submitButton = screen.getByText('Enregistrer', { selector: 'button' })
 
         // When
-        fireEvent.click(screen.getByText('Enregistrer', { selector: 'button' }))
+        fireEvent.click(submitButton)
 
         // Then
-        expect(screen.queryByText('Enregistrer', { selector: 'button' })).not.toBeInTheDocument()
-        expect(screen.getAllByRole('button').pop()).toBeDisabled()
+        expect(submitButton.textContent).toBe('')
+        expect(submitButton).toBeDisabled()
       })
 
       it('should display an enabled "Enregistrer" button after clicking on it when there is an error in the form', async () => {
@@ -600,18 +601,17 @@ describe('stocks page', () => {
         await renderOffers(props, store)
 
         fireEvent.click(await screen.findByText('Ajouter une date'))
-
         fireEvent.click(screen.getByLabelText('Date de l’événement'))
         fireEvent.click(screen.getByText('26'))
-
         fireEvent.click(screen.getByLabelText('Heure de l’événement'))
         fireEvent.click(screen.getByText('20:00'))
+        const submitButton = screen.getByText('Enregistrer', { selector: 'button' })
 
         // When
-        fireEvent.click(screen.getByText('Enregistrer'))
+        fireEvent.click(submitButton)
 
         // Then
-        expect(screen.getByText('Enregistrer', { selector: 'button' })).toBeEnabled()
+        expect(submitButton).toBeEnabled()
       })
     })
   })
