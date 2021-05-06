@@ -11,6 +11,7 @@ from sqlalchemy import Integer
 from sqlalchemy import Numeric
 from sqlalchemy import String
 from sqlalchemy import TEXT
+from sqlalchemy import and_
 from sqlalchemy import case
 from sqlalchemy import cast
 from sqlalchemy import func
@@ -22,6 +23,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
 
 from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.domain.postal_code.postal_code import OVERSEAS_DEPARTEMENT_CODE_START
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.domain.ts_vector import create_ts_vector_and_table_args
@@ -155,7 +157,11 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ve
 
     @property
     def nOffers(self) -> int:
-        return Offer.query.filter(Offer.venueId == self.id).with_entities(Offer.id).count()
+        return (
+            Offer.query.filter(and_(Offer.venueId == self.id, Offer.validation != OfferValidationStatus.DRAFT))
+            .with_entities(Offer.id)
+            .count()
+        )
 
     @hybrid_property
     def timezone(self) -> str:

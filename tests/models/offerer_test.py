@@ -1,5 +1,6 @@
 import pytest
 
+from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.model_creators.generic_creators import create_bank_information
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user
@@ -21,10 +22,12 @@ def test_nOffers(app):
     venue_3 = create_venue(offerer, siret="23451234567891")
     offer_v1_1 = create_offer_with_thing_product(venue_1)
     offer_v1_2 = create_offer_with_event_product(venue_1)
+    draft_offer_v1 = create_offer_with_event_product(venue_1, validation=OfferValidationStatus.DRAFT)
     offer_v2_1 = create_offer_with_event_product(venue_2)
     offer_v2_2 = create_offer_with_event_product(venue_2)
     offer_v3_1 = create_offer_with_thing_product(venue_3)
-    repository.save(offer_v1_1, offer_v1_2, offer_v2_1, offer_v2_2, offer_v3_1)
+    draft_offer_v3 = create_offer_with_thing_product(venue_3, validation=OfferValidationStatus.DRAFT)
+    repository.save(offer_v1_1, offer_v1_2, draft_offer_v1, offer_v2_1, offer_v2_2, offer_v3_1, draft_offer_v3)
 
     # when
     n_offers = offerer.nOffers
