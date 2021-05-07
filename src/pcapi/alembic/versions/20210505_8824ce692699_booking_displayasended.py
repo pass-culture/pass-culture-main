@@ -1,7 +1,7 @@
 """booking.displayAsEnded
 
 Revision ID: 8824ce692699
-Revises: c2e2425fbac6
+Revises: 58df8264fe50
 Create Date: 2021-05-05 22:54:28.928957
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = "8824ce692699"
-down_revision = "c2e2425fbac6"
+down_revision = "58df8264fe50"
 branch_labels = None
 depends_on = None
 
