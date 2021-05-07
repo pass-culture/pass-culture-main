@@ -45,7 +45,6 @@ from pcapi.models import offer_type
 from pcapi.utils.human_ids import humanize
 
 from tests.domain_creators.generic_creators import create_domain_beneficiary_pre_subcription
-from tests.test_utils import create_mocked_bookings
 
 
 # FIXME (dbaty, 2020-02-01): I am not sure what we are really testing
@@ -253,14 +252,13 @@ class SendOffererBookingsRecapEmailAfterOffererCancellationTest:
         self, retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation
     ):
         # Given
-        num_bookings = 5
-        bookings = create_mocked_bookings(num_bookings, "offerer@example.com")
+        booking = BookingFactory()
 
         # When
-        send_offerer_bookings_recap_email_after_offerer_cancellation(bookings)
+        send_offerer_bookings_recap_email_after_offerer_cancellation([booking])
 
         # Then
-        retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation.assert_called_once_with(bookings)
+        retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation.assert_called_once_with([booking])
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 1116333
 
 
