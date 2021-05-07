@@ -17,7 +17,7 @@ class BookingViewTest:
         booking = bookings_factories.BookingFactory()
 
         client = TestClient(app.test_client()).with_auth("admin@example.com")
-        response = client.post(f"/pc/back-office/bookings/", form={"token": booking.token})
+        response = client.post("/pc/back-office/bookings/", form={"token": booking.token})
 
         assert response.status_code == 200
         content = response.data.decode(response.charset)
@@ -29,7 +29,7 @@ class BookingViewTest:
         bookings_factories.BookingFactory(isCancelled=True, token="ABCDEF")
 
         client = TestClient(app.test_client()).with_auth("admin@example.com")
-        response = client.post(f"/pc/back-office/bookings/", form={"token": "abcdeF"})
+        response = client.post("/pc/back-office/bookings/", form={"token": "abcdeF"})
 
         assert response.status_code == 200
         content = response.data.decode(response.charset)
@@ -40,7 +40,7 @@ class BookingViewTest:
         booking = bookings_factories.BookingFactory(isCancelled=True)
 
         client = TestClient(app.test_client()).with_auth("admin@example.com")
-        response = client.post(f"/pc/back-office/bookings/mark-as-used", form={"booking_id": booking.id})
+        response = client.post("/pc/back-office/bookings/mark-as-used", form={"booking_id": booking.id})
 
         assert response.status_code == 302
         assert response.location == f"http://localhost/pc/back-office/bookings/?id={booking.id}"
@@ -56,7 +56,7 @@ class BookingViewTest:
         booking = bookings_factories.BookingFactory()
 
         client = TestClient(app.test_client()).with_auth("admin@example.com")
-        response = client.post(f"/pc/back-office/bookings/mark-as-used", form={"booking_id": booking.id})
+        response = client.post("/pc/back-office/bookings/mark-as-used", form={"booking_id": booking.id})
 
         assert response.status_code == 302
         assert response.location == f"http://localhost/pc/back-office/bookings/?id={booking.id}"

@@ -27,7 +27,7 @@ class BatchIndexingOffersInAlgoliaByOfferTest:
 
         def fake_pop(client):
             popped = []
-            for i in range(3):  # overriden REDIS_OFFER_IDS_CHUNK_SIZE
+            for _i in range(3):  # overriden REDIS_OFFER_IDS_CHUNK_SIZE
                 try:
                     popped.append(queue.pop(0))
                 except IndexError:  # queue is empty
@@ -64,7 +64,7 @@ class BatchIndexingOffersInAlgoliaByOfferTest:
 
         def fake_pop(client):
             popped = []
-            for i in range(3):  # overriden REDIS_OFFER_IDS_CHUNK_SIZE
+            for _i in range(3):  # overriden REDIS_OFFER_IDS_CHUNK_SIZE
                 try:
                     popped.append(queue.pop(0))
                 except IndexError:  # queue is empty

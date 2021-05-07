@@ -1,9 +1,7 @@
 from typing import Optional
-from unittest.mock import MagicMock
 from unittest.mock import patch
 
 from pydantic import BaseModel
-from spectree import Response as SpectreeResponse
 
 from pcapi.flask_app import api
 from pcapi.serialization.decorator import spectree_serialize
@@ -66,7 +64,7 @@ class SerializationDecoratorTest:
         query = TestQueryModel(compulsory_int_query=3)
 
         # When
-        response = mock_func()
+        mock_func(body, query)
 
         # Then
         assert mocked_validate.called_once()

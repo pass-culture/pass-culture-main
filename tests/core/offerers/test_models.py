@@ -3,7 +3,6 @@ import pytest
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import factories
-import pcapi.core.offers.factories as offers_factories
 
 
 @pytest.mark.usefixtures("db_session")
@@ -51,12 +50,12 @@ class VenueTimezoneSqlQueryTest:
 @pytest.mark.usefixtures("db_session")
 class OffererDepartementCodePropertyTest:
     def test_metropole_postal_code(self):
-        offerer = offers_factories.OffererFactory(postalCode="75000")
+        offerer = factories.OffererFactory(postalCode="75000")
 
         assert offerer.departementCode == "75"
 
     def test_drom_postal_code(self):
-        offerer = offers_factories.OffererFactory(postalCode="97300")
+        offerer = factories.OffererFactory(postalCode="97300")
 
         assert offerer.departementCode == "973"
 
@@ -64,14 +63,14 @@ class OffererDepartementCodePropertyTest:
 @pytest.mark.usefixtures("db_session")
 class OffererDepartementCodeSQLExpressionTest:
     def test_metropole_postal_code(self):
-        offers_factories.OffererFactory(postalCode="75000")
+        factories.OffererFactory(postalCode="75000")
 
         query_result = Offerer.query.filter(Offerer.departementCode == "75").all()
 
         assert len(query_result) == 1
 
     def test_drom_postal_code(self):
-        offers_factories.OffererFactory(postalCode="97300")
+        factories.OffererFactory(postalCode="97300")
 
         query_result = Offerer.query.filter(Offerer.departementCode == "973").all()
 
