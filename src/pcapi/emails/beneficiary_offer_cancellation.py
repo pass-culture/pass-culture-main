@@ -1,3 +1,5 @@
+from sqlalchemy.orm import joinedload
+
 from pcapi.models import Booking
 from pcapi.models import Stock
 from pcapi.utils.mailing import build_pc_pro_offer_link
@@ -9,7 +11,7 @@ from pcapi.utils.mailing import format_booking_hours_for_email
 def retrieve_offerer_booking_recap_email_data_after_user_cancellation(booking: Booking) -> dict:
     user = booking.user
     stock = booking.stock
-    bookings = list(filter(lambda ongoing_booking: not ongoing_booking.isCancelled, stock.bookings))
+    bookings = Booking.query.filter_by(isCancelled=False, stock=stock).options(joinedload(Booking.user)).all()
     offer = stock.offer
     venue = offer.venue
     departement_code = venue.departementCode or "numérique"

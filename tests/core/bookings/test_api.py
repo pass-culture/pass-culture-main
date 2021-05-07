@@ -18,6 +18,7 @@ import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 import pcapi.core.payments.factories as payments_factories
+from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.models import api_errors
@@ -318,9 +319,21 @@ class BookOfferTest:
 @pytest.mark.usefixtures("db_session")
 class CancelByBeneficiaryTest:
     def test_cancel_booking(self):
-        booking = factories.BookingFactory()
+        stock = offers_factories.StockFactory()
+        booking = factories.BookingFactory.create_batch(20, stock=stock)[0]
 
-        api.cancel_booking_by_beneficiary(booking.user, booking)
+        # 1: select booking
+        # 2: select user
+        # 3: select stock for update
+        # 4->6: update stock ; update booking ; release savepoint
+        # 7->13: (TODO: optimize): select booking ; user ; deposit ; user.bookings ; feature.SYNCHRONIZE_ALGOLIA, stock, offer
+        # 14-15: insert email ; release savepoint
+        # 16->19: (TODO: optimize) select booking ; stock ; offer ; user
+        # 20: select bookings of same stock with users joinedloaded to avoid N+1 requests
+        # 21-22: select venue ; offerer
+        # 23-24: insert email ; release savepoint
+        with assert_num_queries(24):
+            api.cancel_booking_by_beneficiary(booking.user, booking)
 
         # cancellation can trigger more than one request to Batch
         assert len(push_testing.requests) >= 1
