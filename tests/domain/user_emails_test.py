@@ -1,6 +1,5 @@
 from datetime import datetime
 from datetime import timedelta
-from unittest.mock import call
 from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
@@ -19,7 +18,6 @@ import pcapi.core.users.factories as users_factories
 from pcapi.domain.user_emails import send_activation_email
 from pcapi.domain.user_emails import send_admin_user_validation_email
 from pcapi.domain.user_emails import send_attachment_validation_email_to_pro_offerer
-from pcapi.domain.user_emails import send_batch_cancellation_emails_to_users
 from pcapi.domain.user_emails import send_beneficiary_booking_cancellation_email
 from pcapi.domain.user_emails import send_booking_confirmation_email_to_beneficiary
 from pcapi.domain.user_emails import send_booking_recap_emails
@@ -243,24 +241,6 @@ class SendValidationConfirmationEmailTest:
         # Then
         mock_retrieve_data_for_new_offerer_validation_email.assert_called_once_with(offerer)
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 778723
-
-
-@pytest.mark.usefixtures("db_session")
-class SendCancellationEmailOneUserTest:
-    @patch("pcapi.domain.user_emails.send_warning_to_beneficiary_after_pro_booking_cancellation")
-    def when_called_calls_send_offerer_driven_cancellation_email_to_user_for_every_booking(
-        self, mocked_send_warning_to_beneficiary_after_pro_booking_cancellation
-    ):
-        # Given
-        num_bookings = 6
-        bookings = create_mocked_bookings(num_bookings, "offerer@example.com")
-        calls = [call(booking) for booking in bookings]
-
-        # When
-        send_batch_cancellation_emails_to_users(bookings)
-
-        # Then
-        mocked_send_warning_to_beneficiary_after_pro_booking_cancellation.assert_has_calls(calls)
 
 
 @pytest.mark.usefixtures("db_session")

@@ -444,16 +444,18 @@ def delete_stock(stock: Stock) -> None:
         extra={"stock": stock.id, "bookings": [b.id for b in cancelled_bookings]},
     )
     if cancelled_bookings:
-        try:
-            user_emails.send_batch_cancellation_emails_to_users(cancelled_bookings)
-        except mailing.MailServiceException as exc:
-            logger.exception(
-                "Could not notify beneficiaries about deletion of stock",
-                extra={
-                    "exc": str(exc),
-                    "stock": stock.id,
-                },
-            )
+        for booking in cancelled_bookings:
+            try:
+                user_emails.send_warning_to_beneficiary_after_pro_booking_cancellation(booking)
+            except mailing.MailServiceException as exc:
+                logger.exception(
+                    "Could not notify beneficiary about deletion of stock",
+                    extra={
+                        "exc": str(exc),
+                        "stock": stock.id,
+                        "booking": booking.id,
+                    },
+                )
         try:
             user_emails.send_offerer_bookings_recap_email_after_offerer_cancellation(cancelled_bookings)
         except mailing.MailServiceException as exc:

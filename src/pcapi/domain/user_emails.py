@@ -131,11 +131,6 @@ def send_attachment_validation_email_to_pro_offerer(user_offerer: UserOfferer) -
     mails.send(recipients=[user_offerer.user.email], data=data)
 
 
-def send_batch_cancellation_emails_to_users(bookings: list[Booking]) -> None:
-    for booking in bookings:
-        send_warning_to_beneficiary_after_pro_booking_cancellation(booking)
-
-
 def send_offerer_bookings_recap_email_after_offerer_cancellation(bookings: list[Booking]) -> None:
     recipients = _build_recipients_list(bookings[0])
     data = retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation(bookings)

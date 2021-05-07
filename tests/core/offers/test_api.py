@@ -500,8 +500,8 @@ class DeleteStockTest:
         assert stock.isSoftDeleted
         mocked_add_offer_id.assert_called_once_with(client=app.redis_client, offer_id=stock.offerId)
 
-    @mock.patch("pcapi.domain.user_emails.send_batch_cancellation_emails_to_users")
     @mock.patch("pcapi.domain.user_emails.send_offerer_bookings_recap_email_after_offerer_cancellation")
+    @mock.patch("pcapi.domain.user_emails.send_warning_to_beneficiary_after_pro_booking_cancellation")
     def test_delete_stock_cancel_bookings_and_send_emails(self, mocked_send_to_beneficiaries, mocked_send_to_offerer):
         stock = factories.EventStockFactory()
         booking1 = bookings_factories.BookingFactory(stock=stock)
@@ -527,10 +527,8 @@ class DeleteStockTest:
         assert not booking3.isCancelled  # unchanged
         assert not booking3.cancellationReason
 
-        notified_bookings_beneficiaries = mocked_send_to_beneficiaries.call_args_list[0][0][0]
-        notified_bookings_offerers = mocked_send_to_offerer.call_args_list[0][0][0]
-        assert notified_bookings_beneficiaries == notified_bookings_offerers
-        assert notified_bookings_beneficiaries == [booking1]
+        assert mocked_send_to_beneficiaries.mock_calls == [mock.call(booking1)]
+        assert mocked_send_to_offerer.mock_calls == [mock.call([booking1])]
 
         assert push_testing.requests[-1] == {
             "group_id": "Cancel_booking",
