@@ -121,7 +121,7 @@ def get_bookings(user: User) -> BookingsResponse:
         ongoing_bookings=[
             BookingReponse.from_orm(booking)
             for booking in sorted(
-                ongoing_bookings, key=lambda b: b.expirationDate or b.stock.beginningDatetime or datetime.max
+                ongoing_bookings, key=lambda b: (b.expirationDate or b.stock.beginningDatetime or datetime.max, -b.id)
             )
         ],
     )
