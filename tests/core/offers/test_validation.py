@@ -51,7 +51,7 @@ class CheckOfferExistingStocksAreEditableTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class CheckRequiredDatesForStock:
+class CheckRequiredDatesForStockTest:
     def test_thing_offer_must_not_have_beginning(self):
         offer = factories.ThingOfferFactory()
 
@@ -402,7 +402,7 @@ class CheckImageTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class CheckValidationStatus:
+class CheckValidationStatusTest:
     def test_approved_offer(self):
         approved_offer = factories.OfferFactory()
 

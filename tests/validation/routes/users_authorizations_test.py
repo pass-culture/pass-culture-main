@@ -57,7 +57,7 @@ class CheckUserCanValidateBookingTest:
         assert errors.value.errors["global"] == ["Cette contremarque n'a pas été trouvée"]
 
 
-class CheckUserCanValidateBookingTestv2:
+class CheckUserCanValidateBookingV2Test:
     @pytest.mark.usefixtures("db_session")
     def test_does_not_raise_error_when_user_has_editor_rights_on_booking(self, app):
         # Given

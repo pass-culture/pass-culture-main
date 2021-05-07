@@ -5,6 +5,7 @@ from pcapi.model_creators.generic_creators import create_venue
 from pcapi.repository import repository
 from pcapi.scripts.find_not_modifiable_venues import _get_non_editable_venues
 from pcapi.scripts.find_not_modifiable_venues import generate_non_editable_venues_csv
+from pcapi.utils.human_ids import humanize
 
 
 class GetNonEditableVenuesTest:
@@ -80,7 +81,7 @@ class GetNonEditableVenuesTest:
         assert editable_venue.venueId == venue.id
 
 
-class GenerateNonEditableVenuesCsv:
+class GenerateNonEditableVenuesCsvTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_generate_non_editable_venues_csv_with_correct_header_and_correct_informations(self, app):
         # given
@@ -99,4 +100,7 @@ class GenerateNonEditableVenuesCsv:
             csv_as_lines[0]
             == "offerer_id,offerer_humanized_id,offerer_siren,offerer_name,venue_id,venue_humanized_id,venue_siret,venue_name,venue_departement"
         )
-        assert csv_as_lines[1] == "9,BE,123456788,Test Offerer,9,BE,88345678899999,La petite librairie,93"
+        assert (
+            csv_as_lines[1]
+            == f"{offerer.id},{humanize(offerer.id)},123456788,Test Offerer,{venue.id},{humanize(venue.id)},88345678899999,La petite librairie,93"
+        )

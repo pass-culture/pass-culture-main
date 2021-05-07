@@ -410,7 +410,7 @@ class DeleteVenueProviderCurrentlyInSyncTest:
         client.hdel.assert_called_once_with("venue_providers_in_sync", 1)
 
 
-class GetNumberOfVenueProvidersCurrentlyInSync:
+class GetNumberOfVenueProvidersCurrentlyInSyncTest:
     def test_should_return_number_of_venue_providers_currently_in_sync(self):
         # Given
         client = MagicMock()

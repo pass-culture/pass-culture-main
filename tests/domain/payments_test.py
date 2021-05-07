@@ -219,7 +219,7 @@ class FilterOutAlreadyPaidForBookingsTest:
         assert bookings_not_paid == []
 
 
-class FilterOutBookingsWithoutCost:
+class FilterOutBookingsWithoutCostTest:
     def test_it_returns_reimbursements_on_bookings_with_reimbursed_value_greater_than_zero(self):
         # given
         reimbursement1 = BookingReimbursement(Booking(), ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
