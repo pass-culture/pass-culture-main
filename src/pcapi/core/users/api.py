@@ -496,6 +496,10 @@ def change_user_phone_number(user: User, phone_number: str):
     repository.save(user)
 
 
+def needs_to_validate_phone(user: User) -> bool:
+    return not user.isBeneficiary and not user.is_phone_validated and user.is_eligible
+
+
 def send_phone_validation_code(user: User) -> None:
     _check_phone_number_validation_is_authorized(user)
 
