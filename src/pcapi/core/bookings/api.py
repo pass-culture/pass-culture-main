@@ -29,6 +29,7 @@ from pcapi.utils.mailing import MailServiceException
 from pcapi.workers.push_notification_job import send_cancel_booking_notification
 from pcapi.workers.push_notification_job import update_user_attributes_job
 from pcapi.workers.push_notification_job import update_user_bookings_attributes_job
+from pcapi.workers.user_emails_job import send_booking_cancellation_emails_to_user_and_offerer_job
 
 from . import validation
 from .exceptions import NoActivationCodeAvailable
@@ -194,10 +195,8 @@ def cancel_booking_by_beneficiary(user: User, booking: Booking) -> None:
         raise RuntimeError("Unexpected call to cancel_booking_by_beneficiary with non-beneficiary user %s" % user)
     validation.check_beneficiary_can_cancel_booking(user, booking)
     _cancel_booking(booking, BookingCancellationReasons.BENEFICIARY)
-    try:
-        user_emails.send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason)
-    except MailServiceException as error:
-        logger.exception("Could not send booking=%s cancellation emails to user and offerer: %s", booking.id, error)
+
+    send_booking_cancellation_emails_to_user_and_offerer_job.delay(booking.id)
 
 
 def cancel_booking_by_offerer(booking: Booking) -> None:
