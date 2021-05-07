@@ -9,7 +9,9 @@ from mailjet_rest import Client
 import pytest
 
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.testing import override_features
 from pcapi.core.users import api as users_api
+from pcapi.core.users.models import PhoneValidationStatusType
 from pcapi.core.users.models import User
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.models import ApiErrors
@@ -203,6 +205,7 @@ class RunTest:
         assert beneficiary_import.detail == "Compte existant avec cet email"
         process_beneficiary_application.assert_not_called()
 
+    @override_features(ENABLE_PHONE_VALIDATION=False)
     @patch("pcapi.scripts.beneficiary.remote_import.process_beneficiary_application")
     @patch("pcapi.settings.DMS_NEW_ENROLLMENT_PROCEDURE_ID", 2567158)
     @pytest.mark.usefixtures("db_session")
@@ -244,11 +247,12 @@ class RunTest:
             new_beneficiaries=[],
             retry_ids=[],
             procedure_id=2567158,
-            user=False,
+            preexisting_account=False,
         )
 
 
 class ProcessBeneficiaryApplicationTest:
+    @override_features(ENABLE_PHONE_VALIDATION=False)
     @pytest.mark.usefixtures("db_session")
     def test_new_beneficiaries_are_recorded_with_deposit(self, app):
         # given
@@ -656,6 +660,7 @@ class RunIntegrationTest:
     def _get_all_applications_ids(self, procedure_id: str, token: str, last_update: datetime):
         return [123]
 
+    @override_features(ENABLE_PHONE_VALIDATION=False)
     def test_import_user(self):
         # when
         remote_import.run(
@@ -681,6 +686,119 @@ class RunIntegrationTest:
             "date(u.date_of_birth)"
         ] == self.BENEFICIARY_BIRTH_DATE.strftime("%Y-%m-%dT%H:%M:%S")
 
+    @override_features(ENABLE_PHONE_VALIDATION=True)
+    def test_import_does_not_make_user_beneficiary(self):
+        """
+        Test that an imported user without a validated phone number, and the
+        ENABLE_PHONE_VALIDATION feature flag activated, cannot become
+        beneficiary.
+        """
+        date_of_birth = self.BENEFICIARY_BIRTH_DATE.strftime("%Y-%m-%dT%H:%M:%S")
+
+        # Create a user that has validated its email and phone number, meaning it
+        # should become beneficiary.
+        user = create_user(
+            idx=4, email=self.EMAIL, is_beneficiary=False, is_email_validated=True, date_of_birth=date_of_birth
+        )
+        user.phoneValidationStatus = None
+        repository.save(user)
+
+        # when
+        remote_import.run(
+            ONE_WEEK_AGO,
+            get_details=self._get_details,
+            get_all_applications_ids=self._get_all_applications_ids,
+        )
+
+        # then
+        assert User.query.count() == 1
+        user = User.query.first()
+
+        assert user.firstName == "john"
+        assert user.postalCode == "93450"
+        assert user.address == "11 Rue du Test"
+        assert not user.isBeneficiary
+
+        assert BeneficiaryImport.query.count() == 1
+        beneficiary_import = BeneficiaryImport.query.first()
+
+        assert beneficiary_import.source == "demarches_simplifiees"
+        assert beneficiary_import.applicationId == 123
+        assert beneficiary_import.beneficiary == user
+        assert beneficiary_import.currentStatus == ImportStatus.CREATED
+        assert len(push_testing.requests) == 1
+
+        assert push_testing.requests == [
+            {
+                "attribute_values": {
+                    "date(u.date_created)": user.dateCreated.strftime("%Y-%m-%dT%H:%M:%S"),
+                    "date(u.date_of_birth)": date_of_birth,
+                    "date(u.deposit_expiration_date)": None,
+                    "u.credit": 0,
+                    "u.is_beneficiary": False,
+                    "u.marketing_push_subscription": True,
+                    "u.postal_code": "93450",
+                },
+                "user_id": user.id,
+            }
+        ]
+
+    def test_import_makes_user_beneficiary(self):
+        """
+        Test that an existing user with its phone number validated can become
+        beneficiary.
+        """
+        date_of_birth = self.BENEFICIARY_BIRTH_DATE.strftime("%Y-%m-%dT%H:%M:%S")
+
+        # Create a user that has validated its email and phone number, meaning it
+        # should become beneficiary.
+        user = create_user(
+            idx=4, email=self.EMAIL, is_beneficiary=False, is_email_validated=True, date_of_birth=date_of_birth
+        )
+        user.phoneValidationStatus = PhoneValidationStatusType.VALIDATED
+        repository.save(user)
+
+        # when
+        remote_import.run(
+            ONE_WEEK_AGO,
+            get_details=self._get_details,
+            get_all_applications_ids=self._get_all_applications_ids,
+        )
+
+        # then
+        assert User.query.count() == 1
+        user = User.query.first()
+
+        assert user.firstName == "john"
+        assert user.postalCode == "93450"
+        assert user.address == "11 Rue du Test"
+        assert user.isBeneficiary
+
+        assert BeneficiaryImport.query.count() == 1
+        beneficiary_import = BeneficiaryImport.query.first()
+
+        assert beneficiary_import.source == "demarches_simplifiees"
+        assert beneficiary_import.applicationId == 123
+        assert beneficiary_import.beneficiary == user
+        assert beneficiary_import.currentStatus == ImportStatus.CREATED
+        assert len(push_testing.requests) == 1
+
+        assert push_testing.requests == [
+            {
+                "attribute_values": {
+                    "date(u.date_created)": user.dateCreated.strftime("%Y-%m-%dT%H:%M:%S"),
+                    "date(u.date_of_birth)": date_of_birth,
+                    "date(u.deposit_expiration_date)": user.deposit.expirationDate.strftime("%Y-%m-%dT%H:%M:%S"),
+                    "u.credit": 50000,
+                    "u.is_beneficiary": True,
+                    "u.marketing_push_subscription": True,
+                    "u.postal_code": "93450",
+                },
+                "user_id": user.id,
+            }
+        ]
+
+    @override_features(ENABLE_PHONE_VALIDATION=False)
     def test_import_duplicated_user(self):
         # given
         self.test_import_user()
@@ -702,6 +820,7 @@ class RunIntegrationTest:
         assert beneficiary_import.beneficiary == user
         assert beneficiary_import.currentStatus == ImportStatus.REJECTED
 
+    @override_features(ENABLE_PHONE_VALIDATION=False)
     def test_import_native_app_user(self):
         # given
         user = users_api.create_account(

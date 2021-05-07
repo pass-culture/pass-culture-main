@@ -14,8 +14,10 @@ class BeneficiarySQLRepository:
         return user_sql_entity
 
     @classmethod
-    def reject(cls, beneficiary_pre_subscription: BeneficiaryPreSubscription, detail: str) -> None:
+    def reject(
+        cls, beneficiary_pre_subscription: BeneficiaryPreSubscription, detail: str, user: Optional[User]
+    ) -> None:
         beneficiary_import = beneficiary_pre_subscription_sql_converter.to_rejected_model(
-            beneficiary_pre_subscription, detail=detail
+            beneficiary_pre_subscription, detail=detail, user=user
         )
         repository.save(beneficiary_import)

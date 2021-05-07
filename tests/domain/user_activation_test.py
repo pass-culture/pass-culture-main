@@ -1,5 +1,4 @@
 from datetime import datetime
-from decimal import Decimal
 
 import pytest
 
@@ -80,12 +79,13 @@ class CreateBeneficiaryFromApplicationTest:
         assert beneficiary.postalCode == "67200"
         assert beneficiary.address == "11 Rue du Test"
         assert beneficiary.dateOfBirth == datetime(2000, 5, 1)
-        assert beneficiary.isBeneficiary == True
-        assert beneficiary.isAdmin == False
+        assert not beneficiary.isBeneficiary
+        assert not beneficiary.isAdmin
         assert beneficiary.password is not None
         assert beneficiary.activity == "Lycéen"
         assert beneficiary.civility == "Mme"
         assert beneficiary.hasSeenTutorials == False
+        assert not beneficiary.deposits
 
     def test_updates_existing_user(self):
         # given
@@ -128,32 +128,10 @@ class CreateBeneficiaryFromApplicationTest:
         assert beneficiary.postalCode == "67200"
         assert beneficiary.address == "11 Rue du Test"
         assert beneficiary.dateOfBirth == datetime(2000, 5, 1)
-        assert beneficiary.isBeneficiary == True
-        assert beneficiary.isAdmin == False
+        assert not beneficiary.isBeneficiary
+        assert not beneficiary.isAdmin
         assert beneficiary.password is not None
         assert beneficiary.activity == "Lycéen"
         assert beneficiary.civility == "Mme"
-        assert beneficiary.hasSeenTutorials == False
-
-    def test_a_deposit_is_made_for_the_new_beneficiary(self):
-        # given
-        beneficiary_information = {
-            "department": "67",
-            "last_name": "Doe",
-            "first_name": "Jane",
-            "activity": "Lycéen",
-            "civility": "Mme",
-            "birth_date": datetime(2000, 5, 1),
-            "email": "jane.doe@test.com",
-            "phone": "0612345678",
-            "postal_code": "67200",
-            "address": "11 Rue du Test",
-            "application_id": 123,
-        }
-        # when
-        beneficiary = create_beneficiary_from_application(beneficiary_information, user=None)
-
-        # then
-        assert len(beneficiary.deposits) == 1
-        assert beneficiary.deposit.amount == Decimal(500)
-        assert beneficiary.deposit.source == "démarches simplifiées dossier [123]"
+        assert not beneficiary.hasSeenTutorials
+        assert not beneficiary.deposits

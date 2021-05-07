@@ -44,6 +44,7 @@ class FakeBeneficiaryJouveBackend:
         )
 
 
+@override_features(ENABLE_PHONE_VALIDATION=False)
 @patch("pcapi.use_cases.create_beneficiary_from_application.send_activation_email")
 @patch("pcapi.domain.password.random_token")
 @patch(
@@ -111,6 +112,7 @@ def test_saved_a_beneficiary_from_application(stubed_random_token, mocked_send_a
     ]
 
 
+@override_features(ENABLE_PHONE_VALIDATION=False)
 @patch("pcapi.use_cases.create_beneficiary_from_application.send_accepted_as_beneficiary_email")
 @patch(
     "pcapi.settings.JOUVE_APPLICATION_BACKEND",
@@ -165,6 +167,7 @@ def test_application_for_native_app_user(mocked_send_accepted_as_beneficiary_ema
     ]
 
 
+@override_features(ENABLE_PHONE_VALIDATION=False)
 @patch(
     "pcapi.settings.JOUVE_APPLICATION_BACKEND",
     "tests.use_cases.create_beneficiary_from_application_test.FakeBeneficiaryJouveBackend",
@@ -187,7 +190,7 @@ def test_cannot_save_beneficiary_if_email_is_already_taken(app):
     beneficiary_import = BeneficiaryImport.query.one()
     assert beneficiary_import.currentStatus == ImportStatus.REJECTED
     assert beneficiary_import.applicationId == application_id
-    assert beneficiary_import.beneficiary is None
+    assert beneficiary_import.beneficiary == user
     assert beneficiary_import.detail == f"Email {email} is already taken."
 
     assert push_testing.requests == []

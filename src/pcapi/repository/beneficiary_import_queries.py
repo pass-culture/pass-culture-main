@@ -27,7 +27,7 @@ def save_beneficiary_import_with_status(
     source: BeneficiaryImportSources,
     detail: str = None,
     user: User = None,
-) -> None:
+) -> BeneficiaryImport:
     # FIXME (dbaty, 2021-04-22): see comment above about the non-uniqueness of application_id
     existing_beneficiary_import = BeneficiaryImport.query.filter_by(applicationId=application_id).first()
 
@@ -41,6 +41,8 @@ def save_beneficiary_import_with_status(
     beneficiary_import.setStatus(status=status, detail=detail, author=None)
 
     repository.save(beneficiary_import)
+
+    return beneficiary_import
 
 
 def find_applications_ids_to_retry() -> list[int]:

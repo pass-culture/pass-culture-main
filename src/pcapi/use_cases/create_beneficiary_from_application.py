@@ -18,14 +18,14 @@ class CreateBeneficiaryFromApplication:
     def execute(self, application_id: int) -> None:
         beneficiary_pre_subscription = get_application_by_id(application_id)
 
-        user = find_user_by_email(beneficiary_pre_subscription.email)
+        preexisting_account = find_user_by_email(beneficiary_pre_subscription.email)
 
         try:
-            validate(beneficiary_pre_subscription, preexisting_account=user)
+            validate(beneficiary_pre_subscription, preexisting_account=preexisting_account)
 
         except CantRegisterBeneficiary as cant_register_beneficiary_exception:
             self.beneficiary_repository.reject(
-                beneficiary_pre_subscription, detail=str(cant_register_beneficiary_exception)
+                beneficiary_pre_subscription, detail=str(cant_register_beneficiary_exception), user=preexisting_account
             )
             send_rejection_email_to_beneficiary_pre_subscription(
                 beneficiary_pre_subscription=beneficiary_pre_subscription,
@@ -33,14 +33,14 @@ class CreateBeneficiaryFromApplication:
             )
 
         else:
-            beneficiary = self.beneficiary_repository.save(beneficiary_pre_subscription, user=user)
-            if user is None:
-                token = create_reset_password_token(beneficiary)
-                send_activation_email(user=beneficiary, token=token)
+            user = self.beneficiary_repository.save(beneficiary_pre_subscription, user=preexisting_account)
+            if preexisting_account is None:
+                token = create_reset_password_token(user)
+                send_activation_email(user=user, token=token)
             else:
-                send_accepted_as_beneficiary_email(user=beneficiary)
+                send_accepted_as_beneficiary_email(user=user)
 
-            update_user_attributes_job.delay(beneficiary.id)
+            update_user_attributes_job.delay(user.id)
 
 
 create_beneficiary_from_application = CreateBeneficiaryFromApplication()

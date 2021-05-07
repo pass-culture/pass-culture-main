@@ -1,4 +1,20 @@
+from datetime import datetime
 from unittest.mock import patch
+
+from freezegun import freeze_time
+import pytest
+
+from pcapi.core.testing import override_features
+from pcapi.core.testing import override_settings
+from pcapi.core.users import api as users_api
+from pcapi.core.users.models import PhoneValidationStatusType
+from pcapi.core.users.models import User
+from pcapi.model_creators.generic_creators import create_user
+from pcapi.models import BeneficiaryImport
+from pcapi.models.beneficiary_import_status import ImportStatus
+from pcapi.models.deposit import Deposit
+from pcapi.notifications.push import testing as push_testing
+from pcapi.repository import repository
 
 from tests.conftest import TestClient
 
@@ -17,12 +33,12 @@ class Post:
             assert response.status_code == 200
             mocked_beneficiary_job.assert_called_once_with(5)
 
+        @override_features(APPLY_BOOKING_LIMITS_V2=False)
         @patch("pcapi.use_cases.create_beneficiary_from_application.send_accepted_as_beneficiary_email")
         @patch("pcapi.use_cases.create_beneficiary_from_application.send_activation_email")
         @patch("pcapi.domain.password.random_token")
-        @patch(
-            "pcapi.settings.JOUVE_APPLICATION_BACKEND",
-            "tests.use_cases.create_beneficiary_from_application_test.FakeBeneficiaryJouveBackend",
+        @override_settings(
+            JOUVE_APPLICATION_BACKEND="tests.use_cases.create_beneficiary_from_application_test.FakeBeneficiaryJouveBackend"
         )
         @freeze_time("2013-05-15 09:00:00")
         @pytest.mark.usefixtures("db_session")
@@ -38,8 +54,6 @@ class Post:
             application_id = 35
             stubed_random_token.return_value = "token"
 
-            # Create a user that has validated its email and phone number, meaning it
-            # should become beneficiary.
             user = create_user(idx=4, email="rennes@example.org", is_beneficiary=False, is_email_validated=True)
 
             user.phoneValidationStatus = PhoneValidationStatusType.VALIDATED

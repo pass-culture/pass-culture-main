@@ -31,18 +31,24 @@ def to_model(beneficiary_pre_subscription: BeneficiaryPreSubscription, user: Opt
     beneficiary.postalCode = beneficiary_pre_subscription.postal_code
     beneficiary.publicName = beneficiary_pre_subscription.public_name
 
-    beneficiary = users_api.activate_beneficiary(beneficiary, beneficiary_pre_subscription.deposit_source)
     users_api.attach_beneficiary_import_details(beneficiary, beneficiary_pre_subscription)
+    if not users_api.steps_to_become_beneficiary(beneficiary):
+        beneficiary = users_api.activate_beneficiary(beneficiary, beneficiary_pre_subscription.deposit_source)
 
     return beneficiary
 
 
-def to_rejected_model(beneficiary_pre_subscription: BeneficiaryPreSubscription, detail: str) -> BeneficiaryImport:
+def to_rejected_model(
+    beneficiary_pre_subscription: BeneficiaryPreSubscription, detail: str, user: Optional[User]
+) -> BeneficiaryImport:
     beneficiary_import = BeneficiaryImport()
 
     beneficiary_import.applicationId = beneficiary_pre_subscription.application_id
     beneficiary_import.sourceId = beneficiary_pre_subscription.source_id
     beneficiary_import.source = beneficiary_pre_subscription.source
     beneficiary_import.setStatus(status=ImportStatus.REJECTED, detail=detail)
+
+    if user:
+        user.beneficiaryImports.append(beneficiary_import)
 
     return beneficiary_import

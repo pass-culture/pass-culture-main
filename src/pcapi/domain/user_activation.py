@@ -33,12 +33,13 @@ def create_beneficiary_from_application(application_detail: dict, user: Optional
     beneficiary.isAdmin = False
     beneficiary.hasSeenTutorials = False
 
-    beneficiary.isBeneficiary = True
-    application_id = application_detail["application_id"]
-    deposit = payments_api.create_deposit(beneficiary, f"démarches simplifiées dossier [{application_id}]")
-    beneficiary.deposits = [deposit]
-
     return beneficiary
+
+
+def setup_beneficiary(beneficiary: User, application_id: str, deposit_source: str):
+    beneficiary.isBeneficiary = True
+    deposit = payments_api.create_deposit(beneficiary, deposit_source)
+    beneficiary.deposits.append(deposit)
 
 
 def is_import_status_change_allowed(current_status: ImportStatus, new_status: ImportStatus) -> bool:
