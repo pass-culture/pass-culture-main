@@ -1,6 +1,5 @@
 from datetime import datetime
 import logging
-import subprocess
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -56,28 +55,7 @@ def create_venue_provider(venue_provider: PostVenueProviderBody) -> VenueProvide
     else:
         new_venue_provider = connect_venue_to_provider(venue, provider, venue_provider.venueIdAtOfferProvider)
 
-    _run_first_synchronization(new_venue_provider)
-
     return new_venue_provider
-
-
-def _run_first_synchronization(new_venue_provider: VenueProvider) -> None:
-    if not feature_queries.is_active(FeatureToggle.SYNCHRONIZE_VENUE_PROVIDER_IN_WORKER):
-        subprocess.Popen(
-            [
-                "python",
-                "src/pcapi/scripts/pc.py",
-                "update_providables",
-                "--venue-provider-id",
-                str(new_venue_provider.id),
-            ]
-        )
-        return
-
-    # FIXME (apibrac, 2021-04-19): we shouldn't import infra function from core
-    from pcapi.workers.venue_provider_job import venue_provider_job
-
-    venue_provider_job.delay(new_venue_provider.id)
 
 
 SPECIFIC_STOCK_PROVIDER = {

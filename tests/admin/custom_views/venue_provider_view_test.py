@@ -4,12 +4,10 @@ import pytest
 
 from pcapi.admin.custom_views.venue_provider_view import VenueProviderView
 from pcapi.admin.custom_views.venue_view import _get_venue_provider_link
+from pcapi.core.offerers.factories import ProviderFactory
 from pcapi.core.offerers.factories import VenueProviderFactory
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.providers.models import VenueProvider
-from pcapi.model_creators.provider_creators import activate_provider
-from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
-from pcapi.utils.human_ids import humanize
 
 
 class VenueProviderViewTest:
@@ -34,16 +32,21 @@ class VenueProviderViewTest:
 
 
 class CreateModelTest:
-    @patch("pcapi.admin.custom_views.venue_provider_view.api.create_venue_provider")
-    def test_use_api_method_to_create_venue_provider(self, create_venue_provider, app, db_session):
+    @patch("pcapi.core.providers.api._check_venue_can_be_synchronized_with_provider", lambda *args, **kwargs: True)
+    @patch("pcapi.workers.venue_provider_job.synchronize_venue_provider")
+    def test_use_api_method_to_create_venue_provider(self, synchronize_venue_provider, db_session):
         # Given
         venue = VenueFactory()
-        provider = activate_provider("TiteLiveStocks")
+        provider = ProviderFactory(enabledForPro=True, localClass=None, apiUrl="https://example.com")
         view = VenueProviderView(VenueProvider, db_session)
         VenueProviderForm = view.scaffold_form()
 
         data = dict(
-            isDuo=True, price=23.5, provider=provider, venueId=venue.id, venueIdAtOfferProvider="hsf4uiagèy12386dq"
+            isDuo=True,
+            price=23.5,
+            provider=provider,
+            venueId=venue.id,
+            venueIdAtOfferProvider="hsf4uiagèy12386dq",
         )
         form = VenueProviderForm(data=data)
 
@@ -51,16 +54,11 @@ class CreateModelTest:
         view.create_model(form)
 
         # Then
-        create_venue_provider.assert_called_once()
-        create_venue_provider.assert_called_once_with(
-            PostVenueProviderBody(
-                venueId=humanize(venue.id),
-                providerId=humanize(provider.id),
-                price="23.5",
-                isDuo=True,
-                venueIdAtOfferProvider="hsf4uiagèy12386dq",
-            )
-        )
+        venue_provider = VenueProvider.query.one()
+        assert venue_provider.venue == venue
+        assert venue_provider.provider == provider
+        assert venue_provider.venueIdAtOfferProvider == "hsf4uiagèy12386dq"
+        synchronize_venue_provider.assert_called_once_with(venue_provider)
 
 
 class GetVenueProviderLinkTest:

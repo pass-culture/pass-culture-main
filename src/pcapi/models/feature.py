@@ -34,7 +34,6 @@ class FeatureToggle(enum.Enum):
     APPLY_BOOKING_LIMITS_V2 = "Permettre l affichage des nouvelles règles de génération de portefeuille des jeunes"
     ALLOW_IDCHECK_REGISTRATION = "Autoriser les utilisateurs à suivre le parcours d inscription ID Check"
     WHOLE_FRANCE_OPENING = "Ouvre le service à la France entière"
-    SYNCHRONIZE_VENUE_PROVIDER_IN_WORKER = "Effectue la première synchronisation des venue_provider dans le worker"
     ENABLE_NATIVE_APP_RECAPTCHA = "Active le reCaptacha sur l'API native"
     FNAC_SYNCHRONIZATION_V2 = "Active la synchronisation FNAC v2 : synchronisation par batch"
     OFFER_VALIDATION_MOCK_COMPUTATION = "Active le calcul automatique de validation d'offre depuis le nom de l'offre"

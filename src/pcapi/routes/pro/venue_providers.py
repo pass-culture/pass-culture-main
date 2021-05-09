@@ -8,6 +8,7 @@ from pcapi.routes.serialization.venue_provider_serialize import ListVenueProvide
 from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
 from pcapi.routes.serialization.venue_provider_serialize import VenueProviderResponse
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.workers.venue_provider_job import venue_provider_job
 
 
 @private_api.route("/venueProviders", methods=["GET"])
@@ -27,5 +28,6 @@ def create_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
     body.venueIdAtOfferProvider = None
 
     new_venue_provider = api.create_venue_provider(body)
+    venue_provider_job.delay(new_venue_provider.id)
 
     return VenueProviderResponse.from_orm(new_venue_provider)

@@ -5,7 +5,6 @@ import pytest
 from pcapi.core.offers import factories as offer_factories
 from pcapi.core.providers.factories import AllocinePivotFactory
 from pcapi.core.providers.models import VenueProvider
-from pcapi.core.testing import override_features
 from pcapi.core.users import factories as user_factories
 from pcapi.model_creators.generic_creators import create_venue_provider
 from pcapi.model_creators.provider_creators import activate_provider
@@ -21,47 +20,6 @@ from tests.conftest import clean_database
 
 class Returns201Test:
     @pytest.mark.usefixtures("db_session")
-    @override_features(SYNCHRONIZE_VENUE_PROVIDER_IN_WORKER=False)
-    @patch("pcapi.core.providers.api.subprocess.Popen")
-    @patch("pcapi.core.providers.api._check_venue_can_be_synchronized_with_provider")
-    def when_venue_provider_is_successfully_created_and_using_subprocesses(self, stubbed_check, mock_subprocess, app):
-        # Given
-        user = user_factories.UserFactory(isAdmin=True)
-        venue = offer_factories.VenueFactory(siret="12345678912345")
-
-        provider = activate_provider("LibrairesStocks")
-
-        venue_provider_data = {
-            "providerId": humanize(provider.id),
-            "venueId": humanize(venue.id),
-        }
-
-        auth_request = TestClient(app.test_client()).with_auth(email=user.email)
-        stubbed_check.return_value = True
-
-        # When
-        response = auth_request.post("/venueProviders", json=venue_provider_data)
-
-        # Then
-        assert response.status_code == 201
-        venue_provider = VenueProvider.query.one()
-        assert venue_provider.venueId == venue.id
-        assert venue_provider.providerId == provider.id
-        assert venue_provider.venueIdAtOfferProvider == "12345678912345"
-        assert "id" in response.json
-        venue_provider_id = response.json["id"]
-        mock_subprocess.assert_called_once_with(
-            [
-                "python",
-                "src/pcapi/scripts/pc.py",
-                "update_providables",
-                "--venue-provider-id",
-                str(dehumanize(venue_provider_id)),
-            ]
-        )
-
-    @pytest.mark.usefixtures("db_session")
-    @override_features(SYNCHRONIZE_VENUE_PROVIDER_IN_WORKER=True)
     @patch("pcapi.workers.venue_provider_job.venue_provider_job.delay")
     @patch("pcapi.core.providers.api._check_venue_can_be_synchronized_with_provider")
     def when_venue_provider_is_successfully_created(self, stubbed_check, mock_synchronize_venue_provider, app):
@@ -142,7 +100,6 @@ class Returns201Test:
         assert response.status_code == 201
 
     @pytest.mark.usefixtures("db_session")
-    @override_features(SYNCHRONIZE_VENUE_PROVIDER_IN_WORKER=True)
     @patch("pcapi.workers.venue_provider_job.venue_provider_job.delay")
     @patch("pcapi.core.providers.api._check_venue_can_be_synchronized_with_provider")
     def when_no_regression_on_format(self, stubbed_check, mock_synchronize_venue_provider, app):
@@ -189,10 +146,9 @@ class Returns201Test:
         }
 
     @pytest.mark.usefixtures("db_session")
-    @override_features(SYNCHRONIZE_VENUE_PROVIDER_IN_WORKER=False)
-    @patch("pcapi.core.providers.api.subprocess.Popen")
+    @patch("pcapi.workers.venue_provider_job.venue_provider_job.delay")
     @patch("pcapi.core.providers.api._check_venue_can_be_synchronized_with_provider")
-    def when_venue_id_at_offer_provider_is_ignored_for_pro(self, stubbed_check, mock_subprocess, app):
+    def when_venue_id_at_offer_provider_is_ignored_for_pro(self, stubbed_check, mock_synchronize_venue_provider, app):
         # Given
         user = user_factories.UserFactory(isAdmin=True)
         venue = offer_factories.VenueFactory(siret="12345678912345")
@@ -219,15 +175,7 @@ class Returns201Test:
         assert venue_provider.venueIdAtOfferProvider == "12345678912345"
         assert "id" in response.json
         venue_provider_id = response.json["id"]
-        mock_subprocess.assert_called_once_with(
-            [
-                "python",
-                "src/pcapi/scripts/pc.py",
-                "update_providables",
-                "--venue-provider-id",
-                str(dehumanize(venue_provider_id)),
-            ]
-        )
+        mock_synchronize_venue_provider.assert_called_once_with(dehumanize(venue_provider_id))
 
 
 class Returns400Test:
