@@ -87,8 +87,6 @@ class VenueProvider(PcObject, Model, ProvidableMixin, DeactivableMixin):
 
     lastSyncDate = Column(DateTime, nullable=True)
 
-    syncWorkerId = Column(String(24), nullable=True)
-
     isFromAllocineProvider = column_property(
         exists(select([Provider.id]).where(and_(Provider.id == providerId, Provider.localClass == "AllocineStocks")))
     )

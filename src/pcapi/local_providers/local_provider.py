@@ -246,7 +246,6 @@ class LocalProvider(Iterator):
 
         if self.venue_provider is not None:
             self.venue_provider.lastSyncDate = datetime.utcnow()
-            self.venue_provider.syncWorkerId = None
             repository.save(self.venue_provider)
 
 

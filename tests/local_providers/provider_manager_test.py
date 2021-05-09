@@ -4,8 +4,6 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.core.providers.models import VenueProvider
-from pcapi.local_providers.provider_manager import _remove_worker_id_after_venue_provider_sync_error
 from pcapi.local_providers.provider_manager import do_update
 from pcapi.local_providers.provider_manager import synchronize_data_for_provider
 from pcapi.local_providers.provider_manager import synchronize_venue_provider
@@ -43,10 +41,7 @@ class DoUpdateTest:
         provider_mock.updateObjects.assert_called_once_with(10)
 
     @patch("pcapi.local_providers.provider_manager.build_cron_log_message")
-    @patch("pcapi.local_providers.provider_manager._remove_worker_id_after_venue_provider_sync_error")
-    def test_should_call_remove_worker_id_when_exception_is_raised(
-        self, mock_remove_worker_id, mock_build_cron_log_message, app
-    ):
+    def test_should_call_remove_worker_id_when_exception_is_raised(self, mock_build_cron_log_message, app):
         # Given
         provider_mock = MagicMock()
         provider_mock.updateObjects = mock_update_objects
@@ -55,39 +50,7 @@ class DoUpdateTest:
         do_update(provider_mock, 10)
 
         # Then
-        mock_remove_worker_id.assert_called_once_with(provider_mock)
         mock_build_cron_log_message.assert_called_once_with(name="MagicMock", status=ANY)
-
-
-class RemoveWorkerIdAfterVenueProviderSyncErrorTest:
-    @pytest.mark.usefixtures("db_session")
-    def test_should_not_update_model_when_no_venue_provider_attached_to_provider(self, app):
-        # Given
-        provider = TestLocalProvider()
-
-        # When
-        _remove_worker_id_after_venue_provider_sync_error(provider)
-
-        # Then
-        assert VenueProvider.query.count() == 0
-
-    @pytest.mark.usefixtures("db_session")
-    def test_should_remove_worker_id_value(self, app):
-        # Given
-        provider_test = create_provider(local_class="TestLocalProvider")
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        venue_provider = create_venue_provider(venue, provider_test, sync_worker_id="1234567")
-        repository.save(venue_provider)
-
-        provider = TestLocalProvider(venue_provider)
-
-        # When
-        _remove_worker_id_after_venue_provider_sync_error(provider)
-
-        # Then
-        updated_venue_provider = VenueProvider.query.one()
-        assert updated_venue_provider.syncWorkerId is None
 
 
 class SynchronizeVenueProviderTest:

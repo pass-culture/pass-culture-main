@@ -6,7 +6,6 @@ from pcapi.core.providers.models import VenueProvider
 import pcapi.local_providers
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.provider_api import synchronize_provider_api
-from pcapi.repository import repository
 from pcapi.repository.venue_provider_queries import get_active_venue_providers_for_specific_provider
 from pcapi.scheduled_tasks.logger import CronStatus
 from pcapi.scheduled_tasks.logger import build_cron_log_message
@@ -34,15 +33,7 @@ def do_update(provider: LocalProvider, limit: Optional[int]):
     try:
         provider.updateObjects(limit)
     except Exception:  # pylint: disable=broad-except
-        _remove_worker_id_after_venue_provider_sync_error(provider)
         logger.exception(build_cron_log_message(name=provider.__class__.__name__, status=CronStatus.STARTED))
-
-
-def _remove_worker_id_after_venue_provider_sync_error(provider: LocalProvider):
-    venue_provider_in_sync = provider.venue_provider
-    if venue_provider_in_sync is not None:
-        venue_provider_in_sync.syncWorkerId = None
-        repository.save(venue_provider_in_sync)
 
 
 def get_local_provider_class_by_name(class_name: str) -> Callable:

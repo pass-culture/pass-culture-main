@@ -42,7 +42,6 @@ class VenueProviderResponse(BaseModel):
     lastSyncDate: Optional[datetime]
     nOffers: int
     providerId: str
-    syncWorkerId: Optional[str]
     venueId: str
     venueIdAtOfferProvider: str
     provider: ProviderResponse

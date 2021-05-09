@@ -177,7 +177,6 @@ class Returns201Test:
             "nOffers",
             "provider",
             "providerId",
-            "syncWorkerId",
             "venueId",
             "venueIdAtOfferProvider",
         }
