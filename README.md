@@ -32,9 +32,6 @@ C'est tout le framework du Pass Culture!
 
 - Netlify
   - `npm install -g netlify-cli@1.2.3`
-- Scalingo
-  - `curl -O https://cli-dl.scalingo.io/install && bash install`
-  - Renseigner ensuite dans l'interface Scalingo la clé SSH publique du device
 
 **Il vous faudra une clé SSH sur votre profil GitHub pour pouvoir cloner le repository.**
 
