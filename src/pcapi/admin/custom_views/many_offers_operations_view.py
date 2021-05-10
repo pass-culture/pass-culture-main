@@ -17,6 +17,8 @@ from pcapi.core.offers.api import add_criteria_to_offers
 from pcapi.core.offers.api import deactivate_inappropriate_products
 from pcapi.core.offers.models import Offer
 from pcapi.models.criterion import Criterion
+from pcapi.models.offer_type import EventType
+from pcapi.models.offer_type import ThingType
 from pcapi.models.product import Product
 
 
@@ -84,6 +86,15 @@ def _get_products_compatible_status(products: list[Product]) -> dict[str, str]:
     }
 
 
+def _get_product_type(product: Product) -> str:
+    if product.type == str(EventType.CINEMA):
+        return "cinema"
+    if product.type == str(ThingType.LIVRE_EDITION):
+        return "book"
+
+    return "unknown"
+
+
 class ManyOffersOperationsView(BaseCustomAdminView):
     @expose("/", methods=["GET", "POST"])
     def search(self) -> Response:
@@ -109,17 +120,27 @@ class ManyOffersOperationsView(BaseCustomAdminView):
     @expose("/edit", methods=["GET"])
     def edit(self) -> Response:
         isbn = request.args.get("isbn")
-        if not isbn:
-            flash("Veuillez renseigner un ISBN valide", "error")
+        visa = request.args.get("visa")
+        if not isbn and not visa:
+            flash("Veuillez renseigner un ISBN ou un visa d'exploitation", "error")
             return redirect(url_for(".search"))
 
-        products = (
-            Product.query.filter(Product.extraData["isbn"].astext == isbn)
-            .options(joinedload(Product.offers).joinedload(Offer.criteria))
-            .all()
-        )
+        if isbn:
+            products = (
+                Product.query.filter(Product.extraData["isbn"].astext == isbn)
+                .options(joinedload(Product.offers).joinedload(Offer.criteria))
+                .all()
+            )
+
+        if visa:
+            products = (
+                Product.query.filter(Product.extraData["visa"].astext == visa)
+                .options(joinedload(Product.offers).joinedload(Offer.criteria))
+                .all()
+            )
+
         if not products:
-            flash("Aucun livre n'a été trouvé avec cet ISBN", "error")
+            flash("Aucun livre n'a été trouvé avec cet ISBN ou ce visa d'exploitation", "error")
             return redirect(url_for(".search"))
 
         offer_criteria_form = OfferCriteriaForm()
@@ -139,12 +160,14 @@ class ManyOffersOperationsView(BaseCustomAdminView):
 
         context = {
             "name": products[0].name,
+            "type": _get_product_type(products[0]),
             "active_offers_number": active_offers_number,
             "inactive_offers_number": inactive_offers_number,
             "isbn": isbn,
             "offer_criteria_form": offer_criteria_form,
             "current_criteria_on_offers": current_criteria_on_offers,
             "product_compatibility": _get_products_compatible_status(products),
+            "visa": visa,
         }
 
         return self.render("admin/edit_many_offers.html", **context)
