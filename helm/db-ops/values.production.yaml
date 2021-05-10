@@ -33,29 +33,30 @@ serviceAccount:
     iam.gke.io/gcp-service-account: metier-production-sqldump@passculture-metier-prod.iam.gserviceaccount.com
 
 configmap:
-  ENV: staging
   NLTK_DATA: /root/nltk_data
   PROJECT_DEST: passculture-metier-ehp
   DUMP_BUCKET_NAME: passculture-metier-prod-europe-west1-sql-dump
   DUMP_FILENAME: dump.gz
   POSTGRES_SCRIPT_PATH: /scripts/anonymize.sql
   POSTGRES_INSTANCE_SRC: pcapi-production-9fb2eb30-replica-read0
-  POSTGRES_INSTANCE_DEST: pcapi-ehp-0ef86e9a
   POSTGRES_DATABASE_SRC: pcapi-production
-  POSTGRES_DATABASE_DEST: pcapi-staging
-  POSTGRES_USER_DEST: pcapi-staging
   PC_API_ROOT_PATH: /usr/src/app
   IMPORT_USERS_SCRIPT_PATH: src/pcapi/scripts/beneficiary/import_users.py
   USERS_CSV_PATH: /scripts/data_pass-culture-api-staging.csv
   # dump_restore.sh feature flags
-  EXPORT_DATA: true
-  RECREATE_DEST_DATABASE: true
-  IMPORT_DATA: true
-  DELETE_DUMP_AFTER_IMPORT: true
-  ANONYMISE_DEST: true
-  CREATE_USERS: false
-  POSTGRES_REMOVE_UNNEEDED_TABLES: true
   POSTGRES_UNNEEDED_TABLES : "activity user_session email"
+
+configmapStaging:
+  ENV: staging
+  POSTGRES_INSTANCE_DEST: pcapi-ehp-0ef86e9a
+  POSTGRES_DATABASE_DEST: pcapi-staging
+  POSTGRES_USER_DEST: pcapi-staging
+
+configmapPerf:
+  ENV: testing 
+  POSTGRES_INSTANCE_DEST: pcapi-perf-1ac56766
+  POSTGRES_DATABASE_DEST: pcapi-perf
+  POSTGRES_USER_DEST: pcapi-perf
 
 destSecrets:
   - ADMINISTRATION_EMAIL_ADDRESS
