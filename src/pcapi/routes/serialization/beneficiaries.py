@@ -131,5 +131,12 @@ class PatchBeneficiaryBodyModel(BaseModel):
         json_encoders = {datetime: format_into_utc_date}
 
 
+class SendPhoneValidationRequest(BaseModel):
+    phone_number: Optional[str]
+
+    class Config:
+        alias_generator = to_camel
+
+
 class ValidatePhoneNumberRequest(BaseModel):
     code: str

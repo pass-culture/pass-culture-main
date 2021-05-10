@@ -158,3 +158,7 @@ class GetIdCheckTokenResponse(BaseModel):
 
 class ValidatePhoneNumberRequest(BaseModel):
     code: str
+
+
+class SendPhoneValidationRequest(BaseModel):
+    phoneNumber: Optional[str]

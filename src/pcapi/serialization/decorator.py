@@ -98,7 +98,7 @@ def spectree_serialize(  # pylint: disable=dangerous-default-value
             query_params = request.args
             form = request.form
             if body_in_kwargs:
-                kwargs["body"] = body_in_kwargs(**body_params)
+                kwargs["body"] = body_in_kwargs(**(body_params or {}))
             if query_in_kwargs:
                 kwargs["query"] = query_in_kwargs(**query_params)
             if form_in_kwargs:

@@ -488,6 +488,14 @@ def set_pro_tuto_as_seen(user: User) -> None:
     repository.save(user)
 
 
+def change_user_phone_number(user: User, phone_number: str):
+    _check_phone_number_validation_is_authorized(user)
+
+    user.phoneNumber = phone_number
+    Token.query.filter(Token.user == user, Token.type == TokenType.PHONE_VALIDATION).delete()
+    repository.save(user)
+
+
 def send_phone_validation_code(user: User) -> None:
     _check_phone_number_validation_is_authorized(user)
 
@@ -514,7 +522,7 @@ def validate_phone_number(user: User, code: str) -> None:
     db.session.delete(token)
 
     user.phoneValidationStatus = PhoneValidationStatusType.VALIDATED
-    db.session.add(user)
+    repository.save(user)
 
 
 def _check_phone_number_validation_is_authorized(user: User) -> None:

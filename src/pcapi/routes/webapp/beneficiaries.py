@@ -159,10 +159,11 @@ def id_check_application_update(
 @private_api.route("/send_phone_validation_code", methods=["POST"])
 @login_required
 @spectree_serialize(on_success_status=204)
-def send_phone_validation_code() -> None:
+def send_phone_validation_code(body: serialization_beneficiaries.SendPhoneValidationRequest) -> None:
     user = current_user._get_current_object()
-
     try:
+        if body.phone_number:
+            users_api.change_user_phone_number(user, body.phoneNumber)
         users_api.send_phone_validation_code(user)
     except users_exceptions.UserPhoneNumberAlreadyValidated:
         raise ApiErrors({"message": "Le numéro de téléphone est déjà validé"}, status_code=400)

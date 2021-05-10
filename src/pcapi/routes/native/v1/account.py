@@ -133,8 +133,10 @@ def get_id_check_token(user: User) -> serializers.GetIdCheckTokenResponse:
 @blueprint.native_v1.route("/send_phone_validation_code", methods=["POST"])
 @spectree_serialize(api=blueprint.api, on_success_status=204)
 @authenticated_user_required
-def send_phone_validation_code(user: User) -> None:
+def send_phone_validation_code(user: User, body: serializers.SendPhoneValidationRequest) -> None:
     try:
+        if body.phoneNumber:
+            api.change_user_phone_number(user, body.phoneNumber)
         api.send_phone_validation_code(user)
     except exceptions.UserPhoneNumberAlreadyValidated:
         raise ApiErrors({"message": "Le numéro de téléphone est déjà validé"}, status_code=400)

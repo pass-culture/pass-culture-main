@@ -19,6 +19,7 @@ from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
 from pcapi.core.users.models import VOID_PUBLIC_NAME
 from pcapi.core.users.repository import get_id_check_token
+from pcapi.models import db
 from pcapi.notifications.push import testing as push_testing
 from pcapi.notifications.sms import testing as sms_testing
 from pcapi.routes.native.v1.serialization import account as account_serializers
@@ -673,6 +674,36 @@ class SendPhoneValidationCodeTest:
         assert response.status_code == 400
 
         assert not Token.query.filter_by(userId=user.id).first()
+
+    def test_send_phone_validation_code_for_new_phone_with_already_beneficiary(self, app):
+        user = users_factories.UserFactory(isEmailValidated=True, isBeneficiary=True, phoneNumber="060102030405")
+        access_token = create_access_token(identity=user.email)
+
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+
+        response = test_client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "0102030405"})
+
+        assert response.status_code == 400
+
+        assert not Token.query.filter_by(userId=user.id).first()
+        db.session.refresh(user)
+        assert user.phoneNumber == "060102030405"
+
+    def test_send_phone_validation_code_for_new_phone_updates_phone(self, app):
+        user = users_factories.UserFactory(isEmailValidated=True, isBeneficiary=False, phoneNumber="060102030405")
+        access_token = create_access_token(identity=user.email)
+
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+
+        response = test_client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "0102030405"})
+
+        assert response.status_code == 204
+
+        assert Token.query.filter_by(userId=user.id).first()
+        db.session.refresh(user)
+        assert user.phoneNumber == "0102030405"
 
 
 class ValidatePhoneNumberTest:
