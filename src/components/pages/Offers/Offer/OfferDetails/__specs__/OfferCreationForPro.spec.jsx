@@ -1673,4 +1673,18 @@ describe('offerDetails - Creation - pro user', () => {
       expect(errorNotification).toBeInTheDocument()
     })
   })
+
+  describe('when quitting offer creation', () => {
+    it('should show exit confirmation modal', async () => {
+      // Given
+      await renderOffers(props, store)
+
+      // When
+      fireEvent.click(screen.getByText('Annuler et quitter'))
+
+      // Then
+      const e = screen.getByText('Voulez-vous quitter la création d’offre ?')
+      expect(e).toBeInTheDocument()
+    })
+  })
 })

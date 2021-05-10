@@ -46,17 +46,33 @@ const OfferLayout = ({ location, match }) => {
       const offerCreationPath = '/offres/creation'
       const stocksPathRegex = /\/offres\/([A-Z0-9]+)\/stocks/g
       const confirmationPathRegex = /\/offres\/([A-Z0-9]+)\/confirmation/g
+
       if (
-        isCreatingOffer &&
-        (nextLocation.pathname.startsWith(offerCreationPath) ||
-          nextLocation.pathname.match(stocksPathRegex) ||
-          nextLocation.pathname.match(confirmationPathRegex))
+        location.pathname.match(stocksPathRegex) &&
+        nextLocation.pathname.startsWith(offerCreationPath)
+      ) {
+        nextLocation.pathname = '/offres'
+        nextLocation.search = ''
+        return true
+      }
+      if (location.pathname.match(confirmationPathRegex)) {
+        if (nextLocation.pathname.match(stocksPathRegex)) {
+          nextLocation.pathname = '/offres'
+          nextLocation.search = ''
+        }
+        return false
+      }
+      if (
+        nextLocation.pathname.match(stocksPathRegex) ||
+        nextLocation.pathname.match(confirmationPathRegex) ||
+        (location.pathname.startsWith(offerCreationPath) &&
+          nextLocation.pathname.startsWith(offerCreationPath))
       ) {
         return false
       }
       return true
     },
-    [isCreatingOffer]
+    [location]
   )
 
   useEffect(() => {
@@ -135,7 +151,7 @@ const OfferLayout = ({ location, match }) => {
       </div>
       <LeavingOfferCreationDialog
         shouldBlockNavigation={shouldBlockNavigation}
-        when={isCreatingOffer && !location.pathname.includes('/confirmation')}
+        when={isCreatingOffer}
       />
     </div>
   )
