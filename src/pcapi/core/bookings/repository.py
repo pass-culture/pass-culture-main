@@ -16,8 +16,8 @@ from sqlalchemy.util._collections import AbstractKeyedTuple
 from pcapi.core.bookings import conf
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.offerers.models import Offerer
-from pcapi.core.users.api import sanitize_email
 from pcapi.core.users.models import User
+from pcapi.core.users.utils import sanitize_email
 from pcapi.domain.booking_recap.booking_recap import BookBookingRecap
 from pcapi.domain.booking_recap.booking_recap import BookingRecap
 from pcapi.domain.booking_recap.booking_recap import EventBookingRecap
