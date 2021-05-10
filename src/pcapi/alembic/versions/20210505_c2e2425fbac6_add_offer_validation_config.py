@@ -15,7 +15,7 @@ def upgrade():
         sa.Column("id", sa.BigInteger(), autoincrement=True, nullable=False),
         sa.Column("dateCreated", sa.DateTime(), nullable=False),
         sa.Column("userId", sa.BigInteger(), nullable=True),
-        sa.Column("specs", postgresql.JSON(astext_type=sa.Text()), nullable=True),
+        sa.Column("specs", postgresql.JSON(astext_type=sa.Text()), nullable=False),
         sa.ForeignKeyConstraint(
             ["userId"],
             ["user.id"],

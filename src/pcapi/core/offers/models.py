@@ -585,4 +585,4 @@ class OfferValidationConfig(PcObject, Model):
 
     user = relationship("User", foreign_keys=[userId], backref="offer_validation_configs")
 
-    specs = Column(JSON)
+    specs = Column(JSON, nullable=False)
