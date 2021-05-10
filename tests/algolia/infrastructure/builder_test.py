@@ -173,7 +173,7 @@ class BuildObjectTest:
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
         offer = create_offer_with_thing_product(venue=venue)
-        offer.extraData = {"visa": "123456789"}
+        offer.extraData = {"visa": "123456"}
         stock = create_stock(offer=offer)
         repository.save(stock)
 
@@ -181,7 +181,8 @@ class BuildObjectTest:
         result = build_object(offer)
 
         # Then
-        assert result["offer"]["visa"] == "123456789"
+        assert result["offer"]["visa"] == "123456"
+        assert result["offer"]["isbn"] == "123456"
 
     @pytest.mark.usefixtures("db_session")
     def test_should_return_an_isbn_when_exists(self, app):
@@ -189,7 +190,7 @@ class BuildObjectTest:
         offerer = create_offerer()
         venue = create_venue(offerer=offerer)
         offer = create_offer_with_thing_product(venue=venue)
-        offer.extraData = {"isbn": "123456789"}
+        offer.extraData = {"isbn": "123456987", "visa": "123654"}
         stock = create_stock(offer=offer)
         repository.save(stock)
 
@@ -197,7 +198,8 @@ class BuildObjectTest:
         result = build_object(offer)
 
         # Then
-        assert result["offer"]["isbn"] == "123456789"
+        assert result["offer"]["isbn"] == "123456987"
+        assert result["offer"]["visa"] == "123654"
 
     @pytest.mark.usefixtures("db_session")
     def test_should_return_a_speaker_when_exists(self, app):

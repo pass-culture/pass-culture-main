@@ -17,7 +17,9 @@ def build_object(offer: Offer) -> dict:
     author = offer.extraData and offer.extraData.get("author")
     stage_director = offer.extraData and offer.extraData.get("stageDirector")
     visa = offer.extraData and offer.extraData.get("visa")
-    isbn = offer.extraData and offer.extraData.get("isbn")
+    # FIXME (cgaunet, 2021-05-10): this is to prevent duplicates in Algolia.
+    # When it's possible to remove duplicates on many attributes, remove the visa part from the isbn field.
+    isbn = offer.extraData and (offer.extraData.get("isbn") or offer.extraData.get("visa"))
     speaker = offer.extraData and offer.extraData.get("speaker")
     performer = offer.extraData and offer.extraData.get("performer")
     show_type = offer.extraData and offer.extraData.get("showType")
