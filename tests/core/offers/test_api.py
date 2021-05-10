@@ -1077,7 +1077,7 @@ class OfferExpenseDomainsTest:
 @pytest.mark.usefixtures("db_session")
 class AddCriterionToOffersTest:
     @mock.patch("pcapi.connectors.redis.add_offer_id")
-    def test_add_criteria(self, mocked_add_offer_id):
+    def test_add_criteria_from_isbn(self, mocked_add_offer_id):
         # Given
         isbn = "2-221-00164-8"
         product1 = ProductFactory(extraData={"isbn": "2221001648"})
@@ -1092,6 +1092,38 @@ class AddCriterionToOffersTest:
 
         # When
         is_successful = add_criteria_to_offers([criterion1, criterion2], isbn=isbn)
+
+        # Then
+        assert is_successful is True
+        assert offer11.criteria == [criterion1, criterion2]
+        assert offer12.criteria == [criterion1, criterion2]
+        assert offer21.criteria == [criterion1, criterion2]
+        assert not inactive_offer.criteria
+        assert not unmatched_offer.criteria
+        # fmt: off
+        reindexed_offer_ids = {
+            mocked_add_offer_id.call_args_list[i][1]["offer_id"]
+            for i in range(mocked_add_offer_id.call_count)
+        }
+        # fmt: on
+        assert reindexed_offer_ids == {offer11.id, offer12.id, offer21.id}
+
+    @mock.patch("pcapi.connectors.redis.add_offer_id")
+    def test_add_criteria_from_visa(self, mocked_add_offer_id):
+        # Given
+        visa = "222100"
+        product1 = ProductFactory(extraData={"visa": visa})
+        offer11 = OfferFactory(product=product1)
+        offer12 = OfferFactory(product=product1)
+        product2 = ProductFactory(extraData={"visa": visa})
+        offer21 = OfferFactory(product=product2)
+        inactive_offer = OfferFactory(product=product1, isActive=False)
+        unmatched_offer = OfferFactory()
+        criterion1 = CriterionFactory(name="Pretty good books")
+        criterion2 = CriterionFactory(name="Other pretty good books")
+
+        # When
+        is_successful = add_criteria_to_offers([criterion1, criterion2], visa=visa)
 
         # Then
         assert is_successful is True

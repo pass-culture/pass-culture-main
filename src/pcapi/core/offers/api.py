@@ -569,10 +569,18 @@ def get_expense_domains(offer: Offer) -> list[ExpenseDomain]:
     return list(domains)
 
 
-def add_criteria_to_offers(criteria: list[Criterion], isbn: str) -> bool:
-    isbn = isbn.replace("-", "").replace(" ", "")
+def add_criteria_to_offers(criteria: list[Criterion], isbn: Optional[str] = None, visa: Optional[str] = None) -> bool:
+    if not isbn and not visa:
+        return False
 
-    products = Product.query.filter(Product.extraData["isbn"].astext == isbn).all()
+    query = Product.query
+    if isbn:
+        isbn = isbn.replace("-", "").replace(" ", "")
+        query = query.filter(Product.extraData["isbn"].astext == isbn)
+    if visa:
+        query = query.filter(Product.extraData["visa"].astext == visa)
+
+    products = query.all()
     if not products:
         return False
 

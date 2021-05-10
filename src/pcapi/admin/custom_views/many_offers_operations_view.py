@@ -175,13 +175,14 @@ class ManyOffersOperationsView(BaseCustomAdminView):
     @expose("/add_criteria_to_offers", methods=["POST"])
     def add_criteria_to_offers(self) -> Response:
         isbn = request.args.get("isbn")
-        if not isbn:
-            flash("Veuillez renseigner un ISBN valide", "error")
+        visa = request.args.get("visa")
+        if not isbn and not visa:
+            flash("Veuillez renseigner un ISBN ou un visa d'exploitation", "error")
             return redirect(url_for(".search"))
 
         form = OfferCriteriaForm(request.form)
         if form.validate():
-            is_operation_successful = add_criteria_to_offers(form.data["criteria"], isbn)
+            is_operation_successful = add_criteria_to_offers(form.data["criteria"], isbn=isbn, visa=visa)
             if is_operation_successful:
                 flash("Les offres du produit ont bien été tagguées", "success")
                 return redirect(url_for(".search"))
@@ -196,7 +197,7 @@ class ManyOffersOperationsView(BaseCustomAdminView):
     def product_gcu_compatibility(self) -> Response:
         isbn = request.args.get("isbn")
         if not isbn:
-            flash("Veuillez renseigner un ISBN valide", "error")
+            flash("Veuillez renseigner un ISBN", "error")
             return redirect(url_for(".search"))
 
         is_operation_successful = deactivate_inappropriate_products(isbn)
