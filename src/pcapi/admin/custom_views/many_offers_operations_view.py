@@ -23,9 +23,9 @@ from pcapi.models.product import Product
 class SearchForm(SecureForm):
     isbn = StringField(
         "ISBN",
-        [
-            validators.DataRequired(),
-        ],
+    )
+    visa = StringField(
+        "Visa d'exploitation",
     )
 
 
@@ -90,13 +90,19 @@ class ManyOffersOperationsView(BaseCustomAdminView):
         form = SearchForm()
         if request.method == "POST":
             form = SearchForm(request.form)
-            if form.validate():
-                isbn = form.isbn.data
-                if _is_isbn_valid(isbn):
-                    return redirect(url_for(".edit", isbn=_format_isbn(isbn)))
-                flash("L'ISBN doit être composé de 13 caractères", "error")
-            else:
-                flash("Veuillez renseigner un ISBN", "error")
+            isbn = form.isbn.data if form.isbn else None
+            visa = form.visa.data if form.visa else None
+            if isbn:
+                if not _is_isbn_valid(isbn):
+                    flash("L'ISBN doit être composé de 13 caractères", "error")
+                    return self.render("admin/search_many_offers.html", form=form)
+
+                return redirect(url_for(".edit", isbn=_format_isbn(isbn)))
+
+            if visa:
+                return redirect(url_for(".edit", visa=visa))
+
+            flash("Veuillez renseigner un ISBN ou un visa d'exploitation", "error")
 
         return self.render("admin/search_many_offers.html", form=form)
 

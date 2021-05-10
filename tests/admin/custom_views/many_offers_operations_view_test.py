@@ -20,9 +20,7 @@ class ManyOffersOperationsViewTest:
         # Given
         users_factories.UserFactory(email="admin@example.com", isAdmin=True)
 
-        data = dict(
-            isbn="978-3-16-148410-0",
-        )
+        data = dict(isbn="978-3-16-148410-0")
 
         # When
         client = TestClient(app.test_client()).with_auth("admin@example.com")
@@ -36,6 +34,21 @@ class ManyOffersOperationsViewTest:
         )
 
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_search_product_from_visa(self, mocked_validate_csrf_token, app):
+        # Given
+        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+
+        data = dict(visa="978148")
+
+        # When
+        client = TestClient(app.test_client()).with_auth("admin@example.com")
+        response = client.post("/pc/back-office/many_offers_operations/", form=data)
+
+        # Then
+        assert response.status_code == 302
+        assert response.headers["location"] == "http://localhost/pc/back-office/many_offers_operations/edit?visa=978148"
+
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_search_product_from_isbn_with_invalid_isbn(self, mocked_validate_csrf_token, app):
         # Given
         users_factories.UserFactory(email="admin@example.com", isAdmin=True)
@@ -43,6 +56,20 @@ class ManyOffersOperationsViewTest:
         data = dict(
             isbn="978-3-16-14840-0",
         )
+
+        # When
+        client = TestClient(app.test_client()).with_auth("admin@example.com")
+        response = client.post("/pc/back-office/many_offers_operations/", form=data)
+
+        # Then
+        assert response.status_code == 200
+
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_search_product_with_no_isbn_nor_visa(self, mocked_validate_csrf_token, app):
+        # Given
+        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+
+        data = dict()
 
         # When
         client = TestClient(app.test_client()).with_auth("admin@example.com")
