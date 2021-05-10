@@ -8,6 +8,7 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
 from pcapi.repository import repository
 from pcapi.repository.iris_venues_queries import delete_venue_from_iris_venues
+from pcapi.routes.serialization.venues_serialize import PostVenueBodyModel
 
 from . import validation
 
@@ -76,5 +77,17 @@ def update_venue(
     if indexing_modifications_fields:
         if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
             redis.add_venue_id(client=app.redis_client, venue_id=venue.id)
+
+    return venue
+
+
+def create_venue(venue_data: PostVenueBodyModel) -> Venue:
+    data = venue_data.dict(by_alias=True)
+    venue = Venue()
+    venue.populate_from_dict(data)
+
+    repository.save(venue)
+
+    link_valid_venue_to_irises(venue=venue)
 
     return venue

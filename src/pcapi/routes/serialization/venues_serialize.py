@@ -23,8 +23,8 @@ class PostVenueBodyModel(BaseModel):
     publicName: Optional[str]
     postalCode: str
     siret: str
-    venueLabelId: str
-    venueTypeId: str
+    venueLabelId: Optional[str]
+    venueTypeId: Optional[str]
 
 
 class VenueResponseModel(BaseModel):

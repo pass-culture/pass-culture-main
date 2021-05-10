@@ -1,5 +1,3 @@
-from flask import jsonify
-from flask import request
 from flask_login import current_user
 from flask_login import login_required
 
@@ -12,8 +10,6 @@ from pcapi.core.offerers.validation import validate_coordinates
 from pcapi.core.offers.repository import get_active_offers_count_for_venue
 from pcapi.core.offers.repository import get_sold_out_offers_count_for_venue
 from pcapi.flask_app import private_api
-from pcapi.repository import repository
-from pcapi.routes.serialization import as_dict
 from pcapi.routes.serialization.venues_serialize import EditVenueBodyModel
 from pcapi.routes.serialization.venues_serialize import GetVenueListResponseModel
 from pcapi.routes.serialization.venues_serialize import GetVenueResponseModel
@@ -23,10 +19,7 @@ from pcapi.routes.serialization.venues_serialize import VenueListQueryModel
 from pcapi.routes.serialization.venues_serialize import VenueResponseModel
 from pcapi.routes.serialization.venues_serialize import VenueStatsResponseModel
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.use_cases.create_venue import create_venue
-from pcapi.utils.includes import VENUE_INCLUDES
 from pcapi.utils.rest import check_user_has_access_to_offerer
-from pcapi.utils.rest import expect_json_data
 from pcapi.utils.rest import load_or_404
 
 
@@ -75,8 +68,7 @@ def get_venues(query: VenueListQueryModel) -> GetVenueListResponseModel:
 @spectree_serialize(response_model=VenueResponseModel, on_success_status=201)  # type: ignore
 def post_create_venue(body: PostVenueBodyModel) -> VenueResponseModel:
     validate_coordinates(body.latitude, body.longitude)
-
-    venue = create_venue(venue_properties=body.dict(), save=repository.save)
+    venue = offerers_api.create_venue(body)
 
     return VenueResponseModel.from_orm(venue)
 
