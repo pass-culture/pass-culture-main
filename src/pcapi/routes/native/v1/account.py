@@ -184,7 +184,7 @@ def send_phone_validation_code(user: User, body: serializers.SendPhoneValidation
 def validate_phone_number(user: User, body: serializers.ValidatePhoneNumberRequest) -> None:
     with transaction():
         try:
-            api.validate_phone_number(user, body.code)
+            api.validate_phone_number_and_activate_user(user, body.code)
         except exceptions.PhoneValidationAttemptsLimitReached:
             raise ApiErrors(
                 {"message": "Le nombre de tentatives maximal est dépassé", "code": "TOO_MANY_VALIDATION_ATTEMPTS"},

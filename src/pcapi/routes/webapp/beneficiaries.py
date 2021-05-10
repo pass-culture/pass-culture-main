@@ -183,12 +183,12 @@ def send_phone_validation_code(body: serialization_beneficiaries.SendPhoneValida
 @private_api.route("/validate_phone_number", methods=["POST"])
 @login_required
 @spectree_serialize(on_success_status=204)
-def validate_phone_nymber(body: serialization_beneficiaries.ValidatePhoneNumberRequest) -> None:
+def validate_phone_number(body: serialization_beneficiaries.ValidatePhoneNumberRequest) -> None:
     user = current_user._get_current_object()
 
     with transaction():
         try:
-            users_api.validate_phone_number(user, body.code)
+            users_api.validate_phone_number_and_activate_user(user, body.code)
         except users_exceptions.ExpiredCode:
             raise ApiErrors({"message": "Le code saisi a expiré", "code": "EXPIRED_VALIDATION_CODE"}, status_code=400)
         except users_exceptions.NotValidCode:

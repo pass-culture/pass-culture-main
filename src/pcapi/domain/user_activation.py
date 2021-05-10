@@ -1,6 +1,5 @@
 from typing import Optional
 
-from pcapi.core.payments import api as payments_api
 from pcapi.core.users.models import User
 from pcapi.core.users.utils import sanitize_email
 from pcapi.domain.password import random_hashed_password
@@ -34,12 +33,6 @@ def create_beneficiary_from_application(application_detail: dict, user: Optional
     beneficiary.hasSeenTutorials = False
 
     return beneficiary
-
-
-def setup_beneficiary(beneficiary: User, application_id: str, deposit_source: str):
-    beneficiary.isBeneficiary = True
-    deposit = payments_api.create_deposit(beneficiary, deposit_source)
-    beneficiary.deposits.append(deposit)
 
 
 def is_import_status_change_allowed(current_status: ImportStatus, new_status: ImportStatus) -> bool:

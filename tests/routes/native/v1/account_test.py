@@ -16,12 +16,14 @@ from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.api import create_phone_validation_token
+from pcapi.core.users.factories import BeneficiaryImportFactory
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
 from pcapi.core.users.models import VOID_PUBLIC_NAME
 from pcapi.core.users.repository import get_id_check_token
 from pcapi.models import db
+from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.notifications.push import testing as push_testing
 from pcapi.notifications.sms import testing as sms_testing
 from pcapi.routes.native.v1.serialization import account as account_serializers
@@ -826,12 +828,32 @@ class ValidatePhoneNumberTest:
         assert response.status_code == 204
         user = User.query.get(user.id)
         assert user.is_phone_validated
+        assert not user.isBeneficiary
 
         token = Token.query.filter_by(userId=user.id, type=TokenType.PHONE_VALIDATION).first()
 
         assert not token
 
         assert int(app.redis_client.get(f"phone_validation_attempts_user_{user.id}")) == 2
+
+    def test_validate_phone_number_and_become_beneficiary(self, app):
+        user = users_factories.UserFactory(isBeneficiary=False)
+
+        beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
+        beneficiary_import.setStatus(ImportStatus.CREATED)
+
+        access_token = create_access_token(identity=user.email)
+        token = create_phone_validation_token(user)
+
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+
+        response = test_client.post("/native/v1/validate_phone_number", {"code": token.value})
+
+        assert response.status_code == 204
+        user = User.query.get(user.id)
+        assert user.is_phone_validated
+        assert user.isBeneficiary
 
     @override_settings(MAX_PHONE_VALIDATION_ATTEMPTS=1)
     def test_validate_phone_number_too_many_attempts(self, app):

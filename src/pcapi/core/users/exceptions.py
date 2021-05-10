@@ -72,3 +72,7 @@ class IdCheckTokenLimitReached(Exception):
 
 class IdCheckAlreadyCompleted(Exception):
     pass
+
+
+class BeneficiaryImportMissingException(Exception):
+    pass

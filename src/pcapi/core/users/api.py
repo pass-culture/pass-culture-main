@@ -192,7 +192,21 @@ def steps_to_become_beneficiary(user: User) -> list[BeneficiaryValidationStep]:
     return missing_steps
 
 
-def activate_beneficiary(user: User, deposit_source: str) -> User:
+def validate_phone_number_and_activate_user(user: User, code: str) -> User:
+    validate_phone_number(user, code)
+
+    if not steps_to_become_beneficiary(user):
+        activate_beneficiary(user)
+
+
+def activate_beneficiary(user: User, deposit_source: str = None) -> User:
+    if not deposit_source:
+        beneficiary_import = get_beneficiary_import_for_beneficiary(user)
+        if not beneficiary_import:
+            raise exceptions.BeneficiaryImportMissingException()
+
+        deposit_source = beneficiary_import.get_detailed_source()
+
     user.isBeneficiary = True
     deposit = payment_api.create_deposit(user, deposit_source=deposit_source)
     db.session.add_all((user, deposit))

@@ -6,6 +6,7 @@ from typing import Optional
 
 from pcapi import settings
 from pcapi.connectors.api_demarches_simplifiees import get_application_details
+from pcapi.core.users.api import activate_beneficiary
 from pcapi.core.users.api import create_reset_password_token
 from pcapi.core.users.api import steps_to_become_beneficiary
 from pcapi.core.users.constants import RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED
@@ -13,7 +14,6 @@ from pcapi.core.users.models import User
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_validator import get_beneficiary_duplicates
 from pcapi.domain.demarches_simplifiees import get_closed_application_ids_for_demarche_simplifiee
 from pcapi.domain.user_activation import create_beneficiary_from_application
-from pcapi.domain.user_activation import setup_beneficiary
 from pcapi.domain.user_emails import send_accepted_as_beneficiary_email
 from pcapi.domain.user_emails import send_activation_email
 from pcapi.models import ApiErrors
@@ -199,7 +199,7 @@ def _process_creation(
 
     if not steps_to_become_beneficiary(user):
         deposit_source = beneficiary_import.get_detailed_source()
-        setup_beneficiary(user, information["application_id"], deposit_source)
+        activate_beneficiary(user, deposit_source)
 
     new_beneficiaries.append(user)
     update_user_attributes_job.delay(user.id)
