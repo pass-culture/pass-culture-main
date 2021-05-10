@@ -147,7 +147,6 @@ def create_offer(offer_data: PostOfferBodyModel, user: User) -> Offer:
 
     repository.save(offer)
     logger.info("Offer has been created", extra={"offer": offer.id, "venue": venue.id, "product": offer.productId})
-    admin_emails.send_offer_creation_notification_to_administration(offer, user)
 
     return offer
 
@@ -335,7 +334,7 @@ def _notify_beneficiaries_upon_stock_edit(stock: Stock):
 
 
 def upsert_stocks(
-    offer_id: int, stock_data_list: list[Union[StockCreationBodyModel, StockEditionBodyModel]]
+    offer_id: int, stock_data_list: list[Union[StockCreationBodyModel, StockEditionBodyModel]], user: User
 ) -> list[Stock]:
     activation_codes = []
     stocks = []
@@ -410,6 +409,8 @@ def upsert_stocks(
         if offer.validation == OfferValidationStatus.PENDING or offer.validation == OfferValidationStatus.REJECTED:
             offer.isActive = False
         repository.save(offer)
+        if offer.validation == OfferValidationStatus.APPROVED:
+            admin_emails.send_offer_creation_notification_to_administration(offer, user)
 
     for stock in edited_stocks:
         previous_beginning = edited_stocks_previous_beginnings[stock.id]

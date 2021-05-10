@@ -49,7 +49,7 @@ def upsert_stocks(body: StocksUpsertBodyModel) -> StockIdsResponseModel:
     offerer = offerer_queries.get_by_offer_id(body.offer_id)
     check_user_has_access_to_offerer(current_user, offerer.id)
 
-    stocks = offers_api.upsert_stocks(body.offer_id, body.stocks)
+    stocks = offers_api.upsert_stocks(body.offer_id, body.stocks, current_user)
     return StockIdsResponseModel(
         stockIds=[StockIdResponseModel.from_orm(stock) for stock in stocks],
     )
