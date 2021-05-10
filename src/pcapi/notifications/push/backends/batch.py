@@ -83,6 +83,7 @@ class BatchBackend:
                             "title": notification_data.message.title,
                             "body": notification_data.message.body,
                         },
+                        **notification_data.extra,
                     },
                 )
             except Exception as exc:  # pylint: disable=broad-except

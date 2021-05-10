@@ -8,6 +8,7 @@ from pcapi.domain.user_emails import send_user_webapp_offer_link_email
 from pcapi.models.product import Product
 from pcapi.routes.native.security import authenticated_user_required
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.workers.push_notification_job import send_offer_link_by_push_job
 
 from . import blueprint
 from .serialization import offers as serializers
@@ -44,3 +45,11 @@ def send_offer_webapp_link(user: User, offer_id: int) -> None:
     """
     offer = Offer.query.options(joinedload(Offer.venue)).filter(Offer.id == offer_id).first_or_404()
     send_user_webapp_offer_link_email(user, offer)
+
+
+@blueprint.native_v1.route("/send_offer_link_by_push/<int:offer_id>", methods=["POST"])
+@spectree_serialize(on_success_status=204, api=blueprint.api)  # type: ignore
+@authenticated_user_required
+def send_offer_link_by_push(user: User, offer_id: int) -> None:
+    Offer.query.get_or_404(offer_id)
+    send_offer_link_by_push_job.delay(user.id, offer_id)

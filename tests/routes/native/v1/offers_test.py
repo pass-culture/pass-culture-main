@@ -14,6 +14,7 @@ from pcapi.core.offers.factories import ThingStockFactory
 from pcapi.core.testing import assert_num_queries
 from pcapi.models.offer_type import EventType
 from pcapi.models.offer_type import ThingType
+import pcapi.notifications.push.testing as notifications_testing
 
 from tests.conftest import TestClient
 
@@ -215,3 +216,45 @@ class SendOfferWebAppLinkTest:
             response = test_client.post("/native/v1/send_offer_webapp_link_by_email/98765432123456789")
             assert response.status_code == 404
         assert not mails_testing.outbox
+
+
+class SendOfferLinkNotificationTest:
+    def test_send_offer_link_notification(self, app):
+        """
+        Test that a push notification to the user is send with a link to the
+        offer.
+        """
+        # offer.id must be used before the assert_num_queries context manager
+        # because it triggers a SQL query.
+        offer = OfferFactory()
+        offer_id = offer.id
+
+        user, test_client = create_user_and_test_client(app)
+
+        # expected queries:
+        #   * get user
+        #   * get offer
+        with assert_num_queries(2):
+            response = test_client.post(f"/native/v1/send_offer_link_by_push/{offer_id}")
+            assert response.status_code == 204
+
+        assert len(notifications_testing.requests) == 1
+
+        notification = notifications_testing.requests[0]
+        assert notification["user_ids"] == [user.id]
+
+        assert offer.name in notification["message"]["title"]
+        assert "deeplink" in notification
+
+    def test_send_offer_link_notification_not_found(self, app):
+        """Test that no push notification is sent when offer is not found"""
+        _, test_client = create_user_and_test_client(app)
+
+        # expected queries:
+        #   * get user
+        #   * search for offer
+        with assert_num_queries(2):
+            response = test_client.post("/native/v1/send_offer_link_by_push/9999999999")
+            assert response.status_code == 404
+
+        assert len(notifications_testing.requests) == 0
