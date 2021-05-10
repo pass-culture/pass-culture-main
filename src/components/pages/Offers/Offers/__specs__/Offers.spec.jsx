@@ -804,7 +804,7 @@ describe('src | components | pages | Offers | Offers', () => {
     })
 
     describe('when fraud detection', () => {
-      it('should remove checkbox when offer is rejected or pending for validation', async () => {
+      it('should disabled checkbox when offer is rejected or pending for validation', async () => {
         // Given
         props.currentUser.isAdmin = false
         props.offers = [
@@ -829,9 +829,9 @@ describe('src | components | pages | Offers | Offers', () => {
         await renderOffers(props, store)
 
         // Then
-        expect(screen.queryByTestId('select-offer-ORE')).not.toBeInTheDocument()
-        expect(screen.queryByTestId('select-offer-OAW')).not.toBeInTheDocument()
-        expect(screen.queryByTestId('select-offer-OAC')).toBeInTheDocument()
+        expect(screen.queryByTestId('select-offer-ORE')).toBeDisabled()
+        expect(screen.queryByTestId('select-offer-OAW')).toBeDisabled()
+        expect(screen.queryByTestId('select-offer-OAC')).toBeEnabled()
       })
     })
   })
@@ -1555,28 +1555,41 @@ describe('src | components | pages | Offers | Offers', () => {
             venueId: 'JI',
             status: 'ACTIVE',
           },
+          {
+            id: 'ORE',
+            isActive: false,
+            status: 'REJECTED',
+          },
+          {
+            id: 'OAW',
+            isActive: true,
+            status: 'PENDING',
+          },
         ]
         await renderOffers(props, store)
 
         const firstOfferCheckbox = await screen.findByTestId('select-offer-M4')
         const secondOfferCheckbox = await screen.findByTestId('select-offer-AE3')
-
-        expect(firstOfferCheckbox.checked).toStrictEqual(false)
-        expect(secondOfferCheckbox.checked).toStrictEqual(false)
+        const thirdOfferCheckbox = await screen.findByTestId('select-offer-ORE')
+        const fourthOfferCheckbox = await screen.findByTestId('select-offer-OAW')
 
         // When
         fireEvent.click(screen.getByLabelText('Tout sélectionner'))
 
         // Then
-        expect(firstOfferCheckbox.checked).toStrictEqual(true)
-        expect(secondOfferCheckbox.checked).toStrictEqual(true)
+        expect(firstOfferCheckbox).toBeChecked()
+        expect(secondOfferCheckbox).toBeChecked()
+        expect(thirdOfferCheckbox).not.toBeChecked()
+        expect(fourthOfferCheckbox).not.toBeChecked()
 
         // When
         fireEvent.click(screen.getByLabelText('Tout désélectionner'))
 
         // Then
-        expect(firstOfferCheckbox.checked).toStrictEqual(false)
-        expect(secondOfferCheckbox.checked).toStrictEqual(false)
+        expect(firstOfferCheckbox).not.toBeChecked()
+        expect(secondOfferCheckbox).not.toBeChecked()
+        expect(thirdOfferCheckbox).not.toBeChecked()
+        expect(fourthOfferCheckbox).not.toBeChecked()
       })
     })
   })

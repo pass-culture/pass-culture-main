@@ -40,17 +40,15 @@ const OfferItem = ({ disabled, offer, stocks, venue, isSelected, selectOffer }) 
   return (
     <tr className={`offer-item ${isOfferInactiveOrExpiredOrDisabled ? 'inactive' : ''} offer-row`}>
       <td className="select-column">
-        {!isOfferDisabled(offer.status) && (
-          <input
-            checked={isSelected}
-            className="select-offer-checkbox"
-            data-testid={`select-offer-${offer.id}`}
-            disabled={disabled}
-            id={`select-offer-${offer.id}`}
-            onChange={handleOnChangeSelected}
-            type="checkbox"
-          />
-        )}
+        <input
+          checked={isSelected}
+          className="select-offer-checkbox"
+          data-testid={`select-offer-${offer.id}`}
+          disabled={disabled || isOfferDisabled(offer.status)}
+          id={`select-offer-${offer.id}`}
+          onChange={handleOnChangeSelected}
+          type="checkbox"
+        />
       </td>
       <td className="thumb-column">
         <Link

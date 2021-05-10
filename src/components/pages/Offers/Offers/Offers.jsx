@@ -12,6 +12,7 @@ import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
+import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { fetchAllVenuesByProUser, formatAndOrderVenues } from 'repository/venuesService'
@@ -277,7 +278,9 @@ class Offers extends PureComponent {
     const { offers } = this.props
     const { areAllOffersSelected } = this.state
 
-    const selectedOfferIds = areAllOffersSelected ? [] : offers.map(offer => offer.id)
+    const selectedOfferIds = areAllOffersSelected
+      ? []
+      : offers.filter(offer => !isOfferDisabled(offer.status)).map(offer => offer.id)
     this.setState({ selectedOfferIds: selectedOfferIds })
 
     this.toggleSelectAllCheckboxes()
@@ -503,7 +506,7 @@ class Offers extends PureComponent {
             {offers.map(offer => (
               <OfferItemContainer
                 disabled={areAllOffersSelected}
-                isSelected={areAllOffersSelected || selectedOfferIds.includes(offer.id)}
+                isSelected={selectedOfferIds.includes(offer.id)}
                 key={offer.id}
                 offer={offer}
                 selectOffer={this.selectOffer}
