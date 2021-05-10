@@ -49,6 +49,7 @@ C'est tout le framework du Pass Culture!
 
 - `pc start-backend`
 - Tester `http://localhost/apidoc/swagger#/default` et vous devriez accéder au swagger
+- Aller sur l'url `http://localhost/pc/back-office/` pour accéder au back office
 - `pc sandbox -n industrial` (pour peupler la BDD)
 
 #### L'application web
