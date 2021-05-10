@@ -263,7 +263,7 @@ class Returns400:
         assert response.json["activationCodesExpirationDatetime"] == [
             (
                 "La date limite de validité des codes d'activation doit être ultérieure"
-                "d'au moins 7 jours à la date limite de réservation"
+                " d'au moins 7 jours à la date limite de réservation"
             )
         ]
 
@@ -298,7 +298,7 @@ class Returns400:
         assert response.json["activationCodesExpirationDatetime"] == [
             (
                 "La date limite de validité des codes d'activation doit être ultérieure"
-                "d'au moins 7 jours à la date limite de réservation"
+                " d'au moins 7 jours à la date limite de réservation"
             )
         ]
 

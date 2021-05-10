@@ -265,6 +265,17 @@ def check_activation_codes_expiration_datetime(
     if activation_codes_expiration_datetime is None:
         return
 
+    if booking_limit_datetime is None and activation_codes_expiration_datetime is not None:
+        errors = ApiErrors()
+        errors.add_error(
+            "bookingLimitDatetime",
+            (
+                "La date limite de validité des codes d'activation doit être ultérieure"
+                " d'au moins 7 jours à la date limite de réservation"
+            ),
+        )
+        raise errors
+
     if (
         booking_limit_datetime is not None
         and activation_codes_expiration_datetime < booking_limit_datetime + timedelta(days=7)  # type: ignore[operator]
@@ -274,7 +285,7 @@ def check_activation_codes_expiration_datetime(
             "activationCodesExpirationDatetime",
             (
                 "La date limite de validité des codes d'activation doit être ultérieure"
-                "d'au moins 7 jours à la date limite de réservation"
+                " d'au moins 7 jours à la date limite de réservation"
             ),
         )
         raise errors
