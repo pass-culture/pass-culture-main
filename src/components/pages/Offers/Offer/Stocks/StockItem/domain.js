@@ -159,9 +159,21 @@ export const formatAndSortStocks = (stocks, departementCode) => {
           departementCode
         )
       }
+      if (stock.activationCodesExpirationDatetime) {
+        formattedStock.activationCodesExpirationDatetime = getLocalDepartementDateTimeFromUtc(
+          stock.activationCodesExpirationDatetime,
+          departementCode
+        )
+      }
       return formattedStock
     })
     .sort(
       (stock1, stock2) => new Date(stock2.beginningDatetime) - new Date(stock1.beginningDatetime)
     )
+}
+
+export const getMaximumBookingLimitDatetime = activationCodesExpirationDatetime => {
+  const maximumBookingLimitDatetime = new Date(activationCodesExpirationDatetime)
+  maximumBookingLimitDatetime.setDate(maximumBookingLimitDatetime.getDate() - 7)
+  return maximumBookingLimitDatetime
 }

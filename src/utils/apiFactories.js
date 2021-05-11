@@ -45,6 +45,7 @@ export const stockFactory = (customStock = {}) => {
     offerId: `OFFER${offerId}`,
     price: 10,
     quantity: null,
+    activationCodes: [],
     ...customStock,
   }
 }

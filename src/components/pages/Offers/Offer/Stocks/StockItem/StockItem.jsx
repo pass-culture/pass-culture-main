@@ -7,12 +7,17 @@ import TimeInput from 'components/layout/inputs/TimeInput/TimeInput'
 import { isAllocineProvider } from 'components/pages/Offers/domain/localProvider'
 import DeleteStockDialogContainer from 'components/pages/Offers/Offer/Stocks/DeleteStockDialog/DeleteStockDialogContainer'
 import { ReactComponent as DeleteStockIcon } from 'components/pages/Offers/Offer/Stocks/StockItem/assets/delete-stock.svg'
-import { hasStockBeenUpdated } from 'components/pages/Offers/Offer/Stocks/StockItem/domain'
+import {
+  hasStockBeenUpdated,
+  getMaximumBookingLimitDatetime as getMaximumBookingLimitDatetimeFromExpirationDatetime,
+} from 'components/pages/Offers/Offer/Stocks/StockItem/domain'
 import { getToday } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import ActivationCodesUploadDialog from '../ActivationCodesUploadDialog/ActivationCodesUploadDialog'
 import StockItemOptionsMenu from '../StockItemOptionsMenu/StockItemOptionsMenu'
+
+const noOperation = () => {}
 
 const StockItem = ({
   departmentCode,
@@ -39,12 +44,21 @@ const StockItem = ({
   const [price, setPrice] = useState(initialStock.price)
   const [totalQuantity, setTotalQuantity] = useState(initialStock.quantity)
   const [isActivationCodesDialogOpen, setIsActivationCodesDialogOpen] = useState(false)
-  const [activationCodes, setActivationCodes] = useState([])
-  const [activationCodesExpirationDatetime, setActivationCodesExpirationDatetime] = useState(null)
+  const [activationCodes, setActivationCodes] = useState(initialStock.activationCodes)
+  const [activationCodesExpirationDatetime, setActivationCodesExpirationDatetime] = useState(
+    initialStock.activationCodesExpirationDatetime
+  )
+
+  const hasActivationCodes = isNewStock
+    ? activationCodes.length > 0
+    : initialStock.hasActivationCodes
 
   useEffect(
     function updateStock() {
       const initialValues = {
+        activationCodes: initialStock.activationCodes,
+        activationCodesExpirationDatetime: initialStock.activationCodesExpirationDatetime,
+        hasActivationCodes: initialStock.hasActivationCodes,
         beginningDatetime: initialStock.beginningDatetime,
         bookingLimitDatetime: initialStock.bookingLimitDatetime,
         price: initialStock.price,
@@ -52,6 +66,8 @@ const StockItem = ({
       }
       let updatedStock = {
         key: initialStock.key,
+        activationCodes,
+        activationCodesExpirationDatetime,
         bookingLimitDatetime,
         price,
         quantity: totalQuantity,
@@ -64,9 +80,14 @@ const StockItem = ({
       }
     },
     [
+      activationCodes,
+      activationCodesExpirationDatetime,
       beginningDate,
       beginningTime,
       bookingLimitDatetime,
+      initialStock.activationCodes,
+      initialStock.activationCodesExpirationDatetime,
+      initialStock.hasActivationCodes,
       initialStock.beginningDatetime,
       initialStock.bookingLimitDatetime,
       initialStock.key,
@@ -104,6 +125,22 @@ const StockItem = ({
 
   const changeBookingLimitDatetime = useCallback(dateTime => setBookingLimitDatetime(dateTime), [])
 
+  const changeActivationCodesExpirationDatetime = useCallback(
+    expirationDatetime => {
+      setActivationCodesExpirationDatetime(expirationDatetime)
+      if (expirationDatetime !== null) {
+        const maximumBookingLimitDatetime = getMaximumBookingLimitDatetimeFromExpirationDatetime(
+          expirationDatetime
+        )
+
+        if (bookingLimitDatetime === null) {
+          setBookingLimitDatetime(maximumBookingLimitDatetime)
+        }
+      }
+    },
+    [bookingLimitDatetime]
+  )
+
   const changePrice = useCallback(event => setPrice(event.target.value), [])
 
   const changeTotalQuantity = useCallback(event => setTotalQuantity(event.target.value), [])
@@ -113,7 +150,8 @@ const StockItem = ({
   const closeActivationCodesDialog = useCallback(() => {
     setIsActivationCodesDialogOpen(false)
     setActivationCodes([])
-  }, [])
+    changeActivationCodesExpirationDatetime(null)
+  }, [changeActivationCodesExpirationDatetime])
 
   const totalQuantityValue = totalQuantity !== null ? totalQuantity : ''
   const computedRemainingQuantity = totalQuantityValue - initialStock.bookingsQuantity
@@ -151,8 +189,19 @@ const StockItem = ({
     setIsActivationCodesDialogOpen(false)
   }, [])
 
+  const getMaximumBookingLimitDatetime = useCallback(() => {
+    if (activationCodesExpirationDatetime !== null) {
+      return getMaximumBookingLimitDatetimeFromExpirationDatetime(activationCodesExpirationDatetime)
+    }
+
+    return beginningDate
+  }, [activationCodesExpirationDatetime, beginningDate])
+
   return (
-    <tr data-testid={`stock-item-${initialStock.key}`} title={computeStockTitle()}>
+    <tr
+      data-testid={`stock-item-${initialStock.key}`}
+      title={computeStockTitle()}
+    >
       {isEvent && (
         <Fragment>
           <td>
@@ -204,11 +253,21 @@ const StockItem = ({
             (isOfferSynchronized && !isOfferSynchronizedWithAllocine) ||
             !isStockEditable
           }
-          maxDateTime={beginningDate}
+          maxDateTime={getMaximumBookingLimitDatetime()}
           onChange={changeBookingLimitDatetime}
           openingDateTime={today}
         />
       </td>
+      {activationCodesExpirationDatetime && (
+        <td>
+          <DateInput
+            ariaLabel="Date limite de validité"
+            dateTime={activationCodesExpirationDatetime}
+            disabled
+            onChange={noOperation}
+          />
+        </td>
+      )}
       <td className="resized-input input-text quantity-input">
         <input
           aria-label="Quantité"
@@ -217,7 +276,7 @@ const StockItem = ({
             isOfferDisabled ||
             (isOfferSynchronized && !isOfferSynchronizedWithAllocine) ||
             !isStockEditable ||
-            activationCodes.length > 0
+            hasActivationCodes
           }
           name="quantity"
           onChange={changeTotalQuantity}
@@ -226,8 +285,12 @@ const StockItem = ({
           value={totalQuantityValue}
         />
       </td>
-      <td>{!isNewStock && remainingQuantityValue}</td>
-      <td>{!isNewStock && initialStock.bookingsQuantity}</td>
+      <td>
+        {!isNewStock && remainingQuantityValue}
+      </td>
+      <td>
+        {!isNewStock && initialStock.bookingsQuantity}
+      </td>
       <td className="action-column">
         {isActivationCodesEnabled ? (
           <StockItemOptionsMenu
@@ -235,7 +298,7 @@ const StockItem = ({
             deleteButtonTitle={computeStockDeleteButtonTitle()}
             deleteStock={isNewStock ? removeNewStockLine : askDeletionConfirmation}
             disableDeleteButton={isOfferDisabled || !isStockDeletable || isDeleting}
-            hasActivationCodes={activationCodes.length > 0}
+            hasActivationCodes={hasActivationCodes}
             isNewStock={isNewStock}
             isOfferDisabled={isOfferDisabled}
             setIsActivationCodesDialogOpen={setIsActivationCodesDialogOpen}
@@ -262,9 +325,12 @@ const StockItem = ({
         {isActivationCodesDialogOpen && (
           <ActivationCodesUploadDialog
             activationCodes={activationCodes}
+            activationCodesExpirationDatetime={activationCodesExpirationDatetime}
+            bookingLimitDatetime={bookingLimitDatetime}
+            changeActivationCodesExpirationDatetime={changeActivationCodesExpirationDatetime}
             closeDialog={closeActivationCodesDialog}
             setActivationCodes={setActivationCodes}
-            setActivationCodesExpirationDatetime={setActivationCodesExpirationDatetime}
+            today={today}
             validateActivationCodes={validateActivationCodes}
           />
         )}
@@ -292,6 +358,9 @@ StockItem.propTypes = {
     key: PropTypes.string,
     bookingsQuantity: PropTypes.number,
     isEventDeletable: PropTypes.bool,
+    hasActivationCodes: PropTypes.bool,
+    activationCodes: PropTypes.arrayOf(PropTypes.string),
+    activationCodesExpirationDatetime: PropTypes.instanceOf(Date),
     beginningDatetime: PropTypes.instanceOf(Date),
     bookingLimitDatetime: PropTypes.instanceOf(Date),
     price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),

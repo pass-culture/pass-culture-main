@@ -1,20 +1,62 @@
 import PropTypes from 'prop-types'
-import React, { Fragment } from 'react'
+import React from 'react'
+
+import DateInput from 'components/layout/inputs/DateInput/DateInput'
 
 const ActivationCodesConfirmationForm = ({
   activationCodes,
+  activationCodesExpirationDatetime,
+  bookingLimitDatetime,
+  changeActivationCodesExpirationDatetime,
   clearActivationCodes,
-  setActivationCodesExpirationDatetime,
   submitActivationCodes,
+  today,
 }) => {
+  const getMinimumExpirationDatetime = () => {
+    const result = new Date(bookingLimitDatetime)
+    result.setDate(result.getDate() + 7)
+    return result
+  }
+
   return (
-    <Fragment>
+    <div className="activation-codes-upload-confirmation-form">
       <div className="activation-codes-upload-information-message">
-        <p>{`Vous êtes sur le point d'ajouter ${activationCodes.length} codes d'activation.`}</p>
-        <p>{'La quantité disponible pour cette offre sera mise à jour dans vos stocks'}</p>
+        <p>
+          {`Vous êtes sur le point d’ajouter ${activationCodes.length} codes d’activation.`}
+        </p>
+        <p>
+          {'La quantité disponible pour cette offre sera mise à jour dans vos stocks'}
+        </p>
+        <p className="expiration-date-information-message">
+          {
+            'Veuillez ajouter une date de fin de validité. Cette date ne doit pas être antérieure à la date limite de réservation.'
+          }
+        </p>
+      </div>
+      <div className="resized-input expiration-datetime-input-container">
+        <label className="expiration-datetime-label">
+          <div className="labels">
+            {'Date limite de validité'}
+            <span className="it-sub-label">
+              {'optionnel'}
+            </span>
+          </div>
+        </label>
+        <DateInput
+          ariaLabel="Date limite de validité"
+          dateTime={activationCodesExpirationDatetime}
+          minDateTime={bookingLimitDatetime ? getMinimumExpirationDatetime() : null}
+          onChange={changeActivationCodesExpirationDatetime}
+          openingDateTime={today}
+        />
       </div>
       <div className="activation-codes-upload-confirmation-message">
-        <p>{"Souhaitez-vous valider l'opération ?"}</p>
+        <p>
+          {'Vous ne pourrez modifier ni la quantité ni la date de validité après import.'}
+        </p>
+        <p>
+          {'Souhaitez-vous valider l’opération ?'}
+        </p>
       </div>
       <span className="activation-codes-upload-confirmation-buttons">
         <button
@@ -32,15 +74,23 @@ const ActivationCodesConfirmationForm = ({
           {'Valider'}
         </button>
       </span>
-    </Fragment>
+    </div>
   )
+}
+
+ActivationCodesConfirmationForm.defaultProps = {
+  activationCodesExpirationDatetime: null,
+  bookingLimitDatetime: null,
 }
 
 ActivationCodesConfirmationForm.propTypes = {
   activationCodes: PropTypes.arrayOf(PropTypes.string).isRequired,
+  activationCodesExpirationDatetime: PropTypes.instanceOf(Date),
+  bookingLimitDatetime: PropTypes.instanceOf(Date),
+  changeActivationCodesExpirationDatetime: PropTypes.func.isRequired,
   clearActivationCodes: PropTypes.func.isRequired,
-  setActivationCodesExpirationDatetime: PropTypes.func.isRequired,
   submitActivationCodes: PropTypes.func.isRequired,
+  today: PropTypes.instanceOf(Date).isRequired,
 }
 
 export default ActivationCodesConfirmationForm

@@ -40,6 +40,7 @@ const Stocks = ({
   const [stocks, setStocks] = useState([])
   const isOfferSynchronized = Boolean(offer.lastProvider)
   const [formErrors, setFormErrors] = useState({})
+  const [displayExpirationDatetime, setDisplayExpirationDatetime] = useState(false)
   const isOfferDraft = offer.status === OFFER_STATUS_DRAFT
   const editionOfferLink = `/offres/${offerId}/edition`
 
@@ -69,6 +70,12 @@ const Stocks = ({
   }, [loadStocks])
 
   useEffect(() => {
+    setDisplayExpirationDatetime(
+      stocks.some(stock => stock.activationCodesExpirationDatetime !== null)
+    )
+  }, [stocks])
+
+  useEffect(() => {
     if (Object.values(formErrors).length > 0) {
       showErrorNotification()
     }
@@ -80,6 +87,8 @@ const Stocks = ({
       price: EMPTY_STRING_VALUE,
       quantity: null,
       bookingLimitDatetime: null,
+      activationCodes: [],
+      activationCodesExpirationDatetime: null,
     }
     if (offer.isEvent) {
       newStock.beginningDatetime = null
@@ -247,6 +256,11 @@ const Stocks = ({
                 <th>
                   {'Date limite de réservation'}
                 </th>
+                {displayExpirationDatetime && (
+                  <th>
+                    {'Date limite de validité'}
+                  </th>
+                )}
                 <th>
                   {'Quantité'}
                 </th>

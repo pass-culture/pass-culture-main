@@ -75,6 +75,8 @@ describe('stocks page', () => {
 
     stockId = '2E'
     defaultStock = {
+      activationCodes: [],
+      activationCodesExpirationDatetime: null,
       quantity: 10,
       price: 10.01,
       remainingQuantity: 6,
@@ -86,6 +88,7 @@ describe('stocks page', () => {
     pcapi.loadOffer.mockResolvedValue(defaultOffer)
     pcapi.loadStocks.mockResolvedValue({ stocks: [] })
     pcapi.deleteStock.mockResolvedValue({ id: stockId })
+    pcapi.bulkCreateOrEditStock.mockResolvedValue({})
   })
 
   describe('render', () => {
@@ -1772,13 +1775,15 @@ describe('stocks page', () => {
             // Given
             pcapi.bulkCreateOrEditStock.mockResolvedValue({})
             await renderOffers(props, store)
-            fireEvent.change(screen.getByLabelText('Date limite de réservation'), {
-              target: { value: null },
+            await act(async () => {
+              fireEvent.change(screen.getByLabelText('Date limite de réservation'), {
+                target: { value: null },
+              })
             })
-
             // When
-            fireEvent.click(screen.getByText('Enregistrer'))
-
+            await act(async () => {
+              fireEvent.click(screen.getByText('Enregistrer'))
+            })
             // Then
             const savedStocks = pcapi.bulkCreateOrEditStock.mock.calls[0][1]
             expect(savedStocks[0].bookingLimitDatetime).toBeNull()
@@ -2056,6 +2061,7 @@ describe('stocks page', () => {
           {
             quantity: 15,
             price: 15,
+            activationCodes: [],
             remainingQuantity: 15,
             bookingsQuantity: 0,
             beginningDatetime: '2020-12-24T23:00:00Z',
@@ -2066,6 +2072,7 @@ describe('stocks page', () => {
           {
             quantity: 15,
             price: 15,
+            activationCodes: [],
             remainingQuantity: 15,
             bookingsQuantity: 0,
             beginningDatetime: '2020-12-25T23:00:00Z',
@@ -2335,6 +2342,7 @@ describe('stocks page', () => {
         // given
         pcapi.bulkCreateOrEditStock.mockResolvedValue({})
         const createdStock = {
+          activationCodes: [],
           quantity: 15,
           price: 15,
           remainingQuantity: 15,
@@ -2468,7 +2476,7 @@ describe('stocks page', () => {
 
           // then
           expect(
-            screen.getByLabelText("Importer un fichier .csv depuis l'ordinateur")
+            screen.getByLabelText('Importer un fichier .csv depuis l’ordinateur')
           ).toBeInTheDocument()
         })
 
@@ -2481,8 +2489,8 @@ describe('stocks page', () => {
             .getByText('Ajouter des codes d’activation')
             .closest('div')
           userEvent.click(activationCodeButton)
-          const uploadButton = screen.getByLabelText("Importer un fichier .csv depuis l'ordinateur")
-          const file = new File(["Vos codes d'activations\nABH\nJHB"], 'activation_codes.csv', {
+          const uploadButton = screen.getByLabelText('Importer un fichier .csv depuis l’ordinateur')
+          const file = new File(['Vos codes d’activations\nABH\nJHB'], 'activation_codes.csv', {
             type: 'text/csv',
           })
 
@@ -2496,7 +2504,7 @@ describe('stocks page', () => {
           // Then
           await waitFor(() =>
             expect(
-              screen.getByText("Vous êtes sur le point d'ajouter 2 codes d'activation.")
+              screen.getByText('Vous êtes sur le point d’ajouter 2 codes d’activation.')
             ).toBeInTheDocument()
           )
         })
@@ -2510,7 +2518,7 @@ describe('stocks page', () => {
             .getByText('Ajouter des codes d’activation')
             .closest('div')
           userEvent.click(activationCodeButton)
-          const uploadButton = screen.getByLabelText("Importer un fichier .csv depuis l'ordinateur")
+          const uploadButton = screen.getByLabelText('Importer un fichier .csv depuis l’ordinateur')
 
           // When
           fireEvent.change(uploadButton, {
@@ -2522,10 +2530,10 @@ describe('stocks page', () => {
           // Then
           await waitFor(() => {
             expect(
-              screen.queryByText("Vous êtes sur le point d'ajouter 2 codes d'activations.")
+              screen.queryByText('Vous êtes sur le point d’ajouter 2 codes d’activations.')
             ).not.toBeInTheDocument()
             expect(
-              screen.getByLabelText("Importer un fichier .csv depuis l'ordinateur")
+              screen.getByLabelText('Importer un fichier .csv depuis l’ordinateur')
             ).toBeInTheDocument()
           })
         })
@@ -2539,8 +2547,8 @@ describe('stocks page', () => {
             .getByText('Ajouter des codes d’activation')
             .closest('div')
           userEvent.click(activationCodeButton)
-          const uploadButton = screen.getByLabelText("Importer un fichier .csv depuis l'ordinateur")
-          const file = new File(["Vos codes d'activations\nABH\nJHB"], 'activation_codes.csv', {
+          const uploadButton = screen.getByLabelText('Importer un fichier .csv depuis l’ordinateur')
+          const file = new File(['Vos codes d’activations\nABH\nJHB'], 'activation_codes.csv', {
             type: 'text/csv',
           })
 
@@ -2556,7 +2564,7 @@ describe('stocks page', () => {
 
           // Then
           expect(
-            screen.getByLabelText("Importer un fichier .csv depuis l'ordinateur")
+            screen.getByLabelText('Importer un fichier .csv depuis l’ordinateur')
           ).toBeInTheDocument()
         })
 
@@ -2569,8 +2577,8 @@ describe('stocks page', () => {
             .getByText('Ajouter des codes d’activation')
             .closest('div')
           userEvent.click(activationCodeButton)
-          const uploadButton = screen.getByLabelText("Importer un fichier .csv depuis l'ordinateur")
-          const file = new File(["Vos codes d'activations\nABH\nJHB"], 'activation_codes.csv', {
+          const uploadButton = screen.getByLabelText('Importer un fichier .csv depuis l’ordinateur')
+          const file = new File(['Vos codes d’activations\nABH\nJHB'], 'activation_codes.csv', {
             type: 'text/csv',
           })
 
@@ -2594,7 +2602,91 @@ describe('stocks page', () => {
           expect(screen.queryByText('Valider')).not.toBeInTheDocument()
         })
 
-        it('should discard activation codes and close modal on close button click', async () => {
+        it('should limit expiration datetime when booking limit datetime is set and vice versa', async () => {
+          // Given
+          await renderOffers(props, store)
+          fireEvent.click(screen.getByText('Ajouter un stock'))
+          fireEvent.click(screen.getByLabelText('Date limite de réservation'))
+          fireEvent.click(screen.getByText('18'))
+
+          const activationCodeButton = screen
+            .getByText('Ajouter des codes d’activation')
+            .closest('div')
+          userEvent.click(activationCodeButton)
+          const uploadButton = screen.getByLabelText('Importer un fichier .csv depuis l’ordinateur')
+          const file = new File(['Vos codes d’activations\nABH\nJHB'], 'activation_codes.csv', {
+            type: 'text/csv',
+          })
+          fireEvent.change(uploadButton, {
+            target: {
+              files: [file],
+            },
+          })
+          await waitFor(() => {
+            fireEvent.click(screen.getByLabelText('Date limite de validité'))
+          })
+          fireEvent.click(screen.getByText('22'))
+          expect(screen.queryByDisplayValue('22/12/2020')).not.toBeInTheDocument()
+
+          fireEvent.click(screen.getByLabelText('Date limite de validité'))
+          fireEvent.click(screen.getByText('25'))
+          expect(screen.getAllByDisplayValue('25/12/2020')[0]).toBeInTheDocument()
+          expect(screen.getAllByDisplayValue('25/12/2020')[1]).toBeInTheDocument()
+
+          // When
+          fireEvent.click(screen.getByText('Valider'))
+
+          // Then
+          fireEvent.click(screen.getByDisplayValue('18/12/2020'))
+          fireEvent.click(screen.getByText('19'))
+          expect(screen.queryByDisplayValue('19/12/2020')).not.toBeInTheDocument()
+          expect(screen.queryByDisplayValue('18/12/2020')).toBeInTheDocument()
+
+          expect(screen.getByLabelText('Quantité').value).toBe('2')
+          expect(screen.getByLabelText('Quantité')).toBeDisabled()
+          expect(screen.getByText('Ajouter des codes d’activation').closest('div')).toHaveAttribute(
+            'aria-disabled',
+            'true'
+          )
+          expect(screen.queryByText('Valider')).not.toBeInTheDocument()
+          expect(screen.getByDisplayValue('25/12/2020')).toBeDisabled()
+        })
+
+        it('should set booking limit datetime on expiration datetime change', async () => {
+          // Given
+          await renderOffers(props, store)
+          fireEvent.click(screen.getByText('Ajouter un stock'))
+
+          const activationCodeButton = screen
+            .getByText('Ajouter des codes d’activation')
+            .closest('div')
+          userEvent.click(activationCodeButton)
+          const uploadButton = screen.getByLabelText('Importer un fichier .csv depuis l’ordinateur')
+          const file = new File(['Vos codes d’activations\nABH\nJHB'], 'activation_codes.csv', {
+            type: 'text/csv',
+          })
+          fireEvent.change(uploadButton, {
+            target: {
+              files: [file],
+            },
+          })
+
+          await waitFor(() => {
+            fireEvent.click(screen.getByLabelText('Date limite de validité'))
+          })
+          fireEvent.click(screen.getByText('22'))
+
+          // When
+          fireEvent.click(screen.getByText('Valider'))
+
+          // Then
+          expect(screen.getByLabelText('Date limite de réservation')).toHaveDisplayValue(
+            '15/12/2020'
+          )
+          expect(screen.getByText('Date limite de validité')).toBeInTheDocument()
+        })
+
+        it('should discard activation codes and expiration datetime and close modal on close button click', async () => {
           // Given
           await renderOffers(props, store)
 
@@ -2603,22 +2695,25 @@ describe('stocks page', () => {
             .getByText('Ajouter des codes d’activation')
             .closest('div')
           userEvent.click(activationCodeButton)
-          const uploadButton = screen.getByLabelText("Importer un fichier .csv depuis l'ordinateur")
-          const file = new File(["Vos codes d'activations\nABH\nJHB"], 'activation_codes.csv', {
+          const uploadButton = screen.getByLabelText('Importer un fichier .csv depuis l’ordinateur')
+          const file = new File(['Vos codes d’activations\nABH\nJHB'], 'activation_codes.csv', {
             type: 'text/csv',
           })
-
-          // When
           fireEvent.change(uploadButton, {
             target: {
               files: [file],
             },
           })
           await waitFor(() => {
-            fireEvent.click(screen.getByTitle('Fermer la modale'))
+            fireEvent.click(screen.getByLabelText('Date limite de validité'))
           })
+          fireEvent.click(screen.getByText('22'))
+
+          // When
+          fireEvent.click(screen.getByTitle('Fermer la modale'))
 
           // Then
+          expect(screen.queryByDisplayValue('22/12/2020')).not.toBeInTheDocument()
           expect(screen.getByLabelText('Quantité').value).toBe('')
           expect(screen.getByLabelText('Quantité')).not.toBeDisabled()
           expect(

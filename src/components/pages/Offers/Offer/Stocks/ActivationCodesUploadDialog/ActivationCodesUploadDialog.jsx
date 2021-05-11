@@ -4,8 +4,8 @@ import React, { Fragment, useCallback, useRef, useState } from 'react'
 import { DialogBox } from 'components/layout/DialogBox/DialogBox'
 import Icon from 'components/layout/Icon'
 
-import { ActivationCodeCsvForm } from './ActivationCodesCsvForm/ActivationCodesCsvForm'
 import ActivationCodesConfirmationForm from './ActivationCodesConfirmationForm/ActivationCodesConfirmationForm'
+import { ActivationCodeCsvForm } from './ActivationCodesCsvForm/ActivationCodesCsvForm'
 
 export const ACTIVATION_CODES_UPLOAD_ID = 'ACTIVATION_CODES_UPLOAD_ID'
 
@@ -18,10 +18,13 @@ const getActivationCodesFromFileContent = fileContent => {
 
 const ActivationCodesUploadDialog = ({
   activationCodes,
+  activationCodesExpirationDatetime,
+  bookingLimitDatetime,
+  changeActivationCodesExpirationDatetime,
   closeDialog,
-  validateActivationCodes,
   setActivationCodes,
-  setActivationCodesExpirationDatetime,
+  today,
+  validateActivationCodes,
 }) => {
   const file = useRef({})
 
@@ -53,14 +56,17 @@ const ActivationCodesUploadDialog = ({
 
   return (
     <DialogBox
-      extraClassNames="activation-codes-upload"
+      extraClassNames="activation-codes-upload stocks-page"
       hasCloseButton
       labelledBy={ACTIVATION_CODES_UPLOAD_ID}
       onDismiss={closeDialog}
     >
       <Fragment>
         <section className="activation-codes-upload-section">
-          <h4 className="activation-codes-upload-title" id={ACTIVATION_CODES_UPLOAD_ID}>
+          <h4
+            className="activation-codes-upload-title"
+            id={ACTIVATION_CODES_UPLOAD_ID}
+          >
             {"Ajouter des codes d'activation"}
           </h4>
           <Icon
@@ -81,9 +87,12 @@ const ActivationCodesUploadDialog = ({
         {activationCodes.length > 0 && (
           <ActivationCodesConfirmationForm
             activationCodes={activationCodes}
+            activationCodesExpirationDatetime={activationCodesExpirationDatetime}
+            bookingLimitDatetime={bookingLimitDatetime}
+            changeActivationCodesExpirationDatetime={changeActivationCodesExpirationDatetime}
             clearActivationCodes={clearActivationCodes}
-            setActivationCodesExpirationDatetime={setActivationCodesExpirationDatetime}
             submitActivationCodes={submitActivationCodes}
+            today={today}
           />
         )}
       </Fragment>
@@ -91,11 +100,19 @@ const ActivationCodesUploadDialog = ({
   )
 }
 
+ActivationCodesUploadDialog.defaultProps = {
+  activationCodesExpirationDatetime: null,
+  bookingLimitDatetime: null,
+}
+
 ActivationCodesUploadDialog.propTypes = {
   activationCodes: PropTypes.arrayOf(PropTypes.string).isRequired,
+  activationCodesExpirationDatetime: PropTypes.instanceOf(Date),
+  bookingLimitDatetime: PropTypes.instanceOf(Date),
+  changeActivationCodesExpirationDatetime: PropTypes.func.isRequired,
   closeDialog: PropTypes.func.isRequired,
   setActivationCodes: PropTypes.func.isRequired,
-  setActivationCodesExpirationDatetime: PropTypes.func.isRequired,
+  today: PropTypes.instanceOf(Date).isRequired,
   validateActivationCodes: PropTypes.func.isRequired,
 }
 
