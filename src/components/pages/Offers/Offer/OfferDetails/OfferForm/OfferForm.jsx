@@ -235,8 +235,10 @@ const OfferForm = ({
   useEffect(() => {
     if (formRef.current) {
       const invalidElement = formRef.current.querySelector('.error')
-      if (invalidElement) {
+
+      if (invalidElement && invalidElement.value === '') {
         const scrollBehavior = doesUserPreferReducedMotion() ? 'auto' : 'smooth'
+
         invalidElement.scrollIntoView({
           behavior: scrollBehavior,
           block: 'center',
