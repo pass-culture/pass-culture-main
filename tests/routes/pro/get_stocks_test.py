@@ -37,6 +37,8 @@ class Returns200:
         assert response.json == {
             "stocks": [
                 {
+                    "hasActivationCodes": False,
+                    "activationCodesExpirationDatetime": None,
                     "beginningDatetime": "2020-10-15T00:00:00Z",
                     "bookingLimitDatetime": "2020-10-15T00:00:00Z",
                     "bookingsQuantity": 0,
@@ -53,7 +55,7 @@ class Returns200:
         }
 
     @freeze_time("2019-10-15 00:00:00")
-    def test_returns_a_thing_stock(self, app):
+    def test_returns_a_thing_stock_without_activation_codes(self, app):
         # Given
         now = datetime.utcnow()
         pro = users_factories.UserFactory(isBeneficiary=False)
@@ -76,6 +78,51 @@ class Returns200:
         assert response.json == {
             "stocks": [
                 {
+                    "hasActivationCodes": False,
+                    "activationCodesExpirationDatetime": None,
+                    "beginningDatetime": None,
+                    "bookingLimitDatetime": "2019-10-15T00:00:00Z",
+                    "bookingsQuantity": 0,
+                    "dateCreated": "2019-10-15T00:00:00Z",
+                    "dateModified": "2019-10-15T00:00:00Z",
+                    "id": humanize(stock.id),
+                    "isEventDeletable": True,
+                    "isEventExpired": False,
+                    "offerId": humanize(stock.offer.id),
+                    "price": 10.0,
+                    "quantity": 1000,
+                }
+            ],
+        }
+
+    @freeze_time("2019-10-15 00:00:00")
+    def test_returns_a_thing_stock_with_activation_codes(self, app):
+        # Given
+        now = datetime.utcnow()
+        pro = users_factories.UserFactory(isBeneficiary=False)
+        stock = offers_factories.ThingStockFactory(
+            dateCreated=now,
+            dateModified=now,
+            dateModifiedAtLastProvider=now,
+            bookingLimitDatetime=now,
+        )
+        offers_factories.ActivationCodeFactory(stock=stock, code="ABC", expirationDate=datetime(2022, 10, 15))
+        offers_factories.ActivationCodeFactory(stock=stock, code="DEF", expirationDate=datetime(2022, 10, 15))
+        stock_on_other_offer = offers_factories.ThingStockFactory(offer__venue=stock.offer.venue)
+        offers_factories.UserOffererFactory(user=pro, offerer=stock.offer.venue.managingOfferer)
+        client = TestClient(app.test_client()).with_auth(email=pro.email)
+
+        # When
+        response = client.get(f"/offers/{humanize(stock.offer.id)}/stocks")
+
+        # Then
+        assert response.status_code == 200
+        assert stock_on_other_offer.id not in [stock["id"] for stock in response.json["stocks"]]
+        assert response.json == {
+            "stocks": [
+                {
+                    "hasActivationCodes": True,
+                    "activationCodesExpirationDatetime": "2022-10-15T00:00:00Z",
                     "beginningDatetime": None,
                     "bookingLimitDatetime": "2019-10-15T00:00:00Z",
                     "bookingsQuantity": 0,

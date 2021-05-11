@@ -24,6 +24,7 @@ from pcapi.core.offers.api import update_offer_and_stock_id_at_providers
 from pcapi.core.offers.api import update_pending_offer_validation_status
 from pcapi.core.offers.exceptions import ThumbnailStorageError
 from pcapi.core.offers.exceptions import WrongFormatInFraudConfigurationFile
+from pcapi.core.offers.factories import ActivationCodeFactory
 from pcapi.core.offers.factories import CriterionFactory
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import ProductFactory
@@ -305,6 +306,53 @@ class UpsertStocksTest:
         # Then
         assert error.value.errors == {
             "global": ["Impossible de mettre une date de début si l'offre ne porte pas sur un événement"],
+        }
+
+    def test_validate_booking_limit_datetime_with_expiration_datetime_on_creation(self):
+        # Given
+        user = users_factories.UserFactory()
+        offer = factories.DigitalOfferFactory()
+        created_stock_data = StockCreationBodyModel(
+            price=0,
+            bookingLimitDatetime=None,
+            activationCodesExpirationDatetime=datetime.now(),
+            activationCodes=["ABC", "DEF"],
+        )
+
+        # When
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.upsert_stocks(offer_id=offer.id, stock_data_list=[created_stock_data], user=user)
+
+        # Then
+        assert error.value.errors == {
+            "bookingLimitDatetime": [
+                (
+                    "La date limite de validité des codes d'activation doit être ultérieure"
+                    " d'au moins 7 jours à la date limite de réservation"
+                ),
+            ],
+        }
+
+    def test_validate_booking_limit_datetime_with_expiration_datetime_on_edition(self):
+        # Given
+        user = users_factories.UserFactory()
+        offer = factories.DigitalOfferFactory()
+        existing_stock = factories.StockFactory(offer=offer)
+        ActivationCodeFactory(expirationDate=datetime.now(), stock=existing_stock)
+        edited_stock_data = StockEditionBodyModel(id=existing_stock.id, price=0, bookingLimitDatetime=None)
+
+        # When
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.upsert_stocks(offer_id=offer.id, stock_data_list=[edited_stock_data], user=user)
+
+        # Then
+        assert error.value.errors == {
+            "bookingLimitDatetime": [
+                (
+                    "La date limite de validité des codes d'activation doit être ultérieure"
+                    " d'au moins 7 jours à la date limite de réservation"
+                ),
+            ],
         }
 
     def test_does_not_allow_a_negative_remaining_quantity_on_edition(self):

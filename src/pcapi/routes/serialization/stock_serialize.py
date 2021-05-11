@@ -7,6 +7,7 @@ from pydantic import Field
 from pydantic import condecimal
 from pydantic import validator
 
+from pcapi.core.offers.models import Stock
 from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
@@ -14,6 +15,8 @@ from pcapi.utils.date import format_into_utc_date
 
 
 class StockResponseModel(BaseModel):
+    activationCodesExpirationDatetime: Optional[datetime]
+    hasActivationCodes: bool
     beginningDatetime: Optional[datetime]
     bookingLimitDatetime: Optional[datetime]
     dnBookedQuantity: int = Field(alias="bookingsQuantity")
@@ -29,8 +32,17 @@ class StockResponseModel(BaseModel):
     _humanize_id = humanize_field("id")
     _humanize_offer_id = humanize_field("offerId")
 
+    @classmethod
+    def from_orm(cls, stock: Stock):  # type: ignore
+        stock.hasActivationCodes = stock.activationCodes is not None and len(stock.activationCodes) > 0
+        stock.activationCodesExpirationDatetime = (
+            stock.activationCodes[0].expirationDate if stock.hasActivationCodes else None
+        )
+        return super().from_orm(stock)
+
     class Config:
         allow_population_by_field_name = True
+        arbitrary_types_allowed = True
         json_encoders = {datetime: format_into_utc_date}
         orm_mode = True
 
