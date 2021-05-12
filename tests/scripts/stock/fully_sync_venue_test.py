@@ -39,6 +39,41 @@ def test_fully_sync_venue():
 
 
 @pytest.mark.usefixtures("db_session")
+def test_fully_sync_venue_with_new_provider():
+    api_url = "https://example.com/provider/api"
+    provider = offerers_factories.APIProviderFactory()
+    venue_provider = offerers_factories.VenueProviderFactory(provider=provider)
+    venue = venue_provider.venue
+    stock = offers_factories.StockFactory(quantity=10, offer__venue=venue, offer__idAtProviders="1")
+    bookings_factories.BookingFactory(stock=stock)
+    product2 = offers_factories.ProductFactory(
+        idAtProviders="1234",
+        extraData={"prix_livre": 10},
+        type=str(ThingType.LIVRE_EDITION),
+    )
+    new_provider = offerers_factories.APIProviderFactory(apiUrl=api_url)
+
+    with requests_mock.Mocker() as mock:
+        response = {
+            "total": 1,
+            "stocks": [{"ref": "1234", "available": 5}],
+        }
+        mock.get(f"{api_url}/{venue_provider.venueIdAtOfferProvider}", [{"json": response}, {"json": {"stocks": []}}])
+        fully_sync_venue.fully_sync_venue_with_new_provider(venue, new_provider.id)
+
+    # Check venue_provider has change provider
+    assert len(venue.venueProviders) == 1
+    assert venue.venueProviders[0].providerId == new_provider.id
+    # Check that the quantity of existing stocks has been reset.
+    assert stock.quantity == 1
+    assert stock.offer.lastProviderId == new_provider.id
+    # Check that offers and stocks have been created or updated.
+    offer2 = offers_models.Offer.query.filter_by(product=product2).one()
+    assert offer2.stocks[0].quantity == 5
+    assert offer2.lastProviderId == new_provider.id
+
+
+@pytest.mark.usefixtures("db_session")
 def test_reset_stock_quantity():
     offer = offers_factories.OfferFactory(idAtProviders="1")
     venue = offer.venue
