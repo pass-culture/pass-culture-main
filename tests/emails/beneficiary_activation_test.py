@@ -42,7 +42,7 @@ class GetActivationEmailTest:
 
         # Then
         assert activation_email_data["Vars"]["nativeAppLink"]
-        assert "email=fabien%2Btest%40example.net" in activation_email_data["Vars"]["nativeAppLink"]
+        assert "email%3Dfabien%252Btest%2540example.net" in activation_email_data["Vars"]["nativeAppLink"]
         assert activation_email_data["Vars"]["isEligible"]
         assert not activation_email_data["Vars"]["isMinor"]
         assert isinstance(activation_email_data["Vars"]["isEligible"], int)
@@ -60,7 +60,7 @@ class GetActivationEmailTest:
 
         # Then
         assert activation_email_data["Vars"]["nativeAppLink"]
-        assert "email=fabien%2Btest%40example.net" in activation_email_data["Vars"]["nativeAppLink"]
+        assert "email%3Dfabien%252Btest%2540example.net" in activation_email_data["Vars"]["nativeAppLink"]
         assert not activation_email_data["Vars"]["isEligible"]
         assert activation_email_data["Vars"]["isMinor"]
         assert activation_email_data["Vars"]["depositAmount"] == 500
@@ -77,7 +77,7 @@ class GetActivationEmailTest:
 
         # Then
         assert activation_email_data["Vars"]["nativeAppLink"]
-        assert "email=fabien%2Btest%40example.net" in activation_email_data["Vars"]["nativeAppLink"]
+        assert "email%3Dfabien%252Btest%2540example.net" in activation_email_data["Vars"]["nativeAppLink"]
         assert not activation_email_data["Vars"]["isEligible"]
         assert activation_email_data["Vars"]["isMinor"]
         assert activation_email_data["Vars"]["depositAmount"] == 300

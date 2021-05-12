@@ -284,7 +284,8 @@ configmapApi:
 configmap:
   ENV: production
   NLTK_DATA: /root/nltk_data
-  NATIVE_APP_URL: https://passcultureapp.page.link/?link=https://passculture.app
+  FIREBASE_DYNAMIC_LINKS_URL: https://passcultureapp.page.link
+  NATIVE_APP_URL: https://passculture.app
   GCP_BUCKET_NAME: passculture-metier-prod-production-assets
   GUNICORN_PORT: 5000
   GUNICORN_MAX_REQUESTS: 3000

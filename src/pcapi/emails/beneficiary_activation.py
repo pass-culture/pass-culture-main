@@ -1,12 +1,11 @@
 from datetime import datetime
 from urllib.parse import quote
-from urllib.parse import urlencode
 
 from dateutil.relativedelta import relativedelta
 
-from pcapi import settings
 from pcapi.core.bookings import conf
 from pcapi.core.users import models as users_models
+from pcapi.utils.urls import generate_firebase_dynamic_link
 
 
 def get_activation_email_data(user: users_models.User, token: users_models.Token) -> dict:
@@ -26,8 +25,10 @@ def get_activation_email_data(user: users_models.User, token: users_models.Token
 
 def get_activation_email_data_for_native(user: users_models.User, token: users_models.Token) -> dict:
     expiration_timestamp = int(token.expirationDate.timestamp())
-    query_string = urlencode({"token": token.value, "expiration_timestamp": expiration_timestamp, "email": user.email})
-    email_confirmation_link = f"{settings.NATIVE_APP_URL}/signup-confirmation?{query_string}"
+    email_confirmation_link = generate_firebase_dynamic_link(
+        path="signup-confirmation",
+        params={"token": token.value, "expiration_timestamp": expiration_timestamp, "email": user.email},
+    )
     limit_configuration = conf.LIMIT_CONFIGURATIONS[conf.get_current_deposit_version()]
     deposit_amount = limit_configuration.TOTAL_CAP
     return {
@@ -57,10 +58,10 @@ def get_accepted_as_beneficiary_email_data() -> dict:
 
 def get_newly_eligible_user_email_data(user: users_models.User, token: users_models.Token) -> dict:
     expiration_timestamp = int(token.expirationDate.timestamp())
-    query_string = urlencode(
-        {"licenceToken": token.value, "expirationTimestamp": expiration_timestamp, "email": user.email}
+    email_link = generate_firebase_dynamic_link(
+        path="id-check",
+        params={"licenceToken": token.value, "expirationTimestamp": expiration_timestamp, "email": user.email},
     )
-    email_link = f"{settings.NATIVE_APP_URL}/id-check?{query_string}"
     limit_configuration = conf.LIMIT_CONFIGURATIONS[conf.get_current_deposit_version()]
     deposit_amount = limit_configuration.TOTAL_CAP
     return {

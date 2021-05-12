@@ -1,8 +1,6 @@
-from urllib.parse import urlencode
-
-from pcapi import settings
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import User
+from pcapi.utils.urls import generate_firebase_dynamic_link
 
 
 def retrieve_data_for_reset_password_user_email(user: User, token: Token) -> dict:
@@ -14,14 +12,14 @@ def retrieve_data_for_reset_password_user_email(user: User, token: Token) -> dic
 
 
 def retrieve_data_for_reset_password_native_app_email(user: User, token: Token) -> dict:
-    query_string = urlencode(
-        {
+    reset_password_link = generate_firebase_dynamic_link(
+        path="mot-de-passe-perdu",
+        params={
             "token": token.value,
             "expiration_timestamp": int(token.expirationDate.timestamp()),
             "email": user.email,
-        }
+        },
     )
-    reset_password_link = f"{settings.NATIVE_APP_URL}/mot-de-passe-perdu?{query_string}"
 
     return {
         "MJ-TemplateID": 1838526,

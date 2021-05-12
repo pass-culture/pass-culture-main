@@ -50,8 +50,9 @@ class NativeAppUserResetPasswordEmailDataTest:
             "Mj-trackclick": 1,
             "Vars": {
                 "native_app_link": (
-                    "https://app.passculture-testing.beta.gouv.fr/mot-de-passe-perdu"
-                    "?token=abc&expiration_timestamp=1577836800&email=ewing%2Bdemo%40example.com"
+                    "https://passcultureapptestauto.page.link/"
+                    "?link=https%3A%2F%2Fapp.passculture-testing.beta.gouv.fr%2Fmot-de-passe-perdu%3F"
+                    "token%3Dabc%26expiration_timestamp%3D1577836800%26email%3Dewing%252Bdemo%2540example.com"
                 )
             },
         }

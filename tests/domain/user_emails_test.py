@@ -538,9 +538,10 @@ class SendNewlyEligibleUserEmailTest:
 
         # then
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2030056
+        print(mails_testing.outbox[0].sent_data["Vars"]["nativeAppLink"])
         assert (
-            mails_testing.outbox[0].sent_data["Vars"]["nativeAppLink"][:54]
-            == "https://app.passculture-testing.beta.gouv.fr/id-check?"
+            mails_testing.outbox[0].sent_data["Vars"]["nativeAppLink"][:111]
+            == "https://passcultureapptestauto.page.link/?link=https%3A%2F%2Fapp.passculture-testing.beta.gouv.fr%2Fid-check%3F"
         )
         assert "licenceToken" in mails_testing.outbox[0].sent_data["Vars"]["nativeAppLink"]
         assert "email" in mails_testing.outbox[0].sent_data["Vars"]["nativeAppLink"]
@@ -559,8 +560,8 @@ class SendNewlyEligibleUserEmailTest:
         # then
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2030056
         assert (
-            mails_testing.outbox[0].sent_data["Vars"]["nativeAppLink"][:54]
-            == "https://app.passculture-testing.beta.gouv.fr/id-check?"
+            mails_testing.outbox[0].sent_data["Vars"]["nativeAppLink"][:111]
+            == "https://passcultureapptestauto.page.link/?link=https%3A%2F%2Fapp.passculture-testing.beta.gouv.fr%2Fid-check%3F"
         )
         assert "licenceToken" in mails_testing.outbox[0].sent_data["Vars"]["nativeAppLink"]
         assert "email" in mails_testing.outbox[0].sent_data["Vars"]["nativeAppLink"]
