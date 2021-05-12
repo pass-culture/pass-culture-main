@@ -27,8 +27,11 @@ gunicorn==20.0.4
 inflect==4.1.0
 isbnlib==3.10.3
 isort==5.6.4
+itsdangerous==1.1.0
+Jinja2==2.11.3
 lxml==4.6.3
 mailjet-rest==1.3.3
+MarkupSafe==1.1.1
 mypy==0.812
 nltk==3.5
 # pandas 1.1.5 has isssues with pylint, see https://github.com/PyCQA/pylint/issues/3969
@@ -65,5 +68,6 @@ sib-api-v3-sdk
 simplejson==3.17.2
 spectree==0.3.15
 SQLAlchemy==1.3.*
+Werkzeug==1.0.1
 wheel==0.35.1
 WTForms-SQLAlchemy
