@@ -6,7 +6,6 @@ from pcapi.core.bookings.repository import get_validated_bookings_quantity_for_v
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers.models import Venue
-from pcapi.core.offerers.validation import validate_coordinates
 from pcapi.core.offers.repository import get_active_offers_count_for_venue
 from pcapi.core.offers.repository import get_sold_out_offers_count_for_venue
 from pcapi.flask_app import private_api
@@ -62,12 +61,10 @@ def get_venues(query: VenueListQueryModel) -> GetVenueListResponseModel:
     )
 
 
-# @debt api-migration
 @private_api.route("/venues", methods=["POST"])
 @login_required
-@spectree_serialize(response_model=VenueResponseModel, on_success_status=201)  # type: ignore
+@spectree_serialize(response_model=VenueResponseModel, on_success_status=201)
 def post_create_venue(body: PostVenueBodyModel) -> VenueResponseModel:
-    validate_coordinates(body.latitude, body.longitude)
     venue = offerers_api.create_venue(body)
 
     return VenueResponseModel.from_orm(venue)

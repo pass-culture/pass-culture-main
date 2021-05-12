@@ -1,14 +1,21 @@
 from datetime import datetime
+from decimal import Decimal
+from decimal import InvalidOperation
 from typing import Optional
 from typing import Union
 
 from pydantic import BaseModel
+from pydantic import validator
 
 from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import string_to_boolean_field
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
+
+
+MAX_LONGITUDE = 180
+MAX_LATITUDE = 90
 
 
 class PostVenueBodyModel(BaseModel):
@@ -25,6 +32,31 @@ class PostVenueBodyModel(BaseModel):
     siret: str
     venueLabelId: Optional[str]
     venueTypeId: Optional[str]
+
+    @validator("latitude", pre=True)
+    def validate_latitude(cls, raw_latitude):  # pylint: disable=no-self-argument
+        try:
+            latitude = Decimal(raw_latitude)
+        except InvalidOperation:
+            raise ValueError("Format incorrect")
+        else:
+            if latitude > MAX_LATITUDE or latitude < -MAX_LATITUDE:
+                raise ValueError("La latitude doit être comprise entre -90.0 et +90.0")
+        return raw_latitude
+
+    @validator("longitude", pre=True)
+    def validate_longitude(cls, raw_longitude):  # pylint: disable=no-self-argument
+        try:
+            longitude = Decimal(raw_longitude)
+        except InvalidOperation:
+            raise ValueError("Format incorrect")
+        else:
+            if longitude > MAX_LONGITUDE or longitude < -MAX_LONGITUDE:
+                raise ValueError("La longitude doit être comprise entre -180.0 et +180.0")
+        return raw_longitude
+
+    class Config:
+        extra = "forbid"
 
 
 class VenueResponseModel(BaseModel):
