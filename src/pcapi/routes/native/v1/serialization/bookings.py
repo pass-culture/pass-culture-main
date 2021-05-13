@@ -4,6 +4,7 @@ from typing import Optional
 
 from pydantic.class_validators import validator
 
+from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
@@ -93,6 +94,7 @@ class BookingReponse(BaseModel):
     cancellationDate: Optional[datetime]
     cancellationReason: Optional[BookingCancellationReasons]
     confirmationDate: Optional[datetime]
+    completedUrl: Optional[str]
     dateUsed: Optional[datetime]
     expirationDate: Optional[datetime]
     qrCodeData: Optional[str]
@@ -103,6 +105,11 @@ class BookingReponse(BaseModel):
     activationCode: Optional[BookingActivationCodeResponse]
 
     _convert_total_amount = validator("total_amount", pre=True, allow_reuse=True)(convert_to_cent)
+
+    @classmethod
+    def from_orm(cls: Any, booking: Booking):  # type: ignore
+        booking.stock.offer.url = booking.completedUrl
+        return super().from_orm(booking)
 
     class Config:
         orm_mode = True
