@@ -136,6 +136,7 @@ class GetBookingsTest:
         )
 
         mediation = MediationFactory(id=111, offer=used2.stock.offer, thumbCount=1, credit="street credit")
+        db.session.flush()
 
         access_token = create_access_token(identity=self.identifier)
         test_client = TestClient(app.test_client())
