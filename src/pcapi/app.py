@@ -9,6 +9,7 @@ from pcapi.flask_app import app
 from pcapi.flask_app import db
 from pcapi.local_providers.install import install_local_providers
 from pcapi.routes import install_routes
+from pcapi.routes.eac.v1.blueprint import eac_v1
 from pcapi.routes.native.v1.blueprint import native_v1
 from pcapi.routes.pro.blueprints import pro_api_v2
 
@@ -33,6 +34,7 @@ with app.app_context():
     install_admin_views(admin, db.session)
     install_routes(app)
 
+    app.register_blueprint(eac_v1, url_prefix="/eac/v1")
     app.register_blueprint(native_v1, url_prefix="/native/v1")
     app.register_blueprint(pro_api_v2, url_prefix="/v2")
 
