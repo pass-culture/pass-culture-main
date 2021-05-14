@@ -649,15 +649,15 @@ workflows:
           context:
             - GCP
             - GCP_EHP
-      - deploy-pro:
-          requires:
-            - deploy-pcapi
+      # - deploy-pro:
+      #     requires:
+      #       - deploy-pcapi
       - deploy-webapp:
           requires:
             - deploy-pcapi
       - release-synthesis:
           requires:
-            - deploy-pro
+            #- deploy-pro
             - deploy-webapp
 
   gcp-prod:
