@@ -1,0 +1,37 @@
+<html>
+    <body>
+    <p id="offer">
+        Une nouvelle offre : "{{ offer.name }}"
+    </p>
+    <p id="offerer">
+        Vient d'être créée par : {{ venue.managingOfferer.name }}
+    </p>
+    <p id="mail_reason">
+        L’offre a été refusée par le pôle fraude du pass Culture
+    </p>
+    <p id="pro_offer_link">
+        Lien vers l'offre dans le portail PRO : {{ pro_link_to_offer }}
+    </p>
+    <p id="offer_is_duo">
+        Offre duo : {{ offer.isDuo }}
+    </p>
+    <p id="venue_details">
+        Lien vers le lieu : {{ pro_venue_link }}
+        <br >
+        Catégorie du lieu : {{ venue.venueType.label }}
+        <br >
+        Adresse du lieu : {{ venue.city }} {{ venue.postalCode }}
+    </p>
+    <p id="pro_user_information">
+        Information de l'utilisateur pro ayant créé l'offre
+        <br >
+        Nom : {{ author.lastName }}
+        <br >
+        Prénom : {{ author.firstName }}
+        <br >
+        Téléphone : {{ author.phoneNumber }}
+        <br >
+        Email : {{ author.email }}
+    </p>
+    </body>
+</html>

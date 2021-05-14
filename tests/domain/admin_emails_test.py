@@ -2,19 +2,24 @@ from unittest.mock import MagicMock
 from unittest.mock import Mock
 from unittest.mock import patch
 
+import pytest
+
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.offers.factories import OfferFactory
+from pcapi.core.offers.factories import OffererFactory
+from pcapi.core.offers.factories import UserOffererFactory
+from pcapi.core.offers.models import OfferValidationStatus
+import pcapi.core.users.factories as users_factories
 from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
 from pcapi.domain.admin_emails import send_offer_creation_notification_to_administration
+from pcapi.domain.admin_emails import send_offer_rejection_notification_to_administration
+from pcapi.domain.admin_emails import send_offer_validation_notification_to_administration
 from pcapi.domain.admin_emails import send_payment_details_email
 from pcapi.domain.admin_emails import send_payments_report_emails
 from pcapi.domain.admin_emails import send_wallet_balances_email
-from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_user
-from pcapi.model_creators.generic_creators import create_user_offerer
-from pcapi.model_creators.generic_creators import create_venue
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 
 
+@pytest.mark.usefixtures("db_session")
 @patch("pcapi.connectors.api_entreprises.requests.get")
 def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_when_objects_to_validate(
     mock_api_entreprise, app
@@ -27,10 +32,9 @@ def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_when_ob
         }
     )
     mock_api_entreprise.return_value = response_return_value
-
-    offerer = create_offerer(validation_token="12345")
-    user = create_user(validation_token="98765")
-    user_offerer = create_user_offerer(user, offerer)
+    user = users_factories.UserFactory()
+    offerer = OffererFactory(validationToken="12356")
+    user_offerer = UserOffererFactory(offerer=offerer, user=user)
 
     # When
     maybe_send_offerer_validation_email(offerer, user_offerer)
@@ -40,26 +44,12 @@ def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_when_ob
     assert mails_testing.outbox[0].sent_data["To"] == "administration@example.com"
 
 
+@pytest.mark.usefixtures("db_session")
 def test_maybe_send_offerer_validation_email_does_not_send_email_if_all_validated(app):
     # Given
-    offerer = create_offerer(
-        siren="732075312",
-        address="122 AVENUE DE FRANCE",
-        city="Paris",
-        postal_code="75013",
-        name="Accenture",
-        validation_token=None,
-    )
-
-    user = create_user(
-        is_beneficiary=False,
-        departement_code="75",
-        email="user@accenture.com",
-        public_name="Test",
-        validation_token=None,
-    )
-
-    user_offerer = create_user_offerer(user, offerer, validation_token=None)
+    user = users_factories.UserFactory()
+    offerer = OffererFactory()
+    user_offerer = UserOffererFactory(offerer=offerer, user=user)
 
     # When
     maybe_send_offerer_validation_email(offerer, user_offerer)
@@ -86,11 +76,6 @@ def test_send_wallet_balances_email_sends_email_to_recipients(app):
     csv = '"header A","header B","header C","header D"\n"part A","part B","part C","part D"\n'
     recipients = ["comptable1@culture.fr", "comptable2@culture.fr"]
 
-    mocked_send_email = Mock()
-    return_value = Mock()
-    return_value.status_code = 200
-    mocked_send_email.return_value = return_value
-
     # When
     send_wallet_balances_email(csv, recipients)
 
@@ -113,20 +98,56 @@ def test_send_payments_report_email_ssends_email_to_recipients(app):
     assert mails_testing.outbox[0].sent_data["To"] == "recipient@example.com"
 
 
+@pytest.mark.usefixtures("db_session")
 class SendOfferCreationNotificationToAdministrationTest:
     def test_when_mailjet_status_code_200_sends_email_to_administration_email(self, app):
-        mocked_send_email = Mock()
-        return_value = Mock()
-        return_value.status_code = 200
-        mocked_send_email.return_value = return_value
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-        author = create_user(email="author@email.com")
+        author = users_factories.UserFactory()
+        offer = OfferFactory(author=author)
 
         # When
-        send_offer_creation_notification_to_administration(offer, author)
+        send_offer_creation_notification_to_administration(offer)
 
         # Then
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["To"] == "administration@example.com"
+
+
+@pytest.mark.usefixtures("db_session")
+class SendOfferCreationRefusalNotificationToAdministrationTest:
+    def test_when_mailjet_status_code_200_sends_email_to_administration_email(self, app):
+        author = users_factories.UserFactory(email="author@email.com")
+        offer = OfferFactory(author=author)
+
+        # When
+        send_offer_rejection_notification_to_administration(offer)
+
+        # Then
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["To"] == "administration@example.com"
+
+
+@pytest.mark.usefixtures("db_session")
+class SendOfferNotificationToAdministrationTest:
+    def test_send_refusal_notification(self, app):
+        author = users_factories.UserFactory(email="author@email.com")
+        offer = OfferFactory(name="Test Book", author=author)
+
+        # When
+        send_offer_validation_notification_to_administration(OfferValidationStatus.REJECTED, offer)
+
+        # Then
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["To"] == "administration@example.com"
+        assert mails_testing.outbox[0].sent_data["Subject"] == "[Création d’offre : refus - 75] Test Book"
+
+    def test_send_approval_notification(self, app):
+        author = users_factories.UserFactory(email="author@email.com")
+        offer = OfferFactory(name="Test Book", author=author)
+
+        # When
+        send_offer_validation_notification_to_administration(OfferValidationStatus.APPROVED, offer)
+
+        # Then
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["To"] == "administration@example.com"
+        assert mails_testing.outbox[0].sent_data["Subject"] == "[Création d’offre - 75] Test Book"

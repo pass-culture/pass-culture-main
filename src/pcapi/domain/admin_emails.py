@@ -1,10 +1,11 @@
 from pcapi import settings
 from pcapi.core import mails
 from pcapi.core.offerers.models import Offerer
-from pcapi.core.users.models import User
+from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.models import Offer
 from pcapi.models import UserOfferer
 from pcapi.utils.mailing import make_offer_creation_notification_email
+from pcapi.utils.mailing import make_offer_rejection_notification_email
 from pcapi.utils.mailing import make_payment_details_email
 from pcapi.utils.mailing import make_payment_message_email
 from pcapi.utils.mailing import make_payments_report_email
@@ -45,6 +46,21 @@ def send_payments_report_emails(
     return mails.send(recipients=recipients, data=email)
 
 
-def send_offer_creation_notification_to_administration(offer: Offer, author: User) -> bool:
-    email = make_offer_creation_notification_email(offer, author)
+def send_offer_creation_notification_to_administration(offer: Offer) -> bool:
+    email = make_offer_creation_notification_email(offer)
     return mails.send(recipients=[settings.ADMINISTRATION_EMAIL_ADDRESS], data=email)
+
+
+def send_offer_rejection_notification_to_administration(offer: Offer) -> bool:
+    data = make_offer_rejection_notification_email(offer)
+    return mails.send(recipients=[settings.ADMINISTRATION_EMAIL_ADDRESS], data=data)
+
+
+def send_offer_validation_notification_to_administration(
+    validation_status: OfferValidationStatus, offer: Offer
+) -> bool:
+    if validation_status is OfferValidationStatus.APPROVED:
+        return send_offer_creation_notification_to_administration(offer)
+    if validation_status is OfferValidationStatus.REJECTED:
+        return send_offer_rejection_notification_to_administration(offer)
+    return False

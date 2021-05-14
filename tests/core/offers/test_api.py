@@ -519,7 +519,7 @@ class UpsertStocksTest:
 
         api.upsert_stocks(offer_id=offer.id, stock_data_list=[created_stock_data], user=user)
 
-        mocked_offer_creation_notification_to_admin.assert_called_once_with(offer, user)
+        mocked_offer_creation_notification_to_admin.assert_called_once_with(offer)
 
     @mock.patch("pcapi.domain.admin_emails.send_offer_creation_notification_to_administration")
     @mock.patch("pcapi.core.offers.api.set_offer_status_based_on_fraud_criteria")

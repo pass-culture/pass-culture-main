@@ -28,53 +28,26 @@ class BeneficiaryUserViewTest:
 class OfferValidationViewTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.admin.custom_views.offer_view.get_offerer_legal_category")
-    def test_approve_offer(self, mocked_get_offerer_legal_category, mocked_validate_csrf_token, app):
-        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
-        offer = offers_factories.OfferFactory(
-            validation=OfferValidationStatus.PENDING, venue__bookingEmail="email@example.com"
-        )
-        mocked_get_offerer_legal_category.return_value = {
-            "legal_category_code": 5202,
-            "legal_category_label": "Société en nom collectif",
-        }
-        data = dict(validation=OfferValidationStatus.APPROVED.value, action="save")
-        client = TestClient(app.test_client()).with_auth("admin@example.com")
-        response = client.post(f"/pc/back-office/validation/edit?id={offer.id}", form=data)
-
-        assert response.status_code == 200
-        assert offer.validation == OfferValidationStatus.APPROVED
-
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.admin.custom_views.offer_view.get_offerer_legal_category")
-    def test_reject_offer(self, mocked_get_offerer_legal_category, mocked_validate_csrf_token, app):
-        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
-        offer = offers_factories.OfferFactory(
-            validation=OfferValidationStatus.PENDING, isActive=True, venue__bookingEmail="email@example.com"
-        )
-
-        mocked_get_offerer_legal_category.return_value = {
-            "legal_category_code": 5202,
-            "legal_category_label": "Société en nom collectif",
-        }
-        data = dict(validation=OfferValidationStatus.REJECTED.value, action="save")
-        client = TestClient(app.test_client()).with_auth("admin@example.com")
-        response = client.post(f"/pc/back-office/validation/edit?id={offer.id}", form=data)
-
-        assert response.status_code == 200
-        assert offer.validation == OfferValidationStatus.REJECTED
-        assert offer.isActive is False
-
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    @patch("pcapi.admin.custom_views.offer_view.get_offerer_legal_category")
     def test_approve_offer_and_go_to_next_offer(
         self, mocked_get_offerer_legal_category, mocked_validate_csrf_token, app
     ):
         users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        venue = VenueFactory()
+        offerer = venue.managingOfferer
+        pro_user = users_factories.UserFactory(email="pro@example.com")
+        offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+
         first_offer = offers_factories.OfferFactory(
-            validation=OfferValidationStatus.PENDING, isActive=True, venue__bookingEmail="email1@example.com"
+            validation=OfferValidationStatus.PENDING,
+            isActive=True,
+            venue__bookingEmail="email1@example.com",
+            venue=venue,
         )
         second_offer = offers_factories.OfferFactory(
-            validation=OfferValidationStatus.PENDING, isActive=True, venue__bookingEmail="email2@example.com"
+            validation=OfferValidationStatus.PENDING,
+            isActive=True,
+            venue__bookingEmail="email2@example.com",
+            venue=venue,
         )
 
         mocked_get_offerer_legal_category.return_value = {
@@ -96,8 +69,17 @@ class OfferValidationViewTest:
         self, mocked_get_offerer_legal_category, mocked_validate_csrf_token, app
     ):
         users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        venue = VenueFactory()
+        offerer = venue.managingOfferer
+
+        pro_user = users_factories.UserFactory(email="pro@example.com")
+        offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+
         offer = offers_factories.OfferFactory(
-            validation=OfferValidationStatus.PENDING, isActive=True, venue__bookingEmail="email@example.com"
+            validation=OfferValidationStatus.PENDING,
+            isActive=True,
+            venue__bookingEmail="email@example.com",
+            venue=venue,
         )
 
         mocked_get_offerer_legal_category.return_value = {
@@ -301,3 +283,67 @@ class OfferValidationViewTest:
 
         # Then
         assert response.status_code == 403
+
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("pcapi.admin.custom_views.offer_view.get_offerer_legal_category")
+    @patch("pcapi.admin.custom_views.offer_view.send_offer_validation_notification_to_administration")
+    def test_approve_offer_and_send_mail_to_administration(
+        self,
+        mocked_send_offer_validation_notification_to_administration,
+        mocked_get_offerer_legal_category,
+        mocked_validate_csrf_token,
+        app,
+    ):
+        # Given
+        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+
+        offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING, isActive=True)
+
+        mocked_get_offerer_legal_category.return_value = {
+            "legal_category_code": 5202,
+            "legal_category_label": "Société en nom collectif",
+        }
+        data = dict(validation=OfferValidationStatus.APPROVED.value, action="save")
+        client = TestClient(app.test_client()).with_auth("admin@example.com")
+
+        # When
+        response = client.post(f"/pc/back-office/validation/edit?id={offer.id}", form=data)
+
+        # Then
+        assert response.status_code == 200
+        assert offer.validation == OfferValidationStatus.APPROVED
+        mocked_send_offer_validation_notification_to_administration.assert_called_once_with(
+            OfferValidationStatus.APPROVED, offer
+        )
+
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("pcapi.admin.custom_views.offer_view.get_offerer_legal_category")
+    @patch("pcapi.admin.custom_views.offer_view.send_offer_validation_notification_to_administration")
+    def test_reject_offer_and_send_mail_to_administration(
+        self,
+        mocked_send_offer_validation_notification_to_administration,
+        mocked_get_offerer_legal_category,
+        mocked_validate_csrf_token,
+        app,
+    ):
+        # Given
+        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING, isActive=True)
+
+        mocked_get_offerer_legal_category.return_value = {
+            "legal_category_code": 5202,
+            "legal_category_label": "Société en nom collectif",
+        }
+        data = dict(validation=OfferValidationStatus.REJECTED.value, action="save")
+        client = TestClient(app.test_client()).with_auth("admin@example.com")
+
+        # When
+        response = client.post(f"/pc/back-office/validation/edit?id={offer.id}", form=data)
+
+        # Then
+        mocked_send_offer_validation_notification_to_administration.assert_called_once_with(
+            OfferValidationStatus.REJECTED, offer
+        )
+        assert response.status_code == 200
+        assert offer.validation == OfferValidationStatus.REJECTED
+        assert offer.isActive is False

@@ -31,6 +31,7 @@ from pcapi.core.offers.models import OfferValidationConfig
 from pcapi.core.offers.models import OfferValidationStatus
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.offers.validation import check_user_can_load_config
+from pcapi.domain.admin_emails import send_offer_validation_notification_to_administration
 from pcapi.domain.user_emails import send_offer_validation_status_update_email
 from pcapi.flask_app import app
 from pcapi.models import Offer
@@ -193,6 +194,7 @@ class ValidationView(BaseAdminView):
                     )
 
                     send_offer_validation_status_update_email(offer, validation_status, recipients)
+                    send_offer_validation_notification_to_administration(validation_status, offer)
                     if request.form["action"] == "save-and-go-next":
                         next_offer_query = (
                             Offer.query.filter(Offer.validation == OfferValidationStatus.PENDING)

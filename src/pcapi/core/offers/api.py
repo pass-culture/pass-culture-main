@@ -412,7 +412,7 @@ def upsert_stocks(
             offer.isActive = False
         repository.save(offer)
         if offer.validation == OfferValidationStatus.APPROVED:
-            admin_emails.send_offer_creation_notification_to_administration(offer, user)
+            admin_emails.send_offer_creation_notification_to_administration(offer)
 
     for stock in edited_stocks:
         previous_beginning = edited_stocks_previous_beginnings[stock.id]

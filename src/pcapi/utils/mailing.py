@@ -227,7 +227,8 @@ def make_wallet_balances_email(csv: str) -> dict:
     }
 
 
-def make_offer_creation_notification_email(offer: Offer, author: User) -> dict:
+def make_offer_creation_notification_email(offer: Offer) -> dict:
+    author = offer.author or offer.venue.managingOfferer.UserOfferers[0].user
     pro_link_to_offer = f"{settings.PRO_URL}/offres/{humanize(offer.id)}/edition"
     webapp_link_to_offer = f"{settings.WEBAPP_URL}/offre/details/{humanize(offer.id)}"
     venue = offer.venue
@@ -245,7 +246,28 @@ def make_offer_creation_notification_email(offer: Offer, author: User) -> dict:
     return {
         "Html-part": html,
         "FromName": "pass Culture",
-        "Subject": f"[Création d’offre - {location_information}] {offer.product.name}",
+        "Subject": f"[Création d’offre - {location_information}] {offer.name}",
+    }
+
+
+def make_offer_rejection_notification_email(offer: Offer) -> dict:
+    author = offer.author or offer.venue.managingOfferer.UserOfferers[0].user
+    pro_link_to_offer = f"{settings.PRO_URL}/offres/{humanize(offer.id)}/edition"
+    venue = offer.venue
+    pro_venue_link = f"{settings.PRO_URL}/structures/{humanize(venue.managingOffererId)}/lieux/{humanize(venue.id)}"
+    html = render_template(
+        "mails/offer_creation_refusal_notification_email.html",
+        offer=offer,
+        venue=venue,
+        author=author,
+        pro_link_to_offer=pro_link_to_offer,
+        pro_venue_link=pro_venue_link,
+    )
+    location_information = offer.venue.departementCode or "numérique"
+    return {
+        "Html-part": html,
+        "FromName": "pass Culture",
+        "Subject": f"[Création d’offre : refus - {location_information}] {offer.name}",
     }
 
 
