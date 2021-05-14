@@ -400,7 +400,7 @@ jobs:
             source ${BASH_ENV}
             helm chart export ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:${CHART_VERSION} -d tmp/
       - deploy-helm-chart:
-          helm_chart_name: ${CHART_RELEASE}
+          helm_chart_name: passculture-db-operations
           helm_release_name: ${CHART_RELEASE}
           kubernetes_namespace: ${NAMESPACE}
           helm_values_file: ./api/helm/db-ops/values.${CIRCLE_BRANCH}.yaml
