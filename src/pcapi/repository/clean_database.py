@@ -4,6 +4,7 @@ from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import VenueLabel
 from pcapi.core.offers.models import ActivationCode
 from pcapi.core.offers.models import Mediation
+from pcapi.core.offers.models import OfferValidationConfig
 from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import AllocineVenueProviderPriceRule
 from pcapi.core.providers.models import Provider
@@ -71,6 +72,7 @@ def clean_all_database(*args, **kwargs):
     BeneficiaryImportStatus.query.delete()
     BeneficiaryImport.query.delete()
     Token.query.delete()
+    OfferValidationConfig.query.delete()
     User.query.delete()
     Activity.query.delete()
     UserSession.query.delete()
