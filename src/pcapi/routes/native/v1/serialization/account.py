@@ -13,6 +13,7 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users.api import get_domains_credit
+from pcapi.core.users.api import needs_to_validate_phone
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.core.users.models import User
 from pcapi.core.users.models import VOID_FIRST_NAME
@@ -104,6 +105,7 @@ class UserProfileResponse(BaseModel):
     publicName: Optional[str] = Field(None, alias="pseudo")
     needsToFillCulturalSurvey: bool
     show_eligible_card: bool
+    needs_to_validate_phone: bool
 
     class Config:
         orm_mode = True
@@ -141,6 +143,7 @@ class UserProfileResponse(BaseModel):
         user.subscriptions = user.get_notification_subscriptions()
         user.domains_credit = get_domains_credit(user)
         user.booked_offers = cls._get_booked_offers(user)
+        user.needs_to_validate_phone = needs_to_validate_phone(user)
         return super().from_orm(user)
 
 

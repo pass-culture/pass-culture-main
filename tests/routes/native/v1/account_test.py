@@ -114,6 +114,7 @@ class AccountTest:
             "pseudo": "jdo",
             "showEligibleCard": False,
             "subscriptions": {"marketingPush": True, "marketingEmail": True},
+            "needsToValidatePhone": False,
         }
         EXPECTED_DATA.update(USER_DATA)
 
@@ -164,6 +165,7 @@ class AccountTest:
             "pseudo": "jdo",
             "showEligibleCard": False,
             "subscriptions": {"marketingPush": True, "marketingEmail": True},
+            "needsToValidatePhone": False,
         }
         EXPECTED_DATA.update(USER_DATA)
 
@@ -214,6 +216,7 @@ class AccountTest:
             "pseudo": "jdo",
             "showEligibleCard": False,
             "subscriptions": {"marketingPush": True, "marketingEmail": True},
+            "needsToValidatePhone": False,
         }
         EXPECTED_DATA.update(USER_DATA)
 
@@ -248,6 +251,41 @@ class AccountTest:
         assert response.json["firstName"] is None
         assert response.json["pseudo"] is None
         assert not response.json["isBeneficiary"]
+
+
+def build_test_client(app, identity):
+    access_token = create_access_token(identity=identity)
+    test_client = TestClient(app.test_client())
+    test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+    return test_client
+
+
+class NeedsToValidatePhoneTest:
+    identifier = "email@example.com"
+
+    @freeze_time("2022-06-01")
+    def test_eligible_and_not_beneficiary(self, app):
+        users_factories.UserFactory(
+            isBeneficiary=False, email=self.identifier, dateOfBirth=datetime(2004, 1, 1), departementCode="93"
+        )
+
+        test_client = build_test_client(app, self.identifier)
+        response = test_client.get("/native/v1/me")
+
+        assert response.status_code == 200
+        assert response.json["needsToValidatePhone"]
+
+    def test_already_beneficiary(self, app):
+        users_factories.UserFactory(
+            isBeneficiary=True,
+            email=self.identifier,
+        )
+
+        test_client = build_test_client(app, self.identifier)
+        response = test_client.get("/native/v1/me")
+
+        assert response.status_code == 200
+        assert not response.json["needsToValidatePhone"]
 
 
 class AccountCreationTest:
