@@ -8,7 +8,6 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
-from pcapi.models.db import db
 from pcapi.routes.native.utils import convert_to_cent
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
 from pcapi.routes.native.v1.serialization.offers import OfferCategoryResponse
@@ -114,11 +113,8 @@ class BookingReponse(BaseModel):
         # Therefore the API will override `booking.stock.offer.url` with
         # `booking.completedUrl`.
         # Unfortunate side-effect, the offer object has its url modified and
-        # should be either commited or rolledback.
-        # Alternatively, we detach the offer from the session to evade weird
-        # commit/rollbacks in read-only endpoints.
+        # needs to be rolledback.
         booking.stock.offer.url = booking.completedUrl
-        db.session.expunge(booking.stock.offer)
         return super().from_orm(booking)
 
     class Config:

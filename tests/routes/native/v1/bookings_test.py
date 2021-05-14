@@ -144,7 +144,8 @@ class GetBookingsTest:
         # 1: get the user
         # 1: get the bookings
         # 1: get AUTO_ACTIVATE_DIGITAL_BOOKINGS feature
-        with assert_num_queries(3):
+        # 1: rollback
+        with assert_num_queries(4):
             response = test_client.get("/native/v1/bookings")
 
         assert response.status_code == 200
