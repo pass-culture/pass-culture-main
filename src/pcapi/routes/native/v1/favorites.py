@@ -23,6 +23,13 @@ from . import blueprint
 from .serialization import favorites as serializers
 
 
+@blueprint.native_v1.route("/me/favorites/count", methods=["GET"])
+@spectree_serialize(response_model=serializers.FavoritesCountResponse, api=blueprint.api)  # type: ignore
+@authenticated_user_required
+def get_favorites_count(user: User) -> serializers.FavoritesCountResponse:
+    return serializers.FavoritesCountResponse(count=Favorite.query.filter_by(user=user).count())
+
+
 @blueprint.native_v1.route("/me/favorites", methods=["GET"])
 @spectree_serialize(response_model=serializers.PaginatedFavoritesResponse, api=blueprint.api)  # type: ignore
 @authenticated_user_required

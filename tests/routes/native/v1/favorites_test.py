@@ -19,6 +19,7 @@ from . import utils
 pytestmark = pytest.mark.usefixtures("db_session")
 
 FAVORITES_URL = "/native/v1/me/favorites"
+FAVORITES_COUNT_URL = "/native/v1/me/favorites/count"
 
 
 class Get:
@@ -361,3 +362,33 @@ class Delete:
 
             # Then
             assert response.status_code == 404
+
+
+class GetCount:
+    class Returns200:
+        def when_user_is_logged_in_but_has_no_favorites(self, app):
+            # Given
+            _, test_client = utils.create_user_and_test_client(app)
+
+            # When
+            response = test_client.get(FAVORITES_COUNT_URL)
+
+            # Then
+            assert response.status_code == 200
+            assert response.json == {"count": 0}
+
+        def when_user_is_logged_in_and_has_favorite_offers(self, app):
+            # Given
+            user, test_client = utils.create_user_and_test_client(app)
+            users_factories.FavoriteFactory.create_batch(size=3, user=user)
+
+            # When
+            # QUERY_COUNT:
+            # 1: Fetch the user for auth
+            # 1: Fetch the favorites count
+            with assert_num_queries(2):
+                response = test_client.get(FAVORITES_COUNT_URL)
+
+            # Then
+            assert response.status_code == 200
+            assert response.json == {"count": 3}

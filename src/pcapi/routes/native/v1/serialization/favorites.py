@@ -87,3 +87,7 @@ class PaginatedFavoritesResponse(BaseModel):
 
 class FavoriteRequest(BaseModel):
     offerId: int
+
+
+class FavoritesCountResponse(BaseModel):
+    count: int
