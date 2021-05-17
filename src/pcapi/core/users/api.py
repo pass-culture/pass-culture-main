@@ -9,6 +9,7 @@ import random
 import secrets
 from typing import Optional
 
+from flask import current_app as app
 from jwt import DecodeError
 from jwt import ExpiredSignatureError
 from jwt import InvalidSignatureError
@@ -47,6 +48,8 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.models.user_offerer import UserOfferer
 from pcapi.models.user_session import UserSession
 from pcapi.notifications.sms import send_transactional_sms
+from pcapi.notifications.sms.sending_limit import is_SMS_sending_allowed
+from pcapi.notifications.sms.sending_limit import update_sent_SMS_counter
 from pcapi.repository import feature_queries
 from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_email
@@ -502,11 +505,16 @@ def needs_to_validate_phone(user: User) -> bool:
 def send_phone_validation_code(user: User) -> None:
     _check_phone_number_validation_is_authorized(user)
 
+    if not is_SMS_sending_allowed(app.redis_client, user):
+        raise exceptions.SMSSendingLimitReached()
+
     phone_validation_token = create_phone_validation_token(user)
     content = f"{phone_validation_token.value} est ton code de confirmation pass Culture"
 
     if not send_transactional_sms(format_phone_number_with_country_code(user), content):
         raise exceptions.PhoneVerificationCodeSendingException()
+
+    update_sent_SMS_counter(app.redis_client, user)
 
 
 def validate_phone_number(user: User, code: str) -> None:

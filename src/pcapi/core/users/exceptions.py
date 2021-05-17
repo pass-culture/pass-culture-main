@@ -34,6 +34,10 @@ class PhoneVerificationCodeSendingException(PhoneVerificationException):
     pass
 
 
+class SMSSendingLimitReached(PhoneVerificationException):
+    pass
+
+
 class UnvalidatedEmail(PhoneVerificationException):
     pass
 

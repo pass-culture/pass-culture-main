@@ -117,6 +117,8 @@ WHITELISTED_SMS_RECIPIENTS = utils.parse_phone_numbers(os.environ.get("WHITELIST
 # NOTIFICATIONS
 PUSH_NOTIFICATION_BACKEND = os.environ.get("PUSH_NOTIFICATION_BACKEND", _default_push_notification_backend)
 SMS_NOTIFICATION_BACKEND = os.environ.get("SMS_NOTIFICATION_BACKEND", _default_sms_notification_backend)
+MAX_SMS_SENT_FOR_PHONE_VALIDATION = int(os.environ.get("MAX_SMS_SENT_FOR_PHONE_VALIDATION", 3))
+SENT_SMS_COUNTER_TTL = int(os.environ.get("SENT_SMS_COUNTER_TTL", 30 * 24 * 60 * 60))
 
 # ALGOLIA
 ALGOLIA_API_KEY = os.environ.get("ALGOLIA_API_KEY")

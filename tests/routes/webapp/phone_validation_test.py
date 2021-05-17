@@ -1,4 +1,5 @@
 import pytest
+import redis
 
 from pcapi.core.users.factories import UserFactory
 from pcapi.core.users.models import Token
@@ -10,6 +11,7 @@ from tests.conftest import TestClient
 
 @pytest.mark.usefixtures("db_session")
 def test_send_phone_validation(app):
+    app.redis_client = redis.Redis()
     user = UserFactory(isBeneficiary=False, isEmailValidated=True, phoneNumber="060102030405")
 
     client = TestClient(app.test_client()).with_auth(email=user.email)

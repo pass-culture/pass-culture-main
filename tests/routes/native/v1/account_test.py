@@ -12,6 +12,7 @@ import pytest
 from pcapi.core.bookings.factories import BookingFactory
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.testing import override_features
+from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.api import create_phone_validation_token
 from pcapi.core.users.models import Token
@@ -683,6 +684,8 @@ class SendPhoneValidationCodeTest:
 
         assert response.status_code == 204
 
+        assert int(app.redis_client.get(f"sent_SMS_counter_user_{user.id}")) == 1
+
         token = Token.query.filter_by(userId=user.id, type=TokenType.PHONE_VALIDATION).first()
 
         assert token.expirationDate >= datetime.now() + timedelta(minutes=2)
@@ -691,6 +694,7 @@ class SendPhoneValidationCodeTest:
         assert sms_testing.requests == [
             {"recipient": "3360102030405", "content": f"{token.value} est ton code de confirmation pass Culture"}
         ]
+        assert len(token.value) == 6
         assert 0 <= int(token.value) < 1000000
 
         # validate phone number with generated code
@@ -699,6 +703,21 @@ class SendPhoneValidationCodeTest:
         assert response.status_code == 204
         user = User.query.get(user.id)
         assert user.is_phone_validated
+
+    @override_settings(MAX_SMS_SENT_FOR_PHONE_VALIDATION=1)
+    def test_send_phone_validation_code_too_many_attempts(self, app):
+        user = users_factories.UserFactory(departementCode="93", isBeneficiary=False, phoneNumber="060102030405")
+        access_token = create_access_token(identity=user.email)
+
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+
+        response = test_client.post("/native/v1/send_phone_validation_code")
+        assert response.status_code == 204
+
+        response = test_client.post("/native/v1/send_phone_validation_code")
+        assert response.status_code == 400
+        assert response.json["code"] == "TOO_MANY_SMS_SENT"
 
     def test_send_phone_validation_code_already_beneficiary(self, app):
         user = users_factories.UserFactory(isEmailValidated=True, isBeneficiary=True, phoneNumber="060102030405")

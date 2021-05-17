@@ -137,7 +137,14 @@ def send_phone_validation_code(user: User, body: serializers.SendPhoneValidation
     try:
         if body.phoneNumber:
             api.change_user_phone_number(user, body.phoneNumber)
+
         api.send_phone_validation_code(user)
+
+    except exceptions.SMSSendingLimitReached:
+        raise ApiErrors(
+            {"code": "TOO_MANY_SMS_SENT", "message": "Nombre de tentatives maximal dépassé"},
+            status_code=400,
+        )
     except exceptions.UserPhoneNumberAlreadyValidated:
         raise ApiErrors({"message": "Le numéro de téléphone est déjà validé"}, status_code=400)
     except exceptions.UserWithoutPhoneNumberException:
