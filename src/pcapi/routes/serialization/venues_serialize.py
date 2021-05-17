@@ -29,9 +29,12 @@ class PostVenueBodyModel(BaseModel):
     name: str
     publicName: Optional[str]
     postalCode: str
-    siret: str
+    siret: Optional[str]
     venueLabelId: Optional[str]
-    venueTypeId: Optional[str]
+    venueTypeId: str
+
+    class Config:
+        extra = "forbid"
 
     @validator("latitude", pre=True)
     def validate_latitude(cls, raw_latitude):  # pylint: disable=no-self-argument
@@ -40,7 +43,7 @@ class PostVenueBodyModel(BaseModel):
         except InvalidOperation:
             raise ValueError("Format incorrect")
         else:
-            if latitude > MAX_LATITUDE or latitude < -MAX_LATITUDE:
+            if not -MAX_LATITUDE < latitude < MAX_LATITUDE:
                 raise ValueError("La latitude doit être comprise entre -90.0 et +90.0")
         return raw_latitude
 
@@ -51,12 +54,9 @@ class PostVenueBodyModel(BaseModel):
         except InvalidOperation:
             raise ValueError("Format incorrect")
         else:
-            if longitude > MAX_LONGITUDE or longitude < -MAX_LONGITUDE:
+            if not -MAX_LONGITUDE < longitude < MAX_LONGITUDE:
                 raise ValueError("La longitude doit être comprise entre -180.0 et +180.0")
         return raw_longitude
-
-    class Config:
-        extra = "forbid"
 
 
 class VenueResponseModel(BaseModel):
