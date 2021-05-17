@@ -2,6 +2,7 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
+import { withTracking } from 'components/hocs'
 import { showNotification } from 'store/reducers/notificationReducer'
 import { selectCurrentUser, selectIsUserAdmin } from 'store/selectors/data/usersSelectors'
 
@@ -20,13 +21,6 @@ const mapDispatchToProps = dispatch => ({
         text: 'Une ou plusieurs erreurs sont présentes dans le formulaire',
       })
     ),
-  showCreationSuccessNotification: () =>
-    dispatch(
-      showNotification({
-        type: 'success',
-        text: 'Votre offre a bien été créée',
-      })
-    ),
   showEditionSuccessNotification: () =>
     dispatch(
       showNotification({
@@ -36,4 +30,22 @@ const mapDispatchToProps = dispatch => ({
     ),
 })
 
-export default compose(withRouter, connect(mapStateToProps, mapDispatchToProps))(OfferDetails)
+export const mergeProps = (stateProps, dispatchProps, ownProps) => {
+  return {
+    ...stateProps,
+    ...dispatchProps,
+    ...ownProps,
+    trackCreateOffer: offerId => {
+      ownProps.tracking.trackEvent({ action: 'createOffer', name: offerId })
+    },
+    trackEditOffer: offerId => {
+      ownProps.tracking.trackEvent({ action: 'modifyOffer', name: offerId })
+    },
+  }
+}
+
+export default compose(
+  withTracking('Offer'),
+  withRouter,
+  connect(mapStateToProps, mapDispatchToProps, mergeProps)
+)(OfferDetails)

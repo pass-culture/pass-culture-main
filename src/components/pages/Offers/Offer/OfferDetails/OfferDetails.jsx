@@ -19,6 +19,8 @@ const OfferDetails = ({
   reloadOffer,
   showEditionSuccessNotification,
   showErrorNotification,
+  trackCreateOffer,
+  trackEditOffer,
   userEmail,
 }) => {
   const initialValues = {}
@@ -46,6 +48,7 @@ const OfferDetails = ({
       try {
         if (offer) {
           await pcapi.updateOffer(offer.id, offerValues)
+          trackEditOffer(offer.id)
           showEditionSuccessNotification()
           const offerThumbnailHasBeenUpdated = Object.values(thumbnailInfo).length > 0
           if (offerThumbnailHasBeenUpdated) {
@@ -66,6 +69,7 @@ const OfferDetails = ({
         } else {
           const response = await pcapi.createOffer(offerValues)
           const createdOfferId = response.id
+          trackCreateOffer(createdOfferId)
           const offerThumbnailHasBeenUploaded = Object.values(thumbnailInfo).length > 0
           if (offerThumbnailHasBeenUploaded) {
             const { credit, thumbnail, croppingRect, thumbUrl } = thumbnailInfo
@@ -114,6 +118,8 @@ const OfferDetails = ({
       showEditionSuccessNotification,
       showErrorNotification,
       thumbnailInfo,
+      trackEditOffer,
+      trackCreateOffer,
     ]
   )
 
@@ -201,6 +207,8 @@ OfferDetails.propTypes = {
   reloadOffer: PropTypes.func,
   showEditionSuccessNotification: PropTypes.func.isRequired,
   showErrorNotification: PropTypes.func.isRequired,
+  trackCreateOffer: PropTypes.func.isRequired,
+  trackEditOffer: PropTypes.func.isRequired,
   userEmail: PropTypes.string.isRequired,
 }
 
