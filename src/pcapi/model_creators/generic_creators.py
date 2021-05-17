@@ -11,7 +11,6 @@ from shapely.geometry import Polygon
 from pcapi import settings
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.offerers.models import Offerer
-from pcapi.core.offerers.models import VenueLabel
 from pcapi.core.offers.models import Mediation
 from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import AllocineVenueProviderPriceRule
@@ -552,13 +551,6 @@ def create_venue_type(label: str, idx: Optional[int] = None) -> VenueType:
         venue_type.id = idx
     venue_type.label = label
     return venue_type
-
-
-def create_venue_label(label: str, idx: Optional[int] = None) -> VenueLabel:
-    venue_label = VenueLabel()
-    venue_label.id = idx
-    venue_label.label = label
-    return venue_label
 
 
 def create_allocine_venue_provider(
