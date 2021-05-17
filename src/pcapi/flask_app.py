@@ -23,6 +23,7 @@ from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 from spectree import SpecTree
 from sqlalchemy import orm
 from werkzeug.middleware.profiler import ProfilerMiddleware
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from pcapi import settings
 from pcapi.core.logging import get_or_set_correlation_id
@@ -67,6 +68,8 @@ if settings.PROFILE_REQUESTS:
         app.wsgi_app,
         restrictions=profiling_restrictions,
     )
+
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1)  # type: ignore
 
 if not settings.JWT_SECRET_KEY:
     raise Exception("JWT_SECRET_KEY not found in env")
