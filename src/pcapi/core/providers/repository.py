@@ -4,6 +4,11 @@ from typing import Optional
 from sqlalchemy.orm import query
 
 from pcapi.core.providers.models import Provider
+from pcapi.core.providers.models import VenueProvider
+
+
+def get_venue_provider_list(venue_id: int) -> list[VenueProvider]:
+    return VenueProvider.query.filter_by(venueId=venue_id).all()
 
 
 def get_provider_enabled_for_pro_by_id(provider_id: int) -> Optional[Provider]:

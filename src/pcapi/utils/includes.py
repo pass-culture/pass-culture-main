@@ -92,8 +92,6 @@ VENUE_INCLUDES = [
     {"key": "managingOfferer", "includes": ["-validationToken", "bic", "iban"]},
 ]
 
-VENUE_PROVIDER_INCLUDES = ["provider", "nOffers", "-_sa_polymorphic_on"]
-
 FEATURE_INCLUDES = ["nameKey"]
 
 USER_OFFERER_INCLUDES = ["-validationToken"]

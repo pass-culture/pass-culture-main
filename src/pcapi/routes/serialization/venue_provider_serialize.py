@@ -4,7 +4,9 @@ from typing import Optional
 
 from pydantic.main import BaseModel
 
+from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import humanize_field
+from pcapi.serialization.utils import to_camel
 
 
 class PostVenueProviderBody(BaseModel):
@@ -54,3 +56,17 @@ class VenueProviderResponse(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class ListVenueProviderResponse(BaseModel):
+    venue_providers: List[VenueProviderResponse]
+
+
+class ListVenueProviderQuery(BaseModel):
+    venue_id: int
+
+    _dehumanize_venue_id = dehumanize_field("venue_id")
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
