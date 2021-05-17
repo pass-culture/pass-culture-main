@@ -264,7 +264,7 @@ describe('offerDetails - Creation - pro user', () => {
           ).toBeInTheDocument()
           expect(screen.getByRole('link', { name: '+ Ajouter un lieu' })).toHaveAttribute(
             'href',
-            '/structures'
+            '/accueil'
           )
           expect(screen.queryByLabelText('Type de spectacle')).not.toBeInTheDocument()
         })
