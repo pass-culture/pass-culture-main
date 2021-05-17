@@ -225,5 +225,6 @@ export const loadProviders = async venueId => {
 }
 
 export const loadVenueProviders = async venueId => {
-  return client.get(`/venueProviders?venueId=${venueId}`)
+
+  return client.get(`/venueProviders?venueId=${venueId}`).then((response) => response.venue_providers)
 }
