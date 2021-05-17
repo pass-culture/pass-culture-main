@@ -5,10 +5,10 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offers.factories import VirtualVenueTypeFactory
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
-from pcapi.model_creators.generic_creators import create_venue_type
 from pcapi.models import UserOfferer
 from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
@@ -33,8 +33,8 @@ class Post:
             )
 
             user = create_user()
-            digital_venue_type = create_venue_type(label=DEFAULT_DIGITAL_VENUE_LABEL)
-            repository.save(user, digital_venue_type)
+            digital_venue_type = VirtualVenueTypeFactory()
+            repository.save(user)
             body = {
                 "name": "Test Offerer",
                 "siren": "418166096",
@@ -63,8 +63,8 @@ class Post:
             )
 
             user = create_user()
-            digital_venue_type = create_venue_type(label=DEFAULT_DIGITAL_VENUE_LABEL)
-            repository.save(user, digital_venue_type)
+            VirtualVenueTypeFactory()
+            repository.save(user)
             body = {"name": "Test Offerer", "siren": "418166096", "postalCode": "93100", "city": "Montreuil"}
 
             # when
@@ -84,8 +84,8 @@ class Post:
             )
 
             user = create_user(is_beneficiary=False, is_admin=True)
-            digital_venue_type = create_venue_type(label=DEFAULT_DIGITAL_VENUE_LABEL)
-            repository.save(user, digital_venue_type)
+            VirtualVenueTypeFactory()
+            repository.save(user)
             body = {
                 "name": "Test Offerer",
                 "siren": "418166096",
@@ -109,8 +109,8 @@ class Post:
             )
 
             user = create_user(is_beneficiary=False, is_admin=False)
-            digital_venue_type = create_venue_type(label=DEFAULT_DIGITAL_VENUE_LABEL)
-            repository.save(user, digital_venue_type)
+            VirtualVenueTypeFactory()
+            repository.save(user)
             body = {
                 "name": "Test Offerer",
                 "siren": "418166096",
@@ -143,8 +143,8 @@ class Post:
             user_2 = create_user(email="other_offerer@mail.com", is_admin=False)
             offerer = create_offerer()
             user_offerer = create_user_offerer(user_2, offerer, validation_token=None)
-            digital_venue_type = create_venue_type(label=DEFAULT_DIGITAL_VENUE_LABEL)
-            repository.save(user, user_2, offerer, user_offerer, digital_venue_type)
+            VirtualVenueTypeFactory()
+            repository.save(user, user_2, offerer, user_offerer)
             body = {
                 "name": "Test Offerer",
                 "siren": "123456789",
@@ -177,8 +177,8 @@ class Post:
             )
 
             user = create_user(is_beneficiary=False, is_admin=False)
-            digital_venue_type = create_venue_type(label=DEFAULT_DIGITAL_VENUE_LABEL)
-            repository.save(user, digital_venue_type)
+            VirtualVenueTypeFactory()
+            repository.save(user)
             body = {
                 "name": "Test Offerer",
                 "siren": "418166096",

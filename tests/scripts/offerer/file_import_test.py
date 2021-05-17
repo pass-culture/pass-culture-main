@@ -6,12 +6,11 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offers.factories import VirtualVenueTypeFactory
 from pcapi.core.users.models import User
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user
-from pcapi.model_creators.generic_creators import create_venue_type
 from pcapi.models import UserOfferer
-from pcapi.repository import repository
 from pcapi.scripts.offerer.file_import import OffererNotCreatedException
 from pcapi.scripts.offerer.file_import import UserNotCreatedException
 from pcapi.scripts.offerer.file_import import create_activated_user_offerer
@@ -79,8 +78,7 @@ class CreateActivatedUserOffererTest:
     def test_returns_created_user_offerer(self, app):
         # given
         blake = create_user(email="fblake@bletchley.co.uk", idx=123)
-        venue_type = create_venue_type(label="Offre numérique")
-        repository.save(venue_type)
+        VirtualVenueTypeFactory()
         blakes_company = create_offerer(siren="362521879", name="MyBletcheyCompany", idx=234)
         self.find_user_query.side_effect = [blake]
         self.find_offerer_query.side_effect = [blakes_company]

@@ -11,7 +11,6 @@ from shapely.geometry import Polygon
 from pcapi import settings
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.offerers.models import Offerer
-from pcapi.core.offerers.models import VenueType
 from pcapi.core.offers.models import Mediation
 from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import AllocineVenueProviderPriceRule
@@ -543,14 +542,6 @@ def create_venue_provider(
     venue_provider.syncWorkerId = sync_worker_id
 
     return venue_provider
-
-
-def create_venue_type(label: str, idx: Optional[int] = None) -> VenueType:
-    venue_type = VenueType()
-    if idx:
-        venue_type.id = idx
-    venue_type.label = label
-    return venue_type
 
 
 def create_allocine_venue_provider(

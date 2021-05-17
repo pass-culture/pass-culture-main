@@ -1,10 +1,10 @@
 import pytest
 
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offers.factories import VirtualVenueTypeFactory
 from pcapi.core.users.models import User
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
-from pcapi.model_creators.generic_creators import create_venue_type
 from pcapi.models.user_offerer import UserOfferer
 from pcapi.repository import repository
 
@@ -32,8 +32,7 @@ class Post:
         def when_user_data_is_valid(self, app):
             # Given
             data = BASE_DATA_PRO.copy()
-            venue_type = create_venue_type(label="Offre numérique")
-            repository.save(venue_type)
+            venue_type = VirtualVenueTypeFactory()
 
             # When
             response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
@@ -70,8 +69,7 @@ class Post:
             # Given
             data_pro = BASE_DATA_PRO.copy()
             data_pro["contactOk"] = "true"
-            venue_type = create_venue_type(label="Offre numérique")
-            repository.save(venue_type)
+            venue_type = VirtualVenueTypeFactory()
 
             # When
             response = TestClient(app.test_client()).post("/users/signup/pro", json=data_pro)
@@ -101,12 +99,12 @@ class Post:
                 "postalCode": "75000",
                 "city": "Paris",
             }
-            venue_type = create_venue_type(label="Offre numérique")
+            VirtualVenueTypeFactory()
             offerer = Offerer(from_dict=json_offerer)
             offerer.generate_validation_token()
             user = create_user(email="bobby@test.com", public_name="bobby")
             user_offerer = create_user_offerer(user, offerer)
-            repository.save(venue_type, offerer, user_offerer)
+            repository.save(offerer, user_offerer)
 
             data = BASE_DATA_PRO.copy()
 
@@ -192,8 +190,7 @@ class Post:
             # Given
             data = BASE_DATA_PRO.copy()
             data["email"] = "toto"
-            venue_type = create_venue_type(label="Offre numérique")
-            repository.save(venue_type)
+            VirtualVenueTypeFactory()
 
             # When
             response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
@@ -206,8 +203,7 @@ class Post:
         def when_email_is_already_used(self, app):
             # Given
             data = BASE_DATA_PRO.copy()
-            venue_type = create_venue_type(label="Offre numérique")
-            repository.save(venue_type)
+            VirtualVenueTypeFactory()
             TestClient(app.test_client()).post("/users/signup/pro", json=data)
 
             # When
@@ -222,8 +218,7 @@ class Post:
             # Given
             data = BASE_DATA_PRO.copy()
             del data["publicName"]
-            venue_type = create_venue_type(label="Offre numérique")
-            repository.save(venue_type)
+            VirtualVenueTypeFactory()
 
             # When
             response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
@@ -237,8 +232,7 @@ class Post:
             # Given
             data = BASE_DATA_PRO.copy()
             data["publicName"] = "x" * 300
-            venue_type = create_venue_type(label="Offre numérique")
-            repository.save(venue_type)
+            VirtualVenueTypeFactory()
 
             # When
             response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
@@ -284,8 +278,7 @@ class Post:
             # Given
             data = BASE_DATA_PRO.copy()
             del data["name"]
-            venue_type = create_venue_type(label="Offre numérique")
-            repository.save(venue_type)
+            VirtualVenueTypeFactory()
 
             # When
             response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
@@ -299,8 +292,7 @@ class Post:
             # Given
             data = BASE_DATA_PRO.copy()
             del data["city"]
-            venue_type = create_venue_type(label="Offre numérique")
-            repository.save(venue_type)
+            VirtualVenueTypeFactory()
 
             # When
             response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
@@ -314,8 +306,7 @@ class Post:
             # Given
             data = BASE_DATA_PRO.copy()
             del data["postalCode"]
-            venue_type = create_venue_type(label="Offre numérique")
-            repository.save(venue_type)
+            VirtualVenueTypeFactory()
 
             # When
             response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
@@ -329,8 +320,7 @@ class Post:
             # Given
             data = BASE_DATA_PRO.copy()
             data["postalCode"] = "111"
-            venue_type = create_venue_type(label="Offre numérique")
-            repository.save(venue_type)
+            VirtualVenueTypeFactory()
 
             # When
             response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
@@ -357,8 +347,7 @@ class Post:
                 "isAdmin": True,
                 "contactOk": "true",
             }
-            venue_type = create_venue_type(label="Offre numérique")
-            repository.save(venue_type)
+            VirtualVenueTypeFactory()
 
             # When
             response = TestClient(app.test_client()).post("/users/signup/pro", json=user_json)
@@ -372,8 +361,7 @@ class Post:
             # Given
             data = BASE_DATA_PRO.copy()
             data["phoneNumber"] = "abc 123"
-            venue_type = create_venue_type(label="Offre numérique")
-            repository.save(venue_type)
+            VirtualVenueTypeFactory()
 
             # When
             response = TestClient(app.test_client()).post("/users/signup/pro", json=data)
