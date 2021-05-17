@@ -22,16 +22,11 @@ Idée c'est de le fusionner avec les autres groupes swagger générés qui fonct
 ## Installation et Lancement des tests
 
 - ### Installation des requirements
-  - Soit avec venv
+  - Avec venv (ou virtualenv si vous préférez)
     ```bash
     python3.9 -m venv ./venv
     source venv/bin/activate 
-    pip install -r requirements.txt
-    ```
-    
-  - Soit avec virtualenv
-    ```bash
-    virtualenv pass-culture-api
+    pip install -e .
     pip install -r requirements.txt
     ```
   
@@ -44,7 +39,7 @@ Idée c'est de le fusionner avec les autres groupes swagger générés qui fonct
     
   - Lancement des tests depuis la ligne de commande
     ```bash
-    PYTHONPATH=$(pwd)/src python -m pytest
+    python -m pytest
     ```
   
   - Lancement des tests depuis PyCharm(IntelliJ)
