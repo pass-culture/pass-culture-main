@@ -27,6 +27,7 @@ describe('bookings offer cell', () => {
       const isbn = screen.getByText('97834567654')
       const isbn_link = isbn.closest('a')
       expect(isbn_link.href).toContain('offres/A0')
+      expect(isbn_link.target).toContain('_blank')
     })
 
     it('offer name with a link to the offer when stock is a thing', () => {

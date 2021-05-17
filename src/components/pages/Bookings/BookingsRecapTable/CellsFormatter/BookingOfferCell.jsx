@@ -33,6 +33,8 @@ const BookingOfferCell = ({ offer }) => {
     <a
       className="booking-offer-detail-link"
       href={`/offres/${offer.offer_identifier}/edition`}
+      rel="noopener noreferrer"
+      target="_blank"
     >
       {component}
     </a>
