@@ -35,7 +35,6 @@ from pcapi.models import UserOfferer
 from pcapi.models import UserSession
 from pcapi.models import Venue
 from pcapi.models import VenueType
-from pcapi.models.activity import load_activity
 from pcapi.models.db import db
 from pcapi.models.install import install_features
 
@@ -44,7 +43,6 @@ def clean_all_database(*args, **kwargs):
     """Order of deletions matters because of foreign key constraints"""
     if settings.ENV not in ("development", "testing"):
         raise ValueError(f"You cannot do this on this environment: '{settings.ENV}'")
-    Activity = load_activity()
     LocalProviderEvent.query.delete()
     ActivationCode.query.delete()
     AllocineVenueProviderPriceRule.query.delete()
@@ -74,7 +72,6 @@ def clean_all_database(*args, **kwargs):
     Token.query.delete()
     OfferValidationConfig.query.delete()
     User.query.delete()
-    Activity.query.delete()
     UserSession.query.delete()
     Email.query.delete()
     LocalProviderEvent.query.delete()

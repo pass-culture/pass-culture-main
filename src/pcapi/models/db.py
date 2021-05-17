@@ -1,5 +1,4 @@
 from flask_sqlalchemy import SQLAlchemy
-from postgresql_audit.flask import VersioningManager
 
 from pcapi import settings
 
@@ -18,6 +17,3 @@ if db_options:
 db = SQLAlchemy(engine_options=engine_options)
 
 Model = db.Model
-
-versioning_manager = VersioningManager(actor_cls="User")
-versioning_manager.init(Model)

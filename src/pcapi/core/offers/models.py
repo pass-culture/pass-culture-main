@@ -48,7 +48,6 @@ from pcapi.models.offer_type import ThingType
 from pcapi.models.pc_object import PcObject
 from pcapi.models.providable_mixin import ProvidableMixin
 from pcapi.models.soft_deletable_mixin import SoftDeletableMixin
-from pcapi.models.versioned_mixin import VersionedMixin
 from pcapi.utils.date import DateTimes
 
 
@@ -76,7 +75,7 @@ class Mediation(PcObject, Model, HasThumbMixin, ProvidableMixin, DeactivableMixi
 EVENT_AUTOMATIC_REFUND_DELAY = timedelta(hours=48)
 
 
-class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin, VersionedMixin):
+class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin):
     __tablename__ = "stock"
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
@@ -263,7 +262,7 @@ class OfferValidationStatus(enum.Enum):
     REJECTED = "REJECTED"
 
 
-class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin, VersionedMixin):
+class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin):
     __tablename__ = "offer"
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)

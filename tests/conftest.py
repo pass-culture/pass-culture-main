@@ -24,7 +24,6 @@ from pcapi.install_database_extensions import install_database_extensions
 from pcapi.local_providers.install import install_local_providers
 from pcapi.model_creators.generic_creators import PLAIN_DEFAULT_TESTING_PASSWORD
 from pcapi.models.db import db
-from pcapi.models.install import install_activity
 from pcapi.notifications.push import testing as push_notifications_testing
 from pcapi.notifications.sms import testing as sms_notifications_testing
 from pcapi.repository.clean_database import clean_all_database
@@ -70,7 +69,6 @@ def app():
 
     run_migrations()
 
-    install_activity()
     install_routes(app)
     install_local_providers()
     admin.init_app(app)
@@ -126,7 +124,6 @@ def _db(app):  # pylint: disable=redefined-outer-name
     install_database_extensions(app)
     run_migrations()
 
-    install_activity()
     install_routes(app)
     install_local_providers()
     clean_all_database()

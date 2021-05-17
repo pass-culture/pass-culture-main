@@ -12,7 +12,6 @@ from sqlalchemy.orm import relationship
 
 from pcapi.models.db import Model
 from pcapi.models.pc_object import PcObject
-from pcapi.models.versioned_mixin import VersionedMixin
 
 
 class BankInformationStatus(enum.Enum):
@@ -21,7 +20,7 @@ class BankInformationStatus(enum.Enum):
     ACCEPTED = "ACCEPTED"
 
 
-class BankInformation(PcObject, Model, VersionedMixin):
+class BankInformation(PcObject, Model):
     offererId = Column(BigInteger, ForeignKey("offerer.id"), index=True, nullable=True, unique=True)
 
     offerer = relationship("Offerer", foreign_keys=[offererId], backref=backref("bankInformation", uselist=False))

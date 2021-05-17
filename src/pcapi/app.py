@@ -8,7 +8,6 @@ from pcapi.flask_app import admin
 from pcapi.flask_app import app
 from pcapi.flask_app import db
 from pcapi.local_providers.install import install_local_providers
-from pcapi.models.install import install_activity
 from pcapi.routes import install_routes
 from pcapi.routes.native.v1.blueprint import native_v1
 from pcapi.routes.pro.blueprints import pro_api_v2
@@ -27,7 +26,6 @@ def install_login_manager() -> None:
 
 with app.app_context():
     if settings.IS_DEV:
-        install_activity()
         install_local_providers()
 
     install_login_manager()

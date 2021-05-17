@@ -40,7 +40,6 @@ from pcapi.models.deposit import Deposit
 from pcapi.models.needs_validation_mixin import NeedsValidationMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.user_offerer import UserOfferer
-from pcapi.models.versioned_mixin import VersionedMixin
 
 
 ALGORITHM_HS_256 = "HS256"
@@ -117,7 +116,7 @@ class NotificationSubscriptions:
     marketing_email: bool = True
 
 
-class User(PcObject, Model, NeedsValidationMixin, VersionedMixin):
+class User(PcObject, Model, NeedsValidationMixin):
     __tablename__ = "user"
 
     email = Column(String(120), nullable=False, unique=True)

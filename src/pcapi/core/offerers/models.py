@@ -37,7 +37,6 @@ from pcapi.models.needs_validation_mixin import NeedsValidationMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.providable_mixin import ProvidableMixin
 from pcapi.models.user_offerer import UserOfferer
-from pcapi.models.versioned_mixin import VersionedMixin
 from pcapi.utils.date import CUSTOM_TIMEZONES
 from pcapi.utils.date import METROPOLE_TIMEZONE
 from pcapi.utils.date import get_department_timezone
@@ -71,7 +70,7 @@ CONSTRAINT_CHECK_HAS_SIRET_XOR_HAS_COMMENT_XOR_IS_VIRTUAL = """
 """
 
 
-class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, VersionedMixin, NeedsValidationMixin):
+class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, NeedsValidationMixin):
     __tablename__ = "venue"
 
     id = Column(BigInteger, primary_key=True)
@@ -236,7 +235,6 @@ class Offerer(
     ProvidableMixin,
     NeedsValidationMixin,
     DeactivableMixin,
-    VersionedMixin,
 ):
     id = Column(BigInteger, primary_key=True)
 

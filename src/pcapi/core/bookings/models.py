@@ -21,7 +21,6 @@ from sqlalchemy.sql import expression
 from pcapi.core.bookings.conf import BOOKINGS_AUTO_EXPIRY_DELAY
 from pcapi.models.db import Model
 from pcapi.models.pc_object import PcObject
-from pcapi.models.versioned_mixin import VersionedMixin
 from pcapi.utils.human_ids import humanize
 
 
@@ -32,7 +31,7 @@ class BookingCancellationReasons(enum.Enum):
     FRAUD = "FRAUD"
 
 
-class Booking(PcObject, Model, VersionedMixin):
+class Booking(PcObject, Model):
     __tablename__ = "booking"
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)

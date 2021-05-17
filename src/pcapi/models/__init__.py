@@ -46,14 +46,12 @@ from pcapi.models.providable_mixin import ProvidableMixin
 from pcapi.models.user_offerer import UserOfferer
 from pcapi.models.user_session import UserSession
 from pcapi.models.venue_type import VenueType
-from pcapi.models.versioned_mixin import VersionedMixin
 
 
 # TODO: fix circular import
 from pcapi.models.iris_france import IrisFrance  # isort:skip
 
 __all__ = (
-    "VersionedMixin",
     "ActivationCode",
     "ApiErrors",
     "ApiKey",
