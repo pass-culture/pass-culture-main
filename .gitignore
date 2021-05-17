@@ -30,3 +30,6 @@ pro-packed-staging/
 webapp-packed-staging/
 
 *.retry
+
+# The `shared` submodule has been removed in https://github.com/pass-culture/pass-culture-main/pull/334
+/shared
