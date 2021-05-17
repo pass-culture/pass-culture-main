@@ -1,20 +1,12 @@
-.booking-offer-info {
-  .offer-name {
-    font-weight: 700;
-    max-width: rem(130px);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
+.booking-offer-name {
+  @include button();
 
-  .offer-additional-info {
-    color: $grey-dark;
-  }
+  max-width: rem(130px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.booking-offer-detail-link {
-  &:focus,
-  &:hover {
-    color: inherit;
-  }
+.booking-offer-additional-info {
+  color: $grey-dark;
 }

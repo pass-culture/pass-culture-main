@@ -25,9 +25,11 @@ describe('bookings offer cell', () => {
 
       // Then
       const isbn = screen.getByText('97834567654')
-      const isbn_link = isbn.closest('a')
-      expect(isbn_link.href).toContain('offres/A0')
-      expect(isbn_link.target).toContain('_blank')
+      expect(isbn).toBeInTheDocument()
+      const title = screen.getByText('La Guitare pour les nuls')
+      const title_link = title.closest('a')
+      expect(title_link.href).toContain('offres/A0')
+      expect(title_link.target).toContain('_blank')
     })
 
     it('offer name with a link to the offer when stock is a thing', () => {
@@ -48,6 +50,7 @@ describe('bookings offer cell', () => {
       const offer_name = screen.getByText('Guitare acoustique')
       const offer_name_link = offer_name.closest('a')
       expect(offer_name_link.href).toContain('offres/A1')
+      expect(offer_name_link.target).toContain('_blank')
     })
 
     it('offer name and event beginning datetime in venue timezone when stock is an event', () => {
@@ -70,6 +73,7 @@ describe('bookings offer cell', () => {
       const offer_name = screen.getByText('La danse des poireaux')
       const offer_name_link = offer_name.closest('a')
       expect(offer_name_link.href).toContain('offres/A2')
+      expect(offer_name_link.target).toContain('_blank')
     })
   })
 })

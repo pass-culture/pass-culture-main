@@ -4,26 +4,33 @@ import React from 'react'
 
 import { FORMAT_DD_MM_YYYY_HH_mm, toDateStrippedOfTimezone } from 'utils/date'
 
-const BookingOfferCellForEvent = ({ eventDatetime, offerName }) => {
+const BookingOfferCellForEvent = ({ eventDatetime, offerId, offerName }) => {
   const eventDatetimeFormatted = format(
     toDateStrippedOfTimezone(eventDatetime),
     FORMAT_DD_MM_YYYY_HH_mm
   )
 
   return (
-    <span className="booking-offer-info">
-      <p className="offer-name">
+    <a
+      className="booking-offer-detail-link"
+      href={`/offres/${offerId}/edition`}
+      rel="noopener noreferrer"
+      target="_blank"
+      title={`${offerName} (ouverture dans un nouvel onglet)`}
+    >
+      <div className="booking-offer-name">
         {offerName}
-      </p>
-      <p className="offer-additional-info">
+      </div>
+      <div className="booking-offer-additional-info">
         {eventDatetimeFormatted}
-      </p>
-    </span>
+      </div>
+    </a>
   )
 }
 
 BookingOfferCellForEvent.propTypes = {
   eventDatetime: PropTypes.string.isRequired,
+  offerId: PropTypes.string.isRequired,
   offerName: PropTypes.string.isRequired,
 }
 

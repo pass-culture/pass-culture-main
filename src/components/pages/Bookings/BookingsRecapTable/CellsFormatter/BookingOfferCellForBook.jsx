@@ -1,18 +1,26 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-const BookingOfferCellForBook = ({ offerIsbn, offerName }) => (
-  <span className="booking-offer-info">
-    <p className="offer-name">
-      {offerName}
-    </p>
-    <p className="offer-additional-info">
+const BookingOfferCellForBook = ({ offerId, offerIsbn, offerName }) => (
+  <>
+    <a
+      href={`/offres/${offerId}/edition`}
+      rel="noopener noreferrer"
+      target="_blank"
+      title={`${offerName} (ouverture dans un nouvel onglet)`}
+    >
+      <div className="booking-offer-name">
+        {offerName}
+      </div>
+    </a>
+    <div className="booking-offer-additional-info">
       {offerIsbn}
-    </p>
-  </span>
+    </div>
+  </>
 )
 
 BookingOfferCellForBook.propTypes = {
+  offerId: PropTypes.string.isRequired,
   offerIsbn: PropTypes.string.isRequired,
   offerName: PropTypes.string.isRequired,
 }
