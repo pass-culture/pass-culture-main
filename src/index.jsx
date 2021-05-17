@@ -1,8 +1,8 @@
+import '@fontsource/barlow/latin.css'
 import { init as SentryInit } from '@sentry/browser'
 import { Integrations as TracingIntegrations } from '@sentry/tracing'
 import React from 'react'
 import ReactDOM from 'react-dom'
-import 'typeface-barlow'
 import smoothscroll from 'smoothscroll-polyfill'
 
 import Root from 'Root'

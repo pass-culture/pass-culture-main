@@ -36,6 +36,7 @@
     "*.scss": "stylelint --syntax=scss --fix"
   },
   "dependencies": {
+    "@fontsource/barlow": "^4.3.0",
     "@reach/dialog": "^0.15.0",
     "@reach/menu-button": "^0.15.1",
     "@sentry/browser": "^6.3.1",
@@ -81,8 +82,7 @@
     "redux-saga-data": "^3.3.0",
     "redux-thunk": "^2.3.0",
     "reselect": "^4.0.0",
-    "smoothscroll-polyfill": "^0.4.4",
-    "typeface-barlow": "^0.0.54"
+    "smoothscroll-polyfill": "^0.4.4"
   },
   "devDependencies": {
     "@babel/core": "^7.13.16",

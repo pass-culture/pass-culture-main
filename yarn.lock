@@ -1234,6 +1234,11 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
+"@fontsource/barlow@^4.3.0":
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/@fontsource/barlow/-/barlow-4.3.0.tgz#2510bbc8f33630de9854dd7434ba9d9bd90dfc71"
+  integrity sha512-BaCX3bK22lfgtGHv0zNb+sRo7G8ZnmwOnhEORT/el8GVAQ11x769dyz4WfTLRHZeJxlDCdusb6tGBY60AU2/BQ==
+
 "@hapi/address@2.x.x":
   version "2.1.4"
   resolved "https://registry.yarnpkg.com/@hapi/address/-/address-2.1.4.tgz#5d67ed43f3fd41a69d4b9ff7b56e7c0d1d0a81e5"
@@ -14505,11 +14510,6 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
-
-typeface-barlow@^0.0.54:
-  version "0.0.54"
-  resolved "https://registry.yarnpkg.com/typeface-barlow/-/typeface-barlow-0.0.54.tgz#67f33bb32a79ccd414c251b273ea20c26131eda6"
-  integrity sha512-41Iwl07pFvSYOL7bG+9A/G/SpmALAm67rzd6TK5c85FgGrpfH6Ux5gT1vNf6mYspSWOKWoSlFeay662Reg67BQ==
 
 typescript-compare@^0.0.2:
   version "0.0.2"
