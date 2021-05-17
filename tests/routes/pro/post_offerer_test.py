@@ -5,12 +5,11 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offers.factories import OffererFactory
+from pcapi.core.offers.factories import UserOffererFactory
 from pcapi.core.offers.factories import VirtualVenueTypeFactory
-from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_user
-from pcapi.model_creators.generic_creators import create_user_offerer
+from pcapi.core.users.factories import UserFactory
 from pcapi.models import UserOfferer
-from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
@@ -32,9 +31,8 @@ class Post:
                 status_code=200, text="", json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock))
             )
 
-            user = create_user()
+            user = UserFactory()
             digital_venue_type = VirtualVenueTypeFactory()
-            repository.save(user)
             body = {
                 "name": "Test Offerer",
                 "siren": "418166096",
@@ -62,9 +60,8 @@ class Post:
                 status_code=200, text="", json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock))
             )
 
-            user = create_user()
+            user = UserFactory()
             VirtualVenueTypeFactory()
-            repository.save(user)
             body = {"name": "Test Offerer", "siren": "418166096", "postalCode": "93100", "city": "Montreuil"}
 
             # when
@@ -83,9 +80,8 @@ class Post:
                 status_code=200, text="", json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock))
             )
 
-            user = create_user(is_beneficiary=False, is_admin=True)
+            user = UserFactory(isBeneficiary=False, isAdmin=True)
             VirtualVenueTypeFactory()
-            repository.save(user)
             body = {
                 "name": "Test Offerer",
                 "siren": "418166096",
@@ -108,9 +104,8 @@ class Post:
                 status_code=200, text="", json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock))
             )
 
-            user = create_user(is_beneficiary=False, is_admin=False)
+            user = UserFactory(isBeneficiary=False, isAdmin=False)
             VirtualVenueTypeFactory()
-            repository.save(user)
             body = {
                 "name": "Test Offerer",
                 "siren": "418166096",
@@ -139,18 +134,17 @@ class Post:
                 status_code=200, text="", json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock))
             )
 
-            user = create_user(is_beneficiary=False, is_admin=False)
-            user_2 = create_user(email="other_offerer@mail.com", is_admin=False)
-            offerer = create_offerer()
-            user_offerer = create_user_offerer(user_2, offerer, validation_token=None)
+            user = UserFactory(isBeneficiary=False, isAdmin=False)
+            user_2 = UserFactory(email="other_offerer@mail.com", isAdmin=False)
+            offerer = OffererFactory()
+            UserOffererFactory(user=user_2, offerer=offerer, validationToken=None)
             VirtualVenueTypeFactory()
-            repository.save(user, user_2, offerer, user_offerer)
             body = {
-                "name": "Test Offerer",
-                "siren": "123456789",
-                "address": "123 rue de Paris",
-                "postalCode": "93100",
-                "city": "Montreuil",
+                "name": offerer.name,
+                "siren": offerer.siren,
+                "address": offerer.address,
+                "postalCode": offerer.postalCode,
+                "city": offerer.city,
             }
 
             # when
@@ -176,9 +170,8 @@ class Post:
                 status_code=200, text="", json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock))
             )
 
-            user = create_user(is_beneficiary=False, is_admin=False)
+            user = UserFactory(isBeneficiary=False, isAdmin=False)
             VirtualVenueTypeFactory()
-            repository.save(user)
             body = {
                 "name": "Test Offerer",
                 "siren": "418166096",
@@ -208,15 +201,14 @@ class Post:
                 status_code=200, text="", json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock))
             )
 
-            user = create_user(is_beneficiary=False, is_admin=False)
-            offerer = create_offerer(siren="123456789")
-            repository.save(user, offerer)
+            user = UserFactory(isBeneficiary=False, isAdmin=False)
+            offerer = OffererFactory()
             body = {
-                "name": "Test Offerer",
-                "siren": "123456789",
-                "address": "123 rue de Paris",
-                "postalCode": "93100",
-                "city": "Montreuil",
+                "name": offerer.name,
+                "siren": offerer.siren,
+                "address": offerer.address,
+                "postalCode": offerer.postalCode,
+                "city": offerer.city,
             }
 
             # When
@@ -240,15 +232,14 @@ class Post:
                 status_code=200, text="", json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock))
             )
 
-            user = create_user(is_beneficiary=False, is_admin=False)
-            offerer = create_offerer(siren="123456789", validation_token="not_validated")
-            repository.save(user, offerer)
+            user = UserFactory(isBeneficiary=False, isAdmin=False)
+            offerer = OffererFactory(validationToken="not_validated")
             body = {
-                "name": "Test Offerer",
-                "siren": "123456789",
-                "address": "123 rue de Paris",
-                "postalCode": "93100",
-                "city": "Montreuil",
+                "name": offerer.name,
+                "siren": offerer.siren,
+                "address": offerer.address,
+                "postalCode": offerer.postalCode,
+                "city": offerer.city,
             }
 
             # When
@@ -273,15 +264,14 @@ class Post:
                 status_code=200, text="", json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock))
             )
 
-            user = create_user(is_beneficiary=False, is_admin=False)
-            offerer = create_offerer(siren="123456789", validation_token="not_validated")
-            repository.save(user, offerer)
+            user = UserFactory(isBeneficiary=False, isAdmin=False)
+            offerer = OffererFactory(validationToken="not_validated")
             body = {
-                "name": "Test Offerer",
-                "siren": "123456789",
-                "address": "123 rue de Paris",
-                "postalCode": "93100",
-                "city": "Montreuil",
+                "name": offerer.name,
+                "siren": offerer.siren,
+                "address": offerer.address,
+                "postalCode": offerer.postalCode,
+                "city": offerer.city,
             }
 
             # When

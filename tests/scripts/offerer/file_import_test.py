@@ -6,10 +6,10 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import VirtualVenueTypeFactory
+from pcapi.core.users.factories import UserFactory
 from pcapi.core.users.models import User
-from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_user
 from pcapi.models import UserOfferer
 from pcapi.scripts.offerer.file_import import OffererNotCreatedException
 from pcapi.scripts.offerer.file_import import UserNotCreatedException
@@ -77,9 +77,9 @@ class CreateActivatedUserOffererTest:
 
     def test_returns_created_user_offerer(self, app):
         # given
-        blake = create_user(email="fblake@bletchley.co.uk", idx=123)
+        blake = UserFactory(email="fblake@bletchley.co.uk", id=123)
         VirtualVenueTypeFactory()
-        blakes_company = create_offerer(siren="362521879", name="MyBletcheyCompany", idx=234)
+        blakes_company = OffererFactory(siren="362521879", name="MyBletcheyCompany", id=234)
         self.find_user_query.side_effect = [blake]
         self.find_offerer_query.side_effect = [blakes_company]
         self.find_user_offerer_query.side_effect = [None]
@@ -113,8 +113,8 @@ class FillUserOffererFromTest:
 
     def test_returns_a_user_offerer_built_with_user_and_offerer_relative_to_csv_row(self):
         # given
-        blake = create_user(email="fblake@bletchley.co.uk", idx=123)
-        blakes_company = create_offerer(siren="362521879", name="MyBletcheyCompany", idx=234)
+        blake = UserFactory(email="fblake@bletchley.co.uk", id=123)
+        blakes_company = OffererFactory(siren="362521879", name="MyBletcheyCompany", id=234)
 
         # when
         user_offerer = fill_user_offerer_from(UserOfferer(), blake, blakes_company)
@@ -125,8 +125,8 @@ class FillUserOffererFromTest:
 
     def test_raise_error_when_user_relative_to_csv_not_created(self):
         # given
-        blake = create_user(email="fblake@bletchley.co.uk")
-        blakes_company = create_offerer(siren="362521879", name="MyBletcheyCompany", idx=234)
+        blake = User(email="fblake@bletchley.co.uk")
+        blakes_company = OffererFactory(siren="362521879", name="MyBletcheyCompany", id=234)
 
         # when
         with pytest.raises(UserNotCreatedException):
@@ -134,8 +134,8 @@ class FillUserOffererFromTest:
 
     def test_raise_error_when_offerer_relative_to_csv_not_created(self):
         # given
-        blake = create_user(email="fblake@bletchley.co.uk", idx=123)
-        blakes_company = create_offerer(siren="362521879", name="MyBletcheyCompany")
+        blake = UserFactory(email="fblake@bletchley.co.uk", id=123)
+        blakes_company = Offerer(siren="362521879", name="MyBletcheyCompany")
 
         # when
         with pytest.raises(OffererNotCreatedException):
@@ -197,7 +197,7 @@ class FillUserFromTest:
 
     def test_returns_the_given_user_with_modified_data_from_the_csv(self):
         # given
-        existing_user = create_user(email="pmortimer@bletchley.co.uk", idx=123)
+        existing_user = UserFactory(email="pmortimer@bletchley.co.uk", id=123)
 
         # when
         user = fill_user_from(self.csv_row, existing_user)

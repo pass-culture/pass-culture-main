@@ -1,12 +1,12 @@
 import pytest
 
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offers.factories import OffererFactory
+from pcapi.core.offers.factories import UserOffererFactory
 from pcapi.core.offers.factories import VirtualVenueTypeFactory
+from pcapi.core.users.factories import UserFactory
 from pcapi.core.users.models import User
-from pcapi.model_creators.generic_creators import create_user
-from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.models.user_offerer import UserOfferer
-from pcapi.repository import repository
 
 from tests.conftest import TestClient
 
@@ -92,19 +92,10 @@ class Post:
 
         def when_successful_and_existing_offerer_creates_editor_user_offerer_and_does_not_log_in(self, app):
             # Given
-            json_offerer = {
-                "name": "Test Offerer",
-                "siren": "349974931",
-                "address": "Test adresse",
-                "postalCode": "75000",
-                "city": "Paris",
-            }
             VirtualVenueTypeFactory()
-            offerer = Offerer(from_dict=json_offerer)
-            offerer.generate_validation_token()
-            user = create_user(email="bobby@test.com", public_name="bobby")
-            user_offerer = create_user_offerer(user, offerer)
-            repository.save(offerer, user_offerer)
+            offerer = OffererFactory(siren="349974931", validationToken="not_validated")
+            user = UserFactory(email="bobby@test.com", publicName="bobby")
+            UserOffererFactory(user=user, offerer=offerer)
 
             data = BASE_DATA_PRO.copy()
 
@@ -124,15 +115,7 @@ class Post:
 
         def when_successful_and_existing_offerer_but_no_user_offerer_does_not_signin(self, app):
             # Given
-            json_offerer = {
-                "name": "Test Offerer",
-                "siren": "349974931",
-                "address": "Test adresse",
-                "postalCode": "75000",
-                "city": "Paris",
-            }
-            offerer = Offerer(from_dict=json_offerer)
-            repository.save(offerer)
+            OffererFactory(siren="349974931")
 
             data = BASE_DATA_PRO.copy()
 
@@ -152,15 +135,7 @@ class Post:
 
         def when_successful_and_mark_pro_user_as_no_cultural_survey_needed(self, app):
             # Given
-            json_offerer = {
-                "name": "Test Offerer",
-                "siren": "349974931",
-                "address": "Test adresse",
-                "postalCode": "75000",
-                "city": "Paris",
-            }
-            offerer = Offerer(from_dict=json_offerer)
-            repository.save(offerer)
+            OffererFactory(siren="349974931")
 
             data = BASE_DATA_PRO.copy()
 
