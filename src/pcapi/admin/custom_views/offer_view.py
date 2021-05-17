@@ -29,6 +29,8 @@ from pcapi.core.offers.api import import_offer_validation_config
 from pcapi.core.offers.api import update_pending_offer_validation_status
 from pcapi.core.offers.models import OfferValidationConfig
 from pcapi.core.offers.models import OfferValidationStatus
+from pcapi.core.offers.offer_validation import compute_offer_validation_score
+from pcapi.core.offers.offer_validation import parse_offer_validation_config
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.offers.validation import check_user_can_load_config
 from pcapi.domain.admin_emails import send_offer_validation_notification_to_administration
@@ -129,6 +131,12 @@ def _metabase_offer_link(view, context, model, name) -> Markup:
     return Markup(f'<a href="{url}" target="_blank" rel="noopener noreferrer">{text}</a>')
 
 
+def _compute_score(view, context, model, name) -> float:
+    current_config = offers_repository.get_current_offer_validation_config()
+    validation_items = parse_offer_validation_config(model, current_config)[1]
+    return compute_offer_validation_score(validation_items)
+
+
 class OfferValidationForm(SecureForm):
     validation = SelectField(
         "validation", choices=[(choice.name, choice.value) for choice in OfferValidationStatus], coerce=str
@@ -161,6 +169,7 @@ class ValidationView(BaseAdminView):
     @property
     def column_formatters(self):
         formatters = super().column_formatters
+        formatters.update(score=_compute_score)
         formatters.update(offer=_pro_offer_link)
         formatters.update(offers=_related_offers_link)
         formatters.update(metabase=_metabase_offer_link)
@@ -215,6 +224,8 @@ class ValidationView(BaseAdminView):
         legal_category_label = (
             legal_category["legal_category_label"] or "Ce lieu n'a pas de libellé de catégorie juridique"
         )
+        current_config = offers_repository.get_current_offer_validation_config()
+        validation_items = parse_offer_validation_config(offer, current_config)[1]
         context = {
             "form": form,
             "cancel_link_url": url_for("/validation.index_view"),
@@ -223,6 +234,7 @@ class ValidationView(BaseAdminView):
             "pc_offer_url": _pro_offer_url(offer.id),
             "metabase_offer_url": _metabase_offer_url(offer.id) if IS_PROD else None,
             "offer_name": offer.name,
+            "offer_score": compute_offer_validation_score(validation_items),
         }
         return self.render("admin/edit_offer_validation.html", **context)
 

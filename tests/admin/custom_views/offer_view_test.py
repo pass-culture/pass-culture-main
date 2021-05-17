@@ -4,6 +4,7 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.admin.custom_views.offer_view import OfferView
+from pcapi.core.offers.api import import_offer_validation_config
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import OfferValidationConfig
@@ -184,7 +185,6 @@ class OfferValidationViewTest:
                                 operator: ">"
                                 comparated: 100
                             factor: 0.7
-
                     """
 
         data = dict(specs=config_yaml, action="save")
@@ -238,7 +238,6 @@ class OfferValidationViewTest:
                                 operator: ">"
                                 comparated: 100
                             factor: 0.7
-
                     """
 
         data = dict(specs=config_yaml, action="save")
@@ -272,7 +271,6 @@ class OfferValidationViewTest:
                                 operator: ">"
                                 comparated: 100
                             factor: 0.7
-
                     """
 
         data = dict(specs=config_yaml, action="save")
@@ -295,10 +293,21 @@ class OfferValidationViewTest:
         app,
     ):
         # Given
+        config_yaml = """
+        minimum_score: 0.6
+        parameters:
+            name:
+                model: "Offer"
+                attribute: "name"
+                condition:
+                    operator: "not in"
+                    comparated: "REJECTED"
+                factor: 0
+        """
+        import_offer_validation_config(config_yaml)
         users_factories.UserFactory(email="admin@example.com", isAdmin=True)
 
         offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING, isActive=True)
-
         mocked_get_offerer_legal_category.return_value = {
             "legal_category_code": 5202,
             "legal_category_label": "Société en nom collectif",
@@ -327,6 +336,18 @@ class OfferValidationViewTest:
         app,
     ):
         # Given
+        config_yaml = """
+        minimum_score: 0.6
+        parameters:
+            name:
+                model: "Offer"
+                attribute: "name"
+                condition:
+                    operator: "not in"
+                    comparated: "REJECTED"
+                factor: 0
+        """
+        import_offer_validation_config(config_yaml)
         users_factories.UserFactory(email="admin@example.com", isAdmin=True)
         offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING, isActive=True)
 
