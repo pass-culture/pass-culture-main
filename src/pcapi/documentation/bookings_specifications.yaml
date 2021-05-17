@@ -162,6 +162,13 @@ paths:
                 type: string
               quantity:
                 type: integer
+              theater:
+                type: object
+                properties:
+                  allocine_movie_id:
+                    type: integer
+                  allocine_room_id:
+                    type: string
               userName:
                 type: string
                 description: le user name
