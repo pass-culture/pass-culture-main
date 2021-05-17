@@ -270,8 +270,8 @@ def check_activation_codes_expiration_datetime(
         errors.add_error(
             "bookingLimitDatetime",
             (
-                "La date limite de validité des codes d'activation doit être ultérieure"
-                " d'au moins 7 jours à la date limite de réservation"
+                "Une date limite de validité a été renseignée. Dans ce cas, il faut également"
+                " renseigner une date limite de réservation qui doit être antérieure d'au moins 7 jours."
             ),
         )
         raise errors
