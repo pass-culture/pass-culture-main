@@ -3,131 +3,122 @@ from datetime import timedelta
 
 import pytest
 
-from pcapi.core.users.models import User
-from pcapi.model_creators.generic_creators import create_user
-from pcapi.repository import repository
+from pcapi.core.users import factories as users_factories
+from pcapi.core.users.models import TokenType
 
 from tests.conftest import TestClient
 
 
-class PostNewPassword:
-    class Returns400:
-        @pytest.mark.usefixtures("db_session")
-        def when_the_token_is_outdated(self, app):
-            # given
-            user = create_user(
-                reset_password_token="KL89PBNG51",
-                reset_password_token_validity_limit=datetime.utcnow() - timedelta(days=2),
-            )
-            repository.save(user)
+@pytest.mark.usefixtures("db_session")
+def test_change_password(app):
+    user = users_factories.UserFactory()
+    token = users_factories.TokenFactory(user=user, type=TokenType.RESET_PASSWORD)
+    data = {"token": token.value, "newPassword": "N3W_p4ssw0rd"}
 
-            data = {"token": "KL89PBNG51", "newPassword": "N3W_p4ssw0rd"}
+    client = TestClient(app.test_client())
+    response = client.post("/users/new-password", json=data)
 
-            # when
-            response = TestClient(app.test_client()).post(
-                "/users/new-password", json=data, headers={"origin": "http://localhost:3000"}
-            )
+    assert response.status_code == 204
+    assert user.checkPassword("N3W_p4ssw0rd")
+    assert len(user.tokens) == 0
 
-            # then
-            assert response.status_code == 400
-            assert response.json["token"] == ["Votre lien de changement de mot de passe est invalide."]
 
-        @pytest.mark.usefixtures("db_session")
-        def when_the_token_is_unknown(self, app):
-            # given
-            user = create_user(reset_password_token="KL89PBNG51")
-            repository.save(user)
+@pytest.mark.usefixtures("db_session")
+def test_change_password_with_legacy_reset_token(app):
+    user = users_factories.UserFactory(
+        resetPasswordToken="TOKEN",
+        resetPasswordTokenValidityLimit=datetime.utcnow() + timedelta(hours=24),
+    )
+    data = {"token": "TOKEN", "newPassword": "N3W_p4ssw0rd"}
 
-            data = {"token": "AZER1QSDF2", "newPassword": "N3W_p4ssw0rd"}
+    client = TestClient(app.test_client())
+    response = client.post("/users/new-password", json=data)
 
-            # when
-            response = TestClient(app.test_client()).post(
-                "/users/new-password", json=data, headers={"origin": "http://localhost:3000"}
-            )
+    assert response.status_code == 204
+    assert user.checkPassword("N3W_p4ssw0rd")
+    assert len(user.tokens) == 0
 
-            # then
-            assert response.status_code == 400
-            assert response.json["token"] == ["Votre lien de changement de mot de passe est invalide."]
 
-        @pytest.mark.usefixtures("db_session")
-        def when_the_token_is_missing(self, app):
-            # given
-            user = create_user(reset_password_token="KL89PBNG51")
-            repository.save(user)
+@pytest.mark.usefixtures("db_session")
+def test_fail_if_token_has_expired(app):
+    user = users_factories.UserFactory(password="Old_P4ssword")
+    token = users_factories.TokenFactory(
+        userId=user.id,
+        type=TokenType.RESET_PASSWORD,
+        expirationDate=datetime.utcnow() - timedelta(hours=24),
+    )
+    data = {"token": token.value, "newPassword": "N3W_p4ssw0rd"}
 
-            data = {"newPassword": "N3W_p4ssw0rd"}
+    client = TestClient(app.test_client())
+    response = client.post("/users/new-password", json=data)
 
-            # when
-            response = TestClient(app.test_client()).post(
-                "/users/new-password", json=data, headers={"origin": "http://localhost:3000"}
-            )
+    assert response.status_code == 400
+    assert response.json["token"] == ["Votre lien de changement de mot de passe est invalide."]
+    assert user.checkPassword("Old_P4ssword")
 
-            # then
-            assert response.status_code == 400
-            assert response.json["token"] == ["Votre lien de changement de mot de passe est invalide."]
 
-        @pytest.mark.usefixtures("db_session")
-        def when_new_password_is_missing(self, app):
-            # given
-            user = create_user(reset_password_token="KL89PBNG51")
-            repository.save(user)
+@pytest.mark.usefixtures("db_session")
+def test_fail_if_token_has_expired_with_legacy_reset_token(app):
+    user = users_factories.UserFactory(
+        password="Old_P4ssword",
+        resetPasswordToken="TOKEN",
+        resetPasswordTokenValidityLimit=datetime.utcnow() - timedelta(hours=24),
+    )
+    data = {"token": "TOKEN", "newPassword": "N3W_p4ssw0rd"}
 
-            data = {"token": "KL89PBNG51"}
+    client = TestClient(app.test_client())
+    response = client.post("/users/new-password", json=data)
 
-            # when
-            response = TestClient(app.test_client()).post(
-                "/users/new-password", json=data, headers={"origin": "http://localhost:3000"}
-            )
+    assert response.status_code == 400
+    assert response.json["token"] == ["Votre lien de changement de mot de passe est invalide."]
+    assert user.checkPassword("Old_P4ssword")
 
-            # then
-            assert response.status_code == 400
-            assert response.json["newPassword"] == ["Vous devez renseigner un nouveau mot de passe."]
 
-        @pytest.mark.usefixtures("db_session")
-        def when_new_password_is_not_strong_enough(self, app):
-            # given
-            user = create_user(
-                reset_password_token="KL89PBNG51",
-                reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24),
-            )
-            repository.save(user)
+@pytest.mark.usefixtures("db_session")
+def test_fail_if_token_is_unknown(app):
+    users_factories.UserFactory(resetPasswordToken="TOKEN")
+    data = {"token": "OTHER TOKEN", "newPassword": "N3W_p4ssw0rd"}
 
-            data = {"token": "KL89PBNG51", "newPassword": "weak_password"}
+    client = TestClient(app.test_client())
+    response = client.post("/users/new-password", json=data)
 
-            # when
-            response = TestClient(app.test_client()).post(
-                "/users/new-password", json=data, headers={"origin": "http://localhost:3000"}
-            )
+    assert response.status_code == 400
+    assert response.json["token"] == ["Votre lien de changement de mot de passe est invalide."]
 
-            # then
-            assert response.status_code == 400
-            assert response.json["newPassword"] == [
-                "Ton mot de passe doit contenir au moins :\n"
-                "- 12 caractères\n"
-                "- Un chiffre\n"
-                "- Une majuscule et une minuscule\n"
-                "- Un caractère spécial"
-            ]
 
-    class Returns204:
-        @pytest.mark.usefixtures("db_session")
-        def when_new_password_is_valid(self, app):
-            # given
-            user = create_user(
-                reset_password_token="KL89PBNG51",
-                reset_password_token_validity_limit=datetime.utcnow() + timedelta(hours=24),
-            )
-            repository.save(user)
-            user_id = user.id
-            data = {"token": "KL89PBNG51", "newPassword": "N3W_p4ssw0rd"}
+def test_fail_if_token_is_missing(app):
+    data = {"newPassword": "N3W_p4ssw0rd"}
 
-            # when
-            response = TestClient(app.test_client()).post(
-                "/users/new-password", json=data, headers={"origin": "http://localhost:3000"}
-            )
+    client = TestClient(app.test_client())
+    response = client.post("/users/new-password", json=data)
 
-            # then
-            user = User.query.get(user_id)
-            assert response.status_code == 204
-            assert user.checkPassword("N3W_p4ssw0rd")
-            assert len(user.tokens) == 0
+    assert response.status_code == 400
+    assert response.json["token"] == ["Votre lien de changement de mot de passe est invalide."]
+
+
+@pytest.mark.usefixtures("db_session")
+def test_fail_if_new_password_is_missing(app):
+    data = {"token": "KL89PBNG51"}
+
+    client = app.test_client()
+    response = TestClient(client).post("/users/new-password", json=data)
+
+    assert response.status_code == 400
+    assert response.json["newPassword"] == ["Vous devez renseigner un nouveau mot de passe."]
+
+
+@pytest.mark.usefixtures("db_session")
+def test_fail_if_new_password_is_not_strong_enough(app):
+    data = {"token": "TOKEN", "newPassword": "weak_password"}
+
+    client = TestClient(app.test_client())
+    response = client.post("/users/new-password", json=data)
+
+    assert response.status_code == 400
+    assert response.json["newPassword"] == [
+        "Ton mot de passe doit contenir au moins :\n"
+        "- 12 caractères\n"
+        "- Un chiffre\n"
+        "- Une majuscule et une minuscule\n"
+        "- Un caractère spécial"
+    ]
