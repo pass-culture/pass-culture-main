@@ -66,7 +66,9 @@ def find_by_validation_token(token: str) -> User:
 
 
 def find_user_by_reset_password_token(token: str) -> User:
-    return User.query.filter_by(resetPasswordToken=token).one_or_none()
+    return User.query.filter(
+        User.resetPasswordToken == token, User.resetPasswordTokenValidityLimit >= datetime.utcnow()
+    ).one_or_none()
 
 
 def get_all_users_wallet_balances() -> list[WalletBalance]:
