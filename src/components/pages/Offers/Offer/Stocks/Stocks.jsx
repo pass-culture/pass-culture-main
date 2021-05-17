@@ -33,6 +33,7 @@ const Stocks = ({
   showSuccessNotificationStocksAndOffer,
   reloadOffer,
   autoActivateDigitalBookings,
+  areActivationCodesEnabled,
 }) => {
   const offerId = offer.id
   const [isLoading, setIsLoading] = useState(true)
@@ -214,6 +215,13 @@ const Stocks = ({
         {!autoActivateDigitalBookings &&
           (offer.isEvent ? EVENT_CANCELLATION_INFORMATION : THING_CANCELLATION_INFORMATION)}
       </div>
+      {areActivationCodesEnabled && offer.isDigital && (
+        <div className="activation-codes-information">
+          {
+            "Pour ajouter des code d'activation, veuillez passer par le menu ··· et choisir l'option correspondante."
+          }
+        </div>
+      )}
       {hasNoStock ? (
         <button
           className="primary-button with-icon add-first-stock-button"
@@ -339,6 +347,7 @@ const Stocks = ({
 }
 
 Stocks.propTypes = {
+  areActivationCodesEnabled: PropTypes.bool.isRequired,
   autoActivateDigitalBookings: PropTypes.bool.isRequired,
   history: PropTypes.shape().isRequired,
   offer: PropTypes.shape().isRequired,

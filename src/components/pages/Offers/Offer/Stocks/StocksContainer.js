@@ -10,6 +10,7 @@ import Stocks from './Stocks'
 
 const mapStateToProps = state => ({
   isUserAdmin: selectIsUserAdmin(state),
+  areActivationCodesEnabled: selectIsFeatureActive(state, 'ENABLE_ACTIVATION_CODES'),
   autoActivateDigitalBookings: selectIsFeatureActive(state, 'AUTO_ACTIVATE_DIGITAL_BOOKINGS'),
 })
 
