@@ -2,8 +2,8 @@ from flask import current_app as app
 
 from pcapi.connectors import redis
 from pcapi.core.offerers.models import Venue
+from pcapi.core.offerers.models import VenueType
 from pcapi.domain.iris import link_valid_venue_to_irises
-from pcapi.models import VenueType
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
 from pcapi.repository import repository

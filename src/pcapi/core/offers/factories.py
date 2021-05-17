@@ -70,14 +70,14 @@ class VirtualVenueFactory(VenueFactory):
 
 class VirtualVenueTypeFactory(BaseFactory):
     class Meta:
-        model = models.VenueType
+        model = pcapi.core.offerers.models.VenueType
 
     label = "Offre numérique"
 
 
 class VenueTypeFactory(BaseFactory):
     class Meta:
-        model = models.VenueType
+        model = pcapi.core.offerers.models.VenueType
 
     label = "Librairie"
 

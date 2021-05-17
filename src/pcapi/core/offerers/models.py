@@ -202,6 +202,12 @@ class VenueLabel(PcObject, Model):
     venue = relationship("Venue")
 
 
+class VenueType(PcObject, Model):
+    label = Column(String(100), nullable=False)
+
+    venue = relationship("Venue")
+
+
 @listens_for(Venue, "before_insert")
 def before_insert(mapper, connect, self):
     _fill_departement_code_from_postal_code(self)

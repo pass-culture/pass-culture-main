@@ -1,8 +1,7 @@
 import logging
 
-from pcapi.model_creators.generic_creators import create_venue_type
-from pcapi.models.venue_type import VenueType
-from pcapi.repository import repository
+from pcapi.core.offerers.models import VenueType
+from pcapi.core.offers.factories import VenueTypeFactory
 
 
 logger = logging.getLogger(__name__)
@@ -31,9 +30,7 @@ def create_industrial_venue_types() -> list[VenueType]:
         "Autre",
     ]
 
-    venue_types = [create_venue_type(label=label) for label in labels]
-
-    repository.save(*venue_types)
+    venue_types = [VenueTypeFactory(label=label) for label in labels]
 
     logger.info("created %i venue types", len(venue_types))
 

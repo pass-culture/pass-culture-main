@@ -2,6 +2,7 @@ from pcapi import settings
 from pcapi.core.mails.models import Email
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import VenueLabel
+from pcapi.core.offerers.models import VenueType
 from pcapi.core.offers.models import ActivationCode
 from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import OfferValidationConfig
@@ -34,7 +35,6 @@ from pcapi.models import Stock
 from pcapi.models import UserOfferer
 from pcapi.models import UserSession
 from pcapi.models import Venue
-from pcapi.models import VenueType
 from pcapi.models.db import db
 from pcapi.models.install import install_features
 

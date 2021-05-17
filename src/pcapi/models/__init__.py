@@ -3,6 +3,7 @@ from pcapi.core.mails.models import Email
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.models import VenueLabel
+from pcapi.core.offerers.models import VenueType
 from pcapi.core.offers.models import ActivationCode
 from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
@@ -45,7 +46,6 @@ from pcapi.models.product import Product
 from pcapi.models.providable_mixin import ProvidableMixin
 from pcapi.models.user_offerer import UserOfferer
 from pcapi.models.user_session import UserSession
-from pcapi.models.venue_type import VenueType
 
 
 # TODO: fix circular import

@@ -1,8 +1,7 @@
 import pytest
 
-from pcapi.model_creators.generic_creators import create_user
-from pcapi.model_creators.generic_creators import create_venue_type
-from pcapi.repository import repository
+from pcapi.core.offers.factories import VenueTypeFactory
+from pcapi.core.users.factories import UserFactory
 
 from tests.conftest import TestClient
 
@@ -21,9 +20,9 @@ class Get:
         @pytest.mark.usefixtures("db_session")
         def when_the_user_is_authenticated(self, app):
             # Given
-            user = create_user()
-            venue_types = [create_venue_type(label="Centre culturel", idx=1), create_venue_type(label="Musée", idx=2)]
-            repository.save(user, *venue_types)
+            user = UserFactory()
+            VenueTypeFactory(label="Centre culturel", id=1)
+            VenueTypeFactory(label="Musée", id=2)
 
             # When
             response = TestClient(app.test_client()).with_auth(user.email).get("/venue-types")

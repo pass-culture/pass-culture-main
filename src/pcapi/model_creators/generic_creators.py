@@ -11,6 +11,7 @@ from shapely.geometry import Polygon
 from pcapi import settings
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.offerers.models import Offerer
+from pcapi.core.offerers.models import VenueType
 from pcapi.core.offers.models import Mediation
 from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import AllocineVenueProviderPriceRule
@@ -44,7 +45,6 @@ from pcapi.models import UserOfferer
 from pcapi.models import Venue
 from pcapi.models.bank_information import BankInformationStatus
 from pcapi.models.payment_status import TransactionStatus
-from pcapi.models.venue_type import VenueType
 from pcapi.scripts.iris.import_iris import WGS_SPATIAL_REFERENCE_IDENTIFIER
 from pcapi.scripts.iris.import_iris import create_centroid_from_polygon
 from pcapi.utils.token import random_token

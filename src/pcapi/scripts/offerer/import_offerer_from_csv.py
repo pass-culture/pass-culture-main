@@ -7,11 +7,11 @@ import logging
 from pcapi.core.offerers.api import create_digital_venue
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
+from pcapi.core.offerers.models import VenueType
 from pcapi.core.users.api import create_pro_user
 from pcapi.core.users.api import create_reset_password_token
 from pcapi.domain.password import random_password
 from pcapi.models import ApiErrors
-from pcapi.models import VenueType
 from pcapi.repository import repository
 from pcapi.repository.offerer_queries import find_by_siren
 from pcapi.repository.user_queries import find_user_by_email

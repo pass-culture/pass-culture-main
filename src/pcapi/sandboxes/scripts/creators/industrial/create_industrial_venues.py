@@ -2,9 +2,9 @@ import logging
 import random
 import re
 
+from pcapi.core.offerers.models import VenueType
 from pcapi.model_creators.generic_creators import create_bank_information
 from pcapi.model_creators.generic_creators import create_venue
-from pcapi.models.venue_type import VenueType
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.mocks.venue_mocks import MOCK_NAMES
 
