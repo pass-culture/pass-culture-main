@@ -4,7 +4,9 @@ import logging
 
 from sqlalchemy.sql.sqltypes import DateTime
 
+from pcapi.core.bookings.api import _cancel_booking
 from pcapi.core.bookings.models import Booking
+from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.repository import repository
@@ -15,7 +17,7 @@ from pcapi.utils.human_ids import dehumanize
 logger = logging.getLogger(__name__)
 
 
-def cancel_old_unused_bookings_for_venue(humanized_venue_id: str) -> None:
+def cancel_old_unused_bookings_for_venue(humanized_venue_id: str, reason: BookingCancellationReasons) -> None:
     venue_id = dehumanize(humanized_venue_id)
     if venue_id is None:
         return
@@ -29,8 +31,8 @@ def cancel_old_unused_bookings_for_venue(humanized_venue_id: str) -> None:
 
     old_unused_bookings = _get_old_unused_bookings_from_venue_id(venue.id, limit_date)
 
-    for old_unused_booking in old_unused_bookings:
-        old_unused_booking.isCancelled = True
+    for booking in old_unused_bookings:
+        _cancel_booking(booking, reason)
 
     if len(old_unused_bookings) > 0:
         repository.save(*old_unused_bookings)

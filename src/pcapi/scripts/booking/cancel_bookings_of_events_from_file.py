@@ -2,8 +2,10 @@ import csv
 import logging
 from typing import Iterable
 
+from pcapi.core.bookings import api as bookings_api
+from pcapi.core.bookings.models import Booking
+from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.models import ApiErrors
-from pcapi.models import Booking
 from pcapi.models import Offer
 from pcapi.models import Stock
 from pcapi.repository import repository
@@ -20,17 +22,17 @@ NO_FLAG = "Non"
 BOOKINGS_TOKEN_NOT_TO_UPDATE = ["2QLYYA", "BMTUME", "LUJ9AM", "DA8YLU", "Q46YHM"]
 
 
-def run(csv_file_path: str) -> None:
+def run(csv_file_path: str, cancellation_reason: BookingCancellationReasons) -> None:
     logger.info("[CANCEL BOOKINGS OF EVENTS FROM FILE] START")
     logger.info("[CANCEL BOOKINGS OF EVENTS FROM FILE] STEP 1 - Lecture du fichier CSV")
     with open(csv_file_path) as csv_file:
         csv_reader = csv.reader(csv_file)
         logger.info("[CANCEL BOOKINGS OF EVENTS FROM FILE] STEP 2 - Annulation des réservations")
-        _cancel_bookings_of_offers_from_rows(csv_reader)
+        _cancel_bookings_of_offers_from_rows(csv_reader, cancellation_reason)
     logger.info("[CANCEL BOOKINGS OF EVENTS FROM FILE] END")
 
 
-def _cancel_bookings_of_offers_from_rows(csv_rows: Iterable) -> None:
+def _cancel_bookings_of_offers_from_rows(csv_rows: Iterable, reason: BookingCancellationReasons) -> None:
     offers_successful = []
     offers_in_error = []
 
@@ -52,7 +54,7 @@ def _cancel_bookings_of_offers_from_rows(csv_rows: Iterable) -> None:
         )
 
         for booking in bookings_to_cancel:
-            booking.isCancelled = True
+            bookings_api._cancel_booking(booking, reason)
             booking.isUsed = False
             booking.dateUsed = None
 

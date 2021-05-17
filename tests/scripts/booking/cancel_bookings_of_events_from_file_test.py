@@ -2,13 +2,14 @@ from datetime import datetime
 
 import pytest
 
+from pcapi.core.bookings.models import Booking
+from pcapi.core.bookings.models import BookingCancellationReasons
 import pcapi.core.users.factories as users_factories
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_stock
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
-from pcapi.models import Booking
 from pcapi.repository import repository
 from pcapi.scripts.booking.cancel_bookings_of_events_from_file import _cancel_bookings_of_offers_from_rows
 
@@ -73,11 +74,12 @@ class CancelBookingsOfEventsFromFileTest:
             ],
         ]
 
-        _cancel_bookings_of_offers_from_rows(self.csv_rows)
+        _cancel_bookings_of_offers_from_rows(self.csv_rows, BookingCancellationReasons.OFFERER)
 
         # Then
         saved_booking = Booking.query.get(self.booking_to_cancel.id)
         assert saved_booking.isCancelled is True
+        assert saved_booking.cancellationReason == BookingCancellationReasons.OFFERER
         assert saved_booking.cancellationDate is not None
         assert saved_booking.isUsed is False
         assert saved_booking.dateUsed is None
