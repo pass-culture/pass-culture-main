@@ -87,7 +87,7 @@ class ReimbursementDetailsCSVTest:
         assert _count_non_empty_lines(csv) == 2
         assert (
             _get_header(csv, 1)
-            == f'"2019";"Juillet : remboursement 1ère quinzaine";"{venue.name}";"{venue.siret}";"1 boulevard Poissonnière";"{bank_informations.iban}";"{venue.name}";"Mon titre ; un peu ""spécial""";"Doux";"Jeanne";"0E2722";"";10.00;"Remboursement initié"'
+            == f'"2019";"Juillet : remboursement 1ère quinzaine";"{venue.name}";"{venue.siret}";"1 boulevard Poissonnière";"{bank_informations.iban}";"{venue.name}";"Mon titre ; un peu ""spécial""";"Doux";"Jeanne";"0E2722";"";10.00;"Remboursement en cours"'
         )
 
 
@@ -116,7 +116,7 @@ class AsCsvRowTest:
         raw_csv = ReimbursementDetails(payments_info[0]).as_csv_row()
 
         # then
-        assert raw_csv[13] == "Erreur d'envoi du remboursement : Iban non fourni"
+        assert raw_csv[13] == "Remboursement en cours : Iban non fourni"
 
 
 def _get_header(csv, line):

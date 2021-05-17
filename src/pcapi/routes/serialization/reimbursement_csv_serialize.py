@@ -26,11 +26,11 @@ class ReimbursementDetails:
     ]
 
     TRANSACTION_STATUSES_DETAILS = {
-        TransactionStatus.PENDING: "Remboursement initié",
+        TransactionStatus.PENDING: "Remboursement en cours",
         TransactionStatus.NOT_PROCESSABLE: "Remboursement impossible",
-        TransactionStatus.UNDER_REVIEW: "Remboursement envoyé à la DAF",
-        TransactionStatus.SENT: "Remboursement envoyé à la banque",
-        TransactionStatus.ERROR: "Erreur d'envoi du remboursement",
+        TransactionStatus.UNDER_REVIEW: "Remboursement en cours",
+        TransactionStatus.SENT: "Remboursement envoyé",
+        TransactionStatus.ERROR: "Remboursement en cours",
         TransactionStatus.RETRY: "Remboursement à renvoyer",
         TransactionStatus.BANNED: "Remboursement rejeté",
     }
