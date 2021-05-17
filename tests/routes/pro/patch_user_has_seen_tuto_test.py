@@ -8,62 +8,72 @@ from tests.conftest import TestClient
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns204:
-    def when_user_is_logged_in(self, app):
-        # given
-        user = users_factories.UserFactory(hasSeenProTutorials=False)
+def test_mark_as_seen(app):
+    user = users_factories.UserFactory(hasSeenProTutorials=False)
 
-        # when
-        client = TestClient(app.test_client()).with_auth(user.email)
-        response = client.patch(f"/users/{humanize(user.id)}/tuto-seen")
+    client = TestClient(app.test_client()).with_auth(user.email)
+    response = client.patch("/users/tuto-seen")
 
-        # then
-        updated_user = User.query.one()
-        assert response.status_code == 204
-        assert updated_user.hasSeenProTutorials == True
+    assert response.status_code == 204
+    assert user.hasSeenProTutorials == True
 
 
-@pytest.mark.usefixtures("db_session")
-class Returns404:
-    def when_user_does_not_exist(self, app):
-        # given
-        user = users_factories.UserFactory(hasSeenProTutorials=False)
+class LegacyRouteTest:
+    @pytest.mark.usefixtures("db_session")
+    class Returns204:
+        def when_user_is_logged_in(self, app):
+            # given
+            user = users_factories.UserFactory(hasSeenProTutorials=False)
 
-        # when
-        client = TestClient(app.test_client()).with_auth(user.email)
-        response = client.patch(f"/users/{humanize(12345)}/tuto-seen")
+            # when
+            client = TestClient(app.test_client()).with_auth(user.email)
+            response = client.patch(f"/users/{humanize(user.id)}/tuto-seen")
 
-        # then
-        assert response.status_code == 404
+            # then
+            updated_user = User.query.one()
+            assert response.status_code == 204
+            assert updated_user.hasSeenProTutorials == True
 
+    @pytest.mark.usefixtures("db_session")
+    class Returns404:
+        def when_user_does_not_exist(self, app):
+            # given
+            user = users_factories.UserFactory(hasSeenProTutorials=False)
 
-@pytest.mark.usefixtures("db_session")
-class Returns403:
-    def when_user_is_not_logged_in(self, app):
-        # given
-        user = users_factories.UserFactory(hasSeenProTutorials=False)
+            # when
+            client = TestClient(app.test_client()).with_auth(user.email)
+            response = client.patch(f"/users/{humanize(12345)}/tuto-seen")
 
-        # when
-        response = TestClient(app.test_client()).patch(f"/users/{humanize(user.id)}/tuto-seen")
+            # then
+            assert response.status_code == 404
 
-        # then
-        updated_user = User.query.one()
-        assert response.status_code == 401
-        assert updated_user.hasSeenProTutorials == False
+    @pytest.mark.usefixtures("db_session")
+    class Returns403:
+        def when_user_is_not_logged_in(self, app):
+            # given
+            user = users_factories.UserFactory(hasSeenProTutorials=False)
 
-    def when_user_has_no_rights(self, app):
-        # given
-        user_logged_in = users_factories.UserFactory()
-        user_to_update = users_factories.UserFactory(hasSeenProTutorials=False)
+            # when
+            response = TestClient(app.test_client()).patch(f"/users/{humanize(user.id)}/tuto-seen")
 
-        # when
-        response = (
-            TestClient(app.test_client())
-            .with_auth(email=user_logged_in.email)
-            .patch(f"/users/{humanize(user_to_update.id)}/tuto-seen")
-        )
+            # then
+            updated_user = User.query.one()
+            assert response.status_code == 401
+            assert updated_user.hasSeenProTutorials == False
 
-        # then
-        updated_user = User.query.filter_by(id=user_to_update.id).one()
-        assert response.status_code == 403
-        assert updated_user.hasSeenProTutorials == False
+        def when_user_has_no_rights(self, app):
+            # given
+            user_logged_in = users_factories.UserFactory()
+            user_to_update = users_factories.UserFactory(hasSeenProTutorials=False)
+
+            # when
+            response = (
+                TestClient(app.test_client())
+                .with_auth(email=user_logged_in.email)
+                .patch(f"/users/{humanize(user_to_update.id)}/tuto-seen")
+            )
+
+            # then
+            updated_user = User.query.filter_by(id=user_to_update.id).one()
+            assert response.status_code == 403
+            assert updated_user.hasSeenProTutorials == False

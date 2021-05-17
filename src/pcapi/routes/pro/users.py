@@ -13,10 +13,21 @@ from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.rest import load_or_404
 
 
+@private_api.route("/users/tuto-seen", methods=["PATCH"])
+@login_required
+@spectree_serialize(response_model=None, on_success_status=204)
+def patch_user_tuto_seen() -> None:
+    user = current_user._get_current_object()  # get underlying User object from proxy
+    users_api.set_pro_tuto_as_seen(user)
+
+
+# FIXME (dbaty, 2021-05-17): remove this route (and
+# _ensure_current_user_has_rights below) after a grace period (once
+# the pro portal has been updated).
 @private_api.route("/users/<user_id>/tuto-seen", methods=["PATCH"])
 @login_required
 @spectree_serialize(response_model=None, on_success_status=204)
-def patch_user_tuto_seen(user_id: str) -> None:
+def patch_user_tuto_seen_legacy(user_id: str) -> None:
     user = load_or_404(User, user_id)
     _ensure_current_user_has_rights(user_id)
     users_api.set_pro_tuto_as_seen(user)
