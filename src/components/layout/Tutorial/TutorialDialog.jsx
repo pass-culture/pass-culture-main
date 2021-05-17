@@ -39,7 +39,7 @@ const TutorialDialog = ({ currentUser, setUserHasSeenTuto }) => {
 
   const closeTutoDialog = useCallback(() => {
     pcapi
-      .setHasSeenTutos(currentUser.id)
+      .setHasSeenTutos()
       .then(() => {
         setUserHasSeenTuto(currentUser)
       })

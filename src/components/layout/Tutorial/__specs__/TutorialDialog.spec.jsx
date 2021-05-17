@@ -144,7 +144,7 @@ describe('tutorial modal', () => {
           await act(async () => {
             await fireEvent.click(buttonFinish)
           })
-          expect(pcapi.setHasSeenTutos).toHaveBeenCalledWith('test_id')
+          expect(pcapi.setHasSeenTutos).toHaveBeenCalledWith()
         })
       })
 

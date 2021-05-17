@@ -209,7 +209,7 @@ describe('pcapiClient', () => {
 
     it('should have default value for data', async () => {
       // Given
-      const path = '/users/YJ/tuto-seen'
+      const path = '/users/tuto-seen'
 
       // When
       await client.patch(path, undefined, false)

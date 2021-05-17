@@ -244,12 +244,12 @@ describe('pcapi', () => {
   })
 
   describe('hasSeenTutos', () => {
-    it('should call api patch with user id', () => {
+    it('should call api', () => {
       // when
-      setHasSeenTutos('ABC')
+      setHasSeenTutos()
 
       // then
-      expect(client.patch).toHaveBeenCalledWith('/users/ABC/tuto-seen')
+      expect(client.patch).toHaveBeenCalledWith('/users/tuto-seen')
     })
   })
 

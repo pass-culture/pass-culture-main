@@ -209,8 +209,8 @@ export const setPassword = (token, newPassword) => {
 //
 // tutos
 //
-export const setHasSeenTutos = userId => {
-  return client.patch(`/users/${userId}/tuto-seen`)
+export const setHasSeenTutos = () => {
+  return client.patch(`/users/tuto-seen`)
 }
 
 //
