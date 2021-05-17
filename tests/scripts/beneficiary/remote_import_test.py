@@ -205,7 +205,7 @@ class RunTest:
         assert beneficiary_import.detail == "Compte existant avec cet email"
         process_beneficiary_application.assert_not_called()
 
-    @override_features(ENABLE_PHONE_VALIDATION=False)
+    @override_features(FORCE_PHONE_VALIDATION=False)
     @patch("pcapi.scripts.beneficiary.remote_import.process_beneficiary_application")
     @patch("pcapi.settings.DMS_NEW_ENROLLMENT_PROCEDURE_ID", 2567158)
     @pytest.mark.usefixtures("db_session")
@@ -252,7 +252,7 @@ class RunTest:
 
 
 class ProcessBeneficiaryApplicationTest:
-    @override_features(ENABLE_PHONE_VALIDATION=False)
+    @override_features(FORCE_PHONE_VALIDATION=False)
     @pytest.mark.usefixtures("db_session")
     def test_new_beneficiaries_are_recorded_with_deposit(self, app):
         # given
@@ -660,7 +660,7 @@ class RunIntegrationTest:
     def _get_all_applications_ids(self, procedure_id: str, token: str, last_update: datetime):
         return [123]
 
-    @override_features(ENABLE_PHONE_VALIDATION=False)
+    @override_features(FORCE_PHONE_VALIDATION=False)
     def test_import_user(self):
         # when
         remote_import.run(
@@ -686,11 +686,11 @@ class RunIntegrationTest:
             "date(u.date_of_birth)"
         ] == self.BENEFICIARY_BIRTH_DATE.strftime("%Y-%m-%dT%H:%M:%S")
 
-    @override_features(ENABLE_PHONE_VALIDATION=True)
+    @override_features(FORCE_PHONE_VALIDATION=True)
     def test_import_does_not_make_user_beneficiary(self):
         """
         Test that an imported user without a validated phone number, and the
-        ENABLE_PHONE_VALIDATION feature flag activated, cannot become
+        FORCE_PHONE_VALIDATION feature flag activated, cannot become
         beneficiary.
         """
         date_of_birth = self.BENEFICIARY_BIRTH_DATE.strftime("%Y-%m-%dT%H:%M:%S")
@@ -798,7 +798,7 @@ class RunIntegrationTest:
             }
         ]
 
-    @override_features(ENABLE_PHONE_VALIDATION=False)
+    @override_features(FORCE_PHONE_VALIDATION=False)
     def test_import_duplicated_user(self):
         # given
         self.test_import_user()
@@ -820,7 +820,7 @@ class RunIntegrationTest:
         assert beneficiary_import.beneficiary == user
         assert beneficiary_import.currentStatus == ImportStatus.REJECTED
 
-    @override_features(ENABLE_PHONE_VALIDATION=False)
+    @override_features(FORCE_PHONE_VALIDATION=False)
     def test_import_native_app_user(self):
         # given
         user = users_api.create_account(

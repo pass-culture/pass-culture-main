@@ -48,7 +48,8 @@ class FeatureToggle(enum.Enum):
         "Activer (marquer comme utilisée) les réservations dès leur création pour les offres digitales"
     )
     ENABLE_ACTIVATION_CODES = "Permet la création de codes d'activation"
-    ENABLE_PHONE_VALIDATION = "Active la validation du numéro de téléphone"
+    ENABLE_PHONE_VALIDATION = "Active la validation du numéro de téléphone"  # TODO (viconnex) remove when FORCE_PHONE_VALIDATION is released in production
+    FORCE_PHONE_VALIDATION = "Forcer la validation du numéro de téléphone pour devenir bénéficiaire"
     USE_NEW_BATCH_INDEX_OFFERS_BEHAVIOUR = "Utilise une boucle dans le cron de réindexation Algolia"
     ENABLE_NATIVE_ID_CHECK_VERSION = "Utilise la version d'ID-Check intégrée à l'application native"
 
@@ -69,6 +70,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.ENABLE_ACTIVATION_CODES,
     FeatureToggle.USE_NEW_BATCH_INDEX_OFFERS_BEHAVIOUR,
     FeatureToggle.ENABLE_NATIVE_ID_CHECK_VERSION,
+    FeatureToggle.FORCE_PHONE_VALIDATION,
 )
 
 

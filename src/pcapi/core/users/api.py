@@ -162,7 +162,7 @@ def create_account(
 def steps_to_become_beneficiary(user: User) -> list[BeneficiaryValidationStep]:
     missing_steps = []
 
-    if feature_queries.is_active(FeatureToggle.ENABLE_PHONE_VALIDATION) and not user.is_phone_validated:
+    if feature_queries.is_active(FeatureToggle.FORCE_PHONE_VALIDATION) and not user.is_phone_validated:
         missing_steps.append(BeneficiaryValidationStep.PHONE_VALIDATION)
 
     beneficiary_import = get_beneficiary_import_for_beneficiary(user)

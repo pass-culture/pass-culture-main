@@ -117,6 +117,7 @@ class Post:
                 }
             ]
 
+        @override_features(FORCE_PHONE_VALIDATION=True)
         @patch("pcapi.use_cases.create_beneficiary_from_application.send_accepted_as_beneficiary_email")
         @patch("pcapi.use_cases.create_beneficiary_from_application.send_activation_email")
         @patch("pcapi.domain.password.random_token")

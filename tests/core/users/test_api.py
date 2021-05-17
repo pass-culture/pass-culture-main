@@ -11,6 +11,7 @@ import pytest
 
 from pcapi.core.bookings import factories as booking_factories
 from pcapi.core.payments.api import DEPOSIT_VALIDITY_IN_YEARS
+from pcapi.core.testing import override_features
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
@@ -394,6 +395,7 @@ class StepsToBecomeBeneficiaryTest:
 
         assert steps_to_become_beneficiary(user) == []
 
+    @override_features(FORCE_PHONE_VALIDATION=True)
     def test_missing_step(self):
         user = self.eligible_user(validate_phone=False)
 
@@ -403,6 +405,7 @@ class StepsToBecomeBeneficiaryTest:
         assert steps_to_become_beneficiary(user) == [BeneficiaryValidationStep.PHONE_VALIDATION]
         assert not user.isBeneficiary
 
+    @override_features(FORCE_PHONE_VALIDATION=True)
     def test_rejected_import(self):
         user = self.eligible_user(validate_phone=False)
 
@@ -416,6 +419,7 @@ class StepsToBecomeBeneficiaryTest:
         assert steps_to_become_beneficiary(user) == expected
         assert not user.isBeneficiary
 
+    @override_features(FORCE_PHONE_VALIDATION=True)
     def test_missing_all(self):
         user = self.eligible_user(validate_phone=False)
 
