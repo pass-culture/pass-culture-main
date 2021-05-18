@@ -3,6 +3,7 @@ from sqlalchemy.orm import joinedload
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
 from pcapi.domain.user_emails import send_user_webapp_offer_link_email
 from pcapi.models.product import Product
@@ -20,7 +21,7 @@ from .serialization import offers as serializers
 )  # type: ignore
 def get_offer(offer_id: str) -> serializers.OfferResponse:
     offer = (
-        Offer.query.options(joinedload(Offer.stocks))
+        Offer.query.options(joinedload(Offer.stocks).joinedload(Stock.activationCodes))
         .options(
             joinedload(Offer.venue)
             .joinedload(Venue.managingOfferer)

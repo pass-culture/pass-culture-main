@@ -10,8 +10,10 @@ from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.factories import MediationFactory
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import ProductFactory
+from pcapi.core.offers.factories import StockWithActivationCodesFactory
 from pcapi.core.offers.factories import ThingStockFactory
 from pcapi.core.testing import assert_num_queries
+from pcapi.models.db import db
 from pcapi.models.offer_type import EventType
 from pcapi.models.offer_type import ThingType
 import pcapi.notifications.push.testing as notifications_testing
@@ -88,6 +90,7 @@ class OffersTest:
                     "isBookable": True,
                     "isSoldOut": False,
                     "isExpired": False,
+                    "activationCode": None,
                 },
                 {
                     "id": expiredStock.id,
@@ -98,6 +101,7 @@ class OffersTest:
                     "isBookable": False,
                     "isSoldOut": True,
                     "isExpired": True,
+                    "activationCode": None,
                 },
                 {
                     "id": exhaustedStock.id,
@@ -108,6 +112,7 @@ class OffersTest:
                     "isBookable": False,
                     "isSoldOut": True,
                     "isExpired": False,
+                    "activationCode": None,
                 },
             ],
             "category": {"categoryType": "Event", "label": "Cinéma", "name": "CINEMA"},
@@ -170,6 +175,28 @@ class OffersTest:
             "name": "VISITE",
         }
         assert not response.json["isExpired"]
+
+    def test_get_digital_offer_without_activation_code_expiration_date(self, app):
+        stock = StockWithActivationCodesFactory()
+        offer_id = stock.offer.id
+        with assert_num_queries(1):
+            response = TestClient(app.test_client()).get(f"/native/v1/offer/{offer_id}")
+
+        assert response.status_code == 200
+        assert response.json["stocks"][0]["activationCode"] is None
+
+    def test_get_digital_offer_with_activation_code_expiration_date(self, app):
+        stock = StockWithActivationCodesFactory()
+        for activation_code in stock.activationCodes:
+            activation_code.expirationDate = datetime(2050, 1, 1)
+        db.session.commit()
+
+        offer_id = stock.offer.id
+        with assert_num_queries(1):
+            response = TestClient(app.test_client()).get(f"/native/v1/offer/{offer_id}")
+
+        assert response.status_code == 200
+        assert response.json["stocks"][0]["activationCode"] == {"expirationDate": "2050-01-01T00:00:00Z"}
 
     @freeze_time("2020-01-01")
     def test_get_expired_offer(self, app):
