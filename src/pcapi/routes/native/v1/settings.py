@@ -20,4 +20,5 @@ def get_settings() -> serializers.SettingsResponse:
         auto_activate_digital_bookings=feature_queries.is_active(FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS),
         enable_native_id_check_version=feature_queries.is_active(FeatureToggle.ENABLE_NATIVE_ID_CHECK_VERSION),
         enable_phone_validation=feature_queries.is_active(FeatureToggle.ENABLE_PHONE_VALIDATION),
+        whole_france_opening=feature_queries.is_active(FeatureToggle.WHOLE_FRANCE_OPENING),
     )
