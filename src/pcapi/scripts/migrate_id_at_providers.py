@@ -32,7 +32,6 @@ def migrate_id_at_providers() -> None:
             mapping.append(
                 {
                     "id": offer[0],
-                    "idAtProviders": offer[1],
                     "idAtProvider": isbn,
                 }
             )

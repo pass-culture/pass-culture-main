@@ -128,7 +128,7 @@ class TiteLiveThings(LocalProvider):
 
         book_information_last_update = read_things_date(self.product_infos["date_updated"])
         providable_info = self.create_providable_info(
-            Product, book_unique_identifier, book_information_last_update, book_information_last_update
+            Product, book_unique_identifier, book_information_last_update, book_unique_identifier
         )
         return [providable_info]
 
