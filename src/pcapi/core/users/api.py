@@ -14,6 +14,7 @@ from jwt import DecodeError
 from jwt import ExpiredSignatureError
 from jwt import InvalidSignatureError
 from jwt import InvalidTokenError
+from redis import Redis
 
 # TODO (viconnex): fix circular import of pcapi/models/__init__.py
 from pcapi import models  # pylint: disable=unused-import
@@ -519,6 +520,7 @@ def send_phone_validation_code(user: User) -> None:
 
 def validate_phone_number(user: User, code: str) -> None:
     _check_phone_number_validation_is_authorized(user)
+    _check_and_update_phone_validation_attempts(app.redis_client, user)
 
     token = Token.query.filter(
         Token.user == user, Token.value == code, Token.type == TokenType.PHONE_VALIDATION
@@ -545,3 +547,20 @@ def _check_phone_number_validation_is_authorized(user: User) -> None:
 
     if user.isBeneficiary:
         raise exceptions.UserAlreadyBeneficiary()
+
+
+def _check_and_update_phone_validation_attempts(redis: Redis, user: User) -> None:
+    phone_validation_attempts_key = f"phone_validation_attempts_user_{user.id}"
+    phone_validation_attempts = redis.get(phone_validation_attempts_key)
+
+    if phone_validation_attempts and int(phone_validation_attempts) >= settings.MAX_PHONE_VALIDATION_ATTEMPTS:
+        logger.warning(
+            "Phone number validation limit reached for user with id=%s",
+            user.id,
+            extra={"attempts_count": int(phone_validation_attempts)},
+        )
+        raise exceptions.PhoneValidationAttemptsLimitReached()
+
+    count = redis.incr(phone_validation_attempts_key)
+    if count == 1:
+        redis.expire(phone_validation_attempts_key, settings.PHONE_VALIDATION_ATTEMPTS_TTL)

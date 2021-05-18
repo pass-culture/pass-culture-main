@@ -165,6 +165,11 @@ def validate_phone_number(user: User, body: serializers.ValidatePhoneNumberReque
     with transaction():
         try:
             api.validate_phone_number(user, body.code)
+        except exceptions.PhoneValidationAttemptsLimitReached:
+            raise ApiErrors(
+                {"message": "Le nombre de tentatives maximal est dépassé", "code": "TOO_MANY_VALIDATION_ATTEMPTS"},
+                status_code=400,
+            )
         except exceptions.ExpiredCode:
             raise ApiErrors({"message": "Le code saisi a expiré", "code": "EXPIRED_VALIDATION_CODE"}, status_code=400)
         except exceptions.NotValidCode:

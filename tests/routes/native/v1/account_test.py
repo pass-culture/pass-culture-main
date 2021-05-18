@@ -772,6 +772,8 @@ class ValidatePhoneNumberTest:
         test_client = TestClient(app.test_client())
         test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
 
+        # try one attempt with wrong code
+        response = test_client.post("/native/v1/validate_phone_number", {"code": "wrong code"})
         response = test_client.post("/native/v1/validate_phone_number", {"code": token.value})
 
         assert response.status_code == 204
@@ -781,6 +783,28 @@ class ValidatePhoneNumberTest:
         token = Token.query.filter_by(userId=user.id, type=TokenType.PHONE_VALIDATION).first()
 
         assert not token
+
+        assert int(app.redis_client.get(f"phone_validation_attempts_user_{user.id}")) == 2
+
+    @override_settings(MAX_PHONE_VALIDATION_ATTEMPTS=1)
+    def test_validate_phone_number_too_many_attempts(self, app):
+        user = users_factories.UserFactory(isBeneficiary=False)
+        access_token = create_access_token(identity=user.email)
+        token = create_phone_validation_token(user)
+
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+
+        response = test_client.post("/native/v1/validate_phone_number", {"code": "wrong code"})
+        response = test_client.post("/native/v1/validate_phone_number", {"code": token.value})
+
+        assert response.status_code == 400
+        assert response.json["message"] == "Le nombre de tentatives maximal est dépassé"
+
+        db.session.refresh(user)
+        assert not user.is_phone_validated
+
+        assert int(app.redis_client.get(f"phone_validation_attempts_user_{user.id}")) == 1
 
     def test_wrong_code(self, app):
         user = users_factories.UserFactory(isBeneficiary=False)
