@@ -1,7 +1,6 @@
 from functools import wraps
 from pathlib import Path
 from pprint import pprint
-from unittest.mock import Mock
 
 from alembic import command
 from alembic.config import Config
@@ -10,6 +9,7 @@ from flask.testing import FlaskClient
 from flask_jwt_extended import JWTManager
 from flask_login import LoginManager
 import pytest
+import redis
 from requests import Response
 from requests.auth import _basic_auth_str
 
@@ -76,7 +76,7 @@ def app():
     admin.init_app(app)
     install_admin_views(admin, db.session)
 
-    app.redis_client = Mock()
+    app.redis_client = redis.Redis()
     app.register_blueprint(native_v1, url_prefix="/native/v1")
     app.register_blueprint(pro_api_v2, url_prefix="/v2")
 
