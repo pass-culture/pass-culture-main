@@ -5,9 +5,9 @@ from unittest.mock import patch
 from freezegun import freeze_time
 import pytest
 
+from pcapi.core.offerers.factories import VirtualVenueTypeFactory
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.factories import OffererFactory
-from pcapi.core.offers.factories import VirtualVenueTypeFactory
 from pcapi.core.users.factories import UserFactory
 from pcapi.core.users.models import User
 from pcapi.models import UserOfferer

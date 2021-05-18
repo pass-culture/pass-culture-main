@@ -1,5 +1,6 @@
 import pytest
 
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.users.factories import UserFactory
 from pcapi.models import Venue
@@ -16,8 +17,8 @@ def test_should_register_new_venue(app):
     offerer = offers_factories.OffererFactory(siren="302559178")
     user = UserFactory()
     user_offerer = offers_factories.UserOffererFactory(user=user, offerer=offerer)
-    venue_type = offers_factories.VenueTypeFactory(label="Musée")
-    venue_label = offers_factories.VenueLabelFactory(label="CAC - Centre d'art contemporain d'intérêt national")
+    venue_type = offerers_factories.VenueTypeFactory(label="Musée")
+    venue_label = offerers_factories.VenueLabelFactory(label="CAC - Centre d'art contemporain d'intérêt national")
     repository.save(user_offerer, venue_type, venue_label)
     auth_request = TestClient(app.test_client()).with_auth(email=user.email)
     venue_data = {
@@ -57,8 +58,8 @@ def test_should_consider_the_venue_to_be_permanent(app):
     offerer = offers_factories.OffererFactory(siren="302559178")
     user = UserFactory()
     user_offerer = offers_factories.UserOffererFactory(user=user, offerer=offerer)
-    venue_type = offers_factories.VenueTypeFactory(label="Musée")
-    venue_label = offers_factories.VenueLabelFactory(label="CAC - Centre d'art contemporain d'intérêt national")
+    venue_type = offerers_factories.VenueTypeFactory(label="Musée")
+    venue_label = offerers_factories.VenueLabelFactory(label="CAC - Centre d'art contemporain d'intérêt national")
     repository.save(user_offerer, venue_type, venue_label)
     auth_request = TestClient(app.test_client()).with_auth(email=user.email)
     venue_data = {

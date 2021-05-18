@@ -4,9 +4,9 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.core.offerers.factories import VenueTypeFactory
 from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import VenueFactory
-from pcapi.core.offers.factories import VenueTypeFactory
 from pcapi.models import Venue
 from pcapi.scripts.update_venue_type import _read_venue_type_from_file
 from pcapi.scripts.update_venue_type import update_venue_type

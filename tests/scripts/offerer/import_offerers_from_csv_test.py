@@ -4,13 +4,13 @@ from datetime import datetime
 from freezegun import freeze_time
 import pytest
 
+from pcapi.core.offerers.factories import VenueTypeFactory
+from pcapi.core.offerers.factories import VirtualVenueTypeFactory
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import VenueFactory
-from pcapi.core.offers.factories import VenueTypeFactory
 from pcapi.core.offers.factories import VirtualVenueFactory
-from pcapi.core.offers.factories import VirtualVenueTypeFactory
 from pcapi.core.users.factories import UserFactory
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import User

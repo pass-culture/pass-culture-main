@@ -4,10 +4,10 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.core.offerers.factories import VirtualVenueTypeFactory
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import UserOffererFactory
-from pcapi.core.offers.factories import VirtualVenueTypeFactory
 from pcapi.core.users.factories import UserFactory
 from pcapi.models import UserOfferer
 from pcapi.utils.human_ids import humanize

@@ -1,6 +1,6 @@
 import pytest
 
-from pcapi.core.offers.factories import VenueTypeFactory
+from pcapi.core.offerers.factories import VenueTypeFactory
 from pcapi.core.users.factories import UserFactory
 
 from tests.conftest import TestClient

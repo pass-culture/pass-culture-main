@@ -1,7 +1,7 @@
 import logging
 
+from pcapi.core.offerers.factories import VenueTypeFactory
 from pcapi.core.offerers.models import VenueType
-from pcapi.core.offers.factories import VenueTypeFactory
 
 
 logger = logging.getLogger(__name__)

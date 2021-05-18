@@ -1,6 +1,6 @@
 import pytest
 
-from pcapi.core.offers.factories import VenueLabelFactory
+from pcapi.core.offerers.factories import VenueLabelFactory
 from pcapi.core.users.factories import UserFactory
 from pcapi.utils.human_ids import humanize
 

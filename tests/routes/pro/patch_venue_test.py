@@ -1,5 +1,6 @@
 import pytest
 
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.models import Venue
 from pcapi.utils.human_ids import humanize
@@ -33,8 +34,8 @@ class Returns200:
             managingOfferer=user_offerer.offerer,
         )
 
-        venue_type = offers_factories.VenueTypeFactory(label="Musée")
-        venue_label = offers_factories.VenueLabelFactory(label="CAC - Centre d'art contemporain d'intérêt national")
+        venue_type = offerers_factories.VenueTypeFactory(label="Musée")
+        venue_label = offerers_factories.VenueLabelFactory(label="CAC - Centre d'art contemporain d'intérêt national")
 
         auth_request = TestClient(app.test_client()).with_auth(email=user_offerer.user.email)
         venue_id = venue.id

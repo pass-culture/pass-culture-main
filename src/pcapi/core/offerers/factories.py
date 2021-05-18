@@ -1,5 +1,7 @@
 import factory
 
+from pcapi.core.offerers.models import VenueLabel
+from pcapi.core.offerers.models import VenueType
 from pcapi.core.offers.factories import VenueFactory
 import pcapi.core.providers.models
 from pcapi.core.providers.models import AllocineVenueProvider
@@ -53,3 +55,24 @@ class AllocineVenueProviderPriceRuleFactory(BaseFactory):
     allocineVenueProvider = factory.SubFactory(AllocineVenueProviderFactory)
     priceRule = "default"
     price = 5.5
+
+
+class VirtualVenueTypeFactory(BaseFactory):
+    class Meta:
+        model = VenueType
+
+    label = "Offre numérique"
+
+
+class VenueTypeFactory(BaseFactory):
+    class Meta:
+        model = VenueType
+
+    label = "Librairie"
+
+
+class VenueLabelFactory(BaseFactory):
+    class Meta:
+        model = VenueLabel
+
+    label = "Cinéma d'art et d'essai"

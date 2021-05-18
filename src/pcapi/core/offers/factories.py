@@ -68,27 +68,6 @@ class VirtualVenueFactory(VenueFactory):
     siret = None
 
 
-class VirtualVenueTypeFactory(BaseFactory):
-    class Meta:
-        model = pcapi.core.offerers.models.VenueType
-
-    label = "Offre numérique"
-
-
-class VenueTypeFactory(BaseFactory):
-    class Meta:
-        model = pcapi.core.offerers.models.VenueType
-
-    label = "Librairie"
-
-
-class VenueLabelFactory(BaseFactory):
-    class Meta:
-        model = models.VenueLabel
-
-    label = "Cinéma d'art et d'essai"
-
-
 class ProductFactory(BaseFactory):
     class Meta:
         model = models.Product
