@@ -536,7 +536,7 @@ class CheckHasAvailableActivationCodeTest:
         stock = offers_factories.ThingStockFactory()
         booking = factories.BookingFactory(isUsed=True, token="ABCDEF")
         activation_codes = offers_factories.ActivationCodeFactory.create_batch(
-            size=1, expirationDate=datetime(2000, 1, 1), stock=stock, booking=booking
+            size=1, expirationDate=datetime(2050, 1, 1), stock=stock, booking=booking
         )
 
         # When
