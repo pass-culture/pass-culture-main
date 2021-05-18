@@ -35,6 +35,8 @@ class ReimbursementDetails:
         TransactionStatus.BANNED: "Remboursement rejeté",
     }
 
+    assert set(TRANSACTION_STATUSES_DETAILS) == set(TransactionStatus)
+
     def __init__(self, payment_info: namedtuple = None):
         if payment_info is not None:
             transfer_infos = payment_info.transactionLabel.replace("pass Culture Pro - ", "").split(" ")
@@ -85,7 +87,7 @@ class ReimbursementDetails:
         ]
 
 
-def generate_reimbursement_details_csv(reimbursement_details: list[ReimbursementDetails]):
+def generate_reimbursement_details_csv(reimbursement_details: list[ReimbursementDetails]) -> str:
     output = StringIO()
     csv_lines = [reimbursement_detail.as_csv_row() for reimbursement_detail in reimbursement_details]
     writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
@@ -101,10 +103,10 @@ def find_all_offerer_reimbursement_details(offerer_id: int) -> list[Reimbursemen
     return reimbursement_details
 
 
-def _get_reimbursement_current_status_in_details(current_status: str, current_status_details: str):
+def _get_reimbursement_current_status_in_details(current_status: str, current_status_details: str) -> str:
     human_friendly_status = ReimbursementDetails.TRANSACTION_STATUSES_DETAILS.get(current_status)
 
-    if current_status_details is None:
+    if current_status is not TransactionStatus.NOT_PROCESSABLE or not current_status_details:
         return human_friendly_status
 
     return f"{human_friendly_status} : {current_status_details}"

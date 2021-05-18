@@ -47,6 +47,7 @@ class PaymentFactory(BaseFactory):
     recipientName = "Récipiendaire"
     iban = "CF13QSDFGH456789"
     bic = "QSDFGH8Z555"
+    transactionLabel = None
 
     @factory.post_generation
     def statuses(obj, create, extracted, **kwargs):  # pylint: disable=no-self-argument
