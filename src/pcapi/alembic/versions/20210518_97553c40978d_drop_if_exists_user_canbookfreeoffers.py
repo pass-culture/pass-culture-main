@@ -1,7 +1,7 @@
 """drop_if_exists_User_canBookFreeOffers
 
 Revision ID: 97553c40978d
-Revises: 865dbe4bec27
+Revises: 2c062a40154e
 Create Date: 2021-05-18 07:44:00.970324
 
 """
@@ -11,7 +11,7 @@ from sqlalchemy.sql import text
 
 # revision identifiers, used by Alembic.
 revision = "97553c40978d"
-down_revision = "865dbe4bec27"
+down_revision = "2c062a40154e"
 branch_labels = None
 depends_on = None
 
