@@ -62,6 +62,7 @@ WEBAPP_GET_BOOKING_INCLUDES = [
                     "isDigital",
                     "isEvent",
                     "offerType",
+                    "-authorId",
                     {
                         "key": "stocks",
                         "includes": [

@@ -36,6 +36,7 @@ class GetNonFreeThingOfferWithActiveMediationTest:
             "offer": {
                 "ageMax": None,
                 "ageMin": None,
+                "authorId": None,
                 "audioDisabilityCompliant": None,
                 "bookingEmail": "booking@example.net",
                 "conditions": None,
@@ -109,6 +110,7 @@ class GetNonFreeEventOfferTest:
             "offer": {
                 "ageMax": None,
                 "ageMin": None,
+                "authorId": None,
                 "audioDisabilityCompliant": None,
                 "bookingEmail": "booking@example.net",
                 "conditions": None,

@@ -407,6 +407,7 @@ def upsert_stocks(
     if offer.validation == OfferValidationStatus.DRAFT:
         # TODO(fseguin): remove after the real implementation is added
         offer.validation = set_offer_status_based_on_fraud_criteria(offer)
+        offer.author = user
         if offer.validation == OfferValidationStatus.PENDING or offer.validation == OfferValidationStatus.REJECTED:
             offer.isActive = False
         repository.save(offer)
