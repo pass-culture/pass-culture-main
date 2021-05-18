@@ -146,11 +146,16 @@ def send_phone_validation_code(user: User, body: serializers.SendPhoneValidation
             status_code=400,
         )
     except exceptions.UserPhoneNumberAlreadyValidated:
-        raise ApiErrors({"message": "Le numéro de téléphone est déjà validé"}, status_code=400)
+        raise ApiErrors(
+            {"message": "Le numéro de téléphone est déjà validé", "code": "PHONE_NUMBER_ALREADY_VALIDATED"},
+            status_code=400,
+        )
     except exceptions.UserWithoutPhoneNumberException:
-        raise ApiErrors({"message": "Le numéro de téléphone est invalide"}, status_code=400)
+        raise ApiErrors(
+            {"message": "Le numéro de téléphone est invalide", "code": "INVALID_PHONE_NUMBER"}, status_code=400
+        )
     except exceptions.PhoneVerificationException:
-        raise ApiErrors({"message": "L'envoi du code a échoué"}, status_code=400)
+        raise ApiErrors({"message": "L'envoi du code a échoué", "code": "CODE_SENDING_FAILURE"}, status_code=400)
 
 
 @blueprint.native_v1.route("/validate_phone_number", methods=["POST"])
