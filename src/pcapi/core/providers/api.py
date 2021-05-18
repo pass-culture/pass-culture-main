@@ -232,6 +232,21 @@ def _get_stocks_to_upsert(
         if stock_provider_reference in stocks_by_provider_reference:
             stock = stocks_by_provider_reference[stock_provider_reference]
 
+            # FIXME (dbaty, 2021-05-18): analyze logs to see if the
+            # provider sometimes stops sending a price after having
+            # sent a specific price before. Should we keep the
+            # possibly specific price that we have received before? Or
+            # should we override with the (generic) product price?
+            if not stock_detail.get("price") and stock["price"] != book_price:
+                logger.warning(
+                    "Stock specific price has been overriden by product price because provider price is missing",
+                    extra={
+                        "stock": stock["id"],
+                        "previous_stock_price": stock["price"],
+                        "new_price": book_price,
+                    },
+                )
+
             update_stock_mapping.append(
                 {
                     "id": stock["id"],
