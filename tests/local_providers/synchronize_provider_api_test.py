@@ -140,11 +140,11 @@ class ProviderAPICronTest:
         assert stock_with_booking.rawProviderQuantity == 17
 
         # Test fill stock attributes
-        assert created_stock.price == Decimal("5.02")
+        assert created_stock.price == Decimal("30")
         assert created_stock.idAtProviders == f"{ISBNs[1]}@{siret}"
 
         # Test override stock price attribute
-        assert stock.price == Decimal("5.01")
+        assert stock.price == Decimal("35")
 
         # Test fill offers attributes
         assert created_offer.bookingEmail == venue_provider.venue.bookingEmail
@@ -197,12 +197,14 @@ class ProviderAPICronTest:
                 {
                     "available_quantity": 17,
                     "offers_provider_reference": "3010000108123@siret",
+                    "price": 23.989,
                     "products_provider_reference": "3010000108123",
                     "stocks_provider_reference": "3010000108123@siret",
                 },
                 {
                     "available_quantity": 17,
                     "offers_provider_reference": "3010000108124@siret",
+                    "price": 28.989,
                     "products_provider_reference": "3010000108124",
                     "stocks_provider_reference": "3010000108124@siret",
                 },
@@ -222,6 +224,7 @@ class ProviderAPICronTest:
             assert result == [
                 {
                     "available_quantity": 17,
+                    "price": 28.989,  # latest wins
                     "offers_provider_reference": "3010000108123@siret",
                     "products_provider_reference": "3010000108123",
                     "stocks_provider_reference": "3010000108123@siret",

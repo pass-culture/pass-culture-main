@@ -74,6 +74,7 @@ def _build_stock_details_from_raw_stocks(raw_stocks: list[dict], venue_siret: st
             "offers_provider_reference": stock["ref"] + "@" + venue_siret,
             "stocks_provider_reference": stock["ref"] + "@" + venue_siret,
             "available_quantity": stock["available"],
+            "price": stock.get("price"),  # if missing, we'll use `Product.price`
         }
 
     return list(stock_details.values())
