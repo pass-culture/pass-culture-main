@@ -22,6 +22,7 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.models import api_errors
+from pcapi.models.db import db
 import pcapi.notifications.push.testing as push_testing
 from pcapi.notifications.push.user_attributes_updates import BATCH_DATETIME_FORMAT
 from pcapi.utils.token import random_token
@@ -63,6 +64,24 @@ class BookOfferConcurrencyTest:
 
         assert models.Booking.query.filter().count() == 1
         assert models.Booking.query.filter(models.Booking.isCancelled == True).count() == 0
+
+    @pytest.mark.usefixtures("db_session")
+    def test_cancel_booking_with_concurrent_cancel(self, app):
+        booking = factories.BookingFactory(stock__dnBookedQuantity=1)
+        booking_id = booking.id
+        dnBookedQuantity = booking.stock.dnBookedQuantity
+
+        # simulate concurent change
+        db.session.query(Booking).filter(Booking.id == booking_id).update(
+            {Booking.isCancelled: True, Booking.cancellationReason: BookingCancellationReasons.BENEFICIARY},
+            synchronize_session=False,
+        )
+
+        # Cancelling the booking (that appears as not cancelled as verified) should
+        # not alter dnBookedQuantity due to the concurent cancellation
+        assert not booking.isCancelled
+        api._cancel_booking(booking, BookingCancellationReasons.BENEFICIARY)
+        assert booking.stock.dnBookedQuantity == dnBookedQuantity
 
     @clean_database
     def test_cancel_all_bookings_from_stock(self, app):
@@ -325,14 +344,15 @@ class CancelByBeneficiaryTest:
         # 1: select booking
         # 2: select user
         # 3: select stock for update
-        # 4->6: update stock ; update booking ; release savepoint
-        # 7->13: (TODO: optimize): select booking ; user ; deposit ; user.bookings ; feature.SYNCHRONIZE_ALGOLIA, stock, offer
-        # 14-15: insert email ; release savepoint
-        # 16->19: (TODO: optimize) select booking ; stock ; offer ; user
-        # 20: select bookings of same stock with users joinedloaded to avoid N+1 requests
-        # 21-22: select venue ; offerer
-        # 23-24: insert email ; release savepoint
-        with assert_num_queries(24):
+        # 4: refresh booking
+        # 5->7: update stock ; update booking ; release savepoint
+        # 8->14: (TODO: optimize): select booking ; user ; deposit ; user.bookings ; feature.SYNCHRONIZE_ALGOLIA, stock, offer
+        # 15-16: insert email ; release savepoint
+        # 17->20: (TODO: optimize) select booking ; stock ; offer ; user
+        # 21: select bookings of same stock with users joinedloaded to avoid N+1 requests
+        # 22-23: select venue ; offerer
+        # 24-25: insert email ; release savepoint
+        with assert_num_queries(25):
             api.cancel_booking_by_beneficiary(booking.user, booking)
 
         # cancellation can trigger more than one request to Batch

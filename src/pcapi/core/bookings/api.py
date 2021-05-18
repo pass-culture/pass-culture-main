@@ -137,19 +137,20 @@ def book_offer(
 
 def _cancel_booking(booking: Booking, reason: BookingCancellationReasons) -> None:
     """Cancel booking and update a user's credit information on Batch"""
-    if booking.isCancelled:
-        logger.info(
-            "Booking was already cancelled",
-            extra={
-                "booking": booking.id,
-                "reason": str(reason),
-            },
-        )
-        return
     with transaction():
+        stock = offers_repository.get_and_lock_stock(stock_id=booking.stockId)
+        db.session.refresh(booking)
+        if booking.isCancelled:
+            logger.info(
+                "Booking was already cancelled",
+                extra={
+                    "booking": booking.id,
+                    "reason": str(reason),
+                },
+            )
+            return
         booking.isCancelled = True
         booking.cancellationReason = reason
-        stock = offers_repository.get_and_lock_stock(stock_id=booking.stockId)
         stock.dnBookedQuantity -= booking.quantity
         repository.save(booking, stock)
     logger.info(
