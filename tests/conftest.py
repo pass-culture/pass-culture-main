@@ -74,7 +74,7 @@ def app():
     admin.init_app(app)
     install_admin_views(admin, db.session)
 
-    app.redis_client = redis.Redis()
+    app.redis_client = redis.from_url(url=settings.REDIS_URL)
     app.register_blueprint(native_v1, url_prefix="/native/v1")
     app.register_blueprint(pro_api_v2, url_prefix="/v2")
 
