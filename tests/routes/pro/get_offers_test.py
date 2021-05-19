@@ -48,6 +48,7 @@ class Returns200:
                     "isEditable": True,
                     "isEvent": False,
                     "isThing": True,
+                    "extraData": {"author": "Test Author"},
                     "name": "Test Book",
                     "status": "ACTIVE",
                     "stocks": [
@@ -129,6 +130,7 @@ class Returns200:
                     "isEditable": True,
                     "isEvent": False,
                     "isThing": True,
+                    "extraData": {"author": "Test Author"},
                     "name": "Test Book",
                     "status": "SOLD_OUT",
                     "stocks": [],

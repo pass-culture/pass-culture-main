@@ -26,6 +26,7 @@ def _serialize_offer_paginated(offer: OfferRecap) -> dict:
         "isEditable": offer.is_editable,
         "isEvent": offer.is_event,
         "isThing": offer.is_thing,
+        "extraData": offer.extra_data,
         "name": offer.name,
         "stocks": serialized_stocks,
         "thumbUrl": offer.thumb_url,

@@ -24,6 +24,7 @@ def should_return_serialized_offers_with_relevant_informations():
         is_editable=True,
         is_event=False,
         is_thing=True,
+        extra_data=None,
         name="Test Book",
         thumb_url="/thumb/url",
         offer_type="ThingType.AUDIOVISUEL",
@@ -51,6 +52,7 @@ def should_return_serialized_offers_with_relevant_informations():
             "isEditable": True,
             "isEvent": False,
             "isThing": True,
+            "extraData": None,
             "name": "Test Book",
             "status": "ACTIVE",
             "stocks": [
@@ -98,6 +100,7 @@ def should_return_pagination_details():
         is_editable=True,
         is_event=False,
         is_thing=True,
+        extra_data=None,
         name="Test Book",
         thumb_url="/thumb/url",
         offer_type="ThingType.AUDIOVISUEL",
