@@ -276,7 +276,7 @@ secrets:
   - name: ADMINISTRATION_EMAIL_ADDRESS
     version: 2
   - name: ALGOLIA_API_KEY
-    version: 2
+    version: 3
   - name: ALGOLIA_APPLICATION_ID
     version: 2
   - name: BATCH_SECRET_API_KEY

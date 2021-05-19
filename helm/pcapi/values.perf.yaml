@@ -279,7 +279,7 @@ secrets:
   - name: ALGOLIA_APPLICATION_ID
     version: 1
   - name: ALLOCINE_API_KEY
-    version: 1
+    version: 2
   - name: BATCH_SECRET_API_KEY
     version: 1
   - name: DATABASE_URL
