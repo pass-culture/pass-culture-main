@@ -227,35 +227,6 @@ jobs:
          path: ~/pass-culture-main/pro/testcafe_screenshots
 
   deploy-pro:
-    machine:
-      image: ubuntu-2004:202101-01
-    working_directory: ~/
-    steps:
-      - run:
-          name: Checkout main
-          command: |
-            git clone --single-branch --branch $CIRCLE_BRANCH https://github.com/betagouv/pass-culture-main.git pass-culture-main || git clone https://github.com/betagouv/pass-culture-main.git pass-culture-main
-      - checkout:
-          path: ~/pass-culture-main/pro
-      - run:
-          name: Install Lib CI
-          command: ~/pass-culture-main/install_lib_ci.sh
-      - run:
-          name: Build and Deploy
-          command: |
-            cd ~/pass-culture-main/pro
-            export NVM_DIR="/opt/circleci/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
-            nvm install
-            yarn install
-
-            set -a; source ~/pass-culture-main/config/run_envs/testing
-
-            yarn build:testing
-            npm install -g netlify-cli@2.46.0
-            netlify deploy -s "${NETLIFY_SITE_ID_PRO}" -a "${NETLIFY_TOKEN}" -d build/ --prod
-
-  deploy-pro-gcp:
     executor: node-gcp
     steps:
       - run:
@@ -288,18 +259,10 @@ workflows:
             branches:
               only:
                 - master
+          context:
+            - GCP
+            - GCP_EHP
           requires:
             - unit-tests
             - e2e-tests
             - quality
-
-  gcp:
-    jobs:
-      - deploy-pro-gcp:
-          filters:
-            branches:
-              only:
-                - master
-          context:
-            - GCP
-            - GCP_EHP
