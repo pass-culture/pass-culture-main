@@ -1617,3 +1617,21 @@ class ComputeOfferValidationScoreTest:
 
         score = compute_offer_validation_score([validation_rule])
         assert score == 1
+
+    @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
+    def test_offer_validation_with_id_at_providers_is_none(self):
+        offer = OfferFactory(name="test offer", description=None)
+        assert offer.idAtProviders is None
+        StockFactory(offer=offer, price=15)
+        validation_item_1 = OfferValidationItem(
+            model=offer,
+            attribute="idAtProviders",
+            type=["None"],
+            condition={"operator": "==", "comparated": None},
+        )
+        validation_rule = OfferValidationRuleItem(
+            name="offre non synchro", factor=0.3, offer_validation_items=[validation_item_1]
+        )
+
+        score = compute_offer_validation_score([validation_rule])
+        assert score == 0.3

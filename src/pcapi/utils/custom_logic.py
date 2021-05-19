@@ -2,11 +2,13 @@
 from pcapi.utils.clean_accents import clean_accents
 
 
-def sanitize_str(a: str) -> str:
-    return clean_accents(a.lower())
+def sanitize_str(a: object) -> object:
+    if isinstance(a, str):
+        return clean_accents(a.lower())
+    return a
 
 
-def sanitize_list(l: list[str]) -> list[str]:
+def sanitize_list(l: list) -> list:
     return list(map(sanitize_str, l))
 
 
@@ -33,6 +35,16 @@ def less_or_equal(a: object, b: object, *args) -> bool:
     return (less(a, b) or soft_equals(a, b)) and (not args or less_or_equal(b, *args))
 
 
+def contains(a, b) -> bool:
+    if not a:
+        return False
+    return (
+        any(sanitize_str(element) in sanitize_str(a) for element in b)
+        if "__contains__" in dir(b)
+        else sanitize_str(b) in sanitize_str(a)
+    )
+
+
 OPERATIONS = {
     "==": soft_equals,
     "!=": lambda a, b: not soft_equals(a, b),
@@ -42,7 +54,5 @@ OPERATIONS = {
     "<=": less_or_equal,
     "in": lambda a, b: sanitize_str(a) in sanitize_list(b) if "__contains__" in dir(b) else False,
     "not in": lambda a, b: (sanitize_str(a) not in sanitize_list(b)) if "__contains__" in dir(b) else True,
-    "contains": lambda a, b: any(sanitize_str(element) in sanitize_str(a) for element in b)
-    if "__contains__" in dir(b)
-    else sanitize_str(b) in sanitize_str(a),
+    "contains": contains,
 }

@@ -160,3 +160,45 @@ def test_in_with_words_with_accents():
     b = ["le", "dérèglement", "climatique"]
     result = OPERATIONS["in"](a, b)
     assert result
+
+
+def test_contains_with_none_as_argument_return_false():
+    a = None
+    b = ["le", "dérèglement", "climatique"]
+    result = OPERATIONS["contains"](a, b)
+    assert not result
+
+
+def test_contains_with_none_as_argument_return_true():
+    a = None
+    b = ["le", "dérèglement", "climatique", None]
+    result = OPERATIONS["contains"](a, b)
+    assert not result
+
+
+def test_in_with_none_as_argument_return_false():
+    a = None
+    b = ["le", "dérèglement", "climatique"]
+    result = OPERATIONS["in"](a, b)
+    assert not result
+
+
+def test_in_with_none_as_argument_return_true():
+    a = None
+    b = ["le", "dérèglement", "climatique", None]
+    result = OPERATIONS["in"](a, b)
+    assert result
+
+
+def test_not_in_with_none_as_argument_return_true():
+    a = None
+    b = ["le", "dérèglement", "climatique"]
+    result = OPERATIONS["not in"](a, b)
+    assert result
+
+
+def test_not_in_with_none_as_argument_return_false():
+    a = None
+    b = ["le", "dérèglement", "climatique", None]
+    result = OPERATIONS["not in"](a, b)
+    assert not result

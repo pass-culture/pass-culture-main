@@ -15,9 +15,7 @@ class OfferValidationItem:
 
     def resolve(self) -> bool:
         target_attribute = getattr(self.model, self.attribute)
-        if target_attribute:
-            return OPERATIONS[self.condition["operator"]](target_attribute, self.condition["comparated"])  # type: ignore[operator]
-        return False
+        return OPERATIONS[self.condition["operator"]](target_attribute, self.condition["comparated"])  # type: ignore[operator]
 
 
 @dataclass
