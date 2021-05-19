@@ -31,6 +31,7 @@ class Returns201:
             "stockId": humanize(stock.id),
             "token": booking.token,
             "activationCode": None,
+            "qrCode": booking.qrCode,
         }
 
     @override_features(ENABLE_ACTIVATION_CODES=True)
@@ -59,6 +60,7 @@ class Returns201:
             "stockId": humanize(stock.id),
             "token": booking.token,
             "activationCode": {"code": "code-vgya451afvyux", "expirationDate": None},
+            "qrCode": booking.qrCode,
         }
 
 

@@ -224,6 +224,7 @@ class SerializeBookingMinimalTest:
             "token": "GQTQR9",
             "completedUrl": None,
             "activationCode": None,
+            "qrCode": booking.qrCode,
         }
 
     def test_should_return_booking_with_activation_code(self):
@@ -248,4 +249,5 @@ class SerializeBookingMinimalTest:
             "token": "GQTQR9",
             "completedUrl": None,
             "activationCode": {"code": activation_code.code, "expirationDate": activation_code.expirationDate},
+            "qrCode": booking.qrCode,
         }

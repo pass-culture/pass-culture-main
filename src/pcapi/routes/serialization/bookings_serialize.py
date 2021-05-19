@@ -79,6 +79,7 @@ def serialize_booking_minimal(booking: Booking) -> dict:
         "stock": {"price": booking.stock.price},
         "token": booking.token,
         "activationCode": None,
+        "qrCode": booking.qrCode,
     }
 
     if booking.activationCode:
@@ -117,6 +118,7 @@ class PostBookingResponseModel(BaseModel):
     stockId: str
     token: str
     activationCode: Optional[ActivationCode]
+    qrCode: str
 
     class Config:
         allow_population_by_field_name = True
