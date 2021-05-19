@@ -2,8 +2,9 @@ import React from 'react'
 import { Route, Switch, useRouteMatch } from 'react-router-dom'
 
 import NotFound from 'components/pages/Errors/NotFound/NotFound'
-import OffererDetailsContainer from 'components/pages/Offerer/OffererDetails/OffererDetailsContainer'
-import VenueLayout from 'components/pages/Offerers/OffererDetails/Venue/VenueLayout'
+
+import OffererDetailsContainer from './OffererDetails/OffererDetailsContainer'
+import VenueLayout from './Venue/VenueLayout'
 
 const OffererDetailsLayout = () => {
   const match = useRouteMatch()

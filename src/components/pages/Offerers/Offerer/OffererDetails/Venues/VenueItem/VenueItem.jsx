@@ -5,8 +5,7 @@ import { Link } from 'react-router-dom'
 
 import Icon from 'components/layout/Icon'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
-
-import { pluralize } from '../../../../../../utils/pluralize'
+import { pluralize } from 'utils/pluralize'
 
 const buildLinkIdFromVenue = ({ publicName, name }) => {
   const nameToFormat = publicName || name
