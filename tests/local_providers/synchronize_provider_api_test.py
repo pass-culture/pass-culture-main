@@ -181,30 +181,32 @@ class ProviderAPICronTest:
             )
             synchronize_provider_api.synchronize_venue_provider(venue_provider)
 
+    @pytest.mark.usefixtures("db_session")
     class BuildStocksDetailsTest:
         def test_build_stock_details_from_raw_stocks(self):
             # Given
             raw_stocks = [
-                {"ref": ISBNs[4], "available": 17, "price": 23.989},
-                {"ref": ISBNs[5], "available": 17, "price": 28.989},
+                {"ref": ISBNs[4], "available": 17, "price": 23.99},
+                {"ref": ISBNs[5], "available": 17, "price": 28.99},
             ]
 
             # When
-            result = synchronize_provider_api._build_stock_details_from_raw_stocks(raw_stocks, "siret")
+            provider = offerers_factories.ProviderFactory()
+            result = synchronize_provider_api._build_stock_details_from_raw_stocks(raw_stocks, "siret", provider)
 
             # Then
             assert result == [
                 {
                     "available_quantity": 17,
                     "offers_provider_reference": "3010000108123@siret",
-                    "price": 23.989,
+                    "price": Decimal("23.99"),
                     "products_provider_reference": "3010000108123",
                     "stocks_provider_reference": "3010000108123@siret",
                 },
                 {
                     "available_quantity": 17,
                     "offers_provider_reference": "3010000108124@siret",
-                    "price": 28.989,
+                    "price": Decimal("28.99"),
                     "products_provider_reference": "3010000108124",
                     "stocks_provider_reference": "3010000108124@siret",
                 },
@@ -213,18 +215,41 @@ class ProviderAPICronTest:
         def test_build_stock_details_from_raw_stocks_excludes_duplicates(self):
             # Given
             raw_stocks = [
-                {"ref": ISBNs[4], "available": 17, "price": 23.989},
-                {"ref": ISBNs[4], "available": 17, "price": 28.989},
+                {"ref": ISBNs[4], "available": 17, "price": 23.99},
+                {"ref": ISBNs[4], "available": 17, "price": 28.99},
             ]
 
             # When
-            result = synchronize_provider_api._build_stock_details_from_raw_stocks(raw_stocks, "siret")
+            provider = offerers_factories.ProviderFactory()
+            result = synchronize_provider_api._build_stock_details_from_raw_stocks(raw_stocks, "siret", provider)
 
             # Then
             assert result == [
                 {
                     "available_quantity": 17,
-                    "price": 28.989,  # latest wins
+                    "price": Decimal("28.99"),  # latest wins
+                    "offers_provider_reference": "3010000108123@siret",
+                    "products_provider_reference": "3010000108123",
+                    "stocks_provider_reference": "3010000108123@siret",
+                },
+            ]
+
+        def test_build_stock_details_with_euro_cents(self):
+            # Given
+            raw_stocks = [
+                {"ref": ISBNs[4], "available": 17, "price": 1234},
+                {"ref": ISBNs[4], "available": 17, "price": 1234},
+            ]
+
+            # When
+            provider = offerers_factories.ProviderFactory(name="TiteLive Stocks (Epagine / Place des libraires.com)")
+            result = synchronize_provider_api._build_stock_details_from_raw_stocks(raw_stocks, "siret", provider)
+
+            # Then
+            assert result == [
+                {
+                    "available_quantity": 17,
+                    "price": Decimal("12.34"),  # latest wins
                     "offers_provider_reference": "3010000108123@siret",
                     "products_provider_reference": "3010000108123",
                     "stocks_provider_reference": "3010000108123@siret",

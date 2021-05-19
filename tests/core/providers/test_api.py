@@ -71,7 +71,8 @@ class SynchronizeStocksTest:
         provider = offerers_factories.APIProviderFactory(apiUrl="https://provider_url", authToken="fake_token")
         venue = VenueFactory()
         siret = venue.siret
-        stock_details = synchronize_provider_api._build_stock_details_from_raw_stocks(spec, siret)
+        provider = offerers_factories.ProviderFactory()
+        stock_details = synchronize_provider_api._build_stock_details_from_raw_stocks(spec, siret, provider)
 
         stock = create_stock(
             spec[0]["ref"],

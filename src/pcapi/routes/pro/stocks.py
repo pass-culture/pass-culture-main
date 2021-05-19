@@ -86,6 +86,7 @@ def update_stocks(venue_id: int, body: UpdateVenueStocksBodyModel) -> None:
     Only books, pre existing on the pass Culture database and whitelisted by pass Culture's cgu will be taken, all other stocks are filtered.
     Stocks are referenced by their isbn format EAN13.
     The 'available' quantity is the number of items that could be bought at the library.
+    If provided, the 'price' must be in euros (not cents).
     """
     offerer_id = current_api_key.offererId
     venue = Venue.query.join(Offerer).filter(Venue.id == venue_id, Offerer.id == offerer_id).first_or_404()

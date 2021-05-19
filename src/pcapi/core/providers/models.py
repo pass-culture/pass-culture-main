@@ -52,6 +52,14 @@ class Provider(PcObject, Model, DeactivableMixin):
 
     requireProviderIdentifier = Column(Boolean, nullable=False, default=True, server_default=expression.true())
 
+    # FIXME (dbaty, 2021-05-19): this is very ugly and brittle. We
+    # should probably store this information on the Provider model as
+    # `Provider.pricesInCents`. But we want this in production quickly
+    # and adding a database schema migration would be cumbersome.
+    @property
+    def pricesInCents(self):
+        return self.name == "TiteLive Stocks (Epagine / Place des libraires.com)"
+
     @property
     def isAllocine(self) -> bool:
         from pcapi import local_providers  # avoid import loop
