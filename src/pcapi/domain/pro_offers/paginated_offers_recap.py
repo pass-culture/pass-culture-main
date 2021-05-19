@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Any
 from typing import Optional
 
 from pcapi.domain.identifier.identifier import Identifier
@@ -48,7 +47,7 @@ class OfferRecap:
         is_editable: bool,
         is_event: bool,
         is_thing: bool,
-        extra_data: Optional[Any],
+        extra_data: Optional[dict],
         name: str,
         thumb_url: str,
         offer_type: str,

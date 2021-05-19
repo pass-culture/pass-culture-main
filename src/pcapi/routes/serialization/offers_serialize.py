@@ -179,7 +179,7 @@ class ListOffersOfferResponseModel(BaseModel):
     name: str
     stocks: list[ListOffersStockResponseModel]
     thumbUrl: Optional[str]
-    extraData: Optional[Any]
+    extraData: Optional[dict]
     type: str
     venue: ListOffersVenueResponseModel
     status: str
