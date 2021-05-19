@@ -299,6 +299,23 @@ class Post:
             assert response.json["id"] == favorite.id
             assert response.json["offer"]
 
+        def when_user_creates_a_favorite_twice(self, app):
+            # Given
+            _, test_client = utils.create_user_and_test_client(app)
+            offerer = offers_factories.OffererFactory()
+            venue = offers_factories.VenueFactory(managingOfferer=offerer)
+            offer1 = offers_factories.EventOfferFactory(venue=venue)
+            assert Favorite.query.count() == 0
+
+            # When
+            response = test_client.post(FAVORITES_URL, json={"offerId": offer1.id})
+            assert response.status_code == 200
+            response = test_client.post(FAVORITES_URL, json={"offerId": offer1.id})
+
+            # Then
+            assert response.status_code == 200
+            assert Favorite.query.count() == 1
+
     class Returns400:
         @override_settings(MAX_FAVORITES=1)
         def when_user_creates_one_favorite_above_the_limit(self, app):

@@ -133,14 +133,16 @@ def create_favorite(user: User, body: serializers.FavoriteRequest) -> serializer
             raise ApiErrors({"code": "MAX_FAVORITES_REACHED"})
     with transaction():
         offer = Offer.query.filter_by(id=body.offerId).first_or_404()
+        favorite = Favorite.query.filter(Favorite.offerId == body.offerId, Favorite.userId == user.id).one_or_none()
 
-        favorite = Favorite(
-            mediation=offer.activeMediation,
-            offer=offer,
-            user=user,
-        )
-        db.session.add(favorite)
-        db.session.flush()
+        if not favorite:
+            favorite = Favorite(
+                mediation=offer.activeMediation,
+                offer=offer,
+                user=user,
+            )
+            db.session.add(favorite)
+            db.session.flush()
         return serializers.FavoriteResponse.from_orm(favorite)
 
 
