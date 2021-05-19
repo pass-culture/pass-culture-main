@@ -7,7 +7,7 @@ import OfferLayoutContainer from 'components/pages/Offers/Offer/OfferLayoutConta
 import { configureTestStore } from 'store/testUtils'
 import routes from 'utils/routes_map'
 
-export const renderOffer = async pathname => {
+export const renderOffer = async initialEntries => {
   const store = configureTestStore({
     data: { users: [{ email: 'email@example.com', publicName: 'François', isAdmin: false }] },
   })
@@ -22,7 +22,7 @@ export const renderOffer = async pathname => {
   await act(async () => {
     await render(
       <Provider store={store}>
-        <MemoryRouter initialEntries={[{ pathname }]}>
+        <MemoryRouter initialEntries={[{ ...initialEntries }]}>
           <Route path={path}>
             <OfferLayoutContainer />
           </Route>

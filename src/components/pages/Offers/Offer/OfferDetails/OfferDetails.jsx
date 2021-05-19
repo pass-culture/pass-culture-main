@@ -11,6 +11,8 @@ import OfferThumbnail from 'components/pages/Offers/Offer/OfferDetails/OfferThum
 import OfferPreviewLink from 'components/pages/Offers/Offer/OfferPreviewLink/OfferPreviewLink'
 import * as pcapi from 'repository/pcapi/pcapi'
 
+import { queryParamsFromOfferer } from '../../utils/queryParamsFromOfferer'
+
 const OfferDetails = ({
   history,
   isUserAdmin,
@@ -24,12 +26,12 @@ const OfferDetails = ({
   userEmail,
 }) => {
   const initialValues = {}
-  const queryParams = new URLSearchParams(location.search)
-  if (queryParams.has('structure')) {
-    initialValues.offererId = queryParams.get('structure')
+  const queryParams = queryParamsFromOfferer(location)
+  if (queryParams.structure) {
+    initialValues.offererId = queryParams.structure
   }
-  if (queryParams.has('lieu')) {
-    initialValues.venueId = queryParams.get('lieu')
+  if (queryParams.lieu) {
+    initialValues.venueId = queryParams.lieu
   }
 
   const formInitialValues = useRef(initialValues)
@@ -84,7 +86,17 @@ const OfferDetails = ({
               croppingRect?.height
             )
           }
-          history.push(`/offres/${createdOfferId}/stocks`)
+
+          if (
+            formInitialValues.current.offererId !== undefined &&
+            formInitialValues.current.venueId !== undefined
+          ) {
+            history.push(
+              `/offres/${createdOfferId}/stocks?structure=${formInitialValues.current.offererId}&lieu=${formInitialValues.current.venueId}`
+            )
+          } else {
+            history.push(`/offres/${createdOfferId}/stocks`)
+          }
         }
       } catch (error) {
         if (error && 'errors' in error) {

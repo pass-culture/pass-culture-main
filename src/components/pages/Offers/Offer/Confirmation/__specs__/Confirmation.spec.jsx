@@ -12,7 +12,7 @@ describe('confirmation page', () => {
     loadFakeApiOffer(offer)
 
     // When
-    await renderOffer(`/offres/${offer.id}/confirmation`)
+    await renderOffer({ pathname: `/offres/${offer.id}/confirmation` })
 
     // Then
     expect(screen.queryByText('active')).not.toBeInTheDocument()
@@ -35,11 +35,11 @@ describe('confirmation page', () => {
 
   it('should display the rights information when offer is pending', async () => {
     // Given
-    const offer = offerFactory({ name: 'PENDING', status: 'PENDING' })
+    const offer = offerFactory({ name: 'mon offre', status: 'PENDING' })
     loadFakeApiOffer(offer)
 
     // When
-    await renderOffer(`/offres/${offer.id}/confirmation`)
+    await renderOffer({ pathname: `/offres/${offer.id}/confirmation` })
 
     // Then
     expect(screen.queryByText('active')).not.toBeInTheDocument()
@@ -60,15 +60,35 @@ describe('confirmation page', () => {
     )
   })
 
-  it('should redirect to edition when the offer is not a draft', async () => {
+  it('should redirect to offer edition when the offer is not a draft', async () => {
     // Given
     const offer = offerFactory({ name: 'mon offre', status: 'ACTIVE' })
     loadFakeApiOffer(offer)
 
     // When
-    await renderOffer([`/offres/${offer.id}/edition`, `/offres/${offer.id}/confirmation`])
+    await renderOffer({
+      pathname: [`/offres/${offer.id}/edition`, `/offres/${offer.id}/confirmation`],
+    })
 
     // Then
     expect(screen.getByText('Éditer une offre')).toBeInTheDocument()
+  })
+
+  it('should land to offer edition when you come from an offerer', async () => {
+    // Given
+    const offer = offerFactory({ name: 'mon offre', status: 'DRAFT' })
+    loadFakeApiOffer(offer)
+
+    // When
+    await renderOffer({
+      pathname: [`/offres/${offer.id}/confirmation`],
+      search: '?structure=AA&lieu=AA',
+    })
+
+    // Then
+    expect(screen.getByText('Créer une nouvelle offre', { selector: 'a' })).toHaveAttribute(
+      'href',
+      '/offres/creation?structure=AA&lieu=AA'
+    )
   })
 })

@@ -7,10 +7,18 @@ import { ReactComponent as ValidateIcon } from 'components/pages/Offers/Offer/Co
 import OfferPreviewLink from 'components/pages/Offers/Offer/OfferPreviewLink/OfferPreviewLink'
 import { OFFER_STATUS_DRAFT, OFFER_STATUS_PENDING } from 'components/pages/Offers/Offers/_constants'
 
-const Confirmation = ({ offer }) => {
+import { queryParamsFromOfferer } from '../../utils/queryParamsFromOfferer'
+
+const Confirmation = ({ location, offer }) => {
   const isPendingOffer = offer.status === OFFER_STATUS_PENDING || offer.name.includes('PENDING')
   if (![OFFER_STATUS_DRAFT, OFFER_STATUS_PENDING].includes(offer.status)) {
     return <Redirect to={`/offres/${offer.id}/edition`} />
+  }
+
+  let queryString = ''
+  const queryParams = queryParamsFromOfferer(location)
+  if (queryParams.structure && queryParams.lieu) {
+    queryString = `?structure=${queryParams.structure}&lieu=${queryParams.lieu}`
   }
 
   return (
@@ -47,7 +55,7 @@ const Confirmation = ({ offer }) => {
         />
         <a
           className="primary-link"
-          href="/offres/creation"
+          href={`/offres/creation${queryString}`}
         >
           {'Créer une nouvelle offre'}
         </a>
@@ -57,6 +65,7 @@ const Confirmation = ({ offer }) => {
 }
 
 Confirmation.propTypes = {
+  location: PropTypes.shape().isRequired,
   offer: PropTypes.shape().isRequired,
 }
 

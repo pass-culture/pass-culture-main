@@ -23,7 +23,7 @@ describe('offer step', () => {
       getFakeApiVenuesForOfferer(venue)
 
       // When
-      await renderOffer('/offres/creation')
+      await renderOffer({ pathname: '/offres/creation' })
 
       // Then
       const detailTab = screen.getByText("Détail de l'offre")
@@ -47,7 +47,7 @@ describe('offer step', () => {
       loadFakeApiTypes()
 
       // When
-      await renderOffer(`/offres/${offer.id}/edition`)
+      await renderOffer({ pathname: `/offres/${offer.id}/edition` })
 
       // Then
       const detailTab = screen.getByText("Détail de l'offre", { selector: 'a' })
@@ -68,7 +68,7 @@ describe('stocks step', () => {
       loadFakeApiStocks([])
 
       // When
-      await renderOffer(`/offres/${offer.id}/stocks`)
+      await renderOffer({ pathname: `/offres/${offer.id}/stocks` })
 
       // Then
       const detailTab = screen.getByText("Détail de l'offre")
@@ -96,7 +96,7 @@ describe('stocks step', () => {
       loadFakeApiStocks([stock])
 
       // When
-      await renderOffer(`/offres/${offer.id}/stocks`)
+      await renderOffer({ pathname: `/offres/${offer.id}/stocks` })
 
       // Then
       expect(screen.getByText("Détail de l'offre", { selector: 'a' })).toBeInTheDocument()
@@ -116,7 +116,7 @@ describe('confirmation step', () => {
       loadFakeApiOffer(offer)
 
       // When
-      await renderOffer(`/offres/${offer.id}/confirmation`)
+      await renderOffer({ pathname: `/offres/${offer.id}/confirmation` })
 
       // Then
       const detailTab = screen.getByText("Détail de l'offre")

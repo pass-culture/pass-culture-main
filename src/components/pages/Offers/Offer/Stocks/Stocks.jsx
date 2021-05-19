@@ -23,10 +23,13 @@ import { OFFER_STATUS_DRAFT } from 'components/pages/Offers/Offers/_constants'
 import { ReactComponent as AddStockSvg } from 'icons/ico-plus.svg'
 import * as pcapi from 'repository/pcapi/pcapi'
 
+import { queryParamsFromOfferer } from '../../utils/queryParamsFromOfferer'
+
 const EMPTY_STRING_VALUE = ''
 
 const Stocks = ({
   history,
+  location,
   offer,
   showErrorNotification,
   showSuccessNotification,
@@ -162,7 +165,15 @@ const Stocks = ({
         .then(() => {
           if (isOfferDraft) {
             showSuccessNotificationStocksAndOffer()
-            history.push(`/offres/${offer.id}/confirmation`)
+
+            const queryParams = queryParamsFromOfferer(location)
+            if (queryParams.structure && queryParams.lieu) {
+              history.push(
+                `/offres/${offer.id}/confirmation?structure=${queryParams.structure}&lieu=${queryParams.lieu}`
+              )
+            } else {
+              history.push(`/offres/${offer.id}/confirmation`)
+            }
           } else {
             loadStocks()
             reloadOffer()
@@ -175,6 +186,7 @@ const Stocks = ({
   }, [
     existingStocks,
     history,
+    location,
     stocksInCreation,
     offer.id,
     offer.isEvent,
@@ -350,6 +362,7 @@ Stocks.propTypes = {
   areActivationCodesEnabled: PropTypes.bool.isRequired,
   autoActivateDigitalBookings: PropTypes.bool.isRequired,
   history: PropTypes.shape().isRequired,
+  location: PropTypes.shape().isRequired,
   offer: PropTypes.shape().isRequired,
   reloadOffer: PropTypes.func.isRequired,
   showErrorNotification: PropTypes.func.isRequired,
