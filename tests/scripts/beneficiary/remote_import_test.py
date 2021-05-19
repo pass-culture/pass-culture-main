@@ -280,7 +280,7 @@ class ProcessBeneficiaryApplicationTest:
         # then
         first = User.query.first()
         assert first.email == "jane.doe@example.com"
-        assert first.wallet_balance == 500
+        assert first.wallet_balance == 300
         assert first.civility == "Mme"
         assert first.activity == "Étudiant"
 
@@ -290,7 +290,7 @@ class ProcessBeneficiaryApplicationTest:
                     "date(u.date_created)": first.dateCreated.strftime("%Y-%m-%dT%H:%M:%S"),
                     "date(u.date_of_birth)": "2000-05-01T00:00:00",
                     "date(u.deposit_expiration_date)": first.deposit.expirationDate.strftime("%Y-%m-%dT%H:%M:%S"),
-                    "u.credit": 50000,
+                    "u.credit": 30000,
                     "u.is_beneficiary": True,
                     "u.marketing_push_subscription": True,
                     "u.postal_code": "93130",
@@ -789,7 +789,7 @@ class RunIntegrationTest:
                     "date(u.date_created)": user.dateCreated.strftime("%Y-%m-%dT%H:%M:%S"),
                     "date(u.date_of_birth)": date_of_birth,
                     "date(u.deposit_expiration_date)": user.deposit.expirationDate.strftime("%Y-%m-%dT%H:%M:%S"),
-                    "u.credit": 50000,
+                    "u.credit": 30000,
                     "u.is_beneficiary": True,
                     "u.marketing_push_subscription": True,
                     "u.postal_code": "93450",

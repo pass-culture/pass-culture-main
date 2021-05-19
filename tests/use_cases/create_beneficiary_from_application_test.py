@@ -82,7 +82,7 @@ def test_saved_a_beneficiary_from_application(stubed_random_token, mocked_send_a
     assert beneficiary.notificationSubscriptions == {"marketing_push": True, "marketing_email": True}
 
     deposit = Deposit.query.one()
-    assert deposit.amount == 500
+    assert deposit.amount == 300
     assert deposit.source == "dossier jouve [35]"
     assert deposit.userId == beneficiary.id
 
@@ -100,7 +100,7 @@ def test_saved_a_beneficiary_from_application(stubed_random_token, mocked_send_a
         {
             "user_id": beneficiary.id,
             "attribute_values": {
-                "u.credit": 50000,
+                "u.credit": 30000,
                 "date(u.date_of_birth)": "1995-02-05T00:00:00",
                 "u.postal_code": "35123",
                 "date(u.date_created)": beneficiary.dateCreated.strftime("%Y-%m-%dT%H:%M:%S"),
@@ -141,7 +141,7 @@ def test_application_for_native_app_user(mocked_send_accepted_as_beneficiary_ema
 
     beneficiary = User.query.one()
     deposit = Deposit.query.one()
-    assert deposit.amount == 500
+    assert deposit.amount == 300
     assert deposit.source == "dossier jouve [35]"
     assert deposit.userId == beneficiary.id
 
@@ -155,7 +155,7 @@ def test_application_for_native_app_user(mocked_send_accepted_as_beneficiary_ema
         {
             "user_id": beneficiary.id,
             "attribute_values": {
-                "u.credit": 50000,
+                "u.credit": 30000,
                 "date(u.date_of_birth)": "1995-02-05T00:00:00",
                 "u.postal_code": "35123",
                 "date(u.date_created)": beneficiary.dateCreated.strftime("%Y-%m-%dT%H:%M:%S"),

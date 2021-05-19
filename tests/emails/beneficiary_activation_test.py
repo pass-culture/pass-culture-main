@@ -94,7 +94,7 @@ class GetAcceptedAsBeneficiaryEmailTest:
             "Mj-TemplateID": 2016025,
             "Mj-TemplateLanguage": True,
             "Vars": {
-                "depositAmount": 500,
+                "depositAmount": 300,
             },
         }
 

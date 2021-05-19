@@ -655,6 +655,7 @@ class ShowEligibleCardTest:
         assert account_serializers.UserProfileResponse._show_eligible_card(user) == expected
 
     @pytest.mark.parametrize("departement,expected", [("93", True), ("92", False)])
+    @override_features(WHOLE_FRANCE_OPENING=False)
     def test_against_departement(self, departement, expected):
         date_of_birth = datetime.now() - relativedelta(years=18, days=5)
         date_of_creation = datetime.now() - relativedelta(years=4)

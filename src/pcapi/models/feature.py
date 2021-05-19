@@ -64,12 +64,9 @@ class Feature(PcObject, Model, DeactivableMixin):
 
 
 FEATURES_DISABLED_BY_DEFAULT = (
-    FeatureToggle.APPLY_BOOKING_LIMITS_V2,
-    FeatureToggle.WHOLE_FRANCE_OPENING,
     FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS,
     FeatureToggle.ENABLE_ACTIVATION_CODES,
     FeatureToggle.USE_NEW_BATCH_INDEX_OFFERS_BEHAVIOUR,
-    FeatureToggle.ENABLE_NATIVE_ID_CHECK_VERSION,
     FeatureToggle.FORCE_PHONE_VALIDATION,
 )
 
