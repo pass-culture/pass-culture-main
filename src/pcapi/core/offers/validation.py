@@ -284,7 +284,7 @@ def check_activation_codes_expiration_datetime_on_stock_edition(
 
 
 def check_user_can_load_config(user: User) -> None:
-    if user.email not in settings.SUPER_ADMIN_EMAIL_ADDRESSES:
+    if settings.IS_PROD and user.email not in settings.SUPER_ADMIN_EMAIL_ADDRESSES:
         error = ForbiddenError()
         error.add_error("type", "Seuls les membres de l'équipe de validation peuvent éditer cette configuration")
         raise error
