@@ -7,9 +7,7 @@ import DeskContainer from 'components/pages/Desk/DeskContainer'
 import Unavailable from 'components/pages/Errors/Unavailable/Unavailable'
 import Homepage from 'components/pages/Home/Homepage'
 import LostPasswordContainer from 'components/pages/LostPassword/LostPasswordContainer'
-import OffererCreationContainer from 'components/pages/Offerer/OffererCreation/OffererCreationContainer'
-import OffererDetailsContainer from 'components/pages/Offerer/OffererDetails/OffererDetailsContainer'
-import Offerers from 'components/pages/Offerers/OfferersContainer'
+import OfferersLayout from 'components/pages/Offerers/OfferersLayout'
 import OfferLayoutContainer from 'components/pages/Offers/Offer/OfferLayoutContainer'
 import Offers from 'components/pages/Offers/Offers/OffersContainer'
 import ReimbursementsContainer from 'components/pages/Reimbursements/ReimbursementsContainer'
@@ -19,8 +17,6 @@ import SigninContainer from 'components/pages/Signin/SigninContainer'
 import SignupContainer from 'components/pages/Signup/SignupContainer'
 import SignupValidationContainer from 'components/pages/Signup/SignupValidation/SignupValidationContainer'
 import StyleguideContainer from 'components/pages/Styleguide/StyleguideContainer'
-import VenueCreationContainer from 'components/pages/Venue/VenueCreation/VenueCreationContainer'
-import VenueEditionContainer from 'components/pages/Venue/VenueEdition/VenueEditionContainer'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
 const RedirectToConnexionComponent = () => <Redirect to="/connexion" />
@@ -76,40 +72,10 @@ export const routesWithMain = [
     },
   },
   {
-    component: Offerers,
-    exact: true,
+    component: OfferersLayout,
+    exact: false,
     path: '/structures',
     title: 'Structures',
-  },
-  {
-    component: OffererCreationContainer,
-    exact: true,
-    path: '/structures/creation',
-    title: 'Structure',
-  },
-  {
-    component: OffererDetailsContainer,
-    exact: true,
-    path: '/structures/:offererId',
-    title: 'Structure',
-  },
-  {
-    component: VenueCreationContainer,
-    exact: true,
-    path: '/structures/:offererId/lieux/creation',
-    title: 'Lieu',
-  },
-  {
-    component: VenueEditionContainer,
-    exact: true,
-    path: '/structures/:offererId/lieux/:venueId/modification',
-    title: 'Lieu',
-  },
-  {
-    component: VenueEditionContainer,
-    exact: true,
-    path: '/structures/:offererId/lieux/:venueId',
-    title: 'Lieu',
   },
   {
     component: ReimbursementsContainer,

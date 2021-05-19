@@ -173,21 +173,23 @@ class VenueCreation extends PureComponent {
           pageName: 'venue',
         }}
       >
-        <PageTitle title="Créer un lieu" />
-        <Titles title="Lieu" />
-        <p className="advice">
-          {'Ajoutez un lieu où accéder à vos offres.'}
-        </p>
+        <>
+          <PageTitle title="Créer un lieu" />
+          <Titles title="Lieu" />
+          <p className="advice">
+            {'Ajoutez un lieu où accéder à vos offres.'}
+          </p>
 
-        {showForm && (
-          <Form
-            decorators={decorators}
-            initialValues={formInitialValues}
-            name="venue"
-            onSubmit={this.handleOnFormSubmit}
-            render={this.onHandleRender}
-          />
-        )}
+          {showForm && (
+            <Form
+              decorators={decorators}
+              initialValues={formInitialValues}
+              name="venue"
+              onSubmit={this.handleOnFormSubmit}
+              render={this.onHandleRender}
+            />
+          )}
+        </>
       </AppLayout>
     )
   }

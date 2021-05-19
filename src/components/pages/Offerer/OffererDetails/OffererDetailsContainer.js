@@ -1,4 +1,5 @@
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
@@ -39,6 +40,7 @@ export const mapDispatchToProps = dispatch => {
 }
 
 export default compose(
+  withRouter,
   withTracking('Offerer'),
   connect(mapStateToProps, mapDispatchToProps)
 )(OffererDetails)

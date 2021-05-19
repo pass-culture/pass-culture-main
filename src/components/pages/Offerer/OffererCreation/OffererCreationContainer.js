@@ -1,5 +1,6 @@
 import { removeWhitespaces } from 'react-final-form-utils'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
@@ -53,6 +54,7 @@ export const mergeProps = (stateProps, dispatchProps, ownProps) => {
 }
 
 export default compose(
+  withRouter,
   withTracking('Offerer'),
   connect(mapStateToProps, mapDispatchToProps, mergeProps)
 )(OffererCreation)
