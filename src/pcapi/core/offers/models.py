@@ -327,6 +327,8 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin):
 
     author = relationship("User", foreign_keys=[authorId], backref="offers")
 
+    rankingWeight = Column(Integer, nullable=True)
+
     @hybrid_property
     def isSoldOut(self):
         for stock in self.stocks:

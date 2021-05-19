@@ -35,6 +35,7 @@ def create_offer_with_event_product(
     last_provider_id: int = None,
     product: Product = None,
     last_provider: Provider = None,
+    ranking_weight: int = None,
     thumb_count: int = 0,
     withdrawal_details: Optional[str] = None,
     extra_data: Optional[dict] = None,
@@ -69,6 +70,7 @@ def create_offer_with_event_product(
     offer.validation = validation
     offer.withdrawalDetails = withdrawal_details
     offer.extraData = extra_data
+    offer.rankingWeight = ranking_weight
 
     return offer
 

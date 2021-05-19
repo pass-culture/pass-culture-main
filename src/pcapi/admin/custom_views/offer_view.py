@@ -45,18 +45,19 @@ class OfferView(BaseAdminView):
     can_create = False
     can_edit = True
     can_delete = False
-    column_list = ["id", "name", "type", "criteria", "validation"]
-    column_sortable_list = ["name", "type", "criteria", "validation"]
+    column_list = ["id", "name", "type", "criteria", "rankingWeight", "validation"]
+    column_sortable_list = ["name", "type", "criteria", "rankingWeight", "validation"]
     column_labels = {
         "name": "Nom",
         "type": "Type",
         "criteria": "Tag",
         "criteria.name": "Tag",
+        "rankingWeight": "Pondération",
     }
     # Do not add searchable column on offer view for performance reasons
     # use the filters feature instead
-    column_filters = ["type", "criteria.name", "name", "validation"]
-    form_columns = ["criteria"]
+    column_filters = ["type", "criteria.name", "name", "rankingWeight", "validation"]
+    form_columns = ["criteria", "rankingWeight"]
     simple_list_pager = True
 
     def on_model_change(self, form: Form, offer: Offer, is_created: bool = False) -> None:

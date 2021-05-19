@@ -63,6 +63,7 @@ WEBAPP_GET_BOOKING_INCLUDES = [
                     "isEvent",
                     "offerType",
                     "-authorId",
+                    "-rankingWeight",
                     {
                         "key": "stocks",
                         "includes": [

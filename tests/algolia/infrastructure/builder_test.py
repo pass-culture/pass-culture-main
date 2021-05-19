@@ -44,6 +44,7 @@ class BuildObjectTest:
             event_type=EventType.MUSIQUE,
             thumb_count=1,
             date_created=datetime(2020, 1, 1, 10, 0, 0),
+            ranking_weight=3,
         )
         stock1 = create_stock(
             beginning_datetime=in_four_days,
@@ -112,6 +113,7 @@ class BuildObjectTest:
                 "prices": [Decimal("0.00"), Decimal("10.00"), Decimal("20.00")],
                 "priceMin": Decimal("0.00"),
                 "priceMax": Decimal("20.00"),
+                "rankingWeight": 3,
                 "showSubType": None,
                 "showType": None,
                 "speaker": None,
@@ -474,6 +476,7 @@ class BuildObjectTest:
                 "prices": [Decimal("10.00")],
                 "priceMin": Decimal("10.00"),
                 "priceMax": Decimal("10.00"),
+                "rankingWeight": None,
                 "showSubType": None,
                 "showType": None,
                 "speaker": None,
@@ -565,6 +568,7 @@ class BuildObjectTest:
                 "prices": [Decimal("10.00")],
                 "priceMin": Decimal("10.00"),
                 "priceMax": Decimal("10.00"),
+                "rankingWeight": None,
                 "showSubType": None,
                 "showType": None,
                 "speaker": None,
