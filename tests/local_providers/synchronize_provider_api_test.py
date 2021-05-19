@@ -242,7 +242,7 @@ class ProviderAPICronTest:
             ]
 
             # When
-            provider = offerers_factories.ProviderFactory(name="TiteLive Stocks (Epagine / Place des libraires.com)")
+            provider = offerers_factories.ProviderFactory(pricesInCents=True)
             result = synchronize_provider_api._build_stock_details_from_raw_stocks(raw_stocks, "siret", provider)
 
             # Then

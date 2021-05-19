@@ -27,5 +27,6 @@ def get_providers_by_venue(venue_id: str):
         provider_dict = as_dict(provider)
         del provider_dict["apiUrl"]
         del provider_dict["authToken"]
+        del provider_dict["pricesInCents"]
         result.append(provider_dict)
     return jsonify(result)
