@@ -14,6 +14,9 @@ export const loadFakeApiOffer = offer => jest.spyOn(pcapi, 'loadOffer').mockReso
 export const loadFakeApiStocks = stocks =>
   jest.spyOn(pcapi, 'loadStocks').mockResolvedValue({ stocks })
 
+export const loadFakeApiVenueStats = venue =>
+  jest.spyOn(pcapi, 'getVenueStats').mockResolvedValue(venue)
+
 export const loadFakeApiTypes = () => {
   const types = [
     {

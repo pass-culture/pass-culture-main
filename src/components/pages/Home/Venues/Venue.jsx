@@ -88,7 +88,7 @@ const Venue = ({ id, isVirtual, name, offererId, publicName }) => {
             {!isVirtual && (
               <Link
                 className="tertiary-link"
-                to={`/structures/${offererId}/lieux/${id}`}
+                to={`/structures/${offererId}/lieux/${id}?modification`}
               >
                 <Icon svg="ico-outer-pen" />
                 {'Modifier'}
@@ -108,7 +108,7 @@ const Venue = ({ id, isVirtual, name, offererId, publicName }) => {
                 className="tertiary-link"
                 to={`/offres/creation?structure=${offererId}&lieu=${id}`}
               >
-                <IcoPlus aria-hidden />
+                <IcoPlus />
                 <div>
                   {isVirtual ? 'Créer une nouvelle offre numérique' : 'Créer une nouvelle offre'}
                 </div>
