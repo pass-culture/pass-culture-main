@@ -51,6 +51,7 @@ class FeatureToggle(enum.Enum):
     FORCE_PHONE_VALIDATION = "Forcer la validation du numéro de téléphone pour devenir bénéficiaire"
     USE_NEW_BATCH_INDEX_OFFERS_BEHAVIOUR = "Utilise une boucle dans le cron de réindexation Algolia"
     ENABLE_NATIVE_ID_CHECK_VERSION = "Utilise la version d'ID-Check intégrée à l'application native"
+    ENABLE_NEW_VENUE_PAGES = "Utiliser la nouvelle version des pages d'edition et de creation de lieux"
 
 
 class Feature(PcObject, Model, DeactivableMixin):
@@ -67,6 +68,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.ENABLE_ACTIVATION_CODES,
     FeatureToggle.USE_NEW_BATCH_INDEX_OFFERS_BEHAVIOUR,
     FeatureToggle.FORCE_PHONE_VALIDATION,
+    FeatureToggle.ENABLE_NEW_VENUE_PAGES,
 )
 
 
