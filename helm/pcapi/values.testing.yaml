@@ -387,4 +387,5 @@ secrets:
     version: 1
   - name: WHITELISTED_SMS_RECIPIENTS
     version: 1
-
+  - name: BLACKLISTED_SMS_RECIPIENTS
+    version: 1

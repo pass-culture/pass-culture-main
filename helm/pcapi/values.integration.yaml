@@ -334,3 +334,5 @@ secrets:
     version: 2
   - name: SUPPORT_EMAIL_ADDRESS
     version: 2
+  - name: BLACKLISTED_SMS_RECIPIENTS
+    version: 1

@@ -36,6 +36,11 @@ def sanitize_email(email: str) -> str:
     return email.strip().lower()
 
 
+def build_internationalized_phone_number(user: User, phone_number: str) -> str:
+    country_code = PHONE_PREFIX_BY_DEPARTEMENT_CODE.get(user.departementCode, METROPOLE_PHONE_PREFIX)
+    return country_code + phone_number[1:]
+
+
 def format_phone_number_with_country_code(user: User) -> str:
     if not user.phoneNumber:
         raise UserWithoutPhoneNumberException()
@@ -50,6 +55,4 @@ def format_phone_number_with_country_code(user: User) -> str:
             extra={"departementCode": user.departementCode, "postalCode": user.postalCode},
         )
 
-    phone_prefix = PHONE_PREFIX_BY_DEPARTEMENT_CODE.get(user.departementCode, METROPOLE_PHONE_PREFIX)
-
-    return phone_prefix + user.phoneNumber[1:]
+    return build_internationalized_phone_number(user, user.phoneNumber)

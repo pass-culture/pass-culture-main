@@ -174,7 +174,7 @@ def send_phone_validation_code(user: User, body: serializers.SendPhoneValidation
             {"message": "Le numéro de téléphone est déjà validé", "code": "PHONE_NUMBER_ALREADY_VALIDATED"},
             status_code=400,
         )
-    except (exceptions.UserWithoutPhoneNumberException, exceptions.PhoneAlreadyExists):
+    except (exceptions.UserWithoutPhoneNumberException, exceptions.PhoneAlreadyExists, exceptions.InvalidPhoneNumber):
         raise ApiErrors(
             {"message": "Le numéro de téléphone est invalide", "code": "INVALID_PHONE_NUMBER"}, status_code=400
         )
@@ -198,6 +198,12 @@ def validate_phone_number(user: User, body: serializers.ValidatePhoneNumberReque
             raise ApiErrors({"message": "Le code saisi a expiré", "code": "EXPIRED_VALIDATION_CODE"}, status_code=400)
         except exceptions.NotValidCode:
             raise ApiErrors({"message": "Le code est invalide", "code": "INVALID_VALIDATION_CODE"}, status_code=400)
+        except exceptions.InvalidPhoneNumber:
+            raise ApiErrors(
+                {"message": "Le numéro de téléphone est invalide", "code": "INVALID_PHONE_NUMBER"}, status_code=400
+            )
+        except exceptions.PhoneVerificationException:
+            raise ApiErrors({"message": "L'envoi du code a échoué", "code": "CODE_SENDING_FAILURE"}, status_code=400)
 
 
 @blueprint.native_v1.route("/account/suspend", methods=["POST"])

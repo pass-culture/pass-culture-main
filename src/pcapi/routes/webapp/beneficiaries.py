@@ -170,14 +170,18 @@ def send_phone_validation_code(body: serialization_beneficiaries.SendPhoneValida
     user = current_user._get_current_object()
     try:
         if body.phone_number:
-            users_api.change_user_phone_number(user, body.phoneNumber)
+            users_api.change_user_phone_number(user, body.phone_number)
         users_api.send_phone_validation_code(user)
     except users_exceptions.UserPhoneNumberAlreadyValidated:
         raise ApiErrors({"message": "Le numéro de téléphone est déjà validé"}, status_code=400)
     except users_exceptions.UserWithoutPhoneNumberException:
         raise ApiErrors({"message": "Le numéro de téléphone est invalide"}, status_code=400)
+    except users_exceptions.InvalidPhoneNumber:
+        raise ApiErrors(
+            {"message": "Le numéro de téléphone est invalide", "code": "INVALID_PHONE_NUMBER"}, status_code=400
+        )
     except users_exceptions.PhoneVerificationException:
-        raise ApiErrors({"message": "L'envoi du code a échoué"}, status_code=400)
+        raise ApiErrors({"message": "L'envoi du code a échoué", "code": "CODE_SENDING_FAILURE"}, status_code=400)
 
 
 @private_api.route("/validate_phone_number", methods=["POST"])
@@ -193,3 +197,9 @@ def validate_phone_number(body: serialization_beneficiaries.ValidatePhoneNumberR
             raise ApiErrors({"message": "Le code saisi a expiré", "code": "EXPIRED_VALIDATION_CODE"}, status_code=400)
         except users_exceptions.NotValidCode:
             raise ApiErrors({"message": "Le code est invalide", "code": "INVALID_VALIDATION_CODE"}, status_code=400)
+        except users_exceptions.InvalidPhoneNumber:
+            raise ApiErrors(
+                {"message": "Le numéro de téléphone est invalide", "code": "INVALID_PHONE_NUMBER"}, status_code=400
+            )
+        except users_exceptions.PhoneVerificationException:
+            raise ApiErrors({"message": "L'envoi du code a échoué", "code": "CODE_SENDING_FAILURE"}, status_code=400)

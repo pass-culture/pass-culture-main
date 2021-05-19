@@ -399,3 +399,5 @@ secrets:
     version: 2
   - name: WALLET_BALANCES_RECIPIENTS
     version: 2
+  - name: BLACKLISTED_SMS_RECIPIENTS
+    version: 1

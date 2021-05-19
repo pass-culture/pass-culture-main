@@ -829,10 +829,44 @@ class SendPhoneValidationCodeTest:
         assert user.phoneNumber == "060102030405"
         assert response.json == {"message": "Le numéro de téléphone est invalide", "code": "INVALID_PHONE_NUMBER"}
 
+    @override_settings(BLACKLISTED_SMS_RECIPIENTS={"33607080900"})
+    def test_update_phone_number_with_blocked_phone_number(self, app):
+        user = users_factories.UserFactory(isEmailValidated=True, isBeneficiary=False, phoneNumber="0601020304")
+        access_token = create_access_token(identity=user.email)
+
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+
+        response = test_client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "0607080900"})
+
+        assert response.status_code == 400
+        assert response.json["code"] == "INVALID_PHONE_NUMBER"
+
+        assert not Token.query.filter_by(userId=user.id).first()
+        db.session.refresh(user)
+        assert user.phoneNumber == "0601020304"
+
+    @override_settings(BLACKLISTED_SMS_RECIPIENTS={"33601020304"})
+    def test_blocked_phone_number(self, app):
+        user = users_factories.UserFactory(departementCode="93", isBeneficiary=False, phoneNumber="0601020304")
+        access_token = create_access_token(identity=user.email)
+
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+
+        response = test_client.post("/native/v1/send_phone_validation_code")
+
+        assert response.status_code == 400
+        assert response.json["code"] == "INVALID_PHONE_NUMBER"
+
+        assert not Token.query.filter_by(userId=user.id).first()
+        db.session.refresh(user)
+        assert user.phoneNumber == "0601020304"
+
 
 class ValidatePhoneNumberTest:
     def test_validate_phone_number(self, app):
-        user = users_factories.UserFactory(isBeneficiary=False)
+        user = users_factories.UserFactory(isBeneficiary=False, phoneNumber="0607080900")
         access_token = create_access_token(identity=user.email)
         token = create_phone_validation_token(user)
 
@@ -855,7 +889,7 @@ class ValidatePhoneNumberTest:
         assert int(app.redis_client.get(f"phone_validation_attempts_user_{user.id}")) == 2
 
     def test_validate_phone_number_and_become_beneficiary(self, app):
-        user = users_factories.UserFactory(isBeneficiary=False)
+        user = users_factories.UserFactory(isBeneficiary=False, phoneNumber="0607080900")
 
         beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
         beneficiary_import.setStatus(ImportStatus.CREATED)
@@ -875,7 +909,7 @@ class ValidatePhoneNumberTest:
 
     @override_settings(MAX_PHONE_VALIDATION_ATTEMPTS=1)
     def test_validate_phone_number_too_many_attempts(self, app):
-        user = users_factories.UserFactory(isBeneficiary=False)
+        user = users_factories.UserFactory(isBeneficiary=False, phoneNumber="0607080900")
         access_token = create_access_token(identity=user.email)
         token = create_phone_validation_token(user)
 
@@ -894,7 +928,7 @@ class ValidatePhoneNumberTest:
         assert int(app.redis_client.get(f"phone_validation_attempts_user_{user.id}")) == 1
 
     def test_wrong_code(self, app):
-        user = users_factories.UserFactory(isBeneficiary=False)
+        user = users_factories.UserFactory(isBeneficiary=False, phoneNumber="0607080900")
         access_token = create_access_token(identity=user.email)
         create_phone_validation_token(user)
 
@@ -910,7 +944,7 @@ class ValidatePhoneNumberTest:
         assert Token.query.filter_by(userId=user.id, type=TokenType.PHONE_VALIDATION).first()
 
     def test_expired_code(self, app):
-        user = users_factories.UserFactory(isBeneficiary=False)
+        user = users_factories.UserFactory(isBeneficiary=False, phoneNumber="0607080900")
         token = create_phone_validation_token(user)
 
         with freeze_time(datetime.now() + timedelta(minutes=20)):
@@ -921,6 +955,22 @@ class ValidatePhoneNumberTest:
 
         assert response.status_code == 400
         assert response.json["code"] == "EXPIRED_VALIDATION_CODE"
+
+        assert not User.query.get(user.id).is_phone_validated
+        assert Token.query.filter_by(userId=user.id, type=TokenType.PHONE_VALIDATION).first()
+
+    @override_settings(BLACKLISTED_SMS_RECIPIENTS={"33607080900"})
+    def test_blocked_phone_number(self, app):
+        user = users_factories.UserFactory(isBeneficiary=False, phoneNumber="0607080900")
+        token = create_phone_validation_token(user)
+
+        access_token = create_access_token(identity=user.email)
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+        response = test_client.post("/native/v1/validate_phone_number", {"code": token.value})
+
+        assert response.status_code == 400
+        assert response.json["code"] == "INVALID_PHONE_NUMBER"
 
         assert not User.query.get(user.id).is_phone_validated
         assert Token.query.filter_by(userId=user.id, type=TokenType.PHONE_VALIDATION).first()
