@@ -4,7 +4,7 @@ import { Field } from 'react-final-form'
 import { composeValidators, removeWhitespaces } from 'react-final-form-utils'
 
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
-import { getSirenInformation } from 'components/pages/Offerer/OffererCreation/decorators/getSirenInformation'
+import { getSirenInformation } from 'repository/siren/getSirenInformation'
 
 import formatSiren from './formatSiren'
 

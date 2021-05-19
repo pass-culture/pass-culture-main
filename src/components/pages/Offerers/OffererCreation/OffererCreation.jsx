@@ -6,8 +6,8 @@ import { Form } from 'react-final-form'
 import AppLayout from 'app/AppLayout'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
+import { bindAddressAndDesignationFromSiren } from 'repository/siren/bindSirenFieldToDesignation'
 
-import { bindAddressAndDesignationFromSiren } from './decorators/bindSirenFieldToDesignation'
 import OffererCreationForm from './OffererCreationForm/OffererCreationForm'
 
 class OffererCreation extends PureComponent {

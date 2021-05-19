@@ -10,8 +10,7 @@ import Icon from 'components/layout/Icon'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import { LegalInfos } from 'components/layout/LegalInfos/LegalInfos'
 import { redirectLoggedUser } from 'components/router/helpers'
-
-import bindAddressAndDesignationFromSiren from '../../Offerer/OffererCreation/decorators/bindSirenFieldToDesignation'
+import bindAddressAndDesignationFromSiren from 'repository/siren/bindSirenFieldToDesignation'
 
 import SirenField from './SirenField/SirenField'
 
