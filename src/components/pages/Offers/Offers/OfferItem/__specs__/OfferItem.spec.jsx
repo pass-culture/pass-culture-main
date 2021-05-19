@@ -183,6 +183,17 @@ describe('src | components | pages | Offers | OfferItem', () => {
       expect(screen.queryByText('Gaumont - Offre numérique')).toBeInTheDocument()
     })
 
+    it('should display the isbn when given', () => {
+      // given
+      eventOffer.extraData = { isbn: '123456789' }
+
+      // when
+      renderOfferItem(props)
+
+      // then
+      expect(screen.queryByText('123456789')).toBeInTheDocument()
+    })
+
     describe('offer remaining quantity', () => {
       it('should be 0 when offer has no stock', () => {
         // when

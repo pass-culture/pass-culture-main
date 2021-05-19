@@ -25,6 +25,19 @@
     display: block;
   }
 
+  .secondary-link,
+  .secondary-button {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+
+    img {
+      flex-shrink: 0;
+      max-height: rem(16px);
+      max-width: rem(16px);
+    }
+  }
+
   .stocks {
     display: flex;
     margin-top: rem(5px);
@@ -62,21 +75,12 @@
     }
   }
 
-  .status-column {
-    width: rem(148px);
+  .isbn {
+    margin-top: rem(8px);
   }
 
-  .secondary-link,
-  .secondary-button {
-    align-items: center;
-    display: flex;
-    justify-content: center;
-
-    img {
-      flex-shrink: 0;
-      max-height: rem(16px);
-      max-width: rem(16px);
-    }
+  .status-column {
+    width: rem(148px);
   }
 
   .thumb-column {

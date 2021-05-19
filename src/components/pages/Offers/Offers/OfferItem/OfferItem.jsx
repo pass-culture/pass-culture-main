@@ -99,6 +99,11 @@ const OfferItem = ({ disabled, offer, stocks, venue, isSelected, selectOffer }) 
             )}
           </span>
         )}
+        {offer.extraData && offer.extraData.isbn && (
+          <div className="isbn">
+            {offer.extraData.isbn}
+          </div>
+        )}
       </td>
       <td className="venue-column">
         {venue && computeVenueDisplayName(venue)}
