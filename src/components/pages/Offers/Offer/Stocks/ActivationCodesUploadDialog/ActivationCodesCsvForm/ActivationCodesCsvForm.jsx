@@ -1,24 +1,24 @@
 import PropTypes from 'prop-types'
 import React, { forwardRef, Fragment } from 'react'
 
+import ActivationCodesUploadErrorDescription from './ActivationCodesUploadErrorDescription'
+import ActivationCodesUploadInformationDescription from './ActivationCodesUploadInformationDescription'
+
 export const ActivationCodeCsvForm = forwardRef(function ActivationCodeCsvForm(
-  { isFileInputDisabled, submitThumbnail },
+  { isFileInputDisabled, submitThumbnail, errorMessage },
   ref
 ) {
   return (
     <Fragment>
-      <div className="activation-codes-upload-description">
-        <p>
-          {
-            'Pour les offres nécessitant une activation par code sur une plateforme extérieure, vous pouvez importer directement un fichier .csv.'
-          }
-        </p>
-        <p>
-          {
-            'Le stock disponible sera automatiquement mis à jour. Les jeunes auront accès à ce code dans leur espace réservation.'
-          }
-        </p>
-      </div>
+      {errorMessage ? (
+        <ActivationCodesUploadErrorDescription
+          errorMessage={errorMessage}
+          fileName={ref.current.files[0].name}
+        />
+      ) : (
+        <ActivationCodesUploadInformationDescription />
+      )}
+
       <div className="activation-codes-upload-button-section">
         <label className="primary-button activation-codes-upload-label">
           {'Importer un fichier .csv depuis l’ordinateur'}
@@ -45,7 +45,12 @@ export const ActivationCodeCsvForm = forwardRef(function ActivationCodeCsvForm(
   )
 })
 
+ActivationCodeCsvForm.defaultProps = {
+  errorMessage: null,
+}
+
 ActivationCodeCsvForm.propTypes = {
+  errorMessage: PropTypes.string,
   isFileInputDisabled: PropTypes.bool.isRequired,
   submitThumbnail: PropTypes.func.isRequired,
 }

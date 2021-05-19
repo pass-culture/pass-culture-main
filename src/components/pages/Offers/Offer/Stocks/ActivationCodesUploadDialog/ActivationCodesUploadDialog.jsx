@@ -2,19 +2,14 @@ import PropTypes from 'prop-types'
 import React, { Fragment, useCallback, useRef, useState } from 'react'
 
 import { DialogBox } from 'components/layout/DialogBox/DialogBox'
-import Icon from 'components/layout/Icon'
+
+import { ReactComponent as ActivationCodeErrorIcon } from '../assets/add-activation-code-error.svg'
+import { ReactComponent as AddActivationCodeIcon } from '../assets/add-activation-code-light.svg'
 
 import ActivationCodesConfirmationForm from './ActivationCodesConfirmationForm/ActivationCodesConfirmationForm'
 import { ActivationCodeCsvForm } from './ActivationCodesCsvForm/ActivationCodesCsvForm'
-
+import { checkAndParseUploadedFile, fileReader } from './UploadedFileChecker'
 export const ACTIVATION_CODES_UPLOAD_ID = 'ACTIVATION_CODES_UPLOAD_ID'
-
-const getActivationCodesFromFileContent = fileContent => {
-  const parsedFileContent = fileContent.split('\n')
-  parsedFileContent.shift()
-
-  return parsedFileContent
-}
 
 const ActivationCodesUploadDialog = ({
   activationCodes,
@@ -28,28 +23,35 @@ const ActivationCodesUploadDialog = ({
 }) => {
   const file = useRef({})
 
+  const [errorMessage, setErrorMessage] = useState(null)
   const [isFileInputDisabled, setIsFileInputDisabled] = useState(false)
 
-  const submitThumbnail = useCallback(() => {
+  const submitThumbnail = useCallback(async () => {
     setIsFileInputDisabled(true)
     const currentFile = file.current.files[0]
-    const reader = new FileReader()
     if (currentFile == null) {
       return
     }
-    reader.readAsText(currentFile)
-    reader.onload = function () {
-      const fileContent = reader.result
-      setActivationCodes(getActivationCodesFromFileContent(fileContent))
-      setIsFileInputDisabled(false)
+
+    const { errorMessage, activationCodes } = await checkAndParseUploadedFile({
+      fileReader,
+      currentFile,
+    })
+
+    if (errorMessage) {
+      setErrorMessage(errorMessage)
+    } else {
+      setErrorMessage(null)
+      setActivationCodes(activationCodes)
     }
-    reader.onerror = function () {
-      // Errors should be handled in another ticket (7791)
-      setIsFileInputDisabled(false)
-    }
+
+    setIsFileInputDisabled(false)
   }, [setActivationCodes, setIsFileInputDisabled])
 
-  const clearActivationCodes = useCallback(() => setActivationCodes([]), [setActivationCodes])
+  const clearActivationCodes = useCallback(() => {
+    setActivationCodes([])
+    setErrorMessage(null)
+  }, [setActivationCodes])
   const submitActivationCodes = useCallback(() => {
     validateActivationCodes(activationCodes)
   }, [activationCodes, validateActivationCodes])
@@ -67,18 +69,27 @@ const ActivationCodesUploadDialog = ({
             className="activation-codes-upload-title"
             id={ACTIVATION_CODES_UPLOAD_ID}
           >
-            {"Ajouter des codes d'activation"}
+            {'Ajouter des codes d’activation'}
           </h4>
-          <Icon
-            alt="Ajouter des codes d'activation"
-            aria-hidden
-            className="activation-codes-upload-icon"
-            role="img"
-            svg="add-activation-code-light"
-          />
+          {errorMessage ? (
+            <ActivationCodeErrorIcon
+              alt="Erreur de validation des codes d’activation"
+              aria-hidden
+              className="activation-codes-upload-icon"
+              data-testid="activation-codes-upload-error-icon-id"
+            />
+          ) : (
+            <AddActivationCodeIcon
+              alt="Ajouter des codes d’activation"
+              aria-hidden
+              className="activation-codes-upload-icon"
+              data-testid="activation-codes-upload-icon-id"
+            />
+          )}
         </section>
-        {activationCodes.length == 0 && (
+        {activationCodes.length === 0 && (
           <ActivationCodeCsvForm
+            errorMessage={errorMessage}
             isFileInputDisabled={isFileInputDisabled}
             ref={file}
             submitThumbnail={submitThumbnail}
