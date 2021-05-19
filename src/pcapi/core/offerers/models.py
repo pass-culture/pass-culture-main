@@ -162,6 +162,12 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ne
             .count()
         )
 
+    @property
+    def nApprovedOffers(self) -> int:
+        n_approved_offers = 0
+        n_approved_offers += len([offer for offer in self.offers if offer.validation == OfferValidationStatus.APPROVED])
+        return n_approved_offers
+
     @hybrid_property
     def timezone(self) -> str:
         if self.departementCode is None:
@@ -284,6 +290,13 @@ class Offerer(
         for venue in self.managedVenues:
             n_offers += venue.nOffers
         return n_offers
+
+    @property
+    def nApprovedOffers(self):
+        n_approved_offers = 0
+        for venue in self.managedVenues:
+            n_approved_offers += venue.nApprovedOffers
+        return n_approved_offers
 
     def append_user_has_access_attribute(self, user_id: int, is_admin: bool) -> None:
         if is_admin:
