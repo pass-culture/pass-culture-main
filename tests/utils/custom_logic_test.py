@@ -139,3 +139,24 @@ def test_contains_return_false():
     b = ["hello", "world"]
     result = OPERATIONS["contains"](a, b)
     assert not result
+
+
+def test_equals_word_with_accents():
+    a = "l'école est fermée"
+    b = "l'ècole est fermee"
+    result = OPERATIONS["=="](a, b)
+    assert result
+
+
+def test_contains_with_words_with_accents():
+    a = "je ne vais plus à l'écÔle"
+    b = ["ecole", "marche"]
+    result = OPERATIONS["contains"](a, b)
+    assert result
+
+
+def test_in_with_words_with_accents():
+    a = "dérèglement"
+    b = ["le", "dérèglement", "climatique"]
+    result = OPERATIONS["in"](a, b)
+    assert result

@@ -1,8 +1,19 @@
 # pylint: disable=no-value-for-parameter,arguments-out-of-order
+from pcapi.utils.clean_accents import clean_accents
+
+
+def sanitize_str(a: str) -> str:
+    return clean_accents(a.lower())
+
+
+def sanitize_list(l: list[str]) -> list[str]:
+    return list(map(sanitize_str, l))
+
+
 def soft_equals(a: object, b: object) -> bool:
-    if isinstance(a, str) or isinstance(b, str):
-        return str(a) == str(b)
-    if isinstance(a, bool) or isinstance(b, bool):
+    if isinstance(a, str) and isinstance(b, str):
+        return sanitize_str(str(a)) == sanitize_str(str(b))
+    if isinstance(a, bool) and isinstance(b, bool):
         return bool(a) is bool(b)
     return a == b
 
@@ -29,7 +40,9 @@ OPERATIONS = {
     ">=": lambda a, b: less(b, a) or soft_equals(a, b),
     "<": less,
     "<=": less_or_equal,
-    "in": lambda a, b: a in b if "__contains__" in dir(b) else False,
-    "not in": lambda a, b: not (a in b) if "__contains__" in dir(b) else True,
-    "contains": lambda a, b: any(element in a for element in b) if "__contains__" in dir(b) else b in a,
+    "in": lambda a, b: sanitize_str(a) in sanitize_list(b) if "__contains__" in dir(b) else False,
+    "not in": lambda a, b: (sanitize_str(a) not in sanitize_list(b)) if "__contains__" in dir(b) else True,
+    "contains": lambda a, b: any(sanitize_str(element) in sanitize_str(a) for element in b)
+    if "__contains__" in dir(b)
+    else sanitize_str(b) in sanitize_str(a),
 }
