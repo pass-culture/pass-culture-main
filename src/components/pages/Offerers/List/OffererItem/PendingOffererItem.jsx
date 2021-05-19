@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import { formatSirenOrSiret } from '../../../../utils/siren'
+import { formatSirenOrSiret } from 'utils/siren'
 
 const PendingOffererItem = ({ offerer }) => (
   <li className="offerer-item pending">

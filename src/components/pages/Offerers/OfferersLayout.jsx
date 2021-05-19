@@ -5,7 +5,8 @@ import { Route, Switch } from 'react-router-dom'
 import NotFound from 'components/pages/Errors/NotFound/NotFound'
 import OffererCreationContainer from 'components/pages/Offerer/OffererCreation/OffererCreationContainer'
 import OffererDetailsLayout from 'components/pages/Offerers/OffererDetails/OffererDetailsLayout'
-import OfferersContainer from 'components/pages/Offerers/OfferersContainer'
+
+import OfferersContainer from './List/OfferersContainer'
 
 const OfferersLayout = ({ match }) => {
   return (

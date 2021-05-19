@@ -12,9 +12,8 @@ import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
 import { ReactComponent as AddOffererSvg } from 'icons/ico-plus.svg'
 import { selectOfferers } from 'store/selectors/data/offerersSelectors'
-
-import { UNAVAILABLE_ERROR_PAGE } from '../../../utils/routes'
-import { mapApiToBrowser } from '../../../utils/translate'
+import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
+import { mapApiToBrowser } from 'utils/translate'
 
 import OffererItemContainer from './OffererItem/OffererItemContainer'
 import PendingOffererItem from './OffererItem/PendingOffererItem'

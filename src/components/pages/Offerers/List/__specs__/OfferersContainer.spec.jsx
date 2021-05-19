@@ -1,4 +1,5 @@
-import state from '../../../utils/mocks/state'
+import state from 'components/utils/mocks/state'
+
 import { mapStateToProps, mapDispatchToProps, createApiPath } from '../OfferersContainer'
 
 describe('src | components | pages | Offerers | OfferersContainer', () => {
