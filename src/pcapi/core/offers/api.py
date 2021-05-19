@@ -656,9 +656,9 @@ def set_offer_status_based_on_fraud_criteria(offer: Offer) -> OfferValidationSta
     if not current_config:
         return OfferValidationStatus.APPROVED
 
-    minimum_score, validation_items = parse_offer_validation_config(offer, current_config)
+    minimum_score, validation_rules = parse_offer_validation_config(offer, current_config)
 
-    score = compute_offer_validation_score(validation_items)
+    score = compute_offer_validation_score(validation_rules)
     if score < minimum_score:
         status = OfferValidationStatus.PENDING
     else:

@@ -41,41 +41,22 @@ ACCEPTED_THUMBNAIL_FORMATS = (
 DISTANT_IMAGE_REQUEST_TIMEOUT = 5
 CHUNK_SIZE_IN_BYTES = 4096
 
+
 KEY_VALIDATION_CONFIG = {
-    "init": ["minimum_score", "parameters"],
-    "parameters": [
-        "name",
-        "description",
-        "price_all_types",
-        "price_books",
-        "email",
-        "siren",
-        "withdrawal",
-        "virtual_venue",
-        "venue_providers",
-        "venue_category",
-        "venue_permanence",
-    ],
-    "name": ["model", "attribute", "type", "condition", "factor"],
-    "description": ["model", "attribute", "condition", "factor"],
-    "price_all_types": ["model", "attribute", "condition", "factor"],
-    "price_books": ["model", "attribute", "type", "condition", "factor"],
-    "email": ["model", "attribute", "condition", "factor"],
-    "siren": ["model", "attribute", "condition", "factor"],
-    "withdrawal": ["model", "attribute", "condition", "factor"],
-    "virtual_venue": ["model", "attribute", "condition", "factor"],
-    "venue_providers": ["model", "attribute", "condition", "factor"],
-    "venue_category": ["model", "attribute", "condition", "factor"],
-    "venue_permanence": ["model", "attribute", "condition", "factor"],
+    "init": ["minimum_score", "rules"],
+    "rules": ["name", "factor", "conditions"],
+    "conditions": ["model", "attribute", "condition"],
     "condition": ["operator", "comparated"],
 }
 
 VALUE_VALIDATION_CONFIG = {
+    "name": [str],
+    "conditions": [list],
     "model": ["Offer", "Venue", "Offerer"],
     "attribute": [str],
     "type": [str, list],
     "factor": [float, int],
-    "operator": [">", ">=", "<", "<=", "==", "is", "in", "not in", "contains"],
+    "operator": [">", ">=", "<", "<=", "==", "!=", "is", "in", "not in", "contains"],
     "comparated": [str, bool, float, int, list],
     "minimum_score": [float, int],
 }
@@ -311,7 +292,10 @@ def check_user_can_load_config(user: User) -> None:
 
 def check_validation_config_parameters(config_as_dict: dict, valid_keys: list) -> None:
     for key, value in config_as_dict.items():
-        if isinstance(value, dict):
+        if isinstance(value, list) and key in KEY_VALIDATION_CONFIG:
+            for item in value:
+                check_validation_config_parameters(item, KEY_VALIDATION_CONFIG[key])
+        elif isinstance(value, dict):
             check_validation_config_parameters(value, KEY_VALIDATION_CONFIG[key])
         # Note that these are case-senstive
         elif not (value in VALUE_VALIDATION_CONFIG[key] or type(value) in VALUE_VALIDATION_CONFIG[key]):

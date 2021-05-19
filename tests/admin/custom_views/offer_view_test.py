@@ -170,21 +170,23 @@ class OfferValidationViewTest:
         users_factories.UserFactory(email="super_admin@example.com", isAdmin=True)
         config_yaml = """
                     minimum_score: 0.6
-                    parameters:
-                        name:
-                            model: "Offer"
-                            attribute: "name"
-                            condition:
+                    rules:
+                       - name: "check offer name"
+                         factor: 0
+                         conditions:
+                           - model: "Offer"
+                             attribute: "name"
+                             condition:
                                 operator: "not in"
                                 comparated: "REJECTED"
-                            factor: 0
-                        price_all_types:
-                            model: "Offer"
-                            attribute: "max_price"
-                            condition:
+                       - name: "check offer max price"
+                         factor: 0.7
+                         conditions:
+                           - model: "Offer"
+                             attribute: "max_price"
+                             condition:
                                 operator: ">"
                                 comparated: 100
-                            factor: 0.7
                     """
 
         data = dict(specs=config_yaml, action="save")
@@ -200,20 +202,30 @@ class OfferValidationViewTest:
         assert saved_config.dateCreated.timestamp() == pytest.approx(datetime.datetime.utcnow().timestamp(), rel=1)
         assert saved_config.specs == {
             "minimum_score": 0.6,
-            "parameters": {
-                "name": {
-                    "attribute": "name",
-                    "condition": {"comparated": "REJECTED", "operator": "not in"},
+            "rules": [
+                {
+                    "name": "check offer name",
                     "factor": 0,
-                    "model": "Offer",
+                    "conditions": [
+                        {
+                            "model": "Offer",
+                            "attribute": "name",
+                            "condition": {"operator": "not in", "comparated": "REJECTED"},
+                        }
+                    ],
                 },
-                "price_all_types": {
-                    "attribute": "max_price",
-                    "condition": {"comparated": 100, "operator": ">"},
+                {
+                    "name": "check offer max price",
                     "factor": 0.7,
-                    "model": "Offer",
+                    "conditions": [
+                        {
+                            "model": "Offer",
+                            "attribute": "max_price",
+                            "condition": {"comparated": 100, "operator": ">"},
+                        }
+                    ],
                 },
-            },
+            ],
         }
 
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
@@ -294,19 +306,19 @@ class OfferValidationViewTest:
     ):
         # Given
         config_yaml = """
-        minimum_score: 0.6
-        parameters:
-            name:
-                model: "Offer"
-                attribute: "name"
-                condition:
-                    operator: "not in"
-                    comparated: "REJECTED"
-                factor: 0
-        """
+                    minimum_score: 0.6
+                    rules:
+                       - name: "check offer name"
+                         factor: 0
+                         conditions:
+                           - model: "Offer"
+                             attribute: "name"
+                             condition:
+                                operator: "not in"
+                                comparated: "REJECTED"
+                    """
         import_offer_validation_config(config_yaml)
         users_factories.UserFactory(email="admin@example.com", isAdmin=True)
-
         offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING, isActive=True)
         mocked_get_offerer_legal_category.return_value = {
             "legal_category_code": 5202,
@@ -337,16 +349,17 @@ class OfferValidationViewTest:
     ):
         # Given
         config_yaml = """
-        minimum_score: 0.6
-        parameters:
-            name:
-                model: "Offer"
-                attribute: "name"
-                condition:
-                    operator: "not in"
-                    comparated: "REJECTED"
-                factor: 0
-        """
+                    minimum_score: 0.6
+                    rules:
+                       - name: "check offer name"
+                         factor: 0
+                         conditions:
+                           - model: "Offer"
+                             attribute: "name"
+                             condition:
+                                operator: "not in"
+                                comparated: "REJECTED"
+                    """
         import_offer_validation_config(config_yaml)
         users_factories.UserFactory(email="admin@example.com", isAdmin=True)
         offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING, isActive=True)

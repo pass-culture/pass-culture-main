@@ -101,28 +101,28 @@ def test_less_or_equal_than_return_true_when_a_is_less():
 
 def test_in_return_true():
     a = "hello"
-    b = "hello World"
+    b = ["hello", "World"]
     result = OPERATIONS["in"](a, b)
     assert result
 
 
 def test_in_return_false():
     a = "hello"
-    b = "Goodbye City"
+    b = ["Goodbye", "City"]
     result = OPERATIONS["in"](a, b)
     assert not result
 
 
 def test_not_in_return_true():
     a = "hello"
-    b = "Goodbye City"
+    b = ["Goodbye", "City"]
     result = OPERATIONS["not in"](a, b)
     assert result
 
 
 def test_not_in_return_false():
     a = "hello"
-    b = "hello, Goodbye"
+    b = ["hello", "Goodbye"]
     result = OPERATIONS["not in"](a, b)
     assert not result
 
