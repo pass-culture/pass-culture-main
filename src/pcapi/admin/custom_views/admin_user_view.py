@@ -33,6 +33,7 @@ class AdminUserView(SuspensionMixin, BaseAdminView):
 
     column_list = [
         "id",
+        "isActive",
         "firstName",
         "lastName",
         "email",
@@ -43,6 +44,7 @@ class AdminUserView(SuspensionMixin, BaseAdminView):
         "actions",
     ]
     column_labels = dict(
+        isActive="Est activé",
         email="Email",
         firstName="Prénom",
         lastName="Nom",

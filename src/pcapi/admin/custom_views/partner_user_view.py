@@ -35,6 +35,7 @@ class PartnerUserView(SuspensionMixin, BaseAdminView):
     can_create = True
     column_list = [
         "id",
+        "isActive",
         "firstName",
         "lastName",
         "publicName",
@@ -47,6 +48,7 @@ class PartnerUserView(SuspensionMixin, BaseAdminView):
         "actions",
     ]
     column_labels = dict(
+        isActive="Est activé",
         email="Email",
         firstName="Prénom",
         lastName="Nom",
