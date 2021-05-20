@@ -66,7 +66,10 @@ def find_by_pro_user_id(user_id: int, page: int = 1, per_page_limit: int = 1000)
     bookings_recap_query = _build_bookings_recap_query(user_id)
     bookings_recap_query_with_duplicates = _duplicate_booking_when_quantity_is_two(bookings_recap_query)
 
-    total_bookings_recap = bookings_recap_query_with_duplicates.count()
+    if page == 1:
+        total_bookings_recap = bookings_recap_query_with_duplicates.count()
+    else:
+        total_bookings_recap = 0
 
     paginated_bookings = (
         bookings_recap_query_with_duplicates.order_by(text('"bookingDate" DESC'))

@@ -739,7 +739,7 @@ class FindByProUserIdTest:
         assert bookings_recap_paginated.total == 2
 
     @pytest.mark.usefixtures("db_session")
-    def test_should_return_bookings_from_second_page(self, app: fixture):
+    def test_should_return_bookings_from_second_page_without_page_count(self, app: fixture):
         # Given
         beneficiary = users_factories.UserFactory()
         user = users_factories.UserFactory()
@@ -761,8 +761,8 @@ class FindByProUserIdTest:
         assert len(bookings_recap_paginated.bookings_recap) == 1
         assert bookings_recap_paginated.bookings_recap[0].booking_token == booking.token
         assert bookings_recap_paginated.page == 2
-        assert bookings_recap_paginated.pages == 2
-        assert bookings_recap_paginated.total == 2
+        assert bookings_recap_paginated.pages == 0
+        assert bookings_recap_paginated.total == 0
 
     @pytest.mark.usefixtures("db_session")
     def test_should_not_return_bookings_when_offerer_link_is_not_validated(self, app: fixture):

@@ -4,8 +4,10 @@ from unittest.mock import patch
 from dateutil.tz import tz
 import pytest
 
+from pcapi.core import testing
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.date import format_into_timezoned_date
 from pcapi.utils.human_ids import humanize
@@ -47,7 +49,8 @@ class GetTest:
             offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
             client = TestClient(app.test_client()).with_auth(pro_user.email)
-            response = client.get("/bookings/pro")
+            with assert_num_queries(testing.AUTHENTICATION_QUERIES + 2):
+                response = client.get("/bookings/pro")
 
             expected_bookings_recap = [
                 {
