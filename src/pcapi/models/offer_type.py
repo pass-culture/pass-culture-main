@@ -353,6 +353,7 @@ class Category(Enum):
     PRESSE = ["Presse en ligne"]
     SPECTACLE = ["Spectacle", "Abonnement spectacles"]
     VISITE = ["Musée, arts visuels et patrimoine"]
+    MATERIEL_ART_CREA = ["Matériel arts créatifs"]
 
 
 CategoryNameEnum = Enum("CategoryNameEnum", {category.name: category.name for category in list(Category)})
