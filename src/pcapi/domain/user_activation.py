@@ -23,7 +23,6 @@ def create_beneficiary_from_application(application_detail: dict, user: Optional
     beneficiary.lastName = application_detail["last_name"]
     beneficiary.firstName = application_detail["first_name"]
     beneficiary.publicName = "%s %s" % (application_detail["first_name"], application_detail["last_name"])
-    beneficiary.phoneNumber = application_detail["phone"]
     beneficiary.departementCode = application_detail["department"]
     beneficiary.postalCode = application_detail["postal_code"]
     beneficiary.address = application_detail["address"]
@@ -31,6 +30,9 @@ def create_beneficiary_from_application(application_detail: dict, user: Optional
     beneficiary.activity = application_detail["activity"]
     beneficiary.isAdmin = False
     beneficiary.hasSeenTutorials = False
+
+    if not beneficiary.phoneNumber:
+        beneficiary.phoneNumber = application_detail["phone"]
 
     return beneficiary
 

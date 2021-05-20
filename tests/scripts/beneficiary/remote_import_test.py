@@ -671,11 +671,15 @@ class RunIntegrationTest:
 
         # then
         assert User.query.count() == 1
+
         user = User.query.first()
         assert user.firstName == "john"
         assert user.postalCode == "93450"
         assert user.address == "11 Rue du Test"
+        assert user.phoneNumber == "0102030405"
+
         assert BeneficiaryImport.query.count() == 1
+
         beneficiary_import = BeneficiaryImport.query.first()
         assert beneficiary_import.source == "demarches_simplifiees"
         assert beneficiary_import.applicationId == 123
@@ -773,6 +777,7 @@ class RunIntegrationTest:
         assert user.postalCode == "93450"
         assert user.address == "11 Rue du Test"
         assert user.isBeneficiary
+        assert user.phoneNumber == "0102030405"
 
         assert BeneficiaryImport.query.count() == 1
         beneficiary_import = BeneficiaryImport.query.first()
@@ -829,6 +834,7 @@ class RunIntegrationTest:
             birthdate=self.BENEFICIARY_BIRTH_DATE,
             is_email_validated=True,
             send_activation_mail=False,
+            phone_number="0607080900",
         )
         push_testing.reset_requests()
 
@@ -841,15 +847,23 @@ class RunIntegrationTest:
 
         # then
         assert User.query.count() == 1
+
         user = User.query.first()
         assert user.firstName == "john"
         assert user.postalCode == "93450"
+
+        # Since the User already exists, the phone number should not be updated
+        # during the import process
+        assert user.phoneNumber == "0607080900"
+
         assert BeneficiaryImport.query.count() == 1
+
         beneficiary_import = BeneficiaryImport.query.first()
         assert beneficiary_import.source == "demarches_simplifiees"
         assert beneficiary_import.applicationId == 123
         assert beneficiary_import.beneficiary == user
         assert beneficiary_import.currentStatus == ImportStatus.CREATED
+
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2016025
 

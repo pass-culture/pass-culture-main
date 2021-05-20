@@ -135,6 +135,7 @@ def test_application_for_native_app_user(mocked_send_accepted_as_beneficiary_ema
         is_email_validated=True,
         send_activation_mail=False,
         marketing_email_subscription=False,
+        phone_number="0607080900",
     )
     push_testing.reset_requests()
 
@@ -145,6 +146,12 @@ def test_application_for_native_app_user(mocked_send_accepted_as_beneficiary_ema
     mocked_send_accepted_as_beneficiary_email.assert_called_once()
 
     beneficiary = User.query.one()
+
+    # the fake Jouve backend returns a default phone number. Since a User
+    # alredy exists, the phone number should not be updated during the import
+    # process.
+    assert beneficiary.phoneNumber == "0607080900"
+
     deposit = Deposit.query.one()
     assert deposit.amount == 300
     assert deposit.source == "dossier jouve [35]"

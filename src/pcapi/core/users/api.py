@@ -146,6 +146,7 @@ def create_account(
     is_email_validated: bool = False,
     send_activation_mail: bool = True,
     postal_code: str = None,
+    phone_number: str = None,
 ) -> User:
     email = sanitize_email(email)
     if find_user_by_email(email):
@@ -162,6 +163,7 @@ def create_account(
         notificationSubscriptions=asdict(NotificationSubscriptions(marketing_email=marketing_email_subscription)),
         postalCode=postal_code,
         departementCode=departementCode,
+        phoneNumber=phone_number,
     )
 
     if not user.age or user.age < constants.ACCOUNT_CREATION_MINIMUM_AGE:

@@ -27,9 +27,11 @@ def to_model(beneficiary_pre_subscription: BeneficiaryPreSubscription, user: Opt
     beneficiary.hasSeenTutorials = False
     beneficiary.isAdmin = False
     beneficiary.lastName = beneficiary_pre_subscription.last_name
-    beneficiary.phoneNumber = beneficiary_pre_subscription.phone_number
     beneficiary.postalCode = beneficiary_pre_subscription.postal_code
     beneficiary.publicName = beneficiary_pre_subscription.public_name
+
+    if not beneficiary.phoneNumber:
+        beneficiary.phoneNumber = beneficiary_pre_subscription.phone_number
 
     users_api.attach_beneficiary_import_details(beneficiary, beneficiary_pre_subscription)
     if not users_api.steps_to_become_beneficiary(beneficiary):
