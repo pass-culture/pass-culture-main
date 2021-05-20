@@ -57,7 +57,7 @@ Notification.propTypes = {
   hideNotification: PropTypes.func.isRequired,
   notification: PropTypes.shape({
     text: PropTypes.string,
-    type: PropTypes.oneOf(['error', 'success']),
+    type: PropTypes.oneOf(['error', 'success', 'pending', 'warning']),
   }).isRequired,
 }
 
