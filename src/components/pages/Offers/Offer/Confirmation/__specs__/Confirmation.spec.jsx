@@ -82,13 +82,13 @@ describe('confirmation page', () => {
     // When
     await renderOffer({
       pathname: [`/offres/${offer.id}/confirmation`],
-      search: '?structure=AA&lieu=AA',
+      search: '?structure=OFFERER1&lieu=VENUE1',
     })
 
     // Then
     expect(screen.getByText('Créer une nouvelle offre', { selector: 'a' })).toHaveAttribute(
       'href',
-      '/offres/creation?structure=AA&lieu=AA'
+      '/offres/creation?structure=OFFERER1&lieu=VENUE1'
     )
   })
 })

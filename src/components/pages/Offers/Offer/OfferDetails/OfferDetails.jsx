@@ -27,10 +27,10 @@ const OfferDetails = ({
 }) => {
   const initialValues = {}
   const queryParams = queryParamsFromOfferer(location)
-  if (queryParams.structure) {
+  if (queryParams.structure !== '') {
     initialValues.offererId = queryParams.structure
   }
-  if (queryParams.lieu) {
+  if (queryParams.lieu !== '') {
     initialValues.venueId = queryParams.lieu
   }
 
@@ -87,16 +87,17 @@ const OfferDetails = ({
             )
           }
 
-          if (
-            formInitialValues.current.offererId !== undefined &&
-            formInitialValues.current.venueId !== undefined
-          ) {
-            history.push(
-              `/offres/${createdOfferId}/stocks?structure=${formInitialValues.current.offererId}&lieu=${formInitialValues.current.venueId}`
-            )
-          } else {
-            history.push(`/offres/${createdOfferId}/stocks`)
+          let queryString = ''
+
+          if (formInitialValues.current.offererId !== undefined) {
+            queryString = `?structure=${formInitialValues.current.offererId}`
           }
+
+          if (formInitialValues.current.venueId !== undefined) {
+            queryString += `&lieu=${formInitialValues.current.venueId}`
+          }
+
+          history.push(`/offres/${createdOfferId}/stocks${queryString}`)
         }
       } catch (error) {
         if (error && 'errors' in error) {

@@ -167,13 +167,17 @@ const Stocks = ({
             showSuccessNotificationStocksAndOffer()
 
             const queryParams = queryParamsFromOfferer(location)
-            if (queryParams.structure && queryParams.lieu) {
-              history.push(
-                `/offres/${offer.id}/confirmation?structure=${queryParams.structure}&lieu=${queryParams.lieu}`
-              )
-            } else {
-              history.push(`/offres/${offer.id}/confirmation`)
+            let queryString = ''
+
+            if (queryParams.structure !== '') {
+              queryString = `?structure=${queryParams.structure}`
             }
+
+            if (queryParams.lieu !== '') {
+              queryString += `&lieu=${queryParams.lieu}`
+            }
+
+            history.push(`/offres/${offer.id}/confirmation${queryString}`)
           } else {
             loadStocks()
             reloadOffer()

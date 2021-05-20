@@ -17,8 +17,12 @@ const Confirmation = ({ location, offer }) => {
 
   let queryString = ''
   const queryParams = queryParamsFromOfferer(location)
-  if (queryParams.structure && queryParams.lieu) {
-    queryString = `?structure=${queryParams.structure}&lieu=${queryParams.lieu}`
+  if (queryParams.structure !== '') {
+    queryString = `?structure=${queryParams.structure}`
+  }
+
+  if (queryParams.lieu !== '') {
+    queryString += `&lieu=${queryParams.lieu}`
   }
 
   return (
