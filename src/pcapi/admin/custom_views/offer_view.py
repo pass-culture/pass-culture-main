@@ -132,6 +132,14 @@ def _metabase_offer_link(view, context, model, name) -> Markup:
     return Markup(f'<a href="{url}" target="_blank" rel="noopener noreferrer">{text}</a>')
 
 
+def _offerer_link(view, context, model, name) -> Markup:
+    offerer_id = model.venue.managingOffererId
+    url = f"{settings.PRO_URL}/accueil?structure={humanize(offerer_id)}"
+    text = model.venue.managingOfferer.name
+
+    return Markup(f'<a href="{url}" target="_blank" rel="noopener noreferrer">{text}</a>')
+
+
 def _compute_score(view, context, model, name) -> float:
     current_config = offers_repository.get_current_offer_validation_config()
     validation_items = parse_offer_validation_config(model, current_config)[1]
@@ -148,7 +156,7 @@ class ValidationView(BaseAdminView):
     can_create = False
     can_edit = True
     can_delete = False
-    column_list = ["id", "name", "validation", "venue.name", "score", "offer", "offers", "dateCreated"]
+    column_list = ["id", "name", "validation", "venue.name", "offerer", "score", "offer", "offers", "dateCreated"]
     if IS_PROD:
         column_list.append("metabase")
     column_sortable_list = ["id", "name", "validation", "dateCreated"]
@@ -157,6 +165,7 @@ class ValidationView(BaseAdminView):
         "type": "Type",
         "validation": "Validation",
         "venue.name": "Lieu",
+        "offerer": "Structure",
         "offer": "Offre",
         "offers": "Offres",
         "score": "Score",
@@ -174,6 +183,7 @@ class ValidationView(BaseAdminView):
         formatters.update(offer=_pro_offer_link)
         formatters.update(offers=_related_offers_link)
         formatters.update(metabase=_metabase_offer_link)
+        formatters.update(offerer=_offerer_link)
         return formatters
 
     def get_query(self):
