@@ -37,6 +37,8 @@ const Notification = ({ hideNotification, notification }) => {
     iconComponent = <ErrorIcon />
   } else if (type === 'pending') {
     iconComponent = <PendingIcon />
+  } else if (type === 'warning') {
+    iconComponent = null
   }
 
   if (isInDom) {

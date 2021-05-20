@@ -71,6 +71,11 @@
     color: $white;
   }
 
+  &.is-warning {
+    background-color: $attention;
+    color: $black;
+  }
+
   svg {
     flex: 0 0 rem(40px);
     padding-right: rem(8px);

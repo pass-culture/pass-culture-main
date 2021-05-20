@@ -29,11 +29,14 @@ class BookingsRecap extends PureComponent {
     const { page, pages } = this.state
 
     let currentPage = page
-    if (currentPage < pages) {
+    if (currentPage < pages && currentPage < 10) {
       currentPage++
       fetchBookingsRecapByPage(currentPage).then(this.savePaginatedBookingsRecap)
     } else {
       this.loadData()
+      if (currentPage === 10 && currentPage < pages) {
+        this.props.showWarningNotification()
+      }
     }
   }
 
@@ -86,4 +89,5 @@ BookingsRecap.propTypes = {
       statuses: PropTypes.arrayOf(PropTypes.string),
     }),
   }).isRequired,
+  showWarningNotification: PropTypes.func.isRequired,
 }

@@ -2,6 +2,7 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
+import { showNotification } from 'store/reducers/notificationReducer'
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 
 import BookingsRecap from './BookingsRecap'
@@ -12,4 +13,15 @@ export function mapStateToProps(state) {
   }
 }
 
-export default compose(withRouter, connect(mapStateToProps))(BookingsRecap)
+const mapDispatchToProps = dispatch => ({
+  showWarningNotification: () =>
+    dispatch(
+      showNotification({
+        type: 'warning',
+        text:
+          'Vous avez été limité à 10 pages de réservations. Veuillez contacter le support si nécessaire.',
+      })
+    ),
+})
+
+export default compose(withRouter, connect(mapStateToProps, mapDispatchToProps))(BookingsRecap)
