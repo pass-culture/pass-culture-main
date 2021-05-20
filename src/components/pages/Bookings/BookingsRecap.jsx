@@ -49,11 +49,18 @@ class BookingsRecap extends PureComponent {
   savePaginatedBookingsRecap = paginatedBookingsRecap => {
     const { bookingsRecap } = this.state
 
-    this.setState({
-      bookingsRecap: [...bookingsRecap].concat(paginatedBookingsRecap.bookings_recap),
-      page: paginatedBookingsRecap.page,
-      pages: paginatedBookingsRecap.pages,
-    })
+    if (paginatedBookingsRecap.page === 1) {
+      this.setState({
+        bookingsRecap: [...bookingsRecap].concat(paginatedBookingsRecap.bookings_recap),
+        page: paginatedBookingsRecap.page,
+        pages: paginatedBookingsRecap.pages,
+      })
+    } else {
+      this.setState({
+        bookingsRecap: [...bookingsRecap].concat(paginatedBookingsRecap.bookings_recap),
+        page: paginatedBookingsRecap.page,
+      })
+    }
   }
 
   render() {
