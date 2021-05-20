@@ -29,6 +29,7 @@ class SettingsTest:
             "enableNativeIdCheckVersion": False,
             "isRecaptchaEnabled": True,
             "enablePhoneValidation": True,
+            "objectStorageUrl": "http://localhost/storage",
             "wholeFranceOpening": True,
             "displayDmsRedirection": True,
         }
@@ -53,6 +54,7 @@ class SettingsTest:
             "enableNativeIdCheckVersion": True,
             "isRecaptchaEnabled": False,
             "enablePhoneValidation": False,
+            "objectStorageUrl": "http://localhost/storage",
             "wholeFranceOpening": False,
             "displayDmsRedirection": False,
         }

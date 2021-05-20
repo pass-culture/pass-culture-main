@@ -2,6 +2,7 @@ from pcapi.core.bookings import conf
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.settings import OBJECT_STORAGE_URL
 
 from . import blueprint
 from .serialization import settings as serializers
@@ -22,4 +23,5 @@ def get_settings() -> serializers.SettingsResponse:
         enable_phone_validation=feature_queries.is_active(FeatureToggle.ENABLE_PHONE_VALIDATION),
         whole_france_opening=feature_queries.is_active(FeatureToggle.WHOLE_FRANCE_OPENING),
         display_dms_redirection=feature_queries.is_active(FeatureToggle.DISPLAY_DMS_REDIRECTION),
+        object_storage_url=OBJECT_STORAGE_URL,
     )
