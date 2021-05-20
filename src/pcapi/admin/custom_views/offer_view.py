@@ -148,7 +148,9 @@ def _compute_score(view, context, model, name) -> float:
 
 class OfferValidationForm(SecureForm):
     validation = SelectField(
-        "validation", choices=[(choice.name, choice.value) for choice in OfferValidationStatus], coerce=str
+        "validation",
+        choices=[(choice.name, choice.value) for choice in OfferValidationStatus if choice.name != "DRAFT"],
+        coerce=str,
     )
 
 
