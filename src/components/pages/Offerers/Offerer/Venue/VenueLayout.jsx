@@ -3,8 +3,8 @@ import { Route, Switch, useRouteMatch } from 'react-router-dom'
 
 import NotFound from 'components/pages/Errors/NotFound/NotFound'
 
-import VenueCreationContainer from 'components/pages/Venue/VenueCreation/VenueCreationContainer'
-import VenueEditionContainer from 'components/pages/Venue/VenueEdition/VenueEditionContainer'
+import VenueCreationContainer from './VenueCreation/VenueCreationContainer'
+import VenueEditionContainer from './VenueEdition/VenueEditionContainer'
 
 const VenueLayout = () => {
   const match = useRouteMatch()

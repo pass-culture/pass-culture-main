@@ -1,4 +1,5 @@
-import { venueNormalizer } from '../../../../../utils/normalizers'
+import { venueNormalizer } from 'utils/normalizers'
+
 import VenueLabel from '../../ValueObjects/VenueLabel'
 import VenueType from '../../ValueObjects/VenueType'
 import { mapDispatchToProps, mapStateToProps, mergeProps } from '../VenueCreationContainer'
