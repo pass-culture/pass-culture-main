@@ -237,12 +237,12 @@ def _get_stocks_to_upsert(
             # sent a specific price before. Should we keep the
             # possibly specific price that we have received before? Or
             # should we override with the (generic) product price?
-            if not stock_detail.get("price") and stock["price"] != book_price:
+            if not stock_detail.get("price") and float(stock["price"]) != book_price:
                 logger.warning(
                     "Stock specific price has been overriden by product price because provider price is missing",
                     extra={
                         "stock": stock["id"],
-                        "previous_stock_price": stock["price"],
+                        "previous_stock_price": float(stock["price"]),
                         "new_price": book_price,
                     },
                 )
