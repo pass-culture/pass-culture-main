@@ -52,3 +52,11 @@ export const loadFakeApiTypes = () => {
 
   return types
 }
+
+export const loadFakeApiVenue = venue => {
+  jest.spyOn(pcapi, 'getVenue').mockResolvedValueOnce(venue)
+
+  return {
+    resolvingVenuePromise: Promise.resolve(venue),
+  }
+}

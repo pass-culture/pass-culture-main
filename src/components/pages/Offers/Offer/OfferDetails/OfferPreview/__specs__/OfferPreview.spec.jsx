@@ -2,25 +2,12 @@ import '@testing-library/jest-dom'
 import { act, render, screen } from '@testing-library/react'
 import React from 'react'
 
-import * as pcapi from 'repository/pcapi/pcapi'
+import { venueFactory } from 'utils/apiFactories'
+import { loadFakeApiVenue } from 'utils/fakeApi'
 
 import OfferPreview from '../OfferPreview'
 
-jest.mock('repository/pcapi/pcapi', () => ({
-  getVenue: jest.fn(),
-}))
-
-const renderOfferPreview = async formValues => {
-  await act(async () => {
-    await render(<OfferPreview formValues={formValues} />)
-  })
-}
-
 describe('offer preview', () => {
-  beforeEach(() => {
-    pcapi.getVenue.mockReturnValue(Promise.resolve())
-  })
-
   describe('render', () => {
     it('should display title, description and withdrawal details when given', () => {
       // given
@@ -31,7 +18,7 @@ describe('offer preview', () => {
       }
 
       // when
-      renderOfferPreview(formValues)
+      render(<OfferPreview formValues={formValues} />)
 
       // then
       expect(screen.getByText('Offer title')).toBeInTheDocument()
@@ -48,7 +35,7 @@ describe('offer preview', () => {
       }
 
       // when
-      renderOfferPreview(formValues)
+      render(<OfferPreview formValues={formValues} />)
 
       // then
       const shrinkedDescriptionText = screen.getByText(
@@ -66,7 +53,7 @@ describe('offer preview', () => {
       }
 
       // when
-      renderOfferPreview(formValues)
+      render(<OfferPreview formValues={formValues} />)
 
       // then
       expect(screen.queryByText('Modalités de retrait')).toBeNull()
@@ -80,7 +67,7 @@ describe('offer preview', () => {
       }
 
       // when
-      renderOfferPreview(formValues)
+      render(<OfferPreview formValues={formValues} />)
 
       // then
       const shrinkedWithdrawalDetailsText = screen.getByText(
@@ -96,7 +83,7 @@ describe('offer preview', () => {
       }
 
       // when
-      renderOfferPreview(formValues)
+      render(<OfferPreview formValues={formValues} />)
 
       // then
       const typeText = screen.getByText('Type')
@@ -105,6 +92,50 @@ describe('offer preview', () => {
       expect(duoText).toBeInTheDocument()
       const priceText = screen.getByText('- - €')
       expect(priceText).toBeInTheDocument()
+    })
+
+    describe('when venue is physical', () => {
+      it('should display venue information if non virtual', async () => {
+        //Given
+        const venue = venueFactory()
+        loadFakeApiVenue(venue)
+
+        // When
+        render(<OfferPreview formValues={{ venueId: venue.id }} />)
+
+        // Then
+        expect(await screen.findByText('Mon Lieu - Ma Rue - 11100 - Ma Ville')).toBeInTheDocument()
+      })
+
+      it('should not display any non given venue field', async () => {
+        // Given
+        const venue = venueFactory({
+          address: null,
+          postalCode: null,
+        })
+        loadFakeApiVenue(venue)
+
+        // When
+        render(<OfferPreview formValues={{ venueId: venue.id }} />)
+
+        // Then
+        expect(await screen.findByText('Mon Lieu - Ma Ville')).toBeInTheDocument()
+      })
+    })
+
+    describe('when venue is virtual', () => {
+      it('should not display venue information if venue is virtual', async () => {
+        // Given
+        const venue = venueFactory({ isVirtual: true })
+        const { resolvingVenuePromise } = loadFakeApiVenue(venue)
+
+        // When
+        render(<OfferPreview formValues={{ venueId: venue.id }} />)
+
+        // Then
+        await act(() => resolvingVenuePromise)
+        expect(screen.queryByText('Où ?')).not.toBeInTheDocument()
+      })
     })
   })
 })

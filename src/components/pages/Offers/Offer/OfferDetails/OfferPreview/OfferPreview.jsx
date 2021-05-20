@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { useEffect, useMemo, useState } from 'react'
 
+import { VenueDetails } from 'components/pages/Offers/Offer/OfferDetails/OfferPreview/VenueDetails'
 import { ReactComponent as DuoSvg } from 'icons/ico-duo.svg'
 import { ReactComponent as PassCultureSvg } from 'icons/ico-passculture.svg'
 import { ReactComponent as TagSvg } from 'icons/ico-tag.svg'
@@ -26,7 +27,6 @@ const OfferPreview = ({ formValues, offerType }) => {
       : setVenue(null)
   }, [formValues.venueId])
 
-  const venueName = useMemo(() => venue?.publicName || venue?.name, [venue])
   const isDuoEnabled = useMemo(() => offerType && offerType.type === 'Event' && formValues.isDuo, [
     formValues.isDuo,
     offerType,
@@ -81,25 +81,7 @@ const OfferPreview = ({ formValues, offerType }) => {
         )}
       </div>
 
-      {venue && !venue.isVirtual && (
-        <div className="op-section">
-          <div className="op-section-title">
-            {'Où ?'}
-          </div>
-          <div className="op-section-secondary-title">
-            {'Adresse'}
-          </div>
-          <div className="op-section-text op-address">
-            {`${venueName} - ${venue.address} - ${venue.postalCode} - ${venue.city}`}
-          </div>
-          <div className="op-section-secondary-title">
-            {'Distance'}
-          </div>
-          <div className="op-section-text">
-            {'- - km'}
-          </div>
-        </div>
-      )}
+      {venue && !venue.isVirtual && <VenueDetails physicalVenue={venue} />}
 
       {formValues.withdrawalDetails && (
         <div className="op-section">
