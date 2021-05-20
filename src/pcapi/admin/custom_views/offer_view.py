@@ -56,7 +56,7 @@ class OfferView(BaseAdminView):
     }
     # Do not add searchable column on offer view for performance reasons
     # use the filters feature instead
-    column_filters = ["type", "criteria.name", "name", "rankingWeight", "validation"]
+    column_filters = ["id", "type", "criteria.name", "name", "rankingWeight", "validation"]
     form_columns = ["criteria", "rankingWeight"]
     simple_list_pager = True
 
@@ -174,7 +174,7 @@ class ValidationView(BaseAdminView):
         "metabase": "Metabase",
         "dateCreated": "Date de création",
     }
-    column_filters = ["type"]
+    column_filters = ["name", "venue.name", "id", "dateCreated"]
     simple_list_pager = True
     column_default_sort = ("dateCreated", True)
 
