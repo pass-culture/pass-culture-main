@@ -6,9 +6,9 @@
   width: rem(540px);
 
   .activation-codes-upload-icon {
-    height: rem(124px);
-    margin-top: rem(19px);
-    width: rem(197px);
+    height: rem(120px);
+    margin-top: rem(20px);
+    width: rem(200px);
   }
 
   .activation-codes-upload-title {
@@ -25,7 +25,19 @@
 
   .activation-codes-upload-separator {
     border: 1px solid $grey-medium;
+    margin-bottom: rem(16px);
     margin-top: rem(24px);
     width: 100%;
+  }
+
+  .activation-codes-upload-template-section {
+    text-align: left;
+    width: 100%;
+  }
+
+  .activation-codes-upload-gabarit {
+    @include gabarit();
+
+    margin-bottom: rem(10px);
   }
 }
