@@ -22,7 +22,7 @@ from pcapi.core.offers.api import get_expense_domains
 from pcapi.core.offers.api import import_offer_validation_config
 from pcapi.core.offers.api import set_offer_status_based_on_fraud_criteria
 from pcapi.core.offers.api import update_offer_and_stock_id_at_providers
-from pcapi.core.offers.api import update_pending_offer_validation_status
+from pcapi.core.offers.api import update_pending_offer_validation
 from pcapi.core.offers.exceptions import ThumbnailStorageError
 from pcapi.core.offers.exceptions import WrongFormatInFraudConfigurationFile
 from pcapi.core.offers.factories import ActivationCodeFactory
@@ -1275,7 +1275,7 @@ class UpdateOfferValidationStatusTest:
     def test_update_pending_offer_validation_status_to_approved(self):
         offer = OfferFactory(validation=OfferValidationStatus.PENDING)
 
-        is_offer_updated = update_pending_offer_validation_status(offer, OfferValidationStatus.APPROVED)
+        is_offer_updated = update_pending_offer_validation(offer, OfferValidationStatus.APPROVED)
 
         assert is_offer_updated is True
         assert offer.validation == OfferValidationStatus.APPROVED
@@ -1284,7 +1284,7 @@ class UpdateOfferValidationStatusTest:
     def test_update_pending_offer_validation_status_to_rejected(self):
         offer = OfferFactory(validation=OfferValidationStatus.PENDING)
 
-        is_offer_updated = update_pending_offer_validation_status(offer, OfferValidationStatus.REJECTED)
+        is_offer_updated = update_pending_offer_validation(offer, OfferValidationStatus.REJECTED)
 
         assert is_offer_updated is True
         assert offer.validation == OfferValidationStatus.REJECTED
@@ -1293,7 +1293,7 @@ class UpdateOfferValidationStatusTest:
     def test_cannot_update_pending_offer_validation_with_a_rejected_offer(self):
         offer = OfferFactory(validation=OfferValidationStatus.REJECTED)
 
-        is_offer_updated = update_pending_offer_validation_status(offer, OfferValidationStatus.APPROVED)
+        is_offer_updated = update_pending_offer_validation(offer, OfferValidationStatus.APPROVED)
 
         assert is_offer_updated is False
         assert offer.validation == OfferValidationStatus.REJECTED
@@ -1302,7 +1302,7 @@ class UpdateOfferValidationStatusTest:
     def test_update_pending_offer_validation_status_and_reindex_in_algolia(self, mocked_add_offer_id):
         offer = OfferFactory(validation=OfferValidationStatus.PENDING)
 
-        update_pending_offer_validation_status(offer, OfferValidationStatus.APPROVED)
+        update_pending_offer_validation(offer, OfferValidationStatus.APPROVED)
 
         mocked_add_offer_id.assert_called_once_with(client=app.redis_client, offer_id=offer.id)
 

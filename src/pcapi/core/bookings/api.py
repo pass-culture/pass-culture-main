@@ -17,6 +17,7 @@ from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.repository import generate_booking_token
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.models import ActivationCode
+from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
 from pcapi.domain import user_emails
@@ -170,6 +171,7 @@ def _cancel_booking(booking: Booking, reason: BookingCancellationReasons) -> Non
 def _cancel_bookings_from_stock(stock: Stock, reason: BookingCancellationReasons) -> list[Booking]:
     """
     Cancel multiple bookings and update the users' credit information on Batch.
+    Note that this will not reindex the stock.offer in Algolia
     """
     deleted_bookings = []
     with transaction():
@@ -184,9 +186,6 @@ def _cancel_bookings_from_stock(stock: Stock, reason: BookingCancellationReasons
 
     for booking in deleted_bookings:
         update_user_attributes_job.delay(booking.user.id)
-
-    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
-        redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
 
     return deleted_bookings
 
@@ -207,7 +206,24 @@ def cancel_booking_by_offerer(booking: Booking) -> None:
 
 
 def cancel_bookings_when_offerer_deletes_stock(stock: Stock) -> list[Booking]:
-    return _cancel_bookings_from_stock(stock, BookingCancellationReasons.OFFERER)
+    cancelled_bookings = _cancel_bookings_from_stock(stock, BookingCancellationReasons.OFFERER)
+    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
+        redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
+    return cancelled_bookings
+
+
+def cancel_bookings_from_rejected_offer(offer: Offer) -> list[Booking]:
+    cancelled_bookings = []
+    for stock in offer.stocks:
+        cancelled_bookings.extend(_cancel_bookings_from_stock(stock, BookingCancellationReasons.FRAUD))
+    logger.info(
+        "Cancelled bookings for rejected offer",
+        extra={
+            "bookings": [b.id for b in cancelled_bookings],
+            "offer": offer.id,
+        },
+    )
+    return cancelled_bookings
 
 
 def cancel_booking_for_fraud(booking: Booking) -> None:

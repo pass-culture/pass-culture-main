@@ -3,6 +3,7 @@ from typing import Union
 
 from flask import abort
 from flask import flash
+from flask import has_app_context
 from flask import redirect
 from flask import request
 from flask import url_for
@@ -15,19 +16,19 @@ from markupsafe import Markup
 from sqlalchemy import func
 from sqlalchemy.orm import query
 from werkzeug import Response
-from wtforms import Form
-from wtforms import SelectField
-from wtforms import TextAreaField
+import wtforms
 from wtforms.validators import InputRequired
+from wtforms.validators import ValidationError
 import yaml
 
 from pcapi import settings
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.connectors import redis
 from pcapi.connectors.api_entreprises import get_offerer_legal_category
+from pcapi.core.bookings.api import cancel_bookings_from_rejected_offer
 from pcapi.core.offerers.models import Venue
+from pcapi.core.offers import api as offers_api
 from pcapi.core.offers.api import import_offer_validation_config
-from pcapi.core.offers.api import update_pending_offer_validation_status
 from pcapi.core.offers.models import OfferValidationConfig
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.offer_validation import compute_offer_validation_score
@@ -38,8 +39,12 @@ from pcapi.domain.admin_emails import send_offer_validation_notification_to_admi
 from pcapi.domain.user_emails import send_offer_validation_status_update_email
 from pcapi.flask_app import app
 from pcapi.models import Offer
+from pcapi.models.feature import FeatureToggle
+from pcapi.repository import feature_queries
+from pcapi.repository import repository
 from pcapi.settings import IS_PROD
 from pcapi.utils.human_ids import humanize
+from pcapi.workers.push_notification_job import send_cancel_booking_notification
 
 
 class OfferView(BaseAdminView):
@@ -62,11 +67,64 @@ class OfferView(BaseAdminView):
     form_columns = ["criteria", "rankingWeight"]
     simple_list_pager = True
 
-    def on_model_change(self, form: Form, offer: Offer, is_created: bool = False) -> None:
-        redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
+    def get_edit_form(self) -> wtforms.Form:
+        form = super().get_form()
+        form.name = wtforms.StringField(
+            "Nom de l'offre",
+            render_kw={"readonly": True},
+        )
+        if has_app_context() and self.check_super_admins():
+            form.validation = wtforms.SelectField(
+                "Validation",
+                choices=[(s.name, s.value) for s in OfferValidationStatus],
+                coerce=str,
+                description="Vous pouvez choisir uniquement APPROVED ou REJECTED",
+            )
+        return form
+
+    def on_form_prefill(self, form, id):  # pylint:disable=redefined-builtin
+        current_offer = self.session.query(self.model).get(id)
+        form.validation.data = current_offer.validation.value
+
+    def on_model_change(self, form: wtforms.Form, model: Offer, is_created: bool) -> None:
+        previous_validation = form._fields["validation"].object_data
+        new_validation = OfferValidationStatus[form.validation.data]
+        if previous_validation != new_validation and new_validation in (
+            OfferValidationStatus.DRAFT,
+            OfferValidationStatus.PENDING,
+        ):
+            raise ValidationError("Le statut de validation ne peut pas être changé vers DRAFT ou PENDING")
+
+    def after_model_change(self, form: wtforms.Form, offer: Offer, is_created: bool = False) -> None:
+        previous_validation = form._fields["validation"].object_data
+        new_validation = offer.validation
+        if previous_validation != new_validation:
+            offer.lastValidationDate = datetime.utcnow()
+            if new_validation == OfferValidationStatus.APPROVED:
+                offer.isActive = True
+            if new_validation == OfferValidationStatus.REJECTED:
+                offer.isActive = False
+                cancelled_bookings = cancel_bookings_from_rejected_offer(offer)
+                if cancelled_bookings:
+                    send_cancel_booking_notification.delay([booking.id for booking in cancelled_bookings])
+
+            repository.save(offer)
+
+            recipients = (
+                [offer.venue.bookingEmail]
+                if offer.venue.bookingEmail
+                else [recipient.user.email for recipient in offer.venue.managingOfferer.UserOfferers]
+            )
+            send_offer_validation_status_update_email(offer, new_validation, recipients)
+            send_offer_validation_notification_to_administration(new_validation, offer)
+
+            flash("Le statut de l'offre a bien été modifié", "success")
+
+        if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
+            redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
 
     def get_query(self) -> query:
-        return Offer.query.filter(Offer.validation != OfferValidationStatus.DRAFT).from_self()
+        return self.session.query(self.model).filter(Offer.validation != OfferValidationStatus.DRAFT).from_self()
 
 
 class OfferForVenueSubview(OfferView):
@@ -170,7 +228,7 @@ def _compute_score(view, context, model, name) -> float:
 
 
 class OfferValidationForm(SecureForm):
-    validation = SelectField(
+    validation = wtforms.SelectField(
         "validation",
         choices=[(choice.name, choice.value) for choice in OfferValidationStatus if choice.name != "DRAFT"],
         coerce=str,
@@ -227,7 +285,7 @@ class ValidationView(BaseAdminView):
             form = OfferValidationForm(request.form)
             if form.validate():
                 validation_status = OfferValidationStatus[form.validation.data]
-                is_offer_updated = update_pending_offer_validation_status(
+                is_offer_updated = offers_api.update_pending_offer_validation(
                     offer, OfferValidationStatus[form.validation.data]
                 )
                 if is_offer_updated:
@@ -280,24 +338,24 @@ class ValidationView(BaseAdminView):
         return self.render("admin/edit_offer_validation.html", **context)
 
 
-def yaml_formatter(view, context, model, name):
+def yaml_formatter(view, context, model, name) -> Markup:
     value = getattr(model, name)
     yaml_value = yaml.dump(value, indent=4)
     return Markup("<pre>{}</pre>".format(yaml_value))
 
 
-def user_formatter(view, context, model, name):
+def user_formatter(view, context, model, name) -> str:
     author = getattr(model, name)
     return author.email if author else ""
 
 
-def date_formatter(view, context, model, name):
+def date_formatter(view, context, model, name) -> datetime:
     config_date = getattr(model, name)
     return config_date.strftime("%Y-%m-%d %H:%M:%S")
 
 
 class OfferValidationConfigForm(SecureForm):
-    specs = TextAreaField("Configuration", [InputRequired()])
+    specs = wtforms.TextAreaField("Configuration", [InputRequired()])
 
 
 class ImportConfigValidationOfferView(BaseAdminView):
@@ -335,7 +393,7 @@ class ImportConfigValidationOfferView(BaseAdminView):
 
         return OfferValidationConfigForm(get_form_data())
 
-    def create_model(self, form: Form) -> Union[None, OfferValidationConfig]:
+    def create_model(self, form: wtforms.Form) -> Union[None, OfferValidationConfig]:
         check_user_can_load_config(current_user)
         config = import_offer_validation_config(form.specs.data, current_user)
         return config

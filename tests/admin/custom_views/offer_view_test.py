@@ -5,6 +5,7 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi.admin.custom_views.offer_view import OfferView
+import pcapi.core.bookings.factories as booking_factories
 from pcapi.core.offers.api import import_offer_validation_config
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.factories import VenueFactory
@@ -62,6 +63,7 @@ class OfferValidationViewTest:
         client = TestClient(app.test_client()).with_auth("admin@example.com")
         response = client.post(f"/pc/back-office/validation/edit?id={first_offer.id}", form=data)
 
+        first_offer = Offer.query.get(first_offer.id)
         assert first_offer.validation == OfferValidationStatus.APPROVED
         assert response.status_code == 302
         assert response.headers["location"] == f"http://localhost/pc/back-office/validation/edit/?id={second_offer.id}"
@@ -427,3 +429,113 @@ class GetOfferValidationViewTest:
 
         assert response.status_code == 200
         assert mocked_get_offerer_legal_category.call_count == 1
+
+
+class OfferViewTest:
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("pcapi.admin.custom_views.offer_view.send_offer_validation_status_update_email")
+    @patch("pcapi.admin.custom_views.offer_view.send_offer_validation_notification_to_administration")
+    def test_reject_approved_offer(
+        self,
+        mocked_send_offer_validation_notification_to_administration,
+        mocked_send_offer_validation_status_update_email,
+        mocked_validate_csrf_token,
+        app,
+    ):
+        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        with freeze_time("2020-11-17 15:00:00") as frozen_time:
+            offer = offers_factories.OfferFactory(
+                validation=OfferValidationStatus.APPROVED, isActive=True, venue__bookingEmail="offerer@example.com"
+            )
+            frozen_time.move_to("2020-12-20 15:00:00")
+            data = dict(validation=OfferValidationStatus.REJECTED.value)
+            client = TestClient(app.test_client()).with_auth("admin@example.com")
+
+            response = client.post(f"/pc/back-office/offer/edit/?id={offer.id}", form=data)
+
+        assert response.status_code == 302
+        assert offer.validation == OfferValidationStatus.REJECTED
+        assert offer.lastValidationDate == datetime.datetime(2020, 12, 20, 15)
+
+        mocked_send_offer_validation_notification_to_administration.assert_called_once_with(
+            OfferValidationStatus.REJECTED, offer
+        )
+        mocked_send_offer_validation_status_update_email.assert_called_once_with(
+            offer, OfferValidationStatus.REJECTED, ["offerer@example.com"]
+        )
+
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("pcapi.admin.custom_views.offer_view.send_offer_validation_status_update_email")
+    @patch("pcapi.admin.custom_views.offer_view.send_offer_validation_notification_to_administration")
+    def test_approve_rejected_offer(
+        self,
+        mocked_send_offer_validation_notification_to_administration,
+        mocked_send_offer_validation_status_update_email,
+        mocked_validate_csrf_token,
+        app,
+    ):
+        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        with freeze_time("2020-11-17 15:00:00") as frozen_time:
+            offer = offers_factories.OfferFactory(validation=OfferValidationStatus.REJECTED, isActive=True)
+            frozen_time.move_to("2020-12-20 15:00:00")
+            data = dict(validation=OfferValidationStatus.APPROVED.value)
+            client = TestClient(app.test_client()).with_auth("admin@example.com")
+
+            response = client.post(f"/pc/back-office/offer/edit/?id={offer.id}", form=data)
+
+        assert response.status_code == 302
+        assert offer.validation == OfferValidationStatus.APPROVED
+        assert offer.lastValidationDate == datetime.datetime(2020, 12, 20, 15)
+
+        mocked_send_offer_validation_notification_to_administration.assert_called_once_with(
+            OfferValidationStatus.APPROVED, offer
+        )
+        assert mocked_send_offer_validation_status_update_email.call_count == 1
+
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("pcapi.admin.custom_views.offer_view.send_offer_validation_status_update_email")
+    @patch("pcapi.admin.custom_views.offer_view.send_offer_validation_notification_to_administration")
+    @patch("pcapi.admin.custom_views.offer_view.send_cancel_booking_notification.delay")
+    def test_reject_approved_offer_with_bookings(
+        self,
+        mocked_send_cancel_booking_notification,
+        mocked_send_offer_validation_notification_to_administration,
+        mocked_send_offer_validation_status_update_email,
+        mocked_validate_csrf_token,
+        app,
+    ):
+        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        with freeze_time("2020-11-17 15:00:00") as frozen_time:
+            offer = offers_factories.OfferFactory(validation=OfferValidationStatus.APPROVED, isActive=True)
+            stock = offers_factories.StockFactory(offer=offer, price=10)
+            unused_booking = booking_factories.BookingFactory(stock=stock)
+            used_booking = booking_factories.BookingFactory(stock=stock, isUsed=True)
+            frozen_time.move_to("2020-12-20 15:00:00")
+            data = dict(validation=OfferValidationStatus.REJECTED.value)
+            client = TestClient(app.test_client()).with_auth("admin@example.com")
+
+            response = client.post(f"/pc/back-office/offer/edit/?id={offer.id}", form=data)
+
+        assert response.status_code == 302
+        assert offer.validation == OfferValidationStatus.REJECTED
+        assert offer.lastValidationDate == datetime.datetime(2020, 12, 20, 15)
+        assert unused_booking.isCancelled
+        assert not used_booking.isCancelled
+
+        mocked_send_cancel_booking_notification.assert_called_once_with([unused_booking.id])
+
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_change_to_draft_approved_offer(self, mocked_validate_csrf_token, app):
+        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        offer = offers_factories.OfferFactory(validation=OfferValidationStatus.APPROVED, isActive=True)
+        data = dict(validation=OfferValidationStatus.DRAFT.value)
+        client = TestClient(app.test_client()).with_auth("admin@example.com")
+
+        response = client.post(f"/pc/back-office/offer/edit/?id={offer.id}", form=data)
+
+        assert response.status_code == 200
+        assert offer.validation == OfferValidationStatus.APPROVED

@@ -405,7 +405,6 @@ def upsert_stocks(
     logger.info("Stock has been created or updated", extra={"offer": offer_id})
 
     if offer.validation == OfferValidationStatus.DRAFT:
-        # TODO(fseguin): remove after the real implementation is added
         offer.validation = set_offer_status_based_on_fraud_criteria(offer)
         offer.author = user
         offer.lastValidationDate = datetime.datetime.utcnow()
@@ -669,7 +668,7 @@ def set_offer_status_based_on_fraud_criteria(offer: Offer) -> OfferValidationSta
     return status
 
 
-def update_pending_offer_validation_status(offer: Offer, validation_status: OfferValidationStatus) -> bool:
+def update_pending_offer_validation(offer: Offer, validation_status: OfferValidationStatus) -> bool:
     offer = offer_queries.get_offer_by_id(offer.id)
     if offer.validation != OfferValidationStatus.PENDING:
         logger.exception(
