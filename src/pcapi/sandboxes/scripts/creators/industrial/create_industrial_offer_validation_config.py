@@ -12,37 +12,40 @@ def create_industrial_offer_validation_config() -> None:
     super_admin = find_user_by_email("pctest.admin93.0@example.com")
     previous_config_yaml = """
     minimum_score: 0.6
-    parameters:
-        name:
-            model: "Offer"
-            attribute: "name"
-            condition:
-                operator: "not in"
-                comparated:
-                    - "REJECTED"
-                    - "PENDING"
-                    - "DRAFT"
-            factor: 0
-        price_all_types:
-            model: "Offer"
-            attribute: "max_price"
-            condition:
-                operator: ">"
-                comparated: 100
-            factor: 0.7
+    rules:
+        - name: "Check offer name"
+          factor: 0
+          conditions:
+              - model: "Offer"
+                attribute: "name"
+                condition:
+                    operator: "not in"
+                    comparated:
+                        - "REJECTED"
+                        - "PENDING"
+                        - "DRAFT"
+        - name: "Check max price"
+          factor: 0.7
+          conditions:
+              - model: "Offer"
+                attribute: "max_price"
+                condition:
+                    operator: ">"
+                    comparated: 100
     """
     config_yaml = """
     minimum_score: 0.6
-    parameters:
-        name:
-            model: "Offer"
-            attribute: "name"
-            condition:
-                operator: "contains"
-                comparated:
-                    - "REJECTED"
-                    - "PENDING"
-            factor: 0
+    rules:
+        - name: "Check offer name"
+          factor: 0
+          conditions:
+              - model: "Offer"
+                attribute: "name"
+                condition:
+                    operator: "contains"
+                    comparated:
+                        - "REJECTED"
+                        - "PENDING"
     """
     import_offer_validation_config(previous_config_yaml, super_admin)
     import_offer_validation_config(config_yaml, super_admin)
