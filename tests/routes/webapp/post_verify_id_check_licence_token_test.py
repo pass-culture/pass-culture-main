@@ -1,7 +1,11 @@
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
+import pytest
+
 from pcapi.connectors.api_recaptcha import InvalidRecaptchaTokenException
+from pcapi.core.users.factories import IdCheckToken
+from pcapi.core.users.factories import UserFactory
 
 from tests.conftest import TestClient
 
@@ -10,6 +14,7 @@ token_is_valid_mock = MagicMock()
 token_is_wrong_mock = MagicMock(side_effect=InvalidRecaptchaTokenException())
 
 
+@pytest.mark.usefixtures("db_session")
 class Post:
     class Returns200:
         @patch("pcapi.core.users.repository.get_id_check_token", lambda x: None)
@@ -24,9 +29,11 @@ class Post:
             # Then
             assert response.status_code == 200
 
-        @patch("pcapi.core.users.repository.get_id_check_token", lambda x: "authorized-token")
         def when_has_an_existing_JWT_token(self, app):
             # Given
+            user = UserFactory()
+            IdCheckToken(user=user, isUsed=False, value="authorized-token")
+
             data = {"token": "authorized-token"}
 
             # When

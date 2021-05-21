@@ -263,3 +263,7 @@ RATE_LIMIT_BY_IP = os.environ.get("RATE_LIMIT_BY_IP", "10/minute")
 
 # DEBUG
 DEBUG_ACTIVATED = os.environ.get("DEBUG_ACTIVATED") == "True"
+
+# ID CHECK
+ID_CHECK_TOKEN_LIFE_TIME_HOURS = int(os.environ.get("ID_CHECK_TOKEN_LIFE_TIME_HOURS", 12))
+ID_CHECK_MAX_ALIVE_TOKEN = int(os.environ.get("ID_CHECK_MAX_ALIVE_TOKEN", 3))

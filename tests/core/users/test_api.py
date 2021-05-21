@@ -17,6 +17,7 @@ from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.api import BeneficiaryValidationStep
 from pcapi.core.users.api import _set_offerer_departement_code
+from pcapi.core.users.api import count_existing_id_check_tokens
 from pcapi.core.users.api import create_id_check_token
 from pcapi.core.users.api import delete_expired_tokens
 from pcapi.core.users.api import fulfill_account_password
@@ -199,6 +200,29 @@ class GenerateIdCheckTokenIfEligibleTest:
         user = users_factories.UserFactory(dateOfBirth=datetime(1999, 5, 1))
         token = create_id_check_token(user)
         assert not token
+
+
+class CountIdCheckTokenTest:
+    def test_count_no_token(self):
+        user = users_factories.UserFactory(dateOfBirth=datetime(1999, 5, 1))
+        assert count_existing_id_check_tokens(user) == 0
+
+    def test_count_one_unused_token(self):
+        user = users_factories.UserFactory(dateOfBirth=datetime(1999, 5, 1))
+
+        users_factories.IdCheckToken(user=user, expirationDate=datetime.now() + timedelta(hours=2))
+        assert count_existing_id_check_tokens(user) == 1
+
+    def test_count_multiple_mixed_token(self):
+        user = users_factories.UserFactory(dateOfBirth=datetime(1999, 5, 1))
+
+        past_expiration_date = datetime.now() - timedelta(hours=2)
+        future_expiration_date = datetime.now() + timedelta(hours=2)
+
+        users_factories.IdCheckToken.create_batch(3, user=user, expirationDate=past_expiration_date)
+        users_factories.IdCheckToken.create_batch(2, user=user, expirationDate=future_expiration_date)
+
+        assert count_existing_id_check_tokens(user) == 2
 
 
 class DeleteExpiredTokensTest:

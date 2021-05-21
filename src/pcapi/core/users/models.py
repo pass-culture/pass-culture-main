@@ -29,6 +29,7 @@ from sqlalchemy.orm import backref
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
+from sqlalchemy.sql.expression import false
 
 from pcapi import settings
 from pcapi.core.bookings.models import Booking
@@ -77,6 +78,8 @@ class Token(PcObject, Model):
     creationDate = Column(DateTime, nullable=False, server_default=func.now())
 
     expirationDate = Column(DateTime, nullable=True)
+
+    isUsed = Column(Boolean, nullable=False, server_default=false(), default=False)
 
 
 def _hash_password_with_bcrypt(clear_text: str) -> bytes:

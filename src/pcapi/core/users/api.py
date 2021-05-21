@@ -89,9 +89,22 @@ def create_reset_password_token(user: User, token_life_time: timedelta = None) -
     )
 
 
+def count_existing_id_check_tokens(user: User) -> int:
+    return (
+        Token.query.filter(Token.userId == user.id)
+        .filter_by(type=TokenType.ID_CHECK)
+        .filter(Token.expirationDate > datetime.now())
+        .count()
+    )
+
+
 def create_id_check_token(user: User) -> Optional[Token]:
     if not user.is_eligible:
         return None
+
+    alive_token_count = count_existing_id_check_tokens(user)
+    if alive_token_count >= settings.ID_CHECK_MAX_ALIVE_TOKEN:
+        raise exceptions.IdCheckTokenLimitReached(alive_token_count)
 
     return generate_and_save_token(user, TokenType.ID_CHECK, constants.ID_CHECK_TOKEN_LIFE_TIME)
 

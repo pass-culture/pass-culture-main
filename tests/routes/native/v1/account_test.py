@@ -9,6 +9,7 @@ from flask_jwt_extended.utils import create_access_token
 from freezegun.api import freeze_time
 import pytest
 
+from pcapi import settings
 from pcapi.core.bookings.factories import BookingFactory
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.testing import override_features
@@ -633,6 +634,22 @@ class GetIdCheckTokenTest:
 
         assert response.status_code == 200
         assert not response.json["token"]
+
+    def test_get_id_check_token_limit_reached(self, app):
+        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="93")
+
+        expiration_date = datetime.now() + timedelta(hours=2)
+        users_factories.IdCheckToken.create_batch(
+            settings.ID_CHECK_MAX_ALIVE_TOKEN, user=user, expirationDate=expiration_date, isUsed=False
+        )
+
+        access_token = create_access_token(identity=user.email)
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+        response = test_client.get("/native/v1/id_check_token")
+
+        assert response.status_code == 400
+        assert response.json["code"] == "TOO_MANY_ID_CHECK_TOKEN"
 
 
 class ShowEligibleCardTest:

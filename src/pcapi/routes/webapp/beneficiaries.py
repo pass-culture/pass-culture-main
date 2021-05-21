@@ -16,6 +16,7 @@ from pcapi.core.users import repository as users_repo
 from pcapi.flask_app import private_api
 from pcapi.flask_app import public_api
 from pcapi.models.api_errors import ApiErrors
+from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.routes.serialization import beneficiaries as serialization_beneficiaries
 from pcapi.routes.serialization.beneficiaries import BeneficiaryAccountResponse
@@ -125,7 +126,10 @@ def signin_beneficiary() -> tuple[str, int]:
 def verify_id_check_licence_token(
     body: serialization_beneficiaries.VerifyIdCheckLicenceRequest,
 ) -> serialization_beneficiaries.VerifyIdCheckLicenceResponse:
-    if users_repo.get_id_check_token(body.token):
+    token = users_repo.get_id_check_token(body.token)
+    if token:
+        token.isUsed = True
+        repository.save(token)
         return serialization_beneficiaries.VerifyIdCheckLicenceResponse()
 
     # Let's try with the legacy webapp tokens

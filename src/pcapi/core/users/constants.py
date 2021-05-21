@@ -1,12 +1,14 @@
 from datetime import timedelta
 from enum import Enum
 
+from pcapi import settings
+
 
 RESET_PASSWORD_TOKEN_LIFE_TIME = timedelta(hours=24)
 RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED = timedelta(days=30)
 EMAIL_VALIDATION_TOKEN_LIFE_TIME = timedelta(hours=24)
 EMAIL_CHANGE_TOKEN_LIFE_TIME = timedelta(hours=24)
-ID_CHECK_TOKEN_LIFE_TIME = timedelta(days=1)
+ID_CHECK_TOKEN_LIFE_TIME = timedelta(hours=settings.ID_CHECK_TOKEN_LIFE_TIME_HOURS)
 PHONE_VALIDATION_TOKEN_LIFE_TIME = timedelta(minutes=10)
 
 ELIGIBILITY_AGE = 18
