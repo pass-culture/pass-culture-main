@@ -19,7 +19,7 @@ const mapDispatchToProps = dispatch => ({
       showNotification({
         type: 'warning',
         text:
-          'Vous avez été limité à 10 pages de réservations. Veuillez contacter le support si nécessaire.',
+          'Vous avez été limité à 5 000 réservations. Veuillez contacter le support si nécessaire.',
       })
     ),
 })
