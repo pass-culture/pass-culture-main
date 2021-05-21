@@ -1,11 +1,36 @@
-.id-check-disabled-page {
+.eligible-soon-page.id-check-disabled-page {
   padding: 32px 0;
 
   .legal-notice {
     @include caption();
-    margin-top: 32px;
+
+    margin-top: rem(32px);
   }
+
   .submit-button {
-    margin-top: 8px;
+    margin-top: rem(8px);
+  }
+}
+
+@media screen and (max-width: $iphone5-width) {
+  .eligible-soon-page.id-check-disabled-page {
+    input {
+      padding: rem(8px) rem(20px);
+    }
+
+    .legal-notice {
+      font-size: rem(10px);
+      margin-top: rem(16px);
+    }
+
+    .submit-button {
+      height: rem(40px);
+      margin: rem(12px) auto;
+      padding: 0;
+    }
+
+    .animation-text-container a {
+      margin: 0 auto;
+    }
   }
 }

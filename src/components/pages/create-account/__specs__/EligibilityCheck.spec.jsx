@@ -453,7 +453,10 @@ describe('eligibility check page', () => {
           // then
           expect(wrapper.find({ children: 'Oups !' })).toHaveLength(1)
           expect(
-            wrapper.find({ children: 'Cette page est indisponible pour le moment.' })
+            wrapper.find({
+              children:
+                'Vous êtes très nombreux à solliciter le service. Pour être prévenu du suivi de ton dossier :',
+            })
           ).toHaveLength(1)
         })
 
@@ -490,7 +493,10 @@ describe('eligibility check page', () => {
           // then
           expect(wrapper.find({ children: 'Oups !' })).toHaveLength(1)
           expect(
-            wrapper.find({ children: 'Cette page est indisponible pour le moment.' })
+            wrapper.find({
+              children:
+                'Vous êtes très nombreux à solliciter le service. Pour être prévenu du suivi de ton dossier :',
+            })
           ).toHaveLength(1)
         })
       })

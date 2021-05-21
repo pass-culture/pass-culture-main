@@ -54,12 +54,18 @@ const IdCheckDisabled = () => {
           {'Oups !'}
         </h1>
         <div className="information-text">
-          <p>
-            {'Cette page est indisponible pour le moment.'}
-          </p>
-          <p>
-            {'Entre ton adresse email pour être prévenu dès que nous revenons en ligne.'}
-          </p>
+          {
+            'Vous êtes très nombreux à solliciter le service. Pour être prévenu du suivi de ton dossier :'
+          }
+        </div>
+        <a
+          className="application-download submit-button"
+          href="https://passcultureapp.page.link/home"
+        >
+          {"Télécharge l'application"}
+        </a>
+        <div className="information-text">
+          {'Ou entre ton e-mail : nous te préviendrons dès que nous reviendrons en ligne !'}
         </div>
       </div>
       <div className="buttons-container">
