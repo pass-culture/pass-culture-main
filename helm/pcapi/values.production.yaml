@@ -50,7 +50,7 @@ api:
   autoscaling:
     enabled: true
     minReplicas: 6
-    maxReplicas: 40
+    maxReplicas: 60
     targetCPUUtilization: 70
     # Enable this option to scale on memory percentage
     # targetMemoryUtilization: 70
@@ -291,7 +291,7 @@ configmap:
   GUNICORN_MAX_REQUESTS: 3000
   GUNICORN_MAX_REQUESTS_JITTER: 10
   GUNICORN_WORKERS: 2
-  GUNICORN_THREADS: 10
+  GUNICORN_THREADS: 5
   GUNICORN_TIMEOUT: 90
   OBJECT_STORAGE_PROVIDER: OVH,GCP
 
