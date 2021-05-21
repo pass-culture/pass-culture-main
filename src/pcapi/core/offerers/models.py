@@ -21,7 +21,11 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import aliased
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
+from werkzeug.utils import cached_property
 
+from pcapi import settings
+from pcapi.connectors.api_entreprises import ApiEntrepriseException
+from pcapi.connectors.api_entreprises import get_offerer_legal_category
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.domain.postal_code.postal_code import OVERSEAS_DEPARTEMENT_CODE_START
@@ -333,6 +337,16 @@ class Offerer(
             ],
             else_=func.substring(cls.postalCode, 1, 2),
         )
+
+    @cached_property
+    def legal_category(self) -> str:
+        try:
+            legal_category = get_offerer_legal_category(self)
+        except ApiEntrepriseException:
+            if settings.IS_PROD:
+                raise
+            legal_category = {"legal_category_code": "XXXX", "legal_category_label": "Catégorie factice (hors Prod)"}
+        return legal_category["legal_category_code"]
 
 
 offerer_ts_indexes = [

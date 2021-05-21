@@ -1,5 +1,10 @@
+from unittest.mock import MagicMock
+from unittest.mock import patch
+
 import pytest
 
+# pylint:disable=import-error
+from pcapi.connectors.api_entreprises import ApiEntrepriseException
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import factories as offers_factories
@@ -100,3 +105,49 @@ class OffererNValidatedOffersTest:
         offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING, venue__managingOfferer=offerer)
 
         assert offerer.nApprovedOffers == 0
+
+
+@pytest.mark.usefixtures("db_session")
+class OffererLegalCategoryTest:
+    @patch("pcapi.core.offerers.models.get_offerer_legal_category")
+    def test_offerer_legal_category_with_success_get_legal_category(self, mocked_get_offerer_legal_category):
+        mocked_get_offerer_legal_category.return_value = {
+            "legal_category_code": "5202",
+            "legal_category_label": "Société en nom collectif",
+        }
+        offerer = offers_factories.OffererFactory()
+
+        assert offerer.legal_category == "5202"
+
+    @patch("pcapi.connectors.api_entreprises.requests.get")
+    @patch("pcapi.settings.IS_PROD", True)
+    def test_offerer_legal_category_when_get_legal_category_raise_error_on_prod_env(self, requests_get):
+        requests_get.return_value = MagicMock(status_code=400)
+        offerer = offers_factories.OffererFactory()
+
+        with pytest.raises(ApiEntrepriseException) as error:
+            offerer.legal_category()
+
+        assert "Error getting API entreprise DATA for SIREN" in str(error.value)
+
+    @patch("pcapi.core.offerers.models.get_offerer_legal_category")
+    def test_offerer_legal_category_when_get_legal_category_raise_error_on_non_prod_env(
+        self, mocked_get_offerer_legal_category
+    ):
+        mocked_get_offerer_legal_category.side_effect = [ApiEntrepriseException]
+        offerer = offers_factories.OffererFactory()
+
+        assert offerer.legal_category == "XXXX"
+
+    @patch("pcapi.core.offerers.models.get_offerer_legal_category")
+    def test_offerer_legal_category_called_many_times(self, mocked_get_offerer_legal_category):
+        mocked_get_offerer_legal_category.return_value = {
+            "legal_category_code": "5202",
+            "legal_category_label": "Société en nom collectif",
+        }
+        offerer = offers_factories.OffererFactory()
+
+        assert offerer.legal_category == "5202"
+        assert offerer.legal_category == "5202"
+        assert offerer.legal_category == "5202"
+        assert mocked_get_offerer_legal_category.call_count == 1

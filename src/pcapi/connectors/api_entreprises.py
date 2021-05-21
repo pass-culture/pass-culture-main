@@ -1,13 +1,18 @@
+import typing
+
 from pcapi.connectors.utils.legal_category_code_to_labels import CODE_TO_CATEGORY_MAPPING
-from pcapi.core.offerers.models import Offerer
 from pcapi.utils import requests
+
+
+if typing.TYPE_CHECKING:
+    from pcapi.core.offerers.models import Offerer
 
 
 class ApiEntrepriseException(Exception):
     pass
 
 
-def get_by_offerer(offerer: Offerer) -> dict:
+def get_by_offerer(offerer: "Offerer") -> dict:
     response = requests.get(
         f"https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/{offerer.siren}", verify=False
     )
@@ -29,7 +34,7 @@ def _extract_etablissements_communs_siren(etablissements: list[dict]) -> list[di
     return [etablissement["siret"] for etablissement in etablissements_communs]
 
 
-def get_offerer_legal_category(offerer: Offerer) -> dict:
+def get_offerer_legal_category(offerer: "Offerer") -> dict:
     legal_category = get_by_offerer(offerer)["unite_legale"]["categorie_juridique"]
     legal_category_label = CODE_TO_CATEGORY_MAPPING.get(int(legal_category)) if legal_category else None
 
