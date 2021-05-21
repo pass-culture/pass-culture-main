@@ -19,6 +19,7 @@ from pcapi.admin.custom_views.offer_view import ValidationView
 from pcapi.admin.custom_views.offerer_view import OffererView
 from pcapi.admin.custom_views.partner_user_view import PartnerUserView
 from pcapi.admin.custom_views.pro_user_view import ProUserView
+from pcapi.admin.custom_views.suspend_fraudulent_users import SuspendFraudulentUsersView
 from pcapi.admin.custom_views.user_offerer_view import UserOffererView
 from pcapi.admin.custom_views.venue_provider_view import VenueProviderView
 from pcapi.admin.custom_views.venue_view import VenueView
@@ -138,6 +139,14 @@ def install_admin_views(admin: Admin, session: Session) -> None:
             session,
             name="Configuration des règles de fraude",
             endpoint="/fraud_rules_configuration",
+            category=Category.CUSTOM_OPERATIONS,
+        )
+    )
+
+    admin.add_view(
+        SuspendFraudulentUsersView(
+            name="Suspension d'utilisateurs via noms de domaine",
+            endpoint="/suspend_fraud_users",
             category=Category.CUSTOM_OPERATIONS,
         )
     )

@@ -43,9 +43,10 @@ def suspend_fraudulent_beneficiary_users_by_email_providers(
                 "bookings_concerned_count": len(bookings_to_cancel),
             },
         )
-
     if len(offers) > 0:
         print(f"Suspended users booked following distinct offers {[offer.id for offer in offers]}")
+
+    return {"fraudulent_users": fraudulent_users, "nb_cancelled_bookings": len(bookings_to_cancel)}
 
 
 def _suspend_fraudulent_beneficiary_users(fraudulent_users: list[User], admin_user: User) -> None:
