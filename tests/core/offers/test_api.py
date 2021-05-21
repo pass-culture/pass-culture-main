@@ -1325,7 +1325,7 @@ class ImportOfferValidationConfigTest:
         """
         with pytest.raises(WrongFormatInFraudConfigurationFile) as error:
             import_offer_validation_config(config_yaml)
-        assert "WRONG_KEY" in str(error.value)
+        assert str(error.value) == "\"'Wrong key: WRONG_KEY'\""
 
     @override_features(OFFER_VALIDATION_MOCK_COMPUTATION=False)
     def test_raise_a_WrongFormatInFraudConfigurationFile_error_for_wrong_type(self):

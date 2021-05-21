@@ -701,6 +701,7 @@ def import_offer_validation_config(config_as_yaml: str, user: User = None) -> Of
     except (KeyError, ValueError, ScannerError) as error:
         logger.exception(
             "Wrong configuration file format: %s",
+            error,
             extra={"exc": str(error)},
         )
         raise WrongFormatInFraudConfigurationFile(str(error))

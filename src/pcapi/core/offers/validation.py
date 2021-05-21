@@ -292,6 +292,9 @@ def check_user_can_load_config(user: User) -> None:
 
 def check_validation_config_parameters(config_as_dict: dict, valid_keys: list) -> None:
     for key, value in config_as_dict.items():
+        if key not in valid_keys:
+            raise KeyError(f"Wrong key: {key}")
+
         if isinstance(value, list) and key in KEY_VALIDATION_CONFIG:
             for item in value:
                 check_validation_config_parameters(item, KEY_VALIDATION_CONFIG[key])
@@ -300,5 +303,3 @@ def check_validation_config_parameters(config_as_dict: dict, valid_keys: list) -
         # Note that these are case-senstive
         elif not (value in VALUE_VALIDATION_CONFIG[key] or type(value) in VALUE_VALIDATION_CONFIG[key]):
             raise ValueError(f"{value} of type {type(value)} not in: {VALUE_VALIDATION_CONFIG[key]}")
-        if key not in valid_keys:
-            raise KeyError(f"Wrong key: {key}")
