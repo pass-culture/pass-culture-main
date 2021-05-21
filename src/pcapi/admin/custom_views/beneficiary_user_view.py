@@ -2,6 +2,7 @@ from typing import Optional
 
 from flask.helpers import flash
 from flask_admin.helpers import get_form_data
+from sqlalchemy.orm import joinedload
 from sqlalchemy.orm import query
 from sqlalchemy.sql.functions import func
 from wtforms import Form
@@ -35,7 +36,6 @@ class BeneficiaryUserView(SuspensionMixin, BaseAdminView):
 
     column_list = [
         "id",
-        "isBeneficiary",
         "isActive",
         "email",
         "firstName",
@@ -46,13 +46,13 @@ class BeneficiaryUserView(SuspensionMixin, BaseAdminView):
         "phoneNumber",
         "postalCode",
         "isEmailValidated",
+        "has_active_deposit",
         "deposit_version",
         "actions",
     ]
     column_labels = dict(
         email="Email",
         isActive="Est activé",
-        isBeneficiary="Est bénéficiaire",
         firstName="Prénom",
         lastName="Nom",
         publicName="Nom d'utilisateur",
@@ -61,6 +61,7 @@ class BeneficiaryUserView(SuspensionMixin, BaseAdminView):
         phoneNumber="Numéro de téléphone",
         postalCode="Code postal",
         isEmailValidated="Email validé ?",
+        has_active_deposit="Dépôt valable ?",
         deposit_version="Version du dépot",
     )
     column_searchable_list = ["id", "publicName", "email", "firstName", "lastName"]
@@ -141,7 +142,10 @@ class BeneficiaryUserView(SuspensionMixin, BaseAdminView):
 
     def get_query(self) -> query:
         return (
-            User.query.outerjoin(UserOfferer).filter(UserOfferer.userId.is_(None)).filter(User.isBeneficiary.is_(True))
+            User.query.outerjoin(UserOfferer)
+            .filter(UserOfferer.userId.is_(None))
+            .filter(User.isBeneficiary.is_(True))
+            .options(joinedload(User.deposits))
         )
 
     def get_count_query(self) -> query:

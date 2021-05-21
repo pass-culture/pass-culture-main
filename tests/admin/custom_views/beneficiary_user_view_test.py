@@ -7,8 +7,8 @@ from requests.auth import _basic_auth_str
 
 from pcapi.admin.custom_views.beneficiary_user_view import BeneficiaryUserView
 from pcapi.admin.custom_views.mixins.suspension_mixin import _allow_suspension_and_unsuspension
+from pcapi.core import testing
 import pcapi.core.mails.testing as mails_testing
-from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
@@ -21,6 +21,24 @@ from tests.conftest import clean_database
 
 
 class BeneficiaryUserViewTest:
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_list_beneficiaries(self, mocked_validate_csrf_token, app):
+        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        users_factories.UserFactory.create_batch(3, isBeneficiary=True)
+
+        client = TestClient(app.test_client()).with_auth("admin@example.com")
+        n_queries = testing.AUTHENTICATION_QUERIES
+        n_queries += 1  # select COUNT
+        n_queries += 1  # select users
+        # FIXME (dbaty, 2021-05-21) AUTHENTICATION_QUERIES includes a
+        # RELEASE SAVEPOINT query that we don't have here.
+        n_queries -= 1
+        with testing.assert_num_queries(n_queries):
+            response = client.get("/pc/back-office/beneficiary_users")
+
+        assert response.status_code == 200
+
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_beneficiary_user_creation(self, mocked_validate_csrf_token, app):
@@ -143,7 +161,7 @@ class BeneficiaryUserViewTest:
         # Then
         assert user.deposit_version == 2
 
-    @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["admin@example.com"])
+    @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["admin@example.com"])
     def test_form_has_no_deposit_field_for_production(self, app, db_session):
         # We need an authenticated user to initialize the admin class
         # and call `get_create_form()`, because `scaffold_form()` is
@@ -157,11 +175,8 @@ class BeneficiaryUserViewTest:
         assert hasattr(form, "phoneNumber")
         assert not hasattr(form, "depositVersion")
 
-    @patch("pcapi.settings.IS_PROD", return_value=True)
-    @patch("pcapi.settings.SUPER_ADMIN_EMAIL_ADDRESSES", return_value="")
-    def test_beneficiary_user_creation_is_restricted_in_prod(
-        self, is_prod_mock, super_admin_email_addresses, app, db_session
-    ):
+    @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=[])
+    def test_beneficiary_user_creation_is_restricted_in_prod(self, app, db_session):
         users_factories.UserFactory(email="user@example.com", isAdmin=True)
 
         data = dict(
@@ -238,8 +253,9 @@ class BeneficiaryUserViewTest:
 
         assert response.status_code == 403
 
-    @patch("pcapi.settings.IS_PROD", True)
-    @patch("pcapi.settings.SUPER_ADMIN_EMAIL_ADDRESSES", ["super-admin@example.com", "boss@example.com"])
+    @testing.override_settings(
+        IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["super-admin@example.com", "boss@example.com"]
+    )
     @pytest.mark.usefixtures("db_session")
     def test_allow_suspension_and_unsuspension(self):
         basic_admin = users_factories.UserFactory(email="admin@example.com", isAdmin=True)
