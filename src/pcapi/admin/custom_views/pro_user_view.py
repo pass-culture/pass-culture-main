@@ -63,7 +63,6 @@ class ProUserView(SuspensionMixin, BaseAdminView):
     can_create = True
     column_list = [
         "id",
-        "isBeneficiary",
         "isActive",
         "email",
         "firstName",
@@ -80,7 +79,6 @@ class ProUserView(SuspensionMixin, BaseAdminView):
     column_labels = dict(
         email="Email",
         isActive="Est activé",
-        isBeneficiary="Est bénéficiaire",
         firstName="Prénom",
         lastName="Nom",
         publicName="Nom d'utilisateur",
