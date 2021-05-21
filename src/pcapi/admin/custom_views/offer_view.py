@@ -63,6 +63,9 @@ class OfferView(BaseAdminView):
     def on_model_change(self, form: Form, offer: Offer, is_created: bool = False) -> None:
         redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
 
+    def get_query(self) -> query:
+        return Offer.query.filter(Offer.validation != OfferValidationStatus.DRAFT).from_self()
+
 
 class OfferForVenueSubview(OfferView):
     column_searchable_list = ["name", "criteria.name"]
