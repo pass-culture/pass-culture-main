@@ -7,11 +7,14 @@ import pcapi.core.bookings.api as bookings_api
 from pcapi.core.bookings.models import Booking
 import pcapi.core.bookings.repository as booking_repository
 import pcapi.core.bookings.validation as bookings_validation
+from pcapi.domain.users import UnauthorizedForAdminUser
 from pcapi.domain.users import check_is_authorized_to_access_bookings_recap
 from pcapi.flask_app import private_api
 from pcapi.flask_app import public_api
 from pcapi.models import EventType
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_type import ProductType
+from pcapi.repository import feature_queries
 from pcapi.routes.serialization import serialize
 from pcapi.routes.serialization import serialize_booking
 from pcapi.routes.serialization.bookings_recap_serialize import serialize_bookings_recap_paginated
@@ -72,6 +75,14 @@ def get_all_bookings():
     check_page_format_is_number(page)
 
     check_is_authorized_to_access_bookings_recap(current_user)
+
+    # FIXME: due to generalisation, the performance issue has led to DDOS many
+    # users checking the many bookings of these offerers
+    temporarily_banned_sirens = ["334473352", "434001954"]
+    if feature_queries.is_active(FeatureToggle.DISABLE_BOOKINGS_RECAP_FOR_SOME_PROS):
+        if any(offerer.siren in temporarily_banned_sirens for offerer in current_user.offerers):
+            # Here we use the same process as for admins
+            raise UnauthorizedForAdminUser()
 
     # FIXME: rewrite this route. The repository function should return
     # a bare SQLAlchemy query, and the route should handle the
