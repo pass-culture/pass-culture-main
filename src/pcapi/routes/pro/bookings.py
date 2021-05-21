@@ -78,7 +78,7 @@ def get_all_bookings():
 
     # FIXME: due to generalisation, the performance issue has led to DDOS many
     # users checking the many bookings of these offerers
-    temporarily_banned_sirens = ["334473352", "434001954"]
+    temporarily_banned_sirens = ["334473352", "434001954", "343282380"]
     if feature_queries.is_active(FeatureToggle.DISABLE_BOOKINGS_RECAP_FOR_SOME_PROS):
         if any(offerer.siren in temporarily_banned_sirens for offerer in current_user.offerers):
             # Here we use the same process as for admins
