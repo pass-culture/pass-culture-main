@@ -32,6 +32,7 @@ conn = redis.from_url(settings.REDIS_URL)
 
 default_queue = Queue("default", connection=conn, is_async=(not settings.IS_RUNNING_TESTS))
 low_queue = Queue("low", connection=conn, default_timeout=3600, is_async=(not settings.IS_RUNNING_TESTS))
+id_check_queue = Queue("id_check", connection=conn, default_timeout=3600, is_async=(not settings.IS_RUNNING_TESTS))
 
 logger = logging.getLogger(__name__)
 

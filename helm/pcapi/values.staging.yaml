@@ -198,6 +198,21 @@ workers:
       requests:
         cpu: 300m
         memory: 384Mi
+  - name: worker-idcheck
+    enabled: true
+    replicaCount: 1
+    command:
+      - python
+    args:
+      - src/pcapi/workers/worker.py
+      - id_check
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 300m
+        memory: 384Mi
 
 ### Cron deployments ###
 crons:
