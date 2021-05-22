@@ -63,8 +63,6 @@ def get_id_check_token(token_value: str) -> models.Token:
     return models.Token.query.filter(
         models.Token.value == token_value,
         models.Token.type == models.TokenType.ID_CHECK,
-        models.Token.isUsed == False,
-        models.Token.expirationDate > datetime.now(),
     ).one_or_none()
 
 

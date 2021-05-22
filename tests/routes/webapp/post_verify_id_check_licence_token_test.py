@@ -4,6 +4,7 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.connectors.api_recaptcha import InvalidRecaptchaTokenException
+from pcapi.connectors.api_recaptcha import ReCaptchaException
 from pcapi.core.users.factories import IdCheckToken
 from pcapi.core.users.factories import UserFactory
 
@@ -12,6 +13,7 @@ from tests.conftest import TestClient
 
 token_is_valid_mock = MagicMock()
 token_is_wrong_mock = MagicMock(side_effect=InvalidRecaptchaTokenException())
+token_is_totaly_weird_mock = MagicMock(side_effect=ReCaptchaException())
 
 
 @pytest.mark.usefixtures("db_session")
@@ -54,6 +56,21 @@ class Post:
             # Then
             assert response.status_code == 400
             assert response.json["token"] == ["Le token renseigné n'est pas valide"]
+
+        @patch("pcapi.routes.webapp.beneficiaries.check_webapp_recaptcha_token", token_is_totaly_weird_mock)
+        def when_has_an_expired_JWT_token(self, app):
+            # Given
+            user = UserFactory()
+            IdCheckToken(user=user, isUsed=True, value="authorized-token")
+
+            data = {"token": "authorized-token"}
+
+            # When
+            response = TestClient(app.test_client()).post("/beneficiaries/licence_verify", json=data)
+
+            # Then
+            assert response.status_code == 400
+            assert response.json["token"] == "Le token renseigné n'est pas valide"
 
         @patch("pcapi.routes.webapp.beneficiaries.check_webapp_recaptcha_token", token_is_valid_mock)
         def when_has_no_payload(self, app):

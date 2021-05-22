@@ -1,3 +1,4 @@
+from datetime import datetime
 import logging
 
 from flask import abort
@@ -128,9 +129,11 @@ def verify_id_check_licence_token(
 ) -> serialization_beneficiaries.VerifyIdCheckLicenceResponse:
     token = users_repo.get_id_check_token(body.token)
     if token:
-        token.isUsed = True
-        repository.save(token)
-        return serialization_beneficiaries.VerifyIdCheckLicenceResponse()
+        if not token.isUsed and token.expirationDate > datetime.now():
+            token.isUsed = True
+            repository.save(token)
+            return serialization_beneficiaries.VerifyIdCheckLicenceResponse()
+        raise ApiErrors(errors={"token": "Le token renseigné n'est pas valide"})
 
     # Let's try with the legacy webapp tokens
     check_webapp_recaptcha_token(
