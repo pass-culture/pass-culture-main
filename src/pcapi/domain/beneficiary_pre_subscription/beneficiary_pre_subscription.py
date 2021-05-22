@@ -20,6 +20,7 @@ class BeneficiaryPreSubscription:
     postal_code: str
     source: str
     source_id: Optional[int]
+    fraud_fields: dict
 
     @property
     def department_code(self) -> str:

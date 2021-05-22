@@ -40,6 +40,7 @@ def create_domain_beneficiary_pre_subcription(
         phone_number=phone_number,
         source=source,
         source_id=source_id,
+        fraud_fields=[],
     )
 
 

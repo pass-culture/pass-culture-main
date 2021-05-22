@@ -1,5 +1,7 @@
+from dataclasses import dataclass
 import datetime
 import logging
+from typing import Any
 
 import requests
 
@@ -15,10 +17,6 @@ DEFAULT_JOUVE_SOURCE_ID = None
 
 
 class ApiJouveException(Exception):
-    pass
-
-
-class FraudControlException(Exception):
     pass
 
 
@@ -42,7 +40,7 @@ class BeneficiaryJouveBackend:
         response_json = response.json()
         return response_json["Value"]
 
-    def get_application_by(self, application_id: int) -> BeneficiaryPreSubscription:
+    def _get_application_content(self, application_id: str) -> dict:
         token = self._get_authentication_token()
 
         response = requests.post(
@@ -58,9 +56,11 @@ class BeneficiaryJouveBackend:
                 f"Error {response.status_code} getting API jouve GetJouveByID with id: {application_id}"
             )
 
-        content = response.json()
+        return response.json()
 
-        self._fraud_validation(content, application_id)
+    def get_application_by(self, application_id: int) -> BeneficiaryPreSubscription:
+        content = self._get_application_content(application_id)
+        fraud_fields = get_fraud_fields(content)
 
         # There is a bug in Jouve that invert first_name and last_name (only testing and staging env)
         # More explanations here: https://passculture.atlassian.net/secure/RapidBoard.jspa?rapidView=34&modal=detail&selectedIssue=PC-7845&quickFilter=278
@@ -82,14 +82,47 @@ class BeneficiaryJouveBackend:
             postal_code=content["postalCode"],
             source=BeneficiaryImportSources.jouve.value,
             source_id=DEFAULT_JOUVE_SOURCE_ID,
+            fraud_fields=fraud_fields,
         )
 
-    def _fraud_validation(self, content, application_id):
-        controls = {
-            "poste_code_ok": content.get("posteCodeCtrl", "OK").upper() != "KO",
-            "service_code_ok": content.get("serviceCodeCtrl", "OK").upper() != "KO",
-        }
 
-        if not all(controls.values()):
-            logger.warning("Id check fraud control ko", extra={"application_id": application_id, "controls": controls})
-            raise FraudControlException()
+@dataclass
+class FraudDetectionItem:
+    key: str
+    value: Any
+    valid: bool
+
+    def __str__(self):
+        return f"{self.key}: {self.value} - {self.valid}"
+
+
+def get_boolean_fraud_detetction_item(content: dict, key: str) -> FraudDetectionItem:
+    value = content.get(key)
+    valid = value.upper() != "KO" if value else True
+    return FraudDetectionItem(key=key, value=value, valid=valid)
+
+
+def get_threshold_fraud_detetction_item(content: dict, key: str, threshold: int) -> FraudDetectionItem:
+    value = content.get(key)
+
+    try:
+        valid = int(value) >= threshold if value else True
+    except ValueError:
+        valid = True
+
+    return FraudDetectionItem(key=key, value=value, valid=valid)
+
+
+def get_fraud_fields(content: dict) -> dict:
+    return {
+        "strict_controls": [
+            get_boolean_fraud_detetction_item(content, "posteCodeCtrl"),
+            get_boolean_fraud_detetction_item(content, "serviceCodeCtrl"),
+        ],
+        "non_blocking_controls": [
+            get_boolean_fraud_detetction_item(content, "birthLocationCtrl"),
+            get_boolean_fraud_detetction_item(content, "creatorCtrl"),
+            get_threshold_fraud_detetction_item(content, "bodyBirthDateLevel", 100),
+            get_threshold_fraud_detetction_item(content, "bodyNameLevel", 50),
+        ],
+    }

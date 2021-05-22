@@ -12,4 +12,4 @@ def test_calls_use_case(mocked_create_beneficiary_use_case):
     beneficiary_job(application_id)
 
     # Then
-    mocked_create_beneficiary_use_case.assert_called_once_with(application_id)
+    mocked_create_beneficiary_use_case.assert_called_once_with(application_id, True, False)

@@ -4,7 +4,7 @@ from unittest.mock import patch
 from freezegun import freeze_time
 import pytest
 
-from pcapi.connectors.beneficiaries.jouve_backend import FraudControlException
+from pcapi.connectors.beneficiaries.jouve_backend import FraudDetectionItem
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users import api as users_api
@@ -33,21 +33,20 @@ PRE_SUBSCRIPTION_BASE_DATA = {
     "phone_number": "0123456789",
     "source": "jouve",
     "source_id": None,
+    "fraud_fields": {
+        "strict_controls": [FraudDetectionItem("posteCodeCtrl", "OK", True)],
+        "non_blocking_controls": [FraudDetectionItem("bodyNameLevel", "80", True)],
+    },
 }
 
 
 class FakeBeneficiaryJouveBackend:
-    def get_application_by(self, application_id: int) -> BeneficiaryPreSubscription:
+    def get_application_by(self, application_id: int, fraud_detection: bool = True) -> BeneficiaryPreSubscription:
         return BeneficiaryPreSubscription(
             application_id=application_id,
             postal_code=f"{application_id:02d}123",
             **PRE_SUBSCRIPTION_BASE_DATA,
         )
-
-
-class FakeFraudulentBeneficiaryJouveBackend:
-    def get_application_by(self, application_id: int) -> BeneficiaryPreSubscription:
-        raise FraudControlException()
 
 
 @override_features(FORCE_PHONE_VALIDATION=False)
@@ -204,28 +203,6 @@ def test_cannot_save_beneficiary_if_email_is_already_taken(app):
 
 @patch(
     "pcapi.settings.JOUVE_APPLICATION_BACKEND",
-    "tests.use_cases.create_beneficiary_from_application_test.FakeFraudulentBeneficiaryJouveBackend",
-)
-@pytest.mark.usefixtures("db_session")
-def test_cannot_save_beneficiary_if_fraud_is_detected(app):
-    # Given
-    application_id = 35
-
-    # When
-    create_beneficiary_from_application.execute(application_id)
-
-    # Then
-    users_count = User.query.count()
-    assert users_count == 0
-
-    beneficiary_import = BeneficiaryImport.query.count()
-    assert beneficiary_import == 0
-
-    assert push_testing.requests == []
-
-
-@patch(
-    "pcapi.settings.JOUVE_APPLICATION_BACKEND",
     "tests.use_cases.create_beneficiary_from_application_test.FakeBeneficiaryJouveBackend",
 )
 @pytest.mark.usefixtures("db_session")
@@ -331,3 +308,52 @@ def test_calls_send_rejection_mail_with_validation_error(
         beneficiary_pre_subscription=pre_subscription,
         beneficiary_is_eligible=True,
     )
+
+
+@patch("pcapi.use_cases.create_beneficiary_from_application.validate")
+@patch("pcapi.use_cases.create_beneficiary_from_application.send_rejection_email_to_beneficiary_pre_subscription")
+@patch("pcapi.use_cases.create_beneficiary_from_application.send_activation_email")
+@patch("pcapi.use_cases.create_beneficiary_from_application.send_accepted_as_beneficiary_email")
+@patch("pcapi.connectors.beneficiaries.jouve_backend.BeneficiaryJouveBackend._get_application_content")
+@pytest.mark.usefixtures("db_session")
+def test_cannot_save_beneficiary_when_fraud_is_detected(
+    mocked_get_content,
+    mocked_send_rejection_email_to_beneficiary_pre_subscription,
+    mocked_send_activation_email,
+    mocked_send_accepted_as_beneficiary_email,
+    stubed_validate,
+    app,
+):
+    # Given
+    application_id = 35
+    mocked_get_content.return_value = {
+        "firstName": "first_name",
+        "lastName": "last_name",
+        "email": "some@email.com",
+        "activity": "some activity",
+        "address": "some address",
+        "id": application_id,
+        "city": "some city",
+        "gender": "M",
+        "birthDate": "10/25/2003",
+        "phoneNumber": "°33607080900",
+        "postalCode": "77100",
+        "posteCodeCtrl": "KO",
+        "serviceCodeCtrl": "OK",
+        "birthLocationCtrl": "OK",
+        "creatorCtrl": "OK",
+        "bodyBirthDateLevel": "100",
+        "bodyNameLevel": "20",
+    }
+
+    # When
+    create_beneficiary_from_application.execute(application_id)
+
+    # Then
+    beneficiary_import = BeneficiaryImport.query.one()
+    assert beneficiary_import.currentStatus == ImportStatus.REJECTED
+    assert beneficiary_import.detail == "Fraud controls triggered: posteCodeCtrl, bodyNameLevel"
+
+    mocked_send_activation_email.assert_not_called()
+    mocked_send_accepted_as_beneficiary_email.assert_not_called()
+    mocked_send_rejection_email_to_beneficiary_pre_subscription.assert_not_called()

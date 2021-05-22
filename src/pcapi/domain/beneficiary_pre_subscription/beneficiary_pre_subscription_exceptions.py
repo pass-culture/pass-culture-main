@@ -8,3 +8,11 @@ class BeneficiaryIsADuplicate(CantRegisterBeneficiary):
 
 class BeneficiaryIsNotEligible(CantRegisterBeneficiary):
     pass
+
+
+class FraudDetected(CantRegisterBeneficiary):
+    pass
+
+
+class SuspiciousFraudDetected(CantRegisterBeneficiary):
+    pass
