@@ -8,6 +8,7 @@ import pytest
 
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.testing import override_features
+from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
@@ -329,6 +330,27 @@ def test_validate_email_when_eligible(app):
     test_client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
     refresh_response = test_client.post("/native/v1/refresh_access_token", json={})
     assert refresh_response.status_code == 200
+
+
+@freeze_time("2018-06-01")
+@override_settings(ID_CHECK_MAX_ALIVE_TOKEN=1)
+def test_validate_email_when_id_check_threshold_exceeded(app):
+    user = users_factories.UserFactory(isEmailValidated=False, dateOfBirth=datetime(2000, 6, 1), departementCode="93")
+    token = users_factories.TokenFactory(userId=user.id, type=TokenType.EMAIL_VALIDATION)
+
+    assert not user.isEmailValidated
+
+    test_client = TestClient(app.test_client())
+
+    # under ID_CHECK_MAX_ALIVE_TOKEN thresehold, idCheckToken is returned
+    response = test_client.post("/native/v1/validate_email", json={"email_validation_token": token.value})
+    assert response.status_code == 200
+    assert response.json["idCheckToken"]
+
+    # above ID_CHECK_MAX_ALIVE_TOKEN thresehold, no idCheckToken returned
+    response = test_client.post("/native/v1/validate_email", json={"email_validation_token": token.value})
+    assert response.status_code == 200
+    assert not response.json.get("idCheckToken")
 
 
 @freeze_time("2018-06-01")

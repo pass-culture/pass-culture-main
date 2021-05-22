@@ -134,7 +134,10 @@ def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
     user.isEmailValidated = True
     repository.save(user)
 
-    id_check_token = users_api.create_id_check_token(user)
+    try:
+        id_check_token = users_api.create_id_check_token(user)
+    except users_exceptions.IdCheckTokenLimitReached:
+        id_check_token = None
 
     response = ValidateEmailResponse(
         access_token=create_user_access_token(user),
