@@ -171,14 +171,14 @@ admin:
 workers:
   - name: worker
     enabled: true
-    replicaCount: 1
+    replicaCount: 5
     command:
       - python
     args:
       - src/pcapi/workers/worker.py
     resources:
       limits:
-        cpu: 500m
+        cpu: 800m
         memory: 512Mi
       requests:
         cpu: 300m
