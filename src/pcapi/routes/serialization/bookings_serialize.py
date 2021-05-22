@@ -118,7 +118,7 @@ class PostBookingResponseModel(BaseModel):
     stockId: str
     token: str
     activationCode: Optional[ActivationCode]
-    qrCode: str
+    qrCode: Optional[str]
 
     class Config:
         allow_population_by_field_name = True
