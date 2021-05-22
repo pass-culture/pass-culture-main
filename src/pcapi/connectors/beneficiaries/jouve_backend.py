@@ -1,4 +1,5 @@
 import datetime
+import logging
 
 import requests
 
@@ -7,10 +8,17 @@ from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription impo
 from pcapi.models import BeneficiaryImportSources
 
 
+logger = logging.getLogger(__name__)
+
+
 DEFAULT_JOUVE_SOURCE_ID = None
 
 
 class ApiJouveException(Exception):
+    pass
+
+
+class FraudControlException(Exception):
     pass
 
 
@@ -52,6 +60,8 @@ class BeneficiaryJouveBackend:
 
         content = response.json()
 
+        self._fraud_validation(content, application_id)
+
         # There is a bug in Jouve that invert first_name and last_name (only testing and staging env)
         # More explanations here: https://passculture.atlassian.net/secure/RapidBoard.jspa?rapidView=34&modal=detail&selectedIssue=PC-7845&quickFilter=278
         # TODO 05/2021: remove this code when Jouve fixed the bug
@@ -73,3 +83,14 @@ class BeneficiaryJouveBackend:
             source=BeneficiaryImportSources.jouve.value,
             source_id=DEFAULT_JOUVE_SOURCE_ID,
         )
+
+    def _fraud_validation(self, content, application_id):
+        controls = {
+            "birth_location_ok": content.get("birthLocationCtrl", "OK").upper() != "KO",
+            "poste_code_ok": content.get("posteCodeCtrl", "OK").upper() != "KO",
+            "service_code_ok": content.get("serviceCodeCtrl", "OK").upper() != "KO",
+        }
+
+        if not all(controls.values()):
+            logger.warning("Id check fraud control ko", extra={"application_id": application_id, "controls": controls})
+            raise FraudControlException()

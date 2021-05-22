@@ -8,13 +8,11 @@ import pytest
 
 from pcapi.connectors.beneficiaries.jouve_backend import ApiJouveException
 from pcapi.connectors.beneficiaries.jouve_backend import BeneficiaryJouveBackend
+from pcapi.connectors.beneficiaries.jouve_backend import FraudControlException
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
 
 
-def get_application_by_detail_response(
-    application_id: int = 2,
-    birth_date: str = "09/08/1995",
-) -> dict:
+def get_application_by_detail_response(application_id: int = 2, birth_date: str = "09/08/1995", **kwargs) -> dict:
     return {
         "id": application_id,
         "birthDate": birth_date,
@@ -28,6 +26,10 @@ def get_application_by_detail_response(
         "postalCode": "35123",
         "phoneNumber": "0123456789",
         "activity": "Apprenti",
+        "birthLocationCtrl": "OK",
+        "posteCodeCtrl": "OK",
+        "serviceCodeCtrl": "OK",
+        **kwargs,
     }
 
 
@@ -92,6 +94,38 @@ def test_calls_jouve_api_with_previously_fetched_token(mocked_requests_post):
     assert beneficiary_pre_subscription.phone_number == "0123456789"
     assert beneficiary_pre_subscription.postal_code == "35123"
     assert beneficiary_pre_subscription.public_name == "Céline DURAND"
+
+
+class FraudControlsTest:
+    def _generate_requests_mocks(self, application):
+        get_token_response = MagicMock(status_code=200)
+        get_application_by_response = MagicMock(status_code=200)
+        get_application_by_response.json = MagicMock(return_value=application)
+        return [get_token_response, get_application_by_response]
+
+    @patch("pcapi.connectors.beneficiaries.jouve_backend.requests.post")
+    def test_reject_application_when_birth_location_ko(self, mocked_requests_post):
+        mocked_requests_post.side_effect = self._generate_requests_mocks(
+            get_application_by_detail_response(birthLocationCtrl="KO")
+        )
+        with pytest.raises(FraudControlException):
+            BeneficiaryJouveBackend().get_application_by(5)
+
+    @patch("pcapi.connectors.beneficiaries.jouve_backend.requests.post")
+    def test_reject_application_when_post_code_ko(self, mocked_requests_post):
+        mocked_requests_post.side_effect = self._generate_requests_mocks(
+            get_application_by_detail_response(posteCodeCtrl="KO")
+        )
+        with pytest.raises(FraudControlException):
+            BeneficiaryJouveBackend().get_application_by(5)
+
+    @patch("pcapi.connectors.beneficiaries.jouve_backend.requests.post")
+    def test_reject_application_when_service_code_ko(self, mocked_requests_post):
+        mocked_requests_post.side_effect = self._generate_requests_mocks(
+            get_application_by_detail_response(serviceCodeCtrl="KO")
+        )
+        with pytest.raises(FraudControlException):
+            BeneficiaryJouveBackend().get_application_by(5)
 
 
 @patch("pcapi.connectors.beneficiaries.jouve_backend.requests.post")

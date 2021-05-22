@@ -201,6 +201,34 @@ def test_cannot_save_beneficiary_if_email_is_already_taken(app):
     "tests.use_cases.create_beneficiary_from_application_test.FakeBeneficiaryJouveBackend",
 )
 @pytest.mark.usefixtures("db_session")
+def test_cannot_save_beneficiary_if_fraud_is_detected(app):
+    # Given
+    application_id = 35
+    email = "rennes@example.org"
+    user = create_user(email=email, idx=4)
+    repository.save(user)
+
+    # When
+    create_beneficiary_from_application.execute(application_id)
+
+    # Then
+    user = User.query.one()
+    assert user.id == 4
+
+    beneficiary_import = BeneficiaryImport.query.one()
+    assert beneficiary_import.currentStatus == ImportStatus.REJECTED
+    assert beneficiary_import.applicationId == application_id
+    assert beneficiary_import.beneficiary is None
+    assert beneficiary_import.detail == f"Email {email} is already taken."
+
+    assert push_testing.requests == []
+
+
+@patch(
+    "pcapi.settings.JOUVE_APPLICATION_BACKEND",
+    "tests.use_cases.create_beneficiary_from_application_test.FakeBeneficiaryJouveBackend",
+)
+@pytest.mark.usefixtures("db_session")
 def test_cannot_save_beneficiary_if_duplicate(app):
     # Given
     first_name = "Thomas"

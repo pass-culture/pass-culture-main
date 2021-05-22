@@ -1,4 +1,5 @@
 from pcapi.connectors.beneficiaries import get_application_by_id
+from pcapi.connectors.beneficiaries.jouve_backend import FraudControlException
 from pcapi.core.users.api import create_reset_password_token
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsADuplicate
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import CantRegisterBeneficiary
@@ -16,7 +17,10 @@ class CreateBeneficiaryFromApplication:
         self.beneficiary_repository = BeneficiarySQLRepository()
 
     def execute(self, application_id: int) -> None:
-        beneficiary_pre_subscription = get_application_by_id(application_id)
+        try:
+            beneficiary_pre_subscription = get_application_by_id(application_id)
+        except FraudControlException:
+            return
 
         preexisting_account = find_user_by_email(beneficiary_pre_subscription.email)
 
