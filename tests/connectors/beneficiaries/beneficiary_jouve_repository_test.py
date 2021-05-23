@@ -11,6 +11,10 @@ from pcapi.connectors.beneficiaries.jouve_backend import BeneficiaryJouveBackend
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
 
 
+# Required by the feature flag...
+pytestmark = pytest.mark.usefixtures("db_session")
+
+
 def get_application_by_detail_response(application_id: int = 2, birth_date: str = "09/08/1995", **kwargs) -> dict:
     return {
         "id": application_id,

@@ -8,6 +8,8 @@ import requests
 from pcapi import settings
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
 from pcapi.models import BeneficiaryImportSources
+from pcapi.models.feature import FeatureToggle
+from pcapi.repository import feature_queries
 
 
 logger = logging.getLogger(__name__)
@@ -114,6 +116,12 @@ def get_threshold_fraud_detetction_item(content: dict, key: str, threshold: int)
 
 
 def get_fraud_fields(content: dict) -> dict:
+    if not feature_queries.is_active(FeatureToggle.ENABLE_IDCHECK_FRAUD_CONTROLS):
+        return {
+            "strict_controls": [],
+            "non_blocking_controls": [],
+        }
+
     return {
         "strict_controls": [
             get_boolean_fraud_detetction_item(content, "posteCodeCtrl"),
