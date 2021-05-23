@@ -11,5 +11,6 @@ export default class User {
     this.publicName = user.publicName
     this.wallet_balance = user.wallet_balance
     this.deposit_expiration_date = user.deposit_expiration_date
+    this.isBeneficiary = user.isBeneficiary === undefined ? true : user.isBeneficiary
   }
 }

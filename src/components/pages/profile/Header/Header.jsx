@@ -22,9 +22,11 @@ const Header = ({ user }) => {
       <div className="ph-wallet-balance">
         {`${walletBalance}${NON_BREAKING_SPACE}€`}
       </div>
-      <div className="ph-end-validity-date">
-        {`crédit valable jusqu’au ${formattedExpirationDate}`}
-      </div>
+      {user.isBeneficiary && (
+        <div className="ph-end-validity-date">
+          {`crédit valable jusqu’au ${formattedExpirationDate}`}
+        </div>
+      )}
     </section>
   )
 }

@@ -6,11 +6,12 @@ import Header from '../Header/Header'
 import RemainingCredit from '../RemainingCredit/RemainingCredit'
 import User from '../ValueObjects/User'
 import ListLinks from '../ListLinks/ListLinks'
+import NativeApplicationAdvertisement from '../NativeApplicationAdvertisement/NativeApplicationAdvertisement'
 
 const MainView = ({ user, historyPush }) => (
   <main className="pf-container">
     <Header user={user} />
-    <RemainingCredit user={user} />
+    {user.isBeneficiary ? <RemainingCredit user={user} /> : <NativeApplicationAdvertisement />}
     <ListLinks historyPush={historyPush} />
     <section className="pf-section">
       <div className="mv-app-version">

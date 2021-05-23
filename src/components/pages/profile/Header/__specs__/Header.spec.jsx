@@ -30,4 +30,14 @@ describe('profileHeader', () => {
     expect(walletBalance).toHaveLength(1)
     expect(endValidityDate).toHaveLength(1)
   })
+
+  it('should not end validity date when user is not a beneficiary', () => {
+    // When
+    props.user = new User({ isBeneficiary: false })
+    const wrapper = shallow(<Header {...props} />)
+
+    // Then
+    const endValidityDate = wrapper.find('.ph-end-validity-date')
+    expect(endValidityDate).toHaveLength(0)
+  })
 })
