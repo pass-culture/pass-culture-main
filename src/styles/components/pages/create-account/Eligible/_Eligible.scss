@@ -30,6 +30,13 @@
     font-weight: 500;
   }
 
+  .information-text {
+    color: $white;
+    font-size: rem(16px);
+    margin: rem(15px) rem(25px);
+    padding: rem(10px);
+  }
+
   .buttons-container {
     flex: 1;
     width: 100%;

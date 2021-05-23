@@ -7,7 +7,6 @@ import { IcoNavProfile } from '../layout/NavBar/Icons/IcoNavProfile'
 import { IcoNavSearch } from '../layout/NavBar/Icons/IcoNavSearch'
 import ActivationContainer from '../pages/activation/ActivationContainer'
 import BetaPageContainer from '../pages/beta-page/BetaPageContainer'
-import EligibilityCheckContainer from '../pages/create-account/EligibilityCheckContainer'
 import Debug from '../pages/debug/DebugPage'
 import ForgotPassword from '../pages/forgot-password/ForgotPassword'
 import HomeContainer from '../pages/home/HomeContainer'
@@ -22,6 +21,7 @@ import TutorialsContainer from '../pages/tutorials/TutorialsContainer'
 import TypeFormContainer from '../pages/typeform/TypeformContainer'
 import DiscoveryRedirectionToHome from '../pages/discovery/DiscoveryRedirectionToHome'
 import EmailChange from '../pages/email-change/EmailChange'
+import SignUpFromNativeApp from '../pages/create-account/SignUpFromNativeApp/SignUpFromNativeApp'
 
 let routes = [
   {
@@ -54,10 +54,10 @@ let routes = [
     title: 'Inscription',
   },
   {
-    component: EligibilityCheckContainer,
+    component: SignUpFromNativeApp,
     exact: true,
     path: '/verification-eligibilite',
-    title: 'Eligibilité',
+    title: "Télécharge l'application",
   },
   {
     component: TutorialsContainer,
