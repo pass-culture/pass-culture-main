@@ -30,6 +30,7 @@ from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.models import ThingType
 from pcapi.repository import repository
+from pcapi.utils.date import utc_datetime_to_department_timezone
 
 
 class PaginatedOfferForFiltersTest:
@@ -1074,8 +1075,8 @@ class PaginatedOfferForFiltersTest:
                 offers_per_page=5,
                 page=1,
                 status="ACTIVE",
-                period_beginning_date=in_six_days_beginning.isoformat(),
-                period_ending_date=in_six_days_ending.isoformat(),
+                period_beginning_date=utc_datetime_to_department_timezone(in_six_days_beginning, "75").isoformat(),
+                period_ending_date=utc_datetime_to_department_timezone(in_six_days_ending, "75").isoformat(),
             )
 
             # then
