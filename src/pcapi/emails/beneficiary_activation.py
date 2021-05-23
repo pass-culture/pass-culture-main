@@ -34,6 +34,7 @@ def get_activation_email_data_for_native(user: users_models.User, token: users_m
     return {
         "Mj-TemplateID": 2015423,
         "Mj-TemplateLanguage": True,
+        "Mj-campaign": "confirmation-compte",
         "Mj-trackclick": 1,
         "Vars": {
             "nativeAppLink": email_confirmation_link,
@@ -50,6 +51,7 @@ def get_accepted_as_beneficiary_email_data() -> dict:
     return {
         "Mj-TemplateID": 2016025,
         "Mj-TemplateLanguage": True,
+        "Mj-campaign": "confirmation-credit",
         "Vars": {
             "depositAmount": int(deposit_amount),
         },

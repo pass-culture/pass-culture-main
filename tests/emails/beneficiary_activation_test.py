@@ -93,6 +93,7 @@ class GetAcceptedAsBeneficiaryEmailTest:
         assert email_data == {
             "Mj-TemplateID": 2016025,
             "Mj-TemplateLanguage": True,
+            "Mj-campaign": "confirmation-credit",
             "Vars": {
                 "depositAmount": 300,
             },
