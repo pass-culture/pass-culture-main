@@ -1,3 +1,4 @@
+import dataclasses
 import logging
 
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
@@ -23,8 +24,8 @@ def validate_fraud(beneficiary_pre_subscription: BeneficiaryPreSubscription) -> 
         extra_log = {
             "email": beneficiary_pre_subscription.email,
             "applicationId": beneficiary_pre_subscription.application_id,
-            "okControls": ok_controls,
-            "koControls": ko_controls,
+            "okControls": [dataclasses.asdict(control) for control in ok_controls],
+            "koControls": [dataclasses.asdict(control) for control in ko_controls],
         }
 
         if fraud_detected:
