@@ -86,7 +86,6 @@ class BeneficiaryJouveBackend:
 
     def _fraud_validation(self, content, application_id):
         controls = {
-            "birth_location_ok": content.get("birthLocationCtrl", "OK").upper() != "KO",
             "poste_code_ok": content.get("posteCodeCtrl", "OK").upper() != "KO",
             "service_code_ok": content.get("serviceCodeCtrl", "OK").upper() != "KO",
         }

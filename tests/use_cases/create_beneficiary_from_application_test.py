@@ -4,6 +4,7 @@ from unittest.mock import patch
 from freezegun import freeze_time
 import pytest
 
+from pcapi.connectors.beneficiaries.jouve_backend import FraudControlException
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users import api as users_api
@@ -42,6 +43,11 @@ class FakeBeneficiaryJouveBackend:
             postal_code=f"{application_id:02d}123",
             **PRE_SUBSCRIPTION_BASE_DATA,
         )
+
+
+class FakeFraudulentBeneficiaryJouveBackend:
+    def get_application_by(self, application_id: int) -> BeneficiaryPreSubscription:
+        raise FraudControlException()
 
 
 @override_features(FORCE_PHONE_VALIDATION=False)
@@ -198,28 +204,22 @@ def test_cannot_save_beneficiary_if_email_is_already_taken(app):
 
 @patch(
     "pcapi.settings.JOUVE_APPLICATION_BACKEND",
-    "tests.use_cases.create_beneficiary_from_application_test.FakeBeneficiaryJouveBackend",
+    "tests.use_cases.create_beneficiary_from_application_test.FakeFraudulentBeneficiaryJouveBackend",
 )
 @pytest.mark.usefixtures("db_session")
 def test_cannot_save_beneficiary_if_fraud_is_detected(app):
     # Given
     application_id = 35
-    email = "rennes@example.org"
-    user = create_user(email=email, idx=4)
-    repository.save(user)
 
     # When
     create_beneficiary_from_application.execute(application_id)
 
     # Then
-    user = User.query.one()
-    assert user.id == 4
+    users_count = User.query.count()
+    assert users_count == 0
 
-    beneficiary_import = BeneficiaryImport.query.one()
-    assert beneficiary_import.currentStatus == ImportStatus.REJECTED
-    assert beneficiary_import.applicationId == application_id
-    assert beneficiary_import.beneficiary is None
-    assert beneficiary_import.detail == f"Email {email} is already taken."
+    beneficiary_import = BeneficiaryImport.query.count()
+    assert beneficiary_import == 0
 
     assert push_testing.requests == []
 

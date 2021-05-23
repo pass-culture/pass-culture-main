@@ -108,8 +108,10 @@ class FraudControlsTest:
         mocked_requests_post.side_effect = self._generate_requests_mocks(
             get_application_by_detail_response(birthLocationCtrl="KO")
         )
-        with pytest.raises(FraudControlException):
-            BeneficiaryJouveBackend().get_application_by(5)
+
+        beneficiary_pre_subscription = BeneficiaryJouveBackend().get_application_by(5)
+
+        assert isinstance(beneficiary_pre_subscription, BeneficiaryPreSubscription)
 
     @patch("pcapi.connectors.beneficiaries.jouve_backend.requests.post")
     def test_reject_application_when_post_code_ko(self, mocked_requests_post):
