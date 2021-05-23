@@ -38,6 +38,9 @@ export const {
   SENTRY_SERVER_URL,
   TYPEFORM_URL_CULTURAL_PRACTICES_POLL,
   URL_FOR_MAINTENANCE,
+  ANDROID_APP_ID,
+  IOS_APP_STORE_ID,
+  IOS_APP_ID,
 } = process.env
 
 export const APP_VERSION = version
