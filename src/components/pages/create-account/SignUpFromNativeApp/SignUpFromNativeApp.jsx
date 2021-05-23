@@ -1,9 +1,14 @@
 import React, { useCallback } from 'react'
-import { APP_NATIVE_DYNAMIC_LINK } from '../../../../utils/config'
+import {
+  APP_NATIVE_DYNAMIC_LINK,
+  ANDROID_APP_ID,
+  IOS_APP_STORE_ID,
+  IOS_APP_ID,
+} from '../../../../utils/config'
 
 import { Animation } from '../Animation/Animation'
 
-const setEmailUrl = `${APP_NATIVE_DYNAMIC_LINK}/set-email`
+const setEmailUrl = `${APP_NATIVE_DYNAMIC_LINK}?link=https://passcultureapptesting.page.link/set-email&apn=${ANDROID_APP_ID}&isi=${IOS_APP_STORE_ID}&ibi=${IOS_APP_ID}&ofl=https://pass.culture.fr/nosapplications/`
 
 const SignUpFromNativeApp = () => {
   const handleClick = useCallback(() => window.open(setEmailUrl, '_blank'), [])
