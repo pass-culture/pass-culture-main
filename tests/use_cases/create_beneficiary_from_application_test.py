@@ -314,10 +314,12 @@ def test_calls_send_rejection_mail_with_validation_error(
 @patch("pcapi.use_cases.create_beneficiary_from_application.send_rejection_email_to_beneficiary_pre_subscription")
 @patch("pcapi.use_cases.create_beneficiary_from_application.send_activation_email")
 @patch("pcapi.use_cases.create_beneficiary_from_application.send_accepted_as_beneficiary_email")
+@patch("pcapi.use_cases.create_beneficiary_from_application.send_fraud_suspicion_email")
 @patch("pcapi.connectors.beneficiaries.jouve_backend.BeneficiaryJouveBackend._get_application_content")
 @pytest.mark.usefixtures("db_session")
 def test_cannot_save_beneficiary_when_fraud_is_detected(
     mocked_get_content,
+    mocked_send_fraud_email,
     mocked_send_rejection_email_to_beneficiary_pre_subscription,
     mocked_send_activation_email,
     mocked_send_accepted_as_beneficiary_email,
@@ -357,3 +359,54 @@ def test_cannot_save_beneficiary_when_fraud_is_detected(
     mocked_send_activation_email.assert_not_called()
     mocked_send_accepted_as_beneficiary_email.assert_not_called()
     mocked_send_rejection_email_to_beneficiary_pre_subscription.assert_not_called()
+    mocked_send_fraud_email.assert_not_called()
+
+
+@patch("pcapi.use_cases.create_beneficiary_from_application.validate")
+@patch("pcapi.use_cases.create_beneficiary_from_application.send_rejection_email_to_beneficiary_pre_subscription")
+@patch("pcapi.use_cases.create_beneficiary_from_application.send_activation_email")
+@patch("pcapi.use_cases.create_beneficiary_from_application.send_accepted_as_beneficiary_email")
+@patch("pcapi.use_cases.create_beneficiary_from_application.send_fraud_suspicion_email")
+@patch("pcapi.connectors.beneficiaries.jouve_backend.BeneficiaryJouveBackend._get_application_content")
+@pytest.mark.usefixtures("db_session")
+def test_doesnt_save_beneficiary_when_suspicious(
+    mocked_get_content,
+    mocked_send_fraud_email,
+    mocked_send_rejection_email_to_beneficiary_pre_subscription,
+    mocked_send_activation_email,
+    mocked_send_accepted_as_beneficiary_email,
+    stubed_validate,
+    app,
+):
+    # Given
+    application_id = 35
+    mocked_get_content.return_value = {
+        "firstName": "first_name",
+        "lastName": "last_name",
+        "email": "some@email.com",
+        "activity": "some activity",
+        "address": "some address",
+        "id": application_id,
+        "city": "some city",
+        "gender": "M",
+        "birthDate": "10/25/2003",
+        "phoneNumber": "°33607080900",
+        "postalCode": "77100",
+        "posteCodeCtrl": "OK",
+        "serviceCodeCtrl": "OK",
+        "birthLocationCtrl": "OK",
+        "creatorCtrl": "OK",
+        "bodyBirthDateLevel": "20",
+        "bodyNameLevel": "100",
+    }
+
+    # When
+    create_beneficiary_from_application.execute(application_id)
+
+    # Then
+    assert BeneficiaryImport.query.count() == 0
+
+    mocked_send_activation_email.assert_not_called()
+    mocked_send_accepted_as_beneficiary_email.assert_not_called()
+    mocked_send_rejection_email_to_beneficiary_pre_subscription.assert_not_called()
+    mocked_send_fraud_email.assert_called()

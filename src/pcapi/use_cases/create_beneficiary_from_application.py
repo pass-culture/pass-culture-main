@@ -10,6 +10,7 @@ from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_frau
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_validator import validate
 from pcapi.domain.user_emails import send_accepted_as_beneficiary_email
 from pcapi.domain.user_emails import send_activation_email
+from pcapi.domain.user_emails import send_fraud_suspicion_email
 from pcapi.domain.user_emails import send_rejection_email_to_beneficiary_pre_subscription
 from pcapi.infrastructure.repository.beneficiary.beneficiary_sql_repository import BeneficiarySQLRepository
 from pcapi.repository.user_queries import find_user_by_email
@@ -35,7 +36,7 @@ class CreateBeneficiaryFromApplication:
                 validate_fraud(beneficiary_pre_subscription)
 
         except SuspiciousFraudDetected:
-            pass
+            send_fraud_suspicion_email(beneficiary_pre_subscription)
         except FraudDetected as cant_register_beneficiary_exception:
             # detail column cannot contain more than 255 characters
             detail = f"Fraud controls triggered: {cant_register_beneficiary_exception}"[:255]

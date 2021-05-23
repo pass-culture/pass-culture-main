@@ -22,6 +22,7 @@ from pcapi.emails.beneficiary_pre_subscription_rejected import (
     make_not_eligible_beneficiary_pre_subscription_rejected_data,
 )
 from pcapi.emails.beneficiary_pre_subscription_rejected import make_duplicate_beneficiary_pre_subscription_rejected_data
+from pcapi.emails.beneficiary_pre_subscription_rejected import make_fraud_suspicion_data
 from pcapi.emails.beneficiary_soon_to_be_expired_bookings import (
     build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary,
 )
@@ -212,6 +213,13 @@ def send_rejection_email_to_beneficiary_pre_subscription(
         data = make_not_eligible_beneficiary_pre_subscription_rejected_data()
     else:
         data = make_duplicate_beneficiary_pre_subscription_rejected_data()
+    mails.send(recipients=[beneficiary_pre_subscription.email], data=data)
+
+
+def send_fraud_suspicion_email(
+    beneficiary_pre_subscription: BeneficiaryPreSubscription,
+) -> None:
+    data = make_fraud_suspicion_data()
     mails.send(recipients=[beneficiary_pre_subscription.email], data=data)
 
 
