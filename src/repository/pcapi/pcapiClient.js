@@ -1,8 +1,8 @@
-import { API_URL } from 'utils/config'
-
+import { API_URL, URL_FOR_MAINTENANCE } from 'utils/config'
 export const HTTP_STATUS = {
   NO_CONTENT: 204,
   FORBIDDEN: 403,
+  SERVICE_UNAVAILABLE: 503,
 }
 const GET_HTTP_METHOD = 'GET'
 const DELETE_HTTP_METHOD = 'DELETE'
@@ -27,6 +27,9 @@ const fetchWithErrorHandler = async (path, options) => {
   const response = await fetch(buildUrl(path), options)
   const results = response.status !== HTTP_STATUS.NO_CONTENT ? await response.json() : null
   if (!response.ok) {
+    if (response.status === HTTP_STATUS.SERVICE_UNAVAILABLE) {
+      window.location.href = URL_FOR_MAINTENANCE
+    }
     return Promise.reject(results ? { errors: results, status: response.status } : null)
   }
   return Promise.resolve(results)

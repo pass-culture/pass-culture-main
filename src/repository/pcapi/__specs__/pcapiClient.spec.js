@@ -1,8 +1,14 @@
 import fetch from 'jest-fetch-mock'
 
 import { client } from 'repository/pcapi/pcapiClient'
+import { API_URL, URL_FOR_MAINTENANCE } from 'utils/config'
 
-import { API_URL } from '../../../utils/config'
+delete window.location
+window.location = {}
+const setHrefSpy = jest.fn()
+Object.defineProperty(window.location, 'href', {
+  set: setHrefSpy,
+})
 
 describe('pcapiClient', () => {
   beforeEach(() => {
@@ -76,6 +82,20 @@ describe('pcapiClient', () => {
         errors: 'Forbidden',
         status: 403,
       })
+    })
+
+    it('should redirect to maintenance page when status is 503', async () => {
+      // Given
+      fetch.mockResponse(JSON.stringify('Service Unavailable'), { status: 503 })
+
+      // When
+      await expect(client.get('/bookings/pro')).rejects.toStrictEqual({
+        errors: 'Service Unavailable',
+        status: 503,
+      })
+
+      // Then
+      expect(setHrefSpy).toHaveBeenCalledWith(URL_FOR_MAINTENANCE)
     })
   })
 
