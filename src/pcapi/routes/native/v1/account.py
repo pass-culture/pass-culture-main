@@ -104,6 +104,14 @@ def create_account(body: serializers.AccountRequest) -> None:
         raise ApiErrors({"dateOfBirth": "The birthdate is invalid"})
 
 
+@blueprint.native_v1.route("/account/has_completed_id_check", methods=["POST"])
+@spectree_serialize(api=blueprint.api, on_success_status=204)
+@authenticated_user_required
+def has_completed_id_check(user: User) -> None:
+    user.hasCompletedIdCheck = True
+    repository.save(user)
+
+
 @blueprint.native_v1.route("/resend_email_validation", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 def resend_email_validation(body: serializers.ResendEmailValidationRequest) -> None:
@@ -133,6 +141,11 @@ def get_id_check_token(user: User) -> serializers.GetIdCheckTokenResponse:
         message = f"Tu as fait trop de demandes pour le moment, réessaye dans {settings.ID_CHECK_TOKEN_LIFE_TIME_HOURS} heures"
         raise ApiErrors(
             {"code": "TOO_MANY_ID_CHECK_TOKEN", "message": message},
+            status_code=400,
+        )
+    except exceptions.IdCheckAlreadyCompleted:
+        raise ApiErrors(
+            {"code": "ID_CHECK_ALREADY_COMPLETED", "message": "Tu as déjà déposé un dossier, il est en cours d'étude."},
             status_code=400,
         )
 

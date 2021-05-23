@@ -216,7 +216,10 @@ def send_rejection_email_to_beneficiary_pre_subscription(
 
 
 def send_newly_eligible_user_email(user: User) -> bool:
-    token = users_api.create_id_check_token(user)
+    try:
+        token = users_api.create_id_check_token(user)
+    except Exception:  # pylint: disable=broad-except
+        token = None
     if not token:
         logger.warning("Could not create token for user %s to notify its elibility", user.id)
         return False

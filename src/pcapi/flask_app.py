@@ -119,6 +119,7 @@ def log_request_details(response: flask.wrappers.Response) -> flask.wrappers.Res
         "queryParams": request.query_string.decode("UTF-8"),
         "duration": duration,
         "size": response.headers.get("Content-Length", type=int),
+        "deviceId": response.headers.get("device-id"),
     }
 
     logger.info("HTTP request at %s", request.path, extra=extra)

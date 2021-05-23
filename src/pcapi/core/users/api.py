@@ -106,6 +106,9 @@ def create_id_check_token(user: User) -> Optional[Token]:
     if alive_token_count >= settings.ID_CHECK_MAX_ALIVE_TOKEN:
         raise exceptions.IdCheckTokenLimitReached(alive_token_count)
 
+    if user.hasCompletedIdCheck:
+        raise exceptions.IdCheckAlreadyCompleted()
+
     return generate_and_save_token(user, TokenType.ID_CHECK, constants.ID_CHECK_TOKEN_LIFE_TIME)
 
 

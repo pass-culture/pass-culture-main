@@ -98,6 +98,7 @@ class UserProfileResponse(BaseModel):
     eligibility_start_datetime: Optional[datetime.datetime]
     email: str
     firstName: Optional[str]
+    hasCompletedIdCheck: Optional[bool]
     lastName: Optional[str]
     subscriptions: NotificationSubscriptions  # if we send user.notification_subscriptions, pydantic will take the column and not the property
     isBeneficiary: bool

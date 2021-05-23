@@ -136,7 +136,7 @@ def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
 
     try:
         id_check_token = users_api.create_id_check_token(user)
-    except users_exceptions.IdCheckTokenLimitReached:
+    except Exception:  # pylint: disable=broad-except:
         id_check_token = None
 
     response = ValidateEmailResponse(

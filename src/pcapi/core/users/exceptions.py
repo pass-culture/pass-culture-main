@@ -68,3 +68,7 @@ class ExpiredCode(NotValidCode):
 
 class IdCheckTokenLimitReached(Exception):
     pass
+
+
+class IdCheckAlreadyCompleted(Exception):
+    pass
