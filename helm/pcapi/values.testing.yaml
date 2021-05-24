@@ -288,7 +288,6 @@ configmap:
   FIREBASE_DYNAMIC_LINKS_URL: https://passcultureapptesting.page.link
   NATIVE_APP_URL: https://app-native.testing.internal-passculture.app
   GCP_BUCKET_NAME: passculture-metier-ehp-testing-assets
-  ID_CHECK_MAX_ALIVE_TOKEN: 999
   GUNICORN_PORT: 5000
   GUNICORN_MAX_REQUESTS: 3000
   GUNICORN_MAX_REQUESTS_JITTER: 10
