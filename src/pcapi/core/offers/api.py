@@ -664,7 +664,7 @@ def set_offer_status_based_on_fraud_criteria(offer: Offer) -> OfferValidationSta
     else:
         status = OfferValidationStatus.APPROVED
 
-    logger.info("Computed offer validation", extra={"offer": offer.id, "score": score, "status": status})
+    logger.info("Computed offer validation", extra={"offer": offer.id, "score": score, "status": status.value})
     return status
 
 
