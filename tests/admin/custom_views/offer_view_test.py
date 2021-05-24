@@ -15,6 +15,7 @@ import pcapi.core.users.factories as users_factories
 from pcapi.models import Offer
 
 from tests.conftest import TestClient
+from tests.conftest import clean_database
 
 
 class BeneficiaryUserViewTest:
@@ -386,3 +387,43 @@ class OfferValidationViewTest:
         assert offer.validation == OfferValidationStatus.REJECTED
         assert offer.isActive is False
         assert offer.lastValidationDate == datetime.datetime(2020, 11, 17, 15)
+
+
+class GetOfferValidationViewTest:
+    @clean_database
+    @patch("pcapi.core.offerers.models.get_offerer_legal_category")
+    def test_offer_validation_legal_category_api_calls(self, mocked_get_offerer_legal_category, app):
+        config_yaml = """
+                    minimum_score: 0.6
+                    rules:
+                       - name: "check offer name"
+                         factor: 0
+                         conditions:
+                           - model: "Offerer"
+                             attribute: "legal_category"
+                             condition:
+                                operator: "=="
+                                comparated: "5202"
+                    """
+        import_offer_validation_config(config_yaml)
+        users_factories.UserFactory(email="admin@example.com", isAdmin=True)
+        offerer = offers_factories.OffererFactory()
+        offers_factories.OfferFactory(
+            validation=OfferValidationStatus.PENDING, isActive=False, venue__managingOfferer=offerer
+        )
+        offers_factories.OfferFactory(
+            validation=OfferValidationStatus.PENDING, isActive=False, venue__managingOfferer=offerer
+        )
+        offers_factories.OfferFactory(
+            validation=OfferValidationStatus.PENDING, isActive=False, venue__managingOfferer=offerer
+        )
+        client = TestClient(app.test_client()).with_auth("admin@example.com")
+        mocked_get_offerer_legal_category.return_value = {
+            "legal_category_code": 5202,
+            "legal_category_label": "Société en nom collectif",
+        }
+
+        response = client.get("/pc/back-office/validation/")
+
+        assert response.status_code == 200
+        assert mocked_get_offerer_legal_category.call_count == 1

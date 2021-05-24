@@ -1,9 +1,7 @@
-from unittest.mock import MagicMock
 from unittest.mock import patch
 
 import pytest
 
-# pylint:disable=import-error
 from pcapi.connectors.api_entreprises import ApiEntrepriseException
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
@@ -119,10 +117,14 @@ class OffererLegalCategoryTest:
 
         assert offerer.legal_category == "5202"
 
-    @patch("pcapi.connectors.api_entreprises.requests.get")
+    @patch("pcapi.core.offerers.models.get_offerer_legal_category")
     @patch("pcapi.settings.IS_PROD", True)
-    def test_offerer_legal_category_when_get_legal_category_raise_error_on_prod_env(self, requests_get):
-        requests_get.return_value = MagicMock(status_code=400)
+    def test_offerer_legal_category_when_get_legal_category_raise_error_on_prod_env(
+        self, mocked_get_offerer_legal_category
+    ):
+        mocked_get_offerer_legal_category.side_effect = [
+            ApiEntrepriseException("Error getting API entreprise DATA for SIREN")
+        ]
         offerer = offers_factories.OffererFactory()
 
         with pytest.raises(ApiEntrepriseException) as error:
