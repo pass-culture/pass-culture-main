@@ -4,7 +4,7 @@ import { Route, Switch, useRouteMatch } from 'react-router-dom'
 import NotFound from 'components/pages/Errors/NotFound/NotFound'
 
 import OffererDetailsContainer from './OffererDetails/OffererDetailsContainer'
-import VenueLayout from './Venue/VenueLayout'
+import VenueV1Layout from './VenueV1/VenueLayout'
 
 const OffererDetailsLayout = () => {
   const match = useRouteMatch()
@@ -17,7 +17,7 @@ const OffererDetailsLayout = () => {
         <OffererDetailsContainer />
       </Route>
       <Route path={`${match.path}/lieux`}>
-        <VenueLayout />
+        <VenueV1Layout />
       </Route>
       <Route>
         <NotFound />
