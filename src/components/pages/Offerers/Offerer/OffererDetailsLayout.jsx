@@ -1,13 +1,17 @@
 import React from 'react'
 import { Route, Switch, useRouteMatch } from 'react-router-dom'
 
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import NotFound from 'components/pages/Errors/NotFound/NotFound'
 
 import OffererDetailsContainer from './OffererDetails/OffererDetailsContainer'
+import VenueLayout from './Venue/VenueLayout'
 import VenueV1Layout from './VenueV1/VenueLayout'
 
 const OffererDetailsLayout = () => {
   const match = useRouteMatch()
+  const isVenueV2Enabled = useActiveFeature('ENABLE_NEW_VENUE_PAGES')
+
   return (
     <Switch>
       <Route
@@ -17,7 +21,7 @@ const OffererDetailsLayout = () => {
         <OffererDetailsContainer />
       </Route>
       <Route path={`${match.path}/lieux`}>
-        <VenueV1Layout />
+        {isVenueV2Enabled ? <VenueLayout /> : <VenueV1Layout />}
       </Route>
       <Route>
         <NotFound />
