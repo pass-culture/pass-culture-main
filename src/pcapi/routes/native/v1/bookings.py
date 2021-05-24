@@ -37,6 +37,7 @@ from . import blueprint
 def book_offer(user: User, body: BookOfferRequest) -> BookOfferResponse:
     stock = Stock.query.get(body.stock_id)
     if not stock:
+        logger.info("Could not book offer: stock does not exist", extra={"stock_id": body.stock_id})
         raise ApiErrors({"stock": "stock introuvable"}, status_code=400)
 
     try:
@@ -47,6 +48,7 @@ def book_offer(user: User, body: BookOfferRequest) -> BookOfferResponse:
         )
 
     except StockDoesNotExist:
+        logger.info("Could not book offer: stock does not exist", extra={"stock_id": body.stock_id})
         raise ApiErrors({"stock": "stock introuvable"}, status_code=400)
 
     except (
@@ -54,12 +56,15 @@ def book_offer(user: User, body: BookOfferRequest) -> BookOfferResponse:
         exceptions.DigitalExpenseLimitHasBeenReached,
         exceptions.PhysicalExpenseLimitHasBeenReached,
     ):
+        logger.info("Could not book offer: insufficient credit", extra={"stock_id": body.stock_id})
         raise ApiErrors({"code": "INSUFFICIENT_CREDIT"})
 
     except exceptions.OfferIsAlreadyBooked:
+        logger.info("Could not book offer: offer already booked", extra={"stock_id": body.stock_id})
         raise ApiErrors({"code": "ALREADY_BOOKED"})
 
     except exceptions.StockIsNotBookable:
+        logger.info("Could not book offer: stock is not bookable", extra={"stock_id": body.stock_id})
         raise ApiErrors({"code": "STOCK_NOT_BOOKABLE"})
 
     return BookOfferResponse(bookingId=booking.id)
