@@ -321,6 +321,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin):
         default=OfferValidationStatus.APPROVED,
         # changing the server_default will cost an UPDATE migration on all existing null rows
         server_default="APPROVED",
+        index=True,
     )
 
     authorId = Column(BigInteger, ForeignKey("user.id"), nullable=True)
