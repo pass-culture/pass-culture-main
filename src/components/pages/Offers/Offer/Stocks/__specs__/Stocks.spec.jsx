@@ -1953,12 +1953,17 @@ describe('stocks page', () => {
       expect(successMessage).toBeInTheDocument()
     })
 
-    it('should redirect to confirmation page after validating of stocks', async () => {
+    it('should redirect to confirmation page after stocks validation', async () => {
       // Given
-      const offer = offerFactory({ name: 'mon offre', id: 'AG3A', status: 'DRAFT' })
-      loadFakeApiOffer(offer)
+      const offerDraftStatus = offerFactory({ name: 'mon offre', id: 'AG3A', status: 'DRAFT' })
+      const offerApprovedStatus = offerFactory({
+        name: 'mon offre',
+        id: 'AG3A',
+        status: 'APPROVED',
+      })
+      loadFakeApiOffer(offerApprovedStatus).mockResolvedValueOnce(offerDraftStatus)
       loadFakeApiStocks([])
-      bulkFakeApiCreateOrEditStock({ id: 'MEFA' })
+      bulkFakeApiCreateOrEditStock({ id: 'createdStock' })
       await renderOffers(props, store)
       fireEvent.click(screen.getByText('Ajouter un stock', { selector: 'button' }))
       fireEvent.change(screen.getByLabelText('Prix'), { target: { value: 20 } })
@@ -1968,6 +1973,26 @@ describe('stocks page', () => {
 
       // Then
       expect(await screen.findByText('Offre créée !', { selectof: 'h2' })).toBeInTheDocument()
+    })
+
+    it('should redirect to confirmation page with pending message when offer is pending validation', async () => {
+      // Given
+      const offerDraftStatus = offerFactory({ name: 'mon offre', id: 'AG3A', status: 'DRAFT' })
+      const offerPendingStatus = offerFactory({ name: 'mon offre', id: 'AG3A', status: 'PENDING' })
+      loadFakeApiOffer(offerPendingStatus).mockResolvedValueOnce(offerDraftStatus)
+      loadFakeApiStocks([])
+      bulkFakeApiCreateOrEditStock({ id: 'createdStock' })
+      await renderOffers(props, store)
+      fireEvent.click(screen.getByText('Ajouter un stock', { selector: 'button' }))
+      fireEvent.change(screen.getByLabelText('Prix'), { target: { value: 20 } })
+
+      // When
+      fireEvent.click(screen.getByText('Valider et créer l’offre', { selector: 'button' }))
+
+      // Then
+      expect(
+        await screen.findByText('Offre en cours de validation', { selectof: 'h2' })
+      ).toBeInTheDocument()
     })
 
     describe('event offer', () => {

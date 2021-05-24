@@ -5,13 +5,13 @@ import { Redirect } from 'react-router'
 import { ReactComponent as PendingIcon } from 'components/pages/Offers/Offer/Confirmation/assets/pending.svg'
 import { ReactComponent as ValidateIcon } from 'components/pages/Offers/Offer/Confirmation/assets/validate.svg'
 import OfferPreviewLink from 'components/pages/Offers/Offer/OfferPreviewLink/OfferPreviewLink'
-import { OFFER_STATUS_DRAFT, OFFER_STATUS_PENDING } from 'components/pages/Offers/Offers/_constants'
+import { OFFER_STATUS_PENDING } from 'components/pages/Offers/Offers/_constants'
 
 import { queryParamsFromOfferer } from '../../utils/queryParamsFromOfferer'
 
-const Confirmation = ({ location, offer }) => {
-  const isPendingOffer = offer.status === OFFER_STATUS_PENDING || offer.name.includes('PENDING')
-  if (![OFFER_STATUS_DRAFT, OFFER_STATUS_PENDING].includes(offer.status)) {
+const Confirmation = ({ isCreatingOffer, location, offer }) => {
+  const isPendingOffer = offer.status === OFFER_STATUS_PENDING
+  if (!isCreatingOffer && !isPendingOffer) {
     return <Redirect to={`/offres/${offer.id}/edition`} />
   }
 
@@ -69,6 +69,7 @@ const Confirmation = ({ location, offer }) => {
 }
 
 Confirmation.propTypes = {
+  isCreatingOffer: PropTypes.bool.isRequired,
   location: PropTypes.shape().isRequired,
   offer: PropTypes.shape().isRequired,
 }

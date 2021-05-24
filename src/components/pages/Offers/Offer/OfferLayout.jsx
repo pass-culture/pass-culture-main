@@ -28,18 +28,18 @@ const OfferLayout = ({ location, match }) => {
   const [isCreatingOffer, setIsCreatingOffer] = useState(true)
 
   const loadOffer = useCallback(
-    async offerId => {
+    async (offerId, isCreatingOffer = false) => {
       const existingOffer = await pcapi.loadOffer(offerId)
       setOffer(existingOffer)
-      setIsCreatingOffer(existingOffer.status === OFFER_STATUS_DRAFT)
+      setIsCreatingOffer(isCreatingOffer || existingOffer.status === OFFER_STATUS_DRAFT)
     },
     [setOffer]
   )
 
-  const reloadOffer = useCallback(async () => (offer.id ? loadOffer(offer.id) : false), [
-    loadOffer,
-    offer,
-  ])
+  const reloadOffer = useCallback(
+    async (isCreatingOffer = false) => (offer.id ? loadOffer(offer.id, isCreatingOffer) : false),
+    [loadOffer, offer]
+  )
 
   const shouldBlockNavigation = useCallback(
     nextLocation => {
@@ -147,6 +147,7 @@ const OfferLayout = ({ location, match }) => {
             path={`${match.url}/confirmation`}
           >
             <ConfirmationContainer
+              isCreatingOffer={isCreatingOffer}
               location={location}
               offer={offer}
             />
