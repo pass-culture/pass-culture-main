@@ -1,120 +1,151 @@
-import { shallow } from 'enzyme'
+import '@testing-library/jest-dom'
+import { act, render, screen } from '@testing-library/react'
 import React from 'react'
-import { Route } from 'react-router-dom'
+import { Provider } from 'react-redux'
+import { MemoryRouter } from 'react-router'
 
-import NotFound from 'components/pages/Errors/NotFound/NotFound'
+import * as pcapi from 'repository/pcapi/pcapi'
+import { configureTestStore } from 'store/testUtils'
 
 import FeaturedRoute from '../FeaturedRoute'
 
-const Foo = () => <div />
+jest.mock('repository/pcapi/pcapi', () => ({
+  loadFeatures: jest.fn(),
+}))
+
+const testActiveFeature = {
+  description: 'Active testing feature',
+  id: 'FAKEID',
+  isActive: true,
+  name: 'TEST_FEATURE',
+  nameKey: 'TEST_FEATURE',
+}
+
+const testInactiveFeature = {
+  description: 'Active testing feature',
+  id: 'FAKEID',
+  isActive: false,
+  name: 'TEST_FEATURE',
+  nameKey: 'TEST_FEATURE',
+}
+
+const Foo = () => (
+  <div>
+    {"I'm foo component"}
+  </div>
+)
+
+const renderFeatureRoute = async (props, store) => {
+  const routePath = '/test/path'
+
+  await act(async () => {
+    await render(
+      <Provider store={store}>
+        <MemoryRouter initialEntries={[{ pathname: routePath }]}>
+          <FeaturedRoute
+            path={routePath}
+            {...props}
+          />
+        </MemoryRouter>
+      </Provider>
+    )
+  })
+}
 
 describe('src | components | router | FeaturedRoute', () => {
+  let store
+
+  beforeEach(() => {
+    store = configureTestStore()
+    pcapi.loadFeatures.mockResolvedValue([])
+  })
+
   describe('when features are not yet loaded', () => {
-    it('should render null', () => {
+    beforeEach(async () => {
       // given
+      pcapi.loadFeatures.mockImplementation(() => {
+        return new Promise(resolve => setTimeout(() => resolve([testActiveFeature]), 2000))
+      })
+
       const props = {
-        areFeaturesLoaded: false,
         component: Foo,
-        isRouteDisabled: false,
-        requestGetFeatures: jest.fn(),
+        featureName: 'TEST_FEATURE',
       }
 
       // when
-      const wrapper = shallow(<FeaturedRoute {...props} />)
+      await renderFeatureRoute(props, store)
+    })
 
+    it('should render spinner instead of Foo component', async () => {
       // then
-      const routeWrapper = wrapper.find(Route)
-      expect(routeWrapper).toHaveLength(0)
+      expect(screen.getByTestId('spinner')).toBeInTheDocument()
+      expect(screen.queryByText("I'm foo component")).not.toBeInTheDocument()
     })
 
     it('should call requestGetFeatures', () => {
-      // given
-      const props = {
-        areFeaturesLoaded: false,
-        component: Foo,
-        isRouteDisabled: false,
-        requestGetFeatures: jest.fn(),
-      }
-
-      // when
-      shallow(<FeaturedRoute {...props} />)
-
       // then
-      expect(props.requestGetFeatures).toHaveBeenCalledTimes(1)
+      expect(pcapi.loadFeatures).toHaveBeenCalledTimes(1)
     })
   })
 
   describe('when features are loaded and disabled', () => {
-    it('should render NotMatch', () => {
+    beforeEach(async () => {
       // given
+      store = configureTestStore({
+        features: {
+          initialized: true,
+          list: [testInactiveFeature],
+        },
+      })
+
       const props = {
-        areFeaturesLoaded: true,
         component: Foo,
-        isRouteDisabled: true,
-        requestGetFeatures: jest.fn(),
+        featureName: 'TEST_FEATURE',
       }
 
       // when
-      const wrapper = shallow(<FeaturedRoute {...props} />)
+      await renderFeatureRoute(props, store)
+    })
 
+    it('should render NotMatch instead of Foo component', () => {
       // then
-      const routeWrapper = wrapper.find(Route)
-      expect(routeWrapper).toHaveLength(1)
-      expect(routeWrapper.props().component).toBe(NotFound)
-      expect(props.requestGetFeatures).toHaveBeenCalledTimes(0)
+      expect(screen.getByText("Cette page n'existe pas.")).toBeInTheDocument()
+      expect(screen.queryByText("I'm foo component")).not.toBeInTheDocument()
     })
 
     it('should not call requestGetFeatures', () => {
-      // given
-      const props = {
-        areFeaturesLoaded: true,
-        component: Foo,
-        isRouteDisabled: true,
-        requestGetFeatures: jest.fn(),
-      }
-
-      // when
-      shallow(<FeaturedRoute {...props} />)
-
       // then
-      expect(props.requestGetFeatures).toHaveBeenCalledTimes(0)
+      expect(pcapi.loadFeatures).toHaveBeenCalledTimes(0)
     })
   })
 
   describe('when features are loaded and not disabled', () => {
-    it('should render Foo', () => {
+    beforeEach(async () => {
       // given
+      store = configureTestStore({
+        features: {
+          initialized: true,
+          list: [testActiveFeature],
+        },
+      })
+
       const props = {
-        areFeaturesLoaded: true,
         component: Foo,
-        isRouteDisabled: false,
-        requestGetFeatures: jest.fn(),
+        featureName: 'TEST_FEATURE',
       }
 
       // when
-      const wrapper = shallow(<FeaturedRoute {...props} />)
+      await renderFeatureRoute(props, store)
+    })
 
+    it('should render Foo', () => {
       // then
-      const routeWrapper = wrapper.find(Route)
-      expect(routeWrapper).toHaveLength(1)
-      expect(routeWrapper.props().component).toBe(Foo)
-      expect(props.requestGetFeatures).toHaveBeenCalledTimes(0)
+      expect(screen.getByText("I'm foo component")).toBeInTheDocument()
     })
 
     it('should not call requestGetFeatures', () => {
-      // given
-      const props = {
-        areFeaturesLoaded: true,
-        component: Foo,
-        isRouteDisabled: false,
-        requestGetFeatures: jest.fn(),
-      }
-
-      // when
-      shallow(<FeaturedRoute {...props} />)
-
       // then
-      expect(props.requestGetFeatures).toHaveBeenCalledTimes(0)
+      expect(pcapi.loadFeatures).toHaveBeenCalledTimes(0)
     })
   })
 })

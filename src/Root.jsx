@@ -7,7 +7,7 @@ import AppContainer from 'app/AppContainer'
 import AppLayout from 'app/AppLayout'
 import MatomoContainer from 'components/matomo/MatomoContainer'
 import NotFound from 'components/pages/Errors/NotFound/NotFound'
-import FeaturedRouteContainer from 'components/router/FeaturedRouteContainer'
+import FeaturedRoute from 'components/router/FeaturedRoute'
 import configureStore from 'store'
 import routes, { routesWithMain } from 'utils/routes_map'
 
@@ -25,7 +25,7 @@ const Root = () => {
             <Switch>
               {routes.map(route => {
                 return (
-                  <FeaturedRouteContainer
+                  <FeaturedRoute
                     exact={route.exact}
                     featureName={route.featureName}
                     key={route.path}
@@ -34,14 +34,14 @@ const Root = () => {
                     <AppLayout layoutConfig={route.meta && route.meta.layoutConfig}>
                       <route.component />
                     </AppLayout>
-                  </FeaturedRouteContainer>
+                  </FeaturedRoute>
                 )
               })}
 
               {routesWithMain.map(route => {
                 // first props, last overrides
                 return (
-                  <FeaturedRouteContainer
+                  <FeaturedRoute
                     {...route}
                     exact={route.exact}
                     key={route.path}

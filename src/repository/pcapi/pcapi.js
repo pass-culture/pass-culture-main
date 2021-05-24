@@ -4,6 +4,10 @@ import { client } from 'repository/pcapi/pcapiClient'
 import { formatBrowserTimezonedDateAsUTC } from 'utils/date'
 import { stringify } from 'utils/query-string'
 
+export const loadFeatures = async () => {
+  return client.get('/features')
+}
+
 //
 // offers
 //

@@ -1,50 +1,47 @@
 import PropTypes from 'prop-types'
-import React, { PureComponent } from 'react'
+import React from 'react'
+import { useSelector } from 'react-redux'
 import { Route } from 'react-router-dom'
 
+import useActiveFeature from 'components/hooks/useActiveFeature'
+import Spinner from 'components/layout/Spinner'
 import NotMatch from 'components/pages/Errors/NotFound/NotFound'
+import { featuresInitialized } from 'store/features/selectors'
 
-class FeaturedRoute extends PureComponent {
-  componentDidMount() {
-    const { areFeaturesLoaded, requestGetFeatures } = this.props
+const FeaturedRoute = props => {
+  const { children, featureName, ...routeProps } = props
+  const { path } = routeProps
 
-    if (areFeaturesLoaded) {
-      return
-    }
+  const featuresAreInitialized = useSelector(featuresInitialized)
+  const isActive = useActiveFeature(featureName)
 
-    requestGetFeatures()
+  if (!featuresAreInitialized) {
+    return <Spinner />
   }
 
-  render() {
-    const { areFeaturesLoaded, isRouteDisabled, children, ...routeProps } = this.props
-    const { path } = routeProps
-
-    if (!areFeaturesLoaded) {
-      return null
-    }
-
-    if (isRouteDisabled) {
-      return (
-        <Route
-          component={NotMatch}
-          path={path}
-        />
-      )
-    }
-
+  if (!isActive) {
     return (
-      <Route {...routeProps}>
-        {children || null}
-      </Route>
+      <Route
+        component={NotMatch}
+        path={path}
+      />
     )
   }
+
+  return (
+    <Route {...routeProps}>
+      {children || null}
+    </Route>
+  )
+}
+
+FeaturedRoute.defaultProps = {
+  featureName: null,
 }
 
 FeaturedRoute.propTypes = {
-  areFeaturesLoaded: PropTypes.bool.isRequired,
   children: PropTypes.shape().isRequired,
-  isRouteDisabled: PropTypes.bool.isRequired,
-  requestGetFeatures: PropTypes.func.isRequired,
+  featureName: PropTypes.string,
 }
 
 export default FeaturedRoute
