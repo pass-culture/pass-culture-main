@@ -5,6 +5,7 @@ import logging
 from pcapi import settings
 from pcapi.connectors import api_recaptcha
 from pcapi.core.users import api
+from pcapi.core.users import constants
 from pcapi.core.users import exceptions
 from pcapi.core.users.models import NotificationSubscriptions
 from pcapi.core.users.models import User
@@ -16,13 +17,13 @@ from pcapi.repository import transaction
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.native.security import authenticated_user_required
 from pcapi.serialization.decorator import spectree_serialize
-
-
-logger = logging.getLogger(__name__)
 from pcapi.workers.push_notification_job import update_user_attributes_job
 
 from . import blueprint
 from .serialization import account as serializers
+
+
+logger = logging.getLogger(__name__)
 
 
 @blueprint.native_v1.route("/me", methods=["GET"])
@@ -197,3 +198,10 @@ def validate_phone_number(user: User, body: serializers.ValidatePhoneNumberReque
             raise ApiErrors({"message": "Le code saisi a expiré", "code": "EXPIRED_VALIDATION_CODE"}, status_code=400)
         except exceptions.NotValidCode:
             raise ApiErrors({"message": "Le code est invalide", "code": "INVALID_VALIDATION_CODE"}, status_code=400)
+
+
+@blueprint.native_v1.route("/account/suspend", methods=["POST"])
+@spectree_serialize(api=blueprint.api, on_success_status=204)
+@authenticated_user_required
+def suspend_account(user: User) -> None:
+    api.suspend_account(user, constants.SuspensionReason.UPON_USER_REQUEST, actor=user)

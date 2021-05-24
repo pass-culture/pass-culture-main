@@ -16,6 +16,7 @@ from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.api import create_phone_validation_token
+from pcapi.core.users.constants import SuspensionReason
 from pcapi.core.users.factories import BeneficiaryImportFactory
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
@@ -906,3 +907,18 @@ class ValidatePhoneNumberTest:
 
         assert not User.query.get(user.id).is_phone_validated
         assert Token.query.filter_by(userId=user.id, type=TokenType.PHONE_VALIDATION).first()
+
+
+def test_suspend_account(app):
+    booking = BookingFactory()
+    user = booking.user
+
+    access_token = create_access_token(identity=user.email)
+    test_client = TestClient(app.test_client())
+    test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+    response = test_client.post("/native/v1/account/suspend")
+
+    assert response.status_code == 204
+    assert booking.isCancelled
+    assert not user.isActive
+    assert user.suspensionReason == SuspensionReason.UPON_USER_REQUEST.value
