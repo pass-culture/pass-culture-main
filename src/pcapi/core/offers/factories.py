@@ -5,6 +5,7 @@ import factory
 
 from pcapi import models
 import pcapi.core.offerers.models
+from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.testing import BaseFactory
 import pcapi.core.users.factories as users_factories
 from pcapi.models import offer_type
@@ -118,6 +119,16 @@ class OfferFactory(BaseFactory):
         # Graciously provide the required idAtProviders if lastProvider is given.
         if kwargs.get("lastProvider") and not kwargs.get("idAtProviders"):
             kwargs["idAtProviders"] = uuid.uuid4()
+
+        if kwargs.get("isActive") is None:
+            kwargs["isActive"] = (
+                False  # pylint:disable=simplifiable-if-expression
+                if (
+                    kwargs.get("validation") == OfferValidationStatus.REJECTED
+                    or kwargs.get("validation") == OfferValidationStatus.PENDING
+                )
+                else True
+            )
 
         return super()._create(model_class, *args, **kwargs)
 

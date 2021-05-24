@@ -1055,14 +1055,18 @@ class UpdateOffersActiveStatusTest:
         offer2 = factories.OfferFactory(isActive=False)
         offer3 = factories.OfferFactory(isActive=False)
         rejected_offer = factories.OfferFactory(isActive=False, validation=OfferValidationStatus.REJECTED)
+        pending_offer = factories.OfferFactory(validation=OfferValidationStatus.PENDING)
 
-        query = models.Offer.query.filter(models.Offer.id.in_({offer1.id, offer2.id, rejected_offer.id}))
+        query = models.Offer.query.filter(
+            models.Offer.id.in_({offer1.id, offer2.id, rejected_offer.id, pending_offer.id})
+        )
         api.update_offers_active_status(query, is_active=True)
 
         assert models.Offer.query.get(offer1.id).isActive
         assert models.Offer.query.get(offer2.id).isActive
         assert not models.Offer.query.get(offer3.id).isActive
         assert not models.Offer.query.get(rejected_offer.id).isActive
+        assert not models.Offer.query.get(pending_offer.id).isActive
         assert mocked_add_offer_id.call_count == 2
         mocked_add_offer_id.assert_has_calls(
             [
@@ -1076,15 +1080,13 @@ class UpdateOffersActiveStatusTest:
         offer1 = factories.OfferFactory()
         offer2 = factories.OfferFactory()
         offer3 = factories.OfferFactory()
-        rejected_offer = factories.OfferFactory(validation=OfferValidationStatus.PENDING)
 
-        query = models.Offer.query.filter(models.Offer.id.in_({offer1.id, offer2.id, rejected_offer.id}))
+        query = models.Offer.query.filter(models.Offer.id.in_({offer1.id, offer2.id}))
         api.update_offers_active_status(query, is_active=False)
 
         assert not models.Offer.query.get(offer1.id).isActive
         assert not models.Offer.query.get(offer2.id).isActive
         assert models.Offer.query.get(offer3.id).isActive
-        assert models.Offer.query.get(rejected_offer.id).isActive
 
 
 class UpdateOfferAndStockIdAtProvidersTest:
@@ -1272,6 +1274,7 @@ class UpdateOfferValidationStatusTest:
 
         assert is_offer_updated is True
         assert offer.validation == OfferValidationStatus.APPROVED
+        assert offer.isActive is True
 
     def test_update_pending_offer_validation_status_to_rejected(self):
         offer = OfferFactory(validation=OfferValidationStatus.PENDING)

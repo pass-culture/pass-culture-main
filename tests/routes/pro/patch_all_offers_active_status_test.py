@@ -87,7 +87,7 @@ class Returns204:
         assert Offer.query.get(offer_with_not_matching_name.id).isActive
 
     def test_only_approved_offers_patch(self, app):
-        approved_offer = offers_factories.OfferFactory()
+        approved_offer = offers_factories.OfferFactory(isActive=False)
         venue = approved_offer.venue
         pending_offer = offers_factories.OfferFactory(venue=venue, validation=OfferValidationStatus.PENDING)
         rejected_offer = offers_factories.OfferFactory(venue=venue, validation=OfferValidationStatus.REJECTED)
@@ -95,10 +95,10 @@ class Returns204:
         offers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
 
         client = TestClient(app.test_client()).with_auth("pro@example.com")
-        data = {"isActive": False, "page": 1, "venueId": humanize(venue.id)}
+        data = {"isActive": True, "page": 1, "venueId": humanize(venue.id)}
         response = client.patch("/offers/all-active-status", json=data)
 
         assert response.status_code == 202
-        assert not approved_offer.isActive
-        assert pending_offer.isActive
-        assert rejected_offer.isActive
+        assert approved_offer.isActive
+        assert not pending_offer.isActive
+        assert not rejected_offer.isActive

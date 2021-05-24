@@ -677,8 +677,8 @@ def update_pending_offer_validation_status(offer: Offer, validation_status: Offe
         )
         return False
     offer.validation = validation_status
-    if validation_status == OfferValidationStatus.REJECTED:
-        offer.isActive = False
+    if validation_status == OfferValidationStatus.APPROVED:
+        offer.isActive = True
 
     try:
         db.session.commit()

@@ -362,7 +362,7 @@ class OfferValidationViewTest:
                     """
         import_offer_validation_config(config_yaml)
         users_factories.UserFactory(email="admin@example.com", isAdmin=True)
-        offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING, isActive=True)
+        offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING)
 
         mocked_get_offerer_legal_category.return_value = {
             "legal_category_code": 5202,
