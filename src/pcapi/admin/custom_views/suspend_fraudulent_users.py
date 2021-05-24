@@ -30,7 +30,7 @@ class SuspendFraudulentUsersView(BaseCustomAdminView):
                     formatted_domains = domains.replace(" ", "").split(",")
 
                     result = suspend_fraudulent_beneficiary_users_by_email_providers(
-                        formatted_domains, current_user.email, False
+                        formatted_domains, current_user.email, dry_run=False
                     )
                     fraudulent_users = result["fraudulent_users"]
                     nb_cancelled_bookings = result["nb_cancelled_bookings"]

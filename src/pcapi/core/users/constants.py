@@ -19,6 +19,8 @@ class SuspensionReason(Enum):
     def __str__(self) -> str:
         return str(self.value)
 
+    # If you add a new reason, update `suspend_account()` to cancel
+    # bookings if applicable.
     END_OF_CONTRACT = "end of contract"
     END_OF_ELIGIBILITY = "end of eligibility"
     FRAUD = "fraud"

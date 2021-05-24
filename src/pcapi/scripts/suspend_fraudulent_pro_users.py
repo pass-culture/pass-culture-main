@@ -1,6 +1,4 @@
-from pcapi.core.bookings.api import cancel_booking_for_fraud
 from pcapi.core.bookings.exceptions import CannotDeleteOffererWithBookingsException
-from pcapi.core.bookings.repository import find_cancellable_bookings_by_offerer
 from pcapi.core.users.api import suspend_account
 from pcapi.core.users.constants import SuspensionReason
 from pcapi.core.users.models import User
@@ -22,7 +20,7 @@ def suspend_fraudulent_pro_by_email_providers(
                 try:
                     delete_cascade_offerer_by_id(offerer_id=offerer.id)
                 except CannotDeleteOffererWithBookingsException:
-                    _cancel_bookings_by_fraudulent_pro(offerer_id=offerer.id)
+                    pass
 
         _suspend_fraudulent_pro_users(users=fraudulent_pros, admin_user=admin_user)
     else:
@@ -35,10 +33,3 @@ def suspend_fraudulent_pro_by_email_providers(
 def _suspend_fraudulent_pro_users(users: list[User], admin_user: User) -> None:
     for fraudulent_user in users:
         suspend_account(fraudulent_user, SuspensionReason.FRAUD, admin_user)
-
-
-def _cancel_bookings_by_fraudulent_pro(offerer_id: int) -> None:
-    bookings_to_cancel = find_cancellable_bookings_by_offerer(offerer_id=offerer_id)
-
-    for booking in bookings_to_cancel:
-        cancel_booking_for_fraud(booking=booking)

@@ -9,7 +9,8 @@ from freezegun import freeze_time
 import jwt
 import pytest
 
-from pcapi.core.bookings import factories as booking_factories
+from pcapi.core.bookings import factories as bookings_factories
+from pcapi.core.offers import factories as offers_factories
 from pcapi.core.payments.api import DEPOSIT_VALIDITY_IN_YEARS
 from pcapi.core.testing import override_features
 from pcapi.core.users import api as users_api
@@ -243,7 +244,7 @@ class DeleteExpiredTokensTest:
 
 
 class SuspendAccountTest:
-    def test_suspend_account(self):
+    def test_suspend_admin(self):
         user = users_factories.UserFactory(isAdmin=True)
         users_factories.UserSessionFactory(user=user)
         reason = users_constants.SuspensionReason.FRAUD
@@ -256,6 +257,44 @@ class SuspendAccountTest:
         assert not user.isAdmin
         assert not UserSession.query.filter_by(userId=user.id).first()
         assert actor.isActive
+
+    def test_suspend_beneficiary(self):
+        user = users_factories.UserFactory(isBeneficiary=True)
+        cancellable_booking = bookings_factories.BookingFactory(user=user)
+        yesterday = datetime.now() - timedelta(days=1)
+        confirmed_booking = bookings_factories.BookingFactory(user=user, confirmation_date=yesterday)
+        used_booking = bookings_factories.BookingFactory(user=user, isUsed=True)
+        actor = users_factories.UserFactory(isAdmin=True)
+
+        users_api.suspend_account(user, users_constants.SuspensionReason.FRAUD, actor)
+
+        assert not user.isActive
+        assert cancellable_booking.isCancelled
+        assert confirmed_booking.isCancelled
+        assert not used_booking.isCancelled
+
+    def test_suspend_pro(self):
+        booking = bookings_factories.BookingFactory()
+        offerer = booking.stock.offer.venue.managingOfferer
+        pro = offers_factories.UserOffererFactory(offerer=offerer).user
+        actor = users_factories.UserFactory(isAdmin=True)
+
+        users_api.suspend_account(pro, users_constants.SuspensionReason.FRAUD, actor)
+
+        assert not pro.isActive
+        assert booking.isCancelled
+
+    def test_suspend_pro_with_other_offerer_users(self):
+        booking = bookings_factories.BookingFactory()
+        offerer = booking.stock.offer.venue.managingOfferer
+        pro = offers_factories.UserOffererFactory(offerer=offerer).user
+        offers_factories.UserOffererFactory(offerer=offerer)
+        actor = users_factories.UserFactory(isAdmin=True)
+
+        users_api.suspend_account(pro, users_constants.SuspensionReason.FRAUD, actor)
+
+        assert not pro.isActive
+        assert not booking.isCancelled
 
 
 class UnsuspendAccountTest:
@@ -574,19 +613,19 @@ class DomainsCreditTest:
         user = users_factories.UserFactory(deposit__version=1)
 
         # booking only in all domains
-        booking_factories.BookingFactory(
+        bookings_factories.BookingFactory(
             user=user,
             amount=50,
             stock__offer__type=str(EventType.CINEMA),
         )
-        booking_factories.BookingFactory(
+        bookings_factories.BookingFactory(
             user=user,
             amount=5,
             stock__offer__type=str(EventType.CINEMA),
         )
 
         # booking in digital domain
-        booking_factories.BookingFactory(
+        bookings_factories.BookingFactory(
             user=user,
             amount=80,
             stock__offer__type=str(ThingType.JEUX_VIDEO),
@@ -594,14 +633,14 @@ class DomainsCreditTest:
         )
 
         # booking in physical domain
-        booking_factories.BookingFactory(
+        bookings_factories.BookingFactory(
             user=user,
             amount=150,
             stock__offer__type=str(ThingType.JEUX),
         )
 
         # cancelled booking
-        booking_factories.BookingFactory(
+        bookings_factories.BookingFactory(
             user=user, amount=150, stock__offer__type=str(ThingType.JEUX), isCancelled=True
         )
 
@@ -615,7 +654,7 @@ class DomainsCreditTest:
         user = users_factories.UserFactory(deposit__version=2)
 
         # booking in physical domain
-        booking_factories.BookingFactory(
+        bookings_factories.BookingFactory(
             user=user,
             amount=250,
             stock__offer__type=str(ThingType.JEUX),
@@ -629,7 +668,7 @@ class DomainsCreditTest:
 
     def test_get_domains_credit_deposit_expired(self):
         user = users_factories.UserFactory(deposit__version=2)
-        booking_factories.BookingFactory(
+        bookings_factories.BookingFactory(
             user=user,
             amount=250,
             stock__offer__type=str(ThingType.JEUX),

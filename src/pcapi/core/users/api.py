@@ -21,6 +21,7 @@ from pcapi import models  # pylint: disable=unused-import
 from pcapi import settings
 from pcapi.core import mails
 from pcapi.core.bookings.conf import LIMIT_CONFIGURATIONS
+import pcapi.core.bookings.repository as bookings_repository
 from pcapi.core.payments import api as payment_api
 from pcapi.core.users.models import Credit
 from pcapi.core.users.models import DomainsCredit
@@ -269,6 +270,8 @@ def _generate_random_password(user):
 
 
 def suspend_account(user: User, reason: constants.SuspensionReason, actor: User) -> None:
+    import pcapi.core.bookings.api as bookings_api  # avoid import loop
+
     user.isActive = False
     user.suspensionReason = str(reason)
     # If we ever unsuspend the account, we'll have to explictly enable
@@ -280,6 +283,30 @@ def suspend_account(user: User, reason: constants.SuspensionReason, actor: User)
     sessions = UserSession.query.filter_by(userId=user.id)
     repository.delete(*sessions)
 
+    n_bookings = 0
+
+    # Cancel all bookings of the related offerer if the suspended
+    # account was the last active offerer's account.
+    if reason == constants.SuspensionReason.FRAUD:
+        for offerer in user.offerers:
+            if any(u.isActive and u != user for u in offerer.users):
+                continue
+            bookings = bookings_repository.find_cancellable_bookings_by_offerer(offerer.id)
+            for booking in bookings:
+                bookings_api.cancel_booking_for_fraud(booking)
+                n_bookings += 1
+
+    # Cancel all bookings of the user (the following works even if the
+    # user is not a beneficiary).
+    cancel_booking_callback = {
+        constants.SuspensionReason.FRAUD: bookings_api.cancel_booking_for_fraud,
+        constants.SuspensionReason.UPON_USER_REQUEST: bookings_api.cancel_booking_on_user_requested_account_suspension,
+    }.get(reason)
+    if cancel_booking_callback:
+        for booking in bookings_repository.find_cancellable_bookings_by_beneficiaries([user]):
+            cancel_booking_callback(booking)
+            n_bookings += 1
+
     logger.info(
         "Account has been suspended",
         extra={
@@ -288,6 +315,7 @@ def suspend_account(user: User, reason: constants.SuspensionReason, actor: User)
             "reason": str(reason),
         },
     )
+    return {"cancelled_bookings": n_bookings}
 
 
 def unsuspend_account(user: User, actor: User) -> None:

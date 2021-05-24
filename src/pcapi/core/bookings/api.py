@@ -221,6 +221,19 @@ def cancel_booking_for_fraud(booking: Booking) -> None:
         logger.exception("Could not send booking=%s cancellation emails to offerer: %s", booking.id, error)
 
 
+def cancel_booking_on_user_requested_account_suspension(booking: Booking) -> None:
+    validation.check_booking_can_be_cancelled(booking)
+    _cancel_booking(booking, BookingCancellationReasons.BENEFICIARY)
+    logger.info("Cancelled booking on user-requested account suspension", extra={"booking": booking.id})
+
+    try:
+        user_emails.send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason)
+    except MailServiceException as error:
+        logger.exception(
+            "Could not send booking=%s cancellation emails to offerer and beneficiary: %s", booking.id, error
+        )
+
+
 def mark_as_used(booking: Booking, uncancel: bool = False) -> None:
     """Mark a booking as used.
 
