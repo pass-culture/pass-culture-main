@@ -1,7 +1,7 @@
 """Add offer.rankingWeight column
 
 Revision ID: c83abec806af
-Revises: 8bdc4df58856
+Revises: e442fb5ac4e6
 Create Date: 2021-05-19 09:09:51.376288
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = "c83abec806af"
-down_revision = "8bdc4df58856"
+down_revision = "e442fb5ac4e6"
 branch_labels = None
 depends_on = None
 
