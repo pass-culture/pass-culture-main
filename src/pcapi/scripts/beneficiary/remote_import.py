@@ -24,22 +24,22 @@ from pcapi.repository.beneficiary_import_queries import find_applications_ids_to
 from pcapi.repository.beneficiary_import_queries import is_already_imported
 from pcapi.repository.beneficiary_import_queries import save_beneficiary_import_with_status
 from pcapi.repository.user_queries import find_user_by_email
+from pcapi.utils.mailing import MailServiceException
 from pcapi.workers.push_notification_job import update_user_attributes_job
 
 
 logger = logging.getLogger(__name__)
-from pcapi.utils.mailing import MailServiceException
 
 
 def run(
     process_applications_updated_after: datetime,
+    procedure_id: int,
     get_all_applications_ids: Callable[..., list[int]] = get_closed_application_ids_for_demarche_simplifiee,
     get_applications_ids_to_retry: Callable[..., list[int]] = find_applications_ids_to_retry,
     get_details: Callable[..., dict] = get_application_details,
     already_imported: Callable[..., bool] = is_already_imported,
     already_existing_user: Callable[..., User] = find_user_by_email,
 ) -> None:
-    procedure_id = settings.DMS_NEW_ENROLLMENT_PROCEDURE_ID
     logger.info(
         "[BATCH][REMOTE IMPORT BENEFICIARIES] Start import from Démarches Simplifiées for "
         "procedure = %s - Procedure %s",

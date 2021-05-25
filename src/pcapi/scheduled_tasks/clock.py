@@ -91,7 +91,17 @@ def pc_remote_import_beneficiaries(app: Flask) -> None:
     import_from_date = find_most_recent_beneficiary_creation_date_for_source(
         BeneficiaryImportSources.demarches_simplifiees, procedure_id
     )
-    remote_import.run(import_from_date)
+    remote_import.run(import_from_date, procedure_id)
+
+
+@log_cron
+@cron_context
+def pc_import_beneficiaries_from_dms(app: Flask) -> None:
+    procedure_id = settings.DMS_ENROLLMENT_PROCEDURE_ID_AFTER_GENERAL_OPENING
+    import_from_date = find_most_recent_beneficiary_creation_date_for_source(
+        BeneficiaryImportSources.demarches_simplifiees, procedure_id
+    )
+    remote_import.run(import_from_date, procedure_id)
 
 
 @log_cron
@@ -157,6 +167,8 @@ def main() -> None:
     scheduler.add_job(synchronize_praxiel_stocks, "cron", [app], day="*", hour="0")
 
     scheduler.add_job(pc_remote_import_beneficiaries, "cron", [app], hour="*")
+
+    scheduler.add_job(pc_import_beneficiaries_from_dms, "cron", [app], hour="*")
 
     scheduler.add_job(update_booking_used, "cron", [app], day="*", hour="0")
 

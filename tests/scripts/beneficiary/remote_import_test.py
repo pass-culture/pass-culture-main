@@ -24,6 +24,7 @@ from pcapi.scripts.beneficiary.remote_import import parse_beneficiary_informatio
 
 from tests.scripts.beneficiary.fixture import APPLICATION_DETAIL_STANDARD_RESPONSE
 from tests.scripts.beneficiary.fixture import make_new_beneficiary_application_details
+from tests.scripts.beneficiary.fixture_dms_with_selfie import APPLICATION_DETAIL_STANDARD_RESPONSE_AFTER_GENERALISATION
 
 
 NOW = datetime.utcnow()
@@ -50,6 +51,7 @@ class RunTest:
         # when
         remote_import.run(
             ONE_WEEK_AGO,
+            procedure_id=6712558,
             get_all_applications_ids=get_all_application_ids,
             get_applications_ids_to_retry=find_applications_ids_to_retry,
             get_details=get_details,
@@ -80,6 +82,7 @@ class RunTest:
         # when
         remote_import.run(
             ONE_WEEK_AGO,
+            procedure_id=6712558,
             get_all_applications_ids=get_all_application_ids,
             get_applications_ids_to_retry=find_applications_ids_to_retry,
             get_details=get_details,
@@ -109,6 +112,7 @@ class RunTest:
         # when
         remote_import.run(
             ONE_WEEK_AGO,
+            procedure_id=6712558,
             get_all_applications_ids=get_all_application_ids,
             get_applications_ids_to_retry=find_applications_ids_to_retry,
             get_details=get_details,
@@ -136,6 +140,7 @@ class RunTest:
         # when
         remote_import.run(
             ONE_WEEK_AGO,
+            procedure_id=6712558,
             get_all_applications_ids=get_all_application_ids,
             get_applications_ids_to_retry=find_applications_ids_to_retry,
             get_details=get_details,
@@ -164,6 +169,7 @@ class RunTest:
         # when
         remote_import.run(
             ONE_WEEK_AGO,
+            procedure_id=6712558,
             get_all_applications_ids=get_all_application_ids,
             get_applications_ids_to_retry=find_applications_ids_to_retry,
             get_details=get_details,
@@ -191,6 +197,7 @@ class RunTest:
         # when
         remote_import.run(
             ONE_WEEK_AGO,
+            procedure_id=6712558,
             get_all_applications_ids=get_all_application_ids,
             get_applications_ids_to_retry=find_applications_ids_to_retry,
             get_details=get_details,
@@ -207,7 +214,6 @@ class RunTest:
 
     @override_features(FORCE_PHONE_VALIDATION=False)
     @patch("pcapi.scripts.beneficiary.remote_import.process_beneficiary_application")
-    @patch("pcapi.settings.DMS_NEW_ENROLLMENT_PROCEDURE_ID", 2567158)
     @pytest.mark.usefixtures("db_session")
     def test_beneficiary_is_created_with_procedure_id(self, process_beneficiary_application, app):
         # given
@@ -221,6 +227,7 @@ class RunTest:
         # when
         remote_import.run(
             ONE_WEEK_AGO,
+            procedure_id=6712558,
             get_all_applications_ids=get_all_application_ids,
             get_applications_ids_to_retry=find_applications_ids_to_retry,
             get_details=get_details,
@@ -246,7 +253,7 @@ class RunTest:
             error_messages=[],
             new_beneficiaries=[],
             retry_ids=[],
-            procedure_id=2567158,
+            procedure_id=6712558,
             preexisting_account=False,
         )
 
@@ -490,133 +497,153 @@ class ProcessBeneficiaryApplicationTest:
 
 
 class ParseBeneficiaryInformationTest:
-    def test_personal_information_of_beneficiary_are_parsed_from_application_detail(self):
-        # when
-        information = parse_beneficiary_information(APPLICATION_DETAIL_STANDARD_RESPONSE)
+    class BeforeGeneralOpenningTest:
+        def test_personal_information_of_beneficiary_are_parsed_from_application_detail(self):
+            # when
+            information = parse_beneficiary_information(APPLICATION_DETAIL_STANDARD_RESPONSE)
 
-        # then
-        assert information["last_name"] == "Doe"
-        assert information["first_name"] == "John"
-        assert information["birth_date"] == datetime(2000, 5, 1)
-        assert information["civility"] == "M."
-        assert information["email"] == "john.doe@test.com"
-        assert information["phone"] == "0123456789"
-        assert information["postal_code"] == "93130"
-        assert information["application_id"] == 123
+            # then
+            assert information["last_name"] == "Doe"
+            assert information["first_name"] == "John"
+            assert information["birth_date"] == datetime(2000, 5, 1)
+            assert information["civility"] == "M."
+            assert information["email"] == "john.doe@test.com"
+            assert information["phone"] == "0123456789"
+            assert information["postal_code"] == "93130"
+            assert information["application_id"] == 123
 
-    def test_handles_two_digits_department_code(self):
-        # given
-        application_detail = make_new_beneficiary_application_details(1, "closed", department_code="67 - Bas-Rhin")
+        def test_handles_two_digits_department_code(self):
+            # given
+            application_detail = make_new_beneficiary_application_details(1, "closed", department_code="67 - Bas-Rhin")
 
-        # when
-        information = parse_beneficiary_information(application_detail)
+            # when
+            information = parse_beneficiary_information(application_detail)
 
-        # then
-        assert information["department"] == "67"
+            # then
+            assert information["department"] == "67"
 
-    def test_handles_three_digits_department_code(self):
-        # given
-        application_detail = make_new_beneficiary_application_details(1, "closed", department_code="973 - Guyane")
+        def test_handles_three_digits_department_code(self):
+            # given
+            application_detail = make_new_beneficiary_application_details(1, "closed", department_code="973 - Guyane")
 
-        # when
-        information = parse_beneficiary_information(application_detail)
+            # when
+            information = parse_beneficiary_information(application_detail)
 
-        # then
-        assert information["department"] == "973"
+            # then
+            assert information["department"] == "973"
 
-    def test_handles_uppercased_mixed_digits_and_letter_department_code(self):
-        # given
-        application_detail = make_new_beneficiary_application_details(1, "closed", department_code="2B - Haute-Corse")
+        def test_handles_uppercased_mixed_digits_and_letter_department_code(self):
+            # given
+            application_detail = make_new_beneficiary_application_details(
+                1, "closed", department_code="2B - Haute-Corse"
+            )
 
-        # when
-        information = parse_beneficiary_information(application_detail)
+            # when
+            information = parse_beneficiary_information(application_detail)
 
-        # then
-        assert information["department"] == "2B"
+            # then
+            assert information["department"] == "2B"
 
-    def test_handles_lowercased_mixed_digits_and_letter_department_code(self):
-        # given
-        application_detail = make_new_beneficiary_application_details(1, "closed", department_code="2a - Haute-Corse")
+        def test_handles_lowercased_mixed_digits_and_letter_department_code(self):
+            # given
+            application_detail = make_new_beneficiary_application_details(
+                1, "closed", department_code="2a - Haute-Corse"
+            )
 
-        # when
-        information = parse_beneficiary_information(application_detail)
+            # when
+            information = parse_beneficiary_information(application_detail)
 
-        # then
-        assert information["department"] == "2a"
+            # then
+            assert information["department"] == "2a"
 
-    def test_handles_department_code_with_another_label(self):
-        # given
-        application_detail = make_new_beneficiary_application_details(1, "closed", department_code="67 - Bas-Rhin")
-        for field in application_detail["dossier"]["champs"]:
-            label = field["type_de_champ"]["libelle"]
-            if label == "Veuillez indiquer votre département":
-                field["type_de_champ"]["libelle"] = "Veuillez indiquer votre département de résidence"
+        def test_handles_department_code_with_another_label(self):
+            # given
+            application_detail = make_new_beneficiary_application_details(1, "closed", department_code="67 - Bas-Rhin")
+            for field in application_detail["dossier"]["champs"]:
+                label = field["type_de_champ"]["libelle"]
+                if label == "Veuillez indiquer votre département":
+                    field["type_de_champ"]["libelle"] = "Veuillez indiquer votre département de résidence"
 
-        # when
-        information = parse_beneficiary_information(application_detail)
+            # when
+            information = parse_beneficiary_information(application_detail)
 
-        # then
-        assert information["department"] == "67"
+            # then
+            assert information["department"] == "67"
 
-    def test_handles_postal_codes_wrapped_with_spaces(self):
-        # given
-        application_detail = make_new_beneficiary_application_details(1, "closed", postal_code="  93130  ")
+        def test_handles_postal_codes_wrapped_with_spaces(self):
+            # given
+            application_detail = make_new_beneficiary_application_details(1, "closed", postal_code="  93130  ")
 
-        # when
-        information = parse_beneficiary_information(application_detail)
+            # when
+            information = parse_beneficiary_information(application_detail)
 
-        # then
-        assert information["postal_code"] == "93130"
+            # then
+            assert information["postal_code"] == "93130"
 
-    def test_handles_postal_codes_containing_spaces(self):
-        # given
-        application_detail = make_new_beneficiary_application_details(1, "closed", postal_code="67 200")
+        def test_handles_postal_codes_containing_spaces(self):
+            # given
+            application_detail = make_new_beneficiary_application_details(1, "closed", postal_code="67 200")
 
-        # when
-        information = parse_beneficiary_information(application_detail)
+            # when
+            information = parse_beneficiary_information(application_detail)
 
-        # then
-        assert information["postal_code"] == "67200"
+            # then
+            assert information["postal_code"] == "67200"
 
-    def test_handles_postal_codes_containing_city_name(self):
-        # given
-        application_detail = make_new_beneficiary_application_details(1, "closed", postal_code="67 200 Strasbourg ")
+        def test_handles_postal_codes_containing_city_name(self):
+            # given
+            application_detail = make_new_beneficiary_application_details(1, "closed", postal_code="67 200 Strasbourg ")
 
-        # when
-        information = parse_beneficiary_information(application_detail)
+            # when
+            information = parse_beneficiary_information(application_detail)
 
-        # then
-        assert information["postal_code"] == "67200"
+            # then
+            assert information["postal_code"] == "67200"
 
-    def test_handles_civility_parsing(self):
-        # given
-        application_detail = make_new_beneficiary_application_details(1, "closed", civility="M.")
+        def test_handles_civility_parsing(self):
+            # given
+            application_detail = make_new_beneficiary_application_details(1, "closed", civility="M.")
 
-        # when
-        information = parse_beneficiary_information(application_detail)
+            # when
+            information = parse_beneficiary_information(application_detail)
 
-        # then
-        assert information["civility"] == "M."
+            # then
+            assert information["civility"] == "M."
 
-    def test_handles_activity_parsing(self):
-        # given
-        application_detail = make_new_beneficiary_application_details(1, "closed")
+        def test_handles_activity_parsing(self):
+            # given
+            application_detail = make_new_beneficiary_application_details(1, "closed")
 
-        # when
-        information = parse_beneficiary_information(application_detail)
+            # when
+            information = parse_beneficiary_information(application_detail)
 
-        # then
-        assert information["activity"] == "Étudiant"
+            # then
+            assert information["activity"] == "Étudiant"
 
-    def test_handles_activity_even_if_activity_is_not_filled(self):
-        # given
-        application_detail = make_new_beneficiary_application_details(1, "closed", activity=None)
+        def test_handles_activity_even_if_activity_is_not_filled(self):
+            # given
+            application_detail = make_new_beneficiary_application_details(1, "closed", activity=None)
 
-        # when
-        information = parse_beneficiary_information(application_detail)
+            # when
+            information = parse_beneficiary_information(application_detail)
 
-        # then
-        assert information["activity"] is None
+            # then
+            assert information["activity"] is None
+
+    class AfterGeneralOpenningTest:
+        def test_personal_information_of_beneficiary_are_parsed_from_application_detail(self):
+            # when
+            information = parse_beneficiary_information(APPLICATION_DETAIL_STANDARD_RESPONSE_AFTER_GENERALISATION)
+
+            # then
+            assert information["last_name"] == "Doe"
+            assert information["first_name"] == "John"
+            assert information["birth_date"] == datetime(2000, 5, 1)
+            assert information["civility"] == "M."
+            assert information["email"] == "john.doe@test.com"
+            assert information["phone"] == "0123456789"
+            assert information["postal_code"] == "93130"
+            assert information["application_id"] == 123
 
 
 @pytest.mark.usefixtures("db_session")
@@ -665,6 +692,7 @@ class RunIntegrationTest:
         # when
         remote_import.run(
             ONE_WEEK_AGO,
+            procedure_id=6712558,
             get_details=self._get_details,
             get_all_applications_ids=self._get_all_applications_ids,
         )
@@ -710,6 +738,7 @@ class RunIntegrationTest:
         # when
         remote_import.run(
             ONE_WEEK_AGO,
+            procedure_id=6712558,
             get_details=self._get_details,
             get_all_applications_ids=self._get_all_applications_ids,
         )
@@ -765,6 +794,7 @@ class RunIntegrationTest:
         # when
         remote_import.run(
             ONE_WEEK_AGO,
+            procedure_id=6712558,
             get_details=self._get_details,
             get_all_applications_ids=self._get_all_applications_ids,
         )
@@ -811,6 +841,7 @@ class RunIntegrationTest:
         # when
         remote_import.run(
             ONE_WEEK_AGO,
+            procedure_id=6712558,
             get_details=self._get_details,
             get_all_applications_ids=self._get_all_applications_ids,
         )
@@ -841,6 +872,7 @@ class RunIntegrationTest:
         # when
         remote_import.run(
             ONE_WEEK_AGO,
+            procedure_id=6712558,
             get_details=self._get_details,
             get_all_applications_ids=self._get_all_applications_ids,
         )
