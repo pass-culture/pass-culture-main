@@ -23,4 +23,4 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    feature.add_feature_to_database(FLAG)
+    feature.remove_feature_from_database(FLAG)
