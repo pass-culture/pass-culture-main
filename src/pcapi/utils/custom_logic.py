@@ -45,6 +45,16 @@ def contains(a, b) -> bool:
     )
 
 
+def contains_exact(a, b) -> bool:
+    if not a:
+        return False
+    return (
+        any(sanitize_str(element) in sanitize_list(a.split()) for element in b)
+        if "__contains__" in dir(b)
+        else sanitize_str(b) in sanitize_str(a)
+    )
+
+
 OPERATIONS = {
     "==": soft_equals,
     "!=": lambda a, b: not soft_equals(a, b),
@@ -55,4 +65,5 @@ OPERATIONS = {
     "in": lambda a, b: sanitize_str(a) in sanitize_list(b) if "__contains__" in dir(b) else False,
     "not in": lambda a, b: (sanitize_str(a) not in sanitize_list(b)) if "__contains__" in dir(b) else True,
     "contains": contains,
+    "contains-exact": contains_exact,
 }

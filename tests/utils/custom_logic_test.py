@@ -141,6 +141,27 @@ def test_contains_return_false():
     assert not result
 
 
+def test_contains_exact_return_true():
+    a = "A suspicious offer"
+    b = ["suspicious"]
+    result = OPERATIONS["contains-exact"](a, b)
+    assert result
+
+
+def test_contains_exact_with_sub_word_return_false():
+    a = "A normal offer"
+    b = ["off"]
+    result = OPERATIONS["contains-exact"](a, b)
+    assert not result
+
+
+def test_contains_exact_with_none():
+    a = None
+    b = ["off", "suspicious"]
+    result = OPERATIONS["contains-exact"](a, b)
+    assert not result
+
+
 def test_equals_word_with_accents():
     a = "l'école est fermée"
     b = "l'ècole est fermee"

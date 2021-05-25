@@ -56,7 +56,7 @@ VALUE_VALIDATION_CONFIG = {
     "attribute": [str],
     "type": [str, list],
     "factor": [float, int],
-    "operator": [">", ">=", "<", "<=", "==", "!=", "is", "in", "not in", "contains"],
+    "operator": [">", ">=", "<", "<=", "==", "!=", "is", "in", "not in", "contains", "contains-exact"],
     "comparated": [str, bool, float, int, list, None],
     "minimum_score": [float, int],
 }
