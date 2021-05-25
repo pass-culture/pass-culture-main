@@ -56,6 +56,7 @@ class Returns200:
                             "offerId": humanize(offer_on_requested_venue.id),
                             "hasBookingLimitDatetimePassed": False,
                             "remainingQuantity": "unlimited",
+                            "beginningDatetime": None,
                         }
                     ],
                     "thumbUrl": None,

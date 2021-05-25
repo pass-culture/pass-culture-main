@@ -43,4 +43,5 @@ def _stock_serializer(stock: Stock) -> dict:
         "identifier": Identifier(stock.id),
         "has_booking_limit_datetime_passed": stock.hasBookingLimitDatetimePassed,
         "remaining_quantity": stock.remainingQuantity,
+        "beginning_datetime": stock.beginningDatetime,
     }

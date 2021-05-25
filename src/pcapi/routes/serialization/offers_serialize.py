@@ -160,6 +160,7 @@ class ListOffersStockResponseModel(BaseModel):
     hasBookingLimitDatetimePassed: bool
     offerId: str
     remainingQuantity: Union[int, str]
+    beginningDatetime: Optional[datetime]
 
     @validator("remainingQuantity", pre=True)
     def validate_remaining_quantity(cls, remainingQuantity):  # pylint: disable=no-self-argument
@@ -189,6 +190,9 @@ class ListOffersResponseModel(BaseModel):
     page: int
     page_count: int
     total_count: int
+
+    class Config:
+        json_encoders = {datetime: format_into_utc_date}
 
 
 class ListOffersQueryModel(BaseModel):

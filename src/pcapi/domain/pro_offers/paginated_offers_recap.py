@@ -1,13 +1,21 @@
+from datetime import datetime
 from typing import Optional
 
 from pcapi.domain.identifier.identifier import Identifier
 
 
 class OfferRecapStock:
-    def __init__(self, identifier: Identifier, has_booking_limit_datetime_passed: bool, remaining_quantity: int):
+    def __init__(
+        self,
+        identifier: Identifier,
+        has_booking_limit_datetime_passed: bool,
+        remaining_quantity: int,
+        beginning_datetime: datetime,
+    ):
         self.identifier = identifier
         self.has_booking_limit_datetime_passed = has_booking_limit_datetime_passed
         self.remaining_quantity = remaining_quantity
+        self.beginning_datetime = beginning_datetime
 
 
 class OfferRecapVenue:
@@ -72,7 +80,10 @@ class OfferRecap:
         )
         self.stocks = [
             OfferRecapStock(
-                stock["identifier"], stock["has_booking_limit_datetime_passed"], stock["remaining_quantity"]
+                stock["identifier"],
+                stock["has_booking_limit_datetime_passed"],
+                stock["remaining_quantity"],
+                stock["beginning_datetime"],
             )
             for stock in stocks
         ]
