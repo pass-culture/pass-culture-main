@@ -98,13 +98,13 @@ class FraudDetectionItem:
         return f"{self.key}: {self.value} - {self.valid}"
 
 
-def get_boolean_fraud_detetction_item(content: dict, key: str) -> FraudDetectionItem:
+def get_boolean_fraud_detection_item(content: dict, key: str) -> FraudDetectionItem:
     value = content.get(key)
     valid = value.upper() != "KO" if value else True
     return FraudDetectionItem(key=key, value=value, valid=valid)
 
 
-def get_threshold_fraud_detetction_item(content: dict, key: str, threshold: int) -> FraudDetectionItem:
+def get_threshold_fraud_detection_item(content: dict, key: str, threshold: int) -> FraudDetectionItem:
     value = content.get(key)
 
     try:
@@ -124,13 +124,21 @@ def get_fraud_fields(content: dict) -> dict:
 
     return {
         "strict_controls": [
-            get_boolean_fraud_detetction_item(content, "posteCodeCtrl"),
-            get_boolean_fraud_detetction_item(content, "serviceCodeCtrl"),
+            get_boolean_fraud_detection_item(content, "posteCodeCtrl"),
+            get_boolean_fraud_detection_item(content, "serviceCodeCtrl"),
         ],
         "non_blocking_controls": [
-            get_boolean_fraud_detetction_item(content, "birthLocationCtrl"),
-            get_boolean_fraud_detetction_item(content, "creatorCtrl"),
-            get_threshold_fraud_detetction_item(content, "bodyBirthDateLevel", 100),
-            get_threshold_fraud_detetction_item(content, "bodyNameLevel", 50),
+            get_threshold_fraud_detection_item(content, "bodyBirthDateLevel", 100),
+            get_boolean_fraud_detection_item(content, "birthLocationCtrl"),
+            get_threshold_fraud_detection_item(content, "bodyNameLevel", 50),
+            get_boolean_fraud_detection_item(content, "bodyBirthDateCtrl"),
+            get_boolean_fraud_detection_item(content, "bodyFirstNameCtrl"),
+            get_threshold_fraud_detection_item(content, "bodyFirstNameLevel", 50),
+            get_boolean_fraud_detection_item(content, "bodyNameCtrl"),
+            get_boolean_fraud_detection_item(content, "bodyPieceNumberCtrl"),
+            get_threshold_fraud_detection_item(content, "bodyPieceNumberLevel", 50),
+            get_boolean_fraud_detection_item(content, "creatorCtrl"),
+            get_boolean_fraud_detection_item(content, "initialNumberCtrl"),
+            get_boolean_fraud_detection_item(content, "initialSizeCtrl"),
         ],
     }
