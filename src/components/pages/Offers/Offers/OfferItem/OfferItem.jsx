@@ -9,6 +9,7 @@ import StatusLabel from 'components/pages/Offers/Offer/OfferStatus/StatusLabel'
 import { OFFER_STATUS_SOLD_OUT } from 'components/pages/Offers/Offers/_constants'
 import { computeVenueDisplayName } from 'repository/venuesService'
 import { pluralize } from 'utils/pluralize'
+import { formatLocalTimeDateString } from 'utils/timezone'
 
 const OfferItem = ({ disabled, offer, stocks, venue, isSelected, selectOffer }) => {
   function handleOnChangeSelected() {
@@ -36,6 +37,16 @@ const OfferItem = ({ disabled, offer, stocks, venue, isSelected, selectOffer }) 
     !offer.isActive || offer.hasBookingLimitDatetimesPassed || isOfferDisabled(offer.status)
   const shouldShowSoldOutWarning =
     computeNumberOfSoldOutStocks(stocks) > 0 && offer.status !== OFFER_STATUS_SOLD_OUT
+
+  const getDateInformations = () => {
+    return stockSize === 1
+      ? formatLocalTimeDateString(
+        stocks[0].beginningDatetime,
+        venue.departementCode,
+        'dd/MM/yyyy HH:mm'
+      )
+      : pluralize(stockSize, 'date')
+  }
 
   return (
     <tr className={`offer-item ${isOfferInactiveOrExpiredOrDisabled ? 'inactive' : ''} offer-row`}>
@@ -72,7 +83,7 @@ const OfferItem = ({ disabled, offer, stocks, venue, isSelected, selectOffer }) 
         </Link>
         {offer.isEvent && (
           <span className="stocks">
-            {pluralize(stockSize, 'date')}
+            {getDateInformations()}
             {shouldShowSoldOutWarning && (
               <div>
                 <Icon
@@ -133,6 +144,7 @@ OfferItem.propTypes = {
   selectOffer: PropTypes.func.isRequired,
   stocks: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   venue: PropTypes.shape({
+    departementCode: PropTypes.string.isRequired,
     isVirtual: PropTypes.bool.isRequired,
     name: PropTypes.string,
     offererName: PropTypes.string,

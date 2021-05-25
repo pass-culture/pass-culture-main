@@ -53,6 +53,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       venue: {
         isVirtual: false,
         name: 'Paris',
+        departementCode: '973',
       },
       trackActivateOffer: jest.fn(),
       trackDeactivateOffer: jest.fn(),
@@ -228,6 +229,17 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
         // then
         expect(screen.queryByText('2 dates')).toBeInTheDocument()
+      })
+
+      it('should display the beginning date time when only one date', () => {
+        // given
+        props.stocks = [{ beginningDatetime: '2021-05-27T20:00:00Z', remainingQuantity: 10 }]
+
+        // when
+        renderOfferItem(props)
+
+        // then
+        expect(screen.getByText('27/05/2021 17:00')).toBeInTheDocument()
       })
 
       it('should not display a warning when no stocks are sold out', () => {
