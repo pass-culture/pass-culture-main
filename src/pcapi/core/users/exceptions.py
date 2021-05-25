@@ -42,6 +42,10 @@ class PhoneValidationAttemptsLimitReached(PhoneVerificationException):
     pass
 
 
+class PhoneAlreadyExists(PhoneVerificationException):
+    pass
+
+
 class UnvalidatedEmail(PhoneVerificationException):
     pass
 

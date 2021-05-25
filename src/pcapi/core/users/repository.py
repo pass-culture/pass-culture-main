@@ -151,3 +151,7 @@ def get_beneficiary_import_for_beneficiary(user: User) -> Optional[BeneficiaryIm
         .order_by(BeneficiaryImportStatus.date.desc())
         .first()
     )
+
+
+def does_phone_exists(phone_number: str):
+    return bool(User.query.filter(User.phoneNumber == phone_number).count())

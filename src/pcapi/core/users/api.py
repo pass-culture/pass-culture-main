@@ -31,6 +31,7 @@ from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
 from pcapi.core.users.models import VOID_PUBLIC_NAME
+from pcapi.core.users.repository import does_phone_exists
 from pcapi.core.users.repository import get_beneficiary_import_for_beneficiary
 from pcapi.core.users.utils import decode_jwt_token
 from pcapi.core.users.utils import encode_jwt_payload
@@ -553,6 +554,9 @@ def set_pro_tuto_as_seen(user: User) -> None:
 
 def change_user_phone_number(user: User, phone_number: str):
     _check_phone_number_validation_is_authorized(user)
+
+    if does_phone_exists(phone_number):
+        raise exceptions.PhoneAlreadyExists()
 
     user.phoneNumber = phone_number
     Token.query.filter(Token.user == user, Token.type == TokenType.PHONE_VALIDATION).delete()
