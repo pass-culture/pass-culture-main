@@ -143,6 +143,7 @@ def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
         access_token=create_user_access_token(user),
         refresh_token=create_refresh_token(identity=user.email),
         id_check_token=id_check_token.value if id_check_token else None,
+        id_check_token_timestamp=id_check_token.expirationDate if id_check_token else None,
         needsToValidatePhone=needs_to_validate_phone(user),
     )
 

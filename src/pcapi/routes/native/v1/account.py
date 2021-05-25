@@ -136,7 +136,10 @@ def resend_email_validation(body: serializers.ResendEmailValidationRequest) -> N
 def get_id_check_token(user: User) -> serializers.GetIdCheckTokenResponse:
     try:
         id_check_token = api.create_id_check_token(user)
-        return serializers.GetIdCheckTokenResponse(token=id_check_token.value if id_check_token else None)
+        return serializers.GetIdCheckTokenResponse(
+            token=id_check_token.value if id_check_token else None,
+            token_timestamp=id_check_token.expirationDate if id_check_token else None,
+        )
     except exceptions.IdCheckTokenLimitReached:
         message = f"Tu as fait trop de demandes pour le moment, réessaye dans {settings.ID_CHECK_TOKEN_LIFE_TIME_HOURS} heures"
         raise ApiErrors(

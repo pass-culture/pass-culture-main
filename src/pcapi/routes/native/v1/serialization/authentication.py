@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 
 from pcapi.serialization.utils import to_camel
@@ -61,6 +62,7 @@ class ValidateEmailResponse(BaseModel):
     access_token: str
     refresh_token: str
     id_check_token: Optional[str]
+    id_check_token_timestamp: Optional[datetime]
 
     class Config:
         alias_generator = to_camel
