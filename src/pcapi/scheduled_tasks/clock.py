@@ -82,6 +82,8 @@ def synchronize_praxiel_stocks(app: Flask) -> None:
         synchronize_venue_providers_for_provider(praxiel_stocks_provider.id)
 
 
+# FIXME (asaunier, 2021-05-25): This clock must be removed once every application from procedure
+#  defined in DMS_NEW_ENROLLMENT_PROCEDURE_ID has been treated
 @log_cron
 @cron_context
 def pc_remote_import_beneficiaries(app: Flask) -> None:
@@ -154,7 +156,7 @@ def main() -> None:
 
     scheduler.add_job(synchronize_praxiel_stocks, "cron", [app], day="*", hour="0")
 
-    scheduler.add_job(pc_remote_import_beneficiaries, "cron", [app], day="*")
+    scheduler.add_job(pc_remote_import_beneficiaries, "cron", [app], hour="*")
 
     scheduler.add_job(update_booking_used, "cron", [app], day="*", hour="0")
 
