@@ -56,6 +56,7 @@ class FeatureToggle(enum.Enum):
     ENABLE_NATIVE_ID_CHECK_VERSION = "Utilise la version d'ID-Check intégrée à l'application native"
     ENABLE_NEW_VENUE_PAGES = "Utiliser la nouvelle version des pages d'edition et de creation de lieux"
     ENABLE_IDCHECK_FRAUD_CONTROLS = "Active les contrôles de sécurité en sortie du process ID Check"
+    DISPLAY_DMS_REDIRECTION = "Affiche une redirection vers DMS si ID Check est KO"
 
 
 class Feature(PcObject, Model, DeactivableMixin):
