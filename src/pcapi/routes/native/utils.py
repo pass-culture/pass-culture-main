@@ -3,6 +3,7 @@ from typing import Optional
 
 import flask
 import semver
+import sentry_sdk
 
 from pcapi import settings
 from pcapi.models.api_errors import ForbiddenError
@@ -16,6 +17,7 @@ def convert_to_cent(amount: Optional[Decimal]) -> Optional[int]:
 
 def check_client_version() -> None:
     client_version_header = flask.request.headers.get("app-version", None)
+    sentry_sdk.set_tag("client.version", client_version_header)
     if not client_version_header:
         return
     try:
