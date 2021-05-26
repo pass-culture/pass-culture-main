@@ -370,3 +370,41 @@ test("Je suis redirigé sur la liste des offres si je clique sur retour à parti
 
   await t.expect(getPathname()).eql('/offres')
 })
+
+test('Je suis redirigé sur la liste des offres si je clique sur retour à partir de la page de création quand je viens de la confirmation', async t => {
+  const { user } = await fetchSandbox(
+    'pro_07_offer',
+    'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue'
+  )
+
+  const userRole = createUserRole(user)
+  await navigateToNewOfferAs(user, null, null, userRole)(t)
+
+  await t
+    .click(typeInput)
+    .click(typeOption.withText('Audiovisuel - films sur supports physiques et VOD'))
+    .typeText(nameInput, 'Rencontre avec Franck Lepage')
+    .click(noDisabilityCompliantCheckbox)
+    .click(submitButton)
+    .expect(getPathname())
+    .match(/\/offres\/([A-Z0-9]+)\/stocks$/)
+
+  const addThingStockButton = Selector('button').withText('Ajouter un stock')
+  const priceInput = Selector('input[name="price"]')
+  const validateAndCreateOffer = Selector('button').withText('Valider et créer l’offre')
+  const createANewOffer = Selector('a').withText('Créer une nouvelle offre')
+
+  await t
+    .click(addThingStockButton)
+    .typeText(priceInput, '15')
+    .click(validateAndCreateOffer)
+    .click(createANewOffer)
+    .expect(getPathname())
+    .match(/\/offres\/creation$/)
+
+  await goBack()
+
+  await t.expect(exitOfferCreationMessage.exists).ok().click(exitOfferCreationDialogConfirmButton)
+
+  await t.expect(getPathname()).eql('/offres')
+})

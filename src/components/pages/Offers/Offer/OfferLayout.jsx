@@ -48,8 +48,10 @@ const OfferLayout = ({ location, match }) => {
       const confirmationPathRegex = /\/offres\/([A-Z0-9]+)\/confirmation/g
 
       if (
-        location.pathname.match(stocksPathRegex) &&
-        nextLocation.pathname.startsWith(offerCreationPath)
+        (location.pathname.match(stocksPathRegex) &&
+          nextLocation.pathname.startsWith(offerCreationPath)) ||
+        (location.pathname.match(offerCreationPath) &&
+          nextLocation.pathname.match(confirmationPathRegex))
       ) {
         nextLocation.pathname = '/offres'
         nextLocation.search = ''
@@ -150,6 +152,7 @@ const OfferLayout = ({ location, match }) => {
               isCreatingOffer={isCreatingOffer}
               location={location}
               offer={offer}
+              setOffer={setOffer}
             />
           </Route>
         </Switch>

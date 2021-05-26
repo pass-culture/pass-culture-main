@@ -1,15 +1,19 @@
 import PropTypes from 'prop-types'
-import React from 'react'
+import React, { useCallback } from 'react'
 import { Redirect } from 'react-router'
+import { Link } from 'react-router-dom'
 
 import { ReactComponent as PendingIcon } from 'components/pages/Offers/Offer/Confirmation/assets/pending.svg'
 import { ReactComponent as ValidateIcon } from 'components/pages/Offers/Offer/Confirmation/assets/validate.svg'
 import OfferPreviewLink from 'components/pages/Offers/Offer/OfferPreviewLink/OfferPreviewLink'
 import { OFFER_STATUS_PENDING } from 'components/pages/Offers/Offers/_constants'
+import { queryParamsFromOfferer } from 'components/pages/Offers/utils/queryParamsFromOfferer'
 
-import { queryParamsFromOfferer } from '../../utils/queryParamsFromOfferer'
+const Confirmation = ({ isCreatingOffer, location, offer, setOffer }) => {
+  const resetOffer = useCallback(() => {
+    setOffer(null)
+  }, [setOffer])
 
-const Confirmation = ({ isCreatingOffer, location, offer }) => {
   const isPendingOffer = offer.status === OFFER_STATUS_PENDING
   if (!isCreatingOffer && !isPendingOffer) {
     return <Redirect to={`/offres/${offer.id}/edition`} />
@@ -57,12 +61,13 @@ const Confirmation = ({ isCreatingOffer, location, offer }) => {
           mediationId={offer.activeMediation ? offer.activeMediation.id : null}
           offerId={offer.id}
         />
-        <a
+        <Link
           className="primary-link"
-          href={`/offres/creation${queryString}`}
+          onClick={resetOffer}
+          to={`/offres/creation${queryString}`}
         >
           {'Créer une nouvelle offre'}
-        </a>
+        </Link>
       </div>
     </div>
   )
@@ -72,6 +77,7 @@ Confirmation.propTypes = {
   isCreatingOffer: PropTypes.bool.isRequired,
   location: PropTypes.shape().isRequired,
   offer: PropTypes.shape().isRequired,
+  setOffer: PropTypes.func.isRequired,
 }
 
 export default Confirmation
