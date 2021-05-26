@@ -119,7 +119,7 @@ def book_offer(
     )
 
     try:
-        user_emails.send_booking_recap_emails(booking)
+        user_emails.send_booking_confirmation_email_to_offerer(booking)
     except MailServiceException as error:
         logger.exception("Could not send booking=%s confirmation email to offerer: %s", booking.id, error)
     try:

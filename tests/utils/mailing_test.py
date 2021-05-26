@@ -5,7 +5,6 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.domain.user_emails import _build_recipients_list
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user
@@ -114,38 +113,6 @@ class BuildPcProOfferLinkTest:
 
         # Then
         assert pc_pro_url == f"http://pcpro.com/offres/{offer_id}/edition"
-
-
-class BuildRecipientsListTest:
-    def test_should_return_admin_email_and_booking_email_when_booking_email_on_offer_exists(self):
-        # Given
-        user = create_user()
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue=venue, booking_email="booking.email@example.com")
-        stock = create_stock_from_offer(offer)
-        booking = create_booking(user=user, stock=stock)
-
-        # When
-        recipients = _build_recipients_list(booking)
-
-        # Then
-        assert recipients == ["booking.email@example.com", "administration@example.com"]
-
-    def test_should_return_only_admin_email_when_offer_has_no_booking_email(self):
-        # Given
-        user = create_user()
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue, booking_email=None)
-        stock = create_stock_from_offer(offer)
-        booking = create_booking(user=user, stock=stock)
-
-        # When
-        recipients = _build_recipients_list(booking)
-
-        # Then
-        assert recipients == ["administration@example.com"]
 
 
 class FormatDateAndHourForEmailTest:

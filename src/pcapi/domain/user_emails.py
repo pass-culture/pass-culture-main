@@ -49,22 +49,19 @@ from pcapi.emails.user_reset_password import retrieve_data_for_reset_password_us
 from pcapi.models import Offer
 from pcapi.models import UserOfferer
 from pcapi.repository.offerer_queries import find_new_offerer_user_email
-
-
-logger = logging.getLogger(__name__)
 from pcapi.utils.mailing import make_admin_user_validation_email
 from pcapi.utils.mailing import make_offerer_driven_cancellation_email_for_offerer
 from pcapi.utils.mailing import make_pro_user_validation_email
 
 
-def send_booking_recap_emails(booking: Booking) -> None:
-    recipients = [settings.ADMINISTRATION_EMAIL_ADDRESS]
-    booking_email = booking.stock.offer.bookingEmail
-    if booking_email:
-        recipients.append(booking_email)
+logger = logging.getLogger(__name__)
 
-    data = retrieve_data_for_offerer_booking_recap_email(booking)
-    mails.send(recipients=recipients, data=data)
+
+def send_booking_confirmation_email_to_offerer(booking: Booking) -> None:
+    offerer_booking_email = booking.stock.offer.bookingEmail
+    if offerer_booking_email:
+        data = retrieve_data_for_offerer_booking_recap_email(booking)
+        mails.send(recipients=[offerer_booking_email], data=data)
 
 
 def send_booking_confirmation_email_to_beneficiary(booking: Booking) -> None:
@@ -83,19 +80,17 @@ def send_user_webapp_offer_link_email(user: User, offer: Offer) -> None:
 
 
 def send_user_driven_cancellation_email_to_offerer(booking: Booking) -> None:
-    recipients = _build_recipients_list(booking)
-    data = retrieve_offerer_booking_recap_email_data_after_user_cancellation(booking)
-    mails.send(recipients=recipients, data=data)
+    offerer_booking_email = booking.stock.offer.bookingEmail
+    if offerer_booking_email:
+        data = retrieve_offerer_booking_recap_email_data_after_user_cancellation(booking)
+        mails.send(recipients=[offerer_booking_email], data=data)
 
 
 def send_offerer_driven_cancellation_email_to_offerer(booking: Booking) -> None:
-    offerer_email = booking.stock.offer.bookingEmail
-    recipients = []
-    if offerer_email:
-        recipients.append(offerer_email)
-    recipients.append(settings.ADMINISTRATION_EMAIL_ADDRESS)
-    email = make_offerer_driven_cancellation_email_for_offerer(booking)
-    mails.send(recipients=recipients, data=email)
+    offerer_booking_email = booking.stock.offer.bookingEmail
+    if offerer_booking_email:
+        email = make_offerer_driven_cancellation_email_for_offerer(booking)
+        mails.send(recipients=[offerer_booking_email], data=email)
 
 
 def send_warning_to_beneficiary_after_pro_booking_cancellation(booking: Booking) -> None:
@@ -133,9 +128,10 @@ def send_attachment_validation_email_to_pro_offerer(user_offerer: UserOfferer) -
 
 
 def send_offerer_bookings_recap_email_after_offerer_cancellation(bookings: list[Booking]) -> None:
-    recipients = _build_recipients_list(bookings[0])
-    data = retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation(bookings)
-    mails.send(recipients=recipients, data=data)
+    offerer_booking_email = bookings[0].stock.offer.bookingEmail
+    if offerer_booking_email:
+        data = retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation(bookings)
+        mails.send(recipients=[offerer_booking_email], data=data)
 
 
 def send_booking_cancellation_emails_to_user_and_offerer(
@@ -158,7 +154,10 @@ def send_expired_bookings_recap_email_to_beneficiary(beneficiary: User, bookings
 
 
 def send_expired_bookings_recap_email_to_offerer(offerer: Offerer, bookings: list[Booking]) -> None:
-    recipients = _build_recipients_list(bookings[0])
+    recipients = [settings.ADMINISTRATION_EMAIL_ADDRESS]
+    offerer_booking_email = bookings[0].stock.offer.bookingEmail
+    if offerer_booking_email:
+        recipients.append(offerer_booking_email)
     data = build_expired_bookings_recap_email_data_for_offerer(offerer, bookings)
     mails.send(recipients=recipients, data=data)
 
@@ -251,12 +250,3 @@ def send_offer_validation_status_update_email(
         offer_data = retrieve_data_for_offer_rejection_email(offer)
         return mails.send(recipients=recipient_emails, data=offer_data)
     return False
-
-
-def _build_recipients_list(booking: Booking) -> list[str]:
-    recipients = []
-    offerer_booking_email = booking.stock.offer.bookingEmail
-    if offerer_booking_email:
-        recipients.append(offerer_booking_email)
-    recipients.append(settings.ADMINISTRATION_EMAIL_ADDRESS)
-    return recipients

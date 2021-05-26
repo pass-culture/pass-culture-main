@@ -108,7 +108,7 @@ class BookOfferTest:
     @mock.patch("pcapi.connectors.redis.add_offer_id")
     def test_create_booking(self, mocked_add_offer_id, app):
         user = users_factories.UserFactory()
-        stock = offers_factories.StockFactory(price=10, dnBookedQuantity=5)
+        stock = offers_factories.StockFactory(price=10, dnBookedQuantity=5, offer__bookingEmail="offerer@example.com")
 
         booking = api.book_offer(beneficiary=user, stock_id=stock.id, quantity=1)
 
@@ -338,7 +338,7 @@ class BookOfferTest:
 @pytest.mark.usefixtures("db_session")
 class CancelByBeneficiaryTest:
     def test_cancel_booking(self):
-        stock = offers_factories.StockFactory()
+        stock = offers_factories.StockFactory(offer__bookingEmail="offerer@example.com")
         booking = factories.BookingFactory.create_batch(20, stock=stock)[0]
 
         # 1: select booking

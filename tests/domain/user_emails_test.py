@@ -20,7 +20,7 @@ from pcapi.domain.user_emails import send_admin_user_validation_email
 from pcapi.domain.user_emails import send_attachment_validation_email_to_pro_offerer
 from pcapi.domain.user_emails import send_beneficiary_booking_cancellation_email
 from pcapi.domain.user_emails import send_booking_confirmation_email_to_beneficiary
-from pcapi.domain.user_emails import send_booking_recap_emails
+from pcapi.domain.user_emails import send_booking_confirmation_email_to_offerer
 from pcapi.domain.user_emails import send_expired_bookings_recap_email_to_beneficiary
 from pcapi.domain.user_emails import send_expired_bookings_recap_email_to_offerer
 from pcapi.domain.user_emails import send_newly_eligible_user_email
@@ -87,7 +87,7 @@ class SendOffererDrivenCancellationEmailToOffererTest:
     @patch(
         "pcapi.domain.user_emails.make_offerer_driven_cancellation_email_for_offerer", return_value={"Html-part": ""}
     )
-    def test_should_send_cancellation_by_offerer_email_to_offerer_and_administration_when_booking_email_provided(
+    def test_should_send_cancellation_by_offerer_email_to_offerer(
         self, make_offerer_driven_cancellation_email_for_offerer
     ):
         # Given
@@ -104,33 +104,12 @@ class SendOffererDrivenCancellationEmailToOffererTest:
 
         # Then
         make_offerer_driven_cancellation_email_for_offerer.assert_called_once_with(booking)
-        assert mails_testing.outbox[0].sent_data["To"] == "offer@example.com, administration@example.com"
-
-    @patch(
-        "pcapi.domain.user_emails.make_offerer_driven_cancellation_email_for_offerer", return_value={"Html-part": ""}
-    )
-    def test_should_send_cancellation_by_offerer_email_only_to_administration_when_no_booking_email_provided(
-        self, make_offerer_driven_cancellation_email_for_offerer
-    ):
-        # Given
-        user = create_user(email="user@example.com")
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        stock = create_stock_with_event_offer(offerer, venue)
-        stock.offer.bookingEmail = None
-        booking = create_booking(user=user, stock=stock)
-
-        # When
-        send_offerer_driven_cancellation_email_to_offerer(booking)
-
-        # Then
-        make_offerer_driven_cancellation_email_for_offerer.assert_called_once_with(booking)
-        assert mails_testing.outbox[0].sent_data["To"] == "administration@example.com"
+        assert mails_testing.outbox[0].sent_data["To"] == "offer@example.com"
 
 
 @pytest.mark.usefixtures("db_session")
 class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
-    def test_should_send_booking_cancellation_email_to_offerer_and_administration_when_booking_email_provided(self):
+    def test_should_send_booking_cancellation_email_to_offerer(self):
         # Given
         booking = BookingFactory(stock__offer__bookingEmail="booking@example.com")
 
@@ -138,17 +117,8 @@ class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
         send_user_driven_cancellation_email_to_offerer(booking)
 
         # Then
-        assert mails_testing.outbox[0].sent_data["To"] == "booking@example.com, administration@example.com"
-
-    def test_should_send_booking_cancellation_email_only_to_administration_when_no_booking_email_provided(self):
-        # Given
-        booking = BookingFactory(stock__offer__bookingEmail="")
-
-        # When
-        send_user_driven_cancellation_email_to_offerer(booking)
-
-        # Then
-        assert mails_testing.outbox[0].sent_data["To"] == "administration@example.com"
+        assert mails_testing.outbox[0].sent_data["To"] == "booking@example.com"
+        assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 780015
 
 
 @pytest.mark.usefixtures("db_session")
@@ -204,22 +174,16 @@ class SendBookingConfirmationEmailToBeneficiaryTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class SendBookingRecapEmailsTest:
-    def test_send_to_offerer_and_admin(self):
+class SendBookingConfirmationEmailToOffererTest:
+    def test_send_to_offerer(self):
         booking = BookingFactory(
             stock__offer__bookingEmail="booking.email@example.com",
         )
 
-        send_booking_recap_emails(booking)
+        send_booking_confirmation_email_to_offerer(booking)
 
-        assert mails_testing.outbox[0].sent_data["To"] == "administration@example.com, booking.email@example.com"
-
-    def test_send_only_to_admin(self):
-        booking = BookingFactory()
-
-        send_booking_recap_emails(booking)
-
-        assert mails_testing.outbox[0].sent_data["To"] == "administration@example.com"
+        assert mails_testing.outbox[0].sent_data["To"] == "booking.email@example.com"
+        assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 2843165
 
 
 @pytest.mark.usefixtures("db_session")
@@ -252,7 +216,7 @@ class SendOffererBookingsRecapEmailAfterOffererCancellationTest:
         self, retrieve_offerer_bookings_recap_email_data_after_offerer_cancellation
     ):
         # Given
-        booking = BookingFactory()
+        booking = BookingFactory(stock__offer__bookingEmail="offerer@example.com")
 
         # When
         send_offerer_bookings_recap_email_after_offerer_cancellation([booking])
