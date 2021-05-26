@@ -18,11 +18,15 @@ def create_future_beneficiaries() -> None:
         email="pctest.non-beneficiary.17-going-on-18.v1@example.com",
         dateOfBirth=eighteen_on_saturday,
         isBeneficiary=False,
+        needsToFillCulturalSurvey=False,
+        hasSeenTutorials=True,
     )
     users_factories.UserFactory(
         email="pctest.non-beneficiary.17-going-on-18.v2@example.com",
         dateOfBirth=eighteen_on_saturday,
         isBeneficiary=False,
+        needsToFillCulturalSurvey=False,
+        hasSeenTutorials=True,
     )
 
     logger.info("created 2 future beneficiaries")
@@ -34,6 +38,8 @@ def create_expiring_beneficiary() -> None:
         email="pctest.beneficiary.deposit-expires-soon@example.com",
         deposit__expirationDate=coming_saturday,
         deposit__source="sandbox",
+        needsToFillCulturalSurvey=False,
+        hasSeenTutorials=True,
     )
 
     logger.info("created 1 expiring beneficiary")
@@ -41,7 +47,10 @@ def create_expiring_beneficiary() -> None:
 
 def create_beneficiary_with_empty_deposit() -> None:
     beneficiary_user = users_factories.UserFactory(
-        email="pctest.beneficiary.no-more-deposit@example.com", deposit__source="sandbox"
+        email="pctest.beneficiary.no-more-deposit@example.com",
+        deposit__source="sandbox",
+        needsToFillCulturalSurvey=False,
+        hasSeenTutorials=True,
     )
     beneficiary_user.deposit.amount = 0
     repository.save(beneficiary_user)
@@ -57,6 +66,8 @@ def create_beneficiary_with_specific_address() -> None:
         departementCode="75",
         postalCode="75001",
         deposit__source="sandbox",
+        needsToFillCulturalSurvey=False,
+        hasSeenTutorials=True,
     )
 
     logger.info("created 1 beneficiary with specific address")
