@@ -51,6 +51,65 @@ if settings.IS_DEV is False:
 
 app = Flask(__name__, static_url_path="/static")
 
+# These `before_request()` and `after_request()` callbacks must be
+# registered first, so that:
+# - our "before request" is called first to record the start time of
+#   the request processing. If it was not the first callback, an
+#   exception in another callback (such as RateLimitExceeded) would
+#   prevent ours to be called;
+# - our "log_request_details" is called last (sic) to, well, log.
+#
+# Reminder: functions registered for after request execution are
+# called in reverse order of registration.
+@app.before_request
+def before_request() -> None:
+    if current_user and current_user.is_authenticated:
+        sentry_sdk.set_user(
+            {
+                "id": current_user.id,
+            }
+        )
+    sentry_sdk.set_tag("correlation-id", get_or_set_correlation_id())
+    g.request_start = time.perf_counter()
+
+
+@app.after_request
+def log_request_details(response: flask.wrappers.Response) -> flask.wrappers.Response:
+    extra = {
+        "statusCode": response.status_code,
+        "method": request.method,
+        "route": str(request.url_rule),  # e.g "/offers/<offer_id>"
+        "path": request.path,
+        "queryParams": request.query_string.decode("UTF-8"),
+        "size": response.headers.get("Content-Length", type=int),
+        "deviceId": request.headers.get("device-id"),
+    }
+    try:
+        duration = round((time.perf_counter() - g.request_start) * 1000)  # milliseconds
+    except AttributeError:
+        # If an error occurs in any "before request" function before
+        # our `before_request()` above is called, `g.request_start`
+        # will not be set. It is unlikely since our callback should be
+        # the first, but it warrants an analysis.
+        logger.warning("g.request_start was not available in log_request_details", exc_info=True)
+    else:
+        extra["duration"] = duration
+
+    logger.info("HTTP request at %s", request.path, extra=extra)
+
+    return response
+
+
+@app.after_request
+def add_security_headers(response: flask.wrappers.Response) -> flask.wrappers.Response:
+    response.headers["X-Frame-Options"] = "SAMEORIGIN"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
+
+    return response
+
+
 if not settings.IS_DEV or settings.IS_RUNNING_TESTS:
     # Remove default logger/handler, since we use our own (see pcapi.core.logging)
     app.logger.removeHandler(default_handler)
@@ -94,47 +153,6 @@ app.config["RATELIMIT_STORAGE_URL"] = settings.REDIS_URL
 jwt = JWTManager(app)
 
 rate_limiter.init_app(app)
-
-
-@app.before_request
-def before_request() -> None:
-    if current_user and current_user.is_authenticated:
-        sentry_sdk.set_user(
-            {
-                "id": current_user.id,
-            }
-        )
-    sentry_sdk.set_tag("correlation-id", get_or_set_correlation_id())
-    g.request_start = time.perf_counter()
-
-
-@app.after_request
-def log_request_details(response: flask.wrappers.Response) -> flask.wrappers.Response:
-    duration = round((time.perf_counter() - g.request_start) * 1000)  # milliseconds
-    extra = {
-        "statusCode": response.status_code,
-        "method": request.method,
-        "route": str(request.url_rule),  # e.g "/offers/<offer_id>"
-        "path": request.path,
-        "queryParams": request.query_string.decode("UTF-8"),
-        "duration": duration,
-        "size": response.headers.get("Content-Length", type=int),
-        "deviceId": request.headers.get("device-id"),
-    }
-
-    logger.info("HTTP request at %s", request.path, extra=extra)
-
-    return response
-
-
-@app.after_request
-def add_security_headers(response: flask.wrappers.Response) -> flask.wrappers.Response:
-    response.headers["X-Frame-Options"] = "SAMEORIGIN"
-    response.headers["X-Content-Type-Options"] = "nosniff"
-    response.headers["X-XSS-Protection"] = "1; mode=block"
-    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
-
-    return response
 
 
 @app.teardown_request
