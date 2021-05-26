@@ -14,6 +14,7 @@ class SettingsResponse(BaseModel):
     enable_native_id_check_version: bool
     enable_phone_validation: bool
     whole_france_opening: bool
+    display_dms_redirection: bool
 
     _convert_deposit_amount = validator("deposit_amount", pre=True, allow_reuse=True)(convert_to_cent)
 

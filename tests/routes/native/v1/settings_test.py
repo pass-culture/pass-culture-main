@@ -17,6 +17,7 @@ class SettingsTest:
         ENABLE_NATIVE_ID_CHECK_VERSION=False,
         ENABLE_PHONE_VALIDATION=True,
         WHOLE_FRANCE_OPENING=True,
+        DISPLAY_DMS_REDIRECTION=True,
     )
     def test_get_settings_feature_combination_1(self, app):
         response = TestClient(app.test_client()).get("/native/v1/settings")
@@ -29,6 +30,7 @@ class SettingsTest:
             "isRecaptchaEnabled": True,
             "enablePhoneValidation": True,
             "wholeFranceOpening": True,
+            "displayDmsRedirection": True,
         }
 
     @override_features(
@@ -39,6 +41,7 @@ class SettingsTest:
         ENABLE_NATIVE_ID_CHECK_VERSION=True,
         ENABLE_PHONE_VALIDATION=False,
         WHOLE_FRANCE_OPENING=False,
+        DISPLAY_DMS_REDIRECTION=False,
     )
     def test_get_settings_feature_combination_2(self, app):
         response = TestClient(app.test_client()).get("/native/v1/settings")
@@ -51,4 +54,5 @@ class SettingsTest:
             "isRecaptchaEnabled": False,
             "enablePhoneValidation": False,
             "wholeFranceOpening": False,
+            "displayDmsRedirection": False,
         }
