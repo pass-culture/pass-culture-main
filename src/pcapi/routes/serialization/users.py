@@ -90,7 +90,6 @@ class SharedLoginUserResponseModel(BaseModel):
     departementCode: str
     email: str
     firstName: Optional[str]
-    hasOffers: Optional[bool]
     hasPhysicalVenues: Optional[bool]
     hasSeenProTutorials: Optional[bool]
     id: str

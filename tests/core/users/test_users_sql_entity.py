@@ -15,9 +15,7 @@ from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.models import ApiErrors
-from pcapi.models import ThingType
 from pcapi.repository import repository
 
 
@@ -174,39 +172,6 @@ class HasPhysicalVenuesTest:
 
         # then
         assert user.hasPhysicalVenues is True
-
-
-class nOffersTest:
-    @pytest.mark.usefixtures("db_session")
-    def test_webapp_user_has_no_offerers(self, app):
-        # given
-        user = create_user()
-
-        repository.save(user)
-
-        # then
-        assert user.hasOffers is False
-
-    @pytest.mark.usefixtures("db_session")
-    def test_pro_user_with_offers_from_many_offerers(self, app):
-        # given
-        user = create_user()
-        offerer = create_offerer()
-        offerer2 = create_offerer(siren="123456788")
-        user_offerer = create_user_offerer(user, offerer)
-        user_offerer2 = create_user_offerer(user, offerer2)
-        offerer_virtual_venue = create_venue(offerer, is_virtual=True, siret=None)
-        offerer2_physical_venue = create_venue(offerer2, siret="12345678856734")
-        create_venue(offerer, is_virtual=True, siret=None)
-        offer = create_offer_with_thing_product(
-            offerer_virtual_venue, thing_type=ThingType.JEUX_VIDEO_ABO, url="http://fake.url"
-        )
-        offer2 = create_offer_with_thing_product(offerer2_physical_venue)
-
-        repository.save(offer, offer2, user_offerer, user_offerer2)
-
-        # then
-        assert user.hasOffers is True
 
 
 class needsToSeeTutorialsTest:

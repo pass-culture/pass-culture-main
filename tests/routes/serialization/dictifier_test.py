@@ -60,7 +60,6 @@ class AsDictTest:
 
         # then
         assert "hasPhysicalVenues" not in dict_result
-        assert "hasOffers" not in dict_result
 
     @pytest.mark.usefixtures("db_session")
     def test_returns_included_properties(self, app):
@@ -69,14 +68,13 @@ class AsDictTest:
         offerer = create_offerer()
         user_offerer = create_user_offerer(user, offerer)
         repository.save(user_offerer)
-        USER_INCLUDES = ["hasPhysicalVenues", "hasOffers"]
+        USER_INCLUDES = ["hasPhysicalVenues"]
 
         # when
         dict_result = as_dict(user, includes=USER_INCLUDES)
 
         # then
         assert "hasPhysicalVenues" in dict_result
-        assert "hasOffers" in dict_result
 
     @pytest.mark.usefixtures("db_session")
     def test_returns_model_keys_on_joined_relationships(self, app):

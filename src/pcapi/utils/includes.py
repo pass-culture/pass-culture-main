@@ -38,7 +38,6 @@ USER_INCLUDES = [
     "-suspensionReason",
     "-validationToken",
     "hasPhysicalVenues",
-    "hasOffers",
 ]
 
 WEBAPP_GET_BOOKING_INCLUDES = [

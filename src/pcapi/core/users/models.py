@@ -301,10 +301,6 @@ class User(PcObject, Model, NeedsValidationMixin):
         return self.isBeneficiary and not self.hasSeenTutorials
 
     @property
-    def hasOffers(self):
-        return any(offerer.nOffers > 0 for offerer in self.offerers)
-
-    @property
     def is_eligible(self) -> bool:
         # To avoid import loops
         from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_validator import (

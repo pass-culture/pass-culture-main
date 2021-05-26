@@ -51,7 +51,6 @@ class Get:
                 "email": "toto@example.com",
                 "firstName": "Jean",
                 "hasCompletedIdCheck": None,
-                "hasOffers": False,
                 "hasPhysicalVenues": False,
                 "hasSeenProTutorials": True,
                 "id": humanize(user.id),
@@ -91,7 +90,6 @@ class Get:
 
             # Then
             assert response.json["hasPhysicalVenues"] is True
-            assert response.json["hasOffers"] is True
 
     class Returns401:
         @pytest.mark.usefixtures("db_session")
