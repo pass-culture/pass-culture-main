@@ -125,6 +125,29 @@ commands:
             gsutil rsync -r << parameters.build_path >> gs://<< parameters.bucket_name >>
             true
 
+  mark_version_as_deployed:
+    description: Export APP version number as environment variable
+    parameters:
+      version:
+        type: string
+      subrepository:
+        type: string
+    steps:
+      - run:
+          name: Tag << parameters.subrepository >> as deployed
+          command: |
+            cd << parameters.subrepository >>;
+            git remote -v;
+
+            git config --global user.name "CircleCI - Auto release tag"
+            git config --global user.email "bot@passculture.app"
+
+            production_tag_name="production-<< parameters.version >>"
+            git tag -a -m "New version push to production" $production_tag_name --force
+
+            git push origin $production_tag_name
+
+
 ###################
 #  JOBS
 ###################
@@ -575,6 +598,47 @@ jobs:
             curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
             curl -i -k -XPOST "$GRAFANA_INFLUXDB_URL/write?db=$GRAFANA_DB" --data-binary 'deployments,application=All,environment='"$CIRCLE_BRANCH"',deployed=true version="'"$VERSION_TO_DEPLOY"'"'
 
+  mark-successful-deployement:
+    working_directory: ~/pass-culture
+    docker:
+      - image: cimg/go:1.16
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "96:8a:e0:a3:5b:af:47:c1:73:37:f7:b1:cd:ce:a2:89"
+      - run:
+          name: Initialize submodules
+          command: |
+            ls -al
+            git submodule update --init --recursive
+      - mark_version_as_deployed:
+          version : TOTO
+          subrepository : api
+      - mark_version_as_deployed:
+          version : TOTO
+          subrepository : pro
+      - mark_version_as_deployed:
+          version : TOTO
+          subrepository : webapp
+#      - run:
+#          name: Add and push the tag
+#          command: |
+#            ssh-add -D
+#            ssh-add ~/.ssh/id_rsa_968ae0a35baf47c17337f7b1cdcea289
+#
+#            git config --global user.name "CircleCI - Auto release tag"
+#            git config --global user.email "bot@passculture.app"
+#
+#            SHORT_GIT_HASH=$(echo $CIRCLE_SHA1 | cut -c -7)
+#
+#            rc_tag_name="RC-$SHORT_GIT_HASH"
+#            git tag -a -m "New release candidate pushed into master" $rc_tag_name --force
+#            git --no-pager log -n2
+#
+#            git push origin $rc_tag_name
+
+
 ###################
 #  WORKFLOWS
 ###################
@@ -705,7 +769,18 @@ workflows:
           context:
             - GCP
             - GCP_PROD
-      - release-synthesis:
+      - mark-successful-deployement:
           requires:
             - deploy-pro
             - deploy-webapp
+      - release-synthesis:
+          requires:
+            - mark-successful-deployement
+
+  test_auto_tag:
+    jobs:
+      - mark-successful-deployement:
+          filters:
+            branches:
+              only:
+                - MOB-add-release-candidate-tag
