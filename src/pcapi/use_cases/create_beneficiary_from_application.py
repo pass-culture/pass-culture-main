@@ -1,6 +1,7 @@
 import logging
 
 from pcapi.connectors.beneficiaries import get_application_by_id
+from pcapi.connectors.beneficiaries.jouve_backend import ApiJouveException
 from pcapi.core.users.api import create_reset_password_token
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsADuplicate
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import CantRegisterBeneficiary
@@ -25,7 +26,19 @@ class CreateBeneficiaryFromApplication:
         self.beneficiary_repository = BeneficiarySQLRepository()
 
     def execute(self, application_id: int, run_fraud_detection: bool = True, fraud_detection_ko: bool = False) -> None:
-        beneficiary_pre_subscription = get_application_by_id(application_id)
+        try:
+            beneficiary_pre_subscription = get_application_by_id(application_id)
+        except ApiJouveException as api_jouve_exception:
+            logger.error(
+                api_jouve_exception.value.message,
+                extra={
+                    "route": api_jouve_exception.value.route,
+                    "statusCode": api_jouve_exception.value.status_code,
+                    "applicationId": application_id,
+                },
+            )
+            return
+
         preexisting_account = find_user_by_email(beneficiary_pre_subscription.email)
 
         try:

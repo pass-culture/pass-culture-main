@@ -113,7 +113,9 @@ def test_raise_exception_when_password_is_invalid(stubed_requests_post):
         BeneficiaryJouveBackend().get_application_by(application_id)
 
     # Then
-    assert str(api_jouve_exception.value) == "Error 400 getting API jouve authentication token"
+    assert str(api_jouve_exception.value.message) == "Error getting API Jouve authentication token"
+    assert api_jouve_exception.value.route == "/REST/server/authenticationtokens"
+    assert api_jouve_exception.value.status_code == 400
 
 
 @patch("pcapi.connectors.beneficiaries.jouve_backend.requests.post")
@@ -126,7 +128,7 @@ def test_raise_exception_when_token_is_invalid(stubed_requests_post):
     get_token_response.json = MagicMock(return_value=get_token_detail_response(token))
 
     get_application_by_json = get_application_by_detail_response()
-    get_application_by_response = MagicMock(status_code=400)
+    get_application_by_response = MagicMock(status_code=500)
     get_application_by_response.json = MagicMock(return_value=get_application_by_json)
 
     stubed_requests_post.side_effect = [get_token_response, get_application_by_response]
@@ -136,4 +138,6 @@ def test_raise_exception_when_token_is_invalid(stubed_requests_post):
         BeneficiaryJouveBackend().get_application_by(application_id)
 
     # Then
-    assert str(api_jouve_exception.value) == "Error 400 getting API jouve GetJouveByID with id: 5"
+    assert str(api_jouve_exception.value.message) == "Error getting API jouve GetJeuneByID"
+    assert api_jouve_exception.value.route == "/REST/vault/extensionmethod/VEM_GetJeuneByID"
+    assert api_jouve_exception.value.status_code == 500

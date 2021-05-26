@@ -19,14 +19,19 @@ DEFAULT_JOUVE_SOURCE_ID = None
 
 
 class ApiJouveException(Exception):
-    pass
+    def __init__(self, message, status_code, route):
+        self.message = message
+        self.status_code = status_code
+        self.route = route
+        super().__init__()
 
 
 class BeneficiaryJouveBackend:
     def _get_authentication_token(self) -> str:
         expiration = datetime.datetime.now() + datetime.timedelta(hours=1)
+        uri = "/REST/server/authenticationtokens"
         response = requests.post(
-            f"{settings.JOUVE_API_DOMAIN}/REST/server/authenticationtokens",
+            f"{settings.JOUVE_API_DOMAIN}{uri}",
             headers={"Content-Type": "application/json"},
             json={
                 "Username": settings.JOUVE_API_USERNAME,
@@ -37,7 +42,9 @@ class BeneficiaryJouveBackend:
         )
 
         if response.status_code != 200:
-            raise ApiJouveException(f"Error {response.status_code} getting API jouve authentication token")
+            raise ApiJouveException(
+                "Error getting API Jouve authentication token", route=uri, status_code=response.status_code
+            )
 
         response_json = response.json()
         return response_json["Value"]
@@ -45,8 +52,9 @@ class BeneficiaryJouveBackend:
     def _get_application_content(self, application_id: str) -> dict:
         token = self._get_authentication_token()
 
+        uri = "/REST/vault/extensionmethod/VEM_GetJeuneByID"
         response = requests.post(
-            f"{settings.JOUVE_API_DOMAIN}/REST/vault/extensionmethod/VEM_GetJeuneByID",
+            f"{settings.JOUVE_API_DOMAIN}{uri}",
             headers={
                 "X-Authentication": token,
             },
@@ -54,9 +62,7 @@ class BeneficiaryJouveBackend:
         )
 
         if response.status_code != 200:
-            raise ApiJouveException(
-                f"Error {response.status_code} getting API jouve GetJouveByID with id: {application_id}"
-            )
+            raise ApiJouveException("Error getting API jouve GetJeuneByID", route=uri, status_code=response.status_code)
 
         return response.json()
 
