@@ -118,6 +118,31 @@ describe('src | components | pages | my-bookings | MyBoolingsLists | BookingList
       })
     })
 
+    it('should not return props with "utilisé" ribbon when digital offer is used but the booking is using activation codes', () => {
+      // given
+      ownProps.booking.isUsed = true
+      ownProps.booking.activationCode = 'code-lEkcmMSBW'
+      state.data.offers[0].isDigital = true
+
+      // when
+      const props = mapStateToProps(state, ownProps)
+
+      // then
+      expect(props).toStrictEqual({
+        isQrCodeFeatureDisabled: true,
+        offer: {
+          id: 'CCCC',
+          isDigital: true,
+          product: { name: 'Fake booking name' },
+          venue: {
+            departementCode: '93',
+          },
+        },
+        ribbon: null,
+        stock: { beginningDatetime: null, id: 'AA', offerId: 'CCCC' },
+      })
+    })
+
     it('should return props with "terminé" ribbon when event is over', () => {
       // given
       ownProps.booking.isEventExpired = true

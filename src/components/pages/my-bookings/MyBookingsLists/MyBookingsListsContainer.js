@@ -26,7 +26,4 @@ export const mapStateToProps = state => {
   return { bookingsOfTheWeek, finishedAndUsedAndCancelledBookings, upComingBookings }
 }
 
-export default compose(
-  withRouter,
-  connect(mapStateToProps)
-)(MyBookingsLists)
+export default compose(withRouter, connect(mapStateToProps))(MyBookingsLists)

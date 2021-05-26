@@ -14,7 +14,7 @@ export const ribbonLabelAndType = (
   isUsed,
   isCancelled,
   isPhysical,
-  isDigital,
+  isDigitalAndNotUsingActivationCode,
   isEventExpired,
   humanizeRelativeDate = ''
 ) => {
@@ -25,7 +25,7 @@ export const ribbonLabelAndType = (
         type: 'finished',
       }
     }
-    if (isDigital) {
+    if (isDigitalAndNotUsingActivationCode) {
       return {
         label: 'Utilisé',
         type: 'finished',
@@ -64,7 +64,7 @@ export const ribbonLabelAndType = (
 
 export const mapStateToProps = (state, ownProps) => {
   const { booking } = ownProps
-  const { isCancelled, isUsed, stockId } = booking
+  const { isCancelled, isUsed, stockId, activationCode } = booking
   const stock = selectStockById(state, stockId)
   const { beginningDatetime } = stock
   const offer = selectOfferById(state, stock.offerId)
@@ -77,7 +77,7 @@ export const mapStateToProps = (state, ownProps) => {
     isUsed,
     isCancelled,
     isPhysical,
-    isDigital,
+    isDigital && !activationCode,
     isEventExpired,
     humanizeRelativeBeginningDate
   )

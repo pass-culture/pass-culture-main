@@ -41,7 +41,10 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
           departementCode: '93',
         },
       },
-      stock: { id: 'future stock 1', beginningDatetime: '2030-08-21T20:00:00Z' },
+      stock: {
+        id: 'future stock 1',
+        beginningDatetime: '2030-08-21T20:00:00Z',
+      },
       trackConsultOffer: jest.fn(),
     }
   })
@@ -88,6 +91,7 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
     const bookingName = wrapper.find('.teaser-title-booking')
     const bookingDate = wrapper.find('.teaser-sub-title')
     const bookingToken = wrapper.find('.mb-token-flipped')
+    const bookingTokenTitle = wrapper.find('.mb-token-title')
     const arrowIcon = wrapper.find('.teaser-arrow').find(Icon)
     const ribbon = wrapper.find('.teaser-arrow').find(Ribbon)
 
@@ -99,6 +103,7 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
     expect(bookingName.text()).toBe('Un livre pas mal')
     expect(bookingDate.text()).toBe('Mercredi 21/08/2030 à 22:00')
     expect(bookingToken).toHaveLength(0)
+    expect(bookingTokenTitle.text()).toBe('Ta contremarque')
     expect(ribbon).toHaveLength(0)
     expect(arrowIcon).toHaveLength(1)
     expect(arrowIcon.prop('svg')).toBe('ico-next-pink')
@@ -244,5 +249,93 @@ describe('src | components | pages | my-bookings | MyBookingsList | BookingList 
     // then
     const tokenContainer = wrapper.find('.mb-token-container')
     expect(tokenContainer).toHaveLength(0)
+  })
+
+  describe('bookingItem with activation code', () => {
+    it('should render a booking with an activation code and the corresponding label when qr code feature is inactive and booking has an activation code', () => {
+      // given
+      props.isQrCodeFeatureDisabled = true
+      props.booking.activationCode = 'code-cinAymoEW'
+
+      // when
+      const wrapper = shallow(<BookingItem {...props} />)
+
+      // then
+      const bookingLink = wrapper.find(Link).first()
+      const bookingThumb = wrapper.find('.teaser-thumb').find('img')
+      const bookingName = wrapper.find('.teaser-title-booking')
+      const bookingDate = wrapper.find('.teaser-sub-title')
+      const bookingActivationCode = wrapper.find('.mb-token-flipped')
+      const bookingActivationCodeTitle = wrapper.find('.mb-token-title')
+      const arrowIcon = wrapper.find('.teaser-arrow').find(Icon)
+      const ribbon = wrapper.find('.teaser-arrow').find(Ribbon)
+
+      expect(bookingLink).toHaveLength(1)
+      expect(bookingLink.prop('to')).toBe('/reservations/details/AE?')
+      expect(bookingThumb).toHaveLength(1)
+      expect(bookingThumb.prop('alt')).toBe('')
+      expect(bookingThumb.prop('src')).toBe('/mediations/AE')
+      expect(bookingName.text()).toBe('Un livre pas mal')
+      expect(bookingDate.text()).toBe('Mercredi 21/08/2030 à 22:00')
+      expect(bookingActivationCode.text()).toBe('code-cinAymoEW')
+      expect(bookingActivationCodeTitle.text()).toBe('Ton code d’activation')
+      expect(ribbon).toHaveLength(0)
+      expect(arrowIcon).toHaveLength(1)
+    })
+
+    it('should render a booking with an activation code and the corresponding label when qr code feature is active and booking has an activation code', () => {
+      // given
+      props.isQrCodeFeatureDisabled = false
+      props.booking.activationCode = 'code-cinAymoEW'
+
+      // when
+      const wrapper = shallow(<BookingItem {...props} />)
+
+      // then
+      const bookingLink = wrapper.find(Link).first()
+      const bookingThumb = wrapper.find('.teaser-thumb').find('img')
+      const bookingName = wrapper.find('.teaser-title-booking')
+      const bookingDate = wrapper.find('.teaser-sub-title')
+      const bookingActivationCode = wrapper.find('.mb-token')
+      const bookingActivationCodeTitle = wrapper.find('.mb-token-title')
+      const arrowIcon = wrapper.find('.teaser-arrow').find(Icon)
+      const ribbon = wrapper.find('.teaser-arrow').find(Ribbon)
+
+      expect(bookingLink).toHaveLength(1)
+      expect(bookingLink.prop('to')).toBe('/reservations/details/AE?')
+      expect(bookingThumb).toHaveLength(1)
+      expect(bookingThumb.prop('alt')).toBe('')
+      expect(bookingThumb.prop('src')).toBe('/mediations/AE')
+      expect(bookingName.text()).toBe('Un livre pas mal')
+      expect(bookingDate.text()).toBe('Mercredi 21/08/2030 à 22:00')
+      expect(bookingActivationCode.text()).toBe('code-cinAymoEW')
+      expect(bookingActivationCodeTitle.text()).toBe('Ton code d’activation')
+      expect(ribbon).toHaveLength(0)
+      expect(arrowIcon).toHaveLength(1)
+      expect(arrowIcon.prop('svg')).toBe('ico-next-pink')
+    })
+
+    it('should render an external link to the corresponding booking offer when offer is not used and booking has an activation code', () => {
+      // given
+      props.isQrCodeFeatureDisabled = false
+      props.booking.activationCode = 'code-cinAymoEW'
+      props.booking.completedUrl = 'http://myfakeurl'
+
+      // when
+      const wrapper = shallow(<BookingItem {...props} />)
+
+      // then
+      const bookingTokenLink = wrapper.find('.mb-token-container').find('a')
+      const iconLink = bookingTokenLink.find(Icon)
+
+      expect(bookingTokenLink).toHaveLength(1)
+      expect(bookingTokenLink.prop('href')).toBe('http://myfakeurl')
+      expect(bookingTokenLink.prop('rel')).toBe('noopener noreferrer')
+      expect(bookingTokenLink.prop('target')).toBe('_blank')
+      expect(bookingTokenLink.prop('title')).toBe('Accéder à l’offre - Nouvelle fenêtre')
+      expect(bookingTokenLink.render().text()).toBe('Accéder à l’offre')
+      expect(iconLink).toHaveLength(1)
+      expect(iconLink.prop('svg')).toBe('ico-external-site-red')
+    })
   })
 })

@@ -446,6 +446,89 @@ describe('selectUpComingBookings', () => {
     expect(bookings).toStrictEqual([])
   })
 
+  it('should return a booking on a thing when it is used but has activation code and is not set displayAsEnded true', () => {
+    // given
+    const state = {
+      data: {
+        bookings: [
+          {
+            id: 'usedBookingForDigitalOffer',
+            isUsed: true,
+            isCancelled: false,
+            stockId: 'digitalStock',
+            activationCode: 'code-lEkcmMSBW',
+          },
+        ],
+        offers: [
+          {
+            id: 'digitalOffer',
+            hasBookingLimitDatetimesPassed: false,
+            isEvent: false,
+            isDigital: true,
+          },
+        ],
+        stocks: [
+          {
+            id: 'digitalStock',
+            offerId: 'digitalOffer',
+          },
+        ],
+      },
+    }
+
+    // when
+    const bookings = selectUpComingBookings(state)
+
+    // then
+    expect(bookings).toStrictEqual([
+      {
+        id: 'usedBookingForDigitalOffer',
+        isUsed: true,
+        isCancelled: false,
+        stockId: 'digitalStock',
+        activationCode: 'code-lEkcmMSBW',
+      },
+    ])
+  })
+
+  it('should not return a booking on a thing when it is used but has activation code and is not set displayAsEnded true', () => {
+    // given
+    const state = {
+      data: {
+        bookings: [
+          {
+            id: 'usedBookingForDigitalOffer',
+            isUsed: true,
+            isCancelled: false,
+            stockId: 'digitalStock',
+            activationCode: 'code-lEkcmMSBW',
+            displayAsEnded: true,
+          },
+        ],
+        offers: [
+          {
+            id: 'digitalOffer',
+            hasBookingLimitDatetimesPassed: false,
+            isEvent: false,
+            isDigital: true,
+          },
+        ],
+        stocks: [
+          {
+            id: 'digitalStock',
+            offerId: 'digitalOffer',
+          },
+        ],
+      },
+    }
+
+    // when
+    const bookings = selectUpComingBookings(state)
+
+    // then
+    expect(bookings).toStrictEqual([])
+  })
+
   it('should not a return a cancelled booking', () => {
     // given
     const state = {
@@ -770,10 +853,19 @@ describe('selectUsedThingBookings', () => {
             stockId: 's1',
           },
         ],
+        offers: [
+          {
+            id: 'eventOffer',
+            hasBookingLimitDatetimesPassed: false,
+            isEvent: true,
+            isDigital: false,
+          },
+        ],
         stocks: [
           {
             beginningDatetime: fourDaysAfterNow,
             id: 's1',
+            offerId: 'eventOffer',
           },
         ],
       },
@@ -797,10 +889,19 @@ describe('selectUsedThingBookings', () => {
             stockId: 's1',
           },
         ],
+        offers: [
+          {
+            id: 'thingOffer',
+            hasBookingLimitDatetimesPassed: false,
+            isEvent: false,
+            isDigital: false,
+          },
+        ],
         stocks: [
           {
             beginningDatetime: null,
             id: 's1',
+            offerId: 'thingOffer',
           },
         ],
       },
@@ -824,10 +925,19 @@ describe('selectUsedThingBookings', () => {
             stockId: 's1',
           },
         ],
+        offers: [
+          {
+            id: 'thingOffer',
+            hasBookingLimitDatetimesPassed: false,
+            isEvent: false,
+            isDigital: false,
+          },
+        ],
         stocks: [
           {
             beginningDatetime: null,
             id: 's1',
+            offerId: 'thingOffer',
           },
         ],
       },
@@ -842,6 +952,131 @@ describe('selectUsedThingBookings', () => {
         id: 'b1',
         isUsed: true,
         stockId: 's1',
+      },
+    ])
+  })
+
+  it('should return booking on digital offer', () => {
+    // given
+    const state = {
+      data: {
+        bookings: [
+          {
+            id: 'b1',
+            isUsed: true,
+            stockId: 's1',
+          },
+        ],
+        offers: [
+          {
+            id: 'digitalOffer',
+            hasBookingLimitDatetimesPassed: false,
+            isEvent: false,
+            isDigital: true,
+          },
+        ],
+        stocks: [
+          {
+            beginningDatetime: null,
+            id: 's1',
+            offerId: 'digitalOffer',
+          },
+        ],
+      },
+    }
+
+    // when
+    const bookings = selectUsedThingBookings(state)
+
+    // then
+    expect(bookings).toStrictEqual([
+      {
+        id: 'b1',
+        isUsed: true,
+        stockId: 's1',
+      },
+    ])
+  })
+
+  it('should not return booking with activation code on digital offer', () => {
+    // given
+    const state = {
+      data: {
+        bookings: [
+          {
+            id: 'b1',
+            isUsed: true,
+            stockId: 's1',
+            activationCode: 'code-lEkcmMSBW',
+          },
+        ],
+        offers: [
+          {
+            id: 'digitalOffer',
+            hasBookingLimitDatetimesPassed: false,
+            isEvent: false,
+            isDigital: true,
+          },
+        ],
+        stocks: [
+          {
+            beginningDatetime: null,
+            id: 's1',
+            offerId: 'digitalOffer',
+          },
+        ],
+      },
+    }
+
+    // when
+    const bookings = selectUsedThingBookings(state)
+
+    // then
+    expect(bookings).toStrictEqual([])
+  })
+
+  it('should return booking with activation code on digital offer when displayAsEnded is set to true', () => {
+    // given
+    const state = {
+      data: {
+        bookings: [
+          {
+            id: 'b1',
+            isUsed: true,
+            stockId: 's1',
+            activationCode: 'code-lEkcmMSBW',
+            displayAsEnded: true,
+          },
+        ],
+        offers: [
+          {
+            id: 'digitalOffer',
+            hasBookingLimitDatetimesPassed: false,
+            isEvent: false,
+            isDigital: true,
+          },
+        ],
+        stocks: [
+          {
+            beginningDatetime: null,
+            id: 's1',
+            offerId: 'digitalOffer',
+          },
+        ],
+      },
+    }
+
+    // when
+    const bookings = selectUsedThingBookings(state)
+
+    // then
+    expect(bookings).toStrictEqual([
+      {
+        id: 'b1',
+        isUsed: true,
+        activationCode: 'code-lEkcmMSBW',
+        stockId: 's1',
+        displayAsEnded: true,
       },
     ])
   })

@@ -86,9 +86,13 @@ export const selectUpComingBookings = createSelector(
 
       if (bookingOffer.isEvent) {
         return moment(bookingStock.beginningDatetime).isAfter(sevenDaysFromNow)
-      } else {
-        return !booking.isUsed
       }
+
+      if (bookingOffer.isDigital && booking.activationCode) {
+        return !booking.displayAsEnded
+      }
+
+      return !booking.isUsed
     })
 
     return selectBookingsOrderedByBeginningDateTimeAsc(
@@ -117,10 +121,17 @@ export const selectCancelledBookings = createSelector(selectBookings, bookings =
 
 export const selectUsedThingBookings = createSelector(
   selectBookings,
+  state => state.data.offers,
   state => state.data.stocks,
-  (bookings, stocks) =>
+  (bookings, offers, stocks) =>
     bookings.filter(booking => {
       const stock = selectStockById({ data: { stocks } }, booking.stockId)
+      const offer = selectOfferById({ data: { offers } }, stock.offerId)
+
+      if (offer.isDigital && booking.activationCode) {
+        return booking.displayAsEnded
+      }
+
       return !stock.beginningDatetime ? booking.isUsed : false
     })
 )

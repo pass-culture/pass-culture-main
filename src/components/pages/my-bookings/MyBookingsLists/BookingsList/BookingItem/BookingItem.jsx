@@ -22,7 +22,7 @@ const BookingItem = ({
   shouldDisplayToken,
   trackConsultOffer,
 }) => {
-  const { qrCode, quantity, token } = booking
+  const { activationCode, completedUrl, qrCode, quantity, token } = booking
   const { beginningDatetime } = stock
   const { label, type } = ribbon || {}
   const { name: offerName, venue, thumbUrl } = offer
@@ -85,29 +85,47 @@ const BookingItem = ({
           <div className="mb-corner top left" />
           <div className="mb-corner top right" />
           <div className="mb-token-title">
-            {'Ta contremarque'}
+            {activationCode ? 'Ton code d’activation' : 'Ta contremarque'}
           </div>
           {isQrCodeFeatureDisabled && (
             <div className="mb-token-contremarque-container">
               <div className="mb-token-flipped">
-                {token.toLowerCase()}
+                {activationCode ? activationCode : token.toLowerCase()}
               </div>
             </div>
           )}
           {!isQrCodeFeatureDisabled && qrCode && (
             <div className="mb-token-contremarque-container">
               <div className="mb-token">
-                {token.toLowerCase()}
+                {activationCode ? activationCode : token.toLowerCase()}
               </div>
               <hr />
-              <div className="mb-token-link-container">
-                <Link
-                  className="mb-token-link"
-                  to={getQrCodeUrl(detailsUrl)}
-                >
-                  {'Voir le QR code'}
-                </Link>
-              </div>
+              {activationCode ? (
+                <div className="mb-token-link-container">
+                  <a
+                    className="mb-token-link"
+                    href={completedUrl}
+                    rel="noopener noreferrer"
+                    target="_blank"
+                    title="Accéder à l’offre - Nouvelle fenêtre"
+                  >
+                    <Icon
+                      className="ico-external-site"
+                      svg="ico-external-site-red"
+                    />
+                    {'Accéder à l’offre'}
+                  </a>
+                </div>
+              ) : (
+                <div className="mb-token-link-container">
+                  <Link
+                    className="mb-token-link"
+                    to={getQrCodeUrl(detailsUrl)}
+                  >
+                    {'Voir le QR code'}
+                  </Link>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -124,7 +142,9 @@ BookingItem.defaultProps = {
 BookingItem.propTypes = {
   booking: PropTypes.shape({
     id: PropTypes.string,
+    activationCode: PropTypes.string,
     qrCode: PropTypes.string,
+    completedUrl: PropTypes.string,
     quantity: PropTypes.number,
     token: PropTypes.string.isRequired,
   }).isRequired,
