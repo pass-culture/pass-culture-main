@@ -58,6 +58,8 @@ def _serialize_beneficiary_booking(
         "isCancelled": beneficiary_booking.isCancelled,
         "isUsed": beneficiary_booking.isUsed,
         "quantity": beneficiary_booking.quantity,
+        "displayAsEnded": beneficiary_booking.displayAsEnded,
+        "activationCode": beneficiary_booking.activationCode,
         "stock": {
             "id": humanize(beneficiary_booking.stockId),
             "beginningDatetime": serialize(beneficiary_booking.beginningDatetime),
@@ -98,4 +100,5 @@ def _serialize_beneficiary_booking(
     }
     if with_qr_code:
         dictified_booking["qrCode"] = beneficiary_booking.qr_code
+
     return dictified_booking

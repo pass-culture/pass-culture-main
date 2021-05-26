@@ -17,10 +17,10 @@ from tests.conftest import TestClient
 
 
 class Get:
-    class Returns200:
+    class Returns200Test:
         @patch("pcapi.routes.webapp.bookings.feature_queries.is_active", return_value=False)
         @pytest.mark.usefixtures("db_session")
-        def when_user_has_bookings_and_qr_code_feature_is_inactive_does_not_return_qr_code(
+        def test_when_user_has_bookings_and_qr_code_feature_is_inactive_does_not_return_qr_code(
             self, qr_code_is_active, app
         ):
             # Given
@@ -50,11 +50,13 @@ class Get:
             assert "validationToken" not in bookings[0]["stock"]["offer"]["venue"]
             assert bookings[0]["id"] == humanize(booking1.id)
             assert bookings[0] == {
+                "activationCode": None,
                 "amount": 0.0,
                 "cancellationDate": None,
                 "completedUrl": None,
                 "dateCreated": format_into_utc_date(booking1.dateCreated),
                 "dateUsed": None,
+                "displayAsEnded": None,
                 "id": humanize(booking1.id),
                 "isCancelled": False,
                 "isEventExpired": False,

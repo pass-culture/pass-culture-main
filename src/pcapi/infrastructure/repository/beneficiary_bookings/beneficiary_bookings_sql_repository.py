@@ -5,6 +5,7 @@ from pcapi.domain.beneficiary_bookings.beneficiary_bookings_repository import Be
 from pcapi.domain.beneficiary_bookings.beneficiary_bookings_with_stocks import BeneficiaryBookingsWithStocks
 from pcapi.infrastructure.repository.beneficiary_bookings import active_mediation_domain_converter
 from pcapi.infrastructure.repository.beneficiary_bookings import stock_domain_converter
+from pcapi.models import ActivationCode
 from pcapi.models import Booking
 from pcapi.models import Offer
 from pcapi.models import Product
@@ -64,6 +65,8 @@ class BeneficiaryBookingsSQLRepository(BeneficiaryBookingsRepository):
                     productId=booking.productId,
                     thumbCount=booking.thumbCount,
                     active_mediations=[mediation for mediation in mediations if mediation.offer_id == booking.offerId],
+                    activationCode=booking.activationCode,
+                    displayAsEnded=booking.displayAsEnded,
                 )
             )
         return BeneficiaryBookingsWithStocks(bookings=beneficiary_bookings, stocks=stocks)
@@ -99,7 +102,7 @@ def _get_stocks_information(offers_ids: list[int]) -> list[object]:
     )
 
 
-def _get_bookings_information(beneficiary_id: int) -> list[object]:
+def _get_bookings_information(beneficiary_id: int) -> list[Booking]:
     offer_activation_types = ["ThingType.ACTIVATION", "EventType.ACTIVATION"]
     return (
         Booking.query.join(User, User.id == Booking.userId)
@@ -107,6 +110,7 @@ def _get_bookings_information(beneficiary_id: int) -> list[object]:
         .join(Offer)
         .join(Product, Offer.productId == Product.id)
         .join(Venue)
+        .outerjoin(ActivationCode, ActivationCode.bookingId == Booking.id)
         .filter(Booking.userId == beneficiary_id)
         .filter(Offer.type.notin_(offer_activation_types))
         .distinct(Booking.stockId)
@@ -123,6 +127,7 @@ def _get_bookings_information(beneficiary_id: int) -> list[object]:
             Booking.stockId,
             Booking.token,
             Booking.userId,
+            Booking.displayAsEnded,
             Offer.id.label("offerId"),
             Offer.name,
             Offer.type,
@@ -147,6 +152,7 @@ def _get_bookings_information(beneficiary_id: int) -> list[object]:
             Venue.city,
             Venue.latitude,
             Venue.longitude,
+            ActivationCode.code.label("activationCode"),
         )
         .all()
     )

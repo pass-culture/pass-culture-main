@@ -7,7 +7,7 @@ from pcapi.domain.beneficiary_bookings.beneficiary_booking import BeneficiaryBoo
 
 class BeneficiaryBookingTest:
     class BookingAccessUrlTest:
-        def should_return_booking_completed_url(self):
+        def test_should_return_booking_completed_url(self):
             # Given
             beneficiary_booking = BeneficiaryBooking(
                 amount=12,
@@ -46,6 +46,8 @@ class BeneficiaryBookingTest:
                 productId=12,
                 thumbCount=0,
                 active_mediations=[],
+                displayAsEnded=False,
+                activationCode=None,
             )
 
             # When
@@ -94,6 +96,8 @@ class BeneficiaryBookingTest:
                 productId=12,
                 thumbCount=0,
                 active_mediations=[],
+                displayAsEnded=False,
+                activationCode=None,
             )
 
             # When
@@ -141,6 +145,8 @@ class BeneficiaryBookingTest:
                 productId=12,
                 thumbCount=0,
                 active_mediations=[],
+                displayAsEnded=False,
+                activationCode=None,
             )
 
             # When
@@ -188,6 +194,8 @@ class BeneficiaryBookingTest:
                 productId=12,
                 thumbCount=0,
                 active_mediations=[],
+                displayAsEnded=False,
+                activationCode=None,
             )
 
             # When
@@ -236,6 +244,8 @@ class BeneficiaryBookingTest:
                 productId=12,
                 thumbCount=1,
                 active_mediations=[],
+                displayAsEnded=False,
+                activationCode=None,
             )
 
             # When / Then
@@ -286,6 +296,8 @@ class BeneficiaryBookingTest:
                         offer_id=45,
                     )
                 ],
+                displayAsEnded=False,
+                activationCode=None,
             )
 
             # When / Then

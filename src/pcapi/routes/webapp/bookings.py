@@ -1,3 +1,5 @@
+from typing import Any
+
 from flask import abort
 from flask import jsonify
 from flask_login import current_user
@@ -23,7 +25,7 @@ from pcapi.utils.rest import expect_json_data
 
 @private_api.route("/bookings", methods=["GET"])
 @login_required
-def get_bookings():
+def get_bookings() -> Any:
     beneficiary_bookings = get_bookings_for_beneficiary.execute(current_user.id)
     serialize_with_qr_code = feature_queries.is_active(FeatureToggle.QR_CODE)
     serialized_bookings = serialize_beneficiary_bookings(beneficiary_bookings, with_qr_code=serialize_with_qr_code)
@@ -32,7 +34,7 @@ def get_bookings():
 
 @private_api.route("/bookings/<booking_id>", methods=["GET"])
 @login_required
-def get_booking(booking_id: int):
+def get_booking(booking_id: int) -> Any:
     booking = Booking.query.filter_by(id=dehumanize(booking_id)).first_or_404()
 
     return jsonify(as_dict(booking, includes=WEBAPP_GET_BOOKING_INCLUDES)), 200
@@ -60,7 +62,7 @@ def create_booking(body: PostBookingBodyModel) -> PostBookingResponseModel:
 
 @private_api.route("/bookings/<booking_id>/cancel", methods=["PUT"])
 @login_required
-def cancel_booking(booking_id: str):
+def cancel_booking(booking_id: str) -> Any:
     booking = Booking.query.filter_by(id=dehumanize(booking_id)).first_or_404()
 
     bookings_api.cancel_booking_by_beneficiary(current_user, booking)

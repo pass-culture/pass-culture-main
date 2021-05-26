@@ -51,6 +51,8 @@ class BeneficiaryBooking:
         productId: int,
         thumbCount: int,
         active_mediations: list[ActiveMediation],
+        activationCode: Optional[str],
+        displayAsEnded: Optional[bool],
     ):
         self.price = price
         self.longitude = longitude
@@ -88,6 +90,8 @@ class BeneficiaryBooking:
         self.thumb_url = self._compute_thumb_url(
             active_mediations=active_mediations, product_id=productId, product_thumb_count=thumbCount
         )
+        self.activationCode = activationCode
+        self.displayAsEnded = displayAsEnded
 
     @staticmethod
     def _compute_thumb_url(
