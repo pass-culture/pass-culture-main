@@ -1,7 +1,7 @@
 """migrate_id_at_provider_part_1
 
 Revision ID: 20290f0b5d4f
-Revises: 9908a2709641
+Revises: 963e6e163cf0
 Create Date: 2021-04-30 14:11:44.426573
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = "20290f0b5d4f"
-down_revision = "9908a2709641"
+down_revision = "963e6e163cf0"
 branch_labels = None
 depends_on = None
 
