@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Union
 
 from flask import abort
@@ -45,8 +46,9 @@ class OfferView(BaseAdminView):
     can_create = False
     can_edit = True
     can_delete = False
-    column_list = ["id", "name", "type", "criteria", "rankingWeight", "validation"]
-    column_sortable_list = ["name", "type", "criteria", "rankingWeight", "validation"]
+    can_export = True
+    column_list = ["id", "name", "type", "criteria", "rankingWeight", "validation", "lastValidationDate"]
+    column_sortable_list = ["name", "type", "criteria", "rankingWeight", "validation", "lastValidationDate"]
     column_labels = {
         "name": "Nom",
         "type": "Type",
@@ -56,7 +58,7 @@ class OfferView(BaseAdminView):
     }
     # Do not add searchable column on offer view for performance reasons
     # use the filters feature instead
-    column_filters = ["id", "type", "criteria.name", "name", "rankingWeight", "validation"]
+    column_filters = ["id", "type", "criteria.name", "name", "rankingWeight", "validation", "lastValidationDate"]
     form_columns = ["criteria", "rankingWeight"]
     simple_list_pager = True
 
@@ -211,7 +213,7 @@ class ValidationView(BaseAdminView):
                 )
                 if is_offer_updated:
                     flash("Le statut de l'offre a bien été modifié", "success")
-
+                    offer.lastValidationDate = datetime.utcnow()
                     recipients = (
                         [offer.venue.bookingEmail]
                         if offer.venue.bookingEmail

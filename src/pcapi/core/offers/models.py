@@ -315,6 +315,8 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin):
 
     externalTicketOfficeUrl = Column(String, nullable=True)
 
+    lastValidationDate = Column(DateTime, nullable=True)
+
     validation = Column(
         Enum(OfferValidationStatus),
         nullable=False,

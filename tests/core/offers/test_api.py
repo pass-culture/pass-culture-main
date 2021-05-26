@@ -5,6 +5,7 @@ import pathlib
 from unittest import mock
 
 from flask import current_app as app
+from freezegun import freeze_time
 import pytest
 
 from pcapi import models
@@ -82,6 +83,7 @@ class UpsertStocksTest:
         assert edited_stock.quantity == 7
         mocked_add_offer_id.assert_called_once_with(client=app.redis_client, offer_id=offer.id)
 
+    @freeze_time("2020-11-17 15:00:00")
     def test_upsert_stocks_triggers_draft_offer_validation(self):
         # Given draft offers and new stock data
         user = users_factories.UserFactory()
@@ -98,10 +100,13 @@ class UpsertStocksTest:
         # Then validations statuses are correctly computed
         assert draft_approvable_offer.validation == OfferValidationStatus.APPROVED
         assert draft_approvable_offer.isActive
+        assert draft_approvable_offer.lastValidationDate == datetime(2020, 11, 17, 15, 0)
         assert draft_suspicious_offer.validation == OfferValidationStatus.PENDING
         assert not draft_suspicious_offer.isActive
+        assert draft_suspicious_offer.lastValidationDate == datetime(2020, 11, 17, 15, 0)
         assert draft_fraudulent_offer.validation == OfferValidationStatus.REJECTED
         assert not draft_fraudulent_offer.isActive
+        assert draft_fraudulent_offer.lastValidationDate == datetime(2020, 11, 17, 15, 0)
 
     def test_upsert_stocks_does_not_trigger_approved_offer_validation(self):
         # Given offers with stock and new stock data

@@ -1,6 +1,7 @@
 import datetime
 from unittest.mock import patch
 
+from freezegun import freeze_time
 import pytest
 
 from pcapi.admin.custom_views.offer_view import OfferView
@@ -294,6 +295,7 @@ class OfferValidationViewTest:
         # Then
         assert response.status_code == 403
 
+    @freeze_time("2020-11-17 15:00:00")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.admin.custom_views.offer_view.get_offerer_legal_category")
     @patch("pcapi.admin.custom_views.offer_view.send_offer_validation_notification_to_administration")
@@ -336,7 +338,9 @@ class OfferValidationViewTest:
         mocked_send_offer_validation_notification_to_administration.assert_called_once_with(
             OfferValidationStatus.APPROVED, offer
         )
+        assert offer.lastValidationDate == datetime.datetime(2020, 11, 17, 15)
 
+    @freeze_time("2020-11-17 15:00:00")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.admin.custom_views.offer_view.get_offerer_legal_category")
     @patch("pcapi.admin.custom_views.offer_view.send_offer_validation_notification_to_administration")
@@ -381,3 +385,4 @@ class OfferValidationViewTest:
         assert response.status_code == 200
         assert offer.validation == OfferValidationStatus.REJECTED
         assert offer.isActive is False
+        assert offer.lastValidationDate == datetime.datetime(2020, 11, 17, 15)
