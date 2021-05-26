@@ -74,7 +74,8 @@ class SuspensionMixin:
             form = SuspensionForm(request.form)
             if form.validate():
                 flash(f"Le compte de l'utilisateur {user.email} ({user.id}) a été suspendu.")
-                users_api.suspend_account(user, form.data["reason"], current_user)
+                reason = {r.value: r for r in users_constants.SuspensionReason}[form.data["reason"]]
+                users_api.suspend_account(user, reason, current_user)
                 return redirect(self.user_list_url)
         else:
             form = SuspensionForm()

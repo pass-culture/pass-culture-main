@@ -8,6 +8,7 @@ from requests.auth import _basic_auth_str
 from pcapi.admin.custom_views.beneficiary_user_view import BeneficiaryUserView
 from pcapi.admin.custom_views.mixins.suspension_mixin import _allow_suspension_and_unsuspension
 from pcapi.core import testing
+import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import Token
@@ -205,7 +206,8 @@ class BeneficiaryUserViewTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_suspend_beneficiary(self, mocked_validate_csrf_token, app):
         admin = users_factories.UserFactory(email="admin15@example.com", isAdmin=True)
-        beneficiary = users_factories.UserFactory(email="user15@example.com")
+        booking = bookings_factories.BookingFactory()
+        beneficiary = booking.user
 
         client = TestClient(app.test_client()).with_auth(admin.email)
         url = f"/pc/back-office/beneficiary_users/suspend?user_id={beneficiary.id}"
@@ -217,6 +219,7 @@ class BeneficiaryUserViewTest:
 
         assert response.status_code == 302
         assert not beneficiary.isActive
+        assert booking.isCancelled
 
     @clean_database
     # FIXME (dbaty, 2020-12-16): I could not find a quick way to
