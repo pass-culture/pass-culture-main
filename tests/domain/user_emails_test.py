@@ -414,8 +414,8 @@ class SendExpiredBookingsRecapEmailToOffererTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_send_email_to_offerer_when_expired_bookings_cancelled(self, app):
         offerer = OffererFactory()
-        expired_today_dvd_booking = BookingFactory()
-        expired_today_cd_booking = BookingFactory()
+        expired_today_dvd_booking = BookingFactory(stock__offer__bookingEmail="offerer.booking@example.com")
+        expired_today_cd_booking = BookingFactory(stock__offer__bookingEmail="offerer.booking@example.com")
 
         send_expired_bookings_recap_email_to_offerer(offerer, [expired_today_cd_booking, expired_today_dvd_booking])
 

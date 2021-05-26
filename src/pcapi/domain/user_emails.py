@@ -1,6 +1,5 @@
 import logging
 
-from pcapi import settings
 from pcapi.core import mails
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
@@ -154,12 +153,10 @@ def send_expired_bookings_recap_email_to_beneficiary(beneficiary: User, bookings
 
 
 def send_expired_bookings_recap_email_to_offerer(offerer: Offerer, bookings: list[Booking]) -> None:
-    recipients = [settings.ADMINISTRATION_EMAIL_ADDRESS]
     offerer_booking_email = bookings[0].stock.offer.bookingEmail
     if offerer_booking_email:
-        recipients.append(offerer_booking_email)
-    data = build_expired_bookings_recap_email_data_for_offerer(offerer, bookings)
-    mails.send(recipients=recipients, data=data)
+        data = build_expired_bookings_recap_email_data_for_offerer(offerer, bookings)
+        mails.send(recipients=[offerer_booking_email], data=data)
 
 
 def send_pro_user_validation_email(user: User) -> None:
