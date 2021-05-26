@@ -4,8 +4,8 @@ import logging
 from dateutil.relativedelta import SA
 from dateutil.relativedelta import relativedelta
 
+import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.repository import repository
 
 
 logger = logging.getLogger(__name__)
@@ -52,8 +52,7 @@ def create_beneficiary_with_empty_deposit() -> None:
         needsToFillCulturalSurvey=False,
         hasSeenTutorials=True,
     )
-    beneficiary_user.deposit.amount = 0
-    repository.save(beneficiary_user)
+    bookings_factories.BookingFactory(user=beneficiary_user, amount=beneficiary_user.deposit.amount)
 
     logger.info("created 1 beneficiary with empty deposit")
 
