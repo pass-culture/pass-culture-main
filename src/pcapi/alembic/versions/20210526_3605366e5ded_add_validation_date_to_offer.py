@@ -1,7 +1,7 @@
 """add_validation_date_to_offer
 
 Revision ID: 3605366e5ded
-Revises: 963e6e163cf0
+Revises: e8199ef92975
 Create Date: 2021-05-26 09:30:13.290019
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = "3605366e5ded"
-down_revision = "963e6e163cf0"
+down_revision = "e8199ef92975"
 branch_labels = None
 depends_on = None
 
