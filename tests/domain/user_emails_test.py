@@ -472,7 +472,7 @@ class SendNewlyEligibleUserEmailTest:
     def test_send_activation_email_before_opening(self):
         # given
         beneficiary = users_factories.UserFactory(
-            dateOfBirth=(datetime.now() - relativedelta(years=18, days=5)), departementCode="93"
+            dateOfBirth=(datetime.now() - relativedelta(years=18, days=5)), departementCode="93", isBeneficiary=False
         )
 
         # when
@@ -493,7 +493,7 @@ class SendNewlyEligibleUserEmailTest:
     def test_send_activation_email_after_opening(self):
         # given
         beneficiary = users_factories.UserFactory(
-            dateOfBirth=(datetime.now() - relativedelta(years=18, days=5)), departementCode="93"
+            dateOfBirth=(datetime.now() - relativedelta(years=18, days=5)), departementCode="93", isBeneficiary=False
         )
 
         # when

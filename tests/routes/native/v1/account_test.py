@@ -646,7 +646,7 @@ class ResendEmailValidationTest:
 @freeze_time("2018-06-01")
 class GetIdCheckTokenTest:
     def test_get_id_check_token_eligible(self, app):
-        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="93")
+        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="93", isBeneficiary=False)
         access_token = create_access_token(identity=user.email)
 
         test_client = TestClient(app.test_client())
@@ -657,7 +657,7 @@ class GetIdCheckTokenTest:
         assert get_id_check_token(response.json["token"])
 
     def test_get_id_check_token_not_eligible(self, app):
-        user = users_factories.UserFactory(dateOfBirth=datetime(2001, 1, 1))
+        user = users_factories.UserFactory(dateOfBirth=datetime(2001, 1, 1), isBeneficiary=False)
         access_token = create_access_token(identity=user.email)
 
         test_client = TestClient(app.test_client())
@@ -668,7 +668,7 @@ class GetIdCheckTokenTest:
         assert response.json == {"code": "USER_NOT_ELIGIBLE"}
 
     def test_get_id_check_token_limit_reached(self, app):
-        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="93")
+        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="93", isBeneficiary=False)
 
         expiration_date = datetime.now() + timedelta(hours=2)
         users_factories.IdCheckToken.create_batch(
