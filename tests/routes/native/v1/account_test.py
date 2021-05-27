@@ -18,6 +18,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users.api import create_phone_validation_token
 from pcapi.core.users.constants import SuspensionReason
 from pcapi.core.users.factories import BeneficiaryImportFactory
+from pcapi.core.users.models import PhoneValidationStatusType
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
@@ -285,6 +286,46 @@ class AccountTest:
 
         me_response = test_client.get("/native/v1/me")
         assert me_response.json["hasCompletedIdCheck"]
+
+    @freeze_time("2021-06-01")
+    def test_next_beneficiary_validation_step(self, app):
+        user = users_factories.UserFactory(email=self.identifier, isBeneficiary=False, dateOfBirth=datetime(2003, 1, 1))
+
+        access_token = create_access_token(identity=self.identifier)
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+
+        response = test_client.get("/native/v1/account/next_beneficiary_validation_step")
+
+        assert response.status_code == 200
+        assert response.json["next_beneficiary_validation_step"] == "phone-validation"
+
+        user.phoneValidationStatus = PhoneValidationStatusType.VALIDATED
+
+        response = test_client.get("/native/v1/account/next_beneficiary_validation_step")
+
+        assert response.status_code == 200
+        assert response.json["next_beneficiary_validation_step"] == "id-check"
+
+        user.isBeneficiary = True
+
+        response = test_client.get("/native/v1/account/next_beneficiary_validation_step")
+
+        assert response.status_code == 200
+        assert not response.json["next_beneficiary_validation_step"]
+
+    @freeze_time("2021-06-01")
+    def test_next_beneficiary_validation_step_not_eligible(self, app):
+        users_factories.UserFactory(email=self.identifier, isBeneficiary=False, dateOfBirth=datetime(2000, 1, 1))
+
+        access_token = create_access_token(identity=self.identifier)
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+
+        response = test_client.get("/native/v1/account/next_beneficiary_validation_step")
+
+        assert response.status_code == 200
+        assert not response.json["next_beneficiary_validation_step"]
 
 
 def build_test_client(app, identity):

@@ -63,7 +63,6 @@ class ValidateEmailResponse(BaseModel):
     refresh_token: str
     id_check_token: Optional[str]
     id_check_token_timestamp: Optional[datetime]
-    needs_to_validate_phone: bool
 
     class Config:
         alias_generator = to_camel

@@ -650,3 +650,14 @@ def _check_and_update_phone_validation_attempts(redis: Redis, user: User) -> Non
     count = redis.incr(phone_validation_attempts_key)
     if count == 1:
         redis.expire(phone_validation_attempts_key, settings.PHONE_VALIDATION_ATTEMPTS_TTL)
+
+
+def get_next_beneficiary_validation_step(user: User) -> Optional[BeneficiaryValidationStep]:
+    if user.isBeneficiary or not user.is_eligible:
+        return None
+    if not user.is_phone_validated:
+        return BeneficiaryValidationStep.PHONE_VALIDATION
+    if not user.hasCompletedIdCheck:
+        return BeneficiaryValidationStep.ID_CHECK
+
+    return None

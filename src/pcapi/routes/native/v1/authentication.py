@@ -7,7 +7,6 @@ from pcapi.connectors import api_recaptcha
 from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import repository as users_repo
-from pcapi.core.users.api import needs_to_validate_phone
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
 from pcapi.domain.password import check_password_strength
@@ -142,10 +141,9 @@ def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
     response = ValidateEmailResponse(
         access_token=create_user_access_token(user),
         refresh_token=create_refresh_token(identity=user.email),
+        # TODO (viconnex): remove id-check-token when phone-validation step is enforced in client
         id_check_token=id_check_token.value if id_check_token else None,
         id_check_token_timestamp=id_check_token.expirationDate if id_check_token else None,
-        needsToValidatePhone=needs_to_validate_phone(user),
-        needs_to_validate_phone=needs_to_validate_phone(user),
     )
 
     return response

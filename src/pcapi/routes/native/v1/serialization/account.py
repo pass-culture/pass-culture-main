@@ -12,6 +12,7 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.users import constants as users_constants
+from pcapi.core.users.api import BeneficiaryValidationStep
 from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.api import needs_to_validate_phone
 from pcapi.core.users.models import ExpenseDomain
@@ -169,3 +170,7 @@ class ValidatePhoneNumberRequest(BaseModel):
 
 class SendPhoneValidationRequest(BaseModel):
     phoneNumber: Optional[str]
+
+
+class GetNextBeneficiaryValidationStep(BaseModel):
+    next_beneficiary_validation_step: Optional[BeneficiaryValidationStep]
