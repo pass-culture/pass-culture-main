@@ -17,6 +17,7 @@ export const Animation = ({ name, loop, speed }) => {
         path: `${ANIMATIONS_URL}/${name}.json`,
       })
       .setSpeed(speed)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
