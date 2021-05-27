@@ -68,6 +68,9 @@ def build_object(offer: Offer) -> dict:
             "speaker": speaker,
             "stageDirector": stage_director,
             "stocksDateCreated": sorted(stocks_date_created),
+            # PC-8526: Warning: we should not store the full url of the image but only the path.
+            # Currrently we store `OBJECT_STORAGE_URL/path`, but we should store `path` and build the
+            # full url in the frontend.
             "thumbUrl": offer.thumbUrl,
             "tags": tags,
             "times": list(set(times)),
