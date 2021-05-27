@@ -72,7 +72,6 @@ def test_send_phone_validation_and_become_beneficiary(app):
 @pytest.mark.usefixtures("db_session")
 @override_settings(BLACKLISTED_SMS_RECIPIENTS={"33607080900"})
 def test_send_phone_validation_blocked_number(app):
-    app.redis_client = redis.Redis()
     user = UserFactory(isBeneficiary=False, isEmailValidated=True, phoneNumber="0607080900")
 
     client = TestClient(app.test_client()).with_auth(email=user.email)
@@ -88,7 +87,6 @@ def test_send_phone_validation_blocked_number(app):
 @pytest.mark.usefixtures("db_session")
 @override_settings(BLACKLISTED_SMS_RECIPIENTS={"33607080900"})
 def test_update_phone_number_with_blocked_phone_number(app):
-    app.redis_client = redis.Redis()
     user = UserFactory(isBeneficiary=False, isEmailValidated=True, phoneNumber="0601020304")
 
     client = TestClient(app.test_client()).with_auth(email=user.email)
@@ -105,7 +103,6 @@ def test_update_phone_number_with_blocked_phone_number(app):
 @pytest.mark.usefixtures("db_session")
 @override_settings(BLACKLISTED_SMS_RECIPIENTS={"33607080900"})
 def test_validate_phone_validation_with_blocked_number(app):
-    app.redis_client = redis.Redis()
     user = UserFactory(isBeneficiary=False, isEmailValidated=True, phoneNumber="0607080900")
 
     token = create_phone_validation_token(user)
