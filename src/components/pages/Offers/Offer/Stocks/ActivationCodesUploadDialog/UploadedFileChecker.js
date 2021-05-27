@@ -1,14 +1,13 @@
 const MAX_FILE_SIZE = 1048576
 const CARRIAGE_RETURN = '\n'
-// eslint-disable-next-line no-control-regex
-const UNAUTHORIZED_CHARACTERS = /[,;.	]/
+const UNAUTHORIZED_CHARACTERS = /[,;.]/
 const MAX_CODE_DISPLAY = 5
 
 export const csvToRows = (str = '') => {
   if ((str || '').indexOf(CARRIAGE_RETURN) === -1) {
     return []
   }
-  const rowsAsString = str.slice(str.indexOf(CARRIAGE_RETURN) + 1).split(CARRIAGE_RETURN)
+  const rowsAsString = str.split(CARRIAGE_RETURN)
   return rowsAsString.map(row => row.trim()).filter(row => row.length)
 }
 

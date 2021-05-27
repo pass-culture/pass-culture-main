@@ -31,7 +31,7 @@ describe('uploadedFileChecker', () => {
 
     it('should split a file content in rows', () => {
       // Given
-      const fileContent = 'Votre liste de code\nCD1122\nCD1114'
+      const fileContent = 'CD1122\nCD1114'
 
       // When
       const rows = csvToRows(fileContent)
@@ -42,7 +42,7 @@ describe('uploadedFileChecker', () => {
 
     it('should split a file content in rows and trim whitespaces', () => {
       // Given
-      const fileContent = 'Votre liste de code \n CD1122\nCD1114  '
+      const fileContent = ' CD1122\nCD1114  '
 
       // When
       const rows = csvToRows(fileContent)
@@ -78,18 +78,18 @@ describe('uploadedFileChecker', () => {
       // When
       const currentFile = { size: 1024 }
       const { errorMessage } = await checkAndParseUploadedFile({
-        fileReader: () => Promise.resolve('entête\n'),
+        fileReader: () => Promise.resolve('\n \n \n'),
         currentFile,
       })
 
       // then
       expect(errorMessage).toStrictEqual('Le fichier ne contient aucun code d’activation.')
     })
-    it('should return an error message if the files has more than 1 column per row', async () => {
+    it('should return an error message if the file has more than 1 column per row', async () => {
       // When
       const currentFile = { size: 1024 }
       const { errorMessage } = await checkAndParseUploadedFile({
-        fileReader: () => Promise.resolve('Col1\nCode1,Code2'),
+        fileReader: () => Promise.resolve('Code1\nCode3,Code4'),
         currentFile,
       })
 
@@ -98,14 +98,12 @@ describe('uploadedFileChecker', () => {
         'Le fichier ne respecte pas le format attendu. Merci de vous rapporter au gabarit CSV disponible au téléchargement.'
       )
     })
-    it('should return an error message if the files contains duplicates (up to 5 are displayed)', async () => {
+    it('should return an error message if the file contains duplicates (up to 5 are displayed)', async () => {
       // When
       const currentFile = { size: 1024 }
       const { errorMessage } = await checkAndParseUploadedFile({
         fileReader: () =>
-          Promise.resolve(
-            'Votre liste de code\nC1\nC1\nC1\nC2\nC3\nC4\nC5\nC6\nC7\nC1\nC2\nC3\nC4\nC5\nC6'
-          ),
+          Promise.resolve('C1\nC1\nC1\nC2\nC3\nC4\nC5\nC6\nC7\nC1\nC2\nC3\nC4\nC5\nC6'),
         currentFile,
       })
 
@@ -114,12 +112,35 @@ describe('uploadedFileChecker', () => {
         'Plusieurs codes identiques ont été trouvés dans le fichier : C1, C2, C3, C4, C5... .'
       )
     })
-    it('should return activation codes if the files is correct', async () => {
+    it.each`
+      unauthorizedCharacter
+      ${'.'}
+      ${','}
+      ${';'}
+    `(
+      'should return an error message if the file contains unauthorized characters ($unauthorizedCharacter) more than 1 column per row',
+      async ({ unauthorizedCharacter }) => {
+        // When
+        const currentFile = { size: 1024 }
+        const { errorMessage } = await checkAndParseUploadedFile({
+          fileReader: () =>
+            Promise.resolve(
+              `C1\nC1\nC1\nC2\nC3${unauthorizedCharacter}\nC4\nC5\nC6\nC7\nC1\nC2\nC3\nC4\nC5\nC6`
+            ),
+          currentFile,
+        })
+
+        // then
+        expect(errorMessage).toStrictEqual(
+          'Le fichier ne respecte pas le format attendu. Merci de vous rapporter au gabarit CSV disponible au téléchargement.'
+        )
+      }
+    )
+    it('should return activation codes if the file is correct', async () => {
       // When
       const currentFile = { size: 1024 }
       const { errorMessage, activationCodes } = await checkAndParseUploadedFile({
-        fileReader: () =>
-          Promise.resolve('Votre liste de code\nABOCADEAU_RJ3IF962W1\nABO#@235$01_3I62A4W'),
+        fileReader: () => Promise.resolve('ABOCADEAU_RJ3IF962W1\nABO#@235$01_3I62A4W'),
         currentFile,
       })
 
@@ -132,19 +153,15 @@ describe('uploadedFileChecker', () => {
   describe('fileReader', () => {
     it('should return the content of a file as string', async () => {
       // Given
-      const file = new File(
-        ['Vos codes d’activations\nABH\nJHB\nJHB\nCEG\nCEG'],
-        'activation_codes.csv',
-        {
-          type: 'text/csv',
-        }
-      )
+      const file = new File(['ABH\nJHB\nJHB\nCEG\nCEG'], 'activation_codes.csv', {
+        type: 'text/csv',
+      })
 
       // When
       const content = await fileReader(file)
 
       // Then
-      expect(content).toStrictEqual('Vos codes d’activations\nABH\nJHB\nJHB\nCEG\nCEG')
+      expect(content).toStrictEqual('ABH\nJHB\nJHB\nCEG\nCEG')
     })
   })
 })

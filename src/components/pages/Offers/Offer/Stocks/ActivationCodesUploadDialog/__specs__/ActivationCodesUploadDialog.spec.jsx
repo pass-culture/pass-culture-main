@@ -48,13 +48,9 @@ describe('activationCodesUploadDialog', () => {
       await renderActivationCodesUploadDialog(store, props)
 
       const uploadButton = screen.getByLabelText('Importer un fichier .csv depuis l’ordinateur')
-      const file = new File(
-        ['Vos codes d’activations\nABH\nJHB\nJHB\nCEG\nCEG'],
-        'activation_codes.csv',
-        {
-          type: 'text/csv',
-        }
-      )
+      const file = new File(['ABH\nJHB\nJHB\nCEG\nCEG'], 'activation_codes.csv', {
+        type: 'text/csv',
+      })
 
       expect(screen.getByTestId('activation-codes-upload-icon-id')).toBeInTheDocument()
 

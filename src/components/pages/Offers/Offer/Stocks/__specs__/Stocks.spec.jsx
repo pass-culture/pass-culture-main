@@ -2515,7 +2515,7 @@ describe('stocks page', () => {
             .closest('div')
           userEvent.click(activationCodeButton)
           const uploadButton = screen.getByLabelText('Importer un fichier .csv depuis l’ordinateur')
-          const file = new File(['Vos codes d’activations\nABH\nJHB'], 'activation_codes.csv', {
+          const file = new File(['ABH\nJHB'], 'activation_codes.csv', {
             type: 'text/csv',
           })
 
@@ -2573,7 +2573,7 @@ describe('stocks page', () => {
             .closest('div')
           userEvent.click(activationCodeButton)
           const uploadButton = screen.getByLabelText('Importer un fichier .csv depuis l’ordinateur')
-          const file = new File(['Vos codes d’activations\nABH\nJHB'], 'activation_codes.csv', {
+          const file = new File(['ABH\nJHB'], 'activation_codes.csv', {
             type: 'text/csv',
           })
 
@@ -2603,7 +2603,7 @@ describe('stocks page', () => {
             .closest('div')
           userEvent.click(activationCodeButton)
           const uploadButton = screen.getByLabelText('Importer un fichier .csv depuis l’ordinateur')
-          const file = new File(['Vos codes d’activations\nABH\nJHB'], 'activation_codes.csv', {
+          const file = new File(['ABH\nJHB'], 'activation_codes.csv', {
             type: 'text/csv',
           })
 
@@ -2639,7 +2639,7 @@ describe('stocks page', () => {
             .closest('div')
           userEvent.click(activationCodeButton)
           const uploadButton = screen.getByLabelText('Importer un fichier .csv depuis l’ordinateur')
-          const file = new File(['Vos codes d’activations\nABH\nJHB'], 'activation_codes.csv', {
+          const file = new File(['ABH\nJHB'], 'activation_codes.csv', {
             type: 'text/csv',
           })
           fireEvent.change(uploadButton, {
@@ -2687,7 +2687,7 @@ describe('stocks page', () => {
             .closest('div')
           userEvent.click(activationCodeButton)
           const uploadButton = screen.getByLabelText('Importer un fichier .csv depuis l’ordinateur')
-          const file = new File(['Vos codes d’activations\nABH\nJHB'], 'activation_codes.csv', {
+          const file = new File(['ABH\nJHB'], 'activation_codes.csv', {
             type: 'text/csv',
           })
           fireEvent.change(uploadButton, {
@@ -2721,7 +2721,7 @@ describe('stocks page', () => {
             .closest('div')
           userEvent.click(activationCodeButton)
           const uploadButton = screen.getByLabelText('Importer un fichier .csv depuis l’ordinateur')
-          const file = new File(['Vos codes d’activations\nABH\nJHB'], 'activation_codes.csv', {
+          const file = new File(['ABH\nJHB'], 'activation_codes.csv', {
             type: 'text/csv',
           })
           fireEvent.change(uploadButton, {
