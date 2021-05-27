@@ -65,7 +65,7 @@ ResultsList.propTypes = {
       }),
       offer: PropTypes.shape({
         dates: PropTypes.arrayOf(PropTypes.number),
-        departementCode: PropTypes.number,
+        departementCode: PropTypes.string,
         id: PropTypes.string,
         isDuo: PropTypes.bool,
         label: PropTypes.string,

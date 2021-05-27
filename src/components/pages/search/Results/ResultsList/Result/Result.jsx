@@ -101,7 +101,7 @@ Result.propTypes = {
     }),
     venue: PropTypes.shape({
       city: PropTypes.string,
-      departementCode: PropTypes.number,
+      departementCode: PropTypes.string,
       name: PropTypes.string,
       publicName: PropTypes.string,
     }),
