@@ -1,5 +1,4 @@
 import pytest
-import redis
 
 from pcapi.core.users.factories import BeneficiaryImportFactory
 from pcapi.core.users.factories import UserFactory
@@ -18,7 +17,6 @@ def test_send_phone_validation(app):
     + ensure that a user that has no import operation does not become
     beneficiary.
     """
-    app.redis_client = redis.Redis()
     user = UserFactory(isBeneficiary=False, isEmailValidated=True, phoneNumber="060102030405")
 
     client = TestClient(app.test_client()).with_auth(email=user.email)
