@@ -68,6 +68,7 @@ function getClientEnvironment(publicUrl) {
         MATOMO_SERVER_URL: process.env.MATOMO_SERVER_URL,
         MATOMO_GEOLOCATION_GOAL_ID: process.env.MATOMO_GEOLOCATION_GOAL_ID,
         MAINTENANCE_PAGE_AVAILABLE: process.env.MAINTENANCE_PAGE_AVAILABLE === 'true',
+        OBJECT_STORAGE_URL: process.env.OBJECT_STORAGE_URL,
         NODE_ENV: process.env.NODE_ENV,
         PUBLIC_URL: publicUrl,
         RECAPTCHA_SITE_KEY: process.env.RECAPTCHA_SITE_KEY,
