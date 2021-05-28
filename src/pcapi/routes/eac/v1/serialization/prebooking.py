@@ -1,4 +1,5 @@
 from datetime import datetime
+import enum
 from typing import Any
 from typing import Optional
 
@@ -13,6 +14,20 @@ from pcapi.routes.native.v1.serialization.offers import OfferCategoryResponse
 from pcapi.routes.native.v1.serialization.offers import OfferImageResponse
 from pcapi.routes.native.v1.serialization.offers import get_serialized_offer_category
 from pcapi.serialization.utils import to_camel
+
+
+class PreBookingStatuses(enum.Enum):
+    PENDING = "PENDING"
+    CONFIRMED = "CONFIRMED"
+    REFUSED = "REFUSED"
+    DONE = "DONE"
+
+
+class GetPreBookingsRequest(BaseModel):
+    school_id: str
+    year_id: str
+    redactor_email: Optional[str]
+    status: Optional[PreBookingStatuses]
 
 
 class PreBookingVenueResponse(BaseModel):
