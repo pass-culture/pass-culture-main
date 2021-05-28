@@ -47,7 +47,7 @@ class OfferRecap:
         is_editable: bool,
         is_event: bool,
         is_thing: bool,
-        extra_data: Optional[dict],
+        product_isbn: Optional[str],
         name: str,
         thumb_url: str,
         offer_type: str,
@@ -67,7 +67,7 @@ class OfferRecap:
         self.is_editable = is_editable
         self.is_event = is_event
         self.is_thing = is_thing
-        self.extra_data = extra_data
+        self.product_isbn = product_isbn
         self.name = name
         self.thumb_url = thumb_url
         self.offer_type = offer_type

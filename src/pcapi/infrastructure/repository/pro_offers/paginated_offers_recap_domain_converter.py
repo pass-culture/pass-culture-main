@@ -23,7 +23,7 @@ def _offer_recap_to_domain(offer: Offer) -> OfferRecap:
         is_editable=offer.isEditable,
         is_event=offer.isEvent,
         is_thing=offer.isThing,
-        extra_data=offer.extraData,
+        product_isbn=offer.extraData.isbn if offer.extraData and offer.extraData.isbn else None,
         name=offer.name,
         thumb_url=offer.thumbUrl,
         offer_type=offer.type,
