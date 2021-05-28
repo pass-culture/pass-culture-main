@@ -1,12 +1,12 @@
 # pass-culture-api
 
-[![Coverage Status](https://coveralls.io/repos/github/betagouv/pass-culture-api/badge.svg)](https://coveralls.io/github/betagouv/pass-culture-api)
+[![Coverage Status](https://coveralls.io/repos/github/pass-culture/pass-culture-api/badge.svg)](https://coveralls.io/github/pass-culture/pass-culture-api)
 
 C'est le backend de l'application Pass Culture.
 
 Dans le cadre du projet pass-culure, l'api pass culture est lançée via docker-compose et en utilisant le fichier `docker-compose-app.yml` du répertoire parent de api, soit `pass-culture-main`.
 
-Plus de détails sur le lancement de l'infra docker-compose sont accessibles dans le README dans https://github.com/betagouv/pass-culture-main.
+Plus de détails sur le lancement de l'infra docker-compose sont accessibles dans le README dans https://github.com/pass-culture/pass-culture-main.
 
 ## Swagger
 L'api pass culture dispose d'un swagger accessible via ce lien : [http://localhost:/apidoc/swagger](http://localhost/apidoc/swagger) <br>
@@ -46,7 +46,7 @@ Il existe une ancienne api très incomplète et non utilisable (A décommissione
 
 ## Démarrage du serveur back api
 - Option 1 : Lancement du serveur back api depuis le script pc présent dans le dossier parent
-  https://github.com/betagouv/pass-culture-main
+  https://github.com/pass-culture/pass-culture-main
   
 - Option 2 : Procédure de lancement en local pour pouvoir débugger via son ide préféré, se connecter à la DB etc... 
   - Un fichier docker compose complet est fourni dans le dossier parent et il est conseillé de l'utiliser car il est maintenu à jour.
