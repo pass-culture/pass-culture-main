@@ -5,7 +5,7 @@ from pcapi.flask_app import public_api
 
 
 def install_routes(app: Flask) -> None:
-    from . import eac
+    from . import adage
     from . import error_handlers  # pylint: disable=unused-import
     from . import external
     from . import internal
@@ -14,7 +14,7 @@ def install_routes(app: Flask) -> None:
     from . import shared
     from . import webapp
 
-    eac.install_routes(app)
+    adage.install_routes(app)
     external.install_routes(app)
     internal.install_routes(app)
     native.install_routes(app)
