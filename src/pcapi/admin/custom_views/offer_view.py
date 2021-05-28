@@ -116,6 +116,18 @@ def _metabase_offer_url(offer_id: int) -> str:
     return f"https://data-analytics.internal-passculture.app/question/901?offerid={offer_id}"
 
 
+def _venue_url(venue: Venue) -> str:
+    offerer_id = venue.managingOfferer.id
+    venue_id = venue.id
+    if venue.isVirtual:
+        return f"{settings.PRO_URL}/accueil?structure={humanize(offerer_id)}"
+    return f"{settings.PRO_URL}/structures/{humanize(offerer_id)}/lieux/{humanize(venue_id)}"
+
+
+def _offerer_url(offerer_id: int) -> str:
+    return f"{settings.PRO_URL}/accueil?structure={humanize(offerer_id)}"
+
+
 def _pro_offer_link(view, context, model, name) -> Markup:
     url = _pro_offer_url(model.id)
     text = "Offre PC"
@@ -138,9 +150,15 @@ def _metabase_offer_link(view, context, model, name) -> Markup:
 
 
 def _offerer_link(view, context, model, name) -> Markup:
-    offerer_id = model.venue.managingOffererId
-    url = f"{settings.PRO_URL}/accueil?structure={humanize(offerer_id)}"
+    url = _offerer_url(model.venue.managingOffererId)
     text = model.venue.managingOfferer.name
+
+    return Markup(f'<a href="{url}" target="_blank" rel="noopener noreferrer">{text}</a>')
+
+
+def _venue_link(view, context, model, name) -> Markup:
+    url = _venue_url(model.venue)
+    text = model.venue.publicName or model.venue.name
 
     return Markup(f'<a href="{url}" target="_blank" rel="noopener noreferrer">{text}</a>')
 
@@ -163,7 +181,7 @@ class ValidationView(BaseAdminView):
     can_create = False
     can_edit = True
     can_delete = False
-    column_list = ["id", "name", "validation", "venue.name", "offerer", "score", "offer", "offers", "dateCreated"]
+    column_list = ["id", "name", "validation", "venue", "offerer", "score", "offer", "offers", "dateCreated"]
     if IS_PROD:
         column_list.append("metabase")
     column_sortable_list = ["id", "name", "validation", "dateCreated"]
@@ -171,7 +189,7 @@ class ValidationView(BaseAdminView):
         "name": "Nom",
         "type": "Type",
         "validation": "Validation",
-        "venue.name": "Lieu",
+        "venue": "Lieu",
         "offerer": "Structure",
         "offer": "Offre",
         "offers": "Offres",
@@ -192,6 +210,7 @@ class ValidationView(BaseAdminView):
         formatters.update(offers=_related_offers_link)
         formatters.update(metabase=_metabase_offer_link)
         formatters.update(offerer=_offerer_link)
+        formatters.update(venue=_venue_link)
         return formatters
 
     def get_query(self):
@@ -254,6 +273,10 @@ class ValidationView(BaseAdminView):
             "metabase_offer_url": _metabase_offer_url(offer.id) if IS_PROD else None,
             "offer_name": offer.name,
             "offer_score": compute_offer_validation_score(validation_items),
+            "venue_name": offer.venue.publicName or offer.venue.name,
+            "offerer_name": offer.venue.managingOfferer.name,
+            "venue_url": _venue_url(offer.venue),
+            "offerer_url": _offerer_url(offer.venue.managingOfferer.id),
         }
         return self.render("admin/edit_offer_validation.html", **context)
 

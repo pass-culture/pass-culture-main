@@ -9,6 +9,12 @@
                 | <a href="{{ metabase_offer_url }}" target="_blank" rel="noopener noreferrer"><strong>Metabase</strong></a>
             {% endif %}
         </div>
+        <div>Lieu :
+            <a href="{{ venue_url }}" target="_blank" rel="noopener noreferrer"><strong>{{ venue_name }}</strong></a>
+        </div>
+        <div>Structure :
+            <a href="{{ offerer_url }}" target="_blank" rel="noopener noreferrer"><strong>{{ offerer_name }}</strong></a>
+        </div>
         <div>Score : {{ offer_score }}</div>
         <div>Code de catégorie juridique : <strong>{{ legal_category_code }}</strong></div>
         <div>Libellé de catégorie juridique : <strong>{{ legal_category_label }}</strong></div>
