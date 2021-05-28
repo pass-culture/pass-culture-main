@@ -182,6 +182,7 @@ class ValidationView(BaseAdminView):
     column_filters = ["name", "venue.name", "id", "dateCreated"]
     simple_list_pager = True
     column_default_sort = ("dateCreated", True)
+    page_size = 100
 
     @property
     def column_formatters(self):
