@@ -57,6 +57,7 @@ class FeatureToggle(enum.Enum):
     ENABLE_NEW_VENUE_PAGES = "Utiliser la nouvelle version des pages d'edition et de creation de lieux"
     ENABLE_IDCHECK_FRAUD_CONTROLS = "Active les contrôles de sécurité en sortie du process ID Check"
     DISPLAY_DMS_REDIRECTION = "Affiche une redirection vers DMS si ID Check est KO"
+    ENABLE_BOOKINGS_PAGE_FILTERS_FIRST = "Active le pré-filtrage de la page des réservations"
 
 
 class Feature(PcObject, Model, DeactivableMixin):
@@ -75,6 +76,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.USE_NEW_BATCH_INDEX_OFFERS_BEHAVIOUR,
     FeatureToggle.FORCE_PHONE_VALIDATION,
     FeatureToggle.ENABLE_NEW_VENUE_PAGES,
+    FeatureToggle.ENABLE_BOOKINGS_PAGE_FILTERS_FIRST,
 )
 
 
