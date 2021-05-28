@@ -6,7 +6,6 @@ import pytest
 
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
-from pcapi.core.users import api as users_api
 from pcapi.core.users.models import PhoneValidationStatusType
 from pcapi.core.users.models import User
 from pcapi.model_creators.generic_creators import create_user
@@ -84,7 +83,6 @@ class Post:
             assert beneficiary.postalCode == "35123"
             assert beneficiary.publicName == "Thomas DURAND"
             assert beneficiary.notificationSubscriptions == {"marketing_push": True, "marketing_email": True}
-            assert not users_api.needs_to_validate_phone(user)
 
             deposit = Deposit.query.one()
             assert deposit.amount == 500
@@ -164,7 +162,6 @@ class Post:
             assert user.postalCode == "35123"
             assert user.publicName == "Thomas DURAND"
             assert user.notificationSubscriptions == {"marketing_push": True, "marketing_email": True}
-            assert users_api.needs_to_validate_phone(user)
 
             assert not Deposit.query.one_or_none()
 
