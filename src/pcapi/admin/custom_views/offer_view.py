@@ -309,6 +309,8 @@ class ValidationView(BaseAdminView):
                             next_offer = next_offer_query.one()
                             return redirect(url_for(".edit", id=next_offer.id))
                         return redirect(url_for("/validation.index_view"))
+                    if request.form["action"] == "save":
+                        return redirect(url_for("/validation.index_view"))
                 else:
                     flash("Une erreur s'est produite lors de la mise à jour du statut de validation", "error")
 

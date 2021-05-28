@@ -336,7 +336,8 @@ class OfferValidationViewTest:
         response = client.post(f"/pc/back-office/validation/edit?id={offer.id}", form=data)
 
         # Then
-        assert response.status_code == 200
+        assert response.status_code == 302
+        assert response.headers["location"] == "http://localhost/pc/back-office/validation/"
         assert offer.validation == OfferValidationStatus.APPROVED
         mocked_send_offer_validation_notification_to_administration.assert_called_once_with(
             OfferValidationStatus.APPROVED, offer
@@ -385,7 +386,8 @@ class OfferValidationViewTest:
         mocked_send_offer_validation_notification_to_administration.assert_called_once_with(
             OfferValidationStatus.REJECTED, offer
         )
-        assert response.status_code == 200
+        assert response.status_code == 302
+        assert response.headers["location"] == "http://localhost/pc/back-office/validation/"
         assert offer.validation == OfferValidationStatus.REJECTED
         assert offer.isActive is False
         assert offer.lastValidationDate == datetime.datetime(2020, 11, 17, 15)
