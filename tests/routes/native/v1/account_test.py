@@ -664,8 +664,8 @@ class GetIdCheckTokenTest:
         test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
         response = test_client.get("/native/v1/id_check_token")
 
-        assert response.status_code == 200
-        assert not response.json["token"]
+        assert response.status_code == 400
+        assert response.json == {"code": "USER_NOT_ELIGIBLE"}
 
     def test_get_id_check_token_limit_reached(self, app):
         user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="93")
