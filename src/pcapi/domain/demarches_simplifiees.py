@@ -21,6 +21,10 @@ FIELD_FOR_VENUE_WITH_SIRET = (
 )
 FIELD_FOR_VENUE_WITHOUT_SIRET = "Si vous souhaitez renseigner les coordonn\u00e9es bancaires d'un lieu sans SIRET, merci de saisir le \"Nom du lieu\", \u00e0 l'identique de celui dans le pass Culture Pro :"
 
+ACCEPTED_DMS_STATUS = [DmsApplicationStates.closed]
+DRAFT_DMS_STATUS = [DmsApplicationStates.received, DmsApplicationStates.initiated]
+REJECTED_DMS_STATUS = [DmsApplicationStates.refused, DmsApplicationStates.without_continuation]
+
 
 class ApplicationDetail:
     def __init__(
@@ -78,7 +82,15 @@ def get_closed_application_ids_for_demarche_simplifiee(
     procedure_id: str, token: str, last_update: datetime
 ) -> list[int]:
     return get_all_application_ids_for_demarche_simplifiee(
-        procedure_id, token, last_update, accepted_states=[DmsApplicationStates.closed]
+        procedure_id, token, last_update, accepted_states=ACCEPTED_DMS_STATUS
+    )
+
+
+def get_received_application_ids_for_demarche_simplifiee(
+    procedure_id: str, token: str, last_update: datetime
+) -> list[int]:
+    return get_all_application_ids_for_demarche_simplifiee(
+        procedure_id, token, last_update, accepted_states=DRAFT_DMS_STATUS
     )
 
 
@@ -141,9 +153,9 @@ def _get_status_from_demarches_simplifiees_application_state(state: str) -> Unio
         state = DmsApplicationStates[state]
     except KeyError:
         raise CannotRegisterBankInformation(f"Unknown Demarches Simplifiées state {state}")
-    rejected_states = [DmsApplicationStates.refused, DmsApplicationStates.without_continuation]
-    accepted_states = [DmsApplicationStates.closed]
-    draft_states = [DmsApplicationStates.received, DmsApplicationStates.initiated]
+    rejected_states = REJECTED_DMS_STATUS
+    accepted_states = ACCEPTED_DMS_STATUS
+    draft_states = DRAFT_DMS_STATUS
     if state in rejected_states:
         return BankInformationStatus.REJECTED
     if state in accepted_states:
