@@ -19,7 +19,7 @@ class SendinblueBackend:
     def send_transactional_sms(self, recipient: str, content: str) -> bool:
         send_transac_sms = sib_api_v3_sdk.SendTransacSms(
             sender="PassCulture",
-            recipient=recipient,
+            recipient=self._format_recipient(recipient),
             content=content,
             type="transactional",
             tag="phone-validation",
@@ -31,6 +31,12 @@ class SendinblueBackend:
         except ApiException as e:
             logger.exception("Exception when calling TransactionalSMSApi->send_transac_sms: %s\n", e)
             return False
+
+    def _format_recipient(self, recipient: str):
+        """Sendinblue does not accept phone numbers with a leading '+'"""
+        if recipient.startswith("+"):
+            return recipient[1:]
+        return recipient
 
 
 class ToDevSendinblueBackend(SendinblueBackend):

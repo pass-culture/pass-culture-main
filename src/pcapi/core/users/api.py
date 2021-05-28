@@ -23,8 +23,6 @@ from pcapi.core import mails
 from pcapi.core.bookings.conf import LIMIT_CONFIGURATIONS
 import pcapi.core.bookings.repository as bookings_repository
 from pcapi.core.payments import api as payment_api
-from pcapi.core.users.constants import METROPOLE_PHONE_PREFIX
-from pcapi.core.users.constants import PHONE_PREFIX_BY_DEPARTEMENT_CODE
 from pcapi.core.users.models import Credit
 from pcapi.core.users.models import DomainsCredit
 from pcapi.core.users.models import NotificationSubscriptions
@@ -37,6 +35,8 @@ from pcapi.core.users.repository import does_phone_exists
 from pcapi.core.users.repository import get_beneficiary_import_for_beneficiary
 from pcapi.core.users.utils import decode_jwt_token
 from pcapi.core.users.utils import encode_jwt_payload
+from pcapi.core.users.utils import get_formatted_phone_number
+from pcapi.core.users.utils import parse_phone_number
 from pcapi.core.users.utils import sanitize_email
 from pcapi.domain import user_emails
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
@@ -556,14 +556,14 @@ def set_pro_tuto_as_seen(user: User) -> None:
 def change_user_phone_number(user: User, phone_number: str):
     _check_phone_number_validation_is_authorized(user)
 
-    formatted_phone_number = get_formatted_phone_number(user.departementCode, phone_number)
-    if not is_phone_number_legit(formatted_phone_number):
-        raise exceptions.InvalidPhoneNumber()
+    formatted_phone_number = get_legit_phone_number(phone_number)
+    if not formatted_phone_number:
+        raise exceptions.InvalidPhoneNumber(phone_number)
 
-    if does_phone_exists(phone_number):
+    if does_phone_exists(formatted_phone_number):
         raise exceptions.PhoneAlreadyExists()
 
-    user.phoneNumber = phone_number
+    user.phoneNumber = formatted_phone_number
     Token.query.filter(Token.user == user, Token.type == TokenType.PHONE_VALIDATION).delete()
     repository.save(user)
 
@@ -571,9 +571,9 @@ def change_user_phone_number(user: User, phone_number: str):
 def send_phone_validation_code(user: User) -> None:
     _check_phone_number_validation_is_authorized(user)
 
-    phone_number = get_formatted_phone_number(user.postalCode, user.phoneNumber)
-    if not is_phone_number_legit(phone_number):
-        raise exceptions.InvalidPhoneNumber()
+    formatted_phone_number = get_legit_phone_number(user.phoneNumber)
+    if not formatted_phone_number:
+        raise exceptions.InvalidPhoneNumber(user.phoneNumber)
 
     if not is_SMS_sending_allowed(app.redis_client, user):
         raise exceptions.SMSSendingLimitReached()
@@ -581,7 +581,7 @@ def send_phone_validation_code(user: User) -> None:
     phone_validation_token = create_phone_validation_token(user)
     content = f"{phone_validation_token.value} est ton code de confirmation pass Culture"
 
-    if not send_transactional_sms(phone_number, content):
+    if not send_transactional_sms(formatted_phone_number, content):
         raise exceptions.PhoneVerificationCodeSendingException()
 
     update_sent_SMS_counter(app.redis_client, user)
@@ -591,9 +591,8 @@ def validate_phone_number(user: User, code: str) -> None:
     _check_phone_number_validation_is_authorized(user)
     _check_and_update_phone_validation_attempts(app.redis_client, user)
 
-    phone_number = get_formatted_phone_number(user.postalCode, user.phoneNumber)
-    if not is_phone_number_legit(phone_number):
-        raise exceptions.InvalidPhoneNumber()
+    if not get_legit_phone_number(user.phoneNumber):
+        raise exceptions.InvalidPhoneNumber(user.phoneNumber)
 
     token = Token.query.filter(
         Token.user == user, Token.value == code, Token.type == TokenType.PHONE_VALIDATION
@@ -611,13 +610,23 @@ def validate_phone_number(user: User, code: str) -> None:
     repository.save(user)
 
 
-def is_phone_number_legit(phone_number: Optional[str]) -> bool:
-    return phone_number and phone_number not in settings.BLACKLISTED_SMS_RECIPIENTS
+def get_legit_phone_number(phone_number: Optional[str]) -> Optional[str]:
+    try:
+        parsed_phone_number = parse_phone_number(phone_number)
+        formatted_phone_number = get_formatted_phone_number(parsed_phone_number)
+    except exceptions.InvalidPhoneNumber:
+        return None
+
+    if is_phone_number_legit(formatted_phone_number, parsed_phone_number.country_code):
+        return formatted_phone_number
+    return None
 
 
-def get_formatted_phone_number(departement_code: str, phone_number: str) -> Optional[str]:
-    country_code = PHONE_PREFIX_BY_DEPARTEMENT_CODE.get(departement_code, METROPOLE_PHONE_PREFIX)
-    return country_code + phone_number[1:]
+def is_phone_number_legit(phone_number: str, country_code) -> bool:
+    return (
+        phone_number not in settings.BLACKLISTED_SMS_RECIPIENTS
+        and country_code in constants.WHITELISTED_COUNTRY_PHONE_CODES
+    )
 
 
 def _check_phone_number_validation_is_authorized(user: User) -> None:
