@@ -40,18 +40,27 @@ class OfferValidationViewTest:
         offerer = venue.managingOfferer
         pro_user = users_factories.UserFactory(email="pro@example.com")
         offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
-
-        first_offer = offers_factories.OfferFactory(
+        # newest offer
+        offers_factories.OfferFactory(
             validation=OfferValidationStatus.PENDING,
             isActive=True,
             venue__bookingEmail="email1@example.com",
             venue=venue,
+            id=3,
         )
-        second_offer = offers_factories.OfferFactory(
+        currently_displayed_offer = offers_factories.OfferFactory(
+            validation=OfferValidationStatus.PENDING,
+            isActive=True,
+            venue__bookingEmail="email1@example.com",
+            venue=venue,
+            id=2,
+        )
+        oldest_offer = offers_factories.OfferFactory(
             validation=OfferValidationStatus.PENDING,
             isActive=True,
             venue__bookingEmail="email2@example.com",
             venue=venue,
+            id=1,
         )
 
         mocked_get_offerer_legal_category.return_value = {
@@ -61,12 +70,12 @@ class OfferValidationViewTest:
 
         data = dict(validation=OfferValidationStatus.APPROVED.value, action="save-and-go-next")
         client = TestClient(app.test_client()).with_auth("admin@example.com")
-        response = client.post(f"/pc/back-office/validation/edit?id={first_offer.id}", form=data)
+        response = client.post(f"/pc/back-office/validation/edit?id={currently_displayed_offer.id}", form=data)
 
-        first_offer = Offer.query.get(first_offer.id)
-        assert first_offer.validation == OfferValidationStatus.APPROVED
+        currently_displayed_offer = Offer.query.get(currently_displayed_offer.id)
+        assert currently_displayed_offer.validation == OfferValidationStatus.APPROVED
         assert response.status_code == 302
-        assert response.headers["location"] == f"http://localhost/pc/back-office/validation/edit/?id={second_offer.id}"
+        assert response.headers["location"] == f"http://localhost/pc/back-office/validation/edit/?id={oldest_offer.id}"
 
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.admin.custom_views.offer_view.get_offerer_legal_category")

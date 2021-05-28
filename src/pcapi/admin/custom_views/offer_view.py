@@ -256,7 +256,7 @@ class ValidationView(BaseAdminView):
         "dateCreated": "Date de création",
     }
     column_filters = ["name", "venue.name", "id", "dateCreated"]
-    column_default_sort = ("dateCreated", True)
+    column_default_sort = ("id", True)
     page_size = 100
 
     @property
@@ -302,7 +302,8 @@ class ValidationView(BaseAdminView):
                     if request.form["action"] == "save-and-go-next":
                         next_offer_query = (
                             Offer.query.filter(Offer.validation == OfferValidationStatus.PENDING)
-                            .filter(Offer.id != offer_id)
+                            .filter(Offer.id < offer_id)
+                            .order_by(Offer.id.desc())
                             .limit(1)
                         )
                         if next_offer_query.count() > 0:
