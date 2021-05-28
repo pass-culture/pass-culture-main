@@ -3,11 +3,8 @@ import React from 'react'
 
 import { fetchAllVenuesByProUser } from 'repository/venuesService'
 
-import { ALL_VENUES, EMPTY_FILTER_VALUE } from '../_constants'
-import FilterByBookingPeriod from '../FilterByBookingPeriod'
-import FilterByEventDate from '../FilterByEventDate'
+import { EMPTY_FILTER_VALUE } from '../_constants'
 import FilterByOmniSearch from '../FilterByOmniSearch'
-import FilterByVenue from '../FilterByVenue'
 import Filters from '../Filters'
 
 jest.mock('repository/venuesService', () => ({
@@ -21,9 +18,7 @@ describe('components | Filters', () => {
   beforeEach(() => {
     props = {
       isLoading: false,
-      oldestBookingDate: EMPTY_FILTER_VALUE,
       updateGlobalFilters: jest.fn(),
-      offerVenue: ALL_VENUES,
     }
     fetchAllVenuesByProUser.mockResolvedValue([
       {
@@ -41,7 +36,7 @@ describe('components | Filters', () => {
     ])
   })
 
-  it('should render all filters component with expected props', async () => {
+  it('should render omnisearch component with expected props', async () => {
     // when
     const wrapper = await shallow(<Filters {...props} />)
 
@@ -51,36 +46,6 @@ describe('components | Filters', () => {
       isDisabled: false,
       keywords: '',
       selectedOmniSearchCriteria: 'offre',
-      updateFilters: expect.any(Function),
-    })
-    const filterByEventDate = wrapper.find(FilterByEventDate)
-    expect(filterByEventDate.props()).toStrictEqual({
-      isDisabled: false,
-      selectedOfferDate: '',
-      updateFilters: expect.any(Function),
-    })
-    const filterByVenue = wrapper.find(FilterByVenue)
-    expect(filterByVenue.props()).toStrictEqual({
-      isDisabled: false,
-      selectedVenue: '',
-      updateFilters: expect.any(Function),
-      venuesFormattedAndOrdered: [
-        {
-          displayName: 'gilbert Joseph - Offre numérique',
-          id: 'AE',
-        },
-        {
-          displayName: 'Librairie Fnac',
-          id: 'AF',
-        },
-      ],
-    })
-    const filterByBookingPeriod = wrapper.find(FilterByBookingPeriod)
-    expect(filterByBookingPeriod.props()).toStrictEqual({
-      isDisabled: false,
-      oldestBookingDate: '',
-      selectedBookingBeginningDate: '',
-      selectedBookingEndingDate: expect.any(Object),
       updateFilters: expect.any(Function),
     })
   })
@@ -96,34 +61,9 @@ describe('components | Filters', () => {
     // Then
     expect(props.updateGlobalFilters).toHaveBeenCalledWith({
       bookingBeneficiary: EMPTY_FILTER_VALUE,
-      bookingBeginningDate: EMPTY_FILTER_VALUE,
-      bookingEndingDate: EMPTY_FILTER_VALUE,
       bookingToken: EMPTY_FILTER_VALUE,
-      offerDate: EMPTY_FILTER_VALUE,
       offerName: 'Jurassic Park',
       offerISBN: EMPTY_FILTER_VALUE,
-      offerVenue: ALL_VENUES,
-    })
-  })
-
-  it('should apply given filter', () => {
-    // Given
-    const wrapper = shallow(<Filters {...props} />)
-    const updatedFilter = { offerDate: '2020-05-20' }
-
-    // When
-    wrapper.instance().updateFilters(updatedFilter)
-
-    // Then
-    expect(props.updateGlobalFilters).toHaveBeenCalledWith({
-      bookingBeginningDate: EMPTY_FILTER_VALUE,
-      bookingBeneficiary: EMPTY_FILTER_VALUE,
-      bookingEndingDate: EMPTY_FILTER_VALUE,
-      bookingToken: EMPTY_FILTER_VALUE,
-      offerDate: '2020-05-20',
-      offerISBN: EMPTY_FILTER_VALUE,
-      offerName: EMPTY_FILTER_VALUE,
-      offerVenue: ALL_VENUES,
     })
   })
 
@@ -135,77 +75,10 @@ describe('components | Filters', () => {
 
     // Then
     expect(props.updateGlobalFilters).toHaveBeenCalledWith({
-      bookingBeginningDate: EMPTY_FILTER_VALUE,
       bookingBeneficiary: EMPTY_FILTER_VALUE,
-      bookingEndingDate: EMPTY_FILTER_VALUE,
       bookingToken: EMPTY_FILTER_VALUE,
-      offerDate: EMPTY_FILTER_VALUE,
       offerISBN: EMPTY_FILTER_VALUE,
       offerName: EMPTY_FILTER_VALUE,
-      offerVenue: ALL_VENUES,
     })
-  })
-
-  it('should add filter to previous filters when applying a new one', () => {
-    // Given
-    const wrapper = shallow(<Filters {...props} />)
-    const wrapperInstance = wrapper.instance()
-    const firstUpdatedFilter = { offerDate: '2020-05-20' }
-    wrapperInstance.updateFilters(firstUpdatedFilter)
-    const secondUpdatedFilter = { offerVenue: 'AE' }
-
-    // When
-    wrapperInstance.updateFilters(secondUpdatedFilter)
-
-    // Then
-    expect(props.updateGlobalFilters).toHaveBeenCalledTimes(2)
-    expect(props.updateGlobalFilters).toHaveBeenCalledWith({
-      bookingBeneficiary: EMPTY_FILTER_VALUE,
-      bookingBeginningDate: EMPTY_FILTER_VALUE,
-      bookingEndingDate: EMPTY_FILTER_VALUE,
-      bookingToken: EMPTY_FILTER_VALUE,
-      offerDate: '2020-05-20',
-      offerISBN: EMPTY_FILTER_VALUE,
-      offerName: EMPTY_FILTER_VALUE,
-      offerVenue: 'AE',
-    })
-  })
-
-  it('should add all filters when applying new ones', () => {
-    // Given
-    const wrapper = shallow(<Filters {...props} />)
-    const wrapperInstance = wrapper.instance()
-    const firstUpdatedFilter = { bookingBeneficiary: 'riri' }
-    wrapperInstance.updateFilters(firstUpdatedFilter)
-    const someUpdatedFilters = {
-      bookingBeneficiary: EMPTY_FILTER_VALUE,
-      bookingToken: EMPTY_FILTER_VALUE,
-      offerISBN: '12457',
-      offerName: EMPTY_FILTER_VALUE,
-    }
-
-    // When
-    wrapperInstance.updateFilters(someUpdatedFilters)
-
-    // Then
-    expect(props.updateGlobalFilters).toHaveBeenCalledTimes(2)
-    expect(props.updateGlobalFilters).toHaveBeenCalledWith({
-      bookingBeneficiary: EMPTY_FILTER_VALUE,
-      bookingBeginningDate: EMPTY_FILTER_VALUE,
-      bookingEndingDate: EMPTY_FILTER_VALUE,
-      bookingToken: EMPTY_FILTER_VALUE,
-      offerDate: EMPTY_FILTER_VALUE,
-      offerISBN: '12457',
-      offerName: EMPTY_FILTER_VALUE,
-      offerVenue: ALL_VENUES,
-    })
-  })
-
-  it('should fetch venues of pro user when mounting component', () => {
-    // when
-    shallow(<Filters {...props} />)
-
-    // then
-    expect(fetchAllVenuesByProUser).toHaveBeenCalledTimes(1)
   })
 })

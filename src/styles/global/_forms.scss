@@ -84,7 +84,7 @@
 .field-textarea {
   @include body-important();
 
-  border: 2px solid $grey-medium;
+  border: 1px solid $grey-medium;
   border-radius: 1.125em;
   flex: 1;
   outline: none !important;
@@ -271,7 +271,7 @@
 
   align-items: center;
   appearance: none;
-  border: rem(2px) solid $grey-medium;
+  border: rem(1px) solid $grey-medium;
   border-radius: rem(20px);
   box-shadow: none;
   display: inline-flex;

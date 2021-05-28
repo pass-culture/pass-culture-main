@@ -2,7 +2,7 @@ import '@testing-library/jest-dom'
 import { fireEvent, render, screen } from '@testing-library/react'
 import React from 'react'
 
-import Filters from 'components/pages/Bookings/BookingsRecapTable/Filters/Filters'
+import Filters from 'components/pages/Bookings/BookingsRecapTableLegacy/Filters/Filters'
 
 jest.mock('utils/date', () => ({
   ...jest.requireActual('utils/date'),

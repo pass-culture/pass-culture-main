@@ -72,6 +72,7 @@ const PeriodSelector = ({
 }
 
 PeriodSelector.defaultProps = {
+  isDisabled: false,
   maxDateEnding: undefined,
   minDateBeginning: undefined,
   periodBeginningDate: undefined,
@@ -81,7 +82,7 @@ PeriodSelector.defaultProps = {
 PeriodSelector.propTypes = {
   changePeriodBeginningDateValue: PropTypes.func.isRequired,
   changePeriodEndingDateValue: PropTypes.func.isRequired,
-  isDisabled: PropTypes.bool.isRequired,
+  isDisabled: PropTypes.bool,
   label: PropTypes.string.isRequired,
   maxDateEnding: PropTypes.instanceOf(Date),
   minDateBeginning: PropTypes.instanceOf(Date),

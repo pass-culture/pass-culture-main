@@ -1,0 +1,16 @@
+.bookings-page {
+  .field-date-only {
+    @extend .field-input;
+    @extend .field-date;
+
+    &.disabled {
+      background-color: $grey-light;
+      border-color: $grey-light;
+      opacity: 1;
+    }
+
+    &.error:not(:focus-within) {
+      border: 2px solid $red-error;
+    }
+  }
+}

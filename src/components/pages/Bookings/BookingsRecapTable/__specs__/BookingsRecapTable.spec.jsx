@@ -1,6 +1,5 @@
 import { mount, shallow } from 'enzyme'
 import React from 'react'
-import DatePicker from 'react-datepicker'
 
 import { ReactComponent } from 'utils/svgrMock'
 
@@ -11,7 +10,7 @@ import BookingIsDuoCell from '../CellsFormatter/BookingIsDuoCell'
 import BookingOfferCell from '../CellsFormatter/BookingOfferCell'
 import BookingStatusCell from '../CellsFormatter/BookingStatusCell'
 import BookingTokenCell from '../CellsFormatter/BookingTokenCell'
-import { ALL_BOOKING_STATUS, ALL_VENUES, EMPTY_FILTER_VALUE } from '../Filters/_constants'
+import { ALL_BOOKING_STATUS, EMPTY_FILTER_VALUE } from '../Filters/_constants'
 import Filters from '../Filters/Filters'
 import Header from '../Header/Header'
 import { NB_BOOKINGS_PER_PAGE } from '../NB_BOOKINGS_PER_PAGE'
@@ -519,9 +518,7 @@ describe('components | BookingsRecapTable', () => {
     const filters = wrapper.find(Filters)
     expect(filters.props()).toStrictEqual({
       isLoading: true,
-      oldestBookingDate: '',
       updateGlobalFilters: expect.any(Function),
-      offerVenue: 'all',
     })
   })
 
@@ -628,7 +625,7 @@ describe('components | BookingsRecapTable', () => {
     const wrapper = shallow(<BookingsRecapTable {...props} />)
 
     // When
-    wrapper.setState({ filters: { offerName: 'Avez', offerDate: null, offerVenue: ALL_VENUES } })
+    wrapper.setState({ filters: { offerName: 'Avez' } })
     const expectedBookingsRecap = [...props.bookingsRecap].concat([newBooking])
     wrapper.setProps({
       bookingsRecap: expectedBookingsRecap,
@@ -646,8 +643,6 @@ describe('components | BookingsRecapTable', () => {
     })
     expect(filterBookingsRecap).toHaveBeenCalledWith(expectedBookingsRecap, {
       offerName: 'Avez',
-      offerDate: null,
-      offerVenue: ALL_VENUES,
     })
   })
 
@@ -745,10 +740,6 @@ describe('components | BookingsRecapTable', () => {
     const offerNameInput = wrapper.find(Filters).find({ placeholder: "Rechercher par nom d'offre" })
     await offerNameInput.simulate('change', { target: { value: 'not findable' } })
 
-    const selectedDate = new Date('2020-05-20')
-    const offerDatePicker = wrapper.find(Filters).find(DatePicker).at(0)
-    await offerDatePicker.simulate('change', selectedDate)
-
     const noFilteredBookings = wrapper.find(NoFilteredBookings)
     const displayAllBookingsButton = noFilteredBookings.find({
       children: 'afficher toutes les réservations',
@@ -760,8 +751,6 @@ describe('components | BookingsRecapTable', () => {
     // Then
     const offerName = wrapper.find(Filters).find({ placeholder: "Rechercher par nom d'offre" })
     expect(offerName.text()).toBe('')
-    const offerDate = wrapper.find(Filters).find(DatePicker).at(0)
-    expect(offerDate.prop('selected')).toBe(EMPTY_FILTER_VALUE)
   })
 
   it('should apply default filters when mounting component with bookings', () => {
@@ -835,15 +824,11 @@ describe('components | BookingsRecapTable', () => {
 
     // Then
     expect(filterBookingsRecap).toHaveBeenCalledWith(updatedProps.bookingsRecap, {
-      bookingBeginningDate: EMPTY_FILTER_VALUE,
       bookingBeneficiary: EMPTY_FILTER_VALUE,
-      bookingEndingDate: EMPTY_FILTER_VALUE,
       bookingStatus: ALL_BOOKING_STATUS,
       bookingToken: EMPTY_FILTER_VALUE,
-      offerDate: EMPTY_FILTER_VALUE,
       offerISBN: EMPTY_FILTER_VALUE,
       offerName: EMPTY_FILTER_VALUE,
-      offerVenue: ALL_VENUES,
     })
   })
 
@@ -972,13 +957,9 @@ describe('components | BookingsRecapTable', () => {
 
     // Then
     expect(filterBookingsRecap).toHaveBeenCalledWith(props.bookingsRecap, {
-      offerVenue: props.locationState.venueId,
       bookingStatus: props.locationState.statuses,
       bookingBeneficiary: EMPTY_FILTER_VALUE,
-      bookingBeginningDate: EMPTY_FILTER_VALUE,
-      bookingEndingDate: EMPTY_FILTER_VALUE,
       bookingToken: EMPTY_FILTER_VALUE,
-      offerDate: EMPTY_FILTER_VALUE,
       offerISBN: EMPTY_FILTER_VALUE,
       offerName: EMPTY_FILTER_VALUE,
     })

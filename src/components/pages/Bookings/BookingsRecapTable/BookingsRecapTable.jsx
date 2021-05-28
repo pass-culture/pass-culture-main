@@ -7,7 +7,7 @@ import BookingIsDuoCell from './CellsFormatter/BookingIsDuoCell'
 import BookingOfferCell from './CellsFormatter/BookingOfferCell'
 import BookingStatusCell from './CellsFormatter/BookingStatusCell'
 import BookingTokenCell from './CellsFormatter/BookingTokenCell'
-import { ALL_BOOKING_STATUS, ALL_VENUES, EMPTY_FILTER_VALUE } from './Filters/_constants'
+import { ALL_BOOKING_STATUS, EMPTY_FILTER_VALUE } from './Filters/_constants'
 import FilterByBookingStatus from './Filters/FilterByBookingStatus'
 import Filters from './Filters/Filters'
 import Header from './Header/Header'
@@ -15,7 +15,6 @@ import { NB_BOOKINGS_PER_PAGE } from './NB_BOOKINGS_PER_PAGE'
 import NoFilteredBookings from './NoFilteredBookings/NoFilteredBookings'
 import TableFrame from './Table/TableFrame'
 import filterBookingsRecap from './utils/filterBookingsRecap'
-import findOldestBookingDate from './utils/findOldestBookingDate'
 import { sortByBeneficiaryName, sortByBookingDate, sortByOfferName } from './utils/sortingFunctions'
 
 const FIRST_PAGE_INDEX = 0
@@ -94,18 +93,13 @@ class BookingsRecapTable extends Component {
       currentPage: FIRST_PAGE_INDEX,
       filters: {
         bookingBeneficiary: EMPTY_FILTER_VALUE,
-        bookingBeginningDate: EMPTY_FILTER_VALUE,
-        bookingEndingDate: EMPTY_FILTER_VALUE,
         bookingToken: EMPTY_FILTER_VALUE,
-        offerDate: EMPTY_FILTER_VALUE,
         offerISBN: EMPTY_FILTER_VALUE,
         offerName: EMPTY_FILTER_VALUE,
-        offerVenue: props.locationState?.venueId || ALL_VENUES,
         bookingStatus: props.locationState?.statuses.length
           ? props.locationState.statuses
           : [...ALL_BOOKING_STATUS],
       },
-      oldestBookingDate: findOldestBookingDate(props.bookingsRecap),
     }
     this.filtersRef = React.createRef()
   }
@@ -118,14 +112,7 @@ class BookingsRecapTable extends Component {
     const { bookingsRecap } = this.props
     if (prevProps.bookingsRecap.length !== bookingsRecap.length) {
       this.applyFilters()
-      this.setOldestBookingDate(bookingsRecap)
     }
-  }
-
-  setOldestBookingDate = bookingsRecap => {
-    this.setState({
-      oldestBookingDate: findOldestBookingDate(bookingsRecap),
-    })
   }
 
   updateCurrentPage = currentPage => {
@@ -165,15 +152,13 @@ class BookingsRecapTable extends Component {
 
   render() {
     const { isLoading } = this.props
-    const { bookingsRecapFiltered, columns, currentPage, oldestBookingDate } = this.state
+    const { bookingsRecapFiltered, columns, currentPage } = this.state
     const nbBookings = bookingsRecapFiltered.length
 
     return (
       <div>
         <Filters
           isLoading={isLoading}
-          offerVenue={this.state.filters.offerVenue}
-          oldestBookingDate={oldestBookingDate}
           ref={this.filtersRef}
           updateGlobalFilters={this.updateGlobalFilters}
         />

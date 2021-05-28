@@ -8,7 +8,9 @@ import Titles from 'components/layout/Titles/Titles'
 import { fetchBookingsRecapByPage } from 'repository/bookingsRecapService'
 
 import BookingsRecapTable from './BookingsRecapTable/BookingsRecapTable'
+import BookingsRecapTableLegacy from './BookingsRecapTableLegacy/BookingsRecapTableLegacy' /* eslint-disable-line react/jsx-pascal-case */
 import NoBookingsMessage from './NoBookingsMessage/NoBookingsMessage'
+import PreFilters from './PreFilters/PreFilters'
 
 class BookingsRecap extends PureComponent {
   constructor(props) {
@@ -68,11 +70,22 @@ class BookingsRecap extends PureComponent {
     const { state: locationState } = this.props.location
 
     return (
-      <AppLayout layoutConfig={{ pageName: 'bookings-v2' }}>
+      <AppLayout layoutConfig={{ pageName: 'bookings' }}>
         <PageTitle title="Vos réservations" />
         <Titles title="Réservations" />
-        {bookingsRecap.length > 0 ? (
-          <BookingsRecapTable
+        {this.props.arePreFiltersEnabled ? (
+          <>
+            <PreFilters offerVenue={locationState?.venueId} />
+            {bookingsRecap.length > 0 && (
+              <BookingsRecapTable
+                bookingsRecap={bookingsRecap}
+                isLoading={isLoading}
+                locationState={locationState}
+              />
+            )}
+          </>
+        ) : bookingsRecap.length > 0 ? (
+          <BookingsRecapTableLegacy
             bookingsRecap={bookingsRecap}
             isLoading={isLoading}
             locationState={locationState}
@@ -90,6 +103,7 @@ class BookingsRecap extends PureComponent {
 export default BookingsRecap
 
 BookingsRecap.propTypes = {
+  arePreFiltersEnabled: PropTypes.bool.isRequired,
   location: PropTypes.shape({
     state: PropTypes.shape({
       venueId: PropTypes.string,

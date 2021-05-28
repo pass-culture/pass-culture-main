@@ -1,0 +1,139 @@
+.bookings-page {
+  .vertical-bar {
+    background-color: $grey-medium;
+    height: rem(40px);
+    width: rem(1px);
+  }
+
+  .pre-filters {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: rem(30px);
+
+
+    .fw-offer-date {
+      .field-date {
+        align-items: center;
+        background-image: url(/icons/ico-calendar.svg);
+        background-position-x: 90%;
+        background-position-y: center;
+        background-repeat: no-repeat;
+        border-radius: rem(20px);
+        display: flex;
+        height: rem(40px);
+
+        &:focus-within {
+          border-color: $primary;
+        }
+
+        &.disabled {
+          background-image: url(/icons/ico-calendar-disabled.svg);
+        }
+      }
+
+      .fw-offer-date-picker:focus-within {
+        .field-date {
+          border-color: $primary;
+        }
+      }
+
+      button {
+        outline: none;
+      }
+
+      .field-date {
+        border: 1px solid $grey-medium;
+        box-shadow: 2px 2px 6px 0 $black-shadow;
+        margin-top: rem(12px);
+        width: rem(233px);
+
+        &.disabled {
+          box-shadow: none;
+        }
+      }
+
+      .fw-offer-date-label {
+        margin-bottom: rem(12px);
+      }
+
+      .fw-offer-date-input {
+        @include body();
+
+        background: none;
+        border: 0;
+        outline: none;
+        padding-left: rem(10px);
+        width: rem(150px);
+
+        &:disabled {
+          color: $grey-dark;
+          cursor: initial;
+          opacity: 1;
+
+          &::placeholder {
+            color: $grey-dark;
+          }
+        }
+      }
+    }
+
+    .fw-venues {
+      display: flex;
+      flex-direction: column;
+
+      .fw-offer-venue-label {
+        @include body();
+      }
+
+      select {
+        @include body();
+
+        appearance: none;
+        background: url(/icons/dropdown-disclosure-down-b.svg) no-repeat 92% 56%;
+        border: 1px solid $grey-medium;
+        border-radius: rem(20px);
+        box-shadow: 1px 2px 6px 0 $black-shadow;
+        height: rem(40px);
+        margin-top: rem(12px);
+        outline: none;
+        overflow-y: scroll;
+        padding-left: rem(16px);
+        padding-right: rem(30px);
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: rem(233px);
+        word-wrap: break-word;
+
+        &:focus {
+          border-color: $primary;
+        }
+
+        &:disabled {
+          background-color: $grey-light;
+          background-image: url(/icons/dropdown-disclosure-down-b-disabled.svg);
+          border-color: $grey-light;
+          box-shadow: none;
+          color: $grey-dark;
+          cursor: initial;
+          opacity: 1;
+        }
+      }
+    }
+  }
+
+  .search-separator {
+    align-items: center;
+    display: flex;
+    margin-bottom: rem(30px);
+
+    .separator {
+      background-color: $grey-medium;
+      flex: 5;
+      height: rem(1px);
+    }
+
+    button {
+      flex: 3;
+    }
+  }
+}

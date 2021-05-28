@@ -6,7 +6,7 @@ import Titles from 'components/layout/Titles/Titles'
 import * as bookingRecapsService from 'repository/bookingsRecapService'
 
 import BookingsRecap from '../BookingsRecap'
-import BookingsRecapTable from '../BookingsRecapTable/BookingsRecapTable'
+import BookingsRecapTableLegacy from '../BookingsRecapTableLegacy/BookingsRecapTableLegacy'
 import NoBookingsMessage from '../NoBookingsMessage/NoBookingsMessage'
 
 function flushPromises() {
@@ -44,7 +44,7 @@ describe('components | BookingsRecap', () => {
     await flushPromises()
     const title = wrapper.find(Titles)
     expect(title).toHaveLength(1)
-    const bookingsTable = wrapper.find(BookingsRecapTable)
+    const bookingsTable = wrapper.find(BookingsRecapTableLegacy)
     expect(bookingsTable).toHaveLength(0)
     const noBookingsMessage = wrapper.find(NoBookingsMessage)
     expect(noBookingsMessage).toHaveLength(1)
@@ -77,7 +77,7 @@ describe('components | BookingsRecap', () => {
     await flushPromises()
     const title = wrapper.find(Titles)
     expect(title).toHaveLength(1)
-    const bookingsTable = wrapper.find(BookingsRecapTable)
+    const bookingsTable = wrapper.find(BookingsRecapTableLegacy)
     expect(bookingsTable).toHaveLength(1)
     const noBookingsMessage = wrapper.find(NoBookingsMessage)
     expect(noBookingsMessage).toHaveLength(0)
@@ -127,7 +127,7 @@ describe('components | BookingsRecap', () => {
     expect(fetchBookingsRecapByPageSpy).toHaveBeenCalledTimes(2)
     expect(fetchBookingsRecapByPageSpy).toHaveBeenNthCalledWith(1)
     expect(fetchBookingsRecapByPageSpy).toHaveBeenNthCalledWith(2, 2)
-    const bookingsTable = wrapper.find(BookingsRecapTable)
+    const bookingsTable = wrapper.find(BookingsRecapTableLegacy)
     expect(bookingsTable.props()).toStrictEqual({
       bookingsRecap: [bookings1, bookings2],
       isLoading: false,
@@ -160,7 +160,7 @@ describe('components | BookingsRecap', () => {
     await flushPromises()
     const title = wrapper.find(Titles)
     expect(title).toHaveLength(1)
-    const bookingsTable = wrapper.find(BookingsRecapTable)
+    const bookingsTable = wrapper.find(BookingsRecapTableLegacy)
     expect(bookingsTable).toHaveLength(1)
     expect(bookingsTable.prop('bookingsRecap')).toStrictEqual([oneBooking])
   })
