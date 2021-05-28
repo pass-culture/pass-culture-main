@@ -35,6 +35,7 @@ def get_application_by_detail_response(application_id: int = 2, birth_date: str 
         "creatorCtrl": "OK",
         "bodyBirthDateLevel": "100",
         "bodyNameLevel": "50",
+        "bodyPieceNumber": "id-piece-number",
         **kwargs,
     }
 
@@ -100,6 +101,7 @@ def test_calls_jouve_api_with_previously_fetched_token(mocked_requests_post):
     assert beneficiary_pre_subscription.phone_number == "0123456789"
     assert beneficiary_pre_subscription.postal_code == "35123"
     assert beneficiary_pre_subscription.public_name == "Céline DURAND"
+    assert beneficiary_pre_subscription.id_piece_number == "id-piece-number"
 
 
 @patch("pcapi.connectors.beneficiaries.jouve_backend.requests.post")

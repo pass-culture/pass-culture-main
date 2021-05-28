@@ -59,9 +59,16 @@ class CreateBeneficiaryFromApplication:
                 user=preexisting_account,
             )
         except CantRegisterBeneficiary as cant_register_beneficiary_exception:
-            logger.warning("Couldn't register user from application", extra={"applicationId": application_id})
+            exception_reason = str(cant_register_beneficiary_exception)
+            logger.warning(
+                "Couldn't register user from application",
+                extra={
+                    "applicationId": application_id,
+                    "reason": exception_reason,
+                },
+            )
             self.beneficiary_repository.reject(
-                beneficiary_pre_subscription, detail=str(cant_register_beneficiary_exception), user=preexisting_account
+                beneficiary_pre_subscription, detail=exception_reason, user=preexisting_account
             )
             send_rejection_email_to_beneficiary_pre_subscription(
                 beneficiary_pre_subscription=beneficiary_pre_subscription,

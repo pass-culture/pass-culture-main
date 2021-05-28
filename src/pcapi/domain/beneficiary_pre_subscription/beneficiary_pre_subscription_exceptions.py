@@ -14,5 +14,9 @@ class FraudDetected(CantRegisterBeneficiary):
     pass
 
 
+class IdPieceNumberDuplicate(FraudDetected):
+    pass
+
+
 class SuspiciousFraudDetected(CantRegisterBeneficiary):
     pass

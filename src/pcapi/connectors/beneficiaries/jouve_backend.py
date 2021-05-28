@@ -85,6 +85,7 @@ class BeneficiaryJouveBackend:
             date_of_birth=datetime.datetime.strptime(content["birthDate"], "%m/%d/%Y"),
             email=content["email"],
             first_name=first_name,
+            id_piece_number=content["bodyPieceNumber"],
             last_name=last_name,
             phone_number=content["phoneNumber"],
             postal_code=content["postalCode"],

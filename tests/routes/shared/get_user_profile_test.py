@@ -54,6 +54,7 @@ class Get:
                 "hasPhysicalVenues": False,
                 "hasSeenProTutorials": True,
                 "id": humanize(user.id),
+                "idPieceNumber": None,
                 "isAdmin": False,
                 "isBeneficiary": True,
                 "isEmailValidated": True,

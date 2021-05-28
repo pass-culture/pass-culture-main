@@ -143,6 +143,8 @@ class User(PcObject, Model, NeedsValidationMixin):
 
     firstName = Column(String(128), nullable=True)
 
+    idPieceNumber = Column(String, nullable=True, unique=True)
+
     isAdmin = Column(
         Boolean,
         CheckConstraint(
