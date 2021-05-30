@@ -815,6 +815,10 @@ const state = {
     'mediation-H4': null,
     stockMU: null,
   },
+  features: {
+    list: [],
+    initialized: false,
+  },
   form: {
     offer: {
       name: 'Dormons peu soupons bien',

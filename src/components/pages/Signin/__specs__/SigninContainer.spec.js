@@ -5,8 +5,9 @@ describe('pages | Signin | SigninContainer', () => {
     it('should mark account creation as disabled', () => {
       // given
       const state = {
-        data: {
-          features: [
+        data: {},
+        features: {
+          list: [
             {
               isActive: false,
               nameKey: 'API_SIRENE_AVAILABLE',
@@ -27,8 +28,9 @@ describe('pages | Signin | SigninContainer', () => {
     it('should mark account creation as disabled', () => {
       // given
       const state = {
-        data: {
-          features: [
+        data: {},
+        features: {
+          list: [
             {
               isActive: true,
               nameKey: 'API_SIRENE_AVAILABLE',

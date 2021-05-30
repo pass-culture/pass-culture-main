@@ -4,7 +4,7 @@ import { assignData, requestData } from 'redux-saga-data'
 
 import { withQueryRouter } from 'components/hocs/with-query-router/withQueryRouter'
 import { OFFERERS_API_PATH } from 'config/apiPaths'
-import { isAPISireneAvailable } from 'store/selectors/data/featuresSelectors'
+import { isAPISireneAvailable } from 'store/features/selectors'
 import { selectOfferers } from 'store/selectors/data/offerersSelectors'
 import { offererNormalizer } from 'utils/normalizers'
 import { stringify } from 'utils/query-string'

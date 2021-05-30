@@ -22,7 +22,6 @@ import { configureTestStore } from 'store/testUtils'
 Element.prototype.scrollIntoView = () => {}
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  updateOffer: jest.fn(),
   getValidatedOfferersNames: jest.fn(),
   getVenuesForOfferer: jest.fn(),
   getVenue: jest.fn(),
@@ -30,6 +29,7 @@ jest.mock('repository/pcapi/pcapi', () => ({
   loadStocks: jest.fn(),
   loadTypes: jest.fn(),
   postThumbnail: jest.fn(),
+  updateOffer: jest.fn(),
 }))
 
 jest.mock('../../../utils/computeOffersUrl', () => ({

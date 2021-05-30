@@ -65,14 +65,17 @@ describe('offerDetails - Creation - pro user', () => {
 
   beforeEach(() => {
     store = configureTestStore({
-      data: {
-        features: [
+      features: {
+        initialized: true,
+        list: [
           {
             isActive: true,
             name: 'ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION',
             nameKey: 'ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION',
           },
         ],
+      },
+      data: {
         users: [{ publicName: 'François', isAdmin: false, email: 'francois@example.com' }],
       },
     })

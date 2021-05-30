@@ -53,8 +53,8 @@ describe('components | BookingsRecap | Pro user', () => {
       },
     }
     store = configureTestStore({
-      data: {
-        features: [
+      features: {
+        list: [
           {
             isActive: true,
             name: 'ENABLE_BOOKINGS_PAGE_FILTERS_FIRST',

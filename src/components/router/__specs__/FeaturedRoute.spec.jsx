@@ -56,7 +56,7 @@ describe('src | components | router | FeaturedRoute', () => {
   let store
 
   beforeEach(() => {
-    store = configureTestStore()
+    store = configureTestStore({ features: { initialized: false } })
     pcapi.loadFeatures.mockResolvedValue([])
   })
 

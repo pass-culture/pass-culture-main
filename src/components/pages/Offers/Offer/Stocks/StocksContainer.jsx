@@ -2,14 +2,14 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
-import { showNotification } from '../../../../../store/reducers/notificationReducer'
-import { selectIsFeatureActive } from '../../../../../store/selectors/data/featuresSelectors'
+import { isFeatureActive } from 'store/features/selectors'
+import { showNotification } from 'store/reducers/notificationReducer'
 
 import Stocks from './Stocks'
 
 const mapStateToProps = state => ({
-  areActivationCodesEnabled: selectIsFeatureActive(state, 'ENABLE_ACTIVATION_CODES'),
-  autoActivateDigitalBookings: selectIsFeatureActive(state, 'AUTO_ACTIVATE_DIGITAL_BOOKINGS'),
+  areActivationCodesEnabled: isFeatureActive(state, 'ENABLE_ACTIVATION_CODES'),
+  autoActivateDigitalBookings: isFeatureActive(state, 'AUTO_ACTIVATE_DIGITAL_BOOKINGS'),
 })
 
 const mapDispatchToProps = dispatch => ({

@@ -5,7 +5,7 @@ import Spinner from 'components/layout/Spinner'
 import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl'
 import * as pcapi from 'repository/pcapi/pcapi'
 
-import OfferFormContainer from './OfferFormContainer'
+import OfferForm from './OfferForm'
 
 const OfferCreation = ({
   formValues,
@@ -91,7 +91,7 @@ const OfferCreation = ({
   }
 
   return (
-    <OfferFormContainer
+    <OfferForm
       areAllVenuesVirtual={areAllVenuesVirtual}
       backUrl={computeOffersUrl({})}
       formValues={formValues}

@@ -3,7 +3,7 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 
-import { isAPISireneAvailable } from 'store/selectors/data/featuresSelectors'
+import { isAPISireneAvailable } from 'store/features/selectors'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
 const VenueCreationLinks = ({ hasPhysicalVenue, hasVirtualOffers, offererId }) => {

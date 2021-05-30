@@ -7,8 +7,8 @@ describe('pages | Offerers | VenuesContainer', () => {
         // given
         const props = {}
         const state = {
-          data: {
-            features: [
+          features: {
+            list: [
               {
                 isActive: true,
                 nameKey: 'API_SIRENE_AVAILABLE',
@@ -32,8 +32,8 @@ describe('pages | Offerers | VenuesContainer', () => {
           },
         }
         const state = {
-          data: {
-            features: [
+          features: {
+            list: [
               {
                 isActive: false,
                 nameKey: 'API_SIRENE_AVAILABLE',

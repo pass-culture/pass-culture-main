@@ -13,7 +13,7 @@ export const configureTestStore = overrideData => {
   const initialData = {
     bookingSummary: bookingSummaryInitialState,
     data: dataInitialState,
-    features: featuresInitialState,
+    features: { ...featuresInitialState, initialized: true },
     errors: errorsInitialState,
     maintenance: maintenanceInitialState,
     notification: notificationInitialState,

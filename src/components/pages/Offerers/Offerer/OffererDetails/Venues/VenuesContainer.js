@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 
-import { isAPISireneAvailable } from 'store/selectors/data/featuresSelectors'
+import { isAPISireneAvailable } from 'store/features/selectors'
 
 import Venues from './Venues'
 

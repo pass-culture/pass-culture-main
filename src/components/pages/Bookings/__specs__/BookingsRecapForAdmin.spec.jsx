@@ -48,14 +48,17 @@ describe('components | BookingsRecap | Admin user', () => {
       },
     }
     store = configureTestStore({
-      data: {
-        features: [
+      features: {
+        initialized: true,
+        list: [
           {
             isActive: true,
             name: 'ENABLE_BOOKINGS_PAGE_FILTERS_FIRST',
             nameKey: 'ENABLE_BOOKINGS_PAGE_FILTERS_FIRST',
           },
         ],
+      },
+      data: {
         users: [{ publicName: 'René', isAdmin: true, email: 'rené@example.com' }],
       },
     })

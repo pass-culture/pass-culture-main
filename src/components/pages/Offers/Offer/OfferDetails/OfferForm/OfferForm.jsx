@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import React, { Fragment, useCallback, useEffect, useState, useRef, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import InternalBanner from 'components/layout/Banner/InternalBanner'
 import { CheckboxInput } from 'components/layout/inputs/CheckboxInput/CheckboxInput'
 import DurationInput from 'components/layout/inputs/DurationInput/DurationInput'
@@ -69,7 +70,6 @@ const OfferForm = ({
   initialValues,
   isDisabled,
   isEdition,
-  isIsbnRequiredInLivreEditionEnabled,
   isSubmitLoading,
   isUserAdmin,
   offerersNames,
@@ -96,6 +96,10 @@ const OfferForm = ({
   const [formErrors, setFormErrors] = useState(submitErrors)
   const formRef = useRef(null)
   const [isLoading, setIsLoading] = useState(true)
+
+  const isIsbnRequiredInLivreEditionEnabled = useActiveFeature(
+    'ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION'
+  )
 
   let mandatoryFields = useMemo(() => [...MANDATORY_FIELDS], [])
 
@@ -919,7 +923,6 @@ OfferForm.propTypes = {
   initialValues: PropTypes.shape(),
   isDisabled: PropTypes.bool,
   isEdition: PropTypes.bool,
-  isIsbnRequiredInLivreEditionEnabled: PropTypes.bool.isRequired,
   isSubmitLoading: PropTypes.bool.isRequired,
   isUserAdmin: PropTypes.bool,
   offerersNames: PropTypes.arrayOf(

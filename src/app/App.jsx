@@ -9,10 +9,26 @@ import routes, { routesWithMain } from 'utils/routes_map'
 import RedirectToMaintenance from './RedirectToMaintenance'
 
 export const App = props => {
-  const { children, currentUser, getCurrentUser, history, isMaintenanceActivated, location } = props
+  const {
+    children,
+    currentUser,
+    featuresAreInitialized,
+    getCurrentUser,
+    history,
+    isMaintenanceActivated,
+    loadFeatures,
+    location,
+  } = props
 
   const [isBusy, setIsBusy] = useState(false)
   const currentPathname = window.location.pathname
+
+  useEffect(() => {
+    if (!featuresAreInitialized) {
+      loadFeatures()
+    }
+  }, [featuresAreInitialized, loadFeatures])
+
   useEffect(() => {
     const publicRouteList = [...routes, ...routesWithMain].filter(
       route => route.meta && route.meta.public
@@ -61,5 +77,8 @@ export const App = props => {
 App.propTypes = {
   children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.shape()), PropTypes.shape()])
     .isRequired,
+  featuresInitialized: PropTypes.bool.isRequired,
+  getCurrentUser: PropTypes.func.isRequired,
   isMaintenanceActivated: PropTypes.bool.isRequired,
+  loadFeatures: PropTypes.func.isRequired,
 }

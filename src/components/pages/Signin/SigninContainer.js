@@ -3,8 +3,8 @@ import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 import { requestData } from 'redux-saga-data'
 
+import { isAPISireneAvailable } from 'store/features/selectors'
 import { showNotification } from 'store/reducers/notificationReducer'
-import { isAPISireneAvailable } from 'store/selectors/data/featuresSelectors'
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 
 import Signin from './Signin'

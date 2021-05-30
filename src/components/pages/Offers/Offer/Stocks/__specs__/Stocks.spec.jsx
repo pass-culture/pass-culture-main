@@ -56,7 +56,9 @@ describe('stocks page', () => {
     store = configureTestStore({
       data: {
         users: [{ publicName: 'François', isAdmin: false }],
-        features: [
+      },
+      features: {
+        list: [
           {
             nameKey: 'ENABLE_ACTIVATION_CODES',
             isActive: true,
@@ -548,8 +550,8 @@ describe('stocks page', () => {
         store = configureTestStore({
           data: {
             users: [{ publicName: 'François', isAdmin: false }],
-            features: [{ isActive: true, nameKey: 'AUTO_ACTIVATE_DIGITAL_BOOKINGS' }],
           },
+          features: { list: [{ isActive: true, nameKey: 'AUTO_ACTIVATE_DIGITAL_BOOKINGS' }] },
         })
 
         // when

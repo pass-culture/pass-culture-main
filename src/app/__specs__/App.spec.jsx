@@ -1,70 +1,84 @@
 import { setUser } from '@sentry/browser'
-import { mount, shallow } from 'enzyme/build'
+import '@testing-library/jest-dom'
+import { act, render, screen } from '@testing-library/react'
 import React from 'react'
 
+import { URL_FOR_MAINTENANCE } from 'utils/config'
+
 import { App } from '../App'
-import RedirectToMaintenance from '../RedirectToMaintenance'
+
+const renderApp = async props => {
+  await act(async () => {
+    await render(
+      <App {...props}>
+        <p>
+          {'Sub component'}
+        </p>
+      </App>
+    )
+  })
+}
 
 const getCurrentUser = ({ handleSuccess }) => {
   handleSuccess()
 }
 
+const loadFeatures = jest.fn()
+
 jest.mock('@sentry/browser', () => ({
   setUser: jest.fn(),
 }))
 
+jest.spyOn(window, 'scrollTo').mockImplementation()
+
+delete window.location
+window.location = {}
+const setHrefSpy = jest.fn()
+Object.defineProperty(window.location, 'href', {
+  set: setHrefSpy,
+})
+
 describe('src | App', () => {
-  it('should render App and children components when isMaintenanceActivated is false', () => {
-    // Given
-    const props = { isMaintenanceActivated: false, getCurrentUser }
+  let props
 
-    // When
-    const wrapper = mount(
-      <App {...props}>
-        <p>
-          {'Sub component'}
-        </p>
-      </App>
-    )
-
-    // Then
-    const appNode = wrapper.find(App)
-    expect(appNode).toHaveLength(1)
-    expect(appNode.text()).toBe('Sub component')
+  beforeEach(() => {
+    // props = {}
+    props = {
+      featuresInitialized: false,
+      getCurrentUser,
+      isMaintenanceActivated: false,
+      loadFeatures,
+    }
   })
 
-  it('should render a Redirect component when isMaintenanceActivated is true', () => {
-    // Given
-    const props = { isMaintenanceActivated: true, getCurrentUser }
-
+  it('should render App and children components when isMaintenanceActivated is false', async () => {
     // When
-    const wrapper = shallow(
-      <App {...props}>
-        <p>
-          {'Sub component'}
-        </p>
-      </App>
-    )
+    await renderApp(props)
 
     // Then
-    const redirectToMaintenanceElement = wrapper.find(RedirectToMaintenance)
-    expect(redirectToMaintenanceElement).toHaveLength(1)
+    expect(screen.getByText('Sub component')).toBeInTheDocument()
   })
 
-  it('should call Sentry setUser if current user is given', () => {
-    // Given
-    const props = { isMaintenanceActivated: true, getCurrentUser, currentUser: { pk: 'pk_key' } }
-
+  it('should render a Redirect component when isMaintenanceActivated is true', async () => {
     // When
-    mount(
-      <App {...props}>
-        <p>
-          {'Sub component'}
-        </p>
-      </App>
-    )
+    await renderApp({ ...props, isMaintenanceActivated: true })
+
+    expect(setHrefSpy).toHaveBeenCalledWith(URL_FOR_MAINTENANCE)
+  })
+
+  it('should call Sentry setUser if current user is given', async () => {
+    // When
+    await renderApp({ ...props, currentUser: { pk: 'pk_key' }, isMaintenanceActivated: true })
 
     // Then
     expect(setUser).toHaveBeenCalledWith({ id: 'pk_key' })
+  })
+
+  it('should load features', async () => {
+    // When
+    await renderApp(props)
+
+    // Then
+    expect(loadFeatures).toHaveBeenCalledWith()
   })
 })

@@ -7,6 +7,10 @@ describe('src | AppContainer', () => {
       data: {
         users: [],
       },
+      features: {
+        list: [],
+        initialized: false,
+      },
       maintenance: { isActivated: true },
     }
 
