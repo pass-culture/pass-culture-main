@@ -72,12 +72,6 @@ export const routesWithMain = [
     },
   },
   {
-    component: OfferersLayout,
-    exact: false,
-    path: '/structures',
-    title: 'Structures',
-  },
-  {
     component: ReimbursementsContainer,
     exact: true,
     path: '/remboursements',
@@ -157,6 +151,12 @@ const routes = [
         pageName: 'sign-in',
       },
     },
+  },
+  {
+    component: OfferersLayout,
+    exact: false,
+    path: '/structures',
+    title: 'Structures',
   },
   {
     component: OfferLayoutContainer,

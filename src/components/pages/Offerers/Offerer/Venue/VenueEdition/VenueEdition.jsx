@@ -2,9 +2,9 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Form } from 'react-final-form'
 import { getCanSubmit, parseSubmitErrors } from 'react-final-form-utils'
-import { Link } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 
-import AppLayout from 'app/AppLayout'
+import Icon from 'components/layout/Icon'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
@@ -188,12 +188,14 @@ class VenueEdition extends PureComponent {
     )
 
     return (
-      <AppLayout
-        layoutConfig={{
-          backTo: { label: 'Accueil', path: `/accueil?structure=${offererId}` },
-          pageName: 'venue',
-        }}
-      >
+      <div className="venue-page">
+        <NavLink
+          className="back-button has-text-primary"
+          to={`/accueil?structure=${offererId}`}
+        >
+          <Icon svg="ico-back" />
+          {'Accueil'}
+        </NavLink>
         <PageTitle title={pageTitle} />
         <Titles
           action={actionLink}
@@ -212,7 +214,7 @@ class VenueEdition extends PureComponent {
             render={this.onHandleRender}
           />
         )}
-      </AppLayout>
+      </div>
     )
   }
 }

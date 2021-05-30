@@ -2,8 +2,9 @@ import createDecorator from 'final-form-calculate'
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Form } from 'react-final-form'
+import { NavLink } from 'react-router-dom'
 
-import AppLayout from 'app/AppLayout'
+import Icon from 'components/layout/Icon'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
 import { bindAddressAndDesignationFromSiren } from 'repository/siren/bindSirenFieldToDesignation'
@@ -41,12 +42,14 @@ class OffererCreation extends PureComponent {
 
   render() {
     return (
-      <AppLayout
-        layoutConfig={{
-          backTo: { label: 'Accueil', path: '/accueil' },
-          pageName: 'offerer',
-        }}
-      >
+      <div className="offerer-page">
+        <NavLink
+          className="back-button has-text-primary"
+          to="/accueil"
+        >
+          <Icon svg="ico-back" />
+          {'Accueil'}
+        </NavLink>
         <PageTitle title="Créer une structure" />
         <Titles title="Structure" />
 
@@ -56,7 +59,7 @@ class OffererCreation extends PureComponent {
           decorators={this.createDecorators()}
           onSubmit={this.handleSubmit}
         />
-      </AppLayout>
+      </div>
     )
   }
 }

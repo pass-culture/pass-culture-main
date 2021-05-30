@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-import { Route, Switch } from 'react-router-dom'
+import { Route, Switch, useRouteMatch } from 'react-router-dom'
 
 import NotFound from 'components/pages/Errors/NotFound/NotFound'
 
@@ -8,7 +8,9 @@ import OfferersContainer from './List/OfferersContainer'
 import OffererDetailsLayout from './Offerer/OffererDetailsLayout'
 import OffererCreationContainer from './OffererCreation/OffererCreationContainer'
 
-const OfferersLayout = ({ match }) => {
+const OfferersLayout = () => {
+  const match = useRouteMatch()
+
   return (
     <Switch>
       <Route

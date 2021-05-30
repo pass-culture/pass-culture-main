@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
+import { NavLink } from 'react-router-dom'
 
-import AppLayout from 'app/AppLayout'
+import Icon from 'components/layout/Icon'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
 
@@ -18,12 +19,14 @@ class OffererDetails extends PureComponent {
   render() {
     const { offerer, venues } = this.props
     return (
-      <AppLayout
-        layoutConfig={{
-          backTo: { label: 'Accueil', path: `/accueil?structure=${offerer.id}` },
-          pageName: 'offerer',
-        }}
-      >
+      <div className="offerer-page">
+        <NavLink
+          className="back-button has-text-primary"
+          to={`/accueil?structure=${offerer.id}`}
+        >
+          <Icon svg="ico-back" />
+          {'Accueil'}
+        </NavLink>
         <PageTitle title="Détails de votre structure" />
         <Titles
           subtitle={offerer.name}
@@ -66,7 +69,7 @@ class OffererDetails extends PureComponent {
           offererId={offerer.id}
           venues={venues}
         />
-      </AppLayout>
+      </div>
     )
   }
 }

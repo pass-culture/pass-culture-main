@@ -4,7 +4,6 @@ import { Form } from 'react-final-form'
 import LoadingInfiniteScroll from 'react-loading-infinite-scroller'
 import { Link } from 'react-router-dom'
 
-import AppLayout from 'app/AppLayout'
 import Icon from 'components/layout/Icon'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
@@ -173,11 +172,7 @@ class Offerers extends PureComponent {
     )
 
     return (
-      <AppLayout
-        layoutConfig={{
-          pageName: 'offerers',
-        }}
-      >
+      <div className="offerers-page">
         <PageTitle title="Vos structures juridiques" />
         <Titles
           action={actionLink}
@@ -226,7 +221,7 @@ class Offerers extends PureComponent {
           })}
         </LoadingInfiniteScroll>
         {hasMore === false && 'Fin des résultats'}
-      </AppLayout>
+      </div>
     )
   }
 }

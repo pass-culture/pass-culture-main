@@ -96,17 +96,6 @@ describe('src | components | pages | Venue', () => {
         const title = wrapper.find({ children: 'Ajoutez un lieu où accéder à vos offres.' })
         expect(title).toHaveLength(1)
       })
-
-      it('should build the proper backTo link', () => {
-        // when
-        const wrapper = shallow(<VenueCreation {...props} />)
-
-        // then
-        expect(wrapper.prop('layoutConfig').backTo).toStrictEqual({
-          label: 'Accueil',
-          path: '/accueil?structure=APEQ',
-        })
-      })
     })
 
     describe('when editing', () => {

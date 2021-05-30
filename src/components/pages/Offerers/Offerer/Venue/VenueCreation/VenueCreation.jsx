@@ -2,8 +2,9 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Form } from 'react-final-form'
 import { getCanSubmit, parseSubmitErrors } from 'react-final-form-utils'
+import { NavLink } from 'react-router-dom'
 
-import AppLayout from 'app/AppLayout'
+import Icon from 'components/layout/Icon'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
 
@@ -167,30 +168,30 @@ class VenueCreation extends PureComponent {
     const showForm = typeof offerer !== 'undefined'
 
     return (
-      <AppLayout
-        layoutConfig={{
-          backTo: { label: 'Accueil', path: `/accueil?structure=${offererId}` },
-          pageName: 'venue',
-        }}
-      >
-        <>
-          <PageTitle title="Créer un lieu" />
-          <Titles title="Lieu" />
-          <p className="advice">
-            {'Ajoutez un lieu où accéder à vos offres.'}
-          </p>
+      <div className="venue-page">
+        <NavLink
+          className="back-button has-text-primary"
+          to={`/accueil?structure=${offererId}`}
+        >
+          <Icon svg="ico-back" />
+          {'Accueil'}
+        </NavLink>
+        <PageTitle title="Créer un lieu" />
+        <Titles title="Lieu" />
+        <p className="advice">
+          {'Ajoutez un lieu où accéder à vos offres.'}
+        </p>
 
-          {showForm && (
-            <Form
-              decorators={decorators}
-              initialValues={formInitialValues}
-              name="venue"
-              onSubmit={this.handleOnFormSubmit}
-              render={this.onHandleRender}
-            />
-          )}
-        </>
-      </AppLayout>
+        {showForm && (
+          <Form
+            decorators={decorators}
+            initialValues={formInitialValues}
+            name="venue"
+            onSubmit={this.handleOnFormSubmit}
+            render={this.onHandleRender}
+          />
+        )}
+      </div>
     )
   }
 }
