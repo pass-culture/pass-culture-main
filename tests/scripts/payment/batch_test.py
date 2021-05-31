@@ -1,112 +1,108 @@
-from unittest.mock import patch
+import base64
+import io
+import zipfile
 
 import pytest
+from sqlalchemy import func
 
-from pcapi.core.testing import override_features
+import pcapi.core.bookings.factories as bookings_factories
+import pcapi.core.mails.testing as mails_testing
+import pcapi.core.offers.factories as offers_factories
+import pcapi.core.payments.factories as payments_factories
+import pcapi.core.users.models as users_models
+from pcapi.models.payment import Payment
+from pcapi.models.payment_status import PaymentStatus
+from pcapi.models.payment_status import TransactionStatus
 from pcapi.scripts.payment.batch import generate_and_send_payments
 
 
-class GenerateAndSendPaymentsTest:
-    @patch("pcapi.scripts.payment.batch.update_booking_used_after_stock_occurrence")
-    @patch("pcapi.scripts.payment.batch.get_payments_by_message_id")
-    @patch("pcapi.scripts.payment.batch.generate_new_payments", return_value=([], []))
-    @patch("pcapi.scripts.payment.batch.set_not_processable_payments_with_bank_information_to_retry", return_value=[])
-    @patch("pcapi.scripts.payment.batch.concatenate_payments_with_errors_and_retries", return_value=[])
-    @patch("pcapi.scripts.payment.batch.send_transactions", return_value=[])
-    @patch("pcapi.scripts.payment.batch.send_payments_report", return_value=[])
-    @patch("pcapi.scripts.payment.batch.send_payments_details", return_value=[])
-    @patch("pcapi.scripts.payment.batch.send_wallet_balances", return_value=[])
-    @pytest.mark.usefixtures("db_session")
-    def test_should_retrieve_all_steps_except_1_bis_when_message_id_is_none(
-        self,
-        send_wallet_balances,
-        send_payments_details,
-        send_payments_report,
-        send_transactions,
-        concatenate_payments_with_errors_and_retries,
-        set_not_processable_payments_with_bank_information_to_retry,
-        generate_new_payments,
-        get_payments_by_message_id,
-        update_booking_used_after_stock_occurrence,
-        app,
-    ):
-        # When
-        generate_and_send_payments(None)
+@pytest.mark.usefixtures("db_session")
+def test_generate_and_send_payments():
+    # Comments indicate what `generate_and_send_payments()` will do,
+    # no what the setup does.
+    # 1 new payment + 1 retried payment for venue 1
+    venue1 = offers_factories.VenueFactory(name="venue1")
+    offers_factories.BankInformationFactory(venue=venue1)
+    booking11 = bookings_factories.BookingFactory(isUsed=True, stock__offer__venue=venue1)
+    booking12 = bookings_factories.BookingFactory(isUsed=True, stock__offer__venue=venue1)
+    payment12 = payments_factories.PaymentFactory(booking=booking12)
+    payments_factories.PaymentStatusFactory(payment=payment12, status=TransactionStatus.ERROR)
+    payment13 = payments_factories.PaymentFactory(booking__stock__offer__venue=venue1)
+    payments_factories.PaymentStatusFactory(payment=payment13, status=TransactionStatus.SENT)
+    bookings_factories.BookingFactory(isUsed=False, stock__offer__venue=venue1)
 
-        # Then
-        generate_new_payments.assert_called_once()
-        set_not_processable_payments_with_bank_information_to_retry.assert_called_once()
-        concatenate_payments_with_errors_and_retries.assert_called_once()
-        send_transactions.assert_called_once()
-        send_payments_report.assert_called_once()
-        send_payments_details.assert_called_once()
-        send_wallet_balances.assert_called_once()
-        update_booking_used_after_stock_occurrence.assert_called_once()
-        get_payments_by_message_id.assert_not_called()
+    # 1 new payment for venue 2
+    venue2 = offers_factories.VenueFactory(name="venue2")
+    offers_factories.BankInformationFactory(offerer=venue2.managingOfferer)
+    booking2 = bookings_factories.BookingFactory(isUsed=True, stock__offer__venue=venue2)
 
-    @patch("pcapi.scripts.payment.batch.update_booking_used_after_stock_occurrence")
-    @patch("pcapi.scripts.payment.batch.get_payments_by_message_id")
-    @patch("pcapi.scripts.payment.batch.generate_new_payments", return_value=([], []))
-    @patch("pcapi.scripts.payment.batch.set_not_processable_payments_with_bank_information_to_retry", return_value=[])
-    @patch("pcapi.scripts.payment.batch.concatenate_payments_with_errors_and_retries", return_value=[])
-    @patch("pcapi.scripts.payment.batch.send_transactions", return_value=[])
-    @patch("pcapi.scripts.payment.batch.send_payments_report", return_value=[])
-    @patch("pcapi.scripts.payment.batch.send_payments_details", return_value=[])
-    @patch("pcapi.scripts.payment.batch.send_wallet_balances", return_value=[])
-    @pytest.mark.usefixtures("db_session")
-    def test_should_start_script_at_1_bis_step_when_message_id_is_provided(
-        self,
-        send_wallet_balances,
-        send_payments_details,
-        send_payments_report,
-        send_transactions,
-        concatenate_payments_with_errors_and_retries,
-        set_not_processable_payments_with_bank_information_to_retry,
-        generate_new_payments,
-        get_payments_by_message_id,
-        update_booking_used_after_stock_occurrence,
-        app,
-    ):
-        # When
-        generate_and_send_payments("ar5y65dtre45")
+    # 0 payment for venue 3 (existing booking has already been reimbursed)
+    payment3 = payments_factories.PaymentFactory()
+    payments_factories.PaymentStatusFactory(payment=payment3, status=TransactionStatus.SENT)
 
-        # Then
-        get_payments_by_message_id.assert_called_once()
-        send_transactions.assert_called_once()
-        send_payments_report.assert_called_once()
-        send_payments_details.assert_called_once()
-        send_wallet_balances.assert_called_once()
-        generate_new_payments.assert_not_called()
-        set_not_processable_payments_with_bank_information_to_retry.assert_not_called()
-        concatenate_payments_with_errors_and_retries.assert_not_called()
-        update_booking_used_after_stock_occurrence.assert_called_once()
+    # 1 new payment (not processable) for venue 4 (no IBAN nor BIC)
+    venue4 = offers_factories.VenueFactory()
+    booking4 = bookings_factories.BookingFactory(isUsed=True, stock__offer__venue=venue4)
 
-    @patch("pcapi.scripts.payment.batch.update_booking_used_after_stock_occurrence")
-    @patch("pcapi.scripts.payment.batch.get_payments_by_message_id")
-    @patch("pcapi.scripts.payment.batch.generate_new_payments", return_value=([], []))
-    @patch("pcapi.scripts.payment.batch.set_not_processable_payments_with_bank_information_to_retry", return_value=[])
-    @patch("pcapi.scripts.payment.batch.concatenate_payments_with_errors_and_retries", return_value=[])
-    @patch("pcapi.scripts.payment.batch.send_transactions", return_value=[])
-    @patch("pcapi.scripts.payment.batch.send_payments_report", return_value=[])
-    @patch("pcapi.scripts.payment.batch.send_payments_details", return_value=[])
-    @patch("pcapi.scripts.payment.batch.send_wallet_balances", return_value=[])
-    @pytest.mark.usefixtures("db_session")
-    @override_features(UPDATE_BOOKING_USED=False)
-    def test_should_not_update_booking_usage_if_corresponding_feature_is_disabled(
-        self,
-        send_wallet_balances,
-        send_payments_details,
-        send_payments_report,
-        send_transactions,
-        concatenate_payments_with_errors_and_retries,
-        set_not_processable_payments_with_bank_information_to_retry,
-        generate_new_payments,
-        get_payments_by_message_id,
-        update_booking_used_after_stock_occurrence,
-        app,
-    ):
-        # When
-        generate_and_send_payments("ar5y65dtre45")
+    # 0 payment for venue 5 (booking is not used)
+    venue5 = offers_factories.VenueFactory()
+    bookings_factories.BookingFactory(stock__offer__venue=venue5)
 
-        # Then
-        update_booking_used_after_stock_occurrence.assert_not_called()
+    last_payment_id = Payment.query.with_entities(func.max(Payment.id)).scalar()
+    last_status_id = PaymentStatus.query.with_entities(func.max(PaymentStatus.id)).scalar()
+
+    generate_and_send_payments()
+
+    # Check new payments and statuses
+    new_payments = Payment.query.filter(Payment.id > last_payment_id).all()
+    assert set(p.booking for p in new_payments) == {booking11, booking2, booking4}
+
+    new_statuses = (
+        PaymentStatus.query.filter(PaymentStatus.id > last_status_id)
+        .join(PaymentStatus.payment)
+        .order_by(Payment.bookingId)
+    )
+    assert set((s.payment.booking, s.status) for s in new_statuses) == {
+        (booking11, TransactionStatus.PENDING),
+        (booking11, TransactionStatus.UNDER_REVIEW),
+        (booking12, TransactionStatus.UNDER_REVIEW),
+        (booking2, TransactionStatus.PENDING),
+        (booking2, TransactionStatus.UNDER_REVIEW),
+        (booking4, TransactionStatus.NOT_PROCESSABLE),
+    }
+
+    # Check "transaction" e-mail
+    email = mails_testing.outbox[0]
+    subject = email.sent_data["Subject"].split("-")[0].strip()  # ignore date
+    assert subject == "Virements XML pass Culture Pro"
+    xml = base64.b64decode(email.sent_data["Attachments"][0]["Content"]).decode("utf-8")
+    assert "<NbOfTxs>3</NbOfTxs>" in xml
+    assert "<CtrlSum>30.00</CtrlSum>" in xml
+    assert xml.count("<EndToEndId>") == 3
+
+    # Check "report" e-mail
+    email = mails_testing.outbox[1]
+    subject = email.sent_data["Subject"].split("-")[0].strip()  # ignore date
+    assert subject == "Récapitulatif des paiements pass Culture Pro"
+    html = email.sent_data["Html-part"]
+    assert "Nombre total de paiements : 4" in html
+    assert "NOT_PROCESSABLE : 1" in html
+    assert "UNDER_REVIEW : 3" in html
+
+    # Check "details" e-mail
+    email = mails_testing.outbox[2]
+    subject = email.sent_data["Subject"].split("-")[0].strip()  # ignore date
+    assert subject == "Détails des paiements pass Culture Pro"
+    zip_data = base64.b64decode(email.sent_data["Attachments"][0]["Content"])
+    with zipfile.ZipFile(io.BytesIO(zip_data)) as zf:
+        csv = zf.open(zf.namelist()[0]).read().decode("utf-8")
+    rows = csv.splitlines()
+    assert len(rows) == 4  # header + 3 payments
+
+    # Check "wallet balance" e-mail
+    email = mails_testing.outbox[3]
+    subject = email.sent_data["Subject"].split("-")[0].strip()  # ignore date
+    assert subject == "Soldes des utilisateurs pass Culture"
+    csv = base64.b64decode(email.sent_data["Attachments"][0]["Content"]).decode("utf-8")
+    rows = csv.splitlines()
+    assert len(rows) == users_models.User.query.count() + 1  # + header

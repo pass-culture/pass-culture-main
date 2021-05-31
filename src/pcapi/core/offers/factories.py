@@ -223,7 +223,7 @@ class BankInformationFactory(BaseFactory):
     class Meta:
         model = models.BankInformation
 
-    bic = factory.Sequence(lambda n: f"{n:011}")
+    bic = factory.Sequence(lambda n: f"TESTFR2{n:04}")
     iban = factory.LazyAttributeSequence(lambda o, n: f"FR{n:016}")
     applicationId = factory.Sequence(int)
     status = "ACCEPTED"
