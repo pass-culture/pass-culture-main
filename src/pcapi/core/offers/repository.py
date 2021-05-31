@@ -315,3 +315,4 @@ def get_expired_offers(interval: [datetime, datetime]) -> Query:
 def delete_past_draft_offer() -> None:
     yesterday = datetime.utcnow() - timedelta(days=1)
     Offer.query.filter(Offer.dateCreated < yesterday, Offer.validation == OfferValidationStatus.DRAFT).delete()
+    db.session.commit()
