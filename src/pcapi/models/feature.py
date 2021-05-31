@@ -58,6 +58,9 @@ class FeatureToggle(enum.Enum):
     ENABLE_IDCHECK_FRAUD_CONTROLS = "Active les contrôles de sécurité en sortie du process ID Check"
     DISPLAY_DMS_REDIRECTION = "Affiche une redirection vers DMS si ID Check est KO"
     ENABLE_BOOKINGS_PAGE_FILTERS_FIRST = "Active le pré-filtrage de la page des réservations"
+    ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING = (
+        "Active le mode debug Firebase pour l'Id Check intégrée à l'application native"
+    )
 
 
 class Feature(PcObject, Model, DeactivableMixin):
@@ -77,6 +80,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.FORCE_PHONE_VALIDATION,
     FeatureToggle.ENABLE_NEW_VENUE_PAGES,
     FeatureToggle.ENABLE_BOOKINGS_PAGE_FILTERS_FIRST,
+    FeatureToggle.ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING,
 )
 
 
