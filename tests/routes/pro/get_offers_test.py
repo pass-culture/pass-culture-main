@@ -2,14 +2,9 @@ import secrets
 from unittest.mock import patch
 
 from pcapi.core import testing
+import pcapi.core.offers.factories as offers_factories
+import pcapi.core.users.factories as users_factories
 from pcapi.infrastructure.repository.pro_offers.paginated_offers_recap_domain_converter import to_domain
-from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_stock
-from pcapi.model_creators.generic_creators import create_user
-from pcapi.model_creators.generic_creators import create_user_offerer
-from pcapi.model_creators.generic_creators import create_venue
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
@@ -20,15 +15,22 @@ class Returns200:
         self, app, db_session, assert_num_queries
     ):
         # Given
-        admin = create_user(is_admin=True, is_beneficiary=False)
-        offerer = create_offerer()
+        admin = users_factories.UserFactory(isAdmin=True, isBeneficiary=False)
+        offerer = offers_factories.OffererFactory(name="My Offerer")
         departement_code = "12"
-        requested_venue = create_venue(offerer, siret="12345678912345", postal_code=departement_code + "000")
-        other_venue = create_venue(offerer, siret="54321987654321")
-        offer_on_requested_venue = create_offer_with_thing_product(requested_venue)
-        offer_on_other_venue = create_offer_with_thing_product(other_venue)
-        stock = create_stock(offer=offer_on_requested_venue)
-        repository.save(admin, stock, offer_on_other_venue)
+        requested_venue = offers_factories.VenueFactory(
+            managingOfferer=offerer,
+            siret="12345678912345",
+            postalCode=departement_code + "000",
+            name="My Venue",
+            publicName="My public name",
+        )
+        other_venue = offers_factories.VenueFactory(managingOfferer=offerer, siret="54321987654321")
+        offer_on_requested_venue = offers_factories.ThingOfferFactory(
+            venue=requested_venue, extraData={"isbn": "123456789"}, name="My Offer"
+        )
+        offers_factories.ThingOfferFactory(venue=other_venue)
+        stock = offers_factories.StockFactory(offer=offer_on_requested_venue)
         client = TestClient(app.test_client()).with_auth(email=admin.email)
         path = f"/offers?venueId={humanize(requested_venue.id)}"
         select_and_count_offers_number_of_queries = 2
@@ -48,15 +50,15 @@ class Returns200:
                     "isEditable": True,
                     "isEvent": False,
                     "isThing": True,
-                    "productIsbn": None,
-                    "name": "Test Book",
+                    "productIsbn": "123456789",
+                    "name": "My Offer",
                     "status": "ACTIVE",
                     "stocks": [
                         {
                             "id": humanize(stock.id),
                             "offerId": humanize(offer_on_requested_venue.id),
                             "hasBookingLimitDatetimePassed": False,
-                            "remainingQuantity": "unlimited",
+                            "remainingQuantity": 1000,
                             "beginningDatetime": None,
                         }
                     ],
@@ -67,9 +69,9 @@ class Returns200:
                         "id": humanize(requested_venue.id),
                         "isVirtual": False,
                         "managingOffererId": humanize(offerer.id),
-                        "name": "La petite librairie",
-                        "offererName": "Test Offerer",
-                        "publicName": None,
+                        "name": "My Venue",
+                        "offererName": "My Offerer",
+                        "publicName": "My public name",
                     },
                     "venueId": humanize(requested_venue.id),
                 }
@@ -83,14 +85,13 @@ class Returns200:
         self, app, db_session
     ):
         # Given
-        pro = create_user(is_admin=False, is_beneficiary=False)
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(pro, offerer)
-        requested_venue = create_venue(offerer, siret="12345678912345")
-        other_venue = create_venue(offerer, siret="54321987654321")
-        offer_on_requested_venue = create_offer_with_thing_product(requested_venue)
-        offer_on_other_venue = create_offer_with_thing_product(other_venue)
-        repository.save(pro, user_offerer, offer_on_requested_venue, offer_on_other_venue)
+        pro = users_factories.UserFactory(isAdmin=False, isBeneficiary=False)
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        requested_venue = offers_factories.VenueFactory(managingOfferer=offerer, siret="12345678912345")
+        other_venue = offers_factories.VenueFactory(managingOfferer=offerer, siret="54321987654321")
+        offers_factories.ThingOfferFactory(venue=requested_venue)
+        offers_factories.ThingOfferFactory(venue=other_venue)
 
         # when
         response = (
@@ -107,13 +108,12 @@ class Returns200:
     @patch("pcapi.routes.pro.offers.offers_api.list_offers_for_pro_user")
     def should_return_paginated_offers_with_pagination_details_in_body(self, mocked_list_offers, app, db_session):
         # Given
-        user = create_user()
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user, offerer)
-        venue = create_venue(offerer)
-        offer1 = create_offer_with_thing_product(venue)
-        offer2 = create_offer_with_thing_product(venue)
-        repository.save(user_offerer, offer1, offer2)
+        user = users_factories.UserFactory()
+        offerer = offers_factories.OffererFactory(name="My Offerer")
+        offers_factories.UserOffererFactory(user=user, offerer=offerer)
+        venue = offers_factories.VenueFactory(managingOfferer=offerer, name="My Venue", publicName="My public name")
+        offer1 = offers_factories.ThingOfferFactory(venue=venue, name="My Offer")
+        offers_factories.ThingOfferFactory(venue=venue)
         mocked_list_offers.return_value = to_domain(offers=[offer1], current_page=1, total_pages=1, total_offers=2)
 
         # when
@@ -131,7 +131,7 @@ class Returns200:
                     "isEvent": False,
                     "isThing": True,
                     "productIsbn": None,
-                    "name": "Test Book",
+                    "name": "My Offer",
                     "status": "SOLD_OUT",
                     "stocks": [],
                     "thumbUrl": None,
@@ -140,10 +140,10 @@ class Returns200:
                         "id": humanize(venue.id),
                         "isVirtual": False,
                         "managingOffererId": humanize(offerer.id),
-                        "name": "La petite librairie",
-                        "offererName": "Test Offerer",
-                        "publicName": None,
-                        "departementCode": "93",
+                        "name": "My Venue",
+                        "offererName": "My Offerer",
+                        "publicName": "My public name",
+                        "departementCode": "75",
                     },
                     "venueId": humanize(venue.id),
                 }
@@ -156,11 +156,10 @@ class Returns200:
     @patch("pcapi.routes.pro.offers.offers_api.list_offers_for_pro_user")
     def should_filter_offers_by_given_venue_id(self, mocked_list_offers, app, db_session):
         # given
-        user = create_user()
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user, offerer)
-        venue = create_venue(offerer)
-        repository.save(user_offerer, venue)
+        user = users_factories.UserFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=user, offerer=offerer)
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
 
         # when
         response = (
@@ -187,10 +186,9 @@ class Returns200:
     @patch("pcapi.routes.pro.offers.offers_api.list_offers_for_pro_user")
     def should_filter_offers_by_given_status(self, mocked_list_offers, app, db_session):
         # given
-        user = create_user()
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user, offerer)
-        repository.save(user_offerer)
+        user = users_factories.UserFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=user, offerer=offerer)
 
         # when
         response = TestClient(app.test_client()).with_auth(email=user.email).get("/offers?status=active")
@@ -215,11 +213,10 @@ class Returns200:
     @patch("pcapi.routes.pro.offers.offers_api.list_offers_for_pro_user")
     def should_filter_offers_by_given_offerer_id(self, mocked_list_offers, app, db_session):
         # given
-        user = create_user()
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user, offerer)
-        venue = create_venue(offerer)
-        repository.save(user_offerer, venue)
+        user = users_factories.UserFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=user, offerer=offerer)
+        offers_factories.VenueFactory(managingOfferer=offerer)
 
         # when
         response = (
@@ -246,10 +243,9 @@ class Returns200:
     @patch("pcapi.routes.pro.offers.offers_api.list_offers_for_pro_user")
     def should_filter_offers_by_given_creation_mode(self, mocked_list_offers, app, db_session):
         # given
-        user = create_user()
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user, offerer)
-        repository.save(user_offerer)
+        user = users_factories.UserFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=user, offerer=offerer)
 
         # when
         response = TestClient(app.test_client()).with_auth(email=user.email).get("/offers?creationMode=imported")
@@ -274,10 +270,9 @@ class Returns200:
     @patch("pcapi.routes.pro.offers.offers_api.list_offers_for_pro_user")
     def test_results_are_filtered_by_given_period_beginning_date(self, mocked_list_offers, app, db_session):
         # given
-        user = create_user()
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user, offerer)
-        repository.save(user_offerer)
+        user = users_factories.UserFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=user, offerer=offerer)
 
         # when
         response = (
@@ -306,10 +301,9 @@ class Returns200:
     @patch("pcapi.routes.pro.offers.offers_api.list_offers_for_pro_user")
     def test_results_are_filtered_by_given_period_ending_date(self, mocked_list_offers, app, db_session):
         # given
-        user = create_user()
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user, offerer)
-        repository.save(user_offerer)
+        user = users_factories.UserFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=user, offerer=offerer)
 
         # when
         response = (
@@ -339,8 +333,7 @@ class Returns200:
 class Returns404:
     def when_requested_venue_does_not_exist(self, app, db_session):
         # Given
-        user = create_user()
-        repository.save(user)
+        user = users_factories.UserFactory()
 
         # when
         response = TestClient(app.test_client()).with_auth(email=user.email).get("/offers?venueId=ABC")
@@ -351,10 +344,9 @@ class Returns404:
 
     def should_return_no_offers_when_user_has_no_rights_on_requested_venue(self, app, db_session):
         # Given
-        user = create_user()
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        repository.save(user, venue)
+        user = users_factories.UserFactory()
+        offerer = offers_factories.OffererFactory()
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
 
         # when
         response = (
@@ -372,12 +364,11 @@ class Returns404:
 
     def should_return_no_offers_when_user_offerer_is_not_validated(self, app, db_session):
         # Given
-        user = create_user()
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(user, offerer, validation_token=secrets.token_urlsafe(20))
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-        repository.save(user_offerer, offer)
+        user = users_factories.UserFactory()
+        offerer = offers_factories.OffererFactory()
+        offers_factories.UserOffererFactory(user=user, offerer=offerer, validationToken=secrets.token_urlsafe(20))
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        offers_factories.ThingOfferFactory(venue=venue)
 
         # when
         response = (
