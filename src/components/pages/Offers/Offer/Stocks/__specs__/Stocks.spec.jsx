@@ -14,6 +14,9 @@ import { getToday } from 'utils/date'
 import { bulkFakeApiCreateOrEditStock, loadFakeApiOffer, loadFakeApiStocks } from 'utils/fakeApi'
 import { queryByTextTrimHtml } from 'utils/testHelpers'
 
+const GUYANA_CAYENNE_DEPT = '973'
+const PARIS_FRANCE_DEPT = '75'
+
 jest.mock('repository/pcapi/pcapi', () => ({
   deleteStock: jest.fn(),
   loadOffer: jest.fn(),
@@ -66,7 +69,7 @@ describe('stocks page', () => {
     defaultOffer = {
       id: 'AG3A',
       venue: {
-        departementCode: '973',
+        departementCode: GUYANA_CAYENNE_DEPT,
       },
       isEvent: false,
       status: 'ACTIVE',
@@ -1166,7 +1169,7 @@ describe('stocks page', () => {
 
             it('should set booking limit time to end of selected locale day when specified and different than beginning date in Paris TZ', async () => {
               // Given
-              eventOffer.venue.departementCode = '75'
+              eventOffer.venue.departementCode = PARIS_FRANCE_DEPT
 
               await renderOffers(props, store)
               fireEvent.click(screen.getByLabelText('Date limite de réservation'))
@@ -1756,7 +1759,7 @@ describe('stocks page', () => {
 
           it('should set booking limit time to end of selected local day when specified in Paris TZ', async () => {
             // Given
-            thingOffer.venue.departementCode = '75'
+            thingOffer.venue.departementCode = PARIS_FRANCE_DEPT
 
             pcapi.bulkCreateOrEditStock.mockResolvedValue({})
             await renderOffers(props, store)
@@ -2262,6 +2265,45 @@ describe('stocks page', () => {
         const errorMessage = await screen.findByText('Vos stocks ont bien été sauvegardés.')
         expect(errorMessage).toBeInTheDocument()
       })
+
+      it('should redirect offer with stock to confirmation page after offer creation', async () => {
+        // Given
+        const offerDraftStatus = offerFactory({
+          name: 'mon offre',
+          id: 'AG3A',
+          isEvent: true,
+          status: 'DRAFT',
+        })
+        const offerApprovedStatus = offerFactory({
+          name: 'mon offre',
+          id: 'AG3A',
+          status: 'APPROVED',
+        })
+        loadFakeApiOffer(offerApprovedStatus).mockResolvedValueOnce(offerDraftStatus)
+        loadFakeApiStocks([])
+        bulkFakeApiCreateOrEditStock({ id: 'createdStock' })
+        await renderOffers(props, store)
+        fireEvent.click(screen.getByText('Ajouter une date'))
+
+        fireEvent.click(screen.getByLabelText('Date de l’événement'))
+        fireEvent.click(screen.getByText('26'))
+
+        fireEvent.click(screen.getByLabelText('Heure de l’événement'))
+        fireEvent.click(screen.getByText('20:00'))
+
+        fireEvent.change(screen.getByLabelText('Prix'), { target: { value: '10' } })
+
+        // When
+        fireEvent.click(screen.getByText('Valider et créer l’offre', { selector: 'button' }))
+
+        // Then
+        const successMessage = await screen.findByText(
+          'Votre offre a bien été créée et vos stocks sauvegardés.'
+        )
+        expect(successMessage).toBeInTheDocument()
+
+        expect(await screen.findByText('Offre créée !', { selectof: 'h2' })).toBeInTheDocument()
+      })
     })
 
     describe('thing offer', () => {
@@ -2527,11 +2569,9 @@ describe('stocks page', () => {
           })
 
           // Then
-          await waitFor(() =>
-            expect(
-              screen.getByText('Vous êtes sur le point d’ajouter 2 codes d’activation.')
-            ).toBeInTheDocument()
-          )
+          expect(
+            await screen.findByText('Vous êtes sur le point d’ajouter 2 codes d’activation.')
+          ).toBeInTheDocument()
         })
 
         it('should not change step when file is null', async () => {
@@ -2583,14 +2623,101 @@ describe('stocks page', () => {
               files: [file],
             },
           })
-          await waitFor(() => {
-            fireEvent.click(screen.getByText('Retour'))
-          })
+
+          fireEvent.click(await screen.findByText('Retour'))
 
           // Then
           expect(
             screen.getByLabelText('Importer un fichier .csv depuis l’ordinateur')
           ).toBeInTheDocument()
+        })
+
+        it('should save changes done to stock with activation codes and readjust bookingLimitDatetime according to activationCodesExpirationDatetime', async () => {
+          // Given
+          pcapi.bulkCreateOrEditStock.mockResolvedValue({})
+          await renderOffers(props, store)
+
+          fireEvent.click(screen.getByText('Ajouter un stock'))
+          const activationCodeButton = screen
+            .getByText('Ajouter des codes d’activation')
+            .closest('div')
+          userEvent.click(activationCodeButton)
+          const uploadButton = screen.getByLabelText('Importer un fichier .csv depuis l’ordinateur')
+          const file = new File(['ABH\nJHB'], 'activation_codes.csv', {
+            type: 'text/csv',
+          })
+
+          // When
+          fireEvent.change(uploadButton, {
+            target: {
+              files: [file],
+            },
+          })
+
+          fireEvent.click(await screen.findByLabelText('Date limite de validité'))
+          fireEvent.click(screen.getByText('25'))
+          fireEvent.click(screen.getByText('Valider'))
+
+          const priceField = screen.getByLabelText('Prix')
+          fireEvent.change(priceField, { target: { value: null } })
+          fireEvent.change(priceField, { target: { value: '14.01' } })
+
+          fireEvent.click(screen.getByText('Enregistrer'))
+
+          // Then
+          expect(pcapi.bulkCreateOrEditStock).toHaveBeenCalledWith(defaultOffer.id, [
+            {
+              activationCodes: ['ABH', 'JHB'],
+              activationCodesExpirationDatetime: '2020-12-26T02:59:59Z',
+              bookingLimitDatetime: '2020-12-19T02:59:59Z',
+              id: undefined,
+              price: '14.01',
+              quantity: 2,
+            },
+          ])
+        })
+
+        it('should save changes done to stock with activation codes and no activationCodesExpirationDatetime', async () => {
+          // Given
+          pcapi.bulkCreateOrEditStock.mockResolvedValue({})
+          await renderOffers(props, store)
+
+          fireEvent.click(screen.getByText('Ajouter un stock'))
+          const activationCodeButton = screen
+            .getByText('Ajouter des codes d’activation')
+            .closest('div')
+          userEvent.click(activationCodeButton)
+          const uploadButton = screen.getByLabelText('Importer un fichier .csv depuis l’ordinateur')
+          const file = new File(['ABH\nJHB'], 'activation_codes.csv', {
+            type: 'text/csv',
+          })
+
+          // When
+          fireEvent.change(uploadButton, {
+            target: {
+              files: [file],
+            },
+          })
+
+          fireEvent.click(await screen.findByText('Valider'))
+
+          const priceField = screen.getByLabelText('Prix')
+          fireEvent.change(priceField, { target: { value: null } })
+          fireEvent.change(priceField, { target: { value: '14.01' } })
+
+          fireEvent.click(screen.getByText('Enregistrer'))
+
+          // Then
+          expect(pcapi.bulkCreateOrEditStock).toHaveBeenCalledWith(defaultOffer.id, [
+            {
+              activationCodes: ['ABH', 'JHB'],
+              activationCodesExpirationDatetime: null,
+              bookingLimitDatetime: null,
+              id: undefined,
+              price: '14.01',
+              quantity: 2,
+            },
+          ])
         })
 
         it('should change stock quantity and disable activation codes button on upload', async () => {
@@ -2613,9 +2740,7 @@ describe('stocks page', () => {
               files: [file],
             },
           })
-          await waitFor(() => {
-            fireEvent.click(screen.getByText('Valider'))
-          })
+          fireEvent.click(await screen.findByText('Valider'))
 
           // Then
           expect(screen.getByLabelText('Quantité').value).toBe('2')
@@ -2647,9 +2772,9 @@ describe('stocks page', () => {
               files: [file],
             },
           })
-          await waitFor(() => {
-            fireEvent.click(screen.getByLabelText('Date limite de validité'))
-          })
+
+          fireEvent.click(await screen.findByLabelText('Date limite de validité'))
+
           fireEvent.click(screen.getByText('22'))
           expect(screen.queryByDisplayValue('22/12/2020')).not.toBeInTheDocument()
 
@@ -2696,9 +2821,7 @@ describe('stocks page', () => {
             },
           })
 
-          await waitFor(() => {
-            fireEvent.click(screen.getByLabelText('Date limite de validité'))
-          })
+          fireEvent.click(await screen.findByLabelText('Date limite de validité'))
           fireEvent.click(screen.getByText('22'))
 
           // When
@@ -2729,9 +2852,8 @@ describe('stocks page', () => {
               files: [file],
             },
           })
-          await waitFor(() => {
-            fireEvent.click(screen.getByLabelText('Date limite de validité'))
-          })
+
+          fireEvent.click(await screen.findByLabelText('Date limite de validité'))
           fireEvent.click(screen.getByText('22'))
 
           // When
@@ -2745,6 +2867,44 @@ describe('stocks page', () => {
             screen.getByText('Ajouter des codes d’activation').closest('div')
           ).not.toHaveAttribute('aria-disabled', 'true')
           expect(screen.queryByText('Valider')).not.toBeInTheDocument()
+        })
+
+        it('should not allow to set activation codes on an existing stock', async () => {
+          // given
+          pcapi.bulkCreateOrEditStock.mockResolvedValue({})
+          const offer = {
+            ...defaultOffer,
+            isDigital: true,
+          }
+
+          pcapi.loadOffer.mockResolvedValue(offer)
+          const createdStock = {
+            hasActivationCodes: true,
+            activationCodes: ['ABC'],
+            activationCodesExpirationDatetime: '2020-12-26T23:59:59Z',
+            quantity: 15,
+            price: 15,
+            remainingQuantity: 15,
+            bookingsQuantity: 0,
+            bookingLimitDatetime: '2020-12-22T23:59:59Z',
+            id: stockId,
+          }
+          pcapi.loadStocks.mockResolvedValueOnce({ stocks: [createdStock] })
+
+          // when
+          await renderOffers(props, store)
+
+          // then
+          expect(await screen.findByText('Enregistrer')).toBeInTheDocument()
+          expect(screen.getByLabelText('Quantité').value).toBe('15')
+          expect(screen.getByLabelText('Quantité')).toBeDisabled()
+          expect(screen.getByLabelText('Prix').value).toBe('15')
+          expect(screen.getByLabelText('Date limite de réservation').value).toBe('22/12/2020')
+          expect(screen.getByLabelText('Date limite de validité').value).toBe('26/12/2020')
+          expect(screen.getByText('Ajouter des codes d’activation').closest('div')).toHaveAttribute(
+            'aria-disabled',
+            'true'
+          )
         })
       })
     })

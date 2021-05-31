@@ -4,12 +4,10 @@ import { compose } from 'redux'
 
 import { showNotification } from 'store/reducers/notificationReducer'
 import { selectIsFeatureActive } from 'store/selectors/data/featuresSelectors'
-import { selectIsUserAdmin } from 'store/selectors/data/usersSelectors'
 
-import Stocks from './Stocks'
+import ThingStocks from './ThingStocks'
 
 const mapStateToProps = state => ({
-  isUserAdmin: selectIsUserAdmin(state),
   areActivationCodesEnabled: selectIsFeatureActive(state, 'ENABLE_ACTIVATION_CODES'),
   autoActivateDigitalBookings: selectIsFeatureActive(state, 'AUTO_ACTIVATE_DIGITAL_BOOKINGS'),
 })
@@ -22,20 +20,13 @@ const mapDispatchToProps = dispatch => ({
         text: 'Une ou plusieurs erreurs sont présentes dans le formulaire.',
       })
     ),
-  showSuccessNotification: () =>
+  showSuccessNotification: text =>
     dispatch(
       showNotification({
         type: 'success',
-        text: 'Vos stocks ont bien été sauvegardés.',
-      })
-    ),
-  showSuccessNotificationStocksAndOffer: () =>
-    dispatch(
-      showNotification({
-        type: 'success',
-        text: 'Votre offre a bien été créée et vos stocks sauvegardés.',
+        text,
       })
     ),
 })
 
-export default compose(withRouter, connect(mapStateToProps, mapDispatchToProps))(Stocks)
+export default compose(withRouter, connect(mapStateToProps, mapDispatchToProps))(ThingStocks)

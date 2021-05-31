@@ -8,8 +8,8 @@ import { isAllocineProvider } from 'components/pages/Offers/domain/localProvider
 import DeleteStockDialogContainer from 'components/pages/Offers/Offer/Stocks/DeleteStockDialog/DeleteStockDialogContainer'
 import { ReactComponent as DeleteStockIcon } from 'components/pages/Offers/Offer/Stocks/StockItem/assets/delete-stock.svg'
 import {
-  hasStockBeenUpdated,
   getMaximumBookingLimitDatetime as getMaximumBookingLimitDatetimeFromExpirationDatetime,
+  hasStockBeenUpdated,
 } from 'components/pages/Offers/Offer/Stocks/StockItem/domain'
 import { getToday } from 'utils/date'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
@@ -44,21 +44,21 @@ const StockItem = ({
   const [price, setPrice] = useState(initialStock.price)
   const [totalQuantity, setTotalQuantity] = useState(initialStock.quantity)
   const [isActivationCodesDialogOpen, setIsActivationCodesDialogOpen] = useState(false)
-  const [activationCodes, setActivationCodes] = useState(initialStock.activationCodes)
+  const [activationCodes, setActivationCodes] = useState(initialStock.activationCodes || [])
   const [activationCodesExpirationDatetime, setActivationCodesExpirationDatetime] = useState(
     initialStock.activationCodesExpirationDatetime
   )
 
   const hasActivationCodes = isNewStock
     ? activationCodes.length > 0
-    : initialStock.hasActivationCodes
+    : Boolean(initialStock.hasActivationCodes)
 
   useEffect(
     function updateStock() {
       const initialValues = {
-        activationCodes: initialStock.activationCodes,
-        activationCodesExpirationDatetime: initialStock.activationCodesExpirationDatetime,
-        hasActivationCodes: initialStock.hasActivationCodes,
+        activationCodes,
+        activationCodesExpirationDatetime,
+        hasActivationCodes: Boolean(initialStock.hasActivationCodes),
         beginningDatetime: initialStock.beginningDatetime,
         bookingLimitDatetime: initialStock.bookingLimitDatetime,
         price: initialStock.price,
