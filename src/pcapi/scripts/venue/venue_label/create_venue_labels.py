@@ -29,6 +29,7 @@ def create_venue_labels():
         "Scènes conventionnées",
         "Sites patrimoniaux remarquables",
         "SMAC - Scène de musiques actuelles",
+        "Théâtre lyrique conventionné d'intérêt national",
         "Théâtres nationaux",
         "UNESCO - Patrimoine mondial",
         "Ville et Pays d'art et d'histoire",
