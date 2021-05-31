@@ -220,14 +220,7 @@ def send_fraud_suspicion_email(
 
 
 def send_newly_eligible_user_email(user: User) -> bool:
-    try:
-        token = users_api.create_id_check_token(user)
-    except Exception:  # pylint: disable=broad-except
-        token = None
-    if not token:
-        logger.warning("Could not create token for user %s to notify its elibility", user.id)
-        return False
-    data = beneficiary_activation.get_newly_eligible_user_email_data(user, token)
+    data = beneficiary_activation.get_newly_eligible_user_email_data(user)
     return mails.send(recipients=[user.email], data=data)
 
 

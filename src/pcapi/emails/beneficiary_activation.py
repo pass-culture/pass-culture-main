@@ -58,11 +58,10 @@ def get_accepted_as_beneficiary_email_data() -> dict:
     }
 
 
-def get_newly_eligible_user_email_data(user: users_models.User, token: users_models.Token) -> dict:
-    expiration_timestamp = int(token.expirationDate.timestamp())
+def get_newly_eligible_user_email_data(user: users_models.User) -> dict:
     email_link = generate_firebase_dynamic_link(
         path="id-check",
-        params={"licenceToken": token.value, "expirationTimestamp": expiration_timestamp, "email": user.email},
+        params={"email": user.email},
     )
     limit_configuration = conf.LIMIT_CONFIGURATIONS[conf.get_current_deposit_version()]
     deposit_amount = limit_configuration.TOTAL_CAP
