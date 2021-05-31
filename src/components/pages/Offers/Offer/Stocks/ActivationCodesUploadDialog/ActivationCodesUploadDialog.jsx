@@ -24,12 +24,14 @@ const ActivationCodesUploadDialog = ({
   const file = useRef({})
 
   const [errorMessage, setErrorMessage] = useState(null)
+  const [fileName, setFileName] = useState('')
   const [isFileInputDisabled, setIsFileInputDisabled] = useState(false)
 
   const submitThumbnail = useCallback(async () => {
     setIsFileInputDisabled(true)
     const currentFile = file.current.files[0]
     if (currentFile == null) {
+      setIsFileInputDisabled(false)
       return
     }
 
@@ -37,6 +39,9 @@ const ActivationCodesUploadDialog = ({
       fileReader,
       currentFile,
     })
+
+    setFileName(currentFile.name)
+    file.current.value = '' // To detect input type=file “change” for the same file
 
     if (errorMessage) {
       setErrorMessage(errorMessage)
@@ -90,6 +95,7 @@ const ActivationCodesUploadDialog = ({
         {activationCodes.length === 0 && (
           <ActivationCodeCsvForm
             errorMessage={errorMessage}
+            fileName={fileName}
             isFileInputDisabled={isFileInputDisabled}
             ref={file}
             submitThumbnail={submitThumbnail}

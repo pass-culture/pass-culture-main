@@ -7,7 +7,7 @@ import ActivationCodesUploadErrorDescription from './ActivationCodesUploadErrorD
 import ActivationCodesUploadInformationDescription from './ActivationCodesUploadInformationDescription'
 
 export const ActivationCodeCsvForm = forwardRef(function ActivationCodeCsvForm(
-  { isFileInputDisabled, submitThumbnail, errorMessage },
+  { isFileInputDisabled, submitThumbnail, errorMessage, fileName },
   ref
 ) {
   return (
@@ -15,7 +15,7 @@ export const ActivationCodeCsvForm = forwardRef(function ActivationCodeCsvForm(
       {errorMessage ? (
         <ActivationCodesUploadErrorDescription
           errorMessage={errorMessage}
-          fileName={ref.current.files[0].name}
+          fileName={fileName}
         />
       ) : (
         <ActivationCodesUploadInformationDescription />
@@ -76,6 +76,7 @@ ActivationCodeCsvForm.defaultProps = {
 
 ActivationCodeCsvForm.propTypes = {
   errorMessage: PropTypes.string,
+  fileName: PropTypes.string.isRequired,
   isFileInputDisabled: PropTypes.bool.isRequired,
   submitThumbnail: PropTypes.func.isRequired,
 }

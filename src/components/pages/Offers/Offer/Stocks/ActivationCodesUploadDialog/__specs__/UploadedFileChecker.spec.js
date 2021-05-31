@@ -71,7 +71,7 @@ describe('uploadedFileChecker', () => {
 
       // then
       expect(errorMessage).toStrictEqual(
-        'Le fichier est illisible, veuillez réessayer ou contacter le support.'
+        'Le fichier est vide ou illisible, veuillez réessayer ou contacter le support.'
       )
     })
     it('should return an error message if the file does not contain any activation code', async () => {

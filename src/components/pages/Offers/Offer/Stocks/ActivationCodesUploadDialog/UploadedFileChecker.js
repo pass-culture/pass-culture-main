@@ -34,7 +34,9 @@ export const checkAndParseUploadedFile = async ({ fileReader, currentFile }) => 
 
   const fileContent = await fileReader(currentFile)
   if (!fileContent) {
-    return { errorMessage: 'Le fichier est illisible, veuillez réessayer ou contacter le support.' }
+    return {
+      errorMessage: 'Le fichier est vide ou illisible, veuillez réessayer ou contacter le support.',
+    }
   }
 
   const rows = csvToRows(fileContent)
