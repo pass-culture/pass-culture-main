@@ -63,8 +63,10 @@ def find_by(token: str, email: str = None, offer_id: int = None) -> Booking:
     return booking
 
 
-def find_by_pro_user_id(user_id: int, page: int = 1, per_page_limit: int = 1000) -> BookingsRecapPaginated:
-    bookings_recap_query = _build_bookings_recap_query(user_id)
+def find_by_pro_user_id(
+    user_id: int, venue_id: int = None, page: int = 1, per_page_limit: int = 1000
+) -> BookingsRecapPaginated:
+    bookings_recap_query = _build_bookings_recap_query(user_id, venue_id)
     bookings_recap_query_with_duplicates = _duplicate_booking_when_quantity_is_two(bookings_recap_query)
 
     if page == 1:
@@ -277,8 +279,8 @@ def _duplicate_booking_when_quantity_is_two(bookings_recap_query: Query) -> Quer
     return bookings_recap_query.union_all(bookings_recap_query.filter(Booking.quantity == 2))
 
 
-def _build_bookings_recap_query(user_id: int) -> Query:
-    return (
+def _build_bookings_recap_query(user_id: int, venue_id: int = None) -> Query:
+    query = (
         Booking.query.outerjoin(Payment)
         .reset_joinpoint()
         .join(User)
@@ -289,35 +291,41 @@ def _build_bookings_recap_query(user_id: int) -> Query:
         .join(UserOfferer)
         .filter(UserOfferer.userId == user_id)
         .filter(UserOfferer.validationToken.is_(None))
-        .with_entities(
-            Booking.token.label("bookingToken"),
-            Booking.dateCreated.label("bookingDate"),
-            Booking.isCancelled.label("isCancelled"),
-            Booking.isUsed.label("isUsed"),
-            Booking.quantity.label("quantity"),
-            Booking.amount.label("bookingAmount"),
-            Booking.dateUsed.label("dateUsed"),
-            Booking.cancellationDate.label("cancellationDate"),
-            Booking.confirmationDate.label("confirmationDate"),
-            Booking.isConfirmed.label("isConfirmed"),
-            Offer.name.label("offerName"),
-            Offer.id.label("offerId"),
-            Offer.extraData.label("offerExtraData"),
-            Payment.currentStatus.label("paymentStatus"),
-            Payment.lastProcessedDate.label("paymentDate"),
-            User.firstName.label("beneficiaryFirstname"),
-            User.lastName.label("beneficiaryLastname"),
-            User.email.label("beneficiaryEmail"),
-            Stock.beginningDatetime.label("stockBeginningDatetime"),
-            Venue.departementCode.label("venueDepartementCode"),
-            Offerer.name.label("offererName"),
-            Offerer.postalCode.label("offererPostalCode"),
-            Venue.id.label("venueId"),
-            Venue.name.label("venueName"),
-            Venue.publicName.label("venuePublicName"),
-            Venue.isVirtual.label("venueIsVirtual"),
-        )
     )
+
+    if venue_id:
+        query = query.filter(Venue.id == venue_id)
+
+    query = query.with_entities(
+        Booking.token.label("bookingToken"),
+        Booking.dateCreated.label("bookingDate"),
+        Booking.isCancelled.label("isCancelled"),
+        Booking.isUsed.label("isUsed"),
+        Booking.quantity.label("quantity"),
+        Booking.amount.label("bookingAmount"),
+        Booking.dateUsed.label("dateUsed"),
+        Booking.cancellationDate.label("cancellationDate"),
+        Booking.confirmationDate.label("confirmationDate"),
+        Booking.isConfirmed.label("isConfirmed"),
+        Offer.name.label("offerName"),
+        Offer.id.label("offerId"),
+        Offer.extraData.label("offerExtraData"),
+        Payment.currentStatus.label("paymentStatus"),
+        Payment.lastProcessedDate.label("paymentDate"),
+        User.firstName.label("beneficiaryFirstname"),
+        User.lastName.label("beneficiaryLastname"),
+        User.email.label("beneficiaryEmail"),
+        Stock.beginningDatetime.label("stockBeginningDatetime"),
+        Venue.departementCode.label("venueDepartementCode"),
+        Offerer.name.label("offererName"),
+        Offerer.postalCode.label("offererPostalCode"),
+        Venue.id.label("venueId"),
+        Venue.name.label("venueName"),
+        Venue.publicName.label("venuePublicName"),
+        Venue.isVirtual.label("venueIsVirtual"),
+    )
+
+    return query
 
 
 def _paginated_bookings_sql_entities_to_bookings_recap(

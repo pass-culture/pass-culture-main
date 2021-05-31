@@ -7,6 +7,7 @@ import pytest
 from pcapi.core import testing
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
@@ -22,14 +23,27 @@ class GetAllBookingsTest:
     def test_call_repository_with_user_and_page(self, find_by_pro_user_id, app):
         user = users_factories.UserFactory()
         TestClient(app.test_client()).with_auth(user.email).get("/bookings/pro?page=3")
-        find_by_pro_user_id.assert_called_once_with(user_id=user.id, page=3)
+        find_by_pro_user_id.assert_called_once_with(user_id=user.id, venue_id=None, page=3)
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.core.bookings.repository.find_by_pro_user_id")
     def test_call_repository_with_page_1(self, find_by_pro_user_id, app):
         user = users_factories.UserFactory()
         TestClient(app.test_client()).with_auth(user.email).get("/bookings/pro")
-        find_by_pro_user_id.assert_called_once_with(user_id=user.id, page=1)
+        find_by_pro_user_id.assert_called_once_with(user_id=user.id, venue_id=None, page=1)
+
+    @pytest.mark.usefixtures("db_session")
+    @patch("pcapi.core.bookings.repository.find_by_pro_user_id")
+    def test_call_repository_with_venue_id(self, find_by_pro_user_id, app):
+        # Given
+        user = users_factories.UserFactory()
+        venue = VenueFactory()
+
+        # When
+        TestClient(app.test_client()).with_auth(user.email).get(f"/bookings/pro?venueId={humanize(venue.id)}")
+
+        # Then
+        find_by_pro_user_id.assert_called_once_with(user_id=user.id, venue_id=venue.id, page=1)
 
 
 @pytest.mark.usefixtures("db_session")

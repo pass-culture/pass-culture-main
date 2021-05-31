@@ -988,6 +988,26 @@ class FindByProUserIdTest:
         assert bookings_recap_paginated.bookings_recap[1].venue_name == venue_for_book.publicName
         assert bookings_recap_paginated.bookings_recap[2].venue_name == venue_for_thing.publicName
 
+    @pytest.mark.usefixtures("db_session")
+    def test_should_return_only_booking_for_requested_venue(self, app: fixture):
+        # Given
+        pro_user = users_factories.UserFactory(isBeneficiary=False)
+        user_offerer = offers_factories.UserOffererFactory(user=pro_user)
+
+        bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=user_offerer.offerer)
+        booking_two = bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=user_offerer.offerer)
+
+        # When
+        bookings_recap_paginated = find_by_pro_user_id(user_id=pro_user.id, venue_id=booking_two.stock.offer.venue.id)
+
+        # Then
+        assert len(bookings_recap_paginated.bookings_recap) == 1
+        expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
+        assert expected_booking_recap.offer_identifier == booking_two.stock.offer.id
+        assert expected_booking_recap.offer_name == booking_two.stock.offer.name
+        assert expected_booking_recap.venue_identifier == booking_two.stock.offer.venue.id
+        assert expected_booking_recap.booking_amount == booking_two.amount
+
 
 class FindSoonToBeExpiredBookingsTest:
     @pytest.mark.usefixtures("db_session")

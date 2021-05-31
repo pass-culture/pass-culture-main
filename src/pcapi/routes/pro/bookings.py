@@ -72,6 +72,7 @@ def patch_booking_by_token(token: str):
 @login_required
 def get_all_bookings():
     page = request.args.get("page", 1)
+    venue_id = dehumanize(request.args.get("venueId", None))
     check_page_format_is_number(page)
 
     check_is_authorized_to_access_bookings_recap(current_user)
@@ -88,7 +89,9 @@ def get_all_bookings():
     # a bare SQLAlchemy query, and the route should handle the
     # serialization so that we can get rid of BookingsRecapPaginated
     # that is only used here.
-    bookings_recap_paginated = booking_repository.find_by_pro_user_id(user_id=current_user.id, page=int(page))
+    bookings_recap_paginated = booking_repository.find_by_pro_user_id(
+        user_id=current_user.id, venue_id=venue_id, page=int(page)
+    )
 
     return serialize_bookings_recap_paginated(bookings_recap_paginated), 200
 
