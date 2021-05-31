@@ -185,7 +185,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
     it('should display the isbn when given', () => {
       // given
-      eventOffer.extraData = { isbn: '123456789' }
+      eventOffer.productIsbn = '123456789'
 
       // when
       renderOfferItem(props)
