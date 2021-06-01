@@ -1,24 +1,33 @@
-import { shallow } from 'enzyme'
+import '@testing-library/jest-dom'
+import { act, render, screen } from '@testing-library/react'
 import React from 'react'
+import { Provider } from 'react-redux'
+import { MemoryRouter } from 'react-router'
 
-import Spinner from 'components/layout/Spinner'
-import Titles from 'components/layout/Titles/Titles'
 import * as bookingRecapsService from 'repository/bookingsRecapService'
 
-import BookingsRecap from '../BookingsRecap'
-import BookingsRecapTableLegacy from '../BookingsRecapTableLegacy/BookingsRecapTableLegacy'
-import NoBookingsMessage from '../NoBookingsMessage/NoBookingsMessage'
+import { configureTestStore } from '../../../../store/testUtils'
+import { bookingRecapFactory } from '../../../../utils/apiFactories'
+import BookingsRecapContainer from '../BookingsRecapContainer'
 
-function flushPromises() {
-  return new Promise(resolve => setImmediate(resolve))
+const renderBookingsRecap = async (props, store = {}) => {
+  await act(async () => {
+    await render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <BookingsRecapContainer {...props} />
+        </MemoryRouter>
+      </Provider>
+    )
+  })
 }
 
 describe('components | BookingsRecap', () => {
   let fetchBookingsRecapByPageStub
-
   let fetchBookingsRecapByPageSpy
-
   let props
+  let store
+
   beforeEach(() => {
     fetchBookingsRecapByPageStub = Promise.resolve({
       bookings_recap: [],
@@ -34,143 +43,86 @@ describe('components | BookingsRecap', () => {
         state: null,
       },
     }
-  })
-
-  it('should render a Titles component and a NoBookingsMessage when api returned no bookings', async () => {
-    // When
-    const wrapper = shallow(<BookingsRecap {...props} />)
-
-    // Then
-    await flushPromises()
-    const title = wrapper.find(Titles)
-    expect(title).toHaveLength(1)
-    const bookingsTable = wrapper.find(BookingsRecapTableLegacy)
-    expect(bookingsTable).toHaveLength(0)
-    const noBookingsMessage = wrapper.find(NoBookingsMessage)
-    expect(noBookingsMessage).toHaveLength(1)
-    const spinner = wrapper.find(Spinner)
-    expect(spinner).toHaveLength(0)
-  })
-
-  it('should render a Titles component and a BookingsRecapTable when api returned at least one booking', async () => {
-    // Given
-    const oneBooking = {
-      beneficiary: { email: 'user@example.com', firstname: 'First', lastname: 'Last' },
-      booking_date: '2020-04-12T19:31:12Z',
-      booking_is_duo: false,
-      booking_status: 'reimbursed',
-      booking_token: 'TOKEN',
-      stock: { offer_name: 'My offer name' },
-    }
-    const paginatedBookingRecapReturned = {
-      page: 1,
-      pages: 1,
-      total: 1,
-      bookings_recap: [oneBooking],
-    }
-    fetchBookingsRecapByPageStub = Promise.resolve(paginatedBookingRecapReturned)
-
-    // When
-    const wrapper = shallow(<BookingsRecap {...props} />)
-
-    // Then
-    await flushPromises()
-    const title = wrapper.find(Titles)
-    expect(title).toHaveLength(1)
-    const bookingsTable = wrapper.find(BookingsRecapTableLegacy)
-    expect(bookingsTable).toHaveLength(1)
-    const noBookingsMessage = wrapper.find(NoBookingsMessage)
-    expect(noBookingsMessage).toHaveLength(0)
-    const spinner = wrapper.find(Spinner)
-    expect(spinner).toHaveLength(0)
-  })
-
-  it('should fetch bookings as many time as the number of pages', async () => {
-    // Given
-    const bookings1 = {
-      beneficiary: { email: 'user@example.com', firstname: 'First', lastname: 'Last' },
-      booking_date: '2020-04-12T19:31:12Z',
-      booking_is_duo: false,
-      booking_status: 'reimbursed',
-      booking_token: 'TOKEN',
-      stock: { offer_name: 'My offer name' },
-    }
-    const bookings2 = {
-      beneficiary: { email: 'user@example.com', firstname: 'First', lastname: 'Last' },
-      booking_date: '2020-04-12T19:31:12Z',
-      booking_is_duo: false,
-      booking_status: 'reimbursed',
-      booking_token: 'TOKEN',
-      stock: { offer_name: 'My offer name' },
-    }
-    const paginatedBookingRecapReturned = {
-      page: 1,
-      pages: 2,
-      total: 2,
-      bookings_recap: [bookings1],
-    }
-    const secondPaginatedBookingRecapReturned = {
-      page: 2,
-      pages: 2,
-      total: 2,
-      bookings_recap: [bookings2],
-    }
-    fetchBookingsRecapByPageSpy
-      .mockResolvedValueOnce(paginatedBookingRecapReturned)
-      .mockResolvedValueOnce(secondPaginatedBookingRecapReturned)
-
-    // When
-    const wrapper = shallow(<BookingsRecap {...props} />)
-
-    // Then
-    await flushPromises()
-    expect(fetchBookingsRecapByPageSpy).toHaveBeenCalledTimes(2)
-    expect(fetchBookingsRecapByPageSpy).toHaveBeenNthCalledWith(1)
-    expect(fetchBookingsRecapByPageSpy).toHaveBeenNthCalledWith(2, 2)
-    const bookingsTable = wrapper.find(BookingsRecapTableLegacy)
-    expect(bookingsTable.props()).toStrictEqual({
-      bookingsRecap: [bookings1, bookings2],
-      isLoading: false,
-      locationState: null,
+    store = configureTestStore({
+      data: { users: [{ publicName: 'René', isAdmin: false, email: 'rené@example.com' }] },
     })
   })
 
-  it('should render the BookingsRecapTable with api values', async () => {
-    // Given
-    const oneBooking = {
-      beneficiary: { email: 'user@example.com', firstname: 'First', lastname: 'Last' },
-      booking_date: '2020-04-12T19:31:12Z',
-      booking_is_duo: false,
-      booking_status: 'reimbursed',
-      booking_token: 'TOKEN',
-      stock: { offer_name: 'My offer name' },
-    }
-    const paginatedBookingRecapReturned = {
-      page: 1,
-      pages: 1,
-      total: 1,
-      bookings_recap: [oneBooking],
-    }
-    fetchBookingsRecapByPageStub = Promise.resolve(paginatedBookingRecapReturned)
+  describe('with pre-filters feature flip deactivated', () => {
+    it('should show NoBookingsMessage when api returned no bookings', async () => {
+      // When
+      await renderBookingsRecap(props, store)
 
-    // When
-    const wrapper = shallow(<BookingsRecap {...props} />)
+      // Then
+      const title = screen.getByText('Réservations', { selector: 'h1' })
+      expect(title).toBeInTheDocument()
+      const bookingsTable = screen.queryByText('Télécharger le CSV')
+      expect(bookingsTable).not.toBeInTheDocument()
+      const noBookingsMessage = screen.getByText('Aucune réservation pour le moment')
+      expect(noBookingsMessage).toBeInTheDocument()
+      const spinner = screen.queryByText('Chargement en cours')
+      expect(spinner).not.toBeInTheDocument()
+    })
 
-    // Then
-    await flushPromises()
-    const title = wrapper.find(Titles)
-    expect(title).toHaveLength(1)
-    const bookingsTable = wrapper.find(BookingsRecapTableLegacy)
-    expect(bookingsTable).toHaveLength(1)
-    expect(bookingsTable.prop('bookingsRecap')).toStrictEqual([oneBooking])
-  })
+    it('should render a bookings recap table when api returned at least one booking', async () => {
+      // Given
+      const oneBooking = bookingRecapFactory()
+      const paginatedBookingRecapReturned = {
+        page: 1,
+        pages: 1,
+        total: 1,
+        bookings_recap: [oneBooking],
+      }
+      fetchBookingsRecapByPageStub = Promise.resolve(paginatedBookingRecapReturned)
 
-  it('should render a spinner when data from first page are still loading', async () => {
-    // When
-    const wrapper = shallow(<BookingsRecap {...props} />)
+      // When
+      await renderBookingsRecap(props, store)
 
-    // Then
-    const spinner = wrapper.find(Spinner)
-    expect(spinner).toHaveLength(1)
+      // Then
+      const title = screen.getByText('Réservations', { selector: 'h1' })
+      expect(title).toBeInTheDocument()
+      const bookingsTable = screen.getByText('Télécharger le CSV')
+      expect(bookingsTable).toBeInTheDocument()
+      const bookingRecap = screen.getAllByText(oneBooking.stock.offer_name)
+      expect(bookingRecap).toHaveLength(2)
+      const noBookingsMessage = screen.queryByText('Aucune réservation pour le moment')
+      expect(noBookingsMessage).not.toBeInTheDocument()
+      const spinner = screen.queryByText('Chargement en cours')
+      expect(spinner).not.toBeInTheDocument()
+    })
+
+    it('should fetch bookings as many time as the number of pages', async () => {
+      // Given
+      const bookings1 = bookingRecapFactory()
+      const bookings2 = bookingRecapFactory()
+      const paginatedBookingRecapReturned = {
+        page: 1,
+        pages: 2,
+        total: 2,
+        bookings_recap: [bookings1],
+      }
+      const secondPaginatedBookingRecapReturned = {
+        page: 2,
+        pages: 2,
+        total: 2,
+        bookings_recap: [bookings2],
+      }
+      fetchBookingsRecapByPageSpy
+        .mockResolvedValueOnce(paginatedBookingRecapReturned)
+        .mockResolvedValueOnce(secondPaginatedBookingRecapReturned)
+
+      // When
+      await renderBookingsRecap(props, store)
+
+      // Then
+      expect(fetchBookingsRecapByPageSpy).toHaveBeenCalledTimes(2)
+      expect(fetchBookingsRecapByPageSpy).toHaveBeenNthCalledWith(1)
+      expect(fetchBookingsRecapByPageSpy).toHaveBeenNthCalledWith(2, 2)
+
+      const firstBookingRecap = screen.getAllByText(bookings1.stock.offer_name)
+      expect(firstBookingRecap).toHaveLength(2)
+      const secondBookingRecap = screen.getAllByText(bookings2.stock.offer_name)
+      expect(secondBookingRecap).toHaveLength(2)
+    })
   })
 })
