@@ -31,7 +31,7 @@ from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
 from pcapi.core.users.models import VOID_PUBLIC_NAME
-from pcapi.core.users.repository import does_phone_exists
+from pcapi.core.users.repository import does_validated_phone_exists
 from pcapi.core.users.repository import get_beneficiary_import_for_beneficiary
 from pcapi.core.users.utils import decode_jwt_token
 from pcapi.core.users.utils import encode_jwt_payload
@@ -560,7 +560,7 @@ def change_user_phone_number(user: User, phone_number: str):
     if not formatted_phone_number:
         raise exceptions.InvalidPhoneNumber(phone_number)
 
-    if does_phone_exists(formatted_phone_number):
+    if does_validated_phone_exists(formatted_phone_number):
         raise exceptions.PhoneAlreadyExists()
 
     user.phoneNumber = formatted_phone_number

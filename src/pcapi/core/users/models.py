@@ -24,6 +24,7 @@ from sqlalchemy import UniqueConstraint
 from sqlalchemy import func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.dialects.postgresql.json import JSONB
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.orm import backref
 from sqlalchemy.orm import joinedload
@@ -355,9 +356,13 @@ class User(PcObject, Model, NeedsValidationMixin):
             return None
         return eligibility_stop
 
-    @property
+    @hybrid_property
     def is_phone_validated(self):
         return self.phoneValidationStatus == PhoneValidationStatusType.VALIDATED
+
+    @is_phone_validated.expression
+    def is_phone_validated(cls):  # pylint: disable=no-self-argument
+        return cls.phoneValidationStatus == PhoneValidationStatusType.VALIDATED
 
     def get_notification_subscriptions(self) -> NotificationSubscriptions:
         return NotificationSubscriptions(**self.notificationSubscriptions or {})

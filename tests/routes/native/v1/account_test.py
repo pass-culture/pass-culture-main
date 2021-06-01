@@ -825,8 +825,28 @@ class SendPhoneValidationCodeTest:
         db.session.refresh(user)
         assert user.phoneNumber == "+33102030405"
 
-    def test_send_phone_validation_code_for_new_duplicated_phone_number(self, app):
+    def test_send_phone_validation_code_for_new_unvalidated_duplicated_phone_number(self, app):
         users_factories.UserFactory(isEmailValidated=True, isBeneficiary=False, phoneNumber="+33102030405")
+        user = users_factories.UserFactory(isEmailValidated=True, isBeneficiary=False, phoneNumber="+33601020304")
+        access_token = create_access_token(identity=user.email)
+
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+
+        response = test_client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "+33102030405"})
+
+        assert response.status_code == 204
+
+        db.session.refresh(user)
+        assert user.phoneNumber == "+33102030405"
+
+    def test_send_phone_validation_code_for_new_validated_duplicated_phone_number(self, app):
+        users_factories.UserFactory(
+            isEmailValidated=True,
+            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+            isBeneficiary=False,
+            phoneNumber="+33102030405",
+        )
         user = users_factories.UserFactory(isEmailValidated=True, isBeneficiary=False, phoneNumber="+33601020304")
         access_token = create_access_token(identity=user.email)
 
