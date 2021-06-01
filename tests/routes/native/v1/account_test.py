@@ -1066,6 +1066,29 @@ class ValidatePhoneNumberTest:
         assert not User.query.get(user.id).is_phone_validated
         assert Token.query.filter_by(userId=user.id, type=TokenType.PHONE_VALIDATION).first()
 
+    def test_validate_phone_number_with_already_validated_phone(self, app):
+        users_factories.UserFactory(
+            isBeneficiary=False, phoneValidationStatus=PhoneValidationStatusType.VALIDATED, phoneNumber="+33607080900"
+        )
+        user = users_factories.UserFactory(isBeneficiary=False, phoneNumber="+33607080900")
+        access_token = create_access_token(identity=user.email)
+        token = create_phone_validation_token(user)
+
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+
+        # try one attempt with wrong code
+        response = test_client.post("/native/v1/validate_phone_number", {"code": token.value})
+
+        assert response.status_code == 400
+        user = User.query.get(user.id)
+        assert not user.is_phone_validated
+
+        token = Token.query.filter_by(userId=user.id, type=TokenType.PHONE_VALIDATION).first()
+        assert not token
+
+        assert int(app.redis_client.get(f"phone_validation_attempts_user_{user.id}")) == 1
+
 
 def test_suspend_account(app):
     booking = BookingFactory()

@@ -153,5 +153,5 @@ def get_beneficiary_import_for_beneficiary(user: User) -> Optional[BeneficiaryIm
     )
 
 
-def does_validated_phone_exists(phone_number: str):
+def does_validated_phone_exist(phone_number: str):
     return bool(User.query.filter(User.phoneNumber == phone_number, User.is_phone_validated).count())
