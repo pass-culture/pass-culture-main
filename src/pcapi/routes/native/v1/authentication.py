@@ -133,17 +133,9 @@ def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
     user.isEmailValidated = True
     repository.save(user)
 
-    try:
-        id_check_token = users_api.create_id_check_token(user)
-    except Exception:  # pylint: disable=broad-except:
-        id_check_token = None
-
     response = ValidateEmailResponse(
         access_token=create_user_access_token(user),
         refresh_token=create_refresh_token(identity=user.email),
-        # TODO (viconnex): remove id-check-token when phone-validation step is enforced in client
-        id_check_token=id_check_token.value if id_check_token else None,
-        id_check_token_timestamp=id_check_token.expirationDate if id_check_token else None,
     )
 
     return response
