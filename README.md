@@ -93,7 +93,7 @@ if you got errors, during requirements installation, about psycopg, this may hel
   4. `pc test-backend <path_to_test_file> -x <test_name>` (permet de lancer des tests spécifiques et d'arrêter l'exécution au premier test fail)
 - WEBAPP / PRO
   1. `yarn test:unit`
-  2. `yarn test:cafe` (attention, il doit y avoir des données dans la sandbox au préalable `pc sandbox -n industrial`)
+  2. `yarn test:cafe` (attention, il doit y avoir des données dans la sandbox au préalable `pc sandbox -n testcafe`)
 
 ## Développeurs.ses
 
@@ -216,26 +216,6 @@ Si la commande sandbox renvoie des erreurs que je n'arrive pas à résoudre, tes
 - puis relancer: `pc sandbox -n industrial`
 
 ---
-
-Cette commande faite, il y a alors deux moyens pour avoir les email/mots de passe des utilisateurs sandbox :
-
-- on peut utiliser la commande sandbox_to_testcafe qui résume les objets utilisés de la sandbox dans les différents testcafés. Si on veut avoir tous les utilisateurs des tests pro_07_offer dans l'application pro, il faut faire:
-
-```
-  pc sandbox_to_testcafe -n pro_07_offer
-```
-
-- on peut utiliser un curl (ou postman) qui ping directement le server à l'url du getter que l'on souhaite:
-
-```
-curl -H "Content-Type: application/json" \
-     -H "Origin: http://localhost:3000" \
-     GET http://localhost:80/sandboxes/pro_07_offer/get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_with_physical_venue
-```
-
-Il est important que votre serveur API local tourne.
-
-Pour les développeur.ses, quand vous écrivez un testcafé, il faut donc la plupart du temps écrire aussi un getter côté api dans sandboxes/scripts/getters/<moduleNameAvecleMêmeNomQueLeFichierTestcafe>, afin de récupérer les objets souhaités dans la sandbox.
 
 Pour l'application WEBAPP, vous pouvez naviguer avec ce user toujours présent:
 
