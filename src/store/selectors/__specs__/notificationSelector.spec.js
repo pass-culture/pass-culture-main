@@ -13,7 +13,7 @@ describe('src | selectors | notification', () => {
       expect(notification).toStrictEqual({})
     })
 
-    it('should return notification details when V2 notification is stored', () => {
+    it('should return notification details when notification is stored', () => {
       // given
       const state = { notification: { type: 'success', text: 'My success message' } }
 
