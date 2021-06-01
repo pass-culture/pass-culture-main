@@ -14,6 +14,7 @@ from pcapi.core.offers.models import Stock
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users.api import BeneficiaryValidationStep
 from pcapi.core.users.api import get_domains_credit
+from pcapi.core.users.api import get_next_beneficiary_validation_step
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.core.users.models import User
 from pcapi.core.users.models import VOID_FIRST_NAME
@@ -100,6 +101,7 @@ class UserProfileResponse(BaseModel):
     firstName: Optional[str]
     hasCompletedIdCheck: Optional[bool]
     lastName: Optional[str]
+    next_beneficiary_validation_step: Optional[BeneficiaryValidationStep]
     subscriptions: NotificationSubscriptions  # if we send user.notification_subscriptions, pydantic will take the column and not the property
     isBeneficiary: bool
     phoneNumber: Optional[str]
@@ -143,6 +145,7 @@ class UserProfileResponse(BaseModel):
         user.subscriptions = user.get_notification_subscriptions()
         user.domains_credit = get_domains_credit(user)
         user.booked_offers = cls._get_booked_offers(user)
+        user.next_beneficiary_validation_step = get_next_beneficiary_validation_step(user)
         result = super().from_orm(user)
         result.needsToFillCulturalSurvey = False
         return result
@@ -167,7 +170,3 @@ class ValidatePhoneNumberRequest(BaseModel):
 
 class SendPhoneValidationRequest(BaseModel):
     phoneNumber: Optional[str]
-
-
-class GetNextBeneficiaryValidationStep(BaseModel):
-    next_beneficiary_validation_step: Optional[BeneficiaryValidationStep]

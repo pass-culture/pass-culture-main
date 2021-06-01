@@ -113,15 +113,6 @@ def has_completed_id_check(user: User) -> None:
     repository.save(user)
 
 
-@blueprint.native_v1.route("/account/next_beneficiary_validation_step", methods=["GET"])
-@spectree_serialize(api=blueprint.api, response_model=serializers.GetNextBeneficiaryValidationStep)
-@authenticated_user_required
-def next_beneficiary_validation_step(user: User) -> serializers.GetNextBeneficiaryValidationStep:
-    return serializers.GetNextBeneficiaryValidationStep(
-        next_beneficiary_validation_step=api.get_next_beneficiary_validation_step(user)
-    )
-
-
 @blueprint.native_v1.route("/resend_email_validation", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 def resend_email_validation(body: serializers.ResendEmailValidationRequest) -> None:

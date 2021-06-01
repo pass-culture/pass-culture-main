@@ -118,6 +118,7 @@ class AccountTest:
             "eligibilityStartDatetime": "2018-01-01T00:00:00Z",
             "isBeneficiary": True,
             "hasCompletedIdCheck": None,
+            "nextBeneficiaryValidationStep": None,
             "pseudo": "jdo",
             "showEligibleCard": False,
             "subscriptions": {"marketingPush": True, "marketingEmail": True},
@@ -172,6 +173,7 @@ class AccountTest:
             "eligibilityStartDatetime": None,
             "hasCompletedIdCheck": None,
             "isBeneficiary": False,
+            "nextBeneficiaryValidationStep": None,
             "pseudo": "jdo",
             "showEligibleCard": False,
             "subscriptions": {"marketingPush": True, "marketingEmail": True},
@@ -226,6 +228,7 @@ class AccountTest:
             "eligibilityStartDatetime": "2018-01-01T00:00:00Z",
             "hasCompletedIdCheck": None,
             "isBeneficiary": False,
+            "nextBeneficiaryValidationStep": None,
             "pseudo": "jdo",
             "showEligibleCard": False,
             "subscriptions": {"marketingPush": True, "marketingEmail": True},
@@ -292,24 +295,24 @@ class AccountTest:
         test_client = TestClient(app.test_client())
         test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
 
-        response = test_client.get("/native/v1/account/next_beneficiary_validation_step")
+        response = test_client.get("/native/v1/me")
 
+        assert response.json["nextBeneficiaryValidationStep"] == "phone-validation"
         assert response.status_code == 200
-        assert response.json["next_beneficiary_validation_step"] == "phone-validation"
 
         user.phoneValidationStatus = PhoneValidationStatusType.VALIDATED
 
-        response = test_client.get("/native/v1/account/next_beneficiary_validation_step")
+        response = test_client.get("/native/v1/me")
 
         assert response.status_code == 200
-        assert response.json["next_beneficiary_validation_step"] == "id-check"
+        assert response.json["nextBeneficiaryValidationStep"] == "id-check"
 
         user.isBeneficiary = True
 
-        response = test_client.get("/native/v1/account/next_beneficiary_validation_step")
+        response = test_client.get("/native/v1/me")
 
         assert response.status_code == 200
-        assert not response.json["next_beneficiary_validation_step"]
+        assert not response.json["nextBeneficiaryValidationStep"]
 
     @freeze_time("2021-06-01")
     def test_next_beneficiary_validation_step_not_eligible(self, app):
@@ -319,10 +322,10 @@ class AccountTest:
         test_client = TestClient(app.test_client())
         test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
 
-        response = test_client.get("/native/v1/account/next_beneficiary_validation_step")
+        response = test_client.get("/native/v1/me")
 
         assert response.status_code == 200
-        assert not response.json["next_beneficiary_validation_step"]
+        assert not response.json["nextBeneficiaryValidationStep"]
 
 
 def build_test_client(app, identity):
