@@ -5,21 +5,19 @@ import uuid
 from freezegun import freeze_time
 import pytest
 
+import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.offerers.models import Offerer
+import pcapi.core.offers.factories as offers_factories
 from pcapi.domain.payments import UnmatchedPayments
 from pcapi.domain.payments import apply_banishment
-from pcapi.domain.payments import create_all_payments_details
 from pcapi.domain.payments import create_payment_details
 from pcapi.domain.payments import create_payment_for_booking
 from pcapi.domain.payments import filter_out_already_paid_for_bookings
 from pcapi.domain.payments import filter_out_bookings_without_cost
-from pcapi.domain.payments import group_payments_by_status
 from pcapi.domain.payments import keep_only_not_processable_payments
-from pcapi.domain.payments import keep_only_pending_payments
 from pcapi.domain.payments import make_transaction_label
 from pcapi.domain.reimbursement import BookingReimbursement
 from pcapi.domain.reimbursement import ReimbursementRules
-from pcapi.model_creators.generic_creators import create_bank_information
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_payment
@@ -28,154 +26,59 @@ from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.models import Booking
-from pcapi.models import Offer
-from pcapi.models import Venue
 from pcapi.models.payment import Payment
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.utils.human_ids import humanize
 
 
-@freeze_time("2018-10-15 09:21:34")
-def test_create_payment_for_booking_with_common_information(app):
-    # given
-    user = create_user()
-    stock = create_stock(price=10, quantity=5)
-    booking = create_booking(user=user, quantity=1, stock=stock)
-    booking.stock.offer = Offer()
-    booking.stock.offer.venue = Venue()
-    offerer = create_offerer()
-    create_bank_information(bic="QSDFGH8Z555", iban="CF13QSDFGH456789", offerer=offerer)
-    booking.stock.offer.venue.managingOfferer = offerer
-    booking_reimbursement = BookingReimbursement(booking, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
+@freeze_time("2021-01-01 12:00:00")
+@pytest.mark.usefixtures("db_session")
+class CreatePaymentForBookingTest:
+    def test_basics(self):
+        offerer = offers_factories.OffererFactory(name="offerer", siren="123456")
+        booking = bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=offerer)
+        reimbursement = BookingReimbursement(booking, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
+        batch_date = datetime.utcnow()
 
-    # when
-    payment = create_payment_for_booking(booking_reimbursement)
+        payment = create_payment_for_booking(reimbursement, batch_date)
 
-    # then
-    assert payment.booking == booking
-    assert payment.amount == Decimal(10)
-    assert payment.reimbursementRule == ReimbursementRules.PHYSICAL_OFFERS.value.description
-    assert payment.reimbursementRate == ReimbursementRules.PHYSICAL_OFFERS.value.rate
-    assert payment.comment is None
-    assert payment.author == "batch"
-    assert payment.transactionLabel == "pass Culture Pro - remboursement 2nde quinzaine 10-2018"
+        assert payment.bookingId == booking.id
+        assert payment.amount == 10
+        assert payment.reimbursementRule == ReimbursementRules.PHYSICAL_OFFERS.value.description
+        assert payment.reimbursementRate == ReimbursementRules.PHYSICAL_OFFERS.value.rate
+        assert payment.comment is None
+        assert payment.author == "batch"
+        assert payment.transactionLabel == "pass Culture Pro - remboursement 1ère quinzaine 01-2021"
+        assert payment.batchDate == batch_date
+        assert payment.iban is None
+        assert payment.bic is None
+        assert payment.recipientName == "offerer"
+        assert payment.recipientSiren == "123456"
 
+    def test_use_iban_and_bic_from_venue(self):
+        booking = bookings_factories.BookingFactory()
+        venue = booking.stock.offer.venue
+        offers_factories.BankInformationFactory(venue=venue, iban="iban1", bic="bic1")
+        offers_factories.BankInformationFactory(offerer=venue.managingOfferer, iban="iban2", bic="bic2")
+        reimbursement = BookingReimbursement(booking, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
+        batch_date = datetime.utcnow()
 
-def test_create_payment_for_booking_when_iban_is_on_venue_should_take_payment_info_from_venue(app):
-    # given
-    user = create_user()
-    stock = create_stock(price=10, quantity=5)
-    offerer = create_offerer(name="Test Offerer")
-    venue = create_venue(
-        offerer,
-        name="Test Venue",
-    )
-    booking = create_booking(user=user, quantity=1, stock=stock)
+        payment = create_payment_for_booking(reimbursement, batch_date)
 
-    create_bank_information(bic="Lajr93", iban="B135TGGEG532TG", offerer=offerer)
-    create_bank_information(bic="LokiJU76", iban="KD98765RFGHZ788", venue=venue)
+        assert payment.iban == "IBAN1"
+        assert payment.bic == "BIC1"
 
-    booking.stock.offer = Offer()
-    booking.stock.offer.venue = venue
-    booking.stock.offer.venue.managingOfferer = offerer
-    booking_reimbursement = BookingReimbursement(booking, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
+    def test_use_iban_and_bic_from_offerer(self):
+        booking = bookings_factories.BookingFactory()
+        offerer = booking.stock.offer.venue.managingOfferer
+        offers_factories.BankInformationFactory(offerer=offerer, iban="iban", bic="bic")
+        reimbursement = BookingReimbursement(booking, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
+        batch_date = datetime.utcnow()
 
-    # when
-    payment = create_payment_for_booking(booking_reimbursement)
+        payment = create_payment_for_booking(reimbursement, batch_date)
 
-    # then
-    assert payment.iban == "KD98765RFGHZ788"
-    assert payment.bic == "LOKIJU76"
-
-
-def test_create_payment_for_booking_when_no_iban_on_venue_should_take_payment_info_from_offerer(app):
-    # given
-    user = create_user()
-    stock = create_stock(price=10, quantity=5)
-    offerer = create_offerer(name="Test Offerer")
-    venue = create_venue(offerer, name="Test Venue")
-
-    create_bank_information(bic="QsdFGH8Z555", iban="cf13QSDFGH456789", offerer=offerer)
-    create_bank_information(bic=None, iban=None, venue=venue)
-
-    booking = create_booking(user=user, quantity=1, stock=stock)
-    booking.stock.offer = Offer()
-    booking.stock.offer.venue = venue
-    booking.stock.offer.venue.managingOfferer = offerer
-    booking_reimbursement = BookingReimbursement(booking, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
-
-    # when
-    payment = create_payment_for_booking(booking_reimbursement)
-
-    # then
-    assert payment.iban == "CF13QSDFGH456789"
-    assert payment.bic == "QSDFGH8Z555"
-
-
-def test_create_payment_for_booking_takes_recipient_name_and_siren_from_offerer(app):
-    # given
-    user = create_user()
-    stock = create_stock(price=10, quantity=5)
-    booking = create_booking(user=user, quantity=1, stock=stock)
-    booking.stock.offer = Offer()
-    offerer = create_offerer(name="Test Offerer", siren="123456789")
-    venue = create_venue(offerer, name="Test Venue")
-
-    create_bank_information(bic="QSDFGH8Z555", iban="CF13QSDFGH456789", offerer=offerer)
-    create_bank_information(bic=None, iban=None, venue=venue)
-
-    booking.stock.offer.venue = venue
-    booking.stock.offer.venue.managingOfferer = offerer
-    booking_reimbursement = BookingReimbursement(booking, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
-
-    # when
-    payment = create_payment_for_booking(booking_reimbursement)
-
-    # then
-    assert payment.recipientName == "Test Offerer"
-    assert payment.recipientSiren == "123456789"
-
-
-def test_create_payment_for_booking_with_not_processable_status_when_no_bank_information_linked_to_venue_or_offerer():
-    # given
-    user = create_user()
-    stock = create_stock(price=10, quantity=5)
-    booking = create_booking(user=user, quantity=1, stock=stock)
-    booking.stock.offer = Offer()
-    booking.stock.offer.venue = Venue()
-    booking.stock.offer.venue.managingOfferer = create_offerer(name="Test Offerer")
-    booking_reimbursement = BookingReimbursement(booking, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
-
-    # when
-    payment = create_payment_for_booking(booking_reimbursement)
-
-    # then
-    assert len(payment.statuses) == 1
-    assert payment.statuses[0].status == TransactionStatus.NOT_PROCESSABLE
-    assert payment.statuses[0].detail == "IBAN et BIC manquants sur l'offreur"
-
-
-@freeze_time("2018-10-15 09:21:34")
-def test_create_payment_for_booking_with_pending_status(app):
-    # given
-    user = create_user()
-    stock = create_stock(price=10, quantity=5)
-    booking = create_booking(user=user, quantity=1, stock=stock)
-    booking.stock.offer = Offer()
-    booking.stock.offer.venue = Venue()
-    offerer = create_offerer()
-    booking.stock.offer.venue.managingOfferer = offerer
-    create_bank_information(bic="QSDFGH8Z555", iban="CF13QSDFGH456789", offerer=offerer)
-    booking_reimbursement = BookingReimbursement(booking, ReimbursementRules.PHYSICAL_OFFERS, Decimal(10))
-
-    # when
-    payment = create_payment_for_booking(booking_reimbursement)
-
-    # then
-    assert len(payment.statuses) == 1
-    assert payment.statuses[0].status == TransactionStatus.PENDING
-    assert payment.statuses[0].detail is None
-    assert payment.statuses[0].date == datetime(2018, 10, 15, 9, 21, 34)
+        assert payment.iban == "IBAN"
+        assert payment.bic == "BIC"
 
 
 class FilterOutAlreadyPaidForBookingsTest:
@@ -249,50 +152,6 @@ class FilterOutBookingsWithoutCostTest:
 
         # then
         assert bookings_reimbursements_with_cost == []
-
-
-class KeepOnlyPendingPaymentsTest:
-    def test_it_returns_only_payments_with_current_status_as_pending(self):
-        # given
-        user = create_user()
-        booking = create_booking(user=user)
-        offerer = create_offerer()
-        payments = [
-            create_payment(booking, offerer, 30, status=TransactionStatus.PENDING),
-            create_payment(booking, offerer, 30, status=TransactionStatus.NOT_PROCESSABLE),
-            create_payment(booking, offerer, 30, status=TransactionStatus.ERROR),
-        ]
-
-        # when
-        pending_payments = keep_only_pending_payments(payments)
-
-        # then
-        assert len(pending_payments) == 1
-        assert pending_payments[0].currentStatus.status == TransactionStatus.PENDING
-
-    def test_it_returns_an_empty_list_if_everything_has_no_pending_payment(self):
-        # given
-        user = create_user()
-        booking = create_booking(user=user)
-        offerer = create_offerer()
-        payments = [
-            create_payment(booking, offerer, 30, status=TransactionStatus.SENT),
-            create_payment(booking, offerer, 30, status=TransactionStatus.SENT),
-            create_payment(booking, offerer, 30, status=TransactionStatus.ERROR),
-        ]
-
-        # when
-        pending_payments = keep_only_pending_payments(payments)
-
-        # then
-        assert pending_payments == []
-
-    def test_it_returns_an_empty_list_if_an_empty_list_is_given(self):
-        # when
-        pending_payments = keep_only_pending_payments([])
-
-        # then
-        assert pending_payments == []
 
 
 class KeepOnlyNotProcessablePaymentsTest:
@@ -451,31 +310,6 @@ class CreatePaymentDetailsTest:
         assert details.offer_type == "Audiovisuel - films sur supports physiques et VOD"
 
 
-class CreateAllPaymentsDetailsTest:
-    def test_returns_an_empty_list_if_no_payments_given(self):
-        # when
-        details = create_all_payments_details([])
-
-        # then
-        assert details == []
-
-    def test_returns_as_much_payment_details_as_there_are_payments_given(self):
-        # given
-        offerer1, offerer2 = create_offerer(), create_offerer()
-        user1, user2 = create_user(), create_user()
-        payments = [
-            create_payment(create_booking(user=user1), offerer1, 10),
-            create_payment(create_booking(user=user1), offerer1, 20),
-            create_payment(create_booking(user=user2), offerer2, 30),
-        ]
-
-        # when
-        details = create_all_payments_details(payments)
-
-        # then
-        assert len(details) == 3
-
-
 class PaymentTransactionLabelTest:
     @pytest.mark.parametrize("date", [datetime(2018, 7, d) for d in range(1, 15)])
     def test_in_first_half_of_a_month(self, date):
@@ -492,31 +326,6 @@ class PaymentTransactionLabelTest:
 
         # then
         assert message == "pass Culture Pro - remboursement 2nde quinzaine 07-2018"
-
-
-class GroupPaymentsByStatusTest:
-    def test_payments_are_grouped_by_current_statuses_names(self):
-        # given
-        user = create_user()
-        booking = create_booking(user=user)
-        offerer = create_offerer()
-        payment1 = create_payment(booking, offerer, 10)
-        payment2 = create_payment(booking, offerer, 20)
-        payment3 = create_payment(booking, offerer, 30)
-        payment4 = create_payment(booking, offerer, 40)
-        payment1.setStatus(TransactionStatus.SENT)
-        payment2.setStatus(TransactionStatus.NOT_PROCESSABLE)
-        payment3.setStatus(TransactionStatus.ERROR)
-        payment4.setStatus(TransactionStatus.ERROR)
-        payments = [payment1, payment2, payment3, payment4]
-
-        # when
-        groups = group_payments_by_status(payments)
-
-        # then
-        assert len(groups["SENT"]) == 1
-        assert len(groups["NOT_PROCESSABLE"]) == 1
-        assert len(groups["ERROR"]) == 2
 
 
 class ApplyBanishmentTest:

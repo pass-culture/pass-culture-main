@@ -2,22 +2,22 @@ import csv
 from datetime import datetime
 from datetime import timedelta
 from decimal import Decimal
-from hashlib import sha256
 from io import BytesIO
 from io import StringIO
-import itertools
 import uuid
 from uuid import UUID
 
 from flask import render_template
 from lxml import etree
 
+from pcapi import settings
 from pcapi.domain.bank_account import format_raw_iban_and_bic
 from pcapi.domain.reimbursement import BookingReimbursement
-from pcapi.models import PaymentMessage
+from pcapi.models import db
 from pcapi.models.payment import Payment
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.models.wallet_balance import WalletBalance
+import pcapi.utils.db as db_utils
 from pcapi.utils.human_ids import humanize
 
 
@@ -113,32 +113,28 @@ class PaymentDetails:
         ]
 
 
-def create_payment_for_booking(booking_reimbursement: BookingReimbursement) -> Payment:
+def create_payment_for_booking(booking_reimbursement: BookingReimbursement, batch_date: datetime) -> Payment:
     venue = booking_reimbursement.booking.stock.offer.venue
+    offerer = venue.managingOfferer
 
     payment = Payment()
-    payment.booking = booking_reimbursement.booking
+    payment.bookingId = booking_reimbursement.booking.id
     payment.amount = booking_reimbursement.reimbursed_amount
     payment.reimbursementRule = booking_reimbursement.reimbursement.value.description
     payment.reimbursementRate = booking_reimbursement.reimbursement.value.rate
     payment.author = "batch"
     payment.transactionLabel = make_transaction_label(datetime.utcnow())
+    payment.batchDate = batch_date
 
     if venue.iban:
         payment.iban = format_raw_iban_and_bic(venue.iban)
         payment.bic = format_raw_iban_and_bic(venue.bic)
     else:
-        offerer = venue.managingOfferer
         payment.iban = format_raw_iban_and_bic(offerer.iban)
         payment.bic = format_raw_iban_and_bic(offerer.bic)
 
-    payment.recipientName = venue.managingOfferer.name
-    payment.recipientSiren = venue.managingOfferer.siren
-
-    if payment.iban:
-        payment.setStatus(TransactionStatus.PENDING)
-    else:
-        payment.setStatus(TransactionStatus.NOT_PROCESSABLE, detail="IBAN et BIC manquants sur l'offreur")
+    payment.recipientName = offerer.name
+    payment.recipientSiren = offerer.siren
 
     return payment
 
@@ -153,19 +149,15 @@ def filter_out_bookings_without_cost(booking_reimbursements: list[BookingReimbur
     return list(filter(lambda x: x.reimbursed_amount > Decimal(0), booking_reimbursements))
 
 
-def keep_only_pending_payments(payments: list[Payment]) -> list[Payment]:
-    return list(filter(lambda x: x.currentStatus.status == TransactionStatus.PENDING, payments))
-
-
 def keep_only_not_processable_payments(payments: list[Payment]) -> list[Payment]:
     return list(filter(lambda x: x.currentStatus.status == TransactionStatus.NOT_PROCESSABLE, payments))
 
 
 def generate_message_file(
-    payments: list[Payment], pass_culture_iban: str, pass_culture_bic: str, message_name: str, remittance_code: str
+    payment_query, pass_culture_iban: str, pass_culture_bic: str, message_name: str, remittance_code: str
 ) -> str:
-    transactions = _group_payments_into_transactions(payments)
-    total_amount = sum([transaction.amount for transaction in transactions])
+    transactions = _set_end_to_end_id_and_group_into_transactions(payment_query)
+    total_amount = sum(transaction.amount for transaction in transactions)
     now = datetime.utcnow()
 
     return render_template(
@@ -194,25 +186,23 @@ def validate_message_file_structure(transaction_file: str):
     xsd_schema.assertValid(xml_doc)
 
 
-def generate_file_checksum(file: str):
-    encoded_file = file.encode("utf-8")
-    return sha256(encoded_file).digest()
-
-
-def create_all_payments_details(payments: list[Payment]) -> list[PaymentDetails]:
-    return [create_payment_details(payment) for payment in payments]
-
-
 def create_payment_details(payment: Payment) -> PaymentDetails:
     return PaymentDetails(payment, payment.booking.dateUsed)
 
 
-def generate_payment_details_csv(payments_details: list[PaymentDetails]) -> str:
+def generate_payment_details_csv(payment_query) -> str:
+    # FIXME (dbaty, 2021-05-31): remove this inner import once we have
+    # moved functions to core.payments.api and
+    # core.payments.repository.
+    from pcapi.repository import payment_queries  # avoid import loop
+
     output = StringIO()
-    csv_lines = [details.as_csv_row() for details in payments_details]
     writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
     writer.writerow(PaymentDetails.CSV_HEADER)
-    writer.writerows(csv_lines)
+    for batch in db_utils.get_batches(payment_query, Payment.id, settings.PAYMENTS_CSV_DETAILS_BATCH_SIZE):
+        payments = payment_queries.join_for_payment_details(batch)
+        rows = [create_payment_details(payment).as_csv_row() for payment in payments]
+        writer.writerows(rows)
     return output.getvalue()
 
 
@@ -229,26 +219,6 @@ def make_transaction_label(date: datetime.date) -> str:
     month_and_year = date.strftime("%m-%Y")
     period = "1ère" if date.day < 15 else "2nde"
     return "pass Culture Pro - remboursement %s quinzaine %s" % (period, month_and_year)
-
-
-def generate_payment_message(name: str, checksum: str, payments: list[Payment]) -> PaymentMessage:
-    payment_message = PaymentMessage()
-    payment_message.name = name
-    payment_message.checksum = checksum
-    payment_message.payments = payments
-    return payment_message
-
-
-def group_payments_by_status(payments: list[Payment]) -> dict:
-    groups = {}
-    for p in payments:
-        status_name = p.currentStatus.status.name
-
-        if status_name in groups:
-            groups[status_name].append(p)
-        else:
-            groups[status_name] = [p]
-    return groups
 
 
 def apply_banishment(payments: list[Payment], ids_to_ban: list[int]) -> tuple[list[Payment], list[Payment]]:
@@ -270,28 +240,38 @@ def apply_banishment(payments: list[Payment], ids_to_ban: list[int]) -> tuple[li
     return banned_payments, retry_payments
 
 
-def _group_payments_into_transactions(payments: list[Payment]) -> list[Transaction]:
-    payments_with_iban = sorted(filter(lambda x: x.iban, payments), key=lambda x: (x.iban, x.bic))
-    payments_by_iban = itertools.groupby(payments_with_iban, lambda x: (x.iban, x.bic))
+def _set_end_to_end_id_and_group_into_transactions(payment_query) -> list[Transaction]:
+    # FIXME (dbaty, 2021-05-31): remove this inner import once we have
+    # moved functions to core.payments.api and
+    # core.payments.repository.
+    from pcapi.repository import payment_queries  # avoid import loop
 
+    # FIXME (dbaty, 2021-05-31): this function still makes a lot of
+    # SQL queries. It may be possible to UPDATE all payments in a
+    # single query, with a different PostgreSQL-generated
+    # `transactionEndToEndId` for each pair of `(iban, bic)`.
     transactions = []
-    for (iban, bic), grouped_payments in payments_by_iban:
-        payments_of_iban = list(grouped_payments)
-        amount = sum([payment.amount for payment in payments_of_iban])
+    # Sort for reproducibility and tests
+    groups = sorted(payment_queries.group_by_iban_and_bic(payment_query))
+    for group in groups:
         end_to_end_id = uuid.uuid4()
-
-        for payment in payments_of_iban:
-            payment.transactionEndToEndId = end_to_end_id
-
+        # We cannot directly call "update()" when "join()" has been called.
+        batch = (
+            db.session.query(Payment)
+            .filter(Payment.id.in_(payment_query.with_entities(Payment.id)))
+            .filter_by(iban=group.iban, bic=group.bic)
+        )
+        batch.update({"transactionEndToEndId": end_to_end_id}, synchronize_session=False)
         transactions.append(
             Transaction(
-                iban,
-                bic,
-                payments_of_iban[0].recipientName,
-                payments_of_iban[0].recipientSiren,
+                group.iban,
+                group.bic,
+                group.recipient_name,
+                group.recipient_siren,
                 end_to_end_id,
-                amount,
-                payments_of_iban[0].transactionLabel,
+                group.total_amount,
+                group.transaction_label,
             )
         )
+    db.session.commit()
     return transactions

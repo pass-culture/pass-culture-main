@@ -1,7 +1,9 @@
+import datetime
+from typing import Iterable
 from typing import Optional
 
-from flask import render_template
-from sqlalchemy import text
+from sqlalchemy import func
+from sqlalchemy.orm import joinedload
 
 from pcapi.core.offerers.models import Offerer
 from pcapi.domain.payments import keep_only_not_processable_payments
@@ -18,24 +20,8 @@ from pcapi.models.db import db
 from pcapi.models.payment_status import TransactionStatus
 
 
-def find_error_payments() -> list[Payment]:
-    query = render_template("sql/find_payment_ids_with_last_status.sql", status="ERROR")
-    error_payment_ids = db.session.query(PaymentStatus.paymentId).from_statement(text(query)).all()
-    return Payment.query.filter(Payment.id.in_(error_payment_ids)).all()
-
-
-def find_retry_payments() -> list[Payment]:
-    query = render_template("sql/find_payment_ids_with_last_status.sql", status="RETRY")
-    retry_payment_ids = db.session.query(PaymentStatus.paymentId).from_statement(text(query)).all()
-    return Payment.query.filter(Payment.id.in_(retry_payment_ids)).all()
-
-
 def find_payments_by_message(message_name: str) -> list[Payment]:
     return Payment.query.join(PaymentMessage).filter(PaymentMessage.name == message_name).all()
-
-
-def get_payments_by_message_id(payment_message_id: str) -> list[Payment]:
-    return Payment.query.join(PaymentMessage).filter(PaymentMessage.name == payment_message_id).all()
 
 
 def has_payment(booking: Booking) -> Optional[Payment]:
@@ -71,5 +57,91 @@ def find_not_processable_with_bank_information() -> list[Payment]:
         .join(BankInformation, predicate_matches_venue_or_offerer)
         .all()
     )
-
     return keep_only_not_processable_payments(not_processable_payments_with_bank_information)
+
+
+def join_for_payment_details(query):
+    return (
+        query.options(joinedload(Payment.statuses))
+        .options(joinedload(Payment.booking).joinedload(Booking.user))
+        .options(
+            joinedload(Payment.booking)
+            .joinedload(Booking.stock)
+            .joinedload(Stock.offer)
+            .joinedload(Offer.venue)
+            .joinedload(Venue.managingOfferer)
+        )
+        .options(
+            joinedload(Payment.booking).joinedload(Booking.stock).joinedload(Stock.offer).joinedload(Offer.product)
+        )
+    )
+
+
+def _get_payment_ids_with_latest_status(batch_date: datetime.datetime = None):
+    """Return a query with each payment id with its latest status,
+    filtered on the requested batch date if given.
+
+    This is a helper, to be used as a subquery by other functions in
+    this module.
+    """
+    query = (
+        Payment.query.distinct(PaymentStatus.paymentId)
+        .join(PaymentStatus)
+        .order_by(PaymentStatus.paymentId, PaymentStatus.date.desc())
+        .with_entities(Payment.id, PaymentStatus.status)
+    )
+    if batch_date:
+        query = query.filter(Payment.batchDate == batch_date)
+    return query
+
+
+def get_payments_by_status(statuses: Iterable[TransactionStatus], batch_date: datetime.datetime = None):
+    """Return a query with payments for which the latest status is one the
+    requested statuses.
+
+    If a batch date is given, filter on it.
+    """
+    ids_and_latest_statuses = _get_payment_ids_with_latest_status(batch_date).subquery()
+    # fmt: off
+    return (
+        Payment.query
+        .join(ids_and_latest_statuses, Payment.id == ids_and_latest_statuses.c.id)
+        .filter(ids_and_latest_statuses.c.status.in_(statuses))
+    )
+    # fmt: on
+
+
+def get_payment_count_by_status(batch_date: datetime.datetime) -> dict[str, int]:
+    """Return a dictionary with the number of payments with each (latest)
+    status.
+    """
+    ids_and_latest_statuses = _get_payment_ids_with_latest_status(batch_date).subquery()
+    # fmt: off
+    query = (
+        db.session.query(
+            func.distinct(ids_and_latest_statuses.c.status),
+            func.count(),
+        )
+        .group_by(ids_and_latest_statuses.c.status)
+    )
+    # fmt: on
+    return dict(query.all())
+
+
+def group_by_iban_and_bic(payment_query):
+    query = payment_query.group_by(Payment.iban, Payment.bic).with_entities(
+        Payment.iban,
+        Payment.bic,
+        func.sum(Payment.amount).label("total_amount"),
+        # recipientName and recipientSiren should be the same for all
+        # payments with the same IBAN and BIC.
+        func.min(Payment.recipientName).label("recipient_name"),
+        func.min(Payment.recipientSiren).label("recipient_siren"),
+        # XXX Payments may have a different transactionLabel (for
+        # example if a payment that has been generated in a previous
+        # run is to be retried alongside a new payment that hence has
+        # a different transaction label). I don't know if it was
+        # expected in the previous implementation.
+        func.min(Payment.transactionLabel).label("transaction_label"),
+    )
+    return set(query)

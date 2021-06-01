@@ -3,8 +3,12 @@ from datetime import datetime
 from freezegun import freeze_time
 import pytest
 
-from pcapi.core.payments.api import create_deposit
+from pcapi.core.payments import api
+from pcapi.core.payments import factories
 from pcapi.core.users.factories import UserFactory
+from pcapi.models.payment import Payment
+from pcapi.models.payment_status import PaymentStatus
+from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository import repository
 
 
@@ -17,7 +21,38 @@ class CreateDepositTest:
         repository.delete(*beneficiary.deposits)
 
         # When
-        deposit = create_deposit(beneficiary, "created by test")
+        deposit = api.create_deposit(beneficiary, "created by test")
 
         # Then
         assert deposit.expirationDate == datetime(2023, 2, 5, 9, 0, 0)
+
+
+@pytest.mark.usefixtures("db_session")
+class BulkCreatePaymentStatusesTest:
+    def test_without_detail(self):
+        p1 = factories.PaymentFactory(statuses=[])
+        p2 = factories.PaymentFactory(statuses=[])
+        _ignored = factories.PaymentFactory(statuses=[])
+
+        query = Payment.query.filter(Payment.id.in_((p1.id, p2.id)))
+        api.bulk_create_payment_statuses(query, TransactionStatus.PENDING)
+
+        statuses = PaymentStatus.query.all()
+        assert len(statuses) == 2
+        assert {s.payment for s in statuses} == {p1, p2}
+        assert {s.status for s in statuses} == {TransactionStatus.PENDING}
+        assert {s.detail for s in statuses} == {None}
+
+    def test_with_detail(self):
+        p1 = factories.PaymentFactory(statuses=[])
+        p2 = factories.PaymentFactory(statuses=[])
+        _ignored = factories.PaymentFactory(statuses=[])
+
+        query = Payment.query.filter(Payment.id.in_((p1.id, p2.id)))
+        api.bulk_create_payment_statuses(query, TransactionStatus.PENDING, "something")
+
+        statuses = PaymentStatus.query.all()
+        assert len(statuses) == 2
+        assert {s.payment for s in statuses} == {p1, p2}
+        assert {s.status for s in statuses} == {TransactionStatus.PENDING}
+        assert {s.detail for s in statuses} == {"something"}

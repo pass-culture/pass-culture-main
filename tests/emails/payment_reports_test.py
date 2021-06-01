@@ -1,9 +1,7 @@
 import base64
 import io
-from unittest.mock import Mock
 import zipfile
 
-from bs4 import BeautifulSoup
 from freezegun import freeze_time
 
 from pcapi.utils.mailing import make_payment_details_email
@@ -12,69 +10,25 @@ from pcapi.utils.mailing import make_payments_report_email
 
 
 @freeze_time("2018-10-15 09:21:34")
-class MakePaymentsReportEmailTest:
-    @classmethod
-    def setup_class(cls):
-        cls.grouped_payments = {"ERROR": [Mock(), Mock()], "SENT": [Mock()], "PENDING": [Mock(), Mock(), Mock()]}
+def test_make_payments_report_email(app):
+    n_payments_by_status = {"ERROR": 1, "UNDER_REVIEW": 2}
+    email = make_payments_report_email("csv1", "csv2", n_payments_by_status)
 
-        cls.not_processable_csv = '"header A","header B","header C","header D"\n"part A","part B","part C","part D"\n'
-        cls.error_csv = '"header 1","header 2","header 3","header 4"\n"part 1","part 2","part 3","part 4"\n'
-
-    def test_it_contains_the_two_csv_files_as_attachment(self, app):
-        # When
-        email = make_payments_report_email(self.not_processable_csv, self.error_csv, self.grouped_payments)
-
-        # Then
-        assert email["Attachments"] == [
-            {
-                "ContentType": "text/csv",
-                "Filename": "paiements_non_traitables_2018-10-15.csv",
-                "Content": "ImhlYWRlciBBIiwiaGVhZGVyIEIiLCJoZWFkZXIgQyIsImhlYWRlciBE"
-                "IgoicGFydCBBIiwicGFydCBCIiwicGFydCBDIiwicGFydCBEIgo=",
-            },
-            {
-                "ContentType": "text/csv",
-                "Filename": "paiements_en_erreur_2018-10-15.csv",
-                "Content": "ImhlYWRlciAxIiwiaGVhZGVyIDIiLCJoZWFkZXIgMyIsImhlYWRlciA0"
-                "IgoicGFydCAxIiwicGFydCAyIiwicGFydCAzIiwicGFydCA0Igo=",
-            },
-        ]
-
-    def test_it_contains_from_and_subject_info(self, app):
-        # When
-        email = make_payments_report_email(self.not_processable_csv, self.error_csv, self.grouped_payments)
-
-        # Then
-        assert email["FromName"] == "pass Culture Pro"
-        assert email["Subject"] == "Récapitulatif des paiements pass Culture Pro - 2018-10-15"
-
-    def test_it_contains_the_total_count_of_payments(self, app):
-        # When
-        email = make_payments_report_email(self.not_processable_csv, self.error_csv, self.grouped_payments)
-
-        # Then
-        email_html = BeautifulSoup(email["Html-part"], "html.parser")
-        assert email_html.find("p", {"id": "total"}).text == "Nombre total de paiements : 6"
-
-    def test_it_contains_a_count_of_payments_by_status_in_html_part(self, app):
-        # When
-        email = make_payments_report_email(self.not_processable_csv, self.error_csv, self.grouped_payments)
-
-        # Then
-        email_html = BeautifulSoup(email["Html-part"], "html.parser")
-        assert email_html.find("ul").text == "\nERROR : 2\nSENT : 1\nPENDING : 3\n"
+    assert email["FromName"] == "pass Culture Pro"
+    assert email["Subject"] == "Récapitulatif des paiements pass Culture Pro - 2018-10-15"
+    assert "ERROR : 1" in email["Html-part"]
+    assert "UNDER_REVIEW : 2" in email["Html-part"]
+    assert "Nombre total de paiements : 3" in email["Html-part"]
+    assert len(email["Attachments"]) == 2
 
 
 @freeze_time("2018-10-15 09:21:34")
-def test_make_payment_message_email_sends_a_xml_file_with_its_checksum_in_email_body(app):
-    # Given
+def test_make_payment_message_email(app):
     xml = '<?xml version="1.0" encoding="UTF-8"?><Document xmlns="urn:iso:std:iso:20022:tech:xsd:pain.001.001.03"></Document>'
     checksum = b"\x16\x91\x0c\x11~Hs\xc5\x1a\xa3W1\x13\xbf!jq@\xea  <h&\xef\x1f\xaf\xfc\x7fO\xc8\x82"
 
-    # When
     email = make_payment_message_email(xml, checksum)
 
-    # Then
     assert email["FromName"] == "pass Culture Pro"
     assert email["Subject"] == "Virements XML pass Culture Pro - 2018-10-15"
     assert email["Attachments"] == [
@@ -86,12 +40,8 @@ def test_make_payment_message_email_sends_a_xml_file_with_its_checksum_in_email_
             "ZDpwYWluLjAwMS4wMDEuMDMiPjwvRG9jdW1lbnQ+",
         }
     ]
-    email_html = BeautifulSoup(email["Html-part"], "html.parser")
-    assert "message_banque_de_france_20181015.xml" in email_html.find("p", {"id": "file_name"}).find("strong").text
-    assert (
-        "16910c117e4873c51aa3573113bf216a7140ea20203c6826ef1faffc7f4fc882"
-        in email_html.find("p", {"id": "checksum"}).find("strong").text
-    )
+    assert "message_banque_de_france_20181015.xml" in email["Html-part"]
+    assert "16910c117e4873c51aa3573113bf216a7140ea20203c6826ef1faffc7f4fc882" in email["Html-part"]
 
 
 @freeze_time("2018-10-15 09:21:34")

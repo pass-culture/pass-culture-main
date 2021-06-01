@@ -175,16 +175,13 @@ def make_payment_details_email(csv: str) -> dict:
     }
 
 
-def make_payments_report_email(not_processable_csv: str, error_csv: str, grouped_payments: dict) -> dict:
+def make_payments_report_email(not_processable_csv: str, error_csv: str, n_payments_by_status: dict) -> dict:
     now = datetime.utcnow()
     not_processable_csv_b64encode = base64.b64encode(not_processable_csv.encode("utf-8")).decode()
     error_csv_b64encode = base64.b64encode(error_csv.encode("utf-8")).decode()
     formatted_date = datetime.strftime(now, "%Y-%m-%d")
 
-    def number_of_payments_for_one_status(key_value):
-        return len(key_value[1])
-
-    total_number_of_payments = sum(map(number_of_payments_for_one_status, grouped_payments.items()))
+    n_total_payments = sum(count for count in n_payments_by_status.values())
 
     return {
         "Subject": "Récapitulatif des paiements pass Culture Pro - {}".format(formatted_date),
@@ -204,8 +201,8 @@ def make_payments_report_email(not_processable_csv: str, error_csv: str, grouped
         "Html-part": render_template(
             "mails/payments_report_email.html",
             date_sent=formatted_date,
-            total_number=total_number_of_payments,
-            grouped_payments=grouped_payments,
+            total_number=n_total_payments,
+            n_payments_by_status=n_payments_by_status,
         ),
     }
 

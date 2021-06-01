@@ -10,6 +10,7 @@ from sqlalchemy import func
 from sqlalchemy import or_
 from sqlalchemy import text
 from sqlalchemy.orm import Query
+from sqlalchemy.orm import joinedload
 from sqlalchemy.sql.functions import coalesce
 from sqlalchemy.util._collections import AbstractKeyedTuple
 
@@ -100,6 +101,19 @@ def find_bookings_eligible_for_payment_for_venue(venue_id: int) -> list[Booking]
         .filter(Venue.id == venue_id)
         .reset_joinpoint()
         .outerjoin(Payment)
+        .options(joinedload(Booking.stock).joinedload(Stock.offer).joinedload(Offer.product))
+        .options(joinedload(Booking.stock).joinedload(Stock.offer).joinedload(Offer.venue))
+        .options(
+            joinedload(Booking.stock).joinedload(Stock.offer).joinedload(Offer.venue).joinedload(Venue.bankInformation)
+        )
+        .options(
+            joinedload(Booking.stock)
+            .joinedload(Stock.offer)
+            .joinedload(Offer.venue)
+            .joinedload(Venue.managingOfferer)
+            .joinedload(Offerer.bankInformation)
+        )
+        .options(joinedload(Booking.payments))
         .order_by(Payment.id, Booking.dateCreated.asc())
         .all()
     )

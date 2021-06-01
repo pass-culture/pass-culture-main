@@ -4,6 +4,7 @@ from datetime import datetime
 from sqlalchemy import BigInteger
 from sqlalchemy import CheckConstraint
 from sqlalchemy import Column
+from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
 from sqlalchemy import Numeric
 from sqlalchemy import String
@@ -60,6 +61,8 @@ class Payment(PcObject, Model):
     paymentMessageId = Column(BigInteger, ForeignKey("payment_message.id"), nullable=True)
 
     paymentMessage = relationship("PaymentMessage", foreign_keys=[paymentMessageId], backref=backref("payments"))
+
+    batchDate = Column(DateTime, nullable=True, index=True)
 
     @property
     def paymentMessageName(self):

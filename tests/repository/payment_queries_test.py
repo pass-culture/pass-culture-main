@@ -1,9 +1,10 @@
+import datetime
 import uuid
 
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
-import pcapi.core.payments.factories as payments_factories
+import pcapi.core.payments.factories as factories
 import pcapi.core.users.factories as users_factories
 from pcapi.model_creators.generic_creators import create_bank_information
 from pcapi.model_creators.generic_creators import create_booking
@@ -14,96 +15,10 @@ from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.model_creators.specific_creators import create_stock_from_offer
 from pcapi.models.bank_information import BankInformationStatus
-from pcapi.models.payment_status import PaymentStatus
+from pcapi.models.payment import Payment
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository import payment_queries
 from pcapi.repository import repository
-
-
-class FindErrorPaymentsTest:
-    @pytest.mark.usefixtures("db_session")
-    def test_returns_payments_with_last_payment_status_error(self, app):
-        # Given
-        user = users_factories.UserFactory()
-        booking = create_booking(user=user)
-        error_payment1 = create_payment(
-            booking, booking.stock.offer.venue.managingOfferer, 10, status=TransactionStatus.ERROR
-        )
-        error_payment2 = create_payment(
-            booking, booking.stock.offer.venue.managingOfferer, 10, status=TransactionStatus.ERROR
-        )
-        pending_payment = create_payment(booking, booking.stock.offer.venue.managingOfferer, 10)
-        repository.save(error_payment1, error_payment2, pending_payment)
-
-        # When
-        payments = payment_queries.find_error_payments()
-
-        # Then
-        assert len(payments) == 2
-        for payment in payments:
-            assert payment.currentStatus.status == TransactionStatus.ERROR
-
-    @pytest.mark.usefixtures("db_session")
-    def test_does_not_return_payment_if_has_status_error_but_not_last(self, app):
-        # Given
-        user = users_factories.UserFactory()
-        booking = create_booking(user=user)
-        error_payment = create_payment(booking, booking.stock.offer.venue.managingOfferer, 10)
-        pending_payment = create_payment(booking, booking.stock.offer.venue.managingOfferer, 10)
-        error_status = PaymentStatus()
-        error_status.status = TransactionStatus.ERROR
-        sent_status = PaymentStatus()
-        sent_status.status = TransactionStatus.SENT
-        error_payment.statuses.extend([error_status, sent_status])
-        repository.save(error_payment, pending_payment)
-
-        # When
-        payments = payment_queries.find_error_payments()
-
-        # Then
-        assert payments == []
-
-
-class FindRetryPaymentsTest:
-    @pytest.mark.usefixtures("db_session")
-    def test_returns_payments_with_last_payment_status_retry(self, app):
-        # Given
-        user = users_factories.UserFactory()
-        booking = create_booking(user=user)
-        offerer = booking.stock.offer.venue.managingOfferer
-        retry_payment1 = create_payment(booking, offerer, 10, status=TransactionStatus.RETRY)
-        retry_payment2 = create_payment(booking, offerer, 10, status=TransactionStatus.RETRY)
-        pending_payment = create_payment(booking, offerer, 10, status=TransactionStatus.PENDING)
-        repository.save(retry_payment1, retry_payment2, pending_payment)
-
-        # When
-        payments = payment_queries.find_retry_payments()
-
-        # Then
-        assert len(payments) == 2
-        for payment in payments:
-            assert payment.currentStatus.status == TransactionStatus.RETRY
-
-    @pytest.mark.usefixtures("db_session")
-    def test_does_not_return_payment_if_has_status_retry_but_not_last(self, app):
-        # Given
-        user = users_factories.UserFactory()
-        booking = create_booking(user=user)
-        payment = create_payment(booking, booking.stock.offer.venue.managingOfferer, 10)
-        payment = create_payment(booking, booking.stock.offer.venue.managingOfferer, 10)
-        pending_payment = create_payment(booking, booking.stock.offer.venue.managingOfferer, 10)
-        retry_status = PaymentStatus()
-        retry_status.status = TransactionStatus.RETRY
-        sent_status = PaymentStatus()
-        sent_status.status = TransactionStatus.SENT
-        payment.statuses.extend([retry_status, sent_status])
-        repository.save(payment, pending_payment)
-
-        # When
-        payments = payment_queries.find_retry_payments()
-
-        # Then
-        assert payments == []
 
 
 class FindPaymentsByMessageTest:
@@ -156,32 +71,6 @@ class FindPaymentsByMessageTest:
 
         # then
         assert matching_payments == []
-
-
-class GeneratePayementsByMessageIdTest:
-    @pytest.mark.usefixtures("db_session")
-    def test_only_returns_payments_with_given_message(self, app):
-        # Given
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_thing_product(venue)
-        paying_stock = create_stock_from_offer(offer)
-        free_stock = create_stock_from_offer(offer, price=0)
-        user = users_factories.UserFactory()
-        booking1 = create_booking(user=user, stock=paying_stock, venue=venue, is_used=True)
-        booking2 = create_booking(user=user, stock=paying_stock, venue=venue, is_used=True)
-        booking3 = create_booking(user=user, stock=paying_stock, venue=venue, is_used=True)
-        booking4 = create_booking(user=user, stock=free_stock, venue=venue, is_used=True)
-        payment1 = create_payment(booking1, offerer, 10, payment_message_name="ABCD123")
-        payment2 = create_payment(booking2, offerer, 10, payment_message_name="EFGH456")
-        repository.save(payment1, payment2, booking3, booking4)
-
-        # When
-        payements_by_id = payment_queries.get_payments_by_message_id("ABCD123")
-
-        # Then
-        assert len(payements_by_id) == 1
-        assert payements_by_id[0].paymentMessage.name == "ABCD123"
 
 
 class FindNotProcessableWithBankInformationTest:
@@ -298,5 +187,99 @@ def test_has_payment():
     booking = bookings_factories.BookingFactory()
     assert not payment_queries.has_payment(booking)
 
-    payments_factories.PaymentFactory(booking=booking)
+    factories.PaymentFactory(booking=booking)
     assert payment_queries.has_payment(booking)
+
+
+@pytest.mark.usefixtures("db_session")
+def test_get_payment_count_by_status():
+    batch_date = datetime.datetime.now()
+    other_date = datetime.datetime.now()
+
+    count = payment_queries.get_payment_count_by_status(batch_date)
+    assert count == {}
+
+    factories.PaymentStatusFactory(status=TransactionStatus.NOT_PROCESSABLE, payment__batchDate=other_date)
+    count = payment_queries.get_payment_count_by_status(batch_date)
+    assert count == {}
+
+    ps = factories.PaymentStatusFactory(status=TransactionStatus.NOT_PROCESSABLE, payment__batchDate=batch_date)
+    count = payment_queries.get_payment_count_by_status(batch_date)
+    assert count == {"NOT_PROCESSABLE": 1}
+
+    factories.PaymentStatusFactory(status=TransactionStatus.NOT_PROCESSABLE, payment__batchDate=batch_date)
+    count = payment_queries.get_payment_count_by_status(batch_date)
+    assert count == {"NOT_PROCESSABLE": 2}
+
+    factories.PaymentStatusFactory(status=TransactionStatus.PENDING, payment=ps.payment)
+    count = payment_queries.get_payment_count_by_status(batch_date)
+    assert count == {"NOT_PROCESSABLE": 1, "PENDING": 1}
+
+
+@pytest.mark.usefixtures("db_session")
+class GetPaymentsByStatusTest:
+    def test_without_batch_date(self):
+        p1 = factories.PaymentFactory()
+        p2 = factories.PaymentFactory()
+
+        query = payment_queries.get_payments_by_status([TransactionStatus.PENDING])
+        assert set(query.all()) == {p1, p2}
+
+        factories.PaymentStatusFactory(status=TransactionStatus.NOT_PROCESSABLE, payment=p2)
+        query = payment_queries.get_payments_by_status([TransactionStatus.PENDING])
+        assert query.all() == [p1]
+        query = payment_queries.get_payments_by_status([TransactionStatus.NOT_PROCESSABLE])
+        assert query.all() == [p2]
+
+    def test_with_specific_batch_date(self):
+        batch_date = datetime.datetime.utcnow()
+        query = payment_queries.get_payments_by_status([TransactionStatus.NOT_PROCESSABLE], batch_date)
+
+        factories.PaymentFactory()  # not the same batch date
+        assert query.count() == 0
+
+        ps = factories.PaymentStatusFactory(status=TransactionStatus.PENDING, payment__batchDate=batch_date)
+        assert query.count() == 0
+
+        factories.PaymentStatusFactory(status=TransactionStatus.NOT_PROCESSABLE, payment=ps.payment)
+        assert query.all() == [ps.payment]
+
+
+@pytest.mark.usefixtures("db_session")
+def test_group_by_iban_and_bic():
+    factories.PaymentFactory(
+        author="",
+        iban="iban1",
+        bic="bic1",
+        amount=10,
+        recipientName="name1",
+        recipientSiren="siren1",
+        transactionLabel="label",
+    )
+    factories.PaymentFactory(
+        author="",
+        iban="iban1",
+        bic="bic2",
+        amount=20,
+        recipientName="name2",
+        recipientSiren="siren2",
+        transactionLabel="label",
+    )
+    factories.PaymentFactory(
+        author="",
+        iban="iban1",
+        bic="bic2",
+        amount=40,
+        recipientName="name2",
+        recipientSiren="siren2",
+        transactionLabel="label",
+    )
+    factories.PaymentFactory(author="ignored", iban="ignored", bic="ignored")
+
+    query = Payment.query.filter_by(author="")
+
+    pairs = payment_queries.group_by_iban_and_bic(query)
+    assert pairs == {
+        ("iban1", "bic1", 10, "name1", "siren1", "label"),
+        ("iban1", "bic2", 60, "name2", "siren2", "label"),
+    }

@@ -1,3 +1,6 @@
+import datetime
+import hashlib
+
 import factory
 
 from pcapi import models
@@ -39,7 +42,7 @@ class PaymentFactory(BaseFactory):
         model = models.Payment
 
     author = "batch"
-    booking = factory.SubFactory(bookings_factories.BookingFactory)
+    booking = factory.SubFactory(bookings_factories.BookingFactory, isUsed=True)
     amount = factory.SelfAttribute("booking.total_amount")
     recipientSiren = factory.SelfAttribute("booking.stock.offer.venue.managingOfferer.siren")
     reimbursementRule = factory.Iterator(ALL_REIMBURSEMENT_RULES)
@@ -63,3 +66,13 @@ class PaymentFactory(BaseFactory):
 class PaymentStatusFactory(BaseFactory):
     class Meta:
         model = models.PaymentStatus
+
+    payment = factory.SubFactory(PaymentFactory, statuses=[])
+
+
+class PaymentMessageFactory(BaseFactory):
+    class Meta:
+        model = models.PaymentMessage
+
+    name = factory.Sequence("payment message {0}".format)
+    checksum = factory.LazyFunction(lambda: hashlib.sha1(datetime.datetime.now().isoformat().encode("utf-8")).digest())

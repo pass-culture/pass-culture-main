@@ -1,94 +1,118 @@
-from datetime import datetime
+import datetime
 from decimal import Decimal
 
+import pytest
+
+import pcapi.core.offers.factories as offers_factories
+import pcapi.core.payments.factories as payments_factories
 from pcapi.domain.payments import generate_payment_details_csv
 from pcapi.domain.payments import generate_wallet_balances_csv
-from pcapi.model_creators.generic_creators import create_payment_details
+from pcapi.models.offer_type import ThingType
+from pcapi.models.payment import Payment
 from pcapi.models.wallet_balance import WalletBalance
+from pcapi.utils.human_ids import humanize
 
 
-class PaymentDetailsCSVTest:
-    def test_generate_payment_details_csv_has_human_readable_header(self):
-        # Given
-        payments_details = [create_payment_details(), create_payment_details(), create_payment_details()]
+@pytest.mark.usefixtures("db_session")
+class GeneratePaymentDetailsCsvTest:
+    def test_generate_csv(self):
+        creation_date = datetime.datetime(2020, 1, 1)
+        used_date = datetime.datetime(2020, 1, 2)
+        venue1 = offers_factories.VenueFactory(
+            name="Le Petit Rintintin",
+            siret="11111111122222",
+            managingOfferer__name="Le Petit Rintintin Management Ltd.",
+            managingOfferer__siren="111111111",
+        )
+        payment_message = payments_factories.PaymentMessageFactory()
+        p1 = payments_factories.PaymentFactory(
+            booking__amount=10,
+            booking__dateCreated=creation_date,
+            booking__dateUsed=used_date,
+            booking__user__email="john.doe@example.com",
+            booking__stock__offer__product__name="Une histoire formidable",
+            booking__stock__offer__product__type=str(ThingType.AUDIOVISUEL),
+            booking__stock__offer__venue=venue1,
+            iban="IBAN1",
+            amount=9,
+            paymentMessage=payment_message,
+        )
+        venue2 = offers_factories.VenueFactory(
+            name="Le Gigantesque Cubitus",
+            siret="22222222233333",
+            managingOfferer__name="Le Gigantesque Cubitus Management Ltd.",
+            managingOfferer__siren="222222222",
+        )
+        p2 = payments_factories.PaymentFactory(
+            booking__amount=12,
+            booking__dateCreated=creation_date,
+            booking__dateUsed=used_date,
+            booking__user__email="jeanne.doux@example.com",
+            booking__stock__offer__product__name="Une histoire plutôt bien",
+            booking__stock__offer__product__type=str(ThingType.AUDIOVISUEL),
+            booking__stock__offer__venue=venue2,
+            iban="IBAN2",
+            amount=11,
+            paymentMessage=payment_message,
+        )
 
-        # When
-        csv = generate_payment_details_csv(payments_details)
+        csv = generate_payment_details_csv(Payment.query)
 
-        # Then
+        rows = csv.splitlines()
+        assert len(rows) == 3
         assert (
-            _get_header(csv) == '"ID de l\'utilisateur","Email de l\'utilisateur",'
+            rows[0] == '"ID de l\'utilisateur","Email de l\'utilisateur",'
             '"Raison sociale de la structure","SIREN",'
             '"Raison sociale du lieu","SIRET","ID du lieu",'
             '"Nom de l\'offre","Type de l\'offre",'
             '"Date de la réservation","Prix de la réservation","Date de validation",'
             '"IBAN","Payment Message Name","Transaction ID","Paiement ID",'
-            '"Taux de remboursement","Montant remboursé à l\'offreur"\r'
+            '"Taux de remboursement","Montant remboursé à l\'offreur"'
         )
-
-    def test_generate_payment_details_csv_with_headers_and_two_payment_details_lines(self):
-        # Given
-        payments_details = [
-            create_payment_details(booking_date=datetime(2020, 1, 1), booking_used_date=datetime(2020, 1, 2)),
-            create_payment_details(booking_date=datetime(2020, 1, 1), booking_used_date=datetime(2020, 1, 2)),
+        assert rows[1].split(",") == [
+            f'"{p1.booking.userId}"',
+            '"john.doe@example.com"',
+            '"Le Petit Rintintin Management Ltd."',
+            '"111111111"',
+            '"Le Petit Rintintin"',
+            '"11111111122222"',
+            f'"{humanize(venue1.id)}"',
+            '"Une histoire formidable"',
+            '"Audiovisuel - films sur supports physiques et VOD"',
+            '"2020-01-01 00:00:00"',
+            '"10.00"',
+            '"2020-01-02 00:00:00"',
+            '"IBAN1"',
+            f'"{p1.paymentMessageName}"',
+            f'"{p1.transactionEndToEndId}"',
+            f'"{p1.id}"',
+            f'"{p1.reimbursementRate}"',
+            '"9.00"',
+        ]
+        assert rows[2].split(",") == [
+            f'"{p2.booking.userId}"',
+            '"jeanne.doux@example.com"',
+            '"Le Gigantesque Cubitus Management Ltd."',
+            '"222222222"',
+            '"Le Gigantesque Cubitus"',
+            '"22222222233333"',
+            f'"{humanize(venue2.id)}"',
+            '"Une histoire plutôt bien"',
+            '"Audiovisuel - films sur supports physiques et VOD"',
+            '"2020-01-01 00:00:00"',
+            '"12.00"',
+            '"2020-01-02 00:00:00"',
+            '"IBAN2"',
+            f'"{p2.paymentMessageName}"',
+            f'"{p2.transactionEndToEndId}"',
+            f'"{p2.id}"',
+            f'"{p2.reimbursementRate}"',
+            '"11.00"',
         ]
 
-        # When
-        csv = generate_payment_details_csv(payments_details)
-
-        # Then
-        assert _count_non_empty_lines(csv) == 3
-        csv_as_lines = csv.splitlines()
-        assert (
-            csv_as_lines[1] == '"1234",'
-            '"john.doe@example.com",'
-            '"Les petites librairies",'
-            '"123456789",'
-            '"Vive les BDs",'
-            '"12345678912345",'
-            '"AE",'
-            '"Blake & Mortimer",'
-            '"ThingType.LIVRE_EDITION",'
-            '"2020-01-01 00:00:00",'
-            '"15",'
-            '"2020-01-02 00:00:00",'
-            '"FR7630001007941234567890185",'
-            '"AZERTY123456",'
-            '"None",'
-            '"123",'
-            '"0.5",'
-            '"7.5"'
-        )
-        assert (
-            csv_as_lines[2] == '"1234",'
-            '"john.doe@example.com",'
-            '"Les petites librairies",'
-            '"123456789",'
-            '"Vive les BDs",'
-            '"12345678912345",'
-            '"AE",'
-            '"Blake & Mortimer",'
-            '"ThingType.LIVRE_EDITION",'
-            '"2020-01-01 00:00:00",'
-            '"15",'
-            '"2020-01-02 00:00:00",'
-            '"FR7630001007941234567890185",'
-            '"AZERTY123456",'
-            '"None",'
-            '"123",'
-            '"0.5",'
-            '"7.5"'
-        )
-
-    def test_generate_payment_details_csv_with_headers_and_zero_payment_details_lines(self):
-        # Given
-        payments_details = []
-
-        # When
-        csv = generate_payment_details_csv(payments_details)
-
-        # Then
-        assert _count_non_empty_lines(csv) == 1
+    def test_only_header_if_no_payment(self):
+        csv = generate_payment_details_csv(Payment.query)
+        assert len(csv.splitlines()) == 1
 
 
 class WalletBalancesCSVTest:

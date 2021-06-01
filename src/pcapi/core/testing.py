@@ -97,10 +97,15 @@ def assert_num_queries(expected_n_queries):
 
 
 def _format_sql_query(query, i, total):
-    # SQLAlchemy inserts '\n' into the generated SQL. We add
-    # to padding so that the whole query is properly aligned.
+    # SQLAlchemy inserts '\n' into the generated SQL. We add padding
+    # so that the whole query is properly aligned.
     prefix_length = 3 + int(math.log(total, 10))
-    sql = (query["statement"] % query["parameters"]).replace("\n", "\n" + " " * prefix_length)
+    # XXX: ugly work around to handle multiple statements,
+    # e.g. `INSERT INTO` with multiple rows.
+    try:
+        sql = (query["statement"] % query["parameters"]).replace("\n", "\n" + " " * prefix_length)
+    except TypeError:
+        sql = f"{query['statement']}  -- multiple statement with parameters: {query['parameters']}"
     return f"{i}. {sql}"
 
 

@@ -4,8 +4,8 @@
         <p id="total">Nombre total de paiements : {{ total_number }}</p>
         <p id="counts">
             <ul>
-            {% for status, payments in grouped_payments.items() %}
-                <li>{{ status }} : {{ payments | length }}</li>
+            {% for status, count in n_payments_by_status.items() %}
+                <li>{{ status }} : {{ count }}</li>
             {% endfor %}
             </ul>
         </p>

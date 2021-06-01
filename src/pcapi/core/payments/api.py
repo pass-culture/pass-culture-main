@@ -1,10 +1,15 @@
 from datetime import datetime
 
 from dateutil.relativedelta import relativedelta
+from sqlalchemy import sql
 
 import pcapi.core.bookings.conf as bookings_conf
 from pcapi.core.users.models import User
+from pcapi.models import db
 from pcapi.models.deposit import Deposit
+from pcapi.models.payment import Payment
+from pcapi.models.payment_status import PaymentStatus
+from pcapi.models.payment_status import TransactionStatus
 
 from . import exceptions
 
@@ -38,3 +43,10 @@ def create_deposit(beneficiary: User, deposit_source: str, version: int = None) 
         expirationDate=_get_expiration_date(),
     )
     return deposit
+
+
+def bulk_create_payment_statuses(payment_query, status: TransactionStatus, detail=None):
+    sel = payment_query.with_entities(Payment.id, sql.literal(status.name), sql.literal(detail))
+    query = sql.insert(PaymentStatus).from_select(["paymentId", "status", "detail"], sel)
+    db.session.execute(query)
+    db.session.commit()
