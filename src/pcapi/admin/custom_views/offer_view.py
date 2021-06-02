@@ -171,7 +171,7 @@ def _pro_offer_url(offer_id: int) -> str:
 
 
 def _metabase_offer_url(offer_id: int) -> str:
-    return f"https://data-analytics.internal-passculture.app/question/901?offerid={offer_id}"
+    return f"https://support.internal-passculture.app/question/115?offer_id={offer_id}"
 
 
 def _venue_url(venue: Venue) -> str:
