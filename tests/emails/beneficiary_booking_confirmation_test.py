@@ -32,7 +32,7 @@ def make_booking(**kwargs):
 
 def get_expected_base_email_data(booking, mediation, **overrides):
     email_data = {
-        "MJ-TemplateID": 2841128,
+        "MJ-TemplateID": 2942751,
         "MJ-TemplateLanguage": True,
         "Vars": {
             "user_first_name": "Joe",
@@ -60,6 +60,7 @@ def get_expected_base_email_data(booking, mediation, **overrides):
             "has_expiration_date": 0,
             "has_offer_url": 0,
             "digital_offer_url": "",
+            "offer_withdrawal_details": "",
         },
     }
     email_data["Vars"].update(overrides)
@@ -132,6 +133,24 @@ def test_should_use_public_name_when_available():
         booking,
         mediation,
         venue_name="Librairie Colbert",
+    )
+    assert email_data == expected
+
+
+@pytest.mark.usefixtures("db_session")
+def test_should_return_withdrawal_details_when_available():
+    withdrawal_details = "Conditions de retrait spécifiques."
+    booking = make_booking(
+        stock__offer__withdrawalDetails=withdrawal_details,
+    )
+    mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
+
+    email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)
+
+    expected = get_expected_base_email_data(
+        booking,
+        mediation,
+        offer_withdrawal_details=withdrawal_details,
     )
     assert email_data == expected
 
