@@ -345,7 +345,9 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin):
     # FIXME(fseguin, 2021-06-02): make this non-nullable when all offers have a category
     # Also, change the attribute name (but not the DB column name) once we remove the offer.category used
     # in OfferResponse and FavoriteOfferResponse
-    categoryId = Column("categoryId", BigInteger, index=True)
+    categoryId = Column("categoryId", BigInteger, ForeignKey("offer_category.id"), index=True)
+
+    dbCategory = relationship("OfferCategory", foreign_keys=[categoryId], backref="offers")
 
     # FIXME: We shoud be able to remove the index on `venueId`, since this composite index
     #  can be used by PostgreSQL when filtering on the `venueId` column only.
