@@ -51,6 +51,7 @@ class Get:
                 "email": "toto@example.com",
                 "firstName": "Jean",
                 "hasCompletedIdCheck": None,
+                "hasIdentityDocumentValidated": False,
                 "hasPhysicalVenues": False,
                 "hasSeenProTutorials": True,
                 "id": humanize(user.id),

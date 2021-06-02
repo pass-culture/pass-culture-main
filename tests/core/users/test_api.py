@@ -15,6 +15,7 @@ from pcapi.core.payments.api import DEPOSIT_VALIDITY_IN_YEARS
 from pcapi.core.testing import override_features
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
+from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.api import BeneficiaryValidationStep
 from pcapi.core.users.api import _set_offerer_departement_code
@@ -27,6 +28,7 @@ from pcapi.core.users.api import generate_and_save_token
 from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.api import set_pro_tuto_as_seen
 from pcapi.core.users.api import steps_to_become_beneficiary
+from pcapi.core.users.api import update_user_id_check_profile
 from pcapi.core.users.factories import BeneficiaryImportFactory
 from pcapi.core.users.models import Credit
 from pcapi.core.users.models import DomainsCredit
@@ -685,3 +687,147 @@ class DomainsCreditTest:
         user = users_factories.UserFactory(isBeneficiary=False)
 
         assert not get_domains_credit(user)
+
+
+@pytest.mark.usefixtures("db_session")
+class UpdateIdCheckProfileTest:
+    def test_has_document_validated_and_all_steps_to_become_beneficiary(self):
+        """
+        Test that the user's id check profile information are updated and that
+        it becomes beneficiary (and therefore has a deposit) since it has an
+        identity document validated.
+        """
+        user = users_factories.UserFactory(
+            phoneNumber="+33601020304",
+            isBeneficiary=False,
+            hasIdentityDocumentValidated=True,
+            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+        )
+        beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
+        beneficiary_import.setStatus(ImportStatus.CREATED)
+
+        new_address = f"{user.address}_test"
+        new_city = f"{user.city}_test"
+        update_user_id_check_profile(
+            user_id=user.id,
+            address=new_address,
+            phone_number=user.phoneNumber,
+            city=new_city,
+            postal_code=user.postalCode,
+            activity=user.activity,
+        )
+
+        user = User.query.get(user.id)
+
+        assert user.address == new_address
+        assert user.city == new_city
+
+        assert user.hasCompletedIdCheck
+        assert user.isBeneficiary
+        assert user.deposit
+
+    def test_has_no_document_validated_and_all_steps_to_become_beneficiary(self):
+        """
+        Test that the user's id check profile information are updated and that
+        it does not become beneficiary (and therefore has no deposit) since it
+        has no identity document validated.
+        """
+        user = users_factories.UserFactory(
+            phoneNumber="+33601020304",
+            isBeneficiary=False,
+            hasIdentityDocumentValidated=False,
+            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+        )
+        beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
+        beneficiary_import.setStatus(ImportStatus.REJECTED)
+
+        new_address = f"{user.address}_test"
+        new_city = f"{user.city}_test"
+        update_user_id_check_profile(
+            user_id=user.id,
+            address=new_address,
+            phone_number=user.phoneNumber,
+            city=new_city,
+            postal_code=user.postalCode,
+            activity=user.activity,
+        )
+
+        user = User.query.get(user.id)
+
+        assert user.address == new_address
+        assert user.city == new_city
+
+        assert user.hasCompletedIdCheck
+        assert not user.isBeneficiary
+        assert not user.deposit
+
+    def test_has_document_validated_and_missing_step_to_become_beneficiary(self):
+        """
+        Test that a user with no an unverified phone number does not become
+        beneficiary, even if the identity document has been successfully
+        imported
+        """
+        user = users_factories.UserFactory(
+            phoneNumber="+33601020304",
+            isBeneficiary=False,
+            hasIdentityDocumentValidated=False,
+            phoneValidationStatus=None,  # missing step to become beneficiary
+        )
+        beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
+        beneficiary_import.setStatus(ImportStatus.CREATED)
+
+        new_address = f"{user.address}_test"
+        new_city = f"{user.city}_test"
+        update_user_id_check_profile(
+            user_id=user.id,
+            address=new_address,
+            phone_number=user.phoneNumber,
+            city=new_city,
+            postal_code=user.postalCode,
+            activity=user.activity,
+        )
+
+        user = User.query.get(user.id)
+
+        assert user.address == new_address
+        assert user.city == new_city
+
+        assert user.hasCompletedIdCheck
+        assert not user.isBeneficiary
+        assert not user.deposit
+
+    def test_has_invalid_phone_number(self):
+        """
+        Test that no field is updated if the phone number is malformed or
+        invalid
+        """
+        user = users_factories.UserFactory(
+            phoneNumber="+33601020304",
+            isBeneficiary=False,
+            hasIdentityDocumentValidated=False,
+            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+        )
+        beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
+        beneficiary_import.setStatus(ImportStatus.CREATED)
+
+        new_address = f"{user.address}_test"
+        new_city = f"{user.city}_test"
+
+        with pytest.raises(users_exceptions.InvalidPhoneNumber):
+            update_user_id_check_profile(
+                user_id=user.id,
+                address=new_address,
+                phone_number="0607080900",  # should be "+33607080999"
+                city=new_city,
+                postal_code=user.postalCode,
+                activity=user.activity,
+            )
+
+        user = User.query.get(user.id)
+
+        assert user.address != new_address
+        assert user.city != new_city
+
+        assert not user.hasCompletedIdCheck
+        assert not user.isBeneficiary
+        assert not user.deposit
