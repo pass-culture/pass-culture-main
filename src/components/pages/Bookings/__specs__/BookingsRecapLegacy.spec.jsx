@@ -44,7 +44,16 @@ describe('components | BookingsRecapLegacy', () => {
       },
     }
     store = configureTestStore({
-      data: { users: [{ publicName: 'René', isAdmin: false, email: 'rené@example.com' }] },
+      data: {
+        features: [
+          {
+            isActive: false,
+            name: 'ENABLE_BOOKINGS_PAGE_FILTERS_FIRST',
+            nameKey: 'ENABLE_BOOKINGS_PAGE_FILTERS_FIRST',
+          },
+        ],
+        users: [{ publicName: 'René', isAdmin: false, email: 'rené@example.com' }],
+      },
     })
   })
 
@@ -90,7 +99,7 @@ describe('components | BookingsRecapLegacy', () => {
     expect(spinner).not.toBeInTheDocument()
   })
 
-  it('should fetch bookings as many time as the number of pages', async () => {
+  it('should fetch bookings as many times as the number of pages', async () => {
     // Given
     const bookings1 = bookingRecapFactory()
     const bookings2 = bookingRecapFactory()
@@ -115,8 +124,8 @@ describe('components | BookingsRecapLegacy', () => {
 
     // Then
     expect(fetchBookingsRecapByPageSpy).toHaveBeenCalledTimes(2)
-    expect(fetchBookingsRecapByPageSpy).toHaveBeenNthCalledWith(1)
-    expect(fetchBookingsRecapByPageSpy).toHaveBeenNthCalledWith(2, 2)
+    expect(fetchBookingsRecapByPageSpy).toHaveBeenNthCalledWith(1, 1, { venueId: 'all' })
+    expect(fetchBookingsRecapByPageSpy).toHaveBeenNthCalledWith(2, 2, { venueId: 'all' })
 
     const firstBookingRecap = screen.getAllByText(bookings1.stock.offer_name)
     expect(firstBookingRecap).toHaveLength(2)

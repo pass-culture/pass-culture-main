@@ -15,7 +15,7 @@ const FilterByEventDate = ({ updateFilters, selectedOfferDate }) => {
         className="fw-offer-date-label"
         htmlFor="select-filter-date"
       >
-        {"Date de l'évènement"}
+        {'Date de l’évènement'}
       </label>
       <div className="fw-offer-date-picker">
         <DatePicker

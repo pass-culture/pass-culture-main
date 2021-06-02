@@ -185,13 +185,17 @@ class BookingsRecapTable extends Component {
   }
 }
 
+BookingsRecapTable.defaultProps = {
+  locationState: null,
+}
+
 BookingsRecapTable.propTypes = {
   bookingsRecap: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   isLoading: PropTypes.bool.isRequired,
   locationState: PropTypes.shape({
     venueId: PropTypes.string,
     statuses: PropTypes.arrayOf(PropTypes.string),
-  }).isRequired,
+  }),
 }
 
 export default BookingsRecapTable

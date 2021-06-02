@@ -9,19 +9,13 @@ import FilterByBookingPeriod from './FilterByBookingPeriod'
 import FilterByEventDate from './FilterByEventDate.jsx'
 import FilterByVenue from './FilterByVenue'
 
-const PreFilters = ({ offerVenue }) => {
+const PreFilters = ({ offerVenueId, applyPreFilters }) => {
   // eslint-disable-next-line no-unused-vars
-  const [appliedFilters, setAppliedFilters] = useState({
-    bookingBeginningDate: EMPTY_FILTER_VALUE,
-    bookingEndingDate: EMPTY_FILTER_VALUE,
-    offerDate: EMPTY_FILTER_VALUE,
-    offerVenue: offerVenue || ALL_VENUES,
-  })
   const [selectedFilters, setSelectedFilters] = useState({
     bookingBeginningDate: EMPTY_FILTER_VALUE,
     bookingEndingDate: getToday(),
     offerDate: EMPTY_FILTER_VALUE,
-    offerVenue: offerVenue || ALL_VENUES,
+    offerVenueId: offerVenueId || ALL_VENUES,
   })
   const [venues, setVenues] = useState([])
 
@@ -40,16 +34,16 @@ const PreFilters = ({ offerVenue }) => {
     event => {
       event.preventDefault()
 
-      setAppliedFilters({ ...selectedFilters })
+      applyPreFilters(selectedFilters)
     },
-    [selectedFilters]
+    [applyPreFilters, selectedFilters]
   )
 
   return (
     <form onSubmit={requestFilteredBookings}>
       <div className="pre-filters">
         <FilterByVenue
-          selectedVenue={selectedFilters.offerVenue}
+          selectedVenue={selectedFilters.offerVenueId}
           updateFilters={updateSelectedFilters}
           venuesFormattedAndOrdered={venues}
         />
@@ -77,8 +71,13 @@ const PreFilters = ({ offerVenue }) => {
   )
 }
 
+PreFilters.defaultProps = {
+  offerVenueId: null,
+}
+
 PreFilters.propTypes = {
-  offerVenue: PropTypes.string.isRequired,
+  applyPreFilters: PropTypes.func.isRequired,
+  offerVenueId: PropTypes.string,
 }
 
 export default PreFilters

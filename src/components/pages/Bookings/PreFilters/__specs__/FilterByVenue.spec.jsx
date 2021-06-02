@@ -38,7 +38,7 @@ describe('components | FilterByVenue', () => {
     await venuesSelect.simulate('change', selectedVenue)
 
     // then
-    expect(props.updateFilters).toHaveBeenCalledWith({ offerVenue: 'BG' })
+    expect(props.updateFilters).toHaveBeenCalledWith({ offerVenueId: 'BG' })
   })
 
   it('should render a select input with a default value "Tous les lieux" selected', async () => {

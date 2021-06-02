@@ -6,7 +6,7 @@ import { ALL_VENUES } from './_constants'
 const FilterByVenue = ({ updateFilters, selectedVenue, venuesFormattedAndOrdered }) => {
   function handleVenueSelection(event) {
     const venueId = event.target.value
-    updateFilters({ offerVenue: venueId })
+    updateFilters({ offerVenueId: venueId })
   }
 
   return (

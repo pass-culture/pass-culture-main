@@ -1,3 +1,4 @@
+import { ALL_VENUES } from '../../components/pages/Bookings/PreFilters/_constants'
 import * as fetch from '../../utils/fetch'
 import { fetchBookingsRecapByPage } from '../bookingsRecapService'
 
@@ -15,14 +16,6 @@ describe('bookingRecapsService', () => {
     fetchFromApiWithCredentialsStub = jest
       .spyOn(fetch, 'fetchFromApiWithCredentials')
       .mockImplementation(() => mockJsonPromise)
-  })
-
-  it('should call API with page=1 by default', async () => {
-    // When
-    await fetchBookingsRecapByPage()
-
-    // Then
-    expect(fetchFromApiWithCredentialsStub).toHaveBeenCalledWith('/bookings/pro?page=1')
   })
 
   it('should call API with given page', async () => {
@@ -73,10 +66,34 @@ describe('bookingRecapsService', () => {
     }
 
     // When
-    const bookingRecaps = await fetchBookingsRecapByPage()
+    const bookingRecaps = await fetchBookingsRecapByPage(1, {})
 
     // Then
     expect(bookingRecaps.bookings_recap).toHaveLength(0)
     expect(bookingRecaps).toStrictEqual(emptyPaginatedBookingsRecap)
+  })
+
+  it('should call API with given venueId', () => {
+    // Given
+    const venueId = 'A3HC'
+
+    // When
+    fetchBookingsRecapByPage(1, { venueId: venueId })
+
+    // Then
+    expect(fetchFromApiWithCredentialsStub).toHaveBeenCalledWith(
+      `/bookings/pro?page=1&venueId=${venueId}`
+    )
+  })
+
+  it('should call API with no venueId param when requesting all venues', () => {
+    // Given
+    const venueId = ALL_VENUES
+
+    // When
+    fetchBookingsRecapByPage(1, { venueId: venueId })
+
+    // Then
+    expect(fetchFromApiWithCredentialsStub).toHaveBeenCalledWith(`/bookings/pro?page=1`)
   })
 })

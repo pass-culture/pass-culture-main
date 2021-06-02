@@ -10,6 +10,7 @@ import { fetchBookingsRecapByPage } from 'repository/bookingsRecapService'
 import BookingsRecapTable from './BookingsRecapTable/BookingsRecapTable'
 import BookingsRecapTableLegacy from './BookingsRecapTableLegacy/BookingsRecapTableLegacy' /* eslint-disable-line react/jsx-pascal-case */
 import NoBookingsMessage from './NoBookingsMessage/NoBookingsMessage'
+import { ALL_VENUES, EMPTY_FILTER_VALUE } from './PreFilters/_constants'
 import PreFilters from './PreFilters/PreFilters'
 
 class BookingsRecap extends PureComponent {
@@ -20,20 +21,28 @@ class BookingsRecap extends PureComponent {
       isLoading: true,
       page: 0,
       pages: 0,
+      preFilters: {
+        bookingBeginningDate: EMPTY_FILTER_VALUE,
+        bookingEndingDate: EMPTY_FILTER_VALUE,
+        offerDate: EMPTY_FILTER_VALUE,
+        offerVenueId: ALL_VENUES,
+      },
     }
   }
 
   componentDidMount() {
-    fetchBookingsRecapByPage().then(this.savePaginatedBookingsRecap)
+    this.fetchFirstBookingsRecapPage()
   }
 
   componentDidUpdate() {
-    const { page, pages } = this.state
+    const { page, pages, preFilters } = this.state
 
     let currentPage = page
     if (currentPage < pages && currentPage < 5) {
       currentPage++
-      fetchBookingsRecapByPage(currentPage).then(this.savePaginatedBookingsRecap)
+      fetchBookingsRecapByPage(currentPage, { venueId: preFilters.offerVenueId }).then(
+        this.savePaginatedBookingsRecap
+      )
     } else {
       this.loadData()
       if (currentPage === 5 && currentPage < pages) {
@@ -48,12 +57,30 @@ class BookingsRecap extends PureComponent {
     })
   }
 
+  fetchFirstBookingsRecapPage() {
+    const { preFilters } = this.state
+    fetchBookingsRecapByPage(1, { venueId: preFilters.offerVenueId }).then(
+      this.savePaginatedBookingsRecap
+    )
+  }
+
+  applyPreFilters = selectedPreFilters => {
+    this.setState(
+      {
+        isLoading: true,
+        bookingsRecap: [],
+        preFilters: { ...selectedPreFilters },
+      },
+      () => this.fetchFirstBookingsRecapPage()
+    )
+  }
+
   savePaginatedBookingsRecap = paginatedBookingsRecap => {
     const { bookingsRecap } = this.state
 
     if (paginatedBookingsRecap.page === 1) {
       this.setState({
-        bookingsRecap: [...bookingsRecap].concat(paginatedBookingsRecap.bookings_recap),
+        bookingsRecap: paginatedBookingsRecap.bookings_recap,
         page: paginatedBookingsRecap.page,
         pages: paginatedBookingsRecap.pages,
       })
@@ -75,7 +102,10 @@ class BookingsRecap extends PureComponent {
         <Titles title="Réservations" />
         {this.props.arePreFiltersEnabled ? (
           <>
-            <PreFilters offerVenue={locationState?.venueId} />
+            <PreFilters
+              applyPreFilters={this.applyPreFilters}
+              offerVenueId={locationState?.venueId}
+            />
             {bookingsRecap.length > 0 && (
               <BookingsRecapTable
                 bookingsRecap={bookingsRecap}
@@ -100,8 +130,6 @@ class BookingsRecap extends PureComponent {
   }
 }
 
-export default BookingsRecap
-
 BookingsRecap.propTypes = {
   arePreFiltersEnabled: PropTypes.bool.isRequired,
   location: PropTypes.shape({
@@ -112,3 +140,5 @@ BookingsRecap.propTypes = {
   }).isRequired,
   showWarningNotification: PropTypes.func.isRequired,
 }
+
+export default BookingsRecap
