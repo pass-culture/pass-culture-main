@@ -84,3 +84,7 @@ class BeneficiaryImportMissingException(Exception):
 
 class InvalidPhoneNumber(PhoneVerificationException):
     pass
+
+
+class UserDoesNotExist(Exception):
+    pass

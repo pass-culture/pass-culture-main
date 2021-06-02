@@ -1,5 +1,6 @@
 import datetime
 from datetime import date
+from enum import Enum
 from typing import Optional
 from uuid import UUID
 
@@ -24,6 +25,17 @@ from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 
 from . import BaseModel
+
+
+class ActivityEnum(str, Enum):
+    high_school_student = "Lycéen"
+    student = "Étudiant"
+    employee = "Employé"
+    apprentice = "Apprenti"
+    apprentice_student = "Alternant"
+    volunteer = "Volontaire"
+    inactive = "Inactif"
+    unemployed = "Chômeur"
 
 
 class AccountRequest(BaseModel):
@@ -153,6 +165,17 @@ class UserProfileResponse(BaseModel):
 
 class UserProfileUpdateRequest(BaseModel):
     subscriptions: Optional[NotificationSubscriptions]
+
+
+class UserIdCheckProfileUpdateRequest(BaseModel):
+    address: str
+    city: str
+    phone_number: str
+    postal_code: str
+    activity: ActivityEnum
+
+    class Config:
+        use_enum_values = True
 
 
 class ResendEmailValidationRequest(BaseModel):
