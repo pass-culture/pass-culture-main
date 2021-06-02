@@ -209,6 +209,8 @@ class User(PcObject, Model, NeedsValidationMixin):
 
     hasCompletedIdCheck = Column(Boolean, nullable=True)
 
+    hasIdentityDocumentValidated = Column(Boolean, nullable=True, server_default=expression.false(), default=False)
+
     def checkPassword(self, passwordToCheck):
         return check_password(passwordToCheck, self.password)
 
