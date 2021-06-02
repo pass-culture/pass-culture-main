@@ -31,6 +31,7 @@ import OfferRefundWarning from 'components/pages/Offers/Offer/OfferDetails/Offer
 import WithdrawalReminder from 'components/pages/Offers/Offer/OfferDetails/OfferForm/Messages/WithdrawalReminder'
 import TypeTreeSelects from 'components/pages/Offers/Offer/OfferDetails/OfferForm/TypeTreeSelects'
 import SynchronizedProviderInformation from 'components/pages/Offers/Offer/OfferDetails/SynchronizedProviderInformation'
+import { CGU_URL } from 'utils/config'
 import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
 
 const getOfferConditionalFields = ({
@@ -412,6 +413,32 @@ const OfferForm = ({
     return fieldName in formErrors ? formErrors[fieldName] : null
   }
 
+  const getIsbnErrorMessage = () => {
+    const isbnErrorMessage = getErrorMessage('isbn')
+    if (
+      isbnErrorMessage &&
+      isbnErrorMessage.includes('Ce produit n’est pas éligible au pass Culture.')
+    ) {
+      return (
+        <>
+          {isbnErrorMessage}
+          <b>
+            {' Veuillez consulter nos'}
+            <a
+              href={CGU_URL}
+              rel="noopener noreferrer"
+              target="_blank"
+              title={"Consulter les Conditions Générales d'Utilisation"}
+            >
+              {' conditions générales d’utilisation'}
+            </a>
+          </b>
+        </>
+      )
+    }
+    return isbnErrorMessage
+  }
+
   const isTypeOfflineButOnlyVirtualVenues = offerType?.offlineOnly && areAllVenuesVirtual
 
   if (isLoading) {
@@ -552,10 +579,11 @@ const OfferForm = ({
               <div className="form-row">
                 <TextInput
                   disabled={readOnlyFields.includes('isbn')}
-                  error={getErrorMessage('isbn')}
+                  error={getIsbnErrorMessage()}
                   label="ISBN"
                   name="isbn"
                   onChange={handleSingleFormUpdate}
+                  required
                   subLabel={!MANDATORY_FIELDS.includes('isbn') ? 'Optionnel' : ''}
                   type="text"
                   value={formValues.isbn}
@@ -755,7 +783,7 @@ const OfferForm = ({
 
             {Boolean(getErrorMessage('disabilityCompliant')) && (
               <InputError>
-                {"Vous devez cocher l'une des options ci-dessus"}
+                {'Vous devez cocher l’une des options ci-dessus'}
               </InputError>
             )}
           </section>

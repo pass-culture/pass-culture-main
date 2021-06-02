@@ -9,6 +9,7 @@ import { MemoryRouter, Route } from 'react-router'
 import NotificationContainer from 'components/layout/Notification/NotificationContainer'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
+import { queryByTextTrimHtml } from 'utils/testHelpers'
 
 import OfferLayoutContainer from '../../OfferLayoutContainer'
 import { DEFAULT_FORM_VALUES } from '../OfferForm/_constants'
@@ -1592,6 +1593,21 @@ describe('offerDetails - Creation - pro user', () => {
       expect(bookingEmailInput).toHaveTextContent('Ce champ est obligatoire')
     })
 
+    it('should show error for isbn input when creating offer of type livre edition', async () => {
+      // Given
+      await renderOffers(props, store)
+      await setOfferValues({ type: 'ThingType.LIVRE_EDITION' })
+      await setOfferValues({ receiveNotificationEmails: true })
+
+      // When
+      await setOfferValues({ extraData: { isbn: '' } })
+      fireEvent.click(screen.getByText('Étape suivante'))
+
+      // Then
+      const isbn = await findInputErrorForField('isbn')
+      expect(isbn).toHaveTextContent('Ce champ est obligatoire')
+    })
+
     it('should show error sent by API and show an error notification', async () => {
       // Given
       const offerValues = {
@@ -1629,6 +1645,48 @@ describe('offerDetails - Creation - pro user', () => {
         'Une ou plusieurs erreurs sont présentes dans le formulaire'
       )
       expect(errorNotification).toBeInTheDocument()
+    })
+
+    it('should show an error notification and show error message with CGU link when product is not eligible', async () => {
+      // Given
+      const offerValues = {
+        name: 'Les misérables',
+        type: 'ThingType.LIVRE_EDITION',
+        extraData: {
+          isbn: '0123456789123',
+        },
+        venueId: venues[0].id,
+        audioDisabilityCompliant: false,
+        visualDisabilityCompliant: true,
+        motorDisabilityCompliant: false,
+        mentalDisabilityCompliant: false,
+      }
+
+      pcapi.createOffer.mockRejectedValue({
+        errors: { isbn: 'Ce produit n’est pas éligible au pass Culture.' },
+      })
+      await renderOffers(props, store)
+
+      await setOfferValues({ type: offerValues.type })
+      await setOfferValues(offerValues)
+
+      // When
+      await userEvent.click(screen.getByText('Étape suivante'))
+
+      // Then
+      const errorNotification = await screen.findByText(
+        'Une ou plusieurs erreurs sont présentes dans le formulaire'
+      )
+      expect(errorNotification).toBeInTheDocument()
+
+      const isbnError = queryByTextTrimHtml(
+        screen,
+        'Ce produit n’est pas éligible au pass Culture. Veuillez consulter nos conditions générales d’utilisation',
+        {
+          selector: 'pre',
+        }
+      )
+      expect(isbnError).toBeInTheDocument()
     })
 
     it('should show an error notification and display an error message on the placeholder', async () => {

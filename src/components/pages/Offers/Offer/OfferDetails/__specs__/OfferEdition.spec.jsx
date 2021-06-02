@@ -86,6 +86,14 @@ describe('offerDetails - Edition', () => {
         type: 'Thing',
         value: 'ThingType.LIVRE_EDITION',
       },
+      {
+        conditionalFields: ['author'],
+        offlineOnly: false,
+        onlineOnly: true,
+        proLabel: 'Livres audio numériques',
+        type: 'Thing',
+        value: 'ThingType.LIVRE_AUDIO',
+      },
     ]
     venueManagingOfferer = {
       id: 'BA',
@@ -111,6 +119,9 @@ describe('offerDetails - Edition', () => {
       description: 'My edited description',
       withdrawalDetails: 'My edited withdrawal details',
       status: 'SOLD_OUT',
+      extraData: {
+        isbn: '1234567890123',
+      },
     }
     props = {
       setShowThumbnailForm: jest.fn(),
@@ -198,7 +209,7 @@ describe('offerDetails - Edition', () => {
           )
           expect(errorNotification).toBeInTheDocument()
           let accessibilityErrorNotification = await screen.findByText(
-            "Vous devez cocher l'une des options ci-dessus"
+            'Vous devez cocher l’une des options ci-dessus'
           )
           expect(accessibilityErrorNotification).toBeInTheDocument()
           expect(pcapi.updateOffer).not.toHaveBeenCalled()
@@ -214,7 +225,7 @@ describe('offerDetails - Edition', () => {
 
           // Then
           accessibilityErrorNotification = await screen.queryByText(
-            "Vous devez cocher l'une des options ci-dessus"
+            'Vous devez cocher l’une des options ci-dessus'
           )
           expect(accessibilityErrorNotification).toBeNull()
         })
@@ -1302,7 +1313,9 @@ describe('offerDetails - Edition', () => {
         venue: editedOfferVenue,
         withdrawalDetails: 'Offer withdrawal details',
         bookingEmail: 'booking@example.net',
-        extraData: null,
+        extraData: {
+          isbn: '1234567890123',
+        },
         audioDisabilityCompliant: false,
         visualDisabilityCompliant: true,
         motorDisabilityCompliant: false,
@@ -1336,7 +1349,9 @@ describe('offerDetails - Edition', () => {
         venue: editedOfferVenue,
         withdrawalDetails: 'Offer withdrawal details',
         bookingEmail: 'booking@example.net',
-        extraData: null,
+        extraData: {
+          isbn: '1234567890123',
+        },
         audioDisabilityCompliant: false,
         visualDisabilityCompliant: true,
         motorDisabilityCompliant: false,
@@ -1456,7 +1471,7 @@ describe('offerDetails - Edition', () => {
       const editedOffer = {
         id: 'ABC12',
         name: 'My edited offer',
-        type: 'ThingType.LIVRE_EDITION',
+        type: 'ThingType.LIVRE_AUDIO',
         description: 'Offer description',
         venueId: editedOfferVenue.id,
         venue: editedOfferVenue,
@@ -1464,7 +1479,6 @@ describe('offerDetails - Edition', () => {
         bookingEmail: 'booking@example.net',
         extraData: {
           author: 'Mon auteur',
-          isbn: '123456789',
         },
         audioDisabilityCompliant: false,
         visualDisabilityCompliant: true,
@@ -1476,7 +1490,7 @@ describe('offerDetails - Edition', () => {
       await renderOffers(props, store)
 
       // When
-      await setOfferValues({ author: DEFAULT_FORM_VALUES.author, isbn: DEFAULT_FORM_VALUES.isbn })
+      await setOfferValues({ author: DEFAULT_FORM_VALUES.author })
 
       // Then
       userEvent.click(screen.getByText('Enregistrer'))
@@ -1536,7 +1550,9 @@ describe('offerDetails - Edition', () => {
         venue: editedOfferVenue,
         withdrawalDetails: 'Offer withdrawal details',
         bookingEmail: 'booking@example.net',
-        extraData: null,
+        extraData: {
+          isbn: '1234567890123',
+        },
         audioDisabilityCompliant: false,
         mentalDisabilityCompliant: false,
         motorDisabilityCompliant: false,
@@ -1601,7 +1617,9 @@ describe('offerDetails - Edition', () => {
         venue: editedOfferVenue,
         withdrawalDetails: 'Offer withdrawal details',
         bookingEmail: 'booking@example.net',
-        extraData: null,
+        extraData: {
+          isbn: '1234567890123',
+        },
         status: 'ACTIVE',
       }
       pcapi.loadOffer.mockResolvedValue(editedOffer)
