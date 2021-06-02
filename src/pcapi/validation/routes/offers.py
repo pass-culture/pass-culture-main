@@ -24,3 +24,11 @@ def check_offer_id_is_present_in_request(offer_id: str):
         errors.add_error("global", "Le paramètre offerId est obligatoire")
         errors.maybe_raise()
         raise errors
+
+
+def check_offer_isbn_is_valid(isbn: str):
+    isbn_length = 13
+    if not (isbn and isbn.isnumeric() and len(isbn) == isbn_length):
+        api_errors = ApiErrors()
+        api_errors.add_error("isbn", "Format d’ISBN incorrect. Exemple de format correct : 9782020427852")
+        raise api_errors

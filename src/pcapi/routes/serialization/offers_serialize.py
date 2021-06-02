@@ -10,6 +10,7 @@ from pydantic import validator
 
 from pcapi.core.bookings.api import compute_confirmation_date
 from pcapi.core.offers.models import OfferStatus
+from pcapi.models import ThingType
 from pcapi.serialization.utils import cast_optional_field_str_to_int
 from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import dehumanize_list_field
@@ -17,6 +18,7 @@ from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import DateTimes
 from pcapi.utils.date import format_into_utc_date
+from pcapi.validation.routes.offers import check_offer_isbn_is_valid
 from pcapi.validation.routes.offers import check_offer_name_length_is_valid
 from pcapi.validation.routes.offers import check_offer_type_is_valid
 
@@ -61,6 +63,12 @@ class PostOfferBodyModel(BaseModel):
         if not values["product_id"]:
             check_offer_type_is_valid(type_field)
         return type_field
+
+    @validator("extra_data", pre=True)
+    def validate_isbn(cls, extra_data_field, values):  # pylint: disable=no-self-argument
+        if not values["product_id"] and values["type"] == str(ThingType.LIVRE_EDITION):
+            check_offer_isbn_is_valid(extra_data_field["isbn"])
+        return extra_data_field
 
     class Config:
         alias_generator = to_camel

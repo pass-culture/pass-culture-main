@@ -16,6 +16,7 @@ import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import api
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories
+from pcapi.core.offers.api import _load_product_by_isbn_and_check_is_gcu_compatible_or_raise_error
 from pcapi.core.offers.api import add_criteria_to_offers
 from pcapi.core.offers.api import deactivate_inappropriate_products
 from pcapi.core.offers.api import get_expense_domains
@@ -42,6 +43,7 @@ from pcapi.core.offers.offer_validation import compute_offer_validation_score
 from pcapi.core.offers.offer_validation import parse_offer_validation_config
 from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
+from pcapi.models import ApiErrors
 from pcapi.models import api_errors
 from pcapi.models import offer_type
 from pcapi.models.product import Product
@@ -776,6 +778,90 @@ class CreateOfferTest:
         assert offer.visualDisabilityCompliant
         assert offer.validation == OfferValidationStatus.DRAFT
         assert Offer.query.count() == 1
+
+    def test_create_offer_livre_edition_from_isbn_with_existing_product(self):
+        factories.ProductFactory(
+            type=str(offer_type.ThingType.LIVRE_EDITION),
+            description="Les prévisions du psychohistorien Hari Seldon sont formelles.",
+            extraData={"isbn": "9782207300893", "author": "Asimov", "bookFormat": "Soft cover"},
+            isGcuCompatible=True,
+        )
+        venue = factories.VenueFactory()
+        offerer = venue.managingOfferer
+        user_offerer = factories.UserOffererFactory(offerer=offerer)
+        user = user_offerer.user
+
+        data = offers_serialize.PostOfferBodyModel(
+            venueId=humanize(venue.id),
+            name="FONDATION T.1",
+            type=str(offer_type.ThingType.LIVRE_EDITION),
+            extraData={"isbn": "9782207300893", "author": "Isaac Asimov"},
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=False,
+        )
+        offer = api.create_offer(data, user)
+
+        assert offer.name == "FONDATION T.1"
+        assert offer.type == str(offer_type.ThingType.LIVRE_EDITION)
+        assert offer.description == "Les prévisions du psychohistorien Hari Seldon sont formelles."
+        assert offer.extraData == {"isbn": "9782207300893", "author": "Isaac Asimov", "bookFormat": "Soft cover"}
+        assert offer.audioDisabilityCompliant
+        assert offer.mentalDisabilityCompliant
+        assert offer.motorDisabilityCompliant
+        assert not offer.visualDisabilityCompliant
+
+    def test_create_offer_livre_edition_from_isbn_with_is_not_compatible_gcu_should_fail(self):
+        factories.ProductFactory(
+            type=str(offer_type.ThingType.LIVRE_EDITION),
+            description="Les prévisions du psychohistorien Hari Seldon sont formelles.",
+            extraData={"isbn": "9782207300893", "author": "Asimov", "bookFormat": "Soft cover"},
+            isGcuCompatible=False,
+        )
+
+        venue = factories.VenueFactory()
+        offerer = venue.managingOfferer
+        user_offerer = factories.UserOffererFactory(offerer=offerer)
+        user = user_offerer.user
+
+        data = offers_serialize.PostOfferBodyModel(
+            venueId=humanize(venue.id),
+            name="FONDATION T.1",
+            type=str(offer_type.ThingType.LIVRE_EDITION),
+            extraData={"isbn": "9782207300893"},
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=False,
+        )
+
+        with pytest.raises(ApiErrors) as error:
+            api.create_offer(data, user)
+
+        assert error.value.errors["isbn"] == ["Ce produit n’est pas éligible au pass Culture."]
+
+    def test_create_offer_livre_edition_from_isbn_with_product_not_exists_should_fail(self):
+        venue = factories.VenueFactory()
+        offerer = venue.managingOfferer
+        user_offerer = factories.UserOffererFactory(offerer=offerer)
+        user = user_offerer.user
+
+        data = offers_serialize.PostOfferBodyModel(
+            venueId=humanize(venue.id),
+            name="FONDATION T.1",
+            type=str(offer_type.ThingType.LIVRE_EDITION),
+            extraData={"isbn": "9782207300893"},
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=False,
+        )
+
+        with pytest.raises(ApiErrors) as error:
+            api.create_offer(data, user)
+
+        assert error.value.errors["isbn"] == ["Ce produit n’est pas éligible au pass Culture."]
 
     def test_create_activation_offer(self):
         user = users_factories.UserFactory(isAdmin=True)
@@ -1661,3 +1747,33 @@ class ComputeOfferValidationScoreTest:
 
         score = compute_offer_validation_score([validation_rule])
         assert score == 0.3
+
+
+class LoadProductByIsbnAndCheckIsGCUCompatibleOrRaiseErrorTest:
+    @pytest.mark.usefixtures("db_session")
+    def test_returns_product_if_found_and_is_gcu_compatible(self):
+        isbn = "2221001648"
+        product = ProductFactory(extraData={"isbn": isbn}, isGcuCompatible=True)
+
+        result = _load_product_by_isbn_and_check_is_gcu_compatible_or_raise_error(isbn)
+
+        assert result == product
+
+    @pytest.mark.usefixtures("db_session")
+    def test_raise_api_error_if_no_product(self):
+        ProductFactory(isGcuCompatible=True)
+
+        with pytest.raises(ApiErrors) as error:
+            _load_product_by_isbn_and_check_is_gcu_compatible_or_raise_error("2221001649")
+
+        assert error.value.errors["isbn"] == ["Ce produit n’est pas éligible au pass Culture."]
+
+    @pytest.mark.usefixtures("db_session")
+    def test_raise_api_error_if_product_is_not_gcu_compatible(self):
+        isbn = "2221001648"
+        ProductFactory(extraData={"isbn": isbn}, isGcuCompatible=False)
+
+        with pytest.raises(ApiErrors) as error:
+            _load_product_by_isbn_and_check_is_gcu_compatible_or_raise_error(isbn)
+
+        assert error.value.errors["isbn"] == ["Ce produit n’est pas éligible au pass Culture."]

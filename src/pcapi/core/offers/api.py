@@ -39,6 +39,7 @@ from pcapi.models import EventType
 from pcapi.models import Offer
 from pcapi.models import OfferCriterion
 from pcapi.models import Product
+from pcapi.models import ThingType
 from pcapi.models import Venue
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
@@ -107,7 +108,6 @@ def create_offer(offer_data: PostOfferBodyModel, user: User) -> Offer:
     venue = load_or_raise_error(Venue, offer_data.venue_id)
 
     check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)
-
     if offer_data.product_id:
         product = load_or_raise_error(Product, offer_data.product_id)
         offer = Offer(
@@ -123,6 +123,23 @@ def create_offer(offer_data: PostOfferBodyModel, user: User) -> Offer:
             durationMinutes=product.durationMinutes,
             isNational=product.isNational,
             extraData=product.extraData,
+        )
+    elif offer_data.type == str(ThingType.LIVRE_EDITION):
+        product = _load_product_by_isbn_and_check_is_gcu_compatible_or_raise_error(offer_data.extra_data["isbn"])
+        extra_data = product.extraData
+        extra_data.update(offer_data.extra_data)
+        offer = Offer(
+            product=product,
+            type=product.type,
+            name=offer_data.name,
+            description=offer_data.description if offer_data.description else product.description,
+            url=offer_data.url if offer_data.url else product.url,
+            mediaUrls=offer_data.url if offer_data.url else product.url,
+            conditions=offer_data.conditions if offer_data.conditions else product.conditions,
+            ageMin=offer_data.age_min if offer_data.age_min else product.ageMin,
+            ageMax=offer_data.age_max if offer_data.age_max else product.ageMax,
+            isNational=offer_data.is_national if offer_data.is_national else product.isNational,
+            extraData=extra_data,
         )
     else:
         if offer_data.type == str(EventType.ACTIVATION):
@@ -709,3 +726,16 @@ def import_offer_validation_config(config_as_yaml: str, user: User = None) -> Of
     config = OfferValidationConfig(specs=config_as_dict, user=user)
     repository.save(config)
     return config
+
+
+def _load_product_by_isbn_and_check_is_gcu_compatible_or_raise_error(isbn: str) -> Product:
+    product = Product.query.filter(Product.extraData["isbn"].astext == isbn).first()
+    if product is None or not product.isGcuCompatible:
+        errors = ApiErrors()
+        errors.add_error(
+            "isbn",
+            "Ce produit n’est pas éligible au pass Culture.",
+        )
+        errors.status_code = 400
+        raise errors
+    return product
