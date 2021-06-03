@@ -57,9 +57,8 @@ class FakeBeneficiaryJouveBackend:
 @override_features(FORCE_PHONE_VALIDATION=False)
 @patch("pcapi.use_cases.create_beneficiary_from_application.send_activation_email")
 @patch("pcapi.domain.password.random_token")
-@patch(
-    "pcapi.settings.JOUVE_APPLICATION_BACKEND",
-    "tests.use_cases.create_beneficiary_from_application_test.FakeBeneficiaryJouveBackend",
+@override_settings(
+    JOUVE_APPLICATION_BACKEND="tests.use_cases.create_beneficiary_from_application_test.FakeBeneficiaryJouveBackend",
 )
 @freeze_time("2013-05-15 09:00:00")
 @pytest.mark.usefixtures("db_session")
@@ -124,9 +123,8 @@ def test_saved_a_beneficiary_from_application(stubed_random_token, mocked_send_a
 
 @override_features(FORCE_PHONE_VALIDATION=False)
 @patch("pcapi.use_cases.create_beneficiary_from_application.send_accepted_as_beneficiary_email")
-@patch(
-    "pcapi.settings.JOUVE_APPLICATION_BACKEND",
-    "tests.use_cases.create_beneficiary_from_application_test.FakeBeneficiaryJouveBackend",
+@override_settings(
+    JOUVE_APPLICATION_BACKEND="tests.use_cases.create_beneficiary_from_application_test.FakeBeneficiaryJouveBackend",
 )
 @freeze_time("2013-05-15 09:00:00")
 @pytest.mark.usefixtures("db_session")
@@ -184,9 +182,8 @@ def test_application_for_native_app_user(mocked_send_accepted_as_beneficiary_ema
 
 
 @override_features(FORCE_PHONE_VALIDATION=False)
-@patch(
-    "pcapi.settings.JOUVE_APPLICATION_BACKEND",
-    "tests.use_cases.create_beneficiary_from_application_test.FakeBeneficiaryJouveBackend",
+@override_settings(
+    JOUVE_APPLICATION_BACKEND="tests.use_cases.create_beneficiary_from_application_test.FakeBeneficiaryJouveBackend",
 )
 @pytest.mark.usefixtures("db_session")
 def test_cannot_save_beneficiary_if_email_is_already_taken(app):
@@ -212,9 +209,8 @@ def test_cannot_save_beneficiary_if_email_is_already_taken(app):
     assert push_testing.requests == []
 
 
-@patch(
-    "pcapi.settings.JOUVE_APPLICATION_BACKEND",
-    "tests.use_cases.create_beneficiary_from_application_test.FakeBeneficiaryJouveBackend",
+@override_settings(
+    JOUVE_APPLICATION_BACKEND="tests.use_cases.create_beneficiary_from_application_test.FakeBeneficiaryJouveBackend",
 )
 @pytest.mark.usefixtures("db_session")
 def test_cannot_save_beneficiary_if_duplicate(app):
@@ -293,9 +289,8 @@ def test_cannot_save_beneficiary_if_department_is_not_eligible(app):
 
 @patch("pcapi.use_cases.create_beneficiary_from_application.validate")
 @patch("pcapi.use_cases.create_beneficiary_from_application.send_rejection_email_to_beneficiary_pre_subscription")
-@patch(
-    "pcapi.settings.JOUVE_APPLICATION_BACKEND",
-    "tests.use_cases.create_beneficiary_from_application_test.FakeBeneficiaryJouveBackend",
+@override_settings(
+    JOUVE_APPLICATION_BACKEND="tests.use_cases.create_beneficiary_from_application_test.FakeBeneficiaryJouveBackend",
 )
 @pytest.mark.usefixtures("db_session")
 def test_calls_send_rejection_mail_with_validation_error(
