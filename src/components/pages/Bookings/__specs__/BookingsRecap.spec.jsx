@@ -157,7 +157,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     // When
     userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
-    userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
     // Then
     await screen.findAllByText(bookingRecap.stock.offer_name)
@@ -175,7 +175,7 @@ describe('components | BookingsRecap | Pro user', () => {
     await renderBookingsRecap(props, store)
 
     // When
-    userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
     // Then
     const noBookingsForPreFilters = await screen.findByText(
@@ -194,11 +194,11 @@ describe('components | BookingsRecap | Pro user', () => {
     })
     await renderBookingsRecap(props, store)
     userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
-    userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
     // When
     const resetButton = await screen.findByText('réinitialiser tous les filtres.')
-    userEvent.click(resetButton)
+    fireEvent.click(resetButton)
 
     // Then
     expect(screen.getByLabelText('Lieu')).toHaveValue(DEFAULT_PRE_FILTERS.offerVenueId)
@@ -216,7 +216,7 @@ describe('components | BookingsRecap | Pro user', () => {
     await renderBookingsRecap(props, store)
 
     // When
-    userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
     // Then
     expect(screen.queryByText('Réinitialiser les filtres')).not.toBeInTheDocument()
@@ -245,11 +245,11 @@ describe('components | BookingsRecap | Pro user', () => {
     )
     fireEvent.click(bookingPeriodEndingDateInput)
     fireEvent.click(screen.getByText('5'))
-    userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
     // When
     const resetButton = await screen.findByText('Réinitialiser les filtres')
-    userEvent.click(resetButton)
+    fireEvent.click(resetButton)
 
     // Then
     expect(screen.getByLabelText('Lieu')).toHaveValue(DEFAULT_PRE_FILTERS.offerVenueId)
@@ -270,11 +270,11 @@ describe('components | BookingsRecap | Pro user', () => {
     })
     await renderBookingsRecap(props, store)
     userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
-    userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
     // When
     const resetButton = await screen.findByText('Réinitialiser les filtres')
-    userEvent.click(resetButton)
+    fireEvent.click(resetButton)
 
     // Then
     expect(screen.queryByText('Réinitialiser les filtres')).not.toBeInTheDocument()
@@ -307,7 +307,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     // When
     userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
-    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    await fireEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
     // Then
     const secondBookingRecap = await screen.findAllByText(bookings2.stock.offer_name)
@@ -334,9 +334,9 @@ describe('components | BookingsRecap | Pro user', () => {
     await renderBookingsRecap(props, store)
 
     // When
-    userEvent.click(screen.getByLabelText('Date de l’évènement'))
-    userEvent.click(screen.getByText('8'))
-    userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    fireEvent.click(screen.getByLabelText('Date de l’évènement'))
+    fireEvent.click(screen.getByText('8'))
+    fireEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
     // Then
     await screen.findAllByText(bookingRecap.stock.offer_name)
@@ -512,12 +512,12 @@ describe('components | BookingsRecap | Pro user', () => {
     await renderBookingsRecap(props, store)
 
     userEvent.selectOptions(screen.getByLabelText('Lieu'), otherVenue.id)
-    userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Afficher' }))
     await screen.findAllByText(otherVenueBooking.stock.offer_name)
 
     // When
     userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
-    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    await fireEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
     // Then
     const firstBookingRecap = await screen.findAllByText(booking.stock.offer_name)

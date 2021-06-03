@@ -6,7 +6,7 @@ module.exports = {
   modulePaths: ['node_modules', 'src'],
   preset: 'jest-preset-stylelint',
   setupFiles: ['<rootDir>/jest.setup.js', 'jest-canvas-mock'],
-  testEnvironment: 'jest-environment-jsdom-sixteen',
+  testEnvironment: 'jsdom',
   testMatch: [
     '<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}',
     '<rootDir>/src/**/*.{spec,test}.{js,jsx,ts,tsx}',
