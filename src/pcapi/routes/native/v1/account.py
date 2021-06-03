@@ -62,7 +62,7 @@ def update_user_profile(user: User, body: serializers.UserProfileUpdateRequest) 
 @authenticated_user_required
 def update_user_id_check_profile(user: User, body: serializers.UserIdCheckProfileUpdateRequest) -> None:
     api.update_user_id_check_profile(
-        user_id=user.id,
+        user=user,
         address=body.address,
         city=body.city,
         postal_code=body.postal_code,

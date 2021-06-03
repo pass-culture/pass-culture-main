@@ -1119,7 +1119,6 @@ class UpdateUserIdProfileTest:
             city=None,
             postalCode=None,
             activity=None,
-            hasIdentityDocumentValidated=True,
             phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
         )
 

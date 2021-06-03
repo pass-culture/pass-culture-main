@@ -690,15 +690,13 @@ class DomainsCreditTest:
 
 @pytest.mark.usefixtures("db_session")
 class UpdateIdCheckProfileTest:
-    def test_has_document_validated_and_all_steps_to_become_beneficiary(self):
+    def test_all_steps_to_become_beneficiary(self):
         """
         Test that the user's id check profile information are updated and that
-        it becomes beneficiary (and therefore has a deposit) since it has an
-        identity document validated.
+        it becomes beneficiary (and therefore has a deposit)
         """
         user = users_factories.UserFactory(
             isBeneficiary=False,
-            hasIdentityDocumentValidated=True,
             phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
         )
         beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
@@ -707,7 +705,7 @@ class UpdateIdCheckProfileTest:
         new_address = f"{user.address}_test"
         new_city = f"{user.city}_test"
         update_user_id_check_profile(
-            user_id=user.id,
+            user=user,
             address=new_address,
             city=new_city,
             postal_code=user.postalCode,
@@ -723,40 +721,8 @@ class UpdateIdCheckProfileTest:
         assert user.isBeneficiary
         assert user.deposit
 
-    def test_has_no_document_validated_and_all_steps_to_become_beneficiary(self):
-        """
-        Test that the user's id check profile information are updated and that
-        it does not become beneficiary (and therefore has no deposit) since it
-        has no identity document validated.
-        """
-        user = users_factories.UserFactory(
-            isBeneficiary=False,
-            hasIdentityDocumentValidated=False,
-            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
-        )
-        beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
-        beneficiary_import.setStatus(ImportStatus.REJECTED)
-
-        new_address = f"{user.address}_test"
-        new_city = f"{user.city}_test"
-        update_user_id_check_profile(
-            user_id=user.id,
-            address=new_address,
-            city=new_city,
-            postal_code=user.postalCode,
-            activity=user.activity,
-        )
-
-        user = User.query.get(user.id)
-
-        assert user.address == new_address
-        assert user.city == new_city
-
-        assert user.hasCompletedIdCheck
-        assert not user.isBeneficiary
-        assert not user.deposit
-
-    def test_has_document_validated_and_missing_step_to_become_beneficiary(self):
+    @override_features(FORCE_PHONE_VALIDATION=True)
+    def test_missing_step_to_become_beneficiary(self):
         """
         Test that a user with no an unverified phone number does not become
         beneficiary, even if the identity document has been successfully
@@ -764,7 +730,6 @@ class UpdateIdCheckProfileTest:
         """
         user = users_factories.UserFactory(
             isBeneficiary=False,
-            hasIdentityDocumentValidated=False,
             phoneValidationStatus=None,  # missing step to become beneficiary
         )
         beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
@@ -773,7 +738,7 @@ class UpdateIdCheckProfileTest:
         new_address = f"{user.address}_test"
         new_city = f"{user.city}_test"
         update_user_id_check_profile(
-            user_id=user.id,
+            user=user,
             address=new_address,
             city=new_city,
             postal_code=user.postalCode,

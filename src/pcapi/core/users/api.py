@@ -32,7 +32,6 @@ from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
 from pcapi.core.users.models import VOID_PUBLIC_NAME
 from pcapi.core.users.repository import does_validated_phone_exist
-from pcapi.core.users.repository import get_and_lock_user
 from pcapi.core.users.repository import get_beneficiary_import_for_beneficiary
 from pcapi.core.users.utils import decode_jwt_token
 from pcapi.core.users.utils import encode_jwt_payload
@@ -57,7 +56,6 @@ from pcapi.notifications.sms.sending_limit import is_SMS_sending_allowed
 from pcapi.notifications.sms.sending_limit import update_sent_SMS_counter
 from pcapi.repository import feature_queries
 from pcapi.repository import repository
-from pcapi.repository import transaction
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
 
@@ -206,49 +204,21 @@ def validate_phone_number_and_activate_user(user: User, code: str) -> User:
         activate_beneficiary(user)
 
 
-def update_user_id_check_profile(user_id: int, address: str, city: str, postal_code: str, activity: str) -> None:
-    """
-    Update a user's id check profile information.
+def update_user_id_check_profile(user: User, address: str, city: str, postal_code: str, activity: str) -> None:
+    user.address = address
+    user.city = city
+    user.postalCode = postal_code
+    user.activity = activity
+    user.hasCompletedIdCheck = True
 
-    A lock is set to avoid any concurrency issues since a worker job in charge
-    of importing the user's id check application will:
-
-        * read the user's id check profile information and its isBeneficiary field;
-        * update the value of the user's hasIdentityDocumentValidated.
-
-    while this function:
-
-        * updates the user's id check profile information;
-        * read the value of the user's hasIdentityDocumentValidated.
-
-    The worker job will activate the user (become beneficiary and create
-    deposit) if the user has its id check profile information set (meaning this
-    function ran before).
-
-    And this function will activate the user if hasIdentityDocumentValidated is
-    true (meaning, the worker job ran before).
-
-    The lock is therefore needed to be sure that only one of the two runs at
-    one moment for a specific user. And that only one of the two can activate
-    the user.
-    """
-    with transaction():
-        user = get_and_lock_user(user_id)
-
-        user.address = address
-        user.city = city
-        user.postalCode = postal_code
-        user.activity = activity
-        user.hasCompletedIdCheck = True
-
-        if user.hasIdentityDocumentValidated and not steps_to_become_beneficiary(user) and not user.isBeneficiary:
-            activate_beneficiary(user)
-        else:
-            repository.save(user)
+    if not steps_to_become_beneficiary(user) and not user.isBeneficiary:
+        activate_beneficiary(user)
+    else:
+        repository.save(user)
 
     logger.info(
         "User id check profile updated",
-        extra={"user": user_id, "has_completed_id_check": user.hasCompletedIdCheck},
+        extra={"user": user.id, "has_been_activated": user.isBeneficiary},
     )
 
 
@@ -447,11 +417,6 @@ def update_user_info(
     needs_to_fill_cultural_survey=UNCHANGED,
     phone_number=UNCHANGED,
     public_name=UNCHANGED,
-    address=UNCHANGED,
-    city=UNCHANGED,
-    postal_code=UNCHANGED,
-    activity=UNCHANGED,
-    has_completed_id_check=UNCHANGED,
 ):
     if cultural_survey_filled_date is not UNCHANGED:
         user.culturalSurveyFilledDate = cultural_survey_filled_date
@@ -471,17 +436,6 @@ def update_user_info(
         user.phoneNumber = phone_number
     if public_name is not UNCHANGED:
         user.publicName = public_name
-    if address is not UNCHANGED:
-        user.address = address
-    if city is not UNCHANGED:
-        user.city = city
-    if postal_code is not UNCHANGED:
-        user.postalCode = postal_code
-    if activity is not UNCHANGED:
-        user.activity = activity
-    if has_completed_id_check is not UNCHANGED:
-        user.hasCompletedIdCheck = has_completed_id_check
-
     repository.save(user)
 
 
