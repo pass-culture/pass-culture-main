@@ -2,6 +2,8 @@ from dataclasses import asdict
 from datetime import datetime
 import logging
 
+from flask import request
+
 from pcapi import settings
 from pcapi.connectors import api_recaptcha
 from pcapi.core.users import api
@@ -168,6 +170,35 @@ def get_id_check_token(user: User) -> serializers.GetIdCheckTokenResponse:
             {"code": "ID_CHECK_ALREADY_COMPLETED", "message": "Tu as déjà déposé un dossier, il est en cours d'étude."},
             status_code=400,
         )
+
+
+@blueprint.native_v1.route("/identity_document", methods=["POST"])
+@spectree_serialize(api=blueprint.api, on_success_status=204)
+@authenticated_user_required
+def upload_identity_document(
+    user: User,
+    form: serializers.UploadIdentityDocumentRequest,
+) -> None:
+    if not user.is_eligible:
+        raise ApiErrors({"code": "USER_NOT_ELIGIBLE"})
+    try:
+        api.create_id_check_token(user)
+        image = form.get_image_as_bytes(request)
+        api.asynchronous_identity_document_verification(image, user.email)
+        return
+    except exceptions.IdCheckTokenLimitReached:
+        message = f"Tu as fait trop de demandes pour le moment, réessaye dans {settings.ID_CHECK_TOKEN_LIFE_TIME_HOURS} heures"
+        raise ApiErrors(
+            {"code": "TOO_MANY_ID_CHECK_TOKEN", "message": message},
+            status_code=400,
+        )
+    except exceptions.IdCheckAlreadyCompleted:
+        raise ApiErrors(
+            {"code": "ID_CHECK_ALREADY_COMPLETED", "message": "Tu as déjà déposé un dossier, il est en cours d'étude."},
+            status_code=400,
+        )
+    except (exceptions.IdentityDocumentUploadException, exceptions.CloudTaskCreationException):
+        raise ApiErrors(status_code=503)
 
 
 @blueprint.native_v1.route("/send_phone_validation_code", methods=["POST"])

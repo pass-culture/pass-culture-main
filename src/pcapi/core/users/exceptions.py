@@ -88,3 +88,11 @@ class InvalidPhoneNumber(PhoneVerificationException):
 
 class UserDoesNotExist(Exception):
     pass
+
+
+class IdentityDocumentUploadException(Exception):
+    pass
+
+
+class CloudTaskCreationException(Exception):
+    pass

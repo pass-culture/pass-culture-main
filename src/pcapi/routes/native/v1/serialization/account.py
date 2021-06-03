@@ -10,6 +10,7 @@ from pydantic.fields import Field
 from sqlalchemy.orm import joinedload
 
 from pcapi.core.bookings.models import Booking
+from pcapi.core.offers import validation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.users import constants as users_constants
@@ -193,3 +194,18 @@ class ValidatePhoneNumberRequest(BaseModel):
 
 class SendPhoneValidationRequest(BaseModel):
     phoneNumber: Optional[str]
+
+
+class UploadIdentityDocumentRequest(BaseModel):
+    def get_image_as_bytes(self, request) -> bytes:
+        """
+        Get the image from the POSTed data (request) or from the form field
+        (in which case it's supposed to be an URL that we are going to request.
+        Only the max size is checked at this stage, and possibly the content type header
+        """
+        if "identityDocumentFile" in request.files:
+            blob = request.files["identityDocumentFile"]
+            image_as_bytes = blob.read()
+            return validation.get_uploaded_image(image_as_bytes, 10 * 1000 * 1000)
+
+        raise validation.exceptions.MissingImage

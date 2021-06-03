@@ -1,6 +1,8 @@
 from datetime import datetime
 from datetime import timedelta
 from decimal import Decimal
+from io import BytesIO
+from pathlib import Path
 from unittest.mock import patch
 import uuid
 
@@ -30,6 +32,7 @@ from pcapi.notifications.push import testing as push_testing
 from pcapi.notifications.sms import testing as sms_testing
 from pcapi.routes.native.v1.serialization import account as account_serializers
 
+import tests
 from tests.conftest import TestClient
 
 from .utils import create_user_and_test_client
@@ -670,7 +673,7 @@ class GetIdCheckTokenTest:
         assert get_id_check_token(response.json["token"])
 
     def test_get_id_check_token_not_eligible(self, app):
-        user = users_factories.UserFactory(dateOfBirth=datetime(2001, 1, 1), isBeneficiary=False)
+        user = users_factories.UserFactory(dateOfBirth=datetime(2001, 1, 1), departementCode="984", isBeneficiary=False)
         access_token = create_access_token(identity=user.email)
 
         test_client = TestClient(app.test_client())
@@ -692,6 +695,80 @@ class GetIdCheckTokenTest:
         test_client = TestClient(app.test_client())
         test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
         response = test_client.get("/native/v1/id_check_token")
+
+        assert response.status_code == 400
+        assert response.json["code"] == "TOO_MANY_ID_CHECK_TOKEN"
+
+
+@freeze_time("2018-06-01")
+class UploadIdentityDocumentTest:
+    IMAGES_DIR = Path(tests.__path__[0]) / "files"
+
+    @patch("pcapi.core.users.api.store_public_object")
+    @patch("pcapi.core.users.api.random_token")
+    @patch("pcapi.core.users.api.standardize_image")
+    def test_upload_identity_document_successful(
+        self,
+        mocked_standardize_image,
+        mocked_random_token,
+        mocked_store_public_object,
+        app,
+    ):
+        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="93", isBeneficiary=False)
+        access_token = create_access_token(identity=user.email)
+        mocked_random_token.return_value = "a_very_random_secret"
+        mocked_standardize_image.side_effect = lambda value: value
+
+        identity_document = (self.IMAGES_DIR / "mouette_small.jpg").read_bytes()
+        data = {
+            "identityDocumentFile": (BytesIO(identity_document), "image.jpg"),
+        }
+
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+        response = test_client.post("/native/v1/identity_document", form=data)
+
+        assert response.status_code == 204
+        mocked_store_public_object.assert_called_once_with(
+            "identity_documents",
+            "a_very_random_secret.jpg",
+            identity_document,
+            content_type="image/jpeg",
+            metadata={"email": user.email},
+        )
+
+    def test_get_id_check_token_not_eligible(self, app):
+        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="984", isBeneficiary=False)
+        access_token = create_access_token(identity=user.email)
+
+        thumb = (self.IMAGES_DIR / "mouette_small.jpg").read_bytes()
+        data = {
+            "identityDocumentFile": (BytesIO(thumb), "image.jpg"),
+        }
+
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+        response = test_client.post("/native/v1/identity_document", form=data)
+
+        assert response.status_code == 400
+        assert response.json == {"code": "USER_NOT_ELIGIBLE"}
+
+    def test_get_id_check_token_limit_reached(self, app):
+        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="93", isBeneficiary=False)
+
+        expiration_date = datetime.now() + timedelta(hours=2)
+        users_factories.IdCheckToken.create_batch(
+            settings.ID_CHECK_MAX_ALIVE_TOKEN, user=user, expirationDate=expiration_date, isUsed=False
+        )
+        thumb = (self.IMAGES_DIR / "mouette_small.jpg").read_bytes()
+        data = {
+            "identityDocumentFile": (BytesIO(thumb), "image.jpg"),
+        }
+
+        access_token = create_access_token(identity=user.email)
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+        response = test_client.post("/native/v1/identity_document", form=data)
 
         assert response.status_code == 400
         assert response.json["code"] == "TOO_MANY_ID_CHECK_TOKEN"
