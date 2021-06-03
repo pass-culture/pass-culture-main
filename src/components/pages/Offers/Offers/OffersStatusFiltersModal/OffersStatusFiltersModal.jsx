@@ -6,7 +6,7 @@ import { ALL_STATUS } from 'components/pages/Offers/Offers/_constants'
 
 export const OffersStatusFiltersModal = ({
   isVisible,
-  refreshOffers,
+  applyFilters,
   status,
   setIsVisible,
   updateStatusFilter,
@@ -104,7 +104,7 @@ export const OffersStatusFiltersModal = ({
       />
       <button
         className="primary-button"
-        onClick={refreshOffers}
+        onClick={applyFilters}
         type="button"
       >
         {'Appliquer'}
@@ -118,8 +118,8 @@ OffersStatusFiltersModal.defaultProps = {
 }
 
 OffersStatusFiltersModal.propTypes = {
+  applyFilters: PropTypes.func.isRequired,
   isVisible: PropTypes.bool.isRequired,
-  refreshOffers: PropTypes.func.isRequired,
   setIsVisible: PropTypes.func.isRequired,
   status: PropTypes.string,
   updateStatusFilter: PropTypes.func.isRequired,

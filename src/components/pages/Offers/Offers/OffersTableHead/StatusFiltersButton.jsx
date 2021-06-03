@@ -3,12 +3,12 @@ import React, { Fragment } from 'react'
 
 import Icon from 'components/layout/Icon'
 
-import { ADMINS_DISABLED_FILTERS_MESSAGE, OFFER_STATUS_LIST } from './_constants'
-import { OffersStatusFiltersModal } from './OffersStatusFiltersModal/OffersStatusFiltersModal'
+import { ADMINS_DISABLED_FILTERS_MESSAGE, OFFER_STATUS_LIST } from '../_constants'
+import { OffersStatusFiltersModal } from '../OffersStatusFiltersModal/OffersStatusFiltersModal'
 
 const StatusFiltersButton = ({
   disabled,
-  refreshOffers,
+  applyFilters,
   status,
   updateStatusFilter,
   isStatusFiltersVisible,
@@ -35,8 +35,8 @@ const StatusFiltersButton = ({
         />
       </button>
       <OffersStatusFiltersModal
+        applyFilters={applyFilters}
         isVisible={isStatusFiltersVisible}
-        refreshOffers={refreshOffers}
         setIsVisible={setIsStatusFiltersVisible}
         status={status}
         updateStatusFilter={updateStatusFilter}
@@ -54,9 +54,9 @@ StatusFiltersButton.defaultProps = {
 }
 
 StatusFiltersButton.propTypes = {
+  applyFilters: PropTypes.func.isRequired,
   disabled: PropTypes.bool,
   isStatusFiltersVisible: PropTypes.bool,
-  refreshOffers: PropTypes.func.isRequired,
   setIsStatusFiltersVisible: PropTypes.func.isRequired,
   status: PropTypes.string,
   updateStatusFilter: PropTypes.func.isRequired,

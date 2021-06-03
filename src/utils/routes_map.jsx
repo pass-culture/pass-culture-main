@@ -78,12 +78,6 @@ export const routesWithMain = [
     title: 'Remboursements',
   },
   {
-    component: Offers,
-    exact: true,
-    path: '/offres',
-    title: 'Offres',
-  },
-  {
     component: CsvDetailViewContainer,
     exact: true,
     path: '/reservations/detail',
@@ -163,6 +157,12 @@ const routes = [
     exact: false,
     path: ['/offres/creation', '/offres/:offerId([A-Z0-9]+)'],
     title: 'Offre',
+  },
+  {
+    component: Offers,
+    exact: true,
+    path: '/offres',
+    title: 'Offres',
   },
 ]
 

@@ -15,7 +15,11 @@ export const offerFactory = (
   return {
     id: `OFFER${currentOfferId}`,
     name: `Le nom de l'offre ${currentOfferId}`,
+    isActive: true,
+    isEditable: true,
     isEvent: false,
+    isFullyBooked: false,
+    isThing: true,
     status: 'ACTIVE',
     stocks,
     venue: customVenue,

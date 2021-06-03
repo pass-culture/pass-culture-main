@@ -22,6 +22,7 @@ export const ALL_TYPES = 'all'
 export const ALL_STATUS = 'all'
 export const ALL_CREATION_MODES = 'all'
 export const ALL_EVENT_PERIODS = ''
+export const DEFAULT_PAGE = 1
 export const DEFAULT_SEARCH_FILTERS = {
   name: ALL_OFFERS,
   offererId: ALL_OFFERERS,
@@ -31,8 +32,8 @@ export const DEFAULT_SEARCH_FILTERS = {
   creationMode: ALL_CREATION_MODES,
   periodBeginningDate: ALL_EVENT_PERIODS,
   periodEndingDate: ALL_EVENT_PERIODS,
+  page: DEFAULT_PAGE,
 }
-export const DEFAULT_PAGE = 1
 
 export const ALL_VENUES_OPTION = { displayName: 'Tous les lieux', id: ALL_VENUES }
 export const ALL_TYPES_OPTION = { displayName: 'Toutes', id: ALL_TYPES }
