@@ -671,7 +671,7 @@ def set_offer_status_based_on_fraud_criteria(offer: Offer) -> OfferValidationSta
 def update_pending_offer_validation(offer: Offer, validation_status: OfferValidationStatus) -> bool:
     offer = offer_queries.get_offer_by_id(offer.id)
     if offer.validation != OfferValidationStatus.PENDING:
-        logger.exception(
+        logger.info(
             "Offer validation status cannot be updated, initial validation status is not PENDING. %s",
             extra={"offer": offer.id},
         )
