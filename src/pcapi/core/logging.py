@@ -73,7 +73,7 @@ def monkey_patch_logger_makeRecord():
         because it does not handle the ``extra`` argument.
         """
         record = self.__original_makeRecord(
-            name, level, fn, lno, msg, args, exc_info, func=None, extra=None, sinfo=None
+            name, level, fn, lno, msg, args, exc_info, func=func, extra=extra, sinfo=sinfo
         )
         record.extra = extra or {}
         return record
