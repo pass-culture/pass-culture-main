@@ -1115,7 +1115,6 @@ class UpdateUserIdProfileTest:
         """
         user = users_factories.UserFactory(
             isBeneficiary=False,
-            phoneNumber=None,
             address=None,
             city=None,
             postalCode=None,
@@ -1132,7 +1131,6 @@ class UpdateUserIdProfileTest:
         test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
 
         profile_data = {
-            "phone_number": "+33601020304",
             "address": "1 rue des rues",
             "city": "Uneville",
             "postal_code": "77000",
@@ -1144,7 +1142,6 @@ class UpdateUserIdProfileTest:
         assert response.status_code == 204
 
         user = User.query.get(user.id)
-        assert user.phoneNumber == "+33601020304"
         assert user.address == "1 rue des rues"
         assert user.city == "Uneville"
         assert user.postalCode == "77000"
@@ -1159,90 +1156,3 @@ class UpdateUserIdProfileTest:
         assert notification["user_id"] == user.id
         assert notification["attribute_values"]["u.is_beneficiary"]
         assert notification["attribute_values"]["u.postal_code"] == "77000"
-
-    def test_phone_number_error(self, app):
-        """
-        Test that a request with a malformed phone number does not update any
-        of the user's id check profile information and that no request is sent
-        to Batch
-        """
-        user = users_factories.UserFactory(
-            isBeneficiary=False,
-            phoneNumber=None,
-            address=None,
-            city=None,
-            postalCode=None,
-            activity=None,
-        )
-
-        access_token = create_access_token(identity=user.email)
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        profile_data = {
-            "phone_number": "0601020304",
-            "address": "1 rue des rues",
-            "city": "Uneville",
-            "postal_code": "77000",
-            "activity": "Lycéen",
-        }
-
-        response = test_client.patch("/native/v1/id_check_profile", profile_data)
-
-        assert response.status_code == 400
-        assert response.json["code"] == "INVALID_PHONE_NUMBER"
-
-        user = User.query.get(user.id)
-        assert not user.phoneNumber
-        assert not user.address
-        assert not user.city
-        assert not user.postalCode
-        assert not user.activity
-
-        assert not user.isBeneficiary
-        assert not user.deposit
-
-        assert push_testing.requests == []
-
-    def test_missing_body_fields(self, app):
-        """
-        Test that a request with missing parameters inside the body does not
-        update any of the user's id check profile information and that no
-        request is sent to Batch
-        """
-        user = users_factories.UserFactory(
-            isBeneficiary=False,
-            phoneNumber=None,
-            address=None,
-            city=None,
-            postalCode=None,
-            activity=None,
-        )
-
-        access_token = create_access_token(identity=user.email)
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        profile_data = {
-            "address": "1 rue des rues",
-            "city": "Uneville",
-        }
-
-        response = test_client.patch("/native/v1/id_check_profile", profile_data)
-
-        assert response.status_code == 400
-        assert "activity" in response.json
-        assert "phone_number" in response.json
-        assert "postal_code" in response.json
-
-        user = User.query.get(user.id)
-        assert not user.phoneNumber
-        assert not user.address
-        assert not user.city
-        assert not user.postalCode
-        assert not user.activity
-
-        assert not user.isBeneficiary
-        assert not user.deposit
-
-        assert push_testing.requests == []

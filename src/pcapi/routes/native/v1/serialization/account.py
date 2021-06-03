@@ -170,7 +170,6 @@ class UserProfileUpdateRequest(BaseModel):
 class UserIdCheckProfileUpdateRequest(BaseModel):
     address: str
     city: str
-    phone_number: str
     postal_code: str
     activity: ActivityEnum
 

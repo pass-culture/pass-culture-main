@@ -206,9 +206,7 @@ def validate_phone_number_and_activate_user(user: User, code: str) -> User:
         activate_beneficiary(user)
 
 
-def update_user_id_check_profile(
-    user_id: int, address: str, phone_number: str, city: str, postal_code: str, activity: str
-) -> None:
+def update_user_id_check_profile(user_id: int, address: str, city: str, postal_code: str, activity: str) -> None:
     """
     Update a user's id check profile information.
 
@@ -234,23 +232,19 @@ def update_user_id_check_profile(
     one moment for a specific user. And that only one of the two can activate
     the user.
     """
-    if not get_legit_phone_number(phone_number):
-        raise exceptions.InvalidPhoneNumber(phone_number)
-
     with transaction():
         user = get_and_lock_user(user_id)
-        update_user_info(
-            user=user,
-            address=address,
-            phone_number=phone_number,
-            city=city,
-            postal_code=postal_code,
-            activity=activity,
-            has_completed_id_check=True,
-        )
+
+        user.address = address
+        user.city = city
+        user.postalCode = postal_code
+        user.activity = activity
+        user.hasCompletedIdCheck = True
 
         if user.hasIdentityDocumentValidated and not steps_to_become_beneficiary(user) and not user.isBeneficiary:
             activate_beneficiary(user)
+        else:
+            repository.save(user)
 
     logger.info(
         "User id check profile updated",

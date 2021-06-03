@@ -61,21 +61,14 @@ def update_user_profile(user: User, body: serializers.UserProfileUpdateRequest) 
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_user_required
 def update_user_id_check_profile(user: User, body: serializers.UserIdCheckProfileUpdateRequest) -> None:
-    try:
-        api.update_user_id_check_profile(
-            user_id=user.id,
-            address=body.address,
-            phone_number=body.phone_number,
-            city=body.city,
-            postal_code=body.postal_code,
-            activity=body.activity,
-        )
-    except exceptions.InvalidPhoneNumber:
-        raise ApiErrors(
-            {"message": "Le numéro de téléphone est invalide", "code": "INVALID_PHONE_NUMBER"}, status_code=400
-        )
-    else:
-        update_user_attributes_job.delay(user.id)
+    api.update_user_id_check_profile(
+        user_id=user.id,
+        address=body.address,
+        city=body.city,
+        postal_code=body.postal_code,
+        activity=body.activity,
+    )
+    update_user_attributes_job.delay(user.id)
 
 
 @blueprint.native_v1.route("/me/cultural_survey", methods=["POST"])

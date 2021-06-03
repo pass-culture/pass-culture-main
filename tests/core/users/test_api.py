@@ -15,7 +15,6 @@ from pcapi.core.payments.api import DEPOSIT_VALIDITY_IN_YEARS
 from pcapi.core.testing import override_features
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
-from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.api import BeneficiaryValidationStep
 from pcapi.core.users.api import _set_offerer_departement_code
@@ -698,7 +697,6 @@ class UpdateIdCheckProfileTest:
         identity document validated.
         """
         user = users_factories.UserFactory(
-            phoneNumber="+33601020304",
             isBeneficiary=False,
             hasIdentityDocumentValidated=True,
             phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
@@ -711,7 +709,6 @@ class UpdateIdCheckProfileTest:
         update_user_id_check_profile(
             user_id=user.id,
             address=new_address,
-            phone_number=user.phoneNumber,
             city=new_city,
             postal_code=user.postalCode,
             activity=user.activity,
@@ -733,7 +730,6 @@ class UpdateIdCheckProfileTest:
         has no identity document validated.
         """
         user = users_factories.UserFactory(
-            phoneNumber="+33601020304",
             isBeneficiary=False,
             hasIdentityDocumentValidated=False,
             phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
@@ -746,7 +742,6 @@ class UpdateIdCheckProfileTest:
         update_user_id_check_profile(
             user_id=user.id,
             address=new_address,
-            phone_number=user.phoneNumber,
             city=new_city,
             postal_code=user.postalCode,
             activity=user.activity,
@@ -768,7 +763,6 @@ class UpdateIdCheckProfileTest:
         imported
         """
         user = users_factories.UserFactory(
-            phoneNumber="+33601020304",
             isBeneficiary=False,
             hasIdentityDocumentValidated=False,
             phoneValidationStatus=None,  # missing step to become beneficiary
@@ -781,7 +775,6 @@ class UpdateIdCheckProfileTest:
         update_user_id_check_profile(
             user_id=user.id,
             address=new_address,
-            phone_number=user.phoneNumber,
             city=new_city,
             postal_code=user.postalCode,
             activity=user.activity,
@@ -793,41 +786,5 @@ class UpdateIdCheckProfileTest:
         assert user.city == new_city
 
         assert user.hasCompletedIdCheck
-        assert not user.isBeneficiary
-        assert not user.deposit
-
-    def test_has_invalid_phone_number(self):
-        """
-        Test that no field is updated if the phone number is malformed or
-        invalid
-        """
-        user = users_factories.UserFactory(
-            phoneNumber="+33601020304",
-            isBeneficiary=False,
-            hasIdentityDocumentValidated=False,
-            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
-        )
-        beneficiary_import = BeneficiaryImportFactory(beneficiary=user)
-        beneficiary_import.setStatus(ImportStatus.CREATED)
-
-        new_address = f"{user.address}_test"
-        new_city = f"{user.city}_test"
-
-        with pytest.raises(users_exceptions.InvalidPhoneNumber):
-            update_user_id_check_profile(
-                user_id=user.id,
-                address=new_address,
-                phone_number="0607080900",  # should be "+33607080999"
-                city=new_city,
-                postal_code=user.postalCode,
-                activity=user.activity,
-            )
-
-        user = User.query.get(user.id)
-
-        assert user.address != new_address
-        assert user.city != new_city
-
-        assert not user.hasCompletedIdCheck
         assert not user.isBeneficiary
         assert not user.deposit
