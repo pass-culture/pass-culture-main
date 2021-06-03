@@ -48,14 +48,14 @@ const PreFilters = ({ offerVenue }) => {
   return (
     <form onSubmit={requestFilteredBookings}>
       <div className="pre-filters">
-        <FilterByEventDate
-          selectedOfferDate={selectedFilters.offerDate}
-          updateFilters={updateSelectedFilters}
-        />
         <FilterByVenue
           selectedVenue={selectedFilters.offerVenue}
           updateFilters={updateSelectedFilters}
           venuesFormattedAndOrdered={venues}
+        />
+        <FilterByEventDate
+          selectedOfferDate={selectedFilters.offerDate}
+          updateFilters={updateSelectedFilters}
         />
         <FilterByBookingPeriod
           selectedBookingBeginningDate={selectedFilters.bookingBeginningDate}
