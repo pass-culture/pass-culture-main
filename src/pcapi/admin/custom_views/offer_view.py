@@ -259,6 +259,9 @@ class ValidationView(BaseAdminView):
     column_default_sort = ("id", True)
     page_size = 100
 
+    def is_accessible(self):
+        return super().is_accessible() and self.check_super_admins()
+
     @property
     def column_formatters(self):
         formatters = super().column_formatters

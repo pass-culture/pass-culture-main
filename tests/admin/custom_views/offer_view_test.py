@@ -401,6 +401,25 @@ class OfferValidationViewTest:
         assert offer.isActive is False
         assert offer.lastValidationDate == datetime.datetime(2020, 11, 17, 15)
 
+    @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="super_admin@example.com")
+    def test_access_to_validation_page_with_super_admin_user_on_prod_env(self, app):
+        users_factories.UserFactory(email="super_admin@example.com", isAdmin=True)
+        client = TestClient(app.test_client()).with_auth("super_admin@example.com")
+
+        response = client.get("/pc/back-office/validation/")
+
+        assert response.status_code == 200
+
+    @override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES="super_admin@example.com")
+    def test_access_to_validation_page_with_none_super_admin_user_on_prod_env(self, app):
+        users_factories.UserFactory(email="simple_admin@example.com", isAdmin=True)
+        client = TestClient(app.test_client()).with_auth("simple_admin@example.com")
+
+        response = client.get("/pc/back-office/validation/")
+
+        assert response.status_code == 302
+        assert response.headers["location"] == "http://localhost/pc/back-office/"
+
 
 class GetOfferValidationViewTest:
     @clean_database
