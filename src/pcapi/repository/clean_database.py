@@ -26,7 +26,9 @@ from pcapi.models import IrisFrance
 from pcapi.models import IrisVenues
 from pcapi.models import LocalProviderEvent
 from pcapi.models import Offer
+from pcapi.models import OfferCategory
 from pcapi.models import OfferCriterion
+from pcapi.models import OfferSubcategory
 from pcapi.models import Payment
 from pcapi.models import PaymentMessage
 from pcapi.models import PaymentStatus
@@ -79,6 +81,8 @@ def clean_all_database(*args, **kwargs):
     AllocinePivot.query.delete()
     VenueType.query.delete()
     VenueLabel.query.delete()
+    OfferSubcategory.query.delete()
+    OfferCategory.query.delete()
     db.session.commit()
     install_features()
     install_local_providers()

@@ -6,6 +6,7 @@ from pcapi.sandboxes.scripts.creators.industrial.create_industrial_algolia_objec
     create_industrial_algolia_indexed_objects,
 )
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_bookings import *
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_categories import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_criterion import (
     associate_criterion_to_one_offer_with_mediation,
 )
@@ -94,3 +95,5 @@ def save_industrial_sandbox() -> None:
     create_venue_labels()
 
     create_industrial_offer_validation_config()
+
+    create_industrial_categories()
