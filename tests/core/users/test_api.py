@@ -2,6 +2,7 @@ from datetime import date
 from datetime import datetime
 from datetime import timedelta
 from decimal import Decimal
+from pathlib import Path
 from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
@@ -18,6 +19,7 @@ from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.api import BeneficiaryValidationStep
 from pcapi.core.users.api import _set_offerer_departement_code
+from pcapi.core.users.api import asynchronous_identity_document_verification
 from pcapi.core.users.api import count_existing_id_check_tokens
 from pcapi.core.users.api import create_id_check_token
 from pcapi.core.users.api import delete_expired_tokens
@@ -28,6 +30,7 @@ from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.api import set_pro_tuto_as_seen
 from pcapi.core.users.api import steps_to_become_beneficiary
 from pcapi.core.users.api import update_beneficiary_mandatory_information
+from pcapi.core.users.exceptions import IdentityDocumentUploadException
 from pcapi.core.users.factories import BeneficiaryImportFactory
 from pcapi.core.users.models import Credit
 from pcapi.core.users.models import DomainsCredit
@@ -46,6 +49,8 @@ from pcapi.models.offer_type import EventType
 from pcapi.models.offer_type import ThingType
 from pcapi.models.user_session import UserSession
 from pcapi.repository import repository
+
+import tests
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -689,7 +694,7 @@ class DomainsCreditTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class UpdateIdCheckProfileTest:
+class UpdateBeneficiaryMandatoryInformationTest:
     def test_all_steps_to_become_beneficiary(self):
         """
         Test that the user's id check profile information are updated and that
@@ -753,3 +758,48 @@ class UpdateIdCheckProfileTest:
         assert user.hasCompletedIdCheck
         assert not user.isBeneficiary
         assert not user.deposit
+
+
+class AsynchronousIdentityDocumentVerificationTest:
+    IMAGES_DIR = Path(tests.__path__[0]) / "files"
+
+    @patch("pcapi.core.users.api.store_public_object")
+    @patch("pcapi.core.users.api.random_token")
+    @patch("pcapi.core.users.api.standardize_image")
+    def test_upload_identity_document_successful(
+        self,
+        mocked_standardize_image,
+        mocked_random_token,
+        mocked_store_public_object,
+        app,
+    ):
+        # Given
+        identity_document = (self.IMAGES_DIR / "pixel.png").read_bytes()
+        mocked_random_token.return_value = "a_very_random_secret"
+        mocked_standardize_image.side_effect = lambda value: value
+
+        # When
+        asynchronous_identity_document_verification(identity_document, "toto@email.fr")
+
+        # Then
+        mocked_store_public_object.assert_called_once_with(
+            "identity_documents",
+            "a_very_random_secret.jpg",
+            identity_document,
+            content_type="image/jpeg",
+            metadata={"email": "toto@email.fr"},
+        )
+
+    @patch("pcapi.core.users.api.store_public_object")
+    def test_upload_identity_document_fails_on_upload(
+        self,
+        mocked_store_public_object,
+        app,
+    ):
+        # Given
+        mocked_store_public_object.side_effect = Exception
+        identity_document = (self.IMAGES_DIR / "mouette_small.jpg").read_bytes()
+
+        # Then
+        with pytest.raises(IdentityDocumentUploadException):
+            asynchronous_identity_document_verification(identity_document, "toto@email.fr")

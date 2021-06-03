@@ -97,7 +97,7 @@ def get_encrypted_gcp_storage_client_bucket() -> Bucket:
 
 
 def store_public_object(
-    bucket: str, object_id: str, blob: bytes, content_type: Optional[str] = None, metadata: Optional[str] = None
+    bucket: str, object_id: str, blob: bytes, content_type: Optional[str] = None, metadata: Optional[dict] = None
 ) -> None:
     storage_path = bucket + "/" + object_id
     try:

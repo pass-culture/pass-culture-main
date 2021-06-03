@@ -34,10 +34,12 @@ from pcapi.core.users.models import VOID_PUBLIC_NAME
 from pcapi.core.users.repository import does_validated_phone_exist
 from pcapi.core.users.repository import get_beneficiary_import_for_beneficiary
 from pcapi.core.users.utils import decode_jwt_token
+from pcapi.core.users.utils import delete_public_object
 from pcapi.core.users.utils import encode_jwt_payload
 from pcapi.core.users.utils import get_formatted_phone_number
 from pcapi.core.users.utils import parse_phone_number
 from pcapi.core.users.utils import sanitize_email
+from pcapi.core.users.utils import store_public_object
 from pcapi.domain import user_emails
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
 from pcapi.domain.password import random_hashed_password
@@ -58,6 +60,8 @@ from pcapi.repository import feature_queries
 from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
+from pcapi.utils.image_conversion import standardize_image
+from pcapi.utils.token import random_token
 
 
 logger = logging.getLogger(__name__)
@@ -694,3 +698,27 @@ def get_next_beneficiary_validation_step(user: User) -> Optional[BeneficiaryVali
         return BeneficiaryValidationStep.ID_CHECK
 
     return None
+
+
+def asynchronous_identity_document_verification(image: bytes, email: str) -> None:
+    standardized_image = standardize_image(image)
+    image_name = f"{random_token(64)}.jpg"
+    try:
+        store_public_object(
+            "identity_documents",
+            image_name,
+            standardized_image,
+            content_type="image/jpeg",
+            metadata={"email": email},
+        )
+    except Exception as exception:
+        logger.exception("An error has occured while trying to upload image to encrypted gcp bucket: %s", exception)
+        raise exceptions.IdentityDocumentUploadException
+
+    try:
+        logger.info("To implement")
+    except Exception as exception:
+        logger.exception("An error has occured while trying to add cloudtask in queue: %s", exception)
+        delete_public_object("identity_documents", image_name)
+        raise exceptions.CloudTaskCreationException
+    return
