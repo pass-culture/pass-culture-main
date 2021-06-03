@@ -133,10 +133,10 @@ def get_fraud_fields(content: dict) -> dict:
         "strict_controls": [
             get_boolean_fraud_detection_item(content, "posteCodeCtrl"),
             get_boolean_fraud_detection_item(content, "serviceCodeCtrl"),
+            get_boolean_fraud_detection_item(content, "birthLocationCtrl"),
         ],
         "non_blocking_controls": [
             get_threshold_fraud_detection_item(content, "bodyBirthDateLevel", 100),
-            get_boolean_fraud_detection_item(content, "birthLocationCtrl"),
             get_threshold_fraud_detection_item(content, "bodyNameLevel", 50),
             get_boolean_fraud_detection_item(content, "bodyBirthDateCtrl"),
             get_boolean_fraud_detection_item(content, "bodyFirstNameCtrl"),
