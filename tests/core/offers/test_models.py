@@ -175,10 +175,10 @@ class OfferThumbUrlTest:
         assert offer.thumbUrl == None
 
 
-class OfferCategoryTest:
+class OfferCategoryNameForAppTest:
     def test_offer_category(self):
         offer = models.Offer(type=str(ThingType.JEUX_VIDEO))
-        assert offer.offer_category == "JEUX_VIDEO"
+        assert offer.offer_category_name_for_app == "JEUX_VIDEO"
 
 
 @pytest.mark.usefixtures("db_session")

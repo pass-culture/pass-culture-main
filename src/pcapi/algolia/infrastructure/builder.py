@@ -43,7 +43,7 @@ def build_object(offer: Offer) -> dict:
         "objectID": offer.id,
         "offer": {
             "author": author,
-            "category": offer.offer_category,
+            "category": offer.offer_category_name_for_app,
             "rankingWeight": offer.rankingWeight,
             "dateCreated": date_created,
             "dates": sorted(dates),

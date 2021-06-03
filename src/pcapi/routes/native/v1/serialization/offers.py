@@ -164,7 +164,7 @@ class OfferImageResponse(BaseModel):
 
 def get_serialized_offer_category(offer: Offer) -> dict:
     return {
-        "name": offer.offer_category,
+        "name": offer.offer_category_name_for_app,
         "label": offer.offerType["appLabel"],
         "categoryType": offer.category_type,
     }

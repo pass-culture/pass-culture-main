@@ -59,7 +59,7 @@ class FavoriteOfferResponse(BaseModel):
     @classmethod
     def from_orm(cls, offer):  # type: ignore
         offer.category = {
-            "name": offer.offer_category,
+            "name": offer.offer_category_name_for_app,
             "label": offer.offerType["appLabel"],
             "categoryType": offer.category_type,
         }
