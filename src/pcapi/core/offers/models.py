@@ -624,3 +624,36 @@ class OfferCategoryGroup(PcObject, Model, DeactivableMixin):
 
     def __repr__(self):
         return "<%s #%s: %s>" % (self.__class__.__name__, self.id, self.name)
+
+
+class OfferCategory(PcObject, Model, DeactivableMixin):
+    __tablename__ = "offer_category"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+
+    name = Column(Text, nullable=False, unique=True)
+
+    categoryGroupId = Column(Integer, ForeignKey("offer_category_group.id"), nullable=False)
+
+    categoryGroup = relationship("OfferCategoryGroup", foreign_keys=[categoryGroupId], backref="categories")
+
+    isEvent = Column(Boolean, nullable=False)
+
+    proLabel = Column(Text, unique=True, nullable=False)
+
+    appLabel = Column(Text, unique=True, nullable=False)
+
+    conditionalFields = Column(ARRAY(Text))
+
+    canExpire = Column(Boolean, nullable=False)
+
+    isDigital = Column(Boolean, nullable=False)
+
+    digitalDeposit = Column(Boolean, nullable=False)
+
+    physicalDeposit = Column(Boolean, nullable=False)
+
+    canBeDuo = Column(Boolean, nullable=False)
+
+    def __repr__(self):
+        return "<%s #%s: %s>" % (self.__class__.__name__, self.id, self.name)

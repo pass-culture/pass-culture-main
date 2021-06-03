@@ -236,3 +236,19 @@ class OfferCategoryGroupFactory(BaseFactory):
     name = factory.Sequence("La {}e catégorie".format)
     app_label = factory.Sequence("La {}e catégorie".format)
     pro_label = factory.Sequence("La {}e catégorie (mais avec beaucoup de caractères)".format)
+
+
+class OfferCategoryFactory(BaseFactory):
+    class Meta:
+        model = models.OfferCategory
+
+    name = factory.Sequence("La {}e catégorie".format)
+    categoryGroup = factory.SubFactory(OfferCategoryGroupFactory)
+    isEvent = False
+    app_label = factory.Sequence("La {}e catégorie".format)
+    pro_label = factory.Sequence("La {}e catégorie (mais avec beaucoup de caractères)".format)
+    canExpire = True
+    isDigital = False
+    digitalDeposit = False
+    physicalDeposit = True
+    canDeDuo = False
