@@ -256,7 +256,7 @@ const ThingStocks = ({
             {inCreateMode ? (
               <StockItemContainer
                 departmentCode={offer.venue.departementCode}
-                errors={formErrors[stock.key]}
+                errors={formErrors}
                 initialStock={stock}
                 isDigital={offer.isDigital}
                 isEvent={false}
@@ -269,7 +269,7 @@ const ThingStocks = ({
             ) : (
               <StockItemContainer
                 departmentCode={offer.venue.departementCode}
-                errors={formErrors[stock.key]}
+                errors={formErrors}
                 initialStock={stock}
                 isDigital={offer.isDigital}
                 isDisabled={isDisabled}

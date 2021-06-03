@@ -2241,6 +2241,8 @@ describe('stocks page', () => {
           'Une ou plusieurs erreurs sont présentes dans le formulaire.'
         )
         expect(errorMessage).toBeInTheDocument()
+        expect(screen.getByLabelText('Prix')).toHaveClass('error')
+        expect(screen.getByLabelText('Quantité')).toHaveClass('error')
         expect(pcapi.bulkCreateOrEditStock).toHaveBeenCalledTimes(0)
       })
 
@@ -2485,6 +2487,8 @@ describe('stocks page', () => {
           'Une ou plusieurs erreurs sont présentes dans le formulaire.'
         )
         expect(errorMessage).toBeInTheDocument()
+        expect(screen.getByLabelText('Prix')).toHaveClass('error')
+        expect(screen.getByLabelText('Quantité')).toHaveClass('error')
         expect(pcapi.bulkCreateOrEditStock).toHaveBeenCalledTimes(0)
       })
 
