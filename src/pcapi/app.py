@@ -12,6 +12,7 @@ from pcapi.routes import install_routes
 from pcapi.routes.adage.v1.blueprint import adage_v1
 from pcapi.routes.native.v1.blueprint import native_v1
 from pcapi.routes.pro.blueprints import pro_api_v2
+from pcapi.tasks.decorators import cloud_task_api
 
 
 if settings.PROFILE_REQUESTS:
@@ -37,6 +38,7 @@ with app.app_context():
     app.register_blueprint(adage_v1, url_prefix="/adage/v1")
     app.register_blueprint(native_v1, url_prefix="/native/v1")
     app.register_blueprint(pro_api_v2, url_prefix="/v2")
+    app.register_blueprint(cloud_task_api)
 
 if __name__ == "__main__":
     port = settings.FLASK_PORT

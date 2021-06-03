@@ -24,6 +24,7 @@ GeoAlchemy2==0.8.4
 geopandas==0.8.1
 google-auth==1.23.0
 google-cloud-storage==1.35.0
+google-cloud-tasks==2.3.0
 gspread==3.6.0
 gunicorn==20.0.4
 inflect==4.1.0
