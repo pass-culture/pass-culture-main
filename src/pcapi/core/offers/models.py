@@ -609,3 +609,18 @@ class OfferValidationConfig(PcObject, Model):
     user = relationship("User", foreign_keys=[userId], backref="offer_validation_configs")
 
     specs = Column(JSON, nullable=False)
+
+
+class OfferCategoryGroup(PcObject, Model, DeactivableMixin):
+    __tablename__ = "offer_category_group"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+
+    name = Column(Text, nullable=False, unique=True)
+
+    proLabel = Column(Text, unique=True, nullable=False)
+
+    appLabel = Column(Text, unique=True, nullable=False)
+
+    def __repr__(self):
+        return "<%s #%s: %s>" % (self.__class__.__name__, self.id, self.name)

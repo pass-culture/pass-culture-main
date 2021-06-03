@@ -227,3 +227,12 @@ class BankInformationFactory(BaseFactory):
     iban = factory.LazyAttributeSequence(lambda o, n: f"FR{n:016}")
     applicationId = factory.Sequence(int)
     status = "ACCEPTED"
+
+
+class OfferCategoryGroupFactory(BaseFactory):
+    class Meta:
+        model = models.OfferCategoryGroup
+
+    name = factory.Sequence("La {}e catégorie".format)
+    app_label = factory.Sequence("La {}e catégorie".format)
+    pro_label = factory.Sequence("La {}e catégorie (mais avec beaucoup de caractères)".format)
