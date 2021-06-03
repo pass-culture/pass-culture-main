@@ -36,12 +36,3 @@ def filter_offerers_with_keywords_string(query, keywords_string):
 
 def check_if_siren_already_exists(siren):
     return Offerer.query.filter_by(siren=siren).count() > 0
-
-
-def keep_offerers_with_at_least_one_physical_venue(query):
-    return query.filter(Offerer.managedVenues.any(Venue.isVirtual == False))
-
-
-def keep_offerers_with_no_physical_venue(query):
-    is_not_virtual = Venue.isVirtual == False
-    return query.filter(~Offerer.managedVenues.any(is_not_virtual))

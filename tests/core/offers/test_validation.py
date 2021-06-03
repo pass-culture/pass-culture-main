@@ -243,28 +243,6 @@ class CheckStockIsUpdatableTest:
         assert error.value.errors["global"] == ["Les événements passés ne sont pas modifiables"]
 
 
-class CheckThumbQualityTest:
-    def test_an_error_is_raised_if_the_thumb_width_is_less_than_400_px(self):
-        image_as_bytes = (IMAGES_DIR / "mouette_portrait.jpg").read_bytes()
-
-        with pytest.raises(ApiErrors) as error:
-            validation.check_mediation_thumb_quality(image_as_bytes)
-
-        assert error.value.errors["thumb"] == ["L'image doit faire 400 * 400 px minimum"]
-
-    def test_an_error_is_raised_if_the_thumb_height_is_less_than_400_px(self):
-        image_as_bytes = (IMAGES_DIR / "mouette_landscape.jpg").read_bytes()
-
-        with pytest.raises(ApiErrors) as error:
-            validation.check_mediation_thumb_quality(image_as_bytes)
-
-        assert error.value.errors["thumb"] == ["L'image doit faire 400 * 400 px minimum"]
-
-    def test_no_error_is_raised_if_the_thumb_is_heavier_than_100_ko(self):
-        image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
-        validation.check_mediation_thumb_quality(image_as_bytes)  # should not raise
-
-
 class GetDistantImageTest:
     def test_ok_with_headers(self, requests_mock):
         remote_image_url = "https://example.com/image.jpg"

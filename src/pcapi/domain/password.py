@@ -8,9 +8,6 @@ from pcapi.models import ApiErrors
 from pcapi.utils.token import random_token
 
 
-RESET_PASSWORD_TOKEN_LENGTH = 10
-
-
 def random_hashed_password() -> bytes:
     return hash_password(random_token(length=12))
 

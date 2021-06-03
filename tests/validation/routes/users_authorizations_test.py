@@ -10,7 +10,6 @@ from pcapi.models import ApiKey
 from pcapi.repository import repository
 from pcapi.utils.token import random_token
 from pcapi.validation.routes.users_authorizations import check_api_key_allows_to_validate_booking
-from pcapi.validation.routes.users_authorizations import check_user_can_validate_activation_offer
 from pcapi.validation.routes.users_authorizations import check_user_can_validate_bookings
 from pcapi.validation.routes.users_authorizations import check_user_can_validate_bookings_v2
 
@@ -113,27 +112,6 @@ class CheckApiKeyAllowsToValidateBookingTest:
         # When
         with pytest.raises(ApiErrors) as errors:
             check_api_key_allows_to_validate_booking(validApiKey, None)
-
-        # Then
-        assert errors.value.errors["user"] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]
-
-
-class CheckUserCanValidateActivationOfferTest:
-    @pytest.mark.usefixtures("db_session")
-    def test_does_not_raise_error_when_user_is_admin(self, app):
-        # Given
-        admin_user = create_user(is_admin=True)
-
-        # The the following should not raise
-        check_user_can_validate_activation_offer(admin_user)
-
-    def test_raises_exception_when_user_is_not_admin(self, app):
-        # Given
-        user = create_user()
-
-        # When
-        with pytest.raises(ApiErrors) as errors:
-            check_user_can_validate_activation_offer(user)
 
         # Then
         assert errors.value.errors["user"] == ["Vous n'avez pas les droits suffisants pour valider cette contremarque."]

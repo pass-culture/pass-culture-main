@@ -33,10 +33,3 @@ def check_api_key_allows_to_cancel_booking(valid_api_key, offerer_id: int):
         api_errors = ForbiddenError()
         api_errors.add_error("user", "Vous n'avez pas les droits suffisants pour annuler cette réservation.")
         raise api_errors
-
-
-def check_user_can_validate_activation_offer(user):
-    forbidden_error = ForbiddenError()
-    if not user.isAdmin:
-        forbidden_error.add_error("user", "Vous n'avez pas les droits suffisants pour valider cette contremarque.")
-        raise forbidden_error

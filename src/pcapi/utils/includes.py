@@ -86,15 +86,6 @@ WEBAPP_GET_BOOKING_INCLUDES = [
 WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES = copy.deepcopy(WEBAPP_GET_BOOKING_INCLUDES)
 WEBAPP_GET_BOOKING_WITH_QR_CODE_INCLUDES.append("qrCode")
 
-VENUE_INCLUDES = [
-    "isValidated",
-    "bic",
-    "iban",
-    "demarchesSimplifieesApplicationId",
-    "-validationToken",
-    {"key": "managingOfferer", "includes": ["-validationToken", "bic", "iban"]},
-]
-
 FEATURE_INCLUDES = ["nameKey"]
 
 USER_OFFERER_INCLUDES = ["-validationToken"]

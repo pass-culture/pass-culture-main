@@ -29,7 +29,6 @@ from pcapi.scripts.beneficiary import remote_import
 from pcapi.scripts.booking import *
 from pcapi.settings import *
 from pcapi.utils.human_ids import *
-from pcapi.utils.import_module import *
 from pcapi.utils.includes import *
 from pcapi.utils.token import *
 

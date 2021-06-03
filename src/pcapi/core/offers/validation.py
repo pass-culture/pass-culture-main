@@ -163,12 +163,6 @@ def check_update_only_allowed_stock_fields_for_allocine_offer(updated_fields: se
         raise api_errors
 
 
-def check_mediation_thumb_quality(image_as_bytes: bytes) -> None:
-    image = Image.open(BytesIO(image_as_bytes))
-    if image.width < 400 or image.height < 400:
-        raise ApiErrors({"thumb": ["L'image doit faire 400 * 400 px minimum"]})
-
-
 def get_distant_image(
     url: str,
     accepted_types: tuple = ACCEPTED_THUMBNAIL_FORMATS,

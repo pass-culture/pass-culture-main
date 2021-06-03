@@ -10,7 +10,6 @@ from pcapi.core.bookings import exceptions
 from pcapi.core.bookings import factories
 from pcapi.core.bookings import models
 from pcapi.core.bookings import validation
-from pcapi.core.bookings.validation import check_has_available_activation_code
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
 import pcapi.core.users.factories as users_factories
@@ -511,47 +510,3 @@ class CheckCanBeMarkAsUnusedTest:
         with pytest.raises(api_errors.ResourceGoneError) as exc:
             validation.check_can_be_mark_as_unused(booking)
         assert exc.value.errors["payment"] == ["Le remboursement est en cours de traitement"]
-
-
-@pytest.mark.usefixtures("db_session")
-class CheckHasAvailableActivationCodeTest:
-    def test_raise_when_activation_code_is_expired(self):
-        # Given
-        stock = offers_factories.ThingStockFactory()
-        activation_codes = offers_factories.ActivationCodeFactory.create_batch(
-            size=1, expirationDate=datetime(2000, 1, 1), stock=stock
-        )
-
-        # When
-        with pytest.raises(exceptions.NoActivationCodeAvailable) as error:
-            check_has_available_activation_code(activation_codes)
-
-        # Then
-        assert error.value.errors == {
-            "noActivationCodeAvailable": ["Ce stock ne contient plus de code d'activation disponible."]
-        }
-
-    def test_raise_when_activation_codes_are_booked(self):
-        # Given
-        stock = offers_factories.ThingStockFactory()
-        booking = factories.BookingFactory(isUsed=True, token="ABCDEF")
-        activation_codes = offers_factories.ActivationCodeFactory.create_batch(
-            size=1, expirationDate=datetime(2050, 1, 1), stock=stock, booking=booking
-        )
-
-        # When
-        with pytest.raises(exceptions.NoActivationCodeAvailable) as error:
-            check_has_available_activation_code(activation_codes)
-
-        # Then
-        assert error.value.errors == {
-            "noActivationCodeAvailable": ["Ce stock ne contient plus de code d'activation disponible."]
-        }
-
-    def test_allow_when_no_expiration_date_and_no_booking(self):
-        # Given
-        stock = offers_factories.ThingStockFactory()
-        activation_codes = offers_factories.ActivationCodeFactory.create_batch(size=1, stock=stock)
-
-        # When
-        check_has_available_activation_code(activation_codes)

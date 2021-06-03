@@ -5,7 +5,6 @@ from typing import Union
 from pcapi.core.bookings import api
 from pcapi.core.bookings import conf
 from pcapi.core.bookings import exceptions
-from pcapi.core.bookings.exceptions import NoActivationCodeAvailable
 from pcapi.core.bookings.models import Booking
 from pcapi.core.offers.models import ActivationCode
 from pcapi.core.offers.models import Offer
@@ -187,10 +186,3 @@ def check_activation_is_bookable(activation_code: ActivationCode) -> bool:
     return not activation_code.bookingId and (
         not activation_code.expirationDate or activation_code.expirationDate > datetime.datetime.utcnow()
     )
-
-
-def check_has_available_activation_code(activation_codes: list[ActivationCode]):
-    next_available_code = any(check_activation_is_bookable(activation_code) for activation_code in activation_codes)
-
-    if not next_available_code:
-        raise NoActivationCodeAvailable()
