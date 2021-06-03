@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import { mount } from 'enzyme'
 import React from 'react'
 import { Provider } from 'react-redux'
@@ -238,11 +238,11 @@ describe('src | components | pages | Offers | Offers', () => {
       ]
 
       // When
-      renderOffers(props, store)
+      await renderOffers(props, store)
 
       // Then
-      await waitFor(() => expect(screen.queryByText('My little offer')).not.toBeNull())
-      await waitFor(() => expect(screen.queryByText('My other offer')).not.toBeNull())
+      expect(screen.getByText('My little offer')).toBeInTheDocument()
+      expect(screen.getByText('My other offer')).toBeInTheDocument()
     })
 
     it('should display an unchecked by default checkbox to select all offers when user is not admin', async () => {
@@ -296,12 +296,10 @@ describe('src | components | pages | Offers | Offers', () => {
         props.loadOffers.mockResolvedValueOnce({ page, pageCount, offersCount })
 
         // When
-        renderOffers(props, store)
+        await renderOffers(props, store)
 
         // Then
-        await waitFor(() => {
-          expect(queryByTextTrimHtml(screen, '17 offres')).not.toBeNull()
-        })
+        expect(queryByTextTrimHtml(screen, '17 offres')).toBeInTheDocument()
       })
 
       it('should display total number of offers in singular if one or no offer', async () => {
@@ -312,43 +310,35 @@ describe('src | components | pages | Offers | Offers', () => {
         props.loadOffers.mockResolvedValueOnce({ page, pageCount, offersCount })
 
         // When
-        renderOffers(props, store)
+        await renderOffers(props, store)
 
         // Then
-        await waitFor(() => {
-          expect(queryByTextTrimHtml(screen, '1 offre')).not.toBeNull()
-        })
+        expect(queryByTextTrimHtml(screen, '1 offre')).toBeInTheDocument()
       })
     })
 
     describe('filters', () => {
-      it('should render venue filter with default option and given venues', async () => {
+      it('should render venue filter with default option selected and given venues as options', async () => {
         // Given
         const expectedSelectOptions = [
           { id: [ALL_VENUES_OPTION.id], value: ALL_VENUES_OPTION.displayName },
           { id: [proVenues[0].id], value: proVenues[0].name },
           { id: [proVenues[1].id], value: `${proVenues[1].offererName} - Offre numérique` },
         ]
-        const getByOptions = { selector: 'select[name="lieu"]' }
 
         // When
-        renderOffers(props, store)
+        await renderOffers(props, store)
 
         // Then
-        let venueSelect = screen.getByDisplayValue(expectedSelectOptions[0].value, getByOptions)
-        expect(venueSelect).toBeInTheDocument()
+        const venueSelect = screen.getByLabelText('Lieu')
+        const defaultOption = screen.getByDisplayValue(expectedSelectOptions[0].value)
+        expect(defaultOption).toBeInTheDocument()
 
-        fireEvent.change(venueSelect, { target: { value: expectedSelectOptions[1].id } })
-        await waitFor(() => {
-          venueSelect = screen.getByDisplayValue(expectedSelectOptions[0].value, getByOptions)
-          expect(venueSelect).toBeInTheDocument()
-        })
+        const firstVenueOption = within(venueSelect).getByText(expectedSelectOptions[1].value)
+        expect(firstVenueOption).toBeInTheDocument()
 
-        fireEvent.change(venueSelect, { target: { value: expectedSelectOptions[2].id } })
-        await waitFor(() => {
-          venueSelect = screen.getByDisplayValue(expectedSelectOptions[2].value, getByOptions)
-          expect(venueSelect).toBeInTheDocument()
-        })
+        const secondVenueOption = within(venueSelect).getByText(expectedSelectOptions[2].value)
+        expect(secondVenueOption).toBeInTheDocument()
       })
 
       it('should render venue filter with given venue selected', async () => {
@@ -357,15 +347,13 @@ describe('src | components | pages | Offers | Offers', () => {
         jest.spyOn(props.query, 'parse').mockReturnValue({ lieu: proVenues[0].id })
 
         // When
-        renderOffers(props, store)
+        await renderOffers(props, store)
 
         // Then
-        await waitFor(() => {
-          let venueSelect = screen.getByDisplayValue(expectedSelectOptions[0].value, {
-            selector: 'select[name="lieu"]',
-          })
-          expect(venueSelect).toBeInTheDocument()
+        let venueSelect = screen.getByDisplayValue(expectedSelectOptions[0].value, {
+          selector: 'select[name="lieu"]',
         })
+        expect(venueSelect).toBeInTheDocument()
       })
 
       it('should render creation mode filter with default option selected', async () => {
@@ -506,7 +494,7 @@ describe('src | components | pages | Offers | Offers', () => {
           expect(screen.queryByText('Afficher les statuts')).toBeNull()
         })
 
-        it('should display no results for filters', async () => {
+        it('should indicate that no offers match selected filters', async () => {
           // Given
           props.savedSearchFilters = {
             lieu: proVenues[0].id,
@@ -517,14 +505,13 @@ describe('src | components | pages | Offers | Offers', () => {
           await renderOffers(props, store)
 
           // Then
-
-          const noOffersForSearchFiltersText = await screen.findByText(
+          const noOffersForSearchFiltersText = screen.getByText(
             'Aucune offre trouvée pour votre recherche'
           )
           expect(noOffersForSearchFiltersText).toBeInTheDocument()
         })
 
-        it('should display no results for filter', async () => {
+        it('should indicate that user has no offers yet', async () => {
           // Given
           props.offers = []
 
@@ -532,7 +519,7 @@ describe('src | components | pages | Offers | Offers', () => {
           await renderOffers(props, store)
 
           // Then
-          const noOffersText = await screen.findByText("Vous n'avez pas encore créé d'offre.")
+          const noOffersText = screen.getByText("Vous n'avez pas encore créé d'offre.")
           expect(noOffersText).toBeInTheDocument()
         })
       })
@@ -1013,21 +1000,19 @@ describe('src | components | pages | Offers | Offers', () => {
       })
 
       // When
-      fireEvent.click(screen.getByText('Lancer la recherche'))
+      await fireEvent.click(screen.getByText('Lancer la recherche'))
 
       // Then
-      await waitFor(() => {
-        expect(props.loadOffers).toHaveBeenCalledWith({
-          name: 'Any word',
-          page: DEFAULT_PAGE,
-          venueId: DEFAULT_SEARCH_FILTERS.venueId,
-          typeId: DEFAULT_SEARCH_FILTERS.typeId,
-          offererId: DEFAULT_SEARCH_FILTERS.offererId,
-          status: DEFAULT_SEARCH_FILTERS.status,
-          creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
-          periodBeginningDate: DEFAULT_SEARCH_FILTERS.periodBeginningDate,
-          periodEndingDate: DEFAULT_SEARCH_FILTERS.periodEndingDate,
-        })
+      expect(props.loadOffers).toHaveBeenCalledWith({
+        name: 'Any word',
+        page: DEFAULT_PAGE,
+        venueId: DEFAULT_SEARCH_FILTERS.venueId,
+        typeId: DEFAULT_SEARCH_FILTERS.typeId,
+        offererId: DEFAULT_SEARCH_FILTERS.offererId,
+        status: DEFAULT_SEARCH_FILTERS.status,
+        creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
+        periodBeginningDate: DEFAULT_SEARCH_FILTERS.periodBeginningDate,
+        periodEndingDate: DEFAULT_SEARCH_FILTERS.periodEndingDate,
       })
     })
 
@@ -1039,21 +1024,19 @@ describe('src | components | pages | Offers | Offers', () => {
       })
 
       // When
-      fireEvent.click(screen.getByText('Lancer la recherche'))
+      await fireEvent.click(screen.getByText('Lancer la recherche'))
 
       // Then
-      await waitFor(() => {
-        expect(props.loadOffers).toHaveBeenCalledWith({
-          name: 'Any word',
-          page: DEFAULT_PAGE,
-          venueId: DEFAULT_SEARCH_FILTERS.venueId,
-          typeId: DEFAULT_SEARCH_FILTERS.typeId,
-          offererId: DEFAULT_SEARCH_FILTERS.offererId,
-          status: DEFAULT_SEARCH_FILTERS.status,
-          creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
-          periodBeginningDate: DEFAULT_SEARCH_FILTERS.periodBeginningDate,
-          periodEndingDate: DEFAULT_SEARCH_FILTERS.periodEndingDate,
-        })
+      expect(props.loadOffers).toHaveBeenCalledWith({
+        name: 'Any word',
+        page: DEFAULT_PAGE,
+        venueId: DEFAULT_SEARCH_FILTERS.venueId,
+        typeId: DEFAULT_SEARCH_FILTERS.typeId,
+        offererId: DEFAULT_SEARCH_FILTERS.offererId,
+        status: DEFAULT_SEARCH_FILTERS.status,
+        creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
+        periodBeginningDate: DEFAULT_SEARCH_FILTERS.periodBeginningDate,
+        periodEndingDate: DEFAULT_SEARCH_FILTERS.periodEndingDate,
       })
     })
   })
@@ -1091,131 +1074,115 @@ describe('src | components | pages | Offers | Offers', () => {
     it('should have page value when page value is not first page', async () => {
       // Given
       props.loadOffers.mockResolvedValueOnce({ page: 2, pageCount: 2, offersCount: 5 })
-      renderOffers(props, store)
+      await renderOffers(props, store)
 
       // When
-      await waitFor(() => {
-        fireEvent.click(screen.getByAltText('Aller à la page suivante'))
-      })
+      await fireEvent.click(screen.getByAltText('Aller à la page suivante'))
 
       // Then
-      await waitFor(() => {
-        expect(props.query.change).toHaveBeenCalledWith({
-          categorie: null,
-          creation: null,
-          lieu: null,
-          nom: null,
-          page: 2,
-          'periode-evenement-debut': null,
-          'periode-evenement-fin': null,
-          statut: null,
-          structure: null,
-        })
+      expect(props.query.change).toHaveBeenLastCalledWith({
+        categorie: null,
+        creation: null,
+        lieu: null,
+        nom: null,
+        page: 2,
+        'periode-evenement-debut': null,
+        'periode-evenement-fin': null,
+        statut: null,
+        structure: null,
       })
     })
 
     it('should have page value be removed when page value is first page', async () => {
       // Given
-      renderOffers(props, store)
+      await renderOffers(props, store)
 
       // When
-      const nextIcon = await screen.findByAltText('Aller à la page suivante')
-      fireEvent.click(nextIcon)
+      const nextIcon = screen.getByAltText('Aller à la page suivante')
+      await fireEvent.click(nextIcon)
 
-      const prevIcon = await screen.findByAltText('Aller à la page précédente')
-      fireEvent.click(prevIcon)
+      const prevIcon = screen.getByAltText('Aller à la page précédente')
+      await fireEvent.click(prevIcon)
 
       // Then
-      await waitFor(() => {
-        expect(props.query.change).toHaveBeenCalledWith({
-          categorie: null,
-          creation: null,
-          lieu: null,
-          nom: null,
-          'periode-evenement-debut': null,
-          'periode-evenement-fin': null,
-          statut: null,
-          structure: null,
-        })
+      expect(props.query.change).toHaveBeenLastCalledWith({
+        categorie: null,
+        creation: null,
+        lieu: null,
+        nom: null,
+        'periode-evenement-debut': null,
+        'periode-evenement-fin': null,
+        statut: null,
+        structure: null,
       })
     })
 
     it('should have offer name value when name search value is not an empty string', async () => {
       // Given
-      renderOffers(props, store)
+      await renderOffers(props, store)
 
       // When
-      await waitFor(() =>
-        fireEvent.change(screen.getByPlaceholderText('Rechercher par nom d’offre'), {
-          target: { value: 'AnyWord' },
-        })
-      )
-      fireEvent.click(screen.getByText('Lancer la recherche'))
+      fireEvent.change(screen.getByPlaceholderText('Rechercher par nom d’offre'), {
+        target: { value: 'AnyWord' },
+      })
+      await fireEvent.click(screen.getByText('Lancer la recherche'))
 
       // Then
-      await waitFor(() => {
-        expect(props.query.change).toHaveBeenCalledWith({
-          categorie: null,
-          creation: null,
-          lieu: null,
-          nom: 'AnyWord',
-          'periode-evenement-debut': null,
-          'periode-evenement-fin': null,
-          statut: null,
-          structure: null,
-        })
+      expect(props.query.change).toHaveBeenCalledWith({
+        categorie: null,
+        creation: null,
+        lieu: null,
+        nom: 'AnyWord',
+        'periode-evenement-debut': null,
+        'periode-evenement-fin': null,
+        statut: null,
+        structure: null,
       })
     })
 
     it('should store search value', async () => {
       // Given
-      renderOffers(props, store)
+      await renderOffers(props, store)
       const searchInput = screen.getByPlaceholderText('Rechercher par nom d’offre')
 
       // When
-      await waitFor(() => fireEvent.change(searchInput, { target: { value: 'search string' } }))
-      fireEvent.click(screen.getByText('Lancer la recherche'))
+      fireEvent.change(searchInput, { target: { value: 'search string' } })
+      await fireEvent.click(screen.getByText('Lancer la recherche'))
 
       // Then
-      await waitFor(() => {
-        expect(props.saveSearchFilters).toHaveBeenCalledWith({
-          venueId: ALL_VENUES,
-          typeId: ALL_TYPES,
-          name: 'search string',
-          offererId: ALL_OFFERERS,
-          page: DEFAULT_PAGE,
-          status: ALL_STATUS,
-          creationMode: DEFAULT_CREATION_MODE.id,
-          periodBeginningDate: ALL_EVENT_PERIODS,
-          periodEndingDate: ALL_EVENT_PERIODS,
-        })
+      expect(props.saveSearchFilters).toHaveBeenCalledWith({
+        venueId: ALL_VENUES,
+        typeId: ALL_TYPES,
+        name: 'search string',
+        offererId: ALL_OFFERERS,
+        page: DEFAULT_PAGE,
+        status: ALL_STATUS,
+        creationMode: DEFAULT_CREATION_MODE.id,
+        periodBeginningDate: ALL_EVENT_PERIODS,
+        periodEndingDate: ALL_EVENT_PERIODS,
       })
     })
 
     it('should have offer name value be removed when name search value is an empty string', async () => {
       // Given
-      renderOffers(props, store)
+      await renderOffers(props, store)
 
       // When
-      await waitFor(() =>
-        fireEvent.change(screen.getByPlaceholderText('Rechercher par nom d’offre'), {
-          target: { value: ALL_OFFERS },
-        })
-      )
-      fireEvent.click(screen.getByText('Lancer la recherche'))
+      fireEvent.change(screen.getByPlaceholderText('Rechercher par nom d’offre'), {
+        target: { value: ALL_OFFERS },
+      })
+      await fireEvent.click(screen.getByText('Lancer la recherche'))
 
       // Then
-      await waitFor(() => {
-        expect(props.query.change).toHaveBeenCalledWith({
-          categorie: null,
-          creation: null,
-          lieu: null,
-          nom: null,
-          'periode-evenement-debut': null,
-          'periode-evenement-fin': null,
-          statut: null,
-          structure: null,
-        })
+      expect(props.query.change).toHaveBeenCalledWith({
+        categorie: null,
+        creation: null,
+        lieu: null,
+        nom: null,
+        'periode-evenement-debut': null,
+        'periode-evenement-fin': null,
+        statut: null,
+        structure: null,
       })
     })
 
@@ -1227,21 +1194,19 @@ describe('src | components | pages | Offers | Offers', () => {
       })
 
       // When
-      await waitFor(() => fireEvent.change(venueSelect, { target: { value: proVenues[0].id } }))
-      fireEvent.click(screen.getByText('Lancer la recherche'))
+      fireEvent.change(venueSelect, { target: { value: proVenues[0].id } })
+      await fireEvent.click(screen.getByText('Lancer la recherche'))
 
       // Then
-      await waitFor(() => {
-        expect(props.query.change).toHaveBeenCalledWith({
-          lieu: proVenues[0].id,
-          categorie: null,
-          creation: null,
-          nom: null,
-          'periode-evenement-debut': null,
-          'periode-evenement-fin': null,
-          statut: null,
-          structure: null,
-        })
+      expect(props.query.change).toHaveBeenCalledWith({
+        lieu: proVenues[0].id,
+        categorie: null,
+        creation: null,
+        nom: null,
+        'periode-evenement-debut': null,
+        'periode-evenement-fin': null,
+        statut: null,
+        structure: null,
       })
     })
 
@@ -1259,20 +1224,18 @@ describe('src | components | pages | Offers | Offers', () => {
 
       // When
       fireEvent.change(typeSelect, { target: { value: 'test_id_1' } })
-      fireEvent.click(screen.getByText('Lancer la recherche'))
+      await fireEvent.click(screen.getByText('Lancer la recherche'))
 
       // Then
-      await waitFor(() => {
-        expect(props.query.change).toHaveBeenCalledWith({
-          categorie: 'test_id_1',
-          creation: null,
-          lieu: null,
-          nom: null,
-          'periode-evenement-debut': null,
-          'periode-evenement-fin': null,
-          statut: null,
-          structure: null,
-        })
+      expect(props.query.change).toHaveBeenCalledWith({
+        categorie: 'test_id_1',
+        creation: null,
+        lieu: null,
+        nom: null,
+        'periode-evenement-debut': null,
+        'periode-evenement-fin': null,
+        statut: null,
+        structure: null,
       })
     })
 
@@ -1284,20 +1247,18 @@ describe('src | components | pages | Offers | Offers', () => {
       fireEvent.click(screen.getByLabelText('Épuisée'))
 
       // When
-      fireEvent.click(screen.getByText('Appliquer'))
+      await fireEvent.click(screen.getByText('Appliquer'))
 
       // Then
-      await waitFor(() => {
-        expect(props.query.change).toHaveBeenLastCalledWith({
-          statut: 'epuisee',
-          categorie: null,
-          creation: null,
-          lieu: null,
-          nom: null,
-          'periode-evenement-debut': null,
-          'periode-evenement-fin': null,
-          structure: null,
-        })
+      expect(props.query.change).toHaveBeenLastCalledWith({
+        statut: 'epuisee',
+        categorie: null,
+        creation: null,
+        lieu: null,
+        nom: null,
+        'periode-evenement-debut': null,
+        'periode-evenement-fin': null,
+        structure: null,
       })
     })
 
@@ -1330,10 +1291,10 @@ describe('src | components | pages | Offers | Offers', () => {
       props.getOfferer.mockResolvedValueOnce({ name: 'La structure' })
 
       // When
-      renderOffers(props, store)
+      await renderOffers(props, store)
 
       // Then
-      await waitFor(() => expect(screen.queryByText('La structure')).not.toBeNull())
+      expect(screen.queryByText('La structure')).not.toBeNull()
     })
 
     it('should have offerer value be removed when user removes offerer filter', async () => {
