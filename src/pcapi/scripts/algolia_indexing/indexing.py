@@ -7,12 +7,10 @@ from pcapi import settings
 from pcapi.algolia.usecase.orchestrator import delete_expired_offers
 from pcapi.algolia.usecase.orchestrator import process_eligible_offers
 from pcapi.connectors.redis import RedisBucket
-from pcapi.connectors.redis import delete_offer_ids
 from pcapi.connectors.redis import delete_offer_ids_in_error
 from pcapi.connectors.redis import delete_venue_ids
 from pcapi.connectors.redis import delete_venue_provider_currently_in_sync
 from pcapi.connectors.redis import delete_venue_providers
-from pcapi.connectors.redis import get_offer_ids
 from pcapi.connectors.redis import get_offer_ids_in_error
 from pcapi.connectors.redis import get_venue_ids
 from pcapi.connectors.redis import get_venue_providers
@@ -24,19 +22,6 @@ from pcapi.utils.converter import from_tuple_to_int
 
 
 logger = logging.getLogger(__name__)
-
-
-# FIXME (dbaty, 2021-04-28): remove when we're sure that the new
-# version (`batch_indexing_offers_in_algolia_by_offer` below) works as
-# intended. Also remove `get_offer_ids` and `delete_offer_ids`.
-def legacy_batch_indexing_offers_in_algolia_by_offer(client: Redis) -> None:
-    offer_ids = get_offer_ids(client=client)
-
-    if len(offer_ids) > 0:
-        logger.info("[ALGOLIA] processing %i offers...", len(offer_ids))
-        process_eligible_offers(client=client, offer_ids=offer_ids, from_provider_update=False)
-        delete_offer_ids(client=client)
-        logger.info("[ALGOLIA] %i offers processed!", len(offer_ids))
 
 
 def batch_indexing_offers_in_algolia_by_offer(client: Redis, stop_only_when_empty=False) -> None:

@@ -5,15 +5,12 @@ from flask import current_app as app
 
 from pcapi.algolia.infrastructure.api import clear_index
 from pcapi.connectors.redis import delete_all_indexed_offers
-from pcapi.models.feature import FeatureToggle
-from pcapi.repository import feature_queries
 from pcapi.scripts.algolia_indexing.indexing import _process_venue_provider
 from pcapi.scripts.algolia_indexing.indexing import batch_deleting_expired_offers_in_algolia
 from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_by_offer
 from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_by_venue
 from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_by_venue_provider
 from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_from_database
-from pcapi.scripts.algolia_indexing.indexing import legacy_batch_indexing_offers_in_algolia_by_offer
 
 
 logger = logging.getLogger(__name__)
@@ -22,10 +19,7 @@ logger = logging.getLogger(__name__)
 @app.manager.command
 def process_offers():
     with app.app_context():
-        if feature_queries.is_active(FeatureToggle.USE_NEW_BATCH_INDEX_OFFERS_BEHAVIOUR):
-            batch_indexing_offers_in_algolia_by_offer(client=app.redis_client, stop_only_when_empty=True)
-        else:
-            legacy_batch_indexing_offers_in_algolia_by_offer(client=app.redis_client)
+        batch_indexing_offers_in_algolia_by_offer(client=app.redis_client, stop_only_when_empty=True)
 
 
 @app.manager.command

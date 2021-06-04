@@ -52,7 +52,6 @@ class FeatureToggle(enum.Enum):
     ENABLE_ACTIVATION_CODES = "Permet la création de codes d'activation"
     ENABLE_PHONE_VALIDATION = "Active la validation du numéro de téléphone"  # TODO (viconnex) remove when FORCE_PHONE_VALIDATION is released in production
     FORCE_PHONE_VALIDATION = "Forcer la validation du numéro de téléphone pour devenir bénéficiaire"
-    USE_NEW_BATCH_INDEX_OFFERS_BEHAVIOUR = "Utilise une boucle dans le cron de réindexation Algolia"
     ENABLE_NATIVE_ID_CHECK_VERSION = "Utilise la version d'ID-Check intégrée à l'application native"
     ENABLE_NEW_VENUE_PAGES = "Utiliser la nouvelle version des pages d'edition et de creation de lieux"
     ENABLE_IDCHECK_FRAUD_CONTROLS = "Active les contrôles de sécurité en sortie du process ID Check"
@@ -77,7 +76,6 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS,
     FeatureToggle.ENABLE_ACTIVATION_CODES,
     FeatureToggle.DISABLE_BOOKINGS_RECAP_FOR_SOME_PROS,
-    FeatureToggle.USE_NEW_BATCH_INDEX_OFFERS_BEHAVIOUR,
     FeatureToggle.FORCE_PHONE_VALIDATION,
     FeatureToggle.ENABLE_NEW_VENUE_PAGES,
     FeatureToggle.ENABLE_BOOKINGS_PAGE_FILTERS_FIRST,

@@ -5,7 +5,11 @@ Revises: ff04dc8fe18e
 Create Date: 2021-04-28 17:44:43.120881
 """
 
-from pcapi.models import feature
+# This migration added the USE_NEW_BATCH_INDEX_OFFERS_BEHAVIOUR
+# feature flag. But this flag has been removed in a later
+# migration. Keep this as a no-op until we squash this migration, so
+# that all migration files can be loaded by Alembic and played on an
+# empty database.
 
 
 # revision identifiers, used by Alembic.
@@ -15,12 +19,9 @@ branch_labels = None
 depends_on = None
 
 
-FLAG = feature.FeatureToggle.USE_NEW_BATCH_INDEX_OFFERS_BEHAVIOUR
-
-
 def upgrade():
-    feature.add_feature_to_database(FLAG)
+    pass
 
 
 def downgrade():
-    feature.remove_feature_from_database(FLAG)
+    pass

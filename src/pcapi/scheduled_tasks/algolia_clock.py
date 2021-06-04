@@ -4,7 +4,6 @@ from pcapi import settings
 from pcapi.algolia.infrastructure.worker import process_multi_indexing
 from pcapi.core.logging import install_logging
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository import feature_queries
 from pcapi.scheduled_tasks import utils
 from pcapi.scheduled_tasks.decorators import cron_context
 from pcapi.scheduled_tasks.decorators import cron_require_feature
@@ -13,7 +12,6 @@ from pcapi.scripts.algolia_indexing.indexing import batch_deleting_expired_offer
 from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_by_offer
 from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_by_venue
 from pcapi.scripts.algolia_indexing.indexing import batch_processing_offer_ids_in_error
-from pcapi.scripts.algolia_indexing.indexing import legacy_batch_indexing_offers_in_algolia_by_offer
 
 
 install_logging()
@@ -23,10 +21,7 @@ install_logging()
 @cron_context
 @cron_require_feature(FeatureToggle.SYNCHRONIZE_ALGOLIA)
 def index_offers_in_algolia_by_offer(app):
-    if feature_queries.is_active(FeatureToggle.USE_NEW_BATCH_INDEX_OFFERS_BEHAVIOUR):
-        batch_indexing_offers_in_algolia_by_offer(client=app.redis_client)
-    else:
-        legacy_batch_indexing_offers_in_algolia_by_offer(client=app.redis_client)
+    batch_indexing_offers_in_algolia_by_offer(client=app.redis_client)
 
 
 @log_cron

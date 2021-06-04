@@ -53,15 +53,6 @@ def _add_venue_provider(client: Redis, venue_provider) -> None:
         logger.exception("[REDIS] %s", error)
 
 
-def get_offer_ids(client: Redis) -> list[int]:
-    try:
-        offer_ids = client.lrange(RedisBucket.REDIS_LIST_OFFER_IDS_NAME.value, 0, settings.REDIS_OFFER_IDS_CHUNK_SIZE)
-        return offer_ids
-    except redis.exceptions.RedisError as error:
-        logger.exception("[REDIS] %s", error)
-        return []
-
-
 def pop_offer_ids(client: Redis) -> list[int]:
     # FIXME (dbaty, 2021-04-30): Here we should use `LPOP` but its
     # `count` argument has been added in Redis 6.2. GCP currently has
@@ -111,13 +102,6 @@ def get_venue_providers(client: Redis) -> list[dict]:
     except redis.exceptions.RedisError as error:
         logger.exception("[REDIS] %s", error)
         return []
-
-
-def delete_offer_ids(client: Redis) -> None:
-    try:
-        client.ltrim(RedisBucket.REDIS_LIST_OFFER_IDS_NAME.value, settings.REDIS_OFFER_IDS_CHUNK_SIZE, -1)
-    except redis.exceptions.RedisError as error:
-        logger.exception("[REDIS] %s", error)
 
 
 def delete_venue_ids(client: Redis) -> None:

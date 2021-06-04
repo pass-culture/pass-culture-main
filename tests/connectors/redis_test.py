@@ -14,14 +14,12 @@ from pcapi.connectors.redis import add_venue_provider_currently_in_sync
 from pcapi.connectors.redis import check_offer_exists
 from pcapi.connectors.redis import delete_all_indexed_offers
 from pcapi.connectors.redis import delete_indexed_offers
-from pcapi.connectors.redis import delete_offer_ids
 from pcapi.connectors.redis import delete_offer_ids_in_error
 from pcapi.connectors.redis import delete_venue_ids
 from pcapi.connectors.redis import delete_venue_provider_currently_in_sync
 from pcapi.connectors.redis import delete_venue_providers
 from pcapi.connectors.redis import get_number_of_venue_providers_currently_in_sync
 from pcapi.connectors.redis import get_offer_details
-from pcapi.connectors.redis import get_offer_ids
 from pcapi.connectors.redis import get_offer_ids_in_error
 from pcapi.connectors.redis import get_venue_ids
 from pcapi.connectors.redis import get_venue_providers
@@ -61,45 +59,6 @@ class AddOfferIdTest:
 
         # Then
         client.rpush.assert_called_once_with("offer_ids", 1)
-
-
-class GetOfferIdsTest:
-    @patch("pcapi.settings.REDIS_OFFER_IDS_CHUNK_SIZE", return_value=1000)
-    def test_should_return_offer_ids_from_list(self, mock_redis_lrange_end):
-        # Given
-        client = MagicMock()
-        client.lrange = MagicMock()
-
-        # When
-        get_offer_ids(client=client)
-
-        # Then
-        client.lrange.assert_called_once_with("offer_ids", 0, mock_redis_lrange_end)
-
-    def test_should_return_empty_array_when_exception(self):
-        # Given
-        client = MagicMock()
-        client.lrange = MagicMock()
-        client.lrange.side_effect = redis.exceptions.RedisError
-
-        # When
-        result = get_offer_ids(client=client)
-
-        # Then
-        assert result == []
-
-
-class DeleteOfferIdsTest:
-    def test_should_delete_given_range_of_offer_ids_from_redis(self):
-        # Given
-        client = MagicMock()
-        client.ltrim = MagicMock()
-
-        # When
-        delete_offer_ids(client=client)
-
-        # Then
-        client.ltrim.assert_called_once_with("offer_ids", 10000, -1)
 
 
 class AddVenueIdTest:
