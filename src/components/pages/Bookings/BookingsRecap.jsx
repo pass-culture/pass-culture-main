@@ -1,7 +1,6 @@
 import * as PropTypes from 'prop-types'
-import React, { PureComponent } from 'react'
+import React, { useEffect, useState } from 'react'
 
-import AppLayout from 'app/AppLayout'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
@@ -13,121 +12,77 @@ import NoBookingsMessage from './NoBookingsMessage/NoBookingsMessage'
 import { ALL_VENUES, EMPTY_FILTER_VALUE } from './PreFilters/_constants'
 import PreFilters from './PreFilters/PreFilters'
 
-class BookingsRecap extends PureComponent {
-  constructor(props) {
-    super(props)
-    this.state = {
-      bookingsRecap: [],
-      isLoading: true,
-      page: 0,
-      pages: 0,
-      preFilters: {
-        bookingBeginningDate: EMPTY_FILTER_VALUE,
-        bookingEndingDate: EMPTY_FILTER_VALUE,
-        offerDate: EMPTY_FILTER_VALUE,
-        offerVenueId: ALL_VENUES,
-      },
-    }
-  }
+const MAX_LOADED_PAGES = 5
 
-  componentDidMount() {
-    this.fetchFirstBookingsRecapPage()
-  }
+const BookingsRecap = ({ arePreFiltersEnabled, location, showWarningNotification }) => {
+  const [bookingsRecap, setBookingsRecap] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [preFilters, setPreFilters] = useState({
+    bookingBeginningDate: EMPTY_FILTER_VALUE,
+    bookingEndingDate: EMPTY_FILTER_VALUE,
+    offerDate: EMPTY_FILTER_VALUE,
+    offerVenueId: ALL_VENUES,
+  })
 
-  componentDidUpdate() {
-    const { page, pages, preFilters } = this.state
+  useEffect(() => {
+    async function loadBookingsRecap() {
+      setIsLoading(true)
+      setBookingsRecap([])
 
-    let currentPage = page
-    if (currentPage < pages && currentPage < 5) {
-      currentPage++
-      pcapi
-        .loadFilteredBookingsRecap({ page: currentPage, venueId: preFilters.offerVenueId })
-        .then(this.savePaginatedBookingsRecap)
-    } else {
-      this.loadData()
-      if (currentPage === 5 && currentPage < pages) {
-        this.props.showWarningNotification()
+      let currentPage = 1
+      const { pages, bookings_recap: bookingsRecap } = await pcapi.loadFilteredBookingsRecap({page: currentPage,
+        venueId: preFilters.offerVenueId,
+      })
+      setBookingsRecap(bookingsRecap)
+
+      while (currentPage < Math.min(pages, MAX_LOADED_PAGES)) {
+        currentPage += 1
+        await pcapi.loadFilteredBookingsRecap({page: currentPage,
+          venueId: preFilters.offerVenueId,
+        }).then(({ bookings_recap }) =>
+          setBookingsRecap(currentBookingsRecap => [...currentBookingsRecap].concat(bookings_recap))
+        )
+      }
+
+      setIsLoading(false)
+      if (currentPage === MAX_LOADED_PAGES && currentPage < pages) {
+        showWarningNotification()
       }
     }
-  }
+    loadBookingsRecap()
+  }, [preFilters.offerVenueId, showWarningNotification])
 
-  loadData = () => {
-    this.setState({
-      isLoading: false,
-    })
-  }
-
-  fetchFirstBookingsRecapPage() {
-    const { preFilters } = this.state
-    pcapi
-      .loadFilteredBookingsRecap({ page: 1, venueId: preFilters.offerVenueId })
-      .then(this.savePaginatedBookingsRecap)
-  }
-
-  applyPreFilters = selectedPreFilters => {
-    this.setState(
-      {
-        isLoading: true,
-        bookingsRecap: [],
-        preFilters: { ...selectedPreFilters },
-      },
-      () => this.fetchFirstBookingsRecapPage()
-    )
-  }
-
-  savePaginatedBookingsRecap = paginatedBookingsRecap => {
-    const { bookingsRecap } = this.state
-
-    if (paginatedBookingsRecap.page === 1) {
-      this.setState({
-        bookingsRecap: paginatedBookingsRecap.bookings_recap,
-        page: paginatedBookingsRecap.page,
-        pages: paginatedBookingsRecap.pages,
-      })
-    } else {
-      this.setState({
-        bookingsRecap: [...bookingsRecap].concat(paginatedBookingsRecap.bookings_recap),
-        page: paginatedBookingsRecap.page,
-      })
-    }
-  }
-
-  render() {
-    const { bookingsRecap, isLoading } = this.state
-    const { state: locationState } = this.props.location
-
-    return (
-      <AppLayout layoutConfig={{ pageName: 'bookings' }}>
-        <PageTitle title="Vos réservations" />
-        <Titles title="Réservations" />
-        {this.props.arePreFiltersEnabled ? (
-          <>
-            <PreFilters
-              applyPreFilters={this.applyPreFilters}
-              offerVenueId={locationState?.venueId}
-            />
-            {bookingsRecap.length > 0 && (
-              <BookingsRecapTable
-                bookingsRecap={bookingsRecap}
-                isLoading={isLoading}
-                locationState={locationState}
-              />
-            )}
-          </>
-        ) : bookingsRecap.length > 0 ? (
-          <BookingsRecapTableLegacy
-            bookingsRecap={bookingsRecap}
-            isLoading={isLoading}
-            locationState={locationState}
+  return (
+    <div className="bookings-page">
+      <PageTitle title="Vos réservations" />
+      <Titles title="Réservations" />
+      {arePreFiltersEnabled ? (
+        <>
+          <PreFilters
+            applyPreFilters={setPreFilters}
+            offerVenueId={location.state?.venueId}
           />
-        ) : isLoading ? (
-          <Spinner />
-        ) : (
-          <NoBookingsMessage />
-        )}
-      </AppLayout>
-    )
-  }
+          {bookingsRecap.length > 0 && (
+            <BookingsRecapTable
+              bookingsRecap={bookingsRecap}
+              isLoading={isLoading}
+              locationState={location.state}
+            />
+          )}
+        </>
+      ) : bookingsRecap.length > 0 ? (
+        <BookingsRecapTableLegacy
+          bookingsRecap={bookingsRecap}
+          isLoading={isLoading}
+          locationState={location.state}
+        />
+      ) : isLoading ? (
+        <Spinner />
+      ) : (
+        <NoBookingsMessage />
+      )}
+    </div>
+  )
 }
 
 BookingsRecap.propTypes = {

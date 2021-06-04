@@ -84,12 +84,6 @@ export const routesWithMain = [
     title: 'Remboursements',
   },
   {
-    component: BookingsRecapContainer,
-    exact: true,
-    path: '/reservations',
-    title: 'Réservations',
-  },
-  {
     component: Offers,
     exact: true,
     path: '/offres',
@@ -131,6 +125,12 @@ const routes = [
     exact: true,
     path: '/accueil',
     title: 'Accueil',
+  },
+  {
+    component: BookingsRecapContainer,
+    exact: true,
+    path: '/reservations',
+    title: 'Réservations',
   },
   {
     component: SetPasswordContainer,
