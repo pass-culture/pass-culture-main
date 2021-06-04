@@ -1,4 +1,3 @@
-from pcapi.domain.identifier.identifier import Identifier
 from pcapi.domain.pro_offers.paginated_offers_recap import OfferRecap
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
 from pcapi.models import Offer
@@ -17,7 +16,7 @@ def _offer_recap_to_domain(offer: Offer) -> OfferRecap:
     stocks = [_stock_serializer(stock_entity) for stock_entity in offer.activeStocks]
 
     return OfferRecap(
-        identifier=Identifier(offer.id),
+        id=offer.id,
         has_booking_limit_datetimes_passed=offer.hasBookingLimitDatetimesPassed,
         is_active=offer.isActive,
         is_editable=offer.isEditable,
@@ -27,7 +26,7 @@ def _offer_recap_to_domain(offer: Offer) -> OfferRecap:
         name=offer.name,
         thumb_url=offer.thumbUrl,
         offer_type=offer.type,
-        venue_identifier=Identifier(offer.venue.id),
+        venue_id=offer.venue.id,
         venue_is_virtual=offer.venue.isVirtual,
         venue_managing_offerer_id=offer.venue.managingOffererId,
         venue_name=offer.venue.name,
@@ -41,7 +40,7 @@ def _offer_recap_to_domain(offer: Offer) -> OfferRecap:
 
 def _stock_serializer(stock: Stock) -> dict:
     return {
-        "identifier": Identifier(stock.id),
+        "id": stock.id,
         "has_booking_limit_datetime_passed": stock.hasBookingLimitDatetimePassed,
         "remaining_quantity": stock.remainingQuantity,
         "beginning_datetime": stock.beginningDatetime,

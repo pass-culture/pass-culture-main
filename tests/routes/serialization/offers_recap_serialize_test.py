@@ -1,7 +1,7 @@
-from pcapi.domain.identifier.identifier import Identifier
 from pcapi.domain.pro_offers.paginated_offers_recap import OfferRecap
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
 from pcapi.routes.serialization.offers_recap_serialize import serialize_offers_recap_paginated
+from pcapi.utils.human_ids import humanize
 
 
 def should_return_serialized_offers_with_relevant_informations():
@@ -11,14 +11,14 @@ def should_return_serialized_offers_with_relevant_informations():
     venue_id = 3
     offerer_id = 4
     stock = {
-        "identifier": Identifier(stock_id),
+        "id": stock_id,
         "has_booking_limit_datetime_passed": False,
         "remaining_quantity": 10,
         "beginning_datetime": None,
     }
     departement_code = 12
     offer = OfferRecap(
-        identifier=Identifier(offer_id),
+        id=offer_id,
         has_booking_limit_datetimes_passed=False,
         is_active=True,
         is_editable=True,
@@ -28,7 +28,7 @@ def should_return_serialized_offers_with_relevant_informations():
         name="Test Book",
         thumb_url="/thumb/url",
         offer_type="ThingType.AUDIOVISUEL",
-        venue_identifier=Identifier(venue_id),
+        venue_id=venue_id,
         venue_is_virtual=False,
         venue_managing_offerer_id=offerer_id,
         venue_name="La petite librairie",
@@ -47,7 +47,7 @@ def should_return_serialized_offers_with_relevant_informations():
     expected_serialized_offer = [
         {
             "hasBookingLimitDatetimesPassed": False,
-            "id": offer.identifier.scrambled,
+            "id": humanize(offer_id),
             "isActive": True,
             "isEditable": True,
             "isEvent": False,
@@ -57,9 +57,9 @@ def should_return_serialized_offers_with_relevant_informations():
             "status": "ACTIVE",
             "stocks": [
                 {
-                    "id": offer.stocks[0].identifier.scrambled,
+                    "id": humanize(stock_id),
                     "hasBookingLimitDatetimePassed": False,
-                    "offerId": offer.identifier.scrambled,
+                    "offerId": humanize(offer_id),
                     "remainingQuantity": 10,
                     "beginningDatetime": None,
                 }
@@ -67,15 +67,15 @@ def should_return_serialized_offers_with_relevant_informations():
             "thumbUrl": "/thumb/url",
             "type": "ThingType.AUDIOVISUEL",
             "venue": {
-                "id": offer.venue.identifier.scrambled,
+                "id": humanize(venue_id),
                 "isVirtual": False,
                 "departementCode": departement_code,
-                "managingOffererId": offer.venue.managing_offerer_id.scrambled,
+                "managingOffererId": humanize(offerer_id),
                 "name": "La petite librairie",
                 "offererName": "Gérant de petites librairies",
                 "publicName": "Petite librairie",
             },
-            "venueId": offer.venue.identifier.scrambled,
+            "venueId": humanize(venue_id),
         }
     ]
     assert result["offers"] == expected_serialized_offer
@@ -88,13 +88,13 @@ def should_return_pagination_details():
     venue_id = 3
     offerer_id = 4
     stock = {
-        "identifier": Identifier(stock_id),
+        "id": stock_id,
         "has_booking_limit_datetime_passed": False,
         "remaining_quantity": 10,
         "beginning_datetime": None,
     }
     offer = OfferRecap(
-        identifier=Identifier(offer_id),
+        id=offer_id,
         has_booking_limit_datetimes_passed=False,
         is_active=True,
         is_editable=True,
@@ -104,7 +104,7 @@ def should_return_pagination_details():
         name="Test Book",
         thumb_url="/thumb/url",
         offer_type="ThingType.AUDIOVISUEL",
-        venue_identifier=Identifier(venue_id),
+        venue_id=venue_id,
         venue_is_virtual=False,
         venue_managing_offerer_id=offerer_id,
         venue_name="La petite librairie",

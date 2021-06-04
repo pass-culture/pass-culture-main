@@ -20,7 +20,6 @@ from pcapi.core.offers.repository import get_offers_by_ids
 from pcapi.core.offers.repository import get_paginated_offers_for_filters
 from pcapi.core.offers.repository import get_sold_out_offers_count_for_venue
 from pcapi.core.users import factories as users_factories
-from pcapi.domain.identifier.identifier import Identifier
 from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_provider
@@ -61,7 +60,7 @@ class PaginatedOfferForFiltersTest:
         assert paginated_offers.current_page == requested_page
         assert paginated_offers.total_pages == 2
         assert len(paginated_offers.offers) == 1
-        assert paginated_offers.offers[0].identifier == Identifier(offer1.id)
+        assert paginated_offers.offers[0].id == offer1.id
 
     @pytest.mark.usefixtures("db_session")
     def should_return_offers_sorted_by_id_desc(self):
@@ -80,14 +79,14 @@ class PaginatedOfferForFiltersTest:
         )
 
         # Then
-        assert paginated_offers.offers[0].identifier.persisted > paginated_offers.offers[1].identifier.persisted
+        assert paginated_offers.offers[0].id > paginated_offers.offers[1].id
 
     @pytest.mark.usefixtures("db_session")
     def should_exclude_draft_offers_when_requesting_all_offers(self, app):
         # given
         user_offerer = offers_factories.UserOffererFactory()
-        offers_factories.OfferFactory(venue__managingOfferer=user_offerer.offerer)
-        draft_offer = offers_factories.OfferFactory(
+        non_draft_offer = offers_factories.OfferFactory(venue__managingOfferer=user_offerer.offerer)
+        offers_factories.OfferFactory(
             venue__managingOfferer=user_offerer.offerer,
             validation=OfferValidationStatus.DRAFT,
         )
@@ -98,9 +97,8 @@ class PaginatedOfferForFiltersTest:
         )
 
         # then
-        offers_id = [offer.identifier for offer in paginated_offers.offers]
-        assert len(offers_id) == 1
-        assert not Identifier(draft_offer.id) in offers_id
+        offers_id = [offer.id for offer in paginated_offers.offers]
+        assert offers_id == [non_draft_offer.id]
 
     @pytest.mark.usefixtures("db_session")
     def should_return_offers_of_given_type(self):
@@ -121,9 +119,9 @@ class PaginatedOfferForFiltersTest:
         )
 
         # then
-        offers_id = [offer.identifier for offer in paginated_offers.offers]
-        assert Identifier(requested_offer.id) in offers_id
-        assert Identifier(other_offer.id) not in offers_id
+        offers_id = [offer.id for offer in paginated_offers.offers]
+        assert requested_offer.id in offers_id
+        assert other_offer.id not in offers_id
         assert paginated_offers.total_offers == 1
 
     @pytest.mark.usefixtures("db_session")
@@ -147,7 +145,7 @@ class PaginatedOfferForFiltersTest:
         )
 
         # then
-        assert paginated_offers.offers[0].identifier.persisted == manually_created_offer.id
+        assert paginated_offers.offers[0].id == manually_created_offer.id
         assert paginated_offers.total_offers == 1
 
     @pytest.mark.usefixtures("db_session")
@@ -171,7 +169,7 @@ class PaginatedOfferForFiltersTest:
         )
 
         # then
-        assert paginated_offers.offers[0].identifier.persisted == imported_offer.id
+        assert paginated_offers.offers[0].id == imported_offer.id
         assert paginated_offers.total_offers == 1
 
     @pytest.mark.usefixtures("db_session")
@@ -193,8 +191,8 @@ class PaginatedOfferForFiltersTest:
         )
 
         # then
-        offers_id = [offer.identifier for offer in paginated_offers.offers]
-        assert Identifier(offer_in_requested_time_period.id) not in offers_id
+        offers_id = [offer.id for offer in paginated_offers.offers]
+        assert offer_in_requested_time_period.id not in offers_id
         assert paginated_offers.total_offers == 0
 
     @pytest.mark.usefixtures("db_session")
@@ -223,9 +221,9 @@ class PaginatedOfferForFiltersTest:
         )
 
         # then
-        offers_id = [offer.identifier for offer in paginated_offers.offers]
-        assert Identifier(offer_in_cayenne.id) in offers_id
-        assert Identifier(offer_in_mayotte.id) in offers_id
+        offers_id = [offer.id for offer in paginated_offers.offers]
+        assert offer_in_cayenne.id in offers_id
+        assert offer_in_mayotte.id in offers_id
         assert paginated_offers.total_offers == 2
 
     class WhenUserIsAdmin:
@@ -246,9 +244,9 @@ class PaginatedOfferForFiltersTest:
             )
 
             # then
-            offers_id = [offer.identifier for offer in paginated_offers.offers]
-            assert Identifier(offer_for_requested_venue.id) in offers_id
-            assert Identifier(offer_for_other_venue.id) not in offers_id
+            offers_id = [offer.id for offer in paginated_offers.offers]
+            assert offer_for_requested_venue.id in offers_id
+            assert offer_for_other_venue.id not in offers_id
             assert paginated_offers.total_offers == 1
 
         @pytest.mark.usefixtures("db_session")
@@ -273,9 +271,9 @@ class PaginatedOfferForFiltersTest:
             )
 
             # then
-            offers_id = [offer.identifier for offer in paginated_offers.offers]
-            assert Identifier(offer_for_requested_venue.id) in offers_id
-            assert Identifier(offer_for_other_venue.id) not in offers_id
+            offers_id = [offer.id for offer in paginated_offers.offers]
+            assert offer_for_requested_venue.id in offers_id
+            assert offer_for_other_venue.id not in offers_id
             assert paginated_offers.total_offers == 1
 
         @pytest.mark.usefixtures("db_session")
@@ -295,9 +293,9 @@ class PaginatedOfferForFiltersTest:
             )
 
             # then
-            offers_id = [offer.identifier for offer in paginated_offers.offers]
-            assert Identifier(offer_for_requested_offerer.id) in offers_id
-            assert Identifier(offer_for_other_offerer.id) not in offers_id
+            offers_id = [offer.id for offer in paginated_offers.offers]
+            assert offer_for_requested_offerer.id in offers_id
+            assert offer_for_other_offerer.id not in offers_id
             assert paginated_offers.total_offers == 1
 
         @pytest.mark.usefixtures("db_session")
@@ -323,9 +321,9 @@ class PaginatedOfferForFiltersTest:
             )
 
             # then
-            offers_id = [offer.identifier for offer in paginated_offers.offers]
-            assert Identifier(offer_for_requested_offerer.id) in offers_id
-            assert Identifier(offer_for_other_offerer.id) not in offers_id
+            offers_id = [offer.id for offer in paginated_offers.offers]
+            assert offer_for_requested_offerer.id in offers_id
+            assert offer_for_other_offerer.id not in offers_id
             assert paginated_offers.total_offers == 1
 
     class WhenUserIsPro:
@@ -346,9 +344,9 @@ class PaginatedOfferForFiltersTest:
             )
 
             # then
-            offers_id = [offer.identifier for offer in paginated_offers.offers]
-            assert Identifier(offer_for_requested_venue.id) not in offers_id
-            assert Identifier(offer_for_other_venue.id) not in offers_id
+            offers_id = [offer.id for offer in paginated_offers.offers]
+            assert offer_for_requested_venue.id not in offers_id
+            assert offer_for_other_venue.id not in offers_id
             assert paginated_offers.total_offers == 0
 
         @pytest.mark.usefixtures("db_session")
@@ -373,9 +371,9 @@ class PaginatedOfferForFiltersTest:
             )
 
             # then
-            offers_id = [offer.identifier for offer in paginated_offers.offers]
-            assert Identifier(offer_for_requested_venue.id) in offers_id
-            assert Identifier(offer_for_other_venue.id) not in offers_id
+            offers_id = [offer.id for offer in paginated_offers.offers]
+            assert offer_for_requested_venue.id in offers_id
+            assert offer_for_other_venue.id not in offers_id
             assert paginated_offers.total_offers == 1
 
         @pytest.mark.usefixtures("db_session")
@@ -395,9 +393,9 @@ class PaginatedOfferForFiltersTest:
             )
 
             # then
-            offers_id = [offer.identifier for offer in paginated_offers.offers]
-            assert Identifier(offer_for_requested_offerer.id) not in offers_id
-            assert Identifier(offer_for_other_offerer.id) not in offers_id
+            offers_id = [offer.id for offer in paginated_offers.offers]
+            assert offer_for_requested_offerer.id not in offers_id
+            assert offer_for_other_offerer.id not in offers_id
             assert paginated_offers.total_offers == 0
 
         @pytest.mark.usefixtures("db_session")
@@ -423,9 +421,9 @@ class PaginatedOfferForFiltersTest:
             )
 
             # then
-            offers_id = [offer.identifier for offer in paginated_offers.offers]
-            assert Identifier(offer_for_requested_offerer.id) in offers_id
-            assert Identifier(offer_for_other_offerer.id) not in offers_id
+            offers_id = [offer.id for offer in paginated_offers.offers]
+            assert offer_for_requested_offerer.id in offers_id
+            assert offer_for_other_offerer.id not in offers_id
             assert paginated_offers.total_offers == 1
 
     class NameFilterTest:
@@ -446,9 +444,9 @@ class PaginatedOfferForFiltersTest:
             )
 
             # then
-            offers_id = [offer.identifier for offer in paginated_offers.offers]
-            assert Identifier(expected_offer.id) in offers_id
-            assert Identifier(other_offer.id) not in offers_id
+            offers_id = [offer.id for offer in paginated_offers.offers]
+            assert expected_offer.id in offers_id
+            assert other_offer.id not in offers_id
             assert paginated_offers.total_offers == 1
 
         @pytest.mark.usefixtures("db_session")
@@ -473,10 +471,10 @@ class PaginatedOfferForFiltersTest:
             )
 
             # then
-            offers_id = [offer.identifier for offer in paginated_offers.offers]
-            assert Identifier(expected_offer.id) in offers_id
-            assert Identifier(another_expected_offer.id) in offers_id
-            assert Identifier(other_offer.id) not in offers_id
+            offers_id = [offer.id for offer in paginated_offers.offers]
+            assert expected_offer.id in offers_id
+            assert another_expected_offer.id in offers_id
+            assert other_offer.id not in offers_id
             assert paginated_offers.total_offers == 2
 
         @pytest.mark.usefixtures("db_session")
@@ -500,9 +498,9 @@ class PaginatedOfferForFiltersTest:
             )
 
             # then
-            offers_id = [offer.identifier for offer in paginated_offers.offers]
-            assert Identifier(expected_offer.id) in offers_id
-            assert Identifier(another_expected_offer.id) in offers_id
+            offers_id = [offer.id for offer in paginated_offers.offers]
+            assert expected_offer.id in offers_id
+            assert another_expected_offer.id in offers_id
             assert paginated_offers.total_offers == 2
 
         @pytest.mark.usefixtures("db_session")
@@ -522,9 +520,9 @@ class PaginatedOfferForFiltersTest:
             )
 
             # then
-            offers_id = [offer.identifier for offer in paginated_offers.offers]
-            assert Identifier(expected_offer.id) in offers_id
-            assert Identifier(other_offer.id) not in offers_id
+            offers_id = [offer.id for offer in paginated_offers.offers]
+            assert expected_offer.id in offers_id
+            assert other_offer.id not in offers_id
             assert paginated_offers.total_offers == 1
 
     class StatusFiltersTest:
@@ -744,36 +742,27 @@ class PaginatedOfferForFiltersTest:
             )
 
             # then
-            offer_ids = [offer.identifier for offer in paginated_offers.offers]
-            assert Identifier(self.active_thing_offer_with_one_stock_with_remaining_quantity.id) in offer_ids
-            assert Identifier(self.active_event_in_six_days_offer.id) in offer_ids
-            assert Identifier(self.active_thing_offer_with_all_stocks_without_quantity.id) in offer_ids
-            assert Identifier(self.active_event_offer_with_stock_in_the_future_without_quantity.id) in offer_ids
+            offer_ids = [offer.id for offer in paginated_offers.offers]
+            assert self.active_thing_offer_with_one_stock_with_remaining_quantity.id in offer_ids
+            assert self.active_event_in_six_days_offer.id in offer_ids
+            assert self.active_thing_offer_with_all_stocks_without_quantity.id in offer_ids
+            assert self.active_event_offer_with_stock_in_the_future_without_quantity.id in offer_ids
+            assert self.active_event_offer_with_one_stock_in_the_future_with_remaining_quantity.id in offer_ids
+            assert self.inactive_thing_offer_without_stock.id not in offer_ids
+            assert self.inactive_thing_offer_with_stock_with_remaining_quantity.id not in offer_ids
+            assert self.inactive_expired_event_offer.id not in offer_ids
+            assert self.inactive_thing_offer_without_remaining_quantity.id not in offer_ids
+            assert self.sold_out_thing_offer_without_stock.id not in offer_ids
+            assert self.sold_old_thing_offer_with_all_stocks_empty.id not in offer_ids
             assert (
-                Identifier(self.active_event_offer_with_one_stock_in_the_future_with_remaining_quantity.id) in offer_ids
+                self.sold_out_event_offer_with_all_stocks_in_the_future_with_zero_remaining_quantity.id not in offer_ids
             )
-            assert Identifier(self.inactive_thing_offer_without_stock.id) not in offer_ids
-            assert Identifier(self.inactive_thing_offer_with_stock_with_remaining_quantity.id) not in offer_ids
-            assert Identifier(self.inactive_expired_event_offer.id) not in offer_ids
-            assert Identifier(self.inactive_thing_offer_without_remaining_quantity.id) not in offer_ids
-            assert Identifier(self.sold_out_thing_offer_without_stock.id) not in offer_ids
-            assert Identifier(self.sold_old_thing_offer_with_all_stocks_empty.id) not in offer_ids
-            assert (
-                Identifier(self.sold_out_event_offer_with_all_stocks_in_the_future_with_zero_remaining_quantity.id)
-                not in offer_ids
-            )
-            assert Identifier(self.sold_out_event_offer_with_only_one_stock_soft_deleted.id) not in offer_ids
-            assert Identifier(self.sold_out_event_offer_without_stock.id) not in offer_ids
-            assert Identifier(self.expired_event_offer_with_stock_in_the_past_without_quantity.id) not in offer_ids
-            assert Identifier(self.expired_thing_offer_with_a_stock_expired_with_remaining_quantity.id) not in offer_ids
-            assert (
-                Identifier(self.expired_event_offer_with_all_stocks_in_the_past_with_remaining_quantity.id)
-                not in offer_ids
-            )
-            assert (
-                Identifier(self.expired_event_offer_with_all_stocks_in_the_past_with_zero_remaining_quantity.id)
-                not in offer_ids
-            )
+            assert self.sold_out_event_offer_with_only_one_stock_soft_deleted.id not in offer_ids
+            assert self.sold_out_event_offer_without_stock.id not in offer_ids
+            assert self.expired_event_offer_with_stock_in_the_past_without_quantity.id not in offer_ids
+            assert self.expired_thing_offer_with_a_stock_expired_with_remaining_quantity.id not in offer_ids
+            assert self.expired_event_offer_with_all_stocks_in_the_past_with_remaining_quantity.id not in offer_ids
+            assert self.expired_event_offer_with_all_stocks_in_the_past_with_zero_remaining_quantity.id not in offer_ids
             assert paginated_offers.total_offers == 5
 
         @pytest.mark.usefixtures("db_session")
@@ -787,40 +776,27 @@ class PaginatedOfferForFiltersTest:
             )
 
             # then
-            offer_ids = [offer.identifier for offer in paginated_offers.offers]
-            assert Identifier(self.active_thing_offer_with_one_stock_with_remaining_quantity.id) not in offer_ids
-            assert Identifier(self.active_thing_offer_with_all_stocks_without_quantity.id) not in offer_ids
-            assert Identifier(self.active_event_offer_with_stock_in_the_future_without_quantity.id) not in offer_ids
+            offer_ids = [offer.id for offer in paginated_offers.offers]
+            assert self.active_thing_offer_with_one_stock_with_remaining_quantity.id not in offer_ids
+            assert self.active_thing_offer_with_all_stocks_without_quantity.id not in offer_ids
+            assert self.active_event_offer_with_stock_in_the_future_without_quantity.id not in offer_ids
+            assert self.active_event_offer_with_one_stock_in_the_future_with_remaining_quantity.id not in offer_ids
+            assert self.inactive_thing_offer_without_stock.id in offer_ids
+            assert self.inactive_thing_offer_with_stock_with_remaining_quantity.id in offer_ids
+            assert self.inactive_expired_event_offer.id in offer_ids
+            assert self.inactive_thing_offer_without_remaining_quantity.id in offer_ids
+            assert self.sold_out_thing_offer_without_stock.id not in offer_ids
+            assert self.sold_old_thing_offer_with_all_stocks_empty.id not in offer_ids
             assert (
-                Identifier(self.active_event_offer_with_one_stock_in_the_future_with_remaining_quantity.id)
-                not in offer_ids
+                self.sold_out_event_offer_with_all_stocks_in_the_future_with_zero_remaining_quantity.id not in offer_ids
             )
-            assert Identifier(self.inactive_thing_offer_without_stock.id) in offer_ids
-            assert Identifier(self.inactive_thing_offer_with_stock_with_remaining_quantity.id) in offer_ids
-            assert Identifier(self.inactive_expired_event_offer.id) in offer_ids
-            assert Identifier(self.inactive_thing_offer_without_remaining_quantity.id) in offer_ids
-            assert Identifier(self.sold_out_thing_offer_without_stock.id) not in offer_ids
-            assert Identifier(self.sold_old_thing_offer_with_all_stocks_empty.id) not in offer_ids
-            assert (
-                Identifier(self.sold_out_event_offer_with_all_stocks_in_the_future_with_zero_remaining_quantity.id)
-                not in offer_ids
-            )
-            assert Identifier(self.sold_out_event_offer_with_only_one_stock_soft_deleted.id) not in offer_ids
-            assert Identifier(self.sold_out_event_offer_without_stock.id) not in offer_ids
-            assert Identifier(self.expired_event_offer_with_stock_in_the_past_without_quantity.id) not in offer_ids
-            assert Identifier(self.expired_thing_offer_with_a_stock_expired_with_remaining_quantity.id) not in offer_ids
-            assert (
-                Identifier(self.expired_thing_offer_with_a_stock_expired_with_zero_remaining_quantity.id)
-                not in offer_ids
-            )
-            assert (
-                Identifier(self.expired_event_offer_with_all_stocks_in_the_past_with_remaining_quantity.id)
-                not in offer_ids
-            )
-            assert (
-                Identifier(self.expired_event_offer_with_all_stocks_in_the_past_with_zero_remaining_quantity.id)
-                not in offer_ids
-            )
+            assert self.sold_out_event_offer_with_only_one_stock_soft_deleted.id not in offer_ids
+            assert self.sold_out_event_offer_without_stock.id not in offer_ids
+            assert self.expired_event_offer_with_stock_in_the_past_without_quantity.id not in offer_ids
+            assert self.expired_thing_offer_with_a_stock_expired_with_remaining_quantity.id not in offer_ids
+            assert self.expired_thing_offer_with_a_stock_expired_with_zero_remaining_quantity.id not in offer_ids
+            assert self.expired_event_offer_with_all_stocks_in_the_past_with_remaining_quantity.id not in offer_ids
+            assert self.expired_event_offer_with_all_stocks_in_the_past_with_zero_remaining_quantity.id not in offer_ids
             assert paginated_offers.total_offers == 4
 
         @pytest.mark.usefixtures("db_session")
@@ -834,41 +810,26 @@ class PaginatedOfferForFiltersTest:
             )
 
             # then
-            offer_ids = [offer.identifier for offer in paginated_offers.offers]
-            assert Identifier(self.active_thing_offer_with_one_stock_with_remaining_quantity.id) not in offer_ids
-            assert Identifier(self.active_thing_offer_with_all_stocks_without_quantity.id) not in offer_ids
-            assert Identifier(self.active_event_offer_with_stock_in_the_future_without_quantity.id) not in offer_ids
-            assert (
-                Identifier(self.active_event_offer_with_one_stock_in_the_future_with_remaining_quantity.id)
-                not in offer_ids
-            )
-            assert Identifier(self.inactive_thing_offer_without_stock.id) not in offer_ids
-            assert Identifier(self.inactive_thing_offer_with_stock_with_remaining_quantity.id) not in offer_ids
-            assert Identifier(self.inactive_expired_event_offer.id) not in offer_ids
-            assert Identifier(self.inactive_thing_offer_without_remaining_quantity.id) not in offer_ids
-            assert Identifier(self.sold_out_thing_offer_without_stock.id) in offer_ids
-            assert Identifier(self.sold_old_thing_offer_with_all_stocks_empty.id) in offer_ids
-            assert (
-                Identifier(self.sold_out_event_offer_with_all_stocks_in_the_future_with_zero_remaining_quantity.id)
-                in offer_ids
-            )
-            assert Identifier(self.sold_out_event_offer_with_only_one_stock_soft_deleted.id) in offer_ids
-            assert Identifier(self.sold_out_event_offer_without_stock.id) in offer_ids
-            assert Identifier(self.sold_out_offer_on_other_venue.id) in offer_ids
-            assert Identifier(self.expired_event_offer_with_stock_in_the_past_without_quantity.id) not in offer_ids
-            assert Identifier(self.expired_thing_offer_with_a_stock_expired_with_remaining_quantity.id) not in offer_ids
-            assert (
-                Identifier(self.expired_thing_offer_with_a_stock_expired_with_zero_remaining_quantity.id)
-                not in offer_ids
-            )
-            assert (
-                Identifier(self.expired_event_offer_with_all_stocks_in_the_past_with_remaining_quantity.id)
-                not in offer_ids
-            )
-            assert (
-                Identifier(self.expired_event_offer_with_all_stocks_in_the_past_with_zero_remaining_quantity.id)
-                not in offer_ids
-            )
+            offer_ids = [offer.id for offer in paginated_offers.offers]
+            assert self.active_thing_offer_with_one_stock_with_remaining_quantity.id not in offer_ids
+            assert self.active_thing_offer_with_all_stocks_without_quantity.id not in offer_ids
+            assert self.active_event_offer_with_stock_in_the_future_without_quantity.id not in offer_ids
+            assert self.active_event_offer_with_one_stock_in_the_future_with_remaining_quantity.id not in offer_ids
+            assert self.inactive_thing_offer_without_stock.id not in offer_ids
+            assert self.inactive_thing_offer_with_stock_with_remaining_quantity.id not in offer_ids
+            assert self.inactive_expired_event_offer.id not in offer_ids
+            assert self.inactive_thing_offer_without_remaining_quantity.id not in offer_ids
+            assert self.sold_out_thing_offer_without_stock.id in offer_ids
+            assert self.sold_old_thing_offer_with_all_stocks_empty.id in offer_ids
+            assert self.sold_out_event_offer_with_all_stocks_in_the_future_with_zero_remaining_quantity.id in offer_ids
+            assert self.sold_out_event_offer_with_only_one_stock_soft_deleted.id in offer_ids
+            assert self.sold_out_event_offer_without_stock.id in offer_ids
+            assert self.sold_out_offer_on_other_venue.id in offer_ids
+            assert self.expired_event_offer_with_stock_in_the_past_without_quantity.id not in offer_ids
+            assert self.expired_thing_offer_with_a_stock_expired_with_remaining_quantity.id not in offer_ids
+            assert self.expired_thing_offer_with_a_stock_expired_with_zero_remaining_quantity.id not in offer_ids
+            assert self.expired_event_offer_with_all_stocks_in_the_past_with_remaining_quantity.id not in offer_ids
+            assert self.expired_event_offer_with_all_stocks_in_the_past_with_zero_remaining_quantity.id not in offer_ids
             assert paginated_offers.total_offers == 6
 
         @pytest.mark.usefixtures("db_session")
@@ -882,9 +843,9 @@ class PaginatedOfferForFiltersTest:
             )
 
             # then
-            offer_ids = [offer.identifier for offer in paginated_offers.offers]
-            assert Identifier(self.sold_out_thing_offer_without_stock.id) in offer_ids
-            assert Identifier(self.sold_out_event_offer_with_only_one_stock_soft_deleted.id) in offer_ids
+            offer_ids = [offer.id for offer in paginated_offers.offers]
+            assert self.sold_out_thing_offer_without_stock.id in offer_ids
+            assert self.sold_out_event_offer_with_only_one_stock_soft_deleted.id in offer_ids
 
         @pytest.mark.usefixtures("db_session")
         def should_return_offers_with_no_remaining_quantity_and_no_bookings_when_requesting_sold_out_status(self):
@@ -897,8 +858,8 @@ class PaginatedOfferForFiltersTest:
             )
 
             # then
-            offer_ids = [offer.identifier for offer in paginated_offers.offers]
-            assert Identifier(self.sold_old_thing_offer_with_all_stocks_empty.id) in offer_ids
+            offer_ids = [offer.id for offer in paginated_offers.offers]
+            assert self.sold_old_thing_offer_with_all_stocks_empty.id in offer_ids
 
         @pytest.mark.usefixtures("db_session")
         def should_return_offers_with_no_remaining_quantity_in_the_future_when_requesting_sold_out_status(self):
@@ -911,11 +872,8 @@ class PaginatedOfferForFiltersTest:
             )
 
             # then
-            offer_ids = [offer.identifier for offer in paginated_offers.offers]
-            assert (
-                Identifier(self.sold_out_event_offer_with_all_stocks_in_the_future_with_zero_remaining_quantity.id)
-                in offer_ids
-            )
+            offer_ids = [offer.id for offer in paginated_offers.offers]
+            assert self.sold_out_event_offer_with_all_stocks_in_the_future_with_zero_remaining_quantity.id in offer_ids
 
         @pytest.mark.usefixtures("db_session")
         def should_exclude_offers_with_cancelled_bookings_when_requesting_sold_out_status(self):
@@ -928,11 +886,8 @@ class PaginatedOfferForFiltersTest:
             )
 
             # then
-            offer_ids = [offer.identifier for offer in paginated_offers.offers]
-            assert (
-                Identifier(self.active_event_offer_with_one_stock_in_the_future_with_remaining_quantity.id)
-                not in offer_ids
-            )
+            offer_ids = [offer.id for offer in paginated_offers.offers]
+            assert self.active_event_offer_with_one_stock_in_the_future_with_remaining_quantity.id not in offer_ids
 
         @pytest.mark.usefixtures("db_session")
         def should_return_only_expired_offers_when_requesting_expired_status(self):
@@ -945,38 +900,27 @@ class PaginatedOfferForFiltersTest:
             )
 
             # then
-            offer_ids = [offer.identifier for offer in paginated_offers.offers]
-            assert Identifier(self.active_thing_offer_with_one_stock_with_remaining_quantity.id) not in offer_ids
-            assert Identifier(self.active_thing_offer_with_all_stocks_without_quantity.id) not in offer_ids
-            assert Identifier(self.active_event_offer_with_stock_in_the_future_without_quantity.id) not in offer_ids
+            offer_ids = [offer.id for offer in paginated_offers.offers]
+            assert self.active_thing_offer_with_one_stock_with_remaining_quantity.id not in offer_ids
+            assert self.active_thing_offer_with_all_stocks_without_quantity.id not in offer_ids
+            assert self.active_event_offer_with_stock_in_the_future_without_quantity.id not in offer_ids
+            assert self.active_event_offer_with_one_stock_in_the_future_with_remaining_quantity.id not in offer_ids
+            assert self.inactive_thing_offer_without_stock.id not in offer_ids
+            assert self.inactive_thing_offer_with_stock_with_remaining_quantity.id not in offer_ids
+            assert self.inactive_expired_event_offer.id not in offer_ids
+            assert self.inactive_thing_offer_without_remaining_quantity.id not in offer_ids
+            assert self.sold_out_thing_offer_without_stock.id not in offer_ids
+            assert self.sold_old_thing_offer_with_all_stocks_empty.id not in offer_ids
             assert (
-                Identifier(self.active_event_offer_with_one_stock_in_the_future_with_remaining_quantity.id)
-                not in offer_ids
+                self.sold_out_event_offer_with_all_stocks_in_the_future_with_zero_remaining_quantity.id not in offer_ids
             )
-            assert Identifier(self.inactive_thing_offer_without_stock.id) not in offer_ids
-            assert Identifier(self.inactive_thing_offer_with_stock_with_remaining_quantity.id) not in offer_ids
-            assert Identifier(self.inactive_expired_event_offer.id) not in offer_ids
-            assert Identifier(self.inactive_thing_offer_without_remaining_quantity.id) not in offer_ids
-            assert Identifier(self.sold_out_thing_offer_without_stock.id) not in offer_ids
-            assert Identifier(self.sold_old_thing_offer_with_all_stocks_empty.id) not in offer_ids
-            assert (
-                Identifier(self.sold_out_event_offer_with_all_stocks_in_the_future_with_zero_remaining_quantity.id)
-                not in offer_ids
-            )
-            assert Identifier(self.sold_out_event_offer_with_only_one_stock_soft_deleted.id) not in offer_ids
-            assert Identifier(self.sold_out_event_offer_without_stock.id) not in offer_ids
-            assert Identifier(self.expired_event_offer_with_stock_in_the_past_without_quantity.id) in offer_ids
-            assert Identifier(self.expired_thing_offer_with_a_stock_expired_with_remaining_quantity.id) in offer_ids
-            assert (
-                Identifier(self.expired_thing_offer_with_a_stock_expired_with_zero_remaining_quantity.id) in offer_ids
-            )
-            assert (
-                Identifier(self.expired_event_offer_with_all_stocks_in_the_past_with_remaining_quantity.id) in offer_ids
-            )
-            assert (
-                Identifier(self.expired_event_offer_with_all_stocks_in_the_past_with_zero_remaining_quantity.id)
-                in offer_ids
-            )
+            assert self.sold_out_event_offer_with_only_one_stock_soft_deleted.id not in offer_ids
+            assert self.sold_out_event_offer_without_stock.id not in offer_ids
+            assert self.expired_event_offer_with_stock_in_the_past_without_quantity.id in offer_ids
+            assert self.expired_thing_offer_with_a_stock_expired_with_remaining_quantity.id in offer_ids
+            assert self.expired_thing_offer_with_a_stock_expired_with_zero_remaining_quantity.id in offer_ids
+            assert self.expired_event_offer_with_all_stocks_in_the_past_with_remaining_quantity.id in offer_ids
+            assert self.expired_event_offer_with_all_stocks_in_the_past_with_zero_remaining_quantity.id in offer_ids
             assert paginated_offers.total_offers == 5
 
         @pytest.mark.usefixtures("db_session")
@@ -1047,16 +991,15 @@ class PaginatedOfferForFiltersTest:
             )
 
             # then
-            offer_ids = [offer.identifier for offer in paginated_offers.offers]
-            assert Identifier(self.sold_out_thing_offer_without_stock.id) not in offer_ids
-            assert Identifier(self.sold_old_thing_offer_with_all_stocks_empty.id) not in offer_ids
+            offer_ids = [offer.id for offer in paginated_offers.offers]
+            assert self.sold_out_thing_offer_without_stock.id not in offer_ids
+            assert self.sold_old_thing_offer_with_all_stocks_empty.id not in offer_ids
             assert (
-                Identifier(self.sold_out_event_offer_with_all_stocks_in_the_future_with_zero_remaining_quantity.id)
-                not in offer_ids
+                self.sold_out_event_offer_with_all_stocks_in_the_future_with_zero_remaining_quantity.id not in offer_ids
             )
-            assert Identifier(self.sold_out_event_offer_with_only_one_stock_soft_deleted.id) not in offer_ids
-            assert Identifier(self.sold_out_event_offer_without_stock.id) not in offer_ids
-            assert Identifier(self.sold_out_offer_on_other_venue.id) in offer_ids
+            assert self.sold_out_event_offer_with_only_one_stock_soft_deleted.id not in offer_ids
+            assert self.sold_out_event_offer_without_stock.id not in offer_ids
+            assert self.sold_out_offer_on_other_venue.id in offer_ids
             assert paginated_offers.total_offers == 1
 
         @pytest.mark.usefixtures("db_session")
@@ -1080,15 +1023,12 @@ class PaginatedOfferForFiltersTest:
             )
 
             # then
-            offer_ids = [offer.identifier for offer in paginated_offers.offers]
-            assert Identifier(self.active_event_in_six_days_offer.id) in offer_ids
-            assert (
-                Identifier(self.active_event_offer_with_one_stock_in_the_future_with_remaining_quantity.id)
-                not in offer_ids
-            )
-            assert Identifier(self.active_event_offer_with_stock_in_the_future_without_quantity.id) not in offer_ids
-            assert Identifier(self.active_thing_offer_with_all_stocks_without_quantity.id) not in offer_ids
-            assert Identifier(self.active_thing_offer_with_one_stock_with_remaining_quantity.id) not in offer_ids
+            offer_ids = [offer.id for offer in paginated_offers.offers]
+            assert self.active_event_in_six_days_offer.id in offer_ids
+            assert self.active_event_offer_with_one_stock_in_the_future_with_remaining_quantity.id not in offer_ids
+            assert self.active_event_offer_with_stock_in_the_future_without_quantity.id not in offer_ids
+            assert self.active_thing_offer_with_all_stocks_without_quantity.id not in offer_ids
+            assert self.active_thing_offer_with_one_stock_with_remaining_quantity.id not in offer_ids
             assert paginated_offers.total_offers == 1
 
 

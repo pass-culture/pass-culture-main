@@ -11,7 +11,6 @@ from werkzeug.exceptions import NotFound
 
 import pcapi.core.offers.exceptions as offers_exceptions
 from pcapi.core.payments.exceptions import AlreadyActivatedException
-from pcapi.domain.identifier.identifier import NonProperlyFormattedScrambledId
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import DateTimeCastError
 from pcapi.models.api_errors import DecimalCastError
@@ -55,7 +54,6 @@ def method_not_allowed(error: MethodNotAllowed) -> tuple[dict, int]:
     return jsonify(api_errors.errors), 405
 
 
-@app.errorhandler(NonProperlyFormattedScrambledId)
 @app.errorhandler(NonDehumanizableId)
 def invalid_id_for_dehumanize_error(error: NonDehumanizableId) -> tuple[dict, int]:
     api_errors = ApiErrors()
