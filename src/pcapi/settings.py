@@ -256,6 +256,8 @@ PAYMENTS_CSV_DETAILS_BATCH_SIZE = os.environ.get("PAYMENTS_CSV_DETAILS_BATCH_SIZ
 GOOGLE_KEY = os.environ.get("PC_GOOGLE_KEY_64")
 GCP_BUCKET_CREDENTIALS = json.loads(base64.b64decode(os.environ.get("GCP_BUCKET_CREDENTIALS", "")) or "{}")
 GCP_BUCKET_NAME = os.environ.get("GCP_BUCKET_NAME", "")
+GCP_PROJECT = os.environ.get("GCP_PROJECT", "")
+GCP_REGION = os.environ.get("GCP_REGION", "europe-west1")
 
 # RATE LIMITER
 RATE_LIMIT_BY_EMAIL = os.environ.get("RATE_LIMIT_BY_EMAIL", "10/minute")

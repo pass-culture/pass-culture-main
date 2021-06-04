@@ -2,9 +2,7 @@ import json
 
 from google.cloud import tasks_v2
 
-
-GCP_PROJECT = "passculture-metier-ehp"
-GCP_LOCATION = "europe-west1"
+from pcapi.utils import settings
 
 
 def get_client():
@@ -17,7 +15,7 @@ def get_client():
 def enqueue_task(queue, url, payload):
 
     client = get_client()
-    parent = client.queue_path(GCP_PROJECT, GCP_LOCATION, queue)
+    parent = client.queue_path(settings.GCP_PROJECT, settings.GCP_LOCATION, queue)
 
     body = json.dumps(payload).encode()
 
