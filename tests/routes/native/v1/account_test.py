@@ -1136,7 +1136,7 @@ class UpdateUserIdProfileTest:
             "activity": "Lycéen",
         }
 
-        response = test_client.patch("/native/v1/id_check_profile", profile_data)
+        response = test_client.patch("/native/v1/beneficiary_information", profile_data)
 
         assert response.status_code == 204
 

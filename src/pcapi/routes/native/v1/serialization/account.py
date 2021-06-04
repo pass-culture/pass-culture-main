@@ -167,7 +167,7 @@ class UserProfileUpdateRequest(BaseModel):
     subscriptions: Optional[NotificationSubscriptions]
 
 
-class UserIdCheckProfileUpdateRequest(BaseModel):
+class BeneficiaryInformationUpdateRequest(BaseModel):
     address: str
     city: str
     postal_code: str

@@ -27,7 +27,7 @@ from pcapi.core.users.api import generate_and_save_token
 from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.api import set_pro_tuto_as_seen
 from pcapi.core.users.api import steps_to_become_beneficiary
-from pcapi.core.users.api import update_user_id_check_profile
+from pcapi.core.users.api import update_beneficiary_mandatory_information
 from pcapi.core.users.factories import BeneficiaryImportFactory
 from pcapi.core.users.models import Credit
 from pcapi.core.users.models import DomainsCredit
@@ -704,7 +704,7 @@ class UpdateIdCheckProfileTest:
 
         new_address = f"{user.address}_test"
         new_city = f"{user.city}_test"
-        update_user_id_check_profile(
+        update_beneficiary_mandatory_information(
             user=user,
             address=new_address,
             city=new_city,
@@ -737,7 +737,7 @@ class UpdateIdCheckProfileTest:
 
         new_address = f"{user.address}_test"
         new_city = f"{user.city}_test"
-        update_user_id_check_profile(
+        update_beneficiary_mandatory_information(
             user=user,
             address=new_address,
             city=new_city,

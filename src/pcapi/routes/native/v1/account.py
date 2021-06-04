@@ -57,11 +57,11 @@ def update_user_profile(user: User, body: serializers.UserProfileUpdateRequest) 
     return serializers.UserProfileResponse.from_orm(user)
 
 
-@blueprint.native_v1.route("/id_check_profile", methods=["PATCH"])
+@blueprint.native_v1.route("/beneficiary_information", methods=["PATCH"])
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_user_required
-def update_user_id_check_profile(user: User, body: serializers.UserIdCheckProfileUpdateRequest) -> None:
-    api.update_user_id_check_profile(
+def update_beneficiary_mandatory_information(user: User, body: serializers.BeneficiaryInformationUpdateRequest) -> None:
+    api.update_beneficiary_mandatory_information(
         user=user,
         address=body.address,
         city=body.city,

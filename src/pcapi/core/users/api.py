@@ -204,7 +204,13 @@ def validate_phone_number_and_activate_user(user: User, code: str) -> User:
         activate_beneficiary(user)
 
 
-def update_user_id_check_profile(user: User, address: str, city: str, postal_code: str, activity: str) -> None:
+def update_beneficiary_mandatory_information(
+    user: User,
+    address: str,
+    city: str,
+    postal_code: str,
+    activity: str,
+) -> None:
     user.address = address
     user.city = city
     user.postalCode = postal_code
