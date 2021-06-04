@@ -13,6 +13,7 @@ class SettingsResponse(BaseModel):
     allow_id_check_registration: bool
     enable_native_id_check_version: bool
     enable_native_id_check_verbose_debugging: bool
+    enable_id_check_retention: bool
     enable_phone_validation: bool
     object_storage_url: str
     whole_france_opening: bool

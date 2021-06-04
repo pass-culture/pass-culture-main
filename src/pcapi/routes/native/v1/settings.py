@@ -23,6 +23,7 @@ def get_settings() -> serializers.SettingsResponse:
         enable_native_id_check_verbose_debugging=feature_queries.is_active(
             FeatureToggle.ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING
         ),
+        enable_id_check_retention=feature_queries.is_active(FeatureToggle.ENABLE_ID_CHECK_RETENTION),
         enable_phone_validation=feature_queries.is_active(FeatureToggle.ENABLE_PHONE_VALIDATION),
         whole_france_opening=feature_queries.is_active(FeatureToggle.WHOLE_FRANCE_OPENING),
         display_dms_redirection=feature_queries.is_active(FeatureToggle.DISPLAY_DMS_REDIRECTION),
