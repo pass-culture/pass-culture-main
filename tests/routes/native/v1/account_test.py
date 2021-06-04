@@ -10,6 +10,7 @@ from dateutil.relativedelta import relativedelta
 from flask_jwt_extended.utils import create_access_token
 from freezegun.api import freeze_time
 import pytest
+from requests import Response
 
 from pcapi import settings
 from pcapi.core.bookings.factories import BookingFactory
@@ -772,6 +773,60 @@ class UploadIdentityDocumentTest:
 
         assert response.status_code == 400
         assert response.json["code"] == "TOO_MANY_ID_CHECK_TOKEN"
+
+
+class VerifyIdentityDocumentTest:
+    IMAGES_DIR = Path(tests.__path__[0]) / "files"
+
+    @override_settings(ID_CHECK_MIDDLEWARE_TOKEN="fake_token")
+    @patch("pcapi.routes.native.v1.account.api.get_identity_document_informations")
+    @patch("pcapi.connectors.beneficiaries.id_check_middleware.requests.post")
+    def test_ask_for_document_verification(
+        self,
+        mocked_middleware_post,
+        mocked_get_identity_document_informations,
+        app,
+    ):
+        user = users_factories.UserFactory(
+            email="another@email.com",
+            dateOfBirth=datetime(2000, 1, 1),
+            departementCode="93",
+            isBeneficiary=False,
+        )
+        identity_document = (self.IMAGES_DIR / "mouette_small.jpg").read_bytes()
+        storage_path = "fake_storage_path.jpg"
+        mocked_get_identity_document_informations.return_value = ("fake@email.com", identity_document)
+        mocked_response = Response()
+        mocked_response.status_code = 200
+        mocked_middleware_post.return_value = mocked_response
+        json_data = {"imageStoragePath": storage_path}
+
+        access_token = create_access_token(identity=user.email)
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+        response = test_client.post("/native/v1/verify_identity_document", json=json_data)
+
+        print("HEEEEY")
+        print(response.json)
+        assert response.status_code == 204
+        mocked_get_identity_document_informations.assert_called_once_with(storage_path)
+        mocked_middleware_post.assert_called_once_with(
+            "https://id-check-middleware-dev.passculture.app/simple-registration-process",
+            headers={
+                "X-Authentication": "fake_token",
+            },
+            data={"email": "fake@email.com", "file": identity_document},
+        )
+
+    def test_bad_requests_parameters(self, app):
+        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="93", isBeneficiary=False)
+
+        access_token = create_access_token(identity=user.email)
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+        response = test_client.post("/native/v1/verify_identity_document")
+
+        assert response.status_code == 400
 
 
 class ShowEligibleCardTest:
