@@ -1,12 +1,9 @@
 from pydantic import BaseModel
 
-from pcapi.serialization.decorator import spectree_serialize
-from pcapi.tasks.decorators import cloud_task_api
-from pcapi.tasks.decorators import default_queue
-from pcapi.tasks.decorators import enqueue_cloud_task
+from pcapi.tasks.decorator import task
 
 
-PATH = "/void_task"
+TEST_QUEUE = "test-cyril"
 
 
 class VoidTaskPayload(BaseModel):
@@ -14,11 +11,6 @@ class VoidTaskPayload(BaseModel):
     chouquette_price: int
 
 
-@cloud_task_api.route(PATH, methods=["POST"])
-@spectree_serialize()
+@task(TEST_QUEUE, "/void_task")
 def void_task(payload: VoidTaskPayload):
     print(payload)
-
-
-def enqueue_void_task(payload: VoidTaskPayload):
-    enqueue_cloud_task(default_queue, PATH, payload)
