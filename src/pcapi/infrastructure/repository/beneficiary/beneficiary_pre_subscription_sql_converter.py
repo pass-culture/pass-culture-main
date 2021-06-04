@@ -29,6 +29,7 @@ def to_model(beneficiary_pre_subscription: BeneficiaryPreSubscription, user: Opt
     beneficiary.lastName = beneficiary_pre_subscription.last_name
     beneficiary.postalCode = beneficiary_pre_subscription.postal_code
     beneficiary.publicName = beneficiary_pre_subscription.public_name
+    beneficiary.idPieceNumber = beneficiary_pre_subscription.id_piece_number
 
     if not beneficiary.phoneNumber:
         beneficiary.phoneNumber = beneficiary_pre_subscription.phone_number

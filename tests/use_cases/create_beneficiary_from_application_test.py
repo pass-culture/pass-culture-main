@@ -18,6 +18,7 @@ from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exce
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.models import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import ImportStatus
+from pcapi.models.db import db
 from pcapi.models.deposit import Deposit
 from pcapi.notifications.push import testing as push_testing
 from pcapi.repository import repository
@@ -392,23 +393,27 @@ def test_id_piece_number_no_duplicate(
     app,
 ):
     # Given
-    suscribing_user = UserFactory(
+    ID_PIECE_NUMBER = "id-piece-number"
+    subscribing_user = UserFactory(
         isBeneficiary=False,
         dateOfBirth=datetime.now() - relativedelta(years=18, day=5),
         email=BASE_JOUVE_CONTENT["email"],
+        idPieceNumber=None,
     )
-    UserFactory(idPieceNumber="id-piece-number")
-    mocked_get_content.return_value = BASE_JOUVE_CONTENT | {"bodyPieceNumber": "other-id-piece-number"}
+    mocked_get_content.return_value = BASE_JOUVE_CONTENT | {"bodyPieceNumber": ID_PIECE_NUMBER}
 
     # When
     create_beneficiary_from_application.execute(BASE_APPLICATION_ID)
 
     # Then
-    beneficiary_import = BeneficiaryImport.query.filter(BeneficiaryImport.beneficiary == suscribing_user).first()
+    beneficiary_import = BeneficiaryImport.query.filter(BeneficiaryImport.beneficiary == subscribing_user).first()
     assert beneficiary_import.currentStatus == ImportStatus.CREATED
 
     assert len(mails_testing.outbox) == 1
     assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2016025
+
+    db.session.refresh(subscribing_user)
+    assert subscribing_user.idPieceNumber == ID_PIECE_NUMBER
 
 
 @patch("pcapi.connectors.beneficiaries.jouve_backend.BeneficiaryJouveBackend._get_application_content")
@@ -418,24 +423,22 @@ def test_id_piece_number_duplicate(
     app,
 ):
     # Given
-    suscribing_user = UserFactory(
+    ID_PIECE_NUMBER = "duplicated-id-piece-number"
+    subscribing_user = UserFactory(
         isBeneficiary=False,
         dateOfBirth=datetime.now() - relativedelta(years=18, day=5),
         email=BASE_JOUVE_CONTENT["email"],
     )
-    UserFactory(idPieceNumber="duplicate-id-piece-number")
-    mocked_get_content.return_value = BASE_JOUVE_CONTENT | {"bodyPieceNumber": "duplicate-id-piece-number"}
+    UserFactory(idPieceNumber=ID_PIECE_NUMBER)
+    mocked_get_content.return_value = BASE_JOUVE_CONTENT | {"bodyPieceNumber": ID_PIECE_NUMBER}
 
     # When
     create_beneficiary_from_application.execute(BASE_APPLICATION_ID)
 
     # Then
-    beneficiary_import = BeneficiaryImport.query.filter(BeneficiaryImport.beneficiary == suscribing_user).first()
+    beneficiary_import = BeneficiaryImport.query.filter(BeneficiaryImport.beneficiary == subscribing_user).first()
     assert beneficiary_import.currentStatus == ImportStatus.REJECTED
-    assert (
-        beneficiary_import.detail
-        == "Fraud controls triggered: id piece number n°duplicate-id-piece-number already taken"
-    )
-    assert not suscribing_user.isBeneficiary
+    assert beneficiary_import.detail == f"Fraud controls triggered: id piece number n°{ID_PIECE_NUMBER} already taken"
+    assert not subscribing_user.isBeneficiary
 
     assert len(mails_testing.outbox) == 0
