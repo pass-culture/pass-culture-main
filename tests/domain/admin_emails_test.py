@@ -86,11 +86,10 @@ def test_send_wallet_balances_email_sends_email_to_recipients(app):
 def test_send_payments_report_email_sends_email_to_recipients(app):
     # Given
     not_processable_csv = '"header A","header B","header C","header D"\n"part A","part B","part C","part D"\n'
-    error_csv = '"header 1","header 2","header 3","header 4"\n"part 1","part 2","part 3","part 4"\n'
     n_payments_by_status = {"ERROR": 1, "PENDING": 2}
 
     # When
-    send_payments_report_emails(not_processable_csv, error_csv, n_payments_by_status, ["recipient@example.com"])
+    send_payments_report_emails(not_processable_csv, n_payments_by_status, ["recipient@example.com"])
 
     # Then
     assert len(mails_testing.outbox) == 1

@@ -231,27 +231,22 @@ def send_wallet_balances(recipients: list[str]) -> None:
 
 
 def send_payments_report(batch_date: datetime, recipients: list[str]) -> None:
-    error_payments = payment_queries.join_for_payment_details(
-        payment_queries.get_payments_by_status([TransactionStatus.ERROR], batch_date)
-    )
     not_processable_payments = payment_queries.join_for_payment_details(
         payment_queries.get_payments_by_status([TransactionStatus.NOT_PROCESSABLE], batch_date)
     )
 
     logger.info(
-        "[BATCH][PAYMENTS] Sending report on %d payments in ERROR and %d payments NOT_PROCESSABLE",
-        error_payments.count(),
+        "[BATCH][PAYMENTS] Sending report on %d payments NOT_PROCESSABLE",
         not_processable_payments.count(),
     )
     logger.info("[BATCH][PAYMENTS] Recipients of email : %s", recipients)
 
-    error_csv = generate_payment_details_csv(error_payments)
     not_processable_csv = generate_payment_details_csv(not_processable_payments)
 
     n_payments_by_status = payment_queries.get_payment_count_by_status(batch_date)
 
     try:
-        send_payments_report_emails(not_processable_csv, error_csv, n_payments_by_status, recipients)
+        send_payments_report_emails(not_processable_csv, n_payments_by_status, recipients)
     except MailServiceException as exception:
         logger.exception("[BATCH][PAYMENTS] Error while sending payments reports to MailJet: %s", exception)
 

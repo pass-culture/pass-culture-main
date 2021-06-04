@@ -38,13 +38,11 @@ def send_wallet_balances_email(csv_attachment: str, recipients: list[str]) -> bo
 
 def send_payments_report_emails(
     not_processable_payments_csv: str,
-    error_payments_csv: str,
     n_payments_by_status: dict,
     recipients: list[str],
 ) -> bool:
     email = make_payments_report_email(
         not_processable_payments_csv,
-        error_payments_csv,
         n_payments_by_status,
     )
     return mails.send(recipients=recipients, data=email)

@@ -11,15 +11,15 @@ from pcapi.utils.mailing import make_payments_report_email
 
 @freeze_time("2018-10-15 09:21:34")
 def test_make_payments_report_email(app):
-    n_payments_by_status = {"ERROR": 1, "UNDER_REVIEW": 2}
-    email = make_payments_report_email("csv1", "csv2", n_payments_by_status)
+    n_payments_by_status = {"NOT_PROCESSABLE": 1, "UNDER_REVIEW": 2}
+    email = make_payments_report_email("csv1", n_payments_by_status)
 
     assert email["FromName"] == "pass Culture Pro"
     assert email["Subject"] == "Récapitulatif des paiements pass Culture Pro - 2018-10-15"
-    assert "ERROR : 1" in email["Html-part"]
+    assert "NOT_PROCESSABLE : 1" in email["Html-part"]
     assert "UNDER_REVIEW : 2" in email["Html-part"]
     assert "Nombre total de paiements : 3" in email["Html-part"]
-    assert len(email["Attachments"]) == 2
+    assert len(email["Attachments"]) == 1
 
 
 @freeze_time("2018-10-15 09:21:34")

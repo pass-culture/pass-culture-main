@@ -175,10 +175,9 @@ def make_payment_details_email(csv: str) -> dict:
     }
 
 
-def make_payments_report_email(not_processable_csv: str, error_csv: str, n_payments_by_status: dict) -> dict:
+def make_payments_report_email(not_processable_csv: str, n_payments_by_status: dict) -> dict:
     now = datetime.utcnow()
     not_processable_csv_b64encode = base64.b64encode(not_processable_csv.encode("utf-8")).decode()
-    error_csv_b64encode = base64.b64encode(error_csv.encode("utf-8")).decode()
     formatted_date = datetime.strftime(now, "%Y-%m-%d")
 
     n_total_payments = sum(count for count in n_payments_by_status.values())
@@ -191,11 +190,6 @@ def make_payments_report_email(not_processable_csv: str, error_csv: str, n_payme
                 "ContentType": "text/csv",
                 "Filename": "paiements_non_traitables_{}.csv".format(formatted_date),
                 "Content": not_processable_csv_b64encode,
-            },
-            {
-                "ContentType": "text/csv",
-                "Filename": "paiements_en_erreur_{}.csv".format(formatted_date),
-                "Content": error_csv_b64encode,
             },
         ],
         "Html-part": render_template(

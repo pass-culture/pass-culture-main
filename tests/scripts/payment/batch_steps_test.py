@@ -223,7 +223,7 @@ def test_send_wallet_balances_does_not_send_anything_if_recipients_are_missing()
 
 
 @pytest.mark.usefixtures("db_session")
-def test_send_payments_report_sends_two_csv_attachments_if_some_payments_are_not_processable_and_in_error():
+def test_send_payments_report_sends_one_csv_attachment_if_some_payments_are_not_processable():
     # given
     batch_date = datetime.datetime.now()
     payments = payments_factories.PaymentFactory.create_batch(3, statuses=[], batchDate=batch_date)
@@ -236,9 +236,8 @@ def test_send_payments_report_sends_two_csv_attachments_if_some_payments_are_not
 
     # then
     assert len(mails_testing.outbox) == 1
-    assert len(mails_testing.outbox[0].sent_data["Attachments"]) == 2
+    assert len(mails_testing.outbox[0].sent_data["Attachments"]) == 1
     assert mails_testing.outbox[0].sent_data["Attachments"][0]["ContentType"] == "text/csv"
-    assert mails_testing.outbox[0].sent_data["Attachments"][1]["ContentType"] == "text/csv"
 
 
 class SetNotProcessablePaymentsWithBankInformationToRetryTest:
