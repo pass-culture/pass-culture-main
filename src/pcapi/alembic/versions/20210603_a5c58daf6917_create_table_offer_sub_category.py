@@ -1,4 +1,4 @@
-"""create table offer_category
+"""create table offer_subcategory
 
 Revision ID: a5c58daf6917
 Revises: 2861278ffd7d
@@ -18,11 +18,11 @@ depends_on = None
 
 def upgrade():
     op.create_table(
-        "offer_category",
+        "offer_subcategory",
         sa.Column("isActive", sa.Boolean(), server_default=sa.text("true"), nullable=False),
         sa.Column("id", sa.BigInteger(), autoincrement=True, nullable=False),
         sa.Column("name", sa.Text(), nullable=False),
-        sa.Column("categoryGroupId", sa.Integer(), nullable=False),
+        sa.Column("categoryId", sa.Integer(), nullable=False),
         sa.Column("isEvent", sa.Boolean(), nullable=False),
         sa.Column("proLabel", sa.Text(), nullable=False),
         sa.Column("appLabel", sa.Text(), nullable=False),
@@ -33,8 +33,8 @@ def upgrade():
         sa.Column("physicalDeposit", sa.Boolean(), nullable=False),
         sa.Column("canBeDuo", sa.Boolean(), nullable=False),
         sa.ForeignKeyConstraint(
-            ["categoryGroupId"],
-            ["offer_category_group.id"],
+            ["categoryId"],
+            ["offer_category.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("appLabel"),
@@ -44,4 +44,4 @@ def upgrade():
 
 
 def downgrade():
-    op.drop_table("offer_category")
+    op.drop_table("offer_subcategory")

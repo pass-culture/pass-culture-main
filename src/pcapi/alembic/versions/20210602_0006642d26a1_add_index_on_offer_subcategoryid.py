@@ -1,4 +1,4 @@
-"""add index on categoryId
+"""add index on subcategoryId
 
 Revision ID: 0006642d26a1
 Revises: 380c28602547
@@ -26,7 +26,7 @@ def upgrade():
     )
     op.execute(
         """
-        CREATE INDEX CONCURRENTLY IF NOT EXISTS "ix_offer_categoryId" ON offer ("categoryId")
+        CREATE INDEX CONCURRENTLY IF NOT EXISTS "ix_offer_subcategoryId" ON offer ("subcategoryId")
         """
     )
     op.execute(
@@ -40,6 +40,6 @@ def downgrade():
     op.execute("COMMIT")
     op.execute(
         """
-        DROP INDEX CONCURRENTLY IF EXISTS "ix_offer_categoryId"
+        DROP INDEX CONCURRENTLY IF EXISTS "ix_offer_subcategoryId"
         """
     )

@@ -17,8 +17,8 @@ depends_on = None
 
 
 def upgrade():
-    op.add_column("offer", sa.Column("categoryId", sa.BigInteger(), nullable=True))
+    op.add_column("offer", sa.Column("subcategoryId", sa.BigInteger(), nullable=True))
 
 
 def downgrade():
-    op.drop_column("offer", "categoryId")
+    op.drop_column("offer", "subcategoryId")

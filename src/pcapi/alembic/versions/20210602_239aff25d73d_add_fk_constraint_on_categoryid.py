@@ -18,7 +18,7 @@ depends_on = None
 def upgrade():
     op.execute(
         """
-        ALTER TABLE offer ADD CONSTRAINT "offer_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "offer_category" ("id") NOT VALID
+        ALTER TABLE offer ADD CONSTRAINT "offer_subcategoryId_fkey" FOREIGN KEY ("subcategoryId") REFERENCES "offer_subcategory" ("id") NOT VALID
         """
     )
 
@@ -26,6 +26,6 @@ def upgrade():
 def downgrade():
     op.execute(
         """
-        ALTER TABLE offer DROP CONSTRAINT "offer_categoryId_fkey"
+        ALTER TABLE offer DROP CONSTRAINT "offer_subcategoryId_fkey"
         """
     )

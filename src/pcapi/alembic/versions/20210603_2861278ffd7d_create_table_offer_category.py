@@ -1,4 +1,4 @@
-"""create table offer_category_group
+"""create table offer_category
 
 Revision ID: 2861278ffd7d
 Revises: 32bea863ac77
@@ -18,7 +18,7 @@ depends_on = None
 
 def upgrade():
     op.create_table(
-        "offer_category_group",
+        "offer_category",
         sa.Column("isActive", sa.Boolean(), server_default=sa.text("true"), nullable=False),
         sa.Column("id", sa.BigInteger(), autoincrement=True, nullable=False),
         sa.Column("name", sa.Text(), nullable=False),
@@ -32,4 +32,4 @@ def upgrade():
 
 
 def downgrade():
-    op.drop_table("offer_category_group")
+    op.drop_table("offer_category")

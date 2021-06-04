@@ -342,12 +342,10 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin):
         nullable=True,
     )
 
-    # FIXME(fseguin, 2021-06-02): make this non-nullable when all offers have a category
-    # Also, change the attribute name (but not the DB column name) once we remove the offer.category used
-    # in OfferResponse and FavoriteOfferResponse
-    categoryId = Column("categoryId", BigInteger, ForeignKey("offer_category.id"), index=True)
+    # FIXME(fseguin, 2021-06-02): make this non-nullable when all offers have a subcategory
+    subcategoryId = Column(BigInteger, ForeignKey("offer_subcategory.id"), index=True)
 
-    dbCategory = relationship("OfferCategory", foreign_keys=[categoryId], backref="offers")
+    subcategory = relationship("OfferSubcategory", foreign_keys=[subcategoryId], backref="offers")
 
     # FIXME: We shoud be able to remove the index on `venueId`, since this composite index
     #  can be used by PostgreSQL when filtering on the `venueId` column only.
@@ -618,8 +616,8 @@ class OfferValidationConfig(PcObject, Model):
     specs = Column(JSON, nullable=False)
 
 
-class OfferCategoryGroup(PcObject, Model, DeactivableMixin):
-    __tablename__ = "offer_category_group"
+class OfferCategory(PcObject, Model, DeactivableMixin):
+    __tablename__ = "offer_category"
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
 
@@ -633,16 +631,16 @@ class OfferCategoryGroup(PcObject, Model, DeactivableMixin):
         return "<%s #%s: %s>" % (self.__class__.__name__, self.id, self.name)
 
 
-class OfferCategory(PcObject, Model, DeactivableMixin):
-    __tablename__ = "offer_category"
+class OfferSubcategory(PcObject, Model, DeactivableMixin):
+    __tablename__ = "offer_subcategory"
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
 
     name = Column(Text, nullable=False, unique=True)
 
-    categoryGroupId = Column(Integer, ForeignKey("offer_category_group.id"), nullable=False)
+    categoryId = Column(Integer, ForeignKey("offer_category.id"), nullable=False)
 
-    categoryGroup = relationship("OfferCategoryGroup", foreign_keys=[categoryGroupId], backref="categories")
+    category = relationship("OfferCategory", foreign_keys=[categoryId], backref="subcategories")
 
     isEvent = Column(Boolean, nullable=False)
 

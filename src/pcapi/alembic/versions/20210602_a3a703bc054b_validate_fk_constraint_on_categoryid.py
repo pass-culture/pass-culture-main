@@ -26,7 +26,7 @@ def upgrade():
     )
     op.execute(
         """
-        ALTER TABLE offer VALIDATE CONSTRAINT "offer_categoryId_fkey"
+        ALTER TABLE offer VALIDATE CONSTRAINT "offer_subcategoryId_fkey"
         """
     )
     op.execute(

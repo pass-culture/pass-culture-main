@@ -71,7 +71,7 @@ class Get:
                         "conditions": None,
                         "dateCreated": format_into_utc_date(offer.dateCreated),
                         "dateModifiedAtLastProvider": format_into_utc_date(offer.dateModifiedAtLastProvider),
-                        "categoryId": None,
+                        "subcategoryId": None,
                         "description": None,
                         "durationMinutes": None,
                         "externalTicketOfficeUrl": None,
