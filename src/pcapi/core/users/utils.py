@@ -3,6 +3,7 @@ import logging
 from typing import Optional
 
 from google.cloud.storage import Client
+from google.cloud.storage.blob import Blob
 from google.cloud.storage.bucket import Bucket
 import jwt
 import phonenumbers
@@ -118,4 +119,18 @@ def delete_public_object(bucket: str, object_id: str) -> None:
         gcp_cloud_blob.delete()
     except Exception as exception:
         logger.exception("An error has occured while trying to delete file on encrypted GCP bucket: %s", exception)
+        raise exception
+
+
+def get_object(bucket: str, object_id: str) -> Blob:
+    storage_path = bucket + "/" + object_id
+    try:
+        storage_client_bucket = get_encrypted_gcp_storage_client_bucket()
+        storage_client_bucket.get_blob(storage_path)
+    except Exception as exception:
+        logger.exception(
+            "An error has occured while trying to get file with path: %s on encrypted GCP bucket: %s",
+            storage_path,
+            exception,
+        )
         raise exception
