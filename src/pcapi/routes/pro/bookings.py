@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import jsonify
 from flask import request
 from flask_login import current_user
@@ -73,6 +75,11 @@ def patch_booking_by_token(token: str):
 def get_all_bookings():
     page = request.args.get("page", 1)
     venue_id = dehumanize(request.args.get("venueId", None))
+    event_date = (
+        datetime.fromisoformat(request.args.get("eventDate").replace("Z", "+00:00")).date()
+        if request.args.get("eventDate")
+        else None
+    )
     check_page_format_is_number(page)
 
     check_is_authorized_to_access_bookings_recap(current_user)
@@ -90,7 +97,7 @@ def get_all_bookings():
     # serialization so that we can get rid of BookingsRecapPaginated
     # that is only used here.
     bookings_recap_paginated = booking_repository.find_by_pro_user_id(
-        user_id=current_user.id, venue_id=venue_id, page=int(page)
+        user_id=current_user.id, event_date=event_date, venue_id=venue_id, page=int(page)
     )
 
     return serialize_bookings_recap_paginated(bookings_recap_paginated), 200

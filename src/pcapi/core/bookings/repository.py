@@ -2,6 +2,7 @@ from datetime import date
 from datetime import datetime
 from datetime import time
 import math
+from typing import Optional
 
 from dateutil import tz
 from sqlalchemy import Date
@@ -64,9 +65,13 @@ def find_by(token: str, email: str = None, offer_id: int = None) -> Booking:
 
 
 def find_by_pro_user_id(
-    user_id: int, venue_id: int = None, page: int = 1, per_page_limit: int = 1000
+    user_id: int,
+    event_date: Optional[date] = None,
+    venue_id: Optional[int] = None,
+    page: int = 1,
+    per_page_limit: int = 1000,
 ) -> BookingsRecapPaginated:
-    bookings_recap_query = _build_bookings_recap_query(user_id, venue_id)
+    bookings_recap_query = _build_bookings_recap_query(user_id, event_date, venue_id)
     bookings_recap_query_with_duplicates = _duplicate_booking_when_quantity_is_two(bookings_recap_query)
 
     if page == 1:
@@ -279,7 +284,7 @@ def _duplicate_booking_when_quantity_is_two(bookings_recap_query: Query) -> Quer
     return bookings_recap_query.union_all(bookings_recap_query.filter(Booking.quantity == 2))
 
 
-def _build_bookings_recap_query(user_id: int, venue_id: int = None) -> Query:
+def _build_bookings_recap_query(user_id: int, event_date: Optional[date], venue_id: Optional[int]) -> Query:
     query = (
         Booking.query.outerjoin(Payment)
         .reset_joinpoint()
@@ -295,6 +300,18 @@ def _build_bookings_recap_query(user_id: int, venue_id: int = None) -> Query:
 
     if venue_id:
         query = query.filter(Venue.id == venue_id)
+
+    if event_date:
+        query = query.filter(
+            cast(
+                func.timezone(
+                    Venue.timezone,
+                    func.timezone("UTC", Stock.beginningDatetime),
+                ),
+                Date,
+            )
+            == event_date
+        )
 
     query = query.with_entities(
         Booking.token.label("bookingToken"),

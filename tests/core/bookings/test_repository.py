@@ -1008,6 +1008,64 @@ class FindByProUserIdTest:
         assert expected_booking_recap.venue_identifier == booking_two.stock.offer.venue.id
         assert expected_booking_recap.booking_amount == booking_two.amount
 
+    @pytest.mark.usefixtures("db_session")
+    def test_should_return_only_booking_for_requested_event_date(self, app: fixture):
+        # Given
+        user_offerer = offers_factories.UserOffererFactory()
+        event_date = datetime(2020, 12, 24, 10, 30)
+        expected_booking = bookings_factories.BookingFactory(
+            stock=offers_factories.EventStockFactory(
+                beginningDatetime=event_date, offer__venue__managingOfferer=user_offerer.offerer
+            )
+        )
+        bookings_factories.BookingFactory(
+            stock=offers_factories.EventStockFactory(offer__venue__managingOfferer=user_offerer.offerer)
+        )
+        bookings_factories.BookingFactory(
+            stock=offers_factories.ThingStockFactory(offer__venue__managingOfferer=user_offerer.offerer)
+        )
+
+        # When
+        bookings_recap_paginated = find_by_pro_user_id(user_id=user_offerer.user.id, event_date=event_date.date())
+
+        # Then
+        assert len(bookings_recap_paginated.bookings_recap) == 1
+        resulting_booking_recap = bookings_recap_paginated.bookings_recap[0]
+        assert resulting_booking_recap.booking_token == expected_booking.token
+
+    @pytest.mark.usefixtures("db_session")
+    def should_consider_venue_locale_datetime_when_filtering_by_date(self, app: fixture):
+        # Given
+        user_offerer = offers_factories.UserOffererFactory()
+        event_datetime = datetime(2020, 4, 21, 20, 00)
+
+        offer_in_cayenne = offers_factories.OfferFactory(
+            venue__postalCode="97300", venue__managingOfferer=user_offerer.offerer
+        )
+        cayenne_event_datetime = datetime(2020, 4, 22, 2, 0)
+        stock_in_cayenne = offers_factories.EventStockFactory(
+            offer=offer_in_cayenne, beginningDatetime=cayenne_event_datetime
+        )
+        cayenne_booking = bookings_factories.BookingFactory(stock=stock_in_cayenne)
+
+        offer_in_mayotte = offers_factories.OfferFactory(
+            venue__postalCode="97600", venue__managingOfferer=user_offerer.offerer
+        )
+        mayotte_event_datetime = datetime(2020, 4, 20, 22, 0)
+        stock_in_mayotte = offers_factories.EventStockFactory(
+            offer=offer_in_mayotte, beginningDatetime=mayotte_event_datetime
+        )
+        mayotte_booking = bookings_factories.BookingFactory(stock=stock_in_mayotte)
+
+        # When
+        bookings_recap_paginated = find_by_pro_user_id(user_id=user_offerer.user.id, event_date=event_datetime.date())
+
+        # Then
+        assert len(bookings_recap_paginated.bookings_recap) == 2
+        bookings_tokens = [booking_recap.booking_token for booking_recap in bookings_recap_paginated.bookings_recap]
+        assert cayenne_booking.token in bookings_tokens
+        assert mayotte_booking.token in bookings_tokens
+
 
 class FindSoonToBeExpiredBookingsTest:
     @pytest.mark.usefixtures("db_session")
