@@ -35,6 +35,11 @@ export const getProviderInfo = providerName => {
       icon: 'logo-librisoft',
       name: 'Librisoft',
     },
+    {
+      id: 'decitre',
+      icon: 'logo-decitre',
+      name: 'Decitre',
+    },
   ]
 
   return providers.find(providerInfo => providerName.toLowerCase().startsWith(providerInfo.id))
