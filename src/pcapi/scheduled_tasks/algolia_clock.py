@@ -62,10 +62,15 @@ def main():
     from pcapi.flask_app import app
 
     scheduler = BlockingScheduler()
+
     utils.activate_sentry(scheduler)
 
     scheduler.add_job(
-        index_offers_in_algolia_by_offer, "cron", [app], minute=settings.ALGOLIA_CRON_INDEXING_OFFERS_BY_OFFER_FREQUENCY
+        index_offers_in_algolia_by_offer,
+        "cron",
+        [app],
+        minute=settings.ALGOLIA_CRON_INDEXING_OFFERS_BY_OFFER_FREQUENCY,
+        max_instances=4,
     )
 
     scheduler.add_job(
