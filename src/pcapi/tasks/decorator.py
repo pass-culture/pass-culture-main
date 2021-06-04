@@ -29,6 +29,10 @@ def task(queue: str, path: str):
 
         @wraps(f)
         def delay(payload: payload_in_kwargs):
+            if settings.IS_RUNNING_TESTS:
+                f(payload)
+                return
+
             task_id = _enqueue_task(queue, path, payload)
             logger.info("Enqueued cloud task", extra={"queue": queue, "handler": path, "task": task_id})
 
