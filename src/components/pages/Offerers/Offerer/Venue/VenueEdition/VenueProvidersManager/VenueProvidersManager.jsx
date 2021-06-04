@@ -17,7 +17,6 @@ const VenueProvidersManagerContainer = ({ notifyError, notifySuccess, venue }) =
   const [providers, setProviders] = useState([])
   const [venueProviders, setVenueProviders] = useState([])
   const [isAllocineProviderSelected, setIsAllocineProviderSelected] = useState(false)
-  const [providerIdentifierIsRequired, setProviderIdentifierIsRequired] = useState(true)
 
   useEffect(() => {
     pcapi.loadProviders(venue.id).then(providers => setProviders(providers))
@@ -37,7 +36,6 @@ const VenueProvidersManagerContainer = ({ notifyError, notifySuccess, venue }) =
       const selectedProviderId = event.target.value
       const selectedProvider = providers.find(provider => provider.id === selectedProviderId)
       setIsAllocineProviderSelected(false)
-      setProviderIdentifierIsRequired(selectedProvider?.requireProviderIdentifier)
       setSelectedProviderId(selectedProviderId)
 
       if (isAllocineProvider(selectedProvider)) {
@@ -108,7 +106,6 @@ const VenueProvidersManagerContainer = ({ notifyError, notifySuccess, venue }) =
                 createVenueProvider={createVenueProvider}
                 providerId={selectedProviderId}
                 venueId={venue.id}
-                venueIdAtOfferProviderIsRequired={providerIdentifierIsRequired}
               />
             ) : (
               <StocksProviderForm

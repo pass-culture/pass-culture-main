@@ -45,8 +45,8 @@ describe('src | VenueProvidersManager', () => {
     }
 
     providers = [
-      { id: 'providerId1', requireProviderIdentifier: true, name: 'Cinema provider' },
-      { id: 'providerId2', requireProviderIdentifier: true, name: 'Movies provider' },
+      { id: 'providerId1', name: 'Cinema provider' },
+      { id: 'providerId2', name: 'Movies provider' },
     ]
     venueProviders = []
     pcapi.loadProviders.mockResolvedValue(providers)
