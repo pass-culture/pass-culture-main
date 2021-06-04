@@ -8,6 +8,10 @@ jest.mock('../../../../../../../utils/thumb', () => ({
   DEFAULT_THUMB_URL: '/default/thumb/url',
 }))
 
+jest.mock('../../../../../../../utils/config', () => ({
+  OBJECT_STORAGE_URL: 'http://storage_path',
+}))
+
 describe('components | Result', () => {
   let props
   beforeAll(() => {
@@ -33,10 +37,10 @@ describe('components | Result', () => {
           name: 'Les fleurs du mal',
           priceMin: 8,
           priceMax: 12,
-          thumbUrl: '/lien-vers-mon-image',
+          thumbUrl: '/thumbs/lien-vers-mon-image',
         },
         venue: {
-          departementCode: 54,
+          departementCode: '54',
         },
         objectID: '1',
       },
@@ -62,7 +66,7 @@ describe('components | Result', () => {
     expect(offerPrice).toHaveLength(1)
     expect(offerDistance).toHaveLength(1)
     expect(offerMediation).toHaveLength(1)
-    expect(offerMediation.prop('src')).toBe('/lien-vers-mon-image')
+    expect(offerMediation.prop('src')).toBe('http://storage_path/thumbs/lien-vers-mon-image')
   })
 
   it('should render a Link component containing free offer when offer is free', () => {

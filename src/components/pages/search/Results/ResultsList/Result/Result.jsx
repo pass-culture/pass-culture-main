@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 
 import { formatSearchResultDate } from '../../../../../../utils/date/date'
 import { getHumanizeRelativeDistance } from '../../../../../../utils/geolocation'
+import getThumbUrl from '../../../../../../utils/getThumbUrl'
 import { formatResultPrice } from '../../../../../../utils/price'
 import { DEFAULT_THUMB_URL } from '../../../../../../utils/thumb'
 
@@ -13,7 +14,7 @@ const Result = ({ result, geolocation, search }) => {
   const { latitude: userLatitude, longitude: userLongitude } = geolocation
   const { lat: venueLatitude, lng: venueLongitude } = _geoloc
   const { departementCode } = venue || {}
-  const thumbSrc = thumbUrl !== null ? thumbUrl : DEFAULT_THUMB_URL
+  const thumbSrc = thumbUrl !== null ? getThumbUrl(thumbUrl) : DEFAULT_THUMB_URL
   const formattedDate = formatSearchResultDate(departementCode, dates)
   const formattedPrice = formatResultPrice(priceMin, priceMax, isDuo)
   const canDisplayPrice = (priceMin && priceMax) || priceMin === 0
