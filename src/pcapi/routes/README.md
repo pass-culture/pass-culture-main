@@ -49,11 +49,8 @@ Revises: ba456c84727a
 Create Date: 2020-03-05 16:09:44.899250
 
 """
-import enum
 
-from alembic import op
-import sqlalchemy as sa
-
+from pcapi.models import feature
 
 # revision identifiers, used by Alembic.
 revision = 'b25450206c2b'
@@ -61,74 +58,16 @@ down_revision = 'ba456c84727a'
 branch_labels = None
 depends_on = None
 
-class FeatureToggle(enum.Enum):
-    LE_NOM_DE_VOTRE_FEATURE_DANS_L_ENUM_FEATURE = 'La description de votre feature dans l''enum feature'
 
-def upgrade():
-# Prendre toutes les valeurs de l'enum features (avec votre nouvelle variable feature flip)
-    new_values = ('WEBAPP_SIGNUP', 'DEGRESSIVE_REIMBURSEMENT_RATE', 'QR_CODE',
-                  'FULL_OFFERS_SEARCH_WITH_OFFERER_AND_VENUE', 'SEARCH_ALGOLIA', 'SEARCH_LEGACY',
-                  'BENEFICIARIES_IMPORT', 'SYNCHRONIZE_ALGOLIA', 'SYNCHRONIZE_ALLOCINE',
-                  'SYNCHRONIZE_BANK_INFORMATION', 'SYNCHRONIZE_LIBRAIRES', 'SYNCHRONIZE_TITELIVE',
-                  'SYNCHRONIZE_TITELIVE_PRODUCTS', 'SYNCHRONIZE_TITELIVE_PRODUCTS_DESCRIPTION',
-                  'SYNCHRONIZE_TITELIVE_PRODUCTS_THUMBS', 'UPDATE_DISCOVERY_VIEW', 'UPDATE_BOOKING_USED', 'RECOMMENDATIONS_WITH_DISCOVERY_VIEW')
-# Prendre toutes les valeurs de l'enum features (sans votre nouvelle variable feature flip)
-    previous_values = ('WEBAPP_SIGNUP', 'DEGRESSIVE_REIMBURSEMENT_RATE', 'QR_CODE',
-                  'FULL_OFFERS_SEARCH_WITH_OFFERER_AND_VENUE', 'SEARCH_ALGOLIA', 'SEARCH_LEGACY',
-                  'BENEFICIARIES_IMPORT', 'SYNCHRONIZE_ALGOLIA', 'SYNCHRONIZE_ALLOCINE',
-                  'SYNCHRONIZE_BANK_INFORMATION', 'SYNCHRONIZE_LIBRAIRES', 'SYNCHRONIZE_TITELIVE',
-                  'SYNCHRONIZE_TITELIVE_PRODUCTS', 'SYNCHRONIZE_TITELIVE_PRODUCTS_DESCRIPTION',
-                  'SYNCHRONIZE_TITELIVE_PRODUCTS_THUMBS', 'UPDATE_DISCOVERY_VIEW', 'UPDATE_BOOKING_USED')
-
-    previous_enum = sa.Enum(*previous_values, name='featuretoggle')
-    new_enum = sa.Enum(*new_values, name='featuretoggle')
-    temporary_enum = sa.Enum(*new_values, name='tmp_featuretoggle')
-
-    temporary_enum.create(op.get_bind(), checkfirst=False)
-    op.execute('ALTER TABLE feature ALTER COLUMN name TYPE tmp_featuretoggle'
-               ' USING name::text::tmp_featuretoggle')
-    previous_enum.drop(op.get_bind(), checkfirst=False)
-    new_enum.create(op.get_bind(), checkfirst=False)
-    op.execute('ALTER TABLE feature ALTER COLUMN name TYPE featuretoggle'
-               ' USING name::text::featuretoggle')
-    op.execute("""
-            INSERT INTO feature (name, description, "isActive")
-            VALUES ('%s', '%s', FALSE);
-            """ % (FeatureToggle.LE_NOM_DE_VOTRE_FEATURE_DANS_L_ENUM_FEATURE.name, FeatureToggle.LE_NOM_DE_VOTRE_FEATURE_DANS_L_ENUM_FEATURE.value))
-    temporary_enum.drop(op.get_bind(), checkfirst=False)
+FLAG = feature.FeatureToggle.ENABLE_PHONE_VALIDATION
 
 
-def downgrade():
-# Prendre toutes les valeurs de l'enum features (sans votre nouvelle variable feature flip)
-    new_values = ('WEBAPP_SIGNUP', 'DEGRESSIVE_REIMBURSEMENT_RATE', 'QR_CODE',
-                  'FULL_OFFERS_SEARCH_WITH_OFFERER_AND_VENUE', 'SEARCH_ALGOLIA', 'SEARCH_LEGACY',
-                  'BENEFICIARIES_IMPORT', 'SYNCHRONIZE_ALGOLIA', 'SYNCHRONIZE_ALLOCINE',
-                  'SYNCHRONIZE_BANK_INFORMATION', 'SYNCHRONIZE_LIBRAIRES', 'SYNCHRONIZE_TITELIVE',
-                  'SYNCHRONIZE_TITELIVE_PRODUCTS', 'SYNCHRONIZE_TITELIVE_PRODUCTS_DESCRIPTION',
-                  'SYNCHRONIZE_TITELIVE_PRODUCTS_THUMBS', 'UPDATE_DISCOVERY_VIEW', 'UPDATE_BOOKING_USED')
-# Prendre toutes les valeurs de l'enum features (avec votre nouvelle variable feature flip)
-    previous_values = ('WEBAPP_SIGNUP', 'DEGRESSIVE_REIMBURSEMENT_RATE', 'QR_CODE',
-                       'FULL_OFFERS_SEARCH_WITH_OFFERER_AND_VENUE', 'SEARCH_ALGOLIA', 'SEARCH_LEGACY',
-                       'BENEFICIARIES_IMPORT', 'SYNCHRONIZE_ALGOLIA', 'SYNCHRONIZE_ALLOCINE',
-                       'SYNCHRONIZE_BANK_INFORMATION', 'SYNCHRONIZE_LIBRAIRES', 'SYNCHRONIZE_TITELIVE',
-                       'SYNCHRONIZE_TITELIVE_PRODUCTS', 'SYNCHRONIZE_TITELIVE_PRODUCTS_DESCRIPTION',
-                       'SYNCHRONIZE_TITELIVE_PRODUCTS_THUMBS', 'UPDATE_DISCOVERY_VIEW', 'UPDATE_BOOKING_USED',
-                       'RECOMMENDATIONS_WITH_DISCOVERY_VIEW')
+def upgrade() -> None:
+    feature.add_feature_to_database(FLAG)
 
-    previous_enum = sa.Enum(*previous_values, name='featuretoggle')
-    new_enum = sa.Enum(*new_values, name='featuretoggle')
-    temporary_enum = sa.Enum(*new_values, name='tmp_featuretoggle')
 
-    op.execute("DELETE FROM feature WHERE name = 'LE_NOM_DE_VOTRE_FEATURE_DANS_L_ENUM_FEATURE'")
-    temporary_enum.create(op.get_bind(), checkfirst=False)
-    op.execute('ALTER TABLE feature ALTER COLUMN name TYPE tmp_featuretoggle'
-               ' USING name::text::tmp_featuretoggle')
-    previous_enum.drop(op.get_bind(), checkfirst=False)
-    new_enum.create(op.get_bind(), checkfirst=False)
-    op.execute('ALTER TABLE feature ALTER COLUMN name TYPE featuretoggle'
-               ' USING name::text::featuretoggle')
-    temporary_enum.drop(op.get_bind(), checkfirst=False)
-
+def downgrade() -> None:
+    feature.remove_feature_from_database(FLAG)
 ```
 
 Les étapes sont normalement finies, pour vérifier :
