@@ -96,3 +96,7 @@ class IdentityDocumentUploadException(Exception):
 
 class CloudTaskCreationException(Exception):
     pass
+
+
+class MissingEmailInMetadataException(Exception):
+    pass

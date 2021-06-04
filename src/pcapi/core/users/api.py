@@ -8,8 +8,10 @@ import logging
 import random
 import secrets
 from typing import Optional
+from typing import Tuple
 
 from flask import current_app as app
+from google.cloud.storage.blob import Blob
 from jwt import DecodeError
 from jwt import ExpiredSignatureError
 from jwt import InvalidSignatureError
@@ -37,6 +39,7 @@ from pcapi.core.users.utils import decode_jwt_token
 from pcapi.core.users.utils import delete_public_object
 from pcapi.core.users.utils import encode_jwt_payload
 from pcapi.core.users.utils import get_formatted_phone_number
+from pcapi.core.users.utils import get_object
 from pcapi.core.users.utils import parse_phone_number
 from pcapi.core.users.utils import sanitize_email
 from pcapi.core.users.utils import store_public_object
@@ -722,3 +725,13 @@ def asynchronous_identity_document_verification(image: bytes, email: str) -> Non
         delete_public_object("identity_documents", image_name)
         raise exceptions.CloudTaskCreationException
     return
+
+
+def get_identity_document_informations(image_url: str) -> Tuple[str, bytes]:
+    image_blob: Blob = get_object("identity_documents", image_url)
+    email = image_blob.metadata.get("email", "").strip()
+    if email == "":
+        raise exceptions.MissingEmailInMetadataException
+    image = image_blob.download_as_bytes()
+
+    return (email, image)
