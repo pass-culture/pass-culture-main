@@ -14,6 +14,8 @@ from pcapi.admin.custom_views.booking_view import BookingView
 from pcapi.admin.custom_views.criteria_view import CriteriaView
 from pcapi.admin.custom_views.feature_view import FeatureView
 from pcapi.admin.custom_views.many_offers_operations_view import ManyOffersOperationsView
+from pcapi.admin.custom_views.offer_category_view import OfferCategoryView
+from pcapi.admin.custom_views.offer_category_view import OfferSubcategoryView
 from pcapi.admin.custom_views.offerer_view import OffererView
 from pcapi.admin.custom_views.partner_user_view import PartnerUserView
 from pcapi.admin.custom_views.pro_user_view import ProUserView
@@ -145,6 +147,26 @@ def install_admin_views(admin: Admin, session: Session) -> None:
         SuspendFraudulentUsersView(
             name="Suspension d'utilisateurs via noms de domaine",
             endpoint="/suspend_fraud_users",
+            category=Category.CUSTOM_OPERATIONS,
+        )
+    )
+
+    admin.add_view(
+        OfferCategoryView(
+            models.OfferCategory,
+            session,
+            name="Catégories d'offres",
+            endpoint="/offer_categoriess",
+            category=Category.CUSTOM_OPERATIONS,
+        )
+    )
+
+    admin.add_view(
+        OfferSubcategoryView(
+            models.OfferSubcategory,
+            session,
+            name="Sous-catégories d'offres",
+            endpoint="/offer_subcategories",
             category=Category.CUSTOM_OPERATIONS,
         )
     )
