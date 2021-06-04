@@ -763,14 +763,14 @@ class UpdateBeneficiaryMandatoryInformationTest:
 class AsynchronousIdentityDocumentVerificationTest:
     IMAGES_DIR = Path(tests.__path__[0]) / "files"
 
-    @patch("pcapi.core.users.api.store_public_object")
+    @patch("pcapi.core.users.api.store_object")
     @patch("pcapi.core.users.api.random_token")
     @patch("pcapi.core.users.api.standardize_image")
     def test_upload_identity_document_successful(
         self,
         mocked_standardize_image,
         mocked_random_token,
-        mocked_store_public_object,
+        mocked_store_object,
         app,
     ):
         # Given
@@ -782,7 +782,7 @@ class AsynchronousIdentityDocumentVerificationTest:
         asynchronous_identity_document_verification(identity_document, "toto@email.fr")
 
         # Then
-        mocked_store_public_object.assert_called_once_with(
+        mocked_store_object.assert_called_once_with(
             "identity_documents",
             "a_very_random_secret.jpg",
             identity_document,
@@ -790,14 +790,14 @@ class AsynchronousIdentityDocumentVerificationTest:
             metadata={"email": "toto@email.fr"},
         )
 
-    @patch("pcapi.core.users.api.store_public_object")
+    @patch("pcapi.core.users.api.store_object")
     def test_upload_identity_document_fails_on_upload(
         self,
-        mocked_store_public_object,
+        mocked_store_object,
         app,
     ):
         # Given
-        mocked_store_public_object.side_effect = Exception
+        mocked_store_object.side_effect = Exception
         identity_document = (self.IMAGES_DIR / "mouette_small.jpg").read_bytes()
 
         # Then

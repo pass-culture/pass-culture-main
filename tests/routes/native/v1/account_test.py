@@ -705,14 +705,14 @@ class GetIdCheckTokenTest:
 class UploadIdentityDocumentTest:
     IMAGES_DIR = Path(tests.__path__[0]) / "files"
 
-    @patch("pcapi.core.users.api.store_public_object")
+    @patch("pcapi.core.users.api.store_object")
     @patch("pcapi.core.users.api.random_token")
     @patch("pcapi.core.users.api.standardize_image")
     def test_upload_identity_document_successful(
         self,
         mocked_standardize_image,
         mocked_random_token,
-        mocked_store_public_object,
+        mocked_store_object,
         app,
     ):
         user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="93", isBeneficiary=False)
@@ -730,7 +730,7 @@ class UploadIdentityDocumentTest:
         response = test_client.post("/native/v1/identity_document", form=data)
 
         assert response.status_code == 204
-        mocked_store_public_object.assert_called_once_with(
+        mocked_store_object.assert_called_once_with(
             "identity_documents",
             "a_very_random_secret.jpg",
             identity_document,

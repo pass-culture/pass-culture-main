@@ -97,7 +97,7 @@ def get_encrypted_gcp_storage_client_bucket() -> Bucket:
     return get_encrypted_gcp_storage_client_bucket.client.bucket(settings.GCP_BUCKET_NAME)
 
 
-def store_public_object(
+def store_object(
     bucket: str, object_id: str, blob: bytes, content_type: Optional[str] = None, metadata: Optional[dict] = None
 ) -> None:
     storage_path = bucket + "/" + object_id
@@ -111,7 +111,7 @@ def store_public_object(
         raise exception
 
 
-def delete_public_object(bucket: str, object_id: str) -> None:
+def delete_object(bucket: str, object_id: str) -> None:
     storage_path = bucket + "/" + object_id
     try:
         storage_client_bucket = get_encrypted_gcp_storage_client_bucket()
