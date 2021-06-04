@@ -175,6 +175,7 @@ class BeneficiaryInformationUpdateRequest(BaseModel):
 
     class Config:
         use_enum_values = True
+        alias_generator = to_camel
 
 
 class ResendEmailValidationRequest(BaseModel):

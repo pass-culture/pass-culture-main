@@ -1105,8 +1105,8 @@ def test_suspend_account(app):
     assert user.suspensionReason == SuspensionReason.UPON_USER_REQUEST.value
 
 
-class UpdateUserIdProfileTest:
-    def test_update_user_id_check_profile(self, app):
+class UpdateBeneficiaryInformationTest:
+    def test_update_beneficiary_information(self, app):
         """
         Test that valid request:
             * updates the user's id check profile information;
@@ -1132,7 +1132,7 @@ class UpdateUserIdProfileTest:
         profile_data = {
             "address": "1 rue des rues",
             "city": "Uneville",
-            "postal_code": "77000",
+            "postalCode": "77000",
             "activity": "Lycéen",
         }
 
