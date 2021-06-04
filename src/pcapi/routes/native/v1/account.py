@@ -6,7 +6,7 @@ from flask import request
 
 from pcapi import settings
 from pcapi.connectors import api_recaptcha
-from pcapi.connectors.beneficiaries import ask_for_identity_document_verification
+from pcapi.connectors.beneficiaries.id_check_middleware import ask_for_identity_document_verification
 from pcapi.core.users import api
 from pcapi.core.users import constants
 from pcapi.core.users import exceptions
