@@ -183,19 +183,18 @@ def upload_identity_document(
     if not user.is_eligible:
         raise ApiErrors({"code": "USER_NOT_ELIGIBLE"})
     try:
-        api.create_id_check_token(user)
+        api.validate_token(user.id, form.token)
         image = form.get_image_as_bytes(request)
         api.asynchronous_identity_document_verification(image, user.email)
         return
-    except exceptions.IdCheckTokenLimitReached:
-        message = f"Tu as fait trop de demandes pour le moment, réessaye dans {settings.ID_CHECK_TOKEN_LIFE_TIME_HOURS} heures"
+    except exceptions.ExpiredCode:
         raise ApiErrors(
-            {"code": "TOO_MANY_ID_CHECK_TOKEN", "message": message},
+            {"code": "EXPIRED_TOKEN", "message": "Token expiré"},
             status_code=400,
         )
-    except exceptions.IdCheckAlreadyCompleted:
+    except exceptions.NotValidCode:
         raise ApiErrors(
-            {"code": "ID_CHECK_ALREADY_COMPLETED", "message": "Tu as déjà déposé un dossier, il est en cours d'étude."},
+            {"code": "INVALID_TOKEN", "message": "Token invalide"},
             status_code=400,
         )
     except (exceptions.IdentityDocumentUploadException, exceptions.CloudTaskCreationException):

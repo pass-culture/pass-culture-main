@@ -197,6 +197,8 @@ class SendPhoneValidationRequest(BaseModel):
 
 
 class UploadIdentityDocumentRequest(BaseModel):
+    token: str
+
     def get_image_as_bytes(self, request) -> bytes:
         """
         Get the image from the POSTed data (request) or from the form field

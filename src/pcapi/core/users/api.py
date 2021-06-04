@@ -703,6 +703,21 @@ def get_next_beneficiary_validation_step(user: User) -> Optional[BeneficiaryVali
     return None
 
 
+def validate_token(userId: int, token_value: str) -> None:
+    token = Token.query.filter(
+        Token.userId == userId, Token.value == token_value, Token.type == TokenType.ID_CHECK
+    ).one_or_none()
+
+    if not token:
+        raise exceptions.NotValidCode()
+
+    if token.expirationDate and token.expirationDate < datetime.now() or token.isUsed:
+        raise exceptions.ExpiredCode()
+
+    token.isUsed = True
+    repository.save(token)
+
+
 def asynchronous_identity_document_verification(image: bytes, email: str) -> None:
     standardized_image = standardize_image(image)
     image_name = f"{random_token(64)}.jpg"

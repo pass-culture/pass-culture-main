@@ -21,6 +21,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users.api import create_phone_validation_token
 from pcapi.core.users.constants import SuspensionReason
 from pcapi.core.users.factories import BeneficiaryImportFactory
+from pcapi.core.users.factories import TokenFactory
 from pcapi.core.users.models import PhoneValidationStatusType
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
@@ -716,6 +717,7 @@ class UploadIdentityDocumentTest:
         app,
     ):
         user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="93", isBeneficiary=False)
+        token = TokenFactory(user=user, type=TokenType.ID_CHECK)
         access_token = create_access_token(identity=user.email)
         mocked_random_token.return_value = "a_very_random_secret"
         mocked_standardize_image.side_effect = lambda value: value
@@ -723,6 +725,7 @@ class UploadIdentityDocumentTest:
         identity_document = (self.IMAGES_DIR / "mouette_small.jpg").read_bytes()
         data = {
             "identityDocumentFile": (BytesIO(identity_document), "image.jpg"),
+            "token": token.value,
         }
 
         test_client = TestClient(app.test_client())
@@ -738,14 +741,13 @@ class UploadIdentityDocumentTest:
             metadata={"email": user.email},
         )
 
-    def test_get_id_check_token_not_eligible(self, app):
+    def test_ineligible_user(self, app):
         user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="984", isBeneficiary=False)
         access_token = create_access_token(identity=user.email)
+        token = TokenFactory(user=user, type=TokenType.ID_CHECK)
 
-        thumb = (self.IMAGES_DIR / "mouette_small.jpg").read_bytes()
-        data = {
-            "identityDocumentFile": (BytesIO(thumb), "image.jpg"),
-        }
+        thumb = (self.IMAGES_DIR / "pixel.png").read_bytes()
+        data = {"identityDocumentFile": (BytesIO(thumb), "image.jpg"), "token": token.value}
 
         test_client = TestClient(app.test_client())
         test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
@@ -754,16 +756,29 @@ class UploadIdentityDocumentTest:
         assert response.status_code == 400
         assert response.json == {"code": "USER_NOT_ELIGIBLE"}
 
-    def test_get_id_check_token_limit_reached(self, app):
+    def test_token_expired(self, app):
         user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="93", isBeneficiary=False)
+        access_token = create_access_token(identity=user.email)
+        token = TokenFactory(user=user, type=TokenType.ID_CHECK, expirationDate=datetime(2000, 1, 1))
 
-        expiration_date = datetime.now() + timedelta(hours=2)
-        users_factories.IdCheckToken.create_batch(
-            settings.ID_CHECK_MAX_ALIVE_TOKEN, user=user, expirationDate=expiration_date, isUsed=False
-        )
-        thumb = (self.IMAGES_DIR / "mouette_small.jpg").read_bytes()
+        thumb = (self.IMAGES_DIR / "pixel.png").read_bytes()
+        data = {"identityDocumentFile": (BytesIO(thumb), "image.jpg"), "token": token.value}
+
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+        response = test_client.post("/native/v1/identity_document", form=data)
+
+        assert response.status_code == 400
+        assert response.json == {"code": "EXPIRED_TOKEN", "message": "Token expiré"}
+
+    def test_token_used(self, app):
+        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="93", isBeneficiary=False)
+        token = TokenFactory(user=user, type=TokenType.ID_CHECK, isUsed=True)
+
+        thumb = (self.IMAGES_DIR / "pixel.png").read_bytes()
         data = {
             "identityDocumentFile": (BytesIO(thumb), "image.jpg"),
+            "token": token.value,
         }
 
         access_token = create_access_token(identity=user.email)
@@ -772,7 +787,25 @@ class UploadIdentityDocumentTest:
         response = test_client.post("/native/v1/identity_document", form=data)
 
         assert response.status_code == 400
-        assert response.json["code"] == "TOO_MANY_ID_CHECK_TOKEN"
+        assert response.json["code"] == "EXPIRED_TOKEN"
+
+    def test_no_token_found(self, app):
+        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="93", isBeneficiary=False)
+        token = TokenFactory(user=user, type=TokenType.ID_CHECK, isUsed=True)
+
+        thumb = (self.IMAGES_DIR / "pixel.png").read_bytes()
+        data = {
+            "identityDocumentFile": (BytesIO(thumb), "image.jpg"),
+            "token": f"{token.value}wrongsuffix",
+        }
+
+        access_token = create_access_token(identity=user.email)
+        test_client = TestClient(app.test_client())
+        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
+        response = test_client.post("/native/v1/identity_document", form=data)
+
+        assert response.status_code == 400
+        assert response.json["code"] == "INVALID_TOKEN"
 
 
 class VerifyIdentityDocumentTest:
