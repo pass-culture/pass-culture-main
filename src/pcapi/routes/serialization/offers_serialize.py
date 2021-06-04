@@ -377,7 +377,6 @@ class GetOfferLastProviderResponseModel(BaseModel):
     isActive: bool
     localClass: Optional[str]
     name: str
-    requireProviderIdentifier: bool
 
     _humanize_id = humanize_field("id")
 

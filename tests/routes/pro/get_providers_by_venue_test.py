@@ -36,7 +36,6 @@ class Get:
                     "isActive": True,
                     "localClass": "AllocineStocks",
                     "name": "Allociné",
-                    "requireProviderIdentifier": True,
                 },
                 {
                     "enabledForPro": True,
@@ -44,7 +43,6 @@ class Get:
                     "isActive": True,
                     "localClass": "TiteLiveStocks",
                     "name": "TiteLive Stocks (Epagine / Place des libraires.com)",
-                    "requireProviderIdentifier": True,
                 },
             ]
 
@@ -72,7 +70,6 @@ class Get:
                     "isActive": True,
                     "localClass": "TiteLiveStocks",
                     "name": "TiteLive Stocks (Epagine / Place des libraires.com)",
-                    "requireProviderIdentifier": True,
                 }
             ]
 

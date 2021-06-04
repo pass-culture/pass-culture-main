@@ -187,7 +187,6 @@ class Returns201:
             "isActive",
             "localClass",
             "name",
-            "requireProviderIdentifier",
         }
 
     @pytest.mark.usefixtures("db_session")

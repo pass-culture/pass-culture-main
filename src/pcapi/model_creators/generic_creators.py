@@ -352,7 +352,6 @@ def create_provider(
     provider.isActive = is_active
     provider.localClass = local_class
     provider.name = name
-    provider.requireProviderIdentifier = require_provider_identifier
 
     return provider
 

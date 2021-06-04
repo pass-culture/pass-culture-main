@@ -23,7 +23,6 @@ class ProviderResponse(BaseModel):
     name: str
     enabledForPro: bool
     id: str
-    requireProviderIdentifier: str
     isActive: bool
     localClass: Optional[str]
 
