@@ -229,26 +229,26 @@ class BankInformationFactory(BaseFactory):
     status = "ACCEPTED"
 
 
-class OfferCategoryGroupFactory(BaseFactory):
+class OfferCategoryFactory(BaseFactory):
     class Meta:
         model = models.OfferCategory
 
     name = factory.Sequence("La {}e catégorie".format)
-    app_label = factory.Sequence("La {}e catégorie".format)
-    pro_label = factory.Sequence("La {}e catégorie (mais avec beaucoup de caractères)".format)
+    appLabel = factory.Sequence("{}e cat.".format)
+    proLabel = factory.Sequence("La {}e catégorie (avec beaucoup de caractères)".format)
 
 
-class OfferSubCategoryFactory(BaseFactory):
+class OfferSubcategoryFactory(BaseFactory):
     class Meta:
-        model = models.OfferSubCategory
+        model = models.OfferSubcategory
 
-    name = factory.Sequence("La {}e catégorie".format)
-    categoryGroup = factory.SubFactory(OfferCategoryGroupFactory)
+    name = factory.Sequence("La {}e sous-catégorie".format)
+    category = factory.SubFactory(OfferCategoryFactory)
     isEvent = False
-    app_label = factory.Sequence("La {}e catégorie".format)
-    pro_label = factory.Sequence("La {}e catégorie (mais avec beaucoup de caractères)".format)
+    appLabel = factory.Sequence("{}e sous-cat.".format)
+    proLabel = factory.Sequence("La {}e souscatégorie (avec beaucoup de caractères)".format)
     canExpire = True
     isDigital = False
     digitalDeposit = False
     physicalDeposit = True
-    canDeDuo = False
+    canBeDuo = False
