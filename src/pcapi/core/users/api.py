@@ -688,7 +688,7 @@ def _check_and_update_phone_validation_attempts(redis: Redis, user: User) -> Non
 def get_next_beneficiary_validation_step(user: User) -> Optional[BeneficiaryValidationStep]:
     if user.isBeneficiary or not user.is_eligible:
         return None
-    if not user.is_phone_validated:
+    if not user.is_phone_validated and feature_queries.is_active(FeatureToggle.ENABLE_PHONE_VALIDATION):
         return BeneficiaryValidationStep.PHONE_VALIDATION
     if not user.hasCompletedIdCheck:
         return BeneficiaryValidationStep.ID_CHECK
