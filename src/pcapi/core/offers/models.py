@@ -654,9 +654,9 @@ class OfferSubcategory(PcObject, Model, DeactivableMixin):
 
     isDigital = Column(Boolean, nullable=False)
 
-    digitalDeposit = Column(Boolean, nullable=False)
+    isDigitalDeposit = Column(Boolean, nullable=False)
 
-    physicalDeposit = Column(Boolean, nullable=False)
+    isPhysicalDeposit = Column(Boolean, nullable=False)
 
     canBeDuo = Column(Boolean, nullable=False)
 

@@ -29,8 +29,8 @@ def upgrade():
         sa.Column("conditionalFields", sa.ARRAY(sa.Text()), nullable=True),
         sa.Column("canExpire", sa.Boolean(), nullable=False),
         sa.Column("isDigital", sa.Boolean(), nullable=False),
-        sa.Column("digitalDeposit", sa.Boolean(), nullable=False),
-        sa.Column("physicalDeposit", sa.Boolean(), nullable=False),
+        sa.Column("isDigitalDeposit", sa.Boolean(), nullable=False),
+        sa.Column("isPhysicalDeposit", sa.Boolean(), nullable=False),
         sa.Column("canBeDuo", sa.Boolean(), nullable=False),
         sa.ForeignKeyConstraint(
             ["categoryId"],
