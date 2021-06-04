@@ -30,21 +30,21 @@ class OverrideSettingsOnClassTest:
 
 
 @pytest.mark.usefixtures("db_session")
-@override_features(SEARCH_ALGOLIA=False)
+@override_features(ENABLE_NATIVE_APP_RECAPTCHA=False)
 def test_override_features_on_function():
-    assert not feature_queries.is_active(FeatureToggle.SEARCH_ALGOLIA)
+    assert not feature_queries.is_active(FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA)
 
 
 @pytest.mark.usefixtures("db_session")
 def test_override_features_as_context_manager():
-    assert feature_queries.is_active(FeatureToggle.SEARCH_ALGOLIA)
-    with override_features(SEARCH_ALGOLIA=False):
-        assert not feature_queries.is_active(FeatureToggle.SEARCH_ALGOLIA)
-    assert feature_queries.is_active(FeatureToggle.SEARCH_ALGOLIA)
+    assert feature_queries.is_active(FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA)
+    with override_features(ENABLE_NATIVE_APP_RECAPTCHA=False):
+        assert not feature_queries.is_active(FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA)
+    assert feature_queries.is_active(FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA)
 
 
 @pytest.mark.usefixtures("db_session")
 class OverrideFeaturesOnClassTest:
-    @override_features(SEARCH_ALGOLIA=False)
+    @override_features(ENABLE_NATIVE_APP_RECAPTCHA=False)
     def test_method_level_override(self):
-        assert not feature_queries.is_active(FeatureToggle.SEARCH_ALGOLIA)
+        assert not feature_queries.is_active(FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA)
