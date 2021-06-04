@@ -480,3 +480,36 @@ class ImageBodyModel(BaseModel):
 class ImageResponseModel(BaseModel):
     errors: Optional[list[str]]
     image: Optional[str]
+
+
+class SubCategoryResponseModel(BaseModel):
+    id: int
+    name: str
+    categoryId: int
+    isEvent: bool
+    isDigital: bool
+    isDigitalDeposit: bool
+    isPhysicalDeposit: bool
+    proLabel: str
+    appLabel: str
+    conditionalFields: Optional[list[str]]
+    canExpire: bool
+    canBeDuo: bool
+
+    class Config:
+        orm_mode = True
+
+
+class CategoryResponseModel(BaseModel):
+    id: int
+    name: str
+    proLabel: str
+    appLabel: str
+
+    class Config:
+        orm_mode = True
+
+
+class CategoriesResponseModel(BaseModel):
+    categories: list[CategoryResponseModel]
+    sub_categories: list[SubCategoryResponseModel]

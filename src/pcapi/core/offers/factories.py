@@ -249,6 +249,6 @@ class OfferSubcategoryFactory(BaseFactory):
     proLabel = factory.Sequence("La {}e souscatégorie (avec beaucoup de caractères)".format)
     canExpire = True
     isDigital = False
-    digitalDeposit = False
-    physicalDeposit = True
+    isDigitalDeposit = False
+    isPhysicalDeposit = True
     canBeDuo = False
