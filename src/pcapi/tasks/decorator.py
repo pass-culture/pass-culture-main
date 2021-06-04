@@ -1,13 +1,14 @@
 from functools import wraps
-import json
 import logging
 
 from flask.blueprints import Blueprint
 from flask.globals import request
-from google.cloud import tasks_v2
+import requests
 
 from pcapi import settings
 from pcapi.serialization.decorator import spectree_serialize
+
+from . import cloud_task
 
 
 GCP_PROJECT = "passculture-metier-ehp"
@@ -18,8 +19,6 @@ CLOUD_TASK_SUBPATH = "/cloud-tasks"
 logger = logging.getLogger(__name__)
 
 cloud_task_api = Blueprint("Cloud task internal API", __name__, url_prefix=CLOUD_TASK_SUBPATH)
-
-client = tasks_v2.CloudTasksClient()
 
 
 def task(queue: str, path: str):
@@ -61,21 +60,20 @@ def _define_handler(f, path, payload_type):
 
 
 def _enqueue_task(queue, path, payload):
-    parent = client.queue_path(GCP_PROJECT, GCP_LOCATION, queue)
-
     url = settings.API_URL + CLOUD_TASK_SUBPATH + path
-    body = json.dumps(payload).encode()
 
-    task_request = {
-        "http_request": {
-            "http_method": tasks_v2.HttpMethod.POST,
-            "url": url,
-            "headers": {"Content-type": "application/json"},
-            "body": body,
+    if settings.IS_DEV:
+        _call_task_handler(queue, url, payload)
+        return None
+
+    return cloud_task.enqueue_task(queue, url, payload)
+
+
+def _call_task_handler(queue, url, payload):
+    requests.post(
+        url,
+        headers={
+            "HTTP_X_CLOUDTASKS_QUEUENAME": queue,
         },
-    }
-
-    response = client.create_task(request={"parent": parent, "task": task_request})
-
-    task_id = response.name.split("/")[-1]
-    return task_id
+        json=payload,
+    )
