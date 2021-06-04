@@ -10,6 +10,11 @@ import { createMemoryHistory } from 'history'
 jest.mock('../../../../../../../utils/date/date', () => ({
   formatSearchResultDate: jest.fn(),
 }))
+jest.mock('../../../../../../../utils/config', () => ({
+  OBJECT_STORAGE_URL: 'http://storage_path',
+}))
+
+
 describe('src | components | OfferTile', () => {
   let props
   let history
@@ -27,7 +32,7 @@ describe('src | components | OfferTile', () => {
           name: 'Avengers - Age of Ultron',
           priceMin: 1.2,
           priceMax: 1.2,
-          thumbUrl: 'my-thumb',
+          thumbUrl: '/thumbs/path_to_image',
         },
         venue: {
           departementCode: '54',
@@ -69,7 +74,7 @@ describe('src | components | OfferTile', () => {
     const img = wrapper.find('img')
     expect(img).toHaveLength(1)
     expect(img.prop('alt')).toBe('')
-    expect(img.prop('src')).toBe('my-thumb')
+    expect(img.prop('src')).toBe('http://storage_path/thumbs/path_to_image')
   })
 
   it('should render an offer tile with default thumb when no image', () => {

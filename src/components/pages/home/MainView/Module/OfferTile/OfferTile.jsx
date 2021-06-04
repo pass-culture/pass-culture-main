@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import { formatSearchResultDate } from '../../../../../../utils/date/date'
 import { formatResultPrice } from '../../../../../../utils/price'
 import { DEFAULT_THUMB_URL } from '../../../../../../utils/thumb'
+import getThumbUrl from '../../../../../../utils/getThumbUrl'
 import { PANE_LAYOUT } from '../../domain/layout'
 import { formatToReadableString } from '../../../../../../utils/strings/formatToReadableString'
 
@@ -47,7 +48,7 @@ const OfferTile = ({ historyPush, hit, isSwitching, layout, trackConsultOffer, m
         <div className="otw-image-wrapper">
           <img
             alt=""
-            src={offer.thumbUrl ? offer.thumbUrl : DEFAULT_THUMB_URL}
+            src={offer.thumbUrl ? getThumbUrl(offer.thumbUrl) : DEFAULT_THUMB_URL}
           />
           <div className="otw-offer-linear-background">
             <div className="otw-offer-name">
