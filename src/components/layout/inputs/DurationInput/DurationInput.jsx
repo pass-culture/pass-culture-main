@@ -78,10 +78,9 @@ const DurationInput = ({
         />
       </span>
       {error && (
-        <InputError
-          message={error}
-          name={name}
-        />
+        <InputError name={name}>
+          {error}
+        </InputError>
       )}
     </label>
   )

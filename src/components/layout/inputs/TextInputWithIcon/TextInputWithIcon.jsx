@@ -49,7 +49,11 @@ const TextInputWithIcon = ({
         />
       </button>
     </div>
-    {error && <InputError message={error} />}
+    {error && (
+      <InputError>
+        {error}
+      </InputError>
+    )}
   </label>
 )
 

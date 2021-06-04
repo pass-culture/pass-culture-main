@@ -3,7 +3,7 @@ import React from 'react'
 
 import Icon from '../../Icon'
 
-const InputError = ({ name, message }) => {
+const InputError = ({ children, name }) => {
   const inputErrorExtraProps = name
     ? {
         'data-testid': `input-error-field-${name}`,
@@ -19,7 +19,7 @@ const InputError = ({ name, message }) => {
         svg="ico-notification-error-red"
       />
       <pre>
-        {message}
+        {children}
       </pre>
     </span>
   )
@@ -30,7 +30,7 @@ InputError.defaultProps = {
 }
 
 InputError.propTypes = {
-  message: PropTypes.string.isRequired,
+  children: PropTypes.shape().isRequired,
   name: PropTypes.string,
 }
 

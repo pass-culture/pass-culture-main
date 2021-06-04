@@ -45,10 +45,9 @@ const TextInput = ({
       value={value}
     />
     {error && (
-      <InputError
-        message={error}
-        name={name}
-      />
+      <InputError name={name}>
+        {error}
+      </InputError>
     )}
     {countCharacters && (
       <span className="it-character-count">

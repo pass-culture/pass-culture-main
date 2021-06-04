@@ -281,7 +281,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
       )
 
       // then
-      const error = wrapper.find({ children: 'erreur sur le mail' })
+      const error = wrapper.find({ children: 'erreur sur le mail' }).hostNodes()
       expect(error).toHaveLength(1)
     })
 

@@ -754,7 +754,9 @@ const OfferForm = ({
             />
 
             {Boolean(getErrorMessage('disabilityCompliant')) && (
-              <InputError message="Vous devez cocher l'une des options ci-dessus" />
+              <InputError>
+                {"Vous devez cocher l'une des options ci-dessus"}
+              </InputError>
             )}
           </section>
 
