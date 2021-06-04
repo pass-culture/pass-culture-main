@@ -157,13 +157,12 @@ class AllocineStocksTest:
 
 
 class UpdateObjectsTest:
-    @patch("pcapi.local_providers.local_provider.send_venue_provider_data_to_redis")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
     @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
     @pytest.mark.usefixtures("db_session")
     def test_should_create_one_product_and_one_local_version_offer_with_movie_info(
-        self, mock_call_allocine_api, mock_api_poster, mock_redis
+        self, mock_call_allocine_api, mock_api_poster
     ):
         # Given
         mock_call_allocine_api.return_value = iter(
@@ -266,15 +265,13 @@ class UpdateObjectsTest:
         assert created_product.extraData["stageDirector"] == "Farkhondeh Torabi"
         assert created_product.name == "Les Contes de la mère poule"
         assert created_product.type == str(EventType.CINEMA)
-        mock_redis.assert_called_once()
 
-    @patch("pcapi.local_providers.local_provider.send_venue_provider_data_to_redis")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
     @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
     @pytest.mark.usefixtures("db_session")
     def test_should_create_one_product_and_one_original_version_offer_and_one_dubbed_version_offer_with_movie_info(
-        self, mock_call_allocine_api, mock_api_poster, mock_redis
+        self, mock_call_allocine_api, mock_api_poster
     ):
         # Given
         mock_call_allocine_api.return_value = iter(
@@ -405,13 +402,12 @@ class UpdateObjectsTest:
         assert dubbed_version_offer.product == created_products[0]
         assert dubbed_version_offer.type == str(EventType.CINEMA)
 
-    @patch("pcapi.local_providers.local_provider.send_venue_provider_data_to_redis")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
     @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
     @pytest.mark.usefixtures("db_session")
     def test_should_create_only_one_original_version_offer_when_only_original_showtimes_exist(
-        self, mock_call_allocine_api, mock_api_poster, mock_redis
+        self, mock_call_allocine_api, mock_api_poster
     ):
         # Given
         mock_call_allocine_api.return_value = iter(
@@ -503,13 +499,12 @@ class UpdateObjectsTest:
         assert len(created_offers) == 1
         assert len(created_products) == 1
 
-    @patch("pcapi.local_providers.local_provider.send_venue_provider_data_to_redis")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
     @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
     @pytest.mark.usefixtures("db_session")
     def test_should_update_existing_product_duration_and_update_matching_offers(
-        self, mock_call_allocine_api, mock_api_poster, mock_redis
+        self, mock_call_allocine_api, mock_api_poster
     ):
         # Given
         mock_call_allocine_api.return_value = iter(
@@ -626,13 +621,12 @@ class UpdateObjectsTest:
         assert existing_offers[1].durationMinutes == 110
         assert existing_product.durationMinutes == 110
 
-    @patch("pcapi.local_providers.local_provider.send_venue_provider_data_to_redis")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
     @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
     @pytest.mark.usefixtures("db_session")
     def test_should_update_existing_product_duration_and_create_new_offer_when_no_offer_exists(
-        self, mock_call_allocine_api, mock_api_poster, mock_redis
+        self, mock_call_allocine_api, mock_api_poster
     ):
         # Given
         mock_call_allocine_api.return_value = iter(
@@ -725,13 +719,12 @@ class UpdateObjectsTest:
         assert created_offer.type == str(EventType.CINEMA)
         assert created_offer.name == "Les Contes de la mère poule - VF"
 
-    @patch("pcapi.local_providers.local_provider.send_venue_provider_data_to_redis")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
     @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
     @pytest.mark.usefixtures("db_session")
     def test_should_create_product_and_new_offer_with_missing_visa_and_stage_director(
-        self, mock_call_allocine_api, mock_api_poster, mock_redis
+        self, mock_call_allocine_api, mock_api_poster
     ):
         # Given
         mock_call_allocine_api.return_value = iter(
@@ -804,13 +797,12 @@ class UpdateObjectsTest:
         assert created_offer.type == str(EventType.CINEMA)
         assert created_offer.name == "Les Contes de la mère poule - VF"
 
-    @patch("pcapi.local_providers.local_provider.send_venue_provider_data_to_redis")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
     @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
     @pytest.mark.usefixtures("db_session")
     def test_should_not_create_product_and_offer_when_missing_required_information_in_api_response(
-        self, mock_call_allocine_api, mock_api_poster, mock_redis
+        self, mock_call_allocine_api, mock_api_poster
     ):
         # Given
         mock_call_allocine_api.return_value = iter(
@@ -872,14 +864,13 @@ class UpdateObjectsTest:
         assert Offer.query.count() == 0
         assert Product.query.count() == 0
 
-    @patch("pcapi.local_providers.local_provider.send_venue_provider_data_to_redis")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
     @patch("pcapi.local_providers.allocine.allocine_stocks.AllocineStocks.get_object_thumb")
     @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
     @pytest.mark.usefixtures("db_session")
     def test_should_create_product_with_correct_thumb_and_increase_thumbCount_by_1(
-        self, mock_get_object_thumb, mock_call_allocine_api, mock_api_poster, mock_redis
+        self, mock_get_object_thumb, mock_call_allocine_api, mock_api_poster
     ):
         # Given
         mock_call_allocine_api.return_value = iter(
@@ -959,14 +950,13 @@ class UpdateObjectsTest:
         assert existing_product.thumbUrl == f"http://localhost/storage/thumbs/products/{humanize(existing_product.id)}"
         assert existing_product.thumbCount == 1
 
-    @patch("pcapi.local_providers.local_provider.send_venue_provider_data_to_redis")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
     @patch("pcapi.local_providers.allocine.allocine_stocks.AllocineStocks.get_object_thumb")
     @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
     @pytest.mark.usefixtures("db_session")
     def test_should_replace_product_thumb_when_product_has_already_one_thumb(
-        self, mock_get_object_thumb, mock_call_allocine_api, mock_api_poster, mock_redis
+        self, mock_get_object_thumb, mock_call_allocine_api, mock_api_poster
     ):
         # Given
         mock_call_allocine_api.return_value = iter(
@@ -1060,13 +1050,12 @@ class UpdateObjectsTest:
         assert existing_product.thumbUrl == f"http://localhost/storage/thumbs/products/{humanize(existing_product.id)}"
         assert existing_product.thumbCount == 1
 
-    @patch("pcapi.local_providers.local_provider.send_venue_provider_data_to_redis")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
     @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
     @pytest.mark.usefixtures("db_session")
     def test_should_create_one_product_and_one_offer_and_associated_stocks(
-        self, mock_api_poster, mock_call_allocine_api, mock_redis
+        self, mock_api_poster, mock_call_allocine_api
     ):
         # Given
         mock_call_allocine_api.return_value = iter(
@@ -1186,13 +1175,12 @@ class UpdateObjectsTest:
         assert second_stock.beginningDatetime == datetime(2019, 12, 3, 17, 0)
         assert second_stock.bookingLimitDatetime == datetime(2019, 12, 3, 17, 0)
 
-    @patch("pcapi.local_providers.local_provider.send_venue_provider_data_to_redis")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
     @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
     @pytest.mark.usefixtures("db_session")
     def test_should_create_one_product_and_two_offers_and_associated_stocks(
-        self, mock_poster_get_allocine, mock_call_allocine_api, mock_redis
+        self, mock_poster_get_allocine, mock_call_allocine_api
     ):
         # Given
         mock_call_allocine_api.return_value = iter(
@@ -1504,13 +1492,12 @@ class UpdateObjectsTest:
             assert second_stock.offerId == vf_offer.id
             assert second_stock.beginningDatetime == datetime(2019, 12, 4, 17, 0)
 
-        @patch("pcapi.local_providers.local_provider.send_venue_provider_data_to_redis")
         @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
         @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
         @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
         @pytest.mark.usefixtures("db_session")
         def test_should_create_one_different_offer_and_stock_for_different_venues(
-            self, mock_poster_get_allocine, mock_call_allocine_api, mock_redis
+            self, mock_poster_get_allocine, mock_call_allocine_api
         ):
             # Given
             theater_token1 = "test1"

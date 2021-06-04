@@ -8,7 +8,6 @@ from unittest.mock import patch
 from freezegun import freeze_time
 import pytest
 
-from pcapi.core.testing import override_features
 from pcapi.local_providers import TiteLiveStocks
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
@@ -64,7 +63,6 @@ class TiteliveStocksTest:
 
     class UpdateObjectsTest:
         @pytest.mark.usefixtures("db_session")
-        @override_features(ENABLE_WHOLE_VENUE_PROVIDER_ALGOLIA_INDEXATION=False)
         @patch("pcapi.local_providers.titelive_stocks.titelive_stocks.TiteLiveStocks.get_provider_stock_information")
         @patch("pcapi.connectors.redis.add_offer_id")
         def test_titelive_stock_provider_create_1_stock_and_1_offer_with_wanted_attributes(
@@ -246,7 +244,6 @@ class TiteliveStocksTest:
             assert stock.dateModified == datetime.now()
 
         @pytest.mark.usefixtures("db_session")
-        @override_features(ENABLE_WHOLE_VENUE_PROVIDER_ALGOLIA_INDEXATION=False)
         @patch("pcapi.local_providers.titelive_stocks.titelive_stocks.TiteLiveStocks.get_provider_stock_information")
         @patch("pcapi.connectors.redis.add_offer_id")
         def test_titelive_stock_provider_create_1_stock_and_update_1_existing_offer(

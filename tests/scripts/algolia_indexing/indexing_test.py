@@ -7,11 +7,9 @@ import redis
 
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import override_settings
-from pcapi.scripts.algolia_indexing.indexing import _process_venue_provider
 from pcapi.scripts.algolia_indexing.indexing import batch_deleting_expired_offers_in_algolia
 from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_by_offer
 from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_by_venue
-from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_by_venue_provider
 from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_from_database
 from pcapi.scripts.algolia_indexing.indexing import batch_processing_offer_ids_in_error
 
@@ -99,72 +97,6 @@ class BatchIndexingOffersInAlgoliaByOfferTest:
             ),
         ]
         assert queue == []
-
-
-class BatchIndexingOffersInAlgoliaByVenueProviderTest:
-    @mock.patch("pcapi.settings.ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE", 3)
-    @mock.patch(
-        "pcapi.scripts.algolia_indexing.indexing.offer_queries.get_paginated_offer_ids_by_venue_id_and_last_provider_id"
-    )
-    @mock.patch("pcapi.scripts.algolia_indexing.indexing.process_eligible_offers")
-    @mock.patch("pcapi.scripts.algolia_indexing.indexing.delete_venue_providers")
-    @mock.patch("pcapi.scripts.algolia_indexing.indexing.get_venue_providers")
-    def test_should_index_offers_when_at_least_one_venue_provider(
-        self,
-        mock_get_venue_providers,
-        mock_delete_venue_providers,
-        mock_process_eligible_offers,
-        mock_get_paginated_offer_ids,
-    ):
-        # Given
-        client = mock.MagicMock()
-        mock_get_venue_providers.return_value = [
-            {"id": 1, "providerId": 2, "venueId": 5},
-            {"id": 2, "providerId": 6, "venueId": 7},
-        ]
-        mock_get_paginated_offer_ids.side_effect = [[(1,), (2,), (3,)], [(4,)], [], [(5,), (6,), (7,)], [(8,)], []]
-
-        # When
-        batch_indexing_offers_in_algolia_by_venue_provider(client=client)
-
-        # Then
-        mock_get_venue_providers.assert_called_once()
-        mock_delete_venue_providers.assert_called_once()
-        assert mock_get_paginated_offer_ids.call_count == 6
-        assert mock_process_eligible_offers.call_count == 4
-        assert mock_process_eligible_offers.call_args_list == [
-            mock.call(client=client, from_provider_update=True, offer_ids=[1, 2, 3]),
-            mock.call(client=client, from_provider_update=True, offer_ids=[4]),
-            mock.call(client=client, from_provider_update=True, offer_ids=[5, 6, 7]),
-            mock.call(client=client, from_provider_update=True, offer_ids=[8]),
-        ]
-
-    @mock.patch("pcapi.settings.ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE", 3)
-    @mock.patch(
-        "pcapi.scripts.algolia_indexing.indexing.offer_queries.get_paginated_offer_ids_by_venue_id_and_last_provider_id"
-    )
-    @mock.patch("pcapi.scripts.algolia_indexing.indexing.process_eligible_offers")
-    @mock.patch("pcapi.scripts.algolia_indexing.indexing.delete_venue_providers")
-    @mock.patch("pcapi.scripts.algolia_indexing.indexing.get_venue_providers")
-    def test_should_not_trigger_indexing_when_no_venue_providers(
-        self,
-        mock_get_venue_providers,
-        mock_delete_venue_providers,
-        mock_process_eligible_offers,
-        mock_get_paginated_offer_ids,
-    ):
-        # Given
-        client = mock.MagicMock()
-        mock_get_venue_providers.return_value = []
-
-        # When
-        batch_indexing_offers_in_algolia_by_venue_provider(client=client)
-
-        # Then
-        mock_get_venue_providers.assert_called_once()
-        mock_delete_venue_providers.assert_not_called()
-        mock_get_paginated_offer_ids.assert_not_called()
-        mock_process_eligible_offers.assert_not_called()
 
 
 class BatchIndexingOffersInAlgoliaByVenueTest:
@@ -371,54 +303,3 @@ class BatchProcessingOfferIdsInErrorTest:
         mock_get_offer_ids_in_error.assert_called_once_with(client=client)
         mock_delete_offer_ids_in_error.assert_not_called()
         mock_process_eligible_offers.assert_not_called()
-
-
-class ProcessVenueProviderTest:
-    @mock.patch("pcapi.settings.ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE", 3)
-    @mock.patch("pcapi.scripts.algolia_indexing.indexing.delete_venue_provider_currently_in_sync")
-    @mock.patch(
-        "pcapi.scripts.algolia_indexing.indexing.offer_queries.get_paginated_offer_ids_by_venue_id_and_last_provider_id"
-    )
-    @mock.patch("pcapi.scripts.algolia_indexing.indexing.process_eligible_offers")
-    def test_should_index_offers_when_at_least_one_venue_provider(
-        self, mock_process_eligible_offers, mock_get_paginated_offer_ids, mock_delete_venue_provider_currently_in_sync
-    ):
-        # Given
-        client = mock.MagicMock()
-        mock_get_paginated_offer_ids.side_effect = [
-            [(1,), (2,), (3,)],
-            [(4,)],
-            [],
-        ]
-
-        # When
-        _process_venue_provider(client=client, venue_provider_id=1, provider_id="2", venue_id=5)
-
-        # Then
-        assert mock_get_paginated_offer_ids.call_count == 3
-        assert mock_process_eligible_offers.call_count == 2
-        assert mock_process_eligible_offers.call_args_list == [
-            mock.call(client=client, offer_ids=[1, 2, 3], from_provider_update=True),
-            mock.call(client=client, offer_ids=[4], from_provider_update=True),
-        ]
-        mock_delete_venue_provider_currently_in_sync.assert_called_once_with(client=client, venue_provider_id=1)
-
-    @mock.patch("pcapi.settings.ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE", 3)
-    @mock.patch("pcapi.scripts.algolia_indexing.indexing.delete_venue_provider_currently_in_sync")
-    @mock.patch(
-        "pcapi.scripts.algolia_indexing.indexing.offer_queries."
-        "get_paginated_offer_ids_by_venue_id_and_last_provider_id",
-        return_value=Exception,
-    )
-    def test_should_delete_venue_provider_currently_in_sync_when_exception_is_raised(
-        self, mock_get_paginated_offer_ids, mock_delete_venue_provider_currently_in_sync
-    ):
-        # Given
-        client = mock.MagicMock()
-
-        # When
-        _process_venue_provider(client=client, venue_provider_id=1, provider_id="2", venue_id=5)
-
-        # Then
-        assert mock_get_paginated_offer_ids.call_count == 1
-        mock_delete_venue_provider_currently_in_sync.assert_called_once_with(client=client, venue_provider_id=1)

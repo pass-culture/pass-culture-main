@@ -9,11 +9,8 @@ from pcapi.algolia.usecase.orchestrator import process_eligible_offers
 from pcapi.connectors.redis import RedisBucket
 from pcapi.connectors.redis import delete_offer_ids_in_error
 from pcapi.connectors.redis import delete_venue_ids
-from pcapi.connectors.redis import delete_venue_provider_currently_in_sync
-from pcapi.connectors.redis import delete_venue_providers
 from pcapi.connectors.redis import get_offer_ids_in_error
 from pcapi.connectors.redis import get_venue_ids
-from pcapi.connectors.redis import get_venue_providers
 from pcapi.connectors.redis import pop_offer_ids
 from pcapi.core.offers.models import Offer
 import pcapi.core.offers.repository as offers_repository
@@ -69,20 +66,6 @@ def batch_indexing_offers_in_algolia_by_offer(client: Redis, stop_only_when_empt
         left_to_process = client.llen(RedisBucket.REDIS_LIST_OFFER_IDS_NAME.value)
         if not stop_only_when_empty and left_to_process < settings.REDIS_OFFER_IDS_CHUNK_SIZE:
             break
-
-
-def batch_indexing_offers_in_algolia_by_venue_provider(client: Redis) -> None:
-    venue_providers = get_venue_providers(client=client)
-
-    if len(venue_providers) > 0:
-        delete_venue_providers(client=client)
-        for venue_provider in venue_providers:
-            venue_provider_id = venue_provider["id"]
-            provider_id = venue_provider["providerId"]
-            venue_id = int(venue_provider["venueId"])
-            _process_venue_provider(
-                client=client, provider_id=provider_id, venue_id=venue_id, venue_provider_id=venue_provider_id
-            )
 
 
 def batch_indexing_offers_in_algolia_by_venue(client: Redis) -> None:
@@ -167,47 +150,3 @@ def batch_processing_offer_ids_in_error(client: Redis):
     if len(offer_ids_in_error) > 0:
         process_eligible_offers(client=client, offer_ids=offer_ids_in_error, from_provider_update=False)
         delete_offer_ids_in_error(client=client)
-
-
-def _process_venue_provider(client: Redis, provider_id: str, venue_provider_id: int, venue_id: int) -> None:
-    has_still_offers = True
-    page = 0
-    try:
-        while has_still_offers is True:
-            offer_ids_as_tuple = offer_queries.get_paginated_offer_ids_by_venue_id_and_last_provider_id(
-                last_provider_id=provider_id,
-                limit=settings.ALGOLIA_OFFERS_BY_VENUE_PROVIDER_CHUNK_SIZE,
-                page=page,
-                venue_id=venue_id,
-            )
-            offer_ids_as_int = from_tuple_to_int(offer_ids_as_tuple)
-
-            if len(offer_ids_as_tuple) > 0:
-                logger.info(
-                    "[ALGOLIA] processing offers for (venue %s / provider %s) from page %s...",
-                    venue_id,
-                    provider_id,
-                    page,
-                )
-                process_eligible_offers(client=client, offer_ids=offer_ids_as_int, from_provider_update=True)
-                logger.info(
-                    "[ALGOLIA] offers for (venue %s / provider %s) from page %s processed",
-                    venue_id,
-                    provider_id,
-                    page,
-                )
-                page += 1
-            else:
-                has_still_offers = False
-                logger.info(
-                    "[ALGOLIA] processing of offers for (venue %s / provider %s) finished!", venue_id, provider_id
-                )
-    except Exception as error:  # pylint: disable=broad-except
-        logger.exception(
-            "[ALGOLIA] processing of offers for (venue %s / provider %s) failed! %s",
-            venue_id,
-            provider_id,
-            error,
-        )
-    finally:
-        delete_venue_provider_currently_in_sync(client=client, venue_provider_id=venue_provider_id)

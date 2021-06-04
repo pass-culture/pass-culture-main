@@ -76,17 +76,3 @@ def get_paginated_offer_ids_by_venue_id(venue_id: int, limit: int, page: int) ->
         .limit(limit)
         .all()
     )
-
-
-def get_paginated_offer_ids_by_venue_id_and_last_provider_id(
-    last_provider_id: str, limit: int, page: int, venue_id: int
-) -> list[tuple]:
-    return (
-        Offer.query.with_entities(Offer.id)
-        .filter(Offer.lastProviderId == last_provider_id)  # pylint: disable=comparison-with-callable
-        .filter(Offer.venueId == venue_id)
-        .order_by(Offer.id)
-        .offset(page * limit)
-        .limit(limit)
-        .all()
-    )

@@ -6,7 +6,6 @@ import logging
 from flask import current_app as app
 
 from pcapi.connectors import redis
-from pcapi.connectors.redis import send_venue_provider_data_to_redis
 from pcapi.connectors.thumb_storage import create_thumb
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -173,10 +172,6 @@ class LocalProvider(Iterator):
         chunk_to_insert = {}
         chunk_to_update = {}
 
-        reindex_whole_venue_provider_later = feature_queries.is_active(
-            FeatureToggle.ENABLE_WHOLE_VENUE_PROVIDER_ALGOLIA_INDEXATION
-        )
-
         for providable_infos in self:
             objects_limit_reached = limit and self.checkedObjects >= limit
             if objects_limit_reached:
@@ -238,15 +233,13 @@ class LocalProvider(Iterator):
 
                 if len(chunk_to_insert) + len(chunk_to_update) >= CHUNK_MAX_SIZE:
                     save_chunks(chunk_to_insert, chunk_to_update)
-                    if not reindex_whole_venue_provider_later:
-                        _reindex_offers(list(chunk_to_insert.values()) + list(chunk_to_update.values()))
+                    _reindex_offers(list(chunk_to_insert.values()) + list(chunk_to_update.values()))
                     chunk_to_insert = {}
                     chunk_to_update = {}
 
         if len(chunk_to_insert) + len(chunk_to_update) > 0:
             save_chunks(chunk_to_insert, chunk_to_update)
-            if not reindex_whole_venue_provider_later:
-                _reindex_offers(list(chunk_to_insert.values()) + list(chunk_to_update.values()))
+            _reindex_offers(list(chunk_to_insert.values()) + list(chunk_to_update.values()))
 
         self._print_objects_summary()
         self.log_provider_event(LocalProviderEventType.SyncEnd)
@@ -255,9 +248,6 @@ class LocalProvider(Iterator):
             self.venue_provider.lastSyncDate = datetime.utcnow()
             self.venue_provider.syncWorkerId = None
             repository.save(self.venue_provider)
-            if reindex_whole_venue_provider_later:
-                if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
-                    send_venue_provider_data_to_redis(self.venue_provider)
 
 
 def _save_same_thumb_from_thumb_count_to_index(pc_object: Model, thumb_index: int, image_as_bytes: bytes):

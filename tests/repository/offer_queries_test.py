@@ -3,7 +3,6 @@ from sqlalchemy import func
 
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_provider
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_event_occurrence
@@ -21,7 +20,6 @@ from pcapi.repository.offer_queries import get_offers_by_ids
 from pcapi.repository.offer_queries import get_offers_by_venue_id
 from pcapi.repository.offer_queries import get_paginated_active_offer_ids
 from pcapi.repository.offer_queries import get_paginated_offer_ids_by_venue_id
-from pcapi.repository.offer_queries import get_paginated_offer_ids_by_venue_id_and_last_provider_id
 
 
 class FindOffersTest:
@@ -310,124 +308,3 @@ class GetPaginatedOfferIdsByVenueIdTest:
         assert len(offer_ids) == 1
         assert (offer2.id,) in offer_ids
         assert (offer1.id,) not in offer_ids
-
-
-class GetPaginatedOfferIdsByVenueIdAndLastProviderIdTest:
-    @pytest.mark.usefixtures("db_session")
-    def test_should_return_offer_ids_when_exist_and_venue_id_and_last_provider_id_match(self, app):
-        # Given
-        provider1 = create_provider(idx=1, local_class="OpenAgenda", is_active=False, is_enable_for_pro=False)
-        provider2 = create_provider(idx=2, local_class="TiteLive", is_active=False, is_enable_for_pro=False)
-        offerer = create_offerer()
-        venue = create_venue(offerer=offerer)
-        offer1 = create_offer_with_thing_product(last_provider_id=provider1.id, venue=venue, last_provider=provider1)
-        offer2 = create_offer_with_thing_product(last_provider_id=provider2.id, venue=venue, last_provider=provider2)
-        repository.save(provider1, provider2, offer1, offer2)
-
-        # When
-        offer_ids = get_paginated_offer_ids_by_venue_id_and_last_provider_id(
-            last_provider_id=provider1.id, limit=2, page=0, venue_id=venue.id
-        )
-
-        # Then
-        assert len(offer_ids) == 1
-        assert offer_ids[0] == (offer1.id,)
-
-    @pytest.mark.usefixtures("db_session")
-    def test_should_return_one_offer_id_when_exist_and_venue_id_and_last_provider_id_match_from_first_page_only(
-        self, app
-    ):
-        # Given
-        provider1 = create_provider(idx=1, local_class="OpenAgenda", is_active=False, is_enable_for_pro=False)
-        offerer = create_offerer()
-        venue = create_venue(offerer=offerer)
-        offer1 = create_offer_with_thing_product(last_provider_id=provider1.id, venue=venue, last_provider=provider1)
-        offer2 = create_offer_with_thing_product(last_provider_id=provider1.id, venue=venue, last_provider=provider1)
-        repository.save(provider1, offer1, offer2)
-
-        # When
-        offer_ids = get_paginated_offer_ids_by_venue_id_and_last_provider_id(
-            last_provider_id=provider1.id, limit=1, page=0, venue_id=venue.id
-        )
-
-        # Then
-        assert len(offer_ids) == 1
-        assert offer_ids[0] == (offer1.id,)
-
-    @pytest.mark.usefixtures("db_session")
-    def test_should_return_one_offer_id_when_exist_and_venue_id_and_last_provider_id_match_from_second_page_only(
-        self, app
-    ):
-        # Given
-        provider1 = create_provider(idx=1, local_class="OpenAgenda", is_active=False, is_enable_for_pro=False)
-        offerer = create_offerer()
-        venue = create_venue(offerer=offerer)
-        offer1 = create_offer_with_thing_product(last_provider_id=provider1.id, venue=venue, last_provider=provider1)
-        offer2 = create_offer_with_thing_product(last_provider_id=provider1.id, venue=venue, last_provider=provider1)
-        repository.save(provider1, offer1, offer2)
-
-        # When
-        offer_ids = get_paginated_offer_ids_by_venue_id_and_last_provider_id(
-            last_provider_id=provider1.id, limit=1, page=1, venue_id=venue.id
-        )
-
-        # Then
-        assert len(offer_ids) == 1
-        assert offer_ids[0] == (offer2.id,)
-
-    @pytest.mark.usefixtures("db_session")
-    def test_should_not_return_offer_ids_when_venue_id_and_last_provider_id_do_not_match(self, app):
-        # Given
-        provider1 = create_provider(idx=1, local_class="OpenAgenda", is_active=False, is_enable_for_pro=False)
-        provider2 = create_provider(idx=2, local_class="TiteLive", is_active=False, is_enable_for_pro=False)
-        offerer = create_offerer()
-        venue = create_venue(offerer=offerer)
-        offer1 = create_offer_with_thing_product(last_provider_id=provider1.id, venue=venue)
-        offer2 = create_offer_with_thing_product(last_provider_id=provider2.id, venue=venue)
-        repository.save(provider1, provider2, offer1, offer2)
-
-        # When
-        offer_ids = get_paginated_offer_ids_by_venue_id_and_last_provider_id(
-            last_provider_id="3", limit=2, page=0, venue_id=10
-        )
-
-        # Then
-        assert len(offer_ids) == 0
-
-    @pytest.mark.usefixtures("db_session")
-    def test_should_not_return_offer_ids_when_venue_id_matches_but_last_provider_id_do_not_match(self, app):
-        # Given
-        provider1 = create_provider(idx=1, local_class="OpenAgenda", is_active=False, is_enable_for_pro=False)
-        provider2 = create_provider(idx=2, local_class="TiteLive", is_active=False, is_enable_for_pro=False)
-        offerer = create_offerer()
-        venue = create_venue(offerer=offerer)
-        offer1 = create_offer_with_thing_product(last_provider_id=provider1.id, venue=venue)
-        offer2 = create_offer_with_thing_product(last_provider_id=provider2.id, venue=venue)
-        repository.save(provider1, provider2, offer1, offer2)
-
-        # When
-        offer_ids = get_paginated_offer_ids_by_venue_id_and_last_provider_id(
-            last_provider_id="3", limit=2, page=0, venue_id=venue.id
-        )
-
-        # Then
-        assert len(offer_ids) == 0
-
-    @pytest.mark.usefixtures("db_session")
-    def test_should_not_return_offer_ids_when_venue_id_do_not_matches_but_last_provider_id_matches(self, app):
-        # Given
-        provider1 = create_provider(idx=1, local_class="OpenAgenda", is_active=False, is_enable_for_pro=False)
-        provider2 = create_provider(idx=2, local_class="TiteLive", is_active=False, is_enable_for_pro=False)
-        offerer = create_offerer()
-        venue = create_venue(offerer=offerer)
-        offer1 = create_offer_with_thing_product(last_provider_id=provider1.id, venue=venue)
-        offer2 = create_offer_with_thing_product(last_provider_id=provider2.id, venue=venue)
-        repository.save(provider1, provider2, offer1, offer2)
-
-        # When
-        offer_ids = get_paginated_offer_ids_by_venue_id_and_last_provider_id(
-            last_provider_id=provider1.id, limit=2, page=0, venue_id=10
-        )
-
-        # Then
-        assert len(offer_ids) == 0

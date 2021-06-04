@@ -16,9 +16,7 @@ class RedisBucket(Enum):
     REDIS_LIST_OFFER_IDS_NAME = "offer_ids"
     REDIS_LIST_OFFER_IDS_IN_ERROR_NAME = "offer_ids_in_error"
     REDIS_LIST_VENUE_IDS_NAME = "venue_ids"
-    REDIS_LIST_VENUE_PROVIDERS_NAME = "venue_providers"
     REDIS_HASHMAP_INDEXED_OFFERS_NAME = "indexed_offers"
-    REDIS_HASHMAP_VENUE_PROVIDERS_IN_SYNC_NAME = "venue_providers_in_sync"
 
 
 def add_offer_id(client: Redis, offer_id: int) -> None:
@@ -31,24 +29,6 @@ def add_offer_id(client: Redis, offer_id: int) -> None:
 def add_venue_id(client: Redis, venue_id: int) -> None:
     try:
         client.rpush(RedisBucket.REDIS_LIST_VENUE_IDS_NAME.value, venue_id)
-    except redis.exceptions.RedisError as error:
-        logger.exception("[REDIS] %s", error)
-
-
-def send_venue_provider_data_to_redis(venue_provider) -> None:
-    redis_client = redis.from_url(url=settings.REDIS_URL, decode_responses=True)
-    _add_venue_provider(client=redis_client, venue_provider=venue_provider)
-
-
-def _add_venue_provider(client: Redis, venue_provider) -> None:
-    try:
-        venue_provider_as_dict = {
-            "id": venue_provider.id,
-            "providerId": venue_provider.providerId,
-            "venueId": venue_provider.venueId,
-        }
-        venue_provider_as_string = json.dumps(venue_provider_as_dict)
-        client.rpush(RedisBucket.REDIS_LIST_VENUE_PROVIDERS_NAME.value, venue_provider_as_string)
     except redis.exceptions.RedisError as error:
         logger.exception("[REDIS] %s", error)
 
@@ -93,27 +73,9 @@ def get_venue_ids(client: Redis) -> list[int]:
         return []
 
 
-def get_venue_providers(client: Redis) -> list[dict]:
-    try:
-        venue_providers_as_string = client.lrange(
-            RedisBucket.REDIS_LIST_VENUE_PROVIDERS_NAME.value, 0, settings.REDIS_VENUE_PROVIDERS_CHUNK_SIZE
-        )
-        return [json.loads(venue_provider) for venue_provider in venue_providers_as_string]
-    except redis.exceptions.RedisError as error:
-        logger.exception("[REDIS] %s", error)
-        return []
-
-
 def delete_venue_ids(client: Redis) -> None:
     try:
         client.ltrim(RedisBucket.REDIS_LIST_VENUE_IDS_NAME.value, settings.REDIS_VENUE_IDS_CHUNK_SIZE, -1)
-    except redis.exceptions.RedisError as error:
-        logger.exception("[REDIS] %s", error)
-
-
-def delete_venue_providers(client: Redis) -> None:
-    try:
-        client.ltrim(RedisBucket.REDIS_LIST_VENUE_PROVIDERS_NAME.value, settings.REDIS_VENUE_PROVIDERS_CHUNK_SIZE, -1)
     except redis.exceptions.RedisError as error:
         logger.exception("[REDIS] %s", error)
 
@@ -159,29 +121,6 @@ def delete_all_indexed_offers(client: Redis) -> None:
         client.delete(RedisBucket.REDIS_HASHMAP_INDEXED_OFFERS_NAME.value)
     except redis.exceptions.RedisError as error:
         logger.exception("[REDIS] %s", error)
-
-
-def add_venue_provider_currently_in_sync(client: Redis, venue_provider_id: int, container_id: str) -> None:
-    try:
-        client.hset(RedisBucket.REDIS_HASHMAP_VENUE_PROVIDERS_IN_SYNC_NAME.value, venue_provider_id, container_id)
-    except redis.exceptions.RedisError as error:
-        logger.exception("[REDIS] %s", error)
-
-
-def delete_venue_provider_currently_in_sync(client: Redis, venue_provider_id: int) -> None:
-    try:
-        client.hget(RedisBucket.REDIS_HASHMAP_VENUE_PROVIDERS_IN_SYNC_NAME.value, venue_provider_id)
-        client.hdel(RedisBucket.REDIS_HASHMAP_VENUE_PROVIDERS_IN_SYNC_NAME.value, venue_provider_id)
-    except redis.exceptions.RedisError as error:
-        logger.exception("[REDIS] %s", error)
-
-
-def get_number_of_venue_providers_currently_in_sync(client: Redis) -> int:
-    try:
-        return client.hlen(RedisBucket.REDIS_HASHMAP_VENUE_PROVIDERS_IN_SYNC_NAME.value)
-    except redis.exceptions.RedisError as error:
-        logger.exception("[REDIS] %s", error)
-        return 0
 
 
 def add_offer_ids_in_error(client: Redis, offer_ids: list[int]) -> None:
