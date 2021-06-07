@@ -14,7 +14,7 @@ from pcapi.models import payment_status
 from . import api
 
 
-ALL_REIMBURSEMENT_RULES = {t.name for t in list(reimbursement.ReimbursementRules)}
+REIMBURSEMENT_RULE_DESCRIPTIONS = {t.description for t in reimbursement.REGULAR_RULES}
 
 
 class DepositFactory(BaseFactory):
@@ -45,7 +45,7 @@ class PaymentFactory(BaseFactory):
     booking = factory.SubFactory(bookings_factories.BookingFactory, isUsed=True)
     amount = factory.SelfAttribute("booking.total_amount")
     recipientSiren = factory.SelfAttribute("booking.stock.offer.venue.managingOfferer.siren")
-    reimbursementRule = factory.Iterator(ALL_REIMBURSEMENT_RULES)
+    reimbursementRule = factory.Iterator(REIMBURSEMENT_RULE_DESCRIPTIONS)
     reimbursementRate = 30
     recipientName = "Récipiendaire"
     iban = "CF13QSDFGH456789"
