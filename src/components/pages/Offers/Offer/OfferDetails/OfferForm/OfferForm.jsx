@@ -1,6 +1,6 @@
 import isEqual from 'lodash.isequal'
 import PropTypes from 'prop-types'
-import React, { Fragment, useCallback, useEffect, useState, useRef } from 'react'
+import React, { Fragment, useCallback, useEffect, useState, useRef, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 
 import InternalBanner from 'components/layout/Banner/InternalBanner'
@@ -69,6 +69,7 @@ const OfferForm = ({
   initialValues,
   isDisabled,
   isEdition,
+  isIsbnRequiredInLivreEditionEnabled,
   isSubmitLoading,
   isUserAdmin,
   offerersNames,
@@ -96,6 +97,8 @@ const OfferForm = ({
   const formRef = useRef(null)
   const [isLoading, setIsLoading] = useState(true)
 
+  let mandatoryFields = useMemo(() => [...MANDATORY_FIELDS], [])
+
   const handleFormUpdate = useCallback(
     newFormValues =>
       setFormValues(oldFormValues => {
@@ -105,6 +108,12 @@ const OfferForm = ({
     [setFormValues]
   )
   const offererOptions = buildSelectOptions('id', 'name', offerersNames)
+
+  useEffect(() => {
+    if (isIsbnRequiredInLivreEditionEnabled) {
+      mandatoryFields.push('isbn')
+    }
+  }, [isIsbnRequiredInLivreEditionEnabled, mandatoryFields])
 
   useEffect(() => {
     setFormErrors(submitErrors)
@@ -264,7 +273,7 @@ const OfferForm = ({
     let newFormErrors = {}
     const formFields = [...offerFormFields, 'offererId']
 
-    MANDATORY_FIELDS.forEach(fieldName => {
+    mandatoryFields.forEach(fieldName => {
       if (
         formFields.includes(fieldName) &&
         formValues[fieldName] === DEFAULT_FORM_VALUES[fieldName]
@@ -287,7 +296,7 @@ const OfferForm = ({
 
     setFormErrors(newFormErrors)
     return Object.keys(newFormErrors).length === 0
-  }, [offerFormFields, formValues])
+  }, [offerFormFields, mandatoryFields, formValues])
 
   const submitForm = useCallback(
     event => {
@@ -416,6 +425,7 @@ const OfferForm = ({
   const getIsbnErrorMessage = () => {
     const isbnErrorMessage = getErrorMessage('isbn')
     if (
+      isIsbnRequiredInLivreEditionEnabled &&
       isbnErrorMessage &&
       isbnErrorMessage.includes('Ce produit n’est pas éligible au pass Culture.')
     ) {
@@ -512,7 +522,7 @@ const OfferForm = ({
                 onChange={handleSingleFormUpdate}
                 required
                 rows={1}
-                subLabel={!MANDATORY_FIELDS.includes('name') ? 'Optionnel' : ''}
+                subLabel={!mandatoryFields.includes('name') ? 'Optionnel' : ''}
                 value={formValues.name}
               />
             </div>
@@ -526,7 +536,7 @@ const OfferForm = ({
                 name="description"
                 onChange={handleSingleFormUpdate}
                 rows={6}
-                subLabel={!MANDATORY_FIELDS.includes('description') ? 'Optionnel' : ''}
+                subLabel={!mandatoryFields.includes('description') ? 'Optionnel' : ''}
                 value={formValues.description}
               />
             </div>
@@ -538,7 +548,7 @@ const OfferForm = ({
                   label="Intervenant"
                   name="speaker"
                   onChange={handleSingleFormUpdate}
-                  subLabel={!MANDATORY_FIELDS.includes('speaker') ? 'Optionnel' : ''}
+                  subLabel={!mandatoryFields.includes('speaker') ? 'Optionnel' : ''}
                   type="text"
                   value={formValues.speaker}
                 />
@@ -553,7 +563,7 @@ const OfferForm = ({
                   label="Auteur"
                   name="author"
                   onChange={handleSingleFormUpdate}
-                  subLabel={!MANDATORY_FIELDS.includes('author') ? 'Optionnel' : ''}
+                  subLabel={!mandatoryFields.includes('author') ? 'Optionnel' : ''}
                   type="text"
                   value={formValues.author}
                 />
@@ -568,7 +578,7 @@ const OfferForm = ({
                   label="Visa d’exploitation"
                   name="visa"
                   onChange={handleSingleFormUpdate}
-                  subLabel={!MANDATORY_FIELDS.includes('visa') ? 'Optionnel' : ''}
+                  subLabel={!mandatoryFields.includes('visa') ? 'Optionnel' : ''}
                   type="text"
                   value={formValues.visa}
                 />
@@ -583,8 +593,8 @@ const OfferForm = ({
                   label="ISBN"
                   name="isbn"
                   onChange={handleSingleFormUpdate}
-                  required
-                  subLabel={!MANDATORY_FIELDS.includes('isbn') ? 'Optionnel' : ''}
+                  required={isIsbnRequiredInLivreEditionEnabled}
+                  subLabel={!mandatoryFields.includes('isbn') ? 'Optionnel' : ''}
                   type="text"
                   value={formValues.isbn}
                 />
@@ -599,7 +609,7 @@ const OfferForm = ({
                   label="Metteur en scène"
                   name="stageDirector"
                   onChange={handleSingleFormUpdate}
-                  subLabel={!MANDATORY_FIELDS.includes('stageDirector') ? 'Optionnel' : ''}
+                  subLabel={!mandatoryFields.includes('stageDirector') ? 'Optionnel' : ''}
                   type="text"
                   value={formValues.stageDirector}
                 />
@@ -614,7 +624,7 @@ const OfferForm = ({
                   label="Interprète"
                   name="performer"
                   onChange={handleSingleFormUpdate}
-                  subLabel={!MANDATORY_FIELDS.includes('performer') ? 'Optionnel' : ''}
+                  subLabel={!mandatoryFields.includes('performer') ? 'Optionnel' : ''}
                   type="text"
                   value={formValues.performer}
                 />
@@ -631,7 +641,7 @@ const OfferForm = ({
                   name="durationMinutes"
                   onChange={handleDurationChange}
                   placeholder="HH:MM"
-                  subLabel={!MANDATORY_FIELDS.includes('durationMinutes') ? 'Optionnel' : ''}
+                  subLabel={!mandatoryFields.includes('durationMinutes') ? 'Optionnel' : ''}
                 />
               </div>
             )}
@@ -660,7 +670,7 @@ const OfferForm = ({
                 name="offererId"
                 options={offererOptions}
                 selectedValue={formValues.offererId || DEFAULT_FORM_VALUES.offererId}
-                subLabel={!MANDATORY_FIELDS.includes('offererId') ? 'Optionnel' : ''}
+                subLabel={!mandatoryFields.includes('offererId') ? 'Optionnel' : ''}
               />
             </div>
 
@@ -677,7 +687,7 @@ const OfferForm = ({
                 name="venueId"
                 options={venueOptions}
                 selectedValue={formValues.venueId || DEFAULT_FORM_VALUES.venueId}
-                subLabel={!MANDATORY_FIELDS.includes('venueId') ? 'Optionnel' : ''}
+                subLabel={!mandatoryFields.includes('venueId') ? 'Optionnel' : ''}
               />
             </div>
             {displayRefundWarning && (
@@ -702,7 +712,7 @@ const OfferForm = ({
                 name="withdrawalDetails"
                 onChange={handleSingleFormUpdate}
                 rows={6}
-                subLabel={!MANDATORY_FIELDS.includes('withdrawalDetails') ? 'Optionnel' : ''}
+                subLabel={!mandatoryFields.includes('withdrawalDetails') ? 'Optionnel' : ''}
                 value={formValues.withdrawalDetails}
               />
             </div>
@@ -802,7 +812,7 @@ const OfferForm = ({
               label="URL de redirection externe"
               name="externalTicketOfficeUrl"
               onChange={handleSingleFormUpdate}
-              subLabel={!MANDATORY_FIELDS.includes('externalTicketOfficeUrl') ? 'Optionnel' : ''}
+              subLabel={!mandatoryFields.includes('externalTicketOfficeUrl') ? 'Optionnel' : ''}
               type="text"
               value={formValues.externalTicketOfficeUrl}
             />
@@ -909,6 +919,7 @@ OfferForm.propTypes = {
   initialValues: PropTypes.shape(),
   isDisabled: PropTypes.bool,
   isEdition: PropTypes.bool,
+  isIsbnRequiredInLivreEditionEnabled: PropTypes.bool.isRequired,
   isSubmitLoading: PropTypes.bool.isRequired,
   isUserAdmin: PropTypes.bool,
   offerersNames: PropTypes.arrayOf(

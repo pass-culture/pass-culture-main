@@ -2,9 +2,10 @@ import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 
 import Spinner from 'components/layout/Spinner'
-import OfferForm from 'components/pages/Offers/Offer/OfferDetails/OfferForm/OfferForm'
 import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl'
 import * as pcapi from 'repository/pcapi/pcapi'
+
+import OfferFormContainer from './OfferFormContainer'
 
 const OfferCreation = ({
   formValues,
@@ -90,7 +91,7 @@ const OfferCreation = ({
   }
 
   return (
-    <OfferForm
+    <OfferFormContainer
       areAllVenuesVirtual={areAllVenuesVirtual}
       backUrl={computeOffersUrl({})}
       formValues={formValues}

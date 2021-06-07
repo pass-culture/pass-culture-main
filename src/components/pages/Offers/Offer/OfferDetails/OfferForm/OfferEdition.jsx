@@ -10,9 +10,10 @@ import {
   DEFAULT_FORM_VALUES,
   EDITED_OFFER_READ_ONLY_FIELDS,
 } from 'components/pages/Offers/Offer/OfferDetails/OfferForm/_constants'
-import OfferForm from 'components/pages/Offers/Offer/OfferDetails/OfferForm/OfferForm'
 import { computeOffersUrl } from 'components/pages/Offers/utils/computeOffersUrl'
 import * as pcapi from 'repository/pcapi/pcapi'
+
+import OfferFormContainer from './OfferFormContainer'
 
 const computeNoDisabilityComplianceValue = offer => {
   const disabilityCompliantValues = [
@@ -101,7 +102,7 @@ const OfferEdition = ({
   }
 
   return (
-    <OfferForm
+    <OfferFormContainer
       backUrl={computeOffersUrl(offersSearchFilters)}
       formValues={formValues}
       initialValues={initialValues}
