@@ -14,6 +14,7 @@ from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 import pcapi.core.payments.api as payments_api
+import pcapi.core.payments.models as payments_models
 from pcapi.domain.admin_emails import send_payment_details_email
 from pcapi.domain.admin_emails import send_payment_message_email
 from pcapi.domain.admin_emails import send_payments_report_emails
@@ -70,15 +71,16 @@ def get_venues_to_reimburse() -> Iterable[tuple[id, str]]:
 
 
 def generate_new_payments(batch_date: datetime) -> None:
-    n_payments = 0
     logger.info("Fetching venues to reimburse")
     venues_to_reimburse = get_venues_to_reimburse()
     logger.info("Found %d venues to reimburse", len(venues_to_reimburse))
+    custom_reimbursement_rules = payments_models.CustomReimbursementRule.query.all()
+    n_payments = 0
     for venue_id, venue_name in venues_to_reimburse:
         logger.info("[BATCH][PAYMENTS] Fetching bookings for venue: %s", venue_name, extra={"venue": venue_id})
         bookings = booking_repository.find_bookings_eligible_for_payment_for_venue(venue_id)
         logger.info("[BATCH][PAYMENTS] Calculating reimbursements for venue: %s", venue_name, extra={"venue": venue_id})
-        reimbursements = find_all_booking_reimbursements(bookings)
+        reimbursements = find_all_booking_reimbursements(bookings, custom_reimbursement_rules)
         to_pay = filter_out_already_paid_for_bookings(filter_out_bookings_without_cost(reimbursements))
         if not to_pay:
             logger.info("[BATCH][PAYMENTS] No payments generated for venue: %s", venue_name, extra={"venue": venue_id})

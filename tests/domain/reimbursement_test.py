@@ -6,6 +6,8 @@ import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offers.factories as offers_factories
+import pcapi.core.payments.factories as payments_factories
+import pcapi.core.payments.models as payments_models
 import pcapi.core.users.factories as users_factories
 from pcapi.domain import reimbursement
 from pcapi.models import Booking
@@ -532,7 +534,7 @@ class FindAllBookingsReimbursementsTest:
         bookings = [booking1, booking2, booking3]
 
         # when
-        booking_reimbursements = reimbursement.find_all_booking_reimbursements(bookings)
+        booking_reimbursements = reimbursement.find_all_booking_reimbursements(bookings, custom_rules=[])
 
         # then
         assert_total_reimbursement(booking_reimbursements[0], booking1)
@@ -547,7 +549,7 @@ class FindAllBookingsReimbursementsTest:
         bookings = [booking1, booking2, booking3]
 
         # when
-        booking_reimbursements = reimbursement.find_all_booking_reimbursements(bookings)
+        booking_reimbursements = reimbursement.find_all_booking_reimbursements(bookings, custom_rules=[])
 
         # then
         assert_total_reimbursement(booking_reimbursements[0], booking1)
@@ -562,7 +564,7 @@ class FindAllBookingsReimbursementsTest:
         bookings = [booking1, booking2, booking3]
 
         # when
-        booking_reimbursements = reimbursement.find_all_booking_reimbursements(bookings)
+        booking_reimbursements = reimbursement.find_all_booking_reimbursements(bookings, custom_rules=[])
 
         # then
         assert_total_reimbursement(booking_reimbursements[0], booking1)
@@ -581,7 +583,7 @@ class FindAllBookingsReimbursementsTest:
         )
 
         # when
-        booking_reimbursements = reimbursement.find_all_booking_reimbursements(bookings)
+        booking_reimbursements = reimbursement.find_all_booking_reimbursements(bookings, custom_rules=[])
 
         # then
         assert_total_reimbursement(booking_reimbursements[0], booking1)
@@ -603,7 +605,7 @@ class FindAllBookingsReimbursementsTest:
         )
 
         # when
-        booking_reimbursements = reimbursement.find_all_booking_reimbursements(bookings)
+        booking_reimbursements = reimbursement.find_all_booking_reimbursements(bookings, custom_rules=[])
 
         # then
         assert_total_reimbursement(booking_reimbursements[0], booking1)
@@ -627,7 +629,7 @@ class FindAllBookingsReimbursementsTest:
         )
 
         # when
-        booking_reimbursements = reimbursement.find_all_booking_reimbursements(bookings)
+        booking_reimbursements = reimbursement.find_all_booking_reimbursements(bookings, custom_rules=[])
 
         # then
         assert_total_reimbursement(booking_reimbursements[0], booking1)
@@ -649,7 +651,7 @@ class FindAllBookingsReimbursementsTest:
         )
 
         # when
-        booking_reimbursements = reimbursement.find_all_booking_reimbursements(bookings)
+        booking_reimbursements = reimbursement.find_all_booking_reimbursements(bookings, custom_rules=[])
 
         # then
         assert_total_reimbursement(booking_reimbursements[0], booking1)
@@ -670,7 +672,7 @@ class FindAllBookingsReimbursementsTest:
         bookings = [booking1, booking2, booking3]
 
         # when
-        booking_reimbursements = reimbursement.find_all_booking_reimbursements(bookings)
+        booking_reimbursements = reimbursement.find_all_booking_reimbursements(bookings, custom_rules=[])
 
         # then
         assert_total_reimbursement(booking_reimbursements[0], booking1)
@@ -686,7 +688,7 @@ class FindAllBookingsReimbursementsTest:
         bookings = [booking1, booking2, booking3]
 
         # when
-        booking_reimbursements = reimbursement.find_all_booking_reimbursements(bookings)
+        booking_reimbursements = reimbursement.find_all_booking_reimbursements(bookings, custom_rules=[])
 
         # then
         assert_total_reimbursement(booking_reimbursements[0], booking1)
@@ -702,12 +704,33 @@ class FindAllBookingsReimbursementsTest:
         bookings = [booking1, booking2, booking3]
 
         # when
-        booking_reimbursements = reimbursement.find_all_booking_reimbursements(bookings)
+        booking_reimbursements = reimbursement.find_all_booking_reimbursements(bookings, custom_rules=[])
 
         # then
         assert_total_reimbursement(booking_reimbursements[0], booking1)
         assert_degressive_reimbursement(booking_reimbursements[1], booking2, 25000)
         assert_degressive_reimbursement(booking_reimbursements[2], booking3, 27000)
+
+    @pytest.mark.usefixtures("db_session")
+    def test_select_custom_reimbursement_rule_if_applicable(self):
+        offer1 = offers_factories.DigitalOfferFactory()
+        booking1 = bookings_factories.BookingFactory(stock__offer=offer1)
+        offer2 = offers_factories.DigitalOfferFactory()
+        booking2 = bookings_factories.BookingFactory(stock__offer=offer2)
+        rule1 = payments_factories.CustomReimbursementRuleFactory(offer=offer1, amount=5)
+        rule2 = payments_factories.CustomReimbursementRuleFactory(
+            offer=offer2, timespan=[booking2.dateCreated + timedelta(days=2), None]
+        )
+        print(rule2)
+
+        bookings = [booking1, booking2]
+        custom_rules = payments_models.CustomReimbursementRule.query.all()
+        reimbursements = reimbursement.find_all_booking_reimbursements(bookings, custom_rules)
+
+        assert reimbursements[0].booking == booking1
+        assert reimbursements[0].rule == rule1
+        assert reimbursements[0].reimbursed_amount == 5
+        assert_no_reimbursement_for_digital(reimbursements[1], booking2)
 
 
 def assert_total_reimbursement(booking_reimbursement, booking):

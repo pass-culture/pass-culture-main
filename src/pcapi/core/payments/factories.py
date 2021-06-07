@@ -6,12 +6,14 @@ import factory
 from pcapi import models
 import pcapi.core.bookings.conf as bookings_conf
 import pcapi.core.bookings.factories as bookings_factories
+import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import BaseFactory
 import pcapi.core.users.factories as users_factories
 from pcapi.domain import reimbursement
 from pcapi.models import payment_status
 
 from . import api
+from . import models as payments_models
 
 
 REIMBURSEMENT_RULE_DESCRIPTIONS = {t.description for t in reimbursement.REGULAR_RULES}
@@ -76,3 +78,17 @@ class PaymentMessageFactory(BaseFactory):
 
     name = factory.Sequence("payment message {0}".format)
     checksum = factory.LazyFunction(lambda: hashlib.sha1(datetime.datetime.now().isoformat().encode("utf-8")).digest())
+
+
+class CustomReimbursementRuleFactory(BaseFactory):
+    class Meta:
+        model = payments_models.CustomReimbursementRule
+
+    offer = factory.SubFactory(offers_factories.OfferFactory)
+    timespan = factory.LazyFunction(
+        lambda: [
+            datetime.datetime.now() - datetime.timedelta(days=365),
+            datetime.datetime.now() + datetime.timedelta(days=365),
+        ]
+    )
+    amount = 5

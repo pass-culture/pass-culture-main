@@ -1,5 +1,3 @@
-from abc import ABC
-from abc import abstractmethod
 from collections import defaultdict
 from dataclasses import dataclass
 import datetime
@@ -13,35 +11,22 @@ MIN_DATETIME = datetime.datetime(datetime.MINYEAR, 1, 1)
 MAX_DATETIME = datetime.datetime(datetime.MAXYEAR, 1, 1)
 
 
-class ReimbursementRule(ABC):
+class ReimbursementRule:
     def is_active(self, booking: Booking) -> bool:
         valid_from = self.valid_from or MIN_DATETIME
         valid_until = self.valid_until or MAX_DATETIME
         return valid_from < booking.dateCreated <= valid_until
 
-    @abstractmethod
     def is_relevant(self, booking: Booking, **kwargs: Decimal) -> bool:
-        pass
+        raise NotImplementedError()
 
     @property
-    @abstractmethod
     def rate(self) -> Decimal:
-        pass
+        raise NotImplementedError()
 
     @property
-    @abstractmethod
-    def valid_from(self) -> None:
-        pass
-
-    @property
-    @abstractmethod
-    def valid_until(self) -> None:
-        pass
-
-    @property
-    @abstractmethod
     def description(self) -> str:
-        pass
+        raise NotImplementedError()
 
     def apply(self, booking: Booking) -> Decimal:
         return Decimal(booking.total_amount * self.rate)
@@ -153,9 +138,15 @@ class BookingReimbursement:
     reimbursed_amount: Decimal
 
 
-def find_all_booking_reimbursements(bookings: list[Booking]) -> list[BookingReimbursement]:
+def find_all_booking_reimbursements(
+    bookings: list[Booking], custom_rules: list[ReimbursementRule]
+) -> list[BookingReimbursement]:
     reimbursements = []
     total_per_year = defaultdict(lambda: Decimal(0))
+
+    custom_offer_rules = defaultdict(list)
+    for rule in custom_rules:
+        custom_offer_rules[rule.offerId].append(rule)
 
     for booking in bookings:
         year = booking.dateCreated.year
@@ -163,19 +154,27 @@ def find_all_booking_reimbursements(bookings: list[Booking]) -> list[BookingReim
         if PhysicalOffersReimbursement().is_relevant(booking):
             total_per_year[year] += booking.total_amount
 
-        rule = get_reimbursement_rule(booking, total_per_year[year])
+        rule = get_reimbursement_rule(booking, custom_offer_rules.get(booking.stock.offerId, []), total_per_year[year])
         reimbursements.append(BookingReimbursement(booking, rule, reimbursed_amount=rule.apply(booking)))
 
     return reimbursements
 
 
-def get_reimbursement_rule(booking: Booking, total_per_year: Decimal) -> ReimbursementRule:
+def get_reimbursement_rule(
+    booking: Booking, custom_rules: tuple[ReimbursementRule], total_per_year: Decimal
+) -> ReimbursementRule:
+    # FIXME (dbaty, 2021-06-07): review this inner import once the
+    # code has been moved to the `pcapi.core.payments` package.
+    from pcapi.core.payments.models import CustomReimbursementRule  # avoid import loop
+
     candidates = []
-    for rule in REGULAR_RULES:
+    for rule in custom_rules + REGULAR_RULES:
         if not rule.is_active(booking):
             continue
         if not rule.is_relevant(booking, cumulative_value=total_per_year):
             continue
+        if isinstance(rule, CustomReimbursementRule):
+            return rule
         if isinstance(rule, ReimbursementRateForBookAbove20000):
             return rule
         candidates.append(rule)

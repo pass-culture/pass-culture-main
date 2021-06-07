@@ -31,9 +31,18 @@ class Payment(PcObject, Model):
 
     amount = Column(Numeric(10, 2), nullable=False)
 
-    reimbursementRule = Column(String(200), nullable=False)
+    reimbursementRule = Column(String(200))
 
-    reimbursementRate = Column(Numeric(10, 2), nullable=False)
+    reimbursementRate = Column(Numeric(10, 2))
+
+    customReimbursementRuleId = Column(
+        BigInteger,
+        ForeignKey("custom_reimbursement_rule.id"),
+    )
+
+    customReimbursementRule = relationship(
+        "CustomReimbursementRule", foreign_keys=[customReimbursementRuleId], backref="payments"
+    )
 
     recipientName = Column(String(140), nullable=False)
 
@@ -63,6 +72,23 @@ class Payment(PcObject, Model):
     paymentMessage = relationship("PaymentMessage", foreign_keys=[paymentMessageId], backref=backref("payments"))
 
     batchDate = Column(DateTime, nullable=True, index=True)
+
+    __table_args__ = (
+        CheckConstraint(
+            # fmt: off
+            '('
+            ' "reimbursementRule" IS NOT NULL '
+            ' AND "reimbursementRate" IS NOT NULL '
+            ' AND "customReimbursementRuleId" IS NULL '
+            ') OR ('
+            ' "reimbursementRule" IS NULL '
+            ' AND "reimbursementRate" IS NULL '
+            ' AND "customReimbursementRuleId" IS NOT NULL '
+            ')',
+            name="payment_reimbursement_constraint"
+            # fmt: on
+        ),
+    )
 
     @property
     def paymentMessageName(self):

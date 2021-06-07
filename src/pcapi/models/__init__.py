@@ -1,3 +1,6 @@
+# FIXME (dbaty, 2021-06-07): fix circular import
+from pcapi.models.offer_type import ThingType  # isort:skip
+
 from pcapi.core.bookings.models import Booking
 from pcapi.core.mails.models import Email
 from pcapi.core.offerers.models import Offerer
@@ -10,6 +13,7 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferCategory
 from pcapi.core.offers.models import OfferSubcategory
 from pcapi.core.offers.models import Stock
+from pcapi.core.payments.models import CustomReimbursementRule
 from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import AllocineVenueProviderPriceRule
 from pcapi.core.providers.models import Provider
@@ -38,7 +42,6 @@ from pcapi.models.local_provider_event import LocalProviderEvent
 from pcapi.models.needs_validation_mixin import NeedsValidationMixin
 from pcapi.models.offer_criterion import OfferCriterion
 from pcapi.models.offer_type import EventType
-from pcapi.models.offer_type import ThingType
 from pcapi.models.payment import Payment
 from pcapi.models.payment_message import PaymentMessage
 from pcapi.models.payment_status import PaymentStatus
@@ -50,7 +53,7 @@ from pcapi.models.user_offerer import UserOfferer
 from pcapi.models.user_session import UserSession
 
 
-# TODO: fix circular import
+# FIXME (dbaty, 2021-06-07): fix circular import
 from pcapi.models.iris_france import IrisFrance  # isort:skip
 
 __all__ = (
@@ -62,6 +65,7 @@ __all__ = (
     "BeneficiaryImport",
     "BeneficiaryImportStatus",
     "Criterion",
+    "CustomReimbursementRule",
     "PcObject",
     "DeactivableMixin",
     "Deposit",
@@ -133,6 +137,7 @@ models = (
     LocalProviderEvent,
     OfferCriterion,
     PaymentMessage,
+    CustomReimbursementRule,
     Payment,
     PaymentStatus,
     IrisFrance,

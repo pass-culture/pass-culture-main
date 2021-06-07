@@ -8,6 +8,7 @@ import pytest
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.offerers.models import Offerer
 import pcapi.core.offers.factories as offers_factories
+import pcapi.core.payments.factories as payments_factories
 from pcapi.domain.payments import UnmatchedPayments
 from pcapi.domain.payments import apply_banishment
 from pcapi.domain.payments import create_payment_details
@@ -79,6 +80,18 @@ class CreatePaymentForBookingTest:
 
         assert payment.iban == "IBAN"
         assert payment.bic == "BIC"
+
+    def test_with_custom_reimbursement_rule(self):
+        booking = bookings_factories.BookingFactory()
+        rule = payments_factories.CustomReimbursementRuleFactory(offer=booking.stock.offer, amount=2)
+        reimbursement = BookingReimbursement(booking, rule, Decimal(2))
+        batch_date = datetime.utcnow()
+
+        payment = create_payment_for_booking(reimbursement, batch_date)
+        assert payment.amount == 2
+        assert payment.customReimbursementRuleId == rule.id
+        assert payment.reimbursementRate is None
+        assert payment.reimbursementRule is None
 
 
 class FilterOutAlreadyPaidForBookingsTest:

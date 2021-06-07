@@ -11,6 +11,7 @@ from flask import render_template
 from lxml import etree
 
 from pcapi import settings
+import pcapi.core.payments.models as payments_models
 from pcapi.domain.bank_account import format_raw_iban_and_bic
 from pcapi.domain.reimbursement import BookingReimbursement
 from pcapi.models import db
@@ -113,15 +114,18 @@ class PaymentDetails:
         ]
 
 
-def create_payment_for_booking(booking_reimbursement: BookingReimbursement, batch_date: datetime) -> Payment:
-    venue = booking_reimbursement.booking.stock.offer.venue
+def create_payment_for_booking(reimbursement: BookingReimbursement, batch_date: datetime) -> Payment:
+    venue = reimbursement.booking.stock.offer.venue
     offerer = venue.managingOfferer
 
     payment = Payment()
-    payment.bookingId = booking_reimbursement.booking.id
-    payment.amount = booking_reimbursement.reimbursed_amount
-    payment.reimbursementRule = booking_reimbursement.rule.description
-    payment.reimbursementRate = booking_reimbursement.rule.rate
+    payment.bookingId = reimbursement.booking.id
+    payment.amount = reimbursement.reimbursed_amount
+    if isinstance(reimbursement.rule, payments_models.CustomReimbursementRule):
+        payment.customReimbursementRuleId = reimbursement.rule.id
+    else:
+        payment.reimbursementRule = reimbursement.rule.description
+        payment.reimbursementRate = reimbursement.rule.rate
     payment.author = "batch"
     payment.transactionLabel = make_transaction_label(datetime.utcnow())
     payment.batchDate = batch_date

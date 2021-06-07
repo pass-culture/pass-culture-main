@@ -2,6 +2,9 @@ import datetime
 
 import pytest
 
+import pcapi.core.bookings.factories as bookings_factories
+import pcapi.core.offers.factories as offers_factories
+import pcapi.core.payments.factories as payments_factories
 from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 from pcapi.model_creators.generic_creators import create_bank_information
@@ -53,6 +56,7 @@ class GenerateNewPaymentsTest:
 
         # When
         n_queries = 1  # get_venue_ids_to_reimburse()
+        n_queries += 1  # fetch custom reimbursement rules
         n_queries += 1  # find_bookings_eligible_for_payment_for_venue()
         n_queries += 1  # insert payments
         n_queries += 1  # release savepoint (commit)
@@ -295,3 +299,16 @@ class GenerateNewPaymentsTest:
         assert pending.count() == 3
         assert total_amount(pending) == 115000
         assert get_not_processable_payments().count() == 0
+
+    @pytest.mark.usefixtures("db_session")
+    def test_use_custom_reimbursement_rule(self):
+        offer = offers_factories.DigitalOfferFactory()
+        offers_factories.BankInformationFactory(venue=offer.venue, iban="iban1", bic="bic1")
+        bookings_factories.BookingFactory(amount=10, quantity=2, isUsed=True, stock__offer=offer)
+        rule = payments_factories.CustomReimbursementRuleFactory(offer=offer, amount=7)
+
+        generate_new_payments(batch_date=datetime.datetime.now())
+
+        payment = Payment.query.one()
+        assert payment.amount == 14  # 2 (booking.quantity) * 7 (Rule.amount)
+        assert payment.customReimbursementRule == rule
