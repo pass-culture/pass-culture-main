@@ -91,12 +91,6 @@ describe('components | BookingsRecap', () => {
     // Given
     const bookings1 = bookingRecapFactory()
     const bookings2 = bookingRecapFactory()
-    const emptyPageReturned = {
-      page: 1,
-      pages: 1,
-      total: 0,
-      bookings_recap: [],
-    }
     const paginatedBookingRecapReturned = {
       page: 1,
       pages: 2,
@@ -110,7 +104,6 @@ describe('components | BookingsRecap', () => {
       bookings_recap: [bookings2],
     }
     loadFilteredBookingsRecap
-      .mockResolvedValueOnce(emptyPageReturned)
       .mockResolvedValueOnce(paginatedBookingRecapReturned)
       .mockResolvedValueOnce(secondPaginatedBookingRecapReturned)
     await renderBookingsRecap(props, store)
@@ -125,9 +118,9 @@ describe('components | BookingsRecap', () => {
     const firstBookingRecap = screen.getAllByText(bookings1.stock.offer_name)
     expect(firstBookingRecap).toHaveLength(2)
 
-    expect(loadFilteredBookingsRecap).toHaveBeenCalledTimes(3)
-    expect(loadFilteredBookingsRecap).toHaveBeenNthCalledWith(2, {page:1, venueId: venue.id })
-    expect(loadFilteredBookingsRecap).toHaveBeenNthCalledWith(3, {page:2, venueId: venue.id })
+    expect(loadFilteredBookingsRecap).toHaveBeenCalledTimes(2)
+    expect(loadFilteredBookingsRecap).toHaveBeenNthCalledWith(1, { page: 1, venueId: venue.id })
+    expect(loadFilteredBookingsRecap).toHaveBeenNthCalledWith(2, { page: 2, venueId: venue.id })
   })
 
   it('should reset bookings recap list when applying filters', async () => {
@@ -136,12 +129,6 @@ describe('components | BookingsRecap', () => {
     const otherVenueBooking = bookingRecapFactory()
     const otherVenue = venueFactory()
     getVenuesForOfferer.mockResolvedValue([venue, otherVenue])
-    const emptyPageReturned = {
-      page: 1,
-      pages: 1,
-      total: 0,
-      bookings_recap: [],
-    }
     const paginatedBookingRecapReturned = {
       page: 1,
       pages: 1,
@@ -155,7 +142,6 @@ describe('components | BookingsRecap', () => {
       bookings_recap: [otherVenueBooking],
     }
     loadFilteredBookingsRecap
-      .mockResolvedValueOnce(emptyPageReturned)
       .mockResolvedValueOnce(otherVenuePaginatedBookingRecapReturned)
       .mockResolvedValueOnce(paginatedBookingRecapReturned)
     await renderBookingsRecap(props, store)

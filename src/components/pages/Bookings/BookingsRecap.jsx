@@ -1,5 +1,5 @@
 import * as PropTypes from 'prop-types'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
@@ -24,24 +24,41 @@ const BookingsRecap = ({ arePreFiltersEnabled, location, showWarningNotification
     offerVenueId: ALL_VENUES,
   })
 
+  const atLeastOnePrefilterWasSelected = useMemo(() => {
+    return (
+      preFilters.bookingBeginningDate !== EMPTY_FILTER_VALUE ||
+      preFilters.bookingEndingDate !== EMPTY_FILTER_VALUE ||
+      preFilters.offerDate !== EMPTY_FILTER_VALUE ||
+      preFilters.offerVenueId !== ALL_VENUES
+    )
+  }, [
+    preFilters.bookingBeginningDate,
+    preFilters.bookingEndingDate,
+    preFilters.offerDate,
+    preFilters.offerVenueId,
+  ])
+
   useEffect(() => {
     async function loadBookingsRecap() {
       setIsLoading(true)
       setBookingsRecap([])
 
       let currentPage = 1
-      const { pages, bookings_recap: bookingsRecap } = await pcapi.loadFilteredBookingsRecap({page: currentPage,
+      const { pages, bookings_recap: bookingsRecap } = await pcapi.loadFilteredBookingsRecap({
+        page: currentPage,
         venueId: preFilters.offerVenueId,
       })
       setBookingsRecap(bookingsRecap)
 
       while (currentPage < Math.min(pages, MAX_LOADED_PAGES)) {
         currentPage += 1
-        await pcapi.loadFilteredBookingsRecap({page: currentPage,
-          venueId: preFilters.offerVenueId,
-        }).then(({ bookings_recap }) =>
-          setBookingsRecap(currentBookingsRecap => [...currentBookingsRecap].concat(bookings_recap))
-        )
+        await pcapi
+          .loadFilteredBookingsRecap({ page: currentPage, venueId: preFilters.offerVenueId })
+          .then(({ bookings_recap }) =>
+            setBookingsRecap(currentBookingsRecap =>
+              [...currentBookingsRecap].concat(bookings_recap)
+            )
+          )
       }
 
       setIsLoading(false)
@@ -49,8 +66,18 @@ const BookingsRecap = ({ arePreFiltersEnabled, location, showWarningNotification
         showWarningNotification()
       }
     }
-    loadBookingsRecap()
-  }, [preFilters.offerVenueId, showWarningNotification])
+
+    if (arePreFiltersEnabled && atLeastOnePrefilterWasSelected) {
+      loadBookingsRecap()
+    } else if (!arePreFiltersEnabled) {
+      loadBookingsRecap()
+    }
+  }, [
+    arePreFiltersEnabled,
+    atLeastOnePrefilterWasSelected,
+    preFilters.offerVenueId,
+    showWarningNotification,
+  ])
 
   return (
     <div className="bookings-page">
