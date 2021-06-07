@@ -207,7 +207,7 @@ def verify_identity_document(
     body: serializers.VerifyIdentityDocumentRequest,
 ) -> None:
     try:
-        email, image = api.get_identity_document_informations(body.image_url)
+        email, image = api.get_identity_document_informations(body.image_storage_path)
         ask_for_identity_document_verification(email, image)
         return
     except (exceptions.IdentityDocumentUploadException):

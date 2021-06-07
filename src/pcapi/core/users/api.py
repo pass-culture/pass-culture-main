@@ -742,8 +742,8 @@ def asynchronous_identity_document_verification(image: bytes, email: str) -> Non
     return
 
 
-def get_identity_document_informations(image_url: str) -> Tuple[str, bytes]:
-    image_blob: Blob = get_object("identity_documents", image_url)
+def get_identity_document_informations(image_storage_path: str) -> Tuple[str, bytes]:
+    image_blob: Blob = get_object(image_storage_path)
     email = image_blob.metadata.get("email", "").strip()
     if email == "":
         raise exceptions.MissingEmailInMetadataException

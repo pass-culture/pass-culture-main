@@ -122,8 +122,7 @@ def delete_object(bucket: str, object_id: str) -> None:
         raise exception
 
 
-def get_object(bucket: str, object_id: str) -> Blob:
-    storage_path = bucket + "/" + object_id
+def get_object(storage_path: str) -> Blob:
     try:
         storage_client_bucket = get_encrypted_gcp_storage_client_bucket()
         storage_client_bucket.get_blob(storage_path)

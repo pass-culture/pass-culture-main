@@ -214,7 +214,7 @@ class UploadIdentityDocumentRequest(BaseModel):
 
 
 class VerifyIdentityDocumentRequest(BaseModel):
-    image_url: str
+    image_storage_path: str
 
     class Config:
         alias_generator = to_camel
