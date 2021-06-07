@@ -31,6 +31,8 @@ from pcapi.routes import install_routes
 from pcapi.routes.adage.v1.blueprint import adage_v1
 from pcapi.routes.native.v1.blueprint import native_v1
 from pcapi.routes.pro.blueprints import pro_api_v2
+from pcapi.tasks import install_handlers
+from pcapi.tasks.decorator import cloud_task_api
 from pcapi.utils.json_encoder import EnumJSONEncoder
 
 
@@ -71,6 +73,7 @@ def app():
     run_migrations()
 
     install_routes(app)
+    install_handlers(app)
     install_local_providers()
     admin.init_app(app)
     install_admin_views(admin, db.session)
@@ -79,6 +82,7 @@ def app():
     app.register_blueprint(adage_v1, url_prefix="/adage/v1")
     app.register_blueprint(native_v1, url_prefix="/native/v1")
     app.register_blueprint(pro_api_v2, url_prefix="/v2")
+    app.register_blueprint(cloud_task_api)
 
     JWTManager(app)
 
