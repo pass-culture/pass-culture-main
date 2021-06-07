@@ -18,23 +18,32 @@
   &:focus-within {
     .vertical-bar {
       background-color: $primary;
+      margin-right: 0;
+      width: rem(2px);
     }
   }
 
-  select {
+  .vertical-bar {
+    margin-right: rem(1px);
+  }
+
+  .fw-booking-text-filters-select {
     @include button();
 
     appearance: none;
     background: url(/icons/dropdown-disclosure-down-b.svg) no-repeat 92% 56%;
     border: 1px solid $grey-medium;
-    border-radius: rem(20px);
+    border-radius: rem(20px) 0 0 rem(20px);
+    border-right: none;
     height: rem(40px);
     outline: none;
-    padding-left: rem(10px);
-    padding-right: rem(30px);
+    padding-left: rem(16px);
+    width: rem(200px);
 
     &:focus {
       border-color: $primary;
+      border-width: rem(2px);
+      padding-left: rem(15px);
     }
 
     &:disabled {
@@ -49,15 +58,6 @@
     }
   }
 
-  .fw-booking-text-filters-select {
-    border-bottom-right-radius: 0;
-    border-right: none;
-    border-top-right-radius: 0;
-    height: 2.5rem;
-    padding-left: rem(16px);
-    width: rem(200px);
-  }
-
   .fw-booking-text-filters-input {
     @include body();
 
@@ -70,6 +70,7 @@
 
     &:focus {
       border-color: $primary;
+      border-width: rem(2px);
       outline: none;
     }
 
@@ -103,6 +104,7 @@
 
     &:focus-within {
       border-color: $primary;
+      border-width: rem(2px);
     }
 
     &.disabled {
@@ -118,6 +120,8 @@
     .fw-offer-date-picker:focus-within {
       .field-date {
         border-color: $primary;
+        border-width: rem(2px);
+        padding: 0;
       }
     }
 
@@ -129,6 +133,7 @@
       border: 1px solid $grey-medium;
       box-shadow: 2px 2px 6px 0 $black-shadow;
       margin-top: rem(12px);
+      padding: 0 1px;
       width: rem(233px);
 
       &.disabled {
@@ -190,6 +195,7 @@
 
       &:focus {
         border-color: $primary;
+        border-width: rem(2px);
       }
 
       &:disabled {

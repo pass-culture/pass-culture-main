@@ -66,10 +66,6 @@
 
   .field-date {
     border: 1px solid $grey-medium;
-
-    &:focus-within {
-      border-width: 2px;
-    }
   }
 
   .period-filter-inputs .period-filter-input {
@@ -86,16 +82,6 @@
     border-bottom-right-radius: 20px;
     border-left: none;
     border-top-right-radius: 20px;
-  }
-
-  .vertical-bar {
-    width: rem(1px);
-  }
-
-  .period-filter:focus-within {
-    .vertical-bar {
-      width: rem(2px);
-    }
   }
 
   .form-row {

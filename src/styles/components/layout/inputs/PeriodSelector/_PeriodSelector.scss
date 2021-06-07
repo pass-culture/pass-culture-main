@@ -40,6 +40,8 @@
 
     &:focus-within {
       border-color: $primary;
+      border-width: rem(2px);
+      padding: 0;
     }
   }
 
@@ -52,6 +54,8 @@
 
     &:focus-within {
       border-color: $primary;
+      border-width: rem(2px);
+      padding: 0;
     }
   }
 
@@ -85,5 +89,6 @@
 .period-filter:focus-within {
   .vertical-bar {
     background-color: $primary;
+    width: rem(2px);
   }
 }

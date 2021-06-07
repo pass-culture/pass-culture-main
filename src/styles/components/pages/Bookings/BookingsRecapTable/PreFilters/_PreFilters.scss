@@ -10,7 +10,6 @@
     justify-content: space-between;
     margin-bottom: rem(30px);
 
-
     .fw-offer-date {
       .field-date {
         align-items: center;
@@ -24,6 +23,7 @@
 
         &:focus-within {
           border-color: $primary;
+          border-width: rem(2px);
         }
 
         &.disabled {
@@ -34,6 +34,8 @@
       .fw-offer-date-picker:focus-within {
         .field-date {
           border-color: $primary;
+          border-width: rem(2px);
+          padding: 0;
         }
       }
 
@@ -45,6 +47,7 @@
         border: 1px solid $grey-medium;
         box-shadow: 2px 2px 6px 0 $black-shadow;
         margin-top: rem(12px);
+        padding: 0 1px;
         width: rem(233px);
 
         &.disabled {
@@ -106,6 +109,8 @@
 
         &:focus {
           border-color: $primary;
+          border-width: rem(2px);
+          padding-left: rem(15px);
         }
 
         &:disabled {
