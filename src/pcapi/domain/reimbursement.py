@@ -143,7 +143,7 @@ class ReimbursementRules(Enum):
     BOOK_REIMBURSEMENT = ReimbursementRateForBookAbove20000()
 
 
-RULES = [
+REGULAR_RULES = [
     ReimbursementRules.DIGITAL_THINGS,
     ReimbursementRules.PHYSICAL_OFFERS,
     ReimbursementRules.BETWEEN_20000_AND_40000_EUROS,
@@ -166,9 +166,7 @@ class BookingReimbursement:
         self.reimbursed_amount = reimbursed_amount
 
 
-def find_all_booking_reimbursements(
-    bookings: list[Booking], active_rules: list[ReimbursementRules]
-) -> list[BookingReimbursement]:
+def find_all_booking_reimbursements(bookings: list[Booking]) -> list[BookingReimbursement]:
     reimbursements = []
     cumulative_bookings_value_by_year = {}
 
@@ -182,9 +180,7 @@ def find_all_booking_reimbursements(
                 cumulative_bookings_value_by_year[booking_civil_year] + booking.total_amount
             )
 
-        potential_rules = _find_potential_rules(
-            booking, active_rules, cumulative_bookings_value_by_year[booking_civil_year]
-        )
+        potential_rules = _find_potential_rules(booking, cumulative_bookings_value_by_year[booking_civil_year])
         elected_rule = determine_elected_rule(booking, potential_rules)
         reimbursements.append(BookingReimbursement(booking, elected_rule.rule, elected_rule.amount))
 
@@ -201,11 +197,9 @@ def determine_elected_rule(booking: Booking, potential_rules: list[AppliedReimbu
     return elected_rule
 
 
-def _find_potential_rules(
-    booking: Booking, rules: list[ReimbursementRules], cumulative_bookings_value: Decimal
-) -> list:
+def _find_potential_rules(booking: Booking, cumulative_bookings_value: Decimal) -> list:
     relevant_rules = []
-    for rule in rules:
+    for rule in REGULAR_RULES:
         if rule.value.is_active and rule.value.is_relevant(booking, cumulative_value=cumulative_bookings_value):
             reimbursed_amount = rule.value.apply(booking)
             relevant_rules.append(AppliedReimbursement(rule, reimbursed_amount))

@@ -25,7 +25,6 @@ from pcapi.domain.payments import generate_message_file
 from pcapi.domain.payments import generate_payment_details_csv
 from pcapi.domain.payments import generate_wallet_balances_csv
 from pcapi.domain.payments import validate_message_file_structure
-from pcapi.domain.reimbursement import RULES
 from pcapi.domain.reimbursement import find_all_booking_reimbursements
 from pcapi.models.db import db
 from pcapi.models.payment import Payment
@@ -79,7 +78,7 @@ def generate_new_payments(batch_date: datetime) -> None:
         logger.info("[BATCH][PAYMENTS] Fetching bookings for venue: %s", venue_name, extra={"venue": venue_id})
         bookings = booking_repository.find_bookings_eligible_for_payment_for_venue(venue_id)
         logger.info("[BATCH][PAYMENTS] Calculating reimbursements for venue: %s", venue_name, extra={"venue": venue_id})
-        reimbursements = find_all_booking_reimbursements(bookings, RULES)
+        reimbursements = find_all_booking_reimbursements(bookings)
         to_pay = filter_out_already_paid_for_bookings(filter_out_bookings_without_cost(reimbursements))
         if not to_pay:
             logger.info("[BATCH][PAYMENTS] No payments generated for venue: %s", venue_name, extra={"venue": venue_id})
