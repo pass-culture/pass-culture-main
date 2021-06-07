@@ -7,6 +7,7 @@ from flask import has_app_context
 from flask import redirect
 from flask import request
 from flask import url_for
+from flask_admin.actions import action
 from flask_admin.base import expose
 from flask_admin.form import SecureForm
 from flask_admin.helpers import get_form_data
@@ -279,6 +280,35 @@ class ValidationView(BaseAdminView):
 
     def get_count_query(self):
         return self.session.query(func.count("*")).filter(self.model.validation == OfferValidationStatus.PENDING)
+
+    def _batch_validate(self, offers, validation_status):
+        count = 0
+        try:
+            for offer in offers:
+                is_offer_updated = offers_api.update_pending_offer_validation(offer, validation_status)
+                if is_offer_updated:
+                    count += 1
+                    offer.lastValidationDate = datetime.utcnow()
+                    recipients = (
+                        [offer.venue.bookingEmail]
+                        if offer.venue.bookingEmail
+                        else [recipient.user.email for recipient in offer.venue.managingOfferer.UserOfferers]
+                    )
+                    send_offer_validation_status_update_email(offer, validation_status, recipients)
+                    send_offer_validation_notification_to_administration(validation_status, offer)
+            flash("%d offres ont été modifiées avec succès en %s" % count, validation_status)
+        except Exception as exc:  # pylint: disable=broad-except
+            flash("Une erreur s'est produite lors de la mise à jour du statut de validation: %s" % exc, "error")
+
+    @action("approve", "Approuver", "Etes-vous sûr(e) de vouloir approuver les offres sélectionnées ?")
+    def action_approve(self, ids):
+        offers_to_approve = Offer.query.filter(Offer.id.in_(ids))
+        self._batch_validate(offers_to_approve, OfferValidationStatus.APPROVED)
+
+    @action("reject", "Rejeter", "Etes-vous sûr(e) de vouloir rejeter les offres sélectionnées ?")
+    def action_reject(self, ids):
+        offers_to_reject = Offer.query.filter(Offer.id.in_(ids))
+        self._batch_validate(offers_to_reject, OfferValidationStatus.REJECTED)
 
     @expose("/edit/", methods=["GET", "POST"])
     def edit(self) -> Response:
