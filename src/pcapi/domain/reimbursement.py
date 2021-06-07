@@ -14,9 +14,9 @@ MAX_DATETIME = datetime.datetime(datetime.MAXYEAR, 1, 1)
 
 class ReimbursementRule(ABC):
     def is_active(self, booking: Booking) -> bool:
-        valid_from = self.valid_from if self.valid_from else MIN_DATETIME
-        valid_until = self.valid_until if self.valid_until else MAX_DATETIME
-        return valid_from < booking.dateCreated < valid_until
+        valid_from = self.valid_from or MIN_DATETIME
+        valid_until = self.valid_until or MAX_DATETIME
+        return valid_from < booking.dateCreated <= valid_until
 
     @abstractmethod
     def is_relevant(self, booking: Booking, **kwargs: Decimal) -> bool:
