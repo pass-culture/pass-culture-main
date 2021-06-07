@@ -1,21 +1,19 @@
 import PropTypes from 'prop-types'
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 
 import * as pcapi from 'repository/pcapi/pcapi'
 import { formatAndOrderVenues } from 'repository/venuesService'
-import { getToday } from 'utils/date'
 
-import { ALL_VENUES, EMPTY_FILTER_VALUE } from './_constants'
+import { DEFAULT_PRE_FILTERS } from './_constants'
 import FilterByBookingPeriod from './FilterByBookingPeriod'
 import FilterByEventDate from './FilterByEventDate.jsx'
 import FilterByVenue from './FilterByVenue'
 
 const PreFilters = ({ offerVenueId, applyPreFilters }) => {
-  // eslint-disable-next-line no-unused-vars
   const [selectedFilters, setSelectedFilters] = useState({
-    bookingBeginningDate: EMPTY_FILTER_VALUE,
-    bookingEndingDate: getToday(),
-    offerDate: EMPTY_FILTER_VALUE,
+    bookingBeginningDate: DEFAULT_PRE_FILTERS.bookingBeginningDate,
+    bookingEndingDate: DEFAULT_PRE_FILTERS.bookingEndingDate,
+    offerDate: DEFAULT_PRE_FILTERS.offerDate,
     offerVenueId: offerVenueId,
   })
   const [venues, setVenues] = useState([])
@@ -73,7 +71,7 @@ const PreFilters = ({ offerVenueId, applyPreFilters }) => {
 }
 
 PreFilters.defaultProps = {
-  offerVenueId: ALL_VENUES,
+  offerVenueId: DEFAULT_PRE_FILTERS.offerVenueId,
 }
 
 PreFilters.propTypes = {

@@ -75,6 +75,14 @@ describe('components | BookingsRecap', () => {
     expect(eventBookingPeriodFilter).toBeInTheDocument()
   })
 
+  it('should not request bookings when user does not click on "Afficher"', async () => {
+    // When
+    await renderBookingsRecap(props, store)
+
+    // Then
+    expect(loadFilteredBookingsRecap).not.toHaveBeenCalled()
+  })
+
   it('should request bookings of venue filtered by user when user clicks on "Afficher"', async () => {
     // Given
     await renderBookingsRecap(props, store)

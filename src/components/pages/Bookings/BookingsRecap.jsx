@@ -1,5 +1,5 @@
 import * as PropTypes from 'prop-types'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
@@ -9,7 +9,6 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import BookingsRecapTable from './BookingsRecapTable/BookingsRecapTable'
 import BookingsRecapTableLegacy from './BookingsRecapTableLegacy/BookingsRecapTableLegacy' /* eslint-disable-line react/jsx-pascal-case */
 import NoBookingsMessage from './NoBookingsMessage/NoBookingsMessage'
-import { ALL_VENUES, EMPTY_FILTER_VALUE } from './PreFilters/_constants'
 import PreFilters from './PreFilters/PreFilters'
 
 const MAX_LOADED_PAGES = 5
@@ -17,43 +16,31 @@ const MAX_LOADED_PAGES = 5
 const BookingsRecap = ({ arePreFiltersEnabled, location, showWarningNotification }) => {
   const [bookingsRecap, setBookingsRecap] = useState([])
   const [isLoading, setIsLoading] = useState(true)
-  const [preFilters, setPreFilters] = useState({
-    bookingBeginningDate: EMPTY_FILTER_VALUE,
-    bookingEndingDate: EMPTY_FILTER_VALUE,
-    offerDate: EMPTY_FILTER_VALUE,
-    offerVenueId: ALL_VENUES,
-  })
 
-  const atLeastOnePrefilterWasSelected = useMemo(() => {
-    return (
-      preFilters.bookingBeginningDate !== EMPTY_FILTER_VALUE ||
-      preFilters.bookingEndingDate !== EMPTY_FILTER_VALUE ||
-      preFilters.offerDate !== EMPTY_FILTER_VALUE ||
-      preFilters.offerVenueId !== ALL_VENUES
-    )
-  }, [
-    preFilters.bookingBeginningDate,
-    preFilters.bookingEndingDate,
-    preFilters.offerDate,
-    preFilters.offerVenueId,
-  ])
-
-  useEffect(() => {
-    async function loadBookingsRecap() {
+  const loadBookingsRecap = useCallback(
+    async preFilters => {
       setIsLoading(true)
       setBookingsRecap([])
+
+      // TODO(07/06/2021): To remove when 'ENABLE_BOOKINGS_PAGE_FILTERS_FIRST' feature flip has been removed
+      let bookingsFilters = {}
+      if (preFilters) {
+        bookingsFilters = {
+          venueId: preFilters.offerVenueId,
+        }
+      }
 
       let currentPage = 1
       const { pages, bookings_recap: bookingsRecap } = await pcapi.loadFilteredBookingsRecap({
         page: currentPage,
-        venueId: preFilters.offerVenueId,
+        ...bookingsFilters,
       })
       setBookingsRecap(bookingsRecap)
 
       while (currentPage < Math.min(pages, MAX_LOADED_PAGES)) {
         currentPage += 1
         await pcapi
-          .loadFilteredBookingsRecap({ page: currentPage, venueId: preFilters.offerVenueId })
+          .loadFilteredBookingsRecap({ page: currentPage, ...bookingsFilters })
           .then(({ bookings_recap }) =>
             setBookingsRecap(currentBookingsRecap =>
               [...currentBookingsRecap].concat(bookings_recap)
@@ -65,19 +52,15 @@ const BookingsRecap = ({ arePreFiltersEnabled, location, showWarningNotification
       if (currentPage === MAX_LOADED_PAGES && currentPage < pages) {
         showWarningNotification()
       }
-    }
+    },
+    [showWarningNotification]
+  )
 
-    if (arePreFiltersEnabled && atLeastOnePrefilterWasSelected) {
-      loadBookingsRecap()
-    } else if (!arePreFiltersEnabled) {
+  useEffect(() => {
+    if (!arePreFiltersEnabled) {
       loadBookingsRecap()
     }
-  }, [
-    arePreFiltersEnabled,
-    atLeastOnePrefilterWasSelected,
-    preFilters.offerVenueId,
-    showWarningNotification,
-  ])
+  }, [arePreFiltersEnabled, loadBookingsRecap])
 
   return (
     <div className="bookings-page">
@@ -86,7 +69,7 @@ const BookingsRecap = ({ arePreFiltersEnabled, location, showWarningNotification
       {arePreFiltersEnabled ? (
         <>
           <PreFilters
-            applyPreFilters={setPreFilters}
+            applyPreFilters={loadBookingsRecap}
             offerVenueId={location.state?.venueId}
           />
           {bookingsRecap.length > 0 && (

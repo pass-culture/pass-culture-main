@@ -123,8 +123,8 @@ describe('components | BookingsRecapLegacy', () => {
 
     // Then
     expect(loadFilteredBookingsRecap).toHaveBeenCalledTimes(2)
-    expect(loadFilteredBookingsRecap).toHaveBeenNthCalledWith(1, { page: 1, venueId: 'all' })
-    expect(loadFilteredBookingsRecap).toHaveBeenNthCalledWith(2, { page: 2, venueId: 'all' })
+    expect(loadFilteredBookingsRecap).toHaveBeenNthCalledWith(1, { page: 1 })
+    expect(loadFilteredBookingsRecap).toHaveBeenNthCalledWith(2, { page: 2 })
 
     const firstBookingRecap = screen.getAllByText(bookings1.stock.offer_name)
     expect(firstBookingRecap).toHaveLength(2)
