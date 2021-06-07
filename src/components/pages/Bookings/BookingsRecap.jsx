@@ -27,6 +27,7 @@ const BookingsRecap = ({ arePreFiltersEnabled, location, showWarningNotification
       if (preFilters) {
         bookingsFilters = {
           venueId: preFilters.offerVenueId,
+          eventDate: preFilters.offerEventDate,
         }
       }
 

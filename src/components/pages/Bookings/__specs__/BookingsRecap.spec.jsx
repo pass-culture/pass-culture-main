@@ -5,6 +5,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
+import { DEFAULT_PRE_FILTERS } from 'components/pages/Bookings/PreFilters/_constants'
 import { getVenuesForOfferer, loadFilteredBookingsRecap } from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 import { bookingRecapFactory, venueFactory } from 'utils/apiFactories'
@@ -14,6 +15,11 @@ import BookingsRecapContainer from '../BookingsRecapContainer'
 jest.mock('repository/pcapi/pcapi', () => ({
   getVenuesForOfferer: jest.fn(),
   loadFilteredBookingsRecap: jest.fn(),
+}))
+
+jest.mock('utils/date', () => ({
+  ...jest.requireActual('utils/date'),
+  getToday: jest.fn().mockReturnValue(new Date('2020-06-07T12:00:00Z')),
 }))
 
 const renderBookingsRecap = async (props, store = {}) => {
@@ -100,7 +106,11 @@ describe('components | BookingsRecap', () => {
 
     // Then
     await screen.findAllByText(bookingRecap.stock.offer_name)
-    expect(loadFilteredBookingsRecap).toHaveBeenCalledWith({ page: 1, venueId: venue.id })
+    expect(loadFilteredBookingsRecap).toHaveBeenCalledWith({
+      page: 1,
+      venueId: venue.id,
+      eventDate: DEFAULT_PRE_FILTERS.offerEventDate,
+    })
   })
 
   it('should fetch bookings for the filtered venue as many times as the number of pages', async () => {
@@ -135,8 +145,41 @@ describe('components | BookingsRecap', () => {
     expect(firstBookingRecap).toHaveLength(2)
 
     expect(loadFilteredBookingsRecap).toHaveBeenCalledTimes(2)
-    expect(loadFilteredBookingsRecap).toHaveBeenNthCalledWith(1, { page: 1, venueId: venue.id })
-    expect(loadFilteredBookingsRecap).toHaveBeenNthCalledWith(2, { page: 2, venueId: venue.id })
+    expect(loadFilteredBookingsRecap).toHaveBeenNthCalledWith(1, {
+      page: 1,
+      venueId: venue.id,
+      eventDate: DEFAULT_PRE_FILTERS.offerEventDate,
+    })
+    expect(loadFilteredBookingsRecap).toHaveBeenNthCalledWith(2, {
+      page: 2,
+      venueId: venue.id,
+      eventDate: DEFAULT_PRE_FILTERS.offerEventDate,
+    })
+  })
+
+  it('should request bookings of event date requested by user when user clicks on "Afficher"', async () => {
+    // Given
+    let bookingRecap = bookingRecapFactory()
+    loadFilteredBookingsRecap.mockResolvedValue({
+      page: 1,
+      pages: 1,
+      total: 1,
+      bookings_recap: [bookingRecap],
+    })
+    await renderBookingsRecap(props, store)
+
+    // When
+    userEvent.click(screen.getByLabelText('Date de l’évènement'))
+    userEvent.click(screen.getByText('8'))
+    userEvent.click(screen.getByText('Afficher', { selector: 'button' }))
+
+    // Then
+    await screen.findAllByText(bookingRecap.stock.offer_name)
+    expect(loadFilteredBookingsRecap).toHaveBeenCalledWith({
+      page: 1,
+      venueId: 'all',
+      eventDate: new Date('2020-06-08T00:00:00.000Z'),
+    })
   })
 
   it('should reset bookings recap list when applying filters', async () => {

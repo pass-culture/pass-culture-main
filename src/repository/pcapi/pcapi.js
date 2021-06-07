@@ -1,6 +1,7 @@
 import * as bookingsPreFilters from 'components/pages/Bookings/PreFilters/_constants'
 import { DEFAULT_PAGE, DEFAULT_SEARCH_FILTERS } from 'components/pages/Offers/Offers/_constants'
 import { client } from 'repository/pcapi/pcapiClient'
+import { formatBrowserTimezonedDateAsUTC } from 'utils/date'
 import { stringify } from 'utils/query-string'
 
 //
@@ -234,11 +235,15 @@ export const loadVenueProviders = async venueId => {
 //
 export const loadFilteredBookingsRecap = async ({
   venueId = bookingsPreFilters.ALL_VENUES,
+  eventDate = bookingsPreFilters.ALL_DATES,
   page,
 }) => {
   const params = { page }
   if (venueId !== bookingsPreFilters.ALL_VENUES) {
     params.venueId = venueId
+  }
+  if (eventDate !== bookingsPreFilters.ALL_DATES) {
+    params.eventDate = formatBrowserTimezonedDateAsUTC(eventDate)
   }
 
   const queryParams = stringify(params)

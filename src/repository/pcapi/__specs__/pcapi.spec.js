@@ -373,6 +373,7 @@ describe('pcapi', () => {
       // Given
       const filters = {
         venueId: 'AA',
+        eventDate: new Date(2020, 8, 13),
         page: 2,
       }
 
@@ -380,7 +381,9 @@ describe('pcapi', () => {
       await loadFilteredBookingsRecap(filters)
 
       // Then
-      expect(client.get).toHaveBeenCalledWith('/bookings/pro?page=2&venueId=AA')
+      expect(client.get).toHaveBeenCalledWith(
+        '/bookings/pro?page=2&venueId=AA&eventDate=2020-09-13T00%3A00%3A00Z'
+      )
     })
   })
 })

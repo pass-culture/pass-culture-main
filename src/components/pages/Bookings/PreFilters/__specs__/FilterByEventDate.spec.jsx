@@ -32,6 +32,6 @@ describe('components | FilterByEventDate', () => {
     await offerDateInput.simulate('change', selectedDate)
 
     // Then
-    expect(props.updateFilters).toHaveBeenCalledWith({ offerDate: selectedDate })
+    expect(props.updateFilters).toHaveBeenCalledWith({ offerEventDate: selectedDate })
   })
 })

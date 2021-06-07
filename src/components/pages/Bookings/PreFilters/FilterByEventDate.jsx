@@ -3,10 +3,14 @@ import React from 'react'
 import DatePicker from 'react-datepicker'
 
 import InputWithCalendar from 'components/layout/inputs/PeriodSelector/InputWithCalendar'
+import { DEFAULT_PRE_FILTERS } from 'components/pages/Bookings/PreFilters/_constants'
+import { getToday } from 'utils/date'
 
 const FilterByEventDate = ({ updateFilters, selectedOfferDate }) => {
-  function handleOfferDateChange(offerDate) {
-    updateFilters({ offerDate: offerDate })
+  function handleOfferDateChange(offerEventDate) {
+    updateFilters({
+      offerEventDate: offerEventDate ? offerEventDate : DEFAULT_PRE_FILTERS.offerEventDate,
+    })
   }
 
   return (
@@ -25,8 +29,15 @@ const FilterByEventDate = ({ updateFilters, selectedOfferDate }) => {
           dropdownMode="select"
           id="select-filter-date"
           onChange={handleOfferDateChange}
+          openToDate={
+            selectedOfferDate === DEFAULT_PRE_FILTERS.offerEventDate
+              ? getToday()
+              : selectedOfferDate
+          }
           placeholderText="JJ/MM/AAAA"
-          selected={selectedOfferDate}
+          selected={
+            selectedOfferDate === DEFAULT_PRE_FILTERS.offerEventDate ? '' : selectedOfferDate
+          }
         />
       </div>
     </div>

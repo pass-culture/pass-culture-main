@@ -13,7 +13,7 @@ const PreFilters = ({ offerVenueId, applyPreFilters }) => {
   const [selectedFilters, setSelectedFilters] = useState({
     bookingBeginningDate: DEFAULT_PRE_FILTERS.bookingBeginningDate,
     bookingEndingDate: DEFAULT_PRE_FILTERS.bookingEndingDate,
-    offerDate: DEFAULT_PRE_FILTERS.offerDate,
+    offerEventDate: DEFAULT_PRE_FILTERS.offerEventDate,
     offerVenueId: offerVenueId,
   })
   const [venues, setVenues] = useState([])
@@ -47,7 +47,7 @@ const PreFilters = ({ offerVenueId, applyPreFilters }) => {
           venuesFormattedAndOrdered={venues}
         />
         <FilterByEventDate
-          selectedOfferDate={selectedFilters.offerDate}
+          selectedOfferDate={selectedFilters.offerEventDate}
           updateFilters={updateSelectedFilters}
         />
         <FilterByBookingPeriod
