@@ -83,8 +83,15 @@ describe('components | BookingsRecap', () => {
     expect(loadFilteredBookingsRecap).not.toHaveBeenCalled()
   })
 
-  it('should request bookings of venue filtered by user when user clicks on "Afficher"', async () => {
+  it('should request bookings of venue requested by user when user clicks on "Afficher"', async () => {
     // Given
+    let bookingRecap = bookingRecapFactory()
+    loadFilteredBookingsRecap.mockResolvedValue({
+      page: 1,
+      pages: 1,
+      total: 1,
+      bookings_recap: [bookingRecap],
+    })
     await renderBookingsRecap(props, store)
 
     // When
@@ -92,6 +99,7 @@ describe('components | BookingsRecap', () => {
     userEvent.click(screen.getByText('Afficher', { selector: 'button' }))
 
     // Then
+    await screen.findAllByText(bookingRecap.stock.offer_name)
     expect(loadFilteredBookingsRecap).toHaveBeenCalledWith({ page: 1, venueId: venue.id })
   })
 

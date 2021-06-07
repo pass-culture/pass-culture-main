@@ -2,8 +2,9 @@ import '@testing-library/jest-dom'
 import { fireEvent, render, screen } from '@testing-library/react'
 import React from 'react'
 
-import { getVenuesForOfferer } from '../../../../../repository/pcapi/pcapi'
-import { venueFactory } from '../../../../../utils/apiFactories'
+import { getVenuesForOfferer } from 'repository/pcapi/pcapi'
+import { venueFactory } from 'utils/apiFactories'
+
 import PreFilters from '../PreFilters'
 
 jest.mock('utils/date', () => ({
@@ -20,7 +21,6 @@ describe('filter bookings by bookings period', () => {
   beforeEach(() => {
     props = {
       applyPreFilters: jest.fn(),
-      offerVenueId: null,
     }
 
     getVenuesForOfferer.mockResolvedValue([venueFactory()])
