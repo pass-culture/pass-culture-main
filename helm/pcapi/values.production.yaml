@@ -393,7 +393,7 @@ secrets:
   - name: SENTRY_DSN
     version: 2
   - name: SUPER_ADMIN_EMAIL_ADDRESSES
-    version: 7
+    version: 8
   - name: SUPPORT_EMAIL_ADDRESS
     version: 2
   - name: TRANSACTIONS_RECIPIENTS
