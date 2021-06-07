@@ -30,6 +30,7 @@ from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.api import set_pro_tuto_as_seen
 from pcapi.core.users.api import steps_to_become_beneficiary
 from pcapi.core.users.api import update_beneficiary_mandatory_information
+from pcapi.core.users.exceptions import CloudTaskCreationException
 from pcapi.core.users.exceptions import IdentityDocumentUploadException
 from pcapi.core.users.factories import BeneficiaryImportFactory
 from pcapi.core.users.models import Credit
@@ -766,8 +767,10 @@ class AsynchronousIdentityDocumentVerificationTest:
     @patch("pcapi.core.users.api.store_object")
     @patch("pcapi.core.users.api.random_token")
     @patch("pcapi.core.users.api.standardize_image")
+    @patch("pcapi.core.users.api.verify_identity_document")
     def test_upload_identity_document_successful(
         self,
+        mocked_verify_identity_document,
         mocked_standardize_image,
         mocked_random_token,
         mocked_store_object,
@@ -789,6 +792,9 @@ class AsynchronousIdentityDocumentVerificationTest:
             content_type="image/jpeg",
             metadata={"email": "toto@email.fr"},
         )
+        mocked_verify_identity_document.delay.assert_called_once_with(
+            {"image_storage_path": "identity_documents/a_very_random_secret.jpg"}
+        )
 
     @patch("pcapi.core.users.api.store_object")
     def test_upload_identity_document_fails_on_upload(
@@ -803,3 +809,30 @@ class AsynchronousIdentityDocumentVerificationTest:
         # Then
         with pytest.raises(IdentityDocumentUploadException):
             asynchronous_identity_document_verification(identity_document, "toto@email.fr")
+
+    @patch("pcapi.core.users.api.delete_object")
+    @patch("pcapi.core.users.api.store_object")
+    @patch("pcapi.core.users.api.random_token")
+    @patch("pcapi.core.users.api.standardize_image")
+    @patch("pcapi.core.users.api.verify_identity_document")
+    def test_cloud_task_creation_fails(
+        self,
+        mocked_verify_identity_document,
+        mocked_standardize_image,
+        mocked_random_token,
+        mocked_store_object,
+        mocked_delete_object,
+        app,
+    ):
+        # Given
+        identity_document = (self.IMAGES_DIR / "pixel.png").read_bytes()
+        mocked_random_token.return_value = "a_very_random_secret"
+        mocked_verify_identity_document.delay.side_effect = Exception
+        mocked_standardize_image.side_effect = lambda value: value
+
+        # When
+        with pytest.raises(CloudTaskCreationException):
+            asynchronous_identity_document_verification(identity_document, "toto@email.fr")
+
+        # Then
+        mocked_delete_object.assert_called_once_with("identity_documents/a_very_random_secret.jpg")

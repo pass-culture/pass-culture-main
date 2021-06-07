@@ -100,3 +100,7 @@ class CloudTaskCreationException(Exception):
 
 class MissingEmailInMetadataException(Exception):
     pass
+
+
+class IdentityDocumentVerificationException(Exception):
+    pass

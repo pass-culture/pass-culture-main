@@ -211,10 +211,3 @@ class UploadIdentityDocumentRequest(BaseModel):
             return validation.get_uploaded_image(image_as_bytes, 10 * 1000 * 1000)
 
         raise validation.exceptions.MissingImage
-
-
-class VerifyIdentityDocumentRequest(BaseModel):
-    image_storage_path: str
-
-    class Config:
-        alias_generator = to_camel

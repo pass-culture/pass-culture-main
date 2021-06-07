@@ -111,8 +111,7 @@ def store_object(
         raise exception
 
 
-def delete_object(bucket: str, object_id: str) -> None:
-    storage_path = bucket + "/" + object_id
+def delete_object(storage_path: str) -> None:
     try:
         storage_client_bucket = get_encrypted_gcp_storage_client_bucket()
         gcp_cloud_blob = storage_client_bucket.blob(storage_path)

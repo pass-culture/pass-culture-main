@@ -1,0 +1,23 @@
+from pydantic import BaseModel
+
+from pcapi import settings
+from pcapi.core.users import api
+from pcapi.core.users import exceptions
+from pcapi.models import ApiErrors
+from pcapi.tasks.decorator import task
+
+
+ID_CHECK_TASK_QUEUE = f"idcheck-{settings.ENV}"
+
+
+class VerifyIdentityDocumentRequest(BaseModel):
+    image_storage_path: str
+
+
+@task(ID_CHECK_TASK_QUEUE, "/verify_identity_document")
+def verify_identity_document(payload: VerifyIdentityDocumentRequest) -> None:
+    try:
+        api.verify_identity_document_informations(payload.image_storage_path)
+        return
+    except (exceptions.IdentityDocumentVerificationException):
+        raise ApiErrors(status_code=503)

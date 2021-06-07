@@ -706,6 +706,7 @@ class GetIdCheckTokenTest:
 class UploadIdentityDocumentTest:
     IMAGES_DIR = Path(tests.__path__[0]) / "files"
 
+    @patch("pcapi.core.users.api.verify_identity_document")
     @patch("pcapi.core.users.api.store_object")
     @patch("pcapi.core.users.api.random_token")
     @patch("pcapi.core.users.api.standardize_image")
@@ -714,6 +715,7 @@ class UploadIdentityDocumentTest:
         mocked_standardize_image,
         mocked_random_token,
         mocked_store_object,
+        mocked_verify_identity_document,
         app,
     ):
         user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1), departementCode="93", isBeneficiary=False)
@@ -739,6 +741,9 @@ class UploadIdentityDocumentTest:
             identity_document,
             content_type="image/jpeg",
             metadata={"email": user.email},
+        )
+        mocked_verify_identity_document.delay.assert_called_once_with(
+            {"image_storage_path": "identity_documents/a_very_random_secret.jpg"}
         )
 
     def test_ineligible_user(self, app):
