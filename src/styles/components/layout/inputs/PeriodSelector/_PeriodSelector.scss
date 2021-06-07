@@ -40,7 +40,6 @@
 
     &:focus-within {
       border-color: $primary;
-      padding: 0;
     }
   }
 
@@ -52,13 +51,6 @@
     padding: 0 1px;
 
     &:focus-within {
-      border-color: $primary;
-      padding: 0;
-    }
-  }
-
-  .period-filter-begin-picker:focus-within {
-    .field-date-begin {
       border-color: $primary;
     }
   }
