@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types'
 import React, { useEffect, useState, useCallback } from 'react'
 
-import { formatAndOrderVenues, fetchAllVenuesByProUser } from 'repository/venuesService'
+import * as pcapi from 'repository/pcapi/pcapi'
+import { formatAndOrderVenues } from 'repository/venuesService'
 import { getToday } from 'utils/date'
 
 import { ALL_VENUES, EMPTY_FILTER_VALUE } from './_constants'
@@ -15,12 +16,12 @@ const PreFilters = ({ offerVenueId, applyPreFilters }) => {
     bookingBeginningDate: EMPTY_FILTER_VALUE,
     bookingEndingDate: getToday(),
     offerDate: EMPTY_FILTER_VALUE,
-    offerVenueId: offerVenueId || ALL_VENUES,
+    offerVenueId: offerVenueId,
   })
   const [venues, setVenues] = useState([])
 
   useEffect(() => {
-    fetchAllVenuesByProUser().then(venues => setVenues(formatAndOrderVenues(venues)))
+    pcapi.getVenuesForOfferer().then(venues => setVenues(formatAndOrderVenues(venues)))
   }, [])
 
   const updateSelectedFilters = useCallback(updatedFilter => {
@@ -72,7 +73,7 @@ const PreFilters = ({ offerVenueId, applyPreFilters }) => {
 }
 
 PreFilters.defaultProps = {
-  offerVenueId: null,
+  offerVenueId: ALL_VENUES,
 }
 
 PreFilters.propTypes = {

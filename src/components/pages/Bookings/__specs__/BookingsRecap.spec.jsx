@@ -5,16 +5,15 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
-import * as bookingRecapsService from 'repository/bookingsRecapService'
-import { fetchAllVenuesByProUser } from 'repository/venuesService'
+import { getVenuesForOfferer, loadFilteredBookingsRecap } from 'repository/pcapi/pcapi'
+import { configureTestStore } from 'store/testUtils'
 import { venueFactory } from 'utils/apiFactories'
 
-import { configureTestStore } from '../../../../store/testUtils'
 import BookingsRecapContainer from '../BookingsRecapContainer'
 
-jest.mock('repository/venuesService', () => ({
-  ...jest.requireActual('repository/venuesService'),
-  fetchAllVenuesByProUser: jest.fn(),
+jest.mock('repository/pcapi/pcapi', () => ({
+  getVenuesForOfferer: jest.fn(),
+  loadFilteredBookingsRecap: jest.fn(),
 }))
 
 const renderBookingsRecap = async (props, store = {}) => {
@@ -30,22 +29,18 @@ const renderBookingsRecap = async (props, store = {}) => {
 }
 
 describe('components | BookingsRecap', () => {
-  let fetchBookingsRecapByPageStub
-  let fetchBookingsRecapByPageSpy
   let props
   let store
   let venue
 
   beforeEach(() => {
-    fetchBookingsRecapByPageStub = Promise.resolve({
+    let emptyBookingsRecapPage = {
       bookings_recap: [],
       page: 0,
       pages: 0,
       total: 0,
-    })
-    fetchBookingsRecapByPageSpy = jest
-      .spyOn(bookingRecapsService, 'fetchBookingsRecapByPage')
-      .mockImplementation(() => fetchBookingsRecapByPageStub)
+    }
+    loadFilteredBookingsRecap.mockResolvedValue(emptyBookingsRecapPage)
     props = {
       location: {
         state: null,
@@ -64,7 +59,7 @@ describe('components | BookingsRecap', () => {
       },
     })
     venue = venueFactory()
-    fetchAllVenuesByProUser.mockResolvedValue([venue])
+    getVenuesForOfferer.mockResolvedValue([venue])
   })
 
   it('should show a pre-filter section', async () => {
@@ -72,11 +67,9 @@ describe('components | BookingsRecap', () => {
     await renderBookingsRecap(props, store)
 
     // Then
-    const eventDateFilter = screen.getByText('Date de l’évènement', { selector: 'label' })
-    const eventVenueFilter = screen.getByText('Lieu', { selector: 'label' })
-    const eventBookingPeriodFilter = screen.getByText('Période de réservation', {
-      selector: 'label',
-    })
+    const eventDateFilter = screen.getByLabelText('Date de l’évènement')
+    const eventVenueFilter = screen.getByLabelText('Lieu')
+    const eventBookingPeriodFilter = screen.getByLabelText('Période de réservation')
     expect(eventDateFilter).toBeInTheDocument()
     expect(eventVenueFilter).toBeInTheDocument()
     expect(eventBookingPeriodFilter).toBeInTheDocument()
@@ -91,6 +84,6 @@ describe('components | BookingsRecap', () => {
     userEvent.click(screen.getByText('Afficher', { selector: 'button' }))
 
     // Then
-    expect(fetchBookingsRecapByPageSpy).toHaveBeenCalledWith(1, { venueId: venue.id })
+    expect(loadFilteredBookingsRecap).toHaveBeenCalledWith({ page: 1, venueId: venue.id })
   })
 })

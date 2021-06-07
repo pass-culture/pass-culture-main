@@ -9,7 +9,6 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  ...jest.requireActual('repository/pcapi/pcapi'),
   setHasSeenTutos: jest.fn().mockResolvedValue({}),
 }))
 

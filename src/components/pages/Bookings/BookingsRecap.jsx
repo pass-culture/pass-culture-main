@@ -5,7 +5,7 @@ import AppLayout from 'app/AppLayout'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
-import { fetchBookingsRecapByPage } from 'repository/bookingsRecapService'
+import * as pcapi from 'repository/pcapi/pcapi'
 
 import BookingsRecapTable from './BookingsRecapTable/BookingsRecapTable'
 import BookingsRecapTableLegacy from './BookingsRecapTableLegacy/BookingsRecapTableLegacy' /* eslint-disable-line react/jsx-pascal-case */
@@ -40,9 +40,9 @@ class BookingsRecap extends PureComponent {
     let currentPage = page
     if (currentPage < pages && currentPage < 5) {
       currentPage++
-      fetchBookingsRecapByPage(currentPage, { venueId: preFilters.offerVenueId }).then(
-        this.savePaginatedBookingsRecap
-      )
+      pcapi
+        .loadFilteredBookingsRecap({ page: currentPage, venueId: preFilters.offerVenueId })
+        .then(this.savePaginatedBookingsRecap)
     } else {
       this.loadData()
       if (currentPage === 5 && currentPage < pages) {
@@ -59,9 +59,9 @@ class BookingsRecap extends PureComponent {
 
   fetchFirstBookingsRecapPage() {
     const { preFilters } = this.state
-    fetchBookingsRecapByPage(1, { venueId: preFilters.offerVenueId }).then(
-      this.savePaginatedBookingsRecap
-    )
+    pcapi
+      .loadFilteredBookingsRecap({ page: 1, venueId: preFilters.offerVenueId })
+      .then(this.savePaginatedBookingsRecap)
   }
 
   applyPreFilters = selectedPreFilters => {

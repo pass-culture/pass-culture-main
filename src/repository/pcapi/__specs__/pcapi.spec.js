@@ -1,14 +1,22 @@
+import * as bookingsPreFilters from 'components/pages/Bookings/PreFilters/_constants'
 import { DEFAULT_SEARCH_FILTERS } from 'components/pages/Offers/Offers/_constants'
-import { getVenueStats, signout, updateUserInformations } from 'repository/pcapi/pcapi'
+import {
+  getVenuesForOfferer,
+  getVenueStats,
+  loadFilteredBookingsRecap,
+  signout,
+  updateUserInformations,
+} from 'repository/pcapi/pcapi'
 import { client } from 'repository/pcapi/pcapiClient'
+import { bookingRecapFactory } from 'utils/apiFactories'
 
 import {
   deleteStock,
-  validateDistantImage,
   loadFilteredOffers,
   postThumbnail,
-  updateOffersActiveStatus,
   setHasSeenTutos,
+  updateOffersActiveStatus,
+  validateDistantImage,
 } from '../pcapi'
 
 jest.mock('repository/pcapi/pcapiClient', () => ({
@@ -267,6 +275,112 @@ describe('pcapi', () => {
 
       // then
       expect(client.patch).toHaveBeenCalledWith('/users/current', body)
+    })
+  })
+
+  describe('getVenuesForOfferer', () => {
+    beforeEach(() => {
+      const returnedResponse = {
+        venues: [
+          {
+            id: 'AE',
+            name: 'Librairie Kléber',
+            isVirtual: false,
+          },
+        ],
+      }
+      client.get.mockResolvedValue(returnedResponse)
+    })
+
+    it('should return venues value', async () => {
+      // When
+      const venues = await getVenuesForOfferer()
+
+      // Then
+      expect(venues).toHaveLength(1)
+      expect(venues[0]).toStrictEqual({
+        id: 'AE',
+        name: 'Librairie Kléber',
+        isVirtual: false,
+      })
+    })
+
+    it('should call api with offererId in query params when given', async () => {
+      // When
+      await getVenuesForOfferer({ offererId: 'A4' })
+
+      // Then
+      expect(client.get).toHaveBeenCalledWith('/venues?offererId=A4')
+    })
+
+    it('should call api with validadedForUser as true when no offererId was given', async () => {
+      // When
+      await getVenuesForOfferer()
+
+      // Then
+      expect(client.get).toHaveBeenCalledWith('/venues?validatedForUser=true')
+    })
+  })
+
+  describe('loadFilteredBookingsRecap', () => {
+    const returnedResponse = {
+      page: 1,
+      pages: 1,
+      total: 1,
+      bookings_recap: [bookingRecapFactory()],
+    }
+
+    beforeEach(() => {
+      client.get.mockResolvedValue(returnedResponse)
+    })
+
+    it('should return api response', async () => {
+      // When
+      const response = await loadFilteredBookingsRecap({})
+
+      // Then
+      expect(response).toBe(returnedResponse)
+    })
+
+    it('should call offers route with "page=1" when no other filters are provided', async () => {
+      // Given
+      const filters = {
+        page: 1,
+      }
+
+      // When
+      await loadFilteredBookingsRecap(filters)
+
+      // Then
+      expect(client.get).toHaveBeenCalledWith('/bookings/pro?page=1')
+    })
+
+    it('should call offers route with "page=1" when provided filters are defaults', async () => {
+      // Given
+      const filters = {
+        page: 1,
+        venueId: bookingsPreFilters.ALL_VENUES,
+      }
+
+      // When
+      await loadFilteredBookingsRecap(filters)
+
+      // Then
+      expect(client.get).toHaveBeenCalledWith('/bookings/pro?page=1')
+    })
+
+    it('should call offers route with filters when provided', async () => {
+      // Given
+      const filters = {
+        venueId: 'AA',
+        page: 2,
+      }
+
+      // When
+      await loadFilteredBookingsRecap(filters)
+
+      // Then
+      expect(client.get).toHaveBeenCalledWith('/bookings/pro?page=2&venueId=AA')
     })
   })
 })

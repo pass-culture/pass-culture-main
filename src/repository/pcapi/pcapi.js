@@ -1,3 +1,4 @@
+import * as bookingsPreFilters from 'components/pages/Bookings/PreFilters/_constants'
 import { DEFAULT_PAGE, DEFAULT_SEARCH_FILTERS } from 'components/pages/Offers/Offers/_constants'
 import { client } from 'repository/pcapi/pcapiClient'
 import { stringify } from 'utils/query-string'
@@ -131,7 +132,7 @@ export const getOfferer = offererId => {
 //
 // venues
 //
-export const getVenuesForOfferer = ({ offererId = null, activeOfferersOnly = false }) => {
+export const getVenuesForOfferer = ({ offererId = null, activeOfferersOnly = false } = {}) => {
   const request = {}
   offererId ? (request.offererId = offererId) : (request.validatedForUser = true)
   if (activeOfferersOnly) request.activeOfferersOnly = true
@@ -225,6 +226,21 @@ export const loadProviders = async venueId => {
 }
 
 export const loadVenueProviders = async venueId => {
+  return client.get(`/venueProviders?venueId=${venueId}`).then(response => response.venue_providers)
+}
 
-  return client.get(`/venueProviders?venueId=${venueId}`).then((response) => response.venue_providers)
+//
+// BookingsRecap
+//
+export const loadFilteredBookingsRecap = async ({
+  venueId = bookingsPreFilters.ALL_VENUES,
+  page,
+}) => {
+  const params = { page }
+  if (venueId !== bookingsPreFilters.ALL_VENUES) {
+    params.venueId = venueId
+  }
+
+  const queryParams = stringify(params)
+  return client.get(`/bookings/pro?${queryParams}`)
 }

@@ -4,11 +4,14 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
-import * as bookingRecapsService from 'repository/bookingsRecapService'
-
+import { loadFilteredBookingsRecap } from '../../../../repository/pcapi/pcapi'
 import { configureTestStore } from '../../../../store/testUtils'
 import { bookingRecapFactory } from '../../../../utils/apiFactories'
 import BookingsRecapContainer from '../BookingsRecapContainer'
+
+jest.mock('repository/pcapi/pcapi', () => ({
+  loadFilteredBookingsRecap: jest.fn(),
+}))
 
 const renderBookingsRecap = async (props, store = {}) => {
   await act(async () => {
@@ -23,21 +26,17 @@ const renderBookingsRecap = async (props, store = {}) => {
 }
 
 describe('components | BookingsRecapLegacy', () => {
-  let fetchBookingsRecapByPageStub
-  let fetchBookingsRecapByPageSpy
   let props
   let store
 
   beforeEach(() => {
-    fetchBookingsRecapByPageStub = Promise.resolve({
+    let emptyBookingsRecapPage = {
       bookings_recap: [],
       page: 0,
       pages: 0,
       total: 0,
-    })
-    fetchBookingsRecapByPageSpy = jest
-      .spyOn(bookingRecapsService, 'fetchBookingsRecapByPage')
-      .mockImplementation(() => fetchBookingsRecapByPageStub)
+    }
+    loadFilteredBookingsRecap.mockResolvedValue(emptyBookingsRecapPage)
     props = {
       location: {
         state: null,
@@ -81,7 +80,7 @@ describe('components | BookingsRecapLegacy', () => {
       total: 1,
       bookings_recap: [oneBooking],
     }
-    fetchBookingsRecapByPageStub = Promise.resolve(paginatedBookingRecapReturned)
+    loadFilteredBookingsRecap.mockResolvedValue(paginatedBookingRecapReturned)
 
     // When
     await renderBookingsRecap(props, store)
@@ -115,7 +114,7 @@ describe('components | BookingsRecapLegacy', () => {
       total: 2,
       bookings_recap: [bookings2],
     }
-    fetchBookingsRecapByPageSpy
+    loadFilteredBookingsRecap
       .mockResolvedValueOnce(paginatedBookingRecapReturned)
       .mockResolvedValueOnce(secondPaginatedBookingRecapReturned)
 
@@ -123,9 +122,9 @@ describe('components | BookingsRecapLegacy', () => {
     await renderBookingsRecap(props, store)
 
     // Then
-    expect(fetchBookingsRecapByPageSpy).toHaveBeenCalledTimes(2)
-    expect(fetchBookingsRecapByPageSpy).toHaveBeenNthCalledWith(1, 1, { venueId: 'all' })
-    expect(fetchBookingsRecapByPageSpy).toHaveBeenNthCalledWith(2, 2, { venueId: 'all' })
+    expect(loadFilteredBookingsRecap).toHaveBeenCalledTimes(2)
+    expect(loadFilteredBookingsRecap).toHaveBeenNthCalledWith(1, { page: 1, venueId: 'all' })
+    expect(loadFilteredBookingsRecap).toHaveBeenNthCalledWith(2, { page: 2, venueId: 'all' })
 
     const firstBookingRecap = screen.getAllByText(bookings1.stock.offer_name)
     expect(firstBookingRecap).toHaveLength(2)

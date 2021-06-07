@@ -81,7 +81,6 @@ jest.mock('repository/venuesService', () => ({
 }))
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  ...jest.requireActual('repository/pcapi/pcapi'),
   loadTypes: jest.fn().mockResolvedValue(offerTypes),
 }))
 

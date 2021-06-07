@@ -1,4 +1,5 @@
-import { ALL_VENUES } from '../components/pages/Bookings/PreFilters/_constants'
+import { ALL_VENUES } from 'components/pages/Bookings/PreFilters/_constants'
+
 import { fetchFromApiWithCredentials } from '../utils/fetch'
 import { stringify } from '../utils/query-string'
 
