@@ -11,6 +11,8 @@ from pydantic import validator
 from pcapi.core.bookings.api import compute_confirmation_date
 from pcapi.core.offers.models import OfferStatus
 from pcapi.models import ThingType
+from pcapi.models.feature import FeatureToggle
+from pcapi.repository import feature_queries
 from pcapi.serialization.utils import cast_optional_field_str_to_int
 from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import dehumanize_list_field
@@ -66,7 +68,11 @@ class PostOfferBodyModel(BaseModel):
 
     @validator("extra_data", pre=True)
     def validate_isbn(cls, extra_data_field, values):  # pylint: disable=no-self-argument
-        if not values["product_id"] and values["type"] == str(ThingType.LIVRE_EDITION):
+        if (
+            feature_queries.is_active(FeatureToggle.ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION)
+            and not values["product_id"]
+            and values["type"] == str(ThingType.LIVRE_EDITION)
+        ):
             check_offer_isbn_is_valid(extra_data_field["isbn"])
         return extra_data_field
 

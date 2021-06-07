@@ -779,6 +779,7 @@ class CreateOfferTest:
         assert offer.validation == OfferValidationStatus.DRAFT
         assert Offer.query.count() == 1
 
+    @override_features(ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION=True)
     def test_create_offer_livre_edition_from_isbn_with_existing_product(self):
         factories.ProductFactory(
             type=str(offer_type.ThingType.LIVRE_EDITION),
@@ -811,7 +812,9 @@ class CreateOfferTest:
         assert offer.mentalDisabilityCompliant
         assert offer.motorDisabilityCompliant
         assert not offer.visualDisabilityCompliant
+        assert Product.query.count() == 1
 
+    @override_features(ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION=True)
     def test_create_offer_livre_edition_from_isbn_with_is_not_compatible_gcu_should_fail(self):
         factories.ProductFactory(
             type=str(offer_type.ThingType.LIVRE_EDITION),
@@ -841,6 +844,7 @@ class CreateOfferTest:
 
         assert error.value.errors["isbn"] == ["Ce produit n’est pas éligible au pass Culture."]
 
+    @override_features(ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION=True)
     def test_create_offer_livre_edition_from_isbn_with_product_not_exists_should_fail(self):
         venue = factories.VenueFactory()
         offerer = venue.managingOfferer

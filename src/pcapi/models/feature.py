@@ -56,6 +56,9 @@ class FeatureToggle(enum.Enum):
         "Active le mode debug Firebase pour l'Id Check intégrée à l'application native"
     )
     ENABLE_ID_CHECK_RETENTION = "Active le mode bassin de retention dans Id Check V2"
+    ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION = (
+        "Active le champ isbn obligatoire lors de la création d'offre de type LIVRE_EDITION"
+    )
 
 
 class Feature(PcObject, Model, DeactivableMixin):
@@ -76,6 +79,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.ENABLE_BOOKINGS_PAGE_FILTERS_FIRST,
     FeatureToggle.ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING,
     FeatureToggle.ENABLE_ID_CHECK_RETENTION,
+    FeatureToggle.ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION,
 )
 
 

@@ -124,7 +124,9 @@ def create_offer(offer_data: PostOfferBodyModel, user: User) -> Offer:
             isNational=product.isNational,
             extraData=product.extraData,
         )
-    elif offer_data.type == str(ThingType.LIVRE_EDITION):
+    elif feature_queries.is_active(
+        FeatureToggle.ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION
+    ) and offer_data.type == str(ThingType.LIVRE_EDITION):
         product = _load_product_by_isbn_and_check_is_gcu_compatible_or_raise_error(offer_data.extra_data["isbn"])
         extra_data = product.extraData
         extra_data.update(offer_data.extra_data)
