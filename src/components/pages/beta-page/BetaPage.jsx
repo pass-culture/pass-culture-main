@@ -3,6 +3,7 @@ import React, { useEffect, useRef } from 'react'
 
 import FormFooter from '../../forms/FormFooter'
 import Icon from '../../layout/Icon/Icon'
+import SmartBanner from 'react-smartbanner'
 
 const BetaPage = ({ trackSignup, isNewBookingLimitsActived, wholeFranceOpening }) => {
   const appTitle = useRef(null)
@@ -13,6 +14,14 @@ const BetaPage = ({ trackSignup, isNewBookingLimitsActived, wholeFranceOpening }
 
   return (
     <div className="beta-page">
+      <SmartBanner
+        button="Voir"
+        daysHidden={1}
+        position="top"
+        price={{ ios: 'GRATUIT', android: 'GRATUIT' }}
+        storeText={{ ios: "Sur l'App Store", android: 'Sur Google Play' }}
+        title="pass Culture"
+      />
       <Icon
         alt=""
         className="bp-logo"

@@ -60,3 +60,328 @@
   top: -17%;
   width: rem(50%);
 }
+
+//SMARTBANNER
+$smartbanner-close-margin: 5px;
+$smartbanner-close-size: 17px;
+$smartbanner-icon-margin: 12px;
+$smartbanner-icon-size: 57px;
+$smartbanner-button-size: 110px;
+
+.smartbanner-show {
+  &.smartbanner-margin-top {
+    margin-top: 80px;
+  }
+
+  &.smartbanner-margin-bottom {
+    margin-bottom: 80px;
+  }
+
+  .smartbanner {
+    display: block;
+  }
+}
+
+/** Default **/
+.smartbanner {
+  left: 0;
+  display: none;
+  width: 100%;
+  height: 80px;
+  line-height: 80px;
+  font-family: 'Helvetica Neue', sans-serif;
+  background: #f4f4f4;
+  z-index: 9998;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+  -webkit-text-size-adjust: none;
+}
+
+.smartbanner-top {
+  position: absolute;
+  top: 0;
+}
+
+.smartbanner-bottom {
+  position: fixed;
+  bottom: 0;
+}
+
+.smartbanner-container {
+  margin: 0 auto;
+  padding: 0 5px;
+}
+
+.smartbanner-close {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0 $smartbanner-close-margin 0 0;
+  font-family: 'ArialRoundedMTBold', Arial;
+  font-size: 20px;
+  text-align: center;
+  color: #888;
+  text-decoration: none;
+  border: 0;
+  border-radius: 14px;
+  padding: 0 0 1px;
+  background-color: transparent;
+  -webkit-font-smoothing: subpixel-antialiased;
+
+  &:active,
+  &:hover {
+    color: #aaa;
+  }
+}
+
+.smartbanner-icon {
+  display: inline-block;
+  vertical-align: middle;
+  width: $smartbanner-icon-size;
+  height: $smartbanner-icon-size;
+  margin-right: $smartbanner-icon-margin;
+  background-size: cover;
+  border-radius: 10px;
+}
+
+.smartbanner-info {
+  white-space: normal;
+  display: inline-block;
+  vertical-align: middle;
+  width: calc(99% - #{$smartbanner-close-margin} - #{$smartbanner-close-size} - #{$smartbanner-icon-margin} - #{$smartbanner-icon-size} - #{$smartbanner-button-size});
+  font-size: 11px;
+  line-height: 1.2em;
+  font-weight: bold;
+}
+
+.smartbanner-wrapper {
+  max-width: $smartbanner-button-size;
+  display: inline-block;
+  text-align: right;
+  width: 100%;
+}
+
+.smartbanner-title {
+  font-size: 13px;
+  line-height: 18px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.smartbanner-description {
+  max-height: 40px;
+  overflow: hidden;
+}
+
+.smartbanner-author {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+
+  &:empty {
+    + .smartbanner-description {
+      max-height: 50px;
+    }
+  }
+}
+
+.smartbanner-button {
+  margin: auto 0;
+  height: 24px;
+  font-size: 14px;
+  line-height: 24px;
+  text-align: center;
+  font-weight: bold;
+  color: #6a6a6a;
+  text-transform: uppercase;
+  text-decoration: none;
+  display: inline-block;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+
+  &:active,
+  &:hover {
+    color: #aaa;
+  }
+}
+
+/** iOS **/
+.smartbanner-ios {
+  background: #f2f2f2;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  line-height: 80px;
+
+  .smartbanner-close {
+    border: 0;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+    font-family: Arial;
+    color: #888;
+    text-shadow: 0 1px 0 #fff;
+    -webkit-font-smoothing: none;
+
+    &:active,
+    &:hover {
+      color: #888;
+    }
+  }
+
+  .smartbanner-icon {
+    background-size: cover;
+  }
+
+  .smartbanner-info {
+    color: #6a6a6a;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+    font-weight: 300;
+  }
+
+  .smartbanner-title {
+    color: #4d4d4d;
+    font-weight: 500;
+  }
+
+  .smartbanner-button {
+    padding: 0 10px;
+    font-size: 15px;
+    min-width: 10%;
+    font-weight: 400;
+    color: #0c71fd;
+
+    &:active,
+    &:hover {
+      background: #f2f2f2;
+    }
+  }
+}
+
+/** Android **/
+.smartbanner-android {
+  background: #3d3d3d url('data:image/gif;base64,R0lGODlhCAAIAIABAFVVVf///yH5BAEHAAEALAAAAAAIAAgAAAINRG4XudroGJBRsYcxKAA7');
+  box-shadow: inset 0 4px 0 #88b131;
+  line-height: 82px;
+
+  .smartbanner-close {
+    border: 0;
+    max-width: $smartbanner-close-size;
+    width: 100%;
+    height: $smartbanner-close-size;
+    line-height: $smartbanner-close-size;
+    margin-right: 7px;
+    color: #b1b1b3;
+    background: #1c1e21;
+    text-shadow: 0 1px 1px #000;
+    text-decoration: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.8) inset, 0 1px 1px rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+
+    &:active,
+    &:hover {
+      color: #eee;
+    }
+  }
+
+  .smartbanner-icon {
+    background-color: transparent;
+    box-shadow: none;
+  }
+
+  .smartbanner-info {
+    color: #ccc;
+    text-shadow: 0 1px 2px #000;
+  }
+
+  .smartbanner-title {
+    color: #fff;
+    font-weight: bold;
+  }
+
+  .smartbanner-button {
+    min-width: 12%;
+    color: #d1d1d1;
+    font-weight: bold;
+    padding: 0;
+    background: none;
+    border-radius: 0;
+    box-shadow: 0 0 0 1px #333, 0 0 0 2px #dddcdc;
+
+    &:active,
+    &:hover {
+      background: none;
+    }
+  }
+
+  .smartbanner-button-text {
+    text-align: center;
+    display: block;
+    padding: 0 10px;
+    background: #42b6c9;
+    background: linear-gradient(to bottom, #42b6c9, #39a9bb); // sass-lint:disable-block no-duplicate-properties
+    text-transform: none;
+    text-shadow: none;
+    box-shadow: none;
+
+    &:active,
+    &:hover {
+      background: #2ac7e1;
+    }
+  }
+}
+
+/** Windows / Kindle **/
+.smartbanner-windows,
+.smartbanner-kindle {
+  background: #f4f4f4;
+  background: linear-gradient(to bottom, #f4f4f4, #cdcdcd); // sass-lint:disable-block no-duplicate-properties
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  line-height: 80px;
+
+  .smartbanner-close {
+    border: 0;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+    color: #888;
+    text-shadow: 0 1px 0 #fff;
+
+    &:active,
+    &:hover {
+      color: #aaa;
+    }
+  }
+
+  .smartbanner-icon {
+    background: rgba(0, 0, 0, 0.6);
+    background-size: cover;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+
+  .smartbanner-info {
+    color: #6a6a6a;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+  }
+
+  .smartbanner-title,
+  .smartbanner-title {
+    color: #4d4d4d;
+    font-weight: bold;
+  }
+
+  .smartbanner-button {
+    padding: 0 10px;
+    min-width: 10%;
+    color: #6a6a6a;
+    background: #efefef;
+    background: linear-gradient(to bottom, #efefef, #dcdcdc); // sass-lint:disable-block no-duplicate-properties
+    border-radius: 3px;
+    box-shadow: inset 0 0 0 1px #bfbfbf,
+    0 1px 0 rgba(255, 255, 255, 0.6),
+    0 2px 0 rgba(255, 255, 255, 0.7) inset;
+
+    &:active,
+    &:hover {
+      background: #dcdcdc;
+      background: linear-gradient(to bottom, #dcdcdc, #efefef); // sass-lint:disable-block no-duplicate-properties
+    }
+  }
+}
