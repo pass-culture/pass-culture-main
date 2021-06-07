@@ -6,7 +6,6 @@ from flask import request
 
 from pcapi import settings
 from pcapi.connectors import api_recaptcha
-from pcapi.connectors.beneficiaries.id_check_middleware import ask_for_identity_document_verification
 from pcapi.core.users import api
 from pcapi.core.users import constants
 from pcapi.core.users import exceptions
@@ -198,19 +197,6 @@ def upload_identity_document(
             status_code=400,
         )
     except (exceptions.IdentityDocumentUploadException, exceptions.CloudTaskCreationException):
-        raise ApiErrors(status_code=503)
-
-
-@blueprint.native_v1.route("/verify_identity_document", methods=["POST"])
-@spectree_serialize(api=blueprint.api, on_success_status=204)
-def verify_identity_document(
-    body: serializers.VerifyIdentityDocumentRequest,
-) -> None:
-    try:
-        email, image = api.get_identity_document_informations(body.image_storage_path)
-        ask_for_identity_document_verification(email, image)
-        return
-    except (exceptions.IdentityDocumentUploadException):
         raise ApiErrors(status_code=503)
 
 

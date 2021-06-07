@@ -21,6 +21,7 @@ from redis import Redis
 # TODO (viconnex): fix circular import of pcapi/models/__init__.py
 from pcapi import models  # pylint: disable=unused-import
 from pcapi import settings
+from pcapi.connectors.beneficiaries.id_check_middleware import ask_for_identity_document_verification
 from pcapi.core import mails
 from pcapi.core.bookings.conf import LIMIT_CONFIGURATIONS
 import pcapi.core.bookings.repository as bookings_repository
@@ -742,7 +743,7 @@ def asynchronous_identity_document_verification(image: bytes, email: str) -> Non
     return
 
 
-def get_identity_document_informations(image_storage_path: str) -> Tuple[str, bytes]:
+def _get_identity_document_informations(image_storage_path: str) -> Tuple[str, bytes]:
     image_blob: Blob = get_object(image_storage_path)
     email = image_blob.metadata.get("email", "").strip()
     if email == "":
@@ -750,3 +751,9 @@ def get_identity_document_informations(image_storage_path: str) -> Tuple[str, by
     image = image_blob.download_as_bytes()
 
     return (email, image)
+
+
+def verify_identity_document_informations(image_storage_path: str) -> None:
+    email, image = _get_identity_document_informations(image_storage_path)
+    ask_for_identity_document_verification(email, image)
+    delete_object(image_storage_path)
