@@ -259,7 +259,6 @@ GCP_BUCKET_CREDENTIALS = json.loads(base64.b64decode(os.environ.get("GCP_BUCKET_
 GCP_BUCKET_NAME = os.environ.get("GCP_BUCKET_NAME", "")
 GCP_ENCRYPTED_BUCKET_NAME = os.environ.get("GCP_ENCRYPTED_BUCKET_NAME", "")
 GCP_PROJECT = os.environ.get("GCP_PROJECT", "")
-GCP_PROJECT_ID = os.environ.get("GCP_PROJECT_ID", "")
 GCP_REGION = os.environ.get("GCP_REGION", "europe-west1")
 
 # RATE LIMITER
