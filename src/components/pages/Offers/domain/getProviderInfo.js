@@ -21,9 +21,9 @@ export const getProviderInfo = providerName => {
       name: 'Fnac',
     },
     {
-      id: 'mollat',
-      icon: 'logo-mollat',
-      name: 'Mollat',
+      id: 'cdi-bookshop',
+      icon: 'logo-cdi-bookshop',
+      name: 'CDI-Bookshop',
     },
     {
       id: 'praxiel',
