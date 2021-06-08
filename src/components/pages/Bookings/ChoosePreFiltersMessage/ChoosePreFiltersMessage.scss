@@ -1,0 +1,21 @@
+.choose-pre-filters {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  height: rem(400px);
+
+  svg {
+    height: rem(124px);
+    width: rem(124px);
+
+    .svg-color {
+      fill: $grey-medium;
+    }
+  }
+
+  .choose-pre-filters-message {
+    color: $grey-dark;
+    text-align: center;
+    width: rem(400px);
+  }
+}

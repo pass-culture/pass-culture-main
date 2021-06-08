@@ -32,7 +32,7 @@ const renderBookingsRecap = async (props, store = {}) => {
   })
 }
 
-describe('components | BookingsRecap', () => {
+describe('components | BookingsRecap | Admin user', () => {
   let props
   let store
   let venue

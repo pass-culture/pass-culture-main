@@ -34,7 +34,7 @@ const renderBookingsRecap = async (props, store = {}) => {
   })
 }
 
-describe('components | BookingsRecap', () => {
+describe('components | BookingsRecap | Pro user', () => {
   let props
   let store
   let venue
@@ -81,12 +81,16 @@ describe('components | BookingsRecap', () => {
     expect(eventBookingPeriodFilter).toBeInTheDocument()
   })
 
-  it('should not request bookings when user does not click on "Afficher"', async () => {
+  it('should ask user to select a pre-filter before clicking on "Afficher"', async () => {
     // When
     await renderBookingsRecap(props, store)
 
     // Then
     expect(loadFilteredBookingsRecap).not.toHaveBeenCalled()
+    const noBookingsMessage = screen.getByText(
+      'Pour visualiser vos réservations, veuillez sélectionner un ou plusieurs des filtres précédents et cliquer sur « Afficher »'
+    )
+    expect(noBookingsMessage).toBeInTheDocument()
   })
 
   it('should request bookings of venue requested by user when user clicks on "Afficher"', async () => {

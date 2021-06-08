@@ -8,6 +8,7 @@ import * as pcapi from 'repository/pcapi/pcapi'
 
 import BookingsRecapTable from './BookingsRecapTable/BookingsRecapTable'
 import BookingsRecapTableLegacy from './BookingsRecapTableLegacy/BookingsRecapTableLegacy' /* eslint-disable-line react/jsx-pascal-case */
+import ChoosePreFiltersMessage from './ChoosePreFiltersMessage/ChoosePreFiltersMessage'
 import NoBookingsMessage from './NoBookingsMessage/NoBookingsMessage'
 import PreFilters from './PreFilters/PreFilters'
 
@@ -80,12 +81,14 @@ const BookingsRecap = ({
             applyPreFilters={loadBookingsRecap}
             offerVenueId={location.state?.venueId}
           />
-          {bookingsRecap.length > 0 && (
+          {bookingsRecap.length > 0 ? (
             <BookingsRecapTable
               bookingsRecap={bookingsRecap}
               isLoading={isLoading}
               locationState={location.state}
             />
+          ) : (
+            <ChoosePreFiltersMessage />
           )}
         </>
       ) : bookingsRecap.length > 0 ? (
