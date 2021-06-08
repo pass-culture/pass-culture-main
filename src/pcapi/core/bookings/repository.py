@@ -71,14 +71,20 @@ def find_by_pro_user_id(
     page: int = 1,
     per_page_limit: int = 1000,
 ) -> BookingsRecapPaginated:
-    bookings_recap_query = _build_bookings_recap_query(user_id, event_date, venue_id)
-    bookings_recap_query_with_duplicates = _duplicate_booking_when_quantity_is_two(bookings_recap_query)
-
     if page == 1:
-        total_bookings_recap = bookings_recap_query_with_duplicates.count()
+        total_bookings_recap_count_query = _filter_bookings_recap_query(
+            db.session.query(func.coalesce(func.sum(Booking.quantity), 0)).select_from(Booking),
+            user_id,
+            event_date,
+            venue_id,
+        )
+        total_bookings_recap = total_bookings_recap_count_query.scalar()
     else:
         total_bookings_recap = 0
 
+    bookings_recap_query = _filter_bookings_recap_query(Booking.query, user_id, event_date, venue_id)
+    bookings_recap_query = _build_bookings_recap_query(bookings_recap_query)
+    bookings_recap_query_with_duplicates = _duplicate_booking_when_quantity_is_two(bookings_recap_query)
     paginated_bookings = (
         bookings_recap_query_with_duplicates.order_by(text('"bookingDate" DESC'))
         .offset((page - 1) * per_page_limit)
@@ -280,13 +286,11 @@ def _query_keep_on_non_activation_offers() -> Query:
     return Booking.query.join(Stock).join(Offer).filter(~Offer.type.in_(offer_types))
 
 
-def _duplicate_booking_when_quantity_is_two(bookings_recap_query: Query) -> Query:
-    return bookings_recap_query.union_all(bookings_recap_query.filter(Booking.quantity == 2))
-
-
-def _build_bookings_recap_query(user_id: int, event_date: Optional[date], venue_id: Optional[int]) -> Query:
+def _filter_bookings_recap_query(
+    bookings_recap_query: Query, user_id: int, event_date: Optional[date], venue_id: Optional[int]
+) -> Query:
     query = (
-        Booking.query.outerjoin(Payment)
+        bookings_recap_query.outerjoin(Payment)
         .reset_joinpoint()
         .join(User)
         .join(Stock)
@@ -313,7 +317,15 @@ def _build_bookings_recap_query(user_id: int, event_date: Optional[date], venue_
             == event_date
         )
 
-    query = query.with_entities(
+    return query
+
+
+def _duplicate_booking_when_quantity_is_two(bookings_recap_query: Query) -> Query:
+    return bookings_recap_query.union_all(bookings_recap_query.filter(Booking.quantity == 2))
+
+
+def _build_bookings_recap_query(bookings_recap_query: Query) -> Query:
+    return bookings_recap_query.with_entities(
         Booking.token.label("bookingToken"),
         Booking.dateCreated.label("bookingDate"),
         Booking.isCancelled.label("isCancelled"),
@@ -341,8 +353,6 @@ def _build_bookings_recap_query(user_id: int, event_date: Optional[date], venue_
         Venue.publicName.label("venuePublicName"),
         Venue.isVirtual.label("venueIsVirtual"),
     )
-
-    return query
 
 
 def _paginated_bookings_sql_entities_to_bookings_recap(
