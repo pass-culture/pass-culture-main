@@ -108,9 +108,9 @@ def find_not_cancelled_bookings_by_stock(stock: Stock) -> list[Booking]:
     return Booking.query.filter_by(stockId=stock.id, isCancelled=False).all()
 
 
-def find_bookings_eligible_for_payment_for_venue(venue_id: int) -> list[Booking]:
+def find_bookings_eligible_for_payment_for_venue(venue_id: int, cutoff_date) -> list[Booking]:
     return (
-        _find_bookings_eligible_for_payment()
+        _find_bookings_eligible_for_payment(cutoff_date)
         .filter(Venue.id == venue_id)
         .reset_joinpoint()
         .outerjoin(Payment)
@@ -427,10 +427,17 @@ def _serialize_booking_recap(booking: AbstractKeyedTuple) -> BookingRecap:
     return klass(**kwargs)
 
 
-def _find_bookings_eligible_for_payment() -> Query:
-    return _query_keep_only_used_and_non_cancelled_bookings_on_non_activation_offers().filter(
-        ~(cast(Stock.beginningDatetime, Date) >= date.today()) | (Stock.beginningDatetime.is_(None))
+def _find_bookings_eligible_for_payment(cutoff_date: datetime) -> Query:
+    # fmt: off
+    return (
+        _query_keep_only_used_and_non_cancelled_bookings_on_non_activation_offers()
+        .filter(Booking.dateUsed < cutoff_date)
+        .filter(
+            ~(cast(Stock.beginningDatetime, Date) >= date.today())
+            | (Stock.beginningDatetime.is_(None))
+        )
     )
+    # fmt: on
 
 
 def _query_keep_only_used_and_non_cancelled_bookings_on_non_activation_offers() -> Query:

@@ -19,14 +19,14 @@ from pcapi.scripts.update_booking_used import update_booking_used_after_stock_oc
 logger = logging.getLogger(__name__)
 
 
-def generate_and_send_payments(batch_date: datetime.datetime = None):
+def generate_and_send_payments(cutoff_date: datetime.datetime, batch_date: datetime.datetime = None):
     logger.info("[BATCH][PAYMENTS] STEP 0 : validate bookings associated to outdated stocks")
     if feature_queries.is_active(FeatureToggle.UPDATE_BOOKING_USED):
         update_booking_used_after_stock_occurrence()
 
     if batch_date is None:
         batch_date = datetime.datetime.utcnow()
-        generate_payments(batch_date)
+        generate_payments(cutoff_date, batch_date)
 
     payments_to_send = payment_queries.get_payments_by_status(
         (TransactionStatus.PENDING, TransactionStatus.ERROR, TransactionStatus.RETRY), batch_date
@@ -76,9 +76,9 @@ def generate_and_send_payments(batch_date: datetime.datetime = None):
     logger.info("[BATCH][PAYMENTS] generate_and_send_payments is done")
 
 
-def generate_payments(batch_date: datetime.datetime):
+def generate_payments(cutoff_date: datetime.datetime, batch_date: datetime.datetime):
     logger.info("[BATCH][PAYMENTS] STEP 1 : generate payments")
-    generate_new_payments(batch_date)
+    generate_new_payments(cutoff_date, batch_date)
 
     logger.info("[BATCH][PAYMENTS] STEP 2 : set NOT_PROCESSABLE payments to RETRY")
     set_not_processable_payments_with_bank_information_to_retry(batch_date)

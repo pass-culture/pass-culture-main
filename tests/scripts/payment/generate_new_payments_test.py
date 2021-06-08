@@ -37,16 +37,20 @@ class GenerateNewPaymentsTest:
     @pytest.mark.usefixtures("db_session")
     def test_records_new_payment_lines_in_database(self):
         # Given
+        cutoff = datetime.datetime.now()
+        before_cutoff = cutoff - datetime.timedelta(days=1)
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
         paying_stock = create_stock_from_offer(offer)
         free_stock = create_stock_from_offer(offer, price=0)
         user = users_factories.UserFactory()
-        booking1 = create_booking(user=user, stock=paying_stock, venue=venue, is_used=True)
-        booking2 = create_booking(user=user, stock=paying_stock, venue=venue, is_used=True)
-        booking3 = create_booking(user=user, stock=paying_stock, venue=venue, is_used=True)
-        booking4 = create_booking(user=user, stock=free_stock, venue=venue, is_used=True)
+        booking1 = create_booking(user=user, stock=paying_stock, venue=venue, is_used=True, date_used=before_cutoff)
+        booking2 = create_booking(user=user, stock=paying_stock, venue=venue, is_used=True, date_used=before_cutoff)
+        booking3 = create_booking(user=user, stock=paying_stock, venue=venue, is_used=True, date_used=before_cutoff)
+        booking4 = create_booking(user=user, stock=free_stock, venue=venue, is_used=True, date_used=before_cutoff)
+        create_booking(user=user, stock=paying_stock, venue=venue, is_used=True, date_used=cutoff)
+
         payment1 = create_payment(booking2, offerer, 10, payment_message_name="ABCD123")
 
         repository.save(payment1)
@@ -65,7 +69,7 @@ class GenerateNewPaymentsTest:
         n_queries += 1  # insert NOT_PROCESSABLE payment statuses
         n_queries += 1  # release savepoint (commit)
         with assert_num_queries(n_queries):
-            generate_new_payments(batch_date=datetime.datetime.now())
+            generate_new_payments(cutoff, batch_date=datetime.datetime.now())
 
         # Then
         assert Payment.query.count() - initial_payment_count == 2
@@ -73,6 +77,8 @@ class GenerateNewPaymentsTest:
     @pytest.mark.usefixtures("db_session")
     def test_creates_pending_and_not_processable_payments(self):
         # Given
+        cutoff = datetime.datetime.now()
+        before_cutoff = cutoff - datetime.timedelta(days=1)
         offerer1 = create_offerer(siren="123456789")
         offerer2 = create_offerer(siren="987654321")
         repository.save(offerer1)
@@ -87,14 +93,14 @@ class GenerateNewPaymentsTest:
         paying_stock2 = create_stock_from_offer(offer2)
         free_stock1 = create_stock_from_offer(offer1, price=0)
         user = users_factories.UserFactory()
-        booking1 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True)
-        booking2 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True)
-        booking3 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True)
-        booking4 = create_booking(user=user, stock=free_stock1, venue=venue1, is_used=True)
+        booking1 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True, date_used=before_cutoff)
+        booking2 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True, date_used=before_cutoff)
+        booking3 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True, date_used=before_cutoff)
+        booking4 = create_booking(user=user, stock=free_stock1, venue=venue1, is_used=True, date_used=before_cutoff)
         repository.save(booking1, booking2, booking3, booking4, bank_information)
 
         # When
-        generate_new_payments(batch_date=datetime.datetime.now())
+        generate_new_payments(cutoff, batch_date=datetime.datetime.now())
 
         # Then
         assert get_pending_payments().count() == 2
@@ -103,6 +109,8 @@ class GenerateNewPaymentsTest:
     @pytest.mark.usefixtures("db_session")
     def test_reimburses_offerer_if_he_has_more_than_20000_euros_in_bookings_on_several_venues(self):
         # Given
+        cutoff = datetime.datetime.now()
+        before_cutoff = cutoff - datetime.timedelta(days=1)
         offerer1 = create_offerer(siren="123456789")
         repository.save(offerer1)
         bank_information = create_bank_information(
@@ -120,13 +128,19 @@ class GenerateNewPaymentsTest:
         user = users_factories.UserFactory()
         user.deposit.amount = 50000
         repository.save(user.deposit)
-        booking1 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True, quantity=1)
-        booking2 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True, quantity=1)
-        booking3 = create_booking(user=user, stock=paying_stock3, venue=venue3, is_used=True, quantity=1)
+        booking1 = create_booking(
+            user=user, stock=paying_stock1, venue=venue1, is_used=True, date_used=before_cutoff, quantity=1
+        )
+        booking2 = create_booking(
+            user=user, stock=paying_stock2, venue=venue2, is_used=True, date_used=before_cutoff, quantity=1
+        )
+        booking3 = create_booking(
+            user=user, stock=paying_stock3, venue=venue3, is_used=True, date_used=before_cutoff, quantity=1
+        )
         repository.save(booking1, booking2, booking3, bank_information)
 
         # When
-        generate_new_payments(batch_date=datetime.datetime.now())
+        generate_new_payments(cutoff, batch_date=datetime.datetime.now())
 
         # Then
         pending = get_pending_payments()
@@ -137,6 +151,8 @@ class GenerateNewPaymentsTest:
     @pytest.mark.usefixtures("db_session")
     def test_reimburses_offerer_with_degressive_rate_for_venues_with_bookings_exceeding_20000_euros(self):
         # Given
+        cutoff = datetime.datetime.now()
+        before_cutoff = cutoff - datetime.timedelta(days=1)
         offerer1 = create_offerer(siren="123456789")
         repository.save(offerer1)
         bank_information = create_bank_information(
@@ -154,13 +170,19 @@ class GenerateNewPaymentsTest:
         user = users_factories.UserFactory()
         user.deposit.amount = 50000
         repository.save(user.deposit)
-        booking1 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True, quantity=1)
-        booking2 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True, quantity=1)
-        booking3 = create_booking(user=user, stock=paying_stock3, venue=venue3, is_used=True, quantity=1)
+        booking1 = create_booking(
+            user=user, stock=paying_stock1, venue=venue1, is_used=True, date_used=before_cutoff, quantity=1
+        )
+        booking2 = create_booking(
+            user=user, stock=paying_stock2, venue=venue2, is_used=True, date_used=before_cutoff, quantity=1
+        )
+        booking3 = create_booking(
+            user=user, stock=paying_stock3, venue=venue3, is_used=True, date_used=before_cutoff, quantity=1
+        )
         repository.save(booking1, booking2, booking3, bank_information)
 
         # When
-        generate_new_payments(batch_date=datetime.datetime.now())
+        generate_new_payments(cutoff, batch_date=datetime.datetime.now())
 
         # Then
         pending = get_pending_payments()
@@ -171,6 +193,8 @@ class GenerateNewPaymentsTest:
     @pytest.mark.usefixtures("db_session")
     def test_full_reimburses_book_product_when_bookings_are_below_20000_euros(self):
         # Given
+        cutoff = datetime.datetime.now()
+        before_cutoff = cutoff - datetime.timedelta(days=1)
         offerer1 = create_offerer(siren="123456789")
         repository.save(offerer1)
         bank_information = create_bank_information(
@@ -185,12 +209,16 @@ class GenerateNewPaymentsTest:
         user = users_factories.UserFactory()
         user.deposit.amount = 50000
         repository.save(user.deposit)
-        booking1 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True, quantity=1)
-        booking2 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True, quantity=1)
+        booking1 = create_booking(
+            user=user, stock=paying_stock1, venue=venue1, is_used=True, date_used=before_cutoff, quantity=1
+        )
+        booking2 = create_booking(
+            user=user, stock=paying_stock2, venue=venue2, is_used=True, date_used=before_cutoff, quantity=1
+        )
         repository.save(booking1, booking2, bank_information)
 
         # When
-        generate_new_payments(batch_date=datetime.datetime.now())
+        generate_new_payments(cutoff, batch_date=datetime.datetime.now())
 
         # Then
         pending = get_pending_payments()
@@ -201,6 +229,8 @@ class GenerateNewPaymentsTest:
     @pytest.mark.usefixtures("db_session")
     def test_reimburses_95_percent_for_book_product_when_bookings_exceed_20000_euros(self):
         # Given
+        cutoff = datetime.datetime.now()
+        before_cutoff = cutoff - datetime.timedelta(days=1)
         offerer1 = create_offerer(siren="123456789")
         repository.save(offerer1)
         bank_information = create_bank_information(
@@ -218,13 +248,19 @@ class GenerateNewPaymentsTest:
         user = users_factories.UserFactory()
         user.deposit.amount = 50000
         repository.save(user.deposit)
-        booking1 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True, quantity=1)
-        booking2 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True, quantity=1)
-        booking3 = create_booking(user=user, stock=paying_stock3, venue=venue3, is_used=True, quantity=1)
+        booking1 = create_booking(
+            user=user, stock=paying_stock1, venue=venue1, is_used=True, date_used=before_cutoff, quantity=1
+        )
+        booking2 = create_booking(
+            user=user, stock=paying_stock2, venue=venue2, is_used=True, date_used=before_cutoff, quantity=1
+        )
+        booking3 = create_booking(
+            user=user, stock=paying_stock3, venue=venue3, is_used=True, date_used=before_cutoff, quantity=1
+        )
         repository.save(booking1, booking2, booking3, bank_information)
 
         # When
-        generate_new_payments(batch_date=datetime.datetime.now())
+        generate_new_payments(cutoff, batch_date=datetime.datetime.now())
 
         # Then
         pending = get_pending_payments()
@@ -235,6 +271,8 @@ class GenerateNewPaymentsTest:
     @pytest.mark.usefixtures("db_session")
     def test_reimburses_95_percent_for_book_product_when_bookings_exceed_40000_euros(self):
         # Given
+        cutoff = datetime.datetime.now()
+        before_cutoff = cutoff - datetime.timedelta(days=1)
         offerer1 = create_offerer(siren="123456789")
         repository.save(offerer1)
         bank_information = create_bank_information(
@@ -252,13 +290,19 @@ class GenerateNewPaymentsTest:
         user = users_factories.UserFactory()
         user.deposit.amount = 80000
         repository.save(user.deposit)
-        booking1 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True, quantity=1)
-        booking2 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True, quantity=1)
-        booking3 = create_booking(user=user, stock=paying_stock3, venue=venue3, is_used=True, quantity=1)
+        booking1 = create_booking(
+            user=user, stock=paying_stock1, venue=venue1, is_used=True, date_used=before_cutoff, quantity=1
+        )
+        booking2 = create_booking(
+            user=user, stock=paying_stock2, venue=venue2, is_used=True, date_used=before_cutoff, quantity=1
+        )
+        booking3 = create_booking(
+            user=user, stock=paying_stock3, venue=venue3, is_used=True, date_used=before_cutoff, quantity=1
+        )
         repository.save(booking1, booking2, booking3, bank_information)
 
         # When
-        generate_new_payments(batch_date=datetime.datetime.now())
+        generate_new_payments(cutoff, batch_date=datetime.datetime.now())
 
         # Then
         pending = get_pending_payments()
@@ -269,6 +313,8 @@ class GenerateNewPaymentsTest:
     @pytest.mark.usefixtures("db_session")
     def test_reimburses_95_percent_for_book_product_when_bookings_exceed_100000_euros(self):
         # Given
+        cutoff = datetime.datetime.now()
+        before_cutoff = cutoff - datetime.timedelta(days=1)
         offerer1 = create_offerer(siren="123456789")
         repository.save(offerer1)
         bank_information = create_bank_information(
@@ -286,13 +332,19 @@ class GenerateNewPaymentsTest:
         user = users_factories.UserFactory()
         user.deposit.amount = 120000
         repository.save(user.deposit)
-        booking1 = create_booking(user=user, stock=paying_stock1, venue=venue1, is_used=True, quantity=1)
-        booking2 = create_booking(user=user, stock=paying_stock2, venue=venue2, is_used=True, quantity=1)
-        booking3 = create_booking(user=user, stock=paying_stock3, venue=venue3, is_used=True, quantity=1)
+        booking1 = create_booking(
+            user=user, stock=paying_stock1, venue=venue1, is_used=True, date_used=before_cutoff, quantity=1
+        )
+        booking2 = create_booking(
+            user=user, stock=paying_stock2, venue=venue2, is_used=True, date_used=before_cutoff, quantity=1
+        )
+        booking3 = create_booking(
+            user=user, stock=paying_stock3, venue=venue3, is_used=True, date_used=before_cutoff, quantity=1
+        )
         repository.save(booking1, booking2, booking3, bank_information)
 
         # When
-        generate_new_payments(batch_date=datetime.datetime.now())
+        generate_new_payments(cutoff, batch_date=datetime.datetime.now())
 
         # Then
         pending = get_pending_payments()

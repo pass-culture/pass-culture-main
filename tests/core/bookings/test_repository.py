@@ -84,10 +84,12 @@ def test_find_not_cancelled_bookings_by_stock(app):
     assert set(all_not_cancelled_bookings) == {validated_booking, not_cancelled_booking}
 
 
+@pytest.mark.usefixtures("db_session")
 class FindPaymentEligibleBookingsForVenueTest:
-    @pytest.mark.usefixtures("db_session")
     def test_returns_used_past_event_and_thing_bookings_ordered_by_date_created(self, app: fixture):
         # Given
+        cutoff = datetime.now()
+        before_cutoff = cutoff - timedelta(days=1)
         beneficiary = users_factories.UserFactory()
 
         offerer = create_offerer(siren="123456789")
@@ -99,14 +101,25 @@ class FindPaymentEligibleBookingsForVenueTest:
             offerer=offerer, venue=venue, beginning_datetime=ONE_WEEK_FROM_NOW
         )
         past_event_booking = create_booking(
-            user=beneficiary, is_used=True, stock=past_event_stock, venue=venue, date_created=YESTERDAY
+            user=beneficiary,
+            is_used=True,
+            date_used=before_cutoff,
+            stock=past_event_stock,
+            venue=venue,
+            date_created=YESTERDAY,
         )
-        future_event_booking = create_booking(user=beneficiary, is_used=True, stock=future_event_stock, venue=venue)
-        thing_booking = create_booking(user=beneficiary, is_used=True, venue=venue, date_created=NOW)
+        future_event_booking = create_booking(
+            user=beneficiary, is_used=True, date_used=before_cutoff, stock=future_event_stock, venue=venue
+        )
+        thing_booking = create_booking(
+            user=beneficiary, is_used=True, date_used=before_cutoff, venue=venue, date_created=NOW
+        )
 
         another_offerer = create_offerer(siren="987654321")
         another_venue = create_venue(another_offerer, siret=f"{another_offerer.siren}12345")
-        another_thing_booking = create_booking(user=beneficiary, is_used=True, venue=another_venue)
+        another_thing_booking = create_booking(
+            user=beneficiary, is_used=True, date_used=before_cutoff, venue=another_venue
+        )
         another_past_event_stock = create_stock_with_event_offer(
             offerer=another_offerer,
             venue=another_venue,
@@ -114,7 +127,7 @@ class FindPaymentEligibleBookingsForVenueTest:
             booking_limit_datetime=THREE_DAYS_AGO,
         )
         another_past_event_booking = create_booking(
-            user=beneficiary, is_used=True, stock=another_past_event_stock, venue=venue
+            user=beneficiary, is_used=True, date_used=before_cutoff, stock=another_past_event_stock, venue=venue
         )
 
         repository.save(
@@ -122,13 +135,24 @@ class FindPaymentEligibleBookingsForVenueTest:
         )
 
         # When
-        bookings = booking_repository.find_bookings_eligible_for_payment_for_venue(venue.id)
+        bookings = booking_repository.find_bookings_eligible_for_payment_for_venue(venue.id, cutoff)
 
         # Then
         assert len(bookings) == 2
         assert bookings[0] == past_event_booking
         assert bookings[1] == thing_booking
         assert future_event_booking not in bookings
+
+    def test_cutoff_date(self, app):
+        venue = offers_factories.VenueFactory()
+        cutoff = datetime.now()
+        booking1 = bookings_factories.BookingFactory(
+            isUsed=True, dateUsed=cutoff - timedelta(days=1), stock__offer__venue=venue
+        )
+        bookings_factories.BookingFactory(isUsed=True, dateUsed=cutoff, stock__offer__venue=venue)
+
+        bookings = booking_repository.find_bookings_eligible_for_payment_for_venue(venue.id, cutoff)
+        assert bookings == [booking1]
 
 
 class FindByTest:

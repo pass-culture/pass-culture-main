@@ -343,15 +343,18 @@ class SetNotProcessablePaymentsWithBankInformationToRetryTest:
 
 @pytest.mark.usefixtures("db_session")
 def test_get_venues_to_reimburse():
+    cutoff = datetime.datetime.now()
+    before_cutoff = cutoff - datetime.timedelta(days=1)
     venue1 = offers_factories.VenueFactory(name="name")
-    # Two matching bookings for this venue, but it should onmy appear once.
-    bookings_factories.BookingFactory(isUsed=True, stock__offer__venue=venue1)
-    bookings_factories.BookingFactory(isUsed=True, stock__offer__venue=venue1)
+    # Two matching bookings for this venue, but it should only appear once.
+    bookings_factories.BookingFactory(isUsed=True, dateUsed=before_cutoff, stock__offer__venue=venue1)
+    bookings_factories.BookingFactory(isUsed=True, dateUsed=before_cutoff, stock__offer__venue=venue1)
     venue2 = offers_factories.VenueFactory(publicName="public name")
-    bookings_factories.BookingFactory(isUsed=True, stock__offer__venue=venue2)
+    bookings_factories.BookingFactory(isUsed=True, dateUsed=before_cutoff, stock__offer__venue=venue2)
     bookings_factories.BookingFactory(isUsed=False, stock__offer__venue__publicName="booking not used")
+    bookings_factories.BookingFactory(isUsed=True, dateUsed=cutoff, stock__offer__venue__publicName="after cutoff")
     payments_factories.PaymentFactory(booking__stock__offer__venue__publicName="already has a payment")
 
-    venues = get_venues_to_reimburse()
+    venues = get_venues_to_reimburse(cutoff)
     assert len(venues) == 2
     assert set(venues) == {(venue1.id, "name"), (venue2.id, "public name")}
