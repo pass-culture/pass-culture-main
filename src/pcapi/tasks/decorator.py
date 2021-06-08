@@ -11,8 +11,6 @@ from pcapi.serialization.decorator import spectree_serialize
 from . import cloud_task
 
 
-GCP_PROJECT = "passculture-metier-ehp"
-GCP_LOCATION = "europe-west1"
 CLOUD_TASK_SUBPATH = "/cloud-tasks"
 
 

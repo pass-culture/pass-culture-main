@@ -124,7 +124,7 @@ def delete_object(storage_path: str) -> None:
 def get_object(storage_path: str) -> Blob:
     try:
         storage_client_bucket = get_encrypted_gcp_storage_client_bucket()
-        storage_client_bucket.get_blob(storage_path)
+        return storage_client_bucket.get_blob(storage_path)
     except Exception as exception:
         logger.exception(
             "An error has occured while trying to get file with path: %s on encrypted GCP bucket: %s",
