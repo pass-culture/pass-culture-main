@@ -83,8 +83,9 @@ class OfferView(BaseAdminView):
         return form
 
     def on_form_prefill(self, form, id):  # pylint:disable=redefined-builtin
-        current_offer = self.session.query(self.model).get(id)
-        form.validation.data = current_offer.validation.value
+        if hasattr(form, "validation"):
+            current_offer = self.session.query(self.model).get(id)
+            form.validation.data = current_offer.validation.value
 
     def on_model_change(self, form: wtforms.Form, model: Offer, is_created: bool) -> None:
         previous_validation = form._fields["validation"].object_data
