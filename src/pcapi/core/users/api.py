@@ -35,6 +35,7 @@ from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
 from pcapi.core.users.models import VOID_PUBLIC_NAME
 from pcapi.core.users.repository import does_validated_phone_exist
+from pcapi.core.users.repository import get_and_lock_user
 from pcapi.core.users.repository import get_beneficiary_import_for_beneficiary
 from pcapi.core.users.utils import decode_jwt_token
 from pcapi.core.users.utils import delete_object
@@ -62,6 +63,7 @@ from pcapi.notifications.sms.sending_limit import is_SMS_sending_allowed
 from pcapi.notifications.sms.sending_limit import update_sent_SMS_counter
 from pcapi.repository import feature_queries
 from pcapi.repository import repository
+from pcapi.repository import transaction
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
 from pcapi.tasks.account import verify_identity_document
@@ -225,11 +227,10 @@ def update_beneficiary_mandatory_information(
     user.postalCode = postal_code
     user.activity = activity
     user.hasCompletedIdCheck = True
+    repository.save(user)
 
-    if not steps_to_become_beneficiary(user) and not user.isBeneficiary:
-        activate_beneficiary(user)
-    else:
-        repository.save(user)
+    if not steps_to_become_beneficiary(user):
+        check_and_activate_beneficiary(user.id)
 
     logger.info(
         "User id check profile updated",
@@ -251,6 +252,16 @@ def activate_beneficiary(user: User, deposit_source: str = None) -> User:
     db.session.commit()
     logger.info("Activated beneficiary and created deposit", extra={"user": user.id})
     return user
+
+
+def check_and_activate_beneficiary(userId: int, deposit_source: str = None) -> User:
+    with transaction():
+        user = get_and_lock_user(userId)
+        if user.isBeneficiary or not user.hasCompletedIdCheck:
+            db.session.rollback()
+            return user
+        user = activate_beneficiary(user, deposit_source)
+        return user
 
 
 def attach_beneficiary_import_details(
