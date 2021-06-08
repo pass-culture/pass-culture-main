@@ -59,6 +59,23 @@ def get_user_with_valid_token(
     return token.user
 
 
+def get_and_lock_user(user_id: int) -> User:
+    """Returns `user_id` user with a FOR UPDATE lock
+    Raises UserDoesNotExist if no user is found.
+    WARNING: MAKE SURE YOU FREE THE LOCK (with COMMIT or ROLLBACK) and don't hold it longer than
+    strictly necessary.
+    """
+    # Use `with_for_update()` to make sure we lock the user while perfoming
+    # the booking checks and update the `dnBookedQuantity`
+    # This is required to prevent bugs due to concurent acces
+    # Also call `populate_existing()` to make sure we don't use something
+    # older from the SQLAlchemy's session.
+    user = User.query.filter_by(id=user_id).populate_existing().with_for_update().one_or_none()
+    if not user:
+        raise exceptions.UserDoesNotExist
+    return user
+
+
 def get_id_check_token(token_value: str) -> models.Token:
     return models.Token.query.filter(
         models.Token.value == token_value,
