@@ -23,8 +23,9 @@ const TableHead = ({ headerGroups }) => {
               className={column.className}
               key={column.id}
             >
-              {column.render('headerTitle')}
-              {column.Filter ? column.render('Filter') : null}
+              {column.HeaderTitleFilter
+                ? column.render('HeaderTitleFilter')
+                : column.render('headerTitle')}
               {column.canSort ? (
                 <span className="sorting-icons">
                   {column.isSorted ? (

@@ -1,16 +1,32 @@
 .bookings-head {
   tr {
-    th {
+    th,
+    .table-head-label {
       @include caption();
 
       color: $black;
+      line-height: rem(20px);
+      min-height: rem(60px);
       padding: rem(14px);
+      vertical-align: middle;
 
-      .sorting-icons > img {
+      .sorting-icons {
+        display: inline-block;
         height: rem(20px);
         margin-left: rem(10px);
-        vertical-align: bottom;
-        width: rem(20px);
+        position: relative;
+        vertical-align: middle;
+        width: rem(18px);
+
+        & > img {
+          display: block;
+          left: 50%;
+          max-height: rem(20px);
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%) translateX(-50%);
+          width: auto;
+        }
       }
     }
   }

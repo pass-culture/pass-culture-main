@@ -76,12 +76,11 @@ class BookingsRecapTable extends Component {
         {
           id: 6,
           accessor: 'booking_status',
-          headerTitle: 'Statut',
           /* eslint-disable react/no-unstable-nested-components */
           Cell: ({ row }) => <BookingStatusCell bookingRecapInfo={row} />,
           className: 'column-booking-status',
           disableSortBy: true,
-          Filter: () => (
+          HeaderTitleFilter: () => (
             <FilterByBookingStatus
               bookingStatuses={this.state.filters.bookingStatus}
               bookingsRecap={props.bookingsRecap}

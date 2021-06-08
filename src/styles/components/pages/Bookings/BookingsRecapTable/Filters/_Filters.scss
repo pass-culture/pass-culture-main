@@ -117,14 +117,6 @@
   }
 
   .fw-offer-date {
-    .fw-offer-date-picker:focus-within {
-      .field-date {
-        border-color: $primary;
-        border-width: rem(2px);
-        padding: 0;
-      }
-    }
-
     button {
       outline: none;
     }
@@ -138,6 +130,15 @@
 
       &.disabled {
         box-shadow: none;
+      }
+    }
+
+    .fw-offer-date-picker:focus-within {
+      .field-date {
+        border-color: $primary;
+        border-color: $primary;
+        border-width: rem(2px);
+        padding: 0;
       }
     }
 
@@ -248,12 +249,12 @@
 .bs-filter-button {
   background-color: transparent;
   border: none;
-  margin-left: rem(10px);
-  outline: none;
+  line-height: rem(20px);
+  vertical-align: middle;
 
   img {
-    height: rem(16px);
-    vertical-align: text-bottom;
-    width: rem(16px);
+    height: rem(20px);
+    vertical-align: middle;
+    width: rem(20px);
   }
 }

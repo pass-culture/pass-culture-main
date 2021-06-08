@@ -85,7 +85,7 @@ describe('components | FilterByBookingStatus', () => {
       const wrapper = mount(<FilterByBookingStatus {...props} />)
 
       // when
-      wrapper.find('img').simulate('focus')
+      wrapper.find('button').simulate('focus')
 
       // then
       const filterIcon = wrapper.find('img')
@@ -107,7 +107,6 @@ describe('components | FilterByBookingStatus', () => {
       expect(checkbox).toHaveLength(2)
       expect(checkbox.at(0).props()).toStrictEqual({
         checked: true,
-        'data-status-filter-tooltip': true,
         id: 'bs-booked',
         name: 'booked',
         onChange: expect.any(Function),
@@ -115,7 +114,6 @@ describe('components | FilterByBookingStatus', () => {
       })
       expect(checkbox.at(1).props()).toStrictEqual({
         checked: true,
-        'data-status-filter-tooltip': true,
         id: 'bs-validated',
         name: 'validated',
         onChange: expect.any(Function),
@@ -162,7 +160,11 @@ describe('components | FilterByBookingStatus', () => {
 
     it('should remove value from filters when checking the checkbox', () => {
       // given
-      const wrapper = mount(<FilterByBookingStatus {...props} />)
+      const propsWithInitialFilter = {
+        ...props,
+        bookingStatuses: ['validated'],
+      }
+      const wrapper = mount(<FilterByBookingStatus {...propsWithInitialFilter} />)
       wrapper.find('img').simulate('focus')
 
       const checkbox = wrapper.find('input').at(0)
