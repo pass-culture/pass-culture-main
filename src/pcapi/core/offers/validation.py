@@ -163,6 +163,14 @@ def check_update_only_allowed_stock_fields_for_allocine_offer(updated_fields: se
         raise api_errors
 
 
+def check_stock_has_no_custom_reimbursement_rule(stock: Stock):
+    if stock.offer.custom_reimbursement_rules:
+        api_errors = ApiErrors()
+        api_errors.status_code = 400
+        api_errors.add_error("price", "Vous ne pouvez pas modifier le prix de cette offre")
+        raise api_errors
+
+
 def get_distant_image(
     url: str,
     accepted_types: tuple = ACCEPTED_THUMBNAIL_FORMATS,
