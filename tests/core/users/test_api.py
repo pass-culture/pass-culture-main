@@ -714,7 +714,7 @@ class UpdateBeneficiaryMandatoryInformationTest:
             user=user,
             address=new_address,
             city=new_city,
-            postal_code=user.postalCode,
+            postal_code="93000",
             activity=user.activity,
         )
 
@@ -747,7 +747,7 @@ class UpdateBeneficiaryMandatoryInformationTest:
             user=user,
             address=new_address,
             city=new_city,
-            postal_code=user.postalCode,
+            postal_code="93000",
             activity=user.activity,
         )
 

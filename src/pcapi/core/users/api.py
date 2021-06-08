@@ -222,12 +222,18 @@ def update_beneficiary_mandatory_information(
     postal_code: str,
     activity: str,
 ) -> None:
-    user.address = address
-    user.city = city
-    user.postalCode = postal_code
-    user.activity = activity
-    user.hasCompletedIdCheck = True
-    repository.save(user)
+    User.query.filter(User.id == user.id).update(
+        {
+            "address": address,
+            "city": city,
+            "postalCode": postal_code,
+            "departementCode": PostalCode(postal_code).get_departement_code(),
+            "activity": activity,
+            "hasCompletedIdCheck": True,
+        }
+    )
+    db.session.commit()
+    db.session.refresh(user)
 
     if not steps_to_become_beneficiary(user):
         check_and_activate_beneficiary(user.id)

@@ -1,6 +1,5 @@
 from typing import Optional
 
-from pcapi.core.users import api as users_api
 from pcapi.core.users.api import fulfill_account_password
 from pcapi.core.users.models import User
 from pcapi.core.users.utils import sanitize_email
@@ -10,6 +9,25 @@ from pcapi.models import ImportStatus
 
 
 def to_model(beneficiary_pre_subscription: BeneficiaryPreSubscription, user: Optional[User] = None) -> User:
+    if user and beneficiary_pre_subscription.postal_code.strip() == "":
+        dateOfBirth = beneficiary_pre_subscription.date_of_birth or user.dateOfBirth
+        civility = beneficiary_pre_subscription.civility
+        firstName = beneficiary_pre_subscription.first_name
+        lastName = beneficiary_pre_subscription.last_name
+        publicName = beneficiary_pre_subscription.public_name
+        idPieceNumber = beneficiary_pre_subscription.id_piece_number
+        User.query.filter(User.id == user.id).update(
+            {
+                "civility": civility,
+                "dateOfBirth": dateOfBirth,
+                "firstName": firstName,
+                "idPieceNumber": idPieceNumber,
+                "lastName": lastName,
+                "publicName": publicName,
+            }
+        )
+        return user
+
     if not user:
         beneficiary = User()
         beneficiary.email = sanitize_email(beneficiary_pre_subscription.email)
@@ -30,13 +48,10 @@ def to_model(beneficiary_pre_subscription: BeneficiaryPreSubscription, user: Opt
     beneficiary.postalCode = beneficiary_pre_subscription.postal_code
     beneficiary.publicName = beneficiary_pre_subscription.public_name
     beneficiary.idPieceNumber = beneficiary_pre_subscription.id_piece_number
+    beneficiary.hasCompletedIdCheck = True
 
     if not beneficiary.phoneNumber:
         beneficiary.phoneNumber = beneficiary_pre_subscription.phone_number
-
-    users_api.attach_beneficiary_import_details(beneficiary, beneficiary_pre_subscription)
-    if not users_api.steps_to_become_beneficiary(beneficiary):
-        beneficiary = users_api.activate_beneficiary(beneficiary, beneficiary_pre_subscription.deposit_source)
 
     return beneficiary
 

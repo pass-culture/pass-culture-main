@@ -181,6 +181,89 @@ def test_application_for_native_app_user(mocked_send_accepted_as_beneficiary_ema
     ]
 
 
+@freeze_time("2013-05-15 09:00:00")
+@override_features(FORCE_PHONE_VALIDATION=False)
+@patch("pcapi.use_cases.create_beneficiary_from_application.send_accepted_as_beneficiary_email")
+@patch("pcapi.connectors.beneficiaries.jouve_backend.BeneficiaryJouveBackend._get_application_content")
+def test_application_for_native_app_user_with_load_smoothing(
+    mocked_get_content, mocked_send_accepted_as_beneficiary_email, app, db_session
+):
+    # Given
+    application_id = 35
+    user = UserFactory(
+        dateOfBirth="10/25/2003",
+        phoneNumber="0607080900",
+        isBeneficiary=False,
+        address="an address",
+        city="Nantes",
+        postalCode="44300",
+        activity="Apprenti",
+        hasCompletedIdCheck=True,
+    )
+    push_testing.reset_requests()
+    mocked_get_content.return_value = {
+        "id": BASE_APPLICATION_ID,
+        "firstName": "first_name",
+        "lastName": "last_name",
+        "email": user.email,
+        "activity": "Étudiant",
+        "address": "",
+        "city": "",
+        "gender": "M",
+        "bodyPieceNumber": "id-piece-number",
+        "birthDate": "10/25/2003",
+        "postalCode": "",
+        "phoneNumber": "0102030405",
+        "posteCodeCtrl": "OK",
+        "serviceCodeCtrl": "OK",
+        "birthLocationCtrl": "OK",
+        "creatorCtrl": "OK",
+        "bodyBirthDateLevel": "100",
+        "bodyNameLevel": "100",
+    }
+
+    # When
+    create_beneficiary_from_application.execute(application_id)
+
+    # Then
+    mocked_send_accepted_as_beneficiary_email.assert_called_once()
+
+    beneficiary = User.query.one()
+
+    # the fake Jouve backend returns a default phone number. Since a User
+    # alredy exists, the phone number should not be updated during the import process
+    assert beneficiary.phoneNumber == "0607080900"
+    assert beneficiary.address == "an address"
+    assert beneficiary.activity == "Apprenti"
+    assert beneficiary.postalCode == "44300"
+
+    deposit = Deposit.query.one()
+    assert deposit.amount == 300
+    assert deposit.source == "dossier jouve [35]"
+    assert deposit.userId == beneficiary.id
+
+    beneficiary_import = BeneficiaryImport.query.one()
+    assert beneficiary_import.currentStatus == ImportStatus.CREATED
+    assert beneficiary_import.applicationId == application_id
+    assert beneficiary_import.beneficiary == beneficiary
+    assert beneficiary.notificationSubscriptions == {"marketing_push": True, "marketing_email": True}
+
+    assert push_testing.requests == [
+        {
+            "user_id": beneficiary.id,
+            "attribute_values": {
+                "u.credit": 30000,
+                "date(u.date_of_birth)": "2003-10-25T00:00:00",
+                "u.postal_code": "44300",
+                "date(u.date_created)": beneficiary.dateCreated.strftime("%Y-%m-%dT%H:%M:%S"),
+                "u.marketing_push_subscription": True,
+                "u.is_beneficiary": True,
+                "date(u.deposit_expiration_date)": "2015-05-15T09:00:00",
+            },
+        }
+    ]
+
+
 @override_features(FORCE_PHONE_VALIDATION=False)
 @override_settings(
     JOUVE_APPLICATION_BACKEND="tests.use_cases.create_beneficiary_from_application_test.FakeBeneficiaryJouveBackend",
