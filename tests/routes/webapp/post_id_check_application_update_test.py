@@ -105,6 +105,7 @@ class Post:
                     "user_id": beneficiary.id,
                     "attribute_values": {
                         "u.credit": 50000,
+                        "u.departement_code": "35",
                         "date(u.date_of_birth)": "1995-02-05T00:00:00",
                         "u.postal_code": "35123",
                         "date(u.date_created)": beneficiary.dateCreated.strftime("%Y-%m-%dT%H:%M:%S"),
@@ -179,6 +180,7 @@ class Post:
                     "user_id": user.id,
                     "attribute_values": {
                         "u.credit": 0,
+                        "u.departement_code": "35",
                         "date(u.date_of_birth)": "1995-02-05T00:00:00",
                         "u.postal_code": "35123",
                         "date(u.date_created)": user.dateCreated.strftime("%Y-%m-%dT%H:%M:%S"),

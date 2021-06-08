@@ -5,7 +5,6 @@ import pytest
 
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import User
-from pcapi.notifications.push import testing
 from pcapi.scripts.beneficiary import import_users
 
 
@@ -44,30 +43,3 @@ class ReadFileTest:
 
         admin = User.query.filter_by(email="admin@example.com").one()
         assert admin.isAdmin
-
-        assert testing.requests == [
-            {
-                "user_id": jeanne.id,
-                "attribute_values": {
-                    "date(u.date_created)": jeanne.dateCreated.strftime("%Y-%m-%dT%H:%M:%S"),
-                    "date(u.date_of_birth)": "2000-01-01T00:00:00",
-                    "date(u.deposit_expiration_date)": None,
-                    "u.credit": 0,
-                    "u.is_beneficiary": False,
-                    "u.marketing_push_subscription": True,
-                    "u.postal_code": None,
-                },
-            },
-            {
-                "user_id": admin.id,
-                "attribute_values": {
-                    "date(u.date_created)": admin.dateCreated.strftime("%Y-%m-%dT%H:%M:%S"),
-                    "date(u.date_of_birth)": "1946-12-24T00:00:00",
-                    "date(u.deposit_expiration_date)": None,
-                    "u.credit": 0,
-                    "u.is_beneficiary": False,
-                    "u.marketing_push_subscription": True,
-                    "u.postal_code": None,
-                },
-            },
-        ]

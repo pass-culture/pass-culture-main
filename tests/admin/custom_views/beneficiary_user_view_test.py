@@ -101,6 +101,7 @@ class BeneficiaryUserViewTest:
                         "%Y-%m-%dT%H:%M:%S"
                     ),
                     "u.credit": 50000,
+                    "u.departement_code": "93",
                     "u.is_beneficiary": True,
                     "u.marketing_push_subscription": True,
                     "u.postal_code": "93000",

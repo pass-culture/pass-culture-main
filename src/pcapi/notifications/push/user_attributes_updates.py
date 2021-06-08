@@ -20,6 +20,7 @@ def get_user_attributes(user: User) -> dict:
     credit = get_domains_credit(user)
     return {
         "u.credit": int(credit.all.remaining * 100) if credit else 0,
+        "u.departement_code": user.departementCode,
         "date(u.date_of_birth)": user.dateOfBirth.strftime(BATCH_DATETIME_FORMAT) if user.dateOfBirth else None,
         "u.postal_code": user.postalCode,
         "date(u.date_created)": user.dateCreated.strftime(BATCH_DATETIME_FORMAT),
