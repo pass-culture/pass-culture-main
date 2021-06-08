@@ -6,6 +6,7 @@ from flask import request
 from flask import url_for
 from flask_admin.helpers import get_form_data
 from markupsafe import Markup
+from markupsafe import escape
 from sqlalchemy.orm import query
 from wtforms import BooleanField
 from wtforms import DecimalField
@@ -25,9 +26,7 @@ from pcapi.utils.human_ids import humanize
 
 def _venue_link(view, context, model, name) -> Markup:
     url = url_for("venue.index_view", id=model.venueId)
-    text = "Lieu associé"
-
-    return Markup(f'<a href="{url}">{text}</a>')
+    return Markup('<a href="{}">Lieu associé</a>').format(escape(url))
 
 
 class VenueProviderView(BaseAdminView):

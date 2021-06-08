@@ -14,6 +14,7 @@ from flask_admin.helpers import get_form_data
 from flask_admin.helpers import is_form_submitted
 from flask_login import current_user
 from markupsafe import Markup
+from markupsafe import escape
 from sqlalchemy import func
 from sqlalchemy.orm import query
 from werkzeug import Response
@@ -190,37 +191,29 @@ def _offerer_url(offerer_id: int) -> str:
 
 def _pro_offer_link(view, context, model, name) -> Markup:
     url = _pro_offer_url(model.id)
-    text = "Offre PC"
-
-    return Markup(f'<a href="{url}" target="_blank" rel="noopener noreferrer">{text}</a>')
+    return Markup('<a href="{}" target="_blank" rel="noopener noreferrer">Offre PC</a>').format(escape(url))
 
 
 def _related_offers_link(view, context, model, name) -> Markup:
     url = url_for("offer_for_venue.index", id=model.venue.id)
-    text = "Offres associées"
-
-    return Markup(f'<a href="{url}">{text}</a>')
+    return Markup('<a href="{}">Offres associées</a>').format(escape(url))
 
 
 def _metabase_offer_link(view, context, model, name) -> Markup:
     url = _metabase_offer_url(model.id)
-    text = "Offre"
-
-    return Markup(f'<a href="{url}" target="_blank" rel="noopener noreferrer">{text}</a>')
+    return Markup('<a href="{}" target="_blank" rel="noopener noreferrer">Offre</a>').format(escape(url))
 
 
 def _offerer_link(view, context, model, name) -> Markup:
     url = _offerer_url(model.venue.managingOffererId)
-    text = model.venue.managingOfferer.name
-
-    return Markup(f'<a href="{url}" target="_blank" rel="noopener noreferrer">{text}</a>')
+    link = Markup('<a href="{url}" target="_blank" rel="noopener noreferrer">{name}</a>')
+    return link.format(url=escape(url), name=escape(model.venue.managingOfferer.name))
 
 
 def _venue_link(view, context, model, name) -> Markup:
     url = _venue_url(model.venue)
-    text = model.venue.publicName or model.venue.name
-
-    return Markup(f'<a href="{url}" target="_blank" rel="noopener noreferrer">{text}</a>')
+    link = Markup('<a href="{url}" target="_blank" rel="noopener noreferrer">{name}</a>')
+    return link.format(url=escape(url), name=escape(model.venue.publicName or model.venue.name))
 
 
 def _compute_score(view, context, model, name) -> float:

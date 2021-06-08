@@ -3,6 +3,7 @@ from typing import Union
 from flask import request
 from flask import url_for
 from markupsafe import Markup
+from markupsafe import escape
 from sqlalchemy.orm import query
 from wtforms import Form
 
@@ -13,18 +14,14 @@ from pcapi.core.offers.api import update_offer_and_stock_id_at_providers
 
 def _offers_link(view, context, model, name) -> Markup:
     url = url_for("offer_for_venue.index", id=model.id)
-    text = "Offres associées"
-
-    return Markup(f'<a href="{url}">{text}</a>')
+    return Markup('<a href="{}">Offres associées</a>').format(escape(url))
 
 
 def _get_venue_provider_link(view, context, model, name) -> Union[Markup, None]:
-
     if not model.venueProviders:
         return None
-
     url = url_for("venue_providers.index_view", id=model.id)
-    return Markup(f'<a href="{url}">Voir</a>')
+    return Markup('<a href="{}">Voir</a>').format(url)
 
 
 class VenueView(BaseAdminView):

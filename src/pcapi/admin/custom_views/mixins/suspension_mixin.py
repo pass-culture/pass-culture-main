@@ -44,7 +44,11 @@ def _action_links(view, context, model, name):
         url = url_for(".unsuspend_user_view")
         text = "Réactiver&hellip;"
 
-    return Markup(f'<a href="{url}?user_id={model.id}">{text}</a>')
+    return Markup('<a href="{url}?user_id={model_id}">{text}</a>').format(
+        url=url,
+        model_id=model.id,
+        text=text,
+    )
 
 
 class SuspensionMixin:
