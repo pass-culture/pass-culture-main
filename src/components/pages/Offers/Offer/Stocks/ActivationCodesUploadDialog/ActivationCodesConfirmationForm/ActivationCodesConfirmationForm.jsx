@@ -25,7 +25,7 @@ const ActivationCodesConfirmationForm = ({
           {`Vous êtes sur le point d’ajouter ${activationCodes.length} codes d’activation.`}
         </p>
         <p>
-          {'La quantité disponible pour cette offre sera mise à jour dans vos stocks'}
+          {'La quantité disponible pour cette offre sera mise à jour dans vos stocks.'}
         </p>
         <p className="expiration-date-information-message">
           {
