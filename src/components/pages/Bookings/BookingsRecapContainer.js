@@ -3,7 +3,7 @@ import { withRouter } from 'react-router'
 import { compose } from 'redux'
 
 import { showNotification } from 'store/reducers/notificationReducer'
-import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
+import { selectIsUserAdmin } from 'store/selectors/data/usersSelectors'
 
 import { selectIsFeatureActive } from '../../../store/selectors/data/featuresSelectors'
 
@@ -11,7 +11,7 @@ import BookingsRecap from './BookingsRecap'
 
 export function mapStateToProps(state) {
   return {
-    currentUser: selectCurrentUser(state),
+    isUserAdmin: selectIsUserAdmin(state),
     arePreFiltersEnabled: selectIsFeatureActive(state, 'ENABLE_BOOKINGS_PAGE_FILTERS_FIRST'),
   }
 }

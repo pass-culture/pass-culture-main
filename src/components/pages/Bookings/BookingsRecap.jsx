@@ -13,7 +13,12 @@ import PreFilters from './PreFilters/PreFilters'
 
 const MAX_LOADED_PAGES = 5
 
-const BookingsRecap = ({ arePreFiltersEnabled, location, showWarningNotification }) => {
+const BookingsRecap = ({
+  arePreFiltersEnabled,
+  isUserAdmin,
+  location,
+  showWarningNotification,
+}) => {
   const [bookingsRecap, setBookingsRecap] = useState([])
   const [isLoading, setIsLoading] = useState(true)
 
@@ -67,7 +72,9 @@ const BookingsRecap = ({ arePreFiltersEnabled, location, showWarningNotification
     <div className="bookings-page">
       <PageTitle title="Vos réservations" />
       <Titles title="Réservations" />
-      {arePreFiltersEnabled ? (
+      {isUserAdmin ? (
+        <NoBookingsMessage />
+      ) : arePreFiltersEnabled ? (
         <>
           <PreFilters
             applyPreFilters={loadBookingsRecap}
@@ -98,6 +105,7 @@ const BookingsRecap = ({ arePreFiltersEnabled, location, showWarningNotification
 
 BookingsRecap.propTypes = {
   arePreFiltersEnabled: PropTypes.bool.isRequired,
+  isUserAdmin: PropTypes.bool.isRequired,
   location: PropTypes.shape({
     state: PropTypes.shape({
       venueId: PropTypes.string,
