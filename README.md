@@ -42,7 +42,12 @@ Il existe une ancienne api très incomplète et non utilisable (A décommissione
     
     Configurer le working directory par défaut pour être toujours à la racine de ce projet
     ![pycharm-test-config][pycharm-test-configuration]
-    
+
+## Dépendances
+
+- La combinaison pylint-astroid a parfois quelques soucis : elle est pour
+l'instant figée à 2.8.3 pour pylint et 2.5.6 pour astroid. Ceci pourra être
+modifié quand ces problèmes seront réglés côté pylint/astroid.
 
 ## Démarrage du serveur back api
 - Option 1 : Lancement du serveur back api depuis le script pc présent dans le dossier parent

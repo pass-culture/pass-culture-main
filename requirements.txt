@@ -1,7 +1,7 @@
 alembic==1.4.3
 algoliasearch==2.4.0
-# astroid is required by pylint and version 2.5.7 crashes
-astroid!=2.5.7
+# astroid is required by pylint and version 2.5.7 and 2.5.8 crashes
+astroid==2.5.6
 APScheduler==3.6.3
 Babel==2.8.0
 bcrypt==3.2.0
@@ -43,7 +43,7 @@ pgcli==2.2.0
 Pillow>=8.1.1
 pydantic[email]==1.7.3
 PyJWT==1.7.1
-pylint
+pylint==2.8.3
 pylint-strict-informational
 pytest-cov==2.10.1
 pytest-flask==1.0.0
