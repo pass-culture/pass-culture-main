@@ -56,7 +56,8 @@ class VerifyIdentityDocumentTest:
             headers={
                 "X-Authentication": "fake_token",
             },
-            data={"email": "fake@email.com", "file": identity_document},
+            data={"email": "fake@email.com"},
+            files=[("file", identity_document)],
         )
         mocked_delete_object.assert_called_once_with(storage_path)
 
