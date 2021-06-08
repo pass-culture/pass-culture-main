@@ -7,7 +7,8 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi.connectors.beneficiaries.jouve_backend import ApiJouveException
-from pcapi.connectors.beneficiaries.jouve_backend import BeneficiaryJouveBackend
+from pcapi.connectors.beneficiaries.jouve_backend import get_application_content
+from pcapi.connectors.beneficiaries.jouve_backend import get_subscription_from_content
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
 
 
@@ -69,7 +70,8 @@ def test_calls_jouve_api_with_previously_fetched_token(mocked_requests_post):
     mocked_requests_post.side_effect = [get_token_response, get_application_by_response]
 
     # When
-    beneficiary_pre_subscription = BeneficiaryJouveBackend().get_application_by(application_id)
+    jouve_content = get_application_content(application_id)
+    beneficiary_pre_subscription = get_subscription_from_content(jouve_content)
 
     # Then
     assert mocked_requests_post.call_args_list[0] == call(
@@ -112,7 +114,7 @@ def test_raise_exception_when_password_is_invalid(stubed_requests_post):
 
     # When
     with pytest.raises(ApiJouveException) as api_jouve_exception:
-        BeneficiaryJouveBackend().get_application_by(application_id)
+        get_application_content(application_id)
 
     # Then
     assert str(api_jouve_exception.value.message) == "Error getting API Jouve authentication token"
@@ -137,7 +139,7 @@ def test_raise_exception_when_token_is_invalid(stubed_requests_post):
 
     # When
     with pytest.raises(ApiJouveException) as api_jouve_exception:
-        BeneficiaryJouveBackend().get_application_by(application_id)
+        get_application_content(application_id)
 
     # Then
     assert str(api_jouve_exception.value.message) == "Error getting API jouve GetJeuneByID"

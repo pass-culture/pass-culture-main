@@ -5,15 +5,12 @@ from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
 import pytest
 
-from pcapi.connectors.beneficiaries.jouve_backend import FraudDetectionItem
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.testing import override_features
-from pcapi.core.testing import override_settings
 from pcapi.core.users import api as users_api
 from pcapi.core.users.factories import UserFactory
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
-from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsADuplicate
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.models import BeneficiaryImport
@@ -25,50 +22,46 @@ from pcapi.repository import repository
 from pcapi.use_cases.create_beneficiary_from_application import create_beneficiary_from_application
 
 
-PRE_SUBSCRIPTION_BASE_DATA = {
+APPLICATION_ID = 35
+
+JOUVE_CONTENT = {
     "activity": "Apprenti",
     "address": "3 rue de Valois",
+    "birthDate": "02/05/1995",
+    "bodyBirthDateCtrl": "OK",
+    "bodyBirthDateLevel": 100,
+    "bodyFirstNameCtrl": "OK",
+    "bodyFirstNameLevel": 100,
+    "bodyNameLevel": 80,
+    "bodyNameCtrl": "OK",
+    "bodyPieceNumber": "id-piece-number",
+    "bodyPieceNumberCtrl": "OK",
+    "bodyPieceNumberLevel": 100,
     "city": "Paris",
-    "civility": "Mme",
-    "date_of_birth": datetime(1995, 2, 5),
+    "creatorCtrl": "OK",
     "email": "rennes@example.org",
-    "id_piece_number": "id-piece-number",
-    "first_name": "Thomas",
-    "last_name": "DURAND",
-    "phone_number": "0123456789",
-    "source": "jouve",
-    "source_id": None,
-    "fraud_fields": {
-        "strict_controls": [FraudDetectionItem("posteCodeCtrl", "OK", True)],
-        "non_blocking_controls": [FraudDetectionItem("bodyNameLevel", "80", True)],
-    },
+    "gender": "F",
+    "id": APPLICATION_ID,
+    "initialNumberCtrl": "OK",
+    "initialSizeCtrl": "OK",
+    "firstName": "Thomas",
+    "lastName": "DURAND",
+    "phoneNumber": "0123456789",
+    "postalCode": "35123",
 }
 
 
-class FakeBeneficiaryJouveBackend:
-    def get_application_by(self, application_id: int, fraud_detection: bool = True) -> BeneficiaryPreSubscription:
-        return BeneficiaryPreSubscription(
-            application_id=application_id,
-            postal_code=f"{application_id:02d}123",
-            **PRE_SUBSCRIPTION_BASE_DATA,
-        )
-
-
 @override_features(FORCE_PHONE_VALIDATION=False)
-@patch("pcapi.use_cases.create_beneficiary_from_application.send_activation_email")
+@patch("pcapi.use_cases.create_beneficiary_from_application.get_application_content", return_value=JOUVE_CONTENT)
 @patch("pcapi.domain.password.random_token")
-@override_settings(
-    JOUVE_APPLICATION_BACKEND="tests.use_cases.create_beneficiary_from_application_test.FakeBeneficiaryJouveBackend",
-)
 @freeze_time("2013-05-15 09:00:00")
 @pytest.mark.usefixtures("db_session")
-def test_saved_a_beneficiary_from_application(stubed_random_token, mocked_send_activation_email, app):
+def test_saved_a_beneficiary_from_application(stubed_random_token, app):
     # Given
-    application_id = 35
     stubed_random_token.return_value = "token"
 
     # When
-    create_beneficiary_from_application.execute(application_id)
+    create_beneficiary_from_application.execute(APPLICATION_ID)
 
     # Then
     beneficiary = User.query.one()
@@ -97,13 +90,13 @@ def test_saved_a_beneficiary_from_application(stubed_random_token, mocked_send_a
 
     beneficiary_import = BeneficiaryImport.query.one()
     assert beneficiary_import.currentStatus == ImportStatus.CREATED
-    assert beneficiary_import.applicationId == application_id
+    assert beneficiary_import.applicationId == APPLICATION_ID
     assert beneficiary_import.beneficiary == beneficiary
 
     assert len(beneficiary.tokens) == 1
     assert beneficiary.tokens[0].type == TokenType.RESET_PASSWORD
 
-    mocked_send_activation_email.assert_called_once()
+    assert len(mails_testing.outbox) == 1
 
     assert push_testing.requests == [
         {
@@ -123,19 +116,15 @@ def test_saved_a_beneficiary_from_application(stubed_random_token, mocked_send_a
 
 
 @override_features(FORCE_PHONE_VALIDATION=False)
-@patch("pcapi.use_cases.create_beneficiary_from_application.send_accepted_as_beneficiary_email")
-@override_settings(
-    JOUVE_APPLICATION_BACKEND="tests.use_cases.create_beneficiary_from_application_test.FakeBeneficiaryJouveBackend",
-)
+@patch("pcapi.use_cases.create_beneficiary_from_application.get_application_content", return_value=JOUVE_CONTENT)
 @freeze_time("2013-05-15 09:00:00")
 @pytest.mark.usefixtures("db_session")
-def test_application_for_native_app_user(mocked_send_accepted_as_beneficiary_email, app):
+def test_application_for_native_app_user(app):
     # Given
-    application_id = 35
     users_api.create_account(
-        email=PRE_SUBSCRIPTION_BASE_DATA["email"],
+        email=JOUVE_CONTENT["email"],
         password="123456789",
-        birthdate=PRE_SUBSCRIPTION_BASE_DATA["date_of_birth"],
+        birthdate=datetime(1995, 4, 15),
         is_email_validated=True,
         send_activation_mail=False,
         marketing_email_subscription=False,
@@ -144,11 +133,9 @@ def test_application_for_native_app_user(mocked_send_accepted_as_beneficiary_ema
     push_testing.reset_requests()
 
     # When
-    create_beneficiary_from_application.execute(application_id)
+    create_beneficiary_from_application.execute(APPLICATION_ID)
 
     # Then
-    mocked_send_accepted_as_beneficiary_email.assert_called_once()
-
     beneficiary = User.query.one()
 
     # the fake Jouve backend returns a default phone number. Since a User
@@ -162,7 +149,7 @@ def test_application_for_native_app_user(mocked_send_accepted_as_beneficiary_ema
 
     beneficiary_import = BeneficiaryImport.query.one()
     assert beneficiary_import.currentStatus == ImportStatus.CREATED
-    assert beneficiary_import.applicationId == application_id
+    assert beneficiary_import.applicationId == APPLICATION_ID
     assert beneficiary_import.beneficiary == beneficiary
     assert beneficiary.notificationSubscriptions == {"marketing_push": True, "marketing_email": False}
 
@@ -265,22 +252,21 @@ def test_application_for_native_app_user_with_load_smoothing(
             },
         }
     ]
+    assert len(mails_testing.outbox) == 1
+    assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2016025
 
 
 @override_features(FORCE_PHONE_VALIDATION=False)
-@override_settings(
-    JOUVE_APPLICATION_BACKEND="tests.use_cases.create_beneficiary_from_application_test.FakeBeneficiaryJouveBackend",
-)
+@patch("pcapi.use_cases.create_beneficiary_from_application.get_application_content", return_value=JOUVE_CONTENT)
 @pytest.mark.usefixtures("db_session")
 def test_cannot_save_beneficiary_if_email_is_already_taken(app):
     # Given
-    application_id = 35
     email = "rennes@example.org"
     user = create_user(email=email, idx=4)
     repository.save(user)
 
     # When
-    create_beneficiary_from_application.execute(application_id)
+    create_beneficiary_from_application.execute(APPLICATION_ID)
 
     # Then
     user = User.query.one()
@@ -288,16 +274,14 @@ def test_cannot_save_beneficiary_if_email_is_already_taken(app):
 
     beneficiary_import = BeneficiaryImport.query.one()
     assert beneficiary_import.currentStatus == ImportStatus.REJECTED
-    assert beneficiary_import.applicationId == application_id
+    assert beneficiary_import.applicationId == APPLICATION_ID
     assert beneficiary_import.beneficiary == user
     assert beneficiary_import.detail == f"Email {email} is already taken."
 
     assert push_testing.requests == []
 
 
-@override_settings(
-    JOUVE_APPLICATION_BACKEND="tests.use_cases.create_beneficiary_from_application_test.FakeBeneficiaryJouveBackend",
-)
+@patch("pcapi.use_cases.create_beneficiary_from_application.get_application_content", return_value=JOUVE_CONTENT)
 @pytest.mark.usefixtures("db_session")
 def test_cannot_save_beneficiary_if_duplicate(app):
     # Given
@@ -309,10 +293,8 @@ def test_cannot_save_beneficiary_if_duplicate(app):
     user = create_user(first_name=first_name, last_name=last_name, date_of_birth=date_of_birth, idx=existing_user_id)
     repository.save(user)
 
-    application_id = 35
-
     # When
-    create_beneficiary_from_application.execute(application_id)
+    create_beneficiary_from_application.execute(APPLICATION_ID)
 
     # Then
     user = User.query.one()
@@ -320,23 +302,21 @@ def test_cannot_save_beneficiary_if_duplicate(app):
 
     beneficiary_import = BeneficiaryImport.query.one()
     assert beneficiary_import.currentStatus == ImportStatus.REJECTED
-    assert beneficiary_import.applicationId == application_id
+    assert beneficiary_import.applicationId == APPLICATION_ID
     assert beneficiary_import.beneficiary is None
     assert beneficiary_import.detail == f"User with id {existing_user_id} is a duplicate."
 
 
 @pytest.mark.usefixtures("db_session")
-@override_settings(
-    JOUVE_APPLICATION_BACKEND="tests.use_cases.create_beneficiary_from_application_test.FakeBeneficiaryJouveBackend"
-)
+@patch("pcapi.use_cases.create_beneficiary_from_application.get_application_content")
 @override_features(WHOLE_FRANCE_OPENING=False)
-def test_cannot_save_beneficiary_if_department_is_not_eligible_legacy_behaviour(app):
+def test_cannot_save_beneficiary_if_department_is_not_eligible_legacy_behaviour(get_application_content, app):
     # Given
-    application_id = 36
-    postal_code = f"{application_id}123"
+    postal_code = "75000"
+    get_application_content.return_value = JOUVE_CONTENT | {"postalCode": postal_code}
 
     # When
-    create_beneficiary_from_application.execute(application_id)
+    create_beneficiary_from_application.execute(APPLICATION_ID)
 
     # Then
     users_count = User.query.count()
@@ -344,23 +324,21 @@ def test_cannot_save_beneficiary_if_department_is_not_eligible_legacy_behaviour(
 
     beneficiary_import = BeneficiaryImport.query.one()
     assert beneficiary_import.currentStatus == ImportStatus.REJECTED
-    assert beneficiary_import.applicationId == application_id
+    assert beneficiary_import.applicationId == APPLICATION_ID
     assert beneficiary_import.beneficiary is None
     assert beneficiary_import.detail == f"Postal code {postal_code} is not eligible."
 
 
 @pytest.mark.usefixtures("db_session")
-@override_settings(
-    JOUVE_APPLICATION_BACKEND="tests.use_cases.create_beneficiary_from_application_test.FakeBeneficiaryJouveBackend"
-)
+@patch("pcapi.use_cases.create_beneficiary_from_application.get_application_content")
 @override_features(WHOLE_FRANCE_OPENING=True)
-def test_cannot_save_beneficiary_if_department_is_not_eligible(app):
+def test_cannot_save_beneficiary_if_department_is_not_eligible(get_application_content, app):
     # Given
-    application_id = 988
-    postal_code = f"{application_id}123"
+    postal_code = "984"
+    get_application_content.return_value = JOUVE_CONTENT | {"postalCode": postal_code}
 
     # When
-    create_beneficiary_from_application.execute(application_id)
+    create_beneficiary_from_application.execute(APPLICATION_ID)
 
     # Then
     users_count = User.query.count()
@@ -368,38 +346,27 @@ def test_cannot_save_beneficiary_if_department_is_not_eligible(app):
 
     beneficiary_import = BeneficiaryImport.query.one()
     assert beneficiary_import.currentStatus == ImportStatus.REJECTED
-    assert beneficiary_import.applicationId == application_id
+    assert beneficiary_import.applicationId == APPLICATION_ID
     assert beneficiary_import.beneficiary is None
     assert beneficiary_import.detail == f"Postal code {postal_code} is not eligible."
 
 
 @patch("pcapi.use_cases.create_beneficiary_from_application.validate")
-@patch("pcapi.use_cases.create_beneficiary_from_application.send_rejection_email_to_beneficiary_pre_subscription")
-@override_settings(
-    JOUVE_APPLICATION_BACKEND="tests.use_cases.create_beneficiary_from_application_test.FakeBeneficiaryJouveBackend",
-)
+@patch("pcapi.use_cases.create_beneficiary_from_application.get_application_content")
 @pytest.mark.usefixtures("db_session")
-def test_calls_send_rejection_mail_with_validation_error(
-    mocked_send_rejection_email_to_beneficiary_pre_subscription, stubed_validate, app
-):
+def test_calls_send_rejection_mail_with_validation_error(get_application_content, stubed_validate, app):
     # Given
-    application_id = 35
     error = BeneficiaryIsADuplicate("Some reason")
     stubed_validate.side_effect = error
-    pre_subscription = BeneficiaryPreSubscription(
-        application_id=application_id,
-        postal_code=f"{application_id:02d}123",
-        **PRE_SUBSCRIPTION_BASE_DATA,
-    )
+    get_application_content.return_value = JOUVE_CONTENT
 
     # When
-    create_beneficiary_from_application.execute(application_id)
+    create_beneficiary_from_application.execute(APPLICATION_ID)
 
     # Then
-    mocked_send_rejection_email_to_beneficiary_pre_subscription.assert_called_once_with(
-        beneficiary_pre_subscription=pre_subscription,
-        beneficiary_is_eligible=True,
-    )
+    assert len(mails_testing.outbox) == 1
+    assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 1530996
+    assert mails_testing.outbox[0].sent_data["To"] == "rennes@example.org"
 
 
 BASE_APPLICATION_ID = 35
@@ -429,7 +396,7 @@ BASE_JOUVE_CONTENT = {
     "fraud_strict_detection_parameter",
     [{"serviceCodeCtrl": "KO"}, {"posteCodeCtrl": "KO"}, {"birthLocationCtrl": "KO"}],
 )
-@patch("pcapi.connectors.beneficiaries.jouve_backend.BeneficiaryJouveBackend._get_application_content")
+@patch("pcapi.use_cases.create_beneficiary_from_application.get_application_content")
 @pytest.mark.usefixtures("db_session")
 def test_cannot_save_beneficiary_when_fraud_is_detected(
     mocked_get_content,
@@ -455,7 +422,7 @@ def test_cannot_save_beneficiary_when_fraud_is_detected(
     assert len(mails_testing.outbox) == 0
 
 
-@patch("pcapi.connectors.beneficiaries.jouve_backend.BeneficiaryJouveBackend._get_application_content")
+@patch("pcapi.use_cases.create_beneficiary_from_application.get_application_content")
 @pytest.mark.usefixtures("db_session")
 def test_doesnt_save_beneficiary_when_suspicious(
     mocked_get_content,
@@ -474,7 +441,7 @@ def test_doesnt_save_beneficiary_when_suspicious(
     assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2905960
 
 
-@patch("pcapi.connectors.beneficiaries.jouve_backend.BeneficiaryJouveBackend._get_application_content")
+@patch("pcapi.use_cases.create_beneficiary_from_application.get_application_content")
 @pytest.mark.usefixtures("db_session")
 def test_id_piece_number_no_duplicate(
     mocked_get_content,
@@ -504,7 +471,7 @@ def test_id_piece_number_no_duplicate(
     assert subscribing_user.idPieceNumber == ID_PIECE_NUMBER
 
 
-@patch("pcapi.connectors.beneficiaries.jouve_backend.BeneficiaryJouveBackend._get_application_content")
+@patch("pcapi.use_cases.create_beneficiary_from_application.get_application_content")
 @pytest.mark.usefixtures("db_session")
 def test_id_piece_number_duplicate(
     mocked_get_content,

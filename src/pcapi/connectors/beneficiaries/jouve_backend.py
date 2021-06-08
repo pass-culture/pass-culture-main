@@ -26,67 +26,67 @@ class ApiJouveException(Exception):
         super().__init__()
 
 
-class BeneficiaryJouveBackend:
-    def _get_authentication_token(self) -> str:
-        expiration = datetime.datetime.now() + datetime.timedelta(hours=1)
-        uri = "/REST/server/authenticationtokens"
-        response = requests.post(
-            f"{settings.JOUVE_API_DOMAIN}{uri}",
-            headers={"Content-Type": "application/json"},
-            json={
-                "Username": settings.JOUVE_API_USERNAME,
-                "Password": settings.JOUVE_API_PASSWORD,
-                "VaultGuid": settings.JOUVE_API_VAULT_GUID,
-                "Expiration": expiration.isoformat(),
-            },
+def _get_authentication_token() -> str:
+    expiration = datetime.datetime.now() + datetime.timedelta(hours=1)
+    uri = "/REST/server/authenticationtokens"
+    response = requests.post(
+        f"{settings.JOUVE_API_DOMAIN}{uri}",
+        headers={"Content-Type": "application/json"},
+        json={
+            "Username": settings.JOUVE_API_USERNAME,
+            "Password": settings.JOUVE_API_PASSWORD,
+            "VaultGuid": settings.JOUVE_API_VAULT_GUID,
+            "Expiration": expiration.isoformat(),
+        },
+    )
+
+    if response.status_code != 200:
+        raise ApiJouveException(
+            "Error getting API Jouve authentication token", route=uri, status_code=response.status_code
         )
 
-        if response.status_code != 200:
-            raise ApiJouveException(
-                "Error getting API Jouve authentication token", route=uri, status_code=response.status_code
-            )
+    response_json = response.json()
+    return response_json["Value"]
 
-        response_json = response.json()
-        return response_json["Value"]
 
-    def _get_application_content(self, application_id: str) -> dict:
-        token = self._get_authentication_token()
+def get_application_content(application_id: str) -> dict:
+    token = _get_authentication_token()
 
-        uri = "/REST/vault/extensionmethod/VEM_GetJeuneByID"
-        response = requests.post(
-            f"{settings.JOUVE_API_DOMAIN}{uri}",
-            headers={
-                "X-Authentication": token,
-            },
-            data=str(application_id),
-        )
+    uri = "/REST/vault/extensionmethod/VEM_GetJeuneByID"
+    response = requests.post(
+        f"{settings.JOUVE_API_DOMAIN}{uri}",
+        headers={
+            "X-Authentication": token,
+        },
+        data=str(application_id),
+    )
 
-        if response.status_code != 200:
-            raise ApiJouveException("Error getting API jouve GetJeuneByID", route=uri, status_code=response.status_code)
+    if response.status_code != 200:
+        raise ApiJouveException("Error getting API jouve GetJeuneByID", route=uri, status_code=response.status_code)
 
-        return response.json()
+    return response.json()
 
-    def get_application_by(self, application_id: int) -> BeneficiaryPreSubscription:
-        content = self._get_application_content(application_id)
-        fraud_fields = get_fraud_fields(content)
 
-        return BeneficiaryPreSubscription(
-            activity=content["activity"],
-            address=content["address"],
-            application_id=content["id"],
-            city=content["city"],
-            civility="Mme" if content["gender"] == "F" else "M.",
-            date_of_birth=datetime.datetime.strptime(content["birthDate"], "%m/%d/%Y"),
-            email=content["email"],
-            first_name=content["firstName"],
-            id_piece_number=content["bodyPieceNumber"],
-            last_name=content["lastName"],
-            phone_number=content["phoneNumber"],
-            postal_code=content["postalCode"],
-            source=BeneficiaryImportSources.jouve.value,
-            source_id=DEFAULT_JOUVE_SOURCE_ID,
-            fraud_fields=fraud_fields,
-        )
+def get_subscription_from_content(content: dict) -> BeneficiaryPreSubscription:
+    fraud_fields = get_fraud_fields(content)
+
+    return BeneficiaryPreSubscription(
+        activity=content["activity"],
+        address=content["address"],
+        application_id=content["id"],
+        city=content["city"],
+        civility="Mme" if content["gender"] == "F" else "M.",
+        date_of_birth=datetime.datetime.strptime(content["birthDate"], "%m/%d/%Y"),
+        email=content["email"],
+        first_name=content["firstName"],
+        id_piece_number=content["bodyPieceNumber"],
+        last_name=content["lastName"],
+        phone_number=content["phoneNumber"],
+        postal_code=content["postalCode"],
+        source=BeneficiaryImportSources.jouve.value,
+        source_id=DEFAULT_JOUVE_SOURCE_ID,
+        fraud_fields=fraud_fields,
+    )
 
 
 @dataclass
