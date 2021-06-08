@@ -13,7 +13,7 @@ show_types = [
     },
     {
         "code": 200,
-        "label": "Cirque / Magie",
+        "label": "Cirque",
         "children": [
             {"code": 201, "label": "Cirque Contemporain"},
             {"code": 202, "label": "Cirque Hors les murs"},
