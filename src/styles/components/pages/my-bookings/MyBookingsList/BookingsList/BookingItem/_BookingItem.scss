@@ -131,6 +131,7 @@
 .mb-token {
   @include token();
 
+  overflow-wrap: break-word;
   text-align: center;
   width: 50%;
 }
