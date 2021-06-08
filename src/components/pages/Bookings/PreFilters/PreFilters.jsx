@@ -9,7 +9,7 @@ import FilterByBookingPeriod from './FilterByBookingPeriod'
 import FilterByEventDate from './FilterByEventDate.jsx'
 import FilterByVenue from './FilterByVenue'
 
-const PreFilters = ({ offerVenueId, applyPreFilters }) => {
+const PreFilters = ({ applyPreFilters, isLoading, offerVenueId }) => {
   const [selectedFilters, setSelectedFilters] = useState({
     bookingBeginningDate: DEFAULT_PRE_FILTERS.bookingBeginningDate,
     bookingEndingDate: DEFAULT_PRE_FILTERS.bookingEndingDate,
@@ -60,6 +60,7 @@ const PreFilters = ({ offerVenueId, applyPreFilters }) => {
         <div className="separator" />
         <button
           className="primary-button"
+          disabled={isLoading}
           type="submit"
         >
           {'Afficher'}
@@ -76,6 +77,7 @@ PreFilters.defaultProps = {
 
 PreFilters.propTypes = {
   applyPreFilters: PropTypes.func.isRequired,
+  isLoading: PropTypes.bool.isRequired,
   offerVenueId: PropTypes.string,
 }
 

@@ -21,7 +21,7 @@ const BookingsRecap = ({
   showWarningNotification,
 }) => {
   const [bookingsRecap, setBookingsRecap] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(arePreFiltersEnabled ? false : true)
 
   const loadBookingsRecap = useCallback(
     async preFilters => {
@@ -79,6 +79,7 @@ const BookingsRecap = ({
         <>
           <PreFilters
             applyPreFilters={loadBookingsRecap}
+            isLoading={isLoading}
             offerVenueId={location.state?.venueId}
           />
           {bookingsRecap.length > 0 ? (
@@ -88,7 +89,7 @@ const BookingsRecap = ({
               locationState={location.state}
             />
           ) : (
-            <ChoosePreFiltersMessage />
+            isLoading ? <Spinner /> : <ChoosePreFiltersMessage />
           )}
         </>
       ) : bookingsRecap.length > 0 ? (
