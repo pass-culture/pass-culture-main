@@ -94,7 +94,7 @@ def get_encrypted_gcp_storage_client_bucket() -> Bucket:
     if not hasattr(get_encrypted_gcp_storage_client_bucket, "client"):
         get_encrypted_gcp_storage_client_bucket.client = Client(project=settings.GCP_PROJECT)
 
-    return get_encrypted_gcp_storage_client_bucket.client.bucket(settings.GCP_BUCKET_NAME)
+    return get_encrypted_gcp_storage_client_bucket.client.bucket(settings.GCP_ENCRYPTED_BUCKET_NAME)
 
 
 def store_object(
