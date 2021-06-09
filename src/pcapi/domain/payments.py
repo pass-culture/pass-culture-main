@@ -50,11 +50,13 @@ class Transaction:
 
 class PaymentDetails:
     CSV_HEADER = [
+        "Libellé fournisseur",
         "Raison sociale de la structure",
         "SIREN",
         "Raison sociale du lieu",
         "SIRET",
         "ID du lieu",
+        "ID de l'offre",
         "Nom de l'offre",
         "Type de l'offre",
         "Date de la réservation",
@@ -68,13 +70,18 @@ class PaymentDetails:
 
     def __init__(self, payment: Payment = None, booking_used_date: datetime = None):
         if payment is not None:
-            self.offerer_name = payment.booking.stock.offer.venue.managingOfferer.name
-            self.offerer_siren = payment.booking.stock.offer.venue.managingOfferer.siren
-            self.venue_name = payment.booking.stock.offer.venue.name
-            self.venue_siret = payment.booking.stock.offer.venue.siret
-            self.venue_humanized_id = humanize(payment.booking.stock.offer.venue.id)
-            self.offer_name = payment.booking.stock.offer.product.name
-            self.offer_type = payment.booking.stock.offer.product.offerType["proLabel"]
+            offer = payment.booking.stock.offer
+            venue = offer.venue
+            offerer = venue.managingOfferer
+            self.offerer_and_venue_label = f"{offerer.name}-{venue.name}"
+            self.offerer_name = offerer.name
+            self.offerer_siren = offerer.siren
+            self.venue_name = venue.name
+            self.venue_siret = venue.siret
+            self.venue_humanized_id = humanize(venue.id)
+            self.offer_id = offer.id
+            self.offer_name = offer.product.name
+            self.offer_type = offer.product.offerType["proLabel"]
             self.booking_date = payment.booking.dateCreated
             self.booking_amount = payment.booking.total_amount
             self.booking_used_date = booking_used_date
@@ -85,11 +92,13 @@ class PaymentDetails:
 
     def as_csv_row(self):
         return [
+            self.offerer_and_venue_label,
             self.offerer_name,
             self.offerer_siren,
             self.venue_name,
             self.venue_siret,
             self.venue_humanized_id,
+            str(self.offer_id),
             self.offer_name,
             self.offer_type,
             str(self.booking_date),

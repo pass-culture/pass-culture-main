@@ -64,21 +64,32 @@ class GeneratePaymentDetailsCsvTest:
 
         rows = csv.splitlines()
         assert len(rows) == 3
-        assert (
-            rows[0] == ""
-            '"Raison sociale de la structure","SIREN",'
-            '"Raison sociale du lieu","SIRET","ID du lieu",'
-            '"Nom de l\'offre","Type de l\'offre",'
-            '"Date de la réservation","Prix de la réservation","Date de validation",'
-            '"IBAN","Paiement ID",'
-            '"Taux de remboursement","Montant remboursé à l\'offreur"'
-        )
+        assert rows[0].split(",") == [
+            '"Libellé fournisseur"',
+            '"Raison sociale de la structure"',
+            '"SIREN"',
+            '"Raison sociale du lieu"',
+            '"SIRET"',
+            '"ID du lieu"',
+            '"ID de l\'offre"',
+            '"Nom de l\'offre"',
+            '"Type de l\'offre"',
+            '"Date de la réservation"',
+            '"Prix de la réservation"',
+            '"Date de validation"',
+            '"IBAN"',
+            '"Paiement ID"',
+            '"Taux de remboursement"',
+            '"Montant remboursé à l\'offreur"',
+        ]
         assert rows[1].split(",") == [
+            '"Le Petit Rintintin Management Ltd.-Le Petit Rintintin"',
             '"Le Petit Rintintin Management Ltd."',
             '"111111111"',
             '"Le Petit Rintintin"',
             '"11111111122222"',
             f'"{humanize(venue1.id)}"',
+            f'"{p1.booking.stock.offerId}"',
             '"Une histoire formidable"',
             '"Audiovisuel - films sur supports physiques et VOD"',
             '"2020-01-01 00:00:00"',
@@ -90,11 +101,13 @@ class GeneratePaymentDetailsCsvTest:
             '"9.00"',
         ]
         assert rows[2].split(",") == [
+            '"Le Gigantesque Cubitus Management Ltd.-Le Gigantesque Cubitus"',
             '"Le Gigantesque Cubitus Management Ltd."',
             '"222222222"',
             '"Le Gigantesque Cubitus"',
             '"22222222233333"',
             f'"{humanize(venue2.id)}"',
+            f'"{p2.booking.stock.offerId}"',
             '"Une histoire plutôt bien"',
             '"Audiovisuel - films sur supports physiques et VOD"',
             '"2020-01-01 00:00:00"',
