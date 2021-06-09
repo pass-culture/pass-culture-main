@@ -10,6 +10,6 @@ from pcapi.alembic.run_migrations import run_migrations
 config = context.config
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
-fileConfig(config.config_file_name)
+fileConfig(config.config_file_name, disable_existing_loggers=False)
 
 run_migrations()
