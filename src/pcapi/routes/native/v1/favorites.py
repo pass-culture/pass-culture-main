@@ -1,4 +1,5 @@
 from sqlalchemy import and_
+from sqlalchemy import exc
 from sqlalchemy import func
 from sqlalchemy import not_
 from sqlalchemy.orm import Load
@@ -131,11 +132,10 @@ def create_favorite(user: User, body: serializers.FavoriteRequest) -> serializer
     if settings.MAX_FAVORITES:
         if Favorite.query.filter_by(user=user).count() >= settings.MAX_FAVORITES:
             raise ApiErrors({"code": "MAX_FAVORITES_REACHED"})
-    with transaction():
-        offer = Offer.query.filter_by(id=body.offerId).first_or_404()
-        favorite = Favorite.query.filter(Favorite.offerId == body.offerId, Favorite.userId == user.id).one_or_none()
 
-        if not favorite:
+    offer = Offer.query.filter_by(id=body.offerId).first_or_404()
+    try:
+        with transaction():
             favorite = Favorite(
                 mediation=offer.activeMediation,
                 offer=offer,
@@ -143,7 +143,9 @@ def create_favorite(user: User, body: serializers.FavoriteRequest) -> serializer
             )
             db.session.add(favorite)
             db.session.flush()
-        return serializers.FavoriteResponse.from_orm(favorite)
+    except exc.IntegrityError:
+        favorite = Favorite.query.filter_by(offerId=body.offerId, userId=user.id).one_or_none()
+    return serializers.FavoriteResponse.from_orm(favorite)
 
 
 @blueprint.native_v1.route("/me/favorites/<int:favorite_id>", methods=["DELETE"])
