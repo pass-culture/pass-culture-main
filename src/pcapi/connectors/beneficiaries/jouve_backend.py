@@ -70,12 +70,6 @@ class BeneficiaryJouveBackend:
         content = self._get_application_content(application_id)
         fraud_fields = get_fraud_fields(content)
 
-        # There is a bug in Jouve that invert first_name and last_name (only testing and staging env)
-        # More explanations here: https://passculture.atlassian.net/secure/RapidBoard.jspa?rapidView=34&modal=detail&selectedIssue=PC-7845&quickFilter=278
-        # TODO 05/2021: remove this code when Jouve fixed the bug
-        first_name = content["lastName"] if settings.IS_TESTING or settings.IS_STAGING else content["firstName"]
-        last_name = content["firstName"] if settings.IS_TESTING or settings.IS_STAGING else content["lastName"]
-
         return BeneficiaryPreSubscription(
             activity=content["activity"],
             address=content["address"],
@@ -84,9 +78,9 @@ class BeneficiaryJouveBackend:
             civility="Mme" if content["gender"] == "F" else "M.",
             date_of_birth=datetime.datetime.strptime(content["birthDate"], "%m/%d/%Y"),
             email=content["email"],
-            first_name=first_name,
+            first_name=content["firstName"],
             id_piece_number=content["bodyPieceNumber"],
-            last_name=last_name,
+            last_name=content["lastName"],
             phone_number=content["phoneNumber"],
             postal_code=content["postalCode"],
             source=BeneficiaryImportSources.jouve.value,
