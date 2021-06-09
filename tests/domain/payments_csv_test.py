@@ -81,6 +81,7 @@ class GeneratePaymentDetailsCsvTest:
             '"Paiement ID"',
             '"Taux de remboursement"',
             '"Montant remboursé à l\'offreur"',
+            '"Marge"',
         ]
         assert rows[1].split(",") == [
             '"Le Petit Rintintin Management Ltd.-Le Petit Rintintin"',
@@ -99,6 +100,7 @@ class GeneratePaymentDetailsCsvTest:
             f'"{p1.id}"',
             f'"{p1.reimbursementRate}"',
             '"9.00"',
+            '"1.00"',
         ]
         assert rows[2].split(",") == [
             '"Le Gigantesque Cubitus Management Ltd.-Le Gigantesque Cubitus"',
@@ -117,6 +119,7 @@ class GeneratePaymentDetailsCsvTest:
             f'"{p2.id}"',
             f'"{p2.reimbursementRate}"',
             '"11.00"',
+            '"1.00"',
         ]
 
     def test_only_header_if_no_payment(self):

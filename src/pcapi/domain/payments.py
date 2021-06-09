@@ -66,6 +66,7 @@ class PaymentDetails:
         "Paiement ID",
         "Taux de remboursement",
         "Montant remboursé à l'offreur",
+        "Marge",
     ]
 
     def __init__(self, payment: Payment = None, booking_used_date: datetime = None):
@@ -89,6 +90,7 @@ class PaymentDetails:
             self.payment_id = payment.id
             self.reimbursement_rate = payment.reimbursementRate
             self.reimbursed_amount = payment.amount
+            self.margin = payment.booking.total_amount - payment.amount
 
     def as_csv_row(self):
         return [
@@ -108,6 +110,7 @@ class PaymentDetails:
             str(self.payment_id),
             str(self.reimbursement_rate),
             str(self.reimbursed_amount),
+            str(self.margin),
         ]
 
 
