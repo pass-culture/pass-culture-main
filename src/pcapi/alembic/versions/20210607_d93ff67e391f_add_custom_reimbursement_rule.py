@@ -1,7 +1,7 @@
 """Add `custom_reimbursement_rule` table
 
 Revision ID: d93ff67e391f
-Revises: e85a73abc5a7
+Revises: e5cda043c0ee
 Create Date: 2021-06-07 17:38:48.540828
 
 """

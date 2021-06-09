@@ -1,8 +1,8 @@
 import logging
 
-from pcapi.connectors.beneficiaries.jouve_backend import ApiJouveException
-from pcapi.connectors.beneficiaries.jouve_backend import get_application_content
-from pcapi.connectors.beneficiaries.jouve_backend import get_subscription_from_content
+from pcapi.connectors.beneficiaries import jouve_backend
+from pcapi.core.fraud.api import on_beneficiary_fraud_check_creation
+from pcapi.core.fraud.models import FraudCheckType
 from pcapi.core.users.api import create_reset_password_token
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsADuplicate
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import CantRegisterBeneficiary
@@ -29,9 +29,9 @@ class CreateBeneficiaryFromApplication:
 
     def execute(self, application_id: int, run_fraud_detection: bool = True, fraud_detection_ko: bool = False) -> None:
         try:
-            jouve_content = get_application_content(application_id)
-            beneficiary_pre_subscription = get_subscription_from_content(jouve_content)
-        except ApiJouveException as api_jouve_exception:
+            jouve_content = jouve_backend.get_application_content(application_id)
+            beneficiary_pre_subscription = jouve_backend.get_subscription_from_content(jouve_content)
+        except jouve_backend.ApiJouveException as api_jouve_exception:
             logger.error(
                 api_jouve_exception.value.message,
                 extra={
@@ -41,8 +41,19 @@ class CreateBeneficiaryFromApplication:
                 },
             )
             return
+        except jouve_backend.JouveContentValidationError as exc:
+            logger.error(
+                "Validation error when parsing Jouve content: %s",
+                exc.message,
+                extra={"application_id": application_id, "validation_errors": exc.errors},
+            )
+            return
 
         preexisting_account = find_user_by_email(beneficiary_pre_subscription.email)
+        if preexisting_account:
+            on_beneficiary_fraud_check_creation(
+                FraudCheckType.JOUVE, preexisting_account, jouve_content, str(application_id)
+            )
 
         try:
             validate(beneficiary_pre_subscription, preexisting_account=preexisting_account)

@@ -2,10 +2,13 @@ from dataclasses import dataclass
 import datetime
 import logging
 from typing import Any
+from typing import Optional
 
+from pydantic import ValidationError
 import requests
 
 from pcapi import settings
+from pcapi.core.fraud.models import JouveContent
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
 from pcapi.models import BeneficiaryImportSources
 from pcapi.models.feature import FeatureToggle
@@ -23,6 +26,13 @@ class ApiJouveException(Exception):
         self.message = message
         self.status_code = status_code
         self.route = route
+        super().__init__()
+
+
+class JouveContentValidationError(Exception):
+    def __init__(self, message, errors):
+        self.message = message
+        self.errors = errors
         super().__init__()
 
 
@@ -49,7 +59,7 @@ def _get_authentication_token() -> str:
     return response_json["Value"]
 
 
-def get_application_content(application_id: str) -> dict:
+def _get_raw_content(application_id: str) -> dict:
     token = _get_authentication_token()
 
     uri = "/REST/vault/extensionmethod/VEM_GetJeuneByID"
@@ -67,22 +77,30 @@ def get_application_content(application_id: str) -> dict:
     return response.json()
 
 
-def get_subscription_from_content(content: dict) -> BeneficiaryPreSubscription:
+def get_application_content(application_id: str) -> JouveContent:
+    application_content = _get_raw_content(application_id)
+    try:
+        return JouveContent(**application_content)
+    except ValidationError as exc:
+        raise JouveContentValidationError(str(exc), exc.errors)
+
+
+def get_subscription_from_content(content: JouveContent) -> BeneficiaryPreSubscription:
     fraud_fields = get_fraud_fields(content)
 
     return BeneficiaryPreSubscription(
-        activity=content["activity"],
-        address=content["address"],
-        application_id=content["id"],
-        city=content["city"],
-        civility="Mme" if content["gender"] == "F" else "M.",
-        date_of_birth=datetime.datetime.strptime(content["birthDate"], "%m/%d/%Y"),
-        email=content["email"],
-        first_name=content["firstName"],
-        id_piece_number=content["bodyPieceNumber"],
-        last_name=content["lastName"],
-        phone_number=content["phoneNumber"],
-        postal_code=content["postalCode"],
+        activity=content.activity,
+        address=content.address,
+        application_id=content.id,
+        city=content.city,
+        civility="Mme" if content.gender == "F" else "M.",
+        date_of_birth=datetime.datetime.strptime(content.birthDate, "%m/%d/%Y"),
+        email=content.email,
+        first_name=content.firstName,
+        id_piece_number=content.bodyPieceNumber,
+        last_name=content.lastName,
+        phone_number=content.phoneNumber,
+        postal_code=content.postalCode,
         source=BeneficiaryImportSources.jouve.value,
         source_id=DEFAULT_JOUVE_SOURCE_ID,
         fraud_fields=fraud_fields,
@@ -99,15 +117,12 @@ class FraudDetectionItem:
         return f"{self.key}: {self.value} - {self.valid}"
 
 
-def get_boolean_fraud_detection_item(content: dict, key: str) -> FraudDetectionItem:
-    value = content.get(key)
+def get_boolean_fraud_detection_item(value: Optional[str], key: str) -> FraudDetectionItem:
     valid = value.upper() != "KO" if value else True
     return FraudDetectionItem(key=key, value=value, valid=valid)
 
 
-def get_threshold_fraud_detection_item(content: dict, key: str, threshold: int) -> FraudDetectionItem:
-    value = content.get(key)
-
+def get_threshold_fraud_detection_item(value: Optional[int], key: str, threshold: int) -> FraudDetectionItem:
     try:
         valid = int(value) >= threshold if value else True
     except ValueError:
@@ -125,21 +140,21 @@ def get_fraud_fields(content: dict) -> dict:
 
     return {
         "strict_controls": [
-            get_boolean_fraud_detection_item(content, "posteCodeCtrl"),
-            get_boolean_fraud_detection_item(content, "serviceCodeCtrl"),
-            get_boolean_fraud_detection_item(content, "birthLocationCtrl"),
+            get_boolean_fraud_detection_item(content.posteCodeCtrl, "posteCodeCtrl"),
+            get_boolean_fraud_detection_item(content.serviceCodeCtrl, "serviceCodeCtrl"),
+            get_boolean_fraud_detection_item(content.birthLocationCtrl, "birthLocationCtrl"),
         ],
         "non_blocking_controls": [
-            get_threshold_fraud_detection_item(content, "bodyBirthDateLevel", 100),
-            get_threshold_fraud_detection_item(content, "bodyNameLevel", 50),
-            get_boolean_fraud_detection_item(content, "bodyBirthDateCtrl"),
-            get_boolean_fraud_detection_item(content, "bodyFirstNameCtrl"),
-            get_threshold_fraud_detection_item(content, "bodyFirstNameLevel", 50),
-            get_boolean_fraud_detection_item(content, "bodyNameCtrl"),
-            get_boolean_fraud_detection_item(content, "bodyPieceNumberCtrl"),
-            get_threshold_fraud_detection_item(content, "bodyPieceNumberLevel", 50),
-            get_boolean_fraud_detection_item(content, "creatorCtrl"),
-            get_boolean_fraud_detection_item(content, "initialNumberCtrl"),
-            get_boolean_fraud_detection_item(content, "initialSizeCtrl"),
+            get_threshold_fraud_detection_item(content.bodyBirthDateLevel, "bodyBirthDateLevel", 100),
+            get_threshold_fraud_detection_item(content.bodyNameLevel, "bodyNameLevel", 50),
+            get_boolean_fraud_detection_item(content.bodyBirthDateCtrl, "bodyBirthDateCtrl"),
+            get_boolean_fraud_detection_item(content.bodyFirstNameCtrl, "bodyFirstNameCtrl"),
+            get_threshold_fraud_detection_item(content.bodyFirstNameLevel, "bodyFirstNameLevel", 50),
+            get_boolean_fraud_detection_item(content.bodyNameCtrl, "bodyNameCtrl"),
+            get_boolean_fraud_detection_item(content.bodyPieceNumberCtrl, "bodyPieceNumberCtrl"),
+            get_threshold_fraud_detection_item(content.bodyPieceNumberLevel, "bodyPieceNumberLevel", 50),
+            get_boolean_fraud_detection_item(content.creatorCtrl, "creatorCtrl"),
+            get_boolean_fraud_detection_item(content.initialNumberCtrl, "initialNumberCtrl"),
+            get_boolean_fraud_detection_item(content.initialSizeCtrl, "initialSizeCtrl"),
         ],
     }

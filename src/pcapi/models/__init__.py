@@ -2,6 +2,7 @@
 from pcapi.models.offer_type import ThingType  # isort:skip
 
 from pcapi.core.bookings.models import Booking
+from pcapi.core.fraud.models import BeneficiaryFraudCheck
 from pcapi.core.mails.models import Email
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
@@ -62,6 +63,7 @@ __all__ = (
     "ApiKey",
     "AllocinePivot",
     "BankInformation",
+    "BeneficiaryFraudCheck",
     "BeneficiaryImport",
     "BeneficiaryImportStatus",
     "Criterion",
@@ -117,6 +119,7 @@ models = (
     ApiKey,
     AllocinePivot,
     BankInformation,
+    BeneficiaryFraudCheck,
     BeneficiaryImport,
     BeneficiaryImportStatus,
     Criterion,
