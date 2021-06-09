@@ -90,38 +90,40 @@ class OfferView(BaseAdminView):
             form.validation.data = current_offer.validation.value
 
     def on_model_change(self, form: wtforms.Form, model: Offer, is_created: bool) -> None:
-        previous_validation = form._fields["validation"].object_data
-        new_validation = OfferValidationStatus[form.validation.data]
-        if previous_validation != new_validation and new_validation in (
-            OfferValidationStatus.DRAFT,
-            OfferValidationStatus.PENDING,
-        ):
-            raise ValidationError("Le statut de validation ne peut pas être changé vers DRAFT ou PENDING")
+        if hasattr(form, "validation"):
+            previous_validation = form._fields["validation"].object_data
+            new_validation = OfferValidationStatus[form.validation.data]
+            if previous_validation != new_validation and new_validation in (
+                OfferValidationStatus.DRAFT,
+                OfferValidationStatus.PENDING,
+            ):
+                raise ValidationError("Le statut de validation ne peut pas être changé vers DRAFT ou PENDING")
 
     def after_model_change(self, form: wtforms.Form, offer: Offer, is_created: bool = False) -> None:
-        previous_validation = form._fields["validation"].object_data
-        new_validation = offer.validation
-        if previous_validation != new_validation:
-            offer.lastValidationDate = datetime.utcnow()
-            if new_validation == OfferValidationStatus.APPROVED:
-                offer.isActive = True
-            if new_validation == OfferValidationStatus.REJECTED:
-                offer.isActive = False
-                cancelled_bookings = cancel_bookings_from_rejected_offer(offer)
-                if cancelled_bookings:
-                    send_cancel_booking_notification.delay([booking.id for booking in cancelled_bookings])
+        if hasattr(form, "validation"):
+            previous_validation = form._fields["validation"].object_data
+            new_validation = offer.validation
+            if previous_validation != new_validation:
+                offer.lastValidationDate = datetime.utcnow()
+                if new_validation == OfferValidationStatus.APPROVED:
+                    offer.isActive = True
+                if new_validation == OfferValidationStatus.REJECTED:
+                    offer.isActive = False
+                    cancelled_bookings = cancel_bookings_from_rejected_offer(offer)
+                    if cancelled_bookings:
+                        send_cancel_booking_notification.delay([booking.id for booking in cancelled_bookings])
 
-            repository.save(offer)
+                repository.save(offer)
 
-            recipients = (
-                [offer.venue.bookingEmail]
-                if offer.venue.bookingEmail
-                else [recipient.user.email for recipient in offer.venue.managingOfferer.UserOfferers]
-            )
-            send_offer_validation_status_update_email(offer, new_validation, recipients)
-            send_offer_validation_notification_to_administration(new_validation, offer)
+                recipients = (
+                    [offer.venue.bookingEmail]
+                    if offer.venue.bookingEmail
+                    else [recipient.user.email for recipient in offer.venue.managingOfferer.UserOfferers]
+                )
+                send_offer_validation_status_update_email(offer, new_validation, recipients)
+                send_offer_validation_notification_to_administration(new_validation, offer)
 
-            flash("Le statut de l'offre a bien été modifié", "success")
+                flash("Le statut de l'offre a bien été modifié", "success")
 
         if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
             redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
