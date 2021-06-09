@@ -211,3 +211,7 @@ class UploadIdentityDocumentRequest(BaseModel):
             return validation.get_uploaded_image(image_as_bytes, 10 * 1000 * 1000)
 
         raise validation.exceptions.MissingImage
+
+
+class UserProfilingFraudRequest(BaseModel):
+    session_id: str

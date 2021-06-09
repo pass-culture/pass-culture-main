@@ -2,6 +2,7 @@ from datetime import datetime
 from datetime import timedelta
 from decimal import Decimal
 from io import BytesIO
+import logging
 from pathlib import Path
 from unittest.mock import patch
 import uuid
@@ -35,6 +36,7 @@ from pcapi.routes.native.v1.serialization import account as account_serializers
 
 import tests
 from tests.conftest import TestClient
+from tests.connectors import user_profiling_fixtures
 
 from .utils import create_user_and_test_client
 
@@ -1320,3 +1322,65 @@ class UpdateBeneficiaryInformationTest:
         assert notification["user_id"] == user.id
         assert notification["attribute_values"]["u.is_beneficiary"]
         assert notification["attribute_values"]["u.postal_code"] == "77000"
+
+
+class ProfilingFraudScoreTest:
+
+    USER_PROFILING_URL = "https://example.com/path"
+
+    @override_settings(USER_PROFILING_URL=USER_PROFILING_URL)
+    def test_profiling_fraud_score_call(self, client, requests_mock):
+        user = users_factories.UserFactory(
+            isBeneficiary=False,
+        )
+        session_id = "arbitrary-session-id"
+        matcher = requests_mock.register_uri(
+            "POST",
+            settings.USER_PROFILING_URL,
+            json=user_profiling_fixtures.CORRECT_RESPONSE,
+            status_code=200,
+        )
+        client.with_token(user.email)
+
+        response = client.post("/native/v1/user_profiling", json={"session_id": session_id})
+        assert response.status_code == 204
+        assert matcher.call_count == 1
+
+    @override_settings(USER_PROFILING_URL=USER_PROFILING_URL)
+    def test_profiling_fraud_score_call_error(self, client, requests_mock, caplog):
+        user = users_factories.UserFactory(
+            isBeneficiary=False,
+        )
+        matcher = requests_mock.register_uri(
+            "POST",
+            settings.USER_PROFILING_URL,
+            json=user_profiling_fixtures.PARAMETER_ERROR_RESPONSE,
+            status_code=500,
+        )
+        client.with_token(user.email)
+        response = client.post("/native/v1/user_profiling", json={"session_id": "random-session-id"})
+        assert response.status_code == 204
+        assert matcher.call_count == 1
+        assert caplog.record_tuples == [
+            ("pcapi.routes.native.v1.account", 40, "Error while retrieving user profiling infos")
+        ]
+
+    @override_settings(USER_PROFILING_URL=USER_PROFILING_URL)
+    def test_profiling_fraud_score_user_without_birth_date(self, client, requests_mock, caplog):
+        user = users_factories.UserFactory(
+            isBeneficiary=False,
+            dateOfBirth=None,
+        )
+        matcher = requests_mock.register_uri(
+            "POST",
+            settings.USER_PROFILING_URL,
+            json=user_profiling_fixtures.CORRECT_RESPONSE,
+            status_code=200,
+        )
+        client.with_token(user.email)
+
+        with caplog.at_level(logging.INFO):
+            response = client.post("/native/v1/user_profiling", json={"session_id": "random-session-id"})
+        assert response.status_code == 204
+        assert matcher.call_count == 1
+        assert caplog.record_tuples[0][-1].startswith("Success when profiling user:")

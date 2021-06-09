@@ -6,6 +6,8 @@ from flask import request
 
 from pcapi import settings
 from pcapi.connectors import api_recaptcha
+from pcapi.connectors import user_profiling
+from pcapi.core.logging import get_or_set_correlation_id
 from pcapi.core.offers.exceptions import FileSizeExceeded
 from pcapi.core.users import api
 from pcapi.core.users import constants
@@ -265,3 +267,31 @@ def validate_phone_number(user: User, body: serializers.ValidatePhoneNumberReque
 @authenticated_user_required
 def suspend_account(user: User) -> None:
     api.suspend_account(user, constants.SuspensionReason.UPON_USER_REQUEST, actor=user)
+
+
+@blueprint.native_v1.route("/user_profiling", methods=["POST"])
+@spectree_serialize(api=blueprint.api, on_success_status=204)
+@authenticated_user_required
+def profiling_fraud_score(user: User, body: serializers.UserProfilingFraudRequest) -> None:
+    handler = user_profiling.UserProfilingClient()
+
+    try:
+        profiling_infos = handler.get_user_profiling_fraud_data(
+            session_id=body.session_id,
+            user_id=user.id,
+            user_email=user.email,
+            birth_date=user.dateOfBirth.date() if user.dateOfBirth else None,
+            phone_number=user.phoneNumber,
+            workflow_type=user_profiling.WorkflowType.BENEFICIARY_VALIDATION,
+            # depends on loadbalancer configuration
+            ip_address=request.headers.get("X-Forwarded-For"),
+            line_of_business=user_profiling.LineOfBusiness.B2C,
+            # Insert request unique identifier
+            transaction_id=get_or_set_correlation_id(),
+            agent_type=user_profiling.AgentType.AGENT_MOBILE,
+        )
+    except user_profiling.BaseUserProfilingException:
+        logger.exception("Error while retrieving user profiling infos", exc_info=True)
+
+    else:
+        logger.info("Success when profiling user: returned userdata %r", profiling_infos.dict())
