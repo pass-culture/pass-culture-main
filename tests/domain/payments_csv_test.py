@@ -36,6 +36,7 @@ class GeneratePaymentDetailsCsvTest:
             booking__stock__offer__venue=venue1,
             iban="IBAN1",
             amount=9,
+            reimbursementRate=0.9,
             paymentMessage=payment_message,
         )
         venue2 = offers_factories.VenueFactory(
@@ -54,6 +55,9 @@ class GeneratePaymentDetailsCsvTest:
             booking__stock__offer__venue=venue2,
             iban="IBAN2",
             amount=11,
+            reimbursementRate=None,
+            reimbursementRule=None,
+            customReimbursementRule=payments_factories.CustomReimbursementRuleFactory(),
             paymentMessage=payment_message,
         )
 
@@ -98,7 +102,7 @@ class GeneratePaymentDetailsCsvTest:
             '"2020-01-02 00:00:00"',
             '"IBAN1"',
             f'"{p1.id}"',
-            f'"{p1.reimbursementRate}"',
+            '"0.90"',
             '"9.00"',
             '"1.00"',
         ]
@@ -117,7 +121,7 @@ class GeneratePaymentDetailsCsvTest:
             '"2020-01-02 00:00:00"',
             '"IBAN2"',
             f'"{p2.id}"',
-            f'"{p2.reimbursementRate}"',
+            '"0.92"',
             '"11.00"',
             '"1.00"',
         ]

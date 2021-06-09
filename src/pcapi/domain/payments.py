@@ -88,7 +88,11 @@ class PaymentDetails:
             self.booking_used_date = booking_used_date
             self.payment_iban = payment.iban
             self.payment_id = payment.id
-            self.reimbursement_rate = payment.reimbursementRate
+            # `Payment.reimbursementRate` is None if a custom
+            # reimbursement rule has been applied.
+            self.reimbursement_rate = payment.reimbursementRate or (
+                Decimal(payment.amount / payment.booking.total_amount).quantize(Decimal("0.01"))
+            )
             self.reimbursed_amount = payment.amount
             self.margin = payment.booking.total_amount - payment.amount
 
