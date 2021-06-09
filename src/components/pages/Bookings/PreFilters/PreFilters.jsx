@@ -10,7 +10,7 @@ import FilterByEventDate from './FilterByEventDate.jsx'
 import FilterByVenue from './FilterByVenue'
 
 const PreFilters = ({ applyPreFilters, isLoading, offerVenueId }) => {
-  const [selectedFilters, setSelectedFilters] = useState({
+  const [selectedPreFilters, setSelectedPreFilters] = useState({
     bookingBeginningDate: DEFAULT_PRE_FILTERS.bookingBeginningDate,
     bookingEndingDate: DEFAULT_PRE_FILTERS.bookingEndingDate,
     offerEventDate: DEFAULT_PRE_FILTERS.offerEventDate,
@@ -23,7 +23,7 @@ const PreFilters = ({ applyPreFilters, isLoading, offerVenueId }) => {
   }, [])
 
   const updateSelectedFilters = useCallback(updatedFilter => {
-    setSelectedFilters(currentFilters => ({
+    setSelectedPreFilters(currentFilters => ({
       ...currentFilters,
       ...updatedFilter,
     }))
@@ -33,26 +33,26 @@ const PreFilters = ({ applyPreFilters, isLoading, offerVenueId }) => {
     event => {
       event.preventDefault()
 
-      applyPreFilters(selectedFilters)
+      applyPreFilters(selectedPreFilters)
     },
-    [applyPreFilters, selectedFilters]
+    [applyPreFilters, selectedPreFilters]
   )
 
   return (
     <form onSubmit={requestFilteredBookings}>
       <div className="pre-filters">
         <FilterByVenue
-          selectedVenue={selectedFilters.offerVenueId}
+          selectedVenue={selectedPreFilters.offerVenueId}
           updateFilters={updateSelectedFilters}
           venuesFormattedAndOrdered={venues}
         />
         <FilterByEventDate
-          selectedOfferDate={selectedFilters.offerEventDate}
+          selectedOfferDate={selectedPreFilters.offerEventDate}
           updateFilters={updateSelectedFilters}
         />
         <FilterByBookingPeriod
-          selectedBookingBeginningDate={selectedFilters.bookingBeginningDate}
-          selectedBookingEndingDate={selectedFilters.bookingEndingDate}
+          selectedBookingBeginningDate={selectedPreFilters.bookingBeginningDate}
+          selectedBookingEndingDate={selectedPreFilters.bookingEndingDate}
           updateFilters={updateSelectedFilters}
         />
       </div>

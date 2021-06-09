@@ -117,6 +117,31 @@ describe('components | BookingsRecap | Pro user', () => {
     })
   })
 
+  describe('when no bookings where returned by selected pre-filters', () => {
+    beforeEach(() => {
+      loadFilteredBookingsRecap.mockResolvedValue({
+        page: 1,
+        pages: 0,
+        total: 0,
+        bookings_recap: [],
+      })
+    })
+
+    it('should warn user that his prefilters returned no booking', async () => {
+      // Given
+      await renderBookingsRecap(props, store)
+
+      // When
+      userEvent.click(screen.getByText('Afficher', { selector: 'button' }))
+
+      // Then
+      const noBookingsForPreFilters = await screen.findByText(
+        'Aucune réservation trouvée pour votre recherche.'
+      )
+      expect(noBookingsForPreFilters).toBeInTheDocument()
+    })
+  })
+
   it('should fetch bookings for the filtered venue as many times as the number of pages', async () => {
     // Given
     const bookings1 = bookingRecapFactory()

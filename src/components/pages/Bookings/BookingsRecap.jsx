@@ -9,6 +9,7 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import BookingsRecapTable from './BookingsRecapTable/BookingsRecapTable'
 import BookingsRecapTableLegacy from './BookingsRecapTableLegacy/BookingsRecapTableLegacy' /* eslint-disable-line react/jsx-pascal-case */
 import ChoosePreFiltersMessage from './ChoosePreFiltersMessage/ChoosePreFiltersMessage'
+import NoBookingsForPreFiltersMessage from './NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
 import NoBookingsMessage from './NoBookingsMessage/NoBookingsMessage'
 import PreFilters from './PreFilters/PreFilters'
 
@@ -22,10 +23,12 @@ const BookingsRecap = ({
 }) => {
   const [bookingsRecap, setBookingsRecap] = useState([])
   const [isLoading, setIsLoading] = useState(arePreFiltersEnabled ? false : true)
+  const [werePreFiltersApplied, setWerePreFiltersApplied] = useState(false)
 
   const loadBookingsRecap = useCallback(
     async preFilters => {
       setIsLoading(true)
+      setWerePreFiltersApplied(true)
       setBookingsRecap([])
 
       // TODO(07/06/2021): To remove when 'ENABLE_BOOKINGS_PAGE_FILTERS_FIRST' feature flip has been removed
@@ -82,14 +85,20 @@ const BookingsRecap = ({
             isLoading={isLoading}
             offerVenueId={location.state?.venueId}
           />
-          {bookingsRecap.length > 0 ? (
-            <BookingsRecapTable
-              bookingsRecap={bookingsRecap}
-              isLoading={isLoading}
-              locationState={location.state}
-            />
+          {werePreFiltersApplied ? (
+            bookingsRecap.length > 0 ? (
+              <BookingsRecapTable
+                bookingsRecap={bookingsRecap}
+                isLoading={isLoading}
+                locationState={location.state}
+              />
+            ) : isLoading ? (
+              <Spinner />
+            ) : (
+              <NoBookingsForPreFiltersMessage />
+            )
           ) : (
-            isLoading ? <Spinner /> : <ChoosePreFiltersMessage />
+            <ChoosePreFiltersMessage />
           )}
         </>
       ) : bookingsRecap.length > 0 ? (

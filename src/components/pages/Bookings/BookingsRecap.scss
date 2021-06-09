@@ -1,0 +1,20 @@
+.bookings-page {
+  .br-warning {
+    align-items: center;
+    color: $grey-dark;
+    display: flex;
+    flex-direction: column;
+    height: rem(400px);
+    text-align: center;
+
+    p {
+      margin-top: rem(12px);
+      width: rem(400px);
+    }
+
+    svg {
+      height: rem(124px);
+      width: rem(124px);
+    }
+  }
+}
