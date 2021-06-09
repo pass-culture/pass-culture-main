@@ -270,6 +270,53 @@ console:
       cpu: 200m
       memory: 512Mi
 
+###  Cloud task idcheck deployment ###
+cloudTaskIdcheck:
+  enabled: true
+
+  containerPort : 5000
+
+  probePath: /health/api
+
+  resources:
+    limits:
+      cpu: 1
+      memory: 2Gi
+    requests:
+      cpu: 700m
+      memory: 1536Mi
+
+  replicaCount: 1
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 2
+    targetCPUUtilization: 70
+    # Enable this option to scale on memory percentage
+    # targetMemoryUtilization: 70
+
+  service:
+    type: ClusterIP
+    port: 80
+
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/use-regex: "true"
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/proxy-body-size: 10m
+      cert-manager.io/cluster-issuer: letsencrypt-production
+    hosts:
+      - host: backend.perf.internal-passculture.app
+        paths:
+          - path: /native/v1/identity_document$
+          - path: /cloud-tasks/verify_identity_document$
+    tls:
+    - secretName: pcapi-ingress-cert
+      hosts:
+      - backend.perf.internal-passculture.app
+
 aide:
   enabled: false
 
@@ -285,6 +332,9 @@ configmap:
   GUNICORN_WORKERS: 2
   GUNICORN_THREADS: 5
   GUNICORN_TIMEOUT: 90
+
+configmapCloudTaskIdcheck:
+  GUNICORN_THREADS : 10
 
 secrets:
   - name: ADMINISTRATION_EMAIL_ADDRESS
