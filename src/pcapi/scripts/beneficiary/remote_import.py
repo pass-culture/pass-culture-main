@@ -155,6 +155,8 @@ def parse_beneficiary_information(application_detail: dict) -> dict:
             information["activity"] = value
         if label == "Quelle est votre adresse de résidence":
             information["address"] = value
+        if label == "Quel est le numéro de la pièce que vous venez de saisir ?":
+            information["id_piece_number"] = value
 
     return information
 

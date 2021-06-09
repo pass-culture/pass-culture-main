@@ -30,6 +30,7 @@ def create_beneficiary_from_application(application_detail: dict, user: Optional
     beneficiary.activity = application_detail["activity"]
     beneficiary.isAdmin = False
     beneficiary.hasSeenTutorials = False
+    beneficiary.idPieceNumber = application_detail.get("id_piece_number")
 
     if not beneficiary.phoneNumber:
         beneficiary.phoneNumber = application_detail["phone"]

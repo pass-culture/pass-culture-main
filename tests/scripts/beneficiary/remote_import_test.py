@@ -681,6 +681,10 @@ class RunIntegrationTest:
                         "value": "11 Rue du Test",
                     },
                     {"type_de_champ": {"libelle": "Veuillez indiquer votre statut"}, "value": "Etudiant"},
+                    {
+                        "type_de_champ": {"libelle": "Quel est le numéro de la pièce que vous venez de saisir ?"},
+                        "value": "121314",
+                    },
                 ],
             }
         }
@@ -810,6 +814,7 @@ class RunIntegrationTest:
         assert user.address == "11 Rue du Test"
         assert user.isBeneficiary
         assert user.phoneNumber == "0102030405"
+        assert user.idPieceNumber == "121314"
 
         assert BeneficiaryImport.query.count() == 1
         beneficiary_import = BeneficiaryImport.query.first()

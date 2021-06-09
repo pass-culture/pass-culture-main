@@ -86,6 +86,22 @@ APPLICATION_DETAIL_STANDARD_RESPONSE_AFTER_GENERALISATION = {
                 },
             },
             {
+                "type_de_champ": {
+                    "description": "Indiquez ici ton "
+                    "numéro de la pièce "
+                    "que vous avez "
+                    "envoyée "
+                    "(généralement "
+                    "située en haut à "
+                    "droite du recto)",
+                    "id": 1873743,
+                    "libelle": "Quel est le numéro de " "la pièce que vous venez " "de saisir ?",
+                    "order_place": None,
+                    "type_champ": "text",
+                },
+                "value": "123456789012",
+            },
+            {
                 "value": "0123456789",
                 "type_de_champ": {
                     "id": 582219,
