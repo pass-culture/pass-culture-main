@@ -50,8 +50,6 @@ class Transaction:
 
 class PaymentDetails:
     CSV_HEADER = [
-        "ID de l'utilisateur",
-        "Email de l'utilisateur",
         "Raison sociale de la structure",
         "SIREN",
         "Raison sociale du lieu",
@@ -63,8 +61,6 @@ class PaymentDetails:
         "Prix de la réservation",
         "Date de validation",
         "IBAN",
-        "Payment Message Name",
-        "Transaction ID",
         "Paiement ID",
         "Taux de remboursement",
         "Montant remboursé à l'offreur",
@@ -72,8 +68,6 @@ class PaymentDetails:
 
     def __init__(self, payment: Payment = None, booking_used_date: datetime = None):
         if payment is not None:
-            self.booking_user_id = payment.booking.user.id
-            self.booking_user_email = payment.booking.user.email
             self.offerer_name = payment.booking.stock.offer.venue.managingOfferer.name
             self.offerer_siren = payment.booking.stock.offer.venue.managingOfferer.siren
             self.venue_name = payment.booking.stock.offer.venue.name
@@ -85,16 +79,12 @@ class PaymentDetails:
             self.booking_amount = payment.booking.total_amount
             self.booking_used_date = booking_used_date
             self.payment_iban = payment.iban
-            self.payment_message_name = payment.paymentMessageName
-            self.transaction_end_to_end_id = payment.transactionEndToEndId
             self.payment_id = payment.id
             self.reimbursement_rate = payment.reimbursementRate
             self.reimbursed_amount = payment.amount
 
     def as_csv_row(self):
         return [
-            str(self.booking_user_id),
-            self.booking_user_email,
             self.offerer_name,
             self.offerer_siren,
             self.venue_name,
@@ -106,8 +96,6 @@ class PaymentDetails:
             str(self.booking_amount),
             str(self.booking_used_date),
             self.payment_iban,
-            self.payment_message_name,
-            str(self.transaction_end_to_end_id),
             str(self.payment_id),
             str(self.reimbursement_rate),
             str(self.reimbursed_amount),

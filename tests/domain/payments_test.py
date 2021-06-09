@@ -1,6 +1,5 @@
 from datetime import datetime
 from decimal import Decimal
-import uuid
 
 from freezegun import freeze_time
 import pytest
@@ -217,33 +216,15 @@ class CreatePaymentDetailsTest:
         user = create_user()
         booking = create_booking(user=user)
         offerer = create_offerer()
-        payment = create_payment(
-            booking, offerer, 35, payment_message_name="1234", transaction_end_to_end_id=uuid.uuid4(), iban="123456789"
-        )
+        payment = create_payment(booking, offerer, 35, iban="123456789")
 
         # when
         details = create_payment_details(payment)
 
         # then
         assert details.payment_iban == "123456789"
-        assert details.payment_message_name == "1234"
-        assert details.transaction_end_to_end_id == payment.transactionEndToEndId
         assert details.reimbursed_amount == 35
         assert details.reimbursement_rate == 0.5
-
-    def test_contains_info_on_user_who_booked(self):
-        # given
-        user = create_user(email="jane.doe@test.com", idx=3)
-        booking = create_booking(user=user)
-        offerer = create_offerer()
-        payment = create_payment(booking, offerer, 35)
-
-        # when
-        details = create_payment_details(payment)
-
-        # then
-        assert details.booking_user_id == 3
-        assert details.booking_user_email == "jane.doe@test.com"
 
     def test_contains_info_on_booking(self):
         # given

@@ -5,6 +5,7 @@ import pytest
 
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
+from pcapi.core.testing import assert_num_queries
 from pcapi.domain.payments import generate_payment_details_csv
 from pcapi.domain.payments import generate_wallet_balances_csv
 from pcapi.models.offer_type import ThingType
@@ -56,22 +57,23 @@ class GeneratePaymentDetailsCsvTest:
             paymentMessage=payment_message,
         )
 
-        csv = generate_payment_details_csv(Payment.query)
+        n_queries = 1  # select min(id), max(id) in `utils.db.get_batches()`
+        n_queries += 1  # select payments
+        with assert_num_queries(n_queries):
+            csv = generate_payment_details_csv(Payment.query)
 
         rows = csv.splitlines()
         assert len(rows) == 3
         assert (
-            rows[0] == '"ID de l\'utilisateur","Email de l\'utilisateur",'
+            rows[0] == ""
             '"Raison sociale de la structure","SIREN",'
             '"Raison sociale du lieu","SIRET","ID du lieu",'
             '"Nom de l\'offre","Type de l\'offre",'
             '"Date de la réservation","Prix de la réservation","Date de validation",'
-            '"IBAN","Payment Message Name","Transaction ID","Paiement ID",'
+            '"IBAN","Paiement ID",'
             '"Taux de remboursement","Montant remboursé à l\'offreur"'
         )
         assert rows[1].split(",") == [
-            f'"{p1.booking.userId}"',
-            '"john.doe@example.com"',
             '"Le Petit Rintintin Management Ltd."',
             '"111111111"',
             '"Le Petit Rintintin"',
@@ -83,15 +85,11 @@ class GeneratePaymentDetailsCsvTest:
             '"10.00"',
             '"2020-01-02 00:00:00"',
             '"IBAN1"',
-            f'"{p1.paymentMessageName}"',
-            f'"{p1.transactionEndToEndId}"',
             f'"{p1.id}"',
             f'"{p1.reimbursementRate}"',
             '"9.00"',
         ]
         assert rows[2].split(",") == [
-            f'"{p2.booking.userId}"',
-            '"jeanne.doux@example.com"',
             '"Le Gigantesque Cubitus Management Ltd."',
             '"222222222"',
             '"Le Gigantesque Cubitus"',
@@ -103,8 +101,6 @@ class GeneratePaymentDetailsCsvTest:
             '"12.00"',
             '"2020-01-02 00:00:00"',
             '"IBAN2"',
-            f'"{p2.paymentMessageName}"',
-            f'"{p2.transactionEndToEndId}"',
             f'"{p2.id}"',
             f'"{p2.reimbursementRate}"',
             '"11.00"',

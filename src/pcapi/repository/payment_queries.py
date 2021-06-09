@@ -63,7 +63,7 @@ def find_not_processable_with_bank_information() -> list[Payment]:
 def join_for_payment_details(query):
     return (
         query.options(joinedload(Payment.statuses))
-        .options(joinedload(Payment.booking).joinedload(Booking.user))
+        .options(joinedload(Payment.booking))
         .options(
             joinedload(Payment.booking)
             .joinedload(Booking.stock)
