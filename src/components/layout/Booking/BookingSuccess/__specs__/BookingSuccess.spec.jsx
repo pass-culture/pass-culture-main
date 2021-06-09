@@ -97,7 +97,7 @@ describe('src | components | BookingSuccess', () => {
         const sentence2 = wrapper.find('p a')
         const sentence3 = wrapper.find('p').at(2)
         expect(title.text()).toBe(
-          "<Icon />Ton code d'activation : code-bQetgWSSK A activer avant le 23 décembre 2020."
+          "<Icon />Ton code d’activation : code-bQetgWSSK A activer avant le 23 décembre 2020."
         )
         expect(sentence1.text()).toBe(`12,5${NO_BREAK_SPACE}€ ont été déduits de ton pass.`)
         expect(sentence2.text()).toBe('Accéder à l’offre numérique')
@@ -127,7 +127,7 @@ describe('src | components | BookingSuccess', () => {
         const sentence1 = wrapper.find('p').at(0)
         const sentence2 = wrapper.find('p a')
         const sentence3 = wrapper.find('p').at(2)
-        expect(title.text()).toBe("<Icon />Ton code d'activation : code-bQetgWSSK")
+        expect(title.text()).toBe("<Icon />Ton code d’activation : code-bQetgWSSK")
         expect(sentence1.text()).toBe(`12,5${NO_BREAK_SPACE}€ ont été déduits de ton pass.`)
         expect(sentence2.text()).toBe('Accéder à l’offre numérique')
         expect(sentence2.prop('href')).toBe('http://fake-url.com')

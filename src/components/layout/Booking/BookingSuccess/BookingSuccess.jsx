@@ -37,7 +37,7 @@ const BookingSuccess = ({ quantity, price, token, activationCode, isEvent, offer
           {activationCode != null && (
             <Fragment>
               <span className="is-block">
-                {"Ton code d'activation : "}
+                {'Ton code d’activation : '}
               </span>
               <span className="is-block bs-activation-code">
                 {activationCode.code}
