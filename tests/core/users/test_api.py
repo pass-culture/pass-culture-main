@@ -15,6 +15,7 @@ from pcapi.core.mails import testing as mails_testing
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.payments.api import DEPOSIT_VALIDITY_IN_YEARS
 from pcapi.core.testing import override_features
+from pcapi.core.testing import override_settings
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
@@ -23,6 +24,7 @@ from pcapi.core.users.api import _set_offerer_departement_code
 from pcapi.core.users.api import asynchronous_identity_document_verification
 from pcapi.core.users.api import count_existing_id_check_tokens
 from pcapi.core.users.api import create_id_check_token
+from pcapi.core.users.api import create_pro_user
 from pcapi.core.users.api import delete_expired_tokens
 from pcapi.core.users.api import fulfill_account_password
 from pcapi.core.users.api import fulfill_beneficiary_data
@@ -51,6 +53,7 @@ from pcapi.models.offer_type import EventType
 from pcapi.models.offer_type import ThingType
 from pcapi.models.user_session import UserSession
 from pcapi.repository import repository
+from pcapi.routes.serialization.users import ProUserCreationBodyModel
 
 import tests
 
@@ -760,6 +763,35 @@ class UpdateBeneficiaryMandatoryInformationTest:
         assert user.hasCompletedIdCheck
         assert not user.isBeneficiary
         assert not user.deposit
+
+
+class CreateProUserTest:
+    def test_create_pro_user(self):
+        pro_user_creation_body = ProUserCreationBodyModel(
+            email="prouser@email.fr", password="P@ssword12345", phoneNumber="0666666666"
+        )
+
+        pro_user = create_pro_user(pro_user_creation_body)
+
+        assert pro_user.email == "prouser@email.fr"
+        assert not pro_user.isBeneficiary
+        assert not pro_user.isAdmin
+        assert not pro_user.needsToFillCulturalSurvey
+        assert pro_user.deposits == []
+
+    @override_settings(IS_INTEGRATION=True)
+    def test_create_pro_user_in_integration(self):
+        pro_user_creation_body = ProUserCreationBodyModel(
+            email="prouser@email.fr", password="P@ssword12345", phoneNumber="0666666666"
+        )
+
+        pro_user = create_pro_user(pro_user_creation_body)
+
+        assert pro_user.email == "prouser@email.fr"
+        assert pro_user.isBeneficiary
+        assert not pro_user.isAdmin
+        assert not pro_user.needsToFillCulturalSurvey
+        assert pro_user.deposits != []
 
 
 class AsynchronousIdentityDocumentVerificationTest:

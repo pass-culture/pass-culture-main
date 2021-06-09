@@ -567,6 +567,11 @@ def create_pro_user(pro_user: ProUserCreationBodyModel) -> User:
     if pro_user.postal_code:
         new_pro_user.departementCode = PostalCode(pro_user.postal_code).get_departement_code()
 
+    if settings.IS_INTEGRATION:
+        new_pro_user.isBeneficiary = True
+        deposit = payment_api.create_deposit(new_pro_user, "integration_signup")
+        new_pro_user.deposits = [deposit]
+
     return new_pro_user
 
 
