@@ -711,10 +711,8 @@ class UploadIdentityDocumentTest:
     @patch("pcapi.core.users.api.verify_identity_document")
     @patch("pcapi.core.users.api.store_object")
     @patch("pcapi.core.users.api.random_token")
-    @patch("pcapi.core.users.api.standardize_image")
     def test_upload_identity_document_successful(
         self,
-        mocked_standardize_image,
         mocked_random_token,
         mocked_store_object,
         mocked_verify_identity_document,
@@ -724,7 +722,6 @@ class UploadIdentityDocumentTest:
         token = TokenFactory(user=user, type=TokenType.ID_CHECK)
         access_token = create_access_token(identity=user.email)
         mocked_random_token.return_value = "a_very_random_secret"
-        mocked_standardize_image.side_effect = lambda value: value
 
         identity_document = (self.IMAGES_DIR / "mouette_small.jpg").read_bytes()
         data = {

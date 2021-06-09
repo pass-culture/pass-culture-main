@@ -67,7 +67,6 @@ from pcapi.repository import transaction
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
 from pcapi.tasks.account import verify_identity_document
-from pcapi.utils.image_conversion import standardize_image
 from pcapi.utils.token import random_token
 
 
@@ -738,14 +737,13 @@ def validate_token(userId: int, token_value: str) -> None:
 
 
 def asynchronous_identity_document_verification(image: bytes, email: str) -> None:
-    standardized_image = standardize_image(image)
     image_name = f"{random_token(64)}.jpg"
     image_storage_path = f"identity_documents/{image_name}"
     try:
         store_object(
             "identity_documents",
             image_name,
-            standardized_image,
+            image,
             content_type="image/jpeg",
             metadata={"email": email},
         )
