@@ -356,10 +356,13 @@ class GenerateNewPaymentsTest:
     def test_use_custom_reimbursement_rule(self):
         offer = offers_factories.DigitalOfferFactory()
         offers_factories.BankInformationFactory(venue=offer.venue, iban="iban1", bic="bic1")
-        bookings_factories.BookingFactory(amount=10, quantity=2, isUsed=True, stock__offer=offer)
+        bookings_factories.BookingFactory(
+            amount=10, quantity=2, isUsed=True, dateUsed=datetime.datetime.now(), stock__offer=offer
+        )
         rule = payments_factories.CustomReimbursementRuleFactory(offer=offer, amount=7)
 
-        generate_new_payments(batch_date=datetime.datetime.now())
+        cutoff = batch_date = datetime.datetime.now()
+        generate_new_payments(cutoff, batch_date)
 
         payment = Payment.query.one()
         assert payment.amount == 14  # 2 (booking.quantity) * 7 (Rule.amount)
