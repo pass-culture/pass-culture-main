@@ -6,6 +6,7 @@ from flask import request
 
 from pcapi import settings
 from pcapi.connectors import api_recaptcha
+from pcapi.core.offers.exceptions import FileSizeExceeded
 from pcapi.core.users import api
 from pcapi.core.users import constants
 from pcapi.core.users import exceptions
@@ -182,9 +183,11 @@ def upload_identity_document(
     if not user.is_eligible:
         raise ApiErrors({"code": "USER_NOT_ELIGIBLE"})
     try:
-        api.validate_token(user.id, form.token)
+        token = api.validate_token(user.id, form.token)
         image = form.get_image_as_bytes(request)
         api.asynchronous_identity_document_verification(image, user.email)
+        token.isUsed = True
+        repository.save(token)
         return
     except exceptions.ExpiredCode:
         raise ApiErrors(
@@ -196,8 +199,13 @@ def upload_identity_document(
             {"code": "INVALID_TOKEN", "message": "Token invalide"},
             status_code=400,
         )
+    except FileSizeExceeded:
+        raise ApiErrors(
+            {"code": "FILE_SIZE_EXCEEDED", "message": "L'image envoyée dépasse 10Mo"},
+            status_code=400,
+        )
     except (exceptions.IdentityDocumentUploadException, exceptions.CloudTaskCreationException):
-        raise ApiErrors(status_code=503)
+        raise ApiErrors({"code": "SERVICE_UNAVAILABLE", "message": "Token invalide"}, status_code=503)
 
 
 @blueprint.native_v1.route("/send_phone_validation_code", methods=["POST"])
