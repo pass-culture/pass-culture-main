@@ -255,6 +255,7 @@ def test_application_for_native_app_user_with_load_smoothing(
             "user_id": beneficiary.id,
             "attribute_values": {
                 "u.credit": 30000,
+                "u.departement_code": "75",
                 "date(u.date_of_birth)": "2003-10-25T00:00:00",
                 "u.postal_code": "44300",
                 "date(u.date_created)": beneficiary.dateCreated.strftime("%Y-%m-%dT%H:%M:%S"),
