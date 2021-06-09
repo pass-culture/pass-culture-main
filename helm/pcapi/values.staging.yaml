@@ -384,6 +384,6 @@ secrets:
   - name: WHITELISTED_EMAIL_RECIPIENTS
     version: 3
   - name: WHITELISTED_SMS_RECIPIENTS
-    version: 1
+    version: 2
   - name: BLACKLISTED_SMS_RECIPIENTS
     version: 1
