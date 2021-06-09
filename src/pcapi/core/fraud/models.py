@@ -24,7 +24,7 @@ class FraudStatus(enum.Enum):
     SUSPICIOUS = "SUSPICIOUS"
 
 
-def _parse_level(level: Optional[str]) -> Optional[None]:
+def _parse_level(level: typing.Optional[str]) -> typing.Optional[None]:
     if not level:
         return None
     try:
@@ -62,6 +62,11 @@ class JouveContent(pydantic.BaseModel):
     posteCodeCtrl: typing.Optional[str]
     serviceCodeCtrl: typing.Optional[str]
 
+    _parse_body_birth_date_level = validator("bodyBirthDateLevel", pre=True, allow_reuse=True)(_parse_level)
+    _parse_body_first_name_level = validator("bodyFirstNameLevel", pre=True, allow_reuse=True)(_parse_level)
+    _parse_body_name_level = validator("bodyNameLevel", pre=True, allow_reuse=True)(_parse_level)
+    _parse_body_piece_number_level = validator("bodyPieceNumberLevel", pre=True, allow_reuse=True)(_parse_level)
+
 
 class UserProfilingFraudData(pydantic.BaseModel):
     account_email_result: str
@@ -84,11 +89,6 @@ class UserProfilingFraudData(pydantic.BaseModel):
     tmx_risk_rating: str
     tmx_summary_reason_code: typing.Optional[typing.List[str]]
     summary_risk_score: int
-
-    _parse_body_birth_date_level = validator("bodyBirthDateLevel", pre=True, allow_reuse=True)(_parse_level)
-    _parse_body_first_name_level = validator("bodyFirstNameLevel", pre=True, allow_reuse=True)(_parse_level)
-    _parse_body_name_level = validator("bodyNameLevel", pre=True, allow_reuse=True)(_parse_level)
-    _parse_body_piece_number_level = validator("bodyPieceNumberLevel", pre=True, allow_reuse=True)(_parse_level)
 
 
 class BeneficiaryFraudCheck(PcObject, Model):

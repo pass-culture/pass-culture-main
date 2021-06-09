@@ -2,6 +2,7 @@
 from werkzeug.middleware.profiler import ProfilerMiddleware
 
 from pcapi import settings
+from pcapi.admin.install import install_admin_template_filters
 from pcapi.admin.install import install_admin_views
 from pcapi.documentation import install_documentation
 from pcapi.flask_app import admin
@@ -36,6 +37,8 @@ with app.app_context():
     install_admin_views(admin, db.session)
     install_routes(app)
     install_handlers(app)
+
+    install_admin_template_filters(app)
 
     app.register_blueprint(adage_v1, url_prefix="/adage/v1")
     app.register_blueprint(native_v1, url_prefix="/native/v1")

@@ -1,9 +1,13 @@
 from enum import Enum
+import typing
 
+from flask import Flask
 from flask_admin.base import Admin
+from markupsafe import Markup
 from sqlalchemy.orm.session import Session
 
 from pcapi import models
+from pcapi.admin.custom_views import fraud_view
 from pcapi.admin.custom_views import offer_view
 from pcapi.admin.custom_views.admin_user_view import AdminUserView
 from pcapi.admin.custom_views.allocine_pivot_view import AllocinePivotView
@@ -36,11 +40,17 @@ class Category(Enum):
     OFFRES_STRUCTURES_LIEUX = "Offre, Lieux & Structure"
     USERS = "Utilisateurs"
     CUSTOM_OPERATIONS = "Autres fonctionnalités"
+    FRAUD = "Anti Fraude"
 
 
 def install_admin_views(admin: Admin, session: Session) -> None:
     admin.add_view(
         offer_view.OfferView(models.Offer, session, name="Offres", category=Category.OFFRES_STRUCTURES_LIEUX)
+    )
+    admin.add_view(
+        fraud_view.FraudView(
+            User, session, name="Bénéficiaires", endpoint="/beneficiary_fraud", category=Category.FRAUD
+        )
     )
     admin.add_view(
         offer_view.OfferForVenueSubview(
@@ -170,3 +180,13 @@ def install_admin_views(admin: Admin, session: Session) -> None:
             category=Category.CUSTOM_OPERATIONS,
         )
     )
+
+
+def yesno(value: typing.Any) -> str:
+    css_class = "success" if value else "danger"
+    text_value = "Oui" if value else "Non"
+    return Markup(f"""<span class="badge badge-{css_class}">{text_value}</span>""")
+
+
+def install_admin_template_filters(app: Flask) -> None:
+    app.jinja_env.filters["yesno"] = yesno
