@@ -32,9 +32,6 @@ def generate_and_send_payments(cutoff_date: datetime.datetime, batch_date: datet
         (TransactionStatus.PENDING, TransactionStatus.ERROR, TransactionStatus.RETRY), batch_date
     )
 
-    # `send_transactions()` is called last because it updates the
-    # status of the payments, which modifies what `payments_to_send`
-    # yields afterwards.
     try:
         logger.info("[BATCH][PAYMENTS] STEP 3 : send transactions")
         send_transactions(
