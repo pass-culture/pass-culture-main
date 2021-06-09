@@ -1,4 +1,5 @@
 from datetime import datetime
+from datetime import timezone
 from unittest.mock import patch
 
 from dateutil.tz import tz
@@ -12,6 +13,7 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.date import format_into_timezoned_date
+from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
@@ -23,14 +25,28 @@ class GetAllBookingsTest:
     def test_call_repository_with_user_and_page(self, find_by_pro_user_id, app):
         user = users_factories.UserFactory()
         TestClient(app.test_client()).with_auth(user.email).get("/bookings/pro?page=3")
-        find_by_pro_user_id.assert_called_once_with(user_id=user.id, event_date=None, venue_id=None, page=3)
+        find_by_pro_user_id.assert_called_once_with(
+            user_id=user.id,
+            event_date=None,
+            venue_id=None,
+            booking_period_beginning_date=None,
+            booking_period_ending_date=None,
+            page=3,
+        )
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.core.bookings.repository.find_by_pro_user_id")
     def test_call_repository_with_page_1(self, find_by_pro_user_id, app):
         user = users_factories.UserFactory()
         TestClient(app.test_client()).with_auth(user.email).get("/bookings/pro")
-        find_by_pro_user_id.assert_called_once_with(user_id=user.id, event_date=None, venue_id=None, page=1)
+        find_by_pro_user_id.assert_called_once_with(
+            user_id=user.id,
+            event_date=None,
+            venue_id=None,
+            booking_period_beginning_date=None,
+            booking_period_ending_date=None,
+            page=1,
+        )
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.core.bookings.repository.find_by_pro_user_id")
@@ -43,7 +59,14 @@ class GetAllBookingsTest:
         TestClient(app.test_client()).with_auth(user.email).get(f"/bookings/pro?venueId={humanize(venue.id)}")
 
         # Then
-        find_by_pro_user_id.assert_called_once_with(user_id=user.id, event_date=None, venue_id=venue.id, page=1)
+        find_by_pro_user_id.assert_called_once_with(
+            user_id=user.id,
+            event_date=None,
+            venue_id=venue.id,
+            booking_period_beginning_date=None,
+            booking_period_ending_date=None,
+            page=1,
+        )
 
 
 @pytest.mark.usefixtures("db_session")
@@ -133,6 +156,32 @@ class GetTest:
             assert response.status_code == 200
             assert len(response.json["bookings_recap"]) == 1
             assert response.json["bookings_recap"][0]["booking_token"] == booking.token
+            assert response.json["page"] == 1
+            assert response.json["pages"] == 1
+            assert response.json["total"] == 1
+
+        def when_requested_booking_period_dates_are_iso_format(self, app):
+            booking_date = datetime(2020, 8, 12, 20, 00, tzinfo=timezone.utc)
+            booking_period_beginning_date_iso = "2020-08-10T00:00:00Z"
+            booking_period_ending_date_iso = "2020-08-12T00:00:00Z"
+            booking = bookings_factories.BookingFactory(dateCreated=booking_date, token="AAAAAA")
+            bookings_factories.BookingFactory(token="BBBBBB")
+            pro_user = users_factories.UserFactory(email="pro@example.com")
+            offerer = booking.stock.offer.venue.managingOfferer
+            offers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+
+            client = TestClient(app.test_client()).with_auth(pro_user.email)
+            with assert_num_queries(testing.AUTHENTICATION_QUERIES + 3):
+                response = client.get(
+                    "/bookings/pro?bookingPeriodBeginningDate=%s&bookingPeriodEndingDate=%s"
+                    % (booking_period_beginning_date_iso, booking_period_ending_date_iso)
+                )
+
+            assert response.status_code == 200
+            assert len(response.json["bookings_recap"]) == 1
+            assert response.json["bookings_recap"][0]["booking_date"] == datetime.isoformat(
+                utc_datetime_to_department_timezone(booking.dateCreated, booking.stock.offer.venue.departementCode)
+            )
             assert response.json["page"] == 1
             assert response.json["pages"] == 1
             assert response.json["total"] == 1

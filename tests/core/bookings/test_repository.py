@@ -33,6 +33,7 @@ from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.offer_type import ThingType
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository import repository
+from pcapi.utils.date import utc_datetime_to_department_timezone
 
 
 NOW = datetime.utcnow()
@@ -1083,6 +1084,81 @@ class FindByProUserIdTest:
 
         # When
         bookings_recap_paginated = find_by_pro_user_id(user_id=user_offerer.user.id, event_date=event_datetime.date())
+
+        # Then
+        assert len(bookings_recap_paginated.bookings_recap) == 2
+        bookings_tokens = [booking_recap.booking_token for booking_recap in bookings_recap_paginated.bookings_recap]
+        assert cayenne_booking.token in bookings_tokens
+        assert mayotte_booking.token in bookings_tokens
+
+    @pytest.mark.usefixtures("db_session")
+    def test_should_return_only_bookings_for_requested_booking_period(self, app: fixture):
+        # Given
+        user_offerer = offers_factories.UserOffererFactory()
+        booking_beginning_period = datetime(2020, 12, 24, 10, 30)
+        booking_ending_period = datetime(2020, 12, 28, 00, 30)
+        expected_booking = bookings_factories.BookingFactory(
+            dateCreated=datetime(2020, 12, 26, 15, 30),
+            stock=offers_factories.ThingStockFactory(offer__venue__managingOfferer=user_offerer.offerer),
+        )
+        bookings_factories.BookingFactory(
+            dateCreated=datetime(2020, 12, 29, 15, 30),
+            stock=offers_factories.ThingStockFactory(offer__venue__managingOfferer=user_offerer.offerer),
+        )
+        bookings_factories.BookingFactory(
+            dateCreated=datetime(2020, 12, 22, 15, 30),
+            stock=offers_factories.ThingStockFactory(offer__venue__managingOfferer=user_offerer.offerer),
+        )
+
+        # When
+        bookings_recap_paginated = find_by_pro_user_id(
+            user_id=user_offerer.user.id,
+            booking_period_beginning_date=booking_beginning_period.date(),
+            booking_period_ending_date=booking_ending_period.date(),
+        )
+
+        # Then
+        assert len(bookings_recap_paginated.bookings_recap) == 1
+        resulting_booking_recap = bookings_recap_paginated.bookings_recap[0]
+        assert resulting_booking_recap.booking_date == utc_datetime_to_department_timezone(
+            expected_booking.dateCreated, expected_booking.stock.offer.venue.departementCode
+        )
+
+    @pytest.mark.usefixtures("db_session")
+    def should_consider_venue_locale_datetime_when_filtering_by_booking_period(self, app: fixture):
+        # Given
+        user_offerer = offers_factories.UserOffererFactory()
+        requested_booking_period_beginning = datetime(2020, 4, 21, 20, 00)
+        requested_booking_period_ending = datetime(2020, 4, 22, 20, 00)
+
+        offer_in_cayenne = offers_factories.OfferFactory(
+            venue__postalCode="97300", venue__managingOfferer=user_offerer.offerer
+        )
+        cayenne_booking_datetime = datetime(2020, 4, 22, 2, 0)
+        stock_in_cayenne = offers_factories.EventStockFactory(
+            offer=offer_in_cayenne,
+        )
+        cayenne_booking = bookings_factories.BookingFactory(
+            stock=stock_in_cayenne, dateCreated=cayenne_booking_datetime
+        )
+
+        offer_in_mayotte = offers_factories.OfferFactory(
+            venue__postalCode="97600", venue__managingOfferer=user_offerer.offerer
+        )
+        mayotte_booking_datetime = datetime(2020, 4, 20, 23, 0)
+        stock_in_mayotte = offers_factories.EventStockFactory(
+            offer=offer_in_mayotte,
+        )
+        mayotte_booking = bookings_factories.BookingFactory(
+            stock=stock_in_mayotte, dateCreated=mayotte_booking_datetime
+        )
+
+        # When
+        bookings_recap_paginated = find_by_pro_user_id(
+            user_id=user_offerer.user.id,
+            booking_period_beginning_date=requested_booking_period_beginning.date(),
+            booking_period_ending_date=requested_booking_period_ending.date(),
+        )
 
         # Then
         assert len(bookings_recap_paginated.bookings_recap) == 2

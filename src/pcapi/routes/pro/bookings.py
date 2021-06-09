@@ -80,6 +80,17 @@ def get_all_bookings():
         if request.args.get("eventDate")
         else None
     )
+    booking_period_beginning_date = (
+        datetime.fromisoformat(request.args.get("bookingPeriodBeginningDate").replace("Z", "+00:00")).date()
+        if request.args.get("bookingPeriodBeginningDate")
+        else None
+    )
+    booking_period_ending_date = (
+        datetime.fromisoformat(request.args.get("bookingPeriodEndingDate").replace("Z", "+00:00")).date()
+        if request.args.get("bookingPeriodEndingDate")
+        else None
+    )
+
     check_page_format_is_number(page)
 
     check_is_authorized_to_access_bookings_recap(current_user)
@@ -97,7 +108,12 @@ def get_all_bookings():
     # serialization so that we can get rid of BookingsRecapPaginated
     # that is only used here.
     bookings_recap_paginated = booking_repository.find_by_pro_user_id(
-        user_id=current_user.id, event_date=event_date, venue_id=venue_id, page=int(page)
+        user_id=current_user.id,
+        event_date=event_date,
+        venue_id=venue_id,
+        booking_period_beginning_date=booking_period_beginning_date,
+        booking_period_ending_date=booking_period_ending_date,
+        page=int(page),
     )
 
     return serialize_bookings_recap_paginated(bookings_recap_paginated), 200

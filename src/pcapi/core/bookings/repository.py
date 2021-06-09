@@ -68,6 +68,8 @@ def find_by_pro_user_id(
     user_id: int,
     event_date: Optional[date] = None,
     venue_id: Optional[int] = None,
+    booking_period_beginning_date: Optional[date] = None,
+    booking_period_ending_date: Optional[date] = None,
     page: int = 1,
     per_page_limit: int = 1000,
 ) -> BookingsRecapPaginated:
@@ -77,12 +79,16 @@ def find_by_pro_user_id(
             user_id,
             event_date,
             venue_id,
+            booking_period_beginning_date,
+            booking_period_ending_date,
         )
         total_bookings_recap = total_bookings_recap_count_query.scalar()
     else:
         total_bookings_recap = 0
 
-    bookings_recap_query = _filter_bookings_recap_query(Booking.query, user_id, event_date, venue_id)
+    bookings_recap_query = _filter_bookings_recap_query(
+        Booking.query, user_id, event_date, venue_id, booking_period_beginning_date, booking_period_ending_date
+    )
     bookings_recap_query = _build_bookings_recap_query(bookings_recap_query)
     bookings_recap_query_with_duplicates = _duplicate_booking_when_quantity_is_two(bookings_recap_query)
     paginated_bookings = (
@@ -287,7 +293,12 @@ def _query_keep_on_non_activation_offers() -> Query:
 
 
 def _filter_bookings_recap_query(
-    bookings_recap_query: Query, user_id: int, event_date: Optional[date], venue_id: Optional[int]
+    bookings_recap_query: Query,
+    user_id: int,
+    event_date: Optional[date],
+    venue_id: Optional[int],
+    booking_period_beginning_date: Optional[date],
+    booking_period_ending_date: Optional[date],
 ) -> Query:
     query = (
         bookings_recap_query.outerjoin(Payment)
@@ -315,6 +326,30 @@ def _filter_bookings_recap_query(
                 Date,
             )
             == event_date
+        )
+
+    if booking_period_beginning_date:
+        query = query.filter(
+            cast(
+                func.timezone(
+                    Venue.timezone,
+                    func.timezone("UTC", Booking.dateCreated),
+                ),
+                Date,
+            )
+            >= booking_period_beginning_date
+        )
+
+    if booking_period_ending_date:
+        query = query.filter(
+            cast(
+                func.timezone(
+                    Venue.timezone,
+                    func.timezone("UTC", Booking.dateCreated),
+                ),
+                Date,
+            )
+            <= booking_period_ending_date
         )
 
     return query
