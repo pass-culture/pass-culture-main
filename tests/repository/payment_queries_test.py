@@ -4,6 +4,7 @@ import uuid
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
+import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as factories
 import pcapi.core.users.factories as users_factories
 from pcapi.model_creators.generic_creators import create_bank_information
@@ -248,7 +249,7 @@ class GetPaymentsByStatusTest:
 @pytest.mark.usefixtures("db_session")
 def test_group_by_iban_and_bic():
     factories.PaymentFactory(
-        author="",
+        author="select-me",
         iban="iban1",
         bic="bic1",
         amount=10,
@@ -257,7 +258,7 @@ def test_group_by_iban_and_bic():
         transactionLabel="label",
     )
     factories.PaymentFactory(
-        author="",
+        author="select-me",
         iban="iban1",
         bic="bic2",
         amount=20,
@@ -266,7 +267,7 @@ def test_group_by_iban_and_bic():
         transactionLabel="label",
     )
     factories.PaymentFactory(
-        author="",
+        author="select-me",
         iban="iban1",
         bic="bic2",
         amount=40,
@@ -276,10 +277,56 @@ def test_group_by_iban_and_bic():
     )
     factories.PaymentFactory(author="ignored", iban="ignored", bic="ignored")
 
-    query = Payment.query.filter_by(author="")
+    query = Payment.query.filter_by(author="select-me")
 
     pairs = payment_queries.group_by_iban_and_bic(query)
     assert pairs == {
         ("iban1", "bic1", 10, "name1", "siren1", "label"),
         ("iban1", "bic2", 60, "name2", "siren2", "label"),
     }
+
+
+@pytest.mark.usefixtures("db_session")
+def test_group_by_venue():
+    venue1 = offers_factories.VenueFactory(
+        name="Venue 1",
+        siret="siret1",
+        managingOfferer__name="Offerer 1",
+        managingOfferer__siren="siren1",
+    )
+    factories.PaymentFactory(
+        booking__stock__offer__venue=venue1,
+        author="",
+        iban="iban1",
+        bic="bic1",
+        amount=10,
+    )
+    venue2 = offers_factories.VenueFactory(
+        name="Venue 2",
+        siret="siret2",
+        managingOfferer__name="Offerer 2",
+        managingOfferer__siren="siren2",
+    )
+    factories.PaymentFactory(
+        booking__stock__offer__venue=venue2,
+        author="",
+        iban="iban2",
+        bic="bic2",
+        amount=20,
+    )
+    factories.PaymentFactory(
+        booking__stock__offer__venue=venue2,
+        author="",
+        iban="iban2",
+        bic="bic2",
+        amount=40,
+    )
+    factories.PaymentFactory(author="ignored", iban="ignored", bic="ignored")
+
+    query = Payment.query.filter_by(author="")
+
+    pairs = payment_queries.group_by_venue(query)
+    assert pairs == [
+        (venue1.id, "Venue 1", "siret1", "Offerer 1", "siren1", "iban1", "bic1", 10),
+        (venue2.id, "Venue 2", "siret2", "Offerer 2", "siren2", "iban2", "bic2", 60),
+    ]

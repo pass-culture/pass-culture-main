@@ -24,6 +24,7 @@ from pcapi.domain.payments import filter_out_already_paid_for_bookings
 from pcapi.domain.payments import filter_out_bookings_without_cost
 from pcapi.domain.payments import generate_message_file
 from pcapi.domain.payments import generate_payment_details_csv
+from pcapi.domain.payments import generate_venues_csv
 from pcapi.domain.payments import generate_wallet_balances_csv
 from pcapi.domain.payments import validate_message_file_structure
 from pcapi.domain.reimbursement import find_all_booking_reimbursements
@@ -145,6 +146,11 @@ def send_transactions(
             % (pass_culture_iban, pass_culture_bic, pass_culture_remittance_code)
         )
 
+    logger.info("[BATCH][PAYMENTS] Generating venues file")
+    venues_csv = generate_venues_csv(payment_query)
+
+    logger.info("[BATCH][PAYMENTS] Generating XML file")
+
     message_name = "passCulture-SCT-%s" % datetime.strftime(datetime.utcnow(), "%Y%m%d-%H%M%S")
     xml_file = generate_message_file(
         payment_query, pass_culture_iban, pass_culture_bic, message_name, pass_culture_remittance_code
@@ -190,7 +196,7 @@ def send_transactions(
     # anything. We should rather raise an error (and we should not
     # update the payment status to error) and let the operator re-run
     # the script with the same batch date.
-    if send_payment_message_email(xml_file, checksum, recipients):
+    if send_payment_message_email(xml_file, venues_csv, checksum, recipients):
         status = TransactionStatus.UNDER_REVIEW
         detail = None
     else:

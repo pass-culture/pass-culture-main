@@ -133,16 +133,33 @@ def make_offerer_driven_cancellation_email_for_offerer(booking: Booking) -> dict
     }
 
 
-def make_payment_message_email(xml: str, checksum: bytes) -> dict:
+def make_payment_message_email(xml: str, venues_csv, checksum: bytes) -> dict:
     now = datetime.utcnow()
-    xml_b64encode = base64.b64encode(xml.encode("utf-8")).decode()
-    file_name = "message_banque_de_france_{}.xml".format(datetime.strftime(now, "%Y%m%d"))
+    encoded_xml = base64.b64encode(xml.encode("utf-8")).decode()
+    xml_name = "message_banque_de_france_{}.xml".format(now.strftime("%Y%m%d"))
+    encoded_csv = base64.b64encode(venues_csv.encode("utf-8")).decode()
+    csv_name = "lieux_{}.csv".format(now.strftime("%Y%m%d"))
+
+    attachments = [
+        {
+            "ContentType": "text/xml",
+            "Filename": xml_name,
+            "Content": encoded_xml,
+        },
+        {
+            "ContentType": "text/csv",
+            "Filename": csv_name,
+            "Content": encoded_csv,
+        },
+    ]
 
     return {
         "FromName": "pass Culture Pro",
         "Subject": "Virements XML pass Culture Pro - {}".format(datetime.strftime(now, "%Y-%m-%d")),
-        "Attachments": [{"ContentType": "text/xml", "Filename": file_name, "Content": xml_b64encode}],
-        "Html-part": render_template("mails/payments_xml_email.html", file_name=file_name, file_hash=checksum.hex()),
+        "Attachments": attachments,
+        "Html-part": render_template(
+            "mails/payments_xml_email.html", xml_name=xml_name, csv_name=csv_name, xml_hash=checksum.hex()
+        ),
     }
 
 

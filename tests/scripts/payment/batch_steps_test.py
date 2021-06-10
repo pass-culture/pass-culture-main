@@ -80,7 +80,7 @@ def test_send_transactions_should_not_send_an_email_if_pass_culture_id_is_missin
 
 
 @pytest.mark.usefixtures("db_session")
-def test_send_transactions_should_send_an_email_with_xml_attachment():
+def test_send_transactions_should_send_an_email_with_xml_and_csv_attachments():
     # given
     iban = "CF13QSDFGH456789"
     bic = "AZERTY9Q666"
@@ -93,7 +93,7 @@ def test_send_transactions_should_send_an_email_with_xml_attachment():
 
     # then
     assert len(mails_testing.outbox) == 1
-    assert len(mails_testing.outbox[0].sent_data["Attachments"]) == 1
+    assert len(mails_testing.outbox[0].sent_data["Attachments"]) == 2
 
 
 @pytest.mark.usefixtures("db_session")

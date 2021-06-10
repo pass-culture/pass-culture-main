@@ -14,6 +14,7 @@ from pcapi.domain.payments import create_payment_details
 from pcapi.domain.payments import create_payment_for_booking
 from pcapi.domain.payments import filter_out_already_paid_for_bookings
 from pcapi.domain.payments import filter_out_bookings_without_cost
+from pcapi.domain.payments import generate_venues_csv
 from pcapi.domain.payments import keep_only_not_processable_payments
 from pcapi.domain.payments import make_transaction_label
 from pcapi.domain.reimbursement import BookingReimbursement
@@ -302,6 +303,75 @@ class CreatePaymentDetailsTest:
         # then
         assert details.offer_name == "Test Book"
         assert details.offer_type == "Audiovisuel - films sur supports physiques et VOD"
+
+
+@pytest.mark.usefixtures("db_session")
+def test_generate_venues_csv():
+    venue1 = offers_factories.VenueFactory(
+        name="Venue 1",
+        siret="siret1",
+        managingOfferer__name="Offerer 1",
+        managingOfferer__siren="siren1",
+    )
+    payments_factories.PaymentFactory(
+        booking__stock__offer__venue=venue1,
+        author="",
+        iban="iban1",
+        bic="bic1",
+        amount=10,
+    )
+    venue2 = offers_factories.VenueFactory(
+        name="Venue 2",
+        siret="siret2",
+        managingOfferer__name="Offerer 2",
+        managingOfferer__siren="siren2",
+    )
+    payments_factories.PaymentFactory(
+        booking__stock__offer__venue=venue2,
+        author="",
+        iban="iban2",
+        bic="bic2",
+        amount=20,
+    )
+    payments_factories.PaymentFactory(
+        booking__stock__offer__venue=venue2,
+        author="",
+        iban="iban2",
+        bic="bic2",
+        amount=40,
+    )
+
+    csv = generate_venues_csv(Payment.query)
+
+    rows = csv.splitlines()
+    assert len(rows) == 3
+    assert rows[0].startswith('"ID lieu","SIREN"')
+    assert rows[1] == ",".join(
+        [
+            f'"{venue1.id}"',
+            '"siren1"',
+            '"Offerer 1"',
+            '"siret1"',
+            '"Venue 1"',
+            '"Offerer 1-Venue 1"',
+            '"iban1"',
+            '"bic1"',
+            "10.00",
+        ],
+    )
+    assert rows[2] == ",".join(
+        [
+            f'"{venue2.id}"',
+            '"siren2"',
+            '"Offerer 2"',
+            '"siret2"',
+            '"Venue 2"',
+            '"Offerer 2-Venue 2"',
+            '"iban2"',
+            '"bic2"',
+            "60.00",
+        ],
+    )
 
 
 class PaymentTransactionLabelTest:

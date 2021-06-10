@@ -145,3 +145,26 @@ def group_by_iban_and_bic(payment_query):
         func.min(Payment.transactionLabel).label("transaction_label"),
     )
     return set(query)
+
+
+def group_by_venue(payment_query) -> list:
+    query = (
+        payment_query.join(Booking)
+        .join(Stock)
+        .join(Offer)
+        .join(Venue)
+        .join(Offerer)
+        .group_by(Venue.id, Offerer.name, Offerer.siren, Payment.iban, Payment.bic)
+        .with_entities(
+            Venue.id.label("venue_id"),
+            Venue.name.label("venue_name"),
+            Venue.siret.label("siret"),
+            Offerer.name.label("offerer_name"),
+            Offerer.siren.label("siren"),
+            Payment.iban.label("iban"),
+            Payment.bic.label("bic"),
+            func.sum(Payment.amount).label("total_amount"),
+        )
+        .order_by(Venue.id)
+    )
+    return list(query)

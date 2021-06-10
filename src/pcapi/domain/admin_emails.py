@@ -21,8 +21,8 @@ def maybe_send_offerer_validation_email(offerer: Offerer, user_offerer: UserOffe
     return mails.send(recipients=recipients, data=email)
 
 
-def send_payment_message_email(xml_attachment: str, checksum: bytes, recipients: list[str]) -> bool:
-    email = make_payment_message_email(xml_attachment, checksum)
+def send_payment_message_email(xml_attachment: str, venues_csv: str, checksum: bytes, recipients: list[str]) -> bool:
+    email = make_payment_message_email(xml_attachment, venues_csv, checksum)
     return mails.send(recipients=recipients, data=email)
 
 

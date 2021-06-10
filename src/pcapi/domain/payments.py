@@ -161,6 +161,42 @@ def keep_only_not_processable_payments(payments: list[Payment]) -> list[Payment]
     return list(filter(lambda x: x.currentStatus.status == TransactionStatus.NOT_PROCESSABLE, payments))
 
 
+def generate_venues_csv(payment_query) -> str:
+    # FIXME (dbaty, 2021-05-31): remove this inner import once we have
+    # moved functions to core.payments.api and
+    # core.payments.repository.
+    from pcapi.repository import payment_queries  # avoid import loop
+
+    output = StringIO()
+    writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
+    header = (
+        "ID lieu",
+        "SIREN",
+        "Raison sociale de la structure",
+        "SIRET",
+        "Raison sociale du lieu",
+        "Libellé fournisseur",
+        "IBAN",
+        "BIC",
+        "Montant total",
+    )
+    writer.writerow(header)
+    for group in payment_queries.group_by_venue(payment_query):
+        row = (
+            str(group.venue_id),
+            group.siren,
+            group.offerer_name,
+            group.siret,
+            group.venue_name,
+            f"{group.offerer_name}-{group.venue_name}",
+            group.iban,
+            group.bic,
+            group.total_amount,
+        )
+        writer.writerow(row)
+    return output.getvalue()
+
+
 def generate_message_file(
     payment_query, pass_culture_iban: str, pass_culture_bic: str, message_name: str, remittance_code: str
 ) -> str:
