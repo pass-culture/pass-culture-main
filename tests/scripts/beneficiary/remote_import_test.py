@@ -865,6 +865,37 @@ class RunIntegrationTest:
         assert beneficiary_import.currentStatus == ImportStatus.REJECTED
 
     @override_features(FORCE_PHONE_VALIDATION=False)
+    def test_import_with_existing_id_card(self):
+        user = create_user(
+            idx=4,
+            email=self.EMAIL,
+            is_beneficiary=False,
+            is_email_validated=True,
+            date_of_birth=self.BENEFICIARY_BIRTH_DATE.strftime("%Y-%m-%dT%H:%M:%S"),
+        )
+        user.phoneValidationStatus = PhoneValidationStatusType.VALIDATED
+        user.idPieceNumber = "121314"
+        repository.save(user)
+
+        # when
+        remote_import.run(
+            ONE_WEEK_AGO,
+            procedure_id=6712558,
+            get_details=self._get_details,
+            get_all_applications_ids=self._get_all_applications_ids,
+        )
+
+        # then
+        assert User.query.count() == 1
+        assert BeneficiaryImport.query.count() == 1
+        user = User.query.first()
+        beneficiary_import = BeneficiaryImport.query.first()
+        assert beneficiary_import.source == "demarches_simplifiees"
+        assert beneficiary_import.applicationId == 123
+        assert beneficiary_import.beneficiary == user
+        assert beneficiary_import.currentStatus == ImportStatus.REJECTED
+
+    @override_features(FORCE_PHONE_VALIDATION=False)
     def test_import_native_app_user(self):
         # given
         user = users_api.create_account(

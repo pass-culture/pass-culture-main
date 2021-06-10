@@ -87,8 +87,14 @@ def run(
 
         user = already_existing_user(information["email"])
         if user and user.isBeneficiary is True:
-            _process_rejection(information, procedure_id=procedure_id)
+            _process_rejection(information, procedure_id=procedure_id, reason="Compte existant avec cet email")
             continue
+
+        if (
+            information.get("id_piece_number")
+            and User.query.filter(User.idPieceNumber == information["id_piece_number"]).count() > 0
+        ):
+            _process_rejection(information, procedure_id=procedure_id, reason="Nr de piece déjà utilisé", user=user)
 
         if not already_imported(information["application_id"]):
             process_beneficiary_application(
@@ -237,13 +243,14 @@ def _process_duplication(
     )
 
 
-def _process_rejection(information: dict, procedure_id: int) -> None:
+def _process_rejection(information: dict, procedure_id: int, reason: str, user: User = None) -> None:
     save_beneficiary_import_with_status(
         ImportStatus.REJECTED,
         information["application_id"],
         source=BeneficiaryImportSources.demarches_simplifiees,
         source_id=procedure_id,
-        detail="Compte existant avec cet email",
+        detail=reason,
+        user=user,
     )
     logger.warning(
         "[BATCH][REMOTE IMPORT BENEFICIARIES] Rejected application %s because of already existing email - Procedure %s",
