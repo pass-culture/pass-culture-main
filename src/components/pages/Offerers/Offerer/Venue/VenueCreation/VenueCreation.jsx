@@ -1,16 +1,58 @@
 import PropTypes from 'prop-types'
 import React from 'react'
+import { Route, Redirect, Switch, useParams, useRouteMatch } from 'react-router-dom'
+
+import PageTitle from 'components/layout/PageTitle/PageTitle'
+import Titles from 'components/layout/Titles/Titles'
+
+import Breadcrumb, { mapPathToStep } from '../Breadcrumb'
 
 const VenueCreation = ({ isTemporary }) => {
+  let { offererId, venueId } = useParams()
+
+  const match = useRouteMatch()
+  const pageTitle = isTemporary ? 'Créer un lieu temporaire' : 'Créer un lieu '
+
+  const stepName = location.pathname.match(/[a-z]+$/)
+  const activeStep = stepName ? mapPathToStep[stepName[0]] : null
+
   return (
     <div>
-      <h1>
-        {"i'm the venue creation page"}
-      </h1>
+      <PageTitle title={pageTitle} />
+      <Titles title={pageTitle} />
 
-      <p>
-        {isTemporary ? 'Create a temporary venue' : 'Create a permanent venue'}
-      </p>
+      <Breadcrumb
+        activeStep={activeStep}
+        offererId={offererId}
+        venueId={venueId}
+      />
+
+      <Switch>
+        <Route
+          exact
+          path={`${match.path}/informations`}
+        >
+          <p>
+            {isTemporary
+              ? 'create temporary venue information form'
+              : 'create venue information form'}
+          </p>
+        </Route>
+        <Route
+          exact
+          path={`${match.path}/gestion`}
+        >
+          <p>
+            {'create venue management form'}
+          </p>
+        </Route>
+        <Route
+          exact
+          path={match.path}
+        >
+          <Redirect to={`${match.url}/informations`} />
+        </Route>
+      </Switch>
     </div>
   )
 }

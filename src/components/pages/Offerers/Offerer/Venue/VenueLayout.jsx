@@ -10,22 +10,13 @@ const VenueLayout = () => {
   const match = useRouteMatch()
   return (
     <Switch>
-      <Route
-        exact
-        path={`${match.path}/creation`}
-      >
+      <Route path={`${match.path}/creation`}>
         <VenueCreation />
       </Route>
-      <Route
-        exact
-        path={`${match.path}/temporaire/creation`}
-      >
+      <Route path={`${match.path}/temporaire/creation`}>
         <VenueCreation isTemporary />
       </Route>
-      <Route
-        exact
-        path={`${match.path}/:venueId([A-Z0-9]+)`}
-      >
+      <Route path={`${match.path}/:venueId([A-Z0-9]+)`}>
         <VenueEdition />
       </Route>
       <Route>
