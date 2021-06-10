@@ -1,12 +1,18 @@
 import PropTypes from 'prop-types'
-import React, { useEffect, useRef } from 'react'
-
-import FormFooter from '../../forms/FormFooter'
+import React, { useCallback, useEffect, useRef } from 'react'
 import Icon from '../../layout/Icon/Icon'
 import SmartBanner from 'react-smartbanner'
+import { Link } from 'react-router-dom'
 
-const BetaPage = ({ trackSignup, isNewBookingLimitsActived, wholeFranceOpening }) => {
+const BetaPage = ({ isNewBookingLimitsActived }) => {
   const appTitle = useRef(null)
+  const handleRedirectionToApp = useCallback(
+    () =>
+      window.open(
+        'https://passcultureapp.page.link/?link=https://passculture.app/default&apn=app.passculture.webapp&isi=1557887412&ibi=app.passculture&efr=1&ofl=https://pass.culture.fr/nosapplications'
+      ),
+    []
+  )
 
   useEffect(() => {
     appTitle.current.focus()
@@ -37,52 +43,50 @@ const BetaPage = ({ trackSignup, isNewBookingLimitsActived, wholeFranceOpening }
           {'Bienvenue dans\n'}
           {'ton pass Culture'}
         </div>
-        <div className="bp-content">
-          {'Tu as 18 ans'}
-          {!wholeFranceOpening && (
-            <span>
-              {' et tu vis dans un '}
-              <a
-                href="https://pass.culture.fr/le-dispositif/#dispoexpe"
-                rel="noopener noreferrer"
-                target="_blank"
-              >
-                {'département éligible'}
-              </a>
-            </span>
-          )}
-          {' ?'}
-        </div>
+        <h2 className="lf-subtitle">
+          {'Tu as 18 ans ?'}
+        </h2>
         <div className="bp-content">
           {`Bénéficie de ${isNewBookingLimitsActived ? 300 : 500} € afin de\n`}
           {'renforcer tes pratiques\n'}
           {"culturelles et d'en découvrir\n"}
           {'de nouvelles !'}
         </div>
+        <div className="bp-content">
+          {`Si tu veux profiter des dernières \n`}
+          {"fonctionnalités, télécharge l'application \n"}
+          {'depuis les stores.'}
+        </div>
+        <div className="buttons-container">
+          <Link
+            className="sign-in-button"
+            to="/connexion"
+            type="button"
+          >
+            {'Se connecter'}
+          </Link>
+          <button
+            className="download-app-button"
+            onClick={handleRedirectionToApp}
+            type="button"
+          >
+            <Icon
+              alt="Lien vers l'app"
+              class="external-link-icon"
+              svg="external-link-site"
+            />
+            <span className="download-app">
+              {"Télécharger l'application"}
+            </span>
+          </button>
+        </div>
       </main>
-      <FormFooter
-        items={[
-          {
-            id: 'sign-up-link',
-            label: 'Créer un compte',
-            url: '/verification-eligibilite',
-            tracker: trackSignup,
-          },
-          {
-            id: 'sign-in-link',
-            label: 'Me connecter',
-            url: '/connexion',
-          },
-        ]}
-      />
     </div>
   )
 }
 
 BetaPage.propTypes = {
   isNewBookingLimitsActived: PropTypes.bool.isRequired,
-  trackSignup: PropTypes.func.isRequired,
-  wholeFranceOpening: PropTypes.bool.isRequired,
 }
 
 export default BetaPage
