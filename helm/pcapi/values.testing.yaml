@@ -308,6 +308,8 @@ secrets:
     version: 3
   - name: BATCH_SECRET_API_KEY
     version: 1
+  - name: BLACKLISTED_SMS_RECIPIENTS
+    version: 1
   - name: DATABASE_URL
     version: 4
   - name: DEMARCHES_SIMPLIFIEES_TOKEN
@@ -388,5 +390,4 @@ secrets:
     version: 1
   - name: WHITELISTED_SMS_RECIPIENTS
     version: 2
-  - name: BLACKLISTED_SMS_RECIPIENTS
-    version: 1
+

@@ -297,6 +297,8 @@ secrets:
     version: 2
   - name: BATCH_SECRET_API_KEY
     version: 1
+  - name: BLACKLISTED_SMS_RECIPIENTS
+    version: 1
   - name: DATABASE_URL
     version: 2
   - name: DEV_EMAIL_ADDRESS
@@ -335,5 +337,4 @@ secrets:
     version: 2
   - name: SUPPORT_EMAIL_ADDRESS
     version: 2
-  - name: BLACKLISTED_SMS_RECIPIENTS
     version: 1
