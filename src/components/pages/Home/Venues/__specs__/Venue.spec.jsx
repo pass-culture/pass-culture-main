@@ -1,26 +1,32 @@
 import '@testing-library/jest-dom'
 import { act, render, screen, within } from '@testing-library/react'
 import React from 'react'
+import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
 import Venue from 'components/pages/Home/Venues/Venue'
 import * as pcapi from 'repository/pcapi/pcapi'
+import { configureTestStore } from 'store/testUtils'
 import { loadFakeApiVenueStats } from 'utils/fakeApi'
 
-const renderVenue = async props => {
+const renderVenue = async (props, store) => {
   return await act(async () => {
     await render(
-      <MemoryRouter>
-        <Venue {...props} />
-      </MemoryRouter>
+      <Provider store={store}>
+        <MemoryRouter>
+          <Venue {...props} />
+        </MemoryRouter>
+      </Provider>
     )
   })
 }
 
 describe('venues', () => {
   let props
+  let store
 
   beforeEach(() => {
+    store = configureTestStore()
     props = {
       id: 'VENUE01',
       isVirtual: false,
@@ -37,7 +43,7 @@ describe('venues', () => {
 
   it('should display stats tiles', async () => {
     // When
-    await renderVenue(props)
+    await renderVenue(props, store)
 
     // Then
     expect(pcapi.getVenueStats).toHaveBeenCalledWith(props.id)
@@ -62,7 +68,7 @@ describe('venues', () => {
 
   it('should contain a link for each stats', async () => {
     // When
-    await renderVenue(props)
+    await renderVenue(props, store)
 
     // Then
     expect(screen.getAllByRole('link', { name: 'Voir' })).toHaveLength(4)
@@ -70,7 +76,7 @@ describe('venues', () => {
 
   it('should redirect to filtered bookings when clicking on link', async () => {
     // When
-    await renderVenue(props)
+    await renderVenue(props, store)
 
     // Then
     const [
@@ -101,7 +107,7 @@ describe('venues', () => {
       props.isVirtual = true
 
       // When
-      await renderVenue(props)
+      await renderVenue(props, store)
 
       // Then
       expect(
@@ -116,7 +122,7 @@ describe('venues', () => {
       props.isVirtual = false
 
       // When
-      await renderVenue(props)
+      await renderVenue(props, store)
 
       // Then
       expect(screen.getByRole('link', { name: 'Créer une nouvelle offre' })).toBeInTheDocument()
@@ -127,7 +133,7 @@ describe('venues', () => {
       props.isVirtual = false
 
       // When
-      await renderVenue(props)
+      await renderVenue(props, store)
 
       // Then
       expect(screen.getByRole('link', { name: 'Modifier' }).href).toBe(

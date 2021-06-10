@@ -2,6 +2,7 @@ import * as PropTypes from 'prop-types'
 import React, { Fragment, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import Icon from 'components/layout/Icon'
 import { BOOKING_STATUS } from 'components/pages/Bookings/BookingsRecapTableLegacy/CellsFormatter/utils/bookingStatusConverter'
 import { ReactComponent as IcoPlus } from 'icons/ico-plus.svg'
@@ -57,6 +58,8 @@ const Venue = ({ id, isVirtual, name, offererId, publicName }) => {
     },
   ]
 
+  const isVenueV2Enabled = useActiveFeature('ENABLE_NEW_VENUE_PAGES')
+
   useEffect(() => {
     pcapi.getVenueStats(id).then(stats => {
       setStats({
@@ -67,6 +70,11 @@ const Venue = ({ id, isVirtual, name, offererId, publicName }) => {
       })
     })
   }, [id])
+
+  let editVenueLink = `/structures/${offererId}/lieux/${id}`
+  if (!isVenueV2Enabled) {
+    editVenueLink += '?modification'
+  }
 
   return (
     <div className="h-section-row nested offerer-venue">
@@ -88,7 +96,7 @@ const Venue = ({ id, isVirtual, name, offererId, publicName }) => {
             {!isVirtual && (
               <Link
                 className="tertiary-link"
-                to={`/structures/${offererId}/lieux/${id}?modification`}
+                to={editVenueLink}
               >
                 <Icon svg="ico-outer-pen" />
                 {'Modifier'}
