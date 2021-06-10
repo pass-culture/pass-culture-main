@@ -7,6 +7,7 @@ from alembic.config import Config
 from flask import Flask
 from flask.testing import FlaskClient
 from flask_jwt_extended import JWTManager
+from flask_jwt_extended.utils import create_access_token
 from flask_login import LoginManager
 import pytest
 import redis
@@ -145,6 +146,11 @@ def assert_num_queries():
     return pcapi.core.testing.assert_num_queries
 
 
+@pytest.fixture(name="client")
+def client_fixture(app: Flask):
+    return TestClient(app.test_client())
+
+
 class TestClient:
     WITH_DOC = False
     USER_TEST_ADMIN_EMAIL = "pctest.admin93.0@example.com"
@@ -154,7 +160,7 @@ class TestClient:
         self.client = client
         self.auth_header = {}
 
-    def with_auth(self, email: str = None):
+    def with_auth(self, email: str = None) -> "TestClient":
         self.email = email
         if email is None:
             self.auth_header = {
@@ -165,6 +171,13 @@ class TestClient:
                 "Authorization": _basic_auth_str(email, PLAIN_DEFAULT_TESTING_PASSWORD),
             }
 
+        return self
+
+    def with_token(self, email: str) -> "TestClient":
+        self.email = email
+        self.auth_header = {
+            "Authorization": f"Bearer {create_access_token(self.email)}",
+        }
         return self
 
     def delete(self, route: str, headers: dict = None):
