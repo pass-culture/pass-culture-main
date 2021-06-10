@@ -1,4 +1,4 @@
-import * as bookingsPreFilters from 'components/pages/Bookings/PreFilters/_constants'
+import { DEFAULT_PRE_FILTERS } from 'components/pages/Bookings/PreFilters/_constants'
 import { DEFAULT_PAGE, DEFAULT_SEARCH_FILTERS } from 'components/pages/Offers/Offers/_constants'
 import { client } from 'repository/pcapi/pcapiClient'
 import { formatBrowserTimezonedDateAsUTC } from 'utils/date'
@@ -238,17 +238,21 @@ export const loadVenueProviders = async venueId => {
 // BookingsRecap
 //
 export const loadFilteredBookingsRecap = async ({
-  venueId = bookingsPreFilters.ALL_VENUES,
-  eventDate = bookingsPreFilters.ALL_DATES,
+  venueId = DEFAULT_PRE_FILTERS.offerVenueId,
+  eventDate = DEFAULT_PRE_FILTERS.offerEventDate,
+  bookingPeriodBeginningDate = DEFAULT_PRE_FILTERS.bookingBeginningDate,
+  bookingPeriodEndingDate = DEFAULT_PRE_FILTERS.bookingEndingDate,
   page,
 }) => {
   const params = { page }
-  if (venueId !== bookingsPreFilters.ALL_VENUES) {
+  if (venueId !== DEFAULT_PRE_FILTERS.offerVenueId) {
     params.venueId = venueId
   }
-  if (eventDate !== bookingsPreFilters.ALL_DATES) {
+  if (eventDate !== DEFAULT_PRE_FILTERS.offerEventDate) {
     params.eventDate = formatBrowserTimezonedDateAsUTC(eventDate)
   }
+  params.bookingPeriodBeginningDate = formatBrowserTimezonedDateAsUTC(bookingPeriodBeginningDate)
+  params.bookingPeriodEndingDate = formatBrowserTimezonedDateAsUTC(bookingPeriodEndingDate)
 
   const queryParams = stringify(params)
   return client.get(`/bookings/pro?${queryParams}`)

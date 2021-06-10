@@ -1,4 +1,4 @@
-import * as bookingsPreFilters from 'components/pages/Bookings/PreFilters/_constants'
+import { DEFAULT_PRE_FILTERS } from 'components/pages/Bookings/PreFilters/_constants'
 import { DEFAULT_SEARCH_FILTERS } from 'components/pages/Offers/Offers/_constants'
 import {
   getVenuesForOfferer,
@@ -28,6 +28,13 @@ jest.mock('repository/pcapi/pcapiClient', () => ({
     postWithFormData: jest.fn(),
   },
 }))
+
+jest.mock('utils/date', () => {
+  return {
+    ...jest.requireActual('utils/date'),
+    getToday: jest.fn().mockReturnValue(new Date(2020, 8, 12)),
+  }
+})
 
 describe('pcapi', () => {
   describe('loadFilteredOffers', () => {
@@ -342,7 +349,7 @@ describe('pcapi', () => {
       expect(response).toBe(returnedResponse)
     })
 
-    it('should call offers route with "page=1" when no other filters are provided', async () => {
+    it('should call offers route with "page=1" and default period when no other filters are provided', async () => {
       // Given
       const filters = {
         page: 1,
@@ -352,24 +359,48 @@ describe('pcapi', () => {
       await loadFilteredBookingsRecap(filters)
 
       // Then
-      expect(client.get).toHaveBeenCalledWith('/bookings/pro?page=1')
+      expect(client.get).toHaveBeenCalledWith(
+        '/bookings/pro?page=1&bookingPeriodBeginningDate=2020-08-13T00%3A00%3A00Z&bookingPeriodEndingDate=2020-09-12T00%3A00%3A00Z'
+      )
     })
 
-    it('should call offers route with "page=1" when provided filters are defaults', async () => {
+    it('should call offers route with "page=1" and default period when provided filters are defaults', async () => {
       // Given
       const filters = {
         page: 1,
-        venueId: bookingsPreFilters.ALL_VENUES,
+        venueId: DEFAULT_PRE_FILTERS.offerVenueId,
+        eventDate: DEFAULT_PRE_FILTERS.offerEventDate,
       }
 
       // When
       await loadFilteredBookingsRecap(filters)
 
       // Then
-      expect(client.get).toHaveBeenCalledWith('/bookings/pro?page=1')
+      expect(client.get).toHaveBeenCalledWith(
+        '/bookings/pro?page=1&bookingPeriodBeginningDate=2020-08-13T00%3A00%3A00Z&bookingPeriodEndingDate=2020-09-12T00%3A00%3A00Z'
+      )
     })
 
     it('should call offers route with filters when provided', async () => {
+      // Given
+      const filters = {
+        venueId: 'AA',
+        eventDate: new Date(2020, 8, 13),
+        page: 2,
+        bookingPeriodBeginningDate: new Date(2020, 6, 8),
+        bookingPeriodEndingDate: new Date(2020, 8, 4),
+      }
+
+      // When
+      await loadFilteredBookingsRecap(filters)
+
+      // Then
+      expect(client.get).toHaveBeenCalledWith(
+        '/bookings/pro?page=2&venueId=AA&eventDate=2020-09-13T00%3A00%3A00Z&bookingPeriodBeginningDate=2020-07-08T00%3A00%3A00Z&bookingPeriodEndingDate=2020-09-04T00%3A00%3A00Z'
+      )
+    })
+
+    it('should call bookings route with default period filter when not provided', async () => {
       // Given
       const filters = {
         venueId: 'AA',
@@ -382,7 +413,7 @@ describe('pcapi', () => {
 
       // Then
       expect(client.get).toHaveBeenCalledWith(
-        '/bookings/pro?page=2&venueId=AA&eventDate=2020-09-13T00%3A00%3A00Z'
+        '/bookings/pro?page=2&venueId=AA&eventDate=2020-09-13T00%3A00%3A00Z&bookingPeriodBeginningDate=2020-08-13T00%3A00%3A00Z&bookingPeriodEndingDate=2020-09-12T00%3A00%3A00Z'
       )
     })
   })

@@ -45,6 +45,8 @@ const BookingsRecap = ({
         bookingsFilters = {
           venueId: preFilters.offerVenueId,
           eventDate: preFilters.offerEventDate,
+          bookingPeriodBeginningDate: preFilters.bookingBeginningDate,
+          bookingPeriodEndingDate: preFilters.bookingEndingDate,
         }
       }
 

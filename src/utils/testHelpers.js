@@ -77,3 +77,6 @@ export async function enzymeWaitFor(callback, { interval = 50, timeout = 1000 } 
     }, interval)
   })
 }
+
+export const getNthCallNthArg = (mockedFunction, nthCall, nthArg = 1) =>
+  mockedFunction.mock.calls[nthCall - 1][nthArg - 1]

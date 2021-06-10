@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
@@ -9,6 +9,7 @@ import { DEFAULT_PRE_FILTERS } from 'components/pages/Bookings/PreFilters/_const
 import { getVenuesForOfferer, loadFilteredBookingsRecap } from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 import { bookingRecapFactory, venueFactory } from 'utils/apiFactories'
+import { getNthCallNthArg } from 'utils/testHelpers'
 
 import BookingsRecapContainer from '../BookingsRecapContainer'
 
@@ -19,7 +20,7 @@ jest.mock('repository/pcapi/pcapi', () => ({
 
 jest.mock('utils/date', () => ({
   ...jest.requireActual('utils/date'),
-  getToday: jest.fn().mockReturnValue(new Date('2020-06-07T12:00:00Z')),
+  getToday: jest.fn().mockReturnValue(new Date('2020-06-15T12:00:00Z')),
 }))
 
 const renderBookingsRecap = async (props, store = {}, routerState) => {
@@ -119,11 +120,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     // Then
     await screen.findAllByText(bookingRecap.stock.offer_name)
-    expect(loadFilteredBookingsRecap).toHaveBeenCalledWith({
-      page: 1,
-      venueId: venue.id,
-      eventDate: DEFAULT_PRE_FILTERS.offerEventDate,
-    })
+    expect(getNthCallNthArg(loadFilteredBookingsRecap, 1).venueId).toBe(venue.id)
   })
 
   it('should warn user that his prefilters returned no booking when no bookings where returned by selected pre-filters', async () => {
@@ -195,8 +192,8 @@ describe('components | BookingsRecap | Pro user', () => {
     })
     await renderBookingsRecap(props, store)
     userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
-    const defaultBookingPeriodBeginningDateInput = '08/05/2020'
-    const defaultBookingPeriodEndingDateInput = '07/06/2020'
+    const defaultBookingPeriodBeginningDateInput = '16/05/2020'
+    const defaultBookingPeriodEndingDateInput = '15/06/2020'
     const bookingPeriodBeginningDateInput = screen.getByDisplayValue(
       defaultBookingPeriodBeginningDateInput
     )
@@ -278,16 +275,10 @@ describe('components | BookingsRecap | Pro user', () => {
     expect(firstBookingRecap).toHaveLength(2)
 
     expect(loadFilteredBookingsRecap).toHaveBeenCalledTimes(2)
-    expect(loadFilteredBookingsRecap).toHaveBeenNthCalledWith(1, {
-      page: 1,
-      venueId: venue.id,
-      eventDate: DEFAULT_PRE_FILTERS.offerEventDate,
-    })
-    expect(loadFilteredBookingsRecap).toHaveBeenNthCalledWith(2, {
-      page: 2,
-      venueId: venue.id,
-      eventDate: DEFAULT_PRE_FILTERS.offerEventDate,
-    })
+    expect(getNthCallNthArg(loadFilteredBookingsRecap, 1).page).toBe(1)
+    expect(getNthCallNthArg(loadFilteredBookingsRecap, 1).venueId).toBe(venue.id)
+    expect(getNthCallNthArg(loadFilteredBookingsRecap, 2).page).toBe(2)
+    expect(getNthCallNthArg(loadFilteredBookingsRecap, 2).venueId).toBe(venue.id)
   })
 
   it('should request bookings of event date requested by user when user clicks on "Afficher"', async () => {
@@ -308,11 +299,152 @@ describe('components | BookingsRecap | Pro user', () => {
 
     // Then
     await screen.findAllByText(bookingRecap.stock.offer_name)
-    expect(loadFilteredBookingsRecap).toHaveBeenCalledWith({
+    expect(getNthCallNthArg(loadFilteredBookingsRecap, 1).eventDate).toStrictEqual(
+      new Date('2020-06-08T00:00:00.000Z')
+    )
+  })
+
+  it('should request bookings of default period when user clicks on "Afficher" without selecting a period', async () => {
+    // Given
+    let bookingRecap = bookingRecapFactory()
+    loadFilteredBookingsRecap.mockResolvedValue({
       page: 1,
-      venueId: 'all',
-      eventDate: new Date('2020-06-08T00:00:00.000Z'),
+      pages: 1,
+      total: 1,
+      bookings_recap: [bookingRecap],
     })
+    await renderBookingsRecap(props, store)
+
+    // When
+    fireEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+
+    // Then
+    await screen.findAllByText(bookingRecap.stock.offer_name)
+    expect(getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodBeginningDate).toStrictEqual(
+      DEFAULT_PRE_FILTERS.bookingBeginningDate
+    )
+    expect(getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodEndingDate).toStrictEqual(
+      DEFAULT_PRE_FILTERS.bookingEndingDate
+    )
+  })
+
+  it('should request bookings of selected period when user clicks on "Afficher"', async () => {
+    // Given
+    let bookingRecap = bookingRecapFactory()
+    loadFilteredBookingsRecap.mockResolvedValue({
+      page: 1,
+      pages: 1,
+      total: 1,
+      bookings_recap: [bookingRecap],
+    })
+    await renderBookingsRecap(props, store)
+
+    const bookingPeriodWrapper = screen.getByLabelText('Période de réservation').closest('label')
+    const [beginningPeriodInput, endingPeriodInput] = within(
+      bookingPeriodWrapper
+    ).getAllByPlaceholderText('JJ/MM/AAAA')
+
+    // When
+    fireEvent.click(beginningPeriodInput)
+    fireEvent.click(screen.getByText('10'))
+    fireEvent.click(endingPeriodInput)
+    fireEvent.click(screen.getByText('5'))
+    fireEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+
+    // Then
+    await screen.findAllByText(bookingRecap.stock.offer_name)
+    expect(getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodBeginningDate).toStrictEqual(
+      new Date('2020-05-10T12:00:00.000Z')
+    )
+    expect(getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodEndingDate).toStrictEqual(
+      new Date('2020-06-05T12:00:00.000Z')
+    )
+  })
+
+  it('should set default beginning period date when user empties it and clicks on "Afficher"', async () => {
+    // Given
+    let bookingRecap = bookingRecapFactory()
+    loadFilteredBookingsRecap.mockResolvedValue({
+      page: 1,
+      pages: 1,
+      total: 1,
+      bookings_recap: [bookingRecap],
+    })
+    await renderBookingsRecap(props, store)
+
+    const bookingPeriodWrapper = screen.getByLabelText('Période de réservation').closest('label')
+    const [beginningPeriodInput, endingPeriodInput] = within(
+      bookingPeriodWrapper
+    ).getAllByPlaceholderText('JJ/MM/AAAA')
+    fireEvent.click(endingPeriodInput)
+    fireEvent.click(screen.getByText('12'))
+
+    // When
+    fireEvent.change(beginningPeriodInput, { target: { value: '' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+
+    // Then
+    await screen.findAllByText(bookingRecap.stock.offer_name)
+    const thirtyDaysBeforeEndingDate = new Date('2020-05-13T12:00:00.000Z')
+    expect(getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodBeginningDate).toStrictEqual(
+      thirtyDaysBeforeEndingDate
+    )
+  })
+
+  it('should set default ending period date when user empties it and clicks on "Afficher"', async () => {
+    // Given
+    let bookingRecap = bookingRecapFactory()
+    loadFilteredBookingsRecap.mockResolvedValue({
+      page: 1,
+      pages: 1,
+      total: 1,
+      bookings_recap: [bookingRecap],
+    })
+    await renderBookingsRecap(props, store)
+
+    const bookingPeriodWrapper = screen.getByLabelText('Période de réservation').closest('label')
+    const [beginningPeriodInput, endingPeriodInput] = within(
+      bookingPeriodWrapper
+    ).getAllByPlaceholderText('JJ/MM/AAAA')
+    fireEvent.click(beginningPeriodInput)
+    fireEvent.click(screen.getByText('10'))
+
+    // When
+    fireEvent.change(endingPeriodInput, { target: { value: '' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+
+    // Then
+    await screen.findAllByText(bookingRecap.stock.offer_name)
+    const thirtyDaysAfterBeginningDate = new Date('2020-06-09T12:00:00.000Z')
+    expect(getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodEndingDate).toStrictEqual(
+      thirtyDaysAfterBeginningDate
+    )
+  })
+
+  it('should not be possible to select ending period date greater than today', async () => {
+    // Given
+    let bookingRecap = bookingRecapFactory()
+    loadFilteredBookingsRecap.mockResolvedValue({
+      page: 1,
+      pages: 1,
+      total: 1,
+      bookings_recap: [bookingRecap],
+    })
+    await renderBookingsRecap(props, store)
+
+    const bookingPeriodWrapper = screen.getByLabelText('Période de réservation').closest('label')
+    const endingPeriodInput = within(bookingPeriodWrapper).getAllByPlaceholderText('JJ/MM/AAAA')[1]
+
+    // When
+    fireEvent.click(endingPeriodInput)
+    fireEvent.click(screen.getByText('16'))
+    fireEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+
+    // Then
+    await screen.findAllByText(bookingRecap.stock.offer_name)
+    expect(getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodEndingDate).toStrictEqual(
+      DEFAULT_PRE_FILTERS.bookingEndingDate
+    )
   })
 
   it('should reset bookings recap list when applying filters', async () => {

@@ -1,7 +1,9 @@
+import { addDays, subDays } from 'date-fns'
 import PropTypes from 'prop-types'
 import React from 'react'
 
 import PeriodSelector from 'components/layout/inputs/PeriodSelector/PeriodSelector'
+import { DEFAULT_BOOKING_PERIOD } from 'components/pages/Bookings/PreFilters/_constants'
 import { getToday } from 'utils/date'
 
 const FilterByBookingPeriod = ({
@@ -10,11 +12,19 @@ const FilterByBookingPeriod = ({
   selectedBookingEndingDate,
 }) => {
   function handleBookingBeginningDateChange(bookingBeginningDate) {
-    updateFilters({ bookingBeginningDate: bookingBeginningDate })
+    updateFilters({
+      bookingBeginningDate: bookingBeginningDate
+        ? bookingBeginningDate
+        : subDays(selectedBookingEndingDate, DEFAULT_BOOKING_PERIOD),
+    })
   }
 
   function handleBookingEndingDateChange(bookingEndingDate) {
-    updateFilters({ bookingEndingDate: bookingEndingDate })
+    updateFilters({
+      bookingEndingDate: bookingEndingDate
+        ? bookingEndingDate
+        : addDays(selectedBookingBeginningDate, DEFAULT_BOOKING_PERIOD),
+    })
   }
 
   return (
