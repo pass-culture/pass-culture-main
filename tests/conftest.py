@@ -47,9 +47,9 @@ def pytest_configure(config):
         TestClient.WITH_DOC = True
 
 
-@pytest.fixture(scope="session")
-def app():
-    app = Flask(  # pylint: disable=redefined-outer-name
+@pytest.fixture(scope="session", name="app")
+def app_fixture():
+    app = Flask(
         __name__,
         template_folder=Path(pcapi.__path__[0]) / "templates",
     )
@@ -120,7 +120,7 @@ def clean_database(f: object) -> object:
 
 
 @pytest.fixture(scope="session")
-def _db(app):  # pylint: disable=redefined-outer-name
+def _db(app):
     """
     Provide the transactional fixtures with access to the database via a Flask-SQLAlchemy
     database connection.
