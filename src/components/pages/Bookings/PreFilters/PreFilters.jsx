@@ -4,23 +4,19 @@ import React, { useCallback, useEffect, useState } from 'react'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { formatAndOrderVenues } from 'repository/venuesService'
 
-import { DEFAULT_PRE_FILTERS } from './_constants'
 import FilterByBookingPeriod from './FilterByBookingPeriod'
 import FilterByEventDate from './FilterByEventDate.jsx'
 import FilterByVenue from './FilterByVenue'
 
-const PreFilters = ({ applyPreFilters, isLoading, offerVenueId }) => {
-  const [selectedPreFilters, setSelectedPreFilters] = useState({
-    bookingBeginningDate: DEFAULT_PRE_FILTERS.bookingBeginningDate,
-    bookingEndingDate: DEFAULT_PRE_FILTERS.bookingEndingDate,
-    offerEventDate: DEFAULT_PRE_FILTERS.offerEventDate,
-    offerVenueId: offerVenueId,
-  })
+const PreFilters = ({ appliedPreFilters, applyPreFilters, isLoading }) => {
+  const [selectedPreFilters, setSelectedPreFilters] = useState({ ...appliedPreFilters })
   const [venues, setVenues] = useState([])
 
   useEffect(() => {
     pcapi.getVenuesForOfferer().then(venues => setVenues(formatAndOrderVenues(venues)))
   }, [])
+
+  useEffect(() => setSelectedPreFilters({ ...appliedPreFilters }), [appliedPreFilters])
 
   const updateSelectedFilters = useCallback(updatedFilter => {
     setSelectedPreFilters(currentFilters => ({
@@ -71,14 +67,15 @@ const PreFilters = ({ applyPreFilters, isLoading, offerVenueId }) => {
   )
 }
 
-PreFilters.defaultProps = {
-  offerVenueId: DEFAULT_PRE_FILTERS.offerVenueId,
-}
-
 PreFilters.propTypes = {
+  appliedPreFilters: PropTypes.shape({
+    bookingBeginningDate: PropTypes.instanceOf(Date).isRequired,
+    bookingEndingDate: PropTypes.instanceOf(Date).isRequired,
+    offerEventDate: PropTypes.oneOfType([PropTypes.instanceOf(Date), PropTypes.string]),
+    offerVenueId: PropTypes.string.isRequired,
+  }).isRequired,
   applyPreFilters: PropTypes.func.isRequired,
   isLoading: PropTypes.bool.isRequired,
-  offerVenueId: PropTypes.string,
 }
 
 export default PreFilters

@@ -17,4 +17,17 @@
       width: rem(124px);
     }
   }
+
+  .br-title {
+    @include title3();
+
+    display: inline-block;
+    margin: 0 rem(20px) rem(24px) 0;
+  }
+
+  .reset-filters-link {
+    @include body-important();
+
+    color: $primary;
+  }
 }

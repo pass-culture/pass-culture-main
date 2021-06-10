@@ -1,5 +1,5 @@
 import * as PropTypes from 'prop-types'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState, useMemo } from 'react'
 
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
@@ -11,6 +11,7 @@ import BookingsRecapTableLegacy from './BookingsRecapTableLegacy/BookingsRecapTa
 import ChoosePreFiltersMessage from './ChoosePreFiltersMessage/ChoosePreFiltersMessage'
 import NoBookingsForPreFiltersMessage from './NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
 import NoBookingsMessage from './NoBookingsMessage/NoBookingsMessage'
+import { DEFAULT_PRE_FILTERS } from './PreFilters/_constants'
 import PreFilters from './PreFilters/PreFilters'
 
 const MAX_LOADED_PAGES = 5
@@ -21,15 +22,22 @@ const BookingsRecap = ({
   location,
   showWarningNotification,
 }) => {
+  const [appliedPreFilters, setAppliedPreFilters] = useState({
+    bookingBeginningDate: DEFAULT_PRE_FILTERS.bookingBeginningDate,
+    bookingEndingDate: DEFAULT_PRE_FILTERS.bookingEndingDate,
+    offerEventDate: DEFAULT_PRE_FILTERS.offerEventDate,
+    offerVenueId: location.state?.venueId || DEFAULT_PRE_FILTERS.offerVenueId,
+  })
   const [bookingsRecap, setBookingsRecap] = useState([])
   const [isLoading, setIsLoading] = useState(arePreFiltersEnabled ? false : true)
-  const [werePreFiltersApplied, setWerePreFiltersApplied] = useState(false)
+  const [wereBookingsRequested, setWereBookingsRequested] = useState(false)
 
   const loadBookingsRecap = useCallback(
     async preFilters => {
       setIsLoading(true)
-      setWerePreFiltersApplied(true)
       setBookingsRecap([])
+      setWereBookingsRequested(true)
+      setAppliedPreFilters({ ...preFilters })
 
       // TODO(07/06/2021): To remove when 'ENABLE_BOOKINGS_PAGE_FILTERS_FIRST' feature flip has been removed
       let bookingsFilters = {}
@@ -72,20 +80,51 @@ const BookingsRecap = ({
     }
   }, [arePreFiltersEnabled, loadBookingsRecap])
 
+  const werePreFiltersCustomized = useMemo(() => {
+    return (
+      appliedPreFilters.offerVenueId !== DEFAULT_PRE_FILTERS.offerVenueId ||
+      appliedPreFilters.bookingBeginningDate !== DEFAULT_PRE_FILTERS.bookingBeginningDate ||
+      appliedPreFilters.bookingEndingDate !== DEFAULT_PRE_FILTERS.bookingEndingDate ||
+      appliedPreFilters.offerEventDate !== DEFAULT_PRE_FILTERS.offerEventDate
+    )
+  }, [
+    appliedPreFilters.bookingBeginningDate,
+    appliedPreFilters.bookingEndingDate,
+    appliedPreFilters.offerEventDate,
+    appliedPreFilters.offerVenueId,
+  ])
+
+  const resetPreFilters = useCallback(() => {
+    setWereBookingsRequested(false)
+    setAppliedPreFilters({ ...DEFAULT_PRE_FILTERS })
+  }, [])
+
+  if (isUserAdmin) return <NoBookingsMessage />
+
   return (
     <div className="bookings-page">
       <PageTitle title="Vos réservations" />
       <Titles title="Réservations" />
-      {isUserAdmin ? (
-        <NoBookingsMessage />
-      ) : arePreFiltersEnabled ? (
+      <h2 className="br-title">
+        {'Affichage des réservations'}
+      </h2>
+      {werePreFiltersCustomized && (
+        <button
+          className="tertiary-button reset-filters-link"
+          onClick={resetPreFilters}
+          type="button"
+        >
+          {'Réinitialiser les filtres'}
+        </button>
+      )}
+      {arePreFiltersEnabled ? (
         <>
           <PreFilters
+            appliedPreFilters={appliedPreFilters}
             applyPreFilters={loadBookingsRecap}
             isLoading={isLoading}
-            offerVenueId={location.state?.venueId}
           />
-          {werePreFiltersApplied ? (
+          {wereBookingsRequested ? (
             bookingsRecap.length > 0 ? (
               <BookingsRecapTable
                 bookingsRecap={bookingsRecap}
@@ -95,7 +134,7 @@ const BookingsRecap = ({
             ) : isLoading ? (
               <Spinner />
             ) : (
-              <NoBookingsForPreFiltersMessage />
+              <NoBookingsForPreFiltersMessage resetPreFilters={resetPreFilters} />
             )
           ) : (
             <ChoosePreFiltersMessage />

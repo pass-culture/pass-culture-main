@@ -5,6 +5,7 @@ import React from 'react'
 import { getVenuesForOfferer } from 'repository/pcapi/pcapi'
 import { venueFactory } from 'utils/apiFactories'
 
+import { DEFAULT_PRE_FILTERS } from '../_constants'
 import PreFilters from '../PreFilters'
 
 jest.mock('utils/date', () => ({
@@ -20,7 +21,9 @@ describe('filter bookings by bookings period', () => {
   let props
   beforeEach(() => {
     props = {
+      appliedPreFilters: { ...DEFAULT_PRE_FILTERS },
       applyPreFilters: jest.fn(),
+      isLoading: false,
     }
 
     getVenuesForOfferer.mockResolvedValue([venueFactory()])

@@ -60,8 +60,6 @@ describe('components | BookingsRecapLegacy', () => {
     await renderBookingsRecap(props, store)
 
     // Then
-    const title = screen.getByText('Réservations', { selector: 'h1' })
-    expect(title).toBeInTheDocument()
     const bookingsTable = screen.queryByText('Télécharger le CSV')
     expect(bookingsTable).not.toBeInTheDocument()
     const noBookingsMessage = screen.getByText('Aucune réservation pour le moment')

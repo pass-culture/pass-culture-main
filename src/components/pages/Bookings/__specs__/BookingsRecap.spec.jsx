@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { act, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
@@ -22,11 +22,11 @@ jest.mock('utils/date', () => ({
   getToday: jest.fn().mockReturnValue(new Date('2020-06-07T12:00:00Z')),
 }))
 
-const renderBookingsRecap = async (props, store = {}) => {
+const renderBookingsRecap = async (props, store = {}, routerState) => {
   await act(async () => {
     await render(
       <Provider store={store}>
-        <MemoryRouter>
+        <MemoryRouter initialEntries={[{ pathname: '/reservations', state: routerState }]}>
           <BookingsRecapContainer {...props} />
         </MemoryRouter>
       </Provider>
@@ -81,16 +81,25 @@ describe('components | BookingsRecap | Pro user', () => {
     expect(eventBookingPeriodFilter).toBeInTheDocument()
   })
 
+  it('should init venue pre-filter with venueId in router state', async () => {
+    // When
+    await renderBookingsRecap(props, store, { venueId: venue.id })
+
+    // Then
+    const eventVenueFilter = screen.getByLabelText('Lieu')
+    expect(eventVenueFilter).toHaveValue(venue.id)
+  })
+
   it('should ask user to select a pre-filter before clicking on "Afficher"', async () => {
     // When
     await renderBookingsRecap(props, store)
 
     // Then
     expect(loadFilteredBookingsRecap).not.toHaveBeenCalled()
-    const noBookingsMessage = screen.getByText(
+    const choosePreFiltersMessage = screen.getByText(
       'Pour visualiser vos réservations, veuillez sélectionner un ou plusieurs des filtres précédents et cliquer sur « Afficher »'
     )
-    expect(noBookingsMessage).toBeInTheDocument()
+    expect(choosePreFiltersMessage).toBeInTheDocument()
   })
 
   it('should request bookings of venue requested by user when user clicks on "Afficher"', async () => {
@@ -106,7 +115,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     // When
     userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
-    userEvent.click(screen.getByText('Afficher', { selector: 'button' }))
+    userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
     // Then
     await screen.findAllByText(bookingRecap.stock.offer_name)
@@ -117,29 +126,124 @@ describe('components | BookingsRecap | Pro user', () => {
     })
   })
 
-  describe('when no bookings where returned by selected pre-filters', () => {
-    beforeEach(() => {
-      loadFilteredBookingsRecap.mockResolvedValue({
-        page: 1,
-        pages: 0,
-        total: 0,
-        bookings_recap: [],
-      })
+  it('should warn user that his prefilters returned no booking when no bookings where returned by selected pre-filters', async () => {
+    // Given
+    loadFilteredBookingsRecap.mockResolvedValue({
+      page: 1,
+      pages: 0,
+      total: 0,
+      bookings_recap: [],
     })
+    await renderBookingsRecap(props, store)
 
-    it('should warn user that his prefilters returned no booking', async () => {
-      // Given
-      await renderBookingsRecap(props, store)
+    // When
+    userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
-      // When
-      userEvent.click(screen.getByText('Afficher', { selector: 'button' }))
+    // Then
+    const noBookingsForPreFilters = await screen.findByText(
+      'Aucune réservation trouvée pour votre recherche.'
+    )
+    expect(noBookingsForPreFilters).toBeInTheDocument()
+  })
 
-      // Then
-      const noBookingsForPreFilters = await screen.findByText(
-        'Aucune réservation trouvée pour votre recherche.'
-      )
-      expect(noBookingsForPreFilters).toBeInTheDocument()
+  it('should allow user to reset its pre-filters in the no bookings warning', async () => {
+    // Given
+    loadFilteredBookingsRecap.mockResolvedValue({
+      page: 1,
+      pages: 0,
+      total: 0,
+      bookings_recap: [],
     })
+    await renderBookingsRecap(props, store)
+    userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
+    userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+
+    // When
+    const resetButton = await screen.findByText('réinitialiser tous les filtres.')
+    userEvent.click(resetButton)
+
+    // Then
+    expect(screen.getByLabelText('Lieu')).toHaveValue(DEFAULT_PRE_FILTERS.offerVenueId)
+  })
+
+  it('should not allow user to reset prefilters when none were applied', async () => {
+    // Given
+    let bookingRecap = bookingRecapFactory()
+    loadFilteredBookingsRecap.mockResolvedValue({
+      page: 1,
+      pages: 1,
+      total: 1,
+      bookings_recap: [bookingRecap],
+    })
+    await renderBookingsRecap(props, store)
+
+    // When
+    userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+
+    // Then
+    expect(screen.queryByText('Réinitialiser les filtres')).not.toBeInTheDocument()
+  })
+
+  it('should allow user to reset prefilters when some where applied', async () => {
+    // Given
+    let bookingRecap = bookingRecapFactory()
+    loadFilteredBookingsRecap.mockResolvedValue({
+      page: 1,
+      pages: 1,
+      total: 1,
+      bookings_recap: [bookingRecap],
+    })
+    await renderBookingsRecap(props, store)
+    userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
+    const defaultBookingPeriodBeginningDateInput = '08/05/2020'
+    const defaultBookingPeriodEndingDateInput = '07/06/2020'
+    const bookingPeriodBeginningDateInput = screen.getByDisplayValue(
+      defaultBookingPeriodBeginningDateInput
+    )
+    fireEvent.click(bookingPeriodBeginningDateInput)
+    fireEvent.click(screen.getAllByText('5')[0])
+    const bookingPeriodEndingDateInput = screen.getByDisplayValue(
+      defaultBookingPeriodEndingDateInput
+    )
+    fireEvent.click(bookingPeriodEndingDateInput)
+    fireEvent.click(screen.getByText('5'))
+    userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+
+    // When
+    const resetButton = await screen.findByText('Réinitialiser les filtres')
+    userEvent.click(resetButton)
+
+    // Then
+    expect(screen.getByLabelText('Lieu')).toHaveValue(DEFAULT_PRE_FILTERS.offerVenueId)
+    expect(
+      await screen.findByDisplayValue(defaultBookingPeriodBeginningDateInput)
+    ).toBeInTheDocument()
+    expect(await screen.findByDisplayValue(defaultBookingPeriodEndingDateInput)).toBeInTheDocument()
+  })
+
+  it('should ask user to select a pre-filter when user reset them', async () => {
+    // Given
+    let bookingRecap = bookingRecapFactory()
+    loadFilteredBookingsRecap.mockResolvedValue({
+      page: 1,
+      pages: 1,
+      total: 1,
+      bookings_recap: [bookingRecap],
+    })
+    await renderBookingsRecap(props, store)
+    userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
+    userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+
+    // When
+    const resetButton = await screen.findByText('Réinitialiser les filtres')
+    userEvent.click(resetButton)
+
+    // Then
+    expect(screen.queryByText('Réinitialiser les filtres')).not.toBeInTheDocument()
+    const choosePreFiltersMessage = screen.getByText(
+      'Pour visualiser vos réservations, veuillez sélectionner un ou plusieurs des filtres précédents et cliquer sur « Afficher »'
+    )
+    expect(choosePreFiltersMessage).toBeInTheDocument()
   })
 
   it('should fetch bookings for the filtered venue as many times as the number of pages', async () => {
@@ -165,7 +269,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     // When
     userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
-    await userEvent.click(screen.getByText('Afficher', { selector: 'button' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
     // Then
     const secondBookingRecap = await screen.findAllByText(bookings2.stock.offer_name)
@@ -200,7 +304,7 @@ describe('components | BookingsRecap | Pro user', () => {
     // When
     userEvent.click(screen.getByLabelText('Date de l’évènement'))
     userEvent.click(screen.getByText('8'))
-    userEvent.click(screen.getByText('Afficher', { selector: 'button' }))
+    userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
     // Then
     await screen.findAllByText(bookingRecap.stock.offer_name)
@@ -235,12 +339,12 @@ describe('components | BookingsRecap | Pro user', () => {
     await renderBookingsRecap(props, store)
 
     userEvent.selectOptions(screen.getByLabelText('Lieu'), otherVenue.id)
-    userEvent.click(screen.getByText('Afficher', { selector: 'button' }))
+    userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
     await screen.findAllByText(otherVenueBooking.stock.offer_name)
 
     // When
     userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
-    await userEvent.click(screen.getByText('Afficher', { selector: 'button' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
     // Then
     const firstBookingRecap = await screen.findAllByText(booking.stock.offer_name)

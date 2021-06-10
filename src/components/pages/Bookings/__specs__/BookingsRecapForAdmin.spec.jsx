@@ -73,8 +73,6 @@ describe('components | BookingsRecap | Admin user', () => {
     // Then
     expect(loadFilteredBookingsRecap).not.toHaveBeenCalled()
     expect(getVenuesForOfferer).not.toHaveBeenCalled()
-    const title = screen.getByText('Réservations', { selector: 'h1' })
-    expect(title).toBeInTheDocument()
     const bookingsTable = screen.queryByText('Télécharger le CSV')
     expect(bookingsTable).not.toBeInTheDocument()
     const noBookingsMessage = screen.getByText('Aucune réservation pour le moment')
