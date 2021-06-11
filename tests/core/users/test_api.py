@@ -10,6 +10,7 @@ from freezegun import freeze_time
 import jwt
 import pytest
 
+from pcapi import settings
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.offers import factories as offers_factories
@@ -873,16 +874,15 @@ class VerifyIdentityDocumentInformationsTest:
         self, mocked_get_identity_informations, mocked_ask_for_identity, mocked_delete_object, app
     ):
         # Given
-        user = users_factories.UserFactory(email="py@test.com")
         mocked_get_identity_informations.return_value = ("py@test.com", b"")
-        mocked_ask_for_identity.return_value = (False, "invalid-document")
+        mocked_ask_for_identity.return_value = (False, "unread-document")
 
         users_api.verify_identity_document_informations("some_path")
 
         assert len(mails_testing.outbox) == 1
         sent_data = mails_testing.outbox[0].sent_data
 
-        assert sent_data["Vars"]["first_name"] == user.firstName
+        assert sent_data["Vars"]["url"] == settings.DMS_USER_URL
 
     @patch("pcapi.core.users.api.delete_object")
     @patch("pcapi.core.users.api.ask_for_identity_document_verification")
@@ -891,7 +891,6 @@ class VerifyIdentityDocumentInformationsTest:
         self, mocked_get_identity_informations, mocked_ask_for_identity, mocked_delete_object, app
     ):
         # Given
-        users_factories.UserFactory(email="py@test.com")
         mocked_get_identity_informations.return_value = ("py@test.com", b"")
         mocked_ask_for_identity.return_value = (True, "registration:completed")
 

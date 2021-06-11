@@ -244,6 +244,5 @@ def send_offer_validation_status_update_email(
 
 
 def send_document_verification_error_email(email: str, code: str) -> bool:
-    user = User.query.filter_by(email=email).one()
-    data = build_data_for_document_verification_error(user, code)
+    data = build_data_for_document_verification_error(code)
     return mails.send(recipients=[email], data=data)
