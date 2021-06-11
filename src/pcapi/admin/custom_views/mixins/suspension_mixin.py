@@ -39,10 +39,10 @@ def _action_links(view, context, model, name):
 
     if model.isActive:
         url = url_for(".suspend_user_view")
-        text = "Suspendre&hellip;"
+        text = "Suspendre…"
     else:
         url = url_for(".unsuspend_user_view")
-        text = "Réactiver&hellip;"
+        text = "Réactiver…"
 
     return Markup('<a href="{url}?user_id={model_id}">{text}</a>').format(
         url=url,
