@@ -395,5 +395,4 @@ secrets:
   - name: WHITELISTED_EMAIL_RECIPIENTS
     version: 1
   - name: WHITELISTED_SMS_RECIPIENTS
-    version: 2
-
+    version: 3
