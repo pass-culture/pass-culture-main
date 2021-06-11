@@ -3,13 +3,20 @@ import React, { useCallback, useEffect, useRef } from 'react'
 import Icon from '../../layout/Icon/Icon'
 import SmartBanner from 'react-smartbanner'
 import { Link } from 'react-router-dom'
+import {
+  APP_NATIVE_DYNAMIC_LINK,
+  ANDROID_APP_ID,
+  IOS_APP_STORE_ID,
+  IOS_APP_ID,
+  UNIVERSAL_LINK,
+} from '../../../utils/config'
 
 const BetaPage = ({ isNewBookingLimitsActived }) => {
   const appTitle = useRef(null)
   const handleRedirectionToApp = useCallback(
     () =>
       window.open(
-        'https://passcultureapp.page.link/?link=https://passculture.app/default&apn=app.passculture.webapp&isi=1557887412&ibi=app.passculture&efr=1&ofl=https://pass.culture.fr/nosapplications'
+        `${APP_NATIVE_DYNAMIC_LINK}/?link=https://${UNIVERSAL_LINK}/default&apn=${ANDROID_APP_ID}&isi=${IOS_APP_STORE_ID}&ibi=${IOS_APP_ID}&efr=1&ofl=https://pass.culture.fr/nosapplications`
       ),
     []
   )

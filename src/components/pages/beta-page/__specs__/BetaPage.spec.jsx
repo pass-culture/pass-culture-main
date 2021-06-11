@@ -4,6 +4,13 @@ import { mount, shallow } from 'enzyme'
 import BetaPage from '../BetaPage'
 import { Router } from 'react-router'
 import { createBrowserHistory } from 'history'
+import {
+  APP_NATIVE_DYNAMIC_LINK,
+  ANDROID_APP_ID,
+  IOS_APP_STORE_ID,
+  IOS_APP_ID,
+  UNIVERSAL_LINK,
+} from '../../../../utils/config'
 
 jest.mock('../../../../notifications/setUpBatchSDK', () => jest.fn())
 
@@ -110,7 +117,7 @@ describe('components | BetaPage', () => {
     downloadAppButton.simulate('click', { button: 0 })
 
     expect(openWindowMock).toHaveBeenCalledWith(
-      'https://passcultureapp.page.link/?link=https://passculture.app/default&apn=app.passculture.webapp&isi=1557887412&ibi=app.passculture&efr=1&ofl=https://pass.culture.fr/nosapplications'
+      `${APP_NATIVE_DYNAMIC_LINK}/?link=https://${UNIVERSAL_LINK}/default&apn=${ANDROID_APP_ID}&isi=${IOS_APP_STORE_ID}&ibi=${IOS_APP_ID}&efr=1&ofl=https://pass.culture.fr/nosapplications`
     )
   })
 })
