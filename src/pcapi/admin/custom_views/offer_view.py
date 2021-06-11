@@ -236,6 +236,8 @@ class ValidationView(BaseAdminView):
     can_create = False
     can_edit = True
     can_delete = False
+    list_template = "admin/offer_validation_list.html"
+
     column_list = ["id", "name", "validation", "venue", "offerer", "score", "offer", "offers", "dateCreated"]
     if IS_PROD:
         column_list.append("metabase")
