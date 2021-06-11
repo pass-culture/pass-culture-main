@@ -1,4 +1,5 @@
 from datetime import datetime
+import logging
 from typing import Union
 
 from flask import abort
@@ -47,6 +48,9 @@ from pcapi.repository import repository
 from pcapi.settings import IS_PROD
 from pcapi.utils.human_ids import humanize
 from pcapi.workers.push_notification_job import send_cancel_booking_notification
+
+
+logger = logging.getLogger(__name__)
 
 
 class OfferView(BaseAdminView):
@@ -280,8 +284,9 @@ class ValidationView(BaseAdminView):
 
     def _batch_validate(self, offers, validation_status):
         count = 0
-        try:
-            for offer in offers:
+        not_updated_offers = []
+        for offer in offers:
+            try:
                 is_offer_updated = offers_api.update_pending_offer_validation(offer, validation_status)
                 if is_offer_updated:
                     count += 1
@@ -293,9 +298,21 @@ class ValidationView(BaseAdminView):
                     )
                     send_offer_validation_status_update_email(offer, validation_status, recipients)
                     send_offer_validation_notification_to_administration(validation_status, offer)
-            flash("%d offres ont été modifiées avec succès en %s" % count, validation_status)
-        except Exception as exc:  # pylint: disable=broad-except
-            flash("Une erreur s'est produite lors de la mise à jour du statut de validation: %s" % exc, "error")
+                else:
+                    not_updated_offers += offer
+            except Exception as exc:  # pylint: disable=broad-except
+                logger.exception(
+                    "Une erreur s'est produite lors de la mise à jour du statut de validation: %s",
+                    exc,
+                    extra={"offer": offer},
+                )
+        flash("%d offres ont été modifiées avec succès en %s" % (count, validation_status))
+        if not_updated_offers:
+            flash(
+                "Une erreur s'est produite lors de la mise à jour du statut de validation des offres: %s"
+                % not_updated_offers,
+                "error",
+            )
 
     @action("approve", "Approuver", "Etes-vous sûr(e) de vouloir approuver les offres sélectionnées ?")
     def action_approve(self, ids):
