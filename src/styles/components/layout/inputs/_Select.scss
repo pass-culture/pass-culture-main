@@ -14,7 +14,7 @@
     @include body();
 
     appearance: none;
-    background: url(/icons/dropdown-disclosure-down-b.svg) no-repeat right rem(15px) top 56%;
+    background: url('/icons/dropdown-disclosure-down-b.svg') no-repeat right rem(15px) top 56%;
     border: 1px solid $grey-medium;
     border-radius: rem(20px);
     height: rem(40px);
@@ -31,7 +31,7 @@
 
     &:disabled {
       background-color: $grey-light;
-      background-image: url(/icons/dropdown-disclosure-down-b-disabled.svg);
+      background-image: url('/icons/dropdown-disclosure-down-b-disabled.svg');
       border-color: $grey-light;
       color: $grey-dark;
       cursor: initial;
