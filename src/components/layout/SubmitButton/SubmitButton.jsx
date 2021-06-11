@@ -19,6 +19,7 @@ SubmitButton.defaultProps = {
   children: 'Enregistrer',
   className: '',
   disabled: false,
+  isLoading: false,
   onClick: () => {},
 }
 
@@ -26,7 +27,7 @@ SubmitButton.propTypes = {
   children: PropTypes.node,
   className: PropTypes.string,
   disabled: PropTypes.bool,
-  isLoading: PropTypes.bool.isRequired,
+  isLoading: PropTypes.bool,
   onClick: PropTypes.func,
 }
 
