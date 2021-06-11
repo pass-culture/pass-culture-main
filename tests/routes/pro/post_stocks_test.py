@@ -14,7 +14,7 @@ from tests.conftest import TestClient
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns201:
+class Returns201Test:
     def test_create_one_stock(self, app):
         # Given
         offer = offers_factories.ThingOfferFactory()
@@ -154,7 +154,7 @@ class Returns201:
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns400:
+class Returns400Test:
     def when_missing_offer_id(self, app):
         # Given
         offer = offers_factories.ThingOfferFactory()
@@ -331,7 +331,7 @@ class Returns400:
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns403:
+class Returns403Test:
     def when_user_has_no_rights_and_creating_stock_from_offer_id(self, app, db_session):
         # Given
         user = users_factories.UserFactory(email="wrong@example.com")

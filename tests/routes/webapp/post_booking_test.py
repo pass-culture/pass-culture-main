@@ -10,7 +10,7 @@ from tests.conftest import TestClient
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns201:
+class Returns201Test:
     def test_booking_creation(self, app):
         user = users_factories.UserFactory()
         stock = offers_factories.StockFactory()
@@ -65,7 +65,7 @@ class Returns201:
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns400:
+class Returns400Test:
     def when_use_case_raise_stock_is_not_bookable_exception(self, app):
         user = users_factories.UserFactory()
         stock = offers_factories.StockFactory(quantity=0)

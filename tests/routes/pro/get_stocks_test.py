@@ -13,7 +13,7 @@ from tests.conftest import TestClient
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns200:
+class Returns200Test:
     @freeze_time("2020-10-15 00:00:00")
     def test_returns_an_event_stock(self, app):
         # Given
@@ -186,7 +186,7 @@ class Returns200:
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns403:
+class Returns403Test:
     def test_returns_an_event_stock(self, app):
         # Given
         now = datetime.utcnow()

@@ -7,7 +7,7 @@ from pcapi.utils.human_ids import humanize
 from tests.conftest import TestClient
 
 
-class Returns200ForProUser:
+class Returns200ForProUserTest:
     def _setup_offerers_for_pro_user(self, user):
         offerer = offers_factories.OffererFactory()
         offers_factories.UserOffererFactory(user=user, offerer=offerer)
@@ -153,7 +153,7 @@ class Returns200ForProUser:
         assert humanize(offerers["owned_offerer_not_validated_for_user"].id) in offerer_ids
 
 
-class Returns200ForAdmin:
+class Returns200ForAdminTest:
     def _setup_offerers_for_users(self):
         offerer = offers_factories.OffererFactory()
         user_offerer = offers_factories.UserOffererFactory(offerer=offerer)

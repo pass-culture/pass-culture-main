@@ -19,7 +19,7 @@ from tests.conftest import TestClient
 from tests.conftest import clean_database
 
 
-class Returns201:
+class Returns201Test:
     @pytest.mark.usefixtures("db_session")
     @override_features(SYNCHRONIZE_VENUE_PROVIDER_IN_WORKER=False)
     @patch("pcapi.core.providers.api.subprocess.Popen")
@@ -231,7 +231,7 @@ class Returns201:
         )
 
 
-class Returns400:
+class Returns400Test:
     @pytest.mark.usefixtures("db_session")
     def when_api_error_raise_when_missing_fields(self, app):
         # Given
@@ -321,7 +321,7 @@ class Returns400:
         assert VenueProvider.query.count() == 0
 
 
-class Returns401:
+class Returns401Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_is_not_logged_in(self, app):
         # when
@@ -331,7 +331,7 @@ class Returns401:
         assert response.status_code == 401
 
 
-class Returns404:
+class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def when_venue_does_not_exist(self, app):
         # Given
@@ -375,7 +375,7 @@ class Returns404:
         assert VenueProvider.query.count() == 0
 
 
-class Returns422:
+class Returns422Test:
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.core.providers.api._check_venue_can_be_synchronized_with_provider")
     def when_provider_api_not_available(self, stubbed_check, app):

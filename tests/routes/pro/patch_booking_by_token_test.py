@@ -22,8 +22,8 @@ from tests.conftest import TestClient
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns204:
-    class WhenUserIsAnonymous:
+class Returns204Test:
+    class WhenUserIsAnonymousTest:
         def expect_booking_to_be_used(self, app):
             booking = BookingFactory(token="ABCDEF")
 
@@ -37,7 +37,7 @@ class Returns204:
             booking = Booking.query.one()
             assert booking.isUsed
 
-    class WhenUserIsLoggedIn:
+    class WhenUserIsLoggedInTest:
         def expect_booking_to_be_used(self, app):
             booking = BookingFactory(token="ABCDEF")
             pro_user = UserFactory(email="pro@example.com")
@@ -97,8 +97,8 @@ class Returns204:
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns400:
-    class WhenUserIsAnonymous:
+class Returns400Test:
+    class WhenUserIsAnonymousTest:
         def when_email_is_missing(self, app):
             # Given
             user = create_user()
@@ -157,7 +157,7 @@ class Returns400:
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns403:  # Forbidden
+class Returns403Test:  # Forbidden
     def when_user_is_not_attached_to_linked_offerer(self, app):
         # Given
         user = create_user()
@@ -196,8 +196,8 @@ class Returns403:  # Forbidden
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns404:
-    class WhenUserIsAnonymous:
+class Returns404Test:
+    class WhenUserIsAnonymousTest:
         def when_booking_does_not_exist(self, app):
             # Given
             user = create_user()
@@ -217,7 +217,7 @@ class Returns404:
             assert response.status_code == 404
             assert response.json["global"] == ["Cette contremarque n'a pas été trouvée"]
 
-    class WhenUserIsLoggedIn:
+    class WhenUserIsLoggedInTest:
         def when_user_is_not_editor_and_email_does_not_match(self, app):
             # Given
             user = create_user()

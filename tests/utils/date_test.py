@@ -10,7 +10,7 @@ from pcapi.utils.date import get_postal_code_timezone
 from pcapi.utils.date import get_time_formatted_for_email
 
 
-class GetDateFormattedForEmail:
+class GetDateFormattedForEmailTest:
     def test_should_return_day_followed_by_month_written_in_words(self):
         # Given
         december_23 = datetime.date(2019, 12, 23)
@@ -32,7 +32,7 @@ class GetDateFormattedForEmail:
         assert date_formatted_for_email == "9 décembre 2019"
 
 
-class GetTimeFormattedForEmail:
+class GetTimeFormattedForEmailTest:
     def test_should_return_hour_followed_by_two_digits_minutes(self):
         # Given
         twelve_o_clock = datetime.time(12, 0, 0, 0)
@@ -44,7 +44,7 @@ class GetTimeFormattedForEmail:
         assert time_formatted_for_email == "12h00"
 
 
-class GetDepartmentTimezone:
+class GetDepartmentTimezoneTest:
     def test_should_alert_when_department_code_is_not_a_string(self):
         # When
         with pytest.raises(AssertionError):
@@ -61,7 +61,7 @@ class GetDepartmentTimezone:
             assert dateutil.tz.gettz(timezone) is not None, f"{timezone} is not a valid timezone"
 
 
-class GetPostalCodeTimezone:
+class GetPostalCodeTimezoneTest:
     def test_should_return_paris_as_default_timezone(self):
         assert get_postal_code_timezone("75000") == "Europe/Paris"
 

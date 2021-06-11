@@ -13,7 +13,7 @@ from tests.conftest import TestClient
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns200:
+class Returns200Test:
     def test_patch_offer(self, app):
         # Given
         offer = offers_factories.OfferFactory()
@@ -43,7 +43,7 @@ class Returns200:
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns400:
+class Returns400Test:
     def when_trying_to_patch_forbidden_attributes(self, app):
         # Given
         offer = offers_factories.OfferFactory()
@@ -182,7 +182,7 @@ class Returns400:
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns403:
+class Returns403Test:
     def when_user_is_not_attached_to_offerer(self, app):
         # Given
         offer = offers_factories.OfferFactory(name="Old name")
@@ -201,7 +201,7 @@ class Returns403:
         assert Offer.query.get(offer.id).name == "Old name"
 
 
-class Returns404:
+class Returns404Test:
     def test_returns_404_if_offer_does_not_exist(self, app, db_session):
         # given
         user = users_factories.UserFactory()

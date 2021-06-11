@@ -226,7 +226,7 @@ class PaginatedOfferForFiltersTest:
         assert offer_in_mayotte.id in offers_id
         assert paginated_offers.total_offers == 2
 
-    class WhenUserIsAdmin:
+    class WhenUserIsAdminTest:
         @pytest.mark.usefixtures("db_session")
         def should_return_offers_of_given_venue_when_user_is_not_attached_to_its_offerer(self, app):
             # given
@@ -326,7 +326,7 @@ class PaginatedOfferForFiltersTest:
             assert offer_for_other_offerer.id not in offers_id
             assert paginated_offers.total_offers == 1
 
-    class WhenUserIsPro:
+    class WhenUserIsProTest:
         @pytest.mark.usefixtures("db_session")
         def should_not_return_offers_of_given_venue_when_user_is_not_attached_to_its_offerer(self, app):
             # given

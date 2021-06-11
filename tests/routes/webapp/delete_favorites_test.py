@@ -13,61 +13,61 @@ from pcapi.utils.human_ids import humanize
 from tests.conftest import TestClient
 
 
-class Delete:
-    class Returns204:
-        @pytest.mark.usefixtures("db_session")
-        def when_favorite_exists_with_offerId(self, app):
-            # Given
-            user = create_user(email="test@email.com")
-            offerer = create_offerer()
-            venue = create_venue(offerer, postal_code="29100", siret="12345678912341")
-            offer = create_offer_with_thing_product(venue, thumb_count=0)
-            mediation = None
-            favorite = create_favorite(mediation=mediation, offer=offer, user=user)
-            repository.save(user, favorite)
+class Returns204Test:
+    @pytest.mark.usefixtures("db_session")
+    def when_favorite_exists_with_offerId(self, app):
+        # Given
+        user = create_user(email="test@email.com")
+        offerer = create_offerer()
+        venue = create_venue(offerer, postal_code="29100", siret="12345678912341")
+        offer = create_offer_with_thing_product(venue, thumb_count=0)
+        mediation = None
+        favorite = create_favorite(mediation=mediation, offer=offer, user=user)
+        repository.save(user, favorite)
 
-            # When
-            response = TestClient(app.test_client()).with_auth(user.email).delete(f"/favorites/{humanize(offer.id)}")
+        # When
+        response = TestClient(app.test_client()).with_auth(user.email).delete(f"/favorites/{humanize(offer.id)}")
 
-            # Then
-            assert response.status_code == 200
-            assert "id" in response.json
-            deleted_favorite = Favorite.query.first()
-            assert deleted_favorite is None
+        # Then
+        assert response.status_code == 200
+        assert "id" in response.json
+        deleted_favorite = Favorite.query.first()
+        assert deleted_favorite is None
 
-    class Returns404:
-        @pytest.mark.usefixtures("db_session")
-        def when_expected_parameters_are_not_given(self, app):
-            # Given
-            user = create_user(email="test@email.com")
-            offerer = create_offerer()
-            venue = create_venue(offerer, postal_code="29100", siret="12345678912341")
-            offer = create_offer_with_thing_product(venue, thumb_count=0)
-            mediation = create_mediation(offer, is_active=True)
-            favorite = create_favorite(mediation=mediation, offer=offer, user=user)
-            repository.save(user, favorite)
 
-            # When
-            response = TestClient(app.test_client()).with_auth(user.email).delete("/favorites/1")
+class Returns404Test:
+    @pytest.mark.usefixtures("db_session")
+    def when_expected_parameters_are_not_given(self, app):
+        # Given
+        user = create_user(email="test@email.com")
+        offerer = create_offerer()
+        venue = create_venue(offerer, postal_code="29100", siret="12345678912341")
+        offer = create_offer_with_thing_product(venue, thumb_count=0)
+        mediation = create_mediation(offer, is_active=True)
+        favorite = create_favorite(mediation=mediation, offer=offer, user=user)
+        repository.save(user, favorite)
 
-            # Then
-            assert response.status_code == 404
+        # When
+        response = TestClient(app.test_client()).with_auth(user.email).delete("/favorites/1")
 
-        @pytest.mark.usefixtures("db_session")
-        def when_favorite_does_not_exist(self, app):
-            # Given
-            user = create_user(email="test@email.com")
-            offerer = create_offerer()
-            venue = create_venue(offerer, postal_code="29100", siret="12345678912341")
-            offer = create_offer_with_thing_product(venue, thumb_count=0)
-            mediation = create_mediation(offer, is_active=True)
-            favorite = create_favorite(mediation=mediation, offer=offer, user=user)
-            repository.save(user, favorite)
+        # Then
+        assert response.status_code == 404
 
-            # When
-            response = TestClient(app.test_client()).with_auth(user.email).delete("/favorites/ABCD/ABCD")
+    @pytest.mark.usefixtures("db_session")
+    def when_favorite_does_not_exist(self, app):
+        # Given
+        user = create_user(email="test@email.com")
+        offerer = create_offerer()
+        venue = create_venue(offerer, postal_code="29100", siret="12345678912341")
+        offer = create_offer_with_thing_product(venue, thumb_count=0)
+        mediation = create_mediation(offer, is_active=True)
+        favorite = create_favorite(mediation=mediation, offer=offer, user=user)
+        repository.save(user, favorite)
 
-            # Then
-            assert response.status_code == 404
-            deleted_favorite = Favorite.query.first()
-            assert deleted_favorite == favorite
+        # When
+        response = TestClient(app.test_client()).with_auth(user.email).delete("/favorites/ABCD/ABCD")
+
+        # Then
+        assert response.status_code == 404
+        deleted_favorite = Favorite.query.first()
+        assert deleted_favorite == favorite

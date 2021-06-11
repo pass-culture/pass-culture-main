@@ -7,7 +7,7 @@ from tests.conftest import TestClient
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns200:
+class Returns200Test:
     def when_account_is_known(self, app):
         # given
         user = users_factories.UserFactory(password="secret")
@@ -56,7 +56,7 @@ class Returns200:
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns401:
+class Returns401Test:
     def when_identifier_is_missing(self, app):
         # Given
         users_factories.UserFactory()

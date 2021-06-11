@@ -1322,7 +1322,7 @@ class UpdateObjectsTest:
         assert third_stock.beginningDatetime == datetime(2019, 12, 3, 19, 0)
         assert third_stock.bookingLimitDatetime == datetime(2019, 12, 3, 19, 0)
 
-    class WhenAllocineStockAreSynchronizedTwice:
+    class WhenAllocineStockAreSynchronizedTwiceTest:
         @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
         @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
         @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
@@ -1787,7 +1787,7 @@ class UpdateObjectsTest:
             assert second_stock.price == 10
             assert second_stock.bookingLimitDatetime == datetime(2019, 12, 4, 15, 0)
 
-    class WhenOfferHasBeenManuallyUpdated:
+    class WhenOfferHasBeenManuallyUpdatedTest:
         @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
         @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
         @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
@@ -1957,7 +1957,7 @@ class UpdateObjectsTest:
             created_offer = Offer.query.one()
             assert created_offer.isDuo is True
 
-    class WhenStockHasBeenManuallyDeleted:
+    class WhenStockHasBeenManuallyDeletedTest:
         @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
         @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
         @patch("pcapi.settings.ALLOCINE_API_KEY", "token")
@@ -2111,7 +2111,7 @@ class UpdateObjectsTest:
             created_stock = Stock.query.one()
             assert created_stock.isSoftDeleted is True
 
-    class WhenSettingDefaultValuesAtImport:
+    class WhenSettingDefaultValuesAtImportTest:
         @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
         @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
         @patch("pcapi.settings.ALLOCINE_API_KEY", "token")

@@ -17,98 +17,99 @@ token_is_totaly_weird_mock = MagicMock(side_effect=ReCaptchaException())
 
 
 @pytest.mark.usefixtures("db_session")
-class Post:
-    class Returns200:
-        @patch("pcapi.core.users.repository.get_id_check_token", lambda x: None)
-        @patch("pcapi.routes.webapp.beneficiaries.check_webapp_recaptcha_token", token_is_valid_mock)
-        def when_has_the_exact_payload(self, app):
-            # Given
-            data = {"token": "authorized-token"}
+class Returns200Test:
+    @patch("pcapi.core.users.repository.get_id_check_token", lambda x: None)
+    @patch("pcapi.routes.webapp.beneficiaries.check_webapp_recaptcha_token", token_is_valid_mock)
+    def when_has_the_exact_payload(self, app):
+        # Given
+        data = {"token": "authorized-token"}
 
-            # When
-            response = TestClient(app.test_client()).post("/beneficiaries/licence_verify", json=data)
+        # When
+        response = TestClient(app.test_client()).post("/beneficiaries/licence_verify", json=data)
 
-            # Then
-            assert response.status_code == 200
+        # Then
+        assert response.status_code == 200
 
-        def when_has_an_existing_JWT_token(self, app):
-            # Given
-            user = UserFactory()
-            IdCheckToken(user=user, isUsed=False, value="authorized-token")
+    def when_has_an_existing_JWT_token(self, app):
+        # Given
+        user = UserFactory()
+        IdCheckToken(user=user, isUsed=False, value="authorized-token")
 
-            data = {"token": "authorized-token"}
+        data = {"token": "authorized-token"}
 
-            # When
-            response = TestClient(app.test_client()).post("/beneficiaries/licence_verify", json=data)
+        # When
+        response = TestClient(app.test_client()).post("/beneficiaries/licence_verify", json=data)
 
-            # Then
-            assert response.status_code == 200
+        # Then
+        assert response.status_code == 200
 
-    class Returns400:
-        @patch("pcapi.routes.webapp.beneficiaries.check_webapp_recaptcha_token", token_is_wrong_mock)
-        def when_token_is_wrong(self, app):
-            # Given
-            data = {"token": "wrong-token"}
 
-            # When
-            response = TestClient(app.test_client()).post("/beneficiaries/licence_verify", json=data)
+@pytest.mark.usefixtures("db_session")
+class Returns400Test:
+    @patch("pcapi.routes.webapp.beneficiaries.check_webapp_recaptcha_token", token_is_wrong_mock)
+    def when_token_is_wrong(self, app):
+        # Given
+        data = {"token": "wrong-token"}
 
-            # Then
-            assert response.status_code == 400
-            assert response.json["token"] == ["Le token renseigné n'est pas valide"]
+        # When
+        response = TestClient(app.test_client()).post("/beneficiaries/licence_verify", json=data)
 
-        @patch("pcapi.routes.webapp.beneficiaries.check_webapp_recaptcha_token", token_is_totaly_weird_mock)
-        def when_has_an_expired_JWT_token(self, app):
-            # Given
-            user = UserFactory()
-            IdCheckToken(user=user, isUsed=True, value="authorized-token")
+        # Then
+        assert response.status_code == 400
+        assert response.json["token"] == ["Le token renseigné n'est pas valide"]
 
-            data = {"token": "authorized-token"}
+    @patch("pcapi.routes.webapp.beneficiaries.check_webapp_recaptcha_token", token_is_totaly_weird_mock)
+    def when_has_an_expired_JWT_token(self, app):
+        # Given
+        user = UserFactory()
+        IdCheckToken(user=user, isUsed=True, value="authorized-token")
 
-            # When
-            response = TestClient(app.test_client()).post("/beneficiaries/licence_verify", json=data)
+        data = {"token": "authorized-token"}
 
-            # Then
-            assert response.status_code == 400
-            assert response.json["token"] == "Le token renseigné n'est pas valide"
+        # When
+        response = TestClient(app.test_client()).post("/beneficiaries/licence_verify", json=data)
 
-        @patch("pcapi.routes.webapp.beneficiaries.check_webapp_recaptcha_token", token_is_valid_mock)
-        def when_has_no_payload(self, app):
-            # When
-            response = TestClient(app.test_client()).post("/beneficiaries/licence_verify")
+        # Then
+        assert response.status_code == 400
+        assert response.json["token"] == "Le token renseigné n'est pas valide"
 
-            # Then
-            assert response.status_code == 400
+    @patch("pcapi.routes.webapp.beneficiaries.check_webapp_recaptcha_token", token_is_valid_mock)
+    def when_has_no_payload(self, app):
+        # When
+        response = TestClient(app.test_client()).post("/beneficiaries/licence_verify")
 
-        @patch("pcapi.routes.webapp.beneficiaries.check_webapp_recaptcha_token", token_is_valid_mock)
-        def when_token_is_null(self, app):
-            # Given
-            data = {"token": None}
+        # Then
+        assert response.status_code == 400
 
-            # When
-            response = TestClient(app.test_client()).post("/beneficiaries/licence_verify", json=data)
+    @patch("pcapi.routes.webapp.beneficiaries.check_webapp_recaptcha_token", token_is_valid_mock)
+    def when_token_is_null(self, app):
+        # Given
+        data = {"token": None}
 
-            # Then
-            assert response.status_code == 400
+        # When
+        response = TestClient(app.test_client()).post("/beneficiaries/licence_verify", json=data)
 
-        @patch("pcapi.routes.webapp.beneficiaries.check_webapp_recaptcha_token", token_is_valid_mock)
-        def when_token_is_the_string_null(self, app):
-            # Given
-            data = {"token": "null"}
+        # Then
+        assert response.status_code == 400
 
-            # When
-            response = TestClient(app.test_client()).post("/beneficiaries/licence_verify", json=data)
+    @patch("pcapi.routes.webapp.beneficiaries.check_webapp_recaptcha_token", token_is_valid_mock)
+    def when_token_is_the_string_null(self, app):
+        # Given
+        data = {"token": "null"}
 
-            # Then
-            assert response.status_code == 400
+        # When
+        response = TestClient(app.test_client()).post("/beneficiaries/licence_verify", json=data)
 
-        @patch("pcapi.routes.webapp.beneficiaries.check_webapp_recaptcha_token", token_is_valid_mock)
-        def when_has_wrong_token_key(self, app):
-            # Given
-            data = {"custom-token": "authorized-token"}
+        # Then
+        assert response.status_code == 400
 
-            # When
-            response = TestClient(app.test_client()).post("/beneficiaries/licence_verify", json=data)
+    @patch("pcapi.routes.webapp.beneficiaries.check_webapp_recaptcha_token", token_is_valid_mock)
+    def when_has_wrong_token_key(self, app):
+        # Given
+        data = {"custom-token": "authorized-token"}
 
-            # Then
-            assert response.status_code == 400
+        # When
+        response = TestClient(app.test_client()).post("/beneficiaries/licence_verify", json=data)
+
+        # Then
+        assert response.status_code == 400

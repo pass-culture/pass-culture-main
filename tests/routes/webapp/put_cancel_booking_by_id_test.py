@@ -12,7 +12,7 @@ from pcapi.utils.human_ids import humanize
 from tests.conftest import TestClient
 
 
-class Returns200:
+class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def expect_the_booking_to_be_cancelled_by_current_user(self, app):
         # Given
@@ -41,7 +41,7 @@ class Returns200:
         }
 
 
-class Returns400:
+class Returns400Test:
     @pytest.mark.usefixtures("db_session")
     def when_the_booking_cannot_be_cancelled(self, app):
         # Given
@@ -57,7 +57,7 @@ class Returns400:
         assert not Booking.query.get(booking.id).isCancelled
 
 
-class Returns404:
+class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def when_cancelling_a_booking_of_someone_else(self, app):
         # Given

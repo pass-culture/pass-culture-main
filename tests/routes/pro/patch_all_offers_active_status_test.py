@@ -11,7 +11,7 @@ from tests.conftest import TestClient
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns204:
+class Returns204Test:
     def when_activating_all_existing_offers(self, app):
         # Given
         offer1 = offers_factories.OfferFactory(isActive=False)

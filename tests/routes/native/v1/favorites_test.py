@@ -22,8 +22,8 @@ FAVORITES_URL = "/native/v1/me/favorites"
 FAVORITES_COUNT_URL = "/native/v1/me/favorites/count"
 
 
-class Get:
-    class Returns200:
+class GetTest:
+    class Returns200Test:
         def when_user_is_logged_in_but_has_no_favorites(self, app):
             # Given
             _, test_client = utils.create_user_and_test_client(app)
@@ -268,7 +268,7 @@ class Get:
                 True,
             ]
 
-    class Returns401:
+    class Returns401Test:
         def when_user_is_not_logged_in(self, app):
             # When
             response = TestClient(app.test_client()).get(FAVORITES_URL)
@@ -277,8 +277,8 @@ class Get:
             assert response.status_code == 401
 
 
-class Post:
-    class Returns200:
+class PostTest:
+    class Returns200Test:
         def when_user_creates_a_favorite(self, app):
             # Given
             user, test_client = utils.create_user_and_test_client(app)
@@ -316,7 +316,7 @@ class Post:
             assert response.status_code == 200
             assert Favorite.query.count() == 1
 
-    class Returns400:
+    class Returns400Test:
         @override_settings(MAX_FAVORITES=1)
         def when_user_creates_one_favorite_above_the_limit(self, app):
             _, test_client = utils.create_user_and_test_client(app)
@@ -335,8 +335,8 @@ class Post:
             assert Favorite.query.count() == 1
 
 
-class Delete:
-    class Returns204:
+class DeleteTest:
+    class Returns204Test:
         def when_user_delete_its_favorite(self, app):
             # Given
             user, test_client = utils.create_user_and_test_client(app)
@@ -381,8 +381,8 @@ class Delete:
             assert response.status_code == 404
 
 
-class GetCount:
-    class Returns200:
+class GetCountTest:
+    class Returns200Test:
         def when_user_is_logged_in_but_has_no_favorites(self, app):
             # Given
             _, test_client = utils.create_user_and_test_client(app)

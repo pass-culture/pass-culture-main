@@ -15,7 +15,7 @@ from tests.conftest import TestClient
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns204:
+class Returns204Test:
     @freeze_time("2020-10-15 09:00:00")
     def when_account_is_known(self, app):
         # given
@@ -93,7 +93,7 @@ class Returns204:
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns400:
+class Returns400Test:
     def when_password_is_missing(self, app):
         # Given
         user = users_factories.UserFactory()
@@ -122,7 +122,7 @@ class Returns400:
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns401:
+class Returns401Test:
     def when_password_is_incorrect(self, app):
         # Given
         user = users_factories.UserFactory()

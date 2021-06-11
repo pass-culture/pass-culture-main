@@ -12,7 +12,7 @@ from tests.conftest import TestClient
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns200:
+class Returns200Test:
     def test_create_event_offer(self, app):
         # Given
         venue = offers_factories.VenueFactory()
@@ -97,7 +97,7 @@ class Returns200:
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns400:
+class Returns400Test:
     def test_fail_if_venue_is_not_found(self, app):
         # Given
         offers_factories.UserOffererFactory(user__email="user@example.com")
@@ -267,7 +267,7 @@ class Returns400:
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns403:
+class Returns403Test:
     def when_user_is_not_attached_to_offerer(self, app):
         # Given
         users_factories.UserFactory(email="user@example.com")

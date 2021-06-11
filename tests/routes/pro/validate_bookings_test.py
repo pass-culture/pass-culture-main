@@ -31,7 +31,7 @@ tomorrow_minus_one_hour = tomorrow - timedelta(hours=1)
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns204:  # No Content
+class Returns204Test:  # No Content
     def when_user_has_rights(self, app):
         booking = BookingFactory(token="ABCDEF")
         pro_user = UserFactory(email="pro@example.com")
@@ -81,7 +81,7 @@ class Returns204:  # No Content
         assert booking.isUsed
 
 
-class Returns403:
+class Returns403Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_not_editor_and_valid_email(self, app):
         # Given
@@ -142,7 +142,7 @@ class Returns403:
         assert not Booking.query.get(booking.id).isUsed
 
 
-class Returns404:
+class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_not_editor_and_invalid_email(self, app):
         # Given

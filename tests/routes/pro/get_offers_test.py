@@ -10,7 +10,7 @@ from pcapi.utils.human_ids import humanize
 from tests.conftest import TestClient
 
 
-class Returns200:
+class Returns200Test:
     def should_filter_by_venue_when_user_is_admin_and_request_specific_venue_with_no_rights_on_it(
         self, app, db_session, assert_num_queries
     ):
@@ -330,7 +330,7 @@ class Returns200:
         )
 
 
-class Returns404:
+class Returns404Test:
     def when_requested_venue_does_not_exist(self, app, db_session):
         # Given
         user = users_factories.UserFactory()

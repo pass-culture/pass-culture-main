@@ -24,7 +24,7 @@ API_KEY_VALUE = random_token(64)
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns204:
+class Returns204Test:
     class WithApiKeyAuthTest:
         def when_api_key_is_provided_and_rights_and_regular_offer(self, app):
             booking = BookingFactory(token="ABCDEF")
@@ -90,7 +90,7 @@ class Returns204:
             assert booking.isUsed
 
 
-class Returns401:
+class Returns401Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_not_logged_in_and_doesnt_give_api_key(self, app):
         # Given
@@ -132,7 +132,7 @@ class Returns401:
         assert response.status_code == 401
 
 
-class Returns403:
+class Returns403Test:
     class WithApiKeyAuthTest:
         @pytest.mark.usefixtures("db_session")
         def when_api_key_given_not_related_to_booking_offerer(self, app):
@@ -222,7 +222,7 @@ class Returns403:
             assert Booking.query.get(booking.id).isUsed is False
 
 
-class Returns404:
+class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def when_booking_is_not_provided_at_all(self, app):
         # Given

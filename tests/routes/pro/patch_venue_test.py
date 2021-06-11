@@ -24,7 +24,7 @@ def populate_missing_data_from_venue(venue_data, venue):
     }
 
 
-class Returns200:
+class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def test_should_update_venue(self, app) -> None:
         # given

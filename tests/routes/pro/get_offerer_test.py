@@ -10,7 +10,7 @@ from pcapi.utils.human_ids import humanize
 from tests.conftest import TestClient
 
 
-class Returns404:
+class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_offerer_does_not_exist(self, app):
         # Given
@@ -25,7 +25,7 @@ class Returns404:
         assert response.json["global"] == ["La page que vous recherchez n'existe pas"]
 
 
-class Returns200:
+class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_has_rights_on_offerer(self, app):
         # given

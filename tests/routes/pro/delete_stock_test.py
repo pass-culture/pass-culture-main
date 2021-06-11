@@ -9,7 +9,7 @@ from pcapi.utils.human_ids import humanize
 from tests.conftest import TestClient
 
 
-class Returns200:
+class Returns200Test:
     def when_current_user_has_rights_on_offer(self, app, db_session):
         # given
         offer = offers_factories.OfferFactory()
@@ -38,7 +38,7 @@ class Returns200:
         }
 
 
-class Returns400:
+class Returns400Test:
     def when_stock_is_on_an_offer_from_titelive_provider(self, app, db_session):
         # given
         provider = offerers_factories.ProviderFactory(localClass="TiteLiveThings")
@@ -67,7 +67,7 @@ class Returns400:
         assert response.json["global"] == ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
 
 
-class Returns403:
+class Returns403Test:
     def when_current_user_has_no_rights_on_offer(self, app, db_session):
         # given
         user = users_factories.UserFactory(email="notadmin@example.com")

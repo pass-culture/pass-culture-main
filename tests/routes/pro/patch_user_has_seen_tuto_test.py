@@ -20,7 +20,7 @@ def test_mark_as_seen(app):
 
 class LegacyRouteTest:
     @pytest.mark.usefixtures("db_session")
-    class Returns204:
+    class Returns204Test:
         def when_user_is_logged_in(self, app):
             # given
             user = users_factories.UserFactory(hasSeenProTutorials=False)
@@ -35,7 +35,7 @@ class LegacyRouteTest:
             assert updated_user.hasSeenProTutorials == True
 
     @pytest.mark.usefixtures("db_session")
-    class Returns404:
+    class Returns404Test:
         def when_user_does_not_exist(self, app):
             # given
             user = users_factories.UserFactory(hasSeenProTutorials=False)
@@ -48,7 +48,7 @@ class LegacyRouteTest:
             assert response.status_code == 404
 
     @pytest.mark.usefixtures("db_session")
-    class Returns403:
+    class Returns403Test:
         def when_user_is_not_logged_in(self, app):
             # given
             user = users_factories.UserFactory(hasSeenProTutorials=False)

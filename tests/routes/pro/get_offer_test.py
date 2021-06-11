@@ -12,7 +12,7 @@ from tests.conftest import TestClient
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns200:
+class Returns200Test:
     def test_access_by_beneficiary(self, app):
         # Given
         beneficiary = users_factories.UserFactory()

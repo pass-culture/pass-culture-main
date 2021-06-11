@@ -54,7 +54,7 @@ def test_use_siret_as_default(can_be_synchronized, app):
     can_be_synchronized.assert_called_once_with("12345678912345")
 
 
-class WhenProviderIsLibraires:
+class WhenProviderIsLibrairesTest:
     def setup_class(self):
         self.find_by_id = MagicMock()
 
@@ -129,7 +129,7 @@ class WhenProviderIsLibraires:
         ]
 
 
-class WhenProviderIsTiteLive:
+class WhenProviderIsTiteLiveTest:
     def setup_class(self):
         self.find_by_id = MagicMock()
 
@@ -206,7 +206,7 @@ class WhenProviderIsTiteLive:
         ]
 
 
-class WhenProviderImplementsProviderAPI:
+class WhenProviderImplementsProviderAPITest:
     def setup_class(self):
         self.find_by_id = MagicMock()
 
@@ -282,7 +282,7 @@ class WhenProviderImplementsProviderAPI:
         ]
 
 
-class WhenProviderIsPraxiel:
+class WhenProviderIsPraxielTest:
     def setup_class(self):
         self.find_by_id = MagicMock()
 
@@ -357,7 +357,7 @@ class WhenProviderIsPraxiel:
         ]
 
 
-class WhenProviderIsSomethingElse:
+class WhenProviderIsSomethingElseTest:
     def setup_class(self):
         self.find_by_id = MagicMock()
 

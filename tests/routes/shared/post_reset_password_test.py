@@ -9,7 +9,7 @@ from pcapi.core.users.models import User
 from tests.conftest import TestClient
 
 
-class Returns400:
+class Returns400Test:
     @patch("pcapi.routes.shared.passwords.check_webapp_recaptcha_token", return_value=None)
     def when_email_is_empty(self, check_recaptcha_token_is_valid_mock, app, db_session):
         # given
@@ -70,7 +70,7 @@ class Returns400:
         assert response.json["token"] == ["Le token renseigné n'est pas valide"]
 
 
-class Returns204:
+class Returns204Test:
     @patch("pcapi.routes.shared.passwords.check_webapp_recaptcha_token", return_value=None)
     def when_user_email_is_unknown(self, check_recaptcha_token_is_valid_mock, app, db_session):
         # given

@@ -179,7 +179,7 @@ class GetClosedApplicationIdsForBeneficiaryImportTest:
 
 
 @patch("pcapi.domain.demarches_simplifiees.get_application_details")
-class GetOffererBankInformation_applicationDetailsByApplicationId:
+class GetOffererBankInformation_applicationDetailsByApplicationIdTest:
     def test_retrieve_and_format_all_fields(self, get_application_details):
         # Given
         updated_at = datetime(2020, 1, 3)
@@ -227,7 +227,7 @@ class GetOffererBankInformation_applicationDetailsByApplicationId:
 
 
 @patch("pcapi.domain.demarches_simplifiees.get_application_details")
-class GetVenueBankInformation_applicationDetailsByApplicationId:
+class GetVenueBankInformation_applicationDetailsByApplicationIdTest:
     def test_retrieve_and_format_all_fields_when_with_siret(self, get_application_details):
         # Given
         updated_at = datetime(2020, 1, 3)
@@ -320,7 +320,7 @@ class GetVenueBankInformation_applicationDetailsByApplicationId:
         mock_format_raw_iban_and_bic.assert_has_calls([call("F R763000 700011123 45 67890144"), call("SOGeferp")])
 
 
-class GetStatusFromDemarchesSimplifieesApplicationState:
+class GetStatusFromDemarchesSimplifieesApplicationStateTest:
     def test_correctly_infer_status_from_state(self):
         # Given
         states = ["closed", "initiated", "refused", "received", "without_continuation"]
