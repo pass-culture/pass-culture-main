@@ -41,6 +41,7 @@ class VerifyIdentityDocumentTest:
         mocked_get_identity_document_informations.return_value = ("fake@email.com", identity_document)
         mocked_response = Response()
         mocked_response.status_code = 200
+        mocked_response._content = b'{"code": "registration:completed"}'
         mocked_middleware_post.return_value = mocked_response
         json_data = {"image_storage_path": storage_path}
 

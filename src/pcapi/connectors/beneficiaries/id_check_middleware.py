@@ -12,7 +12,7 @@ class IdCheckMiddlewareException(Exception):
 logger = logging.getLogger(__name__)
 
 
-def ask_for_identity_document_verification(email: str, identity_document: bytes) -> None:
+def ask_for_identity_document_verification(email: str, identity_document: bytes) -> tuple[bool, str]:
     uri = "/simple-registration-process"
     response = requests.post(
         f"{settings.ID_CHECK_MIDDLEWARE_DOMAIN}{uri}",
@@ -22,7 +22,8 @@ def ask_for_identity_document_verification(email: str, identity_document: bytes)
         data={"email": email},
         files=[("file", identity_document)],
     )
-    if response.status_code != 200:
+
+    if response.status_code != 200 and response.status_code != 400:
         logger.error(
             "Error asking API jouve identity document verification for email %s with reponse content: %s",
             email,
@@ -31,3 +32,5 @@ def ask_for_identity_document_verification(email: str, identity_document: bytes)
         raise IdCheckMiddlewareException(
             f"Error asking API jouve identity document verification for email {email}",
         )
+
+    return response.status_code == 200, response.json()["code"]

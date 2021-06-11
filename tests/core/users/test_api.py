@@ -11,6 +11,7 @@ import jwt
 import pytest
 
 from pcapi.core.bookings import factories as bookings_factories
+from pcapi.core.mails import testing as mails_testing
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.payments.api import DEPOSIT_VALIDITY_IN_YEARS
 from pcapi.core.testing import override_features
@@ -830,3 +831,38 @@ class AsynchronousIdentityDocumentVerificationTest:
 
         # Then
         mocked_delete_object.assert_called_once_with("identity_documents/a_very_random_secret.jpg")
+
+
+class VerifyIdentityDocumentInformationsTest:
+    @patch("pcapi.core.users.api.delete_object")
+    @patch("pcapi.core.users.api.ask_for_identity_document_verification")
+    @patch("pcapi.core.users.api._get_identity_document_informations")
+    def test_email_sent_when_document_is_invalid(
+        self, mocked_get_identity_informations, mocked_ask_for_identity, mocked_delete_object, app
+    ):
+        # Given
+        user = users_factories.UserFactory(email="py@test.com")
+        mocked_get_identity_informations.return_value = ("py@test.com", b"")
+        mocked_ask_for_identity.return_value = (False, "invalid-document")
+
+        users_api.verify_identity_document_informations("some_path")
+
+        assert len(mails_testing.outbox) == 1
+        sent_data = mails_testing.outbox[0].sent_data
+
+        assert sent_data["Vars"]["first_name"] == user.firstName
+
+    @patch("pcapi.core.users.api.delete_object")
+    @patch("pcapi.core.users.api.ask_for_identity_document_verification")
+    @patch("pcapi.core.users.api._get_identity_document_informations")
+    def test_no_email_sent_when_document_is_valid(
+        self, mocked_get_identity_informations, mocked_ask_for_identity, mocked_delete_object, app
+    ):
+        # Given
+        users_factories.UserFactory(email="py@test.com")
+        mocked_get_identity_informations.return_value = ("py@test.com", b"")
+        mocked_ask_for_identity.return_value = (True, "registration:completed")
+
+        users_api.verify_identity_document_informations("some_path")
+
+        assert not mails_testing.outbox
