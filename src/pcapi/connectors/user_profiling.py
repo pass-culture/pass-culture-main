@@ -4,9 +4,9 @@ import logging
 import typing
 
 import pydantic
-import requests
 
 from pcapi import settings
+import pcapi.utils.requests as requests
 
 
 logger = logging.getLogger(__name__)

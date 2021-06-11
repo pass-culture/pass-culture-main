@@ -1383,4 +1383,6 @@ class ProfilingFraudScoreTest:
             response = client.post("/native/v1/user_profiling", json={"session_id": "random-session-id"})
         assert response.status_code == 204
         assert matcher.call_count == 1
-        assert caplog.record_tuples[0][-1].startswith("Success when profiling user:")
+        assert len(caplog.records) == 2
+        assert caplog.record_tuples[0][-1] == "External service called"
+        assert caplog.record_tuples[1][-1].startswith("Success when profiling user:")
