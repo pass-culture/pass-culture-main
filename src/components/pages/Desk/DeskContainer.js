@@ -2,8 +2,8 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 
 import { withTracking } from 'components/hocs'
+import * as pcapi from 'repository/pcapi/pcapi'
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
-import { fetchFromApiWithCredentials } from 'utils/fetch'
 
 import Desk from './Desk'
 
@@ -15,7 +15,7 @@ export function mapStateToProps(state) {
 
 export const mapDispatchToProps = dispatch => ({
   getBooking: code =>
-    fetchFromApiWithCredentials(`/v2/bookings/token/${code}`).then(booking => {
+    pcapi.getBooking(code).then(booking => {
       dispatch({
         type: 'GET_DESK_BOOKINGS',
         payload: booking,
@@ -23,9 +23,8 @@ export const mapDispatchToProps = dispatch => ({
 
       return booking
     }),
-  validateBooking: code => fetchFromApiWithCredentials(`/v2/bookings/use/token/${code}`, 'PATCH'),
-  invalidateBooking: code =>
-    fetchFromApiWithCredentials(`/v2/bookings/keep/token/${code}`, 'PATCH'),
+  validateBooking: code => pcapi.validateBooking(code),
+  invalidateBooking: code => pcapi.invalidateBooking(code),
 })
 
 export const mergeProps = (stateProps, dispatchProps, ownProps) => ({

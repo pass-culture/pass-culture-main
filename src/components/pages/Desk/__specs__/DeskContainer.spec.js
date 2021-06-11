@@ -1,9 +1,11 @@
-import { fetchFromApiWithCredentials } from 'utils/fetch'
+import * as pcapi from 'repository/pcapi/pcapi'
 
 import { mapDispatchToProps, mergeProps } from '../DeskContainer'
 
-jest.mock('utils/fetch', () => ({
-  fetchFromApiWithCredentials: jest.fn().mockImplementation(() => Promise.resolve()),
+jest.mock('repository/pcapi/pcapi', () => ({
+  getBooking: jest.fn().mockImplementation(() => Promise.resolve()),
+  validateBooking: jest.fn(),
+  invalidateBooking: jest.fn(),
 }))
 
 describe('src | DeskContainer', () => {
@@ -15,7 +17,7 @@ describe('src | DeskContainer', () => {
     getBooking('ABCDEF')
 
     // then
-    expect(fetchFromApiWithCredentials).toHaveBeenCalledWith('/v2/bookings/token/ABCDEF')
+    expect(pcapi.getBooking).toHaveBeenCalledWith('ABCDEF')
   })
 
   it('should valid a booking with a token given', () => {
@@ -26,10 +28,7 @@ describe('src | DeskContainer', () => {
     validateBooking('ABCDEF')
 
     // then
-    expect(fetchFromApiWithCredentials).toHaveBeenCalledWith(
-      '/v2/bookings/use/token/ABCDEF',
-      'PATCH'
-    )
+    expect(pcapi.validateBooking).toHaveBeenCalledWith('ABCDEF')
   })
 
   it('should invalid a booking with a token given', () => {
@@ -40,10 +39,7 @@ describe('src | DeskContainer', () => {
     invalidateBooking('ABCDEF')
 
     // then
-    expect(fetchFromApiWithCredentials).toHaveBeenCalledWith(
-      '/v2/bookings/keep/token/ABCDEF',
-      'PATCH'
-    )
+    expect(pcapi.invalidateBooking).toHaveBeenCalledWith('ABCDEF')
   })
 
   describe('mergeProps', () => {

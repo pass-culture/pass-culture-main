@@ -253,3 +253,19 @@ export const loadFilteredBookingsRecap = async ({
   const queryParams = stringify(params)
   return client.get(`/bookings/pro?${queryParams}`)
 }
+
+//
+// Booking
+//
+
+export const getBooking = code => {
+  return client.get(`/v2/bookings/token/${code}`)
+}
+
+export const validateBooking = code => {
+  return client.patch(`/v2/bookings/use/token/${code}`)
+}
+
+export const invalidateBooking = code => {
+  return client.patch(`/v2/bookings/keep/token/${code}`)
+}

@@ -1,11 +1,14 @@
 import { DEFAULT_PRE_FILTERS } from 'components/pages/Bookings/PreFilters/_constants'
 import { DEFAULT_SEARCH_FILTERS } from 'components/pages/Offers/Offers/_constants'
 import {
+  getBooking,
   getVenuesForOfferer,
   getVenueStats,
+  invalidateBooking,
   loadFilteredBookingsRecap,
   signout,
   updateUserInformations,
+  validateBooking,
 } from 'repository/pcapi/pcapi'
 import { client } from 'repository/pcapi/pcapiClient'
 import { bookingRecapFactory } from 'utils/apiFactories'
@@ -395,6 +398,36 @@ describe('pcapi', () => {
       expect(client.get).toHaveBeenCalledWith(
         '/bookings/pro?page=2&venueId=AA&eventDate=2020-09-13T00%3A00%3A00Z&bookingPeriodBeginningDate=2020-08-13T00%3A00%3A00Z&bookingPeriodEndingDate=2020-09-12T00%3A00%3A00Z'
       )
+    })
+  })
+
+  describe('getBooking', () => {
+    it('should get booking given it code', async () => {
+      // When
+      getBooking('A5DS6Q')
+
+      // Then
+      expect(client.get).toHaveBeenCalledWith('/v2/bookings/token/A5DS6Q')
+    })
+  })
+
+  describe('validateBooking', () => {
+    it('should patch booking with it code', async () => {
+      // When
+      validateBooking('A5DS6Q')
+
+      // Then
+      expect(client.patch).toHaveBeenCalledWith('/v2/bookings/use/token/A5DS6Q')
+    })
+  })
+
+  describe('invalidateBooking', () => {
+    it('should patch booking with it code', async () => {
+      // When
+      invalidateBooking('A5DS6Q')
+
+      // Then
+      expect(client.patch).toHaveBeenCalledWith('/v2/bookings/keep/token/A5DS6Q')
     })
   })
 })
