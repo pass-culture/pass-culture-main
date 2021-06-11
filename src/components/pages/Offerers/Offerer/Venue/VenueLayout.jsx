@@ -8,6 +8,7 @@ import VenueEdition from './VenueEdition/VenueEdition'
 
 const VenueLayout = () => {
   const match = useRouteMatch()
+
   return (
     <Switch>
       <Route path={`${match.path}/creation`}>

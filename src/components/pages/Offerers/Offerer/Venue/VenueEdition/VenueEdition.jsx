@@ -4,7 +4,7 @@ import { Route, Redirect, Switch, useParams, useRouteMatch } from 'react-router-
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
 
-import Breadcrumb, { mapPathToStep } from '../Breadcrumb'
+import Breadcrumb, { mapPathToStep, STEP_ID_INFORMATIONS } from '../Breadcrumb'
 
 const VenueEdition = () => {
   let { offererId, venueId } = useParams()
@@ -12,7 +12,7 @@ const VenueEdition = () => {
   const match = useRouteMatch()
 
   const stepName = location.pathname.match(/[a-z]+$/)
-  const activeStep = stepName ? mapPathToStep[stepName[0]] : null
+  const activeStep = stepName ? mapPathToStep[stepName[0]] : STEP_ID_INFORMATIONS
 
   return (
     <div>

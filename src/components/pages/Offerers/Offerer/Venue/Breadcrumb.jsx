@@ -13,7 +13,7 @@ export const mapPathToStep = {
 const VenueBreadcrumb = ({ activeStep, offererId, venueId }) => {
   const isCreatingVenue = venueId === null
   let baseUrl = `/structures/${offererId}/lieux/`
-  baseUrl += isCreatingVenue ? 'creation/' : `${venueId}/edition/`
+  baseUrl += isCreatingVenue ? 'creation/' : `${venueId}/`
 
   const steps = [
     {
@@ -23,7 +23,7 @@ const VenueBreadcrumb = ({ activeStep, offererId, venueId }) => {
     },
     {
       id: STEP_ID_MANAGEMENT,
-      label: 'Gestion',
+      label: 'Gestions',
       url: `${baseUrl}gestion`,
     },
   ]
