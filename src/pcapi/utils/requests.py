@@ -24,9 +24,13 @@ REQUEST_TIMEOUT_IN_SECOND = 10
 
 
 def _wrapper(request_func: Callable, method: str, url: str, **kwargs: Any) -> Response:
+    timeout = kwargs.pop("timeout", REQUEST_TIMEOUT_IN_SECOND)
     try:
-        timeout = kwargs.pop("timeout", REQUEST_TIMEOUT_IN_SECOND)
         response = request_func(method=method, url=url, timeout=timeout, **kwargs)
+    except Exception as exc:
+        logger.exception("Call to external service failed with %s", exc, extra={"method": method, "url": url})
+        raise exc
+    else:
         logger.info(
             "External service called",
             extra={
@@ -35,9 +39,6 @@ def _wrapper(request_func: Callable, method: str, url: str, **kwargs: Any) -> Re
                 "duration": response.elapsed.total_seconds(),
             },
         )
-    except Exception as exc:
-        logger.exception("Call to external service failed with %s", exc, extra={"method": method, "url": url})
-        raise exc
 
     return response
 
