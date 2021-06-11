@@ -146,12 +146,12 @@ class OfferIsEditableTest:
         assert offer.isEditable
 
     def test_editable_if_from_allocine(self):
-        provider = providers_factories.ProviderFactory(localClass="AllocineStocks")
+        provider = providers_factories.AllocineProviderFactory(localClass="AllocineStocks")
         offer = factories.OfferFactory(lastProvider=provider)
         assert offer.isEditable
 
     def test_not_editabe_if_from_another_provider(self):
-        provider = providers_factories.ProviderFactory(localClass="TiteLiveStocks")
+        provider = providers_factories.AllocineProviderFactory(localClass="TiteLiveStocks")
         offer = factories.OfferFactory(lastProvider=provider)
         assert not offer.isEditable
 

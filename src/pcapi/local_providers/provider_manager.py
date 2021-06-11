@@ -45,7 +45,9 @@ def synchronize_venue_provider(venue_provider: VenueProvider, limit: Optional[in
         synchronize_provider_api.synchronize_venue_provider(venue_provider)
 
     else:
+        assert venue_provider.provider.localClass == "AllocineStocks", "Only AllocineStocks should reach this code"
         provider_class = get_local_provider_class_by_name(venue_provider.provider.localClass)
+
         logger.info(
             "Starting synchronization of venue_provider=%s with provider=%s",
             venue_provider.id,

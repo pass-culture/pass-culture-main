@@ -4,21 +4,12 @@ from pcapi.infrastructure.repository.beneficiary_bookings.beneficiary_bookings_s
 from pcapi.infrastructure.repository.pro_offerers.paginated_offerers_sql_repository import (
     PaginatedOfferersSQLRepository,
 )
-from pcapi.infrastructure.repository.stock_provider.stock_provider_fnac import StockProviderFnacRepository
-from pcapi.infrastructure.repository.stock_provider.stock_provider_libraires import StockProviderLibrairesRepository
-from pcapi.infrastructure.repository.stock_provider.stock_provider_praxiel import StockProviderPraxielRepository
-from pcapi.infrastructure.repository.stock_provider.stock_provider_titelive import StockProviderTiteLiveRepository
 from pcapi.use_cases.get_bookings_for_beneficiary import GetBookingsForBeneficiary
 from pcapi.use_cases.list_offerers_for_pro_user import ListOfferersForProUser
 
 
 beneficiary_bookings_repository = BeneficiaryBookingsSQLRepository()
 paginated_offerers_repository = PaginatedOfferersSQLRepository()
-
-api_libraires_stocks = StockProviderLibrairesRepository()
-api_fnac_stocks = StockProviderFnacRepository()
-api_titelive_stocks = StockProviderTiteLiveRepository()
-api_praxiel_stocks = StockProviderPraxielRepository()
 
 # Usecases
 get_bookings_for_beneficiary = GetBookingsForBeneficiary(

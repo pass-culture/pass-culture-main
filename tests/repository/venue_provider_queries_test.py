@@ -1,5 +1,6 @@
 import pytest
 
+from pcapi.core.offerers.factories import APIProviderFactory
 from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import VenueProvider
 from pcapi.model_creators.generic_creators import create_allocine_venue_provider
@@ -19,7 +20,7 @@ class GetActiveVenueProvidersForSpecificProviderTest:
         offerer = create_offerer()
         venue1 = create_venue(offerer, siret="12345678901234")
         venue2 = create_venue(offerer)
-        titelive_provider = activate_provider("TiteLiveStocks")
+        titelive_provider = APIProviderFactory()
         allocine_provider = activate_provider("AllocineStocks")
         venue_provider1 = create_venue_provider(venue1, titelive_provider)
         venue_provider2 = create_venue_provider(venue2, allocine_provider)
@@ -37,7 +38,7 @@ class GetActiveVenueProvidersForSpecificProviderTest:
         offerer = create_offerer()
         venue1 = create_venue(offerer, siret="12345678901234")
         venue2 = create_venue(offerer)
-        titelive_provider = activate_provider("TiteLiveStocks")
+        titelive_provider = APIProviderFactory()
         venue_provider1 = create_venue_provider(venue1, titelive_provider)
         venue_provider2 = create_venue_provider(venue2, titelive_provider, is_active=False)
         repository.save(venue_provider1, venue_provider2)
@@ -55,7 +56,7 @@ class GetVenueProviderByIdTest:
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
-        titelive_provider = activate_provider("TiteLiveStocks")
+        titelive_provider = APIProviderFactory()
         venue_provider = create_venue_provider(venue, titelive_provider)
         repository.save(venue_provider)
 

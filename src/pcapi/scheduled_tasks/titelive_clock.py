@@ -6,9 +6,7 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 # FIXME (asaunier, 2021-04-20): this is to prevent circular imports
 import pcapi.models  # pylint: disable=unused-import
 from pcapi.core.logging import install_logging
-from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.local_providers.provider_manager import synchronize_data_for_provider
-from pcapi.local_providers.venue_provider_worker import update_venues_for_specific_provider
 from pcapi.models.feature import FeatureToggle
 from pcapi.scheduled_tasks import utils
 from pcapi.scheduled_tasks.decorators import cron_context
@@ -40,15 +38,6 @@ def synchronize_titelive_thing_thumbs(app):
     synchronize_data_for_provider("TiteLiveThingThumbs")
 
 
-@log_cron
-@cron_context
-@cron_require_feature(FeatureToggle.SYNCHRONIZE_TITELIVE)
-def synchronize_titelive_stocks(app):
-    titelive_stocks_provider = get_provider_by_local_class("TiteLiveStocks")
-    if titelive_stocks_provider:
-        update_venues_for_specific_provider(titelive_stocks_provider.id)
-
-
 def main():
     from pcapi.flask_app import app
 
@@ -60,8 +49,6 @@ def main():
     scheduler.add_job(synchronize_titelive_thing_descriptions, "cron", [app], day="*", hour="2")
 
     scheduler.add_job(synchronize_titelive_thing_thumbs, "cron", [app], day="*", hour="3")
-
-    scheduler.add_job(synchronize_titelive_stocks, "cron", [app], day="*", hour="2", minute="30")
 
     scheduler.start()
 

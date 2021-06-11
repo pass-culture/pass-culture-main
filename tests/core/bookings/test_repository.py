@@ -408,52 +408,6 @@ class FindByTokenTest:
         assert booking is None
 
 
-class CountNotCancelledBookingsQuantityByStocksTest:
-    @pytest.mark.usefixtures("db_session")
-    def test_should_return_sum_of_bookings_quantity_that_are_not_cancelled_for_given_stock(self, app: fixture):
-        # Given
-        user = users_factories.UserFactory()
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue)
-        stock = create_stock(offer=offer, quantity=20)
-
-        booking1 = create_booking(user=user, is_cancelled=True, stock=stock, quantity=2)
-        booking2 = create_booking(user=user, is_cancelled=False, stock=stock, quantity=7)
-        booking3 = create_booking(user=user, is_cancelled=False, stock=stock, quantity=8)
-        repository.save(booking1, booking2, booking3)
-
-        # When
-        result = booking_repository.count_not_cancelled_bookings_quantity_by_stock_id(stock.id)
-
-        # Then
-        assert result == 15
-
-    @pytest.mark.usefixtures("db_session")
-    def test_should_return_0_when_no_bookings_found(self, app: fixture):
-        # Given
-        users_factories.UserFactory()
-        offerer = create_offerer()
-        venue = create_venue(offerer)
-        offer = create_offer_with_event_product(venue)
-        stock = create_stock(offer=offer)
-
-        repository.save(stock)
-
-        # When
-        result = booking_repository.count_not_cancelled_bookings_quantity_by_stock_id(stock.id)
-
-        # Then
-        assert result == 0
-
-    def test_should_return_0_when_no_stock_id_given(self, app: fixture):
-        # When
-        result = booking_repository.count_not_cancelled_bookings_quantity_by_stock_id(None)
-
-        # Then
-        assert result == 0
-
-
 class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_only_expected_booking_attributes(self, app: fixture):

@@ -150,14 +150,6 @@ def find_used_by_token(token: str) -> Booking:
     return Booking.query.filter_by(token=token.upper(), isUsed=True).one_or_none()
 
 
-def count_not_cancelled_bookings_quantity_by_stock_id(stock_id: int) -> int:
-    bookings = (
-        Booking.query.join(Stock).filter(Booking.isCancelled.is_(False)).filter(Booking.stockId == stock_id).all()
-    )
-
-    return sum([booking.quantity for booking in bookings])
-
-
 def find_expiring_bookings() -> Query:
     today_at_midnight = datetime.combine(date.today(), time(0, 0))
     return (

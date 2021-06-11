@@ -16,6 +16,8 @@ class ProviderFactory(BaseFactory):
 
     name = factory.Sequence("Provider {}".format)
     localClass = factory.Sequence("{}Stocks".format)
+    enabledForPro = True
+    isActive = True
 
 
 class APIProviderFactory(BaseFactory):
@@ -24,6 +26,8 @@ class APIProviderFactory(BaseFactory):
 
     name = factory.Sequence("Provider {}".format)
     apiUrl = factory.Sequence("https://{}.example.org/stocks".format)
+    enabledForPro = True
+    isActive = True
 
 
 class VenueProviderFactory(BaseFactory):
@@ -31,9 +35,18 @@ class VenueProviderFactory(BaseFactory):
         model = pcapi.core.providers.models.VenueProvider
 
     venue = factory.SubFactory(VenueFactory)
-    provider = factory.SubFactory(ProviderFactory)
+    provider = factory.SubFactory(APIProviderFactory)
 
     venueIdAtOfferProvider = factory.SelfAttribute("venue.siret")
+
+
+class AllocineProviderFactory(BaseFactory):
+    class Meta:
+        model = pcapi.core.providers.models.Provider
+        sqlalchemy_get_or_create = ["localClass"]
+
+    name = factory.Sequence("Provider {}".format)
+    localClass = "AllocineStocks"
 
 
 class AllocineVenueProviderFactory(BaseFactory):
@@ -41,7 +54,7 @@ class AllocineVenueProviderFactory(BaseFactory):
         model = AllocineVenueProvider
 
     venue = factory.SubFactory(VenueFactory)
-    provider = factory.SubFactory(ProviderFactory)
+    provider = factory.SubFactory(AllocineProviderFactory)
     venueIdAtOfferProvider = factory.SelfAttribute("venue.siret")
     internalId = factory.Sequence("P{}".format)
     isDuo = True

@@ -22,7 +22,7 @@ class UpdateObjectsTest:
     @patch("tests.local_providers.provider_test_utils.TestLocalProvider.__next__")
     def test_iterator_is_called_until_exhausted(self, next_function):
         # Given
-        offerers_factories.ProviderFactory(localClass="TestLocalProvider")
+        offerers_factories.AllocineProviderFactory(localClass="TestLocalProvider")
         local_provider = provider_test_utils.TestLocalProvider()
         next_function.side_effect = [[], [], []]
 
@@ -35,7 +35,7 @@ class UpdateObjectsTest:
     @patch("tests.local_providers.provider_test_utils.TestLocalProvider.__next__")
     def test_iterator_should_log_provider_event_from_start_to_stop(self, next_function):
         # Given
-        offerers_factories.ProviderFactory(localClass="TestLocalProvider")
+        offerers_factories.AllocineProviderFactory(localClass="TestLocalProvider")
         local_provider = provider_test_utils.TestLocalProvider()
         next_function.side_effect = [[], []]
 
@@ -50,7 +50,7 @@ class UpdateObjectsTest:
     @patch("tests.local_providers.provider_test_utils.TestLocalProvider.__next__")
     def test_creates_new_object_when_no_object_in_database(self, next_function):
         # Given
-        offerers_factories.ProviderFactory(localClass="TestLocalProvider")
+        offerers_factories.AllocineProviderFactory(localClass="TestLocalProvider")
         providable_info = create_providable_info()
         local_provider = provider_test_utils.TestLocalProvider()
         next_function.side_effect = [[providable_info]]
@@ -66,7 +66,7 @@ class UpdateObjectsTest:
     @patch("tests.local_providers.provider_test_utils.TestLocalProvider.__next__")
     def test_updates_existing_object(self, next_function):
         # Given
-        provider = offerers_factories.ProviderFactory(localClass="TestLocalProvider")
+        provider = offerers_factories.AllocineProviderFactory(localClass="TestLocalProvider")
         providable_info = create_providable_info(date_modified=datetime(2018, 1, 1))
         product = offers_factories.ThingProductFactory(
             dateModifiedAtLastProvider=datetime(2000, 1, 1),
@@ -90,7 +90,7 @@ class UpdateObjectsTest:
     @patch("tests.local_providers.provider_test_utils.TestLocalProvider.__next__")
     def test_does_not_update_existing_object_when_date_is_older_than_last_modified_date(self, next_function):
         # Given
-        provider = offerers_factories.ProviderFactory(localClass="TestLocalProvider")
+        provider = offerers_factories.AllocineProviderFactory(localClass="TestLocalProvider")
         providable_info = create_providable_info(date_modified=datetime(2018, 1, 1))
         product = offers_factories.ThingProductFactory(
             dateModifiedAtLastProvider=datetime(2020, 1, 1),
@@ -114,7 +114,7 @@ class UpdateObjectsTest:
     @patch("tests.local_providers.provider_test_utils.TestLocalProvider.__next__")
     def test_does_not_update_objects_when_venue_provider_is_not_active(self, next_function):
         # Given
-        offerers_factories.ProviderFactory(localClass="TestLocalProvider")
+        offerers_factories.AllocineProviderFactory(localClass="TestLocalProvider")
         providable_info = create_providable_info(date_modified=datetime(2018, 1, 1))
         venue_provider = offerers_factories.VenueProviderFactory(isActive=False)
         local_provider = provider_test_utils.TestLocalProvider(venue_provider)
@@ -129,7 +129,7 @@ class UpdateObjectsTest:
     @patch("tests.local_providers.provider_test_utils.TestLocalProvider.__next__")
     def test_does_not_update_objects_when_provider_is_not_active(self, next_function):
         # Given
-        offerers_factories.ProviderFactory(localClass="TestLocalProvider", isActive=False)
+        offerers_factories.AllocineProviderFactory(localClass="TestLocalProvider", isActive=False)
         providable_info = create_providable_info(date_modified=datetime(2018, 1, 1))
         local_provider = provider_test_utils.TestLocalProvider()
         next_function.side_effect = [[providable_info]]
@@ -143,7 +143,7 @@ class UpdateObjectsTest:
     @patch("tests.local_providers.provider_test_utils.TestLocalProviderNoCreation.__next__")
     def test_does_not_create_new_object_when_can_create_is_false(self, next_function):
         # Given
-        offerers_factories.ProviderFactory(localClass="TestLocalProviderNoCreation")
+        offerers_factories.AllocineProviderFactory(localClass="TestLocalProviderNoCreation")
         providable_info = create_providable_info()
         local_provider = provider_test_utils.TestLocalProviderNoCreation()
         next_function.side_effect = [[providable_info]]
@@ -157,7 +157,7 @@ class UpdateObjectsTest:
     @patch("tests.local_providers.provider_test_utils.TestLocalProvider.__next__")
     def test_creates_only_one_object_when_limit_is_one(self, next_function):
         # Given
-        offerers_factories.ProviderFactory(localClass="TestLocalProvider")
+        offerers_factories.AllocineProviderFactory(localClass="TestLocalProvider")
         providable_info1 = create_providable_info()
         providable_info2 = create_providable_info(id_at_providers="2")
         local_provider = provider_test_utils.TestLocalProvider()
@@ -176,7 +176,7 @@ class UpdateObjectsTest:
 class CreateObjectTest:
     def test_returns_object_with_expected_attributes(self):
         # Given
-        provider = offerers_factories.ProviderFactory(localClass="TestLocalProvider")
+        provider = offerers_factories.AllocineProviderFactory(localClass="TestLocalProvider")
         providable_info = create_providable_info()
         local_provider = provider_test_utils.TestLocalProvider()
 
@@ -191,7 +191,7 @@ class CreateObjectTest:
 
     def test_raises_api_errors_exception_when_errors_occur_on_model_and_log_error(self):
         # Given
-        offerers_factories.ProviderFactory(localClass="TestLocalProviderWithApiErrors")
+        offerers_factories.AllocineProviderFactory(localClass="TestLocalProviderWithApiErrors")
         providable_info = create_providable_info()
         local_provider = provider_test_utils.TestLocalProviderWithApiErrors()
 
@@ -212,7 +212,7 @@ class CreateObjectTest:
 class HandleUpdateTest:
     def test_returns_object_with_expected_attributes(self):
         # Given
-        provider = offerers_factories.ProviderFactory(localClass="TestLocalProvider")
+        provider = offerers_factories.AllocineProviderFactory(localClass="TestLocalProvider")
         providable_info = create_providable_info()
         product = offers_factories.ThingProductFactory(
             name="Old product name",
@@ -232,7 +232,7 @@ class HandleUpdateTest:
 
     def test_raises_api_errors_exception_when_errors_occur_on_model(self):
         # Given
-        provider = offerers_factories.ProviderFactory(localClass="TestLocalProviderWithApiErrors")
+        provider = offerers_factories.AllocineProviderFactory(localClass="TestLocalProviderWithApiErrors")
         providable_info = create_providable_info()
         product = offers_factories.ThingProductFactory(
             name="Old product name",
@@ -258,7 +258,7 @@ class HandleUpdateTest:
 class HandleThumbTest:
     def test_call_save_thumb_should_increase_thumbCount_by_1(self):
         # Given
-        provider = offerers_factories.ProviderFactory(localClass="TestLocalProviderWithThumb")
+        provider = offerers_factories.AllocineProviderFactory(localClass="TestLocalProviderWithThumb")
         providable_info = create_providable_info()
         product = offers_factories.ThingProductFactory(
             idAtProviders=providable_info.id_at_providers,
@@ -278,7 +278,7 @@ class HandleThumbTest:
 
     def test_create_several_thumbs_when_thumb_index_is_4_and_current_thumbCount_is_0(self):
         # Given
-        provider = offerers_factories.ProviderFactory(localClass="TestLocalProviderWithThumbIndexAt4")
+        provider = offerers_factories.AllocineProviderFactory(localClass="TestLocalProviderWithThumbIndexAt4")
         providable_info = create_providable_info()
         product = offers_factories.ThingProductFactory(
             idAtProviders=providable_info.id_at_providers,
@@ -301,7 +301,7 @@ class HandleThumbTest:
 class SaveThumbFromThumbCountToIndexTest:
     def test_should_iterate_from_current_thumbCount_to_thumbIndex_when_thumbCount_is_0(self, app):
         # Given
-        provider = offerers_factories.ProviderFactory(localClass="TestLocalProviderWithThumb")
+        provider = offerers_factories.AllocineProviderFactory(localClass="TestLocalProviderWithThumb")
         providable_info = create_providable_info()
         product = offers_factories.ThingProductFactory(
             idAtProviders=providable_info.id_at_providers,
@@ -320,7 +320,7 @@ class SaveThumbFromThumbCountToIndexTest:
         assert product.thumbCount == 4
 
     def test_should_only_replace_image_at_specific_thumb_index_when_thumbCount_is_superior_to_thumbIndex(self):
-        provider = offerers_factories.ProviderFactory(localClass="TestLocalProviderWithThumb")
+        provider = offerers_factories.AllocineProviderFactory(localClass="TestLocalProviderWithThumb")
         providable_info = create_providable_info()
         product = offers_factories.ThingProductFactory(
             idAtProviders=providable_info.id_at_providers,

@@ -1,99 +1,90 @@
 import pytest
 
+from pcapi.core.offerers.factories import ProviderFactory
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.providers.factories import AllocinePivotFactory
 from pcapi.core.users.factories import UserFactory
-from pcapi.model_creators.provider_creators import activate_provider
 from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
 
 
-class Returns200Test:
-    @pytest.mark.usefixtures("db_session")
-    def when_venue_has_known_allocine_id(self, app):
-        # Given
-        UserFactory(email="user@test.com")
-        venue = VenueFactory(siret="12345678912345")
-        AllocinePivotFactory(siret="12345678912345")
+@pytest.mark.usefixtures("db_session")
+def test_venue_has_known_allocine_id(app):
+    # Given
+    user = UserFactory()
+    venue = VenueFactory(siret="12345678912345")
+    AllocinePivotFactory(siret="12345678912345")
 
-        titelive_stocks = activate_provider("TiteLiveStocks")
-        allocine_stocks = activate_provider("AllocineStocks")
+    allocine_provider = ProviderFactory(localClass="AllocineStocks")
+    other_provider = ProviderFactory(localClass="B provider")
 
-        # When
-        response = (
-            TestClient(app.test_client()).with_auth(email="user@test.com").get(f"/providers/{humanize(venue.id)}")
-        )
+    # When
+    client = TestClient(app.test_client()).with_auth(email=user.email)
+    response = client.get(f"/providers/{humanize(venue.id)}")
 
-        # Then
-        assert response.status_code == 200
-        response_json = response.json
-        assert response_json == [
-            {
-                "enabledForPro": True,
-                "id": humanize(allocine_stocks.id),
-                "isActive": True,
-                "localClass": "AllocineStocks",
-                "name": "Allociné",
-            },
-            {
-                "enabledForPro": True,
-                "id": humanize(titelive_stocks.id),
-                "isActive": True,
-                "localClass": "TiteLiveStocks",
-                "name": "TiteLive Stocks (Epagine / Place des libraires.com)",
-            },
-        ]
+    # Then
+    assert response.status_code == 200
+    returned_providers = sorted(response.json, key=lambda d: d["localClass"])
+    assert len(returned_providers) == 5
+    assert returned_providers[:2] == [
+        {
+            "enabledForPro": True,
+            "id": humanize(allocine_provider.id),
+            "isActive": True,
+            "localClass": "AllocineStocks",
+            "name": "Allociné",
+        },
+        {
+            "enabledForPro": True,
+            "id": humanize(other_provider.id),
+            "isActive": True,
+            "localClass": other_provider.localClass,
+            "name": other_provider.name,
+        },
+    ]
 
-    @pytest.mark.usefixtures("db_session")
-    def when_venue_has_no_allocine_id(self, app):
-        # Given
-        UserFactory(email="user@test.com")
-        venue = VenueFactory()
 
-        titelive_stocks = activate_provider("TiteLiveStocks")
-        activate_provider("AllocineStocks")
+@pytest.mark.usefixtures("db_session")
+def test_venue_has_no_allocine_id(app):
+    # Given
+    user = UserFactory(email="user@test.com")
+    venue = VenueFactory()
 
-        # When
-        response = (
-            TestClient(app.test_client()).with_auth(email="user@test.com").get(f"/providers/{humanize(venue.id)}")
-        )
+    allocine_provider = ProviderFactory(localClass="AllocineStocks")
+    other_provider = ProviderFactory(localClass="B provider")
 
-        # Then
-        assert response.status_code == 200
-        response_json = response.json
-        assert response_json == [
-            {
-                "enabledForPro": True,
-                "id": humanize(titelive_stocks.id),
-                "isActive": True,
-                "localClass": "TiteLiveStocks",
-                "name": "TiteLive Stocks (Epagine / Place des libraires.com)",
-            }
-        ]
+    # When
+    client = TestClient(app.test_client()).with_auth(email=user.email)
+    response = client.get(f"/providers/{humanize(venue.id)}")
 
-    class Returns404Test:
-        @pytest.mark.usefixtures("db_session")
-        def when_venue_does_not_exists(self, app):
-            # Given
-            UserFactory(email="user@test.com")
-            VenueFactory()
-            AllocinePivotFactory()
+    # Then
+    assert response.status_code == 200
+    returned_providers = sorted(response.json, key=lambda d: d["localClass"])
+    assert len(returned_providers) == 4
+    assert returned_providers[0] == {
+        "enabledForPro": True,
+        "id": humanize(other_provider.id),
+        "isActive": True,
+        "localClass": other_provider.localClass,
+        "name": other_provider.name,
+    }
+    assert humanize(allocine_provider.id) not in [p["id"] for p in returned_providers]
 
-            activate_provider("TiteLiveStocks")
-            activate_provider("AllocineStocks")
 
-            # When
-            response = TestClient(app.test_client()).with_auth(email="user@test.com").get("/providers/AZER")
+@pytest.mark.usefixtures("db_session")
+def test_venue_does_not_exist(app):
+    user = UserFactory()
 
-            # Then
-            assert response.status_code == 404
+    client = TestClient(app.test_client()).with_auth(email=user.email)
+    response = client.get("/providers/AZER")
 
-    class Returns401Test:
-        @pytest.mark.usefixtures("db_session")
-        def when_user_is_not_logged_in(self, app):
-            # when
-            response = TestClient(app.test_client()).get("/providers/AZER")
+    assert response.status_code == 404
 
-            # then
-            assert response.status_code == 401
+
+@pytest.mark.usefixtures("db_session")
+def test_user_is_not_logged_in(app):
+    client = TestClient(app.test_client())
+    response = client.get("/providers/AZER")
+
+    assert response.status_code == 401

@@ -1,6 +1,7 @@
 import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.providers.models import Provider
 from pcapi.core.providers.repository import get_enabled_providers_for_pro
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.providers.repository import get_provider_enabled_for_pro_by_id
@@ -13,11 +14,8 @@ class GetEnabledProvidersForProTest:
     @pytest.mark.usefixtures("db_session")
     def test_get_enabled_providers_for_pro(self, app):
         # Given
-        offerers_factories.ProviderFactory(name="NotEnabledProvider", isActive=True, enabledForPro=False)
-        offerers_factories.ProviderFactory(name="InactiveProvider", isActive=False, enabledForPro=True)
-        offerers_factories.ProviderFactory(name="InactiveProvider2", isActive=False, enabledForPro=False)
-        provider1 = offerers_factories.ProviderFactory(name="Provider1", isActive=True, enabledForPro=True)
-
+        Provider.query.delete()  # remove automatically added providers
+        provider1 = offerers_factories.AllocineProviderFactory(localClass="Truc", isActive=True, enabledForPro=True)
         offerers_factories.APIProviderFactory(name="NotEnabledAPIProvider", isActive=True, enabledForPro=False)
         offerers_factories.APIProviderFactory(name="InactiveAPIProvider", isActive=False, enabledForPro=True)
         offerers_factories.APIProviderFactory(name="InactiveAPIProvider2", isActive=False, enabledForPro=False)
@@ -34,22 +32,17 @@ class GetProvidersEnabledForProExcludingSpecificProviderTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_get_actives_and_enabled_providers_for_pro(self, app):
         # Given
-        offerers_factories.ProviderFactory(
-            name="AllocineProvider", localClass="AllocineStocks", isActive=True, enabledForPro=True
-        )
-        offerers_factories.ProviderFactory(name="NotEnabledProvider", isActive=True, enabledForPro=False)
-        offerers_factories.ProviderFactory(name="InactiveProvider", isActive=False, enabledForPro=True)
-        provider1 = offerers_factories.ProviderFactory(name="Provider1", isActive=True, enabledForPro=True)
-
+        Provider.query.delete()  # remove automatically added providers
+        offerers_factories.AllocineProviderFactory(name="Provider1", isActive=True, enabledForPro=True)
         offerers_factories.APIProviderFactory(name="NotEnabledAPIProvider", isActive=True, enabledForPro=False)
         offerers_factories.APIProviderFactory(name="InactiveAPIProvider", isActive=False, enabledForPro=True)
-        provider2 = offerers_factories.APIProviderFactory(name="Provider2", isActive=True, enabledForPro=True)
+        provider = offerers_factories.APIProviderFactory(name="Provider2", isActive=True, enabledForPro=True)
 
         # When
         providers = get_providers_enabled_for_pro_excluding_specific_provider("AllocineStocks")
 
         # Then
-        assert providers == [provider1, provider2]
+        assert providers == [provider]
 
 
 class GetProviderEnabledForProByIdTest:

@@ -15,7 +15,7 @@ class ProviderApiStocksTest:
         # Given
         api_provider_1 = offerers_factories.APIProviderFactory()
         api_provider_2 = offerers_factories.APIProviderFactory()
-        specific_provider = offerers_factories.ProviderFactory()
+        specific_provider = offerers_factories.AllocineProviderFactory()
 
         correct_venue_providers = [
             VenueProviderFactory(isActive=True, provider=api_provider_1),

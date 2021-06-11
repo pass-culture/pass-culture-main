@@ -19,8 +19,6 @@ class FeatureToggle(enum.Enum):
     SYNCHRONIZE_BANK_INFORMATION = (
         "Permettre la synchronisation journalière avec DMS pour récupérer les informations bancaires des acteurs"
     )
-    SYNCHRONIZE_LIBRAIRES = "Permettre la synchronisation journalière avec leslibraires.fr"
-    SYNCHRONIZE_TITELIVE = "Permettre la synchronisation journalière avec TiteLive / Epagine"
     SYNCHRONIZE_TITELIVE_PRODUCTS = "Permettre limport journalier du référentiel des livres"
     DISABLE_BOOKINGS_RECAP_FOR_SOME_PROS = (
         "Désactivation de l'appel qui est fait sur la route mes réservations pour certains acteurs"
@@ -35,7 +33,6 @@ class FeatureToggle(enum.Enum):
     ALLOW_IDCHECK_REGISTRATION = "Autoriser les utilisateurs à suivre le parcours d inscription ID Check"
     WHOLE_FRANCE_OPENING = "Ouvre le service à la France entière"
     ENABLE_NATIVE_APP_RECAPTCHA = "Active le reCaptacha sur l'API native"
-    FNAC_SYNCHRONIZATION_V2 = "Active la synchronisation FNAC v2 : synchronisation par batch"
     OFFER_VALIDATION_MOCK_COMPUTATION = "Active le calcul automatique de validation d'offre depuis le nom de l'offre"
     AUTO_ACTIVATE_DIGITAL_BOOKINGS = (
         "Activer (marquer comme utilisée) les réservations dès leur création pour les offres digitales"

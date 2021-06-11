@@ -431,7 +431,7 @@ class UpsertStocksTest:
         # Given
         user = users_factories.UserFactory()
         offer = factories.ThingOfferFactory(
-            lastProvider=offerers_factories.ProviderFactory(localClass="TiteLiveStocks")
+            lastProvider=offerers_factories.AllocineProviderFactory(localClass="TiteLiveStocks")
         )
         created_stock_data = StockCreationBodyModel(price=10)
 
@@ -446,7 +446,7 @@ class UpsertStocksTest:
         # Given
         user = users_factories.UserFactory()
         offer = factories.EventOfferFactory(
-            lastProvider=offerers_factories.ProviderFactory(localClass="AllocineStocks")
+            lastProvider=offerers_factories.AllocineProviderFactory(localClass="AllocineStocks")
         )
         date_in_the_future = datetime.utcnow() + timedelta(days=4)
         existing_stock = factories.StockFactory(offer=offer, price=10, beginningDatetime=date_in_the_future)
@@ -468,7 +468,7 @@ class UpsertStocksTest:
         # Given
         user = users_factories.UserFactory()
         offer = factories.EventOfferFactory(
-            lastProvider=offerers_factories.ProviderFactory(localClass="AllocineStocks")
+            lastProvider=offerers_factories.AllocineProviderFactory(localClass="AllocineStocks")
         )
         date_in_the_future = datetime.utcnow() + timedelta(days=4)
         other_date_in_the_future = datetime.utcnow() + timedelta(days=6)
@@ -596,7 +596,7 @@ class DeleteStockTest:
         }
 
     def test_can_delete_if_stock_from_allocine(self):
-        provider = offerers_factories.ProviderFactory(localClass="AllocineStocks")
+        provider = offerers_factories.AllocineProviderFactory(localClass="AllocineStocks")
         offer = factories.OfferFactory(lastProvider=provider, idAtProviders="1")
         stock = factories.StockFactory(offer=offer)
 
@@ -606,7 +606,7 @@ class DeleteStockTest:
         assert stock.isSoftDeleted
 
     def test_cannot_delete_if_stock_from_titelive(self):
-        provider = offerers_factories.ProviderFactory(localClass="TiteLiveStocks")
+        provider = offerers_factories.AllocineProviderFactory(localClass="TiteLiveStocks")
         offer = factories.OfferFactory(lastProvider=provider, idAtProviders="1")
         stock = factories.StockFactory(offer=offer)
 
@@ -1046,7 +1046,7 @@ class UpdateOfferTest:
         assert models.Offer.query.one().name == "Old name"
 
     def test_success_on_allocine_offer(self):
-        provider = offerers_factories.ProviderFactory(localClass="AllocineStocks")
+        provider = offerers_factories.AllocineProviderFactory(localClass="AllocineStocks")
         offer = factories.OfferFactory(lastProvider=provider, name="Old name")
 
         api.update_offer(offer, name="Old name", isDuo=True)
@@ -1056,7 +1056,7 @@ class UpdateOfferTest:
         assert offer.isDuo
 
     def test_forbidden_on_allocine_offer_on_certain_fields(self):
-        provider = offerers_factories.ProviderFactory(localClass="AllocineStocks")
+        provider = offerers_factories.AllocineProviderFactory(localClass="AllocineStocks")
         offer = factories.OfferFactory(lastProvider=provider, name="Old name")
 
         with pytest.raises(models.ApiErrors) as error:
@@ -1068,7 +1068,7 @@ class UpdateOfferTest:
         assert not offer.isDuo
 
     def test_success_on_imported_offer_on_external_ticket_office_url(self):
-        provider = offerers_factories.ProviderFactory()
+        provider = offerers_factories.AllocineProviderFactory()
         offer = factories.OfferFactory(
             externalTicketOfficeUrl="http://example.org",
             lastProvider=provider,
@@ -1085,7 +1085,7 @@ class UpdateOfferTest:
         assert offer.externalTicketOfficeUrl == "https://example.com"
 
     def test_success_on_imported_offer_on_accessibility_fields(self):
-        provider = offerers_factories.ProviderFactory()
+        provider = offerers_factories.AllocineProviderFactory()
         offer = factories.OfferFactory(
             lastProvider=provider,
             name="Old name",
@@ -1112,7 +1112,7 @@ class UpdateOfferTest:
         assert offer.mentalDisabilityCompliant == False
 
     def test_forbidden_on_imported_offer_on_other_fields(self):
-        provider = offerers_factories.ProviderFactory()
+        provider = offerers_factories.APIProviderFactory()
         offer = factories.OfferFactory(
             lastProvider=provider, name="Old name", isDuo=False, audioDisabilityCompliant=True
         )

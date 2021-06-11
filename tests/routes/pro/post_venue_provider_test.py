@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offer_factories
 from pcapi.core.providers.factories import AllocinePivotFactory
 from pcapi.core.providers.models import VenueProvider
@@ -27,7 +28,7 @@ class Returns201Test:
         user = user_factories.UserFactory(isAdmin=True)
         venue = offer_factories.VenueFactory(siret="12345678912345")
 
-        provider = activate_provider("LibrairesStocks")
+        provider = offerers_factories.APIProviderFactory()
 
         venue_provider_data = {
             "providerId": humanize(provider.id),
@@ -107,7 +108,7 @@ class Returns201Test:
         user = user_factories.UserFactory(isAdmin=True)
         venue = offer_factories.VenueFactory(siret="12345678912345")
 
-        provider = activate_provider("LibrairesStocks")
+        provider = offerers_factories.APIProviderFactory()
 
         venue_provider_data = {
             "providerId": humanize(provider.id),
@@ -153,7 +154,7 @@ class Returns201Test:
         user = user_factories.UserFactory(isAdmin=True)
         venue = offer_factories.VenueFactory(siret="12345678912345")
 
-        provider = activate_provider("LibrairesStocks")
+        provider = offerers_factories.APIProviderFactory()
 
         venue_provider_data = {
             "providerId": humanize(provider.id),
@@ -200,7 +201,7 @@ class Returns400Test:
         # Given
         user = user_factories.UserFactory(isAdmin=True)
         venue = offer_factories.VenueFactory(siret="12345678912345")
-        provider = activate_provider("LibrairesStocks")
+        provider = offerers_factories.APIProviderFactory()
         venue_provider = create_venue_provider(venue, provider, venue_id_at_offer_provider="12345678912345")
         repository.save(venue_provider)
 
@@ -284,7 +285,7 @@ class Returns404Test:
         # Given
         user = user_factories.UserFactory(isAdmin=True)
 
-        provider = activate_provider("LibrairesStocks")
+        provider = offerers_factories.APIProviderFactory()
 
         venue_provider_data = {
             "providerId": humanize(provider.id),
@@ -330,7 +331,7 @@ class Returns422Test:
         user = user_factories.UserFactory(isAdmin=True)
         venue = offer_factories.VenueFactory(siret="12345678912345")
 
-        provider = activate_provider("LibrairesStocks")
+        provider = offerers_factories.APIProviderFactory()
 
         venue_provider_data = {
             "providerId": humanize(provider.id),
@@ -369,7 +370,7 @@ class ConnectProviderToVenueTest:
         user = user_factories.UserFactory(isAdmin=True)
         venue = offer_factories.VenueFactory(siret="12345678912345")
 
-        provider = activate_provider("LibrairesStocks")
+        provider = offerers_factories.APIProviderFactory()
 
         venue_provider_data = {
             "providerId": humanize(provider.id),
