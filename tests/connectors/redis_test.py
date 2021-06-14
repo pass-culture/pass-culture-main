@@ -13,7 +13,6 @@ from pcapi.connectors.redis import delete_all_indexed_offers
 from pcapi.connectors.redis import delete_indexed_offers
 from pcapi.connectors.redis import delete_offer_ids_in_error
 from pcapi.connectors.redis import delete_venue_ids
-from pcapi.connectors.redis import get_offer_details
 from pcapi.connectors.redis import get_offer_ids_in_error
 from pcapi.connectors.redis import get_venue_ids
 
@@ -169,48 +168,6 @@ class CheckOfferExistsTest:
 
         # Then
         assert result is False
-
-
-class GetOfferDetailsTest:
-    def test_should_return_offer_details_when_offer_exists(self):
-        # Given
-        client = MagicMock()
-        client.hget = MagicMock()
-        client.hget.return_value = (
-            '{"dateRange": ["2020-01-01 10:00:00", "2020-01-06 12:00:00"], "name": "super offre"}'
-        )
-
-        # When
-        result = get_offer_details(client=client, offer_id=1)
-
-        # Then
-        client.hget.assert_called_once_with("indexed_offers", 1)
-        assert result == {"dateRange": ["2020-01-01 10:00:00", "2020-01-06 12:00:00"], "name": "super offre"}
-
-    def test_should_return_empty_dict_when_offer_does_exists(self):
-        # Given
-        client = MagicMock()
-        client.hget = MagicMock()
-        client.hget.return_value = None
-
-        # When
-        result = get_offer_details(client=client, offer_id=1)
-
-        # Then
-        client.hget.assert_called_once_with("indexed_offers", 1)
-        assert result == {}
-
-    def test_should_return_empty_dict_when_exception(self):
-        # Given
-        client = MagicMock()
-        client.hget = MagicMock()
-        client.hget.side_effect = redis.exceptions.RedisError
-
-        # When
-        result = get_offer_details(client=client, offer_id=1)
-
-        # Then
-        assert result == {}
 
 
 class DeleteAllIndexedOffersTest:

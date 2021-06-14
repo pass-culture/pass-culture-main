@@ -52,7 +52,7 @@ def batch_indexing_offers_in_algolia_by_offer(client: Redis, stop_only_when_empt
 
         logger.info("[ALGOLIA] processing %i offers...", len(offer_ids))
         try:
-            process_eligible_offers(client=client, offer_ids=offer_ids, from_provider_update=False)
+            process_eligible_offers(client=client, offer_ids=offer_ids)
         except Exception as exc:  # pylint: disable=broad-except
             logger.exception(
                 "Exception while reindexing offers, must fix manually",
@@ -84,7 +84,7 @@ def batch_indexing_offers_in_algolia_by_venue(client: Redis) -> None:
 
                 if len(offer_ids_as_int) > 0:
                     logger.info("[ALGOLIA] processing offers for venue %s from page %s...", venue_id, page)
-                    process_eligible_offers(client=client, offer_ids=offer_ids_as_int, from_provider_update=False)
+                    process_eligible_offers(client=client, offer_ids=offer_ids_as_int)
                     logger.info("[ALGOLIA] offers for venue %s from page %s processed!", venue_id, page)
                 else:
                     has_still_offers = False
@@ -109,7 +109,7 @@ def batch_indexing_offers_in_algolia_from_database(
 
         if len(offer_ids_as_int) > 0:
             logger.info("[ALGOLIA] processing offers of database from page %s...", page_number)
-            process_eligible_offers(client=client, offer_ids=offer_ids_as_int, from_provider_update=False)
+            process_eligible_offers(client=client, offer_ids=offer_ids_as_int)
             logger.info("[ALGOLIA] offers of database from page %s processed!", page_number)
         else:
             has_still_offers = False
@@ -148,5 +148,5 @@ def batch_deleting_expired_offers_in_algolia(client: Redis, process_all_expired:
 def batch_processing_offer_ids_in_error(client: Redis):
     offer_ids_in_error = get_offer_ids_in_error(client=client)
     if len(offer_ids_in_error) > 0:
-        process_eligible_offers(client=client, offer_ids=offer_ids_in_error, from_provider_update=False)
+        process_eligible_offers(client=client, offer_ids=offer_ids_in_error)
         delete_offer_ids_in_error(client=client)

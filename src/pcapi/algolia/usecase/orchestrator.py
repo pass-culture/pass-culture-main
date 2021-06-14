@@ -5,7 +5,6 @@ from algoliasearch.exceptions import AlgoliaException
 from redis import Redis
 from redis.client import Pipeline
 
-from pcapi.algolia.domain.rules_engine import is_eligible_for_reindexing
 from pcapi.algolia.infrastructure.api import add_objects
 from pcapi.algolia.infrastructure.api import delete_objects
 from pcapi.algolia.infrastructure.builder import build_object
@@ -13,7 +12,6 @@ from pcapi.connectors.redis import add_offer_ids_in_error
 from pcapi.connectors.redis import add_to_indexed_offers
 from pcapi.connectors.redis import check_offer_exists
 from pcapi.connectors.redis import delete_indexed_offers
-from pcapi.connectors.redis import get_offer_details
 from pcapi.models import Offer
 from pcapi.repository import offer_queries
 
@@ -21,7 +19,7 @@ from pcapi.repository import offer_queries
 logger = logging.getLogger(__name__)
 
 
-def process_eligible_offers(client: Redis, offer_ids: list[int], from_provider_update: bool = False) -> None:
+def process_eligible_offers(client: Redis, offer_ids: list[int]) -> None:
     offers_to_add = []
     offers_to_delete = []
     pipeline = client.pipeline()
@@ -31,18 +29,10 @@ def process_eligible_offers(client: Redis, offer_ids: list[int], from_provider_u
         offer_exists = check_offer_exists(client=client, offer_id=offer.id)
 
         if offer and offer.isBookable:
-            if from_provider_update and offer_exists:
-                offer_details = get_offer_details(client=client, offer_id=offer.id)
-                if offer_details and is_eligible_for_reindexing(offer, offer_details):
-                    offers_to_add.append(build_object(offer=offer))
-                    add_to_indexed_offers(
-                        pipeline=pipeline, offer_id=offer.id, offer_details=_build_offer_details_to_be_indexed(offer)
-                    )
-            else:
-                offers_to_add.append(build_object(offer=offer))
-                add_to_indexed_offers(
-                    pipeline=pipeline, offer_id=offer.id, offer_details=_build_offer_details_to_be_indexed(offer)
-                )
+            offers_to_add.append(build_object(offer=offer))
+            add_to_indexed_offers(
+                pipeline=pipeline, offer_id=offer.id, offer_details=_build_offer_details_to_be_indexed(offer)
+            )
         else:
             if offer_exists:
                 offers_to_delete.append(offer.id)

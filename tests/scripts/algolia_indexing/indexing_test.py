@@ -46,12 +46,10 @@ class BatchIndexingOffersInAlgoliaByOfferTest:
             mock.call(
                 client=redis_client,
                 offer_ids=[1, 2, 3],
-                from_provider_update=False,
             ),
             mock.call(
                 client=redis_client,
                 offer_ids=[4, 5, 6],
-                from_provider_update=False,
             ),
         ]
         assert queue == [7, 8]
@@ -83,17 +81,14 @@ class BatchIndexingOffersInAlgoliaByOfferTest:
             mock.call(
                 client=redis_client,
                 offer_ids=[1, 2, 3],
-                from_provider_update=False,
             ),
             mock.call(
                 client=redis_client,
                 offer_ids=[4, 5, 6],
-                from_provider_update=False,
             ),
             mock.call(
                 client=redis_client,
                 offer_ids=[7, 8],
-                from_provider_update=False,
             ),
         ]
         assert queue == []
@@ -124,9 +119,7 @@ class BatchIndexingOffersInAlgoliaByVenueTest:
         # Then
         assert mock_get_paginated_offer_ids_by_venue_id.call_count == 2
         assert mock_process_eligible_offers.call_count == 1
-        assert mock_process_eligible_offers.call_args_list == [
-            mock.call(client=client, offer_ids=[1, 2], from_provider_update=False)
-        ]
+        assert mock_process_eligible_offers.call_args_list == [mock.call(client=client, offer_ids=[1, 2])]
         assert mock_delete_venue_ids.call_count == 1
 
     @mock.patch("pcapi.settings.ALGOLIA_OFFERS_BY_VENUE_CHUNK_SIZE", 1)
@@ -171,9 +164,7 @@ class BatchIndexingOffersInAlgoliaFromDatabaseTest:
         # Then
         assert mock_get_paginated_active_offer_ids.call_count == 2
         assert mock_process_eligible_offers.call_count == 1
-        assert mock_process_eligible_offers.call_args_list == [
-            mock.call(client=client, offer_ids=[1], from_provider_update=False)
-        ]
+        assert mock_process_eligible_offers.call_args_list == [mock.call(client=client, offer_ids=[1])]
 
     @mock.patch("pcapi.scripts.algolia_indexing.indexing.offer_queries.get_paginated_active_offer_ids")
     @mock.patch("pcapi.scripts.algolia_indexing.indexing.process_eligible_offers")
@@ -191,8 +182,8 @@ class BatchIndexingOffersInAlgoliaFromDatabaseTest:
         assert mock_get_paginated_active_offer_ids.call_count == 3
         assert mock_process_eligible_offers.call_count == 2
         assert mock_process_eligible_offers.call_args_list == [
-            mock.call(client=client, offer_ids=[1], from_provider_update=False),
-            mock.call(client=client, offer_ids=[2], from_provider_update=False),
+            mock.call(client=client, offer_ids=[1]),
+            mock.call(client=client, offer_ids=[2]),
         ]
 
     @mock.patch("pcapi.scripts.algolia_indexing.indexing.offer_queries.get_paginated_active_offer_ids")
@@ -211,7 +202,7 @@ class BatchIndexingOffersInAlgoliaFromDatabaseTest:
         assert mock_get_paginated_active_offer_ids.call_count == 1
         assert mock_process_eligible_offers.call_count == 1
         assert mock_process_eligible_offers.call_args_list == [
-            mock.call(client=client, offer_ids=[1], from_provider_update=False),
+            mock.call(client=client, offer_ids=[1]),
         ]
 
 
@@ -283,7 +274,7 @@ class BatchProcessingOfferIdsInErrorTest:
 
         # Then
         mock_get_offer_ids_in_error.assert_called_once_with(client=client)
-        mock_process_eligible_offers.assert_called_once_with(client=client, offer_ids=[1], from_provider_update=False)
+        mock_process_eligible_offers.assert_called_once_with(client=client, offer_ids=[1])
         mock_delete_offer_ids_in_error.assert_called_once_with(client=client)
 
     @mock.patch("pcapi.scripts.algolia_indexing.indexing.delete_offer_ids_in_error")

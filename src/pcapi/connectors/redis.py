@@ -104,18 +104,6 @@ def check_offer_exists(client: Redis, offer_id: int) -> bool:
         return False
 
 
-def get_offer_details(client: Redis, offer_id: int) -> dict:
-    try:
-        offer_details = client.hget(RedisBucket.REDIS_HASHMAP_INDEXED_OFFERS_NAME.value, offer_id)
-
-        if offer_details:
-            return json.loads(offer_details)
-        return dict()
-    except redis.exceptions.RedisError as error:
-        logger.exception("[REDIS] %s", error)
-        return dict()
-
-
 def delete_all_indexed_offers(client: Redis) -> None:
     try:
         client.delete(RedisBucket.REDIS_HASHMAP_INDEXED_OFFERS_NAME.value)

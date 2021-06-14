@@ -18,4 +18,4 @@ def create_industrial_algolia_indexed_objects() -> None:
         offer_ids = Offer.query.with_entities(Offer.id).all()
         clear_index()
         delete_all_indexed_offers(client=app.redis_client)
-        process_eligible_offers(client=app.redis_client, offer_ids=offer_ids, from_provider_update=False)
+        process_eligible_offers(client=app.redis_client, offer_ids=offer_ids)
