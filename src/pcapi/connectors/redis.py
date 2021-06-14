@@ -1,5 +1,4 @@
 from enum import Enum
-import json
 import logging
 
 import redis
@@ -80,10 +79,14 @@ def delete_venue_ids(client: Redis) -> None:
         logger.exception("[REDIS] %s", error)
 
 
-def add_to_indexed_offers(pipeline: Pipeline, offer_id: int, offer_details: dict) -> None:
+def add_to_indexed_offers(pipeline: Pipeline, offer_id: int) -> None:
     try:
-        offer_details_as_string = json.dumps(offer_details)
-        pipeline.hset(RedisBucket.REDIS_HASHMAP_INDEXED_OFFERS_NAME.value, offer_id, offer_details_as_string)
+        # We used to store a summary of each offer, but we don't need
+        # that summary anymore. We will replace this hashmap by a set
+        # (or completely remove it if don't need it at all). Until
+        # then, store the lightest object possible to make Redis use
+        # less memory.
+        pipeline.hset(RedisBucket.REDIS_HASHMAP_INDEXED_OFFERS_NAME.value, offer_id, "")
     except redis.exceptions.RedisError as error:
         logger.exception("[REDIS] %s", error)
 

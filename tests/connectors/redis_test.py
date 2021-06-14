@@ -103,16 +103,10 @@ class AddToIndexedOffersTest:
         client.hset = MagicMock()
 
         # When
-        add_to_indexed_offers(
-            pipeline=client,
-            offer_id=1,
-            offer_details={"dateRange": ["2020-01-01 10:00:00", "2020-01-06 12:00:00"], "name": "super offre"},
-        )
+        add_to_indexed_offers(pipeline=client, offer_id=1)
 
         # Then
-        client.hset.assert_called_once_with(
-            "indexed_offers", 1, '{"dateRange": ["2020-01-01 10:00:00", "2020-01-06 12:00:00"], "name": "super offre"}'
-        )
+        client.hset.assert_called_once_with("indexed_offers", 1, "")
 
 
 class DeleteIndexedOffersTest:

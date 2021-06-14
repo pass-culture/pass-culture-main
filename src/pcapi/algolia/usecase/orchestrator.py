@@ -1,4 +1,3 @@
-from datetime import datetime
 import logging
 
 from algoliasearch.exceptions import AlgoliaException
@@ -12,7 +11,6 @@ from pcapi.connectors.redis import add_offer_ids_in_error
 from pcapi.connectors.redis import add_to_indexed_offers
 from pcapi.connectors.redis import check_offer_exists
 from pcapi.connectors.redis import delete_indexed_offers
-from pcapi.models import Offer
 from pcapi.repository import offer_queries
 
 
@@ -30,12 +28,14 @@ def process_eligible_offers(client: Redis, offer_ids: list[int]) -> None:
 
         if offer and offer.isBookable:
             offers_to_add.append(build_object(offer=offer))
-            add_to_indexed_offers(
-                pipeline=pipeline, offer_id=offer.id, offer_details=_build_offer_details_to_be_indexed(offer)
-            )
+            add_to_indexed_offers(pipeline=pipeline, offer_id=offer.id)
+        elif offer_exists:
+            offers_to_delete.append(offer.id)
         else:
-            if offer_exists:
-                offers_to_delete.append(offer.id)
+            # FIXME (dbaty, 2021-06-14). I think we could safely do
+            # without the hashmap in Redis. Check the logs and see if
+            # I am right!
+            logger.info("Redis 'indexed_offers' hashmap/set saved use from an unnecessary request to Algolia")
 
     if len(offers_to_add) > 0:
         _process_adding(pipeline=pipeline, client=client, offer_ids=offer_ids, adding_objects=offers_to_add)
@@ -57,17 +57,6 @@ def delete_expired_offers(client: Redis, offer_ids: list[int]) -> None:
 
     if len(offer_ids_to_delete) > 0:
         _process_deleting(client=client, offer_ids_to_delete=offer_ids_to_delete)
-
-
-def _build_offer_details_to_be_indexed(offer: Offer) -> dict:
-    stocks = offer.bookableStocks
-    event_dates = []
-    prices = list(map(lambda stock: float(stock.price), stocks))
-
-    if offer.isEvent:
-        event_dates = list(map(lambda stock: datetime.timestamp(stock.beginningDatetime), stocks))
-
-    return {"name": offer.name, "dates": event_dates, "prices": prices}
 
 
 def _process_adding(pipeline: Pipeline, client: Redis, offer_ids: list[int], adding_objects: list[dict]) -> None:
