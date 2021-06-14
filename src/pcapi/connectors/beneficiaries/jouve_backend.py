@@ -94,7 +94,7 @@ def get_subscription_from_content(content: JouveContent) -> BeneficiaryPreSubscr
         application_id=content.id,
         city=content.city,
         civility="Mme" if content.gender == "F" else "M.",
-        date_of_birth=datetime.datetime.strptime(content.birthDate, "%m/%d/%Y"),
+        date_of_birth=content.birthDateTxt,
         email=content.email,
         first_name=content.firstName,
         id_piece_number=content.bodyPieceNumber,

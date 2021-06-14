@@ -20,7 +20,7 @@ from tests.conftest import TestClient
 JOUVE_CONTENT = {
     "activity": "Apprenti",
     "address": "3 rue de Valois",
-    "birthDate": "02/05/1995",
+    "birthDateTxt": "22/05/1995",
     "bodyBirthDateCtrl": "OK",
     "bodyBirthDateLevel": 100,
     "bodyFirstNameCtrl": "OK",
@@ -100,7 +100,7 @@ class Returns200Test:
         assert beneficiary.isBeneficiary is True
         assert beneficiary.city == "Paris"
         assert beneficiary.civility == "Mme"
-        assert beneficiary.dateOfBirth == datetime(1995, 2, 5)
+        assert beneficiary.dateOfBirth == datetime(1995, 5, 22)
         assert beneficiary.departementCode == "35"
         assert beneficiary.email == "rennes@example.org"
         assert beneficiary.firstName == "Thomas"
@@ -135,7 +135,7 @@ class Returns200Test:
                 "attribute_values": {
                     "u.credit": 50000,
                     "u.departement_code": "35",
-                    "date(u.date_of_birth)": "1995-02-05T00:00:00",
+                    "date(u.date_of_birth)": "1995-05-22T00:00:00",
                     "u.postal_code": "35123",
                     "date(u.date_created)": beneficiary.dateCreated.strftime("%Y-%m-%dT%H:%M:%S"),
                     "u.marketing_push_subscription": True,
@@ -183,7 +183,7 @@ class Returns200Test:
         assert not user.isBeneficiary
         assert user.city == "Paris"
         assert user.civility == "Mme"
-        assert user.dateOfBirth == datetime(1995, 2, 5)
+        assert user.dateOfBirth == datetime(1995, 5, 22)
         assert user.departementCode == "35"
         assert user.email == "rennes@example.org"
         assert user.firstName == "Thomas"
@@ -213,7 +213,7 @@ class Returns200Test:
                 "attribute_values": {
                     "u.credit": 0,
                     "u.departement_code": "35",
-                    "date(u.date_of_birth)": "1995-02-05T00:00:00",
+                    "date(u.date_of_birth)": "1995-05-22T00:00:00",
                     "u.postal_code": "35123",
                     "date(u.date_created)": user.dateCreated.strftime("%Y-%m-%dT%H:%M:%S"),
                     "u.marketing_push_subscription": True,

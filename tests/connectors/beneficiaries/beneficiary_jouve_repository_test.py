@@ -16,10 +16,10 @@ from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription impo
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-def get_application_by_detail_response(application_id: int = 2, birth_date: str = "09/08/1995", **kwargs) -> dict:
+def get_application_by_detail_response(application_id: int = 2, birth_date: str = "19/08/1995", **kwargs) -> dict:
     return {
         "id": application_id,
-        "birthDate": birth_date,
+        "birthDateTxt": birth_date,
         "registrationDate": "04/06/2020 06:00",
         "address": "18 avenue des fleurs",
         "city": "RENNES",
@@ -62,7 +62,7 @@ def test_calls_jouve_api_with_previously_fetched_token(mocked_requests_post):
 
     get_application_by_json = get_application_by_detail_response(
         application_id=application_id,
-        birth_date="08/24/1995",
+        birth_date="24/08/1995",
     )
     get_application_by_response = MagicMock(status_code=200)
     get_application_by_response.json = MagicMock(return_value=get_application_by_json)
@@ -95,7 +95,7 @@ def test_calls_jouve_api_with_previously_fetched_token(mocked_requests_post):
     assert beneficiary_pre_subscription.application_id == 5
     assert beneficiary_pre_subscription.city == "RENNES"
     assert beneficiary_pre_subscription.civility == "Mme"
-    assert beneficiary_pre_subscription.date_of_birth == datetime(1995, 8, 24)
+    assert beneficiary_pre_subscription.date_of_birth == datetime(1995, 8, 24).date()
     assert beneficiary_pre_subscription.department_code == "35"
     assert beneficiary_pre_subscription.email == "rennes@example.org"
     assert beneficiary_pre_subscription.first_name == "Céline"

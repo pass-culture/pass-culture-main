@@ -27,7 +27,7 @@ APPLICATION_ID = 35
 JOUVE_CONTENT = {
     "activity": "Apprenti",
     "address": "3 rue de Valois",
-    "birthDate": "02/05/1995",
+    "birthDateTxt": "22/05/1995",
     "bodyBirthDateCtrl": "OK",
     "bodyBirthDateLevel": 100,
     "bodyFirstNameCtrl": "OK",
@@ -70,7 +70,7 @@ def test_saved_a_beneficiary_from_application(stubed_random_token, app):
     assert beneficiary.isBeneficiary is True
     assert beneficiary.city == "Paris"
     assert beneficiary.civility == "Mme"
-    assert beneficiary.dateOfBirth == datetime(1995, 2, 5)
+    assert beneficiary.dateOfBirth == datetime(1995, 5, 22)
     assert beneficiary.departementCode == "35"
     assert beneficiary.email == "rennes@example.org"
     assert beneficiary.firstName == "Thomas"
@@ -104,7 +104,7 @@ def test_saved_a_beneficiary_from_application(stubed_random_token, app):
             "attribute_values": {
                 "u.credit": 30000,
                 "u.departement_code": "35",
-                "date(u.date_of_birth)": "1995-02-05T00:00:00",
+                "date(u.date_of_birth)": "1995-05-22T00:00:00",
                 "u.postal_code": "35123",
                 "date(u.date_created)": beneficiary.dateCreated.strftime("%Y-%m-%dT%H:%M:%S"),
                 "u.marketing_push_subscription": True,
@@ -158,7 +158,7 @@ def test_application_for_native_app_user(app):
             "user_id": beneficiary.id,
             "attribute_values": {
                 "u.credit": 30000,
-                "date(u.date_of_birth)": "1995-02-05T00:00:00",
+                "date(u.date_of_birth)": "1995-05-22T00:00:00",
                 "u.departement_code": "35",
                 "u.postal_code": "35123",
                 "date(u.date_created)": beneficiary.dateCreated.strftime("%Y-%m-%dT%H:%M:%S"),
@@ -197,7 +197,7 @@ def test_application_for_native_app_user_with_load_smoothing(_get_raw_content, a
         "city": "",
         "gender": "M",
         "bodyPieceNumber": "id-piece-number",
-        "birthDate": "10/25/2003",
+        "birthDateTxt": "25/10/2003",
         "postalCode": "",
         "phoneNumber": "0102030405",
         "posteCodeCtrl": "OK",
@@ -282,7 +282,7 @@ def test_cannot_save_beneficiary_if_duplicate(app):
     # Given
     first_name = "Thomas"
     last_name = "DURAND"
-    date_of_birth = datetime(1995, 2, 5)
+    date_of_birth = datetime(1995, 5, 22)
     existing_user_id = 4
 
     user = create_user(first_name=first_name, last_name=last_name, date_of_birth=date_of_birth, idx=existing_user_id)
@@ -375,7 +375,7 @@ BASE_JOUVE_CONTENT = {
     "city": "some city",
     "gender": "M",
     "bodyPieceNumber": "id-piece-number",
-    "birthDate": "10/25/2003",
+    "birthDateTxt": "25/10/2003",
     "phoneNumber": "+33607080900",
     "postalCode": "77100",
     "posteCodeCtrl": "OK",

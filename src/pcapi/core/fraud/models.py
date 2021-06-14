@@ -34,11 +34,20 @@ def _parse_level(level: typing.Optional[str]) -> typing.Optional[None]:
         return None
 
 
+def _parse_date(date: typing.Optional[str]) -> typing.Optional[None]:
+    if not date:
+        return None
+    try:
+        return datetime.datetime.strptime(date, "%d/%m/%Y")
+    except ValueError:
+        return None
+
+
 class JouveContent(pydantic.BaseModel):
     # TODO: analyze jouve results to see where we can remove "optional"
     activity: typing.Optional[str]
     address: typing.Optional[str]
-    birthDate: typing.Optional[str]
+    birthDateTxt: typing.Optional[datetime.date]
     birthLocationCtrl: typing.Optional[str]
     bodyBirthDateCtrl: typing.Optional[str]
     bodyBirthDateLevel: typing.Optional[int]
@@ -67,6 +76,7 @@ class JouveContent(pydantic.BaseModel):
     _parse_body_first_name_level = validator("bodyFirstNameLevel", pre=True, allow_reuse=True)(_parse_level)
     _parse_body_name_level = validator("bodyNameLevel", pre=True, allow_reuse=True)(_parse_level)
     _parse_body_piece_number_level = validator("bodyPieceNumberLevel", pre=True, allow_reuse=True)(_parse_level)
+    _parse_birth_date = validator("birthDateTxt", pre=True, allow_reuse=True)(_parse_date)
 
 
 class UserProfilingFraudData(pydantic.BaseModel):

@@ -1,7 +1,8 @@
-from datetime import datetime
 import logging
 from typing import List
 from typing import Optional
+
+from sqlalchemy import func
 
 from pcapi.core.users.models import User
 from pcapi.models.feature import FeatureToggle
@@ -77,7 +78,7 @@ def _duplicate_user_fraud_item(jouve_content: models.JouveContent) -> models.Fra
     duplicate_user = User.query.filter(
         matching(User.firstName, jouve_content.firstName)
         & (matching(User.lastName, jouve_content.lastName))
-        & (User.dateOfBirth == datetime.strptime(jouve_content.birthDate, "%m/%d/%Y"))
+        & (func.DATE(User.dateOfBirth) == jouve_content.birthDateTxt)
         & (User.isBeneficiary == True)
     ).first()
 

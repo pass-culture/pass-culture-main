@@ -110,10 +110,7 @@ class JouveFraudCheckTest:
         fraud_result = BeneficiaryFraudResult.query.filter_by(user=user).first()
 
         assert fraud_result.status == FraudStatus.SUSPICIOUS
-        assert (
-            fraud_result.reason
-            == f"Duplicat de l'utilisateur {existing_user.id} ; Le n° de cni 140767100016 est déjà pris par l'utilisateur {existing_user.id}"
-        )
+        assert fraud_result.reason == f"Le n° de cni 140767100016 est déjà pris par l'utilisateur {existing_user.id}"
 
         db.session.refresh(user)
         assert not user.isBeneficiary
