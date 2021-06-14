@@ -20,15 +20,6 @@ def get_pre_bookings(query: GetPreBookingsRequest) -> PreBookingsResponse:
     """Get a list of prebookings"""
 
 
-@blueprint.adage_v1.route("/prebookings/<int:pre_booking_id>", methods=["GET"])
-@spectree_serialize(
-    api=blueprint.api, response_model=PreBookingResponse, on_error_statuses=[404], tags=("get prebookings",)
-)
-@adage_api_key_required
-def get_pre_booking() -> PreBookingResponse:
-    """Get details on a prebooking"""
-
-
 @blueprint.adage_v1.route("/prebookings/<int:pre_booking_id>/confirm", methods=["POST"])
 @spectree_serialize(
     api=blueprint.api, response_model=PreBookingResponse, on_error_statuses=[404, 422], tags=("change prebookings",)
@@ -40,24 +31,27 @@ def confirm_pre_booking() -> PreBookingResponse:
     Can only work if the prebooking is not confirmed yet."""
 
 
-@blueprint.adage_v1.route("/prebookings/<int:pre_booking_id>/cancel_confirmation", methods=["POST"])
+@blueprint.adage_v1.route("/prebookings/<int:pre_booking_id>/refuse", methods=["POST"])
+@spectree_serialize(
+    api=blueprint.api,
+    response_model=PreBookingResponse,
+    on_error_statuses=[404, 422],
+    tags=("change prebookings", "change bookings"),
+)
+@adage_api_key_required
+def refuse_pre_booking() -> PreBookingResponse:
+    """Refuse a prebooking confirmation
+
+    Can only work if prebooking is confirmed or pending,
+    is not yet used and still refusable."""
+
+
+@blueprint.adage_v1.route("/prebookings/<int:pre_booking_id>/mark_as_used", methods=["POST"])
 @spectree_serialize(
     api=blueprint.api, response_model=PreBookingResponse, on_error_statuses=[404, 422], tags=("change bookings",)
 )
 @adage_api_key_required
-def cancel_pre_booking() -> PreBookingResponse:
-    """Cancel a prebooking confirmation
+def mark_booking_as_used() -> PreBookingResponse:
+    """Mark a booking used by the educational institute
 
-    Can only work if prebooking has already been confirmed,
-    is not yet used and still cancellable."""
-
-
-@blueprint.adage_v1.route("/prebookings/<int:pre_booking_id>", methods=["DELETE"])
-@spectree_serialize(
-    api=blueprint.api, response_model=PreBookingResponse, on_error_statuses=[404, 422], tags=("change prebookings",)
-)
-@adage_api_key_required
-def delete_pre_booking() -> PreBookingResponse:
-    """Delete a prebooking
-
-    Can only be used if prebooking is not confirmed yet."""
+    Can only work if booking is in CONFIRMED status"""

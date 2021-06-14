@@ -16,6 +16,7 @@ class PreBookingStatuses(enum.Enum):
     CONFIRMED = "CONFIRMED"
     REFUSED = "REFUSED"
     USED = "USED"
+    USED_BY_INSTITUTE = "USED_BY_INSTITUTE"
     CANCELLED = "CANCELLED"
 
 
