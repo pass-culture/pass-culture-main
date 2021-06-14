@@ -12,6 +12,14 @@ from pcapi.models.pc_object import PcObject
 
 class FraudCheckType(enum.Enum):
     JOUVE = "jouve"
+    USER_PROFILING = "user_profiling"
+    DMS = "dms"
+
+
+class FraudStatus(enum.Enum):
+    OK = "OK"
+    KO = "KO"
+    SUSPICIOUS = "SUSPICIOUS"
 
 
 class JouveContent(pydantic.BaseModel):
@@ -60,3 +68,21 @@ class BeneficiaryFraudCheck(PcObject, Model):
     thirdPartyId = sqlalchemy.Column(sqlalchemy.TEXT, nullable=False)
 
     resultContent = sqlalchemy.Column(sqlalchemy.dialects.postgresql.JSONB)
+
+
+class BeneficiaryFraudResult(PcObject, Model):
+    __tablename__ = "beneficiary_fraud_result"
+
+    id = sqlalchemy.Column(sqlalchemy.BigInteger, primary_key=True, autoincrement=True)
+
+    userId = sqlalchemy.Column(sqlalchemy.BigInteger, sqlalchemy.ForeignKey("user.id"), index=True, nullable=False)
+
+    user = sqlalchemy.orm.relationship("User", foreign_keys=[userId], backref="beneficiaryFraudResult")
+
+    status = sqlalchemy.Column(sqlalchemy.Enum(FraudStatus, create_constraint=False))
+
+    reason = sqlalchemy.Column(sqlalchemy.Text)
+
+    dateCreated = sqlalchemy.Column(sqlalchemy.DateTime, nullable=False, server_default=sqlalchemy.func.now())
+
+    dateUpdated = sqlalchemy.Column(sqlalchemy.DateTime, nullable=True, onupdate=sqlalchemy.func.now())
