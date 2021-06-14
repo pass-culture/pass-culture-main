@@ -20,6 +20,12 @@ describe("bookings recap table's header", () => {
     booking_date: '2020-04-03T12:00:00Z',
     booking_token: 'ZEHBGD',
     booking_status: 'validated',
+    booking_status_history: [
+      {
+        status: 'validated',
+        date: '2020-04-03T16:00:00Z',
+      },
+    ],
     booking_is_duo: false,
     venue: {
       identifier: 'AE',

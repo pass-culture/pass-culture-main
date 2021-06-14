@@ -1,6 +1,82 @@
 import generateBookingsCsvFile, { CSV_HEADERS } from '../generateBookingsCsvFile'
 
 describe('generateBookingsCsvFile', () => {
+  let validated_booking
+  let canceled_booking
+
+  beforeEach(() => {
+    validated_booking = {
+      stock: {
+        event_beginning_datetime: '2021-06-09T11:03:28+05:00',
+        offer_name: 'Avez-vous déjà vu',
+        type: 'event',
+      },
+      beneficiary: {
+        lastname: 'Klepi',
+        firstname: 'Sonia',
+        email: 'sonia.klepi@example.com',
+        phonenumber: '0100000000',
+      },
+      booking_date: '2021-06-09T16:15:12.219158+02:00',
+      booking_token: 'ZEHBGD',
+      booking_status: 'validated',
+      booking_status_history: [
+        {
+          date: '2021-06-09T16:15:12.219158+02:00',
+          status: 'booked',
+        },
+        {
+          date: '2021-06-09T16:30:35.332610+02:00',
+          status: 'validated',
+        },
+      ],
+      booking_is_duo: false,
+      booking_amount: 2,
+      offerer: {
+        name: 'Le conseil des FNAC',
+      },
+      venue: {
+        identifier: 'AE',
+        name: 'Librairie Kléber',
+      },
+    }
+
+    canceled_booking = {
+      stock: {
+        offer_name: 'Jurassic Park',
+        type: 'thing',
+      },
+      beneficiary: {
+        lastname: 'LaMerguez',
+        firstname: 'Daniel',
+        email: 'daniel.lamerguez@example.com',
+        phonenumber: '0100000000',
+      },
+      booking_date: '2020-05-01T14:12:00Z',
+      booking_token: 'ABCDEF',
+      booking_status: 'cancelled',
+      booking_status_history: [
+        {
+          date: '2020-05-01T14:12:00Z',
+          status: 'booked',
+        },
+        {
+          date: '2020-05-01T16:12:00Z',
+          status: 'canceled',
+        },
+      ],
+      booking_is_duo: false,
+      booking_amount: 5,
+      offerer: {
+        name: 'Le conseil des FNAC',
+      },
+      venue: {
+        identifier: 'AB',
+        name: 'La FNAC Lyon',
+      },
+    }
+  })
+
   it('should return data with csv header', () => {
     // given
     const bookings = []
@@ -14,51 +90,7 @@ describe('generateBookingsCsvFile', () => {
 
   it('should return data with all bookings', () => {
     // given
-    const bookings = [
-      {
-        stock: {
-          event_beginning_datetime: '2020-05-12T11:03:28+05:00',
-          offer_name: 'Avez-vous déjà vu',
-          type: 'event',
-        },
-        beneficiary: {
-          lastname: 'Klepi',
-          firstname: 'Sonia',
-          email: 'sonia.klepi@example.com',
-          phonenumber: '0100000000',
-        },
-        booking_date: '2020-04-03T12:00:00+02:00',
-        booking_token: 'ZEHBGD',
-        booking_status: 'validated',
-        booking_is_duo: false,
-        booking_amount: 2,
-        venue: {
-          identifier: 'AE',
-          name: 'Librairie Kléber',
-        },
-      },
-      {
-        stock: {
-          offer_name: 'Jurassic Park',
-          type: 'thing',
-        },
-        beneficiary: {
-          lastname: 'LaMerguez',
-          firstname: 'Daniel',
-          email: 'daniel.lamerguez@example.com',
-          phonenumber: '0100000000',
-        },
-        booking_date: '2020-05-01T14:12:00Z',
-        booking_token: 'ABCDEF',
-        booking_status: 'cancelled',
-        booking_is_duo: false,
-        booking_amount: 5,
-        venue: {
-          identifier: 'AB',
-          name: 'La FNAC Lyon',
-        },
-      },
-    ]
+    const bookings = [validated_booking, canceled_booking]
 
     // when
     const result = generateBookingsCsvFile(bookings)
@@ -69,12 +101,13 @@ describe('generateBookingsCsvFile', () => {
       [
         'Librairie Kléber',
         'Avez-vous déjà vu',
-        '12/05/2020 11:03',
+        '09/06/2021 11:03',
         '',
         'Klepi Sonia',
         'sonia.klepi@example.com',
         '0100000000',
-        '03/04/2020 12:00',
+        '09/06/2021 16:15',
+        '09/06/2021 16:30',
         'ZEHBGD',
         2,
         'validé',
@@ -88,6 +121,7 @@ describe('generateBookingsCsvFile', () => {
         'daniel.lamerguez@example.com',
         '0100000000',
         '01/05/2020 14:12',
+        '',
         'ABCDEF',
         5,
         'annulé',
@@ -99,48 +133,14 @@ describe('generateBookingsCsvFile', () => {
     // given
     const bookings = [
       {
+        ...validated_booking,
         stock: {
           offer_name: 'Avez-vous déjà vu',
           type: 'thing',
           offer_isbn: '9781234567654',
         },
-        beneficiary: {
-          lastname: 'Klepi',
-          firstname: 'Sonia',
-          email: 'sonia.klepi@example.com',
-          phonenumber: '0100000000',
-        },
-        booking_date: '2020-04-03T12:00:00+02:00',
-        booking_token: 'ZEHBGD',
-        booking_status: 'validated',
-        booking_is_duo: false,
-        booking_amount: 1,
-        venue: {
-          identifier: 'AB',
-          name: 'La FNAC Lyon',
-        },
       },
-      {
-        stock: {
-          offer_name: 'Jurassic Park',
-          type: 'thing',
-        },
-        beneficiary: {
-          lastname: 'LaGuez',
-          firstname: 'Anthony',
-          email: 'anthony.laguez@example.com',
-          phonenumber: '0100000000',
-        },
-        booking_date: '2020-05-01T14:12:00Z',
-        booking_token: 'ABCDEF',
-        booking_status: 'cancelled',
-        booking_is_duo: false,
-        booking_amount: 2,
-        venue: {
-          identifier: 'KF',
-          name: 'Librairie Kléber',
-        },
-      },
+      canceled_booking,
     ]
 
     // when
@@ -150,29 +150,31 @@ describe('generateBookingsCsvFile', () => {
     expect(result).toStrictEqual([
       CSV_HEADERS,
       [
-        'La FNAC Lyon',
+        'Librairie Kléber',
         'Avez-vous déjà vu',
         '',
         '9781234567654',
         'Klepi Sonia',
         'sonia.klepi@example.com',
         '0100000000',
-        '03/04/2020 12:00',
+        '09/06/2021 16:15',
+        '09/06/2021 16:30',
         'ZEHBGD',
-        1,
+        2,
         'validé',
       ],
       [
-        'Librairie Kléber',
+        'La FNAC Lyon',
         'Jurassic Park',
         '',
         '',
-        'LaGuez Anthony',
-        'anthony.laguez@example.com',
+        'LaMerguez Daniel',
+        'daniel.lamerguez@example.com',
         '0100000000',
         '01/05/2020 14:12',
+        '',
         'ABCDEF',
-        2,
+        5,
         'annulé',
       ],
     ])
@@ -182,46 +184,18 @@ describe('generateBookingsCsvFile', () => {
     // given
     const bookings = [
       {
+        ...validated_booking,
         stock: {
           offer_name: 'Avez-vous "déjà" "vu"',
           type: 'thing',
           offer_isbn: '9781234567654',
         },
-        beneficiary: {
-          lastname: 'Klepi',
-          firstname: 'Sonia',
-          email: 'sonia.klepi@example.com',
-          phonenumber: '0100000000',
-        },
-        booking_date: '2020-04-03T12:00:00+02:00',
-        booking_token: 'ZEHBGD',
-        booking_status: 'validated',
-        booking_is_duo: false,
-        booking_amount: 1,
-        venue: {
-          identifier: 'AB',
-          name: 'La FNAC Lyon',
-        },
       },
       {
+        ...canceled_booking,
         stock: {
           offer_name: 'Jurassic "Park"',
           type: 'thing',
-        },
-        beneficiary: {
-          lastname: 'LaGuez',
-          firstname: 'Anthony',
-          email: 'anthony.laguez@example.com',
-          phonenumber: '0100000000',
-        },
-        booking_date: '2020-05-01T14:12:00Z',
-        booking_token: 'ABCDEF',
-        booking_status: 'cancelled',
-        booking_is_duo: false,
-        booking_amount: 2,
-        venue: {
-          identifier: 'KF',
-          name: 'Librairie Kléber',
         },
       },
     ]
@@ -233,29 +207,31 @@ describe('generateBookingsCsvFile', () => {
     expect(result).toStrictEqual([
       CSV_HEADERS,
       [
-        'La FNAC Lyon',
+        'Librairie Kléber',
         'Avez-vous ""déjà"" ""vu""',
         '',
         '9781234567654',
         'Klepi Sonia',
         'sonia.klepi@example.com',
         '0100000000',
-        '03/04/2020 12:00',
+        '09/06/2021 16:15',
+        '09/06/2021 16:30',
         'ZEHBGD',
-        1,
+        2,
         'validé',
       ],
       [
-        'Librairie Kléber',
+        'La FNAC Lyon',
         'Jurassic ""Park""',
         '',
         '',
-        'LaGuez Anthony',
-        'anthony.laguez@example.com',
+        'LaMerguez Daniel',
+        'daniel.lamerguez@example.com',
         '0100000000',
         '01/05/2020 14:12',
+        '',
         'ABCDEF',
-        2,
+        5,
         'annulé',
       ],
     ])
@@ -265,25 +241,7 @@ describe('generateBookingsCsvFile', () => {
     // given
     const bookings = [
       {
-        stock: {
-          event_beginning_datetime: '2020-05-12T11:03:28+04:00',
-          offer_name: 'Avez-vous déjà vu',
-          type: 'event',
-        },
-        beneficiary: {
-          lastname: 'Klepi',
-          firstname: 'Sonia',
-          email: 'sonia.klepi@example.com',
-          phonenumber: '0100000000',
-        },
-        booking_date: '2020-04-03T12:00:00+02:00',
-        booking_token: 'ZEHBGD',
-        booking_status: 'validated',
-        booking_is_duo: false,
-        booking_amount: 2,
-        offerer: {
-          name: 'Le conseil des librairies',
-        },
+        ...validated_booking,
         venue: {
           identifier: 'AE',
           name: 'Librairie Kléber',
@@ -291,24 +249,7 @@ describe('generateBookingsCsvFile', () => {
         },
       },
       {
-        stock: {
-          offer_name: 'Jurassic Park',
-          type: 'thing',
-        },
-        beneficiary: {
-          lastname: 'LaMerguez',
-          firstname: 'Daniel',
-          email: 'daniel.lamerguez@example.com',
-          phonenumber: '0100000000',
-        },
-        booking_date: '2020-05-01T14:12:00Z',
-        booking_token: 'ABCDEF',
-        booking_status: 'cancelled',
-        booking_is_duo: false,
-        booking_amount: 5,
-        offerer: {
-          name: 'Le conseil des FNAC',
-        },
+        ...canceled_booking,
         venue: {
           identifier: 'AB',
           name: 'La FNAC Lyon',
@@ -326,12 +267,13 @@ describe('generateBookingsCsvFile', () => {
       [
         'Librairie Kléber',
         'Avez-vous déjà vu',
-        '12/05/2020 11:03',
+        '09/06/2021 11:03',
         '',
         'Klepi Sonia',
         'sonia.klepi@example.com',
         '0100000000',
-        '03/04/2020 12:00',
+        '09/06/2021 16:15',
+        '09/06/2021 16:30',
         'ZEHBGD',
         2,
         'validé',
@@ -345,6 +287,7 @@ describe('generateBookingsCsvFile', () => {
         'daniel.lamerguez@example.com',
         '0100000000',
         '01/05/2020 14:12',
+        '',
         'ABCDEF',
         5,
         'annulé',

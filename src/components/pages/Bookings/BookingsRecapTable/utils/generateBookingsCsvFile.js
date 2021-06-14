@@ -13,6 +13,7 @@ export const CSV_HEADERS = [
   'Email du bénéficiaire',
   'Téléphone du bénéficiaire',
   'Date et heure de réservation',
+  'Date et heure de d’utilisation',
   'Contremarque',
   'Prix de la réservation',
   'Statut de la contremarque',
@@ -52,6 +53,13 @@ const generateBookingsCsvFile = bookings => {
       FORMAT_DD_MM_YYYY_HH_mm
     )
     bookingArray.push(bookingDatetimeFormatted)
+    const validatedStatus = booking.booking_status_history.find(
+      status => status.status === 'validated'
+    )
+    const usedDatetimeFormatted = validatedStatus
+      ? format(toDateStrippedOfTimezone(validatedStatus.date), FORMAT_DD_MM_YYYY_HH_mm)
+      : ''
+    bookingArray.push(usedDatetimeFormatted)
     bookingArray.push(booking.booking_token)
     bookingArray.push(booking.booking_amount)
     bookingArray.push(getBookingStatusDisplayInformations(booking.booking_status).status)
