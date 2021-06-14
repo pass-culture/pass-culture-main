@@ -5,6 +5,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
+import { BOOKING_STATUS } from 'components/pages/Bookings/BookingsRecapTableLegacy/CellsFormatter/utils/bookingStatusConverter'
 import { DEFAULT_PRE_FILTERS } from 'components/pages/Bookings/PreFilters/_constants'
 import { getVenuesForOfferer, loadFilteredBookingsRecap } from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
@@ -84,11 +85,45 @@ describe('components | BookingsRecap | Pro user', () => {
 
   it('should init venue pre-filter with venueId in router state', async () => {
     // When
-    await renderBookingsRecap(props, store, { venueId: venue.id })
+    await renderBookingsRecap(props, store, { venueId: venue.id, statuses: [] })
 
     // Then
     const eventVenueFilter = screen.getByLabelText('Lieu')
     expect(eventVenueFilter).toHaveValue(venue.id)
+  })
+
+  it('should request bookings pre-filtered by venue and period when coming from home page', async () => {
+    // Given
+    loadFilteredBookingsRecap.mockResolvedValue({
+      page: 1,
+      pages: 1,
+      total: 1,
+      bookings_recap: [bookingRecapFactory()],
+    })
+
+    // When
+    await renderBookingsRecap(props, store, {
+      venueId: venue.id,
+      statuses: [
+        BOOKING_STATUS.CANCELLED,
+        BOOKING_STATUS.CONFIRMED,
+        BOOKING_STATUS.REIMBURSED,
+        BOOKING_STATUS.VALIDATED,
+      ],
+    })
+    const statusFilterButton = await screen.findByText('Statut')
+    fireEvent.click(statusFilterButton)
+
+    // Then
+    expect(screen.getByLabelText('Lieu')).toHaveValue(venue.id)
+    expect(getNthCallNthArg(loadFilteredBookingsRecap, 1).venueId).toBe(venue.id)
+    expect(getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodBeginningDate).toStrictEqual(
+      DEFAULT_PRE_FILTERS.bookingBeginningDate
+    )
+    expect(getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodEndingDate).toStrictEqual(
+      DEFAULT_PRE_FILTERS.bookingEndingDate
+    )
+    expect(screen.getByRole('checkbox', { name: 'réservé', checked: true })).toBeInTheDocument()
   })
 
   it('should ask user to select a pre-filter before clicking on "Afficher"', async () => {

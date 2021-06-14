@@ -77,6 +77,17 @@ const BookingsRecap = ({
   )
 
   useEffect(() => {
+    if (location.state?.statuses.length > 0) {
+      loadBookingsRecap({
+        bookingBeginningDate: DEFAULT_PRE_FILTERS.bookingBeginningDate,
+        bookingEndingDate: DEFAULT_PRE_FILTERS.bookingEndingDate,
+        offerEventDate: DEFAULT_PRE_FILTERS.offerEventDate,
+        offerVenueId: location.state?.venueId || DEFAULT_PRE_FILTERS.offerVenueId,
+      })
+    }
+  }, [location.state, loadBookingsRecap])
+
+  useEffect(() => {
     if (!arePreFiltersEnabled) {
       loadBookingsRecap()
     }
