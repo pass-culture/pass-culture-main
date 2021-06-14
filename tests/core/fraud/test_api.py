@@ -1,11 +1,12 @@
 from datetime import datetime
 from unittest.mock import patch
 
-from freezegun import freeze_time
 import pytest
 
 from pcapi.core.fraud.models import BeneficiaryFraudCheck
+from pcapi.core.fraud.models import BeneficiaryFraudResult
 from pcapi.core.fraud.models import FraudCheckType
+from pcapi.core.fraud.models import FraudStatus
 from pcapi.core.fraud.models import JouveContent
 from pcapi.core.users.factories import UserFactory
 from pcapi.core.users.models import PhoneValidationStatusType
@@ -29,9 +30,8 @@ class JouveFraudCheckTest:
         "bodyBirthDate": "06 06 2002",
         "bodyBirthDateCtrl": "OK",
         "bodyBirthDateLevel": "100",
-        "bodyFirstname": "CHRISTOPH",
-        "bodyFirstnameCtrl": "",
-        "bodyFirstnameLevel": "100",
+        "bodyFirstNameCtrl": "",
+        "bodyFirstNameLevel": "100",
         "bodyName": "DUPO",
         "bodyNameCtrl": "OK",
         "bodyNameLevel": "100",
@@ -43,7 +43,7 @@ class JouveFraudCheckTest:
         "docFileID": 535,
         "docObjectID": 535,
         "email": user_email,
-        "firstName": "CHRISTOPH",
+        "firstName": "CHRISTOPHE",
         "gender": "M",
         "id": application_id,
         "initial": "",
@@ -60,14 +60,12 @@ class JouveFraudCheckTest:
     }
 
     @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
-    @pytest.mark.usefixtures("client")
-    @freeze_time("2018/06/06 09:00:00")
     def test_jouve_update(self, _get_raw_content, client):
         user = UserFactory(
             hasCompletedIdCheck=True,
             isBeneficiary=False,
             phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
-            dateOfBirth=datetime(2000, 1, 1),
+            dateOfBirth=datetime(2002, 6, 8),
             email=self.user_email,
         )
         _get_raw_content.return_value = self.JOUVE_CONTENT
@@ -76,10 +74,71 @@ class JouveFraudCheckTest:
         assert response.status_code == 200
 
         fraud_check = BeneficiaryFraudCheck.query.filter_by(user=user, type=FraudCheckType.JOUVE).first()
+        fraud_result = BeneficiaryFraudResult.query.filter_by(user=user).first()
         jouve_fraud_content = JouveContent(**fraud_check.resultContent)
 
         assert jouve_fraud_content.bodyPieceNumber == "140767100016"
         assert fraud_check.dateCreated
+        assert fraud_check.thirdPartyId == "35"
+        assert fraud_result.status == FraudStatus.OK
 
         db.session.refresh(user)
         assert user.isBeneficiary
+
+    @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
+    def test_jouve_update_duplicate_user(self, _get_raw_content, client):
+        existing_user = UserFactory(
+            firstName="Christophe",
+            lastName="Dupo",
+            isBeneficiary=True,
+            dateOfBirth=datetime(2002, 6, 8),
+            idPieceNumber="140767100016",
+        )
+        user = UserFactory(
+            hasCompletedIdCheck=True,
+            isBeneficiary=False,
+            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+            dateOfBirth=datetime(2002, 6, 8),
+            email=self.user_email,
+        )
+        _get_raw_content.return_value = self.JOUVE_CONTENT
+
+        response = client.post("/beneficiaries/application_update", json={"id": self.application_id})
+        assert response.status_code == 200
+
+        fraud_result = BeneficiaryFraudResult.query.filter_by(user=user).first()
+
+        assert fraud_result.status == FraudStatus.SUSPICIOUS
+        assert (
+            fraud_result.reason
+            == f"Duplicat de l'utilisateur {existing_user.id} ; Le n° de cni 140767100016 est déjà pris par l'utilisateur {existing_user.id}"
+        )
+
+        db.session.refresh(user)
+        assert not user.isBeneficiary
+
+    @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
+    def test_jouve_update_id_fraud(self, _get_raw_content, client):
+
+        user = UserFactory(
+            hasCompletedIdCheck=True,
+            isBeneficiary=False,
+            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+            dateOfBirth=datetime(2002, 6, 8),
+            email=self.user_email,
+        )
+        _get_raw_content.return_value = self.JOUVE_CONTENT | {"serviceCodeCtrl": "KO", "bodyFirstNameLevel": "30"}
+
+        response = client.post("/beneficiaries/application_update", json={"id": self.application_id})
+        assert response.status_code == 200
+
+        fraud_result = BeneficiaryFraudResult.query.filter_by(user=user).first()
+
+        assert fraud_result.status == FraudStatus.KO
+        assert (
+            fraud_result.reason
+            == "Le champ serviceCodeCtrl est KO ; Le champ bodyFirstNameLevel a le score 30 (minimum 50)"
+        )
+
+        db.session.refresh(user)
+        assert not user.isBeneficiary

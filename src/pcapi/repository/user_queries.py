@@ -53,8 +53,8 @@ def find_pro_users_by_email_provider(email_provider: str) -> list[User]:
 
 def find_beneficiary_by_civility(first_name: str, last_name: str, date_of_birth: datetime) -> list[User]:
     civility_predicate = (
-        (_matching(User.firstName, first_name))
-        & (_matching(User.lastName, last_name))
+        (matching(User.firstName, first_name))
+        & (matching(User.lastName, last_name))
         & (User.dateOfBirth == date_of_birth)
         & (User.isBeneficiary == True)
     )
@@ -122,7 +122,7 @@ def find_most_recent_beneficiary_creation_date_for_source(source: BeneficiaryImp
     return most_recent_creation.date
 
 
-def _matching(column: Column, search_value: str) -> BinaryExpression:
+def matching(column: Column, search_value: str) -> BinaryExpression:
     return _sanitized_string(column) == _sanitized_string(search_value)
 
 

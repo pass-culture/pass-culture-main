@@ -1,8 +1,7 @@
 import logging
 
 from pcapi.connectors.beneficiaries import jouve_backend
-from pcapi.core.fraud.api import on_beneficiary_fraud_check_creation
-from pcapi.core.fraud.models import FraudCheckType
+from pcapi.core.fraud.api import on_jouve_result
 from pcapi.core.users.api import create_reset_password_token
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsADuplicate
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import CantRegisterBeneficiary
@@ -51,9 +50,10 @@ class CreateBeneficiaryFromApplication:
 
         preexisting_account = find_user_by_email(beneficiary_pre_subscription.email)
         if preexisting_account:
-            on_beneficiary_fraud_check_creation(
-                FraudCheckType.JOUVE, preexisting_account, jouve_content, str(application_id)
-            )
+            try:
+                on_jouve_result(preexisting_account, jouve_content)
+            except Exception as exc:  # pylint: disable=broad-except
+                logger.exception("Error on jouve result: %s", exc)
 
         try:
             validate(beneficiary_pre_subscription, preexisting_account=preexisting_account)

@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 import enum
 from typing import Optional
 
@@ -86,3 +87,9 @@ class BeneficiaryFraudResult(PcObject, Model):
     dateCreated = sqlalchemy.Column(sqlalchemy.DateTime, nullable=False, server_default=sqlalchemy.func.now())
 
     dateUpdated = sqlalchemy.Column(sqlalchemy.DateTime, nullable=True, onupdate=sqlalchemy.func.now())
+
+
+@dataclass
+class FraudItem:
+    status: FraudStatus
+    detail: Optional[str]
