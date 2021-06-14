@@ -1,5 +1,5 @@
-import * as fetch from '../../utils/fetch'
-import { fetchFromApiWithCredentials } from '../../utils/fetch'
+import * as pcapi from 'repository/pcapi/pcapi'
+
 import {
   formatAndOrderVenues,
   fetchAllVenuesByProUser,
@@ -11,23 +11,21 @@ describe('venuesService', () => {
 
   describe('fetchAllVenuesByProUser', () => {
     beforeEach(() => {
-      mockJsonPromise = Promise.resolve({
-        venues: [
-          {
-            id: 'AE',
-            name: 'Librairie Kléber',
-            isVirtual: false,
-          },
-        ]
-      })
-      jest.spyOn(fetch, 'fetchFromApiWithCredentials').mockImplementation(() => mockJsonPromise)
+      mockJsonPromise = Promise.resolve([
+        {
+          id: 'AE',
+          name: 'Librairie Kléber',
+          isVirtual: false,
+        },
+      ])
+      jest.spyOn(pcapi, 'getVenuesForOfferer').mockImplementation(() => mockJsonPromise)
     })
 
-    it('should return paginatedBookingsRecap value', async () => {
+    it('should return list of venues', async () => {
       // When
       const venues = await fetchAllVenuesByProUser()
-
       // Then
+      expect(pcapi.getVenuesForOfferer).toHaveBeenCalledWith({ offererId: null })
       expect(venues).toHaveLength(1)
       expect(venues[0]).toStrictEqual({
         id: 'AE',
@@ -41,15 +39,7 @@ describe('venuesService', () => {
       await fetchAllVenuesByProUser('A4')
 
       // Then
-      expect(fetchFromApiWithCredentials).toHaveBeenCalledWith('/venues?offererId=A4')
-    })
-
-    it('should not add offererId in query params when not given', async () => {
-      // When
-      await fetchAllVenuesByProUser()
-
-      // Then
-      expect(fetchFromApiWithCredentials).toHaveBeenCalledWith('/venues')
+      expect(pcapi.getVenuesForOfferer).toHaveBeenCalledWith({ offererId: 'A4' })
     })
 
     it('should return empty paginatedBookingsRecap when an error occurred', async () => {

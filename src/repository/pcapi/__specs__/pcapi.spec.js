@@ -1,5 +1,5 @@
 import { DEFAULT_PRE_FILTERS } from 'components/pages/Bookings/PreFilters/_constants'
-import { DEFAULT_SEARCH_FILTERS } from 'components/pages/Offers/Offers/_constants'
+import { ALL_OFFERERS, DEFAULT_SEARCH_FILTERS } from 'components/pages/Offers/Offers/_constants'
 import {
   getBooking,
   getVenuesForOfferer,
@@ -309,6 +309,14 @@ describe('pcapi', () => {
 
       // Then
       expect(client.get).toHaveBeenCalledWith('/venues?validatedForUser=true')
+    })
+
+    it('should not add offererId in query params when offererId value is ALL_OFFERERS', async () => {
+      // When
+      await getVenuesForOfferer({ offererId: ALL_OFFERERS })
+
+      // Then
+      expect(client.get).toHaveBeenCalledWith('/venues')
     })
   })
 

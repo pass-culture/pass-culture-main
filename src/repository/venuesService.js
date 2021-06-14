@@ -1,14 +1,7 @@
-import { fetchFromApiWithCredentials } from 'utils/fetch'
+import * as pcapi from 'repository/pcapi/pcapi'
 
-import { ALL_OFFERERS } from '../components/pages/Offers/Offers/_constants'
-
-export const fetchAllVenuesByProUser = offererId => {
-  const apiUrl =
-    offererId && offererId !== ALL_OFFERERS ? `/venues?offererId=${offererId}` : '/venues'
-
-  return fetchFromApiWithCredentials(apiUrl)
-    .then(response => response.venues)
-    .catch(() => [])
+export const fetchAllVenuesByProUser = (offererId = null) => {
+  return pcapi.getVenuesForOfferer({ offererId: offererId }).catch(() => [])
 }
 
 export const computeVenueDisplayName = venue => {

@@ -11,6 +11,7 @@ import BookingsRecapContainer from '../BookingsRecapContainer'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   loadFilteredBookingsRecap: jest.fn(),
+  getVenuesForOfferer: jest.fn().mockImplementation(() => Promise.resolve([])),
 }))
 
 const renderBookingsRecap = async (props, store = {}) => {

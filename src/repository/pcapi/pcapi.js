@@ -1,5 +1,8 @@
 import { DEFAULT_PRE_FILTERS } from 'components/pages/Bookings/PreFilters/_constants'
-import { DEFAULT_SEARCH_FILTERS } from 'components/pages/Offers/Offers/_constants'
+import {
+  ALL_OFFERERS,
+  DEFAULT_SEARCH_FILTERS,
+} from 'components/pages/Offers/Offers/_constants'
 import { client } from 'repository/pcapi/pcapiClient'
 import { formatBrowserTimezonedDateAsUTC } from 'utils/date'
 import { stringify } from 'utils/query-string'
@@ -135,11 +138,16 @@ export const getOfferer = offererId => {
 //
 export const getVenuesForOfferer = ({ offererId = null, activeOfferersOnly = false } = {}) => {
   const request = {}
-  offererId ? (request.offererId = offererId) : (request.validatedForUser = true)
+  if (offererId) {
+    if (offererId !== ALL_OFFERERS) request.offererId = offererId
+  } else {
+    request.validatedForUser = true
+  }
+
   if (activeOfferersOnly) request.activeOfferersOnly = true
   const queryParams = stringify(request)
-
-  return client.get(`/venues?${queryParams}`).then(response => response.venues)
+  const url = queryParams !== '' ? `/venues?${queryParams}` : '/venues'
+  return client.get(url).then(response => response.venues)
 }
 
 export const getVenue = venueId => client.get(`/venues/${venueId}`)
