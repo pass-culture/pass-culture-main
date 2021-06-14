@@ -18,6 +18,7 @@ class SettingsResponse(BaseModel):
     object_storage_url: str
     whole_france_opening: bool
     display_dms_redirection: bool
+    use_app_search: bool
 
     _convert_deposit_amount = validator("deposit_amount", pre=True, allow_reuse=True)(convert_to_cent)
 

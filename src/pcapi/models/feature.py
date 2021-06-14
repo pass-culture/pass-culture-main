@@ -55,6 +55,8 @@ class FeatureToggle(enum.Enum):
     ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION = (
         "Active le champ isbn obligatoire lors de la création d'offre de type LIVRE_EDITION"
     )
+    USE_APP_SEARCH_ON_NATIVE_APP = "Utiliser App Search au lieu d'Algolia sur l'app native"
+    USE_APP_SEARCH_ON_WEBAPP = "Utiliser App Search au lieu d'Algolia sur la webapp"
 
 
 class Feature(PcObject, Model, DeactivableMixin):
@@ -76,6 +78,8 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING,
     FeatureToggle.ENABLE_ID_CHECK_RETENTION,
     FeatureToggle.ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION,
+    FeatureToggle.USE_APP_SEARCH_ON_NATIVE_APP,
+    FeatureToggle.USE_APP_SEARCH_ON_WEBAPP,
 )
 
 

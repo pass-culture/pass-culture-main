@@ -32,6 +32,7 @@ def get_settings() -> serializers.SettingsResponse:
         FeatureToggle.ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING,
         FeatureToggle.ENABLE_NATIVE_ID_CHECK_VERSION,
         FeatureToggle.ENABLE_PHONE_VALIDATION,
+        FeatureToggle.USE_APP_SEARCH_ON_NATIVE_APP,
         FeatureToggle.WHOLE_FRANCE_OPENING,
     )
 
@@ -47,4 +48,5 @@ def get_settings() -> serializers.SettingsResponse:
         whole_france_opening=features[FeatureToggle.WHOLE_FRANCE_OPENING],
         display_dms_redirection=features[FeatureToggle.DISPLAY_DMS_REDIRECTION],
         object_storage_url=OBJECT_STORAGE_URL,
+        use_app_search=features[FeatureToggle.USE_APP_SEARCH_ON_NATIVE_APP],
     )
