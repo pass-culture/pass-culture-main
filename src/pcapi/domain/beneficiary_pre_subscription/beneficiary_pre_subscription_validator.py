@@ -7,7 +7,7 @@ from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exce
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import IdPieceNumberDuplicate
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
-from pcapi.repository.user_queries import find_by_civility
+from pcapi.repository.user_queries import find_beneficiary_by_civility
 from pcapi.repository.user_queries import find_user_by_email
 
 
@@ -53,7 +53,7 @@ def _is_postal_code_eligible(code: str) -> bool:
 
 
 def get_beneficiary_duplicates(first_name: str, last_name: str, date_of_birth: datetime) -> list[User]:
-    return find_by_civility(first_name=first_name, last_name=last_name, date_of_birth=date_of_birth)
+    return find_beneficiary_by_civility(first_name=first_name, last_name=last_name, date_of_birth=date_of_birth)
 
 
 def _check_email_is_not_taken(beneficiary_pre_subscription: BeneficiaryPreSubscription) -> None:

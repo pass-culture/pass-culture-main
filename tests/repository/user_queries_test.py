@@ -12,7 +12,7 @@ from pcapi.model_creators.generic_creators import create_user
 from pcapi.models import BeneficiaryImportSources
 from pcapi.models import ImportStatus
 from pcapi.repository import repository
-from pcapi.repository.user_queries import find_by_civility
+from pcapi.repository.user_queries import find_beneficiary_by_civility
 from pcapi.repository.user_queries import find_most_recent_beneficiary_creation_date_for_source
 from pcapi.repository.user_queries import find_pro_users_by_email_provider
 from pcapi.repository.user_queries import get_all_users_wallet_balances
@@ -117,7 +117,7 @@ class FindByCivilityTest:
         repository.save(user1, user2)
 
         # when
-        users = find_by_civility("john", "doe", datetime(2000, 5, 1))
+        users = find_beneficiary_by_civility("john", "doe", datetime(2000, 5, 1))
 
         # then
         assert len(users) == 1
@@ -135,7 +135,7 @@ class FindByCivilityTest:
         repository.save(user1, user2)
 
         # when
-        users = find_by_civility("johnbob", "doe", datetime(2000, 5, 1))
+        users = find_beneficiary_by_civility("johnbob", "doe", datetime(2000, 5, 1))
 
         # then
         assert len(users) == 1
@@ -153,7 +153,7 @@ class FindByCivilityTest:
         repository.save(user1, user2)
 
         # when
-        users = find_by_civility("johnbob", "doe", datetime(2000, 5, 1))
+        users = find_beneficiary_by_civility("johnbob", "doe", datetime(2000, 5, 1))
 
         # then
         assert len(users) == 1
@@ -171,7 +171,7 @@ class FindByCivilityTest:
         repository.save(user1, user2)
 
         # when
-        users = find_by_civility("jöhn bób", "doe", datetime(2000, 5, 1))
+        users = find_beneficiary_by_civility("jöhn bób", "doe", datetime(2000, 5, 1))
 
         # then
         assert len(users) == 1
@@ -184,7 +184,7 @@ class FindByCivilityTest:
         repository.save(user)
 
         # when
-        users = find_by_civility("john", "doe", datetime(2000, 5, 1))
+        users = find_beneficiary_by_civility("john", "doe", datetime(2000, 5, 1))
 
         # then
         assert not users
@@ -201,7 +201,7 @@ class FindByCivilityTest:
         repository.save(user1, user2)
 
         # when
-        users = find_by_civility("john", "doe", datetime(2000, 5, 1))
+        users = find_beneficiary_by_civility("john", "doe", datetime(2000, 5, 1))
 
         # then
         assert len(users) == 1

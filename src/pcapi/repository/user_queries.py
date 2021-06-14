@@ -51,11 +51,12 @@ def find_pro_users_by_email_provider(email_provider: str) -> list[User]:
     )
 
 
-def find_by_civility(first_name: str, last_name: str, date_of_birth: datetime) -> list[User]:
+def find_beneficiary_by_civility(first_name: str, last_name: str, date_of_birth: datetime) -> list[User]:
     civility_predicate = (
         (_matching(User.firstName, first_name))
         & (_matching(User.lastName, last_name))
         & (User.dateOfBirth == date_of_birth)
+        & (User.isBeneficiary == True)
     )
 
     return User.query.filter(civility_predicate).all()
