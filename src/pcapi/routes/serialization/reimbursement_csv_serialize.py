@@ -21,6 +21,7 @@ class ReimbursementDetails:
         "Prénom utilisateur",
         "Contremarque",
         "Date de validation de la réservation",
+        "Montant de la réservation",
         "Montant remboursé",
         "Statut du remboursement",
     ]
@@ -65,6 +66,7 @@ class ReimbursementDetails:
             self.user_first_name = payment_info.user_firstName
             self.booking_token = payment_info.booking_token
             self.booking_used_date = payment_info.booking_dateUsed
+            self.booking_total_amount = payment_info.booking_amount * payment_info.booking_quantity
             self.reimbursed_amount = payment_info.amount
             self.status = human_friendly_status
 
@@ -82,6 +84,7 @@ class ReimbursementDetails:
             self.user_first_name,
             self.booking_token,
             self.booking_used_date,
+            self.booking_total_amount,
             self.reimbursed_amount,
             self.status,
         ]

@@ -16,7 +16,13 @@ class ReimbursementDetailsTest:
     @pytest.mark.usefixtures("db_session")
     def test_reimbursementDetail_as_csv(self, app):
         # given
-        payment = PaymentFactory(transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2019")
+        booking_amount = 10.5
+        payment = PaymentFactory(
+            transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2019",
+            booking__amount=booking_amount,
+            booking__quantity=2,
+            amount=(booking_amount * 2) * 0.7,
+        )
 
         payments_info = find_all_offerer_payments(payment.booking.stock.offer.venue.managingOfferer.id)
 
@@ -36,8 +42,9 @@ class ReimbursementDetailsTest:
         assert raw_csv[9] == "Jeanne"
         assert raw_csv[10] == payment.booking.token
         assert raw_csv[11] == payment.booking.dateUsed
-        assert raw_csv[12] == payment.booking.amount
-        assert raw_csv[13] == "Remboursement en cours"
+        assert raw_csv[12] == payment.booking.amount * payment.booking.quantity
+        assert raw_csv[13] == payment.amount
+        assert raw_csv[14] == "Remboursement en cours"
 
 
 @pytest.mark.parametrize(
@@ -81,11 +88,15 @@ def test_human_friendly_status_contains_details_for_not_processable_transaction_
 @freeze_time("2019-07-05 12:00:00")
 def test_generate_reimbursement_details_csv():
     # given
+    booking_amount = 10.5
     payment = PaymentFactory(
         booking__stock__offer__name='Mon titre ; un peu "spécial"',
         booking__stock__offer__venue__name='Mon lieu ; un peu "spécial"',
         booking__stock__offer__venue__siret="siret-1234",
         booking__token="0E2722",
+        booking__amount=booking_amount,
+        booking__quantity=1,
+        amount=booking_amount * 0.7,
         iban="iban-1234",
         transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2019",
     )
@@ -99,11 +110,11 @@ def test_generate_reimbursement_details_csv():
     rows = csv.splitlines()
     assert (
         rows[0]
-        == '"Année";"Virement";"Créditeur";"SIRET créditeur";"Adresse créditeur";"IBAN";"Raison sociale du lieu";"Nom de l\'offre";"Nom utilisateur";"Prénom utilisateur";"Contremarque";"Date de validation de la réservation";"Montant remboursé";"Statut du remboursement"'
+        == '"Année";"Virement";"Créditeur";"SIRET créditeur";"Adresse créditeur";"IBAN";"Raison sociale du lieu";"Nom de l\'offre";"Nom utilisateur";"Prénom utilisateur";"Contremarque";"Date de validation de la réservation";"Montant de la réservation";"Montant remboursé";"Statut du remboursement"'
     )
     assert (
         rows[1]
-        == '"2019";"Juillet : remboursement 1ère quinzaine";"Mon lieu ; un peu ""spécial""";"siret-1234";"1 boulevard Poissonnière";"iban-1234";"Mon lieu ; un peu ""spécial""";"Mon titre ; un peu ""spécial""";"Doux";"Jeanne";"0E2722";"";10.00;"Remboursement en cours"'
+        == '"2019";"Juillet : remboursement 1ère quinzaine";"Mon lieu ; un peu ""spécial""";"siret-1234";"1 boulevard Poissonnière";"iban-1234";"Mon lieu ; un peu ""spécial""";"Mon titre ; un peu ""spécial""";"Doux";"Jeanne";"0E2722";"";10.50;7.35;"Remboursement en cours"'
     )
 
 

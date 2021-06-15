@@ -34,6 +34,8 @@ def find_all_offerer_payments(offerer_id: int) -> list[namedtuple]:
             User.firstName.label("user_firstName"),
             Booking.token.label("booking_token"),
             Booking.dateUsed.label("booking_dateUsed"),
+            Booking.quantity.label("booking_quantity"),
+            Booking.amount.label("booking_amount"),
             Offer.name.label("offer_name"),
             Offerer.address.label("offerer_address"),
             Venue.name.label("venue_name"),
