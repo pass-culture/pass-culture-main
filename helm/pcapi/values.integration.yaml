@@ -388,7 +388,7 @@ secrets:
   - name: SUPPORT_EMAIL_ADDRESS
     version: 2
   - name: USER_PROFILING_URL
-    version: 1
+    version: 2
   - name: USER_PROFILING_ORG_ID
     version: 1
   - name: USER_PROFILING_API_KEY
