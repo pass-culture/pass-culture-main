@@ -452,7 +452,7 @@ jobs:
             curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
           when: on_fail
 
-  deploy-pro:
+  deploy-pro-netlify:
     machine:
       image: ubuntu-2004:202101-01
     working_directory: ~/pass-culture
@@ -651,7 +651,7 @@ workflows:
           context:
             - GCP
             - GCP_EHP
-      - deploy-pro:
+      - deploy-pro-netlify:
           requires:
             - deploy-pcapi
       - deploy-webapp:
@@ -659,7 +659,7 @@ workflows:
             - deploy-pcapi
       - release-synthesis:
           requires:
-            - deploy-pro
+            - deploy-pro-netlify
             - deploy-webapp
 
   gcp-prod:
@@ -686,7 +686,7 @@ workflows:
           context:
             - GCP
             - GCP_PROD
-      - deploy-pro:
+      - deploy-pro-netlify:
           requires:
             - deploy-pcapi
       - deploy-webapp:
@@ -706,5 +706,5 @@ workflows:
             - GCP_PROD
       - release-synthesis:
           requires:
-            - deploy-pro
+            - deploy-pro-netlify
             - deploy-webapp
