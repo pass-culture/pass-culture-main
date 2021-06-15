@@ -179,8 +179,8 @@ class DeactivateOffersWithMaxStockDateBetweenTodayAndEndOfQuarantineTest:
         assert offer_not_to_deactivate.isActive is True
 
     @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.scripts.deactivate_offers_during_quarantine.deactivate_offers.delete_expired_offers")
-    def test_should_unindex_offers(self, mocked_delete_expired_offers):
+    @patch("pcapi.core.search.unindex_offer_ids")
+    def test_should_unindex_offers(self, mocked_unindex_offer_ids):
         # Given
         offerer = create_offerer()
         venue = create_venue(offerer)
@@ -196,4 +196,4 @@ class DeactivateOffersWithMaxStockDateBetweenTodayAndEndOfQuarantineTest:
             FIRST_DAY_AFTER_QUARANTINE, TODAY, get_offers
         )
 
-        assert mocked_delete_expired_offers.call_args[0][1] == [offer_to_deactivate.id]
+        mocked_unindex_offer_ids.assert_called_once_with([offer_to_deactivate.id])

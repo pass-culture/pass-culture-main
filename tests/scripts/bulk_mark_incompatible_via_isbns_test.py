@@ -2,7 +2,6 @@ import pytest
 
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import ProductFactory
-from pcapi.core.testing import override_features
 from pcapi.models import Offer
 from pcapi.models import Product
 from pcapi.repository import repository
@@ -11,7 +10,6 @@ from pcapi.scripts.bulk_mark_incompatible_via_isbns import bulk_mark_incompatibl
 
 class BulkMarkIncompatibleViaIsbnsTest:
     @pytest.mark.usefixtures("db_session")
-    @override_features(SYNCHRONIZE_ALGOLIA=False)
     def test_should_mark_offers_and_products_as_incompatible_via_isbn(self):
         # Given
         product = ProductFactory(id=1, extraData={"isbn": "ABCDEFG"})

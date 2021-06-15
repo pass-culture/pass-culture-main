@@ -1,7 +1,6 @@
 from decimal import Decimal
 from unittest import mock
 
-from flask import current_app as app
 from freezegun.api import freeze_time
 import pytest
 
@@ -11,7 +10,6 @@ from pcapi.core.offers import factories
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import Offer
 from pcapi.core.providers import api
-from pcapi.core.testing import override_features
 from pcapi.local_providers.provider_api import synchronize_provider_api
 from pcapi.models import ApiErrors
 from pcapi.models import ThingType
@@ -55,9 +53,8 @@ def create_stock(isbn, siret, **kwargs):
 class SynchronizeStocksTest:
     @pytest.mark.usefixtures("db_session")
     @freeze_time("2020-10-15 09:00:00")
-    @override_features(SYNCHRONIZE_ALGOLIA=True)
-    @mock.patch("pcapi.connectors.redis.add_offer_id")
-    def test_execution(self, mocked_add_offer_id):
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_execution(self, mock_async_index_offer_ids):
         # Given
         spec = [
             {"ref": "3010000101789", "available": 6},
@@ -133,17 +130,9 @@ class SynchronizeStocksTest:
         assert created_offer.idAtProviders == f"{spec[2]['ref']}@{siret}"
         assert created_offer.lastProviderId == provider.id
 
-        # Test it adds offer in redis
-        assert mocked_add_offer_id.call_count == 5
-        mocked_add_offer_id.assert_has_calls(
-            [
-                mock.call(client=app.redis_client, offer_id=offer.id),
-                mock.call(client=app.redis_client, offer_id=stock_with_booking.offer.id),
-                mock.call(client=app.redis_client, offer_id=created_offer.id),
-                mock.call(client=app.redis_client, offer_id=second_created_offer.id),
-                mock.call(client=app.redis_client, offer_id=stock.offer.id),
-            ],
-            any_order=True,
+        # Test offer reindexation
+        mock_async_index_offer_ids.assert_called_with(
+            {stock.offer.id, offer.id, stock_with_booking.offer.id, created_offer.id, second_created_offer.id}
         )
 
     def test_build_new_offers_from_stock_details(self, db_session):

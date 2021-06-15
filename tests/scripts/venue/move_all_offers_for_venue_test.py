@@ -1,4 +1,4 @@
-from unittest.mock import patch
+from unittest import mock
 
 import pytest
 
@@ -10,10 +10,10 @@ from pcapi.repository import repository
 from pcapi.scripts.venue.move_all_offers_for_venue import move_all_offers_from_venue_to_other_venue
 
 
+@pytest.mark.usefixtures("db_session")
 class MoveAllOffersFromVenueToOtherVenueTest:
-    @patch("pcapi.scripts.venue.move_all_offers_for_venue.redis")
-    @pytest.mark.usefixtures("db_session")
-    def should_change_venue_id_to_destination_id_for_offers_linked_to_origin_venue(self, mocked_redis, app):
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def should_change_venue_id_to_destination_id_for_offers_linked_to_origin_venue(self, mock_async_index_offer_ids):
         # Given
         offerer = create_offerer()
         origin_venue = create_venue(offerer)
@@ -27,5 +27,4 @@ class MoveAllOffersFromVenueToOtherVenueTest:
         # Then
         db.session.refresh(destination_venue)
         assert set(destination_venue.offers) == set(offers)
-        for o in offers:
-            mocked_redis.add_offer_id.assert_any_call(client=app.redis_client, offer_id=o.id)
+        mock_async_index_offer_ids.assert_called_with({offer.id for offer in offers})

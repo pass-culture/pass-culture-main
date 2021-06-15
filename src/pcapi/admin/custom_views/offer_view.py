@@ -26,8 +26,8 @@ import yaml
 
 from pcapi import settings
 from pcapi.admin.base_configuration import BaseAdminView
-from pcapi.connectors import redis
 from pcapi.connectors.api_entreprises import get_offerer_legal_category
+from pcapi.core import search
 from pcapi.core.bookings.api import cancel_bookings_from_rejected_offer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import api as offers_api
@@ -40,10 +40,7 @@ import pcapi.core.offers.repository as offers_repository
 from pcapi.core.offers.validation import check_user_can_load_config
 from pcapi.domain.admin_emails import send_offer_validation_notification_to_administration
 from pcapi.domain.user_emails import send_offer_validation_status_update_email
-from pcapi.flask_app import app
 from pcapi.models import Offer
-from pcapi.models.feature import FeatureToggle
-from pcapi.repository import feature_queries
 from pcapi.repository import repository
 from pcapi.settings import IS_PROD
 from pcapi.utils.human_ids import humanize
@@ -129,8 +126,7 @@ class OfferView(BaseAdminView):
 
                 flash("Le statut de l'offre a bien été modifié", "success")
 
-        if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
-            redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
+        search.async_index_offer_ids([offer.id])
 
     def get_query(self) -> query:
         return self.session.query(self.model).filter(Offer.validation != OfferValidationStatus.DRAFT).from_self()

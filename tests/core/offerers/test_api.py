@@ -11,8 +11,8 @@ from pcapi.utils.token import random_token
 
 class EditVenueTest:
     @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.core.offerers.api.redis.add_venue_id")
-    def when_changes_on_name_algolia_indexing_is_triggered(self, mocked_add_venue_id, app) -> None:
+    @patch("pcapi.core.search.async_index_venue_ids")
+    def when_changes_on_name_algolia_indexing_is_triggered(self, mocked_async_index_venue_ids):
         # Given
         venue = offers_factories.VenueFactory(
             name="old names",
@@ -25,11 +25,11 @@ class EditVenueTest:
         offerers_api.update_venue(venue, **json_data)
 
         # Then
-        assert mocked_add_venue_id.called_once()
+        mocked_async_index_venue_ids.assert_called_once_with([venue.id])
 
     @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.core.offerers.api.redis.add_venue_id")
-    def when_changes_on_public_name_algolia_indexing_is_triggered(self, mocked_add_venue_id, app) -> None:
+    @patch("pcapi.core.search.async_index_venue_ids")
+    def when_changes_on_public_name_algolia_indexing_is_triggered(self, mocked_async_index_venue_ids):
         # Given
         venue = offers_factories.VenueFactory(
             name="old names",
@@ -42,11 +42,11 @@ class EditVenueTest:
         offerers_api.update_venue(venue, **json_data)
 
         # Then
-        assert mocked_add_venue_id.called_once()
+        mocked_async_index_venue_ids.called_once_with([venue.id])
 
     @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.core.offerers.api.redis.add_venue_id")
-    def when_changes_on_city_algolia_indexing_is_triggered(self, mocked_add_venue_id, app) -> None:
+    @patch("pcapi.core.search.async_index_venue_ids")
+    def when_changes_on_city_algolia_indexing_is_triggered(self, mocked_async_index_venue_ids):
         # Given
         venue = offers_factories.VenueFactory(
             name="old names",
@@ -59,11 +59,11 @@ class EditVenueTest:
         offerers_api.update_venue(venue, **json_data)
 
         # Then
-        assert mocked_add_venue_id.called_once()
+        mocked_async_index_venue_ids.assert_called_once_with([venue.id])
 
     @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.core.offerers.api.redis.add_venue_id")
-    def when_changes_are_not_on_algolia_fields_it_should_not_trigger_indexing(self, mocked_add_venue_id, app) -> None:
+    @patch("pcapi.core.search.async_index_venue_ids")
+    def when_changes_are_not_on_algolia_fields_it_should_not_trigger_indexing(self, mocked_async_index_venue_ids):
         # Given
         venue = offers_factories.VenueFactory(
             name="old names",
@@ -77,13 +77,11 @@ class EditVenueTest:
         offerers_api.update_venue(venue, **json_data)
 
         # Then
-        assert mocked_add_venue_id.not_called()
+        mocked_async_index_venue_ids.assert_not_called()
 
     @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.core.offerers.api.redis.add_venue_id")
-    def when_changes_in_payload_are_same_as_previous_it_should_not_trigger_indexing(
-        self, mocked_add_venue_id, app
-    ) -> None:
+    @patch("pcapi.core.search.async_index_venue_ids")
+    def when_changes_in_payload_are_same_as_previous_it_should_not_trigger_indexing(self, mocked_async_index_venue_ids):
         # Given
         venue = offers_factories.VenueFactory(
             name="old names",
@@ -96,7 +94,7 @@ class EditVenueTest:
         offerers_api.update_venue(venue, **json_data)
 
         # Then
-        assert mocked_add_venue_id.not_called()
+        mocked_async_index_venue_ids.assert_not_called()
 
     @pytest.mark.usefixtures("db_session")
     def test_empty_siret_is_editable(self, app) -> None:

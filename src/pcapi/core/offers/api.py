@@ -3,7 +3,6 @@ import logging
 from typing import Optional
 from typing import Union
 
-from flask import current_app as app
 import pytz
 from sqlalchemy.orm import joinedload
 from sqlalchemy.sql.functions import func
@@ -11,9 +10,9 @@ import yaml
 from yaml.scanner import ScannerError
 
 from pcapi import settings
-from pcapi.connectors import redis
 from pcapi.connectors.thumb_storage import create_thumb
 from pcapi.connectors.thumb_storage import remove_thumb
+from pcapi.core import search
 from pcapi.core.bookings.api import cancel_bookings_when_offerer_deletes_stock
 from pcapi.core.bookings.api import mark_as_unused
 from pcapi.core.bookings.api import update_confirmation_dates
@@ -224,8 +223,7 @@ def update_offer(  # pylint: disable=redefined-builtin
         repository.save(offer.product)
         logger.info("Product has been updated", extra={"product": offer.product.id})
 
-    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
-        redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
+    search.async_index_offer_ids([offer.id])
 
     return offer
 
@@ -245,9 +243,7 @@ def update_offers_active_status(query, is_active):
         query_to_update.update({"isActive": is_active}, synchronize_session=False)
         db.session.commit()
 
-        if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
-            for offer_id in offer_ids_batch:
-                redis.add_offer_id(client=app.redis_client, offer_id=offer_id)
+        search.async_index_offer_ids(offer_ids_batch)
 
 
 def _create_stock(
@@ -435,8 +431,7 @@ def upsert_stocks(
         previous_beginning = edited_stocks_previous_beginnings[stock.id]
         if stock.beginningDatetime != previous_beginning:
             _notify_beneficiaries_upon_stock_edit(stock)
-    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
-        redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
+    search.async_index_offer_ids([offer.id])
 
     return stocks
 
@@ -536,8 +531,7 @@ def create_mediation(
             else:
                 repository.delete(previous_mediation)
 
-        if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
-            redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
+        search.async_index_offer_ids([offer.id])
 
         return mediation
 
@@ -622,9 +616,7 @@ def add_criteria_to_offers(criteria: list[Criterion], isbn: Optional[str] = None
     db.session.bulk_save_objects(offer_criteria)
     db.session.commit()
 
-    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
-        for offer_id in offer_ids:
-            redis.add_offer_id(client=app.redis_client, offer_id=offer_id)
+    search.async_index_offer_ids(offer_ids)
 
     return True
 
@@ -655,9 +647,7 @@ def deactivate_inappropriate_products(isbn: str) -> bool:
         extra={"isbn": isbn, "products": [p.id for p in products], "offers": offer_ids},
     )
 
-    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
-        for offer_id in offer_ids:
-            redis.add_offer_id(client=app.redis_client, offer_id=offer_id)
+    search.async_index_offer_ids(offer_ids)
 
     return True
 
@@ -705,8 +695,7 @@ def update_pending_offer_validation(offer: Offer, validation_status: OfferValida
             extra={"offer": offer.id, "validation_status": validation_status, "exc": str(exception)},
         )
         return False
-    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
-        redis.add_offer_id(client=app.redis_client, offer_id=offer.id)
+    search.async_index_offer_ids([offer.id])
     logger.info("Offer validation status updated", extra={"offer": offer.id})
     return True
 
@@ -739,3 +728,34 @@ def _load_product_by_isbn_and_check_is_gcu_compatible_or_raise_error(isbn: str) 
         errors.status_code = 400
         raise errors
     return product
+
+
+def unindex_expired_offers(process_all_expired: bool = False):
+    """Unindex offers that have expired.
+
+    By default, process offers that have expired within the last 2
+    days. For example, if run on Thursday (whatever the time), this
+    function handles offers that have expired between Tuesday 00:00
+    and Wednesday 23:59 (included).
+
+    If ``process_all_expired`` is true, process... well all expired
+    offers.
+    """
+    start_of_day = datetime.datetime.combine(datetime.date.today(), datetime.time.min)
+    interval = [start_of_day - datetime.timedelta(days=2), start_of_day]
+    if process_all_expired:
+        interval[0] = datetime.datetime(2000, 1, 1)  # arbitrary old date
+
+    page = 0
+    limit = settings.ALGOLIA_DELETING_OFFERS_CHUNK_SIZE
+    while True:
+        offers = offers_repository.get_expired_offers(interval)
+        offers = offers.offset(page * limit).limit(limit)
+        offer_ids = [offer_id for offer_id, in offers.with_entities(Offer.id)]
+
+        if not offer_ids:
+            break
+
+        logger.info("[ALGOLIA] Found %d expired offers to unindex", len(offer_ids))
+        search.unindex_offer_ids(offer_ids)
+        page += 1

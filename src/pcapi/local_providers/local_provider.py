@@ -3,10 +3,8 @@ from collections.abc import Iterator
 from datetime import datetime
 import logging
 
-from flask import current_app as app
-
-from pcapi.connectors import redis
 from pcapi.connectors.thumb_storage import create_thumb
+from pcapi.core import search
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.providers.repository import get_provider_by_local_class
@@ -16,11 +14,9 @@ from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import ApiErrors
 from pcapi.models.db import Model
 from pcapi.models.db import db
-from pcapi.models.feature import FeatureToggle
 from pcapi.models.has_thumb_mixin import HasThumbMixin
 from pcapi.models.local_provider_event import LocalProviderEvent
 from pcapi.models.local_provider_event import LocalProviderEventType
-from pcapi.repository import feature_queries
 from pcapi.repository import repository
 from pcapi.repository.providable_queries import get_last_update_for_provider
 from pcapi.validation.models import entity_validator
@@ -263,13 +259,10 @@ def _save_same_thumb_from_thumb_count_to_index(pc_object: Model, thumb_index: in
 
 
 def _reindex_offers(created_or_updated_objects):
-    if not feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
-        return
     offer_ids = set()
     for obj in created_or_updated_objects:
         if isinstance(obj, Stock):
             offer_ids.add(obj.offerId)
         elif isinstance(obj, Offer):
             offer_ids.add(obj.id)
-    for offer_id in offer_ids:
-        redis.add_offer_id(client=app.redis_client, offer_id=offer_id)
+    search.async_index_offer_ids([offer_ids])

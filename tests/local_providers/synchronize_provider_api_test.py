@@ -1,7 +1,6 @@
 from decimal import Decimal
 from unittest import mock
 
-from flask import current_app as app
 from freezegun.api import freeze_time
 import pytest
 import requests_mock
@@ -10,7 +9,6 @@ from pcapi.core.bookings.factories import BookingFactory
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import factories
 from pcapi.core.offers.models import Offer
-from pcapi.core.testing import override_features
 from pcapi.local_providers.provider_api import synchronize_provider_api
 from pcapi.models import ThingType
 
@@ -77,9 +75,8 @@ def create_stock(isbn, siret, product_price, **kwargs):
 class ProviderAPICronTest:
     @pytest.mark.usefixtures("db_session")
     @freeze_time("2020-10-15 09:00:00")
-    @override_features(SYNCHRONIZE_ALGOLIA=True)
-    @mock.patch("pcapi.connectors.redis.add_offer_id")
-    def test_execution(self, mocked_add_offer_id):
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_execution(self, mocked_async_index_offer_ids):
         # Given
         provider = offerers_factories.APIProviderFactory(apiUrl="https://provider_url", authToken="fake_token")
         venue_provider = offerers_factories.VenueProviderFactory(
@@ -161,17 +158,10 @@ class ProviderAPICronTest:
         assert created_offer.lastProviderId == provider.id
 
         # Test it adds offer in redis
-        assert mocked_add_offer_id.call_count == 5
-        mocked_add_offer_id.assert_has_calls(
-            [
-                mock.call(client=app.redis_client, offer_id=offer.id),
-                mock.call(client=app.redis_client, offer_id=stock_with_booking.offer.id),
-                mock.call(client=app.redis_client, offer_id=created_offer.id),
-                mock.call(client=app.redis_client, offer_id=second_created_offer.id),
-                mock.call(client=app.redis_client, offer_id=stock.offer.id),
-            ],
-            any_order=True,
-        )
+        assert mocked_async_index_offer_ids.mock_calls == [
+            mock.call({offer.id, created_offer.id, stock.offer.id}),
+            mock.call({stock_with_booking.offer.id, second_created_offer.id}),
+        ]
 
         # Ensure next synchronisation is done with modifiedSince parameter
         with requests_mock.Mocker() as request_mock:

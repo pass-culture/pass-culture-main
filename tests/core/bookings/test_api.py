@@ -105,8 +105,8 @@ class BookOfferConcurrencyTest:
 
 @pytest.mark.usefixtures("db_session")
 class BookOfferTest:
-    @mock.patch("pcapi.connectors.redis.add_offer_id")
-    def test_create_booking(self, mocked_add_offer_id, app):
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_create_booking(self, mocked_async_index_offer_ids, app):
         user = users_factories.UserFactory()
         stock = offers_factories.StockFactory(price=10, dnBookedQuantity=5, offer__bookingEmail="offerer@example.com")
 
@@ -135,7 +135,7 @@ class BookOfferTest:
         assert booking.confirmationDate is None
         assert stock.dnBookedQuantity == 6
 
-        mocked_add_offer_id.assert_called_once_with(client=app.redis_client, offer_id=stock.offer.id)
+        mocked_async_index_offer_ids.assert_called_once_with([stock.offer.id])
 
         assert len(mails_testing.outbox) == 2
         email_data1 = mails_testing.outbox[0].sent_data
@@ -214,15 +214,6 @@ class BookOfferTest:
         assert not booking.isCancelled
         assert not booking.isUsed
         assert booking.confirmationDate == two_days_after_booking
-
-    @override_features(SYNCHRONIZE_ALGOLIA=False)
-    @mock.patch("pcapi.connectors.redis.add_offer_id")
-    def test_do_not_sync_algolia_if_feature_is_disabled(self, mocked_add_offer_id):
-        user = users_factories.UserFactory()
-        stock = offers_factories.StockFactory()
-
-        api.book_offer(beneficiary=user, stock_id=stock.id, quantity=1)
-        mocked_add_offer_id.assert_not_called()
 
     def test_raise_if_is_admin(self):
         user = users_factories.UserFactory(isAdmin=True)
@@ -345,18 +336,18 @@ class CancelByBeneficiaryTest:
         stock = offers_factories.StockFactory(offer__bookingEmail="offerer@example.com")
         booking = factories.BookingFactory.create_batch(20, stock=stock)[0]
 
-        # 1: select booking
-        # 2: select user
-        # 3: select stock for update
-        # 4: refresh booking
-        # 5->7: update stock ; update booking ; release savepoint
-        # 8->14: (TODO: optimize): select booking ; user ; deposit ; user.bookings ; feature.SYNCHRONIZE_ALGOLIA, stock, offer
-        # 15-16: insert email ; release savepoint
-        # 17->20: (TODO: optimize) select booking ; stock ; offer ; user
-        # 21: select bookings of same stock with users joinedloaded to avoid N+1 requests
-        # 22-23: select venue ; offerer
-        # 24-25: insert email ; release savepoint
-        with assert_num_queries(25):
+        queries = 1  # select booking
+        queries += 1  # select user
+        queries += 1  # select stock for update
+        queries += 1  # refresh booking
+        queries += 3  # update stock ; update booking ; release savepoint
+        queries += 6  # (TODO: optimize): select booking ; user ; deposit ; user.bookings ; stock, offer
+        queries += 2  # insert email ; release savepoint
+        queries += 4  # (TODO: optimize) select booking ; stock ; offer ; user
+        queries += 1  # select bookings of same stock with users joinedloaded to avoid N+1 requests
+        queries += 2  # select venue ; offerer
+        queries += 2  # insert email ; release savepoint
+        with assert_num_queries(queries):
             api.cancel_booking_by_beneficiary(booking.user, booking)
 
         # cancellation can trigger more than one request to Batch
@@ -389,13 +380,6 @@ class CancelByBeneficiaryTest:
 
         assert booking.isCancelled
         assert booking.stock.dnBookedQuantity == (initial_quantity - 1)
-
-    @override_features(SYNCHRONIZE_ALGOLIA=False)
-    @mock.patch("pcapi.connectors.redis.add_offer_id")
-    def test_do_not_sync_algolia_if_feature_is_disabled(self, mocked_add_offer_id):
-        booking = factories.BookingFactory()
-        api.cancel_booking_by_beneficiary(booking.user, booking)
-        mocked_add_offer_id.assert_not_called()
 
     def test_raise_if_booking_is_already_used(self):
         booking = factories.BookingFactory(isUsed=True)

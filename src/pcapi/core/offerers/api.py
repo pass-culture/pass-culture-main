@@ -2,17 +2,14 @@ import secrets
 from typing import Optional
 
 import bcrypt
-from flask import current_app as app
 
 from pcapi import settings
-from pcapi.connectors import redis
+from pcapi.core import search
 from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.models import VenueType
 from pcapi.domain.iris import link_valid_venue_to_irises
 from pcapi.models.db import db
-from pcapi.models.feature import FeatureToggle
-from pcapi.repository import feature_queries
 from pcapi.repository import repository
 from pcapi.repository.iris_venues_queries import delete_venue_from_iris_venues
 from pcapi.routes.serialization.venues_serialize import PostVenueBodyModel
@@ -85,8 +82,7 @@ def update_venue(
     indexing_modifications_fields = set(modifications.keys()) & set(VENUE_ALGOLIA_INDEXED_FIELDS)
 
     if indexing_modifications_fields:
-        if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
-            redis.add_venue_id(client=app.redis_client, venue_id=venue.id)
+        search.async_index_venue_ids([venue.id])
 
     return venue
 

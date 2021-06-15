@@ -1,11 +1,9 @@
 import secrets
-from unittest.mock import call
 from unittest.mock import patch
 
 import pytest
 
 from pcapi.core.offerers.models import Offerer
-from pcapi.core.testing import override_features
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user
 from pcapi.model_creators.generic_creators import create_user_offerer
@@ -59,9 +57,9 @@ class Returns202Test:
         assert response.status_code == 202
         assert mocked_link_venue_to_iris_if_valid.call_count == 3
 
-    @patch("pcapi.routes.pro.validate.redis.add_venue_id")
+    @patch("pcapi.core.search.async_index_venue_ids")
     @pytest.mark.usefixtures("db_session")
-    def expect_offerer_managed_venues_to_be_added_to_redis_when_feature_is_active(self, mocked_redis, app):
+    def expect_offerer_managed_venues_to_be_reindexed(self, mocked_async_index_venue_ids, app):
         # Given
         offerer_token = secrets.token_urlsafe(20)
         offerer = create_offerer(validation_token=offerer_token)
@@ -73,41 +71,12 @@ class Returns202Test:
         repository.save(admin)
 
         # When
-        response = TestClient(app.test_client()).get(
-            f"/validate/offerer/{offerer_token}", headers={"origin": "http://localhost:3000"}
-        )
+        client = TestClient(app.test_client())
+        response = client.get(f"/validate/offerer/{offerer_token}")
 
         # Then
         assert response.status_code == 202
-        assert mocked_redis.call_count == 3
-        assert mocked_redis.call_args_list == [
-            call(client=app.redis_client, venue_id=1),
-            call(client=app.redis_client, venue_id=2),
-            call(client=app.redis_client, venue_id=3),
-        ]
-
-    @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.routes.pro.validate.redis.add_venue_id")
-    @override_features(SYNCHRONIZE_ALGOLIA=False)
-    def expect_offerer_managed_venues_not_to_be_added_to_redis_when_feature_is_not_active(self, mocked_redis, app):
-        # Given
-        offerer_token = secrets.token_urlsafe(20)
-        offerer = create_offerer(validation_token=offerer_token)
-        create_venue(offerer)
-        create_venue(offerer, siret=f"{offerer.siren}65371")
-        create_venue(offerer, is_virtual=True, siret=None)
-        user = create_user()
-        admin = create_user_offerer(user, offerer)
-        repository.save(admin)
-
-        # When
-        response = TestClient(app.test_client()).get(
-            f"/validate/offerer/{offerer_token}", headers={"origin": "http://localhost:3000"}
-        )
-
-        # Then
-        assert response.status_code == 202
-        assert mocked_redis.call_count == 0
+        mocked_async_index_venue_ids.assert_called_once_with([1, 2, 3])
 
 
 class Returns404Test:

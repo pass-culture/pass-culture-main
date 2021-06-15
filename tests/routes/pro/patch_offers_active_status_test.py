@@ -38,12 +38,11 @@ class Returns204Test:
         offers_factories.UserOffererFactory(user__email="pro@example.com", offerer=offerer)
 
         offers_update_queries = 3
-        algolia_feature_query = 1
 
         # When
         client = TestClient(app.test_client()).with_auth("pro@example.com")
         data = {"ids": [humanize(offer1.id), humanize(offer2.id)], "isActive": False}
-        with testing.assert_num_queries(testing.AUTHENTICATION_QUERIES + offers_update_queries + algolia_feature_query):
+        with testing.assert_num_queries(testing.AUTHENTICATION_QUERIES + offers_update_queries):
             response = client.patch("/offers/active-status", json=data)
 
         # Then

@@ -217,19 +217,15 @@ class GetPaginatedActiveOfferIdsTest:
         venue = create_venue(offerer=offerer)
         offer1 = create_offer_with_event_product(is_active=True, venue=venue)
         offer2 = create_offer_with_event_product(is_active=True, venue=venue)
-        offer3 = create_offer_with_thing_product(is_active=True, venue=venue)
-        offer4 = create_offer_with_thing_product(is_active=True, venue=venue)
+        create_offer_with_thing_product(is_active=True, venue=venue)
+        create_offer_with_thing_product(is_active=True, venue=venue)
         repository.save(offer1, offer2)
 
         # When
         offer_ids = get_paginated_active_offer_ids(limit=2, page=0)
 
         # Then
-        assert len(offer_ids) == 2
-        assert (offer1.id,) in offer_ids
-        assert (offer2.id,) in offer_ids
-        assert (offer3.id,) not in offer_ids
-        assert (offer4.id,) not in offer_ids
+        assert set(offer_ids) == {offer1.id, offer2.id}
 
     @pytest.mark.usefixtures("db_session")
     def test_should_return_one_offer_id_from_second_page_when_limit_is_1_and_three_active_offers(self, app):
@@ -239,18 +235,14 @@ class GetPaginatedActiveOfferIdsTest:
         offer1 = create_offer_with_event_product(is_active=True, venue=venue)
         offer2 = create_offer_with_event_product(is_active=False, venue=venue)
         offer3 = create_offer_with_thing_product(is_active=True, venue=venue)
-        offer4 = create_offer_with_thing_product(is_active=True, venue=venue)
+        create_offer_with_thing_product(is_active=True, venue=venue)
         repository.save(offer1, offer2)
 
         # When
         offer_ids = get_paginated_active_offer_ids(limit=1, page=1)
 
         # Then
-        assert len(offer_ids) == 1
-        assert (offer3.id,) in offer_ids
-        assert (offer1.id,) not in offer_ids
-        assert (offer2.id,) not in offer_ids
-        assert (offer4.id,) not in offer_ids
+        assert offer_ids == [offer3.id]
 
     @pytest.mark.usefixtures("db_session")
     def test_should_return_one_offer_id_from_third_page_when_limit_is_1_and_three_active_offers(self, app):
@@ -259,7 +251,7 @@ class GetPaginatedActiveOfferIdsTest:
         venue = create_venue(offerer=offerer)
         offer1 = create_offer_with_event_product(is_active=True, venue=venue)
         offer2 = create_offer_with_event_product(is_active=False, venue=venue)
-        offer3 = create_offer_with_thing_product(is_active=True, venue=venue)
+        create_offer_with_thing_product(is_active=True, venue=venue)
         offer4 = create_offer_with_thing_product(is_active=True, venue=venue)
         repository.save(offer1, offer2)
 
@@ -267,11 +259,7 @@ class GetPaginatedActiveOfferIdsTest:
         offer_ids = get_paginated_active_offer_ids(limit=1, page=2)
 
         # Then
-        assert len(offer_ids) == 1
-        assert (offer4.id,) in offer_ids
-        assert (offer1.id,) not in offer_ids
-        assert (offer2.id,) not in offer_ids
-        assert (offer3.id,) not in offer_ids
+        assert offer_ids == [offer4.id]
 
 
 class GetPaginatedOfferIdsByVenueIdTest:
@@ -288,9 +276,7 @@ class GetPaginatedOfferIdsByVenueIdTest:
         offer_ids = get_paginated_offer_ids_by_venue_id(venue_id=venue.id, limit=1, page=0)
 
         # Then
-        assert len(offer_ids) == 1
-        assert (offer1.id,) in offer_ids
-        assert (offer2.id,) not in offer_ids
+        assert offer_ids == [offer1.id]
 
     @pytest.mark.usefixtures("db_session")
     def test_should_return_one_offer_id_in_two_offers_from_second_page_when_limit_is_one(self, app):
@@ -305,6 +291,4 @@ class GetPaginatedOfferIdsByVenueIdTest:
         offer_ids = get_paginated_offer_ids_by_venue_id(venue_id=venue.id, limit=1, page=1)
 
         # Then
-        assert len(offer_ids) == 1
-        assert (offer2.id,) in offer_ids
-        assert (offer1.id,) not in offer_ids
+        assert offer_ids == [offer2.id]

@@ -3,8 +3,7 @@ from typing import Callable
 
 from sqlalchemy import func
 
-from pcapi.algolia.usecase.orchestrator import delete_expired_offers
-from pcapi.flask_app import app
+from pcapi.core import search
 from pcapi.models import Offer
 from pcapi.models import Stock
 from pcapi.models.db import db
@@ -39,7 +38,7 @@ def deactivate_offers(offers: list[Offer]):
         offer.isActive = False
     repository.save(*offers)
     offer_ids = [offer.id for offer in offers]
-    delete_expired_offers(app.redis_client, offer_ids)
+    search.unindex_offer_ids(offer_ids)
 
 
 def deactivate_offers_with_max_stock_date_between_today_and_end_of_quarantine(

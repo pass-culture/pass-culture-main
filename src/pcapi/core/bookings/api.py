@@ -5,12 +5,11 @@ import logging
 import typing
 
 from PIL import Image
-from flask import current_app as app
 import pytz
 import qrcode
 import qrcode.image.svg
 
-from pcapi.connectors import redis
+from pcapi.core import search
 from pcapi.core.bookings import conf
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
@@ -111,8 +110,7 @@ def book_offer(
     except MailServiceException as error:
         logger.exception("Could not send booking=%s confirmation email to beneficiary: %s", booking.id, error)
 
-    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
-        redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
+    search.async_index_offer_ids([stock.offerId])
 
     update_user_bookings_attributes_job.delay(beneficiary.id)
 
@@ -160,8 +158,7 @@ def _cancel_booking(booking: Booking, reason: BookingCancellationReasons) -> Non
 
     update_user_attributes_job.delay(booking.user.id)
 
-    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
-        redis.add_offer_id(client=app.redis_client, offer_id=booking.stock.offerId)
+    search.async_index_offer_ids([booking.stock.offerId])
 
 
 def _cancel_bookings_from_stock(stock: Stock, reason: BookingCancellationReasons) -> list[Booking]:
@@ -203,8 +200,7 @@ def cancel_booking_by_offerer(booking: Booking) -> None:
 
 def cancel_bookings_when_offerer_deletes_stock(stock: Stock) -> list[Booking]:
     cancelled_bookings = _cancel_bookings_from_stock(stock, BookingCancellationReasons.OFFERER)
-    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
-        redis.add_offer_id(client=app.redis_client, offer_id=stock.offerId)
+    search.async_index_offer_ids([stock.offerId])
     return cancelled_bookings
 
 

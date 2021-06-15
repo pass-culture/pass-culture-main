@@ -5,7 +5,7 @@ from decimal import Decimal
 from freezegun import freeze_time
 import pytest
 
-from pcapi.algolia.infrastructure.builder import build_object
+from pcapi.core.search.backends.algolia import AlgoliaBackend
 from pcapi.model_creators.generic_creators import create_criterion
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_stock
@@ -15,6 +15,9 @@ from pcapi.model_creators.specific_creators import create_offer_with_thing_produ
 from pcapi.models import EventType
 from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
+
+
+# FIXME (dbaty, 2021-06-21): I question the usefulness of these 600 lines of tests.
 
 
 class BuildObjectTest:
@@ -86,7 +89,7 @@ class BuildObjectTest:
         humanized_product_id = humanize(offer.product.id)
 
         # When
-        result = build_object(offer)
+        result = AlgoliaBackend.serialize_offer(offer)
 
         # Then
         assert result == {
@@ -148,7 +151,7 @@ class BuildObjectTest:
         repository.save(stock)
 
         # When
-        result = build_object(offer)
+        result = AlgoliaBackend.serialize_offer(offer)
 
         # Then
         assert result["offer"]["author"] == "MEFA"
@@ -164,7 +167,7 @@ class BuildObjectTest:
         repository.save(stock)
 
         # When
-        result = build_object(offer)
+        result = AlgoliaBackend.serialize_offer(offer)
 
         # Then
         assert result["offer"]["stageDirector"] == "MEFA"
@@ -180,7 +183,7 @@ class BuildObjectTest:
         repository.save(stock)
 
         # When
-        result = build_object(offer)
+        result = AlgoliaBackend.serialize_offer(offer)
 
         # Then
         assert result["offer"]["visa"] == "123456"
@@ -197,7 +200,7 @@ class BuildObjectTest:
         repository.save(stock)
 
         # When
-        result = build_object(offer)
+        result = AlgoliaBackend.serialize_offer(offer)
 
         # Then
         assert result["offer"]["isbn"] == "123456987"
@@ -214,7 +217,7 @@ class BuildObjectTest:
         repository.save(stock)
 
         # When
-        result = build_object(offer)
+        result = AlgoliaBackend.serialize_offer(offer)
 
         # Then
         assert result["offer"]["speaker"] == "MEFA"
@@ -230,7 +233,7 @@ class BuildObjectTest:
         repository.save(stock)
 
         # When
-        result = build_object(offer)
+        result = AlgoliaBackend.serialize_offer(offer)
 
         # Then
         assert result["offer"]["performer"] == "MEFA"
@@ -246,7 +249,7 @@ class BuildObjectTest:
         repository.save(stock)
 
         # When
-        result = build_object(offer)
+        result = AlgoliaBackend.serialize_offer(offer)
 
         # Then
         assert result["offer"]["showType"] == "dance"
@@ -262,7 +265,7 @@ class BuildObjectTest:
         repository.save(stock)
 
         # When
-        result = build_object(offer)
+        result = AlgoliaBackend.serialize_offer(offer)
 
         # Then
         assert result["offer"]["showSubType"] == "urbaine"
@@ -278,7 +281,7 @@ class BuildObjectTest:
         repository.save(stock)
 
         # When
-        result = build_object(offer)
+        result = AlgoliaBackend.serialize_offer(offer)
 
         # Then
         assert result["offer"]["musicType"] == "jazz"
@@ -294,7 +297,7 @@ class BuildObjectTest:
         repository.save(stock)
 
         # When
-        result = build_object(offer)
+        result = AlgoliaBackend.serialize_offer(offer)
 
         # Then
         assert result["offer"]["musicSubType"] == "fusion"
@@ -311,7 +314,7 @@ class BuildObjectTest:
         repository.save(stock1, stock2, stock3)
 
         # When
-        result = build_object(offer)
+        result = AlgoliaBackend.serialize_offer(offer)
 
         # Then
         assert result["offer"]["prices"] == [Decimal("5.00"), Decimal("7.00"), Decimal("10.30")]
@@ -326,7 +329,7 @@ class BuildObjectTest:
         repository.save(stock)
 
         # When
-        result = build_object(offer)
+        result = AlgoliaBackend.serialize_offer(offer)
 
         # Then
         assert result["_geoloc"]["lat"] == 47.158459
@@ -350,7 +353,7 @@ class BuildObjectTest:
         repository.save(stock1, stock2, stock3, stock4)
 
         # When
-        result = build_object(offer)
+        result = AlgoliaBackend.serialize_offer(offer)
 
         # Then
         assert result["offer"]["dates"] == [1603011600.0, 1603098000.0, 1603184400.0, 1603616400.0]
@@ -366,7 +369,7 @@ class BuildObjectTest:
         repository.save(stock1, stock2)
 
         # When
-        result = build_object(offer)
+        result = AlgoliaBackend.serialize_offer(offer)
 
         # Then
         assert result["offer"]["dates"] == []
@@ -387,7 +390,7 @@ class BuildObjectTest:
         repository.save(stock1, stock2, stock3)
 
         # When
-        result = build_object(offer)
+        result = AlgoliaBackend.serialize_offer(offer)
 
         # Then
         eighteen_thirty_in_seconds = 66600
@@ -404,7 +407,7 @@ class BuildObjectTest:
         repository.save(stock)
 
         # When
-        result = build_object(offer)
+        result = AlgoliaBackend.serialize_offer(offer)
 
         # Then
         assert result["_geoloc"]["lat"] == 47.158459
@@ -449,7 +452,7 @@ class BuildObjectTest:
         humanized_product_id = humanize(offer.product.id)
 
         # When
-        result = build_object(offer)
+        result = AlgoliaBackend.serialize_offer(offer)
 
         # Then
         assert result == {
@@ -540,7 +543,7 @@ class BuildObjectTest:
         humanized_product_id = humanize(offer.product.id)
 
         # When
-        result = build_object(offer)
+        result = AlgoliaBackend.serialize_offer(offer)
 
         # Then
         result["offer"]["tags"] = set(result["offer"]["tags"])

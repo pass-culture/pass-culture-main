@@ -235,7 +235,7 @@ class override_features(TestContextDecorator):
             call_some_function()
 
         @override_features(
-            SYNCHRONIZE_ALGOLIA=True,
+            ENABLE_FROBULATION=True,
             QR_CODE=False,
         )
         def test_something():

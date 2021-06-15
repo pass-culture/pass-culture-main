@@ -78,9 +78,11 @@ class ManyOffersOperationsViewTest:
         # Then
         assert response.status_code == 200
 
-    @patch("pcapi.connectors.redis.add_offer_id")
+    @patch("pcapi.core.search.async_index_offer_ids")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    def test_edit_product_offers_criteria_from_isbn(self, mocked_validate_csrf_token, mocked_add_offer_id, app):
+    def test_edit_product_offers_criteria_from_isbn(
+        self, mocked_validate_csrf_token, mocked_async_index_offer_ids, app
+    ):
         # Given
         users_factories.UserFactory(email="admin@example.com", isAdmin=True)
         product = offers_factories.ProductFactory(extraData={"isbn": "9783161484100"})
@@ -110,17 +112,13 @@ class ManyOffersOperationsViewTest:
         assert offer2.criteria == [criterion1, criterion2]
         assert not inactive_offer.criteria
         assert not unmatched_offer.criteria
-        # fmt: off
-        reindexed_offer_ids = {
-            mocked_add_offer_id.call_args_list[i][1]["offer_id"]
-            for i in range(mocked_add_offer_id.call_count)
-        }
-        # fmt: on
-        assert reindexed_offer_ids == {offer1.id, offer2.id}
+        mocked_async_index_offer_ids.assert_called_once_with([offer1.id, offer2.id])
 
-    @patch("pcapi.connectors.redis.add_offer_id")
+    @patch("pcapi.core.search.async_index_offer_ids")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    def test_edit_product_offers_criteria_from_visa(self, mocked_validate_csrf_token, mocked_add_offer_id, app):
+    def test_edit_product_offers_criteria_from_visa(
+        self, mocked_validate_csrf_token, mocked_async_index_offer_ids, app
+    ):
         # Given
         users_factories.UserFactory(email="admin@example.com", isAdmin=True)
         product = offers_factories.ProductFactory(extraData={"visa": "9783161484100"})
@@ -150,13 +148,7 @@ class ManyOffersOperationsViewTest:
         assert offer2.criteria == [criterion1, criterion2]
         assert not inactive_offer.criteria
         assert not unmatched_offer.criteria
-        # fmt: off
-        reindexed_offer_ids = {
-            mocked_add_offer_id.call_args_list[i][1]["offer_id"]
-            for i in range(mocked_add_offer_id.call_count)
-        }
-        # fmt: on
-        assert reindexed_offer_ids == {offer1.id, offer2.id}
+        mocked_async_index_offer_ids.called_once_with([offer1.id, offer2.id])
 
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_edit_product_offers_criteria_from_isbn_without_offers(self, mocked_validate_csrf_token, app):
@@ -203,9 +195,11 @@ class ManyOffersOperationsViewTest:
         # Then
         assert result == expected_result
 
-    @patch("pcapi.connectors.redis.add_offer_id")
+    @patch("pcapi.core.search.async_index_offer_ids")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    def test_edit_product_gcu_compatibility(self, mocked_validate_csrf_token, mocked_add_offer_id, app, db_session):
+    def test_edit_product_gcu_compatibility(
+        self, mocked_validate_csrf_token, mocked_async_index_offer_ids, app, db_session
+    ):
         # Given
         users_factories.UserFactory(email="admin@example.com", isAdmin=True)
         offerer = offers_factories.OffererFactory()
@@ -232,8 +226,7 @@ class ManyOffersOperationsViewTest:
         assert not first_product.isGcuCompatible
         assert not first_offer.isActive
         assert not second_offer.isActive
-        for offer in offers:
-            mocked_add_offer_id.assert_any_call(client=app.redis_client, offer_id=offer.id)
+        mocked_async_index_offer_ids.assert_called_once_with([offer.id for offer in offers])
 
     def test_get_products_compatible_status(self):
         # Given

@@ -19,6 +19,7 @@ from pcapi import settings
 from pcapi.admin.install import install_admin_views
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.object_storage.testing as object_storage_testing
+import pcapi.core.search.testing as search_testing
 import pcapi.core.testing
 from pcapi.flask_app import admin
 from pcapi.install_database_extensions import install_database_extensions
@@ -97,7 +98,16 @@ def clear_outboxes():
     finally:
         mails_testing.reset_outbox()
         push_notifications_testing.reset_requests()
+        search_testing.reset_search_store()
         sms_notifications_testing.reset_requests()
+
+
+@pytest.fixture(autouse=True)
+def clear_redis(app):
+    try:
+        yield
+    finally:
+        app.redis_client.flushdb()
 
 
 @pytest.fixture()

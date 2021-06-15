@@ -7,9 +7,7 @@ from typing import Set
 from typing import Tuple
 from typing import Union
 
-from flask import current_app as app
-
-from pcapi.connectors import redis
+from pcapi.core import search
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.validation import check_existing_venue
 from pcapi.core.offers.models import Offer
@@ -23,8 +21,6 @@ from pcapi.core.providers.repository import get_provider_enabled_for_pro_by_id
 from pcapi.models import ApiErrors
 from pcapi.models import Product
 from pcapi.models.db import db
-from pcapi.models.feature import FeatureToggle
-from pcapi.repository import feature_queries
 from pcapi.repository import repository
 from pcapi.repository.venue_queries import find_by_id
 from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
@@ -148,7 +144,7 @@ def synchronize_stocks(stock_details, venue: Venue, provider_id: Optional[int] =
 
     db.session.commit()
 
-    _reindex_offers(offer_ids)
+    search.async_index_offer_ids(offer_ids)
 
     return {"new_offers": len(new_offers), "new_stocks": len(new_stocks), "updated_stocks": len(update_stock_mapping)}
 
@@ -284,12 +280,6 @@ def _build_new_offer(
         venueId=venue.id,
         type=product.type,
     )
-
-
-def _reindex_offers(offer_ids: Set[int]) -> None:
-    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
-        for offer_id in offer_ids:
-            redis.add_offer_id(client=app.redis_client, offer_id=offer_id)
 
 
 def _should_reindex_offer(new_quantity: int, new_price: float, existing_stock: dict) -> bool:

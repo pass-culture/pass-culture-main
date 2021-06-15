@@ -1,8 +1,6 @@
 import logging
 
-from flask import current_app as app
-
-from pcapi.connectors import redis
+from pcapi.core import search
 from pcapi.core.offerers.models import Offerer
 from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
 from pcapi.domain.iris import link_valid_venue_to_irises
@@ -11,8 +9,6 @@ from pcapi.domain.user_emails import send_validation_confirmation_email_to_pro
 from pcapi.flask_app import private_api
 from pcapi.flask_app import public_api
 from pcapi.models import UserOfferer
-from pcapi.models.feature import FeatureToggle
-from pcapi.repository import feature_queries
 from pcapi.repository import repository
 from pcapi.repository import user_offerer_queries
 from pcapi.repository import user_queries
@@ -58,11 +54,7 @@ def validate_new_offerer(token):
         link_valid_venue_to_irises(venue)
 
     repository.save(offerer)
-    if feature_queries.is_active(FeatureToggle.SYNCHRONIZE_ALGOLIA):
-        venue_ids = map(lambda managed_venue: managed_venue.id, managed_venues)
-        sorted_venue_ids = sorted(venue_ids, key=int)
-        for venue_id in sorted_venue_ids:
-            redis.add_venue_id(client=app.redis_client, venue_id=venue_id)
+    search.async_index_venue_ids([venue.id for venue in managed_venues])
 
     try:
         send_validation_confirmation_email_to_pro(offerer)

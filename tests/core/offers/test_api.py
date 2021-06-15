@@ -4,7 +4,6 @@ import os
 import pathlib
 from unittest import mock
 
-from flask import current_app as app
 from freezegun import freeze_time
 import pytest
 
@@ -42,6 +41,7 @@ from pcapi.core.offers.offer_validation import OfferValidationRuleItem
 from pcapi.core.offers.offer_validation import compute_offer_validation_score
 from pcapi.core.offers.offer_validation import parse_offer_validation_config
 from pcapi.core.testing import override_features
+from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 from pcapi.models import ApiErrors
 from pcapi.models import api_errors
@@ -61,8 +61,8 @@ IMAGES_DIR = pathlib.Path(tests.__path__[0]) / "files"
 
 @pytest.mark.usefixtures("db_session")
 class UpsertStocksTest:
-    @mock.patch("pcapi.connectors.redis.add_offer_id")
-    def test_upsert_multiple_stocks(self, mocked_add_offer_id):
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_upsert_multiple_stocks(self, mocked_async_index_offer_ids):
         # Given
         user = users_factories.UserFactory()
         offer = factories.ThingOfferFactory()
@@ -83,7 +83,7 @@ class UpsertStocksTest:
         edited_stock = Stock.query.filter_by(id=existing_stock.id).first()
         assert edited_stock.price == 5
         assert edited_stock.quantity == 7
-        mocked_add_offer_id.assert_called_once_with(client=app.redis_client, offer_id=offer.id)
+        mocked_async_index_offer_ids.assert_called_once_with([offer.id])
 
     @freeze_time("2020-11-17 15:00:00")
     def test_upsert_stocks_triggers_draft_offer_validation(self):
@@ -226,23 +226,6 @@ class UpsertStocksTest:
         updated_booking = Booking.query.get(booking.id)
         assert updated_booking.isUsed is True
         assert updated_booking.dateUsed == date_used_in_48_hours
-
-    @override_features(SYNCHRONIZE_ALGOLIA=False)
-    @mock.patch("pcapi.connectors.redis.add_offer_id")
-    def test_do_not_sync_algolia_if_feature_is_disabled(
-        self,
-        mocked_add_offer_id,
-    ):
-        # Given
-        user = users_factories.UserFactory()
-        offer = factories.ThingOfferFactory()
-        created_stock_data = StockCreationBodyModel(price=10)
-
-        # When
-        api.upsert_stocks(offer_id=offer.id, stock_data_list=[created_stock_data], user=user)
-
-        # Then
-        mocked_add_offer_id.assert_not_called()
 
     def test_does_not_allow_edition_of_stock_of_another_offer_than_given(self):
         # Given
@@ -546,15 +529,15 @@ class UpsertStocksTest:
 
 @pytest.mark.usefixtures("db_session")
 class DeleteStockTest:
-    @mock.patch("pcapi.connectors.redis.add_offer_id")
-    def test_delete_stock_basics(self, mocked_add_offer_id):
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_delete_stock_basics(self, mocked_async_index_offer_ids):
         stock = factories.EventStockFactory()
 
         api.delete_stock(stock)
 
         stock = models.Stock.query.one()
         assert stock.isSoftDeleted
-        mocked_add_offer_id.assert_called_once_with(client=app.redis_client, offer_id=stock.offerId)
+        mocked_async_index_offer_ids.assert_called_once_with([stock.offerId])
 
     @mock.patch("pcapi.domain.user_emails.send_offerer_bookings_recap_email_after_offerer_cancellation")
     @mock.patch("pcapi.domain.user_emails.send_warning_to_beneficiary_after_pro_booking_cancellation")
@@ -649,8 +632,8 @@ class CreateMediationV2Test:
         / "mediations"
     )
 
-    @mock.patch("pcapi.connectors.redis.add_offer_id")
-    def test_ok(self, mocked_add_offer_id):
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_ok(self, mocked_async_index_offer_ids):
         # Given
         user = users_factories.UserFactory()
         offer = factories.ThingOfferFactory()
@@ -666,7 +649,7 @@ class CreateMediationV2Test:
         assert mediation.credit == "©Photographe"
         assert mediation.thumbCount == 1
         assert models.Mediation.query.filter(models.Mediation.offerId == offer.id).count() == 1
-        mocked_add_offer_id.assert_called_once_with(client=app.redis_client, offer_id=offer.id)
+        mocked_async_index_offer_ids.assert_called_once_with([offer.id])
 
     def test_erase_former_mediations(self):
         # Given
@@ -1007,15 +990,15 @@ class CreateOfferBusinessLogicChecksTest:
 
 @pytest.mark.usefixtures("db_session")
 class UpdateOfferTest:
-    @mock.patch("pcapi.connectors.redis.add_offer_id")
-    def test_basics(self, mocked_add_offer_id):
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_basics(self, mocked_async_index_offer_ids):
         offer = factories.OfferFactory(isDuo=False, bookingEmail="old@example.com")
 
         offer = api.update_offer(offer, isDuo=True, bookingEmail="new@example.com")
 
         assert offer.isDuo
         assert offer.bookingEmail == "new@example.com"
-        mocked_add_offer_id.assert_called_once_with(client=app.redis_client, offer_id=offer.id)
+        mocked_async_index_offer_ids.assert_called_once_with([offer.id])
 
     def test_update_product_if_owning_offerer_is_the_venue_managing_offerer(self):
         offerer = factories.OffererFactory()
@@ -1144,8 +1127,8 @@ class UpdateOfferTest:
 
 @pytest.mark.usefixtures("db_session")
 class UpdateOffersActiveStatusTest:
-    @mock.patch("pcapi.connectors.redis.add_offer_id")
-    def test_activate(self, mocked_add_offer_id):
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_activate(self, mocked_async_index_offer_ids):
         offer1 = factories.OfferFactory(isActive=False)
         offer2 = factories.OfferFactory(isActive=False)
         offer3 = factories.OfferFactory(isActive=False)
@@ -1162,14 +1145,7 @@ class UpdateOffersActiveStatusTest:
         assert not models.Offer.query.get(offer3.id).isActive
         assert not models.Offer.query.get(rejected_offer.id).isActive
         assert not models.Offer.query.get(pending_offer.id).isActive
-        assert mocked_add_offer_id.call_count == 2
-        mocked_add_offer_id.assert_has_calls(
-            [
-                mock.call(client=app.redis_client, offer_id=offer1.id),
-                mock.call(client=app.redis_client, offer_id=offer2.id),
-            ],
-            any_order=True,
-        )
+        mocked_async_index_offer_ids.assert_called_once_with([offer1.id, offer2.id])
 
     def test_deactivate(self):
         offer1 = factories.OfferFactory()
@@ -1220,8 +1196,8 @@ class OfferExpenseDomainsTest:
 
 @pytest.mark.usefixtures("db_session")
 class AddCriterionToOffersTest:
-    @mock.patch("pcapi.connectors.redis.add_offer_id")
-    def test_add_criteria_from_isbn(self, mocked_add_offer_id):
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_add_criteria_from_isbn(self, mocked_async_index_offer_ids):
         # Given
         isbn = "2-221-00164-8"
         product1 = ProductFactory(extraData={"isbn": "2221001648"})
@@ -1244,16 +1220,10 @@ class AddCriterionToOffersTest:
         assert offer21.criteria == [criterion1, criterion2]
         assert not inactive_offer.criteria
         assert not unmatched_offer.criteria
-        # fmt: off
-        reindexed_offer_ids = {
-            mocked_add_offer_id.call_args_list[i][1]["offer_id"]
-            for i in range(mocked_add_offer_id.call_count)
-        }
-        # fmt: on
-        assert reindexed_offer_ids == {offer11.id, offer12.id, offer21.id}
+        mocked_async_index_offer_ids.called_once_with([offer11.id, offer12.id, offer21.id])
 
-    @mock.patch("pcapi.connectors.redis.add_offer_id")
-    def test_add_criteria_from_visa(self, mocked_add_offer_id):
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_add_criteria_from_visa(self, mocked_async_index_offer_ids):
         # Given
         visa = "222100"
         product1 = ProductFactory(extraData={"visa": visa})
@@ -1276,16 +1246,10 @@ class AddCriterionToOffersTest:
         assert offer21.criteria == [criterion1, criterion2]
         assert not inactive_offer.criteria
         assert not unmatched_offer.criteria
-        # fmt: off
-        reindexed_offer_ids = {
-            mocked_add_offer_id.call_args_list[i][1]["offer_id"]
-            for i in range(mocked_add_offer_id.call_count)
-        }
-        # fmt: on
-        assert reindexed_offer_ids == {offer11.id, offer12.id, offer21.id}
+        mocked_async_index_offer_ids.called_once_with([offer11.id, offer12.id, offer21.id])
 
-    @mock.patch("pcapi.connectors.redis.add_offer_id")
-    def test_add_criteria_when_no_offers_is_found(self, mocked_add_offer_id):
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_add_criteria_when_no_offers_is_found(self, mocked_async_index_offer_ids):
         # Given
         isbn = "2-221-00164-8"
         OfferFactory(extraData={"isbn": "2221001647"})
@@ -1299,9 +1263,9 @@ class AddCriterionToOffersTest:
 
 
 class DeactivateInappropriateProductTest:
-    @mock.patch("pcapi.connectors.redis.add_offer_id")
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
     @pytest.mark.usefixtures("db_session")
-    def test_should_deactivate_product_with_inappropriate_content(self, mocked_add_offer_id):
+    def test_should_deactivate_product_with_inappropriate_content(self, mocked_async_index_offer_ids):
         # Given
         product1 = ThingProductFactory(extraData={"isbn": "isbn-de-test"})
         product2 = ThingProductFactory(extraData={"isbn": "isbn-de-test"})
@@ -1318,8 +1282,7 @@ class DeactivateInappropriateProductTest:
 
         assert not any(product.isGcuCompatible for product in products)
         assert not any(offer.isActive for offer in offers)
-        for o in offers:
-            mocked_add_offer_id.assert_any_call(client=app.redis_client, offer_id=o.id)
+        mocked_async_index_offer_ids.assert_called_once_with([o.id for o in offers])
 
 
 @pytest.mark.usefixtures("db_session")
@@ -1388,13 +1351,13 @@ class UpdateOfferValidationStatusTest:
         assert is_offer_updated is False
         assert offer.validation == OfferValidationStatus.REJECTED
 
-    @mock.patch("pcapi.connectors.redis.add_offer_id")
-    def test_update_pending_offer_validation_status_and_reindex_in_algolia(self, mocked_add_offer_id):
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_update_pending_offer_validation_status_and_reindex(self, mocked_async_index_offer_ids):
         offer = OfferFactory(validation=OfferValidationStatus.PENDING)
 
         update_pending_offer_validation(offer, OfferValidationStatus.APPROVED)
 
-        mocked_add_offer_id.assert_called_once_with(client=app.redis_client, offer_id=offer.id)
+        mocked_async_index_offer_ids.assert_called_once_with([offer.id])
 
 
 @pytest.mark.usefixtures("db_session")
@@ -1781,3 +1744,41 @@ class LoadProductByIsbnAndCheckIsGCUCompatibleOrRaiseErrorTest:
             _load_product_by_isbn_and_check_is_gcu_compatible_or_raise_error(isbn)
 
         assert error.value.errors["isbn"] == ["Ce produit n’est pas éligible au pass Culture."]
+
+
+@freeze_time("2020-01-05 10:00:00")
+@pytest.mark.usefixtures("db_session")
+class UnindexExpiredOffersTest:
+    @override_settings(ALGOLIA_DELETING_OFFERS_CHUNK_SIZE=2)
+    @mock.patch("pcapi.core.search.unindex_offer_ids")
+    def test_default_run(self, mock_unindex_offer_ids):
+        # Given
+        factories.StockFactory(bookingLimitDatetime=datetime(2020, 1, 2, 12, 0))
+        stock1 = factories.StockFactory(bookingLimitDatetime=datetime(2020, 1, 3, 12, 0))
+        stock2 = factories.StockFactory(bookingLimitDatetime=datetime(2020, 1, 3, 12, 0))
+        stock3 = factories.StockFactory(bookingLimitDatetime=datetime(2020, 1, 4, 12, 0))
+        factories.StockFactory(bookingLimitDatetime=datetime(2020, 1, 5, 12, 0))
+
+        # When
+        api.unindex_expired_offers()
+
+        # Then
+        assert mock_unindex_offer_ids.mock_calls == [
+            mock.call([stock1.offerId, stock2.offerId]),
+            mock.call([stock3.offerId]),
+        ]
+
+    @mock.patch("pcapi.core.search.unindex_offer_ids")
+    def test_run_unlimited(self, mock_unindex_offer_ids):
+        # more than 2 days ago, must be processed
+        stock1 = factories.StockFactory(bookingLimitDatetime=datetime(2020, 1, 2, 12, 0))
+        # today, must be ignored
+        factories.StockFactory(bookingLimitDatetime=datetime(2020, 1, 5, 12, 0))
+
+        # When
+        api.unindex_expired_offers(process_all_expired=True)
+
+        # Then
+        assert mock_unindex_offer_ids.mock_calls == [
+            mock.call([stock1.offerId]),
+        ]
