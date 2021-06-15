@@ -130,7 +130,7 @@ class UserProfilingClient:
         params.update(self.base_params)
 
         try:
-            response = self.session.post(self.url, params=params)
+            response = self.session.post(self.url, json=params)
         except Exception as exc:
             logger.exception("Network error from UserProfiling (%r)", exc)
             raise UserProfilingHTTPError("Unknown error from UserProfiling)") from exc

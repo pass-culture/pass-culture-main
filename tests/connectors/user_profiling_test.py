@@ -110,8 +110,13 @@ def test_get_profiling_data(requests_mock):
     )
 
     assert matcher.call_count == 1
-    assert matcher.last_request.qs["account_email"][0] == "firstname.lastname@example.com"
-    assert "fake-session-id" in matcher.last_request.query
+
+    request_body = matcher.last_request.json()
+    assert request_body["session_id"] == "fake-session-id"
+    assert request_body["account_email"] == "firstname.lastname@example.com"
+    assert request_body["customer_event_type"] == user_profiling.WorkflowType.BENEFICIARY_VALIDATION.value
+    assert request_body["line_of_business"] == user_profiling.LineOfBusiness.B2B.value
+    assert request_body["condition_attrib_5"] == user_profiling.AgentType.AGENT_MOBILE.value
 
 
 @override_settings(
@@ -136,7 +141,7 @@ def test_get_profiling_data_format_phone(requests_mock):
         agent_type=user_profiling.AgentType.AGENT_MOBILE,
     )
 
-    assert matcher.last_request.qs["account_telephone"][0] == "33712345678"
+    assert matcher.last_request.json()["account_telephone"] == "33712345678"
 
 
 @override_settings(
@@ -161,7 +166,7 @@ def test_get_profiling_data_date_of_birth_empty(requests_mock):
         agent_type=user_profiling.AgentType.AGENT_MOBILE,
     )
 
-    assert "account_date_of_birth" not in matcher.last_request.qs.keys()
+    assert "account_date_of_birth" not in matcher.last_request.json().keys()
 
 
 @override_settings(
