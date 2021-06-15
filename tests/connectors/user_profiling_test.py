@@ -4,6 +4,7 @@ import pytest
 
 from pcapi import settings
 from pcapi.connectors import user_profiling
+import pcapi.core.fraud.models as fraud_models
 from pcapi.core.testing import override_settings
 
 from . import user_profiling_fixtures
@@ -80,7 +81,7 @@ def test_get_profiling_data(requests_mock):
         agent_type=user_profiling.AgentType.AGENT_MOBILE,
     )
 
-    assert isinstance(profiling_data, user_profiling.UserProfilingFraudData)
+    assert isinstance(profiling_data, fraud_models.UserProfilingFraudData)
     assert profiling_data.account_email_result == user_profiling_fixtures.CORRECT_RESPONSE["account_email_result"]
     assert profiling_data.account_email_score == int(user_profiling_fixtures.CORRECT_RESPONSE["account_email_score"])
     assert (
@@ -143,7 +144,7 @@ def test_get_profiling_data_empty_fields(requests_mock, empty_field):
         agent_type=user_profiling.AgentType.AGENT_MOBILE,
     )
 
-    assert isinstance(profiling_data, user_profiling.UserProfilingFraudData)
+    assert isinstance(profiling_data, fraud_models.UserProfilingFraudData)
 
 
 @override_settings(

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 import enum
-from typing import Optional
+import typing
 
 import pydantic
 from pydantic.class_validators import validator
@@ -35,32 +35,55 @@ def _parse_level(level: Optional[str]) -> Optional[None]:
 
 class JouveContent(pydantic.BaseModel):
     # TODO: analyze jouve results to see where we can remove "optional"
-    activity: Optional[str]
-    address: Optional[str]
-    birthDate: Optional[str]
-    birthLocationCtrl: Optional[str]
-    bodyBirthDateCtrl: Optional[str]
-    bodyBirthDateLevel: Optional[int]
-    bodyFirstNameCtrl: Optional[str]
-    bodyFirstNameLevel: Optional[int]
-    bodyNameLevel: Optional[int]
-    bodyNameCtrl: Optional[str]
-    bodyPieceNumber: Optional[str]
-    bodyPieceNumberCtrl: Optional[str]
-    bodyPieceNumberLevel: Optional[int]
-    city: Optional[str]
-    creatorCtrl: Optional[str]
+    activity: typing.Optional[str]
+    address: typing.Optional[str]
+    birthDate: typing.Optional[str]
+    birthLocationCtrl: typing.Optional[str]
+    bodyBirthDateCtrl: typing.Optional[str]
+    bodyBirthDateLevel: typing.Optional[int]
+    bodyFirstNameCtrl: typing.Optional[str]
+    bodyFirstNameLevel: typing.Optional[int]
+    bodyNameLevel: typing.Optional[int]
+    bodyNameCtrl: typing.Optional[str]
+    bodyPieceNumber: typing.Optional[str]
+    bodyPieceNumberCtrl: typing.Optional[str]
+    bodyPieceNumberLevel: typing.Optional[int]
+    city: typing.Optional[str]
+    creatorCtrl: typing.Optional[str]
     id: int
-    email: Optional[str]
-    firstName: Optional[str]
-    gender: Optional[str]
-    initialNumberCtrl: Optional[str]
-    initialSizeCtrl: Optional[str]
-    lastName: Optional[str]
-    phoneNumber: Optional[str]
-    postalCode: Optional[str]
-    posteCodeCtrl: Optional[str]
-    serviceCodeCtrl: Optional[str]
+    email: typing.Optional[str]
+    firstName: typing.Optional[str]
+    gender: typing.Optional[str]
+    initialNumberCtrl: typing.Optional[str]
+    initialSizeCtrl: typing.Optional[str]
+    lastName: typing.Optional[str]
+    phoneNumber: typing.Optional[str]
+    postalCode: typing.Optional[str]
+    posteCodeCtrl: typing.Optional[str]
+    serviceCodeCtrl: typing.Optional[str]
+
+
+class UserProfilingFraudData(pydantic.BaseModel):
+    account_email_result: str
+    account_email_score: typing.Optional[int]
+    account_telephone_result: str
+    account_telephone_score: typing.Optional[int]
+    bb_bot_rating: str
+    bb_bot_score: float
+    bb_fraud_rating: str
+    bb_fraud_score: float
+    digital_id_result: str
+    digital_id_trust_score: float
+    digital_id_trust_score_rating: str
+    digital_id_confidence: int
+    digital_id_confidence_rating: str
+    policy_score: int
+    reason_code: typing.List[str]
+    request_id: str
+    risk_rating: str
+    tmx_risk_rating: str
+    tmx_summary_reason_code: typing.Optional[typing.List[str]]
+    summary_risk_score: int
 
     _parse_body_birth_date_level = validator("bodyBirthDateLevel", pre=True, allow_reuse=True)(_parse_level)
     _parse_body_first_name_level = validator("bodyFirstNameLevel", pre=True, allow_reuse=True)(_parse_level)
@@ -109,4 +132,4 @@ class BeneficiaryFraudResult(PcObject, Model):
 @dataclass
 class FraudItem:
     status: FraudStatus
-    detail: Optional[str]
+    detail: typing.Optional[str]

@@ -6,6 +6,7 @@ import typing
 import pydantic
 
 from pcapi import settings
+import pcapi.core.fraud.models as fraud_models
 import pcapi.utils.requests as requests
 
 
@@ -32,29 +33,6 @@ class UserProfilingHTTPError(BaseUserProfilingException):
 
 class UserProfilingDataResponseError(BaseUserProfilingException):
     pass
-
-
-class UserProfilingFraudData(pydantic.BaseModel):
-    account_email_result: str
-    account_email_score: typing.Optional[int]
-    account_telephone_result: str
-    account_telephone_score: typing.Optional[int]
-    bb_bot_rating: str
-    bb_bot_score: float
-    bb_fraud_rating: str
-    bb_fraud_score: float
-    digital_id_result: str
-    digital_id_trust_score: float
-    digital_id_trust_score_rating: str
-    digital_id_confidence: int
-    digital_id_confidence_rating: str
-    policy_score: int
-    reason_code: typing.List[str]
-    request_id: str
-    risk_rating: str
-    tmx_risk_rating: str
-    tmx_summary_reason_code: typing.Optional[typing.List[str]]
-    summary_risk_score: int
 
 
 class WorkflowType(enum.Enum):
@@ -94,7 +72,7 @@ class UserProfilingClient:
         line_of_business: LineOfBusiness,
         transaction_id: str,
         agent_type: AgentType,
-    ) -> UserProfilingFraudData:
+    ) -> fraud_models.UserProfilingFraudData:
         """Retrieve the user fraud score from UserProfiling database & computation
 
         session_id: the session id of the profiling done on the phone
@@ -147,7 +125,7 @@ class UserProfilingClient:
             )
 
         try:
-            return UserProfilingFraudData(**data)
+            return fraud_models.UserProfilingFraudData(**data)
         except pydantic.ValidationError as error:
             logger.warning("Error in UserProfiling response validation", extra={"validation_errors": error.errors()})
             raise UserProfilingDataResponseError("Invalid data received from UserProfiling") from error
