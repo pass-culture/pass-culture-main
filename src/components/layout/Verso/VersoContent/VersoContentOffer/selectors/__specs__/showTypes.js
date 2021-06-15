@@ -24,7 +24,7 @@ const showTypes = [
       { code: 209, label: 'Spectacle Équestre' },
     ],
     code: 200,
-    label: 'Cirque / Magie',
+    label: 'Cirque',
   },
 ]
 
