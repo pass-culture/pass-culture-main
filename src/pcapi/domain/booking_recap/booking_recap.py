@@ -23,6 +23,7 @@ class BookingRecap:
         beneficiary_lastname: str,
         beneficiary_firstname: str,
         beneficiary_email: str,
+        beneficiary_phonenumber: str,
         booking_token: str,
         booking_date: datetime,
         booking_is_duo: bool,
@@ -46,6 +47,7 @@ class BookingRecap:
         self.beneficiary_lastname = beneficiary_lastname
         self.beneficiary_firstname = beneficiary_firstname
         self.beneficiary_email = beneficiary_email
+        self.beneficiary_phonenumber = beneficiary_phonenumber
         self.booking_token = booking_token
         self.booking_date = booking_date
         self.booking_is_duo = booking_is_duo

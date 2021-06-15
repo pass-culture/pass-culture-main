@@ -74,6 +74,7 @@ def _serialize_booking_recap(booking_recap: BookingRecap) -> dict[str, Any]:
             "lastname": booking_recap.beneficiary_lastname,
             "firstname": booking_recap.beneficiary_firstname,
             "email": booking_recap.beneficiary_email,
+            "phonenumber": booking_recap.beneficiary_phonenumber,
         },
         "booking_token": booking_recap.booking_token,
         "booking_date": format_into_timezoned_date(booking_recap.booking_date),

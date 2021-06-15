@@ -80,6 +80,7 @@ class Returns200Test:
             user__email="beneficiary@example.com",
             user__firstName="Hermione",
             user__lastName="Granger",
+            user__phoneNumber="0100000000",
         )
         pro_user = users_factories.UserFactory(email="pro@example.com")
         offerer = booking.stock.offer.venue.managingOfferer
@@ -100,6 +101,7 @@ class Returns200Test:
                     "email": "beneficiary@example.com",
                     "firstname": "Hermione",
                     "lastname": "Granger",
+                    "phonenumber": "0100000000",
                 },
                 "booking_date": format_into_timezoned_date(
                     booking.dateCreated.astimezone(tz.gettz("Europe/Paris")),
