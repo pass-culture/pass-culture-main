@@ -11,6 +11,7 @@ export const CSV_HEADERS = [
   'ISBN',
   'Nom et prénom du bénéficiaire',
   'Email du bénéficiaire',
+  'Téléphone du bénéficiaire',
   'Date et heure de réservation',
   'Contremarque',
   'Prix de la réservation',
@@ -45,6 +46,7 @@ const generateBookingsCsvFile = bookings => {
     bookingArray.push(booking.stock.offer_isbn || '')
     bookingArray.push(`${booking.beneficiary.lastname} ${booking.beneficiary.firstname}`)
     bookingArray.push(booking.beneficiary.email)
+    bookingArray.push(booking.beneficiary.phonenumber)
     const bookingDatetimeFormatted = format(
       toDateStrippedOfTimezone(booking.booking_date),
       FORMAT_DD_MM_YYYY_HH_mm

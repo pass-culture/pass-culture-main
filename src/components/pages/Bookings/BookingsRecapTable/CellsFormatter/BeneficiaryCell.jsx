@@ -12,6 +12,9 @@ const BeneficiaryCell = ({ beneficiaryInfos }) => {
       <span className="beneficiary-subtitle">
         {beneficiaryInfos.email}
       </span>
+      <span className="beneficiary-subtitle">
+        {beneficiaryInfos.phonenumber}
+      </span>
     </div>
   )
 }
@@ -21,6 +24,7 @@ BeneficiaryCell.propTypes = {
     email: PropTypes.string.isRequired,
     firstname: PropTypes.string.isRequired,
     lastname: PropTypes.string.isRequired,
+    phonenumber: PropTypes.string.isRequired,
   }).isRequired,
 }
 
