@@ -112,12 +112,12 @@ class UserProfilingClient:
             "service_type": SERVICE_TYPE,
             "event_type": EVENT_TYPE,
             "policy": POLICY,
-            "customer_event_type": workflow_type,
+            "customer_event_type": workflow_type.value,
             # Event metadata
             "input_ip_address": ip_address,
-            "line_of_business": line_of_business,
+            "line_of_business": line_of_business.value,
             "transaction_id": transaction_id,
-            "condition_attrib_5": agent_type,
+            "condition_attrib_5": agent_type.value,
             # Customer data
             "account_login": str(user_id),
             "account_email": user_email,
