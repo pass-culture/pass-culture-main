@@ -31,7 +31,7 @@ describe('generateBookingsCsvFile', () => {
         },
       ],
       booking_is_duo: false,
-      booking_amount: 2,
+      booking_amount: 1.6,
       offerer: {
         name: 'Le conseil des FNAC',
       },
@@ -66,7 +66,7 @@ describe('generateBookingsCsvFile', () => {
         },
       ],
       booking_is_duo: false,
-      booking_amount: 5,
+      booking_amount: 5.4,
       offerer: {
         name: 'Le conseil des FNAC',
       },
@@ -109,7 +109,7 @@ describe('generateBookingsCsvFile', () => {
         '09/06/2021 16:15',
         '09/06/2021 16:30',
         'ZEHBGD',
-        2,
+        '1,6',
         'validé',
       ],
       [
@@ -123,7 +123,7 @@ describe('generateBookingsCsvFile', () => {
         '01/05/2020 14:12',
         '',
         'ABCDEF',
-        5,
+        '5,4',
         'annulé',
       ],
     ])
@@ -160,7 +160,7 @@ describe('generateBookingsCsvFile', () => {
         '09/06/2021 16:15',
         '09/06/2021 16:30',
         'ZEHBGD',
-        2,
+        '1,6',
         'validé',
       ],
       [
@@ -174,7 +174,7 @@ describe('generateBookingsCsvFile', () => {
         '01/05/2020 14:12',
         '',
         'ABCDEF',
-        5,
+        '5,4',
         'annulé',
       ],
     ])
@@ -217,7 +217,7 @@ describe('generateBookingsCsvFile', () => {
         '09/06/2021 16:15',
         '09/06/2021 16:30',
         'ZEHBGD',
-        2,
+        '1,6',
         'validé',
       ],
       [
@@ -231,7 +231,7 @@ describe('generateBookingsCsvFile', () => {
         '01/05/2020 14:12',
         '',
         'ABCDEF',
-        5,
+        '5,4',
         'annulé',
       ],
     ])
@@ -275,7 +275,7 @@ describe('generateBookingsCsvFile', () => {
         '09/06/2021 16:15',
         '09/06/2021 16:30',
         'ZEHBGD',
-        2,
+        '1,6',
         'validé',
       ],
       [
@@ -289,7 +289,7 @@ describe('generateBookingsCsvFile', () => {
         '01/05/2020 14:12',
         '',
         'ABCDEF',
-        5,
+        '5,4',
         'annulé',
       ],
     ])

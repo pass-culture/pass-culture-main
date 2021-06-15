@@ -17,6 +17,7 @@ describe("bookings recap table's header", () => {
       firstname: 'Sonia',
       email: 'sonia.klepi@example.com',
     },
+    booking_amount: 10,
     booking_date: '2020-04-03T12:00:00Z',
     booking_token: 'ZEHBGD',
     booking_status: 'validated',

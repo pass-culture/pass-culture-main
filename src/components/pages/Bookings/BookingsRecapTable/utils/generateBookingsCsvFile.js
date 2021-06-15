@@ -61,7 +61,7 @@ const generateBookingsCsvFile = bookings => {
       : ''
     bookingArray.push(usedDatetimeFormatted)
     bookingArray.push(booking.booking_token)
-    bookingArray.push(booking.booking_amount)
+    bookingArray.push(booking.booking_amount.toLocaleString('fr-FR'))
     bookingArray.push(getBookingStatusDisplayInformations(booking.booking_status).status)
     csv_data.push(bookingArray)
   })
