@@ -202,7 +202,7 @@ def get_distant_image(
 
 def get_uploaded_image(image_as_bytes: bytes, max_size: int = MAX_THUMBNAIL_SIZE) -> bytes:
     if len(image_as_bytes) > max_size:
-        raise exceptions.FileSizeExceeded
+        raise exceptions.FileSizeExceeded(max_size=max_size)
     return image_as_bytes
 
 
