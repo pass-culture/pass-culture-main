@@ -33,13 +33,14 @@ def test_send_transactions_should_not_send_an_email_if_pass_culture_iban_is_miss
     # given
     iban = "CF13QSDFGH456789"
     bic = "AZERTY9Q666"
+    batch_date = datetime.datetime.now()
     payments_factories.PaymentFactory(iban=iban, bic=bic)
     payments_factories.PaymentFactory(iban=iban, bic=bic)
     payments_factories.PaymentFactory(iban=iban, bic=bic)
 
     # when
     with pytest.raises(Exception):
-        send_transactions(Payment.query, None, bic, "0000", ["comptable@test.com"])
+        send_transactions(Payment.query, batch_date, None, bic, "0000", ["comptable@test.com"])
 
     # then
     assert not mails_testing.outbox
@@ -50,13 +51,14 @@ def test_send_transactions_should_not_send_an_email_if_pass_culture_bic_is_missi
     # given
     iban = "CF13QSDFGH456789"
     bic = "AZERTY9Q666"
+    batch_date = datetime.datetime.now()
     payments_factories.PaymentFactory(iban=iban, bic=bic)
     payments_factories.PaymentFactory(iban=iban, bic=bic)
     payments_factories.PaymentFactory(iban=iban, bic=bic)
 
     # when
     with pytest.raises(Exception):
-        send_transactions(Payment.query, iban, None, "0000", ["comptable@test.com"])
+        send_transactions(Payment.query, batch_date, iban, None, "0000", ["comptable@test.com"])
 
     # then
     assert not mails_testing.outbox
@@ -67,13 +69,14 @@ def test_send_transactions_should_not_send_an_email_if_pass_culture_id_is_missin
     # given
     iban = "CF13QSDFGH456789"
     bic = "AZERTY9Q666"
+    batch_date = datetime.datetime.now()
     payments_factories.PaymentFactory(iban=iban, bic=bic)
     payments_factories.PaymentFactory(iban=iban, bic=bic)
     payments_factories.PaymentFactory(iban=iban, bic=bic)
 
     # when
     with pytest.raises(Exception):
-        send_transactions(Payment.query, iban, bic, None, ["comptable@test.com"])
+        send_transactions(Payment.query, batch_date, iban, bic, None, ["comptable@test.com"])
 
     # then
     assert not mails_testing.outbox
@@ -84,12 +87,13 @@ def test_send_transactions_should_send_an_email_with_xml_and_csv_attachments():
     # given
     iban = "CF13QSDFGH456789"
     bic = "AZERTY9Q666"
-    payments_factories.PaymentFactory(iban=iban, bic=bic)
-    payments_factories.PaymentFactory(iban=iban, bic=bic)
-    payments_factories.PaymentFactory(iban=iban, bic=bic)
+    batch_date = datetime.datetime.now()
+    payments_factories.PaymentFactory(iban=iban, bic=bic, batchDate=batch_date)
+    payments_factories.PaymentFactory(iban=iban, bic=bic, batchDate=batch_date)
+    payments_factories.PaymentFactory(iban=iban, bic=bic, batchDate=batch_date)
 
     # when
-    send_transactions(Payment.query, iban, bic, "0000", ["x@example.com"])
+    send_transactions(Payment.query, batch_date, iban, bic, "0000", ["x@example.com"])
 
     # then
     assert len(mails_testing.outbox) == 1
@@ -101,12 +105,13 @@ def test_send_transactions_creates_a_new_payment_transaction_if_email_was_sent_p
     # given
     iban = "CF13QSDFGH456789"
     bic = "AZERTY9Q666"
-    payments_factories.PaymentFactory(iban=iban, bic=bic)
-    payments_factories.PaymentFactory(iban=iban, bic=bic)
-    payments_factories.PaymentFactory(iban=iban, bic=bic)
+    batch_date = datetime.datetime.now()
+    payments_factories.PaymentFactory(iban=iban, bic=bic, batchDate=batch_date)
+    payments_factories.PaymentFactory(iban=iban, bic=bic, batchDate=batch_date)
+    payments_factories.PaymentFactory(iban=iban, bic=bic, batchDate=batch_date)
 
     # when
-    send_transactions(Payment.query, "BD12AZERTY123456", "AZERTY9Q666", "0000", ["comptable@test.com"])
+    send_transactions(Payment.query, batch_date, "BD12AZERTY123456", "AZERTY9Q666", "0000", ["comptable@test.com"])
 
     # then
     payment_messages = {p.paymentMessage for p in Payment.query.all()}
@@ -119,12 +124,13 @@ def test_send_transactions_set_status_to_sent_if_email_was_sent_properly():
     # given
     iban = "CF13QSDFGH456789"
     bic = "AZERTY9Q666"
-    payments_factories.PaymentFactory(iban=iban, bic=bic)
-    payments_factories.PaymentFactory(iban=iban, bic=bic)
-    payments_factories.PaymentFactory(iban=iban, bic=bic)
+    batch_date = datetime.datetime.now()
+    payments_factories.PaymentFactory(iban=iban, bic=bic, batchDate=batch_date)
+    payments_factories.PaymentFactory(iban=iban, bic=bic, batchDate=batch_date)
+    payments_factories.PaymentFactory(iban=iban, bic=bic, batchDate=batch_date)
 
     # when
-    send_transactions(Payment.query, iban, bic, "0000", ["comptable@test.com"])
+    send_transactions(Payment.query, batch_date, iban, bic, "0000", ["comptable@test.com"])
 
     # then
     payments = Payment.query.all()
@@ -139,11 +145,12 @@ def test_send_transactions_set_status_to_error_with_details_if_email_was_not_sen
     # given
     iban = "CF13QSDFGH456789"
     bic = "AZERTY9Q666"
-    payments_factories.PaymentFactory(iban=iban, bic=bic)
-    payments_factories.PaymentFactory(iban=iban, bic=bic)
+    batch_date = datetime.datetime.now()
+    payments_factories.PaymentFactory(iban=iban, bic=bic, batchDate=batch_date)
+    payments_factories.PaymentFactory(iban=iban, bic=bic, batchDate=batch_date)
 
     # when
-    send_transactions(Payment.query, iban, bic, "0000", ["comptable@test.com"])
+    send_transactions(Payment.query, batch_date, iban, bic, "0000", ["comptable@test.com"])
 
     # then
     payments = Payment.query.all()
@@ -156,11 +163,12 @@ def test_send_transactions_set_status_to_error_with_details_if_email_was_not_sen
 @pytest.mark.usefixtures("db_session")
 def test_send_transactions_with_malformed_iban_on_payments_gives_them_an_error_status_with_a_cause():
     # given
-    payments_factories.PaymentFactory(iban="CF  13QSDFGH45 qbc //")
+    batch_date = datetime.datetime.now()
+    payments_factories.PaymentFactory(iban="CF  13QSDFGH45 qbc //", batchDate=batch_date)
 
     # when
     with pytest.raises(DocumentInvalid):
-        send_transactions(Payment.query, "BD12AZERTY123456", "AZERTY9Q666", "0000", ["comptable@test.com"])
+        send_transactions(Payment.query, batch_date, "BD12AZERTY123456", "AZERTY9Q666", "0000", ["comptable@test.com"])
 
     # then
     payment = Payment.query.one()

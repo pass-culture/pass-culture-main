@@ -36,6 +36,7 @@ def generate_and_send_payments(cutoff_date: datetime.datetime, batch_date: datet
         logger.info("[BATCH][PAYMENTS] STEP 3 : send transactions")
         send_transactions(
             payments_to_send,
+            batch_date,
             settings.PASS_CULTURE_IBAN,
             settings.PASS_CULTURE_BIC,
             settings.PASS_CULTURE_REMITTANCE_CODE,

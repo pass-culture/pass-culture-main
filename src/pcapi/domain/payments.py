@@ -1,10 +1,11 @@
 import csv
+from dataclasses import dataclass
 from datetime import datetime
 from datetime import timedelta
 from decimal import Decimal
 from io import BytesIO
 from io import StringIO
-import uuid
+import logging
 from uuid import UUID
 
 from flask import render_template
@@ -22,30 +23,24 @@ import pcapi.utils.db as db_utils
 from pcapi.utils.human_ids import humanize
 
 
+logger = logging.getLogger(__name__)
+
+
 class UnmatchedPayments(Exception):
     def __init__(self, payment_ids: set[int]):
         super().__init__()
         self.payment_ids = payment_ids
 
 
+@dataclass
 class Transaction:
-    def __init__(
-        self,
-        creditor_iban: str,
-        creditor_bic: str,
-        creditor_name: str,
-        creditor_siren: str,
-        end_to_end_id: UUID,
-        amount: Decimal,
-        custom_message: str,
-    ):
-        self.creditor_iban = creditor_iban
-        self.creditor_bic = creditor_bic
-        self.creditor_name = creditor_name
-        self.creditor_siren = creditor_siren
-        self.end_to_end_id = end_to_end_id
-        self.amount = amount
-        self.custom_message = custom_message
+    creditor_iban: str
+    creditor_bic: str
+    creditor_name: str
+    creditor_siren: str
+    end_to_end_id: UUID
+    amount: Decimal
+    custom_message: str
 
 
 class PaymentDetails:
@@ -198,9 +193,16 @@ def generate_venues_csv(payment_query) -> str:
 
 
 def generate_message_file(
-    payment_query, pass_culture_iban: str, pass_culture_bic: str, message_name: str, remittance_code: str
+    payment_query,
+    batch_date: datetime,
+    pass_culture_iban: str,
+    pass_culture_bic: str,
+    message_name: str,
+    remittance_code: str,
 ) -> str:
-    transactions = _set_end_to_end_id_and_group_into_transactions(payment_query)
+    logger.info("Setting transactionEndToEndId on all payments to send")
+    transactions = _set_end_to_end_id_and_group_into_transactions(payment_query, batch_date)
+    logger.info("Set transactionEndToEndId on all payments to send")
     total_amount = sum(transaction.amount for transaction in transactions)
     now = datetime.utcnow()
 
@@ -284,38 +286,62 @@ def apply_banishment(payments: list[Payment], ids_to_ban: list[int]) -> tuple[li
     return banned_payments, retry_payments
 
 
-def _set_end_to_end_id_and_group_into_transactions(payment_query) -> list[Transaction]:
+def _set_end_to_end_id_and_group_into_transactions(payment_query, batch_date) -> list[Transaction]:
     # FIXME (dbaty, 2021-05-31): remove this inner import once we have
     # moved functions to core.payments.api and
     # core.payments.repository.
     from pcapi.repository import payment_queries  # avoid import loop
 
-    # FIXME (dbaty, 2021-05-31): this function still makes a lot of
-    # SQL queries. It may be possible to UPDATE all payments in a
-    # single query, with a different PostgreSQL-generated
-    # `transactionEndToEndId` for each pair of `(iban, bic)`.
-    transactions = []
+    # FIXME (dbaty, 2021-06-15): we should use the ORM model and
+    # `payment_query` as the base query, instead of this raw SQL. But
+    # I need a very quick fix, so that will do, for now.
+    # Let the database generate and set all transactionEndToEndId and
+    # return the generated value for each IBAN.
+    result = db.session.execute(
+        """
+        UPDATE payment
+        SET "transactionEndToEndId" = sub.uuid
+        FROM (
+            SELECT distinct on (iban)
+                   iban,
+                   gen_random_uuid() as uuid
+            FROM payment
+            WHERE "batchDate" = :batch_date
+        ) AS sub
+        WHERE payment.iban = sub.iban
+        AND id IN (
+            SELECT payment.id
+            FROM payment JOIN (
+                SELECT DISTINCT ON (payment_status."paymentId")
+                       payment.id AS payment_id,
+                       payment_status.status AS status
+                FROM payment
+                JOIN payment_status
+                ON payment.id = payment_status."paymentId"
+                WHERE payment."batchDate" = :batch_date
+                ORDER BY payment_status."paymentId", payment_status.date DESC)
+            AS statuses ON statuses.payment_id = payment.id
+            WHERE statuses.status IN ('PENDING', 'ERROR', 'RETRY')
+        )
+        RETURNING payment.iban AS iban, payment."transactionEndToEndId" AS transaction_id
+    """,
+        {"batch_date": batch_date},
+    )
+    rows = result.fetchall()
+    db.session.commit()
+    transaction_ids = {row.iban: row.transaction_id for row in rows}
+
     # Sort for reproducibility and tests
     groups = sorted(payment_queries.group_by_iban_and_bic(payment_query))
-    for group in groups:
-        end_to_end_id = uuid.uuid4()
-        # We cannot directly call "update()" when "join()" has been called.
-        batch = (
-            db.session.query(Payment)
-            .filter(Payment.id.in_(payment_query.with_entities(Payment.id)))
-            .filter_by(iban=group.iban, bic=group.bic)
+    return [
+        Transaction(
+            creditor_iban=group.iban,
+            creditor_bic=group.bic,
+            creditor_name=group.recipient_name,
+            creditor_siren=group.recipient_siren,
+            end_to_end_id=transaction_ids[group.iban],
+            amount=group.total_amount,
+            custom_message=group.transaction_label,
         )
-        batch.update({"transactionEndToEndId": end_to_end_id}, synchronize_session=False)
-        transactions.append(
-            Transaction(
-                group.iban,
-                group.bic,
-                group.recipient_name,
-                group.recipient_siren,
-                end_to_end_id,
-                group.total_amount,
-                group.transaction_label,
-            )
-        )
-    db.session.commit()
-    return transactions
+        for group in groups
+    ]

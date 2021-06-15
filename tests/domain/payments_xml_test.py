@@ -1,3 +1,4 @@
+import datetime
 from io import BytesIO
 
 from freezegun import freeze_time
@@ -19,8 +20,10 @@ XML_NAMESPACE = {"ns": "urn:iso:std:iso:20022:tech:xsd:pain.001.001.03"}
 class GenerateMessageFileTest:
     def test_basics(self):
         iban1, bic1 = "CF13QSDFGH456789", "QSDFGH8Z555"
+        batch_date = datetime.datetime.now()
         offerer1 = offers_factories.OffererFactory(siren="siren1")
         p1 = payments_factories.PaymentFactory(
+            batchDate=batch_date,
             amount=10,
             iban=iban1,
             bic=bic1,
@@ -31,6 +34,7 @@ class GenerateMessageFileTest:
         offerer2 = offers_factories.OffererFactory(siren="siren2")
         iban2, bic2 = "FR14WXCVBN123456", "WXCVBN7B444"
         p2 = payments_factories.PaymentFactory(
+            batchDate=batch_date,
             amount=20,
             iban=iban2,
             bic=bic2,
@@ -39,6 +43,7 @@ class GenerateMessageFileTest:
             booking__stock__offer__venue__managingOfferer=offerer2,
         )
         payments_factories.PaymentFactory(
+            batchDate=batch_date,
             amount=40,
             iban=iban2,
             bic=bic2,
@@ -52,7 +57,9 @@ class GenerateMessageFileTest:
         message_id = "passCulture-SCT-20181015-114356"
         remittance_code = "remittance-code"
         with freeze_time("2018-10-15 09:21:34"):
-            xml = generate_message_file(Payment.query, recipient_iban, recipient_bic, message_id, remittance_code)
+            xml = generate_message_file(
+                Payment.query, batch_date, recipient_iban, recipient_bic, message_id, remittance_code
+            )
 
         # Group header
         assert (

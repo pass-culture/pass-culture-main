@@ -1,4 +1,5 @@
 from datetime import datetime
+from datetime import timedelta
 from decimal import Decimal
 
 from freezegun import freeze_time
@@ -9,6 +10,7 @@ from pcapi.core.offerers.models import Offerer
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
 from pcapi.domain.payments import UnmatchedPayments
+from pcapi.domain.payments import _set_end_to_end_id_and_group_into_transactions
 from pcapi.domain.payments import apply_banishment
 from pcapi.domain.payments import create_payment_details
 from pcapi.domain.payments import create_payment_for_booking
@@ -29,6 +31,7 @@ from pcapi.model_creators.specific_creators import create_offer_with_thing_produ
 from pcapi.models import Booking
 from pcapi.models.payment import Payment
 from pcapi.models.payment_status import TransactionStatus
+from pcapi.repository import payment_queries
 from pcapi.utils.human_ids import humanize
 
 
@@ -475,3 +478,92 @@ class ApplyBanishmentTest:
 
         # then
         assert e.value.payment_ids == {333}
+
+
+@pytest.mark.usefixtures("db_session")
+def test_set_end_to_end_id_and_group_into_transactions():
+    batch_date = datetime.now()
+    transaction_label = "remboursement 1ère quinzaine 09-2018"
+    iban1, bic1 = "CF13QSDFGH456789", "QSDFGH8Z555"
+    offerer1 = offers_factories.OffererFactory(siren="siren1")
+    p1 = payments_factories.PaymentFactory(
+        batchDate=batch_date,
+        amount=10,
+        iban=iban1,
+        bic=bic1,
+        transactionLabel=transaction_label,
+        recipientName="offerer1",
+        booking__stock__offer__venue__managingOfferer=offerer1,
+    )
+    offerer2 = offers_factories.OffererFactory(siren="siren2")
+    iban2, bic2 = "FR14WXCVBN123456", "WXCVBN7B444"
+    p2 = payments_factories.PaymentFactory(
+        batchDate=batch_date,
+        amount=20,
+        iban=iban2,
+        bic=bic2,
+        recipientName="offerer2",
+        transactionLabel=transaction_label,
+        booking__stock__offer__venue__managingOfferer=offerer2,
+    )
+    p3 = payments_factories.PaymentFactory(
+        batchDate=batch_date,
+        amount=40,
+        iban=iban2,
+        bic=bic2,
+        recipientName="offerer2",
+        transactionLabel=transaction_label,
+        booking__stock__offer__venue__managingOfferer=offerer2,
+    )
+    offerer3 = offers_factories.OffererFactory(siren="siren3")
+    p4 = payments_factories.PaymentFactory(
+        batchDate=batch_date - timedelta(days=1),
+        amount=40,
+        iban=iban2,
+        bic=bic2,
+        recipientName="offerer3, ignored because not the same batch date",
+        transactionLabel=transaction_label,
+        booking__stock__offer__venue__managingOfferer=offerer3,
+    )
+    p5 = payments_factories.PaymentFactory(
+        batchDate=batch_date,
+        amount=40,
+        iban=iban2,
+        bic=bic2,
+        recipientName="offerer3, ignored because not processable",
+        transactionLabel=transaction_label,
+        booking__stock__offer__venue__managingOfferer=offerer3,
+    )
+    payments_factories.PaymentStatusFactory(payment=p5, status=TransactionStatus.NOT_PROCESSABLE)
+
+    # Mimic the query that `generate_and_send_payments()` passes to
+    # `send_transactions()` that itself passes it to
+    # `_set_end_to_end_id_and_group_into_transactions()`
+    payment_query = payment_queries.get_payments_by_status(
+        (TransactionStatus.PENDING, TransactionStatus.ERROR, TransactionStatus.RETRY), batch_date
+    )
+    transactions = _set_end_to_end_id_and_group_into_transactions(payment_query, batch_date)
+
+    assert len(transactions) == 2
+    assert transactions[0].creditor_iban == iban1
+    assert transactions[0].creditor_bic == bic1
+    assert transactions[0].creditor_name == "offerer1"
+    assert transactions[0].creditor_siren == "siren1"
+    assert transactions[0].end_to_end_id == p1.transactionEndToEndId
+    assert transactions[0].amount == 10
+    assert transactions[0].custom_message == p1.transactionLabel
+
+    assert transactions[1].creditor_iban == iban2
+    assert transactions[1].creditor_bic == bic2
+    assert transactions[1].creditor_name == "offerer2"
+    assert transactions[1].creditor_siren == "siren2"
+    assert transactions[1].end_to_end_id == p2.transactionEndToEndId
+    assert transactions[1].amount == 60
+    assert transactions[1].custom_message == p2.transactionLabel
+
+    # FIXME: check transactionEndToEndId
+    assert p1.transactionEndToEndId is not None
+    assert p1.transactionEndToEndId != p2.transactionEndToEndId
+    assert p2.transactionEndToEndId == p3.transactionEndToEndId
+    assert p4.transactionEndToEndId is None
+    assert p5.transactionEndToEndId is None

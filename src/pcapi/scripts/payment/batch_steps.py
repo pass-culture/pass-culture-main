@@ -134,6 +134,7 @@ def generate_new_payments(cutoff_date: datetime, batch_date: datetime) -> None:
 
 def send_transactions(
     payment_query,
+    batch_date: datetime,
     pass_culture_iban: Optional[str],
     pass_culture_bic: Optional[str],
     pass_culture_remittance_code: Optional[str],
@@ -153,7 +154,7 @@ def send_transactions(
 
     message_name = "passCulture-SCT-%s" % datetime.strftime(datetime.utcnow(), "%Y%m%d-%H%M%S")
     xml_file = generate_message_file(
-        payment_query, pass_culture_iban, pass_culture_bic, message_name, pass_culture_remittance_code
+        payment_query, batch_date, pass_culture_iban, pass_culture_bic, message_name, pass_culture_remittance_code
     )
 
     logger.info("[BATCH][PAYMENTS] Payment message name : %s", message_name)
