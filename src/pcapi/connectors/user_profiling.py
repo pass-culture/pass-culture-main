@@ -48,6 +48,13 @@ class UserProfilingFraudData(pydantic.BaseModel):
     digital_id_trust_score_rating: str
     digital_id_confidence: int
     digital_id_confidence_rating: str
+    policy_score: int
+    reason_code: typing.List[str]
+    request_id: str
+    risk_rating: str
+    tmx_risk_rating: str
+    tmx_summary_reason_code: typing.List[str]
+    summary_risk_score: int
 
 
 class WorkflowType(enum.Enum):
