@@ -123,7 +123,6 @@ commands:
           command: |
             set +eo pipefail
             gsutil rsync -r << parameters.build_path >> gs://<< parameters.bucket_name >>
-            true
 
 ###################
 #  JOBS
