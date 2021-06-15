@@ -177,7 +177,7 @@ def test_application_for_native_app_user_with_load_smoothing(_get_raw_content, a
     # Given
     application_id = 35
     user = UserFactory(
-        dateOfBirth="10/25/2003",
+        dateOfBirth=datetime(2003, 10, 25),
         phoneNumber="0607080900",
         isBeneficiary=False,
         address="an address",
