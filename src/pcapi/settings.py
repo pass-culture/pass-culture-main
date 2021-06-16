@@ -254,6 +254,7 @@ GCP_ENCRYPTED_BUCKET_NAME = os.environ.get("GCP_ENCRYPTED_BUCKET_NAME", "")
 GCP_PROJECT = os.environ.get("GCP_PROJECT", "")
 GCP_REGION = os.environ.get("GCP_REGION", "europe-west1")
 GCP_REGION_CLOUD_TASK = os.environ.get("GCP_REGION_CLOUD_TASK", "europe-west3")
+GCP_ID_CHECK_CLOUD_TASK_NAME = os.environ.get("GCP_ID_CHECK_CLOUD_TASK_NAME", "idcheck-prod")
 
 # RATE LIMITER
 RATE_LIMIT_BY_EMAIL = os.environ.get("RATE_LIMIT_BY_EMAIL", "10/minute")

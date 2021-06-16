@@ -8,7 +8,7 @@ from pcapi.models import ApiErrors
 from pcapi.tasks.decorator import task
 
 
-ID_CHECK_TASK_QUEUE = f"idcheck-{settings.ENV}"
+ID_CHECK_TASK_QUEUE = settings.GCP_ID_CHECK_CLOUD_TASK_NAME
 
 
 class VerifyIdentityDocumentRequest(BaseModel):
