@@ -48,6 +48,7 @@ class PreBookingResponse(BaseModel):
     confirmationDate: Optional[datetime] = Field(description="Date of confirmation if prebooking is confirmed")
     confirmationLimitDate: datetime = Field(description="Limit date to confirm the prebooking")
     coordinates: Coordinates = Field(description="Accurate coordinates of event")
+    description: str = Field(description="Offer description")
     durationMinutes: Optional[int] = Field(description="Offer's duration in minutes")
     expirationDate: Optional[datetime] = Field(description="Expiration date after which booking is cancelled")
     id: int = Field(description="pass Culture's prebooking id")
