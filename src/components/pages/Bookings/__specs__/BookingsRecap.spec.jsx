@@ -341,7 +341,7 @@ describe('components | BookingsRecap | Pro user', () => {
     // Then
     await screen.findAllByText(bookingRecap.stock.offer_name)
     expect(getNthCallNthArg(loadFilteredBookingsRecap, 1).eventDate).toStrictEqual(
-      new Date('2020-06-08T00:00:00.000Z')
+      new Date(2020, 5, 8)
     )
   })
 
