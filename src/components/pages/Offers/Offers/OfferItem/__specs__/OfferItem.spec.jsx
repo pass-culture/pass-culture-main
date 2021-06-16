@@ -18,12 +18,6 @@ const renderOfferItem = props => {
   )
 }
 
-jest.mock('utils/fetch', () => {
-  return {
-    fetchFromApiWithCredentials: jest.fn().mockImplementation(() => Promise.resolve()),
-  }
-})
-
 describe('src | components | pages | Offers | OfferItem', () => {
   let props
   let eventOffer
