@@ -1,10 +1,11 @@
 import '@testing-library/jest-dom'
-import { act, fireEvent, render, screen, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
+import NotificationContainer from 'components/layout/Notification/NotificationContainer'
 import { BOOKING_STATUS } from 'components/pages/Bookings/BookingsRecapTableLegacy/CellsFormatter/utils/bookingStatusConverter'
 import { DEFAULT_PRE_FILTERS } from 'components/pages/Bookings/PreFilters/_constants'
 import { getVenuesForOfferer, loadFilteredBookingsRecap } from 'repository/pcapi/pcapi'
@@ -30,6 +31,7 @@ const renderBookingsRecap = async (props, store = {}, routerState) => {
       <Provider store={store}>
         <MemoryRouter initialEntries={[{ pathname: '/reservations', state: routerState }]}>
           <BookingsRecapContainer {...props} />
+          <NotificationContainer />
         </MemoryRouter>
       </Provider>
     )
@@ -68,6 +70,10 @@ describe('components | BookingsRecap | Pro user', () => {
     })
     venue = venueFactory()
     getVenuesForOfferer.mockResolvedValue([venue])
+  })
+
+  afterEach(() => {
+    loadFilteredBookingsRecap.mockReset()
   })
 
   it('should show a pre-filter section', async () => {
@@ -517,5 +523,52 @@ describe('components | BookingsRecap | Pro user', () => {
     const firstBookingRecap = await screen.findAllByText(booking.stock.offer_name)
     expect(firstBookingRecap).toHaveLength(2)
     expect(screen.queryByText(otherVenueBooking.stock.offer_name)).not.toBeInTheDocument()
+  })
+
+  it('should show notification with information message when there are more than 5 pages', async () => {
+    // Given
+    const bookingsRecap = { pages: 6, bookings_recap: [] }
+    loadFilteredBookingsRecap
+      .mockResolvedValueOnce({ ...bookingsRecap, page: 1 })
+      .mockResolvedValueOnce({ ...bookingsRecap, page: 2 })
+      .mockResolvedValueOnce({ ...bookingsRecap, page: 3 })
+      .mockResolvedValueOnce({ ...bookingsRecap, page: 4 })
+      .mockResolvedValueOnce({ ...bookingsRecap, page: 5 })
+      .mockResolvedValueOnce({ ...bookingsRecap, page: 6 })
+    await renderBookingsRecap(props, store)
+
+    // when
+    userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
+    await userEvent.click(screen.getByText('Afficher', { selector: 'button' }))
+
+    // Then
+    const informationalMessage = await screen.findByText(
+      'L’affichage des réservations a été limité à 5 000 réservations. Vous pouvez modifier les filtres pour affiner votre recherche.'
+    )
+    expect(informationalMessage).toBeInTheDocument()
+    expect(loadFilteredBookingsRecap).toHaveBeenCalledTimes(5)
+  })
+
+  it('should not show notification with information message when there are 5 pages or less', async () => {
+    // Given
+    const bookingsRecap = { pages: 5, bookings_recap: [] }
+    loadFilteredBookingsRecap
+      .mockResolvedValueOnce({ ...bookingsRecap, page: 1 })
+      .mockResolvedValueOnce({ ...bookingsRecap, page: 2 })
+      .mockResolvedValueOnce({ ...bookingsRecap, page: 3 })
+      .mockResolvedValueOnce({ ...bookingsRecap, page: 4 })
+      .mockResolvedValueOnce({ ...bookingsRecap, page: 5 })
+    await renderBookingsRecap(props, store)
+
+    // when
+    userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
+    await userEvent.click(screen.getByText('Afficher', { selector: 'button' }))
+
+    // Then
+    await waitFor(() => expect(loadFilteredBookingsRecap).toHaveBeenCalledTimes(5))
+    const informationalMessage = screen.queryByText(
+      'L’affichage des réservations a été limité à 5 000 réservations. Vous pouvez modifier les filtres pour affiner votre recherche.'
+    )
+    expect(informationalMessage).not.toBeInTheDocument()
   })
 })

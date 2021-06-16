@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 
 import { NOTIFICATION_SHOW_DURATION, NOTIFICATION_TRANSITION_DURATION } from './_constants'
 import { ReactComponent as ErrorIcon } from './assets/notification-error-white.svg'
+import { ReactComponent as InfoIcon } from './assets/notification-information.svg'
 import { ReactComponent as SuccessIcon } from './assets/notification-success-white.svg'
 import { ReactComponent as PendingIcon } from './assets/status-pending.svg'
 
@@ -37,8 +38,8 @@ const Notification = ({ hideNotification, notification }) => {
     iconComponent = <ErrorIcon />
   } else if (type === 'pending') {
     iconComponent = <PendingIcon />
-  } else if (type === 'warning') {
-    iconComponent = null
+  } else if (type === 'information') {
+    iconComponent = <InfoIcon />
   }
 
   if (isInDom) {
@@ -57,7 +58,7 @@ Notification.propTypes = {
   hideNotification: PropTypes.func.isRequired,
   notification: PropTypes.shape({
     text: PropTypes.string,
-    type: PropTypes.oneOf(['error', 'success', 'pending', 'warning']),
+    type: PropTypes.oneOf(['error', 'success', 'pending', 'information']),
   }).isRequired,
 }
 

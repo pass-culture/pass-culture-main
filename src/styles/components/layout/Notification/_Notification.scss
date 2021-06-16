@@ -71,9 +71,9 @@
     color: $white;
   }
 
-  &.is-warning {
-    background-color: $attention;
-    color: $black;
+  &.is-information {
+    background-color: $accent;
+    color: $white;
   }
 
   svg {

@@ -20,7 +20,7 @@ const BookingsRecap = ({
   arePreFiltersEnabled,
   isUserAdmin,
   location,
-  showWarningNotification,
+  showInformationNotification,
 }) => {
   const [appliedPreFilters, setAppliedPreFilters] = useState({
     bookingBeginningDate: DEFAULT_PRE_FILTERS.bookingBeginningDate,
@@ -70,10 +70,10 @@ const BookingsRecap = ({
 
       setIsLoading(false)
       if (currentPage === MAX_LOADED_PAGES && currentPage < pages) {
-        showWarningNotification()
+        showInformationNotification()
       }
     },
-    [showWarningNotification]
+    [showInformationNotification]
   )
 
   useEffect(() => {
@@ -177,7 +177,7 @@ BookingsRecap.propTypes = {
       statuses: PropTypes.arrayOf(PropTypes.string),
     }),
   }).isRequired,
-  showWarningNotification: PropTypes.func.isRequired,
+  showInformationNotification: PropTypes.func.isRequired,
 }
 
 export default BookingsRecap

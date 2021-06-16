@@ -16,12 +16,12 @@ export function mapStateToProps(state) {
 }
 
 const mapDispatchToProps = dispatch => ({
-  showWarningNotification: () =>
+  showInformationNotification: () =>
     dispatch(
       showNotification({
-        type: 'warning',
+        type: 'information',
         text:
-          'Vous avez été limité à 5 000 réservations. Veuillez contacter le support si nécessaire.',
+          'L’affichage des réservations a été limité à 5 000 réservations. Vous pouvez modifier les filtres pour affiner votre recherche.',
       })
     ),
 })
