@@ -1,7 +1,6 @@
 from datetime import datetime
 from datetime import time
 from datetime import timedelta
-import math
 import typing
 from typing import Optional
 

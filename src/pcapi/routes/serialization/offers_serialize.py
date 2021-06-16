@@ -14,7 +14,6 @@ from pcapi.core.offers.models import OfferStatus
 from pcapi.models import ThingType
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
-from pcapi.serialization.utils import cast_optional_field_str_to_int
 from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import dehumanize_list_field
 from pcapi.serialization.utils import humanize_field
@@ -202,7 +201,7 @@ class ListOffersOfferResponseModel(BaseModel):
 
 
 class ListOffersResponseModel(BaseModel):
-    offers: list[ListOffersOfferResponseModel]
+    __root__: list[ListOffersOfferResponseModel]
 
     class Config:
         json_encoders = {datetime: format_into_utc_date}

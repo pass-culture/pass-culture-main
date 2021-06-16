@@ -58,7 +58,7 @@ def list_offers(query: ListOffersQueryModel) -> ListOffersResponseModel:
         period_ending_date=query.period_ending_date,
     )
 
-    return ListOffersResponseModel(**serialize_offers_recap_paginated(paginated_offers))
+    return ListOffersResponseModel(__root__=serialize_offers_recap_paginated(paginated_offers))
 
 
 @private_api.route("/offers/<offer_id>", methods=["GET"])

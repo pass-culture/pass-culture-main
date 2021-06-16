@@ -73,13 +73,6 @@ def dehumanize_id(id_to_dehumanize: Optional[Union[int, str]]) -> Optional[int]:
     return int(id_to_dehumanize)
 
 
-def cast_optional_str_to_int(optional_str: Optional[str]) -> Optional[int]:
-    if isinstance(optional_str, str):
-        return int(optional_str)
-
-    return optional_str
-
-
 def check_string_is_not_empty(string: str) -> str:
     if not string or string.isspace():
         raise MissingError()
@@ -112,10 +105,6 @@ def dehumanize_field(field_name: str) -> classmethod:
 
 def dehumanize_list_field(field_name: str) -> classmethod:
     return validator(field_name, pre=True, allow_reuse=True)(dehumanize_ids_list)
-
-
-def cast_optional_field_str_to_int(field_name: str) -> classmethod:
-    return validator(field_name, pre=True, allow_reuse=True)(cast_optional_str_to_int)
 
 
 def validate_not_empty_string_when_provided(field_name: str) -> classmethod:

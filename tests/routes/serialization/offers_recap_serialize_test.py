@@ -78,4 +78,4 @@ def should_return_serialized_offers_with_relevant_informations():
             "venueId": humanize(venue_id),
         }
     ]
-    assert result["offers"] == expected_serialized_offer
+    assert result == expected_serialized_offer

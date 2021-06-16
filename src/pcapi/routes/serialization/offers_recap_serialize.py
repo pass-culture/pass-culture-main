@@ -1,5 +1,3 @@
-from typing import Any
-
 from pcapi.domain.pro_offers.offers_recap import OfferRecap
 from pcapi.domain.pro_offers.offers_recap import OfferRecapStock
 from pcapi.domain.pro_offers.offers_recap import OfferRecapVenue
@@ -7,10 +5,8 @@ from pcapi.domain.pro_offers.offers_recap import OffersRecap
 from pcapi.utils.human_ids import humanize
 
 
-def serialize_offers_recap_paginated(paginated_offers: OffersRecap) -> dict[str, Any]:
-    return {
-        "offers": [_serialize_offer_paginated(offer) for offer in paginated_offers.offers],
-    }
+def serialize_offers_recap_paginated(paginated_offers: OffersRecap) -> list[dict]:
+    return [_serialize_offer_paginated(offer) for offer in paginated_offers.offers]
 
 
 def _serialize_offer_paginated(offer: OfferRecap) -> dict:

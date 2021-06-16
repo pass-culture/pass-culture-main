@@ -4,7 +4,6 @@ from unittest.mock import patch
 from pcapi.core import testing
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.infrastructure.repository.pro_offers.offers_recap_domain_converter import to_domain
 from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
@@ -41,42 +40,40 @@ class Returns200Test:
 
         # then
         assert response.status_code == 200
-        assert response.json == {
-            "offers": [
-                {
-                    "hasBookingLimitDatetimesPassed": False,
-                    "id": humanize(offer_on_requested_venue.id),
-                    "isActive": True,
-                    "isEditable": True,
-                    "isEvent": False,
-                    "isThing": True,
-                    "productIsbn": "123456789",
-                    "name": "My Offer",
-                    "status": "ACTIVE",
-                    "stocks": [
-                        {
-                            "id": humanize(stock.id),
-                            "offerId": humanize(offer_on_requested_venue.id),
-                            "hasBookingLimitDatetimePassed": False,
-                            "remainingQuantity": 1000,
-                            "beginningDatetime": None,
-                        }
-                    ],
-                    "thumbUrl": None,
-                    "type": "ThingType.AUDIOVISUEL",
-                    "venue": {
-                        "departementCode": departement_code,
-                        "id": humanize(requested_venue.id),
-                        "isVirtual": False,
-                        "managingOffererId": humanize(offerer.id),
-                        "name": "My Venue",
-                        "offererName": "My Offerer",
-                        "publicName": "My public name",
-                    },
-                    "venueId": humanize(requested_venue.id),
-                }
-            ],
-        }
+        assert response.json == [
+            {
+                "hasBookingLimitDatetimesPassed": False,
+                "id": humanize(offer_on_requested_venue.id),
+                "isActive": True,
+                "isEditable": True,
+                "isEvent": False,
+                "isThing": True,
+                "productIsbn": "123456789",
+                "name": "My Offer",
+                "status": "ACTIVE",
+                "stocks": [
+                    {
+                        "id": humanize(stock.id),
+                        "offerId": humanize(offer_on_requested_venue.id),
+                        "hasBookingLimitDatetimePassed": False,
+                        "remainingQuantity": 1000,
+                        "beginningDatetime": None,
+                    }
+                ],
+                "thumbUrl": None,
+                "type": "ThingType.AUDIOVISUEL",
+                "venue": {
+                    "departementCode": departement_code,
+                    "id": humanize(requested_venue.id),
+                    "isVirtual": False,
+                    "managingOffererId": humanize(offerer.id),
+                    "name": "My Venue",
+                    "offererName": "My Offerer",
+                    "publicName": "My public name",
+                },
+                "venueId": humanize(requested_venue.id),
+            }
+        ]
 
     def should_filter_by_venue_when_user_is_not_admin_and_request_specific_venue_with_rights_on_it(
         self, app, db_session
@@ -98,7 +95,7 @@ class Returns200Test:
         )
 
         # then
-        offers = response.json["offers"]
+        offers = response.json
         assert response.status_code == 200
         assert len(offers) == 1
 
@@ -292,9 +289,7 @@ class Returns404Test:
 
         # then
         assert response.status_code == 200
-        assert response.json == {
-            "offers": [],
-        }
+        assert response.json == []
 
     def should_return_no_offers_when_user_offerer_is_not_validated(self, app, db_session):
         # Given
@@ -311,6 +306,4 @@ class Returns404Test:
 
         # then
         assert response.status_code == 200
-        assert response.json == {
-            "offers": [],
-        }
+        assert response.json == []
