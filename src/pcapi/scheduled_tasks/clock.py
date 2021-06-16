@@ -79,6 +79,8 @@ def pc_remote_import_beneficiaries(app: Flask) -> None:
 @log_cron
 @cron_context
 def pc_remote_import_beneficiaries_from_old_dms(app: Flask) -> None:
+    if not settings.IS_PROD:
+        return
     procedure_id = 44623
     import_from_date = find_most_recent_beneficiary_creation_date_for_source(
         BeneficiaryImportSources.demarches_simplifiees, procedure_id
