@@ -45,7 +45,7 @@ def create_industrial_webapp_young_users():
 
     variants = itertools.product(DEPARTEMENT_CODES, WEBAPP_TAGS, DEPOSIT_VERSIONS)
 
-    for departement_code, tag, deposit_version in variants:
+    for index, (departement_code, tag, deposit_version) in enumerate(variants, start=0):
         short_tag = "".join([chunk[0].upper() for chunk in tag.split("-")])
 
         if tag == "has-signed-up":
@@ -72,6 +72,7 @@ def create_industrial_webapp_young_users():
             cultural_survey_id=cultural_survey_id,
             departement_code=str(departement_code),
             email=email,
+            phone_number=f"+336{index:0>8}",
             first_name="PC Test Jeune",
             date_of_birth=datetime(2003, 1, 1),
             has_seen_tutorials=has_seen_tutorials,
@@ -114,7 +115,7 @@ def create_industrial_webapp_general_public_users():
 
     variants = itertools.product(AGE_TAGS, DEPOSIT_VERSIONS)
 
-    for age, deposit_version in variants:
+    for index, (age, deposit_version) in enumerate(variants, start=100):
         short_age = "".join([chunk[0].upper() for chunk in age.split("-")])
         email = f"pctest.grandpublic.{age}.v{deposit_version}@example.com"
         departement_code = 39
@@ -131,6 +132,7 @@ def create_industrial_webapp_general_public_users():
             cultural_survey_id=None,
             departement_code=str(departement_code),
             email=email,
+            phone_number=f"+336{index:0>8}",
             first_name="PC Test Grand Public",
             date_of_birth=date_of_birth,
             has_seen_tutorials=False,
