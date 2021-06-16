@@ -5,6 +5,7 @@ import pytest
 
 from pcapi import models
 import pcapi.core.bookings.factories as bookings_factories
+import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.factories import ActivationCodeFactory
 from pcapi.core.testing import override_features
 from pcapi.emails.offerer_booking_recap import retrieve_data_for_offerer_booking_recap_email
@@ -247,9 +248,21 @@ def test_no_need_when_using_activation_code():
 @pytest.mark.usefixtures("db_session")
 def test_no_need_when_booking_is_autovalidated():
     # Given
-    booking = make_booking(
-        stock__offer__product__type=str(models.ThingType.AUDIOVISUEL),
-        stock__offer__product__url="http://example.com",
+    offer = offers_factories.OfferFactory(
+        venue__name="Lieu de l'offreur",
+        venue__managingOfferer__name="Théâtre du coin",
+        product=offers_factories.DigitalProductFactory(name="Super événement", url="http://example.com"),
+    )
+    digital_stock = offers_factories.StockWithActivationCodesFactory()
+    first_activation_code = digital_stock.activationCodes[0]
+    booking = bookings_factories.BookingFactory(
+        user__email="john@example.com",
+        user__firstName="John",
+        user__lastName="Doe",
+        isUsed=True,
+        stock__offer=offer,
+        activationCode=first_activation_code,
+        dateCreated=datetime(2018, 1, 1),
     )
 
     # When
@@ -264,20 +277,30 @@ def test_no_need_when_booking_is_autovalidated():
         is_booking_autovalidated=1,
         must_use_token_for_payment=0,
         offer_type="ThingType.AUDIOVISUEL",
+        contremarque=booking.token,
     )
     assert email_data == expected
 
 
 @override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True)
 @pytest.mark.usefixtures("db_session")
-def test_a_digital_booking_is_automatically_used():
+def test_a_digital_booking_with_activation_code_is_automatically_used():
     # Given
-    booking = make_booking(
-        quantity=10,
-        stock__price=0,
-        stock__offer__product__type=str(models.ThingType.AUDIOVISUEL),
-        stock__offer__product__url="http://example.com",
-        stock__offer__name="Super offre numérique",
+    offer = offers_factories.OfferFactory(
+        venue__name="Lieu de l'offreur",
+        venue__managingOfferer__name="Théâtre du coin",
+        product=offers_factories.DigitalProductFactory(name="Super offre numérique", url="http://example.com"),
+    )
+    digital_stock = offers_factories.StockWithActivationCodesFactory()
+    first_activation_code = digital_stock.activationCodes[0]
+    booking = bookings_factories.BookingFactory(
+        user__email="john@example.com",
+        user__firstName="John",
+        user__lastName="Doe",
+        isUsed=True,
+        stock__offer=offer,
+        activationCode=first_activation_code,
+        dateCreated=datetime(2018, 1, 1),
     )
 
     # When
@@ -288,14 +311,15 @@ def test_a_digital_booking_is_automatically_used():
         booking,
         date="",
         heure="",
-        prix="Gratuit",
+        prix="10.00 €",
         is_event=0,
         nom_offre="Super offre numérique",
         offer_type="ThingType.AUDIOVISUEL",
-        quantity=10,
+        quantity=1,
         can_expire_after_30_days=0,
         is_booking_autovalidated=1,
         must_use_token_for_payment=0,
+        contremarque=booking.token,
     )
     assert email_data == expected
 

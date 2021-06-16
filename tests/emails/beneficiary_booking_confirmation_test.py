@@ -188,14 +188,18 @@ class DigitalOffersTest:
 
     @override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True)
     @pytest.mark.usefixtures("db_session")
-    def test_hide_cancellation_policy_when_auto_validation_activated(self):
-        booking = make_booking(
-            quantity=10,
-            stock__price=0,
-            stock__offer__product__type=str(models.ThingType.AUDIOVISUEL),
-            stock__offer__product__url="http://example.com",
-            stock__offer__name="Super offre numérique",
+    def test_hide_cancellation_policy_when_auto_validation_activated_on_bookings_with_activation_code(self):
+        offer = offers_factories.OfferFactory(
+            venue__name="Lieu de l'offreur",
+            venue__managingOfferer__name="Théâtre du coin",
+            product=offers_factories.DigitalProductFactory(name="Super offre numérique", url="http://example.com"),
         )
+        digital_stock = offers_factories.StockWithActivationCodesFactory()
+        first_activation_code = digital_stock.activationCodes[0]
+        booking = bookings_factories.BookingFactory(
+            isUsed=True, stock__offer=offer, activationCode=first_activation_code, dateCreated=datetime(2018, 1, 1)
+        )
+
         mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
 
         email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)
@@ -209,10 +213,17 @@ class DigitalOffersTest:
             is_event=0,
             is_single_event=0,
             offer_name="Super offre numérique",
-            offer_price="Gratuit",
+            offer_price="10.00 €",
+            offer_token=booking.activationCode.code,
             can_expire=0,
             has_offer_url=1,
             digital_offer_url="http://example.com",
+            user_first_name="Jeanne",
+            venue_address="1 boulevard Poissonnière",
+            venue_city="Paris",
+            venue_postal_code="75000",
+            booking_date="1 janvier 2018",
+            booking_hour="01h00",
         )
 
         assert email_data == expected

@@ -22,7 +22,11 @@ def retrieve_data_for_offerer_booking_recap_email(booking: Booking) -> dict:
     offer_type = offer.type
     is_event = int(offer.isEvent)
 
-    if offer.isDigital and feature_queries.is_active(FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS):
+    if (
+        offer.isDigital
+        and booking.activationCode
+        and feature_queries.is_active(FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS)
+    ):
         can_expire_after_30_days = 0
         is_booking_autovalidated = 1
     else:

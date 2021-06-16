@@ -18,7 +18,11 @@ def retrieve_data_for_beneficiary_booking_confirmation_email(booking: Booking) -
     is_physical_offer = ProductType.is_thing(name=offer.type) and not is_digital_offer
     is_event = ProductType.is_event(name=offer.type)
 
-    if is_digital_offer and feature_queries.is_active(FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS):
+    if (
+        is_digital_offer
+        and booking.activationCode
+        and feature_queries.is_active(FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS)
+    ):
         can_expire = 0
     else:
         can_expire = int(offer.offerType.get("canExpire", False))

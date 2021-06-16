@@ -6,7 +6,7 @@ from pcapi.core.bookings import api
 from pcapi.core.bookings import conf
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings.models import Booking
-from pcapi.core.offers.models import ActivationCode
+from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.users.api import get_domains_credit
@@ -17,6 +17,8 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
 from pcapi.repository import payment_queries
 from pcapi.utils.date import utc_datetime_to_department_timezone
+
+from .exceptions import NoActivationCodeAvailable
 
 
 def check_can_book_free_offer(user: User, stock: Stock) -> None:
@@ -166,7 +168,11 @@ def check_can_be_mark_as_unused(booking: Booking) -> None:
         gone.add_error("booking", "Cette réservation n'a pas encore été validée")
         raise gone
 
-    if booking.stock.offer.isDigital and feature_queries.is_active(FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS):
+    if (
+        booking.stock.offer.isDigital
+        and booking.activationCode
+        and feature_queries.is_active(FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS)
+    ):
         forbidden = api_errors.ForbiddenError()
         forbidden.add_error("booking", "Cette réservation ne peut pas être marquée comme inutilisée")
         raise forbidden
@@ -182,7 +188,11 @@ def check_can_be_mark_as_unused(booking: Booking) -> None:
         raise gone
 
 
-def check_activation_is_bookable(activation_code: ActivationCode) -> bool:
-    return not activation_code.bookingId and (
-        not activation_code.expirationDate or activation_code.expirationDate > datetime.datetime.utcnow()
-    )
+def check_activation_code_available(stock) -> None:
+    if (
+        feature_queries.is_active(FeatureToggle.ENABLE_ACTIVATION_CODES)
+        and stock.offer.isDigital
+        and stock.activationCodes
+    ):
+        if offers_repository.get_available_activation_code(stock) is None:
+            raise NoActivationCodeAvailable()

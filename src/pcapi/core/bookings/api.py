@@ -16,7 +16,6 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.repository import generate_booking_token
 from pcapi.core.offers import repository as offers_repository
-from pcapi.core.offers.models import ActivationCode
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
@@ -33,8 +32,6 @@ from pcapi.workers.push_notification_job import update_user_bookings_attributes_
 from pcapi.workers.user_emails_job import send_booking_cancellation_emails_to_user_and_offerer_job
 
 from . import validation
-from .exceptions import NoActivationCodeAvailable
-from .validation import check_activation_is_bookable
 
 
 logger = logging.getLogger(__name__)
@@ -43,13 +40,6 @@ QR_CODE_PASS_CULTURE_VERSION = "v3"
 QR_CODE_VERSION = 2
 QR_CODE_BOX_SIZE = 5
 QR_CODE_BOX_BORDER = 1
-
-
-def get_available_activation_code(stock: Stock) -> typing.Union[ActivationCode]:
-    return next(
-        (activationCode for activationCode in stock.activationCodes if check_activation_is_bookable(activationCode)),
-        None,
-    )
 
 
 def book_offer(
@@ -71,6 +61,7 @@ def book_offer(
         validation.check_stock_is_bookable(stock)
         total_amount = quantity * stock.price
         validation.check_expenses_limits(beneficiary, total_amount, stock.offer)
+        validation.check_activation_code_available(stock)
 
         # FIXME (dbaty, 2020-10-20): if we directly set relations (for
         # example with `booking.user = beneficiary`) instead of foreign keys,
@@ -93,16 +84,8 @@ def book_offer(
 
         booking.dateCreated = datetime.datetime.utcnow()
         booking.confirmationDate = compute_confirmation_date(stock.beginningDatetime, booking.dateCreated)
-        if stock.offer.isDigital and feature_queries.is_active(FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS):
-            booking.isUsed = True
-            booking.dateUsed = datetime.datetime.utcnow()
 
-        if stock.activationCodes:
-            activation_code = get_available_activation_code(stock)
-            if activation_code is None:
-                raise NoActivationCodeAvailable()
-
-            booking.activationCode = activation_code
+        set_booking_is_used_for_digital_offers_with_activation_code(stock, booking)
 
         stock.dnBookedQuantity += booking.quantity
 
@@ -134,6 +117,19 @@ def book_offer(
     update_user_bookings_attributes_job.delay(beneficiary.id)
 
     return booking
+
+
+def set_booking_is_used_for_digital_offers_with_activation_code(stock, booking) -> None:
+    if (
+        feature_queries.is_active(FeatureToggle.ENABLE_ACTIVATION_CODES)
+        and stock.offer.isDigital
+        and stock.activationCodes
+    ):
+        booking.activationCode = offers_repository.get_available_activation_code(stock)
+
+        if feature_queries.is_active(FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS):
+            booking.isUsed = True
+            booking.dateUsed = datetime.datetime.utcnow()
 
 
 def _cancel_booking(booking: Booking, reason: BookingCancellationReasons) -> None:

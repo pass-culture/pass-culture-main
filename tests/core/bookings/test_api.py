@@ -143,7 +143,7 @@ class BookOfferTest:
         email_data2 = mails_testing.outbox[1].sent_data
         assert email_data2["MJ-TemplateID"] == 2942751  # to beneficiary
 
-    def test_create_multiple_booking(self, app):
+    def test_booked_categories_are_sent_to_batch_backend(self, app):
         offer1 = offers_factories.OfferFactory(type="ThingType.AUDIOVISUEL")
         offer2 = offers_factories.OfferFactory(type="ThingType.CINEMA_ABO")
         offers_factories.OfferFactory(type="ThingType.INSTRUMENT")
@@ -168,25 +168,25 @@ class BookOfferTest:
         expected_categories = ["ThingType.AUDIOVISUEL", "ThingType.CINEMA_ABO"]
         assert sorted(data["attribute_values"]["ut.booking_categories"]) == expected_categories
 
-    @override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True)
-    def test_create_booking_on_digital_offer(self):
+    @override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True, ENABLE_ACTIVATION_CODES=True)
+    def test_booking_on_digital_offer_with_activation_stock(self):
+        offer = offers_factories.OfferFactory(product=offers_factories.DigitalProductFactory())
+        stock = offers_factories.StockWithActivationCodesFactory(price=10, dnBookedQuantity=3, offer=offer)
+        user = users_factories.UserFactory()
+
+        booking = api.book_offer(beneficiary=user, stock_id=stock.id, quantity=1)
+
+        assert booking.isUsed
+
+    @override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True, ENABLE_ACTIVATION_CODES=True)
+    def test_booking_on_digital_offer_without_activation_stock(self):
         offer = offers_factories.OfferFactory(product=offers_factories.DigitalProductFactory())
         stock = offers_factories.StockFactory(price=10, dnBookedQuantity=5, offer=offer)
         user = users_factories.UserFactory()
 
         booking = api.book_offer(beneficiary=user, stock_id=stock.id, quantity=1)
 
-        # One request should have been sent to Batch with the user's
-        # updated attributes
-        assert len(push_testing.requests) == 1
-
-        data = push_testing.requests[0]
-        assert data["attribute_values"]["u.credit"] == 49_000  # values in cents
-
-        expected_date = booking.dateCreated.strftime(BATCH_DATETIME_FORMAT)
-        assert data["attribute_values"]["date(u.last_booking_date)"] == expected_date
-
-        assert booking.isUsed
+        assert not booking.isUsed
 
     def test_create_event_booking(self):
         ten_days_from_now = datetime.utcnow() + timedelta(days=10)
@@ -274,6 +274,7 @@ class BookOfferTest:
             )
 
     class WhenBookingWithActivationCodeTest:
+        @override_features(ENABLE_ACTIVATION_CODES=True)
         def test_book_offer_with_first_activation_code_available(self):
             # Given
             user = users_factories.UserFactory()
@@ -286,6 +287,7 @@ class BookOfferTest:
             # Then
             assert booking.activationCode == first_activation_code
 
+        @override_features(ENABLE_ACTIVATION_CODES=True)
         def test_ignore_activation_that_is_already_used_for_booking(self):
             # Given
             user = users_factories.UserFactory()
@@ -301,6 +303,7 @@ class BookOfferTest:
             # Then
             assert booking.activationCode.code == "code-bha45k15fuz"
 
+        @override_features(ENABLE_ACTIVATION_CODES=True)
         def test_raise_when_no_activation_code_available(self):
             # Given
             user = users_factories.UserFactory()
@@ -318,6 +321,7 @@ class BookOfferTest:
                 "noActivationCodeAvailable": ["Ce stock ne contient plus de code d'activation disponible."]
             }
 
+        @override_features(ENABLE_ACTIVATION_CODES=True)
         def test_raise_when_activation_codes_are_expired(self):
             # Given
             user = users_factories.UserFactory()
@@ -592,6 +596,13 @@ class MarkAsUnusedTest:
         api.mark_as_unused(booking)
         assert not booking.isUsed
 
+    @override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True)
+    def test_mark_as_unused_digital_offer(self):
+        offer = offers_factories.OfferFactory(product=offers_factories.DigitalProductFactory())
+        booking = factories.BookingFactory(isUsed=True, stock__offer=offer)
+        api.mark_as_unused(booking)
+        assert not booking.isUsed
+
     def test_raise_if_not_yet_used(self):
         booking = factories.BookingFactory(isUsed=False)
         with pytest.raises(api_errors.ResourceGoneError):
@@ -612,12 +623,14 @@ class MarkAsUnusedTest:
         assert booking.isUsed  # unchanged
 
     @override_features(AUTO_ACTIVATE_DIGITAL_BOOKINGS=True)
-    def test_raise_if_booking_was_automatically_used(self):
+    def test_raise_if_booking_was_automatically_used_for_digital_offer_with_activation_code(self):
         offer = offers_factories.OfferFactory(product=offers_factories.DigitalProductFactory())
-        booking = factories.BookingFactory(isUsed=True, stock__offer=offer)
+        digital_stock = offers_factories.StockWithActivationCodesFactory()
+        first_activation_code = digital_stock.activationCodes[0]
+        booking = factories.BookingFactory(isUsed=True, stock__offer=offer, activationCode=first_activation_code)
         with pytest.raises(api_errors.ForbiddenError):
             api.mark_as_unused(booking)
-        assert booking.isUsed  # unchanged
+        assert booking.isUsed
 
 
 class GenerateQrCodeTest:

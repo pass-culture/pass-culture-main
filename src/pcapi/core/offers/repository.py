@@ -2,6 +2,7 @@ from datetime import datetime
 from datetime import time
 from datetime import timedelta
 import math
+import typing
 from typing import Optional
 
 from sqlalchemy import and_
@@ -15,6 +16,7 @@ from sqlalchemy.sql.functions import coalesce
 from pcapi.core.bookings.models import Booking
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.exceptions import StockDoesNotExist
+from pcapi.core.offers.models import ActivationCode
 from pcapi.core.offers.models import OfferStatus
 from pcapi.core.offers.models import OfferValidationConfig
 from pcapi.core.offers.models import OfferValidationStatus
@@ -316,3 +318,13 @@ def delete_past_draft_offer() -> None:
     yesterday = datetime.utcnow() - timedelta(days=1)
     Offer.query.filter(Offer.dateCreated < yesterday, Offer.validation == OfferValidationStatus.DRAFT).delete()
     db.session.commit()
+
+
+def check_activation_is_bookable(activation_code: ActivationCode) -> bool:
+    return not activation_code.bookingId and (
+        not activation_code.expirationDate or activation_code.expirationDate > datetime.utcnow()
+    )
+
+
+def get_available_activation_code(stock: Stock) -> typing.Union[ActivationCode]:
+    return next(filter(check_activation_is_bookable, stock.activationCodes), None)

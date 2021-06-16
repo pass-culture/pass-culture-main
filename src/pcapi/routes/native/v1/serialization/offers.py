@@ -8,7 +8,7 @@ from pydantic.class_validators import validator
 from pydantic.fields import Field
 
 from pcapi.core.bookings.api import compute_confirmation_date
-from pcapi.core.bookings.api import get_available_activation_code
+from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.api import get_expense_domains
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -71,8 +71,8 @@ class OfferStockResponse(BaseModel):
         return compute_confirmation_date(stock.beginningDatetime, datetime.now())
 
     @staticmethod
-    def _get_activation_code_datetime(stock: Stock) -> Optional[dict]:
-        activation_code = get_available_activation_code(stock)
+    def _get_non_scrappable_activation_code(stock: Stock) -> Optional[dict]:
+        activation_code = offers_repository.get_available_activation_code(stock)
         if not activation_code or not activation_code.expirationDate:
             return None
         return {"expirationDate": activation_code.expirationDate}
@@ -80,7 +80,7 @@ class OfferStockResponse(BaseModel):
     @classmethod
     def from_orm(cls, stock):  # type: ignore
         stock.cancellation_limit_datetime = cls._get_cancellation_limit_datetime(stock)
-        stock.activationCode = cls._get_activation_code_datetime(stock)
+        stock.activationCode = cls._get_non_scrappable_activation_code(stock)
         return super().from_orm(stock)
 
 

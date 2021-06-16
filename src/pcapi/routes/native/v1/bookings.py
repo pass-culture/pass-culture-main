@@ -145,7 +145,11 @@ def is_ended_booking(booking: Booking) -> bool:
         # consider future events events as "ongoing" even if they are used
         return False
 
-    if booking.stock.offer.isDigital and feature_queries.is_active(FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS):
+    if (
+        booking.stock.offer.isDigital
+        and booking.activationCode
+        and feature_queries.is_active(FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS)
+    ):
         # consider digital bookings as special: isUsed should be true anyway so
         # let's use displayAsEnded
         return booking.displayAsEnded
