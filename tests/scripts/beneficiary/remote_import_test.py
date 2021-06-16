@@ -61,7 +61,7 @@ class RunTest:
 
         # then
         assert get_all_application_ids.call_count == 1
-        get_all_application_ids.assert_called_with(6712558, ANY, ANY)
+        get_all_application_ids.assert_called_with(6712558, ANY)
 
     @patch("pcapi.scripts.beneficiary.remote_import.process_beneficiary_application")
     def test_all_applications_are_processed_once(self, process_beneficiary_application):
@@ -689,7 +689,7 @@ class RunIntegrationTest:
             }
         }
 
-    def _get_all_applications_ids(self, procedure_id: str, token: str, last_update: datetime):
+    def _get_all_applications_ids(self, procedure_id: str, token: str):
         return [123]
 
     @override_features(FORCE_PHONE_VALIDATION=False)

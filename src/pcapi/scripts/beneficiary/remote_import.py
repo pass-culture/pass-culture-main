@@ -31,6 +31,7 @@ from pcapi.workers.push_notification_job import update_user_attributes_job
 logger = logging.getLogger(__name__)
 
 
+# TODO(xordoquy): remove process_applications_updated_after since it is not used
 def run(
     process_applications_updated_after: datetime,
     procedure_id: int,
@@ -48,7 +49,7 @@ def run(
     )
     error_messages: list[str] = []
     new_beneficiaries: list[User] = []
-    applications_ids = get_all_applications_ids(procedure_id, settings.DMS_TOKEN, process_applications_updated_after)
+    applications_ids = get_all_applications_ids(procedure_id, settings.DMS_TOKEN)
     retry_ids = get_applications_ids_to_retry()
 
     logger.info(
