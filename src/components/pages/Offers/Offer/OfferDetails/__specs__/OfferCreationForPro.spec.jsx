@@ -1713,6 +1713,7 @@ describe('offerDetails - Creation - pro user', () => {
         motorDisabilityCompliant: false,
         mentalDisabilityCompliant: false,
       }
+
       jest.spyOn(Object, 'values').mockReturnValue(['item'])
       pcapi.postThumbnail.mockRejectedValue({
         errors: { errors: ['Utilisez une image plus grande (supérieure à 400px par 400px)'] },

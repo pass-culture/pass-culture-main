@@ -11,7 +11,13 @@ import ImportFromURL from 'components/pages/Offers/Offer/Thumbnail/ImportFromURL
 import ImportTab from 'components/pages/Offers/Offer/Thumbnail/ImportTab/ImportTab'
 import Preview from 'components/pages/Offers/Offer/Thumbnail/Preview/Preview'
 
-const ThumbnailDialog = ({ setIsModalOpened, setPreview, setThumbnailInfo }) => {
+const ThumbnailDialog = ({
+  offerId,
+  postThumbnail,
+  setIsModalOpened,
+  setPreview,
+  setThumbnailInfo,
+}) => {
   const DIALOG_LABEL_ID = 'label_for_aria'
 
   const [activeTab, setActiveTab] = useState(IMPORT_TAB_ID)
@@ -42,12 +48,15 @@ const ThumbnailDialog = ({ setIsModalOpened, setPreview, setThumbnailInfo }) => 
 
   useEffect(() => {
     if (step === VALIDATION_STEP) {
-      setThumbnailInfo({
+      const thumbnailInfo = {
         credit: credit,
         thumbnail: thumbnail,
         croppingRect: croppingRect,
         thumbUrl: url,
-      })
+      }
+
+      setThumbnailInfo(thumbnailInfo)
+      offerId && postThumbnail(offerId, thumbnailInfo)
       setPreview(editedThumbnail)
       setIsModalOpened(false)
     }
@@ -56,6 +65,8 @@ const ThumbnailDialog = ({ setIsModalOpened, setPreview, setThumbnailInfo }) => 
     credit,
     croppingRect,
     editedThumbnail,
+    offerId,
+    postThumbnail,
     setIsModalOpened,
     setPreview,
     setThumbnailInfo,
@@ -148,7 +159,13 @@ const ThumbnailDialog = ({ setIsModalOpened, setPreview, setThumbnailInfo }) => 
   )
 }
 
+ThumbnailDialog.defaultProps = {
+  offerId: undefined,
+}
+
 ThumbnailDialog.propTypes = {
+  offerId: PropTypes.string,
+  postThumbnail: PropTypes.func.isRequired,
   setIsModalOpened: PropTypes.func.isRequired,
   setPreview: PropTypes.func.isRequired,
   setThumbnailInfo: PropTypes.func.isRequired,

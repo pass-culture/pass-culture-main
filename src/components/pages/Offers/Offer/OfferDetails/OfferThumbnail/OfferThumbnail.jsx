@@ -6,7 +6,14 @@ import { ReactComponent as AddThumbnailIcon } from 'components/pages/Offers/Offe
 import { ReactComponent as ErrorAlertIcon } from 'components/pages/Offers/Offer/OfferDetails/OfferThumbnail/assets/error-alert.svg'
 import ThumbnailDialog from 'components/pages/Offers/Offer/Thumbnail/ThumbnailDialog'
 
-const OfferThumbnail = ({ isDisabled, setThumbnailInfo, thumbnailError, url }) => {
+const OfferThumbnail = ({
+  isDisabled,
+  offerId,
+  postThumbnail,
+  setThumbnailInfo,
+  thumbnailError,
+  url,
+}) => {
   const [isModalOpened, setIsModalOpened] = useState(false)
   const [preview, setPreview] = useState(url)
   const thumbnailButtonRef = useRef(null)
@@ -15,6 +22,10 @@ const OfferThumbnail = ({ isDisabled, setThumbnailInfo, thumbnailError, url }) =
     e.target.blur()
     setIsModalOpened(true)
   }, [])
+
+  useEffect(() => {
+    setPreview(url)
+  }, [url])
 
   useEffect(() => {
     if (thumbnailError) {
@@ -59,6 +70,8 @@ const OfferThumbnail = ({ isDisabled, setThumbnailInfo, thumbnailError, url }) =
 
       {isModalOpened && (
         <ThumbnailDialog
+          offerId={offerId}
+          postThumbnail={postThumbnail}
           setIsModalOpened={setIsModalOpened}
           setPreview={setPreview}
           setThumbnailInfo={setThumbnailInfo}
@@ -70,11 +83,14 @@ const OfferThumbnail = ({ isDisabled, setThumbnailInfo, thumbnailError, url }) =
 
 OfferThumbnail.defaultProps = {
   isDisabled: false,
+  offerId: undefined,
   url: null,
 }
 
 OfferThumbnail.propTypes = {
   isDisabled: PropTypes.bool,
+  offerId: PropTypes.string,
+  postThumbnail: PropTypes.func.isRequired,
   setThumbnailInfo: PropTypes.func.isRequired,
   thumbnailError: PropTypes.bool.isRequired,
   url: PropTypes.string,

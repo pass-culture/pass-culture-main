@@ -1654,62 +1654,6 @@ describe('offerDetails - Edition', () => {
       const successNotification = await screen.findByText('Votre offre a bien été modifiée')
       expect(successNotification).toBeInTheDocument()
     })
-
-    it('should show an error notification and display an error message on the pre-existing thumbnail', async () => {
-      // Given
-      jest.spyOn(Object, 'values').mockReturnValue(['item'])
-      editedOffer.thumbUrl = 'https://example.com/image'
-      pcapi.loadOffer.mockResolvedValue(editedOffer)
-      pcapi.updateOffer.mockResolvedValue({})
-      pcapi.postThumbnail.mockRejectedValue({
-        errors: { errors: ['Utilisez une image plus grande (supérieure à 400px par 400px)'] },
-      })
-      await renderOffers(props, store)
-
-      // When
-      fireEvent.click(screen.getByText('Enregistrer'))
-
-      // Then
-      const button = await screen.findByTitle('Modifier l’image', { selector: 'button' })
-      expect(button).toBeInTheDocument()
-
-      const thumbnailUploadError = await screen.findByText(
-        "L'image n'a pas pu être ajoutée. Veuillez réessayer."
-      )
-      expect(thumbnailUploadError).toBeInTheDocument()
-
-      const errorNotification = await screen.findByText(
-        'Une ou plusieurs erreurs sont présentes dans le formulaire'
-      )
-      expect(errorNotification).toBeInTheDocument()
-    })
-
-    it('should show an error notification and display an error message on the placeholder', async () => {
-      // Given
-      jest.spyOn(Object, 'values').mockReturnValue(['item'])
-      pcapi.updateOffer.mockResolvedValue({})
-      pcapi.postThumbnail.mockRejectedValue({
-        errors: { errors: ['Utilisez une image plus grande (supérieure à 400px par 400px)'] },
-      })
-      await renderOffers(props, store)
-
-      // When
-      fireEvent.click(screen.getByText('Enregistrer'))
-
-      // Then
-      const addThumbnail = await screen.queryByText('Ajouter une image')
-      expect(addThumbnail).toBeInTheDocument()
-
-      const thumbnailUploadError = await screen.findByText(
-        "L'image n'a pas pu être ajoutée. Veuillez réessayer."
-      )
-      expect(thumbnailUploadError).toBeInTheDocument()
-
-      const errorNotification = await screen.findByText(
-        'Une ou plusieurs erreurs sont présentes dans le formulaire'
-      )
-      expect(errorNotification).toBeInTheDocument()
-    })
   })
 
   describe('when clicking on cancel link', () => {

@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { useCallback, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
@@ -43,6 +43,41 @@ const OfferDetails = ({
   const [thumbnailError, setThumbnailError] = useState(false)
   const [isSubmitLoading, setIsSubmitLoading] = useState(false)
 
+  useEffect(() => {
+    offer?.id && reloadOffer()
+  }, [offer?.id, reloadOffer])
+
+  const postThumbnail = useCallback(
+    async (offerId, thumbnailInfo) => {
+      const offerThumbnailHasBeenUpdated = Object.values(thumbnailInfo).length > 0
+      if (offerThumbnailHasBeenUpdated) {
+        const { credit, thumbnail, croppingRect, thumbUrl } = thumbnailInfo
+
+        try {
+          await pcapi.postThumbnail(
+            formValues.offererId,
+            offerId,
+            credit,
+            thumbnail,
+            thumbUrl,
+            croppingRect?.x,
+            croppingRect?.y,
+            croppingRect?.height
+          )
+        } catch (error) {
+          if (error && 'errors' in error) {
+            if (error.errors.errors) {
+              setThumbnailError(true)
+            }
+            showErrorNotification()
+          }
+          throw error
+        }
+      }
+    },
+    [showErrorNotification, formValues.offererId]
+  )
+
   const handleSubmitOffer = useCallback(
     async offerValues => {
       setIsSubmitLoading(true)
@@ -52,40 +87,13 @@ const OfferDetails = ({
           await pcapi.updateOffer(offer.id, offerValues)
           trackEditOffer(offer.id)
           showEditionSuccessNotification()
-          const offerThumbnailHasBeenUpdated = Object.values(thumbnailInfo).length > 0
-          if (offerThumbnailHasBeenUpdated) {
-            const { credit, thumbnail, croppingRect, thumbUrl } = thumbnailInfo
-            await pcapi.postThumbnail(
-              formValues.offererId,
-              offer.id,
-              credit,
-              thumbnail,
-              thumbUrl,
-              croppingRect?.x,
-              croppingRect?.y,
-              croppingRect?.height
-            )
-          }
           reloadOffer()
           setFormErrors({})
         } else {
           const response = await pcapi.createOffer(offerValues)
           const createdOfferId = response.id
           trackCreateOffer(createdOfferId)
-          const offerThumbnailHasBeenUploaded = Object.values(thumbnailInfo).length > 0
-          if (offerThumbnailHasBeenUploaded) {
-            const { credit, thumbnail, croppingRect, thumbUrl } = thumbnailInfo
-            await pcapi.postThumbnail(
-              formValues.offererId,
-              createdOfferId,
-              credit,
-              thumbnail,
-              thumbUrl,
-              croppingRect?.x,
-              croppingRect?.y,
-              croppingRect?.height
-            )
-          }
+          await postThumbnail(createdOfferId, thumbnailInfo)
 
           let queryString = ''
 
@@ -101,9 +109,6 @@ const OfferDetails = ({
         }
       } catch (error) {
         if (error && 'errors' in error) {
-          if (error.errors.errors) {
-            setThumbnailError(true)
-          }
           const mapApiErrorsToFormErrors = {
             venue: 'venueId',
           }
@@ -124,9 +129,9 @@ const OfferDetails = ({
       setIsSubmitLoading(false)
     },
     [
-      formValues.offererId,
       history,
       offer,
+      postThumbnail,
       reloadOffer,
       showEditionSuccessNotification,
       showErrorNotification,
@@ -185,6 +190,8 @@ const OfferDetails = ({
             <div className="sidebar-wrapper">
               <OfferThumbnail
                 isDisabled={isDisabled}
+                offerId={offer?.id}
+                postThumbnail={postThumbnail}
                 setThumbnailInfo={setThumbnailInfo}
                 thumbnailError={thumbnailError}
                 url={offer?.thumbUrl}

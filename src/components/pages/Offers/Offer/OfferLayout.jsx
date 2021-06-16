@@ -38,7 +38,7 @@ const OfferLayout = ({ location, match }) => {
 
   const reloadOffer = useCallback(
     async (isCreatingOffer = false) => (offer.id ? loadOffer(offer.id, isCreatingOffer) : false),
-    [loadOffer, offer]
+    [loadOffer, offer?.id]
   )
 
   const shouldBlockNavigation = useCallback(
