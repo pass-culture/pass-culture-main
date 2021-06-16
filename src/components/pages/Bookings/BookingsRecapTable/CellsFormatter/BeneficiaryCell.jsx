@@ -12,6 +12,7 @@ const BeneficiaryCell = ({ beneficiaryInfos }) => {
       <span className="beneficiary-subtitle">
         {beneficiaryInfos.email}
       </span>
+      <br />
       <span className="beneficiary-subtitle">
         {beneficiaryInfos.phonenumber}
       </span>
