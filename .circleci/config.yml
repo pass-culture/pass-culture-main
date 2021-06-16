@@ -476,19 +476,6 @@ jobs:
 
             npm install -g netlify-cli@2.46.0
             netlify deploy -s "${NETLIFY_SITE_ID_PRO}" -a "${NETLIFY_TOKEN}" -d build/ --prod
-      - run:
-          name: Check deployed version
-          command: |
-            COMPONENT_URL="https://pro.$(./scripts/compute_component_partial_url.sh ${CIRCLE_BRANCH})"
-            ./scripts/check_current_tag_is_deployed.sh "$COMPONENT_URL"
-      - run:
-          name: Send failure notification
-          command: |
-            VERSION_TO_DEPLOY=$(git describe --contains)
-            BOT_MESSAGE="'*"$CIRCLE_BRANCH"* : *Pro* deployment *"$VERSION_TO_DEPLOY"* seems to have *FAILED* :collision:'"
-            curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
-            curl -i -k -XPOST "$GRAFANA_INFLUXDB_URL/write?db=$GRAFANA_DB" --data-binary 'deployments,application=Pro,environment='"$CIRCLE_BRANCH"',deployed=false version="'"$VERSION_TO_DEPLOY"'"'
-          when: on_fail
 
   deploy-pro-cloudstorage:
     executor: node-gcp-14
@@ -505,6 +492,19 @@ jobs:
       - push-to-bucket:
           build_path: ./pro/build/
           bucket_name: ${GCP_PROJECT}-${CIRCLE_BRANCH}-pro
+      - run:
+          name: Check deployed version
+          command: |
+            COMPONENT_URL="https://pro.$(./scripts/compute_component_partial_url.sh ${CIRCLE_BRANCH})"
+            ./scripts/check_current_tag_is_deployed.sh "$COMPONENT_URL"
+      - run:
+          name: Send failure notification
+          command: |
+            VERSION_TO_DEPLOY=$(git describe --contains)
+            BOT_MESSAGE="'*"$CIRCLE_BRANCH"* : *Pro* deployment *"$VERSION_TO_DEPLOY"* seems to have *FAILED* :collision:'"
+            curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
+            curl -i -k -XPOST "$GRAFANA_INFLUXDB_URL/write?db=$GRAFANA_DB" --data-binary 'deployments,application=Pro,environment='"$CIRCLE_BRANCH"',deployed=false version="'"$VERSION_TO_DEPLOY"'"'
+          when: on_fail
 
   deploy-webapp:
     machine:
