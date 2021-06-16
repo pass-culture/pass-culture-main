@@ -15,9 +15,10 @@ export const loadOffers = filters => {
   return dispatch => {
     return pcapi
       .loadFilteredOffers(filters)
-      .then(({ offers: offersRecap, page, page_count: pageCount, total_count: offersCount }) => {
+      .then(offersRecap => {
         dispatch(setOffersRecap(offersRecap))
-        return { page, pageCount, offersCount }
+
+        return offersRecap.length
       })
   }
 }

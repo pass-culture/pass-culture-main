@@ -38,33 +38,28 @@ jest.mock('utils/date', () => {
 
 describe('pcapi', () => {
   describe('loadFilteredOffers', () => {
-    const returnedResponse = {
-      offers: [
-        {
-          hasBookingLimitDatetimesPassed: false,
-          id: 'AAA',
-          isActive: false,
-          isEditable: true,
-          isEvent: true,
-          isThing: false,
-          name: 'Drunk - VF',
-          stocks: [],
-          thumbUrl: '',
-          type: 'EventType.CINEMA',
-          venue: {
-            id: 'BBB',
-            isVirtual: false,
-            managingOffererId: 'CCC',
-            name: 'Mon petit cinéma',
-            offererName: 'Mon groupe de cinémas',
-          },
-          venueId: 'AAA',
+    const returnedResponse = [
+      {
+        hasBookingLimitDatetimesPassed: false,
+        id: 'AAA',
+        isActive: false,
+        isEditable: true,
+        isEvent: true,
+        isThing: false,
+        name: 'Drunk - VF',
+        stocks: [],
+        thumbUrl: '',
+        type: 'EventType.CINEMA',
+        venue: {
+          id: 'BBB',
+          isVirtual: false,
+          managingOffererId: 'CCC',
+          name: 'Mon petit cinéma',
+          offererName: 'Mon groupe de cinémas',
         },
-      ],
-      page: 1,
-      page_count: 1,
-      total_count: 1,
-    }
+        venueId: 'AAA',
+      },
+    ]
 
     beforeEach(() => {
       client.get.mockResolvedValue(returnedResponse)
@@ -78,18 +73,7 @@ describe('pcapi', () => {
       expect(response).toBe(returnedResponse)
     })
 
-    it('should call offers route with "page=1" query param by default', async () => {
-      // Given
-      const filters = {}
-
-      // When
-      await loadFilteredOffers(filters)
-
-      // Then
-      expect(client.get).toHaveBeenCalledWith('/offers?page=1')
-    })
-
-    it('should call offers route with "page=1" when provided filters are defaults', async () => {
+    it('should call offers route without query params when provided filters are defaults', async () => {
       // Given
       const filters = {
         name: DEFAULT_SEARCH_FILTERS.name,
@@ -102,7 +86,7 @@ describe('pcapi', () => {
       await loadFilteredOffers(filters)
 
       // Then
-      expect(client.get).toHaveBeenCalledWith('/offers?page=1')
+      expect(client.get).toHaveBeenCalledWith('/offers')
     })
 
     it('should call offers route with filters when provided', async () => {
@@ -110,7 +94,6 @@ describe('pcapi', () => {
       const filters = {
         name: 'OCS',
         venueId: 'AA',
-        page: 2,
         status: 'expired',
         creationMode: 'manual',
       }
@@ -120,7 +103,7 @@ describe('pcapi', () => {
 
       // Then
       expect(client.get).toHaveBeenCalledWith(
-        '/offers?name=OCS&venueId=AA&status=expired&creationMode=manual&page=2'
+        '/offers?name=OCS&venueId=AA&status=expired&creationMode=manual'
       )
     })
   })
@@ -139,7 +122,6 @@ describe('pcapi', () => {
         // then
         expect(client.patch).toHaveBeenCalledWith('/offers/all-active-status', {
           isActive: true,
-          page: 1,
         })
       })
 
@@ -150,7 +132,6 @@ describe('pcapi', () => {
           offererId: 'IJ',
           venueId: 'KL',
           typeId: 'ThingType.AUDIOVISUEL',
-          page: 2,
           status: 'expired',
           creationMode: 'imported',
         }
@@ -164,7 +145,6 @@ describe('pcapi', () => {
           offererId: 'IJ',
           venueId: 'KL',
           typeId: 'ThingType.AUDIOVISUEL',
-          page: 2,
           status: 'expired',
           creationMode: 'imported',
         })

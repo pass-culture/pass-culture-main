@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import React, { Fragment, useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 
@@ -11,11 +11,11 @@ import Titles from 'components/layout/Titles/Titles'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 import { saveSearchFilters } from 'store/offers/actions'
-import { selectOffers } from 'store/offers/selectors'
+import { selectOffersByPage } from 'store/offers/selectors'
 import { loadOffers } from 'store/offers/thunks'
 import { mapApiToBrowser, mapBrowserToApi, translateQueryParamsToApiParams } from 'utils/translate'
 
-import { DEFAULT_PAGE, DEFAULT_SEARCH_FILTERS } from './_constants'
+import { DEFAULT_PAGE, DEFAULT_SEARCH_FILTERS, NUMBER_OF_OFFERS_PER_PAGE } from './_constants'
 import ActionsBarContainer from './ActionsBar/ActionsBarContainer'
 import NoOffers from './NoOffers/NoOffers'
 import NoResults from './NoResults/NoResults'
@@ -40,7 +40,6 @@ const Offers = ({ currentUser, getOfferer, query }) => {
         creationMode: searchFiltersInUri.creationMode
           ? mapBrowserToApi[searchFiltersInUri.creationMode]
           : DEFAULT_SEARCH_FILTERS.creationMode,
-        page: searchFiltersInUri.page || DEFAULT_PAGE,
         periodBeginningDate:
           searchFiltersInUri.periodBeginningDate || DEFAULT_SEARCH_FILTERS.periodBeginningDate,
         periodEndingDate:
@@ -59,11 +58,10 @@ const Offers = ({ currentUser, getOfferer, query }) => {
 
   const [selectedOfferIds, setSelectedOfferIds] = useState([])
   const savedSearchFilters = useSelector(state => state.offers.searchFilters)
-  const offers = useSelector(state => selectOffers(state))
+  const offers = useSelector(state => selectOffersByPage(state, pageNumber))
 
   useEffect(() => {
     setSearchFilters({ ...savedSearchFilters })
-    setPageNumber(savedSearchFilters.page)
   }, [savedSearchFilters])
 
   useEffect(() => {
@@ -118,11 +116,10 @@ const Offers = ({ currentUser, getOfferer, query }) => {
   const loadAndUpdateOffers = useCallback(
     filters => {
       dispatch(loadOffers({ ...filters }))
-        .then(({ page, pageCount, offersCount }) => {
+        .then(offersCount => {
           setIsLoading(false)
           setOffersCount(offersCount)
-          setPageNumber(page)
-          setPageCount(pageCount)
+          setPageCount(Math.ceil(offersCount / NUMBER_OF_OFFERS_PER_PAGE))
         })
         .catch(() => setIsLoading(false))
     },
@@ -139,7 +136,6 @@ const Offers = ({ currentUser, getOfferer, query }) => {
     dispatch(
       saveSearchFilters({
         ...searchFilters,
-        page: DEFAULT_PAGE,
       })
     )
   }, [dispatch, searchFilters])
@@ -149,7 +145,6 @@ const Offers = ({ currentUser, getOfferer, query }) => {
     setOfferer(null)
     const updatedFilters = {
       offererId: DEFAULT_SEARCH_FILTERS.offererId,
-      page: DEFAULT_PAGE,
     }
     if (
       searchFilters.venueId === DEFAULT_SEARCH_FILTERS.venueId &&
@@ -168,11 +163,7 @@ const Offers = ({ currentUser, getOfferer, query }) => {
   const hasSearchFilters = useCallback(
     (searchFilters, filterNames = Object.keys(searchFilters)) => {
       return filterNames
-        .map(
-          filterName =>
-            searchFilters[filterName] !==
-            { ...DEFAULT_SEARCH_FILTERS, page: DEFAULT_PAGE }[filterName]
-        )
+        .map(filterName => searchFilters[filterName] !== { ...DEFAULT_SEARCH_FILTERS }[filterName])
         .includes(true)
     },
     []
@@ -190,15 +181,12 @@ const Offers = ({ currentUser, getOfferer, query }) => {
   }, [])
 
   const onPreviousPageClick = useCallback(() => {
-    setIsLoading(true)
-    dispatch(saveSearchFilters({ page: pageNumber - 1 }))
-    setPageNumber(currentPage => currentPage - 1)
-  }, [dispatch, pageNumber])
+    setPageNumber(currentPageNumber => currentPageNumber - 1)
+  }, [])
 
   const onNextPageClick = useCallback(() => {
-    setIsLoading(true)
-    dispatch(saveSearchFilters({ page: pageNumber + 1 }))
-  }, [dispatch, pageNumber])
+    setPageNumber(currentPageNumber => currentPageNumber + 1)
+  }, [])
 
   const selectOffer = useCallback((offerId, selected) => {
     setSelectedOfferIds(currentSelectedIds => {

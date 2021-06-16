@@ -1,5 +1,5 @@
 import { DEFAULT_PRE_FILTERS } from 'components/pages/Bookings/PreFilters/_constants'
-import { DEFAULT_PAGE, DEFAULT_SEARCH_FILTERS } from 'components/pages/Offers/Offers/_constants'
+import { DEFAULT_SEARCH_FILTERS } from 'components/pages/Offers/Offers/_constants'
 import { client } from 'repository/pcapi/pcapiClient'
 import { formatBrowserTimezonedDateAsUTC } from 'utils/date'
 import { stringify } from 'utils/query-string'
@@ -28,7 +28,6 @@ export const loadFilteredOffers = async ({
   offererId = DEFAULT_SEARCH_FILTERS.offererId,
   venueId = DEFAULT_SEARCH_FILTERS.venueId,
   typeId = DEFAULT_SEARCH_FILTERS.typeId,
-  page = DEFAULT_PAGE,
   periodBeginningDate = DEFAULT_SEARCH_FILTERS.periodBeginningDate,
   periodEndingDate = DEFAULT_SEARCH_FILTERS.periodEndingDate,
   status = DEFAULT_SEARCH_FILTERS.status,
@@ -39,7 +38,6 @@ export const loadFilteredOffers = async ({
     offererId,
     venueId,
     typeId,
-    page,
     status,
     creationMode,
     periodBeginningDate,
@@ -47,7 +45,7 @@ export const loadFilteredOffers = async ({
   })
 
   const queryParams = stringify(body)
-  return client.get(`/offers?${queryParams}`)
+  return client.get(`/offers${queryParams ? `?${queryParams}` : ''}`)
 }
 
 export const updateOffersActiveStatus = (
@@ -59,7 +57,6 @@ export const updateOffersActiveStatus = (
     typeId = DEFAULT_SEARCH_FILTERS.typeId,
     status = DEFAULT_SEARCH_FILTERS.status,
     creationMode = DEFAULT_SEARCH_FILTERS.creationMode,
-    page = DEFAULT_PAGE,
     ids = [],
     isActive,
     periodBeginningDate = DEFAULT_SEARCH_FILTERS.periodBeginningDate,
@@ -71,7 +68,6 @@ export const updateOffersActiveStatus = (
     offererId,
     venueId,
     typeId,
-    page,
     status,
     creationMode,
     periodBeginningDate,

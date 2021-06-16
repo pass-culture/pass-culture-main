@@ -107,7 +107,7 @@ describe('src | components | pages | Offers | Offers', () => {
       isVirtual: true,
     },
   ]
-  let paginatedOffers
+  let offersRecap
 
   beforeEach(() => {
     change = jest.fn()
@@ -118,9 +118,9 @@ describe('src | components | pages | Offers | Offers', () => {
         users: [currentUser],
       },
     })
-    paginatedOffers = { offers: [offerFactory()], page: 1, page_count: 2, total_count: 5 }
+    offersRecap = [offerFactory()]
 
-    pcapi.loadFilteredOffers.mockResolvedValue(paginatedOffers)
+    pcapi.loadFilteredOffers.mockResolvedValue(offersRecap)
 
     props = {
       currentUser,
@@ -145,7 +145,6 @@ describe('src | components | pages | Offers | Offers', () => {
       // Then
       expect(pcapi.loadFilteredOffers).toHaveBeenCalledWith({
         name: ALL_OFFERS,
-        page: DEFAULT_PAGE,
         venueId: ALL_VENUES,
         typeId: ALL_TYPES,
         offererId: ALL_OFFERERS,
@@ -181,10 +180,7 @@ describe('src | components | pages | Offers | Offers', () => {
       // Given
       const firstOffer = offerFactory()
       const secondOffer = offerFactory()
-      pcapi.loadFilteredOffers.mockResolvedValue({
-        ...paginatedOffers,
-        offers: [firstOffer, secondOffer],
-      })
+      pcapi.loadFilteredOffers.mockResolvedValue( [firstOffer, secondOffer])
 
       // When
       await renderOffers(props, store)
@@ -200,10 +196,7 @@ describe('src | components | pages | Offers | Offers', () => {
       props.currentUser.isAdmin = false
       const firstOffer = offerFactory()
       const secondOffer = offerFactory()
-      pcapi.loadFilteredOffers.mockResolvedValue({
-        ...paginatedOffers,
-        offers: [firstOffer, secondOffer],
-      })
+      pcapi.loadFilteredOffers.mockResolvedValue([firstOffer, secondOffer])
 
       // When
       await renderOffers(props, store)
@@ -219,33 +212,25 @@ describe('src | components | pages | Offers | Offers', () => {
     describe('total number of offers', () => {
       it('should display total number of offers in plural if multiple offers', async () => {
         // Given
-        const offersCount = 17
-        pcapi.loadFilteredOffers.mockResolvedValueOnce({
-          ...paginatedOffers,
-          total_count: offersCount,
-        })
+        pcapi.loadFilteredOffers.mockResolvedValueOnce([...offersRecap, offerFactory()])
 
         // When
         renderOffers(props, store)
 
         // Then
-        await screen.findByText(paginatedOffers.offers[0].name)
-        expect(queryByTextTrimHtml(screen, '17 offres')).toBeInTheDocument()
+        await screen.findByText(offersRecap[0].name)
+        expect(queryByTextTrimHtml(screen, '2 offres')).toBeInTheDocument()
       })
 
       it('should display total number of offers in singular if one or no offer', async () => {
         // Given
-        const offersCount = 1
-        pcapi.loadFilteredOffers.mockResolvedValueOnce({
-          ...paginatedOffers,
-          total_count: offersCount,
-        })
+        pcapi.loadFilteredOffers.mockResolvedValueOnce(offersRecap)
 
         // When
         renderOffers(props, store)
 
         // Then
-        await screen.findByText(paginatedOffers.offers[0].name)
+        await screen.findByText(offersRecap[0].name)
         expect(queryByTextTrimHtml(screen, '1 offre')).toBeInTheDocument()
       })
     })
@@ -392,7 +377,6 @@ describe('src | components | pages | Offers | Offers', () => {
             creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
             name: '',
             offererId: DEFAULT_SEARCH_FILTERS.offererId,
-            page: DEFAULT_PAGE,
             venueId: DEFAULT_SEARCH_FILTERS.venueId,
             typeId: DEFAULT_SEARCH_FILTERS.typeId,
             periodBeginningDate: DEFAULT_SEARCH_FILTERS.periodBeginningDate,
@@ -407,7 +391,7 @@ describe('src | components | pages | Offers | Offers', () => {
           fireEvent.click(await screen.findByAltText('Afficher ou masquer le filtre par statut'))
 
           // When
-          fireEvent.click(screen.getByText('5 offres'))
+          fireEvent.click(screen.getByRole('heading', { name: 'Rechercher une offre', level: 3 }))
 
           // Then
           expect(screen.queryByText('Afficher les statuts')).toBeNull()
@@ -416,8 +400,8 @@ describe('src | components | pages | Offers | Offers', () => {
         it('should indicate that no offers match selected filters', async () => {
           // Given
           pcapi.loadFilteredOffers
-            .mockResolvedValueOnce(paginatedOffers)
-            .mockResolvedValueOnce({ ...paginatedOffers, offers: [] })
+            .mockResolvedValueOnce(offersRecap)
+            .mockResolvedValueOnce([] )
           renderOffers(props, store)
 
           // When
@@ -434,7 +418,7 @@ describe('src | components | pages | Offers | Offers', () => {
 
         it('should indicate that user has no offers yet', async () => {
           // Given
-          pcapi.loadFilteredOffers.mockResolvedValue({ ...paginatedOffers, offers: [] })
+          pcapi.loadFilteredOffers.mockResolvedValue([] )
 
           // When
           await renderOffers(props, store)
@@ -498,7 +482,6 @@ describe('src | components | pages | Offers | Offers', () => {
             expect(statusFiltersIcon.closest('button')).toBeDisabled()
             expect(pcapi.loadFilteredOffers).toHaveBeenLastCalledWith({
               name: DEFAULT_SEARCH_FILTERS.name,
-              page: DEFAULT_PAGE,
               venueId: DEFAULT_SEARCH_FILTERS.venueId,
               typeId: DEFAULT_SEARCH_FILTERS.typeId,
               offererId: DEFAULT_SEARCH_FILTERS.offererId,
@@ -532,7 +515,6 @@ describe('src | components | pages | Offers | Offers', () => {
             expect(statusFiltersIcon.closest('button')).not.toBeDisabled()
             expect(pcapi.loadFilteredOffers).toHaveBeenLastCalledWith({
               name: DEFAULT_SEARCH_FILTERS.name,
-              page: DEFAULT_PAGE,
               venueId: DEFAULT_SEARCH_FILTERS.venueId,
               typeId: DEFAULT_SEARCH_FILTERS.typeId,
               offererId: 'EF',
@@ -560,7 +542,6 @@ describe('src | components | pages | Offers | Offers', () => {
             expect(statusFiltersIcon.closest('button')).toBeDisabled()
             expect(pcapi.loadFilteredOffers).toHaveBeenLastCalledWith({
               name: DEFAULT_SEARCH_FILTERS.name,
-              page: DEFAULT_PAGE,
               venueId: DEFAULT_SEARCH_FILTERS.venueId,
               typeId: DEFAULT_SEARCH_FILTERS.typeId,
               offererId: DEFAULT_SEARCH_FILTERS.offererId,
@@ -593,7 +574,6 @@ describe('src | components | pages | Offers | Offers', () => {
             expect(statusFiltersIcon.closest('button')).not.toBeDisabled()
             expect(pcapi.loadFilteredOffers).toHaveBeenLastCalledWith({
               name: DEFAULT_SEARCH_FILTERS.name,
-              page: DEFAULT_PAGE,
               venueId: venueId,
               typeId: DEFAULT_SEARCH_FILTERS.typeId,
               offererId: DEFAULT_SEARCH_FILTERS.offererId,
@@ -733,7 +713,7 @@ describe('src | components | pages | Offers | Offers', () => {
             status: 'ACTIVE',
           }),
         ]
-        pcapi.loadFilteredOffers.mockResolvedValue({ ...paginatedOffers, offers })
+        pcapi.loadFilteredOffers.mockResolvedValue(offers )
 
         // When
         renderOffers(props, store)
@@ -758,7 +738,6 @@ describe('src | components | pages | Offers | Offers', () => {
       // Then
       expect(pcapi.loadFilteredOffers).toHaveBeenCalledWith({
         name: DEFAULT_SEARCH_FILTERS.name,
-        page: DEFAULT_PAGE,
         venueId: DEFAULT_SEARCH_FILTERS.venueId,
         typeId: DEFAULT_SEARCH_FILTERS.typeId,
         offererId: DEFAULT_SEARCH_FILTERS.offererId,
@@ -782,7 +761,6 @@ describe('src | components | pages | Offers | Offers', () => {
       // Then
       expect(pcapi.loadFilteredOffers).toHaveBeenCalledWith({
         name: 'Any word',
-        page: DEFAULT_PAGE,
         venueId: DEFAULT_SEARCH_FILTERS.venueId,
         typeId: DEFAULT_SEARCH_FILTERS.typeId,
         offererId: DEFAULT_SEARCH_FILTERS.offererId,
@@ -806,7 +784,6 @@ describe('src | components | pages | Offers | Offers', () => {
 
       // Then
       expect(pcapi.loadFilteredOffers).toHaveBeenCalledWith({
-        page: DEFAULT_PAGE,
         venueId: proVenues[0].id,
         name: DEFAULT_SEARCH_FILTERS.name,
         typeId: DEFAULT_SEARCH_FILTERS.typeId,
@@ -832,7 +809,6 @@ describe('src | components | pages | Offers | Offers', () => {
       // Then
       expect(pcapi.loadFilteredOffers).toHaveBeenLastCalledWith({
         venueId: DEFAULT_SEARCH_FILTERS.venueId,
-        page: DEFAULT_PAGE,
         name: DEFAULT_SEARCH_FILTERS.name,
         typeId: offerTypes[0].value,
         offererId: DEFAULT_SEARCH_FILTERS.offererId,
@@ -855,7 +831,6 @@ describe('src | components | pages | Offers | Offers', () => {
 
       // Then
       expect(pcapi.loadFilteredOffers).toHaveBeenLastCalledWith({
-        page: DEFAULT_PAGE,
         creationMode: 'imported',
         name: DEFAULT_SEARCH_FILTERS.name,
         venueId: DEFAULT_SEARCH_FILTERS.venueId,
@@ -880,7 +855,6 @@ describe('src | components | pages | Offers | Offers', () => {
       // Then
       expect(pcapi.loadFilteredOffers).toHaveBeenLastCalledWith({
         venueId: DEFAULT_SEARCH_FILTERS.venueId,
-        page: DEFAULT_PAGE,
         name: DEFAULT_SEARCH_FILTERS.name,
         typeId: DEFAULT_SEARCH_FILTERS.typeId,
         offererId: DEFAULT_SEARCH_FILTERS.offererId,
@@ -904,7 +878,6 @@ describe('src | components | pages | Offers | Offers', () => {
       // Then
       expect(pcapi.loadFilteredOffers).toHaveBeenLastCalledWith({
         venueId: DEFAULT_SEARCH_FILTERS.venueId,
-        page: DEFAULT_PAGE,
         name: DEFAULT_SEARCH_FILTERS.name,
         typeId: DEFAULT_SEARCH_FILTERS.typeId,
         offererId: DEFAULT_SEARCH_FILTERS.offererId,
@@ -930,7 +903,6 @@ describe('src | components | pages | Offers | Offers', () => {
       // Then
       expect(pcapi.loadFilteredOffers).toHaveBeenCalledWith({
         name: 'Any word',
-        page: DEFAULT_PAGE,
         venueId: DEFAULT_SEARCH_FILTERS.venueId,
         typeId: DEFAULT_SEARCH_FILTERS.typeId,
         offererId: DEFAULT_SEARCH_FILTERS.offererId,
@@ -954,7 +926,6 @@ describe('src | components | pages | Offers | Offers', () => {
       // Then
       expect(pcapi.loadFilteredOffers).toHaveBeenCalledWith({
         name: 'Any word',
-        page: DEFAULT_PAGE,
         venueId: DEFAULT_SEARCH_FILTERS.venueId,
         typeId: DEFAULT_SEARCH_FILTERS.typeId,
         offererId: DEFAULT_SEARCH_FILTERS.offererId,
@@ -1009,31 +980,6 @@ describe('src | components | pages | Offers | Offers', () => {
         creation: null,
         lieu: null,
         nom: null,
-        page: 2,
-        'periode-evenement-debut': null,
-        'periode-evenement-fin': null,
-        statut: null,
-        structure: null,
-      })
-    })
-
-    it('should have page value be removed when page value is first page', async () => {
-      // Given
-      pcapi.loadFilteredOffers.mockResolvedValueOnce({ ...paginatedOffers, page: 2 })
-      renderOffers(props, store)
-
-      // When
-      const previousPageIcon = await screen.findByAltText('Aller à la page précédente')
-      await fireEvent.click(previousPageIcon)
-
-      // Then
-      await screen.findByAltText('Aller à la page suivante')
-      expect(props.query.change).toHaveBeenLastCalledWith({
-        categorie: null,
-        creation: null,
-        lieu: null,
-        nom: null,
-        page: null,
         'periode-evenement-debut': null,
         'periode-evenement-fin': null,
         statut: null,
@@ -1057,7 +1003,6 @@ describe('src | components | pages | Offers | Offers', () => {
         creation: null,
         lieu: null,
         nom: 'AnyWord',
-        page: null,
         'periode-evenement-debut': null,
         'periode-evenement-fin': null,
         statut: null,
@@ -1080,7 +1025,6 @@ describe('src | components | pages | Offers | Offers', () => {
         typeId: ALL_TYPES,
         name: 'search string',
         offererId: ALL_OFFERERS,
-        page: DEFAULT_PAGE,
         status: ALL_STATUS,
         creationMode: DEFAULT_CREATION_MODE.id,
         periodBeginningDate: ALL_EVENT_PERIODS,
@@ -1104,7 +1048,6 @@ describe('src | components | pages | Offers | Offers', () => {
         creation: null,
         lieu: null,
         nom: null,
-        page: null,
         'periode-evenement-debut': null,
         'periode-evenement-fin': null,
         statut: null,
@@ -1129,7 +1072,6 @@ describe('src | components | pages | Offers | Offers', () => {
         categorie: null,
         creation: null,
         nom: null,
-        page: null,
         'periode-evenement-debut': null,
         'periode-evenement-fin': null,
         statut: null,
@@ -1159,7 +1101,6 @@ describe('src | components | pages | Offers | Offers', () => {
         creation: null,
         lieu: null,
         nom: null,
-        page: null,
         'periode-evenement-debut': null,
         'periode-evenement-fin': null,
         statut: null,
@@ -1184,7 +1125,6 @@ describe('src | components | pages | Offers | Offers', () => {
         creation: null,
         lieu: null,
         nom: null,
-        page: null,
         'periode-evenement-debut': null,
         'periode-evenement-fin': null,
         structure: null,
@@ -1207,7 +1147,6 @@ describe('src | components | pages | Offers | Offers', () => {
         creation: null,
         lieu: null,
         nom: null,
-        page: null,
         'periode-evenement-debut': null,
         'periode-evenement-fin': null,
         statut: null,
@@ -1257,7 +1196,6 @@ describe('src | components | pages | Offers | Offers', () => {
         categorie: null,
         lieu: null,
         nom: null,
-        page: null,
         'periode-evenement-debut': null,
         'periode-evenement-fin': null,
         statut: null,
@@ -1286,7 +1224,6 @@ describe('src | components | pages | Offers | Offers', () => {
         creation: null,
         lieu: null,
         nom: null,
-        page: null,
         'periode-evenement-debut': null,
         'periode-evenement-fin': null,
         statut: null,
@@ -1298,7 +1235,8 @@ describe('src | components | pages | Offers | Offers', () => {
   describe('page navigation', () => {
     it('should display next page when clicking on right arrow', async () => {
       // Given
-      pcapi.loadFilteredOffers.mockResolvedValueOnce({ ...paginatedOffers, page: 1, page_count: 2 })
+      const offers = Array.from({ length: 11 }, offerFactory)
+      pcapi.loadFilteredOffers.mockResolvedValueOnce(offers)
       renderOffers(props, store)
       const nextIcon = await screen.findByAltText('Aller à la page suivante')
 
@@ -1306,40 +1244,25 @@ describe('src | components | pages | Offers | Offers', () => {
       await fireEvent.click(nextIcon)
 
       // Then
-      expect(pcapi.loadFilteredOffers).toHaveBeenLastCalledWith({
-        page: 2,
-        creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
-        name: DEFAULT_SEARCH_FILTERS.name,
-        venueId: DEFAULT_SEARCH_FILTERS.venueId,
-        typeId: DEFAULT_SEARCH_FILTERS.typeId,
-        offererId: DEFAULT_SEARCH_FILTERS.offererId,
-        status: DEFAULT_SEARCH_FILTERS.status,
-        periodBeginningDate: DEFAULT_SEARCH_FILTERS.periodBeginningDate,
-        periodEndingDate: DEFAULT_SEARCH_FILTERS.periodEndingDate,
-      })
+      expect(await screen.findByText(offers[10].name)).toBeInTheDocument()
+      expect(screen.queryByText(offers[0].name)).not.toBeInTheDocument()
     })
 
     it('should display previous page when clicking on left arrow', async () => {
       // Given
-      pcapi.loadFilteredOffers.mockResolvedValueOnce({ ...paginatedOffers, page: 2, page_count: 2 })
+      const offers = Array.from({ length: 11 }, offerFactory)
+      pcapi.loadFilteredOffers.mockResolvedValueOnce(offers)
       renderOffers(props, store)
-
-      // When
       const nextIcon = await screen.findByAltText('Aller à la page suivante')
+      const previousIcon = await screen.findByAltText('Aller à la page précédente')
       await fireEvent.click(nextIcon)
 
+      // When
+      await fireEvent.click(previousIcon)
+
       // Then
-      expect(pcapi.loadFilteredOffers).toHaveBeenLastCalledWith({
-        page: DEFAULT_PAGE,
-        creationMode: DEFAULT_SEARCH_FILTERS.creationMode,
-        name: DEFAULT_SEARCH_FILTERS.name,
-        venueId: DEFAULT_SEARCH_FILTERS.venueId,
-        typeId: DEFAULT_SEARCH_FILTERS.typeId,
-        offererId: DEFAULT_SEARCH_FILTERS.offererId,
-        status: DEFAULT_SEARCH_FILTERS.status,
-        periodBeginningDate: DEFAULT_SEARCH_FILTERS.periodBeginningDate,
-        periodEndingDate: DEFAULT_SEARCH_FILTERS.periodEndingDate,
-      })
+      expect(await screen.findByText(offers[0].name)).toBeInTheDocument()
+      expect(screen.queryByText(offers[10].name)).not.toBeInTheDocument()
     })
 
     it('should not be able to click on previous arrow when being on the first page', async () => {
@@ -1356,7 +1279,7 @@ describe('src | components | pages | Offers | Offers', () => {
 
     it('should not be able to click on next arrow when being on the last page', async () => {
       // Given
-      pcapi.loadFilteredOffers.mockResolvedValueOnce({ ...paginatedOffers, page: 2, page_count: 2 })
+      pcapi.loadFilteredOffers.mockResolvedValueOnce(offersRecap)
 
       // When
       renderOffers(props, store)
@@ -1385,7 +1308,7 @@ describe('src | components | pages | Offers | Offers', () => {
       expect(actionBar).not.toBeVisible()
 
       // When
-      const checkbox = await screen.findByTestId(`select-offer-${paginatedOffers.offers[0].id}`)
+      const checkbox = await screen.findByTestId(`select-offer-${offersRecap[0].id}`)
       await fireEvent.click(checkbox)
 
       // Then
@@ -1425,8 +1348,8 @@ describe('src | components | pages | Offers | Offers', () => {
             status: 'PENDING',
           }),
         ]
-        pcapi.loadFilteredOffers.mockResolvedValue({ ...paginatedOffers, offers })
-        pcapi.loadFilteredOffers.mockResolvedValue({ ...paginatedOffers, offers })
+        pcapi.loadFilteredOffers.mockResolvedValue(offers)
+        pcapi.loadFilteredOffers.mockResolvedValue(offers)
 
         renderOffers(props, store)
 
@@ -1459,8 +1382,8 @@ describe('src | components | pages | Offers | Offers', () => {
   describe('should reset filters', () => {
     it('when clicking on "afficher toutes les offres" when no offers are displayed', async () => {
       pcapi.loadFilteredOffers
-        .mockResolvedValueOnce(paginatedOffers)
-        .mockResolvedValueOnce({ ...paginatedOffers, offers: [] })
+        .mockResolvedValueOnce(offersRecap)
+        .mockResolvedValueOnce([] )
       await renderOffers(props, store)
       const venueSelect = screen.getByDisplayValue(ALL_VENUES_OPTION.displayName, {
         selector: 'select[name="lieu"]',
@@ -1490,8 +1413,8 @@ describe('src | components | pages | Offers | Offers', () => {
 
     it('when clicking on "Réinitialiser les filtres"', async () => {
       pcapi.loadFilteredOffers
-        .mockResolvedValueOnce(paginatedOffers)
-        .mockResolvedValueOnce({ ...paginatedOffers, offers: [] })
+        .mockResolvedValueOnce(offersRecap)
+        .mockResolvedValueOnce([])
       await renderOffers(props, store)
       const venueSelect = screen.getByDisplayValue(ALL_VENUES_OPTION.displayName, {
         selector: 'select[name="lieu"]',

@@ -2,7 +2,6 @@ import { connect } from 'react-redux'
 import { compose } from 'redux'
 
 import { withQueryRouter } from 'components/hocs/with-query-router/withQueryRouter'
-import { selectOffers } from 'store/offers/selectors'
 import { loadOffers } from 'store/offers/thunks'
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 import { fetchFromApiWithCredentials } from 'utils/fetch'
@@ -13,7 +12,6 @@ export const mapStateToProps = state => {
   return {
     currentUser: selectCurrentUser(state),
     getOfferer: fetchOffererById,
-    offers: selectOffers(state),
   }
 }
 
