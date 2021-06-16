@@ -1,7 +1,6 @@
 import { ALL_VENUES } from 'components/pages/Bookings/PreFilters/_constants'
 
-import { fetchFromApiWithCredentials } from '../utils/fetch'
-import { stringify } from '../utils/query-string'
+import { loadFilteredBookingsRecap } from './pcapi/pcapi'
 
 const EMPTY_PAGINATED_BOOKINGS_RECAP = {
   page: 0,
@@ -17,8 +16,5 @@ export const fetchBookingsRecapByPage = (page, filters) => {
   if (filters && filters?.venueId !== ALL_VENUES) {
     params.venueId = filters.venueId
   }
-  const queryParams = stringify(params)
-  return fetchFromApiWithCredentials(`/bookings/pro?${queryParams}`).catch(
-    () => EMPTY_PAGINATED_BOOKINGS_RECAP
-  )
+  return loadFilteredBookingsRecap(params).catch(() => EMPTY_PAGINATED_BOOKINGS_RECAP)
 }

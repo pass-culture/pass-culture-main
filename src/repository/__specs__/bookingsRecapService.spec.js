@@ -1,10 +1,13 @@
 import { ALL_VENUES } from '../../components/pages/Bookings/PreFilters/_constants'
-import * as fetch from '../../utils/fetch'
 import { fetchBookingsRecapByPage } from '../bookingsRecapService'
+import { loadFilteredBookingsRecap } from '../pcapi/pcapi'
+
+jest.mock('repository/pcapi/pcapi', () => ({
+  loadFilteredBookingsRecap: jest.fn(),
+}))
 
 describe('bookingRecapsService', () => {
   let mockJsonPromise
-  let fetchFromApiWithCredentialsStub
 
   beforeEach(() => {
     mockJsonPromise = Promise.resolve({
@@ -13,12 +16,10 @@ describe('bookingRecapsService', () => {
       total: 0,
       bookings_recap: [],
     })
-    fetchFromApiWithCredentialsStub = jest
-      .spyOn(fetch, 'fetchFromApiWithCredentials')
-      .mockImplementation(() => mockJsonPromise)
+    loadFilteredBookingsRecap.mockImplementation(() => mockJsonPromise)
   })
 
-  it('should call API with given page', async () => {
+  it('should call pcapi loadFilteredBookingRecap with given page', async () => {
     // Given
     const page = 3
 
@@ -26,7 +27,7 @@ describe('bookingRecapsService', () => {
     await fetchBookingsRecapByPage(page)
 
     // Then
-    expect(fetchFromApiWithCredentialsStub).toHaveBeenCalledWith(`/bookings/pro?page=${page}`)
+    expect(loadFilteredBookingsRecap).toHaveBeenCalledWith({ page: 3 })
   })
 
   it('should return paginatedBookingsRecap value', async () => {
@@ -81,9 +82,7 @@ describe('bookingRecapsService', () => {
     fetchBookingsRecapByPage(1, { venueId: venueId })
 
     // Then
-    expect(fetchFromApiWithCredentialsStub).toHaveBeenCalledWith(
-      `/bookings/pro?page=1&venueId=${venueId}`
-    )
+    expect(loadFilteredBookingsRecap).toHaveBeenCalledWith({ page: 1, venueId: venueId })
   })
 
   it('should call API with no venueId param when requesting all venues', () => {
@@ -94,6 +93,6 @@ describe('bookingRecapsService', () => {
     fetchBookingsRecapByPage(1, { venueId: venueId })
 
     // Then
-    expect(fetchFromApiWithCredentialsStub).toHaveBeenCalledWith(`/bookings/pro?page=1`)
+    expect(loadFilteredBookingsRecap).toHaveBeenCalledWith({ page: 1 })
   })
 })
