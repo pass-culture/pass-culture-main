@@ -1,6 +1,8 @@
 from datetime import datetime
 import hashlib
 import logging
+import pathlib
+import tempfile
 from typing import Iterable
 from typing import Optional
 
@@ -219,10 +221,12 @@ def send_payments_details(payment_query, recipients: list[str]) -> None:
     csv = generate_payment_details_csv(payment_query)
     logger.info("[BATCH][PAYMENTS] Sending CSV details of %s payments", count)
     logger.info("[BATCH][PAYMENTS] Recipients of email : %s", recipients)
-    try:
-        send_payment_details_email(csv, recipients)
-    except MailServiceException as exception:
-        logger.exception("[BATCH][PAYMENTS] Error while sending payment details email to MailJet: %s", exception)
+    if not send_payment_details_email(csv, recipients):
+        # FIXME (dbaty, 2021-06-16): we are likely to end up here
+        # because the attachment is now over Mailjet's 15Mb limit.
+        # This is an ugly quick fix.
+        path = _save_file_on_disk("payments_details", csv)
+        logger.info("[BATCH][PAYMENTS] Could not send payment details email. CSV file has been stored at %s", path)
 
 
 def send_wallet_balances(recipients: list[str]) -> None:
@@ -237,6 +241,13 @@ def send_wallet_balances(recipients: list[str]) -> None:
         send_wallet_balances_email(csv, recipients)
     except MailServiceException as exception:
         logger.exception("[BATCH][PAYMENTS] Error while sending users wallet balances email to MailJet: %s", exception)
+
+
+def _save_file_on_disk(filename_prefix: str, content: str) -> pathlib.Path:
+    dt = datetime.now().strftime("%Y%m%d_%H%M%S")
+    path = pathlib.Path(tempfile.gettempdir()) / f"{filename_prefix}_{dt}.csv"
+    path.write_text(content, encoding="utf-8")
+    return path
 
 
 def send_payments_report(batch_date: datetime, recipients: list[str]) -> None:
@@ -254,10 +265,12 @@ def send_payments_report(batch_date: datetime, recipients: list[str]) -> None:
 
     n_payments_by_status = payment_queries.get_payment_count_by_status(batch_date)
 
-    try:
-        send_payments_report_emails(not_processable_csv, n_payments_by_status, recipients)
-    except MailServiceException as exception:
-        logger.exception("[BATCH][PAYMENTS] Error while sending payments reports to MailJet: %s", exception)
+    if not send_payments_report_emails(not_processable_csv, n_payments_by_status, recipients):
+        # FIXME (dbaty, 2021-06-16): we are likely to end up here
+        # because the attachment is now over Mailjet's 15Mb limit.
+        # This is an ugly quick fix.
+        path = _save_file_on_disk("payments_not_processable", not_processable_csv)
+        logger.info("[BATCH][PAYMENTS] Could not send payment reports email. CSV file has been stored at %s", path)
 
 
 def set_not_processable_payments_with_bank_information_to_retry(batch_date: datetime) -> None:
