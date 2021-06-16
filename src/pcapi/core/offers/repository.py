@@ -40,8 +40,7 @@ MANUAL_CREATION_MODE = "manual"
 def get_capped_offers_for_filters(
     user_id: int,
     user_is_admin: bool,
-    page: Optional[int],
-    max_offers_count: int,
+    offers_limit: int,
     offerer_id: Optional[int] = None,
     status: Optional[str] = None,
     venue_id: Optional[int] = None,
@@ -70,18 +69,13 @@ def get_capped_offers_for_filters(
         .options(joinedload(Offer.mediations))
         .options(joinedload(Offer.product))
         .order_by(Offer.id.desc())
-        .paginate(page, per_page=max_offers_count, error_out=False)
+        .limit(offers_limit)
+        .all()
     )
-
-    total_offers = query.total
-    total_pages = math.ceil(total_offers / max_offers_count)
 
     # FIXME (cgaunet, 2020-11-03): we should not have serialization logic in the repository
     return to_domain(
-        offers=query.items,
-        current_page=query.page,
-        total_pages=total_pages,
-        total_offers=total_offers,
+        offers=query,
     )
 
 

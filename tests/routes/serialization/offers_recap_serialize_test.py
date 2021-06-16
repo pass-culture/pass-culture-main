@@ -38,7 +38,7 @@ def should_return_serialized_offers_with_relevant_informations():
         stocks=[stock],
         status="ACTIVE",
     )
-    offers_recap = OffersRecap(offers_recap=[offer], current_page=1, total_pages=2, total_offers=3)
+    offers_recap = OffersRecap(offers_recap=[offer])
 
     # when
     result = serialize_offers_recap_paginated(offers_recap)
@@ -79,52 +79,3 @@ def should_return_serialized_offers_with_relevant_informations():
         }
     ]
     assert result["offers"] == expected_serialized_offer
-
-
-def should_return_pagination_details():
-    # given
-    offer_id = 1
-    stock_id = 2
-    venue_id = 3
-    offerer_id = 4
-    stock = {
-        "id": stock_id,
-        "has_booking_limit_datetime_passed": False,
-        "remaining_quantity": 10,
-        "beginning_datetime": None,
-    }
-    offer = OfferRecap(
-        id=offer_id,
-        has_booking_limit_datetimes_passed=False,
-        is_active=True,
-        is_editable=True,
-        is_event=False,
-        is_thing=True,
-        product_isbn=None,
-        name="Test Book",
-        thumb_url="/thumb/url",
-        offer_type="ThingType.AUDIOVISUEL",
-        venue_id=venue_id,
-        venue_is_virtual=False,
-        venue_managing_offerer_id=offerer_id,
-        venue_name="La petite librairie",
-        venue_public_name="Petite librairie",
-        venue_offerer_name="Gérant de petites librairies",
-        venue_departement_code=None,
-        stocks=[stock],
-        status="ACTIVE",
-    )
-    current_page = 1
-    total_pages = 2
-    total_offers = 3
-    offers_recap = OffersRecap(
-        offers_recap=[offer], current_page=current_page, total_pages=total_pages, total_offers=total_offers
-    )
-
-    # when
-    result = serialize_offers_recap_paginated(offers_recap)
-
-    # then
-    assert result["page"] == current_page
-    assert result["page_count"] == total_pages
-    assert result["total_count"] == total_offers

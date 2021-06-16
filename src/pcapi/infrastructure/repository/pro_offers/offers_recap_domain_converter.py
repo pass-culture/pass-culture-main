@@ -4,12 +4,10 @@ from pcapi.models import Offer
 from pcapi.models import Stock
 
 
-def to_domain(offers: list[Offer], current_page: int, total_pages: int, total_offers: int) -> OffersRecap:
+def to_domain(offers: list[Offer]) -> OffersRecap:
     offers_recap = [_offer_recap_to_domain(offer) for offer in offers]
 
-    return OffersRecap(
-        offers_recap=offers_recap, current_page=current_page, total_pages=total_pages, total_offers=total_offers
-    )
+    return OffersRecap(offers_recap=offers_recap)
 
 
 def _offer_recap_to_domain(offer: Offer) -> OfferRecap:

@@ -48,12 +48,10 @@ def list_offers(query: ListOffersQueryModel) -> ListOffersResponseModel:
     paginated_offers = offers_api.list_offers_for_pro_user(
         user_id=current_user.id,
         user_is_admin=current_user.isAdmin,
+        type_id=query.type_id,
         offerer_id=query.offerer_id,
         venue_id=query.venue_id,
-        type_id=query.type_id,
-        offers_per_page=query.paginate,
         name_keywords=query.name,
-        page=query.page,
         status=query.status,
         creation_mode=query.creation_mode,
         period_beginning_date=query.period_beginning_date,

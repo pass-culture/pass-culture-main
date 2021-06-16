@@ -10,9 +10,6 @@ from pcapi.utils.human_ids import humanize
 def serialize_offers_recap_paginated(paginated_offers: OffersRecap) -> dict[str, Any]:
     return {
         "offers": [_serialize_offer_paginated(offer) for offer in paginated_offers.offers],
-        "page": paginated_offers.current_page,
-        "page_count": paginated_offers.total_pages,
-        "total_count": paginated_offers.total_offers,
     }
 
 

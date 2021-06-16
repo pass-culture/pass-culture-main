@@ -64,8 +64,7 @@ from .models import Mediation
 logger = logging.getLogger(__name__)
 
 
-DEFAULT_OFFERS_PER_PAGE = 10
-DEFAULT_PAGE = 1
+OFFERS_RECAP_LIMIT = 201
 UNCHANGED = object()
 VALIDATION_KEYWORDS_MAPPING = {
     "APPROVED": OfferValidationStatus.APPROVED,
@@ -79,8 +78,6 @@ def list_offers_for_pro_user(
     user_is_admin: bool,
     type_id: Optional[str],
     offerer_id: Optional[int],
-    offers_per_page: Optional[int],
-    page: Optional[int],
     venue_id: Optional[int] = None,
     name_keywords: Optional[str] = None,
     status: Optional[str] = None,
@@ -91,13 +88,12 @@ def list_offers_for_pro_user(
     return offers_repository.get_capped_offers_for_filters(
         user_id=user_id,
         user_is_admin=user_is_admin,
+        offers_limit=OFFERS_RECAP_LIMIT,
         offerer_id=offerer_id,
-        max_offers_count=offers_per_page or DEFAULT_OFFERS_PER_PAGE,
+        status=status,
         venue_id=venue_id,
         type_id=type_id,
-        page=page or DEFAULT_PAGE,
         name_keywords=name_keywords,
-        status=status,
         creation_mode=creation_mode,
         period_beginning_date=period_beginning_date,
         period_ending_date=period_ending_date,

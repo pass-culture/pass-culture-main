@@ -91,8 +91,5 @@ class OfferRecap:
 
 
 class OffersRecap:
-    def __init__(self, offers_recap: list[OfferRecap], current_page: int, total_pages: int, total_offers: int):
+    def __init__(self, offers_recap: list[OfferRecap]):
         self.offers = offers_recap
-        self.current_page = current_page
-        self.total_pages = total_pages
-        self.total_offers = total_offers

@@ -33,10 +33,10 @@ class Returns200Test:
         stock = offers_factories.StockFactory(offer=offer_on_requested_venue)
         client = TestClient(app.test_client()).with_auth(email=admin.email)
         path = f"/offers?venueId={humanize(requested_venue.id)}"
-        select_and_count_offers_number_of_queries = 2
+        select_offers_nb_queries = 1
 
         # when
-        with assert_num_queries(testing.AUTHENTICATION_QUERIES + select_and_count_offers_number_of_queries):
+        with assert_num_queries(testing.AUTHENTICATION_QUERIES + select_offers_nb_queries):
             response = client.get(path)
 
         # then
@@ -76,9 +76,6 @@ class Returns200Test:
                     "venueId": humanize(requested_venue.id),
                 }
             ],
-            "page": 1,
-            "page_count": 1,
-            "total_count": 1,
         }
 
     def should_filter_by_venue_when_user_is_not_admin_and_request_specific_venue_with_rights_on_it(
@@ -106,54 +103,6 @@ class Returns200Test:
         assert len(offers) == 1
 
     @patch("pcapi.routes.pro.offers.offers_api.list_offers_for_pro_user")
-    def should_return_paginated_offers_with_pagination_details_in_body(self, mocked_list_offers, app, db_session):
-        # Given
-        user = users_factories.UserFactory()
-        offerer = offers_factories.OffererFactory(name="My Offerer")
-        offers_factories.UserOffererFactory(user=user, offerer=offerer)
-        venue = offers_factories.VenueFactory(managingOfferer=offerer, name="My Venue", publicName="My public name")
-        offer1 = offers_factories.ThingOfferFactory(venue=venue, name="My Offer")
-        offers_factories.ThingOfferFactory(venue=venue)
-        mocked_list_offers.return_value = to_domain(offers=[offer1], current_page=1, total_pages=1, total_offers=2)
-
-        # when
-        response = TestClient(app.test_client()).with_auth(email=user.email).get("/offers?paginate=1")
-
-        # then
-        assert response.status_code == 200
-        assert response.json == {
-            "offers": [
-                {
-                    "hasBookingLimitDatetimesPassed": False,
-                    "id": humanize(offer1.id),
-                    "isActive": True,
-                    "isEditable": True,
-                    "isEvent": False,
-                    "isThing": True,
-                    "productIsbn": None,
-                    "name": "My Offer",
-                    "status": "SOLD_OUT",
-                    "stocks": [],
-                    "thumbUrl": None,
-                    "type": "ThingType.AUDIOVISUEL",
-                    "venue": {
-                        "id": humanize(venue.id),
-                        "isVirtual": False,
-                        "managingOffererId": humanize(offerer.id),
-                        "name": "My Venue",
-                        "offererName": "My Offerer",
-                        "publicName": "My public name",
-                        "departementCode": "75",
-                    },
-                    "venueId": humanize(venue.id),
-                }
-            ],
-            "page": 1,
-            "page_count": 1,
-            "total_count": 2,
-        }
-
-    @patch("pcapi.routes.pro.offers.offers_api.list_offers_for_pro_user")
     def should_filter_offers_by_given_venue_id(self, mocked_list_offers, app, db_session):
         # given
         user = users_factories.UserFactory()
@@ -174,9 +123,7 @@ class Returns200Test:
             offerer_id=None,
             venue_id=venue.id,
             type_id=None,
-            offers_per_page=None,
             name_keywords=None,
-            page=None,
             period_beginning_date=None,
             period_ending_date=None,
             status=None,
@@ -201,9 +148,7 @@ class Returns200Test:
             offerer_id=None,
             venue_id=None,
             type_id=None,
-            offers_per_page=None,
             name_keywords=None,
-            page=None,
             period_beginning_date=None,
             period_ending_date=None,
             status="active",
@@ -231,9 +176,7 @@ class Returns200Test:
             offerer_id=offerer.id,
             venue_id=None,
             type_id=None,
-            offers_per_page=None,
             name_keywords=None,
-            page=None,
             period_beginning_date=None,
             period_ending_date=None,
             status=None,
@@ -258,9 +201,7 @@ class Returns200Test:
             offerer_id=None,
             venue_id=None,
             type_id=None,
-            offers_per_page=None,
             name_keywords=None,
-            page=None,
             period_beginning_date=None,
             period_ending_date=None,
             status=None,
@@ -289,9 +230,7 @@ class Returns200Test:
             offerer_id=None,
             venue_id=None,
             type_id=None,
-            offers_per_page=None,
             name_keywords=None,
-            page=None,
             period_beginning_date="2020-10-11T00:00:00Z",
             period_ending_date=None,
             status=None,
@@ -320,9 +259,7 @@ class Returns200Test:
             offerer_id=None,
             venue_id=None,
             type_id=None,
-            offers_per_page=None,
             name_keywords=None,
-            page=None,
             period_beginning_date=None,
             period_ending_date="2020-10-11T23:59:59Z",
             status=None,
@@ -357,9 +294,6 @@ class Returns404Test:
         assert response.status_code == 200
         assert response.json == {
             "offers": [],
-            "page": 1,
-            "page_count": 0,
-            "total_count": 0,
         }
 
     def should_return_no_offers_when_user_offerer_is_not_validated(self, app, db_session):
@@ -379,7 +313,4 @@ class Returns404Test:
         assert response.status_code == 200
         assert response.json == {
             "offers": [],
-            "page": 1,
-            "page_count": 0,
-            "total_count": 0,
         }

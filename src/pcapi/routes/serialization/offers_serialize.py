@@ -203,17 +203,12 @@ class ListOffersOfferResponseModel(BaseModel):
 
 class ListOffersResponseModel(BaseModel):
     offers: list[ListOffersOfferResponseModel]
-    page: int
-    page_count: int
-    total_count: int
 
     class Config:
         json_encoders = {datetime: format_into_utc_date}
 
 
 class ListOffersQueryModel(BaseModel):
-    paginate: Optional[int]
-    page: Optional[int]
     name: Optional[str]
     offerer_id: Optional[int]
     status: Optional[str]
@@ -223,8 +218,6 @@ class ListOffersQueryModel(BaseModel):
     period_beginning_date: Optional[str]
     period_ending_date: Optional[str]
 
-    _cast_paginate = cast_optional_field_str_to_int("paginate")
-    _cast_page = cast_optional_field_str_to_int("page")
     _dehumanize_venue_id = dehumanize_field("venue_id")
     _dehumanize_offerer_id = dehumanize_field("offerer_id")
 
