@@ -160,7 +160,7 @@ def main() -> None:
 
     scheduler.add_job(pc_remote_import_beneficiaries, "cron", [app], hour="*")
 
-    scheduler.add_job(pc_remote_import_beneficiaries_from_old_dms, "cron", [app], days="*", hour="20")
+    scheduler.add_job(pc_remote_import_beneficiaries_from_old_dms, "cron", [app], day="*", hour="20")
 
     scheduler.add_job(pc_import_beneficiaries_from_dms, "cron", [app], hour="*")
 
