@@ -119,7 +119,7 @@ api = SpecTree("flask", MODE="strict", before=before_handler)
 api.register(app)
 
 login_manager = LoginManager()
-admin = Admin(name="Back Office du Pass Culture", url="/pc/back-office/", template_mode="bootstrap3")
+admin = Admin(name="Back Office du Pass Culture", url="/pc/back-office/", template_mode="bootstrap4")
 
 if settings.PROFILE_REQUESTS:
     profiling_restrictions = [settings.PROFILE_REQUESTS_LINES_LIMIT]
