@@ -17,10 +17,10 @@ from pcapi.core.offers.repository import find_tomorrow_event_stock_ids
 from pcapi.core.offers.repository import get_active_offers_count_for_venue
 from pcapi.core.offers.repository import get_expired_offers
 from pcapi.core.offers.repository import get_offers_by_ids
-from pcapi.core.offers.repository import get_paginated_offers_for_filters
+from pcapi.core.offers.repository import get_capped_offers_for_filters
 from pcapi.core.offers.repository import get_sold_out_offers_count_for_venue
 from pcapi.core.users import factories as users_factories
-from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
+from pcapi.domain.pro_offers.offers_recap import OffersRecap
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_provider
 from pcapi.model_creators.generic_creators import create_user
@@ -32,9 +32,9 @@ from pcapi.repository import repository
 from pcapi.utils.date import utc_datetime_to_department_timezone
 
 
-class PaginatedOfferForFiltersTest:
+class GetCappedOffersForFiltersTest:
     @pytest.mark.usefixtures("db_session")
-    def should_return_paginated_offers_with_details_of_pagination_and_offers_of_requested_page(self):
+    def should_return_offers_capped_to_max_offers_count(self):
         # Given
         user = create_user()
         offerer = create_offerer()
@@ -47,20 +47,20 @@ class PaginatedOfferForFiltersTest:
         requested_offers_per_page = 1
 
         # When
-        paginated_offers = get_paginated_offers_for_filters(
+        offers = get_capped_offers_for_filters(
             user_id=user.id,
             user_is_admin=user.isAdmin,
-            offers_per_page=requested_offers_per_page,
+            max_offers_count=requested_offers_per_page,
             page=requested_page,
         )
 
         # Then
-        assert isinstance(paginated_offers, PaginatedOffersRecap)
-        assert paginated_offers.total_offers == 2
-        assert paginated_offers.current_page == requested_page
-        assert paginated_offers.total_pages == 2
-        assert len(paginated_offers.offers) == 1
-        assert paginated_offers.offers[0].id == offer1.id
+        assert isinstance(offers, OffersRecap)
+        assert offers.total_offers == 2
+        assert offers.current_page == requested_page
+        assert offers.total_pages == 2
+        assert len(offers.offers) == 1
+        assert offers.offers[0].id == offer1.id
 
     @pytest.mark.usefixtures("db_session")
     def should_return_offers_sorted_by_id_desc(self):
@@ -74,12 +74,12 @@ class PaginatedOfferForFiltersTest:
         repository.save(user_offerer, offer1, offer2)
 
         # When
-        paginated_offers = get_paginated_offers_for_filters(
-            user_id=user.id, user_is_admin=user.isAdmin, page=1, offers_per_page=10
+        offers = get_capped_offers_for_filters(
+            user_id=user.id, user_is_admin=user.isAdmin, page=1, max_offers_count=10
         )
 
         # Then
-        assert paginated_offers.offers[0].id > paginated_offers.offers[1].id
+        assert offers.offers[0].id > offers.offers[1].id
 
     @pytest.mark.usefixtures("db_session")
     def should_exclude_draft_offers_when_requesting_all_offers(self, app):
@@ -92,12 +92,12 @@ class PaginatedOfferForFiltersTest:
         )
 
         # when
-        paginated_offers = get_paginated_offers_for_filters(
-            user_id=user_offerer.user.id, user_is_admin=user_offerer.user.isAdmin, page=1, offers_per_page=10
+        offers = get_capped_offers_for_filters(
+            user_id=user_offerer.user.id, user_is_admin=user_offerer.user.isAdmin, page=1, max_offers_count=10
         )
 
         # then
-        offers_id = [offer.id for offer in paginated_offers.offers]
+        offers_id = [offer.id for offer in offers.offers]
         assert offers_id == [non_draft_offer.id]
 
     @pytest.mark.usefixtures("db_session")
@@ -110,19 +110,19 @@ class PaginatedOfferForFiltersTest:
             type=str(ThingType.JEUX), venue__managingOfferer=user_offerer.offerer
         )
 
-        paginated_offers = get_paginated_offers_for_filters(
+        offers = get_capped_offers_for_filters(
             user_id=user_offerer.user.id,
             user_is_admin=user_offerer.user.isAdmin,
             type_id=str(ThingType.AUDIOVISUEL),
             page=1,
-            offers_per_page=10,
+            max_offers_count=10,
         )
 
         # then
-        offers_id = [offer.id for offer in paginated_offers.offers]
+        offers_id = [offer.id for offer in offers.offers]
         assert requested_offer.id in offers_id
         assert other_offer.id not in offers_id
-        assert paginated_offers.total_offers == 1
+        assert offers.total_offers == 1
 
     @pytest.mark.usefixtures("db_session")
     def test_returns_offers_filtered_by_manual_creation_mode_when_provided(self):
@@ -140,13 +140,13 @@ class PaginatedOfferForFiltersTest:
         repository.save(manually_created_offer, imported_offer, pro_user)
 
         # When
-        paginated_offers = get_paginated_offers_for_filters(
-            user_id=pro_user.id, user_is_admin=pro_user.isAdmin, page=1, offers_per_page=1, creation_mode="manual"
+        offers = get_capped_offers_for_filters(
+            user_id=pro_user.id, user_is_admin=pro_user.isAdmin, page=1, max_offers_count=1, creation_mode="manual"
         )
 
         # then
-        assert paginated_offers.offers[0].id == manually_created_offer.id
-        assert paginated_offers.total_offers == 1
+        assert offers.offers[0].id == manually_created_offer.id
+        assert offers.total_offers == 1
 
     @pytest.mark.usefixtures("db_session")
     def test_returns_offers_filtered_by_imported_creation_mode_when_provided(self):
@@ -164,13 +164,13 @@ class PaginatedOfferForFiltersTest:
         repository.save(manually_created_offer, imported_offer, pro_user)
 
         # When
-        paginated_offers = get_paginated_offers_for_filters(
-            user_id=pro_user.id, user_is_admin=pro_user.isAdmin, page=1, offers_per_page=1, creation_mode="imported"
+        offers = get_capped_offers_for_filters(
+            user_id=pro_user.id, user_is_admin=pro_user.isAdmin, page=1, max_offers_count=1, creation_mode="imported"
         )
 
         # then
-        assert paginated_offers.offers[0].id == imported_offer.id
-        assert paginated_offers.total_offers == 1
+        assert offers.offers[0].id == imported_offer.id
+        assert offers.total_offers == 1
 
     @pytest.mark.usefixtures("db_session")
     def should_not_return_event_offers_with_only_deleted_stock_if_filtering_by_time_period(self):
@@ -182,18 +182,18 @@ class PaginatedOfferForFiltersTest:
         )
 
         # When
-        paginated_offers = get_paginated_offers_for_filters(
+        offers = get_capped_offers_for_filters(
             user_id=pro.id,
             user_is_admin=pro.isAdmin,
             page=1,
-            offers_per_page=1,
+            max_offers_count=1,
             period_beginning_date="2020-01-01T00:00:00",
         )
 
         # then
-        offers_id = [offer.id for offer in paginated_offers.offers]
+        offers_id = [offer.id for offer in offers.offers]
         assert offer_in_requested_time_period.id not in offers_id
-        assert paginated_offers.total_offers == 0
+        assert offers.total_offers == 0
 
     @pytest.mark.usefixtures("db_session")
     def should_consider_venue_locale_datetime_when_filtering_by_date(self):
@@ -211,20 +211,20 @@ class PaginatedOfferForFiltersTest:
         offers_factories.EventStockFactory(offer=offer_in_mayotte, beginningDatetime=mayotte_event_datetime)
 
         # When
-        paginated_offers = get_paginated_offers_for_filters(
+        offers = get_capped_offers_for_filters(
             user_id=admin.id,
             user_is_admin=admin.isAdmin,
             page=1,
-            offers_per_page=10,
+            max_offers_count=10,
             period_beginning_date=period_beginning_date,
             period_ending_date=period_ending_date,
         )
 
         # then
-        offers_id = [offer.id for offer in paginated_offers.offers]
+        offers_id = [offer.id for offer in offers.offers]
         assert offer_in_cayenne.id in offers_id
         assert offer_in_mayotte.id in offers_id
-        assert paginated_offers.total_offers == 2
+        assert offers.total_offers == 2
 
     class WhenUserIsAdminTest:
         @pytest.mark.usefixtures("db_session")
@@ -235,19 +235,19 @@ class PaginatedOfferForFiltersTest:
             offer_for_other_venue = offers_factories.OfferFactory()
 
             # when
-            paginated_offers = get_paginated_offers_for_filters(
+            offers = get_capped_offers_for_filters(
                 user_id=admin.id,
                 user_is_admin=admin.isAdmin,
                 venue_id=offer_for_requested_venue.venue.id,
                 page=1,
-                offers_per_page=10,
+                max_offers_count=10,
             )
 
             # then
-            offers_id = [offer.id for offer in paginated_offers.offers]
+            offers_id = [offer.id for offer in offers.offers]
             assert offer_for_requested_venue.id in offers_id
             assert offer_for_other_venue.id not in offers_id
-            assert paginated_offers.total_offers == 1
+            assert offers.total_offers == 1
 
         @pytest.mark.usefixtures("db_session")
         def should_return_offers_of_given_venue_when_user_is_attached_to_its_offerer(self, app):
@@ -262,19 +262,19 @@ class PaginatedOfferForFiltersTest:
             )
 
             # when
-            paginated_offers = get_paginated_offers_for_filters(
+            offers = get_capped_offers_for_filters(
                 user_id=admin.id,
                 user_is_admin=admin.isAdmin,
                 venue_id=offer_for_requested_venue.venue.id,
                 page=1,
-                offers_per_page=10,
+                max_offers_count=10,
             )
 
             # then
-            offers_id = [offer.id for offer in paginated_offers.offers]
+            offers_id = [offer.id for offer in offers.offers]
             assert offer_for_requested_venue.id in offers_id
             assert offer_for_other_venue.id not in offers_id
-            assert paginated_offers.total_offers == 1
+            assert offers.total_offers == 1
 
         @pytest.mark.usefixtures("db_session")
         def should_return_offers_of_given_offerer_when_user_is_not_attached_to_it(self):
@@ -284,19 +284,19 @@ class PaginatedOfferForFiltersTest:
             offer_for_other_offerer = offers_factories.OfferFactory()
 
             # When
-            paginated_offers = get_paginated_offers_for_filters(
+            offers = get_capped_offers_for_filters(
                 user_id=admin.id,
                 user_is_admin=admin.isAdmin,
                 page=1,
-                offers_per_page=1,
+                max_offers_count=1,
                 offerer_id=offer_for_requested_offerer.venue.managingOffererId,
             )
 
             # then
-            offers_id = [offer.id for offer in paginated_offers.offers]
+            offers_id = [offer.id for offer in offers.offers]
             assert offer_for_requested_offerer.id in offers_id
             assert offer_for_other_offerer.id not in offers_id
-            assert paginated_offers.total_offers == 1
+            assert offers.total_offers == 1
 
         @pytest.mark.usefixtures("db_session")
         def should_return_offers_of_given_offerer_when_user_is_attached_to_it(self):
@@ -312,19 +312,19 @@ class PaginatedOfferForFiltersTest:
             )
 
             # When
-            paginated_offers = get_paginated_offers_for_filters(
+            offers = get_capped_offers_for_filters(
                 user_id=admin.id,
                 user_is_admin=admin.isAdmin,
                 page=1,
-                offers_per_page=1,
+                max_offers_count=1,
                 offerer_id=offer_for_requested_offerer.venue.managingOffererId,
             )
 
             # then
-            offers_id = [offer.id for offer in paginated_offers.offers]
+            offers_id = [offer.id for offer in offers.offers]
             assert offer_for_requested_offerer.id in offers_id
             assert offer_for_other_offerer.id not in offers_id
-            assert paginated_offers.total_offers == 1
+            assert offers.total_offers == 1
 
     class WhenUserIsProTest:
         @pytest.mark.usefixtures("db_session")
@@ -335,19 +335,19 @@ class PaginatedOfferForFiltersTest:
             offer_for_other_venue = offers_factories.OfferFactory()
 
             # when
-            paginated_offers = get_paginated_offers_for_filters(
+            offers = get_capped_offers_for_filters(
                 user_id=pro.id,
                 user_is_admin=pro.isAdmin,
                 venue_id=offer_for_requested_venue.venue.id,
                 page=1,
-                offers_per_page=10,
+                max_offers_count=10,
             )
 
             # then
-            offers_id = [offer.id for offer in paginated_offers.offers]
+            offers_id = [offer.id for offer in offers.offers]
             assert offer_for_requested_venue.id not in offers_id
             assert offer_for_other_venue.id not in offers_id
-            assert paginated_offers.total_offers == 0
+            assert offers.total_offers == 0
 
         @pytest.mark.usefixtures("db_session")
         def should_return_offers_of_given_venue_when_user_is_attached_to_its_offerer(self, app):
@@ -362,19 +362,19 @@ class PaginatedOfferForFiltersTest:
             )
 
             # when
-            paginated_offers = get_paginated_offers_for_filters(
+            offers = get_capped_offers_for_filters(
                 user_id=pro.id,
                 user_is_admin=pro.isAdmin,
                 venue_id=offer_for_requested_venue.venue.id,
                 page=1,
-                offers_per_page=10,
+                max_offers_count=10,
             )
 
             # then
-            offers_id = [offer.id for offer in paginated_offers.offers]
+            offers_id = [offer.id for offer in offers.offers]
             assert offer_for_requested_venue.id in offers_id
             assert offer_for_other_venue.id not in offers_id
-            assert paginated_offers.total_offers == 1
+            assert offers.total_offers == 1
 
         @pytest.mark.usefixtures("db_session")
         def should_not_return_offers_of_given_offerer_when_user_is_not_attached_to_it(self):
@@ -384,19 +384,19 @@ class PaginatedOfferForFiltersTest:
             offer_for_other_offerer = offers_factories.OfferFactory()
 
             # When
-            paginated_offers = get_paginated_offers_for_filters(
+            offers = get_capped_offers_for_filters(
                 user_id=pro.id,
                 user_is_admin=pro.isAdmin,
                 page=1,
-                offers_per_page=1,
+                max_offers_count=1,
                 offerer_id=offer_for_requested_offerer.venue.managingOffererId,
             )
 
             # then
-            offers_id = [offer.id for offer in paginated_offers.offers]
+            offers_id = [offer.id for offer in offers.offers]
             assert offer_for_requested_offerer.id not in offers_id
             assert offer_for_other_offerer.id not in offers_id
-            assert paginated_offers.total_offers == 0
+            assert offers.total_offers == 0
 
         @pytest.mark.usefixtures("db_session")
         def should_return_offers_of_given_offerer_when_user_is_attached_to_it(self):
@@ -412,19 +412,19 @@ class PaginatedOfferForFiltersTest:
             )
 
             # When
-            paginated_offers = get_paginated_offers_for_filters(
+            offers = get_capped_offers_for_filters(
                 user_id=pro.id,
                 user_is_admin=pro.isAdmin,
                 page=1,
-                offers_per_page=1,
+                max_offers_count=1,
                 offerer_id=offer_for_requested_offerer.venue.managingOffererId,
             )
 
             # then
-            offers_id = [offer.id for offer in paginated_offers.offers]
+            offers_id = [offer.id for offer in offers.offers]
             assert offer_for_requested_offerer.id in offers_id
             assert offer_for_other_offerer.id not in offers_id
-            assert paginated_offers.total_offers == 1
+            assert offers.total_offers == 1
 
     class NameFilterTest:
         @pytest.mark.usefixtures("db_session")
@@ -435,19 +435,19 @@ class PaginatedOfferForFiltersTest:
             other_offer = offers_factories.OfferFactory(name="ocsir", venue__managingOfferer=user_offerer.offerer)
 
             # when
-            paginated_offers = get_paginated_offers_for_filters(
+            offers = get_capped_offers_for_filters(
                 user_id=user_offerer.user.id,
                 user_is_admin=user_offerer.user.isAdmin,
                 name_keywords="ocs",
                 page=1,
-                offers_per_page=10,
+                max_offers_count=10,
             )
 
             # then
-            offers_id = [offer.id for offer in paginated_offers.offers]
+            offers_id = [offer.id for offer in offers.offers]
             assert expected_offer.id in offers_id
             assert other_offer.id not in offers_id
-            assert paginated_offers.total_offers == 1
+            assert offers.total_offers == 1
 
         @pytest.mark.usefixtures("db_session")
         def should_return_offer_which_name_contains_keyword_when_keyword_is_more_than_3_letters(self, app):
@@ -462,20 +462,20 @@ class PaginatedOfferForFiltersTest:
             other_offer = offers_factories.OfferFactory(name="étais-tu là", venue__managingOfferer=user_offerer.offerer)
 
             # when
-            paginated_offers = get_paginated_offers_for_filters(
+            offers = get_capped_offers_for_filters(
                 user_id=user_offerer.user.id,
                 user_is_admin=user_offerer.user.isAdmin,
                 name_keywords="seras-tu",
                 page=1,
-                offers_per_page=10,
+                max_offers_count=10,
             )
 
             # then
-            offers_id = [offer.id for offer in paginated_offers.offers]
+            offers_id = [offer.id for offer in offers.offers]
             assert expected_offer.id in offers_id
             assert another_expected_offer.id in offers_id
             assert other_offer.id not in offers_id
-            assert paginated_offers.total_offers == 2
+            assert offers.total_offers == 2
 
         @pytest.mark.usefixtures("db_session")
         def should_be_case_insensitive(self, app):
@@ -489,19 +489,19 @@ class PaginatedOfferForFiltersTest:
             )
 
             # when
-            paginated_offers = get_paginated_offers_for_filters(
+            offers = get_capped_offers_for_filters(
                 user_id=user_offerer.user.id,
                 user_is_admin=user_offerer.user.isAdmin,
                 name_keywords="mon océan",
                 page=1,
-                offers_per_page=10,
+                max_offers_count=10,
             )
 
             # then
-            offers_id = [offer.id for offer in paginated_offers.offers]
+            offers_id = [offer.id for offer in offers.offers]
             assert expected_offer.id in offers_id
             assert another_expected_offer.id in offers_id
-            assert paginated_offers.total_offers == 2
+            assert offers.total_offers == 2
 
         @pytest.mark.usefixtures("db_session")
         def should_be_accent_sensitive(self, app):
@@ -511,19 +511,19 @@ class PaginatedOfferForFiltersTest:
             other_offer = offers_factories.OfferFactory(name="océan", venue__managingOfferer=user_offerer.offerer)
 
             # when
-            paginated_offers = get_paginated_offers_for_filters(
+            offers = get_capped_offers_for_filters(
                 user_id=user_offerer.user.id,
                 user_is_admin=user_offerer.user.isAdmin,
                 name_keywords="ocean",
                 page=1,
-                offers_per_page=10,
+                max_offers_count=10,
             )
 
             # then
-            offers_id = [offer.id for offer in paginated_offers.offers]
+            offers_id = [offer.id for offer in offers.offers]
             assert expected_offer.id in offers_id
             assert other_offer.id not in offers_id
-            assert paginated_offers.total_offers == 1
+            assert offers.total_offers == 1
 
     class StatusFiltersTest:
         def init_test_data(self):
@@ -737,12 +737,12 @@ class PaginatedOfferForFiltersTest:
             self.init_test_data()
 
             # when
-            paginated_offers = get_paginated_offers_for_filters(
-                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=5, page=1, status="ACTIVE"
+            offers = get_capped_offers_for_filters(
+                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, max_offers_count=5, page=1, status="ACTIVE"
             )
 
             # then
-            offer_ids = [offer.id for offer in paginated_offers.offers]
+            offer_ids = [offer.id for offer in offers.offers]
             assert self.active_thing_offer_with_one_stock_with_remaining_quantity.id in offer_ids
             assert self.active_event_in_six_days_offer.id in offer_ids
             assert self.active_thing_offer_with_all_stocks_without_quantity.id in offer_ids
@@ -763,7 +763,7 @@ class PaginatedOfferForFiltersTest:
             assert self.expired_thing_offer_with_a_stock_expired_with_remaining_quantity.id not in offer_ids
             assert self.expired_event_offer_with_all_stocks_in_the_past_with_remaining_quantity.id not in offer_ids
             assert self.expired_event_offer_with_all_stocks_in_the_past_with_zero_remaining_quantity.id not in offer_ids
-            assert paginated_offers.total_offers == 5
+            assert offers.total_offers == 5
 
         @pytest.mark.usefixtures("db_session")
         def should_return_only_inactive_offers_when_requesting_inactive_status(self):
@@ -771,12 +771,12 @@ class PaginatedOfferForFiltersTest:
             self.init_test_data()
 
             # when
-            paginated_offers = get_paginated_offers_for_filters(
-                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=5, page=1, status="INACTIVE"
+            offers = get_capped_offers_for_filters(
+                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, max_offers_count=5, page=1, status="INACTIVE"
             )
 
             # then
-            offer_ids = [offer.id for offer in paginated_offers.offers]
+            offer_ids = [offer.id for offer in offers.offers]
             assert self.active_thing_offer_with_one_stock_with_remaining_quantity.id not in offer_ids
             assert self.active_thing_offer_with_all_stocks_without_quantity.id not in offer_ids
             assert self.active_event_offer_with_stock_in_the_future_without_quantity.id not in offer_ids
@@ -797,7 +797,7 @@ class PaginatedOfferForFiltersTest:
             assert self.expired_thing_offer_with_a_stock_expired_with_zero_remaining_quantity.id not in offer_ids
             assert self.expired_event_offer_with_all_stocks_in_the_past_with_remaining_quantity.id not in offer_ids
             assert self.expired_event_offer_with_all_stocks_in_the_past_with_zero_remaining_quantity.id not in offer_ids
-            assert paginated_offers.total_offers == 4
+            assert offers.total_offers == 4
 
         @pytest.mark.usefixtures("db_session")
         def should_return_only_sold_out_offers_when_requesting_sold_out_status(self):
@@ -805,12 +805,12 @@ class PaginatedOfferForFiltersTest:
             self.init_test_data()
 
             # when
-            paginated_offers = get_paginated_offers_for_filters(
-                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=10, page=1, status="SOLD_OUT"
+            offers = get_capped_offers_for_filters(
+                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, max_offers_count=10, page=1, status="SOLD_OUT"
             )
 
             # then
-            offer_ids = [offer.id for offer in paginated_offers.offers]
+            offer_ids = [offer.id for offer in offers.offers]
             assert self.active_thing_offer_with_one_stock_with_remaining_quantity.id not in offer_ids
             assert self.active_thing_offer_with_all_stocks_without_quantity.id not in offer_ids
             assert self.active_event_offer_with_stock_in_the_future_without_quantity.id not in offer_ids
@@ -830,7 +830,7 @@ class PaginatedOfferForFiltersTest:
             assert self.expired_thing_offer_with_a_stock_expired_with_zero_remaining_quantity.id not in offer_ids
             assert self.expired_event_offer_with_all_stocks_in_the_past_with_remaining_quantity.id not in offer_ids
             assert self.expired_event_offer_with_all_stocks_in_the_past_with_zero_remaining_quantity.id not in offer_ids
-            assert paginated_offers.total_offers == 6
+            assert offers.total_offers == 6
 
         @pytest.mark.usefixtures("db_session")
         def should_return_offers_with_no_stocks_when_requesting_sold_out_status(self):
@@ -838,12 +838,12 @@ class PaginatedOfferForFiltersTest:
             self.init_test_data()
 
             # when
-            paginated_offers = get_paginated_offers_for_filters(
-                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=5, page=1, status="SOLD_OUT"
+            offers = get_capped_offers_for_filters(
+                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, max_offers_count=5, page=1, status="SOLD_OUT"
             )
 
             # then
-            offer_ids = [offer.id for offer in paginated_offers.offers]
+            offer_ids = [offer.id for offer in offers.offers]
             assert self.sold_out_thing_offer_without_stock.id in offer_ids
             assert self.sold_out_event_offer_with_only_one_stock_soft_deleted.id in offer_ids
 
@@ -853,12 +853,12 @@ class PaginatedOfferForFiltersTest:
             self.init_test_data()
 
             # when
-            paginated_offers = get_paginated_offers_for_filters(
-                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=5, page=1, status="SOLD_OUT"
+            offers = get_capped_offers_for_filters(
+                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, max_offers_count=5, page=1, status="SOLD_OUT"
             )
 
             # then
-            offer_ids = [offer.id for offer in paginated_offers.offers]
+            offer_ids = [offer.id for offer in offers.offers]
             assert self.sold_old_thing_offer_with_all_stocks_empty.id in offer_ids
 
         @pytest.mark.usefixtures("db_session")
@@ -867,12 +867,12 @@ class PaginatedOfferForFiltersTest:
             self.init_test_data()
 
             # when
-            paginated_offers = get_paginated_offers_for_filters(
-                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=5, page=1, status="SOLD_OUT"
+            offers = get_capped_offers_for_filters(
+                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, max_offers_count=5, page=1, status="SOLD_OUT"
             )
 
             # then
-            offer_ids = [offer.id for offer in paginated_offers.offers]
+            offer_ids = [offer.id for offer in offers.offers]
             assert self.sold_out_event_offer_with_all_stocks_in_the_future_with_zero_remaining_quantity.id in offer_ids
 
         @pytest.mark.usefixtures("db_session")
@@ -881,12 +881,12 @@ class PaginatedOfferForFiltersTest:
             self.init_test_data()
 
             # when
-            paginated_offers = get_paginated_offers_for_filters(
-                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=5, page=1, status="SOLD_OUT"
+            offers = get_capped_offers_for_filters(
+                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, max_offers_count=5, page=1, status="SOLD_OUT"
             )
 
             # then
-            offer_ids = [offer.id for offer in paginated_offers.offers]
+            offer_ids = [offer.id for offer in offers.offers]
             assert self.active_event_offer_with_one_stock_in_the_future_with_remaining_quantity.id not in offer_ids
 
         @pytest.mark.usefixtures("db_session")
@@ -895,12 +895,12 @@ class PaginatedOfferForFiltersTest:
             self.init_test_data()
 
             # when
-            paginated_offers = get_paginated_offers_for_filters(
-                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, offers_per_page=5, page=1, status="EXPIRED"
+            offers = get_capped_offers_for_filters(
+                user_id=self.pro.id, user_is_admin=self.pro.isAdmin, max_offers_count=5, page=1, status="EXPIRED"
             )
 
             # then
-            offer_ids = [offer.id for offer in paginated_offers.offers]
+            offer_ids = [offer.id for offer in offers.offers]
             assert self.active_thing_offer_with_one_stock_with_remaining_quantity.id not in offer_ids
             assert self.active_thing_offer_with_all_stocks_without_quantity.id not in offer_ids
             assert self.active_event_offer_with_stock_in_the_future_without_quantity.id not in offer_ids
@@ -921,7 +921,7 @@ class PaginatedOfferForFiltersTest:
             assert self.expired_thing_offer_with_a_stock_expired_with_zero_remaining_quantity.id in offer_ids
             assert self.expired_event_offer_with_all_stocks_in_the_past_with_remaining_quantity.id in offer_ids
             assert self.expired_event_offer_with_all_stocks_in_the_past_with_zero_remaining_quantity.id in offer_ids
-            assert paginated_offers.total_offers == 5
+            assert offers.total_offers == 5
 
         @pytest.mark.usefixtures("db_session")
         def should_return_only_pending_offers_when_requesting_pending_status(self):
@@ -939,14 +939,14 @@ class PaginatedOfferForFiltersTest:
             user = pending_offer.venue.managingOfferer
 
             # when
-            paginated_offers = get_paginated_offers_for_filters(
-                user_id=user.id, user_is_admin=True, offers_per_page=5, page=1, status="PENDING"
+            offers = get_capped_offers_for_filters(
+                user_id=user.id, user_is_admin=True, max_offers_count=5, page=1, status="PENDING"
             )
 
             # then
-            assert len(paginated_offers.offers) == 1
-            assert paginated_offers.offers[0].name == "Offre en attente"
-            assert paginated_offers.offers[0].status == OfferStatus.PENDING.name
+            assert len(offers.offers) == 1
+            assert offers.offers[0].name == "Offre en attente"
+            assert offers.offers[0].status == OfferStatus.PENDING.name
 
         @pytest.mark.usefixtures("db_session")
         def should_return_only_rejected_offers_when_requesting_rejected_status(self):
@@ -964,14 +964,14 @@ class PaginatedOfferForFiltersTest:
             user = rejected_offer.venue.managingOfferer
 
             # when
-            paginated_offers = get_paginated_offers_for_filters(
-                user_id=user.id, user_is_admin=True, offers_per_page=5, page=1, status="REJECTED"
+            offers = get_capped_offers_for_filters(
+                user_id=user.id, user_is_admin=True, max_offers_count=5, page=1, status="REJECTED"
             )
 
             # then
-            assert len(paginated_offers.offers) == 1
-            assert paginated_offers.offers[0].name == "Offre rejetée"
-            assert paginated_offers.offers[0].status == OfferStatus.REJECTED.name
+            assert len(offers.offers) == 1
+            assert offers.offers[0].name == "Offre rejetée"
+            assert offers.offers[0].status == OfferStatus.REJECTED.name
 
         @pytest.mark.usefixtures("db_session")
         def should_return_only_sold_out_offers_and_requested_venue_when_requesting_sold_out_status_and_specific_venue(
@@ -981,17 +981,17 @@ class PaginatedOfferForFiltersTest:
             self.init_test_data()
 
             # when
-            paginated_offers = get_paginated_offers_for_filters(
+            offers = get_capped_offers_for_filters(
                 user_id=self.pro.id,
                 user_is_admin=self.pro.isAdmin,
-                offers_per_page=5,
+                max_offers_count=5,
                 page=1,
                 status="SOLD_OUT",
                 venue_id=self.other_venue.id,
             )
 
             # then
-            offer_ids = [offer.id for offer in paginated_offers.offers]
+            offer_ids = [offer.id for offer in offers.offers]
             assert self.sold_out_thing_offer_without_stock.id not in offer_ids
             assert self.sold_old_thing_offer_with_all_stocks_empty.id not in offer_ids
             assert (
@@ -1000,7 +1000,7 @@ class PaginatedOfferForFiltersTest:
             assert self.sold_out_event_offer_with_only_one_stock_soft_deleted.id not in offer_ids
             assert self.sold_out_event_offer_without_stock.id not in offer_ids
             assert self.sold_out_offer_on_other_venue.id in offer_ids
-            assert paginated_offers.total_offers == 1
+            assert offers.total_offers == 1
 
         @pytest.mark.usefixtures("db_session")
         def should_return_only_active_offer_on_specific_period_when_requesting_active_status_and_time_period(self):
@@ -1012,10 +1012,10 @@ class PaginatedOfferForFiltersTest:
             in_six_days_ending = in_six_days.replace(hour=23, minute=59, second=59)
 
             # when
-            paginated_offers = get_paginated_offers_for_filters(
+            offers = get_capped_offers_for_filters(
                 user_id=self.pro.id,
                 user_is_admin=self.pro.isAdmin,
-                offers_per_page=5,
+                max_offers_count=5,
                 page=1,
                 status="ACTIVE",
                 period_beginning_date=utc_datetime_to_department_timezone(in_six_days_beginning, "75").isoformat(),
@@ -1023,13 +1023,13 @@ class PaginatedOfferForFiltersTest:
             )
 
             # then
-            offer_ids = [offer.id for offer in paginated_offers.offers]
+            offer_ids = [offer.id for offer in offers.offers]
             assert self.active_event_in_six_days_offer.id in offer_ids
             assert self.active_event_offer_with_one_stock_in_the_future_with_remaining_quantity.id not in offer_ids
             assert self.active_event_offer_with_stock_in_the_future_without_quantity.id not in offer_ids
             assert self.active_thing_offer_with_all_stocks_without_quantity.id not in offer_ids
             assert self.active_thing_offer_with_one_stock_with_remaining_quantity.id not in offer_ids
-            assert paginated_offers.total_offers == 1
+            assert offers.total_offers == 1
 
 
 @pytest.mark.usefixtures("db_session")

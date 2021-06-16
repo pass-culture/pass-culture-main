@@ -22,8 +22,8 @@ from pcapi.core.offers.models import OfferStatus
 from pcapi.core.offers.models import OfferValidationConfig
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.users.models import User
-from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
-from pcapi.infrastructure.repository.pro_offers.paginated_offers_recap_domain_converter import to_domain
+from pcapi.domain.pro_offers.offers_recap import OffersRecap
+from pcapi.infrastructure.repository.pro_offers.offers_recap_domain_converter import to_domain
 from pcapi.models import Offer
 from pcapi.models import Product
 from pcapi.models import Stock
@@ -37,11 +37,11 @@ IMPORTED_CREATION_MODE = "imported"
 MANUAL_CREATION_MODE = "manual"
 
 
-def get_paginated_offers_for_filters(
+def get_capped_offers_for_filters(
     user_id: int,
     user_is_admin: bool,
     page: Optional[int],
-    offers_per_page: int,
+    max_offers_count: int,
     offerer_id: Optional[int] = None,
     status: Optional[str] = None,
     venue_id: Optional[int] = None,
@@ -50,7 +50,7 @@ def get_paginated_offers_for_filters(
     creation_mode: Optional[str] = None,
     period_beginning_date: Optional[str] = None,
     period_ending_date: Optional[str] = None,
-) -> PaginatedOffersRecap:
+) -> OffersRecap:
     query = get_offers_by_filters(
         user_id=user_id,
         user_is_admin=user_is_admin,
@@ -70,11 +70,11 @@ def get_paginated_offers_for_filters(
         .options(joinedload(Offer.mediations))
         .options(joinedload(Offer.product))
         .order_by(Offer.id.desc())
-        .paginate(page, per_page=offers_per_page, error_out=False)
+        .paginate(page, per_page=max_offers_count, error_out=False)
     )
 
     total_offers = query.total
-    total_pages = math.ceil(total_offers / offers_per_page)
+    total_pages = math.ceil(total_offers / max_offers_count)
 
     # FIXME (cgaunet, 2020-11-03): we should not have serialization logic in the repository
     return to_domain(

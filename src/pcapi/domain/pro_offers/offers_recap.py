@@ -90,7 +90,7 @@ class OfferRecap:
         self.status = status
 
 
-class PaginatedOffersRecap:
+class OffersRecap:
     def __init__(self, offers_recap: list[OfferRecap], current_page: int, total_pages: int, total_offers: int):
         self.offers = offers_recap
         self.current_page = current_page

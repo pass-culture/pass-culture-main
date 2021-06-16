@@ -1,5 +1,5 @@
-from pcapi.domain.pro_offers.paginated_offers_recap import OfferRecap
-from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
+from pcapi.domain.pro_offers.offers_recap import OfferRecap
+from pcapi.domain.pro_offers.offers_recap import OffersRecap
 from pcapi.routes.serialization.offers_recap_serialize import serialize_offers_recap_paginated
 from pcapi.utils.human_ids import humanize
 
@@ -38,10 +38,10 @@ def should_return_serialized_offers_with_relevant_informations():
         stocks=[stock],
         status="ACTIVE",
     )
-    paginated_offers_recap = PaginatedOffersRecap(offers_recap=[offer], current_page=1, total_pages=2, total_offers=3)
+    offers_recap = OffersRecap(offers_recap=[offer], current_page=1, total_pages=2, total_offers=3)
 
     # when
-    result = serialize_offers_recap_paginated(paginated_offers_recap)
+    result = serialize_offers_recap_paginated(offers_recap)
 
     # then
     expected_serialized_offer = [
@@ -117,12 +117,12 @@ def should_return_pagination_details():
     current_page = 1
     total_pages = 2
     total_offers = 3
-    paginated_offers_recap = PaginatedOffersRecap(
+    offers_recap = OffersRecap(
         offers_recap=[offer], current_page=current_page, total_pages=total_pages, total_offers=total_offers
     )
 
     # when
-    result = serialize_offers_recap_paginated(paginated_offers_recap)
+    result = serialize_offers_recap_paginated(offers_recap)
 
     # then
     assert result["page"] == current_page

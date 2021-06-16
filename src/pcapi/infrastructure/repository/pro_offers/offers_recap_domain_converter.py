@@ -1,13 +1,13 @@
-from pcapi.domain.pro_offers.paginated_offers_recap import OfferRecap
-from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
+from pcapi.domain.pro_offers.offers_recap import OfferRecap
+from pcapi.domain.pro_offers.offers_recap import OffersRecap
 from pcapi.models import Offer
 from pcapi.models import Stock
 
 
-def to_domain(offers: list[Offer], current_page: int, total_pages: int, total_offers: int) -> PaginatedOffersRecap:
+def to_domain(offers: list[Offer], current_page: int, total_pages: int, total_offers: int) -> OffersRecap:
     offers_recap = [_offer_recap_to_domain(offer) for offer in offers]
 
-    return PaginatedOffersRecap(
+    return OffersRecap(
         offers_recap=offers_recap, current_page=current_page, total_pages=total_pages, total_offers=total_offers
     )
 

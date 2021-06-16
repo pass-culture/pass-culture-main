@@ -4,7 +4,7 @@ from unittest.mock import patch
 from pcapi.core import testing
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.infrastructure.repository.pro_offers.paginated_offers_recap_domain_converter import to_domain
+from pcapi.infrastructure.repository.pro_offers.offers_recap_domain_converter import to_domain
 from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient

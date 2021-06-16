@@ -33,7 +33,7 @@ from pcapi.core.users.models import ExpenseDomain
 from pcapi.core.users.models import User
 from pcapi.domain import admin_emails
 from pcapi.domain import user_emails
-from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
+from pcapi.domain.pro_offers.offers_recap import OffersRecap
 from pcapi.models import Criterion
 from pcapi.models import EventType
 from pcapi.models import Offer
@@ -87,12 +87,12 @@ def list_offers_for_pro_user(
     creation_mode: Optional[str] = None,
     period_beginning_date: Optional[str] = None,
     period_ending_date: Optional[str] = None,
-) -> PaginatedOffersRecap:
-    return offers_repository.get_paginated_offers_for_filters(
+) -> OffersRecap:
+    return offers_repository.get_capped_offers_for_filters(
         user_id=user_id,
         user_is_admin=user_is_admin,
         offerer_id=offerer_id,
-        offers_per_page=offers_per_page or DEFAULT_OFFERS_PER_PAGE,
+        max_offers_count=offers_per_page or DEFAULT_OFFERS_PER_PAGE,
         venue_id=venue_id,
         type_id=type_id,
         page=page or DEFAULT_PAGE,

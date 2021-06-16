@@ -1,13 +1,13 @@
 from typing import Any
 
-from pcapi.domain.pro_offers.paginated_offers_recap import OfferRecap
-from pcapi.domain.pro_offers.paginated_offers_recap import OfferRecapStock
-from pcapi.domain.pro_offers.paginated_offers_recap import OfferRecapVenue
-from pcapi.domain.pro_offers.paginated_offers_recap import PaginatedOffersRecap
+from pcapi.domain.pro_offers.offers_recap import OfferRecap
+from pcapi.domain.pro_offers.offers_recap import OfferRecapStock
+from pcapi.domain.pro_offers.offers_recap import OfferRecapVenue
+from pcapi.domain.pro_offers.offers_recap import OffersRecap
 from pcapi.utils.human_ids import humanize
 
 
-def serialize_offers_recap_paginated(paginated_offers: PaginatedOffersRecap) -> dict[str, Any]:
+def serialize_offers_recap_paginated(paginated_offers: OffersRecap) -> dict[str, Any]:
     return {
         "offers": [_serialize_offer_paginated(offer) for offer in paginated_offers.offers],
         "page": paginated_offers.current_page,
