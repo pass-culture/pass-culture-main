@@ -28,7 +28,7 @@ affinity: {}
 serviceAccount:
   create: true
   annotations:
-    iam.gke.io/gcp-service-account: metier-production-pcapi@passculture-metier-ehp.iam.gserviceaccount.com
+    iam.gke.io/gcp-service-account: metier-production-pcapi@passculture-metier-prod.iam.gserviceaccount.com
 
 ### API deployment ###
 api:
