@@ -74,6 +74,19 @@ def pc_remote_import_beneficiaries(app: Flask) -> None:
     remote_tag_has_completed.run(import_from_date, procedure_id)
 
 
+# FIXME (xordoquy, 2021-06-16): This clock must be removed once every application from procedure
+#  defined in 44623 has been treated
+@log_cron
+@cron_context
+def pc_remote_import_beneficiaries_from_old_dms(app: Flask) -> None:
+    procedure_id = 44623
+    import_from_date = find_most_recent_beneficiary_creation_date_for_source(
+        BeneficiaryImportSources.demarches_simplifiees, procedure_id
+    )
+    remote_import.run(import_from_date, procedure_id)
+    remote_tag_has_completed.run(import_from_date, procedure_id)
+
+
 @log_cron
 @cron_context
 def pc_import_beneficiaries_from_dms(app: Flask) -> None:
@@ -144,6 +157,8 @@ def main() -> None:
     scheduler.add_job(synchronize_provider_api, "cron", [app], day="*", hour="1")
 
     scheduler.add_job(pc_remote_import_beneficiaries, "cron", [app], hour="*")
+
+    scheduler.add_job(pc_remote_import_beneficiaries_from_old_dms, "cron", [app], days="*", hour="20")
 
     scheduler.add_job(pc_import_beneficiaries_from_dms, "cron", [app], hour="*")
 
