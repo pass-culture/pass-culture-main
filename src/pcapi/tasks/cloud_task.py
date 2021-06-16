@@ -15,7 +15,7 @@ def get_client():
 def enqueue_task(queue, url, payload):
 
     client = get_client()
-    parent = client.queue_path(settings.GCP_PROJECT, settings.GCP_REGION, queue)
+    parent = client.queue_path(settings.GCP_PROJECT, settings.GCP_REGION_CLOUD_TASK, queue)
 
     body = json.dumps(payload).encode()
 
