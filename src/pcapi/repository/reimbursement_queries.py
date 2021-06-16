@@ -42,6 +42,7 @@ def find_all_offerer_payments(offerer_id: int) -> list[namedtuple]:
             Venue.siret.label("venue_siret"),
             Venue.address.label("venue_address"),
             Payment.amount.label("amount"),
+            Payment.reimbursementRate.label("reimbursement_rate"),
             Payment.iban.label("iban"),
             Payment.transactionLabel.label("transactionLabel"),
             payment_status_query.c.status.label("status"),

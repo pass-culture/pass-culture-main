@@ -22,6 +22,7 @@ class ReimbursementDetails:
         "Contremarque",
         "Date de validation de la réservation",
         "Montant de la réservation",
+        "Barème",
         "Montant remboursé",
         "Statut du remboursement",
     ]
@@ -67,6 +68,11 @@ class ReimbursementDetails:
             self.booking_token = payment_info.booking_token
             self.booking_used_date = payment_info.booking_dateUsed
             self.booking_total_amount = payment_info.booking_amount * payment_info.booking_quantity
+            if payment_info.reimbursement_rate:
+                reimbursement_rate = f"{int(payment_info.reimbursement_rate * 100)}%"
+            else:
+                reimbursement_rate = ""
+            self.reimbursement_rate = reimbursement_rate
             self.reimbursed_amount = payment_info.amount
             self.status = human_friendly_status
 
@@ -85,6 +91,7 @@ class ReimbursementDetails:
             self.booking_token,
             self.booking_used_date,
             self.booking_total_amount,
+            self.reimbursement_rate,
             self.reimbursed_amount,
             self.status,
         ]

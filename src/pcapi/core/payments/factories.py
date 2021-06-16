@@ -1,4 +1,5 @@
 import datetime
+from decimal import Decimal
 import hashlib
 
 import factory
@@ -45,10 +46,12 @@ class PaymentFactory(BaseFactory):
 
     author = "batch"
     booking = factory.SubFactory(bookings_factories.BookingFactory, isUsed=True)
-    amount = factory.SelfAttribute("booking.total_amount")
+    amount = factory.LazyAttribute(lambda payment: payment.booking.total_amount * Decimal(payment.reimbursementRate))
     recipientSiren = factory.SelfAttribute("booking.stock.offer.venue.managingOfferer.siren")
     reimbursementRule = factory.Iterator(REIMBURSEMENT_RULE_DESCRIPTIONS)
-    reimbursementRate = 30
+    reimbursementRate = factory.LazyAttribute(
+        lambda payment: reimbursement.get_reimbursement_rule(payment.booking, [], Decimal(0)).rate
+    )
     recipientName = "Récipiendaire"
     iban = "CF13QSDFGH456789"
     bic = "QSDFGH8Z555"
@@ -92,3 +95,10 @@ class CustomReimbursementRuleFactory(BaseFactory):
         ]
     )
     amount = 5
+
+
+class PaymentWithCustomRuleFactory(PaymentFactory):
+    amount = factory.LazyAttribute(lambda payment: payment.customReimbursementRule.amount)
+    customReimbursementRule = factory.SubFactory(CustomReimbursementRuleFactory)
+    reimbursementRule = None
+    reimbursementRate = None
