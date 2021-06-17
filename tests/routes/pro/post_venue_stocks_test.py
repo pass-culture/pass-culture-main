@@ -122,7 +122,15 @@ def test_returns_comprehensive_errors(mock_synchronize_stocks, app):
 
     response1 = test_client.post("/v2/venue/3/stocks", json={})
     response2 = test_client.post(
-        "/v2/venue/3/stocks", json={"stocks": [{"ref": "123456789"}, {"wrong_key": "123456789"}]}
+        "/v2/venue/3/stocks",
+        json={
+            "stocks": [
+                {"ref": "123456789"},
+                {"wrong_key": "123456789"},
+                {"ref": "1234567890", "available": "abc"},
+                {"ref": "12345678901", "available": -3},
+            ]
+        },
     )
 
     assert response1.status_code == 400
@@ -131,4 +139,6 @@ def test_returns_comprehensive_errors(mock_synchronize_stocks, app):
     assert response2.json["stocks.0.available"] == ["Ce champ est obligatoire"]
     assert response2.json["stocks.1.available"] == ["Ce champ est obligatoire"]
     assert response2.json["stocks.1.ref"] == ["Ce champ est obligatoire"]
+    assert response2.json["stocks.2.available"] == ["Saisissez un nombre valide"]
+    assert response2.json["stocks.3.available"] == ["Saisissez un nombre supérieur à 0"]
     mock_synchronize_stocks.assert_not_called()

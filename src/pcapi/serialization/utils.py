@@ -38,12 +38,17 @@ def before_handler(
         "value_error.url.scheme": 'L\'URL doit commencer par "http://" ou "https://"',
         "value_error.url.host": 'L\'URL doit terminer par une extension (ex. ".fr")',
         "value_error.email": "Le format d'email est incorrect.",
+        "value_error.number.not_gt": "Saisissez un nombre supérieur à {limit_value}",
     }
 
     if pydantic_error and pydantic_error.errors():
         api_errors = ApiErrors()
         for error in pydantic_error.errors():
-            message = error_messages.get(error["type"], error["msg"])
+            if error["type"] in error_messages:
+                message = error_messages[error["type"]].format(**error.get("ctx", {}))
+            else:
+                message = error["msg"]
+
             location = ".".join(str(loc) for loc in error["loc"])
             api_errors.add_error(location, message)
         raise api_errors
