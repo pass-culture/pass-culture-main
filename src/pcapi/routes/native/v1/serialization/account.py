@@ -215,3 +215,11 @@ class UploadIdentityDocumentRequest(BaseModel):
 
 class UserProfilingFraudRequest(BaseModel):
     session_id: str
+
+    @validator("session_id")
+    def session_id_alphanumerics(cls, session_id: str) -> str:  # pylint: disable=no-self-argument
+        if not session_id.isalnum():
+            raise ValueError(
+                "L'identifiant de session ne doit être composé exclusivement que de caratères alphanumériques"
+            )
+        return session_id

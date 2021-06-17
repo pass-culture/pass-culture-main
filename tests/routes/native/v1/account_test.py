@@ -1333,7 +1333,7 @@ class ProfilingFraudScoreTest:
         user = users_factories.UserFactory(
             isBeneficiary=False,
         )
-        session_id = "arbitrary-session-id"
+        session_id = "arbitrarysessionid"
         matcher = requests_mock.register_uri(
             "POST",
             settings.USER_PROFILING_URL,
@@ -1358,7 +1358,7 @@ class ProfilingFraudScoreTest:
             status_code=500,
         )
         client.with_token(user.email)
-        response = client.post("/native/v1/user_profiling", json={"session_id": "random-session-id"})
+        response = client.post("/native/v1/user_profiling", json={"session_id": "randomsessionid"})
         assert response.status_code == 204
         assert matcher.call_count == 1
         assert caplog.record_tuples == [
@@ -1380,9 +1380,25 @@ class ProfilingFraudScoreTest:
         client.with_token(user.email)
 
         with caplog.at_level(logging.INFO):
-            response = client.post("/native/v1/user_profiling", json={"session_id": "random-session-id"})
+            response = client.post("/native/v1/user_profiling", json={"session_id": "randomsessionid"})
         assert response.status_code == 204
         assert matcher.call_count == 1
         assert len(caplog.records) == 2
         assert caplog.record_tuples[0][-1] == "External service called"
         assert caplog.record_tuples[1][-1].startswith("Success when profiling user:")
+
+    @override_settings(USER_PROFILING_URL=USER_PROFILING_URL)
+    def test_profiling_session_id_invalid(self, client, requests_mock):
+        user = users_factories.UserFactory(
+            isBeneficiary=False,
+        )
+        matcher = requests_mock.register_uri(
+            "POST",
+            settings.USER_PROFILING_URL,
+            json=user_profiling_fixtures.CORRECT_RESPONSE,
+            status_code=200,
+        )
+        client.with_token(user.email)
+        response = client.post("/native/v1/user_profiling", json={"session_id": "gdavmoioeuboaobç!p'è"})
+        assert response.status_code == 400
+        assert matcher.call_count == 0
