@@ -13,7 +13,7 @@ export const CSV_HEADERS = [
   'Email du bénéficiaire',
   'Téléphone du bénéficiaire',
   'Date et heure de réservation',
-  'Date et heure de d’utilisation',
+  'Date et heure de validation',
   'Contremarque',
   'Prix de la réservation',
   'Statut de la contremarque',
