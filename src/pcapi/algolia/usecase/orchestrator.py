@@ -33,7 +33,10 @@ def process_eligible_offers(client: Redis, offer_ids: list[int]) -> None:
             # FIXME (dbaty, 2021-06-14). I think we could safely do
             # without the hashmap in Redis. Check the logs and see if
             # I am right!
-            logger.info("Redis 'indexed_offers' hashmap/set saved use from an unnecessary request to Algolia")
+            logger.info(
+                "Redis 'indexed_offers' hashmap/set saved use from an unnecessary request to Algolia",
+                extra={"source": "process_eligible_offers", "offer": offer.id},
+            )
 
     if len(offers_to_add) > 0:
         _process_adding(pipeline=pipeline, client=client, offer_ids=offer_ids, adding_objects=offers_to_add)
@@ -52,6 +55,14 @@ def delete_expired_offers(client: Redis, offer_ids: list[int]) -> None:
 
         if offer_exists:
             offer_ids_to_delete.append(offer_id)
+        else:
+            # FIXME (dbaty, 2021-06-14). I think we could safely do
+            # without the hashmap in Redis. Check the logs and see if
+            # I am right!
+            logger.info(
+                "Redis 'indexed_offers' hashmap/set saved use from an unnecessary request to Algolia",
+                extra={"source": "delete_expired_offers", "offer": offer_id},
+            )
 
     if len(offer_ids_to_delete) > 0:
         _process_deleting(client=client, offer_ids_to_delete=offer_ids_to_delete)
