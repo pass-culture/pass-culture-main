@@ -1671,7 +1671,6 @@ describe('offerDetails - Edition', () => {
             creationMode: 'manual',
             periodBeginningDate: '2020-11-30T00:00:00+01:00',
             periodEndingDate: '2021-01-07T23:59:59+01:00',
-            page: 1,
           },
         },
       }
@@ -1696,7 +1695,10 @@ describe('offerDetails - Edition', () => {
       userEvent.click(screen.getByRole('link', { name: 'Annuler et quitter' }))
 
       // Then
-      expect(computeUrl.computeOffersUrl).toHaveBeenLastCalledWith(testStore.offers.searchFilters)
+      expect(computeUrl.computeOffersUrl).toHaveBeenLastCalledWith(
+        testStore.offers.searchFilters,
+        1
+      )
     })
 
     it('should redirect to offers page', async () => {

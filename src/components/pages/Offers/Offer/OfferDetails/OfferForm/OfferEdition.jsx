@@ -38,6 +38,7 @@ const OfferEdition = ({
   isSubmitLoading,
   isUserAdmin,
   offer,
+  offersPageNumber,
   offersSearchFilters,
   onSubmit,
   setFormValues,
@@ -103,7 +104,7 @@ const OfferEdition = ({
 
   return (
     <OfferForm
-      backUrl={computeOffersUrl(offersSearchFilters)}
+      backUrl={computeOffersUrl(offersSearchFilters, offersPageNumber)}
       formValues={formValues}
       initialValues={initialValues}
       isDisabled={isDisabled}
@@ -140,6 +141,7 @@ OfferEdition.propTypes = {
   isSubmitLoading: PropTypes.bool.isRequired,
   isUserAdmin: PropTypes.bool,
   offer: PropTypes.shape(),
+  offersPageNumber: PropTypes.number.isRequired,
   offersSearchFilters: PropTypes.shape({
     name: PropTypes.string,
     offererId: PropTypes.string,

@@ -1,8 +1,8 @@
 import { stringify } from '../../../../utils/query-string'
 import { mapApiToBrowser, translateApiParamsToQueryParams } from '../../../../utils/translate'
-import { ALL_STATUS, DEFAULT_CREATION_MODE } from '../Offers/_constants'
+import { ALL_STATUS, DEFAULT_CREATION_MODE, DEFAULT_PAGE } from '../Offers/_constants'
 
-export const computeOffersUrl = offersSearchFilters => {
+export const computeOffersUrl = (offersSearchFilters, offersPageNumber = 1) => {
   const { creationMode, status } = offersSearchFilters
   const searchFiltersParams = { ...offersSearchFilters }
 
@@ -11,6 +11,10 @@ export const computeOffersUrl = offersSearchFilters => {
   }
   if (creationMode && creationMode !== DEFAULT_CREATION_MODE.id) {
     searchFiltersParams.creationMode = mapApiToBrowser[creationMode]
+  }
+
+  if (offersPageNumber !== DEFAULT_PAGE) {
+    searchFiltersParams.page = offersPageNumber
   }
 
   const queryString = stringify(translateApiParamsToQueryParams(searchFiltersParams))

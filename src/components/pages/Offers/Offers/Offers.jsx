@@ -11,7 +11,7 @@ import Titles from 'components/layout/Titles/Titles'
 import { getOffersCountToDisplay } from 'components/pages/Offers/domain/getOffersCountToDisplay'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
-import { saveSearchFilters } from 'store/offers/actions'
+import { savePageNumber, saveSearchFilters } from 'store/offers/actions'
 import { selectOffersByPage } from 'store/offers/selectors'
 import { loadOffers } from 'store/offers/thunks'
 import { mapApiToBrowser, mapBrowserToApi, translateQueryParamsToApiParams } from 'utils/translate'
@@ -52,6 +52,7 @@ const Offers = ({ currentUser, getOfferer, query }) => {
           searchFiltersInUri.periodEndingDate || DEFAULT_SEARCH_FILTERS.periodEndingDate,
       })
     )
+    dispatch(savePageNumber(Number(searchFiltersInUri.page) || DEFAULT_PAGE))
   }, [dispatch, query])
   const [isLoading, setIsLoading] = useState(true)
   const [offersCount, setOffersCount] = useState(0)
@@ -64,11 +65,16 @@ const Offers = ({ currentUser, getOfferer, query }) => {
 
   const [selectedOfferIds, setSelectedOfferIds] = useState([])
   const savedSearchFilters = useSelector(state => state.offers.searchFilters)
+  const savedPageNumber = useSelector(state => state.offers.pageNumber)
   const offers = useSelector(state => selectOffersByPage(state, pageNumber))
 
   useEffect(() => {
     setSearchFilters({ ...savedSearchFilters })
   }, [savedSearchFilters])
+
+  useEffect(() => {
+    setPageNumber(savedPageNumber)
+  }, [savedPageNumber])
 
   useEffect(() => {
     if (
@@ -114,9 +120,11 @@ const Offers = ({ currentUser, getOfferer, query }) => {
         }
       })
 
+      queryParams.page = savedPageNumber !== DEFAULT_PAGE ? savedPageNumber : null
+
       query.change(queryParams)
     },
-    [query, savedSearchFilters]
+    [query, savedSearchFilters, savedPageNumber]
   )
 
   const loadAndUpdateOffers = useCallback(
@@ -141,6 +149,7 @@ const Offers = ({ currentUser, getOfferer, query }) => {
   const applyFilters = useCallback(() => {
     setIsLoading(true)
     setIsStatusFiltersVisible(false)
+    dispatch(savePageNumber(DEFAULT_PAGE))
     dispatch(
       saveSearchFilters({
         ...searchFilters,
@@ -189,12 +198,20 @@ const Offers = ({ currentUser, getOfferer, query }) => {
   }, [])
 
   const onPreviousPageClick = useCallback(() => {
-    setPageNumber(currentPageNumber => currentPageNumber - 1)
-  }, [])
+    setPageNumber(currentPageNumber => {
+      const newPageNumber = currentPageNumber - 1
+      dispatch(savePageNumber(newPageNumber))
+      return newPageNumber
+    })
+  }, [dispatch])
 
   const onNextPageClick = useCallback(() => {
-    setPageNumber(currentPageNumber => currentPageNumber + 1)
-  }, [])
+    setPageNumber(currentPageNumber => {
+      const newPageNumber = currentPageNumber + 1
+      dispatch(savePageNumber(newPageNumber))
+      return newPageNumber
+    })
+  }, [dispatch])
 
   const selectOffer = useCallback((offerId, selected) => {
     setSelectedOfferIds(currentSelectedIds => {
@@ -234,6 +251,7 @@ const Offers = ({ currentUser, getOfferer, query }) => {
         ...DEFAULT_SEARCH_FILTERS,
       })
     )
+    dispatch(savePageNumber(DEFAULT_PAGE))
   }, [dispatch])
 
   const { isAdmin } = currentUser || {}

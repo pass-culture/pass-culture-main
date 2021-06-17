@@ -979,11 +979,13 @@ describe('src | components | pages | Offers | Offers', () => {
   describe('url query params', () => {
     it('should have page value when page value is not first page', async () => {
       // Given
+      offersRecap = Array.from({ length: 11 }, offerFactory)
+      pcapi.loadFilteredOffers.mockResolvedValueOnce(offersRecap)
       renderOffers(props, store)
       const nextPageIcon = await screen.findByAltText('Aller à la page suivante')
 
       // When
-      await fireEvent.click(nextPageIcon)
+      fireEvent.click(nextPageIcon)
 
       // Then
       expect(props.query.change).toHaveBeenLastCalledWith({
@@ -991,6 +993,7 @@ describe('src | components | pages | Offers | Offers', () => {
         creation: null,
         lieu: null,
         nom: null,
+        page: 2,
         'periode-evenement-debut': null,
         'periode-evenement-fin': null,
         statut: null,
@@ -1014,6 +1017,7 @@ describe('src | components | pages | Offers | Offers', () => {
         creation: null,
         lieu: null,
         nom: 'AnyWord',
+        page: null,
         'periode-evenement-debut': null,
         'periode-evenement-fin': null,
         statut: null,
@@ -1059,6 +1063,7 @@ describe('src | components | pages | Offers | Offers', () => {
         creation: null,
         lieu: null,
         nom: null,
+        page: null,
         'periode-evenement-debut': null,
         'periode-evenement-fin': null,
         statut: null,
@@ -1083,6 +1088,7 @@ describe('src | components | pages | Offers | Offers', () => {
         categorie: null,
         creation: null,
         nom: null,
+        page: null,
         'periode-evenement-debut': null,
         'periode-evenement-fin': null,
         statut: null,
@@ -1112,6 +1118,7 @@ describe('src | components | pages | Offers | Offers', () => {
         creation: null,
         lieu: null,
         nom: null,
+        page: null,
         'periode-evenement-debut': null,
         'periode-evenement-fin': null,
         statut: null,
@@ -1136,6 +1143,7 @@ describe('src | components | pages | Offers | Offers', () => {
         creation: null,
         lieu: null,
         nom: null,
+        page: null,
         'periode-evenement-debut': null,
         'periode-evenement-fin': null,
         structure: null,
@@ -1158,6 +1166,7 @@ describe('src | components | pages | Offers | Offers', () => {
         creation: null,
         lieu: null,
         nom: null,
+        page: null,
         'periode-evenement-debut': null,
         'periode-evenement-fin': null,
         statut: null,
@@ -1207,6 +1216,7 @@ describe('src | components | pages | Offers | Offers', () => {
         categorie: null,
         lieu: null,
         nom: null,
+        page: null,
         'periode-evenement-debut': null,
         'periode-evenement-fin': null,
         statut: null,
@@ -1235,6 +1245,7 @@ describe('src | components | pages | Offers | Offers', () => {
         creation: null,
         lieu: null,
         nom: null,
+        page: null,
         'periode-evenement-debut': null,
         'periode-evenement-fin': null,
         statut: null,
@@ -1255,6 +1266,7 @@ describe('src | components | pages | Offers | Offers', () => {
       await fireEvent.click(nextIcon)
 
       // Then
+      expect(pcapi.loadFilteredOffers).toHaveBeenCalledTimes(1)
       expect(await screen.findByText(offers[10].name)).toBeInTheDocument()
       expect(screen.queryByText(offers[0].name)).not.toBeInTheDocument()
     })
@@ -1272,6 +1284,7 @@ describe('src | components | pages | Offers | Offers', () => {
       await fireEvent.click(previousIcon)
 
       // Then
+      expect(pcapi.loadFilteredOffers).toHaveBeenCalledTimes(1)
       expect(await screen.findByText(offers[0].name)).toBeInTheDocument()
       expect(screen.queryByText(offers[10].name)).not.toBeInTheDocument()
     })
