@@ -3,6 +3,7 @@ import enum
 from typing import Optional
 
 import pydantic
+from pydantic.class_validators import validator
 import sqlalchemy
 import sqlalchemy.dialects.postgresql
 import sqlalchemy.orm
@@ -21,6 +22,15 @@ class FraudStatus(enum.Enum):
     OK = "OK"
     KO = "KO"
     SUSPICIOUS = "SUSPICIOUS"
+
+
+def _parse_level(level: Optional[str]) -> Optional[None]:
+    if not level:
+        return None
+    try:
+        return int(level)
+    except ValueError:
+        return None
 
 
 class JouveContent(pydantic.BaseModel):
@@ -51,6 +61,11 @@ class JouveContent(pydantic.BaseModel):
     postalCode: Optional[str]
     posteCodeCtrl: Optional[str]
     serviceCodeCtrl: Optional[str]
+
+    _parse_body_birth_date_level = validator("bodyBirthDateLevel", pre=True, allow_reuse=True)(_parse_level)
+    _parse_body_first_name_level = validator("bodyFirstNameLevel", pre=True, allow_reuse=True)(_parse_level)
+    _parse_body_name_level = validator("bodyNameLevel", pre=True, allow_reuse=True)(_parse_level)
+    _parse_body_piece_number_level = validator("bodyPieceNumberLevel", pre=True, allow_reuse=True)(_parse_level)
 
 
 class BeneficiaryFraudCheck(PcObject, Model):

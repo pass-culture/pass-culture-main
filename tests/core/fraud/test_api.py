@@ -60,7 +60,8 @@ class JouveFraudCheckTest:
     }
 
     @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
-    def test_jouve_update(self, _get_raw_content, client):
+    @pytest.mark.parametrize("body_name_level", [None, "", "100"])
+    def test_jouve_update(self, _get_raw_content, client, body_name_level):
         user = UserFactory(
             hasCompletedIdCheck=True,
             isBeneficiary=False,
@@ -68,7 +69,7 @@ class JouveFraudCheckTest:
             dateOfBirth=datetime(2002, 6, 8),
             email=self.user_email,
         )
-        _get_raw_content.return_value = self.JOUVE_CONTENT
+        _get_raw_content.return_value = self.JOUVE_CONTENT | {"bodyNameLevel": body_name_level}
 
         response = client.post("/beneficiaries/application_update", json={"id": self.application_id})
         assert response.status_code == 200
