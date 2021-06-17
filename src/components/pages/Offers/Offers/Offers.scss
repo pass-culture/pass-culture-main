@@ -9,6 +9,7 @@
   .offerer-filter {
     @include caption();
 
+    align-items: center;
     background-color: $notification-info;
     border: none;
     border-radius: 24px;
@@ -20,12 +21,16 @@
     width: max-content;
 
     button {
-      align-self: center;
+      align-items: center;
       background: none;
       border: none;
-      height: rem(14px);
+      display: flex;
       margin-left: rem(8px);
-      width: rem(14px);
+
+      img {
+        height: rem(14px);
+        width: rem(14px);
+      }
     }
   }
 
