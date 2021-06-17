@@ -8,6 +8,7 @@ import Icon from 'components/layout/Icon'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
+import { getOffersCountToDisplay } from 'components/pages/Offers/domain/getOffersCountToDisplay'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 import { saveSearchFilters } from 'store/offers/actions'
@@ -263,7 +264,7 @@ const Offers = ({ currentUser, getOfferer, query }) => {
         <ActionsBarContainer
           areAllOffersSelected={areAllOffersSelected}
           clearSelectedOfferIds={clearSelectedOfferIds}
-          nbSelectedOffers={areAllOffersSelected ? offersCount : selectedOfferIds.length}
+          nbSelectedOffers={nbSelectedOffers}
           refreshOffers={refreshOffers}
           selectedOfferIds={selectedOfferIds}
           toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
@@ -309,7 +310,7 @@ const Offers = ({ currentUser, getOfferer, query }) => {
               <>
                 {hasOffers && (
                   <div className="offers-count">
-                    {`${offersCount <= 200 ? offersCount : '200+'} ${
+                    {`${getOffersCountToDisplay(offersCount)} ${
                       offersCount <= 1 ? 'offre' : 'offres'
                     }`}
                   </div>

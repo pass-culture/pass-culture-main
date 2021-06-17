@@ -2,6 +2,7 @@ import PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
 
 import Icon from 'components/layout/Icon'
+import { getOffersCountToDisplay } from 'components/pages/Offers/domain/getOffersCountToDisplay'
 import { updateOffersActiveStatus } from 'repository/pcapi/pcapi'
 
 const computeActivationSuccessMessage = nbSelectedOffers => {
@@ -14,20 +15,16 @@ const computeDeactivationSuccessMessage = nbSelectedOffers => {
     nbSelectedOffers > 1 ? 'offres ont bien été désactivées' : 'offre a bien été désactivée'
   return `${nbSelectedOffers} ${successMessage}`
 }
-const computeAllActivationSuccessMessage = nbSelectedOffers => {
-  const successMessage =
-    nbSelectedOffers > 1
-      ? 'offres sont en cours d’activation, veuillez rafraichir dans quelques instants'
-      : 'offre est en cours d’activation, veuillez rafraichir dans quelques instants'
-  return `${nbSelectedOffers} ${successMessage}`
-}
-const computeAllDeactivationSuccessMessage = nbSelectedOffers => {
-  const successMessage =
-    nbSelectedOffers > 1
-      ? 'offres sont en cours de désactivation, veuillez rafraichir dans quelques instants'
-      : 'offre est en cours de désactivation, veuillez rafraichir dans quelques instants'
-  return `${nbSelectedOffers} ${successMessage}`
-}
+
+const computeAllActivationSuccessMessage = nbSelectedOffers =>
+  nbSelectedOffers > 1
+    ? 'Les offres sont en cours d’activation, veuillez rafraichir dans quelques instants'
+    : 'Une offre est en cours d’activation, veuillez rafraichir dans quelques instants'
+
+const computeAllDeactivationSuccessMessage = nbSelectedOffers =>
+  nbSelectedOffers > 1
+    ? 'Les offres sont en cours de désactivation, veuillez rafraichir dans quelques instants'
+    : 'Une offre est en cours de désactivation, veuillez rafraichir dans quelques instants'
 
 const ActionsBar = props => {
   const {
@@ -106,7 +103,7 @@ const ActionsBar = props => {
 
   const computeSelectedOffersLabel = () => {
     if (nbSelectedOffers > 1) {
-      return `${nbSelectedOffers} offres sélectionnées`
+      return `${getOffersCountToDisplay(nbSelectedOffers)} offres sélectionnées`
     }
 
     return `${nbSelectedOffers} offre sélectionnée`

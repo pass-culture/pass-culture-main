@@ -66,6 +66,17 @@ describe('src | components | pages | Offers | ActionsBar', () => {
     expect(screen.queryByText('2 offres sélectionnées')).toBeInTheDocument()
   })
 
+  it('should say how many offers are selected when more than 200 offers are selected', () => {
+    // given
+    props.nbSelectedOffers = 201
+
+    // when
+    renderActionsBar(props)
+
+    // then
+    expect(screen.queryByText('200+ offres sélectionnées')).toBeInTheDocument()
+  })
+
   describe('on click on "Activer" button', () => {
     it('should activate selected offers', async () => {
       // given
@@ -198,6 +209,9 @@ describe('src | components | pages | Offers | ActionsBar', () => {
         expect(updateOffersActiveStatus).toHaveBeenLastCalledWith(true, expectedBody)
         expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
         expect(props.refreshOffers).toHaveBeenCalledWith({ shouldTriggerSpinner: false })
+        expect(props.showPendingNotification).toHaveBeenCalledWith(
+          'Les offres sont en cours d’activation, veuillez rafraichir dans quelques instants'
+        )
       })
     })
 
@@ -222,6 +236,9 @@ describe('src | components | pages | Offers | ActionsBar', () => {
         expect(updateOffersActiveStatus).toHaveBeenLastCalledWith(true, expectedBody)
         expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
         expect(props.refreshOffers).toHaveBeenCalledWith({ shouldTriggerSpinner: false })
+        expect(props.showPendingNotification).toHaveBeenCalledWith(
+          'Les offres sont en cours de désactivation, veuillez rafraichir dans quelques instants'
+        )
       })
     })
   })
