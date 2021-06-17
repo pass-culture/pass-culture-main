@@ -115,6 +115,8 @@ def pc_notify_soon_to_be_expired_bookings(app: Flask) -> None:
 @log_cron
 @cron_context
 def pc_notify_newly_eligible_users(app: Flask) -> None:
+    if not settings.IS_PROD and not settings.IS_TESTING:
+        return
     yesterday = date.today() - timedelta(days=1)
     for user in get_newly_eligible_users(yesterday):
         send_newly_eligible_user_email(user)
