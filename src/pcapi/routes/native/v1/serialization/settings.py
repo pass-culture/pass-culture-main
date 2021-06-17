@@ -19,6 +19,7 @@ class SettingsResponse(BaseModel):
     whole_france_opening: bool
     display_dms_redirection: bool
     use_app_search: bool
+    id_check_address_autocompletion: bool
 
     _convert_deposit_amount = validator("deposit_amount", pre=True, allow_reuse=True)(convert_to_cent)
 

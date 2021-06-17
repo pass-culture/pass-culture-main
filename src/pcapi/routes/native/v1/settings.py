@@ -34,6 +34,7 @@ def get_settings() -> serializers.SettingsResponse:
         FeatureToggle.ENABLE_PHONE_VALIDATION,
         FeatureToggle.USE_APP_SEARCH_ON_NATIVE_APP,
         FeatureToggle.WHOLE_FRANCE_OPENING,
+        FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
     )
 
     return serializers.SettingsResponse(
@@ -49,4 +50,5 @@ def get_settings() -> serializers.SettingsResponse:
         display_dms_redirection=features[FeatureToggle.DISPLAY_DMS_REDIRECTION],
         object_storage_url=OBJECT_STORAGE_URL,
         use_app_search=features[FeatureToggle.USE_APP_SEARCH_ON_NATIVE_APP],
+        id_check_address_autocompletion=features[FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION],
     )

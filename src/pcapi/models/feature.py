@@ -54,6 +54,7 @@ class FeatureToggle(enum.Enum):
     )
     USE_APP_SEARCH_ON_NATIVE_APP = "Utiliser App Search au lieu d'Algolia sur l'app native"
     USE_APP_SEARCH_ON_WEBAPP = "Utiliser App Search au lieu d'Algolia sur la webapp"
+    ID_CHECK_ADDRESS_AUTOCOMPLETION = "Autocomplétion de l'adresse lors du parcours IDCheck"
 
 
 class Feature(PcObject, Model, DeactivableMixin):
@@ -77,6 +78,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION,
     FeatureToggle.USE_APP_SEARCH_ON_NATIVE_APP,
     FeatureToggle.USE_APP_SEARCH_ON_WEBAPP,
+    FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
 )
 
 
