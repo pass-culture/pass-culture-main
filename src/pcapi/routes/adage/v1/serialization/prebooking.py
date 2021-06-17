@@ -48,6 +48,7 @@ class PreBookingResponse(BaseModel):
     confirmationDate: Optional[datetime] = Field(description="Date of confirmation if prebooking is confirmed")
     confirmationLimitDate: datetime = Field(description="Limit date to confirm the prebooking")
     coordinates: Coordinates = Field(description="Accurate coordinates of event")
+    durationMinutes: Optional[int] = Field(description="Offer's duration in minutes")
     expirationDate: Optional[datetime] = Field(description="Expiration date after which booking is cancelled")
     id: int = Field(description="pass Culture's prebooking id")
     image: Optional[OfferImageResponse] = Field(description="passculture.app's image of cultural offer")
@@ -55,6 +56,7 @@ class PreBookingResponse(BaseModel):
     venueName: str = Field(description="Name of cultural venue proposing the event")
     name: str = Field(description="Name of event")
     postalCode: str
+    price: float
     quantity: int = Field(description="Number of place prebooked")
     redactor: Redactor
     UAICode: str = Field(description="Educational institution UAI code")
