@@ -15,7 +15,12 @@ import { selectOffersByPage } from 'store/offers/selectors'
 import { loadOffers } from 'store/offers/thunks'
 import { mapApiToBrowser, mapBrowserToApi, translateQueryParamsToApiParams } from 'utils/translate'
 
-import { DEFAULT_PAGE, DEFAULT_SEARCH_FILTERS, NUMBER_OF_OFFERS_PER_PAGE } from './_constants'
+import {
+  DEFAULT_PAGE,
+  DEFAULT_SEARCH_FILTERS,
+  NUMBER_OF_OFFERS_PER_PAGE,
+  MAX_TOTAL_PAGES,
+} from './_constants'
 import ActionsBarContainer from './ActionsBar/ActionsBarContainer'
 import NoOffers from './NoOffers/NoOffers'
 import NoResults from './NoResults/NoResults'
@@ -119,7 +124,9 @@ const Offers = ({ currentUser, getOfferer, query }) => {
         .then(offersCount => {
           setIsLoading(false)
           setOffersCount(offersCount)
-          setPageCount(Math.ceil(offersCount / NUMBER_OF_OFFERS_PER_PAGE))
+          const pageCount = Math.ceil(offersCount / NUMBER_OF_OFFERS_PER_PAGE)
+          const cappedPageCount = Math.min(pageCount, MAX_TOTAL_PAGES)
+          setPageCount(cappedPageCount)
         })
         .catch(() => setIsLoading(false))
     },
@@ -302,7 +309,9 @@ const Offers = ({ currentUser, getOfferer, query }) => {
               <>
                 {hasOffers && (
                   <div className="offers-count">
-                    {`${offersCount} ${offersCount <= 1 ? 'offre' : 'offres'}`}
+                    {`${offersCount <= 200 ? offersCount : '200+'} ${
+                      offersCount <= 1 ? 'offre' : 'offres'
+                    }`}
                   </div>
                 )}
                 <table>

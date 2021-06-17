@@ -180,7 +180,7 @@ describe('src | components | pages | Offers | Offers', () => {
       // Given
       const firstOffer = offerFactory()
       const secondOffer = offerFactory()
-      pcapi.loadFilteredOffers.mockResolvedValue( [firstOffer, secondOffer])
+      pcapi.loadFilteredOffers.mockResolvedValue([firstOffer, secondOffer])
 
       // When
       await renderOffers(props, store)
@@ -232,6 +232,19 @@ describe('src | components | pages | Offers | Offers', () => {
         // Then
         await screen.findByText(offersRecap[0].name)
         expect(queryByTextTrimHtml(screen, '1 offre')).toBeInTheDocument()
+      })
+
+      it('should display 200+ for total number of offers if more than 200 offers are fetched', async () => {
+        // Given
+        offersRecap = Array.from({ length: 201 }, offerFactory)
+        pcapi.loadFilteredOffers.mockResolvedValueOnce(offersRecap)
+
+        // When
+        renderOffers(props, store)
+
+        // Then
+        await screen.findByText(offersRecap[0].name)
+        expect(queryByTextTrimHtml(screen, '200+ offres')).toBeInTheDocument()
       })
     })
 
@@ -399,9 +412,7 @@ describe('src | components | pages | Offers | Offers', () => {
 
         it('should indicate that no offers match selected filters', async () => {
           // Given
-          pcapi.loadFilteredOffers
-            .mockResolvedValueOnce(offersRecap)
-            .mockResolvedValueOnce([] )
+          pcapi.loadFilteredOffers.mockResolvedValueOnce(offersRecap).mockResolvedValueOnce([])
           renderOffers(props, store)
 
           // When
@@ -418,7 +429,7 @@ describe('src | components | pages | Offers | Offers', () => {
 
         it('should indicate that user has no offers yet', async () => {
           // Given
-          pcapi.loadFilteredOffers.mockResolvedValue([] )
+          pcapi.loadFilteredOffers.mockResolvedValue([])
 
           // When
           await renderOffers(props, store)
@@ -713,7 +724,7 @@ describe('src | components | pages | Offers | Offers', () => {
             status: 'ACTIVE',
           }),
         ]
-        pcapi.loadFilteredOffers.mockResolvedValue(offers )
+        pcapi.loadFilteredOffers.mockResolvedValue(offers)
 
         // When
         renderOffers(props, store)
@@ -1288,6 +1299,39 @@ describe('src | components | pages | Offers | Offers', () => {
       const nextIcon = await screen.findByAltText('Aller à la page suivante')
       expect(nextIcon.closest('button')).toBeDisabled()
     })
+
+    describe('when 201 offers are fetched', () => {
+      beforeEach(() => {
+        offersRecap = Array.from({ length: 201 }, offerFactory)
+      })
+
+      it('should have max number page of 20', async () => {
+        // Given
+        pcapi.loadFilteredOffers.mockResolvedValueOnce(offersRecap)
+
+        // When
+        renderOffers(props, store)
+
+        // Then
+        expect(await screen.findByText('Page 1/20')).toBeInTheDocument()
+      })
+
+      it('should not display the 201st booking', async () => {
+        // Given
+        pcapi.loadFilteredOffers.mockResolvedValueOnce(offersRecap)
+        renderOffers(props, store)
+        const nextIcon = await screen.findByAltText('Aller à la page suivante')
+
+        // When
+        for (let i = 1; i < 21; i++) {
+          fireEvent.click(nextIcon)
+        }
+
+        // Then
+        expect(screen.getByText(offersRecap[199].name)).toBeInTheDocument()
+        expect(screen.queryByText(offersRecap[200].name)).not.toBeInTheDocument()
+      })
+    })
   })
 
   describe('offers selection', () => {
@@ -1381,9 +1425,7 @@ describe('src | components | pages | Offers | Offers', () => {
 
   describe('should reset filters', () => {
     it('when clicking on "afficher toutes les offres" when no offers are displayed', async () => {
-      pcapi.loadFilteredOffers
-        .mockResolvedValueOnce(offersRecap)
-        .mockResolvedValueOnce([] )
+      pcapi.loadFilteredOffers.mockResolvedValueOnce(offersRecap).mockResolvedValueOnce([])
       await renderOffers(props, store)
       const venueSelect = screen.getByDisplayValue(ALL_VENUES_OPTION.displayName, {
         selector: 'select[name="lieu"]',
@@ -1412,9 +1454,7 @@ describe('src | components | pages | Offers | Offers', () => {
     })
 
     it('when clicking on "Réinitialiser les filtres"', async () => {
-      pcapi.loadFilteredOffers
-        .mockResolvedValueOnce(offersRecap)
-        .mockResolvedValueOnce([])
+      pcapi.loadFilteredOffers.mockResolvedValueOnce(offersRecap).mockResolvedValueOnce([])
       await renderOffers(props, store)
       const venueSelect = screen.getByDisplayValue(ALL_VENUES_OPTION.displayName, {
         selector: 'select[name="lieu"]',
