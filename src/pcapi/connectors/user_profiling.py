@@ -36,9 +36,9 @@ class UserProfilingDataResponseError(BaseUserProfilingException):
 
 class UserProfilingFraudData(pydantic.BaseModel):
     account_email_result: str
-    account_email_score: int
+    account_email_score: typing.Optional[int]
     account_telephone_result: str
-    account_telephone_score: int
+    account_telephone_score: typing.Optional[int]
     bb_bot_rating: str
     bb_bot_score: float
     bb_fraud_rating: str
