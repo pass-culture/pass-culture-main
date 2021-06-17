@@ -24,12 +24,10 @@ def process_eligible_offers(client: Redis, offer_ids: list[int]) -> None:
 
     offers = offer_queries.get_offers_by_ids(offer_ids)
     for offer in offers:
-        offer_exists = check_offer_exists(client=client, offer_id=offer.id)
-
         if offer and offer.isBookable:
             offers_to_add.append(build_object(offer=offer))
             add_to_indexed_offers(pipeline=pipeline, offer_id=offer.id)
-        elif offer_exists:
+        elif check_offer_exists(client=client, offer_id=offer.id):
             offers_to_delete.append(offer.id)
         else:
             # FIXME (dbaty, 2021-06-14). I think we could safely do
