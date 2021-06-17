@@ -16,12 +16,12 @@ class GetBatchesTest:
         assert isinstance(batches, types.GeneratorType)
         batches = list(batches)
         assert len(batches) == 6
-        assert list(batches[0]) == [users[0], users[1]]
-        assert list(batches[1]) == [users[2], users[3]]
-        assert list(batches[2]) == [users[4], users[5]]
-        assert list(batches[3]) == [users[6], users[7]]
-        assert list(batches[4]) == [users[8], users[9]]
-        assert list(batches[5]) == [users[10]]
+        assert list(batches[0].order_by(users_models.User.id)) == [users[0], users[1]]
+        assert list(batches[1].order_by(users_models.User.id)) == [users[2], users[3]]
+        assert list(batches[2].order_by(users_models.User.id)) == [users[4], users[5]]
+        assert list(batches[3].order_by(users_models.User.id)) == [users[6], users[7]]
+        assert list(batches[4].order_by(users_models.User.id)) == [users[8], users[9]]
+        assert list(batches[5].order_by(users_models.User.id)) == [users[10]]
         assert list(itertools.chain.from_iterable(batches)) == users
 
     def test_empty(self):
