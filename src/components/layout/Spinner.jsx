@@ -34,10 +34,7 @@ class Spinner extends PureComponent {
     const { message } = this.props
 
     return (
-      <div
-        className="loading-spinner"
-        data-testid="spinner"
-      >
+      <div className="loading-spinner">
         <Icon svg="loader-pc" />
         <div
           className="content"

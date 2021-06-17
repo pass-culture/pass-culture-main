@@ -16,7 +16,11 @@ const FeaturedRoute = props => {
   const isActive = useActiveFeature(featureName)
 
   if (!featuresAreInitialized) {
-    return <Spinner />
+    return (
+      <main className="spinner-container">
+        <Spinner />
+      </main>
+    )
   }
 
   if (!isActive) {

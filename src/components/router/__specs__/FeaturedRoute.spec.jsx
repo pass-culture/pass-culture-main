@@ -78,7 +78,7 @@ describe('src | components | router | FeaturedRoute', () => {
 
     it('should render spinner instead of Foo component', async () => {
       // then
-      expect(screen.getByTestId('spinner')).toBeInTheDocument()
+      expect(screen.getByText('Chargement en cours')).toBeInTheDocument()
       expect(screen.queryByText("I'm foo component")).not.toBeInTheDocument()
     })
 
