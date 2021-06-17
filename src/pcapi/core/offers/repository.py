@@ -17,6 +17,7 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.exceptions import StockDoesNotExist
 from pcapi.core.offers.models import ActivationCode
+from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import OfferStatus
 from pcapi.core.offers.models import OfferValidationConfig
 from pcapi.core.offers.models import OfferValidationStatus
@@ -314,9 +315,11 @@ def get_expired_offers(interval: [datetime, datetime]) -> Query:
     )
 
 
-def delete_past_draft_offer() -> None:
+def delete_past_draft_offers() -> None:
     yesterday = datetime.utcnow() - timedelta(days=1)
-    Offer.query.filter(Offer.dateCreated < yesterday, Offer.validation == OfferValidationStatus.DRAFT).delete()
+    filters = (Offer.dateCreated < yesterday, Offer.validation == OfferValidationStatus.DRAFT)
+    Mediation.query.filter(Mediation.offerId == Offer.id).filter(*filters).delete(synchronize_session=False)
+    Offer.query.filter(*filters).delete()
     db.session.commit()
 
 

@@ -12,7 +12,7 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferStatus
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.repository import check_stock_consistency
-from pcapi.core.offers.repository import delete_past_draft_offer
+from pcapi.core.offers.repository import delete_past_draft_offers
 from pcapi.core.offers.repository import find_tomorrow_event_stock_ids
 from pcapi.core.offers.repository import get_active_offers_count_for_venue
 from pcapi.core.offers.repository import get_expired_offers
@@ -1219,13 +1219,14 @@ class DeletePastDraftOfferTest:
     @freeze_time("2020-10-15 09:00:00")
     def test_delete_past_draft_offers(self):
         two_days_ago = datetime.utcnow() - timedelta(days=2)
-        offers_factories.OfferFactory(dateCreated=two_days_ago, validation=OfferValidationStatus.DRAFT)
+        offer = offers_factories.OfferFactory(dateCreated=two_days_ago, validation=OfferValidationStatus.DRAFT)
+        offers_factories.MediationFactory(offer=offer)
         past_offer = offers_factories.OfferFactory(dateCreated=two_days_ago, validation=OfferValidationStatus.PENDING)
         today_offer = offers_factories.OfferFactory(
             dateCreated=datetime.utcnow(), validation=OfferValidationStatus.DRAFT
         )
 
-        delete_past_draft_offer()
+        delete_past_draft_offers()
 
         offers = Offer.query.all()
         assert set(offers) == {today_offer, past_offer}

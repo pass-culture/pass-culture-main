@@ -13,7 +13,7 @@ import pcapi.models  # pylint: disable=unused-import
 from pcapi import settings
 from pcapi.core.logging import install_logging
 from pcapi.core.offers.repository import check_stock_consistency
-from pcapi.core.offers.repository import delete_past_draft_offer
+from pcapi.core.offers.repository import delete_past_draft_offers
 from pcapi.core.offers.repository import find_tomorrow_event_stock_ids
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.users import api as users_api
@@ -147,7 +147,7 @@ def pc_send_tomorrow_events_notifications(app: Flask) -> None:
 @log_cron
 @cron_context
 def pc_clean_past_draft_offers(app: Flask) -> None:
-    delete_past_draft_offer()
+    delete_past_draft_offers()
 
 
 def main() -> None:
