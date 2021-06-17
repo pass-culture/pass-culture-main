@@ -14,7 +14,6 @@ from pcapi.domain.user_emails import send_activation_email
 from pcapi.domain.user_emails import send_fraud_suspicion_email
 from pcapi.domain.user_emails import send_rejection_email_to_beneficiary_pre_subscription
 from pcapi.infrastructure.repository.beneficiary.beneficiary_sql_repository import BeneficiarySQLRepository
-from pcapi.repository import repository
 from pcapi.repository.user_queries import find_user_by_email
 from pcapi.workers.push_notification_job import update_user_attributes_job
 
@@ -84,9 +83,6 @@ class CreateBeneficiaryFromApplication:
             self.beneficiary_repository.reject(
                 beneficiary_pre_subscription, detail=exception_reason, user=preexisting_account
             )
-            if preexisting_account:
-                preexisting_account.hasCompletedIdCheck = False
-                repository.save(preexisting_account)
             send_rejection_email_to_beneficiary_pre_subscription(
                 beneficiary_pre_subscription=beneficiary_pre_subscription,
                 beneficiary_is_eligible=isinstance(cant_register_beneficiary_exception, BeneficiaryIsADuplicate),
