@@ -571,4 +571,78 @@ describe('components | BookingsRecap | Pro user', () => {
     )
     expect(informationalMessage).not.toBeInTheDocument()
   })
+
+  it('should inform the user that the filters have been modified when at least one of them was and before clicking on the "Afficher" button', async () => {
+    // Given
+    render(
+      <Provider store={store}>
+        <MemoryRouter initialEntries={[{ pathname: '/reservations', state: undefined }]}>
+          <BookingsRecapContainer {...props} />
+          <NotificationContainer />
+        </MemoryRouter>
+      </Provider>
+    )
+    userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+
+    // When
+    userEvent.selectOptions(
+      screen.getByLabelText('Lieu'),
+      await screen.findByText(venue.publicName)
+    )
+
+    // Then
+    const informationalMessage = screen.getByText(
+      'Vos filtres ont été modifiés. Veuillez cliquer sur « Afficher » pour actualiser votre recherche.'
+    )
+    expect(informationalMessage).toBeInTheDocument()
+  })
+
+  it('should not inform the user when the selected filter is the same than the actual filter', async () => {
+    // Given
+    render(
+      <Provider store={store}>
+        <MemoryRouter initialEntries={[{ pathname: '/reservations', state: undefined }]}>
+          <BookingsRecapContainer {...props} />
+          <NotificationContainer />
+        </MemoryRouter>
+      </Provider>
+    )
+    userEvent.selectOptions(
+      screen.getByLabelText('Lieu'),
+      await screen.findByText(venue.publicName)
+    )
+
+    // When
+    userEvent.selectOptions(screen.getByLabelText('Lieu'), screen.getByText('Tous les lieux'))
+
+    // Then
+    const informationalMessage = screen.queryByText(
+      'Vos filtres ont été modifiés. Veuillez cliquer sur « Afficher » pour actualiser votre recherche.'
+    )
+    expect(informationalMessage).not.toBeInTheDocument()
+  })
+
+  it('should not inform the user of pre-filter modifications before first click on "Afficher" button', async () => {
+    // Given
+    render(
+      <Provider store={store}>
+        <MemoryRouter initialEntries={[{ pathname: '/reservations', state: undefined }]}>
+          <BookingsRecapContainer {...props} />
+          <NotificationContainer />
+        </MemoryRouter>
+      </Provider>
+    )
+
+    // When
+    userEvent.selectOptions(
+      screen.getByLabelText('Lieu'),
+      await screen.findByText(venue.publicName)
+    )
+
+    // Then
+    const informationalMessage = screen.queryByText(
+      'Vos filtres ont été modifiés. Veuillez cliquer sur « Afficher » pour actualiser votre recherche.'
+    )
+    expect(informationalMessage).not.toBeInTheDocument()
+  })
 })

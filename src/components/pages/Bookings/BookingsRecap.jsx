@@ -136,6 +136,7 @@ const BookingsRecap = ({
             appliedPreFilters={appliedPreFilters}
             applyPreFilters={loadBookingsRecap}
             isLoading={isLoading}
+            wereBookingsRequested={wereBookingsRequested}
           />
           {wereBookingsRequested ? (
             bookingsRecap.length > 0 ? (

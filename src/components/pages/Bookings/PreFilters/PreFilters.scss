@@ -20,6 +20,11 @@
         border-radius: rem(20px);
         display: flex;
         height: rem(40px);
+        border: 1px solid $grey-medium;
+        box-shadow: 2px 2px 6px 0 $black-shadow;
+        margin-top: rem(12px);
+        padding: 0 1px;
+        width: rem(233px);
 
         &:focus-within {
           border-color: $primary;
@@ -28,6 +33,7 @@
 
         &.disabled {
           background-image: url(/icons/ico-calendar-disabled.svg);
+          box-shadow: none;
         }
       }
 
@@ -41,18 +47,6 @@
 
       button {
         outline: none;
-      }
-
-      .field-date {
-        border: 1px solid $grey-medium;
-        box-shadow: 2px 2px 6px 0 $black-shadow;
-        margin-top: rem(12px);
-        padding: 0 1px;
-        width: rem(233px);
-
-        &.disabled {
-          box-shadow: none;
-        }
       }
 
       .fw-offer-date-label {
@@ -129,7 +123,7 @@
   .search-separator {
     align-items: center;
     display: flex;
-    margin-bottom: rem(30px);
+    margin-bottom: rem(16px);
 
     .separator {
       background-color: $grey-medium;
@@ -140,5 +134,12 @@
     button {
       flex: 3;
     }
+  }
+
+  .pf-refresh-message {
+    @include body();
+
+    color: $red-error;
+    text-align: center;
   }
 }

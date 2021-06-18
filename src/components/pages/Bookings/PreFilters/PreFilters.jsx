@@ -1,3 +1,4 @@
+import isEqual from 'lodash.isequal'
 import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
 
@@ -8,7 +9,7 @@ import FilterByBookingPeriod from './FilterByBookingPeriod'
 import FilterByEventDate from './FilterByEventDate.jsx'
 import FilterByVenue from './FilterByVenue'
 
-const PreFilters = ({ appliedPreFilters, applyPreFilters, isLoading }) => {
+const PreFilters = ({ appliedPreFilters, applyPreFilters, isLoading, wereBookingsRequested }) => {
   const [selectedPreFilters, setSelectedPreFilters] = useState({ ...appliedPreFilters })
   const [venues, setVenues] = useState([])
 
@@ -34,36 +35,47 @@ const PreFilters = ({ appliedPreFilters, applyPreFilters, isLoading }) => {
     [applyPreFilters, selectedPreFilters]
   )
 
+  const isRefreshRequired = !isEqual(selectedPreFilters, appliedPreFilters) && wereBookingsRequested
+
   return (
-    <form onSubmit={requestFilteredBookings}>
-      <div className="pre-filters">
-        <FilterByVenue
-          selectedVenue={selectedPreFilters.offerVenueId}
-          updateFilters={updateSelectedFilters}
-          venuesFormattedAndOrdered={venues}
-        />
-        <FilterByEventDate
-          selectedOfferDate={selectedPreFilters.offerEventDate}
-          updateFilters={updateSelectedFilters}
-        />
-        <FilterByBookingPeriod
-          selectedBookingBeginningDate={selectedPreFilters.bookingBeginningDate}
-          selectedBookingEndingDate={selectedPreFilters.bookingEndingDate}
-          updateFilters={updateSelectedFilters}
-        />
-      </div>
-      <div className="search-separator">
-        <div className="separator" />
-        <button
-          className="primary-button"
-          disabled={isLoading}
-          type="submit"
-        >
-          {'Afficher'}
-        </button>
-        <div className="separator" />
-      </div>
-    </form>
+    <>
+      <form onSubmit={requestFilteredBookings}>
+        <div className="pre-filters">
+          <FilterByVenue
+            selectedVenue={selectedPreFilters.offerVenueId}
+            updateFilters={updateSelectedFilters}
+            venuesFormattedAndOrdered={venues}
+          />
+          <FilterByEventDate
+            selectedOfferDate={selectedPreFilters.offerEventDate}
+            updateFilters={updateSelectedFilters}
+          />
+          <FilterByBookingPeriod
+            selectedBookingBeginningDate={selectedPreFilters.bookingBeginningDate}
+            selectedBookingEndingDate={selectedPreFilters.bookingEndingDate}
+            updateFilters={updateSelectedFilters}
+          />
+        </div>
+        <div className="search-separator">
+          <div className="separator" />
+          <button
+            className="primary-button"
+            disabled={isLoading}
+            type="submit"
+          >
+            {'Afficher'}
+          </button>
+          <div className="separator" />
+        </div>
+      </form>
+      {isRefreshRequired && (
+        <p className="pf-refresh-message">
+          {
+            'Vos filtres ont été modifiés. Veuillez cliquer sur « Afficher » pour actualiser votre recherche.'
+          }
+        </p>
+      )}
+    </>
   )
 }
 
@@ -76,6 +88,7 @@ PreFilters.propTypes = {
   }).isRequired,
   applyPreFilters: PropTypes.func.isRequired,
   isLoading: PropTypes.bool.isRequired,
+  wereBookingsRequested: PropTypes.bool.isRequired,
 }
 
 export default PreFilters
