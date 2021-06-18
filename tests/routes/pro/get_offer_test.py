@@ -187,6 +187,7 @@ class Returns200Test:
                     "dateModified": "2020-10-15T00:00:00Z",
                     "dateModifiedAtLastProvider": "2020-10-15T00:00:00Z",
                     "fieldsUpdated": [],
+                    "hasActivationCode": False,
                     "id": humanize(stock.id),
                     "idAtProviders": None,
                     "isBookable": True,
@@ -251,7 +252,7 @@ class Returns200Test:
     def test_returns_a_thing_stock(self, app):
         # Given
         beneficiary = users_factories.UserFactory()
-        stock = offers_factories.ThingStockFactory()
+        stock = offers_factories.StockWithActivationCodesFactory()
         offer = stock.offer
 
         # When
@@ -262,4 +263,5 @@ class Returns200Test:
         assert response.status_code == 200
         data = response.json
         assert data["stocks"][0]["cancellationLimitDate"] is None
+        assert data["stocks"][0]["hasActivationCode"] is True
         assert data["offerType"]["canExpire"] is True

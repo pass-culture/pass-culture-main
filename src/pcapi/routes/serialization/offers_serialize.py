@@ -9,6 +9,7 @@ from pydantic import HttpUrl
 from pydantic import validator
 
 from pcapi.core.bookings.api import compute_confirmation_date
+from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.models import OfferStatus
 from pcapi.models import ThingType
 from pcapi.models.feature import FeatureToggle
@@ -288,6 +289,7 @@ class GetOfferStockResponseModel(BaseModel):
     dateModified: datetime
     dateModifiedAtLastProvider: Optional[datetime]
     fieldsUpdated: list[str]
+    hasActivationCode: bool
     id: str
     idAtProviders: Optional[str]
     isBookable: bool
@@ -303,6 +305,11 @@ class GetOfferStockResponseModel(BaseModel):
     _humanize_id = humanize_field("id")
     _humanize_last_provider_id = humanize_field("lastProviderId")
     _humanize_offer_id = humanize_field("offerId")
+
+    @classmethod
+    def from_orm(cls, stock):  # type: ignore
+        stock.hasActivationCode = offers_repository.get_available_activation_code(stock) is not None
+        return super().from_orm(stock)
 
     @validator("cancellationLimitDate", pre=True, always=True)
     def validate_cancellation_limit_date(cls, cancellation_limit_date, values):  # pylint: disable=no-self-argument
