@@ -170,6 +170,10 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin):
             logger.error("Unexpected error in patch stocks: %s", ie)
         return PcObject.restize_internal_error(ie)
 
+    @property
+    def canHaveActivationCodes(self):
+        return self.offer.isDigital
+
 
 @listens_for(Stock, "before_insert")
 def before_insert(mapper, configuration, self):

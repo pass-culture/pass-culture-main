@@ -11,6 +11,7 @@ from pydantic import validator
 from pcapi.core.bookings.api import compute_confirmation_date
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.models import OfferStatus
+from pcapi.core.offers.models import Stock
 from pcapi.models import ThingType
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
@@ -299,8 +300,12 @@ class GetOfferStockResponseModel(BaseModel):
     _humanize_offer_id = humanize_field("offerId")
 
     @classmethod
-    def from_orm(cls, stock):  # type: ignore
-        stock.hasActivationCode = offers_repository.get_available_activation_code(stock) is not None
+    def from_orm(cls, stock: Stock):  # type: ignore
+        # here we have N+1 requests (for each stock we query an activation code)
+        # but it should be more efficient than loading all activationCodes of all stocks
+        stock.hasActivationCode = (
+            stock.canHaveActivationCodes and offers_repository.get_available_activation_code(stock) is not None
+        )
         return super().from_orm(stock)
 
     @validator("cancellationLimitDate", pre=True, always=True)

@@ -759,3 +759,11 @@ def unindex_expired_offers(process_all_expired: bool = False):
         logger.info("[ALGOLIA] Found %d expired offers to unindex", len(offer_ids))
         search.unindex_offer_ids(offer_ids)
         page += 1
+
+
+def is_activation_code_applicable(stock: Stock):
+    return (
+        stock.canHaveActivationCodes
+        and feature_queries.is_active(FeatureToggle.ENABLE_ACTIVATION_CODES)
+        and db.session.query(ActivationCode.query.filter_by(stock=stock).exists()).scalar()
+    )

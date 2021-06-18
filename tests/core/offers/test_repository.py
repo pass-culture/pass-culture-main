@@ -7,6 +7,7 @@ import pytest
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.factories import BookingFactory
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.offers.factories import ActivationCodeFactory
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferStatus
@@ -15,6 +16,7 @@ from pcapi.core.offers.repository import check_stock_consistency
 from pcapi.core.offers.repository import delete_past_draft_offers
 from pcapi.core.offers.repository import find_tomorrow_event_stock_ids
 from pcapi.core.offers.repository import get_active_offers_count_for_venue
+from pcapi.core.offers.repository import get_available_activation_code
 from pcapi.core.offers.repository import get_capped_offers_for_filters
 from pcapi.core.offers.repository import get_expired_offers
 from pcapi.core.offers.repository import get_offers_by_ids
@@ -1202,3 +1204,24 @@ class DeletePastDraftOfferTest:
 
         offers = Offer.query.all()
         assert set(offers) == {today_offer, past_offer}
+
+
+@pytest.mark.usefixtures("db_session")
+class AvailableActivationCodeTest:
+    def test_available_activation_code(self):
+        booking = BookingFactory()
+        stock = booking.stock
+        ActivationCodeFactory(booking=booking, stock=stock)  # booked_code
+        not_booked_code = ActivationCodeFactory(stock=stock)
+
+        found_code = get_available_activation_code(stock)
+
+        assert found_code.id == not_booked_code.id
+
+    def test_no_available_activation_code(self):
+        booking = BookingFactory()
+        stock = booking.stock
+        ActivationCodeFactory(booking=booking, stock=stock)  # booked_code
+        ActivationCodeFactory(stock=stock, expirationDate=datetime.now() - timedelta(days=1))  # expired code
+
+        assert not get_available_activation_code(stock)

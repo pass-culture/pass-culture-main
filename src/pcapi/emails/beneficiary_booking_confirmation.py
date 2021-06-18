@@ -19,7 +19,7 @@ def retrieve_data_for_beneficiary_booking_confirmation_email(booking: Booking) -
     is_event = ProductType.is_event(name=offer.type)
 
     if (
-        is_digital_offer
+        stock.canHaveActivationCodes
         and booking.activationCode
         and feature_queries.is_active(FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS)
     ):

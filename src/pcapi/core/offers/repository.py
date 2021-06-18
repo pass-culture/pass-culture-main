@@ -1,11 +1,11 @@
 from datetime import datetime
 from datetime import time
 from datetime import timedelta
-import typing
 from typing import Optional
 
 from sqlalchemy import and_
 from sqlalchemy import func
+from sqlalchemy import or_
 from sqlalchemy.orm import Query
 from sqlalchemy.orm import aliased
 from sqlalchemy.orm import joinedload
@@ -175,6 +175,7 @@ def get_stocks_for_offers(offer_ids: list[int]) -> list[Stock]:
 def get_stocks_for_offer(offer_id: int) -> list[Stock]:
     return (
         Stock.query.options(joinedload(Stock.bookings))
+        .options(joinedload(Stock.offer).load_only(Offer.url))
         .options(joinedload(Stock.activationCodes))
         .filter(Stock.offerId == offer_id)
         .filter(Stock.isSoftDeleted.is_(False))
@@ -322,5 +323,9 @@ def check_activation_is_bookable(activation_code: ActivationCode) -> bool:
     )
 
 
-def get_available_activation_code(stock: Stock) -> typing.Union[ActivationCode]:
-    return next(filter(check_activation_is_bookable, stock.activationCodes), None)
+def get_available_activation_code(stock: Stock) -> Optional[ActivationCode]:
+    return ActivationCode.query.filter(
+        Stock.id == stock.id,
+        ActivationCode.bookingId.is_(None),
+        or_(ActivationCode.expirationDate.is_(None), ActivationCode.expirationDate > func.now()),
+    ).first()

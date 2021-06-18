@@ -105,6 +105,7 @@ class Returns200Test:
             dateModified=now,
             dateModifiedAtLastProvider=now,
             bookingLimitDatetime=now,
+            offer__url="url.com",
         )
         offers_factories.ActivationCodeFactory(stock=stock, code="ABC", expirationDate=datetime(2022, 10, 15))
         offers_factories.ActivationCodeFactory(stock=stock, code="DEF", expirationDate=datetime(2022, 10, 15))

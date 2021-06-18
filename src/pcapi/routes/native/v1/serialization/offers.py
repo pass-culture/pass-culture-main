@@ -72,6 +72,10 @@ class OfferStockResponse(BaseModel):
 
     @staticmethod
     def _get_non_scrappable_activation_code(stock: Stock) -> Optional[dict]:
+        if not stock.canHaveActivationCodes:
+            return None
+        # here we have N+1 requests (for each stock we query an activation code)
+        # but it should be more efficient than loading all activationCodes of all stocks
         activation_code = offers_repository.get_available_activation_code(stock)
         if not activation_code or not activation_code.expirationDate:
             return None
@@ -183,12 +187,14 @@ class OfferResponse(BaseModel):
         offer.expense_domains = get_expense_domains(offer)
         offer.isExpired = offer.hasBookingLimitDatetimesPassed
 
-        if offer.extraData:
-            offer.extraData["durationMinutes"] = offer.durationMinutes
-        else:
-            offer.extraData = {"durationMinutes": offer.durationMinutes}
+        result = super().from_orm(offer)
 
-        return super().from_orm(offer)
+        if result.extraData:
+            result.extraData.durationMinutes = offer.durationMinutes
+        else:
+            result.extraData = OfferExtraData(durationMinutes=offer.durationMinutes)
+
+        return result
 
     id: int
     accessibility: OfferAccessibilityResponse

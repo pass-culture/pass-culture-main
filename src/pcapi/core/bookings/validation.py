@@ -169,7 +169,7 @@ def check_can_be_mark_as_unused(booking: Booking) -> None:
         raise gone
 
     if (
-        booking.stock.offer.isDigital
+        booking.stock.canHaveActivationCodes
         and booking.activationCode
         and feature_queries.is_active(FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS)
     ):
@@ -189,10 +189,5 @@ def check_can_be_mark_as_unused(booking: Booking) -> None:
 
 
 def check_activation_code_available(stock) -> None:
-    if (
-        feature_queries.is_active(FeatureToggle.ENABLE_ACTIVATION_CODES)
-        and stock.offer.isDigital
-        and stock.activationCodes
-    ):
-        if offers_repository.get_available_activation_code(stock) is None:
-            raise NoActivationCodeAvailable()
+    if offers_repository.get_available_activation_code(stock) is None:
+        raise NoActivationCodeAvailable()

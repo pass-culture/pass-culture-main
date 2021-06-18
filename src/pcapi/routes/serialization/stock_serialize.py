@@ -7,6 +7,7 @@ from pydantic import Field
 from pydantic import condecimal
 from pydantic import validator
 
+from pcapi.core.offers.models import ActivationCode
 from pcapi.core.offers.models import Stock
 from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import humanize_field
@@ -34,10 +35,11 @@ class StockResponseModel(BaseModel):
 
     @classmethod
     def from_orm(cls, stock: Stock):  # type: ignore
-        stock.hasActivationCodes = stock.activationCodes is not None and len(stock.activationCodes) > 0
-        stock.activationCodesExpirationDatetime = (
-            stock.activationCodes[0].expirationDate if stock.hasActivationCodes else None
+        activation_code = (
+            ActivationCode.query.filter(Stock.id == stock.id).first() if stock.canHaveActivationCodes else None
         )
+        stock.hasActivationCodes = bool(activation_code)
+        stock.activationCodesExpirationDatetime = activation_code.expirationDate if activation_code else None
         return super().from_orm(stock)
 
     class Config:

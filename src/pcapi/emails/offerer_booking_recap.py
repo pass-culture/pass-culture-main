@@ -23,7 +23,7 @@ def retrieve_data_for_offerer_booking_recap_email(booking: Booking) -> dict:
     is_event = int(offer.isEvent)
 
     if (
-        offer.isDigital
+        booking.stock.canHaveActivationCodes
         and booking.activationCode
         and feature_queries.is_active(FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS)
     ):

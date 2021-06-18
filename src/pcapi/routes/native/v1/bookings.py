@@ -146,7 +146,7 @@ def is_ended_booking(booking: Booking) -> bool:
         return False
 
     if (
-        booking.stock.offer.isDigital
+        booking.stock.canHaveActivationCodes
         and booking.activationCode
         and feature_queries.is_active(FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS)
     ):
