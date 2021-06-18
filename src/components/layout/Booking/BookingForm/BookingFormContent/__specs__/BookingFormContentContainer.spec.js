@@ -44,6 +44,8 @@ describe('src | components | BookingFormContentContainer', () => {
         isDigital: true,
         isStockDuo: true,
         autoActivateDigitalBookings: true,
+        enableActivationCodes: false,
+        hasActivationCode: false,
       })
     })
   })

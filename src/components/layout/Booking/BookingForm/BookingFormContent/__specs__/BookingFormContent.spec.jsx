@@ -15,6 +15,7 @@ describe('bookingFormContent', () => {
     handleSubmit = jest.fn()
     props = {
       autoActivateDigitalBookings: true,
+      enableActivationCodes: true,
       canExpire: true,
       extraClassName: 'fake className',
       formId: 'fake formId',
@@ -242,6 +243,8 @@ describe('bookingFormContent', () => {
       props.canExpire = true
       props.isDigital = true
       props.autoActivateDigitalBookings = true
+      props.hasActivationCode = true
+      props.enableActivationCodes = true
 
       // when
       const wrapper = shallow(<BookingFormContent {...props} />)

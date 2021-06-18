@@ -106,6 +106,8 @@ class BookingFormContent extends PureComponent {
       isReadOnly,
       isStockDuo,
       autoActivateDigitalBookings,
+      enableActivationCodes,
+      hasActivationCode,
       values,
     } = this.props
     const { price, isDuo } = values
@@ -172,12 +174,17 @@ class BookingFormContent extends PureComponent {
           </p>
         )}
 
-        {!isEvent && canExpire && isDigital && autoActivateDigitalBookings && (
-          <p className="bc-notification">
-            {
-              "Pour cette offre numérique, ta réservation sera définitivement validée. Tu ne pourras pas l'annuler par la suite."
-            }
-          </p>
+        {!isEvent &&
+          canExpire &&
+          isDigital &&
+          hasActivationCode &&
+          autoActivateDigitalBookings &&
+          enableActivationCodes && (
+            <p className="bc-notification">
+              {
+                "Pour cette offre numérique, ta réservation sera définitivement validée. Tu ne pourras pas l'annuler par la suite."
+              }
+            </p>
         )}
 
         {!isEvent && canExpire && !isDigital && (
@@ -205,9 +212,11 @@ BookingFormContent.defaultProps = {
 BookingFormContent.propTypes = {
   autoActivateDigitalBookings: PropTypes.bool.isRequired,
   canExpire: PropTypes.bool.isRequired,
+  enableActivationCodes: PropTypes.bool.isRequired,
   extraClassName: PropTypes.string,
   formId: PropTypes.string.isRequired,
   handleSubmit: PropTypes.func.isRequired,
+  hasActivationCode: PropTypes.bool.isRequired,
   invalid: PropTypes.bool.isRequired,
   isDigital: PropTypes.bool.isRequired,
   isEvent: PropTypes.bool,
