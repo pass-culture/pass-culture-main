@@ -18,6 +18,7 @@ from pcapi.routes.serialization.venues_serialize import VenueListQueryModel
 from pcapi.routes.serialization.venues_serialize import VenueResponseModel
 from pcapi.routes.serialization.venues_serialize import VenueStatsResponseModel
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.rest import load_or_404
 
@@ -65,6 +66,8 @@ def get_venues(query: VenueListQueryModel) -> GetVenueListResponseModel:
 @login_required
 @spectree_serialize(response_model=VenueResponseModel, on_success_status=201)
 def post_create_venue(body: PostVenueBodyModel) -> VenueResponseModel:
+    dehumanized_managing_offerer_id = dehumanize(body.managingOffererId)
+    check_user_has_access_to_offerer(current_user, dehumanized_managing_offerer_id)
     venue = offerers_api.create_venue(body)
 
     return VenueResponseModel.from_orm(venue)

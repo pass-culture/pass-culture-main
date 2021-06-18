@@ -145,3 +145,29 @@ def test_should_return_401_when_longitude_out_of_range_and_latitude_wrong_format
     assert response.status_code == 400
     assert response.json["longitude"] == ["La longitude doit être comprise entre -180.0 et +180.0"]
     assert response.json["latitude"] == ["Format incorrect"]
+
+
+@pytest.mark.usefixtures("db_session")
+def test_should_return_403_when_user_is_not_managing_offerer_create_venue(app):
+    offerer = offers_factories.OffererFactory(siren="302559178")
+    user = UserFactory()
+    venue_type = offerers_factories.VenueTypeFactory(label="Musée")
+    venue_data = {
+        "name": "Ma venue",
+        "siret": "30255917810045",
+        "address": "75 Rue Charles Fourier, 75013 Paris",
+        "postalCode": "75200",
+        "bookingEmail": "toto@example.com",
+        "city": "Paris",
+        "managingOffererId": humanize(offerer.id),
+        "latitude": 48.82387,
+        "longitude": 2.35284,
+        "publicName": "Ma venue publique",
+        "venueTypeId": humanize(venue_type.id),
+    }
+    auth_request = TestClient(app.test_client()).with_auth(email=user.email)
+
+    response = auth_request.post("/venues", json=venue_data)
+
+    assert response.status_code == 403
+    assert response.json["global"] == ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."]
