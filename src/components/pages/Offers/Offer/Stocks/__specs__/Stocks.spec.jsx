@@ -564,7 +564,7 @@ describe('stocks page', () => {
 
         // then
         const informationMessage = screen.getByText(
-          "Les utilisateurs ont 30 jours pour annuler leurs réservations d’offres numériques<br>Dans le cas d’offres avec codes d’activation, les utilisateurs ne peuvent pas annuler leurs réservations d'offres numériques. Toute réservation est définitive et sera immédiatement validée."
+          'Les utilisateurs ont 30 jours pour annuler leurs réservations d’offres numériques. Dans le cas d’offres avec codes d’activation, les utilisateurs ne peuvent pas annuler leurs réservations d’offres numériques. Toute réservation est définitive et sera immédiatement validée.'
         )
         expect(informationMessage).toBeInTheDocument()
       })
