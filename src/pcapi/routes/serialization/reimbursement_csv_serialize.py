@@ -3,7 +3,7 @@ import csv
 from io import StringIO
 
 from pcapi.models.payment_status import TransactionStatus
-from pcapi.repository.reimbursement_queries import find_all_offerer_payments
+from pcapi.repository.reimbursement_queries import find_sent_offerer_payments
 from pcapi.utils.date import MONTHS_IN_FRENCH
 
 
@@ -107,7 +107,7 @@ def generate_reimbursement_details_csv(reimbursement_details: list[Reimbursement
 
 
 def find_all_offerer_reimbursement_details(offerer_id: int) -> list[ReimbursementDetails]:
-    offerer_payments = find_all_offerer_payments(offerer_id)
+    offerer_payments = find_sent_offerer_payments(offerer_id)
     reimbursement_details = [ReimbursementDetails(offerer_payment) for offerer_payment in offerer_payments]
 
     return reimbursement_details

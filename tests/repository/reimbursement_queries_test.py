@@ -13,12 +13,12 @@ from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository import repository
-from pcapi.repository.reimbursement_queries import find_all_offerer_payments
+from pcapi.repository.reimbursement_queries import find_sent_offerer_payments
 
 
 class FindAllOffererPaymentsTest:
     @pytest.mark.usefixtures("db_session")
-    def test_should_return_one_payment_info_with_error_status(self, app):
+    def test_should_not_return_one_payment_info_with_error_status(self, app):
         # Given
         user = users_factories.UserFactory(lastName="User", firstName="Plus")
         offerer = create_offerer(address="7 rue du livre")
@@ -38,29 +38,10 @@ class FindAllOffererPaymentsTest:
         repository.save(payment)
 
         # When
-        payments = find_all_offerer_payments(offerer.id)
+        payments = find_sent_offerer_payments(offerer.id)
 
         # Then
-        assert len(payments) == 1
-        assert payments[0] == (
-            "User",
-            "Plus",
-            "ABCDEF",
-            now,
-            1,
-            Decimal("10.00"),
-            "Test Book",
-            "7 rue du livre",
-            "La petite librairie",
-            "12345678912345",
-            "123 rue de Paris",
-            Decimal("50.00"),
-            Decimal("0.50"),
-            None,
-            "pass Culture Pro - remboursement 1ère quinzaine 07-2019",
-            TransactionStatus.ERROR,
-            "Iban non fourni",
-        )
+        assert len(payments) == 0
 
     @pytest.mark.usefixtures("db_session")
     def test_should_return_one_payment_info_with_sent_status(self, app):
@@ -88,7 +69,7 @@ class FindAllOffererPaymentsTest:
         repository.save(payment, payment_status1, payment_status2)
 
         # When
-        payments = find_all_offerer_payments(offerer.id)
+        payments = find_sent_offerer_payments(offerer.id)
 
         # Then
         assert len(payments) == 1
@@ -157,7 +138,7 @@ class FindAllOffererPaymentsTest:
         repository.save(first_status_for_payment1, first_status_for_payment2)
 
         # When
-        payments = find_all_offerer_payments(offerer.id)
+        payments = find_sent_offerer_payments(offerer.id)
 
         # Then
         assert len(payments) == 2

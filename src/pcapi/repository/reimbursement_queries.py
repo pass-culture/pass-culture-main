@@ -10,14 +10,17 @@ from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
 from pcapi.models import PaymentStatus
 from pcapi.models import Venue
+from pcapi.models import payment_status
 from pcapi.models.payment import Payment
+from pcapi.repository.payment_queries import get_payments_by_status
 
 
-def find_all_offerer_payments(offerer_id: int) -> list[namedtuple]:
+def find_sent_offerer_payments(offerer_id: int) -> list[namedtuple]:
     payment_status_query = _build_payment_status_subquery()
+    sent_payment_query = get_payments_by_status([payment_status.TransactionStatus.SENT])
 
     return (
-        Payment.query.join(payment_status_query)
+        sent_payment_query.join(payment_status_query)
         .reset_joinpoint()
         .join(Booking)
         .join(User)
