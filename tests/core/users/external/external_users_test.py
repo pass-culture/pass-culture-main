@@ -34,15 +34,9 @@ def test_update_external_user():
     n_query_get_deposit = 1
     n_query_is_pro = 1
     n_query_get_last_favorite = 1
-    n_query_check_feature_WHOLE_FRANCE_OPENING_active = 1
 
     with assert_num_queries(
-        n_query_get_user
-        + n_query_get_bookings
-        + n_query_get_deposit
-        + n_query_is_pro
-        + n_query_get_last_favorite
-        + n_query_check_feature_WHOLE_FRANCE_OPENING_active
+        n_query_get_user + n_query_get_bookings + n_query_get_deposit + n_query_is_pro + n_query_get_last_favorite
     ):
         update_external_user(user)
 
@@ -55,9 +49,8 @@ def test_update_external_pro_user():
 
     n_query_get_user = 1
     n_query_is_pro = 1
-    n_query_check_feature_WHOLE_FRANCE_OPENING_active = 1
 
-    with assert_num_queries(n_query_get_user + n_query_is_pro + n_query_check_feature_WHOLE_FRANCE_OPENING_active):
+    with assert_num_queries(n_query_get_user + n_query_is_pro):
         update_external_user(user)
 
     assert len(batch_testing.requests) == 0
@@ -78,15 +71,9 @@ def test_get_user_attributes():
     n_query_get_deposit = 1
     n_query_is_pro = 1
     n_query_get_last_favorite = 1
-    n_query_check_feature_WHOLE_FRANCE_OPENING_active = 1
 
     with assert_num_queries(
-        n_query_get_user
-        + n_query_get_bookings
-        + n_query_get_deposit
-        + n_query_is_pro
-        + n_query_get_last_favorite
-        + n_query_check_feature_WHOLE_FRANCE_OPENING_active
+        n_query_get_user + n_query_get_bookings + n_query_get_deposit + n_query_is_pro + n_query_get_last_favorite
     ):
         attributes = get_user_attributes(user)
 

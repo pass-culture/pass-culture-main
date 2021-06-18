@@ -159,110 +159,6 @@ class AccountTest:
         assert response.status_code == 200
         assert response.json == EXPECTED_DATA
 
-    @override_features(WHOLE_FRANCE_OPENING=False)
-    @freeze_time("2018-06-01")
-    def test_get_eligible_user_profile_from_non_eligible_area(self, app):
-        USER_DATA = {
-            "email": self.identifier,
-            "firstName": "john",
-            "lastName": "doe",
-            "phoneNumber": "+33102030405",
-            "needsToFillCulturalSurvey": True,
-        }
-        user = users_factories.UserFactory(
-            dateOfBirth=datetime(2000, 1, 1),
-            notificationSubscriptions={"marketing_push": True},
-            publicName="jdo",
-            departementCode="92",
-            **USER_DATA,
-        )
-
-        access_token = create_access_token(identity=self.identifier)
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        response = test_client.get("/native/v1/me")
-
-        EXPECTED_DATA = {
-            "id": user.id,
-            "allowedEligibilityCheckMethods": None,
-            "bookedOffers": {},
-            "domainsCredit": None,
-            "dateOfBirth": "2000-01-01",
-            "depositVersion": None,
-            "depositType": None,
-            "depositExpirationDate": None,
-            "eligibilityEndDatetime": None,
-            "eligibilityStartDatetime": None,
-            "hasCompletedIdCheck": None,
-            "isBeneficiary": False,
-            "roles": [],
-            "nextBeneficiaryValidationStep": None,
-            "pseudo": "jdo",
-            "showEligibleCard": False,
-            "subscriptions": {"marketingPush": True, "marketingEmail": True},
-            "subscriptionMessage": None,
-        }
-        EXPECTED_DATA.update(USER_DATA)
-
-        # TODO: revert this when the typeform is fixed
-        EXPECTED_DATA["needsToFillCulturalSurvey"] = False
-
-        assert response.status_code == 200
-        assert response.json == EXPECTED_DATA
-
-    @override_features(WHOLE_FRANCE_OPENING=False)
-    @freeze_time("2022-06-01")
-    def test_get_non_eligible_user_profile_from_non_eligible_area(self, app):
-        USER_DATA = {
-            "email": self.identifier,
-            "firstName": "john",
-            "lastName": "doe",
-            "phoneNumber": "+33102030405",
-            "needsToFillCulturalSurvey": True,
-        }
-        user = users_factories.UserFactory(
-            dateOfBirth=datetime(2000, 1, 1),
-            notificationSubscriptions={"marketing_push": True},
-            publicName="jdo",
-            departementCode="92",
-            **USER_DATA,
-        )
-
-        access_token = create_access_token(identity=self.identifier)
-        test_client = TestClient(app.test_client())
-        test_client.auth_header = {"Authorization": f"Bearer {access_token}"}
-
-        response = test_client.get("/native/v1/me")
-
-        EXPECTED_DATA = {
-            "id": user.id,
-            "allowedEligibilityCheckMethods": None,
-            "bookedOffers": {},
-            "domainsCredit": None,
-            "dateOfBirth": "2000-01-01",
-            "depositVersion": None,
-            "depositType": None,
-            "depositExpirationDate": None,
-            "eligibilityEndDatetime": None,
-            "eligibilityStartDatetime": None,
-            "hasCompletedIdCheck": None,
-            "isBeneficiary": False,
-            "roles": [],
-            "nextBeneficiaryValidationStep": None,
-            "pseudo": "jdo",
-            "showEligibleCard": False,
-            "subscriptions": {"marketingPush": True, "marketingEmail": True},
-            "subscriptionMessage": None,
-        }
-        EXPECTED_DATA.update(USER_DATA)
-
-        # TODO: revert this when the typeform is fixed
-        EXPECTED_DATA["needsToFillCulturalSurvey"] = False
-
-        assert response.status_code == 200
-        assert response.json == EXPECTED_DATA
-
     def test_get_user_not_beneficiary(self, app):
         users_factories.UserFactory(email=self.identifier)
 
@@ -426,7 +322,6 @@ def build_test_client(app, identity):
 class AccountCreationTest:
     identifier = "email@example.com"
 
-    @override_features(WHOLE_FRANCE_OPENING=True)
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
     def test_account_creation(self, mocked_check_recaptcha_token_is_valid, app):
         test_client = TestClient(app.test_client())
@@ -454,7 +349,6 @@ class AccountCreationTest:
         assert len(push_testing.requests) == 1
         assert len(users_testing.sendinblue_requests) == 1
 
-    @override_features(WHOLE_FRANCE_OPENING=True)
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
     def test_account_creation_with_existing_email_sends_email(self, mocked_check_recaptcha_token_is_valid, app):
         test_client = TestClient(app.test_client())
@@ -476,7 +370,6 @@ class AccountCreationTest:
         assert mails_testing.outbox[0].sent_data["MJ-TemplateID"] == 1838526
         assert push_testing.requests == []
 
-    @override_features(WHOLE_FRANCE_OPENING=True)
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
     def test_account_creation_with_unvalidated_email_sends_email(self, mocked_check_recaptcha_token_is_valid, app):
         test_client = TestClient(app.test_client())
@@ -504,7 +397,6 @@ class AccountCreationTest:
         assert len(tokens) == 1
         assert previous_token != tokens[0].value
 
-    @override_features(WHOLE_FRANCE_OPENING=True)
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
     def test_too_young_account_creation(self, mocked_check_recaptcha_token_is_valid, app):
         test_client = TestClient(app.test_client())
@@ -521,78 +413,6 @@ class AccountCreationTest:
         response = test_client.post("/native/v1/account", json=data)
         assert response.status_code == 400
         assert push_testing.requests == []
-
-
-class AccountCreationBeforeGrandOpeningTest:
-    @override_features(WHOLE_FRANCE_OPENING=False)
-    @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
-    def test_account_creation(self, mocked_check_recaptcha_token_is_valid, app):
-        test_client = TestClient(app.test_client())
-        assert User.query.first() is None
-        data = {
-            "email": "John.doe@example.com",
-            "password": "Aazflrifaoi6@",
-            "birthdate": "1960-12-31",
-            "notifications": True,
-            "token": "gnagna",
-            "marketingEmailSubscription": True,
-            "postalCode": "93000",
-            "appsFlyerUserId": "some-id",
-            "appsFlyerPlatform": "some-platform",
-        }
-
-        response = test_client.post("/native/v1/account", json=data)
-        assert response.status_code == 204, response.json
-
-        user = User.query.first()
-        assert user is not None
-        assert user.email == "john.doe@example.com"
-        assert user.get_notification_subscriptions().marketing_email
-        assert user.isEmailValidated is False
-        mocked_check_recaptcha_token_is_valid.assert_called()
-        assert user.departementCode == "93"
-        assert user.postalCode == "93000"
-        assert user.externalIds == {"apps_flyer": {"platform": "SOME-PLATFORM", "user": "some-id"}}
-        assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2015423
-        assert len(push_testing.requests) == 1
-
-    @override_features(WHOLE_FRANCE_OPENING=False)
-    @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
-    def test_account_creation_with_empty_postal_code(self, mocked_check_recaptcha_token_is_valid, app):
-        test_client = TestClient(app.test_client())
-        assert User.query.first() is None
-        data = {
-            "email": "John.doe@example.com",
-            "password": "Aazflrifaoi6@",
-            "birthdate": "1960-12-31",
-            "notifications": True,
-            "token": "gnagna",
-            "marketingEmailSubscription": True,
-            "postalCode": "",
-        }
-
-        response = test_client.post("/native/v1/account", json=data)
-        assert response.status_code == 400
-        assert response.json == {"postalCode": ["Ce champ est obligatoire"]}
-
-    @override_features(WHOLE_FRANCE_OPENING=False)
-    @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
-    def test_account_creation_without_postal_code(self, mocked_check_recaptcha_token_is_valid, app):
-        test_client = TestClient(app.test_client())
-        assert User.query.first() is None
-        data = {
-            "email": "John.doe@example.com",
-            "password": "Aazflrifaoi6@",
-            "birthdate": "1960-12-31",
-            "notifications": True,
-            "token": "gnagna",
-            "marketingEmailSubscription": True,
-        }
-
-        response = test_client.post("/native/v1/account", json=data)
-        assert response.status_code == 400
-        assert response.json == {"postalCode": ["Ce champ est obligatoire"]}
 
 
 class UserProfileUpdateTest:
@@ -907,18 +727,6 @@ class ShowEligibleCardTest:
             isBeneficiary=beneficiary,
             departementCode="93",
             roles=roles,
-        )
-        assert account_serializers.UserProfileResponse._show_eligible_card(user) == expected
-
-    @pytest.mark.parametrize("departement,expected", [("93", True), ("92", False)])
-    @override_features(WHOLE_FRANCE_OPENING=False)
-    def test_against_departement(self, departement, expected):
-        date_of_birth = datetime.now() - relativedelta(years=18, days=5)
-        date_of_creation = datetime.now() - relativedelta(years=4)
-        user = users_factories.UserFactory.build(
-            dateOfBirth=date_of_birth,
-            dateCreated=date_of_creation,
-            departementCode=departement,
         )
         assert account_serializers.UserProfileResponse._show_eligible_card(user) == expected
 

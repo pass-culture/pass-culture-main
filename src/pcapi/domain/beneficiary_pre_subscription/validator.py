@@ -41,15 +41,6 @@ def _is_postal_code_eligible(code: Optional[str]) -> bool:
     if not code:
         return True
 
-    # FIXME (dbaty, 2020-01-14): remove this block once we have opened
-    # to (almost) all departments.
-    # Legacy behaviour: only a few departments are eligible.
-    if not FeatureToggle.WHOLE_FRANCE_OPENING.is_active():
-        for department in ELIGIBLE_DEPARTMENTS:
-            if code.startswith(department):
-                return True
-        return False
-
     # New behaviour: all departments are eligible, except a few.
     for department in EXCLUDED_DEPARTMENTS:
         if code.startswith(department):

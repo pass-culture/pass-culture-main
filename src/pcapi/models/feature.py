@@ -36,7 +36,6 @@ class FeatureToggle(enum.Enum):
     ALLOW_IDCHECK_UNDERAGE_REGISTRATION = (
         "Autoriser les utilisateurs de moins de 15 à 17 ans à suivre le parcours d inscription ID Check"
     )
-    WHOLE_FRANCE_OPENING = "Ouvre le service à la France entière"
     ENABLE_NATIVE_APP_RECAPTCHA = "Active le reCaptacha sur l'API native"
     OFFER_VALIDATION_MOCK_COMPUTATION = "Active le calcul automatique de validation d'offre depuis le nom de l'offre"
     AUTO_ACTIVATE_DIGITAL_BOOKINGS = (

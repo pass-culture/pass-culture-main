@@ -360,7 +360,7 @@ class CancelByBeneficiaryTest:
         queries += 1  # select stock for update
         queries += 1  # refresh booking
         queries += 3  # update stock ; update booking ; release savepoint
-        queries += 8  # (update batch attributes): select booking ; user ; user.bookings ; deposit ; user_offerer ; favorites ; stock; check feature WHOLE_FRANCE_OPENING
+        queries += 7  # (update batch attributes): select booking ; user ; user.bookings ; deposit ; user_offerer ; favorites ; stock
         queries += 1  # select offer
         queries += 2  # insert email ; release savepoint
         queries += 4  # (TODO: optimize) select booking ; stock ; offer ; user

@@ -3,7 +3,6 @@ from datetime import datetime
 import pytest
 
 from pcapi.core.subscription.factories import BeneficiaryPreSubscriptionFactory
-from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.domain.beneficiary_pre_subscription.exceptions import BeneficiaryIsADuplicate
 from pcapi.domain.beneficiary_pre_subscription.exceptions import BeneficiaryIsNotEligible
@@ -114,37 +113,6 @@ def test_doesnt_raise_if_no_exact_duplicate(app):
         assert pytest.fail("Should not raise an exception when email not given")
 
 
-@override_features(WHOLE_FRANCE_OPENING=False)
-@pytest.mark.parametrize("postal_code", ["36000", "36034", "97400"])
-@pytest.mark.usefixtures("db_session")
-def test_raises_if_not_eligible_legacy_behaviour(postal_code):
-    # Given
-    beneficiary_pre_subcription = BeneficiaryPreSubscriptionFactory(postal_code=postal_code)
-
-    # When
-    with pytest.raises(BeneficiaryIsNotEligible) as error:
-        validate(beneficiary_pre_subcription)
-
-    # Then
-    assert str(error.value) == f"Postal code {postal_code} is not eligible."
-
-
-@override_features(WHOLE_FRANCE_OPENING=False)
-@pytest.mark.parametrize("postal_code", ["34000", "34898", "97340"])
-@pytest.mark.usefixtures("db_session")
-def test_should_not_raise_if_eligible_legacy_behaviour(postal_code):
-    # Given
-    beneficiary_pre_subcription = BeneficiaryPreSubscriptionFactory(postal_code=postal_code)
-
-    try:
-        # When
-        validate(beneficiary_pre_subcription)
-    except CantRegisterBeneficiary:
-        # Then
-        assert pytest.fail("Should not raise when postal code is eligible")
-
-
-@override_features(WHOLE_FRANCE_OPENING=True)
 @pytest.mark.parametrize("postal_code", ["98735", "98800", "98800"])
 @pytest.mark.usefixtures("db_session")
 def test_raises_if_not_eligible(postal_code):
@@ -159,7 +127,6 @@ def test_raises_if_not_eligible(postal_code):
     assert str(error.value) == f"Postal code {postal_code} is not eligible."
 
 
-@override_features(WHOLE_FRANCE_OPENING=True)
 @pytest.mark.parametrize("postal_code", ["36000", "36034", "97400"])
 @pytest.mark.usefixtures("db_session")
 def test_should_not_raise_if_eligible(postal_code):
