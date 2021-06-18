@@ -45,32 +45,40 @@ class JouveContentFactory(factory.Factory):
 
 USERPROFILING_RATING = ["neutral", "low", "good"]
 USERPROFILING_RESULTS = ["sucess", "failure"]
+USERPROFILING_BOOL = ["yes", "no"]
 
 
 class UserProfilingFraudDataFactory(factory.Factory):
     class Meta:
         model = models.UserProfilingFraudData
 
+    account_email = factory.Sequence("user.email-{0}@example.com".format)
     account_email_result = random.choice(USERPROFILING_RESULTS)
     account_email_score = factory.Faker("pyint")
     account_telephone_result = random.choice(USERPROFILING_RESULTS)
     account_telephone_score = factory.Faker("pyint")
+    account_telephone_is_valid = random.choice(USERPROFILING_BOOL)
     bb_bot_rating = random.choice(USERPROFILING_RATING)
     bb_bot_score = factory.Faker("pyfloat", min_value=-100.0, max_value=100.0)
     bb_fraud_rating = random.choice(USERPROFILING_RATING)
     bb_fraud_score = factory.Faker("pyfloat", min_value=-100.0, max_value=100.0)
+    digital_id = factory.Faker("pystr")
     digital_id_result = random.choice(USERPROFILING_RESULTS)
     digital_id_trust_score = factory.Faker("pyfloat", min_value=-100.0, max_value=100.0)
     digital_id_trust_score_rating = random.choice(USERPROFILING_RATING)
+    digital_id_trust_score_reason_code = factory.List(factory.Sequence("Reason code #{0}".format) for x in range(1))
     digital_id_confidence = factory.Faker("pyint")
     digital_id_confidence_rating = random.choice(USERPROFILING_RATING)
+    event_datetime = factory.Faker("date_time")
     policy_score = factory.Faker("pyint")
     reason_code = factory.List((factory.Sequence("Reason code #{0}".format) for x in range(2)))
     request_id = factory.Faker("pystr")
     risk_rating = random.choice(USERPROFILING_RATING)
+    session_id = factory.Faker("pystr")
     tmx_risk_rating = random.choice(USERPROFILING_RATING)
     tmx_summary_reason_code = factory.List(factory.Sequence("Reason code #{0}".format) for x in range(1))
     summary_risk_score = factory.Faker("pyint")
+    unknown_session = random.choice(USERPROFILING_BOOL)
 
 
 FRAUD_CHECK_TYPE_MODEL_ASSOCIATION = {

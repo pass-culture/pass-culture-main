@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import datetime
 import enum
 import typing
 
@@ -69,26 +70,35 @@ class JouveContent(pydantic.BaseModel):
 
 
 class UserProfilingFraudData(pydantic.BaseModel):
+    account_email: str
+    account_email_first_seen: typing.Optional[datetime.date]
     account_email_result: str
     account_email_score: typing.Optional[int]
     account_telephone_result: str
+    account_telephone_first_seen: typing.Optional[datetime.date]
     account_telephone_score: typing.Optional[int]
+    account_telephone_is_valid: str
     bb_bot_rating: str
     bb_bot_score: float
     bb_fraud_rating: str
     bb_fraud_score: float
+    digital_id: str
     digital_id_result: str
     digital_id_trust_score: float
     digital_id_trust_score_rating: str
+    digital_id_trust_score_reason_code: typing.List[str]
     digital_id_confidence: int
     digital_id_confidence_rating: str
+    event_datetime: datetime.datetime
     policy_score: int
     reason_code: typing.List[str]
     request_id: str
     risk_rating: str
+    session_id: str
     tmx_risk_rating: str
     tmx_summary_reason_code: typing.Optional[typing.List[str]]
     summary_risk_score: int
+    unknown_session: str
 
 
 class BeneficiaryFraudCheck(PcObject, Model):
