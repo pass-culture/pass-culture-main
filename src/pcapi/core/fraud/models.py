@@ -93,7 +93,9 @@ class BeneficiaryFraudResult(PcObject, Model):
 
     userId = sqlalchemy.Column(sqlalchemy.BigInteger, sqlalchemy.ForeignKey("user.id"), index=True, nullable=False)
 
-    user = sqlalchemy.orm.relationship("User", foreign_keys=[userId], backref="beneficiaryFraudResult")
+    user = sqlalchemy.orm.relationship(
+        "User", foreign_keys=[userId], backref=sqlalchemy.orm.backref("beneficiaryFraudResult", uselist=False)
+    )
 
     status = sqlalchemy.Column(sqlalchemy.Enum(FraudStatus, create_constraint=False))
 
