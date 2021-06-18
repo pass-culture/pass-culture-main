@@ -8,10 +8,6 @@ import SubmitButton from 'components/layout/SubmitButton/SubmitButton'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import OfferStatusBanner from 'components/pages/Offers/Offer/OfferDetails/OfferStatusBanner/OfferStatusBanner'
 import {
-  DIGITAL_CANCELLATION_INFORMATION,
-  THING_CANCELLATION_INFORMATION,
-} from 'components/pages/Offers/Offer/Stocks/_constants'
-import {
   createThingStockPayload,
   formatStock,
   validateCreatedStock,
@@ -200,9 +196,11 @@ const ThingStocks = ({
       </h3>
 
       <div className="cancellation-information">
-        {autoActivateDigitalBookings &&
-          (offer.isDigital ? DIGITAL_CANCELLATION_INFORMATION : THING_CANCELLATION_INFORMATION)}
-        {!autoActivateDigitalBookings && THING_CANCELLATION_INFORMATION}
+        {(!offer.isDigital || !autoActivateDigitalBookings) &&
+          'Les utilisateurs ont 30 jours pour faire valider leur contremarque. Passé ce délai, la réservation est automatiquement annulée et l’offre remise en vente.'}
+        {offer.isDigital &&
+          autoActivateDigitalBookings &&
+          "Les utilisateurs ont 30 jours pour annuler leurs réservations d’offres numériques<br>Dans le cas d’offres avec codes d’activation, les utilisateurs ne peuvent pas annuler leurs réservations d'offres numériques. Toute réservation est définitive et sera immédiatement validée."}
       </div>
       {areActivationCodesEnabled && offer.isDigital && (
         <div className="activation-codes-information">

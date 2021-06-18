@@ -546,12 +546,17 @@ describe('stocks page', () => {
         pcapi.loadStocks.mockResolvedValue({ stocks: [{ ...defaultStock }] })
       })
 
-      it('should display an information message regarding booking cancellation (new rules)', async () => {
+      it('should display an information message regarding booking cancellation (when feature toggling)', async () => {
         store = configureTestStore({
           data: {
             users: [{ publicName: 'François', isAdmin: false }],
           },
-          features: { list: [{ isActive: true, nameKey: 'AUTO_ACTIVATE_DIGITAL_BOOKINGS' }] },
+          features: {
+            list: [
+              { isActive: true, nameKey: 'AUTO_ACTIVATE_DIGITAL_BOOKINGS' },
+              { isActive: true, nameKey: 'ENABLE_ACTIVATION_CODES' },
+            ],
+          },
         })
 
         // when
@@ -559,12 +564,12 @@ describe('stocks page', () => {
 
         // then
         const informationMessage = screen.getByText(
-          "Les utilisateurs ne peuvent pas annuler leurs réservations d'offres numériques. Toute réservation est définitive et sera immédiatement validée."
+          "Les utilisateurs ont 30 jours pour annuler leurs réservations d’offres numériques<br>Dans le cas d’offres avec codes d’activation, les utilisateurs ne peuvent pas annuler leurs réservations d'offres numériques. Toute réservation est définitive et sera immédiatement validée."
         )
         expect(informationMessage).toBeInTheDocument()
       })
 
-      it('should display an information message regarding booking cancellation (legacy rules)', async () => {
+      it('should display an information message regarding booking cancellation (when no feature toggling)', async () => {
         // when
         await renderOffers(props, store)
 
