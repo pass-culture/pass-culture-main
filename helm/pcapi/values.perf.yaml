@@ -418,7 +418,7 @@ secrets:
   - name: SENDINBLUE_API_KEY
     version: 1
   - name: SENTRY_DSN
-    version: 1
+    version: 2
   - name: SUPPORT_EMAIL_ADDRESS
     version: 1
   - name: TRANSACTIONS_RECIPIENTS

@@ -384,7 +384,7 @@ secrets:
   - name: SENDINBLUE_API_KEY
     version: 1
   - name: SENTRY_DSN
-    version: 2
+    version: 3
   - name: SUPPORT_EMAIL_ADDRESS
     version: 2
   - name: USER_PROFILING_URL
