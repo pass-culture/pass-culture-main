@@ -13,8 +13,10 @@ def beneficiary_fraud_result_formatter(view, context, model, name) -> Markup:
         fraud_models.FraudStatus.SUSPICIOUS: "badge-warning",
     }
 
-    instance = model.beneficiaryFraudResult.status
-    return Markup(f"""<span class="badge {result_mapping_class[instance]}">{instance.value}</span>""")
+    if model.beneficiaryFraudResult:
+        instance = model.beneficiaryFraudResult.status
+        return Markup(f"""<span class="badge {result_mapping_class[instance]}">{instance.value}</span>""")
+    return Markup("""<span class="badge badge-secondary">Inconnu</span>""")
 
 
 def beneficiary_fraud_checks_formatter(view, context, model, name) -> Markup:

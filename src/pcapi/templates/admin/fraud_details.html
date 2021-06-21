@@ -78,6 +78,7 @@
   </div>
   <div class="col">
     <h3>Résultat de l'algorithme</h3>
+    {% if model.beneficiaryFraudResult %}
     <table class="table">
       <tr>
         <th scope="row">Etat</th>
@@ -96,6 +97,7 @@
         <td>{{ model.beneficiaryFraudResult.reason }}</dd></td>
       </tr>
     </table>
+    {% endif %}
   </div>
 </div>
 <div class="row">
