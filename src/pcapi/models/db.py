@@ -1,9 +1,10 @@
+from flask import json
 from flask_sqlalchemy import SQLAlchemy
 
 from pcapi import settings
 
 
-engine_options = {"pool_size": settings.DATABASE_POOL_SIZE}
+engine_options = {"json_serializer": json.dumps, "pool_size": settings.DATABASE_POOL_SIZE}
 
 db_options = []
 if settings.DATABASE_LOCK_TIMEOUT:
