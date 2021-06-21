@@ -875,7 +875,7 @@ class VerifyIdentityDocumentInformationsTest:
     ):
         # Given
         mocked_get_identity_informations.return_value = ("py@test.com", b"")
-        mocked_ask_for_identity.return_value = (False, "unread-document")
+        mocked_ask_for_identity.return_value = (False, "invalid-document-date")
 
         users_api.verify_identity_document_informations("some_path")
 
@@ -883,6 +883,25 @@ class VerifyIdentityDocumentInformationsTest:
         sent_data = mails_testing.outbox[0].sent_data
 
         assert sent_data["Vars"]["url"] == settings.DMS_USER_URL
+        assert sent_data["MJ-TemplateID"] == 2958563
+
+    @patch("pcapi.core.users.api.delete_object")
+    @patch("pcapi.core.users.api.ask_for_identity_document_verification")
+    @patch("pcapi.core.users.api._get_identity_document_informations")
+    def test_email_sent_with_default_template(
+        self, mocked_get_identity_informations, mocked_ask_for_identity, mocked_delete_object, app
+    ):
+        # Given
+        mocked_get_identity_informations.return_value = ("py@test.com", b"")
+        mocked_ask_for_identity.return_value = (False, "unknown-error-code")
+
+        users_api.verify_identity_document_informations("some_path")
+
+        assert len(mails_testing.outbox) == 1
+        sent_data = mails_testing.outbox[0].sent_data
+
+        assert sent_data["Vars"]["url"] == settings.DMS_USER_URL
+        assert sent_data["MJ-TemplateID"] == 2958557  # default email template used
 
     @patch("pcapi.core.users.api.delete_object")
     @patch("pcapi.core.users.api.ask_for_identity_document_verification")

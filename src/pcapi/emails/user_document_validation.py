@@ -14,11 +14,7 @@ def build_data_for_document_verification_error(code: str) -> dict:
         "invalid-age": _build_invalid_age_data,
     }
 
-    if code not in error_codes_switch:
-        # cast to avoid an error: in case code turns out not to be a str
-        raise DocumentValidationUnknownError(str(code))
-
-    handler = error_codes_switch[code]
+    handler = error_codes_switch.get(code, _build_unread_document_data)
     return handler()
 
 
