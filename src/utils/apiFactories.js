@@ -70,7 +70,12 @@ export const bookingRecapFactory = (customBookingRecap = {}) => {
   const venue = venueFactory()
 
   return {
-    beneficiary: { email: 'user@example.com', firstname: 'First', lastname: 'Last' },
+    beneficiary: {
+      email: 'user@example.com',
+      firstname: 'First',
+      lastname: 'Last',
+      phonenumber: '0606060606',
+    },
     booking_amount: 0,
     booking_date: '2020-04-12T19:31:12Z',
     booking_is_duo: false,
