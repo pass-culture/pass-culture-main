@@ -55,6 +55,7 @@ class FeatureToggle(enum.Enum):
     USE_APP_SEARCH_ON_NATIVE_APP = "Utiliser App Search au lieu d'Algolia sur l'app native"
     USE_APP_SEARCH_ON_WEBAPP = "Utiliser App Search au lieu d'Algolia sur la webapp"
     ID_CHECK_ADDRESS_AUTOCOMPLETION = "Autocomplétion de l'adresse lors du parcours IDCheck"
+    USER_PROFILING_FRAUD_CHECK = "Détection de la fraude basée sur le profil de l'utilisateur"
 
 
 class Feature(PcObject, Model, DeactivableMixin):
@@ -79,6 +80,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.USE_APP_SEARCH_ON_NATIVE_APP,
     FeatureToggle.USE_APP_SEARCH_ON_WEBAPP,
     FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
+    FeatureToggle.USER_PROFILING_FRAUD_CHECK,
 )
 
 
