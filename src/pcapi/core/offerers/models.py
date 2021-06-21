@@ -3,7 +3,6 @@ from typing import Optional
 
 from sqlalchemy import BigInteger
 from sqlalchemy import Boolean
-from sqlalchemy import CHAR
 from sqlalchemy import CheckConstraint
 from sqlalchemy import Column
 from sqlalchemy import DateTime
@@ -12,6 +11,7 @@ from sqlalchemy import Integer
 from sqlalchemy import Numeric
 from sqlalchemy import String
 from sqlalchemy import TEXT
+from sqlalchemy import Text
 from sqlalchemy import and_
 from sqlalchemy import case
 from sqlalchemy import cast
@@ -23,6 +23,8 @@ from sqlalchemy.orm import aliased
 from sqlalchemy.orm import backref
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
+from sqlalchemy.sql.sqltypes import CHAR
+from sqlalchemy.sql.sqltypes import LargeBinary
 from werkzeug.utils import cached_property
 
 from pcapi import settings
@@ -361,8 +363,15 @@ offerer_ts_indexes = [
 
 
 class ApiKey(PcObject, Model):
-    value = Column(CHAR(64), index=True, nullable=False)
+    # TODO: remove value colum when legacy keys are migrated
+    value = Column(CHAR(64), index=True, nullable=True)
 
     offererId = Column(BigInteger, ForeignKey("offerer.id"), index=True, nullable=False)
 
-    offerer = relationship("Offerer", foreign_keys=[offererId], backref=backref("apiKey", uselist=False))
+    offerer = relationship("Offerer", foreign_keys=[offererId], backref=backref("apiKeys"))
+
+    dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
+
+    prefix = Column(Text, nullable=True, unique=True)
+
+    secret = Column(LargeBinary, nullable=True)

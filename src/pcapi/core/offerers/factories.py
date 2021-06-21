@@ -1,7 +1,10 @@
+import bcrypt
 import factory
 
+from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import VenueLabel
 from pcapi.core.offerers.models import VenueType
+from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import VenueFactory
 import pcapi.core.providers.models
 from pcapi.core.providers.models import AllocineVenueProvider
@@ -89,3 +92,20 @@ class VenueLabelFactory(BaseFactory):
         model = VenueLabel
 
     label = "Cinéma d'art et d'essai"
+
+
+DEFAULT_PREFIX = "development_prefix"
+DEFAULT_SECRET = "clearSecret"
+DEFAULT_CLEAR_API_KEY = f"{DEFAULT_PREFIX}_{DEFAULT_SECRET}"
+
+
+class ApiKeyFactory(BaseFactory):
+    class Meta:
+        model = ApiKey
+
+    offerer = factory.SubFactory(OffererFactory)
+    prefix = DEFAULT_PREFIX
+
+    @factory.post_generation
+    def hash_secret(self, create, extracted):
+        self.secret = bcrypt.hashpw((extracted or DEFAULT_SECRET).encode("utf-8"), bcrypt.gensalt())

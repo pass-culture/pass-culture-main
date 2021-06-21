@@ -6,6 +6,8 @@ from flask_login import current_user
 from flask_login import login_required
 
 from pcapi.core.offerers.api import create_digital_venue
+from pcapi.core.offerers.api import generate_and_save_api_key
+from pcapi.core.offerers.exceptions import ApiKeyPrefixGenerationError
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.repository import get_all_offerers_for_user
 from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
@@ -16,6 +18,7 @@ from pcapi.models import UserOfferer
 from pcapi.repository import repository
 from pcapi.repository.offerer_queries import find_by_siren
 from pcapi.routes.serialization import as_dict
+from pcapi.routes.serialization.offerers_serialize import GenerateOffererApiKeyResponse
 from pcapi.routes.serialization.offerers_serialize import GetOffererNameResponseModel
 from pcapi.routes.serialization.offerers_serialize import GetOffererResponseModel
 from pcapi.routes.serialization.offerers_serialize import GetOfferersNamesQueryModel
@@ -104,6 +107,20 @@ def get_offerer(offerer_id: str) -> GetOffererResponseModel:
     offerer = load_or_404(Offerer, offerer_id)
 
     return GetOffererResponseModel.from_orm(offerer)
+
+
+@private_api.route("/offerers/<offerer_id>/api_keys", methods=["POST"])
+@login_required
+@spectree_serialize(response_model=GenerateOffererApiKeyResponse)
+def generate_api_key_route(offerer_id: str) -> GenerateOffererApiKeyResponse:
+    check_user_has_access_to_offerer(current_user, dehumanize(offerer_id))
+    offerer = load_or_404(Offerer, offerer_id)
+    try:
+        clear_key = generate_and_save_api_key(offerer.id)
+    except ApiKeyPrefixGenerationError:
+        raise ApiErrors({"api_key": "Could not generate api key"})
+
+    return GenerateOffererApiKeyResponse(apiKey=clear_key)
 
 
 # @debt api-migration

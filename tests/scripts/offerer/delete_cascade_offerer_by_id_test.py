@@ -5,6 +5,7 @@ from pcapi.core.bookings.exceptions import CannotDeleteOffererWithBookingsExcept
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import Booking
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.offerers.factories import ApiKeyFactory
 from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
@@ -93,8 +94,8 @@ def test_delete_cascade_offerer_should_remove_all_user_attachments_to_deleted_of
 def test_delete_cascade_offerer_should_remove_api_key_of_offerer():
     # Given
     offerer_to_delete = offers_factories.OffererFactory()
-    offers_factories.ApiKeyFactory(offerer=offerer_to_delete)
-    offers_factories.ApiKeyFactory()
+    ApiKeyFactory(offerer=offerer_to_delete)
+    ApiKeyFactory(prefix="other-prefix")
 
     # When
     delete_cascade_offerer_by_id(offerer_to_delete.id)

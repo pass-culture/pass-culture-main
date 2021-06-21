@@ -5,7 +5,7 @@ from flask import request
 from flask_login import current_user
 from werkzeug.local import LocalProxy
 
-from pcapi.core.offerers.repository import find_api_key_by_value
+from pcapi.core.offerers.api import find_api_key
 from pcapi.core.users.models import User
 from pcapi.models import ApiErrors
 from pcapi.routes.pro.blueprints import API_KEY_AUTH
@@ -52,7 +52,7 @@ def _fill_current_api_key():
 
     if authorization_header and mandatory_authorization_type in authorization_header:
         app_authorization_credentials = authorization_header.replace(mandatory_authorization_type, "")
-        g.current_api_key = find_api_key_by_value(app_authorization_credentials)
+        g.current_api_key = find_api_key(app_authorization_credentials)
 
 
 def _get_current_api_key():

@@ -1,0 +1,2 @@
+class ApiKeyPrefixGenerationError(Exception):
+    pass

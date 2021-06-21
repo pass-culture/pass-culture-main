@@ -1,9 +1,10 @@
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.offerers.factories import ApiKeyFactory
+from pcapi.core.offerers.factories import DEFAULT_CLEAR_API_KEY
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.users.factories import UserFactory
-from pcapi.model_creators.generic_creators import create_api_key
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_stock
@@ -29,13 +30,13 @@ class Returns204Test:
         def when_api_key_is_provided_and_rights_and_regular_offer(self, app):
             booking = BookingFactory(token="ABCDEF")
             offerer = booking.stock.offer.venue.managingOfferer
-            api_key = offers_factories.ApiKeyFactory(offerer=offerer)
+            ApiKeyFactory(offerer=offerer)
 
             url = f"/v2/bookings/use/token/{booking.token}"
             response = TestClient(app.test_client()).patch(
                 url,
                 headers={
-                    "Authorization": f"Bearer {api_key.value}",
+                    "Authorization": f"Bearer {DEFAULT_CLEAR_API_KEY}",
                     "Origin": "http://localhost",
                 },
             )
@@ -47,13 +48,13 @@ class Returns204Test:
         def expect_booking_to_be_used_with_non_standard_origin_header(self, app):
             booking = BookingFactory(token="ABCDEF")
             offerer = booking.stock.offer.venue.managingOfferer
-            api_key = offers_factories.ApiKeyFactory(offerer=offerer)
+            ApiKeyFactory(offerer=offerer)
 
             url = f"/v2/bookings/use/token/{booking.token}"
             response = TestClient(app.test_client()).patch(
                 url,
                 headers={
-                    "Authorization": f"Bearer {api_key.value}",
+                    "Authorization": f"Bearer {DEFAULT_CLEAR_API_KEY}",
                     "Origin": "http://example.com",
                 },
             )
@@ -148,10 +149,9 @@ class Returns403Test:
 
             repository.save(pro_user, booking, user_offerer, offerer2)
 
-            offerer_api_key = create_api_key(offerer_id=offerer2.id)
-            repository.save(offerer_api_key)
+            ApiKeyFactory(offerer=offerer2)
 
-            user2ApiKey = "Bearer " + offerer_api_key.value
+            user2ApiKey = "Bearer " + DEFAULT_CLEAR_API_KEY
 
             # When
             url = "/v2/bookings/use/token/{}".format(booking.token)
@@ -252,10 +252,9 @@ class Returns404Test:
             booking = create_booking(user=user, stock=stock, venue=venue)
             repository.save(booking)
 
-            offerer_api_key = create_api_key(offerer_id=offerer.id)
-            repository.save(offerer_api_key)
+            ApiKeyFactory(offerer=offerer)
 
-            user2ApiKey = "Bearer " + offerer_api_key.value
+            user2ApiKey = "Bearer " + DEFAULT_CLEAR_API_KEY
 
             # When
             url = "/v2/bookings/use/token/{}".format("456789")

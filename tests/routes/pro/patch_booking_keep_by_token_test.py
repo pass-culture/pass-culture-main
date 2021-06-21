@@ -3,9 +3,10 @@ from decimal import Decimal
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.offerers.factories import ApiKeyFactory
+from pcapi.core.offerers.factories import DEFAULT_CLEAR_API_KEY
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.users.factories import UserFactory
-from pcapi.model_creators.generic_creators import create_api_key
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_payment
@@ -32,13 +33,13 @@ class Returns204Test:
         def when_api_key_provided_is_related_to_regular_offer_with_rights(self, app):
             booking = BookingFactory(isUsed=True, token="ABCDEF")
             offerer = booking.stock.offer.venue.managingOfferer
-            api_key = offers_factories.ApiKeyFactory(offerer=offerer)
+            ApiKeyFactory(offerer=offerer)
 
             url = f"/v2/bookings/keep/token/{booking.token}"
             response = TestClient(app.test_client()).patch(
                 url,
                 headers={
-                    "Authorization": f"Bearer {api_key.value}",
+                    "Authorization": f"Bearer {DEFAULT_CLEAR_API_KEY}",
                     "Origin": "http://localhost",
                 },
             )
@@ -51,13 +52,13 @@ class Returns204Test:
         def expect_booking_to_be_used_with_non_standard_origin_header(self, app):
             booking = BookingFactory(isUsed=True, token="ABCDEF")
             offerer = booking.stock.offer.venue.managingOfferer
-            api_key = offers_factories.ApiKeyFactory(offerer=offerer)
+            ApiKeyFactory(offerer=offerer)
 
             url = f"/v2/bookings/keep/token/{booking.token}"
             response = TestClient(app.test_client()).patch(
                 url,
                 headers={
-                    "Authorization": f"Bearer {api_key.value}",
+                    "Authorization": f"Bearer {DEFAULT_CLEAR_API_KEY}",
                     "Origin": "http://example.com",
                 },
             )
@@ -179,11 +180,10 @@ class Returns403Test:
 
             repository.save(pro_user, booking, user_offerer, offerer2)
 
-            offererApiKey = create_api_key(offerer_id=offerer2.id)
-            repository.save(offererApiKey)
+            ApiKeyFactory(offerer=offerer2)
 
             # When
-            user2_api_key = "Bearer " + offererApiKey.value
+            user2_api_key = f"Bearer {DEFAULT_CLEAR_API_KEY}"
             url = "/v2/bookings/keep/token/{}".format(booking.token)
 
             response = TestClient(app.test_client()).patch(
@@ -205,10 +205,9 @@ class Returns403Test:
             stock = create_stock_with_event_offer(offerer, venue, price=0)
             booking = create_booking(user=user, stock=stock, is_used=True, venue=venue, is_cancelled=True)
             repository.save(booking, user_offerer)
-            offererApiKey = create_api_key(offerer_id=offerer.id)
-            repository.save(offererApiKey)
+            ApiKeyFactory(offerer=offerer)
             url = f"/v2/bookings/keep/token/{booking.token}"
-            user2_api_key = "Bearer " + offererApiKey.value
+            user2_api_key = f"Bearer {DEFAULT_CLEAR_API_KEY}"
 
             # When
             response = TestClient(app.test_client()).patch(
@@ -262,24 +261,9 @@ class Returns404Test:
     class WithApiKeyAuthTest:
         @pytest.mark.usefixtures("db_session")
         def when_booking_is_not_provided_at_all(self, app):
-            # Given
-            user = create_user(email="user@example.net")
-            offerer = create_offerer()
-            venue = create_venue(offerer)
-            offer = create_offer_with_event_product(venue, event_name="Event Name")
-            event_occurrence = create_event_occurrence(offer)
-            stock = create_stock_from_event_occurrence(event_occurrence, price=0)
-
-            booking = create_booking(user=user, stock=stock, venue=venue)
-
-            repository.save(booking)
-
-            offererApiKey = create_api_key(offerer_id=offerer.id)
-            repository.save(offererApiKey)
-
             # When
             url = "/v2/bookings/keep/token/"
-            user2_api_key = "Bearer " + offererApiKey.value
+            user2_api_key = f"Bearer {DEFAULT_CLEAR_API_KEY}"
 
             response = TestClient(app.test_client()).patch(
                 url, headers={"Authorization": user2_api_key, "Origin": "http://localhost"}
@@ -299,12 +283,11 @@ class Returns404Test:
             booking = create_booking(user=user, stock=stock, venue=venue)
             repository.save(booking)
 
-            offererApiKey = create_api_key(offerer_id=offerer.id)
-            repository.save(offererApiKey)
+            ApiKeyFactory(offerer=offerer)
 
             # When
             url = "/v2/bookings/keep/token/{}".format("456789")
-            user2_api_key = "Bearer " + offererApiKey.value
+            user2_api_key = f"Bearer {DEFAULT_CLEAR_API_KEY}"
 
             response = TestClient(app.test_client()).patch(
                 url, headers={"Authorization": user2_api_key, "Origin": "http://localhost"}
@@ -419,12 +402,11 @@ class Returns410Test:
             booking = create_booking(user=user, stock=stock, venue=venue)
             repository.save(booking, user_offerer)
 
-            offererApiKey = create_api_key(offerer_id=offerer.id)
-            repository.save(offererApiKey)
+            ApiKeyFactory(offerer=offerer)
 
             # When
             url = "/v2/bookings/keep/token/{}".format(booking.token)
-            user2_api_key = "Bearer " + offererApiKey.value
+            user2_api_key = f"Bearer {DEFAULT_CLEAR_API_KEY}"
 
             response = TestClient(app.test_client()).patch(
                 url, headers={"Authorization": user2_api_key, "Origin": "http://localhost"}
@@ -449,12 +431,11 @@ class Returns410Test:
 
             repository.save(booking, user_offerer, payment)
 
-            offererApiKey = create_api_key(offerer_id=offerer.id)
-            repository.save(offererApiKey)
+            ApiKeyFactory(offerer=offerer)
 
             # When
             url = "/v2/bookings/keep/token/{}".format(booking.token)
-            user2_api_key = "Bearer " + offererApiKey.value
+            user2_api_key = f"Bearer {DEFAULT_CLEAR_API_KEY}"
 
             response = TestClient(app.test_client()).patch(
                 url, headers={"Authorization": user2_api_key, "Origin": "http://localhost"}

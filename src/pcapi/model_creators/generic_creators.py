@@ -10,7 +10,6 @@ from shapely.geometry import Polygon
 
 from pcapi import settings
 from pcapi.core.bookings import api as bookings_api
-from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.models import Mediation
 from pcapi.core.providers.models import AllocineVenueProvider
@@ -50,15 +49,6 @@ from pcapi.utils.token import random_token
 
 
 PLAIN_DEFAULT_TESTING_PASSWORD = "user@AZERTY123"
-
-
-def create_api_key(idx: int = None, offerer_id: int = 99, value: str = "A_MOCKED_API_KEY") -> ApiKey:
-    api_key = ApiKey()
-    api_key.id = idx
-    api_key.offererId = offerer_id
-    api_key.value = value
-
-    return api_key
 
 
 def create_bank_information(

@@ -95,7 +95,7 @@ class CheckApiKeyAllowsToValidateBookingTest:
         repository.save(user, offerer, user_offerer)
 
         validApiKey = ApiKey()
-        validApiKey.value = random_token(64)
+        validApiKey.prefix = random_token(64)
         validApiKey.offererId = offerer.id
 
         repository.save(validApiKey)
@@ -106,7 +106,7 @@ class CheckApiKeyAllowsToValidateBookingTest:
     def test_raises_exception_when_api_key_is_provided_but_related_offerer_does_not_have_rights_on_booking(self, app):
         # Given
         validApiKey = ApiKey()
-        validApiKey.value = random_token(64)
+        validApiKey.prefix = random_token(64)
         validApiKey.offererId = 67
 
         # When

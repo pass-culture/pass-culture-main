@@ -3,8 +3,10 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.core.offerers import api as offerers_api
+from pcapi.core.offerers.models import ApiKey
 import pcapi.core.offers.factories as offers_factories
 from pcapi.models import api_errors
+from pcapi.utils.token import random_token
 
 
 class EditVenueTest:
@@ -182,3 +184,28 @@ class EditVenueTest:
 
         # Then
         mock_delete_venue_from_iris_venues.assert_not_called()
+
+
+@pytest.mark.usefixtures("db_session")
+class ApiKeyTest:
+    def test_generate_and_save_api_key(self):
+        offerer = offers_factories.OffererFactory()
+
+        generated_key = offerers_api.generate_and_save_api_key(offerer.id)
+
+        found_api_key = offerers_api.find_api_key(generated_key)
+
+        assert found_api_key.offerer == offerer
+
+    def test_legacy_api_key(self):
+        offerer = offers_factories.OffererFactory()
+        value = random_token(64)
+        ApiKey(value=value, offerer=offerer)
+
+        found_api_key = offerers_api.find_api_key(value)
+
+        assert found_api_key.offerer == offerer
+
+    def test_no_key_found(self):
+        assert not offerers_api.find_api_key("legacy-key")
+        assert not offerers_api.find_api_key("development_prefix_value")

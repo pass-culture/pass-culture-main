@@ -1,7 +1,7 @@
 """add_external_ids_to_user
 
 Revision ID: 6f68a45d6d9a
-Revises: 83cad7975604
+Revises: 2e918169bb66
 Create Date: 2021-06-23 16:10:29.078200
 
 """

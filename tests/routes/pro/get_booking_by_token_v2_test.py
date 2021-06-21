@@ -6,9 +6,9 @@ from freezegun import freeze_time
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
+from pcapi.core.offerers.factories import ApiKeyFactory
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.model_creators.generic_creators import create_api_key
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_payment
@@ -27,9 +27,6 @@ from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
-
-
-API_KEY_VALUE = "A_MOCKED_API_KEY"
 
 
 class Returns200Test:
@@ -106,9 +103,8 @@ class Returns200Test:
         stock = create_stock_from_event_occurrence(event_occurrence, price=0)
         booking = create_booking(user=user, stock=stock, venue=venue)
         repository.save(user_offerer, booking)
-        offererApiKey = create_api_key(offerer_id=offerer.id)
-        repository.save(offererApiKey)
-        user2ApiKey = f"Bearer {offererApiKey.value}"
+        ApiKeyFactory(offerer=offerer)
+        user2ApiKey = "Bearer development_prefix_clearSecret"
         booking_token = booking.token.lower()
         url = f"/v2/bookings/token/{booking_token}"
 
@@ -198,17 +194,11 @@ class Returns401Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_not_logged_in_and_existing_api_key_given_with_no_bearer_prefix(self, app):
         # Given
-        pro = create_user(email="offerer@example.com")
-        offerer = create_offerer()
-        user_offerer = create_user_offerer(pro, offerer)
-        repository.save(user_offerer)
-        offerer_api_key = create_api_key(offerer_id=offerer.id)
-        repository.save(offerer_api_key)
         url = "/v2/bookings/token/FAKETOKEN"
 
         # When
         response = TestClient(app.test_client()).get(
-            url, headers={"Authorization": API_KEY_VALUE, "Origin": "http://localhost"}
+            url, headers={"Authorization": "development_prefix_clearSecret", "Origin": "http://localhost"}
         )
 
         # Then
@@ -251,9 +241,8 @@ class Returns403Test:
         stock = create_stock_from_event_occurrence(event_occurrence, price=0)
         booking = create_booking(user=user, stock=stock, venue=venue)
         repository.save(admin_user, booking, user_offerer, offerer2)
-        offerer2ApiKey = create_api_key(offerer_id=offerer2.id)
-        repository.save(offerer2ApiKey)
-        user2ApiKey = f"Bearer {offerer2ApiKey.value}"
+        ApiKeyFactory(offerer=offerer2)
+        user2ApiKey = "Bearer development_prefix_clearSecret"
         url = f"/v2/bookings/token/{booking.token}"
 
         # When
@@ -295,9 +284,8 @@ class Returns403Test:
         stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
         booking = create_booking(user=user, stock=stock, is_cancelled=True, venue=venue)
         repository.save(admin_user, booking, user_offerer)
-        offererApiKey = create_api_key(offerer_id=offerer.id)
-        repository.save(offererApiKey)
-        user2ApiKey = f"Bearer {offererApiKey.value}"
+        ApiKeyFactory(offerer=offerer)
+        user2ApiKey = "Bearer development_prefix_clearSecret"
         url = f"/v2/bookings/token/{booking.token}"
 
         # When
@@ -321,9 +309,8 @@ class Returns403Test:
         booking = create_booking(user=user, stock=stock, is_used=True, venue=venue)
         payment = create_payment(booking=booking, offerer=offerer)
         repository.save(admin_user, payment, user_offerer)
-        offererApiKey = create_api_key(offerer_id=offerer.id)
-        repository.save(offererApiKey)
-        user2ApiKey = f"Bearer {offererApiKey.value}"
+        ApiKeyFactory(offerer=offerer)
+        user2ApiKey = "Bearer development_prefix_clearSecret"
         url = f"/v2/bookings/token/{booking.token}"
 
         # When
@@ -383,9 +370,8 @@ class Returns404Test:
         stock = create_stock_from_event_occurrence(event_occurrence, price=0)
         booking = create_booking(user=user, stock=stock, venue=venue)
         repository.save(admin_user, booking, user_offerer)
-        offererApiKey = create_api_key(offerer_id=offerer.id)
-        repository.save(offererApiKey)
-        user2ApiKey = f"Bearer {offererApiKey.value}"
+        ApiKeyFactory(offerer=offerer)
+        user2ApiKey = "Bearer development_prefix_clearSecret"
         url = "/v2/bookings/token/12345"
 
         # When
@@ -410,9 +396,8 @@ class Returns410Test:
         stock = create_stock_with_thing_offer(offerer, venue, offer=None, price=0)
         booking = create_booking(user=user, stock=stock, is_used=True, venue=venue)
         repository.save(admin_user, booking, user_offerer)
-        offererApiKey = create_api_key(offerer_id=offerer.id)
-        repository.save(offererApiKey)
-        user2ApiKey = f"Bearer {offererApiKey.value}"
+        ApiKeyFactory(offerer=offerer)
+        user2ApiKey = "Bearer development_prefix_clearSecret"
         url = f"/v2/bookings/token/{booking.token}"
 
         # When

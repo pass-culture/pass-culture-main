@@ -94,3 +94,7 @@ class GetOfferersNamesQueryModel(BaseModel):
 
     class Config:
         extra = "forbid"
+
+
+class GenerateOffererApiKeyResponse(BaseModel):
+    apiKey: str

@@ -1,9 +1,16 @@
+import secrets
+from typing import Optional
+
+import bcrypt
 from flask import current_app as app
 
+from pcapi import settings
 from pcapi.connectors import redis
+from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.models import VenueType
 from pcapi.domain.iris import link_valid_venue_to_irises
+from pcapi.models.db import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import feature_queries
 from pcapi.repository import repository
@@ -11,10 +18,12 @@ from pcapi.repository.iris_venues_queries import delete_venue_from_iris_venues
 from pcapi.routes.serialization.venues_serialize import PostVenueBodyModel
 
 from . import validation
+from .exceptions import ApiKeyPrefixGenerationError
 
 
 UNCHANGED = object()
 VENUE_ALGOLIA_INDEXED_FIELDS = ["name", "publicName", "city"]
+API_KEY_SEPARATOR = "_"
 
 
 def create_digital_venue(offerer):
@@ -91,3 +100,52 @@ def create_venue(venue_data: PostVenueBodyModel) -> Venue:
     link_valid_venue_to_irises(venue=venue)
 
     return venue
+
+
+def generate_and_save_api_key(offerer_id: int) -> str:
+    model_api_key, clear_api_key = generate_api_key(offerer_id)
+    repository.save(model_api_key)
+    return clear_api_key
+
+
+def generate_api_key(offerer_id: int) -> tuple[ApiKey, str]:
+    clear_secret = secrets.token_hex(32)
+    prefix = _generate_api_key_prefix()
+    key = ApiKey(
+        offererId=offerer_id, prefix=prefix, secret=bcrypt.hashpw(_encode_clear_secret(clear_secret), bcrypt.gensalt())
+    )
+
+    return key, f"{prefix}{API_KEY_SEPARATOR}{clear_secret}"
+
+
+def _generate_api_key_prefix() -> str:
+    for _ in range(100):
+        prefix_identifier = secrets.token_hex(6)
+        prefix = _create_prefix(settings.ENV, prefix_identifier)
+        if not db.session.query(ApiKey.query.filter_by(prefix=prefix).exists()).scalar():
+            return prefix
+    raise ApiKeyPrefixGenerationError()
+
+
+def find_api_key(key: str) -> Optional[ApiKey]:
+    try:
+        env, prefix_identifier, clear_secret = key.split(API_KEY_SEPARATOR)
+        prefix = _create_prefix(env, prefix_identifier)
+    except ValueError:
+        # TODO: remove this legacy behaviour once we forbid old keys
+        return ApiKey.query.filter_by(value=key).one_or_none()
+
+    api_key = ApiKey.query.filter_by(prefix=prefix).one_or_none()
+
+    if not api_key:
+        return None
+
+    return api_key if bcrypt.checkpw(_encode_clear_secret(clear_secret), api_key.secret) else None
+
+
+def _create_prefix(env: str, prefix_identifier: str) -> str:
+    return f"{env}{API_KEY_SEPARATOR}{prefix_identifier}"
+
+
+def _encode_clear_secret(secret: str) -> bytes:
+    return secret.encode("utf-8")

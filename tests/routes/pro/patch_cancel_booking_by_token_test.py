@@ -1,5 +1,7 @@
 import pytest
 
+from pcapi.core.offerers.factories import ApiKeyFactory
+from pcapi.core.offerers.factories import DEFAULT_CLEAR_API_KEY
 import pcapi.core.users.factories as users_factories
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
@@ -9,20 +11,11 @@ from pcapi.model_creators.generic_creators import create_user_offerer
 from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.models import ApiKey
 from pcapi.models import Booking
 import pcapi.notifications.push.testing as push_testing
 from pcapi.repository import repository
-from pcapi.utils.token import random_token
 
 from tests.conftest import TestClient
-
-
-def create_api_key_for_offerer(offerer, token):
-    offerer_api_key = ApiKey()
-    offerer_api_key.value = token
-    offerer_api_key.offererId = offerer.id
-    return offerer_api_key
 
 
 class Returns204Test:
@@ -40,14 +33,13 @@ class Returns204Test:
         booking = create_booking(user=user, stock=stock, venue=venue)
 
         repository.save(booking, user_offerer)
-        api_key = random_token(64)
-        offerer_api_key = create_api_key_for_offerer(offerer, api_key)
-        repository.save(offerer_api_key)
+
+        ApiKeyFactory(offerer=offerer)
 
         # When
         response = TestClient(app.test_client()).patch(
             "/v2/bookings/cancel/token/{}".format(booking.token),
-            headers={"Authorization": "Bearer " + api_key, "Origin": "http://localhost"},
+            headers={"Authorization": "Bearer " + DEFAULT_CLEAR_API_KEY, "Origin": "http://localhost"},
         )
 
         # cancellation can trigger more than one request to Batch
@@ -81,15 +73,13 @@ class Returns204Test:
         booking = create_booking(user=user, stock=stock, venue=venue)
 
         repository.save(booking, user_offerer)
-        api_key = random_token(64)
-        offerer_api_key = create_api_key_for_offerer(offerer, api_key)
-        repository.save(offerer_api_key)
+        ApiKeyFactory(offerer=offerer)
 
         # When
         token = booking.token.lower()
         response = TestClient(app.test_client()).patch(
             "/v2/bookings/cancel/token/{}".format(token),
-            headers={"Authorization": "Bearer " + api_key, "Origin": "http://localhost"},
+            headers={"Authorization": "Bearer " + DEFAULT_CLEAR_API_KEY, "Origin": "http://localhost"},
         )
 
         # cancellation can trigger more than one request to Batch
@@ -164,15 +154,12 @@ class Returns403Test:
         offerer_with_api_key = create_offerer()
         repository.save(offerer_with_api_key)
 
-        api_key = random_token(64)
-        offerer_api_key = create_api_key_for_offerer(offerer_with_api_key, api_key)
-
-        repository.save(offerer_api_key)
+        ApiKeyFactory(offerer=offerer_with_api_key)
 
         # When
         response = TestClient(app.test_client()).patch(
             "/v2/bookings/cancel/token/{}".format(booking.token),
-            headers={"Authorization": "Bearer " + api_key, "Origin": "http://localhost"},
+            headers={"Authorization": "Bearer " + DEFAULT_CLEAR_API_KEY, "Origin": "http://localhost"},
         )
 
         # Then
@@ -198,10 +185,7 @@ class Returns403Test:
         offerer_with_api_key = create_offerer()
         repository.save(offerer_with_api_key)
 
-        api_key = random_token(64)
-        offerer_api_key = create_api_key_for_offerer(offerer_with_api_key, api_key)
-
-        repository.save(offerer_api_key)
+        ApiKeyFactory(offerer=offerer)
 
         # When
         response = (
@@ -232,14 +216,12 @@ class Returns403Test:
             booking = create_booking(user=user, stock=stock, is_used=True, venue=venue)
 
             repository.save(booking, user_offerer)
-            api_key = random_token(64)
-            offerer_api_key = create_api_key_for_offerer(offerer, api_key)
-            repository.save(offerer_api_key)
+            ApiKeyFactory(offerer=offerer)
 
             # When
             response = TestClient(app.test_client()).patch(
                 "/v2/bookings/cancel/token/{}".format(booking.token),
-                headers={"Authorization": "Bearer " + api_key, "Origin": "http://localhost"},
+                headers={"Authorization": "Bearer " + DEFAULT_CLEAR_API_KEY, "Origin": "http://localhost"},
             )
 
             # Then
@@ -264,14 +246,12 @@ class Returns404Test:
         booking = create_booking(user=user, stock=stock, venue=venue)
         repository.save(user_offerer, booking)
 
-        api_key = "A_MOCKED_API_KEY"
-        offerer_api_key = create_api_key_for_offerer(offerer, api_key)
-        repository.save(offerer_api_key)
+        ApiKeyFactory(offerer=offerer)
 
         # When
         response = TestClient(app.test_client()).patch(
             "/v2/bookings/cancel/token/FAKETOKEN",
-            headers={"Authorization": f"Bearer {api_key}", "Origin": "http://localhost"},
+            headers={"Authorization": f"Bearer {DEFAULT_CLEAR_API_KEY}", "Origin": "http://localhost"},
         )
 
         # Then
@@ -295,14 +275,12 @@ class Returns410Test:
         booking = create_booking(user=user, stock=stock, is_cancelled=True, venue=venue)
 
         repository.save(booking, user_offerer)
-        api_key = random_token(64)
-        offerer_api_key = create_api_key_for_offerer(offerer, api_key)
-        repository.save(offerer_api_key)
+        ApiKeyFactory(offerer=offerer)
 
         # When
         response = TestClient(app.test_client()).patch(
             "/v2/bookings/cancel/token/{}".format(booking.token),
-            headers={"Authorization": "Bearer " + api_key, "Origin": "http://localhost"},
+            headers={"Authorization": "Bearer " + DEFAULT_CLEAR_API_KEY, "Origin": "http://localhost"},
         )
 
         # Then
