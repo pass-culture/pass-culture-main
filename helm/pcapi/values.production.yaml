@@ -289,7 +289,7 @@ cloudTaskIdcheck:
   replicaCount: 1
   autoscaling:
     enabled: true
-    minReplicas: 1
+    minReplicas: 3
     maxReplicas: 10
     targetCPUUtilization: 70
     # Enable this option to scale on memory percentage
