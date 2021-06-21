@@ -25,6 +25,7 @@ export const ALL_EVENT_PERIODS = ''
 export const DEFAULT_PAGE = 1
 export const NUMBER_OF_OFFERS_PER_PAGE = 10
 export const MAX_TOTAL_PAGES = 20
+export const MAX_OFFERS_TO_DISPLAY = MAX_TOTAL_PAGES * NUMBER_OF_OFFERS_PER_PAGE
 export const DEFAULT_SEARCH_FILTERS = {
   name: ALL_OFFERS,
   offererId: ALL_OFFERERS,

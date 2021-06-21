@@ -19,8 +19,9 @@ import { mapApiToBrowser, mapBrowserToApi, translateQueryParamsToApiParams } fro
 import {
   DEFAULT_PAGE,
   DEFAULT_SEARCH_FILTERS,
-  NUMBER_OF_OFFERS_PER_PAGE,
+  MAX_OFFERS_TO_DISPLAY,
   MAX_TOTAL_PAGES,
+  NUMBER_OF_OFFERS_PER_PAGE,
 } from './_constants'
 import ActionsBarContainer from './ActionsBar/ActionsBarContainer'
 import NoOffers from './NoOffers/NoOffers'
@@ -29,7 +30,7 @@ import OffersTableBody from './OffersTableBody/OffersTableBody'
 import OffersTableHead from './OffersTableHead/OffersTableHead'
 import SearchFilters from './SearchFilters/SearchFilters'
 
-const Offers = ({ currentUser, getOfferer, query }) => {
+const Offers = ({ currentUser, getOfferer, query, showInformationNotification }) => {
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -271,6 +272,17 @@ const Offers = ({ currentUser, getOfferer, query }) => {
 
   const nbSelectedOffers = areAllOffersSelected ? offersCount : selectedOfferIds.length
 
+  const isLastPage = pageNumber === pageCount
+
+  useEffect(() => {
+    const hasMoreOffersToFetch = offersCount > MAX_OFFERS_TO_DISPLAY
+    if (isLastPage && hasMoreOffersToFetch) {
+      showInformationNotification(
+        'L’affichage des offres a été limité à 200 offres. Vous pouvez modifier les filtres pour affiner votre recherche.'
+      )
+    }
+  }, [isLastPage, offersCount, showInformationNotification])
+
   return (
     <div className="offers-page">
       <PageTitle title="Vos offres" />
@@ -368,7 +380,7 @@ const Offers = ({ currentUser, getOfferer, query }) => {
                       {`Page ${pageNumber}/${pageCount}`}
                     </span>
                     <button
-                      disabled={pageNumber === pageCount}
+                      disabled={isLastPage}
                       onClick={onNextPageClick}
                       type="button"
                     >
@@ -398,6 +410,7 @@ Offers.propTypes = {
     change: PropTypes.func.isRequired,
     parse: PropTypes.func.isRequired,
   }).isRequired,
+  showInformationNotification: PropTypes.func.isRequired,
 }
 
 export default Offers

@@ -128,11 +128,8 @@ describe('src | components | pages | Offers | Offers', () => {
         change,
         parse,
       },
-      setSelectedOfferIds: jest.fn(),
-      showActionsBar: jest.fn(),
-      hideActionsBar: jest.fn(),
       getOfferer: jest.fn().mockResolvedValue({}),
-      notification: {},
+      showInformationNotification: jest.fn(),
     }
     fetchAllVenuesByProUser.mockResolvedValue(proVenues)
   })
@@ -1313,6 +1310,19 @@ describe('src | components | pages | Offers | Offers', () => {
       expect(nextIcon.closest('button')).toBeDisabled()
     })
 
+    it('should not inform user there is more offers to fetch when less than 201', () => {
+      // Given
+      pcapi.loadFilteredOffers.mockResolvedValueOnce(offersRecap)
+
+      // When
+      renderOffers(props, store)
+
+      // Then
+      expect(props.showInformationNotification).not.toHaveBeenCalledWith(
+        'L’affichage des offres a été limité à 200 offres. Vous pouvez modifier les filtres pour affiner votre recherche.'
+      )
+    })
+
     describe('when 201 offers are fetched', () => {
       beforeEach(() => {
         offersRecap = Array.from({ length: 201 }, offerFactory)
@@ -1329,7 +1339,7 @@ describe('src | components | pages | Offers | Offers', () => {
         expect(await screen.findByText('Page 1/20')).toBeInTheDocument()
       })
 
-      it('should not display the 201st booking', async () => {
+      it('should not display the 201st offer', async () => {
         // Given
         pcapi.loadFilteredOffers.mockResolvedValueOnce(offersRecap)
         renderOffers(props, store)
@@ -1343,6 +1353,23 @@ describe('src | components | pages | Offers | Offers', () => {
         // Then
         expect(screen.getByText(offersRecap[199].name)).toBeInTheDocument()
         expect(screen.queryByText(offersRecap[200].name)).not.toBeInTheDocument()
+      })
+
+      it('should inform user on the last page there is more offers to fetch', async () => {
+        // Given
+        pcapi.loadFilteredOffers.mockResolvedValueOnce(offersRecap)
+        renderOffers(props, store)
+        const nextIcon = await screen.findByAltText('Aller à la page suivante')
+
+        // When
+        for (let i = 1; i < 20; i++) {
+          fireEvent.click(nextIcon)
+        }
+
+        // Then
+        expect(props.showInformationNotification).toHaveBeenCalledWith(
+          'L’affichage des offres a été limité à 200 offres. Vous pouvez modifier les filtres pour affiner votre recherche.'
+        )
       })
     })
   })
