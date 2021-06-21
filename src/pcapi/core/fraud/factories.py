@@ -102,7 +102,7 @@ class BeneficiaryFraudCheckFactory(testing.BaseFactory):
         factory_class = FRAUD_CHECK_TYPE_MODEL_ASSOCIATION.get(kwargs["type"])
         content = {}
         if factory_class:
-            content = factory_class().dict()
+            content = factory_class()
 
         kwargs["resultContent"] = content
 
