@@ -29,21 +29,25 @@ resources:
     memory: 256Mi
 
 workflows:
-  dump_restore: true
-  post_process: false
+  dump_restore: false
+  post_process: true
 
 serviceAccount:
   create: true
   annotations:
-    iam.gke.io/gcp-service-account: metier-production-sqldump@passculture-metier-prod.iam.gserviceaccount.com
+    iam.gke.io/gcp-service-account: metier-ehp-sqldump-processor@passculture-metier-ehp.iam.gserviceaccount.com
 
 configmap:
   NLTK_DATA: /root/nltk_data
   PROJECT_DEST: passculture-metier-ehp
   DUMP_BUCKET_NAME: passculture-metier-prod-europe-west1-sql-dump
   DUMP_FILENAME: dump.gz
-  POSTGRES_INSTANCE_SRC: pcapi-production-9fb2eb30-replica-read0
-  POSTGRES_DATABASE_SRC: pcapi-production
+  POSTGRES_SCRIPT_PATH: /scripts/anonymize.sql
+  PC_API_ROOT_PATH: /usr/src/app
+  IMPORT_USERS_SCRIPT_PATH: src/pcapi/scripts/beneficiary/import_users.py
+  USERS_CSV_PATH: /scripts/data_pass-culture-api-staging.csv
+  # dump_restore.sh feature flags
+  POSTGRES_UNNEEDED_TABLES : "activity user_session email"
 
 configmapStaging:
   ENV: staging
@@ -56,6 +60,8 @@ configmapPerf:
   POSTGRES_INSTANCE_DEST: pcapi-perf-1ac56766
   POSTGRES_DATABASE_DEST: pcapi-perf
   POSTGRES_USER_DEST: pcapi-perf
+
+databaseUrlSecretName: DATABASE_URL
 
 destSecrets:
   - ADMINISTRATION_EMAIL_ADDRESS
@@ -90,7 +96,6 @@ destSecrets:
   - PAYMENTS_REPORT_RECIPIENTS
   - PC_GOOGLE_KEY
   - PROVIDER_FNAC_BASIC_AUTHENTICATION_TOKEN
-  - PUBLIC_DATABASE_URL
   - RECAPTCHA_SECRET
   - REDIS_URL
   - SENDINBLUE_API_KEY
