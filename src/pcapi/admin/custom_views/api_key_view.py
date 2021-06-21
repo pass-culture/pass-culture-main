@@ -6,7 +6,7 @@ from wtforms.fields.core import StringField
 from wtforms.validators import ValidationError
 
 from pcapi.admin.base_configuration import BaseAdminView
-from pcapi.models import ApiKey
+from pcapi.core.offerers.models import ApiKey
 from pcapi.models.db import db
 from pcapi.repository.offerer_queries import find_by_siren
 from pcapi.utils.token import random_token

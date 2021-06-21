@@ -1,8 +1,8 @@
 from unittest.mock import patch
 
+from pcapi.core.offerers.models import ApiKey
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.models import ApiKey
 
 from tests.conftest import TestClient
 from tests.conftest import clean_database

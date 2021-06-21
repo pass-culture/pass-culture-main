@@ -10,6 +10,7 @@ from shapely.geometry import Polygon
 
 from pcapi import settings
 from pcapi.core.bookings import api as bookings_api
+from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.models import Mediation
 from pcapi.core.providers.models import AllocineVenueProvider
@@ -22,7 +23,6 @@ from pcapi.domain.payments import PaymentDetails
 from pcapi.domain.price_rule import PriceRule
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
-from pcapi.models import ApiKey
 from pcapi.models import BankInformation
 from pcapi.models import BeneficiaryImport
 from pcapi.models import BeneficiaryImportSources

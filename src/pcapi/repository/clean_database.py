@@ -1,5 +1,6 @@
 from pcapi import settings
 from pcapi.core.mails.models import Email
+from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import VenueLabel
 from pcapi.core.offerers.models import VenueType
@@ -14,7 +15,6 @@ from pcapi.core.users.models import Token
 from pcapi.core.users.models import User
 from pcapi.local_providers.install import install_local_providers
 from pcapi.models import AllocinePivot
-from pcapi.models import ApiKey
 from pcapi.models import BankInformation
 from pcapi.models import BeneficiaryImport
 from pcapi.models import BeneficiaryImportStatus

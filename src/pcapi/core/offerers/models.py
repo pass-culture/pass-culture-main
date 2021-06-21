@@ -3,6 +3,7 @@ from typing import Optional
 
 from sqlalchemy import BigInteger
 from sqlalchemy import Boolean
+from sqlalchemy import CHAR
 from sqlalchemy import CheckConstraint
 from sqlalchemy import Column
 from sqlalchemy import DateTime
@@ -19,6 +20,7 @@ from sqlalchemy.event import listens_for
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import aliased
+from sqlalchemy.orm import backref
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
 from werkzeug.utils import cached_property
@@ -356,3 +358,11 @@ offerer_ts_indexes = [
 ]
 
 (Offerer.__ts_vectors__, Offerer.__table_args__) = create_ts_vector_and_table_args(offerer_ts_indexes)
+
+
+class ApiKey(PcObject, Model):
+    value = Column(CHAR(64), index=True, nullable=False)
+
+    offererId = Column(BigInteger, ForeignKey("offerer.id"), index=True, nullable=False)
+
+    offerer = relationship("Offerer", foreign_keys=[offererId], backref=backref("apiKey", uselist=False))

@@ -5,9 +5,9 @@ from flask import request
 from flask_login import current_user
 from werkzeug.local import LocalProxy
 
+from pcapi.core.offerers.repository import find_api_key_by_value
 from pcapi.core.users.models import User
 from pcapi.models import ApiErrors
-from pcapi.repository.api_key_queries import find_api_key_by_value
 from pcapi.routes.pro.blueprints import API_KEY_AUTH
 from pcapi.serialization.spec_tree import add_security_scheme
 

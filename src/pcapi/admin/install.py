@@ -27,6 +27,7 @@ from pcapi.admin.custom_views.suspend_fraudulent_users import SuspendFraudulentU
 from pcapi.admin.custom_views.user_offerer_view import UserOffererView
 from pcapi.admin.custom_views.venue_provider_view import VenueProviderView
 from pcapi.admin.custom_views.venue_view import VenueView
+from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.models import OfferValidationConfig
 from pcapi.core.providers.models import VenueProvider
@@ -113,7 +114,7 @@ def install_admin_views(admin: Admin, session: Session) -> None:
     admin.add_view(
         BeneficiaryImportView(models.BeneficiaryImport, session, name="Imports DMS", category=Category.USERS)
     )
-    admin.add_view(ApiKeyView(models.ApiKey, session, name="Clés API", category=Category.USERS))
+    admin.add_view(ApiKeyView(ApiKey, session, name="Clés API", category=Category.USERS))
     admin.add_view(
         AllocinePivotView(
             models.AllocinePivot, session, name="Pivot Allocine", category=Category.OFFRES_STRUCTURES_LIEUX

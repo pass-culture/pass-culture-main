@@ -2,6 +2,7 @@ import logging
 
 from pcapi.core.bookings.exceptions import CannotDeleteOffererWithBookingsException
 from pcapi.core.bookings.models import Booking
+from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Mediation
@@ -10,7 +11,6 @@ from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import Favorite
 from pcapi.models import AllocineVenueProvider
 from pcapi.models import AllocineVenueProviderPriceRule
-from pcapi.models import ApiKey
 from pcapi.models import BankInformation
 from pcapi.models import IrisVenues
 from pcapi.models import OfferCriterion

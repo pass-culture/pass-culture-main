@@ -37,7 +37,7 @@ class UserOffererFactory(BaseFactory):
 
 class ApiKeyFactory(BaseFactory):
     class Meta:
-        model = models.ApiKey
+        model = pcapi.core.offerers.models.ApiKey
 
     offerer = factory.SubFactory(OffererFactory)
     value = factory.Sequence("API KEY {}".format)

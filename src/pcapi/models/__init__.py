@@ -5,6 +5,7 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.fraud.models import BeneficiaryFraudCheck
 from pcapi.core.fraud.models import BeneficiaryFraudResult
 from pcapi.core.mails.models import Email
+from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.models import VenueLabel
@@ -25,7 +26,6 @@ from pcapi.core.users.models import Token
 from pcapi.core.users.models import User
 from pcapi.models.allocine_pivot import AllocinePivot
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.api_key import ApiKey
 from pcapi.models.bank_information import BankInformation
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import import BeneficiaryImportSources

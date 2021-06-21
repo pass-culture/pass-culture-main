@@ -5,6 +5,7 @@ from pcapi.core.bookings.exceptions import CannotDeleteOffererWithBookingsExcept
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import Booking
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 import pcapi.core.offers.factories as offers_factories
@@ -18,7 +19,6 @@ from pcapi.model_creators.generic_creators import create_iris
 from pcapi.model_creators.generic_creators import create_iris_venue
 from pcapi.models import AllocineVenueProvider
 from pcapi.models import AllocineVenueProviderPriceRule
-from pcapi.models import ApiKey
 from pcapi.models import BankInformation
 from pcapi.models import Criterion
 from pcapi.models import IrisFrance
