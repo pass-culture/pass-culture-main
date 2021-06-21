@@ -65,12 +65,9 @@ const OfferDetails = ({
             croppingRect?.height
           )
         } catch (error) {
-          if (error && 'errors' in error) {
-            if (error.errors.errors) {
-              setThumbnailError(true)
-            }
-            showErrorNotification()
-          }
+          setThumbnailError(true)
+          showErrorNotification()
+
           throw error
         }
       }
