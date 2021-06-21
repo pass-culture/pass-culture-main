@@ -1,9 +1,7 @@
 from enum import Enum
-import typing
 
 from flask import Flask
 from flask_admin.base import Admin
-from markupsafe import Markup
 from sqlalchemy.orm.session import Session
 
 from pcapi import models
@@ -32,6 +30,8 @@ from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.models import OfferValidationConfig
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users.models import User
+
+from . import templating
 
 
 class Category(Enum):
@@ -181,11 +181,5 @@ def install_admin_views(admin: Admin, session: Session) -> None:
     )
 
 
-def yesno(value: typing.Any) -> str:
-    css_class = "success" if value else "danger"
-    text_value = "Oui" if value else "Non"
-    return Markup(f"""<span class="badge badge-{css_class}">{text_value}</span>""")
-
-
 def install_admin_template_filters(app: Flask) -> None:
-    app.jinja_env.filters["yesno"] = yesno
+    app.jinja_env.filters["yesno"] = templating.yesno

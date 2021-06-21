@@ -25,6 +25,11 @@ class FraudStatus(enum.Enum):
     SUSPICIOUS = "SUSPICIOUS"
 
 
+class FraudReviewStatus(enum.Enum):
+    OK = "OK"
+    KO = "KO"
+
+
 def _parse_level(level: typing.Optional[str]) -> typing.Optional[None]:
     if not level:
         return None
@@ -147,6 +152,26 @@ class BeneficiaryFraudResult(PcObject, Model):
     dateCreated = sqlalchemy.Column(sqlalchemy.DateTime, nullable=False, server_default=sqlalchemy.func.now())
 
     dateUpdated = sqlalchemy.Column(sqlalchemy.DateTime, nullable=True, onupdate=sqlalchemy.func.now())
+
+
+class BeneficiaryFraudReview(PcObject, Model):
+    __tablename__ = "beneficiary_fraud_review"
+
+    userId = sqlalchemy.Column(sqlalchemy.BigInteger, sqlalchemy.ForeignKey("user.id"), index=True, nullable=False)
+
+    user = sqlalchemy.orm.relationship(
+        "User", foreign_keys=[userId], backref=sqlalchemy.orm.backref("beneficiaryFraudReview", uselist=False)
+    )
+
+    authorId = sqlalchemy.Column(sqlalchemy.BigInteger, sqlalchemy.ForeignKey("user.id"), index=True, nullable=False)
+
+    author = sqlalchemy.orm.relationship("User", foreign_keys=[authorId], backref="adminFraudReviews")
+
+    review = sqlalchemy.Column(sqlalchemy.Enum(FraudReviewStatus, create_constraint=False))
+
+    dateReviewed = sqlalchemy.Column(sqlalchemy.DateTime, nullable=False, server_default=sqlalchemy.func.now())
+
+    reason = sqlalchemy.Column(sqlalchemy.Text)
 
 
 @dataclass

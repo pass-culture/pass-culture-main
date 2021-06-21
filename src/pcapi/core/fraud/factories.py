@@ -116,3 +116,12 @@ class BeneficiaryFraudResultFactory(testing.BaseFactory):
     user = factory.SubFactory(users_factories.UserFactory)
     status = factory.LazyAttribute(lambda o: random.choice(list(models.FraudStatus)).value)
     reason = factory.Sequence("Fraud Result excuse #{0}".format)
+
+
+class BeneficiaryFraudReviewFactory(testing.BaseFactory):
+    class Meta:
+        model = models.BeneficiaryFraudReview
+
+    user = factory.SubFactory(users_factories.UserFactory, isBeneficiary=True)
+    author = factory.SubFactory(users_factories.UserFactory, isAdmin=True)
+    reason = factory.Sequence("Fraud validation reason #{0}".format)
