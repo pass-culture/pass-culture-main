@@ -100,10 +100,10 @@
     {% endif %}
   </div>
 </div>
+<h3>Vérification des données utilisateurs</h3>
 <div class="row">
+  {% for check in model.beneficiaryFraudChecks %}
   <div class="col-lg-4">
-    <h3>Vérification des données utilisateurs</h3>
-    {% for check in model.beneficiaryFraudChecks %}
     <table class="table">
       <tr>
         <th scope="row">Type</th>
@@ -122,7 +122,7 @@
     <div class="row">
       <pre class="pre-scrollable"><code>{{ check.resultContent|pprint }}</code></pre>
     </div>
-    {% endfor %}
   </div>
+  {% endfor %}
 </div>
 {% endblock %}
