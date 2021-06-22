@@ -242,16 +242,6 @@
     }
   }
 
-  .subtitle-container .subtitle {
-    margin-right: rem(20px);
-  }
-
-  .subtitle {
-    display: inline-block;
-    font-size: rem(20px);
-    font-weight: 600;
-  }
-
   .reset-filters-link {
     @include body-important();
 
