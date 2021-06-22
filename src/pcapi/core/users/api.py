@@ -777,6 +777,10 @@ def asynchronous_identity_document_verification(image: bytes, email: str) -> Non
 
 def _get_identity_document_informations(image_storage_path: str) -> Tuple[str, bytes]:
     image_blob: Blob = get_object(image_storage_path)
+    if not image_blob:
+        # This means the image cannot be downloaded.
+        # It either has been treated or there is a network problem
+        raise exceptions.IdentityDocumentVerificationException
     email = image_blob.metadata.get("email", "").strip()
     if email == "":
         raise exceptions.MissingEmailInMetadataException
