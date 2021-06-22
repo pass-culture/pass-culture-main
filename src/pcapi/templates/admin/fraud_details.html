@@ -5,9 +5,50 @@
 
 {% block details_table %}
 
+<div class="modal fade" id="userValidationModal" tabindex="-1" role="dialog" aria-labelledby="userValidationModalTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="userValidationModalTitle">Validation de l'utilisateur {{ model.firstName}} {{model.lastName}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form method="POST" action="{{ url_for('beneficiary_fraud.validate_beneficiary', user_id=model.id)}}">
+      <div class="modal-body">
+          <div class="form-group row">
+            <label for="review" class="col-4 col-form-label">review</label>
+            <div class="col-8">
+              <select id="review" name="review" class="form-control">
+                <option></option>
+                <option value="OK">OK</option>
+                <option value="KO">KO</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="reason" class="col-4 col-form-label">Raison</label>
+            <div class="col-8">
+              <textarea id="reason" name="reason" cols="40" rows="5" class="form-control" required="required"></textarea>
+            </div>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+        <button name="submit" type="submit" class="btn btn-primary">Valider</button>
+      </div>
+    </form>
+    </div>
+  </div>
+</div>
+
 <div class="row">
   <div class="col">
-    <h3>Utilisateur</h3>
+    <h3>Utilisateur</h3>{% if not model.beneficiaryFraudReview %}
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#userValidationModal">
+      Soumettre une revue manuelle
+    </button>
+    {% endif %}
     <table class="table">
     <tr>
       <th scope="row">Id</th>
@@ -99,6 +140,30 @@
     </table>
     {% endif %}
   </div>
+  {% if model.beneficiaryFraudReview %}
+  <div class="col">
+    <h3>Revue manuelle</h3>
+    <table class="table">
+      <tr>
+        <th scope="row">Auteur</th>
+        <td>{{ model.beneficiaryFraudReview.author.firstName }}{{ model.beneficiaryFraudReview.author.lastName }}</td>
+      </tr>
+
+      <tr>
+        <th scope="row">Etat</th>
+        <td>{{ model.beneficiaryFraudReview.review.value }}</td>
+      </tr>
+      <tr>
+        <th scope="row">Date de création</th>
+        <td>{{ model.beneficiaryFraudReview.dateReviewed.strftime('le %d/%m/%Y à %H:%M:%S') }}</dd></td>
+      </tr>
+      <tr>
+        <th scope="row">Explication</th>
+        <td>{{ model.beneficiaryFraudResult.reason }}</dd></td>
+      </tr>
+    </table>
+  </div>
+  {% endif %}
 </div>
 <h3>Vérification des données utilisateurs</h3>
 <div class="row">

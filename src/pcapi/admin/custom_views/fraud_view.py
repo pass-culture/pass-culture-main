@@ -1,10 +1,15 @@
+import flask
+import flask_admin
+import flask_login
 from markupsafe import Markup
 import sqlalchemy.orm
+import wtforms
+import wtforms.validators
 
 from pcapi.admin import base_configuration
-from pcapi.admin import templating
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.users.models as users_models
+from pcapi.models import db
 
 
 def beneficiary_fraud_result_formatter(view, context, model, name) -> Markup:
@@ -40,6 +45,17 @@ def beneficiary_fraud_checks_formatter(view, context, model, name) -> Markup:
         values.append(f"<li>{instance.type.value}</li>")
 
     return Markup(f"""<ul>{"".join(values)}</ul>""")
+
+
+class FraudReviewForm(wtforms.Form):
+    class Meta:
+        locales = ["fr"]
+
+    reason = wtforms.TextAreaField(validators=[wtforms.validators.DataRequired()])
+    review = wtforms.SelectField(
+        choices=[(item.name, item.value) for item in fraud_models.FraudReviewStatus],
+        validators=[wtforms.validators.DataRequired()],
+    )
 
 
 class FraudView(base_configuration.BaseAdminView):
@@ -86,3 +102,29 @@ class FraudView(base_configuration.BaseAdminView):
             sqlalchemy.orm.joinedload(users_models.User.beneficiaryFraudResult),
             sqlalchemy.orm.joinedload(users_models.User.beneficiaryFraudReview),
         )
+
+    @flask_admin.expose("/validate/beneficiary/<user_id>", methods=["POST"])
+    def validate_beneficiary(self, user_id):
+        form = FraudReviewForm(flask.request.form)
+        if not form.validate():
+            errors = "<br>".join(f"{field}: {error[0]}" for field, error in form.errors.items())
+            flask.flash(Markup(f"Erreurs lors de la validation du formulaire: <br> {errors}"), "error")
+            return flask.redirect(flask.url_for(".details_view", id=user_id))
+        user = users_models.User.query.get(user_id)
+        if not user:
+            flask.flash("Cet utilisateur n'existe pas", "error")
+            return flask.redirect(flask.url_for(".index_view"))
+
+        if user.beneficiaryFraudReview:
+            flask.flash(
+                "Une revue manuelle a déjà été réalisée sur l'utilisateur {user.id} {user.firstName} {user.lastName}"
+            )
+            return flask.redirect(flask.url_for(".details_view", id=user_id))
+
+        review = fraud_models.BeneficiaryFraudReview(
+            user=user, author=flask_login.current_user, reason=form.data["reason"], review=form.data["review"]
+        )
+        db.session.add(review)
+        db.session.commit()
+        flask.flash("Une revue manuelle ajoutée pour ce bénéficiaire")
+        return flask.redirect(flask.url_for(".details_view", id=user_id))
