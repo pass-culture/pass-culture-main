@@ -107,7 +107,7 @@ def store_object(
         gcp_cloud_blob.metadata = metadata
         gcp_cloud_blob.upload_from_string(blob, content_type=content_type)
     except Exception as exception:
-        logger.exception("An error has occured while trying to upload file on encrypted GCP bucket: %s", exception)
+        logger.exception("An error has occured while trying to upload file on encrypted GCP bucket: %s", str(exception))
         raise exception
 
 
@@ -117,7 +117,7 @@ def delete_object(storage_path: str) -> None:
         gcp_cloud_blob = storage_client_bucket.blob(storage_path)
         gcp_cloud_blob.delete()
     except Exception as exception:
-        logger.exception("An error has occured while trying to delete file on encrypted GCP bucket: %s", exception)
+        logger.exception("An error has occured while trying to delete file on encrypted GCP bucket: %s", str(exception))
         raise exception
 
 
@@ -129,6 +129,6 @@ def get_object(storage_path: str) -> Blob:
         logger.exception(
             "An error has occured while trying to get file with path: %s on encrypted GCP bucket: %s",
             storage_path,
-            exception,
+            str(exception),
         )
         raise exception
