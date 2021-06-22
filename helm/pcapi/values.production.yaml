@@ -49,7 +49,7 @@ api:
   replicaCount: 1
   autoscaling:
     enabled: true
-    minReplicas: 6
+    minReplicas: 10
     maxReplicas: 60
     targetCPUUtilization: 70
     # Enable this option to scale on memory percentage
