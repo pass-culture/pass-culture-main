@@ -10,7 +10,7 @@
     justify-content: space-between;
     margin-bottom: rem(30px);
 
-    .fw-offer-date {
+    .pf-offer-date {
       .field-date {
         align-items: center;
         background-image: url(/icons/ico-calendar.svg);
@@ -37,7 +37,7 @@
         }
       }
 
-      .fw-offer-date-picker:focus-within {
+      .pf-offer-date-picker:focus-within {
         .field-date {
           border-color: $primary;
           border-width: rem(2px);
@@ -49,11 +49,11 @@
         outline: none;
       }
 
-      .fw-offer-date-label {
+      .pf-offer-date-label {
         margin-bottom: rem(12px);
       }
 
-      .fw-offer-date-input {
+      .pf-offer-date-input {
         @include body();
 
         background: none;
@@ -74,11 +74,11 @@
       }
     }
 
-    .fw-venues {
+    .pf-venues {
       display: flex;
       flex-direction: column;
 
-      .fw-offer-venue-label {
+      .pf-offer-venue-label {
         @include body();
       }
 

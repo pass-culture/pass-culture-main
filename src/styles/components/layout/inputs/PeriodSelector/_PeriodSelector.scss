@@ -1,10 +1,10 @@
 .period-filter {
   .period-filter-inputs {
     border-radius: rem(20px);
-    box-shadow: 2px 2px 6px 0 $black-shadow;
+    box-shadow: rem(2px) rem(2px) rem(6px) 0 $black-shadow;
     display: flex;
     height: rem(40px);
-    margin-top: rem(12px);
+    margin-top: rem(16px);
 
     button {
       outline: none;
@@ -36,7 +36,7 @@
     border-right: none;
     border-top-right-radius: 0;
     height: rem(40px);
-    padding: 0 1px;
+    padding: 0 rem(1px);
 
     &:focus-within {
       border-color: $primary;
@@ -50,7 +50,7 @@
     border-left: none;
     border-top-left-radius: 0;
     height: rem(40px);
-    padding: 0 1px;
+    padding: 0 rem(1px);
 
     &:focus-within {
       border-color: $primary;

@@ -14,16 +14,16 @@ const FilterByEventDate = ({ updateFilters, selectedOfferDate }) => {
   }
 
   return (
-    <div className="fw-offer-date">
+    <div className="pf-offer-date">
       <label
-        className="fw-offer-date-label"
+        className="pf-offer-date-label"
         htmlFor="select-filter-date"
       >
         {'Date de l’évènement'}
       </label>
-      <div className="fw-offer-date-picker">
+      <div className="pf-offer-date-picker">
         <DatePicker
-          className="fw-offer-date-input"
+          className="pf-offer-date-input"
           customInput={<InputWithCalendar customClass="field-date-only" />}
           dateFormat="dd/MM/yyyy"
           dropdownMode="select"

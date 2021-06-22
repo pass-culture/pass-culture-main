@@ -10,9 +10,9 @@ const FilterByVenue = ({ updateFilters, selectedVenue, venuesFormattedAndOrdered
   }
 
   return (
-    <div className="fw-venues">
+    <div className="pf-venues">
       <label
-        className="fw-offer-venue-label"
+        className="pf-offer-venue-label"
         htmlFor="offer-venue-input"
       >
         {'Lieu'}
