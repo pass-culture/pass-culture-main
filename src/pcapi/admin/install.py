@@ -49,9 +49,7 @@ def install_admin_views(admin: Admin, session: Session) -> None:
         offer_view.OfferView(models.Offer, session, name="Offres", category=Category.OFFRES_STRUCTURES_LIEUX)
     )
     admin.add_view(
-        fraud_view.FraudView(
-            User, session, name="Bénéficiaires", endpoint="/beneficiary_fraud", category=Category.FRAUD
-        )
+        fraud_view.FraudView(User, session, name="Bénéficiaires", endpoint="beneficiary_fraud", category=Category.FRAUD)
     )
     admin.add_view(
         offer_view.OfferForVenueSubview(
