@@ -41,6 +41,11 @@ def check_venue_edition(modifications, venue):
         errors = ApiErrors()
         errors.add_error("siret", "Vous ne pouvez pas modifier le siret d'un lieu")
         raise errors
+    if siret:
+        venue_with_same_siret = Venue.query.filter_by(siret=siret).one_or_none()
+        if venue_with_same_siret:
+            errors = ApiErrors()
+            errors.add_error("siret", "Un lieu avec le même siret existe déjà")
 
 
 def _validate_longitude(api_errors, raw_longitude):
