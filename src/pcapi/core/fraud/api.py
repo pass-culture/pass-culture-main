@@ -149,3 +149,16 @@ def _get_threshold_id_fraud_item(
         status = models.FraudStatus.SUSPICIOUS
 
     return models.FraudItem(status=status, detail=f"Le champ {key} a le score {value} (minimum {threshold})")
+
+
+def create_user_profiling_check(
+    user: User, profiling_infos: models.UserProfilingFraudData
+) -> models.BeneficiaryFraudCheck:
+    fraud_check = models.BeneficiaryFraudCheck(
+        user=user,
+        type=models.FraudCheckType.USER_PROFILING,
+        thirdPartyId=profiling_infos.session_id,
+        resultContent=profiling_infos,
+    )
+    repository.save(fraud_check)
+    return fraud_check

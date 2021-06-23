@@ -7,6 +7,7 @@ from flask import request
 from pcapi import settings
 from pcapi.connectors import api_recaptcha
 from pcapi.connectors import user_profiling
+from pcapi.core.fraud import api as fraud_api
 from pcapi.core.logging import get_or_set_correlation_id
 from pcapi.core.offers.exceptions import FileSizeExceeded
 from pcapi.core.users import api
@@ -294,6 +295,6 @@ def profiling_fraud_score(user: User, body: serializers.UserProfilingFraudReques
         )
     except user_profiling.BaseUserProfilingException:
         logger.exception("Error while retrieving user profiling infos", exc_info=True)
-
     else:
         logger.info("Success when profiling user: returned userdata %r", profiling_infos.dict())
+        fraud_api.create_user_profiling_check(user, profiling_infos)

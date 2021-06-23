@@ -14,6 +14,8 @@ import pytest
 
 from pcapi import settings
 from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.fraud.models import BeneficiaryFraudCheck
+from pcapi.core.fraud.models import FraudCheckType
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
@@ -1386,6 +1388,10 @@ class ProfilingFraudScoreTest:
         assert len(caplog.records) == 2
         assert caplog.record_tuples[0][-1] == "External service called"
         assert caplog.record_tuples[1][-1].startswith("Success when profiling user:")
+        assert BeneficiaryFraudCheck.query.count() == 1
+        fraud_check = BeneficiaryFraudCheck.query.first()
+        assert fraud_check.userId == user.id
+        assert fraud_check.type == FraudCheckType.USER_PROFILING
 
     @override_settings(USER_PROFILING_URL=USER_PROFILING_URL)
     def test_profiling_session_id_invalid(self, client, requests_mock):
