@@ -3,6 +3,7 @@ import pytest
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.users.factories as users_factories
+import pcapi.core.users.models as users_models
 
 
 @pytest.mark.usefixtures("db_session")
@@ -52,6 +53,9 @@ class BeneficiaryFraudValidationViewTest:
         review = fraud_models.BeneficiaryFraudReview.query.filter_by(user=user, author=admin).one()
         assert review.review == fraud_models.FraudReviewStatus.OK
         assert review.reason == "User is granted"
+        user = users_models.User.query.get(user.id)
+        assert user.isBeneficiary is True
+        assert len(user.deposits) == 1
 
     def test_validation_view_validate_user_wrong_args(self, client):
         user = users_factories.UserFactory(isBeneficiary=False)
@@ -66,6 +70,10 @@ class BeneficiaryFraudValidationViewTest:
         assert response.status_code == 302
         review = fraud_models.BeneficiaryFraudReview.query.filter_by(user=user, author=admin).one_or_none()
         assert review is None
+
+        user = users_models.User.query.get(user.id)
+        assert user.isBeneficiary is False
+        assert user.deposits == []
 
     def test_validation_view_validate_user_already_reviewed(self, client):
         user = users_factories.UserFactory(isBeneficiary=False)
