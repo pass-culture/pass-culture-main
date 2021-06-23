@@ -1,46 +1,35 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import { ALL_VENUES } from './_constants'
+import Select from 'components/layout/inputs/Select'
 
-const FilterByVenue = ({ updateFilters, selectedVenue, venuesFormattedAndOrdered }) => {
+import { ALL_VENUES_OPTION } from './_constants'
+
+const FilterByVenue = ({ updateFilters, selectedVenueId, venuesFormattedAndOrdered }) => {
   function handleVenueSelection(event) {
     const venueId = event.target.value
     updateFilters({ offerVenueId: venueId })
   }
 
+  const venueOptions = venuesFormattedAndOrdered.map(venue => ({
+    id: venue.id,
+    displayName: venue.displayName
+  }))
+
   return (
-    <div className="pf-venues">
-      <label
-        className="pf-offer-venue-label"
-        htmlFor="offer-venue-input"
-      >
-        {'Lieu'}
-      </label>
-      <select
-        id="offer-venue-input"
-        onBlur={handleVenueSelection}
-        onChange={handleVenueSelection}
-        value={selectedVenue}
-      >
-        <option value={ALL_VENUES}>
-          {'Tous les lieux'}
-        </option>
-        {venuesFormattedAndOrdered.map(venue => (
-          <option
-            key={venue.id}
-            value={venue.id}
-          >
-            {venue.displayName}
-          </option>
-        ))}
-      </select>
-    </div>
+    <Select
+      defaultOption={ALL_VENUES_OPTION}
+      handleSelection={handleVenueSelection}
+      label="Lieu"
+      name="lieu"
+      options={venueOptions}
+      selectedValue={selectedVenueId}
+    />
   )
 }
 
 FilterByVenue.propTypes = {
-  selectedVenue: PropTypes.string.isRequired,
+  selectedVenueId: PropTypes.string.isRequired,
   updateFilters: PropTypes.func.isRequired,
   venuesFormattedAndOrdered: PropTypes.arrayOf(
     PropTypes.shape({

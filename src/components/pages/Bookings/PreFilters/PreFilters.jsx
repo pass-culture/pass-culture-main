@@ -49,7 +49,7 @@ const PreFilters = ({ appliedPreFilters, applyPreFilters, hasResult, isLoading, 
       >
         <div className="pre-filters">
           <FilterByVenue
-            selectedVenue={selectedPreFilters.offerVenueId}
+            selectedVenueId={selectedPreFilters.offerVenueId}
             updateFilters={updateSelectedFilters}
             venuesFormattedAndOrdered={venues}
           />

@@ -87,6 +87,8 @@ describe('components | BookingsRecap | Pro user', () => {
     expect(eventDateFilter).toBeInTheDocument()
     expect(eventVenueFilter).toBeInTheDocument()
     expect(eventBookingPeriodFilter).toBeInTheDocument()
+    expect(eventVenueFilter).toHaveValue(DEFAULT_PRE_FILTERS.offerVenueId)
+    expect(eventDateFilter).not.toHaveValue()
   })
 
   it('should init venue pre-filter with venueId in router state', async () => {

@@ -12,3 +12,4 @@ export const DEFAULT_PRE_FILTERS = {
   offerEventDate: ALL_DATES,
   offerVenueId: ALL_VENUES,
 }
+export const ALL_VENUES_OPTION = { displayName: 'Tous les lieux', id: ALL_VENUES }
