@@ -271,6 +271,8 @@ class Offerer(
         String(9), nullable=True, unique=True
     )  # FIXME: should not be nullable, is until we have all SIRENs filled in the DB
 
+    dateValidated = Column(DateTime, nullable=True, default=None)
+
     def grant_access(self, user):
         if not user:
             return None

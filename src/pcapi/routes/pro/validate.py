@@ -1,3 +1,4 @@
+from datetime import datetime
 import logging
 
 from pcapi.core import search
@@ -47,6 +48,7 @@ def validate_new_offerer(token):
     offerer = Offerer.query.filter_by(validationToken=token).one_or_none()
     check_validation_token_has_been_already_used(offerer)
     offerer.validationToken = None
+    offerer.dateValidated = datetime.utcnow()
     managed_venues = offerer.managedVenues
 
     repository.save(offerer)
@@ -88,9 +90,3 @@ def _ask_for_validation(offerer: Offerer, user_offerer: UserOfferer):
         logger.exception(
             "Could not send offerer validation email to offerer", extra={"exc": str(mail_service_exception)}
         )
-
-
-def _validate_offerer(offerer: Offerer, user_offerer: UserOfferer):
-    offerer.validationToken = None
-    user_offerer.validationToken = None
-    repository.save(offerer, user_offerer)

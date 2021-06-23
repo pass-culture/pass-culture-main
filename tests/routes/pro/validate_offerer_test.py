@@ -1,6 +1,8 @@
+from datetime import datetime
 import secrets
 from unittest.mock import patch
 
+from freezegun import freeze_time
 import pytest
 
 from pcapi.core.offerers.models import Offerer
@@ -16,22 +18,25 @@ from tests.conftest import TestClient
 class Returns202Test:
     @pytest.mark.usefixtures("db_session")
     def expect_offerer_to_be_validated(self, app):
-        # Given
-        offerer_token = secrets.token_urlsafe(20)
-        offerer = create_offerer(validation_token=offerer_token)
-        user = create_user()
-        admin = create_user_offerer(user, offerer)
-        repository.save(admin)
+        with freeze_time("2021-06-22 14:48:00") as frozen_time:
+            # Given
+            offerer_token = secrets.token_urlsafe(20)
+            offerer = create_offerer(validation_token=offerer_token)
+            user = create_user()
+            admin = create_user_offerer(user, offerer)
+            repository.save(admin)
 
-        # When
-        response = TestClient(app.test_client()).get(
-            f"/validate/offerer/{offerer_token}", headers={"origin": "http://localhost:3000"}
-        )
+            # When
+            frozen_time.move_to("2021-06-23 11:00:00")
+            response = TestClient(app.test_client()).get(
+                f"/validate/offerer/{offerer_token}", headers={"origin": "http://localhost:3000"}
+            )
 
         # Then
         assert response.status_code == 202
         offerer = Offerer.query.filter_by(id=offerer.id).first()
         assert offerer.isValidated is True
+        assert offerer.dateValidated == datetime(2021, 6, 23, 11)
 
     @patch("pcapi.core.search.async_index_venue_ids")
     @pytest.mark.usefixtures("db_session")
