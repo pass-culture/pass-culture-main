@@ -2,6 +2,7 @@ import flask
 import flask_admin
 import flask_login
 from markupsafe import Markup
+import sqlalchemy
 import sqlalchemy.orm
 import wtforms
 import wtforms.validators
@@ -101,6 +102,11 @@ class FraudView(base_configuration.BaseAdminView):
             sqlalchemy.orm.joinedload(users_models.User.beneficiaryFraudChecks),
             sqlalchemy.orm.joinedload(users_models.User.beneficiaryFraudResult),
             sqlalchemy.orm.joinedload(users_models.User.beneficiaryFraudReview),
+        )
+
+    def get_count_query(self):
+        return db.session.query(sqlalchemy.func.count(users_models.User.id)).filter(
+            (users_models.User.beneficiaryFraudChecks.any()) | (users_models.User.beneficiaryFraudResult.has())
         )
 
     @flask_admin.expose("/validate/beneficiary/<user_id>", methods=["POST"])
