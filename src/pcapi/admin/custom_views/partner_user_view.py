@@ -89,6 +89,8 @@ class PartnerUserView(SuspensionMixin, BaseAdminView):
         model.publicName = f"{model.firstName} {model.lastName}"
         model.isBeneficiary = False
         model.isAdmin = False
+        model.remove_admin_role()
+        model.remove_beneficiary_role()
 
     def after_model_change(self, form: Form, model: User, is_created: bool) -> None:
         if is_created:

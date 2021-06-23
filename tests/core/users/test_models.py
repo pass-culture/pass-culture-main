@@ -68,3 +68,48 @@ class UserTest:
 
                 assert user.has_beneficiary_role
                 assert not user.has_admin_role
+
+        def test_remove_admin_role(self):
+            user = user_factories.UserFactory(roles=[UserRole.ADMIN])
+
+            user.remove_admin_role()
+
+            assert not user.has_admin_role
+
+        def test_remove_admin_role_when_user_is_not_admin(self):
+            user = user_factories.UserFactory(roles=[UserRole.BENEFICIARY])
+
+            user.remove_admin_role()
+
+            assert user.has_beneficiary_role
+            assert not user.has_admin_role
+
+        def test_remove_beneficiary_role(self):
+            user = user_factories.UserFactory(roles=[UserRole.BENEFICIARY])
+
+            user.remove_beneficiary_role()
+
+            assert not user.has_beneficiary_role
+
+        def test_remove_beneficiary_role_when_user_is_not_beneficiary(self):
+            user = user_factories.UserFactory(roles=[UserRole.PRO])
+
+            user.remove_beneficiary_role()
+
+            assert user.has_pro_role
+            assert not user.has_beneficiary_role
+
+        def test_remove_pro_role(self):
+            user = user_factories.UserFactory(roles=[UserRole.PRO])
+
+            user.remove_pro_role()
+
+            assert not user.has_pro_role
+
+        def test_remove_pro_role_when_user_is_not_pro(self):
+            user = user_factories.UserFactory(roles=[UserRole.BENEFICIARY])
+
+            user.remove_pro_role()
+
+            assert user.has_beneficiary_role
+            assert not user.has_pro_role

@@ -17,14 +17,16 @@ def test_should_grant_wallet_to_existing_users(app, db_session):
     grant_wallet_to_existing_users([beneficiary.id, beneficiary_2.id])
 
     # then
-    users = User.query.join(Deposit).with_entities(Deposit.amount, User.isBeneficiary).all()
+    users = User.query.join(Deposit).with_entities(Deposit.amount, User.isBeneficiary, User.has_beneficiary_role).all()
     user_1 = users[0]
     user_2 = users[1]
 
     assert user_1.amount == 300
     assert user_1.isBeneficiary
+    assert user_1.has_beneficiary_role
     assert user_2.amount == 300
     assert user_2.isBeneficiary
+    assert user_2.has_beneficiary_role
 
 
 @override_features(APPLY_BOOKING_LIMITS_V2=False)
@@ -39,11 +41,13 @@ def test_should_grant_wallet_to_existing_users_with_v1_deposit(app, db_session):
     grant_wallet_to_existing_users([beneficiary.id, beneficiary_2.id])
 
     # then
-    users = User.query.join(Deposit).with_entities(Deposit.amount, User.isBeneficiary).all()
+    users = User.query.join(Deposit).with_entities(Deposit.amount, User.isBeneficiary, User.has_beneficiary_role).all()
     user_1 = users[0]
     user_2 = users[1]
 
     assert user_1.amount == 500
     assert user_1.isBeneficiary
+    assert user_1.has_beneficiary_role
     assert user_2.amount == 500
     assert user_2.isBeneficiary
+    assert user_2.has_beneficiary_role

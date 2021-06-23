@@ -41,6 +41,8 @@ class AdminUserViewTest:
         assert user_created.postalCode == "76001"
         assert user_created.isBeneficiary is False
         assert user_created.isAdmin is True
+        assert not user_created.has_beneficiary_role
+        assert user_created.has_admin_role
         assert user_created.hasSeenProTutorials is True
         assert user_created.needsToFillCulturalSurvey is False
 

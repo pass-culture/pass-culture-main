@@ -29,9 +29,13 @@ def test_should_change_pro_users_to_beneficiary(app):
 
     # then
     assert pro_1.isBeneficiary
+    assert pro_1.has_beneficiary_role
+    assert not pro_1.has_pro_role
     assert pro_1.needsToFillCulturalSurvey
     assert pro_1.wallet_balance == 300
     assert pro_2.isBeneficiary
+    assert pro_2.has_beneficiary_role
+    assert not pro_2.has_pro_role
     assert pro_2.needsToFillCulturalSurvey
     assert pro_2.wallet_balance == 300
     assert UserOfferer.query.count() == 1

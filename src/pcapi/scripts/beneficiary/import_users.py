@@ -44,6 +44,7 @@ def create_or_update_users(rows: Iterable[dict]) -> list[User]:
             repository.save(deposit)
 
         user.isBeneficiary = True
+        user.add_beneficiary_role()
         user.lastName = row["Nom"]
         user.firstName = row["Prénom"]
         user.publicName = f"{user.firstName} {user.lastName}"
@@ -67,6 +68,7 @@ def create_or_update_users(rows: Iterable[dict]) -> list[User]:
     admin.setPassword(settings.STAGING_TEST_USER_PASSWORD)
     admin.isAdmin = True
     admin.isBeneficiary = False
+    admin.add_admin_role()
     admin.firstName = "Jeanne"
     admin.lastName = "Admin"
     admin.publicName = f"{user.firstName} {user.lastName}"

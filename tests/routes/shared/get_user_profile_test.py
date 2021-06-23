@@ -31,6 +31,7 @@ class Returns200Test:
             public_name="Toto",
         )
         user.isEmailValidated = True
+        user.add_beneficiary_role()
         repository.save(user)
 
         # When
@@ -66,6 +67,7 @@ class Returns200Test:
             "phoneValidationStatus": None,
             "postalCode": "93020",
             "publicName": "Toto",
+            "roles": ["BENEFICIARY"],
         }
 
     @pytest.mark.usefixtures("db_session")

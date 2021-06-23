@@ -44,6 +44,7 @@ from pcapi.core.users.models import PhoneValidationStatusType
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
+from pcapi.core.users.models import UserRole
 from pcapi.core.users.repository import get_user_with_valid_token
 from pcapi.core.users.utils import encode_jwt_payload
 from pcapi.model_creators.generic_creators import create_offerer
@@ -258,7 +259,7 @@ class DeleteExpiredTokensTest:
 
 class SuspendAccountTest:
     def test_suspend_admin(self):
-        user = users_factories.UserFactory(isAdmin=True)
+        user = users_factories.UserFactory(isAdmin=True, roles=[UserRole.ADMIN])
         users_factories.UserSessionFactory(user=user)
         reason = users_constants.SuspensionReason.FRAUD
         actor = users_factories.UserFactory(isAdmin=True)
@@ -268,6 +269,7 @@ class SuspendAccountTest:
         assert user.suspensionReason == str(reason)
         assert not user.isActive
         assert not user.isAdmin
+        assert not user.has_admin_role
         assert not UserSession.query.filter_by(userId=user.id).first()
         assert actor.isActive
 
@@ -440,9 +442,10 @@ class ChangeUserEmailTest:
 class CreateBeneficiaryTest:
     def test_with_eligible_user(self):
         eligible_date = date.today() - relativedelta(years=18, days=30)
-        user = users_factories.UserFactory(isBeneficiary=False, dateOfBirth=eligible_date)
+        user = users_factories.UserFactory(isBeneficiary=False, roles=[], dateOfBirth=eligible_date)
         user = users_api.activate_beneficiary(user, "test")
         assert user.isBeneficiary
+        assert user.has_beneficiary_role
         assert len(user.deposits) == 1
 
     def test_apps_flyer_called(self):
@@ -800,6 +803,9 @@ class CreateProUserTest:
         assert not pro_user.isBeneficiary
         assert not pro_user.isAdmin
         assert not pro_user.needsToFillCulturalSurvey
+        assert pro_user.has_pro_role
+        assert not pro_user.has_admin_role
+        assert not pro_user.has_beneficiary_role
         assert pro_user.deposits == []
 
     @override_settings(IS_INTEGRATION=True)
@@ -814,6 +820,9 @@ class CreateProUserTest:
         assert pro_user.isBeneficiary
         assert not pro_user.isAdmin
         assert not pro_user.needsToFillCulturalSurvey
+        assert pro_user.has_pro_role
+        assert not pro_user.has_admin_role
+        assert pro_user.has_beneficiary_role
         assert pro_user.deposits != []
 
 

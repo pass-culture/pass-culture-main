@@ -150,6 +150,7 @@ class ProUserView(SuspensionMixin, BaseAdminView):
 
         if is_created:
             model.isBeneficiary = False
+            model.add_pro_role()
             fulfill_account_password(model)
             offerer = create_offerer(form)
             create_digital_venue(offerer)

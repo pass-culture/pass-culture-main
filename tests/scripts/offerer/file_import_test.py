@@ -167,6 +167,7 @@ class FillUserFromTest:
         assert user.email == "pmortimer@bletchley.co.uk"
         assert user.departementCode == "29"
         assert user.isBeneficiary == False
+        assert user.has_pro_role
 
     def test_returns_an_user_with_computed_password(self):
         # when
@@ -209,6 +210,7 @@ class FillUserFromTest:
         assert user.email == "pmortimer@bletchley.co.uk"
         assert user.departementCode == "29"
         assert user.isBeneficiary == False
+        assert user.has_pro_role
         assert user.password != ""
         # TODO: why do we want to check the token here ?
 

@@ -1,3 +1,4 @@
+import copy
 from dataclasses import asdict
 from dataclasses import dataclass
 from datetime import date
@@ -383,41 +384,58 @@ class User(PcObject, Model, NeedsValidationMixin):
     def is_phone_validated(cls):  # pylint: disable=no-self-argument
         return cls.phoneValidationStatus == PhoneValidationStatusType.VALIDATED
 
-    def add_admin_role(self):
-        if self.has_beneficiary_role:
-            raise InvalidUserRoleException("User is already aa beneficiary")
-        self.roles.append(UserRole.ADMIN)
+    def _add_role(self, role: UserRole) -> None:
+        current_roles = copy.deepcopy(self.roles) if self.roles else []
+        updated_roles = current_roles + [role]
 
-    def add_beneficiary_role(self):
-        if self.has_admin_role:
-            raise InvalidUserRoleException("User is already an admin")
-        self.roles.append(UserRole.BENEFICIARY)
+        if UserRole.BENEFICIARY in updated_roles and UserRole.ADMIN in updated_roles:
+            raise InvalidUserRoleException("User can't have both ADMIN and BENEFICIARY role")
 
-    def add_pro_role(self):
-        self.roles.append(UserRole.PRO)
+        self.roles = updated_roles
+
+    def add_admin_role(self) -> None:
+        self._add_role(UserRole.ADMIN)
+
+    def add_beneficiary_role(self) -> None:
+        self._add_role(UserRole.BENEFICIARY)
+
+    def add_pro_role(self) -> None:
+        self._add_role(UserRole.PRO)
+
+    def remove_admin_role(self) -> None:
+        if self.has_admin_role:  # pylint: disable=using-constant-test
+            self.roles.remove(UserRole.ADMIN)
+
+    def remove_beneficiary_role(self) -> None:
+        if self.has_beneficiary_role:  # pylint: disable=using-constant-test
+            self.roles.remove(UserRole.BENEFICIARY)
+
+    def remove_pro_role(self) -> None:
+        if self.has_pro_role:  # pylint: disable=using-constant-test
+            self.roles.remove(UserRole.PRO)
 
     @hybrid_property
     def has_admin_role(self) -> bool:
-        return UserRole.ADMIN in self.roles
+        return UserRole.ADMIN in self.roles if self.roles else False
 
     @has_admin_role.expression
-    def has_admin_role(cls) -> bool:
+    def has_admin_role(cls) -> bool:  # pylint: disable=no-self-argument
         return cls.roles.contains([UserRole.ADMIN])
 
     @hybrid_property
     def has_beneficiary_role(self) -> bool:
-        return UserRole.BENEFICIARY in self.roles
+        return UserRole.BENEFICIARY in self.roles if self.roles else False
 
     @has_beneficiary_role.expression
-    def has_beneficiary_role(cls) -> bool:
+    def has_beneficiary_role(cls) -> bool:  # pylint: disable=no-self-argument
         return cls.roles.contains([UserRole.BENEFICIARY])
 
     @hybrid_property
     def has_pro_role(self) -> bool:
-        return UserRole.PRO in self.roles
+        return UserRole.PRO in self.roles if self.roles else False
 
     @has_pro_role.expression
-    def has_pro_role(cls) -> bool:
+    def has_pro_role(cls) -> bool:  # pylint: disable=no-self-argument
         return cls.roles.contains([UserRole.PRO])
 
     def get_notification_subscriptions(self) -> NotificationSubscriptions:

@@ -258,6 +258,7 @@ def activate_beneficiary(user: User, deposit_source: str = None) -> User:
         deposit_source = beneficiary_import.get_detailed_source()
 
     user.isBeneficiary = True
+    user.add_beneficiary_role()
 
     if "apps_flyer" in user.externalIds:
         log_user_becomes_beneficiary_event_job.delay(user.id)
@@ -339,6 +340,7 @@ def suspend_account(user: User, reason: constants.SuspensionReason, actor: User)
     # If we ever unsuspend the account, we'll have to explictly enable
     # isAdmin again. An admin now may not be an admin later.
     user.isAdmin = False
+    user.remove_admin_role()
     user.setPassword(secrets.token_urlsafe(30))
     repository.save(user)
 
@@ -573,6 +575,7 @@ def create_pro_user(pro_user: ProUserCreationBodyModel) -> User:
     new_pro_user.isBeneficiary = False
     new_pro_user.isAdmin = False
     new_pro_user.needsToFillCulturalSurvey = False
+    new_pro_user.add_pro_role()
     new_pro_user.generate_validation_token()
 
     if pro_user.postal_code:
@@ -580,6 +583,7 @@ def create_pro_user(pro_user: ProUserCreationBodyModel) -> User:
 
     if settings.IS_INTEGRATION:
         new_pro_user.isBeneficiary = True
+        new_pro_user.add_beneficiary_role()
         deposit = payment_api.create_deposit(new_pro_user, "integration_signup")
         new_pro_user.deposits = [deposit]
 

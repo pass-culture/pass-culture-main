@@ -35,6 +35,7 @@ class ReadFileTest:
         assert jeanne.departementCode == "86"
         assert jeanne.postalCode == "86140"
         assert jeanne.isBeneficiary
+        assert jeanne.has_beneficiary_role
         assert len(jeanne.deposits) == 1
 
         jean = users[1]
@@ -43,3 +44,5 @@ class ReadFileTest:
 
         admin = User.query.filter_by(email="admin@example.com").one()
         assert admin.isAdmin
+        assert admin.has_admin_role
+        assert not admin.has_beneficiary_role

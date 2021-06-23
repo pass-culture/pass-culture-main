@@ -122,6 +122,7 @@ class BeneficiaryUserView(SuspensionMixin, BaseAdminView):
 
         if is_created:
             model.isBeneficiary = True
+            model.add_beneficiary_role()
             # This is to prevent a circulary import dependency
             from pcapi.core.users.api import fulfill_beneficiary_data
 

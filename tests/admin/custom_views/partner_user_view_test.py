@@ -39,6 +39,8 @@ class PartnerUserViewTest:
     def test_a_partner_should_never_be_a_beneficiary(self, app, db_session):
         # given
         user = User()
+        user.isBeneficiary = True
+        user.add_beneficiary_role()
         view = PartnerUserView(model=User, session=db_session)
 
         # when
@@ -46,10 +48,13 @@ class PartnerUserViewTest:
 
         # then
         assert user.isBeneficiary == False
+        assert not user.has_beneficiary_role
 
     def test_a_partner_should_never_be_an_admin(self, app, db_session):
         # given
         user = User()
+        user.isAdmin = True
+        user.add_admin_role()
         view = PartnerUserView(model=User, session=db_session)
 
         # when
@@ -57,6 +62,7 @@ class PartnerUserViewTest:
 
         # then
         assert user.isAdmin == False
+        assert not user.has_admin_role
 
     def test_a_partner_should_not_need_to_fill_cultural_survey(self, app, db_session):
         # given
