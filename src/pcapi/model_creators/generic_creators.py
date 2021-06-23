@@ -207,6 +207,7 @@ def create_offerer(
     siren: Optional[str] = "123456789",
     thumb_count: int = 0,
     validation_token: str = None,
+    date_validated: datetime = None,
 ) -> Offerer:
     offerer = Offerer()
     offerer.address = address
@@ -222,6 +223,7 @@ def create_offerer(
     offerer.siren = siren
     offerer.thumbCount = thumb_count
     offerer.validationToken = validation_token
+    offerer.dateValidated = date_validated
 
     return offerer
 

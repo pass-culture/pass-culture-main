@@ -37,6 +37,7 @@ from pcapi.domain.user_emails import send_soon_to_be_expired_bookings_recap_emai
 from pcapi.domain.user_emails import send_user_driven_cancellation_email_to_offerer
 from pcapi.domain.user_emails import send_validation_confirmation_email_to_pro
 from pcapi.domain.user_emails import send_warning_to_beneficiary_after_pro_booking_cancellation
+from pcapi.domain.user_emails import send_withdrawal_terms_to_newly_validated_offerer
 from pcapi.model_creators.generic_creators import create_booking
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_user
@@ -560,3 +561,23 @@ class SendOfferValidationTest:
         assert mails_testing.outbox[0].sent_data["Vars"]["venue_name"] == "Sibérie orientale"
         assert mails_testing.outbox[0].sent_data["To"] == "jules.verne@example.com"
         assert humanize(offer.id) in mails_testing.outbox[0].sent_data["Vars"]["pc_pro_offer_link"]
+
+
+@pytest.mark.usefixtures("db_session")
+class SendWithdrawalTermsToNewlyValidatedOffererTest:
+    @patch(
+        "pcapi.domain.user_emails.retrieve_data_for_new_offerer_validated_withdrawal_terms_email",
+        return_value={"Mj-TemplateID": 11330916},
+    )
+    def test_send_withdrawal_terms_to_newly_validated_offerer(
+        self, mock_retrieve_data_for_new_offerer_validated_withdrawal_terms_email
+    ):
+        # Given
+        offerer = UserOffererFactory().offerer
+
+        # When
+        send_withdrawal_terms_to_newly_validated_offerer(offerer)
+
+        # Then
+        mock_retrieve_data_for_new_offerer_validated_withdrawal_terms_email.assert_called_once()
+        assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 11330916

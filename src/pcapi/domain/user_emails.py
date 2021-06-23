@@ -31,6 +31,9 @@ from pcapi.emails.beneficiary_warning_after_pro_booking_cancellation import (
 )
 from pcapi.emails.new_offer_validation import retrieve_data_for_offer_approval_email
 from pcapi.emails.new_offer_validation import retrieve_data_for_offer_rejection_email
+from pcapi.emails.new_offerer_validated_withdrawal_terms import (
+    retrieve_data_for_new_offerer_validated_withdrawal_terms_email,
+)
 from pcapi.emails.new_offerer_validation import retrieve_data_for_new_offerer_validation_email
 from pcapi.emails.offer_webapp_link import build_data_for_offer_webapp_link
 from pcapi.emails.offerer_attachment_validation import retrieve_data_for_offerer_attachment_validation_email
@@ -255,3 +258,9 @@ def send_offer_validation_status_update_email(
 def send_document_verification_error_email(email: str, code: str) -> bool:
     data = build_data_for_document_verification_error(code)
     return mails.send(recipients=[email], data=data)
+
+
+def send_withdrawal_terms_to_newly_validated_offerer(offerer: Offerer) -> None:
+    offerer_email = find_new_offerer_user_email(offerer.id)
+    data = retrieve_data_for_new_offerer_validated_withdrawal_terms_email()
+    mails.send(recipients=[offerer_email], data=data)

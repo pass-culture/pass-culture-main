@@ -19,12 +19,13 @@ from pcapi.core.offers.repository import find_tomorrow_event_stock_ids
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.users import api as users_api
 from pcapi.core.users.repository import get_newly_eligible_users
-from pcapi.domain.user_emails import send_newly_eligible_user_email
+from pcapi.domain.user_emails import send_newly_eligible_user_email, send_withdrawal_terms_to_newly_validated_offerer
 from pcapi.local_providers.provider_api import provider_api_stocks
 from pcapi.local_providers.provider_manager import synchronize_venue_providers_for_provider
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.db import db
+from pcapi.repository.offerer_queries import get_offerers_by_date_validated
 from pcapi.repository.user_queries import find_most_recent_beneficiary_creation_date_for_source
 from pcapi.scheduled_tasks import utils
 from pcapi.scheduled_tasks.decorators import cron_context
@@ -152,6 +153,15 @@ def pc_clean_past_draft_offers(app: Flask) -> None:
     delete_past_draft_offers()
 
 
+@log_cron
+@cron_context
+def pc_send_withdrawal_terms_to_offerers_validated_yesterday(app: Flask) -> None:
+    yesterday = date.today() - timedelta(days=1)
+    offerers_validated_yesterday = get_offerers_by_date_validated(yesterday)
+    for offerer in offerers_validated_yesterday:
+        send_withdrawal_terms_to_newly_validated_offerer(offerer)
+
+
 def main() -> None:
     from pcapi.flask_app import app
 
@@ -196,6 +206,8 @@ def main() -> None:
     scheduler.add_job(pc_send_tomorrow_events_notifications, "cron", [app], day="*", hour="16")
 
     scheduler.add_job(pc_clean_past_draft_offers, "cron", [app], day="*", hour="20")
+
+    scheduler.add_job(pc_send_withdrawal_terms_to_offerers_validated_yesterday, "cron", [app], day="*", hour="6")
 
     scheduler.start()
 

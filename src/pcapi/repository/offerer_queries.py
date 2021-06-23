@@ -1,3 +1,6 @@
+from datetime import date
+from datetime import datetime
+
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.users.models import User
 from pcapi.domain.ts_vector import create_filter_matching_all_keywords_in_any_model
@@ -36,3 +39,10 @@ def filter_offerers_with_keywords_string(query, keywords_string):
 
 def check_if_siren_already_exists(siren):
     return Offerer.query.filter_by(siren=siren).count() > 0
+
+
+def get_offerers_by_date_validated(date_validated: date) -> list[Offerer]:
+    from_date = datetime.combine(date_validated, datetime.min.time())
+    to = datetime.combine(date_validated, datetime.max.time())
+
+    return Offerer.query.filter(Offerer.dateValidated.between(from_date, to)).all()

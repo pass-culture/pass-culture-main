@@ -1,3 +1,6 @@
+from datetime import date
+from datetime import datetime
+
 import pytest
 
 from pcapi.core.offerers.models import Offerer
@@ -12,6 +15,7 @@ from pcapi.repository import repository
 from pcapi.repository.offerer_queries import filter_offerers_with_keywords_string
 from pcapi.repository.offerer_queries import find_by_id
 from pcapi.repository.offerer_queries import find_new_offerer_user_email
+from pcapi.repository.offerer_queries import get_offerers_by_date_validated
 
 
 class OffererQueriesTest:
@@ -308,3 +312,17 @@ def test_find_filtered_offerers_with_several_partial_keywords_at_venue_public_na
     assert offerer_with_both_venues_offer_on_both in offerers
     assert offerer_with_both_venues_offer_on_virtual in offerers
     assert offerer_with_both_venues_offer_on_not_virtual in offerers
+
+
+@pytest.mark.usefixtures("db_session")
+def test_get_offerers_by_date_validated(app):
+    offerer1 = create_offerer(siren="123456789", validation_token=None, date_validated=datetime(2021, 6, 7, 15, 49))
+    offerer2 = create_offerer(siren="123456788", validation_token=None, date_validated=datetime(2021, 6, 7, 23, 59, 59))
+    offerer3 = create_offerer(siren="123456787", validation_token=None, date_validated=datetime(2021, 6, 8, 00, 00, 00))
+    offerer4 = create_offerer(siren="123456786", validation_token=None, date_validated=datetime(2021, 6, 6, 11, 49))
+
+    repository.save(offerer1, offerer2, offerer3, offerer4)
+
+    assert get_offerers_by_date_validated(date(2021, 6, 7)) == [offerer1, offerer2]
+    assert get_offerers_by_date_validated(date(2021, 6, 8)) == [offerer3]
+    assert get_offerers_by_date_validated(date(2021, 6, 6)) == [offerer4]
