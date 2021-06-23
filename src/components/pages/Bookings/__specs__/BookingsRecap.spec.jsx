@@ -395,10 +395,10 @@ describe('components | BookingsRecap | Pro user', () => {
     // Then
     await screen.findAllByText(bookingRecap.stock.offer_name)
     expect(getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodBeginningDate).toStrictEqual(
-      new Date('2020-05-10T12:00:00.000Z')
+      new Date(2020, 4, 10)
     )
     expect(getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodEndingDate).toStrictEqual(
-      new Date('2020-06-05T12:00:00.000Z')
+      new Date(2020, 5, 5)
     )
   })
 
@@ -426,7 +426,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     // Then
     await screen.findAllByText(bookingRecap.stock.offer_name)
-    const thirtyDaysBeforeEndingDate = new Date('2020-05-13T12:00:00.000Z')
+    const thirtyDaysBeforeEndingDate = new Date(2020, 4, 13)
     expect(getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodBeginningDate).toStrictEqual(
       thirtyDaysBeforeEndingDate
     )
@@ -456,7 +456,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
     // Then
     await screen.findAllByText(bookingRecap.stock.offer_name)
-    const thirtyDaysAfterBeginningDate = new Date('2020-06-09T12:00:00.000Z')
+    const thirtyDaysAfterBeginningDate = new Date(2020, 5, 9)
     expect(getNthCallNthArg(loadFilteredBookingsRecap, 1).bookingPeriodEndingDate).toStrictEqual(
       thirtyDaysAfterBeginningDate
     )
