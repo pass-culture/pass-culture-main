@@ -32,6 +32,7 @@ class UserFactory(BaseFactory):
     publicName = "Jeanne Doux"
     isEmailValidated = True
     isBeneficiary = True
+    roles = [pcapi.core.users.models.UserRole.BENEFICIARY]
     hasSeenProTutorials = True
 
     @classmethod

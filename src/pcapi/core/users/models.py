@@ -22,10 +22,12 @@ from sqlalchemy import String
 from sqlalchemy import Text
 from sqlalchemy import UniqueConstraint
 from sqlalchemy import func
+from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.dialects.postgresql.json import JSONB
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
+from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy.orm import backref
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm import relationship
@@ -36,6 +38,7 @@ from pcapi import settings
 from pcapi.core.bookings.models import Booking
 from pcapi.core.offers.models import Stock
 from pcapi.core.users import constants
+from pcapi.core.users.exceptions import InvalidUserRoleException
 from pcapi.models.db import Model
 from pcapi.models.db import db
 from pcapi.models.deposit import Deposit
@@ -114,6 +117,12 @@ def check_password(clear_text: str, hashed: str) -> bool:
     return checker(clear_text, hashed)
 
 
+class UserRole(enum.Enum):
+    ADMIN = "ADMIN"
+    BENEFICIARY = "BENEFICIARY"
+    PRO = "PRO"
+
+
 @dataclass
 class NotificationSubscriptions:
     marketing_push: bool = True
@@ -182,6 +191,12 @@ class User(PcObject, Model, NeedsValidationMixin):
     resetPasswordToken = Column(String(10), unique=True)
 
     resetPasswordTokenValidityLimit = Column(DateTime)
+
+    roles = Column(
+        MutableList.as_mutable(ARRAY(Enum(UserRole, native_enum=False, create_constraint=False))),
+        nullable=False,
+        server_default="{}",
+    )
 
     civility = Column(String(20), nullable=True)
 
@@ -367,6 +382,43 @@ class User(PcObject, Model, NeedsValidationMixin):
     @is_phone_validated.expression
     def is_phone_validated(cls):  # pylint: disable=no-self-argument
         return cls.phoneValidationStatus == PhoneValidationStatusType.VALIDATED
+
+    def add_admin_role(self):
+        if self.has_beneficiary_role:
+            raise InvalidUserRoleException("User is already aa beneficiary")
+        self.roles.append(UserRole.ADMIN)
+
+    def add_beneficiary_role(self):
+        if self.has_admin_role:
+            raise InvalidUserRoleException("User is already an admin")
+        self.roles.append(UserRole.BENEFICIARY)
+
+    def add_pro_role(self):
+        self.roles.append(UserRole.PRO)
+
+    @hybrid_property
+    def has_admin_role(self) -> bool:
+        return UserRole.ADMIN in self.roles
+
+    @has_admin_role.expression
+    def has_admin_role(cls) -> bool:
+        return cls.roles.contains([UserRole.ADMIN])
+
+    @hybrid_property
+    def has_beneficiary_role(self) -> bool:
+        return UserRole.BENEFICIARY in self.roles
+
+    @has_beneficiary_role.expression
+    def has_beneficiary_role(cls) -> bool:
+        return cls.roles.contains([UserRole.BENEFICIARY])
+
+    @hybrid_property
+    def has_pro_role(self) -> bool:
+        return UserRole.PRO in self.roles
+
+    @has_pro_role.expression
+    def has_pro_role(cls) -> bool:
+        return cls.roles.contains([UserRole.PRO])
 
     def get_notification_subscriptions(self) -> NotificationSubscriptions:
         return NotificationSubscriptions(**self.notificationSubscriptions or {})

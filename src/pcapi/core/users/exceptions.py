@@ -104,3 +104,7 @@ class MissingEmailInMetadataException(Exception):
 
 class IdentityDocumentVerificationException(Exception):
     pass
+
+
+class InvalidUserRoleException(Exception):
+    pass
