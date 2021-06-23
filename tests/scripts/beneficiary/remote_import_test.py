@@ -957,7 +957,7 @@ class RunIntegrationTest:
     )
     @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
     def test_import_with_existing_id_card(
-        self, get_application_details, get_closed_application_ids_for_demarche_simplifiee
+        self, get_application_details, get_closed_application_ids_for_demarche_simplifiee, mocker
     ):
         user = create_user(
             idx=4,
@@ -973,12 +973,14 @@ class RunIntegrationTest:
         get_application_details.side_effect = self._get_details
 
         # when
+        process_mock = mocker.patch("pcapi.scripts.beneficiary.remote_import.process_beneficiary_application")
         remote_import.run(
             ONE_WEEK_AGO,
             procedure_id=6712558,
         )
 
         # then
+        assert process_mock.call_count == 0
         assert User.query.count() == 1
         assert BeneficiaryImport.query.count() == 1
         user = User.query.first()

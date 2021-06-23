@@ -90,6 +90,7 @@ def run(
             and User.query.filter(User.idPieceNumber == information["id_piece_number"]).count() > 0
         ):
             _process_rejection(information, procedure_id=procedure_id, reason="Nr de piece déjà utilisé", user=user)
+            continue
 
         if not is_already_imported(information["application_id"]):
             process_beneficiary_application(
@@ -248,7 +249,8 @@ def _process_rejection(information: dict, procedure_id: int, reason: str, user: 
         user=user,
     )
     logger.warning(
-        "[BATCH][REMOTE IMPORT BENEFICIARIES] Rejected application %s because of already existing email - Procedure %s",
+        "[BATCH][REMOTE IMPORT BENEFICIARIES] Rejected application %s because of '%s' - Procedure %s",
         information["application_id"],
+        reason,
         procedure_id,
     )
