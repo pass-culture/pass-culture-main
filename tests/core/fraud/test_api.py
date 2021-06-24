@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 from unittest.mock import patch
 
 import pytest
@@ -6,13 +6,8 @@ import pytest
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
-from pcapi.core.fraud.models import BeneficiaryFraudCheck
-from pcapi.core.fraud.models import BeneficiaryFraudResult
-from pcapi.core.fraud.models import FraudCheckType
-from pcapi.core.fraud.models import FraudStatus
-from pcapi.core.fraud.models import JouveContent
-from pcapi.core.users.factories import UserFactory
-from pcapi.core.users.models import PhoneValidationStatusType
+import pcapi.core.users.factories as users_factories
+import pcapi.core.users.models as users_models
 from pcapi.flask_app import db
 
 
@@ -65,11 +60,11 @@ class JouveFraudCheckTest:
     @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
     @pytest.mark.parametrize("body_name_level", [None, "", "100"])
     def test_jouve_update(self, _get_raw_content, client, body_name_level):
-        user = UserFactory(
+        user = users_factories.UserFactory(
             hasCompletedIdCheck=True,
             isBeneficiary=False,
-            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
-            dateOfBirth=datetime(2002, 6, 8),
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            dateOfBirth=datetime.datetime(2002, 6, 8),
             email=self.user_email,
         )
         _get_raw_content.return_value = self.JOUVE_CONTENT | {"bodyNameLevel": body_name_level}
@@ -77,32 +72,34 @@ class JouveFraudCheckTest:
         response = client.post("/beneficiaries/application_update", json={"id": self.application_id})
         assert response.status_code == 200
 
-        fraud_check = BeneficiaryFraudCheck.query.filter_by(user=user, type=FraudCheckType.JOUVE).first()
-        fraud_result = BeneficiaryFraudResult.query.filter_by(user=user).first()
-        jouve_fraud_content = JouveContent(**fraud_check.resultContent)
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
+            user=user, type=fraud_models.FraudCheckType.JOUVE
+        ).first()
+        fraud_result = fraud_models.BeneficiaryFraudResult.query.filter_by(user=user).first()
+        jouve_fraud_content = fraud_models.JouveContent(**fraud_check.resultContent)
 
         assert jouve_fraud_content.bodyPieceNumber == "140767100016"
         assert fraud_check.dateCreated
         assert fraud_check.thirdPartyId == "35"
-        assert fraud_result.status == FraudStatus.OK
+        assert fraud_result.status == fraud_models.FraudStatus.OK
 
         db.session.refresh(user)
         assert user.isBeneficiary
 
     @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
     def test_jouve_update_duplicate_user(self, _get_raw_content, client):
-        existing_user = UserFactory(
+        existing_user = users_factories.UserFactory(
             firstName="Christophe",
             lastName="Dupo",
             isBeneficiary=True,
-            dateOfBirth=datetime(2002, 6, 8),
+            dateOfBirth=datetime.datetime(2002, 6, 8),
             idPieceNumber="140767100016",
         )
-        user = UserFactory(
+        user = users_factories.UserFactory(
             hasCompletedIdCheck=True,
             isBeneficiary=False,
-            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
-            dateOfBirth=datetime(2002, 6, 8),
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            dateOfBirth=datetime.datetime(2002, 6, 8),
             email=self.user_email,
         )
         _get_raw_content.return_value = self.JOUVE_CONTENT
@@ -110,9 +107,9 @@ class JouveFraudCheckTest:
         response = client.post("/beneficiaries/application_update", json={"id": self.application_id})
         assert response.status_code == 200
 
-        fraud_result = BeneficiaryFraudResult.query.filter_by(user=user).first()
+        fraud_result = fraud_models.BeneficiaryFraudResult.query.filter_by(user=user).first()
 
-        assert fraud_result.status == FraudStatus.SUSPICIOUS
+        assert fraud_result.status == fraud_models.FraudStatus.SUSPICIOUS
         assert fraud_result.reason == f"Le n° de cni 140767100016 est déjà pris par l'utilisateur {existing_user.id}"
 
         db.session.refresh(user)
@@ -154,7 +151,7 @@ class JouveFraudCheckTest:
         assert item.status == fraud_models.FraudStatus.OK
 
     def test_on_identity_fraud_check_result_retry(self):
-        user = UserFactory(isBeneficiary=False)
+        user = users_factories.UserFactory(isBeneficiary=False)
         content = fraud_factories.JouveContentFactory(
             birthLocationCtrl="OK",
             bodyBirthDateCtrl="OK",
@@ -181,7 +178,7 @@ class JouveFraudCheckTest:
         assert fraud_result.status == fraud_models.FraudStatus.OK
 
     def test_admin_update_identity_fraud_check_result(self):
-        user = UserFactory(isBeneficiary=False)
+        user = users_factories.UserFactory(isBeneficiary=False)
 
         fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.JOUVE,
@@ -198,7 +195,7 @@ class JouveFraudCheckTest:
     # @patch("pcapi.connectors.beneficiaries.jouve_backend._get_raw_content")
     # def test_jouve_update_id_fraud(self, _get_raw_content, client):
 
-    #     user = UserFactory(
+    #     user = users_factories.users_factories.UserFactory(
     #         hasCompletedIdCheck=True,
     #         isBeneficiary=False,
     #         phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
@@ -210,9 +207,9 @@ class JouveFraudCheckTest:
     #     response = client.post("/beneficiaries/application_update", json={"id": self.application_id})
     #     assert response.status_code == 200
 
-    #     fraud_result = BeneficiaryFraudResult.query.filter_by(user=user).first()
+    #     fraud_result = fraud_models.BeneficiaryFraudResult.query.filter_by(user=user).first()
 
-    #     assert fraud_result.status == FraudStatus.KO
+    #     assert fraud_result.status == fraud_models.FraudStatus.KO
     #     assert (
     #         fraud_result.reason
     #         == "Le champ serviceCodeCtrl est KO ; Le champ bodyFirstnameLevel a le score 30 (minimum 50)"
@@ -224,14 +221,14 @@ class JouveFraudCheckTest:
 
 class CommonTest:
     def test_validator_data(self):
-        user = UserFactory()
-        fraud_data = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=FraudCheckType.JOUVE)
-        fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=FraudCheckType.DMS)
+        user = users_factories.UserFactory()
+        fraud_data = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.JOUVE)
+        fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.DMS)
 
         expected = fraud_api.get_source_data(user)
 
-        assert isinstance(expected, JouveContent)
-        assert expected == JouveContent(**fraud_data.resultContent)
+        assert isinstance(expected, fraud_models.JouveContent)
+        assert expected == fraud_models.JouveContent(**fraud_data.resultContent)
 
 
 class UpsertSuspiciousFraudResultTest:
@@ -240,7 +237,7 @@ class UpsertSuspiciousFraudResultTest:
         Test that the upsert function does updated the reason when consecutive
         calls do not use the same reason.
         """
-        user = UserFactory()
+        user = users_factories.UserFactory()
         first_reason = "first reason"
         second_reason = "second reason"
 
@@ -255,3 +252,30 @@ class UpsertSuspiciousFraudResultTest:
         assert fraud_models.BeneficiaryFraudResult.query.count() == 1
         assert result.user == user
         assert result.reason == f"{first_reason} ; {second_reason} ; {first_reason}"
+
+
+class CommonFraudCheckTest:
+    def test_duplicate_id_piece_number_ok(self):
+        fraud_item = fraud_api._duplicate_id_piece_number_fraud_item("random_id")
+        assert fraud_item.status == fraud_models.FraudStatus.OK
+
+    def test_duplicate_id_piece_number_suspicious(self):
+        user = users_factories.UserFactory(isBeneficiary=True)
+
+        fraud_item = fraud_api._duplicate_id_piece_number_fraud_item(user.idPieceNumber)
+        assert fraud_item.status == fraud_models.FraudStatus.SUSPICIOUS
+
+    def test_duplicate_user_fraud_ok(self):
+        fraud_item = fraud_api._duplicate_user_fraud_item(
+            first_name="Jean", last_name="Michel", birth_date=datetime.date.today()
+        )
+
+        assert fraud_item.status == fraud_models.FraudStatus.OK
+
+    def test_duplicate_user_fraud_suspicious(self):
+        user = users_factories.UserFactory(isBeneficiary=True)
+        fraud_item = fraud_api._duplicate_user_fraud_item(
+            first_name=user.firstName, last_name=user.lastName, birth_date=user.dateOfBirth.date()
+        )
+
+        assert fraud_item.status == fraud_models.FraudStatus.SUSPICIOUS

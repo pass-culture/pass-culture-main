@@ -1,9 +1,10 @@
+import datetime
 import logging
 import re
 from typing import Optional
 from typing import Union
 
-from sqlalchemy import func
+import sqlalchemy
 
 from pcapi.core.users.models import User
 from pcapi.models.feature import FeatureToggle
@@ -79,10 +80,16 @@ def on_identity_fraud_check_result(
     jouve_content = models.JouveContent(**beneficiary_fraud_check.resultContent)
 
     fraud_items = []
+    fraud_items.append(
+        _duplicate_user_fraud_item(
+            first_name=jouve_content.firstName,
+            last_name=jouve_content.lastName,
+            birth_date=jouve_content.birthDateTxt,
+        )
+    )
 
-    fraud_items.append(_duplicate_user_fraud_item(jouve_content))
     fraud_items.append(_validate_id_piece_number_format_fraud_item(jouve_content.bodyPieceNumber))
-    fraud_items.append(_duplicate_id_piece_number_fraud_item(jouve_content))
+    fraud_items.append(_duplicate_id_piece_number_fraud_item(jouve_content.bodyPieceNumber))
     fraud_items.extend(_id_check_fraud_items(jouve_content))
 
     if all(fraud_item.status == models.FraudStatus.OK for fraud_item in fraud_items):
@@ -121,11 +128,11 @@ def _validate_id_piece_number_format_fraud_item(id_piece_number):
     return models.FraudItem(status=models.FraudStatus.OK, detail=None)
 
 
-def _duplicate_user_fraud_item(jouve_content: models.JouveContent) -> models.FraudItem:
+def _duplicate_user_fraud_item(first_name: str, last_name: str, birth_date: datetime.date) -> models.FraudItem:
     duplicate_user = User.query.filter(
-        matching(User.firstName, jouve_content.firstName)
-        & (matching(User.lastName, jouve_content.lastName))
-        & (func.DATE(User.dateOfBirth) == jouve_content.birthDateTxt)
+        matching(User.firstName, first_name)
+        & (matching(User.lastName, last_name))
+        & (sqlalchemy.func.DATE(User.dateOfBirth) == birth_date)
         & (User.isBeneficiary == True)
     ).first()
 
@@ -135,11 +142,11 @@ def _duplicate_user_fraud_item(jouve_content: models.JouveContent) -> models.Fra
     )
 
 
-def _duplicate_id_piece_number_fraud_item(jouve_content: models.JouveContent) -> models.FraudItem:
-    duplicate_user = User.query.filter(User.idPieceNumber == jouve_content.bodyPieceNumber).first()
+def _duplicate_id_piece_number_fraud_item(document_id_number: str) -> models.FraudItem:
+    duplicate_user = User.query.filter(User.idPieceNumber == document_id_number).first()
     return models.FraudItem(
         status=models.FraudStatus.SUSPICIOUS if duplicate_user else models.FraudStatus.OK,
-        detail=f"Le n° de cni {jouve_content.bodyPieceNumber} est déjà pris par l'utilisateur {duplicate_user.id}"
+        detail=f"Le n° de cni {document_id_number} est déjà pris par l'utilisateur {duplicate_user.id}"
         if duplicate_user
         else None,
     )

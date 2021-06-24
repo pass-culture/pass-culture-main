@@ -17,7 +17,7 @@ class JouveContentFactory(factory.Factory):
 
     activity = random.choice(["Etudiant"])
     address = "25 rue du moulin vert"
-    birthDate = factory.Faker("date", pattern="%d/%m/%Y")
+    birthDateTxt = factory.Faker("date", pattern="%d/%m/%Y")
     birthLocationCtrl = random.choice(JOUVE_CTRL_VALUES)
     bodyBirthDateCtrl = random.choice(JOUVE_CTRL_VALUES)
     bodyBirthDateLevel = factory.Faker("pyint", max_value=100)
