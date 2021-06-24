@@ -24,6 +24,7 @@ from pcapi.local_providers.provider_api import provider_api_stocks
 from pcapi.local_providers.provider_manager import synchronize_venue_providers_for_provider
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
 from pcapi.models.feature import FeatureToggle
+from pcapi.models.db import db
 from pcapi.repository.user_queries import find_most_recent_beneficiary_creation_date_for_source
 from pcapi.scheduled_tasks import utils
 from pcapi.scheduled_tasks.decorators import cron_context
@@ -126,6 +127,7 @@ def pc_notify_newly_eligible_users(app: Flask) -> None:
 @cron_context
 def pc_clean_expired_tokens(app: Flask) -> None:
     users_api.delete_expired_tokens()
+    db.session.commit()
 
 
 @log_cron
