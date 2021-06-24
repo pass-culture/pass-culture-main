@@ -19,6 +19,7 @@ from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.api import get_next_beneficiary_validation_step
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.core.users.models import User
+from pcapi.core.users.models import UserRole
 from pcapi.core.users.models import VOID_FIRST_NAME
 from pcapi.core.users.models import VOID_PUBLIC_NAME
 from pcapi.routes.native.utils import convert_to_cent
@@ -119,6 +120,7 @@ class UserProfileResponse(BaseModel):
     next_beneficiary_validation_step: Optional[BeneficiaryValidationStep]
     subscriptions: NotificationSubscriptions  # if we send user.notification_subscriptions, pydantic will take the column and not the property
     isBeneficiary: bool
+    roles: list[UserRole]
     phoneNumber: Optional[str]
     publicName: Optional[str] = Field(None, alias="pseudo")
     needsToFillCulturalSurvey: bool
