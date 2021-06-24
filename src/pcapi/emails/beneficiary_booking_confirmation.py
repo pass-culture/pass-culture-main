@@ -55,17 +55,20 @@ def retrieve_data_for_beneficiary_booking_confirmation_email(booking: Booking) -
         formatted_event_beginning_time = get_time_formatted_for_email(event_beginning_date_in_tz)
         formatted_event_beginning_date = get_date_formatted_for_email(event_beginning_date_in_tz)
 
-    has_expiration_date = 0
-    code_expiration_date = ""
-    if booking.activationCode and booking.activationCode.expirationDate:
-        has_expiration_date = 1
-        code_expiration_date = get_date_formatted_for_email(booking.activationCode.expirationDate)
+    is_digital_booking_with_activation_code_and_no_expiration_date = (
+        1 if is_digital_offer and booking.activationCode and not booking.activationCode.expirationDate else 0
+    )
+
+    code_expiration_date = (
+        get_date_formatted_for_email(booking.activationCode.expirationDate)
+        if is_digital_offer and booking.activationCode and booking.activationCode.expirationDate
+        else ""
+    )
 
     booking_token = booking.activationCode.code if booking.activationCode else booking.token
     has_offer_url = 1 if is_digital_offer else 0
-
     return {
-        "MJ-TemplateID": 2942751,
+        "MJ-TemplateID": 2996790,
         "MJ-TemplateLanguage": True,
         "Vars": {
             "user_first_name": beneficiary_first_name,
@@ -77,7 +80,7 @@ def retrieve_data_for_beneficiary_booking_confirmation_email(booking: Booking) -
             "event_hour": formatted_event_beginning_time,
             "offer_price": stock_price,
             "offer_token": booking_token,
-            "has_expiration_date": has_expiration_date,
+            "is_digital_booking_with_activation_code_and_no_expiration_date": is_digital_booking_with_activation_code_and_no_expiration_date,
             "code_expiration_date": code_expiration_date,
             "venue_name": venue_name,
             "venue_address": venue_address,

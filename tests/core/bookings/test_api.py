@@ -141,7 +141,7 @@ class BookOfferTest:
         email_data1 = mails_testing.outbox[0].sent_data
         assert email_data1["MJ-TemplateID"] == 2843165  # to offerer
         email_data2 = mails_testing.outbox[1].sent_data
-        assert email_data2["MJ-TemplateID"] == 2942751  # to beneficiary
+        assert email_data2["MJ-TemplateID"] == 2996790  # to beneficiary
 
     def test_booked_categories_are_sent_to_batch_backend(self, app):
         offer1 = offers_factories.OfferFactory(type="ThingType.AUDIOVISUEL")

@@ -234,7 +234,7 @@ def test_no_need_when_price_is_free():
 def test_no_need_when_using_activation_code():
     # Given
     booking = make_booking()
-    ActivationCodeFactory(stock=booking.stock, booking=booking, code="code-5uzk15fbha4")
+    ActivationCodeFactory(stock=booking.stock, booking=booking, code="code_toto")
 
     # When
     email_data = retrieve_data_for_offerer_booking_recap_email(booking)

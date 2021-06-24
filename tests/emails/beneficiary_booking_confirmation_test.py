@@ -32,7 +32,7 @@ def make_booking(**kwargs):
 
 def get_expected_base_email_data(booking, mediation, **overrides):
     email_data = {
-        "MJ-TemplateID": 2942751,
+        "MJ-TemplateID": 2996790,
         "MJ-TemplateLanguage": True,
         "Vars": {
             "user_first_name": "Joe",
@@ -57,7 +57,7 @@ def get_expected_base_email_data(booking, mediation, **overrides):
             "offer_id": humanize(booking.stock.offer.id),
             "mediation_id": humanize(mediation.id),
             "code_expiration_date": "",
-            "has_expiration_date": 0,
+            "is_digital_booking_with_activation_code_and_no_expiration_date": 0,
             "has_offer_url": 0,
             "digital_offer_url": "",
             "offer_withdrawal_details": "",
@@ -216,6 +216,7 @@ class DigitalOffersTest:
             offer_price="10.00 €",
             offer_token=booking.activationCode.code,
             can_expire=0,
+            is_digital_booking_with_activation_code_and_no_expiration_date=1,
             has_offer_url=1,
             digital_offer_url="http://example.com",
             user_first_name="Jeanne",
@@ -239,7 +240,7 @@ def test_use_activation_code_instead_of_token_if_possible():
         stock__offer__product__url="http://example.com?token={token}&offerId={offerId}&email={email}",
         stock__offer__name="Super offre numérique",
     )
-    offers_factories.ActivationCodeFactory(stock=booking.stock, booking=booking, code="code-5uzk15fbha4")
+    offers_factories.ActivationCodeFactory(stock=booking.stock, booking=booking, code="code_toto")
     mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
 
     email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)
@@ -256,10 +257,11 @@ def test_use_activation_code_instead_of_token_if_possible():
         offer_name="Super offre numérique",
         offer_price="Gratuit",
         can_expire=1,
-        offer_token="code-5uzk15fbha4",
+        offer_token="code_toto",
+        is_digital_booking_with_activation_code_and_no_expiration_date=1,
         code_expiration_date="",
         has_offer_url=1,
-        digital_offer_url=f"http://example.com?token=code-5uzk15fbha4&offerId={humanize(booking.stock.offer.id)}&email=used-email@example.com",
+        digital_offer_url=f"http://example.com?token=code_toto&offerId={humanize(booking.stock.offer.id)}&email=used-email@example.com",
     )
     assert email_data == expected
 
@@ -274,7 +276,10 @@ def test_add_expiration_date_from_activation_code():
         stock__offer__name="Super offre numérique",
     )
     offers_factories.ActivationCodeFactory(
-        stock=booking.stock, booking=booking, code="code-5uzk15fbha4", expirationDate=datetime(2030, 1, 1)
+        stock=booking.stock,
+        booking=booking,
+        code="code_toto",
+        expirationDate=datetime(2030, 1, 1),
     )
     mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
 
@@ -292,8 +297,7 @@ def test_add_expiration_date_from_activation_code():
         offer_name="Super offre numérique",
         offer_price="Gratuit",
         can_expire=1,
-        offer_token="code-5uzk15fbha4",
-        has_expiration_date=1,
+        offer_token="code_toto",
         code_expiration_date="1 janvier 2030",
         has_offer_url=1,
         digital_offer_url="http://example.com",
