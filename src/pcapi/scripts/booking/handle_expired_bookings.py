@@ -54,10 +54,6 @@ def cancel_expired_bookings(batch_size: int = 500) -> None:
     updated_total = 0
     expiring_booking_ids = bookings_repository.find_expiring_bookings_ids().limit(batch_size).all()
     max_id = expiring_booking_ids[-1][0]
-    stocks_to_recompute = [
-        row[0]
-        for row in db.session.query(Booking.stockId).filter(Booking.id.in_(expiring_booking_ids)).distinct().all()
-    ]
 
     # we commit here to make sure there is no unexpected objects in SQLA cache before the update,
     # as we use synchronize_session=False
@@ -72,6 +68,12 @@ def cancel_expired_bookings(batch_size: int = 500) -> None:
                 synchronize_session=False,
             )
         )
+        # Recompute denormalized stock quantity
+        stocks_to_recompute = [
+            row[0]
+            for row in db.session.query(Booking.stockId).filter(Booking.id.in_(expiring_booking_ids)).distinct().all()
+        ]
+        recompute_dnBookedQuantity(stocks_to_recompute)
         db.session.commit()
 
         updated_total += updated
@@ -82,11 +84,6 @@ def cancel_expired_bookings(batch_size: int = 500) -> None:
             "[cancel_expired_bookings] %d Bookings have been cancelled in this batch",
             updated,
         )
-
-    # Recompute denormalized stock quantity
-    if stocks_to_recompute:
-        recompute_dnBookedQuantity(stocks_to_recompute)
-        db.session.commit()
 
     logger.info(
         "[cancel_expired_bookings] %d Bookings have been cancelled",

@@ -118,11 +118,15 @@ class CancelExpiredBookingsTest:
         n_queries = (
             1  # select count
             + 1  # select initial booking ids
-            + 1  # select associated stocks
             + 1  # release savepoint/COMMIT
-            + 4 * 3  # update, release savepoint/COMMIT, select next ids
-            + 1  # recompute denormalized booking quantity in stock
-            + 1  # commit previous computation
+            + 4
+            * (
+                1  # update
+                + 1  # release savepoint/COMMIT
+                + 1  # select stock
+                + 1  # recompute dnBookedQuantity
+                + 1  # select next ids
+            )
         )
 
         with assert_num_queries(n_queries):
