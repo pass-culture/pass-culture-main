@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import isEqual from 'lodash.isequal'
 import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
@@ -9,7 +10,7 @@ import FilterByBookingPeriod from './FilterByBookingPeriod'
 import FilterByEventDate from './FilterByEventDate.jsx'
 import FilterByVenue from './FilterByVenue'
 
-const PreFilters = ({ appliedPreFilters, applyPreFilters, isLoading, wereBookingsRequested }) => {
+const PreFilters = ({ appliedPreFilters, applyPreFilters, hasResult, isLoading, wereBookingsRequested }) => {
   const [selectedPreFilters, setSelectedPreFilters] = useState({ ...appliedPreFilters })
   const [venues, setVenues] = useState([])
 
@@ -39,7 +40,13 @@ const PreFilters = ({ appliedPreFilters, applyPreFilters, isLoading, wereBooking
 
   return (
     <>
-      <form onSubmit={requestFilteredBookings}>
+      <form
+        className={classNames({
+          'has-result': hasResult,
+          'refresh-required': isRefreshRequired,
+        })}
+        onSubmit={requestFilteredBookings}
+      >
         <div className="pre-filters">
           <FilterByVenue
             selectedVenue={selectedPreFilters.offerVenueId}
@@ -87,6 +94,7 @@ PreFilters.propTypes = {
     offerVenueId: PropTypes.string.isRequired,
   }).isRequired,
   applyPreFilters: PropTypes.func.isRequired,
+  hasResult: PropTypes.bool.isRequired,
   isLoading: PropTypes.bool.isRequired,
   wereBookingsRequested: PropTypes.bool.isRequired,
 }

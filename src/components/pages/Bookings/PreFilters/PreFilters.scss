@@ -17,11 +17,11 @@
         background-position-x: 90%;
         background-position-y: center;
         background-repeat: no-repeat;
+        border: 1px solid $grey-medium;
         border-radius: rem(20px);
+        box-shadow: 2px 2px 6px 0 $black-shadow;
         display: flex;
         height: rem(40px);
-        border: 1px solid $grey-medium;
-        box-shadow: 2px 2px 6px 0 $black-shadow;
         margin-top: rem(12px);
         padding: 0 1px;
         width: rem(233px);
@@ -123,7 +123,6 @@
   .search-separator {
     align-items: center;
     display: flex;
-    margin-bottom: rem(16px);
 
     .separator {
       background-color: $grey-medium;
@@ -136,10 +135,37 @@
     }
   }
 
+  form {
+    &:not(.has-result) {
+      margin-bottom: rem(32px);
+    }
+
+    &.has-result:not(.refresh-required) {
+      margin-bottom: rem(48px);
+    }
+
+    &.refresh-required.has-result {
+      margin-bottom: rem(16px);
+    }
+
+    &:not(.refresh-required) ~ .no-bookings-for-pre-filters {
+      padding-top: rem(16px);
+    }
+
+    &.refresh-required ~ .no-bookings-for-pre-filters {
+      padding-top: 0;
+    }
+  }
+
+  .choose-pre-filters {
+    padding-top: rem(16px);
+  }
+
   .pf-refresh-message {
     @include body();
 
     color: $red-error;
+    line-height: rem(16px);
     text-align: center;
   }
 }
