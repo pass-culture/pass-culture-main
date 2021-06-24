@@ -24,6 +24,11 @@ class Desk extends Component {
     this.TOKEN_MAX_LENGTH = 6
     this.VALID_TOKEN_SYNTAX = /[^a-z0-9]/i
     this.BOOKING_ALREADY_USED = 410
+    this.tokenInputRef = React.createRef()
+  }
+
+  componentDidMount() {
+    this.tokenInputRef.current.focus()
   }
 
   formattedBookingDate = booking =>
@@ -188,6 +193,7 @@ class Desk extends Component {
         </p>
         <form>
           <TextInput
+            inputRef={this.tokenInputRef}
             label="Contremarque"
             maxLength={this.TOKEN_MAX_LENGTH}
             name="token"

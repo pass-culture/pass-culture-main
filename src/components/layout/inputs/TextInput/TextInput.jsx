@@ -7,6 +7,7 @@ const TextInput = ({
   countCharacters,
   disabled,
   error,
+  inputRef,
   label,
   longDescription,
   maxLength,
@@ -40,6 +41,7 @@ const TextInput = ({
       name={name}
       onChange={onChange}
       placeholder={placeholder}
+      ref={inputRef}
       required={required}
       type={type}
       value={value}
@@ -61,6 +63,7 @@ TextInput.defaultProps = {
   countCharacters: false,
   disabled: false,
   error: null,
+  inputRef: null,
   longDescription: null,
   maxLength: null,
   onChange: null,
@@ -75,6 +78,7 @@ TextInput.propTypes = {
   countCharacters: PropTypes.bool,
   disabled: PropTypes.bool,
   error: PropTypes.string,
+  inputRef: PropTypes.oneOfType([PropTypes.func, PropTypes.shape()]),
   label: PropTypes.string.isRequired,
   longDescription: PropTypes.string,
   maxLength: PropTypes.number,
