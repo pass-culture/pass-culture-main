@@ -93,26 +93,7 @@ def on_identity_fraud_check_result(
     fraud_items.append(_duplicate_id_piece_number_fraud_item(jouve_content.bodyPieceNumber))
     fraud_items.extend(_id_check_fraud_items(jouve_content))
 
-    if all(fraud_item.status == models.FraudStatus.OK for fraud_item in fraud_items):
-        status = models.FraudStatus.OK
-    elif any(fraud_item.status == models.FraudStatus.KO for fraud_item in fraud_items):
-        status = models.FraudStatus.KO
-    else:
-        status = models.FraudStatus.SUSPICIOUS
-
-    if user.beneficiaryFraudResult:
-        fraud_result = user.beneficiaryFraudResult
-        fraud_result.status = status
-
-    else:
-        fraud_result = models.BeneficiaryFraudResult(
-            userId=user.id,
-            status=status,
-        )
-    fraud_result.reason = f" {FRAUD_RESULT_REASON_SEPARATOR} ".join(
-        fraud_item.detail for fraud_item in fraud_items if fraud_item.status != models.FraudStatus.OK
-    )
-
+    fraud_result = validate_frauds(user, fraud_items)
     repository.save(fraud_result)
     return fraud_result
 
@@ -314,10 +295,8 @@ def handle_phone_validation_attempts_limit_reached(user: User, attempts_count: i
 
 def dms_fraud_check(
     user: User,
-    dms_content: Union[models.DemarchesSimplifieesContent, dict],
-):
-    if isinstance(dms_content, dict):
-        dms_content = models.DemarchesSimplifieesContent(**dms_content)
+    dms_content: models.DemarchesSimplifieesContent,
+) -> models.BeneficiaryFraudCheck:
 
     fraud_check = models.BeneficiaryFraudCheck(
         user=user,
@@ -328,3 +307,45 @@ def dms_fraud_check(
 
     db.session.add(fraud_check)
     db.session.commit()
+    return fraud_check
+
+
+def on_dms_fraud_check_result(user: User, beneficiary_fraud_check: models.BeneficiaryFraudCheck):
+    dms_content = models.DemarchesSimplifieesContent(**beneficiary_fraud_check.resultContent)
+
+    fraud_items = []
+    fraud_items.append(
+        _duplicate_user_fraud_item(
+            first_name=dms_content.first_name,
+            last_name=dms_content.last_name,
+            birth_date=dms_content.birth_date,
+        )
+    )
+    fraud_items.append(_duplicate_id_piece_number_fraud_item(dms_content.id_piece_number))
+
+    fraud_result = validate_frauds(user, fraud_items)
+    db.session.add(fraud_result)
+    db.session.commit()
+
+
+def validate_frauds(user: User, fraud_items: list[models.FraudItem]) -> models.BeneficiaryFraudResult:
+    if all(fraud_item.status == models.FraudStatus.OK for fraud_item in fraud_items):
+        status = models.FraudStatus.OK
+    elif any(fraud_item.status == models.FraudStatus.KO for fraud_item in fraud_items):
+        status = models.FraudStatus.KO
+    else:
+        status = models.FraudStatus.SUSPICIOUS
+
+    if user.beneficiaryFraudResult:
+        fraud_result = user.beneficiaryFraudResult
+        fraud_result.status = status
+    else:
+        fraud_result = models.BeneficiaryFraudResult(
+            userId=user.id,
+            status=status,
+        )
+    fraud_result.reason = f" {FRAUD_RESULT_REASON_SEPARATOR} ".join(
+        fraud_item.detail for fraud_item in fraud_items if fraud_item.status != models.FraudStatus.OK
+    )
+
+    return fraud_result

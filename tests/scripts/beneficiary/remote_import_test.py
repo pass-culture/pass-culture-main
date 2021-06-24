@@ -8,6 +8,8 @@ from unittest.mock import patch
 from mailjet_rest import Client
 import pytest
 
+from pcapi.core.fraud.factories import FRAUD_CHECK_TYPE_MODEL_ASSOCIATION
+import pcapi.core.fraud.models as fraud_models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.testing import override_features
 from pcapi.core.users import api as users_api
@@ -798,6 +800,16 @@ class RunIntegrationTest:
         assert user.address == "11 Rue du Test"
         assert not user.isBeneficiary
 
+        assert len(user.beneficiaryFraudChecks) == 1
+        fraud_check = user.beneficiaryFraudChecks[0]
+        assert fraud_check.type == fraud_models.FraudCheckType.DMS
+        fraud_content = fraud_models.DemarchesSimplifieesContent(**fraud_check.resultContent)
+        assert fraud_content.birth_date == user.dateOfBirth.date()
+        assert fraud_content.address == "11 Rue du Test"
+
+        fraud_result = user.beneficiaryFraudResult
+        assert fraud_result is None
+
         assert BeneficiaryImport.query.count() == 1
         beneficiary_import = BeneficiaryImport.query.first()
 
@@ -849,6 +861,13 @@ class RunIntegrationTest:
         assert user.phoneNumber == "0102030405"
         assert user.idPieceNumber == "121314"
 
+        assert len(user.beneficiaryFraudChecks) == 1
+        fraud_check = user.beneficiaryFraudChecks[0]
+        assert fraud_check.type == fraud_models.FraudCheckType.DMS
+        fraud_content = fraud_models.DemarchesSimplifieesContent(**fraud_check.resultContent)
+        assert fraud_content.birth_date == user.dateOfBirth.date()
+        assert fraud_content.address == "11 Rue du Test"
+
         assert BeneficiaryImport.query.count() == 1
         beneficiary_import = BeneficiaryImport.query.first()
 
@@ -873,7 +892,7 @@ class RunIntegrationTest:
             email="john.doe@example.com",
             postalCode="93450",
             phoneNumber="0102030405",
-            idPieceNumber="121314",
+            idPieceNumber="121316",
             isEmailValidated=True,
             isActive=True,
             isBeneficiary=True,
@@ -899,7 +918,10 @@ class RunIntegrationTest:
         # then
         assert User.query.count() == 1
         assert BeneficiaryImport.query.count() == 1
-        user = User.query.first()
+        user = User.query.get(user.id)
+        assert len(user.beneficiaryFraudChecks) == 0
+        assert user.beneficiaryFraudResult is None
+
         beneficiary_import = BeneficiaryImport.query.first()
         assert beneficiary_import.source == "demarches_simplifiees"
         assert beneficiary_import.applicationId == 123
@@ -939,6 +961,12 @@ class RunIntegrationTest:
         assert User.query.count() == 1
         assert BeneficiaryImport.query.count() == 1
         user = User.query.first()
+        fraud_check = user.beneficiaryFraudChecks[0]
+        assert fraud_check.type == fraud_models.FraudCheckType.DMS
+        fraud_content = fraud_models.DemarchesSimplifieesContent(**fraud_check.resultContent)
+        assert fraud_content.birth_date == user.dateOfBirth.date()
+        assert fraud_content.address == "11 Rue du Test"
+
         beneficiary_import = BeneficiaryImport.query.first()
         assert beneficiary_import.source == "demarches_simplifiees"
         assert beneficiary_import.applicationId == 123

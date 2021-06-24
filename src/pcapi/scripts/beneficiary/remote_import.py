@@ -81,12 +81,12 @@ def run(
             )
             continue
 
-        user = find_user_by_email(information["email"])
-        if user:
-            fraud_api.dms_fraud_check(user, information)
+        user = find_user_by_email(information.email)
         if user and user.isBeneficiary is True:
             _process_rejection(information, procedure_id=procedure_id, reason="Compte existant avec cet email")
             continue
+        if user:
+            fraud_api.dms_fraud_check(user, information)
 
         if (
             information.get("id_piece_number")
