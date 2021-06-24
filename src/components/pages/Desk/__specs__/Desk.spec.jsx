@@ -49,7 +49,6 @@ describe('src | components | Desk', () => {
     )
     expect(description).toBeInTheDocument()
     const input = screen.getByPlaceholderText('ex : AZE123')
-    expect(input).toHaveAttribute('maxLength', '6')
     expect(input).toHaveAttribute('type', 'text')
     const bookingUser = queryByTextTrimHtml(screen, 'Utilisateur : Fake user name')
     expect(bookingUser).not.toBeInTheDocument()

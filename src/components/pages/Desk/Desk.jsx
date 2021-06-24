@@ -44,7 +44,10 @@ class Desk extends Component {
 
   validateToken = event => {
     const { getBooking } = this.props
-    const token = event.target.value.toUpperCase()
+    const inputValue = event.target.value.toUpperCase()
+    // QRCODE return a prefix that we want to ignore.
+    const token = inputValue.split(':').reverse()[0]
+
     const { canCheckTheToken, level, message } = this.getStatusFromToken(token)
     this.setState({
       booking: null,
@@ -109,6 +112,14 @@ class Desk extends Component {
         message: `Caractères restants : ${this.TOKEN_MAX_LENGTH - token.length}/${
           this.TOKEN_MAX_LENGTH
         }`,
+      }
+    }
+
+    if (token.length > this.TOKEN_MAX_LENGTH) {
+      return {
+        canCheckTheToken: false,
+        level: 'error',
+        message: `La contremarque ne peut pas faire plus de ${this.TOKEN_MAX_LENGTH} caractères`,
       }
     }
 
@@ -195,7 +206,6 @@ class Desk extends Component {
           <TextInput
             inputRef={this.tokenInputRef}
             label="Contremarque"
-            maxLength={this.TOKEN_MAX_LENGTH}
             name="token"
             onChange={this.validateToken}
             placeholder="ex : AZE123"
