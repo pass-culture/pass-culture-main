@@ -9,6 +9,7 @@ from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
 import jwt
 import pytest
+import requests_mock
 
 from pcapi import settings
 from pcapi.core.bookings import factories as bookings_factories
@@ -443,6 +444,27 @@ class CreateBeneficiaryTest:
         user = users_api.activate_beneficiary(user, "test")
         assert user.isBeneficiary
         assert len(user.deposits) == 1
+
+    def test_apps_flyer_called(self):
+        eligible_date = date.today() - relativedelta(years=18, days=30)
+        apps_flyer_data = {"apps_flyer": {"user": "some-user-id", "platform": "ANDROID"}}
+        user = users_factories.UserFactory(isBeneficiary=False, dateOfBirth=eligible_date, externalIds=apps_flyer_data)
+
+        expected = {
+            "customer_user_id": str(user.id),
+            "appsflyer_id": "some-user-id",
+            "eventName": "af_complete_beneficiary_registration",
+            "eventValue": {"af_user_id": str(user.id)},
+        }
+
+        with requests_mock.Mocker() as mock:
+            posted = mock.post("https://api2.appsflyer.com/inappevent/app.passculture.webapp")
+            user = users_api.activate_beneficiary(user, "test")
+
+            assert posted.last_request.json() == expected
+
+            assert user.isBeneficiary
+            assert len(user.deposits) == 1
 
 
 class StepsToBecomeBeneficiaryTest:

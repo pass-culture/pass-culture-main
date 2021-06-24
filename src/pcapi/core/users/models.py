@@ -209,6 +209,8 @@ class User(PcObject, Model, NeedsValidationMixin):
 
     hasCompletedIdCheck = Column(Boolean, nullable=True)
 
+    externalIds = Column(JSONB, nullable=True, default={}, server_default="{}")
+
     def checkPassword(self, passwordToCheck):
         return check_password(passwordToCheck, self.password)
 

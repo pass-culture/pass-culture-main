@@ -48,6 +48,7 @@ class Returns200Test:
             "dateOfBirth": format_into_utc_date(user.dateOfBirth),
             "departementCode": "93",
             "email": "toto@example.com",
+            "externalIds": {},
             "firstName": "Jean",
             "hasCompletedIdCheck": None,
             "hasPhysicalVenues": False,

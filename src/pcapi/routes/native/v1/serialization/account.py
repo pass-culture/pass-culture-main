@@ -46,6 +46,8 @@ class AccountRequest(BaseModel):
     marketing_email_subscription: Optional[bool] = False
     token: str
     postal_code: Optional[str] = None
+    apps_flyer_user_id: Optional[str] = None
+    apps_flyer_platform: Optional[str] = None
 
     class Config:
         alias_generator = to_camel

@@ -454,3 +454,7 @@ secrets:
     version: 2
   - name: WALLET_BALANCES_RECIPIENTS
     version: 2
+  - name: APPS_FLYER_ANDROID_API_KEY
+    version: 1
+  - name: APPS_FLYER_IOS_API_KEY
+    version: 1

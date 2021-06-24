@@ -68,6 +68,7 @@ from pcapi.repository.user_queries import find_user_by_email
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
 from pcapi.tasks.account import verify_identity_document
 from pcapi.utils.token import random_token
+from pcapi.workers.apps_flyer_job import log_user_becomes_beneficiary_event_job
 
 
 logger = logging.getLogger(__name__)
@@ -160,6 +161,8 @@ def create_account(
     send_activation_mail: bool = True,
     postal_code: str = None,
     phone_number: str = None,
+    apps_flyer_user_id: str = None,
+    apps_flyer_platform: str = None,
 ) -> User:
     email = sanitize_email(email)
     if find_user_by_email(email):
@@ -178,6 +181,9 @@ def create_account(
         departementCode=departementCode,
         phoneNumber=phone_number,
     )
+
+    if apps_flyer_user_id and apps_flyer_platform:
+        user.externalIds["apps_flyer"] = {"user": apps_flyer_user_id, "platform": apps_flyer_platform.upper()}
 
     if not user.age or user.age < constants.ACCOUNT_CREATION_MINIMUM_AGE:
         raise exceptions.UnderAgeUserException()
@@ -252,9 +258,14 @@ def activate_beneficiary(user: User, deposit_source: str = None) -> User:
         deposit_source = beneficiary_import.get_detailed_source()
 
     user.isBeneficiary = True
+
+    if "apps_flyer" in user.externalIds:
+        log_user_becomes_beneficiary_event_job.delay(user.id)
     deposit = payment_api.create_deposit(user, deposit_source=deposit_source)
+
     db.session.add_all((user, deposit))
     db.session.commit()
+
     logger.info("Activated beneficiary and created deposit", extra={"user": user.id})
     return user
 
