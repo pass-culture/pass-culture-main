@@ -35,6 +35,7 @@ class BookingVenueResponse(BaseModel):
     id: int
     city: Optional[str]
     name: str
+    publicName: Optional[str]
     coordinates: Coordinates
 
     class Config:

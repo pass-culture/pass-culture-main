@@ -99,7 +99,7 @@ def get_bookings(user: User) -> BookingsResponse:
             joinedload(Booking.stock)
             .joinedload(Stock.offer)
             .joinedload(Offer.venue)
-            .load_only(Venue.name, Venue.city, Venue.latitude, Venue.longitude)
+            .load_only(Venue.name, Venue.city, Venue.latitude, Venue.longitude, Venue.publicName)
         )
         .options(joinedload(Booking.activationCode))
     ).all()
