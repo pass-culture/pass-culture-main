@@ -206,7 +206,7 @@ elif [[ "$CMD" == "bash" ]]; then
     if [ "$FILE_TO_UPLOAD" == 'none' ]; then
     kubectl -n $ENV exec -it $(pod_console)  -- bash
     else
-    kubectl cp "$FILE_TO_UPLOAD" $(pod_console):"$FILE_TO_UPLOAD" && \
+    kubectl cp -n $ENV "$FILE_TO_UPLOAD" $(pod_console):"$FILE_TO_UPLOAD" && \
     kubectl -n $ENV exec -it $(pod_console)  -- bash
     fi
     exit
@@ -644,7 +644,7 @@ elif [[ "$CMD" == "python" ]]; then
     if [ "$FILE_TO_UPLOAD" == 'none' ]; then
       kubectl -n $ENV exec -it $(pod_console) -- python -i src/pcapi/scripts/interact.py
     else
-      kubectl cp "$FILE_TO_UPLOAD" $(pod_console):"$FILE_TO_UPLOAD"
+      kubectl cp -n $ENV "$FILE_TO_UPLOAD" $(pod_console):"$FILE_TO_UPLOAD"
       kubectl -n $ENV exec -it $(pod_console) -- python -i src/pcapi/scripts/interact.py
     fi
     exit
@@ -679,7 +679,7 @@ else
     if [ "$FILE_TO_UPLOAD" == 'none' ]; then
       kubectl -n $ENV exec -it $(pod_console) -- python src/pcapi/scripts/pc.py '"$CMD $*"'
     else
-      kubectl cp "$FILE_TO_UPLOAD" $(pod_console):"$FILE_TO_UPLOAD"
+      kubectl cp -n $ENV "$FILE_TO_UPLOAD" $(pod_console):"$FILE_TO_UPLOAD"
       kubectl -n $ENV exec -it $(pod_console) -- python src/pcapi/scripts/pc.py '"$CMD $*"'
     fi
     exit
