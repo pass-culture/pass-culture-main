@@ -7,6 +7,7 @@ from typing import Union
 import sqlalchemy
 
 from pcapi.core.users.models import User
+from pcapi.models.db import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.repository.user_queries import matching
@@ -309,3 +310,21 @@ def handle_phone_validation_attempts_limit_reached(user: User, attempts_count: i
 
     create_internal_review_fraud_check(user, fraud_check_data)
     return upsert_suspicious_fraud_result(user, reason)
+
+
+def dms_fraud_check(
+    user: User,
+    dms_content: Union[models.DemarchesSimplifieesContent, dict],
+):
+    if isinstance(dms_content, dict):
+        dms_content = models.DemarchesSimplifieesContent(**dms_content)
+
+    fraud_check = models.BeneficiaryFraudCheck(
+        user=user,
+        type=models.FraudCheckType.DMS,
+        thirdPartyId=str(dms_content.application_id),
+        resultContent=dms_content,
+    )
+
+    db.session.add(fraud_check)
+    db.session.commit()

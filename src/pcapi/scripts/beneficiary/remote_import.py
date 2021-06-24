@@ -5,6 +5,7 @@ from typing import Optional
 
 from pcapi import settings
 from pcapi.connectors.api_demarches_simplifiees import get_application_details
+import pcapi.core.fraud.api as fraud_api
 from pcapi.core.users.api import activate_beneficiary
 from pcapi.core.users.api import create_reset_password_token
 from pcapi.core.users.api import steps_to_become_beneficiary
@@ -81,6 +82,8 @@ def run(
             continue
 
         user = find_user_by_email(information["email"])
+        if user:
+            fraud_api.dms_fraud_check(user, information)
         if user and user.isBeneficiary is True:
             _process_rejection(information, procedure_id=procedure_id, reason="Compte existant avec cet email")
             continue

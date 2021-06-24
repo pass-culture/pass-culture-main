@@ -91,13 +91,13 @@ class DemarchesSimplifieesContent(pydantic.BaseModel):
     civility: str
     email: str
     application_id: int
-    departement: str
+    departement: typing.Optional[str]
     birth_date: datetime.date
     phone: str
     postal_code: str
     activity: str
     address: str
-    id_piece_number: str
+    id_piece_number: typing.Optional[str]
 
 
 class UserProfilingFraudData(pydantic.BaseModel):
