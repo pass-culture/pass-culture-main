@@ -1,7 +1,6 @@
 from datetime import datetime
 import logging
 import re
-from typing import Callable
 from typing import Optional
 
 from pcapi import settings
@@ -35,11 +34,6 @@ logger = logging.getLogger(__name__)
 def run(
     process_applications_updated_after: datetime,
     procedure_id: int,
-    get_all_applications_ids: Callable[..., list[int]] = get_closed_application_ids_for_demarche_simplifiee,
-    get_applications_ids_to_retry: Callable[..., list[int]] = find_applications_ids_to_retry,
-    get_details: Callable[..., dict] = get_application_details,
-    already_imported: Callable[..., bool] = is_already_imported,
-    already_existing_user: Callable[..., User] = find_user_by_email,
 ) -> None:
     logger.info(
         "[BATCH][REMOTE IMPORT BENEFICIARIES] Start import from Démarches Simplifiées for "
@@ -49,8 +43,8 @@ def run(
     )
     error_messages: list[str] = []
     new_beneficiaries: list[User] = []
-    applications_ids = get_all_applications_ids(procedure_id, settings.DMS_TOKEN)
-    retry_ids = get_applications_ids_to_retry()
+    applications_ids = get_closed_application_ids_for_demarche_simplifiee(procedure_id, settings.DMS_TOKEN)
+    retry_ids = find_applications_ids_to_retry()
 
     logger.info(
         "[BATCH][REMOTE IMPORT BENEFICIARIES] %i new applications to process - Procedure %s",
@@ -64,7 +58,7 @@ def run(
     )
 
     for application_id in retry_ids + applications_ids:
-        details = get_details(application_id, procedure_id, settings.DMS_TOKEN)
+        details = get_application_details(application_id, procedure_id, settings.DMS_TOKEN)
         try:
             information = parse_beneficiary_information(details)
         except Exception as exc:  # pylint: disable=broad-except
@@ -86,7 +80,7 @@ def run(
             )
             continue
 
-        user = already_existing_user(information["email"])
+        user = find_user_by_email(information["email"])
         if user and user.isBeneficiary is True:
             _process_rejection(information, procedure_id=procedure_id, reason="Compte existant avec cet email")
             continue
@@ -97,7 +91,7 @@ def run(
         ):
             _process_rejection(information, procedure_id=procedure_id, reason="Nr de piece déjà utilisé", user=user)
 
-        if not already_imported(information["application_id"]):
+        if not is_already_imported(information["application_id"]):
             process_beneficiary_application(
                 information=information,
                 error_messages=error_messages,

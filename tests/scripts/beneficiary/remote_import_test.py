@@ -11,6 +11,7 @@ import pytest
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.testing import override_features
 from pcapi.core.users import api as users_api
+from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import PhoneValidationStatusType
 from pcapi.core.users.models import User
 from pcapi.model_creators.generic_creators import create_user
@@ -31,121 +32,148 @@ NOW = datetime.utcnow()
 ONE_WEEK_AGO = NOW - timedelta(days=7)
 
 
+@pytest.mark.usefixtures("db_session")
 class RunTest:
+    @patch("pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee")
+    @patch("pcapi.scripts.beneficiary.remote_import.find_applications_ids_to_retry")
+    @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
+    @patch("pcapi.scripts.beneficiary.remote_import.is_already_imported")
+    @patch("pcapi.scripts.beneficiary.remote_import.find_user_by_email")
     @patch("pcapi.scripts.beneficiary.remote_import.process_beneficiary_application")
-    def test_should_retrieve_applications_from_new_procedure_id(self, process_beneficiary_application):
-        # given
-        get_all_application_ids = Mock(return_value=[123, 456, 789])
-        find_applications_ids_to_retry = Mock(return_value=[])
-
-        get_details = Mock()
-        get_details.side_effect = [
-            make_new_beneficiary_application_details(123, "closed"),
-            make_new_beneficiary_application_details(456, "closed"),
-            make_new_beneficiary_application_details(789, "closed"),
-        ]
-
-        has_already_been_imported = Mock(return_value=False)
-        has_already_been_created = Mock(return_value=False)
-
-        # when
-        remote_import.run(
-            ONE_WEEK_AGO,
-            procedure_id=6712558,
-            get_all_applications_ids=get_all_application_ids,
-            get_applications_ids_to_retry=find_applications_ids_to_retry,
-            get_details=get_details,
-            already_imported=has_already_been_imported,
-            already_existing_user=has_already_been_created,
-        )
-
-        # then
-        assert get_all_application_ids.call_count == 1
-        get_all_application_ids.assert_called_with(6712558, ANY)
-
-    @patch("pcapi.scripts.beneficiary.remote_import.process_beneficiary_application")
-    def test_all_applications_are_processed_once(self, process_beneficiary_application):
-        # given
-        get_all_application_ids = Mock(return_value=[123, 456, 789])
-        find_applications_ids_to_retry = Mock(return_value=[])
-
-        get_details = Mock()
-        get_details.side_effect = [
-            make_new_beneficiary_application_details(123, "closed"),
-            make_new_beneficiary_application_details(456, "closed"),
-            make_new_beneficiary_application_details(789, "closed"),
-        ]
-
-        has_already_been_imported = Mock(return_value=False)
-        has_already_been_created = Mock(return_value=False)
-
-        # when
-        remote_import.run(
-            ONE_WEEK_AGO,
-            procedure_id=6712558,
-            get_all_applications_ids=get_all_application_ids,
-            get_applications_ids_to_retry=find_applications_ids_to_retry,
-            get_details=get_details,
-            already_imported=has_already_been_imported,
-            already_existing_user=has_already_been_created,
-        )
-
-        # then
-        assert process_beneficiary_application.call_count == 3
-
-    @patch("pcapi.scripts.beneficiary.remote_import.process_beneficiary_application")
-    def test_applications_to_retry_are_processed(self, process_beneficiary_application):
-        # given
-        get_all_application_ids = Mock(return_value=[123])
-        find_applications_ids_to_retry = Mock(return_value=[456, 789])
-
-        get_details = Mock()
-        get_details.side_effect = [
-            make_new_beneficiary_application_details(123, "closed"),
-            make_new_beneficiary_application_details(456, "closed"),
-            make_new_beneficiary_application_details(789, "closed"),
-        ]
-
-        has_already_been_imported = Mock(return_value=False)
-        has_already_been_created = Mock(return_value=False)
-
-        # when
-        remote_import.run(
-            ONE_WEEK_AGO,
-            procedure_id=6712558,
-            get_all_applications_ids=get_all_application_ids,
-            get_applications_ids_to_retry=find_applications_ids_to_retry,
-            get_details=get_details,
-            already_imported=has_already_been_imported,
-            already_existing_user=has_already_been_created,
-        )
-
-        # then
-        assert process_beneficiary_application.call_count == 3
-
-    @patch("pcapi.scripts.beneficiary.remote_import.parse_beneficiary_information")
-    @pytest.mark.usefixtures("db_session")
-    def test_an_error_status_is_saved_when_an_application_is_not_parsable(
-        self, mocked_parse_beneficiary_information, app
+    def test_should_retrieve_applications_from_new_procedure_id(
+        self,
+        process_beneficiary_application,
+        find_user_by_email,
+        is_already_imported,
+        get_details,
+        find_applications_ids_to_retry,
+        get_closed_application_ids_for_demarche_simplifiee,
     ):
         # given
-        get_all_application_ids = Mock(return_value=[123])
-        find_applications_ids_to_retry = Mock(return_value=[])
+        get_closed_application_ids_for_demarche_simplifiee.return_value = [123, 456, 789]
+        find_applications_ids_to_retry.return_value = []
 
-        get_details = Mock(side_effect=[make_new_beneficiary_application_details(123, "closed")])
-        has_already_been_imported = Mock(return_value=False)
-        has_already_been_created = Mock(return_value=False)
+        get_details.side_effect = [
+            make_new_beneficiary_application_details(123, "closed"),
+            make_new_beneficiary_application_details(456, "closed"),
+            make_new_beneficiary_application_details(789, "closed"),
+        ]
+
+        is_already_imported.return_value = False
+        find_user_by_email.return_value = False
+
+        # when
+        remote_import.run(
+            ONE_WEEK_AGO,
+            procedure_id=6712558,
+        )
+
+        # then
+        assert get_closed_application_ids_for_demarche_simplifiee.call_count == 1
+        get_closed_application_ids_for_demarche_simplifiee.assert_called_with(6712558, ANY)
+
+    @patch("pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee")
+    @patch("pcapi.scripts.beneficiary.remote_import.find_applications_ids_to_retry")
+    @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
+    @patch("pcapi.scripts.beneficiary.remote_import.is_already_imported")
+    @patch("pcapi.scripts.beneficiary.remote_import.find_user_by_email")
+    @patch("pcapi.scripts.beneficiary.remote_import.process_beneficiary_application")
+    def test_all_applications_are_processed_once(
+        self,
+        process_beneficiary_application,
+        find_user_by_email,
+        is_already_imported,
+        get_details,
+        find_applications_ids_to_retry,
+        get_closed_application_ids_for_demarche_simplifiee,
+    ):
+        # given
+        get_closed_application_ids_for_demarche_simplifiee.return_value = [123, 456, 789]
+        find_applications_ids_to_retry.return_value = []
+
+        get_details.side_effect = [
+            make_new_beneficiary_application_details(123, "closed"),
+            make_new_beneficiary_application_details(456, "closed"),
+            make_new_beneficiary_application_details(789, "closed"),
+        ]
+
+        is_already_imported.return_value = False
+        find_user_by_email.return_value = False
+
+        # when
+        remote_import.run(
+            ONE_WEEK_AGO,
+            procedure_id=6712558,
+        )
+
+        # then
+        assert process_beneficiary_application.call_count == 3
+
+    @patch("pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee")
+    @patch("pcapi.scripts.beneficiary.remote_import.find_applications_ids_to_retry")
+    @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
+    @patch("pcapi.scripts.beneficiary.remote_import.is_already_imported")
+    @patch("pcapi.scripts.beneficiary.remote_import.find_user_by_email")
+    @patch("pcapi.scripts.beneficiary.remote_import.process_beneficiary_application")
+    def test_applications_to_retry_are_processed(
+        self,
+        process_beneficiary_application,
+        find_user_by_email,
+        is_already_imported,
+        get_details,
+        find_applications_ids_to_retry,
+        get_closed_application_ids_for_demarche_simplifiee,
+    ):
+        # given
+        get_closed_application_ids_for_demarche_simplifiee.return_value = [123]
+        find_applications_ids_to_retry.return_value = [456, 789]
+
+        get_details.side_effect = [
+            make_new_beneficiary_application_details(123, "closed"),
+            make_new_beneficiary_application_details(456, "closed"),
+            make_new_beneficiary_application_details(789, "closed"),
+        ]
+
+        is_already_imported.return_value = False
+        find_user_by_email.return_value = False
+
+        # when
+        remote_import.run(
+            ONE_WEEK_AGO,
+            procedure_id=6712558,
+        )
+
+        # then
+        assert process_beneficiary_application.call_count == 3
+
+    @patch("pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee")
+    @patch("pcapi.scripts.beneficiary.remote_import.find_applications_ids_to_retry")
+    @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
+    @patch("pcapi.scripts.beneficiary.remote_import.is_already_imported")
+    @patch("pcapi.scripts.beneficiary.remote_import.find_user_by_email")
+    @patch("pcapi.scripts.beneficiary.remote_import.parse_beneficiary_information")
+    def test_an_error_status_is_saved_when_an_application_is_not_parsable(
+        self,
+        mocked_parse_beneficiary_information,
+        find_user_by_email,
+        is_already_imported,
+        get_details,
+        find_applications_ids_to_retry,
+        get_closed_application_ids_for_demarche_simplifiee,
+    ):
+        # given
+        get_closed_application_ids_for_demarche_simplifiee.return_value = [123]
+        find_applications_ids_to_retry.return_value = []
+
+        get_details.side_effect = [make_new_beneficiary_application_details(123, "closed")]
+        is_already_imported.return_value = False
+        find_user_by_email.return_value = False
         mocked_parse_beneficiary_information.side_effect = [Exception()]
 
         # when
         remote_import.run(
             ONE_WEEK_AGO,
             procedure_id=6712558,
-            get_all_applications_ids=get_all_application_ids,
-            get_applications_ids_to_retry=find_applications_ids_to_retry,
-            get_details=get_details,
-            already_imported=has_already_been_imported,
-            already_existing_user=has_already_been_created,
         )
 
         # then
@@ -154,55 +182,68 @@ class RunTest:
         assert beneficiary_import.applicationId == 123
         assert beneficiary_import.detail == "Le dossier 123 contient des erreurs et a été ignoré - Procedure 6712558"
 
+    @patch("pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee")
+    @patch("pcapi.scripts.beneficiary.remote_import.find_applications_ids_to_retry")
+    @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
+    @patch("pcapi.scripts.beneficiary.remote_import.is_already_imported")
+    @patch("pcapi.scripts.beneficiary.remote_import.find_user_by_email")
     @patch("pcapi.scripts.beneficiary.remote_import.process_beneficiary_application")
-    def test_application_with_known_application_id_are_not_processed(self, process_beneficiary_application):
+    def test_application_with_known_application_id_are_not_processed(
+        self,
+        process_beneficiary_application,
+        find_user_by_email,
+        is_already_imported,
+        get_details,
+        find_applications_ids_to_retry,
+        get_closed_application_ids_for_demarche_simplifiee,
+    ):
         # given
-        get_all_application_ids = Mock(return_value=[123, 456])
-        find_applications_ids_to_retry = Mock(return_value=[])
+        get_closed_application_ids_for_demarche_simplifiee.return_value = [123]
+        find_applications_ids_to_retry.return_value = []
 
-        get_details = Mock(return_value=make_new_beneficiary_application_details(123, "closed"))
+        get_details.return_value = make_new_beneficiary_application_details(123, "closed")
         user = User()
         user.email = "john.doe@example.com"
-        has_already_been_imported = Mock(return_value=True)
-        has_already_been_created = Mock(return_value=False)
+        is_already_imported.return_value = True
+        find_user_by_email.return_value = False
 
         # when
         remote_import.run(
             ONE_WEEK_AGO,
             procedure_id=6712558,
-            get_all_applications_ids=get_all_application_ids,
-            get_applications_ids_to_retry=find_applications_ids_to_retry,
-            get_details=get_details,
-            already_imported=has_already_been_imported,
-            already_existing_user=has_already_been_created,
         )
 
         # then
         process_beneficiary_application.assert_not_called()
 
+    @patch("pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee")
+    @patch("pcapi.scripts.beneficiary.remote_import.find_applications_ids_to_retry")
+    @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
+    @patch("pcapi.scripts.beneficiary.remote_import.is_already_imported")
+    @patch("pcapi.scripts.beneficiary.remote_import.find_user_by_email")
     @patch("pcapi.scripts.beneficiary.remote_import.process_beneficiary_application")
-    @pytest.mark.usefixtures("db_session")
-    def test_application_with_known_email_are_saved_as_rejected(self, process_beneficiary_application, app):
+    def test_application_with_known_email_are_saved_as_rejected(
+        self,
+        process_beneficiary_application,
+        find_user_by_email,
+        is_already_imported,
+        get_details,
+        find_applications_ids_to_retry,
+        get_closed_application_ids_for_demarche_simplifiee,
+    ):
         # given
-        get_all_application_ids = Mock(return_value=[123])
-        find_applications_ids_to_retry = Mock(return_value=[])
+        get_closed_application_ids_for_demarche_simplifiee.return_value = [123]
+        find_applications_ids_to_retry.return_value = []
 
-        get_details = Mock(return_value=make_new_beneficiary_application_details(123, "closed"))
-        user = User()
-        user.email = "john.doe@example.com"
-        user.isBeneficiary = True
-        has_already_been_imported = Mock(return_value=False)
-        has_already_been_created = Mock(return_value=user)
+        get_details.return_value = make_new_beneficiary_application_details(123, "closed")
+        user = users_factories.UserFactory(email="john.doe@example.com", isBeneficiary=True)
+        is_already_imported.return_value = False
+        find_user_by_email.return_value = user
 
         # when
         remote_import.run(
             ONE_WEEK_AGO,
             procedure_id=6712558,
-            get_all_applications_ids=get_all_application_ids,
-            get_applications_ids_to_retry=find_applications_ids_to_retry,
-            get_details=get_details,
-            already_imported=has_already_been_imported,
-            already_existing_user=has_already_been_created,
         )
 
         # then
@@ -213,26 +254,33 @@ class RunTest:
         process_beneficiary_application.assert_not_called()
 
     @override_features(FORCE_PHONE_VALIDATION=False)
+    @patch("pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee")
+    @patch("pcapi.scripts.beneficiary.remote_import.find_applications_ids_to_retry")
+    @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
+    @patch("pcapi.scripts.beneficiary.remote_import.is_already_imported")
+    @patch("pcapi.scripts.beneficiary.remote_import.find_user_by_email")
     @patch("pcapi.scripts.beneficiary.remote_import.process_beneficiary_application")
-    @pytest.mark.usefixtures("db_session")
-    def test_beneficiary_is_created_with_procedure_id(self, process_beneficiary_application, app):
+    def test_beneficiary_is_created_with_procedure_id(
+        self,
+        process_beneficiary_application,
+        find_user_by_email,
+        is_already_imported,
+        get_details,
+        find_applications_ids_to_retry,
+        get_closed_application_ids_for_demarche_simplifiee,
+    ):
         # given
-        get_all_application_ids = Mock(return_value=[123])
-        find_applications_ids_to_retry = Mock(return_value=[])
+        get_closed_application_ids_for_demarche_simplifiee.return_value = [123]
+        find_applications_ids_to_retry.return_value = []
 
-        get_details = Mock(side_effect=[make_new_beneficiary_application_details(123, "closed")])
-        has_already_been_imported = Mock(return_value=False)
-        has_already_been_created = Mock(return_value=False)
+        get_details.side_effect = [make_new_beneficiary_application_details(123, "closed")]
+        is_already_imported.return_value = False
+        find_user_by_email.return_value = False
 
         # when
         remote_import.run(
             ONE_WEEK_AGO,
             procedure_id=6712558,
-            get_all_applications_ids=get_all_application_ids,
-            get_applications_ids_to_retry=find_applications_ids_to_retry,
-            get_details=get_details,
-            already_imported=has_already_been_imported,
-            already_existing_user=has_already_been_created,
         )
 
         # then
@@ -693,13 +741,17 @@ class RunIntegrationTest:
         return [123]
 
     @override_features(FORCE_PHONE_VALIDATION=False)
-    def test_import_user(self):
+    @patch(
+        "pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee",
+    )
+    @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
+    def test_import_user(self, get_application_details, get_closed_application_ids_for_demarche_simplifiee):
         # when
+        get_closed_application_ids_for_demarche_simplifiee.side_effect = self._get_all_applications_ids
+        get_application_details.side_effect = self._get_details
         remote_import.run(
             ONE_WEEK_AGO,
             procedure_id=6712558,
-            get_details=self._get_details,
-            get_all_applications_ids=self._get_all_applications_ids,
         )
 
         # then
@@ -724,7 +776,13 @@ class RunIntegrationTest:
         ] == self.BENEFICIARY_BIRTH_DATE.strftime("%Y-%m-%dT%H:%M:%S")
 
     @override_features(FORCE_PHONE_VALIDATION=True)
-    def test_import_does_not_make_user_beneficiary(self):
+    @patch(
+        "pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee",
+    )
+    @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
+    def test_import_does_not_make_user_beneficiary(
+        self, get_application_details, get_closed_application_ids_for_demarche_simplifiee
+    ):
         """
         Test that an imported user without a validated phone number, and the
         FORCE_PHONE_VALIDATION feature flag activated, cannot become
@@ -739,13 +797,13 @@ class RunIntegrationTest:
         )
         user.phoneValidationStatus = None
         repository.save(user)
+        get_closed_application_ids_for_demarche_simplifiee.side_effect = self._get_all_applications_ids
+        get_application_details.side_effect = self._get_details
 
         # when
         remote_import.run(
             ONE_WEEK_AGO,
             procedure_id=6712558,
-            get_details=self._get_details,
-            get_all_applications_ids=self._get_all_applications_ids,
         )
 
         # then
@@ -782,7 +840,13 @@ class RunIntegrationTest:
             }
         ]
 
-    def test_import_makes_user_beneficiary(self):
+    @patch(
+        "pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee",
+    )
+    @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
+    def test_import_makes_user_beneficiary(
+        self, get_application_details, get_closed_application_ids_for_demarche_simplifiee
+    ):
         """
         Test that an existing user with its phone number validated can become
         beneficiary.
@@ -796,13 +860,13 @@ class RunIntegrationTest:
         )
         user.phoneValidationStatus = PhoneValidationStatusType.VALIDATED
         repository.save(user)
+        get_closed_application_ids_for_demarche_simplifiee.side_effect = self._get_all_applications_ids
+        get_application_details.side_effect = self._get_details
 
         # when
         remote_import.run(
             ONE_WEEK_AGO,
             procedure_id=6712558,
-            get_details=self._get_details,
-            get_all_applications_ids=self._get_all_applications_ids,
         )
 
         # then
@@ -842,16 +906,39 @@ class RunIntegrationTest:
         ]
 
     @override_features(FORCE_PHONE_VALIDATION=False)
-    def test_import_duplicated_user(self):
+    @patch(
+        "pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee",
+    )
+    @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
+    def test_import_duplicated_user(self, get_application_details, get_closed_application_ids_for_demarche_simplifiee):
         # given
-        self.test_import_user()
+        user = users_factories.UserFactory(
+            firstName="john",
+            lastName="doe",
+            email="john.doe@example.com",
+            postalCode="93450",
+            phoneNumber="0102030405",
+            idPieceNumber="121314",
+            isEmailValidated=True,
+            isActive=True,
+            isBeneficiary=True,
+        )
+
+        created_import = users_factories.BeneficiaryImportFactory(
+            applicationId=123, beneficiary=user, source="demarches_simplifiees"
+        )
+        users_factories.BeneficiaryImportStatusFactory(
+            status=ImportStatus.CREATED,
+            beneficiaryImport=created_import,
+            author=None,
+        )
+        get_closed_application_ids_for_demarche_simplifiee.side_effect = self._get_all_applications_ids
+        get_application_details.side_effect = self._get_details
 
         # when
         remote_import.run(
             ONE_WEEK_AGO,
             procedure_id=6712558,
-            get_details=self._get_details,
-            get_all_applications_ids=self._get_all_applications_ids,
         )
 
         # then
@@ -865,7 +952,13 @@ class RunIntegrationTest:
         assert beneficiary_import.currentStatus == ImportStatus.REJECTED
 
     @override_features(FORCE_PHONE_VALIDATION=False)
-    def test_import_with_existing_id_card(self):
+    @patch(
+        "pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee",
+    )
+    @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
+    def test_import_with_existing_id_card(
+        self, get_application_details, get_closed_application_ids_for_demarche_simplifiee
+    ):
         user = create_user(
             idx=4,
             email=self.EMAIL,
@@ -876,13 +969,13 @@ class RunIntegrationTest:
         user.phoneValidationStatus = PhoneValidationStatusType.VALIDATED
         user.idPieceNumber = "121314"
         repository.save(user)
+        get_closed_application_ids_for_demarche_simplifiee.side_effect = self._get_all_applications_ids
+        get_application_details.side_effect = self._get_details
 
         # when
         remote_import.run(
             ONE_WEEK_AGO,
             procedure_id=6712558,
-            get_details=self._get_details,
-            get_all_applications_ids=self._get_all_applications_ids,
         )
 
         # then
@@ -896,7 +989,11 @@ class RunIntegrationTest:
         assert beneficiary_import.currentStatus == ImportStatus.REJECTED
 
     @override_features(FORCE_PHONE_VALIDATION=False)
-    def test_import_native_app_user(self):
+    @patch(
+        "pcapi.scripts.beneficiary.remote_import.get_closed_application_ids_for_demarche_simplifiee",
+    )
+    @patch("pcapi.scripts.beneficiary.remote_import.get_application_details")
+    def test_import_native_app_user(self, get_application_details, get_closed_application_ids_for_demarche_simplifiee):
         # given
         user = users_api.create_account(
             email=self.EMAIL,
@@ -907,13 +1004,13 @@ class RunIntegrationTest:
             phone_number="0607080900",
         )
         push_testing.reset_requests()
+        get_closed_application_ids_for_demarche_simplifiee.side_effect = self._get_all_applications_ids
+        get_application_details.side_effect = self._get_details
 
         # when
         remote_import.run(
             ONE_WEEK_AGO,
             procedure_id=6712558,
-            get_details=self._get_details,
-            get_all_applications_ids=self._get_all_applications_ids,
         )
 
         # then
