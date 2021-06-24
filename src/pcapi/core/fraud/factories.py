@@ -81,6 +81,24 @@ class UserProfilingFraudDataFactory(factory.Factory):
     unknown_session = random.choice(USERPROFILING_BOOL)
 
 
+class DemarchesSimplifieesContentFactory(factory.Factory):
+    class Meta:
+        model = models.DemarchesSimplifieesContent
+
+    last_name = factory.Faker("last_name")
+    first_name = factory.Faker("first_name")
+    civility = random.choice(["M.", "Mme"])
+    email = factory.Faker("ascii_safe_email")
+    application_id = factory.Faker("pyint")
+    departement = factory.Sequence("{}".format)
+    birth_date = factory.Faker("date")
+    phone = factory.Faker("phone_number")
+    postal_code = "75008"
+    activity = "Étudiant"
+    address = factory.Faker("address")
+    id_piece_number = factory.Sequence("{}".format)
+
+
 FRAUD_CHECK_TYPE_MODEL_ASSOCIATION = {
     models.FraudCheckType.JOUVE: JouveContentFactory,
     models.FraudCheckType.USER_PROFILING: UserProfilingFraudDataFactory,
