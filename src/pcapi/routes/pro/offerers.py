@@ -7,6 +7,7 @@ from flask_login import login_required
 
 from pcapi.core.offerers.api import create_digital_venue
 from pcapi.core.offerers.api import generate_and_save_api_key
+from pcapi.core.offerers.exceptions import ApiKeyCountMaxReached
 from pcapi.core.offerers.exceptions import ApiKeyPrefixGenerationError
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.repository import get_all_offerers_for_user
@@ -117,6 +118,8 @@ def generate_api_key_route(offerer_id: str) -> GenerateOffererApiKeyResponse:
     offerer = load_or_404(Offerer, offerer_id)
     try:
         clear_key = generate_and_save_api_key(offerer.id)
+    except ApiKeyCountMaxReached:
+        raise ApiErrors({"api_key_count_max": "Le nombre de clés maximal a été atteint"})
     except ApiKeyPrefixGenerationError:
         raise ApiErrors({"api_key": "Could not generate api key"})
 

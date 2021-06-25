@@ -18,6 +18,7 @@ from pcapi.repository.iris_venues_queries import delete_venue_from_iris_venues
 from pcapi.routes.serialization.venues_serialize import PostVenueBodyModel
 
 from . import validation
+from .exceptions import ApiKeyCountMaxReached
 from .exceptions import ApiKeyPrefixGenerationError
 
 
@@ -103,6 +104,8 @@ def create_venue(venue_data: PostVenueBodyModel) -> Venue:
 
 
 def generate_and_save_api_key(offerer_id: int) -> str:
+    if ApiKey.query.filter_by(offererId=offerer_id).count() >= settings.MAX_API_KEY_PER_OFFERER:
+        raise ApiKeyCountMaxReached()
     model_api_key, clear_api_key = generate_api_key(offerer_id)
     repository.save(model_api_key)
     return clear_api_key
