@@ -33,7 +33,7 @@ class FraudView(base_configuration.BaseAdminView):
     column_labels = {
         "firstName": "Prénom",
         "lastName": "Nom",
-        "beneficiaryFraudResult": "Anti Fraude",
+        "beneficiaryFraudResult": "Statut",
         "beneficiaryFraudChecks": "Vérifications anti fraudes",
     }
 
