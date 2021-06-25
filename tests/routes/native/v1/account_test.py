@@ -324,7 +324,6 @@ class AccountTest:
         assert response.status_code == 200
         assert response.json["nextBeneficiaryValidationStep"] == "id-check"
 
-        user.isBeneficiary = True
         user.add_beneficiary_role()
 
         response = test_client.get("/native/v1/me")

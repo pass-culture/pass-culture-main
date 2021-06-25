@@ -84,7 +84,6 @@ class AdminUserView(SuspensionMixin, BaseAdminView):
         from pcapi.core.users.api import fulfill_account_password
 
         model.publicName = f"{model.firstName} {model.lastName}"
-        model.isAdmin = True
         model.add_admin_role()
         model.hasSeenProTutorials = True
         model.needsToFillCulturalSurvey = False

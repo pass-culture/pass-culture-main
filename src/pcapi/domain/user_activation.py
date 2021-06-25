@@ -28,7 +28,7 @@ def create_beneficiary_from_application(application_detail: dict, user: Optional
     beneficiary.address = application_detail["address"]
     beneficiary.civility = application_detail["civility"]
     beneficiary.activity = application_detail["activity"]
-    beneficiary.isAdmin = False
+    beneficiary.remove_admin_role()
     beneficiary.hasSeenTutorials = False
     beneficiary.idPieceNumber = application_detail.get("id_piece_number")
 

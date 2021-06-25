@@ -87,8 +87,6 @@ class PartnerUserView(SuspensionMixin, BaseAdminView):
             model.hasSeenTutorials = True
 
         model.publicName = f"{model.firstName} {model.lastName}"
-        model.isBeneficiary = False
-        model.isAdmin = False
         model.remove_admin_role()
         model.remove_beneficiary_role()
 

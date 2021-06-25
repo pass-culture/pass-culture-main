@@ -34,6 +34,7 @@ from sqlalchemy.orm import joinedload
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
 from sqlalchemy.sql.expression import false
+from sqlalchemy.sql.expression import or_
 
 from pcapi import settings
 from pcapi.core.bookings.models import Booking
@@ -394,19 +395,29 @@ class User(PcObject, Model, NeedsValidationMixin):
         self.roles = updated_roles
 
     def add_admin_role(self) -> None:
+        if self.isBeneficiary:
+            raise InvalidUserRoleException("User can't have both ADMIN and BENEFICIARY role")
+
+        self.isAdmin = True
         self._add_role(UserRole.ADMIN)
 
     def add_beneficiary_role(self) -> None:
+        if self.isAdmin:
+            raise InvalidUserRoleException("User can't have both ADMIN and BENEFICIARY role")
+
+        self.isBeneficiary = True
         self._add_role(UserRole.BENEFICIARY)
 
     def add_pro_role(self) -> None:
         self._add_role(UserRole.PRO)
 
     def remove_admin_role(self) -> None:
+        self.isAdmin = False
         if self.has_admin_role:  # pylint: disable=using-constant-test
             self.roles.remove(UserRole.ADMIN)
 
     def remove_beneficiary_role(self) -> None:
+        self.isBeneficiary = False
         if self.has_beneficiary_role:  # pylint: disable=using-constant-test
             self.roles.remove(UserRole.BENEFICIARY)
 
@@ -416,19 +427,19 @@ class User(PcObject, Model, NeedsValidationMixin):
 
     @hybrid_property
     def has_admin_role(self) -> bool:
-        return UserRole.ADMIN in self.roles if self.roles else False
+        return UserRole.ADMIN in self.roles or self.isAdmin if self.roles else self.isAdmin
 
     @has_admin_role.expression
     def has_admin_role(cls) -> bool:  # pylint: disable=no-self-argument
-        return cls.roles.contains([UserRole.ADMIN])
+        return or_(cls.roles.contains([UserRole.ADMIN]), cls.isAdmin.is_(True))
 
     @hybrid_property
     def has_beneficiary_role(self) -> bool:
-        return UserRole.BENEFICIARY in self.roles if self.roles else False
+        return UserRole.BENEFICIARY in self.roles or self.isBeneficiary if self.roles else self.isBeneficiary
 
     @has_beneficiary_role.expression
     def has_beneficiary_role(cls) -> bool:  # pylint: disable=no-self-argument
-        return cls.roles.contains([UserRole.BENEFICIARY])
+        return or_(cls.roles.contains([UserRole.BENEFICIARY]), cls.isBeneficiary.is_(True))
 
     @hybrid_property
     def has_pro_role(self) -> bool:

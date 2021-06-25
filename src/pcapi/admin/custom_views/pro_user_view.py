@@ -149,7 +149,7 @@ class ProUserView(SuspensionMixin, BaseAdminView):
         model.publicName = f"{model.firstName} {model.lastName}"
 
         if is_created:
-            model.isBeneficiary = False
+            model.remove_beneficiary_role()
             model.add_pro_role()
             fulfill_account_password(model)
             offerer = create_offerer(form)

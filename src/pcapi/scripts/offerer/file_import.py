@@ -99,7 +99,7 @@ def fill_user_from(csv_row: list[str], user: User) -> User:
     user.publicName = "%s %s" % (user.firstName, user.lastName)
     user.email = sanitize_email(csv_row[USER_EMAIL_COLUMN_INDEX])
     user.departementCode = csv_row[USER_DEPARTMENT_CODE_COLUMN_INDEX]
-    user.isBeneficiary = False
+    user.remove_beneficiary_role()
     user.add_pro_role()
 
     fulfill_account_password(user)

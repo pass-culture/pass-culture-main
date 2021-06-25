@@ -43,7 +43,7 @@ def to_model(beneficiary_pre_subscription: BeneficiaryPreSubscription, user: Opt
     beneficiary.departementCode = beneficiary_pre_subscription.department_code
     beneficiary.firstName = beneficiary_pre_subscription.first_name
     beneficiary.hasSeenTutorials = False
-    beneficiary.isAdmin = False
+    beneficiary.remove_admin_role()
     beneficiary.lastName = beneficiary_pre_subscription.last_name
     beneficiary.postalCode = beneficiary_pre_subscription.postal_code
     beneficiary.publicName = beneficiary_pre_subscription.public_name

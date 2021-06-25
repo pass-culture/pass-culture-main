@@ -43,7 +43,6 @@ def create_or_update_users(rows: Iterable[dict]) -> list[User]:
             deposit = payments_api.create_deposit(user, "import_users (csv)")
             repository.save(deposit)
 
-        user.isBeneficiary = True
         user.add_beneficiary_role()
         user.lastName = row["Nom"]
         user.firstName = row["Prénom"]
@@ -66,8 +65,7 @@ def create_or_update_users(rows: Iterable[dict]) -> list[User]:
             send_activation_mail=False,
         )
     admin.setPassword(settings.STAGING_TEST_USER_PASSWORD)
-    admin.isAdmin = True
-    admin.isBeneficiary = False
+    admin.remove_beneficiary_role()
     admin.add_admin_role()
     admin.firstName = "Jeanne"
     admin.lastName = "Admin"

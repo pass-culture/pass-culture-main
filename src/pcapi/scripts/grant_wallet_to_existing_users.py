@@ -9,7 +9,6 @@ def grant_wallet_to_existing_users(user_ids: list[int]):
         raise ValueError("This action is not available on production")
     users = User.query.filter(User.id.in_(user_ids)).all()
     for user in users:
-        user.isBeneficiary = True
         user.add_beneficiary_role()
         deposit = payments_api.create_deposit(user, "public")
         repository.save(user, deposit)

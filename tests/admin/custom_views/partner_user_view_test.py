@@ -39,7 +39,6 @@ class PartnerUserViewTest:
     def test_a_partner_should_never_be_a_beneficiary(self, app, db_session):
         # given
         user = User()
-        user.isBeneficiary = True
         user.add_beneficiary_role()
         view = PartnerUserView(model=User, session=db_session)
 
@@ -53,7 +52,6 @@ class PartnerUserViewTest:
     def test_a_partner_should_never_be_an_admin(self, app, db_session):
         # given
         user = User()
-        user.isAdmin = True
         user.add_admin_role()
         view = PartnerUserView(model=User, session=db_session)
 
