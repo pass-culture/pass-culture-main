@@ -6,8 +6,6 @@ from sqlalchemy.orm import joinedload
 
 from pcapi.models import Booking
 from pcapi.models import Offer
-from pcapi.models import OfferCategory
-from pcapi.models import OfferSubcategory
 from pcapi.models import Stock
 
 
@@ -78,11 +76,3 @@ def get_paginated_offer_ids_by_venue_id(venue_id: int, limit: int, page: int) ->
         .limit(limit)
     )
     return [offer_id for offer_id, in query]
-
-
-def get_offer_sub_categories() -> list[OfferSubcategory]:
-    return OfferSubcategory.query.all()
-
-
-def get_offer_categories() -> list[OfferCategory]:
-    return OfferCategory.query.all()

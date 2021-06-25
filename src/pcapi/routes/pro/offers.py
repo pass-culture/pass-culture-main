@@ -13,11 +13,7 @@ from pcapi.core.offers.validation import get_distant_image
 from pcapi.flask_app import private_api
 from pcapi.models import Offer
 from pcapi.repository.offer_queries import get_offer_by_id
-from pcapi.repository.offer_queries import get_offer_categories
-from pcapi.repository.offer_queries import get_offer_sub_categories
 from pcapi.routes.serialization.offers_recap_serialize import serialize_offers_recap_paginated
-from pcapi.routes.serialization.offers_serialize import CategoriesResponseModel
-from pcapi.routes.serialization.offers_serialize import CategoryResponseModel
 from pcapi.routes.serialization.offers_serialize import GetOfferResponseModel
 from pcapi.routes.serialization.offers_serialize import ImageBodyModel
 from pcapi.routes.serialization.offers_serialize import ImageResponseModel
@@ -29,7 +25,6 @@ from pcapi.routes.serialization.offers_serialize import PatchAllOffersActiveStat
 from pcapi.routes.serialization.offers_serialize import PatchOfferActiveStatusBodyModel
 from pcapi.routes.serialization.offers_serialize import PatchOfferBodyModel
 from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
-from pcapi.routes.serialization.offers_serialize import SubCategoryResponseModel
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailBodyModel
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailResponseModel
 from pcapi.serialization.decorator import spectree_serialize
@@ -161,13 +156,3 @@ def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseM
     )
 
     return CreateThumbnailResponseModel(id=thumbnail.id)
-
-
-@private_api.route("/offers/categories", methods=["GET"])
-@login_required
-@spectree_serialize(response_model=CategoriesResponseModel)
-def get_categories() -> CategoriesResponseModel:
-    return CategoriesResponseModel(
-        categories=[CategoryResponseModel.from_orm(category) for category in get_offer_categories()],
-        sub_categories=[SubCategoryResponseModel.from_orm(sub_category) for sub_category in get_offer_sub_categories()],
-    )

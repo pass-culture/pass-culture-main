@@ -346,11 +346,6 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin):
 
     isEducational = Column(Boolean, server_default=false(), default=False, nullable=False)
 
-    # FIXME(fseguin, 2021-06-02): make this non-nullable when all offers have a subcategory
-    subcategoryId = Column(BigInteger, ForeignKey("offer_subcategory.id"), index=True)
-
-    subcategory = relationship("OfferSubcategory", foreign_keys=[subcategoryId], backref="offers")
-
     # FIXME: We shoud be able to remove the index on `venueId`, since this composite index
     #  can be used by PostgreSQL when filtering on the `venueId` column only.
     Index("venueId_idAtProvider_index", venueId, idAtProvider, unique=True)
@@ -618,54 +613,6 @@ class OfferValidationConfig(PcObject, Model):
     user = relationship("User", foreign_keys=[userId], backref="offer_validation_configs")
 
     specs = Column(JSON, nullable=False)
-
-
-class OfferCategory(PcObject, Model, DeactivableMixin):
-    __tablename__ = "offer_category"
-
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
-
-    name = Column(Text, nullable=False, unique=True)
-
-    proLabel = Column(Text, unique=True, nullable=False)
-
-    appLabel = Column(Text, unique=True, nullable=False)
-
-    def __repr__(self):
-        return "<%s #%s: %s>" % (self.__class__.__name__, self.id, self.name)
-
-
-class OfferSubcategory(PcObject, Model, DeactivableMixin):
-    __tablename__ = "offer_subcategory"
-
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
-
-    name = Column(Text, nullable=False, unique=True)
-
-    categoryId = Column(Integer, ForeignKey("offer_category.id"), nullable=False)
-
-    category = relationship("OfferCategory", foreign_keys=[categoryId], backref="subcategories")
-
-    isEvent = Column(Boolean, nullable=False)
-
-    proLabel = Column(Text, unique=True, nullable=False)
-
-    appLabel = Column(Text, unique=True, nullable=False)
-
-    conditionalFields = Column(ARRAY(Text))
-
-    canExpire = Column(Boolean, nullable=False)
-
-    isDigital = Column(Boolean, nullable=False)
-
-    isDigitalDeposit = Column(Boolean, nullable=False)
-
-    isPhysicalDeposit = Column(Boolean, nullable=False)
-
-    canBeDuo = Column(Boolean, nullable=False)
-
-    def __repr__(self) -> str:
-        return "<%s #%s: %s>" % (self.__class__.__name__, self.id, self.name)
 
 
 @dataclass

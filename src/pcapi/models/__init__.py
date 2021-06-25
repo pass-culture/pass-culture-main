@@ -13,8 +13,6 @@ from pcapi.core.offerers.models import VenueType
 from pcapi.core.offers.models import ActivationCode
 from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import OfferCategory
-from pcapi.core.offers.models import OfferSubcategory
 from pcapi.core.offers.models import Stock
 from pcapi.core.payments.models import CustomReimbursementRule
 from pcapi.core.providers.models import AllocineVenueProvider
@@ -91,8 +89,6 @@ __all__ = (
     "Offerer",
     "LocalProviderEvent",
     "OfferCriterion",
-    "OfferCategory",
-    "OfferSubcategory",
     "Offer",
     "Payment",
     "PaymentStatus",
@@ -129,8 +125,6 @@ models = (
     Deposit,
     Email,
     Product,
-    OfferCategory,
-    OfferSubcategory,
     Offer,
     Mediation,
     Favorite,
