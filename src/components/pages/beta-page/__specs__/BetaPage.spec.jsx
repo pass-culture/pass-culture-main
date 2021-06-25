@@ -16,8 +16,8 @@ jest.mock('../../../../notifications/setUpBatchSDK', () => jest.fn())
 
 const openWindowMock = jest.spyOn(window, 'open')
 
-const render = props => {
-  const wrapper = shallow(<BetaPage {...props} />)
+const render = () => {
+  const wrapper = shallow(<BetaPage />)
   const findByText = text => wrapper.findWhere(node => node.type() && node.text() === text)
   return {
     instance: wrapper,
@@ -31,47 +31,27 @@ describe('components | BetaPage', () => {
   })
 
   it('should render page component with pass culture information', () => {
-    // when
-    const props = {
-      isNewBookingLimitsActived: false,
-    }
-    const wrapper = render(props)
+    const wrapper = render()
 
     // then
-    const line1 = wrapper.findByText('Bienvenue dans\nton pass Culture')
-    const line2 = wrapper.findByText('Tu as 18 ans ?')
+    const line1 = wrapper.findByText('Bienvenue sur\nle pass Culture,')
+    const line2 = wrapper.findByText(
+      "l'application pour découvrir les activités et\nsorties culturelles proches de chez toi et\npartout en France."
+    )
     const line3 = wrapper.findByText(
-      "Bénéficie de 500 € afin de\nrenforcer tes pratiques\nculturelles et d'en découvrir\nde nouvelles !"
+      "Pour profiter au mieux des fonctionnalités de\nl'application, télécharge-la depuis les stores."
+    )
+    const line4 = wrapper.findByText(
+      'Tu as déjà un compte ?\nConnecte-toi vite pour réserver et profiter de\ntoutes les offres disponibles !'
     )
     expect(line1).toHaveLength(1)
     expect(line2).toHaveLength(1)
     expect(line3).toHaveLength(1)
-  })
-
-  it('should render page component with 300 € when new booking limits is activated', () => {
-    // when
-    const props = {
-      isNewBookingLimitsActived: true,
-    }
-    const wrapper = render(props)
-
-    // then
-    const line1 = wrapper.findByText('Bienvenue dans\nton pass Culture')
-    const line2 = wrapper.findByText('Tu as 18 ans ?')
-    const line3 = wrapper.findByText(
-      "Bénéficie de 300 € afin de\nrenforcer tes pratiques\nculturelles et d'en découvrir\nde nouvelles !"
-    )
-    expect(line1).toHaveLength(1)
-    expect(line2).toHaveLength(1)
-    expect(line3).toHaveLength(1)
+    expect(line4).toHaveLength(1)
   })
 
   it('should render an Icon component for page background', () => {
-    // when
-    const props = {
-      isNewBookingLimitsActived: true,
-    }
-    const wrapper = render(props)
+    const wrapper = render()
 
     // then
     const icon = wrapper.instance.findWhere(node => node.hasClass('bp-logo'))
@@ -81,12 +61,9 @@ describe('components | BetaPage', () => {
   it('should redirect to sign in page when clicking on sign in button', () => {
     // given
     const history = createBrowserHistory()
-    const props = {
-      isNewBookingLimitsActived: true,
-    }
     const wrapper = mount(
       <Router history={history}>
-        <BetaPage {...props} />
+        <BetaPage />
       </Router>
     )
     const signInLink = wrapper
@@ -102,11 +79,7 @@ describe('components | BetaPage', () => {
   })
 
   it('should redirect to app or store when clicking on download app button', () => {
-    // when
-    const props = {
-      isNewBookingLimitsActived: true,
-    }
-    const wrapper = render(props)
+    const wrapper = render()
 
     // then
     const downloadAppButton = wrapper.instance.findWhere(node =>
