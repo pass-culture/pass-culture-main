@@ -28,6 +28,7 @@ class Returns200Test:
             last_connection_date=datetime.datetime(2019, 1, 1),
         )
         user.isEmailValidated = True
+        user.add_beneficiary_role()
         repository.save(user)
         data = {"identifier": user.email, "password": user.clearTextPassword}
 
@@ -59,6 +60,7 @@ class Returns200Test:
             "phoneNumber": "0612345678",
             "postalCode": "93020",
             "publicName": "Toto",
+            "roles": ["BENEFICIARY"],
         }
 
     @pytest.mark.usefixtures("db_session")

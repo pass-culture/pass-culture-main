@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from pydantic import EmailStr
 from pydantic.class_validators import validator
 
+from pcapi.core.users.models import UserRole
 from pcapi.domain.password import check_password_strength
 from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
@@ -102,6 +103,7 @@ class SharedLoginUserResponseModel(BaseModel):
     phoneNumber: Optional[str]
     postalCode: Optional[str]
     publicName: Optional[str]
+    roles: list[UserRole]
 
     _normalize_id = humanize_field("id")
 
