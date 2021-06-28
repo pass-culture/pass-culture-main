@@ -24,6 +24,7 @@ def _offer_recap_to_domain(offer: Offer) -> OfferRecap:
         name=offer.name,
         thumb_url=offer.thumbUrl,
         offer_type=offer.type,
+        subcategoryId=offer.subcategoryId,
         venue_id=offer.venue.id,
         venue_is_virtual=offer.venue.isVirtual,
         venue_managing_offerer_id=offer.venue.managingOffererId,

@@ -11,6 +11,7 @@ from pcapi import models
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
+from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import api
 from pcapi.core.offers import exceptions
@@ -708,6 +709,38 @@ class CreateOfferTest:
         data = offers_serialize.PostOfferBodyModel(
             venueId=humanize(venue.id),
             name="A pretty good offer",
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            externalTicketOfficeUrl="http://example.net",
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
+        )
+        offer = api.create_offer(data, user)
+
+        assert offer.name == "A pretty good offer"
+        assert offer.venue == venue
+        assert offer.type == str(offer_type.EventType.CINEMA)
+        assert offer.subcategoryId == subcategories.SEANCE_CINE.id
+        assert offer.product.owningOfferer == offerer
+        assert offer.externalTicketOfficeUrl == "http://example.net"
+        assert offer.audioDisabilityCompliant
+        assert offer.mentalDisabilityCompliant
+        assert offer.motorDisabilityCompliant
+        assert offer.visualDisabilityCompliant
+        assert offer.validation == OfferValidationStatus.DRAFT
+        assert not offer.bookingEmail
+        assert Offer.query.count() == 1
+
+    def test_create_offer_from_scratch_without_subcategory(self):
+        venue = factories.VenueFactory()
+        offerer = venue.managingOfferer
+        user_offerer = factories.UserOffererFactory(offerer=offerer)
+        user = user_offerer.user
+
+        data = offers_serialize.PostOfferBodyModel(
+            venueId=humanize(venue.id),
+            name="A pretty good offer",
             type=str(offer_type.EventType.CINEMA),
             externalTicketOfficeUrl="http://example.net",
             audioDisabilityCompliant=True,
@@ -720,6 +753,7 @@ class CreateOfferTest:
         assert offer.name == "A pretty good offer"
         assert offer.venue == venue
         assert offer.type == str(offer_type.EventType.CINEMA)
+        assert not offer.subcategoryId
         assert offer.product.owningOfferer == offerer
         assert offer.externalTicketOfficeUrl == "http://example.net"
         assert offer.audioDisabilityCompliant
@@ -778,7 +812,7 @@ class CreateOfferTest:
         data = offers_serialize.PostOfferBodyModel(
             venueId=humanize(venue.id),
             name="FONDATION T.1",
-            type=str(offer_type.ThingType.LIVRE_EDITION),
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
             extraData={"isbn": "9782207300893", "author": "Isaac Asimov"},
             audioDisabilityCompliant=True,
             mentalDisabilityCompliant=True,
@@ -788,6 +822,7 @@ class CreateOfferTest:
         offer = api.create_offer(data, user)
 
         assert offer.name == "FONDATION T.1"
+        assert offer.subcategoryId == subcategories.LIVRE_PAPIER.id
         assert offer.type == str(offer_type.ThingType.LIVRE_EDITION)
         assert offer.description == "Les prévisions du psychohistorien Hari Seldon sont formelles."
         assert offer.extraData == {"isbn": "9782207300893", "author": "Isaac Asimov", "bookFormat": "Soft cover"}
@@ -814,7 +849,7 @@ class CreateOfferTest:
         data = offers_serialize.PostOfferBodyModel(
             venueId=humanize(venue.id),
             name="FONDATION T.1",
-            type=str(offer_type.ThingType.LIVRE_EDITION),
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
             extraData={"isbn": "9782207300893"},
             audioDisabilityCompliant=True,
             mentalDisabilityCompliant=True,
@@ -837,7 +872,7 @@ class CreateOfferTest:
         data = offers_serialize.PostOfferBodyModel(
             venueId=humanize(venue.id),
             name="FONDATION T.1",
-            type=str(offer_type.ThingType.LIVRE_EDITION),
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
             extraData={"isbn": "9782207300893"},
             audioDisabilityCompliant=True,
             mentalDisabilityCompliant=True,
@@ -893,7 +928,7 @@ class CreateOfferTest:
         data = offers_serialize.PostOfferBodyModel(
             venueId=humanize(1),
             name="An awful offer",
-            type=str(offer_type.EventType.ACTIVATION),
+            subcategoryId=subcategories.CONCERT.id,
             audioDisabilityCompliant=True,
             mentalDisabilityCompliant=True,
             motorDisabilityCompliant=True,
@@ -918,26 +953,6 @@ class CreateOfferTest:
             api.create_offer(data, user)
         err = "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."
         assert error.value.errors["global"] == [err]
-
-    def test_fail_to_create_activation_offer_if_not_admin(self):
-        venue = factories.VenueFactory()
-        offerer = venue.managingOfferer
-        user_offerer = factories.UserOffererFactory(offerer=offerer)
-        user = user_offerer.user
-
-        data = offers_serialize.PostOfferBodyModel(
-            venueId=humanize(venue.id),
-            name="A pathetic offer",
-            type=str(offer_type.EventType.ACTIVATION),
-            audioDisabilityCompliant=True,
-            mentalDisabilityCompliant=True,
-            motorDisabilityCompliant=True,
-            visualDisabilityCompliant=True,
-        )
-        with pytest.raises(api_errors.ApiErrors) as error:
-            api.create_offer(data, user)
-        err = "Seuls les administrateurs du pass Culture peuvent créer des offres d'activation"
-        assert error.value.errors["type"] == [err]
 
 
 @pytest.mark.usefixtures("db_session")

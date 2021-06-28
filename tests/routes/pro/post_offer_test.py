@@ -1,5 +1,6 @@
 import pytest
 
+from pcapi.core.categories import subcategories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.models import EventType
@@ -25,7 +26,7 @@ class Returns200Test:
             "bookingEmail": "offer@example.com",
             "durationMinutes": 60,
             "name": "La pièce de théâtre",
-            "type": str(EventType.SPECTACLE_VIVANT),
+            "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
             "extraData": {"toto": "text"},
             "externalTicketOfficeUrl": "http://example.net",
             "audioDisabilityCompliant": False,
@@ -42,6 +43,7 @@ class Returns200Test:
         offer = Offer.query.get(offer_id)
         assert offer.bookingEmail == "offer@example.com"
         assert offer.type == str(EventType.SPECTACLE_VIVANT)
+        assert offer.subcategoryId == subcategories.SPECTACLE_REPRESENTATION.id
         assert offer.extraData == {"toto": "text"}
         assert offer.externalTicketOfficeUrl == "http://example.net"
         assert offer.venue == venue
@@ -65,7 +67,7 @@ class Returns200Test:
             "bookingEmail": "offer@example.com",
             "mediaUrls": ["http://example.com/media"],
             "name": "Les lièvres pas malins",
-            "type": "ThingType.JEUX_VIDEO",
+            "subcategoryId": subcategories.JEU_EN_LIGNE.id,
             "url": "http://example.com/offer",
             "externalTicketOfficeUrl": "http://example.net",
             "audioDisabilityCompliant": True,
@@ -81,6 +83,7 @@ class Returns200Test:
         offer = Offer.query.get(offer_id)
         assert offer.bookingEmail == "offer@example.com"
         assert offer.type == str(ThingType.JEUX_VIDEO)
+        assert offer.subcategoryId == subcategories.JEU_EN_LIGNE.id
         assert offer.venue == venue
         assert offer.product.name == "Les lièvres pas malins"
         assert offer.product.url == "http://example.com/offer"
@@ -109,7 +112,7 @@ class Returns400Test:
             "bookingEmail": "offer@example.com",
             "mediaUrls": ["http://example.com/media"],
             "name": "Les lièvres pas malins",
-            "type": "ThingType.JEUX_VIDEO",
+            "subcategoryId": subcategories.JEU_EN_LIGNE.id,
             "url": "http://example.com/offer",
             "audioDisabilityCompliant": True,
             "mentalDisabilityCompliant": False,
@@ -132,7 +135,7 @@ class Returns400Test:
         data = {
             "venueId": humanize(venue.id),
             "name": "too long" * 30,
-            "type": str(EventType.SPECTACLE_VIVANT),
+            "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
         }
         client = TestClient(app.test_client()).with_auth("user@example.com")
         response = client.post("/offers", json=data)
@@ -141,7 +144,7 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["name"] == ["Le titre de l’offre doit faire au maximum 90 caractères."]
 
-    def test_fail_if_unknown_type(self, app):
+    def test_fail_if_unknown_subcategory(self, app):
         # Given
         venue = offers_factories.VenueFactory()
         offerer = venue.managingOfferer
@@ -151,14 +154,14 @@ class Returns400Test:
         data = {
             "venueId": humanize(venue.id),
             "name": "An unacceptable name",
-            "type": "unknown type",
+            "subcategoryId": "TOTO",
         }
         client = TestClient(app.test_client()).with_auth("user@example.com")
         response = client.post("/offers", json=data)
 
         # Then
         assert response.status_code == 400
-        assert response.json["type"] == ["Le type de cette offre est inconnu"]
+        assert response.json["subcategory"] == ["La sous-catégorie de cette offre est inconnue"]
 
     def test_fail_when_offer_type_does_not_allow_virtual_offer_and_venue_is_virtuel(self, app):
         # Given
@@ -168,7 +171,7 @@ class Returns400Test:
 
         # When
         data = {
-            "type": "ThingType.JEUX",
+            "subcategoryId": subcategories.ACHAT_INSTRUMENT.id,
             "name": "Le grand jeu",
             "url": "http://legrandj.eu",
             "mediaUrls": ["http://media.url"],
@@ -183,7 +186,9 @@ class Returns400Test:
 
         # Then
         assert response.status_code == 400
-        assert response.json["url"] == ["Une offre de type Jeux (support physique) ne peut pas être numérique"]
+        assert response.json["url"] == [
+            "Une offre de type Vente et location d’instruments de musique ne peut pas être numérique"
+        ]
 
     def should_fail_when_url_has_no_scheme(self, app):
         # Given
@@ -196,7 +201,7 @@ class Returns400Test:
         data = {
             "venueId": humanize(venue.id),
             "name": "Les lièvres pas malins",
-            "type": "ThingType.JEUX_VIDEO",
+            "subcategoryId": subcategories.JEU_EN_LIGNE.id,
             "url": "missing.something",
         }
         response = client.post("/offers", json=data)
@@ -216,7 +221,7 @@ class Returns400Test:
         data = {
             "venueId": humanize(venue.id),
             "name": "Les lièvres pas malins",
-            "type": "ThingType.JEUX_VIDEO",
+            "subcategoryId": subcategories.JEU_EN_LIGNE.id,
             "externalTicketOfficeUrl": "missing.something",
         }
         response = client.post("/offers", json=data)
@@ -236,7 +241,7 @@ class Returns400Test:
         data = {
             "venueId": humanize(venue.id),
             "name": "Les lièvres pas malins",
-            "type": "ThingType.JEUX_VIDEO",
+            "subcategoryId": subcategories.JEU_EN_LIGNE.id,
             "url": "https://missing",
         }
         response = client.post("/offers", json=data)
@@ -256,7 +261,7 @@ class Returns400Test:
         data = {
             "venueId": humanize(venue.id),
             "name": "Les lièvres pas malins",
-            "type": "ThingType.JEUX_VIDEO",
+            "subcategoryId": subcategories.JEU_EN_LIGNE.id,
             "externalTicketOfficeUrl": "https://missing",
         }
         response = client.post("/offers", json=data)

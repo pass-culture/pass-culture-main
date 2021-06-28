@@ -24,6 +24,7 @@ def _serialize_offer_paginated(offer: OfferRecap) -> dict:
         "stocks": serialized_stocks,
         "thumbUrl": offer.thumb_url,
         "type": offer.offer_type,
+        "subcategoryId": offer.subcategoryId,
         "venue": _serialize_venue(offer.venue),
         "venueId": humanize(offer.venue.id),
         "status": offer.status,

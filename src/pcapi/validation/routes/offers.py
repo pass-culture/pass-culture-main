@@ -1,3 +1,4 @@
+from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES_DICT
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.offer_type import ProductType
 
@@ -6,6 +7,14 @@ def check_offer_type_is_valid(offer_type_name):
     if not ProductType.is_thing(offer_type_name) and not ProductType.is_event(offer_type_name):
         api_error = ApiErrors()
         api_error.add_error("type", "Le type de cette offre est inconnu")
+        api_error.add_error("subcategory", "La sous-catégorie de cette offre est inconnue")
+        raise api_error
+
+
+def check_offer_subcategory_is_valid(offer_subcategory_id):
+    if offer_subcategory_id not in ALL_SUBCATEGORIES_DICT:
+        api_error = ApiErrors()
+        api_error.add_error("subcategory", "La sous-catégorie de cette offre est inconnue")
         raise api_error
 
 

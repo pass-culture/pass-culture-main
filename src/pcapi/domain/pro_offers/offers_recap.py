@@ -49,6 +49,7 @@ class OfferRecap:
         name: str,
         thumb_url: str,
         offer_type: str,
+        subcategoryId: Optional[str],
         venue_id: int,
         venue_is_virtual: bool,
         venue_managing_offerer_id: int,
@@ -69,6 +70,7 @@ class OfferRecap:
         self.name = name
         self.thumb_url = thumb_url
         self.offer_type = offer_type
+        self.subcategoryId = subcategoryId
         self.venue = OfferRecapVenue(
             venue_id,
             venue_is_virtual,

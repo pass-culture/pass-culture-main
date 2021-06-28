@@ -62,6 +62,7 @@ class Returns200Test:
                 ],
                 "thumbUrl": None,
                 "type": "ThingType.AUDIOVISUEL",
+                "subcategoryId": None,
                 "venue": {
                     "departementCode": departement_code,
                     "id": humanize(requested_venue.id),

@@ -37,6 +37,7 @@ def should_return_serialized_offers_with_relevant_informations():
         venue_departement_code=departement_code,
         stocks=[stock],
         status="ACTIVE",
+        subcategoryId=None,
     )
     offers_recap = OffersRecap(offers_recap=[offer])
 
@@ -64,6 +65,7 @@ def should_return_serialized_offers_with_relevant_informations():
                     "beginningDatetime": None,
                 }
             ],
+            "subcategoryId": None,
             "thumbUrl": "/thumb/url",
             "type": "ThingType.AUDIOVISUEL",
             "venue": {

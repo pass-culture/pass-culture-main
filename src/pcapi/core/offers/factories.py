@@ -221,6 +221,7 @@ class BankInformationFactory(BaseFactory):
     applicationId = factory.Sequence(int)
     status = "ACCEPTED"
 
+
 class OfferReportFactory(BaseFactory):
     class Meta:
         model = OfferReport

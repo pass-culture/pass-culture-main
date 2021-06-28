@@ -4,8 +4,10 @@ from datetime import timedelta
 from freezegun import freeze_time
 import pytest
 
+from pcapi.core.categories import subcategories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
@@ -202,6 +204,7 @@ class Returns200Test:
                     "remainingQuantity": 1000,
                 }
             ],
+            "subcategoryId": None,
             "thumbUrl": None,
             "type": "EventType.CINEMA",
             "url": None,
@@ -253,8 +256,10 @@ class Returns200Test:
     def test_returns_a_thing_stock(self, app):
         # Given
         beneficiary = users_factories.UserFactory()
-        stock = offers_factories.StockWithActivationCodesFactory()
+        stock = offers_factories.ThingStockFactory()
         offer = stock.offer
+        offer.subcategoryId = subcategories.LIVRE_PAPIER.id
+        repository.save(offer)
 
         # When
         client = TestClient(app.test_client()).with_auth(email=beneficiary.email)
@@ -264,5 +269,28 @@ class Returns200Test:
         assert response.status_code == 200
         data = response.json
         assert data["stocks"][0]["cancellationLimitDate"] is None
-        assert data["stocks"][0]["hasActivationCode"] is True
         assert data["offerType"]["canExpire"] is True
+        assert data["subcategoryId"] == "LIVRE_PAPIER"
+
+    @freeze_time("2019-10-15 00:00:00")
+    def test_returns_a_thing_with_activation_code_stock(self, app):
+        # Given
+        beneficiary = users_factories.UserFactory()
+        offer = offers_factories.OfferFactory(
+            stocks=[offers_factories.StockWithActivationCodesFactory()],
+            subcategoryId=subcategories.ABO_PLATEFORME_MUSIQUE.id,
+            url="fake-url",
+        )
+
+        # When
+        client = TestClient(app.test_client()).with_auth(email=beneficiary.email)
+
+        response = client.get(f"/offers/{humanize(offer.id)}")
+
+        # Then
+        assert response.status_code == 200
+        data = response.json
+        assert data["stocks"][0]["cancellationLimitDate"] is None
+        assert data["offerType"]["canExpire"] is True
+        assert data["subcategoryId"] == "ABO_PLATEFORME_MUSIQUE"
+        assert data["stocks"][0]["hasActivationCode"] is True

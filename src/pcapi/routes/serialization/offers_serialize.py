@@ -9,10 +9,10 @@ from pydantic import HttpUrl
 from pydantic import validator
 
 from pcapi.core.bookings.api import compute_confirmation_date
+from pcapi.core.categories.conf import can_create_from_isbn
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.models import OfferStatus
 from pcapi.core.offers.models import Stock
-from pcapi.models import ThingType
 from pcapi.models.feature import FeatureToggle
 from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import dehumanize_list_field
@@ -23,13 +23,48 @@ from pcapi.utils.date import format_into_utc_date
 from pcapi.validation.routes.offers import check_offer_isbn_is_valid
 from pcapi.validation.routes.offers import check_offer_name_length_is_valid
 from pcapi.validation.routes.offers import check_offer_not_duo_and_educational
+from pcapi.validation.routes.offers import check_offer_subcategory_is_valid
 from pcapi.validation.routes.offers import check_offer_type_is_valid
+
+
+class SubcategoryResponseModel(BaseModel):
+    id: str
+    category_id: str
+    matching_type: str
+    pro_label: str
+    app_label: str
+    search_group: str
+    is_event: bool
+    conditional_fields: list[str]
+    can_expire: bool
+    can_be_duo: bool
+    online_offline_platform: str
+    is_digital_deposit: bool
+    is_physical_deposit: bool
+    reimbursement_rule: str
+    is_selectable: bool
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+        orm_mode = True
+
+
+class CategoryResponseModel(BaseModel):
+    id: str
+    pro_label: str
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+        orm_mode = True
 
 
 class PostOfferBodyModel(BaseModel):
     venue_id: str
     product_id: Optional[str]
     type: Optional[str]
+    subcategory_id: Optional[str]
     name: Optional[str]
     booking_email: Optional[str]
     external_ticket_office_url: Optional[HttpUrl]
@@ -73,12 +108,18 @@ class PostOfferBodyModel(BaseModel):
         check_offer_not_duo_and_educational(values["is_duo"], type_field)
         return type_field
 
+    @validator("subcategory_id", pre=True)
+    def validate_subcategory_id(cls, subcategory_id_field, values):  # pylint: disable=no-self-argument
+        if not values["product_id"]:
+            check_offer_subcategory_is_valid(subcategory_id_field)
+        return subcategory_id_field
+
     @validator("extra_data", pre=True)
     def validate_isbn(cls, extra_data_field, values):  # pylint: disable=no-self-argument
         if (
             FeatureToggle.ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION.is_active()
             and not values["product_id"]
-            and values["type"] == str(ThingType.LIVRE_EDITION)
+            and can_create_from_isbn(subcategory_id=values["subcategory_id"], offer_type=values["type"])
         ):
             check_offer_isbn_is_valid(extra_data_field["isbn"])
         return extra_data_field
@@ -202,6 +243,7 @@ class ListOffersOfferResponseModel(BaseModel):
     thumbUrl: Optional[str]
     productIsbn: Optional[str]
     type: str
+    subcategoryId: Optional[str]
     venue: ListOffersVenueResponseModel
     status: str
     venueId: str
