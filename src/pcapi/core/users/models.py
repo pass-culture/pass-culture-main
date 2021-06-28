@@ -122,6 +122,7 @@ def check_password(clear_text: str, hashed: str) -> bool:
 class UserRole(enum.Enum):
     ADMIN = "ADMIN"
     BENEFICIARY = "BENEFICIARY"
+    INSTITUTIONAL_PROJECT_REDACTOR = "INSTITUTIONAL_PROJECT_REDACTOR"
     PRO = "PRO"
 
 
@@ -396,6 +397,10 @@ class User(PcObject, Model, NeedsValidationMixin):
 
         if UserRole.BENEFICIARY in updated_roles and UserRole.ADMIN in updated_roles:
             raise InvalidUserRoleException("User can't have both ADMIN and BENEFICIARY role")
+        if UserRole.BENEFICIARY in updated_roles and UserRole.INSTITUTIONAL_PROJECT_REDACTOR in updated_roles:
+            raise InvalidUserRoleException("User can't have both BENEFICIARY and INSTITUTIONAL_PROJECT_REDACTOR role")
+        if UserRole.ADMIN in updated_roles and UserRole.INSTITUTIONAL_PROJECT_REDACTOR in updated_roles:
+            raise InvalidUserRoleException("User can't have both ADMIN and INSTITUTIONAL_PROJECT_REDACTOR role")
 
         self.roles = updated_roles
 
@@ -403,15 +408,18 @@ class User(PcObject, Model, NeedsValidationMixin):
         if self.isBeneficiary:
             raise InvalidUserRoleException("User can't have both ADMIN and BENEFICIARY role")
 
-        self.isAdmin = True
         self._add_role(UserRole.ADMIN)
+        self.isAdmin = True
 
     def add_beneficiary_role(self) -> None:
         if self.isAdmin:
             raise InvalidUserRoleException("User can't have both ADMIN and BENEFICIARY role")
 
-        self.isBeneficiary = True
         self._add_role(UserRole.BENEFICIARY)
+        self.isBeneficiary = True
+
+    def add_institutional_project_redactor_role(self) -> None:
+        self._add_role(UserRole.INSTITUTIONAL_PROJECT_REDACTOR)
 
     def add_pro_role(self) -> None:
         self._add_role(UserRole.PRO)
@@ -425,6 +433,10 @@ class User(PcObject, Model, NeedsValidationMixin):
         self.isBeneficiary = False
         if self.has_beneficiary_role:  # pylint: disable=using-constant-test
             self.roles.remove(UserRole.BENEFICIARY)
+
+    def remove_institutional_project_redactor_role(self) -> None:
+        if self.has_institutional_project_redactor_role:  # pylint: disable=using-constant-test
+            self.roles.remove(UserRole.INSTITUTIONAL_PROJECT_REDACTOR)
 
     def remove_pro_role(self) -> None:
         if self.has_pro_role:  # pylint: disable=using-constant-test
@@ -445,6 +457,14 @@ class User(PcObject, Model, NeedsValidationMixin):
     @has_beneficiary_role.expression
     def has_beneficiary_role(cls) -> bool:  # pylint: disable=no-self-argument
         return or_(cls.roles.contains([UserRole.BENEFICIARY]), cls.isBeneficiary.is_(True))
+
+    @hybrid_property
+    def has_institutional_project_redactor_role(self) -> bool:
+        return UserRole.INSTITUTIONAL_PROJECT_REDACTOR in self.roles if self.roles else False
+
+    @has_institutional_project_redactor_role.expression
+    def has_institutional_project_redactor_role(cls) -> bool:  # pylint: disable=no-self-argument
+        return cls.roles.contains([UserRole.INSTITUTIONAL_PROJECT_REDACTOR])
 
     @hybrid_property
     def has_pro_role(self) -> bool:
