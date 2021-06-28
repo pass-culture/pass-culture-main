@@ -42,6 +42,11 @@ class Desk extends Component {
 
   firstErrorMessageFromApi = body => Object.keys(body)[0]
 
+  resetTokenField = () => {
+    this.tokenInputRef.current.value = ''
+    this.tokenInputRef.current.focus()
+  }
+
   validateToken = event => {
     const { getBooking } = this.props
     const inputValue = event.target.value.toUpperCase()
@@ -133,6 +138,7 @@ class Desk extends Component {
   registrationOfToken = token => event => {
     event.preventDefault()
     const { validateBooking } = this.props
+
     this.setState({
       message: 'Validation en cours...',
     })
@@ -150,6 +156,9 @@ class Desk extends Component {
           isDisabledButton: false,
           isUsedToken: true,
         })
+      })
+      .then(() => {
+        this.resetTokenField()
       })
       .catch(error => {
         error.json().then(body => {
@@ -179,6 +188,9 @@ class Desk extends Component {
           isUsedToken: false,
           isDisabledButton: false,
         })
+      })
+      .then(() => {
+        this.resetTokenField()
       })
       .catch(error => {
         error.json().then(body => {
