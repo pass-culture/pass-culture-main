@@ -3,6 +3,9 @@ from typing import Optional
 
 from pydantic import BaseModel
 
+from pcapi import settings
+from pcapi.core.offerers.models import Offerer
+from pcapi.core.offerers.repository import get_api_key_prefixes
 from pcapi.serialization.utils import humanize_field
 from pcapi.utils.date import format_into_utc_date
 
@@ -44,8 +47,14 @@ class GetOffererVenueResponseModel(BaseModel):
         json_encoders = {datetime: format_into_utc_date}
 
 
+class OffererApiKey(BaseModel):
+    maxAllowed: int
+    prefixes: list[str]
+
+
 class GetOffererResponseModel(BaseModel):
     address: Optional[str]
+    apiKey: OffererApiKey
     bic: Optional[str]
     city: str
     dateCreated: datetime
@@ -65,6 +74,14 @@ class GetOffererResponseModel(BaseModel):
     siren: Optional[str]
 
     _humanize_id = humanize_field("id")
+
+    @classmethod
+    def from_orm(cls, offerer: Offerer):  # type: ignore
+        offerer.apiKey = {
+            "maxAllowed": settings.MAX_API_KEY_PER_OFFERER,
+            "prefixes": get_api_key_prefixes(offerer.id),
+        }
+        return super().from_orm(offerer)
 
     class Config:
         orm_mode = True

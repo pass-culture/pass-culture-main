@@ -1,5 +1,6 @@
 import pytest
 
+from pcapi.core.offerers.factories import ApiKeyFactory
 import pcapi.core.offerers.models
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
@@ -34,6 +35,8 @@ class Returns200Test:
         offerer = offers_factories.OffererFactory()
         offers_factories.UserOffererFactory(user=pro, offerer=offerer)
         venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        ApiKeyFactory(offerer=offerer, prefix="testenv_prefix")
+        ApiKeyFactory(offerer=offerer, prefix="testenv_prefix2")
 
         offerer_bank_information = create_bank_information(offerer=offerer)
         venue_bank_information = create_bank_information(venue=venue, application_id=2)
@@ -44,6 +47,7 @@ class Returns200Test:
 
         expected_serialized_offerer = {
             "address": offerer.address,
+            "apiKey": {"maxAllowed": 5, "prefixes": ["testenv_prefix", "testenv_prefix2"]},
             "bic": offerer_bank_information.bic,
             "iban": offerer_bank_information.iban,
             "city": offerer.city,

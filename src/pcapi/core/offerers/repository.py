@@ -1,5 +1,6 @@
 from typing import Optional
 
+from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.models import VenueLabel
@@ -69,3 +70,7 @@ def get_filtered_venues(
         query = query.filter(Venue.managingOffererId == offerer_id)
 
     return query.order_by(Venue.name).all()
+
+
+def get_api_key_prefixes(offerer_id: int) -> list[str]:
+    return [prefix[0] for prefix in ApiKey.query.filter_by(offererId=offerer_id).with_entities(ApiKey.prefix).all()]
