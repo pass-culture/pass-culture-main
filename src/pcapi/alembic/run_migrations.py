@@ -2,6 +2,9 @@ from alembic import context
 from sqlalchemy import create_engine
 
 from pcapi import settings
+from pcapi.core.educational.models import EducationalDeposit  # pylint: disable=unused-import
+from pcapi.core.educational.models import EducationalInstitution  # pylint: disable=unused-import
+from pcapi.core.educational.models import EducationalYear  # pylint: disable=unused-import
 from pcapi.models.db import db
 
 
