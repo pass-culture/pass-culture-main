@@ -706,5 +706,5 @@ workflows:
             - GCP_PROD
       - release-synthesis:
           requires:
-            - deploy-pro-netlify
+            - deploy-pro-cloudstorage
             - deploy-webapp
