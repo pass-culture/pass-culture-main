@@ -794,12 +794,12 @@ class UpdateBeneficiaryMandatoryInformationTest:
 class CreateProUserTest:
     def test_create_pro_user(self):
         pro_user_creation_body = ProUserCreationBodyModel(
-            email="prouser@email.fr", password="P@ssword12345", phoneNumber="0666666666"
+            email="prouser@example.com", password="P@ssword12345", phoneNumber="0666666666"
         )
 
         pro_user = create_pro_user(pro_user_creation_body)
 
-        assert pro_user.email == "prouser@email.fr"
+        assert pro_user.email == "prouser@example.com"
         assert not pro_user.isBeneficiary
         assert not pro_user.isAdmin
         assert not pro_user.needsToFillCulturalSurvey
@@ -811,12 +811,12 @@ class CreateProUserTest:
     @override_settings(IS_INTEGRATION=True)
     def test_create_pro_user_in_integration(self):
         pro_user_creation_body = ProUserCreationBodyModel(
-            email="prouser@email.fr", password="P@ssword12345", phoneNumber="0666666666"
+            email="prouser@example.com", password="P@ssword12345", phoneNumber="0666666666"
         )
 
         pro_user = create_pro_user(pro_user_creation_body)
 
-        assert pro_user.email == "prouser@email.fr"
+        assert pro_user.email == "prouser@example.com"
         assert pro_user.isBeneficiary
         assert not pro_user.isAdmin
         assert not pro_user.needsToFillCulturalSurvey
@@ -844,7 +844,7 @@ class AsynchronousIdentityDocumentVerificationTest:
         mocked_random_token.return_value = "a_very_random_secret"
 
         # When
-        asynchronous_identity_document_verification(identity_document, "toto@email.fr")
+        asynchronous_identity_document_verification(identity_document, "toto@example.com")
 
         # Then
         mocked_store_object.assert_called_once_with(
@@ -852,7 +852,7 @@ class AsynchronousIdentityDocumentVerificationTest:
             "a_very_random_secret.jpg",
             identity_document,
             content_type="image/jpeg",
-            metadata={"email": "toto@email.fr"},
+            metadata={"email": "toto@example.com"},
         )
         mocked_verify_identity_document.delay.assert_called_once_with(
             {"image_storage_path": "identity_documents/a_very_random_secret.jpg"}
@@ -870,7 +870,7 @@ class AsynchronousIdentityDocumentVerificationTest:
 
         # Then
         with pytest.raises(IdentityDocumentUploadException):
-            asynchronous_identity_document_verification(identity_document, "toto@email.fr")
+            asynchronous_identity_document_verification(identity_document, "toto@example.com")
 
     @patch("pcapi.core.users.api.delete_object")
     @patch("pcapi.core.users.api.store_object")
@@ -891,7 +891,7 @@ class AsynchronousIdentityDocumentVerificationTest:
 
         # When
         with pytest.raises(CloudTaskCreationException):
-            asynchronous_identity_document_verification(identity_document, "toto@email.fr")
+            asynchronous_identity_document_verification(identity_document, "toto@example.com")
 
         # Then
         mocked_delete_object.assert_called_once_with("identity_documents/a_very_random_secret.jpg")

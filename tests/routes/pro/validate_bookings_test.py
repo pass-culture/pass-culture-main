@@ -86,7 +86,7 @@ class Returns403Test:
     def when_user_not_editor_and_valid_email(self, app):
         # Given
         user = create_user()
-        admin_user = create_user(email="admin@email.fr")
+        admin_user = create_user(email="admin@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(
@@ -98,7 +98,7 @@ class Returns403Test:
         url = "/bookings/token/{}?email={}".format(booking.token, user.email)
 
         # When
-        response = TestClient(app.test_client()).with_auth("admin@email.fr").patch(url)
+        response = TestClient(app.test_client()).with_auth("admin@example.com").patch(url)
 
         # Then
         assert response.status_code == 403
@@ -147,7 +147,7 @@ class Returns404Test:
     def when_user_not_editor_and_invalid_email(self, app):
         # Given
         user = create_user()
-        admin_user = create_user(email="admin@email.fr")
+        admin_user = create_user(email="admin@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(
@@ -156,10 +156,10 @@ class Returns404Test:
         booking = create_booking(user=user, stock=stock, venue=venue)
         repository.save(booking, admin_user)
         booking_id = booking.id
-        url = "/bookings/token/{}?email={}".format(booking.token, "wrong@email.fr")
+        url = "/bookings/token/{}?email={}".format(booking.token, "wrong@example.com")
 
         # When
-        response = TestClient(app.test_client()).with_auth("admin@email.fr").patch(url)
+        response = TestClient(app.test_client()).with_auth("admin@example.com").patch(url)
 
         # Then
         assert response.status_code == 404
@@ -168,8 +168,8 @@ class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def when_booking_user_email_with_special_character_not_url_encoded(self, app):
         # Given
-        user = create_user(email="user+plus@email.fr")
-        user_admin = create_user(email="admin@email.fr")
+        user = create_user(email="user+plus@example.com")
+        user_admin = create_user(email="admin@example.com")
         offerer = create_offerer()
         user_offerer = create_user_offerer(user_admin, offerer)
         venue = create_venue(offerer)
@@ -184,7 +184,7 @@ class Returns404Test:
         url = "/bookings/token/{}?email={}".format(booking.token, user.email)
 
         # When
-        response = TestClient(app.test_client()).with_auth("admin@email.fr").patch(url)
+        response = TestClient(app.test_client()).with_auth("admin@example.com").patch(url)
 
         # Then
         assert response.status_code == 404
@@ -193,7 +193,7 @@ class Returns404Test:
     def when_user_not_editor_and_valid_email_but_invalid_offer_id(self, app):
         # Given
         user = create_user()
-        admin_user = create_user(email="admin@email.fr")
+        admin_user = create_user(email="admin@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(
@@ -205,7 +205,7 @@ class Returns404Test:
         url = "/bookings/token/{}?email={}&offer_id={}".format(booking.token, user.email, humanize(123))
 
         # When
-        response = TestClient(app.test_client()).with_auth("admin@email.fr").patch(url)
+        response = TestClient(app.test_client()).with_auth("admin@example.com").patch(url)
 
         # Then
         assert response.status_code == 404

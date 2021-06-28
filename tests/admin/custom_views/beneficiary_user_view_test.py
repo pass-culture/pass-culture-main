@@ -118,7 +118,7 @@ class BeneficiaryUserViewTest:
         users_factories.UserFactory(email="user@example.com", isAdmin=True)
 
         data = dict(
-            email="toto@email.fr",
+            email="toto@example.com",
             firstName="Serge",
             lastName="Lama",
             dateOfBirth="2002-07-13 10:05:00",
@@ -133,7 +133,7 @@ class BeneficiaryUserViewTest:
 
         assert response.status_code == 302
 
-        user_created = User.query.filter_by(email="toto@email.fr").one()
+        user_created = User.query.filter_by(email="toto@example.com").one()
         assert len(user_created.deposits) == 1
         assert user_created.deposit.version == 2
         assert user_created.deposit.source == "pass-culture-admin"
@@ -146,7 +146,7 @@ class BeneficiaryUserViewTest:
         beneficiary_view = BeneficiaryUserView(User, db_session)
         beneficiary_view_create_form = beneficiary_view.get_create_form()
         data = dict(
-            email="toto@email.fr",
+            email="toto@example.com",
             firstName="Serge",
             lastName="Lama",
             dateOfBirth="2002-07-13 10:05:00",
@@ -184,7 +184,7 @@ class BeneficiaryUserViewTest:
         users_factories.UserFactory(email="user@example.com", isAdmin=True)
 
         data = dict(
-            email="toto@email.fr",
+            email="toto@example.com",
             firstName="Serge",
             lastName="Lama",
             dateOfBirth="2002-07-13 10:05:00",
@@ -197,7 +197,7 @@ class BeneficiaryUserViewTest:
 
         assert response.status_code == 302
 
-        filtered_users = User.query.filter_by(email="toto@email.fr").all()
+        filtered_users = User.query.filter_by(email="toto@example.com").all()
         deposits = Deposit.query.all()
         assert len(filtered_users) == 0
         assert len(deposits) == 0

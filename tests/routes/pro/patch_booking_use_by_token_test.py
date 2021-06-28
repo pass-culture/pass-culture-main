@@ -95,7 +95,7 @@ class Returns401Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_not_logged_in_and_doesnt_give_api_key(self, app):
         # Given
-        user = create_user(email="user@email.fr")
+        user = create_user(email="user@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer, venue, price=0)
@@ -113,8 +113,8 @@ class Returns401Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_not_logged_in_and_not_existing_api_key_given(self, app):
         # Given
-        user = create_user(email="user@email.fr")
-        pro_user = create_user(email="pro@email.fr")
+        user = create_user(email="user@example.com")
+        pro_user = create_user(email="pro@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
         offer = create_offer_with_thing_product(venue)
@@ -138,8 +138,8 @@ class Returns403Test:
         @pytest.mark.usefixtures("db_session")
         def when_api_key_given_not_related_to_booking_offerer(self, app):
             # Given
-            user = create_user(email="user@email.fr")
-            pro_user = create_user(email="pro@email.fr")
+            user = create_user(email="user@example.com")
+            pro_user = create_user(email="pro@example.com")
             offerer = create_offerer()
             offerer2 = create_offerer(siren="987654321")
             user_offerer = create_user_offerer(pro_user, offerer)
@@ -189,7 +189,7 @@ class Returns403Test:
         def when_user_is_not_attached_to_linked_offerer(self, app):
             # Given
             user = create_user()
-            pro_user = create_user(email="pro@email.fr")
+            pro_user = create_user(email="pro@example.com")
             offerer = create_offerer()
             venue = create_venue(offerer)
             stock = create_stock_with_event_offer(offerer, venue, price=0)
@@ -199,7 +199,7 @@ class Returns403Test:
             url = f"/v2/bookings/use/token/{booking.token}"
 
             # When
-            response = TestClient(app.test_client()).with_auth("pro@email.fr").patch(url)
+            response = TestClient(app.test_client()).with_auth("pro@example.com").patch(url)
 
             # Then
             assert response.status_code == 403
@@ -226,7 +226,7 @@ class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def when_booking_is_not_provided_at_all(self, app):
         # Given
-        user = create_user(email="user@email.fr")
+        user = create_user(email="user@example.com")
         offerer = create_offerer()
         venue = create_venue(offerer)
         stock = create_stock_with_event_offer(offerer, venue, price=0)
@@ -271,7 +271,7 @@ class Returns404Test:
         def when_user_is_logged_in_and_booking_does_not_exist(self, app):
             # Given
             user = create_user()
-            pro_user = create_user(email="pro@email.fr")
+            pro_user = create_user(email="pro@example.com")
             offerer = create_offerer()
             user_offerer = create_user_offerer(pro_user, offerer)
             venue = create_venue(offerer)
@@ -281,7 +281,7 @@ class Returns404Test:
 
             # When
             url = "/v2/bookings/use/token/{}".format("123456")
-            response = TestClient(app.test_client()).with_auth("pro@email.fr").patch(url)
+            response = TestClient(app.test_client()).with_auth("pro@example.com").patch(url)
 
             # Then
             assert response.status_code == 404
