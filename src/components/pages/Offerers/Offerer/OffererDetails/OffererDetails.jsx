@@ -6,7 +6,7 @@ import Icon from 'components/layout/Icon'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
 
-import ApiKey from './ApiKey/ApiKey'
+import ApiKey from './ApiKey/ApiKeyContainer'
 import BankInformation from './BankInformation/BankInformation'
 import { Offerer } from './Offerer'
 import VenuesContainer from './Venues/VenuesContainer'
@@ -66,7 +66,11 @@ class OffererDetails extends PureComponent {
           </div>
         </div>
         <BankInformation offerer={offerer} />
-        <ApiKey apiKey={offerer.apiKey} />
+        <ApiKey
+          maxAllowedApiKeys={offerer.apiKey.maxAllowed}
+          offererId={offerer.id}
+          savedApiKeys={offerer.apiKey.savedApiKeys}
+        />
         <VenuesContainer
           offererId={offerer.id}
           venues={venues}

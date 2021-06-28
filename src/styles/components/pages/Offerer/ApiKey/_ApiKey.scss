@@ -1,15 +1,15 @@
 .api-key {
-  .api-key-title {
+  .title {
     align-items: center;
     display: flex;
     justify-content: space-between;
     margin-top: rem(32px);
 
-    &__text {
+    .text {
       @include title3();
     }
 
-    &__counter {
+    .counter {
       @include title4();
 
       &--error {
@@ -18,27 +18,47 @@
     }
   }
 
-  .api-key-info {
+  .info {
     color: $grey-dark;
     margin-top: rem(16px);
   }
 
-  .api-keys {
+  .list {
     display: flex;
     flex-direction: column;
     margin-top: rem(16px);
 
-    &__item {
+    .item {
       align-items: center;
       background-color: $grey-light;
-      color: $grey-dark;
       display: flex;
+      justify-content: space-between;
       padding: rem(12px) rem(16px);
       width: 100%;
 
       &:not(:first-child) {
         margin-top: rem(8px);
       }
+
+      .text {
+        color: $grey-dark;
+        word-break: break-all;
+
+        &--new-key {
+          color: $primary;
+
+          @include button();
+        }
+      }
+
+      .action {
+        margin-left: rem(16px);
+      }
     }
+  }
+
+  .generate {
+    margin-top: rem(16px);
+    min-width: rem(180px);
   }
 }

@@ -111,6 +111,10 @@ export const getAllOfferersNames = () => {
   return client.get('/offerers/names').then(response => response.offerersNames)
 }
 
+export const generateOffererApiKey = async offererId => {
+  return client.post(`/offerers/${offererId}/api_keys`, {}).then(response => response.apiKey)
+}
+
 export const getUserValidatedOfferersNames = () => {
   return client
     .get('/offerers/names?validated_for_user=true')

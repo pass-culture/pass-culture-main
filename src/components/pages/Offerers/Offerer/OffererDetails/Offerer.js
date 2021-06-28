@@ -33,8 +33,8 @@ const formatSiren = siren => {
 }
 
 export class ApiKeyType {
-  constructor(apiKey) {
-    this.maxAllowed = apiKey ? apiKey.maxAllowed : ''
-    this.prefixes = apiKey ? apiKey.prefixes : []
+  constructor(apiKeyResponse) {
+    this.maxAllowed = apiKeyResponse ? apiKeyResponse.maxAllowed : ''
+    this.savedApiKeys = apiKeyResponse ? apiKeyResponse.prefixes : []
   }
 }

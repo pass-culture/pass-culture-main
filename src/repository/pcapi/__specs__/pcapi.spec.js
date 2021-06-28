@@ -2,6 +2,7 @@ import { DEFAULT_PRE_FILTERS } from 'components/pages/Bookings/PreFilters/_const
 import { ALL_OFFERERS, DEFAULT_SEARCH_FILTERS } from 'components/pages/Offers/Offers/_constants'
 import {
   getBooking,
+  generateOffererApiKey,
   getVenuesForOfferer,
   getVenueStats,
   invalidateBooking,
@@ -181,6 +182,16 @@ describe('pcapi', () => {
 
       // Then
       expect(client.get).toHaveBeenCalledWith('/venues/3F/stats')
+    })
+  })
+
+  describe('generateOffererApiKey', () => {
+    it('should post an api key', () => {
+      // When
+      generateOffererApiKey('3F')
+
+      // Then
+      expect(client.post).toHaveBeenCalledWith('/offerers/3F/api_keys', {})
     })
   })
 
