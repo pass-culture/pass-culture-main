@@ -168,7 +168,7 @@ def create_account(
     if find_user_by_email(email):
         raise exceptions.UserAlreadyExistsException()
 
-    departementCode = PostalCode(postal_code).get_departement_code() if postal_code else "007"
+    departement_code = PostalCode(postal_code).get_departement_code() if postal_code else None
 
     user = User(
         email=email,
@@ -178,7 +178,7 @@ def create_account(
         hasSeenTutorials=False,
         notificationSubscriptions=asdict(NotificationSubscriptions(marketing_email=marketing_email_subscription)),
         postalCode=postal_code,
-        departementCode=departementCode,
+        departementCode=departement_code,
         phoneNumber=phone_number,
     )
 
@@ -602,13 +602,10 @@ def _generate_offerer(data: dict) -> Offerer:
 
 
 def _set_offerer_departement_code(new_user: User, offerer: Offerer) -> User:
-    if settings.IS_INTEGRATION:
-        new_user.departementCode = "00"
-    elif offerer.postalCode is not None:
+    if offerer.postalCode is not None:
         new_user.departementCode = PostalCode(offerer.postalCode).get_departement_code()
     else:
-        new_user.departementCode = "XX"  # We don't want to trigger an error on this:
-        # we want the error on user
+        new_user.departementCode = None
     return new_user
 
 

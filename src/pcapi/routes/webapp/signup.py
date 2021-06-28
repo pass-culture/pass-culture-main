@@ -39,7 +39,6 @@ def signup_webapp():
     )
 
     if settings.IS_INTEGRATION:
-        new_user.departementCode = "00"
         objects_to_save.append(payments_api.create_deposit(new_user, "test"))
     else:
         authorized_emails, departement_codes = get_authorized_emails_and_dept_codes(ttl_hash=get_ttl_hash())

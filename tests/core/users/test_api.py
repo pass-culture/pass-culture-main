@@ -573,18 +573,6 @@ class FulfillAccountPasswordTest:
 
 
 class SetOffererDepartementCodeTest:
-    @patch("pcapi.settings.IS_INTEGRATION", True)
-    def should_set_user_department_to_all_departments_in_integration(self):
-        # Given
-        new_user = create_user()
-        offerer = create_offerer(postal_code="75019")
-
-        # When
-        updated_user = _set_offerer_departement_code(new_user, offerer)
-
-        # Then
-        assert updated_user.departementCode == "00"
-
     def should_set_user_department_to_undefined_department_code_when_offerer_has_none(self):
         # Given
         new_user = create_user()
@@ -594,7 +582,7 @@ class SetOffererDepartementCodeTest:
         updated_user = _set_offerer_departement_code(new_user, offerer)
 
         # Then
-        assert updated_user.departementCode == "XX"
+        assert updated_user.departementCode == None
 
     def should_set_user_department_code_based_on_offerer(self):
         # Given

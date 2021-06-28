@@ -150,7 +150,7 @@ class User(PcObject, Model, NeedsValidationMixin):
 
     dateOfBirth = Column(DateTime, nullable=True)
 
-    departementCode = Column(String(3), nullable=False)
+    departementCode = Column(String(3), nullable=True)
 
     firstName = Column(String(128), nullable=True)
 

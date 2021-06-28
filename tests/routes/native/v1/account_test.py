@@ -389,7 +389,7 @@ class AccountCreationTest:
                     "date(u.date_of_birth)": "1960-12-31T00:00:00",
                     "date(u.deposit_expiration_date)": None,
                     "u.credit": 0,
-                    "u.departement_code": "007",
+                    "u.departement_code": None,
                     "u.is_beneficiary": False,
                     "u.marketing_push_subscription": True,
                     "u.postal_code": None,
