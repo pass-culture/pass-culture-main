@@ -6,6 +6,8 @@ import flask_login
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users import models as users_models
+from pcapi.flask_app import db
 from pcapi.models import Booking
 
 
@@ -114,3 +116,26 @@ class IsAccessibleTest:
 
         # then
         assert view.check_super_admins() is True
+
+
+class DummyUserView(BaseAdminView):
+    @property
+    def form_columns(self):
+        fields = ("email",)
+        if self.check_super_admins():
+            fields += ("firstName", "lastName")
+        return fields
+
+
+class BaseAdminFormTest:
+    def test_ensure_no_cache(self, app):
+        view = DummyUserView(name="user", url="/user", model=users_models.User, session=db.session)
+        with app.test_request_context(method="POST", data={}):
+            form = view.get_edit_form()
+            assert hasattr(form, "firstName") == True
+            assert hasattr(form, "lastName") == True
+
+            with patch.object(view, "check_super_admins", return_value=False):
+                form = view.get_edit_form()
+                assert hasattr(form, "firstName") == False
+                assert hasattr(form, "lastName") == False
