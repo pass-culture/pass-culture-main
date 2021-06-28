@@ -12,6 +12,7 @@ import pytest
 import requests_mock
 
 from pcapi import settings
+from pcapi.connectors.serialization.api_adage_serializers import InstitutionalProjectRedactorResponse
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.offers import factories as offers_factories
@@ -26,6 +27,7 @@ from pcapi.core.users.api import _set_offerer_departement_code
 from pcapi.core.users.api import asynchronous_identity_document_verification
 from pcapi.core.users.api import count_existing_id_check_tokens
 from pcapi.core.users.api import create_id_check_token
+from pcapi.core.users.api import create_institutional_project_redactor
 from pcapi.core.users.api import create_pro_user
 from pcapi.core.users.api import delete_expired_tokens
 from pcapi.core.users.api import fulfill_account_password
@@ -56,6 +58,7 @@ from pcapi.models.offer_type import EventType
 from pcapi.models.offer_type import ThingType
 from pcapi.models.user_session import UserSession
 from pcapi.repository import repository
+from pcapi.routes.native.v1.serialization.account import InstitutionalProjectRedactorAccountRequest
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
 
 import tests
@@ -812,6 +815,40 @@ class CreateProUserTest:
         assert not pro_user.has_admin_role
         assert pro_user.has_beneficiary_role
         assert pro_user.deposits != []
+
+
+@pytest.mark.usefixtures("db_session")
+class CreateInstituationalProjectRedactorTest:
+    @patch("pcapi.core.users.api.get_institutional_project_redactor_by_email")
+    def test_create_institutional_project_redactor_with_adage_informations(
+        self, get_institutional_project_redactor_by_email_stub
+    ):
+        # Given
+        institutional_project_redactor_email = "project.redactor@example.com"
+        institutional_project_redactor_password = "P@ssword12345"
+        institutional_project_redactor_adage_response = InstitutionalProjectRedactorResponse(
+            civilite="Madame", prenom="Jane", nom="Doe", mail=institutional_project_redactor_email, etablissements=[]
+        )
+        get_institutional_project_redactor_by_email_stub.return_value = institutional_project_redactor_adage_response
+
+        # When
+        created_user = create_institutional_project_redactor(
+            institutional_project_redactor_email, institutional_project_redactor_password
+        )
+
+        # Then
+        get_institutional_project_redactor_by_email_stub.assert_called_once_with(institutional_project_redactor_email)
+        saved_user = User.query.filter(User.email == institutional_project_redactor_email).one()
+        assert created_user.id == saved_user.id
+        assert saved_user.email == institutional_project_redactor_email
+        assert saved_user.civility == institutional_project_redactor_adage_response.civility
+        assert saved_user.firstName == institutional_project_redactor_adage_response.first_name
+        assert saved_user.lastName == institutional_project_redactor_adage_response.last_name
+        assert (
+            saved_user.publicName
+            == f"{institutional_project_redactor_adage_response.first_name} {institutional_project_redactor_adage_response.last_name}"
+        )
+        assert saved_user.has_institutional_project_redactor_role
 
 
 class AsynchronousIdentityDocumentVerificationTest:

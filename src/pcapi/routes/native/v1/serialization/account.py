@@ -54,6 +54,14 @@ class AccountRequest(BaseModel):
         alias_generator = to_camel
 
 
+class InstitutionalProjectRedactorAccountRequest(BaseModel):
+    email: str
+    password: str
+
+    class Config:
+        alias_generator = to_camel
+
+
 class CulturalSurveyRequest(BaseModel):
     needs_to_fill_cultural_survey: bool
     cultural_survey_id: Optional[UUID]
