@@ -1,6 +1,7 @@
 export class Offerer {
   constructor(offerer = {}) {
     this.address = offerer.address || ''
+    this.apiKey = new ApiKeyType(offerer.apiKey)
     this.bic = offerer.bic || ''
     this.city = offerer.city || ''
     this.iban = offerer.iban || ''
@@ -29,4 +30,11 @@ const formatSiren = siren => {
   }
 
   return blocks.join(' ')
+}
+
+export class ApiKeyType {
+  constructor(apiKey) {
+    this.maxAllowed = apiKey ? apiKey.maxAllowed : ''
+    this.prefixes = apiKey ? apiKey.prefixes : []
+  }
 }

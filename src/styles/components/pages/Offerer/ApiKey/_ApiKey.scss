@@ -1,0 +1,44 @@
+.api-key {
+  .api-key-title {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    margin-top: rem(32px);
+
+    &__text {
+      @include title3();
+    }
+
+    &__counter {
+      @include title4();
+
+      &--error {
+        color: $red-error;
+      }
+    }
+  }
+
+  .api-key-info {
+    color: $grey-dark;
+    margin-top: rem(16px);
+  }
+
+  .api-keys {
+    display: flex;
+    flex-direction: column;
+    margin-top: rem(16px);
+
+    &__item {
+      align-items: center;
+      background-color: $grey-light;
+      color: $grey-dark;
+      display: flex;
+      padding: rem(12px) rem(16px);
+      width: 100%;
+
+      &:not(:first-child) {
+        margin-top: rem(8px);
+      }
+    }
+  }
+}

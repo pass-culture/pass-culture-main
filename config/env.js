@@ -72,6 +72,7 @@ function getClientEnvironment(publicUrl) {
       {
         API_URL: process.env.API_URL,
         ENVIRONMENT_NAME: process.env.ENVIRONMENT_NAME,
+        ENV_WORDING: process.env.ENV_WORDING,
         NAME: name,
         VERSION: version,
         MATOMO_SERVER_URL: process.env.MATOMO_SERVER_URL,

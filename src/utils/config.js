@@ -13,6 +13,7 @@ export const CGU_URL = 'https://pass.culture.fr/cgu-professionnels/'
 export const API_URL = process.env.API_URL || 'http://localhost'
 export const {
   ENVIRONMENT_NAME,
+  ENV_WORDING,
   SENTRY_SAMPLE_RATE,
   SENTRY_SERVER_URL,
   URL_FOR_MAINTENANCE,
