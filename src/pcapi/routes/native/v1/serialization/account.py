@@ -131,6 +131,7 @@ class UserProfileResponse(BaseModel):
         alias_generator = to_camel
         allow_population_by_field_name = True
         json_encoders = {datetime.datetime: format_into_utc_date}
+        use_enum_values = True
 
     @validator("publicName", pre=True)
     def format_public_name(cls, publicName: str) -> Optional[str]:  # pylint: disable=no-self-argument

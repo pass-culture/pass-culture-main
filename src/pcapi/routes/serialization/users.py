@@ -113,3 +113,4 @@ class SharedLoginUserResponseModel(BaseModel):
         alias_generator = to_camel
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
+        use_enum_values = True
