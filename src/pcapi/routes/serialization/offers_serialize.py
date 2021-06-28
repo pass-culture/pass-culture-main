@@ -461,6 +461,7 @@ class GetOfferResponseModel(BaseModel):
     product: GetOfferProductResponseModel
     productId: str
     stocks: list[GetOfferStockResponseModel]
+    subcategoryId: Optional[str]
     thumbUrl: Optional[str]
     type: str
     externalTicketOfficeUrl: Optional[str]

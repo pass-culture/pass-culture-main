@@ -346,6 +346,8 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ProvidableMixin):
 
     isEducational = Column(Boolean, server_default=false(), default=False, nullable=False)
 
+    subcategoryId = Column(Text, nullable=True, index=True)
+
     # FIXME: We shoud be able to remove the index on `venueId`, since this composite index
     #  can be used by PostgreSQL when filtering on the `venueId` column only.
     Index("venueId_idAtProvider_index", venueId, idAtProvider, unique=True)

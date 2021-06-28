@@ -78,7 +78,6 @@ class Returns200Test:
                     "conditions": None,
                     "dateCreated": format_into_utc_date(offer.dateCreated),
                     "dateModifiedAtLastProvider": format_into_utc_date(offer.dateModifiedAtLastProvider),
-                    "subcategoryId": None,
                     "description": product.description,
                     "durationMinutes": None,
                     "externalTicketOfficeUrl": None,
@@ -138,6 +137,7 @@ class Returns200Test:
                             "remainingQuantity": "unlimited",
                         }
                     ],
+                    "subcategoryId": None,
                     "thumbUrl": None,
                     "type": "ThingType.AUDIOVISUEL",
                     "url": "https://host/path/{token}?offerId={offerId}&email={email}",
