@@ -183,6 +183,8 @@ def create_account(
     )
 
     if apps_flyer_user_id and apps_flyer_platform:
+        if user.externalIds is None:
+            user.externalIds = {}
         user.externalIds["apps_flyer"] = {"user": apps_flyer_user_id, "platform": apps_flyer_platform.upper()}
 
     if not user.age or user.age < constants.ACCOUNT_CREATION_MINIMUM_AGE:

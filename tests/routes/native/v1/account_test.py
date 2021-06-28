@@ -453,6 +453,8 @@ class AccountCreationBeforeGrandOpeningTest:
             "token": "gnagna",
             "marketingEmailSubscription": True,
             "postalCode": "93000",
+            "appsFlyerUserId": "some-id",
+            "appsFlyerPlatform": "some-platform",
         }
 
         response = test_client.post("/native/v1/account", json=data)
@@ -466,6 +468,7 @@ class AccountCreationBeforeGrandOpeningTest:
         mocked_check_recaptcha_token_is_valid.assert_called()
         assert user.departementCode == "93"
         assert user.postalCode == "93000"
+        assert user.externalIds == {"apps_flyer": {"platform": "SOME-PLATFORM", "user": "some-id"}}
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["Mj-TemplateID"] == 2015423
         assert push_testing.requests == [
