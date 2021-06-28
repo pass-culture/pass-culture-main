@@ -1,18 +1,13 @@
 from datetime import datetime
-from datetime import timedelta
 from decimal import Decimal
 
 import pytest
 
-import pcapi.core.users.factories as users_factories
-from pcapi.model_creators.generic_creators import create_booking
-from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_payment
-from pcapi.model_creators.generic_creators import create_payment_status
-from pcapi.model_creators.generic_creators import create_venue
-from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
+from pcapi.core.bookings import factories as bookings_factories
+from pcapi.core.offers import factories as offers_factories
+from pcapi.core.payments import factories as payments_factories
+from pcapi.core.users import factories as users_factories
 from pcapi.models.payment_status import TransactionStatus
-from pcapi.repository import repository
 from pcapi.repository.reimbursement_queries import find_sent_offerer_payments
 
 
@@ -20,25 +15,19 @@ class FindAllOffererPaymentsTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_not_return_one_payment_info_with_error_status(self, app):
         # Given
-        user = users_factories.UserFactory(lastName="User", firstName="Plus")
-        offerer = create_offerer(address="7 rue du livre")
-        venue = create_venue(offerer)
-        stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, price=10)
-        now = datetime.utcnow()
-        booking = create_booking(user=user, stock=stock, is_used=True, date_used=now, token="ABCDEF", venue=venue)
-
-        payment = create_payment(
-            booking,
-            offerer,
-            transaction_label="pass Culture Pro - remboursement 1ère quinzaine 07-2019",
-            status=TransactionStatus.ERROR,
-            amount=50,
-            detail="Iban non fourni",
+        stock = offers_factories.ThingStockFactory(price=10)
+        booking = bookings_factories.BookingFactory(
+            stock=stock, isUsed=True, dateUsed=datetime.utcnow(), token="ABCDEF"
         )
-        repository.save(payment)
+        payment = payments_factories.PaymentFactory(
+            booking=booking, transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2019"
+        )
+        payments_factories.PaymentStatusFactory(
+            payment=payment, status=TransactionStatus.ERROR, detail="Iban non fourni"
+        )
 
         # When
-        payments = find_sent_offerer_payments(offerer.id)
+        payments = find_sent_offerer_payments(stock.offer.venue.managingOfferer.id)
 
         # Then
         assert len(payments) == 0
@@ -47,29 +36,32 @@ class FindAllOffererPaymentsTest:
     def test_should_return_one_payment_info_with_sent_status(self, app):
         # Given
         user = users_factories.UserFactory(lastName="User", firstName="Plus")
-        offerer = create_offerer(address="7 rue du livre")
-        venue = create_venue(offerer)
-        stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, price=10)
+        stock = offers_factories.ThingStockFactory(
+            offer__name="Test Book",
+            offer__venue__managingOfferer__address="7 rue du livre",
+            offer__venue__name="La petite librairie",
+            offer__venue__address="123 rue de Paris",
+            offer__venue__siret=12345678912345,
+            price=10,
+        )
         now = datetime.utcnow()
-        booking = create_booking(user=user, stock=stock, is_used=True, date_used=now, token="ABCDEF", venue=venue)
+        booking = bookings_factories.BookingFactory(user=user, stock=stock, isUsed=True, dateUsed=now, token="ABCDEF")
 
-        payment = create_payment(
-            booking,
-            offerer,
-            transaction_label="pass Culture Pro - remboursement 1ère quinzaine 07-2019",
-            status=TransactionStatus.ERROR,
+        payment = payments_factories.PaymentFactory(
             amount=50,
-            detail="Iban non fourni",
-            status_date=now - timedelta(days=2),
+            reimbursementRate=0.5,
+            booking=booking,
+            iban="CF13QSDFGH456789",
+            transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2019",
         )
-        payment_status1 = create_payment_status(
-            payment, detail="All good", status=TransactionStatus.RETRY, date=now - timedelta(days=1)
+        payments_factories.PaymentStatusFactory(
+            payment=payment, status=TransactionStatus.ERROR, detail="Iban non fourni"
         )
-        payment_status2 = create_payment_status(payment, detail="All good", status=TransactionStatus.SENT)
-        repository.save(payment, payment_status1, payment_status2)
+        payments_factories.PaymentStatusFactory(payment=payment, status=TransactionStatus.RETRY, detail="All good")
+        payments_factories.PaymentStatusFactory(payment=payment, status=TransactionStatus.SENT, detail="All good")
 
         # When
-        payments = find_sent_offerer_payments(offerer.id)
+        payments = find_sent_offerer_payments(stock.offer.venue.managingOfferer.id)
 
         # Then
         assert len(payments) == 1
@@ -87,7 +79,7 @@ class FindAllOffererPaymentsTest:
             "123 rue de Paris",
             Decimal("50.00"),
             Decimal("0.50"),
-            None,
+            "CF13QSDFGH456789",
             "pass Culture Pro - remboursement 1ère quinzaine 07-2019",
             TransactionStatus.SENT,
             "All good",
@@ -97,48 +89,44 @@ class FindAllOffererPaymentsTest:
     def test_should_return_last_matching_status_based_on_date_for_each_payment(self, app):
         # Given
         user = users_factories.UserFactory(lastName="User", firstName="Plus")
-        offerer = create_offerer(address="7 rue du livre")
-        venue = create_venue(offerer)
-        stock = create_stock_with_thing_offer(offerer=offerer, venue=venue, price=10)
+        stock = offers_factories.ThingStockFactory(
+            offer__name="Test Book",
+            offer__venue__managingOfferer__address="7 rue du livre",
+            offer__venue__name="La petite librairie",
+            offer__venue__address="123 rue de Paris",
+            offer__venue__siret=12345678912345,
+            price=10,
+        )
         now = datetime.utcnow()
-        booking1 = create_booking(user=user, stock=stock, is_used=True, date_used=now, token="ABCDEF", venue=venue)
-        booking2 = create_booking(user=user, stock=stock, is_used=True, date_used=now, token="ABCDFE", venue=venue)
+        booking1 = bookings_factories.BookingFactory(user=user, stock=stock, isUsed=True, dateUsed=now, token="ABCDEF")
+        booking2 = bookings_factories.BookingFactory(user=user, stock=stock, isUsed=True, dateUsed=now, token="ABCDFE")
 
-        payment1 = create_payment(
-            booking1,
-            offerer,
-            transaction_label="pass Culture Pro - remboursement 1ère quinzaine 07-2019",
-            status=TransactionStatus.PENDING,
+        payment = payments_factories.PaymentFactory(
             amount=50,
-            status_date=now - timedelta(days=2),
+            reimbursementRate=0.5,
+            booking=booking1,
+            iban="CF13QSDFGH456789",
+            transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2019",
         )
-        payment2 = create_payment(
-            booking2,
-            offerer,
-            transaction_label="pass Culture Pro - remboursement 2ème quinzaine 07-2019",
-            status=TransactionStatus.PENDING,
+        payments_factories.PaymentStatusFactory(payment=payment, status=TransactionStatus.RETRY, detail="Retry")
+        payments_factories.PaymentStatusFactory(payment=payment, status=TransactionStatus.SENT, detail="All good")
+
+        payment2 = payments_factories.PaymentFactory(
             amount=75,
-            status_date=now - timedelta(days=4),
+            reimbursementRate=0.5,
+            booking=booking2,
+            iban="CF13QSDFGH456789",
+            transactionLabel="pass Culture Pro - remboursement 2ème quinzaine 07-2019",
         )
-
-        repository.save(payment1, payment2)
-
-        last_status_for_payment1 = create_payment_status(
-            payment1, detail="All good", status=TransactionStatus.SENT, date=now
+        payments_factories.PaymentStatusFactory(
+            payment=payment2, status=TransactionStatus.ERROR, detail="Iban non fourni"
         )
-        last_status_for_payment2 = create_payment_status(payment2, detail=None, status=TransactionStatus.SENT, date=now)
-        repository.save(last_status_for_payment1, last_status_for_payment2)
-
-        first_status_for_payment1 = create_payment_status(
-            payment1, detail="Retry", status=TransactionStatus.RETRY, date=now - timedelta(days=1)
+        payments_factories.PaymentStatusFactory(
+            payment=payment2, status=TransactionStatus.SENT, detail="All realy good"
         )
-        first_status_for_payment2 = create_payment_status(
-            payment2, detail="Iban non fournis", status=TransactionStatus.ERROR, date=now - timedelta(days=3)
-        )
-        repository.save(first_status_for_payment1, first_status_for_payment2)
 
         # When
-        payments = find_sent_offerer_payments(offerer.id)
+        payments = find_sent_offerer_payments(stock.offer.venue.managingOfferer.id)
 
         # Then
         assert len(payments) == 2
@@ -156,10 +144,10 @@ class FindAllOffererPaymentsTest:
             "123 rue de Paris",
             Decimal("75.00"),
             Decimal("0.50"),
-            None,
+            "CF13QSDFGH456789",
             "pass Culture Pro - remboursement 2ème quinzaine 07-2019",
             TransactionStatus.SENT,
-            None,
+            "All realy good",
         )
         assert payments[1] == (
             "User",
@@ -175,7 +163,7 @@ class FindAllOffererPaymentsTest:
             "123 rue de Paris",
             Decimal("50.00"),
             Decimal("0.50"),
-            None,
+            "CF13QSDFGH456789",
             "pass Culture Pro - remboursement 1ère quinzaine 07-2019",
             TransactionStatus.SENT,
             "All good",
