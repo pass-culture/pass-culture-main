@@ -51,8 +51,8 @@ class JouveContent(pydantic.BaseModel):
     birthLocationCtrl: typing.Optional[str]
     bodyBirthDateCtrl: typing.Optional[str]
     bodyBirthDateLevel: typing.Optional[int]
-    bodyFirstNameCtrl: typing.Optional[str]
-    bodyFirstNameLevel: typing.Optional[int]
+    bodyFirstnameCtrl: typing.Optional[str]
+    bodyFirstnameLevel: typing.Optional[int]
     bodyNameLevel: typing.Optional[int]
     bodyNameCtrl: typing.Optional[str]
     bodyPieceNumber: typing.Optional[str]
@@ -73,7 +73,7 @@ class JouveContent(pydantic.BaseModel):
     serviceCodeCtrl: typing.Optional[str]
 
     _parse_body_birth_date_level = validator("bodyBirthDateLevel", pre=True, allow_reuse=True)(_parse_level)
-    _parse_body_first_name_level = validator("bodyFirstNameLevel", pre=True, allow_reuse=True)(_parse_level)
+    _parse_body_first_name_level = validator("bodyFirstnameLevel", pre=True, allow_reuse=True)(_parse_level)
     _parse_body_name_level = validator("bodyNameLevel", pre=True, allow_reuse=True)(_parse_level)
     _parse_body_piece_number_level = validator("bodyPieceNumberLevel", pre=True, allow_reuse=True)(_parse_level)
     _parse_birth_date = validator("birthDateTxt", pre=True, allow_reuse=True)(_parse_date)

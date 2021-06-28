@@ -108,7 +108,7 @@ def _id_check_fraud_items(content: models.JouveContent) -> List[models.FraudItem
     fraud_items.append(_get_boolean_id_fraud_item(content.serviceCodeCtrl, "serviceCodeCtrl", True))
     fraud_items.append(_get_boolean_id_fraud_item(content.birthLocationCtrl, "birthLocationCtrl", True))
     fraud_items.append(_get_boolean_id_fraud_item(content.bodyBirthDateCtrl, "bodyBirthDateCtrl", False))
-    fraud_items.append(_get_boolean_id_fraud_item(content.bodyFirstNameCtrl, "bodyFirstNameCtrl", False))
+    fraud_items.append(_get_boolean_id_fraud_item(content.bodyFirstnameCtrl, "bodyFirstnameCtrl", False))
     fraud_items.append(_get_boolean_id_fraud_item(content.bodyNameCtrl, "bodyNameCtrl", False))
     fraud_items.append(_get_boolean_id_fraud_item(content.bodyPieceNumberCtrl, "bodyPieceNumberCtrl", False))
     fraud_items.append(_get_boolean_id_fraud_item(content.creatorCtrl, "creatorCtrl", False))
@@ -117,7 +117,7 @@ def _id_check_fraud_items(content: models.JouveContent) -> List[models.FraudItem
 
     fraud_items.append(_get_threshold_id_fraud_item(content.bodyBirthDateLevel, "bodyBirthDateLevel", 100, False))
     fraud_items.append(_get_threshold_id_fraud_item(content.bodyNameLevel, "bodyNameLevel", 50, False))
-    fraud_items.append(_get_threshold_id_fraud_item(content.bodyFirstNameLevel, "bodyFirstNameLevel", 50, False))
+    fraud_items.append(_get_threshold_id_fraud_item(content.bodyFirstnameLevel, "bodyFirstnameLevel", 50, False))
     fraud_items.append(_get_threshold_id_fraud_item(content.bodyPieceNumberLevel, "bodyPieceNumberLevel", 50, False))
 
     return fraud_items

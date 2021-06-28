@@ -125,7 +125,7 @@ class JouveFraudCheckTest:
             dateOfBirth=datetime(2002, 6, 8),
             email=self.user_email,
         )
-        _get_raw_content.return_value = self.JOUVE_CONTENT | {"serviceCodeCtrl": "KO", "bodyFirstNameLevel": "30"}
+        _get_raw_content.return_value = self.JOUVE_CONTENT | {"serviceCodeCtrl": "KO", "bodyFirstnameLevel": "30"}
 
         response = client.post("/beneficiaries/application_update", json={"id": self.application_id})
         assert response.status_code == 200
@@ -135,7 +135,7 @@ class JouveFraudCheckTest:
         assert fraud_result.status == FraudStatus.KO
         assert (
             fraud_result.reason
-            == "Le champ serviceCodeCtrl est KO ; Le champ bodyFirstNameLevel a le score 30 (minimum 50)"
+            == "Le champ serviceCodeCtrl est KO ; Le champ bodyFirstnameLevel a le score 30 (minimum 50)"
         )
 
         db.session.refresh(user)
