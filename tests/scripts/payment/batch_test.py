@@ -112,6 +112,8 @@ def test_generate_and_send_payments():
     email = mails_testing.outbox[3]
     subject = email.sent_data["Subject"].split("-")[0].strip()  # ignore date
     assert subject == "Soldes des utilisateurs pass Culture"
-    csv = base64.b64decode(email.sent_data["Attachments"][0]["Content"]).decode("utf-8")
+    zip_data = base64.b64decode(email.sent_data["Attachments"][0]["Content"])
+    with zipfile.ZipFile(io.BytesIO(zip_data)) as zf:
+        csv = zf.open(zf.namelist()[0]).read().decode("utf-8")
     rows = csv.splitlines()
     assert len(rows) == users_models.User.query.count() + 1  # + header

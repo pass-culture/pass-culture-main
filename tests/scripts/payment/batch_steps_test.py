@@ -241,7 +241,7 @@ def test_send_wallet_balances_sends_a_csv_attachment():
     # then
     assert len(mails_testing.outbox) == 1
     assert len(mails_testing.outbox[0].sent_data["Attachments"]) == 1
-    assert mails_testing.outbox[0].sent_data["Attachments"][0]["ContentType"] == "text/csv"
+    assert mails_testing.outbox[0].sent_data["Attachments"][0]["ContentType"] == "application/zip"
 
 
 def test_send_wallet_balances_does_not_send_anything_if_recipients_are_missing():

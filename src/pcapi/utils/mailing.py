@@ -220,15 +220,16 @@ def make_payments_report_email(not_processable_csv: str, n_payments_by_status: d
 
 def make_wallet_balances_email(csv: str) -> dict:
     now = datetime.utcnow()
-    csv_b64encode = base64.b64encode(csv.encode("utf-8")).decode()
+    csv_filename = "soldes_des_utilisateurs_{}.csv".format(now.strftime("%Y%m%d"))
+    zipfile_content = _get_zipfile_content(csv, csv_filename)
     return {
         "FromName": "pass Culture Pro",
         "Subject": "Soldes des utilisateurs pass Culture - {}".format(datetime.strftime(now, "%Y-%m-%d")),
         "Attachments": [
             {
-                "ContentType": "text/csv",
-                "Filename": "soldes_des_utilisateurs_{}.csv".format(datetime.strftime(now, "%Y%m%d")),
-                "Content": csv_b64encode,
+                "ContentType": "application/zip",
+                "Filename": f"{csv_filename}.zip",
+                "Content": base64.b64encode(zipfile_content).decode(),
             }
         ],
         "Html-part": "",
