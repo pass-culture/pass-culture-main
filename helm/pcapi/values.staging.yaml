@@ -359,6 +359,10 @@ secrets:
     version: 1
   - name: APPS_FLYER_IOS_API_KEY
     version: 1
+  - name: APPSEARCH_API_KEY
+    version: 1
+  - name: APPSEARCH_HOST
+    version: 1
   - name: BATCH_SECRET_API_KEY
     version: 1
   - name: BLACKLISTED_SMS_RECIPIENTS

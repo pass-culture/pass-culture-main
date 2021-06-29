@@ -184,8 +184,9 @@ def reindex_offer_ids(offer_ids: Iterable[int]):
 def _reindex_offer_ids(backend, offer_ids: Iterable[int]):
     to_add = []
     to_delete = []
-    # FIXME (dbaty, 2021-06-16): join-load Stock, Venue and Offerer to
-    # avoid N+1 queries on each offer.
+    # FIXME (dbaty, 2021-07-05): join-load Stock, Venue, Offerer,
+    # etc. to avoid N+1 queries on each offer. See relayed comment in
+    # test_serialize_appsearch:test_check_number_of_sql_queries
     offers = Offer.query.filter(Offer.id.in_(offer_ids))
     for offer in offers:
         if offer and offer.isBookable:
