@@ -220,7 +220,8 @@ Booking.trig_ddl = """
       END IF;
 
       IF (
-        (
+        (NEW."educationalBookingId" IS NULL AND OLD."educationalBookingId" IS NULL)
+        AND (
           -- If this is a new booking, we probably want to check the wallet.
           OLD IS NULL
           -- If we're updating an existing booking...
