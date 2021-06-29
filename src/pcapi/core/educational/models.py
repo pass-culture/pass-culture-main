@@ -41,13 +41,13 @@ class EducationalDeposit(Model):
     __tablename__ = "educational_deposit"
     id = Column(BigInteger, primary_key=True, autoincrement=True)
 
-    educationalInstitutionId = Column(BigInteger, ForeignKey("educational_institution.id"), index=True, nullable=True)
+    educationalInstitutionId = Column(BigInteger, ForeignKey("educational_institution.id"), index=True, nullable=False)
 
     educationalInstitution = relationship(
         EducationalInstitution, foreign_keys=[educationalInstitutionId], backref="deposits"
     )
 
-    educationalYearId = Column(BigInteger, ForeignKey("educational_year.id"), index=True, nullable=True)
+    educationalYearId = Column(String(30), ForeignKey("educational_year.adageId"), index=True, nullable=False)
 
     educationalYear = relationship(EducationalYear, foreign_keys=[educationalYearId], backref="deposits")
 
