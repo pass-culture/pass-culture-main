@@ -108,7 +108,7 @@ def install_admin_views(admin: Admin, session: Session) -> None:
         )
     )
     admin.add_view(
-        PartnerUserView(User, session, name="Comptes Partenaires", category=Category.USERS, endpoint="/partner_users")
+        PartnerUserView(User, session, name="Comptes Grand Public", category=Category.USERS, endpoint="/partner_users")
     )
     admin.add_view(FeatureView(models.Feature, session, name="Feature Flipping", category=None))
     admin.add_view(
