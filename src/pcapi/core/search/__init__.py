@@ -2,7 +2,7 @@ import logging
 from typing import Iterable
 
 from pcapi import settings
-import pcapi.core.offers.models as offers_models
+from pcapi.models import Offer
 from pcapi.repository import offer_queries
 from pcapi.utils.module_loading import import_string
 
@@ -174,7 +174,7 @@ def _reindex_offer_ids(backend, offer_ids: Iterable[int]):
     to_delete = []
     # FIXME (dbaty, 2021-06-16): join-load Stock, Venue and Offerer to
     # avoid N+1 queries on each offer.
-    offers = offers_models.Offer.query.filter(offers_models.Offer.id.in_(offer_ids))
+    offers = Offer.query.filter(Offer.id.in_(offer_ids))
     for offer in offers:
         if offer and offer.isBookable:
             to_add.append(offer)
