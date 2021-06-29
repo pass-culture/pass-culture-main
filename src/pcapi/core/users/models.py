@@ -246,14 +246,19 @@ class User(PcObject, Model, NeedsValidationMixin):
             ).exists()
         ).scalar()
 
-    def is_authenticated(self):
+    def is_authenticated(self) -> bool:
         return True
 
-    def is_active(self):
+    def is_active(self) -> bool:
         return True
 
-    def is_anonymous(self):
+    def is_anonymous(self) -> bool:
         return False
+
+    def is_super_user(self) -> bool:
+        if settings.IS_PROD:
+            return self.email in settings.SUPER_ADMIN_EMAIL_ADDRESSES
+        return self.isAdmin
 
     def populate_from_dict(self, data):
         super().populate_from_dict(data)

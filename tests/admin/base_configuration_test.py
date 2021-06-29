@@ -109,7 +109,7 @@ class IsAccessibleTest:
     @override_settings(SUPER_ADMIN_EMAIL_ADDRESSES="")
     def test_check_super_admins_is_deactived_in_non_prod_environments(self, get_user):
         # given
-        get_user.return_value = users_factories.UserFactory.build(email="dummy@email.com")
+        get_user.return_value = users_factories.UserFactory.build(email="dummy@email.com", isAdmin=True)
 
         # when
         view = DummyAdminView(Booking, fake_db_session)
@@ -131,11 +131,12 @@ class BaseAdminFormTest:
     def test_ensure_no_cache(self, app):
         view = DummyUserView(name="user", url="/user", model=users_models.User, session=db.session)
         with app.test_request_context(method="POST", data={}):
-            form = view.get_edit_form()
-            assert hasattr(form, "firstName") == True
-            assert hasattr(form, "lastName") == True
+            with patch.object(view, "check_super_admins", return_value=True):
+                form = view.get_edit_form()
+                assert hasattr(form, "firstName")
+                assert hasattr(form, "lastName")
 
             with patch.object(view, "check_super_admins", return_value=False):
                 form = view.get_edit_form()
-                assert hasattr(form, "firstName") == False
-                assert hasattr(form, "lastName") == False
+                assert hasattr(form, "firstName") is False
+                assert hasattr(form, "lastName") is False

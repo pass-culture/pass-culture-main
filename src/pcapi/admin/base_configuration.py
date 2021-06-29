@@ -8,8 +8,6 @@ from flask_admin.helpers import get_form_data
 from flask_login import current_user
 from werkzeug.utils import redirect
 
-from pcapi import settings
-
 
 logger = logging.getLogger(__name__)
 
@@ -59,13 +57,12 @@ class BaseAdminView(BaseAdminMixin, ModelView):
         logger.info("[ADMIN] %s du modèle %s par l'utilisateur %s", action, model_name, current_user)
 
     def check_super_admins(self) -> bool:
-        if settings.IS_PROD:
-            # `current_user` may be None, here, because this function
-            # is (also) called when admin views are registered and
-            # Flask-Admin populates its form cache.
-            return current_user and current_user.email in settings.SUPER_ADMIN_EMAIL_ADDRESSES
-
-        return True
+        # `current_user` may be None, here, because this function
+        # is (also) called when admin views are registered and
+        # Flask-Admin populates its form cache.
+        if not current_user or not current_user.is_authenticated:
+            return False
+        return current_user.is_super_user()
 
 
 class BaseCustomAdminView(BaseAdminMixin, BaseView):
@@ -73,10 +70,9 @@ class BaseCustomAdminView(BaseAdminMixin, BaseView):
         return is_accessible()
 
     def check_super_admins(self) -> bool:
-        if settings.IS_PROD:
-            # `current_user` may be None, here, because this function
-            # is (also) called when admin views are registered and
-            # Flask-Admin populates its form cache.
-            return current_user and current_user.email in settings.SUPER_ADMIN_EMAIL_ADDRESSES
-
-        return True
+        # `current_user` may be None, here, because this function
+        # is (also) called when admin views are registered and
+        # Flask-Admin populates its form cache.
+        if not current_user or not current_user.is_authenticated:
+            return False
+        return current_user.is_super_user()

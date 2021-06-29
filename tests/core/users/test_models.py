@@ -1,5 +1,6 @@
 import pytest
 
+from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as user_factories
 from pcapi.core.users.exceptions import InvalidUserRoleException
 from pcapi.core.users.models import User
@@ -169,3 +170,26 @@ class UserTest:
 
             assert user.has_beneficiary_role
             assert not user.has_pro_role
+
+
+@pytest.mark.usefixtures("db_session")
+class SuperUserTest:
+    @override_settings(SUPER_ADMIN_EMAIL_ADDRESSES="super@admin.user", IS_PROD=True)
+    def test_super_user_prod(self):
+        user = user_factories.UserFactory(email="super@admin.user")
+        assert user.is_super_user()
+
+    @override_settings(SUPER_ADMIN_EMAIL_ADDRESSES="", IS_PROD=True)
+    def test_super_user_prod_not_configured(self):
+        user = user_factories.UserFactory(email="simple-admin@admin.user")
+        assert user.is_super_user() is False
+
+    @override_settings()
+    def test_super_user_not_prod_not_admin(self):
+        user = user_factories.UserFactory(email="simple-user@example.com")
+        assert user.is_super_user() is False
+
+    @override_settings()
+    def test_super_user_not_prod_is_admin_is_super_user(self):
+        user = user_factories.UserFactory(isAdmin=True)
+        assert user.is_super_user()
