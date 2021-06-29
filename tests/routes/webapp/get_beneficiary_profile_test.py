@@ -39,9 +39,9 @@ class Returns200Test:
             "dateCreated": format_into_utc_date(user.dateCreated),
             "dateOfBirth": format_into_utc_date(user.dateOfBirth),
             "departementCode": user.departementCode,
-            'deposit_expiration_date': None,
-            'deposit_version': None,
-            'domainsCredit': None,
+            "deposit_expiration_date": None,
+            "deposit_version": None,
+            "domainsCredit": None,
             "email": "toto@example.com",
             "firstName": user.firstName,
             "hasPhysicalVenues": user.hasPhysicalVenues,
@@ -53,14 +53,14 @@ class Returns200Test:
             "lastName": user.lastName,
             "needsToFillCulturalSurvey": True,
             "needsToSeeTutorials": True,
-            "pk":user.id,
+            "pk": user.id,
             "phoneNumber": user.phoneNumber,
             "postalCode": user.postalCode,
             "publicName": user.publicName,
             "roles": ["BENEFICIARY"],
-            'suspensionReason': '',
-            'wallet_balance': 0.0,
-            'wallet_is_activated': False,
+            "suspensionReason": "",
+            "wallet_balance": 0.0,
+            "wallet_is_activated": False,
         }
 
     @pytest.mark.usefixtures("db_session")
@@ -128,7 +128,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def when_user_is_created_without_postal_code(self, app):
         # Given
-        UserFactory(email="wallet_test@email.com", postalCode=None)
+        UserFactory(email="wallet_test@email.com", postalCode=None, departementCode=None)
 
         # When
         response = TestClient(app.test_client()).with_auth("wallet_test@email.com").get("/beneficiaries/current")

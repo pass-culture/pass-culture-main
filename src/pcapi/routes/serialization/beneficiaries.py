@@ -5,8 +5,9 @@ from pydantic import BaseModel
 from pydantic.class_validators import validator
 
 from pcapi.core.users.api import get_domains_credit
-from pcapi.core.users.models import ExpenseDomain, UserRole
+from pcapi.core.users.models import ExpenseDomain
 from pcapi.core.users.models import User
+from pcapi.core.users.models import UserRole
 from pcapi.models.api_errors import ApiErrors
 from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
@@ -79,7 +80,7 @@ class BeneficiaryAccountResponse(BaseModel):
     civility: Optional[str]
     dateCreated: datetime
     dateOfBirth: Optional[datetime]
-    departementCode: str
+    departementCode: Optional[str]
     deposit_version: Optional[int]
     domainsCredit: Optional[DomainsCredit]
     email: str

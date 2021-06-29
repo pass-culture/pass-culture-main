@@ -64,6 +64,19 @@ class Returns200Test:
         }
 
     @pytest.mark.usefixtures("db_session")
+    def when_user_has_no_departement_code(self, app):
+        # given
+        user = create_user(email="USER@example.COM", departement_code=None)
+        repository.save(user)
+        data = {"identifier": user.email, "password": user.clearTextPassword}
+
+        # when
+        response = TestClient(app.test_client()).post("/users/signin", json=data)
+
+        # then
+        assert response.status_code == 200
+
+    @pytest.mark.usefixtures("db_session")
     def when_account_is_known_with_mixed_case_email(self, app):
         # given
         user = create_user(email="USER@example.COM")

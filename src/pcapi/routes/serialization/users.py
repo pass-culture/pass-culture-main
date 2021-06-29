@@ -88,7 +88,7 @@ class SharedLoginUserResponseModel(BaseModel):
     civility: Optional[str]
     dateCreated: datetime
     dateOfBirth: Optional[datetime]
-    departementCode: str
+    departementCode: Optional[str]
     email: str
     firstName: Optional[str]
     hasPhysicalVenues: Optional[bool]
