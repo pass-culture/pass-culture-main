@@ -112,6 +112,9 @@ class FraudView(base_configuration.BaseAdminView):
 
     @flask_admin.expose("/validate/beneficiary/<user_id>", methods=["POST"])
     def validate_beneficiary(self, user_id):
+        if not self.check_super_admins():
+            flask.flash("Vous n'avez pas les droits suffisant pour activer ce bénéficiaire", "error")
+            return flask.redirect(flask.url_for(".details_view", id=user_id))
         form = FraudReviewForm(flask.request.form)
         if not form.validate():
             errors = "<br>".join(f"{field}: {error[0]}" for field, error in form.errors.items())

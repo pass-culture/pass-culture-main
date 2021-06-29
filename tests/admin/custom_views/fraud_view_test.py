@@ -2,6 +2,7 @@ import pytest
 
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
+from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 
@@ -88,3 +89,34 @@ class BeneficiaryFraudValidationViewTest:
         assert response.status_code == 302
         review = fraud_models.BeneficiaryFraudReview.query.filter_by(user=user, author=admin).one()
         assert review.reason == expected_review.reason
+
+    def test_validation_view_validate_not_super_user_fails(self, client):
+        user = users_factories.UserFactory(isBeneficiary=False)
+        admin = users_factories.UserFactory(isAdmin=True)
+        client.with_auth(admin.email)
+
+        with override_settings(IS_PROD=True):
+            response = client.post(
+                f"/pc/back-office/beneficiary_fraud/validate/beneficiary/{user.id}",
+                form={"user_id": user.id, "reason": "User is granted", "review": "OK"},
+            )
+        assert response.status_code == 302
+        review = fraud_models.BeneficiaryFraudReview.query.filter_by(user=user, author=admin).one_or_none()
+        assert review is None
+        assert user.isBeneficiary is False
+
+    def test_validation_prod_requires_super_admin(self, client):
+        user = users_factories.UserFactory(isBeneficiary=False)
+        admin = users_factories.UserFactory(isAdmin=True)
+        client.with_auth(admin.email)
+
+        with override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=[admin.email]):
+            response = client.post(
+                f"/pc/back-office/beneficiary_fraud/validate/beneficiary/{user.id}",
+                form={"user_id": user.id, "reason": "User is granted", "review": "OK"},
+            )
+        assert response.status_code == 302
+        review = fraud_models.BeneficiaryFraudReview.query.filter_by(user=user, author=admin).one_or_none()
+        assert review is not None
+        assert review.author == admin
+        assert user.isBeneficiary is True

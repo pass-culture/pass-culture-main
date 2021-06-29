@@ -44,7 +44,7 @@
 
 <div class="row">
   <div class="col">
-    <h3>Utilisateur</h3>{% if not model.beneficiaryFraudReview %}
+    <h3>Utilisateur</h3>{% if not model.beneficiaryFraudReview and current_user.is_super_user() %}
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#userValidationModal">
       Soumettre une revue manuelle
     </button>
