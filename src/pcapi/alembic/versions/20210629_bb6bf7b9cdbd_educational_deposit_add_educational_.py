@@ -16,15 +16,20 @@ branch_labels = None
 depends_on = None
 
 
-def upgrade():
+def upgrade() -> None:
     op.add_column("educational_deposit", sa.Column("educationalYearId", sa.BigInteger(), nullable=True))
     op.create_index(
         op.f("ix_educational_deposit_educationalYearId"), "educational_deposit", ["educationalYearId"], unique=False
     )
-    op.create_foreign_key(None, "educational_deposit", "educational_year", ["educationalYearId"], ["id"])
+    op.create_foreign_key(
+        None,
+        "educational_deposit",
+        "educational_year",
+        ["educationalYearId"],
+        ["id"],
+    )
 
 
-def downgrade():
-    op.drop_constraint(None, "educational_deposit", type_="foreignkey")
+def downgrade() -> None:
     op.drop_index(op.f("ix_educational_deposit_educationalYearId"), table_name="educational_deposit")
     op.drop_column("educational_deposit", "educationalYearId")
