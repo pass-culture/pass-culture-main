@@ -1,8 +1,11 @@
 from unittest.mock import Mock
 from unittest.mock import patch
 
+import flask_login
+
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.core.testing import override_settings
+from pcapi.core.users import factories as users_factories
 from pcapi.models import Booking
 
 
@@ -10,6 +13,10 @@ fake_db_session = [Mock()]
 
 
 class DummyAdminView(BaseAdminView):
+    pass
+
+
+class AnonymousUser(flask_login.AnonymousUserMixin):
     pass
 
 
@@ -39,10 +46,10 @@ class DefaultConfigurationTest:
 
 
 class IsAccessibleTest:
-    @patch("pcapi.admin.base_configuration.current_user")
-    def test_access_is_forbidden_for_anonymous_users(self, current_user):
+    @patch("flask_login.utils._get_user")
+    def test_access_is_forbidden_for_anonymous_users(self, get_user):
         # given
-        current_user.is_authenticated = False
+        get_user.return_value = AnonymousUser()
 
         # when
         view = DummyAdminView(Booking, fake_db_session)
@@ -50,11 +57,10 @@ class IsAccessibleTest:
         # then
         assert not view.is_accessible()
 
-    @patch("pcapi.admin.base_configuration.current_user")
-    def test_access_is_forbidden_for_non_admin_users(self, current_user):
+    @patch("flask_login.utils._get_user")
+    def test_access_is_forbidden_for_non_admin_users(self, get_user):
         # given
-        current_user.is_authenticated = True
-        current_user.isAdmin = False
+        get_user.return_value = users_factories.UserFactory.build(isAdmin=False)
 
         # when
         view = DummyAdminView(Booking, fake_db_session)
@@ -62,11 +68,10 @@ class IsAccessibleTest:
         # then
         assert not view.is_accessible()
 
-    @patch("pcapi.admin.base_configuration.current_user")
-    def test_access_is_authorized_for_admin_users(self, current_user):
+    @patch("flask_login.utils._get_user")
+    def test_access_is_authorized_for_admin_users(self, get_user):
         # given
-        current_user.is_authenticated = True
-        current_user.isAdmin = True
+        get_user.return_value = users_factories.UserFactory.build(isAdmin=True)
 
         # when
         view = DummyAdminView(Booking, fake_db_session)
@@ -74,11 +79,11 @@ class IsAccessibleTest:
         # then
         assert view.is_accessible() is True
 
-    @patch("pcapi.admin.base_configuration.current_user")
+    @patch("flask_login.utils._get_user")
     @override_settings(SUPER_ADMIN_EMAIL_ADDRESSES="", IS_PROD=True)
-    def test_check_super_admins_is_false_for_non_super_admin_users(self, current_user):
+    def test_check_super_admins_is_false_for_non_super_admin_users(self, get_user):
         # given
-        current_user.email = "dummy@email.com"
+        get_user.return_value = users_factories.UserFactory.build(email="dummy@email.com")
 
         # when
         view = DummyAdminView(Booking, fake_db_session)
@@ -86,11 +91,11 @@ class IsAccessibleTest:
         # then
         assert view.check_super_admins() is False
 
-    @patch("pcapi.admin.base_configuration.current_user")
+    @patch("flask_login.utils._get_user")
     @override_settings(SUPER_ADMIN_EMAIL_ADDRESSES="super@admin.user", IS_PROD=True)
-    def test_check_super_admins_is_true_for_super_admin_users(self, current_user):
+    def test_check_super_admins_is_true_for_super_admin_users(self, get_user):
         # given
-        current_user.email = "super@admin.user"
+        get_user.return_value = users_factories.UserFactory.build(email="super@admin.user")
 
         # when
         view = DummyAdminView(Booking, fake_db_session)
@@ -98,11 +103,11 @@ class IsAccessibleTest:
         # then
         assert view.check_super_admins() is True
 
-    @patch("pcapi.admin.base_configuration.current_user")
+    @patch("flask_login.utils._get_user")
     @override_settings(SUPER_ADMIN_EMAIL_ADDRESSES="")
-    def test_check_super_admins_is_deactived_in_non_prod_environments(self, current_user):
+    def test_check_super_admins_is_deactived_in_non_prod_environments(self, get_user):
         # given
-        current_user.email = "dummy@email.com"
+        get_user.return_value = users_factories.UserFactory.build(email="dummy@email.com")
 
         # when
         view = DummyAdminView(Booking, fake_db_session)
