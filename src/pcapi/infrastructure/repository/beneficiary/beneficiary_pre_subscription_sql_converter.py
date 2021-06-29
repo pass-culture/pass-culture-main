@@ -6,6 +6,8 @@ from pcapi.core.users.utils import sanitize_email
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
 from pcapi.models import BeneficiaryImport
 from pcapi.models import ImportStatus
+from pcapi.models.feature import FeatureToggle
+from pcapi.repository import feature_queries
 
 
 def to_model(beneficiary_pre_subscription: BeneficiaryPreSubscription, user: Optional[User] = None) -> User:
@@ -47,7 +49,8 @@ def to_model(beneficiary_pre_subscription: BeneficiaryPreSubscription, user: Opt
     beneficiary.lastName = beneficiary_pre_subscription.last_name
     beneficiary.postalCode = beneficiary_pre_subscription.postal_code
     beneficiary.publicName = beneficiary_pre_subscription.public_name
-    beneficiary.idPieceNumber = beneficiary_pre_subscription.id_piece_number
+    if feature_queries.is_active(FeatureToggle.ENABLE_IDCHECK_FRAUD_CONTROLS):
+        beneficiary.idPieceNumber = beneficiary_pre_subscription.id_piece_number
     beneficiary.hasCompletedIdCheck = True
 
     if not beneficiary.phoneNumber:
