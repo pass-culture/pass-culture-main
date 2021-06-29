@@ -14,7 +14,7 @@ from pcapi.models.pc_object import DeletedRecordException
 from pcapi.repository import repository
 
 
-EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST = timedelta(hours=72)
+CUSTOM_AUTO_USE_AFTER_EVENT_TIME_DELAY_FOR_TEST = timedelta(hours=72)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -285,7 +285,7 @@ class IsEventExpiredTest:
 
 class IsEventDeletableTest:
     @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.core.offers.models.EVENT_AUTOMATIC_REFUND_DELAY", EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
+    @patch("pcapi.core.bookings.conf.AUTO_USE_AFTER_EVENT_TIME_DELAY", CUSTOM_AUTO_USE_AFTER_EVENT_TIME_DELAY_FOR_TEST)
     def test_is_deletable_when_stock_is_not_an_event(self):
         # When
         stock = offers_factories.ThingStockFactory()
@@ -294,7 +294,7 @@ class IsEventDeletableTest:
         assert stock.isEventDeletable is True
 
     @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.core.offers.models.EVENT_AUTOMATIC_REFUND_DELAY", EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
+    @patch("pcapi.core.bookings.conf.AUTO_USE_AFTER_EVENT_TIME_DELAY", CUSTOM_AUTO_USE_AFTER_EVENT_TIME_DELAY_FOR_TEST)
     def test_is_deletable_when_stock_is_an_event_in_the_future(self):
         # Given
         three_days_from_now = datetime.utcnow() + timedelta(hours=72)
@@ -306,11 +306,11 @@ class IsEventDeletableTest:
         assert stock.isEventDeletable is True
 
     @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.core.offers.models.EVENT_AUTOMATIC_REFUND_DELAY", EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
+    @patch("pcapi.core.bookings.conf.AUTO_USE_AFTER_EVENT_TIME_DELAY", CUSTOM_AUTO_USE_AFTER_EVENT_TIME_DELAY_FOR_TEST)
     def test_is_deletable_when_stock_is_expired_since_less_than_event_automatic_refund_delay(self):
         # Given
         expired_date_but_not_automaticaly_refunded = (
-            datetime.utcnow() - EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST + timedelta(1)
+            datetime.utcnow() - CUSTOM_AUTO_USE_AFTER_EVENT_TIME_DELAY_FOR_TEST + timedelta(1)
         )
 
         # When
@@ -320,10 +320,10 @@ class IsEventDeletableTest:
         assert stock.isEventDeletable is True
 
     @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.core.offers.models.EVENT_AUTOMATIC_REFUND_DELAY", EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST)
+    @patch("pcapi.core.bookings.conf.AUTO_USE_AFTER_EVENT_TIME_DELAY", CUSTOM_AUTO_USE_AFTER_EVENT_TIME_DELAY_FOR_TEST)
     def test_is_not_deletable_when_stock_is_expired_since_more_than_event_automatic_refund_delay(self):
         # Given
-        expired_date_and_automaticaly_refunded = datetime.utcnow() - EVENT_AUTOMATIC_REFUND_DELAY_FOR_TEST
+        expired_date_and_automaticaly_refunded = datetime.utcnow() - CUSTOM_AUTO_USE_AFTER_EVENT_TIME_DELAY_FOR_TEST
 
         # When
         stock = offers_factories.EventStockFactory(beginningDatetime=expired_date_and_automaticaly_refunded)

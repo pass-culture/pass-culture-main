@@ -11,6 +11,7 @@ from flask import Flask
 # FIXME (xordoquy, 2021-03-01): this is to prevent circular imports when importing pcapi.core.users.api
 import pcapi.models  # pylint: disable=unused-import
 from pcapi import settings
+import pcapi.core.bookings.api as bookings_api
 from pcapi.core.logging import install_logging
 from pcapi.core.offers.repository import check_stock_consistency
 from pcapi.core.offers.repository import delete_past_draft_offers
@@ -31,7 +32,6 @@ from pcapi.scheduled_tasks.decorators import log_cron
 from pcapi.scripts.beneficiary import remote_import, remote_tag_has_completed
 from pcapi.scripts.booking.handle_expired_bookings import handle_expired_bookings
 from pcapi.scripts.booking.notify_soon_to_be_expired_bookings import notify_soon_to_be_expired_bookings
-from pcapi.scripts.update_booking_used import update_booking_used_after_stock_occurrence
 from pcapi.workers.push_notification_job import send_tomorrow_stock_notification
 
 
@@ -44,7 +44,7 @@ logger = logging.getLogger(__name__)
 @cron_context
 @cron_require_feature(FeatureToggle.UPDATE_BOOKING_USED)
 def update_booking_used(app: Flask) -> None:
-    update_booking_used_after_stock_occurrence()
+    bookings_api.auto_mark_as_used_after_event()
 
 
 @log_cron

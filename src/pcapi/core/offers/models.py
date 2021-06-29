@@ -33,6 +33,7 @@ from sqlalchemy.event import listens_for
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 
+import pcapi.core.bookings.conf as bookings_conf
 from pcapi.models.db import Model
 from pcapi.models.db import db
 from pcapi.models.deactivable_mixin import DeactivableMixin
@@ -70,9 +71,6 @@ class Mediation(PcObject, Model, HasThumbMixin, ProvidableMixin, DeactivableMixi
     offerId = Column(BigInteger, ForeignKey("offer.id"), index=True, nullable=False)
 
     offer = relationship("Offer", foreign_keys=[offerId], backref="mediations")
-
-
-EVENT_AUTOMATIC_REFUND_DELAY = timedelta(hours=48)
 
 
 class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin):
@@ -139,7 +137,7 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin):
     def isEventDeletable(self):
         if not self.beginningDatetime:
             return True
-        limit_date_for_stock_deletion = self.beginningDatetime + EVENT_AUTOMATIC_REFUND_DELAY
+        limit_date_for_stock_deletion = self.beginningDatetime + bookings_conf.AUTO_USE_AFTER_EVENT_TIME_DELAY
         return limit_date_for_stock_deletion >= datetime.utcnow()
 
     @property

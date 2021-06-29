@@ -2,6 +2,7 @@ import datetime
 import logging
 
 from pcapi import settings
+import pcapi.core.bookings.api as bookings_api
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository import feature_queries
@@ -13,7 +14,6 @@ from pcapi.scripts.payment.batch_steps import send_payments_report
 from pcapi.scripts.payment.batch_steps import send_transactions
 from pcapi.scripts.payment.batch_steps import send_wallet_balances
 from pcapi.scripts.payment.batch_steps import set_not_processable_payments_with_bank_information_to_retry
-from pcapi.scripts.update_booking_used import update_booking_used_after_stock_occurrence
 
 
 logger = logging.getLogger(__name__)
@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 def generate_and_send_payments(cutoff_date: datetime.datetime, batch_date: datetime.datetime = None):
     logger.info("[BATCH][PAYMENTS] STEP 0 : validate bookings associated to outdated stocks")
     if feature_queries.is_active(FeatureToggle.UPDATE_BOOKING_USED):
-        update_booking_used_after_stock_occurrence()
+        bookings_api.auto_mark_as_used_after_event()
 
     if batch_date is None:
         batch_date = datetime.datetime.utcnow()

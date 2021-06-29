@@ -738,3 +738,56 @@ class UpdateConfirmationDatesTest:
         # Then
         assert updated_bookings == [recent_booking, old_booking]
         assert recent_booking.confirmationDate == old_booking.confirmationDate == datetime(2020, 11, 19, 15)
+
+
+@pytest.mark.usefixtures("db_session")
+class AutoMarkAsUsedAfterEventTest:
+    def test_do_not_update_if_thing_product(self):
+        factories.BookingFactory(stock=offers_factories.ThingStockFactory())
+
+        api.auto_mark_as_used_after_event()
+
+        booking = Booking.query.first()
+        assert not booking.isUsed
+        assert not booking.dateUsed
+
+    @freeze_time("2021-01-01")
+    def test_update_booking_used_when_event_date_is_3_days_before(self):
+        event_date = datetime.now() - timedelta(days=3)
+        factories.BookingFactory(stock__beginningDatetime=event_date)
+
+        api.auto_mark_as_used_after_event()
+
+        booking = Booking.query.first()
+        assert booking.isUsed
+        assert booking.dateUsed == datetime(2021, 1, 1)
+
+    @freeze_time("2021-01-01")
+    @pytest.mark.usefixtures("db_session")
+    def test_does_not_update_when_event_date_is_only_1_day_before(self):
+        event_date = datetime.now() - timedelta(days=1)
+        factories.BookingFactory(stock__beginningDatetime=event_date)
+
+        api.auto_mark_as_used_after_event()
+
+        booking = Booking.query.first()
+        assert not booking.isUsed
+        assert booking.dateUsed is None
+
+    @freeze_time("2021-01-01")
+    def test_does_not_update_booking_if_already_used(self):
+        event_date = datetime.now() - timedelta(days=3)
+        booking = factories.BookingFactory(stock__beginningDatetime=event_date, isUsed=True)
+        initial_date_used = booking.dateUsed
+
+        api.auto_mark_as_used_after_event()
+
+        booking = Booking.query.first()
+        assert booking.isUsed
+        assert booking.dateUsed == initial_date_used
+
+    @pytest.mark.usefixtures("db_session")
+    @override_features(UPDATE_BOOKING_USED=False)
+    def test_raise_if_feature_flag_is_deactivated(self):
+        with pytest.raises(ValueError):
+            api.auto_mark_as_used_after_event()

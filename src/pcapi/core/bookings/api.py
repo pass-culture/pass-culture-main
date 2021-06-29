@@ -354,3 +354,24 @@ def recompute_dnBookedQuantity(stock_ids: list[int]) -> None:
       WHERE stock.id = bookings_per_stock.stock_id
     """
     db.session.execute(query, {"stock_ids": tuple(stock_ids)})
+
+
+def auto_mark_as_used_after_event():
+    """Automatically mark as used bookings that correspond to events that
+    have happened (with a delay).
+    """
+    if not feature_queries.is_active(FeatureToggle.UPDATE_BOOKING_USED):
+        raise ValueError("This function is behind a deactivated feature flag.")
+
+    now = datetime.datetime.now()
+    threshold = now - conf.AUTO_USE_AFTER_EVENT_TIME_DELAY
+    # fmt: off
+    bookings = (
+        Booking.query
+        .filter_by(isUsed=False, isCancelled=False)
+        .filter(Stock.id == Booking.stockId)
+        .filter(Stock.beginningDatetime < threshold)
+    )
+    # fmt: on
+    n_updated = bookings.update({"isUsed": True, "dateUsed": now}, synchronize_session=False)
+    logger.info("Automatically marked bookings as used after event", extra={"bookings": n_updated})
