@@ -21,6 +21,8 @@ class EducationalYear(Model):
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
 
+    adageId = Column(String(30), unique=True, nullable=False)
+
     beginningDate = Column(DateTime, nullable=False)
 
     expirationDate = Column(DateTime, nullable=False)
