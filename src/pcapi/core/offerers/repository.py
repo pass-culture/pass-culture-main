@@ -73,4 +73,10 @@ def get_filtered_venues(
 
 
 def get_api_key_prefixes(offerer_id: int) -> list[str]:
-    return [prefix[0] for prefix in ApiKey.query.filter_by(offererId=offerer_id).with_entities(ApiKey.prefix).all()]
+    return [
+        prefix or value[:8]
+        for prefix, value in ApiKey.query.filter_by(offererId=offerer_id)
+        .with_entities(ApiKey.prefix, ApiKey.value)
+        .all()
+        if prefix or value
+    ]
