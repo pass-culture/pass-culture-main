@@ -1,11 +1,20 @@
 from alembic import context
 from sqlalchemy import create_engine
 
+
+# This order is needed to prevent circular dependency due to
+# EducationalBooking needing db.Model needing Booking needing EducationalBooking.
+# This is because we import every model in the models.__init.py__
+# fmt: off
+# isort: off
+from pcapi.models.db import db
+# isort: on
+# fmt: on
+
 from pcapi import settings
 from pcapi.core.educational.models import EducationalDeposit  # pylint: disable=unused-import
 from pcapi.core.educational.models import EducationalInstitution  # pylint: disable=unused-import
 from pcapi.core.educational.models import EducationalYear  # pylint: disable=unused-import
-from pcapi.models.db import db
 
 
 target_metadata = db.metadata

@@ -44,6 +44,8 @@ WEBAPP_GET_BOOKING_INCLUDES = [
     "completedUrl",
     "-displayAsEnded",
     "isEventExpired",
+    "-educationalBookingId",
+    "-status",
     {
         "key": "stock",
         "includes": [

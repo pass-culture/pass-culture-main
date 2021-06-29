@@ -19,6 +19,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
 
 from pcapi.core.bookings.conf import BOOKINGS_AUTO_EXPIRY_DELAY
+from pcapi.core.educational.models import EducationalBooking
 from pcapi.models.db import Model
 from pcapi.models.pc_object import PcObject
 from pcapi.utils.human_ids import humanize
@@ -29,6 +30,13 @@ class BookingCancellationReasons(enum.Enum):
     BENEFICIARY = "BENEFICIARY"
     EXPIRED = "EXPIRED"
     FRAUD = "FRAUD"
+
+
+class BookingStatus(enum.Enum):
+    PENDING = "PENDING"
+    CONFIRMED = "CONFIRMED"
+    USED = "USED"
+    CANCELLED = "CANCELLED"
 
 
 class Booking(PcObject, Model):
@@ -73,6 +81,19 @@ class Booking(PcObject, Model):
             values_callable=lambda x: [reason.value for reason in BookingCancellationReasons],
         ),
         nullable=True,
+    )
+
+    status = Column(
+        "status",
+        Enum(BookingStatus),
+        nullable=True,
+    )
+
+    educationalBookingId = Column(BigInteger, ForeignKey("educational_booking.id"), nullable=True, unique=True)
+    educationalBooking = relationship(
+        EducationalBooking,
+        backref="booking",
+        uselist=False,
     )
 
     @property
