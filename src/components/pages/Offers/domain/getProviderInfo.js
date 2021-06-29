@@ -31,6 +31,11 @@ export const getProviderInfo = providerName => {
       name: 'CDI-Bookshop',
     },
     {
+      id: 'tmic-ellipses',
+      icon: 'logo-tmic-ellipses',
+      name: 'TMIC Ellipses',
+    },
+    {
       id: 'praxiel',
       icon: 'logo-praxiel',
       name: 'Praxiel',
