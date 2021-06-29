@@ -80,7 +80,7 @@ def log_request_details(response: flask.wrappers.Response) -> flask.wrappers.Res
         "method": request.method,
         "route": str(request.url_rule),  # e.g "/offers/<offer_id>"
         "path": request.path,
-        "queryParams": request.query_string.decode("UTF-8"),
+        "queryParams": request.query_string.decode(request.url_charset, errors="backslashreplace"),
         "size": response.headers.get("Content-Length", type=int),
         "deviceId": request.headers.get("device-id"),
         "sourceIp": request.headers.get("X-Forwarded-For"),
