@@ -52,6 +52,7 @@ def test_patch_beneficiary(app):
         "phoneNumber": user.phoneNumber,
         "postalCode": user.postalCode,
         "publicName": "Anne",
+        "roles": ["BENEFICIARY"],
         "suspensionReason": "",
         "wallet_balance": 500.0,
         "deposit_expiration_date": format_into_utc_date(user.deposit_expiration_date),

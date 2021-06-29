@@ -10,6 +10,8 @@ from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.model_creators.specific_creators import create_stock_with_thing_offer
 from pcapi.repository import repository
+from pcapi.utils.date import format_into_utc_date
+from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
 
@@ -29,14 +31,37 @@ class Returns200Test:
 
         # Then
         assert response.status_code == 200
-        json = response.json
-        assert json["email"] == "toto@example.com"
-        assert not json["domainsCredit"]
-        assert "password" not in json
-        assert "clearTextPassword" not in json
-        assert "resetPasswordToken" not in json
-        assert "resetPasswordTokenValidityLimit" not in json
-        assert json["wallet_is_activated"] == False
+        assert response.json == {
+            "activity": user.activity,
+            "address": user.address,
+            "city": user.city,
+            "civility": user.civility,
+            "dateCreated": format_into_utc_date(user.dateCreated),
+            "dateOfBirth": format_into_utc_date(user.dateOfBirth),
+            "departementCode": user.departementCode,
+            'deposit_expiration_date': None,
+            'deposit_version': None,
+            'domainsCredit': None,
+            "email": "toto@example.com",
+            "firstName": user.firstName,
+            "hasPhysicalVenues": user.hasPhysicalVenues,
+            "id": humanize(user.id),
+            "isActive": True,
+            "isAdmin": False,
+            "isBeneficiary": True,
+            "isEmailValidated": True,
+            "lastName": user.lastName,
+            "needsToFillCulturalSurvey": True,
+            "needsToSeeTutorials": True,
+            "pk":user.id,
+            "phoneNumber": user.phoneNumber,
+            "postalCode": user.postalCode,
+            "publicName": user.publicName,
+            "roles": ["BENEFICIARY"],
+            'suspensionReason': '',
+            'wallet_balance': 0.0,
+            'wallet_is_activated': False,
+        }
 
     @pytest.mark.usefixtures("db_session")
     def when_user_is_logged_in_and_has_a_deposit(self, app):

@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from pydantic.class_validators import validator
 
 from pcapi.core.users.api import get_domains_credit
-from pcapi.core.users.models import ExpenseDomain
+from pcapi.core.users.models import ExpenseDomain, UserRole
 from pcapi.core.users.models import User
 from pcapi.models.api_errors import ApiErrors
 from pcapi.serialization.utils import humanize_field
@@ -100,6 +100,7 @@ class BeneficiaryAccountResponse(BaseModel):
     wallet_balance: float
     deposit_expiration_date: Optional[datetime]
     wallet_is_activated: bool
+    roles: list[UserRole]
 
     _humanize_id = humanize_field("id")
 
@@ -112,6 +113,7 @@ class BeneficiaryAccountResponse(BaseModel):
     class Config:
         orm_mode = True
         json_encoders = {datetime: format_into_utc_date}
+        use_enum_values = True
 
 
 class PatchBeneficiaryBodyModel(BaseModel):
