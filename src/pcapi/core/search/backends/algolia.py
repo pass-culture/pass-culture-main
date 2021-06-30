@@ -102,7 +102,7 @@ class AlgoliaBackend(base.SearchBackend):
             if settings.IS_RUNNING_TESTS:
                 raise
             logger.exception("Could not get venue ids to index from queue")
-            return []
+            return set()
 
     def delete_venue_ids_from_queue(self, venue_ids: Iterable[int]) -> None:
         if not venue_ids:
