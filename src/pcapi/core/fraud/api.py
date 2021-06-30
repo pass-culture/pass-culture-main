@@ -104,8 +104,6 @@ def _id_check_fraud_items(content: models.JouveContent) -> List[models.FraudItem
 
     fraud_items = []
 
-    fraud_items.append(_get_boolean_id_fraud_item(content.posteCodeCtrl, "posteCodeCtrl", False))
-    fraud_items.append(_get_boolean_id_fraud_item(content.serviceCodeCtrl, "serviceCodeCtrl", False))
     fraud_items.append(_get_boolean_id_fraud_item(content.birthLocationCtrl, "birthLocationCtrl", False))
     fraud_items.append(_get_boolean_id_fraud_item(content.bodyBirthDateCtrl, "bodyBirthDateCtrl", False))
     fraud_items.append(_get_boolean_id_fraud_item(content.bodyFirstnameCtrl, "bodyFirstnameCtrl", False))
