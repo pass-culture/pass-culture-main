@@ -19,6 +19,7 @@ class FeatureToggleTest:
 
         # When / Then
         assert is_active(FeatureToggle.WEBAPP_SIGNUP)
+        assert FeatureToggle.WEBAPP_SIGNUP.is_active()
 
     def test_is_active_returns_false_when_feature_is_inactive(self):
         # Given
@@ -27,6 +28,7 @@ class FeatureToggleTest:
         repository.save(feature)
         # When / Then
         assert not is_active(FeatureToggle.WEBAPP_SIGNUP)
+        assert not FeatureToggle.WEBAPP_SIGNUP.is_active()
 
     def test_is_active_raises_exception_when_feature_is_unknown(self):
         # When / Then
@@ -44,6 +46,16 @@ class FeatureToggleTest:
             is_active(FeatureToggle.WEBAPP_SIGNUP)
             is_active(FeatureToggle.WEBAPP_SIGNUP)
 
+    def test_is_active_query_count_inside_request_context_using_new_api(self):
+        feature = Feature.query.filter_by(name=FeatureToggle.WEBAPP_SIGNUP.name).first()
+        feature.isActive = True
+        repository.save(feature)
+
+        with assert_num_queries(1):
+            FeatureToggle.WEBAPP_SIGNUP.is_active()
+            FeatureToggle.WEBAPP_SIGNUP.is_active()
+            FeatureToggle.WEBAPP_SIGNUP.is_active()
+
     def test_is_active_query_count_outside_request_context(self, app):
         feature = Feature.query.filter_by(name=FeatureToggle.WEBAPP_SIGNUP.name).first()
         feature.isActive = True
@@ -56,5 +68,11 @@ class FeatureToggleTest:
                 is_active(FeatureToggle.WEBAPP_SIGNUP)
                 is_active(FeatureToggle.WEBAPP_SIGNUP)
                 is_active(FeatureToggle.WEBAPP_SIGNUP)
+
+            with assert_num_queries(3):
+                FeatureToggle.WEBAPP_SIGNUP.is_active()
+                FeatureToggle.WEBAPP_SIGNUP.is_active()
+                FeatureToggle.WEBAPP_SIGNUP.is_active()
+
         finally:
             flask._request_ctx_stack.push(context)

@@ -1,6 +1,7 @@
 import enum
 
 from alembic import op
+import flask
 from sqlalchemy import Column
 from sqlalchemy import String
 from sqlalchemy import Text
@@ -58,6 +59,22 @@ class FeatureToggle(enum.Enum):
     USER_PROFILING_FRAUD_CHECK = "Détection de la fraude basée sur le profil de l'utilisateur"
     BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS = "Active la validation d'un bénéficiaire via les contrôles de sécurité"
     ENABLE_VENUE_WITHDRAWAL_DETAILS = "Active les modalités de retrait sur la page lieu"
+
+    def is_active(self) -> bool:
+        if flask.has_request_context():
+            if not hasattr(flask.request, "_cached_features"):
+                setattr(flask.request, "_cached_features", {})
+
+            cached_value = flask.request._cached_features.get(self.name)
+            if cached_value is not None:
+                return cached_value
+
+        value = Feature.query.filter_by(name=self.name).one().isActive
+
+        if flask.has_request_context():
+            flask.request._cached_features[self.name] = value
+
+        return value
 
 
 class Feature(PcObject, Model, DeactivableMixin):
