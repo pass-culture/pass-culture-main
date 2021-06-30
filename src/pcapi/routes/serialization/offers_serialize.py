@@ -496,3 +496,8 @@ class ImageBodyModel(BaseModel):
 class ImageResponseModel(BaseModel):
     errors: Optional[list[str]]
     image: Optional[str]
+
+
+class CategoriesResponseModel(BaseModel):
+    categories: list[CategoryResponseModel]
+    subcategories: list[SubcategoryResponseModel]

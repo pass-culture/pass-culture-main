@@ -5,6 +5,8 @@ from flask import request
 from flask_login import current_user
 from flask_login import login_required
 
+from pcapi.core.categories import categories
+from pcapi.core.categories import subcategories
 from pcapi.core.offers import exceptions
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.repository as offers_repository
@@ -13,18 +15,8 @@ from pcapi.core.offers.validation import get_distant_image
 from pcapi.flask_app import private_api
 from pcapi.models import Offer
 from pcapi.repository.offer_queries import get_offer_by_id
+from pcapi.routes.serialization import offers_serialize
 from pcapi.routes.serialization.offers_recap_serialize import serialize_offers_recap_paginated
-from pcapi.routes.serialization.offers_serialize import GetOfferResponseModel
-from pcapi.routes.serialization.offers_serialize import ImageBodyModel
-from pcapi.routes.serialization.offers_serialize import ImageResponseModel
-from pcapi.routes.serialization.offers_serialize import ListOffersQueryModel
-from pcapi.routes.serialization.offers_serialize import ListOffersResponseModel
-from pcapi.routes.serialization.offers_serialize import OfferResponseIdModel
-from pcapi.routes.serialization.offers_serialize import PatchAllOffersActiveStatusBodyModel
-from pcapi.routes.serialization.offers_serialize import PatchAllOffersActiveStatusResponseModel
-from pcapi.routes.serialization.offers_serialize import PatchOfferActiveStatusBodyModel
-from pcapi.routes.serialization.offers_serialize import PatchOfferBodyModel
-from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailBodyModel
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailResponseModel
 from pcapi.serialization.decorator import spectree_serialize
@@ -38,8 +30,8 @@ from pcapi.utils.rest import load_or_404
 
 @private_api.route("/offers", methods=["GET"])
 @login_required
-@spectree_serialize(response_model=ListOffersResponseModel)  # type: ignore
-def list_offers(query: ListOffersQueryModel) -> ListOffersResponseModel:
+@spectree_serialize(response_model=offers_serialize.ListOffersResponseModel)  # type: ignore
+def list_offers(query: offers_serialize.ListOffersQueryModel) -> offers_serialize.ListOffersResponseModel:
     paginated_offers = offers_api.list_offers_for_pro_user(
         user_id=current_user.id,
         user_is_admin=current_user.isAdmin,
@@ -53,29 +45,29 @@ def list_offers(query: ListOffersQueryModel) -> ListOffersResponseModel:
         period_ending_date=query.period_ending_date,
     )
 
-    return ListOffersResponseModel(__root__=serialize_offers_recap_paginated(paginated_offers))
+    return offers_serialize.ListOffersResponseModel(__root__=serialize_offers_recap_paginated(paginated_offers))
 
 
 @private_api.route("/offers/<offer_id>", methods=["GET"])
 @login_required
-@spectree_serialize(response_model=GetOfferResponseModel)
-def get_offer(offer_id: str) -> GetOfferResponseModel:
+@spectree_serialize(response_model=offers_serialize.GetOfferResponseModel)
+def get_offer(offer_id: str) -> offers_serialize.GetOfferResponseModel:
     offer = load_or_404(Offer, offer_id)
-    return GetOfferResponseModel.from_orm(offer)
+    return offers_serialize.GetOfferResponseModel.from_orm(offer)
 
 
 @private_api.route("/offers", methods=["POST"])
 @login_required
-@spectree_serialize(response_model=OfferResponseIdModel, on_success_status=201)  # type: ignore
-def post_offer(body: PostOfferBodyModel) -> OfferResponseIdModel:
+@spectree_serialize(response_model=offers_serialize.OfferResponseIdModel, on_success_status=201)  # type: ignore
+def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.OfferResponseIdModel:
     offer = offers_api.create_offer(offer_data=body, user=current_user)
-    return OfferResponseIdModel.from_orm(offer)
+    return offers_serialize.OfferResponseIdModel.from_orm(offer)
 
 
 @private_api.route("/offers/active-status", methods=["PATCH"])
 @login_required
 @spectree_serialize(response_model=None, on_success_status=204)  # type: ignore
-def patch_offers_active_status(body: PatchOfferActiveStatusBodyModel) -> None:
+def patch_offers_active_status(body: offers_serialize.PatchOfferActiveStatusBodyModel) -> None:
     query = offers_repository.get_offers_by_ids(current_user, body.ids)
     offers_api.update_offers_active_status(query, body.is_active)
 
@@ -84,8 +76,8 @@ def patch_offers_active_status(body: PatchOfferActiveStatusBodyModel) -> None:
 @login_required
 @spectree_serialize(response_model=None, on_success_status=202)
 def patch_all_offers_active_status(
-    body: PatchAllOffersActiveStatusBodyModel,
-) -> PatchAllOffersActiveStatusResponseModel:
+    body: offers_serialize.PatchAllOffersActiveStatusBodyModel,
+) -> offers_serialize.PatchAllOffersActiveStatusResponseModel:
     filters = {
         "user_id": current_user.id,
         "is_user_admin": current_user.isAdmin,
@@ -99,32 +91,32 @@ def patch_all_offers_active_status(
         "period_ending_date": body.period_ending_date,
     }
     update_all_offers_active_status_job.delay(filters, body.is_active)
-    return PatchAllOffersActiveStatusResponseModel()
+    return offers_serialize.PatchAllOffersActiveStatusResponseModel()
 
 
 @private_api.route("/offers/<offer_id>", methods=["PATCH"])
 @login_required
-@spectree_serialize(response_model=OfferResponseIdModel)  # type: ignore
-def patch_offer(offer_id: str, body: PatchOfferBodyModel) -> OfferResponseIdModel:
+@spectree_serialize(response_model=offers_serialize.OfferResponseIdModel)  # type: ignore
+def patch_offer(offer_id: str, body: offers_serialize.PatchOfferBodyModel) -> offers_serialize.OfferResponseIdModel:
     offer = load_or_404(Offer, human_id=offer_id)
     check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
     offer = offers_api.update_offer(offer, **body.dict(exclude_unset=True))
 
-    return OfferResponseIdModel.from_orm(offer)
+    return offers_serialize.OfferResponseIdModel.from_orm(offer)
 
 
 @private_api.route("/offers/thumbnail-url-validation", methods=["POST"])
 @login_required
-@spectree_serialize(response_model=ImageResponseModel)
-def validate_distant_image(body: ImageBodyModel) -> ImageResponseModel:
+@spectree_serialize(response_model=offers_serialize.ImageResponseModel)
+def validate_distant_image(body: offers_serialize.ImageBodyModel) -> offers_serialize.ImageResponseModel:
     errors = []
 
     try:
         image = get_distant_image(body.url)
         check_image(image)
         image_as_base64 = base64.b64encode(image)
-        return ImageResponseModel(
+        return offers_serialize.ImageResponseModel(
             image=f'data:image/png;base64,{str(image_as_base64, encoding="utf-8")}', errors=errors
         )
     except (
@@ -136,7 +128,7 @@ def validate_distant_image(body: ImageBodyModel) -> ImageResponseModel:
         logger.info("When validating image at: %s, this error was encountered: %s", body.url, exc.__class__.__name__)
         errors.append(exc.args[0])
 
-    return ImageResponseModel(errors=errors)
+    return offers_serialize.ImageResponseModel(errors=errors)
 
 
 @private_api.route("/offers/thumbnails/", methods=["POST"])
@@ -156,3 +148,18 @@ def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseM
     )
 
     return CreateThumbnailResponseModel(id=thumbnail.id)
+
+
+@private_api.route("/offers/categories", methods=["GET"])
+@login_required
+@spectree_serialize(response_model=offers_serialize.CategoriesResponseModel)
+def get_categories() -> offers_serialize.CategoriesResponseModel:
+    return offers_serialize.CategoriesResponseModel(
+        categories=[
+            offers_serialize.CategoryResponseModel.from_orm(category) for category in categories.ALL_CATEGORIES
+        ],
+        subcategories=[
+            offers_serialize.SubcategoryResponseModel.from_orm(subcategory)
+            for subcategory in subcategories.ALL_SUBCATEGORIES
+        ],
+    )
