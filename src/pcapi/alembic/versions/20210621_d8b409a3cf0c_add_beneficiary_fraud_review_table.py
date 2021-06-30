@@ -1,7 +1,7 @@
 """add beneficiary_fraud_review table
 
 Revision ID: d8b409a3cf0c
-Revises: 76d2efd6ad7e
+Revises: bb6bf7b9cdbd
 Create Date: 2021-06-21 16:05:16.973267
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = "d8b409a3cf0c"
-down_revision = "76d2efd6ad7e"
+down_revision = "bb6bf7b9cdbd"
 branch_labels = None
 depends_on = None
 
