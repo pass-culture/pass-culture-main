@@ -1,4 +1,8 @@
 from pcapi import settings
+from pcapi.core.educational.models import EducationalBooking
+from pcapi.core.educational.models import EducationalDeposit
+from pcapi.core.educational.models import EducationalInstitution
+from pcapi.core.educational.models import EducationalYear
 from pcapi.core.mails.models import Email
 from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Offerer
@@ -83,6 +87,10 @@ def clean_all_database(*args, **kwargs):
     VenueLabel.query.delete()
     OfferSubcategory.query.delete()
     OfferCategory.query.delete()
+    EducationalBooking.query.delete()
+    EducationalDeposit.query.delete()
+    EducationalInstitution.query.delete()
+    EducationalYear.query.delete()
     db.session.commit()
     install_features()
     install_local_providers()
