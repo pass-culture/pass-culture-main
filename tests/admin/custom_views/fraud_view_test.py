@@ -2,6 +2,7 @@ import pytest
 
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
+from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
@@ -34,12 +35,14 @@ class BeneficiaryFraudDetailViewTest:
 
 @pytest.mark.usefixtures("db_session")
 class BeneficiaryFraudValidationViewTest:
+    @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
     def test_validation_view_auth_required(self, client):
         user = users_factories.UserFactory()
         response = client.post(f"/pc/back-office/beneficiary_fraud/validate/beneficiary/{user.id}")
         assert response.status_code == 302
         assert response.headers["Location"] == "http://localhost/pc/back-office/"
 
+    @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
     def test_validation_view_validate_user(self, client):
         user = users_factories.UserFactory(isBeneficiary=False)
         admin = users_factories.UserFactory(isAdmin=True)
@@ -58,6 +61,7 @@ class BeneficiaryFraudValidationViewTest:
         assert user.isBeneficiary is True
         assert len(user.deposits) == 1
 
+    @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
     def test_validation_view_validate_user_wrong_args(self, client):
         user = users_factories.UserFactory(isBeneficiary=False)
         admin = users_factories.UserFactory(isAdmin=True)
@@ -76,6 +80,7 @@ class BeneficiaryFraudValidationViewTest:
         assert user.isBeneficiary is False
         assert user.deposits == []
 
+    @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
     def test_validation_view_validate_user_already_reviewed(self, client):
         user = users_factories.UserFactory(isBeneficiary=False)
         admin = users_factories.UserFactory(isAdmin=True)
@@ -90,6 +95,7 @@ class BeneficiaryFraudValidationViewTest:
         review = fraud_models.BeneficiaryFraudReview.query.filter_by(user=user, author=admin).one()
         assert review.reason == expected_review.reason
 
+    @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
     def test_validation_view_validate_not_super_user_fails(self, client):
         user = users_factories.UserFactory(isBeneficiary=False)
         admin = users_factories.UserFactory(isAdmin=True)
@@ -105,6 +111,7 @@ class BeneficiaryFraudValidationViewTest:
         assert review is None
         assert user.isBeneficiary is False
 
+    @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
     def test_validation_prod_requires_super_admin(self, client):
         user = users_factories.UserFactory(isBeneficiary=False)
         admin = users_factories.UserFactory(isAdmin=True)

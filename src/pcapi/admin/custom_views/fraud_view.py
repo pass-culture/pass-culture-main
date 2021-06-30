@@ -12,6 +12,8 @@ import pcapi.core.fraud.models as fraud_models
 import pcapi.core.users.api as users_api
 import pcapi.core.users.models as users_models
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
+from pcapi.repository import feature_queries
 
 
 def beneficiary_fraud_result_formatter(view, context, model, name) -> Markup:
@@ -112,7 +114,9 @@ class FraudView(base_configuration.BaseAdminView):
 
     @flask_admin.expose("/validate/beneficiary/<user_id>", methods=["POST"])
     def validate_beneficiary(self, user_id):
-        if not self.check_super_admins():
+        if not self.check_super_admins() or not feature_queries.is_active(
+            FeatureToggle.BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS
+        ):
             flask.flash("Vous n'avez pas les droits suffisant pour activer ce bénéficiaire", "error")
             return flask.redirect(flask.url_for(".details_view", id=user_id))
         form = FraudReviewForm(flask.request.form)
