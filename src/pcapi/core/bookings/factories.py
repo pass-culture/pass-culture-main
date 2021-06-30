@@ -20,6 +20,7 @@ class BookingFactory(BaseFactory):
     token = factory.LazyFunction(random_token)
     user = factory.SubFactory(users_factories.UserFactory)
     amount = factory.SelfAttribute("stock.price")
+    status = models.BookingStatus.CONFIRMED
 
     @factory.post_generation
     def confirmation_date(self, create, extracted, **kwargs):
