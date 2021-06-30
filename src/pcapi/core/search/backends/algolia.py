@@ -38,6 +38,8 @@ class AlgoliaBackend(base.SearchBackend):
         try:
             self.redis_client.rpush(REDIS_LIST_OFFER_IDS_NAME, *offer_ids)
         except redis.exceptions.RedisError:
+            if settings.IS_RUNNING_TESTS:
+                raise
             logger.exception("Could not add offers to indexation queue", extra={"offers": offer_ids})
 
     def enqueue_offer_ids_in_error(self, offer_ids: Iterable[int]) -> None:
@@ -46,6 +48,8 @@ class AlgoliaBackend(base.SearchBackend):
         try:
             self.redis_client.rpush(REDIS_LIST_OFFER_IDS_IN_ERROR_NAME, *offer_ids)
         except redis.exceptions.RedisError:
+            if settings.IS_RUNNING_TESTS:
+                raise
             logger.exception("Could not add offers to error queue", extra={"offers": offer_ids})
 
     def enqueue_venue_ids(self, venue_ids: Iterable[int]) -> None:
@@ -54,6 +58,8 @@ class AlgoliaBackend(base.SearchBackend):
         try:
             self.redis_client.rpush(REDIS_LIST_VENUE_IDS_NAME, *venue_ids)
         except redis.exceptions.RedisError:
+            if settings.IS_RUNNING_TESTS:
+                raise
             logger.exception("Could not add venues to indexation queue", extra={"venues": venue_ids})
 
     def pop_offer_ids_from_queue(self, count: int, from_error_queue: bool = False) -> set[int]:
@@ -81,6 +87,8 @@ class AlgoliaBackend(base.SearchBackend):
             results = pipeline.execute()
             offer_ids = {int(offer_id) for offer_id in results[0]}  # str -> int
         except redis.exceptions.RedisError:
+            if settings.IS_RUNNING_TESTS:
+                raise
             logger.exception("Could not pop offer ids to index from queue")
         finally:
             pipeline.reset()
@@ -91,6 +99,8 @@ class AlgoliaBackend(base.SearchBackend):
             venue_ids = self.redis_client.lrange(REDIS_LIST_VENUE_IDS_NAME, 0, count - 1)
             return {int(venue_id) for venue_id in venue_ids}  # str -> int
         except redis.exceptions.RedisError:
+            if settings.IS_RUNNING_TESTS:
+                raise
             logger.exception("Could not get venue ids to index from queue")
             return []
 
@@ -102,6 +112,8 @@ class AlgoliaBackend(base.SearchBackend):
                 # count=0 means "remove all occurrences of this value"
                 self.redis_client.lrem(REDIS_LIST_VENUE_IDS_NAME, count=0, value=venue_id)
         except redis.exceptions.RedisError:
+            if settings.IS_RUNNING_TESTS:
+                raise
             logger.exception("Could not delete indexed venue ids from queue")
 
     def count_offers_to_index_from_queue(self, from_error_queue: bool = False) -> int:
@@ -112,6 +124,8 @@ class AlgoliaBackend(base.SearchBackend):
         try:
             return self.redis_client.llen(redis_list_name)
         except redis.exceptions.RedisError:
+            if settings.IS_RUNNING_TESTS:
+                raise
             logger.exception("Could not count offers left to index from queue")
             return 0
 
@@ -119,6 +133,8 @@ class AlgoliaBackend(base.SearchBackend):
         try:
             return self.redis_client.hexists(REDIS_HASHMAP_INDEXED_OFFERS_NAME, offer.id)
         except redis.exceptions.RedisError:
+            if settings.IS_RUNNING_TESTS:
+                raise
             logger.exception("Could not check whether offer exists in cache", extra={"offer": offer.id})
             # This function is only used to avoid an unnecessary
             # deletion request to Algolia if the offer is not in the
@@ -155,6 +171,8 @@ class AlgoliaBackend(base.SearchBackend):
         try:
             self.redis_client.hdel(REDIS_HASHMAP_INDEXED_OFFERS_NAME, *offer_ids)
         except redis.exceptions.RedisError:
+            if settings.IS_RUNNING_TESTS:
+                raise
             logger.exception("Could not remove offers from indexed offers set", extra={"offers": offer_ids})
 
     def unindex_all_offers(self) -> None:
@@ -162,6 +180,8 @@ class AlgoliaBackend(base.SearchBackend):
         try:
             self.redis_client.delete(REDIS_HASHMAP_INDEXED_OFFERS_NAME)
         except redis.exceptions.RedisError:
+            if settings.IS_RUNNING_TESTS:
+                raise
             logger.exception(
                 "Could not clear indexed offers cache",
             )

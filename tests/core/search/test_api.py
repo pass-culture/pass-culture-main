@@ -76,7 +76,8 @@ class ReindexOfferIdsTest:
     def test_handle_indexation_error(self):
         offer = make_bookable_offer()
         assert search_testing.search_store == {}
-        search.reindex_offer_ids([offer.id])
+        with override_settings(IS_RUNNING_TESTS=False):  # as on prod: don't catch errors
+            search.reindex_offer_ids([offer.id])
         assert offer.id not in search_testing.search_store
         backend = search._get_backends()[0]
         assert backend.pop_offer_ids_from_queue(5, from_error_queue=True) == {offer.id}
@@ -86,7 +87,8 @@ class ReindexOfferIdsTest:
         offer = make_unbookable_offer()
         app.redis_client.hset("indexed_offers", offer.id, "")
         search_testing.search_store[offer.id] = "dummy"
-        search.reindex_offer_ids([offer.id])
+        with override_settings(IS_RUNNING_TESTS=False):  # as on prod: don't catch errors
+            search.reindex_offer_ids([offer.id])
         assert offer.id in search_testing.search_store
         backend = search._get_backends()[0]
         assert backend.pop_offer_ids_from_queue(5, from_error_queue=True) == {offer.id}

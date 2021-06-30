@@ -34,6 +34,8 @@ def async_index_offer_ids(offer_ids: Iterable[int]) -> None:
         try:
             backend.enqueue_offer_ids(offer_ids)
         except Exception:  # pylint: disable=broad-except
+            if settings.IS_RUNNING_TESTS:
+                raise
             logger.exception(
                 "Could not enqueue offer ids to index", extra={"offers": offer_ids, "backend": str(backend)}
             )
@@ -51,6 +53,8 @@ def async_index_venue_ids(venue_ids: Iterable[int]) -> None:
         try:
             backend.enqueue_venue_ids(venue_ids)
         except Exception:  # pylint: disable=broad-except
+            if settings.IS_RUNNING_TESTS:
+                raise
             logger.exception(
                 "Could not enqueue venue ids to index", extra={"venues": venue_ids, "backend": str(backend)}
             )
@@ -81,6 +85,8 @@ def index_offers_in_queue(stop_only_when_empty: bool = False, from_error_queue: 
                 backend, stop_only_when_empty=stop_only_when_empty, from_error_queue=from_error_queue
             )
         except Exception:  # pylint: disable=broad-except
+            if settings.IS_RUNNING_TESTS:
+                raise
             logger.exception("Could not index offers from queue", extra={"backend": str(backend)})
 
 
@@ -105,6 +111,8 @@ def _index_offers_in_queue(backend, stop_only_when_empty: bool = False, from_err
         try:
             _reindex_offer_ids(backend, offer_ids)
         except Exception as exc:  # pylint: disable=broad-except
+            if settings.IS_RUNNING_TESTS:
+                raise
             logger.exception(
                 "Exception while reindexing offers, must fix manually",
                 extra={
@@ -131,6 +139,8 @@ def index_venues_in_queue():
         try:
             _index_venues_in_queue(backend)
         except Exception:  # pylint: disable=broad-except
+            if settings.IS_RUNNING_TESTS:
+                raise
             logger.exception("Could not index venues from queue", extra={"backend": str(backend)})
 
 
@@ -166,6 +176,8 @@ def reindex_offer_ids(offer_ids: Iterable[int]):
         try:
             _reindex_offer_ids(backend, offer_ids)
         except Exception:  # pylint: disable=broad-except
+            if settings.IS_RUNNING_TESTS:
+                raise
             logger.exception("Could not reindex offers", extra={"offers": offer_ids, "backend": str(backend)})
 
 
@@ -193,6 +205,8 @@ def _reindex_offer_ids(backend, offer_ids: Iterable[int]):
     try:
         backend.index_offers(to_add)
     except Exception as exc:  # pylint: disable=broad-except
+        if settings.IS_RUNNING_TESTS:
+            raise
         logger.warning(
             "Could not reindex offers, will automatically retry",
             extra={"exc": str(exc), "offers": [offer.id for offer in to_add], "backend": str(backend)},
@@ -204,6 +218,8 @@ def _reindex_offer_ids(backend, offer_ids: Iterable[int]):
     try:
         backend.unindex_offer_ids([offer.id for offer in to_delete])
     except Exception as exc:  # pylint: disable=broad-except
+        if settings.IS_RUNNING_TESTS:
+            raise
         logger.warning(
             "Could not unindex offers, will automatically retry",
             extra={"exc": str(exc), "offers": [offer.id for offer in to_delete], "backend": str(backend)},
@@ -218,6 +234,8 @@ def unindex_offer_ids(offer_ids: Iterable[int]):
         try:
             backend.unindex_offer_ids(offer_ids)
         except Exception:  # pylint: disable=broad-except
+            if settings.IS_RUNNING_TESTS:
+                raise
             logger.exception("Could not unindex offers", extra={"offers": offer_ids, "backend": str(backend)})
 
 
@@ -229,4 +247,6 @@ def unindex_all_offers():
         try:
             backend.unindex_all_offers()
         except Exception:  # pylint: disable=broad-except
+            if settings.IS_RUNNING_TESTS:
+                raise
             logger.exception("Could not unindex all offers", extra={"backend": str(backend)})
