@@ -325,7 +325,7 @@ def check_activation_is_bookable(activation_code: ActivationCode) -> bool:
 
 def get_available_activation_code(stock: Stock) -> Optional[ActivationCode]:
     return ActivationCode.query.filter(
-        Stock.id == stock.id,
+        ActivationCode.stockId == stock.id,
         ActivationCode.bookingId.is_(None),
         or_(ActivationCode.expirationDate.is_(None), ActivationCode.expirationDate > func.now()),
     ).first()

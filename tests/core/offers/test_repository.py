@@ -1208,20 +1208,34 @@ class DeletePastDraftOfferTest:
 
 @pytest.mark.usefixtures("db_session")
 class AvailableActivationCodeTest:
-    def test_available_activation_code(self):
+    def test_activation_code_is_available_for_a_stock(self):
+        # GIVEN
         booking = BookingFactory()
         stock = booking.stock
         ActivationCodeFactory(booking=booking, stock=stock)  # booked_code
         not_booked_code = ActivationCodeFactory(stock=stock)
 
+        # WHEN
         found_code = get_available_activation_code(stock)
 
+        # THEN
         assert found_code.id == not_booked_code.id
 
-    def test_no_available_activation_code(self):
+    def test_expired_activation_code_is_not_available_for_a_stock(self):
+        # GIVEN
         booking = BookingFactory()
         stock = booking.stock
         ActivationCodeFactory(booking=booking, stock=stock)  # booked_code
         ActivationCodeFactory(stock=stock, expirationDate=datetime.now() - timedelta(days=1))  # expired code
+
+        # WHEN THEN
+        assert not get_available_activation_code(stock)
+
+    def test_activation_code_of_a_stock_is_not_available_for_another_stock(self):
+        booking = BookingFactory()
+        booking2 = BookingFactory()
+        stock = booking.stock
+        stock2 = booking2.stock
+        ActivationCodeFactory(stock=stock2)
 
         assert not get_available_activation_code(stock)
