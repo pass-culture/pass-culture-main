@@ -59,6 +59,8 @@ class Product(PcObject, Model, ExtraDataMixin, HasThumbMixin, ProvidableMixin):
 
     owningOfferer = relationship("Offerer", foreign_keys=[owningOffererId], backref="events")
 
+    subcategoryId = Column(Text, nullable=True, index=True)
+
     @property
     def offerType(self):
         all_types = list(ThingType) + list(EventType)
