@@ -1,7 +1,7 @@
 """feature_enable_venue_withdrawal_details
 
 Revision ID: a249e90c9677
-Revises: d8b409a3cf0c
+Revises: 29c8b67b67a5
 Create Date: 2021-06-30 12:59:01.298321
 
 """

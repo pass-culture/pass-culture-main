@@ -1,7 +1,7 @@
 """educational_institution_add_adageId_field
 
 Revision ID: 3c46248f7143
-Revises: d8b409a3cf0c
+Revises: a249e90c9677
 Create Date: 2021-06-29 15:38:50.855795
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = "3c46248f7143"
-down_revision = "d8b409a3cf0c"
+down_revision = "a249e90c9677"
 branch_labels = None
 depends_on = None
 
