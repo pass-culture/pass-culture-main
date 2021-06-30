@@ -53,6 +53,7 @@ def update_venue(
     comment: str = UNCHANGED,
     venueTypeId: int = UNCHANGED,
     venueLabelId: int = UNCHANGED,
+    withdrawalDetails: str = UNCHANGED,
 ) -> Venue:
     validation.validate_coordinates(
         latitude if latitude is not UNCHANGED else None,

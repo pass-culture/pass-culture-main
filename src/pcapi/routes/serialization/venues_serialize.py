@@ -32,6 +32,7 @@ class PostVenueBodyModel(BaseModel):
     siret: Optional[str]
     venueLabelId: Optional[str]
     venueTypeId: str
+    withdrawalDetails: Optional[str]
 
     class Config:
         extra = "forbid"
@@ -129,6 +130,7 @@ class GetVenueResponseModel(BaseModel):
     siret: Optional[str]
     venueLabelId: Optional[str]
     venueTypeId: Optional[str]
+    withdrawalDetails: Optional[str]
 
     _humanize_id = humanize_field("id")
     _humanize_managing_offerer_id = humanize_field("managingOffererId")
@@ -153,6 +155,7 @@ class EditVenueBodyModel(BaseModel):
     comment: Optional[str]
     venueTypeId: Optional[int]
     venueLabelId: Optional[int]
+    withdrawalDetails: Optional[str]
 
     _dehumanize_venue_label_id = dehumanize_field("venueLabelId")
     _dehumanize_venue_type_id = dehumanize_field("venueTypeId")

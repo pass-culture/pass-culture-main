@@ -166,6 +166,7 @@ class Returns200Test:
                         "thumbCount": 0,
                         "venueLabelId": None,
                         "venueTypeId": None,
+                        "withdrawalDetails": None,
                     },
                     "venueId": humanize(offer.venue.id),
                     "visualDisabilityCompliant": False,

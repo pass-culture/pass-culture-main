@@ -137,6 +137,8 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ne
 
     dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow)
 
+    withdrawalDetails = Column(Text, nullable=True)
+
     def store_departement_code(self) -> None:
         self.departementCode = PostalCode(self.postalCode).get_departement_code()
 

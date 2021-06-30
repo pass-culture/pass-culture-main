@@ -59,6 +59,7 @@ class Returns200Test:
             "siret": venue.siret,
             "venueLabelId": humanize(venue.venueLabelId),
             "venueTypeId": humanize(venue.venueTypeId),
+            "withdrawalDetails": None,
         }
 
         # when
