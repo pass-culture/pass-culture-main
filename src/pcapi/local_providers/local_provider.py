@@ -265,4 +265,4 @@ def _reindex_offers(created_or_updated_objects):
             offer_ids.add(obj.offerId)
         elif isinstance(obj, Offer):
             offer_ids.add(obj.id)
-    search.async_index_offer_ids([offer_ids])
+    search.async_index_offer_ids(offer_ids)
