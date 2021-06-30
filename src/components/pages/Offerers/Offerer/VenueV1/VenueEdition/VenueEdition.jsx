@@ -17,6 +17,7 @@ import bindGetSuggestionsToLatitude from '../fields/LocationFields/decorators/bi
 import bindGetSuggestionsToLongitude from '../fields/LocationFields/decorators/bindGetSuggestionsToLongitude'
 import LocationFields from '../fields/LocationFields/LocationFields'
 import { FRANCE_POSITION } from '../fields/LocationFields/utils/positions'
+import WithdrawalDetailsFields from '../fields/WithdrawalDetailsFields/WithdrawalDetailsFields'
 import VenueLabel from '../ValueObjects/VenueLabel'
 import VenueType from '../ValueObjects/VenueType'
 
@@ -81,13 +82,14 @@ class VenueEdition extends PureComponent {
       offerer,
       venueTypes,
       venueLabels,
+      withdrawalDetailActive,
     } = this.props
     const { isRequestPending } = this.state
     const { readOnly } = query.context({
       id: venueId,
     })
 
-    const { siret: initialSiret } = venue || {}
+    const { siret: initialSiret, withdrawalDetails: initialWithdrawalDetails } = venue || {}
 
     const canSubmit = getCanSubmit(formProps)
     const { form, handleSubmit, values } = formProps
@@ -118,6 +120,12 @@ class VenueEdition extends PureComponent {
           venueTypeId={venueTypeId}
           venueTypes={venueTypes}
         />
+        {withdrawalDetailActive && (
+          <WithdrawalDetailsFields
+            initialWithdrawalDetails={initialWithdrawalDetails}
+            readOnly={readOnly}
+          />
+        )}
         <BankInformation
           offerer={offerer}
           venue={venue}
@@ -232,6 +240,7 @@ VenueEdition.propTypes = {
   venue: PropTypes.shape().isRequired,
   venueLabels: PropTypes.arrayOf(PropTypes.instanceOf(VenueLabel)).isRequired,
   venueTypes: PropTypes.arrayOf(PropTypes.instanceOf(VenueType)).isRequired,
+  withdrawalDetailActive: PropTypes.bool.isRequired,
 }
 
 export default VenueEdition

@@ -15,6 +15,7 @@ export const formatVenuePayload = (payload, isCreatedEntity) => {
     'siret',
     'venueLabelId',
     'venueTypeId',
+    'withdrawalDetails',
   ]
 
   const edition_authorized_input_field = [
@@ -30,6 +31,7 @@ export const formatVenuePayload = (payload, isCreatedEntity) => {
     'siret',
     'venueLabelId',
     'venueTypeId',
+    'withdrawalDetails',
   ]
 
   const requestPayload = {}

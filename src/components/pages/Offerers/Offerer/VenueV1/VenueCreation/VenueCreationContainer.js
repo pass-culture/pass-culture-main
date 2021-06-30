@@ -5,6 +5,7 @@ import { requestData } from 'redux-saga-data'
 import { withQueryRouter } from 'components/hocs/with-query-router/withQueryRouter'
 import { CREATION } from 'components/hocs/withFrenchQueryRouter'
 import withTracking from 'components/hocs/withTracking'
+import { isFeatureActive } from 'store/features/selectors'
 import { showNotification } from 'store/reducers/notificationReducer'
 import { selectOffererById } from 'store/selectors/data/offerersSelectors'
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
@@ -36,6 +37,7 @@ export const mapStateToProps = (state, ownProps) => {
       bookingEmail: currentUser.email,
     },
     offerer: selectOffererById(state, offererId),
+    withdrawalDetailActive: isFeatureActive(state, 'ENABLE_VENUE_WITHDRAWAL_DETAILS'),
   }
 }
 

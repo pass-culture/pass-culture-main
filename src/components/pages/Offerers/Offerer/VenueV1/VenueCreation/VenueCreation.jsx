@@ -17,6 +17,7 @@ import bindGetSuggestionsToLatitude from '../fields/LocationFields/decorators/bi
 import bindGetSuggestionsToLongitude from '../fields/LocationFields/decorators/bindGetSuggestionsToLongitude'
 import LocationFields from '../fields/LocationFields/LocationFields'
 import { FRANCE_POSITION } from '../fields/LocationFields/utils/positions'
+import WithdrawalDetailsFields from '../fields/WithdrawalDetailsFields/WithdrawalDetailsFields'
 import { formatSiret } from '../siret/formatSiret'
 import VenueLabel from '../ValueObjects/VenueLabel'
 import VenueType from '../ValueObjects/VenueType'
@@ -88,6 +89,7 @@ class VenueCreation extends PureComponent {
       venueTypes,
       venueLabels,
       offerer,
+      withdrawalDetailActive,
     } = this.props
     const { isRequestPending } = this.state
     const readOnly = false
@@ -116,6 +118,12 @@ class VenueCreation extends PureComponent {
           venueLabels={venueLabels}
           venueTypes={venueTypes}
         />
+        {withdrawalDetailActive && (
+          <WithdrawalDetailsFields
+            isCreatedEntity
+            readOnly={readOnly}
+          />
+        )}
         <BankInformation offerer={offerer} />
         <LocationFields
           fieldReadOnlyBecauseFrozenFormSiret={siretValidOnCreation}
@@ -208,6 +216,7 @@ VenueCreation.propTypes = {
   trackCreateVenue: PropTypes.func.isRequired,
   venueLabels: PropTypes.arrayOf(PropTypes.instanceOf(VenueLabel)).isRequired,
   venueTypes: PropTypes.arrayOf(PropTypes.instanceOf(VenueType)).isRequired,
+  withdrawalDetailActive: PropTypes.bool.isRequired,
 }
 
 export default VenueCreation

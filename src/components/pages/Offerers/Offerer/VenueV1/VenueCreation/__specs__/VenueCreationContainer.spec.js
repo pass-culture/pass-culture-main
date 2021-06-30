@@ -40,6 +40,9 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
       // given
       const currentUser = { id: 1, email: 'john.doe@email.com' }
       const state = {
+        features: {
+          list: [],
+        },
         data: {
           offerers: [{ id: 1 }],
           userOfferers: [{ offererId: 1, rights: 'admin', userId: 1 }],
@@ -61,12 +64,16 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
         },
         venueTypes: [],
         venueLabels: [],
+        withdrawalDetailActive: false,
       })
     })
 
     it('should map venue types for the component', () => {
       // given
       const state = {
+        features: {
+          list: [],
+        },
         data: {
           offerers: [],
           userOfferers: [],
@@ -101,6 +108,9 @@ describe('src | components | pages | VenueContainer | mapStateToProps', () => {
     it('should map venue labels for the component', () => {
       // given
       const state = {
+        features: {
+          list: [],
+        },
         data: {
           offerers: [],
           userOfferers: [],
@@ -227,7 +237,11 @@ describe('src | components | pages | VenueContainer | mapDispatchToProps', () =>
   describe('handleSubmitRequestSuccess', () => {
     it('should dispatch action to display a succes message', () => {
       // given
-      const state = {}
+      const state = {
+        features: {
+          list: [],
+        },
+      }
       const action = {
         config: {
           method: 'POST',
