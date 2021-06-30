@@ -451,3 +451,5 @@ secrets:
     version: 1
   - name: APPS_FLYER_IOS_API_KEY
     version: 1
+  - name: ADAGE_API_KEY
+    version: 1
