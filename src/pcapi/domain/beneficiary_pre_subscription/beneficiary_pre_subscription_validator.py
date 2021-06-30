@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from pcapi.core.users.models import User
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
@@ -35,7 +36,11 @@ EXCLUDED_DEPARTMENTS = {
 }
 
 
-def _is_postal_code_eligible(code: str) -> bool:
+def _is_postal_code_eligible(code: Optional[str]) -> bool:
+    # departmentCode can now be null
+    if not code:
+        return True
+
     # FIXME (dbaty, 2020-01-14): remove this block once we have opened
     # to (almost) all departments.
     # Legacy behaviour: only a few departments are eligible.
