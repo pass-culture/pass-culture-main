@@ -57,6 +57,7 @@ class FeatureToggle(enum.Enum):
     ID_CHECK_ADDRESS_AUTOCOMPLETION = "Autocomplétion de l'adresse lors du parcours IDCheck"
     USER_PROFILING_FRAUD_CHECK = "Détection de la fraude basée sur le profil de l'utilisateur"
     BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS = "Active la validation d'un bénéficiaire via les contrôles de sécurité"
+    ENABLE_VENUE_WITHDRAWAL_DETAILS = "Active les modalités de retrait sur la page lieu"
 
 
 class Feature(PcObject, Model, DeactivableMixin):
@@ -83,6 +84,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
     FeatureToggle.USER_PROFILING_FRAUD_CHECK,
     FeatureToggle.BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS,
+    FeatureToggle.ENABLE_VENUE_WITHDRAWAL_DETAILS,
 )
 
 
