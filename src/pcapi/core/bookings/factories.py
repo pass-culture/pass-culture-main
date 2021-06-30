@@ -1,5 +1,6 @@
 import factory
 
+from pcapi.core.educational.factories import EducationalBookingFactory as EducationalBookingSubFactory
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import BaseFactory
 import pcapi.core.users.factories as users_factories
@@ -44,3 +45,7 @@ class BookingFactory(BaseFactory):
             stock.dnBookedQuantity = stock.dnBookedQuantity + kwargs.get("quantity", 1)
             kwargs["stock"] = stock
         return super()._create(model_class, *args, **kwargs)
+
+
+class EducationalBookingFactory(BookingFactory):
+    educationalBooking = factory.SubFactory(EducationalBookingSubFactory)
