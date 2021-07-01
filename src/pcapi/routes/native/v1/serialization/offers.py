@@ -202,7 +202,6 @@ class OfferResponse(BaseModel):
     expense_domains: list[ExpenseDomain]
     externalTicketOfficeUrl: Optional[str]
     extraData: Optional[OfferExtraData]
-    isActive: bool  # TODO (viconnex): remove field when frontend uses isReleased
     canExpire: bool
     isExpired: bool
     isReleased: bool

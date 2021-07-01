@@ -134,7 +134,6 @@ class OffersTest:
                 "visa": "vasi",
             },
             "image": {"url": "http://localhost/storage/thumbs/mediations/N4", "credit": "street credit"},
-            "isActive": True,
             "isExpired": False,
             "isSoldOut": False,
             "isDuo": True,
