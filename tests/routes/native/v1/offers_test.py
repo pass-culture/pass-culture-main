@@ -80,6 +80,7 @@ class OffersTest:
                 "motorDisability": False,
                 "visualDisability": True,
             },
+            "canExpire": False,
             "stocks": [
                 {
                     "id": bookableStock.id,
@@ -175,6 +176,33 @@ class OffersTest:
             "name": "VISITE",
         }
         assert not response.json["isExpired"]
+        assert response.json["canExpire"] is True
+
+    def test_get_digital_offer_book_cannot_exire(self, app):
+        product = ProductFactory(thumbCount=1)
+        offer_type = ThingType.LIVRE_AUDIO
+        offer = OfferFactory(type=str(offer_type), product=product)
+        ThingStockFactory(offer=offer, price=12.34)
+
+        offer_id = offer.id
+        with assert_num_queries(1):
+            response = TestClient(app.test_client()).get(f"/native/v1/offer/{offer_id}")
+
+        assert response.status_code == 200
+        assert response.json["canExpire"] is False
+
+    def test_get_digital_offer_press_cannot_exire(self, app):
+        product = ProductFactory(thumbCount=1)
+        offer_type = ThingType.PRESSE_ABO
+        offer = OfferFactory(type=str(offer_type), product=product)
+        ThingStockFactory(offer=offer, price=12.34)
+
+        offer_id = offer.id
+        with assert_num_queries(1):
+            response = TestClient(app.test_client()).get(f"/native/v1/offer/{offer_id}")
+
+        assert response.status_code == 200
+        assert response.json["canExpire"] is False
 
     def test_get_digital_offer_without_activation_code_expiration_date(self, app):
         stock = StockWithActivationCodesFactory()
