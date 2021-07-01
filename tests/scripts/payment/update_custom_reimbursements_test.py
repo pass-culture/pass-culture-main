@@ -6,7 +6,7 @@ import pytest
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
 import pcapi.core.payments.models as payments_models
-from pcapi.scripts.payment.update_custom_reimbursement import update_from_csv_file
+from pcapi.scripts.payment.update_custom_reimbursements import update_from_csv_file
 from pcapi.utils.human_ids import humanize
 
 
