@@ -1,3 +1,4 @@
+from datetime import datetime
 import enum
 
 from sqlalchemy import BigInteger
@@ -7,7 +8,10 @@ from sqlalchemy import Enum
 from sqlalchemy import ForeignKey
 from sqlalchemy import String
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql.functions import func
 from sqlalchemy.sql.schema import Index
+from sqlalchemy.sql.sqltypes import Boolean
+from sqlalchemy.sql.sqltypes import Numeric
 
 from pcapi.models.db import Model
 
@@ -50,6 +54,12 @@ class EducationalDeposit(Model):
     educationalYearId = Column(String(30), ForeignKey("educational_year.adageId"), index=True, nullable=False)
 
     educationalYear = relationship(EducationalYear, foreign_keys=[educationalYearId], backref="deposits")
+
+    amount = Column(Numeric(10, 2), nullable=False)
+
+    dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
+
+    isFinal = Column(Boolean, nullable=False, default=True)
 
 
 class EducationalBooking(Model):
