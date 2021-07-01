@@ -67,7 +67,9 @@ class GetInstitutionalProjectRedactorByEmailTest:
                 get_institutional_project_redactor_by_email(institutional_project_redactor_email)
 
         # Then
-        assert str(exception.value) == "Error getting API Adage"
+        assert str(exception.value.message) == "Error getting Adage API"
+        assert str(exception.value.status_code) == "400"
+        assert str(exception.value.api_response) == adage_error_message
 
     @override_settings(ADAGE_API_URL="https://adage-api-url")
     @override_settings(ADAGE_API_KEY="adage-api-key")

@@ -13,6 +13,7 @@ from freezegun.api import freeze_time
 import pytest
 
 from pcapi import settings
+from pcapi.connectors.api_adage import AdageException
 from pcapi.connectors.api_adage import InstitutionalProjectRedactorNotFoundException
 from pcapi.connectors.serialization.api_adage_serializers import InstitutionalProjectRedactorResponse
 from pcapi.core.bookings.factories import BookingFactory
@@ -507,6 +508,24 @@ class InstitutionalProjectRedactorAccountCreationTest:
         response = test_client.post("/native/v1/institutional-project-redactor-account", json=data)
 
         assert response.status_code == 204, response.json
+        assert User.query.first() is None
+
+    @patch("pcapi.core.users.api.get_institutional_project_redactor_by_email")
+    def test_when_adage_is_unavailable(self, get_institutional_project_redactor_by_email_stub, app):
+        test_client = TestClient(app.test_client())
+
+        institutional_project_redactor_email = "project.redactor@example.com"
+        get_institutional_project_redactor_by_email_stub.side_effect = AdageException(
+            "Error getting Adage API", 503, "Unauthorized"
+        )
+        data = {
+            "email": institutional_project_redactor_email,
+            "password": "Aazflrifaoi6@",
+        }
+
+        response = test_client.post("/native/v1/institutional-project-redactor-account", json=data)
+
+        assert response.status_code == 503, response.json
         assert User.query.first() is None
 
 

@@ -2,11 +2,13 @@ from dataclasses import asdict
 from datetime import datetime
 import logging
 
+from flask import abort
 from flask import request
 
 from pcapi import settings
 from pcapi.connectors import api_recaptcha
 from pcapi.connectors import user_profiling
+from pcapi.connectors.api_adage import AdageException
 from pcapi.connectors.api_adage import InstitutionalProjectRedactorNotFoundException
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.logging import get_or_set_correlation_id
@@ -140,6 +142,9 @@ def create_institutional_project_redactor_account(body: serializers.Institutiona
         logger.info("Cette adresse mail est déjà utilisée")
     except InstitutionalProjectRedactorNotFoundException:
         logger.info("Cette adresse mail n'est pas une adresse mail académique reconnue")
+    except AdageException as exception:
+        logger.error(exception.message, extra={"statusCode": exception.status_code, "error": exception.api_response})
+        abort(503)
 
 
 @blueprint.native_v1.route("/account/has_completed_id_check", methods=["POST"])
