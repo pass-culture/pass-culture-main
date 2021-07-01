@@ -19,6 +19,7 @@ nameOverride: ""
 fullnameOverride: ""
 
 schedule:  "0 3 * * 4" # Thursday at 3am
+timezone: "Europe/Paris"
 
 resources:
   limits:
