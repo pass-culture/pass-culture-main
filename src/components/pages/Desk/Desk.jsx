@@ -42,6 +42,11 @@ class Desk extends Component {
 
   firstErrorMessageFromApi = body => Object.keys(body)[0]
 
+  getErrorMessageFromApi = errorResponse => {
+    const errorKey = this.firstErrorMessageFromApi(errorResponse.errors)
+    return errorResponse.errors[errorKey]
+  }
+
   resetTokenField = () => {
     this.tokenInputRef.current.value = ''
     this.tokenInputRef.current.focus()
@@ -73,20 +78,17 @@ class Desk extends Component {
           })
         })
         .catch(error => {
+          const errorMessage = this.getErrorMessageFromApi(error)
           if (error.status === this.BOOKING_ALREADY_USED) {
-            error.json().then(body => {
-              this.setState({
-                level: '',
-                isUsedToken: true,
-                message: body[this.firstErrorMessageFromApi(body)],
-              })
+            this.setState({
+              level: '',
+              isUsedToken: true,
+              message: errorMessage,
             })
           } else {
-            error.json().then(body => {
-              this.setState({
-                level: 'error',
-                message: body[this.firstErrorMessageFromApi(body)],
-              })
+            this.setState({
+              level: 'error',
+              message: errorMessage,
             })
           }
         })
@@ -161,11 +163,9 @@ class Desk extends Component {
         this.resetTokenField()
       })
       .catch(error => {
-        error.json().then(body => {
-          this.setState({
-            level: 'error',
-            message: body[this.firstErrorMessageFromApi(body)],
-          })
+        this.setState({
+          level: 'error',
+          message: this.getErrorMessageFromApi(error),
         })
       })
   }
@@ -193,11 +193,9 @@ class Desk extends Component {
         this.resetTokenField()
       })
       .catch(error => {
-        error.json().then(body => {
-          this.setState({
-            level: 'error',
-            message: body[this.firstErrorMessageFromApi(body)],
-          })
+        this.setState({
+          level: 'error',
+          message: this.getErrorMessageFromApi(error),
         })
       })
   }

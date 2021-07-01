@@ -12,7 +12,7 @@ import Desk from '../Desk'
 const renderDesk = props => {
   const store = configureTestStore({
     data: {
-      users: [{ publicName: 'USER', hasSeenProTutorials: true }],
+      users: [{ publicName: 'USER', hasSeenProTutorials: true, isAdmin: false }],
     },
   })
 
@@ -120,7 +120,7 @@ describe('src | components | Desk', () => {
     // given
     jest.spyOn(props, 'getBooking').mockResolvedValue(
       Promise.reject({
-        json: jest.fn(() => Promise.resolve({ booking: 'token is already validated' })),
+        errors: { booking: 'token is already validated' },
         status: 410,
       })
     )
@@ -172,7 +172,8 @@ describe('src | components | Desk', () => {
     it('should display an error message when token validation fails', async () => {
       // given
       jest.spyOn(props, 'getBooking').mockRejectedValue({
-        json: jest.fn(() => Promise.resolve({ booking: 'token validation is failed' })),
+        errors: { booking: 'token validation is failed' },
+        status: 410,
       })
       renderDesk(props)
       const tokenInput = screen.getByLabelText('Contremarque')
@@ -188,7 +189,7 @@ describe('src | components | Desk', () => {
     it('should display a message and can invalidated the token when token is already validated', async () => {
       // given
       jest.spyOn(props, 'getBooking').mockRejectedValue({
-        json: jest.fn(() => Promise.resolve({ booking: 'token is already validated' })),
+        errors: { booking: 'token is already validated' },
         status: 410,
       })
       renderDesk(props)
@@ -231,7 +232,7 @@ describe('src | components | Desk', () => {
     it('should display a message when booking is invalidated', async () => {
       // given
       jest.spyOn(props, 'getBooking').mockRejectedValue({
-        json: jest.fn(() => Promise.resolve({ booking: 'token is already validated' })),
+        errors: { booking: 'token is already validated' },
         status: 410,
       })
       jest.spyOn(props, 'invalidateBooking').mockResolvedValue()
@@ -254,9 +255,10 @@ describe('src | components | Desk', () => {
     it('should display an error message when the booking validation has failed', async () => {
       // given
       jest.spyOn(props, 'getBooking').mockResolvedValue()
-      jest
-        .spyOn(props, 'validateBooking')
-        .mockRejectedValue({ json: jest.fn(() => Promise.resolve({ booking: 'error message' })) })
+      jest.spyOn(props, 'validateBooking').mockRejectedValue({
+        errors: { booking: 'error message' },
+        status: 401,
+      })
       renderDesk(props)
       const tokenInput = screen.getByLabelText('Contremarque')
       const submitButton = screen.getByRole('button', { name: 'Valider la contremarque' })
@@ -272,22 +274,25 @@ describe('src | components | Desk', () => {
 
     it('should display an error message when the booking invalidation has failed', async () => {
       // given
+      renderDesk(props)
+
       jest.spyOn(props, 'getBooking').mockRejectedValue({
-        json: () => Promise.resolve({ booking: 'token is already validated' }),
+        errors: { booking: 'token is already validated' },
         status: 410,
       })
-      jest.spyOn(props, 'invalidateBooking').mockRejectedValue({
-        json: () => Promise.resolve({ booking: 'cannot invalidate booking' }),
-        status: 403,
-      })
-      renderDesk(props)
+      // when
       const tokenInput = screen.getByLabelText('Contremarque')
       fireEvent.change(tokenInput, { target: { value: 'MEFA01' } })
-      const submitButton = await screen.findByRole('button', { name: 'Invalider la contremarque' })
+      // then
+      expect(await screen.findByText('token is already validated')).toBeInTheDocument()
 
       // when
+      jest.spyOn(props, 'invalidateBooking').mockRejectedValue({
+        errors: { booking: 'cannot invalidate booking' },
+        status: 403,
+      })
+      const submitButton = await screen.findByRole('button', { name: 'Invalider la contremarque' })
       fireEvent.click(submitButton)
-
       // then
       const responseFromApi = await screen.findByText('cannot invalidate booking')
       expect(responseFromApi).toBeInTheDocument()
