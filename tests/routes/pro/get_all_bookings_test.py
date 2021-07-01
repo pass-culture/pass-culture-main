@@ -197,7 +197,7 @@ class Returns400Test:
         response = client.get("/bookings/pro?page=not-a-number")
 
         assert response.status_code == 400
-        assert response.json["global"] == ["L'argument 'page' not-a-number n'est pas valide"]
+        assert response.json["page"] == ["Saisissez un nombre valide"]
 
 
 @pytest.mark.usefixtures("db_session")

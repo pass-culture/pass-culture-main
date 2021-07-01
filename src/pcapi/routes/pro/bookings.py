@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from flask import jsonify
 from flask import request
 from flask_login import current_user
@@ -18,12 +16,14 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_type import ProductType
 from pcapi.routes.serialization import serialize
 from pcapi.routes.serialization import serialize_booking
-from pcapi.routes.serialization.bookings_recap_serialize import serialize_bookings_recap_paginated
+from pcapi.routes.serialization.bookings_recap_serialize import ListBookingsQueryModel
+from pcapi.routes.serialization.bookings_recap_serialize import ListBookingsResponseModel
+from pcapi.routes.serialization.bookings_recap_serialize import _serialize_booking_recap
+from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import humanize
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.validation.routes.bookings import check_email_and_offer_id_for_anonymous_user
-from pcapi.validation.routes.bookings import check_page_format_is_number
 from pcapi.validation.routes.users_authentifications import check_user_is_logged_in_or_email_is_provided
 from pcapi.validation.routes.users_authentifications import current_api_key
 from pcapi.validation.routes.users_authentifications import login_or_api_key_required
@@ -71,26 +71,13 @@ def patch_booking_by_token(token: str):
 # @debt api-migration
 @private_api.route("/bookings/pro", methods=["GET"])
 @login_required
-def get_all_bookings():
-    page = request.args.get("page", 1)
-    venue_id = dehumanize(request.args.get("venueId", None))
-    event_date = (
-        datetime.fromisoformat(request.args.get("eventDate").replace("Z", "+00:00")).date()
-        if request.args.get("eventDate")
-        else None
-    )
-    booking_period_beginning_date = (
-        datetime.fromisoformat(request.args.get("bookingPeriodBeginningDate").replace("Z", "+00:00")).date()
-        if request.args.get("bookingPeriodBeginningDate")
-        else None
-    )
-    booking_period_ending_date = (
-        datetime.fromisoformat(request.args.get("bookingPeriodEndingDate").replace("Z", "+00:00")).date()
-        if request.args.get("bookingPeriodEndingDate")
-        else None
-    )
-
-    check_page_format_is_number(page)
+@spectree_serialize(response_model=ListBookingsResponseModel)
+def get_all_bookings(query: ListBookingsQueryModel) -> ListBookingsResponseModel:
+    page = query.page
+    venue_id = query.venue_id
+    event_date = query.event_date
+    booking_period_beginning_date = query.booking_period_beginning_date
+    booking_period_ending_date = query.booking_period_ending_date
 
     check_is_authorized_to_access_bookings_recap(current_user)
 
@@ -115,7 +102,14 @@ def get_all_bookings():
         page=int(page),
     )
 
-    return serialize_bookings_recap_paginated(bookings_recap_paginated), 200
+    return ListBookingsResponseModel(
+        bookings_recap=[
+            _serialize_booking_recap(booking_recap) for booking_recap in bookings_recap_paginated.bookings_recap
+        ],
+        page=bookings_recap_paginated.page,
+        pages=bookings_recap_paginated.pages,
+        total=bookings_recap_paginated.total,
+    )
 
 
 # @debt api-migration

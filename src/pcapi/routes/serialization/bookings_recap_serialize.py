@@ -1,5 +1,8 @@
 from datetime import datetime
 from typing import Any
+from typing import Optional
+
+from pydantic import BaseModel
 
 from pcapi.domain.booking_recap.booking_recap import BookBookingRecap
 from pcapi.domain.booking_recap.booking_recap import BookingRecap
@@ -11,6 +14,8 @@ from pcapi.domain.booking_recap.booking_recap_history import BookingRecapHistory
 from pcapi.domain.booking_recap.booking_recap_history import BookingRecapReimbursedHistory
 from pcapi.domain.booking_recap.booking_recap_history import BookingRecapValidatedHistory
 from pcapi.domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
+from pcapi.serialization.utils import dehumanize_field
+from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_timezoned_date
 from pcapi.utils.human_ids import humanize
 
@@ -101,3 +106,25 @@ def _serialize_booking_recap(booking_recap: BookingRecap) -> dict[str, Any]:
         serialized_booking_recap["stock"]["offer_isbn"] = booking_recap.offer_isbn
 
     return serialized_booking_recap
+
+
+class ListBookingsQueryModel(BaseModel):
+    page: int = 1
+    venue_id: Optional[int]
+    event_date: Optional[datetime]
+    booking_period_beginning_date: Optional[datetime]
+    booking_period_ending_date: Optional[datetime]
+
+    _dehumanize_venue_id = dehumanize_field("venue_id")
+
+    class Config:
+        alias_generator = to_camel
+
+    extra = "forbid"
+
+
+class ListBookingsResponseModel(BaseModel):
+    bookings_recap: list[dict]
+    page: int
+    pages: int
+    total: int
