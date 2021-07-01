@@ -49,6 +49,7 @@ configmap:
   USERS_CSV_PATH: /scripts/data_pass-culture-api-staging.csv
   # dump_restore.sh feature flags
   POSTGRES_UNNEEDED_TABLES : "activity user_session email"
+  DISABLE_VENUE_PROVIDERS: "true"
 
 configmapStaging:
   ENV: staging
