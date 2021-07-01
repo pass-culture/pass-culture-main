@@ -51,10 +51,18 @@ const BookingsRecap = ({
       }
 
       let currentPage = 1
-      const { pages, bookings_recap: bookingsRecap } = await pcapi.loadFilteredBookingsRecap({
-        page: currentPage,
-        ...bookingsFilters,
-      })
+      const { pages, bookings_recap: bookingsRecap } = await pcapi
+        .loadFilteredBookingsRecap({
+          page: currentPage,
+          ...bookingsFilters,
+        })
+        .then(response => response)
+        .catch(() => ({
+          page: 0,
+          pages: 0,
+          total: 0,
+          bookings_recap: [],
+        }))
       setBookingsRecap(bookingsRecap)
 
       while (currentPage < Math.min(pages, MAX_LOADED_PAGES)) {
