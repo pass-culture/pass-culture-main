@@ -39,7 +39,7 @@ def update_custom_reimbursements(path):
         >>> results = update_custom_reimbursements("/path/to/rules.csv")
         >>> for key in ("created", "errors", "warnings"):
             ... print(key)
-            ... print("\n".join(results[key])
+            ... print("\n".join(results[key]))
     """
     with open(path, encoding="utf-8") as csv_file:
         return update_from_csv_file(csv_file)
