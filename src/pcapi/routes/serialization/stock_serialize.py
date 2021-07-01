@@ -37,7 +37,9 @@ class StockResponseModel(BaseModel):
     @classmethod
     def from_orm(cls, stock: Stock):  # type: ignore
         activation_code = (
-            ActivationCode.query.filter(Stock.id == stock.id).first() if stock.canHaveActivationCodes else None
+            ActivationCode.query.filter(ActivationCode.stockId == stock.id).first()
+            if stock.canHaveActivationCodes
+            else None
         )
         stock.hasActivationCodes = bool(activation_code)
         stock.activationCodesExpirationDatetime = activation_code.expirationDate if activation_code else None
