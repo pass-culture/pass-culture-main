@@ -22,8 +22,7 @@ from pcapi.flask_app import app
 from pcapi.models.db import db
 from pcapi.utils.health_checker import check_database_connection
 from pcapi.utils.health_checker import read_version_from_file
-from pcapi.workers.logger import JobStatus
-from pcapi.workers.logger import build_job_log_message
+from pcapi.workers.logger import job_extra_description
 
 
 install_logging()
@@ -40,7 +39,15 @@ logger = logging.getLogger(__name__)
 def log_worker_error(job: Job, exception_type: Type, exception_value: Exception, traceback: Any = None) -> None:
     # This handler is called by `rq.Worker.handle_exception()` from an
     # `except` clause, so we can (and should) use `logger.exception`.
-    logger.exception(build_job_log_message(job, JobStatus.FAILED, f"{exception_type.__name__}: {exception_value}"))
+    logger.exception(
+        "Failed job %s",
+        job.func_name,
+        extra={
+            **job_extra_description(job),
+            "status": "failed",
+            "error": f"{exception_type.__name__}: {exception_value}",
+        },
+    )
 
 
 def log_redis_connection_status() -> None:

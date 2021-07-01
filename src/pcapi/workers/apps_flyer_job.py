@@ -2,14 +2,12 @@ from dataclasses import dataclass
 import logging
 
 from requests.exceptions import RequestException
-from rq.decorators import job
 
 from pcapi import settings
 from pcapi.models import User
 from pcapi.utils import requests
 from pcapi.workers import worker
-from pcapi.workers.decorators import job_context
-from pcapi.workers.decorators import log_job
+from pcapi.workers.decorators import job
 
 
 APPS_FLYER_API_URL = "https://api2.appsflyer.com/inappevent"
@@ -42,9 +40,7 @@ class AppsFlyerMissingError(Exception):
     pass
 
 
-@job(worker.default_queue, connection=worker.conn)
-@job_context
-@log_job
+@job(worker.default_queue)
 def log_user_becomes_beneficiary_event_job(user_id: int) -> None:
     user = User.query.get(user_id)
 

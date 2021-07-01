@@ -1,17 +1,12 @@
 import datetime
 
-from rq.decorators import job
-
 from pcapi import settings
 from pcapi.core import mails
 from pcapi.workers import worker
-from pcapi.workers.decorators import job_context
-from pcapi.workers.decorators import log_job
+from pcapi.workers.decorators import job
 
 
-@job(worker.default_queue, connection=worker.conn)
-@job_context
-@log_job
+@job(worker.default_queue)
 def mailing_contacts_job(contact_email: str, contact_date_of_birth: str, contact_department_code: str) -> None:
     _create_mailing_contact(contact_email, contact_date_of_birth, contact_department_code)
     _add_contact_to_eligible_soon_list(contact_email)

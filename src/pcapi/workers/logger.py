@@ -1,20 +1,10 @@
-from enum import Enum
-from typing import Optional
+from rq.job import Job
 
 
-class JobStatus(Enum):
-    STARTED = "started"
-    ENDED = "ended"
-    FAILED = "failed"
-
-    def __str__(self):  # pylint: disable=invalid-str-returned
-        return self.value
-
-
-def build_job_log_message(job: str, status: JobStatus, error: Optional[str] = None) -> str:
-    log_message = f"type=job name={job} status={status}"
-
-    if error:
-        log_message += f" error={error}"
-
-    return log_message
+def job_extra_description(job: Job):
+    return {
+        "job": job.id,
+        "function": job.func_name,
+        "call_args": str(job.args),  # args is a reserved word for logging
+        "call_kwargs": str(job.kwargs),
+    }

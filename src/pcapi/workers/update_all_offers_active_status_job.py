@@ -1,15 +1,10 @@
-from rq.decorators import job
-
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.repository as offers_repository
 from pcapi.workers import worker
-from pcapi.workers.decorators import job_context
-from pcapi.workers.decorators import log_job
+from pcapi.workers.decorators import job
 
 
-@job(worker.low_queue, connection=worker.conn)
-@job_context
-@log_job
+@job(worker.low_queue)
 def update_all_offers_active_status_job(filters: dict, is_active: bool) -> None:
     query = offers_repository.get_offers_by_filters(
         user_id=filters["user_id"],
