@@ -4,6 +4,8 @@ from typing import Callable
 
 import requests
 from requests import Response
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 
 # fmt: off
@@ -69,4 +71,9 @@ class _SessionMixin:
 
 
 class Session(_SessionMixin, requests.Session):
-    pass
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Only sets a retry strategy for safe verbs
+        retry_strategy = Retry(total=3, method_whitelist=["HEAD", "GET", "OPTIONS"])
+        adapter = HTTPAdapter(max_retries=retry_strategy)
+        self.mount("https://www.demarches-simplifiees.fr", adapter)
