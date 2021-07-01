@@ -7,6 +7,7 @@ from flask import request
 from pcapi import settings
 from pcapi.connectors import api_recaptcha
 from pcapi.connectors import user_profiling
+from pcapi.connectors.api_adage import InstitutionalProjectRedactorNotFoundException
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.logging import get_or_set_correlation_id
 from pcapi.core.offers.exceptions import FileSizeExceeded
@@ -125,6 +126,20 @@ def create_account(body: serializers.AccountRequest) -> None:
             raise ApiErrors({"email": ["L'email n'a pas pu être envoyé"]})
     except exceptions.UnderAgeUserException:
         raise ApiErrors({"dateOfBirth": "The birthdate is invalid"})
+
+
+@blueprint.native_v1.route("/institutional-project-redactor-account", methods=["POST"])
+@spectree_serialize(on_success_status=204, api=blueprint.api)
+def create_institutional_project_redactor_account(body: serializers.InstitutionalProjectRedactorAccountRequest) -> None:
+    try:
+        api.create_institutional_project_redactor(
+            email=body.email,
+            password=body.password,
+        )
+    except exceptions.UserAlreadyExistsException:
+        logger.info("Cette adresse mail est déjà utilisée")
+    except InstitutionalProjectRedactorNotFoundException:
+        logger.info("Cette adresse mail n'est pas une adresse mail académique reconnue")
 
 
 @blueprint.native_v1.route("/account/has_completed_id_check", methods=["POST"])

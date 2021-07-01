@@ -58,7 +58,6 @@ from pcapi.models.offer_type import EventType
 from pcapi.models.offer_type import ThingType
 from pcapi.models.user_session import UserSession
 from pcapi.repository import repository
-from pcapi.routes.native.v1.serialization.account import InstitutionalProjectRedactorAccountRequest
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
 
 import tests
@@ -824,7 +823,7 @@ class CreateInstituationalProjectRedactorTest:
         self, get_institutional_project_redactor_by_email_stub
     ):
         # Given
-        institutional_project_redactor_email = "project.redactor@example.com"
+        institutional_project_redactor_email = "Project.Redactor@example.com"
         institutional_project_redactor_password = "P@ssword12345"
         institutional_project_redactor_adage_response = InstitutionalProjectRedactorResponse(
             civilite="Madame", prenom="Jane", nom="Doe", mail=institutional_project_redactor_email, etablissements=[]
@@ -837,10 +836,11 @@ class CreateInstituationalProjectRedactorTest:
         )
 
         # Then
-        get_institutional_project_redactor_by_email_stub.assert_called_once_with(institutional_project_redactor_email)
-        saved_user = User.query.filter(User.email == institutional_project_redactor_email).one()
+        sanitized_email = "project.redactor@example.com"
+        get_institutional_project_redactor_by_email_stub.assert_called_once_with(sanitized_email)
+        saved_user = User.query.filter(User.email == sanitized_email).one()
         assert created_user.id == saved_user.id
-        assert saved_user.email == institutional_project_redactor_email
+        assert saved_user.email == sanitized_email
         assert saved_user.civility == institutional_project_redactor_adage_response.civility
         assert saved_user.firstName == institutional_project_redactor_adage_response.first_name
         assert saved_user.lastName == institutional_project_redactor_adage_response.last_name

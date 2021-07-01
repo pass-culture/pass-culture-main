@@ -589,6 +589,10 @@ def create_pro_user(pro_user: ProUserCreationBodyModel) -> User:
 
 
 def create_institutional_project_redactor(email: str, password: str) -> User:
+    email = sanitize_email(email)
+    if find_user_by_email(email):
+        raise exceptions.UserAlreadyExistsException()
+
     institutional_project_redactor_informations = get_institutional_project_redactor_by_email(email)
     new_institutional_project_redactor = User(
         email=email,
