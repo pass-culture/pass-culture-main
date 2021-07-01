@@ -72,3 +72,6 @@ class EducationalBooking(Model):
         Enum(EducationalBookingStatus),
         nullable=True,
     )
+
+    confirmationDate = Column(DateTime, nullable=True, default=datetime.utcnow)
+    confirmationLimitDate = Column(DateTime, nullable=True, default=datetime.utcnow)
