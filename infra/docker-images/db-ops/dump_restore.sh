@@ -146,3 +146,11 @@ if [ "$CREATE_USERS" = "true" ];then
     python3 ${PC_API_ROOT_PATH}/${IMPORT_USERS_SCRIPT_PATH} ${USERS_CSV_PATH}
     echo "Ended: python3 $(echo_time)"
 fi
+
+if [ "$DISABLE_VENUE_PROVIDERS" = "true" ];then
+    echo "Starting: disable all venue providers $(echo_time)"
+    psql "${POSTGRES_CONNEXION_STRING_DEST}" \
+        --echo-errors \
+        --command 'UPDATE venue_provider SET "isActive" = false'
+    echo "Ended: disable all venue providers $(echo_time)"
+fi
