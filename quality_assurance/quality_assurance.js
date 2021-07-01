@@ -52,7 +52,7 @@ test('captures d’écran de toutes les pages du site', async () => {
     .takeScreenshot(optionsOfScreenshot('thumbnail-upload-from-url'))
     .typeText(
       Selector('.thumbnail-dialog .tnf-form input[name="url"]'),
-      'https://upload.wikimedia.org/wikipedia/commons/f/f9/Zebra_%28PSF%29.png'
+      'https://pass.culture.fr/wp-content/uploads/2020/11/N_PASS_CULTURE_HD.png'
     )
     .click(Selector('.thumbnail-dialog .tnf-url-button'))
     .takeScreenshot(optionsOfScreenshot('thumbnail-credit'))

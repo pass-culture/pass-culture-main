@@ -169,7 +169,7 @@ test("je peux modifier la thumbnail d'une offre", async t => {
     .click(importFromUrlButton)
     .typeText(
       importFromUrlInput,
-      'https://upload.wikimedia.org/wikipedia/commons/f/f9/Zebra_%28PSF%29.png'
+      'https://pass.culture.fr/wp-content/uploads/2020/11/N_PASS_CULTURE_HD.png'
     )
     .click(importFromUrlSubmitButton)
     .click(creditSubmitButton)
@@ -273,7 +273,7 @@ test('Je peux créer une offre avec médiation', async t => {
     .click(importFromUrlButton)
     .typeText(
       importFromUrlInput,
-      'https://upload.wikimedia.org/wikipedia/commons/f/f9/Zebra_%28PSF%29.png'
+      'https://pass.culture.fr/wp-content/uploads/2020/11/N_PASS_CULTURE_HD.png'
     )
     .click(importFromUrlSubmitButton)
     .click(creditSubmitButton)
