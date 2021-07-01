@@ -44,7 +44,7 @@ class OfferOffererResponse(BaseModel):
 
 
 class OfferStockActivationCodeResponse(BaseModel):
-    expirationDate: datetime
+    expirationDate: Optional[datetime]
 
 
 class OfferStockResponse(BaseModel):
@@ -77,7 +77,7 @@ class OfferStockResponse(BaseModel):
         # here we have N+1 requests (for each stock we query an activation code)
         # but it should be more efficient than loading all activationCodes of all stocks
         activation_code = offers_repository.get_available_activation_code(stock)
-        if not activation_code or not activation_code.expirationDate:
+        if not activation_code:
             return None
         return {"expirationDate": activation_code.expirationDate}
 
