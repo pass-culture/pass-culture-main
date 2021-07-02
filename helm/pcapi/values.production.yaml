@@ -388,6 +388,8 @@ secrets:
     version: 2
   - name: DEV_EMAIL_ADDRESS
     version: 2
+  - name: EAC_API_KEY
+    version: 1
   - name: EXPORT_TOKEN
     version: 2
   - name: FLASK_SECRET
