@@ -80,7 +80,13 @@ class FraudView(base_configuration.BaseAdminView):
     }
 
     column_searchable_list = ["id", "email", "firstName", "lastName"]
-    column_filters = ["postalCode", "email", "beneficiaryFraudResult.status", "beneficiaryFraudChecks.type"]
+    column_filters = [
+        "postalCode",
+        "email",
+        "beneficiaryFraudResult.status",
+        "beneficiaryFraudChecks.type",
+        "beneficiaryFraudReview",
+    ]
 
     can_view_details = True
     details_template = "admin/fraud_details.html"
