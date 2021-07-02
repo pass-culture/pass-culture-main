@@ -5,10 +5,15 @@ from typing import Optional
 from pydantic import BaseModel
 from pydantic.fields import Field
 
+from pcapi import settings
+from pcapi.core.bookings.models import Booking
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
 from pcapi.routes.native.v1.serialization.offers import OfferCategoryResponse
 from pcapi.routes.native.v1.serialization.offers import OfferImageResponse
+from pcapi.routes.native.v1.serialization.offers import get_serialized_offer_category
 from pcapi.serialization.utils import to_camel
+from pcapi.utils.human_ids import humanize
 
 
 class PreBookingStatuses(enum.Enum):
@@ -64,6 +69,7 @@ class PreBookingResponse(BaseModel):
     UAICode: str = Field(description="Educational institution UAI code")
     yearId: int = Field(description="Shared year id")
     status: PreBookingStatuses
+    venueTimezone: str
     totalAmount: int = Field(description="Total price of the prebooking")
     url: Optional[str] = Field(description="Url to access the offer")
     withdrawalDetails: Optional[str]
@@ -79,3 +85,61 @@ class PreBookingsResponse(BaseModel):
 
     class Config:
         title = "List of prebookings"
+
+
+def get_pre_bookings_response(bookings: list[Booking]) -> PreBookingsResponse:
+    prebookings = []
+    for booking in bookings:
+        stock = booking.stock
+        offer = stock.offer
+        venue = offer.venue
+        user = booking.user
+        prebooking_response = PreBookingResponse(
+            address=venue.address,
+            beginningDatetime=stock.beginningDatetime,
+            cancellationDate=booking.cancellationDate,
+            cancellationLimitDate=booking.confirmationDate,
+            category=get_serialized_offer_category(offer),
+            city=venue.city,
+            confirmationDate=booking.educationalBooking.confirmationDate,
+            confirmationLimitDate=booking.educationalBooking.confirmationLimitDate,
+            coordinates={
+                "latitude": venue.latitude,
+                "longitude": venue.longitude,
+            },
+            creationDate=booking.dateCreated,
+            description=offer.description,
+            durationMinutes=offer.durationMinutes,
+            expirationDate=booking.expirationDate,
+            id=booking.educationalBooking.id,
+            image={"url": offer.image.url, "credit": offer.image.credit} if offer.image else None,
+            isDigital=offer.isDigital,
+            venueName=venue.name,
+            name=offer.name,
+            postalCode=venue.postalCode,
+            price=booking.amount,
+            quantity=booking.quantity,
+            redactor={
+                "email": user.email,
+                "redactorFirstName": user.firstName,
+                "redactorLastName": user.lastName,
+                "redactorCivility": user.civility,
+            },
+            UAICode=booking.educationalBooking.educationalInstitution.institutionId,
+            yearId=booking.educationalBooking.educationalYearId,
+            status=get_education_booking_status(booking),
+            venueTimezone=venue.timezone,
+            totalAmount=booking.amount * booking.quantity,
+            url=f"{settings.WEBAPP_URL}/accueil/details/{humanize(offer.id)}",
+            withdrawalDetails=offer.withdrawalDetails,
+        )
+        prebookings.append(prebooking_response)
+
+    return PreBookingsResponse(prebookings=prebookings)
+
+
+def get_education_booking_status(booking: Booking) -> PreBookingStatuses:
+    if booking.educationalBooking.status and not booking.status == BookingStatus.USED:
+        return booking.educationalBooking.status.value
+
+    return booking.status.value

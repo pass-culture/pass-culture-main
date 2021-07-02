@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 from . import blueprint
 
 
-educational_institution_path = "years/<int:year_id>/educational_institution/<string:uai_code>"
+educational_institution_path = "years/<string:year_id>/educational_institution/<string:uai_code>"
 
 
 @blueprint.adage_v1.route(educational_institution_path, methods=["GET"])

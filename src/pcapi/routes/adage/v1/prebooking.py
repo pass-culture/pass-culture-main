@@ -1,10 +1,19 @@
 import logging
 
+from sqlalchemy.orm import joinedload
+
+from pcapi.core.bookings.models import Booking
+from pcapi.core.educational.models import EducationalBooking
+from pcapi.core.educational.models import EducationalInstitution
+from pcapi.core.educational.models import EducationalYear
+from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import Stock
 from pcapi.routes.adage.security import adage_api_key_required
 from pcapi.routes.adage.v1.educational_institution import educational_institution_path
 from pcapi.routes.adage.v1.serialization.prebooking import GetPreBookingsRequest
 from pcapi.routes.adage.v1.serialization.prebooking import PreBookingResponse
 from pcapi.routes.adage.v1.serialization.prebooking import PreBookingsResponse
+from pcapi.routes.adage.v1.serialization.prebooking import get_pre_bookings_response
 from pcapi.serialization.decorator import spectree_serialize
 
 
@@ -16,8 +25,19 @@ from . import blueprint
 @blueprint.adage_v1.route(educational_institution_path + "/prebookings", methods=["GET"])
 @spectree_serialize(api=blueprint.api, response_model=PreBookingsResponse, tags=("get prebookings",))
 @adage_api_key_required
-def get_pre_bookings(query: GetPreBookingsRequest) -> PreBookingsResponse:
-    """Get a list of prebookings"""
+def get_pre_bookings(query: GetPreBookingsRequest, year_id: str, uai_code: str) -> PreBookingsResponse:
+    bookings = (
+        Booking.query.join(EducationalBooking)
+        .join(EducationalInstitution)
+        .join(EducationalYear)
+        .options(joinedload(Booking.stock).joinedload(Stock.offer).joinedload(Offer.venue))
+        .options(joinedload(Booking.educationalBooking).joinedload(EducationalBooking.educationalInstitution))
+        .filter(EducationalInstitution.institutionId == uai_code)
+        .filter(EducationalYear.adageId == year_id)
+        .all()
+    )
+
+    return get_pre_bookings_response(bookings)
 
 
 @blueprint.adage_v1.route("/prebookings/<int:pre_booking_id>/confirm", methods=["POST"])
