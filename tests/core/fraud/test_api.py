@@ -3,6 +3,8 @@ from unittest.mock import patch
 
 import pytest
 
+import pcapi.core.fraud.api as fraud_api
+import pcapi.core.fraud.factories as fraud_factories
 from pcapi.core.fraud.models import BeneficiaryFraudCheck
 from pcapi.core.fraud.models import BeneficiaryFraudResult
 from pcapi.core.fraud.models import FraudCheckType
@@ -141,3 +143,15 @@ class JouveFraudCheckTest:
 
     #     db.session.refresh(user)
     #     assert not user.isBeneficiary
+
+
+class CommonTest:
+    def test_validator_data(self):
+        user = UserFactory()
+        fraud_data = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=FraudCheckType.JOUVE)
+        fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=FraudCheckType.DMS)
+
+        expected = fraud_api.get_source_data(user)
+
+        assert isinstance(expected, JouveContent)
+        assert expected == JouveContent(**fraud_data.resultContent)

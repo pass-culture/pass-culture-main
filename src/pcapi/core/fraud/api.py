@@ -160,3 +160,16 @@ def create_user_profiling_check(
     )
     repository.save(fraud_check)
     return fraud_check
+
+
+def get_source_data(user: User) -> models.JouveContent:
+    mapped_class = {models.FraudCheckType.JOUVE: models.JouveContent}
+    fraud_check_type = (
+        models.BeneficiaryFraudCheck.query.filter(
+            models.BeneficiaryFraudCheck.userId == user.id,
+            models.BeneficiaryFraudCheck.type.in_([models.FraudCheckType.JOUVE]),
+        )
+        .order_by(models.BeneficiaryFraudCheck.dateCreated.desc())
+        .first()
+    )
+    return mapped_class[fraud_check_type.type](**fraud_check_type.resultContent)

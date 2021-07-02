@@ -14,6 +14,7 @@ import requests_mock
 from pcapi import settings
 from pcapi.connectors.serialization.api_adage_serializers import InstitutionalProjectRedactorResponse
 from pcapi.core.bookings import factories as bookings_factories
+import pcapi.core.fraud.factories as fraud_factories
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.payments.api import DEPOSIT_VALIDITY_IN_YEARS
@@ -40,6 +41,7 @@ from pcapi.core.users.api import update_beneficiary_mandatory_information
 from pcapi.core.users.exceptions import CloudTaskCreationException
 from pcapi.core.users.exceptions import IdentityDocumentUploadException
 from pcapi.core.users.factories import BeneficiaryImportFactory
+from pcapi.core.users.factories import UserFactory
 from pcapi.core.users.models import Credit
 from pcapi.core.users.models import DomainsCredit
 from pcapi.core.users.models import PhoneValidationStatusType
@@ -972,3 +974,25 @@ class VerifyIdentityDocumentInformationsTest:
         users_api.verify_identity_document_informations("some_path")
 
         assert not mails_testing.outbox
+
+
+class BeneficairyInformationUpdateTest:
+    def test_update_user_information_from_external_source(self):
+        user = UserFactory(
+            activity=None,
+            address=None,
+            city=None,
+            departementCode=None,
+            firstName=None,
+            lastName=None,
+            postalCode=None,
+            publicName="UNSET",
+        )
+        jouve_data = fraud_factories.JouveContentFactory()
+        new_user = users_api.update_user_information_from_external_source(user, jouve_data)
+
+        assert new_user.activity == jouve_data.activity
+        assert new_user.address == jouve_data.address
+        assert new_user.city == jouve_data.city
+        assert new_user.firstName == jouve_data.firstName
+        assert new_user.lastName == jouve_data.lastName

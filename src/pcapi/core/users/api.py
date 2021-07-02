@@ -26,7 +26,8 @@ from pcapi.connectors.beneficiaries.id_check_middleware import ask_for_identity_
 from pcapi.core import mails
 from pcapi.core.bookings.conf import LIMIT_CONFIGURATIONS
 import pcapi.core.bookings.repository as bookings_repository
-from pcapi.core.payments import api as payment_api
+import pcapi.core.fraud.models as fraud_models
+import pcapi.core.payments.api as payment_api
 from pcapi.core.users.models import Credit
 from pcapi.core.users.models import DomainsCredit
 from pcapi.core.users.models import NotificationSubscriptions
@@ -249,6 +250,28 @@ def update_beneficiary_mandatory_information(
         "User id check profile updated",
         extra={"user": user.id, "has_been_activated": user.isBeneficiary},
     )
+
+
+def update_user_information_from_external_source(user: User, data: fraud_models.JouveContent) -> User:
+    user.activity = data.activity
+    user.address = data.address
+    user.city = data.city
+    user.civility = "Mme" if data.gender == "F" else "M."
+    user.departementCode = PostalCode(data.postalCode).get_departement_code()
+    user.dateOfBirth = data.birthDateTxt
+    user.firstName = data.firstName
+    user.lastName = data.lastName
+    user.postalCode = data.postalCode
+    user.publicName = f"{user.firstName} {user.lastName}"
+
+    # update user fields to be correctly initialized
+    user.hasSeenTutorials = False
+    user.remove_admin_role()
+
+    user.dateOfBirth = data.birthDateTxt
+    db.session.add(user)
+    db.session.flush()
+    return user
 
 
 def activate_beneficiary(user: User, deposit_source: str = None) -> User:

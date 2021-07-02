@@ -8,6 +8,7 @@ import wtforms
 import wtforms.validators
 
 from pcapi.admin import base_configuration
+import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.users.api as users_api
 import pcapi.core.users.models as users_models
@@ -143,6 +144,7 @@ class FraudView(base_configuration.BaseAdminView):
         )
         db.session.add(review)
         db.session.commit()
+        users_api.update_user_information_from_external_source(user, fraud_api.get_source_data(user))
         users_api.activate_beneficiary(user, "fraud_validation")
         flask.flash(f"Une revue manuelle ajoutée pour le bénéficiaire {user.firstName} {user.lastName}")
         return flask.redirect(flask.url_for(".details_view", id=user_id))

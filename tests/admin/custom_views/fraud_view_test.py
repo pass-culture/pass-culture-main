@@ -45,6 +45,7 @@ class BeneficiaryFraudValidationViewTest:
     @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
     def test_validation_view_validate_user(self, client):
         user = users_factories.UserFactory(isBeneficiary=False)
+        check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.JOUVE)
         admin = users_factories.UserFactory(isAdmin=True)
         client.with_auth(admin.email)
 
@@ -60,6 +61,10 @@ class BeneficiaryFraudValidationViewTest:
         user = users_models.User.query.get(user.id)
         assert user.isBeneficiary is True
         assert len(user.deposits) == 1
+
+        jouve_content = fraud_models.JouveContent(**check.resultContent)
+        assert user.firstName == jouve_content.firstName
+        assert user.lastName == jouve_content.lastName
 
     @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
     def test_validation_view_validate_user_wrong_args(self, client):
@@ -114,6 +119,7 @@ class BeneficiaryFraudValidationViewTest:
     @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
     def test_validation_prod_requires_super_admin(self, client):
         user = users_factories.UserFactory(isBeneficiary=False)
+        check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.JOUVE)
         admin = users_factories.UserFactory(isAdmin=True)
         client.with_auth(admin.email)
 
@@ -127,3 +133,7 @@ class BeneficiaryFraudValidationViewTest:
         assert review is not None
         assert review.author == admin
         assert user.isBeneficiary is True
+
+        jouve_content = fraud_models.JouveContent(**check.resultContent)
+        assert user.firstName == jouve_content.firstName
+        assert user.lastName == jouve_content.lastName
