@@ -202,7 +202,6 @@ class OfferResponse(BaseModel):
     expense_domains: list[ExpenseDomain]
     externalTicketOfficeUrl: Optional[str]
     extraData: Optional[OfferExtraData]
-    canExpire: bool
     isExpired: bool
     isReleased: bool
     isSoldOut: bool
