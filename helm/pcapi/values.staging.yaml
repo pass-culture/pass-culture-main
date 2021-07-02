@@ -345,6 +345,8 @@ configmapCloudTaskIdcheck:
   GUNICORN_THREADS : 10
 
 secrets:
+  - name: ADAGE_API_KEY
+    version: 1
   - name: ADMINISTRATION_EMAIL_ADDRESS
     version: 3
   - name: ALGOLIA_API_KEY
@@ -353,6 +355,10 @@ secrets:
     version: 2
   - name: ALLOCINE_API_KEY
     version: 3
+  - name: APPS_FLYER_ANDROID_API_KEY
+    version: 1
+  - name: APPS_FLYER_IOS_API_KEY
+    version: 1
   - name: BATCH_SECRET_API_KEY
     version: 1
   - name: BLACKLISTED_SMS_RECIPIENTS
@@ -447,9 +453,3 @@ secrets:
     version: 3
   - name: WHITELISTED_SMS_RECIPIENTS
     version: 2
-  - name: APPS_FLYER_ANDROID_API_KEY
-    version: 1
-  - name: APPS_FLYER_IOS_API_KEY
-    version: 1
-  - name: ADAGE_API_KEY
-    version: 1
