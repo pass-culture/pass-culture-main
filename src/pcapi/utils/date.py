@@ -77,8 +77,6 @@ def get_postal_code_timezone(postal_code: str) -> str:
 
 
 def get_department_timezone(departement_code: str) -> str:
-    assert isinstance(departement_code, str)
-
     return CUSTOM_TIMEZONES.get(departement_code, METROPOLE_TIMEZONE)
 
 

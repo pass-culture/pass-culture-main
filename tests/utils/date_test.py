@@ -1,7 +1,6 @@
 import datetime
 
 import dateutil
-import pytest
 
 from pcapi.utils.date import CUSTOM_TIMEZONES
 from pcapi.utils.date import get_date_formatted_for_email
@@ -45,11 +44,6 @@ class GetTimeFormattedForEmailTest:
 
 
 class GetDepartmentTimezoneTest:
-    def test_should_alert_when_department_code_is_not_a_string(self):
-        # When
-        with pytest.raises(AssertionError):
-            get_department_timezone(86)
-
     def test_should_return_paris_as_default_timezone(self):
         assert get_department_timezone("1") == "Europe/Paris"
 

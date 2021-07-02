@@ -310,3 +310,20 @@ def test_should_return_total_price_for_duo_offers():
     booking = bookings_factories.BookingFactory(quantity=2, stock__price=10)
     email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)
     assert email_data["Vars"]["offer_price"] == "20.00 €"
+
+
+@pytest.mark.usefixtures("db_session")
+def test_digital_offer_without_departement_code_information():
+    """
+    Test that a user without any postal code information can book a digital
+    offer. The booking date information should use the default timezone:
+    metropolitan France.
+    """
+    offer = offers_factories.DigitalOfferFactory()
+    stock = offers_factories.StockFactory(offer=offer)
+    date_created = datetime(2021, 7, 1, 10, 0, 0, tzinfo=timezone.utc)
+    booking = bookings_factories.BookingFactory(stock=stock, dateCreated=date_created, user__departementCode=None)
+
+    email_data = retrieve_data_for_beneficiary_booking_confirmation_email(booking)
+    assert email_data["Vars"]["booking_date"] == "1 juillet 2021"
+    assert email_data["Vars"]["booking_hour"] == "12h00"
