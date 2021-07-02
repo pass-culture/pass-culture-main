@@ -22,8 +22,8 @@ class UserFactory(BaseFactory):
     class Meta:
         model = pcapi.core.users.models.User
 
-    email = factory.Sequence("jeanne.doux{0}@example.com".format)
-    address = factory.Sequence("{0} rue des machines".format)
+    email = factory.Sequence("jeanne.doux{}@example.com".format)
+    address = factory.Sequence("{} rue des machines".format)
     city = "Paris"
     dateOfBirth = datetime.datetime(2000, 1, 1)
     departementCode = "75"
@@ -63,18 +63,88 @@ class UserFactory(BaseFactory):
         return DepositFactory(user=obj, **kwargs)
 
 
+class AdminFactory(BaseFactory):
+    class Meta:
+        model = pcapi.core.users.models.User
+
+    email = factory.Sequence("un.admin{}@example.com".format)
+    address = factory.Sequence("{} rue des détectives".format)
+    city = "Bordeaux"
+    departementCode = "33"
+    firstName = "Frank"
+    lastName = "Columbo"
+    publicName = "Frank Columbo"
+    isEmailValidated = True
+    isAdmin = True
+    isBeneficiary = False
+    roles = [pcapi.core.users.models.UserRole.ADMIN]
+    hasSeenProTutorials = True
+
+    @classmethod
+    def _create(cls, model_class, *args, **kwargs):
+        password = kwargs.get("password", DEFAULT_PASSWORD)
+        kwargs["password"] = pcapi.core.users.models.hash_password(password)
+        return super()._create(model_class, *args, **kwargs)
+
+    @classmethod
+    def _build(cls, model_class, *args, **kwargs):
+        password = kwargs.get("password", DEFAULT_PASSWORD)
+        kwargs["password"] = pcapi.core.users.models.hash_password(password)
+        return super()._build(model_class, *args, **kwargs)
+
+
+class BeneficiaryFactory(BaseFactory):
+    class Meta:
+        model = pcapi.core.users.models.User
+
+    email = factory.Sequence("jeanne.doux{}@example.com".format)
+    address = factory.Sequence("{} rue des machines".format)
+    city = "Paris"
+    dateOfBirth = datetime.datetime(2000, 1, 1)
+    departementCode = "75"
+    firstName = "Jeanne"
+    lastName = "Doux"
+    publicName = "Jeanne Doux"
+    isEmailValidated = True
+    isAdmin = False
+    isBeneficiary = True
+    roles = [pcapi.core.users.models.UserRole.BENEFICIARY]
+    hasSeenProTutorials = True
+
+    @classmethod
+    def _create(cls, model_class, *args, **kwargs):
+        password = kwargs.get("password", DEFAULT_PASSWORD)
+        kwargs["password"] = pcapi.core.users.models.hash_password(password)
+        return super()._create(model_class, *args, **kwargs)
+
+    @classmethod
+    def _build(cls, model_class, *args, **kwargs):
+        password = kwargs.get("password", DEFAULT_PASSWORD)
+        kwargs["password"] = pcapi.core.users.models.hash_password(password)
+        return super()._build(model_class, *args, **kwargs)
+
+    @factory.post_generation
+    def deposit(obj, create, extracted, **kwargs):  # pylint: disable=no-self-argument
+        from pcapi.core.payments.factories import DepositFactory
+
+        if not create:
+            return None
+        return DepositFactory(user=obj, **kwargs)
+
+
 class ProFactory(BaseFactory):
     class Meta:
         model = pcapi.core.users.models.User
 
-    email = factory.Sequence("ma.librairie{0}@example.com".format)
-    address = factory.Sequence("{0} rue des cinémas".format)
+    email = factory.Sequence("ma.librairie{}@example.com".format)
+    address = factory.Sequence("{} rue des cinémas".format)
     city = "Toulouse"
     departementCode = "31"
     firstName = "René"
-    lastName = "Coti"
-    publicName = "René Coti"
+    lastName = "Coty"
+    publicName = "René Coty"
     isEmailValidated = True
+    isAdmin = False
     isBeneficiary = False
     roles = [pcapi.core.users.models.UserRole.PRO]
     hasSeenProTutorials = True

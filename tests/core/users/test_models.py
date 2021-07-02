@@ -12,23 +12,23 @@ from pcapi.repository import repository
 class UserTest:
     class UserRoleTest:
         def test_has_admin_role(self):
-            user = user_factories.UserFactory(isAdmin=True, roles=[UserRole.ADMIN])
+            user = user_factories.AdminFactory()
 
             assert user.has_admin_role
             assert User.query.filter(User.has_admin_role.is_(False)).all() == []
             assert User.query.filter(User.has_admin_role.is_(True)).all() == [user]
 
         def test_has_beneficiary_role(self):
-            user = user_factories.UserFactory(isBeneficiary=True, roles=[UserRole.BENEFICIARY])
+            user = user_factories.BeneficiaryFactory()
 
             assert user.has_beneficiary_role
             assert User.query.filter(User.has_beneficiary_role.is_(False)).all() == []
             assert User.query.filter(User.has_beneficiary_role.is_(True)).all() == [user]
 
         def test_has_institutional_project_redactor_role(self):
-            user = user_factories.UserFactory(isBeneficiary=True, roles=[UserRole.INSTITUTIONAL_PROJECT_REDACTOR])
+            user = user_factories.UserFactory(isBeneficiary=False, roles=[UserRole.INSTITUTIONAL_PROJECT_REDACTOR])
 
-            assert user.has_beneficiary_role
+            assert user.has_institutional_project_redactor_role
             assert User.query.filter(User.has_institutional_project_redactor_role.is_(False)).all() == []
             assert User.query.filter(User.has_institutional_project_redactor_role.is_(True)).all() == [user]
 
@@ -47,14 +47,14 @@ class UserTest:
             assert User.query.filter(User.has_beneficiary_role.is_(True)).all() == [user]
 
         def test_has_pro_role(self):
-            user = user_factories.UserFactory(isBeneficiary=False, roles=[UserRole.PRO])
+            user = user_factories.ProFactory()
 
             assert user.has_pro_role
             assert User.query.filter(User.has_pro_role.is_(False)).all() == []
             assert User.query.filter(User.has_pro_role.is_(True)).all() == [user]
 
         def test_add_admin_role(self):
-            user = user_factories.UserFactory(isBeneficiary=False, roles=[UserRole.PRO])
+            user = user_factories.ProFactory()
 
             user.add_admin_role()
             repository.save(user)
@@ -63,7 +63,7 @@ class UserTest:
             assert user.isAdmin
 
         def test_add_beneficiary_role(self):
-            user = user_factories.UserFactory(isBeneficiary=False, roles=[UserRole.PRO])
+            user = user_factories.ProFactory()
 
             user.add_beneficiary_role()
             repository.save(user)
@@ -72,7 +72,7 @@ class UserTest:
             assert user.isBeneficiary
 
         def test_add_institutional_project_redactor_role(self):
-            user = user_factories.UserFactory(isBeneficiary=False, roles=[UserRole.PRO])
+            user = user_factories.ProFactory()
 
             user.add_institutional_project_redactor_role()
             repository.save(user)
@@ -80,7 +80,7 @@ class UserTest:
             assert user.has_institutional_project_redactor_role
 
         def test_add_pro_role(self):
-            user = user_factories.UserFactory(isAdmin=True, roles=[UserRole.ADMIN])
+            user = user_factories.AdminFactory()
 
             user.add_pro_role()
             repository.save(user)
@@ -88,7 +88,7 @@ class UserTest:
             assert user.has_pro_role
 
         def test_cannot_add_beneficiary_role_to_an_admin(self):
-            user = user_factories.UserFactory(isAdmin=True, roles=[UserRole.ADMIN])
+            user = user_factories.AdminFactory()
 
             with pytest.raises(InvalidUserRoleException):
                 user.add_beneficiary_role()
@@ -108,7 +108,7 @@ class UserTest:
                 assert user.has_institutional_project_redactor_role
 
         def test_cannot_add_admin_role_to_a_beneficiary(self):
-            user = user_factories.UserFactory(isBeneficiary=True, roles=[UserRole.BENEFICIARY])
+            user = user_factories.BeneficiaryFactory()
 
             with pytest.raises(InvalidUserRoleException):
                 user.add_admin_role()
@@ -128,7 +128,7 @@ class UserTest:
                 assert not user.has_admin_role
 
         def test_cannot_add_institutional_project_redactor_role_to_an_admin(self):
-            user = user_factories.UserFactory(isAdmin=True, roles=[UserRole.ADMIN])
+            user = user_factories.AdminFactory()
 
             with pytest.raises(InvalidUserRoleException):
                 user.add_institutional_project_redactor_role()
@@ -138,7 +138,7 @@ class UserTest:
                 assert user.has_admin_role
 
         def test_cannot_add_institutional_project_redactor_role_to_a_beneficiary(self):
-            user = user_factories.UserFactory(isBeneficiary=True, roles=[UserRole.BENEFICIARY])
+            user = user_factories.BeneficiaryFactory()
 
             with pytest.raises(InvalidUserRoleException):
                 user.add_institutional_project_redactor_role()
@@ -172,7 +172,7 @@ class UserTest:
                 assert not user.isAdmin
 
         def test_remove_admin_role(self):
-            user = user_factories.UserFactory(isAdmin=True, roles=[UserRole.ADMIN])
+            user = user_factories.AdminFactory()
 
             user.remove_admin_role()
             repository.save(user)
@@ -181,7 +181,7 @@ class UserTest:
             assert not user.isAdmin
 
         def test_remove_admin_role_when_user_is_not_admin(self):
-            user = user_factories.UserFactory(isBeneficiary=True, roles=[UserRole.BENEFICIARY])
+            user = user_factories.BeneficiaryFactory()
 
             user.remove_admin_role()
             repository.save(user)
@@ -191,7 +191,7 @@ class UserTest:
             assert not user.isAdmin
 
         def test_remove_beneficiary_role(self):
-            user = user_factories.UserFactory(isBeneficiary=True, roles=[UserRole.BENEFICIARY])
+            user = user_factories.BeneficiaryFactory()
 
             user.remove_beneficiary_role()
             repository.save(user)
@@ -200,7 +200,7 @@ class UserTest:
             assert not user.isBeneficiary
 
         def test_remove_beneficiary_role_when_user_is_not_beneficiary(self):
-            user = user_factories.UserFactory(isBeneficiary=False, roles=[UserRole.PRO])
+            user = user_factories.ProFactory()
 
             user.remove_beneficiary_role()
             repository.save(user)
@@ -210,7 +210,7 @@ class UserTest:
             assert not user.isBeneficiary
 
         def test_remove_pro_role(self):
-            user = user_factories.UserFactory(isBeneficiary=False, roles=[UserRole.PRO])
+            user = user_factories.ProFactory()
 
             user.remove_pro_role()
             repository.save(user)
@@ -218,7 +218,7 @@ class UserTest:
             assert not user.has_pro_role
 
         def test_remove_pro_role_when_user_is_not_pro(self):
-            user = user_factories.UserFactory(isBeneficiary=True, roles=[UserRole.BENEFICIARY])
+            user = user_factories.BeneficiaryFactory()
 
             user.remove_pro_role()
             repository.save(user)
@@ -235,7 +235,7 @@ class UserTest:
             assert not user.has_institutional_project_redactor_role
 
         def test_remove_institutional_project_redactor_role_when_user_is_not_institutional_project_redactor(self):
-            user = user_factories.UserFactory(isBeneficiary=True, roles=[UserRole.BENEFICIARY])
+            user = user_factories.BeneficiaryFactory()
 
             user.remove_institutional_project_redactor_role()
             repository.save(user)
