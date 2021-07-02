@@ -5,8 +5,10 @@ from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.core.offers.factories import EventStockFactory
+from pcapi.core.offers.factories import MediationFactory
 from pcapi.core.users.factories import UserFactory
 from pcapi.core.users.models import UserRole
+from pcapi.sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
 
 
 def create_industrial_educational_bookings() -> None:
@@ -47,6 +49,10 @@ def create_industrial_educational_bookings() -> None:
             offer__venue__postalCode="97400",
         ),
     ]
+    for stock in stocks:
+        mediation = MediationFactory(offer=stock.offer, credit="Crédit photo")
+        store_public_object_from_sandbox_assets("thumbs", mediation, mediation.offer.type)
+
     next_year_stock = EventStockFactory(
         quantity=100,
         price=1200,
