@@ -20,6 +20,9 @@ import requests.exceptions as exceptions
 # isort: on
 # fmt: on
 
+from pcapi import settings
+
+
 logger = logging.getLogger(__name__)
 
 REQUEST_TIMEOUT_IN_SECOND = 10
@@ -74,6 +77,10 @@ class Session(_SessionMixin, requests.Session):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Only sets a retry strategy for safe verbs
-        retry_strategy = Retry(total=3, method_whitelist=["HEAD", "GET", "OPTIONS"])
-        adapter = HTTPAdapter(max_retries=retry_strategy)
-        self.mount("https://www.demarches-simplifiees.fr", adapter)
+        safe_retry_strategy = Retry(total=3, method_whitelist=["HEAD", "GET", "OPTIONS"])
+        unsafe_retry_strategy = Retry(total=3)
+        safe_adapter = HTTPAdapter(max_retries=safe_retry_strategy)
+        unsafe_adapter = HTTPAdapter(max_retries=unsafe_retry_strategy)
+        self.mount("https://www.demarches-simplifiees.fr", safe_adapter)
+        self.mount(settings.JOUVE_API_DOMAIN, safe_adapter)
+        self.mount("https://api.mailjet.com", unsafe_adapter)
