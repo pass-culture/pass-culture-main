@@ -3,7 +3,6 @@ from decimal import Decimal
 
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_type import ThingType
-from pcapi.repository import feature_queries
 
 
 CONFIRM_BOOKING_AFTER_CREATION_DELAY = datetime.timedelta(hours=48)
@@ -96,4 +95,4 @@ LIMIT_CONFIGURATIONS = {
 
 
 def get_current_deposit_version():
-    return 2 if feature_queries.is_active(FeatureToggle.APPLY_BOOKING_LIMITS_V2) else 1
+    return 2 if FeatureToggle.APPLY_BOOKING_LIMITS_V2.is_active() else 1

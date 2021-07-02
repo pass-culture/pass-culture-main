@@ -15,7 +15,6 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.models.db import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.product import Product
-from pcapi.repository import feature_queries
 from pcapi.repository import repository
 from pcapi.routes.native.security import authenticated_user_required
 from pcapi.routes.native.v1.serialization.bookings import BookOfferRequest
@@ -148,7 +147,7 @@ def is_ended_booking(booking: Booking) -> bool:
     if (
         booking.stock.canHaveActivationCodes
         and booking.activationCode
-        and feature_queries.is_active(FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS)
+        and FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS.is_active()
     ):
         # consider digital bookings as special: isUsed should be true anyway so
         # let's use displayAsEnded

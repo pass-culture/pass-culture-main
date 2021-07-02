@@ -62,7 +62,6 @@ from pcapi.models.user_session import UserSession
 from pcapi.notifications.sms import send_transactional_sms
 from pcapi.notifications.sms.sending_limit import is_SMS_sending_allowed
 from pcapi.notifications.sms.sending_limit import update_sent_SMS_counter
-from pcapi.repository import feature_queries
 from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.repository.user_queries import find_user_by_email
@@ -206,7 +205,7 @@ def create_account(
 def steps_to_become_beneficiary(user: User) -> list[BeneficiaryValidationStep]:
     missing_steps = []
 
-    if feature_queries.is_active(FeatureToggle.FORCE_PHONE_VALIDATION) and not user.is_phone_validated:
+    if not user.is_phone_validated and FeatureToggle.FORCE_PHONE_VALIDATION.is_active():
         missing_steps.append(BeneficiaryValidationStep.PHONE_VALIDATION)
 
     beneficiary_import = get_beneficiary_import_for_beneficiary(user)
@@ -748,7 +747,7 @@ def _check_and_update_phone_validation_attempts(redis: Redis, user: User) -> Non
 def get_next_beneficiary_validation_step(user: User) -> Optional[BeneficiaryValidationStep]:
     if user.isBeneficiary or not user.is_eligible:
         return None
-    if not user.is_phone_validated and feature_queries.is_active(FeatureToggle.ENABLE_PHONE_VALIDATION):
+    if not user.is_phone_validated and FeatureToggle.ENABLE_PHONE_VALIDATION.is_active():
         return BeneficiaryValidationStep.PHONE_VALIDATION
     if not user.hasCompletedIdCheck:
         return BeneficiaryValidationStep.ID_CHECK

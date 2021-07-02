@@ -4,7 +4,6 @@ from pcapi import settings
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository import feature_queries
 
 
 @override_settings(IS_RUNNING_TESTS=2)
@@ -32,19 +31,19 @@ class OverrideSettingsOnClassTest:
 @pytest.mark.usefixtures("db_session")
 @override_features(ENABLE_NATIVE_APP_RECAPTCHA=False)
 def test_override_features_on_function():
-    assert not feature_queries.is_active(FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA)
+    assert not FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA.is_active()
 
 
 @pytest.mark.usefixtures("db_session")
 def test_override_features_as_context_manager():
-    assert feature_queries.is_active(FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA)
+    assert FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA.is_active()
     with override_features(ENABLE_NATIVE_APP_RECAPTCHA=False):
-        assert not feature_queries.is_active(FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA)
-    assert feature_queries.is_active(FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA)
+        assert not FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA.is_active()
+    assert FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA.is_active()
 
 
 @pytest.mark.usefixtures("db_session")
 class OverrideFeaturesOnClassTest:
     @override_features(ENABLE_NATIVE_APP_RECAPTCHA=False)
     def test_method_level_override(self):
-        assert not feature_queries.is_active(FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA)
+        assert not FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA.is_active()

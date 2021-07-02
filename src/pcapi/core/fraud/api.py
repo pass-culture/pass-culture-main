@@ -6,7 +6,6 @@ from sqlalchemy import func
 
 from pcapi.core.users.models import User
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository import feature_queries
 from pcapi.repository import repository
 from pcapi.repository.user_queries import matching
 
@@ -46,7 +45,7 @@ def on_identity_fraud_check_result(user: User, beneficiary_fraud_check: models.B
         raise exceptions.UserAlreadyBeneficiary()
     if not user.isEmailValidated:
         raise exceptions.UserEmailNotValidated()
-    if feature_queries.is_active(FeatureToggle.FORCE_PHONE_VALIDATION) and not user.is_phone_validated:
+    if FeatureToggle.FORCE_PHONE_VALIDATION.is_active() and not user.is_phone_validated:
         raise exceptions.UserPhoneNotValidated()
 
     jouve_content = models.JouveContent(**beneficiary_fraud_check.resultContent)
@@ -99,7 +98,7 @@ def _duplicate_id_piece_number_fraud_item(jouve_content: models.JouveContent) ->
 
 
 def _id_check_fraud_items(content: models.JouveContent) -> List[models.FraudItem]:
-    if not feature_queries.is_active(FeatureToggle.ENABLE_IDCHECK_FRAUD_CONTROLS):
+    if not FeatureToggle.ENABLE_IDCHECK_FRAUD_CONTROLS.is_active():
         return []
 
     fraud_items = []

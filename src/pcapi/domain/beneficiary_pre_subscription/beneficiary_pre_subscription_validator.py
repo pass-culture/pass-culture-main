@@ -7,7 +7,6 @@ from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exce
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import BeneficiaryIsNotEligible
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription_exceptions import IdPieceNumberDuplicate
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository import feature_queries
 from pcapi.repository.user_queries import find_beneficiary_by_civility
 from pcapi.repository.user_queries import find_user_by_email
 
@@ -44,7 +43,7 @@ def _is_postal_code_eligible(code: Optional[str]) -> bool:
     # FIXME (dbaty, 2020-01-14): remove this block once we have opened
     # to (almost) all departments.
     # Legacy behaviour: only a few departments are eligible.
-    if not feature_queries.is_active(FeatureToggle.WHOLE_FRANCE_OPENING):
+    if not FeatureToggle.WHOLE_FRANCE_OPENING.is_active():
         for department in ELIGIBLE_DEPARTMENTS:
             if code.startswith(department):
                 return True
@@ -87,7 +86,7 @@ def _check_not_a_duplicate(beneficiary_pre_subscription: BeneficiaryPreSubscript
 
 
 def _check_id_piece_number_is_unique(beneficiary_pre_subscription: BeneficiaryPreSubscription) -> None:
-    if not feature_queries.is_active(FeatureToggle.ENABLE_IDCHECK_FRAUD_CONTROLS):
+    if not FeatureToggle.ENABLE_IDCHECK_FRAUD_CONTROLS.is_active():
         return
     if User.query.filter(User.idPieceNumber == beneficiary_pre_subscription.id_piece_number).count() > 0:
         raise IdPieceNumberDuplicate(f"id piece number n°{beneficiary_pre_subscription.id_piece_number} already taken")

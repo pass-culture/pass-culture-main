@@ -17,7 +17,7 @@ from tests.conftest import TestClient
 
 
 class Returns200Test:
-    @patch("pcapi.routes.webapp.bookings.feature_queries.is_active", return_value=False)
+    @patch("pcapi.routes.webapp.bookings.FeatureToggle.is_active", return_value=False)
     @pytest.mark.usefixtures("db_session")
     def test_when_user_has_bookings_and_qr_code_feature_is_inactive_does_not_return_qr_code(
         self, qr_code_is_active, app
@@ -130,7 +130,7 @@ class Returns200Test:
             "userId": humanize(booking1.userId),
         }
 
-    @patch("pcapi.routes.webapp.bookings.feature_queries.is_active", return_value=True)
+    @patch("pcapi.routes.webapp.bookings.FeatureToggle.is_active", return_value=True)
     @pytest.mark.usefixtures("db_session")
     def when_user_has_bookings_and_qr_code_feature_is_active(self, qr_code_is_active, app):
         # Given

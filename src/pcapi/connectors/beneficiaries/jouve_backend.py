@@ -12,7 +12,6 @@ from pcapi.core.fraud.models import JouveContent
 from pcapi.domain.beneficiary_pre_subscription.beneficiary_pre_subscription import BeneficiaryPreSubscription
 from pcapi.models import BeneficiaryImportSources
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository import feature_queries
 
 
 logger = logging.getLogger(__name__)
@@ -132,7 +131,7 @@ def get_threshold_fraud_detection_item(value: Optional[int], key: str, threshold
 
 
 def get_fraud_fields(content: dict) -> dict:
-    if not feature_queries.is_active(FeatureToggle.ENABLE_IDCHECK_FRAUD_CONTROLS):
+    if not FeatureToggle.ENABLE_IDCHECK_FRAUD_CONTROLS.is_active():
         return {
             "strict_controls": [],
             "non_blocking_controls": [],

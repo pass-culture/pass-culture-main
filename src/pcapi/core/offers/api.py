@@ -43,7 +43,6 @@ from pcapi.models import Venue
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository import feature_queries
 from pcapi.repository import offer_queries
 from pcapi.repository import repository
 from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
@@ -119,9 +118,10 @@ def create_offer(offer_data: PostOfferBodyModel, user: User) -> Offer:
             isNational=product.isNational,
             extraData=product.extraData,
         )
-    elif feature_queries.is_active(
-        FeatureToggle.ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION
-    ) and offer_data.type == str(ThingType.LIVRE_EDITION):
+    elif (
+        offer_data.type == str(ThingType.LIVRE_EDITION)
+        and FeatureToggle.ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION.is_active()
+    ):
         product = _load_product_by_isbn_and_check_is_gcu_compatible_or_raise_error(offer_data.extra_data["isbn"])
         extra_data = product.extraData
         extra_data.update(offer_data.extra_data)
@@ -654,7 +654,7 @@ def deactivate_inappropriate_products(isbn: str) -> bool:
 
 def set_offer_status_based_on_fraud_criteria(offer: Offer) -> OfferValidationStatus:
     # TODO (rchaffal) to delete after implementation is completed
-    if not settings.IS_PROD and feature_queries.is_active(FeatureToggle.OFFER_VALIDATION_MOCK_COMPUTATION):
+    if not settings.IS_PROD and FeatureToggle.OFFER_VALIDATION_MOCK_COMPUTATION.is_active():
         for keyword, validation_status in VALIDATION_KEYWORDS_MAPPING.items():
             if keyword in offer.name:
                 return validation_status
@@ -764,6 +764,6 @@ def unindex_expired_offers(process_all_expired: bool = False):
 def is_activation_code_applicable(stock: Stock):
     return (
         stock.canHaveActivationCodes
-        and feature_queries.is_active(FeatureToggle.ENABLE_ACTIVATION_CODES)
+        and FeatureToggle.ENABLE_ACTIVATION_CODES.is_active()
         and db.session.query(ActivationCode.query.filter_by(stock=stock).exists()).scalar()
     )

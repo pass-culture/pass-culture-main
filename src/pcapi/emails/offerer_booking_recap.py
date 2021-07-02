@@ -1,7 +1,6 @@
 from pcapi.core.bookings.models import Booking
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_type import ProductType
-from pcapi.repository import feature_queries
 from pcapi.utils.mailing import build_pc_pro_offer_link
 from pcapi.utils.mailing import format_booking_date_for_email
 from pcapi.utils.mailing import format_booking_hours_for_email
@@ -25,7 +24,7 @@ def retrieve_data_for_offerer_booking_recap_email(booking: Booking) -> dict:
     if (
         booking.stock.canHaveActivationCodes
         and booking.activationCode
-        and feature_queries.is_active(FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS)
+        and FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS.is_active()
     ):
         can_expire_after_30_days = 0
         is_booking_autovalidated = 1

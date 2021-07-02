@@ -2,14 +2,13 @@ from functools import wraps
 
 from pcapi.models import ApiErrors
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository import feature_queries
 
 
 def feature_required(feature_toggle: FeatureToggle):
     def decorator(f):
         @wraps(f)
         def wrapper(*args, **kwargs):
-            if feature_queries.is_active(feature_toggle):
+            if feature_toggle.is_active():
                 return f(*args, **kwargs)
 
             errors = ApiErrors()

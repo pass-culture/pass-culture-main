@@ -20,7 +20,6 @@ from pcapi.core.users.models import NotificationSubscriptions
 from pcapi.core.users.models import User
 from pcapi.models import ApiErrors
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository import feature_queries
 from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.repository.user_queries import find_user_by_email
@@ -101,13 +100,13 @@ def update_cultural_survey(user: User, body: serializers.CulturalSurveyRequest) 
 @blueprint.native_v1.route("/account", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400])
 def create_account(body: serializers.AccountRequest) -> None:
-    if feature_queries.is_active(FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA):
+    if FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA.is_active():
         try:
             api_recaptcha.check_native_app_recaptcha_token(body.token)
         except api_recaptcha.ReCaptchaException:
             raise ApiErrors({"token": "The given token is not invalid"})
 
-    if not feature_queries.is_active(FeatureToggle.WHOLE_FRANCE_OPENING) and not body.postal_code:
+    if not FeatureToggle.WHOLE_FRANCE_OPENING.is_active() and not body.postal_code:
         raise ApiErrors(errors={"postalCode": ["Ce champ est obligatoire"]})
     try:
         api.create_account(

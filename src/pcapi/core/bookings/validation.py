@@ -14,7 +14,6 @@ from pcapi.core.users.models import User
 from pcapi.models import api_errors
 from pcapi.models.db import db
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository import feature_queries
 from pcapi.repository import payment_queries
 from pcapi.utils.date import utc_datetime_to_department_timezone
 
@@ -171,7 +170,7 @@ def check_can_be_mark_as_unused(booking: Booking) -> None:
     if (
         booking.stock.canHaveActivationCodes
         and booking.activationCode
-        and feature_queries.is_active(FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS)
+        and FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS.is_active()
     ):
         forbidden = api_errors.ForbiddenError()
         forbidden.add_error("booking", "Cette réservation ne peut pas être marquée comme inutilisée")

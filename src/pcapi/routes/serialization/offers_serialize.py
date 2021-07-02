@@ -14,7 +14,6 @@ from pcapi.core.offers.models import OfferStatus
 from pcapi.core.offers.models import Stock
 from pcapi.models import ThingType
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository import feature_queries
 from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import dehumanize_list_field
 from pcapi.serialization.utils import humanize_field
@@ -70,7 +69,7 @@ class PostOfferBodyModel(BaseModel):
     @validator("extra_data", pre=True)
     def validate_isbn(cls, extra_data_field, values):  # pylint: disable=no-self-argument
         if (
-            feature_queries.is_active(FeatureToggle.ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION)
+            FeatureToggle.ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION.is_active()
             and not values["product_id"]
             and values["type"] == str(ThingType.LIVRE_EDITION)
         ):

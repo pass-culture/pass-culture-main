@@ -3,7 +3,6 @@ import logging
 import time
 
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository import feature_queries
 from pcapi.scheduled_tasks.logger import CronStatus
 from pcapi.scheduled_tasks.logger import build_cron_log_message
 
@@ -25,7 +24,7 @@ def cron_require_feature(feature_toggle: FeatureToggle):
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
-            if feature_queries.is_active(feature_toggle):
+            if feature_toggle.is_active():
                 return func(*args, **kwargs)
             logger.info("%s is not active", feature_toggle)
             return None

@@ -21,7 +21,6 @@ from pcapi.core.users.models import User
 from pcapi.domain import user_emails
 from pcapi.flask_app import db
 from pcapi.models.feature import FeatureToggle
-from pcapi.repository import feature_queries
 from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.utils.mailing import MailServiceException
@@ -91,7 +90,7 @@ def book_offer(
         if is_activation_code_applicable(stock):
             booking.activationCode = offers_repository.get_available_activation_code(stock)
 
-            if feature_queries.is_active(FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS):
+            if FeatureToggle.AUTO_ACTIVATE_DIGITAL_BOOKINGS.is_active():
                 booking.isUsed = True
                 booking.dateUsed = datetime.datetime.utcnow()
 
@@ -360,7 +359,7 @@ def auto_mark_as_used_after_event():
     """Automatically mark as used bookings that correspond to events that
     have happened (with a delay).
     """
-    if not feature_queries.is_active(FeatureToggle.UPDATE_BOOKING_USED):
+    if not FeatureToggle.UPDATE_BOOKING_USED.is_active():
         raise ValueError("This function is behind a deactivated feature flag.")
 
     now = datetime.datetime.now()
