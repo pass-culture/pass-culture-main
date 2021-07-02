@@ -26,7 +26,7 @@
     "testcafe": "testcafe --assertion-timeout 5000 --selector-timeout 15000 -S -s testcafe_screenshots 'chrome:headless'",
     "prepare": "husky install",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook -o docs-build -s ./src/stories/assets"
   },
   "lint-staged": {
     "./public/**/*.svg": "svgo",
