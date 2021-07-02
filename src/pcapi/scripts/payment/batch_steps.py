@@ -7,8 +7,6 @@ from typing import Iterable
 from typing import Optional
 
 from lxml.etree import DocumentInvalid
-from sqlalchemy import orm
-from sqlalchemy import sql
 
 from pcapi.core.bookings.models import Booking
 import pcapi.core.bookings.repository as booking_repository
@@ -57,20 +55,17 @@ def get_venues_to_reimburse(cutoff_date: datetime) -> Iterable[tuple[id, str]]:
     # FIXME (dbaty, 2021-06-02): this query is very slow (around 2
     # minutes). It's still better than iterating over all venues, but
     # we should look into it.
-    booking_alias = orm.aliased(Booking)
-    return [
-        (venue.id, venue.publicName or venue.name)
-        for venue in (
-            Venue.query.distinct(Venue.id)
-            .join(Offer)
-            .join(Stock)
-            .join(booking_alias)
-            .outerjoin(Payment, sql.and_(booking_alias.id == Payment.bookingId))
-            .filter(sql.and_(booking_alias.dateUsed < cutoff_date, ~booking_alias.isCancelled))
-            .filter(Payment.id.is_(None))
-            .with_entities(Venue.id, Venue.publicName, Venue.name)
-        )
-    ]
+    query = (
+        Venue.query.distinct(Venue.id)
+        .join(Offer)
+        .join(Stock)
+        .join(Booking)
+        .filter(Booking.dateUsed < cutoff_date, ~Booking.isCancelled)
+        .outerjoin(Payment, Booking.id == Payment.bookingId)
+        .filter(Payment.id.is_(None))
+        .with_entities(Venue.id, Venue.publicName, Venue.name)
+    )
+    return [(venue.id, venue.publicName or venue.name) for venue in query]
 
 
 def generate_new_payments(cutoff_date: datetime, batch_date: datetime) -> None:
