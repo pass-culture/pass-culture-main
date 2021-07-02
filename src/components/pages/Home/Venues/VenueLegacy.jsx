@@ -1,23 +1,31 @@
 import * as PropTypes from 'prop-types'
-import React, { Fragment } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import Icon from 'components/layout/Icon'
 import { BOOKING_STATUS } from 'components/pages/Bookings/BookingsRecapTableLegacy/CellsFormatter/utils/bookingStatusConverter'
 import { ReactComponent as IcoPlus } from 'icons/ico-plus.svg'
+import * as pcapi from 'repository/pcapi/pcapi'
 
 import VenueStat from './VenueStat'
 
-const Venue = ({ id, isVirtual, name, offererId, publicName, venueStats }) => {
+const Venue = ({ id, isVirtual, name, offererId, publicName }) => {
+  const [stats, setStats] = useState({
+    activeBookingsQuantity: '',
+    activeOffersCount: '',
+    soldOutOffersCount: '',
+    validatedBookingsQuantity: '',
+  })
+
   const venueStatData = [
     {
-      count: venueStats.activeOffersCount.toString(),
+      count: stats.activeOffersCount,
       label: 'Offres actives',
       link: `/offres?lieu=${id}&statut=active`,
     },
     {
-      count: venueStats.activeBookingsQuantity.toString(),
+      count: stats.activeBookingsQuantity,
       label: 'Réservations en cours',
       link: {
         pathname: '/reservations',
@@ -33,7 +41,7 @@ const Venue = ({ id, isVirtual, name, offererId, publicName, venueStats }) => {
       },
     },
     {
-      count: venueStats.validatedBookingsQuantity.toString(),
+      count: stats.validatedBookingsQuantity,
       label: 'Réservations validées',
       link: {
         pathname: '/reservations',
@@ -44,13 +52,24 @@ const Venue = ({ id, isVirtual, name, offererId, publicName, venueStats }) => {
       },
     },
     {
-      count: venueStats.soldOutOffersCount.toString(),
+      count: stats.soldOutOffersCount,
       label: 'Offres stocks épuisés',
       link: `/offres?lieu=${id}&statut=epuisee`,
     },
   ]
 
   const isVenueV2Enabled = useActiveFeature('ENABLE_NEW_VENUE_PAGES')
+
+  useEffect(() => {
+    pcapi.getVenueStats(id).then(stats => {
+      setStats({
+        activeBookingsQuantity: stats.activeBookingsQuantity.toString(),
+        activeOffersCount: stats.activeOffersCount.toString(),
+        soldOutOffersCount: stats.soldOutOffersCount.toString(),
+        validatedBookingsQuantity: stats.validatedBookingsQuantity.toString(),
+      })
+    })
+  }, [id])
 
   let editVenueLink = `/structures/${offererId}/lieux/${id}`
   if (!isVenueV2Enabled) {
@@ -123,12 +142,6 @@ Venue.propTypes = {
   name: PropTypes.string.isRequired,
   offererId: PropTypes.string,
   publicName: PropTypes.string,
-  venueStats: PropTypes.shape({
-    activeBookingsQuantity: PropTypes.number,
-    activeOffersCount: PropTypes.number,
-    soldOutOffersCount: PropTypes.number,
-    validatedBookingsQuantity: PropTypes.number,
-  }).isRequired,
 }
 
 export default Venue

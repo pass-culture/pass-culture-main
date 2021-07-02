@@ -8,7 +8,7 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
 
-import Homepage from '../Homepage'
+import HomepageContainer from '../HomepageContainer'
 
 jest.mock('utils/config', () => ({
   DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL:
@@ -44,7 +44,7 @@ const renderHomePage = async () => {
     await render(
       <Provider store={store}>
         <MemoryRouter>
-          <Homepage />
+          <HomepageContainer />
         </MemoryRouter>
       </Provider>
     )

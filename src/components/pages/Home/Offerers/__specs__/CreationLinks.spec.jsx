@@ -7,7 +7,7 @@ import { MemoryRouter } from 'react-router'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
-import Homepage from '../../Homepage'
+import HomepageContainer from '../../HomepageContainer'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   getOfferer: jest.fn(),
@@ -34,7 +34,7 @@ const renderHomePage = async () => {
     await render(
       <Provider store={store}>
         <MemoryRouter>
-          <Homepage />
+          <HomepageContainer />
         </MemoryRouter>
       </Provider>
     )

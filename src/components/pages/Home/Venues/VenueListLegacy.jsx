@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import Venue from 'components/pages/Home/Venues/Venue'
+import Venue from 'components/pages/Home/Venues/VenueLegacy'
 
 export const VenueList = ({ physicalVenues, selectedOffererId, virtualVenue }) => (
   <div className="h-venue-list">
@@ -11,7 +11,6 @@ export const VenueList = ({ physicalVenues, selectedOffererId, virtualVenue }) =
         isVirtual
         name="Offres numériques"
         offererId={selectedOffererId}
-        venueStats={virtualVenue.stats}
       />
     )}
 
@@ -23,7 +22,6 @@ export const VenueList = ({ physicalVenues, selectedOffererId, virtualVenue }) =
           name={venue.name}
           offererId={selectedOffererId}
           publicName={venue.publicName}
-          venueStats={venue.stats}
         />
       ))}
   </div>

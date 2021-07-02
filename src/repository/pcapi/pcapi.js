@@ -158,6 +158,8 @@ export const getVenue = venueId => client.get(`/venues/${venueId}`)
 
 export const getVenueStats = venueId => client.get(`/venues/${venueId}/stats`)
 
+export const getOffererWithVenueStats = offererId => client.get(`/offerers/${offererId}/stats`)
+
 //
 // types
 //

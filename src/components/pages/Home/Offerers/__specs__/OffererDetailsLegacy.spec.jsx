@@ -31,21 +31,13 @@ jest.mock('utils/config', () => ({
 }))
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  getOffererWithVenueStats: jest.fn(),
+  getOfferer: jest.fn(),
   getAllOfferersNames: jest.fn(),
+  getVenueStats: jest.fn(),
 }))
 
 const renderHomePage = async () => {
   const store = configureTestStore({
-    features: {
-      list: [
-        {
-          isActive: true,
-          name: 'PERF_VENUE_STATS',
-          nameKey: 'PERF_VENUE_STATS',
-        },
-      ],
-    },
     data: {
       users: [
         {
@@ -69,7 +61,7 @@ const renderHomePage = async () => {
   })
 }
 
-describe('offererDetails', () => {
+describe('offererDetailsLegacy', () => {
   let baseOfferers
   let firstOffererByAlphabeticalOrder
   let baseOfferersNames
@@ -86,12 +78,6 @@ describe('offererDetails', () => {
       offererName: 'Bar des amis',
       publicName: null,
       nOffers: 2,
-      stats: {
-        activeBookingsQuantity: 4,
-        activeOffersCount: 2,
-        soldOutOffersCount: 3,
-        validatedBookingsQuantity: 3,
-      },
     }
     physicalVenue = {
       id: 'test_venue_id_2',
@@ -101,12 +87,6 @@ describe('offererDetails', () => {
       offererName: 'Bar des amis',
       publicName: null,
       nOffers: 2,
-      stats: {
-        activeBookingsQuantity: 4,
-        activeOffersCount: 2,
-        soldOutOffersCount: 3,
-        validatedBookingsQuantity: 3,
-      },
     }
     physicalVenueWithPublicName = {
       id: 'test_venue_id_3',
@@ -116,12 +96,6 @@ describe('offererDetails', () => {
       offererName: 'Bar des amis',
       publicName: 'Le deuxième Sous-sol',
       nOffers: 2,
-      stats: {
-        activeBookingsQuantity: 4,
-        activeOffersCount: 2,
-        soldOutOffersCount: 3,
-        validatedBookingsQuantity: 3,
-      },
     }
     baseOfferers = [
       {
@@ -161,8 +135,14 @@ describe('offererDetails', () => {
       name: offerer.name,
     }))
 
-    pcapi.getOffererWithVenueStats.mockResolvedValue(firstOffererByAlphabeticalOrder)
+    pcapi.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
     pcapi.getAllOfferersNames.mockResolvedValue(baseOfferersNames)
+    pcapi.getVenueStats.mockResolvedValue({
+      activeBookingsQuantity: 4,
+      activeOffersCount: 2,
+      soldOutOffersCount: 3,
+      validatedBookingsQuantity: 3,
+    })
   })
 
   it('should display offerer select', async () => {
@@ -171,18 +151,6 @@ describe('offererDetails', () => {
     fireEvent.click(showButton)
 
     expect(screen.getByDisplayValue(firstOffererByAlphabeticalOrder.name)).toBeInTheDocument()
-  })
-
-  it('should not display offerer when none exist', async () => {
-    // Given
-    pcapi.getAllOfferersNames.mockResolvedValue([])
-
-    // When
-    await renderHomePage()
-
-    // Then
-    expect(screen.queryByRole('button', { name: 'Afficher' })).not.toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Ajouter une nouvelle structure' })).toBeInTheDocument()
   })
 
   it('should not warn user when offerer is validated', async () => {
@@ -275,12 +243,6 @@ describe('offererDetails', () => {
             offererName: baseOfferers[0].name,
             publicName: null,
             nOffers: 2,
-            stats: {
-              activeBookingsQuantity: 4,
-              activeOffersCount: 2,
-              soldOutOffersCount: 3,
-              validatedBookingsQuantity: 3,
-            },
           },
           {
             id: 'test_venue_id_4',
@@ -290,12 +252,6 @@ describe('offererDetails', () => {
             offererName: baseOfferers[0].name,
             publicName: null,
             nOffers: 2,
-            stats: {
-              activeBookingsQuantity: 4,
-              activeOffersCount: 2,
-              soldOutOffersCount: 3,
-              validatedBookingsQuantity: 3,
-            },
           },
           {
             id: 'test_venue_id_5',
@@ -305,17 +261,11 @@ describe('offererDetails', () => {
             offererName: baseOfferers[0].name,
             publicName: 'Second new venue public name',
             nOffers: 2,
-            stats: {
-              activeBookingsQuantity: 4,
-              activeOffersCount: 2,
-              soldOutOffersCount: 3,
-              validatedBookingsQuantity: 3,
-            },
           },
         ],
       }
       await renderHomePage()
-      pcapi.getOffererWithVenueStats.mockResolvedValue(newSelectedOfferer)
+      pcapi.getOfferer.mockResolvedValue(newSelectedOfferer)
       await act(async () => {
         await fireEvent.change(screen.getByDisplayValue(selectedOffer.name), {
           target: { value: newSelectedOfferer.id },
@@ -386,7 +336,7 @@ describe('offererDetails', () => {
           iban: '',
         },
       ]
-      pcapi.getOffererWithVenueStats.mockResolvedValue(baseOfferers[0])
+      pcapi.getOfferer.mockResolvedValue(baseOfferers[0])
       await renderHomePage()
 
       const showButton = screen.getByRole('button', { name: 'Afficher' })
@@ -413,7 +363,7 @@ describe('offererDetails', () => {
           managedVenues: [virtualVenue],
         },
       ]
-      pcapi.getOffererWithVenueStats.mockResolvedValue(baseOfferers[0])
+      pcapi.getOfferer.mockResolvedValue(baseOfferers[0])
 
       // When
       await renderHomePage()
@@ -448,7 +398,7 @@ describe('offererDetails', () => {
           managedVenues: [virtualVenue, physicalVenue, physicalVenueWithPublicName],
         },
       ]
-      pcapi.getOffererWithVenueStats.mockResolvedValue(firstOffererByAlphabeticalOrder)
+      pcapi.getOfferer.mockResolvedValue(firstOffererByAlphabeticalOrder)
       await renderHomePage()
 
       const warningIcons = await screen.queryByAltText('Informations bancaires manquantes')
@@ -464,7 +414,7 @@ describe('offererDetails', () => {
           demarchesSimplifieesApplicationId: 'demarchesSimplifieesApplication_fake_id',
         },
       ]
-      pcapi.getOffererWithVenueStats.mockResolvedValue(baseOfferers[0])
+      pcapi.getOfferer.mockResolvedValue(baseOfferers[0])
       await renderHomePage()
 
       const showButton = screen.getByRole('button', { name: 'Afficher' })
@@ -487,12 +437,6 @@ describe('offererDetails', () => {
         name: 'Le Sous-sol (Offre numérique)',
         offererName: 'Bar des amis',
         publicName: null,
-        stats: {
-          activeBookingsQuantity: 4,
-          activeOffersCount: 2,
-          soldOutOffersCount: 3,
-          validatedBookingsQuantity: 3,
-        },
       }
       offererWithNoPhysicalVenues = {
         address: 'LA COULÉE D’OR',
@@ -505,15 +449,9 @@ describe('offererDetails', () => {
         siren: '111111111',
         bic: 'test bic 01',
         iban: 'test iban 01',
-        stats: {
-          activeBookingsQuantity: 4,
-          activeOffersCount: 2,
-          soldOutOffersCount: 3,
-          validatedBookingsQuantity: 3,
-        },
       }
 
-      pcapi.getOffererWithVenueStats.mockResolvedValue(offererWithNoPhysicalVenues)
+      pcapi.getOfferer.mockResolvedValue(offererWithNoPhysicalVenues)
       pcapi.getAllOfferersNames.mockResolvedValue([
         {
           id: offererWithNoPhysicalVenues.id,
@@ -572,12 +510,6 @@ describe('offererDetails', () => {
           name: 'Le Sous-sol (Offre numérique)',
           offererName: 'Bar des amis',
           publicName: null,
-          stats: {
-            activeBookingsQuantity: 4,
-            activeOffersCount: 2,
-            soldOutOffersCount: 3,
-            validatedBookingsQuantity: 3,
-          },
         },
         {
           id: 'test_venue_id_2',
@@ -586,12 +518,6 @@ describe('offererDetails', () => {
           name: 'Le Sous-sol (Offre physique)',
           offererName: 'Bar des amis',
           publicName: null,
-          stats: {
-            activeBookingsQuantity: 4,
-            activeOffersCount: 2,
-            soldOutOffersCount: 3,
-            validatedBookingsQuantity: 3,
-          },
         },
       ]
       offererWithPhysicalVenues = {
@@ -607,7 +533,7 @@ describe('offererDetails', () => {
         iban: 'test iban 01',
       }
 
-      pcapi.getOffererWithVenueStats.mockResolvedValue(offererWithPhysicalVenues)
+      pcapi.getOfferer.mockResolvedValue(offererWithPhysicalVenues)
       pcapi.getAllOfferersNames.mockResolvedValue([
         {
           id: offererWithPhysicalVenues.id,
@@ -662,7 +588,7 @@ describe('offererDetails', () => {
         isValidated: false,
         managedVenues: [virtualVenue],
       }
-      pcapi.getOffererWithVenueStats.mockResolvedValue(nonValidatedOfferer)
+      pcapi.getOfferer.mockResolvedValue(nonValidatedOfferer)
       pcapi.getAllOfferersNames.mockResolvedValue([
         { name: nonValidatedOfferer.name, id: nonValidatedOfferer.id },
       ])
@@ -701,7 +627,7 @@ describe('offererDetails', () => {
         { name: firstOffererByAlphabeticalOrder.name, id: firstOffererByAlphabeticalOrder.id },
         { name: baseOfferers[0].name, id: baseOfferers[0].id },
       ])
-      pcapi.getOffererWithVenueStats.mockRejectedValue({ status: 403 })
+      pcapi.getOfferer.mockRejectedValue({ status: 403 })
     })
 
     it('should warn user offerer is being validated', async () => {
@@ -748,7 +674,7 @@ describe('offererDetails', () => {
         { name: baseOfferers[0].name, id: baseOfferers[0].id },
         { name: firstOffererByAlphabeticalOrder.name, id: firstOffererByAlphabeticalOrder.id },
       ])
-      pcapi.getOffererWithVenueStats
+      pcapi.getOfferer
         .mockResolvedValueOnce({
           ...firstOffererByAlphabeticalOrder,
           managedVenues: [virtualVenue, physicalVenue],
@@ -763,7 +689,7 @@ describe('offererDetails', () => {
       })
 
       // Then
-      expect(pcapi.getOffererWithVenueStats).toHaveBeenCalledTimes(2)
+      expect(pcapi.getOfferer).toHaveBeenCalledTimes(2)
       await waitForElementToBeRemoved(() =>
         screen.getByRole('heading', { level: 3, name: 'Offres numériques' })
       )

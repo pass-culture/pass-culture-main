@@ -8,7 +8,7 @@ import {
   INITIAL_PHYSICAL_VENUES,
   INITIAL_VIRTUAL_VENUE,
 } from 'components/pages/Home/Offerers/_constants'
-import { VenueList } from 'components/pages/Home/Venues/VenueList'
+import { VenueList } from 'components/pages/Home/Venues/VenueListLegacy'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 
@@ -55,7 +55,7 @@ const Offerers = () => {
   useEffect(() => {
     if (!selectedOffererId) return
     pcapi
-      .getOffererWithVenueStats(selectedOffererId)
+      .getOfferer(selectedOffererId)
       .then(receivedOfferer => {
         setSelectedOfferer(receivedOfferer)
         setPhysicalVenues(receivedOfferer.managedVenues.filter(venue => !venue.isVirtual))

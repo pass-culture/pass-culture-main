@@ -4,8 +4,10 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
-import Venue from 'components/pages/Home/Venues/Venue'
+import Venue from 'components/pages/Home/Venues/VenueLegacy'
+import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
+import { loadFakeApiVenueStats } from 'utils/fakeApi'
 
 const renderVenue = async (props, store) => {
   return await act(async () => {
@@ -30,13 +32,13 @@ describe('venues', () => {
       isVirtual: false,
       name: 'My venue',
       offererId: 'OFFERER01',
-      venueStats: {
-        activeBookingsQuantity: 0,
-        activeOffersCount: 2,
-        soldOutOffersCount: 3,
-        validatedBookingsQuantity: 1,
-      },
     }
+    loadFakeApiVenueStats({
+      activeBookingsQuantity: 0,
+      activeOffersCount: 2,
+      soldOutOffersCount: 3,
+      validatedBookingsQuantity: 1,
+    })
   })
 
   it('should display stats tiles', async () => {
@@ -44,6 +46,7 @@ describe('venues', () => {
     await renderVenue(props, store)
 
     // Then
+    expect(pcapi.getVenueStats).toHaveBeenCalledWith(props.id)
     const [
       activeOffersStat,
       activeBookingsStat,
