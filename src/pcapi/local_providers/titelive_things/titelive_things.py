@@ -28,6 +28,7 @@ THINGS_FOLDER_NAME_TITELIVE = "livre3_11"
 NUMBER_OF_ELEMENTS_PER_LINE = 46  # (45 elements from line + \n)
 PAPER_PRESS_TVA = "2,10"
 PAPER_PRESS_SUPPORT_CODE = "R"
+UNRELEASED_BOOK_MARKER = "xxx"
 SCHOOL_RELATED_CSR_CODE = [
     "2700",
     "2701",
@@ -124,6 +125,13 @@ class TiteLiveThings(LocalProvider):
                 self.log_provider_event(
                     LocalProviderEventType.SyncError, f"Error deleting product with ISBN: {self.product_infos['ean13']}"
                 )
+            return []
+
+        if is_unreleased_book(self.product_infos):
+            logger.info(
+                "Ignoring isbn=%s because it has 'xxx' in 'titre' and 'auteurs' fields, which means it is not yet released",
+                book_unique_identifier,
+            )
             return []
 
         book_information_last_update = read_things_date(self.product_infos["date_updated"])
@@ -316,3 +324,9 @@ def get_extra_data_from_infos(infos: dict) -> dict:
     if infos["commentaire"] != "":
         extra_data["comment"] = trim_with_elipsis(infos["commentaire"], 92)
     return extra_data
+
+
+def is_unreleased_book(product_info: dict) -> None:
+    title = product_info.get("titre", "").lower()
+    authors = product_info.get("auteurs", "").lower()
+    return title == authors == UNRELEASED_BOOK_MARKER
