@@ -63,6 +63,35 @@ class UserFactory(BaseFactory):
         return DepositFactory(user=obj, **kwargs)
 
 
+class ProFactory(BaseFactory):
+    class Meta:
+        model = pcapi.core.users.models.User
+
+    email = factory.Sequence("ma.librairie{0}@example.com".format)
+    address = factory.Sequence("{0} rue des cinémas".format)
+    city = "Toulouse"
+    departementCode = "31"
+    firstName = "René"
+    lastName = "Coti"
+    publicName = "René Coti"
+    isEmailValidated = True
+    isBeneficiary = False
+    roles = [pcapi.core.users.models.UserRole.PRO]
+    hasSeenProTutorials = True
+
+    @classmethod
+    def _create(cls, model_class, *args, **kwargs):
+        password = kwargs.get("password", DEFAULT_PASSWORD)
+        kwargs["password"] = pcapi.core.users.models.hash_password(password)
+        return super()._create(model_class, *args, **kwargs)
+
+    @classmethod
+    def _build(cls, model_class, *args, **kwargs):
+        password = kwargs.get("password", DEFAULT_PASSWORD)
+        kwargs["password"] = pcapi.core.users.models.hash_password(password)
+        return super()._build(model_class, *args, **kwargs)
+
+
 class TokenFactory(BaseFactory):
     class Meta:
         model = models.Token

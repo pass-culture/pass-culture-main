@@ -7,6 +7,7 @@ from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers.models import OfferValidationStatus
+from pcapi.core.users import factories as users_factories
 
 
 @pytest.mark.usefixtures("db_session")
@@ -153,3 +154,41 @@ class OffererLegalCategoryTest:
         assert offerer.legal_category == "5202"
         assert offerer.legal_category == "5202"
         assert mocked_get_offerer_legal_category.call_count == 1
+
+
+@pytest.mark.usefixtures("db_session")
+class OffererGrantAccessTest:
+    def test_grant_access_to_offerer_to_given_pro(self):
+        # Given
+        offerer = offers_factories.OffererFactory()
+        user = users_factories.ProFactory()
+
+        # When
+        created_user_offerer = offerer.grant_access(user)
+
+        # Then
+        assert created_user_offerer.user == user
+        assert created_user_offerer.offerer == offerer
+
+    def test_add_pro_role_to_user_if_he_does_not_possess_this_role(self):
+        # Given
+        offerer = offers_factories.OffererFactory()
+        user = users_factories.UserFactory()
+
+        # When
+        created_user_offerer = offerer.grant_access(user)
+
+        # Then
+        assert created_user_offerer.user == user
+        assert created_user_offerer.offerer == offerer
+        assert user.has_pro_role
+
+    def test_do_nothing_when_no_user_provided(self):
+        # Given
+        offerer = offers_factories.OffererFactory()
+
+        # When
+        created_user_offerer = offerer.grant_access(None)
+
+        # Then
+        assert created_user_offerer is None
