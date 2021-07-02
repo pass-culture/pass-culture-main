@@ -60,7 +60,7 @@ def get_venues_to_reimburse(cutoff_date: datetime) -> Iterable[tuple[id, str]]:
         .join(Offer)
         .join(Stock)
         .join(Booking)
-        .filter(Booking.dateUsed < cutoff_date, ~Booking.isCancelled)
+        .filter(Booking.dateUsed < cutoff_date, ~Booking.isCancelled, Booking.amount > 0)
         .outerjoin(Payment, Booking.id == Payment.bookingId)
         .filter(Payment.id.is_(None))
         .with_entities(Venue.id, Venue.publicName, Venue.name)

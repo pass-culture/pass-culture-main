@@ -460,7 +460,7 @@ def _find_bookings_eligible_for_payment(cutoff_date: datetime) -> Query:
     # fmt: off
     return (
         _query_keep_only_used_and_non_cancelled_bookings_on_non_activation_offers()
-        .filter(Booking.dateUsed < cutoff_date)
+        .filter(Booking.dateUsed < cutoff_date, Booking.amount > 0)
         .filter(
             ~(cast(Stock.beginningDatetime, Date) >= date.today())
             | (Stock.beginningDatetime.is_(None))
