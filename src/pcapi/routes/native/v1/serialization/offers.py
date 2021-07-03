@@ -11,6 +11,7 @@ from pcapi.core.bookings.api import compute_confirmation_date
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.api import get_expense_domains
 from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import ReasonMeta
 from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.domain.music_types import MUSIC_SUB_TYPES_DICT
@@ -219,3 +220,18 @@ class OfferResponse(BaseModel):
         alias_generator = to_camel
         allow_population_by_field_name = True
         json_encoders = {datetime: format_into_utc_date}
+
+
+class OfferReportRequest(BaseModel):
+    class Config:
+        alias_generator = to_camel
+
+    reason: str
+    custom_reason: Optional[str]
+
+
+class OfferReportReasons(BaseModel):
+    class Config:
+        alias_generator = to_camel
+
+    reasons: dict[str, ReasonMeta]

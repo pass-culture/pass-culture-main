@@ -54,3 +54,19 @@ class StockDoesNotExist(ApiErrors):
 
 class WrongFormatInFraudConfigurationFile(ApiErrors):
     pass
+
+
+class OfferReportError(Exception):
+    code = "OFFER_REPORT_ERROR"
+
+
+class OfferAlreadyReportedError(OfferReportError):
+    code = "OFFER_ALREADY_REPORTED"
+
+
+class ReportMalformed(OfferReportError):
+    code = "REPORT_MALFORMED"
+
+
+class CustomReasonTooLong(OfferReportError):
+    code = "CUSTOM_REASON_TOO_LONG"

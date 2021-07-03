@@ -5,6 +5,7 @@ import factory
 
 from pcapi import models
 import pcapi.core.offerers.models
+from pcapi.core.offers.models import OfferReport
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.testing import BaseFactory
 import pcapi.core.users.factories as users_factories
@@ -244,3 +245,12 @@ class OfferSubcategoryFactory(BaseFactory):
     isDigitalDeposit = False
     isPhysicalDeposit = True
     canBeDuo = False
+
+
+class OfferReportFactory(BaseFactory):
+    class Meta:
+        model = OfferReport
+
+    user = factory.SubFactory(users_factories.UserFactory)
+    offer = factory.SubFactory(OfferFactory)
+    reason = "INAPPROPRIATE"

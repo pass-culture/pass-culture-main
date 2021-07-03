@@ -4,14 +4,17 @@ from datetime import timedelta
 from freezegun import freeze_time
 import pytest
 
+from pcapi import settings
 from pcapi.core.bookings.factories import BookingFactory
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.factories import MediationFactory
 from pcapi.core.offers.factories import OfferFactory
+from pcapi.core.offers.factories import OfferReportFactory
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.offers.factories import StockWithActivationCodesFactory
 from pcapi.core.offers.factories import ThingStockFactory
+from pcapi.core.offers.models import OfferReport
 from pcapi.core.testing import assert_num_queries
 from pcapi.models.offer_type import EventType
 from pcapi.models.offer_type import ThingType
@@ -309,3 +312,107 @@ class SendOfferLinkNotificationTest:
             assert response.status_code == 404
 
         assert len(notifications_testing.requests) == 0
+
+
+class ReportOfferTest:
+    def test_report_offer(self, app):
+        user, test_client = create_user_and_test_client(app)
+        offer = OfferFactory()
+
+        # expected queries:
+        #   * get user
+        #   * get offer
+        #   * insert report
+        #   * release savepoint
+        #
+        #   * reload user
+        #   * reload offer
+        #   * insert email into db
+        #   * release savepoint
+        with assert_num_queries(8):
+            response = test_client.post(f"/native/v1/offer/{offer.id}/report", json={"reason": "INAPPROPRIATE"})
+            assert response.status_code == 204
+
+        assert OfferReport.query.count() == 1
+        report = OfferReport.query.first()
+
+        assert report.user == user
+        assert report.offer == offer
+
+        assert len(mails_testing.outbox) == 1
+
+        email = mails_testing.outbox[0]
+        assert email.sent_data["To"] == settings.SUPPORT_EMAIL_ADDRESS
+        assert email.sent_data["Vars"]["user_id"] == user.id
+        assert email.sent_data["Vars"]["offer_id"] == offer.id
+
+    def test_report_offer_twice(self, app):
+        user, test_client = create_user_and_test_client(app)
+        offer = OfferFactory()
+
+        OfferReportFactory(user=user, offer=offer)
+
+        # expected queries:
+        #   * get user
+        #   * get offer
+        #   * rollback
+        with assert_num_queries(3):
+            response = test_client.post(f"/native/v1/offer/{offer.id}/report", json={"reason": "PRICE_TOO_HIGH"})
+            assert response.status_code == 400
+            assert response.json["code"] == "OFFER_ALREADY_REPORTED"
+
+        assert OfferReport.query.count() == 1  # no new report
+        assert not mails_testing.outbox
+
+    def test_report_offer_malformed(self, app):
+        _, test_client = create_user_and_test_client(app)
+        offer = OfferFactory()
+
+        # expected queries:
+        #   * get user
+        #   * get offer
+        #   * rollback
+        with assert_num_queries(3):
+            response = test_client.post(f"/native/v1/offer/{offer.id}/report", json={"reason": "OTHER"})
+            assert response.status_code == 400
+            assert response.json["code"] == "REPORT_MALFORMED"
+
+        assert OfferReport.query.count() == 0  # no new report
+        assert not mails_testing.outbox
+
+    def test_report_offer_custom_reason_too_long(self, app):
+        _, test_client = create_user_and_test_client(app)
+        offer = OfferFactory()
+
+        # expected queries:
+        #   * get user
+        #   * get offer
+        #   * rollback
+        with assert_num_queries(3):
+            data = {"reason": "OTHER", "customReason": "a" * 513}
+            response = test_client.post(f"/native/v1/offer/{offer.id}/report", json=data)
+            assert response.status_code == 400
+            assert response.json["code"] == "CUSTOM_REASON_TOO_LONG"
+
+        assert OfferReport.query.count() == 0  # no new report
+        assert not mails_testing.outbox
+
+
+class OfferReportReasonsTest:
+    def test_get_reasons(self, app):
+        _, test_client = create_user_and_test_client(app)
+        response = test_client.get("/native/v1/offer/report/reasons")
+
+        assert response.status_code == 200
+        assert response.json["reasons"] == {
+            "IMPROPER": {
+                "title": "La description est non conforme",
+                "description": "La date ne correspond pas, mauvaise description...",
+            },
+            "PRICE_TOO_HIGH": {"title": "Le tarif est trop élevé", "description": "comparé à l'offre public"},
+            "INAPPROPRIATE": {
+                "title": "Le contenu est inapproprié",
+                "description": "violence, incitation à la haine, nudité...",
+            },
+            "OTHER": {"title": "Autre", "description": ""},
+        }

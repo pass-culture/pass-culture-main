@@ -662,5 +662,93 @@ class OfferSubcategory(PcObject, Model, DeactivableMixin):
 
     canBeDuo = Column(Boolean, nullable=False)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "<%s #%s: %s>" % (self.__class__.__name__, self.id, self.name)
+
+
+@dataclass
+class ReasonMeta:
+    title: str
+    description: str
+
+
+class Reason(enum.Enum):
+    """
+    Describe possible reason codes to used when reporting an offer.
+
+    The whole meta part is only consumed by the api client, it has no meaning
+    inside the whole API code.
+
+    Note: when adding a new enum symbol, do not forget to update the meta
+    method.
+    """
+
+    IMPROPER = "IMPROPER"
+    PRICE_TOO_HIGH = "PRICE_TOO_HIGH"
+    INAPPROPRIATE = "INAPPROPRIATE"
+    OTHER = "OTHER"
+
+    @staticmethod
+    def get_meta(value: str) -> ReasonMeta:
+        return Reason.get_full_meta()[value]
+
+    @staticmethod
+    def get_full_meta() -> dict[str, ReasonMeta]:
+        return {
+            "IMPROPER": ReasonMeta(
+                title="La description est non conforme",
+                description="La date ne correspond pas, mauvaise description...",
+            ),
+            "PRICE_TOO_HIGH": ReasonMeta(title="Le tarif est trop élevé", description="comparé à l'offre public"),
+            "INAPPROPRIATE": ReasonMeta(
+                title="Le contenu est inapproprié", description="violence, incitation à la haine, nudité..."
+            ),
+            "OTHER": ReasonMeta(title="Autre", description=""),
+        }
+
+
+# if the reason is != OTHER, there should be no customReasonContent,
+# and if reason = OTHER, the customReasonContent cannot be NULL or "".
+OFFER_REPORT_CUSTOM_REASONS_CONSTRAINT = """
+(offer_report."customReasonContent" IS NULL AND offer_report.reason != 'OTHER')
+OR (
+    (offer_report."customReasonContent" IS NOT NULL OR trim(both ' ' from offer_report."customReasonContent") = '')
+    AND offer_report.reason = 'OTHER'
+)
+"""
+
+
+class OfferReport(PcObject, Model):
+    __tablename__ = "offer_report"
+
+    __table_args__ = (
+        UniqueConstraint(
+            "userId",
+            "offerId",
+            name="unique_offer_per_user",
+        ),
+        CheckConstraint(
+            OFFER_REPORT_CUSTOM_REASONS_CONSTRAINT,
+            name="custom_reason_null_only_if_reason_is_other",
+        ),
+    )
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+
+    userId = Column(BigInteger, ForeignKey("user.id"), index=True, nullable=False)
+
+    user = relationship("User", foreign_keys=[userId], backref="reported_offers")
+
+    offerId = Column(BigInteger, ForeignKey("offer.id"), index=True, nullable=False)
+
+    offer = relationship("Offer", foreign_keys=[offerId], backref="reports")
+
+    when = Column(DateTime, nullable=False, server_default=func.now())
+
+    reason = Column(Enum(Reason), nullable=False, index=True)
+
+    # If the reason code is OTHER, save the user's custom reason
+    customReasonContent = Column(String(512), nullable=True)
+
+    def __str__(self) -> str:
+        return f"{self.__class__.__name__}#{self.id} userId={self.userId}, offerId={self.offerId}, when={self.when}"

@@ -3,7 +3,11 @@ import logging
 from typing import Optional
 from typing import Union
 
+from psycopg2.errorcodes import CHECK_VIOLATION
+from psycopg2.errorcodes import STRING_DATA_RIGHT_TRUNCATION
+from psycopg2.errorcodes import UNIQUE_VIOLATION
 import pytz
+from sqlalchemy import exc
 from sqlalchemy.orm import joinedload
 from sqlalchemy.sql.functions import func
 import yaml
@@ -19,7 +23,11 @@ from pcapi.core.bookings.api import update_confirmation_dates
 from pcapi.core.bookings.conf import LIMIT_CONFIGURATIONS
 from pcapi.core.bookings.models import Booking
 import pcapi.core.bookings.repository as bookings_repository
+from pcapi.core.offers.exceptions import CustomReasonTooLong
+from pcapi.core.offers.exceptions import OfferAlreadyReportedError
+from pcapi.core.offers.exceptions import ReportMalformed
 from pcapi.core.offers.exceptions import WrongFormatInFraudConfigurationFile
+from pcapi.core.offers.models import OfferReport
 from pcapi.core.offers.models import OfferValidationConfig
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import Stock
@@ -31,6 +39,7 @@ from pcapi.core.offers.validation import check_validation_config_parameters
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.core.users.models import User
 from pcapi.domain import admin_emails
+from pcapi.domain import offer_report_emails
 from pcapi.domain import user_emails
 from pcapi.domain.pro_offers.offers_recap import OffersRecap
 from pcapi.models import Criterion
@@ -45,6 +54,7 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import offer_queries
 from pcapi.repository import repository
+from pcapi.repository import transaction
 from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
 from pcapi.routes.serialization.stock_serialize import StockCreationBodyModel
 from pcapi.routes.serialization.stock_serialize import StockEditionBodyModel
@@ -767,3 +777,31 @@ def is_activation_code_applicable(stock: Stock):
         and FeatureToggle.ENABLE_ACTIVATION_CODES.is_active()
         and db.session.query(ActivationCode.query.filter_by(stock=stock).exists()).scalar()
     )
+
+
+def report_offer(user: User, offer: Offer, reason: str, custom_reason: Optional[str]) -> None:
+    try:
+        # transaction() handles the commit/rollback operations
+        #
+        # UNIQUE_VIOLATION, CHECK_VIOLATION and STRING_DATA_RIGHT_TRUNCATION
+        # errors are specific ones:
+        # either the user tried to report the same error twice, which is not
+        # allowed, or the client sent a invalid report (eg. OTHER without
+        # custom reason / custom reason too long).
+        #
+        # Other errors are unexpected and are therefore re-raised as is.
+        with transaction():
+            report = OfferReport(user=user, offer=offer, reason=reason, customReasonContent=custom_reason)
+            db.session.add(report)
+    except exc.IntegrityError as error:
+        if error.orig.pgcode == UNIQUE_VIOLATION:
+            raise OfferAlreadyReportedError() from error
+        if error.orig.pgcode == CHECK_VIOLATION:
+            raise ReportMalformed() from error
+        raise
+    except exc.DataError as error:
+        if error.orig.pgcode == STRING_DATA_RIGHT_TRUNCATION:
+            raise CustomReasonTooLong() from error
+        raise
+
+    offer_report_emails.send_report_notification(user, offer, reason)
