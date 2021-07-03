@@ -4,7 +4,6 @@ from typing import Optional
 from typing import Union
 
 from psycopg2.errorcodes import CHECK_VIOLATION
-from psycopg2.errorcodes import STRING_DATA_RIGHT_TRUNCATION
 from psycopg2.errorcodes import UNIQUE_VIOLATION
 import pytz
 from sqlalchemy import exc
@@ -23,7 +22,6 @@ from pcapi.core.bookings.api import update_confirmation_dates
 from pcapi.core.bookings.conf import LIMIT_CONFIGURATIONS
 from pcapi.core.bookings.models import Booking
 import pcapi.core.bookings.repository as bookings_repository
-from pcapi.core.offers.exceptions import CustomReasonTooLong
 from pcapi.core.offers.exceptions import OfferAlreadyReportedError
 from pcapi.core.offers.exceptions import ReportMalformed
 from pcapi.core.offers.exceptions import WrongFormatInFraudConfigurationFile
@@ -798,10 +796,6 @@ def report_offer(user: User, offer: Offer, reason: str, custom_reason: Optional[
             raise OfferAlreadyReportedError() from error
         if error.orig.pgcode == CHECK_VIOLATION:
             raise ReportMalformed() from error
-        raise
-    except exc.DataError as error:
-        if error.orig.pgcode == STRING_DATA_RIGHT_TRUNCATION:
-            raise CustomReasonTooLong() from error
         raise
 
     offer_report_emails.send_report_notification(user, offer, reason)

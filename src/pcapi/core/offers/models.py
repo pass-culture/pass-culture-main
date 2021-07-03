@@ -743,12 +743,12 @@ class OfferReport(PcObject, Model):
 
     offer = relationship("Offer", foreign_keys=[offerId], backref="reports")
 
-    when = Column(DateTime, nullable=False, server_default=func.now())
+    reportedAt = Column(DateTime, nullable=False, server_default=func.now())
 
-    reason = Column(Enum(Reason), nullable=False, index=True)
+    reason = Column(Enum(Reason, create_constraint=False), nullable=False, index=True)
 
     # If the reason code is OTHER, save the user's custom reason
-    customReasonContent = Column(String(512), nullable=True)
+    customReasonContent = Column(Text, nullable=True)
 
     def __str__(self) -> str:
         return f"{self.__class__.__name__}#{self.id} userId={self.userId}, offerId={self.offerId}, when={self.when}"

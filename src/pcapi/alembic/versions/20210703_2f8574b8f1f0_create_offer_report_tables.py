@@ -32,15 +32,10 @@ def upgrade():
         sa.Column("id", sa.BigInteger(), autoincrement=True, nullable=False),
         sa.Column("userId", sa.BigInteger(), nullable=False),
         sa.Column("offerId", sa.BigInteger(), nullable=False),
-        sa.Column("when", sa.DateTime(), server_default=sa.text("now()"), nullable=False),
-        sa.Column(
-            "reason", sa.Enum("IMPROPER", "PRICE_TOO_HIGH", "INAPPROPRIATE", "OTHER", name="reason"), nullable=False
-        ),
-        sa.Column("customReasonContent", sa.String(length=512), nullable=True),
-        sa.CheckConstraint(
-            CHECK_CONSTRAINT,
-            name="custom_reason_null_only_if_reason_is_other",
-        ),
+        sa.Column("reportedAt", sa.DateTime(), server_default=sa.text("now()"), nullable=False),
+        sa.Column("reason", sa.Text(), nullable=False),
+        sa.Column("customReasonContent", sa.Text(), nullable=True),
+        sa.CheckConstraint(CHECK_CONSTRAINT, name="custom_reason_null_only_if_reason_is_other"),
         sa.ForeignKeyConstraint(
             ["offerId"],
             ["offer.id"],

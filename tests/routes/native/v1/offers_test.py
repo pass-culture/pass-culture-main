@@ -16,6 +16,7 @@ from pcapi.core.offers.factories import StockWithActivationCodesFactory
 from pcapi.core.offers.factories import ThingStockFactory
 from pcapi.core.offers.models import OfferReport
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.users.factories import UserFactory
 from pcapi.models.offer_type import EventType
 from pcapi.models.offer_type import ThingType
 import pcapi.notifications.push.testing as notifications_testing
@@ -364,44 +365,59 @@ class ReportOfferTest:
         assert OfferReport.query.count() == 1  # no new report
         assert not mails_testing.outbox
 
-    def test_report_offer_malformed(self, app):
-        _, test_client = create_user_and_test_client(app)
+    def test_report_offer_malformed(self, app, client):
+        user = UserFactory()
         offer = OfferFactory()
+
+        # user.email triggers an SQL request, same for offer.id
+        # therefore, these attributes should be read outside of the
+        # assert_num_queries() block
+        email = user.email
+        offer_id = offer.id
 
         # expected queries:
         #   * get user
-        #   * get offer
         #   * rollback
-        with assert_num_queries(3):
-            response = test_client.post(f"/native/v1/offer/{offer.id}/report", json={"reason": "OTHER"})
+        with assert_num_queries(2):
+            dst = f"/native/v1/offer/{offer_id}/report"
+            response = client.with_token(email).post(dst, json={"reason": "OTHER"})
             assert response.status_code == 400
             assert response.json["code"] == "REPORT_MALFORMED"
 
         assert OfferReport.query.count() == 0  # no new report
         assert not mails_testing.outbox
 
-    def test_report_offer_custom_reason_too_long(self, app):
-        _, test_client = create_user_and_test_client(app)
+    def test_report_offer_custom_reason_too_long(self, app, client):
         offer = OfferFactory()
+        offer_id = offer.id
 
-        # expected queries:
-        #   * get user
-        #   * get offer
-        #   * rollback
-        with assert_num_queries(3):
+        with assert_num_queries(0):
             data = {"reason": "OTHER", "customReason": "a" * 513}
-            response = test_client.post(f"/native/v1/offer/{offer.id}/report", json=data)
+            response = client.post(f"/native/v1/offer/{offer_id}/report", json=data)
             assert response.status_code == 400
-            assert response.json["code"] == "CUSTOM_REASON_TOO_LONG"
+            assert response.json["customReason"] == ["custom reason is too long"]
+
+        assert OfferReport.query.count() == 0  # no new report
+        assert not mails_testing.outbox
+
+    def test_report_offer_unknown_reason(self, app, client):
+        offer = OfferFactory()
+        offer_id = offer.id
+
+        with assert_num_queries(0):
+            data = {"reason": "UNKNOWN"}
+            response = client.post(f"/native/v1/offer/{offer_id}/report", json=data)
+            assert response.status_code == 400
+            assert response.json["reason"] == ["unknown reason"]
 
         assert OfferReport.query.count() == 0  # no new report
         assert not mails_testing.outbox
 
 
 class OfferReportReasonsTest:
-    def test_get_reasons(self, app):
-        _, test_client = create_user_and_test_client(app)
-        response = test_client.get("/native/v1/offer/report/reasons")
+    def test_get_reasons(self, app, client):
+        user = UserFactory()
+        response = client.with_token(user.email).get("/native/v1/offer/report/reasons")
 
         assert response.status_code == 200
         assert response.json["reasons"] == {

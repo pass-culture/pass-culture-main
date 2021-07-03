@@ -66,7 +66,3 @@ class OfferAlreadyReportedError(OfferReportError):
 
 class ReportMalformed(OfferReportError):
     code = "REPORT_MALFORMED"
-
-
-class CustomReasonTooLong(OfferReportError):
-    code = "CUSTOM_REASON_TOO_LONG"

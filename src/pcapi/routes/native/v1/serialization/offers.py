@@ -11,6 +11,7 @@ from pcapi.core.bookings.api import compute_confirmation_date
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.api import get_expense_domains
 from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import Reason
 from pcapi.core.offers.models import ReasonMeta
 from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import ExpenseDomain
@@ -228,6 +229,24 @@ class OfferReportRequest(BaseModel):
 
     reason: str
     custom_reason: Optional[str]
+
+    @validator("custom_reason")
+    def custom_reason_must_not_be_too_long(  # pylint: disable=no-self-argument
+        cls, content: Optional[str]
+    ) -> Optional[str]:
+        if not content:
+            return None
+
+        if len(content) > 512:
+            raise ValueError("custom reason is too long")
+
+        return content
+
+    @validator("reason")
+    def reason_is_valid_enum_value(cls, reason: str) -> str:  # pylint: disable=no-self-argument
+        if reason not in {r.value for r in Reason}:
+            raise ValueError("unknown reason")
+        return reason
 
 
 class OfferReportReasons(BaseModel):
