@@ -432,3 +432,50 @@ class OfferReportReasonsTest:
             },
             "OTHER": {"title": "Autre", "description": ""},
         }
+
+
+class ReportedOffersTest:
+    def test_get_user_reported_offers(self, client):
+        user = UserFactory()
+        offers = OfferFactory.create_batch(3)
+        reports = [
+            OfferReportFactory(user=user, offer=offers[0]),
+            OfferReportFactory(user=user, offer=offers[1]),
+        ]
+
+        # offers reported by this user should not be returned
+        another_user = UserFactory()
+        OfferReportFactory(user=another_user, offer=offers[2])
+
+        client.with_token(user.email)
+        response = client.get("/native/v1/offers/reports")
+
+        assert response.status_code == 200
+
+        response_reports = sorted(response.json["reportedOffers"], key=lambda x: x["offerId"])
+        assert response_reports == [
+            {
+                "id": reports[0].id,
+                "userId": reports[0].userId,
+                "offerId": reports[0].offerId,
+                "reportedAt": reports[0].reportedAt.isoformat(),
+                "reason": reports[0].reason.value,
+            },
+            {
+                "id": reports[1].id,
+                "userId": reports[1].userId,
+                "offerId": reports[1].offerId,
+                "reportedAt": reports[1].reportedAt.isoformat(),
+                "reason": reports[1].reason.value,
+            },
+        ]
+
+    def test_get_no_reported_offers(self, client):
+        user = UserFactory()
+        OfferFactory()
+
+        client.with_token(user.email)
+        response = client.get("/native/v1/offers/reports")
+
+        assert response.status_code == 200
+        assert not response.json["reportedOffers"]

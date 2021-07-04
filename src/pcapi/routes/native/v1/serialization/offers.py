@@ -254,3 +254,25 @@ class OfferReportReasons(BaseModel):
         alias_generator = to_camel
 
     reasons: dict[str, ReasonMeta]
+
+
+class ReportedOffer(BaseModel):
+    id: int
+    user_id: int
+    offer_id: int
+    reported_at: datetime
+    reason: Reason
+
+    class Config:
+        orm_mode = True
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+        json_encoders = {datetime: format_into_utc_date}
+        use_enum_values = True
+
+
+class UserReportedOffersResponse(BaseModel):
+    reported_offers: list[ReportedOffer]
+
+    class Config:
+        alias_generator = to_camel
