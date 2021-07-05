@@ -118,13 +118,15 @@ def create_booking(
     is_used: bool = False,
     quantity: int = 1,
     stock: Stock = None,
-    token: str = None,
     venue: Venue = None,
+    token: str = None,
+    offerer: Offerer = None,
 ) -> Booking:
     booking = Booking()
-    offerer = create_offerer(
-        siren="987654321", address="Test address", city="Test city", postal_code="93000", name="Test name"
-    )
+    if offerer is None:
+        offerer = create_offerer(
+            siren="987654321", address="Test address", city="Test city", postal_code="93000", name="Test name"
+        )
     if venue is None:
         venue = create_venue(
             offerer=offerer,
@@ -152,6 +154,8 @@ def create_booking(
     booking.isUsed = is_used
     booking.quantity = quantity
     booking.stock = stock
+    booking.offerer = offerer
+    booking.venue = venue
     booking.token = token if token is not None else random_token()
     booking.userId = user.id
     booking.confirmationDate = bookings_api.compute_confirmation_date(stock.beginningDatetime, date_created)

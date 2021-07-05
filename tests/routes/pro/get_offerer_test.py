@@ -84,6 +84,7 @@ class Returns200Test:
                     "postalCode": offererVenue.postalCode,
                     "publicName": offererVenue.publicName,
                     "siret": offererVenue.siret,
+                    "stats": None,
                     "venueLabelId": humanize(offererVenue.venueLabelId),
                     "venueTypeId": humanize(offererVenue.venueTypeId),
                 }

@@ -104,6 +104,7 @@ def _create_bookings_for_other_beneficiaries(
                 date_used=datetime.now() if is_used else None,
                 stock=stock,
                 token=str(token),
+                offerer=offer.venue.managingOfferer,
                 venue=offer.venue,
             )
 

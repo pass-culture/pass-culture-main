@@ -220,7 +220,21 @@ def find_expired_bookings_ordered_by_offerer(expired_on: date = None) -> Query:
     )
 
 
-def get_active_bookings_quantity_for_venue(venue_id: int) -> int:
+def get_active_bookings_quantity_for_offerer(offerer_id: int) -> dict:
+    return dict(
+        Booking.query.filter(
+            offerer_id == Booking.offererId,
+            Booking.isUsed.is_(False),
+            Booking.isCancelled.is_(False),
+            Booking.isConfirmed.is_(False),
+        )
+        .with_entities(Booking.venueId, coalesce(func.sum(Booking.quantity), 0))
+        .group_by(Booking.venueId)
+        .all()
+    )
+
+
+def get_legacy_active_bookings_quantity_for_venue(venue_id: int) -> int:
     # Stock.dnBookedQuantity cannot be used here because we exclude used/confirmed bookings.
     return (
         Booking.query.join(Stock)
@@ -236,7 +250,17 @@ def get_active_bookings_quantity_for_venue(venue_id: int) -> int:
     )
 
 
-def get_validated_bookings_quantity_for_venue(venue_id: int) -> int:
+def get_validated_bookings_quantity_for_offerer(offerer_id: int) -> dict:
+    return dict(
+        Booking.query.filter(Booking.isCancelled.is_(False), offerer_id == Booking.offererId)
+        .filter(or_(Booking.isUsed.is_(True), Booking.isConfirmed.is_(True)))
+        .with_entities(Booking.venueId, coalesce(func.sum(Booking.quantity), 0))
+        .group_by(Booking.venueId)
+        .all()
+    )
+
+
+def get_legacy_validated_bookings_quantity_for_venue(venue_id: int) -> int:
     return (
         Booking.query.join(Stock)
         .join(Offer)

@@ -22,7 +22,7 @@ def create_industrial_activation_offers():
     offer = create_offer_with_thing_product(venue, thing_type=ThingType.ACTIVATION)
     stock = create_stock_with_thing_offer(offerer, venue, offer=offer, price=0, quantity=10000)
 
-    booking = create_booking(user=activated_user, stock=stock, token="ACTIVA", venue=venue)
+    booking = create_booking(user=activated_user, stock=stock, offerer=offerer, venue=venue, token="ACTIVA")
 
     repository.save(booking)
     logger.info("created 1 activation offer")

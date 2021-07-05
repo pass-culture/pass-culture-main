@@ -1,8 +1,8 @@
 from flask_login import current_user
 from flask_login import login_required
 
-from pcapi.core.bookings.repository import get_active_bookings_quantity_for_venue
-from pcapi.core.bookings.repository import get_validated_bookings_quantity_for_venue
+from pcapi.core.bookings.repository import get_legacy_active_bookings_quantity_for_venue
+from pcapi.core.bookings.repository import get_legacy_validated_bookings_quantity_for_venue
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers.models import Venue
@@ -92,8 +92,8 @@ def get_venue_stats(humanized_venue_id: str) -> VenueStatsResponseModel:
     venue = load_or_404(Venue, humanized_venue_id)
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 
-    active_bookings_quantity = get_active_bookings_quantity_for_venue(venue.id)
-    validated_bookings_count = get_validated_bookings_quantity_for_venue(venue.id)
+    active_bookings_quantity = get_legacy_active_bookings_quantity_for_venue(venue.id)
+    validated_bookings_count = get_legacy_validated_bookings_quantity_for_venue(venue.id)
     active_offers_count = get_active_offers_count_for_venue(venue.id)
     sold_out_offers_count = get_sold_out_offers_count_for_venue(venue.id)
 

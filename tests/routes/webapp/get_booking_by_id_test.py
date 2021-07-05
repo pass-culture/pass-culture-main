@@ -55,6 +55,7 @@ class Returns200Test:
             "isEventExpired": False,
             "isUsed": False,
             "mediation": None,
+            "offererId": humanize(offer.venue.managingOffererId),
             "quantity": 1,
             "stock": {
                 "beginningDatetime": None,
@@ -177,4 +178,5 @@ class Returns200Test:
             "stockId": humanize(stock.id),
             "token": booking.token,
             "userId": humanize(user.id),
+            "venueId": humanize(offer.venue.id),
         }

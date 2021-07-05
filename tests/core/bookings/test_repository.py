@@ -1163,7 +1163,37 @@ class FindSoonToBeExpiredBookingsTest:
         assert expired_bookings == [expected_booking]
 
 
-class GetActiveBookingsQuantityForVenueTest:
+class GetActiveBookingsQuantityForOffererTest:
+    @pytest.mark.usefixtures("db_session")
+    def test_return_active_bookings_by_venues_for_offerer(self):
+        # Given
+        beneficiary = users_factories.UserFactory()
+        offerer = offers_factories.OffererFactory()
+
+        venue_1 = offers_factories.VenueFactory(managingOfferer=offerer)
+        offer_1 = offers_factories.ThingOfferFactory(venue=venue_1)
+        stock_1 = offers_factories.ThingStockFactory(offer=offer_1)
+        bookings_factories.BookingFactory(user=beneficiary, stock=stock_1)
+        bookings_factories.BookingFactory(user=beneficiary, stock=stock_1, isUsed=True)
+        bookings_factories.BookingFactory(user=beneficiary, stock=stock_1, isUsed=False)
+
+        venue_2 = offers_factories.VenueFactory(managingOfferer=offerer)
+        offer_2 = offers_factories.ThingOfferFactory(venue=venue_2)
+        stock_2 = offers_factories.ThingStockFactory(offer=offer_2)
+        bookings_factories.BookingFactory(user=beneficiary, stock=stock_2)
+        bookings_factories.BookingFactory(user=beneficiary, stock=stock_2, isCancelled=True)
+        bookings_factories.BookingFactory(user=beneficiary, stock=stock_2, isCancelled=False)
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        bookings_factories.BookingFactory(user=beneficiary, stock=stock_2, confirmation_date=yesterday, quantity=2)
+
+        # When
+        active_bookings_by_venue = booking_repository.get_active_bookings_quantity_for_offerer(offerer.id)
+
+        # Then
+        assert active_bookings_by_venue == {venue_1.id: 2, venue_2.id: 2}
+
+
+class GetLegacyActiveBookingsQuantityForVenueTest:
     @pytest.mark.usefixtures("db_session")
     def test_return_bookings_quantity_for_venue(self):
         # Given
@@ -1172,7 +1202,7 @@ class GetActiveBookingsQuantityForVenueTest:
         bookings_factories.BookingFactory(stock__offer__venue=venue)
 
         # When
-        active_bookings_quantity = booking_repository.get_active_bookings_quantity_for_venue(venue.id)
+        active_bookings_quantity = booking_repository.get_legacy_active_bookings_quantity_for_venue(venue.id)
 
         # Then
         assert active_bookings_quantity == 3
@@ -1183,7 +1213,7 @@ class GetActiveBookingsQuantityForVenueTest:
         venue = offers_factories.VenueFactory()
 
         # When
-        active_bookings_quantity = booking_repository.get_active_bookings_quantity_for_venue(venue.id)
+        active_bookings_quantity = booking_repository.get_legacy_active_bookings_quantity_for_venue(venue.id)
 
         # Then
         assert active_bookings_quantity == 0
@@ -1199,7 +1229,7 @@ class GetActiveBookingsQuantityForVenueTest:
         bookings_factories.BookingFactory(confirmation_date=yesterday, quantity=2, stock__offer__venue=venue)
 
         # When
-        active_bookings_quantity = booking_repository.get_active_bookings_quantity_for_venue(venue.id)
+        active_bookings_quantity = booking_repository.get_legacy_active_bookings_quantity_for_venue(venue.id)
 
         # Then
         assert active_bookings_quantity == 1
@@ -1213,13 +1243,43 @@ class GetActiveBookingsQuantityForVenueTest:
         bookings_factories.BookingFactory(stock__offer__venue=another_venue)
 
         # When
-        active_bookings_quantity = booking_repository.get_active_bookings_quantity_for_venue(venue.id)
+        active_bookings_quantity = booking_repository.get_legacy_active_bookings_quantity_for_venue(venue.id)
 
         # Then
         assert active_bookings_quantity == 1
 
 
-class GetValidatedBookingsQuantityForVenueTest:
+class GetValidatedBookingsQuantityForOffererTest:
+    @pytest.mark.usefixtures("db_session")
+    def test_return_validated_bookings_by_venues_for_offerer(self):
+        # Given
+        beneficiary = users_factories.UserFactory()
+        offerer = offers_factories.OffererFactory()
+
+        venue_1 = offers_factories.VenueFactory(managingOfferer=offerer)
+        offer_1 = offers_factories.ThingOfferFactory(venue=venue_1)
+        stock_1 = offers_factories.ThingStockFactory(offer=offer_1, price=0)
+        bookings_factories.BookingFactory(user=beneficiary, stock=stock_1, isUsed=True)
+        bookings_factories.BookingFactory(user=beneficiary, stock=stock_1, isCancelled=True)
+        bookings_factories.BookingFactory(user=beneficiary, stock=stock_1, isUsed=False)
+
+        venue_2 = offers_factories.VenueFactory(managingOfferer=offerer)
+        offer_2 = offers_factories.ThingOfferFactory(venue=venue_2)
+        stock_2 = offers_factories.ThingStockFactory(offer=offer_2, price=0)
+        bookings_factories.BookingFactory(user=beneficiary, stock=stock_2)
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        bookings_factories.BookingFactory(user=beneficiary, stock=stock_2, confirmation_date=yesterday, quantity=2)
+
+        # When
+        validated_bookings_quantity_by_venue = booking_repository.get_validated_bookings_quantity_for_offerer(
+            offerer.id
+        )
+
+        # Then
+        assert validated_bookings_quantity_by_venue == {venue_1.id: 1, venue_2.id: 2}
+
+
+class GetLegacyValidatedBookingsQuantityForVenueTest:
     @pytest.mark.usefixtures("db_session")
     def test_return_used_bookings_quantity_for_venue(self):
         # Given
@@ -1228,7 +1288,7 @@ class GetValidatedBookingsQuantityForVenueTest:
         bookings_factories.BookingFactory(isUsed=True, stock__offer__venue=venue)
 
         # When
-        validated_bookings_quantity = booking_repository.get_validated_bookings_quantity_for_venue(venue.id)
+        validated_bookings_quantity = booking_repository.get_legacy_validated_bookings_quantity_for_venue(venue.id)
 
         # Then
         assert validated_bookings_quantity == 3
@@ -1241,7 +1301,7 @@ class GetValidatedBookingsQuantityForVenueTest:
         venue = booking.stock.offer.venue
 
         # When
-        validated_bookings_quantity = booking_repository.get_validated_bookings_quantity_for_venue(venue.id)
+        validated_bookings_quantity = booking_repository.get_legacy_validated_bookings_quantity_for_venue(venue.id)
 
         # Then
         assert validated_bookings_quantity == 2
@@ -1252,7 +1312,7 @@ class GetValidatedBookingsQuantityForVenueTest:
         venue = offers_factories.VenueFactory()
 
         # When
-        validated_bookings_quantity = booking_repository.get_validated_bookings_quantity_for_venue(venue.id)
+        validated_bookings_quantity = booking_repository.get_legacy_validated_bookings_quantity_for_venue(venue.id)
 
         # Then
         assert validated_bookings_quantity == 0
@@ -1266,7 +1326,7 @@ class GetValidatedBookingsQuantityForVenueTest:
         bookings_factories.BookingFactory(isCancelled=True, isUsed=True, stock__offer__venue=venue)
 
         # When
-        validated_bookings_quantity = booking_repository.get_validated_bookings_quantity_for_venue(venue.id)
+        validated_bookings_quantity = booking_repository.get_legacy_validated_bookings_quantity_for_venue(venue.id)
 
         # Then
         assert validated_bookings_quantity == 1
@@ -1280,7 +1340,7 @@ class GetValidatedBookingsQuantityForVenueTest:
         bookings_factories.BookingFactory(isUsed=True, stock__offer__venue=another_venue)
 
         # When
-        validated_bookings_quantity = booking_repository.get_validated_bookings_quantity_for_venue(venue.id)
+        validated_bookings_quantity = booking_repository.get_legacy_validated_bookings_quantity_for_venue(venue.id)
 
         # Then
         assert validated_bookings_quantity == 1

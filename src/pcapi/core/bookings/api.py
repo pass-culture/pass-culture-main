@@ -82,6 +82,8 @@ def book_offer(
             amount=stock.price,
             quantity=quantity,
             token=generate_booking_token(),
+            venueId=stock.offer.venueId,
+            offererId=stock.offer.venue.managingOffererId,
         )
 
         booking.dateCreated = datetime.datetime.utcnow()

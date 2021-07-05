@@ -109,7 +109,7 @@ def _get_bookings_information(beneficiary_id: int) -> list[Booking]:
         .join(Stock, Stock.id == Booking.stockId)
         .join(Offer)
         .join(Product, Offer.productId == Product.id)
-        .join(Venue)
+        .join(Venue, Venue.id == Offer.venueId)
         .outerjoin(ActivationCode, ActivationCode.bookingId == Booking.id)
         .filter(Booking.userId == beneficiary_id)
         .filter(Offer.type.notin_(offer_activation_types))

@@ -59,6 +59,7 @@ class FeatureToggle(enum.Enum):
     USER_PROFILING_FRAUD_CHECK = "Détection de la fraude basée sur le profil de l'utilisateur"
     BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS = "Active la validation d'un bénéficiaire via les contrôles de sécurité"
     ENABLE_VENUE_WITHDRAWAL_DETAILS = "Active les modalités de retrait sur la page lieu"
+    PERF_VENUE_STATS = "Permet de basculer vers une nouvelle implémentation performante de la page d'accueil pro contenant les indicateurs statistiques par venue"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -102,6 +103,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.USER_PROFILING_FRAUD_CHECK,
     FeatureToggle.BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS,
     FeatureToggle.ENABLE_VENUE_WITHDRAWAL_DETAILS,
+    FeatureToggle.PERF_VENUE_STATS,
 )
 
 

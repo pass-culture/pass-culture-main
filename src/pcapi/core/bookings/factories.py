@@ -45,6 +45,8 @@ class BookingFactory(BaseFactory):
             stock = kwargs.get("stock")
             stock.dnBookedQuantity = stock.dnBookedQuantity + kwargs.get("quantity", 1)
             kwargs["stock"] = stock
+        kwargs["venue"] = kwargs["stock"].offer.venue
+        kwargs["offerer"] = kwargs["stock"].offer.venue.managingOfferer
         return super()._create(model_class, *args, **kwargs)
 
 

@@ -1,270 +1,211 @@
 from datetime import datetime
 from datetime import timedelta
 
-from pcapi.core.payments.api import create_deposit
+from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.offers.factories import EventOfferFactory
+from pcapi.core.offers.factories import EventProductFactory
+from pcapi.core.offers.factories import EventStockFactory
+from pcapi.core.offers.factories import OffererFactory
+from pcapi.core.offers.factories import ThingOfferFactory
+from pcapi.core.offers.factories import ThingProductFactory
+from pcapi.core.offers.factories import ThingStockFactory
+from pcapi.core.offers.factories import UserOffererFactory
+from pcapi.core.offers.factories import VenueFactory
+from pcapi.core.payments.factories import DepositFactory
+from pcapi.core.payments.factories import PaymentFactory
+from pcapi.core.payments.factories import PaymentStatusFactory
+from pcapi.core.users.factories import UserFactory
 from pcapi.models import EventType
 from pcapi.models import ThingType
 from pcapi.models.payment_status import TransactionStatus
 from pcapi.repository import repository
-from pcapi.sandboxes.scripts.creators.helpers.sql_creators import create_booking
-from pcapi.sandboxes.scripts.creators.helpers.sql_creators import create_offer_with_event_product
-from pcapi.sandboxes.scripts.creators.helpers.sql_creators import create_offer_with_thing_product
-from pcapi.sandboxes.scripts.creators.helpers.sql_creators import create_offerer
-from pcapi.sandboxes.scripts.creators.helpers.sql_creators import create_payment
-from pcapi.sandboxes.scripts.creators.helpers.sql_creators import create_stock
-from pcapi.sandboxes.scripts.creators.helpers.sql_creators import create_user
-from pcapi.sandboxes.scripts.creators.helpers.sql_creators import create_user_offerer
-from pcapi.sandboxes.scripts.creators.helpers.sql_creators import create_venue
 
 
 def save_bookings_recap_sandbox():
     yesterday = datetime.utcnow() - timedelta(days=1)
     today = datetime.utcnow()
 
-    beneficiary1 = create_user(
-        public_name="Riri Duck",
-        first_name="Riri",
-        last_name="Duck",
-        email="riri.duck@example.com",
-    )
-    beneficiary2 = create_user(
-        public_name="Fifi Brindacier",
-        first_name="Fifi",
-        last_name="Brindacier",
+    beneficiary1 = UserFactory(publicName="Riri Duck", firstName="Riri", lastName="Duck", email="riri.duck@example.com")
+
+    beneficiary2 = UserFactory(
+        publicName="Fifi Brindacier",
+        firstName="Fifi",
+        lastName="Brindacier",
         email="fifi.brindacier@example.com",
     )
-    beneficiary3 = create_user(
-        public_name="LouLou Duck",
-        first_name="Loulou",
-        last_name="Duck",
+    beneficiary3 = UserFactory(
+        publicName="LouLou Duck",
+        firstName="Loulou",
+        lastName="Duck",
         email="loulou.duck@example.com",
     )
 
-    repository.save(beneficiary1, beneficiary2, beneficiary3)
-    deposit1 = create_deposit(beneficiary1, "public")
-    deposit2 = create_deposit(beneficiary2, "public")
-    deposit3 = create_deposit(beneficiary3, "public")
-    repository.save(deposit1, deposit2, deposit3)
+    DepositFactory(user=beneficiary1, version=1)
+    DepositFactory(user=beneficiary1, version=1)
+    DepositFactory(user=beneficiary1, version=1)
 
-    pro = create_user(
-        public_name="Balthazar Picsou",
-        first_name="Balthazar",
-        last_name="Picsou",
+    pro = UserFactory(
+        publicName="Balthazar Picsou",
+        firstName="Balthazar",
+        lastName="Picsou",
         email="balthazar.picsou@example.com",
-        is_beneficiary=False,
+        isBeneficiary=False,
     )
-    offerer = create_offerer(
-        siren="645389012",
-    )
-    user_offerer = create_user_offerer(user=pro, offerer=offerer)
-    venue1 = create_venue(offerer, name="Cinéma Le Monde Perdu", siret="64538901265877")
-    venue2 = create_venue(offerer, name="Librairie Atlantis", siret="64538901201379")
-    venue3 = create_venue(offerer, name="Théatre Mordor", siret="64538954601379")
-    venue4_virtual = create_venue(offerer, name="Un lieu virtuel", siret=None, is_virtual=True)
+    offerer = OffererFactory(siren="645389012")
+    UserOffererFactory(user=pro, offerer=offerer)
+    venue1 = VenueFactory(managingOfferer=offerer, name="Cinéma Le Monde Perdu", siret="64538901265877")
+    venue2 = VenueFactory(managingOfferer=offerer, name="Librairie Atlantis", siret="64538901201379")
+    venue3 = VenueFactory(managingOfferer=offerer, name="Théatre Mordor", siret="64538954601379")
+    venue4_virtual = VenueFactory(managingOfferer=offerer, name="Un lieu virtuel", siret=None, isVirtual=True)
 
-    offer1_venue1 = create_offer_with_event_product(
-        venue=venue1,
-        event_name="Jurassic Park",
-        event_type=EventType.CINEMA,
-        is_duo=True,
-    )
-    stock_1_offer1_venue1 = create_stock(
-        offer=offer1_venue1,
-        beginning_datetime=yesterday,
-        quantity=None,
-        price=12.99,
-    )
-    offer2_venue1 = create_offer_with_event_product(
-        venue=venue1,
-        event_name="Matrix",
-        event_type=EventType.CINEMA,
-        is_duo=False,
-    )
-    stock_2_offer2_venue1 = create_stock(
-        offer=offer2_venue1,
-        beginning_datetime=today,
-        quantity=None,
-        price=0,
+    product1_venue1 = EventProductFactory(name="Jurassic Park", type=str(EventType.CINEMA))
+    offer1_venue1 = EventOfferFactory(product=product1_venue1, venue=venue1, isDuo=True)
+    stock_1_offer1_venue1 = EventStockFactory(
+        offer=offer1_venue1, beginningDatetime=yesterday, quantity=None, price=12.99
     )
 
-    offer1_venue2 = create_offer_with_thing_product(
-        venue=venue2, thing_name="Fondation", thing_type=ThingType.LIVRE_EDITION, extra_data={"isbn": "9788804119135"}
-    )
-    stock_1_offer1_venue2 = create_stock(
-        offer=offer1_venue2,
-        quantity=42,
-        price=9.99,
-    )
-    offer2_venue2 = create_offer_with_thing_product(
-        venue=venue2,
-        thing_name="Martine à la playa",
-        thing_type=ThingType.LIVRE_EDITION,
-        extra_data={"isbn": "9787605639121"},
-    )
-    stock_1_offer2_venue2 = create_stock(
-        offer=offer2_venue2,
-        quantity=12,
-        price=49.99,
-    )
+    product2_venue1 = EventProductFactory(name="Matrix", type=str(EventType.CINEMA))
 
-    offer1_venue3 = create_offer_with_event_product(
-        venue=venue3,
-        event_name="Danse des haricots",
-        event_type=EventType.SPECTACLE_VIVANT,
-    )
-    stock_1_offer1_venue3 = create_stock(
-        offer=offer1_venue3,
-        quantity=44,
-        price=18.50,
-    )
+    offer2_venue1 = EventOfferFactory(product=product2_venue1, venue=venue1, isDuo=False)
+    stock_2_offer2_venue1 = EventStockFactory(offer=offer2_venue1, beginningDatetime=today, quantity=None, price=0)
 
-    offer1_venue4 = create_offer_with_thing_product(
-        venue=venue4_virtual,
-        thing_name="Le livre des haricots",
-        thing_type=ThingType.LIVRE_EDITION,
+    product1_venue2 = ThingProductFactory(
+        name="Fondation", type=str(ThingType.LIVRE_EDITION), extraData={"isbn": "9788804119135"}
     )
-    stock_1_offer1_venue4 = create_stock(
-        offer=offer1_venue4,
-        quantity=70,
-        price=10.99,
-    )
+    offer1_venue2 = ThingOfferFactory(product=product1_venue2, venue=venue2)
+    stock_1_offer1_venue2 = ThingStockFactory(offer=offer1_venue2, quantity=42, price=9.99)
 
-    booking1_beneficiary1 = create_booking(
+    product2_venue2 = ThingProductFactory(
+        name="Martine à la playa", type=str(ThingType.LIVRE_EDITION), extraData={"isbn": "9787605639121"}
+    )
+    offer2_venue2 = ThingOfferFactory(product=product2_venue2, venue=venue2)
+    stock_1_offer2_venue2 = ThingStockFactory(offer=offer2_venue2, quantity=12, price=49.99)
+
+    product1_venue3 = EventProductFactory(name="Danse des haricots", type=str(EventType.SPECTACLE_VIVANT))
+    offer1_venue3 = EventOfferFactory(product=product1_venue3, venue=venue3)
+    stock_1_offer1_venue3 = EventStockFactory(offer=offer1_venue3, quantity=44, price=18.50)
+
+    product1_venue4 = ThingProductFactory(name="Le livre des haricots", type=str(ThingType.LIVRE_EDITION))
+    offer1_venue4 = ThingOfferFactory(product=product1_venue4, venue=venue4_virtual)
+    stock_1_offer1_venue4 = ThingStockFactory(offer=offer1_venue4, quantity=70, price=10.99)
+
+    BookingFactory(
         user=beneficiary1,
         stock=stock_1_offer1_venue1,
-        date_created=datetime(2020, 3, 18, 14, 56, 12, 0),
-        is_used=True,
-        date_used=datetime(2020, 3, 22, 17, 00, 10, 0),
+        dateCreated=datetime(2020, 3, 18, 14, 56, 12, 0),
+        isUsed=True,
+        dateUsed=datetime(2020, 3, 22, 17, 00, 10, 0),
         quantity=2,
     )
-    booking2_beneficiary1 = create_booking(
-        user=beneficiary1,
-        stock=stock_2_offer2_venue1,
-        date_created=datetime(2020, 4, 22, 9, 17, 12, 0),
-    )
-    booking1_beneficiary2 = create_booking(
+
+    BookingFactory(user=beneficiary1, stock=stock_2_offer2_venue1, dateCreated=datetime(2020, 4, 22, 9, 17, 12, 0))
+
+    BookingFactory(
         user=beneficiary2,
         stock=stock_1_offer1_venue1,
-        date_created=datetime(2020, 3, 18, 12, 18, 12, 0),
-        is_used=True,
-        date_used=datetime(2020, 5, 2),
+        dateCreated=datetime(2020, 3, 18, 12, 18, 12, 0),
+        isUsed=True,
+        dateUsed=datetime(2020, 5, 2),
         quantity=2,
     )
-    booking2_beneficiary2 = create_booking(
+
+    booking2_beneficiary2 = BookingFactory(
         user=beneficiary2,
         stock=stock_1_offer1_venue2,
-        date_created=datetime(2020, 4, 12, 14, 31, 12, 0),
-        is_cancelled=False,
+        dateCreated=datetime(2020, 4, 12, 14, 31, 12, 0),
+        isCancelled=False,
     )
-    booking1_beneficiary3 = create_booking(
+
+    booking1_beneficiary3 = BookingFactory(
         user=beneficiary3,
         stock=stock_2_offer2_venue1,
-        date_created=datetime(2020, 1, 4, 19, 31, 12, 0),
-        is_cancelled=False,
-        is_used=True,
-        date_used=datetime(2020, 1, 4, 23, 00, 10, 0),
+        dateCreated=datetime(2020, 1, 4, 19, 31, 12, 0),
+        isCancelled=False,
+        isUsed=True,
+        dateUsed=datetime(2020, 1, 4, 23, 00, 10, 0),
         quantity=2,
     )
-    booking2_beneficiary3 = create_booking(
+
+    booking2_beneficiary3 = BookingFactory(
         user=beneficiary3,
         stock=stock_1_offer1_venue2,
-        date_created=datetime(2020, 3, 21, 22, 9, 12, 0),
-        is_cancelled=False,
+        dateCreated=datetime(2020, 3, 21, 22, 9, 12, 0),
+        isCancelled=False,
     )
-    booking3_beneficiary1 = create_booking(
-        user=beneficiary1,
-        stock=stock_1_offer1_venue3,
-        date_created=datetime(2020, 4, 12, 14, 31, 12, 0),
+
+    booking3_beneficiary1 = BookingFactory(
+        user=beneficiary1, stock=stock_1_offer1_venue3, dateCreated=datetime(2020, 4, 12, 14, 31, 12, 0)
     )
-    payment_booking3_beneficiary1 = create_payment(
-        booking=booking3_beneficiary1, offerer=offerer, status=TransactionStatus.PENDING
-    )
-    booking3_beneficiary2 = create_booking(
+
+    payment_booking3_beneficiary1 = PaymentFactory(booking=booking3_beneficiary1)
+    PaymentStatusFactory(payment=payment_booking3_beneficiary1, status=TransactionStatus.PENDING)
+
+    booking3_beneficiary2 = BookingFactory(
         user=beneficiary2,
         stock=stock_1_offer1_venue3,
-        date_created=datetime(2020, 4, 12, 19, 31, 12, 0),
-        is_used=True,
-        date_used=datetime(2020, 4, 22, 17, 00, 10, 0),
-        is_cancelled=False,
+        dateCreated=datetime(2020, 4, 12, 19, 31, 12, 0),
+        isUsed=True,
+        dateUsed=datetime(2020, 4, 22, 17, 00, 10, 0),
+        isCancelled=False,
     )
-    payment_booking3_beneficiary2 = create_payment(
-        booking=booking3_beneficiary2, offerer=offerer, status=TransactionStatus.SENT
+
+    PaymentFactory(booking=booking3_beneficiary2)
+    PaymentStatusFactory(payment=payment_booking3_beneficiary1, status=TransactionStatus.SENT)
+
+    booking3_beneficiary3 = BookingFactory(
+        user=beneficiary3, stock=stock_1_offer1_venue3, dateCreated=datetime(2020, 4, 12, 22, 9, 12, 0)
     )
-    booking3_beneficiary3 = create_booking(
-        user=beneficiary3,
-        stock=stock_1_offer1_venue3,
-        date_created=datetime(2020, 4, 12, 22, 9, 12, 0),
-    )
-    payment_booking3_beneficiary3 = create_payment(
-        booking=booking3_beneficiary3, offerer=offerer, status=TransactionStatus.ERROR
-    )
-    booking4_beneficiary3 = create_booking(
+
+    payment_booking3_beneficiary3 = PaymentFactory(booking=booking3_beneficiary3)
+    PaymentStatusFactory(payment=payment_booking3_beneficiary3, status=TransactionStatus.ERROR)
+
+    BookingFactory(
         user=beneficiary3,
         stock=stock_1_offer1_venue2,
-        date_created=datetime(2020, 3, 21, 22, 9, 12, 0),
-        is_cancelled=False,
-        is_used=False,
+        dateCreated=datetime(2020, 3, 21, 22, 9, 12, 0),
+        isUsed=True,
+        isCancelled=False,
     )
-    booking5_beneficiary3 = create_booking(
+
+    booking5_beneficiary3 = BookingFactory(
         user=beneficiary3,
         stock=stock_1_offer1_venue4,
-        date_created=datetime(2020, 3, 21, 22, 9, 12, 0),
-        is_cancelled=False,
+        dateCreated=datetime(2020, 3, 21, 22, 9, 12, 0),
+        isCancelled=False,
     )
 
-    booking6_beneficiary3 = create_booking(
+    booking6_beneficiary3 = BookingFactory(
         user=beneficiary3,
         stock=stock_1_offer2_venue2,
-        date_created=datetime(2020, 3, 21, 22, 9, 12, 0),
-        is_used=True,
-        date_used=datetime(2020, 4, 22, 21, 9, 12, 0),
-    )
-    payment_booking6_beneficiary3 = create_payment(
-        booking=booking6_beneficiary3, offerer=offerer, status=TransactionStatus.SENT
+        dateCreated=datetime(2020, 3, 21, 22, 9, 12, 0),
+        isUsed=True,
+        dateUsed=datetime(2020, 4, 22, 21, 9, 12, 0),
     )
 
-    booking7_beneficiary2 = create_booking(
+    payment_booking6_beneficiary3 = PaymentFactory(booking=booking6_beneficiary3)
+    PaymentStatusFactory(payment=payment_booking6_beneficiary3, status=TransactionStatus.SENT)
+
+    booking7_beneficiary2 = BookingFactory(
         user=beneficiary2,
         stock=stock_1_offer2_venue2,
-        date_created=datetime(2020, 4, 21, 22, 6, 12, 0),
-        is_used=True,
-        date_used=datetime(2020, 4, 22, 22, 9, 12, 0),
+        dateCreated=datetime(2020, 4, 21, 22, 6, 12, 0),
+        isUsed=True,
+        dateUsed=datetime(2020, 4, 22, 22, 9, 12, 0),
     )
 
-    payment_booking7_beneficiary2 = create_payment(
-        booking=booking7_beneficiary2, offerer=offerer, status=TransactionStatus.RETRY
-    )
+    payment_booking7_beneficiary2 = PaymentFactory(booking=booking7_beneficiary2)
+    PaymentStatusFactory(payment=payment_booking7_beneficiary2, status=TransactionStatus.RETRY)
 
-    booking8_beneficiary1 = create_booking(
+    BookingFactory(
         user=beneficiary1,
         stock=stock_1_offer2_venue2,
-        date_created=datetime(2020, 2, 21, 22, 6, 12, 0),
-        is_used=True,
-        date_used=datetime(2020, 4, 22, 23, 9, 12, 0),
+        dateCreated=datetime(2020, 2, 21, 22, 6, 12, 0),
+        isUsed=True,
+        dateUsed=datetime(2020, 4, 22, 23, 9, 12, 0),
     )
 
-    payment_booking8_beneficiary1 = create_payment(
-        booking=booking8_beneficiary1, offerer=offerer, status=TransactionStatus.PENDING
-    )
-
-    repository.save(
-        pro,
-        booking1_beneficiary1,
-        booking2_beneficiary1,
-        booking1_beneficiary2,
-        booking2_beneficiary2,
-        booking1_beneficiary3,
-        booking2_beneficiary3,
-        booking5_beneficiary3,
-        payment_booking3_beneficiary1,
-        payment_booking3_beneficiary2,
-        payment_booking3_beneficiary3,
-        user_offerer,
-        payment_booking6_beneficiary3,
-        payment_booking7_beneficiary2,
-        payment_booking8_beneficiary1,
-        booking4_beneficiary3,
-    )
+    payment_booking8_beneficiary1 = PaymentFactory(booking=booking7_beneficiary2)
+    PaymentStatusFactory(payment=payment_booking8_beneficiary1, status=TransactionStatus.PENDING)
 
     bookings_to_cancel = [
         booking2_beneficiary2,
