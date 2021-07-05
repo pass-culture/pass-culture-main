@@ -3,6 +3,9 @@ from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalDeposit
 from pcapi.core.educational.models import EducationalInstitution
 from pcapi.core.educational.models import EducationalYear
+from pcapi.core.fraud.models import BeneficiaryFraudCheck
+from pcapi.core.fraud.models import BeneficiaryFraudResult
+from pcapi.core.fraud.models import BeneficiaryFraudReview
 from pcapi.core.mails.models import Email
 from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Offerer
@@ -75,6 +78,9 @@ def clean_all_database(*args, **kwargs):
     Deposit.query.delete()
     BeneficiaryImportStatus.query.delete()
     BeneficiaryImport.query.delete()
+    BeneficiaryFraudCheck.query.delete()
+    BeneficiaryFraudResult.query.delete()
+    BeneficiaryFraudReview.query.delete()
     Token.query.delete()
     OfferValidationConfig.query.delete()
     User.query.delete()
