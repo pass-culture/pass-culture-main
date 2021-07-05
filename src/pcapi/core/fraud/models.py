@@ -91,11 +91,11 @@ class DemarchesSimplifieesContent(pydantic.BaseModel):
     civility: str
     email: str
     application_id: int
-    departement: typing.Optional[str]
+    department: typing.Optional[str]
     birth_date: datetime.date
     phone: str
     postal_code: str
-    activity: str
+    activity: typing.Optional[str]
     address: str
     id_piece_number: typing.Optional[str]
 

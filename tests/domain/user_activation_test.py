@@ -1,7 +1,8 @@
-from datetime import datetime
+import datetime
 
 import pytest
 
+from pcapi.core.fraud import models as fraud_models
 from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
 from pcapi.domain.user_activation import create_beneficiary_from_application
@@ -52,19 +53,19 @@ class IsImportStatusChangeAllowedTest:
 class CreateBeneficiaryFromApplicationTest:
     def test_return_newly_created_user(self):
         # given
-        beneficiary_information = {
-            "department": "67",
-            "last_name": "Doe",
-            "first_name": "Jane",
-            "activity": "Lycéen",
-            "civility": "Mme",
-            "birth_date": datetime(2000, 5, 1),
-            "email": "jane.doe@test.com",
-            "phone": "0612345678",
-            "postal_code": "67200",
-            "address": "11 Rue du Test",
-            "application_id": 123,
-        }
+        beneficiary_information = fraud_models.DemarchesSimplifieesContent(
+            department="67",
+            last_name="Doe",
+            first_name="Jane",
+            activity="Lycéen",
+            civility="Mme",
+            birth_date=datetime.date(2000, 5, 1),
+            email="jane.doe@test.com",
+            phone="0612345678",
+            postal_code="67200",
+            address="11 Rue du Test",
+            application_id=123,
+        )
 
         # when
         beneficiary = create_beneficiary_from_application(beneficiary_information, user=None)
@@ -78,7 +79,7 @@ class CreateBeneficiaryFromApplicationTest:
         assert beneficiary.departementCode == "67"
         assert beneficiary.postalCode == "67200"
         assert beneficiary.address == "11 Rue du Test"
-        assert beneficiary.dateOfBirth == datetime(2000, 5, 1)
+        assert beneficiary.dateOfBirth == datetime.date(2000, 5, 1)
         assert not beneficiary.isBeneficiary
         assert not beneficiary.isAdmin
         assert beneficiary.password is not None
@@ -89,24 +90,24 @@ class CreateBeneficiaryFromApplicationTest:
 
     def test_updates_existing_user(self):
         # given
-        beneficiary_information = {
-            "department": "67",
-            "last_name": "Doe",
-            "first_name": "Jane",
-            "activity": "Lycéen",
-            "civility": "Mme",
-            "birth_date": datetime(2000, 5, 1),
-            "email": "jane.doe@test.com",
-            "phone": "0612345678",
-            "postal_code": "67200",
-            "address": "11 Rue du Test",
-            "application_id": 123,
-        }
+        beneficiary_information = fraud_models.DemarchesSimplifieesContent(
+            department="67",
+            last_name="Doe",
+            first_name="Jane",
+            activity="Lycéen",
+            civility="Mme",
+            birth_date=datetime.date(2000, 5, 1),
+            email="jane.doe@test.com",
+            phone="0612345678",
+            postal_code="67200",
+            address="11 Rue du Test",
+            application_id=123,
+        )
 
         user = users_api.create_account(
-            email=beneficiary_information["email"],
+            email=beneficiary_information.email,
             password="123azerty@56",
-            birthdate=beneficiary_information["birth_date"],
+            birthdate=beneficiary_information.birth_date,
             send_activation_mail=False,
         )
         db.session.add(user)
@@ -127,7 +128,7 @@ class CreateBeneficiaryFromApplicationTest:
         assert beneficiary.departementCode == "67"
         assert beneficiary.postalCode == "67200"
         assert beneficiary.address == "11 Rue du Test"
-        assert beneficiary.dateOfBirth == datetime(2000, 5, 1)
+        assert beneficiary.dateOfBirth == datetime.datetime(2000, 5, 1)
         assert not beneficiary.isBeneficiary
         assert not beneficiary.isAdmin
         assert beneficiary.password is not None

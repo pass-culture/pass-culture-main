@@ -6,6 +6,7 @@ from typing import Optional
 from pcapi import settings
 from pcapi.connectors.api_demarches_simplifiees import get_application_details
 import pcapi.core.fraud.api as fraud_api
+import pcapi.core.fraud.models as fraud_models
 from pcapi.core.users.api import activate_beneficiary
 from pcapi.core.users.api import create_reset_password_token
 from pcapi.core.users.api import steps_to_become_beneficiary
@@ -89,13 +90,13 @@ def run(
             fraud_api.dms_fraud_check(user, information)
 
         if (
-            information.get("id_piece_number")
-            and User.query.filter(User.idPieceNumber == information["id_piece_number"]).count() > 0
+            information.id_piece_number
+            and User.query.filter(User.idPieceNumber == information.id_piece_number).count() > 0
         ):
             _process_rejection(information, procedure_id=procedure_id, reason="Nr de piece déjà utilisé", user=user)
             continue
 
-        if not is_already_imported(information["application_id"]):
+        if not is_already_imported(information.application_id):
             process_beneficiary_application(
                 information=information,
                 error_messages=error_messages,
@@ -119,12 +120,12 @@ def process_beneficiary_application(
     preexisting_account: Optional[User] = None,
 ) -> None:
     duplicate_users = get_beneficiary_duplicates(
-        first_name=information["first_name"],
-        last_name=information["last_name"],
-        date_of_birth=information["birth_date"],
+        first_name=information.first_name,
+        last_name=information.last_name,
+        date_of_birth=information.birth_date,
     )
 
-    if not duplicate_users or information["application_id"] in retry_ids:
+    if not duplicate_users or information.application_id in retry_ids:
         _process_creation(
             error_messages, information, new_beneficiaries, procedure_id, preexisting_account=preexisting_account
         )
@@ -132,7 +133,7 @@ def process_beneficiary_application(
         _process_duplication(duplicate_users, error_messages, information, procedure_id)
 
 
-def parse_beneficiary_information(application_detail: dict) -> dict:
+def parse_beneficiary_information(application_detail: dict) -> fraud_models.DemarchesSimplifieesContent:
     dossier = application_detail["dossier"]
 
     information = {
@@ -163,7 +164,7 @@ def parse_beneficiary_information(application_detail: dict) -> dict:
         if label == "Quel est le numéro de la pièce que vous venez de saisir ?":
             information["id_piece_number"] = value
 
-    return information
+    return fraud_models.DemarchesSimplifieesContent(**information)
 
 
 def _process_creation(
@@ -183,7 +184,7 @@ def _process_creation(
     except ApiErrors as api_errors:
         logger.warning(
             "[BATCH][REMOTE IMPORT BENEFICIARIES] Could not save application %s, because of error: %s - Procedure %s",
-            information["application_id"],
+            information.application_id,
             api_errors,
             procedure_id,
         )
@@ -192,13 +193,13 @@ def _process_creation(
 
     logger.info(
         "[BATCH][REMOTE IMPORT BENEFICIARIES] Successfully created user for application %s - Procedure %s",
-        information["application_id"],
+        information.application_id,
         procedure_id,
     )
 
     beneficiary_import = save_beneficiary_import_with_status(
         ImportStatus.CREATED,
-        information["application_id"],
+        information.application_id,
         source=BeneficiaryImportSources.demarches_simplifiees,
         source_id=procedure_id,
         user=user,
@@ -219,7 +220,7 @@ def _process_creation(
     except MailServiceException as mail_service_exception:
         logger.exception(
             "Email send_activation_email failure for application %s - Procedure %s : %s",
-            information["application_id"],
+            information.application_id,
             procedure_id,
             mail_service_exception,
         )
@@ -230,12 +231,12 @@ def _process_duplication(
 ) -> None:
     number_of_beneficiaries = len(duplicate_users)
     duplicate_ids = ", ".join([str(u.id) for u in duplicate_users])
-    message = f"{number_of_beneficiaries} utilisateur(s) en doublon {duplicate_ids} pour le dossier {information['application_id']} - Procedure {procedure_id}"
+    message = f"{number_of_beneficiaries} utilisateur(s) en doublon {duplicate_ids} pour le dossier {information.application_id} - Procedure {procedure_id}"
     logger.warning("[BATCH][REMOTE IMPORT BENEFICIARIES] Duplicate beneficiaries found : %s", message)
     error_messages.append(message)
     save_beneficiary_import_with_status(
         ImportStatus.DUPLICATE,
-        information["application_id"],
+        information.application_id,
         source=BeneficiaryImportSources.demarches_simplifiees,
         source_id=procedure_id,
         detail=f"Utilisateur en doublon : {duplicate_ids}",
@@ -245,7 +246,7 @@ def _process_duplication(
 def _process_rejection(information: dict, procedure_id: int, reason: str, user: User = None) -> None:
     save_beneficiary_import_with_status(
         ImportStatus.REJECTED,
-        information["application_id"],
+        information.application_id,
         source=BeneficiaryImportSources.demarches_simplifiees,
         source_id=procedure_id,
         detail=reason,
@@ -253,7 +254,7 @@ def _process_rejection(information: dict, procedure_id: int, reason: str, user: 
     )
     logger.warning(
         "[BATCH][REMOTE IMPORT BENEFICIARIES] Rejected application %s because of '%s' - Procedure %s",
-        information["application_id"],
+        information.application_id,
         reason,
         procedure_id,
     )
