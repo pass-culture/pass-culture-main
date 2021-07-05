@@ -677,10 +677,10 @@ else
     RUN='docker exec pc-flask bash -c "cd /opt/services/flaskapp/src/ && python src/pcapi/scripts/pc.py '"$CMD $*"'"'
   else
     if [ "$FILE_TO_UPLOAD" == 'none' ]; then
-      kubectl -n $ENV exec -it $(pod_console) -- python src/pcapi/scripts/pc.py '"$CMD $*"'
+      kubectl -n $ENV exec -it $(pod_console) -- python src/pcapi/scripts/pc.py "$CMD" $*
     else
       kubectl cp -n $ENV "$FILE_TO_UPLOAD" $(pod_console):"$FILE_TO_UPLOAD"
-      kubectl -n $ENV exec -it $(pod_console) -- python src/pcapi/scripts/pc.py '"$CMD $*"'
+      kubectl -n $ENV exec -it $(pod_console) -- python src/pcapi/scripts/pc.py "$CMD" $*
     fi
     exit
   fi
