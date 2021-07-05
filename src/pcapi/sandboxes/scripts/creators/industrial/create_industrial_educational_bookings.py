@@ -26,7 +26,7 @@ def create_industrial_educational_bookings() -> None:
         rennes_educational_institution2,
     ]
 
-    now = datetime.datetime.now()
+    now = datetime.datetime.now(datetime.timezone.utc)
 
     educational_test_user = UserFactory(
         email="compte.test@education.gouv.fr",
