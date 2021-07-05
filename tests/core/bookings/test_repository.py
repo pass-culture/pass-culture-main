@@ -385,6 +385,11 @@ class FindByTokenTest:
         assert booking is None
 
 
+default_booking_date = date.today()
+one_year_before_booking = default_booking_date - timedelta(weeks=52)
+one_year_after_booking = default_booking_date + timedelta(weeks=52)
+
+
 class FindByProUserIdTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_only_expected_booking_attributes(self, app: fixture):
@@ -404,7 +409,9 @@ class FindByProUserIdTest:
         )
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
+        bookings_recap_paginated = find_by_pro_user_id(
+            user_id=user.id, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
+        )
 
         # Then
         assert len(bookings_recap_paginated.bookings_recap) == 1
@@ -443,7 +450,9 @@ class FindByProUserIdTest:
         bookings_factories.BookingFactory(user=beneficiary, stock=stock, quantity=2)
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
+        bookings_recap_paginated = find_by_pro_user_id(
+            user_id=user.id, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
 
         # Then
         assert len(bookings_recap_paginated.bookings_recap) == 2
@@ -470,7 +479,9 @@ class FindByProUserIdTest:
         PaymentStatusFactory(payment=payment, status=TransactionStatus.SENT)
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
+        bookings_recap_paginated = find_by_pro_user_id(
+            user_id=user.id, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
 
         # Then
         assert len(bookings_recap_paginated.bookings_recap) == 1
@@ -505,7 +516,9 @@ class FindByProUserIdTest:
         bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=yesterday, token="ABCDEF")
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
+        bookings_recap_paginated = find_by_pro_user_id(
+            user_id=user.id, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
 
         # Then
         assert len(bookings_recap_paginated.bookings_recap) == 1
@@ -550,7 +563,9 @@ class FindByProUserIdTest:
         )
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
+        bookings_recap_paginated = find_by_pro_user_id(
+            user_id=user.id, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
 
         # Then
         expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
@@ -586,7 +601,9 @@ class FindByProUserIdTest:
         repository.save(payment, payment)
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
+        bookings_recap_paginated = find_by_pro_user_id(
+            user_id=user.id, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
 
         # Then
         assert len(bookings_recap_paginated.bookings_recap) == 1
@@ -621,7 +638,9 @@ class FindByProUserIdTest:
         )
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
+        bookings_recap_paginated = find_by_pro_user_id(
+            user_id=user.id, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
 
         # Then
         assert len(bookings_recap_paginated.bookings_recap) == 1
@@ -656,7 +675,9 @@ class FindByProUserIdTest:
         )
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
+        bookings_recap_paginated = find_by_pro_user_id(
+            user_id=user.id, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
 
         # Then
         assert len(bookings_recap_paginated.bookings_recap) == 1
@@ -691,7 +712,9 @@ class FindByProUserIdTest:
         bookings_factories.BookingFactory(user=beneficiary, stock=stock2, dateCreated=today, token="FGHI")
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
+        bookings_recap_paginated = find_by_pro_user_id(
+            user_id=user.id, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
 
         # Then
         assert len(bookings_recap_paginated.bookings_recap) == 2
@@ -713,7 +736,9 @@ class FindByProUserIdTest:
         booking2 = bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=today, token="FGHI")
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(user_id=user.id, page=1, per_page_limit=1)
+        bookings_recap_paginated = find_by_pro_user_id(
+            user_id=user.id, booking_period=(one_year_before_booking, one_year_after_booking), page=1, per_page_limit=1
+        )
 
         # Then
         assert len(bookings_recap_paginated.bookings_recap) == 1
@@ -740,7 +765,9 @@ class FindByProUserIdTest:
         bookings_factories.BookingFactory(user=beneficiary, stock=stock, token="FGHI", dateCreated=today)
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(user_id=user.id, page=2, per_page_limit=1)
+        bookings_recap_paginated = find_by_pro_user_id(
+            user_id=user.id, booking_period=(one_year_before_booking, one_year_after_booking), page=2, per_page_limit=1
+        )
 
         # Then
         assert len(bookings_recap_paginated.bookings_recap) == 1
@@ -764,7 +791,9 @@ class FindByProUserIdTest:
         bookings_factories.BookingFactory(user=beneficiary, stock=stock)
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
+        bookings_recap_paginated = find_by_pro_user_id(
+            user_id=user.id, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
 
         # Then
         assert bookings_recap_paginated.bookings_recap == []
@@ -784,7 +813,9 @@ class FindByProUserIdTest:
         booking = bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=today, token="FGHI")
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(user_id=user.id, page=1, per_page_limit=4)
+        bookings_recap_paginated = find_by_pro_user_id(
+            user_id=user.id, booking_period=(one_year_before_booking, one_year_after_booking), page=1, per_page_limit=4
+        )
 
         # Then
         assert len(bookings_recap_paginated.bookings_recap) == 1
@@ -810,7 +841,9 @@ class FindByProUserIdTest:
         )
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(user_id=user.id, page=1, per_page_limit=4)
+        bookings_recap_paginated = find_by_pro_user_id(
+            user_id=user.id, booking_period=(one_year_before_booking, one_year_after_booking), page=1, per_page_limit=4
+        )
 
         # Then
         assert len(bookings_recap_paginated.bookings_recap) == 2
@@ -838,7 +871,9 @@ class FindByProUserIdTest:
         )
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
+        bookings_recap_paginated = find_by_pro_user_id(
+            user_id=user.id, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
+        )
 
         # Then
         assert len(bookings_recap_paginated.bookings_recap) == 1
@@ -863,7 +898,9 @@ class FindByProUserIdTest:
         )
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
+        bookings_recap_paginated = find_by_pro_user_id(
+            user_id=user.id, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
+        )
 
         # Then
         expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
@@ -885,7 +922,11 @@ class FindByProUserIdTest:
         offer_for_event = offers_factories.EventOfferFactory(venue=venue_for_event, product=product)
         stock_for_event = offers_factories.EventStockFactory(offer=offer_for_event, price=0)
         bookings_factories.BookingFactory(
-            user=beneficiary, stock=stock_for_event, dateCreated=datetime(2020, 1, 3), token="BBBBBB", isUsed=True
+            user=beneficiary,
+            stock=stock_for_event,
+            dateCreated=(default_booking_date + timedelta(days=1)),
+            token="BBBBBB",
+            isUsed=True,
         )
 
         venue_for_book = offers_factories.VenueFactory(
@@ -897,7 +938,7 @@ class FindByProUserIdTest:
         )
         stock_for_book = offers_factories.ThingStockFactory(offer=offer_for_book, price=0)
         bookings_factories.BookingFactory(
-            user=beneficiary, stock=stock_for_book, dateCreated=datetime(2020, 1, 2), token="AAAAAA", isUsed=True
+            user=beneficiary, stock=stock_for_book, dateCreated=default_booking_date, token="AAAAAA", isUsed=True
         )
 
         venue_for_thing = offers_factories.VenueFactory(
@@ -909,13 +950,15 @@ class FindByProUserIdTest:
         bookings_factories.BookingFactory(
             user=beneficiary,
             stock=stock_for_thing,
-            dateCreated=(datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)),
+            dateCreated=(default_booking_date - timedelta(days=1)),
             token="ABCDEF",
             isUsed=True,
         )
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
+        bookings_recap_paginated = find_by_pro_user_id(
+            user_id=user.id, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
 
         # Then
         assert bookings_recap_paginated.bookings_recap[0].venue_name == venue_for_event.name
@@ -937,7 +980,11 @@ class FindByProUserIdTest:
         offer_for_event = offers_factories.EventOfferFactory(venue=venue_for_event, product=product)
         stock_for_event = offers_factories.EventStockFactory(offer=offer_for_event, price=0)
         bookings_factories.BookingFactory(
-            user=beneficiary, stock=stock_for_event, dateCreated=datetime(2020, 1, 3), token="BBBBBB", isUsed=True
+            user=beneficiary,
+            stock=stock_for_event,
+            dateCreated=(default_booking_date + timedelta(days=1)),
+            token="BBBBBB",
+            isUsed=True,
         )
 
         venue_for_book = offers_factories.VenueFactory(
@@ -949,7 +996,7 @@ class FindByProUserIdTest:
         )
         stock_for_book = offers_factories.ThingStockFactory(offer=offer_for_book, price=0)
         bookings_factories.BookingFactory(
-            user=beneficiary, stock=stock_for_book, dateCreated=datetime(2020, 1, 2), token="AAAAAA", isUsed=True
+            user=beneficiary, stock=stock_for_book, dateCreated=default_booking_date, token="AAAAAA", isUsed=True
         )
 
         venue_for_thing = offers_factories.VenueFactory(
@@ -964,13 +1011,15 @@ class FindByProUserIdTest:
         bookings_factories.BookingFactory(
             user=beneficiary,
             stock=stock_for_thing,
-            dateCreated=(datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)),
+            dateCreated=(default_booking_date - timedelta(days=1)),
             token="ABCDEF",
             isUsed=True,
         )
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(user_id=user.id)
+        bookings_recap_paginated = find_by_pro_user_id(
+            user_id=user.id, booking_period=(one_year_before_booking, one_year_after_booking)
+        )
 
         # Then
         assert bookings_recap_paginated.bookings_recap[0].venue_name == venue_for_event.publicName
@@ -987,7 +1036,11 @@ class FindByProUserIdTest:
         booking_two = bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=user_offerer.offerer)
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(user_id=pro_user.id, venue_id=booking_two.stock.offer.venue.id)
+        bookings_recap_paginated = find_by_pro_user_id(
+            user_id=pro_user.id,
+            booking_period=(one_year_before_booking, one_year_after_booking),
+            venue_id=booking_two.stock.offer.venue.id,
+        )
 
         # Then
         assert len(bookings_recap_paginated.bookings_recap) == 1
@@ -1015,7 +1068,11 @@ class FindByProUserIdTest:
         )
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(user_id=user_offerer.user.id, event_date=event_date.date())
+        bookings_recap_paginated = find_by_pro_user_id(
+            user_id=user_offerer.user.id,
+            booking_period=(one_year_before_booking, one_year_after_booking),
+            event_date=event_date.date(),
+        )
 
         # Then
         assert len(bookings_recap_paginated.bookings_recap) == 1
@@ -1023,7 +1080,7 @@ class FindByProUserIdTest:
         assert resulting_booking_recap.booking_token == expected_booking.token
 
     @pytest.mark.usefixtures("db_session")
-    def should_consider_venue_locale_datetime_when_filtering_by_date(self, app: fixture):
+    def should_consider_venue_locale_datetime_when_filtering_by_event_date(self, app: fixture):
         # Given
         user_offerer = offers_factories.UserOffererFactory()
         event_datetime = datetime(2020, 4, 21, 20, 00)
@@ -1047,7 +1104,11 @@ class FindByProUserIdTest:
         mayotte_booking = bookings_factories.BookingFactory(stock=stock_in_mayotte)
 
         # When
-        bookings_recap_paginated = find_by_pro_user_id(user_id=user_offerer.user.id, event_date=event_datetime.date())
+        bookings_recap_paginated = find_by_pro_user_id(
+            user_id=user_offerer.user.id,
+            booking_period=(one_year_before_booking, one_year_after_booking),
+            event_date=event_datetime.date(),
+        )
 
         # Then
         assert len(bookings_recap_paginated.bookings_recap) == 2
@@ -1059,8 +1120,8 @@ class FindByProUserIdTest:
     def test_should_return_only_bookings_for_requested_booking_period(self, app: fixture):
         # Given
         user_offerer = offers_factories.UserOffererFactory()
-        booking_beginning_period = datetime(2020, 12, 24, 10, 30)
-        booking_ending_period = datetime(2020, 12, 28, 00, 30)
+        booking_beginning_period = datetime(2020, 12, 24, 10, 30).date()
+        booking_ending_period = datetime(2020, 12, 26, 15, 00).date()
         expected_booking = bookings_factories.BookingFactory(
             dateCreated=datetime(2020, 12, 26, 15, 30),
             stock=offers_factories.ThingStockFactory(offer__venue__managingOfferer=user_offerer.offerer),
@@ -1077,8 +1138,7 @@ class FindByProUserIdTest:
         # When
         bookings_recap_paginated = find_by_pro_user_id(
             user_id=user_offerer.user.id,
-            booking_period_beginning_date=booking_beginning_period.date(),
-            booking_period_ending_date=booking_ending_period.date(),
+            booking_period=(booking_beginning_period, booking_ending_period),
         )
 
         # Then
@@ -1092,8 +1152,8 @@ class FindByProUserIdTest:
     def should_consider_venue_locale_datetime_when_filtering_by_booking_period(self, app: fixture):
         # Given
         user_offerer = offers_factories.UserOffererFactory()
-        requested_booking_period_beginning = datetime(2020, 4, 21, 20, 00)
-        requested_booking_period_ending = datetime(2020, 4, 22, 20, 00)
+        requested_booking_period_beginning = datetime(2020, 4, 21, 20, 00).date()
+        requested_booking_period_ending = datetime(2020, 4, 22, 20, 00).date()
 
         offer_in_cayenne = offers_factories.OfferFactory(
             venue__postalCode="97300", venue__managingOfferer=user_offerer.offerer
@@ -1120,8 +1180,7 @@ class FindByProUserIdTest:
         # When
         bookings_recap_paginated = find_by_pro_user_id(
             user_id=user_offerer.user.id,
-            booking_period_beginning_date=requested_booking_period_beginning.date(),
-            booking_period_ending_date=requested_booking_period_ending.date(),
+            booking_period=(requested_booking_period_beginning, requested_booking_period_ending),
         )
 
         # Then

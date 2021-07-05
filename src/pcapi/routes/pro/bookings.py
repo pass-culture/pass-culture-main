@@ -68,7 +68,6 @@ def patch_booking_by_token(token: str):
     return "", 204
 
 
-# @debt api-migration
 @private_api.route("/bookings/pro", methods=["GET"])
 @login_required
 @spectree_serialize(response_model=ListBookingsResponseModel)
@@ -76,8 +75,7 @@ def get_all_bookings(query: ListBookingsQueryModel) -> ListBookingsResponseModel
     page = query.page
     venue_id = query.venue_id
     event_date = query.event_date
-    booking_period_beginning_date = query.booking_period_beginning_date
-    booking_period_ending_date = query.booking_period_ending_date
+    booking_period = (query.booking_period_beginning_date, query.booking_period_ending_date)
 
     check_is_authorized_to_access_bookings_recap(current_user)
 
@@ -95,10 +93,9 @@ def get_all_bookings(query: ListBookingsQueryModel) -> ListBookingsResponseModel
     # that is only used here.
     bookings_recap_paginated = booking_repository.find_by_pro_user_id(
         user_id=current_user.id,
+        booking_period=booking_period,
         event_date=event_date,
         venue_id=venue_id,
-        booking_period_beginning_date=booking_period_beginning_date,
-        booking_period_ending_date=booking_period_ending_date,
         page=int(page),
     )
 

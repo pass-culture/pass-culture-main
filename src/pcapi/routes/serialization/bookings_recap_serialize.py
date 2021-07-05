@@ -1,3 +1,4 @@
+from datetime import date
 from datetime import datetime
 from typing import Any
 from typing import Optional
@@ -112,8 +113,8 @@ class ListBookingsQueryModel(BaseModel):
     page: int = 1
     venue_id: Optional[int]
     event_date: Optional[datetime]
-    booking_period_beginning_date: Optional[datetime]
-    booking_period_ending_date: Optional[datetime]
+    booking_period_beginning_date: date
+    booking_period_ending_date: date
 
     _dehumanize_venue_id = dehumanize_field("venue_id")
 
