@@ -58,6 +58,11 @@ def put(url: str, **kwargs: Any) -> Response:
         return session.request(method="PUT", url=url, **kwargs)
 
 
+def delete(url: str, **kwargs: Any) -> Response:
+    with Session() as session:
+        return session.request(method="DELETE", url=url, **kwargs)
+
+
 class _SessionMixin:
     def request(self, method: str, url: str, *args: Any, **kwargs: Any) -> Response:
         return _wrapper(super().request, method, url, *args, **kwargs)
