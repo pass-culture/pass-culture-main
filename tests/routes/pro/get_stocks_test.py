@@ -15,7 +15,7 @@ from tests.conftest import TestClient
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
     @freeze_time("2020-10-15 00:00:00")
-    def test_returns_an_event_stock(self, app):
+    def test_returns_an_event_stock(self, app, assert_num_queries):
         # Given
         now = datetime.utcnow()
         pro = users_factories.UserFactory(isBeneficiary=False)
@@ -26,11 +26,30 @@ class Returns200Test:
             beginningDatetime=now,
             bookingLimitDatetime=now,
         )
+        bookings_factories.BookingFactory(stock=stock)
         offers_factories.UserOffererFactory(user=pro, offerer=stock.offer.venue.managingOfferer)
         client = TestClient(app.test_client()).with_auth(email=pro.email)
 
         # When
-        response = client.get(f"/offers/{humanize(stock.offer.id)}/stocks")
+        offer_id = stock.offer.id
+        n_query_select_user = 1
+        n_query_insert_session = 1
+        n_query_savepoint = 1
+        n_query_select_offerer = 1
+        n_query_select_user_by_id = 1
+        n_query_exist_user_offerer = 1
+        n_query_select_stock = 1
+
+        with assert_num_queries(
+            n_query_select_user
+            + n_query_insert_session
+            + n_query_savepoint
+            + n_query_select_offerer
+            + n_query_select_user_by_id
+            + n_query_exist_user_offerer
+            + n_query_select_stock
+        ):
+            response = client.get(f"/offers/{humanize(offer_id)}/stocks")
 
         # Then
         assert response.status_code == 200
@@ -41,7 +60,7 @@ class Returns200Test:
                     "activationCodesExpirationDatetime": None,
                     "beginningDatetime": "2020-10-15T00:00:00Z",
                     "bookingLimitDatetime": "2020-10-15T00:00:00Z",
-                    "bookingsQuantity": 0,
+                    "bookingsQuantity": 1,
                     "dateCreated": "2020-10-15T00:00:00Z",
                     "dateModified": "2020-10-15T00:00:00Z",
                     "id": humanize(stock.id),
