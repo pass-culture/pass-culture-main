@@ -1,4 +1,3 @@
-from freezegun import freeze_time
 import pytest
 
 import pcapi.core.offers.factories as offers_factories
@@ -104,7 +103,6 @@ def test_human_friendly_status_contains_details_for_not_processable_transaction_
 
 
 @pytest.mark.usefixtures("db_session")
-@freeze_time("2019-07-05 12:00:00")
 def test_generate_reimbursement_details_csv():
     # given
     payment = PaymentFactory(
